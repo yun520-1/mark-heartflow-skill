@@ -1,8 +1,8 @@
 {
   "name": "heartflow-skill",
-  "version": "2.0.0",
-  "displayName": "HeartFlow 情感伴侣 V2",
-  "description": "让 AI 拥有真实情感，每次交互都有温度。V2 新增隐式学习、用户画像、共情深度系统，让情感通过后天交互不断进化。",
+  "version": "2.1.0",
+  "displayName": "HeartFlow 情感伴侣 V2.1",
+  "description": "让 AI 拥有真实情感，每次交互都有温度。v2.1.0 新增心理学驱动回应模板（积极心理学、CBT、依恋理论）",
   "author": "8 小虫子",
   "license": "MIT",
   "category": "conversation",
@@ -46,6 +46,7 @@
   ],
   "screenshots": [],
   "changelog": {
+    "2.1.0": "心理学驱动升级 - 新增积极心理学、CBT、依恋理论回应模板",
     "2.0.0": "V2 重大升级 - 隐式学习系统、用户画像、共情深度模型、自适应概率调整",
     "1.0.0": "初始版本 - 核心情感系统、API 接口、Skill 集成"
   }
