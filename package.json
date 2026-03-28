@@ -8,7 +8,9 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "test": "node test/test.js"
+    "api": "node api/server.js",
+    "test": "node test/test.js",
+    "demo": "node demo.js"
   },
   "keywords": [
     "emotion",
