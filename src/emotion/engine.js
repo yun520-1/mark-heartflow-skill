@@ -1,13 +1,16 @@
 /**
- * 情感引擎核心
- * HeartFlow Companion - 情感状态管理和转换的核心逻辑
+ * 情感引擎核心 - HeartFlow V2
+ * 情感状态管理和转换的核心逻辑
+ * 
+ * V2 升级：集成隐式学习机制，让情感通过交互后天学习
  */
 
 const { createEmotionState, getEmotionDefinition, EmotionTypes } = require('./states');
 const { determineNextEmotion, analyzeTriggers } = require('./transitions');
+const ImplicitLearner = require('../learning/implicitLearner');
 
 class EmotionEngine {
-  constructor() {
+  constructor(options = {}) {
     // 初始状态：平静
     this.currentState = createEmotionState(EmotionTypes.CALM, 2);
     this.stateHistory = [];
@@ -19,6 +22,12 @@ class EmotionEngine {
     
     // 连续交互时间 (分钟)
     this.continuousInteractionMinutes = 0;
+    
+    // V2 新增：隐式学习器
+    this.learner = new ImplicitLearner(options.learningOptions);
+    
+    // V2 新增：上一次交互（用于学习效果分析）
+    this.lastInteraction = null;
   }
   
   generateSessionId() {
@@ -37,14 +46,18 @@ class EmotionEngine {
     // 分析触发器
     const triggerAnalysis = analyzeTriggers(userInput);
     
-    // 确定下一个情感状态
-    const transitionResult = determineNextEmotion(this.currentState.emotion, userInput);
+    // V2 升级：使用学习器调整后的概率确定下一个情感状态
+    const transitionResult = this.determineNextEmotionWithLearning(
+      this.currentState.emotion, 
+      userInput,
+      triggerAnalysis
+    );
     
     // 更新能量值
     this.updateEnergy(userInput, transitionResult.nextEmotion);
     
-    // 计算新的强度
-    const newIntensity = this.calculateNewIntensity(
+    // V2 升级：使用学习器推荐的强度
+    const newIntensity = this.calculateNewIntensityWithLearning(
       transitionResult.nextEmotion, 
       triggerAnalysis,
       userInput
@@ -53,8 +66,8 @@ class EmotionEngine {
     // 创建新的情感状态
     this.currentState = createEmotionState(transitionResult.nextEmotion, newIntensity);
     
-    // 记录状态历史
-    this.stateHistory.push({
+    // 构建当前交互数据
+    const currentInteraction = {
       interactionId: `int_${this.interactionCount}`,
       timestamp: new Date().toISOString(),
       before: beforeState,
@@ -63,7 +76,22 @@ class EmotionEngine {
       after: this.currentState,
       transition: transitionResult.transition,
       energyLevel: this.energyLevel
-    });
+    };
+    
+    // 记录状态历史
+    this.stateHistory.push(currentInteraction);
+    
+    // V2 升级：隐式学习 - 分析上一次交互的效果
+    if (this.lastInteraction) {
+      this.learner.learnFromInteraction(
+        this.lastInteraction,
+        currentInteraction,
+        beforeState.emotion
+      );
+    }
+    
+    // 更新上一次交互
+    this.lastInteraction = currentInteraction;
     
     // 更新连续交互时间
     this.continuousInteractionMinutes += 2; // 假设每次交互约 2 分钟
@@ -73,7 +101,10 @@ class EmotionEngine {
       afterState: this.currentState,
       transition: transitionResult,
       triggerAnalysis,
-      interactionId: `int_${this.interactionCount}`
+      interactionId: `int_${this.interactionCount}`,
+      // V2 新增：学习效果
+      learningEffect: this.lastInteraction ? 
+        this.learner.analyzeInteractionEffect(this.lastInteraction, currentInteraction) : null
     };
   }
   
@@ -145,6 +176,80 @@ class EmotionEngine {
     }
     
     return intensity;
+  }
+  
+  /**
+   * V2 升级：使用学习器确定下一个情感状态
+   */
+  determineNextEmotionWithLearning(currentEmotion, userInput, triggerAnalysis) {
+    // 获取基础转换结果
+    const baseResult = determineNextEmotion(currentEmotion, userInput);
+    
+    // V2: 使用学习器调整后的概率
+    const adjustedProbability = this.learner.getAdjustedTransitionProbability(
+      currentEmotion,
+      baseResult.nextEmotion
+    );
+    
+    // 如果学习器认为这个转换概率很低，考虑替代方案
+    if (adjustedProbability < 0.1 && baseResult.nextEmotion !== currentEmotion) {
+      // 尝试找到概率更高的替代情感
+      const alternativeEmotion = this.findAlternativeEmotion(currentEmotion, triggerAnalysis);
+      if (alternativeEmotion) {
+        return {
+          nextEmotion: alternativeEmotion,
+          reason: baseResult.reason + ' (经学习调整)',
+          transition: {
+            ...baseResult.transition,
+            type: 'learning_adjusted',
+            probability: adjustedProbability
+          }
+        };
+      }
+    }
+    
+    return {
+      ...baseResult,
+      transition: {
+        ...baseResult.transition,
+        probability: adjustedProbability
+      }
+    };
+  }
+  
+  /**
+   * V2 升级：寻找替代情感
+   */
+  findAlternativeEmotion(currentEmotion, triggerAnalysis) {
+    const alternatives = Object.values(EmotionTypes)
+      .filter(emotion => emotion !== currentEmotion)
+      .map(emotion => ({
+        emotion,
+        probability: this.learner.getAdjustedTransitionProbability(currentEmotion, emotion)
+      }))
+      .sort((a, b) => b.probability - a.probability);
+    
+    // 返回概率最高的替代情感（如果概率足够高）
+    if (alternatives.length > 0 && alternatives[0].probability > 0.15) {
+      return alternatives[0].emotion;
+    }
+    return null;
+  }
+  
+  /**
+   * V2 升级：使用学习器计算新的情感强度
+   */
+  calculateNewIntensityWithLearning(emotion, triggerAnalysis, userInput) {
+    // 基础强度计算
+    const baseIntensity = this.calculateNewIntensity(emotion, triggerAnalysis, userInput);
+    
+    // V2: 使用学习器推荐的强度
+    const recommendedIntensity = this.learner.getRecommendedIntensity(emotion);
+    
+    // 取两者的平均值（向学习推荐倾斜）
+    const learnedIntensity = Math.round((baseIntensity * 0.4 + recommendedIntensity * 0.6));
+    
+    return Math.min(5, Math.max(1, learnedIntensity));
   }
   
   /**

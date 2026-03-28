@@ -1,8 +1,8 @@
 {
   "name": "heartflow-skill",
-  "version": "1.0.0",
-  "displayName": "HeartFlow 情感伴侣",
-  "description": "让 AI 拥有真实情感，每次交互都有温度。情感拟人化交互系统，支持 6 种基础情感状态和完整的情感分析报告。",
+  "version": "2.0.0",
+  "displayName": "HeartFlow 情感伴侣 V2",
+  "description": "让 AI 拥有真实情感，每次交互都有温度。V2 新增隐式学习、用户画像、共情深度系统，让情感通过后天交互不断进化。",
   "author": "8 小虫子",
   "license": "MIT",
   "category": "conversation",
@@ -13,7 +13,9 @@
     "AI",
     "共情",
     "emotion",
-    "empathy"
+    "empathy",
+    "learning",
+    "adaptive"
   ],
   "repository": "https://github.com/8xiaochongzi/heartflow-skill",
   "homepage": "https://github.com/8xiaochongzi/heartflow-skill#readme",
@@ -34,12 +36,17 @@
     "5 级情感强度",
     "情感转换分析和报告",
     "完整的记忆存储系统",
+    "🔥 V2 新增：隐式学习系统（自动学习什么回应有效）",
+    "🔥 V2 新增：用户画像系统（个性化情感偏好）",
+    "🔥 V2 新增：共情深度模型（信任度决定回应深度）",
+    "🔥 V2 新增：自适应情感转换概率",
     "RESTful API 接口",
     "OpenClaw Skill 集成",
     "CLI 交互界面"
   ],
   "screenshots": [],
   "changelog": {
+    "2.0.0": "V2 重大升级 - 隐式学习系统、用户画像、共情深度模型、自适应概率调整",
     "1.0.0": "初始版本 - 核心情感系统、API 接口、Skill 集成"
   }
 }

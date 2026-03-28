@@ -24,7 +24,11 @@ async function init(options = {}) {
   const dataDir = options.dataDir || path.join(__dirname, '../data');
   
   instance = {
-    chatManager: new ChatManager({ dataDir }),
+    chatManager: new ChatManager({ 
+      dataDir,
+      userId: options.userId || 'default_user',
+      learningOptions: options.learningOptions
+    }),
     options,
     initialized: true,
     createdAt: new Date().toISOString()
@@ -55,6 +59,12 @@ async function chat(userInput) {
       intensity: result.response.intensity,
       energy: result.internalState.energyLevel
     },
+    
+    // V2 新增：用户画像
+    userProfile: result.userProfile,
+    
+    // V2 新增：内部状态（包含学习效果）
+    internalState: result.internalState,
     
     // 完整报告
     report: result.report,
@@ -123,7 +133,15 @@ function getStats() {
     return { totalInteractions: 0 };
   }
   
-  return instance.chatManager.getStats();
+  const chatStats = instance.chatManager.getStats();
+  const learnerStats = instance.chatManager.emotionEngine.learner.getStats();
+  const profileSummary = instance.chatManager.userProfile.getSummary();
+  
+  return {
+    ...chatStats,
+    learningStats: learnerStats,
+    userProfile: profileSummary
+  };
 }
 
 /**
