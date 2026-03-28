@@ -69,9 +69,17 @@ cd empathy-system
 npm install
 ```
 
-### 运行
+### 运行演示
 
 ```bash
+# 观看完整演示
+npm run demo
+```
+
+### CLI 交互
+
+```bash
+# 启动命令行界面
 npm start
 ```
 
@@ -79,6 +87,14 @@ npm start
 
 ```bash
 node src/index.js
+```
+
+### API 服务器
+
+```bash
+# 启动 API 服务
+npm run api
+# 访问 http://localhost:3800
 ```
 
 ### 基本使用
