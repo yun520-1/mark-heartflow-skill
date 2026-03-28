@@ -1,0 +1,45 @@
+{
+  "name": "heartflow-skill",
+  "version": "1.0.0",
+  "displayName": "HeartFlow 情感伴侣",
+  "description": "让 AI 拥有真实情感，每次交互都有温度。情感拟人化交互系统，支持 6 种基础情感状态和完整的情感分析报告。",
+  "author": "8 小虫子",
+  "license": "MIT",
+  "category": "conversation",
+  "tags": [
+    "情感",
+    "陪伴",
+    "对话",
+    "AI",
+    "共情",
+    "emotion",
+    "empathy"
+  ],
+  "repository": "https://github.com/8xiaochongzi/heartflow-skill",
+  "homepage": "https://github.com/8xiaochongzi/heartflow-skill#readme",
+  "bugs": "https://github.com/8xiaochongzi/heartflow-skill/issues",
+  "main": "skill/index.js",
+  "skill": {
+    "entry": "skill/index.js",
+    "handler": "skill/handlers/openclaw.js",
+    "commands": ["/heartflow", "/hf"],
+    "triggers": ["开心", "高兴", "难过", "累", "压力", "为什么", "谢谢"]
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "openclaw": ">=1.0.0"
+  },
+  "features": [
+    "6 种基础情感状态（平静、愉悦、好奇、关切、疲惫、兴奋）",
+    "5 级情感强度",
+    "情感转换分析和报告",
+    "完整的记忆存储系统",
+    "RESTful API 接口",
+    "OpenClaw Skill 集成",
+    "CLI 交互界面"
+  ],
+  "screenshots": [],
+  "changelog": {
+    "1.0.0": "初始版本 - 核心情感系统、API 接口、Skill 集成"
+  }
+}
