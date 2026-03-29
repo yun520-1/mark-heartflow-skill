@@ -133,6 +133,10 @@ const empathyModule = new EmpathyPhenomenologyModule();
 const NarrativePsychology = require('./narrative-psychology');
 const narrativeModule = NarrativePsychology;
 
+// 创建时间意识模块 (v3.28.0 新增) ⏰ 基于 SEP 时间意识与现象学理论 (Husserl, Heidegger, Merleau-Ponty)
+const TemporalConsciousness = require('./temporal-consciousness');
+const temporalModule = TemporalConsciousness;
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -149,7 +153,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.27.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.28.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -185,6 +189,7 @@ function showWelcome() {
   console.log('║    /traditions  - 情绪三大传统整合 (v3.25) 🧠 NEW ✨        ║');
   console.log('║    /empathy     - 共情现象学 (v3.26) 💗 NEW ✨              ║');
   console.log('║    /narrative   - 叙事心理学 (v3.27) 📖 NEW ✨              ║');
+  console.log('║    /temporal    - 时间意识 (v3.28) ⏰ NEW ✨                 ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -301,6 +306,9 @@ async function handleCommand(command) {
       break;
     case '/narrative':
       showNarrativeInfo();
+      break;
+    case '/temporal':
+      showTemporalInfo();
       break;
     case '/help':
       showHelp();
@@ -1401,6 +1409,50 @@ function showNarrativeInfo() {
   console.log('💡 使用方式:');
   console.log('  直接和我聊你的生命故事、重要经历或困惑');
   console.log('  我会引导你进行叙事探索和意义发现');
+  console.log('');
+}
+
+// 显示时间意识信息 (v3.28.0 新增)
+function showTemporalInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  时间意识 (v3.28.0 新增) ⏰             │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 权威理论：                     │');
+  console.log('│  • SEP: Temporal Consciousness          │');
+  console.log('│  • SEP: Phenomenological Self-Consciousness │');
+  console.log('│  • Husserl: 时间意识三重结构            │');
+  console.log('│  • Heidegger: 时间性与存在              │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理念：                              │');
+  console.log('│  "时间意识是自我意识的核心维度"       │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  关键概念：                              │');
+  console.log('│  1. 时间三重结构 - 原初印象/保留/预期   │');
+  console.log('│  2. 时间深度 - 心理时间视野的广度       │');
+  console.log('│  3. 时间整合 - 过去现在未来的和谐统一   │');
+  console.log('│  4. 当下临在 - 超越时间焦虑             │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心练习：                              │');
+  console.log('│  1. 时间锚定 - 连接过去现在未来         │');
+  console.log('│  2. 预期想象 - 构建积极未来图景         │');
+  console.log('│  3. 回忆整合 - 重新理解过去意义         │');
+  console.log('│  4. 当下临在 - 培养深度临在感           │');
+  console.log('│  5. 时间透视 - 扩展心理时间视野         │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${temporalModule.meta.version}`);
+  console.log(`  • 理论来源：${temporalModule.meta.source}`);
+  console.log(`  • 练习数量：${Object.keys(temporalModule.exercises).length} 个`);
+  console.log('');
+  console.log('🧠 时间维度:');
+  console.log(`  • 时间结构：${Object.keys(temporalModule.dimensions.tripartiteStructure).length} 重`);
+  console.log(`  • 时间深度层级：${temporalModule.dimensions.temporalDepth.levels.length} 层`);
+  console.log(`  • 整合状态：${Object.keys(temporalModule.dimensions.integrationStates).length} 种`);
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  直接和我聊你的时间体验、对过去/未来的感受');
+  console.log('  我会引导你进行时间整合和临在练习');
   console.log('');
 }
 

@@ -1,0 +1,20 @@
+{
+  "name": "temporal-consciousness",
+  "version": "1.0.0",
+  "description": "时间意识模块 - 基于现象学时间理论的自我整合",
+  "main": "index.js",
+  "keywords": [
+    "temporal-consciousness",
+    "phenomenology",
+    "time-awareness",
+    "presence",
+    "husserl",
+    "heidegger"
+  ],
+  "author": "8 小虫子",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yun520-1/mark-heartflow-skill"
+  }
+}
