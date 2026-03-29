@@ -16,6 +16,7 @@ const { StoicModule } = require('./stoic');
 const { HumanisticPsychologyModule } = require('./humanistic');
 const { MindfulnessModule } = require('./mindfulness');
 const { EmotionalIntelligenceModule } = require('./emotional-intelligence');
+const { SocialPsychologyModule } = require('./social-psychology');
 const readline = require('readline');
 
 // 创建 CBT 模块
@@ -32,6 +33,9 @@ const mindfulnessModule = new MindfulnessModule();
 
 // 创建情绪智力模块 (v2.8.0 新增)
 const eiModule = new EmotionalIntelligenceModule();
+
+// 创建社会心理学模块 (v2.9.0 新增)
+const socialModule = new SocialPsychologyModule();
 
 // 创建对话管理器
 const chatManager = new ChatManager({
@@ -114,6 +118,9 @@ async function handleCommand(command) {
       break;
     case '/eq':
       showEQInfo();
+      break;
+    case '/social':
+      showSocialPsychologyInfo();
       break;
     case '/help':
       showHelp();
@@ -276,6 +283,29 @@ function showEQInfo() {
   console.log(`  "${info.coreIdea}"\n`);
 }
 
+// 显示社会心理学信息 (v2.9.0 新增)
+function showSocialPsychologyInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│     社会心理学 (v2.9.0 新增) ✨          │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心主题：                               │');
+  console.log('│  • 归属需求 - 社会连接的基本需求          │');
+  console.log('│  • 社会认同 - 群体身份的影响              │');
+  console.log('│  • 从众 - 群体压力下的顺从                │');
+  console.log('│  • 服从 - 权威命令下的行为                │');
+  console.log('│  • 归因 - 如何解释行为                    │');
+  console.log('│  • 偏见 - 识别和减少偏见                  │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  经典研究：                               │');
+  console.log('│  Asch 从众实验、Milgram 服从实验          │');
+  console.log('│  斯坦福监狱实验、社会认同实验             │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = socialModule.getSocialPsychologyInfo();
+  console.log('👥 核心洞察:');
+  console.log(`  "${info.coreInsight}"\n`);
+}
+
 // 显示当前状态
 function showState() {
   const state = chatManager.getCurrentState();
@@ -421,6 +451,7 @@ function showHelp() {
   console.log('│  /mindful - 正念与接纳 (v2.7.0)          │');
   console.log('│  /growth  - 成长型思维 (v2.7.0)          │');
   console.log('│  /eq      - 情绪智力 (v2.8.0)            │');
+  console.log('│  /social  - 社会心理学 (v2.9.0)          │');
   console.log('│  /help    - 显示此帮助信息              │');
   console.log('│  /quit    - 退出程序                    │');
   console.log('└─────────────────────────────────────────┘\n');
