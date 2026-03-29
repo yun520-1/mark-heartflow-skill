@@ -22,6 +22,7 @@ const { AppraisalModule } = require('./appraisal');
 const AttachmentModule = require('./attachment');
 const ACTModule = require('./act');
 const { EmotionRegulationModule } = require('./emotion-regulation');
+const { PositivePsychologyModule } = require('./positive-psychology');
 const readline = require('readline');
 
 // 创建 CBT 模块
@@ -57,6 +58,9 @@ const actModule = ACTModule;
 // 创建情绪调节模块 (v3.3.0 新增) 🎛️
 const regulationModule = new EmotionRegulationModule();
 
+// 创建积极心理学模块 (v3.4.0 新增) ✨
+const positiveModule = new PositivePsychologyModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -73,7 +77,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.1.0                  ║');
+  console.log('║              情感拟人化交互系统 v3.4.0                  ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -93,6 +97,7 @@ function showWelcome() {
   console.log('║    /attachment  - 依恋理论 (v3.2) ✨ NEW                ║');
   console.log('║    /act         - ACT 接受与承诺疗法 (v3.2) ✨ NEW      ║');
   console.log('║    /regulation  - 情绪调节策略 (v3.3) 🎛️ NEW            ║');
+  console.log('║    /positive    - 积极心理学 (v3.4) ✨ NEW               ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -161,6 +166,9 @@ async function handleCommand(command) {
       break;
     case '/regulation':
       showRegulationInfo();
+      break;
+    case '/positive':
+      showPositiveInfo();
       break;
     case '/help':
       showHelp();
@@ -483,6 +491,45 @@ function showRegulationInfo() {
   console.log('  • 预防优于治疗：情境选择 > 情境修改 > 其他');
   console.log('  • 认知优于抑制：认知重评 > 表达抑制');
   console.log('  • 灵活胜单一：根据情境选择策略\n');
+}
+
+// 显示积极心理学信息 (v3.4.0 新增) ✨
+function showPositiveInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   积极心理学 (v3.4.0 新增) ✨            │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心理念：                              │');
+  console.log('│ 心理学不仅修复问题，更要培育优势        │');
+  console.log('│ 幸福是可以培养的技能                    │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ PERMA 幸福感模型：                      │');
+  console.log('│ P - 积极情绪 (Positive Emotion)         │');
+  console.log('│ E - 投入 (Engagement/Flow)              │');
+  console.log('│ R - 人际关系 (Relationships)            │');
+  console.log('│ M - 意义 (Meaning)                      │');
+  console.log('│ A - 成就 (Accomplishment)               │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 24 种品格优势 (VIA 分类):               │');
+  console.log('│ 智慧、勇气、仁爱、正义、节制、超越      │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 心流体验：挑战与技能平衡时的最优状态    │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  const info = positiveModule.getInfo();
+  console.log(`📚 ${info.description}\n`);
+  
+  const perma = positiveModule.assessPERMA();
+  console.log('PERMA 评估维度:');
+  perma.dimensions.forEach(d => {
+    console.log(`  ${d.code}. ${d.name}`);
+  });
+  
+  console.log('\n💡 积极干预练习:');
+  console.log('  • 三件好事 - 每晚记录三件顺利的事');
+  console.log('  • 优势运用 - 用新方式运用核心优势');
+  console.log('  • 感恩拜访 - 向帮助过的人表达感谢');
+  console.log('  • 最佳自我愿景 - 想象 5 年后的理想自己');
+  console.log('  • 品味练习 - 专注体验当下的美好时刻\n');
 }
 
 // 显示当前状态

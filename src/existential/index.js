@@ -1,158 +1,385 @@
-#!/usr/bin/env node
-
 /**
  * 存在主义心理学模块 (Existential Psychology Module)
- * v3.0.0 新增
- * 核心理论：弗兰克尔意义治疗、亚隆四大终极关怀、存在主义哲学
+ * 
+ * 基于 Viktor Frankl 的意义治疗、Rollo May 和 Irvin Yalom 的存在主义心理治疗
+ * 
+ * 理论来源:
+ * - Frankl, V. E. (1946). Man's Search for Meaning
+ * - Yalom, I. D. (1980). Existential Psychotherapy
+ * - May, R. (1950). The Meaning of Anxiety
+ * - Stanford Encyclopedia of Philosophy: Existentialism
  */
 
-const { EmotionTypes } = require('../emotion/states');
-
-const UltimateConcerns = { DEATH: 'death', FREEDOM: 'freedom', ISOLATION: 'isolation', MEANINGNESS: 'meaningness' };
-const MeaningPathways = { CREATIVE: 'creative', EXPERIENTIAL: 'experiential', ATTITUDINAL: 'attitudinal' };
-
-const ExistentialKeywords = {
-  death: ['死亡', '去世', '临终', '生命有限', '时间不多', '终点'],
-  freedom: ['自由', '选择', '决定', '责任', '自主', '掌控'],
-  isolation: ['孤独', '寂寞', '孤立', '分离', '没人理解', '独处'],
-  meaningness: ['意义', '目的', '价值', '空虚', '迷茫', '为什么'],
-  authenticity: ['真实', '自我', '本真', '伪装', '面具', '做自己']
+// 四大终极关怀 (Yalom)
+ULTIMATE_CONCERNS = {
+  '死亡': {
+    description: '对死亡和有限性的觉察',
+    anxiety: '存在性焦虑：生命终将结束的恐惧',
+    defenses: [
+      '否认：避免思考死亡',
+      '追求不朽：通过成就、后代、信仰寻求永恒',
+      '完美主义：试图控制一切以避免意外'
+    ],
+    growth: [
+      '死亡意识可以唤醒对生命的珍视',
+      '有限性赋予选择以意义',
+      '接纳死亡可以更充分地生活'
+    ],
+    interventions: [
+      '想象生命只剩一年，你会如何生活？',
+      '墓志铭练习：你想被如何记住',
+      '死亡冥想：正视死亡以减少恐惧'
+    ]
+  },
+  '自由': {
+    description: '没有外在结构来决定我们的选择',
+    anxiety: '责任焦虑：我们必须为自己的选择负责',
+    defenses: [
+      '逃避自由：服从权威、从众、依赖他人',
+      '决定论信念：相信一切都是注定的',
+      '强迫行为：用仪式和规则减少不确定性'
+    ],
+    growth: [
+      '自由意味着我们是自己生活的作者',
+      '每个选择都在塑造我们成为谁',
+      '接纳责任是成熟和力量的标志'
+    ],
+    interventions: [
+      '识别你在逃避哪些选择',
+      '探索"不得不"背后的"选择"',
+      '练习小决定，增强选择肌肉'
+    ]
+  },
+  '孤独': {
+    description: '我们终究是独自的个体',
+    types: [
+      '人际孤独：独自一人，没有陪伴',
+      '心理孤独：否认自己的感受以避免被拒绝',
+      '存在孤独：与他人之间无法跨越的鸿沟'
+    ],
+    defenses: [
+      '融合：失去自我以融入他人',
+      '关系依赖：需要他人才能完整',
+      '回避亲密：避免深度连接以防受伤'
+    ],
+    growth: [
+      '接纳存在孤独是真实连接的前提',
+      '完整的自我才能建立健康的关系',
+      '孤独也可以是创造和反思的空间'
+    ],
+    interventions: [
+      '探索你与孤独的关系',
+      '练习独处而不感到孤单',
+      '培养真实的自我表达'
+    ]
+  },
+  '无意义': {
+    description: '生命没有预设的意义',
+    anxiety: '意义危机：为什么要活着？',
+    defenses: [
+      '盲目信仰：不加批判地接受现成答案',
+      '享乐主义：追求即时满足避免思考',
+      '虚无主义：宣称一切都没有意义'
+    ],
+    growth: [
+      '意义不是发现的，而是创造的',
+      '我们可以通过态度、工作、爱创造意义',
+      '即使在苦难中也能找到意义'
+    ],
+    interventions: [
+      '意义日志：记录有意义的时刻',
+      '价值观澄清：什么对你真正重要',
+      '服务他人：通过贡献找到意义'
+    ]
+  }
 };
 
-class ExistentialPsychologyModule {
-  constructor() { this.name = 'ExistentialPsychology'; this.version = '3.0.0'; }
+// 意义治疗的三大价值 (Frankl)
+MEANING_VALUES = {
+  '创造性价值': {
+    description: '通过创造和工作给予世界什么',
+    examples: [
+      '艺术创作：绘画、写作、音乐',
+      '工作贡献：专业成就、帮助他人',
+      '养育子女：培养下一代',
+      '志愿服务：为社区做贡献'
+    ],
+    questions: [
+      '你想给世界留下什么？',
+      '你的独特才能是什么？',
+      '什么工作让你感到有意义？'
+    ]
+  },
+  '体验性价值': {
+    description: '通过体验和感受从世界获得什么',
+    examples: [
+      '爱与关系：深度的人际连接',
+      '美的体验：艺术、自然、音乐',
+      '学习与成长：获取新知识',
+      '愉悦体验：美食、旅行、运动'
+    ],
+    questions: [
+      '什么体验让你感到充实？',
+      '你与谁有深度的连接？',
+      '你最近一次被美打动是什么时候？'
+    ]
+  },
+  '态度性价值': {
+    description: '面对无法改变的命运时的态度',
+    examples: [
+      '面对疾病的勇气',
+      '面对损失的尊严',
+      '面对不公的坚持',
+      '面对苦难的超越'
+    ],
+    questions: [
+      '你正在面对什么无法改变的现实？',
+      '你选择以什么态度面对它？',
+      '这个挑战能教会你什么？'
+    ],
+    note: 'Frankl: "人可以被剥夺任何东西，除了最后一种自由——在任何给定环境下选择自己态度的自由"'
+  }
+};
 
-  detectThemes(input) {
-    const themes = [];
-    const lowerInput = input.toLowerCase();
-    for (const [theme, keywords] of Object.entries(ExistentialKeywords)) {
-      if (keywords.some(kw => lowerInput.includes(kw.toLowerCase()))) themes.push(theme);
+// 本真生活的特征 (Heidegger, Sartre)
+AUTHENTIC_LIVING = {
+  '自我觉察': '清楚自己的价值观、动机、模式',
+  '自主选择': '基于自己的价值观做决定，而非他人期望',
+  '承担责任': '为自己的选择和行为负责',
+  '接纳有限': '接纳自己的局限和生命的有限性',
+  '活在当下': '充分体验此时此地，而非活在过去或未来',
+  '真实表达': '诚实地表达自己的感受和想法',
+  '深度连接': '与他人建立真实、深度的关系'
+};
+
+// 存在主义干预技术
+EXISTENTIAL_INTERVENTIONS = {
+  '墓志铭练习': {
+    purpose: '澄清你想留下的人生印记',
+    instructions: [
+      '想象你已经过完一生，正在写自己的墓志铭',
+      '你希望别人如何记住你？',
+      '你希望被记住的品质、成就、贡献是什么？',
+      '写下 3-5 句墓志铭',
+      '反思：现在的生活与这个愿景一致吗？'
+    ],
+    duration: '20-30 分钟',
+    followUp: '基于墓志铭，设定一个本周可以做的行动'
+  },
+  '80 岁生日宴会': {
+    purpose: '从终点看现在，澄清价值观',
+    instructions: [
+      '想象你 80 岁生日，重要的人都在场',
+      '你希望他们如何评价你的一生？',
+      '你希望他们说什么关于你的话？',
+      '写下你希望听到的 3 个祝酒词',
+      '反思：现在的生活在创造这些评价吗？'
+    ],
+    duration: '20-30 分钟',
+    followUp: '识别一个需要调整的生活领域'
+  },
+  '理想一天': {
+    purpose: '描绘有意义生活的具体画面',
+    instructions: [
+      '想象 5 年后理想的一天，从早到晚',
+      '你在哪里醒来？和谁在一起？',
+      '你做什么工作？如何度过时间？',
+      '什么让你感到充实和有意义？',
+      '详细描述这一天的每个细节'
+    ],
+    duration: '15-20 分钟',
+    followUp: '识别理想与现实的差距，设定小目标'
+  },
+  '意义日志': {
+    purpose: '培养对意义的觉察',
+    instructions: [
+      '每天记录 3 个有意义的时刻',
+      '描述发生了什么，为什么有意义',
+      '注意什么活动、人、情境带来意义感',
+      '每周回顾，寻找模式'
+    ],
+    duration: '每天 5 分钟',
+    followUp: '基于模式调整生活优先级'
+  },
+  '态度选择': {
+    purpose: '练习在困境中选择态度',
+    instructions: [
+      '识别一个你正在面对的困难情境',
+      '列出你对这个情境的所有反应方式',
+      '问：在这些反应中，我选择成为谁？',
+      '选择一个与价值观一致的态度',
+      '承诺以这个态度面对情境'
+    ],
+    duration: '10-15 分钟',
+    followUp: '记录选择后的体验和感受'
+  },
+  '生命轮': {
+    purpose: '评估生活各领域的平衡',
+    domains: ['健康', '家庭', '友谊', '工作', '财务', '成长', '休闲', '贡献'],
+    instructions: [
+      '画一个圆，分成 8 个扇区',
+      '每个扇区代表一个生活领域',
+      '1-10 分评分每个领域的满意度',
+      '连接各点，看到生命轮的形状',
+      '选择 1-2 个领域设定改进目标'
+    ],
+    duration: '15-20 分钟',
+    followUp: '为选定的领域设定具体行动'
+  }
+};
+
+// 存在主义反思问题
+REFLECTION_QUESTIONS = {
+  '关于死亡': [
+    '如果生命只剩一年，你会如何生活？',
+    '你害怕死亡吗？这种害怕在告诉你什么？',
+    '你想如何被记住？',
+    '死亡意识如何影响你此刻的选择？'
+  ],
+  '关于自由': [
+    '你在哪些事情上感到"不得不"做？',
+    '这些"不得不"背后有哪些选择？',
+    '你在逃避哪些选择的责任？',
+    '如果完全自由，你会做什么不同的事？'
+  ],
+  '关于孤独': [
+    '你如何体验孤独？',
+    '你害怕独处吗？为什么？',
+    '什么关系让你感到被理解？',
+    '你如何平衡连接和独立？'
+  ],
+  '关于意义': [
+    '什么让你的生活感到有意义？',
+    '你正在为什么比自我更大的事物服务？',
+    '什么活动让你忘记时间？',
+    '如果一切都没有预设意义，你选择创造什么意义？'
+  ]
+};
+
+class ExistentialModule {
+  constructor() {
+    this.name = '存在主义心理学模块';
+    this.version = '1.0.0';
+  }
+
+  /**
+   * 终极关怀评估
+   */
+  assessUltimateConcerns() {
+    return {
+      model: 'Yalom 四大终极关怀',
+      concerns: Object.entries(ULTIMATE_CONCERNS).map(([key, value]) => ({
+        name: key,
+        description: value.description,
+        anxiety: value.anxiety,
+        growth: value.growth,
+        interventions: value.interventions
+      })),
+      assessment: [
+        '哪个关怀此刻对你最突出？',
+        '你通常如何应对这些焦虑？',
+        '哪个关怀的成长方向最吸引你？'
+      ],
+      note: '这些关怀不是问题，而是人类境况的一部分。觉察它们可以带来成长。'
+    };
+  }
+
+  /**
+   * 意义来源评估
+   */
+  assessMeaningSources() {
+    return {
+      model: 'Frankl 意义治疗三大价值',
+      values: Object.entries(MEANING_VALUES).map(([key, value]) => ({
+        name: key,
+        description: value.description,
+        examples: value.examples,
+        questions: value.questions
+      })),
+      assessment: [
+        '哪个价值领域你最常体验？',
+        '哪个价值领域你最需要加强？',
+        '最近一次感到有意义是什么时候？'
+      ],
+      integration: '三个价值领域平衡发展，生命更充实'
+    };
+  }
+
+  /**
+   * 推荐存在主义干预
+   */
+  recommendIntervention(userState = {}) {
+    let recommendation;
+    
+    if (userState.concern === 'death' || userState.mortality === 'high') {
+      recommendation = EXISTENTIAL_INTERVENTIONS['墓志铭练习'];
+    } else if (userState.concern === 'freedom' || userState.stuck === 'high') {
+      recommendation = EXISTENTIAL_INTERVENTIONS['态度选择'];
+    } else if (userState.concern === 'loneliness' || userState.isolated === 'high') {
+      recommendation = EXISTENTIAL_INTERVENTIONS['80 岁生日宴会'];
+    } else if (userState.concern === 'meaninglessness' || userState.empty === 'high') {
+      recommendation = EXISTENTIAL_INTERVENTIONS['意义日志'];
+    } else if (userState.balanced === 'low') {
+      recommendation = EXISTENTIAL_INTERVENTIONS['生命轮'];
+    } else {
+      recommendation = EXISTENTIAL_INTERVENTIONS['理想一天'];
     }
-    return themes;
-  }
 
-  analyzeConcern(input) {
-    const themes = this.detectThemes(input);
-    if (themes.length === 0) return null;
-    return { themes, primaryConcern: themes[0], recommendations: this.getRecommendations(themes[0]) };
-  }
-
-  getRecommendations(theme) {
-    const recs = {
-      death: [
-        { type: 'reflection', title: '死亡意识练习', content: '意识到生命的有限性不是让你恐惧，而是让你珍惜当下。如果生命只剩一年，你会如何度过今天？', source: '海德格尔 - 向死而生' },
-        { type: 'action', title: '生命优先级重排', content: '列出你目前花费时间最多的 5 件事，再列出对你真正重要的 5 件事。两者有多少重合？', source: '存在主义时间观' }
-      ],
-      freedom: [
-        { type: 'reflection', title: '自由与责任', content: '萨特说"人被判定为自由"。每个选择都定义了你是谁。你现在面临的选择是什么？', source: '萨特 - 存在先于本质' },
-        { type: 'action', title: '选择审计', content: '回顾过去一周，哪些决定是你主动选择的？哪些是被动接受的？', source: '存在主义自主性' }
-      ],
-      isolation: [
-        { type: 'reflection', title: '存在性孤独', content: '每个人在本质上都是孤独的——这是存在的真相。但正是这种分离让我们渴望连接。', source: '欧文·亚隆' },
-        { type: 'action', title: '真实连接', content: '今天尝试与一个人进行真实的对话——不伪装、不迎合。', source: '本真性关系' }
-      ],
-      meaningness: [
-        { type: 'reflection', title: '意义发现', content: '弗兰克尔说：意义不是被发明的，是被发现的。通过创造、体验或态度，你都能找到意义。', source: '弗兰克尔 - 意义治疗' },
-        { type: 'action', title: '意义三途径评估', content: '问自己：(1) 我在创造什么？(2) 我在体验什么？(3) 我如何面对无法改变的苦难？', source: '意义发现三途径' }
-      ],
-      authenticity: [
-        { type: 'reflection', title: '本真性检查', content: '海德格尔区分"本真"与"非本真"的存在。你现在的生活方式是出于自己的选择，还是迎合他人的期待？', source: '海德格尔 - 本真性' },
-        { type: 'action', title: '真实自我表达', content: '今天至少有一次，按照自己真实的想法行事。', source: '存在主义真实性' }
+    return {
+      recommended: recommendation,
+      allInterventions: EXISTENTIAL_INTERVENTIONS,
+      reflectionQuestions: REFLECTION_QUESTIONS,
+      tips: [
+        '选择一个练习，给自己充足的时间',
+        '不追求"正确"答案，真诚面对自己',
+        '可以重复做同一个练习，每次可能有新发现',
+        '考虑与信任的人分享你的反思'
       ]
     };
-    return recs[theme] || [];
   }
 
-  logotherapyExercise(type) {
-    const exercises = {
-      willToMeaning: { title: '意义意志探索', description: '弗兰克尔：人类最基本的动力是追求意义。', steps: ['回想一个你感到最有意义的时刻', '当时你在做什么？和谁在一起？', '是什么让这个时刻有意义？', '这个意义来源现在还能重现吗？'], quote: '人不是问生命能给他什么，而是问生命期待他什么。——弗兰克尔' },
-      tragicOptimism: { title: '悲剧乐观主义', description: '即使面对无法改变的苦难，我们仍能选择回应的态度。', steps: ['识别你当前无法改变的现实', '问自己：我能从中学到什么？', '这个经历如何让我更强大？', '我能用这个经历帮助他人吗？'], quote: '当一个人无法改变情境时，他会被挑战去改变自己。——弗兰克尔' },
-      creativeValue: { title: '创造性价值', description: '通过工作或创造活动发现意义。', steps: ['列出你目前的创造性活动', '评估每个活动的意义感（1-10 分）', '选择低分活动，思考如何赋予更多意义', '选择高分活动，投入更多时间'], quote: '创造不是天赋，是选择。' },
-      experientialValue: { title: '体验性价值', description: '通过爱、美、自然等体验发现意义。', steps: ['回想最近一次深刻体验', '是什么让这个体验特别？', '如何创造更多这样的体验？', '谁能与你分享这些体验？'], quote: '爱是人类所能达到的最高体验。——弗兰克尔' },
-      attitudinalValue: { title: '态度性价值', description: '通过面对苦难的态度发现意义。', steps: ['识别你无法改变的痛苦', '问自己：我能选择什么态度？', '这个态度如何影响生活质量？', '你的选择如何影响他人？'], quote: '人类最后的自由，是在给定环境下选择自己态度的自由。——弗兰克尔' }
-    };
-    return exercises[type] || exercises.willToMeaning;
-  }
-
-  exploreUltimateConcern(concern) {
-    const explorations = {
-      death: { title: '死亡意识探索', introduction: '海德格尔说"向死而生"——只有直面死亡，才能真实地活着。', questions: ['当你想到生命有限时，你感受到什么？', '如果知道自己还能活多少年，你会改变什么？', '你希望人们在葬礼上如何评价你？', '今天，你可以做什么让生命更真实？'], insight: '死亡意识不是让你恐惧，而是让你清醒。' },
-      freedom: { title: '自由与责任探索', introduction: '人是"被判定为自由"的。自由不是礼物，是负担。', questions: ['你目前最重要的选择是什么？', '这个选择有多少是真正由你做出的？', '如果不考虑他人期待，你会如何选择？', '你愿意为选择承担什么后果？'], insight: '自由意味着没有借口。你是你生命的作者。' },
-      isolation: { title: '存在性孤独探索', introduction: '存在性孤独是更深层的真相：没有人能完全理解你的内在体验。', questions: ['你什么时候感到最孤独？', '你如何回应这种孤独感？', '孤独是否让你回避真实的关系？', '如何在承认孤独的同时选择连接？'], insight: '孤独是存在的代价。但正是这种分离，让真正的相遇变得珍贵。' },
-      meaningness: { title: '无意义感探索', introduction: '无意义感是现代人的普遍处境。意义不是被给予的，是被创造的。', questions: ['你什么时候感到最没有意义？', '什么活动让你感到最有意义？', '如果没有人会知道，你还会做现在的事吗？', '你愿意为什么事情付出生命？'], insight: '意义不在远方，就在你选择的每个行动中。' }
-    };
-    return explorations[concern] || explorations.meaningness;
-  }
-
+  /**
+   * 本真生活评估
+   */
   assessAuthenticity() {
     return {
-      title: '本真性自我评估',
-      description: '评估你的生活在多大程度上是"本真"的——出于自己的选择，而非他人期待。',
-      questions: [
-        { area: '工作', question: '你的工作选择是出于自己的兴趣，还是他人期待？', scale: '1(完全迎合) - 10(完全自主)' },
-        { area: '关系', question: '你在关系中表达的是真实的自己，还是别人想看到的？', scale: '1(完全伪装) - 10(完全真实)' },
-        { area: '价值观', question: '你的价值观是自己反思形成的，还是从家庭/文化继承的？', scale: '1(完全继承) - 10(完全自主)' },
-        { area: '生活方式', question: '你的生活方式是你真正想要的，还是社会定义的"成功"？', scale: '1(完全迎合) - 10(完全自主)' }
-      ],
-      reflection: '本真性不是目的地，是持续的选择。'
+      model: '本真生活特征',
+      characteristics: Object.entries(AUTHENTIC_LIVING).map(([key, value]) => ({
+        name: key,
+        description: value,
+        selfAssessment: `在 1-10 分上，你在"${key}"上得几分？`
+      })),
+      strongest: '识别得分最高的 2-3 个特征',
+      growth: '识别得分最低的 2-3 个特征，设定成长目标',
+      note: '本真是一个过程，不是终点。持续觉察和选择。'
     };
   }
 
-  generateResponse(input, analysis) {
-    if (!analysis) return this.getDefaultResponse();
-    const { themes, recommendations } = analysis;
-    let response = { text: '', existentialThemes: themes, exercises: [], quotes: [] };
-
-    if (themes.includes('meaningness')) {
-      response.text = '我听到你在思考生命的意义。弗兰克尔说，意义不是被发明的，是被发现的——它存在于世界中，等待你去发现。';
-      response.exercises.push(this.logotherapyExercise('willToMeaning'));
-      response.quotes.push('人不是问生命能给他什么，而是问生命期待他什么。——维克多·弗兰克尔');
-    } else if (themes.includes('death')) {
-      response.text = '你在思考死亡和生命的有限性。海德格尔认为，只有直面死亡，我们才能真实地活着。';
-      response.exercises.push(this.logotherapyExercise('tragicOptimism'));
-      response.quotes.push('向死而生——只有意识到生命有限，才会珍惜每个当下。——海德格尔');
-    } else if (themes.includes('freedom')) {
-      response.text = '你在思考自由和选择。萨特说"人被判定为自由"——这不是祝福，是责任。';
-      response.exercises.push(this.assessAuthenticity());
-      response.quotes.push('人是自由的，人就是自由。——萨特');
-    } else if (themes.includes('isolation')) {
-      response.text = '你感到孤独。存在主义说，存在性孤独是人类的共同处境。';
-      response.exercises.push(this.exploreUltimateConcern('isolation'));
-      response.quotes.push('孤独是存在的代价。但正是这种分离，让真正的相遇变得珍贵。——欧文·亚隆');
-    } else if (themes.includes('authenticity')) {
-      response.text = '你在思考真实地活着。海德格尔区分"本真"与"非本真"的存在。';
-      response.exercises.push(this.assessAuthenticity());
-      response.quotes.push('成为你自己。——尼采');
-    } else {
-      response = this.getDefaultResponse();
-    }
-    if (recommendations && recommendations.length > 0) response.recommendations = recommendations.slice(0, 2);
-    return response;
-  }
-
-  getDefaultResponse() {
-    return {
-      text: '存在主义心理学关注人类存在的基本问题：自由、责任、意义、死亡、孤独。追问它们本身就有意义。',
-      existentialThemes: [],
-      exercises: [this.logotherapyExercise('willToMeaning')],
-      quotes: ['未经审视的人生不值得过。——苏格拉底', '成为你自己。——尼采', '存在先于本质。——萨特']
-    };
-  }
-
-  process(input, context = {}) {
-    const analysis = this.analyzeConcern(input);
-    const response = this.generateResponse(input, analysis);
-    return { module: 'existential', version: this.version, input, analysis, response, timestamp: new Date().toISOString() };
-  }
-
+  /**
+   * 获取模块信息
+   */
   getInfo() {
     return {
-      name: this.name, version: this.version,
-      description: '存在主义心理学模块 - 意义治疗、终极关怀、本真性',
-      features: ['意义发现练习 (Logotherapy)', '四大终极关怀探索', '本真性评估', '存在主义主题检测', '哲学智慧集成'],
-      theorists: ['维克多·弗兰克尔', '欧文·亚隆', '克尔凯郭尔', '尼采', '海德格尔', '萨特']
+      name: this.name,
+      version: this.version,
+      description: '基于存在主义心理学的意义与成长模块',
+      features: [
+        '四大终极关怀探索',
+        '意义治疗三大价值',
+        '6 种存在主义干预',
+        '本真生活评估'
+      ],
+      commands: ['/existential - 查看存在主义介绍和练习']
     };
   }
 }
 
-module.exports = { ExistentialPsychologyModule, UltimateConcerns, MeaningPathways };
+// 导出模块
+module.exports = {
+  ExistentialModule,
+  ULTIMATE_CONCERNS,
+  MEANING_VALUES,
+  AUTHENTIC_LIVING,
+  EXISTENTIAL_INTERVENTIONS,
+  REFLECTION_QUESTIONS
+};
