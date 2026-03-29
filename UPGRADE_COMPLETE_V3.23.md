@@ -483,8 +483,8 @@ console.log('关系性自我数量:', status.statistics.relationalSelvesCount);
 - [x] 更新版本号 (3.22.0 → 3.23.0)
 - [x] 更新 package.json description
 - [x] 创建升级完成报告
-- [ ] Git 提交并推送到 GitHub 仓库
-- [ ] 测试模块功能
+- [x] Git 提交并推送到 GitHub 仓库
+- [x] 测试模块功能 (所有测试通过 ✅)
 
 ---
 
@@ -543,3 +543,17 @@ feat(v3.23.0): 新增集体认同模块，基于 SEP 社会认同理论
 
 **升级完成时间**: 2026-03-30 02:00  
 **下一步**: Git 提交并推送到 GitHub 仓库
+
+---
+
+## 🔧 修复记录
+
+### 修复 1: selfCategorizations 缺少 this 前缀
+
+**问题**: 构造函数中 `selfCategorizations = []` 缺少 `this.` 前缀
+
+**修复**: 改为 `this.selfCategorizations = []`
+
+**提交**: `fix: 修复 selfCategorizations 缺少 this 前缀的语法错误`
+
+**测试**: 所有功能测试通过 ✅
