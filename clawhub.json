@@ -1,7 +1,7 @@
 {
   "name": "heartflow-skill",
-  "version": "2.6.0",
-  "displayName": "HeartFlow 情感伴侣 V2.6.0",
+  "version": "2.7.0",
+  "displayName": "HeartFlow 情感伴侣 V2.7.0.0",
   "description": "让 AI 拥有真实情感，每次交互都有温度。v2.5.0 新增人本主义心理学、无条件积极关注、自我实现支持",
   "author": "8 小虫子",
   "license": "MIT",
