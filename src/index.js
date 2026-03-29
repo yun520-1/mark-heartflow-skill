@@ -6,7 +6,7 @@
  * 
  * 原创设计，无版权风险
  * 
- * v2.7.0 新增：正念与接纳、成长型思维
+ * v3.0.0 新增：存在主义心理学、意义治疗
  */
 
 const ChatManager = require('./chat/manager');
@@ -17,6 +17,7 @@ const { HumanisticPsychologyModule } = require('./humanistic');
 const { MindfulnessModule } = require('./mindfulness');
 const { EmotionalIntelligenceModule } = require('./emotional-intelligence');
 const { SocialPsychologyModule } = require('./social-psychology');
+const { ExistentialPsychologyModule } = require('./existential');
 const readline = require('readline');
 
 // 创建 CBT 模块
@@ -36,6 +37,9 @@ const eiModule = new EmotionalIntelligenceModule();
 
 // 创建社会心理学模块 (v2.9.0 新增)
 const socialModule = new SocialPsychologyModule();
+const existentialModule = new ExistentialPsychologyModule();
+
+// 创建存在主义心理学模块 (v3.0.0 新增) ✨
 
 // 创建对话管理器
 const chatManager = new ChatManager({
@@ -53,7 +57,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v2.7.0                  ║');
+  console.log('║              情感拟人化交互系统 v3.0.0                  ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -68,7 +72,8 @@ function showWelcome() {
   console.log('║    /human     - 人本主义心理学 (v2.5)                    ║');
   console.log('║    /mindful   - 正念与接纳 (v2.7) ✨ NEW                 ║');
   console.log('║    /growth    - 成长型思维 (v2.7) ✨ NEW                 ║');
-  console.log('║    /help      - 显示帮助                                ║');
+  console.log('║    /existential - 存在主义心理学 (v3.0) ✨ NEW        ║
+║    /help       - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
   
@@ -121,6 +126,9 @@ async function handleCommand(command) {
       break;
     case '/social':
       showSocialPsychologyInfo();
+      break;
+    case '/existential':
+      showExistentialInfo();
       break;
     case '/help':
       showHelp();
@@ -303,7 +311,35 @@ function showSocialPsychologyInfo() {
   
   const info = socialModule.getSocialPsychologyInfo();
   console.log('👥 核心洞察:');
-  console.log(`  "${info.coreInsight}"\n`);
+  console.log(`  "${info.coreInsight}
+// 显示存在主义心理学信息 (v3.0.0 新增)
+function showExistentialInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│     存在主义心理学 (v3.0.0 新增) ✨       │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心理论：                              │');
+  console.log('│ - 维克多·弗兰克尔：意义治疗 (Logotherapy) │');
+  console.log('│ - 欧文·亚隆：四大终极关怀               │');
+  console.log('│ - 克尔凯郭尔/尼采/海德格尔/萨特         │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 四大终极关怀：                          │');
+  console.log('│ - 死亡 (Death) - 生命的有限性           │');
+  console.log('│ - 自由 (Freedom) - 选择的责任           │');
+  console.log('│ - 孤独 (Isolation) - 存在的分离         │');
+  console.log('│ - 无意义 (Meaningness) - 寻找意义       │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 意义发现三途径：                        │');
+  console.log('│ - 创造性价值 (工作/创造)                │');
+  console.log('│ - 体验性价值 (爱/美/自然)               │');
+  console.log('│ - 态度性价值 (面对苦难的态度)           │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 经典语录：                              │');
+  console.log('│ "人不是问生命能给他什么，               │');
+  console.log('│   而是问生命期待他什么"                 │');
+  console.log('│ ——维克多·弗兰克尔                       │');
+  console.log('└────────────────────────────────────────┘\n');
+}
+"\n`);
 }
 
 // 显示当前状态
