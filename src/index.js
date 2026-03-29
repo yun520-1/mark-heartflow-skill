@@ -149,6 +149,10 @@ const moralPsychologyModule = new MoralPsychologyModule();
 const PracticalWisdom = require('./practical-wisdom');
 const practicalWisdomModule = new PracticalWisdom();
 
+// 创建关系性自我模块 (v3.32.0 新增) 💞 基于 SEP 现象学自我意识 + 集体意向性 + 共情理论
+const RelationalSelf = require('./relational-self');
+const relationalSelfModule = new RelationalSelf();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -205,6 +209,7 @@ function showWelcome() {
   console.log('║    /wisdom      - 实践智慧 (v3.31) 🧠 NEW ✨                 ║');
   console.log('║    /agency      - 自由意志与能动性 (v3.29) 🎯 NEW ✨        ║');
   console.log('║    /moral       - 道德心理学 (v3.30) ⚖️ NEW ✨              ║');
+  console.log('║    /relational  - 关系性自我 (v3.32) 💞 NEW ✨               ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -333,6 +338,9 @@ async function handleCommand(command) {
       break;
     case '/wisdom':
       showPracticalWisdomInfo();
+      break;
+    case '/relational':
+      showRelationalSelfInfo();
       break;
     case '/help':
       showHelp();
@@ -1616,6 +1624,52 @@ function showPracticalWisdomInfo() {
   console.log('');
 }
 
+// 显示关系性自我模块信息 (v3.32.0 新增)
+function showRelationalSelfInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  关系性自我 (v3.32.0 新增) 💞              │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 权威理论：                     │');
+  console.log('│  • SEP: Self-Consciousness (现象学方法) │');
+  console.log('│  • SEP: Collective Intentionality       │');
+  console.log('│  • SEP: Phenomenology                   │');
+  console.log('│  • 现象学：Husserl, Heidegger, Merleau-│');
+  console.log('│    Ponty, Sartre, Zahavi                │');
+  console.log('│  • 共情理论：Scheler, Walther, Stein    │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理念：                              │');
+  console.log('│  "自我在关系中构成，既独立又联结"      │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  关键概念：                              │');
+  console.log('│  1. 前反思自我意识 - 体验的"为我性"     │');
+  console.log('│  2. 关系性自我 - 在关系中构成的自我     │');
+  console.log('│  3. 共情层次 - 传染/共鸣/认知/关怀/融合 │');
+  console.log('│  4. 集体意向性 - "我们意图"与共享体验   │');
+  console.log('│  5. 自我 - 他人边界 - 平衡与灵活调整    │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心练习：                              │');
+  console.log('│  1. 健康边界练习 - 设立与维护边界       │');
+  console.log('│  2. 共情倾听练习 - 深度理解他人         │');
+  console.log('│  3. 视角转换练习 - 从他人角度看问题     │');
+  console.log('│  4. 我们意图练习 - 培养集体归属感       │');
+  console.log('│  5. 关系反思日记 - 觉察关系模式         │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const help = relationalSelfModule.help();
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${help.version}`);
+  console.log(`  • 共情层次：5 个 (传染/共鸣/认知/关怀/融合)`);
+  console.log(`  • 关系模式：3 种 (过度分离/过度融合/平衡)`);
+  console.log(`  • 发展阶段：5 个 (自我中心→超越)`);
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  直接和我聊你的关系困扰、孤独感、边界问题、');
+  console.log('  共情困难、归属感需求、或任何关系议题');
+  console.log('  我会帮你评估共情水平、识别关系模式、');
+  console.log('  判断发展阶段，提供个性化的关系建议');
+  console.log('');
+}
+
 // 显示当前状态
 function showState() {
   const state = chatManager.getCurrentState();
@@ -1885,6 +1939,32 @@ async function main() {
           }
           if (wisdomAnalysis.developmentStage) {
             console.log(`   发展阶段：${wisdomAnalysis.developmentStage.stage.name}`);
+          }
+          console.log('');
+        }
+        
+        // 关系性自我分析 (v3.32.0 新增)
+        const relationalAnalysis = relationalSelfModule.analyzeRelationalSituation(trimmed);
+        if (relationalAnalysis.detectedThemes.length > 0 || relationalAnalysis.empathyLevel || relationalAnalysis.relationalPattern) {
+          console.log('\n💞 [关系性自我分析]');
+          if (relationalAnalysis.detectedThemes.length > 0) {
+            console.log(`   关系主题：${relationalAnalysis.detectedThemes.join('、')}`);
+          }
+          if (relationalAnalysis.empathyLevel) {
+            console.log(`   共情水平：${relationalAnalysis.empathyLevel.name} (Level ${relationalAnalysis.empathyLevel.level})`);
+          }
+          if (relationalAnalysis.relationalPattern && relationalAnalysis.relationalPattern.pattern !== '待评估') {
+            console.log(`   关系模式：${relationalAnalysis.relationalPattern.pattern}`);
+            console.log(`   说明：${relationalAnalysis.relationalPattern.description}`);
+          }
+          if (relationalAnalysis.developmentStage) {
+            console.log(`   发展阶段：${relationalAnalysis.developmentStage.name}`);
+          }
+          if (relationalAnalysis.recommendations.length > 0) {
+            console.log('   建议:');
+            relationalAnalysis.recommendations.forEach(rec => {
+              console.log(`   • ${rec.area}: ${rec.suggestion}`);
+            });
           }
           console.log('');
         }
