@@ -1,27 +1,40 @@
 {
-  "sessionId": "session_1774766349277_zqlb2",
-  "lastInteractionId": "int_5",
-  "currentEmotion": {
-    "emotion": "好奇",
-    "intensity": 3,
-    "intensityLabel": "中等",
-    "definition": {
-      "name": "好奇",
-      "english": "Curious",
-      "description": "对新知识和未知领域的探索欲望",
-      "defaultIntensity": 3,
-      "naturalDecayMinutes": 20,
-      "color": "#9B59B6",
-      "traits": [
-        "探索",
-        "提问",
-        "专注",
-        "求知"
-      ],
-      "responseStyle": "追问、引导、启发式"
-    },
-    "timestamp": "2026-03-29T06:39:09.282Z"
+  "version": "2.7.0",
+  "upgradeTime": "2026-03-29T14:15:00+08:00",
+  "upgradeType": "hourly_minor",
+  "theme": "正念与接纳、成长型思维",
+  "changes": {
+    "newFiles": [
+      "src/mindfulness/index.js",
+      "docs/V2.7_UPGRADE.md"
+    ],
+    "modifiedFiles": [
+      "src/index.js",
+      "clawhub.json"
+    ],
+    "newFeatures": [
+      "正念与接纳模块 (MBSR、ACT 疗法)",
+      "5 种核心练习",
+      "正念七原则",
+      "ACT 核心流程",
+      "成长型思维转换",
+      "自动检测与回应"
+    ],
+    "newCommands": [
+      "/mindful",
+      "/growth"
+    ]
   },
-  "energyLevel": 95,
-  "lastUpdated": "2026-03-29T06:39:09.283Z"
+  "stats": {
+    "addedLines": 793,
+    "removedLines": 19,
+    "netChange": 774
+  },
+  "gitCommit": "b99c210",
+  "pushedToGithub": true,
+  "nextUpgrade": {
+    "version": "2.8.0",
+    "scheduledTime": "2026-03-29T15:15:00+08:00",
+    "theme": "情绪智力升级 / 社会心理学整合"
+  }
 }

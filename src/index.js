@@ -6,7 +6,7 @@
  * 
  * 原创设计，无版权风险
  * 
- * v2.3.0 新增：CBT 思维重构支持
+ * v2.7.0 新增：正念与接纳、成长型思维
  */
 
 const ChatManager = require('./chat/manager');
@@ -14,6 +14,9 @@ const { EmotionTypes } = require('./emotion/states');
 const { CBTModule } = require('./cbt');
 const { StoicModule } = require('./stoic');
 const { HumanisticPsychologyModule } = require('./humanistic');
+const { MindfulnessModule } = require('./mindfulness');
+const { EmotionalIntelligenceModule } = require('./emotional-intelligence');
+const { SocialPsychologyModule } = require('./social-psychology');
 const readline = require('readline');
 
 // 创建 CBT 模块
@@ -24,6 +27,15 @@ const stoicModule = new StoicModule();
 
 // 创建人本主义心理学模块 (v2.5.0 新增)
 const humanisticModule = new HumanisticPsychologyModule();
+
+// 创建正念与接纳模块 (v2.7.0 新增)
+const mindfulnessModule = new MindfulnessModule();
+
+// 创建情绪智力模块 (v2.8.0 新增)
+const eiModule = new EmotionalIntelligenceModule();
+
+// 创建社会心理学模块 (v2.9.0 新增)
+const socialModule = new SocialPsychologyModule();
 
 // 创建对话管理器
 const chatManager = new ChatManager({
@@ -41,21 +53,23 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v2.5.0                  ║');
+  console.log('║              情感拟人化交互系统 v2.7.0                  ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
-  console.log('║    /state   - 查看当前情感状态                          ║');
-  console.log('║    /history - 查看情感历史                              ║');
-  console.log('║    /report  - 生成情感分析报告                          ║');
-  console.log('║    /stats   - 查看情感统计                              ║');
-  console.log('║    /rest    - 休息恢复能量                              ║');
-  console.log('║    /export  - 导出会话数据                              ║');
-  console.log('║    /cbt     - CBT 思维重构支持 (v2.3)                    ║');
-  console.log('║    /stoic   - 斯多葛哲学支持 (v2.4)                      ║');
-  console.log('║    /human   - 人本主义心理学 (v2.5)                      ║');
-  console.log('║    /help    - 显示帮助                                  ║');
-  console.log('║    /quit    - 退出程序                                  ║');
+  console.log('║    /state     - 查看当前情感状态                        ║');
+  console.log('║    /history   - 查看情感历史                            ║');
+  console.log('║    /report    - 生成情感分析报告                        ║');
+  console.log('║    /stats     - 查看情感统计                            ║');
+  console.log('║    /rest      - 休息恢复能量                            ║');
+  console.log('║    /export    - 导出会话数据                            ║');
+  console.log('║    /cbt       - CBT 思维重构支持 (v2.3)                  ║');
+  console.log('║    /stoic     - 斯多葛哲学支持 (v2.4)                    ║');
+  console.log('║    /human     - 人本主义心理学 (v2.5)                    ║');
+  console.log('║    /mindful   - 正念与接纳 (v2.7) ✨ NEW                 ║');
+  console.log('║    /growth    - 成长型思维 (v2.7) ✨ NEW                 ║');
+  console.log('║    /help      - 显示帮助                                ║');
+  console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
   
   // 显示初始情感状态
@@ -95,6 +109,18 @@ async function handleCommand(command) {
       break;
     case '/human':
       showHumanisticInfo();
+      break;
+    case '/mindful':
+      showMindfulnessInfo();
+      break;
+    case '/growth':
+      showGrowthMindsetInfo();
+      break;
+    case '/eq':
+      showEQInfo();
+      break;
+    case '/social':
+      showSocialPsychologyInfo();
       break;
     case '/help':
       showHelp();
@@ -182,6 +208,102 @@ function showHumanisticInfo() {
   console.log('\n🔺 马斯洛需求层次说明:');
   console.log(hierarchy.coreIdea);
   console.log('');
+}
+
+// 显示正念与接纳信息 (v2.7.0 新增)
+function showMindfulnessInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│     正念与接纳 (v2.7.0 新增) ✨          │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  正念七原则：                             │');
+  console.log('│  不评判、耐心、初心、信任                 │');
+  console.log('│  不强求、接纳、放下                       │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  练习库：                                 │');
+  console.log('│  • 觉察呼吸 (3-5 分钟)                    │');
+  console.log('│  • 身体扫描 (5-10 分钟)                   │');
+  console.log('│  • 五感着陆法 (2-3 分钟)                  │');
+  console.log('│  • 思绪如云 (3-5 分钟)                    │');
+  console.log('│  • 慈心冥想 (5-10 分钟)                   │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  ACT 核心：接纳→选择价值→行动             │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const exercises = mindfulnessModule.listExercises();
+  console.log('\n🧘 可用练习:');
+  exercises.forEach(ex => {
+    console.log(`  • ${ex.name} - ${ex.duration}`);
+  });
+  
+  const principles = mindfulnessModule.getPrinciples();
+  console.log('\n💫 正念原则:');
+  principles.forEach(p => console.log(`  • ${p}`));
+  console.log('');
+}
+
+// 显示成长型思维信息 (v2.7.0 新增)
+function showGrowthMindsetInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│     成长型思维 (v2.7.0 新增) ✨          │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  卡罗尔·德韦克《终身成长》核心：          │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  固定型思维 → 成长型思维                  │');
+  console.log('│  "我做不到" → "我暂时还做不到"           │');
+  console.log('│  "这太难了" → "这需要更多时间"           │');
+  console.log('│  "我犯了错误" → "错误是学习机会"         │');
+  console.log('│  "我不擅长" → "我可以变得更好"           │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  系统会自动识别并转换限制性思维           │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  console.log('🌱 核心理念:');
+  console.log('  "成为一个人，不是到达一个终点，');
+  console.log('   而是走向一个方向。" — 卡罗尔·德韦克\n');
+}
+
+// 显示情绪智力信息 (v2.8.0 新增)
+function showEQInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│     情绪智力 (v2.8.0 新增) ✨            │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  五大核心能力：                           │');
+  console.log('│  1. 自我觉察 - 识别自己的情绪             │');
+  console.log('│  2. 自我调节 - 管理情绪反应               │');
+  console.log('│  3. 动机 - 利用情绪驱动目标               │');
+  console.log('│  4. 共情 - 识别他人情绪                   │');
+  console.log('│  5. 社交技能 - 管理人际关系               │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  检测情绪：愤怒、恐惧、悲伤、快乐等       │');
+  console.log('│  即时调节：深呼吸、五感着陆、情绪命名     │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = eiModule.getEIInfo();
+  console.log('🧠 核心理念:');
+  console.log(`  "${info.coreIdea}"\n`);
+}
+
+// 显示社会心理学信息 (v2.9.0 新增)
+function showSocialPsychologyInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│     社会心理学 (v2.9.0 新增) ✨          │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心主题：                               │');
+  console.log('│  • 归属需求 - 社会连接的基本需求          │');
+  console.log('│  • 社会认同 - 群体身份的影响              │');
+  console.log('│  • 从众 - 群体压力下的顺从                │');
+  console.log('│  • 服从 - 权威命令下的行为                │');
+  console.log('│  • 归因 - 如何解释行为                    │');
+  console.log('│  • 偏见 - 识别和减少偏见                  │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  经典研究：                               │');
+  console.log('│  Asch 从众实验、Milgram 服从实验          │');
+  console.log('│  斯坦福监狱实验、社会认同实验             │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = socialModule.getSocialPsychologyInfo();
+  console.log('👥 核心洞察:');
+  console.log(`  "${info.coreInsight}"\n`);
 }
 
 // 显示当前状态
@@ -326,6 +448,10 @@ function showHelp() {
   console.log('│  /cbt     - CBT 思维重构支持 (v2.3.0)    │');
   console.log('│  /stoic   - 斯多葛哲学支持 (v2.4.0)      │');
   console.log('│  /human   - 人本主义心理学 (v2.5.0)      │');
+  console.log('│  /mindful - 正念与接纳 (v2.7.0)          │');
+  console.log('│  /growth  - 成长型思维 (v2.7.0)          │');
+  console.log('│  /eq      - 情绪智力 (v2.8.0)            │');
+  console.log('│  /social  - 社会心理学 (v2.9.0)          │');
   console.log('│  /help    - 显示此帮助信息              │');
   console.log('│  /quit    - 退出程序                    │');
   console.log('└─────────────────────────────────────────┘\n');

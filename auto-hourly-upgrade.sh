@@ -35,11 +35,12 @@ echo "🔄 尝试拉取最新代码..."
 git fetch origin 2>/dev/null && git pull origin main 2>/dev/null || echo "⚠️  网络不可用，使用本地代码"
 echo ""
 
-# 4. 创建心理学/哲学精华升级摘要
-echo "🧠 提取心理学/哲学精华内容..."
+# 4. 搜索并提取心理学/哲学精华内容
+echo "🧠 搜索心理学和哲学精华内容..."
 PSYCHOLOGY_UPGRADE_FILE="temp/psychology_upgrade_${DATE_STAMP}.md"
 mkdir -p temp
 
+# 创建升级摘要（精华提取，无描述性内容）
 cat > "$PSYCHOLOGY_UPGRADE_FILE" << 'EOF'
 # 心理学/哲学精华升级
 
@@ -120,4 +121,4 @@ echo ""
 echo "╔════════════════════════════════════════════════════════╗"
 echo "║     v$NEW_VERSION 升级完成！                            ║"
 echo "║     下次升级时间：$(date -v+1H +"%Y-%m-%d %H:%M")                  ║"
-echo "╚════════════════════════════════════════════════════════╗"
+echo "╚════════════════════════════════════════════════════════╝"
