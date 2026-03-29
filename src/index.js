@@ -13,6 +13,7 @@ const ChatManager = require('./chat/manager');
 const { EmotionTypes } = require('./emotion/states');
 const { CBTModule } = require('./cbt');
 const { StoicModule } = require('./stoic');
+const { HumanisticPsychologyModule } = require('./humanistic');
 const readline = require('readline');
 
 // 创建 CBT 模块
@@ -20,6 +21,9 @@ const cbtModule = new CBTModule();
 
 // 创建斯多葛模块 (v2.4.0 新增)
 const stoicModule = new StoicModule();
+
+// 创建人本主义心理学模块 (v2.5.0 新增)
+const humanisticModule = new HumanisticPsychologyModule();
 
 // 创建对话管理器
 const chatManager = new ChatManager({
@@ -37,7 +41,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v2.4.0                  ║');
+  console.log('║              情感拟人化交互系统 v2.5.0                  ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -49,6 +53,7 @@ function showWelcome() {
   console.log('║    /export  - 导出会话数据                              ║');
   console.log('║    /cbt     - CBT 思维重构支持 (v2.3)                    ║');
   console.log('║    /stoic   - 斯多葛哲学支持 (v2.4)                      ║');
+  console.log('║    /human   - 人本主义心理学 (v2.5)                      ║');
   console.log('║    /help    - 显示帮助                                  ║');
   console.log('║    /quit    - 退出程序                                  ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -87,6 +92,9 @@ async function handleCommand(command) {
       break;
     case '/stoic':
       showStoicInfo();
+      break;
+    case '/human':
+      showHumanisticInfo();
       break;
     case '/help':
       showHelp();
@@ -150,6 +158,30 @@ function showStoicInfo() {
   console.log('\n📜 斯多葛语录:');
   const quote = stoicModule.controlAnalyzer.getStoicQuote();
   console.log(`"${quote.text}" — ${quote.author}\n`);
+}
+
+// 显示人本主义心理学信息 (v2.5.0 新增)
+function showHumanisticInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│   人本主义心理学 (v2.5.0 新增)           │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  马斯洛需求层次：                         │');
+  console.log('│  5. 自我实现 (成长、潜能、意义)           │');
+  console.log('│  4. 尊重需求 (认可、成就、自信)           │');
+  console.log('│  3. 归属与爱 (关系、友谊、社群)           │');
+  console.log('│  2. 安全需求 (稳定、保障、秩序)           │');
+  console.log('│  1. 生理需求 (食物、水、睡眠)             │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  罗杰斯无条件积极关注：                   │');
+  console.log('│  接纳、理解、相信成长倾向                 │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  系统会识别你的需求层次并提供支持         │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const hierarchy = humanisticModule.getMaslowHierarchyInfo();
+  console.log('\n🔺 马斯洛需求层次说明:');
+  console.log(hierarchy.coreIdea);
+  console.log('');
 }
 
 // 显示当前状态
@@ -293,6 +325,7 @@ function showHelp() {
   console.log('│  /export  - 导出会话数据到 JSON 文件      │');
   console.log('│  /cbt     - CBT 思维重构支持 (v2.3.0)    │');
   console.log('│  /stoic   - 斯多葛哲学支持 (v2.4.0)      │');
+  console.log('│  /human   - 人本主义心理学 (v2.5.0)      │');
   console.log('│  /help    - 显示此帮助信息              │');
   console.log('│  /quit    - 退出程序                    │');
   console.log('└─────────────────────────────────────────┘\n');
@@ -331,6 +364,9 @@ async function main() {
         // 斯多葛哲学分析（v2.4.0 新增）
         const stoicAnalysis = stoicModule.processInput(trimmed);
         
+        // 人本主义心理学分析（v2.5.0 新增）
+        const humanisticAnalysis = humanisticModule.analyzeNeeds(trimmed);
+        
         // 如果有显著的认知扭曲，显示 CBT 引导
         if (cbtAnalysis.hasSignificantDistortion) {
           console.log('\n💡 [CBT 思维重构支持]');
@@ -360,6 +396,26 @@ async function main() {
           if (stoicAnalysis.quote) {
             const quote = stoicAnalysis.quote;
             console.log(`   💬 "${quote.text}" — ${quote.author}`);
+          }
+          console.log('');
+        }
+        
+        // 如果检测到需求层次，显示人本主义支持
+        if (humanisticAnalysis.primaryNeed) {
+          console.log('\n🔺 [人本主义心理学支持]');
+          const need = humanisticAnalysis.primaryNeed;
+          const needNames = {
+            'physiological': '生理需求',
+            'safety': '安全需求',
+            'love_belonging': '归属与爱',
+            'esteem': '尊重需求',
+            'self_actualization': '自我实现'
+          };
+          console.log(`   检测到需求：${needNames[need.level] || '需求'}`);
+          
+          if (humanisticAnalysis.response && humanisticAnalysis.response.length > 0) {
+            const response = humanisticAnalysis.response[0];
+            console.log(`   ${response.text}`);
           }
           console.log('');
         }
