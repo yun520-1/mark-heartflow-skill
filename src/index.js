@@ -7,6 +7,7 @@
  * 原创设计，无版权风险
  * 
  * v3.18.0 新增：现象学情绪体验模块（基于 SEP 现象学与情绪理论整合）
+ * v3.24.0 新增：情绪整合理论 v2.0（SEP 三大传统 + 四大挑战完整整合）
  */
 
 const ChatManager = require('./chat/manager');
@@ -116,6 +117,10 @@ const collectiveIntentionalityModule = new CollectiveIntentionalityModule();
 const { CollectiveIdentityModule } = require('./collective-identity');
 const collectiveIdentityModule = new CollectiveIdentityModule();
 
+// 创建情绪整合理论 v2.0 模块 (v3.24.0 新增) 🧠 基于 SEP 情绪理论三大传统 + 四大挑战整合
+const EmotionIntegrationTheory = require('./emotion-integration-theory');
+const emotionIntegrationTheoryModule = new EmotionIntegrationTheory();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -132,7 +137,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.23.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.24.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
