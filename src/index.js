@@ -84,6 +84,10 @@ const emotionIntegrationModule = new EmotionIntegrationModule();
 const { EmbodiedCognitionModule } = require('./embodied-cognition');
 const embodiedCognitionModule = new EmbodiedCognitionModule();
 
+// 创建情绪粒度模块 (v3.16.0 新增) 🧠 基于 Barrett 情绪建构理论与 SEP 情绪分化理论
+const { EmotionalGranularityModule } = require('./emotional-granularity');
+const granularityModule = new EmotionalGranularityModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -100,7 +104,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.13.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.16.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -126,6 +130,7 @@ function showWelcome() {
   console.log('║    /mentalization - 心理化理论 (v3.9) 🧠 NEW              ║');
   console.log('║    /self        - 自我意识与现象学 (v3.10) 🧠 NEW        ║');
   console.log('║    /embodied    - 具身认知 (v3.13) 🧠 NEW                 ║');
+  console.log('║    /granularity - 情绪粒度评估 (v3.16) 🧠 NEW             ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -212,6 +217,9 @@ async function handleCommand(command) {
       break;
     case '/embodied':
       showEmbodiedCognitionInfo();
+      break;
+    case '/granularity':
+      showGranularityInfo();
       break;
     case '/help':
       showHelp();
@@ -825,6 +833,58 @@ function showEmbodiedCognitionInfo() {
   console.log('  2. 隐喻觉察：留意语言中的具身隐喻');
   console.log('  3. 行动反思：注意行动如何塑造思维');
   console.log('  4. 环境互动：觉察环境提供的行动可能性');
+  console.log('');
+}
+
+// 显示情绪粒度信息 (v3.16.0 新增)
+function showGranularityInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│    情绪粒度模块 (v3.16.0 新增) 🧠        │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 Barrett 情绪建构理论与 SEP：        │');
+  console.log('│  • Theory of Constructed Emotion        │');
+  console.log('│  • Emotion Differentiation Research     │');
+  console.log('│  • Emotional Granularity Studies        │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心能力：                              │');
+  console.log('│  1. 情绪粒度评估                        │');
+  console.log('│  2. 精细化情绪词汇库 (60+ 精确情绪)       │');
+  console.log('│  3. 情绪分化训练                        │');
+  console.log('│  4. 身体感觉 - 情绪匹配                   │');
+  console.log('│  5. 跨情境情绪分析                      │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  // 展示词汇库统计
+  const vocabInfo = granularityModule.getVocabularyInfo();
+  console.log('📊 情绪词汇库统计:');
+  console.log(`  总情绪数：${vocabInfo.totalEmotions} 个精确情绪`);
+  console.log(`  情绪家族：${vocabInfo.families} 个`);
+  console.log(`  评估问题：${vocabInfo.assessmentQuestions} 题`);
+  console.log('');
+  
+  console.log('📚 情绪家族分类:');
+  for (const [family, count] of Object.entries(vocabInfo.byFamily)) {
+    const familyName = family.replace('_FAMILY', '');
+    console.log(`  • ${familyName}: ${count} 种`);
+  }
+  console.log('');
+  
+  console.log('💡 核心理念:');
+  console.log('  情绪不是天生的，而是通过概念 + 身体感觉 + 情境构建的。');
+  console.log('  词汇越丰富，情绪体验越精确，调节能力越强。');
+  console.log('');
+  
+  console.log('🧘 提升情绪粒度的方法:');
+  console.log('  1. 学习情绪词汇：每天学习 2-3 个新情绪词');
+  console.log('  2. 情绪日记：记录情绪，用不同词汇描述');
+  console.log('  3. 身体扫描：注意情绪来时的身体感觉');
+  console.log('  4. 分化练习：比较相似情绪的细微差别');
+  console.log('');
+  
+  console.log('📝 使用命令:');
+  console.log('  /granularity assess - 进行情绪粒度评估');
+  console.log('  /granularity vocab - 查看情绪词汇库');
+  console.log('  /granularity exercise <情绪> - 分化练习');
   console.log('');
 }
 
