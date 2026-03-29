@@ -31,7 +31,7 @@ class CollectiveIdentityModule {
   constructor() {
     this.version = '3.23.0';
     this.socialIdentities = []; // 社会认同列表
-    selfCategorizations = []; // 自我分类列表
+    this.selfCategorizations = []; // 自我分类列表
     this.groupNorms = []; // 群体规范列表
     this.identityFusions = []; // 认同融合状态
     this.relationalSelves = []; // 关系性自我
