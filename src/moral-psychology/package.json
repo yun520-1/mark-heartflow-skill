@@ -1,0 +1,24 @@
+{
+  "name": "heartflow-moral-psychology",
+  "version": "3.30.0",
+  "description": "道德心理学模块 - 基于 SEP 权威理论的道德判断、道德发展与道德情感分析",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ../../test/test-moral-psychology.js"
+  },
+  "keywords": [
+    "moral-psychology",
+    "ethics",
+    "virtue-ethics",
+    "consequentialism",
+    "deontology",
+    "moral-development",
+    "moral-emotion",
+    "altruism",
+    "heartflow"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

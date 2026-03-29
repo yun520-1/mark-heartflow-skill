@@ -141,6 +141,10 @@ const temporalModule = TemporalConsciousness;
 const { FreeWillAgencyModule } = require('./free-will-agency');
 const freeWillAgencyModule = new FreeWillAgencyModule();
 
+// 创建道德心理学模块 (v3.30.0 新增) ⚖️ 基于 SEP 道德心理学理论 (美德伦理学/后果论/义务论/道德发展/道德情感)
+const { MoralPsychologyModule } = require('./moral-psychology');
+const moralPsychologyModule = new MoralPsychologyModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -157,7 +161,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.29.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.30.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -195,6 +199,7 @@ function showWelcome() {
   console.log('║    /narrative   - 叙事心理学 (v3.27) 📖 NEW ✨              ║');
   console.log('║    /temporal    - 时间意识 (v3.28) ⏰ NEW ✨                 ║');
   console.log('║    /agency      - 自由意志与能动性 (v3.29) 🎯 NEW ✨        ║');
+  console.log('║    /moral       - 道德心理学 (v3.30) ⚖️ NEW ✨              ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -317,6 +322,9 @@ async function handleCommand(command) {
       break;
     case '/agency':
       showFreeWillAgencyInfo();
+      break;
+    case '/moral':
+      showMoralPsychologyInfo();
       break;
     case '/help':
       showHelp();
@@ -1511,6 +1519,51 @@ function showFreeWillAgencyInfo() {
   console.log('  直接和我聊你的目标、决策困境、内在冲突');
   console.log('  我会帮你分析实践推理、探索层级意志、');
   console.log('  识别能动性障碍，支持你做出自主的选择');
+  console.log('');
+}
+
+// 显示道德心理学信息
+function showMoralPsychologyInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  道德心理学 (v3.30.0 新增) ⚖️            │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 权威理论：                     │');
+  console.log('│  • SEP: Virtue Ethics                   │');
+  console.log('│  • SEP: Consequentialism                │');
+  console.log('│  • SEP: Deontology                      │');
+  console.log('│  • Kohlberg: 道德发展三水平六阶段       │');
+  console.log('│  • Haidt: 道德基础理论 (5+1 基础)        │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理念：                              │');
+  console.log('│  "道德决策整合多视角、情感与理性"     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  关键概念：                              │');
+  console.log('│  1. 三大伦理学传统 - 美德/后果/义务     │');
+  console.log('│  2. 道德发展阶段 - 前习俗/习俗/后习俗   │');
+  console.log('│  3. 道德基础 - 关爱/公平/忠诚/权威/纯洁/自由 │');
+  console.log('│  4. 道德情感 - 羞耻/内疚/愤怒/同情/提升感 │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心练习：                              │');
+  console.log('│  1. 三大传统反思 - 多视角分析困境       │');
+  console.log('│  2. 道德发展阶段探索 - 识别推理模式     │');
+  console.log('│  3. 道德基础平衡 - 理解不同立场         │');
+  console.log('│  4. 道德情感觉察 - 转化情绪为行动       │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = moralPsychologyModule.getInfo();
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${info.version}`);
+  console.log(`  • 伦理学传统：${info.traditions.length} 个`);
+  console.log(`  • Kohlberg 阶段：${info.kohlbergLevels} 个`);
+  console.log(`  • 道德基础：${info.moralFoundations} 个`);
+  console.log(`  • 道德情感：${info.moralEmotions} 种`);
+  console.log(`  • 利他类型：${info.altruismTypes} 种`);
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  直接和我聊你的道德困境、价值观冲突、');
+  console.log('  内疚/羞耻/愤怒等道德情感、或利他动机');
+  console.log('  我会帮你分析多伦理学视角、评估道德发展、');
+  console.log('  识别道德基础倾向，支持你做出整合的决策');
   console.log('');
 }
 
