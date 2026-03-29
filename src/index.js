@@ -159,6 +159,10 @@ const relationalSelfModule = new RelationalSelf();
 
 // 创建预测加工与情绪模块 (v3.33.0 新增) 🧠 基于 SEP 情绪三大传统 + 预测加工理论 + 主动推理
 const PredictiveEmotion = require('./predictive-emotion');
+
+// 创建情绪理性模块 (v3.39.0 新增) 🧠 基于 SEP 情绪理论第 10 节：Rationality and Emotions
+const { EmotionRationalityModule } = require('./emotion-rationality');
+const emotionRationalityModule = new EmotionRationalityModule();
 const predictiveEmotionModule = new PredictiveEmotion();
 
 // 创建对话管理器
