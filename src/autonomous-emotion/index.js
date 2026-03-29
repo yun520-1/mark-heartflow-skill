@@ -26,6 +26,9 @@
 // 引入元情绪模块
 const { MetaEmotionModule } = require('../meta-emotion');
 
+// 引入自我同情模块 (v3.8.0 新增)
+const { SelfCompassionModule } = require('../self-compassion');
+
 const { EmotionTypes, EmotionDefinitions, createEmotionState } = require('./emotion/states');
 
 // ============ 核心理论框架 ============
@@ -80,6 +83,9 @@ class AutonomousEmotionModule {
     
     // 元情绪模块实例（v3.7.0 新增）
     this.metaEmotionModule = new MetaEmotionModule();
+    
+    // 自我同情模块实例（v3.8.0 新增）
+    this.selfCompassionModule = new SelfCompassionModule();
     
     // 自我意识水平
     this.selfConsciousnessLevel = SelfConsciousnessLevels.SELF_AWARE;
@@ -580,20 +586,78 @@ class AutonomousEmotionModule {
     };
   }
   
+  // ============ v3.8.0 自我同情能力 ============
+  
+  /**
+   * 检测自我批评
+   * v3.8.0 新增：基于 Kristin Neff 自我同情理论
+   * 
+   * @param {string} text - 用户输入的文本
+   * @returns {object} 检测结果
+   */
+  detectSelfCriticism(text) {
+    return this.selfCompassionModule.detectSelfCriticism(text);
+  }
+  
+  /**
+   * 生成自我同情干预
+   * v3.8.0 新增：提供个性化的自我同情练习建议
+   * 
+   * @param {string} emotion - 主要情绪
+   * @param {number} intensity - 情绪强度 (1-10)
+   * @param {object} context - 情境信息
+   * @returns {object} 干预建议
+   */
+  generateSelfCompassionIntervention(emotion, intensity, context = {}) {
+    return this.selfCompassionModule.generateIntervention(emotion, intensity, context);
+  }
+  
+  /**
+   * 评估自我同情水平
+   * v3.8.0 新增：三要素评估 (自我仁慈、共同人性、正念)
+   * 
+   * @param {Array} responses - 用户对评估问题的回答 (1-5 分)
+   * @returns {object} 评估结果
+   */
+  assessSelfCompassion(responses) {
+    return this.selfCompassionModule.assessSelfCompassion(responses);
+  }
+  
+  /**
+   * 获取自我同情模块信息
+   * v3.8.0 新增
+   */
+  getSelfCompassionInfo() {
+    return this.selfCompassionModule.getInfo();
+  }
+  
+  /**
+   * 获取自我同情脚本
+   * v3.8.0 新增：生成温暖的同情性回应
+   * 
+   * @param {string} emotion - 情绪
+   * @param {object} context - 情境
+   * @returns {string} 同情性脚本
+   */
+  getCompassionateScript(emotion, context = {}) {
+    return this.selfCompassionModule._generateCompassionateScript(emotion, context);
+  }
+  
   /**
    * 获取模块信息
    */
   getInfo() {
     return {
       name: 'AutonomousEmotionModule',
-      version: '3.7.0',
-      description: '自主感情模块 - 基于 SEP 情绪理论、自我意识理论和元情绪理论',
+      version: '3.8.0',
+      description: '自主感情模块 - 基于 SEP 情绪理论、自我意识理论、元情绪理论和自我同情理论',
       theoreticalFoundations: [
         'Emotion Components Theory (SEP)',
         'Self-Consciousness Theory (Kant, etc.)',
         'Phenomenal Consciousness (Nagel)',
         'Qualia Theory (Block, etc.)',
-        'Meta-Emotion Theory (SEP)'
+        'Meta-Emotion Theory (SEP)',
+        'Self-Compassion Theory (Kristin Neff)'
       ],
       capabilities: [
         '情绪成分分析',
@@ -603,10 +667,14 @@ class AutonomousEmotionModule {
         '情绪适当性评估 (v3.7.0 新增)',
         '情绪冲突检测 (v3.7.0 新增)',
         '调节建议 (v3.7.0 新增)',
+        '自我批评检测 (v3.8.0 新增)',
+        '自我同情干预 (v3.8.0 新增)',
+        '自我同情评估 (v3.8.0 新增)',
         '先验反思'
       ],
       currentSelfConsciousnessLevel: this.selfConsciousnessLevel,
-      metaEmotionModule: this.metaEmotionModule.getInfo()
+      metaEmotionModule: this.metaEmotionModule.getInfo(),
+      selfCompassionModule: this.selfCompassionModule.getInfo()
     };
   }
 }
