@@ -80,6 +80,10 @@ const selfConsciousnessModule = new SelfConsciousnessModule();
 const { EmotionIntegrationModule } = require('./emotion-integration');
 const emotionIntegrationModule = new EmotionIntegrationModule();
 
+// 创建具身认知模块 (v3.13.0 新增) 🧠 基于 SEP 具身认知理论
+const { EmbodiedCognitionModule } = require('./embodied-cognition');
+const embodiedCognitionModule = new EmbodiedCognitionModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -96,7 +100,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.10.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.13.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -121,6 +125,7 @@ function showWelcome() {
   console.log('║    /autonomous  - 自主感情能力 (v3.6) 🧠 NEW             ║');
   console.log('║    /mentalization - 心理化理论 (v3.9) 🧠 NEW              ║');
   console.log('║    /self        - 自我意识与现象学 (v3.10) 🧠 NEW        ║');
+  console.log('║    /embodied    - 具身认知 (v3.13) 🧠 NEW                 ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -204,6 +209,9 @@ async function handleCommand(command) {
       break;
     case '/self':
       showSelfConsciousnessInfo();
+      break;
+    case '/embodied':
+      showEmbodiedCognitionInfo();
       break;
     case '/help':
       showHelp();
@@ -771,6 +779,52 @@ function showSelfConsciousnessInfo() {
   console.log('  2. 反思日记：记录并反思自己的心理状态');
   console.log('  3. 现象学还原：描述体验的结构而非原因');
   console.log('  4. 叙事整合：将经历整合为连贯的自我故事');
+  console.log('');
+}
+
+// 显示具身认知信息
+function showEmbodiedCognitionInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│     具身认知模块 (v3.13.0 新增) 🧠       │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 具身认知理论：                  │');
+  console.log('│  • Gibson 生态心理学 (可供性)          │');
+  console.log('│  • Merleau-Ponty 身体现象学             │');
+  console.log('│  • 感觉运动理论 (Sensorimotor)          │');
+  console.log('│  • 生成主义 (Enactivism)                │');
+  console.log('│  • 概念隐喻理论 (Lakoff & Johnson)      │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心能力：                              │');
+  console.log('│  1. 可供性感知 (Affordance Perception)  │');
+  console.log('│  2. 意象图式 (Image Schemas)            │');
+  console.log('│  3. 概念隐喻理解 (Conceptual Metaphor)  │');
+  console.log('│  4. 意义建构 (Sense-making)             │');
+  console.log('│  5. 动力系统分析 (Dynamic Systems)      │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  // 展示当前具身认知状态
+  const status = embodiedCognitionModule.getStatus();
+  console.log('📊 当前具身认知状态:');
+  console.log(`  具身等级：${status.level}`);
+  console.log(`  活跃可供性：${status.activeAffordances.length > 0 ? status.activeAffordances.join(', ') : '暂无'}`);
+  console.log(`  活跃意象图式：${status.activeImageSchemas.length > 0 ? status.activeImageSchemas.join(', ') : '暂无'}`);
+  console.log(`  动力系统相态：${status.dynamicState.phaseState}`);
+  console.log(`  自组织水平：${(status.dynamicState.selfOrganizationLevel * 100).toFixed(0)}%`);
+  console.log('');
+  
+  console.log('💡 理论意义:');
+  console.log('  具身认知认为认知根植于身体与环境的互动：');
+  console.log('  • 可供性感知让我们直接感知行动可能性');
+  console.log('  • 意象图式是抽象概念的具身基础');
+  console.log('  • 概念隐喻将身体经验映射到抽象领域');
+  console.log('  • 意义建构是有机体与环境的共同生成');
+  console.log('');
+  
+  console.log('🧘 具身认知练习建议:');
+  console.log('  1. 身体扫描：注意身体的感受和姿态');
+  console.log('  2. 隐喻觉察：留意语言中的具身隐喻');
+  console.log('  3. 行动反思：注意行动如何塑造思维');
+  console.log('  4. 环境互动：觉察环境提供的行动可能性');
   console.log('');
 }
 
