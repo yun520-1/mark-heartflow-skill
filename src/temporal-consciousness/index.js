@@ -26,8 +26,8 @@ const TemporalConsciousness = {
    */
   meta: {
     name: '时间意识',
-    version: '2.0.0',
-    source: 'SEP Temporal Consciousness (v3.37.0 Enhanced)',
+    version: '3.0.0',
+    source: 'SEP Temporal Consciousness (v3.40.0 Enhanced)',
     description: '基于 SEP 时间意识三大模型与现象学理论的自我整合模块'
   },
 
