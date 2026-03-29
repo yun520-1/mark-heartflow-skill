@@ -1,8 +1,16 @@
-# 时间意识模块 (Temporal Consciousness)
+# 时间意识模块 (Temporal Consciousness) v3.40.0
 
 ## 理论基础
 
-本模块基于 **Stanford Encyclopedia of Philosophy** 时间意识与现象学理论，整合了 Husserl、Heidegger、Merleau-Ponty 等现象学家的时间理论。
+本模块基于 **Stanford Encyclopedia of Philosophy** 时间意识与现象学理论，整合了 Husserl、Heidegger、Merleau-Ponty、Dainton 等现象学家的时间理论。
+
+### 最新版本 (v3.40.0) 增强内容
+
+- ✅ SEP 三大时间意识模型完整实现 (电影/保留/延展)
+- ✅ 时间深度评估框架 (5 层次)
+- ✅ 时间整合状态评估 (4 状态)
+- ✅ 时间连续性评估 (5 维度)
+- ✅ 现象学时间体验技术 (4 练习)
 
 ### 核心理论框架
 
