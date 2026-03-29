@@ -108,6 +108,10 @@ const intentionalityModule = new IntentionalityModule();
 const { EmotionTheoryFoundation } = require('./emotion-theory');
 const emotionTheoryModule = new EmotionTheoryFoundation();
 
+// 创建集体意向性模块 (v3.22.0 新增) 🧠 基于 SEP 集体意向性理论 (Searle, Bratman, Gilbert, Tuomela, Scheler)
+const { CollectiveIntentionalityModule } = require('./collective-intentionality');
+const collectiveIntentionalityModule = new CollectiveIntentionalityModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -124,7 +128,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.21.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.22.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -154,6 +158,7 @@ function showWelcome() {
   console.log('║    /phenomenological - 现象学情绪体验 (v3.18) 🧠 NEW     ║');
   console.log('║    /emotion-theory  - 情绪理论基础 (v3.21) 🧠 NEW       ║');
   console.log('║    /intentionality - 意向性理论 (v3.20) 🎯 NEW             ║');
+  console.log('║    /collective  - 集体意向性 (v3.22) 🧠 NEW ✨           ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -252,6 +257,9 @@ async function handleCommand(command) {
       break;
     case '/emotion-theory':
       showEmotionTheoryInfo();
+      break;
+    case '/collective':
+      showCollectiveIntentionalityInfo();
       break;
     case '/help':
       showHelp();
@@ -1071,6 +1079,60 @@ function showEmotionTheoryInfo() {
   
   console.log('📝 使用命令:');
   console.log('  /emotion-theory - 查看情绪理论基础信息');
+  console.log('');
+}
+
+// 显示集体意向性模块信息 (v3.22.0 新增)
+function showCollectiveIntentionalityInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│   集体意向性模块 (v3.22.0 新增) 🧠      │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 集体意向性理论：                │');
+  console.log('│  • Searle (1990) - 原始集体意向性       │');
+  console.log('│  • Bratman (1999) - 共享意向性理论      │');
+  console.log('│  • Gilbert (1990) - 联合承诺理论        │');
+  console.log('│  • Tuomela & Miller (1988) - 我们意图   │');
+  console.log('│  • Scheler (1912) - 集体情绪现象学      │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理论：                              │');
+  console.log('│  1. 我们意图 (We-Intention)             │');
+  console.log('│  2. 联合承诺 (Joint Commitment)         │');
+  console.log('│  3. 集体情绪体验 (Collective Emotion)   │');
+  console.log('│  4. 集体意向性层次 (5 层次模型)          │');
+  console.log('│  5. 集体意向立场 (Collective Stance)    │');
+  console.log('│  6. 一致性检查 (Coherence Check)        │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  意向性层次：                            │');
+  console.log('│  0. 无意向 → 1. 派生 → 2. 原创          │');
+  console.log('│  3. 反思 → 4. 高阶 → 5. 集体 ✨          │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  // 展示模块信息
+  const status = collectiveIntentionalityModule.getStatus();
+  console.log('📊 集体意向性状态:');
+  console.log(`  • 我们意图数量：${status.statistics.weIntentionsCount}`);
+  console.log(`  • 联合承诺数量：${status.statistics.jointCommitmentsCount}`);
+  console.log(`  • 集体情绪数量：${status.statistics.collectiveEmotionsCount}`);
+  console.log(`  • 参与者数量：${status.statistics.participantsCount}`);
+  console.log(`  • 一致性状态：${status.coherence.isCoherent ? '✅ 一致' : '⚠️ 存在冲突'}`);
+  console.log('');
+  
+  console.log('💡 核心理念:');
+  console.log('  集体意向性不是个体意向性的简单加总，');
+  console.log('  而是"我们"作为集体共同拥有意向状态。');
+  console.log('  这是实现真正社会情感能力的关键一步。');
+  console.log('');
+  
+  console.log('🧠 理论应用:');
+  console.log('  1. 我们意图形成：形成"我们意图做 X"的集体意向');
+  console.log('  2. 联合承诺：建立"我们一起承诺做 Y"的规范性关系');
+  console.log('  3. 集体情绪：体验"我们共同感受 Z"的共享情绪');
+  console.log('  4. 一致性检查：确保集体意向性内部协调');
+  console.log('  5. 集体意向立场：用信念 - 欲望框架理解集体行为');
+  console.log('');
+  
+  console.log('📝 使用命令:');
+  console.log('  /collective - 查看集体意向性状态');
   console.log('');
 }
 
