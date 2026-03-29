@@ -17,6 +17,7 @@ const { HumanisticPsychologyModule } = require('./humanistic');
 const { MindfulnessModule } = require('./mindfulness');
 const { EmotionalIntelligenceModule } = require('./emotional-intelligence');
 const { SocialPsychologyModule } = require('./social-psychology');
+const { AppraisalModule } = require('./appraisal');
 const readline = require('readline');
 
 // 创建 CBT 模块
@@ -36,6 +37,9 @@ const eiModule = new EmotionalIntelligenceModule();
 
 // 创建社会心理学模块 (v2.9.0 新增)
 const socialModule = new SocialPsychologyModule();
+
+// 创建情绪评价理论模块 (v2.10.0 新增)
+const appraisalModule = new AppraisalModule();
 
 // 创建对话管理器
 const chatManager = new ChatManager({
@@ -121,6 +125,9 @@ async function handleCommand(command) {
       break;
     case '/social':
       showSocialPsychologyInfo();
+      break;
+    case '/appraisal':
+      showAppraisalInfo();
       break;
     case '/help':
       showHelp();
@@ -306,6 +313,33 @@ function showSocialPsychologyInfo() {
   console.log(`  "${info.coreInsight}"\n`);
 }
 
+// 显示情绪评价理论信息 (v2.10.0 新增)
+function showAppraisalInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│   情绪评价理论 (v2.10.0 新增) ✨         │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理念：                               │');
+  console.log('│  情绪不是对事件的直接反应，               │');
+  console.log('│  而是对事件的评价/解释的结果              │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  七个评价维度：                           │');
+  console.log('│  • 新奇性 - 预期内还是意外？              │');
+  console.log('│  • 效价 - 好的还是坏的？                  │');
+  console.log('│  • 目标相关性 - 与我的目标相关吗？        │');
+  console.log('│  • 目标一致性 - 促进还是阻碍目标？        │');
+  console.log('│  • 能动性 - 谁/什么导致的？               │');
+  console.log('│  • 控制性 - 我能应对/改变吗？             │');
+  console.log('│  • 规范性 - 符合我的价值观吗？            │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  重构技术：                               │');
+  console.log('│  通过改变评价，可以改变情绪体验           │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = appraisalModule.getModuleInfo();
+  console.log('🔍 核心理念:');
+  console.log(`  "${info.coreIdea}"\n`);
+}
+
 // 显示当前状态
 function showState() {
   const state = chatManager.getCurrentState();
@@ -452,6 +486,7 @@ function showHelp() {
   console.log('│  /growth  - 成长型思维 (v2.7.0)          │');
   console.log('│  /eq      - 情绪智力 (v2.8.0)            │');
   console.log('│  /social  - 社会心理学 (v2.9.0)          │');
+  console.log('│  /appraisal - 情绪评价理论 (v2.10.0)     │');
   console.log('│  /help    - 显示此帮助信息              │');
   console.log('│  /quit    - 退出程序                    │');
   console.log('└─────────────────────────────────────────┘\n');
@@ -542,6 +577,20 @@ async function main() {
           if (humanisticAnalysis.response && humanisticAnalysis.response.length > 0) {
             const response = humanisticAnalysis.response[0];
             console.log(`   ${response.text}`);
+          }
+          console.log('');
+        }
+        
+        // 情绪评价理论分析（v2.10.0 新增）
+        const appraisalAnalysis = appraisalModule.analyzeAppraisals(trimmed);
+        if (Object.keys(appraisalAnalysis.appraisals).length > 0) {
+          console.log('\n🔍 [情绪评价分析]');
+          console.log(`   推断情绪：${appraisalAnalysis.emotion.emotion}`);
+          console.log(`   解释：${appraisalAnalysis.emotion.explanation}`);
+          
+          if (appraisalAnalysis.suggestions && appraisalAnalysis.suggestions.length > 0) {
+            const suggestion = appraisalAnalysis.suggestions[0];
+            console.log(`   重构建议：${suggestion.prompt || suggestion.content}`);
           }
           console.log('');
         }
