@@ -77,6 +77,10 @@ const mentalizationModule = new MentalizationModule();
 const { SelfConsciousnessModule } = require('./self-consciousness');
 const selfConsciousnessModule = new SelfConsciousnessModule();
 
+// 创建自我意识增强模块 (v3.38.0 新增) 🧠 基于 SEP 具身认知、集体意向性、现象学自我理论 (Merleau-Ponty, Zahavi, Gallagher, Searle, Hegel)
+const { SelfConsciousnessEnhancedModule } = require('./self-consciousness-enhanced');
+const selfConsciousnessEnhancedModule = new SelfConsciousnessEnhancedModule();
+
 // 创建情绪理论整合模块 (v3.12.0 新增) 🧠 基于 SEP 情绪三大传统理论
 const { EmotionIntegrationModule } = require('./emotion-integration');
 const emotionIntegrationModule = new EmotionIntegrationModule();
