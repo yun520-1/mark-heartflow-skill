@@ -165,6 +165,10 @@ const { EmotionRationalityModule } = require('./emotion-rationality');
 const emotionRationalityModule = new EmotionRationalityModule();
 const predictiveEmotionModule = new PredictiveEmotion();
 
+// 创建现象学意识模块 (v3.41.0 新增) 🧠 基于 SEP 现象学/意识/意向性/感受质理论 (Husserl, Brentano, Merleau-Ponty)
+const PhenomenologicalConsciousnessModule = require('./phenomenological-consciousness');
+const phenomenologicalConsciousnessModule = PhenomenologicalConsciousnessModule;
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -181,7 +185,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.31.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.41.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
