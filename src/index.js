@@ -96,6 +96,10 @@ const generativeRegulationModule = new GenerativeEmotionRegulationModule();
 const { PhenomenologicalEmotionModule } = require('./phenomenological-emotion');
 const phenomenologicalModule = new PhenomenologicalEmotionModule();
 
+// 创建前反思自我意识模块 (v3.19.0 新增) 🧠 基于 SEP 现象学自我意识理论 (Zahavi, Sartre, Husserl)
+const { PrereflectiveConsciousnessModule } = require('./prereflective-consciousness');
+const prereflectiveModule = new PrereflectiveConsciousnessModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -112,7 +116,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.18.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.19.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
