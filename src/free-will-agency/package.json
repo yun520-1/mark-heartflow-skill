@@ -1,0 +1,34 @@
+{
+  "name": "heartflow-free-will-agency",
+  "version": "3.29.0",
+  "description": "HeartFlow 自由意志与能动性模块 - 基于 SEP 权威理论",
+  "main": "index.js",
+  "keywords": [
+    "free-will",
+    "agency",
+    "intentionality",
+    "practical-reasoning",
+    "hierarchical-will",
+    "frankfurt",
+    "bratman",
+    "anscombe",
+    "davidson",
+    "heartflow",
+    "psychology",
+    "philosophy"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yun520-1/mark-heartflow-skill"
+  },
+  "theoreticalBasis": [
+    "SEP: Agency (https://plato.stanford.edu/entries/agency/)",
+    "SEP: Free Will (https://plato.stanford.edu/entries/free-will/)",
+    "Frankfurt, H. (1971). Freedom of the Will and the Concept of a Person",
+    "Bratman, M. (1987). Intention, Plans, and Practical Reason",
+    "Anscombe, G. E. M. (1957). Intention",
+    "Davidson, D. (1963). Actions, Reasons, and Causes"
+  ]
+}
