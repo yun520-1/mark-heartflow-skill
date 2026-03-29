@@ -145,6 +145,10 @@ const freeWillAgencyModule = new FreeWillAgencyModule();
 const { MoralPsychologyModule } = require('./moral-psychology');
 const moralPsychologyModule = new MoralPsychologyModule();
 
+// 创建实践智慧模块 (v3.31.0 新增) 🧠 基于亚里士多德实践智慧理论 (Phronesis) 与 SEP 智慧理论
+const PracticalWisdom = require('./practical-wisdom');
+const practicalWisdomModule = new PracticalWisdom();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -161,7 +165,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.30.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.31.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -198,6 +202,7 @@ function showWelcome() {
   console.log('║    /empathy     - 共情现象学 (v3.26) 💗 NEW ✨              ║');
   console.log('║    /narrative   - 叙事心理学 (v3.27) 📖 NEW ✨              ║');
   console.log('║    /temporal    - 时间意识 (v3.28) ⏰ NEW ✨                 ║');
+  console.log('║    /wisdom      - 实践智慧 (v3.31) 🧠 NEW ✨                 ║');
   console.log('║    /agency      - 自由意志与能动性 (v3.29) 🎯 NEW ✨        ║');
   console.log('║    /moral       - 道德心理学 (v3.30) ⚖️ NEW ✨              ║');
   console.log('║    /help        - 显示帮助                                ║');
@@ -325,6 +330,9 @@ async function handleCommand(command) {
       break;
     case '/moral':
       showMoralPsychologyInfo();
+      break;
+    case '/wisdom':
+      showPracticalWisdomInfo();
       break;
     case '/help':
       showHelp();
@@ -1567,6 +1575,47 @@ function showMoralPsychologyInfo() {
   console.log('');
 }
 
+// 显示实践智慧信息
+function showPracticalWisdomInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  实践智慧 (v3.31.0 新增) 🧠              │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 权威理论：                     │');
+  console.log('│  • 亚里士多德《尼各马可伦理学》         │');
+  console.log('│  • SEP: Wisdom (智慧理论)               │');
+  console.log('│  • SEP: Aristotle\'s Ethics             │');
+  console.log('│  • SEP: Virtue Ethics (美德伦理学)      │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理念：                              │');
+  console.log('│  "在具体情境中找到过度与不足之间的中道"│');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  关键概念：                              │');
+  console.log('│  1. 实践智慧 (Phronesis) - 情境判断力   │');
+  console.log('│  2. 中道 (Golden Mean) - 平衡点         │');
+  console.log('│  3. 核心德性 - 勇气/节制/慷慨/公正等    │');
+  console.log('│  4. 智慧视角 - 谦逊/准确/知识/理性      │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心练习：                              │');
+  console.log('│  1. 每日反思 - 觉察德性表现             │');
+  console.log('│  2. 中道平衡练习 - 分析过度与不足       │');
+  console.log('│  3. 德性日记 - 每周培养一个德性         │');
+  console.log('│  4. 智慧导师练习 - 想象榜样如何应对     │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const help = practicalWisdomModule.help();
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${help.version}`);
+  console.log(`  • 核心德性：${help.virtues.length} 个`);
+  console.log(`  • 智慧视角：${help.wisdomPerspectives.length} 个`);
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  直接和我聊你的决策困境、价值观冲突、');
+  console.log('  或任何需要平衡判断的情境');
+  console.log('  我会帮你识别相关德性、分析中道平衡、');
+  console.log('  评估智慧视角，提供个性化的实践建议');
+  console.log('');
+}
+
 // 显示当前状态
 function showState() {
   const state = chatManager.getCurrentState();
@@ -1818,6 +1867,24 @@ async function main() {
           if (humanisticAnalysis.response && humanisticAnalysis.response.length > 0) {
             const response = humanisticAnalysis.response[0];
             console.log(`   ${response.text}`);
+          }
+          console.log('');
+        }
+        
+        // 实践智慧分析 (v3.31.0 新增)
+        const wisdomAnalysis = practicalWisdomModule.analyzeSituation(trimmed);
+        if (wisdomAnalysis.virtues.length > 0 || (wisdomAnalysis.goldenMeanAnalysis && wisdomAnalysis.goldenMeanAnalysis.details)) {
+          console.log('\n🧠 [实践智慧分析]');
+          if (wisdomAnalysis.virtues.length > 0) {
+            console.log(`   相关德性：${wisdomAnalysis.virtues.map(v => v.virtue.name).join('、')}`);
+          }
+          if (wisdomAnalysis.goldenMeanAnalysis && wisdomAnalysis.goldenMeanAnalysis.details) {
+            wisdomAnalysis.goldenMeanAnalysis.details.forEach(detail => {
+              console.log(`   ${detail.virtue}: ${detail.balanceAdvice}`);
+            });
+          }
+          if (wisdomAnalysis.developmentStage) {
+            console.log(`   发展阶段：${wisdomAnalysis.developmentStage.stage.name}`);
           }
           console.log('');
         }
