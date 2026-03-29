@@ -21,6 +21,7 @@ const { ExistentialPsychologyModule } = require('./existential');
 const { AppraisalModule } = require('./appraisal');
 const AttachmentModule = require('./attachment');
 const ACTModule = require('./act');
+const { EmotionRegulationModule } = require('./emotion-regulation');
 const readline = require('readline');
 
 // 创建 CBT 模块
@@ -52,6 +53,9 @@ const attachmentModule = AttachmentModule;
 
 // 创建 ACT 接受与承诺疗法模块 (v3.2.0 新增) ✨
 const actModule = ACTModule;
+
+// 创建情绪调节模块 (v3.3.0 新增) 🎛️
+const regulationModule = new EmotionRegulationModule();
 
 // 创建对话管理器
 const chatManager = new ChatManager({
@@ -88,6 +92,7 @@ function showWelcome() {
   console.log('║    /appraisal   - 情绪评价理论 (v3.1) ✨ NEW            ║');
   console.log('║    /attachment  - 依恋理论 (v3.2) ✨ NEW                ║');
   console.log('║    /act         - ACT 接受与承诺疗法 (v3.2) ✨ NEW      ║');
+  console.log('║    /regulation  - 情绪调节策略 (v3.3) 🎛️ NEW            ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -153,6 +158,9 @@ async function handleCommand(command) {
       break;
     case '/act':
       showACTInfo();
+      break;
+    case '/regulation':
+      showRegulationInfo();
       break;
     case '/help':
       showHelp();
@@ -447,6 +455,34 @@ function showACTInfo() {
   console.log('命令:');
   info.commands.forEach(cmd => console.log(`  ${cmd}`));
   console.log('');
+}
+
+// 显示情绪调节模块信息 (v3.3.0 新增) 🎛️
+function showRegulationInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   情绪调节策略 (v3.3.0 新增) 🎛️         │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心理念：                              │');
+  console.log('│ 情绪调节是有意识地影响情绪体验的过程    │');
+  console.log('│ 不同策略效果不同，认知重评最有效        │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 五种调节策略 (按时间顺序):              │');
+  console.log('│ 1. 🎯 情境选择 - 情绪触发前 (0.85) ⭐⭐⭐⭐  │');
+  console.log('│ 2. 🔧 情境修改 - 情绪触发早期 (0.75) ⭐⭐⭐⭐│');
+  console.log('│ 3. 👁️ 注意部署 - 情绪触发中期 (0.65) ⭐⭐⭐ │');
+  console.log('│ 4. 🔄 认知改变 - 情绪触发中后期 (0.90) ⭐⭐⭐⭐⭐│');
+  console.log('│ 5. 🎭 反应调节 - 情绪产生后 (0.50) ⭐⭐   │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 研究证明：认知重评 → 更高幸福感        │');
+  console.log('│        表达抑制 → 更低幸福感            │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  const info = regulationModule.getModuleInfo();
+  console.log(`📚 ${info.description}\n`);
+  console.log('策略选择原则:');
+  console.log('  • 预防优于治疗：情境选择 > 情境修改 > 其他');
+  console.log('  • 认知优于抑制：认知重评 > 表达抑制');
+  console.log('  • 灵活胜单一：根据情境选择策略\n');
 }
 
 // 显示当前状态
