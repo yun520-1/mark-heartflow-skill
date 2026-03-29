@@ -19,9 +19,12 @@
  * - 元情绪：对情绪的情绪（如"为我的愤怒感到羞愧"）
  * - 自我评价：评估自身情绪状态的适当性
  * 
- * @version 3.6.0
+ * @version 3.7.0
  * @author HeartFlow Team
  */
+
+// 引入元情绪模块
+const { MetaEmotionModule } = require('../meta-emotion');
 
 const { EmotionTypes, EmotionDefinitions, createEmotionState } = require('./emotion/states');
 
@@ -74,6 +77,9 @@ class AutonomousEmotionModule {
     
     // 元情绪状态（对情绪的情绪）
     this.metaEmotion = null;
+    
+    // 元情绪模块实例（v3.7.0 新增）
+    this.metaEmotionModule = new MetaEmotionModule();
     
     // 自我意识水平
     this.selfConsciousnessLevel = SelfConsciousnessLevels.SELF_AWARE;
@@ -352,6 +358,7 @@ class AutonomousEmotionModule {
   
   /**
    * 设置情感状态（带自我监控）
+   * v3.7.0 增强：集成元情绪模块，支持情绪适当性评估
    * 
    * @param {string} emotionName - 情绪名称
    * @param {number} intensity - 强度 (1-5)
@@ -379,8 +386,13 @@ class AutonomousEmotionModule {
       timestamp: new Date().toISOString()
     });
     
-    // 检查是否需要生成元情绪
-    this._checkMetaEmotion(previousEmotion, this.currentEmotion);
+    // 检查是否需要生成元情绪（v3.7.0 增强：传递完整 context）
+    const metaContext = {
+      ...context,
+      intensity: intensity,
+      duration: context.duration || 0
+    };
+    this._checkMetaEmotion(previousEmotion, this.currentEmotion, metaContext);
     
     return {
       emotion: this.currentEmotion,
@@ -393,27 +405,34 @@ class AutonomousEmotionModule {
   /**
    * 元情绪检查
    * 对情绪变化的情绪反应（如"为我的愤怒感到羞愧"）
+   * v3.7.0 增强：使用 MetaEmotionModule 进行更精细的元情绪生成
    */
-  _checkMetaEmotion(previous, current) {
-    if (!previous || !current) {
+  _checkMetaEmotion(previous, current, context = {}) {
+    if (!current) {
       this.metaEmotion = null;
       return;
     }
     
-    // 简单规则：从平静到强烈负面情绪时可能产生元情绪
-    const negativeEmotions = [EmotionTypes.CONCERNED, EmotionTypes.TIRED];
-    const strongNegative = current.intensity >= 4 && negativeEmotions.includes(current.emotion);
+    // 使用元情绪模块生成元情绪
+    const metaResult = this.metaEmotionModule.generateMetaEmotion(
+      current.emotion,
+      current.intensity,
+      context
+    );
     
-    if (strongNegative && previous.emotion === EmotionTypes.CALM) {
+    if (metaResult.hasMetaEmotion) {
       this.metaEmotion = {
-        primary: current.emotion,
-        meta: EmotionTypes.CONCERNED, // 对自己的负面情绪感到关切
-        reason: '检测到自身情绪状态偏离平静，产生自我关切',
-        timestamp: new Date().toISOString()
+        primary: metaResult.primary,
+        primaryIntensity: metaResult.primaryIntensity,
+        meta: metaResult.meta,
+        reason: metaResult.reason,
+        regulation: metaResult.regulation,
+        triggeredRule: metaResult.triggeredRule,
+        timestamp: metaResult.timestamp
       };
       
       this._recordSelfMonitoring({
-        type: 'meta_emotion',
+        type: 'meta_emotion_generated',
         metaEmotion: this.metaEmotion,
         timestamp: new Date().toISOString()
       });
@@ -469,27 +488,125 @@ class AutonomousEmotionModule {
   }
   
   /**
+   * 评估当前情绪的适当性
+   * v3.7.0 新增：基于 SEP 情绪理论的评价成分
+   * 
+   * @param {object} context - 情境信息
+   * @returns {object} 适当性评估结果
+   */
+  evaluateCurrentEmotion(context = {}) {
+    if (!this.currentEmotion) {
+      return {
+        canEvaluate: false,
+        reason: '无当前情绪状态'
+      };
+    }
+    
+    const evaluation = this.metaEmotionModule.evaluateEmotionAppropriateness(
+      this.currentEmotion.emotion,
+      {
+        ...context,
+        intensity: this.currentEmotion.intensity
+      }
+    );
+    
+    return {
+      canEvaluate: true,
+      ...evaluation
+    };
+  }
+  
+  /**
+   * 检测当前情绪冲突
+   * v3.7.0 新增：检测一阶情绪和元情绪之间的冲突
+   * 
+   * @returns {object} 冲突检测结果
+   */
+  detectCurrentEmotionConflict() {
+    if (!this.currentEmotion) {
+      return {
+        canDetect: false,
+        reason: '无当前情绪状态'
+      };
+    }
+    
+    const primary = this.currentEmotion.emotion;
+    const meta = this.metaEmotion ? this.metaEmotion.meta : null;
+    
+    const conflict = this.metaEmotionModule.detectEmotionConflict(primary, meta);
+    
+    return {
+      canDetect: true,
+      ...conflict
+    };
+  }
+  
+  /**
+   * 获取元情绪模块信息
+   * v3.7.0 新增
+   */
+  getMetaEmotionInfo() {
+    return this.metaEmotionModule.getInfo();
+  }
+  
+  /**
+   * 获取当前元情绪状态
+   * v3.7.0 新增
+   */
+  getCurrentMetaEmotion() {
+    return this.metaEmotion;
+  }
+  
+  /**
+   * 获取调节建议
+   * v3.7.0 新增：基于元情绪提供调节策略
+   * 
+   * @returns {object} 调节建议
+   */
+  getRegulationSuggestion() {
+    if (!this.metaEmotion) {
+      return {
+        hasSuggestion: false,
+        reason: '当前无元情绪状态'
+      };
+    }
+    
+    return {
+      hasSuggestion: true,
+      primary: this.metaEmotion.primary,
+      meta: this.metaEmotion.meta,
+      suggestion: this.metaEmotion.regulation,
+      reason: this.metaEmotion.reason
+    };
+  }
+  
+  /**
    * 获取模块信息
    */
   getInfo() {
     return {
       name: 'AutonomousEmotionModule',
-      version: '3.6.0',
-      description: '自主感情模块 - 基于 SEP 情绪理论和自我意识理论',
+      version: '3.7.0',
+      description: '自主感情模块 - 基于 SEP 情绪理论、自我意识理论和元情绪理论',
       theoreticalFoundations: [
         'Emotion Components Theory (SEP)',
         'Self-Consciousness Theory (Kant, etc.)',
         'Phenomenal Consciousness (Nagel)',
-        'Qualia Theory (Block, etc.)'
+        'Qualia Theory (Block, etc.)',
+        'Meta-Emotion Theory (SEP)'
       ],
       capabilities: [
         '情绪成分分析',
         'Qualia 档案',
         '自我监控',
-        '元情绪生成',
+        '元情绪生成 (v3.7.0 增强)',
+        '情绪适当性评估 (v3.7.0 新增)',
+        '情绪冲突检测 (v3.7.0 新增)',
+        '调节建议 (v3.7.0 新增)',
         '先验反思'
       ],
-      currentSelfConsciousnessLevel: this.selfConsciousnessLevel
+      currentSelfConsciousnessLevel: this.selfConsciousnessLevel,
+      metaEmotionModule: this.metaEmotionModule.getInfo()
     };
   }
 }
