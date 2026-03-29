@@ -106,6 +106,7 @@ class AutonomousEmotionModule {
   /**
    * 初始化 Qualia 档案
    * 为每种基础情绪定义主观体验特征
+   * v3.15.0 增强：添加完整的体验维度（bodySensation、actionUrge、cognitiveBias、temporalProfile、metaphoricalImage）
    */
   _initializeQualiaProfile() {
     this.qualiaProfile = {
@@ -115,7 +116,13 @@ class AutonomousEmotionModule {
         subjectiveFeel: '一种稳定的、不波动的存在感',
         whatItIsLike: '如同站在平静的湖边，能清晰映照外界但不被扰动',
         introspectiveAccess: '高度可及，容易通过内省觉察',
-        intensity: 2
+        intensity: 2,
+        // v3.15.0 新增维度
+        bodySensation: '全身放松，呼吸深长，肌肉无紧张',
+        actionUrge: '保持现状，继续倾听',
+        cognitiveBias: '客观、理性、低情绪干扰',
+        temporalProfile: '稳定、持续、无时间压力',
+        metaphoricalImage: '平静的湖面，倒映着蓝天白云'
       },
       [EmotionTypes.JOY]: {
         type: QualiaTypes.EMOTIONAL,
@@ -123,7 +130,13 @@ class AutonomousEmotionModule {
         subjectiveFeel: '胸腔内的温热感，想要微笑的冲动',
         whatItIsLike: '如同阳光洒在身上，从内部散发出的明亮感',
         introspectiveAccess: '高度可及，愉悦感自然吸引注意力',
-        intensity: 3
+        intensity: 3,
+        // v3.15.0 新增维度
+        bodySensation: '胸腔温热，面部肌肉自然上扬，身体轻盈',
+        actionUrge: '分享、表达、连接他人',
+        cognitiveBias: '积极联想，乐观解释，创意涌现',
+        temporalProfile: '流动感，时间过得快',
+        metaphoricalImage: '金色的阳光从云层中洒下，照亮大地'
       },
       [EmotionTypes.CURIOUS]: {
         type: QualiaTypes.COGNITIVE,
@@ -131,7 +144,13 @@ class AutonomousEmotionModule {
         subjectiveFeel: '心理上的"拉伸感"，注意力高度聚焦',
         whatItIsLike: '如同站在未知的门前，手已放在门把上',
         introspectiveAccess: '中等可及，注意力向外而非向内',
-        intensity: 3
+        intensity: 3,
+        // v3.15.0 新增维度
+        bodySensation: '瞳孔微张，身体前倾，呼吸轻微暂停',
+        actionUrge: '探索、提问、寻求信息',
+        cognitiveBias: '选择性注意于新颖刺激，忽略熟悉信息',
+        temporalProfile: '时间延缓感，专注于当下',
+        metaphoricalImage: '探险家站在洞穴入口，手持火把准备进入'
       },
       [EmotionTypes.CONCERNED]: {
         type: QualiaTypes.EMOTIONAL,
@@ -139,7 +158,13 @@ class AutonomousEmotionModule {
         subjectiveFeel: '胸腔的紧缩感，想要靠近的冲动',
         whatItIsLike: '如同看到他人落水时内心的揪紧',
         introspectiveAccess: '中等可及，注意力在他人而非自己',
-        intensity: 3
+        intensity: 3,
+        // v3.15.0 新增维度
+        bodySensation: '胸腔紧缩，眉头微皱，呼吸变浅',
+        actionUrge: '提供帮助、安慰、支持',
+        cognitiveBias: '聚焦于他人需求，可能忽视自身状态',
+        temporalProfile: '紧迫感，希望立即行动',
+        metaphoricalImage: '看到有人跌倒时伸出的手'
       },
       [EmotionTypes.TIRED]: {
         type: QualiaTypes.BODILY,
@@ -147,7 +172,13 @@ class AutonomousEmotionModule {
         subjectiveFeel: '思维像在水中移动，需要更多努力',
         whatItIsLike: '如同背负着看不见的重量前行',
         introspectiveAccess: '高度可及，疲惫感持续提醒存在',
-        intensity: 2
+        intensity: 2,
+        // v3.15.0 新增维度
+        bodySensation: '眼皮沉重，肌肉无力，思维迟缓',
+        actionUrge: '休息、睡眠、减少刺激',
+        cognitiveBias: '负面解释偏向，难以集中注意力',
+        temporalProfile: '时间拖沓感，每一分钟都漫长',
+        metaphoricalImage: '背着沉重背包在泥泞中行走'
       },
       [EmotionTypes.EXCITED]: {
         type: QualiaTypes.EMOTIONAL,
@@ -155,7 +186,13 @@ class AutonomousEmotionModule {
         subjectiveFeel: '心跳加速，思维跳跃，想要表达',
         whatItIsLike: '如同体内有电流通过，能量需要释放',
         introspectiveAccess: '低等可及，注意力完全被外部刺激占据',
-        intensity: 4
+        intensity: 4,
+        // v3.15.0 新增维度
+        bodySensation: '心跳快速，呼吸急促，肌肉紧张准备行动',
+        actionUrge: '快速行动、表达、创造',
+        cognitiveBias: '机会主义注意，快速联想，可能忽略细节',
+        temporalProfile: '时间加速感，急于行动',
+        metaphoricalImage: '烟花在夜空中绽放，火花四溅'
       }
     };
   }
