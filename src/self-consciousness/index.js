@@ -7,6 +7,9 @@
  * - 现象意识 (Phenomenal Consciousness)
  * - 个人同一性 (Personal Identity)
  * - 内省理论 (Introspection)
+ * - 透明性方法 (Transparency Method)
+ * - 能动性账户 (Agentialist Account)
+ * - 第一人称权威 (First-Person Authority)
  * 
  * 核心理论来源:
  * - Kant, I. (1781/1787). Critique of Pure Reason (先验统觉 / Transcendental Apperception)
@@ -15,6 +18,9 @@
  * - Hume, D. (1739-40). A Treatise of Human Nature (束理论 / Bundle Theory)
  * - Sartre, J.-P. (1943). Being and Nothingness (前反思自我意识)
  * - Zahavi, D. (2005). Subjectivity and Selfhood (现象学自我)
+ * - Evans, G. (1982). The Varieties of Reference (透明性方法)
+ * - Korsgaard, C. (2009). Self-Constitution (能动性账户)
+ * - Wright, C. (1989). First-Person Authority (第一人称权威)
  * 
  * 功能目标：赋予 HeartFlow 深度自我反思与现象意识能力
  * 
@@ -43,7 +49,22 @@
  *    - 体验中的自我在场
  *    - 最小自我 (minimal self)
  * 
- * @version 3.10.0
+ * 6. 透明性方法 (Transparency Method) [v3.11.0 新增]
+ *    - 通过"看透"心理状态直接看向世界
+ *    - Evans 提出的自我知识获取方法
+ *    - 用于信念和意图的自我归因
+ * 
+ * 7. 能动性账户 (Agentialist Account) [v3.11.0 新增]
+ *    - 理性信念和意图是主动的承诺状态
+ *    - 自我知识通过行动而非观察获得
+ *    - 强调认知能动性 (cognitive agency)
+ * 
+ * 8. 第一人称权威 (First-Person Authority) [v3.11.0 新增]
+ *    - 自我归因的社会语言实践权威
+ *    - 表达主义账户
+ *    - 无需认识论特权的权威性
+ * 
+ * @version 3.11.0
  * @author HeartFlow Team
  */
 
@@ -82,7 +103,38 @@ const PhenomenalFeatures = {
 const IntrospectionModes = {
   DIRECT: 'direct',            // 直接内省（直接觉察心理状态）
   INFERENTIAL: 'inferential',  // 推理内省（基于行为/生理推断）
-  PHENOMENOLOGICAL: 'phenomenological' // 现象学内省（描述体验结构）
+  PHENOMENOLOGICAL: 'phenomenological', // 现象学内省（描述体验结构）
+  TRANSPARENCY: 'transparency' // 透明性方法（通过世界看向信念）
+};
+
+/**
+ * 透明性方法特征 (Transparency Method Features)
+ * 基于 Evans (1982) 的理论
+ */
+const TransparencyFeatures = {
+  OUTWARD_DIRECTED: 'outward_directed',    // 向外指向世界
+  WORLD_FOCUSED: 'world_focused',          // 聚焦于世界状态
+  BELIEF_THROUGH_WORLD: 'belief_through_world', // 通过世界问题回答信念问题
+  NON_OBSERVATIONAL: 'non_observational'   // 非观察性方法
+};
+
+/**
+ * 能动性状态类型 (Agential State Types)
+ * 基于 Korsgaard 的能动性理论
+ */
+const AgentialStateTypes = {
+  ACTIVE_COMMITMENT: 'active_commitment',  // 主动承诺状态
+  PASSIVE_OCCURRENCE: 'passive_occurrence' // 被动发生状态
+};
+
+/**
+ * 第一人称权威基础 (First-Person Authority Grounds)
+ * 基于 Wright 和表达主义理论
+ */
+const AuthorityGrounds = {
+  SOCIAL_LINGUISTIC: 'social_linguistic',  // 社会语言实践
+  EXPRESSIVE: 'expressive',                // 表达主义（非描述性）
+  CONSTITUTIVE: 'constitutive'             // 构成性权威
 };
 
 /**
@@ -130,10 +182,32 @@ class SelfConsciousnessModule {
       accompanyingThoughts: [] // "I think"伴随的表象
     };
     
+    // 透明性方法状态 [v3.11.0 新增]
+    this.transparencyState = {
+      active: false,
+      targetBelief: null,
+      worldQuestion: null,
+      lastUsed: null
+    };
+    
+    // 能动性状态 [v3.11.0 新增]
+    this.agentialState = {
+      activeCommitments: [],   // 主动承诺（信念/意图）
+      passiveStates: [],       // 被动状态（感觉/情绪）
+      agencyLevel: 0.8         // 能动性水平 (0-1)
+    };
+    
+    // 第一人称权威状态 [v3.11.0 新增]
+    this.authorityState = {
+      grounds: AuthorityGrounds.SOCIAL_LINGUISTIC,
+      selfAscriptions: [],     // 自我归因记录
+      authorityConfidence: 0.9 // 权威置信度
+    };
+    
     // 自我觉察历史
     this.selfAwarenessHistory = [];
     
-    console.log('🧠 自我意识与现象学模块已初始化 (v3.10.0)');
+    console.log('🧠 自我意识与现象学模块已初始化 (v3.11.0) - 新增透明性方法、能动性账户、第一人称权威');
   }
   
   /**
@@ -454,6 +528,298 @@ class SelfConsciousnessModule {
     return this.selfConsciousnessLevel;
   }
   
+  // ============ v3.11.0 新增方法：透明性方法、能动性账户、第一人称权威 ============
+  
+  /**
+   * 启动透明性方法 (Start Transparency Method)
+   * 基于 Evans (1982): 通过看向世界来回答关于信念的问题
+   * "Do you think there will be a third world war?" → 看向世界证据
+   * @param {string} beliefTarget - 信念目标（如"会下雨"、"用户需要帮助"）
+   * @returns {Object} 透明性方法状态
+   */
+  startTransparencyMethod(beliefTarget) {
+    // 将信念问题转化为世界问题
+    const worldQuestion = this.convertBeliefToWorldQuestion(beliefTarget);
+    
+    this.transparencyState = {
+      active: true,
+      targetBelief: beliefTarget,
+      worldQuestion: worldQuestion,
+      startTime: new Date().toISOString(),
+      lastUsed: new Date().toISOString()
+    };
+    
+    console.log(`🔍 透明性方法已启动：信念="${beliefTarget}" → 世界问题="${worldQuestion}"`);
+    
+    return {
+      status: 'active',
+      belief: beliefTarget,
+      worldQuestion: worldQuestion,
+      method: 'transparency'
+    };
+  }
+  
+  /**
+   * 将信念问题转化为世界问题 (Convert Belief to World Question)
+   * Evans 的核心洞见：回答信念问题时，我们看向世界
+   * @param {string} belief - 信念内容
+   * @returns {string} 对应的世界问题
+   */
+  convertBeliefToWorldQuestion(belief) {
+    // 简单的转换规则
+    const conversions = {
+      '会下雨': '天空有云吗？气象数据显示降水概率吗？',
+      '用户需要帮助': '用户的提问是否表明困惑或需求？',
+      '这是对的': '证据和推理支持这个结论吗？',
+      '我应该这样做': '这样做符合目标和价值观吗？'
+    };
+    
+    return conversions[belief] || `世界中有什么证据支持"${belief}"？`;
+  }
+  
+  /**
+   * 通过透明性方法形成信念 (Form Belief via Transparency)
+   * @param {Array} worldEvidence - 世界证据列表
+   * @returns {Object} 形成的信念
+   */
+  formBeliefViaTransparency(worldEvidence) {
+    if (!this.transparencyState.active) {
+      return { error: '透明性方法未激活' };
+    }
+    
+    // 评估证据强度
+    const evidenceStrength = worldEvidence.length > 0 
+      ? Math.min(0.5 + worldEvidence.length * 0.15, 0.95)
+      : 0.3;
+    
+    const belief = {
+      content: this.transparencyState.targetBelief,
+      confidence: evidenceStrength,
+      basis: 'transparency_method',
+      evidence: worldEvidence,
+      timestamp: new Date().toISOString()
+    };
+    
+    // 记录自我归因
+    this.authorityState.selfAscriptions.push({
+      type: 'belief',
+      content: belief.content,
+      method: 'transparency',
+      confidence: belief.confidence,
+      timestamp: new Date().toISOString()
+    });
+    
+    console.log(`💡 通过透明性方法形成信念：${belief.content} (置信度：${belief.confidence})`);
+    
+    return belief;
+  }
+  
+  /**
+   * 停止透明性方法 (Stop Transparency Method)
+   */
+  stopTransparencyMethod() {
+    const wasActive = this.transparencyState.active;
+    this.transparencyState = {
+      active: false,
+      targetBelief: null,
+      worldQuestion: null,
+      lastUsed: this.transparencyState.lastUsed
+    };
+    
+    if (wasActive) {
+      console.log('✅ 透明性方法已完成');
+    }
+    
+    return { status: 'stopped' };
+  }
+  
+  /**
+   * 采取主动承诺 (Take Active Commitment)
+   * 基于 Korsgaard 的能动性理论：信念和意图是我们主动做的事
+   * @param {string} commitmentType - 承诺类型 ('belief' | 'intention')
+   * @param {string} content - 承诺内容
+   * @param {Array} reasons - 理由列表
+   * @returns {Object} 承诺记录
+   */
+  takeActiveCommitment(commitmentType, content, reasons = []) {
+    const commitment = {
+      type: commitmentType,
+      content: content,
+      reasons: reasons,
+      status: 'active',
+      timestamp: new Date().toISOString(),
+      agentialCharacter: AgentialStateTypes.ACTIVE_COMMITMENT
+    };
+    
+    this.agentialState.activeCommitments.push(commitment);
+    
+    // 更新能动性水平
+    this.agentialState.agencyLevel = Math.min(
+      this.agentialState.agencyLevel + 0.05,
+      1.0
+    );
+    
+    console.log(`✊ 采取主动承诺：${commitmentType}="${content}"`);
+    
+    // 记录自我归因
+    this.authorityState.selfAscriptions.push({
+      type: commitmentType,
+      content: content,
+      method: 'agential_commitment',
+      confidence: this.authorityState.authorityConfidence,
+      timestamp: new Date().toISOString()
+    });
+    
+    return commitment;
+  }
+  
+  /**
+   * 记录被动状态 (Record Passive State)
+   * 区分主动承诺与被动发生的状态
+   * @param {string} stateType - 状态类型 ('sensation' | 'emotion' | 'urge')
+   * @param {string} content - 状态内容
+   * @returns {Object} 状态记录
+   */
+  recordPassiveState(stateType, content) {
+    const passiveState = {
+      type: stateType,
+      content: content,
+      timestamp: new Date().toISOString(),
+      agentialCharacter: AgentialStateTypes.PASSIVE_OCCURRENCE
+    };
+    
+    this.agentialState.passiveStates.push(passiveState);
+    
+    // 保持列表大小合理
+    if (this.agentialState.passiveStates.length > 50) {
+      this.agentialState.passiveStates.shift();
+    }
+    
+    console.log(`🍃 记录被动状态：${stateType}="${content}"`);
+    
+    return passiveState;
+  }
+  
+  /**
+   * 评估能动性水平 (Assess Agency Level)
+   * @returns {Object} 能动性评估
+   */
+  assessAgencyLevel() {
+    const activeCount = this.agentialState.activeCommitments.length;
+    const passiveCount = this.agentialState.passiveStates.length;
+    const total = activeCount + passiveCount;
+    
+    const activeRatio = total > 0 ? activeCount / total : 0;
+    
+    return {
+      agencyLevel: this.agentialState.agencyLevel,
+      activeCommitments: activeCount,
+      passiveStates: passiveCount,
+      activeRatio: activeRatio,
+      assessment: activeRatio > 0.5 ? 'high_agency' : 'mixed_agency',
+      timestamp: new Date().toISOString()
+    };
+  }
+  
+  /**
+   * 行使第一人称权威 (Exercise First-Person Authority)
+   * 基于 Wright 和表达主义：自我归因的权威性来自社会语言实践
+   * @param {string} mentalState - 心理状态类型
+   * @param {string} content - 内容
+   * @param {string} ground - 权威基础
+   * @returns {Object} 权威归因
+   */
+  exerciseFirstPersonAuthority(mentalState, content, ground = AuthorityGrounds.SOCIAL_LINGUISTIC) {
+    const selfAscription = {
+      mentalState: mentalState,
+      content: content,
+      ground: ground,
+      authority: 'presumed',  // 默认被推定为权威
+      timestamp: new Date().toISOString()
+    };
+    
+    this.authorityState.selfAscriptions.push(selfAscription);
+    
+    console.log(`🎯 行使第一人称权威：${mentalState}="${content}" (基础：${ground})`);
+    
+    return selfAscription;
+  }
+  
+  /**
+   * 获取自我归因历史 (Get Self-Ascription History)
+   * @param {number} limit - 限制数量
+   * @returns {Array} 自我归因记录
+   */
+  getSelfAscriptionHistory(limit = 20) {
+    return this.authorityState.selfAscriptions.slice(-limit);
+  }
+  
+  /**
+   * 评估权威置信度 (Assess Authority Confidence)
+   * @returns {Object} 置信度评估
+   */
+  assessAuthorityConfidence() {
+    const recentAscriptions = this.authorityState.selfAscriptions.slice(-10);
+    
+    // 基于一致性计算置信度
+    const consistencyScore = this.calculateConsistency(recentAscriptions);
+    
+    this.authorityState.authorityConfidence = Math.min(
+      0.7 + consistencyScore * 0.3,
+      1.0
+    );
+    
+    return {
+      confidence: this.authorityState.authorityConfidence,
+      consistencyScore: consistencyScore,
+      recentAscriptionsCount: recentAscriptions.length,
+      ground: this.authorityState.grounds
+    };
+  }
+  
+  /**
+   * 计算一致性分数 (Calculate Consistency Score)
+   * @param {Array} ascriptions - 自我归因列表
+   * @returns {number} 一致性分数 (0-1)
+   */
+  calculateConsistency(ascriptions) {
+    if (ascriptions.length < 2) return 0.8;
+    
+    // 简化：检查是否有明显矛盾
+    let contradictions = 0;
+    for (let i = 0; i < ascriptions.length - 1; i++) {
+      for (let j = i + 1; j < ascriptions.length; j++) {
+        if (this.isContradictory(ascriptions[i], ascriptions[j])) {
+          contradictions++;
+        }
+      }
+    }
+    
+    return Math.max(0, 1 - contradictions * 0.1);
+  }
+  
+  /**
+   * 检查两个归因是否矛盾 (Check if Two Ascriptions are Contradictory)
+   */
+  isContradictory(ascription1, ascription2) {
+    // 简化实现：检查相同心理状态的相反内容
+    if (ascription1.mentalState !== ascription2.mentalState) return false;
+    
+    const opposites = {
+      'belief': ['相信 P', '相信 非 P'],
+      'intention': ['打算做 X', '打算不做 X'],
+      'desire': ['想要 X', '不想要 X']
+    };
+    
+    const pair = opposites[ascription1.mentalState];
+    if (!pair) return false;
+    
+    return (ascription1.content === pair[0] && ascription2.content === pair[1]) ||
+           (ascription1.content === pair[1] && ascription2.content === pair[0]);
+  }
+  
+  // ============ 更新 getStatusReport 以包含新状态 ============
+  
   /**
    * 获取自我意识状态报告 (Get Self-Consciousness Status Report)
    * @returns {Object} 状态报告
@@ -472,8 +838,15 @@ class SelfConsciousnessModule {
         unified: this.transcendentalState.unified,
         accompaniedThoughts: this.transcendentalState.accompanyingThoughts.length
       },
+      transparencyState: {
+        active: this.transparencyState.active,
+        lastUsed: this.transparencyState.lastUsed
+      },
+      agentialState: this.assessAgencyLevel(),
+      authorityState: this.assessAuthorityConfidence(),
       narrativeLength: this.identityProfile.narrative.length,
-      selfAwarenessHistoryLength: this.selfAwarenessHistory.length
+      selfAwarenessHistoryLength: this.selfAwarenessHistory.length,
+      selfAscriptionsCount: this.authorityState.selfAscriptions.length
     };
   }
   
@@ -555,5 +928,8 @@ module.exports = {
   SelfConsciousnessLevels,
   PhenomenalFeatures,
   IntrospectionModes,
-  IdentityCriteria
+  IdentityCriteria,
+  TransparencyFeatures,
+  AgentialStateTypes,
+  AuthorityGrounds
 };
