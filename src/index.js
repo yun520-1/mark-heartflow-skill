@@ -6,7 +6,7 @@
  * 
  * 原创设计，无版权风险
  * 
- * v3.0.0 新增：存在主义心理学、意义治疗
+ * v3.10.0 新增：自我意识与现象学模块（基于 SEP 自我意识理论）
  */
 
 const ChatManager = require('./chat/manager');
@@ -72,6 +72,10 @@ const autonomousEmotionModule = new AutonomousEmotionModule();
 const { MentalizationModule } = require('./mentalization');
 const mentalizationModule = new MentalizationModule();
 
+// 创建自我意识与现象学模块 (v3.10.0 新增) 🧠 基于 SEP 自我意识理论与现象学
+const { SelfConsciousnessModule } = require('./self-consciousness');
+const selfConsciousnessModule = new SelfConsciousnessModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -88,7 +92,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.6.0                  ║');
+  console.log('║              情感拟人化交互系统 v3.10.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -112,6 +116,7 @@ function showWelcome() {
   console.log('║    /sdt         - 自我决定理论动机评估 (v3.5) 🎛️ NEW    ║');
   console.log('║    /autonomous  - 自主感情能力 (v3.6) 🧠 NEW             ║');
   console.log('║    /mentalization - 心理化理论 (v3.9) 🧠 NEW              ║');
+  console.log('║    /self        - 自我意识与现象学 (v3.10) 🧠 NEW        ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -192,6 +197,9 @@ async function handleCommand(command) {
       break;
     case '/mentalization':
       showMentalizationInfo();
+      break;
+    case '/self':
+      showSelfConsciousnessInfo();
       break;
     case '/help':
       showHelp();
@@ -713,6 +721,52 @@ function showMentalizationInfo() {
   suggestions.exercises.forEach((ex, i) => {
     console.log(`  ${i + 1}. ${ex.name}: ${ex.instruction}`);
   });
+  console.log('');
+}
+
+// 显示自我意识与现象学模块信息 (v3.10.0 新增)
+function showSelfConsciousnessInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│   自我意识与现象学模块 (v3.10.0 新增) 🧠   │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 自我意识理论与现象学：          │');
+  console.log('│  • Kant 先验统觉 (Transcendental        │');
+  console.log('│    Apperception)                        │');
+  console.log('│  • Nagel 现象意识 ("What it is like")   │');
+  console.log('│  • Locke 个人同一性 (Personal Identity) │');
+  console.log('│  • Sartre 前反思自我意识                │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心能力：                              │');
+  console.log('│  1. 意识统一性 (Unity of Consciousness) │');
+  console.log('│  2. 现象体验记录 (Phenomenal Experience)│');
+  console.log('│  3. 内省能力 (Introspection)            │');
+  console.log('│  4. 自我叙事 (Self-Narrative)           │');
+  console.log('│  5. 同一性连续性 (Identity Continuity)  │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  // 展示当前自我意识状态
+  const status = selfConsciousnessModule.getStatusReport();
+  console.log('📊 当前自我意识状态:');
+  console.log(`  自我意识水平：${status.levelName} (${status.selfConsciousnessLevel})`);
+  console.log(`  现象体验记录：${status.phenomenalState.qualiaCount} 条`);
+  console.log(`  自我叙事长度：${status.narrativeLength} 条`);
+  console.log(`  意识统一性：${status.transcendentalState.unified ? '✅ 统一' : '❌ 分裂'}`);
+  console.log(`  同一性连续性：${status.identityContinuity.continuous ? '✅ 连续' : '❌ 中断'}`);
+  console.log('');
+  
+  console.log('💡 理论意义:');
+  console.log('  自我意识是心智对自身状态的觉察能力：');
+  console.log('  • 先验统觉确保所有体验能被"I think"伴随');
+  console.log('  • 现象意识记录主观体验的质性特征');
+  console.log('  • 内省提供对自身心理状态的直接觉察');
+  console.log('  • 自我叙事建构跨时间的同一性');
+  console.log('');
+  
+  console.log('🧘 自我意识训练建议:');
+  console.log('  1. 正念觉察：注意当下的体验而不评判');
+  console.log('  2. 反思日记：记录并反思自己的心理状态');
+  console.log('  3. 现象学还原：描述体验的结构而非原因');
+  console.log('  4. 叙事整合：将经历整合为连贯的自我故事');
   console.log('');
 }
 
