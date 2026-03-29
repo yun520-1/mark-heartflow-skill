@@ -19,6 +19,8 @@ const { EmotionalIntelligenceModule } = require('./emotional-intelligence');
 const { SocialPsychologyModule } = require('./social-psychology');
 const { ExistentialPsychologyModule } = require('./existential');
 const { AppraisalModule } = require('./appraisal');
+const AttachmentModule = require('./attachment');
+const ACTModule = require('./act');
 const readline = require('readline');
 
 // 创建 CBT 模块
@@ -44,6 +46,12 @@ const existentialModule = new ExistentialPsychologyModule();
 
 // 创建情绪评价理论模块 (v3.1.0 新增)
 const appraisalModule = new AppraisalModule();
+
+// 创建依恋理论模块 (v3.2.0 新增) ✨
+const attachmentModule = AttachmentModule;
+
+// 创建 ACT 接受与承诺疗法模块 (v3.2.0 新增) ✨
+const actModule = ACTModule;
 
 // 创建对话管理器
 const chatManager = new ChatManager({
@@ -78,6 +86,8 @@ function showWelcome() {
   console.log('║    /growth    - 成长型思维 (v2.7) ✨ NEW                 ║');
   console.log('║    /existential - 存在主义心理学 (v3.0) ✨ NEW         ║');
   console.log('║    /appraisal   - 情绪评价理论 (v3.1) ✨ NEW            ║');
+  console.log('║    /attachment  - 依恋理论 (v3.2) ✨ NEW                ║');
+  console.log('║    /act         - ACT 接受与承诺疗法 (v3.2) ✨ NEW      ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -137,6 +147,12 @@ async function handleCommand(command) {
       break;
     case '/appraisal':
       showAppraisalInfo();
+      break;
+    case '/attachment':
+      showAttachmentInfo();
+      break;
+    case '/act':
+      showACTInfo();
       break;
     case '/help':
       showHelp();
@@ -378,6 +394,59 @@ function showAppraisalInfo() {
   console.log('🔍 核心理念:');
   console.log(`  "${info.coreIdea}"\n`);
 }
+
+// 显示依恋理论信息 (v3.2.0 新增)
+function showAttachmentInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   依恋理论 (v3.2.0 新增) ✨              │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心理念：                              │');
+  console.log('│ 早期照顾者互动形成内部工作模式，        │');
+  console.log('│ 影响成年后的关系预期和行为模式          │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 四种依恋风格：                          │');
+  console.log('│ • 安全型 - 舒适于亲密，信任他人         │');
+  console.log('│ • 焦虑型 - 渴望亲密，担心被抛弃         │');
+  console.log('│ • 回避型 - 回避亲密，强调独立           │');
+  console.log('│ • 混乱型 - 既渴望又害怕亲密             │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 依恋风格不是固定的，                    │');
+  console.log('│ 可以通过觉察和安全关系改变              │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  const info = attachmentModule.info;
+  console.log(`📚 ${info.description}\n`);
+  console.log('命令:');
+  info.commands.forEach(cmd => console.log(`  ${cmd}`));
+  console.log('');
+}
+
+// 显示 ACT 信息 (v3.2.0 新增)
+function showACTInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   ACT 接受与承诺疗法 (v3.2.0 新增) ✨    │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心理念：                              │');
+  console.log('│ 痛苦是生活的一部分，但挣扎是可选的      │');
+  console.log('│ 心理灵活性 = 接纳 + 正念 + 价值观行动   │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 六个核心过程 (Hexaflex):                │');
+  console.log('│ • 接纳 - 拥抱内在体验，不回避           │');
+  console.log('│ • 认知解离 - 想法只是想法，不是事实     │');
+  console.log('│ • 当下觉察 - 觉察此时此地               │');
+  console.log('│ • 自我作为背景 - 你是觉察者，不是内容   │');
+  console.log('│ • 价值观 - 澄清你真正想要的生活         │');
+  console.log('│ • 承诺行动 - 基于价值观采取行动         │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 目标不是消除痛苦，                      │');
+  console.log('│ 而是带着痛苦过有意义的生活              │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  const info = actModule.info;
+  console.log(`📚 ${info.description}\n`);
+  console.log('命令:');
+  info.commands.forEach(cmd => console.log(`  ${cmd}`));
+  console.log('');
 }
 
 // 显示当前状态
