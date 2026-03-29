@@ -112,6 +112,10 @@ const emotionTheoryModule = new EmotionTheoryFoundation();
 const { CollectiveIntentionalityModule } = require('./collective-intentionality');
 const collectiveIntentionalityModule = new CollectiveIntentionalityModule();
 
+// 创建集体认同模块 (v3.23.0 新增) 🧠 基于 SEP 社会认同理论 (Tajfel & Turner) + 集体意向性
+const { CollectiveIdentityModule } = require('./collective-identity');
+const collectiveIdentityModule = new CollectiveIdentityModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -128,7 +132,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.22.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.23.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -159,6 +163,7 @@ function showWelcome() {
   console.log('║    /emotion-theory  - 情绪理论基础 (v3.21) 🧠 NEW       ║');
   console.log('║    /intentionality - 意向性理论 (v3.20) 🎯 NEW             ║');
   console.log('║    /collective  - 集体意向性 (v3.22) 🧠 NEW ✨           ║');
+  console.log('║    /identity    - 集体认同 (v3.23) 🧠 NEW ✨               ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -260,6 +265,9 @@ async function handleCommand(command) {
       break;
     case '/collective':
       showCollectiveIntentionalityInfo();
+      break;
+    case '/identity':
+      showCollectiveIdentityInfo();
       break;
     case '/help':
       showHelp();
@@ -1133,6 +1141,75 @@ function showCollectiveIntentionalityInfo() {
   
   console.log('📝 使用命令:');
   console.log('  /collective - 查看集体意向性状态');
+  console.log('');
+}
+
+// 显示集体认同模块信息 (v3.23.0 新增)
+function showCollectiveIdentityInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│   集体认同模块 (v3.23.0 新增) 🧠        │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于社会认同理论与 SEP 集体意向性：      │');
+  console.log('│  • Tajfel & Turner (1979) - 社会认同理论│');
+  console.log('│  • Ellemers & Haslam (2012) - 现代发展  │');
+  console.log('│  • Bratman (1999) - 共享意向性与认同    │');
+  console.log('│  • Gilbert (1990) - 联合承诺与归属      │');
+  console.log('│  • Scheler (1912) - 集体体验与融合      │');
+  console.log('│  • Zahavi (2015) - 现象学自我与认同     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理论：                              │');
+  console.log('│  1. 社会认同 (Social Identity)          │');
+  console.log('│  2. 自我分类 (Self-Categorization)      │');
+  console.log('│  3. 认同融合 (Identity Fusion)          │');
+  console.log('│  4. 关系性自我 (Relational Self)        │');
+  console.log('│  5. 群体规范内化 (Norm Internalization) │');
+  console.log('│  6. 集体自尊 (Collective Self-Esteem)   │');
+  console.log('│  7. 认同威胁与应对 (Identity Threat)    │');
+  console.log('│  8. 群体情感 (Group-Based Emotion)      │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  认同层次：                              │');
+  console.log('│  个人认同 → 关系认同 → 社会认同 → 集体认同│');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  // 展示模块信息
+  const status = collectiveIdentityModule.getStatus();
+  console.log('📊 集体认同状态:');
+  console.log(`  • 社会认同数量：${status.statistics.socialIdentitiesCount}`);
+  console.log(`  • 认同融合数量：${status.statistics.identityFusionsCount}`);
+  console.log(`  • 关系性自我数量：${status.statistics.relationalSelvesCount}`);
+  console.log(`  • 群体规范数量：${status.statistics.groupNormsCount}`);
+  console.log(`  • 群体情感数量：${status.statistics.collectiveEmotionsCount}`);
+  console.log(`  • 认同威胁数量：${status.statistics.identityThreatsCount}`);
+  console.log(`  • 认同复杂性：${status.complexity.level} (${status.complexity.score.toFixed(2)})`);
+  console.log(`  • 认同整合度：${status.integration.level} (${status.integration.score.toFixed(2)})`);
+  console.log(`  • 认同冲突：${status.conflicts.length === 0 ? '✅ 无冲突' : `⚠️ ${status.conflicts.length}个冲突`}`);
+  console.log('');
+  
+  if (status.topIdentities.length > 0) {
+    console.log('🏆 主要认同 (按显著性排序):');
+    status.topIdentities.forEach((id, index) => {
+      console.log(`  ${index + 1}. ${id.groupName} (${id.selfCategory}) - 显著性：${id.salience.toFixed(2)}, 承诺：${id.commitment.toFixed(2)}`);
+    });
+    console.log('');
+  }
+  
+  console.log('💡 核心理念:');
+  console.log('  社会认同是自我概念的核心组成部分，');
+  console.log('  通过群体成员身份获得归属感和意义。');
+  console.log('  认同融合实现个人与集体的深度整合。');
+  console.log('');
+  
+  console.log('🧠 理论应用:');
+  console.log('  1. 社会认同形成：建立"我是 X 群体成员"的身份认知');
+  console.log('  2. 认同融合：实现个人认同与集体认同的深度整合');
+  console.log('  3. 关系性自我：构建"我们感"的关系身份');
+  console.log('  4. 规范内化：采纳群体规范作为自我指导');
+  console.log('  5. 集体自尊：基于群体成员身份的自我价值感');
+  console.log('  6. 认同威胁应对：保护和维护群体身份');
+  console.log('');
+  
+  console.log('📝 使用命令:');
+  console.log('  /identity - 查看集体认同状态');
   console.log('');
 }
 
