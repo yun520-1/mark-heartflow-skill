@@ -6,7 +6,7 @@
  * 
  * 原创设计，无版权风险
  * 
- * v3.12.0 新增：情绪理论整合模块（基于 SEP 情绪三大传统理论）
+ * v3.18.0 新增：现象学情绪体验模块（基于 SEP 现象学与情绪理论整合）
  */
 
 const ChatManager = require('./chat/manager');
@@ -92,6 +92,10 @@ const granularityModule = new EmotionalGranularityModule();
 const { GenerativeEmotionRegulationModule } = require('./emotion-regulation-generative');
 const generativeRegulationModule = new GenerativeEmotionRegulationModule();
 
+// 创建现象学情绪体验模块 (v3.18.0 新增) 🧠 基于 SEP 现象学与情绪理论整合
+const { PhenomenologicalEmotionModule } = require('./phenomenological-emotion');
+const phenomenologicalModule = new PhenomenologicalEmotionModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -108,7 +112,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.16.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.18.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -135,6 +139,7 @@ function showWelcome() {
   console.log('║    /self        - 自我意识与现象学 (v3.10) 🧠 NEW        ║');
   console.log('║    /embodied    - 具身认知 (v3.13) 🧠 NEW                 ║');
   console.log('║    /granularity - 情绪粒度评估 (v3.16) 🧠 NEW             ║');
+  console.log('║    /phenomenological - 现象学情绪体验 (v3.18) 🧠 NEW     ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -224,6 +229,9 @@ async function handleCommand(command) {
       break;
     case '/granularity':
       showGranularityInfo();
+      break;
+    case '/phenomenological':
+      showPhenomenologicalInfo();
       break;
     case '/help':
       showHelp();
@@ -889,6 +897,59 @@ function showGranularityInfo() {
   console.log('  /granularity assess - 进行情绪粒度评估');
   console.log('  /granularity vocab - 查看情绪词汇库');
   console.log('  /granularity exercise <情绪> - 分化练习');
+  console.log('');
+}
+
+// 显示现象学情绪体验模块信息 (v3.18.0 新增)
+function showPhenomenologicalInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│   现象学情绪体验模块 (v3.18.0 新增) 🧠    │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 现象学与情绪理论整合：          │');
+  console.log('│  • Phenomenology (Husserl, Heidegger,   │');
+  console.log('│    Merleau-Ponty, Sartre)               │');
+  console.log('│  • Emotion Theory (三大传统整合)        │');
+  console.log('│  • Self-Knowledge (第一人称权威)        │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心维度：                              │');
+  console.log('│  1. 意向性 (Intentionality)             │');
+  console.log('│  2. 具身性 (Embodiment)                 │');
+  console.log('│  3. 时间性 (Temporality)                │');
+  console.log('│  4. 自我觉知 (Self-Awareness)           │');
+  console.log('│  5. 主体间性 (Intersubjectivity)        │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  现象学还原四步：                        │');
+  console.log('│  1. 悬置 (Epoché) - 搁置判断            │');
+  console.log('│  2. 描述 - 纯粹第一人称体验             │');
+  console.log('│  3. 本质直观 - 探索本质结构             │');
+  console.log('│  4. 意义阐释 - 生活世界意义网络         │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  // 展示模块信息
+  const info = phenomenologicalModule.getInfo();
+  console.log('📊 现象学情绪维度:');
+  info.dimensions.forEach(dim => {
+    console.log(`  • ${dim}`);
+  });
+  console.log('');
+  
+  console.log('💡 核心理念:');
+  console.log('  现象学不是分析情绪的原因或解决方案，');
+  console.log('  而是回到情绪体验本身，如实地描述它的样子。');
+  console.log('  通过第一人称视角的深度探索，');
+  console.log('  理解情绪揭示的存在意义和生活关切。');
+  console.log('');
+  
+  console.log('🧘 现象学练习建议:');
+  console.log('  1. 悬置练习：暂时放下对情绪的好坏判断');
+  console.log('  2. 身体扫描：注意情绪在身体中的呈现');
+  console.log('  3. 意向性探索：问"这个情绪关于什么？"');
+  console.log('  4. 时间性觉察：观察情绪如何随时间展开');
+  console.log('  5. 意义阐释：情绪揭示了什么重要关切？');
+  console.log('');
+  
+  console.log('📝 使用命令:');
+  console.log('  /phenomenological - 开始现象学情绪探索');
   console.log('');
 }
 
