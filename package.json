@@ -1,7 +1,7 @@
 {
   "name": "heartflow-companion",
-  "version": "2.3.0",
-  "description": "心流伴侣 - 情感拟人化交互系统，具有原创情感状态和转换机制 + CBT 思维重构支持",
+  "version": "2.4.0",
+  "description": "心流伴侣 - 情感拟人化交互系统 + CBT + 斯多葛哲学智慧",
   "main": "src/index.js",
   "bin": {
     "heartflow": "./src/index.js"

@@ -12,10 +12,14 @@
 const ChatManager = require('./chat/manager');
 const { EmotionTypes } = require('./emotion/states');
 const { CBTModule } = require('./cbt');
+const { StoicModule } = require('./stoic');
 const readline = require('readline');
 
 // 创建 CBT 模块
 const cbtModule = new CBTModule();
+
+// 创建斯多葛模块 (v2.4.0 新增)
+const stoicModule = new StoicModule();
 
 // 创建对话管理器
 const chatManager = new ChatManager({
@@ -33,7 +37,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v2.3.0                  ║');
+  console.log('║              情感拟人化交互系统 v2.4.0                  ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -43,7 +47,8 @@ function showWelcome() {
   console.log('║    /stats   - 查看情感统计                              ║');
   console.log('║    /rest    - 休息恢复能量                              ║');
   console.log('║    /export  - 导出会话数据                              ║');
-  console.log('║    /cbt     - CBT 思维重构支持                           ║');
+  console.log('║    /cbt     - CBT 思维重构支持 (v2.3)                    ║');
+  console.log('║    /stoic   - 斯多葛哲学支持 (v2.4)                      ║');
   console.log('║    /help    - 显示帮助                                  ║');
   console.log('║    /quit    - 退出程序                                  ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -79,6 +84,9 @@ async function handleCommand(command) {
       break;
     case '/cbt':
       showCBTInfo();
+      break;
+    case '/stoic':
+      showStoicInfo();
       break;
     case '/help':
       showHelp();
@@ -118,6 +126,30 @@ function showCBTInfo() {
   const thoughtRecord = cbtModule.getThoughtRecord();
   console.log('\n📋 思维记录表:');
   console.log('列：情境 → 自动思维 → 情绪 → 认知扭曲 → 替代思维 → 结果\n');
+}
+
+// 显示斯多葛哲学信息 (v2.4.0 新增)
+function showStoicInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│     斯多葛哲学支持 (v2.4.0 新增)         │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  控制二分法：                             │');
+  console.log('│  区分你能控制的和不能控制的               │');
+  console.log('│  专注于前者，接受后者                     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  可控的：                                 │');
+  console.log('│  我的判断、选择、态度、努力、价值观       │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  不可控的：                               │');
+  console.log('│  他人看法、过去、未来、外部结果、名誉     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  系统会自动分析你的担忧并提供斯多葛智慧   │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = stoicModule.getControlDichotomyInfo();
+  console.log('\n📜 斯多葛语录:');
+  const quote = stoicModule.controlAnalyzer.getStoicQuote();
+  console.log(`"${quote.text}" — ${quote.author}\n`);
 }
 
 // 显示当前状态
@@ -260,6 +292,7 @@ function showHelp() {
   console.log('│  /rest    - 休息 10 分钟恢复能量          │');
   console.log('│  /export  - 导出会话数据到 JSON 文件      │');
   console.log('│  /cbt     - CBT 思维重构支持 (v2.3.0)    │');
+  console.log('│  /stoic   - 斯多葛哲学支持 (v2.4.0)      │');
   console.log('│  /help    - 显示此帮助信息              │');
   console.log('│  /quit    - 退出程序                    │');
   console.log('└─────────────────────────────────────────┘\n');
@@ -295,6 +328,9 @@ async function main() {
         // CBT 分析（v2.3.0 新增）
         const cbtAnalysis = cbtModule.processInput(trimmed);
         
+        // 斯多葛哲学分析（v2.4.0 新增）
+        const stoicAnalysis = stoicModule.processInput(trimmed);
+        
         // 如果有显著的认知扭曲，显示 CBT 引导
         if (cbtAnalysis.hasSignificantDistortion) {
           console.log('\n💡 [CBT 思维重构支持]');
@@ -307,6 +343,23 @@ async function main() {
             if (response.suggestion) {
               console.log(`   替代思维：${response.suggestion}`);
             }
+          }
+          console.log('');
+        }
+        
+        // 如果过度关注不可控，显示斯多葛建议
+        if (stoicAnalysis.hasUncontrollableFocus) {
+          console.log('\n🏛️ [斯多葛哲学支持]');
+          console.log('   检测到你的担忧集中在不可控事物上');
+          
+          if (stoicAnalysis.stoicAdvice.length > 0) {
+            const advice = stoicAnalysis.stoicAdvice[0];
+            console.log(`   建议：${advice.text}`);
+          }
+          
+          if (stoicAnalysis.quote) {
+            const quote = stoicAnalysis.quote;
+            console.log(`   💬 "${quote.text}" — ${quote.author}`);
           }
           console.log('');
         }
