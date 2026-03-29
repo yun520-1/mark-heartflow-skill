@@ -6,7 +6,7 @@
  * 
  * 原创设计，无版权风险
  * 
- * v3.10.0 新增：自我意识与现象学模块（基于 SEP 自我意识理论）
+ * v3.12.0 新增：情绪理论整合模块（基于 SEP 情绪三大传统理论）
  */
 
 const ChatManager = require('./chat/manager');
@@ -75,6 +75,10 @@ const mentalizationModule = new MentalizationModule();
 // 创建自我意识与现象学模块 (v3.10.0 新增) 🧠 基于 SEP 自我意识理论与现象学
 const { SelfConsciousnessModule } = require('./self-consciousness');
 const selfConsciousnessModule = new SelfConsciousnessModule();
+
+// 创建情绪理论整合模块 (v3.12.0 新增) 🧠 基于 SEP 情绪三大传统理论
+const { EmotionIntegrationModule } = require('./emotion-integration');
+const emotionIntegrationModule = new EmotionIntegrationModule();
 
 // 创建对话管理器
 const chatManager = new ChatManager({
