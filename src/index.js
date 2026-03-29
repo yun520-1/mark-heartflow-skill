@@ -88,6 +88,10 @@ const embodiedCognitionModule = new EmbodiedCognitionModule();
 const { EmotionalGranularityModule } = require('./emotional-granularity');
 const granularityModule = new EmotionalGranularityModule();
 
+// 创建生成式情绪调节模块 (v3.17.0 新增) 🌀 基于生成主义与动力系统理论
+const { GenerativeEmotionRegulationModule } = require('./emotion-regulation-generative');
+const generativeRegulationModule = new GenerativeEmotionRegulationModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
