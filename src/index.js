@@ -61,6 +61,9 @@ const regulationModule = new EmotionRegulationModule();
 // 创建积极心理学模块 (v3.4.0 新增) ✨
 const positiveModule = new PositivePsychologyModule();
 
+// 创建自我决定理论模块 (v3.5.0 新增) 🎯
+const SDTModule = require('./sdt');
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -98,6 +101,7 @@ function showWelcome() {
   console.log('║    /act         - ACT 接受与承诺疗法 (v3.2) ✨ NEW      ║');
   console.log('║    /regulation  - 情绪调节策略 (v3.3) 🎛️ NEW            ║');
   console.log('║    /positive    - 积极心理学 (v3.4) ✨ NEW               ║');
+  console.log('║    /sdt         - 自我决定理论动机评估 (v3.5) 🎛️ NEW    ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -169,6 +173,9 @@ async function handleCommand(command) {
       break;
     case '/positive':
       showPositiveInfo();
+      break;
+    case '/sdt':
+      showSDTInfo();
       break;
     case '/help':
       showHelp();
@@ -530,6 +537,47 @@ function showPositiveInfo() {
   console.log('  • 感恩拜访 - 向帮助过的人表达感谢');
   console.log('  • 最佳自我愿景 - 想象 5 年后的理想自己');
   console.log('  • 品味练习 - 专注体验当下的美好时刻\n');
+}
+
+// 显示 SDT 自我决定理论信息
+function showSDTInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   自我决定理论 SDT (v3.5.0 新增) 🎯      │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心理念：                              │');
+  console.log('│ 人类有天生的成长倾向和内在动机          │');
+  console.log('│ 社会环境可以促进或阻碍这种倾向          │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 三大基本心理需求：                      │');
+  console.log('│ 🟢 Autonomy (自主性) - 自愿选择的感觉   │');
+  console.log('│ 🟢 Competence (胜任感) - 有能力应对挑战 │');
+  console.log('│ 🟢 Relatedness (关系感) - 与他人连接    │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 动机连续体 (从低自主到高自主):          │');
+  console.log('│ 无动机 → 外部调节 → 内摄 → 认同 → 整合 → 内在 │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 六大 Mini-Theories:                     │');
+  console.log('│ CET, OIT, COT, BPNT, GCT, RMT          │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  console.log('📚 理论来源：Deci & Ryan (1985, 2000, 2017)\n');
+  
+  console.log('🎯 评估维度:');
+  console.log('  • 基本需求满足度 - 自主/胜任/关系');
+  console.log('  • 动机类型识别 - 6 种动机定位');
+  console.log('  • 目标内容分析 - 内在 vs 外在目标');
+  console.log('  • 自主性水平 - 1-10 评分\n');
+  
+  console.log('💡 SDT 干预技术:');
+  console.log('  • 选择重构 - 重新发现个人选择权');
+  console.log('  • 最优挑战 - 设置匹配技能的任务');
+  console.log('  • 成长反馈 - 关注进步而非结果');
+  console.log('  • 价值观连接 - 连接行为与深层价值');
+  console.log('  • 动机访谈 - 促进外在动机内化\n');
+  
+  console.log('📝 使用示例:');
+  console.log('  "我感到被迫做这件事，没有动力"');
+  console.log('  → 评估自主需求，提供选择重构技术\n');
 }
 
 // 显示当前状态
