@@ -19,9 +19,9 @@ const FreeWillAgencyEnhanced = {
    */
   meta: {
     name: '自由意志与能动性 (增强版)',
-    version: '3.34.0',
-    source: 'SEP Agency + Classic Philosophy of Action',
-    description: '基于 SEP 能动性理论的完整框架，支持五种能动性概念与实践推理'
+    version: '3.35.0',
+    source: 'SEP Agency + Free Will + Intentionality + Moral Psychology',
+    description: '基于 SEP 能动性理论的完整框架，支持五种能动性概念、自由意志理论、道德责任与实践推理'
   },
 
   /**
@@ -509,9 +509,437 @@ const FreeWillAgencyEnhanced = {
         '五种能动性概念评估',
         '实践推理工具',
         '个性化练习推荐',
-        '能动性整合指导'
+        '能动性整合指导',
+        '自由意志理论分析',
+        '道德责任评估',
+        '意志薄弱处理'
       ]
     };
+  },
+
+  /**
+   * 自由意志理论框架 (SEP Free Will)
+   * v3.35.0 新增
+   */
+  freeWillTheories: {
+    /**
+     * 古典相容论 (Classical Compatibilism)
+     * 来源：Hobbes, Hume, Locke, Moore, Ayer
+     */
+    classicalCompatibilism: {
+      name: '古典相容论',
+      theorists: ['Hobbes', 'Hume', 'Locke', 'Moore', 'Ayer'],
+      coreClaim: '自由意志与决定论相容',
+      definition: {
+        freedom: '没有外部约束地做想做的事',
+        freedomToDoOtherwise: '如果偏好不同，就会做不同的事',
+        selfDetermination: '行动由最强的欲望引起'
+      },
+      twoStepStrategy: [
+        '第一步：论证自由的对立面不是决定论，而是外部约束',
+        '第二步：论证任何试图捕捉"更深层"自由的尝试都会导致难题'
+      ],
+      scenarios: [
+        '日常选择：选择午餐（没有外部约束）',
+        '习惯行动：基于最强动机行动',
+        '理性决策：权衡后选择'
+      ]
+    },
+
+    /**
+     * 自由意志论/不相容论 (Libertarianism)
+     * 来源：Kant, Reid, Campbell, Chisholm, Kane
+     */
+    libertarianism: {
+      name: '自由意志论',
+      theorists: ['Kant', 'Reid', 'Campbell', 'Chisholm', 'Kane', 'O\'Connor'],
+      coreClaim: '自由意志要求能够真正做 otherwise，与决定论不相容',
+      requirements: [
+        '能够做 otherwise（在完全相同的条件下）',
+        '行动者是因果链的起点（主体因果）',
+        '行动不是由 prior 心理状态完全决定'
+      ],
+      types: {
+        // 主体因果论
+        agentCausation: {
+          description: '行动者作为实体可以直接引起行动',
+          theorists: ['Chisholm', 'Taylor', 'O\'Connor']
+        },
+        // 非因果论
+        nonCausal: {
+          description: '自由行动不是由任何事物引起的',
+          theorists: ['Ginet']
+        },
+        // 事件因果自由意志论
+        eventCausal: {
+          description: '自由行动由 prior 事件因果引起，但因果链包含不确定性',
+          theorists: ['Kane', 'Franklin']
+        }
+      },
+      challenges: [
+        '运气问题：如果行动不是由 prior 状态决定，似乎是运气',
+        '解释问题：如何解释行动者为何这样选择而非那样',
+        '科学相容性：与物理决定论的张力'
+      ]
+    },
+
+    /**
+     * 半相容论 (Semicompatibilism)
+     * 来源：Fischer, Ravizza
+     */
+    semicompatibilism: {
+      name: '半相容论',
+      theorists: ['Fischer', 'Ravizza'],
+      coreClaim: '道德责任与决定论相容，即使自由意志（能够做 otherwise）不相容',
+      distinction: {
+        regulativeControl: '能够做 otherwise 的控制（与决定论不相容）',
+        guidanceControl: '引导行动的控制（与决定论相容）'
+      },
+      reasonsResponsiveness: {
+        description: '道德责任要求对理由有响应能力',
+        levels: {
+          strong: '在不同理由下会做不同行动',
+          moderate: '在足够强的理由下会改变行动',
+          weak: '至少在有些理由下会响应'
+        }
+      }
+    }
+  },
+
+  /**
+   * Frankfurt Cases 与道德责任
+   * v3.35.0 新增
+   */
+  frankfurtCases: {
+    /**
+     * Frankfurt 案例结构
+     * 挑战 Principle of Alternative Possibilities (PAP)
+     */
+    structure: {
+      pap: '一个人只有在能够做 otherwise 的情况下才对其行动负有道德责任',
+      frankfurtChallenge: 'Frankfurt 案例试图显示 PAP 是错的',
+      scenario: {
+        setup: 'Jones 决定做 X。Black 想要 Jones 做 X，并准备了干预机制',
+        intervention: '如果 Jones 显示要做非 X 的迹象，Black 会干预使他做 X',
+        actual: 'Jones 自己做 X，Black 没有干预',
+        conclusion: 'Jones 不能做 otherwise（因为 Black 会干预），但仍有道德责任'
+      }
+    },
+
+    /**
+     * Frankfurt 案例类型
+     */
+    types: {
+      // 经典 Frankfurt 案例
+      classic: {
+        name: '经典 Frankfurt 案例',
+        description: 'Black 监控 Jones 的决定，准备必要时干预',
+        implication: '道德责任不要求能够做 otherwise'
+      },
+      // 缓冲区案例
+      bufferCases: {
+        name: '缓冲区案例',
+        description: '行动者在做决定前有缓冲时间，但结果仍被保证',
+        theorists: ['Kane']
+      },
+      //  Flicker 策略
+      flickerStrategy: {
+        name: 'Flicker 策略',
+        description: '即使结果相同，仍有" flicker "的替代可能性',
+        theorists: ['Widerker', 'Ginet']
+      }
+    },
+
+    /**
+     * 道德责任评估
+     */
+    assessMoralResponsibility: function(context) {
+      const {
+        hasAlternatives = true,
+        hasCoercion = false,
+        hasIgnorance = false,
+        hasMentalIllness = false,
+        reasonsResponsive = true
+      } = context;
+
+      // PAP 条件
+      const papSatisfied = hasAlternatives;
+
+      // Frankfurt 条件（理由响应）
+      const frankfurtSatisfied = reasonsResponsive && !hasCoercion && !hasIgnorance && !hasMentalIllness;
+
+      // 半相容论条件
+      const semicompatibilistSatisfied = reasonsResponsive;
+
+      return {
+        pap: {
+          satisfied: papSatisfied,
+          explanation: papSatisfied ? '有替代可能性' : '没有替代可能性'
+        },
+        frankfurt: {
+          satisfied: frankfurtSatisfied,
+          explanation: frankfurtSatisfied ? '有理由响应能力且无削弱条件' : '缺乏理由响应或有削弱条件'
+        },
+        semicompatibilist: {
+          satisfied: semicompatibilistSatisfied,
+          explanation: semicompatibilistSatisfied ? '有理由响应能力' : '缺乏理由响应能力'
+        },
+        overall: {
+          responsible: frankfurtSatisfied || semicompatibilistSatisfied,
+          basis: semicompatibilistSatisfied ? '半相容论基础' : (frankfurtSatisfied ? 'Frankfurt 基础' : '无责任基础')
+        }
+      };
+    }
+  },
+
+  /**
+   * 意志薄弱 (Akrasia) 处理
+   * v3.35.0 新增
+   * 来源：SEP Akrasia, Aristotle, Davidson
+   */
+  akrasia: {
+    /**
+     * 意志薄弱的定义与类型
+     */
+    definition: {
+      name: '意志薄弱 (Akrasia / Weakness of Will)',
+      description: '明知应该做 X，却做了 Y（Y 与自己的最佳判断相悖）',
+      aristotle: '不能控制自己的欲望，尽管知道什么是最好的',
+      davidson: 'all-things-considered 判断与行动的分离'
+    },
+
+    /**
+     * 意志薄弱的类型
+     */
+    types: {
+      // 冲动型
+      impulsive: {
+        name: '冲动型',
+        description: '被强烈欲望压倒，没有充分反思',
+        example: '明知应该节食，但看到蛋糕就吃了',
+        mechanism: '欲望强度 > 理性控制'
+      },
+      // 拖延型
+      procrastination: {
+        name: '拖延型',
+        description: '知道应该现在做，但推迟到以后',
+        example: '知道应该写报告，但刷手机到深夜',
+        mechanism: '时间贴现：现在的小快乐 > 未来的大收益'
+      },
+      // 自我欺骗型
+      selfDeceptive: {
+        name: '自我欺骗型',
+        description: '临时重新解释判断，使行动"合理化"',
+        example: '就今天一次，明天开始节食',
+        mechanism: '临时改变 all-things-considered 判断'
+      }
+    },
+
+    /**
+     * 意志薄弱的解释理论
+     */
+    theories: {
+      // 欲望强度模型
+      desireStrength: {
+        name: '欲望强度模型',
+        description: '最强的欲望获胜，即使与判断相悖',
+        theorists: ['Hume', 'Aristotle (部分)']
+      },
+      // 判断变化模型
+      judgmentShift: {
+        name: '判断变化模型',
+        description: '行动时判断实际上改变了',
+        theorists: ['Davidson', 'Aristotle (部分)']
+      },
+      // 注意转移模型
+      attentionShift: {
+        name: '注意转移模型',
+        description: '注意力从理性考虑转移到欲望对象',
+        theorists: ['Contemporary research']
+      }
+    },
+
+    /**
+     * 克服意志薄弱的策略
+     */
+    strategies: {
+      // 预先承诺
+      precommitment: {
+        name: '预先承诺 (Precommitment)',
+        description: '提前限制未来的选择',
+        examples: [
+          '把零食放在够不到的地方',
+          '使用网站屏蔽软件',
+          '公开承诺目标'
+        ],
+        theorists: ['Ulysses strategy']
+      },
+      // 实施意图
+      implementationIntentions: {
+        name: '实施意图 (Implementation Intentions)',
+        description: '制定 if-then 计划',
+        format: '如果情况 X 出现，我就做 Y',
+        examples: [
+          '如果想吃零食，就先喝一杯水',
+          '如果想拖延，就先做 5 分钟',
+          '如果感到愤怒，就先深呼吸三次'
+        ],
+        effectiveness: '实证研究显示显著提高自控力'
+      },
+      // 正念觉察
+      mindfulness: {
+        name: '正念觉察',
+        description: '觉察欲望而不立即行动',
+        steps: [
+          '注意欲望的出现',
+          '标注欲望（"这是想吃甜食的欲望"）',
+          '观察欲望的强度变化',
+          '选择是否响应'
+        ]
+      },
+      // 价值重连
+      valueReconnection: {
+        name: '价值重连',
+        description: '重新连接行动与深层价值',
+        steps: [
+          '问：这个行动服务于什么价值？',
+          '问：长期来看什么更重要？',
+          '想象未来的自己会感谢什么选择',
+          '使抽象价值具体化'
+        ]
+      }
+    },
+
+    /**
+     * 意志薄弱评估与干预
+     */
+    assessAndIntervene: function(context) {
+      const {
+        behavior,
+        judgment,
+        type = 'impulsive',
+        frequency = 'occasional'
+      } = context;
+
+      const assessment = {
+        hasAkrasia: behavior !== judgment,
+        type: this.types[type],
+        severity: frequency === 'daily' ? 'severe' : (frequency === 'weekly' ? 'moderate' : 'mild')
+      };
+
+      const interventions = [];
+
+      // 根据类型推荐策略
+      if (type === 'impulsive') {
+        interventions.push(this.strategies.precommitment);
+        interventions.push(this.strategies.mindfulness);
+      } else if (type === 'procrastination') {
+        interventions.push(this.strategies.implementationIntentions);
+        interventions.push(this.strategies.valueReconnection);
+      } else if (type === 'selfDeceptive') {
+        interventions.push(this.strategies.mindfulness);
+        interventions.push(this.strategies.valueReconnection);
+      }
+
+      return {
+        assessment,
+        interventions,
+        immediateAction: interventions[0]?.examples?.[0] || '觉察当前欲望'
+      };
+    }
+  },
+
+  /**
+   * 集体意向性整合
+   * v3.35.0 新增
+   * 来源：SEP Collective Intentionality
+   */
+  collectiveIntentionality: {
+    /**
+     * 集体意向性的定义
+     */
+    definition: {
+      name: '集体意向性',
+      description: '多人共享的意向状态，如"我们一起做 X"',
+      distinction: {
+        individual: '我做 X',
+        collective: '我们一起做 X',
+        irreducible: '集体意向不能简化为个体意向的总和'
+      }
+    },
+
+    /**
+     * 集体意向性的理论
+     */
+    theories: {
+      // 联合承诺
+      jointCommitment: {
+        name: '联合承诺理论',
+        theorists: ['Gilbert'],
+        coreClaim: '集体意向性基于成员之间的联合承诺',
+        features: [
+          '相互承诺做 X',
+          '承诺对彼此负责',
+          '形成"我们"作为行动主体'
+        ]
+      },
+      // 共享意向
+      sharedIntention: {
+        name: '共享意向理论',
+        theorists: ['Bratman', 'Searle'],
+        coreClaim: '共享意向是个体意向的互锁结构',
+        bratmanFeatures: [
+          '每个人都意向我们一起做 X',
+          '每个人的意向基于对方的意向',
+          '协调子计划',
+          '共同知识'
+        ]
+      },
+      // 原始集体意向
+      primitiveCollective: {
+        name: '原始集体意向',
+        theorists: ['Searle'],
+        coreClaim: '集体意向是心理原语，不能还原',
+        weIntention: '我们有 X 的意向是基本的心理状态'
+      }
+    },
+
+    /**
+     * 集体能动性应用
+     */
+    applications: {
+      // 关系性自我
+      relationalSelf: {
+        name: '关系性自我',
+        description: '自我认同包含集体身份',
+        exercises: [
+          '探索"我们"的身份认同',
+          '识别集体价值观',
+          '平衡个体与集体需求'
+        ]
+      },
+      // 集体情绪
+      collectiveEmotion: {
+        name: '集体情绪',
+        description: '群体共享的情绪体验',
+        examples: [
+          '团队胜利的喜悦',
+          '国家哀悼日的悲伤',
+          '社会运动的愤怒'
+        ]
+      },
+      // 合作行动
+      cooperativeAction: {
+        name: '合作行动',
+        description: '基于集体意向的协调行动',
+        requirements: [
+          '共享目标',
+          '角色分工',
+          '相互响应',
+          '共同责任'
+        ]
+      }
+    }
   }
 };
 
