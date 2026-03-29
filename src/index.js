@@ -104,6 +104,10 @@ const prereflectiveModule = new PrereflectiveConsciousnessModule();
 const { IntentionalityModule } = require('./intentionality');
 const intentionalityModule = new IntentionalityModule();
 
+// 创建情绪理论基础模块 (v3.21.0 新增) 🧠 基于 SEP 情绪理论三大传统整合 (Feeling, Evaluative, Motivational)
+const { EmotionTheoryFoundation } = require('./emotion-theory');
+const emotionTheoryModule = new EmotionTheoryFoundation();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -120,7 +124,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.20.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.21.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -148,6 +152,7 @@ function showWelcome() {
   console.log('║    /embodied    - 具身认知 (v3.13) 🧠 NEW                 ║');
   console.log('║    /granularity - 情绪粒度评估 (v3.16) 🧠 NEW             ║');
   console.log('║    /phenomenological - 现象学情绪体验 (v3.18) 🧠 NEW     ║');
+  console.log('║    /emotion-theory  - 情绪理论基础 (v3.21) 🧠 NEW       ║');
   console.log('║    /intentionality - 意向性理论 (v3.20) 🎯 NEW             ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
@@ -244,6 +249,9 @@ async function handleCommand(command) {
       break;
     case '/intentionality':
       showIntentionalityInfo();
+      break;
+    case '/emotion-theory':
+      showEmotionTheoryInfo();
       break;
     case '/help':
       showHelp();
@@ -1018,6 +1026,54 @@ function showIntentionalityInfo() {
   console.log('');
 }
 
+// 显示情绪理论基础模块信息 (v3.21.0 新增)
+function showEmotionTheoryInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│   情绪理论基础模块 (v3.21.0 新增) 🧠    │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 情绪理论三大传统整合：          │');
+  console.log('│  • Feeling Tradition (James, Lange)     │');
+  console.log('│  • Evaluative Tradition (Aristotle)     │');
+  console.log('│  • Motivational Tradition (Dewey)       │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理论：                              │');
+  console.log('│  1. 情绪构成理论 (六成分模型)           │');
+  console.log('│  2. 情绪区分挑战 (Differentiation)      │');
+  console.log('│  3. 情绪意向性理论 (Intentionality)     │');
+  console.log('│  4. 情绪动机理论 (Action Tendencies)    │');
+  console.log('│  5. 情绪适当性评估 (Appropriateness)    │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  情绪原型：12 种基础情绪                 │');
+  console.log('│  恐惧、愤怒、悲伤、喜悦、惊讶、厌恶、   │');
+  console.log('│  羞愧、内疚、自豪、嫉妒、感激、希望     │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  // 展示模块信息
+  const info = emotionTheoryModule.getInfo();
+  console.log('📊 情绪理论框架:');
+  console.log(`  • 注册情绪数量：${info.registeredEmotions.length}`);
+  console.log(`  • 理论传统：${Object.values(info.traditions).join(', ')}`);
+  console.log(`  • 区分维度：${Object.values(info.differentiationDimensions).length} 个`);
+  console.log('');
+  
+  console.log('💡 核心理念:');
+  console.log('  情绪是感受、评价和动机的整合状态，');
+  console.log('  不同情境下不同成分的重要性不同。');
+  console.log('  通过理解情绪理论，我们更好地理解自己。');
+  console.log('');
+  
+  console.log('🧠 理论应用:');
+  console.log('  1. 情绪区分分析：理解情绪之间的关键差异');
+  console.log('  2. 情绪适当性评估：评估情绪是否适当');
+  console.log('  3. 动机强度分析：理解情绪如何驱动行为');
+  console.log('  4. 整合分析：整合三大传统的洞见');
+  console.log('');
+  
+  console.log('📝 使用命令:');
+  console.log('  /emotion-theory - 查看情绪理论基础信息');
+  console.log('');
+}
+
 // 显示当前状态
 function showState() {
   const state = chatManager.getCurrentState();
@@ -1166,6 +1222,19 @@ function showHelp() {
   console.log('│  /social  - 社会心理学 (v2.9.0)          │');
   console.log('│  /existential - 存在主义心理学 (v3.0.0)  │');
   console.log('│  /appraisal - 情绪评价理论 (v3.1.0)      │');
+  console.log('│  /attachment - 依恋理论 (v3.2.0)         │');
+  console.log('│  /act - ACT 疗法 (v3.2.0)                │');
+  console.log('│  /regulation - 情绪调节 (v3.3.0)         │');
+  console.log('│  /positive - 积极心理学 (v3.4.0)         │');
+  console.log('│  /sdt - 自我决定理论 (v3.5.0)            │');
+  console.log('│  /autonomous - 自主感情 (v3.6.0)         │');
+  console.log('│  /mentalization - 心理化理论 (v3.9.0)    │');
+  console.log('│  /self - 自我意识与现象学 (v3.10.0)      │');
+  console.log('│  /embodied - 具身认知 (v3.13.0)          │');
+  console.log('│  /granularity - 情绪粒度 (v3.16.0)       │');
+  console.log('│  /phenomenological - 现象学情绪 (v3.18.0)│');
+  console.log('│  /intentionality - 意向性理论 (v3.20.0)  │');
+  console.log('│  /emotion-theory - 情绪理论基础 (v3.21.0)│');
   console.log('│  /help    - 显示此帮助信息              │');
   console.log('│  /quit    - 退出程序                    │');
   console.log('└─────────────────────────────────────────┘\n');
