@@ -153,6 +153,10 @@ const practicalWisdomModule = new PracticalWisdom();
 const RelationalSelf = require('./relational-self');
 const relationalSelfModule = new RelationalSelf();
 
+// 创建预测加工与情绪模块 (v3.33.0 新增) 🧠 基于 SEP 情绪三大传统 + 预测加工理论 + 主动推理
+const PredictiveEmotion = require('./predictive-emotion');
+const predictiveEmotionModule = new PredictiveEmotion();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -210,6 +214,7 @@ function showWelcome() {
   console.log('║    /agency      - 自由意志与能动性 (v3.29) 🎯 NEW ✨        ║');
   console.log('║    /moral       - 道德心理学 (v3.30) ⚖️ NEW ✨              ║');
   console.log('║    /relational  - 关系性自我 (v3.32) 💞 NEW ✨               ║');
+  console.log('║    /predictive-emotion - 预测加工与情绪 (v3.33) 🧠 NEW ✨   ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -341,6 +346,9 @@ async function handleCommand(command) {
       break;
     case '/relational':
       showRelationalSelfInfo();
+      break;
+    case '/predictive-emotion':
+      showPredictiveEmotionInfo();
       break;
     case '/help':
       showHelp();
@@ -1670,6 +1678,60 @@ function showRelationalSelfInfo() {
   console.log('');
 }
 
+// 显示预测加工与情绪模块信息 (v3.33.0 新增)
+function showPredictiveEmotionInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  预测加工与情绪 (v3.33.0 新增) 🧠            │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 权威理论：                     │');
+  console.log('│  • SEP: Emotion (三大传统整合)          │');
+  console.log('│  • SEP: Cognitive Science (预测加工)    │');
+  console.log('│  • SEP: Consciousness (现象学意识)      │');
+  console.log('│  • Friston: Free Energy Principle       │');
+  console.log('│  • Clark: Surfing Uncertainty           │');
+  console.log('│  • Barrett: How Emotions Are Made       │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理念：                              │');
+  console.log('│  "情绪是大脑对身体状态的预测，          │');
+  console.log('│   不是被触发的，而是被生成的"           │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  关键概念：                              │');
+  console.log('│  1. 预测 - 大脑生成对感官输入的预测     │');
+  console.log('│  2. 预测误差 - 实际与预测的差异         │');
+  console.log('│  3. 精度加权 - 根据可靠性调整权重       │');
+  console.log('│  4. 主动推理 - 通过行动最小化误差       │');
+  console.log('│  5. 自由能原理 - 生物系统的存在原则     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  情绪调节策略：                          │');
+  console.log('│  1. 预测修正 - 更新内部模型             │');
+  console.log('│  2. 精度调节 - 调整敏感度               │');
+  console.log('│  3. 主动推理 - 改变情境                 │');
+  console.log('│  4. 注意采样 - 选择性关注               │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心练习：                              │');
+  console.log('│  1. 预测觉察练习 - 识别情绪背后的预测   │');
+  console.log('│  2. 精度调节练习 - 降低过度敏感         │');
+  console.log('│  3. 主动推理练习 - 通过行动改变感受     │');
+  console.log('│  4. 内感受预测练习 - 觉察身体预测       │');
+  console.log('│  5. 情绪建构练习 - 理解情绪的生成性质   │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const help = predictiveEmotionModule.help();
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${help.version}`);
+  console.log(`  • 情绪三大传统：感受/评价/动机`);
+  console.log(`  • 预测加工核心：预测/误差/精度/主动推理`);
+  console.log(`  • 情绪生成层次：3 个 (核心情感/概念化/表达)`);
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  直接和我聊你的情绪困扰、焦虑、抑郁、');
+  console.log('  或任何情绪体验');
+  console.log('  我会帮你识别情绪预测、分析预测误差、');
+  console.log('  评估精度模式，提供个性化的调节建议');
+  console.log('');
+}
+
+
 // 显示当前状态
 function showState() {
   const state = chatManager.getCurrentState();
@@ -1964,6 +2026,36 @@ async function main() {
             console.log('   建议:');
             relationalAnalysis.recommendations.forEach(rec => {
               console.log(`   • ${rec.area}: ${rec.suggestion}`);
+            });
+          }
+          console.log('');
+        }
+        
+        // 预测加工与情绪分析 (v3.33.0 新增)
+        const predictiveAnalysis = predictiveEmotionModule.analyzePredictiveEmotion(trimmed);
+        if (predictiveAnalysis.analysis.detectedPredictions.count > 0 || 
+            predictiveAnalysis.analysis.predictionErrors.count > 0 ||
+            Object.values(predictiveAnalysis.analysis.precisionPatterns).some(p => p.detected)) {
+          console.log('\n🧠 [预测加工与情绪分析]');
+          if (predictiveAnalysis.analysis.detectedPredictions.count > 0) {
+            console.log(`   情绪预测：检测到 ${predictiveAnalysis.analysis.detectedPredictions.count} 个预测`);
+            if (predictiveAnalysis.analysis.detectedPredictions.items.some(p => p.type === 'catastrophic_prediction')) {
+              console.log(`   ⚠️ 注意：检测到灾难化预测模式`);
+            }
+          }
+          if (predictiveAnalysis.analysis.predictionErrors.count > 0) {
+            console.log(`   预测误差：${predictiveAnalysis.analysis.predictionErrors.overallSurprise} (${predictiveAnalysis.analysis.predictionErrors.count} 个误差信号)`);
+          }
+          const precisionIssues = Object.entries(predictiveAnalysis.analysis.precisionPatterns)
+            .filter(([_, v]) => v.detected)
+            .map(([k, v]) => v.description);
+          if (precisionIssues.length > 0) {
+            console.log(`   精度模式：${precisionIssues.join('; ')}`);
+          }
+          if (predictiveAnalysis.recommendations.length > 0) {
+            console.log('   建议:');
+            predictiveAnalysis.recommendations.slice(0, 2).forEach(rec => {
+              console.log(`   • ${rec.domain}: ${rec.suggestion}`);
             });
           }
           console.log('');
