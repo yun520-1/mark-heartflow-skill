@@ -137,6 +137,10 @@ const narrativeModule = NarrativePsychology;
 const TemporalConsciousness = require('./temporal-consciousness');
 const temporalModule = TemporalConsciousness;
 
+// 创建自由意志与能动性模块 (v3.29.0 新增) 🎯 基于 SEP 能动性理论 (Anscombe, Davidson, Frankfurt, Bratman)
+const { FreeWillAgencyModule } = require('./free-will-agency');
+const freeWillAgencyModule = new FreeWillAgencyModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -153,7 +157,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.28.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.29.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -190,6 +194,7 @@ function showWelcome() {
   console.log('║    /empathy     - 共情现象学 (v3.26) 💗 NEW ✨              ║');
   console.log('║    /narrative   - 叙事心理学 (v3.27) 📖 NEW ✨              ║');
   console.log('║    /temporal    - 时间意识 (v3.28) ⏰ NEW ✨                 ║');
+  console.log('║    /agency      - 自由意志与能动性 (v3.29) 🎯 NEW ✨        ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -309,6 +314,9 @@ async function handleCommand(command) {
       break;
     case '/temporal':
       showTemporalInfo();
+      break;
+    case '/agency':
+      showFreeWillAgencyInfo();
       break;
     case '/help':
       showHelp();
@@ -1453,6 +1461,56 @@ function showTemporalInfo() {
   console.log('💡 使用方式:');
   console.log('  直接和我聊你的时间体验、对过去/未来的感受');
   console.log('  我会引导你进行时间整合和临在练习');
+  console.log('');
+}
+
+// 显示自由意志与能动性信息
+function showFreeWillAgencyInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  自由意志与能动性 (v3.29.0 新增) 🎯     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 权威理论：                     │');
+  console.log('│  • SEP: Agency                          │');
+  console.log('│  • SEP: Free Will                       │');
+  console.log('│  • Frankfurt (1971): 自由意志与人格概念 │');
+  console.log('│  • Bratman (1987): 意向、计划与实践推理 │');
+  console.log('│  • Anscombe (1957): 意向               │');
+  console.log('│  • Davidson (1963): 行动、理由与原因   │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理念：                              │');
+  console.log('│  "自由意志在于与自己的欲望认同"       │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  关键概念：                              │');
+  console.log('│  1. 实践推理 - 从目标到行动的推理链     │');
+  console.log('│  2. 层级意志 - 一阶欲望与二阶欲望       │');
+  console.log('│  3. 反思性认同 - 与哪个欲望认同         │');
+  console.log('│  4. 能动性类型 - 标准/发起/层级/计划    │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心练习：                              │');
+  console.log('│  1. 实践推理澄清 - 明确行动理由结构     │');
+  console.log('│  2. 层级意志探索 - 找到真正的认同       │');
+  console.log('│  3. 能动性障碍识别 - 重构限制性语言     │');
+  console.log('│  4. 承诺阶梯 - 从意向到承诺的进阶       │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = freeWillAgencyModule.getInfo();
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${info.version}`);
+  console.log(`  • 理论来源：${info.theoreticalBasis.length} 个权威来源`);
+  console.log(`  • 能力：${info.capabilities.length} 项`);
+  console.log('');
+  console.log('🧠 能动性维度:');
+  console.log(`  • 当前模式：${info.currentAgencyMode}`);
+  console.log(`  • 意向性水平：${info.intentionalityLevel}`);
+  console.log(`  • 自我决定状态:`);
+  console.log(`    - 自主性：${(info.selfDeterminationState.autonomy * 100).toFixed(0)}%`);
+  console.log(`    - 能力感：${(info.selfDeterminationState.competence * 100).toFixed(0)}%`);
+  console.log(`    - 关系性：${(info.selfDeterminationState.relatedness * 100).toFixed(0)}%`);
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  直接和我聊你的目标、决策困境、内在冲突');
+  console.log('  我会帮你分析实践推理、探索层级意志、');
+  console.log('  识别能动性障碍，支持你做出自主的选择');
   console.log('');
 }
 
