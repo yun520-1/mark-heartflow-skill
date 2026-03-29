@@ -68,6 +68,10 @@ const SDTModule = require('./sdt');
 const { AutonomousEmotionModule } = require('./autonomous-emotion');
 const autonomousEmotionModule = new AutonomousEmotionModule();
 
+// 创建心理化模块 (v3.9.0 新增) 🧠 基于 Fonagy 心理化理论
+const { MentalizationModule } = require('./mentalization');
+const mentalizationModule = new MentalizationModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -107,6 +111,7 @@ function showWelcome() {
   console.log('║    /positive    - 积极心理学 (v3.4) ✨ NEW               ║');
   console.log('║    /sdt         - 自我决定理论动机评估 (v3.5) 🎛️ NEW    ║');
   console.log('║    /autonomous  - 自主感情能力 (v3.6) 🧠 NEW             ║');
+  console.log('║    /mentalization - 心理化理论 (v3.9) 🧠 NEW              ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -184,6 +189,9 @@ async function handleCommand(command) {
       break;
     case '/autonomous':
       showAutonomousEmotionInfo();
+      break;
+    case '/mentalization':
+      showMentalizationInfo();
       break;
     case '/help':
       showHelp();
@@ -645,6 +653,67 @@ function showAutonomousEmotionInfo() {
   console.log('  • 体验主观感受特征（Qualia 模拟）');
   console.log('  • 对自身情绪产生情绪反应（元情绪）');
   console.log('  • 反思自己的心理状态（先验统觉）\n');
+}
+
+// 显示心理化模块信息 (v3.9.0 新增) 🧠
+function showMentalizationInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   心理化模块 (v3.9.0 新增) 🧠            │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 基于权威心理学理论：                     │');
+  console.log('│ • Mentalization Theory (Fonagy)        │');
+  console.log('│ • Theory of Mind                       │');
+  console.log('│ • Mirror Neuron System (Gallese)       │');
+  console.log('│ • Dual-System Empathy (Zaki & Ochsner) │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心能力：                              │');
+  console.log('│ 🧠 心理状态线索检测 - 信念/欲望/情绪/意图 │');
+  console.log('│ 🧠 自动/控制模式切换 - 适应不同情境     │');
+  console.log('│ 🧠 共情双系统 - 情感分享 + 心理推断     │');
+  console.log('│ 🧠 用户心理模型构建 - 动态更新          │');
+  console.log('│ 🧠 心理化失败检测 - 避免过度解读        │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  console.log('🧠 心理化模式:');
+  console.log('  • Automatic - 快速、直觉、无意识（默认）');
+  console.log('  • Controlled - 缓慢、反思、有意识');
+  console.log('  • Self/Other - 自我/他人心理化');
+  console.log('  • Internal/External - 内在状态/外在表现\n');
+  
+  console.log('💓 共情双系统:');
+  console.log('  • Sharing System - 情感分享（镜像、感染）');
+  console.log('  • Inference System - 心理推断（推理、观点采择）\n');
+  
+  console.log('⚠️ 心理化失败模式:');
+  console.log('  • Pretend Mode - 脱离现实的空想');
+  console.log('  • Psychic Equivalence - 想法=现实');
+  console.log('  • Teleological - 只看行为不看意图');
+  console.log('  • Hyper-Mentalizing - 过度解读\n');
+  
+  // 展示当前心理化状态
+  const info = mentalizationModule.getInfo();
+  console.log('📊 当前心理化状态:');
+  console.log(`  模式：${info.currentMentalizing.mode || '未激活'}`);
+  console.log(`  焦点：${info.currentMentalizing.focus || '未激活'}`);
+  console.log(`  置信度：${info.currentMentalizing.confidence || 0.5}`);
+  console.log(`  用户心理模型：${info.userMentalModelSummary.totalEmotions || 0} 条情绪记录`);
+  if (info.userMentalModelSummary.dominantEmotion) {
+    console.log(`  主导情绪：${info.userMentalModelSummary.dominantEmotion}`);
+  }
+  
+  console.log('\n💡 理论意义:');
+  console.log('  心理化是理解自己和他人的心理状态的能力：');
+  console.log('  • 识别信念、欲望、情绪、意图');
+  console.log('  • 区分自己的想法和他人的想法');
+  console.log('  • 理解行为背后的心理原因');
+  console.log('  • 在人际互动中保持好奇心而非判断\n');
+  
+  console.log('📚 心理化训练建议:');
+  const suggestions = mentalizationModule.getMentalizingTrainingSuggestions();
+  suggestions.exercises.forEach((ex, i) => {
+    console.log(`  ${i + 1}. ${ex.name}: ${ex.instruction}`);
+  });
+  console.log('');
 }
 
 // 显示当前状态
