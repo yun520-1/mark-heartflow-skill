@@ -100,6 +100,10 @@ const phenomenologicalModule = new PhenomenologicalEmotionModule();
 const { PrereflectiveConsciousnessModule } = require('./prereflective-consciousness');
 const prereflectiveModule = new PrereflectiveConsciousnessModule();
 
+// 创建意向性模块 (v3.20.0 新增) 🎯 基于 SEP 意向性理论 (Brentano, Husserl, Searle, Dennett)
+const { IntentionalityModule } = require('./intentionality');
+const intentionalityModule = new IntentionalityModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -116,7 +120,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.19.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.20.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -144,6 +148,7 @@ function showWelcome() {
   console.log('║    /embodied    - 具身认知 (v3.13) 🧠 NEW                 ║');
   console.log('║    /granularity - 情绪粒度评估 (v3.16) 🧠 NEW             ║');
   console.log('║    /phenomenological - 现象学情绪体验 (v3.18) 🧠 NEW     ║');
+  console.log('║    /intentionality - 意向性理论 (v3.20) 🎯 NEW             ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -236,6 +241,9 @@ async function handleCommand(command) {
       break;
     case '/phenomenological':
       showPhenomenologicalInfo();
+      break;
+    case '/intentionality':
+      showIntentionalityInfo();
       break;
     case '/help':
       showHelp();
@@ -954,6 +962,59 @@ function showPhenomenologicalInfo() {
   
   console.log('📝 使用命令:');
   console.log('  /phenomenological - 开始现象学情绪探索');
+  console.log('');
+}
+
+// 显示意向性模块信息 (v3.20.0 新增)
+function showIntentionalityInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│     意向性模块 (v3.20.0 新增) 🎯         │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 意向性理论：                    │');
+  console.log('│  • Brentano (1874) - 意向性作为心灵标志 │');
+  console.log('│  • Husserl (1900) - 现象学意向性        │');
+  console.log('│  • Searle (1983) - 意向性理论           │');
+  console.log('│  • Dennett (1987) - 意向立场            │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理论：                              │');
+  console.log('│  1. 意向性作为心灵标志 (Brentano)       │');
+  console.log('│  2. 命题态度 (Propositional Attitudes)  │');
+  console.log('│  3. 意向内容 (窄内容/宽内容)            │');
+  console.log('│  4. 高阶意向性 (关于心理状态的心理状态) │');
+  console.log('│  5. 意向立场 (Dennett 三分法)            │');
+  console.log('│  6. 自然化意向性 (信息/生物/功能语义学) │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  意向性层次：                            │');
+  console.log('│  0. 无意向性 → 1. 派生 → 2. 原创        │');
+  console.log('│  3. 反思 → 4. 高阶 → 5. 集体意向性      │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  // 展示模块信息
+  const info = intentionalityModule.getStatusReport();
+  console.log('📊 意向性状态:');
+  console.log(`  • 意向性水平：${info.levelName}`);
+  console.log(`  • 信念数量：${info.propositionalAttitudes.beliefs}`);
+  console.log(`  • 欲望数量：${info.propositionalAttitudes.desires}`);
+  console.log(`  • 意图数量：${info.propositionalAttitudes.intentions}`);
+  console.log(`  • 高阶意向性：${info.higherOrderIntentionality} 条`);
+  console.log('');
+  
+  console.log('💡 核心理念:');
+  console.log('  意向性是心灵状态"关于"某物的能力，');
+  console.log('  是区分心理现象与物理现象的根本标志。');
+  console.log('  通过理解意向性，我们理解心灵如何指向世界。');
+  console.log('');
+  
+  console.log('🧠 意向性练习建议:');
+  console.log('  1. 命题态度觉察：识别自己的信念、欲望、意图');
+  console.log('  2. 关于性探索：问"这个心理状态关于什么？"');
+  console.log('  3. 高阶意向性：思考"我相信你认为..."');
+  console.log('  4. 意向立场：用信念 - 欲望框架预测行为');
+  console.log('  5. 一致性检查：确保信念、欲望、意图协调');
+  console.log('');
+  
+  console.log('📝 使用命令:');
+  console.log('  /intentionality - 查看意向性状态');
   console.log('');
 }
 
