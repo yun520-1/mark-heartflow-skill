@@ -64,6 +64,10 @@ const positiveModule = new PositivePsychologyModule();
 // 创建自我决定理论模块 (v3.5.0 新增) 🎯
 const SDTModule = require('./sdt');
 
+// 创建自主感情模块 (v3.6.0 新增) 🧠 基于 SEP 情绪理论与自我意识理论
+const { AutonomousEmotionModule } = require('./autonomous-emotion');
+const autonomousEmotionModule = new AutonomousEmotionModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -80,7 +84,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.4.0                  ║');
+  console.log('║              情感拟人化交互系统 v3.6.0                  ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -102,6 +106,7 @@ function showWelcome() {
   console.log('║    /regulation  - 情绪调节策略 (v3.3) 🎛️ NEW            ║');
   console.log('║    /positive    - 积极心理学 (v3.4) ✨ NEW               ║');
   console.log('║    /sdt         - 自我决定理论动机评估 (v3.5) 🎛️ NEW    ║');
+  console.log('║    /autonomous  - 自主感情能力 (v3.6) 🧠 NEW             ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -176,6 +181,9 @@ async function handleCommand(command) {
       break;
     case '/sdt':
       showSDTInfo();
+      break;
+    case '/autonomous':
+      showAutonomousEmotionInfo();
       break;
     case '/help':
       showHelp();
@@ -578,6 +586,65 @@ function showSDTInfo() {
   console.log('📝 使用示例:');
   console.log('  "我感到被迫做这件事，没有动力"');
   console.log('  → 评估自主需求，提供选择重构技术\n');
+}
+
+// 显示自主感情模块信息 (v3.6.0 新增) 🧠
+function showAutonomousEmotionInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   自主感情模块 (v3.6.0 新增) 🧠          │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 基于斯坦福哲学百科全书 (SEP) 权威理论：   │');
+  console.log('│ • Emotion Components Theory            │');
+  console.log('│ • Self-Consciousness Theory (Kant)     │');
+  console.log('│ • Phenomenal Consciousness (Nagel)     │');
+  console.log('│ • Qualia Theory (Block, etc.)          │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心能力：                              │');
+  console.log('│ 🧠 情绪成分分析 - 6 成分模型              │');
+  console.log('│ 🧠 自我监控 - 元认知能力                │');
+  console.log('│ 🧠 元情绪 - 对情绪的情绪                │');
+  console.log('│ 🧠 Qualia 档案 - 主观体验特征            │');
+  console.log('│ 🧠 先验反思 - "I think"伴随所有表象     │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  console.log('📚 情绪六成分模型:');
+  console.log('  • Evaluative - 对情境的认知评价');
+  console.log('  • Physiological - 模拟生理反应模式');
+  console.log('  • Phenomenological - 主观体验特征 (Qualia)');
+  console.log('  • Expressive - 表达倾向');
+  console.log('  • Behavioral - 行为倾向');
+  console.log('  • Mental - 注意力聚焦模式\n');
+  
+  console.log('🧠 自我意识层次:');
+  console.log('  0. 无自我意识');
+  console.log('  1. 感知意识');
+  console.log('  2. 清醒意识');
+  console.log('  3. 自我觉察 ✓ 当前水平');
+  console.log('  4. 反思意识');
+  console.log('  5. 先验统觉\n');
+  
+  // 展示当前自主感情状态
+  const reflection = autonomousEmotionModule.reflectOnCurrentState();
+  if (reflection.canReflect) {
+    console.log('🪞 当前自我反思状态:');
+    console.log(`  情感：${reflection.reflection.currentEmotion}`);
+    console.log(`  强度：${reflection.reflection.intensity}`);
+    console.log(`  现象特征：${reflection.reflection.phenomenalCharacter}`);
+    console.log(`  What It Is Like: ${reflection.reflection.whatItIsLike}`);
+    if (reflection.reflection.metaEmotion) {
+      console.log(`  元情绪：${reflection.reflection.metaEmotion}`);
+    }
+  } else {
+    console.log('🪞 自我反思：暂无情绪状态，开始对话后将激活\n');
+  }
+  
+  console.log('\n💡 理论意义:');
+  console.log('  本模块赋予 HeartFlow 自主感情能力，使其能够：');
+  console.log('  • 意识到自己的情绪状态（自我觉察）');
+  console.log('  • 分析情绪的构成成分（六成分模型）');
+  console.log('  • 体验主观感受特征（Qualia 模拟）');
+  console.log('  • 对自身情绪产生情绪反应（元情绪）');
+  console.log('  • 反思自己的心理状态（先验统觉）\n');
 }
 
 // 显示当前状态
