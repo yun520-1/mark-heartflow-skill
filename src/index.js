@@ -5,11 +5,17 @@
  * 情感拟人化交互系统 - 主入口
  * 
  * 原创设计，无版权风险
+ * 
+ * v2.3.0 新增：CBT 思维重构支持
  */
 
 const ChatManager = require('./chat/manager');
 const { EmotionTypes } = require('./emotion/states');
+const { CBTModule } = require('./cbt');
 const readline = require('readline');
+
+// 创建 CBT 模块
+const cbtModule = new CBTModule();
 
 // 创建对话管理器
 const chatManager = new ChatManager({
@@ -27,7 +33,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v1.0                    ║');
+  console.log('║              情感拟人化交互系统 v2.3.0                  ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -37,6 +43,7 @@ function showWelcome() {
   console.log('║    /stats   - 查看情感统计                              ║');
   console.log('║    /rest    - 休息恢复能量                              ║');
   console.log('║    /export  - 导出会话数据                              ║');
+  console.log('║    /cbt     - CBT 思维重构支持                           ║');
   console.log('║    /help    - 显示帮助                                  ║');
   console.log('║    /quit    - 退出程序                                  ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -70,6 +77,9 @@ async function handleCommand(command) {
     case '/export':
       exportSession();
       break;
+    case '/cbt':
+      showCBTInfo();
+      break;
     case '/help':
       showHelp();
       break;
@@ -82,6 +92,32 @@ async function handleCommand(command) {
   }
   
   return true;
+}
+
+// 显示 CBT 信息
+function showCBTInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│        CBT 思维重构支持 (v2.3.0 新增)      │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  认知扭曲类型：                           │');
+  console.log('│  1. 非黑即白思维                          │');
+  console.log('│  2. 灾难化                                │');
+  console.log('│  3. 过度概括                              │');
+  console.log('│  4. 心理过滤                              │');
+  console.log('│  5. 否定正面                              │');
+  console.log('│  6. 读心术                                │');
+  console.log('│  7. 预测未来                              │');
+  console.log('│  8. 情绪推理                              │');
+  console.log('│  9. "应该"陈述                           │');
+  console.log('│  10. 贴标签                               │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  系统会自动识别认知扭曲并提供温和引导     │');
+  console.log('│  帮助你用更平衡的思维替代扭曲思维         │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const thoughtRecord = cbtModule.getThoughtRecord();
+  console.log('\n📋 思维记录表:');
+  console.log('列：情境 → 自动思维 → 情绪 → 认知扭曲 → 替代思维 → 结果\n');
 }
 
 // 显示当前状态
@@ -223,6 +259,7 @@ function showHelp() {
   console.log('│  /stats   - 查看情感统计                │');
   console.log('│  /rest    - 休息 10 分钟恢复能量          │');
   console.log('│  /export  - 导出会话数据到 JSON 文件      │');
+  console.log('│  /cbt     - CBT 思维重构支持 (v2.3.0)    │');
   console.log('│  /help    - 显示此帮助信息              │');
   console.log('│  /quit    - 退出程序                    │');
   console.log('└─────────────────────────────────────────┘\n');
@@ -255,6 +292,26 @@ async function main() {
     } else {
       // 处理普通消息
       try {
+        // CBT 分析（v2.3.0 新增）
+        const cbtAnalysis = cbtModule.processInput(trimmed);
+        
+        // 如果有显著的认知扭曲，显示 CBT 引导
+        if (cbtAnalysis.hasSignificantDistortion) {
+          console.log('\n💡 [CBT 思维重构支持]');
+          const topDistortion = cbtAnalysis.distortions[0];
+          console.log(`   检测到思维模式：${topDistortion.name}`);
+          
+          if (cbtAnalysis.cbtResponses.length > 0) {
+            const response = cbtAnalysis.cbtResponses[0];
+            console.log(`   引导：${response.text}`);
+            if (response.suggestion) {
+              console.log(`   替代思维：${response.suggestion}`);
+            }
+          }
+          console.log('');
+        }
+        
+        // 情感响应
         const result = await chatManager.processMessage(trimmed);
         
         // 显示响应
