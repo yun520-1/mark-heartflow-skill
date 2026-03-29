@@ -121,6 +121,10 @@ const collectiveIdentityModule = new CollectiveIdentityModule();
 const EmotionIntegrationTheory = require('./emotion-integration-theory');
 const emotionIntegrationTheoryModule = new EmotionIntegrationTheory();
 
+// 创建情绪理论三大传统整合模块 (v3.25.0 新增) 🧠 基于 SEP 情绪理论三大传统完整整合 (Feeling, Evaluative, Motivational)
+const EmotionTraditionsIntegration = require('./emotion-traditions-integration');
+const emotionTraditionsModule = new EmotionTraditionsIntegration();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -137,7 +141,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.24.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.25.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -169,6 +173,8 @@ function showWelcome() {
   console.log('║    /intentionality - 意向性理论 (v3.20) 🎯 NEW             ║');
   console.log('║    /collective  - 集体意向性 (v3.22) 🧠 NEW ✨           ║');
   console.log('║    /identity    - 集体认同 (v3.23) 🧠 NEW ✨               ║');
+  console.log('║    /emotion-integration-theory - 情绪整合理论 v2.0 (v3.24) 🧠');
+  console.log('║    /traditions  - 情绪三大传统整合 (v3.25) 🧠 NEW ✨        ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -273,6 +279,12 @@ async function handleCommand(command) {
       break;
     case '/identity':
       showCollectiveIdentityInfo();
+      break;
+    case '/emotion-integration-theory':
+      showEmotionIntegrationTheoryInfo();
+      break;
+    case '/traditions':
+      showEmotionTraditionsInfo();
       break;
     case '/help':
       showHelp();
@@ -1215,6 +1227,73 @@ function showCollectiveIdentityInfo() {
   
   console.log('📝 使用命令:');
   console.log('  /identity - 查看集体认同状态');
+  console.log('');
+}
+
+// 显示情绪整合理论 v2.0 信息
+function showEmotionIntegrationTheoryInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  情绪整合理论 v2.0 (v3.24.0 新增) 🧠     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 情绪理论三大传统 + 四大挑战：   │');
+  console.log('│  • Feeling Tradition (James, Lange)     │');
+  console.log('│  • Evaluative Tradition (Solomon)       │');
+  console.log('│  • Motivational Tradition (Aristotle)   │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  四大理论挑战：                          │');
+  console.log('│  1. Differentiation (分化)              │');
+  console.log('│  2. Motivation (动机)                   │');
+  console.log('│  3. Intentionality (意向性)             │');
+  console.log('│  4. Phenomenology (现象学)              │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = emotionIntegrationTheoryModule.getModuleInfo();
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${info.version}`);
+  console.log(`  • 理论来源：${info.source}`);
+  console.log(`  • 支持情绪：${info.emotions.length} 种`);
+  console.log(`  • 能力：${info.capabilities.join(', ')}`);
+  console.log('');
+}
+
+// 显示情绪三大传统整合信息
+function showEmotionTraditionsInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  情绪三大传统整合 (v3.25.0 新增) 🧠      │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 情绪理论权威内容：              │');
+  console.log('│  • SEP: Emotion (Stanford Encyclopedia) │');
+  console.log('│  • Scarantino (2016) 哲学情绪理论       │');
+  console.log('│  • James-Lange, Cannon-Bard 经典理论    │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  三大传统：                              │');
+  console.log('│  1. Feeling Tradition - 情绪作为感受    │');
+  console.log('│  2. Evaluative Tradition - 情绪作为评价 │');
+  console.log('│  3. Motivational Tradition - 情绪作为动机│');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  情绪成分 (Problem of Parts):           │');
+  console.log('│  • 评价 • 生理 • 现象学 • 表达 • 行为 • 心理│');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  支持情绪原型：                          │');
+  console.log('│  Fear, Anger, Sadness, Happiness,       │');
+  console.log('│  Disgust, Surprise                      │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = emotionTraditionsModule.getModuleInfo();
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${info.version}`);
+  console.log(`  • 理论来源：${info.source}`);
+  console.log(`  • 传统数量：${info.traditions.length}`);
+  console.log(`  • 理论挑战：${info.challenges.length}`);
+  console.log(`  • 支持情绪：${info.emotions.length} 种`);
+  console.log('');
+  console.log('🧠 核心能力:');
+  info.capabilities.forEach(cap => console.log(`  • ${cap}`));
+  console.log('');
+  console.log('💡 应用场景:');
+  console.log('  1. 情绪识别：多成分评估 + 原型匹配');
+  console.log('  2. 情绪调节：针对具体成分干预');
+  console.log('  3. 情绪教育：理解情绪的多维本质');
   console.log('');
 }
 
