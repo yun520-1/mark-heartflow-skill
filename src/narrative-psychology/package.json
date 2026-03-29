@@ -1,0 +1,26 @@
+{
+  "name": "narrative-psychology",
+  "version": "1.0.0",
+  "description": "叙事心理学模块 - 基于 SEP 叙事心理学理论",
+  "main": "index.js",
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "keywords": ["narrative", "psychology", "life-story", "identity"],
+  "theory": {
+    "source": "Stanford Encyclopedia of Philosophy - Narrative Psychology",
+    "keyConcepts": [
+      "Life Story Model of Identity",
+      "Nuclear Scenes",
+      "Narrative Themes (Agency/Communion)",
+      "Redemption vs Contamination Sequences",
+      "Narrative Tone",
+      "Imago (Protagonist Image)"
+    ],
+    "applications": [
+      "自我理解与身份认同",
+      "生命意义探索",
+      "创伤后成长",
+      "心理治疗中的叙事重构"
+    ]
+  }
+}

@@ -129,6 +129,10 @@ const emotionTraditionsModule = new EmotionTraditionsIntegration();
 const { EmpathyPhenomenologyModule } = require('./empathy-phenomenology');
 const empathyModule = new EmpathyPhenomenologyModule();
 
+// 创建叙事心理学模块 (v3.27.0 新增) 📖 基于 SEP 叙事心理学理论 (McAdams 生命故事模型)
+const NarrativePsychology = require('./narrative-psychology');
+const narrativeModule = NarrativePsychology;
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -145,7 +149,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.26.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.27.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -180,6 +184,7 @@ function showWelcome() {
   console.log('║    /emotion-integration-theory - 情绪整合理论 v2.0 (v3.24) 🧠');
   console.log('║    /traditions  - 情绪三大传统整合 (v3.25) 🧠 NEW ✨        ║');
   console.log('║    /empathy     - 共情现象学 (v3.26) 💗 NEW ✨              ║');
+  console.log('║    /narrative   - 叙事心理学 (v3.27) 📖 NEW ✨              ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -293,6 +298,9 @@ async function handleCommand(command) {
       break;
     case '/empathy':
       showEmpathyInfo();
+      break;
+    case '/narrative':
+      showNarrativeInfo();
       break;
     case '/help':
       showHelp();
@@ -1351,6 +1359,48 @@ function showEmpathyInfo() {
   console.log('');
   console.log('📚 理论来源:');
   info.theoreticalFoundations.forEach(source => console.log(`  • ${source}`));
+  console.log('');
+}
+
+// 显示叙事心理学信息 (v3.27.0 新增)
+function showNarrativeInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  叙事心理学 (v3.27.0 新增) 📖           │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 权威理论：                     │');
+  console.log('│  • SEP: Narrative Psychology            │');
+  console.log('│  • McAdams: Life Story Model           │');
+  console.log('│  • 生命故事与身份认同理论               │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理念：                              │');
+  console.log('│  "人们通过叙事来理解和组织生活经验"   │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  关键概念：                              │');
+  console.log('│  1. 关键场景 - 高峰/低谷/转折点         │');
+  console.log('│  2. 叙事主题 - 能动性/共生              │');
+  console.log('│  3. 叙事序列 - 救赎/污染                │');
+  console.log('│  4. 主人公形象 - 英雄/智者/照顾者等     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心练习：                              │');
+  console.log('│  1. 生命章节 - 划分生命有意义的章节     │');
+  console.log('│  2. 关键场景探索 - 深入探索塑造事件     │');
+  console.log('│  3. 主题识别 - 发现反复出现的人生主题   │');
+  console.log('│  4. 叙事重构 - 重新诠释困难经历         │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${narrativeModule.meta.version}`);
+  console.log(`  • 理论来源：${narrativeModule.meta.source}`);
+  console.log(`  • 练习数量：${Object.keys(narrativeModule.exercises).length} 个`);
+  console.log('');
+  console.log('🧠 叙事元素:');
+  console.log(`  • 关键场景：${narrativeModule.narrativeElements.nuclearScenes.length} 种`);
+  console.log(`  • 主题类型：${Object.keys(narrativeModule.narrativeElements.themes).length} 类`);
+  console.log(`  • 主人公形象：${narrativeModule.narrativeElements.imagoes.length} 种`);
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  直接和我聊你的生命故事、重要经历或困惑');
+  console.log('  我会引导你进行叙事探索和意义发现');
   console.log('');
 }
 
