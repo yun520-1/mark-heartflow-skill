@@ -81,6 +81,14 @@ const selfConsciousnessModule = new SelfConsciousnessModule();
 const { SelfConsciousnessEnhancedModule } = require('./self-consciousness-enhanced');
 const selfConsciousnessEnhancedModule = new SelfConsciousnessEnhancedModule();
 
+// 创建自我意识现象学增强模块 (v4.8.0 新增) 🧠 基于 SEP 自我意识理论 + 现象学 (Zahavi, Gallagher, Korsgaard, Husserl, Hegel)
+const { SelfConsciousnessPhenomenologyEnhanced } = require('./self-consciousness-phenomenology-enhanced');
+const selfConsciousnessPhenomenologyEnhancedModule = new SelfConsciousnessPhenomenologyEnhanced();
+
+// 创建主体性与给定性模块 (v4.8.0 新增) 🌟 基于 SEP 主体性理论与给定性理论 (Zahavi, Henry, Husserl, Wright)
+const { SubjectivityGivennessModule } = require('./subjectivity-givenness');
+const subjectivityGivennessModule = new SubjectivityGivennessModule();
+
 // 创建现象学能动性模块 (v3.51.0 新增) 🧠 基于 SEP 现象学自我意识与能动性理论 (Zahavi, Frankfurt, Velleman)
 const { PhenomenologicalAgencyModule } = require('./phenomenological-agency');
 const phenomenologicalAgencyModule = new PhenomenologicalAgencyModule();
