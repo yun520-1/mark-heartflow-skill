@@ -77,6 +77,22 @@ const autonomousEmotionAgencyModule = new AutonomousEmotionAgencyModule();
 const EmbodiedPredictiveEmotionModule = require('./embodied-predictive-emotion-v5.0.7');
 const embodiedPredictiveEmotionModule = new EmbodiedPredictiveEmotionModule();
 
+// === v5.0.8 新增模块 ===
+
+// 创建情绪原型结构模块 (v5.0.8 新增) 🧠 基于 Fehr & Russell (1984) 情绪原型理论 (SEP Emotion §1)
+const EmotionPrototypeStructure = require('./emotion-prototype-structure');
+const emotionPrototypeStructure = EmotionPrototypeStructure;
+
+// 创建集体情绪现象学增强模块 (v5.0.8 新增) 🧠 基于 Scheler (1954), Walther (1923) 共享体验理论 (SEP Collective Intentionality §2.2)
+const CollectiveEmotionPhenomenologyEnhanced = require('./collective-emotion-phenomenology-enhanced');
+const collectiveEmotionPhenomenologyEnhanced = CollectiveEmotionPhenomenologyEnhanced;
+
+// 创建自我检查元认知增强模块 (v5.0.8 新增) 🧠 基于 SEP 自我意识理论 (直觉式 vs 推论式自我知识)
+const SelfCheckingMetacognitive = require('./self-checking-metacognitive');
+const selfCheckingMetacognitive = SelfCheckingMetacognitive;
+
+// === v5.0.8 结束 ===
+
 // 创建心理化模块 (v3.9.0 新增) 🧠 基于 Fonagy 心理化理论
 const { MentalizationModule } = require('./mentalization');
 const mentalizationModule = new MentalizationModule();
@@ -1067,6 +1083,103 @@ function showEmbodiedPredictiveEmotionInfo() {
   console.log('  const practice = module.generateEmbodiedAwarenessPractice({...});');
   console.log('  const full = module.fullEmbodiedPredictiveProcess({...});\n');
 }
+
+// === v5.0.8 新增模块信息展示 ===
+
+// 显示情绪原型结构模块信息 (v5.0.8 新增) 🧠
+function showEmotionPrototypeStructureInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   情绪原型结构模块 (v5.0.8 新增) 🧠       │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 基于权威心理学理论：                     │');
+  console.log('│ • Fehr & Russell (1984) 原型理论       │');
+  console.log('│ • SEP Emotion §1 情绪概念结构          │');
+  console.log('│ • Scarantino (2016) 情绪三大传统       │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心能力：                              │');
+  console.log('│ 🎯 情绪原型度评分 - 识别典型/边界情绪   │');
+  console.log('│ 🎯 特征匹配分析 - 5 维度评估            │');
+  console.log('│ 🎯 识别置信度计算 - 原型×成分×一致性   │');
+  console.log('│ 🎯 模糊匹配 - 处理未见过的情绪标签     │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  console.log('🎯 情绪原型分类:');
+  const highPrototypes = emotionPrototypeStructure.getHighPrototypeEmotions();
+  console.log(`  高原型情绪 (${highPrototypes.length}个): ${highPrototypes.map(e => e.name).join('、')}`);
+  
+  const borderline = emotionPrototypeStructure.getBorderlineEmotions();
+  console.log(`  边界案例情绪 (${borderline.length}个): ${borderline.map(e => e.name).join('、')}`);
+  
+  console.log('\n💻 使用示例:');
+  console.log('  const match = emotionPrototypeStructure.calculatePrototypeMatch({');
+  console.log('    label: "anxiety",');
+  console.log('    features: { physiological_arousal: 0.75, action_tendency: 0.6 }');
+  console.log('  });');
+  console.log('  const confidence = emotionPrototypeStructure.assessEmotionConfidence(...);');
+  console.log('  const proto = emotionPrototypeStructure.getEmotionPrototype("awe");\n');
+}
+
+// 显示集体情绪现象学增强模块信息 (v5.0.8 新增) 🧠
+function showCollectiveEmotionPhenomenologyInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   集体情绪现象学增强 (v5.0.8 新增) 🧠    │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 基于权威哲学理论：                       │');
+  console.log('│ • Scheler (1954 [1912]) 集体情绪现象学 │');
+  console.log('│ • Walther (1923) 共享体验四层结构      │');
+  console.log('│ • SEP Collective Intentionality §2.2   │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心能力：                              │');
+  console.log('│ 👥 集体情绪深度评估 - 4 层等级          │');
+  console.log('│ 👥 Scheler 条件检测 - 真正融合情绪     │');
+  console.log('│ 👥 Walther 共享体验评估 - 4 层完整性   │');
+  console.log('│ 👥 We-Intention 标记分析               │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  console.log('👥 集体情绪深度等级:');
+  console.log('  Level 1: 情绪聚集 (个体情绪简单聚集)');
+  console.log('  Level 2: 反应性情绪 (对你的情绪产生我的情绪)');
+  console.log('  Level 3: 共情共享 (通过共情产生的共享情绪)');
+  console.log('  Level 4: 融合情绪 (Scheler 水平 - 数值上同一的状态)');
+  
+  console.log('\n💻 使用示例:');
+  console.log('  const assessor = collectiveEmotionPhenomenologyEnhanced.collectiveEmotionAssessor;');
+  console.log('  const depth = assessor.assessDepth(context, participants, emotionType);');
+  console.log('  const scheler = collectiveEmotionPhenomenologyEnhanced.schelerDetector.detect(...);');
+  console.log('  const walther = collectiveEmotionPhenomenologyEnhanced.waltherAssessor.assess(...);\n');
+}
+
+// 显示自我检查元认知增强模块信息 (v5.0.8 新增) 🧠
+function showSelfCheckingMetacognitiveInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   自我检查元认知增强 (v5.0.8 新增) 🧠    │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 基于权威哲学理论：                       │');
+  console.log('│ • Locke 直觉式自我知识                 │');
+  console.log('│ • SEP Self-Consciousness 理论区分      │');
+  console.log('│ • 前反思 vs 反思自我意识               │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心能力：                              │');
+  console.log('│ 🧠 自我知识来源分析 - 直觉/推论/前反思/反思 │');
+  console.log('│ 🧠 冲突检测 - 直觉 vs 推论的张力       │');
+  console.log('│ 🧠 元认知校准 - 整合不同来源           │');
+  console.log('│ 🧠 平衡度评估 - 多元自我知识发展       │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  console.log('🧠 自我知识来源:');
+  console.log('  直觉式：直接体验，"我知道我在疼痛"');
+  console.log('  推论式：推理分析，"我一定是生气了 (因为我在发抖)"');
+  console.log('  前反思：非对象化体验，"就是感觉..."');
+  console.log('  反思：对象化自我描述，"我是一个焦虑的人"');
+  
+  console.log('\n💻 使用示例:');
+  console.log('  const assessor = selfCheckingMetacognitive.selfKnowledgeAssessor;');
+  console.log('  const analysis = assessor.analyze("我觉得焦虑，因为...");');
+  console.log('  const calibrator = selfCheckingMetacognitive.metacognitiveCalibrator;');
+  console.log('  const calibration = calibrator.calibrate(intuitive, inferential, behavioral);\n');
+}
+
+// === v5.0.8 结束 ===
 
 // 显示心理化模块信息 (v3.9.0 新增) 🧠
 function showMentalizationInfo() {
