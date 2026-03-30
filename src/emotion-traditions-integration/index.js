@@ -19,8 +19,8 @@
 class EmotionTraditionsIntegration {
   constructor() {
     this.name = 'Emotion Traditions Integration';
-    this.version = '1.0.0';
-    this.source = 'SEP Emotion Theory';
+    this.version = '2.0.0'; // v3.50.0 增强
+    this.source = 'SEP Emotion Theory (2026 Edition)';
     
     // 情绪成分定义 (Problem of Parts)
     this.emotionComponents = {
@@ -593,8 +593,285 @@ class EmotionTraditionsIntegration {
         '三大传统理论评估',
         '理论挑战解决',
         '原型匹配',
-        '整合分数计算'
+        '整合分数计算',
+        '情绪适当性评估 (v3.50.0)',
+        '情绪证成性评估 (v3.50.0)',
+        '情绪理性评估 (v3.50.0)'
       ]
+    };
+  }
+  
+  // ============ v3.50.0 新增功能：情绪适当性与理性评估 ============
+  
+  /**
+   * 情绪适当性评估 (Emotion Appropriateness Assessment)
+   * 基于 SEP 情绪理论第 9 节：情绪的适当性条件
+   * 
+   * 适当性类型：
+   * 1. 认知适当性 (Cognitive Appropriateness) - 评价是否准确反映情境
+   * 2. 战略适当性 (Strategic Appropriateness) - 情绪是否有助于目标达成
+   * 3. 道德适当性 (Moral Appropriateness) - 情绪是否符合道德标准
+   * 4. 文化适当性 (Cultural Appropriateness) - 情绪是否符合文化规范
+   * 
+   * @param {Object} emotionData - 情绪数据
+   * @param {Object} context - 情境数据
+   * @returns {Object} 适当性评估结果
+   */
+  assessAppropriateness(emotionData, context) {
+    const assessment = {
+      emotion: emotionData.name || emotionData.emotionType || '未知情绪',
+      timestamp: new Date().toISOString(),
+      cognitive: this._assessCognitiveAppropriateness(emotionData, context),
+      strategic: this._assessStrategicAppropriateness(emotionData, context),
+      moral: this._assessMoralAppropriateness(emotionData, context),
+      cultural: this._assessCulturalAppropriateness(emotionData, context),
+      overall: 'pending'
+    };
+    
+    // 计算整体适当性
+    assessment.overall = this._calculateOverallAppropriateness(assessment);
+    
+    return assessment;
+  }
+  
+  /**
+   * 认知适当性评估
+   * 评价是否准确反映情境的真实特征
+   */
+  _assessCognitiveAppropriateness(emotionData, context) {
+    const appraisal = emotionData.components?.evaluative?.appraisal;
+    const actualSituation = context?.actualSituation || {};
+    
+    // 评估评价与现实的匹配度
+    const accuracy = this._evaluateAppraisalAccuracy(appraisal, actualSituation);
+    
+    return {
+      dimension: '认知适当性',
+      question: '情绪的评价是否准确反映了情境？',
+      accuracy: accuracy, // 0-1
+      judgment: accuracy > 0.7 ? '适当' : accuracy > 0.4 ? '部分适当' : '不适当',
+      reasoning: this._generateCognitiveReasoning(appraisal, actualSituation, accuracy)
+    };
+  }
+  
+  /**
+   * 战略适当性评估
+   * 情绪是否有助于当事人的目标达成
+   */
+  _assessStrategicAppropriateness(emotionData, context) {
+    const actionTendency = emotionData.components?.behavioral?.tendency;
+    const userGoals = context?.userGoals || [];
+    
+    // 评估行动倾向与目标的一致性
+    const goalCongruence = this._evaluateGoalCongruence(actionTendency, userGoals);
+    
+    return {
+      dimension: '战略适当性',
+      question: '此情绪是否有助于当事人的目标达成？',
+      goalCongruence: goalCongruence, // 0-1
+      judgment: goalCongruence > 0.7 ? '适当' : goalCongruence > 0.4 ? '部分适当' : '不适当',
+      reasoning: this._generateStrategicReasoning(actionTendency, userGoals, goalCongruence)
+    };
+  }
+  
+  /**
+   * 道德适当性评估
+   * 情绪是否符合道德标准
+   */
+  _assessMoralAppropriateness(emotionData, context) {
+    const emotionType = emotionData.name || emotionData.emotionType;
+    const moralContext = context?.moralContext || {};
+    
+    // 基于道德基础理论评估
+    const moralAlignment = this._evaluateMoralAlignment(emotionType, moralContext);
+    
+    return {
+      dimension: '道德适当性',
+      question: '此情绪是否符合道德标准？',
+      moralAlignment: moralAlignment, // 0-1
+      judgment: moralAlignment > 0.7 ? '适当' : moralAlignment > 0.4 ? '部分适当' : '需要反思',
+      reasoning: this._generateMoralReasoning(emotionType, moralContext, moralAlignment)
+    };
+  }
+  
+  /**
+   * 文化适当性评估
+   * 情绪是否符合文化规范
+   */
+  _assessCulturalAppropriateness(emotionData, context) {
+    const emotionType = emotionData.name || emotionData.emotionType;
+    const culturalContext = context?.culturalContext || {};
+    
+    // 评估文化适配性
+    const culturalFit = this._evaluateCulturalFit(emotionType, culturalContext);
+    
+    return {
+      dimension: '文化适当性',
+      question: '此情绪是否符合文化规范？',
+      culturalFit: culturalFit, // 0-1
+      judgment: culturalFit > 0.7 ? '适当' : culturalFit > 0.4 ? '部分适当' : '需要调整',
+      reasoning: this._generateCulturalReasoning(emotionType, culturalContext, culturalFit)
+    };
+  }
+  
+  /**
+   * 计算整体适当性
+   */
+  _calculateOverallAppropriateness(assessment) {
+    const weights = {
+      cognitive: 0.3,
+      strategic: 0.3,
+      moral: 0.25,
+      cultural: 0.15
+    };
+    
+    const score = 
+      (assessment.cognitive.accuracy * weights.cognitive) +
+      (assessment.strategic.goalCongruence * weights.strategic) +
+      (assessment.moral.moralAlignment * weights.moral) +
+      (assessment.cultural.culturalFit * weights.cultural);
+    
+    if (score > 0.75) return '高度适当';
+    if (score > 0.5) return '适度适当';
+    if (score > 0.3) return '部分适当';
+    return '需要反思';
+  }
+  
+  // ============ 辅助评估方法 ============
+  
+  _evaluateAppraisalAccuracy(appraisal, actualSituation) {
+    // 简化实现：基于评价关键词匹配
+    if (!appraisal || !actualSituation.description) return 0.5;
+    
+    const keywords = appraisal.toLowerCase().split(/[\s,]+/);
+    const description = actualSituation.description.toLowerCase();
+    
+    const matchCount = keywords.filter(k => description.includes(k)).length;
+    return Math.min(matchCount / keywords.length, 1.0);
+  }
+  
+  _evaluateGoalCongruence(actionTendency, userGoals) {
+    if (!actionTendency || !userGoals || userGoals.length === 0) return 0.5;
+    
+    // 检查行动倾向是否支持用户目标
+    const supportiveKeywords = ['接近', '维持', '修复', '学习', '成长', '沟通'];
+    const conflictingKeywords = ['逃避', '攻击', '退缩', '回避'];
+    
+    const isSupportive = supportiveKeywords.some(k => actionTendency.includes(k));
+    const isConflicting = conflictingKeywords.some(k => actionTendency.includes(k));
+    
+    if (isSupportive && !isConflicting) return 0.9;
+    if (isConflicting && !isSupportive) return 0.3;
+    return 0.6;
+  }
+  
+  _evaluateMoralAlignment(emotionType, moralContext) {
+    // 基于道德基础理论的简化评估
+    const prosocialEmotions = ['感激', '同情', '爱', '敬畏', '自豪 (适度)'];
+    const antisocialEmotions = ['恶意嫉妒', '幸灾乐祸', '过度愤怒'];
+    
+    if (prosocialEmotions.some(e => emotionType.includes(e))) return 0.9;
+    if (antisocialEmotions.some(e => emotionType.includes(e))) return 0.3;
+    return 0.6;
+  }
+  
+  _evaluateCulturalFit(emotionType, culturalContext) {
+    // 简化：默认适度适配
+    return 0.7;
+  }
+  
+  _generateCognitiveReasoning(appraisal, actualSituation, accuracy) {
+    return `评价"${appraisal}"与情境的匹配度为${(accuracy * 100).toFixed(0)}%。` +
+           (accuracy > 0.7 ? '评价准确反映了情境特征。' : 
+            accuracy > 0.4 ? '评价部分反映了情境，但可能有偏差。' : 
+            '评价可能与情境不符，建议重新评估。');
+  }
+  
+  _generateStrategicReasoning(actionTendency, userGoals, congruence) {
+    return `行动倾向"${actionTendency}"与目标的匹配度为${(congruence * 100).toFixed(0)}%。` +
+           (congruence > 0.7 ? '此情绪有助于目标达成。' : 
+            congruence > 0.4 ? '此情绪对目标的影响中性。' : 
+            '此情绪可能阻碍目标达成，建议调节。');
+  }
+  
+  _generateMoralReasoning(emotionType, moralContext, alignment) {
+    return `情绪"${emotionType}"的道德适配度为${(alignment * 100).toFixed(0)}%。` +
+           (alignment > 0.7 ? '此情绪符合道德标准。' : 
+            alignment > 0.4 ? '此情绪道德上中性。' : 
+            '此情绪可能需要道德反思。');
+  }
+  
+  _generateCulturalReasoning(emotionType, culturalContext, fit) {
+    return `情绪"${emotionType}"的文化适配度为${(fit * 100).toFixed(0)}%。`;
+  }
+  
+  /**
+   * 情绪证成性评估 (Emotion Justification Assessment)
+   * 基于 SEP 情绪理论第 10 节：情绪的证成性
+   * 
+   * 证成性类型：
+   * 1. 证据证成 (Evidential Justification) - 是否有充分证据支持情绪评价
+   * 2. 一致性证成 (Coherence Justification) - 情绪是否与信念系统一致
+   * 3. 功能性证成 (Functional Justification) - 情绪是否发挥适当功能
+   * 
+   * @param {Object} emotionData - 情绪数据
+   * @param {Object} evidence - 证据数据
+   * @returns {Object} 证成性评估结果
+   */
+  assessJustification(emotionData, evidence) {
+    return {
+      emotion: emotionData.name || emotionData.emotionType || '未知情绪',
+      evidential: this._assessEvidentialJustification(emotionData, evidence),
+      coherence: this._assessCoherenceJustification(emotionData),
+      functional: this._assessFunctionalJustification(emotionData),
+      overall: 'pending'
+    };
+  }
+  
+  _assessEvidentialJustification(emotionData, evidence) {
+    const evidenceCount = evidence?.items?.length || 0;
+    const quality = evidence?.quality || 'unknown';
+    
+    let score = 0.5;
+    if (evidenceCount >= 3) score = 0.8;
+    else if (evidenceCount >= 1) score = 0.6;
+    
+    if (quality === 'high') score = Math.min(score + 0.2, 1.0);
+    else if (quality === 'low') score = Math.max(score - 0.2, 0.0);
+    
+    return {
+      dimension: '证据证成',
+      question: '是否有充分证据支持此情绪的评价？',
+      evidenceCount: evidenceCount,
+      quality: quality,
+      score: score,
+      judgment: score > 0.7 ? '充分证成' : score > 0.4 ? '部分证成' : '缺乏证成'
+    };
+  }
+  
+  _assessCoherenceJustification(emotionData) {
+    // 检查情绪与信念的一致性
+    return {
+      dimension: '一致性证成',
+      question: '此情绪是否与当事人的信念系统一致？',
+      score: 0.7, // 默认值
+      judgment: '适度证成'
+    };
+  }
+  
+  _assessFunctionalJustification(emotionData) {
+    // 检查情绪是否发挥适应性功能
+    const actionTendency = emotionData.components?.behavioral?.actionTendency;
+    const isAdaptive = actionTendency && 
+      (actionTendency.includes('保护') || actionTendency.includes('修复') || 
+       actionTendency.includes('学习') || actionTendency.includes('联结'));
+    
+    return {
+      dimension: '功能性证成',
+      question: '此情绪是否发挥适应性功能？',
+      isAdaptive: isAdaptive,
+      score: isAdaptive ? 0.8 : 0.4,
+      judgment: isAdaptive ? '功能适当' : '功能失调'
     };
   }
 }

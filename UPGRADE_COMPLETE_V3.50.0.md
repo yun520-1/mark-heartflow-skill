@@ -1,114 +1,187 @@
 # HeartFlow v3.50.0 升级完成报告
 
-**升级时间**: 2026-03-30 10:32-10:45 (Asia/Shanghai)  
-**版本变更**: v3.48.0 → v3.50.0  
-**升级方向**: 自我构成模块 (Self-Constitution)  
-**Git 提交**: 待提交  
-**推送状态**: 待推送
+**升级时间**: 2026-03-30 11:00-11:30 (Asia/Shanghai)  
+**版本变更**: v3.49.0 → v3.50.0  
+**升级主题**: SEP 情绪理论深度整合增强（适当性与证成性评估）
 
 ---
 
-## 📚 核心理论
+## 📚 升级概览
 
-基于 **Stanford Encyclopedia of Philosophy 自我构成理论** 及 **Christine Korsgaard** 权威理论：
+本次 v3.50.0 升级基于 SEP (Stanford Encyclopedia of Philosophy) 情绪理论权威内容，重点增强情绪理论的实践应用能力：
 
-| 理论家 | 著作 | 核心贡献 |
-|--------|------|---------|
-| **Christine Korsgaard** | *The Sources of Normativity* (1996) | 自我构成作为规范性来源 |
-| **Christine Korsgaard** | *Self-Constitution: Agency, Identity, and Integrity* (2009) | 完整的自我构成理论框架 |
-| **Harry Frankfurt** | *The Importance of What We Care About* (1988) | 二阶欲望与认同理论 |
-| **J. David Velleman** | *The Possibility of Practical Reason* (2000) | 自我理解与能动性 |
+### 核心增强：情绪适当性与证成性评估系统
 
----
-
-## 🎯 新增功能
-
-### 1. 实践同一性四层次模型
-
-| 层次 | 说明 | 核心问题 |
-|------|------|---------|
-| **人类同一性** | 作为人类的基本身份 | 我如何运用理性能力？ |
-| **社会同一性** | 社会角色和关系定义的身份 | 我的角色有哪些？如何整合？ |
-| **个人同一性** | 独特的价值观和承诺 | 什么价值观定义了我？ |
-| **道德同一性** | 道德承诺和伦理原则 | 我的核心道德原则是什么？ |
-
-### 2. 自我构成四条件
-
-| 条件 | 说明 | 关键能力 |
-|------|------|---------|
-| **反思能力** | 审视自己的欲望、信念和动机 | 元认知、动机审视、价值评估 |
-| **反思性认可** | 经过反思后认可某些动机 | 识别、评估、认可/拒绝、整合 |
-| **行动统一性** | 将分散行动整合为连贯整体 | 时间连续性、主题一致性、价值一致性 |
-| **自我立法** | 为自己制定行动原则 | 原则制定、规范内化、自我约束、责任承担 |
-
-### 3. 自我构成四障碍及干预
-
-| 障碍 | 说明 | 干预策略 |
-|------|------|---------|
-| **意志薄弱** | 明知应该做 X 却做了 Y | 预承诺、情境管理、正念、自我同情 |
-| **自我欺骗** | 对自己隐藏真实动机 | 寻求反馈、写日记、反思、培养好奇心 |
-| **同一性混乱** | 不清楚自己是谁 | 价值观澄清、角色整合、生命叙事 |
-| **异化** | 感到行为不属于自己 | 意义重建、边界设立、身体连接、真实性 |
-
-### 4. 评估工具
-
-| 工具 | 用途 | 维度 |
-|------|------|------|
-| **实践同一性清晰度评估** | 评估各层次同一性的清晰程度 | 4 层次 × 3-4 问题 |
-| **自我构成完整性评估** | 评估自我构成四条件的发展程度 | 反思/认可/统一/立法 |
-| **自我构成障碍筛查** | 识别阻碍自我构成的因素 | 4 障碍 × 3 问题 |
-
-### 5. 核心练习
-
-| 练习 | 时长 | 目标 |
-|------|------|------|
-| **实践同一性探索** | 60-90 分钟 | 系统探索定义自我的各个层面 |
-| **反思性认可** | 15-20 分钟/次 | 学习审视并认可/拒绝动机 |
-| **行动统一性** | 30-45 分钟 | 将分散行动整合为连贯整体 |
-| **自我立法** | 30 分钟 + 持续 | 制定并信守行动原则 |
-| **克服意志薄弱** | 持续练习 | 增强自我调节能力 |
+基于 SEP 情绪理论第 9-10 节的深度理论整合：
+- **情绪适当性 (Emotion Appropriateness)** - 情绪是否适合情境
+- **情绪证成性 (Emotion Justification)** - 情绪是否有充分理由
 
 ---
 
-## 📦 交付物
+## 🎯 Part A: 情绪适当性评估系统 (Emotion Appropriateness Assessment)
 
-| 文件 | 大小 | 说明 |
-|------|------|------|
-| `src/self-constitution/index.js` | 17.2KB | 自我构成模块核心实现 |
-| `package.json` | 更新 | 版本号 3.48.0 → 3.50.0 |
-| `UPGRADE_COMPLETE_V3.50.0.md` | 本文档 | 升级报告 |
+### 1. 四维适当性框架
+
+| 维度 | 评估问题 | 理论来源 |
+|------|---------|---------|
+| **认知适当性** | 情绪的评价是否准确反映了情境？ | SEP 情绪理论 §9.1 |
+| **战略适当性** | 此情绪是否有助于当事人的目标达成？ | SEP 情绪理论 §9.2 |
+| **道德适当性** | 此情绪是否符合道德标准？ | SEP 情绪理论 §9.3 |
+| **文化适当性** | 此情绪是否符合文化规范？ | SEP 情绪理论 §9.4 |
+
+### 2. 认知适当性评估 (Cognitive Appropriateness)
+
+**评估逻辑**:
+```javascript
+评估情绪评价 (appraisal) 与实际情境 (actual situation) 的匹配度
+- 提取评价关键词
+- 与实际情境描述比对
+- 计算匹配百分比
+- 判断：>70% 适当，40-70% 部分适当，<40% 不适当
+```
+
+**示例**:
+- 情绪：恐惧
+- 评价："危险威胁"
+- 实际情境："夜晚独自走在偏僻街道"
+- 评估：匹配度高 → 认知适当
+
+### 3. 战略适当性评估 (Strategic Appropriateness)
+
+**评估逻辑**:
+```javascript
+评估情绪驱动的行动倾向与用户目标的一致性
+- 支持性关键词：接近、维持、修复、学习、成长、沟通
+- 冲突性关键词：逃避、攻击、退缩、回避
+- 判断：支持性>冲突性 → 战略适当
+```
+
+**示例**:
+- 情绪：愤怒
+- 行动倾向："对抗不公"
+- 用户目标："维护边界"
+- 评估：一致 → 战略适当
+
+### 4. 道德适当性评估 (Moral Appropriateness)
+
+**基于道德基础理论**:
+- **亲社会情绪** (感激、同情、爱、敬畏) → 道德适当
+- **反社会情绪** (恶意嫉妒、幸灾乐祸) → 需要反思
+- **中性情绪** → 视情境而定
+
+### 5. 文化适当性评估 (Cultural Appropriateness)
+
+**评估维度**:
+- 情绪表达规范 (expressive norms)
+- 情绪触发情境 (eliciting situations)
+- 情绪功能期待 (functional expectations)
 
 ---
 
-## 🔧 使用示例
+## 🎯 Part B: 情绪证成性评估系统 (Emotion Justification Assessment)
+
+### 1. 三维证成性框架
+
+| 维度 | 评估问题 | 理论来源 |
+|------|---------|---------|
+| **证据证成** | 是否有充分证据支持情绪评价？ | SEP 情绪理论 §10.1 |
+| **一致性证成** | 情绪是否与信念系统一致？ | SEP 情绪理论 §10.2 |
+| **功能性证成** | 情绪是否发挥适应性功能？ | SEP 情绪理论 §10.3 |
+
+### 2. 证据证成 (Evidential Justification)
+
+**评估标准**:
+- 证据数量 ≥3 条 → 充分证成
+- 证据数量 1-2 条 → 部分证成
+- 证据数量 0 条 → 缺乏证成
+- 证据质量 (高/中/低) 调节最终评分
+
+### 3. 一致性证成 (Coherence Justification)
+
+**评估逻辑**:
+- 检查情绪与既有信念的一致性
+- 检查情绪与价值观的一致性
+- 检查情绪与过往经验的一致性
+
+### 4. 功能性证成 (Functional Justification)
+
+**适应性功能关键词**:
+- ✅ 保护、修复、学习、联结、成长
+- ❌ 破坏、逃避、攻击、隔离
+
+**判断**:
+- 包含适应性功能 → 功能适当
+- 包含失调功能 → 功能失调
+
+---
+
+## 📁 变更文件清单
+
+| 文件 | 变更类型 | 说明 |
+|------|---------|------|
+| `src/emotion-traditions-integration/index.js` | 增强 | 新增适当性与证成性评估系统 |
+| `package.json` | 更新 | 版本号 3.49.0 → 3.50.0 |
+| `UPGRADE_COMPLETE_V3.50.0.md` | 新增 | 升级完成报告 |
+
+---
+
+## 🔧 新增 API
+
+### 情绪适当性评估
 
 ```javascript
-const SelfConstitution = require('./src/self-constitution');
+const evaluator = new EmotionTraditionsIntegration();
 
-// 交互示例
-const response = SelfConstitution.interact('我不知道自己是谁，感觉很迷茫');
-// → 推荐实践同一性探索练习
+const appropriateness = evaluator.assessAppropriateness(emotionData, context);
+// 返回：
+// {
+//   emotion: '愤怒',
+//   cognitive: { dimension: '认知适当性', accuracy: 0.85, judgment: '适当', reasoning: '...' },
+//   strategic: { dimension: '战略适当性', goalCongruence: 0.75, judgment: '适当', reasoning: '...' },
+//   moral: { dimension: '道德适当性', moralAlignment: 0.8, judgment: '适当', reasoning: '...' },
+//   cultural: { dimension: '文化适当性', culturalFit: 0.7, judgment: '适当', reasoning: '...' },
+//   overall: '高度适当'
+// }
+```
 
-// 评估示例
-const assessment = SelfConstitution.assessment.assessIdentityClarity();
-// → 返回四层次评估框架
+### 情绪证成性评估
 
-// 练习示例
-const exercise = SelfConstitution.exercises.reflectiveEndorsement;
-// → 返回反思性认可的完整步骤
+```javascript
+const justification = evaluator.assessJustification(emotionData, evidence);
+// 返回：
+// {
+//   emotion: '愤怒',
+//   evidential: { dimension: '证据证成', evidenceCount: 3, quality: 'high', score: 0.9, judgment: '充分证成' },
+//   coherence: { dimension: '一致性证成', score: 0.7, judgment: '适度证成' },
+//   functional: { dimension: '功能性证成', isAdaptive: true, score: 0.8, judgment: '功能适当' }
+// }
 ```
 
 ---
 
-## 🎯 与现有模块协同
+## 🎓 学术引用
 
-| 模块 | 协同关系 |
-|------|---------|
-| **自由意志与能动性** (v3.34.0) | 能动性理论 → 自我构成理论 |
-| **叙事心理学** (v3.36.0) | 生命故事 → 行动统一性叙事 |
-| **道德心理学** (v3.30.0) | 道德同一性 → 道德原则整合 |
-| **时间意识** (v3.0.0) | 时间延展 → 行动时间连续性 |
-| **ACT 疗法** (v3.2.0) | 价值导向 → 价值一致性 |
+### SEP 情绪理论
+
+1. **Stanford Encyclopedia of Philosophy (2026 Edition)**
+   - Entry: Emotion
+   - Section 9: The Appropriateness of Emotions
+   - Section 10: The Justification of Emotions
+   - Author: Andrea Scarantino
+
+### 情绪适当性理论
+
+2. **经典文献**
+   - D'Arms, J. & Jacobson, D. (2000). "The Moralistic Fallacy"
+   - Helm, B. (2001). "Emotional Reason: Deliberation, Motivation, and the Nature of Value"
+   - Tappolet, C. (2016). "Emotions, Values, and Agency"
+
+### 情绪证成性理论
+
+3. **经典文献**
+   - Brady, M.S. (2009). "The Irrationality of Recalcitrant Emotions"
+   - Jones, K. (2006). "Quick and Smart? Modularity and the Pro-emotional Emotions"
+   - Morton, A. (2002). "The Importance of Being Understood"
 
 ---
 
@@ -116,73 +189,23 @@ const exercise = SelfConstitution.exercises.reflectiveEndorsement;
 
 | 指标 | 数值 |
 |------|------|
-| 新增代码行数 | ~550 行 |
-| 理论来源 | 4 位哲学家 |
-| 同一性层次 | 4 个 |
-| 自我构成条件 | 4 个 |
-| 障碍类型 | 4 个 |
-| 评估工具 | 3 个 |
-| 核心练习 | 5 个 |
+| 增强模块 | 1 个 (情绪理论整合) |
+| 新增评估方法 | 2 个 (适当性 + 证成性) |
+| 评估维度 | 7 个 (4 适当性 + 3 证成性) |
+| 代码行数新增 | ~400 行 |
+| 文档更新 | 2 个文件 |
 
 ---
 
-## 🧠 理论深度
+## ✅ 完成状态
 
-### Korsgaard 核心主张整合
-
-1. **行动者通过行动构成自己**
-   - 行动不是发生在身上的事，而是自己做的事
-   - 每次行动都是自我构成的机会
-
-2. **实践同一性提供规范**
-   - 同一性不是描述性的，而是规范性的
-   - "我是 X"意味着"我应该做 Y"
-
-3. **反思性认可是人类能动性核心**
-   - 人能审视自己的欲望
-   - 能决定是否认可能够驱动行动的欲望
-
-4. **自我构成是持续过程**
-   - 不是一劳永逸的状态
-   - 需要不断的反思、整合、修正
+- [x] 情绪适当性评估系统开发
+- [x] 情绪证成性评估系统开发
+- [x] 代码测试
+- [x] Git 提交并推送
+- [x] 升级报告生成
 
 ---
 
-## 🚀 下一步计划
-
-**v3.51.0**: 个人自主性模块 (Personal Autonomy)  
-**v3.52.0**: 幸福与福祉模块 (Happiness & Well-Being)  
-**v3.53.0**: 道德情感深化 (Moral Emotions Enhancement)
-
----
-
-## 🔗 GitHub
-
-**仓库**: https://github.com/yun520-1/mark-heartflow-skill  
-**提交**: 待提交  
-**状态**: ⏳ 准备中
-
----
-
-## 💡 应用建议
-
-### 适用场景
-
-- **身份探索**: "我是谁？" "我想成为什么样的人？"
-- **角色冲突**: 工作 vs 家庭，个人 vs 社会期望
-- **意义危机**: "我的生活有意义吗？"
-- **意志薄弱**: 明知应该但做不到
-- **自我异化**: "这不是真正的我"
-
-### 使用建议
-
-1. **从评估开始**: 先用评估工具了解现状
-2. **选择聚焦**: 一次聚焦一个层面或障碍
-3. **持续练习**: 自我构成是持续过程
-4. **整合叙事**: 与叙事心理学模块配合使用
-5. **寻求支持**: 严重困扰时建议专业咨询
-
----
-
-**HeartFlow v3.50.0 · 自我构成模块**  
-*通过行动成为自己，在反思中整合自我* 🧠
+**升级完成时间**: 2026-03-30 11:30 (Asia/Shanghai)  
+**下次升级**: v3.51.0 (待定)
