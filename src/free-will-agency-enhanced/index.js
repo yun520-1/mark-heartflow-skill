@@ -608,7 +608,8 @@ const FreeWillAgencyEnhanced = {
 
   /**
    * Frankfurt Cases 与道德责任
-   * v3.35.0 新增
+   * v3.35.0 新增，v3.49.0 增强
+   * 来源：SEP Free Will + Frankfurt (1969, 1971) + Fischer & Ravizza (1998)
    */
   frankfurtCases: {
     /**
@@ -624,6 +625,145 @@ const FreeWillAgencyEnhanced = {
         actual: 'Jones 自己做 X，Black 没有干预',
         conclusion: 'Jones 不能做 otherwise（因为 Black 会干预），但仍有道德责任'
       }
+    },
+
+    /**
+     * Frankfurt 案例深度分析器 - v3.49.0 新增
+     * 分析案例结构并评估道德责任
+     */
+    analyzeCase: function(caseDetails) {
+      const {
+        hasCounterfactualIntervener = false,
+        intervenerType = 'neural', // neural/sign/prior
+        agentActsOnOwnReasons = true,
+        interventionOccurred = false,
+        hasFlickerOfFreedom = false
+      } = caseDetails;
+
+      // PAP 评估
+      const papAnalysis = {
+        satisfied: !hasCounterfactualIntervener,
+        explanation: hasCounterfactualIntervener 
+          ? '存在反事实干预者，行动者不能做 otherwise' 
+          : '没有反事实干预者，行动者可以做 otherwise'
+      };
+
+      // Frankfurt 条件评估
+      const frankfurtAnalysis = {
+        conditionsMet: hasCounterfactualIntervener && !interventionOccurred && agentActsOnOwnReasons,
+        responsibilityGrounded: agentActsOnOwnReasons && !interventionOccurred,
+        basis: agentActsOnOwnReasons ? '行动者基于自己的理由行动' : '行动由外部因素决定'
+      };
+
+      // Flicker 策略分析
+      const flickerAnalysis = {
+        hasFlicker: hasFlickerOfFreedom,
+        significance: hasFlickerOfFreedom 
+          ? '存在微小的替代可能性（如决定时间、方式），可能保留 PAP' 
+          : '没有明显的替代可能性',
+        theorists: hasFlickerOfFreedom ? ['Widerker', 'Ginet'] : ['Frankfurt', 'Fischer']
+      };
+
+      // 半相容论评估 (Semocompatibilism)
+      const semicompatibilistAnalysis = {
+        reasonsResponsive: agentActsOnOwnReasons,
+        responsibilityCompatible: agentActsOnOwnReasons && !interventionOccurred,
+        determinismCompatible: true,
+        explanation: '即使决定论为真，只要行动者有理由响应能力，就有道德责任'
+      };
+
+      return {
+        pap: papAnalysis,
+        frankfurt: frankfurtAnalysis,
+        flicker: flickerAnalysis,
+        semicompatibilist: semicompatibilistAnalysis,
+        overallResponsibility: {
+          responsible: frankfurtAnalysis.responsibilityGrounded,
+          confidence: agentActsOnOwnReasons ? 0.9 : 0.3,
+          basis: semicompatibilistAnalysis.responsibilityCompatible 
+            ? '半相容论：理由响应能力' 
+            : frankfurtAnalysis.responsibilityGrounded
+            ? 'Frankfurt 式：实际序列责任'
+            : '无责任基础'
+        }
+      };
+    },
+
+    /**
+     * 道德责任评估增强版 - v3.49.0
+     * 整合 PAP、Frankfurt、理由响应理论
+     */
+    assessMoralResponsibilityEnhanced: function(context) {
+      const {
+        action,
+        hasAlternatives = true,
+        hasCoercion = false,
+        hasIgnorance = false,
+        hasMentalIllness = false,
+        reasonsResponsive = true,
+        actsOnOwnValues = true,
+        hasCounterfactualIntervener = false
+      } = context;
+
+      // 传统 PAP 评估
+      const papAssessment = {
+        theory: 'Principle of Alternative Possibilities',
+        satisfied: hasAlternatives && !hasCounterfactualIntervener,
+        explanation: hasAlternatives 
+          ? '行动者有替代可能性' 
+          : '行动者没有替代可能性'
+      };
+
+      // Frankfurt 式评估
+      const frankfurtAssessment = this.analyzeCase({
+        hasCounterfactualIntervener,
+        agentActsOnOwnReasons: reasonsResponsive && actsOnOwnValues,
+        interventionOccurred: false
+      });
+
+      // 理由响应评估 (Fischer & Ravizza)
+      const reasonsResponsivenessAssessment = {
+        theory: 'Reasons Responsiveness (Fischer & Ravizza)',
+        moderateResponsiveness: reasonsResponsive,
+        strongResponsiveness: reasonsResponsive && actsOnOwnValues,
+        levels: {
+          strong: '在充分理由下会改变行动，且行动反映价值观',
+          moderate: '在充分理由下会改变行动',
+          weak: '至少在有些理由下会响应',
+          none: '不响应理由'
+        },
+        currentLevel: reasonsResponsive && actsOnOwnValues ? 'strong' : (reasonsResponsive ? 'moderate' : 'none')
+      };
+
+      // 削弱条件检查
+      const underminingConditions = [];
+      if (hasCoercion) underminingConditions.push('强制');
+      if (hasIgnorance) underminingConditions.push('无知');
+      if (hasMentalIllness) underminingConditions.push('精神疾病');
+
+      // 综合评估
+      const overallAssessment = {
+        responsible: reasonsResponsive && !hasCoercion && !hasIgnorance && !hasMentalIllness,
+        basis: reasonsResponsive 
+          ? '理由响应能力' 
+          : underminingConditions.length > 0
+          ? `责任被削弱：${underminingConditions.join(', ')}`
+          : '缺乏理由响应能力',
+        confidence: reasonsResponsive && !hasCoercion && !hasIgnorance && !hasMentalIllness ? 0.9 : 0.4,
+        theoreticalBasis: '半相容论 (Semocompatibilism)'
+      };
+
+      return {
+        action,
+        pap: papAssessment,
+        frankfurt: frankfurtAssessment,
+        reasonsResponsiveness: reasonsResponsivenessAssessment,
+        underminingConditions,
+        overall: overallAssessment,
+        philosophicalImplication: overallAssessment.responsible
+          ? '即使决定论为真，行动者仍有道德责任（半相容论立场）'
+          : '行动者缺乏道德责任的必要条件'
+      };
     },
 
     /**
@@ -760,54 +900,240 @@ const FreeWillAgencyEnhanced = {
     },
 
     /**
-     * 克服意志薄弱的策略
+     * 克服意志薄弱的策略 - v3.49.0 增强
+     * 来源：SEP Akrasia + Aristotle + Davidson + Gollwitzer + Thaler & Sunstein
      */
     strategies: {
       // 预先承诺
       precommitment: {
         name: '预先承诺 (Precommitment)',
-        description: '提前限制未来的选择',
+        description: '提前限制未来的选择，防止冲动行为',
+        theorists: ['Ulysses strategy', 'Thaler & Sunstein (Nudge)'],
+        types: {
+          physical: '物理限制（如把零食放在够不到的地方）',
+          social: '社会约束（如公开承诺目标）',
+          financial: '经济约束（如赌注合同）',
+          digital: '数字限制（如网站屏蔽软件）'
+        },
         examples: [
           '把零食放在够不到的地方',
           '使用网站屏蔽软件',
-          '公开承诺目标'
+          '公开承诺目标',
+          '与朋友签订行为合同',
+          '使用承诺设备 app（如 StickK）'
         ],
-        theorists: ['Ulysses strategy']
+        effectiveness: '实证研究显示预先承诺显著提高目标达成率',
+        steps: [
+          '识别诱惑情境',
+          '设计预先约束机制',
+          '在冷静期实施约束',
+          '定期评估和调整'
+        ]
       },
       // 实施意图
       implementationIntentions: {
         name: '实施意图 (Implementation Intentions)',
-        description: '制定 if-then 计划',
+        description: '制定 if-then 计划，自动化目标追求',
+        theorists: ['Gollwitzer (1999)'],
         format: '如果情况 X 出现，我就做 Y',
         examples: [
           '如果想吃零食，就先喝一杯水',
           '如果想拖延，就先做 5 分钟',
-          '如果感到愤怒，就先深呼吸三次'
+          '如果感到愤怒，就先深呼吸三次',
+          '如果早上闹钟响，就立刻起床',
+          '如果想刷手机，就先做 3 个俯卧撑'
         ],
-        effectiveness: '实证研究显示显著提高自控力'
+        effectiveness: '实证研究显示提高目标达成率 2-3 倍',
+        mechanism: '将情境线索与目标响应直接关联，绕过意志努力',
+        steps: [
+          '明确目标意图',
+          '识别关键情境线索',
+          '制定具体 if-then 计划',
+          '心理模拟执行过程',
+          '定期回顾和调整'
+        ]
       },
       // 正念觉察
       mindfulness: {
-        name: '正念觉察',
-        description: '觉察欲望而不立即行动',
+        name: '正念觉察 (Mindful Awareness)',
+        description: '觉察欲望而不立即行动，创造响应空间',
+        theorists: ['Buddhist psychology', 'ACT therapy', 'MBCT'],
         steps: [
           '注意欲望的出现',
           '标注欲望（"这是想吃甜食的欲望"）',
-          '观察欲望的强度变化',
+          '观察欲望的强度变化（如冲浪）',
+          '注意身体感受',
           '选择是否响应'
-        ]
+        ],
+        effectiveness: '实证研究显示正念训练减少冲动行为',
+        practice: '每日 10 分钟正念冥想，培养觉察能力'
       },
       // 价值重连
       valueReconnection: {
-        name: '价值重连',
-        description: '重新连接行动与深层价值',
+        name: '价值重连 (Value Reconnection)',
+        description: '重新连接行动与深层价值，增强内在动机',
+        theorists: ['ACT therapy', 'Self-Determination Theory'],
         steps: [
           '问：这个行动服务于什么价值？',
           '问：长期来看什么更重要？',
           '想象未来的自己会感谢什么选择',
-          '使抽象价值具体化'
+          '使抽象价值具体化',
+          '将小行动与大价值连接'
+        ],
+        exercises: [
+          '价值排序练习：列出最重要的 5 个价值',
+          '未来自我对话：给 1 年后的自己写信',
+          '价值 - 行动对齐检查：每日反思'
         ]
+      },
+      // 情境设计 - v3.49.0 新增
+     情境设计：{
+        name: '情境设计 (Choice Architecture)',
+        description: '重新设计环境，使目标行为更容易、诱惑行为更难',
+        theorists: ['Thaler & Sunstein (Nudge)', 'Behavioral Design'],
+        principles: [
+          '增加诱惑行为的摩擦',
+          '减少目标行为的摩擦',
+          '改变默认选项',
+          '提供即时反馈'
+        ],
+        examples: [
+          '把手机放在另一个房间（增加刷手机摩擦）',
+          '提前准备健康午餐（减少健康饮食摩擦）',
+          '设置自动储蓄（改变默认选项）',
+          '使用习惯追踪 app（提供即时反馈）'
+        ],
+        steps: [
+          '分析当前环境中的诱惑线索',
+          '设计环境改变方案',
+          '实施改变',
+          '评估效果并调整'
+        ]
+      },
+      // 自我同情干预 - v3.49.0 新增
+      selfCompassion: {
+        name: '自我同情干预 (Self-Compassion Intervention)',
+        description: '用自我同情而非自我批评应对意志薄弱',
+        theorists: ['Neff (2003)', 'Gilbert (Compassion Focused Therapy)'],
+        rationale: '自我批评增加压力，反而削弱自控；自我同情提供安全感，增强改变动机',
+        steps: [
+          '承认意志薄弱的痛苦（正念）',
+          '理解这是人类共同体验（共同人性）',
+          '对自己说友善的话（自我友善）',
+          '问：什么对我真正有帮助？'
+        ],
+        phrases: [
+          '这确实很难，我理解自己的挣扎',
+          '很多人都会经历类似的困难',
+          '愿我对自己友善，愿我找到力量',
+          '我可以从这次经历中学习'
+        ],
+        effectiveness: '实证研究显示自我同情训练减少暴饮暴食、拖延等行为'
       }
+    },
+
+    /**
+     * 意志薄弱评估与干预增强版 - v3.49.0
+     */
+    assessAndInterveneEnhanced: function(context) {
+      const {
+        behavior,
+        judgment,
+        type = 'impulsive',
+        frequency = 'occasional',
+        severity = 'moderate',
+        triggers = [],
+        values = []
+      } = context;
+
+      // 评估
+      const assessment = {
+        hasAkrasia: behavior !== judgment,
+        type: this.types[type] || this.types.impulsive,
+        frequency,
+        severity,
+        triggers,
+        impact: severity === 'severe' ? '显著影响生活质量' : severity === 'moderate' ? '中等影响' : '轻微影响'
+      };
+
+      // 干预推荐
+      const interventions = [];
+
+      // 根据类型推荐策略
+      if (type === 'impulsive') {
+        interventions.push({
+          strategy: this.strategies.precommitment,
+          priority: 'high',
+          rationale: '冲动型需要即时约束机制'
+        });
+        interventions.push({
+          strategy: this.strategies.mindfulness,
+          priority: 'medium',
+          rationale: '培养觉察能力，创造响应空间'
+        });
+        interventions.push({
+          strategy: this.strategies.情境设计，
+          priority: 'high',
+          rationale: '减少环境中的诱惑线索'
+        });
+      } else if (type === 'procrastination') {
+        interventions.push({
+          strategy: this.strategies.implementationIntentions,
+          priority: 'high',
+          rationale: 'if-then 计划自动化启动行为'
+        });
+        interventions.push({
+          strategy: this.strategies.valueReconnection,
+          priority: 'medium',
+          rationale: '连接行动与深层价值，增强动机'
+        });
+        interventions.push({
+          strategy: this.strategies.情境设计，
+          priority: 'medium',
+          rationale: '减少开始任务的摩擦'
+        });
+      } else if (type === 'selfDeceptive') {
+        interventions.push({
+          strategy: this.strategies.mindfulness,
+          priority: 'high',
+          rationale: '觉察自我欺骗模式'
+        });
+        interventions.push({
+          strategy: this.strategies.valueReconnection,
+          priority: 'high',
+          rationale: '澄清真实价值，防止临时重新解释'
+        });
+        interventions.push({
+          strategy: this.strategies.selfCompassion,
+          priority: 'medium',
+          rationale: '减少防御性自我欺骗'
+        });
+      }
+
+      // 严重程度调整
+      if (severity === 'severe') {
+        interventions.push({
+          strategy: '专业支持',
+          recommendation: '建议寻求心理咨询师帮助',
+          rationale: '严重意志薄弱可能与深层心理问题相关'
+        });
+      }
+
+      // 生成个性化计划
+      const personalizedPlan = {
+        assessment,
+        interventions: interventions.map(i => ({
+          name: i.strategy.name,
+          priority: i.priority,
+          rationale: i.rationale,
+          firstStep: i.strategy.steps?.[0] || i.strategy.examples?.[0] || '开始练习'
+        })),
+        immediateAction: interventions[0]?.strategy?.examples?.[0] || '觉察当前状态',
+        weeklyGoal: `本周重点练习${interventions[0]?.strategy?.name || '正念觉察'}`,
+        followUp: '7 天后评估进展，调整策略'
+      };
+
+      return personalizedPlan;
     },
 
     /**

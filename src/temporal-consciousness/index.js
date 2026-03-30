@@ -1285,6 +1285,337 @@ const TemporalConsciousness = {
   },
 
   /**
+   * 现象学时间觉察练习 - v3.49.0 新增
+   * 基于 Husserl、Heidegger 现象学传统
+   */
+  phenomenologicalExercises: {
+    /**
+     * 时间三重结构觉察
+     * 觉察原初印象 - 保留 - 预期的动态结构
+     */
+    tripartiteAwareness: {
+      name: '时间三重结构觉察',
+      description: '觉察当下体验中的过去 - 现在 - 未来结构',
+      duration: '10-15 分钟',
+      source: 'Husserl 时间意识现象学',
+      steps: [
+        {
+          phase: '准备',
+          instructions: [
+            '找一个安静的地方坐下',
+            '做 3 次深呼吸，放松身体',
+            '选择一个简单的体验对象（如呼吸、声音、身体感受）'
+          ]
+        },
+        {
+          phase: '觉察原初印象',
+          instructions: [
+            '将注意力完全集中在当下的体验',
+            '注意此刻的直接感受，不加评判',
+            '这是"原初印象"——时间的核心点',
+            '停留 2-3 分钟'
+          ]
+        },
+        {
+          phase: '觉察保留',
+          instructions: [
+            '注意刚刚过去的体验如何在意识中持存',
+            '这不是回忆，而是"活生生的过去"',
+            '像彗星尾一样跟随着现在的体验',
+            '注意保留如何给现在体验厚度和连续性',
+            '停留 2-3 分钟'
+          ]
+        },
+        {
+          phase: '觉察预期',
+          instructions: [
+            '注意对即将到来的体验的预期',
+            '这不是预测，而是"活生生的未来"',
+            '注意预期如何打开可能性空间',
+            '注意预期如何引导注意力',
+            '停留 2-3 分钟'
+          ]
+        },
+        {
+          phase: '整合觉察',
+          instructions: [
+            '同时觉察原初印象、保留和预期',
+            '注意三者如何构成统一的时间流',
+            '注意时间体验的厚度和连续性',
+            '停留 3-5 分钟'
+          ]
+        }
+      ],
+      reflectionQuestions: [
+        '你能清晰区分原初印象、保留和预期吗？',
+        '时间体验的"厚度"是什么样的？',
+        '哪个维度最容易觉察？哪个最难？',
+        '这个练习如何改变了你的时间感？'
+      ]
+    },
+
+    /**
+     * 时间深度扩展练习
+     * 扩展心理时间视野
+     */
+    temporalDepthExpansion: {
+      name: '时间深度扩展',
+      description: '逐步扩展心理时间视野，从当下到超越',
+      duration: '20-30 分钟',
+      source: 'Heidegger 时间性 + 积极心理学',
+      levels: [
+        {
+          level: 1,
+          name: '当下临在',
+          duration: '3 分钟',
+          practice: '完全投入当下体验，注意感官细节'
+        },
+        {
+          level: 2,
+          name: '今日回顾与展望',
+          duration: '5 分钟',
+          practice: '回顾今天的亮点，展望今晚的期待'
+        },
+        {
+          level: 3,
+          name: '本周视角',
+          duration: '5 分钟',
+          practice: '回顾本周的成长，规划下周的重点'
+        },
+        {
+          level: 4,
+          name: '年度视角',
+          duration: '5 分钟',
+          practice: '回顾今年的收获，设定明年的意图'
+        },
+        {
+          level: 5,
+          name: '人生视角',
+          duration: '5 分钟',
+          practice: '回顾人生旅程，思考人生方向和意义'
+        },
+        {
+          level: 6,
+          name: '超越视角',
+          duration: '5 分钟',
+          practice: '思考你想留下的遗产，超越个人生命的贡献'
+        }
+      ],
+      instructions: '按顺序完成每个 level，逐步扩展时间视野',
+      benefits: [
+        '增强时间深度',
+        '提升决策质量',
+        '增强生命意义感',
+        '减少短视行为'
+      ]
+    },
+
+    /**
+     * 时间整合冥想
+     * 整合过去 - 现在 - 未来
+     */
+    temporalIntegrationMeditation: {
+      name: '时间整合冥想',
+      description: '冥想练习，整合过去、现在、未来为连续的生命流',
+      duration: '15-20 分钟',
+      source: '现象学 + 正念冥想 + 叙事心理学',
+      visualization: [
+        {
+          phase: ' grounding',
+          instructions: '坐在舒适的位置，感受身体与地面的接触，深呼吸 3 次'
+        },
+        {
+          phase: '过去感恩',
+          instructions: [
+            '想象过去如一条河流向你流来',
+            '识别 3 个你感恩的过去经历',
+            '对每个经历说：谢谢你塑造了现在的我',
+            '让过去融入你，但不定义你'
+          ]
+        },
+        {
+          phase: '当下临在',
+          instructions: [
+            '将注意力带回当下',
+            '感受此刻的呼吸、身体感受、环境声音',
+            '承认：此刻是我唯一真正拥有的时间',
+            '充分临在于此时此地'
+          ]
+        },
+        {
+          phase: '未来开放',
+          instructions: [
+            '想象未来如一条河流从你流向远方',
+            '识别 3 个你期待的未来可能性',
+            '对每个可能性说：我向你开放，但不执着',
+            '让未来保持开放和可能'
+          ]
+        },
+        {
+          phase: '整合',
+          instructions: [
+            '想象过去、现在、未来如一条连续的河流',
+            '你是这条河流，而非其中的某一点',
+            '感受时间的连续性和流动性',
+            '安住于这个整合的时间感中 5 分钟'
+          ]
+        }
+      ],
+      closingInstructions: '慢慢睁开眼睛，带着整合的时间感回到日常活动',
+      benefits: [
+        '减少时间焦虑',
+        '增强生命连续性感',
+        '提升当下临在能力',
+        '培养希望感'
+      ]
+    },
+
+    /**
+     * 时间现象学还原
+     * 悬置时间概念，回到体验本身
+     */
+    temporalEpoché: {
+      name: '时间现象学还原',
+      description: '悬置关于时间的概念和假设，回到时间体验本身',
+      duration: '10-15 分钟',
+      source: 'Husserl 现象学还原',
+      steps: [
+        {
+          phase: '识别时间概念',
+          instructions: [
+            '列出你对时间的常见概念（如"时间不够"、"时间飞逝"、"浪费时间"）',
+            '注意这些概念如何影响你的体验',
+            '承认这些都是概念，而非体验本身'
+          ]
+        },
+        {
+          phase: '悬置概念',
+          instructions: [
+            '将这些概念放入"括号"中，暂时搁置',
+            '不判断真假，只是不使用它们',
+            '让心智回到前概念的体验'
+          ]
+        },
+        {
+          phase: '回到体验',
+          instructions: [
+            '注意没有概念标签的时间体验是什么样的',
+            '注意体验的流动、变化、持续',
+            '注意体验的厚度和质量',
+            '描述体验而非解释体验'
+          ]
+        },
+        {
+          phase: '反思',
+          instructions: [
+            '概念化的时间体验 vs 直接的时间体验有什么不同？',
+            '哪些概念有帮助？哪些造成束缚？',
+            '如何更灵活地使用时间概念？'
+          ]
+        }
+      ],
+      benefits: [
+        '减少时间概念造成的焦虑',
+        '增强对时间体验的直接感知',
+        '培养现象学态度',
+        '增加时间体验的丰富性'
+      ]
+    }
+  },
+
+  /**
+   * 与用户交互的主函数 (v3.49.0 Enhanced)
+   */
+  interact: function(userInput, context = {}) {
+    const response = {
+      module: '时间意识 (v3.49.0)',
+      understanding: '',
+      guidance: '',
+      exercise: null,
+      assessment: null,
+      feedback: ''
+    };
+
+    const input = userInput.toLowerCase();
+
+    // 检测是否需要模型分析
+    if (input.includes('体验') || input.includes('感觉') || input.includes('感受')) {
+      const modelAnalysis = this.models.compare(userInput);
+      response.understanding = '让我分析你的时间体验模式...';
+      response.assessment = { type: '时间意识模型', result: modelAnalysis };
+      response.guidance = modelAnalysis.recommendation;
+      response.exercise = this._getExerciseForModel(modelAnalysis.dominantModel);
+    }
+    // 检测是否需要连续性评估
+    else if (input.includes('连续') || input.includes('碎片') || input.includes('断裂') || input.includes('整合')) {
+      const continuityAssessment = this.continuityAssessment.assess(userInput);
+      response.understanding = '让我评估你的时间连续性...';
+      response.assessment = { type: '时间连续性', result: continuityAssessment };
+      response.guidance = continuityAssessment.interpretation;
+      response.exercise = continuityAssessment.recommendations[0]?.exercise || this.exercises.temporalAnchoring;
+    }
+    // 检测是否需要现象学练习 - v3.49.0 新增
+    else if (input.includes('现象学') || input.includes('还原') || input.includes('悬置')) {
+      response.understanding = '你想探索时间现象学还原练习。';
+      response.exercise = this.phenomenologicalExercises.temporalEpoché;
+      response.guidance = '现象学还原帮助你悬置时间概念，回到时间体验本身。';
+    }
+    // 检测是否需要三重结构觉察 - v3.49.0 新增
+    else if (input.includes('三重') || input.includes('结构') || input.includes('husserl')) {
+      response.understanding = '你想探索 Husserl 时间三重结构。';
+      response.exercise = this.phenomenologicalExercises.tripartiteAwareness;
+      response.guidance = '时间三重结构（原初印象 - 保留 - 预期）是时间意识的核心结构。';
+    }
+    // 检测是否需要时间深度扩展 - v3.49.0 新增
+    else if (input.includes('深度') || input.includes('视野') || input.includes('扩展')) {
+      response.understanding = '你想扩展时间深度和心理时间视野。';
+      response.exercise = this.phenomenologicalExercises.temporalDepthExpansion;
+      response.guidance = '时间深度扩展帮助你从当下扩展到超越视角。';
+    }
+    // 检测是否需要时间整合冥想 - v3.49.0 新增
+    else if (input.includes('整合') || input.includes('冥想') || input.includes('过去') && input.includes('未来')) {
+      response.understanding = '你想整合过去、现在和未来的时间感。';
+      response.exercise = this.phenomenologicalExercises.temporalIntegrationMeditation;
+      response.guidance = '时间整合冥想帮助你体验时间的连续流。';
+    }
+    // 原有逻辑
+    else if (input.includes('过去') || input.includes('回忆') || input.includes('后悔') || input.includes('怀念')) {
+      response.understanding = '你正在思考过去的经历，这是时间意识的重要部分。';
+      response.exercise = this.exercises.memoryIntegration;
+      response.guidance = '让我们一起探索过去经历如何塑造了现在的你，以及它可能蕴含的时间礼物。';
+    } else if (input.includes('未来') || input.includes('担心') || input.includes('希望') || input.includes('计划')) {
+      response.understanding = '你在思考未来，这显示了你的前瞻性思维。';
+      response.exercise = this.exercises.protentionImagination;
+      response.guidance = '让我们一起构建积极的未来图景，同时保持与当下的联结。';
+    } else if (input.includes('现在') || input.includes('当下') || input.includes('焦虑') || input.includes('匆忙')) {
+      response.understanding = '你关注当下的体验，这是时间意识的核心。';
+      response.exercise = this.exercises.presentPresence;
+      response.guidance = '让我们一起培养深度的当下临在感，超越时间焦虑。';
+    } else if (input.includes('时间') || input.includes('自我') || input.includes('身份') || input.includes('我是')) {
+      response.understanding = '你在探索时间与自我的关系。';
+      const selfLink = this.selfAwareness.linkToTemporalExperience(userInput);
+      response.assessment = { type: '自我 - 时间关联', result: selfLink };
+      response.guidance = selfLink.synthesis;
+      response.exercise = this.exercises.temporalAnchoring;
+    } else {
+      response.understanding = '时间意识是我们体验自我和世界的基本维度。';
+      response.guidance = '你可以探索：\n1. 时间意识模型分析 - 识别你的时间体验模式\n2. 时间连续性评估 - 评估时间整合程度\n3. 时间锚定 - 连接过去现在未来\n4. 现象学还原 - 探索时间体验本质 (v3.49.0)\n5. 三重结构觉察 - Husserl 时间意识核心 (v3.49.0)\n6. 时间深度扩展 - 扩展心理时间视野 (v3.49.0)\n7. 时间整合冥想 - 整合过去现在未来 (v3.49.0)\n8. 预期想象 - 构建积极未来\n9. 回忆整合 - 理解过去意义\n10. 当下临在 - 培养深度临在感\n\n你想从哪个开始？';
+    }
+
+    return response;
+  },
+
+  _getExerciseForModel: function(model) {
+    const exerciseMap = {
+      '电影模型': this.exercises.presentPresence,
+      '保留模型': this.phenomenologicalExercises.tripartiteAwareness,
+      '延展模型': this.phenomenologicalExercises.temporalDepthExpansion,
+      '未确定': this.exercises.temporalAnchoring
+    };
+    return exerciseMap[model] || this.exercises.temporalAnchoring;
+  },
+
+  /**
    * 导出模块
    */
   export: function() {
@@ -1292,6 +1623,7 @@ const TemporalConsciousness = {
       meta: this.meta,
       dimensions: Object.keys(this.dimensions),
       exercises: Object.keys(this.exercises),
+      phenomenologicalExercises: Object.keys(this.phenomenologicalExercises),
       interact: this.interact.bind(this),
       assessIntegration: this.assessmentTools.assessIntegration,
       assessTemporalDepth: this.assessmentTools.assessTemporalDepth
