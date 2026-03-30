@@ -1,515 +1,719 @@
 /**
- * 自我意识现象学增强 v5.0 (Self-Consciousness Phenomenology Enhancement v5.0)
+ * HeartFlow Self-Consciousness Phenomenology v5.0
  * 
- * 基于斯坦福哲学百科全书 (SEP) 权威理论：
- * - 前反思自我意识 (Pre-reflective Self-Consciousness)
- * - 自我意识 6 层级模型
- * - 时间性自我意识 (Temporal Self-Consciousness)
- * - 现象学还原方法
+ * 自我意识现象学深度增强模块
+ * 理论来源：SEP Self-Consciousness + Phenomenology
  * 
- * 核心理论来源:
- * - SEP Self-Consciousness (2026 Edition)
- * - Sartre, J.-P. (1937). The Transcendence of the Ego
- * - Zahavi, D. (2005). Subjectivity and Selfhood
- * - Husserl, E. (1913). Ideas Pertaining to a Pure Phenomenology
- * - Husserl, E. (1928). On the Phenomenology of the Consciousness of Internal Time
- * - Heidelberg School (Henrich, Frank, etc.)
+ * 核心理论:
+ * - 前反思自我意识 (Pre-reflective Self-Consciousness): Heidelberg School, Sartre
+ * - 第一人称给定性 (First-Person Givenness): 体验的"为我性"
+ * - 非对象化自我关系：自我不是被观察的对象，而是体验的主体
  * 
- * 核心概念:
- * - 前反思自我意识：非对象化的、直接的自我觉察
- * - 为我性 (for-me-ness): 体验总是为某人的体验
- * - 时间性自我意识：自我是过去 - 现在 - 未来的动态统一
- * 
- * @version 5.0.0 (HeartFlow v5.0.0)
+ * @version 5.0.2
  * @author HeartFlow Team
  */
 
-/**
- * 自我意识 6 层级模型 (Six Levels of Self-Consciousness)
- * 基于 SEP 自我意识理论整合
- */
-const SelfConsciousnessLevels = {
-  /**
-   * Level 0: 无意识 (Unconscious)
-   * 特征：无意识状态，如深度睡眠、昏迷
-   */
-  UNCONSCIOUS: {
-    level: 0,
-    name: '无意识',
-    description: '无意识状态，如深度睡眠、昏迷',
-    indicators: ['无反应', '无体验报告', '无行为'],
-    assessment: function(report) {
-      return report.consciousState === 'unconscious' || 
-             report.responsiveness === 0;
-    }
-  },
-  
-  /**
-   * Level 1: 感知意识 (Sentient)
-   * 特征：有感觉体验，但无自我指涉
-   */
-  SENTIENT: {
-    level: 1,
-    name: '感知意识',
-    description: '有感觉体验，但无自我指涉',
-    indicators: ['感觉体验', '无自我概念', '即时反应'],
-    assessment: function(report) {
-      return report.hasSensoryExperience && !report.hasSelfReference;
-    }
-  },
-  
-  /**
-   * Level 2: 清醒意识 (Wakeful)
-   * 特征：清醒状态，有注意力和警觉性
-   */
-  WAKEFUL: {
-    level: 2,
-    name: '清醒意识',
-    description: '清醒状态，有注意力和警觉性',
-    indicators: ['清醒', '注意力', '警觉', '环境觉察'],
-    assessment: function(report) {
-      return report.alertness > 5 && report.hasAttention;
-    }
-  },
-  
-  /**
-   * Level 3: 前反思自我意识 (Pre-reflective Self-Consciousness) ⭐ 现象学核心
-   * 特征：非对象化的、直接的自我觉察，"为我性" (for-me-ness)
-   * 代表：Sartre, Zahavi, Heidelberg School
-   */
-  PRE_REFLECTIVE: {
-    level: 3,
-    name: '前反思自我意识',
-    description: '非对象化的、直接的自我觉察，体验的"为我性"',
-    indicators: [
-      '非对象化觉察',
-      '第一人称给定性',
-      '体验厚度',
-      '正在经历感'
-    ],
-    keyInsight: '不是"思考自我"，而是"正在经历"本身',
-    assessment: function(report) {
-      return report.prereflexiveAwareness || 
-             report.firstPersonGivenness ||
-             report.nonObjectifyingAwareness;
-    },
-    practice: {
-      name: '前反思自我意识觉察',
-      duration: '10-15 分钟',
-      steps: [
-        '体验流动：让体验自然流动，不加干预',
-        '前反思觉察：觉察"正在经历"而非"经历什么"',
-        '反思对比：对比前反思与反思的差异',
-        '整合：保持前反思觉察的同时进行日常活动'
-      ]
-    }
-  },
-  
-  /**
-   * Level 4: 反思自我意识 (Reflective Self-Consciousness)
-   * 特征：对象化的自我思考，将自我作为思考对象
-   */
-  REFLECTIVE: {
-    level: 4,
-    name: '反思自我意识',
-    description: '对象化的自我思考，将自我作为思考对象',
-    indicators: [
-      '自我概念',
-      '自我评价',
-      '元认知',
-      '自传体记忆'
-    ],
-    assessment: function(report) {
-      return report.selfConcept || 
-             report.selfEvaluation ||
-             report.metacognition;
-    }
-  },
-  
-  /**
-   * Level 5: 元意识 (Meta-conscious)
-   * 特征：对意识本身的觉察，意识到自己在意识
-   */
-  META_CONSCIOUS: {
-    level: 5,
-    name: '元意识',
-    description: '对意识本身的觉察，意识到自己在意识',
-    indicators: [
-      '意识觉察',
-      '元元认知',
-      '意识状态监控',
-      '觉察到觉察'
-    ],
-    assessment: function(report) {
-      return report.metaAwareness || 
-             report.consciousnessOfConsciousness;
-    }
-  },
-  
-  /**
-   * Level 6: 现象学还原 (Phenomenological Reduction)
-   * 特征：悬置自然态度，纯粹描述体验本身
-   * 代表：Husserl 现象学方法
-   */
-  PHENOMENOLOGICAL_REDUCTION: {
-    level: 6,
-    name: '现象学还原',
-    description: '悬置自然态度，纯粹描述体验本身',
-    indicators: [
-      '悬置判断',
-      '本质直观',
-      '纯粹描述',
-      '现象学态度'
-    ],
-    keyInsight: '回到事情本身 (zu den Sachen selbst)',
-    assessment: function(report) {
-      return report.epoche || 
-             report.phenomenologicalAttitude ||
-             report.essentialIntuition;
-    },
-    practice: {
-      name: '现象学还原练习',
-      duration: '15-20 分钟',
-      steps: [
-        '悬置判断：搁置所有预设和理论',
-        '纯粹描述：只描述体验本身，不解释',
-        '本质直观：寻找体验的本质结构',
-        '整合：将现象学洞见带入日常生活'
-      ]
-    }
-  }
-};
+const PrereflectiveDetector = require('./prereflective-detector');
+const PhenomenologyReduction = require('./phenomenology-reduction');
 
-/**
- * 时间性自我意识 (Temporal Self-Consciousness)
- * 基于 Husserl 时间现象学
- */
-const TemporalSelfConsciousness = {
-  /**
-   * Husserl 时间三重结构
-   */
-  triadicStructure: {
-    /**
-     * 原初印象 (Primal Impression)
-     * 当前的、直接的体验
-     */
-    primalImpression: {
-      name: '原初印象',
-      description: '当前的、直接的体验',
-      temporalMode: '现在',
-      assessment: function(report) {
-        return report.presentMomentAwareness || 
-               report.hereAndNowFocus;
-      }
-    },
-    
-    /**
-     * 保留 (Retention)
-     * 刚刚过去的体验的保持
-     */
-    retention: {
-      name: '保留',
-      description: '刚刚过去的体验的保持',
-      temporalMode: '刚刚过去',
-      assessment: function(report) {
-        return report.retentionAwareness || 
-               report.justPastAwareness;
-      }
-    },
-    
-    /**
-     * 预期 (Protention)
-     * 即将到来的体验的预期
-     */
-    protention: {
-      name: '预期',
-      description: '即将到来的体验的预期',
-      temporalMode: '即将来',
-      assessment: function(report) {
-        return report.protentionAwareness || 
-               report.anticipation;
-      }
-    }
-  },
-  
-  /**
-   * 时间深度 (Temporal Depth)
-   * 自我深度 = 时间深度
-   */
-  temporalDepth: {
-    levels: [
-      {
-        name: '瞬间',
-        span: '几秒',
-        description: '仅关注当下瞬间'
-      },
-      {
-        name: '短期',
-        span: '几分钟到几小时',
-        description: '关注短期事件和计划'
-      },
-      {
-        name: '中期',
-        span: '几天到几个月',
-        description: '关注中期目标和关系'
-      },
-      {
-        name: '长期',
-        span: '几年到几十年',
-        description: '关注人生叙事和长期意义'
-      }
-    ],
-    
-    assess: function(report) {
-      const depth = report.temporalSpan || '短期';
-      const index = this.levels.findIndex(l => l.name === depth);
-      return {
-        level: index >= 0 ? index : 1,
-        span: this.levels[index >= 0 ? index : 1].span,
-        description: this.levels[index >= 0 ? index : 1].description
-      };
-    }
-  },
-  
-  /**
-   * 时间性自我意识练习
-   */
-  practice: {
-    name: '时间性自我意识练习',
-    duration: '15-20 分钟',
-    steps: [
-      {
-        step: 1,
-        focus: '原初印象觉察',
-        duration: '5 分钟',
-        instruction: '觉察当前的直接体验，不加解释'
-      },
-      {
-        step: 2,
-        focus: '保留觉察',
-        duration: '5 分钟',
-        instruction: '觉察刚刚过去的体验如何保持在当前'
-      },
-      {
-        step: 3,
-        focus: '预期觉察',
-        duration: '5 分钟',
-        instruction: '觉察对即将到来的体验的预期'
-      },
-      {
-        step: 4,
-        focus: '时间性整合',
-        duration: '5 分钟',
-        instruction: '觉察自我是过去 - 现在 - 未来的动态统一'
-      }
-    ],
-    insight: '自我深度 = 时间深度'
-  }
-};
-
-/**
- * 前反思自我意识评估器
- */
-class PrereflexiveSelfConsciousnessAssessor {
+class SelfConsciousnessPhenomenology {
   constructor() {
-    this.levels = SelfConsciousnessLevels;
-    this.temporal = TemporalSelfConsciousness;
+    this.detector = new PrereflectiveDetector();
+    this.reduction = new PhenomenologyReduction();
+    this.version = '5.0.2';
   }
-  
+
   /**
-   * 评估自我意识层次
+   * 自我意识现象学评估
+   * @param {Object} experienceData - 体验数据
+   * @returns {Object} 评估结果
    */
-  assessLevels(report) {
-    const assessment = {
-      timestamp: new Date().toISOString(),
-      detectedLevels: [],
-      dominantLevel: null,
-      levelScores: {}
-    };
-    
-    // 评估每个层次
-    for (const [key, level] of Object.entries(this.levels)) {
-      const score = level.assessment(report) ? 1 : 0;
-      assessment.levelScores[key] = score;
-      
-      if (score > 0) {
-        assessment.detectedLevels.push({
-          level: level.level,
-          name: level.name,
-          description: level.description
-        });
-      }
-    }
-    
-    // 确定主导层次
-    const maxLevel = Math.max(...Object.values(assessment.levelScores).map((v, i) => v * (i + 1)));
-    if (maxLevel > 0) {
-      const dominantIndex = Object.values(assessment.levelScores).indexOf(1, Math.floor(maxLevel) - 1);
-      assessment.dominantLevel = Object.keys(this.levels)[dominantIndex];
-    }
-    
-    return assessment;
-  }
-  
-  /**
-   * 评估时间性自我意识
-   */
-  assessTemporality(report) {
-    const assessment = {
-      triadicStructure: {},
-      temporalDepth: this.temporal.temporalDepth.assess(report),
-      integration: {
-        score: 0,
-        insights: [],
-        recommendations: []
-      }
-    };
-    
-    // 评估三重结构
-    for (const [key, component] of Object.entries(this.temporal.triadicStructure)) {
-      const present = component.assessment(report);
-      assessment.triadicStructure[key] = {
-        name: component.name,
-        present: present,
-        description: component.description
-      };
-      
-      if (present) {
-        assessment.integration.score += 33;
-        assessment.integration.insights.push(`${component.name}: 已觉察`);
-      } else {
-        assessment.integration.recommendations.push(
-          `加强${component.name}觉察练习`
-        );
-      }
-    }
-    
-    return assessment;
-  }
-  
-  /**
-   * 生成现象学练习
-   */
-  generatePhenomenologicalPractice(assessment) {
-    const practices = [];
-    
-    // 基于自我意识层次的练习
-    if (assessment.detectedLevels.some(l => l.level >= 3)) {
-      practices.push({
-        name: '前反思自我意识觉察',
-        duration: '10-15 分钟',
-        type: 'awareness',
-        steps: [
-          '找一个安静的地方坐下，闭上眼睛',
-          '让体验自然流动，不加干预',
-          '觉察"正在经历"而非"经历什么"',
-          '注意体验的"为我性" (for-me-ness)',
-          '保持这种觉察 5-10 分钟',
-          '慢慢睁开眼睛，将觉察带入日常活动'
-        ],
-        keyInsight: '不是"思考自我"，而是"正在经历"本身'
-      });
-    }
-    
-    // 基于时间性的练习
-    practices.push({
-      name: '时间性自我意识练习',
-      duration: '15-20 分钟',
-      type: 'temporal',
-      steps: [
-        '原初印象觉察 (5 分钟): 觉察当前的直接体验',
-        '保留觉察 (5 分钟): 觉察刚刚过去的体验如何保持',
-        '预期觉察 (5 分钟): 觉察对即将到来的体验的预期',
-        '时间性整合 (5 分钟): 觉察自我是过去 - 现在 - 未来的动态统一'
-      ],
-      keyInsight: '自我深度 = 时间深度'
+  assessSelfConsciousness(experienceData) {
+    const { experience, reflection, context } = experienceData;
+
+    // 1. 前反思自我意识检测
+    const prereflectiveAssessment = this.detector.detectPrereflectiveConsciousness({
+      experience,
+      context
     });
-    
-    // 现象学还原练习
-    practices.push({
-      name: '现象学还原练习',
-      duration: '15-20 分钟',
-      type: 'reduction',
-      steps: [
-        '悬置判断：搁置所有预设和理论',
-        '纯粹描述：只描述体验本身，不解释',
-        '本质直观：寻找体验的本质结构',
-        '整合：将现象学洞见带入日常生活'
-      ],
-      keyInsight: '回到事情本身 (zu den Sachen selbst)'
+
+    // 2. 反思自我意识评估
+    const reflectiveAssessment = this._assessReflectiveConsciousness({
+      reflection,
+      experience
     });
-    
-    return practices;
-  }
-  
-  /**
-   * 完整评估
-   */
-  assess(report) {
+
+    // 3. 自我意识层次分析
+    const levelsAnalysis = this._analyzeLevels(
+      prereflectiveAssessment,
+      reflectiveAssessment
+    );
+
+    // 4. 现象学还原练习
+    const reductionExercise = this.reduction.generateExercise(experience);
+
+    // 5. 整合分析
+    const integration = this._integrateAnalysis(
+      prereflectiveAssessment,
+      reflectiveAssessment,
+      levelsAnalysis
+    );
+
     return {
-      version: '5.0.0',
+      version: this.version,
       timestamp: new Date().toISOString(),
-      
-      // 自我意识层次评估
-      levels: this.assessLevels(report),
-      
-      // 时间性自我意识评估
-      temporality: this.assessTemporality(report),
-      
-      // 现象学练习建议
-      practices: this.generatePhenomenologicalPractice({
-        detectedLevels: this.assessLevels(report).detectedLevels
-      }),
-      
-      // 整合洞见
-      insights: this.generateInsights(report)
+      prereflective: prereflectiveAssessment,
+      reflective: reflectiveAssessment,
+      levels: levelsAnalysis,
+      reductionExercise,
+      integration,
+      recommendations: this._generateRecommendations(integration)
     };
   }
-  
+
   /**
-   * 生成整合洞见
+   * 反思自我意识评估
    */
-  generateInsights(report) {
-    const insights = [];
+  _assessReflectiveConsciousness({ reflection, experience }) {
+    const hasReflection = !!reflection && reflection.length > 0;
     
-    // 基于前反思自我意识
-    if (report.prereflexiveAwareness) {
-      insights.push({
-        area: '前反思自我意识',
-        insight: '你已具备前反思自我意识能力，这是现象学自我意识的核心。',
-        implication: '可以直接体验体验本身，而非通过概念过滤。',
-        development: '可以进一步深化现象学还原练习。'
+    return {
+      present: hasReflection,
+      content: reflection || '无反思内容',
+      
+      // 反思类型
+      type: this._identifyReflectionType(reflection),
+      
+      // 反思深度
+      depth: this._assessReflectionDepth(reflection),
+      
+      // 反思对象
+      object: this._identifyReflectionObject(reflection),
+      
+      // 反思距离
+      distance: this._assessReflectiveDistance(reflection, experience),
+      
+      // 元认知特征
+      metacognitiveFeatures: this._identifyMetacognitiveFeatures(reflection)
+    };
+  }
+
+  /**
+   * 自我意识层次分析
+   */
+  _analyzeLevels(prereflective, reflective) {
+    const levels = {
+      prereflective: {
+        present: prereflective.present,
+        clarity: prereflective.clarity,
+        quality: prereflective.quality
+      },
+      reflective: {
+        present: reflective.present,
+        clarity: reflective.depth,
+        quality: reflective.type
+      },
+      social: {
+        // 社会层次自我意识 (通过他者视角)
+        present: this._detectSocialAwareness(reflective.content),
+        quality: 'to-be-assessed'
+      }
+    };
+
+    // 层次整合度
+    const integration = this._assessLevelIntegration(levels);
+
+    // 主导层次
+    const dominantLevel = this._identifyDominantLevel(levels);
+
+    return {
+      levels,
+      integration,
+      dominantLevel,
+      balance: this._assessBalance(levels),
+      developmentalStage: this._inferDevelopmentalStage(levels)
+    };
+  }
+
+  /**
+   * 整合分析
+   */
+  _integrateAnalysis(prereflective, reflective, levels) {
+    // 前反思 - 反思关系
+    const relationship = this._analyzePrereflectiveReflectiveRelationship(
+      prereflective,
+      reflective
+    );
+
+    // 现象学特征
+    const phenomenologicalFeatures = this._identifyPhenomenologicalFeatures(
+      prereflective,
+      reflective
+    );
+
+    // 自我意识模式
+    const pattern = this._identifySelfConsciousnessPattern(
+      prereflective,
+      reflective,
+      levels
+    );
+
+    // 体验厚度
+    const thickness = this._assessExperientialThickness(prereflective, reflective);
+
+    return {
+      relationship,
+      phenomenologicalFeatures,
+      pattern,
+      thickness,
+      coherence: this._assessCoherence(prereflective, reflective, levels),
+      authenticity: this._assessAuthenticity(prereflective, reflective)
+    };
+  }
+
+  /**
+   * 分析前反思 - 反思关系
+   */
+  _analyzePrereflectiveReflectiveRelationship(prereflective, reflective) {
+    if (!prereflective.present && !reflective.present) {
+      return { type: 'absent', description: '自我意识体验缺失' };
+    }
+
+    if (prereflective.present && !reflective.present) {
+      return {
+        type: 'prereflective-dominant',
+        description: '以前反思觉察为主，反思较少',
+        strength: '沉浸式体验',
+        risk: '可能缺乏元认知洞察'
+      };
+    }
+
+    if (!prereflective.present && reflective.present) {
+      return {
+        type: 'reflective-dominant',
+        description: '以反思为主，前反思觉察较弱',
+        strength: '元认知能力强',
+        risk: '可能过度反思，失去直接体验'
+      };
+    }
+
+    // 两者都存在
+    const congruence = this._assessCongruence(prereflective, reflective);
+    
+    if (congruence > 0.7) {
+      return {
+        type: 'integrated',
+        description: '前反思与反思整合良好',
+        strength: '既有直接体验又有元认知洞察',
+        risk: 'low'
+      };
+    }
+
+    return {
+      type: 'conflicted',
+      description: '前反思体验与反思理解存在冲突',
+      strength: '复杂性高',
+      risk: '可能存在自我理解困难',
+      congruence
+    };
+  }
+
+  /**
+   * 识别现象学特征
+   */
+  _identifyPhenomenologicalFeatures(prereflective, reflective) {
+    const features = [];
+
+    // 第一人称给定性
+    if (prereflective.firstPersonGivenness) {
+      features.push('第一人称给定性 (体验天然具有"为我性")');
+    }
+
+    // 非对象化自我关系
+    if (prereflective.nonObjectifying) {
+      features.push('非对象化自我关系 (自我作为主体而非对象)');
+    }
+
+    // 即时性
+    if (prereflective.immediacy) {
+      features.push('即时性 (无需反思的自我觉察)');
+    }
+
+    // 反思距离
+    if (reflective.distance === 'healthy') {
+      features.push('健康反思距离 (既能反思又不失去体验)');
+    }
+
+    // 过度反思
+    if (reflective.distance === 'excessive') {
+      features.push('过度反思 (可能失去直接体验)');
+    }
+
+    return features;
+  }
+
+  /**
+   * 识别自我意识模式
+   */
+  _identifySelfConsciousnessPattern(prereflective, reflective, levels) {
+    const patterns = {
+      'immersed': {
+        condition: prereflective.clarity > 0.7 && (!reflective.present || reflective.depth < 0.4),
+        description: '沉浸模式：深度体验但反思较少',
+        strengths: ['直接体验', '流动感', '临在感'],
+        growthEdge: '发展元认知能力，增加反思深度'
+      },
+      'detached': {
+        condition: reflective.depth > 0.7 && prereflective.clarity < 0.4,
+        description: '疏离模式：强反思但体验较弱',
+        strengths: ['元认知洞察', '理性分析', '自我观察'],
+        growthEdge: ' reconnect with direct experience, practice presence'
+      },
+      'integrated': {
+        condition: prereflective.clarity > 0.6 && reflective.depth > 0.6,
+        description: '整合模式：体验与反思平衡',
+        strengths: ['直接体验 + 元认知', '临在 + 洞察', '感性与理性整合'],
+        growthEdge: '维持平衡，深化整合'
+      },
+      'fragmented': {
+        condition: prereflective.clarity < 0.4 && (!reflective.present || reflective.depth < 0.4),
+        description: '碎片模式：体验和反思都较弱',
+        strengths: [],
+        growthEdge: '从基础觉察练习开始，培养自我意识'
+      },
+      'conflicted': {
+        condition: this._assessCongruence(prereflective, reflective) < 0.5,
+        description: '冲突模式：体验与反思不一致',
+        strengths: ['复杂性意识'],
+        growthEdge: '探索冲突来源，整合分裂部分'
+      }
+    };
+
+    for (const [pattern, config] of Object.entries(patterns)) {
+      if (config.condition) {
+        return { name: pattern, ...config };
+      }
+    }
+
+    return { name: 'mixed', description: '混合模式' };
+  }
+
+  /**
+   * 评估体验厚度
+   */
+  _assessExperientialThickness(prereflective, reflective) {
+    const prereflectiveScore = prereflective.clarity * 0.5;
+    const reflectiveScore = reflective.present ? reflective.depth * 0.3 : 0;
+    const integrationScore = this._assessCongruence(prereflective, reflective) * 0.2;
+
+    const total = prereflectiveScore + reflectiveScore + integrationScore;
+
+    return {
+      score: total,
+      level: total > 0.7 ? 'thick' : total > 0.4 ? 'moderate' : 'thin',
+      description: total > 0.7 
+        ? '体验厚度高：丰富的现象学内容 + 深度反思' 
+        : total > 0.4 
+        ? '体验厚度中等：有一定的现象学内容和反思' 
+        : '体验厚度较薄：现象学内容和反思都有限'
+    };
+  }
+
+  /**
+   * 评估连贯性
+   */
+  _assessCoherence(prereflective, reflective, levels) {
+    const congruence = this._assessCongruence(prereflective, reflective);
+    const levelBalance = this._assessBalance(levels);
+
+    return {
+      score: (congruence + levelBalance) / 2,
+      level: congruence > 0.7 && levelBalance > 0.7 ? 'high' : congruence > 0.5 ? 'moderate' : 'low',
+      description: congruence > 0.7 
+        ? '自我意识连贯性高：体验与反思一致' 
+        : congruence > 0.5 
+        ? '自我意识连贯性中等：部分一致' 
+        : '自我意识连贯性低：体验与反思存在显著差异'
+    };
+  }
+
+  /**
+   * 评估真实性
+   */
+  _assessAuthenticity(prereflective, reflective) {
+    // 真实性指标：前反思觉察的清晰度 + 反思的开放性
+    const prereflectiveClarity = prereflective.clarity;
+    const reflectiveOpenness = reflective.present ? 
+      (reflective.type === 'open' || reflective.type === 'exploratory' ? 0.9 : 0.5) : 0.5;
+
+    const score = (prereflectiveClarity + reflectiveOpenness) / 2;
+
+    return {
+      score,
+      level: score > 0.7 ? 'high' : score > 0.5 ? 'moderate' : 'low',
+      description: score > 0.7 
+        ? '真实性高：清晰的直接体验 + 开放的反思态度' 
+        : score > 0.5 
+        ? '真实性中等：有一定的直接体验和反思开放性' 
+        : '真实性较低：可能缺乏直接体验或反思封闭'
+    };
+  }
+
+  /**
+   * 评估一致性
+   */
+  _assessCongruence(prereflective, reflective) {
+    if (!prereflective.present || !reflective.present) return 0.5;
+    
+    // 简化评估：比较效价和主题
+    const valenceMatch = prereflective.valence === reflective.valence;
+    const themeMatch = prereflective.theme === reflective.theme;
+
+    return (valenceMatch ? 0.6 : 0.3) + (themeMatch ? 0.4 : 0.1);
+  }
+
+  /**
+   * 评估层次平衡
+   */
+  _assessBalance(levels) {
+    const scores = [
+      levels.prereflective.clarity,
+      levels.reflective.present ? 0.7 : 0.2,
+      levels.social.present ? 0.7 : 0.3
+    ];
+
+    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const variance = scores.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / scores.length;
+
+    return 1 - Math.min(1, variance); // 方差越小，平衡越好
+  }
+
+  /**
+   * 识别主导层次
+   */
+  _identifyDominantLevel(levels) {
+    const scores = {
+      prereflective: levels.prereflective.clarity,
+      reflective: levels.reflective.present ? levels.reflective.clarity : 0,
+      social: levels.social.present ? 0.6 : 0
+    };
+
+    const entries = Object.entries(scores);
+    entries.sort((a, b) => b[1] - a[1]);
+
+    return {
+      primary: entries[0][0],
+      score: entries[0][1],
+      secondary: entries[1][0],
+      secondaryScore: entries[1][1]
+    };
+  }
+
+  /**
+   * 推断发展阶段
+   */
+  _inferDevelopmentalStage(levels) {
+    const prereflectiveScore = levels.prereflective.clarity;
+    const reflectiveScore = levels.reflective.present ? levels.reflective.clarity : 0;
+    const socialScore = levels.social.present ? 0.6 : 0.2;
+
+    if (prereflectiveScore < 0.3 && reflectiveScore < 0.3) {
+      return {
+        stage: 'pre-awareness',
+        description: '前觉察阶段：自我意识尚未发展',
+        intervention: '基础觉察练习，培养自我注意'
+      };
+    }
+
+    if (prereflectiveScore > 0.7 && reflectiveScore < 0.4) {
+      return {
+        stage: 'immersed',
+        description: '沉浸阶段：有体验但缺乏反思',
+        intervention: '引导反思，发展元认知'
+      };
+    }
+
+    if (reflectiveScore > 0.7 && prereflectiveScore < 0.4) {
+      return {
+        stage: 'detached',
+        description: '疏离阶段：强反思但体验弱',
+        intervention: ' reconnect with direct experience, 正念练习'
+      };
+    }
+
+    if (prereflectiveScore > 0.6 && reflectiveScore > 0.6 && socialScore > 0.5) {
+      return {
+        stage: 'integrated',
+        description: '整合阶段：体验、反思、社会视角平衡',
+        intervention: '深化整合，维持平衡'
+      };
+    }
+
+    return {
+      stage: 'developing',
+      description: '发展阶段：自我意识正在发展中',
+      intervention: '根据主导层次选择干预'
+    };
+  }
+
+  /**
+   * 识别反思类型
+   */
+  _identifyReflectionType(reflection) {
+    if (!reflection) return 'absent';
+    const lower = reflection.toLowerCase();
+    
+    if (lower.includes('为什么') || lower.includes('why')) {
+      return 'explanatory';
+    }
+    if (lower.includes('感觉') || lower.includes('feel')) {
+      return 'experiential';
+    }
+    if (lower.includes('应该') || lower.includes('should')) {
+      return 'normative';
+    }
+    if (lower.includes('可能') || lower.includes('maybe') || lower.includes('explore')) {
+      return 'exploratory';
+    }
+    if (lower.includes('接受') || lower.includes('accept') || lower.includes('open')) {
+      return 'open';
+    }
+    if (lower.includes('分析') || lower.includes('analyze')) {
+      return 'analytical';
+    }
+    return 'mixed';
+  }
+
+  /**
+   * 评估反思深度
+   */
+  _assessReflectionDepth(reflection) {
+    if (!reflection) return 0;
+    
+    const depthIndicators = {
+      length: Math.min(1, reflection.length / 100),
+      complexity: (reflection.match(/[，,。.!?]/g) || []).length / 10,
+      abstraction: (reflection.match(/因为 | 所以 | 如果 | 可能 | 意义 | 价值/g) || []).length / 5
+    };
+
+    return (depthIndicators.length + depthIndicators.complexity + depthIndicators.abstraction) / 3;
+  }
+
+  /**
+   * 识别反思对象
+   */
+  _identifyReflectionObject(reflection) {
+    if (!reflection) return 'unknown';
+    const lower = reflection.toLowerCase();
+    
+    if (lower.includes('情绪') || lower.includes('感受') || lower.includes('emotion')) {
+      return 'emotion';
+    }
+    if (lower.includes('行为') || lower.includes('行动') || lower.includes('behavior')) {
+      return 'behavior';
+    }
+    if (lower.includes('想法') || lower.includes('思维') || lower.includes('thought')) {
+      return 'thought';
+    }
+    if (lower.includes('自我') || lower.includes('自己') || lower.includes('self')) {
+      return 'self';
+    }
+    if (lower.includes('关系') || lower.includes('他人') || lower.includes('relationship')) {
+      return 'relationship';
+    }
+    return 'mixed';
+  }
+
+  /**
+   * 评估反思距离
+   */
+  _assessReflectiveDistance(reflection, experience) {
+    if (!reflection) return 'absent';
+    
+    // 检查是否有过度反思的迹象
+    const overReflectionIndicators = ['反复', '纠结', '想不通', 'rumination', 'obsess'];
+    const hasOverReflection = overReflectionIndicators.some(ind => 
+      reflection.toLowerCase().includes(ind)
+    );
+
+    if (hasOverReflection) {
+      return 'excessive';
+    }
+
+    // 检查是否有健康反思的迹象
+    const healthyReflectionIndicators = ['理解', '觉察', ' insight', '学习', '成长'];
+    const hasHealthyReflection = healthyReflectionIndicators.some(ind => 
+      reflection.toLowerCase().includes(ind)
+    );
+
+    if (hasHealthyReflection) {
+      return 'healthy';
+    }
+
+    return 'moderate';
+  }
+
+  /**
+   * 识别元认知特征
+   */
+  _identifyMetacognitiveFeatures(reflection) {
+    if (!reflection) return [];
+    const lower = reflection.toLowerCase();
+    
+    const features = [];
+    
+    if (lower.includes('意识到') || lower.includes('aware')) {
+      features.push('awareness');
+    }
+    if (lower.includes('思考我的') || lower.includes('think about my')) {
+      features.push('self-monitoring');
+    }
+    if (lower.includes('模式') || lower.includes('pattern')) {
+      features.push('pattern-recognition');
+    }
+    if (lower.includes('改变') || lower.includes('change')) {
+      features.push('change-orientation');
+    }
+
+    return features;
+  }
+
+  /**
+   * 检测社会意识
+   */
+  _detectSocialAwareness(reflection) {
+    if (!reflection) return false;
+    const socialIndicators = ['他人', '别人', '他们', '关系', '社交', 'other', 'they', 'relationship'];
+    return socialIndicators.some(ind => reflection.toLowerCase().includes(ind));
+  }
+
+  /**
+   * 评估层次整合
+   */
+  _assessLevelIntegration(levels) {
+    const scores = [
+      levels.prereflective.clarity,
+      levels.reflective.present ? levels.reflective.clarity : 0,
+      levels.social.present ? 0.6 : 0.3
+    ];
+
+    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+    const variance = scores.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / scores.length;
+
+    return {
+      score: mean * (1 - variance),
+      level: mean > 0.6 && variance < 0.1 ? 'high' : mean > 0.4 ? 'moderate' : 'low'
+    };
+  }
+
+  /**
+   * 生成干预建议
+   */
+  _generateRecommendations(integration) {
+    const recommendations = [];
+
+    const pattern = integration.pattern.name;
+
+    if (pattern === 'immersed') {
+      recommendations.push({
+        type: 'metacognitive_development',
+        title: '元认知发展练习',
+        description: '培养反思能力，增加元认知洞察',
+        exercises: [
+          '反思日记：每天花 10 分钟记录体验并反思',
+          '第三人称自我对话：用"你"或名字称呼自己',
+          '情绪命名练习：识别并命名情绪'
+        ]
       });
     }
-    
-    // 基于时间性
-    if (report.temporalSpan && report.temporalSpan !== '瞬间') {
-      insights.push({
-        area: '时间性自我意识',
-        insight: `你的时间深度为${report.temporalSpan}，这决定了你的自我深度。`,
-        implication: '更长的时间跨度支持更丰富的自我叙事。',
-        development: '可以通过时间性练习扩展时间深度。'
+
+    if (pattern === 'detached') {
+      recommendations.push({
+        type: 'reconnection',
+        title: '重新连接体验练习',
+        description: ' reconnect with direct experience, 减少过度反思',
+        exercises: [
+          '身体扫描冥想：将注意力带回身体感受',
+          '感官觉察练习：专注于看、听、触',
+          '正念呼吸：不加评判地观察呼吸'
+        ]
       });
     }
-    
-    // 基于现象学态度
-    if (report.phenomenologicalAttitude) {
-      insights.push({
-        area: '现象学态度',
-        insight: '你能够悬置判断，纯粹描述体验。',
-        implication: '这是现象学探究的基础能力。',
-        development: '可以深化本质直观练习。'
+
+    if (pattern === 'integrated') {
+      recommendations.push({
+        type: 'deepening',
+        title: '深化整合练习',
+        description: '维持体验与反思的平衡，深化整合',
+        exercises: [
+          '现象学反思：描述体验 + 反思意义',
+          '整合日记：记录体验、反思、行动',
+          '正念反思冥想：临在 + 洞察'
+        ]
       });
     }
-    
-    return insights;
+
+    if (pattern === 'fragmented') {
+      recommendations.push({
+        type: 'foundation',
+        title: '基础觉察练习',
+        description: '从基础开始，培养自我意识',
+        exercises: [
+          '呼吸觉察：每天 5 分钟专注呼吸',
+          '身体感受扫描：注意身体各部位感受',
+          '简单情绪命名：识别基本情绪'
+        ]
+      });
+    }
+
+    if (pattern === 'conflicted') {
+      recommendations.push({
+        type: 'integration_work',
+        title: '整合对话练习',
+        description: '探索体验与反思的冲突，促进整合',
+        exercises: [
+          '两部分对话：让体验部分和反思部分对话',
+          '冲突探索：探索冲突的来源和意义',
+          '整合叙述：生成包容冲突的新叙述'
+        ]
+      });
+    }
+
+    // 基于真实性
+    if (integration.authenticity.level === 'low') {
+      recommendations.push({
+        type: 'authenticity_building',
+        title: '真实性建设',
+        description: '培养更真实的自我关系',
+        exercises: [
+          '价值澄清：探索个人核心价值观',
+          '真实自我对话：不加评判地倾听自己',
+          '接纳练习：接纳当下体验'
+        ]
+      });
+    }
+
+    return recommendations;
+  }
+
+  /**
+   * 获取模块信息
+   */
+  getInfo() {
+    return {
+      name: 'Self-Consciousness Phenomenology',
+      version: this.version,
+      description: '自我意识现象学深度增强模块',
+      theoreticalBasis: 'SEP Self-Consciousness + Phenomenology',
+      keyConcepts: [
+        'Pre-reflective Self-Consciousness',
+        'First-Person Givenness',
+        'Non-Objectifying Self-Relation',
+        'Reflective Distance',
+        'Experiential Thickness'
+      ]
+    };
   }
 }
 
-// ============ 导出 ============
-
-module.exports = {
-  SelfConsciousnessLevels,
-  TemporalSelfConsciousness,
-  PrereflexiveSelfConsciousnessAssessor
-};
+module.exports = SelfConsciousnessPhenomenology;
