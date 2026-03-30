@@ -1,0 +1,17 @@
+{
+  "name": "self-consciousness-phenomenology-v5",
+  "version": "5.0.0",
+  "description": "自我意识现象学增强 v5.0 - 基于 SEP 自我意识理论与 Husserl 时间现象学",
+  "main": "index.js",
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "keywords": [
+    "self-consciousness",
+    "phenomenology",
+    "pre-reflective",
+    "temporality",
+    "Husserl",
+    "Sartre",
+    "Zahavi"
+  ]
+}

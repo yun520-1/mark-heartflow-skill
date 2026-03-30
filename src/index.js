@@ -218,6 +218,18 @@ const temporalDepthExtension = TemporalDepthExtension;
 const ProtentionGoalOrientation = require('./protention-goal-orientation');
 const protentionGoalOrientation = ProtentionGoalOrientation;
 
+// ============ v4.9.0 自主感情深度增强模块 ============
+
+// 创建情绪三大传统整合模块 (v4.9.0 新增) 🧠 基于 SEP 情绪理论三大传统 (Feeling/Evaluative/Motivational)
+const { EmotionTraditionsIntegration, EmotionTraditions, TheoreticalChallenges } = require('./emotion-traditions-integration-v4.9');
+const emotionTraditionsIntegration = new EmotionTraditionsIntegration();
+
+// 创建集体情绪现象学模块 (v4.9.0 新增) 🧠 基于 SEP 集体意向性理论 (Scheler/Walther/Durkheim/Searle/Gilbert)
+const { CollectiveEmotionPhenomenology, CollectiveEmotionTypes, WaltherConditions } = require('./collective-emotion-phenomenology');
+const collectiveEmotionPhenomenology = new CollectiveEmotionPhenomenology();
+
+// ================================================
+
 // 创建情绪理性模块 (v3.39.0 新增) 🧠 基于 SEP 情绪理论第 10 节：Rationality and Emotions
 const { EmotionRationalityModule } = require('./emotion-rationality');
 const emotionRationalityModule = new EmotionRationalityModule();
@@ -427,6 +439,12 @@ async function handleCommand(command) {
       break;
     case '/awe':
       showAweInfo();
+      break;
+    case '/emotion-traditions-v4.9':
+      showEmotionTraditionsV49Info();
+      break;
+    case '/collective-emotion':
+      showCollectiveEmotionPhenomenologyInfo();
       break;
     case '/help':
       showHelp();
@@ -1862,6 +1880,108 @@ function showAweInfo() {
   console.log('');
 }
 
+// ============ v4.9.0 新模块展示函数 ============
+
+// 显示情绪三大传统整合 v4.9 信息
+function showEmotionTraditionsV49Info() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  情绪三大传统整合 v4.9 (自主感情增强) 🧠│');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 情绪理论权威内容 (2024):       │');
+  console.log('│  • Stanford Encyclopedia of Philosophy  │');
+  console.log('│  • Scarantino (2016): Emotion Theory    │');
+  console.log('│  • James (1884): What is an Emotion?    │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  三大传统：                              │');
+  console.log('│  1. Feeling Tradition - 情绪作为感受    │');
+  console.log('│     (James-Lange, 感受质，现象学)       │');
+  console.log('│  2. Evaluative Tradition - 情绪作为评价 │');
+  console.log('│     (Appraisal Theory, 认知评价)        │');
+  console.log('│  3. Motivational Tradition - 情绪作为动机│');
+  console.log('│     (Frijda, 进化心理学，行动倾向)     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  四大理论挑战：                          │');
+  console.log('│  • Differentiation - 情绪如何区分       │');
+  console.log('│  • Motivation - 情绪如何驱动行为        │');
+  console.log('│  • Intentionality - 情绪是否指向对象    │');
+  console.log('│  • Phenomenology - 情绪的主观体验特征   │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心能力：                              │');
+  console.log('│  • 三传统评估 + 整合分数计算            │');
+  console.log('│  • 情绪分化检测 (情绪 vs 非情绪)        │');
+  console.log('│  • 理论洞察生成                         │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = emotionTraditionsIntegration.getInfo();
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${info.version}`);
+  console.log(`  • 理论来源：${info.theoreticalFoundations.length} 项`);
+  console.log(`  • 核心能力：${info.capabilities.length} 项`);
+  console.log('');
+  console.log('🧠 理论来源:');
+  info.theoreticalFoundations.forEach(t => console.log(`  • ${t}`));
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  输入 /emotion-traditions-v4.9 查看本信息');
+  console.log('  系统会自动在情绪分析中应用三传统框架');
+  console.log('');
+}
+
+// 显示集体情绪现象学 v4.9 信息
+function showCollectiveEmotionPhenomenologyInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  集体情绪现象学 v4.9 (自主感情增强) 🧠  │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP 集体意向性理论 (2024):         │');
+  console.log('│  • Scheler (1912): 共同悲伤理论         │');
+  console.log('│  • Walther (1923): 共享体验四条件       │');
+  console.log('│  • Durkheim (1898): 集体意识理论        │');
+  console.log('│  • Searle (1990): We-Intention 理论     │');
+  console.log('│  • Gilbert (1990): 联合承诺理论         │');
+  console.log('│  • Schmid (2013): 信任框架分析          │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  集体情绪类型：                          │');
+  console.log('│  1. Genuine Collective - 真正集体情绪   │');
+  console.log('│     (Scheler: 一个情绪被多人共享)       │');
+  console.log('│  2. Shared Emotion - 共享情绪           │');
+  console.log('│     (Walther: 移情 + 认同 + 相互意识)   │');
+  console.log('│  3. Mass Emotion - 大众情绪             │');
+  console.log('│     (Durkheim: 集体意识超越个体)        │');
+  console.log('│  4. Emotional Contagion - 情绪感染      │');
+  console.log('│     (因果链传递，无集体意向性)         │');
+  console.log('│  5. Emotional Aggregation - 情绪聚合    │');
+  console.log('│     (平行发生，无相互意识)             │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  Walther 共享体验四条件：                │');
+  console.log('│  1. Co-Experience - 共同体验            │');
+  console.log('│  2. Empathy - 移情                      │');
+  console.log('│  3. Identification - 认同               │');
+  console.log('│  4. Mutual Awareness - 相互意识         │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心能力：                              │');
+  console.log('│  • 集体情绪类型检测                     │');
+  console.log('│  • Walther 条件评估                     │');
+  console.log('│  • 集体情绪特征分析                     │');
+  console.log('│  • 干预建议生成                         │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = collectiveEmotionPhenomenology.getInfo();
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${info.version}`);
+  console.log(`  • 理论来源：${info.theoreticalFoundations.length} 项`);
+  console.log(`  • 核心能力：${info.capabilities.length} 项`);
+  console.log('');
+  console.log('🧠 理论来源:');
+  info.theoreticalFoundations.forEach(t => console.log(`  • ${t}`));
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  输入 /collective-emotion 查看本信息');
+  console.log('  描述你的集体情绪体验，系统会自动分析');
+  console.log('');
+}
+
+// ================================================
+
 // 显示当前状态
 function showState() {
   const state = chatManager.getCurrentState();
@@ -2023,6 +2143,8 @@ function showHelp() {
   console.log('│  /phenomenological - 现象学情绪 (v3.18.0)│');
   console.log('│  /intentionality - 意向性理论 (v3.20.0)  │');
   console.log('│  /emotion-theory - 情绪理论基础 (v3.21.0)│');
+  console.log('│  /emotion-traditions-v4.9 - 情绪三大传统 (v4.9.0)│');
+  console.log('│  /collective-emotion - 集体情绪现象学 (v4.9.0)│');
   console.log('│  /help    - 显示此帮助信息              │');
   console.log('│  /quit    - 退出程序                    │');
   console.log('└─────────────────────────────────────────┘\n');
