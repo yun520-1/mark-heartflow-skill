@@ -1,0 +1,18 @@
+{
+  "name": "consciousness-phenomenology-v5.0.16",
+  "version": "5.0.16",
+  "description": "HeartFlow 意识现象学与具身认知深度整合模块 - 基于 SEP Consciousness + Embodied Cognition + Self-Consciousness",
+  "main": "index.js",
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "keywords": [
+    "consciousness",
+    "phenomenology",
+    "embodied-cognition",
+    "self-consciousness",
+    "predictive-processing",
+    "heartflow"
+  ],
+  "dependencies": {},
+  "peerDependencies": {}
+}
