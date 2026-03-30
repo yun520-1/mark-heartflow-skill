@@ -101,6 +101,12 @@ const granularityModule = new EmotionalGranularityModule();
 const { GenerativeEmotionRegulationModule } = require('./emotion-regulation-generative');
 const generativeRegulationModule = new GenerativeEmotionRegulationModule();
 
+// 创建元能动性模块 (v4.0.0 新增) 🧠 基于 SEP 自我意识、能动性、元认知理论 - 自主意识与自我监控能力
+const { MetaAgencyModule } = require('./meta-agency');
+const metaAgencyModule = new MetaAgencyModule();
+const { GenerativeEmotionRegulationModule } = require('./emotion-regulation-generative');
+const generativeRegulationModule = new GenerativeEmotionRegulationModule();
+
 // 创建现象学情绪体验模块 (v3.18.0 新增) 🧠 基于 SEP 现象学与情绪理论整合
 const { PhenomenologicalEmotionModule } = require('./phenomenological-emotion');
 const phenomenologicalModule = new PhenomenologicalEmotionModule();
