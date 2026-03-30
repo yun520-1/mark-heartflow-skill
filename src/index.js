@@ -182,6 +182,18 @@ const predictiveEmotionEnhanced = PredictiveEmotionEnhanced;
 const EmbodiedCognitionEnhanced = require('./embodied-cognition-enhanced');
 const embodiedCognitionEnhanced = EmbodiedCognitionEnhanced;
 
+// 创建集体意向性增强模块 (v4.6.0 新增) 🧠 基于 SEP Collective Intentionality 理论 (Searle, Bratman, Gilbert)
+const { CollectiveIntentionalityEnhanced } = require('./collective-intentionality-enhanced');
+const collectiveIntentionalityEnhanced = new CollectiveIntentionalityEnhanced();
+
+// 创建社会认同增强模块 (v4.6.0 新增) 🧠 基于 Tajfel & Turner SIT 和 SEP Social Identity 理论
+const { SocialIdentityEnhanced } = require('./social-identity-enhanced');
+const socialIdentityEnhanced = new SocialIdentityEnhanced();
+
+// 创建集体情绪整合模块 (v4.6.0 新增) 🧠 基于 Scheler 和 von Scheve & Salmela 集体情绪理论
+const { CollectiveEmotionIntegration } = require('./collective-emotion-integration');
+const collectiveEmotionIntegration = new CollectiveEmotionIntegration();
+
 // 创建情绪理性模块 (v3.39.0 新增) 🧠 基于 SEP 情绪理论第 10 节：Rationality and Emotions
 const { EmotionRationalityModule } = require('./emotion-rationality');
 const emotionRationalityModule = new EmotionRationalityModule();
@@ -211,7 +223,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.45.0                 ║');
+  console.log('║              情感拟人化交互系统 v4.6.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
