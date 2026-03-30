@@ -117,6 +117,14 @@ const emotionCollectiveIntegrationModule = EmotionCollectiveIntegration;
 
 // === v5.0.11 结束 ===
 
+// === v5.0.12 新增模块 ===
+
+// 创建情绪三大传统整合模块 (v5.0.12 新增) 🧠 基于 SEP 情绪理论 §2-7 (Feeling/Evaluative/Motivational 三大传统完整整合 + 跨传统一致性检测 + 冲突识别 + 整合干预)
+const EmotionTraditionsIntegration = require('./emotion-traditions-integration-v5.0.12');
+const emotionTraditionsIntegrationModule = new EmotionTraditionsIntegration();
+
+// === v5.0.12 结束 ===
+
 // 创建心理化模块 (v3.9.0 新增) 🧠 基于 Fonagy 心理化理论
 const { MentalizationModule } = require('./mentalization');
 const mentalizationModule = new MentalizationModule();
@@ -509,6 +517,9 @@ async function handleCommand(command) {
       break;
     case '/collective-emotion':
       showCollectiveEmotionPhenomenologyInfo();
+      break;
+    case '/emotion-traditions-v5':
+      showEmotionTraditionsV5Info();
       break;
     case '/help':
       showHelp();
@@ -2363,6 +2374,46 @@ function showCollectiveEmotionPhenomenologyInfo() {
   console.log('💡 使用方式:');
   console.log('  输入 /collective-emotion 查看本信息');
   console.log('  描述你的集体情绪体验，系统会自动分析');
+  console.log('');
+}
+
+// 显示情绪三大传统整合 v5.0.12 信息
+function showEmotionTraditionsV5Info() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  情绪三大传统整合 v5.0.12 🧠            │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP Emotion Theory §2-7:          │');
+  console.log('│  • Feeling Tradition - 感受传统         │');
+  console.log('│    (情绪作为独特的意识体验)             │');
+  console.log('│  • Evaluative Tradition - 评价传统      │');
+  console.log('│    (情绪作为对情境的评价)               │');
+  console.log('│  • Motivational Tradition - 动机传统    │');
+  console.log('│    (情绪作为动机状态)                   │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心功能：                              │');
+  console.log('│  • 三成分自动识别                       │');
+  console.log('│  • 传统间一致性检测                     │');
+  console.log('│  • 冲突识别与干预                       │');
+  console.log('│  • 整合练习生成                         │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  四大理论挑战：                          │');
+  console.log('│  1. Differentiation - 分化问题          │');
+  console.log('│  2. Motivation - 动机问题               │');
+  console.log('│  3. Intentionality - 意向性问题         │');
+  console.log('│  4. Phenomenology - 现象学问题          │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  console.log('🧠 理论来源:');
+  console.log('  • SEP Emotion (2026 Edition) §2-7');
+  console.log('  • Fehr & Russell (1984): 情绪原型理论');
+  console.log('  • Scarantino (2016): 情绪理论整合框架');
+  console.log('  • James (1884): 情绪身体理论');
+  console.log('  • Arnold (1960): 评价理论');
+  console.log('  • Lazarus (1991): 认知 - 动机理论');
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  输入 /emotion-traditions-v5 查看本信息');
+  console.log('  描述你的情绪体验，系统会自动进行三传统评估');
   console.log('');
 }
 
