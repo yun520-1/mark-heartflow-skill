@@ -30,9 +30,9 @@ const NarrativePsychology = {
    */
   meta: {
     name: '叙事心理学',
-    version: '1.0.0',
-    source: 'SEP Narrative Psychology',
-    description: '基于叙事心理学的自我理解与成长模块'
+    version: '3.37.0',
+    source: 'SEP Narrative Psychology + McAdams Life Story Model',
+    description: '基于叙事心理学和 McAdams 生命故事模型的自我理解与成长模块，支持自传体推理分析、叙事幸福感评估和完整生命故事访谈'
   },
 
   /**

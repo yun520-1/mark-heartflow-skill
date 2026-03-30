@@ -190,8 +190,8 @@ const AltruismTypes = {
 class MoralPsychologyModule {
   constructor() {
     this.name = 'MoralPsychology';
-    this.version = '3.30.0';
-    this.description = '基于 SEP 权威理论的道德判断、道德发展与道德情感分析';
+    this.version = '3.31.0';
+    this.description = '基于 SEP 权威理论的道德判断、道德发展与道德情感分析，整合 Frankfurt Cases、意志薄弱干预和道德基础理论';
     
     // 伦理学传统数据库
     this.ethicsTraditions = this._initEthicsTraditions();

@@ -19,9 +19,9 @@ const FreeWillAgencyEnhanced = {
    */
   meta: {
     name: '自由意志与能动性 (增强版)',
-    version: '3.35.0',
-    source: 'SEP Agency + Free Will + Intentionality + Moral Psychology',
-    description: '基于 SEP 能动性理论的完整框架，支持五种能动性概念、自由意志理论、道德责任与实践推理'
+    version: '3.36.0',
+    source: 'SEP Agency + Free Will + Intentionality + Moral Psychology + Frankfurt Cases + Akrasia',
+    description: '基于 SEP 能动性理论的完整框架，支持五种能动性概念、自由意志理论、道德责任评估、Frankfurt Cases、意志薄弱干预与实践推理'
   },
 
   /**
@@ -441,7 +441,7 @@ const FreeWillAgencyEnhanced = {
     
     const response = {
       module: 'free-will-agency-enhanced',
-      version: '3.34.0',
+      version: '3.36.0',
       assessment,
       guidance: this._generateGuidance(assessment, userInput),
       exercises: this._selectExercises(assessment.dominantType)
