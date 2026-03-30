@@ -1,0 +1,28 @@
+{
+  "name": "heartflow-prereflective-temporal-awareness",
+  "version": "5.0.4",
+  "description": "HeartFlow v5.0.4 - 前反思自我意识与时间意识整合模块",
+  "main": "index.js",
+  "keywords": [
+    "phenomenology",
+    "prereflective-awareness",
+    "temporal-consciousness",
+    "self-consciousness",
+    "emotion-temporal-structure",
+    "husserl",
+    "sartre",
+    "merleau-ponty",
+    "heartflow"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yun520-1/mark-heartflow-skill.git"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "node test.js"
+  }
+}
