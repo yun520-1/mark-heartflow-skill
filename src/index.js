@@ -85,6 +85,10 @@ const selfConsciousnessEnhancedModule = new SelfConsciousnessEnhancedModule();
 const { PhenomenologicalAgencyModule } = require('./phenomenological-agency');
 const phenomenologicalAgencyModule = new PhenomenologicalAgencyModule();
 
+// 创建幸福与福祉模块 (v3.52.0 新增) 🌟 基于 SEP 幸福与福祉理论 (Hedonic/Eudaimonic/Ojective List + PERMA + PWB)
+const { HappinessWellBeingModule } = require('./happiness-wellbeing');
+const happinessWellBeingModule = new HappinessWellBeingModule();
+
 // 创建情绪理论整合模块 (v3.12.0 新增) 🧠 基于 SEP 情绪三大传统理论
 const { EmotionIntegrationModule } = require('./emotion-integration');
 const emotionIntegrationModule = new EmotionIntegrationModule();
