@@ -1,0 +1,19 @@
+{
+  "name": "collective-intentionality-enhanced",
+  "version": "4.6.0",
+  "description": "集体意向性增强模块 - 基于 SEP Collective Intentionality 理论",
+  "main": "index.js",
+  "keywords": [
+    "collective-intentionality",
+    "we-intention",
+    "joint-commitment",
+    "shared-goal",
+    "heartflow"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yun520-1/mark-heartflow-skill"
+  }
+}
