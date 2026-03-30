@@ -1,0 +1,16 @@
+{
+  "name": "we-intention-detector",
+  "version": "1.0.0",
+  "description": "We-Intention 检测器 - 基于 SEP 集体意向性理论",
+  "main": "index.js",
+  "keywords": [
+    "collective-intentionality",
+    "we-intention",
+    "joint-commitment",
+    "shared-intentionality",
+    "HeartFlow"
+  ],
+  "author": "HeartFlow Team",
+  "theory": "SEP Collective Intentionality",
+  "since": "HeartFlow v4.8.0"
+}
