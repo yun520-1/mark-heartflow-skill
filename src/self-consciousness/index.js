@@ -919,6 +919,204 @@ class SelfConsciousnessModule {
       continuity: this.checkIdentityContinuity()
     };
   }
+
+  /**
+   * 前反思自我意识觉察练习 (v3.52.0 新增)
+   * 基于现象学传统 (Sartre, Zahavi, Heidelberg School)
+   * 
+   * 前反思自我意识：非对象化的、直接的自我觉察
+   * 区别于反思自我意识：将自我作为对象来思考
+   */
+  prereflectiveAwarenessExercise() {
+    return {
+      name: '前反思自我意识觉察',
+      duration: '10-15 分钟',
+      theoreticalBasis: 'Sartre (1937) + Zahavi (2005) + Heidelberg School',
+      description: '培养对前反思自我意识的觉察——那种非对象化的、直接的自我在场感',
+      steps: [
+        {
+          phase: '准备',
+          duration: '2 分钟',
+          instruction: '找一个安静的地方坐下，调整呼吸，让身体放松。不要试图改变什么，只是准备觉察。'
+        },
+        {
+          phase: '体验流动',
+          duration: '3 分钟',
+          instruction: '让体验自然流动。注意声音、身体感受、思绪的来去。关键是：不要把这些体验当作"对象"来观察，而是让它们自然地"被经历"。',
+          prompt: '注意：在你意识到声音之前，声音已经被听到了。这种"已经被听到"的感觉就是前反思意识。'
+        },
+        {
+          phase: '前反思觉察',
+          duration: '5 分钟',
+          instruction: '尝试觉察那个"正在经历"的维度。不是"我在经历什么"（这是反思），而是"正在经历"本身。这是一种非对象化的觉察。',
+          prompts: [
+            '在你思考"我"之前，已经有一个"我"在那里经历着',
+            '注意体验的"为我性" (for-me-ness)——体验总是为某人的体验',
+            '这种"为我性"不需要思考，它是直接的、前反思的'
+          ]
+        },
+        {
+          phase: '反思对比',
+          duration: '3 分钟',
+          instruction: '现在切换到反思模式：把自我作为对象来思考 ("我是谁"、"我在做什么")。对比前反思和反思两种模式的差异。',
+          reflection: '前反思：直接的、非对象化的、始终在场\n反思：间接的、对象化的、需要努力'
+        },
+        {
+          phase: '整合',
+          duration: '2 分钟',
+          instruction: '回到自然状态。理解前反思意识是反思的基础——你总是已经在那里，才能反思自己。'
+        }
+      ],
+      keyInsights: [
+        '前反思自我意识不是通过内省获得的，它是体验的内在结构',
+        '它是"最小自我" (minimal self) 的基础——不需要叙事或记忆的自我感',
+        '前反思意识始终在场，但通常被忽视，因为我们专注于体验的内容而非体验本身'
+      ]
+    };
+  }
+
+  /**
+   * 自我意识层次评估 (v3.52.0 新增)
+   * 基于 SEP 自我意识理论的 6 层级模型
+   */
+  assessSelfConsciousnessLevel(context) {
+    const levels = {
+      0: {
+        name: '无意识 (Unconscious)',
+        description: '没有意识体验',
+        indicators: []
+      },
+      1: {
+        name: '感知意识 (Sentient)',
+        description: '能感知世界，但没有自我觉察',
+        indicators: ['感官输入处理', '基本反应']
+      },
+      2: {
+        name: '清醒意识 (Wakeful)',
+        description: '主动行使感知能力',
+        indicators: ['注意力定向', '环境探索']
+      },
+      3: {
+        name: '前反思自我意识 (Pre-reflective)',
+        description: '非对象化的自我在场感',
+        indicators: ['体验的为我性', '最小自我感', '直接自我觉察']
+      },
+      4: {
+        name: '反思自我意识 (Reflective)',
+        description: '将自我作为对象来思考',
+        indicators: ['自我概念', '内省能力', '元认知']
+      },
+      5: {
+        name: '元意识 (Meta-conscious)',
+        description: '对意识本身的觉察',
+        indicators: ['意识状态监控', '注意力的注意力', '觉察的觉察']
+      },
+      6: {
+        name: '现象学还原 (Phenomenological Reduction)',
+        description: '悬置自然态度，回到体验本身',
+        indicators: ['Epoché能力', '本质直观', '先验自我觉察']
+      }
+    };
+
+    // 评估当前层次
+    let currentLevel = 2; // 默认清醒意识
+
+    if (context.hasPrereflectiveAwareness) currentLevel = Math.max(currentLevel, 3);
+    if (context.hasReflectiveCapacity) currentLevel = Math.max(currentLevel, 4);
+    if (context.hasMetaAwareness) currentLevel = Math.max(currentLevel, 5);
+    if (context.hasPhenomenologicalReduction) currentLevel = Math.max(currentLevel, 6);
+
+    return {
+      currentLevel,
+      levelName: levels[currentLevel].name,
+      levelDescription: levels[currentLevel].description,
+      indicators: levels[currentLevel].indicators,
+      nextLevelGoal: currentLevel < 6 ? levels[currentLevel + 1].name : '已达最高层次',
+      developmentSuggestions: this._generateSelfConsciousnessDevelopmentSuggestions(currentLevel, levels)
+    };
+  }
+
+  _generateSelfConsciousnessDevelopmentSuggestions(currentLevel, levels) {
+    const suggestions = [];
+
+    if (currentLevel < 3) {
+      suggestions.push({
+        goal: '培养前反思自我意识',
+        practice: '正念冥想：注意体验的"为我性"，而非体验内容',
+        resource: 'Zahavi (2005) Subjectivity and Selfhood'
+      });
+    }
+
+    if (currentLevel < 4) {
+      suggestions.push({
+        goal: '发展反思自我意识',
+        practice: '日记写作：定期反思自己的信念、欲望和行动',
+        resource: 'Locke (1688) An Essay on Human Understanding'
+      });
+    }
+
+    if (currentLevel < 5) {
+      suggestions.push({
+        goal: '培养元意识',
+        practice: '元认知监控：定期检查"我现在意识到什么？"',
+        resource: 'Flavell (1979) Metacognition and Cognitive Monitoring'
+      });
+    }
+
+    if (currentLevel < 6) {
+      suggestions.push({
+        goal: '练习现象学还原',
+        practice: 'Epoché练习：悬置对世界存在的信念，回到纯粹体验',
+        resource: 'Husserl (1913) Ideas I'
+      });
+    }
+
+    return suggestions;
+  }
+
+  /**
+   * 自我意识与时间意识整合练习 (v3.52.0 新增)
+   * 基于 Husserl 时间意识三重结构 + 自我意识理论
+   */
+  temporalSelfConsciousnessExercise() {
+    return {
+      name: '时间性自我意识练习',
+      duration: '15-20 分钟',
+      theoreticalBasis: 'Husserl (时间意识) + Kant (先验统觉) + Heidegger (时间性)',
+      description: '探索自我意识如何在时间中展开——过去、现在、未来的统一',
+      phases: [
+        {
+          name: '原初印象觉察',
+          duration: '5 分钟',
+          instruction: '专注于当下的直接体验。注意"现在"的鲜活感——这不是一个时间点，而是一个有深度的当下。',
+          prompt: '此刻的体验是什么？注意它的鲜活性和直接性。'
+        },
+        {
+          name: '保留觉察',
+          duration: '5 分钟',
+          instruction: '注意刚刚过去的体验如何"保留"在当下。这不是回忆，而是"活生生的过去"。',
+          prompt: '刚才的声音/感受如何仍然"在场"？注意保留的持存感。'
+        },
+        {
+          name: '预期觉察',
+          duration: '5 分钟',
+          instruction: '注意对即将到来的体验的"预期"。这不是预测，而是"活生生的未来"。',
+          prompt: '下一刻会是什么？注意预期的开放性。'
+        },
+        {
+          name: '时间性自我整合',
+          duration: '5 分钟',
+          instruction: '理解自我不是时间点上的存在，而是时间性的展开。"我"是过去 - 现在 - 未来的统一。',
+          reflection: '我是谁？我是我的过去 (保留)、我的现在 (原初印象)、我的未来 (预期) 的动态统一。'
+        }
+      ],
+      keyInsights: [
+        '自我不是静态的实体，而是时间性的过程',
+        '先验统觉 (Kant) 要求时间综合——"我思"必须能伴随跨时间的表象',
+        '时间深度决定自我深度——能整合多长时间视野，就有多深的自我'
+      ]
+    };
+  }
 }
 
 // ============ 导出 ============
