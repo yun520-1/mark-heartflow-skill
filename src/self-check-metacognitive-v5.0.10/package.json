@@ -1,0 +1,41 @@
+{
+  "name": "self-check-metacognitive-v5.0.10",
+  "version": "1.0.0",
+  "description": "自我检查元认知增强模块 - 基于 SEP 自我意识理论的直觉式与推论式自我知识整合",
+  "main": "index.js",
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "keywords": [
+    "self-consciousness",
+    "metacognition",
+    "self-knowledge",
+    "intuitive-knowledge",
+    "inferential-knowledge",
+    "first-person-givenness",
+    "SEP",
+    "phenomenology"
+  ],
+  "theory": {
+    "source": "SEP: Self-Consciousness",
+    "url": "https://plato.stanford.edu/entries/self-consciousness/",
+    "sections": [
+      "§2: Self-Consciousness in Thought",
+      "§4: Constitutive Questions"
+    ],
+    "philosophers": [
+      "Descartes",
+      "Locke",
+      "Kant",
+      "Fichte",
+      "Sartre",
+      "Evans"
+    ]
+  },
+  "features": [
+    "自我知识类型识别 (直觉式 vs 推论式)",
+    "元认知校准 (确定性评估)",
+    "第一人称给定性检测",
+    "自我知识冲突检测",
+    "整合干预方案生成"
+  ]
+}

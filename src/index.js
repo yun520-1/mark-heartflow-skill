@@ -101,6 +101,14 @@ const temporalSelfIntegrationModule = new TemporalSelfIntegration();
 
 // === v5.0.9 结束 ===
 
+// === v5.0.10 新增模块 ===
+
+// 创建自我检查元认知增强模块 (v5.0.10 新增) 🧠 基于 SEP 自我意识理论 (直觉式 vs 推论式自我知识、第一人称给定性、元认知校准)
+const SelfCheckMetacognitive = require('./self-check-metacognitive-v5.0.10');
+const selfCheckMetacognitiveModule = new SelfCheckMetacognitive();
+
+// === v5.0.10 结束 ===
+
 // 创建心理化模块 (v3.9.0 新增) 🧠 基于 Fonagy 心理化理论
 const { MentalizationModule } = require('./mentalization');
 const mentalizationModule = new MentalizationModule();
