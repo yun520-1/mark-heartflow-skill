@@ -30,8 +30,8 @@ const NarrativePsychology = {
    */
   meta: {
     name: '叙事心理学',
-    version: '1.0.0',
-    source: 'SEP Narrative Psychology',
+    version: '3.48.0',
+    source: 'SEP Narrative Psychology + McAdams Life Story Model + Piff et al. (2015)',
     description: '基于叙事心理学的自我理解与成长模块'
   },
 
@@ -919,5 +919,236 @@ const NarrativePsychology = {
       };
     }
   },
+
+  /**
+   * 与敬畏心理学模块整合 - v3.48.0 新增
+   * 来源：McAdams + Berkeley Greater Good
+   */
+  integrateWithAwe: {
+    connection: '敬畏体验常常是生命故事中的"高峰体验"(peak experience) 或"关键场景"(nuclear scenes)',
+    research: '敬畏体验能扩展时间感知，增强叙事整合能力，促进救赎序列的形成',
+    
+    /**
+     * 识别叙事中的敬畏体验
+     */
+    identifyAweMoments: function(narrative) {
+      const aweKeywords = [
+        '敬畏', '浩瀚', '惊叹', '震撼', 'wonder', 'awe', 'amazing', 'breathtaking',
+        '宇宙', '星空', '自然', '壮丽', '宏伟', '渺小', 'transcendent', 'sublime'
+      ];
+      
+      const text = narrative.toLowerCase();
+      const foundKeywords = aweKeywords.filter(kw => text.includes(kw));
+      
+      return {
+        hasAweMoments: foundKeywords.length > 0,
+        keywords: foundKeywords,
+        significance: foundKeywords.length > 0 
+          ? '你的叙事中包含敬畏体验，这些时刻往往是生命故事的转折点和意义来源。'
+          : '你的叙事中没有明显的敬畏体验描述。敬畏体验常常是深刻的人生转折点。',
+        prompts: [
+          '你生命中最深刻的敬畏体验是什么？',
+          '那次体验如何改变了你对自己或世界的理解？',
+          '敬畏体验在你的生命故事中扮演什么角色？'
+        ]
+      };
+    },
+
+    /**
+     * 分析敬畏体验的叙事意义
+     */
+    analyzeAweNarrativeSignificance: function(aweExperience) {
+      return {
+        narrativeFunction: '敬畏体验在生命故事中通常扮演以下角色：',
+        functions: [
+          {
+            role: '转折点 (Turning Point)',
+            description: '敬畏体验常常标志着人生方向的改变或视角的转换',
+            example: '"那次看到星空后，我决定学习天文学"'
+          },
+          {
+            role: '救赎序列的起点 (Redemption Sequence)',
+            description: '从困境到成长的转折，敬畏提供新的视角',
+            example: '"经历那次敬畏体验后，我不再纠结于小事"'
+          },
+          {
+            role: '身份认同的核心 (Identity Core)',
+            description: '敬畏体验成为自我定义的一部分',
+            example: '我是一个对自然充满敬畏的人"'
+          },
+          {
+            role: '意义来源 (Meaning Source)',
+            description: '敬畏体验提供生命的意义感和目的感',
+            example: '那次体验让我明白什么是真正重要的"'
+          }
+        ],
+        integrationTips: [
+          '将敬畏体验写入生命故事的关键章节',
+          '反思敬畏体验如何影响了你的价值观和行为',
+          '探索敬畏体验与人生主题的连接',
+          '用敬畏体验作为未来决策的参照点'
+        ]
+      };
+    }
+  },
+
+  /**
+   * 叙事幸福感评估 - v3.48.0 新增
+   * 基于 McAdams 研究：叙事特征与幸福感的相关性
+   */
+  assessNarrativeWellbeing: function(narrative) {
+    const text = narrative.toLowerCase();
+    
+    // 评估指标
+    let redemptionScore = 0;
+    let contaminationScore = 0;
+    let agencyScore = 0;
+    let communionScore = 0;
+    let growthScore = 0;
+
+    // 救赎关键词
+    const redemptionKeywords = ['成长', '学会', '变得更强', '克服', '救赎', '重生', 'transform', 'overcome', 'grow', 'learned'];
+    redemptionKeywords.forEach(kw => {
+      if (text.includes(kw)) redemptionScore++;
+    });
+
+    // 污染关键词
+    const contaminationKeywords = ['失去', '破坏', '毁掉', '再也无法', '失去信心', 'lost', 'destroyed', 'ruined', 'never again'];
+    contaminationKeywords.forEach(kw => {
+      if (text.includes(kw)) contaminationScore++;
+    });
+
+    // 能动性关键词
+    const agencyKeywords = ['我选择', '我决定', '我掌控', '我的目标', '我实现', 'I chose', 'I decided', 'achieved', 'accomplished'];
+    agencyKeywords.forEach(kw => {
+      if (text.includes(kw)) agencyScore++;
+    });
+
+    // 共生关键词
+    const communionKeywords = ['爱', '关心', '帮助', '连接', '关系', '我们', 'love', 'care', 'help', 'connect', 'relationship'];
+    communionKeywords.forEach(kw => {
+      if (text.includes(kw)) communionScore++;
+    });
+
+    // 成长导向关键词
+    const growthKeywords = ['成长', '学习', '发展', '进步', '改善', '变得更', 'growth', 'learn', 'develop', 'improve', 'became'];
+    growthKeywords.forEach(kw => {
+      if (text.includes(kw)) growthScore++;
+    });
+
+    // 计算综合指标
+    const redemptionRatio = redemptionScore / (redemptionScore + contaminationScore + 1);
+    const agencyCommunionBalance = Math.abs(agencyScore - communionScore);
+    const growthOrientation = growthScore / (narrative.length / 100); // 每百字成长关键词密度
+
+    // 评估结果
+    let wellbeingLevel, description, suggestions;
+
+    if (redemptionRatio > 0.6 && growthOrientation > 0.1) {
+      wellbeingLevel = '高叙事幸福感';
+      description = '你的叙事呈现高救赎倾向和成长导向，这是心理健康和幸福感的重要预测因子。';
+      suggestions = [
+        '继续培养成长型叙事',
+        '分享你的故事，激励他人',
+        '探索更深层的生命主题'
+      ];
+    } else if (redemptionRatio > 0.4 || growthOrientation > 0.05) {
+      wellbeingLevel = '中等叙事幸福感';
+      description = '你的叙事有一定的积极元素，可以通过叙事重构进一步增强。';
+      suggestions = [
+        '尝试识别困难经历中的成长元素',
+        '练习叙事重构，寻找救赎序列',
+        '平衡能动性和共生主题'
+      ];
+    } else {
+      wellbeingLevel = '低叙事幸福感';
+      description = '你的叙事中污染序列较多，可能需要关注叙事重构。';
+      suggestions = [
+        '考虑与心理咨询师探讨叙事重构',
+        '尝试识别生活中的积极时刻',
+        '练习感恩和积极叙事',
+        '关注小步骤的成长和改变'
+      ];
+    }
+
+    return {
+      wellbeingLevel,
+      description,
+      suggestions,
+      scores: {
+        redemption: redemptionScore,
+        contamination: contaminationScore,
+        redemptionRatio: redemptionRatio.toFixed(2),
+        agency: agencyScore,
+        communion: communionScore,
+        agencyCommunionBalance: agencyCommunionBalance,
+        growth: growthScore,
+        growthOrientation: growthOrientation.toFixed(3)
+      },
+      research: 'McAdams 研究发现：高救赎倾向、成长导向、能动性 - 共生平衡的叙事与更高的幸福感、生活意义感和心理健康相关。'
+    };
+  },
+
+  /**
+   * 生命故事章节练习增强版 - v3.48.0
+   */
+  getLifeChaptersExercise: function() {
+    return {
+      name: '生命章节 (Life Chapters)',
+      duration: '30-45 分钟',
+      source: 'McAdams Life Story Model + SEP Narrative Psychology',
+      instructions: [
+        {
+          step: 1,
+          title: '划分生命章节',
+          content: '将你的生命划分为 5-8 个有意义的章节，就像一本书的章节一样。',
+          prompts: [
+            '每个章节应该有一个主题或标题 (如"求学岁月"、"探索自我"、"建立家庭")',
+            '章节之间可以有过渡期',
+            '不必严格按照年龄划分，按意义划分'
+          ]
+        },
+        {
+          step: 2,
+          title: '为每个章节写摘要',
+          content: '用 3-5 句话描述每个章节：',
+          prompts: [
+            '这个章节的时间范围是什么？',
+            '这个章节的主要主题或情节是什么？',
+            '这个章节中的重要人物有哪些？',
+            '这个章节如何影响了你？'
+          ]
+        },
+        {
+          step: 3,
+          title: '识别章节间的连接',
+          content: '探索章节之间的连续性和变化：',
+          prompts: [
+            '哪些主题贯穿多个章节？',
+            '哪些章节是转折点？为什么？',
+            '你如何从一个章节过渡到下一个？'
+          ]
+        },
+        {
+          step: 4,
+          title: '反思整体叙事',
+          content: '从整体视角看你的生命故事：',
+          prompts: [
+            '你的生命故事的整体基调是什么？',
+            '主要主题是什么 (能动性/共生/救赎/成长)?',
+            '你希望下一章是什么样子？'
+          ]
+        }
+      ],
+      benefits: [
+        '增强自我理解和身份认同',
+        '发现生命模式和主题',
+        '整合分散的经历为连贯叙事',
+        '为未来提供方向感'
+      ],
+      tip: '可以定期 (如每年) 重复这个练习，观察你的叙事如何随时间演变。'
+    };
+  }
+};
 
 module.exports = NarrativePsychology;
