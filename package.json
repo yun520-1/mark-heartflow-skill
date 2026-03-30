@@ -23,7 +23,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/yun520-1/mark-heartflow-skill"
   },
   "engines": {
     "node": ">=14.0.0"
