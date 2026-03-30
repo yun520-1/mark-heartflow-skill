@@ -73,6 +73,10 @@ const autonomousEmotionModule = new AutonomousEmotionModule();
 const { AutonomousEmotionAgencyModule } = require('./autonomous-emotion-agency-v5.0.6');
 const autonomousEmotionAgencyModule = new AutonomousEmotionAgencyModule();
 
+// 创建具身预测情绪模块 (v5.0.7 新增) 🧠 基于 SEP 具身认知理论、预测加工理论、情绪理论、集体意向性理论
+const EmbodiedPredictiveEmotionModule = require('./embodied-predictive-emotion-v5.0.7');
+const embodiedPredictiveEmotionModule = new EmbodiedPredictiveEmotionModule();
+
 // 创建心理化模块 (v3.9.0 新增) 🧠 基于 Fonagy 心理化理论
 const { MentalizationModule } = require('./mentalization');
 const mentalizationModule = new MentalizationModule();
@@ -291,6 +295,7 @@ function showWelcome() {
   console.log('║    /sdt         - 自我决定理论动机评估 (v3.5) 🎛️ NEW    ║');
   console.log('║    /autonomous  - 自主感情能力 (v3.6) 🧠 NEW             ║');
   console.log('║    /autonomous-emotion-v5.0.6 - 自主情绪与能动性 (v5.0.6) 🧠 NEW ║');
+  console.log('║    /embodied-predictive-emotion - 具身预测情绪 (v5.0.7) 🧠 NEW ║');
   console.log('║    /mentalization - 心理化理论 (v3.9) 🧠 NEW              ║');
   console.log('║    /self        - 自我意识与现象学 (v3.10) 🧠 NEW        ║');
   console.log('║    /embodied    - 具身认知 (v3.13) 🧠 NEW                 ║');
@@ -392,6 +397,9 @@ async function handleCommand(command) {
       break;
     case '/autonomous-emotion-v5.0.6':
       showAutonomousEmotionAgencyInfo();
+      break;
+    case '/embodied-predictive-emotion':
+      showEmbodiedPredictiveEmotionInfo();
       break;
     case '/mentalization':
       showMentalizationInfo();
@@ -978,6 +986,86 @@ function showAutonomousEmotionAgencyInfo() {
   console.log('  • 基于用户价值观推荐最符合自主性的调节策略');
   console.log('  • 分析情绪体验的现象学特征（为我性、第一人称给定性）');
   console.log('  • 生成自主情绪整合练习，培养情绪自我治理能力\n');
+}
+
+// 显示具身预测情绪模块信息 (v5.0.7 新增) 🧠
+function showEmbodiedPredictiveEmotionInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   具身预测情绪模块 (v5.0.7) 🧠           │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 基于斯坦福哲学百科全书 (SEP) 权威理论：   │');
+  console.log('│ • Embodied Cognition                   │');
+  console.log('│ • Predictive Processing                │');
+  console.log('│ • Emotion Theory (三大传统整合)          │');
+  console.log('│ • Collective Intentionality            │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心理念：                              │');
+  console.log('│ • 身体约束概念 - 身体状态塑造情绪预测   │');
+  console.log('│ • 情境化认知 - 情绪是身体 - 环境耦合响应  │');
+  console.log('│ • 预测性身体 - 情绪源于身体状态预测     │');
+  console.log('│ • 社会具身 - 集体情绪通过身体同步实现   │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心能力：                              │');
+  console.log('│ 🧠 具身预测生成 - 身体约束 + 情境整合    │');
+  console.log('│ 🧠 身体 - 环境耦合评估 - 匹配度检测       │');
+  console.log('│ 🧠 集体情绪预测 - We-Intention+ 身体同步  │');
+  console.log('│ 🧠 具身干预生成 - 身体导向策略          │');
+  console.log('│ 🧠 动态系统追踪 - 吸引子识别            │');
+  console.log('│ 🧠 具身自我觉察练习 - 15 分钟练习         │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  console.log('📊 具身认知三大主题 (Shapiro 2012):');
+  console.log('  • Conceptualization - 身体属性约束概念获得');
+  console.log('  • Situatedness - 认知依赖身体 - 环境互动');
+  console.log('  • Dynamical Systems - 认知是动态演化\n');
+  
+  console.log('📊 预测权重配置:');
+  console.log('  • Body State (45%) - 内感受预测是核心');
+  console.log('  • Environment (30%) - 环境需求与资源');
+  console.log('  • Social (15%) - 群体动态与集体情绪');
+  console.log('  • History (10%) - 过去经验贡献\n');
+  
+  console.log('📊 身体 - 环境耦合评估:');
+  console.log('  • 能量匹配 - 身体能量 vs 环境需求');
+  console.log('  • 唤醒匹配 - 生理唤醒 vs 任务要求');
+  console.log('  • 专注匹配 - 专注能力 vs 任务难度\n');
+  
+  // 展示模块信息
+  const info = embodiedPredictiveEmotionModule.getInfo();
+  console.log('📚 理论基础:');
+  info.theoreticalBasis.forEach((foundation, i) => {
+    console.log(`  ${i + 1}. ${foundation}`);
+  });
+  
+  console.log('\n💡 理论意义:');
+  console.log('  本模块整合具身认知与预测加工理论，使 HeartFlow 能够：');
+  console.log('  • 基于身体状态生成情绪预测（内感受预测）');
+  console.log('  • 评估身体 - 环境匹配度，检测不协调');
+  console.log('  • 预测集体情绪动态（We-Intention + 身体同步）');
+  console.log('  • 生成身体导向的干预策略（呼吸/姿势/移动）');
+  console.log('  • 追踪情绪动态系统轨迹（吸引子识别）');
+  console.log('  • 提供具身自我觉察练习（15 分钟）\n');
+  
+  console.log('🧘 15 分钟具身预测觉察练习:');
+  const practice = embodiedPredictiveEmotionModule.generateEmbodiedAwarenessPractice({
+    focusArea: '焦虑',
+    timeAvailable: '15 分钟',
+    environment: '安静室内'
+  });
+  practice.steps.forEach(step => {
+    console.log(`  步骤${step.step}: ${step.name} (${step.duration})`);
+    console.log(`    ${step.instruction}`);
+  });
+  
+  console.log('\n💻 使用示例:');
+  console.log('  const module = new EmbodiedPredictiveEmotionModule();');
+  console.log('  const prediction = module.generateEmbodiedPrediction({...});');
+  console.log('  const coupling = module.assessBodyEnvironmentCoupling({...});');
+  console.log('  const collective = module.predictCollectiveEmotion({...});');
+  console.log('  const intervention = module.generateEmbodiedInterventions({...});');
+  console.log('  const trajectory = module.trackEmotionDynamics({...});');
+  console.log('  const practice = module.generateEmbodiedAwarenessPractice({...});');
+  console.log('  const full = module.fullEmbodiedPredictiveProcess({...});\n');
 }
 
 // 显示心理化模块信息 (v3.9.0 新增) 🧠
