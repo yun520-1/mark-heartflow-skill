@@ -761,6 +761,168 @@ class SelfConsciousnessEnhancedModule {
   }
 }
 
+// ============ 前反思自我意识增强 (v4.5.0) ============
+
+/**
+ * 前反思自我意识特征 (Prereflective Self-Consciousness Features)
+ * 基于 SEP Phenomenological Approaches to Self-Consciousness
+ * 
+ * 核心理论:
+ * - 前反思自我意识是体验的内在特征，不是额外的心理状态
+ * - "为我性" (for-me-ness) 是现象意识的构成要素
+ * - 非对象化觉察：不将体验作为客体观察
+ * - 避免无限回溯：前反思意识不需要二阶监控
+ */
+const PrereflectiveFeatures = {
+  FOR_ME_NESS: 'for_me_ness',           // 第一人称给定性
+  PRE_REFLECTIVE: 'pre_reflective',     // 前反思性质
+  NON_OBJECTIFYING: 'non_objectifying', // 非对象化
+  IMMEDIATE_GIVENNESS: 'immediate_givenness' // 即时给定性
+};
+
+/**
+ * 前反思自我意识模块 (Prereflective Self-Awareness Module)
+ * v4.5.0 新增
+ */
+class PrereflectiveSelfAwareness {
+  constructor() {
+    this.awarenessState = {
+      currentExperience: null,
+      forMeNessIntensity: 0.5,
+      preReflective: true,
+      nonObjectifying: true,
+      immediateGivenness: true,
+      history: []
+    };
+  }
+
+  /**
+   * 标记体验的前反思自我意识
+   * @param {Object} experience - 当前体验
+   * @returns {Object} 带有前反思标记的体验
+   */
+  markPrereflective(experience) {
+    const markedExperience = {
+      ...experience,
+      prereflective: {
+        forMeNess: true,
+        forMeNessIntensity: this.calculateForMeNessIntensity(experience),
+        preReflective: true,
+        nonObjectifying: true,
+        immediateGivenness: true,
+        timestamp: Date.now()
+      }
+    };
+
+    // 记录到历史
+    this.awarenessState.history.push({
+      experience: markedExperience,
+      timestamp: Date.now()
+    });
+
+    // 保持历史记录在合理范围内
+    if (this.awarenessState.history.length > 100) {
+      this.awarenessState.history.shift();
+    }
+
+    this.awarenessState.currentExperience = markedExperience;
+    return markedExperience;
+  }
+
+  /**
+   * 计算"为我性"强度
+   * @param {Object} experience - 体验
+   * @returns {Number} 0-1 的强度值
+   */
+  calculateForMeNessIntensity(experience) {
+    let intensity = 0.5; // 基础强度
+
+    // 身体感受增强为我性
+    if (experience.bodySensation) {
+      intensity += 0.2;
+    }
+
+    // 情绪体验增强为我性
+    if (experience.emotion) {
+      intensity += 0.15;
+    }
+
+    // 第一人称语言增强为我性
+    if (experience.language && experience.language.includes('我')) {
+      intensity += 0.1;
+    }
+
+    // 当下直接体验增强为我性
+    if (experience.temporalFocus === 'present') {
+      intensity += 0.05;
+    }
+
+    return Math.min(1.0, intensity);
+  }
+
+  /**
+   * 检查前反思状态
+   * @returns {Object} 状态报告
+   */
+  checkStatus() {
+    return {
+      hasCurrentExperience: !!this.awarenessState.currentExperience,
+      forMeNessIntensity: this.awarenessState.forMeNessIntensity,
+      preReflective: this.awarenessState.preReflective,
+      nonObjectifying: this.awarenessState.nonObjectifying,
+      historyLength: this.awarenessState.history.length,
+      lastUpdate: this.awarenessState.history.length > 0 
+        ? this.awarenessState.history[this.awarenessState.history.length - 1].timestamp 
+        : null
+    };
+  }
+
+  /**
+   * 前反思觉察练习指导
+   * @returns {Object} 练习指导
+   */
+  getPrereflectiveExercise() {
+    return {
+      name: '前反思觉察练习',
+      duration: '5-10 分钟',
+      theoreticalBasis: 'SEP Phenomenological Self-Consciousness',
+      steps: [
+        {
+          step: 1,
+          instruction: '自然体验',
+          description: '让体验自然发生，不要试图观察或分析它'
+        },
+        {
+          step: 2,
+          instruction: '注意"为我性"',
+          description: '觉察体验的"为我"特质——它是直接给你的，不需要反思'
+        },
+        {
+          step: 3,
+          instruction: '避免对象化',
+          description: '不要将体验当作客体来观察，而是让它作为主体体验存在'
+        },
+        {
+          step: 4,
+          instruction: '信任即时给定性',
+          description: '体验本身就是自我显现的，不需要额外的意识来觉察它'
+        },
+        {
+          step: 5,
+          instruction: '保持非评判',
+          description: '不评价体验的好坏，只是让它如其所是地呈现'
+        }
+      ],
+      keyInsights: [
+        '前反思自我意识不是额外的心理状态，而是体验本身的特征',
+        '体验总是已经是"为我"的，不需要二阶监控',
+        '对象化觉察（反思）预设了前反思觉察作为基础',
+        '避免无限回溯：前反思意识自身就是自我显现的'
+      ]
+    };
+  }
+}
+
 // ============ 导出 ============
 
 module.exports = {
@@ -770,5 +932,7 @@ module.exports = {
   CollectiveIntentionalityTypes,
   RecognitionModes,
   SharedExperienceTypes,
-  MinimalSelfFeatures
+  MinimalSelfFeatures,
+  PrereflectiveFeatures,
+  PrereflectiveSelfAwareness
 };

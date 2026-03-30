@@ -1,0 +1,28 @@
+{
+  "name": "heartflow-predictive-emotion-enhanced",
+  "version": "1.0.0",
+  "description": "预测加工情绪增强模块 - 基于 SEP Predictive Processing 理论",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "heartflow",
+    "predictive-processing",
+    "emotion",
+    "prediction-error",
+    "active-inference"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "heartflow": {
+    "moduleType": "emotion-enhancement",
+    "upgradeVersion": "v4.5.0",
+    "theorySource": "SEP Predictive Processing",
+    "dependencies": [
+      "emotion-theory",
+      "meta-emotion",
+      "self-consciousness"
+    ]
+  }
+}
