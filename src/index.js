@@ -81,6 +81,10 @@ const selfConsciousnessModule = new SelfConsciousnessModule();
 const { SelfConsciousnessEnhancedModule } = require('./self-consciousness-enhanced');
 const selfConsciousnessEnhancedModule = new SelfConsciousnessEnhancedModule();
 
+// 创建现象学能动性模块 (v3.51.0 新增) 🧠 基于 SEP 现象学自我意识与能动性理论 (Zahavi, Frankfurt, Velleman)
+const { PhenomenologicalAgencyModule } = require('./phenomenological-agency');
+const phenomenologicalAgencyModule = new PhenomenologicalAgencyModule();
+
 // 创建情绪理论整合模块 (v3.12.0 新增) 🧠 基于 SEP 情绪三大传统理论
 const { EmotionIntegrationModule } = require('./emotion-integration');
 const emotionIntegrationModule = new EmotionIntegrationModule();
