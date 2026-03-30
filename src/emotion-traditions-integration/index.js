@@ -19,8 +19,8 @@
 class EmotionTraditionsIntegration {
   constructor() {
     this.name = 'Emotion Traditions Integration';
-    this.version = '2.0.0'; // v3.50.0 增强
-    this.source = 'SEP Emotion Theory (2026 Edition)';
+    this.version = '3.0.0'; // v3.52.0 增强 - 整合 SEP 情绪理论完整版
+    this.source = 'SEP Emotion Theory (2026 Edition) + Scarantino 2016';
     
     // 情绪成分定义 (Problem of Parts)
     this.emotionComponents = {
@@ -872,6 +872,235 @@ class EmotionTraditionsIntegration {
       isAdaptive: isAdaptive,
       score: isAdaptive ? 0.8 : 0.4,
       judgment: isAdaptive ? '功能适当' : '功能失调'
+    };
+  }
+
+  /**
+   * SEP 情绪理论四大挑战评估 (v3.52.0 新增)
+   * 基于 SEP Emotion Theory 完整框架
+   */
+  assessTheoreticalChallenges(emotionData) {
+    const challenges = {
+      differentiation: this._assessDifferentiation(emotionData),
+      motivation: this._assessMotivation(emotionData),
+      intentionality: this._assessIntentionality(emotionData),
+      phenomenology: this._assessPhenomenology(emotionData)
+    };
+
+    const overallScore = Object.values(challenges).reduce((sum, c) => sum + c.score, 0) / 4;
+
+    return {
+      challenges,
+      overallScore: Math.round(overallScore * 100),
+      level: overallScore > 0.7 ? 'well_integrated' : overallScore > 0.4 ? 'moderate' : 'needs_development',
+      recommendations: this._generateChallengeRecommendations(challenges)
+    };
+  }
+
+  _assessDifferentiation(emotionData) {
+    // 挑战：情绪如何彼此区分，以及如何与非情绪状态区分？
+    const { emotionType, components } = emotionData;
+    
+    // 检查是否有明确的评价主题 (formal object)
+    const hasFormalObject = components?.evaluative?.appraisal !== undefined;
+    
+    // 检查是否有独特的生理特征
+    const hasPhysiologicalProfile = components?.physiological?.arousal !== undefined;
+    
+    // 检查是否有独特的行动倾向
+    const hasActionTendency = components?.behavioral?.actionTendency !== undefined;
+    
+    // 检查是否有独特的主观感受
+    const hasPhenomenology = components?.phenomenological?.valence !== undefined;
+
+    const distinctivenessScore = [
+      hasFormalObject ? 0.25 : 0,
+      hasPhysiologicalProfile ? 0.25 : 0,
+      hasActionTendency ? 0.25 : 0,
+      hasPhenomenology ? 0.25 : 0
+    ].reduce((a, b) => a + b, 0);
+
+    return {
+      dimension: '区分性 (Differentiation)',
+      question: '此情绪如何与其他情绪和非情绪状态区分？',
+      criteria: {
+        formalObject: hasFormalObject,
+        physiologicalProfile: hasPhysiologicalProfile,
+        actionTendency: hasActionTendency,
+        phenomenology: hasPhenomenology
+      },
+      score: distinctivenessScore,
+      judgment: distinctivenessScore > 0.75 ? '高度分化' : distinctivenessScore > 0.5 ? '中度分化' : '分化不足'
+    };
+  }
+
+  _assessMotivation(emotionData) {
+    // 挑战：情绪是否以及如何动机行为？
+    const { components } = emotionData;
+    
+    const actionReadiness = components?.behavioral?.actionReadiness || 'medium';
+    const actionTendency = components?.behavioral?.actionTendency;
+    const physiologicalArousal = components?.physiological?.arousal;
+    
+    // 评估动机强度
+    let motivationScore = 0.5;
+    
+    if (actionReadiness === 'high') motivationScore += 0.2;
+    if (actionReadiness === 'low') motivationScore -= 0.2;
+    
+    if (actionTendency) motivationScore += 0.15;
+    if (physiologicalArousal === '高') motivationScore += 0.15;
+
+    return {
+      dimension: '动机性 (Motivation)',
+      question: '此情绪如何动机行为？动机强度如何？',
+      indicators: {
+        actionReadiness,
+        actionTendency,
+        physiologicalArousal
+      },
+      score: Math.min(1.0, motivationScore),
+      judgment: motivationScore > 0.7 ? '强动机' : motivationScore > 0.4 ? '中等动机' : '弱动机'
+    };
+  }
+
+  _assessIntentionality(emotionData) {
+    // 挑战：情绪是否有对象指向性？是否可评价适当性？
+    const { components } = emotionData;
+    
+    const hasObject = components?.evaluative?.object !== undefined;
+    const formalObject = components?.evaluative?.formalObject;
+    const appropriateness = components?.evaluative?.appropriateness;
+    
+    // 评估意向性质量
+    let intentionalityScore = 0.3;
+    
+    if (hasObject) intentionalityScore += 0.3;
+    if (formalObject) intentionalityScore += 0.2;
+    if (appropriateness !== undefined) intentionalityScore += 0.2;
+
+    return {
+      dimension: '意向性 (Intentionality)',
+      question: '此情绪是否有明确的对象？是否适当？',
+      indicators: {
+        hasObject,
+        formalObject,
+        appropriateness
+      },
+      score: Math.min(1.0, intentionalityScore),
+      judgment: intentionalityScore > 0.7 ? '意向清晰' : intentionalityScore > 0.4 ? '意向模糊' : '意向缺失'
+    };
+  }
+
+  _assessPhenomenology(emotionData) {
+    // 挑战：情绪是否总涉及主观体验？何种体验？
+    const { components } = emotionData;
+    
+    const hasValence = components?.phenomenological?.valence !== undefined;
+    const hasIntensity = components?.phenomenological?.intensity !== undefined;
+    const hasQuality = components?.phenomenological?.quality !== undefined;
+    const hasBodilyFeeling = components?.physiological?.bodilyFeeling !== undefined;
+    
+    // 评估现象学深度
+    const phenomenologyScore = [
+      hasValence ? 0.25 : 0,
+      hasIntensity ? 0.25 : 0,
+      hasQuality ? 0.25 : 0,
+      hasBodilyFeeling ? 0.25 : 0
+    ].reduce((a, b) => a + b, 0);
+
+    return {
+      dimension: '现象学 (Phenomenology)',
+      question: '此情绪的主观体验质量如何？',
+      indicators: {
+        valence: hasValence,
+        intensity: hasIntensity,
+        quality: hasQuality,
+        bodilyFeeling: hasBodilyFeeling
+      },
+      score: phenomenologyScore,
+      judgment: phenomenologyScore > 0.75 ? '体验丰富' : phenomenologyScore > 0.5 ? '体验中等' : '体验贫乏'
+    };
+  }
+
+  _generateChallengeRecommendations(challenges) {
+    const recommendations = [];
+
+    if (challenges.differentiation.score < 0.5) {
+      recommendations.push({
+        area: '区分性',
+        suggestion: '尝试更精确地识别情绪的评价主题和行动倾向',
+        exercise: '情绪粒度练习：区分相似情绪 (如愤怒 vs 沮丧 vs 失望)'
+      });
+    }
+
+    if (challenges.motivation.score < 0.5) {
+      recommendations.push({
+        area: '动机性',
+        suggestion: '探索情绪背后的行动倾向，理解情绪想让你做什么',
+        exercise: '行动倾向觉察：当情绪出现时，注意身体的行动准备状态'
+      });
+    }
+
+    if (challenges.intentionality.score < 0.5) {
+      recommendations.push({
+        area: '意向性',
+        suggestion: '明确情绪的对象：你对什么感到这种情绪？',
+        exercise: '对象定位练习：具体描述引发情绪的情境或事件'
+      });
+    }
+
+    if (challenges.phenomenology.score < 0.5) {
+      recommendations.push({
+        area: '现象学',
+        suggestion: '深化对情绪主观体验的觉察',
+        exercise: '身体扫描冥想：注意情绪在身体中的感受和定位'
+      });
+    }
+
+    return recommendations;
+  }
+
+  /**
+   * 情绪理论整合练习 (v3.52.0 新增)
+   * 基于 SEP 三大传统的综合练习
+   */
+  generateIntegrationExercise(emotionType) {
+    return {
+      name: '情绪三大传统整合练习',
+      duration: '15-20 分钟',
+      emotionType,
+      steps: [
+        {
+          tradition: 'Feeling Tradition',
+          focus: '感受体验',
+          instruction: '闭上眼睛，专注于这种情绪在身体中的感受。注意它的位置、强度、质地。不要试图改变它，只是观察。',
+          duration: '5 分钟',
+          prompt: '这种情绪在身体的哪个部位最明显？它有什么质感 (热/冷/紧/松)?'
+        },
+        {
+          tradition: 'Evaluative Tradition',
+          focus: '评价分析',
+          instruction: '探索这种情绪背后的评价。你对情境做了什么判断？什么对你来说是重要的？',
+          duration: '5 分钟',
+          prompt: '这种情绪告诉你什么是重要的？你对情境做了什么评价？'
+        },
+        {
+          tradition: 'Motivational Tradition',
+          focus: '动机探索',
+          instruction: '探索这种情绪想让你做什么。注意行动倾向，但不必立即行动。',
+          duration: '5 分钟',
+          prompt: '这种情绪想让你做什么？这个行动倾向服务于什么目的？'
+        },
+        {
+          tradition: 'Integration',
+          focus: '整合反思',
+          instruction: '整合三个维度的洞察。这种情绪整体上想告诉你什么？',
+          duration: '5 分钟',
+          prompt: '综合感受、评价和动机，这种情绪的整体信息是什么？'
+        }
+      ],
+      theoreticalBasis: 'SEP Emotion Theory: Feeling + Evaluative + Motivational Traditions Integration'
     };
   }
 }
