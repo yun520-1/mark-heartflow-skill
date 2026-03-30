@@ -562,7 +562,7 @@ class TaskAgencyModule {
     if (context.includes('我不行') || context.includes('我做不到')) {
       return ['自我能力怀疑'];
     }
-    if (context.includes'别人') {
+    if (context.includes('别人')) {
       return ['他人评价关注'];
     }
     return ['未明确识别'];
@@ -573,10 +573,10 @@ class TaskAgencyModule {
    * @private
    */
   _identifyAssumptions(context) {
-    if (context.includes'必须') {
+    if (context.includes('必须')) {
       return ['完美主义假设'];
     }
-    if (context.includes'应该') {
+    if (context.includes('应该')) {
       return ['义务性假设'];
     }
     return ['未明确识别'];
