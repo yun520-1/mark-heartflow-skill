@@ -119,9 +119,9 @@ const emotionCollectiveIntegrationModule = EmotionCollectiveIntegration;
 
 // === v5.0.12 新增模块 ===
 
-// 创建情绪三大传统整合模块 (v5.0.12 新增) 🧠 基于 SEP 情绪理论 §2-7 (Feeling/Evaluative/Motivational 三大传统完整整合 + 跨传统一致性检测 + 冲突识别 + 整合干预)
-const EmotionTraditionsIntegration = require('./emotion-traditions-integration-v5.0.12');
-const emotionTraditionsIntegrationModule = new EmotionTraditionsIntegration();
+// 创建情绪原型结构深度增强模块 (v5.0.12 新增) 🧠 基于 SEP 情绪原型理论 + Fehr & Russell (1984) 原型模型 (情绪原型网络/典型性评分/置信度评估/情绪粒度)
+const EmotionPrototypeStructureV5 = require('./emotion-prototype-structure-v5.0.12');
+const emotionPrototypeStructureV5Module = new EmotionPrototypeStructureV5();
 
 // === v5.0.12 结束 ===
 
@@ -520,6 +520,9 @@ async function handleCommand(command) {
       break;
     case '/emotion-traditions-v5':
       showEmotionTraditionsV5Info();
+      break;
+    case '/emotion-prototype-v5':
+      showEmotionPrototypeV5Info();
       break;
     case '/help':
       showHelp();
@@ -2377,43 +2380,48 @@ function showCollectiveEmotionPhenomenologyInfo() {
   console.log('');
 }
 
-// 显示情绪三大传统整合 v5.0.12 信息
-function showEmotionTraditionsV5Info() {
+// 显示情绪原型结构深度增强 v5.0.12 信息
+function showEmotionPrototypeV5Info() {
   console.log('\n┌─────────────────────────────────────────┐');
-  console.log('│  情绪三大传统整合 v5.0.12 🧠            │');
+  console.log('│  情绪原型结构深度增强 v5.0.12 🧠        │');
   console.log('├─────────────────────────────────────────┤');
-  console.log('│  基于 SEP Emotion Theory §2-7:          │');
-  console.log('│  • Feeling Tradition - 感受传统         │');
-  console.log('│    (情绪作为独特的意识体验)             │');
-  console.log('│  • Evaluative Tradition - 评价传统      │');
-  console.log('│    (情绪作为对情境的评价)               │');
-  console.log('│  • Motivational Tradition - 动机传统    │');
-  console.log('│    (情绪作为动机状态)                   │');
+  console.log('│  基于 SEP Emotion Theory §1 +           │');
+  console.log('│  Fehr & Russell (1984) 原型模型：       │');
+  console.log('│  • 情绪原型网络 (15+ 种情绪)             │');
+  console.log('│  • 典型性评分 (0-1)                     │');
+  console.log('│  • 5 成分匹配分析                       │');
+  console.log('│  • 置信度评估 (高/中/低/模糊)           │');
   console.log('├─────────────────────────────────────────┤');
   console.log('│  核心功能：                              │');
-  console.log('│  • 三成分自动识别                       │');
-  console.log('│  • 传统间一致性检测                     │');
-  console.log('│  • 冲突识别与干预                       │');
-  console.log('│  • 整合练习生成                         │');
+  console.log('│  • 原型情绪识别 (fear, anger, joy...)   │');
+  console.log('│  • 边界情绪处理 (boredom, curiosity)    │');
+  console.log('│  • 情绪粒度映射 (强度连续谱)            │');
+  console.log('│  • 可操作练习生成                       │');
   console.log('├─────────────────────────────────────────┤');
-  console.log('│  四大理论挑战：                          │');
-  console.log('│  1. Differentiation - 分化问题          │');
-  console.log('│  2. Motivation - 动机问题               │');
-  console.log('│  3. Intentionality - 意向性问题         │');
-  console.log('│  4. Phenomenology - 现象学问题          │');
+  console.log('│  5 成分模型：                            │');
+  console.log('│  1. Feeling - 感受 (主观体验)           │');
+  console.log('│  2. Evaluative - 评价 (形式对象)        │');
+  console.log('│  3. Motivational - 动机 (行动倾向)      │');
+  console.log('│  4. Expressive - 表达 (面部/声音)       │');
+  console.log('│  5. Physiological - 生理 (身体反应)     │');
   console.log('└─────────────────────────────────────────┘\n');
   
+  const info = emotionPrototypeStructureV5Module.getInfo();
   console.log('🧠 理论来源:');
-  console.log('  • SEP Emotion (2026 Edition) §2-7');
-  console.log('  • Fehr & Russell (1984): 情绪原型理论');
-  console.log('  • Scarantino (2016): 情绪理论整合框架');
-  console.log('  • James (1884): 情绪身体理论');
-  console.log('  • Arnold (1960): 评价理论');
-  console.log('  • Lazarus (1991): 认知 - 动机理论');
+  console.log('  • SEP Emotion (2026 Edition) §1: Emotion Concepts and Prototypes');
+  console.log('  • Fehr & Russell (1984): Prototype Approach to Emotion Concepts');
+  console.log('  • 原型效应：情绪类别具有家族相似性');
+  console.log('  • 典型性梯度：fear > awe (作为情绪的例子)');
+  console.log('');
+  console.log('📊 模块统计:');
+  console.log(`  • 情绪原型数量：${info.emotionCount}`);
+  console.log(`  • 原型情绪：${info.prototypeEmotions} 个 (高典型性)`);
+  console.log(`  • 争议情绪：${info.contestedEmotions} 个 (边界案例)`);
   console.log('');
   console.log('💡 使用方式:');
-  console.log('  输入 /emotion-traditions-v5 查看本信息');
-  console.log('  描述你的情绪体验，系统会自动进行三传统评估');
+  console.log('  输入 /emotion-prototype-v5 查看本信息');
+  console.log('  描述你的情绪体验，系统会自动进行原型匹配分析');
+  console.log('  示例："我感到很害怕，心跳加速，想要逃跑"');
   console.log('');
 }
 
