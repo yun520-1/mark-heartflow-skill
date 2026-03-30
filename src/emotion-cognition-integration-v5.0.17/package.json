@@ -1,0 +1,26 @@
+{
+  "name": "heartflow-emotion-cognition-integration-v5.0.17",
+  "version": "5.0.17",
+  "description": "HeartFlow v5.0.17 - Emotion-Cognition-Embodiment Triadic Integration Enhancement",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "dev": "node dev.js"
+  },
+  "keywords": [
+    "heartflow",
+    "emotion",
+    "cognition",
+    "embodiment",
+    "AI",
+    "affective-computing"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "peerDependencies": {
+    "heartflow-core": ">=5.0.0"
+  }
+}
