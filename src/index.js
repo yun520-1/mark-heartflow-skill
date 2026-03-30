@@ -243,6 +243,10 @@ const phenomenologicalConsciousnessModule = PhenomenologicalConsciousnessModule;
 const AwePsychology = require('./awe-psychology');
 const aweModule = AwePsychology;
 
+// 创建审美情绪模块 (v5.0.5 新增) 🎨 基于 SEP Aesthetic Emotions + Silvia + Frijda 理论
+const { AestheticEmotionsModule } = require('./aesthetic-emotions-v5.0.5');
+const aestheticModule = new AestheticEmotionsModule();
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -302,6 +306,7 @@ function showWelcome() {
   console.log('║    /relational  - 关系性自我 (v3.32) 💞 NEW ✨               ║');
   console.log('║    /predictive-emotion - 预测加工与情绪 (v3.33) 🧠 NEW ✨   ║');
   console.log('║    /awe         - 敬畏心理学 (v3.45) 🌌 NEW ✨              ║');
+  console.log('║    /aesthetic   - 审美情绪 (v5.0.5) 🎨 NEW ✨               ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -439,6 +444,9 @@ async function handleCommand(command) {
       break;
     case '/awe':
       showAweInfo();
+      break;
+    case '/aesthetic':
+      showAestheticInfo();
       break;
     case '/emotion-traditions-v4.9':
       showEmotionTraditionsV49Info();
@@ -1877,6 +1885,50 @@ function showAweInfo() {
   console.log('  和我聊聊你的敬畏体验，或询问如何培养敬畏');
   console.log('  我可以帮你识别敬畏来源、提供练习指导、');
   console.log('  或评估你的敬畏倾向性');
+  console.log('');
+}
+
+// 显示审美情绪模块信息 (v5.0.5 新增)
+function showAestheticInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  审美情绪模块 (v5.0.5 新增) 🎨            │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP Aesthetic Emotions (2026):     │');
+  console.log('│  • Frijda (1988): 审美情绪理论          │');
+  console.log('│  • Silvia (2005, 2008): 兴趣与好奇     │');
+  console.log('│  • Keltner & Haidt (2003): 敬畏理论    │');
+  console.log('│  • Berkeley GGSC: 美感与幸福感研究     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  六大审美情绪：                          │');
+  console.log('│  1. 敬畏 (Awe) - 宏大、超越理解         │');
+  console.log('│  2. 美感 (Beauty) - 和谐、愉悦欣赏      │');
+  console.log('│  3. 兴趣 (Interest) - 新奇、探索欲望    │');
+  console.log('│  4. 好奇 (Curiosity) - 知识缺口、寻求   │');
+  console.log('│  5. 惊奇 (Surprise) - 意外、重新评估    │');
+  console.log('│  6. 崇高 (Sublime) - 危险 + 吸引混合    │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心特征：                              │');
+  console.log('│  • 心理距离 - 非功利欣赏                │');
+  console.log('│  • 无利害性 - 纯粹体验本身              │');
+  console.log('│  • 注意捕获 - 自动吸引注意力            │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心练习：                              │');
+  console.log('│  1. 美感沉浸练习 (10-15 分钟)            │');
+  console.log('│  2. 兴趣 - 好奇循环培养 (15-20 分钟)     │');
+  console.log('│  3. 崇高体验引导 (15-20 分钟)           │');
+  console.log('│  4. 日常审美觉察 (每天 5 分钟)           │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${aestheticModule.version}`);
+  console.log(`  • 情绪类型：${Object.keys(aestheticModule.emotionTypes).length} 种`);
+  console.log(`  • 评估维度：${Object.keys(aestheticModule.features).length} 个`);
+  console.log(`  • 干预练习：4 种`);
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  和我聊聊你的审美体验，或询问如何培养美感');
+  console.log('  我可以帮你识别审美情绪、提供练习指导、');
+  console.log('  或评估你的审美体验特征');
   console.log('');
 }
 
