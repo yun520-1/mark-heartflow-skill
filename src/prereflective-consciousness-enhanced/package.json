@@ -1,0 +1,16 @@
+{
+  "name": "prereflective-consciousness-enhanced",
+  "version": "1.0.0",
+  "description": "前反思自我意识增强模块 - 基于 SEP 现象学自我意识理论",
+  "main": "index.js",
+  "keywords": [
+    "phenomenology",
+    "self-consciousness",
+    "prereflective",
+    "first-person",
+    "HeartFlow"
+  ],
+  "author": "HeartFlow Team",
+  "theory": "SEP Phenomenological Self-Consciousness",
+  "since": "HeartFlow v4.8.0"
+}
