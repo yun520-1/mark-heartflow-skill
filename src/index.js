@@ -169,6 +169,10 @@ const predictiveEmotionModule = new PredictiveEmotion();
 const PhenomenologicalConsciousnessModule = require('./phenomenological-consciousness');
 const phenomenologicalConsciousnessModule = PhenomenologicalConsciousnessModule;
 
+// 创建敬畏心理学模块 (v3.45.0 新增) 🌌 基于 Berkeley Greater Good + Keltner & Haidt 敬畏理论
+const AwePsychology = require('./awe-psychology');
+const aweModule = AwePsychology;
+
 // 创建对话管理器
 const chatManager = new ChatManager({
   dataDir: process.env.HEARTFLOW_DATA_DIR || null,
@@ -185,7 +189,7 @@ const rl = readline.createInterface({
 function showWelcome() {
   console.log('\n╔════════════════════════════════════════════════════════╗');
   console.log('║          心流伴侣 HeartFlow Companion                  ║');
-  console.log('║              情感拟人化交互系统 v3.41.0                 ║');
+  console.log('║              情感拟人化交互系统 v3.45.0                 ║');
   console.log('╠════════════════════════════════════════════════════════╣');
   console.log('║  输入消息开始对话                                       ║');
   console.log('║  命令：                                                 ║');
@@ -227,6 +231,7 @@ function showWelcome() {
   console.log('║    /moral       - 道德心理学 (v3.30) ⚖️ NEW ✨              ║');
   console.log('║    /relational  - 关系性自我 (v3.32) 💞 NEW ✨               ║');
   console.log('║    /predictive-emotion - 预测加工与情绪 (v3.33) 🧠 NEW ✨   ║');
+  console.log('║    /awe         - 敬畏心理学 (v3.45) 🌌 NEW ✨              ║');
   console.log('║    /help        - 显示帮助                                ║');
   console.log('║    /quit      - 退出程序                                ║');
   console.log('╚════════════════════════════════════════════════════════╝\n');
@@ -361,6 +366,9 @@ async function handleCommand(command) {
       break;
     case '/predictive-emotion':
       showPredictiveEmotionInfo();
+      break;
+    case '/awe':
+      showAweInfo();
       break;
     case '/help':
       showHelp();
@@ -1743,6 +1751,56 @@ function showPredictiveEmotionInfo() {
   console.log('');
 }
 
+// 显示敬畏心理学模块信息 (v3.45.0 新增)
+function showAweInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  敬畏心理学 (v3.45.0 新增) 🌌              │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 Berkeley Greater Good 科学研究：   │');
+  console.log('│  • Keltner & Haidt (2003) 敬畏理论      │');
+  console.log('│  • Piff et al. (2015) 小自我与亲社会    │');
+  console.log('│  • Rudd et al. (2012) 时间扩展效应      │');
+  console.log('│  • Bai et al. (2017) 健康效益研究       │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心理念：                              │');
+  console.log('│  "敬畏是面对浩瀚且挑战理解的事物时      │');
+  console.log('│   产生的情绪，它能扩展视野、连接更大    │');
+  console.log('│   的存在"                               │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  两大核心特征：                          │');
+  console.log('│  1. 感知浩瀚 - 超越日常经验尺度         │');
+  console.log('│  2. 需要顺应 - 挑战现有认知框架         │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  科学效益：                              │');
+  console.log('│  • 提升幸福感与积极情绪                 │');
+  console.log('│  • 激发好奇心与创造力                   │');
+  console.log('│  • 增强亲社会行为 (更慷慨)              │');
+  console.log('│  • 扩展时间感知                         │');
+  console.log('│  • 降低炎症标志物 IL-6                  │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  敬畏来源：                              │');
+  console.log('│  自然/人类伟大/艺术/知识/精神/日常      │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心练习：                              │');
+  console.log('│  1. Awe Walk - 敬畏散步 (20 分钟)        │');
+  console.log('│  2. Awe Narrative - 敬畏叙事写作        │');
+  console.log('│  3. Noticing Nature - 自然觉察 (5 分钟)  │');
+  console.log('│  4. Beginner's Mind - 初学者心态        │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const assessment = aweModule.assessAweProneness([5, 5, 5, 5, 5, 5, 5, 5, 5, 5]);
+  console.log('📊 模块信息:');
+  console.log(`  • 版本：${aweModule.meta.version}`);
+  console.log(`  • 敬畏来源：${Object.keys(aweModule.aweSources).length} 类`);
+  console.log(`  • 评估量表：${aweModule.awePronenessScale.length} 项`);
+  console.log(`  • 核心练习：4 种`);
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  和我聊聊你的敬畏体验，或询问如何培养敬畏');
+  console.log('  我可以帮你识别敬畏来源、提供练习指导、');
+  console.log('  或评估你的敬畏倾向性');
+  console.log('');
+}
 
 // 显示当前状态
 function showState() {
