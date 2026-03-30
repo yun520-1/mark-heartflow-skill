@@ -1,0 +1,21 @@
+{
+  "name": "heartflow-emotion-traditions-integration",
+  "version": "5.0.2",
+  "description": "HeartFlow Emotion Theory Three Traditions Integration Module - 情绪理论三大传统完整整合",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "demo": "node demo.js"
+  },
+  "keywords": [
+    "emotion",
+    "feeling-tradition",
+    "evaluative-tradition",
+    "motivational-tradition",
+    "heartflow",
+    "SEP"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "theoreticalBasis": "Stanford Encyclopedia of Philosophy - Emotion"
+}

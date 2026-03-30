@@ -1,0 +1,20 @@
+{
+  "name": "heartflow-collective-intentionality-enhanced",
+  "version": "5.0.2",
+  "description": "HeartFlow Collective Intentionality Enhanced Module - 集体意向性深度整合",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "demo": "node demo.js"
+  },
+  "keywords": [
+    "collective-intentionality",
+    "we-intention",
+    "joint-commitment",
+    "heartflow",
+    "SEP"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "theoreticalBasis": "Stanford Encyclopedia of Philosophy - Collective Intentionality"
+}
