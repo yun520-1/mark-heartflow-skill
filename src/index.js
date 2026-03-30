@@ -109,6 +109,14 @@ const selfCheckMetacognitiveModule = new SelfCheckMetacognitive();
 
 // === v5.0.10 结束 ===
 
+// === v5.0.11 新增模块 ===
+
+// 创建情绪 - 集体意向性整合模块 (v5.0.11 新增) 🧠 基于 SEP 情绪理论三大传统 (Feeling/Evaluative/Motivational) + 集体意向性理论 (We-Intention/联合承诺/信任框架)
+const EmotionCollectiveIntegration = require('./emotion-collective-integration-v5.0.11');
+const emotionCollectiveIntegrationModule = EmotionCollectiveIntegration;
+
+// === v5.0.11 结束 ===
+
 // 创建心理化模块 (v3.9.0 新增) 🧠 基于 Fonagy 心理化理论
 const { MentalizationModule } = require('./mentalization');
 const mentalizationModule = new MentalizationModule();
