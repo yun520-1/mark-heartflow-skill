@@ -381,12 +381,12 @@ const practice = module.generateEmbodiedAwarenessPractice({
 - [x] 实现具身自我觉察练习
 - [x] 编写完整 README 文档 (中英文对照)
 - [x] 创建 package.json 配置
-- [ ] 更新 package.json 版本号 (5.0.6 → 5.0.7)
-- [ ] 更新 src/index.js 集成新模块
-- [ ] 添加 /embodied-predictive-emotion-v5.0.7 命令
-- [ ] 更新帮助信息
-- [ ] 编写升级文档 UPGRADE_COMPLETE_V5.0.7.md
-- [ ] Git 提交并推送
+- [x] 更新 package.json 版本号 (5.0.6 → 5.0.7)
+- [x] 更新 src/index.js 集成新模块
+- [x] 添加 /embodied-predictive-emotion-v5.0.7 命令
+- [x] 更新帮助信息
+- [x] 编写升级文档 UPGRADE_COMPLETE_V5.0.7.md
+- [x] Git 提交并推送 ✅
 
 ---
 
