@@ -125,6 +125,22 @@ const emotionPrototypeStructureV5Module = new EmotionPrototypeStructureV5();
 
 // === v5.0.12 结束 ===
 
+// === v5.0.13 新增模块 ===
+
+// 创建集体情绪现象学与自我意识深度整合模块 (v5.0.13 新增) 🧠 基于 SEP Collective Intentionality + Self-Consciousness + Scheler 集体情绪现象学 + Walther 共享经验四层
+const CollectiveEmotionSelfIntegration = require('./collective-emotion-self-integration-v5.0.13');
+const collectiveEmotionSelfIntegrationModule = new CollectiveEmotionSelfIntegration();
+
+// === v5.0.13 结束 ===
+
+// === v5.0.14 新增模块 ===
+
+// 创建预测加工与具身认知深度整合增强模块 (v5.0.14 新增) 🧠 基于 SEP Predictive Processing + Embodied Cognition + 多层级预测模型 + 主动推理干预 + 动态系统追踪
+const PredictiveEmbodiedCognitionEnhanced = require('./predictive-embodied-cognition-v5.0.14');
+const predictiveEmbodiedCognitionEnhancedModule = new PredictiveEmbodiedCognitionEnhanced();
+
+// === v5.0.14 结束 ===
+
 // 创建心理化模块 (v3.9.0 新增) 🧠 基于 Fonagy 心理化理论
 const { MentalizationModule } = require('./mentalization');
 const mentalizationModule = new MentalizationModule();
@@ -523,6 +539,12 @@ async function handleCommand(command) {
       break;
     case '/emotion-prototype-v5':
       showEmotionPrototypeV5Info();
+      break;
+    case '/collective-self-v5':
+      showCollectiveEmotionSelfIntegrationInfo();
+      break;
+    case '/predictive-embodied-v5':
+      showPredictiveEmbodiedCognitionEnhancedInfo();
       break;
     case '/help':
       showHelp();
@@ -2425,6 +2447,72 @@ function showEmotionPrototypeV5Info() {
   console.log('');
 }
 
+// 显示集体情绪现象学与自我意识深度整合 v5.0.13 信息
+function showCollectiveEmotionSelfIntegrationInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  集体情绪现象学与自我意识 v5.0.13 🧠   │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP Collective Intentionality +   │');
+  console.log('│  Self-Consciousness + Scheler + Walther:│');
+  console.log('│  • Walther 共享经验四层评估 (1923)      │');
+  console.log('│  • Scheler 集体情绪现象学 (1954)        │');
+  console.log('│  • 自我意识双层结构 (前反思/反思)       │');
+  console.log('│  • 情绪 - 集体 - 自我三元整合            │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心功能：                              │');
+  console.log('│  • 集体情绪类型检测器                   │');
+  console.log('│  • 自我知识来源评估                     │');
+  console.log('│  • 层间一致性检查                       │');
+  console.log('│  • 个性化调节建议生成                   │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = collectiveEmotionSelfIntegrationModule.getInfo();
+  console.log('🧠 理论来源:');
+  console.log('  • SEP Collective Intentionality (2026 Edition)');
+  console.log('  • SEP Self-Consciousness (2026 Edition)');
+  console.log('  • Scheler (1954): 集体情绪现象学');
+  console.log('  • Walther (1923): 共享经验四层结构');
+  console.log('  • Durkheim: 集体欢腾理论');
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  输入 /collective-self-v5 查看本信息');
+  console.log('  描述你的集体情绪体验，系统会自动分析');
+  console.log('');
+}
+
+// 显示预测加工与具身认知深度整合增强 v5.0.14 信息
+function showPredictiveEmbodiedCognitionEnhancedInfo() {
+  console.log('\n┌─────────────────────────────────────────┐');
+  console.log('│  预测加工与具身认知增强 v5.0.14 🧠     │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  基于 SEP Predictive Processing +       │');
+  console.log('│  Embodied Cognition + 自由能原理：      │');
+  console.log('│  • 多层级预测模型 (L0-L4)               │');
+  console.log('│  • 预测误差精细化计算                   │');
+  console.log('│  • 主动推理干预生成                     │');
+  console.log('│  • 动态系统追踪 (吸引子/分岔)           │');
+  console.log('├─────────────────────────────────────────┤');
+  console.log('│  核心功能：                              │');
+  console.log('│  • 五层预测误差分析                     │');
+  console.log('│  • 误差来源归因 (4 类型)                │');
+  console.log('│  • 多层级干预方案生成                   │');
+  console.log('│  • 时间深度预测整合                     │');
+  console.log('└─────────────────────────────────────────┘\n');
+  
+  const info = predictiveEmbodiedCognitionEnhancedModule.getInfo();
+  console.log('🧠 理论来源:');
+  console.log('  • SEP Predictive Processing (Friston)');
+  console.log('  • SEP Embodied Cognition');
+  console.log('  • Friston (2010): Free Energy Principle');
+  console.log('  • Anil Seth (2021): Being You');
+  console.log('  • Lisa Feldman Barrett: Constructed Emotion');
+  console.log('');
+  console.log('💡 使用方式:');
+  console.log('  输入 /predictive-embodied-v5 查看本信息');
+  console.log('  描述你的情绪体验，系统会进行预测误差分析');
+  console.log('');
+}
+
 // ================================================
 
 // 显示当前状态
@@ -2591,6 +2679,9 @@ function showHelp() {
   console.log('│  /emotion-theory - 情绪理论基础 (v3.21.0)│');
   console.log('│  /emotion-traditions-v4.9 - 情绪三大传统 (v4.9.0)│');
   console.log('│  /collective-emotion - 集体情绪现象学 (v4.9.0)│');
+  console.log('│  /emotion-prototype-v5 - 情绪原型结构 (v5.0.12)│');
+  console.log('│  /collective-self-v5 - 集体情绪与自我意识 (v5.0.13)│');
+  console.log('│  /predictive-embodied-v5 - 预测加工与具身认知 (v5.0.14)│');
   console.log('│  /help    - 显示此帮助信息              │');
   console.log('│  /quit    - 退出程序                    │');
   console.log('└─────────────────────────────────────────┘\n');

@@ -1,0 +1,35 @@
+{
+  "name": "predictive-embodied-cognition-v5.0.14",
+  "version": "5.0.14",
+  "description": "HeartFlow v5.0.14 - 预测加工与具身认知深度整合增强",
+  "main": "index.js",
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "keywords": [
+    "predictive-processing",
+    "embodied-cognition",
+    "emotion",
+    "active-inference",
+    "free-energy-principle"
+  ],
+  "theory": {
+    "sources": [
+      "SEP Predictive Processing",
+      "SEP Embodied Cognition",
+      "SEP Emotion Theory",
+      "Friston Free Energy Principle",
+      "Anil Seth Being You",
+      "Lisa Feldman Barrett Theory of Constructed Emotion"
+    ],
+    "keyConcepts": [
+      "Hierarchical Predictive Model",
+      "Prediction Error Minimization",
+      "Active Inference",
+      "Interoceptive Prediction",
+      "Dynamic Systems",
+      "Attractor States",
+      "Bifurcation Warning",
+      "Temporal Depth"
+    ]
+  }
+}
