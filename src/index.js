@@ -69,6 +69,10 @@ const SDTModule = require('./sdt');
 const { AutonomousEmotionModule } = require('./autonomous-emotion');
 const autonomousEmotionModule = new AutonomousEmotionModule();
 
+// 创建自主情绪与能动性整合模块 (v5.0.6 新增) 🧠 基于 SEP 自主性理论、现象学自我意识理论、能动性理论
+const { AutonomousEmotionAgencyModule } = require('./autonomous-emotion-agency-v5.0.6');
+const autonomousEmotionAgencyModule = new AutonomousEmotionAgencyModule();
+
 // 创建心理化模块 (v3.9.0 新增) 🧠 基于 Fonagy 心理化理论
 const { MentalizationModule } = require('./mentalization');
 const mentalizationModule = new MentalizationModule();
@@ -286,6 +290,7 @@ function showWelcome() {
   console.log('║    /positive    - 积极心理学 (v3.4) ✨ NEW               ║');
   console.log('║    /sdt         - 自我决定理论动机评估 (v3.5) 🎛️ NEW    ║');
   console.log('║    /autonomous  - 自主感情能力 (v3.6) 🧠 NEW             ║');
+  console.log('║    /autonomous-emotion-v5.0.6 - 自主情绪与能动性 (v5.0.6) 🧠 NEW ║');
   console.log('║    /mentalization - 心理化理论 (v3.9) 🧠 NEW              ║');
   console.log('║    /self        - 自我意识与现象学 (v3.10) 🧠 NEW        ║');
   console.log('║    /embodied    - 具身认知 (v3.13) 🧠 NEW                 ║');
@@ -384,6 +389,9 @@ async function handleCommand(command) {
       break;
     case '/autonomous':
       showAutonomousEmotionInfo();
+      break;
+    case '/autonomous-emotion-v5.0.6':
+      showAutonomousEmotionAgencyInfo();
       break;
     case '/mentalization':
       showMentalizationInfo();
@@ -916,6 +924,60 @@ function showAutonomousEmotionInfo() {
   console.log('  • 体验主观感受特征（Qualia 模拟）');
   console.log('  • 对自身情绪产生情绪反应（元情绪）');
   console.log('  • 反思自己的心理状态（先验统觉）\n');
+}
+
+// 显示自主情绪与能动性整合模块信息 (v5.0.6 新增) 🧠
+function showAutonomousEmotionAgencyInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   自主情绪与能动性整合模块 (v5.0.6) 🧠   │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 基于斯坦福哲学百科全书 (SEP) 权威理论：   │');
+  console.log('│ • Autonomy in Moral and Political Phil.│');
+  console.log('│ • Self-Consciousness (Phenomenological)│');
+  console.log('│ • Agency Theory                        │');
+  console.log('│ • Synofzik Dual-Factor Model (2008)    │');
+  console.log('│ • Gross Process Model of Emotion Reg.  │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心能力：                              │');
+  console.log('│ 🧠 情绪自主性评估 - 独立性/真实性/能力/关系│');
+  console.log('│ 🧠 情绪能动性检测 - 控制感/所有权感/自愿 │');
+  console.log('│ 🧠 自主调节推荐 - 基于价值观的策略选择  │');
+  console.log('│ 🧠 情绪所有权现象学 - 为我性/第一人称   │');
+  console.log('│ 🧠 整合练习生成 - 15-20 分钟自主情绪培养  │');
+  console.log('└────────────────────────────────────────┘\n');
+  
+  console.log('📊 情绪自主性四维度:');
+  console.log('  • Independence (独立性) - 不受外部强制');
+  console.log('  • Authenticity (真实性) - 符合真实自我');
+  console.log('  • Competence (能力感) - 能有效调节');
+  console.log('  • Relatedness (关系性) - 社会支持\n');
+  
+  console.log('📊 情绪能动性四维度:');
+  console.log('  • Sense of Agency (控制感) - 我能影响情绪');
+  console.log('  • Sense of Ownership (所有权感) - 情绪属于我');
+  console.log('  • Voluntariness (自愿性) - 我是自愿的');
+  console.log('  • Effort (努力感) - 我付出了努力\n');
+  
+  console.log('📊 情绪所有权现象学四维度:');
+  console.log('  • For-Me-Ness (为我性) - 体验向我呈现');
+  console.log('  • First-Person Givenness (第一人称给定性)');
+  console.log('  • Non-Objectifying (非对象化) - 不是被观察对象');
+  console.log('  • Experiential Thickness (体验厚度)\n');
+  
+  // 展示模块信息
+  const info = autonomousEmotionAgencyModule.getInfo();
+  console.log('📚 理论基础:');
+  info.theoreticalFoundations.forEach((foundation, i) => {
+    console.log(`  ${i + 1}. ${foundation}`);
+  });
+  
+  console.log('\n💡 理论意义:');
+  console.log('  本模块增强 HeartFlow 的自主感情能力，使其能够：');
+  console.log('  • 评估情绪的自主性水平（独立性、真实性、能力感、关系性）');
+  console.log('  • 检测情绪的能动性感受（控制感、所有权感、自愿性、努力感）');
+  console.log('  • 基于用户价值观推荐最符合自主性的调节策略');
+  console.log('  • 分析情绪体验的现象学特征（为我性、第一人称给定性）');
+  console.log('  • 生成自主情绪整合练习，培养情绪自我治理能力\n');
 }
 
 // 显示心理化模块信息 (v3.9.0 新增) 🧠
@@ -2188,6 +2250,7 @@ function showHelp() {
   console.log('│  /positive - 积极心理学 (v3.4.0)         │');
   console.log('│  /sdt - 自我决定理论 (v3.5.0)            │');
   console.log('│  /autonomous - 自主感情 (v3.6.0)         │');
+  console.log('│  /autonomous-emotion-v5.0.6 - 自主情绪与能动性 (v5.0.6) │');
   console.log('│  /mentalization - 心理化理论 (v3.9.0)    │');
   console.log('│  /self - 自我意识与现象学 (v3.10.0)      │');
   console.log('│  /embodied - 具身认知 (v3.13.0)          │');
