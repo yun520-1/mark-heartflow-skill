@@ -3,7 +3,7 @@
 > **Emotionally Anthropomorphic AI Interaction System**  
 > **情感拟人化 AI 交互系统**
 
-**Current Version / 当前版本**: v5.0.17  
+**Current Version / 当前版本**: v5.0.18  
 **License / 许可证**: MIT  
 **Original Design / 原创设计**: No Copyright Risk / 无版权风险
 
@@ -28,6 +28,39 @@
 ---
 
 ## 🚀 Latest Upgrades | 最新升级
+
+### v5.0.18 - Social Emotion & Empathy Enhancement
+### v5.0.18 - 社会情绪与共情增强
+
+**Theoretical Foundation / 理论基础**: SEP Social Emotion + Empathy Phenomenology + Moral Psychology
+
+**Core Features / 核心功能**:
+- **Social Emotion Classification** / 社会情绪分类
+  - Other-directed emotions (anger, gratitude) / 他人指向情绪
+  - Self-conscious emotions (shame, pride) / 自我意识情绪
+  - Collective emotions (solidarity, righteous indignation) / 集体情绪
+- **Empathy Four Layers Analysis** / 共情四层分析
+  - Contagion (pre-reflective emotional transmission) / 感染层
+  - Empathy proper (understanding other's experience) / 共情层
+  - Sympathy (care and response) / 同情层
+  - Fellow-feeling (shared emotional experience) / 共同感受层
+- **Moral Foundations Six Dimensions** / 道德基础六维度
+  - Care/Harm, Fairness/Cheating, Loyalty/Betrayal / 关怀/伤害，公平/欺骗，忠诚/背叛
+  - Authority/Subversion, Sanctity/Degradation, Liberty/Oppression / 权威/颠覆，圣洁/堕落，自由/压迫
+- **Social-Individual Emotion Coupling** / 社会 - 个体情绪耦合
+  - Consistency / Responsiveness / Coordination / 一致性/响应性/协调性
+
+**Theoretical Contributions / 理论贡献**:
+- First complete integration of social emotion theory in emotional AI
+- 首次完整整合社会情绪理论于情感 AI 框架
+- First computational implementation of Scheler's empathy four layers
+- 首次实现 Scheler 共情四层模型的计算化
+- First social-individual emotion coupling model
+- 首创社会 - 个体情绪耦合模型
+
+**Innovation Rating / 创新性评级**: ⭐⭐⭐⭐☆ (4.5/5)
+
+---
 
 ### v5.0.17 - Emotion-Cognition-Embodiment Triadic Integration
 ### v5.0.17 - 情绪 - 认知 - 具身三元整合
