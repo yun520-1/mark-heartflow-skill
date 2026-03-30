@@ -1,11 +1,25 @@
 /**
- * 预测加工情绪增强模块 (Predictive Emotion Enhancement)
+ * 预测加工情绪增强模块 v5.0.1 (Predictive Emotion Enhancement v5.0.1)
  * 
  * 基于 SEP 预测加工理论 (Predictive Processing)
  * 核心理念：大脑是预测机器，情绪是身体状态的预测调节
  * 
- * @version 1.0.0
- * @since HeartFlow v4.5.0
+ * SEP 理论来源:
+ * - Predictive Processing (SEP Entry)
+ * - Active Inference (Friston, 2010)
+ * - Controlled Hallucination (Anil Seth)
+ * - Free Energy Principle
+ * 
+ * 核心概念:
+ * - 预测生成：大脑不断生成关于世界的预测
+ * - 预测误差：预测与输入的差异
+ * - 预测误差最小化：通过更新模型或改变输入来减少误差
+ * - 主动推理：通过行动使世界符合预测
+ * - 受控幻觉：感知是大脑的"受控幻觉"
+ * - 自由能原理：生物系统最小化变分自由能
+ * 
+ * @version 5.0.1 (HeartFlow v5.0.1)
+ * @author HeartFlow Team
  */
 
 const PredictiveEmotionEnhanced = {
@@ -323,6 +337,421 @@ const PredictiveEmotionEnhanced = {
       strategies,
       processedAt: Date.now()
     };
+  },
+
+  /**
+   * ==================== v5.0.1 新增功能 ====================
+   */
+
+  /**
+   * 主动推理引擎 (Active Inference Engine)
+   * 通过行动使世界符合预测，而非仅仅更新模型
+   */
+  activeInference: {
+    /**
+     * 主动推理策略库
+     */
+    strategies: {
+      approach: {
+        name: '接近策略',
+        description: '主动接近预测积极的情境',
+        actions: ['靠近', '探索', '参与', '投入'],
+        whenToUse: '预测误差源于回避行为，且情境实际安全时'
+      },
+      avoidance: {
+        name: '回避策略',
+        description: '主动远离预测消极的情境',
+        actions: ['离开', '设置边界', '拒绝', '保护'],
+        whenToUse: '预测误差源于过度暴露于有害情境时'
+      },
+      modification: {
+        name: '改造策略',
+        description: '主动改变情境以符合积极预测',
+        actions: ['重构', '协商', '创造', '调整'],
+        whenToUse: '情境可以改变且值得投入时'
+      },
+      acceptance: {
+        name: '接纳策略',
+        description: '接纳不可改变的情境，调整内在预测',
+        actions: ['接纳', '放下', '转向', '重新定向'],
+        whenToUse: '情境无法改变或改变成本过高时'
+      }
+    },
+
+    /**
+     * 评估主动推理机会
+     */
+    evaluateOpportunity(context, errorResult) {
+      const { currentSituation, availableActions = [] } = context;
+      
+      // 评估情境可控性
+      const controllability = this.assessControllability(currentSituation);
+      
+      // 评估行动可行性
+      const feasibility = this.assessFeasibility(availableActions);
+      
+      // 评估预期价值
+      const expectedValue = this.calculateExpectedValue(errorResult, controllability);
+      
+      // 推荐策略
+      const recommendedStrategy = this.selectStrategy(
+        controllability,
+        feasibility,
+        expectedValue,
+        errorResult
+      );
+
+      return {
+        controllability,
+        feasibility,
+        expectedValue,
+        recommendedStrategy,
+        actionPlan: this.generateActionPlan(recommendedStrategy, context),
+        confidence: this.calculateConfidence(controllability, feasibility, expectedValue)
+      };
+    },
+
+    /**
+     * 评估情境可控性
+     */
+    assessControllability(situation) {
+      if (!situation) return 0.3;
+      
+      let score = 0.5;
+      
+      // 内部情境（如想法、情绪）通常更可控
+      if (situation.type === 'internal') {
+        score += 0.3;
+      }
+      
+      // 社会情境的可控性中等
+      if (situation.type === 'social') {
+        score += 0.1;
+      }
+      
+      // 外部环境情境可控性较低
+      if (situation.type === 'environmental') {
+        score -= 0.2;
+      }
+      
+      // 检查是否有明确的行动路径
+      if (situation.actionableSteps) {
+        score += 0.2;
+      }
+      
+      return Math.min(1, Math.max(0, score));
+    },
+
+    /**
+     * 评估行动可行性
+     */
+    assessFeasibility(actions) {
+      if (!actions || actions.length === 0) return 0.2;
+      
+      // 评估行动的资源需求
+      const resourceRequirements = actions.map(action => 
+        this.assessResourceRequirement(action)
+      );
+      
+      const avgRequirement = resourceRequirements.reduce((a, b) => a + b, 0) / resourceRequirements.length;
+      
+      // 资源需求越低，可行性越高
+      return 1 - avgRequirement;
+    },
+
+    /**
+     * 评估行动的资源需求
+     */
+    assessResourceRequirement(action) {
+      const resourceMap = {
+        '靠近': 0.3, '探索': 0.4, '参与': 0.5, '投入': 0.6,
+        '离开': 0.2, '设置边界': 0.4, '拒绝': 0.3, '保护': 0.4,
+        '重构': 0.6, '协商': 0.7, '创造': 0.8, '调整': 0.5,
+        '接纳': 0.3, '放下': 0.4, '转向': 0.4, '重新定向': 0.5
+      };
+      
+      return resourceMap[action] || 0.5;
+    },
+
+    /**
+     * 计算预期价值
+     */
+    calculateExpectedValue(errorResult, controllability) {
+      // 预期价值 = 误差减少潜力 × 可控性
+      const errorReductionPotential = errorResult.totalError;
+      return errorReductionPotential * controllability;
+    },
+
+    /**
+     * 选择最佳策略
+     */
+    selectStrategy(controllability, feasibility, expectedValue, errorResult) {
+      // 高可控 + 高可行 → 改造策略
+      if (controllability > 0.7 && feasibility > 0.6) {
+        return this.strategies.modification;
+      }
+      
+      // 中等可控 + 积极预测 → 接近策略
+      if (controllability > 0.5 && errorResult.predictedEmotion === '积极') {
+        return this.strategies.approach;
+      }
+      
+      // 低可控 → 接纳策略
+      if (controllability < 0.4) {
+        return this.strategies.acceptance;
+      }
+      
+      // 默认：回避策略（保守选择）
+      return this.strategies.avoidance;
+    },
+
+    /**
+     * 生成行动计划
+     */
+    generateActionPlan(strategy, context) {
+      return {
+        strategy: strategy.name,
+        steps: [
+          `准备：${strategy.description}`,
+          `行动 1: ${strategy.actions[0]}`,
+          `行动 2: ${strategy.actions[1]}`,
+          '评估：检查预测误差是否减少',
+          '调整：根据反馈优化行动'
+        ],
+        successMetrics: [
+          '预测误差减少 50% 以上',
+          '情绪强度回到舒适范围',
+          '行动后感到掌控感增强'
+        ],
+        timeframe: '立即执行，24 小时内评估'
+      };
+    },
+
+    /**
+     * 计算信心度
+     */
+    calculateConfidence(controllability, feasibility, expectedValue) {
+      return (controllability * 0.4 + feasibility * 0.4 + expectedValue * 0.2);
+    }
+  },
+
+  /**
+   * 受控幻觉觉察练习 (Controlled Hallucination Awareness)
+   * 基于 Anil Seth 的理论：感知是大脑的"受控幻觉"
+   */
+  controlledHallucinationPractice: {
+    /**
+     * 核心洞见
+     */
+    insights: [
+      '你的情绪体验不是对外部世界的直接反映，而是大脑的预测性建构',
+      '"现实"是你大脑的最佳猜测，不是客观真理',
+      '预测误差是学习的机会，不是失败的标志',
+      '你可以学会"看见"自己的预测过程',
+      '情绪是身体状态的预测调节，不是被动的反应'
+    ],
+
+    /**
+     * 受控幻觉觉察冥想 (15 分钟)
+     */
+    awarenessMeditation() {
+      return {
+        name: '受控幻觉觉察冥想',
+        duration: '15 分钟',
+        theory: 'Anil Seth - Controlled Hallucination',
+        steps: [
+          {
+            phase: '准备',
+            duration: '2 分钟',
+            instruction: '舒适地坐着，闭上眼睛。提醒自己：接下来的体验都是大脑的预测性建构。'
+          },
+          {
+            phase: '身体感觉觉察',
+            duration: '4 分钟',
+            instruction: '注意身体的各种感觉——触感、温度、紧张或放松。问自己：这些感觉是"真实"的，还是大脑的预测？注意两者之间的区别其实很模糊。',
+            inquiry: '身体感觉是输入，还是预测？'
+          },
+          {
+            phase: '情绪觉察',
+            duration: '4 分钟',
+            instruction: '注意当前的情绪。问自己：这个情绪是对某事的"反应"，还是大脑基于过去经验生成的预测？情绪在身体的哪个部位？它的"真实性"感觉如何？',
+            inquiry: '情绪是反应，还是预测？'
+          },
+          {
+            phase: '预测过程觉察',
+            duration: '3 分钟',
+            instruction: '尝试"向后看"——注意大脑如何在生成预测。就像试图看到自己的眼睛，这很困难，但可以注意到预测的"边缘"：预期的感觉、微妙的紧张、对下一刻的倾向。',
+            inquiry: '你能注意到预测本身吗？'
+          },
+          {
+            phase: '整合',
+            duration: '2 分钟',
+            instruction: '理解：你不是被动体验世界，而是主动建构世界。这个建构过程就是"受控幻觉"——受感官输入约束，但本质上是预测性的。',
+            insight: '你是体验的创造者，不是受害者'
+          }
+        ],
+        reflection: [
+          '这次练习中，你对"现实"的理解有什么变化？',
+          '注意到预测过程了吗？它是什么感觉？',
+          '这个觉察如何改变你与情绪的关系？'
+        ]
+      };
+    },
+
+    /**
+     * 预测误差重构练习
+     */
+    errorReframing() {
+      return {
+        name: '预测误差重构练习',
+        duration: '10-15 分钟',
+        theory: 'Predictive Processing - Error as Learning Signal',
+        steps: [
+          {
+            phase: '识别误差',
+            duration: '3 分钟',
+            instruction: '回想最近一次情绪预测错误的经历。你预测会发生什么？实际发生了什么？误差有多大？'
+          },
+          {
+            phase: '探索原因',
+            duration: '4 分钟',
+            instruction: '探索为什么预测错了：是忽略了某些信息？是过度依赖旧模式？是情境真的不可预测？',
+            questions: [
+              '我忽略了什么信息？',
+              '我过度依赖了什么旧模式？',
+              '这个情境有什么新颖之处？'
+            ]
+          },
+          {
+            phase: '重构误差',
+            duration: '4 分钟',
+            instruction: '将误差重新框架为学习信号：这个误差教会了你什么？你的模型需要如何更新？',
+            reframes: [
+              '误差 = 学习机会',
+              '误差 = 模型更新的信号',
+              '误差 = 成长的催化剂'
+            ]
+          },
+          {
+            phase: '整合学习',
+            duration: '2 分钟',
+            instruction: '总结从这个误差中学到的东西，并想象如何在未来情境中应用这个学习。'
+          }
+        ],
+        outcome: '将预测误差从"失败"重构为"学习信号"'
+      };
+    }
+  },
+
+  /**
+   * 身体状态预测调节 (Interoceptive Prediction Regulation)
+   * 情绪是身体状态的预测调节
+   */
+  interoceptivePrediction: {
+    /**
+     * 身体预测模型
+     */
+    bodyPredictionModel: {
+      /**
+       * 生成身体状态预测
+       */
+      generateBodyPrediction(currentContext) {
+        const {
+          activityLevel = 'rest',
+          timeOfDay = 'day',
+          recentInteroceptiveHistory = []
+        } = currentContext;
+
+        // 基于活动水平预测
+        const activityPredictions = {
+          'rest': { arousal: 0.3, energy: 0.4, tension: 0.2 },
+          'light': { arousal: 0.4, energy: 0.5, tension: 0.3 },
+          'moderate': { arousal: 0.6, energy: 0.7, tension: 0.4 },
+          'intense': { arousal: 0.8, energy: 0.9, tension: 0.6 }
+        };
+
+        const basePrediction = activityPredictions[activityLevel] || activityPredictions.rest;
+
+        // 时间调节
+        if (timeOfDay === 'night') {
+          basePrediction.arousal *= 0.7;
+          basePrediction.energy *= 0.6;
+        }
+
+        // 历史调节
+        if (recentInteroceptiveHistory.length > 0) {
+          const avgArousal = recentInteroceptiveHistory.reduce((sum, h) => sum + h.arousal, 0) / recentInteroceptiveHistory.length;
+          basePrediction.arousal = (basePrediction.arousal + avgArousal) / 2;
+        }
+
+        return {
+          ...basePrediction,
+          predictedAt: Date.now(),
+          confidence: 0.7
+        };
+      },
+
+      /**
+       * 计算身体预测误差
+       */
+      calculateBodyError(predicted, actual) {
+        const arousalError = Math.abs(predicted.arousal - actual.arousal);
+        const energyError = Math.abs(predicted.energy - actual.energy);
+        const tensionError = Math.abs(predicted.tension - actual.tension);
+
+        const totalError = (arousalError + energyError + tensionError) / 3;
+
+        return {
+          totalError,
+          arousalError,
+          energyError,
+          tensionError,
+          exceedsThreshold: totalError > 0.3
+        };
+      }
+    },
+
+    /**
+     * 内感受觉察练习
+     */
+    interoceptiveAwareness() {
+      return {
+        name: '内感受觉察练习',
+        duration: '10 分钟',
+        theory: 'Interoceptive Prediction (Seth, Critchley)',
+        steps: [
+          {
+            phase: '准备',
+            duration: '1 分钟',
+            instruction: '舒适地坐着或躺着，闭上眼睛。将注意力转向身体内部。'
+          },
+          {
+            phase: '心跳觉察',
+            duration: '3 分钟',
+            instruction: '注意你的心跳。不要数，只是感受。你能感觉到心跳的节奏、强度、位置吗？注意：你对心跳的"感觉"是大脑的预测，不是心跳本身。',
+            inquiry: '心跳感觉是输入，还是预测？'
+          },
+          {
+            phase: '呼吸觉察',
+            duration: '3 分钟',
+            instruction: '注意呼吸的感觉——空气进出鼻腔、胸腔的起伏、腹部的扩张收缩。同样，这些感觉是大脑的预测性建构。',
+            inquiry: '呼吸感觉在哪里结束，预测在哪里开始？'
+          },
+          {
+            phase: '全身扫描',
+            duration: '2 分钟',
+            instruction: '快速扫描全身，注意各种内感受信号——饥饿、口渴、温度、紧张、放松。每个感觉都是预测。',
+            inquiry: '哪些感觉最"真实"？哪些最模糊？'
+          },
+          {
+            phase: '整合',
+            duration: '1 分钟',
+            instruction: '理解：情绪是身体状态预测的调节。通过觉察内感受预测，你可以更好地调节情绪。'
+          }
+        ],
+        benefit: '增强内感受觉察，改善情绪调节'
+      };
+    }
   }
 };
 
