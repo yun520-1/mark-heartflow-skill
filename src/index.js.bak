@@ -157,7 +157,6 @@ const freeWillAgencyModule = new FreeWillAgencyModule();
 const { MoralPsychologyModule } = require('./moral-psychology');
 const { TaskAgencyModule } = require('./task-agency');
 const moralPsychologyModule = new MoralPsychologyModule();
-const taskAgencyModule = new TaskAgencyModule();
 
 // 创建实践智慧模块 (v3.31.0 新增) 🧠 基于亚里士多德实践智慧理论 (Phronesis) 与 SEP 智慧理论
 const PracticalWisdom = require('./practical-wisdom');
