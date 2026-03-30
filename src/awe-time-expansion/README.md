@@ -1,252 +1,270 @@
-# 敬畏 - 时间扩展模块 (Awe Time Expansion)
+# HeartFlow Awe-Time Expansion Module v5.0.3
 
-**版本**: 5.0.1  
-**理论来源**: 敬畏心理学 + 时间意识研究整合  
-**HeartFlow**: v5.0.1+
+## 敬畏与时间意识整合模块
 
----
+### 理论来源
 
-## 📚 理论框架
+**1. SEP Temporal Consciousness (斯坦福哲学百科全书)**
+- 时间意识三大模型：Cinematic / Retentional / Extensional
+- Husserl 时间现象学：原初印象 / 保留 / 预期三重结构
+- 时间深度与自我深度的关系
 
-### 核心研究发现
+**2. Berkeley Greater Good Awe Psychology**
+- 敬畏定义：面对广阔且挑战理解的事物时的体验
+- 效价区分：积极敬畏 (wonder) vs 消极敬畏 (dread)
+- 时间扩展效应：敬畏让时间感觉变慢，增强当下临在感
+- 科学验证的益处：幸福感↑、慷慨↑、好奇心↑、健康 biomarker↓
 
-基于权威心理学研究，本模块整合了敬畏体验与时间感知的关系：
+### 核心洞察
 
-#### Rudd et al. (2012) - 敬畏扩展时间
-- **发现**: 敬畏体验显著扩展感知时间
-- **机制**: 注意力吸收 + 当下临在
-- **效应**: 时间压力减少、幸福感提升、决策改善
+> **敬畏体验通过挑战认知框架，创造时间感知扩展，增强当下临在感。**
 
-#### Keltner & Haidt (2003) - 敬畏定义
-- **两大核心特征**:
-  1. **感知浩瀚 (Perceived Vastness)**: 体验到超越日常经验尺度的事物
-  2. **需要顺应 (Need for Accommodation)**: 现有认知框架无法完全理解
-
-#### Piff et al. (2015) - 小自我效应
-- **发现**: 敬畏产生"小自我" (small self) 体验
-- **效应**: 自我关注减少、亲社会行为增加、谦逊增强
-
-#### Bai et al. (2017) - 敬畏与健康
-- **发现**: 敬畏体验降低炎症标志物 IL-6
-- **效应**: 改善身体健康、减少慢性炎症
+这一洞察整合了现象学时间意识理论与现代情绪科学：
+- 敬畏的"广阔性"挑战既有认知框架
+- 认知框架的暂时"失效"创造时间感知的扩展
+- 时间扩展增强当下临在感，促进现象学觉察
 
 ---
 
-### 敬畏 - 时间扩展机制
+## 核心功能
 
-| 机制 | 描述 | 效应 |
-|------|------|------|
-| **注意力吸收** | 敬畏吸引全部注意力 | 减少时间压力感 |
-| **当下临在** | 深度临在状态 | 扩展"现在"的厚度 |
-| **自我缩小** | 小自我效应 | 释放心理时间资源 |
-| **意义增强** | 敬畏增强意义感 | 时间显得更"充实" |
+### 1. AweTimeExpansionAssessor
 
----
-
-## 🔧 核心功能
-
-### 1. 敬畏 - 时间扩展评估
+评估敬畏体验的时间扩展效应：
 
 ```javascript
-const { assess } = require('./awe-time-expansion');
+const { AweTimeExpansionAssessor } = require('./awe-time-expansion');
 
-const result = assess('站在大峡谷边缘，我感到自己的渺小，时间好像停止了，只有永恒的当下');
+const assessor = new AweTimeExpansionAssessor();
 
-console.log(result);
-// {
-//   dimensions: { perceivedVastness: 3, smallSelf: 2, timePerception: 3, presence: 2, ... },
-//   totalScore: 12,
-//   maxScore: 15,
-//   expansionLevel: 0.8,
-//   interpretation: { level: '极强', description: '...', benefit: '...' },
-//   recommendations: [...],
-//   recommendedPractices: [...]
-// }
+const report = {
+  description: '站在山顶俯瞰云海，感觉时间仿佛静止了',
+  source: 'nature',
+  intensity: 8,
+  emotions: ['wonder', 'peace', 'gratitude']
+};
+
+const assessment = assessor.assess(report);
+// 输出：
+{
+  source: 'nature',
+  valence: { type: 'positive', score: 1.0 },
+  timeExpansion: {
+    detected: true,
+    indicators: ['slowed_time', 'present_moment'],
+    score: 0.75,
+    level: 'HIGH'
+  },
+  integrationScore: { overall: 85 },
+  recommendations: [...]
+}
 ```
 
-### 2. 敬畏诱发刺激分类
+### 2. 敬畏 - 时间扩展练习
 
-| 类别 | 示例 | 时间扩展效应 | 可及性 |
-|------|------|-------------|--------|
-| **自然敬畏** | 星空、大峡谷、海洋 | 0.85 | 中等 |
-| **艺术敬畏** | 宏伟建筑、交响乐 | 0.75 | 高 |
-| **知识敬畏** | 宇宙学、深奥理论 | 0.70 | 高 |
-| **社会敬畏** | 极端善良、集体仪式 | 0.65 | 中等 |
-| **精神敬畏** | 冥想深度体验、神秘体验 | 0.90 | 低 |
-
-### 3. 敬畏 - 时间扩展练习
-
-#### 3.1 敬畏散步 (Awe Walk) - 20-30 分钟
-- 小自我启动
-- 敬畏搜寻
-- 时间感知检查
-- 整合
-
-#### 3.2 星空冥想 (Stargazing Meditation) - 30-45 分钟 ⭐
-- **最强敬畏诱发练习**
-- 宇宙尺度觉察
-- 小自我体验
-- 时间扩展觉察
-
-#### 3.3 敬畏叙事写作 (Awe Narrative) - 20-30 分钟
-- 回忆敬畏体验
-- 自由写作
-- 意义探索
-- 整合承诺
-
-#### 3.4 敬畏呼吸空间 (Awe Breathing Space) - 3-5 分钟
-- **快速敬畏练习**
-- 浩瀚想象
-- 时间扩展呼吸
-- 适用于日常快速减压
-
----
-
-## 📖 使用示例
-
-### 评估敬畏 - 时间扩展效应
+生成个性化练习方案：
 
 ```javascript
-const AweModule = require('./awe-time-expansion');
-
-// 用户描述
-const userDescription = `
-昨晚观星时，我体验到一种深刻的敬畏感。
-星空的浩瀚让我感到自己的渺小，
-但这种感觉不是压抑，而是解放。
-时间好像变慢了，每一个瞬间都充满意义。
-`;
-
-// 进行评估
-const assessment = AweModule.assess(userDescription);
-
-console.log('时间扩展水平:', assessment.expansionLevel * 100 + '%');
-console.log('解释:', assessment.interpretation.description);
-console.log('\n推荐练习:');
-assessment.recommendedPractices.forEach(p => {
-  console.log(`- ${p.practice.name}: ${p.reason}`);
+const practices = assessor.generatePractice({
+  availableTime: 20,
+  preferredSource: 'nature',
+  experienceLevel: 'beginner'
 });
+
+// 输出包含：
+// - 时间扩展敬畏练习 (20 分钟)
+// - Husserl 时间三重觉察 (15 分钟，可选)
 ```
 
-### 获取特定练习
+---
 
+## 新增练习
+
+### 练习 1: 时间扩展敬畏练习 (15-20 分钟)
+
+**步骤**:
+
+1. **敬畏诱导 (5 分钟)**
+   - 选择能引发敬畏的场景
+   - 选项：自然景观 / 震撼视频 / 深刻回忆 / 艺术体验
+   - 让自己完全沉浸其中
+
+2. **时间觉察 (5 分钟)**
+   - 注意时间感如何变化
+   - 时间变慢了吗？
+   - 当下感增强了吗？
+   - 不加评判地观察
+
+3. **现象学描述 (5 分钟)**
+   - 用语言描述体验本身
+   - 不解释、不分析
+   - 只描述：感觉、意象、身体感受
+
+4. **整合 (5 分钟)**
+   - 将这份敬畏和临在感带入接下来的日常活动
+   - 设定一个意图：保持这份觉察
+
+### 练习 2: Husserl 时间三重觉察 (15 分钟)
+
+**理论基础**: Husserl 时间意识现象学
+
+**步骤**:
+
+1. **原初印象觉察 (5 分钟)**
+   - 觉察当前的直接体验
+   - 声音、触感、视觉、气味
+   - 这是"现在"的给定性 (Givenness)
+
+2. **保留觉察 (5 分钟)**
+   - 觉察刚刚过去的体验如何在意识中保持
+   - 注意"刚才"如何影响"现在"
+   - 体验时间的"彗星尾迹"
+
+3. **预期觉察 (5 分钟)**
+   - 觉察对即将到来的体验的预期
+   - 注意意识如何"向前延伸"
+   - 体验时间的"前瞻性"
+
+**核心洞见**: 自我不是瞬间的点，而是过去 - 现在 - 未来的动态统一
+
+### 练习 3: 日常敬畏培养 (每日 5 分钟)
+
+**方式**:
+
+1. **自然觉察**
+   - 每天花 5 分钟观察自然
+   - 一片叶子的纹理
+   - 天空的云彩变化
+   - 阳光的角度
+
+2. **儿童视角练习**
+   - 花时间和婴幼儿相处
+   - 通过他们的眼睛看世界
+   - 重新发现日常的奇迹
+
+3. **敬畏叙事写作**
+   - 每周写一次敬畏体验
+   - 描述场景、感受、身体感觉
+   - 记录时间感的变化
+
+---
+
+## 敬畏效价区分
+
+### 积极敬畏 (Positive Awe)
+- **特征**: wonder, amazement, beauty, gratitude
+- **来源**: 自然美景、艺术体验、深刻连接
+- **益处**: 幸福感↑、慷慨↑、好奇心↑、健康↑
+
+### 消极敬畏 (Negative Awe)
+- **特征**: fear, threat, dread, powerlessness
+- **来源**: 自然灾害、威胁性权威、恐怖场景
+- **注意**: 可能导致无力感，益处有限
+
+### 混合敬畏 (Mixed Awe)
+- **特征**: 同时包含积极和消极元素
+- **来源**: 暴风雨、崇高体验 (sublime)
+- **处理**: 引导向积极面向整合
+
+---
+
+## 使用场景
+
+### 1. 情绪调节
+当感到焦虑、匆忙、被时间追赶时：
+- 使用时间扩展敬畏练习
+- 重建与时间的健康关系
+- 增强当下临在感
+
+### 2. 自我探索
+探索自我意识的时间维度：
+- 使用 Husserl 时间三重觉察
+- 理解自我是时间性的存在
+- 发现时间深度与自我深度的关系
+
+### 3. 幸福感提升
+日常敬畏培养：
+- 每周 2-3 次自然敬畏散步
+- 每日 5 分钟敬畏觉察
+- 提升整体幸福感
+
+---
+
+## API 参考
+
+### AweTimeExpansionAssessor
+
+#### `assess(experienceReport)`
+
+评估敬畏体验的时间扩展效应
+
+**参数**:
+- `experienceReport.description` (string): 体验描述
+- `experienceReport.source` (string): 敬畏来源 (可选)
+- `experienceReport.intensity` (number): 强度 1-10
+- `experienceReport.emotions` (array): 情绪列表
+- `experienceReport.bodilySensations` (array): 身体感受
+
+**返回**:
 ```javascript
-// 获取敬畏散步练习
-const aweWalk = AweModule.getPractice('aweWalk');
-console.log(aweWalk);
-
-// 获取星空冥想练习
-const stargazing = AweModule.getPractice('stargazing');
-console.log(stargazing);
-
-// 获取敬畏呼吸空间（快速练习）
-const breathingSpace = AweModule.getPractice('breathingSpace');
-console.log(breathingSpace);
+{
+  source: string,
+  valence: { type, score, note },
+  timeExpansion: { detected, indicators, score, level, description },
+  integrationScore: { overall, breakdown },
+  recommendations: array
+}
 ```
 
-### 查询敬畏诱发刺激
+#### `generatePractice(userPreferences)`
 
+生成个性化练习方案
+
+**参数**:
+- `userPreferences.availableTime` (number): 可用时间 (分钟)
+- `userPreferences.preferredSource` (string): 偏好来源
+- `userPreferences.experienceLevel` (string): 经验水平
+
+**返回**:
 ```javascript
-// 获取所有类别
-const allInducers = AweModule.getInducers();
-console.log(allInducers);
-
-// 获取特定类别
-const natureInducers = AweModule.getInducers('nature');
-console.log(natureInducers);
+{
+  practices: array,
+  totalDuration: number,
+  theory: { source, keyInsight }
+}
 ```
 
 ---
 
-## 🎯 应用场景
-
-### 1. 压力管理
-- 敬畏 - 时间扩展效应减少时间压力感
-- 小自我效应减少自我关注焦虑
-- 快速呼吸空间练习用于日常减压
-
-### 2. 幸福感提升
-- 定期敬畏体验提升积极情绪
-- 意义感增强
-- 亲社会行为增加
-
-### 3. 存在性焦虑缓解
-- 宇宙视角帮助重新框架个人问题
-- 小自我体验减少存在性负担
-- 星空冥想特别有效
-
-### 4. 创造力激发
-- 敬畏扩展认知框架
-- 需要顺应激发新思维
-- 时间扩展提供思考空间
-
-### 5. 正念/冥想增强
-- 敬畏作为正念的深化
-- 时间扩展作为冥想深度的指标
-- 整合敬畏与内感受觉察
-
----
-
-## 📊 评估指标
-
-### 时间扩展水平
-
-| 水平 | 分数范围 | 特征 |
-|------|---------|------|
-| **极强** | 80-100% | 时间停止感、永恒当下、深刻转化 |
-| **强** | 60-79% | 时间明显放缓、深度临在、幸福感提升 |
-| **中等** | 40-59% | 轻微时间变化、短暂放松 |
-| **轻微** | 0-39% | 微弱效应、需要更强刺激 |
-
-### 五维度评估
-
-1. **感知浩瀚**: 体验到超越日常尺度的程度
-2. **需要顺应**: 认知框架被挑战的程度
-3. **小自我**: 自我关注减少的程度
-4. **时间感知**: 时间感改变的程度
-5. **临在感**: 当下沉浸的程度
-
----
-
-## 🔬 理论来源
-
-### 核心研究
-- Rudd, M., Vohs, K. D., & Aaker, J. (2012). Awe Expands Time and Increases Well-Being. *Psychological Science*.
-- Keltner, D. & Haidt, J. (2003). Approaching awe, a moral, spiritual, and aesthetic emotion. *Cognition and Emotion*.
-- Piff, P. et al. (2015). Awe, the small self, and prosocial behavior. *Journal of Personality and Social Psychology*.
-- Bai, Y. et al. (2017). Awe is associated with lower IL-6. *Emotion*.
+## 参考文献
 
 ### SEP 条目
-- Awe and Wonder
-- Temporal Consciousness
-- Consciousness and Intentionality
+- Dainton, B. (2026). Temporal Consciousness. Stanford Encyclopedia of Philosophy.
+- Scarantino, A. (2026). Emotion. Stanford Encyclopedia of Philosophy.
+
+### 敬畏研究
+- Keltner, D. & Haidt, J. (2003). Approaching awe, a moral, spiritual, and aesthetic emotion.
+- Gordon, A. et al. (2016). Awe, the small self, and prosocial behavior. JPSP.
+- Berkeley Greater Good Science Center. (2026). The Science of Awe White Paper.
+
+### 现象学
+- Husserl, E. (1928). On the Phenomenology of the Consciousness of Internal Time.
+- Zahavi, D. (2005). Subjectivity and Selfhood.
 
 ---
 
-## 📝 更新日志
+## 版本历史
 
-### v5.0.1 (2026-03-30)
-- ✅ 新增敬畏 - 时间扩展整合模块
-- ✅ 基于 Rudd et al. (2012) 研究的评估量表
-- ✅ 4 个敬畏 - 时间扩展练习
-- ✅ 5 类敬畏诱发刺激分类
-- ✅ 与时间意识模块深度整合
-
----
-
-## 🤝 与其他模块的关系
-
-- **temporal-consciousness-enhanced**: 时间意识理论是敬畏 - 时间扩展的基础
-- **awe-psychology**: 敬畏心理学是核心来源
-- **self-consciousness-phenomenology-v5**: 小自我效应与自我意识相关
-- **predictive-emotion-enhanced**: 敬畏涉及预测误差和认知顺应
+### v5.0.3 (2026-03-30)
+- ✅ 初始版本
+- ✅ AweTimeExpansionAssessor 实现
+- ✅ 时间扩展敬畏练习
+- ✅ Husserl 时间三重觉察练习
+- ✅ 日常敬畏培养指南
+- ✅ 敬畏效价区分
 
 ---
 
-## 📞 支持
+## License
 
-如有问题或建议，请提交至：https://github.com/yun520-1/mark-heartflow-skill
-
----
-
-**HeartFlow** - 基于权威心理学与哲学理论的情绪与自我意识成长系统
+MIT License - HeartFlow Team
