@@ -17,8 +17,8 @@
 
 class CollectiveIntentionalityModule {
   constructor() {
-    this.version = '3.22.0';
-    this.name = '集体意向性模块';
+    this.version = '3.46.0';
+    this.name = '集体意向性模块 (SEP 深化版)';
     
     // 集体意向性状态
     this.collectiveAttitudes = [];
@@ -32,38 +32,86 @@ class CollectiveIntentionalityModule {
     // 参与者模型
     this.participants = new Map();
     
-    // 理论配置
+    // 理论配置 (SEP Fall 2025 Edition 深化)
     this.theoreticalFramework = {
       searle: {
-        // Searle 的原始意向性理论
+        // Searle (1990, 1995): 原始意向性理论
         // 集体意向性是原始的，不可还原为个体意向性
         primitiveCollectiveIntentionality: true,
-        level: 'original' // original vs derived
+        level: 'original', // original vs derived
+        keyInsight: '我们意图是原始的，不能分解为我意图 + 你意图',
+        example: '我们意图一起抬钢琴 ≠ 我意图抬 + 你意图抬'
       },
       bratman: {
-        // Bratman 的共享意向性理论
+        // Bratman (1999): 共享意向性理论
         // 共享意向性 = 相互响应的个体意向性 + 共同知识
         sharedIntentionAsWeb: true,
         mutualResponsiveness: true,
-        commitmentToCoordination: true
+        commitmentToCoordination: true,
+        keyInsight: '共享意向性是个体意向性的网状结构',
+        conditions: [
+          '相互响应：每个参与者的意图响应他人的意图',
+          '协调承诺：承诺协调行动',
+          '相互支持：承诺在需要时互相帮助'
+        ]
       },
       gilbert: {
-        // Gilbert 的联合承诺理论
+        // Gilbert (1990): 联合承诺理论
         // 集体意向性 = 联合承诺 + 共同知识
         jointCommitment: true,
-        normativeExpectations: true
+        normativeExpectations: true,
+        keyInsight: '联合承诺创造规范性期望和义务',
+        features: {
+          irreducible: '联合承诺不是个体承诺的总和',
+          createsObligations: '参与者对彼此负有义务',
+          violationWarrantsReproach: '违背承诺会受到规范性谴责'
+        }
       },
       tuomela: {
-        // Tuomela & Miller 的我们意图分析
+        // Tuomela & Miller (1988): 我们意图分析
         // 我们意图 = 个体意图 + 集体目标信念
         weIntentionAnalysis: true,
-        collectiveGoalBelief: true
+        collectiveGoalBelief: true,
+        keyInsight: '我们意图包含个体成分和集体信念',
+        structure: {
+          individualComponent: '我意图为集体目标做贡献',
+          collectiveBelief: '我们相信集体目标是可实现的',
+          mutualBelief: '每个参与者都相信其他参与者也会做贡献'
+        }
       },
-      phenomenology: {
-        // 现象学集体情绪理论 (Scheler, Walther)
-        // 集体情绪是真实的共享体验，不是个体情绪的聚合
-        collectiveEmotionReality: true,
-        empatheticIdentification: true
+      scheler: {
+        // Scheler (1954 [1912]): 现象学集体情绪
+        // 集体情绪是真实的共享体验，数值上同一
+        keyInsight: '集体情绪是多个心灵处于数值上相同的状态',
+        paradigmCase: '父母在孩子病床前共同悲伤，无需思考彼此',
+        features: {
+          numericalIdentity: '同一情绪状态在多个心灵中',
+          directSharing: '无需推理或共情的直接共享',
+          nonAggregate: '不是个体情绪的聚合'
+        }
+      },
+      walther: {
+        // Walther (1923): 共享体验分析
+        // 共享体验需要四层递归意识
+        keyInsight: '共享体验需要相互的共情意识',
+        conditions: [
+          '条件 1: A 体验 x，B 体验 x',
+          '条件 2: A 共情 B 的体验，B 共情 A 的体验',
+          '条件 3: A 认同 B 的体验，B 认同 A 的体验',
+          '条件 4: 相互的共情意识 (A 知道 B 共情 A，反之亦然)'
+        ]
+      },
+      durkheim: {
+        // Durkheim (1898): 集体意识
+        // 社会事实需要集体意识解释
+        keyInsight: '集体意识超越个体态度总和',
+        example: '群体性情绪爆发，参与者无法用个人观点解释'
+      },
+      weber: {
+        // Weber (1922): 社会行动理论
+        // 集体意向性作为社会行动基础
+        keyInsight: '基于共享目标的行动导向',
+        distinction: '战略性相互依赖 vs 共享意向性'
       }
     };
   }
