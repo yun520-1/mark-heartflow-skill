@@ -50,7 +50,7 @@ class RelationalSelf {
     };
     
     // 关系性自我的维度
-    this.dimensions = {
+    self.dimensions = {
       individualAgency: '个体能动性 - 作为独立行动者的自我感',
       relationalIdentity: '关系认同 - 在关系中定义的自我',
       collectiveBelonging: '集体归属 - 作为群体成员的自我感',

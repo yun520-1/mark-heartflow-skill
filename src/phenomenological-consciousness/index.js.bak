@@ -20,7 +20,7 @@ const PhenomenologicalConsciousnessModule = {
     name: 'Phenomenological Consciousness',
     version: '3.41.0',
     description: '现象学意识分析与第一人称体验建模',
-    theoreticalBasis: [
+   理论基础：[
       'SEP Phenomenology',
       'SEP Consciousness',
       'SEP Intentionality',
