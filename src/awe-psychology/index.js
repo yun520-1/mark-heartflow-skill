@@ -44,8 +44,8 @@ const AwePsychology = {
    */
   meta: {
     name: '敬畏心理学',
-    version: '3.45.0',
-    source: 'Berkeley Greater Good + Keltner & Haidt (2003) + Piff et al. (2015)',
+    version: '3.48.0',
+    source: 'Berkeley Greater Good + Keltner & Haidt (2003) + Piff et al. (2015) + Rudd et al. (2012) + Bai et al. (2017)',
     description: '基于科学研究的敬畏情绪培养模块，帮助体验浩瀚感、激发好奇心、增强亲社会联结'
   },
 
@@ -73,6 +73,46 @@ const AwePsychology = {
         '看到前所未见的艺术形式时的审美冲击',
         '经历超自然体验时的信仰挑战'
       ]
+    }
+  },
+
+  /**
+   * 敬畏的效价 (Valence) - v3.48.0 新增
+   * 来源：Berkeley Greater Good Science Center
+   */
+  aweValence: {
+    positive: {
+      name: '积极敬畏',
+      emotions: ['wonder', 'amazement', 'inspiration', 'elevation', 'gratitude'],
+      description: '带来愉悦、启发和成长的敬畏体验',
+      examples: [
+        '观看壮丽的日出',
+        '见证新生儿的诞生',
+        '聆听震撼人心的音乐',
+        '目睹无私的善举',
+        '理解深刻的科学理论'
+      ],
+      benefits: '提升幸福感、激发创造力、增强亲社会行为、扩展时间感知',
+      practice: '多接触积极的敬畏来源，记录和回味积极敬畏体验'
+    },
+    negative: {
+      name: '消极敬畏',
+      emotions: ['threat', 'dread', 'fear', 'powerlessness', 'anxiety'],
+      description: '伴随恐惧、威胁或无力感的敬畏体验',
+      examples: [
+        '面对自然灾害 (地震、海啸、龙卷风)',
+        '目睹战争暴行',
+        '面对极权领袖的 coercive charisma',
+        '感知到愤怒和惩罚性的上帝',
+        '面对无法控制的巨大力量'
+      ],
+      effects: '可能不会带来积极敬畏的效益，反而增加无力感和焦虑',
+      note: '消极敬畏是复杂的情绪体验，需要谨慎处理。如果感到 overwhelmed，建议寻求专业支持。'
+    },
+    distinction: {
+      key: '积极敬畏 vs 消极敬畏的关键区别在于：是否感到赋能 (empowered) 还是无力 (powerless)',
+      positiveSigns: ['感到好奇和探索欲', '感到与更大的存在连接', '感到启发和鼓舞', '时间感知扩展'],
+      negativeSigns: ['感到威胁和恐惧', '感到无力控制', '想要逃避', '持续的焦虑或困扰']
     }
   },
 
@@ -727,6 +767,226 @@ const AwePsychology = {
         '有没有一次敬畏体验改变了你对世界的理解？',
         '敬畏体验在你的生命故事中扮演什么角色？'
       ]
+    };
+  },
+
+  /**
+   * 敬畏视频练习 (Awe Video) - v3.48.0 新增
+   * 来源：Berkeley Greater Good in Action
+   */
+  getAweVideoPractice() {
+    return {
+      name: '敬畏视频 (Awe Video)',
+      duration: '4-5 分钟',
+      source: 'UC Berkeley Greater Good in Action',
+      research: 'Bai et al. (2017) - 观看 4 分钟敬畏视频可快速诱发敬畏体验，降低 IL-6 水平',
+      instructions: [
+        {
+          step: 1,
+          title: '准备环境',
+          content: '找一个安静的地方，确保不会被干扰。可以戴上耳机获得更好的沉浸体验。'
+        },
+        {
+          step: 2,
+          title: '选择视频',
+          content: '选择 awe-inspiring 的视频，推荐：',
+          suggestions: [
+            'Planet Earth 系列 (BBC) - 自然景观',
+            '太空纪录片 (Cosmos, The Universe) - 宇宙浩瀚',
+            '人类成就纪录片 - 人类伟大',
+            '艺术/音乐表演视频 - 艺术之美',
+            'GGSC 推荐的 awe 视频合集'
+          ]
+        },
+        {
+          step: 3,
+          title: '观看方式',
+          content: '全身心投入观看，不要 multitask。让视频带你进入浩瀚的体验。'
+        },
+        {
+          step: 4,
+          title: '注意身体反应',
+          content: '观看时注意：',
+          details: [
+            '是否有起鸡皮疙瘩？',
+            '呼吸是否变深或暂停？',
+            '是否感到"小自我"？',
+            '是否有好奇或探索的冲动？'
+          ]
+        },
+        {
+          step: 5,
+          title: '观看后反思',
+          content: '视频结束后，花 1 分钟静默，然后问自己：',
+          questions: [
+            '刚才的体验中，什么最触动我？',
+            '我感受到了什么样的"浩瀚"？',
+            '我的理解或视角有什么变化吗？',
+            '我现在感觉如何？'
+          ]
+        }
+      ],
+      tips: [
+        '每周观看 1-2 次，保持新鲜感',
+        '尝试不同类型的敬畏视频 (自然/宇宙/人类/艺术)',
+        '记录每次观看后的感受，追踪模式',
+        '与他人一起观看并讨论体验'
+      ]
+    };
+  },
+
+  /**
+   * 敬畏效益详细说明 - v3.48.0 增强
+   * 来源：Berkeley Greater Good Science Center
+   */
+  explainAweBenefitsDetailed() {
+    return {
+      psychological: [
+        {
+          benefit: '提升幸福感',
+          research: 'Gordon et al. (2016) - 体验敬畏的日子，人们报告更高的幸福感和积极情绪 cascade',
+          mechanism: '敬畏引发 joy, gratitude, inspiration 等积极情绪的连锁反应',
+          practice: '每天记录一次敬畏体验，持续 2 周'
+        },
+        {
+          benefit: '激发好奇心与创造力',
+          research: 'Keltner & Haidt (2003) - 敬畏的"需要顺应"特征促进认知灵活性',
+          mechanism: '挑战现有框架，鼓励探索性思维，减少对熟悉答案的依赖',
+          practice: '在创造性任务前观看敬畏视频'
+        },
+        {
+          benefit: '增强亲社会行为',
+          research: 'Piff et al. (2015) - 敬畏体验后，人们更慷慨、更愿意帮助他人，减少 entitlement',
+          mechanism: '"小自我"效应 (small self) 减少自我中心，增强与他人/世界的联结感',
+          practice: '在需要增强合作或利他行为的情境前诱发敬畏'
+        },
+        {
+          benefit: '扩展时间感知',
+          research: 'Rudd et al. (2012) - 敬畏让人感知更多可用时间，减少不耐烦，增加生活满意度',
+          mechanism: '浩瀚体验改变时间参照系，当下时刻被"扩展"',
+          practice: '感到时间紧迫时，进行 5 分钟敬畏练习'
+        },
+        {
+          benefit: '促进批判性思维',
+          research: '敬畏状态下的认知开放性增强，减少确认偏误',
+          mechanism: '挑战现有理解，增加信息整合能力',
+          practice: '在重要决策前进行敬畏反思'
+        }
+      ],
+      physical: [
+        {
+          benefit: '降低炎症水平',
+          research: 'Bai et al. (2017) - 敬畏倾向高的人 IL-6 (炎症标志物) 水平更低',
+          mechanism: '积极情绪调节免疫系统，减少慢性炎症',
+          practice: '每周 3 次敬畏练习，持续 8 周'
+        },
+        {
+          benefit: '改善心血管健康',
+          research: '降低 IL-6 与降低心血管疾病风险相关',
+          mechanism: '炎症减少 → 心血管负担减轻 → 整体健康改善',
+          practice: '将敬畏练习纳入日常健康习惯'
+        }
+      ],
+      social: [
+        {
+          benefit: '增强社会联结',
+          research: '敬畏体验增强集体归属感和共同人性感知',
+          mechanism: '小自我效应 + 感受到与更大整体的连接',
+          practice: '团体敬畏体验 (如集体观看、自然徒步)'
+        },
+        {
+          benefit: '减少自我中心',
+          research: '敬畏后人们更少关注个人烦恼，更多关注他人和集体',
+          mechanism: '相对浩瀚，个人问题显得较小',
+          practice: '在人际冲突后进行敬畏反思'
+        }
+      ]
+    };
+  },
+
+  /**
+   * 评估敬畏体验的效价 - v3.48.0 新增
+   * @param {string} experience - 用户描述的敬畏体验
+   * @returns {Object} 效价评估结果
+   */
+  assessAweValence(experience) {
+    const input = experience.toLowerCase();
+    
+    // 积极敬畏关键词
+    const positiveKeywords = ['wonder', 'amazing', 'beautiful', 'inspiring', 'grateful', 'joy', 'love', 'peace', 'connected', 'expanded', 'enlightened', '奇迹', '美丽', '感动', '启发', '感恩', '喜悦', '平静', '连接', '扩展'];
+    
+    // 消极敬畏关键词
+    const negativeKeywords = ['scary', 'threatening', 'fear', 'dread', 'overwhelming', 'powerless', 'anxious', 'terrifying', 'horror', '可怕', '威胁', '恐惧', '无力', '焦虑', '恐怖', '压倒'];
+    
+    let positiveScore = 0;
+    let negativeScore = 0;
+    
+    positiveKeywords.forEach(word => {
+      if (input.includes(word)) positiveScore++;
+    });
+    
+    negativeKeywords.forEach(word => {
+      if (input.includes(word)) negativeScore++;
+    });
+    
+    let valence, description, suggestions;
+    
+    if (positiveScore > negativeScore && positiveScore > 0) {
+      valence = '积极敬畏';
+      description = '你的体验主要是积极敬畏，这种体验能带来幸福感、创造力和亲社会行为。';
+      suggestions = [
+        '记录和回味这次体验，让它持续影响你',
+        '探索类似的敬畏来源',
+        '与他人分享你的体验'
+      ];
+    } else if (negativeScore > positiveScore && negativeScore > 0) {
+      valence = '消极敬畏';
+      description = '你的体验包含消极敬畏的元素 (恐惧、威胁、无力感)。这种体验可能不会带来积极敬畏的效益。';
+      suggestions = [
+        '承认并接纳你的感受',
+        '如果感到 overwhelmed，考虑寻求专业支持',
+        '尝试转向积极敬畏来源 (自然美景、艺术、善举)',
+        '用正念练习来 grounding'
+      ];
+    } else {
+      valence = '混合/中性';
+      description = '你的体验包含混合元素，或者描述中没有明显的效价线索。敬畏可以是复杂的情绪。';
+      suggestions = [
+        '进一步探索你的感受',
+        '注意体验后的长期影响',
+        '尝试不同的敬畏来源，观察哪种最适合你'
+      ];
+    }
+    
+    return {
+      valence,
+      positiveScore,
+      negativeScore,
+      description,
+      suggestions,
+      note: '敬畏的效价不是非黑即白的。有些体验可能同时包含敬畏和恐惧，这是正常的。'
+    };
+  },
+
+  /**
+   * 敬畏练习合集 - v3.48.0 整理
+   */
+  getAllPractices() {
+    return {
+      quick: [
+        { name: 'Awe Video', duration: '4-5 分钟', effect: '快速诱发敬畏' },
+        { name: 'Noticing Nature', duration: '5 分钟', effect: '日常敬畏培养' },
+        { name: 'Beginner\'s Mind', duration: '10 分钟', effect: '打破自动化知觉' }
+      ],
+      medium: [
+        { name: 'Awe Narrative', duration: '15-20 分钟', effect: '深化敬畏记忆和整合' },
+        { name: '正念敬畏冥想', duration: '15 分钟', effect: '敬畏与正念整合' }
+      ],
+      long: [
+        { name: 'Awe Walk', duration: '20+ 分钟', effect: '深度敬畏体验' },
+        { name: '敬畏体验追踪', duration: '持续练习', effect: '长期敬畏能力培养' }
+      ],
+      recommendation: '从 quick 练习开始，逐渐尝试 medium 和 long 练习。每周至少 3 次敬畏练习，持续 8 周以获得最佳效果。'
     };
   }
 };
