@@ -551,7 +551,9 @@ function showSocialPsychologyInfo() {
   
   const info = socialModule.getSocialPsychologyInfo();
   console.log('👥 核心洞察:');
-  console.log(`  "${info.coreInsight}
+  console.log(`  "${info.coreInsight}"\n`);
+}
+
 // 显示存在主义心理学信息 (v3.0.0 新增)
 function showExistentialInfo() {
   console.log('\n┌────────────────────────────────────────┐');
