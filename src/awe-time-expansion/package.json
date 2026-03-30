@@ -1,0 +1,36 @@
+{
+  "name": "heartflow-awe-time-expansion",
+  "version": "5.0.1",
+  "description": "敬畏 - 时间扩展模块 - 整合敬畏心理学与时间意识研究",
+  "main": "index.js",
+  "keywords": [
+    "awe",
+    "time-expansion",
+    "temporal-consciousness",
+    "small-self",
+    "heartflow",
+    "positive-psychology"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yun520-1/mark-heartflow-skill"
+  },
+  "theory": {
+    "source": "Awe Psychology + Temporal Consciousness Integration",
+    "keyResearch": [
+      "Rudd et al. (2012) - Awe Expands Time",
+      "Keltner & Haidt (2003) - Awe Definition",
+      "Piff et al. (2015) - Small Self Effect",
+      "Bai et al. (2017) - Awe and IL-6"
+    ],
+    "keyConcepts": [
+      "Perceived Vastness (感知浩瀚)",
+      "Need for Accommodation (需要顺应)",
+      "Small Self Effect (小自我效应)",
+      "Time Perception Expansion (时间感知扩展)",
+      "Prosocial Behavior (亲社会行为)"
+    ]
+  }
+}
