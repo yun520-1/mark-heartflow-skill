@@ -93,6 +93,14 @@ const selfCheckingMetacognitive = SelfCheckingMetacognitive;
 
 // === v5.0.8 结束 ===
 
+// === v5.0.9 新增模块 ===
+
+// 创建时间 - 自我整合模块 (v5.0.9 新增) 🧠 基于 SEP 时间意识理论 + 自我意识理论 (Husserl, William James, Kant, Fichte)
+const TemporalSelfIntegration = require('./temporal-self-integration-v5.0.9');
+const temporalSelfIntegrationModule = new TemporalSelfIntegration();
+
+// === v5.0.9 结束 ===
+
 // 创建心理化模块 (v3.9.0 新增) 🧠 基于 Fonagy 心理化理论
 const { MentalizationModule } = require('./mentalization');
 const mentalizationModule = new MentalizationModule();
@@ -1180,6 +1188,53 @@ function showSelfCheckingMetacognitiveInfo() {
 }
 
 // === v5.0.8 结束 ===
+
+// === v5.0.9 新增模块信息展示 ===
+
+// 显示时间 - 自我整合模块信息 (v5.0.9 新增) 🧠
+function showTemporalSelfIntegrationInfo() {
+  console.log('\n┌────────────────────────────────────────┐');
+  console.log('│   时间 - 自我整合模块 (v5.0.9 新增) 🧠      │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 基于权威哲学与心理学理论：               │');
+  console.log('│ • SEP Temporal Consciousness           │');
+  console.log('│ • SEP Self-Consciousness               │');
+  console.log('│ • Husserl 时间三重结构                 │');
+  console.log('│ • William James 显似现在               │');
+  console.log('├────────────────────────────────────────┤');
+  console.log('│ 核心功能：                              │');
+  console.log('│ • 时间意识模型评估 (Cinematic/Retentional/Extensional) │');
+  console.log('│ • 时间深度评估 (瞬间型→跨代型)          │');
+  console.log('│ • 时间 - 自我交叉评估                   │');
+  console.log('│ • Husserl 时间三重结构觉察练习          │');
+  console.log('│ • 显似现在探索练习                     │');
+  console.log('│ • 时间深度干预生成器                   │');
+  console.log('│ • 时间 - 情绪交叉分析                   │');
+  console.log('└────────────────────────────────────────┘');
+  
+  console.log('\n📚 理论背景:');
+  console.log('  时间意识三大模型:');
+  console.log('  • Cinematic: 意识由离散快照组成');
+  console.log('  • Retentional: 瞬间意识包含保留和预期 (Husserl)');
+  console.log('  • Extensional: 体验本身具有时间延展 (William James)');
+  console.log('');
+  console.log('  时间深度层级:');
+  console.log('  瞬间型 → 短期型 → 中期型 → 长期型 → 跨代型');
+  console.log('');
+  
+  console.log('\n💻 使用示例:');
+  console.log('  const temporalModule = new TemporalSelfIntegration();');
+  console.log('  const result = temporalModule.assessTemporalSelfCrossing({');
+  console.log('    temporalExperience: "时间感觉断断续续",');
+  console.log('    selfContinuity: 0.5,');
+  console.log('    pastSelfConnection: 0.4,');
+  console.log('    futureSelfConnection: 0.5,');
+  console.log('    presentSelfAwareness: 0.6');
+  console.log('  });');
+  console.log('  const practice = temporalModule.husserlTemporalAwarenessPractice({ duration: 15 });\n');
+}
+
+// === v5.0.9 结束 ===
 
 // 显示心理化模块信息 (v3.9.0 新增) 🧠
 function showMentalizationInfo() {
