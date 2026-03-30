@@ -1,221 +1,263 @@
 # 具身认知增强模块 (Embodied Cognition Enhancement)
 
-## 版本信息
-- **版本**: 1.0.0
-- **HeartFlow 版本**: v4.5.0
-- **理论来源**: Stanford Encyclopedia of Philosophy - Embodied Cognition
+> **版本**: 1.0.0 | **HeartFlow**: v4.5.0+
 
-## 核心理论
+## 理论基础
 
-### 具身认知理论 (Embodied Cognition)
+本模块基于 **Stanford Encyclopedia of Philosophy** 的具身认知理论 (Embodied Cognition):
 
-具身认知理论挑战了传统认知科学的"离身心智"假设，主张：
+### 核心原理
 
-1. **概念化 (Conceptualization)**: 身体的属性限制和塑造概念获取
-   - 我们通过身体经验理解抽象概念
-   - 身体形态决定认知可能性
+1. **认知是具身的** - 认知过程依赖于身体的物理特征和感觉运动系统
+2. **身体约束概念** - 身体形态和感知能力塑造概念获取和理解
+3. **环境互动** - 认知发生在身体与环境的动态互动中
+4. **行动导向** - 认知服务于行动，而非抽象表征
 
-2. **替代性 (Replacement)**: 身体 - 环境互动可替代内部表征
-   - 不需要完整的内部模型
-   - 利用环境作为"外部记忆"
+### 关键概念
 
-3. **构成性 (Constitution)**: 身体过程构成认知过程
-   - 认知不是发生在大脑中
-   - 身体动作是认知的一部分
+| 概念 | 说明 | 代码实现 |
+|------|------|---------|
+| 概念化 (Conceptualization) | 身体属性约束概念获取 | `scanBodilyState()` |
+| 替代性 (Replacement) | 身体 - 环境互动替代内部表征 | `assessEnvironmentContext()` |
+| 构成性 (Constitution) | 身体过程构成认知过程 | `generateEmbodiedResponse()` |
+| 行动导向 (Action-Oriented) | 认知促进身体行动 | `facilitateBodyAction()` |
 
-### 现象学基础
-
-- **Merleau-Ponty**: 身体是主体，不是客体；身体图式 (body schema) 是知觉和行动的基础
-- **Heidegger**: 上手状态 (ready-to-hand) - 身体与工具的无缝整合
-- **Husserl**: 身体作为感知和行动的零点 (zero-point)
-
-## 模块功能
+## 功能特性
 
 ### 1. 身体状态扫描
-```javascript
-const bodyState = EmbodiedCognitionEnhanced.bodyScan.scan({
-  depth: 'full',
-  focusAreas: ['chest', 'shoulders', 'stomach']
-});
-```
 
-**输出**:
-- 各身体区域的紧张度、温度、感觉
-- 整体唤醒度 (arousal) 和效价 (valence)
-- 行动倾向识别
+检测 7 个身体维度：
+
+```javascript
+const bodyState = EmbodiedCognitionEnhanced.scanBodilyState({
+  verbalCues: ['心跳很快', '肌肉紧绷', '喘不过气']
+});
+
+// 输出:
+// {
+//   arousal: 0.7,        // 唤醒度
+//   tension: 0.75,       // 肌肉紧张
+//   breathing: 'rapid',  // 呼吸模式
+//   posture: 'closed',   // 身体姿势
+//   energy: 0.4,         // 能量水平
+//   grounding: 0.35,     // 接地感
+//   overallActivation: 0.55,
+//   stressIndicator: 0.675
+// }
+```
 
 ### 2. 环境情境评估
-```javascript
-const environment = EmbodiedCognitionEnhanced.environmentAssessment.assess({
-  physical: { space: 'open', noise: 'quiet' },
-  social: { othersPresent: true, supportAvailability: 0.8 },
-  task: { control: 0.7, timePressure: 0.3 }
-});
-```
 
-**输出**:
-- 物理/社会/任务环境评估
-- 环境给养 (affordances) 识别
-- 环境约束识别
+评估 5 个环境维度：
+
+```javascript
+const envContext = EmbodiedCognitionEnhanced.assessEnvironmentContext({
+  location: '办公室',
+  urgency: 0.8,
+  socialPressure: 0.6,
+  sensoryOverload: true
+});
+
+// 输出:
+// {
+//   physical: {...},
+//   social: {...},
+//   temporal: { urgency: 0.8, timePressure: 0.8 },
+//   spatial: {...},
+//   sensory: { overload: true },
+//   stressIndex: 0.76
+// }
+```
 
 ### 3. 具身响应生成
+
+基于身体 - 环境互动生成干预：
+
+| 身体状态 | 环境情境 | 推荐干预 |
+|---------|---------|---------|
+| 高唤醒 + 高紧张 | 任何 | 渐进式肌肉放松 |
+| 低能量 + 低接地 | 任何 | 接地练习 |
+| 封闭姿势 | 任何 | 力量姿势 |
+| 快速呼吸 | 任何 | 4-7-8 呼吸法 |
+| 任何 | 高压力 | 情境调整 |
+| 任何 | 高社交压力 | 寻求支持 |
+
+### 4. 行动促进
+
+将干预转化为具体步骤：
+
 ```javascript
-const response = EmbodiedCognitionEnhanced.embodiedResponse.generate(bodyState, environment);
+const actionGuide = EmbodiedCognitionEnhanced.facilitateBodyAction({
+  action: '478_breathing',
+  intervention: '4-7-8 呼吸法'
+});
+
+// 输出:
+// {
+//   name: '4-7-8 呼吸法',
+//   steps: [
+//     '用鼻子吸气 4 秒',
+//     '屏住呼吸 7 秒',
+//     '用嘴巴缓慢呼气 8 秒',
+//     '重复 4 个循环',
+//     '感受呼吸的缓慢和深长'
+//   ],
+//   duration: '3 分钟',
+//   benefit: '激活副交感神经，促进放松'
+// }
 ```
 
-**响应类型**:
-- `calming_grounding`: 高唤醒 + 负面 → 平静/接地
-- `activating`: 低唤醒 + 负面 → 激活
-- `channeling`: 高唤醒 + 正面 → 引导能量
-- `savoring`: 低唤醒 + 正面 → 品味
-- `awareness`: 中等 → 觉察
+## 使用示例
 
-### 4. 身体行动促进
+### 完整具身认知循环
+
 ```javascript
-const facilitation = EmbodiedCognitionEnhanced.actionFacilitation.facilitate(intervention);
+const EmbodiedCognitionEnhanced = require('./embodied-cognition-enhanced');
+
+const context = {
+  verbalCues: ['心跳很快', '肌肉紧绷', '压力好大'],
+  location: '办公室',
+  urgency: 0.8,
+  socialPressure: 0.6,
+  isAlone: false
+};
+
+const result = EmbodiedCognitionEnhanced.processEmbodiedCycle(context);
+
+console.log('身体状态:', result.bodyState);
+console.log('环境压力:', result.envContext.stressIndex);
+console.log('推荐干预:', result.actionGuide.name);
+console.log('执行步骤:', result.actionGuide.steps);
 ```
 
-**支持内容**:
-- 行动准备
-- 分步执行指导
-- 调整建议
-- 反思支持
+## 觉察练习
+
+### 1. 身体扫描冥想 (10-15 分钟)
+
+**步骤**:
+1. 舒适地坐下或躺下
+2. 将注意力带到脚部
+3. 注意任何感觉：温暖、凉爽、紧张、放松
+4. 不评判，只是觉察
+5. 慢慢向上移动：腿→躯干→手臂→头部
+6. 最后，感受整个身体的存在感
+
+**益处**: 增强身体觉察，识别紧张模式
+
+### 2. 行走冥想 (10 分钟)
+
+**步骤**:
+1. 缓慢行走，注意每一步
+2. 感受脚底与地面的接触
+3. 注意腿部的运动感觉
+4. 当心智游离时，温和地带回脚步
+5. 感受身体在空间中的移动
+
+**益处**: 整合身体运动与正念觉察
+
+### 3. 姿势觉察练习 (随时)
+
+**步骤**:
+1. 暂停当前活动
+2. 注意当前的身体姿势
+3. 问：这个姿势传达了什么情绪？
+4. 尝试调整姿势
+5. 注意情绪是否随之改变
+
+**益处**: 发现姿势与情绪的关联
+
+## 身体维度详解
+
+| 维度 | 范围 | 高值特征 | 低值特征 |
+|------|------|---------|---------|
+| 唤醒度 | 0-1 | 兴奋、激动、紧张 | 平静、放松、困倦 |
+| 肌肉紧张 | 0-1 | 紧绷、僵硬、酸痛 | 放松、柔软、舒展 |
+| 呼吸模式 | - | rapid (快速) | slow (缓慢) / normal |
+| 身体姿势 | - | open (开放) | closed (封闭) / neutral |
+| 能量水平 | 0-1 | 精力充沛、有活力 | 疲惫、倦怠、无力 |
+| 接地感 | 0-1 | 踏实、稳定、清晰 | 飘忽、恍惚、迷茫 |
+
+## 环境维度详解
+
+| 维度 | 子维度 | 说明 |
+|------|--------|------|
+| 物理环境 | location, comfort, noise, lighting | 物理空间特征 |
+| 社会环境 | alone, socialPressure, support | 社会互动特征 |
+| 时间压力 | urgency, deadline, timePressure | 时间相关压力 |
+| 空间特征 | confined, open, familiar | 空间感知特征 |
+| 感官输入 | overload, underload, dominant | 感官刺激水平 |
 
 ## 干预措施库
 
-### 平静/接地类 (Calming/Grounding)
-| 干预 | 类型 | 时长 | 身体基础 |
-|------|------|------|---------|
-| 深呼吸练习 | breathing | 2-5 分钟 | 调节自主神经系统 |
-| 身体接地 | somatic | 1-2 分钟 | 本体感受增强稳定感 |
-| 渐进肌肉放松 | relaxation | 5-10 分钟 | 释放肌肉紧张 |
+### 高优先级干预
 
-### 激活类 (Activating)
-| 干预 | 类型 | 时长 | 身体基础 |
-|------|------|------|---------|
-| 活力呼吸 | breathing | 1-2 分钟 | 增加氧气供应 |
-| 身体伸展 | movement | 2-3 分钟 | 扩展姿态提升能量 |
-| 快步走 | movement | 5-10 分钟 | 全身运动激活 |
+| 干预 | 适用情境 | 持续时间 | 效果 |
+|------|---------|---------|------|
+| 渐进式肌肉放松 | 高紧张 + 高唤醒 | 10 分钟 | 降低生理激活 |
+| 接地练习 | 低接地 + 低能量 | 5 分钟 | 增强当下觉察 |
+| 4-7-8 呼吸法 | 快速呼吸 | 3 分钟 | 激活副交感神经 |
 
-### 引导类 (Channeling)
-| 干预 | 类型 | 时长 | 身体基础 |
-|------|------|------|---------|
-| 目标导向行动 | action | 根据任务 | 利用高能量工作 |
-| 创造性表达 | creative | 15-30 分钟 | 情绪能量转化 |
+### 中优先级干预
 
-## 核心 API
+| 干预 | 适用情境 | 持续时间 | 效果 |
+|------|---------|---------|------|
+| 力量姿势 | 封闭姿势 | 2 分钟 | 提升自信 |
+| 情境调整 | 高环境压力 | 即时 | 改变心理状态 |
+| 寻求支持 | 高社交压力 | 视情况 | 情感缓冲 |
 
-### EmbodiedCognitionEnhanced.bodyScan
-- `scan(options)` - 执行身体扫描
-- `scanRegion(region)` - 扫描特定区域
-- `calculateArousal(regions)` - 计算唤醒度
-- `calculateValence(regions)` - 计算效价
-- `identifyActionTendencies(scanResult)` - 识别行动倾向
+## 研究依据
 
-### EmbodiedCognitionEnhanced.environmentAssessment
-- `assess(context)` - 评估环境情境
-- `assessPhysical(physical)` - 物理环境评估
-- `assessSocial(social)` - 社会环境评估
-- `assessTask(task)` - 任务环境评估
-- `identifyAffordances(assessment)` - 识别环境给养
-- `identifyConstraints(assessment)` - 识别环境约束
+### 具身认知核心发现
 
-### EmbodiedCognitionEnhanced.embodiedResponse
-- `generate(bodyState, environment)` - 生成具身响应
-- `categorizeResponse(bodyState, environment)` - 分类响应类型
-- `selectInterventions(category, bodyState, environment)` - 选择干预
+1. **身体塑造认知** (Lakoff & Johnson, 1999)
+   - 抽象概念基于身体经验
+   - 隐喻系统根植于感觉运动系统
 
-### EmbodiedCognitionEnhanced.actionFacilitation
-- `facilitate(intervention)` - 促进行动执行
-- `prepareAction(intervention)` - 准备行动
-- `supportExecution(intervention)` - 支持执行
-- `supportReflection(intervention)` - 支持反思
+2. **认知在行动中** (Clark, 1997)
+   - 认知不是离线计算
+   - 认知发生在与环境的实时互动中
 
-### EmbodiedCognitionEnhanced (核心 API)
-- `runEmbodiedIntervention(context)` - 完整干预循环
-- `quickBodyAwarenessExercise()` - 快速身体觉察
-- `embodiedEmotionRegulation(targetEmotion)` - 具身情绪调节
+3. **扩展心智** (Clark & Chalmers, 1998)
+   - 认知过程可以延伸到身体之外
+   - 环境是认知系统的一部分
 
-## 练习技术
+## 与其他模块的整合
 
-### 快速身体觉察练习 (2-3 分钟)
-1. 暂停当前活动，将注意力转向身体
-2. 注意双脚与地面的接触感
-3. 扫描身体，注意任何紧张或不适
-4. 做 3 次深呼吸，感受气息进出
-5. 注意整体身体感受
-6. 不带评判地接纳当下的身体状态
+### 与情绪调节整合
 
-### 具身情绪调节练习
+```javascript
+// 身体状态 → 情绪调节策略
+if (bodyState.tension > 0.6) {
+  const strategy = EmotionRegulation.recommendStrategies({
+    type: 'body_focused',
+    intervention: 'progressive_relaxation'
+  });
+}
+```
 
-**平静练习**:
-- 姿态：舒适坐姿，脊柱挺直但放松
-- 呼吸：缓慢深呼吸，呼气比吸气长
-- 动作：缓慢、流畅的动作
-- 接地：感受身体重量，双脚稳踏地面
+### 与正念模块整合
 
-**活力练习**:
-- 姿态：站立，双脚分开与肩同宽
-- 呼吸：有力的呼吸，激活核心
-- 动作：大幅度的伸展和跳跃
-- 接地：感受双脚推地的力量
-
-**自信练习**:
-- 姿态：扩展姿态（挺胸抬头，双手叉腰）
-- 呼吸：深而稳定的呼吸
-- 动作：有力的手势和姿态
-- 接地：感受身体的稳定和力量
-
-## 应用场景
-
-### 1. 焦虑管理
-- 身体扫描识别紧张区域
-- 接地练习降低生理唤醒
-- 呼吸调节自主神经系统
-
-### 2. 抑郁状态
-- 激活练习提升能量
-- 扩展姿态改善情绪
-- 运动干预增加活力
-
-### 3. 愤怒调节
-- 觉察身体愤怒信号
-- 通过运动释放能量
-- 平静练习降低唤醒
-
-### 4. 表现优化
-- 利用高能量状态
-- 具身自信姿态
-- 引导能量至任务
-
-## 与其他 HeartFlow 模块的整合
-
-- **预测加工模块**: 提供身体状态作为预测输入
-- **情绪理论模块**: 提供情绪 - 身体映射
-- **自我意识模块**: 提供前反思身体觉察
-- **正念模块**: 提供觉察基础
-
-## 理论参考文献
-
-1. **Merleau-Ponty, M.** (1962). *Phenomenology of Perception*. Routledge.
-
-2. **Varela, F., Thompson, E., & Rosch, E.** (1991). *The Embodied Mind: Cognitive Science and Human Experience*. MIT Press.
-
-3. **Clark, A.** (1997). *Being There: Putting Brain, Body, and World Together Again*. MIT Press.
-
-4. **Gallagher, S.** (2005). *How the Body Shapes the Mind*. Oxford University Press.
-
-5. **Thompson, E.** (2007). *Mind in Life: Biology, Phenomenology, and the Sciences of Mind*. Harvard University Press.
-
-6. **Stanford Encyclopedia of Philosophy**: Embodied Cognition
+```javascript
+// 身体扫描 → 正念觉察
+const mindfulness = Mindfulness.generatePractice({
+  focus: 'body_scan',
+  duration: 10
+});
+```
 
 ## 版本历史
 
-### v1.0.0 (2026-03-30)
-- 初始版本
-- 实现身体扫描系统
-- 实现环境评估系统
-- 实现具身响应生成
-- 实现行动促进系统
-- 整合 SEP 具身认知理论
-- 提供多种练习技术
+| 版本 | 日期 | 更新内容 |
+|------|------|---------|
+| 1.0.0 | 2026-03-30 | 初始版本，整合 SEP 具身认知理论 |
+
+## 参考文献
+
+- Lakoff, G., & Johnson, M. (1999). *Philosophy in the Flesh: The Embodied Mind and Its Challenge to Western Thought*.
+- Clark, A. (1997). *Being There: Putting Brain, Body, and World Together Again*. MIT Press.
+- Clark, A., & Chalmers, D. (1998). The extended mind. *Analysis*, 58(1), 7-19.
+- Stanford Encyclopedia of Philosophy. "Embodied Cognition". https://plato.stanford.edu/
+
+---
+
+**HeartFlow Companion** - 让 AI 交互更有温度 🌊
