@@ -1,0 +1,29 @@
+{
+  "name": "heartflow-self-consciousness-predictive-v5.0.15",
+  "version": "5.0.15",
+  "description": "HeartFlow v5.0.15 - Self-Consciousness & Predictive Processing Integration | 自我意识现象学与预测加工深度整合",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "heartflow",
+    "self-consciousness",
+    "predictive-processing",
+    "phenomenology",
+    "emotion-ai",
+    "psychology",
+    "philosophy"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yun520-1/mark-heartflow-skill.git"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
