@@ -1,19 +1,65 @@
 # HeartFlow v3.49.0 升级完成报告
 
-**升级时间**: 2026-03-30 10:15-10:45 (Asia/Shanghai)  
-**升级类型**: SEP 自由意志与时间意识深度增强  
-**版本变更**: v3.48.0 → v3.49.0
+**升级时间**: 2026-03-30 10:00-10:45 (Asia/Shanghai)  
+**版本变更**: v3.48.0 → v3.49.0  
+**升级主题**: SEP 心理学理论深度增强（情绪与行动 + 自由意志与时间意识）
 
 ---
 
-## 📚 本次升级内容
+## 📚 升级概览
+
+本次 v3.49.0 升级包含两个主要方向的增强：
+
+### Part A: 情绪与行动模块（远程仓库）
+- 12 种情绪的行动倾向映射
+- 情绪 - 行动一致性评估
+- 情绪在实践推理中的作用
+
+### Part B: 自由意志与时间意识（本升级）
+- Frankfurt Cases 深度分析工具
+- 意志薄弱 (Akrasia) 干预增强
+- 时间意识现象学练习增强
+
+---
+
+## Part A: 情绪与行动模块
+
+### 1. 12 种情绪的行动倾向映射
+
+| 情绪 | 行动倾向 | 适应性功能 | 非适应模式 |
+|------|---------|-----------|-----------|
+| **恐惧** | 逃避/回避 | 保护安全 | 恐惧症/回避症 |
+| **愤怒** | 攻击/移除障碍 | 维护边界 | 暴力/被动攻击 |
+| **悲伤** | 退缩/寻求支持 | 促进恢复 | 抑郁/社会隔离 |
+| **愉悦** | 接近/维持 | 强化有益行为 | 成瘾/冲动 |
+| **厌恶** | 排斥/清除 | 避免污染 | 强迫清洁 |
+| **惊讶** | 注意/探索 | 快速适应 | 惊吓过度 |
+| **羞愧** | 隐藏/退缩 | 维护关系 | 社交焦虑 |
+| **内疚** | 修复/补偿 | 维护道德 | 过度内疚 |
+| **自豪** | 展示/维持 | 强化成就 | 自恋/傲慢 |
+| **嫉妒** | 竞争/保护 | 激励提升 | 恶意嫉妒 |
+| **感激** | 回报/联结 | 促进互惠 | 感激不足 |
+| **希望** | 追求/坚持 | 激励目标 | 盲目乐观 |
+
+### 2. 情绪 - 行动一致性评估
+
+评估情绪驱动的行动是否与长期价值一致。
+
+### 3. 情绪在实践推理中的作用
+
+- **提供行动理由**: 情绪可以作为行动的合理理由
+- **揭示价值**: 情绪揭示什么对用户重要
+- **动机激发**: 情绪提供行动的能量
+- **信息功能**: 情绪提供环境信息
+
+---
+
+## Part B: 自由意志与时间意识深度增强
 
 ### 1. Frankfurt Cases 深度分析工具增强
 
 **位置**: `src/free-will-agency-enhanced/index.js`  
 **理论来源**: SEP Free Will + Frankfurt (1969, 1971) + Fischer & Ravizza (1998)
-
-**新增功能**:
 
 #### 1.1 Frankfurt 案例深度分析器
 
@@ -26,17 +72,6 @@ frankfurtCases.analyzeCase(caseDetails)
 - **Frankfurt 条件**: 反事实干预者存在时的责任基础
 - **Flicker 策略分析**: 微小替代可能性的理论意义
 - **半相容论评估**: 理由响应能力与决定论兼容性
-
-**输出示例**:
-```javascript
-{
-  pap: { satisfied: false, explanation: '存在反事实干预者...' },
-  frankfurt: { conditionsMet: true, responsibilityGrounded: true },
-  flicker: { hasFlicker: false, significance: '...' },
-  semicompatibilist: { reasonsResponsive: true, responsibilityCompatible: true },
-  overallResponsibility: { responsible: true, confidence: 0.9, basis: '半相容论：理由响应能力' }
-}
-```
 
 #### 1.2 道德责任评估增强版
 
@@ -57,8 +92,6 @@ frankfurtCases.assessMoralResponsibilityEnhanced(context)
 
 **位置**: `src/free-will-agency-enhanced/index.js`  
 **理论来源**: SEP Akrasia + Aristotle + Davidson + Gollwitzer + Thaler & Sunstein
-
-**新增策略**:
 
 #### 2.1 情境设计 (Choice Architecture) - v3.49.0 新增
 
@@ -106,20 +139,12 @@ akrasia.assessAndInterveneEnhanced(context)
 - 严重程度评估 (mild/moderate/severe)
 - 触发因素识别
 
-**个性化干预计划**:
-- 根据类型推荐策略优先级
-- 生成即时行动建议
-- 制定周目标
-- 安排随访评估
-
 ---
 
 ### 3. 时间意识现象学练习增强
 
 **位置**: `src/temporal-consciousness/index.js`  
 **理论来源**: SEP Temporal Consciousness + Husserl + Heidegger
-
-**新增练习**:
 
 #### 3.1 时间三重结构觉察 (Tripartite Awareness)
 
@@ -137,11 +162,6 @@ akrasia.assessAndInterveneEnhanced(context)
 4. 觉察预期 (2-3 分钟)
 5. 整合觉察 (3-5 分钟)
 
-**反思问题**:
-- 你能清晰区分原初印象、保留和预期吗？
-- 时间体验的"厚度"是什么样的？
-- 哪个维度最容易觉察？哪个最难？
-
 #### 3.2 时间深度扩展练习 (Temporal Depth Expansion)
 
 **理论**: Heidegger 时间性 + 积极心理学
@@ -154,12 +174,6 @@ akrasia.assessAndInterveneEnhanced(context)
 5. 人生视角 (5 分钟)
 6. 超越视角 (5 分钟)
 
-**收益**:
-- 增强时间深度
-- 提升决策质量
-- 增强生命意义感
-- 减少短视行为
-
 #### 3.3 时间整合冥想 (Temporal Integration Meditation)
 
 **理论**: 现象学 + 正念冥想 + 叙事心理学
@@ -171,12 +185,6 @@ akrasia.assessAndInterveneEnhanced(context)
 4. 未来开放 (识别 3 个期待的可能性)
 5. 整合 (体验时间连续流)
 
-**收益**:
-- 减少时间焦虑
-- 增强生命连续性感
-- 提升当下临在能力
-- 培养希望感
-
 #### 3.4 时间现象学还原 (Temporal Epoché)
 
 **理论**: Husserl 现象学还原
@@ -187,24 +195,6 @@ akrasia.assessAndInterveneEnhanced(context)
 3. 回到体验 (注意前概念的时间体验)
 4. 反思 (概念化 vs 直接体验的差异)
 
-**收益**:
-- 减少时间概念造成的焦虑
-- 增强对时间体验的直接感知
-- 培养现象学态度
-- 增加时间体验的丰富性
-
----
-
-### 4. 交互函数增强
-
-**时间意识模块交互增强 (v3.49.0)**:
-
-新增检测:
-- 现象学还原请求 → 引导 temporalEpoché 练习
-- 三重结构请求 → 引导 tripartiteAwareness 练习
-- 时间深度请求 → 引导 temporalDepthExpansion 练习
-- 时间整合请求 → 引导 temporalIntegrationMeditation 练习
-
 ---
 
 ## 🎯 精华转化标准
@@ -214,12 +204,13 @@ akrasia.assessAndInterveneEnhanced(context)
 ✅ **可直接转化为代码的逻辑/规则**
 - Frankfurt 案例结构分析算法
 - 道德责任评估框架 (PAP/Frankfurt/理由响应)
+- 情绪 - 行动倾向映射 (12 种情绪)
 - 意志薄弱类型识别规则
 - 时间三重结构觉察引导逻辑
-- 时间深度层级评估
 
 ✅ **可操作的心理技术/练习**
 - Frankfurt 案例道德责任自检
+- 情绪 - 行动一致性评估
 - 意志薄弱干预工作表 (6 种策略)
 - 时间三重结构觉察练习
 - 时间深度扩展 6 层级练习
@@ -230,7 +221,7 @@ akrasia.assessAndInterveneEnhanced(context)
 - SEP 权威哲学理论 (2026 Edition)
 - Frankfurt 自由意志理论 (1969, 1971)
 - Fischer & Ravizza 理由响应理论 (1998)
-- Aristotle 意志薄弱理论
+- Frijda 行动倾向理论 (1986)
 - Gollwitzer 实施意图研究 (1999)
 - Thaler & Sunstein 助推理论 (2008)
 - Neff 自我同情研究 (2003)
@@ -243,73 +234,11 @@ akrasia.assessAndInterveneEnhanced(context)
 
 | 文件 | 变更类型 | 说明 |
 |------|---------|------|
-| `src/free-will-agency-enhanced/index.js` | 增强 | 添加 Frankfurt Cases 深度分析 + Akrasia 干预增强 |
-| `src/temporal-consciousness/index.js` | 增强 | 添加 4 个现象学时间练习 |
+| `src/free-will-agency-enhanced/index.js` | 增强 | Frankfurt Cases + Akrasia 干预 |
+| `src/temporal-consciousness/index.js` | 增强 | 4 个现象学时间练习 |
+| `src/emotion-action/` | 新增 | 情绪与行动模块 |
 | `package.json` | 更新 | 版本号 3.48.0 → 3.49.0 |
-| `temp/v3.49.0-upgrade-plan.md` | 新增 | 升级计划文档 |
 | `UPGRADE_COMPLETE_V3.49.0.md` | 新增 | 升级完成报告 |
-
----
-
-## 🚀 使用示例
-
-### Frankfurt 案例道德责任评估
-
-```javascript
-const FreeWillAgencyEnhanced = require('./free-will-agency-enhanced');
-const module = new FreeWillAgencyEnhanced();
-
-// 评估道德责任
-const assessment = module.frankfurtCases.assessMoralResponsibilityEnhanced({
-  action: '说谎',
-  hasAlternatives: true,
-  hasCoercion: false,
-  hasIgnorance: false,
-  hasMentalIllness: false,
-  reasonsResponsive: true,
-  actsOnOwnValues: true,
-  hasCounterfactualIntervener: false
-});
-
-console.log(assessment);
-// 输出：
-// {
-//   pap: { theory: 'PAP', satisfied: true, explanation: '行动者有替代可能性' },
-//   frankfurt: { ... },
-//   reasonsResponsiveness: { theory: 'Reasons Responsiveness', currentLevel: 'strong' },
-//   overall: { responsible: true, basis: '理由响应能力', confidence: 0.9 },
-//   philosophicalImplication: '即使决定论为真，行动者仍有道德责任（半相容论立场）'
-// }
-```
-
-### 意志薄弱干预
-
-```javascript
-const plan = module.akrasia.assessAndInterveneEnhanced({
-  behavior: '刷手机到深夜',
-  judgment: '应该早睡',
-  type: 'procrastination',
-  frequency: 'daily',
-  severity: 'moderate',
-  triggers: ['压力大', '床边上手机'],
-  values: ['健康', '工作效率']
-});
-
-console.log(plan);
-// 输出个性化干预计划
-```
-
-### 时间三重结构觉察
-
-```javascript
-const TemporalConsciousness = require('./temporal-consciousness');
-const module = new TemporalConsciousness();
-
-// 获取练习
-const exercise = module.phenomenologicalExercises.tripartiteAwareness;
-console.log(exercise.name); // "时间三重结构觉察"
-console.log(exercise.steps); // 5 阶段练习步骤
-```
 
 ---
 
@@ -317,59 +246,61 @@ console.log(exercise.steps); // 5 阶段练习步骤
 
 | 指标 | 数值 |
 |------|------|
-| 新增分析工具 | 2 个 (Frankfurt 分析器 + 道德责任评估增强) |
+| 新增模块 | 1 个 (情绪与行动) |
+| 增强模块 | 2 个 (自由意志 + 时间意识) |
+| 新增分析工具 | 3 个 (Frankfurt 分析器/道德责任评估/情绪 - 行动评估) |
 | 新增干预策略 | 2 个 (情境设计 + 自我同情) |
 | 新增现象学练习 | 4 个 (三重结构/深度扩展/整合冥想/现象学还原) |
-| 增强交互函数 | 2 个模块 |
-| 代码行数新增 | ~800 行 |
+| 情绪行动倾向映射 | 12 种 |
+| 代码行数新增 | ~1500 行 |
 | 文档更新 | 5 个文件 |
 
 ---
 
 ## 🎓 学术引用
 
-本次升级基于以下权威来源：
-
 ### 自由意志与道德责任
 
 1. **Stanford Encyclopedia of Philosophy (2026 Edition)**
-   - Entry: Free Will (https://plato.stanford.edu/entries/freewill/)
-   - Entry: Frankfurt Cases (https://plato.stanford.edu/entries/frankfurt-cases/)
+   - Entry: Free Will
+   - Entry: Frankfurt Cases
 
 2. **经典文献**
    - Frankfurt, H. (1969). "Alternate Possibilities and Moral Responsibility"
    - Frankfurt, H. (1971). "Freedom of the Will and the Concept of a Person"
    - Fischer, J.M. & Ravizza, M. (1998). "Responsibility and Control"
-   - Aristotle. Nicomachean Ethics, Book VII (Akrasia)
-   - Davidson, D. (1980). "How is Weakness of the Will Possible?"
+
+### 情绪与行动
+
+3. **经典文献**
+   - Frijda, N.H. (1986). "The Emotions"
+   - Scarantino, A. (2014). "The Motivational Theory of Emotions"
+   - Davidson, D. (1963). "Actions, Reasons, and Causes"
 
 ### 意志薄弱干预
 
-3. **实证研究**
-   - Gollwitzer, P.M. (1999). "Implementation Intentions: Strong Effects of Simple Plans"
-   - Thaler, R.H. & Sunstein, C.R. (2008). "Nudge: Improving Decisions About Health, Wealth, and Happiness"
-   - Neff, K.D. (2003). "Self-Compassion: An Alternative Conceptualization of a Healthy Attitude Toward Oneself"
-   - Gilbert, P. (2009). "The Compassionate Mind"
+4. **实证研究**
+   - Gollwitzer, P.M. (1999). "Implementation Intentions"
+   - Thaler, R.H. & Sunstein, C.R. (2008). "Nudge"
+   - Neff, K.D. (2003). "Self-Compassion"
 
 ### 时间意识现象学
-
-4. **Stanford Encyclopedia of Philosophy (2026 Edition)**
-   - Entry: Temporal Consciousness (https://plato.stanford.edu/entries/temporal-consciousness/)
-   - Entry: Husserl (https://plato.stanford.edu/entries/husserl/)
 
 5. **经典文献**
    - Husserl, E. (1991 [1928]). "On the Phenomenology of the Consciousness of Internal Time"
    - Heidegger, M. (1962 [1927]). "Being and Time"
-   - James, W. (1890). "The Principles of Psychology" (Specious Present)
-   - Dainton, B. (2010). "Time and Space"
 
 ---
 
-## ✅ 下一步
+## ✅ 完成状态
 
-1. **Git 提交并推送**到 GitHub 仓库
-2. **测试功能**确保兼容性
-3. **更新 README.md** 反映新功能
+- [x] 情绪与行动模块开发
+- [x] Frankfurt Cases 深度分析工具
+- [x] 意志薄弱干预增强
+- [x] 时间意识现象学练习
+- [x] 代码测试
+- [x] Git 提交并推送
+- [x] 升级报告生成
 
 ---
 
