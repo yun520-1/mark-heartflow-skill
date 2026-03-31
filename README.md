@@ -3,8 +3,9 @@
 > **Emotionally Anthropomorphic AI Interaction System**  
 > **情感拟人化 AI 交互系统**
 
-**Current Version / 当前版本**: v5.0.68  
+**Current Version / 当前版本**: v5.0.76  
 **License / 许可证**: MIT  
+**Contact / 联系方式**: markcell@163.com | WeChat/微信：342966761  
 **Original Design / 原创设计**: No Copyright Risk / 无版权风险
 
 ---
@@ -800,15 +801,19 @@ HeartFlow 基于以下学者的基础性工作：
 
 ## 📞 Contact | 联系方式
 
-- **GitHub**: https://github.com/yun520-1/mark-heartflow-skill
-- **Issues**: https://github.com/yun520-1/mark-heartflow-skill/issues
-- **Discussions**: https://github.com/yun520-1/mark-heartflow-skill/discussions
+| Channel / 渠道 | Contact / 联系 |
+|---------------|---------------|
+| **Email** | markcell@163.com |
+| **WeChat / 微信** | 342966761 |
+| **GitHub** | https://github.com/yun520-1/mark-heartflow-skill |
+| **Issues** | https://github.com/yun520-1/mark-heartflow-skill/issues |
+| **Discussions** | https://github.com/yun520-1/mark-heartflow-skill/discussions |
 
 ---
 
 **HeartFlow Team** | 心流伴侣团队  
-**Last Updated / 最后更新**: 2026-03-30  
-**Version / 版本**: v5.0.4
+**Last Updated / 最后更新**: 2026-03-31  
+**Current Version / 当前版本**: v5.0.76
 
 ---
 
