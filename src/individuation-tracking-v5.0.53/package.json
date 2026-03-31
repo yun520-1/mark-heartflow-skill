@@ -1,0 +1,20 @@
+{
+  "name": "individuation-tracking-v5.0.53",
+  "version": "5.0.53",
+  "description": "个体化过程追踪系统 - 荣格分析心理学核心概念",
+  "main": "index.js",
+  "keywords": ["individuation", "jung", "analytical-psychology", "self-realization", "heartflow"],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "heartflow": {
+    "moduleType": "theory-integration",
+    "version": "5.0.53",
+    "theoryBase": "Jung-Individuation",
+    "integrationLevel": "P0",
+    "dependencies": [
+      "lifespan-development-model",
+      "self-consciousness-assessment",
+      "mental-health-assessment"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "dream-analysis-v5.0.53",
+  "version": "5.0.53",
+  "description": "梦的解析计算模型 - 弗洛伊德梦理论形式化",
+  "main": "index.js",
+  "keywords": ["dream-analysis", "freud", "psychoanalysis", "unconscious", "heartflow"],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "heartflow": {
+    "moduleType": "theory-integration",
+    "version": "5.0.53",
+    "theoryBase": "Freud-Dream-Analysis",
+    "integrationLevel": "P0",
+    "dependencies": [
+      "unconscious-computing-model",
+      "emotion-regulation",
+      "memory-integration"
+    ]
+  }
+}
