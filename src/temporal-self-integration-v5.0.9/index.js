@@ -26,7 +26,7 @@ class TemporalSelfIntegration {
     };
     
     // 自我意识层次
-    self.selfConsciousnessLevels = {
+    this.selfConsciousnessLevels = {
       prereflective: '前反思层',  // 直接的、非对象化的自我觉察
       reflective: '反思层',       // 将自我作为对象的元认知
       social: '社会层'           // 通过他者视角的自我理解

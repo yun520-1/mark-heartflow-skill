@@ -558,7 +558,7 @@ function identifyConflictPatterns(description) {
   if (description.includes('总是') || description.includes('从不')) {
     patterns.push('绝对化思维');
   }
-  if (description.includes('你让我') || description.includes '都是因为你')) {
+  if (description.includes('你让我') || description.includes('都是因为你')) {
     patterns.push('外归因模式');
   }
   if (description.includes('我应该') || description.includes('我不应该')) {
@@ -583,7 +583,7 @@ function getConflictInterventionSuggestions(analysis) {
 
   if (analysis.conflictType === 'attachment_trigger') {
     suggestions.push('识别依恋触发点');
-    suggestions.push '发展自我安抚能力');
+    suggestions.push('发展自我安抚能力');
     suggestions.push('与伴侣/朋友讨论依恋需要');
   }
 

@@ -292,10 +292,6 @@ const protentionGoalOrientation = ProtentionGoalOrientation;
 
 // ============ v4.9.0 自主感情深度增强模块 ============
 
-// 创建情绪三大传统整合模块 (v4.9.0 新增) 🧠 基于 SEP 情绪理论三大传统 (Feeling/Evaluative/Motivational)
-const { EmotionTraditionsIntegration, EmotionTraditions, TheoreticalChallenges } = require('./emotion-traditions-integration-v4.9');
-const emotionTraditionsIntegration = new EmotionTraditionsIntegration();
-
 // 创建集体情绪现象学模块 (v4.9.0 新增) 🧠 基于 SEP 集体意向性理论 (Scheler/Walther/Durkheim/Searle/Gilbert)
 const { CollectiveEmotionPhenomenology, CollectiveEmotionTypes, WaltherConditions } = require('./collective-emotion-phenomenology');
 const collectiveEmotionPhenomenology = new CollectiveEmotionPhenomenology();

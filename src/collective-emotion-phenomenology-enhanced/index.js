@@ -127,7 +127,7 @@ class CollectiveEmotionAssessor {
     ];
 
     const hasMutualAwareness = participants.some(p =>
-      p verbalReport &&
+      p.verbalReport &&
       mutualAwarenessMarkers.some(marker => p.verbalReport.includes(marker))
     );
 
