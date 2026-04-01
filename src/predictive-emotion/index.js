@@ -584,11 +584,11 @@ class PredictiveEmotion {
       timestamp: new Date().toISOString(),
       userInput: userInput.substring(0, 200) + (userInput.length > 200 ? '...' : ''),
       analysis: {
-        情绪预测: analysis.analysis.detectedPredictions,
-        预测误差: analysis.analysis.predictionErrors,
-        精度模式: analysis.analysis.precisionPatterns,
-        主动推理: analysis.analysis.activeInferencePatterns,
-        情绪传统: analysis.analysis.emotionTradition
+        p_情绪预测: analysis.analysis.detectedPredictions,
+        p_预测误差: analysis.analysis.predictionErrors,
+        p_精度模式: analysis.analysis.precisionPatterns,
+        p_主动推理: analysis.analysis.activeInferencePatterns,
+        p_情绪传统: analysis.analysis.emotionTradition
       },
       recommendations: analysis.recommendations,
       suggestedPractices: analysis.practices.map(p => ({
@@ -597,9 +597,9 @@ class PredictiveEmotion {
         target: p.target
       })),
       theoreticalBackground: {
-        情绪三大传统: Object.values(this.emotionTraditions).map(t => t.name),
-        预测加工核心: Object.values(this.predictiveProcessing).map(c => c.name),
-        情绪生成层次: this.emotionAsPrediction.levels.map(l => l.name)
+        p_情绪三大传统: Object.values(this.emotionTraditions).map(t => t.name),
+        p_预测加工核心: Object.values(this.predictiveProcessing).map(c => c.name),
+        p_情绪生成层次: this.emotionAsPrediction.levels.map(l => l.name)
       }
     };
   }
@@ -613,9 +613,9 @@ class PredictiveEmotion {
       version: this.version,
       description: this.description,
       theoreticalBackground: {
-        情绪三大传统: 'SEP 情绪理论整合 (感受/评价/动机)',
-        预测加工理论: '大脑通过预测 - 误差最小化生成情绪',
-        主动推理: '通过行动改变感官输入以最小化预测误差'
+        p_情绪三大传统: 'SEP 情绪理论整合 (感受/评价/动机)',
+        p_预测加工理论: '大脑通过预测 - 误差最小化生成情绪',
+        p_主动推理: '通过行动改变感官输入以最小化预测误差'
       },
       features: [
         '情绪预测检测',

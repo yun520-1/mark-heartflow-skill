@@ -473,7 +473,7 @@ const PredictiveEmotionV5 = {
           '调整期望值',
           '认知灵活性练习'
         ],
-       适用场景: totalError > 0.5
+       p_适用场景: totalError > 0.5
       },
 
       // 策略 2: 主动推理 (改变世界)
@@ -486,7 +486,7 @@ const PredictiveEmotionV5 = {
           '采取问题解决行动',
           '创造积极体验'
         ],
-        适用场景: totalError > 0.4
+        p_适用场景: totalError > 0.4
       },
 
       // 策略 3: 身体调节 (改变内感受输入)
@@ -499,7 +499,7 @@ const PredictiveEmotionV5 = {
           '正念身体扫描',
           '运动调节'
         ],
-        适用场景: totalError > 0.3
+        p_适用场景: totalError > 0.3
       },
 
       // 策略 4: 觉察接纳 (减少误差权重)
@@ -512,7 +512,7 @@ const PredictiveEmotionV5 = {
           '去中心化观察',
           '价值导向行动'
         ],
-        适用场景: totalError > 0.2
+        p_适用场景: totalError > 0.2
       }
     };
 
