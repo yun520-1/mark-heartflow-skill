@@ -242,8 +242,9 @@ main() {
     echo "  仓库地址：$REPO_URL"
     echo ""
     
-    # 检查是否自动模式（-y 或 --yes 参数）
-    if [[ "$1" == "-y" ]] || [[ "$1" == "--yes" ]] || [[ -n "$AUTO_INSTALL" ]]; then
+    # 检查是否自动模式（-y/--yes 参数或 AUTO_INSTALL 环境变量）
+    # 管道安装时自动启用自动模式（无法读取用户输入）
+    if [[ "$1" == "-y" ]] || [[ "$1" == "--yes" ]] || [[ -n "$AUTO_INSTALL" ]] || [[ ! -t 0 ]]; then
         print_success "自动模式：无需确认，开始安装..."
     else
         echo -n "是否继续安装？[Y/n]: "
@@ -288,7 +289,7 @@ main() {
     echo ""
     
     # 询问是否运行演示（自动模式下跳过）
-    if [[ "$1" == "-y" ]] || [[ "$1" == "--yes" ]] || [[ -n "$AUTO_INSTALL" ]]; then
+    if [[ "$1" == "-y" ]] || [[ "$1" == "--yes" ]] || [[ -n "$AUTO_INSTALL" ]] || [[ ! -t 0 ]]; then
         print_success "自动模式：跳过演示运行"
         print_success "运行演示：node $INSTALL_DIR/demo.js"
     else
