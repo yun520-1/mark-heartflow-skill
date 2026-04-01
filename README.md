@@ -371,6 +371,7 @@ heartflow --help
 | [📋 项目简介](#-项目简介--project-overview) | 本文档 |
 | [🚀 快速开始](#-30-秒快速开始--quick-start-in-30-seconds) | 安装和使用指南 |
 | [📖 安装指南](INSTALL.md) | 详细安装文档 |
+| [🔧 故障排查](docs/INSTALLATION_TROUBLESHOOTING.md) | 安装问题和解决方案 ⭐ NEW |
 | [📈 版本升级](docs/upgrades/README.md) | 完整的版本历史和升级报告 |
 | [🏗️ 架构说明](docs/ARCHITECTURE.md) | 系统架构和技术细节 |
 | [🔌 API 文档](docs/API.md) | API 接口和使用说明 |

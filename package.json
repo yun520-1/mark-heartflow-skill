@@ -13,7 +13,8 @@
     "test": "node test/test.js",
     "api": "node api/server.js",
     "verify": "node verify-install.js",
-    "postinstall": "node verify-install.js || echo '验证完成，请检查上述输出'"
+    "fix": "node post-install-fix.js",
+    "postinstall": "node post-install-fix.js || node verify-install.js"
   },
   "keywords": [
     "emotion",
