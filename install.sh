@@ -242,11 +242,16 @@ main() {
     echo "  仓库地址：$REPO_URL"
     echo ""
     
-    echo -n "是否继续安装？[Y/n]: "
-    read -r response
-    if [[ "$response" =~ ^[Nn]$ ]]; then
-        print_warning "安装已取消"
-        exit 0
+    # 检查是否自动模式（-y 或 --yes 参数）
+    if [[ "$1" == "-y" ]] || [[ "$1" == "--yes" ]] || [[ -n "$AUTO_INSTALL" ]]; then
+        print_success "自动模式：无需确认，开始安装..."
+    else
+        echo -n "是否继续安装？[Y/n]: "
+        read -r response
+        if [[ "$response" =~ ^[Nn]$ ]]; then
+            print_warning "安装已取消"
+            exit 0
+        fi
     fi
     
     echo ""
@@ -282,11 +287,16 @@ main() {
     echo "═══════════════════════════════════════════════════════════"
     echo ""
     
-    # 询问是否运行演示
-    echo -n "是否立即运行演示？[Y/n]: "
-    read -r response
-    if [[ ! "$response" =~ ^[Nn]$ ]]; then
-        run_demo
+    # 询问是否运行演示（自动模式下跳过）
+    if [[ "$1" == "-y" ]] || [[ "$1" == "--yes" ]] || [[ -n "$AUTO_INSTALL" ]]; then
+        print_success "自动模式：跳过演示运行"
+        print_success "运行演示：node $INSTALL_DIR/demo.js"
+    else
+        echo -n "是否立即运行演示？[Y/n]: "
+        read -r response
+        if [[ ! "$response" =~ ^[Nn]$ ]]; then
+            run_demo
+        fi
     fi
 }
 
