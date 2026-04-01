@@ -127,14 +127,20 @@ clone_repository() {
     
     if [ -d "$INSTALL_DIR" ]; then
         print_warning "目录已存在：$INSTALL_DIR"
-        echo -n "是否删除并重新安装？[y/N]: "
-        read -r response
-        if [[ "$response" =~ ^[Yy]$ ]]; then
+        if [[ "$1" == "-y" ]] || [[ "$1" == "--yes" ]] || [[ -n "$AUTO_INSTALL" ]] || [[ ! -t 0 ]]; then
+            print_success "自动模式：删除旧版本并重新安装..."
             rm -rf "$INSTALL_DIR"
             print_success "已删除旧版本"
         else
-            print_warning "跳过安装"
-            exit 0
+            echo -n "是否删除并重新安装？[y/N]: "
+            read -r response
+            if [[ "$response" =~ ^[Yy]$ ]]; then
+                rm -rf "$INSTALL_DIR"
+                print_success "已删除旧版本"
+            else
+                print_warning "跳过安装"
+                exit 0
+            fi
         fi
     fi
     
