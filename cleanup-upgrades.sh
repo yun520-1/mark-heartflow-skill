@@ -42,9 +42,11 @@ echo ""
 FILE_TYPES=(
     "self-evolution-state"
     "theory-update-summary"
-    "UPGRADE_COMPLETE"
     "upgrade-report"
 )
+
+# UPGRADE_COMPLETE 特殊处理（文件名格式不同）
+UPGRADE_COMPLETE_PATTERN="UPGRADE_COMPLETE_v"
 
 # 统计
 TOTAL_BEFORE=0
@@ -118,6 +120,63 @@ for type in "${FILE_TYPES[@]}"; do
     
     echo ""
 done
+
+# 特殊处理 UPGRADE_COMPLETE 文件
+echo -e "${YELLOW}处理文件类型 | Processing: UPGRADE_COMPLETE_v*.md${NC}"
+
+# 获取所有版本号文件（排序，最新在前）
+uc_versions=($(ls -1 UPGRADE_COMPLETE_v*.md 2>/dev/null | \
+    sed 's/UPGRADE_COMPLETE_v\([0-9.]*\)\.md/\1/' | \
+    sort -t. -k1,1nr -k2,2nr -k3,3nr))
+
+# 保留的文件
+uc_keep_files=()
+
+# 1. 保留最近 3 次小版本
+for i in "${!uc_versions[@]}"; do
+    if [ $i -lt 3 ]; then
+        uc_keep_files+=("${uc_versions[$i]}")
+    fi
+done
+
+# 2. 保留所有重大版本 (x.0.x 或 x.x.0)
+for version in "${uc_versions[@]}"; do
+    minor=$(echo "$version" | cut -d'.' -f2)
+    patch=$(echo "$version" | cut -d'.' -f3)
+    
+    # 保留 major.0.x (主版本发布)
+    if [ "$minor" = "0" ]; then
+        if [[ ! " ${uc_keep_files[@]} " =~ " ${version} " ]]; then
+            uc_keep_files+=("$version")
+        fi
+    fi
+    
+    # 保留 major.minor.0 (次版本发布)
+    if [ "$patch" = "0" ]; then
+        if [[ ! " ${uc_keep_files[@]} " =~ " ${version} " ]]; then
+            uc_keep_files+=("$version")
+        fi
+    fi
+done
+
+echo "  保留版本 | Keep versions: ${uc_keep_files[*]}"
+
+# 删除不需要的 UPGRADE_COMPLETE 文件
+for file in UPGRADE_COMPLETE_v*.md; do
+    [ -f "$file" ] || continue
+    
+    version=$(echo "$file" | sed 's/UPGRADE_COMPLETE_v\([0-9.]*\)\.md/\1/')
+    
+    if [[ ! " ${uc_keep_files[@]} " =~ " ${version} " ]]; then
+        echo -e "  ${RED}删除 | Delete:${NC} $file"
+        rm -f "$file"
+        DELETED_COUNT=$((DELETED_COUNT + 1))
+    else
+        echo -e "  ${GREEN}保留 | Keep:${NC} $file"
+    fi
+done
+
+echo ""
 
 # 计算清理后文件数
 for type in "${FILE_TYPES[@]}"; do

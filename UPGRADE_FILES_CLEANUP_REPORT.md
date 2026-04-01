@@ -1,7 +1,7 @@
 # HeartFlow 升级文件清理报告
 # HeartFlow Upgrade Files Cleanup Report
 
-**执行时间 | Execution Time**: 2026-04-01 17:33:12 (Asia/Shanghai)
+**执行时间 | Execution Time**: 2026-04-01 17:34:50 (Asia/Shanghai)
 **当前版本 | Current Version**: 5.1.28
 
 ---
@@ -10,10 +10,10 @@
 
 | 项目 | 数量 |
 |------|------|
-| 清理前文件数 | 71 |
+| 清理前文件数 | 9 |
 | 清理后文件数 | 9 |
-| 删除文件数 | 62 |
-| 保留率 | 12.6% |
+| 删除文件数 | 21 |
+| 保留率 | 100.0% |
 
 ---
 
@@ -35,6 +35,7 @@ self-evolution-state-v5.1.28.md
 theory-update-summary-v5.1.26.md
 theory-update-summary-v5.1.27.md
 theory-update-summary-v5.1.28.md
+theory-update-summary-v5.1.29.md
 upgrade-report-v5.1.26-cron.md
 upgrade-report-v5.1.27-cron.md
 upgrade-report-v5.1.28-cron.md
