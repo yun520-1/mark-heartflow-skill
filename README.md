@@ -11,6 +11,19 @@
 
 ---
 
+## 📁 文档导航 | Documentation Navigation
+
+| 类别 | 链接 |
+|------|------|
+| 📄 **最新版本** | [UPGRADE_COMPLETE_v5.1.104.md](UPGRADE_COMPLETE_v5.1.104.md) |
+| 🏆 **大版本里程碑** | [archive/VERSION_INDEX.md](archive/VERSION_INDEX.md) |
+| 📦 **历史归档** | [archive/](archive/) |
+| 📋 **归档政策** | [archive/VERSION_ARCHIVE_POLICY.md](archive/VERSION_ARCHIVE_POLICY.md) |
+| 🔒 **隐私政策** | [PRIVACY.md](PRIVACY.md) |
+| 📜 **开源协议** | [LICENSE](LICENSE) |
+
+---
+
 ## 📖 项目简介 | Project Overview
 
 **English:**
