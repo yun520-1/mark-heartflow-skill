@@ -388,11 +388,11 @@ For privacy-related questions, concerns, or requests:
 
 | Contact Type | Method |
 |--------------|--------|
-| General privacy questions | `heartflow-privacy@github.com` |
-| Data access requests | `heartflow-privacy@github.com` |
+| General privacy questions | `markcell@163.com` |
+| Data access requests | `markcell@163.com` |
 | Data deletion requests | In-app commands (`/purge-all`) |
-| Security vulnerability reports | `heartflow-security@github.com` |
-| Commercial licensing | `heartflow-licensing@github.com` |
+| Security vulnerability reports | `markcell@163.com` |
+| Commercial licensing | `markcell@163.com` |
 
 ---
 

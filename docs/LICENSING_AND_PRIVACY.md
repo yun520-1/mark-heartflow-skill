@@ -80,7 +80,7 @@ For commercial licensing inquiries, please contact:
 
 商业许可咨询，请联系：
 
-📧 Email: `heartflow-licensing@github.com`
+📧 Email: `markcell@163.com`
 
 ---
 
@@ -259,11 +259,11 @@ Commercial licensees must additionally comply with:
 
 | 联系类型 | 邮箱 |
 |----------|------|
-| 一般隐私问题 | `heartflow-privacy@github.com` |
-| 数据访问请求 | `heartflow-privacy@github.com` |
+| 一般隐私问题 | `markcell@163.com` |
+| 数据访问请求 | `markcell@163.com` |
 | 数据删除请求 | 应用内命令 (`/purge-all`) |
-| 安全漏洞报告 | `heartflow-security@github.com` |
-| 商业许可咨询 | `heartflow-licensing@github.com` |
+| 安全漏洞报告 | `markcell@163.com` |
+| 商业许可咨询 | `markcell@163.com` |
 
 ---
 

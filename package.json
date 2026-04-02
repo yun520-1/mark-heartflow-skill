@@ -51,7 +51,7 @@
       "src/assessment/protocol-generator.js",
       "src/intervention/calibrator.js"
     ],
-    "contact": "heartflow-licensing@github.com"
+    "contact": "markcell@163.com"
   },
   "engines": {
     "node": ">=14.0.0"
