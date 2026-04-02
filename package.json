@@ -23,11 +23,35 @@
     "empathy",
     "conversation"
   ],
-  "author": "8 小虫子",
-  "license": "MIT",
+  "author": "小虫子 · 严谨专业版",
+  "license": "MIT WITH Core-Algorithms-Restriction",
   "repository": {
     "type": "git",
     "url": "https://github.com/yun520-1/mark-heartflow-skill"
+  },
+  "privacy": {
+    "dataStorage": "local-only",
+    "remoteAccess": "blocked",
+    "encryption": "AES-256-GCM",
+    "telemetry": "none",
+    "thirdPartySharing": "prohibited",
+    "userRights": ["access", "export", "delete", "purge-all"],
+    "compliance": ["GDPR", "CCPA", "PIPL", "PIPEDA"],
+    "policy": "PRIVACY.md"
+  },
+  "licensing": {
+    "personal": "MIT License - Free",
+    "research": "MIT License - Free",
+    "commercial": "Commercial License Required for Core Algorithms",
+    "coreAlgorithms": [
+      "src/integration/core-engine.js",
+      "src/theory/integration-algorithms/",
+      "src/inference/cross-module.js",
+      "src/quality/verification.js",
+      "src/assessment/protocol-generator.js",
+      "src/intervention/calibrator.js"
+    ],
+    "contact": "heartflow-licensing@github.com"
   },
   "engines": {
     "node": ">=14.0.0"

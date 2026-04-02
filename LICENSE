@@ -1,0 +1,84 @@
+# MIT License with Core Algorithm Restriction
+
+**HeartFlow Companion** - Emotionally Anthropomorphic AI Interaction System
+
+**Copyright (c) 2026 小虫子 · 严谨专业版**
+
+---
+
+## License Grant
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software **without the Core Algorithms** without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+---
+
+## Core Algorithm Restriction
+
+**The following components are NOT included in this open-source license:**
+
+1. **Core Integration Engine** (`src/integration/core-engine.js`)
+2. **Theory Integration Algorithms** (`src/theory/integration-algorithms/`)
+3. **Cross-Module Inference Engine** (`src/inference/cross-module.js`)
+4. **Quality Verification System** (`src/quality/verification.js`)
+5. **Assessment Protocol Generator** (`src/assessment/protocol-generator.js`)
+6. **Intervention Tool Calibrator** (`src/intervention/calibrator.js`)
+
+These Core Algorithms remain **proprietary and closed-source**. Commercial use of the Software is permitted, **but commercial use of the Core Algorithms requires a separate commercial license**.
+
+For commercial licensing inquiries, please contact: `heartflow-licensing@github.com`
+
+---
+
+## Conditions
+
+The above copyright notice and this permission notice (including the Core Algorithm Restriction) shall be included in all copies or substantial portions of the Software.
+
+---
+
+## Data Privacy Requirements
+
+**All users of this Software must comply with the following data privacy requirements:**
+
+1. **Local-Only Storage**: All user data must be stored locally on the user's device. No user data shall be uploaded to external servers without explicit user consent.
+
+2. **No Remote Access**: User data files must be protected from remote access. Only the local user instance can read and write to the data directory.
+
+3. **Chat Display Only**: User data may only be displayed within the local chat interface. No data export, sharing, or transmission is permitted without explicit user consent.
+
+4. **Data Protection**: Users must implement appropriate security measures to protect user data from unauthorized access, including encryption at rest and access controls.
+
+5. **Privacy by Design**: The Software is designed with privacy as a core principle. All data processing occurs locally, and no telemetry or analytics are collected.
+
+See `PRIVACY.md` for detailed data privacy policy.
+
+---
+
+## Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+---
+
+## Commercial Use Summary
+
+| Use Case | Permitted | License Required |
+|----------|-----------|------------------|
+| Personal use | ✅ Yes | MIT License |
+| Research/Academic | ✅ Yes | MIT License |
+| Commercial deployment (without Core Algorithms) | ✅ Yes | MIT License |
+| Commercial deployment (with Core Algorithms) | ❌ No | Commercial License Required |
+| SaaS/Cloud service | ❌ No | Commercial License Required |
+| Modification and redistribution | ✅ Yes* | *Excluding Core Algorithms |
+
+---
+
+## Version
+
+**License Version**: 1.0  
+**Effective Date**: 2026-04-02  
+**Applies to**: HeartFlow v5.1.92 and all future versions
+
+---
+
+**Repository**: https://github.com/yun520-1/mark-heartflow-skill  
+**Commercial Licensing**: heartflow-licensing@github.com
