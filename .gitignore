@@ -1,28 +1,88 @@
-# 依赖
+# HeartFlow Git Ignore Rules
+# 版本文件归档策略 - 仅保留最新版本和大版本里程碑
+
+## 节点模块和依赖
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# 数据文件
-data/*.json
-data/temp/*.json
-
-# 日志
+## 构建产物
+dist/
+build/
+output/
 *.log
-logs/
 
-# 临时文件
-temp/*.md
-*.tmp
-
-# 系统文件
+## 系统文件
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# 编辑器
-.vscode/
-.idea/
-*.swp
-*.swo
+## 版本文件归档规则
+## 保留规则：仅保留最新版本 (v5.1.108+) 和大版本里程碑 (v5.1.80, v5.1.90, v5.1.100)
 
-# 环境变量
+### 归档所有小版本文件 (v5.1.81-v5.1.107)
+### 这些文件应该移动到 archive/ 目录
+
+## UPGRADE_COMPLETE 文件
+## 保留：v5.1.80, v5.1.90, v5.1.100, v5.1.108 (最新)
+## 归档：其他所有版本
+UPGRADE_COMPLETE_v5.1.8[1-9].md
+UPGRADE_COMPLETE_v5.1.9[1-9].md
+UPGRADE_COMPLETE_v5.1.10[1-7].md
+
+## theory-update-summary 文件
+## 保留：v5.1.80, v5.1.90, v5.1.100, v5.1.108 (最新)
+## 归档：其他所有版本
+theory-update-summary-v5.1.8[1-9].md
+theory-update-summary-v5.1.9[1-9].md
+theory-update-summary-v5.1.10[1-7].md
+
+## self-evolution-state 文件
+## 保留：v5.1.80, v5.1.90, v5.1.100, v5.1.108 (最新)
+## 归档：其他所有版本
+self-evolution-state-v5.1.8[1-9].md
+self-evolution-state-v5.1.9[1-9].md
+self-evolution-state-v5.1.10[1-7].md
+
+## upgrade-report-cron 文件
+## 保留：v5.1.80, v5.1.90, v5.1.100, v5.1.108 (最新)
+## 归档：其他所有版本
+upgrade-report-v5.1.8[1-9]-cron.md
+upgrade-report-v5.1.9[1-9]-cron.md
+upgrade-report-v5.1.10[1-7]-cron.md
+
+## UPGRADE_SUMMARY 文件 (全部归档到 archive/releases/)
+UPGRADE_SUMMARY_v5.1.*.md
+
+## 旧版本文件 (v5.0.x 和更早)
+UPGRADE_COMPLETE_v5.0.*.md
+theory-update-summary-v5.0.*.md
+self-evolution-state-v5.0.*.md
+upgrade-report-v5.0.*-cron.md
+
+## 临时文件和备份
+*.tmp
+*.bak
+*.swp
+*~
+
+## 敏感信息
 .env
 .env.local
+.env.*.local
+*.key
+*.pem
+*.crt
+
+## 数据库文件
+*.sqlite
+*.db
+
+## 日志文件
+logs/
+*.log
