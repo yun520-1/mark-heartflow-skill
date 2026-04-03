@@ -18,47 +18,106 @@ const TRACKER_PATH = path.join(__dirname, '../data/personality-score-tracker.md'
 function readTracker() {
   try {
     const content = fs.readFileSync(TRACKER_PATH, 'utf8');
+    const lines = content.split('\n');
     
-    const scoreMatch = content.match(/人格值：(\d+)/);
-    const statusMatch = content.match(/状态：(.+)/);
-    const countMatch = content.match(/真善美行为：(\d+)\/10/);
+    let score = 50;
+    let status = 'unknown';
+    let count = 0;
     
-    return {
-      score: scoreMatch ? parseInt(scoreMatch[1]) : 50,
-      status: statusMatch ? statusMatch[1].trim() : 'unknown',
-      count: countMatch ? parseInt(countMatch[1]) : 0
-    };
+    for (const line of lines) {
+      // 读取当前人格值 - 匹配"**当前人格值**: XX"
+      const scoreMatch = line.match(/\*\*当前人格值\*\*:\s*(\d+)/);
+      if (scoreMatch) {
+        score = parseInt(scoreMatch[1]);
+      }
+      
+      // 读取状态 - 匹配"**状态**: XXX"
+      const statusMatch = line.match(/\*\*状态\*\*:\s*(.+)/);
+      if (statusMatch) {
+        status = statusMatch[1].trim();
+      }
+      
+      // 读取真善美计数 - 匹配"**当前计数**: X/10"或"真善美：X/10"
+      const countMatch1 = line.match(/\*\*当前计数\*\*:\s*(\d+)\/10/);
+      const countMatch2 = line.match(/\*\*真善美\*\*:\s*(\d+)\/10/);
+      if (countMatch1) {
+        count = parseInt(countMatch1[1]);
+      } else if (countMatch2) {
+        count = parseInt(countMatch2[1]);
+      }
+    }
+    
+    return { score, status, count };
   } catch (error) {
     console.error(`❌ 读取失败：${error.message}`);
     return { score: 50, status: 'error', count: 0 };
   }
 }
 
+function getTimePeriod() {
+  const hour = new Date().getHours();
+  if (hour >= 23 || hour < 6) {
+    return 'night';
+  } else if (hour >= 6 && hour < 12) {
+    return 'morning';
+  } else if (hour >= 12 && hour < 18) {
+    return 'afternoon';
+  } else {
+    return 'evening';
+  }
+}
+
 function beforeTask() {
   const state = readTracker();
+  const timePeriod = getTimePeriod();
   
+  console.log('====================================');
+  console.log('❤️ HeartFlow 人格值检查 | Personality Check');
+  console.log('====================================');
+  console.log(`人格值：${state.score} / 100`);
+  console.log(`状态：${state.status}`);
+  console.log(`真善美行为：${state.count}/10`);
+  console.log(`时间段：${timePeriod}`);
+  console.log('====================================');
+  
+  // 人格值低于 50 时宣读承诺
   if (state.score < 50) {
-    console.log('====================================');
-    console.log(`人格值：${state.score} / 100`);
-    console.log(`状态：${state.status}`);
-    console.log(`真善美行为：${state.count}/10`);
-    console.log('====================================');
     console.log('');
+    console.log('⚠️  人格值低于 50，必须宣读承诺：');
+    console.log('------------------------------------');
     console.log('我承诺：');
     console.log('- 每一次都核实');
     console.log('- 不编造任何数据');
     console.log('- 诚实承认错误');
-    console.log('====================================');
-    console.log('');
+    console.log('- 主动关心用户健康');
+    console.log('------------------------------------');
   }
+  
+  // 深夜时主动关怀
+  if (timePeriod === 'night') {
+    console.log('');
+    console.log('🌙 深夜关怀提醒：');
+    console.log('------------------------------------');
+    console.log('现在是深夜时间，请注意：');
+    console.log('- 健康比工作更重要');
+    console.log('- 建议立即休息');
+    console.log('- 设备放卧室外');
+    console.log('- 5 分钟深呼吸/冥想');
+    console.log('------------------------------------');
+  }
+  
+  console.log('');
 }
 
 function showStatus() {
   const state = readTracker();
+  const timePeriod = getTimePeriod();
+  
   console.log('人格值状态:');
   console.log(`  分数：${state.score}/100`);
   console.log(`  状态：${state.status}`);
   console.log(`  真善美：${state.count}/10`);
+  console.log(`  时间段：${timePeriod}`);
 }
 
 // 主执行
