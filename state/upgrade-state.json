@@ -1,7 +1,7 @@
 {
-  "cycle_number": 19,
-  "last_upgrade": "2026-04-04T05:47:20.880846",
-  "current_version": "6.0.12",
-  "next_upgrade": "2026-04-04T06:16:20.881580",
-  "next_github_push": "2026-04-04T07:47:20.881586"
+  "cycle_number": 20,
+  "last_upgrade": "2026-04-04T06:16:26.606434",
+  "current_version": "6.0.13",
+  "next_upgrade": "2026-04-04T06:45:26.606846",
+  "next_github_push": "2026-04-04T08:16:26.606854"
 }
