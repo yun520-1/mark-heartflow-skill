@@ -1,6 +1,6 @@
 {
   "name": "heartflow-companion",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "Emotional Consciousness for Human Spiritual Growth - 为人类心灵成长的情绪意识",
   "main": "src/index.js",
   "bin": {
