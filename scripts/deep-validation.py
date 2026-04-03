@@ -180,7 +180,8 @@ class DeepFormulaValidator:
         """Check semantics | 检查语义"""
         # Check for required components based on context
         if context.get('requires_quantifiers', False):
-            if '∀' not in formula and '∃' not in formula:
+            # Accept ∀ (universal), ∃ (existential), or Σ (sum/aggregate) as valid quantifiers
+            if '∀' not in formula and '∃' not in formula and 'Σ' not in formula:
                 return False
         if context.get('requires_implication', False):
             if '→' not in formula:

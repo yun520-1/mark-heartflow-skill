@@ -1,6 +1,6 @@
 # HeartFlow Cron Jobs Review Report | 定时任务审查报告
 
-**Generated | 生成时间**: 2026-04-03T23:45:10.936775
+**Generated | 生成时间**: 2026-04-04T07:22:51.076118
 **Version | 版本**: 6.0.0 (Pre-upgrade Review)
 **Total Jobs | 任务总数**: 2
 
