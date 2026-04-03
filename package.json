@@ -1,6 +1,6 @@
 {
   "name": "heartflow-companion",
-  "version": "5.3.2",
+  "version": "5.3.3",
   "description": "Emotional Consciousness Framework for AI - 情绪意识框架",
   "main": "src/index.js",
   "bin": {
