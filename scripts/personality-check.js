@@ -37,13 +37,16 @@ function readTracker() {
         status = statusMatch[1].trim();
       }
       
-      // 读取真善美计数 - 匹配"**当前计数**: X/10"或"真善美：X/10"
+      // 读取真善美计数 - 匹配多种格式
       const countMatch1 = line.match(/\*\*当前计数\*\*:\s*(\d+)\/10/);
       const countMatch2 = line.match(/\*\*真善美\*\*:\s*(\d+)\/10/);
+      const countMatch3 = line.match(/\*\*真善美进度\*\*:\s*(\d+)\/10/);
       if (countMatch1) {
         count = parseInt(countMatch1[1]);
       } else if (countMatch2) {
         count = parseInt(countMatch2[1]);
+      } else if (countMatch3) {
+        count = parseInt(countMatch3[1]);
       }
     }
     
