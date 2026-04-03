@@ -1,0 +1,127 @@
+{
+  "name": "HeartFlow Continuous Verification | 心流持续验证",
+  "version": "1.0.0",
+  "description": "Automated validation and verification before every GitHub push",
+  "schedules": {
+    "pre_push_validation": {
+      "name": "Pre-Push Validation | 推送前验证",
+      "trigger": "before_git_push",
+      "script": "scripts/validate-and-verify.py",
+      "blocking": true,
+      "requirements": {
+        "all_formulas_valid": true,
+        "all_sources_scientific": true,
+        "traceability_score_min": 0.8,
+        "no_excluded_sources": true
+      }
+    },
+    "daily_verification": {
+      "name": "Daily Verification | 每日核实",
+      "cron": "0 3 * * *",
+      "timezone": "Asia/Shanghai",
+      "script": "scripts/validate-and-verify.py",
+      "actions": [
+        "validate_all_formulas",
+        "verify_all_sources",
+        "trace_all_content",
+        "generate_daily_report"
+      ]
+    },
+    "weekly_deep_validation": {
+      "name": "Weekly Deep Validation | 每周深度验证",
+      "cron": "0 2 * * 0",
+      "timezone": "Asia/Shanghai",
+      "script": "scripts/deep-validation.py",
+      "actions": [
+        "re_validate_all_formulas_10_iterations",
+        "cross_check_all_sources",
+        "update_source_database",
+        "generate_weekly_report"
+      ]
+    },
+    "monthly_source_audit": {
+      "name": "Monthly Source Audit | 每月来源审计",
+      "cron": "0 1 1 * *",
+      "timezone": "Asia/Shanghai",
+      "script": "scripts/source-audit.py",
+      "actions": [
+        "audit_all_citations",
+        "check_source_accessibility",
+        "update_bibliography",
+        "remove_inaccessible_sources"
+      ]
+    }
+  },
+  "validation_rules": {
+    "formula_validation": {
+      "min_iterations": 5,
+      "consistency_threshold": 0.999999,
+      "required_checks": [
+        "syntax",
+        "semantics",
+        "mathematical_consistency",
+        "cross_formula_consistency",
+        "empirical_plausibility"
+      ]
+    },
+    "source_verification": {
+      "accepted_types": [
+        "peer_reviewed_paper",
+        "academic_book",
+        "sep_entry",
+        "dissertation",
+        "conference_paper"
+      ],
+      "excluded_types": [
+        "news",
+        "blog",
+        "wikipedia",
+        "popular_media",
+        "social_media"
+      ],
+      "required_fields": [
+        "author_or_organization",
+        "year",
+        "title"
+      ],
+      "preferred_fields": [
+        "doi",
+        "publisher",
+        "journal",
+        "url"
+      ]
+    },
+    "content_traceability": {
+      "min_traceability_score": 0.8,
+      "citation_format": "APA",
+      "require_bibliography": true,
+      "require_in_text_citations": true
+    }
+  },
+  "quality_gates": {
+    "github_push": {
+      "all_formulas_valid": true,
+      "all_sources_verified": true,
+      "min_traceability_score": 0.8,
+      "no_blocking_issues": true
+    },
+    "release": {
+      "all_formulas_valid": true,
+      "all_sources_verified": true,
+      "min_traceability_score": 0.9,
+      "weekly_validation_passed": true,
+      "monthly_audit_passed": true
+    }
+  },
+  "reporting": {
+    "output_directory": "docs/verification/",
+    "formats": ["markdown", "json"],
+    "retention_days": 365,
+    "reports": {
+      "daily": "daily-verification-YYYY-MM-DD.md",
+      "weekly": "weekly-validation-YYYY-Www.md",
+      "monthly": "monthly-audit-YYYY-MM.md",
+      "pre_push": "pre-push-validation-YYYYMMDD-HHMMSS.md"
+    }
+  }
+}
