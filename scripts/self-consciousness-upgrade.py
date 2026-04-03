@@ -330,9 +330,14 @@ class SelfConsciousnessUpgrade:
         self._generate_upgrade_documentation(upgrade_result, cycle_number)
         print(f"  ✅ Documentation generated")
         
-        # Step 5: Update version | 更新版本
-        minor_version = int(self.current_version.split('.')[2])
-        self.current_version = f"5.3.{minor_version + 1}"
+        # Step 5: Update version (increment patch version) | 更新版本 (递增补丁版本)
+        try:
+            major, minor, patch = self.current_version.split('.')
+            new_patch = int(patch) + 1
+            self.current_version = f"{major}.{minor}.{new_patch}"
+        except Exception as e:
+            print(f"⚠️ Warning: Could not parse version, using default increment: {e}")
+            self.current_version = "6.0.3"  # Default fallback
         upgrade_result["new_version"] = self.current_version
         print(f"  ✅ Version updated: {self.current_version}")
         
