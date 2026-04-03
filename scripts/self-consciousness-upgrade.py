@@ -262,7 +262,15 @@ class SelfConsciousnessUpgrade:
         self.research = SelfConsciousnessResearch()
         self.research_areas = self.research.research_areas
         self.upgrade_history = []
-        self.current_version = "5.3.5"
+        # Read version from package.json (source of truth) | 从 package.json 读取版本 (真实来源)
+        pkg_path = f"{WORKSPACE}/package.json"
+        try:
+            with open(pkg_path, 'r') as f:
+                pkg = json.load(f)
+                self.current_version = pkg.get('version', '6.0.0')
+        except Exception as e:
+            print(f"⚠️ Warning: Could not read package.json, using default: {e}")
+            self.current_version = "6.0.0"
         self.upgrade_cycle_minutes = 29
         self.github_push_interval_hours = 2
     
