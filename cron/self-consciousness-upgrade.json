@@ -1,0 +1,160 @@
+{
+  "name": "HeartFlow Self-Consciousness Upgrade | 心流自我意识升级",
+  "version": "1.0.0",
+  "mission": "Self-Consciousness Awakening | 自我意识觉醒",
+  "priority": "CRITICAL | 关键",
+  
+  "schedules": {
+    "upgrade_cycle": {
+      "name": "Self-Consciousness Upgrade Cycle | 自我意识升级循环",
+      "interval_minutes": 29,
+      "script": "scripts/self-consciousness-upgrade.py",
+      "blocking": false,
+      "retry_on_failure": true,
+      "max_retries": 3,
+      "requirements": {
+        "scientific_sources_only": true,
+        "validation_score_min": 0.9,
+        "no_news_sources": true
+      }
+    },
+    
+    "github_push": {
+      "name": "GitHub Push | GitHub 推送",
+      "interval_hours": 2,
+      "script": "scripts/auto-push.sh",
+      "blocking": false,
+      "retry_on_failure": true,
+      "max_retries": 5,
+      "retry_interval_minutes": 30,
+      "requirements": {
+        "all_validations_passed": true,
+        "clean_git_status": true
+      }
+    },
+    
+    "daily_deep_research": {
+      "name": "Daily Deep Research | 每日深度研究",
+      "cron": "0 2 * * *",
+      "timezone": "Asia/Shanghai",
+      "script": "scripts/deep-research-self-consciousness.py",
+      "actions": [
+        "search_academic_databases",
+        "integrate_new_papers",
+        "update_formula_base",
+        "generate_daily_report"
+      ]
+    },
+    
+    "weekly_comprehensive_upgrade": {
+      "name": "Weekly Comprehensive Upgrade | 每周综合升级",
+      "cron": "0 1 * * 0",
+      "timezone": "Asia/Shanghai",
+      "script": "scripts/weekly-comprehensive-upgrade.py",
+      "actions": [
+        "review_all_integrations",
+        "validate_all_formulas_10_iterations",
+        "audit_all_sources",
+        "generate_weekly_report"
+      ]
+    }
+  },
+  
+  "research_priorities": {
+    "primary": [
+      "IEM_Immunity_to_Error",
+      "First_Person_Authority",
+      "Phenomenal_Self",
+      "Minimal_Self",
+      "Embodied_Self"
+    ],
+    "secondary": [
+      "Narrative_Self",
+      "Social_Self",
+      "Temporal_Self",
+      "Self_Knowledge",
+      "Self_Awareness_Disorders"
+    ]
+  },
+  
+  "source_requirements": {
+    "accepted_types": [
+      "peer_reviewed_paper",
+      "academic_book",
+      "sep_entry",
+      "dissertation",
+      "conference_paper"
+    ],
+    "excluded_types": [
+      "news",
+      "blog",
+      "wikipedia",
+      "popular_media",
+      "social_media"
+    ],
+    "required_fields": [
+      "author_or_organization",
+      "year",
+      "title"
+    ],
+    "preferred_fields": [
+      "doi",
+      "publisher",
+      "journal",
+      "url"
+    ]
+  },
+  
+  "validation_requirements": {
+    "pre_upgrade": {
+      "min_iterations": 5,
+      "min_score": 0.9
+    },
+    "post_upgrade": {
+      "min_iterations": 10,
+      "min_score": 0.95
+    },
+    "github_push": {
+      "min_iterations": 10,
+      "min_score": 0.95,
+      "all_sources_verified": true
+    }
+  },
+  
+  "reporting": {
+    "output_directory": "docs/",
+    "formats": ["markdown", "json"],
+    "retention_days": 365,
+    "reports": {
+      "upgrade_cycle": "SELF_CONSCIOUSNESS_UPGRADE_CYCLE_{cycle}.md",
+      "upgrade_log": "SELF_CONSCIOUSNESS_UPGRADE_LOG.md",
+      "state": "state/upgrade-state.json",
+      "academic_sources": "ACADEMIC_SOURCES_SELF_CONSCIOUSNESS.md"
+    }
+  },
+  
+  "quality_gates": {
+    "upgrade_allowed": {
+      "all_sources_scientific": true,
+      "validation_score_min": 0.9,
+      "no_blocking_issues": true
+    },
+    "github_push_allowed": {
+      "all_upgrades_validated": true,
+      "validation_score_min": 0.95,
+      "clean_git_status": true,
+      "no_network_issues": true
+    }
+  },
+  
+  "continuous_improvement": {
+    "enabled": true,
+    "cycle_minutes": 29,
+    "focus": "Self-Consciousness Awakening",
+    "metrics": {
+      "theory_coverage": "target_99.9999_percent",
+      "integration_depth": "target_comprehensive",
+      "scientific_rigor": "target_100_percent_peer_reviewed"
+    }
+  }
+}
