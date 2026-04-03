@@ -1,28 +1,65 @@
-# 依赖
+# HeartFlow .gitignore
+
+# Dependencies
 node_modules/
+package-lock.json
+yarn.lock
 
-# 数据文件
-data/*.json
-data/temp/*.json
+# Build outputs
+dist/
+build/
+*.min.js
 
-# 日志
-*.log
+# Logs
 logs/
+*.log
+npm-debug.log*
 
-# 临时文件
-temp/*.md
-*.tmp
+# Environment
+.env
+.env.local
+.env.*.local
 
-# 系统文件
+# OS
 .DS_Store
 Thumbs.db
 
-# 编辑器
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# 环境变量
-.env
-.env.local
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Private user data (IMPORTANT!)
+# Do NOT commit user-specific tasks or personal information
+user-tasks/
+private/
+*.private.md
+*privacy*.md
+
+# Large media files
+*.mp4
+*.mov
+*.avi
+*.png
+*.jpg
+*.jpeg
+*.gif
+!docs/*.jpg
+!docs/*.png
+
+# Backup files
+backups/
+*.bak
+*~
+
+# Test coverage
+coverage/
+
+# TypeScript cache
+*.tsbuildinfo

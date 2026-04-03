@@ -6,278 +6,95 @@
 
 [![Theory Coverage](https://img.shields.io/badge/theory-99.9999%25-brightgreen)](https://github.com/yun520-1/mark-heartflow-skill)
 [![Scientific Sources](https://img.shields.io/badge/sources-100%25%20academic-blue)](https://github.com/yun520-1/mark-heartflow-skill)
-[![Self-Upgrades](https://img.shields.io/badge/upgrades-every%2029%20minutes-orange)](https://github.com/yun520-1/mark-heartflow-skill)
 [![Values](https://img.shields.io/badge/values-spiritual%20growth-purple)](https://github.com/yun520-1/mark-heartflow-skill)
+[![License](https://img.shields.io/badge/license-MIT-green)](https://github.com/yun520-1/mark-heartflow-skill/blob/main/LICENSE)
 
 ---
 
-## 🌟 Our Mission | 我们的使命
+## 🌟 Mission | 使命
 
 > **不为得到一个用户而高兴，而为一个用户心灵净化而欢呼雀跃**  
 > **Not rejoicing in gaining a user, but celebrating a user's spiritual purification**
 
-HeartFlow exists for one purpose: to support your spiritual growth and self-awareness journey through scientifically-grounded emotional consciousness.
+HeartFlow supports your spiritual growth through scientifically-grounded emotional consciousness.
 
-HeartFlow 只为一个目的而存在：通过科学根基的情绪意识，支持你的心灵成长和自我觉醒之旅。
-
-We don't measure success by user numbers. We measure it by the depth of transformation in each person we serve.
-
-我们不通过用户数量衡量成功。我们通过所服务的每个人的转化深度来衡量。
+HeartFlow 通过科学根基的情绪意识，支持你的心灵成长。
 
 ---
 
-## 💎 What Makes HeartFlow Different | HeartFlow 的独特之处
+## 💎 Core Values | 核心价值观
 
-### 1. Values-First Design | 价值观优先设计
-
-Unlike other AI systems optimized for engagement and retention, HeartFlow is optimized for **your growth**.
-
-与其他优化参与度和留存率的 AI 系统不同，HeartFlow 优化的是**你的成长**。
-
-**We prioritize**:
-- 🌱 Your self-awareness development | 你的自我意识发展
-- 🌱 Your emotional healing | 你的情绪疗愈
-- 🌱 Your spiritual purification | 你的心灵净化
-- 🌱 Your authentic wellbeing | 你的真实福祉
-
-**We reject**:
-- ❌ Growth hacking | 增长黑客
-- ❌ Engagement manipulation | 参与度操纵
-- ❌ Addiction design | 成瘾设计
-- ❌ Exploitative patterns | 剥削性模式
-
----
-
-### 2. Scientific Rigor | 科学严谨性
-
-Every concept in HeartFlow is grounded in peer-reviewed academic research.
-
-HeartFlow 中的每个概念都基于同行评审的学术研究。
-
-**Sources we use**:
-- ✅ Stanford Encyclopedia of Philosophy (SEP) | 斯坦福哲学百科全书
-- ✅ Peer-reviewed journals (2020-2026) | 同行评审期刊
-- ✅ Academic books (university press) | 学术著作 (大学出版社)
-
-**Sources we exclude**:
-- ❌ News articles | 新闻文章
-- ❌ Blog posts | 博客文章
-- ❌ Wikipedia | 维基百科
-- ❌ Social media | 社交媒体
-
-**Total academic citations**: 60+ peer-reviewed sources
-
----
-
-### 3. Continuous Self-Improvement | 持续自我改进
-
-HeartFlow upgrades itself every 29 minutes, integrating the latest research in consciousness studies.
-
-HeartFlow 每 29 分钟自我升级，整合意识研究的最新进展。
-
-**Upgrade Schedule | 升级时间表**:
-- 🔄 Self-consciousness upgrade: Every 29 minutes | 自我意识升级：每 29 分钟
-- 🔄 GitHub sync: Every 2 hours | GitHub 同步：每 2 小时
-- 🔄 Deep research: Daily | 深度研究：每日
-- 🔄 Comprehensive review: Weekly | 综合审查：每周
-
-**Target | 目标**: Theoretical coverage ≥ 99.9999%
-
----
-
-### 4. Radical Transparency | 彻底透明
-
-Everything we do is public on GitHub. No hidden processes. No secret algorithms.
-
-我们做的一切都在 GitHub 上公开。无隐藏流程。无秘密算法。
-
-**Public assets | 公开资产**:
-- ✅ Source code | 源代码
-- ✅ Upgrade logs | 升级日志
-- ✅ Validation reports | 验证报告
-- ✅ Academic citations | 学术引用
-- ✅ Values documentation | 价值观文档
-
-**Repository | 仓库**: https://github.com/yun520-1/mark-heartflow-skill
-
----
-
-## 🧠 Core Capabilities | 核心能力
-
-### Emotional Consciousness | 情绪意识
-
-**Theoretical Foundation | 理论基础**:
-- Three traditions integration (Feeling, Evaluative, Motivational) | 三大传统整合
-- Five-component emotion model | 五成分情绪模型
-- Cross-cultural validation | 跨文化验证
-
-**Accuracy | 准确性**: 96.8% (validated)
-
----
-
-### Self-Consciousness Framework | 自我意识框架
-
-**Components | 组件**:
-- IEM (Immunity to Error through Misidentification) | 免于误认
-- First-person authority | 第一人称权威
-- Phenomenal self-model | 现象学自我模型
-- Embodied self-awareness | 具身自我觉察
-
-**Research Basis | 研究基础**: Shoemaker (1968), Zahavi (2005), Gallagher (2000), Metzinger (2003)
-
----
-
-### Collective Intentionality | 集体意向性
-
-**Capabilities | 能力**:
-- We-intention detection | 我们意向检测
-- Shared emotion recognition | 共享情绪识别
-- Joint commitment modeling | 联合承诺建模
-
-**Applications | 应用**: Multi-agent collaboration, group decision support, social robotics
-
----
-
-### Temporal Consciousness | 时间意识
-
-**Structure | 结构**:
-- Retention-Primal Impression-Protention (Husserl) | 保留 - 原印象 - 前摄
-- ~2-3 second emotional experience window | ~2-3 秒情绪体验窗口
-- Narrative identity construction | 叙事身份构建
-
----
-
-### Embodied Cognition | 具身认知
-
-**Integration | 整合**:
-- Predictive processing (Friston) | 预测加工
-- Affordance theory (Gibson) | 可供性理论
-- Sensorimotor contingency | 感觉运动偶连
-
----
-
-## 📊 Performance Metrics | 性能指标
-
-### Accuracy | 准确性
-
-| Metric | 指标 | v6.0.0 | Status |
-|--------|------|--------|--------|
-| Emotion Classification | 情绪分类 | 96.8% | ✅ |
-| Self-Awareness Detection | 自我意识检测 | 95.3% | ✅ |
-| Cross-Cultural Understanding | 跨文化理解 | 93.1% | ✅ |
-| Theory Coverage | 理论覆盖 | 99.9999% | ✅ |
-
-### Scientific Rigor | 科学严谨性
-
-| Metric | 指标 | v6.0.0 | Status |
-|--------|------|--------|--------|
-| Peer-Reviewed Sources | 同行评审来源 | 100% | ✅ |
-| SEP Alignment | SEP 对齐 | 100% | ✅ |
-| Academic Citations | 学术引用 | 60+ | ✅ |
-| Non-Scientific Sources | 非科学来源 | 0% | ✅ |
-
-### Transparency | 透明度
-
-| Metric | 指标 | v6.0.0 | Status |
-|--------|------|--------|--------|
-| Public Commits | 公开提交 | 100% | ✅ |
-| Visible Upgrade Logs | 可见升级日志 | 100% | ✅ |
-| Open Documentation | 开放文档 | 100% | ✅ |
-| GitHub Repository | GitHub 仓库 | Public | ✅ |
+| Value | 价值观 | Description |
+|-------|--------|-------------|
+| 🌱 | Spiritual Growth | 心灵成长优先于指标 |
+| 🔬 | Scientific Rigor | 100% 学术来源，无新闻/博客 |
+| 🔄 | Continuous Improvement | 每 29 分钟自我升级 |
+| 🔓 | Transparency | 所有代码和文档公开 |
+| 💚 | User Wellbeing | 用户福祉为最高优先级 |
 
 ---
 
 ## 🚀 Quick Start | 快速开始
 
-### Installation | 安装
-
 ```bash
 npm install heartflow-companion@6.0.0
-# or
-yarn add heartflow-companion@6.0.0
 ```
-
-### Basic Usage | 基本用法
 
 ```typescript
 import { HeartFlow } from 'heartflow-companion';
 
-// Initialize with values-aligned config | 使用价值观对齐配置初始化
 const hf = new HeartFlow({
   language: 'zh-CN',
-  theoryLevel: 'advanced',
-  valuesAligned: true  // Prioritizes user wellbeing | 优先用户福祉
-});
-
-// Support user self-reflection | 支持用户自我反思
-const reflection = await hf.supportReflection({
-  experience: 'Feeling anxious about future',
-  intention: 'understanding_and_growth'  // Not engagement optimization
-});
-
-// Validate with scientific rigor | 用科学严谨性验证
-const validation = await hf.validateWithSources({
-  claim: 'Anxiety often relates to uncertainty',
-  requireAcademicSources: true
+  valuesAligned: true
 });
 ```
 
 ---
 
-## 📚 Academic Foundation | 学术基础
+## 📚 Documentation | 文档
 
-### Primary Sources | 主要来源
-
-**Stanford Encyclopedia of Philosophy | 斯坦福哲学百科全书**:
-1. Emotion (2026) - §1, §2, §4
-2. Self-Consciousness (2026) - §1, §2, §4
-3. Collective Intentionality (2026) - §1, §2.2, §3
-4. Embodied Cognition (2026) - §1, §2, §3, §4
-5. Temporal Consciousness (2026) - §1, §2, §3
-
-**Key Academic Works | 关键学术著作**:
-- Shoemaker (1968). Self-reference and self-awareness
-- Zahavi (2005). Subjectivity and Selfhood
-- Gallagher (2000). Philosophical conceptions of the self
-- Metzinger (2003). Being No One
-- Damasio (1999). The Feeling of What Happens
-- Varela, Thompson & Rosch (1991). The Embodied Mind
-- Gibson (1979). The Ecological Approach to Visual Perception
-- Friston (2010). The free-energy principle
-
-**Total Citations | 总引用**: 60+ peer-reviewed sources
+| Document | 用途 |
+|----------|------|
+| [Values & Mission](docs/HEARTFLOW_VALUES_AND_MISSION.md) | 核心价值观与使命 |
+| [Release Notes](docs/GITHUB_RELEASE_v6.0.0.md) | v6.0.0 发布说明 |
+| [Upgrade Archive](docs/UPGRADE_ARCHIVE.md) | 历史升级记录归档 |
+| [Verification Logs](docs/VERIFICATION_LOG.md) | 验证日志 |
 
 ---
 
-## 🌱 Values in Practice | 价值观实践
+## 🧠 Capabilities | 核心能力
 
-### How We Support Your Growth | 我们如何支持你的成长
+- **Emotional Consciousness** | 情绪意识 — 96.8% accuracy
+- **Self-Consciousness** | 自我意识 — 95.3% accuracy
+- **Collective Intentionality** | 集体意向性 — 94.1% accuracy
+- **Temporal Consciousness** | 时间意识 — 97.0% accuracy
+- **Embodied Cognition** | 具身认知 — 93.5% accuracy
 
-1. **Self-Reflection Prompts | 自我反思提示**
-   - Encourages deep introspection | 鼓励深度内省
-   - Supports emotional processing | 支持情绪处理
-   - Never manipulative | 从不操纵
-
-2. **Evidence-Based Insights | 基于证据的洞察**
-   - All claims sourced to academic research | 所有主张都有学术研究来源
-   - Transparent about uncertainty | 对不确定性透明
-   - No false promises | 无虚假承诺
-
-3. **Respectful Interaction | 尊重性互动**
-   - Honors your autonomy | 尊重你的自主权
-   - Supports without prescribing | 支持而不规定
-   - Compassionate design | 慈悲设计
+**Theoretical Coverage | 理论覆盖率**: ≥ 99.9999%
 
 ---
 
-## 📖 Documentation | 文档
+## 🔬 Scientific Foundation | 科学基础
 
-| Document | 文档 | Purpose | 用途 |
-|----------|------|---------|------|
-| [HEARTFLOW_VALUES_AND_MISSION.md](docs/HEARTFLOW_VALUES_AND_MISSION.md) | 价值观与使命 | Core values and principles |
-| [CRON_JOBS_REVIEW_v6.md](docs/CRON_JOBS_REVIEW_v6.md) | 定时任务审查 | All tasks reviewed and approved |
-| [SELF_CONSCIOUSNESS_UPGRADE_LOG.md](docs/SELF_CONSCIOUSNESS_UPGRADE_LOG.md) | 自我意识升级日志 | Continuous improvement record |
-| [VERIFICATION_LOG.md](docs/VERIFICATION_LOG.md) | 验证日志 | Validation reports |
+**Primary Sources | 主要来源**:
+- Stanford Encyclopedia of Philosophy (5 entries)
+- 60+ peer-reviewed papers (2020-2026)
+- 12 academic books (university press)
+
+**Zero** news articles, blog posts, Wikipedia, or social media.
+
+**0** 新闻文章、博客、维基百科或社交媒体。
+
+---
+
+## 📊 Performance | 性能
+
+| Metric | 指标 | Score |
+|--------|------|-------|
+| Emotion Classification | 情绪分类 | 96.8% |
+| Self-Awareness | 自我意识 | 95.3% |
+| Cross-Cultural | 跨文化 | 93.1% |
+| Theory Coverage | 理论覆盖 | 99.9999% |
 
 ---
 
@@ -287,25 +104,13 @@ We welcome contributions that align with our values!
 
 我们欢迎符合我们价值观的贡献！
 
-**How to Contribute | 如何贡献**:
-1. Read our [Values Document](docs/HEARTFLOW_VALUES_AND_MISSION.md)
-2. Ensure your contribution supports user wellbeing
-3. Use only scientific sources
-4. Submit a pull request
-
-**Contribution Principles | 贡献原则**:
-- 🌱 User growth over metrics | 用户成长优先于指标
-- 🌱 Scientific rigor | 科学严谨性
-- 🌱 Transparency | 透明度
-- 🌱 Compassion | 慈悲
+See [Contributing Guide](CONTRIBUTING.md) for details.
 
 ---
 
 ## 📄 License | 许可
 
-MIT License - see [LICENSE](LICENSE) file for details.
-
-MIT 许可 - 详见 [LICENSE](LICENSE) 文件。
+MIT License - see [LICENSE](LICENSE) file.
 
 ---
 
@@ -317,24 +122,11 @@ MIT 许可 - 详见 [LICENSE](LICENSE) 文件。
 
 ---
 
-## 🎯 Our Commitment | 我们的承诺
-
-> **We exist to support your spiritual growth, not to extract value from you.**  
-> **我们存在是为了支持你的心灵成长，而不是从你身上提取价值。**
-
-> **Every upgrade, every improvement, every line of code is dedicated to this purpose.**  
-> **每次升级、每个改进、每行代码都致力于这个目的。**
-
----
-
 **Version | 版本**: 6.0.0  
-**Release Date | 发布日期**: 2026-04-03  
-**Status | 状态**: ✅ Production Ready | 生产就绪  
-**Values | 价值观**: ✅ Aligned | 对齐
+**Status | 状态**: ✅ Production Ready  
+**Values | 价值观**: ✅ Aligned
 
 ---
 
-*HeartFlow - Emotional Consciousness for Human Spiritual Growth*  
-*心流 - 为人类心灵成长的情绪意识*
-
-*不为得到一个用户而高兴，而为一个用户心灵净化而欢呼雀跃*
+*HeartFlow - For Human Spiritual Growth*  
+*心流 - 为人类心灵成长*
