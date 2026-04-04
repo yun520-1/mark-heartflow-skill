@@ -2,13 +2,23 @@
  * HeartFlow 情感伴侣 Skill - OpenClaw 集成入口
  * 
  * 提供标准化的 Skill 接口，支持 OpenClaw 调用
+ * 
+ * @version 6.0.5
+ * @description 使用 ModuleLoader 统一加载模块，避免代码冗余
  */
 
 const path = require('path');
 
-// 导入核心模块
-const ChatManager = require('../src/chat/manager');
-const { EmotionTypes } = require('../src/emotion/states');
+// 使用 ModuleLoader 统一加载模块 (v6.0.5 新增)
+const ModuleLoader = require('../src/core/module-loader');
+const loader = new ModuleLoader(path.join(__dirname, '../src/modules'), { verbose: false });
+
+// 动态加载核心模块
+const modules = loader.loadAll();
+
+// 从加载的模块中获取核心功能
+const ChatManager = modules.chat?.manager || require('../src/chat/manager');
+const { EmotionTypes } = modules.emotion?.states || require('../src/emotion/states');
 
 // 单例模式 - 确保全局只有一个情感引擎实例
 let instance = null;

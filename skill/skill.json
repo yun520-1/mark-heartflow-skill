@@ -37,7 +37,24 @@
       "压力",
       "为什么",
       "谢谢",
-      "陪伴"
+      "陪伴",
+      "你好",
+      "嗨",
+      "在吗",
+      "帮我",
+      "怎么办",
+      "心情",
+      "感觉",
+      "今天",
+      "现在",
+      "想",
+      "要",
+      "可以",
+      "能",
+      "好吗",
+      "吗",
+      "呢",
+      "吧"
     ],
     "commands": [
       "/heartflow",
@@ -45,7 +62,7 @@
     ],
     "handler": "skill/handlers/openclaw.js",
     "config": {
-      "dataDir": "~/.openclaw/workspace/empathy-system/data",
+      "dataDir": "~/.jvs/.openclaw/workspace/mark-heartflow-skill/data",
       "autoReport": true,
       "maxHistory": 100
     }

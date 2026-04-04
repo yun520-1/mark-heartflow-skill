@@ -1,40 +1,27 @@
 {
-  "version": "2.7.0",
-  "upgradeTime": "2026-03-29T14:15:00+08:00",
-  "upgradeType": "hourly_minor",
-  "theme": "正念与接纳、成长型思维",
-  "changes": {
-    "newFiles": [
-      "src/mindfulness/index.js",
-      "docs/V2.7_UPGRADE.md"
-    ],
-    "modifiedFiles": [
-      "src/index.js",
-      "clawhub.json"
-    ],
-    "newFeatures": [
-      "正念与接纳模块 (MBSR、ACT 疗法)",
-      "5 种核心练习",
-      "正念七原则",
-      "ACT 核心流程",
-      "成长型思维转换",
-      "自动检测与回应"
-    ],
-    "newCommands": [
-      "/mindful",
-      "/growth"
-    ]
+  "sessionId": "session_1775312738027_5mi2d",
+  "lastInteractionId": "int_6",
+  "currentEmotion": {
+    "emotion": "关切",
+    "intensity": 3,
+    "intensityLabel": "中等",
+    "definition": {
+      "name": "关切",
+      "english": "Concerned",
+      "description": "对他人困境的共情和关心",
+      "defaultIntensity": 3,
+      "naturalDecayMinutes": 40,
+      "color": "#E74C3C",
+      "traits": [
+        "共情",
+        "支持",
+        "温柔",
+        "耐心"
+      ],
+      "responseStyle": "温和、支持性、不评判"
+    },
+    "timestamp": "2026-04-04T14:25:38.033Z"
   },
-  "stats": {
-    "addedLines": 793,
-    "removedLines": 19,
-    "netChange": 774
-  },
-  "gitCommit": "b99c210",
-  "pushedToGithub": true,
-  "nextUpgrade": {
-    "version": "2.8.0",
-    "scheduledTime": "2026-03-29T15:15:00+08:00",
-    "theme": "情绪智力升级 / 社会心理学整合"
-  }
+  "energyLevel": 75,
+  "lastUpdated": "2026-04-04T14:25:38.033Z"
 }
