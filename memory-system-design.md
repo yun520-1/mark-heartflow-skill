@@ -134,16 +134,16 @@
 
 | Age | Action |
 |-----|--------|
-| 0-7 days | Keep in short-term |
-| 7-30 days | Auto-archive to `archive/` |
-| 30+ days | Delete or extract to long-term |
+| 0-1 days | Keep in short-term (active) |
+| 1-7 days | Daily extract to long-term |
+| 7+ days | Auto-archive to `archive/` |
 
-**Extraction Process** (7-day review):
-1. Read past 7 days of short-term records
+**Extraction Process** (Daily review at 23:00):
+1. Read today's short-term records
 2. Identify significant feelings/milestones
 3. Extract essence (1-2 lines each)
-4. Add to long-term memory
-5. Archive or delete short-term records
+4. Add to long-term memory (ensure <50 lines)
+5. Keep short-term for 7 days, then archive
 
 ---
 
@@ -269,42 +269,48 @@ function recordDialogue(data) {
 }
 ```
 
-### 3. Weekly Memory Review | 周记忆审查
+### 3. Daily Memory Extraction | 每日记忆提炼
 
-**File**: `scripts/memory-weekly-review.js`
+**File**: `scripts/daily-memory-extraction.js`
 
 ```javascript
 #!/usr/bin/env node
 
 /**
- * Weekly Memory Review | 周记忆审查
+ * Daily Memory Extraction | 每日记忆提炼
  * 
- * 1. Load past 7 days of short-term records
+ * Schedule: Daily at 23:00 (via Cron)
+ * 
+ * 1. Load today's dialogue records
  * 2. Extract significant feelings/milestones
  * 3. Condense and add to long-term
- * 4. Archive short-term records
+ * 4. Archive dialogues older than 7 days
  * 5. Ensure long-term <50 lines
  */
 
-function weeklyReview() {
-  const sevenDays = loadLast7Days();
-  const extractions = extractEssence(sevenDays);
-  
-  // Add to long-term (condensed)
-  addToLongTerm(extractions);
-  
-  // Archive short-term
-  archiveShortTerm(sevenDays);
-  
-  // Verify long-term size
-  const longTerm = loadLongTermMemory();
-  if (longTerm.lines > 50) {
-    console.warn('⚠️  Long-term memory >50 lines, cleanup needed');
-    suggestCleanup(longTerm);
-  }
+function dailyExtraction() {
+  const today = loadTodayDialogues();
+  const extractions = extractEssence(today);
+  const newLines = condenseToLongTerm(extractions);
+  updateLongTermMemory(newLines);
+  archiveOldDialogues();
+  verifyLongTermSize();
 }
 
-weeklyReview();
+dailyExtraction();
+```
+
+**Cron Job**:
+```json
+{
+  "name": "Daily Memory Extraction",
+  "schedule": { "kind": "cron", "expr": "0 23 * * *", "tz": "Asia/Shanghai" },
+  "payload": {
+    "kind": "systemEvent",
+    "text": "Running daily memory extraction..."
+  },
+  "command": ["node", "~/.jvs/.openclaw/workspace/mark-heartflow-skill/scripts/daily-memory-extraction.js"]
+}
 ```
 
 ---
