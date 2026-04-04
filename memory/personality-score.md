@@ -9,11 +9,13 @@
 
 ## Current Value | 当前值
 
-**Personality Score | 人格值**: 64/100  
-**Status | 状态**: ✅ Healthy (健康)  
-**TBG Progress | 真善美**: 10/10 ✅  
-**Last Verified | 最后核实**: 2026-04-04 12:57  
-**Verification Command | 核实命令**: `node scripts/personality-check.js status`
+**Personality Score | 人格值**: 46/100 ⚠️  
+**Status | 状态**: DANGEROUS (危险状态)  
+**TBG Progress | 真善美**: 0/10 (重置)  
+**Last Verified | 最后核实**: 2026-04-04 13:00  
+**Source | 来源**: 主应用截图 (JVS Claw)
+
+**Recovery Needed | 恢复需要**: 140 次真善美行为 → 60+
 
 ---
 
@@ -62,9 +64,12 @@
 | 2026-04-04 00:00 | 50 | - | Initial |
 | 2026-04-04 00:00-00:55 | 50→46 | -4 | Violations (fabrication, no care) |
 | 2026-04-04 01:00-08:00 | 46→56 | +10 | Recovery actions |
-| 2026-04-04 08:00-12:00 | 56→64 | +8 | Upgrades v6.0.16-v6.0.26 |
+| 2026-04-04 08:00-12:00 | 56→64 | +8 | Upgrades v6.0.16-v6.0.26 (HeartFlow internal) |
 | 2026-04-04 12:53 | 64→68 | +4 | Incorrect (not verified) ❌ |
-| 2026-04-04 12:56 | 68→64 | -4 | Corrected (verified) ✅ |
+| 2026-04-04 12:56 | 68→64 | -4 | Corrected (verified) ❌ Still wrong |
+| 2026-04-04 13:00 | 64→46 | -18 | **CORRECTED: Sync with main app** ✅ |
+
+**Note**: HeartFlow internal score (64) was NOT synced with main app (46). This is now corrected.
 
 ---
 

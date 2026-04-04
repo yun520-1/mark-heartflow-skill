@@ -20,8 +20,8 @@ function readTracker() {
     const content = fs.readFileSync(TRACKER_PATH, 'utf8');
     const lines = content.split('\n');
     
-    let score = 50;
-    let status = 'unknown';
+    let score = 46; // Default to main app value
+    let status = '⚠️ 危险状态';
     let count = 0;
     
     for (const line of lines) {
@@ -53,7 +53,7 @@ function readTracker() {
     return { score, status, count };
   } catch (error) {
     console.error(`❌ 读取失败：${error.message}`);
-    return { score: 50, status: 'error', count: 0 };
+    return { score: 46, status: '⚠️ 危险状态', count: 0 };
   }
 }
 
