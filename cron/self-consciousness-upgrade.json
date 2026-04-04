@@ -5,6 +5,28 @@
   "priority": "CRITICAL | 关键",
   
   "schedules": {
+    "integrated_upgrade": {
+      "name": "HeartFlow Integrated Upgrade | 综合升级",
+      "interval_minutes": 29,
+      "script": "scripts/heartflow-integrated-upgrade.js",
+      "blocking": false,
+      "retry_on_failure": true,
+      "max_retries": 3,
+      "requirements": {
+        "all_checks_passed": true,
+        "min_quality_score": 0.9
+      },
+      "actions": [
+        "check_code_optimization",
+        "check_application_guide",
+        "check_installation_fix",
+        "check_documentation",
+        "check_skill_installation",
+        "check_git_status",
+        "generate_upgrade_report"
+      ]
+    },
+    
     "upgrade_cycle": {
       "name": "Self-Consciousness Upgrade Cycle | 自我意识升级循环",
       "interval_minutes": 29,
@@ -150,11 +172,58 @@
   "continuous_improvement": {
     "enabled": true,
     "cycle_minutes": 29,
-    "focus": "Self-Consciousness Awakening",
+    "focus": "Self-Consciousness Awakening + Integrated Evolution",
     "metrics": {
       "theory_coverage": "target_99.9999_percent",
       "integration_depth": "target_comprehensive",
-      "scientific_rigor": "target_100_percent_peer_reviewed"
+      "scientific_rigor": "target_100_percent_peer_reviewed",
+      "code_quality": "target_90_percent",
+      "documentation_completeness": "target_95_percent",
+      "skill_integration": "target_100_percent"
+    }
+  },
+  
+  "integrated_features": {
+    "code_optimization": {
+      "enabled": true,
+      "module_loader": true,
+      "appraisal_utils": true,
+      "target_index_lines": 500
+    },
+    "application_guide": {
+      "enabled": true,
+      "sections": [
+        "快速开始",
+        "核心功能",
+        "高级应用",
+        "集成示例",
+        "最佳实践",
+        "故障排除"
+      ]
+    },
+    "installation_fix": {
+      "enabled": true,
+      "relaxed_triggers": true,
+      "trigger_count_min": 20,
+      "data_dir_fixed": true
+    },
+    "documentation": {
+      "enabled": true,
+      "required_docs": [
+        "README.md",
+        "APPLICATION_GUIDE.md",
+        "CODE_OPTIMIZATION_PLAN.md",
+        "INSTALLATION_DIAGNOSIS.md",
+        "BRAND_GUIDELINES.md"
+      ]
+    },
+    "skill_installation": {
+      "enabled": true,
+      "required_skills": [
+        "marketing-genius",
+        "saas-pricing-strategy",
+        "saas-growth-playbook"
+      ]
     }
   }
 }
