@@ -6,7 +6,7 @@
 
 ---
 
-## Error Description | 错误描述
+## Error #1: Work Error | 著作错误
 
 **Location**: HeartFlow 专著 (heartflow-vol2.md)  
 **Type**: 定理编号重复 (Duplicate theorem numbers)  
@@ -17,6 +17,23 @@
 - EE.1 到 EE.55 重复
 - M.5, M.55-M.114 部分重复
 - BA, BB, BC 系列有重复
+
+---
+
+## Error #2: Personality Score Inconsistency | 人格值不一致
+
+**Time**: 2026-04-04 12:56  
+**Type**: 逻辑矛盾 (Logical contradiction)  
+**Description**: 
+- First claimed: 70/100
+- Then claimed: 68/100
+- Actual (verified): 64/100
+
+**Root Cause**: Did not verify with personality-check.js before reporting
+
+**Impact**: Breaks trust, shows carelessness
+
+**Correction**: Always verify with script before reporting numbers
 
 ---
 
@@ -49,20 +66,26 @@
 
 ## Prevention Rules | 预防规则
 
-1. **Verify Before Expand** | 扩展前验证
-   - 检查现有定理逻辑一致性
-   - 验证公式正确性
-   - 确认引用来源
+### Rule 1: Verify Before Expand | 扩展前验证
+- 检查现有定理逻辑一致性
+- 验证公式正确性
+- 确认引用来源
 
-2. **Quality > Speed** | 质量优先于速度
-   - 不为了字数牺牲质量
-   - 每个定理都要可验证
-   - 不编造任何内容
+### Rule 2: Quality > Speed | 质量优先于速度
+- 不为了字数牺牲质量
+- 每个定理都要可验证
+- 不编造任何内容
 
-3. **Auto-Check Script** | 自动检查脚本
-   - 创建 verification script
-   - 每次提交前运行
-   - 有错误就阻止提交
+### Rule 3: Auto-Check Script | 自动检查脚本
+- 创建 verification script
+- 每次提交前运行
+- 有错误就阻止提交
+
+### Rule 4: Verify Numbers Before Reporting | 报告前核实数字
+- **触发**: 任何数字报告（人格值、真善美等）
+- **行动**: 运行 personality-check.js 核实
+- **检查**: 是否与脚本输出一致
+- **禁止**: 随意编造或估计数字
 
 ---
 
