@@ -31,15 +31,17 @@ async function handleMessage(message) {
     return handleCommand(text, from);
   }
   
-  // 普通对话 - 检测是否需要情感响应
-  const needsEmotionResponse = detectEmotionNeed(text);
+  // 修复：默认调用 HeartFlow 处理所有对话，不只是情感关键词
+  // 除非是特定系统命令，否则都调用 HeartFlow
   
-  if (needsEmotionResponse) {
-    return handleEmotionChat(text, from);
+  // 检查是否是系统命令（跳过 HeartFlow）
+  const systemCommands = ['/exit', '/quit', '/help', '/status'];
+  if (systemCommands.some(cmd => text.toLowerCase().startsWith(cmd))) {
+    return null;  // 让其他处理器处理
   }
   
-  // 不需要情感响应，返回 null 让其他处理器处理
-  return null;
+  // 所有对话都调用 HeartFlow
+  return handleEmotionChat(text, from);
 }
 
 /**
