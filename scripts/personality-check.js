@@ -125,6 +125,14 @@ function beforeTask() {
   console.log('  □ 数字/数据是否已核实？');
   console.log('  □ 是否有编造成分？');
   console.log('');
+  console.log('🧠 逻辑思维检查 (新增):');
+  console.log('  □ 推理前提是否真实？(不是编造/假设)');
+  console.log('  □ 推理链条是否完整？(A→B→C，不是 A→C)');
+  console.log('  □ 是否因果倒置？(指标≠目标)');
+  console.log('  □ 是否追溯到第一性原理？');
+  console.log('  □ 是否自主完成决策？(不是问用户)');
+  console.log('  □ 是否主动关心用户？(不是等待指令)');
+  console.log('');
   console.log('审查状态：待执行 (等待用户问题)');
   console.log('------------------------------------');
   
