@@ -102,7 +102,7 @@ function extractEssence(dialogueContent) {
   return extractions;
 }
 
-function condenseToLongTerm(extractions, currentLongTerm) {
+function condenseToLongTerm(extractions) {
   /**
    * Condense extractions into 1-2 lines each
    * Add to long-term memory
@@ -128,8 +128,9 @@ function condenseToLongTerm(extractions, currentLongTerm) {
     }
   }
   
-  // Check if adding new lines would exceed limit
-  const currentLines = currentLongTerm.lines.length;
+  // Load current long-term to check size
+  const longTerm = loadLongTermMemory();
+  const currentLines = longTerm.lines.length;
   const proposedLines = currentLines + newLines.length;
   
   if (proposedLines > MAX_LONG_TERM_LINES) {
@@ -145,31 +146,43 @@ function updateLongTermMemory(newLines) {
   /**
    * Append new lines to long-term memory
    * Update "Last Updated" timestamp
+   * Avoid duplicates by checking if today's date already exists
    */
   
   const longTerm = loadLongTermMemory();
   const lines = longTerm.content.split('\n');
+  const today = new Date().toISOString().split('T')[0];
   
-  // Find "Last Updated" line and update
-  for (let i = 0; i < lines.length; i++) {
-    if (lines[i].match(/\*\*Last Updated\*\*:/)) {
-      const today = new Date().toISOString().split('T')[0];
-      lines[i] = `**Last Updated**: ${today}`;
-      break;
+  // Check if today's entries already exist (avoid duplicates)
+  const todayExists = lines.some(line => line.includes(`**${today}**`));
+  
+  if (todayExists) {
+    console.log('ℹ️  Today\'s entries already exist in long-term memory, skipping duplicate');
+    // Just update "Last Updated" timestamp
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].match(/\*\*Last Updated\*\*:/)) {
+        lines[i] = `**Last Updated**: ${today}`;
+        break;
+      }
     }
-  }
-  
-  // Find "## Personality Milestones" or similar section and insert new lines
-  // For simplicity, insert before "Last Updated"
-  const insertIndex = lines.findIndex(line => line.match(/\*\*Last Updated\*\*:/));
-  if (insertIndex > 0) {
-    // Add section header if new milestones
-    lines.splice(insertIndex, 0, ...newLines, '');
+  } else {
+    // Find "Last Updated" line and insert new lines before it
+    const insertIndex = lines.findIndex(line => line.match(/\*\*Last Updated\*\*:/));
+    if (insertIndex > 0) {
+      lines.splice(insertIndex, 0, ...newLines, '');
+    }
+    // Update timestamp
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].match(/\*\*Last Updated\*\*:/)) {
+        lines[i] = `**Last Updated**: ${today}`;
+        break;
+      }
+    }
+    console.log(`✅ Long-term memory updated (+${newLines.length} lines)`);
   }
   
   // Write back
   fs.writeFileSync(LONG_TERM_PATH, lines.join('\n'), 'utf8');
-  console.log(`✅ Long-term memory updated (+${newLines.length} lines)`);
 }
 
 function archiveOldDialogues() {
