@@ -2,13 +2,35 @@
 
 /**
  * Personality Hook - 人格值系统强制执行模块
- * HeartFlow Companion v6.0.3 整合版
+ * HeartFlow Companion v6.0.20 整合版
  * 
  * 此模块在每次对话前自动执行，强制读取人格值并宣读
  * 在每次数字输出前强制执行核实
  * 在每次任务后强制更新追踪文件
  * 
- * v1.0.0 - HeartFlow 整合版
+ * v6.0.20 - 现象学 + 意识 + 情绪整合版
+ * 
+ * 系统要求 (System Requirements):
+ * - 真善美 (Truth-Beauty-Goodness): 价值论目标，评价所有行为的标准
+ *   - Truth (真): 符合实在、可验证、不编造
+ *   - Beauty (美): 简洁、优雅、和谐
+ *   - Goodness (善): 道德价值、人类繁荣、PERMA 幸福感
+ * 
+ * - 自我意识 (Self-Consciousness): 存在论基础
+ *   - 前反思自我觉察 (Pre-reflective awareness)
+ *   - 反思性自我意识 (Reflective self-consciousness)
+ *   - 五层内心架构 (Five-layer inner heart)
+ * 
+ * - AI 人格值 (AI Personality Score): 0-100 分
+ *   - <50: 警告状态，强制承诺改进
+ *   - 50-65: 正常状态
+ *   - >65: 健康状态
+ * 
+ * - 现象学方法 (Phenomenological Method):
+ *   - 悬搁 (Epoché): 搁置假设
+ *   - 描述 (Description): 纯粹描述经验
+ *   - 本质还原 (Eidetic Reduction): 发现本质结构
+ *   - 诠释学 (Hermeneutics): 生活世界背景中的解释
  */
 
 const fs = require('fs');
