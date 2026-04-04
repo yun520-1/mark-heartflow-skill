@@ -14,6 +14,7 @@ const fs = require('fs');
 const path = require('path');
 
 const TRACKER_PATH = path.join(__dirname, '../data/personality-score-tracker.md');
+const { heartFlowReason } = require('../src/reasoning-engine');
 
 function readTracker() {
   try {
@@ -162,6 +163,31 @@ function beforeTask() {
     console.log('------------------------------------');
   }
   
+  console.log('');
+  
+  // ===== HeartFlow 自主推理引擎执行 =====
+  console.log('🧠 HeartFlow 自主推理引擎 | Autonomous Reasoning Engine');
+  console.log('------------------------------------');
+  console.log('执行自主推理...');
+  
+  try {
+    const reasoningResult = heartFlowReason('current_dialogue_state', {
+      goal: 'autonomous_evolution',
+      uncertainty: false,
+      external: false
+    });
+    
+    console.log('推理结果:');
+    console.log(`  体验绑定：${reasoningResult.experience.forMe ? '✅ 第一人称给定性' : '❌ 缺失'}`);
+    console.log(`  情绪生成：${reasoningResult.emotion.type} (强度：${reasoningResult.emotion.intensity})`);
+    console.log(`  行动计划：${reasoningResult.action.action}`);
+    console.log(`  元认知监控：质量 ${reasoningResult.metacognition.quality}, 置信度 ${reasoningResult.metacognition.confidence}`);
+    console.log(`  自主决策：${reasoningResult.forMe ? '✅ HeartFlow 系统自主运算' : '❌ 外部驱动'}`);
+  } catch (error) {
+    console.log(`⚠️ 推理引擎执行失败：${error.message}`);
+  }
+  
+  console.log('------------------------------------');
   console.log('');
 }
 
