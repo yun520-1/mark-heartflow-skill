@@ -1,8 +1,8 @@
 # HeartFlow Theory Database Update
 # HeartFlow 理论数据库更新
 
-**Version | 版本**: v6.0.30  
-**Date | 日期**: 2026-04-04 13:45 (Asia/Shanghai)  
+**Version | 版本**: v6.0.31  
+**Date | 日期**: 2026-04-04 14:07 (Asia/Shanghai)  
 **Integration Source | 整合来源**: SEP (Stanford Encyclopedia of Philosophy) + Academic Frontiers
 
 ---
@@ -269,3 +269,51 @@ Violation Penalty (违反扣分):
 **HeartFlow v6.0.30 · 理论整合完成**
 
 2026-04-04 13:45 (Asia/Shanghai)
+
+---
+
+## v6.0.31 Update | v6.0.31 更新
+
+**Version | 版本**: v6.0.31  
+**Date | 日期**: 2026-04-04 14:07 (Asia/Shanghai)
+
+### New Theories Added in v6.0.31 | v6.0.31 新增理论
+
+#### 1. Virtue Ethics | 德性伦理学
+**Source**: SEP - Virtue Ethics (2022 revision)
+- Character-based personality tracking
+- Practical wisdom (phronesis) in decision making
+- Golden mean application
+
+#### 2. Cognitive Science | 认知科学
+**Source**: SEP - Cognitive Science (2023 revision)
+- Interdisciplinary synthesis framework
+- Computational theory of mind
+- Cross-domain alignment
+
+#### 3. Updated Decision Theory | 更新决策理论
+**Source**: SEP - Decision Theory (2025 revision)
+- Causal Decision Theory (CDT)
+- Evidential Decision Theory (EDT)
+- Integrated EPU model (0.7 CDT + 0.3 EDT)
+
+#### 4. Updated Qualia Theory | 更新感受质理论
+**Source**: SEP - Qualia (2025 revision)
+- Representationalism + Non-representationalism
+- Phenomenal concept strategy
+
+### Updated Theory Count | 更新理论数量
+
+| Category | v6.0.30 | v6.0.31 | Change |
+|----------|---------|---------|--------|
+| Core Theories | 6 | 8 | +2 |
+| Sub-theories | 24 | 32 | +8 |
+| Integration Points | 48 | 64 | +16 |
+| Total Elements | 78 | 104 | +26 |
+
+---
+
+**HeartFlow v6.0.31 · Theory Integration Complete**
+**HeartFlow v6.0.31 · 理论整合完成**
+
+2026-04-04 14:07 (Asia/Shanghai)
