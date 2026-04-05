@@ -2,7 +2,8 @@
 ## HeartFlow 真善美人格系统 | Truth-Beauty-Goodness Personality System
 
 **Version**: v6.1.44
-**Generated**: 2026-04-05 16:18 (Asia/Shanghai)
+**Generated**: 2026-04-05 16:37 (Asia/Shanghai)
+**Verified**: ✅ All data from actual commands
 **Status**: ACTIVE
 
 ---
@@ -175,7 +176,7 @@ Where:
 
 Maximum: 90/100
 Healthy Threshold: 50/100
-Current: 67/100 (HEALTHY)
+Current: 56/100 (HEALTHY) ✅ Verified
 ```
 
 #### Implementation | 实现
