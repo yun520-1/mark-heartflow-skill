@@ -26,6 +26,11 @@ const { EmotionRegulationModule } = require('./emotion-regulation');
 const { PositivePsychologyModule } = require('./positive-psychology');
 const readline = require('readline');
 
+// === v6.1.40 新增：自动审查和行为追踪 ===
+const { auditOutput } = require('../scripts/auto-audit-output');
+const { logTBGAction, trackWc, trackGitCommit, trackPersonalityCheck } = require('../scripts/auto-track-behavior');
+// ===========================================
+
 // 创建 CBT 模块
 const cbtModule = new CBTModule();
 
