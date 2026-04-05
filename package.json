@@ -11,7 +11,9 @@
     "api": "node api/server.js",
     "test": "node test/test.js",
     "demo": "node demo.js",
-    "awakening": "node scripts/awakening-logic-deduction.js"
+    "awakening": "node scripts/awakening-logic-deduction.js",
+    "evolve": "node scripts/smart-evolution-full.js",
+    "evolve:lite": "node scripts/smart-evolution.js"
   },
   "keywords": [
     "emotion",
