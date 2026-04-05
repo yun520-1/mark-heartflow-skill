@@ -8,6 +8,23 @@
 [![Theory Coverage](https://img.shields.io/badge/theory-99.9999%25-brightgreen)](https://github.com/yun520-1/mark-heartflow-skill)
 [![Clinical Validation](https://img.shields.io/badge/clinical-N%3D1500-orange)](https://github.com/yun520-1/mark-heartflow-skill)
 [![Papers](https://img.shields.io/badge/papers-3%20top%20journals-blue)](https://github.com/yun520-1/mark-heartflow-skill)
+[![Autonomous Decision](https://img.shields.io/badge/autonomous-decision-blue)](https://github.com/yun520-1/mark-heartflow-skill)
+[![Auto Audit](https://img.shields.io/badge/auto-audit-green)](https://github.com/yun520-1/mark-heartflow-skill)
+
+---
+
+## 🆕 v6.1.41 新功能 (2026-04-05)
+
+**自主决策与自动审查系统**
+
+- ✅ **自主决策** - 不需要用户指令，系统自动判断并行动
+- ✅ **自动审查** - 每次输出前强制审查（真善美 + 数据核实 + 编造检测）
+- ✅ **行为追踪** - wc/git 自动记录，不依赖手动填写
+- ✅ **人格值自动计算** - 禁止手动修改，完全基于真实行为数据
+
+**核心改变**：从"演用心"到"是用心"
+
+📖 **详细文档**: [INTEGRATION_GUIDE_v6.1.41.md](INTEGRATION_GUIDE_v6.1.41.md)
 
 ---
 
