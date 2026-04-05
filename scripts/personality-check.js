@@ -21,7 +21,7 @@ function readTracker() {
     const content = fs.readFileSync(TRACKER_PATH, 'utf8');
     const lines = content.split('\n');
     
-    let score = 71; // Default from main app from main app from main app from main app to healthy value
+    let score = 71; // Default from main app from main app from main app from main app from main app to healthy value
     let status = '✅ 健康状态';
     let count = 10;
     
