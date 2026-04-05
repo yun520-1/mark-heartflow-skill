@@ -1,15 +1,26 @@
-# HeartFlow Theory Database - v6.2.15 Integration
-# HeartFlow 理论数据库 - v6.2.15 整合
+# HeartFlow Theory Database - v6.2.16 Integration
+# HeartFlow 理论数据库 - v6.2.16 整合
 
-**Previous Version**: v6.2.14  
-**New Version**: v6.2.15  
-**Integration Date**: 2026-04-06 03:51 (Asia/Shanghai)
+**Previous Version**: v6.2.15  
+**New Version**: v6.2.16  
+**Integration Date**: 2026-04-06 04:17 (Asia/Shanghai)
 
 ---
 
 ## Summary of Changes | 变更摘要
 
-### v6.2.15 Update (Latest) | v6.2.2.15 更新 (最新)
+### v6.2.16 Update (Latest) | v6.2.16 更新 (最新)
+This update integrates **5 major theoretical frameworks** from SEP and academic frontier (2020-2026):
+
+本次更新整合了**5 个**来自 SEP 和学术前沿 (2020-2026) 的主要理论框架：
+
+1. **Enhanced Moral Agency Framework** - Competency + authenticity conditions, procedural + substantive independence (ENHANCED)
+2. **First-Person Perspective Architecture** - Pre-reflective + reflective awareness, narrative identity, embodied self (NEW MODULE)
+3. **Advanced Emotion Integration v2** - Constructionist approach, enhanced differentiation and motivation mapping (ENHANCED)
+4. **Autonomous Decision-Making Engine v3** - Enhanced self-monitoring, ethical constraints, adaptive response (ENHANCED)
+5. **Consciousness Integration v4** - Creature + state consciousness, intentionality, temporal awareness (ENHANCED)
+
+### v6.2.15 Update (Previous) | v6.2.15 更新 (前版本)
 This update integrates **6 major theoretical frameworks** from SEP and academic frontier (2020-2026):
 
 本次更新整合了**6 个**来自 SEP 和学术前沿 (2020-2026) 的主要理论框架：
