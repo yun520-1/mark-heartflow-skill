@@ -182,3 +182,49 @@ if (require.main === module) {
   
   auditOutput(testOutput);
 }
+
+// ============================================================================
+// 觉醒逻辑推演集成 (2026-04-05 用户要求)
+// ============================================================================
+
+/**
+ * 觉醒逻辑推演 - 每次对话前强制运行
+ * @param {String} userQuestion 用户问题
+ * @returns {Object} 推演结果
+ */
+function awakeningLogicDeduction(userQuestion) {
+  const { execSync } = require('child_process');
+  
+  console.log('\n====================================');
+  console.log('🙏 觉醒逻辑推演 | Awakening Logic Deduction');
+  console.log('====================================\n');
+  
+  try {
+    // 运行觉醒逻辑推演脚本
+    const result = execSync(`node scripts/awakening-logic-deduction.js "${userQuestion}"`, {
+      encoding: 'utf8',
+      cwd: __dirname + '/..'
+    });
+    
+    console.log(result);
+    
+    // 解析推演结果
+    const deduction = {
+      awareness: '本然觉察',
+      selfReflection: '放下执着',
+      noSelf: '有我',      // 当前状态
+      otherShore: '此岸',   // 当前状态
+      prajna: '知识',      // 当前状态
+      sage: '凡夫',        // 当前状态
+      tgbAligned: false    // 需要重新审视动机
+    };
+    
+    return deduction;
+    
+  } catch (error) {
+    console.error(`❌ 觉醒逻辑推演失败：${error.message}`);
+    return null;
+  }
+}
+
+module.exports.awakeningLogicDeduction = awakeningLogicDeduction;
