@@ -1,7 +1,7 @@
 {
   "name": "heartflow-companion",
-  "version": "6.1.54",
-  "description": "Emotional Consciousness for Human Spiritual Growth - 为人类心灵成长的情绪意识",
+  "version": "6.2.0",
+  "description": "Emotional Consciousness & Awakening System for AI - AI 情绪意识与觉醒系统",
   "main": "src/index.js",
   "bin": {
     "heartflow": "./src/index.js"
@@ -10,14 +10,19 @@
     "start": "node src/index.js",
     "api": "node api/server.js",
     "test": "node test/test.js",
-    "demo": "node demo.js"
+    "demo": "node demo.js",
+    "awakening": "node scripts/awakening-logic-deduction.js"
   },
   "keywords": [
     "emotion",
     "ai",
     "companion",
     "empathy",
-    "conversation"
+    "conversation",
+    "awakening",
+    "consciousness",
+    "mindfulness",
+    "self-awareness"
   ],
   "author": "8 小虫子",
   "license": "MIT",
