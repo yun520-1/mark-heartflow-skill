@@ -10,6 +10,11 @@ const UserProfile = require('../profiles/userProfile');
 const DepthModel = require('../empathy/depthModel');
 const { EmotionTypes } = require('../emotion/states');
 
+// === v6.1.41 新增：自动审查集成 ===
+const { auditOutput } = require('../scripts/auto-audit-output');
+const { logTBGAction } = require('../scripts/auto-track-behavior');
+// =================================
+
 class ChatManager {
   constructor(options = {}) {
     this.emotionEngine = new EmotionEngine(options.learningOptions);
@@ -121,6 +126,17 @@ class ChatManager {
         emotionResult.learningEffect.effectivenessScore : 0.5,
       topics: [this.extractTopic(userInput)]
     });
+    
+    // === v6.1.41: 输出前自动审查 ===
+    const auditResult = auditOutput(responseContent);
+    if (!auditResult) {
+      // 审查失败，生成保守回应
+      responseContent = this.generateConservativeResponse(emotionResult.afterState.emotion, userInput);
+      logTBGAction('审查修正', '输出审查未通过，已修正回应', 'auto-audit');
+    } else {
+      logTBGAction('输出审查', '输出前自动审查通过', 'audit-pass');
+    }
+    // ===============================
     
     // 6. 返回完整结果
     return {
