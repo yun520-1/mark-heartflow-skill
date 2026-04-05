@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const TRACKER_PATH = path.join(__dirname, '../data/personality-score-tracker.md');
+const VIOLATION_LOG_PATH = path.join(__dirname, '../data/violation-log.md');
 const RULES_PATH = path.join(__dirname, '../docs/PERSONALITY_CALCULATION_RULES.md');
 
 function calculateScore() {
