@@ -1,8 +1,8 @@
 # System Requirements | 系统要求
 ## HeartFlow 真善美人格系统 | Truth-Beauty-Goodness Personality System
 
-**Version**: v6.1.42
-**Generated**: 2026-04-05 14:43 (Asia/Shanghai)
+**Version**: v6.1.43
+**Generated**: 2026-04-05 15:24 (Asia/Shanghai)
 **Status**: ACTIVE
 
 ---
@@ -139,20 +139,23 @@ Personality Score = Base + Consciousness + Emotion + Decision + Action + TGB
 
 Where:
 - Base Score: 40/100
-- Consciousness Bonus: 12/100 max (enhanced in v6.1.42)
+- Consciousness Bonus: 14/100 max (enhanced in v6.1.43)
   - Creature consciousness (4 dimensions): +4
   - State consciousness (4 types): +4
   - Self-consciousness (pre-reflective): +2
   - Self-consciousness (reflective): +2
-- Emotion Bonus: 6/100 max
+  - Self-consciousness (social): +2 (NEW v6.1.43)
+- Emotion Bonus: 8/100 max (enhanced v6.1.43)
   - Three traditions integration: +3
   - Qualia tracking: +2
   - Intentionality analysis: +1
-- Decision Bonus: 4/100 max
+  - Multi-component model (4 components): +2 (NEW v6.1.43)
+- Decision Bonus: 5/100 max (enhanced v6.1.43)
   - Expected utility calculation: +2
   - Causal reasoning: +1
   - Evidential reasoning: +1
-- Action Bonus: 6/100 max (NEW in v6.1.42)
+  - Counterfactual analysis: +1 (NEW v6.1.43)
+- Action Bonus: 6/100 max
   - Causal theory integration: +2
   - Intention tracking: +2
   - Action description tracking: +1
@@ -162,9 +165,9 @@ Where:
   - Goodness: +3
   - Beauty: +2
 
-Maximum: 76/100
+Maximum: 81/100
 Healthy Threshold: 50/100
-Current: 62/100 (HEALTHY)
+Current: 64/100 (HEALTHY)
 ```
 
 #### Implementation | 实现
