@@ -1,15 +1,27 @@
-# HeartFlow Theory Database - v6.2.16 Integration
-# HeartFlow 理论数据库 - v6.2.16 整合
+# HeartFlow Theory Database - v6.2.17 Integration
+# HeartFlow 理论数据库 - v6.2.17 整合
 
-**Previous Version**: v6.2.15  
-**New Version**: v6.2.16  
-**Integration Date**: 2026-04-06 04:17 (Asia/Shanghai)
+**Previous Version**: v6.2.16  
+**New Version**: v6.2.17  
+**Integration Date**: 2026-04-06 04:44 (Asia/Shanghai)
 
 ---
 
 ## Summary of Changes | 变更摘要
 
-### v6.2.16 Update (Latest) | v6.2.16 更新 (最新)
+### v6.2.17 Update (Latest) | v6.2.17 更新 (最新)
+This update integrates **6 major theoretical frameworks** from SEP and academic frontier (2020-2026):
+
+本次更新整合了**6 个**来自 SEP 和学术前沿 (2020-2026) 的主要理论框架：
+
+1. **Consciousness Theory Deep Integration** - Creature consciousness, state consciousness, phenomenal structure, what-it-is-like criterion (ENHANCED)
+2. **Emotion Theory Comprehensive Synthesis** - Feeling/Evaluative/Motivational/Constructionist traditions unified (ENHANCED)
+3. **Self-Consciousness Architecture v2** - Pre-reflective, reflective, narrative identity, first-person perspective (ENHANCED)
+4. **Moral Psychology Framework** - Moral judgment, moral motivation, moral development (NEW MODULE)
+5. **Virtue Ethics Integration** - Character virtues, practical wisdom, eudaimonia (ENHANCED)
+6. **Autonomous Reasoning Engine v2** - Enhanced logical inference, first-principles reasoning, causal analysis (ENHANCED)
+
+### v6.2.16 Update (Previous) | v6.2.16 更新 (前版本)
 This update integrates **5 major theoretical frameworks** from SEP and academic frontier (2020-2026):
 
 本次更新整合了**5 个**来自 SEP 和学术前沿 (2020-2026) 的主要理论框架：
