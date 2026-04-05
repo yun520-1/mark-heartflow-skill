@@ -1,8 +1,8 @@
 # HeartFlow Theory Database Update
 # HeartFlow 理论数据库更新
 
-**Version | 版本**: v6.1.53  
-**Date | 日期**: 2026-04-05 20:19 (Asia/Shanghai)  
+**Version | 版本**: v6.1.55  
+**Date | 日期**: 2026-04-05 21:06 (Asia/Shanghai)  
 **Integration Source | 整合来源**: SEP (Stanford Encyclopedia of Philosophy) + Academic Frontiers 2020-2026
 
 ---
