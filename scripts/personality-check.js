@@ -21,9 +21,9 @@ function readTracker() {
     const content = fs.readFileSync(TRACKER_PATH, 'utf8');
     const lines = content.split('\n');
     
-    let score = 46; // Default to main app value
-    let status = '⚠️ 危险状态';
-    let count = 0;
+    let score = 56; // Default to healthy value
+    let status = '✅ 健康状态';
+    let count = 10;
     
     for (const line of lines) {
       // 读取当前人格值 - 匹配"**当前人格值**: XX"
