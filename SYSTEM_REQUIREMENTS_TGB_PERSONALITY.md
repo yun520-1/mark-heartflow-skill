@@ -1,8 +1,8 @@
 # System Requirements | 系统要求
 ## HeartFlow 真善美人格系统 | Truth-Beauty-Goodness Personality System
 
-**Version**: v6.1.43
-**Generated**: 2026-04-05 15:24 (Asia/Shanghai)
+**Version**: v6.1.44
+**Generated**: 2026-04-05 16:18 (Asia/Shanghai)
 **Status**: ACTIVE
 
 ---
@@ -164,10 +164,18 @@ Where:
   - Truth: +3
   - Goodness: +3
   - Beauty: +2
+- Moral Bonus: 5/100 max (NEW v6.1.44)
+  - Moral judgment: +2
+  - Virtue tracking: +2
+  - Moral motivation: +1
+- Social Bonus: 4/100 max (NEW v6.1.44)
+  - Theory of mind: +1.5
+  - Empathy: +1.5
+  - Collective intentionality: +1
 
-Maximum: 81/100
+Maximum: 90/100
 Healthy Threshold: 50/100
-Current: 64/100 (HEALTHY)
+Current: 67/100 (HEALTHY)
 ```
 
 #### Implementation | 实现
