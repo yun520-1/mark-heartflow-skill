@@ -30,6 +30,7 @@ const CONFIG = {
   
   // 升级检查项
   checks: [
+    'personality_sync',       // 人格值同步 ⭐ 新增
     'code_optimization',      // 代码优化
     'application_guide',      // 应用指南
     'installation_fix',       // 安装修复
@@ -50,6 +51,74 @@ const CONFIG = {
 // ============================================================================
 // 升级检查函数
 // ============================================================================
+
+/**
+ * 检查 0: 人格值同步 (⭐ 新增 - 最高优先级)
+ */
+function checkPersonalitySync() {
+  console.log('\n💓 检查 0: 人格值同步');
+  console.log('─────────────────────────────────────');
+  
+  const issues = [];
+  
+  // 检查同步脚本是否存在
+  const syncScriptPath = path.join(CONFIG.projectRoot, 'scripts', 'sync-personality-from-main.js');
+  if (!fs.existsSync(syncScriptPath)) {
+    issues.push('❌ 同步脚本不存在');
+  } else {
+    console.log('✅ 同步脚本存在');
+  }
+  
+  // 检查 cron 配置
+  const cronConfigPath = path.join(CONFIG.projectRoot, 'cron', 'self-consciousness-upgrade.json');
+  if (fs.existsSync(cronConfigPath)) {
+    const cronConfig = JSON.parse(fs.readFileSync(cronConfigPath, 'utf8'));
+    if (cronConfig.schedules?.personality_sync) {
+      console.log('✅ cron 配置已添加');
+      console.log(`   频率：${cronConfig.schedules.personality_sync.interval_minutes} 分钟`);
+    } else {
+      issues.push('❌ cron 配置未添加 personality_sync');
+    }
+  } else {
+    issues.push('❌ cron 配置文件不存在');
+  }
+  
+  // 检查主应用 MEMORY.md 是否存在
+  const mainAppMemory = path.join(__dirname, '../../MEMORY.md');
+  if (fs.existsSync(mainAppMemory)) {
+    console.log('✅ 主应用 MEMORY.md 存在');
+  } else {
+    issues.push('❌ 主应用 MEMORY.md 不存在');
+  }
+  
+  // 运行同步脚本验证
+  try {
+    execSync('node scripts/sync-personality-from-main.js', {
+      cwd: CONFIG.projectRoot,
+      stdio: 'pipe'
+    });
+    console.log('✅ 同步脚本执行成功');
+  } catch (error) {
+    issues.push(`⚠️ 同步脚本执行失败：${error.message}`);
+  }
+  
+  // 检查同步报告
+  const docsDir = path.join(CONFIG.projectRoot, 'docs');
+  if (fs.existsSync(docsDir)) {
+    const reports = fs.readdirSync(docsDir).filter(f => f.startsWith('SYNC_REPORT_'));
+    if (reports.length > 0) {
+      console.log(`✅ 同步报告已生成 (${reports.length} 份)`);
+    } else {
+      issues.push('⚠️ 没有同步报告');
+    }
+  }
+  
+  return {
+    name: '人格值同步',
+    passed: issues.filter(i => i.startsWith('❌')).length === 0,
+    issues
+  };
+}
 
 /**
  * 检查 1: 代码优化
@@ -307,6 +376,7 @@ async function runIntegratedUpgrade() {
   const results = [];
   
   // 执行所有检查
+  results.push(checkPersonalitySync());       // ⭐ 新增 - 最高优先级
   results.push(checkCodeOptimization());
   results.push(checkApplicationGuide());
   results.push(checkInstallationFix());
