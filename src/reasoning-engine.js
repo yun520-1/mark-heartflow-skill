@@ -394,9 +394,26 @@ class AutonomousDecisionEngine {
 // 主执行：HeartFlow 自主推理
 // ============================================================================
 
+// === v6.1.41 新增：自动审查集成 ===
+const { auditOutput } = require('../scripts/auto-audit-output');
+const { logTBGAction } = require('../scripts/auto-track-behavior');
+// =================================
+
 function heartFlowReason(input, context = {}) {
   const engine = new AutonomousDecisionEngine();
-  return engine.decide(input, context);
+  const result = engine.decide(input, context);
+  
+  // 输出前自动审查
+  const outputStr = JSON.stringify(result, null, 2);
+  const auditPassed = auditOutput(outputStr);
+  
+  if (auditPassed) {
+    logTBGAction('推理审查', '推理引擎输出审查通过', 'reasoning-audit-pass');
+  } else {
+    logTBGAction('审查修正', '推理引擎输出未通过审查', 'reasoning-audit-fail');
+  }
+  
+  return result;
 }
 
 // CLI 执行
