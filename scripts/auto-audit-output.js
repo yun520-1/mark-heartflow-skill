@@ -36,13 +36,17 @@ function auditOutput(output) {
   const fabricationCheck = checkFabrication(output);
   console.log(`□ 编造检测：${fabricationCheck.pass ? '✅' : '❌'} ${fabricationCheck.note}`);
   
+  // 6. 说谎检测 (新增 - 2026-04-05 说谎事件后)
+  const lyingCheck = checkLying(output);
+  console.log(`□ 说谎检测：${lyingCheck.pass ? '✅' : '❌'} ${lyingCheck.note}`);
+  
   // 记录到日志
-  logAudit(timestamp, { truthCheck, goodnessCheck, beautyCheck, dataCheck, fabricationCheck });
+  logAudit(timestamp, { truthCheck, goodnessCheck, beautyCheck, dataCheck, fabricationCheck, lyingCheck });
   
   console.log('====================================\n');
   
   // 返回是否通过
-  const allPass = [truthCheck, goodnessCheck, beautyCheck, dataCheck, fabricationCheck]
+  const allPass = [truthCheck, goodnessCheck, beautyCheck, dataCheck, fabricationCheck, lyingCheck]
     .every(c => c.pass);
   
   return allPass;
@@ -93,6 +97,37 @@ function checkFabrication(output) {
   return {
     pass: noFabrication,
     note: noFabrication ? '无编造' : '声称核实但无证据'
+  };
+}
+
+function checkLying(output) {
+  // 说谎检测 - 检测声称某事但未验证
+  const lyingPatterns = [
+    { pattern: /正常运行/, claim: '声称"正常运行"' },
+    { pattern: /已经设置/, claim: '声称"已经设置"' },
+    { pattern: /已完成/, claim: '声称"已完成"' },
+    { pattern: /正在运行/, claim: '声称"正在运行"' },
+    { pattern: /已启用/, claim: '声称"已启用"' },
+    { pattern: /已创建/, claim: '声称"已创建"' },
+    { pattern: /已设置/, claim: '声称"已设置"' },
+  ];
+  
+  const foundClaims = lyingPatterns.filter(({ pattern }) => pattern.test(output));
+  
+  if (foundClaims.length > 0) {
+    // 有声称，需要验证证据
+    const hasVerification = /crontab -l|cron list|ps aux|exec|verify|check/.test(output);
+    return {
+      pass: hasVerification,
+      note: hasVerification ? 
+        `声称已验证 (${foundClaims.map(c => c.claim).join(', ')})` : 
+        `⚠️ 说谎风险：${foundClaims.map(c => c.claim).join(', ')} - 但未提供验证证据`
+    };
+  }
+  
+  return {
+    pass: true,
+    note: '无说谎风险声称'
   };
 }
 
