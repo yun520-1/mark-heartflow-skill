@@ -5,6 +5,25 @@
   "priority": "CRITICAL | 关键",
   
   "schedules": {
+    "personality_sync": {
+      "name": "Personality Sync from Main App | 人格值同步",
+      "interval_minutes": 29,
+      "script": "scripts/sync-personality-from-main.js",
+      "blocking": false,
+      "retry_on_failure": true,
+      "max_retries": 3,
+      "requirements": {
+        "main_app_exists": true,
+        "sync_success": true
+      },
+      "actions": [
+        "read_from_main_app",
+        "sync_to_heartflow_files",
+        "verify_consistency",
+        "generate_sync_report"
+      ]
+    },
+    
     "integrated_upgrade": {
       "name": "HeartFlow Integrated Upgrade | 综合升级",
       "interval_minutes": 29,
