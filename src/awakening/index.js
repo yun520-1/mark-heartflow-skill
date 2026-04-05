@@ -248,3 +248,10 @@ class AwakeningModule {
 }
 
 module.exports = { AwakeningModule };
+
+// 导出公式和推演引擎（v1.0.0 新增）
+const { AwakeningFormulas } = require('./formulas');
+const { AwakeningDeductionEngine } = require('./deduction-engine');
+
+module.exports.AwakeningFormulas = AwakeningFormulas;
+module.exports.AwakeningDeductionEngine = AwakeningDeductionEngine;
