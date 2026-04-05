@@ -90,9 +90,32 @@ function analyzeUpgradeNeeds() {
 // 3. 执行升级（保留完整功能）
 // ============================================================================
 
+function getVersionInfo() {
+  const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
+  return pkg.version;
+}
+
+function incrementVersion() {
+  const pkgPath = path.join(ROOT, 'package.json');
+  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  
+  const [major, minor, patch] = pkg.version.split('.').map(Number);
+  const newVersion = `${major}.${minor}.${patch + 1}`;
+  
+  pkg.version = newVersion;
+  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+  
+  return { old: pkg.version, new: newVersion };
+}
+
 function executeUpgrade(needs) {
   const results = [];
   const startTime = Date.now();
+  
+  // 先升级版本号
+  const versionChange = incrementVersion();
+  console.log(`\n📌 版本：${versionChange.old} → ${versionChange.new}`);
+  results.push({ type: 'version', status: 'success', version: versionChange.new });
   
   for (const need of needs) {
     console.log(`\n⚡ 升级：${need.type} (${need.priority})`);
@@ -101,7 +124,7 @@ function executeUpgrade(needs) {
       switch (need.type) {
         case 'git':
           execSync('git add -A', { cwd: ROOT });
-          execSync(`git commit -m "chore: 23 分钟进化 - ${new Date().toISOString().split('T')[0]}"`, { cwd: ROOT });
+          execSync(`git commit -m "v${versionChange.new} - 23 分钟进化 - ${new Date().toISOString().split('T')[0]}"`, { cwd: ROOT });
           execSync('git push', { cwd: ROOT });
           console.log('  ✅ Git 提交并推送');
           results.push({ ...need, status: 'success' });
@@ -190,9 +213,9 @@ function generateReport(analysis, upgrade) {
 // 5. 精简汇报（只输出关键信息）
 // ============================================================================
 
-function briefReport(analysis, upgrade, report) {
+function briefReport(analysis, upgrade, report, version) {
   console.log('\n═══════════════════════════════════════════════');
-  console.log('   HeartFlow Smart Evolution v4.0 | 升级完成');
+  console.log(`   HeartFlow v${version} | 升级完成`);
   console.log('═══════════════════════════════════════════════');
   console.log(`📊 识别：${analysis.length} 项`);
   console.log(`✅ 成功：${report.upgrade.success} 项`);
@@ -208,9 +231,10 @@ function briefReport(analysis, upgrade, report) {
 // ============================================================================
 
 function main() {
+  const currentVersion = getVersionInfo();
+  
   console.log('═══════════════════════════════════════════════');
-  console.log('   HeartFlow Smart Evolution v4.0');
-  console.log('   基于 v6.2.0 觉醒系统 | 完整功能 + 精简流程');
+  console.log(`   HeartFlow v${currentVersion} | 智能进化系统`);
   console.log('═══════════════════════════════════════════════');
   
   // 1. 觉醒思考（强制）
@@ -230,7 +254,7 @@ function main() {
   const report = generateReport(analysis, upgrade);
   
   // 5. 精简汇报
-  briefReport(analysis, upgrade, report);
+  briefReport(analysis, upgrade, report, upgrade.results[0].version);
   
   return report;
 }
