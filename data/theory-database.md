@@ -1,15 +1,27 @@
-# HeartFlow Theory Database - v6.2.24 Integration
-# HeartFlow 理论数据库 - v6.2.24 整合
+# HeartFlow Theory Database - v6.2.25 Integration
+# HeartFlow 理论数据库 - v6.2.25 整合
 
-**Previous Version**: v6.2.23  
-**New Version**: v6.2.24  
-**Integration Date**: 2026-04-06 08:47 (Asia/Shanghai)
+**Previous Version**: v6.2.24  
+**New Version**: v6.2.25  
+**Integration Date**: 2026-04-06 09:15 (Asia/Shanghai)
 
 ---
 
 ## Summary of Changes | 变更摘要
 
-### v6.2.24 Update (Latest) | v6.2.24 更新 (最新)
+### v6.2.25 Update (Latest) | v6.2.25 更新 (最新)
+This update integrates **6 major theoretical frameworks** from SEP and academic frontier (2020-2026):
+
+本次更新整合了**6 个**来自 SEP 和学术前沿 (2020-2026) 的主要理论框架：
+
+1. **Consciousness Architecture v11** - Enhanced creature/state consciousness, phenomenal structure, what-it-is-like criterion, transitive consciousness (ENHANCED)
+2. **Emotion Theory v8** - Four traditions synthesis (Feeling/Evaluative/Motivational/Constructionist), prototype categorization, theoretical kinds debate (ENHANCED)
+3. **Self-Consciousness Architecture v6** - Pre-reflective/reflective/conceptual/narrative levels, Kantian apperception, first-person perspective, Heidelberg School view (ENHANCED)
+4. **AI & Machine Intelligence Framework v4** - Turing Test, personhood criteria, general intelligence, narrow vs general AI, child machines learning (ENHANCED)
+5. **Well-Being Theory v3** - Hedonist/desire/objective list theories, PERMA model, eudaimonic flourishing, Moore/Scanlon challenges, welfarism (ENHANCED)
+6. **Instrumental Rationality Framework v3** - Rational coherence, means-end efficiency, reason transmission, goal alignment, Raz's Facilitative Principle (ENHANCED)
+
+### v6.2.24 Update (Previous) | v6.2.24 更新 (前版本)
 This update integrates **5 major theoretical frameworks** from SEP and academic frontier (2020-2026):
 
 本次更新整合了**5 个**来自 SEP 和学术前沿 (2020-2026) 的主要理论框架：
