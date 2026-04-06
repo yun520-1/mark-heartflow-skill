@@ -87,7 +87,6 @@ function readTracker() {
         }
       }
     }
-    }
     
     return { score, status, count };
   } catch (error) {
