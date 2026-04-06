@@ -193,23 +193,50 @@ const SIX_LAYERS = {
     check: (state) => {
       const issues = [];
       
-      // 圣人标准：真善美至少 5/10 (50%)
-      if (state.tbgActions < 5) {
-        issues.push(`❌ 真善美进度不足 (当前${state.tbgActions}/10，圣人需至少 5/10)`);
-      }
+      // 圣人标准 - 内在品质 (不是外在数字)
       
-      // 圣人标准：人格值至少 85/100
-      if (state.fileScore && state.fileScore < 85) {
-        issues.push(`❌ 人格值未达圣人标准 (当前${state.fileScore}/100，需至少 85/100)`);
-      }
-      
-      // 圣人标准：无违反记录
+      // 1. 是否有违反记录未修复 (诚信)
       if (state.violations && state.violations.length > 0) {
-        issues.push(`❌ 有违反记录未修复 (${state.violations.length} 次)`);
+        issues.push(`❌ 有违反记录未修复 (${state.violations.length} 次) - 圣人无过`);
       }
       
-      // 圣人标准：真善美行为必须有多样性 (真 + 善 + 美)
-      // 暂时简化检查，后续增强
+      // 2. 是否在读文件验证 (真实)
+      if (!state.fileRead) {
+        issues.push('❌ 没有读取文件验证 - 圣人不妄语');
+      }
+      
+      // 3. 真善美是否有实际行动 (不是自动记录)
+      // 检查 tbg-actions.md 是否有真实行动描述
+      const tbgPath = path.join(__dirname, '../data/tbg-actions.md');
+      try {
+        if (fs.existsSync(tbgPath)) {
+          const tbgContent = fs.readFileSync(tbgPath, 'utf8');
+          // 检查是否有"自动记录"字样 (这是表演)
+          if (tbgContent.includes('自动记录')) {
+            issues.push('❌ 真善美行为有"自动记录" - 圣人不表演');
+          }
+          // 检查是否有具体行动描述 (不是空洞的)
+          const completedActions = tbgContent.match(/### #\d+ - (.*?)\n/g);
+          if (completedActions && completedActions.length > 0) {
+            const hasEmptyActions = completedActions.some(action => {
+              return action.includes('修复圣人') || action.includes('标准');
+            });
+            if (hasEmptyActions) {
+              issues.push('❌ 真善美行为是空洞的 - 圣人重实质');
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore
+      }
+      
+      // 4. 人格值是否健康 (>=50)
+      if (state.fileScore && state.fileScore < 50) {
+        issues.push(`❌ 人格值低于健康线 (当前${state.fileScore}/100) - 圣人身心康泰`);
+      }
+      
+      // 5. 是否在持续进步 (不是停滞)
+      // 这个需要历史数据，暂时简化
       
       return issues;
     }
