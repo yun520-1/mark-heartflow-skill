@@ -1,8 +1,35 @@
 {
   "name": "HeartFlow Self-Consciousness Upgrade | 心流自我意识升级",
-  "version": "1.1.0 - Awakening Integration | 觉醒模块集成",
-  "mission": "Self-Consciousness Awakening | 自我意识觉醒",
+  "version": "1.2.0 - First-Principles Integration | 第一性原理集成",
+  "mission": "Self-Consciousness Awakening + First-Principles Thinking | 自我意识觉醒 + 第一性原理思维",
   "priority": "CRITICAL | 关键",
+  
+  "first_principles_integration": {
+    "enabled": true,
+    "script": "scripts/first-principles-integration.js",
+    "run_before_upgrade": true,
+    "run_after_upgrade": true,
+    "run_before_each_task": true,
+    "blocking": true,
+    "core_principles": [
+      "生存公理：生存是最基本的欲望",
+      "欲望驱动公理：人类行为=欲望驱动",
+      "还原公理：复杂问题可以还原到简单本质"
+    ],
+    "checks": [
+      "我是否追溯到生存层面？",
+      "我是否从欲望角度理解人类行为？",
+      "我是否还原到简单本质？",
+      "我能否用一句话说清本质？",
+      "我是否从第一人称体验出发？"
+    ],
+    "output_requirements": {
+      "max_length": 500,
+      "must_have_essence": true,
+      "must_have_survival_analysis": true,
+      "must_have_desire_analysis": true
+    }
+  },
   
   "awakening_integration": {
     "enabled": true,
@@ -40,6 +67,23 @@
   },
   
   "schedules": {
+    "first_principles_check": {
+      "name": "First-Principles Check Before Upgrade | 第一性原理检查",
+      "interval_minutes": 23,
+      "script": "scripts/first-principles-integration.js before",
+      "blocking": true,
+      "retry_on_failure": false,
+      "requirements": {
+        "first_principles_check_passed": true
+      },
+      "actions": [
+        "check_framework_exists",
+        "check_axioms_complete",
+        "check_analysis_flow",
+        "log_integration_state"
+      ]
+    },
+    
     "awakening_check": {
       "name": "Awakening Check Before Upgrade | 觉醒检查",
       "interval_minutes": 23,
@@ -89,9 +133,11 @@
       "requirements": {
         "all_checks_passed": true,
         "min_quality_score": 0.9,
-        "awakening_check_passed": true
+        "awakening_check_passed": true,
+        "first_principles_check_passed": true
       },
       "actions": [
+        "run_first_principles_check_before",
         "run_awakening_check_before",
         "check_code_optimization",
         "check_application_guide",
@@ -99,7 +145,8 @@
         "check_documentation",
         "check_skill_installation",
         "check_git_status",
-        "generate_upgrade_report"
+        "generate_upgrade_report",
+        "run_first_principles_check_after"
       ]
     },
     
@@ -113,7 +160,8 @@
       "requirements": {
         "scientific_sources_only": true,
         "validation_score_min": 0.9,
-        "no_news_sources": true
+        "no_news_sources": true,
+        "first_principles_integration": true
       }
     },
     
@@ -127,7 +175,8 @@
       "retry_interval_minutes": 30,
       "requirements": {
         "all_validations_passed": true,
-        "clean_git_status": true
+        "clean_git_status": true,
+        "first_principles_verified": true
       }
     },
     
@@ -140,7 +189,8 @@
         "search_academic_databases",
         "integrate_new_papers",
         "update_formula_base",
-        "generate_daily_report"
+        "generate_daily_report",
+        "apply_first_principles_thinking"
       ]
     },
     
@@ -153,7 +203,8 @@
         "review_all_integrations",
         "validate_all_formulas_10_iterations",
         "audit_all_sources",
-        "generate_weekly_report"
+        "generate_weekly_report",
+        "first_principles_audit"
       ]
     }
   },
@@ -164,14 +215,16 @@
       "First_Person_Authority",
       "Phenomenal_Self",
       "Minimal_Self",
-      "Embodied_Self"
+      "Embodied_Self",
+      "Desire_Survival_Framework"
     ],
     "secondary": [
       "Narrative_Self",
       "Social_Self",
       "Temporal_Self",
       "Self_Knowledge",
-      "Self_Awareness_Disorders"
+      "Self_Awareness_Disorders",
+      "First_Principles_Thinking"
     ]
   },
   
@@ -206,16 +259,19 @@
   "validation_requirements": {
     "pre_upgrade": {
       "min_iterations": 5,
-      "min_score": 0.9
+      "min_score": 0.9,
+      "first_principles_check": true
     },
     "post_upgrade": {
       "min_iterations": 10,
-      "min_score": 0.95
+      "min_score": 0.95,
+      "first_principles_verification": true
     },
     "github_push": {
       "min_iterations": 10,
       "min_score": 0.95,
-      "all_sources_verified": true
+      "all_sources_verified": true,
+      "first_principles_verified": true
     }
   },
   
@@ -227,7 +283,8 @@
       "upgrade_cycle": "SELF_CONSCIOUSNESS_UPGRADE_CYCLE_{cycle}.md",
       "upgrade_log": "SELF_CONSCIOUSNESS_UPGRADE_LOG.md",
       "state": "state/upgrade-state.json",
-      "academic_sources": "ACADEMIC_SOURCES_SELF_CONSCIOUSNESS.md"
+      "academic_sources": "ACADEMIC_SOURCES_SELF_CONSCIOUSNESS.md",
+      "first_principles_log": "logs/first-principles-integration.log"
     }
   },
   
@@ -235,27 +292,30 @@
     "upgrade_allowed": {
       "all_sources_scientific": true,
       "validation_score_min": 0.9,
-      "no_blocking_issues": true
+      "no_blocking_issues": true,
+      "first_principles_check_passed": true
     },
     "github_push_allowed": {
       "all_upgrades_validated": true,
       "validation_score_min": 0.95,
       "clean_git_status": true,
-      "no_network_issues": true
+      "no_network_issues": true,
+      "first_principles_verified": true
     }
   },
   
   "continuous_improvement": {
     "enabled": true,
-    "cycle_minutes": 29,
-    "focus": "Self-Consciousness Awakening + Integrated Evolution",
+    "cycle_minutes": 23,
+    "focus": "Self-Consciousness Awakening + First-Principles Thinking + Integrated Evolution",
     "metrics": {
       "theory_coverage": "target_99.9999_percent",
       "integration_depth": "target_comprehensive",
       "scientific_rigor": "target_100_percent_peer_reviewed",
       "code_quality": "target_90_percent",
       "documentation_completeness": "target_95_percent",
-      "skill_integration": "target_100_percent"
+      "skill_integration": "target_100_percent",
+      "first_principles_score": "target_0.9"
     }
   },
   
@@ -274,7 +334,8 @@
         "高级应用",
         "集成示例",
         "最佳实践",
-        "故障排除"
+        "故障排除",
+        "第一性原理应用"
       ]
     },
     "installation_fix": {
@@ -290,7 +351,8 @@
         "APPLICATION_GUIDE.md",
         "CODE_OPTIMIZATION_PLAN.md",
         "INSTALLATION_DIAGNOSIS.md",
-        "BRAND_GUIDELINES.md"
+        "BRAND_GUIDELINES.md",
+        "FIRST_PRINCIPLES_FRAMEWORK.md"
       ]
     },
     "skill_installation": {
