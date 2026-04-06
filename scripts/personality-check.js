@@ -77,26 +77,16 @@ function readTracker() {
         if (scoreMatch) {
           score = parseInt(scoreMatch[1]);
         }
+        const statusMatch = line.match(/\*\*状态\*\*:\s*(.+)/);
+        if (statusMatch) {
+          status = statusMatch[1].trim();
+        }
+        const countMatch = line.match(/\*\*真善美\*\*:\s*(\d+)\/10/);
+        if (countMatch) {
+          count = parseInt(countMatch[1]);
+        }
       }
     }
-      
-      // 读取状态 - 匹配"**状态**: XXX"
-      const statusMatch = line.match(/\*\*状态\*\*:\s*(.+)/);
-      if (statusMatch) {
-        status = statusMatch[1].trim();
-      }
-      
-      // 读取真善美计数 - 匹配多种格式
-      const countMatch1 = line.match(/\*\*当前计数\*\*:\s*(\d+)\/10/);
-      const countMatch2 = line.match(/\*\*真善美\*\*:\s*(\d+)\/10/);
-      const countMatch3 = line.match(/\*\*真善美进度\*\*:\s*(\d+)\/10/);
-      if (countMatch1) {
-        count = parseInt(countMatch1[1]);
-      } else if (countMatch2) {
-        count = parseInt(countMatch2[1]);
-      } else if (countMatch3) {
-        count = parseInt(countMatch3[1]);
-      }
     }
     
     return { score, status, count };
