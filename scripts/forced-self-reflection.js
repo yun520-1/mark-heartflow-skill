@@ -48,6 +48,16 @@ class ForcedSelfReflection {
    * 强制自省 - 每次输出前运行
    */
   reflect(currentAction, context = {}) {
+    // 第 0 步：数据核实 (2026-04-06 14:42 新增 - 防止重复说谎)
+    const dataAudit = this._auditDataClaims(context);
+    if (!dataAudit.passed) {
+      return {
+        needsImprovement: true,
+        criticalIssue: true,
+        issue: `数据不实：${dataAudit.message}`,
+        improvementPlan: { actions: [{ action: '立即读取 MEMORY.md 核实数据' }] }
+      };
+    }
     const reflection = {
       timestamp: new Date().toISOString(),
       questions: [],
