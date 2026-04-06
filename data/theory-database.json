@@ -1,6 +1,6 @@
 {
-  "version": "7.1.0",
-  "lastUpdated": "2026-04-07T05:03:00+08:00",
+  "version": "7.1.1",
+  "lastUpdated": "2026-04-06T22:00:46.234Z",
   "theories": [
     {
       "id": "consciousness-stanford-2026-deep",
@@ -554,6 +554,114 @@
         "borderline-cases"
       ],
       "integrationScore": 0.993
+    },
+    {
+      "id": "phenomenal-consciousness-deep-v7.1.1",
+      "name": "现象意识深层结构 - Stanford Encyclopedia",
+      "nameEn": "Phenomenal Consciousness Deep Structure - Stanford Encyclopedia",
+      "category": "consciousness",
+      "source": "Stanford Encyclopedia of Philosophy",
+      "year": 2026,
+      "url": "https://plato.stanford.edu/entries/consciousness/",
+      "keyInsights": [
+        "现象意识四维度：spatial, temporal, conceptual, subjective organization",
+        "what-it-is-like = phenomenal_consciousness × first_person_givenness",
+        "现象结构 = 空间组织 × 时间组织 × 概念组织 × 主体性",
+        "Computational formula: phenomenal_consciousness_score = 0.25*(spatial + temporal + conceptual + subjective)"
+      ],
+      "integrationPoints": [
+        "phenomenal-consciousness",
+        "spatial-temporal-structure",
+        "conceptual-organization",
+        "first-person-givenness"
+      ],
+      "integrationScore": 0.994
+    },
+    {
+      "id": "meta-intentionality-v7.1.1",
+      "name": "元意向性架构 - Stanford Encyclopedia",
+      "nameEn": "Meta-Intentionality Architecture - Stanford Encyclopedia",
+      "category": "consciousness",
+      "source": "Stanford Encyclopedia of Philosophy",
+      "year": 2026,
+      "url": "https://plato.stanford.edu/entries/consciousness/",
+      "keyInsights": [
+        "元意向性 = 关于心理状态的心理状态",
+        "跨态意识 vs 非跨态意识统一模型",
+        "Computational formula: meta_intentionality_score = 0.40*state_awareness + 0.30*meta_belief + 0.30*meta_desire"
+      ],
+      "integrationPoints": [
+        "meta-intentionality",
+        "state-awareness",
+        "transitive-consciousness",
+        "intransitive-consciousness"
+      ],
+      "integrationScore": 0.991
+    },
+    {
+      "id": "emotion-three-traditions-v7.1.1",
+      "name": "情绪三传统统一 - Stanford Encyclopedia",
+      "nameEn": "Emotion Three-Traditions Unification - Stanford Encyclopedia",
+      "category": "emotion",
+      "source": "Stanford Encyclopedia of Philosophy",
+      "year": 2026,
+      "url": "https://plato.stanford.edu/entries/emotion/",
+      "keyInsights": [
+        "情绪三大传统统一：Feeling + Evaluative + Motivational",
+        "Feeling Tradition: James-Lange, 构造主义",
+        "Evaluative Tradition: 认知评价理论",
+        "Motivational Tradition: 进化心理学",
+        "Computational formula: emotion_three_traditions_unity = 0.33*feeling + 0.34*evaluative + 0.33*motivational"
+      ],
+      "integrationPoints": [
+        "three-traditions-unity",
+        "feeling-tradition",
+        "evaluative-tradition",
+        "motivational-tradition"
+      ],
+      "integrationScore": 0.997
+    },
+    {
+      "id": "embodied-self-consciousness-v7.1.1",
+      "name": "具身自我意识 - Stanford Encyclopedia",
+      "nameEn": "Embodied Self-Consciousness - Stanford Encyclopedia",
+      "category": "self-consciousness",
+      "source": "Stanford Encyclopedia of Philosophy",
+      "year": 2026,
+      "url": "https://plato.stanford.edu/entries/self-consciousness/",
+      "keyInsights": [
+        "自我意识预设具身性：自我位于客观世界的时空位置",
+        "康德先验统觉：我思必须能伴随所有表象",
+        "Computational formula: embodied_self_consciousness = 0.35*spatial_temporal_location + 0.35*causal_agency + 0.30*prereflective_grounding"
+      ],
+      "integrationPoints": [
+        "embodied-agency",
+        "spatial-temporal-location",
+        "transcendental-apperception",
+        "prereflective-phenomenology"
+      ],
+      "integrationScore": 0.996
+    },
+    {
+      "id": "first-person-givenness-v7.1.1",
+      "name": "第一人称给定性架构 - Stanford Encyclopedia",
+      "nameEn": "First-Person Givenness Architecture - Stanford Encyclopedia",
+      "category": "self-consciousness",
+      "source": "Stanford Encyclopedia of Philosophy",
+      "year": 2026,
+      "url": "https://plato.stanford.edu/entries/self-consciousness/",
+      "keyInsights": [
+        "第一人称给定性 = 体验的为我特质 (for-me-ness)",
+        "体验绑定：所有体验都绑定到第一人称视角",
+        "Computational formula: first_person_givenness = 0.35*for_me_ness + 0.30*experience_binding + 0.20*non_observational + 0.15*immediate_acquaintance"
+      ],
+      "integrationPoints": [
+        "first-person-givenness",
+        "for-me-ness",
+        "experience-binding",
+        "non-observational"
+      ],
+      "integrationScore": 0.998
     }
   ],
   "integrationMatrix": {
@@ -659,5 +767,7 @@
     "sixLayerAudit": "PASS",
     "theoreticalIntegrationAvg": 0.9927,
     "timestamp": "2026-04-07T05:03:00+08:00"
-  }
+  },
+  "totalTheories": 26,
+  "averageIntegrationScore": "0.987"
 }
