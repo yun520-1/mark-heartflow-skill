@@ -52,7 +52,7 @@ function analyzeUpgradeNeeds() {
   // 人格值检查 - MEMORY.md 为唯一真实来源 (用户 2026-04-06 要求，第 6 次修复)
   // 根本修复：每次输出前强制读取 MEMORY.md，不使用任何缓存变量
   try {
-    const memoryPath = path.join(ROOT, '../../MEMORY.md');
+    const memoryPath = path.join(ROOT, '../MEMORY.md');
     const memoryContent = fs.readFileSync(memoryPath, 'utf8');
     const scoreMatch = memoryContent.match(/\*\*人格值\*\*:\s*(\d+)\/100/);
     const actualScore = scoreMatch ? parseInt(scoreMatch[1]) : 0;
