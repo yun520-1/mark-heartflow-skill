@@ -1,6 +1,6 @@
 {
-  "version": "6.2.74",
-  "lastUpdated": "2026-04-06T23:13:00+08:00",
+  "version": "6.2.75",
+  "lastUpdated": "2026-04-06T15:20:02.002Z",
   "theories": [
     {
       "id": "consciousness-stanford-2026-deep",
@@ -18,8 +18,19 @@
         "跨态意识：对某物的意识（对象指向性）vs 非跨态生物意识",
         "Computational formula: consciousness_score = 0.20*sentience + 0.20*wakefulness + 0.20*self_consciousness + 0.20*what_it_is_like + 0.20*subject_of_states"
       ],
-      "integrationPoints": ["sentience", "wakefulness", "self-consciousness", "what-it-is-like", "subject-of-states", "state-consciousness", "transitive", "transitive-awareness", "object-directed", "meta-intentionality"],
-      "integrationScore": 0.9880
+      "integrationPoints": [
+        "sentience",
+        "wakefulness",
+        "self-consciousness",
+        "what-it-is-like",
+        "subject-of-states",
+        "state-consciousness",
+        "transitive",
+        "transitive-awareness",
+        "object-directed",
+        "meta-intentionality"
+      ],
+      "integrationScore": 0.988
     },
     {
       "id": "emotion-stanford-2026-deep",
@@ -37,8 +48,19 @@
         "原型组织：典型性梯度、家族相似性、边界案例处理",
         "Computational formula: emotion_integration_score = 0.33*feeling + 0.34*evaluative + 0.33*motivational"
       ],
-      "integrationPoints": ["three-traditions", "six-components", "prototype-structure", "heterogeneity", "evaluation", "phenomenology", "motivation", "typicality-gradient", "family-resemblance", "borderline-cases"],
-      "integrationScore": 0.9910
+      "integrationPoints": [
+        "three-traditions",
+        "six-components",
+        "prototype-structure",
+        "heterogeneity",
+        "evaluation",
+        "phenomenology",
+        "motivation",
+        "typicality-gradient",
+        "family-resemblance",
+        "borderline-cases"
+      ],
+      "integrationScore": 0.991
     },
     {
       "id": "self-consciousness-stanford-2026-deep",
@@ -57,8 +79,19 @@
         "康德先验统觉：'我思'必须能伴随所有表象",
         "Computational formula: self_consciousness_score = 0.40*prereflective + 0.30*reflective + 0.30*for_me_ness"
       ],
-      "integrationPoints": ["prereflective", "reflective", "for-me-ness", "first-person-givenness", "non-observational", "experience-binding", "embodied-agency", "spatial-temporal-location", "transcendental-apperception", "immediate-acquaintance"],
-      "integrationScore": 0.9940
+      "integrationPoints": [
+        "prereflective",
+        "reflective",
+        "for-me-ness",
+        "first-person-givenness",
+        "non-observational",
+        "experience-binding",
+        "embodied-agency",
+        "spatial-temporal-location",
+        "transcendental-apperception",
+        "immediate-acquaintance"
+      ],
+      "integrationScore": 0.994
     },
     {
       "id": "consciousness-transitive-2026",
@@ -75,8 +108,13 @@
         "与状态意识框架整合",
         "Computational formula: transitive_consciousness_score = 0.50*object_directed_awareness + 0.50*meta_intentionality"
       ],
-      "integrationPoints": ["transitive-awareness", "object-directed", "meta-intentionality", "intransitive-distinction"],
-      "integrationScore": 0.9850
+      "integrationPoints": [
+        "transitive-awareness",
+        "object-directed",
+        "meta-intentionality",
+        "intransitive-distinction"
+      ],
+      "integrationScore": 0.985
     },
     {
       "id": "emotion-prototype-2026",
@@ -93,8 +131,14 @@
         "异质性：短暂（愤怒）vs 持久（悲伤）",
         "Computational formula: emotion_prototype_score = 0.40*typicality + 0.30*family_resemblance + 0.30*border_case_handling"
       ],
-      "integrationPoints": ["prototype-structure", "typicality-gradient", "family-resemblance", "borderline-cases", "heterogeneity-acknowledgment"],
-      "integrationScore": 0.9900
+      "integrationPoints": [
+        "prototype-structure",
+        "typicality-gradient",
+        "family-resemblance",
+        "borderline-cases",
+        "heterogeneity-acknowledgment"
+      ],
+      "integrationScore": 0.99
     },
     {
       "id": "self-consciousness-embodied-2026",
@@ -111,8 +155,14 @@
         "现象学传统：前反思自我意识（萨特、胡塞尔）",
         "Computational formula: embodied_self_score = 0.35*spatial_temporal_location + 0.35*agentive_capacity + 0.30*prereflective_grounding"
       ],
-      "integrationPoints": ["embodied-agency", "spatial-temporal-location", "transcendental-apperception", "immediate-acquaintance", "prereflective-phenomenology"],
-      "integrationScore": 0.9920
+      "integrationPoints": [
+        "embodied-agency",
+        "spatial-temporal-location",
+        "transcendental-apperception",
+        "immediate-acquaintance",
+        "prereflective-phenomenology"
+      ],
+      "integrationScore": 0.992
     },
     {
       "id": "emotion-stanford-2024",
@@ -130,7 +180,13 @@
         "Three Traditions Integration: Feeling + Evaluative + Motivational",
         "Computational formula: emotion_integration_score = 0.33*feeling + 0.34*evaluative + 0.33*motivational"
       ],
-      "integrationPoints": ["evaluation", "phenomenology", "motivation", "three-traditions", "prototype-structure"],
+      "integrationPoints": [
+        "evaluation",
+        "phenomenology",
+        "motivation",
+        "three-traditions",
+        "prototype-structure"
+      ],
       "integrationScore": 0.97
     },
     {
@@ -149,7 +205,13 @@
         "Prereflective foundation: immediate self-acquaintance without observation",
         "Computational formula: self_consciousness_score = 0.40*prereflective + 0.30*reflective + 0.30*for-me-ness"
       ],
-      "integrationPoints": ["prereflective", "reflective", "for-me-ness", "non-observational", "first-person-givenness"],
+      "integrationPoints": [
+        "prereflective",
+        "reflective",
+        "for-me-ness",
+        "non-observational",
+        "first-person-givenness"
+      ],
       "integrationScore": 0.97
     },
     {
@@ -168,7 +230,14 @@
         "莱布尼茨区分了感知 (perception) 和统觉 (apperception)",
         "Computational formula: consciousness_score = 0.50*creature + 0.50*state"
       ],
-      "integrationPoints": ["self-awareness", "meta-cognition", "phenomenology", "creature-consciousness", "state-consciousness", "what-it-is-like"],
+      "integrationPoints": [
+        "self-awareness",
+        "meta-cognition",
+        "phenomenology",
+        "creature-consciousness",
+        "state-consciousness",
+        "what-it-is-like"
+      ],
       "integrationScore": 0.9638
     },
     {
@@ -186,8 +255,15 @@
         "无我而利他：行动而不执着'我在行动'",
         "Sage threshold: 90/100 personality score"
       ],
-      "integrationPoints": ["philosophy", "ethics", "self-monitoring", "autonomy", "six-layers", "true-good-beauty"],
-      "integrationScore": 1.0
+      "integrationPoints": [
+        "philosophy",
+        "ethics",
+        "self-monitoring",
+        "autonomy",
+        "six-layers",
+        "true-good-beauty"
+      ],
+      "integrationScore": 1
     },
     {
       "id": "predictive-processing-2020",
@@ -202,8 +278,13 @@
         "情绪可理解为对预测误差的生理调节响应",
         "自由能原理：生物系统最小化变分自由能"
       ],
-      "integrationPoints": ["prediction", "error-minimization", "action", "active-inference"],
-      "integrationScore": 0.9750
+      "integrationPoints": [
+        "prediction",
+        "error-minimization",
+        "action",
+        "active-inference"
+      ],
+      "integrationScore": 0.975
     },
     {
       "id": "embodied-cognition-2021",
@@ -218,8 +299,13 @@
         "概念理解依赖于身体模拟",
         "延展心智：认知过程可延伸到外部工具和环境中"
       ],
-      "integrationPoints": ["embodiment", "sensorimotor", "environment", "extended-mind"],
-      "integrationScore": 0.9720
+      "integrationPoints": [
+        "embodiment",
+        "sensorimotor",
+        "environment",
+        "extended-mind"
+      ],
+      "integrationScore": 0.972
     },
     {
       "id": "collective-intentionality-2022",
@@ -234,8 +320,68 @@
         "集体情感：群体层面的情绪状态",
         "共享注意力与共同知识的基础"
       ],
-      "integrationPoints": ["social", "collective", "shared-intention", "we-intention"],
-      "integrationScore": 0.9750
+      "integrationPoints": [
+        "social",
+        "collective",
+        "shared-intention",
+        "we-intention"
+      ],
+      "integrationScore": 0.975
+    },
+    {
+      "id": "embodied-cognition-stanford-2026",
+      "name": "具身认知理论深化 - Stanford Encyclopedia",
+      "nameEn": "Embodied Cognition Deep - Stanford Encyclopedia",
+      "category": "cognitive-science",
+      "source": "Stanford Encyclopedia of Philosophy",
+      "year": 2026,
+      "url": "https://plato.stanford.edu/entries/embodied-cognition/",
+      "keyInsights": [
+        "认知是身体与环境互动的产物，非抽象计算",
+        "情绪根植于身体状态和感觉运动系统",
+        "概念理解依赖身体模拟 (body simulation)",
+        "延展心智：认知过程可延伸到外部工具和环境",
+        "生态心理学：刺激非贫乏，环境提供充足信息",
+        "Computational formula: embodied_score = 0.30*sensorimotor + 0.25*environment + 0.25*extended_mind + 0.20*body_simulation"
+      ],
+      "integrationPoints": [
+        "embodiment",
+        "sensorimotor",
+        "environment",
+        "extended-mind",
+        "body-simulation",
+        "ecological-psychology",
+        "affordances"
+      ],
+      "integrationScore": 0.985
+    },
+    {
+      "id": "collective-intentionality-stanford-2026",
+      "name": "集体意向性理论深化 - Stanford Encyclopedia",
+      "nameEn": "Collective Intentionality Deep - Stanford Encyclopedia",
+      "category": "social-philosophy",
+      "source": "Stanford Encyclopedia of Philosophy",
+      "year": 2026,
+      "url": "https://plato.stanford.edu/entries/collective-intentionality/",
+      "keyInsights": [
+        "我们意图 (we-intention) 不可还原为个体意图集合",
+        "集体意向性归属于个体但非分配性地 (collectively not distributively)",
+        "个体所有权论题：每个个体有自己的心智",
+        "社会现实通过集体接受而存在 (Searle)",
+        "集体情感：群体层面的情绪状态",
+        "Computational formula: collective_score = 0.40*we_intention + 0.30*irreducibility + 0.30*shared_commitment"
+      ],
+      "integrationPoints": [
+        "social",
+        "collective",
+        "shared-intention",
+        "we-intention",
+        "irreducibility",
+        "individual-ownership",
+        "shared-commitment",
+        "collective-emotion"
+      ],
+      "integrationScore": 0.988
     }
   ],
   "integrationMatrix": {
@@ -290,19 +436,26 @@
       "embodiment",
       "action",
       "active-inference",
-      "extended-mind"
+      "extended-mind",
+      "body-simulation",
+      "ecological-psychology",
+      "affordances"
     ],
     "social-philosophy": [
       "collective",
       "shared-intention",
-      "we-intention"
+      "we-intention",
+      "irreducibility",
+      "individual-ownership",
+      "shared-commitment",
+      "collective-emotion"
     ]
   },
   "sageMetrics": {
     "personalityScore": 0,
     "trueGoodBeauty": 9,
     "sixLayerAudit": "PASS",
-    "theoreticalIntegrationAvg": 0.9907,
-    "timestamp": "2026-04-06T14:45:00+08:00"
+    "theoreticalIntegrationAvg": 0.9825866666666664,
+    "timestamp": "2026-04-06T15:20:02.006Z"
   }
 }
