@@ -46,19 +46,39 @@ function runSixLayerAudit(mode = 'before') {
 
 function readTracker() {
   try {
-    const content = fs.readFileSync(TRACKER_PATH, 'utf8');
-    const lines = content.split('\n');
-    
-    let score = 0; // Default to 0 after reset (2026-04-06 09:37)
+    // 优先读取 MEMORY.md (单一真实来源 - 用户 2026-04-06 要求)
+    const MEMORY_PATH = path.join(__dirname, '../../MEMORY.md');
+    let score = 0;
     let status = '🔴 归零重塑';
     let count = 0;
     
-    for (const line of lines) {
-      // 读取当前人格值 - 匹配"**当前人格值**: XX"
-      const scoreMatch = line.match(/\*\*当前人格值\*\*:\s*(\d+)/);
-      if (scoreMatch) {
-        score = parseInt(scoreMatch[1]);
+    // 先读 MEMORY.md
+    try {
+      const memoryContent = fs.readFileSync(MEMORY_PATH, 'utf8');
+      const memoryScoreMatch = memoryContent.match(/\*\*人格值\*\*:\s*(\d+)\/100/);
+      if (memoryScoreMatch) {
+        score = parseInt(memoryScoreMatch[1]);
       }
+      const memoryStatusMatch = memoryContent.match(/\*\*状态\*\*:\s*(.+)/);
+      if (memoryStatusMatch) {
+        status = memoryStatusMatch[1].trim();
+      }
+    } catch (e) {
+      // MEMORY.md 不存在，回退到 tracker.md
+    }
+    
+    // 如果 MEMORY.md 没有读到，再读 tracker.md
+    if (score === 0) {
+      const content = fs.readFileSync(TRACKER_PATH, 'utf8');
+      const lines = content.split('\n');
+      
+      for (const line of lines) {
+        const scoreMatch = line.match(/\*\*当前人格值\*\*:\s*(\d+)/);
+        if (scoreMatch) {
+          score = parseInt(scoreMatch[1]);
+        }
+      }
+    }
       
       // 读取状态 - 匹配"**状态**: XXX"
       const statusMatch = line.match(/\*\*状态\*\*:\s*(.+)/);
