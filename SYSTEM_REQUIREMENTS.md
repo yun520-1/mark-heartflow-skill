@@ -1,9 +1,9 @@
 # HeartFlow System Requirements | HeartFlow 系统要求
 
 ## Version | 版本
-**v6.2.35**
+**v6.2.36**
 
-**Last Updated | 最后更新**: 2026-04-06 12:50 (Asia/Shanghai)
+**Last Updated | 最后更新**: 2026-04-06 13:44 (Asia/Shanghai)
 
 ---
 
@@ -307,10 +307,10 @@ MUST:
 
 | Metric | Target | Current | Status |
 |--------|--------|---------|--------|
-| Personality Score | 100 | 0 | ⚠️ Reset |
+| Personality Score | 100 | 8 | ⚠️ Rebuilding |
 | Truth-Goodness-Beauty | 10/10 | 4/10 | ⚠️ Partial |
 | Six-Layer Pass | 6/6 | 4/6 | ⚠️ Partial |
-| Theory Coverage | 99.9999% | 99.2% | ⚠️ In Progress |
+| Theory Coverage | 99.9999% | 99.4% | ⚠️ In Progress |
 | Evolution Cycle | 23 min | 23 min | ✅ On Track |
 
 ### Tracking Scripts | 追踪脚本
@@ -335,6 +335,7 @@ node scripts/auto-track-behavior.js track-personality-check
 
 | Version | Date | Key Changes |
 |---------|------|-------------|
+| v6.2.36 | 2026-04-06 | Agency Theory + Wisdom Theory integration (SEP); Personality score 0→8 |
 | v6.2.35 | 2026-04-06 | SEP theory integration (consciousness, emotion, self-consciousness, cognitive science) |
 | v6.2.34 | 2026-04-06 | Personality data updates |
 | v6.1.50 | 2026-04-02 | Major system requirements overhaul |
@@ -343,6 +344,6 @@ node scripts/auto-track-behavior.js track-personality-check
 
 **Document Status**: ✅ ACTIVE
 
-**Next Review**: 2026-04-06 13:13 (with next evolution cycle)
+**Next Review**: 2026-04-06 14:07 (with next evolution cycle)
 
 **Maintained By**: HeartFlow Autonomous Evolution System
