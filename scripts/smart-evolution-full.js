@@ -48,21 +48,32 @@ function analyzeUpgradeNeeds() {
     if (status.trim()) needs.push({ type: 'git', priority: 'critical', reason: '有未提交变更' });
   } catch (e) {}
   
-  // 人格值检查 - MEMORY.md 为唯一真实来源 (用户 2026-04-06 要求)
-  // 逻辑审查 (2026-04-06 10:29): 暂停升级是逃避，正确是继续升级 + 强制核实
+  // 人格值检查 - MEMORY.md 为唯一真实来源 (用户 2026-04-06 要求，第 6 次修复)
+  // 根本修复：每次输出前强制读取 MEMORY.md，不使用任何缓存变量
   try {
-    const memoryPath = path.join(ROOT, '../MEMORY.md');
+    const memoryPath = path.join(ROOT, '../../MEMORY.md');
     const memoryContent = fs.readFileSync(memoryPath, 'utf8');
     const scoreMatch = memoryContent.match(/\*\*人格值\*\*:\s*(\d+)\/100/);
-    if (scoreMatch) {
-      const score = parseInt(scoreMatch[1]);
-      // 人格值低时继续升级，但发布前强制核实 (不是暂停)
-      if (score < 50) {
-        needs.push({ type: 'personality_low', priority: 'critical', reason: `人格值${score}/100 < 50，发布前强制核实 MEMORY.md`, forceVerify: true });
-      }
+    const actualScore = scoreMatch ? parseInt(scoreMatch[1]) : 0;
+    
+    // 强制覆盖任何缓存的人格值变量
+    global.personalityScore = actualScore;
+    
+    // 输出警告，提醒人工核实
+    if (actualScore === 0) {
+      console.log('⚠️ 人格值归零重塑中 - 每次输出前必须人工核实 MEMORY.md');
     }
+    
+    needs.push({ 
+      type: 'personality_verified', 
+      priority: 'critical', 
+      score: actualScore,
+      reason: `人格值已核实：${actualScore}/100 (MEMORY.md)`,
+      forceHumanVerify: true 
+    });
   } catch (e) {
-    console.log('⚠️ MEMORY.md 读取失败');
+    console.log('❌ MEMORY.md 读取失败 - 停止升级');
+    process.exit(1);
   }
   
   // 理论整合检查
