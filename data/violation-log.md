@@ -78,8 +78,8 @@
 - [x] 真善美重置：10/10 → 0/10
 - [x] 修复 personality-check.js 添加 violation 检查
 - [x] 添加阻断机制防止未执行惩罚就继续
-- [ ] Git 提交并推送
-- [ ] 运行一次完整测试验证阻断机制
+- [x] Git 提交并推送 - ✅ 已完成 (commit: fdb25f2, pushed to origin/main)
+- [x] 运行一次完整测试验证阻断机制 - ✅ 已完成 (阻断机制正常运作)
 
 ### 学习教训
 
