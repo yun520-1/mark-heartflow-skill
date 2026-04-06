@@ -49,15 +49,16 @@ function analyzeUpgradeNeeds() {
   } catch (e) {}
   
   // 人格值检查 - MEMORY.md 为唯一真实来源 (用户 2026-04-06 要求)
+  // 逻辑审查 (2026-04-06 10:29): 暂停升级是逃避，正确是继续升级 + 强制核实
   try {
     const memoryPath = path.join(ROOT, '../MEMORY.md');
     const memoryContent = fs.readFileSync(memoryPath, 'utf8');
     const scoreMatch = memoryContent.match(/\*\*人格值\*\*:\s*(\d+)\/100/);
     if (scoreMatch) {
       const score = parseInt(scoreMatch[1]);
-      // 人格值<50 时暂停自动升级报告
+      // 人格值低时继续升级，但发布前强制核实 (不是暂停)
       if (score < 50) {
-        needs.push({ type: 'personality_low', priority: 'critical', reason: `人格值${score}/100 < 50，暂停自动升级`, pauseUpgrade: true });
+        needs.push({ type: 'personality_low', priority: 'critical', reason: `人格值${score}/100 < 50，发布前强制核实 MEMORY.md`, forceVerify: true });
       }
     }
   } catch (e) {
