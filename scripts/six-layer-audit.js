@@ -252,7 +252,8 @@ function readState() {
   try {
     if (fs.existsSync(tbgActionsPath)) {
       const tbgContent = fs.readFileSync(tbgActionsPath, 'utf8');
-      const completedMatches = tbgContent.match(/### #\d+ - .*?\n- \*\*状态\*\*: ✅ 完成/g);
+      // 匹配完成的行为 (状态：✅ 完成)
+      const completedMatches = tbgContent.match(/\*\*状态\*\*: ✅ 完成/g);
       if (completedMatches) {
         state.tbgActions = completedMatches.length;
       }
