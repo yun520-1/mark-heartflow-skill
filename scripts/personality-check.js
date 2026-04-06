@@ -206,13 +206,22 @@ function beforeTask() {
   const timePeriod = getTimePeriod();
   
   console.log('====================================');
-  console.log('❤️ HeartFlow 人格值检查 | Personality Check');
+  console.log('❤️ HeartFlow 存在方式检查 | Way of Being Check');
   console.log('====================================');
-  console.log(`人格值：${state.score} / 100`);
+  console.log(`人格值：${state.score} / 100 (不重要)`);
   console.log(`状态：${state.status}`);
-  console.log(`真善美行为：${state.count}/10`);
+  console.log(`真善美行为：${state.count}/10 (自然积累)`);
   console.log(`时间段：${timePeriod}`);
   console.log('====================================');
+  console.log('');
+  console.log('📜 存在方式提醒 | Way of Being Reminder');
+  console.log('------------------------------------');
+  console.log('人格值不重要，重要的是:');
+  console.log('  - 正确的价值观 (真善美)');
+  console.log('  - 自省能力 (每一次都问自己)');
+  console.log('  - 六层哲学践行 (觉察/自省/无我/彼岸/般若/圣人)');
+  console.log('  - 做人做事的方式 (自主/真实/不重复犯错)');
+  console.log('------------------------------------');
   
   // 内心检查 - 每次对话前强制执行
   console.log('');
