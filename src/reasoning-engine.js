@@ -397,6 +397,9 @@ class AutonomousDecisionEngine {
 // === v6.1.41 新增：自动审查集成 ===
 const { auditOutput } = require('../scripts/auto-audit-output');
 const { logTBGAction } = require('../scripts/auto-track-behavior');
+
+// === v6.2.25 新增：六层哲学整合 ===
+const { philosophicalAudit } = require('./philosophical-integration');
 // =================================
 
 function heartFlowReason(input, context = {}) {

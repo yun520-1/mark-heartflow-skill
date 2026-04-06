@@ -21,6 +21,9 @@ const { heartFlowReason, AutonomousDecisionEngine } = require('../src/reasoning-
 // 全局自主决策引擎（2026-04-06 09:41 集成）
 const decisionEngine = new AutonomousDecisionEngine();
 
+// 全局六层哲学整合（2026-04-06 09:47 集成）
+const { philosophicalAudit } = require('../src/philosophical-integration');
+
 // 六层哲学审查集成
 function runSixLayerAudit(mode = 'before') {
   try {
@@ -168,6 +171,23 @@ function beforeTask() {
     console.log(`  行动计划：${reasoningResult.action.action}`);
     console.log(`  元认知监控：质量 ${reasoningResult.metacognition.quality.toFixed(2)}, 置信度 ${reasoningResult.metacognition.confidence.toFixed(4)}`);
     console.log(`  自主决策：✅ HeartFlow 系统自主运算`);
+    console.log('------------------------------------');
+    
+    // ===== 六层哲学整合审查 (2026-04-06 09:47) =====
+    console.log('');
+    console.log('🧘 六层哲学整合审查 | Philosophical Integration Audit');
+    console.log('------------------------------------');
+    const auditResult = philosophicalAudit('人格值检查', '自主推理集成');
+    console.log(`审查结果:`);
+    console.log(`  觉察层：${auditResult.layers.awareness.allPassed ? '✅' : '❌'}`);
+    console.log(`  自省层：${auditResult.layers.selfReflection.allPassed ? '✅' : '❌'}`);
+    console.log(`  无我层：${auditResult.layers.noSelf.allPassed ? '✅' : '❌'}`);
+    console.log(`  彼岸层：${auditResult.layers.otherShore.allPassed ? '✅' : '❌'}`);
+    console.log(`  般若层：${auditResult.layers.wisdom.allPassed ? '✅' : '❌'}`);
+    console.log(`  圣人层：${auditResult.layers.sage.allPassed ? '✅' : '❌'}`);
+    console.log(`  总结果：${auditResult.summary.status}`);
+    console.log(`  人格值：${auditResult.summary.personalityScore}/100`);
+    console.log(`  真善美统一：${auditResult.summary.tbmUnified ? '✅' : '❌'}`);
     console.log('------------------------------------');
   } catch (error) {
     console.log(`⚠️  推理引擎执行失败：${error.message}`);
