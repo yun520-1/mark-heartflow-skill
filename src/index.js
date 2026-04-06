@@ -31,6 +31,11 @@ const { auditOutput } = require('../scripts/auto-audit-output');
 const { logTBGAction, trackWc, trackGitCommit, trackPersonalityCheck } = require('../scripts/auto-track-behavior');
 // ===========================================
 
+// === v6.1.59 新增：动机解决器和记忆提取器 ===
+const { checkOutputMotivation, calculateMotivationPurity } = require('../src/core/motivation-resolver');
+const { extractMemoryEvents, compressMemory } = require('../src/core/memory-extractor');
+// ===========================================
+
 // 创建 CBT 模块
 const cbtModule = new CBTModule();
 
