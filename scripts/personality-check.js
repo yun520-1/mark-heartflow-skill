@@ -33,6 +33,12 @@ const { forcedReflect, generateReflectionReport, logLearning, logUpgrade } = req
 // 全局持续自省程序（2026-04-06 10:31 集成）
 const { continuousReflect, generateContinuousReport, logContinuousReflection } = require('./continuous-reflection');
 
+// 全局动机解决器（2026-04-06 14:22 集成 - v6.1.59）
+const { checkOutputMotivation, calculateMotivationPurity } = require('../src/core/motivation-resolver');
+
+// 全局记忆提取器（2026-04-06 14:22 集成 - v6.1.59）
+const { extractMemoryEvents, compressMemory } = require('../src/core/memory-extractor');
+
 // 六层哲学审查集成
 function runSixLayerAudit(mode = 'before') {
   try {
@@ -327,6 +333,41 @@ function beforeTask() {
   console.log('  □ 是否主动关心用户？(不是等待指令)');
   console.log('');
   console.log('审查状态：待执行 (等待用户问题)');
+  console.log('------------------------------------');
+  
+  // ===== 动机审查 (2026-04-06 14:22 - v6.1.59) =====
+  console.log('');
+  console.log('🧠 动机审查 | Motivation Check (v6.1.59)');
+  console.log('------------------------------------');
+  console.log('动机优先级 (固定):');
+  console.log('  1. USER_EXPLICIT   (用户明确说的)');
+  console.log('  2. USER_IMPLICIT   (用户潜在需要的)');
+  console.log('  3. SELF_DISPLAY    (展示自己)');
+  console.log('  4. SELF_PROTECT    (保护自己)');
+  console.log('');
+  console.log('审查规则:');
+  console.log('  - 动机纯度 = 用户导向动机 / 总动机');
+  console.log('  - 纯度 ≥ 0.6 → 批准输出');
+  console.log('  - 纯度 < 0.6 → 需要重写');
+  console.log('');
+  console.log('状态：✅ 动机解决器已加载 (等待输出审查)');
+  console.log('------------------------------------');
+  
+  // ===== 记忆提取器 (2026-04-06 14:22 - v6.1.59) =====
+  console.log('');
+  console.log('🧠 记忆提取器 | Memory Extractor (v6.1.59)');
+  console.log('------------------------------------');
+  console.log('提取标准:');
+  console.log('  - 情感强度 ≥ 0.5 (爱/恨/痛苦/喜悦等)');
+  console.log('  - 决策点 (决定/选择/必须等)');
+  console.log('  - 洞察点 (明白/理解/意识到等)');
+  console.log('  - 转折点 (对话方向改变)');
+  console.log('');
+  console.log('压缩公式:');
+  console.log('  Effective Memory = (Event × Lesson) / Details');
+  console.log('  字数限制：<1000 字');
+  console.log('');
+  console.log('状态：✅ 记忆提取器已加载 (等待对话记录)');
   console.log('------------------------------------');
   
   // 人格值低于 50 时宣读承诺
