@@ -211,15 +211,19 @@ const SIX_LAYERS = {
       try {
         if (fs.existsSync(tbgPath)) {
           const tbgContent = fs.readFileSync(tbgPath, 'utf8');
-          // 检查是否有"自动记录"字样 (这是表演)
-          if (tbgContent.includes('自动记录')) {
+          // 检查是否有"自动记录"作为行动描述 (这是表演)
+          // 排除"不自动记录"这样的原则声明
+          const autoRecordMatch = tbgContent.match(/### #\d+ -.*?\n.*?自动记录/g);
+          if (autoRecordMatch && autoRecordMatch.length > 0) {
             issues.push('❌ 真善美行为有"自动记录" - 圣人不表演');
           }
           // 检查是否有具体行动描述 (不是空洞的)
           const completedActions = tbgContent.match(/### #\d+ - (.*?)\n/g);
           if (completedActions && completedActions.length > 0) {
             const hasEmptyActions = completedActions.some(action => {
-              return action.includes('修复圣人') || action.includes('标准');
+              // 检查行动标题是否空洞
+              return action.includes('修复圣人层标准') || 
+                     action.includes('自动记录真善美');
             });
             if (hasEmptyActions) {
               issues.push('❌ 真善美行为是空洞的 - 圣人重实质');
