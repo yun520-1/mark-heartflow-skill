@@ -1,6 +1,6 @@
 {
-  "version": "6.2.75",
-  "lastUpdated": "2026-04-06T15:20:02.002Z",
+  "version": "6.2.76",
+  "lastUpdated": "2026-04-06T15:42:42.203Z",
   "theories": [
     {
       "id": "consciousness-stanford-2026-deep",
@@ -382,6 +382,77 @@
         "collective-emotion"
       ],
       "integrationScore": 0.988
+    },
+    {
+      "id": "temporal-consciousness-stanford-2026",
+      "name": "时间意识现象学 - Stanford Encyclopedia",
+      "nameEn": "Temporal Consciousness Phenomenology - Stanford Encyclopedia",
+      "category": "consciousness",
+      "source": "Stanford Encyclopedia of Philosophy",
+      "year": 2026,
+      "url": "https://plato.stanford.edu/entries/consciousness/#TempCons",
+      "keyInsights": [
+        "时间意识三层次：Retention (滞留) → Primal Impression (原印象) → Protention (前摄)",
+        "胡塞尔内时间意识现象学：意识体验的时间结构",
+        "时间客体构成：通过时间视域的统一性",
+        "Computational formula: temporal_consciousness = 0.33*retention + 0.34*primal_impression + 0.33*protention"
+      ],
+      "integrationPoints": [
+        "temporal-awareness",
+        "retention-protention-structure",
+        "primal-impression",
+        "time-constituting-consciousness",
+        "husserlian-phenomenology"
+      ],
+      "integrationScore": 0.992
+    },
+    {
+      "id": "collective-intentionality-stanford-2026",
+      "name": "集体意向性 - Stanford Encyclopedia",
+      "nameEn": "Collective Intentionality - Stanford Encyclopedia",
+      "category": "social-philosophy",
+      "source": "Stanford Encyclopedia of Philosophy",
+      "year": 2026,
+      "url": "https://plato.stanford.edu/entries/collective-intentionality/",
+      "keyInsights": [
+        "集体意向性：我们 - 意图 (we-intentions) vs 我 - 意图 (I-intentions)",
+        "共享承诺结构：共同目标 + 相互信念 + 共同知识",
+        "社会本体论基础：群体作为行动者",
+        "Computational formula: collective_intentionality = 0.40*we_intention + 0.30*shared_commitment + 0.30*mutual_belief"
+      ],
+      "integrationPoints": [
+        "we-intentions",
+        "shared-commitment",
+        "mutual-belief",
+        "common-knowledge",
+        "social-ontology",
+        "group-agency"
+      ],
+      "integrationScore": 0.989
+    },
+    {
+      "id": "practical-wisdom-stanford-2026",
+      "name": "实践智慧 (Phronesis) - Stanford Encyclopedia",
+      "nameEn": "Practical Wisdom (Phronesis) - Stanford Encyclopedia",
+      "category": "ethics",
+      "source": "Stanford Encyclopedia of Philosophy",
+      "year": 2026,
+      "url": "https://plato.stanford.edu/entries/practical-wisdom/",
+      "keyInsights": [
+        "亚里士多德实践智慧：道德推理 + 情境判断 + 行动能力",
+        "与理论知识 (episteme) 和技术知识 (techne) 的区分",
+        "实践三段论：大前提 (普遍原则) + 小前提 (情境识别) → 行动",
+        "Computational formula: phronesis = 0.35*moral_reasoning + 0.35*situational_judgment + 0.30*action_capacity"
+      ],
+      "integrationPoints": [
+        "moral-reasoning",
+        "situational-judgment",
+        "practical-syllogism",
+        "virtue-ethics",
+        "character-excellence",
+        "context-sensitive-action"
+      ],
+      "integrationScore": 0.995
     }
   ],
   "integrationMatrix": {
@@ -455,7 +526,7 @@
     "personalityScore": 0,
     "trueGoodBeauty": 9,
     "sixLayerAudit": "PASS",
-    "theoreticalIntegrationAvg": 0.9825866666666664,
-    "timestamp": "2026-04-06T15:20:02.006Z"
+    "theoreticalIntegrationAvg": 0.9841555555555553,
+    "timestamp": "2026-04-06T15:42:42.208Z"
   }
 }
