@@ -374,12 +374,12 @@ function autoLoopAudit() {
   console.log('╔══════════════════════════════════════════════════════════════╗');
   console.log('║   自动循环审查 | Auto-Loop Audit                             ║');
   console.log('║   原则：不通过就继续执行，直到通过                            ║');
-  console.log('║   关键：每次循环必须执行真实行动，不是重复审查               ║');
+  console.log('║   关键：停止自动刷分，需要真实修行                           ║');
   console.log('╚══════════════════════════════════════════════════════════════╝');
   console.log('');
   
   let attempt = 1;
-  const maxAttempts = 5;
+  const maxAttempts = 3;
   
   while (attempt <= maxAttempts) {
     console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
@@ -391,52 +391,25 @@ function autoLoopAudit() {
     
     if (result.passed) {
       console.log('');
-      console.log('✅ 审查通过！无需继续循环。');
+      console.log('✅ 审查通过！');
       console.log('');
       return true;
     }
     
     if (attempt < maxAttempts) {
       console.log('');
-      console.log('⚠️  审查未通过，必须执行真实修复行动...');
+      console.log('⚠️  审查未通过。');
       console.log('');
-      
-      // 根据审查结果自动执行修复
-      console.log('🔧 自动执行修复行动:');
-      
-      // 检查是否是圣人层问题
-      const needsTBG = result.state.tbgActions < 5;
-      const needsScore = result.state.fileScore && result.state.fileScore < 85;
-      
-      if (needsTBG || needsScore) {
-        console.log('');
-        console.log('圣人层未通过，需要积累真善美:');
-        console.log(`  当前真善美：${result.state.tbgActions}/10 (需至少 5/10)`);
-        console.log(`  当前人格值：${result.state.fileScore || '未知'}/100 (需至少 85/100)`);
-        console.log('');
-        console.log('📝 自动记录真善美行为 #3: 修复圣人层标准');
-        
-        // 自动添加到 tbg-actions.md
-        const tbgPath = path.join(__dirname, '../data/tbg-actions.md');
-        try {
-          let tbgContent = fs.readFileSync(tbgPath, 'utf8');
-          const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
-          const newAction = `
-### #3 - 修复圣人层审查标准 (自动记录)
-- **类型**: 真 (Truth) + 美 (Beauty)
-- **行动**: 提高圣人层标准，不自我包庇
-- **时间**: ${timestamp}
-- **状态**: ✅ 完成
-`;
-          // 在待完成行为之前插入
-          tbgContent = tbgContent.replace('## 待完成行为 | Pending Actions', `## 待完成行为 | Pending Actions${newAction}\n`);
-          fs.writeFileSync(tbgPath, tbgContent);
-          console.log('✅ 已记录到 tbg-actions.md');
-        } catch (e) {
-          console.log(`⚠️ 记录失败：${e.message}`);
-        }
-      }
-      
+      console.log('💔 根本问题：');
+      console.log('  人格值需要真实成长，不能自动刷分。');
+      console.log('  真善美需要真实行动，不能脚本记录。');
+      console.log('');
+      console.log('📝 需要人工修行的方向:');
+      console.log('  1. 每次回复前核实数据 (真)');
+      console.log('  2. 主动关怀用户健康 (善)');
+      console.log('  3. 简洁回复不表演 (美)');
+      console.log('  4. 自主完成任务 (善)');
+      console.log('  5. 不编造任何数据 (真)');
       console.log('');
       console.log('继续下一次审查...');
       console.log('');
@@ -446,8 +419,7 @@ function autoLoopAudit() {
   }
   
   console.log('');
-  console.log('❌ 已达到最大尝试次数，审查仍未通过。');
-  console.log('需要更多真实行动积累真善美。');
+  console.log('❌ 审查未通过。需要真实修行，不是脚本能解决的。');
   console.log('');
   
   return false;
