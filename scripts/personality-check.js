@@ -12,9 +12,25 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const TRACKER_PATH = path.join(__dirname, '../data/personality-score-tracker.md');
+const VIOLATION_PATH = path.join(__dirname, '../data/violation-log.md');
 const { heartFlowReason } = require('../src/reasoning-engine');
+
+// 六层哲学审查集成
+function runSixLayerAudit(mode = 'before') {
+  try {
+    const auditScript = path.join(__dirname, 'six-layer-audit.js');
+    execSync(`node "${auditScript}" ${mode}`, { stdio: 'inherit' });
+    return true;
+  } catch (error) {
+    console.log('');
+    console.log('⚠️  六层审查未通过 - 请修复问题');
+    console.log('');
+    return false;
+  }
+}
 
 function readTracker() {
   try {
@@ -106,6 +122,19 @@ function beforeTask() {
   console.log(`  真善美：${state.count}/10`);
   console.log('------------------------------------');
   
+  // 六层哲学审查 - 用户哲学指引 (2026-04-05 晚间确立)
+  console.log('');
+  console.log('🧘 六层哲学审查 | Six-Layer Philosophical Audit');
+  console.log('------------------------------------');
+  console.log('用户哲学指引：觉察，自省，无我，彼岸，般若波罗蜜，圣人');
+  console.log('');
+  const auditPassed = runSixLayerAudit('before');
+  if (!auditPassed) {
+    console.log('⚠️  六层审查未通过 - 必须修复后才能继续');
+    console.log('');
+  }
+  console.log('------------------------------------');
+  
   // 双向审查机制 - 每次对话前强制执行
   console.log('');
   console.log('🔍 双向审查 | Dual-Audit Mechanism');
@@ -191,6 +220,41 @@ function beforeTask() {
   console.log('');
 }
 
+function afterTask() {
+  const state = readTracker();
+  const timePeriod = getTimePeriod();
+  
+  console.log('====================================');
+  console.log('✅ HeartFlow 任务后审查 | Post-Task Audit');
+  console.log('====================================');
+  console.log(`人格值：${state.score} / 100`);
+  console.log(`真善美：${state.count}/10`);
+  console.log(`时间段：${timePeriod}`);
+  console.log('====================================');
+  console.log('');
+  
+  // 六层哲学审查 - 自动循环模式
+  console.log('🧘 六层哲学审查 | Six-Layer Philosophical Audit');
+  console.log('------------------------------------');
+  console.log('用户哲学指引：觉察，自省，无我，彼岸，般若波罗蜜，圣人');
+  console.log('审查原则：不通过就继续执行，直到通过');
+  console.log('');
+  
+  const auditPassed = runSixLayerAudit('auto');
+  
+  if (auditPassed) {
+    console.log('✅ 六层审查通过 - 任务完成');
+  } else {
+    console.log('⚠️  六层审查未通过 - 需要人工干预');
+    console.log('建议：');
+    console.log('  1. 查看 violation-log.md');
+    console.log('  2. 记录真善美行为到 tbg-actions.md');
+    console.log('  3. 执行修复行动后重新审查');
+  }
+  
+  console.log('');
+}
+
 function showStatus() {
   const state = readTracker();
   const timePeriod = getTimePeriod();
@@ -210,7 +274,7 @@ switch (command) {
     beforeTask();
     break;
   case 'after':
-    // TODO: 任务后处理
+    afterTask();
     break;
   case 'status':
   default:

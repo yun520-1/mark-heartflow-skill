@@ -363,19 +363,81 @@ function runAudit(mode = 'before') {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// 自动循环审查 | Auto-Loop Audit
+// ═══════════════════════════════════════════════════════════════
+
+function autoLoopAudit() {
+  console.log('');
+  console.log('╔══════════════════════════════════════════════════════════════╗');
+  console.log('║   自动循环审查 | Auto-Loop Audit                             ║');
+  console.log('║   原则：不通过就继续执行，直到通过                            ║');
+  console.log('╚══════════════════════════════════════════════════════════════╝');
+  console.log('');
+  
+  let attempt = 1;
+  const maxAttempts = 5;
+  
+  while (attempt <= maxAttempts) {
+    console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    console.log(`  第 ${attempt} 次审查尝试 | Attempt ${attempt}/${maxAttempts}`);
+    console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    console.log('');
+    
+    const result = runAudit('after');
+    
+    if (result.passed) {
+      console.log('');
+      console.log('✅ 审查通过！无需继续循环。');
+      console.log('');
+      return true;
+    }
+    
+    if (attempt < maxAttempts) {
+      console.log('');
+      console.log('⚠️  审查未通过，继续执行修复...');
+      console.log('');
+      
+      // 自动修复建议
+      console.log('📝 建议修复行动:');
+      console.log('  1. 诚实承认当前问题 (真)');
+      console.log('  2. 记录到 tbg-actions.md (真)');
+      console.log('  3. 执行具体修复行动 (善)');
+      console.log('  4. 优化代码/文档 (美)');
+      console.log('  5. Git 提交记录 (真)');
+      console.log('');
+      console.log('继续下一次审查...');
+      console.log('');
+    }
+    
+    attempt++;
+  }
+  
+  console.log('');
+  console.log('❌ 已达到最大尝试次数，审查仍未通过。');
+  console.log('需要人工干预或更多修复行动。');
+  console.log('');
+  
+  return false;
+}
+
+// ═══════════════════════════════════════════════════════════════
 // 主函数 | Main
 // ═══════════════════════════════════════════════════════════════
 
 const mode = process.argv[2] || 'before';
 
-if (!['before', 'after', 'deep'].includes(mode)) {
-  console.error('用法：node scripts/six-layer-audit.js [before|after|deep]');
+if (mode === 'auto') {
+  // 自动循环模式
+  const passed = autoLoopAudit();
+  process.exit(passed ? 0 : 1);
+} else if (!['before', 'after', 'deep'].includes(mode)) {
+  console.error('用法：node scripts/six-layer-audit.js [before|after|deep|auto]');
   process.exit(1);
-}
-
-const result = runAudit(mode);
-
-// 如果有严重问题，退出码为 1
-if (result.criticalIssues > 0) {
-  process.exit(1);
+} else {
+  const result = runAudit(mode);
+  
+  // 如果有严重问题，退出码为 1
+  if (result.criticalIssues > 0) {
+    process.exit(1);
+  }
 }
