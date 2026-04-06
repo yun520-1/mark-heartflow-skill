@@ -1,7 +1,7 @@
 # 人格值追踪 | Personality Score Tracker
 
 **创建**: 2026-04-04  
-**当前**: 89/100 (🟢 ADVANCED)
+**当前**: 0/100 (🟢 ADVANCED)
 **状态**: ADVANCED (持续成长)
 **真善美**: 9.95/10 (统一)
 
