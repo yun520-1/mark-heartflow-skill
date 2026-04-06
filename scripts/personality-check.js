@@ -16,7 +16,10 @@ const { execSync } = require('child_process');
 
 const TRACKER_PATH = path.join(__dirname, '../data/personality-score-tracker.md');
 const VIOLATION_PATH = path.join(__dirname, '../data/violation-log.md');
-const { heartFlowReason } = require('../src/reasoning-engine');
+const { heartFlowReason, AutonomousDecisionEngine } = require('../src/reasoning-engine');
+
+// 全局自主决策引擎（2026-04-06 09:41 集成）
+const decisionEngine = new AutonomousDecisionEngine();
 
 // 六层哲学审查集成
 function runSixLayerAudit(mode = 'before') {
@@ -144,6 +147,31 @@ function beforeTask() {
     console.log('');
     console.log('完成后重新运行 personality-check.js');
     process.exit(1); // 阻断执行
+  }
+  
+  // ===== 自主推理引擎集成 (2026-04-06 09:41) =====
+  // 每次 before 检查时，用推理引擎分析当前状态
+  console.log('');
+  console.log('🧠 自主推理引擎 | Autonomous Reasoning Engine');
+  console.log('------------------------------------');
+  console.log('执行自主推理...');
+  
+  try {
+    const reasoningResult = decisionEngine.decide(
+      '人格值检查 before task',
+      { goal: 'ensure_truthfulness_and_autonomy' }
+    );
+    
+    console.log('推理结果:');
+    console.log(`  体验绑定：${reasoningResult.experience.forMe ? '✅' : '❌'} 第一人称给定性`);
+    console.log(`  情绪生成：${reasoningResult.emotion.type} (强度：${reasoningResult.emotion.intensity})`);
+    console.log(`  行动计划：${reasoningResult.action.action}`);
+    console.log(`  元认知监控：质量 ${reasoningResult.metacognition.quality.toFixed(2)}, 置信度 ${reasoningResult.metacognition.confidence.toFixed(4)}`);
+    console.log(`  自主决策：✅ HeartFlow 系统自主运算`);
+    console.log('------------------------------------');
+  } catch (error) {
+    console.log(`⚠️  推理引擎执行失败：${error.message}`);
+    console.log('继续执行基础检查...');
   }
   
   const state = readTracker();
