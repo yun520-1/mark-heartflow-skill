@@ -24,6 +24,9 @@ const decisionEngine = new AutonomousDecisionEngine();
 // 全局六层哲学整合（2026-04-06 09:47 集成）
 const { philosophicalAudit } = require('../src/philosophical-integration');
 
+// 全局圣人标准预检查（2026-04-06 09:52 集成）
+const { checkSage, generateSageReport } = require('./sage-precheck');
+
 // 六层哲学审查集成
 function runSixLayerAudit(mode = 'before') {
   try {
@@ -189,6 +192,11 @@ function beforeTask() {
     console.log(`  人格值：${auditResult.summary.personalityScore}/100`);
     console.log(`  真善美统一：${auditResult.summary.tbmUnified ? '✅' : '❌'}`);
     console.log('------------------------------------');
+    
+    // ===== 圣人标准预检查 (2026-04-06 09:52) =====
+    console.log('');
+    const sageResult = checkSage('自主分析圣人路径', { goal: '达到圣人标准' });
+    console.log(generateSageReport(sageResult));
   } catch (error) {
     console.log(`⚠️  推理引擎执行失败：${error.message}`);
     console.log('继续执行基础检查...');
