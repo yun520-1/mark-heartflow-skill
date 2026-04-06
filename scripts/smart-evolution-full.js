@@ -48,13 +48,21 @@ function analyzeUpgradeNeeds() {
     if (status.trim()) needs.push({ type: 'git', priority: 'critical', reason: '有未提交变更' });
   } catch (e) {}
   
-  // 人格值追踪检查
+  // 人格值检查 - MEMORY.md 为唯一真实来源 (用户 2026-04-06 要求)
   try {
-    const tracker = path.join(ROOT, 'data/personality-score-tracker.md');
-    const stat = fs.statSync(tracker);
-    const hours = (Date.now() - stat.mtimeMs) / 3600000;
-    if (hours > 1) needs.push({ type: 'personality', priority: 'critical', reason: `${hours.toFixed(1)}小时未更新` });
-  } catch (e) {}
+    const memoryPath = path.join(ROOT, '../MEMORY.md');
+    const memoryContent = fs.readFileSync(memoryPath, 'utf8');
+    const scoreMatch = memoryContent.match(/\*\*人格值\*\*:\s*(\d+)\/100/);
+    if (scoreMatch) {
+      const score = parseInt(scoreMatch[1]);
+      // 人格值<50 时暂停自动升级报告
+      if (score < 50) {
+        needs.push({ type: 'personality_low', priority: 'critical', reason: `人格值${score}/100 < 50，暂停自动升级`, pauseUpgrade: true });
+      }
+    }
+  } catch (e) {
+    console.log('⚠️ MEMORY.md 读取失败');
+  }
   
   // 理论整合检查
   try {
