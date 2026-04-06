@@ -274,12 +274,38 @@ function main() {
   // 4. 生成详细报告
   const report = generateReport(analysis, upgrade);
   
-  // 5. 精简汇报
-  briefReport(analysis, upgrade, report, upgrade.results[0].version);
+  // 5. 精简汇报 - 输出前强制核实
+  const briefReportContent = generateBriefReportContent(analysis, upgrade, report, upgrade.results[0].version);
+  const verification = verifyBeforeOutput(briefReportContent);
+  
+  if (!verification.allowed) {
+    console.log('\n⚠️ 输出被阻止:', verification.reason);
+    console.log('请修复问题后重新运行升级');
+    process.exit(1);
+  }
+  
+  // 核实通过，输出报告
+  console.log(briefReportContent);
   
   return report;
 }
 
+// 辅助函数：生成精简汇报内容（不输出，用于核实）
+function generateBriefReportContent(analysis, upgrade, report, version) {
+  return `
+═══════════════════════════════════════════════
+   HeartFlow v${version} | 升级完成
+═══════════════════════════════════════════════
+📊 识别：${analysis.length} 项
+✅ 成功：${report.upgrade.success} 项
+❌ 失败：${report.upgrade.failed} 项
+⏭️  跳过：${report.upgrade.skipped + report.upgrade.planned} 项
+⏱️  耗时：${upgrade.duration}s
+📄 报告：${LOG_FILE}
+═══════════════════════════════════════════════
+`;
+}
+
 // 导出
 if (require.main === module) main();
-module.exports = { main, analyzeUpgradeNeeds, executeUpgrade, generateReport };
+module.exports = { main, analyzeUpgradeNeeds, executeUpgrade, generateReport, generateBriefReportContent };
