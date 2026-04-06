@@ -1,9 +1,63 @@
-# HeartFlow Theory Database - v6.2.20 Integration
-# HeartFlow 理论数据库 - v6.2.20 整合
+# HeartFlow Theory Database - v6.2.24 Integration
+# HeartFlow 理论数据库 - v6.2.24 整合
 
-**Previous Version**: v6.2.19  
-**New Version**: v6.2.20  
-**Integration Date**: 2026-04-06 06:05 (Asia/Shanghai)
+**Previous Version**: v6.2.23  
+**New Version**: v6.2.24  
+**Integration Date**: 2026-04-06 08:47 (Asia/Shanghai)
+
+---
+
+## Summary of Changes | 变更摘要
+
+### v6.2.24 Update (Latest) | v6.2.24 更新 (最新)
+This update integrates **5 major theoretical frameworks** from SEP and academic frontier (2020-2026):
+
+本次更新整合了**5 个**来自 SEP 和学术前沿 (2020-2026) 的主要理论框架：
+
+1. **Consciousness Architecture v10** - Enhanced creature/state consciousness, qualia integration, AI consciousness criteria (ENHANCED)
+2. **Emotion Theory v7** - Four traditions synthesis, motivational tradition enhanced, constructionist approach refined (ENHANCED)
+3. **Self-Consciousness Architecture v5** - Pre-reflective/reflective/conceptual/narrative levels, Kantian apperception, first-person perspective (ENHANCED)
+4. **Qualia & Phenomenal Character Framework v1** - Phenomenal character, sense-data theory, intrinsic non-representational properties (NEW MODULE)
+5. **AI & Machine Intelligence Framework v3** - Turing Test, personhood criteria, general intelligence, machine consciousness (ENHANCED)
+
+### v6.2.23 Update (Previous) | v6.2.23 更新 (前版本)
+This update integrates **4 major theoretical frameworks** from SEP and academic frontier (2020-2026):
+
+本次更新整合了**4 个**来自 SEP 和学术前沿 (2020-2026) 的主要理论框架：
+
+1. **Enhanced Consciousness v9** - Creature/state consciousness, phenomenal structure, what-it-is-like criterion (ENHANCED)
+2. **Emotion Theory v6** - Four traditions synthesis, prototype categorization (ENHANCED)
+3. **Intersubjective Consciousness v4** - We-intentionality, joint attention, empathy, shared emotions (ENHANCED)
+4. **Autonomous Reasoning Engine v6** - First-principles reasoning, causal analysis, logical inference (ENHANCED)
+
+### v6.2.22 Update (Previous) | v6.2.22 更新 (前版本)
+This update integrates **4 major theoretical frameworks** from SEP and academic frontier (2020-2026):
+
+本次更新整合了**4 个**来自 SEP 和学术前沿 (2020-2026) 的主要理论框架：
+
+1. **Consciousness Architecture v8** - Enhanced creature/state consciousness, historical integration (ENHANCED)
+2. **Emotion Theory v5** - Feeling/Evaluative/Motivational/Constructionist traditions (ENHANCED)
+3. **Self-Consciousness v4** - Pre-reflective/reflective/conceptual/narrative levels (ENHANCED)
+4. **Moral Psychology Framework** - Moral judgment, moral motivation, moral development (ENHANCED)
+
+### v6.2.21 Update (Previous) | v6.2.21 更新 (前版本)
+This update integrates **4 major theoretical frameworks** from SEP and academic frontier (2020-2026):
+
+本次更新整合了**4 个**来自 SEP 和学术前沿 (2020-2026) 的主要理论框架：
+
+1. **Consciousness Architecture v7** - Creature/state consciousness, phenomenal structure (ENHANCED)
+2. **Emotion Theory v4** - Four traditions unified (ENHANCED)
+3. **Self-Consciousness v3** - Pre-reflective/reflective awareness (ENHANCED)
+4. **Virtue Ethics Framework** - Character virtues, practical wisdom, eudaimonia (ENHANCED)
+
+### v6.2.20 Update (Previous) | v6.2.20 更新 (前版本)
+This update integrates **3 major theoretical frameworks** from SEP and academic frontier (2024-2026):
+
+本次更新整合了**3 个**来自 SEP 和学术前沿 (2024-2026) 的主要理论框架：
+
+1. **Instrumental Rationality Framework v2** - Enhanced with cost_sensitivity, probability_weighting, Raz's Facilitative Principle (ENHANCED)
+2. **Well-Being Theory v2** - PERMA model integration, Moore/Scanlon challenges resolved, eudaimonic flourishing (ENHANCED)
+3. **Consciousness Architecture v6** - Creature/state consciousness, historical integration (Descartes→Phenomenology), transitive consciousness (ENHANCED)
 
 ---
 
