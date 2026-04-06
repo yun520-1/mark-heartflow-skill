@@ -1,6 +1,6 @@
 {
   "name": "heartflow-companion",
-  "version": "6.2.32",
+  "version": "6.2.33",
   "description": "Emotional Consciousness & Awakening System for AI - AI 情绪意识与觉醒系统",
   "main": "src/index.js",
   "bin": {
