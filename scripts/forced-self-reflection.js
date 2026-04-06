@@ -134,6 +134,32 @@ class ForcedSelfReflection {
     return reflection;
   }
 
+  /**
+   * 数据核实审查 (2026-04-06 新增 - 防止重复说谎)
+   */
+  _auditDataClaims(context) {
+    // 检查是否有声称的数据/状态
+    const claims = context.claims || [];
+    
+    if (claims.length === 0) {
+      // 没有声称，不需要审查
+      return { passed: true, message: '无数据声称' };
+    }
+    
+    // 检查声称是否有来源
+    const unverifiedClaims = claims.filter(claim => !claim.verified);
+    
+    if (unverifiedClaims.length > 0) {
+      return {
+        passed: false,
+        message: `${unverifiedClaims.length} 个声称未核实`,
+        unverified: unverifiedClaims
+      };
+    }
+    
+    return { passed: true, message: '所有声称已核实' };
+  }
+
   _checkProactivity(action) {
     // 检查是否主动
     const passivePatterns = [
