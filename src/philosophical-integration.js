@@ -493,7 +493,7 @@ class SageLayer {
 class SixLayerIntegration {
   constructor() {
     this.awareness = new AwarenessLayer();
-    selfReflection = new SelfReflectionLayer();
+    this.selfReflection = new SelfReflectionLayer();
     this.noSelf = new NoSelfLayer();
     this.otherShore = new OtherShoreLayer();
     this.wisdom = new WisdomLayer();
