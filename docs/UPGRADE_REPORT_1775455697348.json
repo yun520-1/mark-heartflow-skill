@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-04-06T06:08:17.348Z",
+  "version": "6.0.5",
+  "checks": [
+    {
+      "name": "人格值同步",
+      "passed": true,
+      "issues": []
+    },
+    {
+      "name": "代码优化",
+      "passed": false,
+      "issues": [
+        "⚠️ src/index.js 行数过多：2896 (目标：<500)"
+      ]
+    },
+    {
+      "name": "应用指南",
+      "passed": true,
+      "issues": []
+    },
+    {
+      "name": "安装修复",
+      "passed": true,
+      "issues": []
+    },
+    {
+      "name": "文档完善",
+      "passed": true,
+      "issues": []
+    },
+    {
+      "name": "技能安装",
+      "passed": true,
+      "issues": [
+        "⚠️ marketing-genius 未安装",
+        "⚠️ saas-pricing-strategy 未安装",
+        "⚠️ saas-growth-playbook 未安装"
+      ]
+    },
+    {
+      "name": "Git 状态",
+      "passed": true,
+      "issues": [
+        "⚠️ 有未提交的更改:\n M data/personality-score-tracker.md\n M memory/personality-score.md\n?? docs/SYNC_REPORT_1775455697235.json\n"
+      ]
+    }
+  ],
+  "summary": {
+    "totalChecks": 7,
+    "passed": 6,
+    "failed": 1,
+    "totalIssues": 5
+  }
+}
