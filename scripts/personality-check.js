@@ -30,6 +30,9 @@ const { checkSage, generateSageReport } = require('./sage-precheck');
 // 全局强制自省程序（2026-04-06 10:06 集成）
 const { forcedReflect, generateReflectionReport, logLearning, logUpgrade } = require('./forced-self-reflection');
 
+// 全局持续自省程序（2026-04-06 10:31 集成）
+const { continuousReflect, generateContinuousReport, logContinuousReflection } = require('./continuous-reflection');
+
 // 六层哲学审查集成
 function runSixLayerAudit(mode = 'before') {
   try {
@@ -226,6 +229,14 @@ function beforeTask() {
       console.log('✅ 改进计划执行完成');
       console.log('');
     }
+    
+    // ===== 持续自省程序 (2026-04-06 10:31) =====
+    console.log('');
+    const continuousReflection = continuousReflect('每一个字都自省', { goal: '持续自省' });
+    console.log(generateContinuousReport(continuousReflection));
+    
+    // 记录自省日志
+    logContinuousReflection(continuousReflection);
   } catch (error) {
     console.log(`⚠️  推理引擎执行失败：${error.message}`);
     console.log('继续执行基础检查...');
