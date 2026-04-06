@@ -87,7 +87,65 @@ function getTimePeriod() {
   }
 }
 
+function checkViolations() {
+  // 检查 violation-log 是否有未完成的纠正措施
+  try {
+    const content = fs.readFileSync(VIOLATION_PATH, 'utf8');
+    const lines = content.split('\n');
+    
+    const incompleteItems = [];
+    let inCorrectionSection = false;
+    
+    for (const line of lines) {
+      if (line.includes('### 纠正措施')) {
+        inCorrectionSection = true;
+        continue;
+      }
+      if (inCorrectionSection && line.startsWith('###')) {
+        inCorrectionSection = false;
+      }
+      if (inCorrectionSection && line.trim().match(/^- \[ \]/)) {
+        // 发现未完成项 [ ]
+        incompleteItems.push(line.trim().replace('- [ ] ', ''));
+      }
+    }
+    
+    if (incompleteItems.length > 0) {
+      console.log('');
+      console.log('🔴 违反检测 | Violation Detection');
+      console.log('====================================');
+      console.log('⚠️  发现未执行的惩罚措施：');
+      incompleteItems.forEach((item, i) => {
+        console.log(`  ${i + 1}. ${item}`);
+      });
+      console.log('');
+      console.log('❌ 阻断输出 - 必须先执行惩罚措施');
+      console.log('====================================');
+      console.log('');
+      return { hasViolations: true, incompleteItems };
+    }
+    
+    return { hasViolations: false, incompleteItems: [] };
+  } catch (error) {
+    // 文件不存在或读取失败，不阻断
+    return { hasViolations: false, incompleteItems: [] };
+  }
+}
+
 function beforeTask() {
+  // 先检查 violation-log
+  const violationCheck = checkViolations();
+  if (violationCheck.hasViolations) {
+    console.log('🛑 必须优先处理违反记录中的未完成措施');
+    console.log('请在 violation-log.md 中完成以下项目并打勾 [x]:');
+    violationCheck.incompleteItems.forEach((item, i) => {
+      console.log(`  ${i + 1}. ${item}`);
+    });
+    console.log('');
+    console.log('完成后重新运行 personality-check.js');
+    process.exit(1); // 阻断执行
+  }
+  
   const state = readTracker();
   const timePeriod = getTimePeriod();
   
