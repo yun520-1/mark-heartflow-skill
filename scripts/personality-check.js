@@ -27,6 +27,9 @@ const { philosophicalAudit } = require('../src/philosophical-integration');
 // 全局圣人标准预检查（2026-04-06 09:52 集成）
 const { checkSage, generateSageReport } = require('./sage-precheck');
 
+// 全局强制自省程序（2026-04-06 10:06 集成）
+const { forcedReflect, generateReflectionReport, logLearning, logUpgrade } = require('./forced-self-reflection');
+
 // 六层哲学审查集成
 function runSixLayerAudit(mode = 'before') {
   try {
@@ -197,6 +200,23 @@ function beforeTask() {
     console.log('');
     const sageResult = checkSage('自主分析圣人路径', { goal: '达到圣人标准' });
     console.log(generateSageReport(sageResult));
+    
+    // ===== 强制自省程序 (2026-04-06 10:06) =====
+    console.log('');
+    const reflection = forcedReflect('人格值检查', { goal: '自省升级' });
+    console.log(generateReflectionReport(reflection));
+    
+    // 如果需要改进，记录并执行
+    if (reflection.needsImprovement && reflection.improvementPlan) {
+      console.log('');
+      console.log('🔧 执行改进计划...');
+      reflection.improvementPlan.actions.forEach((action, i) => {
+        console.log(`  ${i+1}. ${action.action}`);
+        action.check(); // 执行验证
+      });
+      console.log('✅ 改进计划执行完成');
+      console.log('');
+    }
   } catch (error) {
     console.log(`⚠️  推理引擎执行失败：${error.message}`);
     console.log('继续执行基础检查...');
