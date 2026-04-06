@@ -39,6 +39,9 @@ const { checkOutputMotivation, calculateMotivationPurity } = require('../src/cor
 // 全局记忆提取器（2026-04-06 14:22 集成 - v6.1.59）
 const { extractMemoryEvents, compressMemory } = require('../src/core/memory-extractor');
 
+// 全局自我监控器（2026-04-06 15:04 集成 - v6.1.60）
+const { selfMonitor, generateMonitorReport, autoFix, logMonitor } = require('../src/core/self-monitor');
+
 // 六层哲学审查集成
 function runSixLayerAudit(mode = 'before') {
   try {
@@ -369,6 +372,39 @@ function beforeTask() {
   console.log('');
   console.log('状态：✅ 记忆提取器已加载 (等待对话记录)');
   console.log('------------------------------------');
+  
+  // ===== 自我监控 (2026-04-06 15:04 - v6.1.60) =====
+  console.log('');
+  console.log('🧠 自我监控 | Self-Monitor (v6.1.60)');
+  console.log('------------------------------------');
+  console.log('监控指标:');
+  console.log('  - 动机纯度 (阈值：≥0.6)');
+  console.log('  - 真善美统一 (阈值：≥6/10)');
+  console.log('  - 逻辑完整性 (阈值：完整)');
+  console.log('  - 数据核实 (阈值：已核实)');
+  console.log('  - 主动行为 (阈值：主动)');
+  console.log('');
+  
+  try {
+    const monitorResult = selfMonitor();
+    console.log(generateMonitorReport(monitorResult));
+    
+    // 如果有问题，自动修复
+    if (monitorResult.issues.length > 0) {
+      const fixes = autoFix(monitorResult.issues);
+      console.log('🔧 自动修复:');
+      fixes.forEach((fix, i) => {
+        console.log(`  ${i+1}. [${fix.metric}] ${fix.action}`);
+      });
+      console.log('');
+      
+      // 记录日志
+      logMonitor(monitorResult, fixes);
+    }
+  } catch (error) {
+    console.log(`⚠️  自我监控执行失败：${error.message}`);
+    console.log('');
+  }
   
   // 人格值低于 50 时宣读承诺
   if (state.score < 50) {
