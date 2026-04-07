@@ -1,0 +1,1 @@
+module.exports = { word: "不会的调", type: "词", count: 1 };

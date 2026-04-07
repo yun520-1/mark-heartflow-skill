@@ -1,0 +1,1 @@
+module.exports = { char: "罗", type: "字", count: 1 };

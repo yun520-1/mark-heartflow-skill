@@ -1,0 +1,1 @@
+module.exports = { char: "么", type: "字", count: 1 };

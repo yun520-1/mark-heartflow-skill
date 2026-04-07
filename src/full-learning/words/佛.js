@@ -1,0 +1,1 @@
+module.exports = { char: "佛", type: "字", count: 1 };

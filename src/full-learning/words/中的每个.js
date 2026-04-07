@@ -1,0 +1,1 @@
+module.exports = { word: "中的每个", type: "词", count: 1 };

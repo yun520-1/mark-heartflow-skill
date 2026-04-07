@@ -1,0 +1,1 @@
+module.exports = { word: "没有真实", type: "词", count: 1 };

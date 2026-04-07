@@ -1,0 +1,1 @@
+module.exports = { word: "学到", type: "词", count: 1 };

@@ -1,0 +1,1 @@
+module.exports = { word: "理解层级", type: "词", count: 1 };

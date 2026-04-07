@@ -1,0 +1,1 @@
+module.exports = { word: "批评", type: "词", count: 1 };
