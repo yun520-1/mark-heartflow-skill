@@ -1,0 +1,31 @@
+# 隐藏技术文件从 GitHub 文件列表
+*.md linguist-generated=true
+*.log linguist-generated=true
+*.json linguist-generated=true
+*.py linguist-generated=true
+*.sh linguist-generated=true
+*.plist linguist-generated=true
+.DS_Store linguist-generated=true
+
+# 归档目录不显示
+archive/** linguist-generated=true
+cron/** linguist-generated=true
+data/** linguist-generated=true
+memory/** linguist-generated=true
+reports/** linguist-generated=true
+scripts/** linguist-generated=true
+src/** linguist-generated=true
+state/** linguist-generated=true
+temp/** linguist-generated=true
+test/** linguist-generated=true
+upgrades/** linguist-generated=true
+api/** linguist-generated=true
+blog/** linguist-generated=true
+skill/** linguist-generated=true
+
+# 只保留核心文档
+README.md -linguist-generated
+docs/** -linguist-generated
+CONTRIBUTING.md -linguist-generated
+LICENSE -linguist-generated
+package.json -linguist-generated
