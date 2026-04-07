@@ -1,0 +1,11 @@
+[
+  {
+    "timestamp": "2026-04-07T08:56:46.175Z",
+    "reason": "low_understanding",
+    "input": "你好",
+    "output": "这是大模型对\"你好\"的响应 (待集成)",
+    "callCount": 2,
+    "localProcessCount": 0,
+    "ratio": 1
+  }
+]
