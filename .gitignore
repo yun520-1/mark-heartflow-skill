@@ -63,3 +63,7 @@ coverage/
 
 # TypeScript cache
 *.tsbuildinfo
+
+# HeartFlow self-awareness system (generated at runtime)
+src/self/memory-store/
+src/self/logs/
