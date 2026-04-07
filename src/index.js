@@ -49,6 +49,14 @@ const {
 
 // 创建语言理解引擎实例
 const languageEngine = new LanguageUnderstandingEngine();
+
+// === v7.1.10 新增：智能路由引擎 (减少大模型调用，优先本地处理) ===
+const { IntelligentRoutingEngine } = require('./language/intelligent-routing');
+const routingEngine = new IntelligentRoutingEngine();
+
+// === v7.1.11 新增：大模型学习模块 (在运行中升级，每次调用都学习) ===
+const { LLMLearningManager } = require('./language/llm-learning');
+const llmLearner = new LLMLearningManager();
 // ========================================================================
 
 // 创建 CBT 模块
@@ -2739,6 +2747,26 @@ async function main() {
     } else {
       // 处理普通消息
       try {
+        // === v7.1.11 新增：智能路由 + 大模型学习 (真正集成到主程序) ===
+        // 使用智能路由处理用户输入
+        const mockLLM = async (input) => {
+          // TODO: 替换为真实大模型 API 调用
+          console.log('\n⚠️ 大模型调用 (待集成真实 API)');
+          return `这是大模型对"${input}"的响应 (待集成)`;
+        };
+        
+        const routingResult = await routingEngine.process(trimmed, mockLLM);
+        
+        if (routingResult.type === 'local') {
+          console.log('\n✅ [本地处理 - 已理解]');
+          console.log(`   ${routingResult.message}`);
+        } else if (routingResult.type === 'llm' && routingResult.learningResult) {
+          console.log('\n🧠 [大模型处理 + 学习]');
+          console.log(`   学习了 ${routingResult.learningResult.learnedPrograms.length} 个新字`);
+          console.log(`   累计学习：${routingEngine.llmLearner.getStats().learnedProgramsCount} 个字`);
+        }
+        // ================================================================
+        
         // CBT 分析（v2.3.0 新增）
         const cbtAnalysis = cbtModule.processInput(trimmed);
         

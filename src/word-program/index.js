@@ -81,6 +81,12 @@ class WordProgramEngine {
     };
   }
   
+  // 学习新字
+  learn(char, program) {
+    this.generator.programs.set(char, program);
+    this.cache.set(char, program.execute({}));
+  }
+  
   // 压缩分析
   analyzeCompression() {
     return this.generator.compress();

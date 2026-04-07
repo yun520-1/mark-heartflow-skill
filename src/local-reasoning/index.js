@@ -86,8 +86,16 @@ class LocalReasoningEngine {
     // 解析大模型回答，提取字义
     const program = this.parseLLMAnswer(word, llmAnswer);
     
-    // 本地化
-    this.wordEngine.understand(word); // 确保程序存在
+    // 添加到 wordEngine 的字典
+    this.wordEngine.learn(word, {
+      execute: (ctx) => ({
+        concept: program.concept,
+        components: program.components,
+        source: 'learned'
+      })
+    });
+    
+    // 存储学习记录
     this.learnedWords.set(word, {
       program,
       answer: llmAnswer,
