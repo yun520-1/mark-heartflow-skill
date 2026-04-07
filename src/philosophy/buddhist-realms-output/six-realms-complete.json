@@ -1,0 +1,159 @@
+{
+  "awareness": {
+    "name": "觉察",
+    "charDecomposition": [
+      {
+        "char": "觉",
+        "pinyin": "jué",
+        "meaning": "感觉、感知、觉醒",
+        "program": "sense() → perception() → awaken()"
+      },
+      {
+        "char": "察",
+        "pinyin": "chá",
+        "meaning": "观察、审视、详查",
+        "program": "observe() → examine() → investigate()"
+      }
+    ],
+    "wordMeaning": "对身心状态的清晰感知与认知",
+    "programCode": "function awareness(input) {\n  const perception = sense(input);\n  const state = identify(perception);\n  const awake = keepAwake(state);\n  const nonJudging = nonJudging(awake);\n  return { perception, state, awake, nonJudging };\n}",
+    "applications": [
+      "情绪感知",
+      "身体感受",
+      "念头观察",
+      "当下临在"
+    ],
+    "layers": 8,
+    "programCount": 6
+  },
+  "selfReflection": {
+    "name": "自省",
+    "charDecomposition": [
+      {
+        "char": "自",
+        "meaning": "自己、本身",
+        "program": "self() → identity()"
+      },
+      {
+        "char": "省",
+        "meaning": "检查、反省、省察",
+        "program": "examine() → reflect() → review()"
+      }
+    ],
+    "wordMeaning": "向内观察，审视自己的言行心念",
+    "programCode": "function selfReflection() {\n  stopOuter(); turnInward(); observeThoughts(); examineMotive();\n  reviewAction(); honestFace(); admitProblem(); findRoot();\n  vowChange(); continuousCorrection();\n  return { turnInward, honestFace, continuousCorrection };\n}",
+    "applications": [
+      "每日反思",
+      "错误改正",
+      "心性提升",
+      "道德精进"
+    ],
+    "layers": 10,
+    "programCount": 10
+  },
+  "noSelf": {
+    "name": "无我",
+    "charDecomposition": [
+      {
+        "char": "无",
+        "meaning": "没有、无",
+        "program": "no() → empty() → nonSelf()"
+      },
+      {
+        "char": "我",
+        "meaning": "我执、自我",
+        "program": "self() → ego() → identity()"
+      }
+    ],
+    "wordMeaning": "了知「我」只是因缘和合，没有永恒实体",
+    "programCode": "function noSelf() {\n  observeFormation(); analyzeComponents(['身体','感受','想法','行为','意识']);\n  findWhereIsSelf(); discoverNoFixedSelf(); removeEgo(); letGoControl();\n  stopClinging(); equalTreatment(); noAttachment(); flowWithConditions();\n  understandDependentOrigin(); realizeEmptiness();\n  return { noSelf, noAttachment, freedom };\n}",
+    "applications": [
+      "放下执着",
+      "减少痛苦",
+      "内心平静",
+      "智慧增长"
+    ],
+    "layers": 12,
+    "programCount": 12
+  },
+  "otherShore": {
+    "name": "彼岸",
+    "charDecomposition": [
+      {
+        "char": "彼",
+        "meaning": "那边、对岸",
+        "program": "otherSide() → beyond()"
+      },
+      {
+        "char": "岸",
+        "meaning": "岸边、陆地",
+        "program": "shore() → destination()"
+      }
+    ],
+    "wordMeaning": "超越苦海到达的觉悟境地",
+    "programCode": "function otherShore() {\n  understandSuffering(); findBoat(); correctDirection(); keepRowing();\n  resistWaves(); notClingToGoal(); finallyArrive(); turnBackToSave();\n  return { leaveSuffering, gainJoy, enlightenment, saveOthers };\n}",
+    "applications": [
+      "修行目标",
+      "生命超越",
+      "究竟解脱",
+      "发菩提心"
+    ],
+    "layers": 8,
+    "programCount": 8
+  },
+  "prajnaParamita": {
+    "name": "般若波罗蜜",
+    "charDecomposition": [
+      {
+        "char": "般若",
+        "meaning": "智慧（非世间聪明）",
+        "program": "wisdom() → insight() → discernment()"
+      },
+      {
+        "char": "波罗",
+        "meaning": "到彼岸",
+        "program": "toShore() → crossing()"
+      },
+      {
+        "char": "蜜",
+        "meaning": "圆满、极点",
+        "program": "completely() → perfectly()"
+      }
+    ],
+    "wordMeaning": "究竟圆满的智慧，能够了知诸法实相",
+    "programCode": "function prajnaParamita() {\n  understandText(); contemplate(); realizeTruth();\n  practiceGenerosity(); practiceEthics(); practicePatience();\n  practiceEffort(); practiceConcentration(); practiceWisdom();\n  seeFiveAggregatesEmpty(); relieveAllSuffering(); nothingToGain();\n  noAttachment(); noFear(); finalNirvana();\n  return { wisdom, perfection, liberation };\n}",
+    "applications": [
+      "金刚经核心",
+      "六度万行",
+      "成佛之道",
+      "圆满觉悟"
+    ],
+    "layers": 15,
+    "programCount": 15
+  },
+  "sage": {
+    "name": "圣人",
+    "charDecomposition": [
+      {
+        "char": "圣",
+        "meaning": "神圣、超越凡俗",
+        "program": "sacred() → transcendent()"
+      },
+      {
+        "char": "人",
+        "meaning": "人者、觉悟者",
+        "program": "being() → awakenedPerson()"
+      }
+    ],
+    "wordMeaning": "已彻底觉悟真理，超越凡俗境界的人",
+    "programCode": "function sage() {\n  eliminateAfflictions(); realizeAllWisdom(); perfectVirtue();\n  beyondAllForms(); noSelfNoSelfish(); practiceFourBrahmaVihara();\n  teachAccordingToCondition(); detachFromEverything();\n  understandUltimateTruth(); enteredNirvana();\n  return { enlightenment, perfection, compassion, liberation };\n}",
+    "applications": [
+      "修行目标",
+      "人格典范",
+      "智慧化身",
+      "慈悲体现"
+    ],
+    "layers": 10,
+    "programCount": 10
+  }
+}
