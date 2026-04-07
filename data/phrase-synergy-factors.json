@@ -1,0 +1,252 @@
+{
+  "emotionSynergy": {
+    "我们": {
+      "emotion": "归属",
+      "intensity": 0.8
+    },
+    "你们": {
+      "emotion": "关注",
+      "intensity": 0.7
+    },
+    "他们": {
+      "emotion": "中性",
+      "intensity": 0.5
+    },
+    "喜欢": {
+      "emotion": "喜悦",
+      "intensity": 0.9
+    },
+    "爱": {
+      "emotion": "爱",
+      "intensity": 1
+    },
+    "讨厌": {
+      "emotion": "愤怒",
+      "intensity": 0.8
+    },
+    "希望": {
+      "emotion": "期待",
+      "intensity": 0.8
+    },
+    "快乐": {
+      "emotion": "喜悦",
+      "intensity": 0.95
+    },
+    "幸福": {
+      "emotion": "喜悦",
+      "intensity": 0.95
+    },
+    "成功": {
+      "emotion": "喜悦",
+      "intensity": 0.9
+    },
+    "失败": {
+      "emotion": "悲伤",
+      "intensity": 0.8
+    },
+    "困难": {
+      "emotion": "担忧",
+      "intensity": 0.7
+    },
+    "害怕": {
+      "emotion": "恐惧",
+      "intensity": 0.9
+    },
+    "勇敢": {
+      "emotion": "自信",
+      "intensity": 0.85
+    },
+    "坚强": {
+      "emotion": "自信",
+      "intensity": 0.8
+    },
+    "谢谢": {
+      "emotion": "感激",
+      "intensity": 0.9
+    },
+    "对不起": {
+      "emotion": "愧疚",
+      "intensity": 0.8
+    },
+    "加油": {
+      "emotion": "鼓励",
+      "intensity": 0.9
+    },
+    "关心": {
+      "emotion": "关切",
+      "intensity": 0.85
+    },
+    "照顾": {
+      "emotion": "关切",
+      "intensity": 0.8
+    }
+  },
+  "contextSynergy": {
+    "今天": {
+      "contextWeight": 0.9,
+      "temporal": true
+    },
+    "明天": {
+      "contextWeight": 0.9,
+      "temporal": true
+    },
+    "昨天": {
+      "contextWeight": 0.9,
+      "temporal": true
+    },
+    "现在": {
+      "contextWeight": 0.95,
+      "temporal": true
+    },
+    "过去": {
+      "contextWeight": 0.8,
+      "temporal": true
+    },
+    "未来": {
+      "contextWeight": 0.85,
+      "temporal": true
+    },
+    "马上": {
+      "contextWeight": 0.85,
+      "temporal": true
+    },
+    "已经": {
+      "contextWeight": 0.8,
+      "temporal": true
+    },
+    "正在": {
+      "contextWeight": 0.85,
+      "temporal": true
+    },
+    "将要": {
+      "contextWeight": 0.8,
+      "temporal": true
+    },
+    "这里": {
+      "contextWeight": 0.7,
+      "spatial": true
+    },
+    "那里": {
+      "contextWeight": 0.7,
+      "spatial": true
+    },
+    "上面": {
+      "contextWeight": 0.6,
+      "spatial": true
+    },
+    "下面": {
+      "contextWeight": 0.6,
+      "spatial": true
+    },
+    "里面": {
+      "contextWeight": 0.6,
+      "spatial": true
+    },
+    "外面": {
+      "contextWeight": 0.6,
+      "spatial": true
+    },
+    "非常": {
+      "intensityMultiplier": 1.5
+    },
+    "特别": {
+      "intensityMultiplier": 1.4
+    },
+    "十分": {
+      "intensityMultiplier": 1.4
+    },
+    "极其": {
+      "intensityMultiplier": 1.6
+    },
+    "相当": {
+      "intensityMultiplier": 1.3
+    },
+    "有点": {
+      "intensityMultiplier": 0.7
+    },
+    "稍微": {
+      "intensityMultiplier": 0.6
+    }
+  },
+  "grammarSynergy": {
+    "我们": {
+      "type": "pronoun",
+      "person": "first",
+      "number": "plural"
+    },
+    "你们": {
+      "type": "pronoun",
+      "person": "second",
+      "number": "plural"
+    },
+    "他们": {
+      "type": "pronoun",
+      "person": "third",
+      "number": "plural"
+    },
+    "这个": {
+      "type": "pronoun",
+      "demonstrative": "near"
+    },
+    "那个": {
+      "type": "pronoun",
+      "demonstrative": "far"
+    },
+    "什么": {
+      "type": "pronoun",
+      "interrogative": true
+    },
+    "怎么": {
+      "type": "pronoun",
+      "interrogative": true
+    },
+    "可以": {
+      "type": "auxiliary",
+      "modality": "possibility"
+    },
+    "可能": {
+      "type": "auxiliary",
+      "modality": "possibility"
+    },
+    "应该": {
+      "type": "auxiliary",
+      "modality": "obligation"
+    },
+    "必须": {
+      "type": "auxiliary",
+      "modality": "necessity"
+    },
+    "需要": {
+      "type": "auxiliary",
+      "modality": "necessity"
+    },
+    "已经": {
+      "type": "adverb",
+      "aspect": "perfective"
+    },
+    "正在": {
+      "type": "adverb",
+      "aspect": "progressive"
+    },
+    "将要": {
+      "type": "adverb",
+      "aspect": "future"
+    },
+    "经常": {
+      "type": "adverb",
+      "frequency": "high"
+    },
+    "偶尔": {
+      "type": "adverb",
+      "frequency": "low"
+    },
+    "总是": {
+      "type": "adverb",
+      "frequency": "always"
+    },
+    "从不": {
+      "type": "adverb",
+      "frequency": "never"
+    }
+  }
+}

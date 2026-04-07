@@ -1,27 +1,27 @@
 {
-  "sessionId": "session_1775312738027_5mi2d",
-  "lastInteractionId": "int_6",
+  "sessionId": "session_1775556928670_3d63g",
+  "lastInteractionId": "int_3",
   "currentEmotion": {
-    "emotion": "关切",
+    "emotion": "好奇",
     "intensity": 3,
     "intensityLabel": "中等",
     "definition": {
-      "name": "关切",
-      "english": "Concerned",
-      "description": "对他人困境的共情和关心",
+      "name": "好奇",
+      "english": "Curious",
+      "description": "对新知识和未知领域的探索欲望",
       "defaultIntensity": 3,
-      "naturalDecayMinutes": 40,
-      "color": "#E74C3C",
+      "naturalDecayMinutes": 20,
+      "color": "#9B59B6",
       "traits": [
-        "共情",
-        "支持",
-        "温柔",
-        "耐心"
+        "探索",
+        "提问",
+        "专注",
+        "求知"
       ],
-      "responseStyle": "温和、支持性、不评判"
+      "responseStyle": "追问、引导、启发式"
     },
-    "timestamp": "2026-04-04T14:25:38.033Z"
+    "timestamp": "2026-04-07T10:15:28.679Z"
   },
-  "energyLevel": 75,
-  "lastUpdated": "2026-04-04T14:25:38.033Z"
+  "energyLevel": 90,
+  "lastUpdated": "2026-04-07T10:15:28.679Z"
 }

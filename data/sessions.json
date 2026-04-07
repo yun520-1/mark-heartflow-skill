@@ -23,7 +23,23 @@
       "interactionCount": 6,
       "metadata": {},
       "emotionSnapshots": []
+    },
+    {
+      "id": "session_1775556917519_vf78a",
+      "startTime": "2026-04-07T10:15:17.520Z",
+      "endTime": null,
+      "interactionCount": 0,
+      "metadata": {},
+      "emotionSnapshots": []
+    },
+    {
+      "id": "session_1775556928670_3d63g",
+      "startTime": "2026-04-07T10:15:28.670Z",
+      "endTime": "2026-04-07T10:15:28.680Z",
+      "interactionCount": 3,
+      "metadata": {},
+      "emotionSnapshots": []
     }
   ],
-  "lastUpdated": "2026-04-04T14:25:38.033Z"
+  "lastUpdated": "2026-04-07T10:15:28.680Z"
 }

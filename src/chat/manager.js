@@ -11,8 +11,8 @@ const DepthModel = require('../empathy/depthModel');
 const { EmotionTypes } = require('../emotion/states');
 
 // === v6.1.41 新增：自动审查集成 ===
-const { auditOutput } = require('../scripts/auto-audit-output');
-const { logTBGAction } = require('../scripts/auto-track-behavior');
+const { auditOutput } = require('../../scripts/auto-audit-output');
+const { logTBGAction } = require('../../scripts/auto-track-behavior');
 // =================================
 
 class ChatManager {
@@ -112,7 +112,7 @@ class ChatManager {
     }, history);
     
     // 4. V2 升级：生成响应内容（使用共情深度模型）
-    const responseContent = this.generateResponseContent(
+    let responseContent = this.generateResponseContent(
       emotionResult.afterState.emotion,
       userInput,
       emotionResult.triggerAnalysis,

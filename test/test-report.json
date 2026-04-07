@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-04-07T10:16:06.752Z",
+  "summary": {
+    "total": 21,
+    "passed": 19,
+    "failed": 2,
+    "passRate": "90.48%"
+  },
+  "performance": {
+    "average": "1.16ms",
+    "max": "4.00ms",
+    "min": "0.95ms"
+  },
+  "processing": {
+    "localRate": "100.00%",
+    "llmRate": "0.00%"
+  },
+  "cache": {
+    "hits": 1,
+    "misses": 1,
+    "hitRate": "50.00%"
+  }
+}
