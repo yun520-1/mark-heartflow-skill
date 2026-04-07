@@ -96,7 +96,14 @@ class HeartFlowv723 {
    * 从记忆文件构建词库
    */
   buildDictionaryFromMemory() {
-    const memoryDir = path.join(__dirname, '../../memory');
+    // 尝试多个可能的 memory 目录
+    const possiblePaths = [
+      path.join(__dirname, '../../memory'),
+      path.join(__dirname, '../../../../memory'),
+      '/Users/apple/.jvs/.openclaw/workspace/memory'
+    ];
+    
+    let memoryDir = possiblePaths.find(p => fs.existsSync(p)) || possiblePaths[0];
     const words = new Set();
     
     // 读取所有记忆文件
