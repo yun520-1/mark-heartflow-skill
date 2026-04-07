@@ -44,5 +44,25 @@
       "纠",
       "缠"
     ]
+  },
+  {
+    "timestamp": "2026-04-07T08:30:35.068Z",
+    "input": "我爱你",
+    "llmResponse": "mock response",
+    "unknownChars": [
+      "我",
+      "爱",
+      "你"
+    ],
+    "learnedPrograms": [
+      "我",
+      "爱",
+      "你"
+    ],
+    "updatedChars": [
+      "我",
+      "爱",
+      "你"
+    ]
   }
 ]

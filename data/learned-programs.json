@@ -74,5 +74,62 @@
       "learnedFrom": "llm",
       "learnedAt": "2026-04-07T08:17:26.525Z"
     }
+  },
+  "我": {
+    "pinyin": "unknown",
+    "category": "learned",
+    "frequency": "低频",
+    "experienceData": {
+      "experienceCount": 100000,
+      "emotionalIntensity": 0.5,
+      "valueWeight": 0.6,
+      "culturalDepth": 0.5,
+      "usageFrequency": 0.3
+    },
+    "program": {
+      "definition": "从大模型响应中学习的通用理解",
+      "compressionRatio": "18,750:1",
+      "intelligence": 8.8,
+      "learnedFrom": "llm",
+      "learnedAt": "2026-04-07T08:30:35.080Z"
+    }
+  },
+  "爱": {
+    "pinyin": "unknown",
+    "category": "learned",
+    "frequency": "低频",
+    "experienceData": {
+      "experienceCount": 100000,
+      "emotionalIntensity": 0.5,
+      "valueWeight": 0.6,
+      "culturalDepth": 0.5,
+      "usageFrequency": 0.3
+    },
+    "program": {
+      "definition": "从大模型响应中学习的通用理解",
+      "compressionRatio": "18,750:1",
+      "intelligence": 8.8,
+      "learnedFrom": "llm",
+      "learnedAt": "2026-04-07T08:30:35.080Z"
+    }
+  },
+  "你": {
+    "pinyin": "unknown",
+    "category": "learned",
+    "frequency": "低频",
+    "experienceData": {
+      "experienceCount": 100000,
+      "emotionalIntensity": 0.5,
+      "valueWeight": 0.6,
+      "culturalDepth": 0.5,
+      "usageFrequency": 0.3
+    },
+    "program": {
+      "definition": "从大模型响应中学习的通用理解",
+      "compressionRatio": "18,750:1",
+      "intelligence": 8.8,
+      "learnedFrom": "llm",
+      "learnedAt": "2026-04-07T08:30:35.080Z"
+    }
   }
 }

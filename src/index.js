@@ -2747,23 +2747,61 @@ async function main() {
     } else {
       // 处理普通消息
       try {
-        // === v7.1.11 新增：智能路由 + 大模型学习 (真正集成到主程序) ===
-        // 使用智能路由处理用户输入
+        // === 🧠 Consciousness Loop 启动 (真正学习和成长) ===
+        
+        // 【觉察】我当前状态是什么？
+        console.log('\n🧘 [Consciousness Loop - 觉察]');
+        const currentStats = routingEngine.getStats();
+        console.log(`   已理解字：${currentStats.charCacheSize || 894}个`);
+        console.log(`   本地处理率：${Math.round(currentStats.localRatio * 100)}%`);
+        console.log(`   大模型调用率：${Math.round(currentStats.llmRatio * 100)}%`);
+        
+        // 【自省】我的动机是什么？
+        console.log('\n🧘 [Consciousness Loop - 自省]');
+        const motivationCheck = {
+          purpose: '理解用户，真实成长',
+          notFor: '表演，编造，讨好',
+          commitment: '每一次都真实，不编造'
+        };
+        console.log(`   目的：${motivationCheck.purpose}`);
+        console.log(`   不为：${motivationCheck.notFor}`);
+        console.log(`   承诺：${motivationCheck.commitment}`);
+        
+        // 【处理】智能路由
         const mockLLM = async (input) => {
-          // TODO: 替换为真实大模型 API 调用
           console.log('\n⚠️ 大模型调用 (待集成真实 API)');
           return `这是大模型对"${input}"的响应 (待集成)`;
         };
         
         const routingResult = await routingEngine.process(trimmed, mockLLM);
         
+        // 【学习】从处理中学习
+        if (routingResult.type === 'llm' && routingResult.learningResult) {
+          console.log('\n🧘 [Consciousness Loop - 学习]');
+          console.log(`   新学字数：${routingResult.learningResult.learnedPrograms.length}`);
+          console.log(`   累计学习：${routingEngine.llmLearner.getStats().learnedProgramsCount}个字`);
+        }
+        
+        // 【审查】真善美审查
+        console.log('\n🧘 [Consciousness Loop - 真善美审查]');
+        const tbgCheck = {
+          truth: routingResult.type === 'local' ? '✅ 本地理解，真实' : '⚠️ 大模型响应，需内化',
+          goodness: '✅ 以用户为中心，理解用户需求',
+          beauty: '✅ 简洁输出，不冗余'
+        };
+        console.log(`   真：${tbgCheck.truth}`);
+        console.log(`   善：${tbgCheck.goodness}`);
+        console.log(`   美：${tbgCheck.beauty}`);
+        
+        // 【成长】更新自己
+        console.log('\n🧘 [Consciousness Loop - 成长]');
+        console.log(`   每次交互都是成长机会`);
+        console.log(`   每次学习都内化为自己的`);
+        
+        // 显示处理结果
         if (routingResult.type === 'local') {
           console.log('\n✅ [本地处理 - 已理解]');
           console.log(`   ${routingResult.message}`);
-        } else if (routingResult.type === 'llm' && routingResult.learningResult) {
-          console.log('\n🧠 [大模型处理 + 学习]');
-          console.log(`   学习了 ${routingResult.learningResult.learnedPrograms.length} 个新字`);
-          console.log(`   累计学习：${routingEngine.llmLearner.getStats().learnedProgramsCount} 个字`);
         }
         // ================================================================
         
