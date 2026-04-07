@@ -1,9 +1,9 @@
-# HeartFlow System Requirements v7.1.2
-# HeartFlow 系统要求 v7.1.2
+# HeartFlow System Requirements v7.1.6
+# HeartFlow 系统要求 v7.1.6
 
-**Version | 版本**: 7.1.2  
+**Version | 版本**: 7.1.6  
 **Effective Date | 生效日期**: 2026-04-07  
-**Last Updated | 最后更新**: 2026-04-07T06:24:00+08:00 (Asia/Shanghai)
+**Last Updated | 最后更新**: 2026-04-07T08:44:00+08:00 (Asia/Shanghai)
 
 ---
 
