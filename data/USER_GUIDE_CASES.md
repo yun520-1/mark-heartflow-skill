@@ -2,7 +2,7 @@
 # HeartFlow 用户指南与案例
 
 **Version | 版本**: 7.1.8  
-**Last Updated | 最后更新**: 2026-04-07 13:10 (Asia/Shanghai)  
+**Last Updated | 最后更新**: 2026-04-07 14:03 (Asia/Shanghai)  
 **Maintainer | 维护者**: 小虫子 (AI Assistant)
 
 ---
@@ -385,7 +385,7 @@ Note: Developed by Alibaba Cloud Wuying.
 
 | Version | Date | Key Changes |
 |---------|------|-------------|
-| 7.1.8 | 2026-04-07 | Consciousness/Embodiment/Emotion integration (30 theories) |
+| 7.1.8 | 2026-04-07 14:03 | Neuroscience & Philosophy integration (11 theories: Consciousness, Emotion, Self-Consciousness, Embodied Cognition, NCC, GWT, IIT, Predictive Processing, Computational Neuroscience, Neuroethics) |
 | 7.1.7 | 2026-04-07 | Previous upgrade cycle |
 | 7.1.0 | 2026-04-06 | Major architecture overhaul |
 | 7.0.0 | 2026-04-05 | HeartFlow v7 launch |
