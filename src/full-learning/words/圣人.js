@@ -1,0 +1,1 @@
+module.exports = { word: "圣人", type: "词", count: 1 };

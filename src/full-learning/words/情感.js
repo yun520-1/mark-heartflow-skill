@@ -1,0 +1,1 @@
+module.exports = { word: "情感", type: "词", count: 1 };

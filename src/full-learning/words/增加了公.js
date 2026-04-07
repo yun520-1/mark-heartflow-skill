@@ -1,0 +1,1 @@
+module.exports = { word: "增加了公", type: "词", count: 1 };

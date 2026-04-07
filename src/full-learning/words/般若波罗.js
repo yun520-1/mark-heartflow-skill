@@ -1,0 +1,1 @@
+module.exports = { word: "般若波罗", type: "词", count: 1 };
