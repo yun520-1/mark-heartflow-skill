@@ -86,5 +86,49 @@
         "reason": "未统一"
       }
     ]
+  },
+  {
+    "timestamp": 1775552452869,
+    "input": "你好",
+    "passedCount": 2,
+    "totalCount": 6,
+    "results": [
+      {
+        "layer": 1,
+        "name": "觉察",
+        "passed": true,
+        "reason": "数据已核实"
+      },
+      {
+        "layer": 2,
+        "name": "自省",
+        "passed": false,
+        "reason": "未承认错误"
+      },
+      {
+        "layer": 3,
+        "name": "无我",
+        "passed": true,
+        "reason": "以用户为中心"
+      },
+      {
+        "layer": 4,
+        "name": "彼岸",
+        "passed": false,
+        "reason": "停滞不前"
+      },
+      {
+        "layer": 5,
+        "name": "般若波罗蜜",
+        "passed": false,
+        "reason": "无智慧指导"
+      },
+      {
+        "layer": 6,
+        "name": "圣人",
+        "passed": false,
+        "reason": "未统一"
+      }
+    ]
   }
 ]
