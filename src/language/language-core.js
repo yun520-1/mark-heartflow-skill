@@ -17,6 +17,18 @@
 const { CharPrograms, decompressChar } = require('./chinese-dictionary');
 const { CompressionFormulas, SmartCharPrograms, smartDecompress, combineCharsToWord } = require('./smart-compression-engine');
 
+// === 导入批量生成的 894 字程序 (真正加载) ===
+const BatchCharPrograms = require('./char-programs-batch').CharPrograms;
+
+// 合并批量程序和手动定义的程序
+const MergedCharPrograms = {
+  ...SmartCharPrograms,
+  ...BatchCharPrograms
+};
+
+// 更新导出
+module.exports.CharPrograms = MergedCharPrograms;
+
 // === 语言理解引擎类 ===
 class LanguageUnderstandingEngine {
   constructor() {

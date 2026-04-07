@@ -249,9 +249,24 @@ const SmartCharPrograms = {
   }
 };
 
+// === 尝试加载批量生成的程序 (如果存在) ===
+let BatchCharPrograms = {};
+try {
+  BatchCharPrograms = require('./char-programs-batch').CharPrograms || {};
+} catch (e) {
+  // 文件可能不存在，忽略
+}
+
+// === 合并程序库 ===
+const MergedCharPrograms = {
+  ...SmartCharPrograms,
+  ...BatchCharPrograms
+};
+
 // === 智能解压缩引擎 ===
 function smartDecompress(char, depth = 'full') {
-  const charProgram = SmartCharPrograms[char];
+  // 先在手动定义的程序中查找，再在批量程序中查找
+  const charProgram = SmartCharPrograms[char] || BatchCharPrograms[char];
   
   if (!charProgram) {
     return {
@@ -261,13 +276,16 @@ function smartDecompress(char, depth = 'full') {
     };
   }
 
-  const result = charProgram.program();
+  // 批量程序是静态对象，手动程序是函数
+  const result = typeof charProgram.program === 'function' 
+    ? charProgram.program()
+    : charProgram.program;
   
   if (depth === 'shallow') {
     return {
       char,
       pinyin: charProgram.pinyin,
-      meaning: result.meaning || result.function,
+      meaning: result.meaning || result.function || result.definition,
       intelligence: result.intelligence
     };
   }
@@ -276,10 +294,10 @@ function smartDecompress(char, depth = 'full') {
   return {
     char,
     pinyin: charProgram.pinyin,
-    radical: charProgram.radical,
-    strokes: charProgram.strokes,
-    frequency: charProgram.frequency,
-    type: charProgram.type,
+    radical: charProgram.radical || 'unknown',
+    strokes: charProgram.strokes || 0,
+    frequency: charProgram.frequency || '中频',
+    type: charProgram.type || 'unknown',
     ...result,
     decompressionNote: `这是"${char}"的智能解压缩`,
     metadata: {
