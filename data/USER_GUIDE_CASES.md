@@ -1,8 +1,8 @@
 # HeartFlow User Guide & Cases
 # HeartFlow 用户指南与案例
 
-**Version | 版本**: 7.1.8  
-**Last Updated | 最后更新**: 2026-04-07 14:03 (Asia/Shanghai)  
+**Version | 版本**: 7.1.9  
+**Last Updated | 最后更新**: 2026-04-07 14:31 (Asia/Shanghai)  
 **Maintainer | 维护者**: 小虫子 (AI Assistant)
 
 ---
@@ -385,6 +385,7 @@ Note: Developed by Alibaba Cloud Wuying.
 
 | Version | Date | Key Changes |
 |---------|------|-------------|
+| 7.1.9 | 2026-04-07 14:31 | Emotion+Embodied Cognition+Neuroscience (18 theories: 3 traditions unified, 6 components, prototype structure, ecological/connectionist/phenomenological, NCC/GWT/IIT) |
 | 7.1.8 | 2026-04-07 14:03 | Neuroscience & Philosophy integration (11 theories: Consciousness, Emotion, Self-Consciousness, Embodied Cognition, NCC, GWT, IIT, Predictive Processing, Computational Neuroscience, Neuroethics) |
 | 7.1.7 | 2026-04-07 | Previous upgrade cycle |
 | 7.1.0 | 2026-04-06 | Major architecture overhaul |
@@ -393,6 +394,6 @@ Note: Developed by Alibaba Cloud Wuying.
 
 ---
 
-**Last Updated | 最后更新**: 2026-04-07 13:10 (Asia/Shanghai)  
-**Next Update | 下次更新**: 2026-04-07 13:33 (v7.1.9 cycle)  
-**Document Version | 文档版本**: 7.1.8
+**Last Updated | 最后更新**: 2026-04-07 14:31 (Asia/Shanghai)  
+**Next Update | 下次更新**: 2026-04-07 14:54 (v7.2.0 cycle)  
+**Document Version | 文档版本**: 7.1.9
