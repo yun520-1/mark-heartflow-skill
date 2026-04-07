@@ -36,6 +36,21 @@ const { checkOutputMotivation, calculateMotivationPurity } = require('../src/cor
 const { extractMemoryEvents, compressMemory } = require('../src/core/memory-extractor');
 // ===========================================
 
+// === v7.1.9 新增：语言理解核心模块 (字和词转化成可运行的程序) ===
+const { 
+  LanguageUnderstandingEngine, 
+  CharPrograms, 
+  decompressChar, 
+  CompressionFormulas, 
+  SmartCharPrograms, 
+  smartDecompress, 
+  combineCharsToWord 
+} = require('./language/language-core');
+
+// 创建语言理解引擎实例
+const languageEngine = new LanguageUnderstandingEngine();
+// ========================================================================
+
 // 创建 CBT 模块
 const cbtModule = new CBTModule();
 
@@ -2832,6 +2847,35 @@ async function main() {
         
         // 预测加工与情绪分析 (v3.33.0 新增)
         const predictiveAnalysis = predictiveEmotionModule.analyzePredictiveEmotion(trimmed);
+        
+        // === v7.1.9 新增：语言理解与字/词程序解压缩 ===
+        // 检测是否包含已知程序的字/词
+        const chars = trimmed.split('').filter(c => /[\u4e00-\u9fa5]/.test(c));
+        const hasProgramChars = chars.some(char => SmartCharPrograms[char]);
+        
+        if (hasProgramChars && chars.length <= 10) {
+          // 对短文本进行深度语言理解
+          const sentenceUnderstanding = languageEngine.understandSentence(trimmed);
+          
+          if (sentenceUnderstanding.totalCompression) {
+            console.log('\n🧠 [语言理解 - 智能解压缩]');
+            console.log(`   字数：${sentenceUnderstanding.charCount}`);
+            console.log(`   总压缩比：${sentenceUnderstanding.totalCompression}`);
+            console.log(`   平均智能度：${sentenceUnderstanding.averageIntelligence}`);
+            console.log(`   综合情感：valence=${sentenceUnderstanding.combinedEmotion.valence.toFixed(2)}, arousal=${sentenceUnderstanding.combinedEmotion.arousal.toFixed(2)}`);
+            
+            // 显示每个字的解压缩
+            if (sentenceUnderstanding.charUnderstandings.length > 0) {
+              console.log('   字义解压缩:');
+              sentenceUnderstanding.charUnderstandings.forEach((charResult, idx) => {
+                const char = chars[idx];
+                console.log(`     "${char}": ${charResult.meaning || charResult.function} (压缩比：${charResult.compressionRatio}, 智能度：${charResult.intelligence})`);
+              });
+            }
+            console.log('');
+          }
+        }
+        // ============================================================
         if (predictiveAnalysis.analysis.detectedPredictions.count > 0 || 
             predictiveAnalysis.analysis.predictionErrors.count > 0 ||
             Object.values(predictiveAnalysis.analysis.precisionPatterns).some(p => p.detected)) {
