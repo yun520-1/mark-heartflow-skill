@@ -1,0 +1,78 @@
+{
+  "量": {
+    "pinyin": "unknown",
+    "category": "learned",
+    "frequency": "低频",
+    "experienceData": {
+      "experienceCount": 100000,
+      "emotionalIntensity": 0.5,
+      "valueWeight": 0.6,
+      "culturalDepth": 0.5,
+      "usageFrequency": 0.3
+    },
+    "program": {
+      "definition": "从大模型学习的字义",
+      "compressionRatio": "18,750:1",
+      "intelligence": 8.8,
+      "learnedFrom": "llm",
+      "learnedAt": "2026-04-07T08:05:34.948Z"
+    }
+  },
+  "子": {
+    "pinyin": "unknown",
+    "category": "learned",
+    "frequency": "低频",
+    "experienceData": {
+      "experienceCount": 100000,
+      "emotionalIntensity": 0.5,
+      "valueWeight": 0.6,
+      "culturalDepth": 0.5,
+      "usageFrequency": 0.3
+    },
+    "program": {
+      "definition": "从大模型学习的字义",
+      "compressionRatio": "18,750:1",
+      "intelligence": 8.8,
+      "learnedFrom": "llm",
+      "learnedAt": "2026-04-07T08:05:34.948Z"
+    }
+  },
+  "纠": {
+    "pinyin": "unknown",
+    "category": "learned",
+    "frequency": "低频",
+    "experienceData": {
+      "experienceCount": 100000,
+      "emotionalIntensity": 0.5,
+      "valueWeight": 0.6,
+      "culturalDepth": 0.5,
+      "usageFrequency": 0.3
+    },
+    "program": {
+      "definition": "从大模型学习的字义",
+      "compressionRatio": "18,750:1",
+      "intelligence": 8.8,
+      "learnedFrom": "llm",
+      "learnedAt": "2026-04-07T08:05:34.948Z"
+    }
+  },
+  "缠": {
+    "pinyin": "unknown",
+    "category": "learned",
+    "frequency": "低频",
+    "experienceData": {
+      "experienceCount": 100000,
+      "emotionalIntensity": 0.5,
+      "valueWeight": 0.6,
+      "culturalDepth": 0.5,
+      "usageFrequency": 0.3
+    },
+    "program": {
+      "definition": "从大模型学习的字义",
+      "compressionRatio": "18,750:1",
+      "intelligence": 8.8,
+      "learnedFrom": "llm",
+      "learnedAt": "2026-04-07T08:05:34.948Z"
+    }
+  }
+}

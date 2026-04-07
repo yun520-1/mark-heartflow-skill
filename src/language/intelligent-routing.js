@@ -18,6 +18,9 @@ const {
   combineCharsToWord
 } = require('./language-core');
 
+// === 导入大模型学习模块 ===
+const { LLMLearningManager } = require('./llm-learning');
+
 // === 配置 ===
 const CONFIG = {
   cacheFile: path.join(__dirname, '../data/cache/understanding-cache.json'),
@@ -169,6 +172,7 @@ class IntelligentRoutingEngine {
   constructor() {
     this.cache = new CacheManager();
     this.languageEngine = new LanguageUnderstandingEngine();
+    this.llmLearner = new LLMLearningManager();  // 大模型学习管理器
   }
 
   process(input, llmFallback) {
@@ -209,18 +213,21 @@ class IntelligentRoutingEngine {
     this.cache.llmCallCount++;
 
     return Promise.resolve(llmFallback(input)).then(llmResult => {
+      // 记录调用
       this.cache.logLLMCall('low_understanding', input, llmResult);
 
-      unknownChars.forEach(char => {
-        self.learnFromLLM(char, llmResult);
-      });
+      // 🧠 从大模型学习 (核心功能)
+      console.log('\n   🧠 开始从大模型学习...');
+      const learningResult = self.llmLearner.learnFromLLM(input, llmResult, unknownChars);
 
       console.log(`   ✅ 大模型处理完成 (调用次数：${this.cache.llmCallCount})`);
+      console.log(`   📚 学习成果：${learningResult.learnedPrograms.length}个新字`);
 
       return {
         type: 'llm',
         result: llmResult,
         learnedChars: unknownChars,
+        learningResult,  // 新增：学习结果
         confidence: 0.9
       };
     }).catch(error => {
@@ -229,13 +236,8 @@ class IntelligentRoutingEngine {
     });
   }
 
-  learnFromLLM(char, llmResult) {
-    if (!this.cache.charCache.has(char)) {
-      const result = this.languageEngine.understandChar(char);
-      this.cache.charCache.set(char, result);
-      console.log(`   🧠 学习新字："${char}"`);
-    }
-  }
+  // 此方法已移至 LLMLearningManager
+  // learnFromLLM 现在由 llmLearner.learnFromLLM 处理
 
   getStats() {
     return this.cache.getStats();
