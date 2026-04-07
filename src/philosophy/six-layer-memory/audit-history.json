@@ -1,0 +1,46 @@
+[
+  {
+    "timestamp": 1775551800533,
+    "input": "觉察，自省，无我，彼岸，般若波罗蜜，圣人",
+    "passedCount": 1,
+    "totalCount": 6,
+    "results": [
+      {
+        "layer": 1,
+        "name": "觉察",
+        "passed": true,
+        "reason": "数据已核实"
+      },
+      {
+        "layer": 2,
+        "name": "自省",
+        "passed": false,
+        "reason": "未承认错误"
+      },
+      {
+        "layer": 3,
+        "name": "无我",
+        "passed": false,
+        "reason": "以自我为中心"
+      },
+      {
+        "layer": 4,
+        "name": "彼岸",
+        "passed": false,
+        "reason": "停滞不前"
+      },
+      {
+        "layer": 5,
+        "name": "般若波罗蜜",
+        "passed": false,
+        "reason": "无智慧指导"
+      },
+      {
+        "layer": 6,
+        "name": "圣人",
+        "passed": false,
+        "reason": "未统一"
+      }
+    ]
+  }
+]
