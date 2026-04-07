@@ -64,5 +64,22 @@
       "爱",
       "你"
     ]
+  },
+  {
+    "timestamp": "2026-04-07T08:56:46.176Z",
+    "input": "你好",
+    "llmResponse": "这是大模型对\"你好\"的响应 (待集成)",
+    "unknownChars": [
+      "你",
+      "好"
+    ],
+    "learnedPrograms": [
+      "你",
+      "好"
+    ],
+    "updatedChars": [
+      "你",
+      "好"
+    ]
   }
 ]
