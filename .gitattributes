@@ -1,31 +1,27 @@
-# 隐藏技术文件从 GitHub 文件列表
-*.md linguist-generated=true
-*.log linguist-generated=true
-*.json linguist-generated=true
-*.py linguist-generated=true
+# 隐藏所有技术文件，只保留核心文档
+# GitHub 文件列表将只显示 README 和 docs/
+
+# 隐藏所有脚本
 *.sh linguist-generated=true
+*.py linguist-generated=true
+*.js linguist-generated=true
 *.plist linguist-generated=true
-.DS_Store linguist-generated=true
 
-# 归档目录不显示
-archive/** linguist-generated=true
-cron/** linguist-generated=true
-data/** linguist-generated=true
-memory/** linguist-generated=true
-reports/** linguist-generated=true
-scripts/** linguist-generated=true
-src/** linguist-generated=true
-state/** linguist-generated=true
-temp/** linguist-generated=true
-test/** linguist-generated=true
-upgrades/** linguist-generated=true
-api/** linguist-generated=true
-blog/** linguist-generated=true
-skill/** linguist-generated=true
+# 隐藏所有数据文件
+*.json linguist-generated=true
+*.log linguist-generated=true
+*.md linguist-generated=true
 
-# 只保留核心文档
+# 隐藏所有目录（除了 docs/）
+**/* linguist-generated=true
+
+# 明确保留的文件
 README.md -linguist-generated
-docs/** -linguist-generated
-CONTRIBUTING.md -linguist-generated
 LICENSE -linguist-generated
 package.json -linguist-generated
+CONTRIBUTING.md -linguist-generated
+docs/** -linguist-generated
+
+# 隐藏系统文件
+.DS_Store linguist-generated=true
+.gitignore linguist-generated=true
