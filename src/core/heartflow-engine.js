@@ -883,3 +883,97 @@ module.exports.generateWorkflowReport = generateWorkflowReport;
 module.exports.resetWorkflow = resetWorkflow;
 module.exports.setWorkflowConfig = setWorkflowConfig;
 module.exports.WorkflowSwitch = WorkflowSwitch;
+
+/**
+ * ========================================
+ * 心流状态预测与解释模块
+ * ========================================
+ */
+
+const FlowPredictor = require('./flow-predictor.js');
+
+/**
+ * 记录编辑行为
+ * @param {object} editEvent - 编辑事件
+ */
+function recordEditBehavior(editEvent) {
+  return FlowPredictor.flowPredictor.recordEdit(editEvent);
+}
+
+/**
+ * 记录错误事件
+ * @param {object} errorEvent - 错误事件
+ */
+function recordErrorBehavior(errorEvent) {
+  return FlowPredictor.flowPredictor.recordError(errorEvent);
+}
+
+/**
+ * 记录暂停时长
+ * @param {number} duration - 暂停时长 (秒)
+ */
+function recordPauseBehavior(duration) {
+  return FlowPredictor.flowPredictor.recordPause(duration);
+}
+
+/**
+ * 分析语言负面模式
+ * @param {string} userInput - 用户输入
+ * @returns {object} 分析结果
+ */
+function analyzeNegativePatterns(userInput) {
+  return FlowPredictor.flowPredictor.analyzeLanguage(userInput);
+}
+
+/**
+ * 评估是否需要干预
+ * @returns {object} 干预评估结果
+ */
+function evaluateFlowIntervention() {
+  return FlowPredictor.flowPredictor.evaluateIntervention();
+}
+
+/**
+ * 获取心流状态
+ * @returns {object} 心流状态
+ */
+function getFlowState() {
+  return FlowPredictor.flowPredictor.getFlowState();
+}
+
+/**
+ * 生成心流报告
+ * @returns {string} 报告文本
+ */
+function generateFlowReport() {
+  return FlowPredictor.flowPredictor.generateReport();
+}
+
+/**
+ * 重置心流预测器
+ * @returns {object} 重置结果
+ */
+function resetFlowPredictor() {
+  return FlowPredictor.flowPredictor.reset();
+}
+
+/**
+ * 设置心流预测配置
+ * @param {object} config - 配置对象
+ * @returns {object} 配置结果
+ */
+function setFlowConfig(config) {
+  return FlowPredictor.flowPredictor.setConfig(config);
+}
+
+// 导出心流预测相关函数
+module.exports.recordEditBehavior = recordEditBehavior;
+module.exports.recordErrorBehavior = recordErrorBehavior;
+module.exports.recordPauseBehavior = recordPauseBehavior;
+module.exports.analyzeNegativePatterns = analyzeNegativePatterns;
+module.exports.evaluateFlowIntervention = evaluateFlowIntervention;
+module.exports.getFlowState = getFlowState;
+module.exports.generateFlowReport = generateFlowReport;
+module.exports.resetFlowPredictor = resetFlowPredictor;
+module.exports.setFlowConfig = setFlowConfig;
+module.exports.FlowPredictor = FlowPredictor;
