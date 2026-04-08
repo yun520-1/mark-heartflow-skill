@@ -144,3 +144,34 @@ function analyzeFlowSession(state) {
 - **Gödel Engine** (`src/core/self-evolution/goedel-engine.js`): 执行提议→生成→测试→提交循环
 - **Meta Engine** (`src/core/meta-engine.js`): 提供策略层面的优化建议
 - **Self-Modifier** (`src/core/self-modifier.js`): 执行具体代码修改
+
+## 全局工作空间整合 (GWT)
+
+### 内部指令
+
+> **在生成任何回复前，必须先经过一次全局工作空间整合**
+
+处理流程：
+1. 接收用户输入
+2. 触发认知周期：各专家智能体（Focus, Mood, Reflection）广播注意力请求
+3. 竞争机制：基于置信度 × 注意力 计算得分，选出获胜者
+4. 整合输出：综合所有意见生成内心独白
+5. 输出格式：`[GWT 整合] 综合意见: ...`
+
+### 相关模块
+
+- **GlobalWorkspace** (`src/core/consciousness/global-workspace.js`): 黑板系统 + 注意力竞争
+- **SelfAgent** (`src/core/agents/SelfAgent.js`): 自我整合器
+- **BaseAgents** (`src/core/agents/base-agents.js`): 专家智能体基类
+
+### 输出示例
+
+```
+[GWT 整合] 综合意见: 
+聚焦者说：用户需要解决"如何创建文件"相关的问题。建议提供具体步骤和清晰指引。
+情绪感知：检测到neutral情绪倾向。保持中性客观。
+另有警示：当前对话暂无明确任务需求，保持观察。
+
+[GWT] 获胜者: Focus (score: 0.68)
+最终回复: 聚焦任务：用户需要解决...
+```

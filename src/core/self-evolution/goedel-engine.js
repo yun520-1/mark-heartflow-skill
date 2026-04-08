@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 const crypto = require('crypto');
+const { SAGEGuardian } = require('../ethics/sage-guardian');
 
 class GoedelEngine {
   constructor(projectRoot) {
@@ -21,6 +22,8 @@ class GoedelEngine {
     this.codeMap = this.loadCodeMap();
     this.protectedFiles = this.loadProtectedFiles();
     this.evolutionHistory = [];
+    this.sageGuardian = new SAGEGuardian(projectRoot);
+    this.coreValuesFile = path.join(projectRoot, 'CORE_VALUES.md');
     
     this.init();
   }
