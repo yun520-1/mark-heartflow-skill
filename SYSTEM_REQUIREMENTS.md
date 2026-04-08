@@ -1,9 +1,9 @@
 # HeartFlow System Requirements | HeartFlow 系统要求
 
 ## Version | 版本
-**v7.2.44**
+**v7.3.0**
 
-**Last Updated**: 2026-04-08 23:00 (Asia/Shanghai)**: 2026-04-08 (Asia/Shanghai)
+**Last Updated**: 2026-04-08 23:30 (Asia/Shanghai)
 
 ---
 
