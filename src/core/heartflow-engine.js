@@ -404,3 +404,66 @@ module.exports.getStatePrompt = getStatePrompt;
 module.exports.resetStateMachine = resetStateMachine;
 module.exports.loadStateMachine = loadStateMachine;
 module.exports.saveStateMachine = saveStateMachine;
+
+/**
+ * ========================================
+ * 多智能体架构 (NeuroCircuit)
+ * ========================================
+ */
+
+const AgentManager = require('./agents/AgentManager.js');
+
+// 全局代理管理器实例
+let agentManagerInstance = null;
+
+/**
+ * 获取代理管理器
+ */
+function getAgentManager() {
+  if (!agentManagerInstance) {
+    agentManagerInstance = new AgentManager();
+  }
+  return agentManagerInstance;
+}
+
+/**
+ * 处理代理请求
+ * @param {string} userInput - 用户输入
+ * @param {string} agentName - 指定代理 (可选)
+ * @returns {object} 代理响应
+ */
+function handleAgentRequest(userInput, agentName = null) {
+  const manager = getAgentManager();
+  return manager.processInput(userInput, agentName);
+}
+
+/**
+ * 开始心流会话
+ */
+function startFlowSession() {
+  const manager = getAgentManager();
+  return manager.startSession();
+}
+
+/**
+ * 结束心流会话
+ */
+function endFlowSession() {
+  const manager = getAgentManager();
+  return manager.endSession();
+}
+
+/**
+ * 获取代理状态
+ */
+function getAgentStatus() {
+  const manager = getAgentManager();
+  return manager.getStatus();
+}
+
+// 导出多智能体相关函数
+module.exports.getAgentManager = getAgentManager;
+module.exports.handleAgentRequest = handleAgentRequest;
+module.exports.startFlowSession = startFlowSession;
+module.exports.endFlowSession = endFlowSession;
+module.exports.getAgentStatus = getAgentStatus;
