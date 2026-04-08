@@ -11,3 +11,6 @@
 
 # 每周日清理旧日志
 0 3 * * 0 find ~/.jvs/.openclaw/workspace/mark-heartflow-skill/.opencode -name "*.log" -mtime +7 -delete 2>/dev/null
+
+# HeartFlow 每 30 分钟自动运行
+*/30 * * * * cd ~/.jvs/.openclaw/workspace/mark-heartflow-skill && node .opencode/auto-runner.js >> .opencode/auto-runner.log 2>&1
