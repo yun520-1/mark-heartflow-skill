@@ -643,3 +643,77 @@ module.exports.updateSubGoal = updateSubGoal;
 module.exports.setNudgeConfig = setNudgeConfig;
 module.exports.resetIntentionTracker = resetIntentionTracker;
 module.exports.IntentionTracker = IntentionTracker;
+
+/**
+ * ========================================
+ * 伦理安全模块
+ * ========================================
+ */
+
+const EthicsSafety = require('./EthicsSafety.js');
+
+/**
+ * 获取免责声明
+ */
+function getEthicsDisclaimer() {
+  return EthicsSafety.ethicsSafety.getDisclaimer();
+}
+
+/**
+ * 处理用户输入 (伦理安全检查)
+ * @param {string} userInput - 用户输入
+ * @returns {object} 检查结果
+ */
+function checkEthicsSafety(userInput) {
+  return EthicsSafety.ethicsSafety.processInput(userInput);
+}
+
+/**
+ * 检测负面情绪
+ * @param {string} userInput - 用户输入
+ * @returns {object} 检测结果
+ */
+function detectNegativeEmotion(userInput) {
+  return EthicsSafety.ethicsSafety.detectNegativeEmotion(userInput);
+}
+
+/**
+ * 获取危机干预响应
+ * @returns {object} 干预建议
+ */
+function getCrisisIntervention() {
+  return EthicsSafety.ethicsSafety.checkCrisisIntervention();
+}
+
+/**
+ * 生成危机响应文本
+ * @param {object} intervention - 干预建议
+ * @returns {string} 响应文本
+ */
+function generateCrisisResponse(intervention) {
+  return EthicsSafety.ethicsSafety.generateCrisisResponse(intervention);
+}
+
+/**
+ * 获取伦理安全状态
+ */
+function getEthicsSafetyStatus() {
+  return EthicsSafety.ethicsSafety.getStatus();
+}
+
+/**
+ * 重置伦理安全模块
+ */
+function resetEthicsSafety() {
+  return EthicsSafety.ethicsSafety.reset();
+}
+
+// 导出伦理安全相关函数
+module.exports.getEthicsDisclaimer = getEthicsDisclaimer;
+module.exports.checkEthicsSafety = checkEthicsSafety;
+module.exports.detectNegativeEmotion = detectNegativeEmotion;
+module.exports.getCrisisIntervention = getCrisisIntervention;
+module.exports.generateCrisisResponse = generateCrisisResponse;
+module.exports.getEthicsSafetyStatus = getEthicsSafetyStatus;
+module.exports.resetEthicsSafety = resetEthicsSafety;
+module.exports.EthicsSafety = EthicsSafety;
