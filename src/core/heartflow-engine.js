@@ -562,3 +562,84 @@ module.exports.getEmpathyState = getEmpathyState;
 module.exports.updateBigFiveInState = updateBigFiveInState;
 module.exports.BigFivePersonality = BigFivePersonality;
 module.exports.EmpathyAssessment = EmpathyAssessment;
+
+/**
+ * ========================================
+ * 意图追踪与温和干预
+ * ========================================
+ */
+
+const IntentionTracker = require('./IntentionTracker.js');
+
+/**
+ * 设定主要目标
+ * @param {string} goal - 目标描述
+ * @param {array} subGoals - 子目标列表
+ */
+function setPrimaryGoal(goal, subGoals = []) {
+  return IntentionTracker.intentionTracker.setPrimaryGoal(goal, subGoals);
+}
+
+/**
+ * 检查偏离并生成干预
+ * @param {string} userInput - 用户输入
+ * @returns {object} 干预结果
+ */
+function checkAndNudge(userInput) {
+  const deviation = IntentionTracker.intentionTracker.checkDeviation(userInput);
+  const nudge = IntentionTracker.intentionTracker.generateNudge(deviation);
+  
+  return {
+    deviation,
+    nudge,
+    shouldNudge: nudge !== null
+  };
+}
+
+/**
+ * 获取目标进度
+ */
+function getGoalProgress() {
+  return IntentionTracker.intentionTracker.getProgress();
+}
+
+/**
+ * 生成进度报告
+ */
+function generateProgressReport() {
+  return IntentionTracker.intentionTracker.generateProgressReport();
+}
+
+/**
+ * 更新子目标状态
+ * @param {number} index - 子目标索引
+ * @param {boolean} completed - 完成状态
+ */
+function updateSubGoal(index, completed) {
+  return IntentionTracker.intentionTracker.updateSubGoal(index, completed);
+}
+
+/**
+ * 设置干预配置
+ * @param {object} config - 配置对象
+ */
+function setNudgeConfig(config) {
+  return IntentionTracker.intentionTracker.setNudgeConfig(config);
+}
+
+/**
+ * 重置意图追踪
+ */
+function resetIntentionTracker() {
+  return IntentionTracker.intentionTracker.reset();
+}
+
+// 导出意图追踪相关函数
+module.exports.setPrimaryGoal = setPrimaryGoal;
+module.exports.checkAndNudge = checkAndNudge;
+module.exports.getGoalProgress = getGoalProgress;
+module.exports.generateProgressReport = generateProgressReport;
+module.exports.updateSubGoal = updateSubGoal;
+module.exports.setNudgeConfig = setNudgeConfig;
+module.exports.resetIntentionTracker = resetIntentionTracker;
+module.exports.IntentionTracker = IntentionTracker;
