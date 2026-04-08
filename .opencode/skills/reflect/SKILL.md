@@ -114,3 +114,33 @@ function analyzeFlowSession(state) {
 - `feedback_history` - 反馈历史数组  
 - `achievements` - 成就记录数组
 - `big_five_scores` - 大五人格评分
+
+## 自指涉进化命令
+
+### `/flow evolve`
+
+触发自指涉代码进化循环：
+
+1. **调用 Gödel Engine** 分析自身源代码架构
+2. **识别可优化点**：扫描所有核心模块中的函数
+3. **生成改进提议**：基于分析结果生成修改建议
+4. **输出报告**：显示发现的优化点数量
+
+**输出示例**：
+```
+[自指涉进化] 正在分析自身架构...
+📊 已扫描 15 个核心文件，识别 127 个函数
+🔍 发现 3 处可优化点：
+
+1. [heartflow-engine.js:calculatePAD] 建议优化情绪敏感度参数
+2. [meta-engine.js:plan] 建议改进策略选择算法  
+3. [personality-engine.js:update] 建议增加批量更新支持
+
+是否查看详情并应用改进？ (是/否)
+```
+
+### 配合模块
+
+- **Gödel Engine** (`src/core/self-evolution/goedel-engine.js`): 执行提议→生成→测试→提交循环
+- **Meta Engine** (`src/core/meta-engine.js`): 提供策略层面的优化建议
+- **Self-Modifier** (`src/core/self-modifier.js`): 执行具体代码修改
