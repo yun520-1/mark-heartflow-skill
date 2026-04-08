@@ -81,7 +81,23 @@ echo "✅ 升级报告已生成"
 # 3. Git 操作
 echo ""
 echo "📦 Git 操作..."
-git pull --rebase origin main || echo "Git pull 失败，继续..."
+
+# 暂存本地更改
+git stash push -m "hourly-upgrade-$(date +%s)" 2>/dev/null || true
+
+# 拉取远程更新
+git fetch origin main
+git rebase origin/main || {
+    echo "Rebase冲突，解决中..."
+    # 接受远程版本解决冲突
+    git checkout --theirs . 2>/dev/null || true
+    git add -A
+    git rebase --continue 2>/dev/null || true
+}
+
+# 恢复本地更改
+git stash pop 2>/dev/null || true
+
 git add -A
 git commit -m "HeartFlow v$NEW_VERSION - 定时升级
 
