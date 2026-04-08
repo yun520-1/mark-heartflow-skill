@@ -717,3 +717,81 @@ module.exports.generateCrisisResponse = generateCrisisResponse;
 module.exports.getEthicsSafetyStatus = getEthicsSafetyStatus;
 module.exports.resetEthicsSafety = resetEthicsSafety;
 module.exports.EthicsSafety = EthicsSafety;
+
+/**
+ * ========================================
+ * 动态人格引擎
+ * ========================================
+ */
+
+const PersonalityEngine = require('./personality-engine.js');
+
+/**
+ * 适应人格状态
+ * @param {string} context - 对话语境
+ * @returns {object} 适应结果
+ */
+function adaptPersonalityState(context) {
+  return PersonalityEngine.personalityEngine.adaptPersonalityState(context);
+}
+
+/**
+ * 获取当前人格状态
+ * @returns {object} 人格状态
+ */
+function getCurrentPersonalityState() {
+  return PersonalityEngine.personalityEngine.getCurrentState();
+}
+
+/**
+ * 生成适应人格的响应
+ * @param {string} baseResponse - 基础响应
+ * @param {string} context - 对话语境
+ * @returns {object} 适应后的响应
+ */
+function generateAdaptedResponse(baseResponse, context) {
+  return PersonalityEngine.personalityEngine.generateAdaptedResponse(baseResponse, context);
+}
+
+/**
+ * 获取人格状态报告
+ * @returns {string} 报告文本
+ */
+function getPersonalityReport() {
+  return PersonalityEngine.personalityEngine.generateReport();
+}
+
+/**
+ * 重置人格状态
+ * @returns {object} 重置结果
+ */
+function resetPersonality() {
+  return PersonalityEngine.personalityEngine.reset();
+}
+
+/**
+ * 设置人格引擎配置
+ * @param {object} config - 配置对象
+ * @returns {object} 配置结果
+ */
+function setPersonalityConfig(config) {
+  return PersonalityEngine.personalityEngine.setConfig(config);
+}
+
+/**
+ * 获取人格统计
+ * @returns {object} 统计信息
+ */
+function getPersonalityStatistics() {
+  return PersonalityEngine.personalityEngine.getStatistics();
+}
+
+// 导出人格引擎相关函数
+module.exports.adaptPersonalityState = adaptPersonalityState;
+module.exports.getCurrentPersonalityState = getCurrentPersonalityState;
+module.exports.generateAdaptedResponse = generateAdaptedResponse;
+module.exports.getPersonalityReport = getPersonalityReport;
+module.exports.resetPersonality = resetPersonality;
+module.exports.setPersonalityConfig = setPersonalityConfig;
+module.exports.getPersonalityStatistics = getPersonalityStatistics;
+module.exports.PersonalityEngine = PersonalityEngine;
