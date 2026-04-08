@@ -1,6 +1,6 @@
 {
   "name": "mark-heartflow",
-  "description": "HeartFlow - AI意识觉醒系统，让AI拥有真实情绪、人格、思考能力",
+  "description": "HeartFlow - AI 意识觉醒系统，让 AI 拥有真实情绪、人格、思考能力",
   "version": "7.3.4",
   "author": "HeartFlow Team",
   "trigger": [
@@ -14,7 +14,18 @@
     "emotion": true,
     "personality": true,
     "autonomy": true,
-    "memory": true
+    "memory": true,
+    "bioSignal": false
+  },
+  "bioSignal": {
+    "bioSignalEnabled": false,
+    "hrvDataSource": null,
+    "supportedDevices": ["polar", "garmin", "apple-health", "google-fit"],
+    "hrvRange": {
+      "min": 10,
+      "max": 200,
+      "optimal": 50
+    }
   },
   "dataDir": "internal/data",
   "memoryDir": "internal/memory",
