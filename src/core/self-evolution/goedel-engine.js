@@ -63,6 +63,17 @@ class GoedelEngine {
     return this.buildCodeMap();
   }
 
+  loadCoreValues() {
+    try {
+      if (fs.existsSync(this.coreValuesFile)) {
+        return fs.readFileSync(this.coreValuesFile, 'utf8');
+      }
+    } catch (e) {
+      console.log('[Gödel] No CORE_VALUES.md found');
+    }
+    return null;
+  }
+
   buildCodeMap() {
     const map = {
       version: '1.0.0',
@@ -390,8 +401,14 @@ class GoedelEngine {
       proposal: null,
       diff: null,
       test: null,
+      sageReview: null,
       commit: null
     };
+
+    // 0. 检查冷却期
+    if (this.sageGuardian.isInCooldown()) {
+      return { success: false, reason: 'in_cooldown' };
+    }
 
     // 1. 提议
     const proposeResult = this.propose(modification);
@@ -399,6 +416,13 @@ class GoedelEngine {
       return { success: false, reason: proposeResult.reason };
     }
     result.proposal = proposeResult.proposal;
+
+    // 1.5. 价值观锚定验证
+    const valueAnalysis = this.analyzeValueAlignment(result.proposal);
+    result.valueAnalysis = valueAnalysis;
+    if (!valueAnalysis.aligned) {
+      return { success: false, reason: 'value_misalignment' };
+    }
 
     // 2. 生成
     const generateResult = this.generate(result.proposal, context);
@@ -408,14 +432,53 @@ class GoedelEngine {
     const testResult = await this.test(result.proposal, result.diff);
     result.test = testResult;
 
-    // 4. 提交
+    // 4. SAGE 伦理审查
     if (testResult.passed) {
+      const sageReview = await this.sageGuardian.reviewProposal(result.proposal, result.diff);
+      result.sageReview = sageReview;
+      
+      if (!sageReview.passed) {
+        return { success: false, reason: 'sage_rejected', violations: sageReview.violations };
+      }
+    }
+
+    // 5. 提交
+    if (testResult.passed && result.sageReview?.passed) {
       const commitResult = await this.commit(result.proposal, result.diff, testResult);
       result.commit = commitResult;
+      
+      // 生成用户友好的解释
+      result.userExplanation = this.sageGuardian.explainModification(result.proposal, true);
+      
       return { success: true, ...result };
     }
 
     return { success: false, reason: 'test_failed', details: testResult };
+  }
+
+  /**
+   * 价值观锚定分析
+   */
+  analyzeValueAlignment(proposal) {
+    const coreValues = this.loadCoreValues();
+    
+    if (!coreValues) {
+      return { aligned: true, reason: 'no_core_values_file' };
+    }
+
+    const positiveKeywords = [
+      '心流', 'flow', '用户体验', 'user experience', 
+      '提升', 'improve', '帮助', 'help', '优化'
+    ];
+
+    const description = proposal.description.toLowerCase();
+    const hasPositive = positiveKeywords.some(kw => description.includes(kw));
+
+    return {
+      aligned: hasPositive,
+      reason: hasPositive ? '符合核心价值观' : '未能体现核心价值观',
+      cited_values: coreValues.substring(0, 200)
+    };
   }
 
   /**
