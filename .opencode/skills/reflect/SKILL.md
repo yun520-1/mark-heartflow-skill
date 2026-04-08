@@ -208,3 +208,55 @@ function analyzeFlowSession(state) {
 - **SAGE Guardian** (`src/core/ethics/sage-guardian.js`): 伦理审查 + 冷却期
 - **Rollback Manager** (`src/core/self-evolution/rollback-manager.js`): 性能监控 + 自动回滚
 - **Gödel Engine** (`src/core/self-evolution/goedel-engine.js`): 价值观锚定验证
+
+## 自主决策层
+
+### 空闲状态目标生成
+
+> 当系统处于空闲状态（用户超过30分钟无交互），激活 `goal-generator.js`，自主选择优先级最高的目标，并开始规划执行步骤，无需等待用户指令。
+
+**触发条件**：
+- 用户超过30分钟无交互
+- 系统处于空闲状态
+
+**执行流程**：
+1. 调用 `GoalGenerator.generateIntrinsicGoals()`
+2. 获取最高优先级目标
+3. 触发 PDCA 执行循环
+4. 输出：`[自主目标] ID: g-xxx, 描述: ..., 优先级: x/10`
+
+### PDCA 执行循环
+
+> 在执行任何自主目标时，必须将完整的 PDCA 过程写入 `.opencode/logs/autonomy_trace.json`，以便事后审计。
+
+**执行流程**：
+1. **Plan**: 分解目标为子任务
+2. **Do**: 执行子任务（代码修改需调用 goedel-engine）
+3. **Check**: 根据 success_criteria 评估结果
+4. **Act**: 成功则完成，失败则重试（最多3次）
+
+### 自主优化
+
+> 每月1日，运行 `policy-optimizer.js`，并输出一份优化摘要，简要说明本月自主学到了什么新策略。
+
+**配合模块**：
+
+- **GoalGenerator** (`src/core/autonomy/goal-generator.js`): 自激发目标生成
+- **PDCAEngine** (`src/core/autonomy/pdca-engine.js`): 规划-执行-评估循环
+- **PolicyOptimizer** (`src/core/autonomy/policy-optimizer.js`): 无监督策略优化
+
+**输出示例**：
+
+```
+[自主目标] ID: g-042, 描述: 分析近期3次用户中断恢复失败的原因，优化状态恢复策略, 优先级: 8/10
+
+[PDCA执行] 
+- Plan: 分解为4个子任务
+- Do: 执行中... (2/4)
+- Check: 成功率 50%
+- Act: 调整计划重试
+
+[月度优化] 本月自主学到2条新策略:
+- 当用户中断后返回，优先恢复上下文而非直接询问
+- 检测到用户挫败时，使用共情语句而非建议
+```

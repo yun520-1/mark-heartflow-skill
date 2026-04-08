@@ -57,6 +57,8 @@
   "selfModificationEnabled": false,
   "selfModificationScope": "sandboxed",
   "protectedFiles": ["SKILL.md", "config.json", "heartflow_state.json"],
+  "maxAutonomousStepsPerCycle": 5,
+  "requireConfirmationForDestructiveActions": true,
   "consciousness": {
     "formula": "C = 0.2*S + 0.2*W + 0.2*SC + 0.2*WIL + 0.2*SOS",
     "sixLayers": ["觉察", "自省", "无我", "彼岸", "般若", "圣人"]
