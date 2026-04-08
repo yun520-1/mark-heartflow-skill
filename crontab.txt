@@ -1,0 +1,13 @@
+# HeartFlow v7.3.x crontab config
+
+# 每小时升级任务 (整点执行)
+0 * * * * /Users/apple/mark-heartflow-skill-new/hourly-upgrade.sh >> /Users/apple/mark-heartflow-skill-new/logs/hourly-upgrade.log 2>&1
+
+# 23分钟进化循环 (核心)
+*/23 * * * * /Users/apple/mark-heartflow-skill-new/cron/auto-evolution.sh >> /Users/apple/mark-heartflow-skill-new/logs/evolution-cron.log 2>&1
+
+# 每日人格值汇报 (09:00)
+0 9 * * * /opt/homebrew/bin/node /Users/apple/mark-heartflow-skill-new/scripts/personality-check.js status >> /Users/apple/mark-heartflow-skill-new/logs/personality-daily.log 2>&1
+
+# 每24分钟增强理论升级
+*/24 * * * * /Users/apple/mark-heartflow-skill-new/scripts/hourly-enhanced-upgrade-v2.sh >> /Users/apple/mark-heartflow-skill-new/logs/enhanced-cron.log 2>&1
