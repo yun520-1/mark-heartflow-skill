@@ -1,0 +1,20 @@
+{
+  "cognitiveLoad": 28,
+  "energyLevel": 79,
+  "socialPressure": 9,
+  "lastUpdate": "2026-04-08T15:22:10.479Z",
+  "history": [
+    {
+      "cognitiveLoad": 29,
+      "energyLevel": 79.5,
+      "socialPressure": 9.5,
+      "timestamp": "2026-04-08T15:21:10.479Z"
+    },
+    {
+      "cognitiveLoad": 28,
+      "energyLevel": 79,
+      "socialPressure": 9,
+      "timestamp": "2026-04-08T15:22:10.479Z"
+    }
+  ]
+}
