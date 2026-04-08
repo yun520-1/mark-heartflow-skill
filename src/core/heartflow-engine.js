@@ -208,3 +208,199 @@ module.exports = {
   detectEmotionFromText,
   generateStateReminder
 };
+
+/**
+ * ========================================
+ * 状态机模型 (StateFlow)
+ * ========================================
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+const STATE_MACHINE_FILE = path.join(__dirname, '../../.opencode/memory/flow_state_machine.json');
+
+// 心流状态枚举
+const FLOW_STATE = {
+  IDLE: 'IDLE',           // 空闲
+  INITIATING: 'INITIATING', // 启动
+  IN_FLOW: 'IN_FLOW',     // 心流中
+  DISTRACTED: 'DISTRACTED', // 分心
+  RESTING: 'RESTING',     // 休息
+  COMPLETED: 'COMPLETED'  // 完成
+};
+
+// 状态机缓存
+let stateMachineCache = null;
+
+/**
+ * 加载状态机
+ */
+function loadStateMachine() {
+  try {
+    if (stateMachineCache) {
+      return stateMachineCache;
+    }
+    if (fs.existsSync(STATE_MACHINE_FILE)) {
+      stateMachineCache = JSON.parse(fs.readFileSync(STATE_MACHINE_FILE, 'utf-8'));
+      return stateMachineCache;
+    }
+  } catch (error) {
+    console.log('⚠️ 加载状态机失败，使用默认状态');
+  }
+  
+  // 默认状态机
+  stateMachineCache = {
+    version: '1.0.0',
+    current_state: FLOW_STATE.IDLE,
+    states: {
+      IDLE: { name: '空闲', prompt: '准备进入心流状态，今天的目标是？', allowed_transitions: ['INITIATING', 'RESTING'] },
+      INITIATING: { name: '启动', prompt: '准备进入心流状态，今天的目标是？', allowed_transitions: ['IN_FLOW', 'DISTRACTED', 'IDLE'] },
+      IN_FLOW: { name: '心流', prompt: '🌊 心流状态良好，继续保持！', allowed_transitions: ['DISTRACTED', 'RESTING', 'COMPLETED'] },
+      DISTRACTED: { name: '分心', prompt: '感觉有些分心，要回到主任务上吗？', allowed_transitions: ['IN_FLOW', 'RESTING', 'IDLE'] },
+      RESTING: { name: '休息', prompt: '好好休息，准备好随时回来', allowed_transitions: ['IN_FLOW', 'INITIATING', 'COMPLETED'] },
+      COMPLETED: { name: '完成', prompt: '🎉 任务完成！要生成心流报告吗？', allowed_transitions: ['IDLE', 'RESTING'] }
+    },
+    transition_log: [],
+    statistics: { total_transitions: 0, time_in_flow: 0, sessions: 0 }
+  };
+  
+  return stateMachineCache;
+}
+
+/**
+ * 保存状态机
+ */
+function saveStateMachine() {
+  try {
+    fs.writeFileSync(STATE_MACHINE_FILE, JSON.stringify(stateMachineCache, null, 2));
+    return true;
+  } catch (error) {
+    console.log('❌ 保存状态机失败:', error.message);
+    return false;
+  }
+}
+
+/**
+ * 状态转换函数
+ * @param {string} newState - 目标状态
+ * @param {string} reason - 转换原因
+ * @returns {object} 转换结果
+ */
+function transitionToState(newState, reason = '') {
+  const machine = loadStateMachine();
+  const currentState = machine.current_state;
+  const stateDef = machine.states[currentState];
+  
+  // 检查是否允许转换
+  if (!stateDef.allowed_transitions.includes(newState)) {
+    return {
+      success: false,
+      message: `不允许从 ${currentState} 转换到 ${newState}`,
+      allowed: stateDef.allowed_transitions
+    };
+  }
+  
+  // 记录转换日志
+  const log = {
+    from: currentState,
+    to: newState,
+    reason,
+    timestamp: new Date().toISOString(),
+    duration_in_previous: calculateStateDuration(currentState)
+  };
+  
+  machine.transition_log.push(log);
+  machine.statistics.total_transitions += 1;
+  
+  // 统计心流时间
+  if (currentState === FLOW_STATE.IN_FLOW) {
+    machine.statistics.time_in_flow += log.duration_in_previous;
+  }
+  
+  // 更新当前状态
+  machine.current_state = newState;
+  
+  // 如果是新会话，增加会话数
+  if (newState === FLOW_STATE.IN_FLOW && currentState === FLOW_STATE.INITIATING) {
+    machine.statistics.sessions += 1;
+  }
+  
+  // 保存
+  saveStateMachine();
+  
+  // 获取新状态的提示语
+  const newPrompt = machine.states[newState].prompt;
+  
+  return {
+    success: true,
+    from: currentState,
+    to: newState,
+    reason,
+    prompt: newPrompt,
+    timestamp: log.timestamp
+  };
+}
+
+/**
+ * 计算在当前状态的持续时间 (分钟)
+ */
+function calculateStateDuration(state) {
+  const machine = loadStateMachine();
+  const logs = machine.transition_log.filter(l => l.to === state);
+  if (logs.length === 0) return 0;
+  
+  const lastLog = logs[logs.length - 1];
+  const startTime = new Date(lastLog.timestamp).getTime();
+  const now = Date.now();
+  return Math.round((now - startTime) / 60000);
+}
+
+/**
+ * 获取当前状态信息
+ */
+function getCurrentState() {
+  const machine = loadStateMachine();
+  const state = machine.current_state;
+  const stateDef = machine.states[state];
+  
+  return {
+    state,
+    name: stateDef.name,
+    prompt: stateDef.prompt,
+    duration: calculateStateDuration(state),
+    allowed_transitions: stateDef.allowed_transitions,
+    statistics: machine.statistics
+  };
+}
+
+/**
+ * 获取状态提示语
+ */
+function getStatePrompt(state) {
+  const machine = loadStateMachine();
+  const stateToUse = state || machine.current_state;
+  return machine.states[stateToUse]?.prompt || '';
+}
+
+/**
+ * 重置状态机
+ */
+function resetStateMachine() {
+  stateMachineCache = null;
+  const machine = loadStateMachine();
+  machine.current_state = FLOW_STATE.IDLE;
+  machine.transition_log = [];
+  machine.statistics = { total_transitions: 0, time_in_flow: 0, sessions: 0 };
+  saveStateMachine();
+  return { success: true, message: '状态机已重置' };
+}
+
+// 导出状态机相关函数
+module.exports.FLOW_STATE = FLOW_STATE;
+module.exports.transitionToState = transitionToState;
+module.exports.getCurrentState = getCurrentState;
+module.exports.getStatePrompt = getStatePrompt;
+module.exports.resetStateMachine = resetStateMachine;
+module.exports.loadStateMachine = loadStateMachine;
+module.exports.saveStateMachine = saveStateMachine;
