@@ -795,3 +795,91 @@ module.exports.resetPersonality = resetPersonality;
 module.exports.setPersonalityConfig = setPersonalityConfig;
 module.exports.getPersonalityStatistics = getPersonalityStatistics;
 module.exports.PersonalityEngine = PersonalityEngine;
+
+/**
+ * ========================================
+ * 智能工作流切换模块
+ * ========================================
+ */
+
+const WorkflowSwitch = require('./workflow-switch.js');
+
+/**
+ * 分析用户意图
+ * @param {string} userInput - 用户输入
+ * @returns {object} 意图分析结果
+ */
+function analyzeIntent(userInput) {
+  return WorkflowSwitch.workflowSwitch.analyzeIntent(userInput);
+}
+
+/**
+ * 评估是否需要切换工作流
+ * @param {string} userInput - 用户输入
+ * @param {string} currentContext - 当前上下文
+ * @returns {object} 评估结果
+ */
+function evaluateWorkflowSwitch(userInput, currentContext = '') {
+  return WorkflowSwitch.workflowSwitch.evaluateSwitch(userInput, currentContext);
+}
+
+/**
+ * 切换工作流
+ * @param {string} targetWorkflow - 目标工作流
+ * @returns {object} 切换结果
+ */
+function switchWorkflow(targetWorkflow) {
+  return WorkflowSwitch.workflowSwitch.switchWorkflow(targetWorkflow);
+}
+
+/**
+ * 获取当前工作流
+ * @returns {object} 工作流信息
+ */
+function getCurrentWorkflow() {
+  return WorkflowSwitch.workflowSwitch.getCurrentWorkflow();
+}
+
+/**
+ * 获取可用工作流列表
+ * @returns {array} 工作流列表
+ */
+function getAvailableWorkflows() {
+  return WorkflowSwitch.workflowSwitch.getAvailableWorkflows();
+}
+
+/**
+ * 生成工作流报告
+ * @returns {string} 报告文本
+ */
+function generateWorkflowReport() {
+  return WorkflowSwitch.workflowSwitch.generateReport();
+}
+
+/**
+ * 重置工作流
+ * @returns {object} 重置结果
+ */
+function resetWorkflow() {
+  return WorkflowSwitch.workflowSwitch.reset();
+}
+
+/**
+ * 设置工作流配置
+ * @param {object} config - 配置对象
+ * @returns {object} 配置结果
+ */
+function setWorkflowConfig(config) {
+  return WorkflowSwitch.workflowSwitch.setConfig(config);
+}
+
+// 导出工作流相关函数
+module.exports.analyzeIntent = analyzeIntent;
+module.exports.evaluateWorkflowSwitch = evaluateWorkflowSwitch;
+module.exports.switchWorkflow = switchWorkflow;
+module.exports.getCurrentWorkflow = getCurrentWorkflow;
+module.exports.getAvailableWorkflows = getAvailableWorkflows;
+module.exports.generateWorkflowReport = generateWorkflowReport;
+module.exports.resetWorkflow = resetWorkflow;
+module.exports.setWorkflowConfig = setWorkflowConfig;
+module.exports.WorkflowSwitch = WorkflowSwitch;
