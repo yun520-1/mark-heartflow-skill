@@ -1,0 +1,13 @@
+# HeartFlow 定时任务配置
+# 每 30 分钟运行一次
+
+# 格式：分 时 日 月 星期 命令
+
+# 每 30 分钟运行自动运行器
+*/30 * * * * cd ~/.jvs/.openclaw/workspace/mark-heartflow-skill && node .opencode/auto-runner.js >> .opencode/cron.log 2>&1
+
+# 每天凌晨 2 点生成日报
+0 2 * * * cd ~/.jvs/.openclaw/workspace/mark-heartflow-skill && node -e "const {generateReport}=require('./.opencode/memory/report-generator');const {initializeState}=require('./.opencode/memory/init');const s=initializeState('./.opencode/memory/heartflow_state.json');console.log(generateReport(s));" >> .opencode/daily-report.log 2>&1
+
+# 每周日清理旧日志
+0 3 * * 0 find ~/.jvs/.openclaw/workspace/mark-heartflow-skill/.opencode -name "*.log" -mtime +7 -delete 2>/dev/null
