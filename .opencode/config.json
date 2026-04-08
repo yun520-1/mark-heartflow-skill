@@ -54,6 +54,7 @@
     "types": ["平静", "愉悦", "好奇", "关切", "疲惫", "兴奋"],
     "formula": "E = f(user_input, context)"
   },
+  "selfModificationEnabled": false,
   "consciousness": {
     "formula": "C = 0.2*S + 0.2*W + 0.2*SC + 0.2*WIL + 0.2*SOS",
     "sixLayers": ["觉察", "自省", "无我", "彼岸", "般若", "圣人"]
