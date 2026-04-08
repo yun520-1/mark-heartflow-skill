@@ -34,8 +34,7 @@ class PDCAEngine {
         this.trace = { cycles: [], completed_goals: [] };
       }
     } catch (e) {
-      this.trace = { cycles: [], completed_goals: [];
-      }
+      this.trace = { cycles: [], completed_goals: [] };
     }
   }
 
