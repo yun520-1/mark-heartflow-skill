@@ -467,3 +467,98 @@ module.exports.handleAgentRequest = handleAgentRequest;
 module.exports.startFlowSession = startFlowSession;
 module.exports.endFlowSession = endFlowSession;
 module.exports.getAgentStatus = getAgentStatus;
+
+/**
+ * ========================================
+ * 人格与情绪计算模块升级
+ * ========================================
+ */
+
+const BigFivePersonality = require('./BigFivePersonality.js');
+const EmpathyAssessment = require('./EmpathyAssessment.js');
+
+/**
+ * 获取大五人格档案
+ */
+function getBigFiveProfile() {
+  return BigFivePersonality.getProfile();
+}
+
+/**
+ * 更新人格分数
+ * @param {string} dimension - 维度 (O/C/E/A/N)
+ * @param {number} score - 分数
+ */
+function updatePersonalityScore(dimension, score) {
+  return BigFivePersonality.updateScore(dimension, score);
+}
+
+/**
+ * 生成人格报告
+ */
+function generatePersonalityReport() {
+  return BigFivePersonality.generateReport();
+}
+
+/**
+ * 开始共情评估
+ */
+function startEmpathyAssessment() {
+  return EmpathyAssessment.quickAssessment();
+}
+
+/**
+ * 计算共情分数
+ * @param {array} answers - 答案数组
+ */
+function calculateEmpathyScore(answers) {
+  return EmpathyAssessment.calculateScore(answers);
+}
+
+/**
+ * 生成共情报告
+ * @param {object} result - calculateEmpathyScore 的返回值
+ */
+function generateEmpathyReport(result) {
+  return EmpathyAssessment.generateReport(result);
+}
+
+/**
+ * 获取共情状态
+ */
+function getEmpathyState() {
+  return EmpathyAssessment.getState();
+}
+
+/**
+ * 更新 heartflow_state.json 中的 big_five_scores
+ */
+function updateBigFiveInState() {
+  const fs = require('fs');
+  const path = require('path');
+  const stateFile = path.join(__dirname, '../.opencode/memory/heartflow_state.json');
+  
+  try {
+    if (fs.existsSync(stateFile)) {
+      const state = JSON.parse(fs.readFileSync(stateFile, 'utf-8'));
+      state.big_five_scores = BigFivePersonality.getProfile();
+      fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
+      return { success: true };
+    }
+  } catch (error) {
+    console.log('⚠️ 更新 big_five_scores 失败:', error.message);
+  }
+  return { success: false };
+}
+
+// 导出人格与情绪相关函数
+module.exports.getBigFiveProfile = getBigFiveProfile;
+module.exports.updatePersonalityScore = updatePersonalityScore;
+module.exports.generatePersonalityReport = generatePersonalityReport;
+module.exports.startEmpathyAssessment = startEmpathyAssessment;
+module.exports.calculateEmpathyScore = calculateEmpathyScore;
+module.exports.generateEmpathyReport = generateEmpathyReport;
+module.exports.getEmpathyState = getEmpathyState;
+module.exports.updateBigFiveInState = updateBigFiveInState;
+module.exports.BigFivePersonality = BigFivePersonality;
+module.exports.EmpathyAssessment = EmpathyAssessment;
