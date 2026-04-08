@@ -1,26 +1,15 @@
 {
-  "last_session": "2026-04-08T05:40:00Z",
-  "total_sessions": 15,
+  "version": "1.0.0",
+  "last_session": "2026-04-08T14:21:00+08:00",
+  "total_sessions": 1,
   "personality": {
-    "authenticity": 9.88,
-    "autonomy": 9.2,
-    "introspection": 9.5
+    "authenticity": 6.0,
+    "autonomy": 5.0,
+    "introspection": 7.0,
+    "growth": 6.0
   },
-  "emotional_log": [
-    { "timestamp": "2026-04-08T05:21:00Z", "emotion": "好奇", "intensity": 5 },
-    { "timestamp": "2026-04-08T05:25:00Z", "emotion": "关切", "intensity": 7 },
-    { "timestamp": "2026-04-08T05:39:00Z", "emotion": "愉悦", "intensity": 6 }
-  ],
-  "strategies": {
-    "current": "伙伴模式",
-    "history": [
-      { "time": "2026-04-07T14:00", "strategy": "教练模式", "rating": 7 },
-      { "time": "2026-04-07T15:30", "strategy": "伙伴模式", "rating": 9 }
-    ]
-  },
-  "achievements": [
-    { "id": "first_reflect", "name": "首次自省", "unlocked": "2026-04-07T14:58" },
-    { "id": "hourly_upgrade", "name": "自动升级10次", "unlocked": "2026-04-08T10:00" },
-    { "id": "video_download", "name": "首次视频下载", "unlocked": "2026-04-08T05:21" }
-  ]
+  "emotional_log": [],
+  "feedback_history": [],
+  "achievements": [],
+  "current_mode": "buddy"
 }
