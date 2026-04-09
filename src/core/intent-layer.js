@@ -6,6 +6,13 @@
 const fs = require('fs');
 const path = require('path');
 
+const RETRY_CONFIG = {
+  maxRetries: 3,
+  initialDelay: 1000,
+  backoffFactor: 2,
+  maxDelay: 10000
+};
+
 const INTENT_PROMPT_TEMPLATE = `你是一个深层意图分析专家。请分析以下用户消息的意图。
 
 用户当前消息: {userMessage}
@@ -101,44 +108,80 @@ class IntentLayer {
   }
 
   /**
-   * 调用LLM进行意图分析
+   * 指数退避延迟
+   */
+  async sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * 计算重试延迟
+   */
+  calculateBackoff(attempt) {
+    const delay = RETRY_CONFIG.initialDelay * Math.pow(RETRY_CONFIG.backoffFactor, attempt);
+    return Math.min(delay, RETRY_CONFIG.maxDelay);
+  }
+
+  /**
+   * 调用LLM进行意图分析（带重试）
    */
   async callLLM(prompt) {
     if (!this.llmEndpoint) {
       return null;
     }
 
-    try {
-      const response = await fetch(this.llmEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.llmApiKey}`
-        },
-        body: JSON.stringify({
-          model: 'claude-3-sonnet-20240229',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
+    let lastError = null;
 
-      if (!response.ok) {
-        console.error('[IntentLayer] LLM API error:', response.status);
+    for (let attempt = 0; attempt < RETRY_CONFIG.maxRetries; attempt++) {
+      try {
+        const response = await fetch(this.llmEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.llmApiKey}`
+          },
+          body: JSON.stringify({
+            model: 'claude-3-sonnet-20240229',
+            max_tokens: 1000,
+            messages: [{ role: 'user', content: prompt }]
+          })
+        });
+
+        if (!response.ok) {
+          if (attempt < RETRY_CONFIG.maxRetries - 1) {
+            const delay = this.calculateBackoff(attempt);
+            console.log(`[IntentLayer] Retry ${attempt + 1}/${RETRY_CONFIG.maxRetries} after ${delay}ms`);
+            await this.sleep(delay);
+            continue;
+          }
+          console.error('[IntentLayer] LLM API error:', response.status);
+          return null;
+        }
+
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content || data.content || '';
+        
+        try {
+          return JSON.parse(content);
+        } catch {
+          return this.parseJSONFromText(content);
+        }
+      } catch (e) {
+        lastError = e;
+        
+        if (attempt < RETRY_CONFIG.maxRetries - 1) {
+          const delay = this.calculateBackoff(attempt);
+          console.log(`[IntentLayer] Retry ${attempt + 1}/${RETRY_CONFIG.maxRetries} after ${delay}ms (error: ${e.message})`);
+          await this.sleep(delay);
+          continue;
+        }
+        
+        console.error('[IntentLayer] LLM call failed:', e.message);
         return null;
       }
-
-      const data = await response.json();
-      const content = data.choices?.[0]?.message?.content || data.content || '';
-      
-      try {
-        return JSON.parse(content);
-      } catch {
-        return this.parseJSONFromText(content);
-      }
-    } catch (e) {
-      console.error('[IntentLayer] LLM call failed:', e.message);
-      return null;
     }
+
+    return null;
   }
 
   parseJSONFromText(text) {

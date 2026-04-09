@@ -1,5 +1,37 @@
 # HeartFlow 变更日志
 
+## v7.8.0 (2026-04-09)
+
+### 🛡️ 流程健壮性增强
+
+#### 全局错误边界 (ErrorHandler)
+- `handleError(error, context)` 统一错误处理
+- 记录错误堆栈到 `.opencode/logs/error.log`
+- 根据错误类型决定是否重试（最多3次）
+- 优雅降级消息："我遇到了一些内部波动，让我们重新聚焦当前任务..."
+
+#### 状态快照与断点恢复 (StateSnapshot)
+- `takeSnapshot()`: 每5轮对话自动保存核心状态
+- 快照内容：人格值、情绪向量、记忆指针、联想图谱激活节点
+- `restoreFromSnapshot(snapshotId)`: 支持 `/flow restore` 回滚
+- 最多保存20个快照，自动清理旧快照
+
+#### 重试与退避策略
+- 所有LLM调用模块增加指数退避重试
+- 参数：初始延迟1s，最大重试3次，退避因子2
+- 已更新：`intent-layer.js`
+
+#### 调试命令
+- `/flow snapshot list`: 列出所有快照
+- `/flow restore <id>`: 从快照恢复状态
+
+#### 配合模块
+- **ErrorHandler** (`src/core/utils/error-handler.js`): 全局错误处理
+- **StateSnapshot** (`src/core/utils/state-snapshot.js`): 快照与恢复
+- **RetryUtility** (`src/core/utils/retry-util.js`): 重试工具
+
+---
+
 ## v7.7.0 (2026-04-09)
 
 ### 🧠 人类式逐词联想理解与生成引擎

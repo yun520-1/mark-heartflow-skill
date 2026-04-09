@@ -156,6 +156,26 @@ function analyzeFlowSession(state) {
 3. **反思记录** - 说前反思的问题与修改
 4. **预测结果** - predictReaction 的输出
 
+### `/flow snapshot list`
+
+列出所有可用的状态快照：
+
+- 显示快照ID、标签、时间戳、对话轮次
+- 方便用户选择恢复点
+
+### `/flow restore <id>`
+
+从指定快照恢复状态：
+
+- 恢复人格值、情绪向量、记忆指针等
+- 将对话轮次恢复到快照时刻
+- 用于：从错误中恢复、回到之前状态、测试不同决策路径
+
+**使用场景：**
+- AI行为异常时回滚到正常状态
+- 测试不同回复策略的效果
+- 长时间会话后重置到某个节点
+
 ### 配合模块
 
 - **Gödel Engine** (`src/core/self-evolution/goedel-engine.js`): 执行提议→生成→测试→提交循环
@@ -509,6 +529,10 @@ function analyzeFlowSession(state) {
 ### 调试命令
 
 - `/flow intent`: 查看AI对用户上一条消息的意图分析结果（透明化）
+- `/flow think`: 查看完整内部思考过程
+- `/flow trace`: 查看逐词联想生成轨迹
+- `/flow snapshot list`: 列出所有快照
+- `/flow restore <id>`: 从快照恢复状态
 
 ### 输出格式
 
