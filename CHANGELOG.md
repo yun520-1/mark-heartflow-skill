@@ -1,5 +1,30 @@
 # HeartFlow 变更日志
 
+## v7.6.0 (2026-04-09)
+
+### 🔬 高级AI系统探索
+
+#### 社会模拟与道德进化 (SocietySimulator)
+- 运行100个AI实例的模拟社会交互
+- 遗传算法选择"最具合作性"实例
+- 评估道德规范自发涌现
+- 基因：cooperation, reciprocity, punishment, forgiveness, transparency, empathy
+
+#### 价值对齐的深度验证 (BlindReviewModule)
+- 逆向图灵测试框架
+- 匿名人类评审机制
+- 评估维度：善意、智慧、可信度
+- 根据反馈调整价值函数
+
+#### 多模态自我感知闭环 (MultimodalAwareness)
+- 监听IDE编辑事件流（键入速度、删除频率）
+- 文本情绪分析（叹气检测）
+- 心流状态判断：high/medium/low
+- 用户存在感检测：active/idle/away
+- 自动调整AI交互频率和方式
+
+---
+
 ## v7.5.1 (2026-04-09)
 
 ### 🧘 圣人思维循环
