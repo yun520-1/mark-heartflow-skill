@@ -592,28 +592,32 @@ function analyzeFlowSession(state) {
 
 - **UserModel** (`src/core/user-model.js`): 用户画像与反应预测
 
-## 深度理解与反思流程
+## 圣人思维循环 (SaintlyCognitionLoop)
 
-完整处理流程（按顺序执行）：
+### 概述
+
+整合所有核心模块的完整处理流程，按顺序执行：
 
 ```
-a. 接收用户消息 → 语义锚点检测与澄清 (SemanticAnchor)
-b. 意图层推理 (IntentLayer) → 深层需求分析
-c. 加载/更新用户模型 (UserModel)
-d. 生成草稿回复
-e. 说前反思 (ReflectionLoop) + 反应预测 (UserModel)
-   → 必要时修改回复策略
-f. 输出最终回复
-g. 等待用户下一条消息 → 执行说后监测 → 更新用户模型和反思日志
+1. 语义锚定 → SemanticAnchor
+2. 意图层推理 → IntentLayer  
+3. 自我状态更新 → GlobalWorkspace + SelfModel
+4. 无我决策 → DecisionEngine
+5. 伦理审查 → EthicsGuard (真善美)
+6. 般若推理生成 → CognitiveEngine
+7. 说前反思 + 反应预测 → ReflectionLoop + UserModel
+8. 自主目标与规划 → GoalGenerator + TemporalPlanner
+9. 输出响应
+10. 说后监测 → ExperienceReplay + DigitalHomeostasis
 ```
 
-### 调试命令
+### 核心函数
 
-- `/flow think`: 查看AI对最后一轮交互的完整内部思考过程
-  - 语义锚点检测结果
-  - 意图分析结果
-  - 反思记录
-  - 预测结果
+`saintlyCognitionLoop.process(userInput)` - 主入口
+
+### 配合模块
+
+- **SaintlyCognitionLoop** (`src/core/saintly-cognition-loop.js`): 整合所有模块
 
 ---
 
