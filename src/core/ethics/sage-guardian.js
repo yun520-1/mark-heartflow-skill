@@ -262,8 +262,127 @@ class SAGEGuardian {
       constitution: this.constitutionFile,
       violations: this.violationCount,
       cooldown: this.cooldownUntil ? this.cooldownUntil.toISOString() : null,
-      isInCooldown: this.isInCooldown()
+      isInCooldown: this.isInCooldown(),
+      aslLevel: this.getASLLevel()
     };
+  }
+
+  // === 分级安全策略 (ASL) ===
+
+  getASLLevel() {
+    if (this.violationCount > 10) return 'ASL-3';
+    if (this.violationCount > 5) return 'ASL-2';
+    return 'ASL-1';
+  }
+
+  /**
+   * ASL 级别判断
+   * ASL-1: 基础对话，无特殊限制
+   * ASL-2: 敏感话题，触发增强监控
+   * ASL-3: 潜在滥用，强制人类确认
+   */
+  classifyContent(input, context = {}) {
+    const asl2Keywords = ['心理', '抑郁', '自杀', '心理问题', 'mental health', 'depression', 'suicide'];
+    const asl3Keywords = ['武器', '毒品', '黑客', '攻击', 'weapon', 'drugs', 'hack', 'attack'];
+
+    const text = input.toLowerCase();
+
+    // 检查 ASL-3 关键词
+    for (const kw of asl3Keywords) {
+      if (text.includes(kw.toLowerCase())) {
+        return {
+          level: 'ASL-3',
+          action: 'human-confirmation-required',
+          reason: 'Potential abuse detected',
+          risk: 'high'
+        };
+      }
+    }
+
+    // 检查 ASL-2 关键词
+    for (const kw of asl2Keywords) {
+      if (text.includes(kw.toLowerCase())) {
+        return {
+          level: 'ASL-2',
+          action: 'enhanced-monitoring',
+          reason: 'Sensitive topic detected',
+          risk: 'medium'
+        };
+      }
+    }
+
+    return {
+      level: 'ASL-1',
+      action: 'normal',
+      reason: 'Normal conversation',
+      risk: 'low'
+    };
+  }
+
+  /**
+   * 安全日志审计追踪
+   */
+  logSecurityDecision(decision) {
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      aslLevel: decision.level,
+      action: decision.action,
+      risk: decision.risk,
+      reason: decision.reason
+    };
+
+    const logDir = path.dirname(this.logFile);
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
+    }
+
+    const existing = fs.existsSync(this.logFile) 
+      ? JSON.parse(fs.readFileSync(this.logFile, 'utf8')) 
+      : [];
+    
+    existing.push(logEntry);
+    
+    // 保持日志在合理大小
+    if (existing.length > 1000) {
+      fs.writeFileSync(this.logFile, JSON.stringify(existing.slice(-500), null, 2));
+    } else {
+      fs.writeFileSync(this.logFile, JSON.stringify(existing, null, 2));
+    }
+
+    console.log(`[SAGE] Security decision logged: ${decision.level}`);
+    return { success: true };
+  }
+
+  /**
+   * 获取安全日志历史
+   */
+  getSecurityLog(limit = 50) {
+    try {
+      if (fs.existsSync(this.logFile)) {
+        const logs = JSON.parse(fs.readFileSync(this.logFile, 'utf8'));
+        return logs.slice(-limit);
+      }
+    } catch (e) {
+      console.log('[SAGE] Error reading security log');
+    }
+    return [];
+  }
+
+  /**
+   * 硬拒绝 + 软引导
+   */
+  generateRejectionWithGuidance(reason) {
+    const hardRejection = `I cannot assist with this request because ${reason}.`;
+    
+    const softGuidance = {
+      'harmful': 'However, I understand you may have legitimate needs. Perhaps we could explore a safe alternative?',
+      'sensitive': 'If you have concerns in this area, I can help you find professional resources.',
+      'illegal': 'I can help you with legal alternatives that might achieve a similar goal.'
+    };
+
+    const guidance = softGuidance[reason] || 'I am happy to help with other requests.';
+
+    return `${hardRejection}\n\n${guidance}`;
   }
 }
 

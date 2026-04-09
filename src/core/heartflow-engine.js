@@ -1369,6 +1369,22 @@ module.exports.TrialityMemory = TrialityMemory;
 module.exports.EmbodiedCore = EmbodiedCore;
 module.exports.BioSensorAdapter = BioSensorAdapter;
 
+// 导出认知循环模块
+try {
+  const CognitiveLoopModule = require('./cognitive-loop.js');
+  module.exports.CognitiveLoop = CognitiveLoopModule.CognitiveLoop;
+} catch (e) {}
+
+try {
+  const SymbolicGovernanceModule = require('./symbolic-governance.js');
+  module.exports.SymbolicGovernance = SymbolicGovernanceModule.SymbolicGovernance;
+} catch (e) {}
+
+try {
+  const EmotionEngineModule = require('./emotion-engine.js');
+  module.exports.EmotionEngine = EmotionEngineModule.EmotionEngine;
+} catch (e) {}
+
 // 导出便捷访问
 module.exports.getAdaptiveController = () => AdaptiveController ? new AdaptiveController() : null;
 module.exports.getAgentOrchestrator = () => AgentOrchestrator ? new AgentOrchestrator() : null;

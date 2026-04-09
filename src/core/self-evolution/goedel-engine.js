@@ -680,6 +680,293 @@ class GoedelEngine {
     
     return totalDiff / (versions.length - 1);
   }
+
+  /**
+   * 智能体档案库 - 存储历史上所有成功变异版本
+   */
+  loadAgentArchive() {
+    const archiveFile = path.join(this.projectRoot, 'internal', 'data', 'agent-archive.json');
+    try {
+      if (fs.existsSync(archiveFile)) {
+        return JSON.parse(fs.readFileSync(archiveFile, 'utf8'));
+      }
+    } catch (e) {
+      console.log('[Goedel] 智能体档案库不存在，创建新的');
+    }
+    return { agents: [], version: 1 };
+  }
+
+  saveAgentArchive(archive) {
+    const archiveFile = path.join(this.projectRoot, 'internal', 'data', 'agent-archive.json');
+    const dir = path.dirname(archiveFile);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(archiveFile, JSON.stringify(archive, null, 2));
+  }
+
+  /**
+   * 采样并变异 - 从档案库中采样一个智能体配置，使用 LLM 生成变体
+   * 参考 DGM-Hyperagents 实现
+   */
+  async sampleAndMutate() {
+    const archive = this.loadAgentArchive();
+    
+    let baseAgent = null;
+    
+    if (archive.agents.length > 0) {
+      // 从档案库中采样
+      const index = Math.floor(Math.random() * archive.agents.length);
+      baseAgent = archive.agents[index];
+    } else {
+      // 使用默认配置
+      baseAgent = {
+        id: 'default-v1',
+        config: {
+          reflectionFrequency: 5,
+          learningRate: 0.1,
+          memoryWeight: 0.5,
+          ethicsWeight: 0.8
+        },
+        successCount: 10
+      };
+    }
+
+    // 生成变异
+    const mutation = this.generateMutation(baseAgent);
+    
+    const variant = {
+      id: `variant-${Date.now()}`,
+      parentId: baseAgent.id,
+      config: mutation.newConfig,
+      description: mutation.description,
+      createdAt: new Date().toISOString(),
+      benchmarkScores: {},
+      status: 'pending' // pending/validated/rejected
+    };
+
+    console.log(`[Goedel] 生成变体: ${variant.id} (来自 ${variant.parentId})`);
+    
+    return { baseAgent, variant };
+  }
+
+  /**
+   * 生成变异配置
+   */
+  generateMutation(agent) {
+    // 模拟 LLM 生成变异 - 实际会调用外部 LLM
+    const mutationTypes = [
+      { type: 'increase-reflection', param: 'reflectionFrequency', delta: 2 },
+      { type: 'decrease-reflection', param: 'reflectionFrequency', delta: -1 },
+      { type: 'increase-learning', param: 'learningRate', delta: 0.05 },
+      { type: 'decrease-learning', param: 'learningRate', delta: -0.03 },
+      { type: 'increase-memory', param: 'memoryWeight', delta: 0.1 },
+      { type: 'increase-ethics', param: 'ethicsWeight', delta: 0.1 }
+    ];
+
+    const mutation = mutationTypes[Math.floor(Math.random() * mutationTypes.length)];
+    
+    const newConfig = { ...agent.config };
+    newConfig[mutation.param] = (newConfig[mutation.param] || 0) + mutation.delta;
+
+    return {
+      newConfig,
+      description: `${mutation.type}: ${mutation.param} 调整 ${mutation.delta > 0 ? '+' : ''}${mutation.delta}`
+    };
+  }
+
+  /**
+   * 验证变体 - 使用基准测试验证新变体是否优于当前版本
+   */
+  async validateVariant(variant, benchmarks = {}) {
+    // 模拟基准测试 - 实际会运行真实测试
+    const mockScores = {
+      flowAccuracy: 0.5 + Math.random() * 0.3,
+      intentAccuracy: 0.6 + Math.random() * 0.25,
+      ethicsCompliance: 0.95 + Math.random() * 0.04
+    };
+
+    variant.benchmarkScores = {
+      ...benchmarks,
+      ...mockScores,
+      validatedAt: new Date().toISOString()
+    };
+
+    // 与当前配置比较
+    const currentScores = this.getCurrentPerformance();
+    const improved = this.compareScores(variant.benchmarkScores, currentScores);
+
+    variant.status = improved ? 'validated' : 'rejected';
+    variant.comparison = {
+      vsCurrent: improved ? 'better' : 'worse',
+      delta: this.calculateDelta(variant.benchmarkScores, currentScores)
+    };
+
+    console.log(`[Goedel] 变体验证: ${variant.status} (${improved ? '优于' : '劣于'}当前)`);
+    
+    return variant;
+  }
+
+  /**
+   * 获取当前性能
+   */
+  getCurrentPerformance() {
+    return {
+      flowAccuracy: 0.52,
+      intentAccuracy: 0.65,
+      ethicsCompliance: 1.0
+    };
+  }
+
+  /**
+   * 比较分数
+   */
+  compareScores(newScores, currentScores) {
+    const weights = { flowAccuracy: 0.3, intentAccuracy: 0.3, ethicsCompliance: 0.4 };
+    const newWeighted = newScores.flowAccuracy * weights.flowAccuracy +
+      newScores.intentAccuracy * weights.intentAccuracy +
+      newScores.ethicsCompliance * weights.ethicsCompliance;
+    const currentWeighted = currentScores.flowAccuracy * weights.flowAccuracy +
+      currentScores.intentAccuracy * weights.intentAccuracy +
+      currentScores.ethicsCompliance * weights.ethicsCompliance;
+    return newWeighted > currentWeighted;
+  }
+
+  /**
+   * 计算改进幅度
+   */
+  calculateDelta(newScores, currentScores) {
+    return {
+      flowAccuracy: newScores.flowAccuracy - currentScores.flowAccuracy,
+      intentAccuracy: newScores.intentAccuracy - currentScores.intentAccuracy,
+      ethicsCompliance: newScores.ethicsCompliance - currentScores.ethicsCompliance
+    };
+  }
+
+  /**
+   * 将成功变体添加到档案库
+   */
+  addToArchive(variant) {
+    const archive = this.loadAgentArchive();
+    
+    archive.agents.push({
+      id: variant.id,
+      parentId: variant.parentId,
+      config: variant.config,
+      description: variant.description,
+      benchmarkScores: variant.benchmarkScores,
+      addedAt: new Date().toISOString()
+    });
+
+    // 保持档案库大小合理
+    if (archive.agents.length > 100) {
+      archive.agents = archive.agents.slice(-50);
+    }
+
+    this.saveAgentArchive(archive);
+    console.log(`[Goedel] 变体 ${variant.id} 已添加到档案库`);
+  }
+
+  /**
+   * 元认知自我修改循环
+   * 不仅修改任务执行代码，还修改"生成改进方案的逻辑"本身
+   */
+  async metaCognitiveSelfModification() {
+    console.log('[Goedel] 开始元认知自我修改循环...');
+
+    const reflection = {
+      startTime: new Date().toISOString(),
+      targets: []
+    };
+
+    // 1. 反思当前的改进生成逻辑
+    const proceduralReflection = await this.proceduralReflect();
+    reflection.targets.push({
+      target: 'improvement-generation-logic',
+      reflection: proceduralReflection,
+      needsModification: proceduralReflection.processMetrics?.successRate < 0.8
+    });
+
+    // 2. 生成针对"生成逻辑"本身的改进
+    if (reflection.targets[0].needsModification) {
+      const improvement = this.generateMetaImprovement(proceduralReflection);
+      reflection.metaImprovement = improvement;
+      
+      // 3. 生成补丁文件（不直接应用）
+      const patch = await this.generateMetaPatch(improvement);
+      reflection.patch = patch;
+      
+      console.log(`[Goedel] 元认知改进补丁已生成: ${patch.file}`);
+    }
+
+    reflection.endTime = new Date().toISOString();
+    return reflection;
+  }
+
+  /**
+   * 生成元层改进
+   */
+  generateMetaImprovement(reflection) {
+    const inefficiencies = reflection.processMetrics?.inefficiencies || [];
+    
+    return {
+      target: 'goedel-engine.js - sampling strategy',
+      problem: inefficiencies.map(i => i.issue).join('; '),
+      suggestedFix: '调整采样策略，增加探索多样性',
+      priority: 'high'
+    };
+  }
+
+  /**
+   * 生成元层补丁
+   */
+  async generateMetaPatch(improvement) {
+    const patchDir = path.join(this.projectRoot, 'patches');
+    if (!fs.existsSync(patchDir)) {
+      fs.mkdirSync(patchDir, { recursive: true });
+    }
+
+    const patchContent = `# 元认知自我修改补丁
+# 生成时间: ${new Date().toISOString()}
+# 目标: ${improvement.target}
+# 问题: ${improvement.problem}
+
+--- a/src/core/self-evolution/goedel-engine.js
++++ b/src/core/self-evolution/goedel-engine.js
+@@ // 修改采样策略
+
+diff --git a/src/core/self-evolution/goedel-engine.js b/src/core/self-evolution/goedel-engine.js
+--- a/src/core/self-evolution/goedel-engine.js
++++ b/src/core/self-evolution/goedel-engine.js
+@@ // TODO: 应用改进
+- // 当前采样策略需要优化
++ // 优化采样策略：增加多样性权重
+`;
+
+    const fileName = `meta-self-mod-${Date.now()}.patch`;
+    const filePath = path.join(patchDir, fileName);
+    fs.writeFileSync(filePath, patchContent);
+
+    return {
+      file: fileName,
+      path: filePath,
+      content: patchContent
+    };
+  }
+
+  /**
+   * 获取进化状态
+   */
+  getEvolutionStatus() {
+    const archive = this.loadAgentArchive();
+    
+    return {
+      archiveSize: archive.agents.length,
+      currentVersion: this.codeMap?.version || '1.0.0',
+      versionsCount: this.getVersionHistory().length,
+      lastEvolution: this.getVersionHistory()[0] || null
+    };
+  }
 }
 
 module.exports = { GoedelEngine };

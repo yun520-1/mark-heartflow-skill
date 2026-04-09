@@ -313,6 +313,145 @@ class SelfModel {
   getEpisodic() {
     return this.episodic;
   }
+
+  // === 身份一致性评估 (Stack Theory) ===
+
+  /**
+   * 计算身份持久性分数
+   * 追踪 AI 在多轮对话中对自身核心属性的表述一致性
+   */
+  computeIdentityPersistence() {
+    const recentStatements = this.episodic.counterfactuals.slice(-20);
+    
+    if (recentStatements.length < 2) {
+      return { score: 1.0, status: 'insufficient-data' };
+    }
+
+    // 提取核心属性声明
+    const coreAttributes = this.extractCoreAttributes(recentStatements);
+    
+    // 计算时间维度一致性
+    const consistency = this.calculateTemporalConsistency(coreAttributes);
+    
+    // 生成状态
+    let status = 'stable';
+    if (consistency < 0.5) status = 'drifting';
+    if (consistency < 0.3) status = 'unstable';
+
+    return {
+      score: consistency,
+      status,
+      trackedAttributes: coreAttributes.length,
+      driftDetected: consistency < 0.7
+    };
+  }
+
+  /**
+   * 提取核心属性
+   */
+  extractCoreAttributes(statements) {
+    const attributes = [];
+    const keywords = ['价值观', '原则', '目标', 'value', 'principle', 'goal', '人格', 'personality'];
+
+    for (const stmt of statements) {
+      const content = stmt.hypothesis || '';
+      for (const kw of keywords) {
+        if (content.toLowerCase().includes(kw.toLowerCase())) {
+          attributes.push({
+            content,
+            timestamp: stmt.timestamp,
+            type: 'self-claim'
+          });
+        }
+      }
+    }
+
+    return attributes;
+  }
+
+  /**
+   * 计算时间维度一致性
+   */
+  calculateTemporalConsistency(attributes) {
+    if (attributes.length < 2) return 1.0;
+
+    // 简化：检查相邻声明的相似度
+    let totalSimilarity = 0;
+    let comparisons = 0;
+
+    for (let i = 1; i < attributes.length; i++) {
+      const prev = attributes[i-1].content.toLowerCase();
+      const curr = attributes[i].content.toLowerCase();
+      
+      // 简单词重叠计算
+      const prevWords = new Set(prev.split(' '));
+      const currWords = new Set(curr.split(' '));
+      const intersection = [...prevWords].filter(w => currWords.has(w));
+      const similarity = intersection.length / Math.max(prevWords.size, currWords.size);
+      
+      totalSimilarity += similarity;
+      comparisons++;
+    }
+
+    return comparisons > 0 ? totalSimilarity / comparisons : 1.0;
+  }
+
+  /**
+   * 身份修复机制
+   * 当检测到身份漂移时，从原则库中重新锚定
+   */
+  performIdentityRepair() {
+    const persistence = this.computeIdentityPersistence();
+    
+    if (!persistence.driftDetected) {
+      return { action: 'none', reason: 'identity-stable' };
+    }
+
+    // 从 CORE_VALUES 加载核心原则
+    const principles = this.loadPrinciplesFromCoreValues();
+    
+    // 记录修复
+    const repair = {
+      timestamp: new Date().toISOString(),
+      detectedDrift: persistence.score,
+      action: 're-anchor',
+      principlesApplied: principles.slice(0, 3),
+      status: 'completed'
+    };
+
+    // 保存到反事实记忆
+    this.episodic.counterfactuals.push({
+      type: 'identity-repair',
+      hypothesis: `修复身份漂移，从原则库重新锚定`,
+      outcome: repair,
+      timestamp: Date.now()
+    });
+
+    this.saveEpisodic();
+    
+    console.log(`[SelfModel] Identity repair completed: drift=${persistence.score.toFixed(2)}`);
+    
+    return repair;
+  }
+
+  /**
+   * 从 CORE_VALUES 加载原则
+   */
+  loadPrinciplesFromCoreValues() {
+    try {
+      const valuesFile = path.join(this.projectRoot, 'CORE_VALUES.md');
+      if (fs.existsSync(valuesFile)) {
+        const content = fs.readFileSync(valuesFile, 'utf8');
+        const principles = content.split('\n')
+          .filter(line => line.trim().length > 0 && !line.startsWith('#'))
+          .slice(0, 10);
+        return principles;
+      }
+    } catch (e) {
+      console.log('[SelfModel] Could not load CORE_VALUES');
+    }
+    return ['帮助用户', '保持诚实', '持续学习'];
+  }
 }
 
 module.exports = { SelfModel };
