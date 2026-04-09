@@ -1,5 +1,41 @@
 # HeartFlow 变更日志
 
+## v7.5.0 (2026-04-09)
+
+### 🔍 深度理解与反思系统
+
+#### 意图层推理 (IntentLayer)
+- LLM增强的深层意图分析
+- 分析维度：surface_intent, emotional_undercurrent, deep_need, context_requirements
+- 支持环境变量配置 LLM_ENDPOINT 和 LLM_API_KEY
+- 回退到规则基础分析（当LLM不可用时）
+
+#### 话语反思双环机制 (ReflectionLoop)
+- **说前反思环**: `reflectBeforeSpeaking(responseDraft, context)`
+  - 自我提问：目的、情绪反应、优化可能
+  - 根据反思修改草稿
+- **说后监测环**: `monitorAfterSpeaking(userReaction, context)`
+  - 分析用户反应与预期一致性
+  - 标记效果并存储到 reflection_log
+
+#### 用户模型与反应预测 (UserModel)
+- 维护用户画像：sensitivity, preferred_style, PAD情感状态
+- `predictReaction(draftResponse, userModel)` 预测反应标签
+- 在说前反思中集成：负面预测时强制修改回复策略
+- 每次对话后更新模型，形成闭环学习
+
+#### 调试命令
+- `/flow intent`: 查看意图分析结果
+- `/flow think`: 查看完整内部思考过程
+
+#### 配合模块
+- SemanticAnchor: 语义锚点检测
+- IntentLayer: 意图层推理
+- ReflectionLoop: 话语反思双环
+- UserModel: 用户模型
+
+---
+
 ## v7.4.0 (2026-04-09)
 
 ### 🧘 向"圣人"境界进化

@@ -1,10 +1,44 @@
 /**
- * Intent Layer - 意图层推理模块
+ * Intent Layer - 意图层推理模块 (LLM增强版)
  * 深层意图推断，理解用户真实需求
  */
 
 const fs = require('fs');
 const path = require('path');
+
+const INTENT_PROMPT_TEMPLATE = `你是一个深层意图分析专家。请分析以下用户消息的意图。
+
+用户当前消息: {userMessage}
+
+对话历史:
+{conversationHistory}
+
+请从以下维度分析:
+
+1. surface_intent (表层意图): 用户明确表达的需求
+   - 分类: request | question | exploration | problem_solving | learning | optimization | emotional_support | unclear
+
+2. emotional_undercurrent (情绪暗流): 
+   - 情绪: frustrated | curious | urgent | confused | satisfied | neutral | hopeful | anxious
+   - 强度: 0.0-1.0
+
+3. deep_need (深层需求): 用户真正想要的是什么
+   - 分类: recognition | understanding | solution | learning | emotional_support | autonomy | mastery | connection | unclear
+
+4. context_requirements (上下文需求):
+   - needs_clarification: true/false - 是否需要澄清
+   - complexity: low/medium/high
+   - time_sensitivity: low/medium/high
+
+请返回JSON格式:
+{
+  "surface_intent": "...",
+  "emotional_undercurrent": {"emotion": "...", "intensity": 0.0},
+  "deep_need": "...",
+  "context_requirements": {"needs_clarification": false, "complexity": "medium", "time_sensitivity": "low"},
+  "confidence": 0.0-1.0,
+  "reasoning": "简短解释"
+}`;
 
 class IntentLayer {
   constructor(projectRoot) {
@@ -12,6 +46,8 @@ class IntentLayer {
     this.historyFile = path.join(projectRoot, '.opencode', 'memory', 'intent-history.json');
     this.intentPatterns = this.initializePatterns();
     this.loadHistory();
+    this.llmEndpoint = process.env.LLM_ENDPOINT || null;
+    this.llmApiKey = process.env.LLM_API_KEY || null;
   }
 
   initializePatterns() {
@@ -21,7 +57,7 @@ class IntentLayer {
         template: '用户明确表达了{action}的意图'
       },
       implicit_needs: {
-        indicators: ['好烦', '太难', '不想', '累', 'tired', 'frustrated', 'don\'t want'],
+        indicators: ['好烦', '太难', '不想', '累', 'tired', 'frustrated', "don't want"],
         template: '用户可能有情感支持或简化任务的需求'
       },
       exploration: {
@@ -65,35 +101,125 @@ class IntentLayer {
   }
 
   /**
-   * 推断深层意图
+   * 调用LLM进行意图分析
    */
-  inferDeepIntent(userMessage, conversationHistory = []) {
+  async callLLM(prompt) {
+    if (!this.llmEndpoint) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(this.llmEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.llmApiKey}`
+        },
+        body: JSON.stringify({
+          model: 'claude-3-sonnet-20240229',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      if (!response.ok) {
+        console.error('[IntentLayer] LLM API error:', response.status);
+        return null;
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content || data.content || '';
+      
+      try {
+        return JSON.parse(content);
+      } catch {
+        return this.parseJSONFromText(content);
+      }
+    } catch (e) {
+      console.error('[IntentLayer] LLM call failed:', e.message);
+      return null;
+    }
+  }
+
+  parseJSONFromText(text) {
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[0]);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 构建LLM提示词
+   */
+  buildPrompt(userMessage, conversationHistory) {
+    const historyText = conversationHistory.length > 0
+      ? conversationHistory.slice(-5).map((msg, i) => `${i + 1}. ${msg.role || 'user'}: ${msg.content || msg}`).join('\n')
+      : '(无对话历史)';
+
+    return INTENT_PROMPT_TEMPLATE
+      .replace('{userMessage}', userMessage)
+      .replace('{conversationHistory}', historyText);
+  }
+
+  /**
+   * 推断深层意图 - 主入口
+   */
+  async inferDeepIntent(userMessage, conversationHistory = []) {
+    const llmResult = await this.callLLM(this.buildPrompt(userMessage, conversationHistory));
+    
     const surfaceIntent = this.detectSurfaceIntent(userMessage);
-    const emotionalUndercurrent = this.detectEmotionalUndercurrent(userMessage, conversationHistory);
+    const emotionalUndercurrent = llmResult?.emotional_undercurrent 
+      ? { emotion: llmResult.emotional_undercurrent.emotion, intensity: llmResult.emotional_undercurrent.intensity }
+      : this.detectEmotionalUndercurrent(userMessage, conversationHistory);
     const contextualNeeds = this.analyzeContextualNeeds(userMessage, conversationHistory);
-    const deepMotivation = this.inferDeepMotivation(surfaceIntent, emotionalUndercurrent, contextualNeeds);
+    
+    const deepMotivation = llmResult?.deep_need 
+      ? { summary: llmResult.deep_need, confidence: llmResult.confidence || 0.5 }
+      : this.inferDeepMotivation(surfaceIntent, emotionalUndercurrent, contextualNeeds);
+    
     const recommendedApproach = this.suggestApproach(deepMotivation);
 
     const result = {
       timestamp: new Date().toISOString(),
       userMessage: userMessage,
-      surface: surfaceIntent,
+      surface: {
+        type: llmResult?.surface_intent || surfaceIntent.type,
+        template: surfaceIntent.template,
+        raw_intent: userMessage,
+        confidence: llmResult?.confidence || surfaceIntent.confidence
+      },
       emotional: emotionalUndercurrent,
       contextual: contextualNeeds,
-      deep: deepMotivation,
-      recommendedApproach: recommendedApproach
+      deep: {
+        summary: deepMotivation.summary,
+        confidence: deepMotivation.confidence,
+        suggestions: deepMotivation.suggestions
+      },
+      recommendedApproach: recommendedApproach,
+      llmEnhanced: !!llmResult,
+      raw_llm_result: llmResult
     };
 
-    result.confidence = (surfaceIntent.confidence + deepMotivation.confidence) / 2;
+    result.confidence = (result.surface.confidence + result.deep.confidence) / 2;
 
-    this.history.intents.push(result);
+    this.history.intents.push({
+      timestamp: result.timestamp,
+      surface: result.surface.type,
+      deep: result.deep.summary,
+      emotion: result.emotional?.emotion || 'neutral'
+    });
     this.saveHistory();
 
     return result;
   }
 
   /**
-   * 检测表层意图
+   * 检测表层意图 (规则基础后备)
    */
   detectSurfaceIntent(message) {
     const messageLower = message.toLowerCase();
@@ -120,7 +246,7 @@ class IntentLayer {
     }
 
     return detected || {
-      type: 'unknown',
+      type: 'unclear',
       template: '无法确定具体意图',
       raw_intent: message,
       confidence: 0.3
@@ -128,30 +254,15 @@ class IntentLayer {
   }
 
   /**
-   * 检测情绪暗流
+   * 检测情绪暗流 (规则基础后备)
    */
   detectEmotionalUndercurrent(message, history) {
     const emotions = {
-      frustration: {
-        keywords: ['烦', '难', '挫败', '不行', '不会', 'tired', 'frustrated', 'hard', 'difficult'],
-        indicator: '用户可能感到挫败或不耐烦'
-      },
-      curiosity: {
-        keywords: ['好奇', '想知', '问问', 'interesting', 'curious', 'wonder'],
-        indicator: '用户表现出好奇心'
-      },
-      urgency: {
-        keywords: ['急', '赶', '快点', '来不及', 'urgent', 'quickly', 'asap'],
-        indicator: '用户可能有时间压力'
-      },
-      confusion: {
-        keywords: ['不懂', '困惑', '模糊', ' unclear', 'confused', 'confusing'],
-        indicator: '用户可能感到困惑'
-      },
-      satisfaction: {
-        keywords: ['好', '棒', '赞', '满意', 'good', 'great', 'perfect', 'happy'],
-        indicator: '用户表现出满意'
-      }
+      frustration: { keywords: ['烦', '难', '挫败', '不行', '不会', 'tired', 'frustrated', 'hard', 'difficult'], indicator: '用户可能感到挫败或不耐烦' },
+      curiosity: { keywords: ['好奇', '想知', '问问', 'interesting', 'curious', 'wonder'], indicator: '用户表现出好奇心' },
+      urgency: { keywords: ['急', '赶', '快点', '来不及', 'urgent', 'quickly', 'asap'], indicator: '用户可能有时间压力' },
+      confusion: { keywords: ['不懂', '困惑', '模糊', 'unclear', 'confused', 'confusing'], indicator: '用户可能感到困惑' },
+      satisfaction: { keywords: ['好', '棒', '赞', '满意', 'good', 'great', 'perfect', 'happy'], indicator: '用户表现出满意' }
     };
 
     const detected = [];
@@ -177,9 +288,6 @@ class IntentLayer {
     };
   }
 
-  /**
-   * 计算情绪强度
-   */
   calculateEmotionIntensity(keyword, message) {
     const emphasis = ['!!!', '!!', '很', '非常', 'really', 'very'];
     for (const e of emphasis) {
@@ -188,12 +296,8 @@ class IntentLayer {
     return 0.6;
   }
 
-  /**
-   * 分析上下文需求
-   */
   analyzeContextualNeeds(message, history) {
     const needs = [];
-
     if (history.length === 0) {
       needs.push('用户可能是首次互动，需要建立信任');
     }
@@ -215,9 +319,6 @@ class IntentLayer {
     };
   }
 
-  /**
-   * 提取话题
-   */
   extractTopics(messages) {
     const topics = [];
     const keywords = ['代码', '项目', '问题', '学习', '优化', 'code', 'project', 'problem', 'learn'];
@@ -230,19 +331,15 @@ class IntentLayer {
         }
       }
     }
-
     return topics;
   }
 
-  /**
-   * 推断深层动机
-   */
   inferDeepMotivation(surface, emotional, contextual) {
     let motivation = '';
     let confidence = 0.5;
     let suggestions = [];
 
-    if (emotional.needs_support) {
+    if (emotional.needs_support || emotional.intensity > 0.6) {
       motivation = '用户除了表面需求外，还需要情感支持';
       suggestions.push('在提供解决方案前，先认可用户的感受');
       confidence += 0.2;
@@ -273,49 +370,26 @@ class IntentLayer {
     };
   }
 
-  /**
-   * 计算置信度
-   */
-  calculateConfidence(result) {
-    if (!result) return 0;
-    const scores = [
-      result.surface?.confidence || 0,
-      result.deep?.confidence || 0
-    ];
-    return scores.reduce((a, b) => a + b, 0) / scores.length;
-  }
-
-  /**
-   * 建议处理方式
-   */
   suggestApproach(deepMotivation) {
     const suggestions = deepMotivation.suggestions || [];
     
-    const approach = {
+    return {
       tone: suggestions.includes('在提供解决方案前，先认可用户的感受') ? 'empathetic' : 'professional',
       structure: suggestions.includes('使用复述确认机制') ? 'confirm_first' : 'direct',
       depth: suggestions.includes('解释原理，给出例子') ? 'detailed' : 'concise'
     };
-
-    return approach;
   }
 
-  /**
-   * 格式化输出
-   */
   formatOutput(result) {
     return {
-      surface_intent: result.surface?.type || 'unknown',
-      emotional_state: result.emotional?.primary_emotion || 'neutral',
-      deep_motivation: result.deep?.summary || '未知',
+      surface_intent: result.surface?.type || 'unclear',
+      emotional_state: result.emotional?.emotion || result.emotional?.primary_emotion || 'neutral',
+      deep_need: result.deep?.summary || '未知',
       confidence: (result.confidence || 0).toFixed(2),
       approach: result.recommendedApproach
     };
   }
 
-  /**
-   * 获取历史
-   */
   getHistory() {
     return this.history.intents.slice(-10);
   }
