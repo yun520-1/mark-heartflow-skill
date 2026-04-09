@@ -1,8 +1,9 @@
 {
   "version": "1.0",
   "metadata": {
-    "lastUpdate": "2026-04-09T00:00:00.000Z",
-    "description": "成语故事数据库 - 与心流、专注、创造相关的成语典故"
+    "lastUpdate": "2026-04-09T04:24:47.706Z",
+    "description": "成语故事数据库 - 与心流、专注、创造相关的成语典故",
+    "idiomCount": 106
   },
   "idioms": {
     "废寝忘食": {
@@ -10,84 +11,1650 @@
       "meaning": "形容人非常专心努力，以至于忘记了吃饭和睡觉",
       "origin": "《列子·天瑞》",
       "narrativeSeed": "忘我投入 专注极致",
-      "keywords": ["专注", "投入", "忘我", "学习", "研究"]
+      "keywords": [
+        "专注",
+        "投入",
+        "忘我",
+        "学习",
+        "研究"
+      ]
     },
     "庖丁解牛": {
       "story": "古代有一个名叫丁的厨师，善于解剖牛。他解剖牛时，刀法极其精妙，仿佛在演奏音乐。梁惠王问他为何技术如此高超，回答说：我刚开始时看到的是完整的牛，三年后看到的只是牛的骨骼，如今我只需用心体会，就能轻松解剖。",
       "meaning": "形容技艺高超熟练，达到了出神入化的境界",
       "origin": "《庄子·养生主》",
       "narrativeSeed": "技艺精进 熟能生巧",
-      "keywords": ["熟练", "精进", "境界", "技巧", "心流"]
+      "keywords": [
+        "熟练",
+        "精进",
+        "境界",
+        "技巧",
+        "心流"
+      ]
     },
     "心流": {
       "story": "现代心理学概念，指一个人在从事某项活动时，完全沉浸其中，达到一种时间感消失、自我意识淡化的最佳体验状态。在这种状态下，人们会感到极度满足和愉悦。",
       "meaning": "心理学上指一个人完全沉浸在某种活动中的最优体验状态",
       "origin": "心理学 Mihaly Csikszentmihalyi",
       "narrativeSeed": "沉浸体验 最优状态",
-      "keywords": ["沉浸", "专注", "最优体验", "忘我"]
+      "keywords": [
+        "沉浸",
+        "专注",
+        "最优体验",
+        "忘我"
+      ]
     },
     "全神贯注": {
       "story": "古代有一位射箭高手，每次射箭时都集中全部精神，眼睛紧盯目标，心无旁骛。有一天，他在射箭时，一只蝉在树枝上鸣叫，他仿佛没有听到，继续专注瞄准，最终一箭命中目标。",
       "meaning": "形容精神高度集中，注意力完全集中在一点上",
       "origin": "《庄子·外物》",
       "narrativeSeed": "精神集中 注意力",
-      "keywords": ["专注", "集中", "注意力", "投入"]
+      "keywords": [
+        "专注",
+        "集中",
+        "注意力",
+        "投入"
+      ]
     },
     "聚精会神": {
       "story": "相传古代画家顾恺之作画时，为了画好人物的眼睛，会对着镜子聚精会神地观察自己的眼神，直到能够准确把握眼神的精髓。他的画作因此栩栩如生。",
       "meaning": "原指集中精神，后泛指高度集中注意力",
       "origin": "汉代文献",
       "narrativeSeed": "精神集中 观察入微",
-      "keywords": ["专注", "观察", "精神", "投入"]
+      "keywords": [
+        "专注",
+        "观察",
+        "精神",
+        "投入"
+      ]
     },
     "忘我": {
       "story": "传说有一位书法家王羲之，有一天在湖边练字。他写字太过投入，以至于把墨汁当成茶水端起来喝浑然不觉，旁边的书童提醒他，他才发现自己满嘴都是墨汁。",
       "meaning": "形容做事非常专心，达到了忘记自己的境界",
       "origin": "民间传说",
       "narrativeSeed": "投入忘我 专注忘我",
-      "keywords": ["忘我", "投入", "专注", "痴迷"]
+      "keywords": [
+        "忘我",
+        "投入",
+        "专注",
+        "痴迷"
+      ]
     },
     "锲而不舍": {
       "story": "古代有一位学者学习雕刻，开始时总是失败，但他坚持不懈，每天练习。经过多年的努力，他终于能够在一块小小的玉石上刻出精美的图案，连皇帝都赞叹不已。",
       "meaning": "比喻有恒心，有毅力",
       "origin": "《荀子·劝学》",
       "narrativeSeed": "坚持不懈 持之以恒",
-      "keywords": ["坚持", "毅力", "努力", "恒心"]
+      "keywords": [
+        "坚持",
+        "毅力",
+        "努力",
+        "恒心"
+      ]
     },
     "熟能生巧": {
       "story": "古代有一个射箭能手，每天练习射箭。他告诉别人，射箭没什么秘诀，就是天天练习。后来，他的箭术已经到了出神入化的境界，百发百中。",
       "meaning": "熟练了就能找到窍门",
       "origin": "《庄子·天道》",
       "narrativeSeed": "练习积累 技艺精进",
-      "keywords": ["熟练", "技巧", "练习", "精进"]
+      "keywords": [
+        "熟练",
+        "技巧",
+        "练习",
+        "精进"
+      ]
     },
     "渐入佳境": {
       "story": "东晋画家顾恺之画人物肖像，起初画得并不好，但每次作画后都会说'渐入佳境'。意思是画面越来越美，逐步达到完美的境界。后来果然成为一代大师。",
       "meaning": "逐渐进入美好的境界",
       "origin": "《晋书·顾恺之传》",
       "narrativeSeed": "逐步精进 状态上升",
-      "keywords": ["进步", "精进", "提升", "状态"]
+      "keywords": [
+        "进步",
+        "精进",
+        "提升",
+        "状态"
+      ]
     },
     "灵感迸发": {
       "story": "唐代诗人李白相传在黄鹤楼饮酒，正要提笔作诗，却一时没有灵感。突然，他看到窗外明月当空，灵感和诗意如泉水般涌出，于是写下了不朽的诗篇。",
       "meaning": "突然产生奇妙的想法或构思",
       "origin": "民间传说",
       "narrativeSeed": "创意涌现 思维爆发",
-      "keywords": ["灵感", "创意", "爆发", "思维"]
+      "keywords": [
+        "灵感",
+        "创意",
+        "爆发",
+        "思维"
+      ]
     },
     "茅塞顿开": {
       "story": "古代有一位学者，开始时对某个问题百思不得其解，就像心中被茅草堵塞。一次偶然的机会，他听到别人的一句话，突然明白了其中的道理，心中豁然开朗。",
       "meaning": "比喻突然开窍，明白了某个道理",
       "origin": "《孟子·尽心下》",
       "narrativeSeed": "突然开窍 顿悟",
-      "keywords": ["顿悟", "开窍", "理解", "明白"]
+      "keywords": [
+        "顿悟",
+        "开窍",
+        "理解",
+        "明白"
+      ]
     },
     "坚持不懈": {
       "story": "古代有一位名叫愚公的人，想要移走家门前的两座大山。他带领子孙后代，每天坚持挖山不止。虽然被人嘲笑，但他的精神感动了上帝，最终神仙帮助移走了大山。",
       "meaning": "坚决保持、维护或进行",
       "origin": "《列子·汤问》",
       "narrativeSeed": "持之以恒 不放弃",
-      "keywords": ["坚持", "恒心", "努力", "不放弃"]
+      "keywords": [
+        "坚持",
+        "恒心",
+        "努力",
+        "不放弃"
+      ]
+    },
+    "游刃有余": {
+      "story": "庖丁解牛",
+      "meaning": "技艺高超",
+      "origin": "《庄子》",
+      "narrativeSeed": "技艺纯熟",
+      "keywords": [
+        "熟练",
+        "精通"
+      ],
+      "tags": [
+        "心流",
+        "熟练"
+      ],
+      "emotion": "admiration",
+      "pinyin": "you ren you yu"
+    },
+    "心无旁骛": {
+      "story": "专注做事",
+      "meaning": "专心致志",
+      "origin": "刘义庆",
+      "narrativeSeed": "专注一念",
+      "keywords": [
+        "专注",
+        "集中"
+      ],
+      "tags": [
+        "心流",
+        "专注"
+      ],
+      "emotion": "admiration",
+      "pinyin": "xin wu pang wu"
+    },
+    "孜孜不倦": {
+      "story": "勤学不倦",
+      "meaning": "勤奋努力",
+      "origin": "《论语》",
+      "narrativeSeed": "勤勉求学",
+      "keywords": [
+        "勤奋",
+        "努力"
+      ],
+      "tags": [
+        "学习",
+        "勤奋"
+      ],
+      "emotion": "admiration",
+      "pinyin": "zi zi bu juan"
+    },
+    "一丝不苟": {
+      "story": "认真细致",
+      "meaning": "非常认真",
+      "origin": "《论语》",
+      "narrativeSeed": "认真细致",
+      "keywords": [
+        "认真",
+        "细致"
+      ],
+      "tags": [
+        "认真",
+        "细致"
+      ],
+      "emotion": "respect",
+      "pinyin": "yi si bu gou"
+    },
+    "精益求精": {
+      "story": "追求完美",
+      "meaning": "好了更好",
+      "origin": "《论语》",
+      "narrativeSeed": "追求极致",
+      "keywords": [
+        "追求",
+        "完美"
+      ],
+      "tags": [
+        "追求",
+        "完美"
+      ],
+      "emotion": "admiration",
+      "pinyin": "jing yi qiu jing"
+    },
+    "持之以恒": {
+      "story": "长期坚持",
+      "meaning": "恒心",
+      "origin": "《孟子》",
+      "narrativeSeed": "长期坚持",
+      "keywords": [
+        "坚持",
+        "恒心"
+      ],
+      "tags": [
+        "坚持",
+        "恒心"
+      ],
+      "emotion": "admiration",
+      "pinyin": "chi zhi yi heng"
+    },
+    "豁然开朗": {
+      "story": "突然明白",
+      "meaning": "开朗明白",
+      "origin": "《桃花源记》",
+      "narrativeSeed": "突然明白",
+      "keywords": [
+        "明白",
+        "理解"
+      ],
+      "tags": [
+        "明白",
+        "理解"
+      ],
+      "emotion": "insight",
+      "pinyin": "huo ran kai lang"
+    },
+    "如梦初醒": {
+      "story": "像梦醒了一样",
+      "meaning": "突然清醒",
+      "origin": "成语",
+      "narrativeSeed": "突然清醒",
+      "keywords": [
+        "清醒",
+        "明白"
+      ],
+      "tags": [
+        "清醒",
+        "明白"
+      ],
+      "emotion": "insight",
+      "pinyin": "ru meng chu xing"
+    },
+    "恍然大悟": {
+      "story": "一下子明白",
+      "meaning": "突然理解",
+      "origin": "《红楼梦》",
+      "narrativeSeed": "突然明白",
+      "keywords": [
+        "明白",
+        "理解"
+      ],
+      "tags": [
+        "明白",
+        "理解"
+      ],
+      "emotion": "insight",
+      "pinyin": "huang ran da wu"
+    },
+    "柳暗花明": {
+      "story": "困境中见希望",
+      "meaning": "出现转机",
+      "origin": "陆游",
+      "narrativeSeed": "困境希望",
+      "keywords": [
+        "希望",
+        "转机"
+      ],
+      "tags": [
+        "希望",
+        "转机"
+      ],
+      "emotion": "hope",
+      "pinyin": "liu an hua ming"
+    },
+    "山重水复": {
+      "story": "山山水水",
+      "meaning": "困境",
+      "origin": "陆游",
+      "narrativeSeed": "困境",
+      "keywords": [
+        "困境",
+        "艰难"
+      ],
+      "tags": [
+        "困境",
+        "艰难"
+      ],
+      "emotion": "concern",
+      "pinyin": "shan chong shui fu"
+    },
+    "否极泰来": {
+      "story": "逆境变好",
+      "meaning": "坏运过去好运来",
+      "origin": "《易经》",
+      "narrativeSeed": "逆境转机",
+      "keywords": [
+        "转机",
+        "希望"
+      ],
+      "tags": [
+        "转机",
+        "希望"
+      ],
+      "emotion": "hope",
+      "pinyin": "ji tai lai"
+    },
+    "苦尽甘来": {
+      "story": "苦尽甘来",
+      "meaning": "艰辛后有甜",
+      "origin": "成语",
+      "narrativeSeed": "艰辛收获",
+      "keywords": [
+        "收获",
+        "希望"
+      ],
+      "tags": [
+        "收获",
+        "希望"
+      ],
+      "emotion": "joy",
+      "pinyin": "ku jin gan lai"
+    },
+    "一波三折": {
+      "story": "曲折",
+      "meaning": "不顺利",
+      "origin": "成语",
+      "narrativeSeed": "曲折",
+      "keywords": [
+        "曲折",
+        "困难"
+      ],
+      "tags": [
+        "曲折",
+        "困难"
+      ],
+      "emotion": "concern",
+      "pinyin": "yi bo san zhe"
+    },
+    "一帆风顺": {
+      "story": "顺利",
+      "meaning": "一切顺利",
+      "origin": "成语",
+      "narrativeSeed": "顺利",
+      "keywords": [
+        "顺利",
+        "成功"
+      ],
+      "tags": [
+        "顺利",
+        "成功"
+      ],
+      "emotion": "joy",
+      "pinyin": "yi fan feng shun"
+    },
+    "风雨同舟": {
+      "story": "共同渡难",
+      "meaning": "一起面对困难",
+      "origin": "《孙子》",
+      "narrativeSeed": "共度难关",
+      "keywords": [
+        "合作",
+        "支持"
+      ],
+      "tags": [
+        "合作",
+        "支持"
+      ],
+      "emotion": "trust",
+      "pinyin": "feng yu tong zhou"
+    },
+    "同舟共济": {
+      "story": "同舟共济",
+      "meaning": "齐心协力",
+      "origin": "《孙子》",
+      "narrativeSeed": "齐心协力",
+      "keywords": [
+        "合作",
+        "团结"
+      ],
+      "tags": [
+        "合作",
+        "团结"
+      ],
+      "emotion": "trust",
+      "pinyin": "tong zhou gong ji"
+    },
+    "众志成城": {
+      "story": "团结力量大",
+      "meaning": "团结如城墙",
+      "origin": "《国语》",
+      "narrativeSeed": "团结力量",
+      "keywords": [
+        "团结",
+        "力量"
+      ],
+      "tags": [
+        "团结",
+        "力量"
+      ],
+      "emotion": "admiration",
+      "pinyin": "zhong zhi cheng cheng"
+    },
+    "万众一心": {
+      "story": "大家一起",
+      "meaning": "团结一致",
+      "origin": "成语",
+      "narrativeSeed": "团结一致",
+      "keywords": [
+        "团结",
+        "一致"
+      ],
+      "tags": [
+        "团结",
+        "一致"
+      ],
+      "emotion": "trust",
+      "pinyin": "wan zhong yi xin"
+    },
+    "同心协力": {
+      "story": "一起努力",
+      "meaning": "共同合作",
+      "origin": "《商君书》",
+      "narrativeSeed": "一起努力",
+      "keywords": [
+        "合作",
+        "努力"
+      ],
+      "tags": [
+        "合作",
+        "努力"
+      ],
+      "emotion": "trust",
+      "pinyin": "tong xin xie li"
+    },
+    "和衷共济": {
+      "story": "同心渡难关",
+      "meaning": "齐心协力",
+      "origin": "《尚书》",
+      "narrativeSeed": "同心协力",
+      "keywords": [
+        "合作",
+        "同心"
+      ],
+      "tags": [
+        "合作",
+        "同心"
+      ],
+      "emotion": "trust",
+      "pinyin": "he zhong gong ji"
+    },
+    "群策群力": {
+      "story": "集体想办法",
+      "meaning": "大家一起想",
+      "origin": "《汉书》",
+      "narrativeSeed": "集体智慧",
+      "keywords": [
+        "集体",
+        "智慧"
+      ],
+      "tags": [
+        "集体",
+        "智慧"
+      ],
+      "emotion": "trust",
+      "pinyin": "qun ce qun li"
+    },
+    "集思广益": {
+      "story": "集中众人智慧",
+      "meaning": "听取意见",
+      "origin": "《孟子》",
+      "narrativeSeed": "集中智慧",
+      "keywords": [
+        "智慧",
+        "集体"
+      ],
+      "tags": [
+        "智慧",
+        "集体"
+      ],
+      "emotion": "respect",
+      "pinyin": "ji si guang yi"
+    },
+    "博采众长": {
+      "story": "学习各方长处",
+      "meaning": "吸收优点",
+      "origin": "成语",
+      "narrativeSeed": "学习长处",
+      "keywords": [
+        "学习",
+        "吸收"
+      ],
+      "tags": [
+        "学习",
+        "吸收"
+      ],
+      "emotion": "learn",
+      "pinyin": "bo cai zhong chang"
+    },
+    "学以致用": {
+      "story": "学习用于实践",
+      "meaning": "学有所用",
+      "origin": "成语",
+      "narrativeSeed": "学以致用",
+      "keywords": [
+        "学习",
+        "实践"
+      ],
+      "tags": [
+        "学习",
+        "实践"
+      ],
+      "emotion": "practical",
+      "pinyin": "xue yi zhi yong"
+    },
+    "温故知新": {
+      "story": "复习旧知识",
+      "meaning": "获得新理解",
+      "origin": "《论语》",
+      "narrativeSeed": "复习新得",
+      "keywords": [
+        "学习",
+        "复习"
+      ],
+      "tags": [
+        "学习",
+        "复习"
+      ],
+      "emotion": "learn",
+      "pinyin": "wen gu zhi xin"
+    },
+    "举一反三": {
+      "story": "知道一点懂很多",
+      "meaning": "善于推导",
+      "origin": "《论语》",
+      "narrativeSeed": "触类旁通",
+      "keywords": [
+        "理解",
+        "推导"
+      ],
+      "tags": [
+        "理解",
+        "推导"
+      ],
+      "emotion": "insight",
+      "pinyin": "ju yi fan san"
+    },
+    "触类旁通": {
+      "story": "理解一类推其他",
+      "meaning": "融会贯通",
+      "origin": "《易经》",
+      "narrativeSeed": "类推理解",
+      "keywords": [
+        "理解",
+        "推导"
+      ],
+      "tags": [
+        "理解",
+        "推导"
+      ],
+      "emotion": "insight",
+      "pinyin": "chu lei pang tong"
+    },
+    "闻一知十": {
+      "story": "知道一点懂很多",
+      "meaning": "很聪明",
+      "origin": "《论语》",
+      "narrativeSeed": "智慧敏捷",
+      "keywords": [
+        "智慧",
+        "敏捷"
+      ],
+      "tags": [
+        "智慧",
+        "敏捷"
+      ],
+      "emotion": "wisdom",
+      "pinyin": "wen yi zhi shi"
+    },
+    "融会贯通": {
+      "story": "融合各知识",
+      "meaning": "全面理解",
+      "origin": "《论语》",
+      "narrativeSeed": "全面理解",
+      "keywords": [
+        "理解",
+        "贯通"
+      ],
+      "tags": [
+        "理解",
+        "贯通"
+      ],
+      "emotion": "insight",
+      "pinyin": "rong hui guan tong"
+    },
+    "豁然贯通": {
+      "story": "突然全面明白",
+      "meaning": "彻底理解",
+      "origin": "《大学》",
+      "narrativeSeed": "突然明白",
+      "keywords": [
+        "明白",
+        "理解"
+      ],
+      "tags": [
+        "明白",
+        "理解"
+      ],
+      "emotion": "insight",
+      "pinyin": "huo ran guan tong"
+    },
+    "大彻大悟": {
+      "story": "彻底觉悟",
+      "meaning": "完全明白",
+      "origin": "《红楼梦》",
+      "narrativeSeed": "彻底觉悟",
+      "keywords": [
+        "觉悟",
+        "领悟"
+      ],
+      "tags": [
+        "觉悟",
+        "领悟"
+      ],
+      "emotion": "enlightenment",
+      "pinyin": "da che da wu"
+    },
+    "如梦方醒": {
+      "story": "如梦初醒",
+      "meaning": "突然清醒",
+      "origin": "成语",
+      "narrativeSeed": "突然清醒",
+      "keywords": [
+        "清醒",
+        "明白"
+      ],
+      "tags": [
+        "清醒",
+        "明白"
+      ],
+      "emotion": "insight",
+      "pinyin": "ru meng fang xing"
+    },
+    "幡然醒悟": {
+      "story": "很快醒悟",
+      "meaning": "改变态度",
+      "origin": "成语",
+      "narrativeSeed": "快速醒悟",
+      "keywords": [
+        "醒悟",
+        "改变"
+      ],
+      "tags": [
+        "醒悟",
+        "改变"
+      ],
+      "emotion": "insight",
+      "pinyin": "fan ran xing wu"
+    },
+    "迷途知返": {
+      "story": "迷路后返回",
+      "meaning": "知错能改",
+      "origin": "《论语》",
+      "narrativeSeed": "知错能改",
+      "keywords": [
+        "改正",
+        "回头"
+      ],
+      "tags": [
+        "改正",
+        "回头"
+      ],
+      "emotion": "repentance",
+      "pinyin": "mi tu zhi fan"
+    },
+    "知过能改": {
+      "story": "知道错误改正",
+      "meaning": "有错就改",
+      "origin": "成语",
+      "narrativeSeed": "知错能改",
+      "keywords": [
+        "改正",
+        "错误"
+      ],
+      "tags": [
+        "改正",
+        "错误"
+      ],
+      "emotion": "repentance",
+      "pinyin": "zhi guo neng gai"
+    },
+    "悬崖勒马": {
+      "story": "及时止步",
+      "meaning": "停止危险",
+      "origin": "成语",
+      "narrativeSeed": "及时止步",
+      "keywords": [
+        "停止",
+        "危险"
+      ],
+      "tags": [
+        "停止",
+        "危险"
+      ],
+      "emotion": "warning",
+      "pinyin": "xuan ya le ma"
+    },
+    "亡羊补牢": {
+      "story": "丢失后补救",
+      "meaning": "及时补救",
+      "origin": "《战国策》",
+      "narrativeSeed": "及时补救",
+      "keywords": [
+        "补救",
+        "及时"
+      ],
+      "tags": [
+        "补救",
+        "及时"
+      ],
+      "emotion": "remedy",
+      "pinyin": "wang yang bu lao"
+    },
+    "塞翁失马": {
+      "story": "得失转化",
+      "meaning": "祸福相依",
+      "origin": "《淮南子》",
+      "narrativeSeed": "祸福转换",
+      "keywords": [
+        "转换",
+        "祸福"
+      ],
+      "tags": [
+        "转换",
+        "祸福"
+      ],
+      "emotion": "philosophical",
+      "pinyin": "sai weng shi ma"
+    },
+    "福祸相依": {
+      "story": "福祸互相转化",
+      "meaning": "互相依赖",
+      "origin": "《老子》",
+      "narrativeSeed": "祸福转化",
+      "keywords": [
+        "转化",
+        "祸福"
+      ],
+      "tags": [
+        "转化",
+        "祸福"
+      ],
+      "emotion": "philosophical",
+      "pinyin": "fu huo xiang yi"
+    },
+    "物极必反": {
+      "story": "极致必反",
+      "meaning": "到了极限会变",
+      "origin": "《鹖冠子》",
+      "narrativeSeed": "极点转化",
+      "keywords": [
+        "转化",
+        "极限"
+      ],
+      "tags": [
+        "转化",
+        "极限"
+      ],
+      "emotion": "philosophical",
+      "pinyin": "wu ji bi fan"
+    },
+    "画蛇添足": {
+      "story": "画蛇時給蛇添腳",
+      "meaning": "多此一举",
+      "origin": "《战国策》",
+      "narrativeSeed": "多此一举",
+      "keywords": [
+        "多余",
+        "过度"
+      ],
+      "tags": [
+        "多余",
+        "过度"
+      ],
+      "emotion": "irony",
+      "pinyin": "hua she tian zu"
+    },
+    "掩耳盗铃": {
+      "story": "偷铃怕响声",
+      "meaning": "自己骗自己",
+      "origin": "《吕氏春秋》",
+      "narrativeSeed": "自欺欺人",
+      "keywords": [
+        "欺骗",
+        "自己"
+      ],
+      "tags": [
+        "欺骗",
+        "自己"
+      ],
+      "emotion": "irony",
+      "pinyin": "yan er dao ling"
+    },
+    "守株待兔": {
+      "story": "等兔子撞树",
+      "meaning": "等待偶然",
+      "origin": "《韩非子》",
+      "narrativeSeed": "等待运气",
+      "keywords": [
+        "等待",
+        "偶然"
+      ],
+      "tags": [
+        "等待",
+        "偶然"
+      ],
+      "emotion": "irony",
+      "pinyin": "shou zhu dai tu"
+    },
+    "刻舟求剑": {
+      "story": "船上刻记号找剑",
+      "meaning": "固执不知变通",
+      "origin": "《吕氏春秋》",
+      "narrativeSeed": "固执",
+      "keywords": [
+        "固执",
+        "变通"
+      ],
+      "tags": [
+        "固执",
+        "变通"
+      ],
+      "emotion": "irony",
+      "pinyin": "ke zhou qiu jian"
+    },
+    "买椟还珠": {
+      "story": "买盒子还珠子",
+      "meaning": "取舍不当",
+      "origin": "《韩非子》",
+      "narrativeSeed": "取舍不当",
+      "keywords": [
+        "取舍",
+        "不当"
+      ],
+      "tags": [
+        "取舍",
+        "不当"
+      ],
+      "emotion": "irony",
+      "pinyin": "mai du huan zhu"
+    },
+    "叶公好龙": {
+      "story": "叶公喜欢假龙",
+      "meaning": "表面喜欢实际怕",
+      "origin": "《新序》",
+      "narrativeSeed": "表面喜欢",
+      "keywords": [
+        "虚伪",
+        "表面"
+      ],
+      "tags": [
+        "虚伪",
+        "表面"
+      ],
+      "emotion": "irony",
+      "pinyin": "ye gong hao long"
+    },
+    "井底之蛙": {
+      "story": "井底青蛙看天",
+      "meaning": "眼光狭小",
+      "origin": "《庄子》",
+      "narrativeSeed": "眼光狭小",
+      "keywords": [
+        "狭小",
+        "眼光"
+      ],
+      "tags": [
+        "狭小",
+        "眼光"
+      ],
+      "emotion": "irony",
+      "pinyin": "jing di zhi wa"
+    },
+    "夜郎自大": {
+      "story": "夜郎国很大",
+      "meaning": "骄傲自大",
+      "origin": "《汉书》",
+      "narrativeSeed": "骄傲",
+      "keywords": [
+        "骄傲",
+        "自大"
+      ],
+      "tags": [
+        "骄傲",
+        "自大"
+      ],
+      "emotion": "irony",
+      "pinyin": "ye lang zi da"
+    },
+    "班门弄斧": {
+      "story": "在鲁班门前弄斧",
+      "meaning": "内行面前卖弄",
+      "origin": "成语",
+      "narrativeSeed": "卖弄",
+      "keywords": [
+        "卖弄",
+        "内行"
+      ],
+      "tags": [
+        "卖弄",
+        "内行"
+      ],
+      "emotion": "irony",
+      "pinyin": "ban men nong fu"
+    },
+    "东施效颦": {
+      "story": "东施效颦皱眉",
+      "meaning": "模仿不当",
+      "origin": "《庄子》",
+      "narrativeSeed": "模仿",
+      "keywords": [
+        "模仿",
+        "不当"
+      ],
+      "tags": [
+        "模仿",
+        "不当"
+      ],
+      "emotion": "irony",
+      "pinyin": "dong shi xiao pin"
+    },
+    "囫囵吞枣": {
+      "story": "囫囵吞枣不消化",
+      "meaning": "学习不求甚解",
+      "origin": "《成语》",
+      "narrativeSeed": "不求甚解",
+      "keywords": [
+        "学习",
+        "粗糙"
+      ],
+      "tags": [
+        "学习",
+        "粗糙"
+      ],
+      "emotion": "irony",
+      "pinyin": "hu lun tun zao"
+    },
+    "走马观花": {
+      "story": "骑马路过看花",
+      "meaning": "观察不细致",
+      "origin": "成语",
+      "narrativeSeed": "不细致",
+      "keywords": [
+        "观察",
+        "粗糙"
+      ],
+      "tags": [
+        "观察",
+        "粗糙"
+      ],
+      "emotion": "irony",
+      "pinyin": "zou ma guan hua"
+    },
+    "蜻蜓点水": {
+      "story": "蜻蜓点水",
+      "meaning": "做事不深入",
+      "origin": "成语",
+      "narrativeSeed": "不深入",
+      "keywords": [
+        "表面",
+        "浅"
+      ],
+      "tags": [
+        "表面",
+        "浅"
+      ],
+      "emotion": "irony",
+      "pinyin": "qing ting dian shui"
+    },
+    "浅尝辄止": {
+      "story": "浅尝就停止",
+      "meaning": "不深入研究",
+      "origin": "成语",
+      "narrativeSeed": "不深入",
+      "keywords": [
+        "表面",
+        "停止"
+      ],
+      "tags": [
+        "表面",
+        "停止"
+      ],
+      "emotion": "irony",
+      "pinyin": "qian chang zhe zhi"
+    },
+    "三心二意": {
+      "story": "心意不专一",
+      "meaning": "不专心",
+      "origin": "成语",
+      "narrativeSeed": "不专心",
+      "keywords": [
+        "不专",
+        "犹豫"
+      ],
+      "tags": [
+        "不专",
+        "犹豫"
+      ],
+      "emotion": "concern",
+      "pinyin": "xin er yi"
+    },
+    "心不在焉": {
+      "story": "心思不在这里",
+      "meaning": "不专心",
+      "origin": "《礼记》",
+      "narrativeSeed": "不专心",
+      "keywords": [
+        "不专",
+        "走神"
+      ],
+      "tags": [
+        "不专",
+        "走神"
+      ],
+      "emotion": "concern",
+      "pinyin": "xin bu zai yan"
+    },
+    "敷衍了事": {
+      "story": "敷衍应付",
+      "meaning": "不认真",
+      "origin": "成语",
+      "narrativeSeed": "不认真",
+      "keywords": [
+        "应付",
+        "不认真"
+      ],
+      "tags": [
+        "应付",
+        "不认真"
+      ],
+      "emotion": "concern",
+      "pinyin": "fu yan liao shi"
+    },
+    "得过且过": {
+      "story": "得过且过",
+      "meaning": "凑合度日",
+      "origin": "成语",
+      "narrativeSeed": "凑合",
+      "keywords": [
+        "凑合",
+        "敷衍"
+      ],
+      "tags": [
+        "凑合",
+        "敷衍"
+      ],
+      "emotion": "concern",
+      "pinyin": "de qie guo guo"
+    },
+    "安于现状": {
+      "story": "安于现在状态",
+      "meaning": "不求进取",
+      "origin": "成语",
+      "narrativeSeed": "不进取",
+      "keywords": [
+        "现状",
+        "不进取"
+      ],
+      "tags": [
+        "现状",
+        "不进取"
+      ],
+      "emotion": "concern",
+      "pinyin": "an yu xian zhuang"
+    },
+    "不思进取": {
+      "story": "不想进步",
+      "meaning": "不求上进",
+      "origin": "成语",
+      "narrativeSeed": "不上进",
+      "keywords": [
+        "不求",
+        "上进"
+      ],
+      "tags": [
+        "不求",
+        "上进"
+      ],
+      "emotion": "concern",
+      "pinyin": "bu si jin qu"
+    },
+    "画饼充饥": {
+      "story": "画饼充饥",
+      "meaning": "空想安慰",
+      "origin": "《三国志》",
+      "narrativeSeed": "空想",
+      "keywords": [
+        "空想",
+        "安慰"
+      ],
+      "tags": [
+        "空想",
+        "安慰"
+      ],
+      "emotion": "irony",
+      "pinyin": "hua bing chong ji"
+    },
+    "望梅止渴": {
+      "story": "望梅止渴",
+      "meaning": "空想安慰",
+      "origin": "《三国志》",
+      "narrativeSeed": "空想",
+      "keywords": [
+        "空想",
+        "希望"
+      ],
+      "tags": [
+        "空想",
+        "希望"
+      ],
+      "emotion": "hope",
+      "pinyin": "wang mei zhi ke"
+    },
+    "水中捞月": {
+      "story": "水中捞月",
+      "meaning": "做不可能的事",
+      "origin": "成语",
+      "narrativeSeed": "不可能",
+      "keywords": [
+        "不可能",
+        "幻想"
+      ],
+      "tags": [
+        "不可能",
+        "幻想"
+      ],
+      "emotion": "irony",
+      "pinyin": "shui zhong lao yue"
+    },
+    "海底捞针": {
+      "story": "海底捞针",
+      "meaning": "很难找到",
+      "origin": "成语",
+      "narrativeSeed": "很难",
+      "keywords": [
+        "困难",
+        "寻找"
+      ],
+      "tags": [
+        "困难",
+        "寻找"
+      ],
+      "emotion": "concern",
+      "pinyin": "hai di lao zhen"
+    },
+    "大海捞针": {
+      "story": "大海捞针",
+      "meaning": "极难寻找",
+      "origin": "成语",
+      "narrativeSeed": "极难",
+      "keywords": [
+        "困难",
+        "寻找"
+      ],
+      "tags": [
+        "困难",
+        "寻找"
+      ],
+      "emotion": "concern",
+      "pinyin": "da hai lao zhen"
+    },
+    "火中取栗": {
+      "story": "火中取栗",
+      "meaning": "冒险替人做事",
+      "origin": "成语",
+      "narrativeSeed": "冒险",
+      "keywords": [
+        "冒险",
+        "被人利用"
+      ],
+      "tags": [
+        "冒险",
+        "利用"
+      ],
+      "emotion": "concern",
+      "pinyin": "huo zhong qu li"
+    },
+    "与虎谋皮": {
+      "story": "与虎谋皮",
+      "meaning": "与强者商量",
+      "origin": "成语",
+      "narrativeSeed": "危险",
+      "keywords": [
+        "危险",
+        "不可能"
+      ],
+      "tags": [
+        "危险",
+        "不可能"
+      ],
+      "emotion": "concern",
+      "pinyin": "hu mou pi"
+    },
+    "对牛弹琴": {
+      "story": "对牛弹琴",
+      "meaning": "对不懂的人说话",
+      "origin": "《弘明集》",
+      "narrativeSeed": "白费口舌",
+      "keywords": [
+        "白费",
+        "对牛"
+      ],
+      "tags": [
+        "白费",
+        "对牛"
+      ],
+      "emotion": "irony",
+      "pinyin": "dui niu tan qin"
+    },
+    "城门失火": {
+      "story": "城门失火",
+      "meaning": "牵连受害",
+      "origin": "《风俗通》",
+      "narrativeSeed": "牵连",
+      "keywords": [
+        "牵连",
+        "池鱼"
+      ],
+      "tags": [
+        "牵连",
+        "池鱼"
+      ],
+      "emotion": "concern",
+      "pinyin": "cheng men shi huo"
+    },
+    "兔死狗烹": {
+      "story": "兔死狗烹",
+      "meaning": "过河拆桥",
+      "origin": "《史记》",
+      "narrativeSeed": "过河拆桥",
+      "keywords": [
+        "背叛",
+        "利用"
+      ],
+      "tags": [
+        "背叛",
+        "利用"
+      ],
+      "emotion": "sorrow",
+      "pinyin": "tu si gou peng"
+    },
+    "鸟尽弓藏": {
+      "story": "鸟尽弓藏",
+      "meaning": "功成名就后除掉功臣",
+      "origin": "《史记》",
+      "narrativeSeed": "过河拆桥",
+      "keywords": [
+        "背叛",
+        "利用"
+      ],
+      "tags": [
+        "背叛",
+        "利用"
+      ],
+      "emotion": "sorrow",
+      "pinyin": "niao jin gong cang"
+    },
+    "兔起鹘落": {
+      "story": "兔子起鹘落",
+      "meaning": "动作敏捷",
+      "origin": "成语",
+      "narrativeSeed": "敏捷",
+      "keywords": [
+        "快速",
+        "敏捷"
+      ],
+      "tags": [
+        "快速",
+        "敏捷"
+      ],
+      "emotion": "admiration",
+      "pinyin": "tu qi gu luo"
+    },
+    "轻如鸿毛": {
+      "story": "轻如鸿毛",
+      "meaning": "非常轻微",
+      "origin": "《史记》",
+      "narrativeSeed": "轻微",
+      "keywords": [
+        "轻",
+        "轻微"
+      ],
+      "tags": [
+        "轻",
+        "轻微"
+      ],
+      "emotion": "neutral",
+      "pinyin": "qing ru hong mao"
+    },
+    "重如泰山": {
+      "story": "重如泰山",
+      "meaning": "非常重要",
+      "origin": "《史记》",
+      "narrativeSeed": "重要",
+      "keywords": [
+        "重",
+        "重要"
+      ],
+      "tags": [
+        "重",
+        "重要"
+      ],
+      "emotion": "serious",
+      "pinyin": "zhong ru tai shan"
+    },
+    "举足轻重": {
+      "story": "举足轻重",
+      "meaning": "非常重要",
+      "origin": "《后汉书》",
+      "narrativeSeed": "重要",
+      "keywords": [
+        "重要",
+        "关键"
+      ],
+      "tags": [
+        "重要",
+        "关键"
+      ],
+      "emotion": "serious",
+      "pinyin": "ju zu qing zhong"
+    },
+    "微不足道": {
+      "story": "微不足道",
+      "meaning": "很小不重要",
+      "origin": "成语",
+      "narrativeSeed": "微小",
+      "keywords": [
+        "微小",
+        "不重要"
+      ],
+      "tags": [
+        "微小",
+        "不重要"
+      ],
+      "emotion": "neutral",
+      "pinyin": "wei bu zu dao"
+    },
+    "举世闻名": {
+      "story": "举世闻名",
+      "meaning": "全世界都知道",
+      "origin": "成语",
+      "narrativeSeed": "著名",
+      "keywords": [
+        "著名",
+        "世界"
+      ],
+      "tags": [
+        "著名",
+        "世界"
+      ],
+      "emotion": "admire",
+      "pinyin": "ju shi wen ming"
+    },
+    "名不虚传": {
+      "story": "名不虚传",
+      "meaning": "确实很好",
+      "origin": "成语",
+      "narrativeSeed": "确实好",
+      "keywords": [
+        "好",
+        "真实"
+      ],
+      "tags": [
+        "好",
+        "真实"
+      ],
+      "emotion": "joy",
+      "pinyin": "ming bu xu chuan"
+    },
+    "实至名归": {
+      "story": "实至名归",
+      "meaning": "有了成就获得名誉",
+      "origin": "成语",
+      "narrativeSeed": "成就名誉",
+      "keywords": [
+        "成就",
+        "名誉"
+      ],
+      "tags": [
+        "成就",
+        "名誉"
+      ],
+      "emotion": "joy",
+      "pinyin": "shi zhi ming gui"
+    },
+    "当之无愧": {
+      "story": "当之无愧",
+      "meaning": "完全配得上",
+      "origin": "成语",
+      "narrativeSeed": "配得上",
+      "keywords": [
+        "配得上",
+        "无愧"
+      ],
+      "tags": [
+        "配得上",
+        "无愧"
+      ],
+      "emotion": "proud",
+      "pinyin": "dang zhi bu kui"
+    },
+    "名落孙山": {
+      "story": "名落孙山",
+      "meaning": "考试不中",
+      "origin": "《过庭录》",
+      "narrativeSeed": "落榜",
+      "keywords": [
+        "失败",
+        "落榜"
+      ],
+      "tags": [
+        "失败",
+        "落榜"
+      ],
+      "emotion": "sorrow",
+      "pinyin": "ming luo sun shan"
+    },
+    "金榜题名": {
+      "story": "金榜题名",
+      "meaning": "考试中榜",
+      "origin": "《科举》",
+      "narrativeSeed": "中榜",
+      "keywords": [
+        "成功",
+        "中榜"
+      ],
+      "tags": [
+        "成功",
+        "中榜"
+      ],
+      "emotion": "joy",
+      "pinyin": "jin bang ti ming"
+    },
+    "独占鳌头": {
+      "story": "独占鳌头",
+      "meaning": "第一名",
+      "origin": "成语",
+      "narrativeSeed": "第一",
+      "keywords": [
+        "第一",
+        "领先"
+      ],
+      "tags": [
+        "第一",
+        "领先"
+      ],
+      "emotion": "joy",
+      "pinyin": "du zhan ao tou"
+    },
+    "首屈一指": {
+      "story": "首屈一指",
+      "meaning": "排在第一",
+      "origin": "成语",
+      "narrativeSeed": "第一",
+      "keywords": [
+        "第一",
+        "最好"
+      ],
+      "tags": [
+        "第一",
+        "最好"
+      ],
+      "emotion": "proud",
+      "pinyin": "shou yi zhi"
+    },
+    "出类拔萃": {
+      "story": "出类拔萃",
+      "meaning": "超群出众",
+      "origin": "《孟子》",
+      "narrativeSeed": "出众",
+      "keywords": [
+        "出众",
+        "优秀"
+      ],
+      "tags": [
+        "出众",
+        "优秀"
+      ],
+      "emotion": "admire",
+      "pinyin": "chu lei ba cui"
+    },
+    "超群绝伦": {
+      "story": "超群绝伦",
+      "meaning": "无人可比",
+      "origin": "《诸葛亮》",
+      "narrativeSeed": "无敌",
+      "keywords": [
+        "无敌",
+        "最强"
+      ],
+      "tags": [
+        "无敌",
+        "最强"
+      ],
+      "emotion": "admire",
+      "pinyin": "chao qun jue lun"
+    },
+    "鹤立鸡群": {
+      "story": "鹤立鸡群",
+      "meaning": "出众显眼",
+      "origin": "《成语》",
+      "narrativeSeed": "出众",
+      "keywords": [
+        "出众",
+        "显眼"
+      ],
+      "tags": [
+        "出众",
+        "显眼"
+      ],
+      "emotion": "admire",
+      "pinyin": "he li ji qun"
+    },
+    "凤毛麟角": {
+      "story": "凤毛麟角",
+      "meaning": "稀少珍贵",
+      "origin": "《成语》",
+      "narrativeSeed": "稀少",
+      "keywords": [
+        "稀少",
+        "珍贵"
+      ],
+      "tags": [
+        "稀少",
+        "珍贵"
+      ],
+      "emotion": "rare",
+      "pinyin": "feng mao lin jiao"
+    },
+    "百里挑一": {
+      "story": "百里挑一",
+      "meaning": "非常优秀",
+      "origin": "成语",
+      "narrativeSeed": "优秀",
+      "keywords": [
+        "优秀",
+        "挑选"
+      ],
+      "tags": [
+        "优秀",
+        "挑选"
+      ],
+      "emotion": "admire",
+      "pinyin": "bai li tiao yi"
+    },
+    "沧海一粟": {
+      "story": "沧海一粟",
+      "meaning": "非常微小",
+      "origin": "《成语》",
+      "narrativeSeed": "微小",
+      "keywords": [
+        "微小",
+        "渺小"
+      ],
+      "tags": [
+        "微小",
+        "渺小"
+      ],
+      "emotion": "humble",
+      "pinyin": "cang hai yi su"
+    },
+    "九牛一毛": {
+      "story": "九牛一毛",
+      "meaning": "微不足道",
+      "origin": "《史记》",
+      "narrativeSeed": "微小",
+      "keywords": [
+        "微小",
+        "渺小"
+      ],
+      "tags": [
+        "微小",
+        "渺小"
+      ],
+      "emotion": "humble",
+      "pinyin": "jiu niu yi mao"
+    },
+    "独一无二": {
+      "story": "独一无二",
+      "meaning": "唯一独特",
+      "origin": "成语",
+      "narrativeSeed": "独特",
+      "keywords": [
+        "唯一",
+        "独特"
+      ],
+      "tags": [
+        "唯一",
+        "独特"
+      ],
+      "emotion": "special",
+      "pinyin": "du yi wu er"
+    },
+    "绝无仅有": {
+      "story": "绝无仅有",
+      "meaning": "极其罕见",
+      "origin": "成语",
+      "narrativeSeed": "罕见",
+      "keywords": [
+        "罕见",
+        "仅有"
+      ],
+      "tags": [
+        "罕见",
+        "仅有"
+      ],
+      "emotion": "rare",
+      "pinyin": "jue wu jin you"
     }
   },
   "poetry": {
@@ -96,14 +1663,22 @@
       "author": "李白",
       "era": "唐",
       "narrativeSeed": "思念之情",
-      "keywords": ["思念", "明月", "故乡"]
+      "keywords": [
+        "思念",
+        "明月",
+        "故乡"
+      ]
     },
     "春眠不觉晓": {
       "content": "春眠不觉晓，处处闻啼鸟",
       "author": "孟浩然",
       "era": "唐",
       "narrativeSeed": "自然之美",
-      "keywords": ["春天", "自然", "美好"]
+      "keywords": [
+        "春天",
+        "自然",
+        "美好"
+      ]
     }
   },
   "proverbs": {
@@ -112,14 +1687,22 @@
       "meaning": "只要肯下功夫，再困难的事也能成功",
       "origin": "民间谚语",
       "narrativeSeed": "坚持成功",
-      "keywords": ["坚持", "努力", "成功"]
+      "keywords": [
+        "坚持",
+        "努力",
+        "成功"
+      ]
     },
     "熟能生巧": {
       "content": "熟能生巧，巧能生精",
       "meaning": "熟练了就能产生技巧，技巧熟练了就能达到精妙的境界",
       "origin": "民间谚语",
       "narrativeSeed": "精进之路",
-      "keywords": ["熟练", "精进", "技巧"]
+      "keywords": [
+        "熟练",
+        "精进",
+        "技巧"
+      ]
     }
   }
 }

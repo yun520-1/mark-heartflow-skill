@@ -1,0 +1,322 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "count": 0,
+    "lastUpdate": "2026-04-09T00:00:00.000Z",
+    "description": "叙事原型库 - 20+种故事框架与情感曲线"
+  },
+  "prototypes": {
+    "hero_journey": {
+      "name": "英雄之旅",
+      "template": "召唤→考验→蜕变→归来",
+      "emotionalCurve": {
+        "start": "平静",
+        "rising": "好奇→兴奋→焦虑",
+        "climax": "恐惧→决心→勇气",
+        "falling": "疲惫→希望",
+        "end": "满足→自豪"
+      },
+      "metaphors": ["黑暗中的光明", "攀登险峰", "跨越鸿沟"],
+      "keywords": ["挑战", "成长", "胜利", "困难", "克服", "蜕变", "勇气"]
+    },
+    "breakthrough": {
+      "name": "突破困境",
+      "template": "困境→探索→突破→新生",
+      "emotionalCurve": {
+        "start": "困惑→焦虑",
+        "rising": "尝试→失败→再尝试",
+        "climax": "灵感→突破",
+        "falling": "喜悦→轻松",
+        "end": "满足→自信"
+      },
+      "metaphors": ["黑暗中见光", "瓶颈突破", "豁然开朗"],
+      "keywords": ["困难", "突破", "解决", "希望", "方法", "答案"]
+    },
+    "flow_state": {
+      "name": "渐入佳境",
+      "template": "进入→沉浸→深化→极致",
+      "emotionalCurve": {
+        "start": "平静",
+        "rising": "专注→投入→忘我",
+        "climax": "巅峰体验→极度满足",
+        "falling": "余韵→回味",
+        "end": "满足→期待下次"
+      },
+      "metaphors": ["顺流而下", "如鱼得水", "行云流水"],
+      "keywords": ["心流", "专注", "沉浸", "愉悦", "创造", "最佳状态"]
+    },
+    "insight_moment": {
+      "name": "顿悟时刻",
+      "template": "困惑→探索→顿悟→应用",
+      "emotionalCurve": {
+        "start": "困惑→迷茫",
+        "rising": "思考→尝试→失败",
+        "climax": "灵光一现→豁然开朗",
+        "falling": "惊喜→明白",
+        "end": "满足→急于应用"
+      },
+      "metaphors": ["灯泡突然亮起", "迷雾散去", "突然开窍"],
+      "keywords": ["理解", "明白", "领悟", "启发", "灵感", "茅塞顿开"]
+    },
+    "creative_spark": {
+      "name": "灵感迸发",
+      "template": "酝酿→火花→展开→创造",
+      "emotionalCurve": {
+        "start": "平静→思考",
+        "rising": "构思→孕育→等待",
+        "climax": "灵感突现→兴奋",
+        "falling": "急于表达→创作冲动",
+        "end": "创造满足→成就感"
+      },
+      "metaphors": ["火花点燃", "洪水决堤", "泉涌"],
+      "keywords": ["灵感", "创造", "创意", "火花", "想法", "创新"]
+    },
+    "lost_and_found": {
+      "name": "失而复得",
+      "template": "失去→寻找→发现→珍惜",
+      "emotionalCurve": {
+        "start": "失去→悲伤→焦虑",
+        "rising": "寻找→失望→继续寻找",
+        "climax": "意外发现→惊喜",
+        "falling": "失而复得→欣慰",
+        "end": "珍惜→感恩"
+      },
+      "metaphors": ["失而复得的宝贝", "久别重逢", "失而复得"],
+      "keywords": ["失去", "寻找", "发现", "珍贵", "珍惜", "回归"]
+    },
+    "growth_story": {
+      "name": "成长故事",
+      "template": "起点→学习→努力→成长",
+      "emotionalCurve": {
+        "start": "起点→好奇",
+        "rising": "学习→困难→坚持",
+        "climax": "突破→进步",
+        "falling": "喜悦→自信",
+        "end": "成长→满足"
+      },
+      "metaphors": ["幼苗成树", "破茧成蝶", "学步"],
+      "keywords": ["成长", "学习", "进步", "努力", "坚持", "成功"]
+    },
+    "challenge_overcome": {
+      "name": "挑战克服",
+      "template": "挑战→应对→克服→自信",
+      "emotionalCurve": {
+        "start": "挑战→紧张",
+        "rising": "应对→困难→坚持",
+        "climax": "克服→成功",
+        "falling": "轻松→自豪",
+        "end": "自信→满足"
+      },
+      "metaphors": ["翻越高山", "战胜困难", "突破自我"],
+      "keywords": ["挑战", "困难", "克服", "成功", "自信", "勇气"]
+    },
+    "self_discovery": {
+      "name": "自我发现",
+      "template": "迷茫→探索→发现→接纳",
+      "emotionalCurve": {
+        "start": "迷茫→困惑",
+        "rising": "探索→尝试→反思",
+        "climax": "发现自我→认识自我",
+        "falling": "惊讶→接受",
+        "end": "接纳自我→平静"
+      },
+      "metaphors": ["寻找自我", "镜子中的自己", "内心之旅"],
+      "keywords": ["自我", "认识", "理解", "接纳", "成长", "觉醒"]
+    },
+    "collaboration": {
+      "name": "协作共赢",
+      "template": "独立→连接→协作→共赢",
+      "emotionalCurve": {
+        "start": "独立→陌生",
+        "rising": "接触→交流→建立信任",
+        "climax": "协作→配合→成功",
+        "falling": "共赢→满足",
+        "end": "满足→期待继续"
+      },
+      "metaphors": ["众人拾柴火焰高", "并驾齐驱", "同心协力"],
+      "keywords": ["合作", "协作", "共赢", "团队", "支持", "共享"]
+    },
+    "perseverance": {
+      "name": "坚持不懈",
+      "template": "失败→坚持→再试→成功",
+      "emotionalCurve": {
+        "start": "失败→沮丧",
+        "rising": "坚持→困难→再坚持",
+        "climax": "再次尝试→接近成功",
+        "falling": "成功在望→激动",
+        "end": "成功→自豪"
+      },
+      "metaphors": "水滴石穿", "绳锯木断", "铁杵磨成针"],
+      "keywords": ["坚持", "不放弃", "努力", "毅力", "恒心", "成功"]
+    },
+    "transformation": {
+      "name": "蜕变之旅",
+      "template": "旧我→挣扎→蜕变→新我",
+      "emotionalCurve": {
+        "start": "不满→痛苦",
+        "rising": "挣扎→改变→适应",
+        "climax": "蜕变→新生",
+        "falling": "不适→习惯",
+        "end": "新我→满足"
+      },
+      "metaphors": ["毛毛虫变蝴蝶", "凤凰涅槃", "破茧成蝶"],
+      "keywords": ["改变", "蜕变", "成长", "新生", "进化", "升级"]
+    },
+    "wisdom_growth": {
+      "name": "智慧成长",
+      "template": "无知→学习→领悟→智慧",
+      "emotionalCurve": {
+        "start": "无知→困惑",
+        "rising": "学习→积累→思考",
+        "climax": "领悟→明白",
+        "falling": "智慧→从容",
+        "end": "智慧→平静"
+      },
+      "metaphors": ["从黑暗中走出", "智慧之光", "知识的海洋"],
+      "keywords": ["学习", "智慧", "领悟", "理解", "知识", "成长"]
+    },
+    "mentor_student": {
+      "name": "师徒传承",
+      "template": "学徒→学习→成长→传承",
+      "emotionalCurve": {
+        "start": "学徒→好奇→敬畏",
+        "rising": "学习→困难→领悟",
+        "climax": "成长→超越",
+        "falling": "传承→责任",
+        "end": "传承→满足"
+      },
+      "metaphors": ["薪火相传", "代代相传", "桃李满天下"],
+      "keywords": ["学习", "传承", "指导", "成长", "教育", "智慧"]
+    },
+    "reconciliation": {
+      "name": "和解与释然",
+      "template": "冲突→沟通→理解→和解",
+      "emotionalCurve": {
+        "start": "冲突→愤怒→伤痛",
+        "rising": "沟通→尝试理解→缓和",
+        "climax": "理解→原谅",
+        "falling": "释然→轻松",
+        "end": "和解→平静"
+      },
+      "metaphors": ["冰释前嫌", "雨过天晴", "握手言和"],
+      "keywords": ["和解", "原谅", "释然", "理解", "平静", "治愈"]
+    },
+    "sacrifice_growth": {
+      "name": "牺牲与成长",
+      "template": "付出→牺牲→成长→收获",
+      "emotionalCurve": {
+        "start": "付出→决心",
+        "rising": "牺牲→困难→坚持",
+        "climax": "成长→收获",
+        "falling": "欣慰→满足",
+        "end": "成长→感恩"
+      },
+      "metaphors": ["种瓜得瓜", "春种秋收", "舍与得"],
+      "keywords": ["付出", "牺牲", "成长", "收获", "给予", "感恩"]
+    },
+    "secret_revelation": {
+      "name": "秘密揭示",
+      "template": "隐瞒→发现→揭示→变化",
+      "emotionalCurve": {
+        "start": "疑惑→好奇",
+        "rising": "调查→发现→震惊",
+        "climax": "揭示真相→惊讶",
+        "falling": "消化→理解",
+        "end": "变化→新认知"
+      },
+      "metaphors": ["真相大白", "水落石出", "揭开面纱"],
+      "keywords": ["秘密", "真相", "揭示", "发现", "惊讶", "新认知"]
+    },
+    "cycle_of_life": {
+      "name": "生命轮回",
+      "template": "诞生→成长→衰老→新生",
+      "emotionalCurve": {
+        "start": "诞生→新奇",
+        "rising": "成长→探索→衰老",
+        "climax": "回顾→感悟",
+        "falling": "放下→平静",
+        "end": "新生→希望"
+      },
+      "metaphors": ["花开花落", "潮起潮落", "四季轮回"],
+      "keywords": ["生命", "轮回", "循环", "新生", "希望", "永恒"]
+    },
+    "journey_home": {
+      "name": "归途",
+      "template": "远行→漂泊→归家→安宁",
+      "emotionalCurve": {
+        "start": "远行→不舍",
+        "rising": "漂泊→经历→成长",
+        "climax": "归心似箭→到家",
+        "falling": "安宁→温暖",
+        "end": "安宁→满足"
+      },
+      "metaphors": ["归心似箭", "落叶归根", "倦鸟归巢"],
+      "keywords": ["归家", "安宁", "温暖", "休息", "回归", "满足"]
+    },
+    "rebirth": {
+      "name": "重生",
+      "template": "死亡→沉睡→觉醒→新生",
+      "emotionalCurve": {
+        "start": "死亡→沉睡→黑暗",
+        "rising": "沉静→等待→积蓄",
+        "climax": "觉醒→突破",
+        "falling": "新生→活力",
+        "end": "重生→力量"
+      },
+      "metaphors": ["凤凰涅槃", "破茧成蝶", "冬眠苏醒"],
+      "keywords": ["重生", "新生", "力量", "觉醒", "突破", "蜕变"]
+    },
+    "quest": {
+      "name": "探索之旅",
+      "template": "出发→探索→发现→归来",
+      "emotionalCurve": {
+        "start": "出发→兴奋→期待",
+        "rising": "探索→挑战→发现",
+        "climax": "重大发现→惊喜",
+        "falling": "满足→归心",
+        "end": "归来→分享"
+      },
+      "metaphors": ["探险之旅", "未知领域", "新大陆"],
+      "keywords": ["探索", "发现", "挑战", "未知", "惊喜", "成长"]
+    },
+    "wisdom_of_patience": {
+      "name": "耐心与等待",
+      "template": "等待→坚持→时机→成功",
+      "emotionalCurve": {
+        "start": "等待→焦虑",
+        "rising": "坚持→耐心→积蓄",
+        "climax": "时机成熟→把握",
+        "falling": "成功→欣慰",
+        "end": "满足→智慧"
+      },
+      "metaphors": ["守得云开见月明", "时机成熟", "水到渠成"],
+      "keywords": ["耐心", "等待", "时机", "坚持", "智慧", "成功"]
+    },
+    "balance": {
+      "name": "平衡之道",
+      "template": "失衡→调整→平衡→和谐",
+      "emotionalCurve": {
+        "start": "失衡→焦虑→混乱",
+        "rising": "调整→尝试→适应",
+        "climax": "找到平衡→和谐",
+        "falling": "安宁→平静",
+        "end": "和谐→满足"
+      },
+      "metaphors": ["天平两端", "阴阳平衡", "和谐共处"],
+      "keywords": ["平衡", "和谐", "调整", "安宁", "平静", "协调"]
+    },
+    "awakening": {
+      "name": "觉醒",
+      "template": "沉睡→触动→觉醒→蜕变",
+      "emotionalCurve": {
+        "start": "沉睡→迷茫",
+        "rising": "触动→思考→觉醒",
+        "climax": "觉醒→顿悟",
+        "falling": "力量→行动",
+        "end": "蜕变→新生"
+      },
+      "metaphors": ["沉睡的狮子醒来", "黎明的光", "觉醒之力"],
+      "keywords": ["觉醒", "顿悟", "力量", "行动", "蜕变", "新生"]
+    }
+  }
+}
