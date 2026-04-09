@@ -1,0 +1,12 @@
+{
+  "patterns": [
+    {
+      "key": "negative_emotion",
+      "skill_area": "emotion-regulation",
+      "occurrence": 1,
+      "firstSeen": "2026-04-09T00:29:56.773Z",
+      "lastSeen": "2026-04-09T00:29:56.773Z"
+    }
+  ],
+  "lastUpdate": "2026-04-09T00:29:56.776Z"
+}

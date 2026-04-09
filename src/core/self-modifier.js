@@ -1,267 +1,337 @@
 /**
- * Self-Modifier - 自我代码修正模块
- * 实验性功能：根据 reflect 建议自动修改代码
+ * Self Modifier - 自我代码修正模块
+ * 接收修改建议，生成代码补丁
  */
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
-
-const CONFIG_FILE = '.opencode/config.json';
+const crypto = require('crypto');
 
 class SelfModifier {
   constructor(projectRoot) {
     this.projectRoot = projectRoot;
-    this.configFile = path.join(projectRoot, CONFIG_FILE);
+    this.configFile = path.join(projectRoot, '.opencode', 'config.json');
+    this.patchDir = path.join(projectRoot, 'logs', 'patches');
     this.enabled = this.isEnabled();
-    this.changeLog = path.join(projectRoot, 'logs', 'self-modifier.log');
+    
+    this.ensureDirectories();
+  }
+
+  ensureDirectories() {
+    if (!fs.existsSync(this.patchDir)) {
+      fs.mkdirSync(this.patchDir, { recursive: true });
+    }
   }
 
   isEnabled() {
     try {
-      const config = JSON.parse(fs.readFileSync(this.configFile, 'utf8'));
-      return config.selfModificationEnabled === true;
-    } catch (e) {
-      console.log('[SelfModifier] Config not found or invalid, disabled by default');
-      return false;
-    }
-  }
-
-  log(message) {
-    const timestamp = new Date().toISOString();
-    const entry = `[${timestamp}] ${message}\n`;
-    fs.appendFileSync(this.changeLog, entry);
-    console.log(`[SelfModifier] ${message}`);
+      if (fs.existsSync(this.configFile)) {
+        const config = JSON.parse(fs.readFileSync(this.configFile, 'utf8'));
+        return config.selfModificationEnabled === true;
+      }
+    } catch (e) {}
+    return false;
   }
 
   /**
-   * 处理改进建议并执行代码修改
+   * 执行修改
    */
-  async processSuggestion(suggestion) {
+  applyModification(suggestion) {
     if (!this.enabled) {
-      return { success: false, reason: 'self_modification_disabled' };
-    }
-
-    this.log(`Processing suggestion: ${suggestion.type}`);
-
-    const parsed = this.parseSuggestion(suggestion);
-    if (!parsed) {
-      return { success: false, reason: 'cannot_parse_suggestion' };
-    }
-
-    const filePath = path.join(this.projectRoot, parsed.file);
-    if (!fs.existsSync(filePath)) {
-      return { success: false, reason: 'file_not_found', path: parsed.file };
-    }
-
-    const originalContent = fs.readFileSync(filePath, 'utf8');
-    const modifiedContent = this.applyModification(originalContent, parsed);
-
-    if (modifiedContent === originalContent) {
-      return { success: false, reason: 'no_changes_made' };
-    }
-
-    const testResult = await this.runTests(parsed.testFile);
-
-    if (testResult.passed) {
-      fs.writeFileSync(filePath, modifiedContent);
-      this.log(`Successfully modified: ${parsed.file}`);
-      
-      this.recordChange({
-        file: parsed.file,
-        suggestion: suggestion.type,
-        timestamp: new Date().toISOString(),
-        test_passed: true
-      });
-
-      return {
-        success: true,
-        file: parsed.file,
-        changes: this.describeChanges(originalContent, modifiedContent)
-      };
-    } else {
-      this.log(`Tests failed, rolling back: ${testResult.error}`);
-      
-      this.recordChange({
-        file: parsed.file,
-        suggestion: suggestion.type,
-        timestamp: new Date().toISOString(),
-        test_passed: false,
-        error: testResult.error
-      });
-
       return {
         success: false,
-        reason: 'tests_failed',
-        error: testResult.error
+        reason: 'self_modification_disabled',
+        message: '自我修改功能已关闭，请在 config.json 中启用'
       };
     }
+
+    const { targetFile, functionName, newBehavior } = this.parseSuggestion(suggestion);
+    
+    if (!targetFile || !functionName) {
+      return {
+        success: false,
+        reason: 'invalid_suggestion',
+        message: '无法解析修改建议'
+      };
+    }
+
+    const fullPath = path.join(this.projectRoot, targetFile);
+    
+    if (!fs.existsSync(fullPath)) {
+      return {
+        success: false,
+        reason: 'file_not_found',
+        message: `文件不存在: ${targetFile}`
+      };
+    }
+
+    const originalCode = fs.readFileSync(fullPath, 'utf8');
+    const modifiedCode = this.generatePatch(originalCode, functionName, newBehavior);
+    
+    const diff = this.generateDiff(originalCode, modifiedCode, targetFile);
+    
+    this.savePatch(diff, targetFile);
+
+    return {
+      success: true,
+      targetFile: targetFile,
+      function: functionName,
+      diff: diff,
+      patchFile: `${this.patchDir}/${this.getPatchFilename(targetFile)}`,
+      message: '补丁已生成，请在验证后手动应用'
+    };
   }
 
+  /**
+   * 解析修改建议
+   */
   parseSuggestion(suggestion) {
+    const suggestionStr = typeof suggestion === 'string' ? suggestion : 
+                         suggestion.suggestion || suggestion.description || '';
+
     const patterns = [
-      {
-        regex: /修改\s+([^\s]+)\s+中的\s+([^\s]+)\s+函数/,
-        extract: (match) => ({
-          file: match[1],
-          function: match[2],
-          type: 'function'
-        })
-      },
-      {
-        regex: /更新\s+([^\s]+)\s+的\s+([^\s]+)/,
-        extract: (match) => ({
-          file: match[1],
-          section: match[2],
-          type: 'section'
-        })
-      },
-      {
-        regex: /调整\s+([^\s]+)\s+中的\s+([^\s]+)/,
-        extract: (match) => ({
-          file: match[1],
-          parameter: match[2],
-          type: 'parameter'
-        })
-      }
+      /修改\s+([^\s]+)\s+中的\s+([^\s]+)\s+函数/,
+      /modify\s+([^\s]+)\s+.*?\s+([^\s]+)\s+function/,
+      /update\s+([^\s]+)\s+.*?\s+([^\s]+)/,
+      /change\s+([^\s]+)\s+.*?\s+([^\s]+)/
     ];
 
     for (const pattern of patterns) {
-      const match = suggestion.type.match(pattern.regex);
+      const match = suggestionStr.match(pattern);
       if (match) {
-        return pattern.extract(match);
+        return {
+          targetFile: match[1],
+          functionName: match[2],
+          newBehavior: suggestionStr
+        };
       }
     }
 
-    return null;
+    return {
+      targetFile: 'src/core/heartflow-engine.js',
+      functionName: 'calculatePAD',
+      newBehavior: suggestionStr
+    };
   }
 
-  applyModification(content, parsed) {
-    if (parsed.type === 'function' && parsed.function === 'calculatePAD') {
-      return this.modifyCalculatePAD(content, parsed);
+  /**
+   * 生成补丁代码
+   */
+  generatePatch(originalCode, functionName, newBehavior) {
+    const functionPattern = new RegExp(
+      `(function\\s+${functionName}|const\\s+${functionName}\\s*=|let\\s+${functionName}\\s*=|var\\s+${functionName}\\s*=)`,
+      'g'
+    );
+
+    if (!functionPattern.test(originalCode)) {
+      return originalCode + '\n\n// New function: ' + functionName + '\n// ' + newBehavior;
     }
 
-    return content;
+    const enhancement = this.generateEnhancement(functionName, newBehavior);
+    
+    return originalCode.replace(
+      functionPattern,
+      `$1${enhancement}`
+    );
   }
 
-  modifyCalculatePAD(content, parsed) {
-    const oldFunction = /function\s+calculatePAD[\s\S]*?(?=\nfunction|\nexport|\n$)/;
-    const newFunction = `function calculatePAD(emotion, context) {
-  // Modified: 增加对用户挫败感的敏感度
-  const basePAD = calculateBasePAD(emotion);
-  
-  // 检测挫败感信号
-  const frustrationSignals = ['difficult', 'hard', 'frustrated', '挫败', '难'];
+  /**
+   * 生成增强代码
+   */
+  generateEnhancement(functionName, newBehavior) {
+    const enhancements = {
+      'calculatePAD': `
+  // Self-Modifier: 增加对用户挫败感的敏感度
+  const frustrationIndicators = ['difficult', 'hard', 'frustrated', '挫败', '难', '不行'];
   const hasFrustration = context?.userInput?.some(input => 
-    frustrationSignals.some(signal => input.toLowerCase().includes(signal))
+    frustrationIndicators.some(indicator => input.toLowerCase().includes(indicator))
   );
-  
-  // 如果检测到挫败感，调整 PAD 值
   if (hasFrustration) {
-    return {
-      pleasure: basePAD.pleasure - 0.3,
-      arousal: basePAD.arousal + 0.2,
-      dominance: basePAD.dominance - 0.2
+    pad.pleasure -= 0.2;
+    pad.dominance -= 0.1;
+  }
+`,
+      'default': `
+  // Self-Modifier enhancement based on: ${newBehavior.substring(0, 50)}...
+`
     };
-  }
-  
-  return basePAD;
-}`;
 
-    if (oldFunction.test(content)) {
-      return content.replace(oldFunction, newFunction);
-    }
-
-    return content;
+    return enhancements[functionName] || enhancements.default;
   }
 
-  async runTests(testFile) {
-    if (!testFile) {
-      return { passed: true, reason: 'no_tests' };
-    }
-
-    const testPath = path.join(this.projectRoot, testFile);
-    if (!fs.existsSync(testPath)) {
-      return { passed: true, reason: 'test_file_not_found' };
-    }
-
-    try {
-      execSync(`npm test -- "${testPath}"`, {
-        cwd: this.projectRoot,
-        stdio: 'pipe'
-      });
-      return { passed: true };
-    } catch (e) {
-      return { passed: false, error: e.message };
-    }
-  }
-
-  describeChanges(original, modified) {
-    const originalLines = original.split('\n').length;
-    const modifiedLines = modified.split('\n').length;
-    return {
-      lines_added: modifiedLines - originalLines,
-      lines_removed: originalLines - modifiedLines
+  /**
+   * 生成差异
+   */
+  generateDiff(original, modified, filename) {
+    const originalLines = original.split('\n');
+    const modifiedLines = modified.split('\n');
+    
+    const diff = {
+      filename: filename,
+      timestamp: new Date().toISOString(),
+      original: {
+        lines: originalLines.length,
+        hash: crypto.createHash('sha256').update(original).digest('hex')
+      },
+      modified: {
+        lines: modifiedLines.length,
+        hash: crypto.createHash('sha256').update(modified).digest('hex')
+      },
+      changes: [],
+      unifiedDiff: this.generateUnifiedDiff(original, modified, filename)
     };
-  }
 
-  recordChange(change) {
-    const logFile = path.join(this.projectRoot, 'logs', 'self-modifier-changes.json');
-    let changes = [];
+    let lineNum = 0;
+    const maxLines = Math.max(originalLines.length, modifiedLines.length);
     
-    try {
-      if (fs.existsSync(logFile)) {
-        changes = JSON.parse(fs.readFileSync(logFile, 'utf8'));
+    for (let i = 0; i < maxLines; i++) {
+      const origLine = originalLines[i] || '';
+      const modLine = modifiedLines[i] || '';
+      
+      if (origLine !== modLine) {
+        diff.changes.push({
+          line: i + 1,
+          original: origLine.substring(0, 80),
+          modified: modLine.substring(0, 80)
+        });
       }
-    } catch (e) {
-      changes = [];
     }
-    
-    changes.push(change);
-    fs.writeFileSync(logFile, JSON.stringify(changes, null, 2));
+
+    return diff;
   }
 
-  getChangeHistory() {
-    const logFile = path.join(this.projectRoot, 'logs', 'self-modifier-changes.json');
-    try {
-      if (fs.existsSync(logFile)) {
-        return JSON.parse(fs.readFileSync(logFile, 'utf8'));
+  /**
+   * 生成统一格式差异
+   */
+  generateUnifiedDiff(original, modified, filename) {
+    const lines = [
+      `--- a/${filename}`,
+      `+++ b/${filename}`,
+      `@@ @@`
+    ];
+
+    const origLines = original.split('\n');
+    const modLines = modified.split('\n');
+    
+    let i = 0;
+    while (i < Math.max(origLines.length, modLines.length)) {
+      const orig = origLines[i] || '';
+      const mod = modLines[i] || '';
+      
+      if (orig !== mod) {
+        if (orig) lines.push(`-${orig}`);
+        if (mod) lines.push(`+${mod}`);
+      } else {
+        lines.push(` ${orig}`);
       }
-    } catch (e) {
+      i++;
+    }
+
+    return lines.join('\n');
+  }
+
+  /**
+   * 保存补丁
+   */
+  savePatch(diff, targetFile) {
+    const patchFile = path.join(this.patchDir, this.getPatchFilename(targetFile));
+    fs.writeFileSync(patchFile, diff.unifiedDiff);
+    
+    const metaFile = patchFile.replace('.diff', '.json');
+    fs.writeFileSync(metaFile, JSON.stringify(diff, null, 2));
+  }
+
+  getPatchFilename(targetFile) {
+    const name = targetFile.replace(/[^a-zA-Z0-9]/g, '_');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    return `${name}_${timestamp}.diff`;
+  }
+
+  /**
+   * 列出补丁历史
+   */
+  listPatches() {
+    if (!fs.existsSync(this.patchDir)) {
       return [];
     }
-    return [];
+
+    return fs.readdirSync(this.patchDir)
+      .filter(f => f.endsWith('.json'))
+      .map(f => {
+        const fullPath = path.join(this.patchDir, f);
+        const stat = fs.statSync(fullPath);
+        return {
+          file: f,
+          created: stat.mtime.toISOString()
+        };
+      })
+      .sort((a, b) => new Date(b.created) - new Date(a.created));
   }
 
+  /**
+   * 获取状态
+   */
+  getStatus() {
+    return {
+      enabled: this.enabled,
+      configFile: this.configFile,
+      patchesGenerated: this.listPatches().length
+    };
+  }
+
+  /**
+   * 启用功能
+   */
   enable() {
     this.setConfig(true);
     this.enabled = true;
-    this.log('Self-modification enabled');
   }
 
+  /**
+   * 禁用功能
+   */
   disable() {
     this.setConfig(false);
     this.enabled = false;
-    this.log('Self-modification disabled');
   }
 
   setConfig(enabled) {
     try {
-      const config = JSON.parse(fs.readFileSync(this.configFile, 'utf8'));
+      let config = {};
+      if (fs.existsSync(this.configFile)) {
+        config = JSON.parse(fs.readFileSync(this.configFile, 'utf8'));
+      }
       config.selfModificationEnabled = enabled;
       fs.writeFileSync(this.configFile, JSON.stringify(config, null, 2));
     } catch (e) {
-      const newConfig = { selfModificationEnabled: enabled };
-      fs.writeFileSync(this.configFile, JSON.stringify(newConfig, null, 2));
+      console.error('[SelfModifier] 配置更新失败:', e.message);
     }
   }
+}
 
-  getStatus() {
-    return {
-      enabled: this.enabled,
-      config_file: this.configFile,
-      change_history: this.getChangeHistory()
+/**
+ * CLI 入口
+ */
+if (require.main === module) {
+  const modifier = new SelfModifier(process.cwd());
+  
+  console.log('=== Self Modifier ===');
+  console.log('状态:', modifier.getStatus().enabled ? '已启用' : '已禁用');
+  
+  if (modifier.enabled) {
+    const testSuggestion = {
+      targetFile: 'src/core/heartflow-engine.js',
+      functionName: 'calculatePAD',
+      suggestion: '修改 calculatePAD 函数，使其对用户挫败感更敏感'
     };
+    
+    const result = modifier.applyModification(testSuggestion);
+    console.log('结果:', result.success ? '成功' : result.message);
+    if (result.success) {
+      console.log('补丁文件:', result.patchFile);
+    }
+  } else {
+    console.log('请在 config.json 中设置 selfModificationEnabled: true 来启用');
   }
 }
 
