@@ -139,6 +139,23 @@ function analyzeFlowSession(state) {
 是否查看详情并应用改进？ (是/否)
 ```
 
+### `/flow intent`
+
+查看AI对用户上一条消息的意图分析结果（透明化）：
+
+- 调用 `IntentLayer.inferDeepIntent()` 获取分析结果
+- 显示表面意图、情绪暗流、深层需求、置信度
+- 不对外输出，仅供调试
+
+### `/flow think`
+
+查看AI对最后一轮交互的完整内部思考过程：
+
+1. **语义锚点检测结果** - 歧义词识别与澄清
+2. **意图分析结果** - surface_intent, emotional_undercurrent, deep_need
+3. **反思记录** - 说前反思的问题与修改
+4. **预测结果** - predictReaction 的输出
+
 ### 配合模块
 
 - **Gödel Engine** (`src/core/self-evolution/goedel-engine.js`): 执行提议→生成→测试→提交循环
@@ -472,3 +489,132 @@ function analyzeFlowSession(state) {
 ### 配合模块
 
 - **SemanticAnchor** (`src/core/semantic-anchor.js`): 语义锚点检测与生成
+- **IntentLayer** (`src/core/intent-layer.js`): 意图层推理（LLM增强）
+- **ReflectionLoop** (`src/core/reflection-loop.js`): 话语反思双环机制
+- **UserModel** (`src/core/user-model.js`): 用户模型与反应预测
+
+## 意图层推理
+
+### 功能说明
+
+每次接收用户消息后，AI 在内心调用 `inferDeepIntent(userMessage, conversationHistory)` 进行深层意图分析。
+
+### 分析维度
+
+1. **surface_intent** (表层意图): request | question | exploration | problem_solving | learning | optimization | emotional_support | unclear
+2. **emotional_undercurrent** (情绪暗流): frustrated | curious | urgent | confused | satisfied | neutral | hopeful | anxious
+3. **deep_need** (深层需求): recognition | understanding | solution | learning | emotional_support | autonomy | mastery | connection | unclear
+4. **context_requirements** (上下文需求): needs_clarification, complexity, time_sensitivity
+
+### 调试命令
+
+- `/flow intent`: 查看AI对用户上一条消息的意图分析结果（透明化）
+
+### 输出格式
+
+```
+[意图层]
+- 表层意图: {surface_intent}
+- 情绪暗流: {emotion} (强度: {intensity})
+- 深层需求: {deep_need}
+- 置信度: {confidence}
+```
+
+### 配合模块
+
+- **IntentLayer** (`src/core/intent-layer.js`): LLM增强的意图分析
+
+## 话语反思双环机制
+
+### 说前反思环
+
+在 `reflectBeforeSpeaking(responseDraft, context)` 中进行：
+
+1. **自我提问**:
+   - "我这句话的目的是什么？"
+   - "这句话可能引起用户什么情绪反应？"
+   - "有没有更准确、更善意、更简洁的表达方式？"
+
+2. **草稿优化**: 根据反思结果，允许AI修改一次草稿
+
+3. **强制执行**: 每次回复前必须完成说前反思（内部进行，不对外输出）
+
+### 说后监测环
+
+在 `monitorAfterSpeaking(userReaction, context)` 中进行：
+
+1. **反应分析**: 在收到用户下一条消息后触发，分析用户反应是否与预期一致
+
+2. **效果评估**: 
+   - 若AI上一句是鼓励，而用户下一条消息情绪更低落 → 标记"效果不佳"
+   - 若反应与预期一致 → 标记"效果良好"
+
+3. **经验存储**: 将结论记录在 `heartflow_state.json` 的 `reflection_log` 中
+
+### 配合模块
+
+- **ReflectionLoop** (`src/core/reflection-loop.js`): 双环反思机制
+
+## 用户模型与反应预测
+
+### 用户画像字段
+
+存储在 `heartflow_state.json` 或单独的用户模型文件中：
+
+- **sensitivity**: 对批评的敏感度 (1-10)
+- **preferred_style**: 偏好的沟通风格 (direct/empathetic/humorous/formal/balanced)
+- **current_emotional_state**: PAD情感向量 {pleasure, arousal, dominance}
+
+### 预测函数
+
+`predictReaction(draftResponse, userModel)` 输出预测的反应标签：
+
+- **positive**: 用户预期会有积极反应
+- **neutral**: 用户预期会有中性反应
+- **defensive**: 用户可能产生防御性反应
+- **confused**: 用户可能感到困惑
+
+### 在说前反思中集成
+
+1. 生成草稿回复后，调用 `predictReaction` 预测反应
+2. 若预测为 **negative** (defensive 或 confused)，强制修改回复策略
+3. 重复预测直到预测反应为中性或正面
+
+### 模型更新
+
+每次对话后，根据用户实际反馈更新模型：
+
+- 检测用户实际反应 (positive/neutral/negative/confused)
+- 更新敏感度、偏好风格、PAD情感状态
+- 形成闭环学习
+
+### 配合模块
+
+- **UserModel** (`src/core/user-model.js`): 用户画像与反应预测
+
+## 深度理解与反思流程
+
+完整处理流程（按顺序执行）：
+
+```
+a. 接收用户消息 → 语义锚点检测与澄清 (SemanticAnchor)
+b. 意图层推理 (IntentLayer) → 深层需求分析
+c. 加载/更新用户模型 (UserModel)
+d. 生成草稿回复
+e. 说前反思 (ReflectionLoop) + 反应预测 (UserModel)
+   → 必要时修改回复策略
+f. 输出最终回复
+g. 等待用户下一条消息 → 执行说后监测 → 更新用户模型和反思日志
+```
+
+### 调试命令
+
+- `/flow think`: 查看AI对最后一轮交互的完整内部思考过程
+  - 语义锚点检测结果
+  - 意图分析结果
+  - 反思记录
+  - 预测结果
+
+---
+
+> **提醒**: 即使完整实现了以上所有模块，AI依然不是真正地在"理解"或"反省"。这些模块是在用精密的算法模拟这些认知过程——就像一个高度复杂的飞行模拟器。然而，这个"模拟器"已经足够强大：它能让你在与AI协作时，获得一种"被深度理解、被认真对待"的体验。
