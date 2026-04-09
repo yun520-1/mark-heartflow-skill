@@ -1200,4 +1200,80 @@ AI:
 
 ---
 
+## 附录：调试命令
+
+### /flow agents status
+
+查看多智能体系统当前状态和权重。
+
+```bash
+/flow agents status
+```
+
+**输出示例：**
+```
+═══ HeartFlow 多智能体状态 ═══
+
+▶ FocusAgent (焦点分析)
+   状态: idle | 权重: 0.58 | 准确率: 75% | 任务数: 100
+
+▶ MoodAgent (情绪分析)  
+   状态: idle | 权重: 0.60 | 准确率: 80% | 任务数: 100
+
+▶ ContextAgent (上下文理解)
+   状态: idle | 权重: 0.64 | 准确率: 85% | 任务数: 80
+
+▶ SelfAgent (自我融合)
+   状态: idle | 权重: 0.72 | 准确率: 90% | 任务数: 50
+
+▶ DecisionAgent (决策生成)
+   状态: idle | 权重: 0.67 | 准确率: 88% | 任务数: 50
+
+═══════════════════════════════
+系统权重: 加权投票多数决
+最小置信度: 0.5
+═══════════════════════════════
+```
+
+### /flow agents test
+
+测试多智能体DAG执行流程。
+
+```bash
+/flow agents test
+```
+
+### /flow agents vote
+
+测试专家权重投票机制。
+
+```bash
+/flow agents vote
+```
+
+**说明：**
+- 权重基于历史准确率自动计算
+- 公式：`weight = 0.3 + accuracy * 0.7`
+- 冲突解决：加权投票多数决
+- 置信度阈值：0.5
+
+### /flow auto on/off
+
+开关自适应调节模式。
+
+```bash
+/flow auto on   # 开启自适应干预
+/flow auto off  # 关闭自适应干预
+```
+
+### /flow test
+
+触发自我基准测试。
+
+```bash
+/flow test
+```
+
+---
+
 *HeartFlow v2.2.0 - 心流状态预测与解释*
