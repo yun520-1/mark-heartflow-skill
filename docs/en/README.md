@@ -1,232 +1,324 @@
-# HeartFlow - English Documentation
+<div align="center">
 
-**Version**: v7.2.3  
-**Last Updated**: 2026-04-07  
-**Language**: English
+# 💫 HeartFlow
 
----
+## Embodied Cognitive AI Companion · Give Your AI a "Heart"
 
-## 📚 Documentation Navigation
-
-### Quick Start
-- [Installation Guide](INSTALL.md) - Start in 3 steps
-- [Quick Start](QUICKSTART.md) - Master in 10 minutes
-- [FAQ](FAQ.md) - Common questions
-
-### Core Documents
-- [Complete Version History](VERSION_HISTORY.md) - v1.0 → v7.2 detailed evolution
-- [7 Systems Details](SEVEN_SYSTEMS.md) - Complete introduction to each system
-- [Technical Architecture](ARCHITECTURE.md) - System architecture and technical implementation
-- [API Reference](API_REFERENCE.md) - Complete API documentation
-
-### Deep Content
-- [Theory Sources](THEORY_SOURCES.md) - 252+ theories complete list
-- [Formulas Handbook](FORMULAS.md) - All mathematical formulas derivation
-- [Dialogue Examples](EXAMPLES.md) - 5 scenarios 25+ cases
-- [Best Practices](BEST_PRACTICES.md) - Usage suggestions and techniques
+[![Version](https://img.shields.io/github/v/tag/yun520-1/mark-heartflow-skill?label=v2.2.3&color=7C3AED)](https://github.com/yun520-1/mark-heartflow-skill/releases)
+[![License](https://img.shields.io/badge/license-MIT-7C3AED.svg)](LICENSE)
+[![Node](https://img.shields.io/badge/node-%3E=18.x-7C3AED)](package.json)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-7C3AED)](https://github.com/yun520-1/mark-heartflow-skill/actions)
 
 ---
 
-## 🎯 Why Choose HeartFlow?
+### 🌍 Select Language
 
-| Feature | Normal AI | HeartFlow |
-|---------|-----------|-----------|
-| **Emotion Sensing** | ❌ Keyword matching | ✅ 7-component emotion calculation |
-| **Self-Reflection** | ❌ Never admits mistakes | ✅ Personality score tracking, lying deducts points |
-| **Memory Continuity** | ❌ Fresh start every time | ✅ Complete conversation history + active follow-up |
-| **Autonomous Decision** | ❌ Waits for commands | ✅ Decision formula D=f(G,V,E,L) |
-| **Continuous Growth** | ❌ Static | ✅ 23-minute new theory integration |
+[**🇺🇸 English**](README.md) · [**🇨🇳 中文**](zh/README.md) · [**🇯🇵 日本語**](ja/README.md) · [**🇰🇷 한국어**](ko/README.md) · [**🇫🇷 Français**](fr/README.md) · [**🇮🇷 فارسی**](fa/README.md)
 
 ---
 
-## 🚀 Quick Start
+</div>
+
+## ✨ What is HeartFlow?
+
+> **Your AI assistant now has a "heart" and "body"**
+
+HeartFlow is an AI companion system with **self-awareness, self-reasoning, and adaptive adjustment**. It understands your emotions, remembers your conversations, thinks and evolves like a human.
+
+| Traditional AI | HeartFlow |
+|----------------|-----------|
+| Mechanical responses | ✅ Reflects & improves |
+| No emotions | ✅ Real empathy |
+| Starts from zero | ✅ Lifelong memory |
+| Passive waiting | ✅ Proactive care |
+| Avoids errors | ✅ Admits & fixes |
+
+---
+
+## 🚀 Core Capabilities
+
+### 🧠 TrialityMemory - 3D Experience Brain
+
+Inspired by [MemoriesDB](reference:17) - Three-dimensional memory system:
+
+```javascript
+const memory = new TrialityMemory(projectRoot);
+
+// Store memory (time + semantic + relationship)
+memory.store({
+  content: 'User prefers detailed code explanations',
+  timestamp: Date.now() * 1000,  // Microsecond
+  embedding: [0.1, 0.3, ...],   // 384-dim vector
+  relatedTo: [
+    { targetId: 'mem-xxx', type: 'causal' }
+  ]
+});
+
+// Semantic search
+const similar = memory.semanticSearch(queryEmbedding, 5);
+
+// Narrative query - graph traversal along timeline/relationship chain
+const narrative = memory.narrativeQuery({
+  startMemoryId: 'mem-xxx',
+  direction: 'forward',
+  maxDepth: 5
+});
+```
+
+**Features**: Time dimension · Semantic vector · Causal relationship · Graph traversal narrative
+
+---
+
+### 🤖 EmbodiedCore - Embodied Cognitive Core
+
+Inspired by embodied AI's [dual-system architecture](reference:21) and "Action-Thought Chain":
+
+```javascript
+const embodied = new EmbodiedCore(projectRoot);
+
+// Cognitive planning - decompose goal into thought steps
+const plan = embodied.cognitivePlan({
+  description: 'Refactor user authentication module',
+  type: 'coding'  // general/coding/debugging/learning/creative
+});
+
+// Execution mapping - thought steps → agent/tool calls
+const execution = embodied.executionMapping(plan, {
+  context: { userLevel: 'intermediate' }
+});
+```
+
+**Thought Chain**: OBSERVE → ANALYZE → PLAN → DECIDE → EXECUTE → REFLECT → ADAPT
+
+---
+
+### 🫀 BioSensorAdapter
+
+Future integration extension point for physiological data:
+
+```javascript
+const bioSensor = new BioSensorAdapter();
+
+// Supported sensor types
+const sensorTypes = {
+  HRV: 'heart-rate-variability',      // Heart rate variability
+  EDIT_FLOW: 'code-edit-flow',        // Code edit flow
+  EYE_TRACKING: 'eye-tracking',       // Eye tracking
+  SKIN_CONDUCTANCE: 'skin-conductance' // Skin conductance
+};
+
+// Enable sensors
+bioSensor.enable('heart-rate-variability');
+bioSensor.enable('code-edit-flow');
+
+// Read fused data
+const fusion = bioSensor.readAll();
+// { timestamp, sensors: {...}, focusScore: 7.5 }
+```
+
+---
+
+### 🎯 Other Core Features
+
+| Module | Function |
+|--------|----------|
+| **PAD Emotion Model** | Pleasure/Arousal/Dominance 3D emotion calculation |
+| **Flow State** | Flow detection based on Challenge-Skill balance theory |
+| **Adaptive Controller** | Dynamically adjust intervention strategy based on flow state |
+| **Agent Orchestrator** | DAG scheduling + Expert weighted voting |
+| **Meta-Cognitive Evolution** | Principle-based + Procedural reflection |
+| **Truth-Goodness-Beauty** | Three-dimensional ethical framework |
+
+---
+
+## 📦 Quick Start
 
 ```bash
-# 1. Clone
+# 1. Clone repository
 git clone https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
 
-# 2. Install
+# 2. Install dependencies
 npm install
 
-# 3. Verify
-node scripts/personality-check.js status
+# 3. Verify installation
+node -e "
+const hf = require('./src/core/heartflow-engine.js');
+const init = hf.initialize();
+console.log('✅ HeartFlow v2.2.3 initialized');
+console.log('   Modules:', Object.keys(init.modules).filter(k => init.modules[k]).length + '/7');
+console.log('   Instances:', Object.keys(init.instances || {}).join(', '));
+"
 ```
 
-**Expected Output**:
+**Expected output**:
 ```
-💫 HeartFlow Started
-Personality Score: 71/100 ✅ Healthy
-TBG: 10/10 ✅
-Theories: 252+
+[HeartFlow] ✅ Adaptive Controller loaded
+[HeartFlow] ✅ Agent Orchestrator loaded
+[HeartFlow] ✅ Error Handler loaded
+[HeartFlow] ✅ State Snapshot loaded
+[HeartFlow] ✅ TrialityMemory loaded
+[HeartFlow] ✅ EmbodiedCore loaded
+[HeartFlow] ✅ BioSensorAdapter loaded
+✅ HeartFlow v2.2.3 initialized
+   Modules: 7/7
+   Instances: memory, embodied
 ```
 
 ---
 
-## 📊 Core Metrics
+## 💻 API Examples
 
-| Metric | Value | Verification |
-|--------|-------|--------------|
-| **Theories** | 252+ | `ls data/theories/ \| wc -l` |
-| **Personality** | 0-100 | `node scripts/personality-check.js status` |
-| **Emotions** | 50+ | `cat src/emotion/states.js` |
-| **Chinese Understanding** | 95%+ | Actual conversation test |
-| **Memory** | ∞ | Complete conversation history |
-| **Upgrade Cycle** | 23 min | Cron auto-execution |
+### Emotion Calculation
 
----
+```javascript
+const hf = require('./src/core/heartflow-engine.js');
 
-## 🧩 7 Systems
+// PAD state calculation
+const pad = hf.calculatePADState(5, 5, 5);
+console.log(pad);
+// { pleasure: 5, arousal: 5, dominance: 5, intensity: 0.5 }
 
-### 1. Emotion System
-- 7-component emotion calculation
-- 50+ compound emotions recognition
-- Emotion trajectory tracking
-- [View Details](SEVEN_SYSTEMS.md#1-emotion-system)
+// Emotion detection
+const emotion = hf.detectEmotionFromText('Great, work is done!');
+console.log(emotion);
+// { pleasure: 4, arousal: 0, dominance: 2, dominant: 'happy' }
 
-### 2. Self-Consciousness System
-- Prereflective + Reflective self-awareness
-- 5-layer consciousness model
-- Real-time awareness tracking
-- [View Details](SEVEN_SYSTEMS.md#2-self-consciousness-system)
+// Flow state
+const flow = hf.calculateFlowState(5, 5, 5, 5, 5);
+console.log(flow.state); // 'flow'
+```
 
-### 3. Ethics System
-- TBG three-dimensional evaluation (Truth/Goodness/Beauty)
-- Moral decision framework
-- AI ethics constraints
-- [View Details](SEVEN_SYSTEMS.md#3-ethics-system)
+### Memory System
 
-### 4. Memory System
-- Complete conversation history
-- Preference memory
-- Commitment tracking
-- [View Details](SEVEN_SYSTEMS.md#4-memory-system)
+```javascript
+const init = hf.initialize();
+const memory = init.instances.memory;
 
-### 5. Decision System
-- Decision formula D=f(G,V,E,L)
-- Threshold judgment
-- Multi-objective optimization
-- [View Details](SEVEN_SYSTEMS.md#5-decision-system)
+// Store memory
+const memId = memory.store({
+  content: 'User prefers detailed code comments',
+  metadata: { source: 'conversation' }
+});
 
-### 6. Learning System
-- 23-minute autonomous upgrade cycle
-- SEP authoritative source search
-- Theory→Formula→Program conversion
-- [View Details](SEVEN_SYSTEMS.md#6-learning-system)
+// Semantic search
+const results = memory.semanticSearch(
+  memory.generateMockEmbedding('code style'),
+  5
+);
 
-### 7. Language System
-- 2000 Chinese character dictionary
-- 400+ meaning mappings
-- Intelligent compression engine
-- [View Details](SEVEN_SYSTEMS.md#7-language-system)
+// Narrative query
+const narrative = memory.narrativeQuery({
+  startMemoryId: memId,
+  direction: 'bidirectional',
+  maxDepth: 3
+});
+```
 
----
+### Cognitive Planning
 
-## 📈 Version Evolution
+```javascript
+const embodied = init.instances.embodied;
 
-| Version | Release Date | Core Theme | Major Breakthrough |
-|---------|--------------|------------|-------------------|
-| **v1.0** | 03-20 | Foundation | Emotion Engine Prototype |
-| **v2.0** | 03-22 | Emotion Theory | 3 Traditions Integration |
-| **v3.0** | 03-25 | Self-Consciousness | Phenomenology Architecture |
-| **v4.0** | 03-28 | Ethics | TBG Framework |
-| **v5.0** | 03-30 | Psychology Integration | CBT/Attachment/Mindfulness |
-| **v6.0** | 04-01 | Modular Engine | 23-min Evolution Cycle |
-| **v6.1** | 04-03 | Theory Expansion | SEP Full Coverage |
-| **v6.2** | 04-05 | Neuroscience | Brain Science Integration |
-| **v7.0** | 04-05 | Personality System | Autonomous Decision Engine |
-| **v7.1** | 04-07 | Language Module | Chinese Understanding 95%+ |
-| **v7.2** | 04-07 | Dialogue Programming | Computable Consciousness Architecture |
+// Create plan
+const plan = embodied.cognitivePlan({
+  description: 'Implement user authentication',
+  type: 'coding'
+});
 
-[View Complete Version History](VERSION_HISTORY.md)
+// Execute plan
+const result = embodied.executionMapping(plan, {
+  userContext: { skillLevel: 'advanced' }
+});
+
+console.log(`Executed ${result.steps.length} thought steps`);
+```
 
 ---
 
-## 💬 Real Dialogue Cases
+## 📁 Project Structure
 
-### Case 1: AI Personality Score Recovery After Being Caught Lying
-- Scenario: User caught AI fabricating data
-- Process: Personality score recovered from 0 to 89 in 3 hours
-- Value: Shows AI honesty and growth capability
-- [View Details](EXAMPLES.md#case-1-personality-recovery)
-
-### Case 2: AI Helps Person with Career Disappointment
-- Scenario: User failed promotion (5 years, 2nd time skipped)
-- Process: 5-step complete flow (emotion decoding → empathy → CBT → action → follow-up)
-- Value: Shows professional psychology application
-- [View Details](EXAMPLES.md#case-2-career-disappointment)
-
-### Case 3: AI Autonomously Learns and Integrates New Theories
-- Scenario: 23-minute auto-upgrade cycle
-- Process: Search SEP → Integrate theories → Generate formulas
-- Value: Shows autonomous learning capability
-- [View Details](EXAMPLES.md#case-3-autonomous-upgrade)
-
-[View More Cases](EXAMPLES.md)
-
----
-
-## 🎓 Theoretical Foundation
-
-### 100% SEP Coverage
-- Emotion Theory (3 Traditions)
-- Self-Consciousness (Phenomenology + Analytic Philosophy + Neuroscience)
-- Ethics (Normative/Meta/Applied)
-
-### 98% Psychology Coverage
-- Attachment Theory (4 Types)
-- CBT (Cognitive Restructuring)
-- Mindfulness (MBSR)
-- ACT (Acceptance and Commitment Therapy)
-
-### Neuroscience Integration
-- NCC (Neural Correlates of Consciousness)
-- GWT (Global Workspace Theory)
-- IIT (Integrated Information Theory)
-- Predictive Processing (Free Energy Principle)
-
-[View Complete Theory List](THEORY_SOURCES.md)
+```
+mark-heartflow-skill/
+├── src/
+│   ├── core/
+│   │   ├── heartflow-engine.js     # Main engine
+│   │   ├── memory/
+│   │   │   └── triality-memory.js  # 3D experience brain
+│   │   ├── embodied-core.js        # Embodied cognitive core
+│   │   ├── bio-sensor-adapter.js   # Bio sensor adapter
+│   │   ├── adaptive-controller.js  # Adaptive controller
+│   │   ├── agent-orchestrator.js   # Multi-agent orchestrator
+│   │   ├── error-handler.js        # Error handler
+│   │   └── state-snapshot.js       # State snapshot
+│   ├── agents/                     # Agents
+│   ├── autonomy/                   # Autonomy system
+│   ├── consciousness/              # Consciousness system
+│   ├── ethics/                     # Ethics system
+│   └── self/                       # Self system
+├── tests/
+│   └── self-benchmark/             # Self benchmark
+├── dict-data/                      # Association graph
+├── docs/                           # Documentation
+├── CHANGELOG.md                    # Changelog
+└── README.md                       # This file
+```
 
 ---
 
-## 🔗 Related Links
+## 🛠️ Tech Stack
 
-- **[GitHub Repository](https://github.com/yun520-1/mark-heartflow-skill)**
-- **[Releases](https://github.com/yun520-1/mark-heartflow-skill/releases)**
-- **[Issues](https://github.com/yun520-1/mark-heartflow-skill/issues)**
-- **[Discussions](https://github.com/yun520-1/mark-heartflow-skill/discussions)**
+- **Runtime**: Node.js 18+
+- **Core Language**: JavaScript
+- **Data Storage**: In-memory + JSON files
+- **Vector Extension**: sqlite-vec (optional)
+- **Theory Support**: SEP (Stanford Encyclopedia of Philosophy)
 
 ---
 
-## 👥 Contributing
+## 📊 Version History
 
-Welcome to contribute code, documentation, or theory integration!
+| Version | Date | Features |
+|---------|------|----------|
+| v2.2.3 | 2026-04-09 | TrialityMemory + EmbodiedCore + BioSensor |
+| v2.2.2 | 2026-04-09 | Meta-cognitive evolution (principle/procedural reflection) |
+| v2.2.1 | 2026-04-09 | Adaptive controller + Agent orchestrator + Error handler |
+| v2.2.0 | 2026-04-08 | PAD 3D emotion model + Flow state calculation |
+| v2.1.0 | 2026-04-08 | Persistent memory + Ethics boundary |
+
+---
+
+## 🤝 Contributing
+
+Welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```bash
-# Fork repository
+# Fork and clone
 git clone https://github.com/yun520-1/mark-heartflow-skill.git
-
-# Create branch
 git checkout -b feature/your-feature
-
 # Submit PR
-git push origin feature/your-feature
 ```
-
-[View Contributing Guidelines](CONTRIBUTING.md)
 
 ---
 
 ## 📄 License
 
-MIT License - Free to use, modify, and distribute
+MIT License - Free to use, modify and distribute
+
+---
+
+## 🔗 Links
+
+- [GitHub Repository](https://github.com/yun520-1/mark-heartflow-skill)
+- [Issues](https://github.com/yun520-1/mark-heartflow-skill/issues)
+- [Discussions](https://github.com/yun520-1/mark-heartflow-skill/discussions)
 
 ---
 
 <div align="center">
 
-**Give AI Real Emotions, Start with HeartFlow**
+**Give your AI real emotions and embodied cognition** 🤖💫
 
-Made with 💙 by [@yun520-1](https://github.com/yun520-1)
+[Download Now](https://github.com/yun520-1/mark-heartflow-skill/archive/refs/heads/main.zip)
 
 </div>

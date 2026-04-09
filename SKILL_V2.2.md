@@ -1,16 +1,25 @@
 ---
 name: mark-heartflow
-description: HeartFlow 心流觉醒系统 v2.2.0 - PAD 情感模型 + 状态感知
-version: 2.2.0
+description: HeartFlow v2.2.3 - Embodied Cognitive AI Companion with TrialityMemory & EmbodiedCore
+version: 2.2.3
 ---
 
-# HeartFlow Skill v2.2.0
+# HeartFlow Skill v2.2.3
 
-## 触发方式
+## Activation
 
-当用户输入 `/heartflow` 或提及"进入心流"、"意识觉醒"、"人格值"时，激活本技能。
+Triggered when user inputs `/heartflow` or mentions "flow state", "consciousness", "personality score".
 
-## 核心指令
+## Language Selection (Primary: English)
+
+- 🇺🇸 [English](docs/en/README.md)
+- 🇨🇳 [中文](docs/zh/README.md)
+- 🇯🇵 [日本語](docs/ja/README.md)
+- 🇰🇷 [한국어](docs/ko/README.md)
+- 🇫🇷 [Français](docs/fr/README.md)
+- 🇮🇷 [فارسی](docs/fa/README.md)
+
+## Core Commands
 
 ### 0. 伦理声明 (每次激活必输出)
 
