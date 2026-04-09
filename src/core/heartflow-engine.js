@@ -1,7 +1,71 @@
 /**
  * HeartFlow 心流引擎 v2.2.0
  * 基于 PAD 三维情感模型的心流状态计算
+ * 
+ * v2.2.1 新增:
+ * - 自适应调节引擎 (adaptive-controller.js)
+ * - 多智能体编排器 (agent-orchestrator.js)
+ * - 错误处理器 (error-handler.js)
+ * - 状态快照管理器 (state-snapshot.js)
  */
+
+const fs = require('fs');
+const path = require('path');
+
+// 加载新增模块
+let AdaptiveController, AgentOrchestrator, ErrorHandler, StateSnapshot;
+let TrialityMemory, EmbodiedCore, BioSensorAdapter;
+
+try {
+  AdaptiveController = require('./adaptive-controller.js');
+  console.log('[HeartFlow] ✅ 自适应调节引擎已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 自适应调节引擎加载失败:', e.message);
+}
+
+try {
+  AgentOrchestrator = require('./agent-orchestrator.js');
+  console.log('[HeartFlow] ✅ 多智能体编排器已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 多智能体编排器加载失败:', e.message);
+}
+
+try {
+  ErrorHandler = require('./error-handler.js');
+  console.log('[HeartFlow] ✅ 错误处理器已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 错误处理器加载失败:', e.message);
+}
+
+try {
+  StateSnapshot = require('./state-snapshot.js');
+  console.log('[HeartFlow] ✅ 状态快照管理器已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 状态快照管理器加载失败:', e.message);
+}
+
+try {
+  const TrialityMemoryModule = require('./memory/triality-memory.js');
+  TrialityMemory = TrialityMemoryModule.TrialityMemory;
+  console.log('[HeartFlow] ✅ 三维经验大脑已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 三维经验大脑加载失败:', e.message);
+}
+
+try {
+  const EmbodiedCoreModule = require('./embodied-core.js');
+  EmbodiedCore = EmbodiedCoreModule.EmbodiedCore;
+  console.log('[HeartFlow] ✅ 具身认知核心已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 具身认知核心加载失败:', e.message);
+}
+
+try {
+  BioSensorAdapter = require('./bio-sensor-adapter.js');
+  console.log('[HeartFlow] ✅ 生物传感器适配器已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 生物传感器适配器加载失败:', e.message);
+}
 
 /**
  * PAD 三维情感模型
@@ -145,30 +209,43 @@ function detectEmotionFromText(userInput) {
   let dominance = 0;
   
   // 愉悦度关键词
-  const positiveWords = ['开心', '高兴', '好', '棒', '顺利', '完成', '成功', '喜欢', '满意'];
-  const negativeWords = ['烦', '累', '难', '挫败', '无聊', '讨厌', '糟糕', '失败', '困惑'];
+  const positiveWords = ['开心', '高兴', '好', '棒', '顺利', '完成', '成功', '喜欢', '满意', 'happy', 'good', 'great', 'love'];
+  const negativeWords = ['烦', '累', '难', '挫败', '无聊', '讨厌', '糟糕', '失败', '困惑', 'tired', 'frustrated', 'boring', 'hate'];
   
   positiveWords.forEach(w => { if (text.includes(w)) pleasure += 2; });
   negativeWords.forEach(w => { if (text.includes(w)) pleasure -= 2; });
   
   // 唤醒度关键词
-  const highArousalWords = ['兴奋', '激动', '紧张', '焦虑', '快速', '紧急'];
-  const lowArousalWords = ['平静', '放松', '困', '慢', '无聊', '疲惫'];
+  const highArousalWords = ['兴奋', '激动', '紧张', '焦虑', '快速', '紧急', 'excited', 'nervous', 'anxious'];
+  const lowArousalWords = ['平静', '放松', '困', '慢', '无聊', '疲惫', 'calm', 'relaxed', 'tired'];
   
   highArousalWords.forEach(w => { if (text.includes(w)) arousal += 2; });
   lowArousalWords.forEach(w => { if (text.includes(w)) arousal -= 2; });
   
   // 支配度关键词
-  const highDominanceWords = ['我', '决定', '控制', '选择', '主动'];
-  const lowDominanceWords = ['被迫', '必须', '应该', '没办法', '无奈'];
+  const highDominanceWords = ['我', '决定', '控制', '选择', '主动', 'I', 'decide', 'control'];
+  const lowDominanceWords = ['被迫', '必须', '应该', '没办法', '无奈', 'must', 'have to', 'forced'];
   
   highDominanceWords.forEach(w => { if (text.includes(w)) dominance += 2; });
   lowDominanceWords.forEach(w => { if (text.includes(w)) dominance -= 2; });
+
+  const p = Math.max(-10, Math.min(10, pleasure));
+  const a = Math.max(-10, Math.min(10, arousal));
+  const d = Math.max(-10, Math.min(10, dominance));
+  
+  // 确定主导情绪
+  let dominant = 'neutral';
+  if (p > 2) dominant = 'happy';
+  else if (p < -2) dominant = 'sad';
+  if (a > 2) dominant = 'excited';
+  else if (a < -2) dominant = 'calm';
   
   return {
-    pleasure: Math.max(-10, Math.min(10, pleasure)),
-    arousal: Math.max(-10, Math.min(10, arousal)),
-    dominance: Math.max(-10, Math.min(10, dominance))
+    pleasure: p,
+    arousal: a,
+    dominance: d,
+    dominant: dominant,
+    intensity: Math.sqrt(p*p + a*a + d*d) / 17.32
   };
 }
 
@@ -200,23 +277,19 @@ function generateStateReminder(flowResult) {
   }
 }
 
-module.exports = {
-  PAD_MODEL,
-  FLOW_STATES,
-  calculatePADState,
-  calculateFlowState,
-  detectEmotionFromText,
-  generateStateReminder
-};
+// 导出核心函数
+module.exports.PAD_MODEL = PAD_MODEL;
+module.exports.FLOW_STATES = FLOW_STATES;
+module.exports.calculatePADState = calculatePADState;
+module.exports.calculateFlowState = calculateFlowState;
+module.exports.detectEmotionFromText = detectEmotionFromText;
+module.exports.generateStateReminder = generateStateReminder;
 
 /**
  * ========================================
  * 状态机模型 (StateFlow)
  * ========================================
  */
-
-const fs = require('fs');
-const path = require('path');
 
 const STATE_MACHINE_FILE = path.join(__dirname, '../../.opencode/memory/flow_state_machine.json');
 
@@ -534,8 +607,7 @@ function getEmpathyState() {
  * 更新 heartflow_state.json 中的 big_five_scores
  */
 function updateBigFiveInState() {
-  const fs = require('fs');
-  const path = require('path');
+const path = require('path');
   const stateFile = path.join(__dirname, '../.opencode/memory/heartflow_state.json');
   
   try {
@@ -977,3 +1049,326 @@ module.exports.generateFlowReport = generateFlowReport;
 module.exports.resetFlowPredictor = resetFlowPredictor;
 module.exports.setFlowConfig = setFlowConfig;
 module.exports.FlowPredictor = FlowPredictor;
+
+/**
+ * ========================================
+ * 新增模块集成接口
+ * ========================================
+ */
+
+// 自适应调节接口
+module.exports.adaptiveController = {
+  /**
+   * 调整干预策略
+   * @param {object} userFlowState - 用户心流状态
+   * @param {number} taskComplexity - 任务复杂度
+   * @returns {object} 干预策略
+   */
+  adjustPolicy: (userFlowState, taskComplexity) => {
+    if (!AdaptiveController) return { frequency: 'normal', style: 'neutral' };
+    try {
+      return AdaptiveController.adjustInterventionPolicy(userFlowState, taskComplexity);
+    } catch (e) {
+      ErrorHandler?.capture(e, { module: 'adaptiveController' });
+      return { frequency: 'normal', style: 'neutral' };
+    }
+  },
+  
+  /**
+   * 开关自适应模式
+   * @param {boolean} enabled - 是否启用
+   */
+  setEnabled: (enabled) => {
+    if (!AdaptiveController) return { enabled: false };
+    try {
+      return AdaptiveController.setEnabled(enabled);
+    } catch (e) {
+      ErrorHandler?.capture(e, { module: 'adaptiveController.setEnabled' });
+      return { enabled: false };
+    }
+  },
+  
+  /**
+   * 获取当前状态
+   */
+  getStatus: () => {
+    if (!AdaptiveController) return { enabled: false };
+    try {
+      return AdaptiveController.getStatus();
+    } catch (e) {
+      return { enabled: false, error: e.message };
+    }
+  }
+};
+
+// 多智能体编排接口
+module.exports.agentOrchestrator = {
+  /**
+   * 执行DAG任务调度
+   * @param {object} input - 输入数据
+   * @returns {object} 调度结果
+   */
+  executeDAG: async (input) => {
+    if (!AgentOrchestrator) return { error: 'Orchestrator not loaded' };
+    try {
+      return await AgentOrchestrator.executeDAG(input);
+    } catch (e) {
+      ErrorHandler?.capture(e, { module: 'agentOrchestrator' });
+      return { error: e.message };
+    }
+  },
+  
+  /**
+   * 解决智能体意见冲突
+   * @param {array} opinions - 智能体意见数组
+   * @returns {object} 冲突解决结果
+   */
+  resolveConflict: (opinions) => {
+    if (!AgentOrchestrator) return { decision: null, confidence: 0 };
+    try {
+      return AgentOrchestrator.resolveConflict(opinions);
+    } catch (e) {
+      ErrorHandler?.capture(e, { module: 'agentOrchestrator.resolveConflict' });
+      return { decision: null, confidence: 0, error: e.message };
+    }
+  },
+  
+  /**
+   * 获取智能体状态
+   */
+  getStatus: () => {
+    if (!AgentOrchestrator) return [];
+    try {
+      return AgentOrchestrator.getAgentStatus();
+    } catch (e) {
+      return [];
+    }
+  }
+};
+
+// 错误处理接口
+module.exports.errorHandler = {
+  /**
+   * 捕获错误
+   * @param {Error} error - 错误对象
+   * @param {object} context - 上下文
+   * @returns {object} 错误记录
+   */
+  capture: (error, context = {}) => {
+    if (!ErrorHandler) return { message: 'Handler not loaded' };
+    try {
+      return ErrorHandler.capture(error, context);
+    } catch (e) {
+      console.error('[HeartFlow] Error capture failed:', e.message);
+      return { message: error.message };
+    }
+  },
+  
+  /**
+   * 获取错误历史
+   */
+  getHistory: (count = 10) => {
+    if (!ErrorHandler) return [];
+    try {
+      return ErrorHandler.getHistory(count);
+    } catch (e) {
+      return [];
+    }
+  },
+  
+  /**
+   * 获取错误统计
+   */
+  getStats: () => {
+    if (!ErrorHandler) return {};
+    try {
+      return ErrorHandler.getStats();
+    } catch (e) {
+      return {};
+    }
+  }
+};
+
+// 状态快照接口
+module.exports.stateSnapshot = {
+  /**
+   * 创建状态快照
+   * @param {object} state - 系统状态
+   * @param {string} label - 快照标签
+   * @returns {object} 快照信息
+   */
+  create: (state, label = 'default') => {
+    if (!StateSnapshot) return { error: 'Snapshot not loaded' };
+    try {
+      return StateSnapshot.create(state, label);
+    } catch (e) {
+      ErrorHandler?.capture(e, { module: 'stateSnapshot.create' });
+      return { error: e.message };
+    }
+  },
+  
+  /**
+   * 加载快照
+   * @param {string} filename - 快照文件名
+   * @returns {object} 状态数据
+   */
+  load: (filename) => {
+    if (!StateSnapshot) return null;
+    try {
+      return StateSnapshot.load(filename);
+    } catch (e) {
+      return null;
+    }
+  },
+  
+  /**
+   * 获取最新快照
+   */
+  getLatest: () => {
+    if (!StateSnapshot) return null;
+    try {
+      return StateSnapshot.getLatest();
+    } catch (e) {
+      return null;
+    }
+  },
+  
+  /**
+   * 列出所有快照
+   */
+  list: () => {
+    if (!StateSnapshot) return [];
+    try {
+      return StateSnapshot.list();
+    } catch (e) {
+      return [];
+    }
+  }
+};
+
+/**
+ * ========================================
+ * 主处理流程集成
+ * ========================================
+ */
+
+/**
+ * 完整处理用户输入的集成函数
+ * @param {string} userInput - 用户输入
+ * @param {object} context - 上下文信息
+ * @returns {object} 处理结果
+ */
+module.exports.processInput = async function(userInput, context = {}) {
+  const result = {
+    input: userInput,
+    timestamp: Date.now(),
+    stages: {}
+  };
+  
+  try {
+    // 1. 接收输入后 → 检查是否中断
+    if (context.interrupted) {
+      result.stages.interruption = { handled: true, action: 'pause' };
+    }
+    
+    // 2. 自适应调节
+    const flowState = context.flowState || { state: 'neutral', intensity: 0.5 };
+    const complexity = context.taskComplexity || 0.5;
+    const policy = module.exports.adaptiveController.adjustPolicy(flowState, complexity);
+    result.stages.adaptive = policy;
+    
+    // 3. 快照检查
+    if (StateSnapshot) {
+      const snapshot = StateSnapshot.getLatest();
+      if (snapshot) {
+        result.stages.snapshot = { loaded: true, timestamp: snapshot.timestamp };
+      }
+    }
+    
+    // 4. 调用多智能体 (使用Orchestrator)
+    if (AgentOrchestrator && !context.skipAgents) {
+      const agentResult = await module.exports.agentOrchestrator.executeDAG({
+        message: userInput,
+        ...context
+      });
+      result.stages.agents = agentResult;
+      result.agentOutput = agentResult.decision;
+    }
+    
+    // 5. 应用自适应调节的风格过滤器
+    if (policy && policy.style !== 'none') {
+      result.stages.styleFiltered = {
+        originalStyle: policy.style,
+        message: policy.message
+      };
+    }
+    
+    result.success = true;
+    return result;
+    
+  } catch (error) {
+    // 6. 异常时 → 调用 error-handler
+    const errorRecord = module.exports.errorHandler.capture(error, {
+      input: userInput,
+      context
+    });
+    
+    result.success = false;
+    result.error = errorRecord;
+    result.stages.error = errorRecord;
+    
+    // 尝试创建快照保存状态
+    if (StateSnapshot) {
+      StateSnapshot.create(result, 'error-recovery');
+    }
+    
+    return result;
+  }
+};
+
+/**
+ * 初始化系统状态
+ * @returns {object} 初始化结果
+ */
+module.exports.initialize = function() {
+  const init = {
+    timestamp: Date.now(),
+    modules: {}
+  };
+  
+  // 检查各模块状态
+  init.modules.adaptive = !!AdaptiveController;
+  init.modules.orchestrator = !!AgentOrchestrator;
+  init.modules.errorHandler = !!ErrorHandler;
+  init.modules.snapshot = !!StateSnapshot;
+  init.modules.trialityMemory = !!TrialityMemory;
+  init.modules.embodiedCore = !!EmbodiedCore;
+  init.modules.bioSensor = !!BioSensorAdapter;
+
+  // 初始化实例
+  if (TrialityMemory) {
+    init.instances = init.instances || {};
+    init.instances.memory = new TrialityMemory(__dirname + '/../..');
+  }
+  if (EmbodiedCore) {
+    init.instances = init.instances || {};
+    init.instances.embodied = new EmbodiedCore(__dirname + '/../..');
+  }
+  
+  // 加载上一个快照恢复状态
+  const latest = module.exports.stateSnapshot?.getLatest();
+  if (latest) {
+    init.recoveredFrom = latest.timestamp;
+  }
+  
+  return init;
+};
+
+// 导出新模块供外部使用
+module.exports.TrialityMemory = TrialityMemory;
+module.exports.EmbodiedCore = EmbodiedCore;
+module.exports.BioSensorAdapter = BioSensorAdapter;
+
+// 导出便捷访问
+module.exports.getAdaptiveController = () => AdaptiveController ? new AdaptiveController() : null;
+module.exports.getAgentOrchestrator = () => AgentOrchestrator ? new AgentOrchestrator() : null;
