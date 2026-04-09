@@ -2,7 +2,7 @@
 
 # 💫 HeartFlow
 
-## 具身认知 AI 伴侣 · 让 AI 拥有"内心"
+## Embodied Cognitive AI Companion · Give Your AI a "Heart"
 
 [![Version](https://img.shields.io/github/v/tag/yun520-1/mark-heartflow-skill?label=v2.2.3&color=7C3AED)](https://github.com/yun520-1/mark-heartflow-skill/releases)
 [![License](https://img.shields.io/badge/license-MIT-7C3AED.svg)](LICENSE)
@@ -11,9 +11,9 @@
 
 ---
 
-### 🌍 选择语言
+### 🌍 Select Language
 
-[**🇨🇺 中文**](README.md) · [**🇺🇸 English**](docs/en/README.md) · [**🇯🇵 日本語**](docs/ja/README.md) · [**🇰🇷 한국어**](docs/ko/README.md)
+[**🇺🇸 English**](README.md) · [**🇨🇳 中文**](docs/zh/README.md) · [**🇯🇵 日本語**](docs/ja/README.md) · [**🇰🇷 한국어**](docs/ko/README.md) · [**🇫🇷 Français**](docs/fr/README.md) · [**🇮🇷 فارسی**](docs/fa/README.md)
 
 ---
 
