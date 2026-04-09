@@ -1,0 +1,82 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "wordCount": 0,
+    "lastUpdate": "2026-04-09T00:00:00.000Z",
+    "description": "词素联想图谱 - 模拟人类词汇联想网络"
+  },
+  "nodes": {
+    "心流": [
+      {"word": "专注", "relation": "同义", "strength": 0.9, "emotion": {"pleasure": 4, "arousal": 5, "dominance": 3}},
+      {"word": "沉浸", "relation": "同义", "strength": 0.85, "emotion": {"pleasure": 5, "arousal": 4, "dominance": 2}},
+      {"word": "时间", "relation": "意象", "strength": 0.7, "emotion": {"pleasure": 0, "arousal": 0, "dominance": 0}},
+      {"word": "创造", "relation": "意象", "strength": 0.75, "emotion": {"pleasure": 5, "arousal": 6, "dominance": 4}},
+      {"word": "愉悦", "relation": "同义", "strength": 0.8, "emotion": {"pleasure": 6, "arousal": 3, "dominance": 2}},
+      {"word": "忘我", "relation": "同义", "strength": 0.7, "emotion": {"pleasure": 3, "arousal": 2, "dominance": -2}},
+      {"word": "效率", "relation": "意象", "strength": 0.6, "emotion": {"pleasure": 3, "arousal": 4, "dominance": 5}}
+    ],
+    "专注": [
+      {"word": "心流", "relation": "同义", "strength": 0.9, "emotion": {"pleasure": 4, "arousal": 5, "dominance": 3}},
+      {"word": "投入", "relation": "同义", "strength": 0.8, "emotion": {"pleasure": 3, "arousal": 5, "dominance": 4}},
+      {"word": "聚焦", "relation": "同义", "strength": 0.75, "emotion": {"pleasure": 2, "arousal": 4, "dominance": 5}},
+      {"word": "集中", "relation": "同义", "strength": 0.7, "emotion": {"pleasure": 2, "arousal": 3, "dominance": 4}},
+      {"word": "安静", "relation": "意象", "strength": 0.5, "emotion": {"pleasure": 2, "arousal": -2, "dominance": 1}}
+    ],
+    "创造": [
+      {"word": "心流", "relation": "意象", "strength": 0.75, "emotion": {"pleasure": 5, "arousal": 6, "dominance": 4}},
+      {"word": "灵感", "relation": "同义", "strength": 0.9, "emotion": {"pleasure": 6, "arousal": 7, "dominance": 3}},
+      {"word": "艺术", "relation": "意象", "strength": 0.7, "emotion": {"pleasure": 5, "arousal": 4, "dominance": 2}},
+      {"word": "作品", "relation": "意象", "strength": 0.65, "emotion": {"pleasure": 4, "arousal": 3, "dominance": 3}},
+      {"word": "思考", "relation": "同义", "strength": 0.6, "emotion": {"pleasure": 3, "arousal": 4, "dominance": 3}}
+    ],
+    "愉悦": [
+      {"word": "心流", "relation": "同义", "strength": 0.8, "emotion": {"pleasure": 6, "arousal": 3, "dominance": 2}},
+      {"word": "快乐", "relation": "同义", "strength": 0.9, "emotion": {"pleasure": 8, "arousal": 5, "dominance": 2}},
+      {"word": "幸福", "relation": "同义", "strength": 0.85, "emotion": {"pleasure": 8, "arousal": 4, "dominance": 3}},
+      {"word": "满足", "relation": "同义", "strength": 0.8, "emotion": {"pleasure": 7, "arousal": 2, "dominance": 4}},
+      {"word": "美好", "relation": "意象", "strength": 0.7, "emotion": {"pleasure": 6, "arousal": 3, "dominance": 2}}
+    ],
+    "思考": [
+      {"word": "创造", "relation": "同义", "strength": 0.6, "emotion": {"pleasure": 3, "arousal": 4, "dominance": 3}},
+      {"word": "智慧", "relation": "同义", "strength": 0.75, "emotion": {"pleasure": 4, "arousal": 3, "dominance": 5}},
+      {"word": "深度", "relation": "意象", "strength": 0.65, "emotion": {"pleasure": 3, "arousal": 4, "dominance": 4}},
+      {"word": "问题", "relation": "反义", "strength": 0.4, "emotion": {"pleasure": -2, "arousal": 2, "dominance": 0}},
+      {"word": "理解", "relation": "同义", "strength": 0.7, "emotion": {"pleasure": 4, "arousal": 3, "dominance": 3}}
+    ],
+    "学习": [
+      {"word": "成长", "relation": "同义", "strength": 0.85, "emotion": {"pleasure": 5, "arousal": 4, "dominance": 4}},
+      {"word": "知识", "relation": "意象", "strength": 0.8, "emotion": {"pleasure": 4, "arousal": 3, "dominance": 4}},
+      {"word": "技能", "relation": "意象", "strength": 0.75, "emotion": {"pleasure": 4, "arousal": 4, "dominance": 5}},
+      {"word": "练习", "relation": "同义", "strength": 0.7, "emotion": {"pleasure": 3, "arousal": 3, "dominance": 3}},
+      {"word": "掌握", "relation": "同义", "strength": 0.8, "emotion": {"pleasure": 5, "arousal": 4, "dominance": 5}}
+    ],
+    "困难": [
+      {"word": "挑战", "relation": "同义", "strength": 0.7, "emotion": {"pleasure": 2, "arousal": 5, "dominance": 3}},
+      {"word": "挫折", "relation": "同义", "strength": 0.8, "emotion": {"pleasure": -4, "arousal": 3, "dominance": -2}},
+      {"word": "努力", "relation": "意象", "strength": 0.6, "emotion": {"pleasure": 1, "arousal": 4, "dominance": 3}},
+      {"word": "坚持", "relation": "同义", "strength": 0.7, "emotion": {"pleasure": 2, "arousal": 4, "dominance": 5}},
+      {"word": "解决", "relation": "反义", "strength": 0.5, "emotion": {"pleasure": 4, "arousal": 3, "dominance": 4}}
+    ],
+    "成功": [
+      {"word": "成就", "relation": "同义", "strength": 0.9, "emotion": {"pleasure": 7, "arousal": 5, "dominance": 5}},
+      {"word": "胜利", "relation": "同义", "strength": 0.85, "emotion": {"pleasure": 7, "arousal": 6, "dominance": 5}},
+      {"word": "满足", "relation": "意象", "strength": 0.75, "emotion": {"pleasure": 7, "arousal": 3, "dominance": 4}},
+      {"word": "自信", "relation": "意象", "strength": 0.8, "emotion": {"pleasure": 5, "arousal": 4, "dominance": 6}},
+      {"word": "价值", "relation": "意象", "strength": 0.7, "emotion": {"pleasure": 5, "arousal": 3, "dominance": 5}}
+    ],
+    "失败": [
+      {"word": "挫折", "relation": "同义", "strength": 0.85, "emotion": {"pleasure": -5, "arousal": 3, "dominance": -3}},
+      {"word": "反思", "relation": "同义", "strength": 0.7, "emotion": {"pleasure": -1, "arousal": 2, "dominance": 2}},
+      {"word": "学习", "relation": "意象", "strength": 0.6, "emotion": {"pleasure": 2, "arousal": 3, "dominance": 3}},
+      {"word": "重新", "relation": "意象", "strength": 0.5, "emotion": {"pleasure": 1, "arousal": 3, "dominance": 3}},
+      {"word": "坚持", "relation": "反义", "strength": 0.4, "emotion": {"pleasure": 2, "arousal": 4, "dominance": 4}}
+    ],
+    "成长": [
+      {"word": "学习", "relation": "同义", "strength": 0.85, "emotion": {"pleasure": 5, "arousal": 4, "dominance": 4}},
+      {"word": "变化", "relation": "同义", "strength": 0.75, "emotion": {"pleasure": 4, "arousal": 4, "dominance": 3}},
+      {"word": "进步", "relation": "同义", "strength": 0.8, "emotion": {"pleasure": 5, "arousal": 4, "dominance": 4}},
+      {"word": "成熟", "relation": "意象", "strength": 0.7, "emotion": {"pleasure": 4, "arousal": 2, "dominance": 5}},
+      {"word": "挑战", "relation": "意象", "strength": 0.65, "emotion": {"pleasure": 3, "arousal": 5, "dominance": 4}}
+    ]
+  }
+}
