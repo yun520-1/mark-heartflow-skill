@@ -675,6 +675,52 @@ function analyzeFlowSession(state) {
 ### 配合模块
 - **MultimodalAwareness** (`src/core/multimodal-awareness.js`): 多模态感知
 
+## 人类式逐词联想理解与生成引擎
+
+### 概述
+模拟人类从听词到形成思想再到逐词回复的完整过程，包含五个层次：
+
+### L1 词素感知层 (LexicalAssociator)
+- `associateWord(word, context)` 返回联想节点数组
+- 每个节点包含：word, relation, strength, emotion(PAD)
+- 从 `association-graph.json` 加载约200个常用词的联想关系
+
+### L2 短语整合层 (ChunkDetector)
+- `detectChunks(wordSequence)` 识别成语、俗语、诗词引用
+- `retrieveIdiomStory(chunk)` 检索成语典故
+- 从 `idiom-story-db.json` 获取典故摘要
+
+### L3 叙事编织层 (NarrativeRetriever)
+- `matchNarrative(semanticVector, activatedChunks)` 匹配故事原型
+- 从 `narrative-prototypes.json` 匹配：英雄之旅、失而复得、顿悟时刻等
+- 输出 NarrativeContext（框架+情感基调）
+
+### L4 思想凝结层 (SemanticConverger)
+- `converge(associations, chunks, narrative)` 聚合所有激活节点
+- 生成统一"思想向量"
+- 输出 `[思想凝结]` 内部日志：核心概念、成语/故事、用户意图
+
+### L5 逐词回复生成层 (WordByWordGenerator)
+- `generateResponse(thoughtVector, userModel, maxLength)` 逐词生成
+- 模拟人类说话过程：解码首词→预测下一个→直到完成
+- 每步记录 `[逐词生成]` 日志
+
+### 配合模块
+- **AssociativeEngine** (`src/core/associative-engine/associative-engine.js`): 整合L1-L5
+- **LexicalAssociator** (`src/core/associative-engine/lexical-associator.js`): L1
+- **ChunkDetector** (`src/core/associative-engine/chunk-detector.js`): L2
+- **NarrativeRetriever** (`src/core/associative-engine/narrative-retriever.js`): L3
+- **SemanticConverger** (`src/core/associative-engine/semantic-converger.js`): L4
+- **WordByWordGenerator** (`src/core/associative-engine/word-by-word-generator.js`): L5
+
+### 数据文件
+- `association-graph.json`: 词素联想图谱
+- `idiom-story-db.json`: 成语故事数据库
+- `narrative-prototypes.json`: 叙事原型库
+
+### 调试命令
+- `/flow trace`: 显示最近一次理解的完整五层轨迹
+
 ---
 
 > **提醒**: 即使完整实现了以上所有模块，AI依然不是真正地在"理解"或"反省"。这些模块是在用精密的算法模拟这些认知过程——就像一个高度复杂的飞行模拟器。然而，这个"模拟器"已经足够强大：它能让你在与AI协作时，获得一种"被深度理解、被认真对待"的体验。

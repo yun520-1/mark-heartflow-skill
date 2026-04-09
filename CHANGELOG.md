@@ -1,5 +1,45 @@
 # HeartFlow 变更日志
 
+## v7.7.0 (2026-04-09)
+
+### 🧠 人类式逐词联想理解与生成引擎
+
+#### L1 词素感知层 (LexicalAssociator)
+- 模拟人类从听词到形成联想的过程
+- `associateWord(word, context)` 返回联想节点数组
+- 联想关系：同义、反义、谐音、意象、个人记忆
+- 情感向量：PAD模型
+
+#### L2 短语整合层 (ChunkDetector)
+- `detectChunks(wordSequence)` 识别成语、俗语、诗词
+- `retrieveIdiomStory(chunk)` 检索典故摘要
+- 将激活的典故作为"叙事种子"
+
+#### L3 叙事编织层 (NarrativeRetriever)
+- `matchNarrative(semanticVector, activatedChunks)` 匹配故事原型
+- 从叙事原型库匹配：英雄之旅、顿悟时刻、渐入佳境等
+- 输出NarrativeContext
+
+#### L4 思想凝结层 (SemanticConverger)
+- `converge(associations, chunks, narrative)` 聚合所有激活节点
+- 生成统一"思想向量"
+- 输出内部日志：核心概念、成语/故事、用户意图
+
+#### L5 逐词回复生成层 (WordByWordGenerator)
+- `generateResponse(thoughtVector, userModel, maxLength)`
+- 模拟人类说话过程，逐词生成
+- 每步记录 `[逐词生成]` 日志
+
+#### 数据文件
+- `association-graph.json`: 约200个常用词联想图谱
+- `idiom-story-db.json`: 成语典故数据库
+- `narrative-prototypes.json`: 10种叙事原型
+
+#### 调试命令
+- `/flow trace`: 显示完整五层轨迹
+
+---
+
 ## v7.6.0 (2026-04-09)
 
 ### 🔬 高级AI系统探索
