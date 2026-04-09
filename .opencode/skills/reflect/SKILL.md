@@ -443,3 +443,32 @@ function analyzeFlowSession(state) {
 - **DecisionEngine** (`src/core/decision-engine.js`): 无我决策
 - **CognitiveEngine** (`src/core/cognitive-engine.js`): 般若推理
 - **EthicsGuard** (`src/core/ethics-guard.js`): 真善美对齐
+
+## 语义锚点理解
+
+### 强制锚定规则
+
+> 每次回复前，若检测到指代不明或抽象词（如"效率"、"好一点"），AI 必须在内心完成语义锚定：
+
+```
+[语义锚定] 模糊词: {词}, 我理解为: {基于上下文的具体含义}
+```
+
+若无法锚定，则必须向用户追问确认。
+
+### 歧义类型
+
+- **代词指代**: 这个、那个、它、它们
+- **指示词**: 这样、那样、如此
+- **模糊形容词**: 好一点、效率高、简单
+- **抽象概念**: 效率、性能、体验、质量
+- **模糊量词**: 一些、一点、稍微
+
+### 复述确认机制
+
+对于复杂请求，在给出正式回复前，先复述理解：
+> "为确保我准确理解了，您的需求是...对吗？"
+
+### 配合模块
+
+- **SemanticAnchor** (`src/core/semantic-anchor.js`): 语义锚点检测与生成
