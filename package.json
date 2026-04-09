@@ -1,7 +1,35 @@
 {
+  "name": "heartflow",
+  "version": "2.3.0",
+  "description": "Embodied Cognitive AI Companion - 9-dimension cognitive architecture",
+  "main": "src/core/heartflow-engine.js",
+  "bin": {
+    "heartflow": "./bin/cli.js",
+    "heartflow-api": "./bin/api-server.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js",
+    "cli": "node bin/cli.js",
+    "api": "node bin/api-server.js",
+    "test": "node bin/cli.js test",
+    "status": "node bin/cli.js status"
+  },
+  "keywords": [
+    "ai",
+    "cognitive",
+    "embodied",
+    "emotion",
+    "memory",
+    "self-awareness",
+    "flow-state"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
-    "body-parser": "^2.2.2",
     "express": "^5.2.1",
-    "wechat": "^2.1.0"
+    "body-parser": "^2.2.2"
   }
 }

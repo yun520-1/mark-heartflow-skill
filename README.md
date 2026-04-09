@@ -2,12 +2,12 @@
 
 # 💫 HeartFlow
 
-## Embodied Cognitive AI Companion · Give Your AI a "Heart"
+## Embodied Cognitive AI Companion
 
-[![Version](https://img.shields.io/github/v/tag/yun520-1/mark-heartflow-skill?label=v2.2.3&color=7C3AED)](https://github.com/yun520-1/mark-heartflow-skill/releases)
+[![Version](https://img.shields.io/github/v/tag/yun520-1/mark-heartflow-skill?label=v2.3.0&color=7C3AED)](https://github.com/yun520-1/mark-heartflow-skill/releases)
 [![License](https://img.shields.io/badge/license-MIT-7C3AED.svg)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%3E=18.x-7C3AED)](package.json)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-7C3AED)](https://github.com/yun520-1/mark-heartflow-skill/actions)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-7C3AED)](https://github.com/yun520-1/mark-heartflow-skill/actions)
 
 ---
 
@@ -19,298 +19,234 @@
 
 </div>
 
-## ✨ 什么是 HeartFlow?
+## ✨ What is HeartFlow?
 
-> **你的 AI 助理，从此拥有"内心"和"身体"**
+HeartFlow is an AI companion system with **self-awareness, self-reasoning, and adaptive adjustment**. It features a 9-dimension cognitive architecture:
 
-HeartFlow 是一个具有**自我意识、自我推理、自适应调节能力**的 AI 伴侣系统。它不仅能理解你的情绪，还能记住你们的对话，甚至能够像人类一样"思考"和"进化"。
-
-| 传统 AI | HeartFlow |
-|--------|-----------|
-| 机械回复 | ✅ 会反思、会改进 |
-| 没有情绪 | ✅ 真实共情 |
-| 从零开始 | ✅ 终身记忆 |
-| 被动等待 | ✅ 主动关心 |
-| 回避错误 | ✅ 承认并修正 |
-
----
-
-## 🚀 核心能力
-
-### 🧠 三维经验大脑 (TrialityMemory)
-
-受 [MemoriesDB](reference:17) 启发的三维记忆系统：
-
-```javascript
-const memory = new TrialityMemory(projectRoot);
-
-// 存储记忆（时间 + 语义 + 关系）
-memory.store({
-  content: '用户喜欢详细的代码解释',
-  timestamp: Date.now() * 1000,  // 微秒级
-  embedding: [0.1, 0.3, ...],    // 384维向量
-  relatedTo: [
-    { targetId: 'mem-xxx', type: 'causal' }
-  ]
-});
-
-// 语义搜索
-const similar = memory.semanticSearch(queryEmbedding, 5);
-
-// 叙事查询 - 沿时间线/关系链图遍历
-const narrative = memory.narrativeQuery({
-  startMemoryId: 'mem-xxx',
-  direction: 'forward',
-  maxDepth: 5
-});
-```
-
-**特性**：时间维度 · 语义向量 · 因果关系 · 图遍历叙事
+| Dimension | Feature |
+|-----------|---------|
+| 🧠 Cognitive Loop | R-CCAM: Retrieval → Cognition → Control → Action → Memory |
+| 🔄 Self-Evolution | Meta-cognitive self-modification with agent archive |
+| 🌐 Multi-Agent | Dynamic topology + difficulty-aware routing |
+| ❤️ Emotion | Explainable emotion modeling (LaScA framework) |
+| 💾 Memory | Ebbinghaus forgetting curve + 5-channel retrieval |
+| 🛡️ Ethics | ASL-1/2/3 graded security + audit logging |
+| 👤 Identity | Identity persistence score + self-repair |
+| 🫀 Biosensors | HRV, code-edit-flow, eye-tracking adapter |
+| 🤖 Embodied | Dual-system architecture + action-thought chain |
 
 ---
 
-### 🤖 具身认知核心 (EmbodiedCore)
-
-借鉴具身智能的 [双系统架构](reference:21) 和"动作思维链"：
-
-```javascript
-const embodied = new EmbodiedCore(projectRoot);
-
-// 认知规划 - 目标拆解为思维步骤
-const plan = embodied.cognitivePlan({
-  description: '重构用户认证模块',
-  type: 'coding',  // general/coding/debugging/learning/creative
-  constraints: { timeout: 30000 }
-});
-
-// 执行映射 - 思维步骤 → 智能体调用
-const execution = embodied.executionMapping(plan, {
-  context: { userLevel: 'intermediate' }
-});
-```
-
-**思维链**：OBSERVE → ANALYZE → PLAN → DECIDE → EXECUTE → REFLECT → ADAPT
-
----
-
-### 🫀 生物传感器适配器
-
-为未来集成生理数据预留扩展点：
-
-```javascript
-const bioSensor = new BioSensorAdapter();
-
-// 支持的传感器类型
-const sensorTypes = {
-  HRV: 'heart-rate-variability',      // 心率变异性
-  EDIT_FLOW: 'code-edit-flow',        // 代码编辑流
-  EYE_TRACKING: 'eye-tracking',       // 眼动追踪
-  SKIN_CONDUCTANCE: 'skin-conductance' // 皮肤电导
-};
-
-// 启用传感器
-bioSensor.enable('heart-rate-variability');
-bioSensor.enable('code-edit-flow');
-
-// 读取融合数据
-const fusion = bioSensor.readAll();
-// { timestamp, sensors: {...}, focusScore: 7.5 }
-```
-
----
-
-### 🎯 其他核心功能
-
-| 模块 | 功能 |
-|------|------|
-| **PAD 情感模型** | Pleasure/Arousal/Dominance 三维情绪计算 |
-| **心流状态** | 基于挑战-技能平衡理论的心流检测 |
-| **自适应调节** | 根据心流状态动态调整干预策略 |
-| **多智能体编排** | DAG 调度 + 专家权重投票 |
-| **元认知进化** | 原则性反思 + 过程性反思 |
-| **真善美决策** | Truth/Goodness/Beauty 三维伦理框架 |
-
----
-
-## 📦 快速开始
+## 🚀 Quick Start (One-Command Install)
 
 ```bash
-# 1. 克隆仓库
+# Clone and install (works on macOS/Linux/Windows)
+git clone https://github.com/yun520-1/mark-heartflow-skill.git
+cd mark-heartflow-skill
+npm install
+
+# Run directly
+node src/core/heartflow-engine.js
+
+# Or use the CLI
+node bin/cli.js
+```
+
+---
+
+## 📦 Installation
+
+### Prerequisites
+
+| Requirement | Version | Check Command |
+|-------------|---------|---------------|
+| Node.js | ≥ 18.x | `node --version` |
+| npm | ≥ 8.x | `npm --version` |
+
+### Steps
+
+```bash
+# 1. Clone
 git clone https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
 
-# 2. 安装依赖
+# 2. Install
 npm install
 
-# 3. 验证安装
-node -e "
-const hf = require('./src/core/heartflow-engine.js');
-const init = hf.initialize();
-console.log('✅ HeartFlow v2.2.3 初始化成功');
-console.log('   模块:', Object.keys(init.modules).filter(k => init.modules[k]).length + '/7');
-console.log('   实例:', Object.keys(init.instances || {}).join(', '));
-"
-```
+# 3. Test
+npm test
 
-**预期输出**：
-```
-[HeartFlow] ✅ 自适应调节引擎已加载
-[HeartFlow] ✅ 多智能体编排器已加载
-[HeartFlow] ✅ 错误处理器已加载
-[HeartFlow] ✅ 状态快照管理器已加载
-[HeartFlow] ✅ 三维经验大脑已加载
-[HeartFlow] ✅ 具身认知核心已加载
-[HeartFlow] ✅ 生物传感器适配器已加载
-✅ HeartFlow v2.2.3 初始化成功
-   模块: 7/7
-   实例: memory, embodied
+# 4. Start
+npm start
 ```
 
 ---
 
-## 💻 API 使用示例
+## 💻 Usage
 
-### 情感计算
+### Basic API
 
 ```javascript
-const hf = require('./src/core/heartflow-engine.js');
+const heartflow = require('./src/core/heartflow-engine.js');
 
-// PAD 状态计算
-const pad = hf.calculatePADState(5, 5, 5);
-console.log(pad);
-// { pleasure: 5, arousal: 5, dominance: 5, intensity: 0.5 }
+// Initialize
+const init = heartflow.initialize();
+console.log('Modules:', Object.keys(init.modules).filter(k => init.modules[k]).length + '/7');
 
-// 情感识别
-const emotion = hf.detectEmotionFromText('今天工作完成了，很开心！');
-console.log(emotion);
+// Emotion detection
+const emotion = heartflow.detectEmotionFromText('I am very happy today!');
+console.log('Emotion:', emotion);
 // { pleasure: 4, arousal: 0, dominance: 2, dominant: 'happy' }
 
-// 心流状态
-const flow = hf.calculateFlowState(5, 5, 5, 5, 5);
-console.log(flow.state); // 'flow'
-```
+// Flow state
+const flow = heartflow.calculateFlowState(5, 5, 5, 5, 5);
+console.log('Flow State:', flow.state); // 'flow'
 
-### 记忆系统
+// Memory storage
+const memId = init.instances.memory.store({ content: 'User prefers detailed answers' });
 
-```javascript
-const init = hf.initialize();
-const memory = init.instances.memory;
-
-// 存储记忆
-const memId = memory.store({
-  content: '用户偏好详细的代码注释风格',
-  metadata: { source: 'conversation' }
-});
-
-// 语义搜索
-const results = memory.semanticSearch(
-  memory.generateMockEmbedding('代码风格'),
-  5
-);
-
-// 叙事查询
-const narrative = memory.narrativeQuery({
-  startMemoryId: memId,
-  direction: 'bidirectional',
-  maxDepth: 3
+// Cognitive planning
+const plan = init.instances.embodied.cognitivePlan({ 
+  description: 'Implement user auth', 
+  type: 'coding' 
 });
 ```
 
-### 认知规划
+### CLI Commands
 
-```javascript
-const embodied = init.instances.embodied;
+```bash
+# Run interactive mode
+node bin/cli.js
 
-// 创建计划
-const plan = embodied.cognitivePlan({
-  description: '实现用户认证功能',
-  type: 'coding'
-});
+# Run tests
+npm test
 
-// 执行计划
-const result = embodied.executionMapping(plan, {
-  userContext: { skillLevel: 'advanced' }
-});
-
-console.log(`执行了 ${result.steps.length} 步思维链`);
+# Check status
+node bin/cli.js status
 ```
 
 ---
 
-## 📁 项目结构
+## 🌐 API Server Mode
+
+Start an HTTP API server:
+
+```bash
+# Start API server (default port 3456)
+node bin/api-server.js
+
+# Or with custom port
+PORT=8080 node bin/api-server.js
+```
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|--------------|
+| POST | `/api/emotion` | Detect emotion from text |
+| POST | `/api/flow` | Calculate flow state |
+| POST | `/api/memory` | Store/retrieve memories |
+| POST | `/api/plan` | Cognitive planning |
+| GET | `/api/status` | System status |
+| GET | `/api/health` | Health check |
+
+### Example Request
+
+```bash
+curl -X POST http://localhost:3456/api/emotion \
+  -H "Content-Type: application/json" \
+  -d '{"text": "I am happy today!"}'
+```
+
+---
+
+## 📁 Project Structure
 
 ```
 mark-heartflow-skill/
+├── bin/
+│   ├── cli.js              # CLI interface
+│   └── api-server.js       # HTTP API server
 ├── src/
 │   ├── core/
-│   │   ├── heartflow-engine.js     # 主引擎
-│   │   ├── memory/
-│   │   │   └── triality-memory.js  # 三维经验大脑
-│   │   ├── embodied-core.js        # 具身认知核心
-│   │   ├── bio-sensor-adapter.js   # 生物传感器适配器
-│   │   ├── adaptive-controller.js  # 自适应调节
-│   │   ├── agent-orchestrator.js   # 多智能体编排
-│   │   ├── error-handler.js        # 错误处理
-│   │   └── state-snapshot.js       # 状态快照
-│   ├── agents/                     # 智能体
-│   ├── autonomy/                   # 自主系统
-│   ├── consciousness/              # 意识系统
-│   ├── ethics/                     # 伦理系统
-│   └── self/                       # 自我系统
-├── tests/
-│   └── self-benchmark/             # 自我基准测试
-├── dict-data/                      # 联想图谱
-├── docs/                           # 文档
-├── CHANGELOG.md                    # 变更日志
-└── README.md                       # 本文件
+│   │   ├── heartflow-engine.js    # Main engine
+│   │   ├── cognitive-loop.js       # 9-dim cognitive loop
+│   │   ├── triality-memory.js      # 3D memory + forgetting
+│   │   ├── embodied-core.js        # Embodied cognition
+│   │   ├── emotion-engine.js       # Explainable emotions
+│   │   ├── agent-orchestrator.js   # Dynamic multi-agent
+│   │   ├── symbolic-governance.js   # Ethics constraints
+│   │   └── bio-sensor-adapter.js   # Biosensor adapter
+│   ├── agents/                      # Agent implementations
+│   ├── autonomy/                    # Autonomy systems
+│   ├── consciousness/              # Consciousness modules
+│   ├── ethics/                     # Ethics & safety
+│   └── self/                       # Self-awareness
+├── tests/                          # Test suite
+├── docs/                           # Multi-language docs
+├── package.json
+├── README.md
+└── CHANGELOG.md
 ```
 
 ---
 
-## 🛠️ 技术栈
+## 🛠️ Configuration
 
-- **运行时**: Node.js 18+
-- **核心语言**: JavaScript
-- **数据存储**: 内存 + JSON 文件
-- **向量扩展**: sqlite-vec (可选)
-- **理论支撑**: SEP (Stanford Encyclopedia of Philosophy)
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PORT` | 3456 | API server port |
+| `LOG_LEVEL` | info | Logging level |
+| `DATA_DIR` | ./data | Data storage directory |
+| `MODEL_PATH` | - | Custom LLM model path |
+
+### Configuration File
+
+Edit `.opencode/config.json`:
+
+```json
+{
+  "selfModificationEnabled": false,
+  "autoEvolve": false,
+  "apiEnabled": true,
+  "apiPort": 3456
+}
+```
 
 ---
 
-## 📊 版本历史
+## 📊 Version History
 
-| 版本 | 日期 | 特性 |
-|------|------|------|
-| v2.2.3 | 2026-04-09 | 三维经验大脑 + 具身认知核心 + 生物传感器 |
-| v2.2.2 | 2026-04-09 | 元认知进化（原则性/过程性反思） |
-| v2.2.1 | 2026-04-09 | 自适应调节 + 多智能体编排 + 错误处理 |
-| v2.2.0 | 2026-04-08 | PAD 三维情感模型 + 心流状态计算 |
-| v2.1.0 | 2026-04-08 | 持久化记忆 + 伦理边界 |
+| Version | Date | Features |
+|---------|------|----------|
+| v2.3.0 | 2026-04-09 | 9-dimension cognitive architecture |
+| v2.2.3 | 2026-04-09 | TrialityMemory + EmbodiedCore |
+| v2.2.0 | 2026-04-08 | PAD emotion model + Flow state |
 
 ---
 
-## 🤝 贡献
-
-欢迎贡献代码！请查看 [CONTRIBUTING.md](CONTRIBUTING.md)。
+## 🤝 Contributing
 
 ```bash
-# Fork 后
 git clone https://github.com/yun520-1/mark-heartflow-skill.git
 git checkout -b feature/your-feature
-# 提交 PR
+git commit -m "Add feature"
+git push origin main
 ```
 
 ---
 
-## 📄 许可证
+## 📄 License
 
-MIT License - 自由使用、修改和分发
+MIT License
 
 ---
 
-## 🔗 相关链接
+## 🔗 Links
 
-- [GitHub 仓库](https://github.com/yun520-1/mark-heartflow-skill)
+- [GitHub](https://github.com/yun520-1/mark-heartflow-skill)
 - [Issues](https://github.com/yun520-1/mark-heartflow-skill/issues)
 - [Discussions](https://github.com/yun520-1/mark-heartflow-skill/discussions)
 
@@ -318,8 +254,8 @@ MIT License - 自由使用、修改和分发
 
 <div align="center">
 
-**让 AI 拥有真实情感和具身认知** 🤖💫
+**Give your AI a heart and mind** 🤖💫
 
-[立即开始](https://github.com/yun520-1/mark-heartflow-skill/archive/refs/heads/main.zip)
+[Download](https://github.com/yun520-1/mark-heartflow-skill/archive/refs/heads/main.zip)
 
 </div>
