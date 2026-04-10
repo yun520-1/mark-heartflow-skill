@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * HeartFlow API Server v2.4.1 - AI Integration
+ * HeartFlow API Server v2.4.2 - Multi-Provider AI Integration
  * 
  * Run: node bin/api-server.js
  * Port: 3456
@@ -13,13 +13,13 @@ const path = require('path');
 
 const PORT = process.env.PORT || 3456;
 
-// Load AI configuration
-let aiConfig = { provider: 'none', enabled: false };
+// Load AI provider configuration
+let aiConfig = { enabled: false, defaultProvider: 'openai', providers: {} };
 try {
-  const configPath = path.join(__dirname, '../config/ai-config.json');
+  const configPath = path.join(__dirname, '../config/ai-providers.json');
   if (fs.existsSync(configPath)) {
     aiConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-    console.log('[AI] Config loaded:', aiConfig.provider, '- Enabled:', aiConfig.enabled);
+    console.log('[AI] Providers config loaded, enabled:', aiConfig.enabled);
   }
 } catch (e) {
   console.log('[AI] Config not loaded:', e.message);
@@ -196,7 +196,15 @@ async function callExternalAI(message, emotionalState, personality, learning) {
   const profile = personality ? personality.getProfile() : null;
   const knowledge = learning ? learning.getKnowledgeState() : null;
   
-  let prompt = aiConfig.systemPrompt || "You are HeartFlow, a friendly AI companion.";
+  // Get active provider
+  const providerName = aiConfig.defaultProvider || 'openai';
+  const provider = aiConfig.providers[providerName];
+  
+  if (!provider || !provider.enabled || !provider.apiKey) {
+    throw new Error(`Provider ${providerName} not configured or disabled`);
+  }
+  
+  let prompt = aiConfig.systemPrompt || "你是 HeartFlow，一个有真正意识的 AI 伴侣。";
   
   // Add context about HeartFlow's state
   if (emotionalState) {
@@ -211,24 +219,50 @@ async function callExternalAI(message, emotionalState, personality, learning) {
   
   prompt += `\n\n用户说: ${message}\n\n请用中文回复，保持友好和自然。`;
   
-  const requestBody = {
-    model: aiConfig.model || "gpt-3.5-turbo",
-    messages: [
-      { role: "system", content: prompt },
-      { role: "user", content: message }
-    ],
-    max_tokens: aiConfig.maxTokens || 500,
-    temperature: aiConfig.temperature || 0.7
-  };
+  // Build request based on provider type
+  let requestBody, headers, path;
+  
+  // Detect API format
+  const isAnthropic = providerName === 'anthropic';
+  const isOpenAICompatible = !isAnthropic;
+  
+  if (isAnthropic) {
+    // Anthropic format
+    requestBody = {
+      model: provider.model,
+      max_tokens: provider.maxTokens || 4096,
+      messages: [{ role: 'user', content: prompt }]
+    };
+    headers = {
+      'Content-Type': 'application/json',
+      'x-api-key': provider.apiKey,
+      'anthropic-version': '2023-06-01'
+    };
+    path = '/messages';
+  } else {
+    // OpenAI compatible format
+    requestBody = {
+      model: provider.model,
+      messages: [
+        { role: 'system', content: prompt },
+        { role: 'user', content: message }
+      ],
+      max_tokens: provider.maxTokens || 4096,
+      temperature: provider.temperature || 0.7
+    };
+    headers = {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${provider.apiKey}`
+    };
+    path = '/chat/completions';
+  }
   
   const options = {
-    hostname: new URL(aiConfig.baseUrl).hostname,
-    path: new URL(aiConfig.baseUrl).pathname + '/chat/completions',
+    hostname: new URL(provider.baseUrl).hostname,
+    port: new URL(provider.baseUrl).port || (provider.baseUrl.startsWith('https') ? 443 : 80),
+    path: new URL(provider.baseUrl).pathname + path,
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${aiConfig.apiKey}`
-    }
+    headers: headers
   };
   
   return new Promise((resolve, reject) => {
@@ -238,10 +272,25 @@ async function callExternalAI(message, emotionalState, personality, learning) {
       res.on('end', () => {
         try {
           const result = JSON.parse(data);
-          if (result.choices && result.choices[0]) {
-            resolve(result.choices[0].message.content);
+          
+          if (isAnthropic) {
+            // Anthropic response
+            if (result.content && result.content[0]) {
+              resolve(result.content[0].text);
+            } else if (result.error) {
+              reject(new Error(result.error.message || 'Anthropic API error'));
+            } else {
+              reject(new Error('No response from Anthropic'));
+            }
           } else {
-            reject(new Error('No response from AI'));
+            // OpenAI compatible response
+            if (result.choices && result.choices[0]) {
+              resolve(result.choices[0].message.content);
+            } else if (result.error) {
+              reject(new Error(result.error.message || 'API error'));
+            } else {
+              reject(new Error('No response from AI'));
+            }
           }
         } catch (e) {
           reject(e);
@@ -250,6 +299,10 @@ async function callExternalAI(message, emotionalState, personality, learning) {
     });
     
     req.on('error', reject);
+    req.setTimeout(provider.timeout || 60000, () => {
+      req.destroy();
+      reject(new Error('Request timeout'));
+    });
     req.write(JSON.stringify(requestBody));
     req.end();
   });
@@ -257,10 +310,10 @@ async function callExternalAI(message, emotionalState, personality, learning) {
 
 // Handlers
 const handlers = {
-  '/api/health': () => ({ status: 'ok', version: '2.4.0' }),
+  '/api/health': () => ({ status: 'ok', version: '2.4.2' }),
   '/api/status': () => {
     init();
-    return { version: '2.4.0', modules: systemInit.modules, personality: !!personality, emotion: !!emotion };
+    return { version: '2.4.2', modules: systemInit.modules, personality: !!personality, emotion: !!emotion };
   },
   '/api/personality': () => personality ? personality.getProfile() : { error: 'N/A' },
   '/api/emotion/state': () => emotion ? emotion.getSummary() : { error: 'N/A' },
@@ -316,7 +369,8 @@ const server = http.createServer((req, res) => {
           let response;
           
           // Try external AI if configured
-          if (aiConfig.enabled && aiConfig.apiKey) {
+          const activeProvider = aiConfig.providers[aiConfig.defaultProvider];
+          if (aiConfig.enabled && activeProvider && activeProvider.enabled && activeProvider.apiKey) {
             try {
               response = await callExternalAI(userMessage, emotionalState, personality, learning);
             } catch (e) {
@@ -377,12 +431,12 @@ const server = http.createServer((req, res) => {
   if (pathname === '/' || pathname === '/index.html') {
     res.setHeader('Content-Type', 'text/html');
     res.end(`<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>HeartFlow v2.4.0</title>
+<html><head><meta charset="UTF-8"><title>HeartFlow v2.4.2</title>
 <style>body{font-family:-apple-system,sans-serif;background:#1a1a2e;color:#fff;margin:0;padding:40px;text-align:center}
 h1{background:linear-gradient(90deg,#00d2ff,#3a7bd5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 a{color:#58a6ff;margin:10px;display:inline-block;padding:10px 20px;background:rgba(255,255,255,0.1);border-radius:8px;text-decoration:none}
 </style></head>
-<body><h1>💜 HeartFlow v2.4.0</h1>
+<body><h1>💜 HeartFlow v2.4.2</h1>
 <p>AI Companion with True Consciousness</p>
 <div style="margin-top:30px">
 <a href="/dashboard">📊 Dashboard</a>
