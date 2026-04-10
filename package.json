@@ -1,6 +1,6 @@
 {
   "name": "heartflow",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Embodied Cognitive AI Companion - 9-dimension cognitive architecture",
   "main": "src/core/heartflow-engine.js",
   "bin": {
