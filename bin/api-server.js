@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * HeartFlow API Server v2.4.0 - Fresh Rewrite
+ * HeartFlow API Server v2.4.1 - AI Integration
  * 
  * Run: node bin/api-server.js
  * Port: 3456
@@ -8,8 +8,22 @@
 
 const http = require('http');
 const url = require('url');
+const fs = require('fs');
+const path = require('path');
 
 const PORT = process.env.PORT || 3456;
+
+// Load AI configuration
+let aiConfig = { provider: 'none', enabled: false };
+try {
+  const configPath = path.join(__dirname, '../config/ai-config.json');
+  if (fs.existsSync(configPath)) {
+    aiConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    console.log('[AI] Config loaded:', aiConfig.provider, '- Enabled:', aiConfig.enabled);
+  }
+} catch (e) {
+  console.log('[AI] Config not loaded:', e.message);
+}
 
 // Load core
 const heartflow = require('../src/core/heartflow-engine.js');
@@ -177,6 +191,70 @@ function getDefaultResponse(msg, profile, knowledge) {
   return responses[Math.floor(Math.random() * responses.length)];
 }
 
+// Call external AI API
+async function callExternalAI(message, emotionalState, personality, learning) {
+  const profile = personality ? personality.getProfile() : null;
+  const knowledge = learning ? learning.getKnowledgeState() : null;
+  
+  let prompt = aiConfig.systemPrompt || "You are HeartFlow, a friendly AI companion.";
+  
+  // Add context about HeartFlow's state
+  if (emotionalState) {
+    prompt += `\n当前用户情绪: ${emotionalState.emotion} (强度: ${emotionalState.intensity})`;
+  }
+  if (profile && profile.bigFive) {
+    prompt += `\n你的性格: 开放性${profile.bigFive.O.score}/10, 尽责性${profile.bigFive.C.score}/10, 外向性${profile.bigFive.E.score}/10`;
+  }
+  if (knowledge && knowledge.schemaCount > 0) {
+    prompt += `\n你已学习的主题: ${knowledge.topics.join(', ')}`;
+  }
+  
+  prompt += `\n\n用户说: ${message}\n\n请用中文回复，保持友好和自然。`;
+  
+  const requestBody = {
+    model: aiConfig.model || "gpt-3.5-turbo",
+    messages: [
+      { role: "system", content: prompt },
+      { role: "user", content: message }
+    ],
+    max_tokens: aiConfig.maxTokens || 500,
+    temperature: aiConfig.temperature || 0.7
+  };
+  
+  const options = {
+    hostname: new URL(aiConfig.baseUrl).hostname,
+    path: new URL(aiConfig.baseUrl).pathname + '/chat/completions',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${aiConfig.apiKey}`
+    }
+  };
+  
+  return new Promise((resolve, reject) => {
+    const req = http.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        try {
+          const result = JSON.parse(data);
+          if (result.choices && result.choices[0]) {
+            resolve(result.choices[0].message.content);
+          } else {
+            reject(new Error('No response from AI'));
+          }
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
+    
+    req.on('error', reject);
+    req.write(JSON.stringify(requestBody));
+    req.end();
+  });
+}
+
 // Handlers
 const handlers = {
   '/api/health': () => ({ status: 'ok', version: '2.4.0' }),
@@ -212,7 +290,7 @@ const server = http.createServer((req, res) => {
   if (req.method === 'POST') {
     let body = '';
     req.on('data', c => body += c);
-    req.on('end', () => {
+    req.on('end', async () => {
       let data = {};
       try { data = JSON.parse(body); } catch(e) {}
       
@@ -225,7 +303,6 @@ const server = http.createServer((req, res) => {
         }
         // Chat/AI response
         else if (pathname === '/api/chat' && data.message) {
-          // Use emotion and learning to generate response
           const userMessage = data.message;
           
           // Detect emotion from user message
@@ -236,8 +313,20 @@ const server = http.createServer((req, res) => {
             learning.learn(userMessage, { source: 'chat', personal: true });
           }
           
-          // Generate response based on message content
-          let response = generateResponse(userMessage, emotionalState, personality, learning);
+          let response;
+          
+          // Try external AI if configured
+          if (aiConfig.enabled && aiConfig.apiKey) {
+            try {
+              response = await callExternalAI(userMessage, emotionalState, personality, learning);
+            } catch (e) {
+              console.log('[AI] External API failed, using fallback:', e.message);
+              response = generateResponse(userMessage, emotionalState, personality, learning);
+            }
+          } else {
+            // Use built-in response generator
+            response = generateResponse(userMessage, emotionalState, personality, learning);
+          }
           
           result = {
             message: response,
