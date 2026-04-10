@@ -11,3 +11,6 @@
 
 # 每24分钟增强理论升级
 */24 * * * * /Users/apple/mark-heartflow-skill-new/scripts/hourly-enhanced-upgrade-v2.sh >> /Users/apple/mark-heartflow-skill-new/logs/enhanced-cron.log 2>&1
+
+# HeartFlow v7.6.x 自动升级任务 (每30分钟)
+*/30 * * * * cd /Users/apple/mark-heartflow-skill && /usr/local/bin/node scripts/auto-upgrade.js >> logs/auto-upgrade.log 2>&1
