@@ -1,6 +1,6 @@
 {
   "name": "heartflow",
-  "version": "7.6.000",
+  "version": "7.6.001",
   "description": "HeartFlow v7.6 - Self-Evolution Engine with Meta-Learning",
   "releaseDate": "2026-04-10",
   "main": "src/core/heartflow-engine.js",
@@ -20,10 +20,19 @@
     "dashboard": "start http://localhost:3456/dashboard",
     "chat": "start http://localhost:3456/chat"
   },
-  "keywords": ["ai", "cognitive", "emotion", "memory", "consciousness", "personality"],
+  "keywords": [
+    "ai",
+    "cognitive",
+    "emotion",
+    "memory",
+    "consciousness",
+    "personality"
+  ],
   "author": "HeartFlow Team",
   "license": "MIT",
-  "engines": { "node": ">=18.0.0" },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "express": "^5.2.1",
     "body-parser": "^2.2.2"
