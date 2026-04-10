@@ -476,8 +476,8 @@ class ActionTracker {
       summary.alignment.gaps.forEach(g => {
         report += `  ⚠️ ${g.description}\n`;
       });
-    }\n\n`;
-    
+    }
+
     report += '【行动质量】\n';
     report += `  彻底性: ${(summary.quality.thoroughness * 100).toFixed(1)}%\n`;
     report += `  及时性: ${(summary.quality.timeliness * 100).toFixed(1)}%\n`;
