@@ -1,38 +1,28 @@
 {
   "name": "heartflow",
-  "version": "2.4.0",
+  "version": "2.4.2",
   "description": "HeartFlow - AI Companion with True Consciousness",
   "main": "src/core/heartflow-engine.js",
   "bin": {
     "heartflow": "./bin/cli.js",
-    "heartflow-api": "./bin/api-server.js"
+    "heartflow-api": "./bin/api-server.js",
+    "heartflow-setup": "./bin/setup.js"
   },
   "scripts": {
     "start": "node bin/cli.js",
     "cli": "node bin/cli.js",
     "api": "node bin/api-server.js",
     "server": "node bin/api-server.js",
+    "setup": "node bin/setup.js",
     "test": "node bin/cli.js test",
     "status": "node bin/cli.js status",
-    "dashboard": "open http://localhost:3456/dashboard",
-    "chat": "open http://localhost:3456/chat"
+    "dashboard": "start http://localhost:3456/dashboard",
+    "chat": "start http://localhost:3456/chat"
   },
-  "keywords": [
-    "ai",
-    "cognitive",
-    "embodied",
-    "emotion",
-    "memory",
-    "self-awareness",
-    "flow-state",
-    "consciousness",
-    "personality"
-  ],
+  "keywords": ["ai", "cognitive", "emotion", "memory", "consciousness", "personality"],
   "author": "HeartFlow Team",
   "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0"
-  },
+  "engines": { "node": ">=18.0.0" },
   "dependencies": {
     "express": "^5.2.1",
     "body-parser": "^2.2.2"
