@@ -5,6 +5,7 @@
  * Run: node bin/setup.js
  * 
  * 类似 OpenClaw 的交互式配置向导
+ * 支持自动检测 OpenClaw/OpenCode 环境并安装为 skill
  */
 
 const readline = require('readline');
@@ -43,68 +44,185 @@ function header(text) {
   console.log('═'.repeat(60));
 }
 
+async function detectPlatform() {
+  const env = process.env;
+  
+  // Check OpenClaw
+  if (env.OPENCLAW_HOME || env.OPENCLAW_CONFIG || fs.existsSync(path.join(process.cwd(), '.openclaw'))) {
+    return 'openclaw';
+  }
+  
+  // Check OpenCode
+  if (env.CLAUDE_CODE || env.OPENCODE_HOME || fs.existsSync(path.join(process.cwd(), '.claude'))) {
+    return 'opencode';
+  }
+  
+  // Check skill directories
+  const skillPaths = [
+    path.join(process.cwd(), '.claude/skills'),
+    path.join(process.cwd(), '.opencode/skills'),
+    path.join(process.cwd(), 'skills'),
+    path.join(process.env.HOME || '', '.claude/skills'),
+    path.join(process.env.HOME || '', '.openclaw/skills'),
+    path.join(process.env.HOME || '', '.opencode/skills')
+  ];
+  
+  for (const sp of skillPaths) {
+    if (fs.existsSync(sp)) {
+      const parentDir = path.basename(process.cwd());
+      if (parentDir.includes('skill') || fs.existsSync(path.join(sp, parentDir))) {
+        return 'skill';
+      }
+    }
+  }
+  
+  return 'standalone';
+}
+
+function copyDirRecursive(src, dest) {
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDirRecursive(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
+async function installAsSkill(platform) {
+  const skillSrc = path.join(__dirname, '..');
+  let skillDest = '';
+  
+  if (platform === 'opencode') {
+    skillDest = path.join(process.env.HOME || '', '.claude/skills/mark-heartflow');
+  } else if (platform === 'openclaw') {
+    skillDest = path.join(process.env.HOME || '', '.openclaw/skills/mark-heartflow');
+  } else {
+    skillDest = path.join(process.cwd(), 'skills/mark-heartflow');
+  }
+  
+  console.log(`\n🖥️ 检测到: ${platform.toUpperCase()} 环境`);
+  console.log(`📁 安装到: ${skillDest}\n`);
+  
+  try {
+    if (!fs.existsSync(skillDest)) {
+      fs.mkdirSync(skillDest, { recursive: true });
+    }
+    
+    // Copy essential files
+    fs.copyFileSync(path.join(skillSrc, 'SKILL.md'), path.join(skillDest, 'SKILL.md'));
+    console.log('✓ SKILL.md');
+    
+    const binDest = path.join(skillDest, 'bin');
+    fs.mkdirSync(binDest, { recursive: true });
+    fs.copyFileSync(path.join(skillSrc, 'bin', 'api-server.js'), path.join(binDest, 'api-server.js'));
+    fs.copyFileSync(path.join(skillSrc, 'bin', 'cli.js'), path.join(binDest, 'cli.js'));
+    console.log('✓ bin/');
+    
+    const configDest = path.join(skillDest, 'config');
+    fs.mkdirSync(configDest, { recursive: true });
+    fs.copyFileSync(path.join(skillSrc, 'config', 'ai-providers.json'), path.join(configDest, 'ai-providers.json'));
+    console.log('✓ config/');
+    
+    const srcDest = path.join(skillDest, 'src');
+    const srcDirs = ['core', 'consciousness', 'emotion', 'memory', 'self'];
+    for (const dir of srcDirs) {
+      const srcPath = path.join(skillSrc, 'src', dir);
+      if (fs.existsSync(srcPath)) {
+        const destPath = path.join(srcDest, dir);
+        fs.mkdirSync(destPath, { recursive: true });
+        const files = fs.readdirSync(srcPath);
+        for (const f of files) {
+          if (f.endsWith('.js')) {
+            fs.copyFileSync(path.join(srcPath, f), path.join(destPath, f));
+          }
+        }
+      }
+    }
+    console.log('✓ src/');
+    
+    if (fs.existsSync(path.join(skillSrc, 'public'))) {
+      copyDirRecursive(path.join(skillSrc, 'public'), path.join(skillDest, 'public'));
+      console.log('✓ public/');
+    }
+    
+    console.log(`\n✅ 安装完成!`);
+    console.log(`   路径: ${skillDest}`);
+    console.log(`\n💡 激活方式: 在 ${platform} 中输入 /heartflow`);
+    
+    return true;
+  } catch (e) {
+    console.log(`❌ 安装失败: ${e.message}`);
+    return false;
+  }
+}
+
 async function checkInternet() {
   return new Promise(resolve => {
     const req = http.get('http://www.baidu.com', (res) => {
       resolve(true);
     });
     req.on('error', () => resolve(false));
-    req.setTimeout(3000, () => { resolve(false); req.destroy(); });
+    req.setTimeout(3000, () => { req.destroy(); resolve(false); });
   });
 }
 
 async function testAPI(provider) {
-  const testMessage = "Hello";
-  let success = false;
-  let errorMsg = '';
-  
-  // Simple test - just check if endpoint is reachable
   return new Promise(resolve => {
-    const url = new URL(provider.baseUrl);
-    const options = {
-      hostname: url.hostname,
-      port: url.port || (url.protocol === 'https:' ? 443 : 80),
-      path: url.pathname + (provider.name === 'anthropic' ? '/messages' : '/models'),
-      method: 'GET',
-      headers: {
+    try {
+      const url = new URL(provider.baseUrl);
+      const isLocalProvider = ['ollama', 'lmstudio'].includes(provider.defaultProvider);
+      const headers = isLocalProvider ? { 'Content-Type': 'application/json' } : {
         'Authorization': `Bearer ${provider.apiKey}`,
         'Content-Type': 'application/json'
-      },
-      timeout: 10000
-    };
-    
-    const protocol = url.protocol === 'https:' ? https : http;
-    const req = protocol.request(options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        // For models endpoint, even 401 means endpoint is reachable
-        if (res.statusCode === 401 || res.statusCode === 200 || res.statusCode === 403) {
-          success = true;
-          errorMsg = 'API endpoint reachable';
-        } else {
-          errorMsg = `Status: ${res.statusCode}`;
-        }
-        resolve({ success, errorMsg });
+      };
+      
+      const options = {
+        hostname: url.hostname,
+        port: url.port || (url.protocol === 'https:' ? 443 : 80),
+        path: url.pathname + '/models',
+        method: 'GET',
+        headers: headers,
+        timeout: 10000
+      };
+      
+      const protocol = url.protocol === 'https:' ? https : http;
+      const req = protocol.request(options, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          const success = [200, 401, 403].includes(res.statusCode);
+          resolve({ success, errorMsg: success ? 'OK' : `Status: ${res.statusCode}` });
+        });
       });
-    });
-    
-    req.on('error', (e) => {
-      errorMsg = e.message;
-      resolve({ success: false, errorMsg });
-    });
-    
-    req.on('timeout', () => {
-      errorMsg = 'Connection timeout';
-      req.destroy();
-      resolve({ success: false, errorMsg });
-    });
-    
-    req.end();
+      
+      req.on('error', (e) => resolve({ success: false, errorMsg: e.message }));
+      req.on('timeout', () => { req.destroy(); resolve({ success: false, errorMsg: 'Timeout' }); });
+      req.end();
+    } catch (e) {
+      resolve({ success: false, errorMsg: e.message });
+    }
   });
 }
 
 async function setup() {
+  // Auto-detect and install as skill if in OpenClaw/OpenCode env
+  const platform = await detectPlatform();
+  
+  if (platform !== 'standalone') {
+    header('💜 HeartFlow Skill 安装');
+    await installAsSkill(platform);
+    rl.close();
+    return;
+  }
+  
+  // Normal setup wizard
   console.clear();
   header('💜 HeartFlow 交互式设置向导');
   
@@ -134,21 +252,13 @@ async function setup() {
     console.log(`     ${p.desc}\n`);
   });
   
-  const choice = await question('请输入编号 (1-11): ');
-  const selectedProvider = providers[parseInt(choice) - 1];
+  const choice = await question('请输入序号 (1-11): ');
+  const selectedProvider = providers[parseInt(choice) - 1] || providers[0];
   
-  if (!selectedProvider) {
-    log('无效选择，使用默认 OpenAI', 'yellow');
-    selectedProvider = providers[0];
-  }
+  console.log(`\n已选择: ${selectedProvider.name}\n`);
   
-  log(`已选择: ${selectedProvider.name}`, 'green');
-  
-  // Step 2: Get API Key
+  // Step 2: API Key
   header('步骤 2: 配置 API Key');
-  
-  console.log(`\n配置 ${selectedProvider.name} 需要 API Key。`);
-  console.log('获取地址:');
   
   const keyUrls = {
     openai: 'https://platform.openai.com/api-keys',
@@ -160,191 +270,122 @@ async function setup() {
     siliconflow: 'https://siliconflow.cn/api-keys',
     google: 'https://aistudio.google.com/app/apikey',
     xai: 'https://console.x.ai',
-    ollama: 'https://ollama.com',
-    lmstudio: 'https://lmstudio.ai'
+    ollama: 'https://ollama.com (本地运行，无需 API Key)',
+    lmstudio: 'https://lmstudio.ai (本地运行，无需 API Key)'
   };
   
-  console.log(`  ${keyUrls[selectedProvider.id] || '请自行搜索'}\n`);
+  const requiresApiKey = !['ollama', 'lmstudio'].includes(selectedProvider.id);
   
-  let apiKey = await question('请粘贴 API Key (或按回车跳过): ');
-  apiKey = apiKey.trim();
-  
-  if (!apiKey) {
-    log('未提供 API Key，将使用内置回复', 'yellow');
+  if (!requiresApiKey) {
+    console.log(`\n${selectedProvider.name} 是本地模型，无需 API Key。`);
+    console.log('确保已启动 Ollama 或 LM Studio，然后直接回车继续。\n');
   } else {
-    // Mask most of the key
-    const masked = apiKey.length > 8 
-      ? apiKey.substring(0, 4) + '...' + apiKey.substring(apiKey.length - 4) 
-      : '***';
-    log(`API Key: ${masked}`, 'green');
+    console.log(`\n配置 ${selectedProvider.name} 需要 API Key。`);
   }
   
-  // Step 3: Select Model
+  console.log(`获取地址: ${keyUrls[selectedProvider.id]}\n`);
+  
+  let apiKey = await question(requiresApiKey ? '请粘贴 API Key (或按回车跳过): ' : '按回车继续 (确保本地服务已启动): ');
+  apiKey = apiKey.trim();
+  
+  // Step 3: Model
   header('步骤 3: 选择模型');
   
   const models = {
     openai: [
-      { id: 'gpt-4o', name: 'GPT-4o (最新最强)' },
-      { id: 'gpt-4o-mini', name: 'GPT-4o mini (便宜快速)' },
-      { id: 'gpt-4-turbo', name: 'GPT-4 Turbo' }
+      { id: 'gpt-4o', name: 'GPT-4o', desc: '最新最强模型' },
+      { id: 'gpt-4o-mini', name: 'GPT-4o mini', desc: '性价比高' },
+      { id: 'gpt-4-turbo', name: 'GPT-4 Turbo', desc: '稳定可靠' }
     ],
     anthropic: [
-      { id: 'claude-sonnet-4-20250514', name: 'Claude Sonnet 4 (推荐)' },
-      { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet' },
-      { id: 'claude-3-opus-20240229', name: 'Claude 3 Opus' }
+      { id: 'claude-sonnet-4-20250514', name: 'Claude 4 Sonnet', desc: '最新版本' },
+      { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet', desc: '性价比高' }
     ],
     deepseek: [
-      { id: 'deepseek-chat', name: 'DeepSeek Chat (推荐)' },
-      { id: 'deepseek-coder', name: 'DeepSeek Coder' }
-    ],
-    moonshot: [
-      { id: 'kimi-k2.5', name: 'Kimi K2.5 (推荐)' },
-      { id: 'kimi-k2', name: 'Kimi K2' },
-      { id: 'kimi-k2-turbo', name: 'Kimi K2 Turbo' }
-    ],
-    qwen: [
-      { id: 'qwen-plus', name: 'Qwen Plus (推荐)' },
-      { id: 'qwen-turbo', name: 'Qwen Turbo' },
-      { id: 'qwen-long', name: 'Qwen Long (长文本)' }
-    ],
-    minimax: [
-      { id: 'MiniMax-M2.5', name: 'MiniMax M2.5 (推荐)' },
-      { id: 'MiniMax-Text-01', name: 'MiniMax Text 01' }
-    ],
-    siliconflow: [
-      { id: 'Qwen/Qwen2.5-72B-Instruct', name: 'Qwen 2.5 72B' },
-      { id: 'THUDM/glm-4-9b-chat', name: 'GLM-4 9B' },
-      { id: 'deepseek-ai/DeepSeek-V2-Chat', name: 'DeepSeek V2' }
-    ],
-    google: [
-      { id: 'gemini-2.0-flash-exp', name: 'Gemini 2.0 Flash (推荐)' },
-      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' },
-      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash' }
-    ],
-    xai: [
-      { id: 'grok-2-1212', name: 'Grok-2 (推荐)' },
-      { id: 'grok-beta', name: 'Grok Beta' }
+      { id: 'deepseek-chat', name: 'DeepSeek Chat', desc: '通用对话' },
+      { id: 'deepseek-coder', name: 'DeepSeek Coder', desc: '代码专用' }
     ],
     ollama: [
-      { id: 'llama3', name: 'Llama 3' },
-      { id: 'qwen2', name: 'Qwen 2' },
-      { id: 'mistral', name: 'Mistral' }
-    ],
-    lmstudio: [
-      { id: 'llama3.1', name: 'Llama 3.1' },
-      { id: 'qwen2.5', name: 'Qwen 2.5' }
+      { id: 'llama3', name: 'Llama 3', desc: 'Meta 开源模型' },
+      { id: 'qwen2', name: 'Qwen 2', desc: '阿里开源模型' },
+      { id: 'mistral', name: 'Mistral', desc: '欧洲开源模型' }
     ]
   };
   
-  const providerModels = models[selectedProvider.id] || [{ id: 'default', name: '默认模型' }];
+  const providerModels = models[selectedProvider.id] || [{ id: 'default', name: 'Default', desc: '默认模型' }];
   
   console.log('可选模型:\n');
   providerModels.forEach((m, i) => {
     console.log(`  ${i + 1}. ${m.name}`);
+    console.log(`     ${m.desc}\n`);
   });
   
-  const modelChoice = await question('请输入编号 (默认 1): ');
-  const selectedModel = providerModels[parseInt(modelChoice) || 1];
+  const modelChoice = await question('请输入序号: ');
+  const selectedModel = providerModels[parseInt(modelChoice) - 1] || providerModels[0];
   
-  log(`已选择: ${selectedModel.name}`, 'green');
+  console.log(`\n已选择: ${selectedModel.name}\n`);
   
-  // Step 4: Save Config
-  header('步骤 4: 保存配置');
-  
-  let config = {
-    enabled: !!apiKey,
-    defaultProvider: selectedProvider.id,
-    providers: {}
-  };
-  
+  // Save config
   const providerDefaults = {
-    openai: { baseUrl: 'https://api.openai.com/v1', maxTokens: 4096, temperature: 0.7 },
-    anthropic: { baseUrl: 'https://api.anthropic.com/v1', maxTokens: 4096, temperature: 0.7 },
-    deepseek: { baseUrl: 'https://api.deepseek.com/v1', maxTokens: 4096, temperature: 0.7 },
-    moonshot: { baseUrl: 'https://api.moonshot.ai/v1', maxTokens: 4096, temperature: 0.7 },
-    qwen: { baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', maxTokens: 4096, temperature: 0.7 },
-    minimax: { baseUrl: 'https://api.minimax.chat/v1/text/chatcompletion_v2', maxTokens: 4096, temperature: 0.7 },
-    siliconflow: { baseUrl: 'https://api.siliconflow.cn/v1', maxTokens: 4096, temperature: 0.7 },
-    google: { baseUrl: 'https://generativelanguage.googleapis.com/v1beta', maxTokens: 4096, temperature: 0.7 },
-    xai: { baseUrl: 'https://api.x.ai/v1', maxTokens: 4096, temperature: 0.7 },
-    ollama: { baseUrl: 'http://localhost:11434/v1', maxTokens: 4096, temperature: 0.7 },
-    lmstudio: { baseUrl: 'http://localhost:1234/v1', maxTokens: 4096, temperature: 0.7 }
+    openai: { baseUrl: 'https://api.openai.com/v1', timeout: 60000 },
+    anthropic: { baseUrl: 'https://api.anthropic.com', timeout: 60000 },
+    deepseek: { baseUrl: 'https://api.deepseek.com/v1', timeout: 60000 },
+    moonshot: { baseUrl: 'https://api.moonshot.cn/v1', timeout: 60000 },
+    qwen: { baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1', timeout: 60000 },
+    minimax: { baseUrl: 'https://api.minimax.chat/v1', timeout: 60000 },
+    siliconflow: { baseUrl: 'https://api.siliconflow.cn/v1', timeout: 60000 },
+    google: { baseUrl: 'https://generativelanguage.googleapis.com/v1', timeout: 60000 },
+    xai: { baseUrl: 'https://api.x.ai/v1', timeout: 60000 },
+    ollama: { baseUrl: 'http://localhost:11434', timeout: 30000 },
+    lmstudio: { baseUrl: 'http://localhost:1234/v1', timeout: 30000 }
   };
   
-  config.providers[selectedProvider.id] = {
-    enabled: !!apiKey,
-    apiKey: apiKey,
-    model: selectedModel.id,
-    ...providerDefaults[selectedProvider.id]
+  const config = {
+    enabled: true,
+    defaultProvider: selectedProvider.id,
+    providers: {
+      [selectedProvider.id]: {
+        enabled: true,
+        apiKey: requiresApiKey ? apiKey : '',
+        model: selectedModel.id,
+        ...providerDefaults[selectedProvider.id]
+      }
+    }
   };
-  
-  // Create config directory if needed
-  const configDir = path.dirname(CONFIG_PATH);
-  if (!fs.existsSync(configDir)) {
-    fs.mkdirSync(configDir, { recursive: true });
-  }
   
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
-  log('配置已保存!', 'green');
+  console.log('✓ 配置已保存\n');
   
-  // Step 5: Test Connection (if API key provided)
-  if (apiKey) {
-    header('步骤 5: 测试连接');
-    
-    log('正在测试 API 连接...', 'blue');
-    
+  // Step 4: Test
+  header('步骤 4: 测试连接');
+  
+  const hasInternet = await checkInternet();
+  if (hasInternet || !requiresApiKey) {
     const testResult = await testAPI(config.providers[selectedProvider.id]);
-    
     if (testResult.success) {
       log('✓ API 连接成功!', 'green');
     } else {
       log(`⚠ 连接测试: ${testResult.errorMsg}`, 'yellow');
-      log('可能原因: API Key 不正确或网络问题', 'yellow');
     }
   }
   
-  // Step 6: Start Server
-  header('步骤 6: 启动服务');
+  // Step 5: Start
+  header('💜 安装完成!');
   
-  console.log('\n配置完成！选择启动方式:\n');
-  console.log('  1. 启动 API 服务器 (推荐)');
-  console.log('  2. 启动并打开 Web 界面');
-  console.log('  3. 仅测试对话');
-  console.log('  4. 退出\n');
+  console.log('\n  1. 启动 API 服务器 (推荐)');
+  console.log('  2. 退出\n');
   
-  const startChoice = await question('请输入选择 (1-4): ');
+  const startChoice = await question('请选择: ');
   
-  switch (startChoice) {
-    case '1':
-      log('\n启动 API 服务器...', 'blue');
-      console.log('  访问: http://localhost:3456');
-      console.log('  API:  http://localhost:3456/api/chat\n');
-      break;
-    case '2':
-      log('\n启动并打开浏览器...', 'blue');
-      execSync('start http://localhost:3456/chat', { shell: true });
-      break;
-    case '3':
-      console.log('\n测试对话模式 (输入 exit 退出):\n');
-      while (true) {
-        const msg = await question('你: ');
-        if (msg.toLowerCase() === 'exit') break;
-        console.log('HeartFlow: (请启动服务器使用 AI 对话)');
-      }
-      break;
-    default:
-      console.log('\n配置已保存，可以手动启动:');
-      console.log('  node bin/api-server.js');
+  if (startChoice === '1') {
+    console.log('\n启动服务器...\n');
+    execSync('node bin/api-server.js', { stdio: 'inherit' });
   }
-  
-  console.log('\n' + '═'.repeat(60));
-  log('设置完成！感谢使用 HeartFlow', 'green');
-  console.log('═'.repeat(60) + '\n');
   
   rl.close();
 }
 
 setup().catch(e => {
-  console.error('设置失败:', e.message);
+  console.error('Error:', e.message);
   rl.close();
 });

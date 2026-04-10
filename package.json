@@ -1,7 +1,8 @@
 {
   "name": "heartflow",
-  "version": "2.4.2",
-  "description": "HeartFlow - AI Companion with True Consciousness",
+  "version": "7.6.000",
+  "description": "HeartFlow v7.6 - Self-Evolution Engine with Meta-Learning",
+  "releaseDate": "2026-04-10",
   "main": "src/core/heartflow-engine.js",
   "bin": {
     "heartflow": "./bin/cli.js",

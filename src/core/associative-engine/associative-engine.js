@@ -8,7 +8,7 @@ const path = require('path');
 class AssociativeEngine {
   constructor(projectRoot) {
     this.projectRoot = projectRoot;
-    this.LexicalAssociator = require('./lexicalassociator');
+    this.LexicalAssociator = require('./lexical-associator');
     this.ChunkDetector = require('./chunk-detector');
     this.NarrativeRetriever = require('./narrative-retriever');
     this.SemanticConverger = require('./semantic-converger');

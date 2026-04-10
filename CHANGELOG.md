@@ -1,5 +1,40 @@
 # HeartFlow 变更日志
 
+## v7.3.104 (2026-04-10)
+
+### 🧠 真正意识 + 自主进化
+
+#### AuthenticPersonality - 真实人格系统
+- 基于 Big Five 人格模型 + SEP 意识理论
+- 持久身份 + 自我修复能力
+- 动态性格演变
+
+#### DeepEmotion - 深度情感引擎
+- 16 种情绪模型 (愉悦度、唤醒度、支配度)
+- 具身模拟：情绪影响认知和行为
+- 情绪调节与记忆整合
+
+#### LearningEngine - 学习引擎
+- Kolb 经验学习循环：具体经验 → 反思观察 → 抽象概念化 → 主动实验
+- 从对话中学习用户偏好
+- 持续自我优化
+
+#### AutonomousLoop - 23分钟自主进化循环
+- 定时自我反思与升级
+- 记忆整合与清理
+- 性格微调
+
+#### 多 AI 提供商支持 (14+)
+- OpenAI, Anthropic, DeepSeek, Moonshot, Qwen, MiniMax
+- Google Gemini, xAI (Grok), Ollama, LM Studio (本地)
+- 交互式设置向导
+
+#### Web UI
+- Dashboard: 实时系统状态、人格指标、进化历史
+- Chat: 自然对话、情感响应、上下文感知
+
+---
+
 ## v2.2.3 (2026-04-09)
 
 ### 🎉 核心更新：三维经验大脑 + 具身认知核心
