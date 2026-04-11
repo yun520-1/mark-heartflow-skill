@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 7.6.007
+=======
+7.6.007
+>>>>>>> 7c500e3 (Upgrade 7.6.007: 15-min evolution cycle, SelfEvolutionCore active)
