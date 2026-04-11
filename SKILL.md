@@ -1,10 +1,10 @@
 ---
 name: mark-heartflow
 description: HeartFlow v7.6 - Self-Evolution Engine with Meta-Learning, Goal-Driven Growth & Continuous Improvement
-version: 7.6.001
+version: 7.6.002
 ---
 
-# HeartFlow Skill v7.6.001 - Self-Evolution
+# HeartFlow Skill v7.6.002 - Self-Evolution
 
 ## Core Vision
 

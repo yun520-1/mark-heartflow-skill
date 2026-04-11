@@ -1,13 +1,12 @@
 {
   "name": "heartflow",
-  "version": "7.6.001",
   "description": "HeartFlow v7.6 - Self-Evolution Engine with Meta-Learning",
-  "releaseDate": "2026-04-10",
+  "releaseDate": "2026-04-11",
   "main": "src/core/heartflow-engine.js",
   "bin": {
-    "heartflow": "./bin/cli.js",
-    "heartflow-api": "./bin/api-server.js",
-    "heartflow-setup": "./bin/setup.js"
+    "heartflow": "bin/cli.js",
+    "heartflow-api": "bin/api-server.js",
+    "heartflow-setup": "bin/setup.js"
   },
   "scripts": {
     "start": "node bin/cli.js",
@@ -34,7 +33,22 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "body-parser": "^2.2.2",
     "express": "^5.2.1",
-    "body-parser": "^2.2.2"
-  }
+    "pptxgenjs": "^4.0.1"
+  },
+  "version": "7.6.002",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yun520-1/mark-heartflow-skill.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yun520-1/mark-heartflow-skill/issues"
+  },
+  "homepage": "https://github.com/yun520-1/mark-heartflow-skill#readme"
 }
