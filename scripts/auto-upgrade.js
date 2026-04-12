@@ -29,8 +29,8 @@ function getCurrentVersion() {
 function parseVersion(versionStr) {
   const parts = versionStr.split('.');
   return {
-    major: parseInt(parts[0]) || 7,
-    minor: parseInt(parts[1]) || 6,
+    major: parseInt(parts[0]) || 0,
+    minor: parseInt(parts[1]) || 0,
     patch: parseInt(parts[2]) || 0
   };
 }
