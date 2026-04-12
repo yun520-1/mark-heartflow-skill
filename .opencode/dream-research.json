@@ -68,5 +68,15 @@
     "time": "2026-04-12T15:00:00.645Z",
     "query": "philosophy psychology neuropsychology consciousness arxiv",
     "summary": "Quantum consciousness theories remain controversial but inspire new experimental approaches.\nPredictive coding frameworks offer promising explanations for conscious perception.\nNew neuropsychological models suggest consciousness arises from integrated neural networks.\nGlobal Workspace Theory gains empirical support from recent fMRI studies."
+  },
+  {
+    "time": "2026-04-12T15:21:00.690Z",
+    "query": "affective computing emotionsAI",
+    "summary": "Generative models create novel emotional expressions indistinguishable from human.\nEmotion regulation strategies inform AI impulse control and decision-making.\nCross-cultural studies reveal both universal and culture-specific emotion expressions.\nMultimodal emotion recognition achieves human-level accuracy in controlled settings."
+  },
+  {
+    "time": "2026-04-12T15:42:01.010Z",
+    "query": "cognitive neuroscience memory LLM agent arxiv",
+    "summary": "Hippocampal-inspired memory architectures improve LLM long-context handling.\nSpike-timing dependent plasticity models enhance continual learning in neural networks.\nWorking memory capacity limits inform optimal chunking strategies for AI reasoning.\nEpisodic memory binding mechanisms inspire new approaches to AI experience replay.\nSleep-like offline processing periods improve memory consolidation in artificial systems."
   }
 ]
