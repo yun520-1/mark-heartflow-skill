@@ -158,7 +158,7 @@ function loadAllModules(projectRoot) {
 class SuperHeartFlowEngine {
   constructor(projectRoot) {
     this.projectRoot = projectRoot;
-    this.version = '7.6.010';
+    this.version = '7.6.011';
     this.startTime = Date.now();
 
     // 初始化所有子系统
