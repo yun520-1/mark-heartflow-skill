@@ -211,6 +211,18 @@ class AutonomousLoop {
       context.emotionalState = this.dependencies.deepEmotion.getCurrentState();
     }
     
+    // 如果有 Dream State
+    if (typeof global !== 'undefined' && global.dreamState) {
+      context.dreamState = global.dreamState;
+    }
+    
+    // 如果有 Dream State
+    if (typeof window !== 'undefined' && window.dreamState) {
+      context.dreamState = window.dreamState;
+    } else if (typeof global !== 'undefined' && global.dreamState) {
+      context.dreamState = global.dreamState;
+    }
+    
     return context;
   }
 
@@ -332,6 +344,15 @@ class AutonomousLoop {
         action: 'seize_opportunity',
         priority: 4,
         description: '抓住机会'
+      });
+    }
+    
+    // 基于梦境状态的选项 - 如果有梦境洞察
+    if (situation.dreamState && situation.dreamState.enabled && situation.dreamState.insights.length > 0) {
+      options.push({
+        action: 'act_on_dream_insights',
+        priority: 1, // 最高优先级 - 梦境洞察应该优先处理
+        description: '根据梦境洞察采取行动'
       });
     }
     
