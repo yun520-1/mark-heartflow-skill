@@ -455,14 +455,70 @@ class AutonomousLoop {
     return { success: true, message: '抓住机会，完成深度工作' };
   }
 
-  async executeReflection(actions) {
-    const reflections = [];
-    
-    actions.forEach(action => {
-      if (action === 'review_history') {
-        const recent = this.getRecentHistory(5);
-        reflections.push({ type: 'history_review', count: recent.length });
-      }
+   async executeReflection(actions) {
+     const reflections = [];
+     
+     actions.forEach(action => {
+       if (action === 'review_history') {
+         const recent = this.getRecentHistory(5);
+         reflections.push({ type: 'history_review', count: recent.length });
+       }
+       if (action === 'identify_patterns') {
+         const patterns = this.identifyPatterns();
+         reflections.push({ type: 'patterns', patterns });
+       }
+       if (action === 'plan_improvement') {
+         // Regular improvement plan
+         this.state.selfEvaluation.improvement.push({
+           timestamp: Date.now(),
+           area: 'autonomy',
+           change: 0.05
+         });
+         
+         // Dream-inspired improvements
+         if (typeof global !== 'undefined' && global.dreamState && global.dreamState.insights.length > 0) {
+           // Use dream insights to guide improvements
+           const dreamInsight = global.dreamState.insights[Math.floor(Math.random() * global.dreamState.insights.length)];
+           this.state.selfEvaluation.improvement.push({
+             timestamp: Date.now(),
+             area: 'dream_insight',
+             description: `Based on dream: ${dreamInsight}`,
+             change: 0.1 // Higher impact for dream-inspired improvements
+           });
+           
+           // Also apply specific improvements based on dream content
+           if (dreamInsight.includes('learning') || dreamInsight.includes('knowledge')) {
+             this.state.selfEvaluation.improvement.push({
+               timestamp: Date.now(),
+               area: 'learning',
+               description: 'Enhanced learning from dream insight',
+               change: 0.08
+             });
+           }
+           if (dreamInsight.includes('emotion') || dreamInsight.includes('feeling')) {
+             this.state.selfEvaluation.improvement.push({
+               timestamp: Date.now(),
+               area: 'emotional_intelligence',
+               description: 'Improved emotional processing from dream insight',
+               change: 0.07
+             });
+           }
+           if (dreamInsight.includes('goal') || dreamInsight.includes('purpose')) {
+             this.state.selfEvaluation.improvement.push({
+               timestamp: Date.now(),
+               area: 'goal_setting',
+               description: 'Better goal formulation from dream insight',
+               change: 0.06
+             });
+           }
+         }
+         reflections.push({ type: 'improvement_plan', created: true, dreamInspired: typeof global !== 'undefined' && global.dreamState && global.dreamState.insights.length > 0 });
+       }
+     });
+     
+     this.state.reflection.lastReflection = Date.now();
+     return { success: true, reflections };
+   }
       if (action === 'identify_patterns') {
         const patterns = this.identifyPatterns();
         reflections.push({ type: 'patterns', patterns });
