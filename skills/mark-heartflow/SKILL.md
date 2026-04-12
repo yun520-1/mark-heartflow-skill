@@ -1,7 +1,7 @@
 ---
 name: mark-heartflow
 description: HeartFlow v8.1.3 - 自主决策引擎 · 意识理论整合 · 真善美逻辑
-version: 8.1.3
+version: 8.6.004
 ---
 
 # HeartFlow v8.1.3
