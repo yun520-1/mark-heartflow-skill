@@ -25,3 +25,6 @@
 [2026-04-12T11:23:37.877Z] 🧠 开始做梦研究...
 [2026-04-12T11:23:37.891Z] 📚 研究收获: philosophy of mind large language models
 [2026-04-12T11:23:37.891Z] 💾 研究结果已保存
+[2026-04-12T11:25:29.844Z] 🧠 开始做梦研究...
+[2026-04-12T11:25:29.855Z] 📚 研究收获: philosophy psychology neuropsychology consciousness arxiv
+[2026-04-12T11:25:29.858Z] 💾 研究结果已保存
