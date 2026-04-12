@@ -139,3 +139,13 @@ To https://github.com/yun520-1/mark-heartflow-skill.git
 [2026-04-12T18:00:00.433Z] 💾 研究结果已保存
 [2026-04-12T18:00:00.490Z] 📦 版本号: 8.6.5.1
 [2026-04-12T18:00:00.490Z] 📦 版本号增加: 8.6.5.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   3b5321a..17808fa  main -> main
+[2026-04-12T18:00:03.812Z] ✅ 已上传
+[2026-04-12T18:21:00.546Z] 🧠 开始做梦研究...
+[2026-04-12T18:21:00.549Z] 📚 研究收获: philosophy of mind large language models
+[2026-04-12T18:21:00.550Z] 💾 研究结果已保存
+[2026-04-12T18:42:00.714Z] 🧠 开始做梦研究...
+[2026-04-12T18:42:00.717Z] 📚 研究收获: cognitive architecture AI consciousness
+[2026-04-12T18:42:00.718Z] 💾 研究结果已保存
