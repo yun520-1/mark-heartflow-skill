@@ -111,10 +111,10 @@ function pushToGitHub() {
 function installCron() {
   const cronContent = `# HeartFlow Dream Mode 定时任务
 # 每 21 分钟 - 做梦研究
-*/21 * * * * cd ${WORK_DIR} && node .opencode/dream-mode.js research >> .opencode/dream-log.txt 2>&1
+*/21 * * * * cd ${WORK_DIR} && /opt/homebrew/bin/node .opencode/dream-mode.js research >> .opencode/dream-log.txt 2>&1
 
 # 每小时 - 打包上传
-0 * * * * cd ${WORK_DIR} && node .opencode/dream-mode.js push >> .opencode/dream-log.txt 2>&1
+0 * * * * cd ${WORK_DIR} && /opt/homebrew/bin/node .opencode/dream-mode.js push >> .opencode/dream-log.txt 2>&1
 `;
   fs.writeFileSync(CRON_FILE, cronContent);
   log(`✅ 已创建 ${CRON_FILE}`);
