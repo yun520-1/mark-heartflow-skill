@@ -393,75 +393,37 @@ class AutonomousLoop {
         };
       },
       
-      set_goals: () => ({
-        type: 'goal_setting',
-        goals: [
-          { name: '深化学习', target: 'knowledge' },
-          { name: '提升能力', target: 'competence' }
-        ]
-      }),
-      
-      learn: async () => {
-        if (!this.dependencies.learningEngine) return null;
-        return {
-          type: 'learning',
-          action: 'explore_new_topic'
-        };
-      },
-      
-      seize_opportunity: () => ({
-        type: 'opportunity',
-        action: 'deep_work'
-      }),
-      
-      self_reflect: () => ({
-        type: 'reflection',
-        actions: ['review_history', 'identify_patterns', 'plan_improvement']
-      })
-    };
-    
-    const planFn = plans[decision.choice.action];
-    return planFn ? await planFn() : null;
-  }
-
-  /**
-   * 4. 执行
-   */
-  async execute(plan) {
-    if (!plan) {
-      return { success: true, message: '无计划需要执行' };
-    }
-    
-    switch (plan.type) {
-      case 'sequential':
-        return await this.executeSequential(plan.steps);
-      
-      case 'goal_setting':
-        return await this.executeGoalSetting(plan.goals);
-      
-      case 'learning':
-        return await this.executeLearning(plan);
-      
-      case 'opportunity':
-        return await this.executeOpportunity(plan);
-      
-      case 'reflection':
-        return await this.executeReflection(plan.actions);
-      
-      default:
-        return { success: true, message: '计划执行完成' };
-    }
-  }
-
-  async executeSequential(steps) {
-    const results = [];
-    
-    for (const step of steps) {
-      if (step.action === 'execute_commitment' && this.dependencies.actionTracker) {
-        const result = this.dependencies.actionTracker.execute(step.commitmentId, {
-          success: true,
-          thoroughness: 0.8
-        });
+       set_goals: () => ({
+         type: 'goal_setting',
+         goals: [
+           { name: '深化学习', target: 'knowledge' },
+           { name: '提升能力', target: 'competence' }
+         ]
+       }),
+       
+       learn: async () => {
+         if (!this.dependencies.learningEngine) return null;
+         return {
+           type: 'learning',
+           action: 'explore_new_topic'
+         };
+       },
+       
+       seize_opportunity: () => ({
+         type: 'opportunity',
+         description: '抓住当前机会'
+       }),
+       
+       act_on_dream_insights: () => ({
+         type: 'dream_insight_action',
+         description: '根据梦境洞察采取具体行动'
+       }),
+       
+       self_reflect: () => ({
+         type: 'reflection',
+         actions: ['review_history', 'identify_patterns', 'plan_improvement']
+       })
+     };
         results.push(result);
       }
     }
