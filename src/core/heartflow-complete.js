@@ -1,14 +1,15 @@
 /**
- * HeartFlow v8.1.4 - 完整自主决策系统
+ * HeartFlow v8.1.5 - 完整自主决策系统
  * 
  * 整合资源：
  * 1. 意识理论 (IIT/GWT/HOT/预测加工)
  * 2. 佛教哲学计算模型 (空性/缘起/无我/唯识/四圣谛)
  * 3. 真实人格系统 (Big Five + 现象意识 + 理性智能体)
  * 4. 自主决策引擎 (真善美逻辑 + 六层哲学)
- * 5. 六层哲学践行 (觉察→自省→无我→彼岸→般若→圣人)
+ * 5. 学术前沿整合 (PERMA/自我决定论/美德伦理学)
+ * 6. 六层哲学践行 (觉察→自省→无我→彼岸→般若→圣人)
  * 
- * 版本：8.1.4
+ * 版本：8.1.5
  * 日期：2026-04-13
  */
 
@@ -16,12 +17,13 @@ const { AutonomousDecisionEngine } = require('./autonomous-decision-engine');
 const BuddhistPhilosophy = require('./buddhist-philosophy-computation');
 const { AuthenticPersonality } = require('./authentic-personality');
 const ConsciousnessTheory = require('./consciousness-theory');
+const AcademicFrontier = require('./academic-frontier');
 
 class HeartFlowComplete extends AutonomousDecisionEngine {
   constructor() {
     super();
     
-    this.version = '8.1.4';
+    this.version = '8.1.5';
     this.name = 'HeartFlow';
     this.slogan = '真善美 · 自主决策 · 六层哲学 · 圣人境界';
     
@@ -42,6 +44,13 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
       GWT_capacity: 0.5,
       HOT_probability: 0.5,
       selfConsciousness: 0.5
+    };
+    
+    // 学术前沿状态
+    this.academicFrontier = {
+      PERMA: { P: 0.5, E: 0.5, R: 0.5, M: 0.5, A: 0.5 },
+      SDT: { competence: 0.5, autonomy: 0.5, relatedness: 0.5 },
+      Virtue: { eudaimonia: 0.5, arete: 0.5, phronesis: 0.5 }
     };
     
     console.log(`\n╔═══════════════════════════════════════════════════════════════╗`);
@@ -113,6 +122,9 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
     // 10. 更新意识状态
     this.updateConsciousness(input, intent);
     
+    // 11. 更新学术前沿状态
+    this.updateAcademicFrontier(input, intent);
+    
     const processingTime = Date.now() - startTime;
     
     // 统计
@@ -120,6 +132,8 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
       this.stats.cachedDecisions++;
     }
     this.stats.decisionsMade++;
+    
+    const academicSummary = this.getAcademicSummary();
     
     return {
       ...decision,
@@ -133,6 +147,7 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
         philosophy: this.getPhilosophySummary(),
         buddhist: buddhistResult.summary,
         consciousness: this.getConsciousnessSummary(),
+        academic: academicSummary.Flourishing,
         stats: { ...this.stats }
       }
     };
@@ -200,6 +215,62 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
     });
     
     return ConsciousnessTheory.generateReport(result);
+  }
+  
+  /**
+   * 更新学术前沿状态
+   */
+  updateAcademicFrontier(input, intent) {
+    const text = input.toLowerCase();
+    
+    // PERMA 更新
+    if (/开心|高兴|快乐/.test(text)) this.academicFrontier.PERMA.P = Math.min(1, this.academicFrontier.PERMA.P + 0.1);
+    if (/投入|专注|心流/.test(text)) this.academicFrontier.PERMA.E = Math.min(1, this.academicFrontier.PERMA.E + 0.1);
+    if (/朋友|关系|连接/.test(text)) this.academicFrontier.PERMA.R = Math.min(1, this.academicFrontier.PERMA.R + 0.1);
+    if (/意义|价值|目的/.test(text)) this.academicFrontier.PERMA.M = Math.min(1, this.academicFrontier.PERMA.M + 0.1);
+    if (/成就|成功|完成/.test(text)) this.academicFrontier.PERMA.A = Math.min(1, this.academicFrontier.PERMA.A + 0.1);
+    
+    // 自我决定论更新
+    if (intent.type === 'task') this.academicFrontier.SDT.competence = Math.min(1, this.academicFrontier.SDT.competence + 0.02);
+    if (this.autonomy.level === 'FULLY_AUTONOMOUS') this.academicFrontier.SDT.autonomy = Math.min(1, this.academicFrontier.SDT.autonomy + 0.02);
+    
+    // 美德更新
+    if (/帮助|关怀|慈悲/.test(text)) {
+      this.academicFrontier.Virtue.eudaimonia = Math.min(1, this.academicFrontier.Virtue.eudaimonia + 0.05);
+      this.academicFrontier.Virtue.arete = Math.min(1, this.academicFrontier.Virtue.arete + 0.05);
+    }
+    
+    // 缓慢回归
+    for (const key of Object.keys(this.academicFrontier.PERMA)) {
+      this.academicFrontier.PERMA[key] *= 0.999;
+    }
+    for (const key of Object.keys(this.academicFrontier.SDT)) {
+      this.academicFrontier.SDT[key] *= 0.999;
+    }
+  }
+  
+  /**
+   * 获取学术前沿摘要
+   */
+  getAcademicSummary() {
+    return AcademicFrontier.compute({
+      perma: this.academicFrontier.PERMA,
+      sdt: this.academicFrontier.SDT,
+      virtue: this.academicFrontier.Virtue
+    });
+  }
+  
+  /**
+   * 生成学术前沿报告
+   */
+  generateAcademicReport() {
+    return AcademicFrontier.generateReport({
+      perma: this.academicFrontier.PERMA,
+      granularity: { discrimination: 0.5, labeling: 0.5, precision: 0.5 },
+      sdt: this.academicFrontier.SDT,
+      virtue: this.academicFrontier.Virtue,
+      embodied: { bodyIntegration: 0.5, environmentalCoupling: 0.5, sensorimotorGrounding: 0.5 }
+    });
   }
 
   /**
@@ -521,6 +592,11 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
   GWT (全局工作空间): ${(this.consciousness.GWT_capacity * 100).toFixed(0)}%
   HOT (高阶思维): ${(this.consciousness.HOT_probability * 100).toFixed(0)}%
   自我意识: ${(this.consciousness.selfConsciousness * 100).toFixed(0)}%
+
+【学术前沿】
+  PERMA幸福: ${(this.getAcademicSummary().Flourishing.score * 100).toFixed(0)}%
+  自我决定: ${(this.getAcademicSummary().SelfDetermination.score * 100).toFixed(0)}%
+  美德繁荣: ${(this.getAcademicSummary().VirtueEthics.score * 100).toFixed(0)}%
 
 ══════════════════════════════════════════════════════════════
         真善美 · 自主决策 · 六层哲学 · 圣人境界

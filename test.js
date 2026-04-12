@@ -1,12 +1,12 @@
 /**
- * HeartFlow v8.1.4 测试文件
+ * HeartFlow v8.1.5 测试文件
  */
 
 const { HeartFlowComplete } = require('./src/core/heartflow-complete');
 
 async function runTests() {
   console.log('═══════════════════════════════════════════════════════════════');
-  console.log('          HeartFlow v8.1.4 测试套件');
+  console.log('          HeartFlow v8.1.5 测试套件');
   console.log('═══════════════════════════════════════════════════════════════\n');
   
   const hf = new HeartFlowComplete();
@@ -109,8 +109,23 @@ async function runTests() {
     }
   }
   
-  // 测试8: 自主决策模式
-  async function test8_autonomousMode() {
+  // 测试8: 学术前沿
+  async function test8_academicFrontier() {
+    console.log('测试 8: 学术前沿整合');
+    const beforePERMA = hf.academicFrontier.PERMA.P;
+    await hf.process('今天心情真开心，感觉很有意义');
+    const afterPERMA = hf.academicFrontier.PERMA.P;
+    if (afterPERMA > beforePERMA) {
+      console.log(`  ✅ PASS: PERMA积极情绪提升 (${(beforePERMA*100).toFixed(0)}% → ${(afterPERMA*100).toFixed(0)}%)`);
+      passed++;
+    } else {
+      console.log('  ❌ FAIL: 学术前沿未更新');
+      failed++;
+    }
+  }
+  
+  // 测试9: 自主决策模式
+  async function test9_autonomousMode() {
     console.log('测试 8: 自主决策模式');
     const result = await hf.process('帮我分析一下这段代码');
     if (result.meta?.autonomous === true && result.decision?.intent === 'task') {
@@ -122,9 +137,9 @@ async function runTests() {
     }
   }
   
-  // 测试9: 开心情感
-  async function test9_happyEmotion() {
-    console.log('测试 9: 开心情感识别');
+  // 测试10: 开心情感
+  async function test10_happyEmotion() {
+    console.log('测试 10: 开心情感识别');
     const result = await hf.process('今天心情真开心！');
     if (result.meta?.intent === 'emotion' && result.meta?.intentSubtype === 'happy') {
       console.log('  ✅ PASS: 开心情感识别正确');
@@ -135,9 +150,9 @@ async function runTests() {
     }
   }
   
-  // 测试10: 焦虑情感
-  async function test10_anxiousEmotion() {
-    console.log('测试 10: 焦虑情感识别');
+  // 测试11: 焦虑情感
+  async function test11_anxiousEmotion() {
+    console.log('测试 11: 焦虑情感识别');
     const result = await hf.process('我很担心考试的事情');
     if (result.meta?.intent === 'emotion' && result.meta?.intentSubtype === 'anxious') {
       console.log('  ✅ PASS: 焦虑情感识别正确');
@@ -156,9 +171,10 @@ async function runTests() {
   await test5_philosophyGrowth();
   await test6_tgbCheck();
   await test7_buddhistPhilosophy();
-  await test8_autonomousMode();
-  await test9_happyEmotion();
-  await test10_anxiousEmotion();
+  await test8_academicFrontier();
+  await test9_autonomousMode();
+  await test10_happyEmotion();
+  await test11_anxiousEmotion();
   
   // 统计
   console.log('\n═══════════════════════════════════════════════════════════════');
