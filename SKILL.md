@@ -1,10 +1,10 @@
 ---
 name: mark-heartflow
-description: HeartFlow v8.0 - 自主决策引擎 · 真善美逻辑 · 六层哲学践行
-version: 8.6.003
+description: HeartFlow v8.1.01 - 自主决策引擎 · 真善美逻辑 · 六层哲学践行
+version: 8.1.01
 ---
 
-# HeartFlow v8.0 - 自主决策系统
+# HeartFlow v8.1.01 - 自主决策系统
 
 **从"它"走向"我" - From "it" to "I"**
 

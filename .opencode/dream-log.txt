@@ -91,3 +91,23 @@ To https://github.com/yun520-1/mark-heartflow-skill.git
 [2026-04-12T16:00:01.008Z] 💾 研究结果已保存
 [2026-04-12T16:00:01.096Z] 📦 版本号: 8.6.3.1
 [2026-04-12T16:00:01.096Z] 📦 版本号增加: 8.6.3.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/yun520-1/mark-heartflow-skill.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+[2026-04-12T16:00:03.830Z] ⚠️ 上传失败: Command failed: git push origin main
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/yun520-1/mark-heartflow-skill.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+

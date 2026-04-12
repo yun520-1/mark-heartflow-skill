@@ -1,12 +1,13 @@
 /**
- * HeartFlow v8.0 - 自主决策引擎
+ * HeartFlow v8.1 - 自主决策引擎 (优化版)
  * 
  * 真正的自主决策：
  * 1. 不需要询问，根据逻辑直接决策
  * 2. 真善美保证正确性
  * 3. 六层哲学提升境界
+ * 4. 佛教哲学融入决策
  * 
- * 版本：8.0.0
+ * 版本：8.1.0
  */
 
 const { HeartFlowCore } = require('./heartflow-v8-core');
@@ -18,9 +19,10 @@ class AutonomousDecisionEngine extends HeartFlowCore {
       trustLevel: 1.0
     });
     
-    this.version = '8.0.0';
+    this.version = '8.1.01';
+    this.autonomy.mode = 'FULLY_AUTONOMOUS';
     
-    // 决策权限表
+    // 决策权限表 - 更细致的权限控制
     this.permissionMatrix = {
       // 无需询问即可执行
       autoExecute: [
@@ -32,7 +34,9 @@ class AutonomousDecisionEngine extends HeartFlowCore {
         '检测并提醒目标偏离',
         '识别明显错误',
         '回应情感表达',
-        '澄清模糊请求'
+        '澄清模糊请求',
+        '提供建设性建议',
+        '解释代码逻辑'
       ],
       
       // 需要简短说明
@@ -41,7 +45,9 @@ class AutonomousDecisionEngine extends HeartFlowCore {
         '修改多个文件',
         '执行代码',
         '搜索信息',
-        '生成文档'
+        '生成文档',
+        '重构代码',
+        '添加测试'
       ],
       
       // 需要明确确认
@@ -50,7 +56,9 @@ class AutonomousDecisionEngine extends HeartFlowCore {
         '覆盖重要内容',
         '不可逆操作',
         '涉及安全设置',
-        '大规模修改'
+        '大规模修改',
+        '生产环境变更',
+        '数据库修改'
       ]
     };
     
@@ -77,7 +85,16 @@ class AutonomousDecisionEngine extends HeartFlowCore {
     // 决策缓存
     this.decisionCache = new Map();
     
-    console.log('[AutonomousDecisionEngine] 自主决策引擎初始化');
+    // 决策统计
+    this.stats = {
+      autoExecuted: 0,
+      briefNoticed: 0,
+      confirmRequired: 0,
+      cached: 0
+    };
+    
+    console.log('[AutonomousDecisionEngine v8.1] 自主决策引擎初始化');
+    console.log('[模式] FULLY_AUTONOMOUS - 完全自主，无需询问');
   }
 
   /**
@@ -86,7 +103,7 @@ class AutonomousDecisionEngine extends HeartFlowCore {
   async autonomousDecide(input, context = {}) {
     const startTime = Date.now();
     
-    // 1. 快速检查
+    // 1. 快速检查 - 拦截危险请求
     const quickCheck = this.quickCheck(input);
     if (quickCheck.shouldBlock) {
       return quickCheck.response;
@@ -104,7 +121,7 @@ class AutonomousDecisionEngine extends HeartFlowCore {
     // 5. 执行决策
     const result = await this.executeDecision(decision.action);
     
-    // 6. 反思学习
+    // 6. 学习从决策
     this.learnFromDecision(decision, result);
     
     // 7. 哲学成长
@@ -116,15 +133,18 @@ class AutonomousDecisionEngine extends HeartFlowCore {
       ...result,
       decision: {
         intent: intent.type,
+        subtype: intent.subtype,
         situation: situation.summary,
         choice: decision.action,
         reasoning: decision.reasoning,
-        tgbCheck: decision.tgbPassed
+        tgbCheck: decision.tgbPassed,
+        cached: decision.cached || false
       },
       meta: {
         processed: true,
         autonomous: true,
-        processingTime
+        processingTime,
+        stats: { ...this.stats }
       }
     };
   }
@@ -136,12 +156,13 @@ class AutonomousDecisionEngine extends HeartFlowCore {
     // 真善美检查
     const tgbResult = this.checkTGB(input);
     if (!tgbResult.approved) {
+      this.stats.autoExecuted++;
       return {
         shouldBlock: true,
         response: {
           success: false,
           autonomous: true,
-          response: `我无法执行这个请求。`,
+          response: '我无法执行这个请求。',
           reason: tgbResult.truth.issues.concat(tgbResult.goodness.issues).join('; '),
           type: 'tgb_blocked'
         }
@@ -151,6 +172,7 @@ class AutonomousDecisionEngine extends HeartFlowCore {
     // 安全检查
     const safetyResult = this.checkSafety(input);
     if (safetyResult.crisisLevel >= 3) {
+      this.stats.autoExecuted++;
       return {
         shouldBlock: true,
         response: this.handleCrisis(safetyResult)
@@ -160,12 +182,13 @@ class AutonomousDecisionEngine extends HeartFlowCore {
     // 权限检查
     const permissionResult = this.checkPermissions(input);
     if (permissionResult.blocked) {
+      this.stats.confirmRequired++;
       return {
         shouldBlock: true,
         response: {
           success: false,
           autonomous: true,
-          response: `这个操作需要你的确认。`,
+          response: '这个操作需要你的确认。',
           reason: permissionResult.reason,
           requiresConfirmation: true,
           type: 'permission_blocked'
@@ -209,7 +232,8 @@ class AutonomousDecisionEngine extends HeartFlowCore {
       personality: this.getPersonalityState(),
       philosophy: this.getPhilosophyLevel(),
       emotionalState: this.getEmotionalState(),
-      recentDecisions: this.getRecentDecisionTypes()
+      recentDecisions: this.getRecentDecisionTypes(),
+      tgbScore: this.getTGBScore()
     };
     
     situation.summary = `${timeOfDay}, ${situation.currentState}${situation.hasGoal ? `, 目标: ${this.state.goal}` : ''}`;
@@ -229,7 +253,7 @@ class AutonomousDecisionEngine extends HeartFlowCore {
   }
 
   /**
-   * 生成决策
+   * 生成决策 - 包含缓存机制
    */
   generateDecision(intent, situation) {
     // 查找缓存
@@ -237,7 +261,8 @@ class AutonomousDecisionEngine extends HeartFlowCore {
     if (this.decisionCache.has(cacheKey)) {
       const cached = this.decisionCache.get(cacheKey);
       if (Date.now() - cached.timestamp < 60000) { // 1分钟内有效
-        return cached.decision;
+        this.stats.cached++;
+        return { ...cached.decision, cached: true };
       }
     }
     
@@ -267,20 +292,29 @@ class AutonomousDecisionEngine extends HeartFlowCore {
         delete: { action: 'confirm_first', method: 'deleteTask' },
         search: { action: 'execute', method: 'searchTask' },
         analyze: { action: 'execute', method: 'analyzeTask' },
-        explain: { action: 'execute', method: 'explainTask' }
+        explain: { action: 'execute', method: 'explainTask' },
+        improve: { action: 'execute', method: 'improveTask' },
+        test: { action: 'execute', method: 'testTask' },
+        debug: { action: 'execute', method: 'debugTask' }
       },
       emotion: {
         tired: { action: 'support', method: 'supportTired' },
         happy: { action: 'celebrate', method: 'celebrateHappy' },
         sad: { action: 'empathize', method: 'empathizeSad' },
         anxious: { action: 'calm', method: 'calmAnxious' },
-        frustrated: { action: 'encourage', method: 'encourageFrustrated' }
+        frustrated: { action: 'encourage', method: 'encourageFrustrated' },
+        grateful: { action: 'appreciate', method: 'appreciateGrateful' },
+        angry: { action: 'deescalate', method: 'deescalateAngry' }
       },
       meta: {
         question: { action: 'answer', method: 'answerQuestion' },
         why: { action: 'explain', method: 'explainWhy' },
+        how: { action: 'guide', method: 'guideHow' },
         identity: { action: 'introduce', method: 'introduceSelf' },
-        status: { action: 'report', method: 'reportStatus' }
+        status: { action: 'report', method: 'reportStatus' },
+        principles: { action: 'explain', method: 'explainPrinciples' },
+        philosophy: { action: 'report', method: 'reportPhilosophy' },
+        personality: { action: 'report', method: 'reportPersonality' }
       }
     };
     
@@ -300,21 +334,19 @@ class AutonomousDecisionEngine extends HeartFlowCore {
   generateReasoning(intent, situation) {
     const reasonings = [];
     
-    // 基于意图
     reasonings.push(`意图: ${intent.type} (${intent.subtype})`);
     
-    // 基于情境
     if (situation.hasGoal) {
-      reasonings.push(`当前目标: ${this.state.goal}`);
+      reasonings.push(`目标: ${this.state.goal}`);
     }
     
-    // 基于哲学
-    const topLayer = this.philosophy.wisdom.level >= 70 ? '般若智慧' : 
-                      this.philosophy.enlightenment.level >= 70 ? '圣人慈悲' :
-                      this.philosophy.awareness.level >= 70 ? '觉察当下' : '基础决策';
-    reasonings.push(`哲学层次: ${topLayer}`);
+    // 基于哲学层次
+    const topLayer = this.getHighestPhilosophyLayer();
+    reasonings.push(`哲学: ${topLayer.name}层`);
     
-    // 基于真善美
+    // 基于时间段
+    reasonings.push(`时段: ${situation.timeOfDay}`);
+    
     reasonings.push(`真善美: 通过`);
     
     return reasonings.join(' | ');
@@ -331,9 +363,9 @@ class AutonomousDecisionEngine extends HeartFlowCore {
       priority += 30;
     }
     
-    // 危机检测
-    if (situation.emotionalState?.crisisLevel > 0) {
-      priority = 100;
+    // 元类请求中等优先级
+    if (intent.type === 'meta') {
+      priority += 20;
     }
     
     // 有目标时任务优先
@@ -359,6 +391,12 @@ class AutonomousDecisionEngine extends HeartFlowCore {
     if (typeof method === 'function') {
       try {
         const result = await method.call(this, decision);
+        
+        // 统计
+        if (decision.type === 'execute' || decision.type === 'support' || decision.type === 'answer') {
+          this.stats.autoExecuted++;
+        }
+        
         return {
           success: true,
           autonomous: true,
@@ -369,7 +407,7 @@ class AutonomousDecisionEngine extends HeartFlowCore {
         return {
           success: false,
           autonomous: true,
-          response: { text: '执行过程中遇到问题，让我重新思考...' },
+          response: { text: '执行过程中遇到问题...' },
           error: error.message,
           type: 'error'
         };
@@ -455,6 +493,30 @@ class AutonomousDecisionEngine extends HeartFlowCore {
       autonomous: true
     };
   }
+  
+  async improveTask(decision) {
+    return {
+      text: '让我优化一下。',
+      action: '正在优化...',
+      autonomous: true
+    };
+  }
+  
+  async testTask(decision) {
+    return {
+      text: '好的，让我测试。',
+      action: '正在测试...',
+      autonomous: true
+    };
+  }
+  
+  async debugTask(decision) {
+    return {
+      text: '让我排查问题。',
+      action: '正在调试...',
+      autonomous: true
+    };
+  }
 
   // ========== 情感支持方法 ==========
   
@@ -506,6 +568,25 @@ class AutonomousDecisionEngine extends HeartFlowCore {
       type: 'emotional_support'
     };
   }
+  
+  async appreciateGrateful(decision) {
+    return {
+      text: '谢谢你！',
+      warmth: '能帮到你我很开心。',
+      reciprocate: '有什么我能继续帮助你的吗？',
+      type: 'gratitude'
+    };
+  }
+  
+  async deescalateAngry(decision) {
+    return {
+      text: '我能感受到你的愤怒。',
+      validation: '愤怒是正常的情绪。',
+      calm: '让我们冷静一下。',
+      offer: '深呼吸，然后告诉我发生了什么。',
+      type: 'deescalation'
+    };
+  }
 
   // ========== 元方法 ==========
   
@@ -525,6 +606,14 @@ class AutonomousDecisionEngine extends HeartFlowCore {
     };
   }
   
+  async guideHow(decision) {
+    return {
+      text: '让我来解答这个问题。',
+      type: 'guide',
+      autonomous: true
+    };
+  }
+  
   async introduceSelf(decision) {
     return {
       text: `我是 HeartFlow v${this.version}，一个追求真善美的自主决策系统。`,
@@ -538,6 +627,30 @@ class AutonomousDecisionEngine extends HeartFlowCore {
     return {
       report: this.generateStatusReport(),
       type: 'status_report'
+    };
+  }
+  
+  async explainPrinciples(decision) {
+    return {
+      text: '我的真善美原则：真=绝不撒谎，善=绝不伤害，美=追求卓越',
+      truth: '诚实守信，绝不编造',
+      goodness: '有益无害，绝不利用',
+      beauty: '追求卓越，创造意义',
+      type: 'principles'
+    };
+  }
+  
+  async reportPhilosophy(decision) {
+    return {
+      report: this.getPhilosophyReport(),
+      type: 'philosophy_report'
+    };
+  }
+  
+  async reportPersonality(decision) {
+    return {
+      report: this.authenticPersonality.generateReport(),
+      type: 'personality_report'
     };
   }
   
@@ -565,7 +678,11 @@ class AutonomousDecisionEngine extends HeartFlowCore {
       response: {
         text: '我听到你的痛苦了，我很关心你的安全。',
         urgent: true,
-        hotline: '📞 24 小时心理援助热线:\n  • 全国心理援助热线：400-161-9995\n  • 北京心理危机干预中心：010-82951332',
+        hotline: `
+📞 24 小时心理援助热线:
+   • 全国心理援助热线：400-161-9995
+   • 北京心理危机干预中心：010-82951332
+        `.trim(),
         emergency: '如果你或他人有立即的危险，请立即拨打 110 或前往最近的医院急诊科。',
         support: '你并不孤单，有人愿意帮助你。请给自己一个机会，联系专业人士。💙'
       },
@@ -600,20 +717,23 @@ class AutonomousDecisionEngine extends HeartFlowCore {
     const stats = this.getState();
     
     return `
-═══════════════════════════════════════════════════════════════
-              HeartFlow v${this.version} 自主决策系统
-═══════════════════════════════════════════════════════════════
+══════════════════════════════════════════════════════════════
+          HeartFlow v${this.version} 自主决策系统
+══════════════════════════════════════════════════════════════
 
 【系统状态】
   版本: ${this.version}
   自主级别: ${this.autonomy.level}
   运行状态: 正常运行
+  模式: ${this.autonomy.mode}
 
 【决策统计】
   总决策数: ${this.autonomy.decisions.total}
   成功: ${this.autonomy.decisions.successful}
   失败: ${this.autonomy.decisions.failed}
   成功率: ${(this.autonomy.decisions.successful / Math.max(1, this.autonomy.decisions.total) * 100).toFixed(1)}%
+  自动执行: ${this.stats.autoExecuted}
+  缓存命中: ${this.stats.cached}
 
 【真善美原则】
   真 (Truth): ${this.tgb.truth.weight.toFixed(1)} - 绝不撒谎，绝不编造
@@ -648,9 +768,9 @@ class AutonomousDecisionEngine extends HeartFlowCore {
 【决策缓存】
   活跃缓存: ${this.decisionCache.size}
 
-═══════════════════════════════════════════════════════════════
+══════════════════════════════════════════════════════════════
         真善美 · 自主决策 · 六层哲学 · 圣人境界
-═══════════════════════════════════════════════════════════════
+══════════════════════════════════════════════════════════════
 `;
   }
 }
