@@ -16,7 +16,7 @@ const { AuthenticPersonality } = require('./authentic-personality');
 
 class HeartFlowCore {
   constructor(config = {}) {
-    this.version = '8.1.01';
+    this.version = '8.1.2';
     this.name = 'HeartFlow';
     
     // ============ 真善美核心原则 ============

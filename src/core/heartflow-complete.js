@@ -19,7 +19,7 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
   constructor() {
     super();
     
-    this.version = '8.1.01';
+    this.version = '8.1.2';
     this.name = 'HeartFlow';
     this.slogan = '真善美 · 自主决策 · 六层哲学 · 圣人境界';
     
