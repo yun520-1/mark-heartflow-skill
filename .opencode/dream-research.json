@@ -138,5 +138,10 @@
     "time": "2026-04-12T19:42:00.594Z",
     "query": "moral philosophy AI alignment",
     "summary": "Virtue ethics approaches focus on developing AI character rather than rule following.\nContractarianism provides basis for AI alignment through rational agreement models.\nConsequentialist frameworks guide AI optimization toward human flourishing metrics."
+  },
+  {
+    "time": "2026-04-12T20:00:01.041Z",
+    "query": "cognitive neuroscience memory LLM agent arxiv",
+    "summary": "Sleep-like offline processing periods improve memory consolidation in artificial systems.\nHippocampal-inspired memory architectures improve LLM long-context handling.\nSpike-timing dependent plasticity models enhance continual learning in neural networks.\nEpisodic memory binding mechanisms inspire new approaches to AI experience replay.\nWorking memory capacity limits inform optimal chunking strategies for AI reasoning."
   }
 ]
