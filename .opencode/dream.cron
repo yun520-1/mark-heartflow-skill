@@ -1,0 +1,6 @@
+# HeartFlow Dream Mode 定时任务
+# 每 21 分钟 - 做梦研究
+*/21 * * * * cd /Users/apple/mark-heartflow-skill && /opt/homebrew/bin/node .opencode/dream-mode.js research >> .opencode/dream-log.txt 2>&1
+
+# 每小时 - 打包上传
+0 * * * * cd /Users/apple/mark-heartflow-skill && /opt/homebrew/bin/node .opencode/dream-mode.js push >> .opencode/dream-log.txt 2>&1
