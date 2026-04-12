@@ -78,5 +78,10 @@
     "time": "2026-04-12T15:42:01.010Z",
     "query": "cognitive neuroscience memory LLM agent arxiv",
     "summary": "Hippocampal-inspired memory architectures improve LLM long-context handling.\nSpike-timing dependent plasticity models enhance continual learning in neural networks.\nWorking memory capacity limits inform optimal chunking strategies for AI reasoning.\nEpisodic memory binding mechanisms inspire new approaches to AI experience replay.\nSleep-like offline processing periods improve memory consolidation in artificial systems."
+  },
+  {
+    "time": "2026-04-12T16:00:01.008Z",
+    "query": "epistemology knowledge representation AI",
+    "summary": "Virtue epistemology shifts focus to intellectual virtues in AI knowledge acquisition.\nSocial epistemology examines how AI communities validate and share knowledge.\nFormal epistemology provides probabilistic frameworks for AI belief revision."
   }
 ]
