@@ -1,6 +1,6 @@
 {
-  "version": "7.1.7",
-  "lastUpdated": "2026-04-07T05:52:24.372Z",
+  "version": "7.1.10",
+  "lastUpdated": "2026-04-12T09:21:45.752Z",
   "theories": [
     {
       "id": "consciousness-stanford-2026-deep",
@@ -1022,6 +1022,72 @@
         "top-down-control"
       ],
       "integrationScore": 0.98
+    },
+    {
+      "id": "predictive-processing-2026",
+      "name": "预测处理与主动推理",
+      "nameEn": "Predictive Processing & Active Inference",
+      "category": "cognitive",
+      "source": "Trends in Cognitive Sciences",
+      "year": 2025,
+      "keyInsights": [
+        "大脑是预测机器，不断生成并更新世界模型",
+        "感知 = 自上而下预测 + 自下而上预测误差",
+        "主动推理：行动是为了最小化预测误差",
+        "自由能原理：生物系统最小化变分自由能",
+        "Computational formula: F = E_q[ln q(ψ) - ln p(ψ|o)]"
+      ],
+      "integrationPoints": [
+        "prediction",
+        "error-minimization",
+        "active-inference",
+        "free-energy"
+      ],
+      "integrationScore": 0.992
+    },
+    {
+      "id": "embodied-cognition-2026",
+      "name": "具身认知深化",
+      "nameEn": "Embodied Cognition Deep",
+      "category": "cognitive",
+      "source": "Nature Reviews Neuroscience",
+      "year": 2024,
+      "keyInsights": [
+        "认知根植于身体与环境的互动",
+        "身体状态直接影响情绪与决策",
+        "感知 - 行动循环是认知的基础单元",
+        "社会认知依赖集体意向性",
+        "Computational formula: C = ∫(body × environment × action) dt"
+      ],
+      "integrationPoints": [
+        "embodiment",
+        "sensorimotor",
+        "collective-intentionality",
+        "enactive"
+      ],
+      "integrationScore": 0.989
+    },
+    {
+      "id": "meta-cognition-2026",
+      "name": "元认知与自我监控",
+      "nameEn": "Meta-cognition & Self-Monitoring",
+      "category": "self-consciousness",
+      "source": "Philosophical Transactions B",
+      "year": 2025,
+      "keyInsights": [
+        "元认知 = 对自身认知过程的认知",
+        "信心评估是元认知的核心指标",
+        "错误监控触发认知控制调整",
+        "递归自我模型支持高阶意识",
+        "Computational formula: MC = f(confidence, error_rate, adjustment)"
+      ],
+      "integrationPoints": [
+        "meta-awareness",
+        "confidence",
+        "error-monitoring",
+        "recursive-model"
+      ],
+      "integrationScore": 0.995
     }
   ],
   "integrationMatrix": {
