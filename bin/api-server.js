@@ -33,6 +33,21 @@ console.log('[API] HeartFlow loaded');
 
 // Load modules
 let personality, emotion, learning, actionTracker, autonomousLoop, trueBeing, philosophy, superEngine;
+let dreamState = {
+  enabled: false,
+  startTime: null,
+  dreams: [],
+  lastDream: null,
+  dreamCount: 0,
+  topics: [],
+  insights: [],
+  status: 'idle'
+};
+let dreamTimer = null;
+
+// Make dreamState globally accessible for autonomous loop
+global.dreamState = dreamState;
+
 try {
   const { AuthenticPersonality } = require('../src/core/authentic-personality.js');
   const { DeepEmotion } = require('../src/core/deep-emotion.js');
@@ -403,12 +418,18 @@ const server = http.createServer((req, res) => {
           // Detect emotion from user message
           const emotionalState = emotion ? emotion.feel(userMessage, { important: true, personal: true }) : null;
           
-          // Learn from the conversation
-          if (learning) {
-            learning.learn(userMessage, { source: 'chat', personal: true });
-          }
-          
-          let response;
+           // Learn from the conversation
+           if (learning) {
+             learning.learn(userMessage, { source: 'chat', personal: true });
+           }
+           
+           // Learn from dreams if dream mode is enabled and we had a recent dream
+           if (dreamState && dreamState.enabled && dreamState.lastDream) {
+             const dreamInsight = `梦境主题: ${dreamState.lastDream.topic} | 梦境类型: ${dreamState.lastDream.type} | 梦境内容: ${dreamState.lastDream.content.substring(0, 100)}`;
+             learning.learn(dreamInsight, { source: 'dream', personal: true, timestamp: dreamState.lastDream.timestamp });
+           }
+           
+           let response;
           
           // Try external AI if configured
           const activeProvider = aiConfig.providers[aiConfig.defaultProvider];
