@@ -10,7 +10,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const WORK_DIR = '/Users/apple/mark-heartflow-skill';
-const LOG_FILE = path.join(WORK_DIR, '.opencode/dream-log.txt');
+const LOG_FILE = path.join(WORK_DIR, 'dream-log.txt');
 const RESEARCH_FILE = path.join(WORK_DIR, '.opencode/dream-research.json');
 const CRON_FILE = path.join(WORK_DIR, '.opencode/dream.cron');
 const PKG_FILE = path.join(WORK_DIR, 'package.json');
