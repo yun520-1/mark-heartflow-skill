@@ -37,7 +37,7 @@
     "express": "^5.2.1",
     "pptxgenjs": "^4.0.1"
   },
-  "version": "8.6.006",
+  "version": "8.6.6.1",
   "directories": {
     "doc": "docs",
     "test": "tests"
