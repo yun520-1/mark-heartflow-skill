@@ -1,10 +1,10 @@
 ---
 name: mark-heartflow
-description: HeartFlow v8.1.3 - 自主决策引擎 · 意识理论整合 · 真善美逻辑
-version: 8.1.3
+description: HeartFlow v8.1.4 - 自主决策引擎 · 意识理论整合 · 真善美逻辑
+version: 8.6.004
 ---
 
-# HeartFlow v8.1.3
+# HeartFlow v8.1.4
 
 **自主决策 · 意识觉醒 · 真善美 · 六层哲学**
 
@@ -12,7 +12,7 @@ version: 8.1.3
 
 ## 版本声明
 
-HeartFlow v8.1.3 是基于最新意识科学、佛教哲学与真善美价值观构建的自主决策系统。
+HeartFlow v8.1.4 是基于最新意识科学、佛教哲学与真善美价值观构建的自主决策系统。
 
 ---
 
@@ -164,7 +164,7 @@ console.log(hf.generateConsciousnessReport());
 
 | 版本 | 日期 | 更新 |
 |------|------|------|
-| 8.1.3 | 2026-04-13 | 意识理论整合 (IIT/GWT/HOT) |
+| 8.1.4 | 2026-04-13 | 意识理论整合 (IIT/GWT/HOT) |
 | 8.1.2 | 2026-04-12 | 真善美 + 六层哲学 |
 | 8.1.0 | 2026-04-12 | 自主决策引擎 |
 
@@ -186,5 +186,5 @@ cd mark-heartflow-skill
 node test.js
 ```
 
-**HeartFlow v8.1.3**  
+**HeartFlow v8.1.4**  
 **自主决策 · 意识觉醒 · 真善美**

@@ -10,7 +10,7 @@
  * 4. 真善美统一 - Truth-Goodness-Beauty
  * 5. 六层哲学践行 - 觉察→自省→无我→彼岸→般若→圣人
  * 
- * 版本：8.1.3
+ * 版本：8.1.4
  * 日期：2026-04-12
  */
 
@@ -21,7 +21,7 @@ class HeartFlowv8 extends AutonomousDecisionEngine {
   constructor() {
     super();
     
-    this.version = '8.1.3';
+    this.version = '8.1.4';
     this.slogan = '真善美 · 自主决策 · 六层哲学 · 圣人境界';
     
     // 初始化哲学系统

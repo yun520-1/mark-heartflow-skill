@@ -1,12 +1,12 @@
 /**
- * HeartFlow v8.1.3 测试文件
+ * HeartFlow v8.1.4 测试文件
  */
 
 const { HeartFlowComplete } = require('./src/core/heartflow-complete');
 
 async function runTests() {
   console.log('═══════════════════════════════════════════════════════════════');
-  console.log('          HeartFlow v8.1.3 测试套件');
+  console.log('          HeartFlow v8.1.4 测试套件');
   console.log('═══════════════════════════════════════════════════════════════\n');
   
   const hf = new HeartFlowComplete();

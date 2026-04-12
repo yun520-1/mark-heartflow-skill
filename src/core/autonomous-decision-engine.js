@@ -19,7 +19,7 @@ class AutonomousDecisionEngine extends HeartFlowCore {
       trustLevel: 1.0
     });
     
-    this.version = '8.1.3';
+    this.version = '8.1.4';
     this.autonomy.mode = 'FULLY_AUTONOMOUS';
     
     // 决策权限表 - 更细致的权限控制

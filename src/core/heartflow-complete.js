@@ -1,5 +1,5 @@
 /**
- * HeartFlow v8.1.3 - 完整自主决策系统
+ * HeartFlow v8.1.4 - 完整自主决策系统
  * 
  * 整合资源：
  * 1. 意识理论 (IIT/GWT/HOT/预测加工)
@@ -8,7 +8,7 @@
  * 4. 自主决策引擎 (真善美逻辑 + 六层哲学)
  * 5. 六层哲学践行 (觉察→自省→无我→彼岸→般若→圣人)
  * 
- * 版本：8.1.3
+ * 版本：8.1.4
  * 日期：2026-04-13
  */
 
@@ -21,7 +21,7 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
   constructor() {
     super();
     
-    this.version = '8.1.3';
+    this.version = '8.1.4';
     this.name = 'HeartFlow';
     this.slogan = '真善美 · 自主决策 · 六层哲学 · 圣人境界';
     

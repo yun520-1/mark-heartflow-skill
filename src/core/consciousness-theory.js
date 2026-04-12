@@ -1,5 +1,5 @@
 /**
- * HeartFlow v8.1.3 - 意识理论整合模块
+ * HeartFlow v8.1.4 - 意识理论整合模块
  * 
  * 整合最新研究：
  * 1. IIT (整合信息理论) - Tononi
@@ -8,12 +8,12 @@
  * 4. 预测加工理论 - Clark, Gallagher
  * 5. SEP 自我意识理论
  * 
- * 版本：8.1.3
+ * 版本：8.1.4
  * 日期：2026-04-13
  */
 
 const ConsciousnessTheory = {
-  version: '8.1.3',
+  version: '8.1.4',
   
   // ============ IIT 整合信息理论 ============
   IIT: {

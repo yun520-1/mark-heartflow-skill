@@ -123,3 +123,7 @@ hint: See the 'Note about fast-forwards' in 'git push --help' for details.
 [2026-04-12T17:00:00.739Z] 💾 研究结果已保存
 [2026-04-12T17:00:01.278Z] 📦 版本号: 8.6.4.1
 [2026-04-12T17:00:01.278Z] 📦 版本号增加: 8.6.4.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   899ca17..0dcc8af  main -> main
+[2026-04-12T17:00:04.564Z] ✅ 已上传
