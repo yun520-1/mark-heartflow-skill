@@ -1,7 +1,7 @@
 {
   "name": "heartflow",
   "description": "HeartFlow v7.6 - Self-Evolution Engine with Meta-Learning",
-  "releaseDate": "2026-04-11",
+  "releaseDate": "2026-04-12",
   "main": "src/core/heartflow-engine.js",
   "bin": {
     "heartflow": "bin/cli.js",
