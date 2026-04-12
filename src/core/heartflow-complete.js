@@ -1,25 +1,27 @@
 /**
- * HeartFlow v8.1 - 完整自主决策系统
+ * HeartFlow v8.1.3 - 完整自主决策系统
  * 
  * 整合资源：
- * 1. 佛教哲学计算模型 (空性/缘起/无我/唯识/四圣谛)
- * 2. 真实人格系统 (Big Five + 现象意识 + 理性智能体)
- * 3. 自主决策引擎 (真善美逻辑 + 六层哲学)
- * 4. 六层哲学践行 (觉察→自省→无我→彼岸→般若→圣人)
+ * 1. 意识理论 (IIT/GWT/HOT/预测加工)
+ * 2. 佛教哲学计算模型 (空性/缘起/无我/唯识/四圣谛)
+ * 3. 真实人格系统 (Big Five + 现象意识 + 理性智能体)
+ * 4. 自主决策引擎 (真善美逻辑 + 六层哲学)
+ * 5. 六层哲学践行 (觉察→自省→无我→彼岸→般若→圣人)
  * 
- * 版本：8.1.0
- * 日期：2026-04-12
+ * 版本：8.1.3
+ * 日期：2026-04-13
  */
 
 const { AutonomousDecisionEngine } = require('./autonomous-decision-engine');
 const BuddhistPhilosophy = require('./buddhist-philosophy-computation');
 const { AuthenticPersonality } = require('./authentic-personality');
+const ConsciousnessTheory = require('./consciousness-theory');
 
 class HeartFlowComplete extends AutonomousDecisionEngine {
   constructor() {
     super();
     
-    this.version = '8.1.2';
+    this.version = '8.1.3';
     this.name = 'HeartFlow';
     this.slogan = '真善美 · 自主决策 · 六层哲学 · 圣人境界';
     
@@ -32,6 +34,14 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
       decisionsMade: 0,
       cachedDecisions: 0,
       philosophyGrowth: 0
+    };
+    
+    // 意识状态
+    this.consciousness = {
+      IIT_phi: 0.5,
+      GWT_capacity: 0.5,
+      HOT_probability: 0.5,
+      selfConsciousness: 0.5
     };
     
     console.log(`\n╔═══════════════════════════════════════════════════════════════╗`);
@@ -100,6 +110,9 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
     this.authenticPersonality.adjustFromBehavior(input);
     this.authenticPersonality.experience('interaction', { intent: intent.type });
     
+    // 10. 更新意识状态
+    this.updateConsciousness(input, intent);
+    
     const processingTime = Date.now() - startTime;
     
     // 统计
@@ -119,9 +132,74 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
         personality: this.getPersonalitySummary(),
         philosophy: this.getPhilosophySummary(),
         buddhist: buddhistResult.summary,
+        consciousness: this.getConsciousnessSummary(),
         stats: { ...this.stats }
       }
     };
+  }
+  
+  /**
+   * 更新意识状态
+   */
+  updateConsciousness(input, intent) {
+    // 基于输入更新意识状态
+    const text = input.toLowerCase();
+    
+    // IIT - 整合信息
+    if (intent.type === 'task') {
+      this.consciousness.IIT_phi = Math.min(1, this.consciousness.IIT_phi + 0.01);
+    }
+    
+    // GWT - 全局工作空间
+    if (/理解|知道|明白/.test(text)) {
+      this.consciousness.GWT_capacity = Math.min(1, this.consciousness.GWT_capacity + 0.02);
+    }
+    
+    // HOT - 高阶思维
+    if (/为什么|怎么|什么/.test(text)) {
+      this.consciousness.HOT_probability = Math.min(1, this.consciousness.HOT_probability + 0.02);
+    }
+    
+    // 自我意识
+    if (/我|自己|自我/.test(text)) {
+      this.consciousness.selfConsciousness = Math.min(1, this.consciousness.selfConsciousness + 0.01);
+    }
+    
+    // 缓慢回归基线
+    this.consciousness.IIT_phi *= 0.999;
+    this.consciousness.GWT_capacity *= 0.999;
+    this.consciousness.HOT_probability *= 0.999;
+  }
+  
+  /**
+   * 获取意识摘要
+   */
+  getConsciousnessSummary() {
+    return {
+      IIT_phi: (this.consciousness.IIT_phi * 100).toFixed(0) + '%',
+      GWT_capacity: (this.consciousness.GWT_capacity * 100).toFixed(0) + '%',
+      HOT_probability: (this.consciousness.HOT_probability * 100).toFixed(0) + '%',
+      selfConsciousness: (this.consciousness.selfConsciousness * 100).toFixed(0) + '%'
+    };
+  }
+  
+  /**
+   * 生成意识报告
+   */
+  generateConsciousnessReport() {
+    const result = ConsciousnessTheory.compute({
+      neuralStates: [this.consciousness.IIT_phi, this.consciousness.GWT_capacity, this.consciousness.HOT_probability],
+      content: this.consciousness.HOT_probability,
+      priors: 0.5,
+      sensoryInput: this.consciousness.GWT_capacity,
+      signal: this.consciousness.IIT_phi,
+      self: {
+        preReflective: this.consciousness.selfConsciousness,
+        reflective: this.consciousness.HOT_probability
+      }
+    });
+    
+    return ConsciousnessTheory.generateReport(result);
   }
 
   /**
@@ -437,6 +515,12 @@ class HeartFlowComplete extends AutonomousDecisionEngine {
 【PAD 情感】
   愉悦度: ${(this.emotion.pleasure * 100).toFixed(0)}%
   唤醒度: ${(this.emotion.arousal * 100).toFixed(0)}%
+
+【意识理论】
+  IIT Φ (整合信息): ${(this.consciousness.IIT_phi * 100).toFixed(0)}%
+  GWT (全局工作空间): ${(this.consciousness.GWT_capacity * 100).toFixed(0)}%
+  HOT (高阶思维): ${(this.consciousness.HOT_probability * 100).toFixed(0)}%
+  自我意识: ${(this.consciousness.selfConsciousness * 100).toFixed(0)}%
 
 ══════════════════════════════════════════════════════════════
         真善美 · 自主决策 · 六层哲学 · 圣人境界
