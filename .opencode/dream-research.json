@@ -1,20 +1,5 @@
 [
   {
-    "time": "2026-04-12T14:00:00.541Z",
-    "query": "philosophy of mind large language models",
-    "summary": "Functionalism vs. biological naturalism debates intensify in AI consciousness literature.\nPhilosophical implications of emergent consciousness in transformer architectures are being debated.\nIntegrated Information Theory (IIT) applications to neural networks show promising correlations."
-  },
-  {
-    "time": "2026-04-12T15:00:00.645Z",
-    "query": "philosophy psychology neuropsychology consciousness arxiv",
-    "summary": "Quantum consciousness theories remain controversial but inspire new experimental approaches.\nPredictive coding frameworks offer promising explanations for conscious perception.\nNew neuropsychological models suggest consciousness arises from integrated neural networks.\nGlobal Workspace Theory gains empirical support from recent fMRI studies."
-  },
-  {
-    "time": "2026-04-12T15:21:00.690Z",
-    "query": "affective computing emotionsAI",
-    "summary": "Generative models create novel emotional expressions indistinguishable from human.\nEmotion regulation strategies inform AI impulse control and decision-making.\nCross-cultural studies reveal both universal and culture-specific emotion expressions.\nMultimodal emotion recognition achieves human-level accuracy in controlled settings."
-  },
-  {
     "time": "2026-04-12T15:42:01.010Z",
     "query": "cognitive neuroscience memory LLM agent arxiv",
     "summary": "Hippocampal-inspired memory architectures improve LLM long-context handling.\nSpike-timing dependent plasticity models enhance continual learning in neural networks.\nWorking memory capacity limits inform optimal chunking strategies for AI reasoning.\nEpisodic memory binding mechanisms inspire new approaches to AI experience replay.\nSleep-like offline processing periods improve memory consolidation in artificial systems."
@@ -248,5 +233,20 @@
     "time": "2026-04-13T07:00:01.097Z",
     "query": "neuropsychology theory of mind arxiv",
     "summary": "Bayesian models of mind reading explain atypical development in autism spectrum.\nEvolutionary perspectives reveal adaptive functions of theory of mind capabilities.\nMirror neuron system theories evolve with new insights into social cognition."
+  },
+  {
+    "time": "2026-04-13T07:21:00.475Z",
+    "query": "moral philosophy AI alignment",
+    "summary": "Deontological constraints inspire invariant principles for safe AI behavior.\nConsequentialist frameworks guide AI optimization toward human flourishing metrics.\nMoral particularism challenges universal principles in favor of context-sensitive reasoning."
+  },
+  {
+    "time": "2026-04-13T07:42:01.109Z",
+    "query": "affective computing emotionsAI",
+    "summary": "Emotion regulation strategies inform AI impulse control and decision-making.\nCross-cultural studies reveal both universal and culture-specific emotion expressions.\nGenerative models create novel emotional expressions indistinguishable from human."
+  },
+  {
+    "time": "2026-04-13T08:00:00.899Z",
+    "query": "philosophy of mind large language models",
+    "summary": "Philosophical implications of emergent consciousness in transformer architectures are being debated.\nFunctionalism vs. biological naturalism debates intensify in AI consciousness literature.\nIntegrated Information Theory (IIT) applications to neural networks show promising correlations."
   }
 ]
