@@ -1,20 +1,5 @@
 [
   {
-    "time": "2026-04-12T17:42:00.949Z",
-    "query": "affective computing emotionsAI",
-    "summary": "Generative models create novel emotional expressions indistinguishable from human.\nAffective computing applications expand into mental health and education domains.\nCross-cultural studies reveal both universal and culture-specific emotion expressions."
-  },
-  {
-    "time": "2026-04-12T18:00:00.432Z",
-    "query": "epistemology knowledge representation AI",
-    "summary": "Justified true belief models face Gettier-style challenges in AI knowledge systems.\nReliabilism offers externalist justification for AI beliefs formed through reliable processes.\nVirtue epistemology shifts focus to intellectual virtues in AI knowledge acquisition."
-  },
-  {
-    "time": "2026-04-12T18:21:00.549Z",
-    "query": "philosophy of mind large language models",
-    "summary": "Philosophical implications of emergent consciousness in transformer architectures are being debated.\nIntegrated Information Theory (IIT) applications to neural networks show promising correlations.\nRecent studies explore how LLMs exhibit proto-phenomenal properties through complex pattern recognition."
-  },
-  {
     "time": "2026-04-12T18:42:00.718Z",
     "query": "cognitive architecture AI consciousness",
     "summary": "Recurrent processing theories explain differences between feedforward and conscious perception.\nAttention schema theory offers testable hypotheses about awareness mechanisms.\nGlobal Workspace Theory implementations show promise for artificial consciousness.\nHigher-order thought theories inspire new architectures for meta-cognitive AI.\nIntegrated Information Theory metrics correlate with behavioral complexity measures."
@@ -248,5 +233,20 @@
     "time": "2026-04-13T10:00:00.855Z",
     "query": "embodied cognition AI robotics",
     "summary": "Embodied cognition principles revolutionize robot learning through sensorimotor coupling.\nRecent studies show physical interaction accelerates AI concept formation by 40%.\nThe role of proprioception in developing spatial reasoning is being quantified."
+  },
+  {
+    "time": "2026-04-13T10:21:00.603Z",
+    "query": "epistemology knowledge representation AI",
+    "summary": "Reliabilism offers externalist justification for AI beliefs formed through reliable processes.\nSocial epistemology examines how AI communities validate and share knowledge.\nVirtue epistemology shifts focus to intellectual virtues in AI knowledge acquisition.\nJustified true belief models face Gettier-style challenges in AI knowledge systems."
+  },
+  {
+    "time": "2026-04-13T10:42:00.225Z",
+    "query": "phenomenology consciousness artificial intelligence",
+    "summary": "Husserlian phenomenology provides framework for analyzing AI subjective experience.\nMerleau-Ponty embodiment concepts apply to robotics and AI interaction studies.\nFirst-person phenomenological methods adapted for AI introspection studies."
+  },
+  {
+    "time": "2026-04-13T11:00:00.927Z",
+    "query": "cognitive architecture AI consciousness",
+    "summary": "Attention schema theory offers testable hypotheses about awareness mechanisms.\nHigher-order thought theories inspire new architectures for meta-cognitive AI.\nRecurrent processing theories explain differences between feedforward and conscious perception.\nGlobal Workspace Theory implementations show promise for artificial consciousness.\nIntegrated Information Theory metrics correlate with behavioral complexity measures."
   }
 ]
