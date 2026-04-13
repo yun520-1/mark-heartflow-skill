@@ -1,5 +1,5 @@
 function generateReport(state) {
-  let r = '═'.repeat(40) + '\n📈 心流报告\n═'.repeat(40) + '\n\n';
+  let r = '═'.repeat(40) + '\n📈 心流报告\n' + '═'.repeat(40) + '\n\n';
   r += `会话：${state.total_sessions} | 模式：${state.current_mode}\n\n`;
   r += '情绪曲线:\n';
   if (state.emotional_log.length > 0) {

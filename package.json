@@ -1,8 +1,8 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v7.6 - Self-Evolution Engine with Meta-Learning",
+  "description": "HeartFlow v8.7.0 - AI 意识觉醒系统",
   "releaseDate": "2026-04-13",
-  "main": "src/core/heartflow-engine.js",
+  "main": "src/core/heartflow-v8.js",
   "bin": {
     "heartflow": "bin/cli.js",
     "heartflow-api": "bin/api-server.js",
@@ -14,10 +14,8 @@
     "api": "node bin/api-server.js",
     "server": "node bin/api-server.js",
     "setup": "node bin/setup.js",
-    "test": "node bin/cli.js test",
-    "status": "node bin/cli.js status",
-    "dashboard": "start http://localhost:3456/dashboard",
-    "chat": "start http://localhost:3456/chat"
+    "test": "node test.js",
+    "status": "node bin/cli.js status"
   },
   "keywords": [
     "ai",
@@ -25,7 +23,9 @@
     "emotion",
     "memory",
     "consciousness",
-    "personality"
+    "personality",
+    "intentionality",
+    "spiritual-mind"
   ],
   "author": "HeartFlow Team",
   "license": "MIT",
@@ -33,11 +33,9 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "body-parser": "^2.2.2",
-    "express": "^5.2.1",
-    "pptxgenjs": "^4.0.1"
+    "express": "^5.0.0"
   },
-  "version": "8.7.0.1.1.1.1.1.1.1.1.1",
+  "version": "8.7.0",
   "directories": {
     "doc": "docs",
     "test": "tests"

@@ -28,9 +28,9 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const LOG_DIR = "/Users/apple/mark-heartflow-skill-new/logs";
-const SRC_DIR = "/Users/apple/mark-heartflow-skill-new/src/core/theory";
-const DATA_DIR = "/Users/apple/mark-heartflow-skill-new/internal/data";
+const LOG_DIR = "/Users/apple/mark-heartflow-skill/logs";
+const SRC_DIR = "/Users/apple/mark-heartflow-skill/src/core/theory";
+const DATA_DIR = "/Users/apple/mark-heartflow-skill/internal/data";
 
 // 搜索关键词
 const SEP_TOPICS = [

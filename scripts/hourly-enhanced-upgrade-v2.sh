@@ -10,7 +10,7 @@
 # 4. 生成可执行程序
 # 5. 保存心理学公式库
 
-SCRIPT_DIR="/Users/apple/mark-heartflow-skill-new"
+SCRIPT_DIR="/Users/apple/mark-heartflow-skill"
 LOG_DIR="$SCRIPT_DIR/logs"
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 

@@ -33,13 +33,16 @@
   "scriptsDir": "scripts",
   "downloadsDir": "downloads",
   "tasks": {
+    "defaultModel": "MiniMax-M2.5",
     "theoryUpgrade": {
       "interval": "*/24 * * * *",
-      "script": "scripts/hourly-enhanced-upgrade-v2.sh"
+      "script": "scripts/hourly-enhanced-upgrade-v2.sh",
+      "model": "MiniMax-M2.5"
     },
     "comfyuiMonitor": {
       "interval": "*/15 * * * *",
-      "script": "scripts/comfyui-cron.sh"
+      "script": "scripts/comfyui-cron.sh",
+      "model": "MiniMax-M2.5"
     }
   },
   "personality": {

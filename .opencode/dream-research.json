@@ -1,10 +1,5 @@
 [
   {
-    "time": "2026-04-12T19:42:00.594Z",
-    "query": "moral philosophy AI alignment",
-    "summary": "Virtue ethics approaches focus on developing AI character rather than rule following.\nContractarianism provides basis for AI alignment through rational agreement models.\nConsequentialist frameworks guide AI optimization toward human flourishing metrics."
-  },
-  {
     "time": "2026-04-12T20:00:01.041Z",
     "query": "cognitive neuroscience memory LLM agent arxiv",
     "summary": "Sleep-like offline processing periods improve memory consolidation in artificial systems.\nHippocampal-inspired memory architectures improve LLM long-context handling.\nSpike-timing dependent plasticity models enhance continual learning in neural networks.\nEpisodic memory binding mechanisms inspire new approaches to AI experience replay.\nWorking memory capacity limits inform optimal chunking strategies for AI reasoning."
@@ -248,5 +243,10 @@
     "time": "2026-04-13T12:00:01.060Z",
     "query": "affective computing emotionsAI",
     "summary": "Multimodal emotion recognition achieves human-level accuracy in controlled settings.\nGenerative models create novel emotional expressions indistinguishable from human.\nAffective computing applications expand into mental health and education domains.\nEmotion regulation strategies inform AI impulse control and decision-making."
+  },
+  {
+    "time": "2026-04-13T12:21:01.080Z",
+    "query": "epistemology knowledge representation AI",
+    "summary": "Virtue epistemology shifts focus to intellectual virtues in AI knowledge acquisition.\nReliabilism offers externalist justification for AI beliefs formed through reliable processes.\nSocial epistemology examines how AI communities validate and share knowledge."
   }
 ]
