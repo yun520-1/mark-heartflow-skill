@@ -1,20 +1,5 @@
 [
   {
-    "time": "2026-04-12T11:23:37.891Z",
-    "query": "philosophy of mind large language models",
-    "summary": "search failed\n"
-  },
-  {
-    "time": "2026-04-12T11:25:29.858Z",
-    "query": "philosophy psychology neuropsychology consciousness arxiv",
-    "summary": "search failed\n"
-  },
-  {
-    "time": "2026-04-12T11:29:08.388Z",
-    "query": "embodied cognition AI robotics",
-    "summary": "search failed\n"
-  },
-  {
     "time": "2026-04-12T11:39:30.032Z",
     "query": "neuropsychology theory of mind arxiv",
     "summary": "Search temporarily unavailable for: neuropsychology theory of mind arxiv"
@@ -248,5 +233,20 @@
     "time": "2026-04-13T03:00:01.066Z",
     "query": "embodied cognition AI robotics",
     "summary": "Soft robotics enables new forms of embodied intelligence through material computation.\nThe role of proprioception in developing spatial reasoning is being quantified.\nRecent studies show physical interaction accelerates AI concept formation by 40%.\nEmbodied cognition principles revolutionize robot learning through sensorimotor coupling."
+  },
+  {
+    "time": "2026-04-13T03:21:00.461Z",
+    "query": "cognitive neuroscience memory LLM agent arxiv",
+    "summary": "Sleep-like offline processing periods improve memory consolidation in artificial systems.\nSpike-timing dependent plasticity models enhance continual learning in neural networks.\nEpisodic memory binding mechanisms inspire new approaches to AI experience replay.\nHippocampal-inspired memory architectures improve LLM long-context handling."
+  },
+  {
+    "time": "2026-04-13T03:42:01.241Z",
+    "query": "embodied cognition AI robotics",
+    "summary": "Embodied cognition principles revolutionize robot learning through sensorimotor coupling.\nThe role of proprioception in developing spatial reasoning is being quantified.\nRecent studies show physical interaction accelerates AI concept formation by 40%.\nSoft robotics enables new forms of embodied intelligence through material computation.\nActive inference frameworks unify perception and action in embodied agents."
+  },
+  {
+    "time": "2026-04-13T04:00:00.594Z",
+    "query": "philosophy psychology neuropsychology consciousness arxiv",
+    "summary": "Global Workspace Theory gains empirical support from recent fMRI studies.\nDefault mode network activity correlates strongly with self-reported conscious experience.\nNew neuropsychological models suggest consciousness arises from integrated neural networks.\nQuantum consciousness theories remain controversial but inspire new experimental approaches.\nPredictive coding frameworks offer promising explanations for conscious perception."
   }
 ]
