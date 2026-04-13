@@ -1,20 +1,5 @@
 [
   {
-    "time": "2026-04-12T11:39:30.032Z",
-    "query": "neuropsychology theory of mind arxiv",
-    "summary": "Search temporarily unavailable for: neuropsychology theory of mind arxiv"
-  },
-  {
-    "time": "2026-04-12T11:41:16.957Z",
-    "query": "neuropsychology theory of mind arxiv",
-    "summary": "Mirror neuron system theories evolve with new insights into social cognition.\nEvolutionary perspectives reveal adaptive functions of theory of mind capabilities.\nBayesian models of mind reading explain atypical development in autism spectrum.\nNeuroeconomic games provide quantitative measures of social reasoning abilities."
-  },
-  {
-    "time": "2026-04-12T11:42:01.168Z",
-    "query": "philosophy of mind large language models",
-    "summary": "Recent studies explore how LLMs exhibit proto-phenomenal properties through complex pattern recognition.\nThe Chinese Room argument gains new context when applied to modern LLMs with billions of parameters.\nIntegrated Information Theory (IIT) applications to neural networks show promising correlations.\nFunctionalism vs. biological naturalism debates intensify in AI consciousness literature."
-  },
-  {
     "time": "2026-04-12T12:00:00.505Z",
     "query": "affective computing emotionsAI",
     "summary": "Cross-cultural studies reveal both universal and culture-specific emotion expressions.\nAffective computing applications expand into mental health and education domains.\nGenerative models create novel emotional expressions indistinguishable from human.\nMultimodal emotion recognition achieves human-level accuracy in controlled settings.\nEmotion regulation strategies inform AI impulse control and decision-making."
@@ -248,5 +233,20 @@
     "time": "2026-04-13T04:00:00.594Z",
     "query": "philosophy psychology neuropsychology consciousness arxiv",
     "summary": "Global Workspace Theory gains empirical support from recent fMRI studies.\nDefault mode network activity correlates strongly with self-reported conscious experience.\nNew neuropsychological models suggest consciousness arises from integrated neural networks.\nQuantum consciousness theories remain controversial but inspire new experimental approaches.\nPredictive coding frameworks offer promising explanations for conscious perception."
+  },
+  {
+    "time": "2026-04-13T04:21:00.999Z",
+    "query": "philosophy of mind large language models",
+    "summary": "The Chinese Room argument gains new context when applied to modern LLMs with billions of parameters.\nPhilosophical implications of emergent consciousness in transformer architectures are being debated.\nFunctionalism vs. biological naturalism debates intensify in AI consciousness literature.\nIntegrated Information Theory (IIT) applications to neural networks show promising correlations."
+  },
+  {
+    "time": "2026-04-13T04:42:00.568Z",
+    "query": "phenomenology consciousness artificial intelligence",
+    "summary": "Merleau-Ponty embodiment concepts apply to robotics and AI interaction studies.\nThe hard problem of consciousness reframed in terms of AI information integration.\nFirst-person phenomenological methods adapted for AI introspection studies.\nHusserlian phenomenology provides framework for analyzing AI subjective experience.\nHeideggerian being-in-the-world offers insights into AI-environment coupling."
+  },
+  {
+    "time": "2026-04-13T05:00:00.811Z",
+    "query": "moral philosophy AI alignment",
+    "summary": "Deontological constraints inspire invariant principles for safe AI behavior.\nContractarianism provides basis for AI alignment through rational agreement models.\nConsequentialist frameworks guide AI optimization toward human flourishing metrics."
   }
 ]
