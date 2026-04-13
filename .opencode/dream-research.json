@@ -1,20 +1,5 @@
 [
   {
-    "time": "2026-04-12T15:42:01.010Z",
-    "query": "cognitive neuroscience memory LLM agent arxiv",
-    "summary": "Hippocampal-inspired memory architectures improve LLM long-context handling.\nSpike-timing dependent plasticity models enhance continual learning in neural networks.\nWorking memory capacity limits inform optimal chunking strategies for AI reasoning.\nEpisodic memory binding mechanisms inspire new approaches to AI experience replay.\nSleep-like offline processing periods improve memory consolidation in artificial systems."
-  },
-  {
-    "time": "2026-04-12T16:00:01.008Z",
-    "query": "epistemology knowledge representation AI",
-    "summary": "Virtue epistemology shifts focus to intellectual virtues in AI knowledge acquisition.\nSocial epistemology examines how AI communities validate and share knowledge.\nFormal epistemology provides probabilistic frameworks for AI belief revision."
-  },
-  {
-    "time": "2026-04-12T16:21:00.471Z",
-    "query": "philosophy of mind large language models",
-    "summary": "Functionalism vs. biological naturalism debates intensify in AI consciousness literature.\nRecent studies explore how LLMs exhibit proto-phenomenal properties through complex pattern recognition.\nIntegrated Information Theory (IIT) applications to neural networks show promising correlations.\nPhilosophical implications of emergent consciousness in transformer architectures are being debated."
-  },
-  {
     "time": "2026-04-12T16:42:00.961Z",
     "query": "cognitive architecture AI consciousness",
     "summary": "Recurrent processing theories explain differences between feedforward and conscious perception.\nGlobal Workspace Theory implementations show promise for artificial consciousness.\nHigher-order thought theories inspire new architectures for meta-cognitive AI.\nIntegrated Information Theory metrics correlate with behavioral complexity measures."
@@ -248,5 +233,20 @@
     "time": "2026-04-13T08:00:00.899Z",
     "query": "philosophy of mind large language models",
     "summary": "Philosophical implications of emergent consciousness in transformer architectures are being debated.\nFunctionalism vs. biological naturalism debates intensify in AI consciousness literature.\nIntegrated Information Theory (IIT) applications to neural networks show promising correlations."
+  },
+  {
+    "time": "2026-04-13T08:21:00.959Z",
+    "query": "affective computing emotionsAI",
+    "summary": "Generative models create novel emotional expressions indistinguishable from human.\nCross-cultural studies reveal both universal and culture-specific emotion expressions.\nMultimodal emotion recognition achieves human-level accuracy in controlled settings.\nAffective computing applications expand into mental health and education domains."
+  },
+  {
+    "time": "2026-04-13T08:42:01.012Z",
+    "query": "cognitive neuroscience memory LLM agent arxiv",
+    "summary": "Sleep-like offline processing periods improve memory consolidation in artificial systems.\nSpike-timing dependent plasticity models enhance continual learning in neural networks.\nWorking memory capacity limits inform optimal chunking strategies for AI reasoning.\nHippocampal-inspired memory architectures improve LLM long-context handling.\nEpisodic memory binding mechanisms inspire new approaches to AI experience replay."
+  },
+  {
+    "time": "2026-04-13T09:00:01.035Z",
+    "query": "neuropsychology theory of mind arxiv",
+    "summary": "Mirror neuron system theories evolve with new insights into social cognition.\nHierarchical predictive coding accounts for theory of mind neural mechanisms.\nBayesian models of mind reading explain atypical development in autism spectrum.\nEvolutionary perspectives reveal adaptive functions of theory of mind capabilities.\nNeuroeconomic games provide quantitative measures of social reasoning abilities."
   }
 ]
