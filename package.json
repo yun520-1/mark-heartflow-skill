@@ -1,7 +1,7 @@
 {
   "name": "heartflow",
   "description": "HeartFlow v7.6 - Self-Evolution Engine with Meta-Learning",
-  "releaseDate": "2026-04-12",
+  "releaseDate": "2026-04-13",
   "main": "src/core/heartflow-engine.js",
   "bin": {
     "heartflow": "bin/cli.js",
@@ -37,7 +37,7 @@
     "express": "^5.2.1",
     "pptxgenjs": "^4.0.1"
   },
-  "version": "8.7.0",
+  "version": "8.6.012",
   "directories": {
     "doc": "docs",
     "test": "tests"
