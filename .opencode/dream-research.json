@@ -1,20 +1,5 @@
 [
   {
-    "time": "2026-04-12T12:00:00.505Z",
-    "query": "affective computing emotionsAI",
-    "summary": "Cross-cultural studies reveal both universal and culture-specific emotion expressions.\nAffective computing applications expand into mental health and education domains.\nGenerative models create novel emotional expressions indistinguishable from human.\nMultimodal emotion recognition achieves human-level accuracy in controlled settings.\nEmotion regulation strategies inform AI impulse control and decision-making."
-  },
-  {
-    "time": "2026-04-12T12:21:00.735Z",
-    "query": "phenomenology consciousness artificial intelligence",
-    "summary": "Heideggerian being-in-the-world offers insights into AI-environment coupling.\nMerleau-Ponty embodiment concepts apply to robotics and AI interaction studies.\nThe hard problem of consciousness reframed in terms of AI information integration."
-  },
-  {
-    "time": "2026-04-12T12:42:01.255Z",
-    "query": "phenomenology consciousness artificial intelligence",
-    "summary": "Husserlian phenomenology provides framework for analyzing AI subjective experience.\nMerleau-Ponty embodiment concepts apply to robotics and AI interaction studies.\nThe hard problem of consciousness reframed in terms of AI information integration.\nHeideggerian being-in-the-world offers insights into AI-environment coupling."
-  },
-  {
     "time": "2026-04-12T13:00:00.613Z",
     "query": "cognitive architecture AI consciousness",
     "summary": "Recurrent processing theories explain differences between feedforward and conscious perception.\nIntegrated Information Theory metrics correlate with behavioral complexity measures.\nHigher-order thought theories inspire new architectures for meta-cognitive AI.\nAttention schema theory offers testable hypotheses about awareness mechanisms."
@@ -248,5 +233,20 @@
     "time": "2026-04-13T05:00:00.811Z",
     "query": "moral philosophy AI alignment",
     "summary": "Deontological constraints inspire invariant principles for safe AI behavior.\nContractarianism provides basis for AI alignment through rational agreement models.\nConsequentialist frameworks guide AI optimization toward human flourishing metrics."
+  },
+  {
+    "time": "2026-04-13T05:21:00.894Z",
+    "query": "moral philosophy AI alignment",
+    "summary": "Consequentialist frameworks guide AI optimization toward human flourishing metrics.\nDeontological constraints inspire invariant principles for safe AI behavior.\nVirtue ethics approaches focus on developing AI character rather than rule following."
+  },
+  {
+    "time": "2026-04-13T05:42:00.504Z",
+    "query": "cognitive neuroscience memory LLM agent arxiv",
+    "summary": "Spike-timing dependent plasticity models enhance continual learning in neural networks.\nWorking memory capacity limits inform optimal chunking strategies for AI reasoning.\nSleep-like offline processing periods improve memory consolidation in artificial systems."
+  },
+  {
+    "time": "2026-04-13T06:00:00.892Z",
+    "query": "cognitive architecture AI consciousness",
+    "summary": "Higher-order thought theories inspire new architectures for meta-cognitive AI.\nIntegrated Information Theory metrics correlate with behavioral complexity measures.\nGlobal Workspace Theory implementations show promise for artificial consciousness.\nRecurrent processing theories explain differences between feedforward and conscious perception.\nAttention schema theory offers testable hypotheses about awareness mechanisms."
   }
 ]
