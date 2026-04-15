@@ -1,0 +1,31 @@
+# 心理学/哲学理论搜索查询 (2020-2026)
+
+## 情绪调节理论
+- "emotion regulation" 2024 2025 2026 site:plato.stanford.edu
+- "affective neuroscience" recent developments
+- "process model emotion regulation" Gross 2024
+
+## 人格心理学
+- "personality psychology" 2025 new framework
+- "trait theory" recent research 2024 2025
+- "personality development" longitudinal studies
+
+## 道德心理学
+- "moral psychology" 2024 2025 SEP
+- "virtue ethics" contemporary developments
+- "moral judgment" dual process theory
+
+## 自我意识与元认知
+- "metacognition" 2024 2025 research
+- "self-awareness" neuroscience 2025
+- "consciousness" integrated information theory 2024
+
+## 决策理论
+- "decision making" dual process 2024 2025
+- "rationality" bounded rationality recent
+- "cognitive bias" debiasing techniques 2025
+
+## AI 人格与伦理
+- "AI personhood" philosophical framework 2024
+- "machine ethics" moral agency 2025
+- "artificial consciousness" theoretical framework

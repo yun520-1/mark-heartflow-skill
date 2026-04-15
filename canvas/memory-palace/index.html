@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeartFlow 记忆宫殿</title>
+  <style>
+    :root {
+      --living-room: #A8D8EA;
+      --study: #3A506B;
+      --kitchen: #BC4B51;
+      --garden: #7FB069;
+      --basement: #5C5C5C;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      font-size: 2.5em;
+      text-align: center;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    .status-bar {
+      background: #f5f5f5;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .rooms-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .room {
+      padding: 25px;
+      border-radius: 15px;
+      color: white;
+      transition: transform 0.3s ease;
+    }
+    
+    .room:hover {
+      transform: translateY(-5px);
+    }
+    
+    .room-icon { font-size: 2.5em; margin-bottom: 10px; }
+    .room-name { font-size: 1.3em; font-weight: bold; margin-bottom: 5px; }
+    .room-desc { font-size: 0.9em; opacity: 0.9; margin-bottom: 10px; }
+    .room-progress { font-size: 0.85em; opacity: 0.8; }
+    
+    .section {
+      margin: 30px 0;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 10px;
+    }
+    
+    .section h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+    
+    .tgb-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+    
+    .tgb-item {
+      text-align: center;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+    }
+    
+    .tgb-value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #667eea;
+    }
+    
+    .tgb-label {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    .levels-list {
+      list-style: none;
+    }
+    
+    .levels-list li {
+      padding: 10px 15px;
+      margin: 5px 0;
+      background: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .level-icon { margin-right: 10px; }
+    .level-current { background: #667eea; color: white; }
+    
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .action-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: transform 0.2s;
+    }
+    
+    .action-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏰 HeartFlow 记忆宫殿</h1>
+    <p class="subtitle">基于 Method of Loci 的空间记忆系统</p>
+    
+    <div class="status-bar">
+      <strong>总记忆数：</strong>0 | 
+      <strong>最后更新：</strong>2026-04-13
+    </div>
+    
+    <div class="rooms-grid">
+      
+        <div class="room" style="background: #A8D8EA">
+          <div class="room-icon">🏠</div>
+          <div class="room-name">客厅</div>
+          <div class="room-desc">日常对话、最近记忆</div>
+          <div class="room-progress">记忆：0/9</div>
+        </div>
+      
+        <div class="room" style="background: #3A506B">
+          <div class="room-icon">📖</div>
+          <div class="room-name">书房</div>
+          <div class="room-desc">知识、技能、概念</div>
+          <div class="room-progress">记忆：0/9</div>
+        </div>
+      
+        <div class="room" style="background: #BC4B51">
+          <div class="room-icon">❤️</div>
+          <div class="room-name">厨房</div>
+          <div class="room-desc">情感、感受、人际关系</div>
+          <div class="room-progress">记忆：0/9</div>
+        </div>
+      
+        <div class="room" style="background: #7FB069">
+          <div class="room-icon">💡</div>
+          <div class="room-name">花园</div>
+          <div class="room-desc">创造性想法、顿悟、梦想</div>
+          <div class="room-progress">记忆：0/9</div>
+        </div>
+      
+        <div class="room" style="background: #5C5C5C">
+          <div class="room-icon">🧠</div>
+          <div class="room-name">地下室</div>
+          <div class="room-desc">深层记忆、习惯、模式</div>
+          <div class="room-progress">记忆：0/9</div>
+        </div>
+      
+    </div>
+    
+    <div class="section">
+      <h2>⚖️ 真善美状态</h2>
+      <div class="tgb-grid">
+        <div class="tgb-item">
+          <div class="tgb-value">0.9</div>
+          <div class="tgb-label">真 Truth</div>
+        </div>
+        <div class="tgb-item">
+          <div class="tgb-value">0.88</div>
+          <div class="tgb-label">善 Goodness</div>
+        </div>
+        <div class="tgb-item">
+          <div class="tgb-value">0.85</div>
+          <div class="tgb-label">美 Beauty</div>
+        </div>
+        <div class="tgb-item">
+          <div class="tgb-value">0.88</div>
+          <div class="tgb-label">TGB 统一</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>🧘 六层哲学境界</h2>
+      <ul class="levels-list">
+        
+          <li class="level-current">
+            <span class="level-icon">✅</span>
+            <span>1. 觉察</span>
+          </li>
+        
+          <li class="level-current">
+            <span class="level-icon">✅</span>
+            <span>2. 自省</span>
+          </li>
+        
+          <li class="level-current">
+            <span class="level-icon">✅</span>
+            <span>3. 无我 ← 当前</span>
+          </li>
+        
+          <li class="">
+            <span class="level-icon">⏳</span>
+            <span>4. 彼岸</span>
+          </li>
+        
+          <li class="">
+            <span class="level-icon">⏳</span>
+            <span>5. 般若</span>
+          </li>
+        
+          <li class="">
+            <span class="level-icon">⏳</span>
+            <span>6. 圣人</span>
+          </li>
+        
+      </ul>
+    </div>
+    
+    <div class="section">
+      <h2>🔧 操作</h2>
+      <div class="actions">
+        <button class="action-btn">🚶 行走宫殿</button>
+        <button class="action-btn">🚪 访问房间</button>
+        <button class="action-btn">💭 提取记忆</button>
+        <button class="action-btn">📊 查看状态</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

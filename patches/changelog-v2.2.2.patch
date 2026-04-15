@@ -1,0 +1,138 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index f6f99da..a35961e 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,5 +1,133 @@
+ # HeartFlow 变更日志
+ 
++## v2.2.2 (2026-04-09)
++
++### 🎉 新增功能
++
++#### 元认知进化模块 (`src/core/self-evolution/goedel-engine.js`)
++
++- **原则性反思 `principleBasedReflect()`**
++  - 基于核心价值观进行深度反思
++  - 评估当前行为是否符合长期原则
++  - 计算原则对齐分数
++  - 检测原则偏离并提供建议
++
++- **过程性反思 `proceduralReflect()`**
++  - 反思进化过程本身的有效性
++  - 分析进化频率、成功率、时间间隔
++  - 识别效率瓶颈和优化空间
++
++#### 元认知自我修改 (`src/core/self-modifier.js`)
++
++- **补丁生成机制**
++  - 所有修改生成 `.patch` 文件交由用户审查
++  - 不直接应用修改，确保用户可控
++  - 补丁存储在 `patches/` 目录
++
++- **审批工作流**
++  - `metacognitiveModify(suggestion)` - 生成补丁
++  - `listPendingPatches()` - 列出待审批补丁
++  - `applyApprovedPatch(patchFileName)` - 应用已审批补丁
++  - `rejectPatch(patchFileName)` - 拒绝并删除补丁
++
++- **差异化对比**
++  - `computeSimpleDiff()` - 计算行级差异
++  - 标准 unified diff 格式
++  - 包含应用/撤销说明
++
++### 🔧 技术改进
++
++- 补丁文件命名：`self-mod-{timestamp}.patch`
++- 变更历史记录增加 `requiresApproval` 字段
++- 新增 patches 目录管理
++
++### 📋 审查流程
++
++1. 自我修改建议 → 生成补丁 → 存储到 `patches/`
++2. 用户审查补丁文件
++3. 使用 `patch -p1 < patches/xxx.patch` 应用
++4. 使用 `patch -R -p1 < patches/xxx.patch` 撤销
++
++---
++
++## v2.2.1 (2026-04-09)
++
++### 🎉 新增功能
++
++#### 自适应调节引擎 (`src/core/adaptive-controller.js`)
++- `adjustInterventionPolicy(userFlowState, taskComplexity)` 函数
++- 根据心流状态动态调整干预频率和风格
++- 策略映射：
++  - 深度心流 → 极低干预 (`⚡`)
++  - 轻度分心 → 中等干预 (`要继续吗？`)
++  - 焦虑/挫败 → 高干预 (`我注意到你卡住了...`)
++  - 无聊 → 低干预 (`想试试更优雅的写法吗？`)
++- 内部日志记录调节决策
++
++#### 多智能体编排器 (`src/core/agent-orchestrator.js`)
++- 基于DAG的任务调度器
++- 支持并行执行（FocusAgent + MoodAgent）
++- 依赖链：FocusAgent/MoodAgent → ContextAgent → SelfAgent → DecisionAgent
++- `Promise.all` 实现并行调用
++- 专家权重投票机制 `resolveConflict(opinions)`
++- 根据历史准确率自动计算权重
++
++#### 智能体表现追踪 (`src/core/agent-performance.json`)
++- 追踪各智能体任务成功率
++- 权重公式：`weight = 0.3 + accuracy * 0.7`
++- 定期更新权重
++
++#### 错误处理器 (`src/core/error-handler.js`)
++- 统一捕获系统异常
++- 错误分类：timeout/memory/permission/network/syntax/unknown
++- 错误历史记录和统计
++
++#### 状态快照管理器 (`src/core/state-snapshot.js`)
++- 定期保存系统状态
++- 支持快照恢复
++- 自动清理敏感数据
++
++### 📝 文档更新
++
++- `SKILL.md` 新增调试命令：
++  - `/flow agents status` - 查看智能体状态
++  - `/flow auto on/off` - 开关自适应模式
++  - `/flow test` - 触发基准测试
++- `src/core/heartflow-engine.js` 集成所有新模块
++
++### 🔧 技术改进
++
++- 心流引擎模块化重构
++- 统一的错误处理和日志
++- 快照恢复机制
++- DAG执行优化（并行+依赖）
++
++### 📊 新增测试
++
++- `tests/self-benchmark/test-cases.json` - 25个标准测试用例
++- `tests/self-benchmark/run-benchmark.js` - 基准测试运行器
++- 意图识别率、情感识别率、伦理合规率
++
++### 🚀 下一步测试重点
++
++1. **自适应调节测试**
++   - 测试不同心流状态下的干预策略
++   - 验证干预频率和风格是否正确
++
++2. **多智能体DAG测试**
++   - 测试并行执行性能
++   - 测试专家权重投票
++
++3. **错误恢复测试**
++   - 模拟异常，验证错误捕获
++   - 验证快照恢复
++
++4. **基准测试**
++   - 运行 `/flow test`
++   - 评估意图识别和情感分析准确率
++
++---
++
+ ## v2.2.0 (2026-04-08)
+ 
+ ### 🎉 新增功能

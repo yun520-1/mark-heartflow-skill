@@ -1,0 +1,19 @@
+{
+  "name": "cn-web-search",
+  "version": "0.9.0",
+  "description": "中文网页搜索 - 聚合360搜索+DuckDuckGo，无需API Key",
+  "author": "joansongjr",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joansongjr/cn-web-search"
+  },
+  "keywords": [
+    "search",
+    "chinese",
+    "web-search",
+    "openclaw",
+    "clawhub",
+    "skill"
+  ]
+}

@@ -1,0 +1,1 @@
+module.exports = { word: "失望", type: "词", count: 1 };

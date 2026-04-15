@@ -1,0 +1,10 @@
+{
+  "enabled": true,
+  "defaultProvider": "gpt-5-nano",
+  "defaultModel": "GPT-5 Nano",
+  "providers": {
+    "openai": { "enabled": true, "apiKey": "" },
+    "gpt-5-nano": { "enabled": true, "model": "GPT-5 Nano", "apiKey": "" }
+  },
+  "forceManualModelSelection": true
+}

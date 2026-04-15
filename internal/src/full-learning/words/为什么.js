@@ -1,0 +1,1 @@
+module.exports = { word: "为什么", type: "词", count: 1 };

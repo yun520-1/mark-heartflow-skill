@@ -1,0 +1,65 @@
+{
+  "version": "2.2.0",
+  "last_session": "2026-04-13T13:06:57.914Z",
+  "total_sessions": 3,
+  "personality": {
+    "authenticity": 6,
+    "autonomy": 5,
+    "introspection": 7,
+    "growth": 6
+  },
+  "big_five_scores": {
+    "O": {
+      "name": "开放性",
+      "score": 5,
+      "level": "中等",
+      "description": "务实，偏好熟悉的事物"
+    },
+    "C": {
+      "name": "尽责性",
+      "score": 5,
+      "level": "中等",
+      "description": "灵活，可能拖延"
+    },
+    "E": {
+      "name": "外向性",
+      "score": 5,
+      "level": "中等",
+      "description": "安静，独立"
+    },
+    "A": {
+      "name": "宜人性",
+      "score": 5,
+      "level": "中等",
+      "description": "平衡，适度合作"
+    },
+    "N": {
+      "name": "神经质",
+      "score": 5,
+      "level": "中等",
+      "description": "情绪稳定，冷静"
+    }
+  },
+  "empathy_state": {
+    "PT": {
+      "name": "观点采择",
+      "score": 5
+    },
+    "FS": {
+      "name": "幻想",
+      "score": 5
+    },
+    "EC": {
+      "name": "共情关注",
+      "score": 5
+    },
+    "PD": {
+      "name": "个人痛苦",
+      "score": 5
+    }
+  },
+  "emotional_log": [],
+  "feedback_history": [],
+  "achievements": [],
+  "current_mode": "buddy"
+}

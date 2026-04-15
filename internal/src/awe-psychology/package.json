@@ -1,0 +1,19 @@
+{
+  "name": "heartflow-awe-psychology",
+  "version": "3.45.0",
+  "description": "HeartFlow 敬畏心理学模块 - 基于 Berkeley Greater Good 科学研究",
+  "main": "index.js",
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "keywords": [
+    "awe",
+    "psychology",
+    "emotion",
+    "wellbeing",
+    "heartflow"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yun520-1/mark-heartflow-skill"
+  }
+}

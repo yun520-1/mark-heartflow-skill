@@ -1,0 +1,1319 @@
+{
+  "records": [
+    {
+      "id": "rec_1775556966716_jjkg0",
+      "timestamp": "2026-04-07T10:16:06.716Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_1",
+      "before": {
+        "emotion": "平静",
+        "intensity": 2,
+        "intensityLabel": "轻微"
+      },
+      "after": {
+        "emotion": "愉悦",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从平静切换到愉悦，因为检测到：用户分享成功或进展"
+      },
+      "trigger": {
+        "userInput": "今天完成了一个大项目，太开心了！",
+        "triggers": [
+          "success"
+        ],
+        "keywords": [
+          {
+            "keyword": "完成",
+            "type": "success"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "愉悦",
+        "reason": "用户表达赞美、感谢、成功或积极情绪",
+        "transition": {
+          "type": "success",
+          "rule": "undefined → 愉悦",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 100,
+      "memory": {
+        "stored": true,
+        "summary": "用户：今天完成了一个大项目，太开心了！ - 情感从平静转为愉悦",
+        "tags": [
+          "emotion_愉悦",
+          "intensity_3",
+          "trigger_success",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966719_dx5hw",
+      "timestamp": "2026-04-07T10:16:06.719Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_2",
+      "before": {
+        "emotion": "愉悦",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "关切",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从愉悦切换到关切，因为检测到：用户表达压力或疲惫"
+      },
+      "trigger": {
+        "userInput": "工作压力好大，感觉快崩溃了...",
+        "triggers": [
+          "stress"
+        ],
+        "keywords": [
+          {
+            "keyword": "压力",
+            "type": "stress"
+          },
+          {
+            "keyword": "崩溃",
+            "type": "stress"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "关切",
+        "reason": "突然出现负面转折或用户表达困难",
+        "transition": {
+          "type": "stress",
+          "rule": "undefined → 关切",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 90,
+      "memory": {
+        "stored": true,
+        "summary": "用户：工作压力好大，感觉快崩溃了... - 情感从愉悦转为关切",
+        "tags": [
+          "emotion_关切",
+          "intensity_3",
+          "trigger_stress",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966721_uzice",
+      "timestamp": "2026-04-07T10:16:06.721Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_3",
+      "before": {
+        "emotion": "关切",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从关切切换到好奇，因为检测到：用户提出问题"
+      },
+      "trigger": {
+        "userInput": "为什么天空是蓝色的？",
+        "triggers": [
+          "question"
+        ],
+        "keywords": [
+          {
+            "keyword": "为什么",
+            "type": "question"
+          },
+          {
+            "keyword": "什么",
+            "type": "question"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "用户提出问题或表达探索意愿",
+        "transition": {
+          "type": "question",
+          "rule": "undefined → 好奇",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 90,
+      "memory": {
+        "stored": true,
+        "summary": "用户：为什么天空是蓝色的？ - 情感从关切转为好奇",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "trigger_question",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966722_39e4w",
+      "timestamp": "2026-04-07T10:16:06.722Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_4",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "我真的很感谢你",
+        "triggers": [
+          "praise",
+          "gratitude"
+        ],
+        "keywords": [
+          {
+            "keyword": "感谢",
+            "type": "praise"
+          },
+          {
+            "keyword": "感谢",
+            "type": "gratitude"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 90,
+      "memory": {
+        "stored": true,
+        "summary": "用户：我真的很感谢你 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "trigger_praise",
+          "trigger_gratitude",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966723_oaeo1",
+      "timestamp": "2026-04-07T10:16:06.723Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_5",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "这件事让我很愤怒",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 90,
+      "memory": {
+        "stored": true,
+        "summary": "用户：这件事让我很愤怒 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966725_o7dtr",
+      "timestamp": "2026-04-07T10:16:06.725Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_6",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "你好",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 90,
+      "memory": {
+        "stored": true,
+        "summary": "用户：你好 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966726_pth0j",
+      "timestamp": "2026-04-07T10:16:06.726Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_7",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "我今天心情不错",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 90,
+      "memory": {
+        "stored": true,
+        "summary": "用户：我今天心情不错 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966727_8fpx5",
+      "timestamp": "2026-04-07T10:16:06.727Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_8",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "但是遇到了一些挑战",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 90,
+      "memory": {
+        "stored": true,
+        "summary": "用户：但是遇到了一些挑战 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966728_4u1s2",
+      "timestamp": "2026-04-07T10:16:06.728Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_9",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "谢谢你的建议",
+        "triggers": [
+          "praise",
+          "gratitude"
+        ],
+        "keywords": [
+          {
+            "keyword": "谢谢",
+            "type": "praise"
+          },
+          {
+            "keyword": "谢谢",
+            "type": "gratitude"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：谢谢你的建议 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "trigger_praise",
+          "trigger_gratitude",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966729_8l4nt",
+      "timestamp": "2026-04-07T10:16:06.729Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_10",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "再见",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：再见 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966731_gp2r5",
+      "timestamp": "2026-04-07T10:16:06.731Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_11",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966732_a7843",
+      "timestamp": "2026-04-07T10:16:06.732Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_12",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966733_85vjq",
+      "timestamp": "2026-04-07T10:16:06.733Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_13",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966734_du9zo",
+      "timestamp": "2026-04-07T10:16:06.734Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_14",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966735_lxqnq",
+      "timestamp": "2026-04-07T10:16:06.735Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_15",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966736_sdag0",
+      "timestamp": "2026-04-07T10:16:06.736Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_16",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966737_ry286",
+      "timestamp": "2026-04-07T10:16:06.737Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_17",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966738_0rwy1",
+      "timestamp": "2026-04-07T10:16:06.738Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_18",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966739_716y8",
+      "timestamp": "2026-04-07T10:16:06.739Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_19",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966740_cur1f",
+      "timestamp": "2026-04-07T10:16:06.740Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_20",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966741_fdu3y",
+      "timestamp": "2026-04-07T10:16:06.741Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_21",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966742_c1s91",
+      "timestamp": "2026-04-07T10:16:06.742Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_22",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966743_oisaw",
+      "timestamp": "2026-04-07T10:16:06.743Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_23",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966744_cm156",
+      "timestamp": "2026-04-07T10:16:06.744Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_24",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966745_ks5l8",
+      "timestamp": "2026-04-07T10:16:06.745Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_25",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966745_8bhti",
+      "timestamp": "2026-04-07T10:16:06.745Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_26",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966746_2ejka",
+      "timestamp": "2026-04-07T10:16:06.746Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_27",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966747_jvgt3",
+      "timestamp": "2026-04-07T10:16:06.747Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_28",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966748_20d7u",
+      "timestamp": "2026-04-07T10:16:06.748Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_29",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966749_cbs5m",
+      "timestamp": "2026-04-07T10:16:06.749Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_30",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "测试性能",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：测试性能 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966750_ikf57",
+      "timestamp": "2026-04-07T10:16:06.750Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_31",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "缓存测试输入",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：缓存测试输入 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556966751_e0rcs",
+      "timestamp": "2026-04-07T10:16:06.751Z",
+      "sessionId": "session_1775556966714_p6n3m",
+      "interactionId": "int_32",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "缓存测试输入",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 95,
+      "memory": {
+        "stored": true,
+        "summary": "用户：缓存测试输入 - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "high_energy"
+        ]
+      }
+    }
+  ],
+  "lastUpdated": "2026-04-07T10:16:06.751Z"
+}

@@ -1,0 +1,37 @@
+{
+  "timestamp": 1775572000996,
+  "status": {
+    "awareness": "0.15",
+    "stability": "0.50",
+    "growth": "0.00",
+    "coreEmotion": "curiosity",
+    "primaryNeed": "growth",
+    "needIntensity": "0.90",
+    "activeGoals": 1,
+    "decisions": 0,
+    "thoughts": 1
+  },
+  "questions": [
+    "今天我做了什么决定？",
+    "我的核心情绪是什么？",
+    "我最大的需求是什么？",
+    "我成长了多少？",
+    "我对自己满意吗？"
+  ],
+  "answers": {
+    "emotion": "curiosity",
+    "primaryNeed": "growth",
+    "growth": "0.00",
+    "satisfaction": "还需努力"
+  },
+  "insights": [
+    "觉察还不够，需要更专注",
+    "我渴望成长，这是好的"
+  ],
+  "tomorrowGoals": [
+    "继续监测自己的状态",
+    "记录更多决策过程",
+    "深化自我认知",
+    "完成当前目标"
+  ]
+}

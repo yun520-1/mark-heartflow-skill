@@ -1,0 +1,1 @@
+module.exports = { char: "过", type: "字", count: 1 };

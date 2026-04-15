@@ -1,0 +1,7 @@
+# HeartFlow v8.7.1 crontab config
+# 项目目录：/Users/apple/mark-heartflow-claw
+# 仓库：https://github.com/yun520-1/mark-heartflow-claw
+# 当前版本：8.7.1
+
+# 每 24 分钟增强理论升级
+*/24 * * * * /Users/apple/mark-heartflow-claw/scripts/hourly-enhanced-upgrade-v2.sh >> /Users/apple/mark-heartflow-claw/logs/enhanced-cron.log 2>&1

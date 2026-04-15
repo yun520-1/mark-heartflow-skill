@@ -1,0 +1,1 @@
+module.exports = { word: "从所有对", type: "词", count: 1 };

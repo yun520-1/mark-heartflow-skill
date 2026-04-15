@@ -1,0 +1,23 @@
+{
+  "name": "emotion-collective-integration-v5.0.11",
+  "version": "1.0.0",
+  "description": "情绪 - 集体意向性整合模块 - 基于 SEP 情绪理论三大传统 + 集体意向性理论",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "emotion",
+    "collective-intentionality",
+    "SEP",
+    "phenomenology",
+    "HeartFlow"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "theory": {
+    "emotion": "SEP Emotion Entry - Feeling/Evaluative/Motivational Traditions",
+    "collective": "SEP Collective Intentionality Entry - We-Intention/Joint Commitment/Trust",
+    "phenomenology": "Scheler 1954, Walther 1923 - Shared Emotion"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "date": "2026-04-14",
+  "version": "8.7.114",
+  "previous_version": "8.7.113",
+  "sep_theories": 5,
+  "academic_papers": 7,
+  "math_formulas": 8,
+  "advanced_calculations": 7,
+  "git_commit": "8b3179e",
+  "git_commit_msg": "HeartFlow v8.7.114 - 理论升级 2026-04-14",
+  "git_push": "FAILED - 网络连接失败: Failed to connect to github.com port 443",
+  "files_changed": 4,
+  "report_file": "internal/data/theory-upgrade-2026-04-14.md"
+}

@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-04-05T14:59:37.960Z",
+  "version": "4.0.0",
+  "analysis": {
+    "totalNeeds": 1,
+    "byPriority": {
+      "critical": 1,
+      "high": 0,
+      "medium": 0,
+      "low": 0
+    },
+    "items": [
+      {
+        "type": "git",
+        "priority": "critical",
+        "reason": "有未提交变更"
+      }
+    ]
+  },
+  "upgrade": {
+    "success": 1,
+    "failed": 0,
+    "skipped": 0,
+    "planned": 0,
+    "duration": "2.5",
+    "items": [
+      {
+        "type": "git",
+        "priority": "critical",
+        "reason": "有未提交变更",
+        "status": "success"
+      }
+    ]
+  },
+  "awakening": {
+    "checked": true,
+    "cai": "见觉醒推演输出"
+  }
+}

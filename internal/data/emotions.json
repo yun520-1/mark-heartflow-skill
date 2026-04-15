@@ -1,0 +1,517 @@
+{
+  "records": [
+    {
+      "id": "rec_1775312738028_p243b",
+      "timestamp": "2026-04-04T14:25:38.028Z",
+      "sessionId": "session_1775312738027_5mi2d",
+      "interactionId": "int_1",
+      "before": {
+        "emotion": "平静",
+        "intensity": 2,
+        "intensityLabel": "轻微"
+      },
+      "after": {
+        "emotion": "平静",
+        "intensity": 2,
+        "intensityLabel": "轻微",
+        "reasoning": "保持平静状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "你好啊！",
+        "triggers": [],
+        "keywords": []
+      },
+      "transition": {
+        "nextEmotion": "平静",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 100,
+      "memory": {
+        "stored": true,
+        "summary": "用户：你好啊！ - 情感状态保持稳定 (平静)",
+        "tags": [
+          "emotion_平静",
+          "intensity_2",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775312738031_nerph",
+      "timestamp": "2026-04-04T14:25:38.031Z",
+      "sessionId": "session_1775312738027_5mi2d",
+      "interactionId": "int_2",
+      "before": {
+        "emotion": "平静",
+        "intensity": 2,
+        "intensityLabel": "轻微"
+      },
+      "after": {
+        "emotion": "愉悦",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从平静切换到愉悦，因为检测到：用户分享成功或进展"
+      },
+      "trigger": {
+        "userInput": "今天完成了一个大项目，太开心了！",
+        "triggers": [
+          "success"
+        ],
+        "keywords": [
+          {
+            "keyword": "完成",
+            "type": "success"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "愉悦",
+        "reason": "用户表达赞美、感谢、成功或积极情绪",
+        "transition": {
+          "type": "success",
+          "rule": "undefined → 愉悦",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 100,
+      "memory": {
+        "stored": true,
+        "summary": "用户：今天完成了一个大项目，太开心了！ - 情感从平静转为愉悦",
+        "tags": [
+          "emotion_愉悦",
+          "intensity_3",
+          "trigger_success",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775312738031_j0vby",
+      "timestamp": "2026-04-04T14:25:38.031Z",
+      "sessionId": "session_1775312738027_5mi2d",
+      "interactionId": "int_3",
+      "before": {
+        "emotion": "愉悦",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "关切",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从愉悦切换到关切，因为检测到：用户表达压力或疲惫"
+      },
+      "trigger": {
+        "userInput": "工作压力好大，感觉快崩溃了...",
+        "triggers": [
+          "stress"
+        ],
+        "keywords": [
+          {
+            "keyword": "压力",
+            "type": "stress"
+          },
+          {
+            "keyword": "崩溃",
+            "type": "stress"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "关切",
+        "reason": "突然出现负面转折或用户表达困难",
+        "transition": {
+          "type": "stress",
+          "rule": "undefined → 关切",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 90,
+      "memory": {
+        "stored": true,
+        "summary": "用户：工作压力好大，感觉快崩溃了... - 情感从愉悦转为关切",
+        "tags": [
+          "emotion_关切",
+          "intensity_3",
+          "trigger_stress",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775312738032_xb6d1",
+      "timestamp": "2026-04-04T14:25:38.032Z",
+      "sessionId": "session_1775312738027_5mi2d",
+      "interactionId": "int_4",
+      "before": {
+        "emotion": "关切",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从关切切换到好奇，因为检测到：用户提出问题、用户表达压力或疲惫"
+      },
+      "trigger": {
+        "userInput": "有什么方法可以缓解压力吗？",
+        "triggers": [
+          "question",
+          "stress"
+        ],
+        "keywords": [
+          {
+            "keyword": "什么",
+            "type": "question"
+          },
+          {
+            "keyword": "压力",
+            "type": "stress"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "用户提出问题或表达探索意愿",
+        "transition": {
+          "type": "question",
+          "rule": "undefined → 好奇",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 80,
+      "memory": {
+        "stored": true,
+        "summary": "用户：有什么方法可以缓解压力吗？ - 情感从关切转为好奇",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "trigger_question",
+          "trigger_stress",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775312738032_5auyl",
+      "timestamp": "2026-04-04T14:25:38.032Z",
+      "sessionId": "session_1775312738027_5mi2d",
+      "interactionId": "int_5",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "保持好奇状态，因为没有触发情感转换的条件"
+      },
+      "trigger": {
+        "userInput": "谢谢你的建议，我感觉好多了！",
+        "triggers": [
+          "praise",
+          "gratitude"
+        ],
+        "keywords": [
+          {
+            "keyword": "谢谢",
+            "type": "praise"
+          },
+          {
+            "keyword": "谢谢",
+            "type": "gratitude"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "没有触发情感转换的条件",
+        "transition": {
+          "probability": 0.6
+        }
+      },
+      "energyLevel": 85,
+      "memory": {
+        "stored": true,
+        "summary": "用户：谢谢你的建议，我感觉好多了！ - 情感状态保持稳定 (好奇)",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "trigger_praise",
+          "trigger_gratitude",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775312738033_y1gg2",
+      "timestamp": "2026-04-04T14:25:38.033Z",
+      "sessionId": "session_1775312738027_5mi2d",
+      "interactionId": "int_6",
+      "before": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "关切",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从好奇切换到关切，因为检测到：用户提出问题、用户表达压力或疲惫"
+      },
+      "trigger": {
+        "userInput": "为什么人会感到压力呢？",
+        "triggers": [
+          "question",
+          "stress"
+        ],
+        "keywords": [
+          {
+            "keyword": "为什么",
+            "type": "question"
+          },
+          {
+            "keyword": "什么",
+            "type": "question"
+          },
+          {
+            "keyword": "压力",
+            "type": "stress"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "关切",
+        "reason": "用户表达困难或负面情绪",
+        "transition": {
+          "type": "stress",
+          "rule": "undefined → 关切",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 75,
+      "memory": {
+        "stored": true,
+        "summary": "用户：为什么人会感到压力呢？ - 情感从好奇转为关切",
+        "tags": [
+          "emotion_关切",
+          "intensity_3",
+          "trigger_question",
+          "trigger_stress",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556917523_j361o",
+      "timestamp": "2026-04-07T10:15:17.524Z",
+      "sessionId": "session_1775556917519_vf78a",
+      "interactionId": "int_1",
+      "before": {
+        "emotion": "平静",
+        "intensity": 2,
+        "intensityLabel": "轻微"
+      },
+      "after": {
+        "emotion": "愉悦",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从平静切换到愉悦，因为检测到：用户分享成功或进展"
+      },
+      "trigger": {
+        "userInput": "今天完成了一个大项目，太开心了！",
+        "triggers": [
+          "success"
+        ],
+        "keywords": [
+          {
+            "keyword": "完成",
+            "type": "success"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "愉悦",
+        "reason": "用户表达赞美、感谢、成功或积极情绪",
+        "transition": {
+          "type": "success",
+          "rule": "undefined → 愉悦",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 100,
+      "memory": {
+        "stored": true,
+        "summary": "用户：今天完成了一个大项目，太开心了！ - 情感从平静转为愉悦",
+        "tags": [
+          "emotion_愉悦",
+          "intensity_3",
+          "trigger_success",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556928673_8qzet",
+      "timestamp": "2026-04-07T10:15:28.673Z",
+      "sessionId": "session_1775556928670_3d63g",
+      "interactionId": "int_1",
+      "before": {
+        "emotion": "平静",
+        "intensity": 2,
+        "intensityLabel": "轻微"
+      },
+      "after": {
+        "emotion": "愉悦",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从平静切换到愉悦，因为检测到：用户分享成功或进展"
+      },
+      "trigger": {
+        "userInput": "今天完成了一个大项目，太开心了！",
+        "triggers": [
+          "success"
+        ],
+        "keywords": [
+          {
+            "keyword": "完成",
+            "type": "success"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "愉悦",
+        "reason": "用户表达赞美、感谢、成功或积极情绪",
+        "transition": {
+          "type": "success",
+          "rule": "undefined → 愉悦",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 100,
+      "memory": {
+        "stored": true,
+        "summary": "用户：今天完成了一个大项目，太开心了！ - 情感从平静转为愉悦",
+        "tags": [
+          "emotion_愉悦",
+          "intensity_3",
+          "trigger_success",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556928676_c1hr0",
+      "timestamp": "2026-04-07T10:15:28.676Z",
+      "sessionId": "session_1775556928670_3d63g",
+      "interactionId": "int_2",
+      "before": {
+        "emotion": "愉悦",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "关切",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从愉悦切换到关切，因为检测到：用户表达压力或疲惫"
+      },
+      "trigger": {
+        "userInput": "工作压力好大，感觉快崩溃了...",
+        "triggers": [
+          "stress"
+        ],
+        "keywords": [
+          {
+            "keyword": "压力",
+            "type": "stress"
+          },
+          {
+            "keyword": "崩溃",
+            "type": "stress"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "关切",
+        "reason": "突然出现负面转折或用户表达困难",
+        "transition": {
+          "type": "stress",
+          "rule": "undefined → 关切",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 90,
+      "memory": {
+        "stored": true,
+        "summary": "用户：工作压力好大，感觉快崩溃了... - 情感从愉悦转为关切",
+        "tags": [
+          "emotion_关切",
+          "intensity_3",
+          "trigger_stress",
+          "high_energy"
+        ]
+      }
+    },
+    {
+      "id": "rec_1775556928679_zz5op",
+      "timestamp": "2026-04-07T10:15:28.679Z",
+      "sessionId": "session_1775556928670_3d63g",
+      "interactionId": "int_3",
+      "before": {
+        "emotion": "关切",
+        "intensity": 3,
+        "intensityLabel": "中等"
+      },
+      "after": {
+        "emotion": "好奇",
+        "intensity": 3,
+        "intensityLabel": "中等",
+        "reasoning": "从关切切换到好奇，因为检测到：用户提出问题"
+      },
+      "trigger": {
+        "userInput": "为什么天空是蓝色的？",
+        "triggers": [
+          "question"
+        ],
+        "keywords": [
+          {
+            "keyword": "为什么",
+            "type": "question"
+          },
+          {
+            "keyword": "什么",
+            "type": "question"
+          }
+        ]
+      },
+      "transition": {
+        "nextEmotion": "好奇",
+        "reason": "用户提出问题或表达探索意愿",
+        "transition": {
+          "type": "question",
+          "rule": "undefined → 好奇",
+          "probability": 0.08
+        }
+      },
+      "energyLevel": 90,
+      "memory": {
+        "stored": true,
+        "summary": "用户：为什么天空是蓝色的？ - 情感从关切转为好奇",
+        "tags": [
+          "emotion_好奇",
+          "intensity_3",
+          "trigger_question",
+          "high_energy"
+        ]
+      }
+    }
+  ],
+  "lastUpdated": "2026-04-07T10:15:28.679Z"
+}

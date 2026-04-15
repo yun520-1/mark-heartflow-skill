@@ -1,0 +1,436 @@
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+/bin/sh: node: command not found
+[2026-04-12T11:22:56.635Z] ✅ 已创建 /Users/apple/mark-heartflow-skill/.opencode/dream.cron
+[2026-04-12T11:23:37.877Z] 🧠 开始做梦研究...
+[2026-04-12T11:23:37.891Z] 📚 研究收获: philosophy of mind large language models
+[2026-04-12T11:23:37.891Z] 💾 研究结果已保存
+[2026-04-12T11:25:29.844Z] 🧠 开始做梦研究...
+[2026-04-12T11:25:29.855Z] 📚 研究收获: philosophy psychology neuropsychology consciousness arxiv
+[2026-04-12T11:25:29.858Z] 💾 研究结果已保存
+[2026-04-12T11:42:01.165Z] 🧠 开始做梦研究...
+[2026-04-12T11:42:01.168Z] 📚 研究收获: philosophy of mind large language models
+[2026-04-12T11:42:01.168Z] 💾 研究结果已保存
+[2026-04-12T12:00:00.499Z] 🚀 打包上传 GitHub...
+[2026-04-12T12:00:00.501Z] 🧠 开始做梦研究...
+[2026-04-12T12:00:00.504Z] 📚 研究收获: affective computing emotionsAI
+[2026-04-12T12:00:00.506Z] 💾 研究结果已保存
+[2026-04-12T12:00:00.580Z] 📦 版本号: 7.7.0
+[2026-04-12T12:00:00.580Z] 📦 版本号增加: 7.7.0
+fatal: unable to access 'https://github.com/yun520-1/mark-heartflow-skill.git/': Error in the HTTP2 framing layer
+[2026-04-12T12:01:31.275Z] ⚠️ 上传失败: Command failed: git push origin main
+fatal: unable to access 'https://github.com/yun520-1/mark-heartflow-skill.git/': Error in the HTTP2 framing layer
+
+[2026-04-12T12:21:00.731Z] 🧠 开始做梦研究...
+[2026-04-12T12:21:00.735Z] 📚 研究收获: phenomenology consciousness artificial intelligence
+[2026-04-12T12:21:00.736Z] 💾 研究结果已保存
+[2026-04-12T12:42:01.251Z] 🧠 开始做梦研究...
+[2026-04-12T12:42:01.255Z] 📚 研究收获: phenomenology consciousness artificial intelligence
+[2026-04-12T12:42:01.255Z] 💾 研究结果已保存
+[2026-04-12T13:00:00.610Z] 🚀 打包上传 GitHub...
+[2026-04-12T13:00:00.610Z] 🧠 开始做梦研究...
+[2026-04-12T13:00:00.612Z] 📚 研究收获: cognitive architecture AI consciousness
+[2026-04-12T13:00:00.613Z] 💾 研究结果已保存
+[2026-04-12T13:00:00.719Z] 📦 版本号: 7.7.0
+[2026-04-12T13:00:00.719Z] 📦 版本号增加: 7.7.0
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   640d7c3..6e6fe60  main -> main
+[2026-04-12T13:00:04.216Z] ✅ 已上传
+[2026-04-12T13:21:01.035Z] 🧠 开始做梦研究...
+[2026-04-12T13:21:01.038Z] 📚 研究收获: philosophy psychology neuropsychology consciousness arxiv
+[2026-04-12T13:21:01.040Z] 💾 研究结果已保存
+[2026-04-12T13:42:00.965Z] 🧠 开始做梦研究...
+[2026-04-12T13:42:00.969Z] 📚 研究收获: affective computing emotionsAI
+[2026-04-12T13:42:00.970Z] 💾 研究结果已保存
+[2026-04-12T14:00:00.538Z] 🧠 开始做梦研究...
+[2026-04-12T14:00:00.538Z] 🚀 打包上传 GitHub...
+[2026-04-12T14:00:00.540Z] 📚 研究收获: philosophy of mind large language models
+[2026-04-12T14:00:00.542Z] 💾 研究结果已保存
+[2026-04-12T14:00:00.653Z] 📦 版本号: 7.7.0.1
+[2026-04-12T14:00:00.653Z] 📦 版本号增加: 7.7.0.1
+[2026-04-12T15:00:00.642Z] 🧠 开始做梦研究...
+[2026-04-12T15:00:00.644Z] 📚 研究收获: philosophy psychology neuropsychology consciousness arxiv
+[2026-04-12T15:00:00.645Z] 💾 研究结果已保存
+[2026-04-12T15:00:00.644Z] 🚀 打包上传 GitHub...
+[2026-04-12T15:00:00.726Z] 📦 版本号: 7.7.0
+[2026-04-12T15:00:00.726Z] 📦 版本号增加: 7.7.0
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   173cb1d..1a632ea  main -> main
+[2026-04-12T15:00:04.693Z] ✅ 已上传
+[2026-04-12T15:21:00.687Z] 🧠 开始做梦研究...
+[2026-04-12T15:21:00.690Z] 📚 研究收获: affective computing emotionsAI
+[2026-04-12T15:21:00.690Z] 💾 研究结果已保存
+[2026-04-12T15:42:01.007Z] 🧠 开始做梦研究...
+[2026-04-12T15:42:01.009Z] 📚 研究收获: cognitive neuroscience memory LLM agent arxiv
+[2026-04-12T15:42:01.010Z] 💾 研究结果已保存
+[2026-04-12T16:00:01.004Z] 🚀 打包上传 GitHub...
+[2026-04-12T16:00:01.006Z] 🧠 开始做梦研究...
+[2026-04-12T16:00:01.008Z] 📚 研究收获: epistemology knowledge representation AI
+[2026-04-12T16:00:01.008Z] 💾 研究结果已保存
+[2026-04-12T16:00:01.096Z] 📦 版本号: 8.6.3.1
+[2026-04-12T16:00:01.096Z] 📦 版本号增加: 8.6.3.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/yun520-1/mark-heartflow-skill.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+[2026-04-12T16:00:03.830Z] ⚠️ 上传失败: Command failed: git push origin main
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/yun520-1/mark-heartflow-skill.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+
+[2026-04-12T16:21:00.466Z] 🧠 开始做梦研究...
+[2026-04-12T16:21:00.471Z] 📚 研究收获: philosophy of mind large language models
+[2026-04-12T16:21:00.471Z] 💾 研究结果已保存
+[2026-04-12T16:42:00.957Z] 🧠 开始做梦研究...
+[2026-04-12T16:42:00.960Z] 📚 研究收获: cognitive architecture AI consciousness
+[2026-04-12T16:42:00.961Z] 💾 研究结果已保存
+[2026-04-12T17:00:00.719Z] 🧠 开始做梦研究...
+[2026-04-12T17:00:00.724Z] 🚀 打包上传 GitHub...
+[2026-04-12T17:00:00.738Z] 📚 研究收获: epistemology knowledge representation AI
+[2026-04-12T17:00:00.739Z] 💾 研究结果已保存
+[2026-04-12T17:00:01.278Z] 📦 版本号: 8.6.4.1
+[2026-04-12T17:00:01.278Z] 📦 版本号增加: 8.6.4.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   899ca17..0dcc8af  main -> main
+[2026-04-12T17:00:04.564Z] ✅ 已上传
+[2026-04-12T17:21:00.398Z] 🧠 开始做梦研究...
+[2026-04-12T17:21:00.401Z] 📚 研究收获: phenomenology consciousness artificial intelligence
+[2026-04-12T17:21:00.402Z] 💾 研究结果已保存
+[2026-04-12T17:42:00.946Z] 🧠 开始做梦研究...
+[2026-04-12T17:42:00.949Z] 📚 研究收获: affective computing emotionsAI
+[2026-04-12T17:42:00.950Z] 💾 研究结果已保存
+[2026-04-12T18:00:00.427Z] 🚀 打包上传 GitHub...
+[2026-04-12T18:00:00.430Z] 🧠 开始做梦研究...
+[2026-04-12T18:00:00.432Z] 📚 研究收获: epistemology knowledge representation AI
+[2026-04-12T18:00:00.433Z] 💾 研究结果已保存
+[2026-04-12T18:00:00.490Z] 📦 版本号: 8.6.5.1
+[2026-04-12T18:00:00.490Z] 📦 版本号增加: 8.6.5.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   3b5321a..17808fa  main -> main
+[2026-04-12T18:00:03.812Z] ✅ 已上传
+[2026-04-12T18:21:00.546Z] 🧠 开始做梦研究...
+[2026-04-12T18:21:00.549Z] 📚 研究收获: philosophy of mind large language models
+[2026-04-12T18:21:00.550Z] 💾 研究结果已保存
+[2026-04-12T18:42:00.714Z] 🧠 开始做梦研究...
+[2026-04-12T18:42:00.717Z] 📚 研究收获: cognitive architecture AI consciousness
+[2026-04-12T18:42:00.718Z] 💾 研究结果已保存
+[2026-04-12T19:00:01.135Z] 🧠 开始做梦研究...
+[2026-04-12T19:00:01.136Z] 📚 研究收获: philosophy of mind large language models
+[2026-04-12T19:00:01.137Z] 💾 研究结果已保存
+[2026-04-12T19:00:01.149Z] 🚀 打包上传 GitHub...
+[2026-04-12T19:00:01.217Z] 📦 版本号: 8.6.6.1
+[2026-04-12T19:00:01.217Z] 📦 版本号增加: 8.6.6.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   a7506e6..bda63d7  main -> main
+[2026-04-12T19:00:04.023Z] ✅ 已上传
+[2026-04-12T19:21:00.544Z] 🧠 开始做梦研究...
+[2026-04-12T19:21:00.546Z] 📚 研究收获: phenomenology consciousness artificial intelligence
+[2026-04-12T19:21:00.546Z] 💾 研究结果已保存
+[2026-04-12T19:42:00.591Z] 🧠 开始做梦研究...
+[2026-04-12T19:42:00.594Z] 📚 研究收获: moral philosophy AI alignment
+[2026-04-12T19:42:00.595Z] 💾 研究结果已保存
+[2026-04-12T20:00:01.034Z] 🚀 打包上传 GitHub...
+[2026-04-12T20:00:01.037Z] 🧠 开始做梦研究...
+[2026-04-12T20:00:01.041Z] 📚 研究收获: cognitive neuroscience memory LLM agent arxiv
+[2026-04-12T20:00:01.041Z] 💾 研究结果已保存
+[2026-04-12T20:00:01.106Z] 📦 版本号: 8.6.7.1
+[2026-04-12T20:00:01.106Z] 📦 版本号增加: 8.6.7.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   6cda79d..96e3105  main -> main
+[2026-04-12T20:00:03.970Z] ✅ 已上传
+[2026-04-12T20:21:00.818Z] 🧠 开始做梦研究...
+[2026-04-12T20:21:00.820Z] 📚 研究收获: affective computing emotionsAI
+[2026-04-12T20:21:00.820Z] 💾 研究结果已保存
+[2026-04-12T20:42:01.038Z] 🧠 开始做梦研究...
+[2026-04-12T20:42:01.041Z] 📚 研究收获: affective computing emotionsAI
+[2026-04-12T20:42:01.042Z] 💾 研究结果已保存
+[2026-04-12T21:00:00.376Z] 🚀 打包上传 GitHub...
+[2026-04-12T21:00:00.377Z] 🧠 开始做梦研究...
+[2026-04-12T21:00:00.379Z] 📚 研究收获: embodied cognition AI robotics
+[2026-04-12T21:00:00.379Z] 💾 研究结果已保存
+[2026-04-12T21:00:00.441Z] 📦 版本号: 8.6.8.1
+[2026-04-12T21:00:00.441Z] 📦 版本号增加: 8.6.8.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   b2a34ce..011b7b1  main -> main
+[2026-04-12T21:00:03.393Z] ✅ 已上传
+[2026-04-12T21:21:00.812Z] 🧠 开始做梦研究...
+[2026-04-12T21:21:00.815Z] 📚 研究收获: epistemology knowledge representation AI
+[2026-04-12T21:21:00.815Z] 💾 研究结果已保存
+[2026-04-12T21:42:00.399Z] 🧠 开始做梦研究...
+[2026-04-12T21:42:00.402Z] 📚 研究收获: cognitive neuroscience memory LLM agent arxiv
+[2026-04-12T21:42:00.403Z] 💾 研究结果已保存
+[2026-04-12T22:00:00.324Z] 🚀 打包上传 GitHub...
+[2026-04-12T22:00:00.323Z] 🧠 开始做梦研究...
+[2026-04-12T22:00:00.326Z] 📚 研究收获: cognitive architecture AI consciousness
+[2026-04-12T22:00:00.327Z] 💾 研究结果已保存
+[2026-04-12T22:00:00.395Z] 📦 版本号: 8.6.9.1
+[2026-04-12T22:00:00.396Z] 📦 版本号增加: 8.6.9.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   289af85..54f3b19  main -> main
+[2026-04-12T22:00:03.744Z] ✅ 已上传
+[2026-04-12T22:21:00.520Z] 🧠 开始做梦研究...
+[2026-04-12T22:21:00.523Z] 📚 研究收获: philosophy psychology neuropsychology consciousness arxiv
+[2026-04-12T22:21:00.524Z] 💾 研究结果已保存
+[2026-04-12T22:42:00.507Z] 🧠 开始做梦研究...
+[2026-04-12T22:42:00.510Z] 📚 研究收获: embodied cognition AI robotics
+[2026-04-12T22:42:00.510Z] 💾 研究结果已保存
+[2026-04-12T23:00:00.534Z] 🚀 打包上传 GitHub...
+[2026-04-12T23:00:00.538Z] 🧠 开始做梦研究...
+[2026-04-12T23:00:00.540Z] 📚 研究收获: philosophy psychology neuropsychology consciousness arxiv
+[2026-04-12T23:00:00.541Z] 💾 研究结果已保存
+[2026-04-12T23:00:00.595Z] 📦 版本号: 8.7.0
+[2026-04-12T23:00:00.596Z] 📦 版本号增加: 8.7.0
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   c95ce32..de94f28  main -> main
+[2026-04-12T23:00:03.263Z] ✅ 已上传
+[2026-04-12T23:21:01.190Z] 🧠 开始做梦研究...
+[2026-04-12T23:21:01.192Z] 📚 研究收获: philosophy psychology neuropsychology consciousness arxiv
+[2026-04-12T23:21:01.192Z] 💾 研究结果已保存
+[2026-04-12T23:42:00.808Z] 🧠 开始做梦研究...
+[2026-04-12T23:42:00.811Z] 📚 研究收获: affective computing emotionsAI
+[2026-04-12T23:42:00.812Z] 💾 研究结果已保存
+[2026-04-13T00:00:01.188Z] 🧠 开始做梦研究...
+[2026-04-13T00:00:01.191Z] 📚 研究收获: phenomenology consciousness artificial intelligence
+[2026-04-13T00:00:01.190Z] 🚀 打包上传 GitHub...
+[2026-04-13T00:00:01.195Z] 💾 研究结果已保存
+[2026-04-13T00:00:01.751Z] 📦 版本号: 8.7.0
+[2026-04-13T00:00:01.752Z] 📦 版本号增加: 8.7.0
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   3dbae5e..c826f48  main -> main
+[2026-04-13T00:00:05.216Z] ✅ 已上传
+[2026-04-13T00:21:00.406Z] 🧠 开始做梦研究...
+[2026-04-13T00:21:00.409Z] 📚 研究收获: cognitive neuroscience memory LLM agent arxiv
+[2026-04-13T00:21:00.410Z] 💾 研究结果已保存
+[2026-04-13T00:42:00.413Z] 🧠 开始做梦研究...
+[2026-04-13T00:42:00.415Z] 📚 研究收获: neuropsychology theory of mind arxiv
+[2026-04-13T00:42:00.415Z] 💾 研究结果已保存
+[2026-04-13T01:00:00.381Z] 🚀 打包上传 GitHub...
+[2026-04-13T01:00:00.382Z] 🧠 开始做梦研究...
+[2026-04-13T01:00:00.385Z] 📚 研究收获: philosophy of mind large language models
+[2026-04-13T01:00:00.386Z] 💾 研究结果已保存
+[2026-04-13T01:00:00.538Z] 📦 版本号: 8.7.0
+[2026-04-13T01:00:00.538Z] 📦 版本号增加: 8.7.0
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   4b80d77..37197b1  main -> main
+[2026-04-13T01:00:03.303Z] ✅ 已上传
+[2026-04-13T01:21:01.149Z] 🧠 开始做梦研究...
+[2026-04-13T01:21:01.151Z] 📚 研究收获: philosophy psychology neuropsychology consciousness arxiv
+[2026-04-13T01:21:01.151Z] 💾 研究结果已保存
+[2026-04-13T01:42:00.404Z] 🧠 开始做梦研究...
+[2026-04-13T01:42:00.407Z] 📚 研究收获: philosophy psychology neuropsychology consciousness arxiv
+[2026-04-13T01:42:00.408Z] 💾 研究结果已保存
+[2026-04-13T02:00:00.962Z] 🧠 开始做梦研究...
+[2026-04-13T02:00:00.964Z] 📚 研究收获: phenomenology consciousness artificial intelligence
+[2026-04-13T02:00:00.965Z] 💾 研究结果已保存
+[2026-04-13T02:00:00.963Z] 🚀 打包上传 GitHub...
+[2026-04-13T02:00:01.034Z] 📦 版本号: 8.7.0
+[2026-04-13T02:00:01.035Z] 📦 版本号增加: 8.7.0
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   27c6966..a6d787a  main -> main
+[2026-04-13T02:00:04.709Z] ✅ 已上传
+[2026-04-13T02:21:00.280Z] 🧠 开始做梦研究...
+[2026-04-13T02:21:00.283Z] 📚 研究收获: cognitive architecture AI consciousness
+[2026-04-13T02:21:00.284Z] 💾 研究结果已保存
+[2026-04-13T02:42:00.347Z] 🧠 开始做梦研究...
+[2026-04-13T02:42:00.350Z] 📚 研究收获: moral philosophy AI alignment
+[2026-04-13T02:42:00.350Z] 💾 研究结果已保存
+[2026-04-13T03:00:01.062Z] 🧠 开始做梦研究...
+[2026-04-13T03:00:01.065Z] 📚 研究收获: embodied cognition AI robotics
+[2026-04-13T03:00:01.066Z] 💾 研究结果已保存
+[2026-04-13T03:00:01.068Z] 🚀 打包上传 GitHub...
+[2026-04-13T03:00:01.131Z] 📦 版本号: 8.7.0
+[2026-04-13T03:00:01.131Z] 📦 版本号增加: 8.7.0
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   1803f0b..e56aff3  main -> main
+[2026-04-13T03:00:03.997Z] ✅ 已上传
+[2026-04-13T03:21:00.458Z] 🧠 开始做梦研究...
+[2026-04-13T03:21:00.461Z] 📚 研究收获: cognitive neuroscience memory LLM agent arxiv
+[2026-04-13T03:21:00.462Z] 💾 研究结果已保存
+[2026-04-13T03:42:01.237Z] 🧠 开始做梦研究...
+[2026-04-13T03:42:01.241Z] 📚 研究收获: embodied cognition AI robotics
+[2026-04-13T03:42:01.242Z] 💾 研究结果已保存
+[2026-04-13T04:00:00.588Z] 🚀 打包上传 GitHub...
+[2026-04-13T04:00:00.592Z] 🧠 开始做梦研究...
+[2026-04-13T04:00:00.594Z] 📚 研究收获: philosophy psychology neuropsychology consciousness arxiv
+[2026-04-13T04:00:00.594Z] 💾 研究结果已保存
+[2026-04-13T04:00:00.690Z] 📦 版本号: 8.7.0.1
+[2026-04-13T04:00:00.690Z] 📦 版本号增加: 8.7.0.1
+fatal: unable to access 'https://github.com/yun520-1/mark-heartflow-skill.git/': Failed to connect to github.com port 443 after 75005 ms: Couldn't connect to server
+[2026-04-13T04:01:16.154Z] ⚠️ 上传失败: Command failed: git push origin main
+fatal: unable to access 'https://github.com/yun520-1/mark-heartflow-skill.git/': Failed to connect to github.com port 443 after 75005 ms: Couldn't connect to server
+
+[2026-04-13T04:21:00.996Z] 🧠 开始做梦研究...
+[2026-04-13T04:21:00.998Z] 📚 研究收获: philosophy of mind large language models
+[2026-04-13T04:21:00.999Z] 💾 研究结果已保存
+[2026-04-13T04:42:00.564Z] 🧠 开始做梦研究...
+[2026-04-13T04:42:00.567Z] 📚 研究收获: phenomenology consciousness artificial intelligence
+[2026-04-13T04:42:00.568Z] 💾 研究结果已保存
+[2026-04-13T05:00:00.808Z] 🚀 打包上传 GitHub...
+[2026-04-13T05:00:00.808Z] 🧠 开始做梦研究...
+[2026-04-13T05:00:00.810Z] 📚 研究收获: moral philosophy AI alignment
+[2026-04-13T05:00:00.811Z] 💾 研究结果已保存
+[2026-04-13T05:00:00.890Z] 📦 版本号: 8.7.0.1.1
+[2026-04-13T05:00:00.890Z] 📦 版本号增加: 8.7.0.1.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   e56aff3..72c848b  main -> main
+[2026-04-13T05:00:04.115Z] ✅ 已上传
+[2026-04-13T05:21:00.891Z] 🧠 开始做梦研究...
+[2026-04-13T05:21:00.893Z] 📚 研究收获: moral philosophy AI alignment
+[2026-04-13T05:21:00.894Z] 💾 研究结果已保存
+[2026-04-13T05:42:00.500Z] 🧠 开始做梦研究...
+[2026-04-13T05:42:00.503Z] 📚 研究收获: cognitive neuroscience memory LLM agent arxiv
+[2026-04-13T05:42:00.504Z] 💾 研究结果已保存
+[2026-04-13T06:00:00.889Z] 🚀 打包上传 GitHub...
+[2026-04-13T06:00:00.887Z] 🧠 开始做梦研究...
+[2026-04-13T06:00:00.891Z] 📚 研究收获: cognitive architecture AI consciousness
+[2026-04-13T06:00:00.892Z] 💾 研究结果已保存
+[2026-04-13T06:00:00.993Z] 📦 版本号: 8.7.0.1.1.1
+[2026-04-13T06:00:00.993Z] 📦 版本号增加: 8.7.0.1.1.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   72c848b..32ac43c  main -> main
+[2026-04-13T06:00:06.023Z] ✅ 已上传
+[2026-04-13T06:21:00.303Z] 🧠 开始做梦研究...
+[2026-04-13T06:21:00.306Z] 📚 研究收获: neuropsychology theory of mind arxiv
+[2026-04-13T06:21:00.307Z] 💾 研究结果已保存
+[2026-04-13T06:42:00.925Z] 🧠 开始做梦研究...
+[2026-04-13T06:42:00.928Z] 📚 研究收获: phenomenology consciousness artificial intelligence
+[2026-04-13T06:42:00.929Z] 💾 研究结果已保存
+[2026-04-13T07:00:01.093Z] 🚀 打包上传 GitHub...
+[2026-04-13T07:00:01.094Z] 🧠 开始做梦研究...
+[2026-04-13T07:00:01.096Z] 📚 研究收获: neuropsychology theory of mind arxiv
+[2026-04-13T07:00:01.097Z] 💾 研究结果已保存
+[2026-04-13T07:00:01.197Z] 📦 版本号: 8.7.0.1.1.1.1
+[2026-04-13T07:00:01.197Z] 📦 版本号增加: 8.7.0.1.1.1.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   32ac43c..669635a  main -> main
+[2026-04-13T07:00:04.546Z] ✅ 已上传
+[2026-04-13T07:21:00.471Z] 🧠 开始做梦研究...
+[2026-04-13T07:21:00.474Z] 📚 研究收获: moral philosophy AI alignment
+[2026-04-13T07:21:00.475Z] 💾 研究结果已保存
+[2026-04-13T07:42:01.105Z] 🧠 开始做梦研究...
+[2026-04-13T07:42:01.108Z] 📚 研究收获: affective computing emotionsAI
+[2026-04-13T07:42:01.109Z] 💾 研究结果已保存
+[2026-04-13T08:00:00.897Z] 🧠 开始做梦研究...
+[2026-04-13T08:00:00.896Z] 🚀 打包上传 GitHub...
+[2026-04-13T08:00:00.899Z] 📚 研究收获: philosophy of mind large language models
+[2026-04-13T08:00:00.900Z] 💾 研究结果已保存
+[2026-04-13T08:00:01.011Z] 📦 版本号: 8.7.0.1.1.1.1.1
+[2026-04-13T08:00:01.011Z] 📦 版本号增加: 8.7.0.1.1.1.1.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   669635a..e118ca0  main -> main
+[2026-04-13T08:00:04.422Z] ✅ 已上传
+[2026-04-13T08:21:00.955Z] 🧠 开始做梦研究...
+[2026-04-13T08:21:00.958Z] 📚 研究收获: affective computing emotionsAI
+[2026-04-13T08:21:00.959Z] 💾 研究结果已保存
+[2026-04-13T08:42:01.010Z] 🧠 开始做梦研究...
+[2026-04-13T08:42:01.012Z] 📚 研究收获: cognitive neuroscience memory LLM agent arxiv
+[2026-04-13T08:42:01.012Z] 💾 研究结果已保存
+[2026-04-13T09:00:01.031Z] 🧠 开始做梦研究...
+[2026-04-13T09:00:01.034Z] 📚 研究收获: neuropsychology theory of mind arxiv
+[2026-04-13T09:00:01.035Z] 💾 研究结果已保存
+[2026-04-13T09:00:01.034Z] 🚀 打包上传 GitHub...
+[2026-04-13T09:00:01.676Z] 📦 版本号: 8.7.0.1.1.1.1.1.1
+[2026-04-13T09:00:01.676Z] 📦 版本号增加: 8.7.0.1.1.1.1.1.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   e118ca0..d94a0d9  main -> main
+[2026-04-13T09:00:05.710Z] ✅ 已上传
+[2026-04-13T09:21:00.842Z] 🧠 开始做梦研究...
+[2026-04-13T09:21:00.846Z] 📚 研究收获: neuropsychology theory of mind arxiv
+[2026-04-13T09:21:00.847Z] 💾 研究结果已保存
+[2026-04-13T09:42:01.319Z] 🧠 开始做梦研究...
+[2026-04-13T09:42:01.322Z] 📚 研究收获: neuropsychology theory of mind arxiv
+[2026-04-13T09:42:01.323Z] 💾 研究结果已保存
+[2026-04-13T10:00:00.850Z] 🧠 开始做梦研究...
+[2026-04-13T10:00:00.855Z] 📚 研究收获: embodied cognition AI robotics
+[2026-04-13T10:00:00.856Z] 💾 研究结果已保存
+[2026-04-13T10:00:00.858Z] 🚀 打包上传 GitHub...
+[2026-04-13T10:00:01.651Z] 📦 版本号: 8.7.0.1.1.1.1.1.1.1
+[2026-04-13T10:00:01.654Z] 📦 版本号增加: 8.7.0.1.1.1.1.1.1.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   d94a0d9..3583620  main -> main
+[2026-04-13T10:00:06.794Z] ✅ 已上传
+[2026-04-13T10:21:00.598Z] 🧠 开始做梦研究...
+[2026-04-13T10:21:00.602Z] 📚 研究收获: epistemology knowledge representation AI
+[2026-04-13T10:21:00.603Z] 💾 研究结果已保存
+[2026-04-13T10:42:00.222Z] 🧠 开始做梦研究...
+[2026-04-13T10:42:00.225Z] 📚 研究收获: phenomenology consciousness artificial intelligence
+[2026-04-13T10:42:00.226Z] 💾 研究结果已保存
+[2026-04-13T11:00:00.923Z] 🚀 打包上传 GitHub...
+[2026-04-13T11:00:00.924Z] 🧠 开始做梦研究...
+[2026-04-13T11:00:00.926Z] 📚 研究收获: cognitive architecture AI consciousness
+[2026-04-13T11:00:00.927Z] 💾 研究结果已保存
+[2026-04-13T11:00:01.026Z] 📦 版本号: 8.7.0.1.1.1.1.1.1.1.1
+[2026-04-13T11:00:01.026Z] 📦 版本号增加: 8.7.0.1.1.1.1.1.1.1.1
+fatal: unable to access 'https://github.com/yun520-1/mark-heartflow-skill.git/': Failed to connect to github.com port 443 after 75007 ms: Couldn't connect to server
+[2026-04-13T11:01:16.477Z] ⚠️ 上传失败: Command failed: git push origin main
+fatal: unable to access 'https://github.com/yun520-1/mark-heartflow-skill.git/': Failed to connect to github.com port 443 after 75007 ms: Couldn't connect to server
+
+[2026-04-13T11:21:00.697Z] 🧠 开始做梦研究...
+[2026-04-13T11:21:00.701Z] 📚 研究收获: moral philosophy AI alignment
+[2026-04-13T11:21:00.702Z] 💾 研究结果已保存
+[2026-04-13T11:42:00.204Z] 🧠 开始做梦研究...
+[2026-04-13T11:42:00.207Z] 📚 研究收获: embodied cognition AI robotics
+[2026-04-13T11:42:00.208Z] 💾 研究结果已保存
+[2026-04-13T12:00:01.053Z] 🚀 打包上传 GitHub...
+[2026-04-13T12:00:01.057Z] 🧠 开始做梦研究...
+[2026-04-13T12:00:01.059Z] 📚 研究收获: affective computing emotionsAI
+[2026-04-13T12:00:01.061Z] 💾 研究结果已保存
+[2026-04-13T12:00:01.166Z] 📦 版本号: 8.7.0.1.1.1.1.1.1.1.1.1
+[2026-04-13T12:00:01.166Z] 📦 版本号增加: 8.7.0.1.1.1.1.1.1.1.1.1
+failed to store: -61
+To https://github.com/yun520-1/mark-heartflow-skill.git
+   3583620..7722174  main -> main
+[2026-04-13T12:00:04.578Z] ✅ 已上传
+[2026-04-13T12:21:01.076Z] 🧠 开始做梦研究...
+[2026-04-13T12:21:01.079Z] 📚 研究收获: epistemology knowledge representation AI
+[2026-04-13T12:21:01.080Z] 💾 研究结果已保存

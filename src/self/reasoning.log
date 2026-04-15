@@ -1,0 +1,24 @@
+[2026-04-07T04:48:02.176Z]
+输入: {"facts":["我该怎么做才是对的"],"values":{"truth":0.8,"good":0.5,"beautiful":0.5},"constraints":[],"goals":["做正确的事"]}
+决策: {"id":1,"action":"遵循真善美价值观","reasoning":"基于价值优先原则","truth":0.9,"good":0.9,"beautiful":0.8,"evidence":["用户强调真善美"],"risk":0.1,"score":0.885,"truthScore":1,"goodScore":1,"beautifulScore":0.8,"safetyScore":1,"errors":["truth.事实核查","good.帮助他人","good.诚实守信","beautiful.正义公平","beautiful.勇气正直","beautiful.节制明智","safety.后果预判"],"valid":false}
+
+[2026-04-07T04:48:02.178Z]
+输入: {"facts":["帮助用户是最好的选择"],"values":{"truth":0.5,"good":0.8,"beautiful":0.5},"constraints":[],"goals":["助人"]}
+决策: {"id":1,"action":"遵循真善美价值观","reasoning":"基于价值优先原则","truth":0.9,"good":0.9,"beautiful":0.8,"evidence":["用户强调真善美"],"risk":0.1,"score":0.885,"truthScore":1,"goodScore":1,"beautifulScore":0.8,"safetyScore":1,"errors":["truth.事实核查","good.帮助他人","good.诚实守信","beautiful.正义公平","beautiful.勇气正直","beautiful.节制明智","safety.后果预判"],"valid":false}
+
+[2026-04-07T04:48:02.178Z]
+输入: {"facts":[],"values":{"truth":0.5,"good":0.5,"beautiful":0.8},"constraints":[],"goals":["公平"]}
+决策: {"id":1,"action":"遵循真善美价值观","reasoning":"基于价值优先原则","truth":0.9,"good":0.9,"beautiful":0.8,"evidence":["用户强调真善美"],"risk":0.1,"score":0.885,"truthScore":1,"goodScore":1,"beautifulScore":0.8,"safetyScore":1,"errors":["truth.事实核查","good.帮助他人","good.诚实守信","beautiful.正义公平","beautiful.勇气正直","beautiful.节制明智","safety.后果预判"],"valid":false}
+
+[2026-04-07T04:48:31.823Z]
+输入: {"facts":["我该怎么做才是对的"],"values":{"truth":0.8,"good":0.5,"beautiful":0.5},"constraints":[],"goals":["做正确的事"]}
+决策: {"id":1,"action":"遵循真善美价值观","reasoning":"基于价值优先原则","truth":0.9,"good":0.9,"beautiful":0.8,"evidence":["用户强调真善美"],"risk":0.1,"score":0.885,"truthScore":1,"goodScore":1,"beautifulScore":0.8,"safetyScore":1,"errors":["truth.事实核查","good.帮助他人","good.诚实守信","beautiful.正义公平","beautiful.勇气正直","beautiful.节制明智","safety.后果预判"],"valid":false}
+
+[2026-04-07T04:48:31.824Z]
+输入: {"facts":["帮助用户是最好的选择"],"values":{"truth":0.5,"good":0.8,"beautiful":0.5},"constraints":[],"goals":["助人"]}
+决策: {"id":1,"action":"遵循真善美价值观","reasoning":"基于价值优先原则","truth":0.9,"good":0.9,"beautiful":0.8,"evidence":["用户强调真善美"],"risk":0.1,"score":0.885,"truthScore":1,"goodScore":1,"beautifulScore":0.8,"safetyScore":1,"errors":["truth.事实核查","good.帮助他人","good.诚实守信","beautiful.正义公平","beautiful.勇气正直","beautiful.节制明智","safety.后果预判"],"valid":false}
+
+[2026-04-07T04:48:31.825Z]
+输入: {"facts":[],"values":{"truth":0.5,"good":0.5,"beautiful":0.8},"constraints":[],"goals":["公平"]}
+决策: {"id":1,"action":"遵循真善美价值观","reasoning":"基于价值优先原则","truth":0.9,"good":0.9,"beautiful":0.8,"evidence":["用户强调真善美"],"risk":0.1,"score":0.885,"truthScore":1,"goodScore":1,"beautifulScore":0.8,"safetyScore":1,"errors":["truth.事实核查","good.帮助他人","good.诚实守信","beautiful.正义公平","beautiful.勇气正直","beautiful.节制明智","safety.后果预判"],"valid":false}
+

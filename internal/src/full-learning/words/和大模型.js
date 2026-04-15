@@ -1,0 +1,1 @@
+module.exports = { word: "和大模型", type: "词", count: 1 };

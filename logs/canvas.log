@@ -1,0 +1,14 @@
+[2026-04-13T12:49:08.073Z] ℹ️ 
+==================================================
+[2026-04-13T12:49:08.075Z] ℹ️ 🏰 HeartFlow 记忆宫殿 Canvas UI
+[2026-04-13T12:49:08.075Z] ℹ️ ==================================================
+
+[2026-04-13T12:49:08.076Z] ✅ 记忆宫殿状态：0 个记忆
+[2026-04-13T12:49:08.076Z] ✅ A2UI Surface 生成完成
+[2026-04-13T12:49:08.076Z] ✅ A2UI JSONL 生成完成
+[2026-04-13T12:49:08.077Z] ℹ️ A2UI JSONL 已保存到：/Users/apple/mark-heartflow-claw/temp/a2ui-memory-palace.jsonl
+[2026-04-13T12:49:08.077Z] ⚠️ ⚠️ Canvas 推送需要 openclaw CLI 和 Canvas 节点支持
+[2026-04-13T12:49:08.077Z] ℹ️ 📋 手动推送命令:
+[2026-04-13T12:49:08.077Z] ℹ️    openclaw nodes canvas a2ui push --jsonl /Users/apple/mark-heartflow-claw/temp/a2ui-memory-palace.jsonl
+[2026-04-13T12:49:08.077Z] ✅ Canvas UI 文件已保存：/Users/apple/mark-heartflow-claw/temp/a2ui-memory-palace.jsonl
+[2026-04-13T12:49:08.078Z] ✅ HTML 版本已保存：/Users/apple/mark-heartflow-claw/canvas/memory-palace/index.html

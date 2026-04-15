@@ -1,0 +1,21 @@
+{
+  "name": "free-will-agency-enhanced",
+  "version": "3.34.0",
+  "description": "自由意志与能动性模块增强版 - 基于 SEP Agency 理论的五种能动性概念整合",
+  "main": "index.js",
+  "keywords": [
+    "agency",
+    "free-will",
+    "practical-reasoning",
+    "intention",
+    "philosophy",
+    "psychology",
+    "heartflow"
+  ],
+  "author": "8 小虫子",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yun520-1/mark-heartflow-skill"
+  }
+}

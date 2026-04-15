@@ -1,0 +1,1 @@
+module.exports = { word: "已保存到", type: "词", count: 1 };

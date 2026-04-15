@@ -1,0 +1,1 @@
+module.exports = { word: "你是神经", type: "词", count: 1 };

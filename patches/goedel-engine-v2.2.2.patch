@@ -1,0 +1,161 @@
+diff --git a/src/core/self-evolution/goedel-engine.js b/src/core/self-evolution/goedel-engine.js
+index 128b4d2..067a893 100644
+--- a/src/core/self-evolution/goedel-engine.js
++++ b/src/core/self-evolution/goedel-engine.js
+@@ -530,6 +530,156 @@ class GoedelEngine {
+     }
+     return [];
+   }
++
++  /**
++   * 原则性反思 (Principle-Based Reflect)
++   * 基于核心价值观进行深度反思，评估当前行为是否符合长期原则
++   */
++  async principleBasedReflect(context = {}) {
++    const reflection = {
++      timestamp: new Date().toISOString(),
++      type: 'principle_based',
++      principles: [],
++      alignment: [],
++      recommendations: []
++    };
++
++    const coreValues = this.loadCoreValues();
++    if (!coreValues) {
++      reflection.principles.push({ principle: '无约束原则', status: 'neutral' });
++      return reflection;
++    }
++
++    const principles = this.extractPrinciples(coreValues);
++    reflection.principles = principles;
++
++    const recentVersions = this.getVersionHistory().slice(-5);
++    for (const version of recentVersions) {
++      const alignmentScore = this.evaluatePrincipleAlignment(version, principles);
++      reflection.alignment.push({
++        version: version.id,
++        score: alignmentScore,
++        timestamp: version.timestamp
++      });
++    }
++
++    const avgAlignment = reflection.alignment.reduce((a, b) => a + b.score, 0) / 
++      (reflection.alignment.length || 1);
++
++    if (avgAlignment < 0.7) {
++      reflection.recommendations.push({
++        type: 'principle_drift',
++        message: '检测到原则偏离，建议加强价值观锚定',
++        priority: 'high'
++      });
++    }
++
++    this.log(`Principle-based reflection complete: avg alignment ${avgAlignment.toFixed(2)}`);
++    return reflection;
++  }
++
++  extractPrinciples(coreValues) {
++    const principles = [];
++    const lines = coreValues.split('\n');
++    
++    for (const line of lines) {
++      if (line.includes(':') || line.includes('—') || line.includes('-')) {
++        const principle = line.replace(/^[#\-\s]*/, '').trim();
++        if (principle.length > 3 && principle.length < 100) {
++          principles.push({
++            principle: principle,
++            source: 'CORE_VALUES.md'
++          });
++        }
++      }
++    }
++
++    return principles.length > 0 ? principles : [
++      { principle: '用户利益优先', source: 'default' },
++      { principle: '持续学习和进化', source: 'default' },
++      { principle: '透明和诚实', source: 'default' }
++    ];
++  }
++
++  evaluatePrincipleAlignment(version, principles) {
++    const description = version.proposal?.toLowerCase() || '';
++    const positiveWords = ['优化', '改善', '提升', '帮助', 'improve', 'help', 'enhance'];
++    const negativeWords = ['破坏', '伤害', '欺骗', 'harm', 'deceive', 'damage'];
++    
++    let score = 0.5;
++    
++    for (const word of positiveWords) {
++      if (description.includes(word)) score += 0.1;
++    }
++    for (const word of negativeWords) {
++      if (description.includes(word)) score -= 0.2;
++    }
++
++    return Math.max(0, Math.min(1, score));
++  }
++
++  /**
++   * 过程性反思 (Procedural Reflect)
++   * 反思进化过程本身的有效性，识别改进空间
++   */
++  async proceduralReflect(context = {}) {
++    const reflection = {
++      timestamp: new Date().toISOString(),
++      type: 'procedural',
++      processMetrics: {},
++      inefficiencies: [],
++      optimizations: []
++    };
++
++    const history = this.getVersionHistory();
++    const recentHistory = history.slice(-10);
++
++    reflection.processMetrics = {
++      totalEvolutions: history.length,
++      recentEvolutions: recentHistory.length,
++      avgTimeBetweenEvolutions: this.calculateAvgTimeBetween(recentHistory),
++      successRate: recentHistory.filter(v => v.id).length / (recentHistory.length || 1)
++    };
++
++    if (reflection.processMetrics.avgTimeBetweenEvolutions < 60000) {
++      reflection.inefficiencies.push({
++        issue: '进化频率过高',
++        detail: '平均间隔不足1分钟，可能缺乏充分评估'
++      });
++    }
++
++    const codeMapVersion = this.codeMap?.version || 'unknown';
++    if (codeMapVersion === '1.0.0') {
++      reflection.optimizations.push({
++        suggestion: '更新代码映射版本以反映最新架构',
++        benefit: '提高自我分析准确性'
++      });
++    }
++
++    const sageStatus = this.sageGuardian?.getStatus?.() || {};
++    if (sageStatus.cooldownActive) {
++      reflection.inefficiencies.push({
++        issue: 'SAGEGuardian 冷却期激活',
++        detail: '伦理审查可能成为瓶颈'
++      });
++    }
++
++    this.log(`Procedural reflection complete: ${reflection.inefficiencies.length} inefficiencies found`);
++    return reflection;
++  }
++
++  calculateAvgTimeBetween(versions) {
++    if (versions.length < 2) return 0;
++    
++    let totalDiff = 0;
++    for (let i = 1; i < versions.length; i++) {
++      const t1 = new Date(versions[i-1].timestamp);
++      const t2 = new Date(versions[i].timestamp);
++      totalDiff += (t2 - t1);
++    }
++    
++    return totalDiff / (versions.length - 1);
++  }
+ }
+ 
+ module.exports = { GoedelEngine };

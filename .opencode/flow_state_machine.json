@@ -1,0 +1,92 @@
+{
+  "version": "1.0.0",
+  "current_state": "DISTRACTED",
+  "states": {
+    "IDLE": {
+      "name": "空闲状态",
+      "description": "未开始心流任务",
+      "prompt": "准备进入心流状态，今天的目标是？",
+      "allowed_transitions": [
+        "INITIATING",
+        "RESTING"
+      ]
+    },
+    "INITIATING": {
+      "name": "启动状态",
+      "description": "准备进入心流",
+      "prompt": "准备进入心流状态，今天的目标是？",
+      "allowed_transitions": [
+        "IN_FLOW",
+        "DISTRACTED",
+        "IDLE"
+      ]
+    },
+    "IN_FLOW": {
+      "name": "心流状态",
+      "description": "深度专注中",
+      "prompt": "🌊 心流状态良好，继续保持！",
+      "allowed_transitions": [
+        "DISTRACTED",
+        "RESTING",
+        "COMPLETED"
+      ]
+    },
+    "DISTRACTED": {
+      "name": "分心状态",
+      "description": "注意力分散",
+      "prompt": "感觉有些分心，要回到主任务上吗？",
+      "allowed_transitions": [
+        "IN_FLOW",
+        "RESTING",
+        "IDLE"
+      ]
+    },
+    "RESTING": {
+      "name": "休息状态",
+      "description": "短暂休息中",
+      "prompt": "好好休息，准备好随时回来",
+      "allowed_transitions": [
+        "IN_FLOW",
+        "INITIATING",
+        "COMPLETED"
+      ]
+    },
+    "COMPLETED": {
+      "name": "完成状态",
+      "description": "任务完成",
+      "prompt": "🎉 任务完成！要生成心流报告吗？",
+      "allowed_transitions": [
+        "IDLE",
+        "RESTING"
+      ]
+    }
+  },
+  "transition_log": [
+    {
+      "from": "IDLE",
+      "to": "INITIATING",
+      "reason": "用户开始工作",
+      "timestamp": "2026-04-08T06:49:12.486Z",
+      "duration_in_previous": 0
+    },
+    {
+      "from": "INITIATING",
+      "to": "IN_FLOW",
+      "reason": "进入专注状态",
+      "timestamp": "2026-04-08T06:49:12.488Z",
+      "duration_in_previous": 0
+    },
+    {
+      "from": "IN_FLOW",
+      "to": "DISTRACTED",
+      "reason": "用户感到挫败",
+      "timestamp": "2026-04-08T06:49:12.488Z",
+      "duration_in_previous": 0
+    }
+  ],
+  "statistics": {
+    "total_transitions": 3,
+    "time_in_flow": 0,
+    "sessions": 1
+  }
+}

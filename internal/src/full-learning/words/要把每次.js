@@ -1,0 +1,1 @@
+module.exports = { word: "要把每次", type: "词", count: 1 };

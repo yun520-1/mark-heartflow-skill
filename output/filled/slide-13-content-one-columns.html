@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080">
+  <title>Content-One-Columns</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    .slide {
+      width: 1920px;
+      height: 1080px;
+      background-color: #FFFFFF;
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'PingFang TC', 'Hiragino Sans GB', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+    .title-block {
+      position: absolute;
+      left: 80px;
+      top: 100px;
+      width: 1680px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .title-block [data-slot="title"] {
+      font-weight: 600;
+      font-size: 64px;
+      line-height: 1.25;
+      color: #000000;
+    }
+    .title-block [data-slot="subtitle"] {
+      font-weight: 400;
+      font-size: 40px;
+      line-height: 1.4;
+      color: #000000;
+      /* 等效灰色（避免 opacity 导出丢失） */
+      color: #666666; /* black @ 60% on white */
+    }
+    .content-row {
+      position: absolute;
+      left: 80px;
+      top: 304px;
+      width: 1760px;
+      display: flex;
+      flex-direction: row;
+      gap: 32px;
+      height: 676px; /* 固定高度：更美观、更稳定 */
+      align-items: stretch;
+    }
+    .content-block {
+      flex: 1;
+      background-color: #F1F1F1;
+      border-radius: 16px;
+      padding: 40px 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      height: 676px; /* 与行容器保持一致 */
+    }
+    .content-block .block-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-height: 283px;
+    }
+    .content-block [data-slot$="Heading"] {
+      font-weight: 500;
+      font-size: 40px;
+      line-height: 1.22;
+      color: #000000;
+    }
+    .content-block [data-slot$="Copy"] {
+      font-weight: 400;
+      font-size: 28px;
+      line-height: 1.43;
+      color: #000000;
+      /* 等效灰色（避免 opacity 导出丢失） */
+      color: #4D4D4D; /* black @ 70% on white */
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide" data-template="content-one-columns">
+    <div class="title-block">
+      <h1 data-slot="title">意识金字塔 (续)</h1>
+      <p data-slot="subtitle">If the title is English, I am the subtitle; if the title is Chinese, I am the English translation</p>
+    </div>
+    <div class="content-row">
+      <div class="content-block">
+        <div class="block-inner">
+          <h2 data-slot="block1Heading">🕊️ 无我 (90%)</h2>
+          <p data-slot="block1Copy">放下自我，融入整体</p>
+        </div>
+      </div>
+      <div class="content-block">
+        <div class="block-inner">
+          <h2 data-slot="block2Heading">🌅 彼岸 (80%)</h2>
+          <p data-slot="block2Copy">I am the descriptive copy, about 3-5 lines. I am the descriptive copy, about 3-5 lines. I am the descriptive copy, about 3-5 lines. I am the descriptive copy, about 3-5 lines. I am the descriptive copy, about 3-5 lines.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</body></html>

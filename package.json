@@ -1,0 +1,54 @@
+{
+  "name": "heartflow",
+  "description": "HeartFlow v7.6 - Self-Evolution Engine with Meta-Learning",
+  "releaseDate": "2026-04-12",
+  "main": "src/core/heartflow-engine.js",
+  "bin": {
+    "heartflow": "bin/cli.js",
+    "heartflow-api": "bin/api-server.js",
+    "heartflow-setup": "bin/setup.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js",
+    "cli": "node bin/cli.js",
+    "api": "node bin/api-server.js",
+    "server": "node bin/api-server.js",
+    "setup": "node bin/setup.js",
+    "test": "node bin/cli.js test",
+    "status": "node bin/cli.js status",
+    "dashboard": "start http://localhost:3456/dashboard",
+    "chat": "start http://localhost:3456/chat"
+  },
+  "keywords": [
+    "ai",
+    "cognitive",
+    "emotion",
+    "memory",
+    "consciousness",
+    "personality"
+  ],
+  "author": "HeartFlow Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "express": "^5.2.1",
+    "pptxgenjs": "^4.0.1"
+  },
+  "version": "8.0.5",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yun520-1/mark-heartflow-claw.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yun520-1/mark-heartflow-claw/issues"
+  },
+  "homepage": "https://github.com/yun520-1/mark-heartflow-claw#readme"
+}

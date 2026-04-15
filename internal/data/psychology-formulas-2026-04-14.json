@@ -1,0 +1,135 @@
+{
+  "timestamp": "2026-04-14T23:52:37.570Z",
+  "formulas": {
+    "emotion-intensity": {
+      "name": "情绪强度",
+      "formula": "I = √(V² + A² + D²)",
+      "description": "Russell情绪维度模型",
+      "variables": {
+        "V": "效价",
+        "A": "唤醒度",
+        "D": "控制度"
+      }
+    },
+    "consciousness-level": {
+      "name": "意识水平",
+      "formula": "C = w₁S + w₂W + w₃SC + w₄WIL + w₅SOS",
+      "description": "意识五层次模型 (SEP)",
+      "weights": {
+        "S": 0.2,
+        "W": 0.2,
+        "SC": 0.2,
+        "WIL": 0.2,
+        "SOS": 0.2
+      }
+    },
+    "self-consciousness": {
+      "name": "自我意识",
+      "formula": "SC = 0.4×PR + 0.3×R + 0.3×FM",
+      "description": "自我意识三层模型",
+      "components": {
+        "PR": "前反思",
+        "R": "反思",
+        "FM": "为我性"
+      }
+    },
+    "qualia": {
+      "name": "感受质",
+      "formula": "Q = ∫₀^∞ e^(-t/τ) × dS/dt dt",
+      "description": "感受质时间积分"
+    },
+    "intentionality": {
+      "name": "意向性",
+      "formula": "I(M,O) = P(O) × C(M→O)",
+      "description": "心理状态指向对象"
+    },
+    "AI-consciousness": {
+      "name": "AI意识",
+      "formula": "Φ_AI = √(∑φᵢ²)/N",
+      "description": "整合信息AI版本"
+    },
+    "truth-goodness-beauty": {
+      "name": "真善美",
+      "formula": "TGB = 0.35×T + 0.35×G + 0.30×B",
+      "description": "价值统一公式"
+    },
+    "AI-personality": {
+      "name": "AI人格",
+      "formula": "P = 0.5×C + 0.3×A + 0.1×Ph + 0.1×TGB",
+      "description": "AI人格综合公式",
+      "components": {
+        "C": "意识",
+        "A": "能动性",
+        "Ph": "哲学层",
+        "TGB": "真善美"
+      }
+    }
+  },
+  "advancedCalculations": {
+    "iit": {
+      "phi": 0.6263417597446301,
+      "formula": "Φ = √(∑λᵢ²)",
+      "complexity": "O(n³)"
+    },
+    "gwt": {
+      "consciousness": 2.29,
+      "formula": "C = ∑(aᵢ × wᵢ)",
+      "threshold": 0.5
+    },
+    "sc": {
+      "sc": 0.7945108649402478,
+      "formula": "Sₙ₊₁ = Sₙ + α(1-Sₙ) - βSₙ²",
+      "depth": 10
+    },
+    "emotion": {
+      "intensity": 1.2206555615733703,
+      "formula": "|E| = √(P² + A² + D²)",
+      "dimensions": {
+        "pleasure": 0.7,
+        "arousal": 0.8,
+        "dominance": 0.6
+      }
+    },
+    "qualia": {
+      "qualia": 1.235934358963156,
+      "formula": "Q = ∫₀ᵀ (∂E/∂t) × e^(-t/τ) dt",
+      "decay": 1
+    },
+    "layers": {
+      "layers": {
+        "觉察": {
+          "base": 0.95,
+          "formula": "L₁ = ∂意识/∂时间"
+        },
+        "自省": {
+          "base": 0.9,
+          "formula": "L₂ = ∂自省/∂对象"
+        },
+        "无我": {
+          "base": 0.85,
+          "formula": "L₃ = lim(自我→0) 意识"
+        },
+        "彼岸": {
+          "base": 0.8,
+          "formula": "L₄ = ∫超越(时间) dt"
+        },
+        "般若": {
+          "base": 0.75,
+          "formula": "L₅ = ∇智慧 × 觉悟"
+        },
+        "圣人": {
+          "base": 0.7,
+          "formula": "L₆ = lim(个体→∞) 全体"
+        }
+      },
+      "progression": 1.0510100501,
+      "formula": "P(n) = P₀ × (1+γ)^n"
+    },
+    "hp": {
+      "gap": 0.6000000000000001,
+      "irreducibility": 1,
+      "formula": "Gap = |S - P|, Irreducible = I(gap > θ)",
+      "hard": true
+    }
+  }
+}

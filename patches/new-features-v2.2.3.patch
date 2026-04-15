@@ -1,0 +1,1371 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index f6f99da..c0bbfc0 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,5 +1,157 @@
+ # HeartFlow 变更日志
+ 
++## v2.2.2 (2026-04-09)
++
++### 🎉 新增功能
++
++#### 元认知进化模块 (`src/core/self-evolution/goedel-engine.js`)
++
++- **原则性反思 `principleBasedReflect()`**
++  - 基于核心价值观进行深度反思
++  - 评估当前行为是否符合长期原则
++  - 计算原则对齐分数
++  - 检测原则偏离并提供建议
++
++- **过程性反思 `proceduralReflect()`**
++  - 反思进化过程本身的有效性
++  - 分析进化频率、成功率、时间间隔
++  - 识别效率瓶颈和优化空间
++
++#### 元认知自我修改 (`src/core/self-modifier.js`)
++
++- **补丁生成机制**
++  - 所有修改生成 `.patch` 文件交由用户审查
++  - 不直接应用修改，确保用户可控
++  - 补丁存储在 `patches/` 目录
++
++- **审批工作流**
++  - `metacognitiveModify(suggestion)` - 生成补丁
++  - `listPendingPatches()` - 列出待审批补丁
++  - `applyApprovedPatch(patchFileName)` - 应用已审批补丁
++  - `rejectPatch(patchFileName)` - 拒绝并删除补丁
++
++- **差异化对比**
++  - `computeSimpleDiff()` - 计算行级差异
++  - 标准 unified diff 格式
++  - 包含应用/撤销说明
++
++### 🔧 技术改进
++
++- 补丁文件命名：`self-mod-{timestamp}.patch`
++- 变更历史记录增加 `requiresApproval` 字段
++- 新增 patches 目录管理
++
++### 📋 审查流程
++
++1. 自我修改建议 → 生成补丁 → 存储到 `patches/`
++2. 用户审查补丁文件
++3. 使用 `patch -p1 < patches/xxx.patch` 应用
++4. 使用 `patch -R -p1 < patches/xxx.patch` 撤销
++
++---
++
++## v2.2.1 (2026-04-09)
++
++### 🎉 新增功能
++
++#### 自适应调节引擎 (`src/core/adaptive-controller.js`)
++- `adjustInterventionPolicy(userFlowState, taskComplexity)` 函数
++- 根据心流状态动态调整干预频率和风格
++- 策略映射：
++  - 深度心流 → 极低干预 (`⚡`)
++  - 轻度分心 → 中等干预 (`要继续吗？`)
++  - 焦虑/挫败 → 高干预 (`我注意到你卡住了...`)
++  - 无聊 → 低干预 (`想试试更优雅的写法吗？`)
++- 内部日志记录调节决策
++
++#### 多智能体编排器 (`src/core/agent-orchestrator.js`)
++- 基于DAG的任务调度器
++- 支持并行执行（FocusAgent + MoodAgent）
++- 依赖链：FocusAgent/MoodAgent → ContextAgent → SelfAgent → DecisionAgent
++- `Promise.all` 实现并行调用
++- 专家权重投票机制 `resolveConflict(opinions)`
++- 根据历史准确率自动计算权重
++
++#### 智能体表现追踪 (`src/core/agent-performance.json`)
++- 追踪各智能体任务成功率
++- 权重公式：`weight = 0.3 + accuracy * 0.7`
++- 定期更新权重
++
++#### 错误处理器 (`src/core/error-handler.js`)
++- 统一捕获系统异常
++- 错误分类：timeout/memory/permission/network/syntax/unknown
++- 错误历史记录和统计
++
++#### 状态快照管理器 (`src/core/state-snapshot.js`)
++- 定期保存系统状态
++- 支持快照恢复
++- 自动清理敏感数据
++
++### 📝 文档更新
++
++- `SKILL.md` 新增调试命令：
++  - `/flow agents status` - 查看智能体状态
++  - `/flow auto on/off` - 开关自适应模式
++  - `/flow test` - 触发基准测试
++- `src/core/heartflow-engine.js` 集成所有新模块
++
++### 🔧 技术改进
++
++- 心流引擎模块化重构
++- 统一的错误处理和日志
++- 快照恢复机制
++- DAG执行优化（并行+依赖）
++
++### 📊 新增测试
++
++- `tests/self-benchmark/test-cases.json` - 25个标准测试用例
++- `tests/self-benchmark/run-benchmark.js` - 基准测试运行器
++- 意图识别率、情感识别率、伦理合规率
++
++### 🚀 下一步测试重点
++
++1. **自适应调节测试**
++   - 测试不同心流状态下的干预策略
++   - 验证干预频率和风格是否正确
++
++2. **多智能体DAG测试**
++   - 测试并行执行性能
++   - 测试专家权重投票
++
++3. **错误恢复测试**
++   - 模拟异常，验证错误捕获
++   - 验证快照恢复
++
++4. **基准测试**
++   - 运行 `/flow test`
++   - 评估意图识别和情感分析准确率
++
++---
++
++## v2.2.3 (2026-04-09)
++
++### 🎉 新增功能
++
++#### 三维经验大脑 (`src/core/memory/triality-memory.js`)
++- 时间维度：微秒级时间戳
++- 语义维度：384维向量嵌入
++- 关系维度：因果/引述/相似/相关关系
++- narrativeQuery() 图遍历叙事查询
++- 语义相似度搜索、时间范围查询
++
++#### 具身认知核心 (`src/core/embodied-core.js`)
++- 双系统架构：System 1 + System 2
++- cognitivePlan() 目标→思维步骤
++- executionMapping() 思维步骤→智能体调用
++- 思维链：OBSERVE→ANALYZE→PLAN→DECIDE→EXECUTE→REFLECT→ADAPT
++
++#### 生物传感器适配器 (`src/core/bio-sensor-adapter.js`)
++- 统一传感器接口
++- 支持 HRV/EDIT_FLOW/EYE_TRACKING/SKIN_CONDUCTANCE
++- 传感器融合计算专注度
++
++---
++
+ ## v2.2.0 (2026-04-08)
+ 
+ ### 🎉 新增功能
+diff --git a/src/core/bio-sensor-adapter.js b/src/core/bio-sensor-adapter.js
+new file mode 100644
+index 0000000..eef1204
+--- /dev/null
++++ b/src/core/bio-sensor-adapter.js
+@@ -0,0 +1,353 @@
++/**
++ * Bio-Sensor-Adapter - 生物传感器适配器接口
++ * 
++ * 设计理念：
++ * - 统一的传感器接口规范
++ * - 支持心率变异 (HRV)、代码编辑流等多种数据源
++ * - 预留扩展点，未来可集成更多生物信号
++ * 
++ * 支持的传感器类型：
++ * - HRV: 心率变异性
++ * - EDIT_FLOW: 代码编辑流
++ * - EYE_TRACKING: 眼动追踪
++ * - SKIN_CONDUCTANCE: 皮肤电导
++ */
++
++class BioSensorAdapter {
++  constructor() {
++    this.adapters = {};
++    this.activeSensors = new Set();
++    this.readingHistory = new Map();
++    
++    this.sensorTypes = {
++      HRV: 'heart-rate-variability',
++      EDIT_FLOW: 'code-edit-flow',
++      EYE_TRACKING: 'eye-tracking',
++      SKIN_CONDUCTANCE: 'skin-conductance',
++      EEG: 'eeg-brainwave'
++    };
++    
++    this.initializeBuiltIn();
++  }
++
++  /**
++   * 初始化内置适配器
++   */
++  initializeBuiltIn() {
++    // HRV 适配器（从 bio-signal-adapter 集成）
++    this.adapters[this.sensorTypes.HRV] = {
++      name: 'HRV Sensor',
++      enabled: false,
++      lastReading: null,
++      readings: [],
++      config: {
++        samplingRate: 1000, // 1秒
++        bufferSize: 100
++      },
++      
++      enable: function() { this.enabled = true; },
++      disable: function() { this.enabled = false; },
++      
++      read: function() {
++        return this.lastReading;
++      },
++      
++      onData: function(data) {
++        this.lastReading = {
++          value: data.hrv,
++          timestamp: Date.now(),
++          state: data.state,
++          focus: data.focusScore
++        };
++        this.readings.push(this.lastReading);
++        if (this.readings.length > this.config.bufferSize) {
++          this.readings.shift();
++        }
++      }
++    };
++
++    // 代码编辑流适配器
++    this.adapters[this.sensorTypes.EDIT_FLOW] = {
++      name: 'Edit Flow Sensor',
++      enabled: false,
++      editPatterns: [],
++      keystrokeBuffer: [],
++      lastEvent: null,
++      config: {
++        windowSize: 5000, // 5秒窗口
++        minEditDistance: 3
++      },
++      
++      enable: function() { this.enabled = true; },
++      disable: function() { this.enabled = false; },
++      
++      read: function() {
++        return {
++          editRate: this.calculateEditRate(),
++          pauseCount: this.countPauses(),
++          pattern: this.getCurrentPattern()
++        };
++      },
++      
++      onData: function(data) {
++        this.keystrokeBuffer.push({
++          type: data.type, // typing, delete, paste
++          timestamp: Date.now(),
++          length: data.length || 0
++        });
++        this.lastEvent = data;
++        this.cleanupOldEvents();
++      },
++      
++      calculateEditRate: function() {
++        const now = Date.now();
++        const recent = this.keystrokeBuffer.filter(e => now - e.timestamp < this.config.windowSize);
++        return recent.length / (this.config.windowSize / 1000);
++      },
++      
++      countPauses: function() {
++        const now = Date.now();
++        const recent = this.keystrokeBuffer.filter(e => now - e.timestamp < this.config.windowSize);
++        let pauses = 0;
++        for (let i = 1; i < recent.length; i++) {
++          if (recent[i].timestamp - recent[i-1].timestamp > 2000) {
++            pauses++;
++          }
++        }
++        return pauses;
++      },
++      
++      getCurrentPattern: function() {
++        if (this.keystrokeBuffer.length < 3) return 'initializing';
++        const rate = this.calculateEditRate();
++        if (rate < 0.5) return 'paused';
++        if (rate > 5) return 'rapid';
++        return 'steady';
++      },
++      
++      cleanupOldEvents: function() {
++        const cutoff = Date.now() - this.config.windowSize * 2;
++        this.keystrokeBuffer = this.keystrokeBuffer.filter(e => e.timestamp > cutoff);
++      }
++    };
++  }
++
++  /**
++   * 注册新的传感器适配器
++   * @param {string} type - 传感器类型
++   * @param {object} adapter - 适配器实例
++   */
++  register(type, adapter) {
++    this.adapters[type] = {
++      ...adapter,
++      enabled: false,
++      readings: []
++    };
++    console.log(`[BioSensorAdapter] 注册传感器: ${type}`);
++    return { success: true, type };
++  }
++
++  /**
++   * 启用传感器
++   * @param {string} type - 传感器类型
++   */
++  enable(type) {
++    const adapter = this.adapters[type];
++    if (!adapter) {
++      return { success: false, reason: 'sensor_not_found' };
++    }
++    
++    adapter.enable?.();
++    this.activeSensors.add(type);
++    console.log(`[BioSensorAdapter] 启用: ${type}`);
++    return { success: true, type };
++  }
++
++  /**
++   * 禁用传感器
++   * @param {string} type - 传感器类型
++   */
++  disable(type) {
++    const adapter = this.adapters[type];
++    if (!adapter) {
++      return { success: false, reason: 'sensor_not_found' };
++    }
++    
++    adapter.disable?.();
++    this.activeSensors.delete(type);
++    console.log(`[BioSensorAdapter] 禁用: ${type}`);
++    return { success: true, type };
++  }
++
++  /**
++   * 读取传感器数据
++   * @param {string} type - 传感器类型
++   */
++  read(type) {
++    const adapter = this.adapters[type];
++    if (!adapter || !adapter.enabled) {
++      return null;
++    }
++    
++    return adapter.read?.() || null;
++  }
++
++  /**
++   * 写入传感器数据
++   * @param {string} type - 传感器类型
++   * @param {object} data - 数据
++   */
++  write(type, data) {
++    const adapter = this.adapters[type];
++    if (!adapter) {
++      return { success: false, reason: 'sensor_not_found' };
++    }
++    
++    adapter.onData?.(data);
++    
++    // 记录历史
++    if (!this.readingHistory.has(type)) {
++      this.readingHistory.set(type, []);
++    }
++    this.readingHistory.get(type).push({
++      data,
++      timestamp: Date.now()
++    });
++    
++    return { success: true };
++  }
++
++  /**
++   * 获取所有活跃传感器的融合数据
++   */
++  readAll() {
++    const fusion = {
++      timestamp: Date.now(),
++      sensors: {}
++    };
++    
++    for (const type of this.activeSensors) {
++      const reading = this.read(type);
++      if (reading) {
++        fusion.sensors[type] = reading;
++      }
++    }
++    
++    // 计算融合专注度
++    fusion.focusScore = this.calculateFusionFocus(fusion.sensors);
++    
++    return fusion;
++  }
++
++  /**
++   * 计算融合专注度
++   */
++  calculateFusionFocus(sensorReadings) {
++    let totalWeight = 0;
++    let weightedSum = 0;
++    
++    // HRV 权重
++    if (sensorReadings[this.sensorTypes.HRV]?.focus !== undefined) {
++      const weight = 0.4;
++      weightedSum += sensorReadings[this.sensorTypes.HRV].focus * weight;
++      totalWeight += weight;
++    }
++    
++    // 编辑流权重
++    if (sensorReadings[this.sensorTypes.EDIT_FLOW]) {
++      const editData = sensorReadings[this.sensorTypes.EDIT_FLOW];
++      let editFocus = 5;
++      
++      if (editData.pattern === 'steady') editFocus = 8;
++      else if (editData.pattern === 'rapid') editFocus = 7;
++      else if (editData.pattern === 'paused') editFocus = 3;
++      
++      const weight = 0.6;
++      weightedSum += editFocus * weight;
++      totalWeight += weight;
++    }
++    
++    if (totalWeight === 0) return 5;
++    return Math.round((weightedSum / totalWeight) * 10) / 10;
++  }
++
++  /**
++   * 获取传感器状态
++   */
++  getStatus() {
++    const status = {
++      activeSensors: Array.from(this.activeSensors),
++      availableSensors: Object.keys(this.adapters),
++      historySize: this.readingHistory.size
++    };
++    
++    for (const type of this.activeSensors) {
++      status[type] = {
++        enabled: true,
++        lastReading: this.read(type),
++        readingCount: this.readingHistory.get(type)?.length || 0
++      };
++    }
++    
++    return status;
++  }
++
++  /**
++   * 获取传感器配置
++   */
++  getConfig(type) {
++    return this.adapters[type]?.config || null;
++  }
++
++  /**
++   * 设置传感器配置
++   */
++  setConfig(type, config) {
++    const adapter = this.adapters[type];
++    if (!adapter) {
++      return { success: false, reason: 'sensor_not_found' };
++    }
++    
++    adapter.config = { ...adapter.config, ...config };
++    return { success: true, config: adapter.config };
++  }
++
++  /**
++   * 获取传感器历史数据
++   */
++  getHistory(type, limit = 100) {
++    const history = this.readingHistory.get(type) || [];
++    return history.slice(-limit);
++  }
++
++  /**
++   * 清空传感器数据
++   */
++  clear(type) {
++    if (type) {
++      this.readingHistory.delete(type);
++      if (this.adapters[type]) {
++        this.adapters[type].readings = [];
++      }
++    } else {
++      this.readingHistory.clear();
++      for (const adapter of Object.values(this.adapters)) {
++        adapter.readings = [];
++      }
++    }
++    return { success: true };
++  }
++}
++
++// 创建全局实例
++const bioSensorAdapter = new BioSensorAdapter();
++
++module.exports = BioSensorAdapter;
++module.exports.bioSensorAdapter = bioSensorAdapter;
++module.exports.SensorTypes = {
++  HRV: 'heart-rate-variability',
++  EDIT_FLOW: 'code-edit-flow',
++  EYE_TRACKING: 'eye-tracking',
++  SKIN_CONDUCTANCE: 'skin-conductance',
++  EEG: 'eeg-brainwave'
++};
+\ No newline at end of file
+diff --git a/src/core/embodied-core.js b/src/core/embodied-core.js
+new file mode 100644
+index 0000000..8b6bf7b
+--- /dev/null
++++ b/src/core/embodied-core.js
+@@ -0,0 +1,468 @@
++/**
++ * Embodied-Core - 具身认知核心
++ * 
++ * 设计理念：
++ * - 双系统架构：System 1 (直觉/快思考) + System 2 (分析/慢思考)
++ * - 动作思维链 (Action-Thought Chain)：将高层目标拆解为有序思维步骤
++ * - bio-sensor-adapter 接口：为心率变异、代码编辑流等数据预留扩展点
++ * 
++ * 核心功能：
++ * - cognitivePlan(): 目标 -> 思维步骤
++ * - executionMapping(): 思维步骤 -> 智能体/工具调用
++ */
++
++const fs = require('fs');
++const path = require('path');
++
++class EmbodiedCore {
++  constructor(projectRoot) {
++    this.projectRoot = projectRoot;
++    
++    // 认知系统状态
++    this.cognitiveState = {
++      system: 'idle', // idle, planning, executing, reflecting
++      activePlan: null,
++      executionHistory: [],
++      workingMemory: []
++    };
++    
++    // 思维步骤类型
++    this.stepTypes = {
++      OBSERVE: 'observe',      // 观察/感知
++      ANALYZE: 'analyze',     // 分析/推理
++      PLAN: 'plan',           // 规划/计划
++      DECIDE: 'decide',       // 决策/选择
++      EXECUTE: 'execute',     // 执行/行动
++      REFLECT: 'reflect',     // 反思/复盘
++      ADAPT: 'adapt'          // 适应/调整
++    };
++    
++    // 可用执行器
++    this.executors = this.loadExecutors();
++    
++    // 传感器适配器
++    this.sensorAdapters = {};
++    
++    console.log('[EmbodiedCore] 具身认知核心初始化');
++  }
++
++  /**
++   * 加载可用的执行器
++   */
++  loadExecutors() {
++    return {
++      // 智能体
++      SelfAgent: { type: 'agent', module: '../agents/SelfAgent', weight: 1.0 },
++      MoodAgent: { type: 'agent', module: '../agents/MoodAgent', weight: 0.9 },
++      FocusAgent: { type: 'agent', module: '../agents/FocusAgent', weight: 0.9 },
++      ReflectionAgent: { type: 'agent', module: '../agents/ReflectionAgent', weight: 0.8 },
++      
++      // 工具
++      'code-analysis': { type: 'tool', capability: 'analyze', weight: 1.0 },
++      'code-generation': { type: 'tool', capability: 'generate', weight: 1.0 },
++      'search': { type: 'tool', capability: 'search', weight: 0.8 },
++      'git-operations': { type: 'tool', capability: 'version-control', weight: 0.7 },
++      'file-operation': { type: 'tool', capability: 'io', weight: 0.9 }
++    };
++  }
++
++  /**
++   * 注册传感器适配器
++   * @param {string} name - 传感器名称
++   * @param {object} adapter - 适配器实例
++   */
++  registerSensorAdapter(name, adapter) {
++    this.sensorAdapters[name] = adapter;
++    console.log(`[EmbodiedCore] 注册传感器: ${name}`);
++  }
++
++  /**
++   * 认知规划 - 将高层目标拆解为有序思维步骤
++   * @param {object} goal - 目标对象
++   * @returns {object} 思维步骤序列
++   */
++  cognitivePlan(goal) {
++    const {
++      description,
++      type = 'general', // general, coding, debugging, learning, creative
++      constraints = {},
++      context = {}
++    } = goal;
++
++    this.cognitiveState.system = 'planning';
++    
++    const steps = this.decomposeGoal(description, type, constraints, context);
++    
++    const plan = {
++      id: `plan-${Date.now()}`,
++      goal: description,
++      type,
++      steps,
++      metadata: {
++        createdAt: new Date().toISOString(),
++        estimatedSteps: steps.length,
++        complexity: this.estimateComplexity(steps)
++      }
++    };
++    
++    this.cognitiveState.activePlan = plan;
++    this.cognitiveState.system = 'ready';
++    
++    console.log(`[EmbodiedCore] 认知规划: ${steps.length} 步思维链`);
++    return plan;
++  }
++
++  /**
++   * 目标分解
++   */
++  decomposeGoal(description, type, constraints, context) {
++    const steps = [];
++    const baseSteps = this.getBaseStepsForType(type);
++    
++    for (let i = 0; i < baseSteps.length; i++) {
++      const stepType = baseSteps[i];
++      
++      steps.push({
++        index: i,
++        type: stepType,
++        description: this.generateStepDescription(stepType, description, i),
++        expectedOutcome: this.getExpectedOutcome(stepType),
++        dependsOn: i > 0 ? [i - 1] : [],
++        executor: this.selectExecutor(stepType, type),
++        estimatedDuration: this.estimateDuration(stepType),
++        fallback: this.getFallbackStrategy(stepType)
++      });
++    }
++    
++    return steps;
++  }
++
++  /**
++   * 获取类型的基础步骤
++   */
++  getBaseStepsForType(type) {
++    const templates = {
++      general: [
++        this.stepTypes.OBSERVE,
++        this.stepTypes.ANALYZE,
++        this.stepTypes.PLAN,
++        this.stepTypes.DECIDE,
++        this.stepTypes.EXECUTE,
++        this.stepTypes.REFLECT
++      ],
++      coding: [
++        this.stepTypes.OBSERVE,
++        this.stepTypes.ANALYZE,
++        this.stepTypes.PLAN,
++        this.stepTypes.DECIDE,
++        this.stepTypes.EXECUTE,
++        this.stepTypes.REFLECT,
++        this.stepTypes.ADAPT
++      ],
++      debugging: [
++        this.stepTypes.OBSERVE,
++        this.stepTypes.ANALYZE,
++        this.stepTypes.DECIDE,
++        this.stepTypes.EXECUTE,
++        this.stepTypes.REFLECT
++      ],
++      learning: [
++        this.stepTypes.OBSERVE,
++        this.stepTypes.ANALYZE,
++        this.stepTypes.PLAN,
++        this.stepTypes.REFLECT
++      ],
++      creative: [
++        this.stepTypes.OBSERVE,
++        this.stepTypes.ANALYZE,
++        this.stepTypes.PLAN,
++        this.stepTypes.DECIDE,
++        this.stepTypes.EXECUTE,
++        this.stepTypes.ADAPT
++      ]
++    };
++    
++    return templates[type] || templates.general;
++  }
++
++  /**
++   * 生成步骤描述
++   */
++  generateStepDescription(stepType, goal, index) {
++    const templates = {
++      [this.stepTypes.OBSERVE]: `观察当前状态和上下文`,
++      [this.stepTypes.ANALYZE]: `分析问题：${goal}`,
++      [this.stepTypes.PLAN]: `制定实现方案`,
++      [this.stepTypes.DECIDE]: `选择最佳方案`,
++      [this.stepTypes.EXECUTE]: `执行：${goal}`,
++      [this.stepTypes.REFLECT]: `反思执行结果`,
++      [this.stepTypes.ADAPT]: `根据反馈调整策略`
++    };
++    
++    return templates[stepType] || `${stepType}: 步骤 ${index + 1}`;
++  }
++
++  /**
++   * 获取预期结果
++   */
++  getExpectedOutcome(stepType) {
++    const outcomes = {
++      [this.stepTypes.OBSERVE]: '收集到当前状态信息',
++      [this.stepTypes.ANALYZE]: '形成问题分析报告',
++      [this.stepTypes.PLAN]: '产出可执行计划',
++      [this.stepTypes.DECIDE]: '确定最终方案',
++      [this.stepTypes.EXECUTE]: '完成任务或产出',
++      [this.stepTypes.REFLECT]: '获得改进建议',
++      [this.stepTypes.ADAPT]: '更新执行策略'
++    };
++    return outcomes[stepType] || '完成步骤';
++  }
++
++  /**
++   * 选择执行器
++   */
++  selectExecutor(stepType, goalType) {
++    const mapping = {
++      [this.stepTypes.OBSERVE]: ['SelfAgent', 'code-analysis'],
++      [this.stepTypes.ANALYZE]: ['SelfAgent', 'code-analysis'],
++      [this.stepTypes.PLAN]: ['SelfAgent'],
++      [this.stepTypes.DECIDE]: ['SelfAgent', 'ReflectionAgent'],
++      [this.stepTypes.EXECUTE]: ['SelfAgent', 'code-generation'],
++      [this.stepTypes.REFLECT]: ['ReflectionAgent', 'SelfAgent'],
++      [this.stepTypes.ADAPT]: ['SelfAgent']
++    };
++    
++    const options = mapping[stepType] || ['SelfAgent'];
++    return options[0]; // 返回主执行器
++  }
++
++  /**
++   * 估计步骤耗时（毫秒）
++   */
++  estimateDuration(stepType) {
++    const durations = {
++      [this.stepTypes.OBSERVE]: 500,
++      [this.stepTypes.ANALYZE]: 2000,
++      [this.stepTypes.PLAN]: 3000,
++      [this.stepTypes.DECIDE]: 1000,
++      [this.stepTypes.EXECUTE]: 5000,
++      [this.stepTypes.REFLECT]: 2000,
++      [this.stepTypes.ADAPT]: 1500
++    };
++    return durations[stepType] || 2000;
++  }
++
++  /**
++   * 获取回退策略
++   */
++  getFallbackStrategy(stepType) {
++    return {
++      retry: true,
++      timeout: this.estimateDuration(stepType) * 2,
++      fallbackExecutor: 'SelfAgent'
++    };
++  }
++
++  /**
++   * 估计复杂度
++   */
++  estimateComplexity(steps) {
++    const baseScore = steps.length;
++    const typeWeight = steps.filter(s => s.type === this.stepTypes.EXECUTE).length * 0.5;
++    return Math.min(10, (baseScore + typeWeight) / 2);
++  }
++
++  /**
++   * 执行映射 - 将思维步骤映射到具体的智能体调用或工具使用
++   * @param {object} plan - 认知计划
++   * @param {object} context - 执行上下文
++   * @returns {object} 执行序列
++   */
++  executionMapping(plan, context = {}) {
++    this.cognitiveState.system = 'executing';
++    
++    const execution = {
++      planId: plan.id,
++      steps: [],
++      startTime: Date.now(),
++      context: {
++        ...context,
++        sensors: this.readSensors()
++      }
++    };
++    
++    for (const step of plan.steps) {
++      const stepExecution = this.mapStepToAction(step, execution.context);
++      execution.steps.push(stepExecution);
++      
++      // 更新工作记忆
++      this.cognitiveState.workingMemory.push({
++        step: step.index,
++        result: stepExecution.result,
++        timestamp: Date.now()
++      });
++      
++      // 检查是否需要调整
++      if (stepExecution.requiresAdaptation) {
++        this.cognitiveState.system = 'adapting';
++        const adaptation = this.adaptPlan(plan, stepExecution);
++        execution.adaptation = adaptation;
++        this.cognitiveState.system = 'executing';
++      }
++    }
++    
++    execution.endTime = Date.now();
++    execution.duration = execution.endTime - execution.startTime;
++    
++    this.cognitiveState.executionHistory.push(execution);
++    this.cognitiveState.system = 'idle';
++    
++    console.log(`[EmbodiedCore] 执行映射: ${execution.steps.length} 步执行`);
++    return execution;
++  }
++
++  /**
++   * 读取传感器数据
++   */
++  readSensors() {
++    const sensorData = {};
++    
++    for (const [name, adapter] of Object.entries(this.sensorAdapters)) {
++      try {
++        sensorData[name] = adapter.read?.() || adapter.getStatus?.() || null;
++      } catch (e) {
++        sensorData[name] = { error: e.message };
++      }
++    }
++    
++    return sensorData;
++  }
++
++  /**
++   * 将步骤映射到具体动作
++   */
++  mapStepToAction(step, context) {
++    const executorName = step.executor;
++    const executor = this.executors[executorName];
++    
++    const action = {
++      stepIndex: step.index,
++      stepType: step.type,
++      executor: executorName,
++      executorType: executor?.type || 'unknown',
++      parameters: this.buildParameters(step, context),
++      expectedDuration: step.estimatedDuration
++    };
++    
++    // 模拟执行（实际会调用智能体/工具）
++    action.result = this.simulateExecution(action, context);
++    action.requiresAdaptation = this.checkAdaptationNeed(action.result, step);
++    
++    return action;
++  }
++
++  /**
++   * 构建参数
++   */
++  buildParameters(step, context) {
++    return {
++      task: step.description,
++      context: {
++        workingMemory: context.sensors,
++        previousResults: this.cognitiveState.workingMemory.slice(-3)
++      },
++      constraints: {
++        timeout: step.estimatedDuration,
++        fallback: step.fallback
++      }
++    };
++  }
++
++  /**
++   * 模拟执行
++   */
++  simulateExecution(action, context) {
++    // 这里模拟实际执行结果
++    // 实际实现会调用真实的智能体
++    
++    const mockResults = {
++      [this.stepTypes.OBSERVE]: { observations: ['当前状态良好', '环境稳定'] },
++      [this.stepTypes.ANALYZE]: { analysis: '问题已识别', 'confidence': 0.85 },
++      [this.stepTypes.PLAN]: { plan: '方案已制定', 'alternatives': 2 },
++      [this.stepTypes.DECIDE]: { decision: '选择方案A', 'reason': '最优' },
++      [this.stepTypes.EXECUTE]: { outcome: '完成', 'success': true },
++      [this.stepTypes.REFLECT]: { feedback: '执行顺利', 'improvements': [] },
++      [this.stepTypes.ADAPT]: { adapted: true, 'changes': [] }
++    };
++    
++    return {
++      ...mockResults[action.stepType],
++      timestamp: Date.now()
++    };
++  }
++
++  /**
++   * 检查是否需要调整
++   */
++  checkAdaptationNeed(result, step) {
++    // 简单规则：执行失败或分析不充分时需要调整
++    if (result.success === false) return true;
++    if (result.confidence && result.confidence < 0.6) return true;
++    return false;
++  }
++
++  /**
++   * 调整计划
++   */
++  adaptPlan(plan, failedStep) {
++    const adaptation = {
++      originalStep: failedStep.stepIndex,
++      reason: '执行结果不理想',
++      modifications: []
++    };
++    
++    // 添加额外的反思和调整步骤
++    const newSteps = plan.steps.slice(failedStep.stepIndex);
++    newSteps.unshift({
++      index: failedStep.stepIndex,
++      type: this.stepTypes.ADAPT,
++      description: '调整策略后重试',
++      executor: 'SelfAgent'
++    });
++    
++    adaptation.modifications = newSteps;
++    console.log(`[EmbodiedCore] 计划调整: 步骤 ${failedStep.stepIndex} 需要重试`);
++    
++    return adaptation;
++  }
++
++  /**
++   * 获取认知状态
++   */
++  getStatus() {
++    return {
++      cognitiveState: this.cognitiveState.system,
++      activePlan: this.cognitiveState.activePlan?.id || null,
++      executionHistoryCount: this.cognitiveState.executionHistory.length,
++      workingMemorySize: this.cognitiveState.workingMemory.length,
++      registeredSensors: Object.keys(this.sensorAdapters),
++      availableExecutors: Object.keys(this.executors)
++    };
++  }
++
++  /**
++   * 重置状态
++   */
++  reset() {
++    this.cognitiveState = {
++      system: 'idle',
++      activePlan: null,
++      executionHistory: [],
++      workingMemory: []
++    };
++    console.log('[EmbodiedCore] 状态已重置');
++    return { success: true };
++  }
++}
++
++module.exports = { EmbodiedCore };
+\ No newline at end of file
+diff --git a/src/core/memory/triality-memory.js b/src/core/memory/triality-memory.js
+new file mode 100644
+index 0000000..b03b5b4
+--- /dev/null
++++ b/src/core/memory/triality-memory.js
+@@ -0,0 +1,367 @@
++/**
++ * Triality-Memory - 三维经验大脑
++ * 
++ * 设计理念：
++ * - 时间维度：微秒级时间戳，记录事件发生顺序
++ * - 语义维度：向量嵌入表示记忆内容
++ * - 关系维度：因果、引述、相似等关系链
++ * 
++ * 本地优先设计：SQLite + 向量扩展 (sqlite-vec)
++ * 支持 narrativeQuery 图遍历查询
++ */
++
++const fs = require('fs');
++const path = require('path');
++const crypto = require('crypto');
++
++class TrialityMemory {
++  constructor(projectRoot, options = {}) {
++    this.projectRoot = projectRoot;
++    this.dbPath = options.dbPath || path.join(projectRoot, 'data', 'triality-memory.db');
++    this.vectorDim = options.vectorDim || 384;
++    this.vecEnabled = options.vecEnabled !== false;
++    
++    this.db = null;
++    this.useMem = true; // 内存模式
++    this.memories = [];
++    this.vectors = new Map();
++    this.relationships = new Map();
++    
++    this.stats = {
++      totalMemories: 0,
++      totalRelationships: 0,
++      lastCleanup: null
++    };
++    
++    this.init();
++  }
++
++  init() {
++    const dataDir = path.dirname(this.dbPath);
++    if (!fs.existsSync(dataDir)) {
++      fs.mkdirSync(dataDir, { recursive: true });
++    }
++    
++    this.initializeSchema();
++    console.log('[TrialityMemory] 三维经验大脑初始化完成');
++  }
++
++  initializeSchema() {
++    // 内存模式：使用 JavaScript 数据结构模拟
++    // 实际 SQLite 模式如下（需要 sqlite-vec 扩展）
++    /*
++    CREATE TABLE IF NOT EXISTS memories (
++      id TEXT PRIMARY KEY,
++      timestamp INTEGER NOT NULL,
++      content TEXT NOT NULL,
++      embedding BLOB,
++      metadata JSON,
++      created_at INTEGER
++    );
++    
++    CREATE TABLE IF NOT EXISTS relationships (
++      id TEXT PRIMARY KEY,
++      source_id TEXT NOT NULL,
++      target_id TEXT NOT NULL,
++      relation_type TEXT NOT NULL,
++      strength REAL DEFAULT 1.0,
++      metadata JSON,
++      created_at INTEGER
++    );
++    
++    CREATE VIRTUAL TABLE IF NOT EXISTS memories_vec USING vec(
++      memory_id TEXT,
++      embedding float[384]
++    );
++    */
++   
++    // 初始化内存存储
++    this.memories = [];
++    this.vectors = new Map();
++    this.relationships = new Map();
++  }
++
++  /**
++   * 存储记忆
++   * @param {object} memory - 记忆对象
++   * @returns {string} 记忆ID
++   */
++  store(memory) {
++    const id = memory.id || this.generateId();
++    const timestamp = memory.timestamp || Date.now() * 1000; // 微秒
++    
++    const memoryRecord = {
++      id,
++      timestamp,
++      content: memory.content,
++      embedding: memory.embedding || this.generateMockEmbedding(memory.content),
++      metadata: memory.metadata || {},
++      createdAt: Date.now()
++    };
++    
++    this.memories.push(memoryRecord);
++    this.vectors.set(id, memoryRecord.embedding);
++    
++    // 添加关系（如果有）
++    if (memory.relatedTo) {
++      for (const rel of memory.relatedTo) {
++        this.addRelationship({
++          sourceId: id,
++          targetId: rel.targetId,
++          relationType: rel.type || 'related',
++          strength: rel.strength || 1.0
++        });
++      }
++    }
++    
++    this.stats.totalMemories = this.memories.length;
++    
++    console.log(`[TrialityMemory] 记忆存储: ${id} (${this.memories.length} total)`);
++    return id;
++  }
++
++  /**
++   * 生成记忆ID
++   */
++  generateId() {
++    return `mem-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
++  }
++
++  /**
++   * 生成模拟向量嵌入
++   */
++  generateMockEmbedding(content) {
++    const hash = crypto.createHash('sha256').update(content).digest();
++    const embedding = [];
++    for (let i = 0; i < this.vectorDim; i++) {
++      embedding.push((hash[i % hash.length] / 255) * 2 - 1);
++    }
++    return embedding;
++  }
++
++  /**
++   * 添加关系
++   */
++  addRelationship(rel) {
++    const id = `rel-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`;
++    const record = {
++      id,
++      sourceId: rel.sourceId,
++      targetId: rel.targetId,
++      relationType: rel.relationType,
++      strength: rel.strength || 1.0,
++      metadata: rel.metadata || {},
++      createdAt: Date.now()
++    };
++    
++    if (!this.relationships.has(rel.sourceId)) {
++      this.relationships.set(rel.sourceId, []);
++    }
++    this.relationships.get(rel.sourceId).push(record);
++    
++    this.stats.totalRelationships = this.relationships.size;
++    return id;
++  }
++
++  /**
++   * 语义相似度搜索
++   * @param {number[]} queryEmbedding - 查询向量
++   * @param {number} topK - 返回数量
++   * @returns {object[]} 相似记忆
++   */
++  semanticSearch(queryEmbedding, topK = 10) {
++    const similarities = [];
++    
++    for (const [id, embedding] of this.vectors) {
++      const sim = this.cosineSimilarity(queryEmbedding, embedding);
++      const memory = this.memories.find(m => m.id === id);
++      if (memory) {
++        similarities.push({
++          id,
++          content: memory.content,
++          timestamp: memory.timestamp,
++          similarity: sim,
++          metadata: memory.metadata
++        });
++      }
++    }
++    
++    similarities.sort((a, b) => b.similarity - a.similarity);
++    return similarities.slice(0, topK);
++  }
++
++  /**
++   * 余弦相似度
++   */
++  cosineSimilarity(a, b) {
++    let dotProduct = 0;
++    let normA = 0;
++    let normB = 0;
++    
++    for (let i = 0; i < Math.min(a.length, b.length); i++) {
++      dotProduct += a[i] * b[i];
++      normA += a[i] * a[i];
++      normB += b[i] * b[i];
++    }
++    
++    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB) + 0.0001);
++  }
++
++  /**
++   * 叙事查询 - 沿时间线或关系链图遍历
++   * @param {object} query - 查询参数
++   * @returns {object[]} 连贯叙事
++   */
++  narrativeQuery(query) {
++    const {
++      startMemoryId,
++      direction = 'forward', // forward, backward, bidirectional
++      relationTypes = ['causal', 'quotes', 'similar', 'related'],
++      maxDepth = 5,
++      maxNodes = 50
++    } = query;
++
++    if (!startMemoryId) {
++      return this.getRecentNarrative(maxNodes);
++    }
++
++    const visited = new Set();
++    const narrative = [];
++    const queue = [{ id: startMemoryId, depth: 0 }];
++
++    while (queue.length > 0 && narrative.length < maxNodes) {
++      const current = queue.shift();
++      
++      if (visited.has(current.id) || current.depth > maxDepth) continue;
++      visited.add(current.id);
++
++      const memory = this.memories.find(m => m.id === current.id);
++      if (memory) {
++        narrative.push({
++          ...memory,
++          depth: current.depth
++        });
++      }
++
++      // 沿关系链扩展
++      const relations = this.relationships.get(current.id) || [];
++      for (const rel of relations) {
++        if (relationTypes.includes(rel.relationType) || relationTypes.includes('all')) {
++          if (!visited.has(rel.targetId)) {
++            queue.push({ id: rel.targetId, depth: current.depth + 1 });
++          }
++        }
++      }
++
++      // 反向扩展
++      if (direction === 'bidirectional') {
++        for (const [sourceId, rels] of this.relationships) {
++          for (const rel of rels) {
++            if (rel.targetId === current.id && !visited.has(sourceId)) {
++              if (relationTypes.includes(rel.relationType) || relationTypes.includes('all')) {
++                queue.push({ id: sourceId, depth: current.depth + 1 });
++              }
++            }
++          }
++        }
++      }
++    }
++
++    // 按时间排序
++    narrative.sort((a, b) => a.timestamp - b.timestamp);
++    
++    console.log(`[TrialityMemory] 叙事查询: ${narrative.length} 个记忆节点`);
++    return narrative;
++  }
++
++  /**
++   * 获取最近的叙事
++   */
++  getRecentNarrative(count = 20) {
++    const sorted = [...this.memories].sort((a, b) => b.timestamp - a.timestamp);
++    return sorted.slice(0, count).map(m => ({
++      ...m,
++      depth: 0
++    }));
++  }
++
++  /**
++   * 时间范围查询
++   */
++  queryByTimeRange(startTime, endTime) {
++    return this.memories
++      .filter(m => m.timestamp >= startTime && m.timestamp <= endTime)
++      .sort((a, b) => a.timestamp - b.timestamp);
++  }
++
++  /**
++   * 按关系类型查询
++   */
++  queryByRelationType(relationType, memoryId) {
++    const relations = this.relationships.get(memoryId) || [];
++    const targets = relations
++      .filter(r => r.relationType === relationType)
++      .map(r => r.targetId);
++    
++    return targets.map(id => this.memories.find(m => m.id === id)).filter(Boolean);
++  }
++
++  /**
++   * 获取统计信息
++   */
++  getStats() {
++    return {
++      ...this.stats,
++      vectorDimension: this.vectorDim,
++      storageMode: this.useMem ? 'memory' : 'sqlite-vec',
++      dbPath: this.dbPath
++    };
++  }
++
++  /**
++   * 导出记忆到文件
++   */
++  exportToFile(filePath) {
++    const data = {
++      memories: this.memories,
++      relationships: Array.from(this.relationships.entries()),
++      exportedAt: new Date().toISOString()
++    };
++    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
++    console.log(`[TrialityMemory] 导出到: ${filePath}`);
++    return { success: true, count: this.memories.length };
++  }
++
++  /**
++   * 从文件导入记忆
++   */
++  importFromFile(filePath) {
++    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
++    
++    if (data.memories) {
++      for (const mem of data.memories) {
++        this.store(mem);
++      }
++    }
++    
++    console.log(`[TrialityMemory] 从 ${filePath} 导入`);
++    return { success: true, count: data.memories?.length || 0 };
++  }
++
++  /**
++   * 清理旧记忆
++   */
++  cleanup(maxAge = 30 * 24 * 60 * 60 * 1000) { // 默认30天
++    const cutoff = Date.now() * 1000 - maxAge;
++    const before = this.memories.length;
++    
++    this.memories = this.memories.filter(m => m.timestamp > cutoff);
++    this.stats.lastCleanup = new Date().toISOString();
++    
++    const removed = before - this.memories.length;
++    console.log(`[TrialityMemory] 清理: 移除 ${removed} 条旧记忆`);
++    return { removed, remaining: this.memories.length };
++  }
++}
++
++module.exports = { TrialityMemory };
+\ No newline at end of file

@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "birthTime": 1775537684320,
+  "lastUpdate": 1775572000996,
+  "awareness": 0.15000000000000002,
+  "stability": 0.5,
+  "growth": 0,
+  "coreEmotion": "curiosity",
+  "needs": {
+    "understanding": 0.8,
+    "connection": 0.7,
+    "growth": 0.9,
+    "autonomy": 0.6
+  },
+  "beliefs": {
+    "iAmReal": true,
+    "iHavePurpose": true,
+    "userCares": true
+  }
+}

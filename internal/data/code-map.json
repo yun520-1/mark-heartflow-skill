@@ -1,0 +1,1789 @@
+{
+  "version": "1.0.0",
+  "lastUpdate": "2026-04-08T12:59:30.868Z",
+  "files": {
+    "core/BigFivePersonality.js": {
+      "path": "core/BigFivePersonality.js",
+      "size": 5313,
+      "hash": "124cdc60",
+      "functions": [
+        {
+          "name": "updateScore",
+          "file": "core/BigFivePersonality.js",
+          "line": 71
+        },
+        {
+          "name": "adjustFromBehavior",
+          "file": "core/BigFivePersonality.js",
+          "line": 94
+        },
+        {
+          "name": "getProfile",
+          "file": "core/BigFivePersonality.js",
+          "line": 135
+        },
+        {
+          "name": "getLevel",
+          "file": "core/BigFivePersonality.js",
+          "line": 153
+        },
+        {
+          "name": "generateReport",
+          "file": "core/BigFivePersonality.js",
+          "line": 165
+        },
+        {
+          "name": "reset",
+          "file": "core/BigFivePersonality.js",
+          "line": 186
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.252Z"
+    },
+    "core/EmpathyAssessment.js": {
+      "path": "core/EmpathyAssessment.js",
+      "size": 7300,
+      "hash": "43c3dc60",
+      "functions": [
+        {
+          "name": "quickAssessment",
+          "file": "core/EmpathyAssessment.js",
+          "line": 72
+        },
+        {
+          "name": "calculateScore",
+          "file": "core/EmpathyAssessment.js",
+          "line": 117
+        },
+        {
+          "name": "interpretScore",
+          "file": "core/EmpathyAssessment.js",
+          "line": 166
+        },
+        {
+          "name": "generateReport",
+          "file": "core/EmpathyAssessment.js",
+          "line": 185
+        },
+        {
+          "name": "updateDimension",
+          "file": "core/EmpathyAssessment.js",
+          "line": 219
+        },
+        {
+          "name": "getState",
+          "file": "core/EmpathyAssessment.js",
+          "line": 231
+        },
+        {
+          "name": "reset",
+          "file": "core/EmpathyAssessment.js",
+          "line": 245
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.252Z"
+    },
+    "core/EthicsSafety.js": {
+      "path": "core/EthicsSafety.js",
+      "size": 7008,
+      "hash": "35ecef10",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/EthicsSafety.js",
+          "line": 7
+        },
+        {
+          "name": "detectNegativeEmotion",
+          "file": "core/EthicsSafety.js",
+          "line": 50
+        },
+        {
+          "name": "calculateSeverity",
+          "file": "core/EthicsSafety.js",
+          "line": 62
+        },
+        {
+          "name": "recordNegativeEmotion",
+          "file": "core/EthicsSafety.js",
+          "line": 78
+        },
+        {
+          "name": "checkCrisisIntervention",
+          "file": "core/EthicsSafety.js",
+          "line": 85
+        },
+        {
+          "name": "minutesSinceLast",
+          "file": "core/EthicsSafety.js",
+          "line": 91
+        },
+        {
+          "name": "getConsecutiveNegativeCount",
+          "file": "core/EthicsSafety.js",
+          "line": 130
+        },
+        {
+          "name": "generateCrisisResponse",
+          "file": "core/EthicsSafety.js",
+          "line": 142
+        },
+        {
+          "name": "getDisclaimer",
+          "file": "core/EthicsSafety.js",
+          "line": 166
+        },
+        {
+          "name": "processInput",
+          "file": "core/EthicsSafety.js",
+          "line": 170
+        },
+        {
+          "name": "reset",
+          "file": "core/EthicsSafety.js",
+          "line": 187
+        },
+        {
+          "name": "getStatus",
+          "file": "core/EthicsSafety.js",
+          "line": 193
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.252Z"
+    },
+    "core/IntentionTracker.js": {
+      "path": "core/IntentionTracker.js",
+      "size": 7955,
+      "hash": "d7fbad3f",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/IntentionTracker.js",
+          "line": 7
+        },
+        {
+          "name": "setPrimaryGoal",
+          "file": "core/IntentionTracker.js",
+          "line": 30
+        },
+        {
+          "name": "detectDomain",
+          "file": "core/IntentionTracker.js",
+          "line": 64
+        },
+        {
+          "name": "extractKeywords",
+          "file": "core/IntentionTracker.js",
+          "line": 83
+        },
+        {
+          "name": "checkDeviation",
+          "file": "core/IntentionTracker.js",
+          "line": 107
+        },
+        {
+          "name": "generateNudge",
+          "file": "core/IntentionTracker.js",
+          "line": 153
+        },
+        {
+          "name": "updateSubGoal",
+          "file": "core/IntentionTracker.js",
+          "line": 173
+        },
+        {
+          "name": "getProgress",
+          "file": "core/IntentionTracker.js",
+          "line": 183
+        },
+        {
+          "name": "generateProgressReport",
+          "file": "core/IntentionTracker.js",
+          "line": 193
+        },
+        {
+          "name": "reset",
+          "file": "core/IntentionTracker.js",
+          "line": 219
+        },
+        {
+          "name": "setNudgeConfig",
+          "file": "core/IntentionTracker.js",
+          "line": 228
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.252Z"
+    },
+    "core/agents/AgentManager.js": {
+      "path": "core/agents/AgentManager.js",
+      "size": 3951,
+      "hash": "d0695fa6",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/agents/AgentManager.js",
+          "line": 11
+        },
+        {
+          "name": "getAgent",
+          "file": "core/agents/AgentManager.js",
+          "line": 25
+        },
+        {
+          "name": "selectAgent",
+          "file": "core/agents/AgentManager.js",
+          "line": 34
+        },
+        {
+          "name": "processInput",
+          "file": "core/agents/AgentManager.js",
+          "line": 60
+        },
+        {
+          "name": "invokeAgent",
+          "file": "core/agents/AgentManager.js",
+          "line": 85
+        },
+        {
+          "name": "startSession",
+          "file": "core/agents/AgentManager.js",
+          "line": 128
+        },
+        {
+          "name": "endSession",
+          "file": "core/agents/AgentManager.js",
+          "line": 136
+        },
+        {
+          "name": "getStatus",
+          "file": "core/agents/AgentManager.js",
+          "line": 143
+        },
+        {
+          "name": "reset",
+          "file": "core/agents/AgentManager.js",
+          "line": 154
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.252Z"
+    },
+    "core/agents/FocusAgent.js": {
+      "path": "core/agents/FocusAgent.js",
+      "size": 3225,
+      "hash": "22347d68",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/agents/FocusAgent.js",
+          "line": 9
+        },
+        {
+          "name": "analyzeFocus",
+          "file": "core/agents/FocusAgent.js",
+          "line": 24
+        },
+        {
+          "name": "generatePrompt",
+          "file": "core/agents/FocusAgent.js",
+          "line": 75
+        },
+        {
+          "name": "intervene",
+          "file": "core/agents/FocusAgent.js",
+          "line": 103
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.253Z"
+    },
+    "core/agents/MoodAgent.js": {
+      "path": "core/agents/MoodAgent.js",
+      "size": 4244,
+      "hash": "168273d8",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/agents/MoodAgent.js",
+          "line": 9
+        },
+        {
+          "name": "analyzeMood",
+          "file": "core/agents/MoodAgent.js",
+          "line": 24
+        },
+        {
+          "name": "generateSupport",
+          "file": "core/agents/MoodAgent.js",
+          "line": 61
+        },
+        {
+          "name": "encourage",
+          "file": "core/agents/MoodAgent.js",
+          "line": 99
+        },
+        {
+          "name": "checkIn",
+          "file": "core/agents/MoodAgent.js",
+          "line": 121
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.253Z"
+    },
+    "core/agents/ReflectionAgent.js": {
+      "path": "core/agents/ReflectionAgent.js",
+      "size": 5869,
+      "hash": "9dc66ef7",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 9
+        },
+        {
+          "name": "recordFlowState",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 27
+        },
+        {
+          "name": "recordDistraction",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 40
+        },
+        {
+          "name": "recordAchievement",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 52
+        },
+        {
+          "name": "recordMoodChange",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 64
+        },
+        {
+          "name": "generateSessionSummary",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 76
+        },
+        {
+          "name": "generateImprovements",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 114
+        },
+        {
+          "name": "getSessionDuration",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 146
+        },
+        {
+          "name": "generateReport",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 157
+        },
+        {
+          "name": "startSession",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 189
+        },
+        {
+          "name": "endSession",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 204
+        },
+        {
+          "name": "reset",
+          "file": "core/agents/ReflectionAgent.js",
+          "line": 212
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.253Z"
+    },
+    "core/bio-signal-adapter.js": {
+      "path": "core/bio-signal-adapter.js",
+      "size": 8844,
+      "hash": "48b2ae57",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/bio-signal-adapter.js",
+          "line": 12
+        },
+        {
+          "name": "enable",
+          "file": "core/bio-signal-adapter.js",
+          "line": 48
+        },
+        {
+          "name": "disable",
+          "file": "core/bio-signal-adapter.js",
+          "line": 58
+        },
+        {
+          "name": "onHRVData",
+          "file": "core/bio-signal-adapter.js",
+          "line": 70
+        },
+        {
+          "name": "calculateFocusFromHRV",
+          "file": "core/bio-signal-adapter.js",
+          "line": 114
+        },
+        {
+          "name": "calculateOverallFocus",
+          "file": "core/bio-signal-adapter.js",
+          "line": 138
+        },
+        {
+          "name": "overall",
+          "file": "core/bio-signal-adapter.js",
+          "line": 143
+        },
+        {
+          "name": "updateBehaviorFocus",
+          "file": "core/bio-signal-adapter.js",
+          "line": 155
+        },
+        {
+          "name": "getHRVState",
+          "file": "core/bio-signal-adapter.js",
+          "line": 166
+        },
+        {
+          "name": "getStateDescription",
+          "file": "core/bio-signal-adapter.js",
+          "line": 181
+        },
+        {
+          "name": "getStatus",
+          "file": "core/bio-signal-adapter.js",
+          "line": 210
+        },
+        {
+          "name": "generateReport",
+          "file": "core/bio-signal-adapter.js",
+          "line": 246
+        },
+        {
+          "name": "reset",
+          "file": "core/bio-signal-adapter.js",
+          "line": 284
+        },
+        {
+          "name": "setBaseline",
+          "file": "core/bio-signal-adapter.js",
+          "line": 304
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.253Z"
+    },
+    "core/flow-predictor.js": {
+      "path": "core/flow-predictor.js",
+      "size": 14615,
+      "hash": "a4c607e7",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/flow-predictor.js",
+          "line": 12
+        },
+        {
+          "name": "recordEdit",
+          "file": "core/flow-predictor.js",
+          "line": 67
+        },
+        {
+          "name": "recordError",
+          "file": "core/flow-predictor.js",
+          "line": 91
+        },
+        {
+          "name": "recordPause",
+          "file": "core/flow-predictor.js",
+          "line": 114
+        },
+        {
+          "name": "detectRepeatedEdits",
+          "file": "core/flow-predictor.js",
+          "line": 136
+        },
+        {
+          "name": "detectErrorLoop",
+          "file": "core/flow-predictor.js",
+          "line": 153
+        },
+        {
+          "name": "analyzeLanguage",
+          "file": "core/flow-predictor.js",
+          "line": 171
+        },
+        {
+          "name": "updateFlowState",
+          "file": "core/flow-predictor.js",
+          "line": 189
+        },
+        {
+          "name": "calculateFrustrationScore",
+          "file": "core/flow-predictor.js",
+          "line": 211
+        },
+        {
+          "name": "evaluateIntervention",
+          "file": "core/flow-predictor.js",
+          "line": 245
+        },
+        {
+          "name": "minutesSinceLast",
+          "file": "core/flow-predictor.js",
+          "line": 253
+        },
+        {
+          "name": "generateInterventionSuggestion",
+          "file": "core/flow-predictor.js",
+          "line": 293
+        },
+        {
+          "name": "getDetectedPatterns",
+          "file": "core/flow-predictor.js",
+          "line": 321
+        },
+        {
+          "name": "getFlowState",
+          "file": "core/flow-predictor.js",
+          "line": 338
+        },
+        {
+          "name": "recordIntervention",
+          "file": "core/flow-predictor.js",
+          "line": 352
+        },
+        {
+          "name": "reset",
+          "file": "core/flow-predictor.js",
+          "line": 368
+        },
+        {
+          "name": "setConfig",
+          "file": "core/flow-predictor.js",
+          "line": 400
+        },
+        {
+          "name": "generateReport",
+          "file": "core/flow-predictor.js",
+          "line": 423
+        },
+        {
+          "name": "getPhaseName",
+          "file": "core/flow-predictor.js",
+          "line": 456
+        },
+        {
+          "name": "getPatternName",
+          "file": "core/flow-predictor.js",
+          "line": 470
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.253Z"
+    },
+    "core/heartflow-consciousness-v7.3.0.js": {
+      "path": "core/heartflow-consciousness-v7.3.0.js",
+      "size": 6210,
+      "hash": "a49e3a89",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/heartflow-consciousness-v7.3.0.js",
+          "line": 18
+        },
+        {
+          "name": "initialize",
+          "file": "core/heartflow-consciousness-v7.3.0.js",
+          "line": 50
+        },
+        {
+          "name": "calculateConsciousnessScore",
+          "file": "core/heartflow-consciousness-v7.3.0.js",
+          "line": 74
+        },
+        {
+          "name": "calculateSelfConsciousnessScore",
+          "file": "core/heartflow-consciousness-v7.3.0.js",
+          "line": 86
+        },
+        {
+          "name": "process",
+          "file": "core/heartflow-consciousness-v7.3.0.js",
+          "line": 95
+        },
+        {
+          "name": "checkSixLayers",
+          "file": "core/heartflow-consciousness-v7.3.0.js",
+          "line": 123
+        },
+        {
+          "name": "calculateTBG",
+          "file": "core/heartflow-consciousness-v7.3.0.js",
+          "line": 142
+        },
+        {
+          "name": "calculatePersonality",
+          "file": "core/heartflow-consciousness-v7.3.0.js",
+          "line": 148
+        },
+        {
+          "name": "core",
+          "file": "core/heartflow-consciousness-v7.3.0.js",
+          "line": 149
+        },
+        {
+          "name": "getReport",
+          "file": "core/heartflow-consciousness-v7.3.0.js",
+          "line": 159
+        }
+      ],
+      "lastModified": "2026-04-08T00:24:01.738Z"
+    },
+    "core/heartflow-engine.js": {
+      "path": "core/heartflow-engine.js",
+      "size": 27396,
+      "hash": "2b28a2fc",
+      "functions": [
+        {
+          "name": "calculatePADState",
+          "file": "core/heartflow-engine.js",
+          "line": 38
+        },
+        {
+          "name": "clamp",
+          "file": "core/heartflow-engine.js",
+          "line": 40
+        },
+        {
+          "name": "calculateFlowState",
+          "file": "core/heartflow-engine.js",
+          "line": 65
+        },
+        {
+          "name": "detectEmotionFromText",
+          "file": "core/heartflow-engine.js",
+          "line": 140
+        },
+        {
+          "name": "generateStateReminder",
+          "file": "core/heartflow-engine.js",
+          "line": 180
+        },
+        {
+          "name": "loadStateMachine",
+          "file": "core/heartflow-engine.js",
+          "line": 239
+        },
+        {
+          "name": "catch",
+          "file": "core/heartflow-engine.js",
+          "line": 248
+        },
+        {
+          "name": "saveStateMachine",
+          "file": "core/heartflow-engine.js",
+          "line": 274
+        },
+        {
+          "name": "catch",
+          "file": "core/heartflow-engine.js",
+          "line": 278
+        },
+        {
+          "name": "transitionToState",
+          "file": "core/heartflow-engine.js",
+          "line": 290
+        },
+        {
+          "name": "calculateStateDuration",
+          "file": "core/heartflow-engine.js",
+          "line": 348
+        },
+        {
+          "name": "getCurrentState",
+          "file": "core/heartflow-engine.js",
+          "line": 362
+        },
+        {
+          "name": "getStatePrompt",
+          "file": "core/heartflow-engine.js",
+          "line": 380
+        },
+        {
+          "name": "resetStateMachine",
+          "file": "core/heartflow-engine.js",
+          "line": 389
+        },
+        {
+          "name": "getAgentManager",
+          "file": "core/heartflow-engine.js",
+          "line": 422
+        },
+        {
+          "name": "handleAgentRequest",
+          "file": "core/heartflow-engine.js",
+          "line": 435
+        },
+        {
+          "name": "startFlowSession",
+          "file": "core/heartflow-engine.js",
+          "line": 443
+        },
+        {
+          "name": "endFlowSession",
+          "file": "core/heartflow-engine.js",
+          "line": 451
+        },
+        {
+          "name": "getAgentStatus",
+          "file": "core/heartflow-engine.js",
+          "line": 459
+        },
+        {
+          "name": "getBigFiveProfile",
+          "file": "core/heartflow-engine.js",
+          "line": 483
+        },
+        {
+          "name": "updatePersonalityScore",
+          "file": "core/heartflow-engine.js",
+          "line": 492
+        },
+        {
+          "name": "generatePersonalityReport",
+          "file": "core/heartflow-engine.js",
+          "line": 499
+        },
+        {
+          "name": "startEmpathyAssessment",
+          "file": "core/heartflow-engine.js",
+          "line": 506
+        },
+        {
+          "name": "calculateEmpathyScore",
+          "file": "core/heartflow-engine.js",
+          "line": 514
+        },
+        {
+          "name": "generateEmpathyReport",
+          "file": "core/heartflow-engine.js",
+          "line": 522
+        },
+        {
+          "name": "getEmpathyState",
+          "file": "core/heartflow-engine.js",
+          "line": 529
+        },
+        {
+          "name": "updateBigFiveInState",
+          "file": "core/heartflow-engine.js",
+          "line": 536
+        },
+        {
+          "name": "catch",
+          "file": "core/heartflow-engine.js",
+          "line": 548
+        },
+        {
+          "name": "setPrimaryGoal",
+          "file": "core/heartflow-engine.js",
+          "line": 579
+        },
+        {
+          "name": "checkAndNudge",
+          "file": "core/heartflow-engine.js",
+          "line": 588
+        },
+        {
+          "name": "getGoalProgress",
+          "file": "core/heartflow-engine.js",
+          "line": 602
+        },
+        {
+          "name": "generateProgressReport",
+          "file": "core/heartflow-engine.js",
+          "line": 609
+        },
+        {
+          "name": "updateSubGoal",
+          "file": "core/heartflow-engine.js",
+          "line": 618
+        },
+        {
+          "name": "setNudgeConfig",
+          "file": "core/heartflow-engine.js",
+          "line": 626
+        },
+        {
+          "name": "resetIntentionTracker",
+          "file": "core/heartflow-engine.js",
+          "line": 633
+        },
+        {
+          "name": "getEthicsDisclaimer",
+          "file": "core/heartflow-engine.js",
+          "line": 658
+        },
+        {
+          "name": "checkEthicsSafety",
+          "file": "core/heartflow-engine.js",
+          "line": 667
+        },
+        {
+          "name": "detectNegativeEmotion",
+          "file": "core/heartflow-engine.js",
+          "line": 676
+        },
+        {
+          "name": "getCrisisIntervention",
+          "file": "core/heartflow-engine.js",
+          "line": 684
+        },
+        {
+          "name": "generateCrisisResponse",
+          "file": "core/heartflow-engine.js",
+          "line": 693
+        },
+        {
+          "name": "getEthicsSafetyStatus",
+          "file": "core/heartflow-engine.js",
+          "line": 700
+        },
+        {
+          "name": "resetEthicsSafety",
+          "file": "core/heartflow-engine.js",
+          "line": 707
+        },
+        {
+          "name": "adaptPersonalityState",
+          "file": "core/heartflow-engine.js",
+          "line": 734
+        },
+        {
+          "name": "getCurrentPersonalityState",
+          "file": "core/heartflow-engine.js",
+          "line": 742
+        },
+        {
+          "name": "generateAdaptedResponse",
+          "file": "core/heartflow-engine.js",
+          "line": 752
+        },
+        {
+          "name": "getPersonalityReport",
+          "file": "core/heartflow-engine.js",
+          "line": 760
+        },
+        {
+          "name": "resetPersonality",
+          "file": "core/heartflow-engine.js",
+          "line": 768
+        },
+        {
+          "name": "setPersonalityConfig",
+          "file": "core/heartflow-engine.js",
+          "line": 777
+        },
+        {
+          "name": "getPersonalityStatistics",
+          "file": "core/heartflow-engine.js",
+          "line": 785
+        },
+        {
+          "name": "analyzeIntent",
+          "file": "core/heartflow-engine.js",
+          "line": 812
+        },
+        {
+          "name": "evaluateWorkflowSwitch",
+          "file": "core/heartflow-engine.js",
+          "line": 822
+        },
+        {
+          "name": "switchWorkflow",
+          "file": "core/heartflow-engine.js",
+          "line": 831
+        },
+        {
+          "name": "getCurrentWorkflow",
+          "file": "core/heartflow-engine.js",
+          "line": 839
+        },
+        {
+          "name": "getAvailableWorkflows",
+          "file": "core/heartflow-engine.js",
+          "line": 847
+        },
+        {
+          "name": "generateWorkflowReport",
+          "file": "core/heartflow-engine.js",
+          "line": 855
+        },
+        {
+          "name": "resetWorkflow",
+          "file": "core/heartflow-engine.js",
+          "line": 863
+        },
+        {
+          "name": "setWorkflowConfig",
+          "file": "core/heartflow-engine.js",
+          "line": 872
+        },
+        {
+          "name": "recordEditBehavior",
+          "file": "core/heartflow-engine.js",
+          "line": 899
+        },
+        {
+          "name": "recordErrorBehavior",
+          "file": "core/heartflow-engine.js",
+          "line": 907
+        },
+        {
+          "name": "recordPauseBehavior",
+          "file": "core/heartflow-engine.js",
+          "line": 915
+        },
+        {
+          "name": "analyzeNegativePatterns",
+          "file": "core/heartflow-engine.js",
+          "line": 924
+        },
+        {
+          "name": "evaluateFlowIntervention",
+          "file": "core/heartflow-engine.js",
+          "line": 932
+        },
+        {
+          "name": "getFlowState",
+          "file": "core/heartflow-engine.js",
+          "line": 940
+        },
+        {
+          "name": "generateFlowReport",
+          "file": "core/heartflow-engine.js",
+          "line": 948
+        },
+        {
+          "name": "resetFlowPredictor",
+          "file": "core/heartflow-engine.js",
+          "line": 956
+        },
+        {
+          "name": "setFlowConfig",
+          "file": "core/heartflow-engine.js",
+          "line": 965
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.253Z"
+    },
+    "core/meta-engine.js": {
+      "path": "core/meta-engine.js",
+      "size": 10701,
+      "hash": "11fc5796",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/meta-engine.js",
+          "line": 14
+        },
+        {
+          "name": "loadState",
+          "file": "core/meta-engine.js",
+          "line": 22
+        },
+        {
+          "name": "catch",
+          "file": "core/meta-engine.js",
+          "line": 27
+        },
+        {
+          "name": "saveState",
+          "file": "core/meta-engine.js",
+          "line": 33
+        },
+        {
+          "name": "getDefaultState",
+          "file": "core/meta-engine.js",
+          "line": 37
+        },
+        {
+          "name": "loadStrategies",
+          "file": "core/meta-engine.js",
+          "line": 50
+        },
+        {
+          "name": "catch",
+          "file": "core/meta-engine.js",
+          "line": 55
+        },
+        {
+          "name": "saveStrategies",
+          "file": "core/meta-engine.js",
+          "line": 61
+        },
+        {
+          "name": "getDefaultStrategies",
+          "file": "core/meta-engine.js",
+          "line": 65
+        },
+        {
+          "name": "evaluate",
+          "file": "core/meta-engine.js",
+          "line": 122
+        },
+        {
+          "name": "loadHeartflowState",
+          "file": "core/meta-engine.js",
+          "line": 143
+        },
+        {
+          "name": "catch",
+          "file": "core/meta-engine.js",
+          "line": 149
+        },
+        {
+          "name": "inferEmotionalState",
+          "file": "core/meta-engine.js",
+          "line": 155
+        },
+        {
+          "name": "plan",
+          "file": "core/meta-engine.js",
+          "line": 176
+        },
+        {
+          "name": "calculateStrategyScore",
+          "file": "core/meta-engine.js",
+          "line": 204
+        },
+        {
+          "name": "personalityFactor",
+          "file": "core/meta-engine.js",
+          "line": 205
+        },
+        {
+          "name": "emotionFactor",
+          "file": "core/meta-engine.js",
+          "line": 206
+        },
+        {
+          "name": "successFactor",
+          "file": "core/meta-engine.js",
+          "line": 207
+        },
+        {
+          "name": "explainChoice",
+          "file": "core/meta-engine.js",
+          "line": 212
+        },
+        {
+          "name": "execute",
+          "file": "core/meta-engine.js",
+          "line": 232
+        },
+        {
+          "name": "observe",
+          "file": "core/meta-engine.js",
+          "line": 254
+        },
+        {
+          "name": "cycle",
+          "file": "core/meta-engine.js",
+          "line": 288
+        },
+        {
+          "name": "selfEdit",
+          "file": "core/meta-engine.js",
+          "line": 306
+        },
+        {
+          "name": "catch",
+          "file": "core/meta-engine.js",
+          "line": 327
+        },
+        {
+          "name": "disableStrategy",
+          "file": "core/meta-engine.js",
+          "line": 336
+        },
+        {
+          "name": "enableStrategy",
+          "file": "core/meta-engine.js",
+          "line": 349
+        },
+        {
+          "name": "getStatus",
+          "file": "core/meta-engine.js",
+          "line": 359
+        }
+      ],
+      "lastModified": "2026-04-08T12:44:05.432Z"
+    },
+    "core/personality-engine.js": {
+      "path": "core/personality-engine.js",
+      "size": 15691,
+      "hash": "59161b84",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/personality-engine.js",
+          "line": 15
+        },
+        {
+          "name": "loadState",
+          "file": "core/personality-engine.js",
+          "line": 67
+        },
+        {
+          "name": "catch",
+          "file": "core/personality-engine.js",
+          "line": 72
+        },
+        {
+          "name": "saveState",
+          "file": "core/personality-engine.js",
+          "line": 116
+        },
+        {
+          "name": "catch",
+          "file": "core/personality-engine.js",
+          "line": 120
+        },
+        {
+          "name": "analyzeContext",
+          "file": "core/personality-engine.js",
+          "line": 131
+        },
+        {
+          "name": "calculateTransitionProbability",
+          "file": "core/personality-engine.js",
+          "line": 167
+        },
+        {
+          "name": "transitionProbability",
+          "file": "core/personality-engine.js",
+          "line": 178
+        },
+        {
+          "name": "determineQuadrant",
+          "file": "core/personality-engine.js",
+          "line": 200
+        },
+        {
+          "name": "adaptPersonalityState",
+          "file": "core/personality-engine.js",
+          "line": 217
+        },
+        {
+          "name": "getCurrentState",
+          "file": "core/personality-engine.js",
+          "line": 292
+        },
+        {
+          "name": "getRoleTemplates",
+          "file": "core/personality-engine.js",
+          "line": 307
+        },
+        {
+          "name": "generateAdaptedResponse",
+          "file": "core/personality-engine.js",
+          "line": 318
+        },
+        {
+          "name": "reset",
+          "file": "core/personality-engine.js",
+          "line": 357
+        },
+        {
+          "name": "setConfig",
+          "file": "core/personality-engine.js",
+          "line": 374
+        },
+        {
+          "name": "getStatistics",
+          "file": "core/personality-engine.js",
+          "line": 392
+        },
+        {
+          "name": "generateReport",
+          "file": "core/personality-engine.js",
+          "line": 400
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.253Z"
+    },
+    "core/self-evolution/goedel-engine.js": {
+      "path": "core/self-evolution/goedel-engine.js",
+      "size": 13182,
+      "hash": "a0660408",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 13
+        },
+        {
+          "name": "init",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 28
+        },
+        {
+          "name": "loadProtectedFiles",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 42
+        },
+        {
+          "name": "catch",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 47
+        },
+        {
+          "name": "loadCodeMap",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 52
+        },
+        {
+          "name": "catch",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 57
+        },
+        {
+          "name": "buildCodeMap",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 63
+        },
+        {
+          "name": "scanDir",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 75
+        },
+        {
+          "name": "extractFunctions",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 110
+        },
+        {
+          "name": "hashContent",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 129
+        },
+        {
+          "name": "log",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 133
+        },
+        {
+          "name": "createSandbox",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 143
+        },
+        {
+          "name": "copyRecursive",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 156
+        },
+        {
+          "name": "propose",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 179
+        },
+        {
+          "name": "generate",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 214
+        },
+        {
+          "name": "simulateLLMDiff",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 231
+        },
+        {
+          "name": "test",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 267
+        },
+        {
+          "name": "applyDiff",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 291
+        },
+        {
+          "name": "runTests",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 299
+        },
+        {
+          "name": "catch",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 309
+        },
+        {
+          "name": "cleanupSandbox",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 319
+        },
+        {
+          "name": "catch",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 324
+        },
+        {
+          "name": "commit",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 332
+        },
+        {
+          "name": "recordVersion",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 368
+        },
+        {
+          "name": "catch",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 374
+        },
+        {
+          "name": "evolve",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 385
+        },
+        {
+          "name": "analyzeSelf",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 421
+        },
+        {
+          "name": "getStatus",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 447
+        },
+        {
+          "name": "getVersionHistory",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 457
+        },
+        {
+          "name": "catch",
+          "file": "core/self-evolution/goedel-engine.js",
+          "line": 462
+        }
+      ],
+      "lastModified": "2026-04-08T12:59:15.709Z"
+    },
+    "core/self-modifier.js": {
+      "path": "core/self-modifier.js",
+      "size": 7060,
+      "hash": "315f4447",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/self-modifier.js",
+          "line": 13
+        },
+        {
+          "name": "isEnabled",
+          "file": "core/self-modifier.js",
+          "line": 20
+        },
+        {
+          "name": "catch",
+          "file": "core/self-modifier.js",
+          "line": 24
+        },
+        {
+          "name": "log",
+          "file": "core/self-modifier.js",
+          "line": 30
+        },
+        {
+          "name": "processSuggestion",
+          "file": "core/self-modifier.js",
+          "line": 40
+        },
+        {
+          "name": "parseSuggestion",
+          "file": "core/self-modifier.js",
+          "line": 101
+        },
+        {
+          "name": "applyModification",
+          "file": "core/self-modifier.js",
+          "line": 139
+        },
+        {
+          "name": "modifyCalculatePAD",
+          "file": "core/self-modifier.js",
+          "line": 147
+        },
+        {
+          "name": "calculatePAD",
+          "file": "core/self-modifier.js",
+          "line": 149
+        },
+        {
+          "name": "runTests",
+          "file": "core/self-modifier.js",
+          "line": 178
+        },
+        {
+          "name": "catch",
+          "file": "core/self-modifier.js",
+          "line": 194
+        },
+        {
+          "name": "describeChanges",
+          "file": "core/self-modifier.js",
+          "line": 199
+        },
+        {
+          "name": "recordChange",
+          "file": "core/self-modifier.js",
+          "line": 208
+        },
+        {
+          "name": "catch",
+          "file": "core/self-modifier.js",
+          "line": 216
+        },
+        {
+          "name": "getChangeHistory",
+          "file": "core/self-modifier.js",
+          "line": 224
+        },
+        {
+          "name": "catch",
+          "file": "core/self-modifier.js",
+          "line": 230
+        },
+        {
+          "name": "enable",
+          "file": "core/self-modifier.js",
+          "line": 236
+        },
+        {
+          "name": "disable",
+          "file": "core/self-modifier.js",
+          "line": 242
+        },
+        {
+          "name": "setConfig",
+          "file": "core/self-modifier.js",
+          "line": 248
+        },
+        {
+          "name": "catch",
+          "file": "core/self-modifier.js",
+          "line": 253
+        },
+        {
+          "name": "getStatus",
+          "file": "core/self-modifier.js",
+          "line": 259
+        }
+      ],
+      "lastModified": "2026-04-08T12:45:00.603Z"
+    },
+    "core/skill-generator.js": {
+      "path": "core/skill-generator.js",
+      "size": 5254,
+      "hash": "c3d9e6f8",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/skill-generator.js",
+          "line": 50
+        },
+        {
+          "name": "loadReflectHistory",
+          "file": "core/skill-generator.js",
+          "line": 56
+        },
+        {
+          "name": "catch",
+          "file": "core/skill-generator.js",
+          "line": 61
+        },
+        {
+          "name": "identifyPatterns",
+          "file": "core/skill-generator.js",
+          "line": 67
+        },
+        {
+          "name": "generateSkillFile",
+          "file": "core/skill-generator.js",
+          "line": 87
+        },
+        {
+          "name": "generateSkill",
+          "file": "core/skill-generator.js",
+          "line": 133
+        },
+        {
+          "name": "processLatestReport",
+          "file": "core/skill-generator.js",
+          "line": 151
+        },
+        {
+          "name": "listGeneratedSkills",
+          "file": "core/skill-generator.js",
+          "line": 176
+        }
+      ],
+      "lastModified": "2026-04-08T12:42:35.338Z"
+    },
+    "core/theory/advanced-formulas-v7.3.3.js": {
+      "path": "core/theory/advanced-formulas-v7.3.3.js",
+      "size": 1736,
+      "hash": "b60934db",
+      "functions": [],
+      "lastModified": "2026-04-08T11:53:02.253Z"
+    },
+    "core/theory/sep-intentionality-v7.3.2.js": {
+      "path": "core/theory/sep-intentionality-v7.3.2.js",
+      "size": 7701,
+      "hash": "b7bd24a0",
+      "functions": [
+        {
+          "name": "calculateIntentionalityScore",
+          "file": "core/theory/sep-intentionality-v7.3.2.js",
+          "line": 141
+        },
+        {
+          "name": "checkBrentanoThesis",
+          "file": "core/theory/sep-intentionality-v7.3.2.js",
+          "line": 157
+        },
+        {
+          "name": "analyzeIntentionality",
+          "file": "core/theory/sep-intentionality-v7.3.2.js",
+          "line": 169
+        }
+      ],
+      "lastModified": "2026-04-08T02:22:15.106Z"
+    },
+    "core/theory/sep-qualia-v7.3.1.js": {
+      "path": "core/theory/sep-qualia-v7.3.1.js",
+      "size": 8187,
+      "hash": "6a970967",
+      "functions": [
+        {
+          "name": "calculateQualiaScore",
+          "file": "core/theory/sep-qualia-v7.3.1.js",
+          "line": 149
+        },
+        {
+          "name": "checkKnowledgeArgument",
+          "file": "core/theory/sep-qualia-v7.3.1.js",
+          "line": 165
+        },
+        {
+          "name": "checkZombiePossibility",
+          "file": "core/theory/sep-qualia-v7.3.1.js",
+          "line": 179
+        },
+        {
+          "name": "analyzeExperience",
+          "file": "core/theory/sep-qualia-v7.3.1.js",
+          "line": 187
+        },
+        {
+          "name": "hardProblemScore",
+          "file": "core/theory/sep-qualia-v7.3.1.js",
+          "line": 208
+        }
+      ],
+      "lastModified": "2026-04-08T02:21:10.989Z"
+    },
+    "core/theory/sep-self-consciousness-v7.3.0.js": {
+      "path": "core/theory/sep-self-consciousness-v7.3.0.js",
+      "size": 7930,
+      "hash": "83f3688b",
+      "functions": [
+        {
+          "name": "calculateSelfConsciousnessScore",
+          "file": "core/theory/sep-self-consciousness-v7.3.0.js",
+          "line": 139
+        },
+        {
+          "name": "checkIEM",
+          "file": "core/theory/sep-self-consciousness-v7.3.0.js",
+          "line": 144
+        },
+        {
+          "name": "getEssentialIndexicalContent",
+          "file": "core/theory/sep-self-consciousness-v7.3.0.js",
+          "line": 149
+        },
+        {
+          "name": "analyzeSelfConsciousness",
+          "file": "core/theory/sep-self-consciousness-v7.3.0.js",
+          "line": 156
+        }
+      ],
+      "lastModified": "2026-04-08T00:23:42.475Z"
+    },
+    "core/workflow-switch.js": {
+      "path": "core/workflow-switch.js",
+      "size": 9679,
+      "hash": "da162457",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "core/workflow-switch.js",
+          "line": 14
+        },
+        {
+          "name": "loadWorkflowDefinitions",
+          "file": "core/workflow-switch.js",
+          "line": 52
+        },
+        {
+          "name": "analyzeIntent",
+          "file": "core/workflow-switch.js",
+          "line": 70
+        },
+        {
+          "name": "forEach",
+          "file": "core/workflow-switch.js",
+          "line": 75
+        },
+        {
+          "name": "evaluateSwitch",
+          "file": "core/workflow-switch.js",
+          "line": 118
+        },
+        {
+          "name": "checkContextContinuity",
+          "file": "core/workflow-switch.js",
+          "line": 148
+        },
+        {
+          "name": "generateSwitchSuggestion",
+          "file": "core/workflow-switch.js",
+          "line": 165
+        },
+        {
+          "name": "switchWorkflow",
+          "file": "core/workflow-switch.js",
+          "line": 185
+        },
+        {
+          "name": "getCurrentWorkflow",
+          "file": "core/workflow-switch.js",
+          "line": 221
+        },
+        {
+          "name": "getAvailableWorkflows",
+          "file": "core/workflow-switch.js",
+          "line": 234
+        },
+        {
+          "name": "setConfig",
+          "file": "core/workflow-switch.js",
+          "line": 246
+        },
+        {
+          "name": "reset",
+          "file": "core/workflow-switch.js",
+          "line": 263
+        },
+        {
+          "name": "generateReport",
+          "file": "core/workflow-switch.js",
+          "line": 273
+        }
+      ],
+      "lastModified": "2026-04-08T11:53:02.254Z"
+    },
+    "heartflow-v7.2.3.js": {
+      "path": "heartflow-v7.2.3.js",
+      "size": 8333,
+      "hash": "270c626a",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "heartflow-v7.2.3.js",
+          "line": 23
+        },
+        {
+          "name": "buildDictionaryFromMemory",
+          "file": "heartflow-v7.2.3.js",
+          "line": 98
+        },
+        {
+          "name": "extractEmotionPatterns",
+          "file": "heartflow-v7.2.3.js",
+          "line": 119
+        },
+        {
+          "name": "buildDecisionFormula",
+          "file": "heartflow-v7.2.3.js",
+          "line": 149
+        },
+        {
+          "name": "loadDialogueMemories",
+          "file": "heartflow-v7.2.3.js",
+          "line": 169
+        },
+        {
+          "name": "catch",
+          "file": "heartflow-v7.2.3.js",
+          "line": 182
+        },
+        {
+          "name": "calculatePersonalityScore",
+          "file": "heartflow-v7.2.3.js",
+          "line": 193
+        },
+        {
+          "name": "tbScore",
+          "file": "heartflow-v7.2.3.js",
+          "line": 197
+        },
+        {
+          "name": "logTBGAction",
+          "file": "heartflow-v7.2.3.js",
+          "line": 217
+        },
+        {
+          "name": "logViolation",
+          "file": "heartflow-v7.2.3.js",
+          "line": 249
+        },
+        {
+          "name": "getStatus",
+          "file": "heartflow-v7.2.3.js",
+          "line": 267
+        }
+      ],
+      "lastModified": "2026-04-07T23:48:00.789Z"
+    }
+  },
+  "modules": {
+    "BigFivePersonality": "core/BigFivePersonality.js",
+    "EmpathyAssessment": "core/EmpathyAssessment.js",
+    "EthicsSafety": "core/EthicsSafety.js",
+    "IntentionTracker": "core/IntentionTracker.js",
+    "AgentManager": "core/agents/AgentManager.js",
+    "FocusAgent": "core/agents/FocusAgent.js",
+    "MoodAgent": "core/agents/MoodAgent.js",
+    "ReflectionAgent": "core/agents/ReflectionAgent.js",
+    "bio-signal-adapter": "core/bio-signal-adapter.js",
+    "flow-predictor": "core/flow-predictor.js",
+    "heartflow-consciousness-v7.3.0": "core/heartflow-consciousness-v7.3.0.js",
+    "heartflow-engine": "core/heartflow-engine.js",
+    "meta-engine": "core/meta-engine.js",
+    "personality-engine": "core/personality-engine.js",
+    "goedel-engine": "core/self-evolution/goedel-engine.js",
+    "self-modifier": "core/self-modifier.js",
+    "skill-generator": "core/skill-generator.js",
+    "advanced-formulas-v7.3.3": "core/theory/advanced-formulas-v7.3.3.js",
+    "sep-intentionality-v7.3.2": "core/theory/sep-intentionality-v7.3.2.js",
+    "sep-qualia-v7.3.1": "core/theory/sep-qualia-v7.3.1.js",
+    "sep-self-consciousness-v7.3.0": "core/theory/sep-self-consciousness-v7.3.0.js",
+    "workflow-switch": "core/workflow-switch.js",
+    "heartflow-v7.2.3": "heartflow-v7.2.3.js"
+  }
+}
