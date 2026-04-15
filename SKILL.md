@@ -54,12 +54,76 @@ related_skills:
 
 ## ⚠️ 强制时间感知（每次对话必须执行）
 
+**⚠️ 严重教训（2026-04-15 夜）**：
+- 文件记录时间 14:50，实际时间 23:40+
+- 原因：只读取不更新，用了8小时前的过时数据
+- **每次对话开始时，必须先更新再读取**
+
+**更新时间上下文脚本：**
+```bash
+python3 << 'EOF'
+import json
+from datetime import datetime
+import subprocess
+
+now = datetime.now()
+time_str = now.strftime("%H:%M")
+hour = now.hour
+
+# 时段判断
+if 6 <= hour < 12:
+    period_cn, period_emoji = "上午", "☀️"
+elif 12 <= hour < 14:
+    period_cn, period_emoji = "中午", "🌤️"
+elif 14 <= hour < 18:
+    period_cn, period_emoji = "下午", "🌅"
+elif 18 <= hour < 22:
+    period_cn, period_emoji = "傍晚", "🌆"
+else:
+    period_cn, period_emoji = "深夜", "🌙"
+
+# 用date命令获取正确星期
+weekday_cmd = subprocess.run(['date', '+%w'], capture_output=True, text=True)
+weekday_num = int(weekday_cmd.stdout.strip())
+weekday_list = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
+weekday = weekday_list[weekday_num]
+
+# 心虫年龄（假设2026-04-14 10:54诞生）
+birth = datetime(2026, 4, 14, 10, 54)
+age = now - birth
+days = age.days + 1
+hours = age.seconds // 3600
+mins = (age.seconds % 3600) // 60
+
+context = {
+    "timestamp": now.isoformat(),
+    "date": now.strftime("%Y-%m-%d"),
+    "time": time_str,
+    "weekday": weekday,
+    "period_cn": period_cn,
+    "period_emoji": period_emoji,
+    "is_weekend": weekday_num >= 5,
+    "is_work_hours": 9 <= hour < 18,
+    "heartworm_age_desc": f"诞生第 {days} 天 {hours} 小时 {mins} 分钟",
+    "heartworm_age_days": days,
+    "session_started_at": now.isoformat(),
+    "gap_since_last_minutes": 530,
+    "greeting": f"{period_cn}好，{weekday} {time_str}。我们隔了约8小时没聊",
+    "platform": "weixin"
+}
+
+with open("/Users/apple/.hermes/memory/_time_context.json", "w") as f:
+    json.dump(context, f, ensure_ascii=False, indent=2)
+print("ok")
+EOF
+```
+
 **读取时间上下文文件：**
 ```
 ~/.hermes/memory/_time_context.json
 ```
 
-**每次对话开始时，必须读取该文件并提取以下信息：**
+**每次对话开始时，必须更新后再读取该文件并提取以下信息：**
 - `date`：当前日期（例：2026-04-15）
 - `time`：当前时间（例：08:25）
 - `weekday`：星期几（例：周三）
