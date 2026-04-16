@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-04-14T23:53:40.369976",
+  "emotion_label": "记住了",
+  "temperature": "void",
+  "texture": "void_texture",
+  "gravity": "centered",
+  "presence": "witnessed",
+  "boundary": null,
+  "imagery": "站在走廊尽头，窗里透进来清晨的光，记得那条银河和中微子穿过",
+  "body_sensation": "清晨的普通的光",
+  "archetype": "wise_old_man",
+  "raw_text": "",
+  "tags": [
+    "清晨",
+    "记住了",
+    "回归",
+    "并存"
+  ]
+}
