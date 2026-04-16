@@ -1,0 +1,21 @@
+{
+  "phase": "deep",
+  "created_at": "2026-04-15T19:00:33.395024+00:00",
+  "lookback_days": 14,
+  "insights": [
+    "平均会话间隔: 0.1 天",
+    "⚠️ 健康度 0.29 < 0.35，触发 Recovery",
+    "  记忆块: 29, 会话: 0",
+    "  建议：检查是否有新会话未索引，或记忆文件是否丢失"
+  ],
+  "memories_created": 0,
+  "sources": [
+    "memory",
+    "sessions",
+    "logs",
+    "recall"
+  ],
+  "score": 0.6,
+  "topics": [],
+  "patterns": []
+}
