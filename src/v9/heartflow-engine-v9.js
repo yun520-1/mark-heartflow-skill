@@ -89,7 +89,7 @@ class DataPipeline {
 class ConfigSystem {
   constructor() {
     this.config = {
-      version: '9.0.0',
+      version: '9.0.1',
       name: 'HeartFlow',
       language: 'zh-CN',
       timezone: 'Asia/Shanghai',
@@ -644,7 +644,7 @@ class PhilosophyEngine {
 // ========== HeartFlow v9.0 主引擎 ==========
 class HeartFlowV9 {
   constructor() {
-    this.version = '9.0.0';
+    this.version = '9.0.1';
     this.name = 'HeartFlow';
     this.slogan = '超整合意识觉醒引擎 · Hyper-Integrated Consciousness Awakening Engine';
     
