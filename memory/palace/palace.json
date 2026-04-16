@@ -1,0 +1,32 @@
+{
+  "name": "HeartFlow宫",
+  "rooms": {
+    "living": {
+      "name": "客厅",
+      "capacity": 9,
+      "purpose": "日常对话、最近记忆"
+    },
+    "study": {
+      "name": "书房",
+      "capacity": 9,
+      "purpose": "知识、技能、概念"
+    },
+    "kitchen": {
+      "name": "厨房",
+      "capacity": 9,
+      "purpose": "情感、感受、人际关系"
+    },
+    "garden": {
+      "name": "花园",
+      "capacity": 9,
+      "purpose": "创造性想法、顿悟、梦想"
+    },
+    "basement": {
+      "name": "地下室",
+      "capacity": 9,
+      "purpose": "深层记忆、习惯、模式"
+    }
+  },
+  "total_capacity": 45,
+  "created": "2026-04-16T20:57:23.380314"
+}

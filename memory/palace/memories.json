@@ -1,0 +1,16 @@
+{
+  "memories": [
+    {
+      "id": "hf.main.kitchen.1",
+      "content": "测试记忆 - 用户说很重要的话",
+      "room": "kitchen",
+      "position": 1,
+      "priority": 4,
+      "emotion": "sadness",
+      "intensity": 8,
+      "themes": [],
+      "timestamp": "2026-04-16T20:57:23.381171",
+      "connections": []
+    }
+  ]
+}
