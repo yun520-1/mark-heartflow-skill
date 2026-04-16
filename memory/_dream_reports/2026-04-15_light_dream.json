@@ -1,0 +1,17 @@
+{
+  "phase": "light",
+  "created_at": "2026-04-15T22:00:04.362565+00:00",
+  "lookback_days": 2,
+  "insights": [
+    "过去2天共有 16 个会话",
+    "总消息数约 1379 条"
+  ],
+  "memories_created": 0,
+  "sources": [
+    "sessions",
+    "daily"
+  ],
+  "score": 1.0,
+  "topics": [],
+  "patterns": []
+}
