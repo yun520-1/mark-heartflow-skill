@@ -21,6 +21,7 @@ from pathlib import Path
 from truth_good_beauty import TruthGoodBeautyEngine, TGBResult
 from mental_health import MentalHealthEngine, MentalHealthResult
 from entropy_engine import EntropyEngine, EntropyResult
+from self_level_engine import SelfLevelEngine, LevelResult
 
 
 @dataclass
@@ -29,6 +30,7 @@ class HeartFlowResult:
     tgb: TGBResult           # 真善美结果
     mental: MentalHealthResult # 心理健康结果  
     entropy: EntropyResult    # 熵减结果
+    self_level: int          # 四层级 (1-4)
     decision: str           # 决策建议
     timestamp: str         # 时间戳
     
@@ -37,6 +39,7 @@ class HeartFlowResult:
             "tgb": self.tgb.to_dict(),
             "mental": self.mental.to_dict(),
             "entropy": self.entropy.to_dict(),
+            "self_level": self.self_level,
             "decision": self.decision,
             "timestamp": self.timestamp
         }
@@ -49,6 +52,7 @@ class HeartFlow:
         self.tgb_engine = TruthGoodBeautyEngine()
         self.mental_engine = MentalHealthEngine()
         self.entropy_engine = EntropyEngine()
+        self.self_level_engine = SelfLevelEngine()  # 四层级引擎
         self.history: List[HeartFlowResult] = []
         
         # 加载配置
@@ -101,13 +105,21 @@ class HeartFlow:
         # 3. 熵减计算
         entropy_result = self.entropy_engine.calculate(user_input, context)
         
-        # 4. 综合决策
+        # 4. 四层级自我认知
+        level_result = self.self_level_engine.assess(
+            action=f"处理用户输入: {user_input[:30]}...",
+            result=decision,
+            feedback=None
+        )
+        
+        # 5. 综合决策
         decision = self._make_decision(tgb_result, mental_result, entropy_result)
         
         result = HeartFlowResult(
             tgb=tgb_result,
             mental=mental_result,
             entropy=entropy_result,
+            self_level=level_result.current_level,
             decision=decision,
             timestamp=datetime.now().isoformat()
         )
