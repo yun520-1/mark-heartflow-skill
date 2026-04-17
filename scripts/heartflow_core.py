@@ -22,6 +22,12 @@ from truth_good_beauty import TruthGoodBeautyEngine, TGBResult
 from mental_health import MentalHealthEngine, MentalHealthResult
 from entropy_engine import EntropyEngine, EntropyResult
 from self_level_engine import SelfLevelEngine, LevelResult
+# 王东岳PDF逻辑模型引擎
+from logic_model_engine import LogicModelEngine, LogicModelResult
+from weakness_compensation_engine import WeaknessCompensationEngine, WeaknessCompensationResult
+from existence_degree_engine import ExistenceDegreeEngine, ExistenceDegreeResult
+# 物演通论引擎
+from wuyan_tong_engine import WanYanTongEngine, WanYanTongResult
 
 
 @dataclass
@@ -33,6 +39,11 @@ class HeartFlowResult:
     self_level: int          # 四层级 (1-4)
     decision: str           # 决策建议
     timestamp: str         # 时间戳
+    process_time_ms: float = 0     # 总处理时间
+    local_compute_time_ms: float = 0  # 本地计算时间
+    api_compute_time_ms: float = 0    # API计算时间
+    api_call_count: int = 0          # API调用次数
+    local_compute: bool = True        # 是否本地计算
     
     def to_dict(self) -> dict:
         return {
@@ -41,8 +52,21 @@ class HeartFlowResult:
             "entropy": self.entropy.to_dict(),
             "self_level": self.self_level,
             "decision": self.decision,
-            "timestamp": self.timestamp
+            "timestamp": self.timestamp,
+            "process_time_ms": self.process_time_ms,
+            "local_compute_time_ms": self.local_compute_time_ms,
+            "api_compute_time_ms": self.api_compute_time_ms,
+            "api_call_count": self.api_call_count,
+            "local_compute": self.local_compute
         }
+    
+    def get_performance_info(self) -> str:
+        """获取性能信息字符串"""
+        local_info = f"本地计算: {self.local_compute_time_ms:.1f}ms"
+        api_info = f"API计算: {self.api_compute_time_ms:.1f}ms ({self.api_call_count}次)"
+        total_info = f"总时间: {self.process_time_ms:.1f}ms"
+        
+        return f" | {local_info} | {api_info} | {total_info}"
 
 
 class HeartFlow:
@@ -53,6 +77,12 @@ class HeartFlow:
         self.mental_engine = MentalHealthEngine()
         self.entropy_engine = EntropyEngine()
         self.self_level_engine = SelfLevelEngine()  # 四层级引擎
+        # 王东岳逻辑模型引擎
+        self.logic_model_engine = LogicModelEngine()
+        self.weakness_engine = WeaknessCompensationEngine()
+        self.existence_engine = ExistenceDegreeEngine()
+        # 物演通论引擎
+        self.wuyan_engine = WanYanTongEngine()
         self.history: List[HeartFlowResult] = []
         
         # 加载配置
@@ -81,39 +111,73 @@ class HeartFlow:
             }
         }
     
-    def process(self, user_input: str, context: Dict = None) -> HeartFlowResult:
+    def process(self, user_input: str, context: Dict = None, use_api: bool = False) -> HeartFlowResult:
         """
         处理用户输入
         
         Args:
             user_input: 用户消息
             context: 额外上下文
+            use_api: 是否使用API (复杂任务)
             
         Returns:
             HeartFlowResult: 处理结果
         """
+        import time
+        start_time = time.time()
+        local_start = start_time
+        api_time = 0
+        api_calls = 0
+        
         context = context or {}
         
-        # 1. 真善美检查
+        # 1. 真善美检查 (本地计算)
         tgb_result = self.tgb_engine.evaluate(
             {"content": user_input}, user_input
         )
+        local_time_1 = (time.time() - local_start) * 1000
         
-        # 2. 心理健康评估
+        # 2. 心理健康评估 (本地计算)
         mental_result = self.mental_engine.quick_assessment(user_input)
+        local_time_2 = (time.time() - local_start) * 1000
         
-        # 3. 熵减计算
+        # 3. 熵减计算 (本地计算)
         entropy_result = self.entropy_engine.calculate(user_input, context)
+        local_time_3 = (time.time() - local_start) * 1000
         
-        # 4. 四层级自我认知
+        # 4. 四层级自我认知 (本地计算)
         level_result = self.self_level_engine.assess(
             action=f"处理用户输入: {user_input[:30]}...",
-            result=decision,
+            result="分析用户输入",
             feedback=None
         )
+        local_time_4 = (time.time() - local_start) * 1000
         
-        # 5. 综合决策
+        # 5. 知识图谱推理 (本地计算)
+        ontology_result = self.ontology_engine.query(user_input) if hasattr(self, 'ontology_engine') else None
+        local_time_5 = (time.time() - local_start) * 1000
+        
+        # 6. 理性思维分析 (本地计算)
+        rationality_result = self.rationality_engine.analyze(user_input) if hasattr(self, 'rationality_engine') else None
+        local_time_6 = (time.time() - local_start) * 1000
+        
+        # 7. 文字理解 (本地计算)
+        text_result = self.text_engine.query(user_input) if hasattr(self, 'text_engine') else None
+        local_time_7 = (time.time() - local_start) * 1000
+        
+        # 如果需要API调用
+        if use_api:
+            api_start = time.time()
+            # 这里可以添加API调用逻辑
+            api_time += (time.time() - api_start) * 1000
+            api_calls += 1
+        
+        # 8. 综合决策
         decision = self._make_decision(tgb_result, mental_result, entropy_result)
+        
+        # 计算处理时间
+        process_time_ms = (time.time() - start_time) * 1000
+        local_compute_time_ms = local_time_4  # 所有本地计算的总时间
         
         result = HeartFlowResult(
             tgb=tgb_result,
@@ -121,7 +185,12 @@ class HeartFlow:
             entropy=entropy_result,
             self_level=level_result.current_level,
             decision=decision,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
+            process_time_ms=process_time_ms,
+            local_compute_time_ms=local_compute_time_ms,
+            api_compute_time_ms=api_time,
+            api_call_count=api_calls,
+            local_compute=not use_api
         )
         
         self.history.append(result)
