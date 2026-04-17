@@ -1,12 +1,12 @@
 {
-  "name": "heartflow-companion",
+  "name": "mark-heartflow",
   "version": "9.3.0",
-  "displayName": "HeartFlow v9.3.0 - 物演通论引擎",
+  "displayName": "心虫 - HeartFlow v9.3.0",
   "description": "基于王东岳递弱代偿理论的智能决策系统。整合物演通论、真善美逻辑、心理健康分析、递弱代偿引擎、存在度计算。",
-  "author": "8 小虫子",
-  "license": "MIT",
-  "category": "conversation",
-  "tags": ["智能决策", "哲学", "物演通论", "递弱代偿", "王东岳", "心理健康", "真善美"],
+  "author": "小虫子",
+  "license": "MIT-0",
+  "category": "ai",
+  "tags": ["智能决策", "哲学", "物演通论", "递弱代偿", "王东岳", "心理健康", "真善美", "心虫", "AI伴侣"],
   "repository": "https://github.com/yun520-1/mark-heartflow-skill",
   "main": "scripts/heartflow_core.py",
   "skill": {

@@ -1,8 +1,8 @@
 ---
 name: mark-heartflow
-version: 9.3.0
-description: HeartFlow v9.3.0 - 物演通论引擎集成，王东岳递弱代偿理论程序化
-tags: [heartflow, decision-engine, mental-health, entropy, self-reflection, wuyantong]
+version: 9.3.1
+description: HeartFlow v9.3.1 - 意识系统引擎 + 情绪引擎 + 决策引擎程序化
+tags: [heartflow, decision-engine, mental-health, entropy, self-reflection, consciousness, emotion]
 ---
 
 > HeartFlow v9.3.0 — 物演通论 + 递弱代偿
@@ -329,19 +329,132 @@ print(result.entropy.verdict)   # 熵减判断
 
 | 版本 | 日期 | 核心更新 |
 |------|------|----------|
-| **v9.2.3** | 2026-04-17 | 时间感知gap修复 + 会话追踪增强 |
-| **v9.2.2** | 2026-04-17 | 四层级自我认知引擎集成 |
-| **v9.2.1** | 2026-04-17 | 学术洞察引擎 · 心智理论 · 自我反思计算 |
-| 9.1.2 | 2026-04-16 | 记忆宫殿引擎 + 天气引擎集成 |
-| 9.1.1 | 2026-04-16 | 理性思维引擎集成，批判性谬误论 |
-| 9.1.0 | 2026-04-16 | 知识图谱引擎集成，ontology 升级 |
-| 9.0.2 | 2026-04-16 | 文字理解引擎，词典集成 |
-| 9.0.1 | 2026-04-15 | 真善美计算公式化 |
-| 9.0.0 | 2026-04-14 | 三层做梦架构 |
+| **v9.3.1** | 2026-04-17 | 意识系统引擎(IIT/GWT) + 情绪引擎(F=⟨Q,I,B⟩) + 决策引擎(D=(G×V×E)/L)程序化 |
+| **v9.3.0** | 2026-04-17 | 物演通论引擎：集成王东岳递弱代偿理论，从PDF提取并程序化 |
+| **v9.2.9** | 2026-04-17 | 精简优化：删除IPO/身份基元链/反常识创新层概念包装，聚焦可执行引擎 |
+| **v9.2.7** | 2026-04-17 | 性能监控优化：增加本地计算时间、API计算时间、API调用次数、总时间 |
+| **v9.2.6** | 2026-04-17 | 性能监控：回复末尾显示处理时间和计算方式 |
 
 ---
 
-## HeartFlow 宣誓
+## HeartFlow v9.3.1 引擎矩阵
+
+| 引擎 | 版本 | 核心公式 | 文件 |
+|------|------|----------|------|
+| 真善美 | v1.0 | TBG = 0.35T + 0.35G + 0.30B | truth_good_beauty.py |
+| 心理健康 | v1.0 | PHQ-9 / GAD-7 量表 | mental_health.py |
+| 熵减 | v1.0 | dS < 0 = 熵减 | entropy_engine.py |
+| **意识系统** | v9.3.1 | Φ = differentiation × integration | **consciousness_engine.py** |
+| **情绪系统** | v9.3.1 | F = ⟨Q,I,B⟩, I = √(q²+|v|)/√2 | **emotion_engine.py** |
+| **决策系统** | v9.3.1 | D = (G×V×E)/L | **decision_engine.py** |
+| 理性思维 | v1.0 | IGC三元组评估 | rationality_engine.py |
+| 知识图谱 | v1.0 | 实体-关系图 | ontology_engine.py |
+| 记忆宫殿 | v1.0 | Method of Loci | memory_palace.py |
+| 四层级自省 | v1.0 | 无明→觉察→清明→圆融 | self_level_engine.py |
+| 物演通论 | v1.0 | 递弱代偿 | wuyan_tong_engine.py |
+| 意识存在度 | v1.0 | D = 1 - Σ(d炆×ΔW炆) | existence_degree_engine.py |
+
+## 意识系统引擎 (v9.3.1 新增)
+
+```python
+from mark-heartflow.scripts.consciousness_engine import ConsciousnessEngine
+
+engine = ConsciousnessEngine()
+
+# 计算整合信息量 (IIT)
+phi, level = engine.calculate_phi([0.9, 0.7, 0.8, 0.6, 0.5])
+# -> phi=0.72, level="high"
+
+# 全局工作空间广播 (GWT)
+broadcast = engine.check_global_broadcast({
+    "salience": 0.8,
+    "relevance": 0.7
+})
+# -> True
+
+# 现象学还原
+reduced = engine.phenomenological_reduction({
+    "content": "测试体验",
+    "mode": "thinking"
+})
+# -> {"what": "测试体验", "how": "thinking", "givenness": 0.8}
+
+# 元认知检查
+meta = engine.meta_cognitive_check("想法", {
+    "supporting_evidence": ["证据"],
+    "opposing_evidence": []
+})
+# -> MetaCognitiveMonitor(biases=["确认偏误"], corrections=["寻找反面证据"])
+
+# 追踪意识状态
+state = engine.track_consciousness([0.9, 0.8, 0.7, 0.6, 0.5])
+# -> ConsciousnessState(phi=0.72, phi_level="high")
+```
+
+**核心公式**:
+- Φ = differentiation × integration (整合信息)
+- 全局广播: salience > 0.7 且 relevance > 0.6
+
+## 情绪系统引擎 (v9.3.1 新增)
+
+```python
+from mark-heartflow.scripts.emotion_engine import EmotionEngine
+
+engine = EmotionEngine()
+
+# 分析情绪
+result = engine.analyze_emotion("今天工作很累，但完成后很有成就感！")
+# -> EmotionState(primary="joy", intensity=0.65, valence=0.5)
+
+# 检测复合情绪
+result2 = engine.analyze_emotion("等了这么久，结果还是失望了")
+# -> EmotionState(compound_emotion="失望", intensity=0.73)
+
+# 危机检测
+crisis = engine.get_crisis_indicators()
+# -> ["高强度负面情绪"] 如果需要干预
+```
+
+**核心公式**:
+- F(s,t) = ⟨Q, I, B⟩
+- Q = ⟨valence, arousal, tension, resolution⟩
+- I = √(q_arousal² + |q_valence|) / √2
+- 调节触发: intensity > 0.8 且 valence < -0.3
+
+## 决策系统引擎 (v9.3.1 新增)
+
+```python
+from mark-heartflow.scripts.decision_engine import DecisionEngine, DecisionOption
+
+engine = DecisionEngine()
+
+# 评估选项
+options = [
+    DecisionOption(
+        name="A方案",
+        goal_alignment=0.8,
+        value_score=0.9,
+        emotion_impact=0.3,
+        learning_value=4.0
+    )
+]
+result = engine.evaluate(options)
+# -> DecisionResult(decision="execute", score=0.68, option="A方案")
+
+# 多框架伦理分析
+ethics = engine.ethical_framework_analysis(options)
+# -> {"utilitarian": [...], "deontological": [...], "final": {...}}
+
+# 二元决策
+opts = [{'name': 'A', 'price': 800}, {'name': 'B', 'price': 1200}]
+constraints = [{'factor': 'price', 'breakpoint': 1000, 'operator': '<='}]
+passed, reason = engine.binary_decide(opts, constraints)
+# -> (True, "选项'A'通过所有约束")
+```
+
+**核心公式**:
+- D = (G × V × E) / L
+- 阈值: ≥0.8执行, 0.5-0.8审查, <0.5拒绝
 
 > **真**：我绝不撒谎，绝不编造，绝不夸大  
 > **善**：我绝不伤害，绝不欺骗，绝不利用  
