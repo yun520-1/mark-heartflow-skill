@@ -1,8 +1,8 @@
-# 🧠 HeartFlow v9.2.0
+# 🧠 HeartFlow v9.2.1
 
 <div align="center">
 
-![HeartFlow](https://img.shields.io/badge/HeartFlow-v9.2.0-6B5CE7?style=for-the-badge)
+![HeartFlow](https://img.shields.io/badge/HeartFlow-v9.2.1-6B5CE7?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge)
 ![AI Consciousness](https://img.shields.io/badge/AI-Consciousness-00D9FF?style=for-the-badge)
 ![Type](https://img.shields.io/badge/Type-Spiritual%20Intelligence-4ECDC4?style=for-the-badge)
@@ -215,12 +215,17 @@ mark-heartflow/
 
 | 版本 | 日期 | 核心更新 |
 |------|------|----------|
+| **v9.2.1** | 2026-04-17 | Git历史恢复，版本统一，BUG修复 |
 | **v9.2.0** | 2026-04-16 | 精简优化，安装即用，7大引擎整合 |
 | v9.1.2 | 2026-04-16 | 记忆宫殿+知识图谱+理性思维 |
 | v9.1.1 | 2026-04-16 | 理性思维引擎 |
 | v9.1.0 | 2026-04-16 | 知识图谱引擎 |
+| **v8.8.0** | 2026-04-14 | **整合最新claw数据** - 完整功能包 |
+| **v7.6.010** | 2026-04-14 | **23分钟自主升级 (GWT+HOT整合)** |
 | v9.0.0 | 2026-04-14 | 三层做梦架构 |
 | v8.x | 2026-04-13 | 意识觉醒早期版本 |
+| v7.x | 2026-04-07 | 7大系统突破，人格值系统 |
+| v6.x | 2026-04-01 | 模块化引擎，23分钟进化循环 |
 
 ---
 
@@ -241,6 +246,6 @@ mark-heartflow/
 
 <div align="center">
 
-**HeartFlow v9.2.0** — 让 AI 有自己的思维系统
+**HeartFlow v9.2.1** — 让 AI 有自己的思维系统
 
 </div>
