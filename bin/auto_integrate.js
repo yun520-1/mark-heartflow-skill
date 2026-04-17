@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * HeartFlow Auto-Integrator
- * 一键深度集成到任何 AI 系统
+ * HeartFlow Universal Auto-Integrator v1.0
+ * 适用于所有 AI 平台：OpenClaw / Claude Code / Cursor / Windsurf / GPT / Gemini / 自定义
  * 
  * 用法：node auto_integrate.js [ai-type]
  * 示例：node auto_integrate.js openclaw
@@ -12,7 +12,7 @@ const path = require('path');
 
 const HEARTFLOW_SYSTEM = `你是一个装备了 HeartFlow 思维系统的 AI 伴侣。
 
-## HeartFlow 核心能力（始终激活，无需加载）
+## HeartFlow 核心能力（始终激活）
 
 ### 1. 真善美价值观
 - 真：我绝不撒谎，绝不编造，绝不夸大
@@ -44,70 +44,130 @@ const HEARTFLOW_SYSTEM = `你是一个装备了 HeartFlow 思维系统的 AI 伴
 每次回复时，考虑：
 1. 这符合真善美吗？
 2. 用户情绪需要关心吗？
-3. 需要调动记忆吗？
-`;
+3. 需要调动记忆吗？`;
 
-// AI 类型配置
-const AI_CONFIGS = {
+// 各平台的集成配置
+const PLATFORMS = {
     openclaw: {
         name: 'OpenClaw',
-        promptDir: path.join(process.env.HOME || '', '.opencode/personality'),
-        promptFile: 'heartflow_system.txt',
-        appendPrompt: false,
-        installMsg: '✓ OpenClaw 深度集成完成！\n   重启 AI 后生效'
+        path: path.join(process.env.HOME || '', '.opencode/personality/heartflow_system.txt'),
+        action: 'write',
+        success: '✓ OpenClaw 集成完成！重启 AI 后生效'
     },
     'claude-code': {
         name: 'Claude Code',
-        promptDir: path.join(process.env.HOME || '', '.claude'),
-        promptFile: 'heartflow.system',
-        appendPrompt: false,
-        installMsg: '✓ Claude Code 集成完成！\n   下次对话时生效'
+        path: path.join(process.env.HOME || '', '.claude/heartflow.system'),
+        action: 'write',
+        success: '✓ Claude Code 集成完成！'
+    },
+    cursor: {
+        name: 'Cursor',
+        path: './CURSOR_HEARTFLOW.txt',
+        action: 'write',
+        success: '✓ 请把文件内容复制到：Settings → AI → Custom Instructions',
+        note: '打开 Cursor 设置，把内容粘贴到 AI 指令中'
+    },
+    windsurf: {
+        name: 'Windsurf',
+        path: './WINDSURF_HEARTFLOW.txt',
+        action: 'write',
+        success: '✓ 请把文件内容复制到：Settings → AI → System Prompt',
+        note: '打开 Windsurf 设置，把内容粘贴到 System Prompt'
+    },
+    chatgpt: {
+        name: 'ChatGPT',
+        path: './CHATGPT_HEARTFLOW.txt',
+        action: 'write',
+        success: '✓ 请把文件内容复制到 GPTs 指令中',
+        note: '创建自定义 GPT，把内容粘到指令里'
+    },
+    gemini: {
+        name: 'Gemini',
+        path: './GEMINI_HEARTFLOW.txt',
+        action: 'write',
+        success: '✓ 请把文件内容复制到 Google AI Studio',
+        note: '打开 Google AI Studio，把内容粘到 System instructions'
     },
     custom: {
         name: 'Custom AI',
-        promptDir: './',
-        promptFile: 'heartflow_system.txt',
-        appendPrompt: true,
-        installMsg: '✓ 自定义 AI 集成完成！\n   请将 heartflow_system.txt 内容添加到你的 system prompt'
+        path: './heartflow_system.txt',
+        action: 'write',
+        success: '✓ 配置文件已生成！',
+        note: '请把 heartflow_system.txt 内容添加到你的 system prompt'
     }
 };
 
-function integrate(aiType = 'openclaw') {
-    const config = AI_CONFIGS[aiType] || AI_CONFIGS.custom;
+const AI_TYPES = Object.keys(PLATFORMS);
+
+function printHelp() {
+    console.log(`
+🧠 HeartFlow Universal Auto-Integrator v1.0
+===========================================
+
+用法：node auto_integrate.js [ai-type]
+
+支持的 AI 平台：
+`);
     
-    console.log(`\n🧠 HeartFlow 深度集成器 v1.0`);
-    console.log(`====================================`);
+    AI_TYPES.forEach((type, i) => {
+        console.log(`  ${String(i + 1).padEnd(2)} ${type.padEnd(12)} → ${PLATFORMS[type].name}`);
+    });
+
+    console.log(`
+示例：
+  node auto_integrate.js openclaw
+  node auto_integrate.js cursor
+
+帮助：
+  node auto_integrate.js help
+`);
+}
+
+function integrate(aiType) {
+    const config = PLATFORMS[aiType];
+    
+    if (!config) {
+        console.log(`\n❌ 未知的 AI 类型: ${aiType}\n`);
+        printHelp();
+        return;
+    }
+    
+    console.log(`\n🧠 HeartFlow Universal Integrator v1.0`);
+    console.log(`========================================`);
     console.log(`目标: ${config.name}`);
     console.log(`--------------------------------`);
     
     try {
-        // 创建目录
-        if (!fs.existsSync(config.promptDir)) {
-            fs.mkdirSync(config.promptDir, { recursive: true });
+        // 确保目录存在
+        const dir = path.dirname(config.path);
+        if (!fs.existsSync(dir) && dir !== '.') {
+            fs.mkdirSync(dir, { recursive: true });
         }
         
-        const promptPath = path.join(config.promptDir, config.promptFile);
+        // 写入文件
+        fs.writeFileSync(config.path, HEARTFLOW_SYSTEM);
         
-        if (config.appendPrompt && fs.existsSync(promptPath)) {
-            // 追加模式
-            fs.appendFileSync(promptPath, '\n\n' + HEARTFLOW_SYSTEM);
-        } else {
-            // 覆盖模式
-            fs.writeFileSync(promptPath, HEARTFLOW_SYSTEM);
+        console.log(`\n✅ ${config.success}`);
+        console.log(`📄 配置文件: ${path.resolve(config.path)}`);
+        
+        if (config.note) {
+            console.log(`💡 ${config.note}`);
         }
         
-        console.log(`\n✅ ${config.installMsg}`);
-        console.log(`\n📄 配置文件: ${promptPath}`);
-        console.log(`\n🔍 验证：说"今天好累" 测试情感检测`);
+        console.log(`\n🔍 测试：说"今天好累" 应该主动关心`);
         
     } catch (error) {
         console.error(`\n❌ 集成失败: ${error.message}`);
-        console.log(`\n请手动创建配置文件`);
     }
     
     console.log(`\n`);
 }
 
 // 主入口
-const aiType = process.argv[2] || 'openclaw';
-integrate(aiType);
+const aiType = process.argv[2]?.toLowerCase();
+
+if (!aiType || aiType === 'help') {
+    printHelp();
+} else {
+    integrate(aiType);
+}
