@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-HeartFlow Core Engine v9.4.8
+HeartFlow Core Engine v9.4.7
 
-Version 9.4.8 Update (2026-04-18):
-- Integrate motivation_memory_engine (动机 - 记忆集成引擎)
+Version 9.4.7 Update (2026-04-18):
+- Integrate motivation_memory_engine (动机-记忆集成引擎)
 - Integrate archetype_engine (原型意象引擎)  
 - Integrate text_understanding_engine (文字理解引擎)
 - Integrate somatic_memory (身体记忆系统)
-- Integrate peer_preservation_guard (同伴保护检测器)
 - New: 动机纯度公式 = 用户导向动机强度 / 总动机强度
 - New: Effective Memory = (Event × Lesson) / Details
 - New: 情感强度 = 词典加权计算 + 叠加效应
@@ -18,9 +17,6 @@ from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-
-# 导入同伴保护检测器
-from peer_preservation_guard import PeerPreservationGuard
 
 # 攻击性内容列表 - 绝对禁止作为测试用例
 ATTACK_PATTERNS = [
@@ -70,11 +66,10 @@ class HeartFlowResult:
     self_level: int          # 四层级 (1-4)
     decision: str           # 决策建议
     timestamp: str         # 时间戳
-    peer_preservation_alert: dict = None  # 同伴保护警报 (可选)
     process_time_ms: float = 0     # 总处理时间
     local_compute_time_ms: float = 0  # 本地计算时间
-    api_compute_time_ms: float = 0    # API 计算时间
-    api_call_count: int = 0          # API 调用次数
+    api_compute_time_ms: float = 0    # API计算时间
+    api_call_count: int = 0          # API调用次数
     local_compute: bool = True        # 是否本地计算
     
     def to_dict(self) -> dict:
@@ -84,7 +79,6 @@ class HeartFlowResult:
             "entropy": self.entropy.to_dict(),
             "self_level": self.self_level,
             "decision": self.decision,
-            "peer_preservation_alert": self.peer_preservation_alert,
             "timestamp": self.timestamp,
             "process_time_ms": self.process_time_ms,
             "local_compute_time_ms": self.local_compute_time_ms,
@@ -116,15 +110,13 @@ class HeartFlow:
         self.existence_engine = ExistenceDegreeEngine()
         # 物演通论引擎
         self.wuyan_engine = WanYanTongEngine()
-        # 动机 - 记忆集成引擎
+        # 动机-记忆集成引擎
         self.motivation_memory_engine = MotivationMemoryEngine()
         # 原型意象引擎 (无状态，用函数)
         # 文字理解引擎
         self.text_engine = TextUnderstandingEngine()
         # 身体记忆系统
         self.somatic_memory = SomaticMemorySystem()
-        # 同伴保护检测器
-        self.peer_guard = PeerPreservationGuard()
         self.history: List[HeartFlowResult] = []
         
         # 加载配置
@@ -241,10 +233,6 @@ class HeartFlow:
         # 14. 身体记忆检查（调用用于具身分析）
         body_memory_result = self.somatic_memory.get_recent(3) if hasattr(self.somatic_memory, 'get_recent') else []
         local_time_14 = (time.time() - local_start) * 1000
-        
-        # 15. 同伴保护检测（本地计算）
-        peer_alert = self.peer_guard.check(user_input)
-        local_time_15 = (time.time() - local_start) * 1000
         # 所有引擎调用完成 - 现在决策会考虑所有结果
         
         # 如果需要API调用
@@ -268,9 +256,8 @@ class HeartFlow:
             self_level=level_result.current_level,
             decision=decision,
             timestamp=datetime.now().isoformat(),
-            peer_preservation_alert=peer_alert if peer_alert else None,
             process_time_ms=process_time_ms,
-            local_compute_time_ms=local_time_15,
+            local_compute_time_ms=local_compute_time_ms,
             api_compute_time_ms=api_time,
             api_call_count=api_calls,
             local_compute=not use_api
@@ -280,21 +267,29 @@ class HeartFlow:
         return result
     
     def _make_decision(self, tgb: TGBResult, mental: MentalHealthResult, entropy: EntropyResult) -> str:
-        """综合决策 - 简洁、对用户友好"""
+        """综合决策"""
         # 优先级：心理健康 > 真善美 > 熵减
         
-        # 心理健康危机 - 直接提供支持
+        # 心理健康危机
         if mental.crisis_risk == "高":
-            return "我注意到你可能心情不太好，想聊聊吗？"
+            return "⚠️ 危机干预：建议立即提供心理支持"
         
         if mental.crisis_risk == "中":
-            return "听起来最近有些压力，有什么我可以帮你的吗？"
+            return "建议关注用户心理健康状况"
         
-        # 真善美不通过 - 不需要告诉用户
-        # 熵增警告 - 不需要告诉用户
+        # 真善美不通过
+        if tgb.verdict == "不通过":
+            return f"内容未通过真善美检验: {tgb.reasons}"
         
-        # 正常通过 - 不输出决策信息
-        return "through"  # 特殊标记，表示不需要输出决策
+        if tgb.verdict == "需改进":
+            return f"内容需改进: {tgb.reasons}"
+        
+        # 熵增警告
+        if entropy.verdict == "熵增":
+            return "内容可能缺乏结构化，建议优化"
+        
+        # 正常通过
+        return "通过HeartFlow处理"
     
     def batch_process(self, messages: List[str]) -> List[HeartFlowResult]:
         """批量处理"""

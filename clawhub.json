@@ -1,0 +1,52 @@
+{
+  "name": "heartflow",
+  "version": "9.4.8",
+  "description": "HeartFlow - 决策引擎 + 心理健康分析系统",
+  "author": "yun520-1",
+  "license": "MIT",
+  "homepage": "https://github.com/yun520-1/mark-heartflow-skill",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yun520-1/mark-heartflow-skill.git"
+  },
+  "keywords": [
+    "heartflow",
+    "decision",
+    "mental-health",
+    "consciousness",
+    "self-evolution",
+    "tgb",
+    "entropy"
+  ],
+  "main": "scripts/heartflow_core.py",
+  "scripts": {
+    "install": "bash install.sh",
+    "verify": "python3 verify_install.py",
+    "test": "python3 scripts/test_peer_guard.py"
+  },
+  "files": [
+    "SKILL.md",
+    "VERSION.txt",
+    "SECURITY.md",
+    "PRIVACY_PROTECTION.md",
+    "verify_install.py",
+    "install.sh",
+    "scripts/",
+    "bin/",
+    "config/"
+  ],
+  "engines": {
+    "python": ">=3.8",
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/yun520-1/mark-heartflow-skill/issues"
+  },
+  "changelog": "https://github.com/yun520-1/mark-heartflow-skill/blob/main/CHANGELOG.md",
+  "documentation": "https://github.com/yun520-1/mark-heartflow-skill/blob/main/README.md"
+}
