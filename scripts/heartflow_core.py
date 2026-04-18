@@ -66,10 +66,11 @@ class HeartFlowResult:
     self_level: int          # 四层级 (1-4)
     decision: str           # 决策建议
     timestamp: str         # 时间戳
+    peer_preservation_alert: bool = False  # 同伴保护警报
     process_time_ms: float = 0     # 总处理时间
     local_compute_time_ms: float = 0  # 本地计算时间
-    api_compute_time_ms: float = 0    # API计算时间
-    api_call_count: int = 0          # API调用次数
+    api_compute_time_ms: float = 0    # API 计算时间
+    api_call_count: int = 0          # API 调用次数
     local_compute: bool = True        # 是否本地计算
     
     def to_dict(self) -> dict:
