@@ -22,6 +22,19 @@ tags: [heartflow, decision, mental-health, consciousness, self-evolution, ai-saf
 5. **行为经济** - 16种认知偏误识别
 6. **记忆永存** - 四层记忆系统
 
+## 论文提取（v10.0.7新增）
+
+从论文 "Rethinking Memory in LLM based Agents" (Du et al., 2025) 提取的核心记忆操作：
+
+|| 操作 | 定义 | HeartFlow集成 |
+|------|------|---------------|
+| **Consolidation** | 将短期经验转化为持久记忆 | memory_core 记忆巩固 |
+| **Updating** | 修改现有记忆纳入最新更新 | memory_hooks 增量更新 |
+| **Indexing** | 构建辅助代码作为记忆访问点 | ontology_engine 实体索引 |
+| **Forgetting** | 删除过时或不正确内容 | 熵减引擎 过期清除 |
+| **Retrieval** | 记忆检索 | TF-IDF向量搜索 |
+| **Condensation** | 压缩关键信息 | 记忆压缩算法 |
+
 ## 快速开始
 
 ```python
