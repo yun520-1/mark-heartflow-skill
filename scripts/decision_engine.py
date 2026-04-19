@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """
-决策系统引擎 v10.0.3
+决策系统引擎 v9.3.1
 ====================
 基于 SEVEN_SYSTEMS.md 文档程序化
-
-v10.0.3: 集成到 heartflow_core 核心决策流程 (替代硬编码if-else)
 
 核心公式:
   D = (G × V × E) / L

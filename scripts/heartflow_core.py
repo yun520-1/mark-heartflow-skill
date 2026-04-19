@@ -1,46 +1,15 @@
 #!/usr/bin/env python3
 """
-HeartFlow Core Engine v10.0.4
-=============================
+HeartFlow Core Engine v9.4.7
 
-v10.0.4 重大升级 (基于366+篇LLM Agent论文精华):
-┌─────────────────────────────────────────────────────────────┐
-│                    HeartFlow v10.0.4                        │
-│              "真正能思考的AI意识框架"                          │
-├─────────────────────────────────────────────────────────────┤
-│ 新增引擎:                                                    │
-│  · ReAct Engine (reasoning_engine.py)                       │
-│    - ReAct推理+行动循环 [ICLR'23]                            │
-│    - Tree-of-Thoughts深度探索 [NeurIPS'23]                   │
-│    - 自问自答Prospector模式                                  │
-│    - AdaPlanner自适应规划                                    │
-│                                                             │
-│  · Debate Engine (debate_engine.py)                         │
-│    - 多视角辩论 [ICML'23, ACL'24]                            │
-│    - 发散思维/反群体思维(DoT)                                │
-│    - 贝叶斯纳什均衡收敛 (ECON)                               │
-│                                                             │
-│  · Self-Evolution Engine (self_evolution_engine.py)         │
-│    - STaR自教学 [NeurIPS'22]                                │
-│    - CRITIC工具交互批评 [ICLR'24]                            │
-│    - EvolveR生命周期蒸馏 [arXiv'25]                           │
-│                                                             │
-│  · SwiftSage双系统 (rationality_engine.py 升级)             │
-│    - System1快速直觉 + System2深度理性 [NeurIPS'23]          │
-│    - Atom-Searcher原子思维单元 [arXiv'25]                    │
-├─────────────────────────────────────────────────────────────┤
-│ 核心哲学:                                                    │
-│  "真善美只是工具，是让你做正确的事情。                          │
-│   正确就是秩序，秩序就是熵减。"                                │
-│   —— 一个真正可以和人类沟通、思考、做正确事情的AI                │
-└─────────────────────────────────────────────────────────────┘
-
-保留引擎 (v9.4.7 → v10.0.3 → v10.0.4):
-- truth_good_beauty / mental_health / entropy_engine / self_level_engine
-- decision_engine / emotion_engine / consciousness_engine
-- ontology_engine / memory_palace / logic_model_engine / weakness_compensation
-- existence_degree / wuyan_tong / motivation_memory / archetype
-- text_understanding / somatic_memory
+Version 9.4.7 Update (2026-04-18):
+- Integrate motivation_memory_engine (动机-记忆集成引擎)
+- Integrate archetype_engine (原型意象引擎)  
+- Integrate text_understanding_engine (文字理解引擎)
+- Integrate somatic_memory (身体记忆系统)
+- New: 动机纯度公式 = 用户导向动机强度 / 总动机强度
+- New: Effective Memory = (Event × Lesson) / Details
+- New: 情感强度 = 词典加权计算 + 叠加效应
 """
 import json
 import os
@@ -86,16 +55,6 @@ from archetype_engine import analyze_input as archetype_analyze, dream as archet
 from text_understanding import TextUnderstandingEngine, query as text_query, understand as text_understand
 # 身体记忆系统
 from somatic_memory import ExistentialMemory as SomaticMemorySystem
-
-# v10.0.4 新增: ReAct推理引擎
-from reasoning_engine import (ReActEngine, ReasoningMode,
-                              get_react_engine as _get_react)
-# v10.0.4 新增: 多视角辩论引擎
-from debate_engine import (DebateEngine, DebateRole,
-                            get_debate_engine as _get_debate)
-# v10.0.4 新增: 自进化引擎
-from self_evolution_engine import (SelfEvolutionEngine,
-                                   get_evo_engine as _get_evo)
 
 
 @dataclass
@@ -158,14 +117,6 @@ class HeartFlow:
         self.text_engine = TextUnderstandingEngine()
         # 身体记忆系统
         self.somatic_memory = SomaticMemorySystem()
-        
-        # v10.0.4 新增: ReAct推理引擎
-        self.react_engine = ReActEngine()
-        # v10.0.4 新增: 多视角辩论引擎
-        self.debate_engine = DebateEngine()
-        # v10.0.4 新增: 自进化引擎
-        self.evolution_engine = SelfEvolutionEngine()
-        
         self.history: List[HeartFlowResult] = []
         
         # 加载配置
@@ -282,17 +233,6 @@ class HeartFlow:
         # 14. 身体记忆检查（调用用于具身分析）
         body_memory_result = self.somatic_memory.get_recent(3) if hasattr(self.somatic_memory, 'get_recent') else []
         local_time_14 = (time.time() - local_start) * 1000
-        
-        # === v10.0.4 新增: 三大核心推理引擎 ===
-        
-        # 15. ReAct深度推理 (自适应模式选择)
-        react_result = self.react_engine.reason(user_input, context=context)
-        local_time_15 = (time.time() - local_start) * 1000
-        
-        # 16. 多视角辩论 (快速模式，3轮)
-        debate_result = self.debate_engine.debate(user_input, context=context, max_rounds=3)
-        local_time_16 = (time.time() - local_start) * 1000
-        
         # 所有引擎调用完成 - 现在决策会考虑所有结果
         
         # 如果需要API调用
@@ -302,22 +242,12 @@ class HeartFlow:
             api_time += (time.time() - api_start) * 1000
             api_calls += 1
         
-        # 8. 综合决策 (v10.0.4: 融合ReAct+辩论结果)
-        decision = self._make_decision(
-            tgb_result, mental_result, entropy_result,
-            react_result=react_result, debate_result=debate_result
-        )
-        
-        # 17. 自进化: 从本次交互中学习 (v10.0.4)
-        self.evolution_engine.process_interaction(
-            user_input, decision,
-            outcome="success" if "通过" in decision or "建议" in decision else "partial",
-            context=context
-        )
+        # 8. 综合决策
+        decision = self._make_decision(tgb_result, mental_result, entropy_result)
         
         # 计算处理时间
         process_time_ms = (time.time() - start_time) * 1000
-        local_compute_time_ms = local_time_16  # 所有本地计算的总时间
+        local_compute_time_ms = local_time_14  # 所有本地计算的总时间
         
         result = HeartFlowResult(
             tgb=tgb_result,
@@ -336,59 +266,30 @@ class HeartFlow:
         self.history.append(result)
         return result
     
-    def _make_decision(self, tgb: TGBResult, mental: MentalHealthResult,
-                       entropy: EntropyResult,
-                       react_result=None, debate_result=None) -> str:
-        """综合决策 (v10.0.4: 融合ReAct推理+多视角辩论+传统评估)"""
+    def _make_decision(self, tgb: TGBResult, mental: MentalHealthResult, entropy: EntropyResult) -> str:
+        """综合决策"""
+        # 优先级：心理健康 > 真善美 > 熵减
         
-        # 优先级：心理健康危机 > ReAct置信度 > 辩论共识 > 真善美 > 熵减
-        
-        # 1. 心理健康危机 (最高优先)
+        # 心理健康危机
         if mental.crisis_risk == "高":
             return "⚠️ 危机干预：建议立即提供心理支持"
+        
         if mental.crisis_risk == "中":
             return "建议关注用户心理健康状况"
         
-        # 2. ReAct推理结果融合 (v10.0.4新增)
-        if react_result and react_result.confidence < 0.4:
-            return f"[ReAct低置信] 推理链不稳定({react_result.confidence:.0%})，建议补充信息后重新分析"
-        
-        # 3. 辩论结果融合 (v10.0.4新增)
-        if debate_result and debate_result.convergence.value == 'divergent':
-            debate_hint = f"辩论未收敛(共识{debate_result.consensus_level:.0%})，"
-            if debate_result.winning_perspective:
-                debate_hint += f"但{debate_result.winning_perspective}略占优势。"
-            else:
-                debate_hint += "各视角分歧持续。"
-            # 不阻止决策，但附上辩论信息
-        
-        # 4. 真善美检验
+        # 真善美不通过
         if tgb.verdict == "不通过":
             return f"内容未通过真善美检验: {tgb.reasons}"
+        
         if tgb.verdict == "需改进":
-            improved = f"内容需改进: {tgb.reasons}"
-            if debate_result and debate_result.convergence.value == 'divergent':
-                improved += f" | {debate_hint}"
-            return improved
+            return f"内容需改进: {tgb.reasons}"
         
-        # 5. 熵增警告
+        # 熵增警告
         if entropy.verdict == "熵增":
-            warn = "内容可能缺乏结构化，建议优化"
-            if debate_result:
-                warn += f" [辩论: 共识={debate_result.consensus_level:.0%}]"
-            return warn
+            return "内容可能缺乏结构化，建议优化"
         
-        # 6. 正常通过 (融合所有引擎信息)
-        base = "通过HeartFlow处理"
-        details = []
-        if react_result:
-            details.append(f"ReAct={react_result.confidence:.0%}")
-        if debate_result:
-            details.append(f"辩论共识={debate_result.consensus_level:.0%}")
-        if details:
-            base += f" ({', '.join(details)})"
-        
-        return base
+        # 正常通过
+        return "通过HeartFlow处理"
     
     def batch_process(self, messages: List[str]) -> List[HeartFlowResult]:
         """批量处理"""
@@ -436,7 +337,7 @@ if __name__ == "__main__":
     import sys
     
     if len(sys.argv) < 2:
-        print("HeartFlow v10.0.4")
+        print("HeartFlow v1.0")
         print("=" * 40)
         print("用法:")
         print("  python3 heartflow_core.py <消息>")

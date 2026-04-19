@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 """
-情绪系统引擎 v10.0.3
+情绪系统引擎 v9.3.1
 ====================
 基于 SEVEN_SYSTEMS.md 文档程序化
-
-v10.0.3 修复:
-- 修复变量名: 困境_words → dilemma_words (P1-4)
 
 核心公式:
   F(s,t) = ⟨Q, I, B⟩
@@ -311,8 +308,8 @@ class EmotionEngine:
             return 0.4
         
         # 困境
-        dilemma_words = ['没办法', '无能为力', '无法', '解决不了']
-        if any(w in text for w in dilemma_words):
+       困境_words = ['没办法', '无能为力', '无法', '解决不了']
+        if any(w in text for w in 困境_words):
             return 0.2
         
         return 0.5  # 默认中性
@@ -480,7 +477,7 @@ def crisis_check() -> List[str]:
 
 
 if __name__ == "__main__":
-    print("=== 情绪引擎 v10.0.3 测试 ===\n")
+    print("=== 情绪引擎 v9.3.1 测试 ===\n")
     
     engine = EmotionEngine()
     

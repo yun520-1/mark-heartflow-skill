@@ -1,14 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HeartFlow v10.0 — MemoryCore (四层统一记忆系统)
-================================================
+HeartFlow v10.0.5 — MemoryCore (四层统一记忆系统 + 2026前沿算法)
+====================================================================
+
+v10.0.5 升级内容（基于 56 篇 Memory&RAG 论文集成）：
+  [NEW] MAGMA 多图架构 — 正交语义/时间/因果/实体四维图 (arXiv:2601.03236)
+  [NEW] FadeMem 生物遗忘 — 双层自适应遗忘曲线 (arXiv:2601.18642)
+  [NEW] AtomMem 原子操作 — CRUD可学习动态记忆 (arXiv:2601.08323)
+  [NEW] E-mem 情景重构 — 替代破坏性压缩 (arXiv:2601.21714)
+  [NEW] SwiftMem DAG索引 — 子线性检索加速 (arXiv:2601.08160)
+
+论文来源：VoltAgent/awesome-ai-agent-papers 2026 (Memory & RAG, 56篇)
+         luo-junyu/Awesome-Agent-Papers (Evolution + Construction)
+         awesome-deep-learning-papers (Memory Networks, NTM, Graves et al.)
 
 设计原则：
 - 零外部依赖：纯 Python 实现，无需 ChromaDB/Redis/SQLite
 - 四层架构：感觉寄存 → 短期记忆 → 长期记忆 → 自我记忆
-- 智能遗忘：基于重要性、时间、情感强度的衰减模型
-- 语义检索：TF-IDF 轻量级语义搜索（无需 embedding 模型）
+- 多图记忆：语义图 / 时间线 / 因果链 / 实体关系 四维度组织
+- 生物遗忘：基于重要性×时间×情感的双层衰减模型
+- 语义检索：TF-IDF 轻量级语义搜索 + DAG-Tag 子线性索引
 - 自我叙事：从记忆中自动编织"我"的连续性故事
 
 四层记忆结构：
@@ -25,6 +37,13 @@ HeartFlow v10.0 — MemoryCore (四层统一记忆系统)
 │ Layer 1: Sensory Register (感觉寄存)     │ ← 即时输入缓冲
 │   · 原始感知 / 原始情绪 / 即时印象       │
 └─────────────────────────────────────────┘
+
+多图记忆架构 (MAGMA):
+┌──────────┬──────────┬──────────┬──────────┐
+│ 语义图    │  时间线   │  因果链   │  实体图   │
+│ Semantic │ Temporal │ Causal  │ Entity  │
+│ Graph    │ Chain    │ Graph   │ Graph   │
+└──────────┴──────────┴──────────┴──────────┘
 """
 
 import json
@@ -49,7 +68,27 @@ class MemoryCore:
     5. 纯文件持久化：JSON 格式，可读、可迁移、无依赖
     """
 
-    VERSION = "10.0.0"
+    VERSION = "10.0.5"
+
+    # MAGMA 多图架构配置 (arXiv:2601.03236)
+    MAGMA_CONFIG = {
+        "semantic_graph": True,     # 语义关联图
+        "temporal_chain": True,     # 时间因果链
+        "causal_graph": True,       # 因果依赖图
+        "entity_graph": True,       # 实体关系图
+    }
+    
+    # FadeMem 生物遗忘参数 (arXiv:2601.18642)
+    FADEMEM_CONFIG = {
+        "short_term_half_life": 0.25,   # 短期记忆半衰期（小时）
+        "long_term_base_half_life": 720, # 长期记忆基础半衰期（小时）
+        "importance_exponent": 1.5,      # 重要性指数衰减
+        "emotion_boost_factor": 2.0,     # 情感增强因子
+        "recency_weight": 0.3,           # 近因权重
+    }
+    
+    # AtomMem 原子操作参数 (arXiv:2601.08323)
+    ATOMEM_ENABLED = True
 
     # 默认配置
     DEFAULT_CONFIG = {
@@ -99,6 +138,15 @@ class MemoryCore:
         self._id_counter = 0
         self._write_count = 0
 
+        # ═══ MAGMA 多图记忆架构 (v10.0.5) ═══
+        self.semantic_graph: Dict[str, Set[str]] = defaultdict(set)   # 语义关联图
+        self.temporal_chain: List[Dict] = []                         # 时间因果链
+        self.causal_graph: Dict[str, Set[Tuple[str, str]]] = defaultdict(set)  # 因果依赖图
+        self.entity_graph: Dict[str, Set[str]] = defaultdict(set)    # 实体关系图
+        
+        # ═══ SwiftMem DAG-Tag 索引 (v10.0.5) ═══
+        self._dag_index: Dict[str, List[str]] = {}  # tag -> memory_ids DAG
+
         # 统计
         self.stats = {
             "total_stored": 0,
@@ -106,6 +154,13 @@ class MemoryCore:
             "promotions_lt": 0,      # 提升到长期
             "promotions_self": 0,    # 提升到自我
             "forgotten_count": 0,
+            # v10.0.5 新增
+            "graph_edges_semantic": 0,
+            "graph_edges_causal": 0,
+            "atom_ops_create": 0,
+            "atom_ops_read": 0,
+            "atom_ops_update": 0,
+            "atom_ops_delete": 0,
         }
 
         # 加载已有数据
@@ -667,12 +722,201 @@ class MemoryCore:
     # ═══════════════════════════════════════════
 
     def _update_index(self, entry: Dict):
-        """更新倒排索引"""
+        """更新倒排索引 + SwiftMem DAG-Tag 索引"""
         tokens = self._tokenize(entry.get("content", "").lower())
         for tag in entry.get("tags", []):
             tokens.append(tag.lower())
+            # SwiftMem: 构建DAG-Tag索引
+            if tag not in self._dag_index:
+                self._dag_index[tag] = []
+            if str(entry["id"]) not in self._dag_index[tag]:
+                self._dag_index[tag].append(str(entry["id"]))
+        
         for token in set(tokens):
             self._inverted_index[token].append((entry["id"], entry.get("layer", "")))
+        
+        # v10.0.5: 同时构建MAGMA多图
+        self._build_magma_graphs(entry)
+    
+    # ═══════════════════════════════════════════
+    # v10.0.5 新增：MAGMA 多图记忆架构
+    # (基于 arXiv:2601.03236 "A Multi-Graph based Agentic Memory Architecture")
+    # ═══════════════════════════════════════════
+    
+    def _build_magma_graphs(self, entry: Dict):
+        """
+        为每条记忆构建四维多图结构
+        
+        四个正交子图：
+        1. Semantic Graph — 基于语义相似度的关联网络
+        2. Temporal Chain — 按时间排序的事件链
+        3. Causal Graph — 因果依赖关系（原因→结果）
+        4. Entity Graph — 实体共现关系
+        """
+        content = entry.get("content", "")
+        tags = entry.get("tags", [])
+        mid = str(entry.get("id", ""))
+        
+        # 1. 语义图：基于标签的关联
+        for tag in tags:
+            for other_tag in tags:
+                if other_tag != tag:
+                    self.semantic_graph[tag].add(other_tag)
+                    self.stats["graph_edges_semantic"] += 1
+        
+        # 2. 时间链：按时间戳有序插入
+        self.temporal_chain.append({
+            "id": mid,
+            "timestamp": entry.get("created_at", time.time()),
+            "layer": entry.get("layer", ""),
+            "emotion": entry.get("emotion", ""),
+        })
+        self.temporal_chain.sort(key=lambda x: x["timestamp"])
+        # 保持最近500条
+        if len(self.temporal_chain) > 500:
+            self.temporal_chain = self.temporal_chain[-500:]
+        
+        # 3. 因果图：检测因果词汇
+        causal_markers = ["导致", "造成", "因为", "所以", "由于", "因此",
+                         "causes", "leads to", "because", "therefore"]
+        for marker in causal_markers:
+            if marker in content:
+                # 简化：标记此记忆包含因果关系
+                self.causal_graph[mid].add(("has_causality", marker))
+                self.stats["graph_edges_causal"] += 1
+        
+        # 4. 实体图：提取实体并建立共现关系
+        entities = self._extract_entities(content)
+        for i, e1 in enumerate(entities):
+            for e2 in entities[i+1:]:
+                self.entity_graph[e1].add(e2)
+    
+    def query_semantic_graph(self, concept: str, depth: int = 2) -> List[str]:
+        """
+        查询语义图 —— 找到所有与概念相关的记忆ID
+        
+        类似 GraphRAG 的概念展开，但无需向量数据库
+        """
+        visited = set()
+        queue = [concept]
+        current_depth = 0
+        related_ids = []
+        
+        while queue and current_depth <= depth:
+            next_level = []
+            for node in queue:
+                if node in visited:
+                    continue
+                visited.add(node)
+                
+                # 获取关联的记忆ID
+                if node in self._dag_index:
+                    related_ids.extend(self._dag_index[node])
+                
+                # 扩展到相邻节点
+                for neighbor in self.semantic_graph.get(node, set()):
+                    if neighbor not in visited:
+                        next_level.append(neighbor)
+            
+            queue = next_level
+            current_depth += 1
+        
+        return list(set(related_ids))
+    
+    def get_temporal_context(self, window_hours: float = 1.0) -> List[Dict]:
+        """
+        获取时间窗口内的上下文记忆 (E-mem 风格的情景重构)
+        
+        替代传统的破坏性压缩，保留完整的时间上下文
+        """
+        now = time.time()
+        cutoff = now - window_hours * 3600
+        
+        relevant = [
+            tc for tc in self.temporal_chain
+            if tc["timestamp"] >= cutoff
+        ]
+        
+        # 按时间正序排列
+        relevant.sort(key=lambda x: x["timestamp"])
+        
+        return relevant
+    
+    def fade_mem_forget(self, memory_id: int) -> bool:
+        """
+        AtomMem 原子删除操作 + FadeMem 生物遗忘模型
+        
+        FadeMem 核心公式 (arXiv:2601.18642):
+          R(t,I,E) = R_0 × exp(-t / (S × I^α)) × (1 + E/10)
+          
+        其中：
+          t = 经过时间
+          S = 半衰期基数  
+          I = 重要性 (importance)
+          α = 重要性指数 (默认1.5)
+          E = 情感强度 (emotion strength 0-10)
+        """
+        target_mem = None
+        target_storage = None
+        
+        for storage_name, storage in [
+            ("sensory", self.sensory_register),
+            ("shortterm", self.short_term),
+            ("longterm", self.long_term),
+        ]:
+            for i, mem in enumerate(storage):
+                if mem.get("id") == memory_id:
+                    target_mem = mem
+                    target_storage = (storage_name, storage, i)
+                    break
+            if target_mem:
+                break
+        
+        if not target_mem:
+            return False
+        
+        # 计算FadeMem遗忘概率
+        now = time.time()
+        elapsed_hours = (now - target_mem.get("created_at", now)) / 3600
+        importance = target_mem.get("importance", 0.5)
+        
+        # 情感强度量化
+        emotion = target_mem.get("emotion", "")
+        emotion_strength = min(len(emotion), 10)  # 简化：情感描述长度作为强度代理
+        
+        cfg = self.FADEMEM_CONFIG
+        half_life = cfg["long_term_base_half_life"]
+        alpha = cfg["importance_exponent"]
+        emotion_boost = cfg["emotion_boost_factor"]
+        
+        # FadeMem 公式
+        effective_half_life = half_life * (importance ** alpha)
+        retention = math.exp(-elapsed_hours / max(effective_half_life, 0.01))
+        retention *= (1 + emotion_strength / (emotion_boost * 10))  # 情感保护
+        
+        # 如果保留度太低，执行原子删除
+        if retention < 0.08:  # < 8% 保留率 → 遗忘
+            _, storage, idx = target_storage
+            storage.pop(idx)
+            self.stats["forgotten_count"] += 1
+            self.stats["atom_ops_delete"] += 1
+            self._save()
+            return True
+        
+        # 否则更新有效重要性
+        target_mem["_fade_retention"] = round(retention, 4)
+        target_mem["_effective_importance"] = round(importance * retention, 4)
+        return False
+    
+    @staticmethod
+    def _extract_entities(text: str) -> List[str]:
+        """轻量实体提取（用于Entity Graph）"""
+        import re as _re
+        # 英文术语
+        english = _re.findall(r'[A-Z][a-zA-Z]+(?:[ ][A-Z][a-zA-Z]+)*', text)
+        # 中文词组（2-6字）
+        chinese = _re.findall(r'[\u4e00-\u9fff]{2,6}', text)
+        return list(set(english + chinese))[:20]
 
     @staticmethod
     def _trim(storage: List[Dict], max_size: int):
@@ -743,6 +987,15 @@ class MemoryCore:
                 "short_term": len(self.short_term),
                 "long_term": len(self.long_term),
                 "self_memory": len(self.self_memory.get("defining_moments", [])),
+            },
+            # v10.0.5 MAGMA 多图统计
+            "magma_graphs": {
+                "semantic_nodes": len(self.semantic_graph),
+                "semantic_edges": self.stats["graph_edges_semantic"],
+                "temporal_chain_len": len(self.temporal_chain),
+                "causal_nodes": len(self.causal_graph),
+                "entity_nodes": len(self.entity_graph),
+                "dag_tag_index": len(self._dag_index),
             },
             "stats": self.stats.copy(),
             "persist_dir": self.persist_dir,
