@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: 10.1.2
+version: 10.2.0
 description: HeartFlow - 决策引擎 + 心理健康分析
 tags: [heartflow, decision, mental-health, consciousness, self-evolution]
 ---
