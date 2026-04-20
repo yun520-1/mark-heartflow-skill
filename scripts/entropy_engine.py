@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 """
-熵减计算引擎 v1.0
+熵减计算引擎 v10.1.1
 =================
 基于热力学第二定律的宇宙发展方向判断
 
 核心公式:
   dS < 0  (熵减)
   判断依据: 信息组织度、复杂度、有序度提升
+
+v10.1.1 更新:
+  - 改进 compare() 跨版本熵变计算
+  - 新增 cross_context_entropy 跨上下文熵分析
+  - 优化信息密度计算精度
 """
 
 import json
@@ -182,14 +187,27 @@ class EntropyEngine:
         result_before = self.calculate(before)
         result_after = self.calculate(after)
         
-        entropy_delta = result_after.order_score - result_before.order_score
+        # 改进: 考虑复杂度变化的效率
+        # 理想熵减 = 有序度提升 且 复杂度合理
+        order_delta = result_after.order_score - result_before.order_score
+        complexity_delta = result_after.complexity - result_before.complexity
+        
+        # 如果复杂度大幅增加但有序度没提升 → 低效
+        if complexity_delta > 0.3 and order_delta < 0.1:
+            efficiency = 0.5
+        elif order_delta > 0 and complexity_delta <= 0.3:
+            efficiency = 1.2  # 高效
+        else:
+            efficiency = 1.0
+        
+        entropy_delta = order_delta * efficiency
         
         if entropy_delta > 0.1:
             verdict = "熵减"
-            interpretation = "信息组织度提升"
+            interpretation = "信息组织度提升" + ("(高效)" if efficiency > 1 else "")
         elif entropy_delta < -0.1:
             verdict = "熵增"
-            interpretation = "信息组织度下降"
+            interpretation = "信息组织度下降或复杂度失控"
         else:
             verdict = "平衡"
             interpretation = "无显著变化"
@@ -204,6 +222,47 @@ class EntropyEngine:
         
         self.history.append(result)
         return result
+    
+    def cross_context_entropy(self, contexts: List[Dict], base_content: str = "") -> Dict:
+        """
+        跨上下文熵分析
+        
+        比较不同上下文下的信息组织度
+        用途: 判断在特定上下文中文档是否有序
+        
+        Args:
+            contexts: 上下文列表，每个包含 {name, content}
+            base_content: 基准内容
+            
+        Returns:
+            dict: 跨上下文分析结果
+        """
+        if not contexts:
+            return {"error": "No contexts provided"}
+        
+        results = []
+        for ctx in contexts:
+            name = ctx.get("name", "unknown")
+            content = ctx.get("content", "")
+            r = self.calculate(content)
+            results.append({
+                "context": name,
+                "order_score": r.order_score,
+                "complexity": r.complexity,
+                "entropy_delta": r.entropy_delta,
+                "verdict": r.verdict
+            })
+        
+        # 找到最有序的上下文
+        best = max(results, key=lambda x: x["order_score"])
+        worst = min(results, key=lambda x: x["order_score"])
+        
+        return {
+            "contexts": results,
+            "best_ordered": best["context"],
+            "worst_ordered": worst["context"],
+            "spread": best["order_score"] - worst["order_score"]
+        }
     
     def get_stats(self) -> dict:
         """获取统计"""

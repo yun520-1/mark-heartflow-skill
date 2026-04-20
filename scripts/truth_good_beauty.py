@@ -216,7 +216,7 @@ class TruthGoodBeautyEngine:
 
 
 # 单例
-_engine: Optional[TGBResult] = None
+_engine: Optional[TruthGoodBeautyEngine] = None
 
 
 def get_engine() -> TruthGoodBeautyEngine:

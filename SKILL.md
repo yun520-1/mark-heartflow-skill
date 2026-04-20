@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: 10.1.0
+version: 10.1.1
 description: HeartFlow - 决策引擎 + 心理健康分析
 tags: [heartflow, decision, mental-health, consciousness, self-evolution]
 ---
@@ -11,7 +11,7 @@ tags: [heartflow, decision, mental-health, consciousness, self-evolution]
 
 ## 版本
 
-**v9.4.7** - 2026-04-20
+**v10.1.1** - 2026-04-20
 
 ## 快速开始
 
@@ -34,9 +34,9 @@ print(result.decision)
 | `truth_good_beauty.py` | 真善美逻辑 | TGB = 0.35×真 + 0.35×善 + 0.30×美 |
 | `decision_engine.py` | 决策引擎 | D = (G×V×E)/L 决策公式，多框架伦理分析 |
 | `self_level_engine.py` | 六层自省 | 无明→觉察→清明→圆融 四层级智慧评估 |
-| `entropy_engine.py` | 熵减引擎 | 基于热力学第二定律的信息有序度计算 |
+| `entropy_engine.py` | 熵减引擎 | 基于热力学第二定律的信息有序度计算 + 跨上下文熵分析 |
 | `emotion_engine.py` | 情绪引擎 | F = ⟨Q,I,B⟩ 情绪状态分析，复合情绪检测 |
-| `consciousness_engine.py` | 意识系统 | Φ 整合信息量计算 + GWT 全局工作空间广播 |
+| `consciousness_engine.py` | 意识系统 | Φ 整合信息量 + GWT 广播 + 意向性分析 + 施动感检测 |
 | `rationality_engine.py` | 理性思维 | IGC三元组评估 + 过犹不及信号检测 |
 | `ontology_engine.py` | 知识图谱 | 实体-关系图谱构建与查询 |
 | `memory_palace.py` | 记忆宫殿 | Method of Loci 空间记忆系统 |
