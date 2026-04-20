@@ -1,18 +1,11 @@
 {
   "name": "heartflow",
-  "version": "9.4.7",
-  "description": "HeartFlow - 决策引擎 + 心理健康分析",
+  "version": "10.0.8",
+  "description": "HeartFlow - 自主决策引擎 + 心理健康分析 + 记忆永存",
   "main": "scripts/heartflow_core.py",
-  "keywords": ["heartflow", "decision", "mental-health", "consciousness"],
+  "keywords": ["heartflow", "decision", "mental-health", "consciousness", "self-evolution"],
   "author": "HeartFlow Team",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yun520-1/mark-heartflow-skill.git"
-  },
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/yun520-1/mark-heartflow-skill/issues"
-  },
-  "homepage": "https://github.com/yun520-1/mark-heartflow-skill#readme"
+  "python_requires": ">=3.9",
+  "dependencies": {}
 }

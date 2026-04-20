@@ -112,70 +112,9 @@ class RationalityEngine:
         )
     
     def _is_refuted(self, context: str, idea: str) -> bool:
-        """
-        检查Idea是否在Context下被反驳
-        
-        核心逻辑：从context中提取约束关键词，检查idea是否违反这些约束
-        支持的约束模式：
-        - "不能/不可/禁止" + X → 如果idea包含X，则被反驳
-        - "必须" + X → 如果idea不包含X，则被反驳
-        - "不超过" + 数量 → 如果idea超过数量，则被反驳
-        """
-        import re
-        
-        # 提取约束关键词
-        context_lower = context.lower()
-        idea_lower = idea.lower()
-        
-        # 模式1：禁止类 "不能/不可/禁止 X"
-        forbid_pattern = r'(?:不能|不可|禁止|不得|不允许|严禁)(.+?)[，。，。,\.]'
-        forbid_matches = re.findall(forbid_pattern, context)
-        for forbidden in forbid_matches:
-            forbidden = forbidden.strip()
-            if forbidden in idea_lower:
-                return True  # idea包含了被禁止的内容
-        
-        # 模式2：必须类 "必须 X"
-        must_pattern = r'必须(.+?)[，。，。,\.]'
-        must_matches = re.findall(must_pattern, context)
-        for required in must_matches:
-            required = required.strip()
-            # 如果idea根本没有提到必须的内容，可能被反驳
-            if required and required not in idea_lower:
-                # 检查是否有同义词
-                synonyms = {
-                    "用python": ["python", "py文件", ".py"],
-                    "用本地模型": ["本地模型", "local model", "ollama"],
-                    "用免费": ["免费", "零成本", "不花钱"],
-                }
-                found = False
-                for syn_group in synonyms.values():
-                    if required in syn_group or any(s in idea_lower for s in syn_group):
-                        found = True
-                        break
-                if not found:
-                    return True
-        
-        # 模式3：数量限制 "不超过/最多 X"
-        limit_pattern = r'(?:不超过|最多|低于|小于|低于|不能超过)(\d+)'
-        limit_matches = re.findall(limit_pattern, context)
-        for limit in limit_matches:
-            try:
-                limit_num = int(limit)
-                # 从idea中提取数字
-                idea_nums = re.findall(r'\d+', idea)
-                for num in idea_nums:
-                    if int(num) > limit_num:
-                        return True
-            except:
-                pass
-        
-        # 模式4：直接包含检查 - context明确说了"不行/不可能"
-        if any(neg in context_lower for neg in ["不行", "不可能", "不允许", "不能实现"]):
-            if any(pos in idea_lower for pos in ["可以", "能", "实现"]):
-                # 进一步检查是否真的矛盾
-                return True
-        
+        """检查Idea是否在Context下被反驳（简化版）"""
+        # 实际需要更复杂的解析
+        # 这里只是一个框架
         return False
     
     def _find_bottleneck(self, context: list[str]) -> str:

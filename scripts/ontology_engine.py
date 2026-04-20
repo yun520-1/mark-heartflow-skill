@@ -11,21 +11,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 import argparse
-import os
-
-# 尝试导入安全文件工具（如果存在）
-try:
-    from secure_file_utils import validate_path as _safe_validate
-    HAS_SECURE_UTILS = True
-except ImportError:
-    HAS_SECURE_UTILS = False
 
 # 默认存储路径
 DEFAULT_GRAPH_PATH = "memory/ontology/graph.jsonl"
 DEFAULT_SCHEMA_PATH = "memory/ontology/schema.yaml"
-
-# 白名单根目录
-ALLOWED_ROOTS = [".hermes", ".hermes/skills", ".hermes/memory"]
 
 
 def generate_id(type_name: str) -> str:
@@ -36,32 +25,12 @@ def generate_id(type_name: str) -> str:
 
 
 def resolve_path(path: str, root: Path = None) -> Path:
-    """Resolve path within root (with security check)."""
+    """Resolve path within root."""
     safe_root = (root or Path.cwd()).resolve()
     candidate = Path(path).expanduser()
     if not candidate.is_absolute():
         candidate = safe_root / candidate
-    resolved = candidate.resolve()
-    
-    # v10.0.6 安全改进：路径遍历检查
-    if HAS_SECURE_UTILS:
-        if not _safe_validate(resolved):
-            raise PermissionError(f"路径不在白名单目录内: {resolved}")
-    else:
-        # 备用检查：确保路径在 allowed roots 内
-        resolved_str = str(resolved)
-        allowed = False
-        for allowed_root in ALLOWED_ROOTS:
-            home = Path.home()
-            if resolved_str.startswith(str((home / allowed_root).resolve())):
-                allowed = True
-                break
-        if not allowed:
-            # 检查是否在当前工作目录
-            if not str(resolved).startswith(str(safe_root)):
-                raise PermissionError(f"路径不在白名单目录内: {resolved}")
-    
-    return resolved
+    return candidate.resolve()
 
 
 def load_graph(graph_path: str) -> tuple[dict, list]:

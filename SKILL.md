@@ -1,39 +1,17 @@
 ---
 name: heartflow
-version: 10.0.7
-description: HeartFlow v10.0.7 - 决策引擎 + 心理健康分析 + 自我进化引擎
-tags: [heartflow, decision, mental-health, consciousness, self-evolution, ai-safety]
+version: 9.4.7
+description: HeartFlow - 决策引擎 + 心理健康分析
+tags: [heartflow, decision, mental-health, consciousness, self-evolution]
 ---
 
-# HeartFlow v10.0.7
+# HeartFlow
 
-自主决策引擎 + 心理健康分析系统 + 自我进化引擎。
+自主决策引擎 + 心理健康分析系统。
 
 ## 版本
 
-**v10.0.7** - 2026-04-19
-
-## 核心定位（目标铁律）
-
-1. **真善美逻辑** - TGB = 0.35×真 + 0.35×善 + 0.30×美
-2. **六层哲学** - 无明→觉察→清明→圆融
-3. **具身认知** - 双系统+7步思维链
-4. **心理健康** - PHQ-9/GAD-7 评估
-5. **行为经济** - 16种认知偏误识别
-6. **记忆永存** - 四层记忆系统
-
-## 论文提取（v10.0.7新增）
-
-从论文 "Rethinking Memory in LLM based Agents" (Du et al., 2025) 提取的核心记忆操作：
-
-|| 操作 | 定义 | HeartFlow集成 |
-|------|------|---------------|
-| **Consolidation** | 将短期经验转化为持久记忆 | memory_core 记忆巩固 |
-| **Updating** | 修改现有记忆纳入最新更新 | memory_hooks 增量更新 |
-| **Indexing** | 构建辅助代码作为记忆访问点 | ontology_engine 实体索引 |
-| **Forgetting** | 删除过时或不正确内容 | 熵减引擎 过期清除 |
-| **Retrieval** | 记忆检索 | TF-IDF向量搜索 |
-| **Condensation** | 压缩关键信息 | 记忆压缩算法 |
+**v9.4.7** - 2026-04-20
 
 ## 快速开始
 

@@ -1,134 +1,44 @@
-# HeartFlow .gitignore
+# System
+.DS_Store
+*.DS_Store
+*.bak
+*.log
 
-# ========== DEFAULT IGNORES ==========
-
-# Dependencies
-node_modules/
-package-lock.json
-yarn.lock
-
-# Build outputs
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
 dist/
 build/
-*.min.js
 
-# Logs
-logs/
-*.log
-npm-debug.log*
+# Node
+node_modules/
+package-lock.json
 
 # Environment
 .env
 .env.local
-.env.*.local
-
-# OS
-.DS_Store
-Thumbs.db
+*.local
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-# Private user data (IMPORTANT!)
-# Do NOT commit user-specific tasks or personal information
-user-tasks/
-private/
-*.private.md
-*privacy*.md
-
-# Large media files
-*.mp4
-*.mov
-*.avi
-*.png
-*.jpg
-*.jpeg
-*.gif
-
-# Backup files
-backups/
-*.bak
 *~
 
-# Test coverage
-coverage/
-
-# TypeScript cache
-*.tsbuildinfo
-
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-
-# ========== LOCAL RUN-ONLY (User-specific, DO NOT PUSH) ==========
-
-# Runtime memory and data (generated at runtime)
-memory/
-data/
-heartflow/
-output/
-
-# Crontab and scheduler configs (user-specific)
-crontab.txt
-cron/
-
-# macOS plist launch agents (user-specific)
-com.heartflow.*.plist
-
-# Upgrade scripts (user-specific paths)
-hourly-upgrade.sh
-hourly-enhanced-upgrade-v2.sh
-hourly-theory-upgrade.sh
-hourly-theory-upgrade-v2.js
-
-# Development and testing (user-specific)
-tests/
-.sandbox/
-openclaw-*.tgz
-
-# User-specific scripts
-scripts/auto-upgrade.js
-scripts/comfyui-monitor.js
-scripts/comfyui-cron.sh
-scripts/generate-ppt.js
-scripts/personality-check.js
-scripts/set-version.js
-scripts/awakening-integration.js
-scripts/count-log-total.js
-scripts/count-log-uptimes.js
-
-# Obsolete upgrade reports
-upgrade-report-*.md
-UPGRADE_COMPLETE_v*.md
-UPGRADE_REPORT_v*.md
-theory-update-summary-v*.md
-self-evolution-state-v*.md
-
-# Large internal docs (not needed for core functionality)
-internal/
-archive/
-
-# Configs with user-specific paths
-config/
-bin/
-public/
-skill/
-skills-integration/
+# Temp
+temp/
 downloads/
-canvas/
-patches/
+tmp/
+*.tmp
 
-# Docs not needed for installation
-DIMENSION_UPGRADE.md
-dream-log.txt
-test.js
-package.json
+# Private/Personal
+logs/
+*.private
+*.secret
