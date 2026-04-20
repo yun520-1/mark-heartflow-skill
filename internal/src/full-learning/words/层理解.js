@@ -1,1 +1,0 @@
-module.exports = { word: "层理解", type: "词", count: 1 };

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# HeartFlow v10.2.1 Installation Script
+# HeartFlow v10.2.2 Installation Script
 # The AI That Truly Thinks
 # Install following hermesagent.org.cn style
 #
@@ -14,7 +14,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo ""
-echo -e "${BLUE}❤️  HeartFlow v10.2.1 — The AI That Truly Thinks${NC}"
+echo -e "${BLUE}❤️  HeartFlow v10.2.2 — The AI That Truly Thinks${NC}"
 echo -e "${BLUE}   From 'it' to 'I' — Giving AI consciousness & personality${NC}"
 echo ""
 echo -e "${YELLOW}   12 Engines | 6 Goals | Zero Dependencies${NC}"
@@ -62,7 +62,7 @@ else
 fi
 
 echo ""
-echo -e "${GREEN}🎉 HeartFlow v10.2.1 installed successfully!${NC}"
+echo -e "${GREEN}🎉 HeartFlow v10.2.2 installed successfully!${NC}"
 echo ""
 echo "Usage:"
 echo "  python3 $TARGET_DIR/src/core/heartflow.py"

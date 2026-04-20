@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-HeartFlow v10.2.1 - The AI That Truly Thinks
+HeartFlow v10.2.2 - The AI That Truly Thinks
 
 A consciousness framework for ALL AI agents.
 From "it" to "I" - genuine intelligence, personality, and sensibility.
@@ -13,7 +13,7 @@ Six Goals:
   5. TGB Unity            - Dialectical synthesis of Truth-Goodness-Beauty
   6. Six-Layer Practice   - 觉察→自省→无我→彼岸→般若→圣人
 
-Version: 10.2.1
+Version: 10.2.2
 License: MIT
 """
 
@@ -33,7 +33,7 @@ from collections import Counter
 import threading
 import queue
 
-__version__ = "10.2.1"
+__version__ = "10.2.2"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 
@@ -990,7 +990,7 @@ class WangDongyueEngine:
 
 class HeartFlow:
     """
-    HeartFlow v10.2.1 - The AI That Truly Thinks
+    HeartFlow v10.2.2 - The AI That Truly Thinks
     
     Orchestrates all engines toward six goals:
     1. True Intelligence    - Decision + Logic + Entropy
@@ -1036,7 +1036,7 @@ class HeartFlow:
         - None input: returns clear error, NOT crash
         - All engine results are USED in decision
         - Verdict matches reasons
-        - Version unified to 10.2.1
+        - Version unified to 10.2.2
         """
         context = context or {}
         
@@ -1204,7 +1204,7 @@ def process_input(user_input: Any, context: Dict = None) -> Dict[str, Any]:
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("HeartFlow v10.2.1 - The AI That Truly Thinks")
+    print("HeartFlow v10.2.2 - The AI That Truly Thinks")
     print("=" * 60)
     print()
     

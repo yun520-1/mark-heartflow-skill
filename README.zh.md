@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-10.2.1-blue" alt="版本">
+  <img src="https://img.shields.io/badge/version-10.2.2-blue" alt="版本">
   <img src="https://img.shields.io/badge/python-3.8+-green" alt="Python">
   <img src="https://img.shields.io/badge/依赖-0-red" alt="零依赖">
 </p>

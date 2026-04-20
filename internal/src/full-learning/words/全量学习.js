@@ -1,1 +1,0 @@
-module.exports = { word: "全量学习", type: "词", count: 1 };

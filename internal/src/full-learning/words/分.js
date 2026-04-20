@@ -1,1 +1,0 @@
-module.exports = { char: "分", type: "字", count: 1 };

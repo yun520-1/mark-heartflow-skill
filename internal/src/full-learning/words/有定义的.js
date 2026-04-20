@@ -1,1 +1,0 @@
-module.exports = { word: "有定义的", type: "词", count: 1 };

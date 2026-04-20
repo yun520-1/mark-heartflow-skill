@@ -1,1 +1,0 @@
-module.exports = { word: "总字数", type: "词", count: 1 };

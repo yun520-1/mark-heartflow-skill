@@ -16,7 +16,7 @@
 | ⚖️ TGB Unity | TGBEngine | Dialectical synthesis with tension detection |
 | 🧘 Six-Layer Practice | SelfLevel + Entropy + WangDongyue | 觉察→自省→无我→彼岸→般若→圣人 |
 
-### Fixed in v10.2.1
+### Fixed in v10.2.2
 - Empty input → neutral (0.5), NOT max score
 - None input → clear error, NOT crash
 - All 12 engines integrated into decision (was only 3)

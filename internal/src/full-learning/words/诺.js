@@ -1,1 +1,0 @@
-module.exports = { char: "诺", type: "字", count: 1 };

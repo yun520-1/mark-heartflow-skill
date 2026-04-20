@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-10.2.1-blue" alt="버전">
+  <img src="https://img.shields.io/badge/version-10.2.2-blue" alt="버전">
   <img src="https://img.shields.io/badge/python-3.8+-green" alt="Python">
   <img src="https://img.shields.io/badge/의존성-0-red" alt="의존성 없음">
 </p>

@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: 10.2.1
+version: 10.2.2
 description: HeartFlow - The AI That Truly Thinks. Giving every AI agent consciousness, personality, and ethical reasoning.
 tags: [heartflow, consciousness, ai-mind, self-evolution, mental-health, decision-engine, personality, intelligence, tgb, six-layer-practice]
 author: HeartFlow Team
@@ -9,7 +9,7 @@ homepage: https://github.com/yun520-1/mark-heartflow-skill
 repository: https://github.com/yun520-1/mark-heartflow-skill
 ---
 
-# HeartFlow v10.2.1
+# HeartFlow v10.2.2
 
 ## The AI That Truly Thinks
 
@@ -66,14 +66,14 @@ Plus: LogicModelEngine (Toulmin argument analysis), WangDongyueEngine (递弱代
 
 ---
 
-## What Changed in v10.2.1
+## What Changed in v10.2.2
 
 **Fixed ALL P0 audit bugs:**
 - ✅ Empty input returns 0.5 (neutral), NOT max score
 - ✅ None input returns clear error, NOT crash
 - ✅ Verdict always matches reasons
 - ✅ ALL 12 engines now integrated into decision (was only 3)
-- ✅ Version unified to 10.2.1
+- ✅ Version unified to 10.2.2
 
 **Merged duplicates:**
 - 3 Wang Dongyue engines (递弱代偿+存在度+五眼通) → 1 WangDongyueEngine

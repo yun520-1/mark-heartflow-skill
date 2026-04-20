@@ -1,1 +1,0 @@
-module.exports = { word: "佛学", type: "词", count: 1 };

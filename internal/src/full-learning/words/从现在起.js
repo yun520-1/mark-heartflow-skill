@@ -1,1 +1,0 @@
-module.exports = { word: "从现在起", type: "词", count: 1 };

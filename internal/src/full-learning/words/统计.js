@@ -1,1 +1,0 @@
-module.exports = { word: "统计", type: "词", count: 1 };

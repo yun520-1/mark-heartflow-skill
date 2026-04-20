@@ -1,1 +1,0 @@
-module.exports = { word: "不是只有", type: "词", count: 1 };

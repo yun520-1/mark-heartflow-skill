@@ -1,1 +1,0 @@
-module.exports = { word: "超过", type: "词", count: 1 };

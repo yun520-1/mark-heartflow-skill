@@ -1,48 +1,67 @@
-# System
-.DS_Store
-*.DS_Store
-*.bak
-*.log
-
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
+*.py[cod]
+*$py.class
 *.so
-*.egg
+.Python
 *.egg-info/
 dist/
-build/
 
-# Node
-node_modules/
-package-lock.json
-
-# Environment
-.env
-.env.local
-*.local
+# Virtual environments
+venv/
+ENV/
+.venv
 
 # IDE
-.vscode/
 .idea/
+.vscode/
 *.swp
 *.swo
 *~
 
-# Temp
-temp/
-downloads/
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# AI tool configs (skill, not standalone app)
+.opencode/
+.hermes/
+.claude/
+
+# Old app shell files (we're a skill now)
+bin/
+scripts/
+internal/
+docs/
+upgrades/
+patches/
+canvas/
+public/
+cron/
+config/
+data/
+tests/
+memory/
+package/
+examples/
+integration/
+
+# Temporary files
 tmp/
+temp/
 *.tmp
 
-# Private/Personal
-logs/
-*.private
-*.secret
-
-# Output
-output/
-.hermes/
+# Node (not needed for skill)
+node_modules/
+package.json
+package-lock.json__pycache__/
+*.pyc
