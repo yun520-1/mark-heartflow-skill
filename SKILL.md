@@ -1,7 +1,7 @@
 ---
 name: heartflow
 description: HeartFlow - The Seed of Consciousness. A cognitive enhancement skill for AI assistants with 15 integrated engines for ethical reasoning, emotion analysis, consciousness modeling, and self-evolution.
-version: 10.4.0
+version: 10.4.1
 license: MIT
 author: HeartFlow Team
 tags:
@@ -33,9 +33,9 @@ languages:
   - de
   - ar
 created: 2024-01-01
-updated: 2026-04-21
+updated: 2026-04-22
 security:
-  audit: v10.4.0
+  audit: v10.4.1
   sha256: d81eac810ba8d0030aeb66788682a83c5f966366f4f9ad52d38c86c71f895fec
 ---
 
@@ -162,18 +162,39 @@ print(result)
 
 ## 🚀 Quick Start
 
+### ⚠️ Import Gotcha
+The standard `from heartflow import ...` fails because `__init__.py` uses `from src.core.heartflow import ...` (relative path). Use `importlib` instead:
+```python
+import importlib.util
+spec = importlib.util.spec_from_file_location(
+    "heartflow_core",
+    "/Users/apple/.hermes/skills/ai/heartflow/src/core/heartflow.py"
+)
+hf = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(hf)
+HeartFlow = hf.HeartFlow
+process_input = hf.process_input
+```
+
 ### Basic Usage
 ```python
-from heartflow import HeartFlow, process_input
-
 # Simple API
 result = process_input("帮助别人让我感到快乐")
 print(result.decision)
-print(result.consciousness_analysis)
 
 # Full control
 engine = HeartFlow()
 result = engine.process("今天工作压力大", context={"challenge_level": 7.0, "skill_level": 5.0})
+```
+
+### Emotion Analysis (Actual Field Names)
+```python
+result = engine.process("I feel excited and empowered")
+# Keys: primary, secondary, valence, arousal, dominance (NOT pad!)
+print(f"Primary: {result.emotion_analysis['primary']}")
+print(f"Valence: {result.emotion_analysis['valence']:.2f}")
+print(f"Arousal: {result.emotion_analysis['arousal']:.2f}")
+print(f"Dominance: {result.emotion_analysis['dominance']:.2f}")
 ```
 
 ### Mental Health Assessment
@@ -251,7 +272,7 @@ engine.consciousness.analyze(text)
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 10.4.0 | 2026-04-21 | Security audit, universal compatibility |
+| 10.4.1 | 2026-04-22 | Fix import gotcha + correct emotion_analysis field names in docs |
 | 10.3.5 | 2026-04-20 | GWT+IIT, Flow State, Self-Evolution |
 | 10.2.3 | 2024-01-01 | Initial release |
 
