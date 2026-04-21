@@ -36,6 +36,16 @@ search:
     - "embodied cognition AI"
     - "AI uncertainty quantification"
     - "recursive self-improvement AI"
+    # 2026 前沿方向（新增）
+    - "LLM reasoning with search"
+    - "open-ended alignment benchmark"
+    - "synthetic data generation LLM"
+    - "AI delay of gratification"
+    - "concept penetration AI"
+    - "self-reflection LLM"
+    - "multimodal chain-of-thought"
+    - "agentic RAG systems"
+    - "LLM program synthesis"
 
   # arXiv 分类
   categories:
