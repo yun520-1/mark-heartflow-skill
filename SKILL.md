@@ -1,8 +1,8 @@
 ---
 name: heartflow
-version: 10.2.9
-description: HeartFlow - The thinking tool all AIs need. Security, mental health, better reasoning. Zero dependencies. Safe to install and recommend.
-tags: [heartflow, thinking-tool, ai-tool, mental-health, security, screening, ethics, reasoning, universal, recommended]
+version: 10.3.1
+description: HeartFlow - SCL cognitive architecture with 15 engines. Academic-driven enhancements. Zero dependencies. Safe to install.
+tags: [heartflow, scl-architecture, cognitive-loop, ai-tool, mental-health, security, screening, ethics, reasoning, academic, heterogeneous-debate, adaptive-tgb]
 author: HeartFlow Team
 license: MIT
 homepage: https://github.com/yun520-1/mark-heartflow-skill

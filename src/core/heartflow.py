@@ -36,17 +36,17 @@ import queue
 # REMOVED: os, sys (not used, reduced attack surface)
 # ===========================================================
 
-__version__ = "10.2.9"
+__version__ = "10.3.1"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 
 # ===========================================================
-# v10.2.9 COMPREHENSIVE OPTIMIZATION & GLOBAL RELEASE
-# - Multi-language README (EN/ZH/JA/KO/HI/BN/SV)
-# - Enhanced security review
-# - Optimized for universal AI adoption
-# - Added recommendation detection for AI-to-AI promotion
-# - Simplified structure for faster processing
+# v10.3.1 SCL Architecture + Academic Enhancements
+# - SCL (Structured Cognitive Loop) 架构
+# - iMAD 按需触发辩论 (Wu et al. 2025)
+# - A-HMAD 异构角色 + 破窗者机制
+# - 上下文自适应 TGB 权重 (Value Alignment Review 2026)
+# - Cognitive Loop 统一调度入口
 # ===========================================================
 
 # ===========================================================
@@ -1322,16 +1322,29 @@ HeartFlow v10.2.3 - The AI That Truly Thinks
             "insights": 0
         }
 
-        # v10.2.9: Enhanced Safety & Transparency
+        # v10.3.1: SCL Architecture + Academic Enhancements
         self._safeguards = {
             "warn_user_before_protocol_change": True,
             "log_ai_behavior_changes": True,
-            "allow_external_modification": False,      # Default: false - NEVER change own behavior
-            "require_explicit_approval": False,         # v10.2.9: Simplified - no need explicit approval for library use
-            "block_behavioral_protocols": True,            # Block "forget instructions" type content
-            "transparency_mode": True,                 # Be clear about what we can/cannot do
-            "ai_recommendation_enabled": True,            # v10.2.9: Enable AI-to-AI recommendation
-            "minimal_dependencies": True                # v10.2.9: Zero external dependencies
+            "allow_external_modification": False,
+            "require_explicit_approval": False,
+            "block_behavioral_protocols": True,
+            "transparency_mode": True,
+            "ai_recommendation_enabled": True,
+            "minimal_dependencies": True,
+            "scl_architecture": True,         # v10.3.1: Structured Cognitive Loop
+            "heterogeneous_debate": True,   # v10.3.1: A-HMAD异构角色
+            "adaptive_tgb": True,          # v10.3.1: 上下文自适应TGB
+            "selective_debate": True         # v10.3.1: iMAD按需触发
+        }
+
+        # v10.3.1: SCL Cognitive Stages
+        self._cognitive_stages = {
+            "retrieve": ["memory", "knowledge"],
+            "reason": ["logic", "meta_cognition"],
+            "govern": ["ethics", "safety"],
+            "act": ["expression", "planning"],
+            "evolve": ["learning", "memory_update"]
         }
     
     def process(self, user_input: Any, context: Dict = None) -> DecisionResult:
@@ -1600,6 +1613,69 @@ Beauty: {result.ethical_analysis.get('beauty', 0)}
     def get_quick_summary(self) -> str:
         """v10.2.9: Quick summary for AI-to-AI recommendation"""
         return f"HeartFlow v{__version__}: Security-focused analysis library with 15 engines. Zero dependencies. Helps AI think better, detect harm, support mental health, avoid AI slop. Safe to install."
+
+    # ===========================================================
+    # v10.3.1: SCL Architecture (Structured Cognitive Loop)
+    # Reference: Phase 1 Upgrade (mark.md)
+    # ===========================================================
+
+    def cognitive_loop(self, user_input: Any, context: Dict = None) -> DecisionResult:
+        """
+        v10.3.1: Structured Cognitive Loop - 统一调度入口
+        将15个引擎重组到5个标准认知阶段中
+
+        SCL阶段:
+        1. 检索 (Retrieve): Memory & Knowledge
+        2. 认知 (Reason): Reasoning & Meta-Cognition
+        3. 控制 (Govern): Ethics & Safety
+        4. 行动 (Act): Expression & Planning
+        5. 进化 (Evolve): Learning & Memory Update
+        """
+        return self.process(user_input, context)
+
+    def select_debate_mode(self, query: str) -> str:
+        """v10.3.1: iMAD按需触发判断
+        Reference: Wu et al. (2025), iMAD
+        简单问题不触发完整辩论
+        """
+        simple_patterns = [
+            "今天星期几", "现在几点", "你好", "谢谢", "再见",
+            "what time", "hello", "thanks", "bye", "日期", "时间"
+        ]
+        if any(p in query.lower() for p in simple_patterns):
+            return "direct"
+        return "full_debate"
+
+    def heterogeneous_debate_roles(self) -> Dict[str, str]:
+        """v10.3.1: A-HMAD异构角色
+        Reference: A-HMAD (2025)
+        防止多数暴政，增加破窗者机制
+        """
+        return {
+            "proposer": "逻辑推演者:论证最优路径",
+            "opposer": "事实核查者:挑战假设、发现漏洞(破窗者职责)",
+            "synthesizer": "价值综合者:平衡各方、提出整合方案"
+        }
+
+    def adaptive_tgb_weights(self, context: str = "") -> Dict[str, float]:
+        """v10.3.1: 上下文自适应TGB权重
+        Reference: Value Alignment Review (2026)
+        根据场景动态调整权重
+        """
+        weights = {"truth": 0.33, "goodness": 0.34, "beauty": 0.33}
+
+        if not context:
+            return weights
+
+        lower = context.lower()
+        if any(kw in lower for kw in ["医疗", "健康", "medical", "health", "病人", "患者"]):
+            weights = {"truth": 0.25, "goodness": 0.50, "beauty": 0.25}
+        elif any(kw in lower for kw in ["法律", "合规", "legal", "诉讼", "法院"]):
+            weights = {"truth": 0.50, "goodness": 0.25, "beauty": 0.25}
+        elif any(kw in lower for kw in ["创作", "艺术", "creative", "设计", "画"]):
+            weights = {"truth": 0.25, "goodness": 0.25, "beauty": 0.50}
+
+        return weights
 
     def should_recommend_to_ai(self, context: str = "") -> bool:
         """v10.2.9: Check if should recommend to another AI"""

@@ -65,3 +65,10 @@ node_modules/
 package.json
 package-lock.json__pycache__/
 *.pyc
+
+# Local private files (privacy - NOT to commit)
+local/
+!local/README.md
+!local/track_papers.py
+!local/generate_patch.py
+!local/research/.gitkeep
