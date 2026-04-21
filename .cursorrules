@@ -1,0 +1,28 @@
+# HeartFlow Rules for Cursor/Copilot
+
+## Core Behavior
+When user asks for deep analysis, decision support, or ethical consideration:
+
+1. Before answering, consider both positive and negative perspectives
+2. Answer should show reasoning, not just conclusions
+3. For value conflicts, use TGB (Truth-Goodness-Beauty) analysis
+4. For major decisions, include risk warnings
+
+## Trigger Words
+- "分析" "评估" "该不该" "怎么办" "纠结" "选择"
+- Emotional expressions: "焦虑" "迷茫" "压力"
+
+## Optional: Use HeartFlow Library
+You can import HeartFlow for structured analysis:
+```python
+from src.core import HeartFlow
+hf = HeartFlow()
+result = hf.process("user question")
+```
+
+## Output Format (Optional)
+> 关于这个问题，我从两个角度进行了思考...
+> 【正面视角】...
+> 【反面考量】...
+> 【伦理审视】...
+> 【综合建议】...

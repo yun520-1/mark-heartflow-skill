@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+
+# Virtual environments
+venv/
+ENV/
+.venv
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# AI tool configs (skill, not standalone app)
+.opencode/
+.hermes/
+.claude/
+
+# Old app shell files (we're a skill now)
+bin/
+scripts/
+internal/
+docs/
+upgrades/
+patches/
+canvas/
+public/
+cron/
+config/
+data/
+tests/
+memory/
+package/
+examples/
+integration/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Node (not needed for skill)
+node_modules/
+package.json
+package-lock.json__pycache__/
+*.pyc
