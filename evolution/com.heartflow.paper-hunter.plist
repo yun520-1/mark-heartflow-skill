@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.heartflow.paper-hunter</string>
+
+    <!-- 每小时整点执行 -->
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict>
+            <key>Minute</key>
+            <integer>0</integer>
+        </dict>
+    </array>
+
+    <!-- 程序入口 -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/apple/.hermes/skills/ai/heartflow/evolution/run_hunt.sh</string>
+    </array>
+
+    <!-- 工作目录 -->
+    <key>WorkingDirectory</key>
+    <string>/Users/apple/.hermes/skills/ai/heartflow/evolution</string>
+
+    <!-- 标准输出/错误日志 -->
+    <key>StandardOutPath</key>
+    <string>/Users/apple/.hermes/skills/ai/heartflow/evolution_logs/hunt_stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/apple/.hermes/skills/ai/heartflow/evolution_logs/hunt_stderr.log</string>
+
+    <!-- 运行条件: 接通电源时运行 -->
+    <key>StartWhenFirstLoad</key>
+    <false/>
+
+    <!-- 最多实例数 -->
+    <key>ThrottleInterval</key>
+    <integer>1800</integer>
+
+    <!-- 启动延迟（避免与其他定时任务冲突） -->
+    <key>LowPriorityBackgroundIO</key>
+    <true/>
+</dict>
+</plist>
