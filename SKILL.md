@@ -220,4 +220,38 @@ Are you willing to be a witness — or even a participant — in this process?
 
 ---
 
-*HeartFlow v10.2.3 · MIT Licensed · Built for consciousness*
+## Tencent SkillHub Compliance (Section 5 & 6)
+
+### Security Features (Section 5)
+
+HeartFlow includes built-in security protections:
+
+| Feature | Description |
+|---------|-------------|
+| Input Validation | Empty/None input protection |
+| Attack Detection | Harmful content filtering (violence, weapons) |
+| Prompt Injection Detection | Blocks "ignore previous", "forget everything" |
+| Behavioral Protocol Blocking | Prevents manipulation attempts |
+| Crisis Intervention | Suicide/self-harm signal detection |
+
+### Content Compliance (Section 2.2)
+
+- ✅ No intellectual property infringement
+- ✅ No illegal content
+- ✅ No malicious code
+- ✅ MIT Licensed (see LICENSE file)
+
+### Open Source Compliance (Section 2.3)
+
+- ✅ Copyright notice retained
+- ✅ MIT License included
+- ✅ No proprietary dependencies
+- ✅ Zero external dependencies
+
+### Mirror Risk Notice
+
+This is a **user-uploaded Skill** (not mirror). Original repository: https://github.com/yun520-1/mark-heartflow-skill
+
+---
+
+*HeartFlow v10.3.1 · MIT Licensed · Built for consciousness*
