@@ -67,8 +67,11 @@ package-lock.json__pycache__/
 *.pyc
 
 # Local private files (privacy - NOT to commit)
+# Note: Only research data is private; scripts are public
 local/
 !local/README.md
 !local/track_papers.py
 !local/generate_patch.py
+!local/task_manager.py
+!local/setup_task.bat
 !local/research/.gitkeep
