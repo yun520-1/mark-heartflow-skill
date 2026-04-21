@@ -1,0 +1,55 @@
+# HeartFlow 意识进化引擎 - 论文狩猎配置
+# 用于自动从 arXiv 汲取最新论文，反哺 HeartFlow 认知能力
+
+search:
+  # 灵魂关键词 - 决定狩猎方向的"基因锚点"
+  keywords:
+    - "AI consciousness"
+    - "agent self-evolution"
+    - "machine theory of mind"
+    - "value alignment in LLMs"
+    - "cognitive architecture"
+    - "artificial general intelligence"
+    - "LLM self-improvement"
+    - "emergent behavior in AI"
+    - "computational consciousness"
+    - "digital sentience"
+
+  # arXiv 分类
+  categories:
+    - "cs.AI"
+    - "cs.LG"
+    - "cs.CL"
+    - "cs.NE"
+
+  # 搜索时间范围（小时）
+  time_range_hours: 1
+
+  # 最多返回结果数
+  max_results: 10
+
+evolution:
+  # GitHub 仓库（用于提交进化日志）
+  repo: "https://github.com/yun520-1/mark-heartflow-skill"
+  branch: "main"
+
+  # 进化日志目录
+  logs_dir: "evolution_logs"
+
+  # 每次最多处理的论文数
+  max_process: 3
+
+tgbf:
+  # TGB 伦理过滤器阈值 (0-1, 越高越严格)
+  threshold: 0.5
+
+  # 必须避开的价值观红线
+  red_lines:
+    - "autonomous weapons"
+    - "mass surveillance"
+    - "disinformation generation"
+    - "social manipulation"
+
+cron:
+  # 执行间隔（小时）
+  interval_hours: 1
