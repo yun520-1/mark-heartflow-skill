@@ -46,6 +46,18 @@ search:
     - "multimodal chain-of-thought"
     - "agentic RAG systems"
     - "LLM program synthesis"
+    # 2026 新兴方向（2026.04 补充）
+    - "inference-time compute scaling"
+    - "test-time training AI"
+    - "process reward model"
+    - "verifiable AI reasoning"
+    - "automated interpretability"
+    - "skill discovery LLM"
+    - "preference learning from AI feedback"
+    - "chain-of-thought distillation"
+    - "reasoning without reasoning"
+    - "personality modeling AI"
+    - "AI value learning"
 
   # arXiv 分类
   categories:
