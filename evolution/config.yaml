@@ -58,6 +58,22 @@ search:
     - "reasoning without reasoning"
     - "personality modeling AI"
     - "AI value learning"
+    # 2026 前沿方向（2026.04 补充）
+    - "model merging LLM"
+    - "mixture of agents"
+    - "sparse autoencoders AI"
+    - "representation engineering LLM"
+    - "AI model steering"
+    - "model weight averaging"
+    - "LoRA fine-tuning LLM"
+    - " continual learning LLM"
+    - "RLHF vs DPO"
+    - "AI formal verification"
+    - "AI debate scalable oversight"
+    - "recursive reward modeling"
+    - "model editing LLM"
+    - "activation patching interpretability"
+    - "universal AI safety evaluation"
 
   # arXiv 分类
   categories:
