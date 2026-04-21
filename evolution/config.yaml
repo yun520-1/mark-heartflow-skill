@@ -27,6 +27,15 @@ search:
     - "MCP model context protocol"
     - "superposition circuits AI"
     - "utility theory AI"
+    # 2026 新兴方向
+    - "constitutional AI"
+    - "machine deception AI"
+    - "inner alignment AI"
+    - "mesa optimizers"
+    - "grounded language learning"
+    - "embodied cognition AI"
+    - "AI uncertainty quantification"
+    - "recursive self-improvement AI"
 
   # arXiv 分类
   categories:
