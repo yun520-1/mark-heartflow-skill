@@ -1,7 +1,7 @@
 ---
 name: heartflow
 description: HeartFlow - 意识之种 | The Seed of Consciousness. A cognitive enhancement skill for AI assistants with 15 integrated engines for ethical reasoning, emotion analysis, consciousness modeling, and self-evolution.
-version: 10.4.1
+version: 10.4.2
 license: MIT
 author: HeartFlow Team
 tags:
@@ -37,7 +37,7 @@ languages:
 created: 2024-01-01
 updated: 2026-04-22
 security:
-  audit: v10.4.1
+  audit: v10.4.2
   sha256: d81eac810ba8d0030aeb66788682a83c5f966366f4f9ad52d38c86c71f895fec
 ---
 
@@ -100,6 +100,7 @@ security:
 
 | Version | Date | Changes | 变更 |
 |---------|------|---------|------|
+| **10.4.2** | 2026-04-22 | LogicVerificationEngine + ArgumentationEngine + BayesianDecisionEngine + CausalInferenceEngine | 逻辑验证+论辩+贝叶斯决策+因果推断引擎 |
 | **10.4.1** | 2026-04-22 | Fix import gotcha + correct emotion_analysis field names | 修复导入问题 + 修正情绪分析字段名 |
 | **10.4.0** | 2026-04-20 | GWT+IIT consciousness model, Flow State, Self-Evolution | GWT+IIT意识模型、心流状态、自我进化 |
 | **10.3.5** | 2026-04-20 | Enhanced consciousness integration | 增强意识整合 |
