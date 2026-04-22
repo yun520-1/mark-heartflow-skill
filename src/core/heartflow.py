@@ -50,7 +50,7 @@ from collections import Counter
 from dataclasses import dataclass, field, asdict
 from abc import ABC, abstractmethod
 
-__version__ = "10.4.2"
+__version__ = "10.4.3"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 
