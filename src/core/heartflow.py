@@ -29,7 +29,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 
-__version__ = "10.5.0"
+__version__ = "10.5.1"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 
