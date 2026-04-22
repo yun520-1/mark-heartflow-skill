@@ -270,11 +270,54 @@ engine.consciousness.analyze(text)
 
 ## 📊 Version History
 
-| Version | Date | Changes |
+|| Version | Date | Changes |
 |---------|------|---------|
 | 10.4.1 | 2026-04-22 | Fix import gotcha + correct emotion_analysis field names in docs |
 | 10.3.5 | 2026-04-20 | GWT+IIT, Flow State, Self-Evolution |
 | 10.2.3 | 2024-01-01 | Initial release |
+
+---
+
+## 🔄 Self-Evolution Pipeline (v3.0 - 2026-04-22)
+
+### Change Log: Paper Hunt → Code Hunt
+
+| Aspect | v1/v2 (Old) | v3.0 (New) |
+|--------|-------------|-----------|
+| Target | arXiv paper PDFs | GitHub code repos + arXiv papers with code |
+| Download | .pdf files | .py/.ipynb code files |
+| Keywords | 70+ (triggered rate limits) | 10 core domains |
+| Search | arXiv API only | GitHub API + arXiv with GitHub links |
+| Schedule | hourly | 02:00-10:00 hourly |
+
+### Core Keywords (v3.0)
+- consciousness AI pytorch
+- self-evolving agent
+- cognitive architecture
+- emotion recognition transformer
+- LLM agent memory
+- reinforcement learning human feedback
+- theory of mind AI
+- value alignment LLM
+- emergent behavior AI
+- digital sentience
+
+### Execution
+```bash
+# Run code hunt
+python3 evolution/hunt_papers.py
+
+# Test mode (search only)
+python3 evolution/hunt_papers.py --test
+
+# Output directories
+~/Documents/HeartFlow/代码库/    # downloaded code
+~/Documents/HeartFlow/论文库/    # legacy papers
+```
+
+### Known Issues
+- GitHub API rate limit (403): Reduce keywords, add GITHUB_TOKEN
+- Download not executing: Check cron job prompt for --test flag
 
 ---
 
