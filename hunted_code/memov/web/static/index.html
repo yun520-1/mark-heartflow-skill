@@ -1,0 +1,3179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MemoV Timeline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #fafafa;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-info {
+            color: #888;
+            font-size: 13px;
+        }
+
+        /* Main container */
+        .container {
+            display: flex;
+            height: calc(100vh - 56px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 180px;
+            background: #fff;
+            border-right: 1px solid #e5e5e5;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .sidebar h2 {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .branch-item {
+            padding: 6px 10px;
+            margin-bottom: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .branch-item:hover {
+            background: #f0f0f0;
+        }
+
+        .branch-item.current {
+            background: #333;
+            color: white;
+        }
+
+        .branch-item .count {
+            float: right;
+            color: #aaa;
+            font-size: 11px;
+        }
+
+        .branch-item.current .count {
+            color: #ccc;
+        }
+
+        .branch-item.active {
+            border: 1.5px solid #333;
+        }
+
+        /* Timeline */
+        .timeline {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            position: relative;
+        }
+
+        .timeline-container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Inline Search Box - DeepWiki Style */
+        .inline-search {
+            background: rgba(245, 245, 247, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            padding: 0;
+            margin-bottom: 20px;
+            margin-left: auto;
+            max-width: 420px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            overflow: visible;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .search-input-area {
+            padding: 16px 16px 12px 16px;
+            background: rgba(245, 245, 247, 0.95);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .search-input-area input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            color: #333;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        .search-input-area input::placeholder {
+            color: #999;
+        }
+
+        .search-bottom-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px 10px 12px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: visible;
+            position: relative;
+            background: rgba(245, 245, 247, 0.95);
+            border-radius: 0 0 12px 12px;
+        }
+
+        .search-mode-dropdown {
+            position: relative;
+            z-index: 9999;
+        }
+
+        .search-mode-trigger {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #555;
+            transition: background 0.15s;
+        }
+
+        .search-mode-trigger:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .search-mode-trigger svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .search-mode-trigger .chevron {
+            width: 10px;
+            height: 10px;
+            color: #999;
+            transition: transform 0.2s;
+        }
+
+        .search-mode-dropdown.open .chevron {
+            transform: rotate(180deg);
+        }
+
+        .search-mode-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 6px;
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 220px;
+            overflow: visible;
+            z-index: 9999;
+        }
+
+        .search-mode-dropdown.open .search-mode-menu {
+            display: block;
+        }
+
+        .search-mode-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .search-mode-option:hover {
+            background: #f5f5f5;
+        }
+
+        .search-mode-option.active {
+            background: #f0f0f0;
+        }
+
+        .search-mode-option .icon {
+            width: 18px;
+            height: 18px;
+            color: #666;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .search-mode-option .text {
+            flex: 1;
+        }
+
+        .search-mode-option .title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-mode-option .title .check {
+            color: #333;
+            width: 14px;
+            height: 14px;
+        }
+
+        .search-mode-option .desc {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .ai-config {
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-config.show {
+            display: flex;
+        }
+
+        .search-bottom-bar .spacer {
+            flex: 1;
+        }
+
+        .ai-config input {
+            flex: 1;
+            max-width: 140px;
+            padding: 5px 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.8);
+            outline: none;
+        }
+
+        .ai-config input:focus {
+            border-color: #333;
+        }
+
+        .ai-config select {
+            padding: 5px 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            outline: none;
+        }
+
+        .search-submit-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            flex: 0 0 32px;
+            padding: 0;
+        }
+
+        .search-submit-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        .search-submit-btn svg {
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+
+        .search-submit-btn:disabled {
+            pointer-events: none;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Search Results Area - Glass style floating dropdown */
+        .search-results-area {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 4px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-height: 350px;
+            overflow: auto;
+            z-index: 1000;
+        }
+
+        .search-results-area.show {
+            display: block;
+        }
+
+        .search-results-area .ai-response {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .search-results-area .ai-header {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-results-area .close-btn {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+
+        .search-results-area .close-btn:hover {
+            color: #333;
+        }
+
+        .search-results-area .loading {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 13px;
+        }
+
+        .search-results-area .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ddd;
+            border-top-color: #333;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .search-results-area .error {
+            color: #c62828;
+            font-size: 13px;
+        }
+
+        /* Search Result Items */
+        .search-result-list {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .search-result-item {
+            padding: 10px 12px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .search-result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .search-result-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .search-result-item.selected {
+            background: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        .search-result-item.ai-summary {
+            cursor: default;
+        }
+
+        .search-result-item.ai-summary:hover {
+            background: rgba(255, 255, 255, 0.6);
+            border-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .search-result-item .item-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .search-result-item .item-hash {
+            font-family: monospace;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .search-result-item .item-type {
+            font-size: 10px;
+            padding: 2px 6px;
+            background: #eee;
+            border-radius: 4px;
+            color: #666;
+        }
+
+        .search-result-item .item-branch {
+            font-size: 10px;
+            padding: 2px 6px;
+            background: #d4edda;
+            border-radius: 4px;
+            color: #155724;
+        }
+
+        .search-result-item .item-time {
+            font-size: 11px;
+            color: #999;
+            margin-left: auto;
+        }
+
+        .search-result-item .item-prompt {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .search-result-item.ai-summary .item-prompt {
+            white-space: normal;
+            line-height: 1.5;
+        }
+
+        .search-result-item .item-files {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .search-result-item .item-file {
+            font-size: 10px;
+            padding: 2px 6px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            color: #666;
+        }
+
+        .search-result-item .item-file.changed {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .search-result-item .item-file.matched {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .search-results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .search-results-header .count {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Node highlight for search results - Green */
+        .node-card.search-highlight {
+            border-color: #22c55e !important;
+            background: #f0fdf4 !important;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2) !important;
+        }
+
+        .tree-node.search-highlight circle {
+            stroke: #22c55e !important;
+            stroke-width: 3 !important;
+            fill: #f0fdf4 !important;
+        }
+
+        /* Selected node highlight - larger and more prominent */
+        .node-card.selected-node {
+            border-color: #22c55e !important;
+            background: #f0fdf4 !important;
+            box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.35), 0 6px 16px rgba(34, 197, 94, 0.25) !important;
+            transform: scale(1.02);
+            animation: pulse-selected 1.5s ease-in-out;
+        }
+
+        .tree-node.selected-node circle {
+            stroke: #22c55e !important;
+            stroke-width: 5 !important;
+            fill: #dcfce7 !important;
+            r: 8 !important;
+            filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.6));
+        }
+
+        @keyframes pulse-selected {
+            0% { box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.35), 0 6px 16px rgba(34, 197, 94, 0.25); }
+            50% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0.2), 0 8px 20px rgba(34, 197, 94, 0.3); }
+            100% { box-shadow: 0 0 0 5px rgba(34, 197, 94, 0.35), 0 6px 16px rgba(34, 197, 94, 0.25); }
+        }
+
+        /* Node */
+        .node {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .node-line {
+            position: absolute;
+            left: 9px;
+            top: 20px;
+            bottom: -16px;
+            width: 2px;
+            background: #ddd;
+        }
+
+        .node:last-child .node-line {
+            display: none;
+        }
+
+        .node-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #999;
+            flex-shrink: 0;
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        .node-dot:hover {
+            transform: scale(1.15);
+            border-color: #333;
+        }
+
+        .node-dot.head {
+            background: #333;
+            border-color: #333;
+        }
+
+        /* Node card */
+        .node-card {
+            margin-left: 12px;
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 6px;
+            padding: 12px 16px;
+            flex: 1;
+            max-width: 700px;
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .node-card:hover {
+            border-color: #ccc;
+        }
+
+        .node-card.expanded {
+            border-color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .node-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .node-hash {
+            font-family: 'SF Mono', Consolas, monospace;
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .node-operation {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .node-branch {
+            font-size: 11px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .node-time {
+            font-size: 11px;
+            color: #aaa;
+            margin-left: auto;
+        }
+
+        .node-prompt {
+            color: #444;
+            font-size: 13px;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .node-files {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .node-file {
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 10px;
+        }
+
+        .node-file.added {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .node-file.modified {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .node-file.deleted {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .node-file.unchanged {
+            background: #f5f5f5;
+            color: #777;
+        }
+
+        .node-file.more {
+            background: #f0f0f0;
+            color: #999;
+        }
+
+        /* Expanded details */
+        .node-details {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+        }
+
+        .node-card.expanded .node-details {
+            display: block;
+        }
+
+        .detail-section {
+            margin-bottom: 12px;
+        }
+
+        .detail-section h4 {
+            color: #333;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            letter-spacing: 0.6px;
+        }
+
+        .detail-section p {
+            color: #444;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .detail-files {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .detail-file {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 11px;
+            transition: opacity 0.15s;
+        }
+
+        .detail-file:hover {
+            opacity: 0.8;
+        }
+
+        .detail-file.added {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .detail-file.modified {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .detail-file.deleted {
+            background: #ffebee;
+            color: #c62828;
+            text-decoration: line-through;
+        }
+
+        .detail-file.unchanged {
+            background: #f5f5f5;
+            color: #757575;
+        }
+
+        .detail-file .status-icon {
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            background: #444;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #eee;
+        }
+
+        /* Diff modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 100;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #fafafa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        /* Node Detail Modal */
+        .node-detail-modal .modal-content {
+            max-width: 600px;
+        }
+
+        .node-detail-body {
+            padding: 20px;
+        }
+
+        .node-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .node-detail-hash {
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .node-detail-operation {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .node-detail-branch {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .node-detail-time {
+            font-size: 12px;
+            color: #999;
+            margin-left: auto;
+        }
+
+        .node-detail-section {
+            margin-bottom: 16px;
+        }
+
+        .node-detail-section h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.4px;
+        }
+
+        .node-detail-section p {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .node-detail-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #eee;
+        }
+
+        .node-detail-actions .btn {
+            flex: 1;
+        }
+
+        .diff-modal-content {
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        .diff-layout {
+            display: flex;
+            height: 70vh;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #fff;
+        }
+
+        .diff-sidebar {
+            width: 240px;
+            background: #f7f7f7;
+            border-right: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .diff-sidebar-header {
+            padding: 10px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            border-bottom: 1px solid #eee;
+        }
+
+        .diff-file-list {
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+
+        .diff-file-item {
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #444;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .diff-file-item:hover {
+            background: #f0f0f0;
+        }
+
+        .diff-file-item.active {
+            background: #e3f2fd;
+            border-left-color: #1976d2;
+            color: #0d47a1;
+            font-weight: 600;
+        }
+
+        .diff-pane {
+            flex: 1;
+            overflow: auto;
+            background: #fafafa;
+        }
+
+        .diff-content {
+            padding: 0;
+        }
+
+        .diff-section {
+            border-bottom: 1px solid #eee;
+        }
+
+        .diff-section-header {
+            padding: 10px 12px;
+            background: #f0f0f0;
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 12px;
+            color: #333;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .diff-section-content {
+            padding: 12px;
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: pre;
+        }
+
+        .diff-add {
+            color: #2e7d32;
+            background: #e8f5e9;
+        }
+
+        .diff-del {
+            color: #c62828;
+            background: #ffebee;
+        }
+
+        .diff-header {
+            color: #1565c0;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        /* Empty state */
+        .empty {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+        }
+
+        .empty h3 {
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* ALL button for tree view */
+        .view-all-btn {
+            display: block;
+            width: 100%;
+            padding: 8px 10px;
+            margin-bottom: 12px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            color: #555;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.15s;
+        }
+
+        .view-all-btn:hover {
+            background: #eee;
+            border-color: #ccc;
+        }
+
+        .view-all-btn.active {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        /* Tree view container */
+        .tree-view {
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .tree-view svg {
+            display: block;
+        }
+
+        .tree-node {
+            cursor: pointer;
+        }
+
+        .tree-node circle {
+            fill: #fff;
+            stroke: #999;
+            stroke-width: 2;
+            transition: all 0.15s;
+        }
+
+        .tree-node:hover circle {
+            stroke: #333;
+        }
+
+        .tree-node {
+            cursor: pointer;
+        }
+
+        /* Tooltip for prompt preview */
+        .tree-tooltip {
+            position: fixed;
+            background: #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            max-width: 300px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            z-index: 1000;
+            pointer-events: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .tree-tooltip.visible {
+            opacity: 1;
+        }
+
+        .tree-tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px 6px 0 6px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .tree-node.head circle {
+            fill: #333;
+            stroke: #333;
+        }
+
+        .tree-node text {
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 10px;
+            fill: #666;
+        }
+
+        .tree-edge {
+            stroke: #ddd;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .tree-edge.jump {
+            stroke-dasharray: 4 2;
+            stroke: #999;
+        }
+
+        .tree-jump-arrow {
+            stroke: #e74c3c;
+            stroke-width: 2;
+            stroke-dasharray: 6 3;
+            fill: none;
+            marker-end: url(#jump-arrowhead);
+        }
+
+        .tree-lane-label {
+            font-size: 11px;
+            fill: #999;
+            text-anchor: middle;
+        }
+
+        /* Header right section */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Search button */
+        .search-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #555;
+            transition: all 0.15s;
+        }
+
+        .search-btn:hover {
+            background: #eee;
+            border-color: #ccc;
+        }
+
+        .search-btn svg {
+            flex-shrink: 0;
+        }
+
+        /* Search modal styles */
+        .search-modal-content {
+            max-width: 700px;
+            min-height: 400px;
+        }
+
+        .search-body {
+            padding: 16px;
+        }
+
+        .search-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+        }
+
+        .search-tab {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #555;
+            transition: all 0.15s;
+        }
+
+        .search-tab:hover {
+            background: #eee;
+        }
+
+        .search-tab.active {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        .search-panel {
+            display: none;
+        }
+
+        .search-panel.active {
+            display: block;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: stretch;
+        }
+
+        .search-input-group .btn {
+            flex-shrink: 0;
+            padding: 0 16px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0 12px;
+            height: 42px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.15s;
+            box-sizing: border-box;
+        }
+
+        .search-input:focus {
+            border-color: #333;
+        }
+
+        .search-select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: #fff;
+            cursor: pointer;
+            outline: none;
+            flex-shrink: 0;
+        }
+
+        .search-select:focus {
+            border-color: #333;
+        }
+
+        .api-key-input {
+            flex: 1;
+            max-width: 350px;
+        }
+
+        .search-hint {
+            font-size: 12px;
+            color: #999;
+            margin: 0 0 16px 0;
+        }
+
+        .search-results {
+            margin-top: 16px;
+            border-top: 1px solid #eee;
+            padding-top: 16px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .search-results-placeholder {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .search-result-item {
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+
+        .search-result-item:hover {
+            border-color: #ccc;
+        }
+
+        .search-result-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .search-result-hash {
+            font-family: 'SF Mono', Consolas, monospace;
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .search-result-branch {
+            font-size: 10px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .search-result-time {
+            font-size: 11px;
+            color: #aaa;
+            margin-left: auto;
+        }
+
+        .search-result-prompt {
+            font-size: 13px;
+            color: #444;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-result-item.ai-summary .search-result-prompt {
+            white-space: normal;
+            line-height: 1.5;
+        }
+
+        .search-result-match {
+            background: #fff59d;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .ai-response {
+            padding: 16px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        .ai-response-header {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .search-loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ddd;
+            border-top-color: #333;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .search-error {
+            padding: 16px;
+            background: #ffebee;
+            border-radius: 6px;
+            color: #c62828;
+            font-size: 13px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <img src="/static/memov.jpg" alt="MemoV" class="header-logo">
+            <h1>MemoV Timeline</h1>
+        </div>
+        <div class="header-right">
+            <div class="header-info" id="branch-info">Loading...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Branches</h2>
+            </div>
+            <button class="view-all-btn" id="view-all-btn" onclick="showAllTree()">ALL</button>
+            <div id="branches-list">
+                <div class="loading">Loading...</div>
+            </div>
+        </div>
+
+        <div class="timeline">
+            <!-- Inline Search Box - DeepWiki Style -->
+            <div class="inline-search" id="inline-search">
+                <div class="search-input-area">
+                    <input type="text" id="inline-search-input" placeholder="Search all branches...">
+                </div>
+                <div class="search-bottom-bar">
+                    <div class="search-mode-dropdown" id="search-mode-dropdown">
+                        <button class="search-mode-trigger" onclick="toggleSearchModeMenu()">
+                            <svg class="mode-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                            </svg>
+                            <span id="current-mode-text">Regex</span>
+                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m6 9 6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div class="search-mode-menu">
+                            <div class="search-mode-option active" data-mode="regex" onclick="selectSearchMode('regex')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                </svg>
+                                <div class="text">
+                                    <div class="title">
+                                        Regex
+                                        <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 6L9 17l-5-5"/>
+                                        </svg>
+                                    </div>
+                                    <div class="desc">Quick pattern matching search</div>
+                                </div>
+                            </div>
+                            <div class="search-mode-option" data-mode="ai" onclick="selectSearchMode('ai')">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                                </svg>
+                                <div class="text">
+                                    <div class="title">AI Search</div>
+                                    <div class="desc">Natural language search with AI</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ai-config" id="ai-config">
+                        <input type="password" id="inline-api-key" placeholder="OpenAI API Key">
+                        <select id="inline-ai-provider">
+                            <option value="openai">OpenAI</option>
+                        </select>
+                    </div>
+                    <div class="spacer"></div>
+                    <button class="search-submit-btn" onclick="doInlineSearch()" title="Search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Search Results Area -->
+                <div class="search-results-area" id="search-results-area"></div>
+            </div>
+
+            <div class="timeline-container" id="timeline">
+                <div class="loading">Loading commits...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tooltip for prompt preview -->
+    <div class="tree-tooltip" id="tree-tooltip"></div>
+
+    <!-- Diff Modal -->
+    <div class="modal" id="diff-modal">
+        <div class="modal-content diff-modal-content">
+            <div class="modal-header">
+                <h3 id="diff-title">Diff</h3>
+                <button class="modal-close" onclick="closeDiffModal()">&times;</button>
+            </div>
+            <div class="diff-layout">
+                <div class="diff-sidebar">
+                    <div class="diff-sidebar-header">Files</div>
+                    <div class="diff-file-list" id="diff-file-list"></div>
+                </div>
+                <div class="diff-pane">
+                    <div class="diff-content" id="diff-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Node Detail Modal -->
+    <div class="modal node-detail-modal" id="node-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Commit Details</h3>
+                <button class="modal-close" onclick="closeNodeDetailModal()">&times;</button>
+            </div>
+            <div class="node-detail-body" id="node-detail-body"></div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal" id="search-modal">
+        <div class="modal-content search-modal-content">
+            <div class="modal-header">
+                <h3>Search History</h3>
+                <button class="modal-close" onclick="closeSearchModal()">&times;</button>
+            </div>
+            <div class="search-body">
+                <!-- Search Type Tabs -->
+                <div class="search-tabs">
+                    <button class="search-tab active" data-tab="regex" onclick="switchSearchTab('regex')">Regex Match</button>
+                    <button class="search-tab" data-tab="ai" onclick="switchSearchTab('ai')">AI Search</button>
+                </div>
+
+                <!-- Regex Search Panel -->
+                <div class="search-panel active" id="panel-regex">
+                    <div class="search-input-group">
+                        <input type="text" id="regex-input" placeholder="Search branch/commit (regex supported)" class="search-input">
+                        <button class="btn" onclick="doRegexSearch()">Search</button>
+                    </div>
+                    <p class="search-hint">Match against branch name, commit hash, prompt, response, or files</p>
+                </div>
+
+                <!-- AI Search Panel -->
+                <div class="search-panel" id="panel-ai">
+                    <div class="search-input-group">
+                        <input type="password" id="api-key-input" placeholder="Enter your OpenAI API key" class="search-input api-key-input">
+                        <select id="ai-provider" class="search-select">
+                            <option value="openai">OpenAI</option>
+                        </select>
+                    </div>
+                    <div class="search-input-group">
+                        <input type="text" id="ai-query-input" placeholder="Ask about your history in natural language..." class="search-input">
+                        <button class="btn" onclick="doAISearch()">Ask</button>
+                    </div>
+                    <p class="search-hint">AI will analyze your commit history and answer your question</p>
+                </div>
+
+                <!-- Search Results -->
+                <div class="search-results" id="search-results">
+                    <div class="search-results-placeholder">Enter a query to search</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let graphData = null;
+        let branchesData = null;
+        let childToParent = {};
+        let nodeBranch = {}; // Maps commit hash to the branch it belongs to
+        let expandedNode = null;
+        let viewMode = 'branch'; // 'branch' | 'all'
+        let currentBranch = null; // Currently selected branch (null = all)
+        let searchMode = 'regex'; // 'regex' | 'ai'
+        let highlightedNodes = []; // Currently highlighted node IDs
+
+        // Build nodeBranch mapping: determine which branch each commit belongs to
+        // Shared commits belong to the "parent" branch (main first, then alphabetically)
+        function buildNodeBranchMapping() {
+            nodeBranch = {};
+            if (!branchesData?.branches) return;
+
+            const branches = Object.keys(branchesData.branches);
+            // Process main first, then others alphabetically
+            const orderedBranches = [];
+            if (branches.includes('main')) {
+                orderedBranches.push('main');
+            }
+            branches.filter(b => b !== 'main').sort().forEach(b => orderedBranches.push(b));
+
+            for (const branchName of orderedBranches) {
+                const tipCommit = branchesData.branches[branchName];
+                let current = tipCommit;
+                const branchNodes = [];
+
+                // Traverse from tip to root
+                while (current) {
+                    branchNodes.push(current);
+                    current = childToParent[current];
+                }
+
+                // Assign branch ownership (root to tip order)
+                // Only set if not already assigned (shared commits belong to parent branch)
+                branchNodes.reverse().forEach(nodeId => {
+                    if (!nodeBranch[nodeId]) {
+                        nodeBranch[nodeId] = branchName;
+                    }
+                });
+            }
+        }
+
+        // Fetch and render data
+        async function init() {
+            try {
+                // First check if memov is initialized
+                const statusRes = await fetch('/api/status');
+                const status = await statusRes.json();
+
+                if (!status.initialized) {
+                    document.getElementById('branches-list').innerHTML =
+                        '<div class="empty">Not initialized</div>';
+                    document.getElementById('timeline').innerHTML = `
+                        <div class="empty">
+                            <h3>MemoV Not Initialized</h3>
+                            <p>This project hasn't been set up with MemoV yet.</p>
+                            <p style="margin-top: 16px; font-family: monospace; background: #f5f5f5; padding: 12px; border-radius: 4px;">
+                                cd ${escapeHtml(status.project_path)}<br>
+                                mem init
+                            </p>
+                            <p style="margin-top: 16px; color: #666;">Then refresh this page.</p>
+                        </div>
+                    `;
+                    document.getElementById('branch-info').textContent = 'Not initialized';
+                    return;
+                }
+
+                const [branchesRes, graphRes] = await Promise.all([
+                    fetch('/api/branches'),
+                    fetch('/api/graph')
+                ]);
+
+                const branches = await branchesRes.json();
+                graphData = await graphRes.json();
+                branchesData = branches;
+
+                // Build childToParent mapping from edges (skip duplicates)
+                childToParent = {};
+                if (graphData.edges) {
+                    graphData.edges.forEach(e => {
+                        if (!childToParent[e.to]) {
+                            childToParent[e.to] = e.from;
+                        }
+                    });
+                }
+
+                // Build nodeBranch mapping (which branch each commit belongs to)
+                buildNodeBranchMapping();
+
+                renderBranches(branches);
+
+                // Default to ALL tree view
+                showAllTree();
+
+                // Defer tooltip initialization - render nodes first
+                if (window.requestIdleCallback) {
+                    requestIdleCallback(() => initTreeTooltip());
+                } else {
+                    setTimeout(() => initTreeTooltip(), 0);
+                }
+            } catch (error) {
+                console.error('Failed to load data:', error);
+                document.getElementById('timeline').innerHTML =
+                    '<div class="empty"><h3>Error loading data</h3><p>Check server connection and try again.</p></div>';
+            }
+        }
+
+        function renderBranches(branches) {
+            const container = document.getElementById('branches-list');
+            if (!branches.branches || Object.keys(branches.branches).length === 0) {
+                container.innerHTML = '<div class="empty">No branches</div>';
+                return;
+            }
+
+            // Count commits per branch using nodeBranch mapping
+            const branchCommitCounts = {};
+            for (const name of Object.keys(branches.branches)) {
+                branchCommitCounts[name] = 0;
+            }
+            // Count how many nodes belong to each branch
+            for (const [nodeId, branchName] of Object.entries(nodeBranch)) {
+                if (branchCommitCounts.hasOwnProperty(branchName)) {
+                    branchCommitCounts[branchName]++;
+                }
+            }
+
+            container.innerHTML = Object.entries(branches.branches)
+                .map(([name, hash]) => `
+                    <div class="branch-item ${name === branches.current ? 'active' : ''}"
+                         onclick="showBranchView('${name}')">
+                        ${name}
+                        <span class="count">${branchCommitCounts[name] || 0}</span>
+                    </div>
+                `).join('');
+        }
+
+        function renderTimeline(data) {
+            const container = document.getElementById('timeline');
+
+            if (!data.nodes || data.nodes.length === 0) {
+                container.innerHTML = '<div class="empty"><h3>No commits yet</h3><p>Start tracking files with mem track.</p></div>';
+                return;
+            }
+
+            // Topological sort (like git rev-list --reverse): parent before child
+            // Then reverse for display (most recent/child first)
+            const nodeMap = new Map(data.nodes.map(n => [n.id, n]));
+            const visited = new Set();
+            const sorted = [];
+
+            // DFS to get topological order
+            function visit(nodeId) {
+                if (visited.has(nodeId)) return;
+                visited.add(nodeId);
+                // Visit parent first (if exists)
+                const parentId = childToParent[nodeId];
+                if (parentId && nodeMap.has(parentId)) {
+                    visit(parentId);
+                }
+                sorted.push(nodeMap.get(nodeId));
+            }
+
+            // Visit all nodes
+            data.nodes.forEach(n => visit(n.id));
+
+            // Reverse: child (newest) first for display
+            const sortedNodes = sorted.reverse();
+
+            container.innerHTML = sortedNodes.map(node => `
+                <div class="node" data-id="${node.id}">
+                    <div class="node-line"></div>
+                    <div class="node-dot ${node.is_head ? 'head' : ''}" data-label="${node.short_hash}${node.branch ? ' [' + node.branch + ']' : ''}" onclick="toggleNode('${node.id}')"></div>
+                    <div class="node-card" id="card-${node.id}" onclick="toggleNode('${node.id}')">
+                        <div class="node-header">
+                            <span class="node-hash">${node.short_hash}</span>
+                            <span class="node-operation">${node.operation || 'snap'}</span>
+                            ${node.branch ? `<span class="node-branch">${node.branch}</span>` : ''}
+                            <span class="node-time">${formatTime(node.timestamp)}</span>
+                        </div>
+                        <div class="node-prompt">${escapeHtml(node.prompt || 'No prompt')}</div>
+                        <div class="node-files">
+                            ${renderNodeFiles(node)}
+                        </div>
+                        <div class="node-details">
+                            ${node.prompt ? `
+                            <div class="detail-section">
+                                <h4>Prompt</h4>
+                                <p>${escapeHtml(node.prompt)}</p>
+                            </div>
+                            ` : ''}
+                            ${node.agent_plan ? `
+                            <div class="detail-section">
+                                <h4>Agent Plan</h4>
+                                <p>${escapeHtml(node.agent_plan)}</p>
+                            </div>
+                            ` : ''}
+                            ${node.response ? `
+                            <div class="detail-section">
+                                <h4>Response</h4>
+                                <p>${escapeHtml(node.response)}</p>
+                            </div>
+                            ` : ''}
+                            <div class="detail-section">
+                                <h4>Files</h4>
+                                <div class="detail-files">
+                                    ${renderFilesList(node)}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn" onclick="event.stopPropagation(); viewDiff('${node.id}')">View Diff</button>
+                                <button class="btn btn-secondary" onclick="event.stopPropagation(); jumpTo('${node.id}')">Jump Here</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleNode(id) {
+            const card = document.getElementById(`card-${id}`);
+            if (expandedNode && expandedNode !== id) {
+                document.getElementById(`card-${expandedNode}`)?.classList.remove('expanded');
+            }
+            card.classList.toggle('expanded');
+            expandedNode = card.classList.contains('expanded') ? id : null;
+        }
+
+        async function viewDiff(commitHash) {
+            try {
+                const res = await fetch(`/api/diff/${commitHash}`);
+                const data = await res.json();
+
+                document.getElementById('diff-title').textContent = `Diff: ${commitHash.substring(0, 7)}`;
+
+                const sections = buildDiffSections(data.diff || {});
+                renderDiffLayout(sections);
+                document.getElementById('diff-modal').classList.add('show');
+            } catch (error) {
+                console.error('Failed to load diff:', error);
+                alert('Failed to load diff');
+            }
+        }
+
+        function closeDiffModal() {
+            document.getElementById('diff-modal').classList.remove('show');
+        }
+
+        async function jumpTo(commitHash) {
+            if (!confirm(`Jump to commit ${commitHash.substring(0, 7)}?\n\nThis will restore all files to this state.`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/jump/${commitHash}`, { method: 'POST' });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    alert(`Jumped to commit!\nNew branch: ${data.new_branch}`);
+                    location.reload();
+                } else {
+                    alert('Jump failed');
+                }
+            } catch (error) {
+                console.error('Failed to jump:', error);
+                alert('Failed to jump to commit');
+            }
+        }
+
+        function filterBranch(branchName, skipScroll = false) {
+            // Update sidebar highlight
+            const branchItems = document.querySelectorAll('.branch-item');
+            branchItems.forEach(item => {
+                // Get the branch name from the item (text content minus the count)
+                const itemName = item.childNodes[0].textContent.trim();
+                if (itemName === branchName) {
+                    item.classList.add('current');
+                } else {
+                    item.classList.remove('current');
+                }
+            });
+
+            // Update header info
+            document.getElementById('branch-info').textContent = `Current: ${branchName}`;
+
+            // Get the tip commit of this branch (for scrolling)
+            const tipCommit = branchesData?.branches?.[branchName];
+
+            // Show only commits belonging to this branch (using nodeBranch mapping)
+            const nodes = document.querySelectorAll('.node');
+            nodes.forEach(node => {
+                const nodeId = node.dataset.id;
+                if (nodeBranch[nodeId] === branchName) {
+                    node.style.display = '';
+                } else {
+                    node.style.display = 'none';
+                }
+            });
+
+            // Scroll to the tip commit (most recent in this branch)
+            if (!skipScroll && tipCommit) {
+                const targetNode = document.querySelector(`.node[data-id="${tipCommit}"]`);
+                if (targetNode) {
+                    targetNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
+        function showAllTree() {
+            viewMode = 'all';
+            currentBranch = null;
+
+            // Update button states
+            document.getElementById('view-all-btn').classList.add('active');
+            document.querySelectorAll('.branch-item').forEach(item => {
+                item.classList.remove('current');
+            });
+
+            // Update header
+            document.getElementById('branch-info').textContent = 'All Branches';
+
+            // Update search placeholder
+            updateSearchPlaceholder();
+
+            // Clear any search highlights
+            clearHighlights();
+
+            // Render tree view
+            renderTreeView();
+        }
+
+        function showBranchView(branchName) {
+            // If switching from tree view, re-render timeline first
+            if (viewMode === 'all') {
+                renderTimeline(graphData);
+            }
+            viewMode = 'branch';
+            currentBranch = branchName;
+            document.getElementById('view-all-btn').classList.remove('active');
+
+            // Update search placeholder
+            updateSearchPlaceholder();
+
+            // Clear any search highlights
+            clearHighlights();
+
+            filterBranch(branchName);
+        }
+
+        function renderTreeView() {
+            const container = document.getElementById('timeline');
+
+            if (!graphData || !graphData.nodes || graphData.nodes.length === 0) {
+                container.innerHTML = '<div class="empty"><h3>No commits yet</h3></div>';
+                return;
+            }
+
+            // Assign lanes to branches (main = 0, others = 1, 2, ...)
+            const branches = Object.keys(branchesData.branches || {});
+            const branchLane = {};
+            let laneIndex = 0;
+
+            // Main branch first
+            if (branches.includes('main')) {
+                branchLane['main'] = laneIndex++;
+            }
+            // Then other branches
+            branches.filter(b => b !== 'main').sort().forEach(b => {
+                branchLane[b] = laneIndex++;
+            });
+
+            // Build node info: which branch each node belongs to
+            const nodeBranch = {};
+            const nodeDepth = {}; // depth from root
+
+            for (const [branchName, tipCommit] of Object.entries(branchesData.branches || {})) {
+                let current = tipCommit;
+                let depth = 0;
+                const branchNodes = [];
+
+                // Traverse from tip to root
+                while (current) {
+                    branchNodes.push(current);
+                    current = childToParent[current];
+                }
+
+                // Assign depths (root = 0, tip = highest)
+                branchNodes.reverse().forEach((nodeId, idx) => {
+                    // Only set if not already assigned (shared commits belong to parent branch)
+                    if (!nodeBranch[nodeId]) {
+                        nodeBranch[nodeId] = branchName;
+                    }
+                    // Depth is from root
+                    nodeDepth[nodeId] = Math.max(nodeDepth[nodeId] || 0, idx);
+                });
+            }
+
+            // Find max depth for height calculation
+            const maxDepth = Math.max(...Object.values(nodeDepth), 0);
+            const numLanes = Object.keys(branchLane).length || 1;
+
+            // SVG dimensions
+            const laneWidth = 80;
+            const rowHeight = 50;
+            const nodeRadius = 8;
+            const padding = 40;
+            const labelHeight = 30;
+
+            // Extra width for jump arrows that curve to the right
+            const jumpArrowSpace = (graphData.jump_edges && graphData.jump_edges.length > 0) ? 60 : 0;
+            const svgWidth = numLanes * laneWidth + padding * 2 + jumpArrowSpace;
+            const svgHeight = (maxDepth + 1) * rowHeight + padding * 2 + labelHeight;
+
+            // Calculate node positions
+            const nodePositions = {};
+            graphData.nodes.forEach(node => {
+                const branch = nodeBranch[node.id] || 'main';
+                const lane = branchLane[branch] ?? 0;
+                const depth = nodeDepth[node.id] ?? 0;
+
+                nodePositions[node.id] = {
+                    x: padding + lane * laneWidth + laneWidth / 2,
+                    y: svgHeight - padding - depth * rowHeight - nodeRadius,
+                    lane: lane,
+                    branch: branch,
+                    depth: depth
+                };
+            });
+
+            // Build SVG content
+            let svgContent = '';
+
+            // Lane labels at top
+            for (const [branchName, lane] of Object.entries(branchLane)) {
+                const x = padding + lane * laneWidth + laneWidth / 2;
+                svgContent += `<text class="tree-lane-label" x="${x}" y="${labelHeight - 10}">${branchName}</text>`;
+            }
+
+            // Draw edges first (so they're behind nodes)
+            graphData.edges.forEach(edge => {
+                const fromPos = nodePositions[edge.from];
+                const toPos = nodePositions[edge.to];
+
+                if (!fromPos || !toPos) return;
+
+                // Check if this is a jump edge (crosses lanes)
+                const isJump = fromPos.lane !== toPos.lane;
+                const edgeClass = isJump ? 'tree-edge jump' : 'tree-edge';
+
+                if (fromPos.lane === toPos.lane) {
+                    // Same lane: straight vertical line
+                    svgContent += `<line class="${edgeClass}" x1="${fromPos.x}" y1="${fromPos.y}" x2="${toPos.x}" y2="${toPos.y}"/>`;
+                } else {
+                    // Different lanes: curved path
+                    const midY = (fromPos.y + toPos.y) / 2;
+                    svgContent += `<path class="${edgeClass}" d="M${fromPos.x},${fromPos.y} C${fromPos.x},${midY} ${toPos.x},${midY} ${toPos.x},${toPos.y}"/>`;
+                }
+            });
+
+            // Draw nodes
+            graphData.nodes.forEach(node => {
+                const pos = nodePositions[node.id];
+                if (!pos) return;
+
+                const isHead = node.is_head;
+                const nodeClass = isHead ? 'tree-node head' : 'tree-node';
+
+                svgContent += `
+                    <g class="${nodeClass}" onclick="toggleNodeFromTree('${node.id}')" data-id="${node.id}">
+                        <circle cx="${pos.x}" cy="${pos.y}" r="${nodeRadius}"/>
+                        <text x="${pos.x + nodeRadius + 4}" y="${pos.y + 3}">${node.short_hash}</text>
+                    </g>
+                `;
+            });
+
+            // Draw jump arrows (from source commit to target commit)
+            if (graphData.jump_edges) {
+                graphData.jump_edges.forEach(jumpEdge => {
+                    const fromPos = nodePositions[jumpEdge.from_commit];
+                    const toPos = nodePositions[jumpEdge.to_commit];
+
+                    if (!fromPos || !toPos) return;
+
+                    // Draw curved arrow from source to target
+                    // Arrow goes from the commit we were at, to the commit we jumped to
+                    const dx = toPos.x - fromPos.x;
+                    const dy = toPos.y - fromPos.y;
+
+                    // Control point for curve (offset to the right to make it visible)
+                    const offsetX = Math.max(40, Math.abs(dx) * 0.3);
+                    const ctrlX = Math.max(fromPos.x, toPos.x) + offsetX;
+                    const ctrlY = (fromPos.y + toPos.y) / 2;
+
+                    svgContent += `<path class="tree-jump-arrow" d="M${fromPos.x},${fromPos.y} Q${ctrlX},${ctrlY} ${toPos.x},${toPos.y}"/>`;
+                });
+            }
+
+            container.innerHTML = `
+                <div class="tree-view">
+                    <svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}">
+                        <defs>
+                            <marker id="jump-arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#e74c3c"/>
+                            </marker>
+                        </defs>
+                        ${svgContent}
+                    </svg>
+                </div>
+            `;
+
+        }
+
+        function updateTooltipPosition(e, tooltip) {
+            const tooltipRect = tooltip.getBoundingClientRect();
+            let x = e.clientX - tooltipRect.width / 2;
+            let y = e.clientY - tooltipRect.height - 15;
+
+            // Keep tooltip within viewport
+            if (x < 10) x = 10;
+            if (x + tooltipRect.width > window.innerWidth - 10) {
+                x = window.innerWidth - tooltipRect.width - 10;
+            }
+            if (y < 10) {
+                y = e.clientY + 20; // Show below cursor if no room above
+            }
+
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        // Event delegation for tooltip - only 3 listeners instead of 3*N
+        function initTreeTooltip() {
+            const tooltip = document.getElementById('tree-tooltip');
+            const container = document.getElementById('timeline');
+
+            container.addEventListener('mouseover', (e) => {
+                const nodeEl = e.target.closest('.tree-node');
+                if (!nodeEl) return;
+
+                const nodeId = nodeEl.getAttribute('data-id');
+                const node = graphData?.nodes?.find(n => n.id === nodeId);
+                if (!node) return;
+
+                const prompt = node.prompt || 'No prompt';
+                const displayText = prompt.length > 100 ? prompt.substring(0, 100) + '...' : prompt;
+                tooltip.textContent = displayText;
+                tooltip.classList.add('visible');
+                updateTooltipPosition(e, tooltip);
+            });
+
+            container.addEventListener('mousemove', (e) => {
+                if (tooltip.classList.contains('visible')) {
+                    updateTooltipPosition(e, tooltip);
+                }
+            });
+
+            container.addEventListener('mouseout', (e) => {
+                const nodeEl = e.target.closest('.tree-node');
+                if (nodeEl) {
+                    tooltip.classList.remove('visible');
+                }
+            });
+        }
+
+        function toggleNodeFromTree(nodeId) {
+            // Find the node data
+            const node = graphData.nodes.find(n => n.id === nodeId);
+            if (!node) return;
+
+            // Reuse renderNodeFiles for consistent file display
+            const files = node.files || [];
+            const filesHtml = files.length > 0
+                ? renderNodeFiles(node)
+                : '<span style="color: #999; font-size: 12px;">No files changed</span>';
+
+            const prompt = node.prompt || 'No prompt recorded';
+            const promptPreview = prompt.length > 300 ? prompt.substring(0, 300) + '...' : prompt;
+
+            const html = `
+                <div class="node-detail-header">
+                    <span class="node-detail-hash">${node.short_hash}</span>
+                    <span class="node-detail-operation">${node.operation || 'snap'}</span>
+                    ${node.branch ? `<span class="node-detail-branch">${node.branch}</span>` : ''}
+                    <span class="node-detail-time">${formatTime(node.timestamp)}</span>
+                </div>
+                <div class="node-detail-section">
+                    <h4>Prompt</h4>
+                    <p>${escapeHtml(promptPreview)}</p>
+                </div>
+                ${node.agent_plan ? `
+                <div class="node-detail-section">
+                    <h4>Agent Plan</h4>
+                    <p>${escapeHtml(node.agent_plan.length > 200 ? node.agent_plan.substring(0, 200) + '...' : node.agent_plan)}</p>
+                </div>
+                ` : ''}
+                <div class="node-detail-section">
+                    <h4>Files${files.length > 0 ? ` (${files.length})` : ''}</h4>
+                    <div class="node-files">${filesHtml}</div>
+                </div>
+                <div class="node-detail-actions">
+                    <button class="btn" onclick="viewDiff('${node.id}'); closeNodeDetailModal();">View Diff</button>
+                    <button class="btn btn-secondary" onclick="jumpTo('${node.id}'); closeNodeDetailModal();">Jump Here</button>
+                </div>
+            `;
+
+            document.getElementById('node-detail-body').innerHTML = html;
+            document.getElementById('node-detail-modal').classList.add('show');
+        }
+
+        function closeNodeDetailModal() {
+            document.getElementById('node-detail-modal').classList.remove('show');
+        }
+
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            return date.toLocaleString();
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function renderNodeFiles(node) {
+            const files = node.files || [];
+            const diff = node.diff || {};
+            const maxShow = 4;
+
+            if (files.length === 0) return '';
+
+            // Categorize files by status
+            const changedFiles = [];
+            const unchangedFiles = [];
+
+            files.forEach(f => {
+                const fileDiff = diff[f];
+                const status = fileDiff ? (fileDiff.status || 'modified') : 'unchanged';
+                if (status === 'unchanged') {
+                    unchangedFiles.push({ file: f, status });
+                } else {
+                    changedFiles.push({ file: f, status });
+                }
+            });
+
+            // Show changed files first, then unchanged
+            const sortedFiles = [...changedFiles, ...unchangedFiles];
+            const shown = sortedFiles.slice(0, maxShow);
+            const remaining = sortedFiles.length - maxShow;
+
+            let html = shown.map(({ file, status }) => {
+                const fileName = file.split('/').pop();
+                return `<span class="node-file ${status}">${fileName}</span>`;
+            }).join('');
+
+            if (remaining > 0) {
+                html += `<span class="node-file more">+${remaining}</span>`;
+            }
+
+            return html;
+        }
+
+        function renderFilesList(node) {
+            const files = node.files || [];
+            const diff = node.diff || {};
+
+            if (files.length === 0) {
+                return '<span style="color: #999; font-size: 12px;">No files</span>';
+            }
+
+            // Categorize files
+            const changedFiles = [];
+            const unchangedFiles = [];
+
+            files.forEach(f => {
+                const fileDiff = diff[f];
+                let status = 'unchanged';
+                let icon = '·';
+
+                if (fileDiff) {
+                    status = fileDiff.status || 'modified';
+                    if (status === 'added') icon = '+';
+                    else if (status === 'deleted') icon = '−';
+                    else if (status === 'modified') icon = '~';
+                }
+
+                const fileName = f.split('/').pop();
+                const hasPath = f.includes('/');
+                const title = hasPath ? f : '';
+
+                const fileHtml = `<span class="detail-file ${status}" title="${title}">
+                    <span class="status-icon">${icon}</span>${fileName}
+                </span>`;
+
+                if (status === 'unchanged') {
+                    unchangedFiles.push(fileHtml);
+                } else {
+                    changedFiles.push(fileHtml);
+                }
+            });
+
+            let html = '';
+
+            // Show changed files first
+            if (changedFiles.length > 0) {
+                html += changedFiles.join('');
+            }
+
+            // Show collapsed unchanged files section if any
+            if (unchangedFiles.length > 0) {
+                const toggleId = `unchanged-${node.id}`;
+                html += `<div style="width: 100%; margin-top: 8px;">
+                    <span class="detail-file unchanged" style="cursor: pointer;" onclick="event.stopPropagation(); toggleUnchanged('${toggleId}')">
+                        <span class="status-icon" id="${toggleId}-icon">+</span>${unchangedFiles.length} unchanged files
+                    </span>
+                    <div id="${toggleId}" style="display: none; margin-top: 6px;">
+                        ${unchangedFiles.join('')}
+                    </div>
+                </div>`;
+            }
+
+            // If no changed files, show a message
+            if (changedFiles.length === 0 && unchangedFiles.length > 0) {
+                html = `<span style="color: #999; font-size: 12px; margin-right: 8px;">No changes</span>` + html;
+            }
+
+            return html;
+        }
+
+        function toggleUnchanged(toggleId) {
+            const container = document.getElementById(toggleId);
+            const icon = document.getElementById(toggleId + '-icon');
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                icon.textContent = '−';
+            } else {
+                container.style.display = 'none';
+                icon.textContent = '+';
+            }
+        }
+
+        function showFileDiff(commitHash, fileName) {
+            const node = graphData.nodes.find(n => n.id === commitHash);
+            if (!node || !node.diff || !node.diff[fileName]) {
+                alert('No diff available for this file');
+                return;
+            }
+
+            const fileDiff = node.diff[fileName];
+            document.getElementById('diff-title').textContent = `${fileName} (${commitHash.substring(0, 7)})`;
+
+            // Render structured diff
+            let html = '';
+            if (fileDiff.hunks && fileDiff.hunks.length > 0) {
+                fileDiff.hunks.forEach(hunk => {
+                    html += `<span class="diff-header">${escapeHtml(hunk.header)}</span>\n`;
+                    hunk.lines.forEach(line => {
+                        if (line.type === 'add') {
+                            html += `<span class="diff-add">+${escapeHtml(line.content)}</span>\n`;
+                        } else if (line.type === 'delete') {
+                            html += `<span class="diff-del">-${escapeHtml(line.content)}</span>\n`;
+                        } else if (line.type === 'context') {
+                            html += ` ${escapeHtml(line.content)}\n`;
+                        } else if (line.type === 'info') {
+                            html += `<span class="diff-header">${escapeHtml(line.content)}</span>\n`;
+                        }
+                    });
+                });
+            } else {
+                html = '<span style="color:#999">No changes in this file</span>';
+            }
+
+            document.getElementById('diff-content').innerHTML = html;
+            document.getElementById('diff-modal').classList.add('show');
+        }
+
+        function buildDiffSections(diff) {
+            if (!diff) return [];
+            if (diff._all) {
+                return parseUnifiedDiff(diff._all);
+            }
+            return Object.entries(diff).map(([file, content]) => ({
+                file,
+                lines: (content || '').split('\n'),
+            }));
+        }
+
+        function parseUnifiedDiff(text) {
+            const lines = (text || '').split('\n');
+            const sections = [];
+            let current = null;
+
+            lines.forEach(line => {
+                if (line.startsWith('diff --git ')) {
+                    if (current) sections.push(current);
+                    const parts = line.split(' ');
+                    const bPath = parts[3] || '';
+                    const file = bPath.startsWith('b/') ? bPath.slice(2) : bPath;
+                    current = { file: file || 'diff', lines: [line] };
+                    return;
+                }
+
+                if (!current) {
+                    current = { file: 'diff', lines: [] };
+                }
+                current.lines.push(line);
+            });
+
+            if (current) sections.push(current);
+            return sections;
+        }
+
+        function formatDiffLines(lines) {
+            return lines.map(line => {
+                if (line.startsWith('+') && !line.startsWith('+++')) {
+                    return `<span class="diff-add">${escapeHtml(line)}</span>`;
+                } else if (line.startsWith('-') && !line.startsWith('---')) {
+                    return `<span class="diff-del">${escapeHtml(line)}</span>`;
+                } else if (line.startsWith('@@') || line.startsWith('diff ') || line.startsWith('index ')) {
+                    return `<span class="diff-header">${escapeHtml(line)}</span>`;
+                }
+                return escapeHtml(line);
+            }).join('\n');
+        }
+
+        function setActiveDiffFile(index) {
+            document.querySelectorAll('.diff-file-item').forEach((item, idx) => {
+                item.classList.toggle('active', idx === index);
+            });
+        }
+
+        function scrollToDiffSection(index) {
+            const target = document.getElementById(`diff-section-${index}`);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                setActiveDiffFile(index);
+            }
+        }
+
+        function renderDiffLayout(sections) {
+            const list = document.getElementById('diff-file-list');
+            const content = document.getElementById('diff-content');
+
+            if (!sections || sections.length === 0) {
+                list.innerHTML = '<div class="empty" style="padding: 12px;">No files</div>';
+                content.innerHTML = '<div class="empty" style="padding: 12px;">No diff available</div>';
+                return;
+            }
+
+            list.innerHTML = sections.map((section, idx) => `
+                <div class="diff-file-item" onclick="scrollToDiffSection(${idx})" title="${escapeHtml(section.file)}">
+                    ${escapeHtml(section.file)}
+                </div>
+            `).join('');
+
+            content.innerHTML = sections.map((section, idx) => `
+                <div class="diff-section" id="diff-section-${idx}">
+                    <div class="diff-section-header">${escapeHtml(section.file)}</div>
+                    <div class="diff-section-content">${formatDiffLines(section.lines || [])}</div>
+                </div>
+            `).join('');
+
+            setActiveDiffFile(0);
+        }
+
+        // Close modal on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDiffModal();
+            }
+        });
+
+        // Close modal on background click
+        document.getElementById('diff-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('diff-modal')) {
+                closeDiffModal();
+            }
+        });
+
+        // Search modal on background click
+        document.getElementById('search-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('search-modal')) {
+                closeSearchModal();
+            }
+        });
+
+        // Node detail modal on background click
+        document.getElementById('node-detail-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('node-detail-modal')) {
+                closeNodeDetailModal();
+            }
+        });
+
+        // ============ Search Functions ============
+
+        function openSearchModal() {
+            document.getElementById('search-modal').classList.add('show');
+            document.getElementById('regex-input').focus();
+        }
+
+        function closeSearchModal() {
+            document.getElementById('search-modal').classList.remove('show');
+        }
+
+        function switchSearchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.search-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+            // Update panels
+            document.querySelectorAll('.search-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.id === `panel-${tab}`);
+            });
+            // Clear results
+            document.getElementById('search-results').innerHTML =
+                '<div class="search-results-placeholder">Enter a query to search</div>';
+        }
+
+        function doRegexSearch() {
+            const query = document.getElementById('regex-input').value.trim();
+            if (!query) return;
+
+            const resultsDiv = document.getElementById('search-results');
+            resultsDiv.innerHTML = '<div class="search-loading"><div class="search-loading-spinner"></div>Searching...</div>';
+
+            try {
+                const regex = new RegExp(query, 'i');
+                const matches = [];
+
+                // Search through all nodes in graphData
+                if (graphData && graphData.nodes) {
+                    graphData.nodes.forEach(node => {
+                        let matchField = null;
+                        let matchText = '';
+
+                        // Check branch
+                        if (node.branch && regex.test(node.branch)) {
+                            matchField = 'branch';
+                            matchText = node.branch;
+                        }
+                        // Check commit hash
+                        else if (regex.test(node.id) || regex.test(node.short_hash)) {
+                            matchField = 'commit';
+                            matchText = node.short_hash;
+                        }
+                        // Check prompt
+                        else if (node.prompt && regex.test(node.prompt)) {
+                            matchField = 'prompt';
+                            matchText = node.prompt;
+                        }
+                        // Check response
+                        else if (node.response && regex.test(node.response)) {
+                            matchField = 'response';
+                            matchText = node.response;
+                        }
+                        // Check changed files only (not unchanged tracked files)
+                        else if (node.files && node.diff) {
+                            const changedFiles = node.files.filter(f => {
+                                const fileDiff = node.diff[f];
+                                return fileDiff && fileDiff.status !== 'unchanged';
+                            });
+                            const matchedFile = changedFiles.find(f => regex.test(f));
+                            if (matchedFile) {
+                                matchField = 'files';
+                                matchText = matchedFile;
+                            }
+                        }
+
+                        if (matchField) {
+                            matches.push({ node, matchField, matchText, regex });
+                        }
+                    });
+                }
+
+                renderSearchResults(matches, query);
+            } catch (e) {
+                resultsDiv.innerHTML = `<div class="search-error">Invalid regex: ${escapeHtml(e.message)}</div>`;
+            }
+        }
+
+        function renderSearchResults(matches, query) {
+            const resultsDiv = document.getElementById('search-results');
+
+            if (matches.length === 0) {
+                resultsDiv.innerHTML = '<div class="search-results-placeholder">No matches found</div>';
+                return;
+            }
+
+            const html = matches.map(({ node, matchField, matchText, regex }) => {
+                // Highlight match in text
+                let displayText = matchText || node.prompt || 'No prompt';
+                if (displayText.length > 100) {
+                    displayText = displayText.substring(0, 100) + '...';
+                }
+                // Highlight the matched part
+                displayText = escapeHtml(displayText).replace(
+                    new RegExp(`(${escapeRegex(query)})`, 'gi'),
+                    '<span class="search-result-match">$1</span>'
+                );
+
+                return `
+                    <div class="search-result-item" onclick="jumpToSearchResult('${node.id}')">
+                        <div class="search-result-header">
+                            <span class="search-result-hash">${node.short_hash}</span>
+                            ${node.branch ? `<span class="search-result-branch">${node.branch}</span>` : ''}
+                            <span style="font-size: 10px; color: #999;">${matchField}</span>
+                            <span class="search-result-time">${formatTime(node.timestamp)}</span>
+                        </div>
+                        <div class="search-result-prompt">${displayText}</div>
+                    </div>
+                `;
+            }).join('');
+
+            resultsDiv.innerHTML = `<div style="font-size: 12px; color: #666; margin-bottom: 12px;">${matches.length} result(s)</div>${html}`;
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function jumpToSearchResult(nodeId, stayInAllView = false) {
+            closeSearchModal();
+
+            // Clear previous selected node highlight
+            document.querySelectorAll('.selected-node').forEach(el => {
+                el.classList.remove('selected-node');
+            });
+
+            // If in tree view, switch to branch view first (unless stayInAllView is true)
+            if (viewMode === 'all' && !stayInAllView) {
+                const branch = nodeBranch[nodeId];
+                if (branch) {
+                    showBranchView(branch);
+                }
+            }
+
+            // Wait a bit for render, then scroll and expand
+            setTimeout(() => {
+                const nodeElement = document.querySelector(`.node[data-id="${nodeId}"]`);
+                if (nodeElement) {
+                    nodeElement.style.display = '';
+                    const card = nodeElement.querySelector('.node-card');
+                    if (card) card.classList.add('selected-node');
+                    nodeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    toggleNode(nodeId);
+                }
+            }, 100);
+        }
+
+        async function doAISearch() {
+            const apiKey = document.getElementById('api-key-input').value.trim();
+            const query = document.getElementById('ai-query-input').value.trim();
+            const provider = document.getElementById('ai-provider').value;
+
+            if (!apiKey) {
+                alert('Please enter your API key');
+                return;
+            }
+            if (!query) {
+                alert('Please enter your question');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('search-results');
+            resultsDiv.innerHTML = '<div class="search-loading"><div class="search-loading-spinner"></div>AI is analyzing your history...</div>';
+
+            try {
+                const res = await fetch('/api/search/ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        api_key: apiKey,
+                        query: query,
+                        provider: provider
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.detail || 'Search failed');
+                }
+
+                // Highlight relevant commits in the graph/timeline
+                const commitIds = data.commit_ids || [];
+                if (commitIds.length > 0) {
+                    highlightSearchResults(commitIds);
+                }
+
+                const providerName = 'OpenAI';
+                const answerText = (data.response || '').trim();
+
+                const matchedNodes = (commitIds.length > 0 && graphData && graphData.nodes)
+                    ? commitIds.map(id => graphData.nodes.find(node => node.id === id)).filter(Boolean)
+                    : [];
+
+                const answerHtml = answerText ? `
+                    <div class="search-result-item ai-summary">
+                        <div class="search-result-header">
+                            <span class="search-result-hash">AI</span>
+                            <span class="search-result-branch">${providerName}</span>
+                        </div>
+                        <div class="search-result-prompt">${escapeHtml(answerText)}</div>
+                    </div>
+                ` : '';
+
+                const itemsHtml = matchedNodes.map(node => {
+                    return `
+                        <div class="search-result-item" onclick="jumpToSearchResult('${node.id}', true)">
+                            <div class="search-result-header">
+                                <span class="search-result-hash">${node.short_hash}</span>
+                                ${node.branch ? `<span class="search-result-branch">${escapeHtml(node.branch)}</span>` : ''}
+                                <span class="search-result-time">${formatTime(node.timestamp)}</span>
+                            </div>
+                            <div class="search-result-prompt">${escapeHtml((node.prompt || 'No prompt').substring(0, 100))}${(node.prompt || '').length > 100 ? '...' : ''}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                const countHtml = `<div style="font-size: 12px; color: #666; margin-bottom: 12px;">${matchedNodes.length} relevant commit(s)</div>`;
+
+                if (!answerHtml && matchedNodes.length === 0) {
+                    resultsDiv.innerHTML = '<div class="search-results-placeholder">No matches found</div>';
+                } else {
+                    resultsDiv.innerHTML = `${answerHtml}${countHtml}${itemsHtml}`;
+                }
+            } catch (e) {
+                resultsDiv.innerHTML = `<div class="search-error">Error: ${escapeHtml(e.message)}</div>`;
+            }
+        }
+
+        // Handle Enter key in search inputs
+        document.getElementById('regex-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') doRegexSearch();
+        });
+
+        document.getElementById('ai-query-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') doAISearch();
+        });
+
+        // ============ Inline Search Functions (DeepWiki Style) ============
+
+        function toggleSearchModeMenu() {
+            const dropdown = document.getElementById('search-mode-dropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        function selectSearchMode(mode) {
+            searchMode = mode;
+
+            // Update dropdown trigger text
+            document.getElementById('current-mode-text').textContent = mode === 'regex' ? 'Regex' : 'AI Search';
+
+            // Update menu options
+            document.querySelectorAll('.search-mode-option').forEach(opt => {
+                const isActive = opt.dataset.mode === mode;
+                opt.classList.toggle('active', isActive);
+                // Show/hide check mark
+                const check = opt.querySelector('.check');
+                if (check) {
+                    check.style.display = isActive ? 'inline' : 'none';
+                }
+            });
+
+            // Show/hide AI config
+            document.getElementById('ai-config').classList.toggle('show', mode === 'ai');
+
+            // Close dropdown
+            document.getElementById('search-mode-dropdown').classList.remove('open');
+        }
+
+        function updateSearchPlaceholder() {
+            const input = document.getElementById('inline-search-input');
+            if (input) {
+                input.placeholder = currentBranch
+                    ? `Search in ${currentBranch}...`
+                    : 'Search all branches...';
+            }
+        }
+
+        function clearHighlights() {
+            highlightedNodes.forEach(nodeId => {
+                // Clear timeline view highlights
+                const card = document.getElementById(`card-${nodeId}`);
+                if (card) card.classList.remove('search-highlight');
+
+                // Clear tree view highlights
+                const treeNode = document.querySelector(`.tree-node[data-id="${nodeId}"]`);
+                if (treeNode) treeNode.classList.remove('search-highlight');
+            });
+            highlightedNodes = [];
+
+            // Also clear selected node highlight
+            document.querySelectorAll('.selected-node').forEach(el => {
+                el.classList.remove('selected-node');
+            });
+        }
+
+        function highlightSearchResults(matchedNodeIds) {
+            clearHighlights();
+            highlightedNodes = matchedNodeIds;
+
+            matchedNodeIds.forEach(nodeId => {
+                // Highlight in timeline view
+                const card = document.getElementById(`card-${nodeId}`);
+                if (card) card.classList.add('search-highlight');
+
+                // Highlight in tree view
+                const treeNode = document.querySelector(`.tree-node[data-id="${nodeId}"]`);
+                if (treeNode) treeNode.classList.add('search-highlight');
+            });
+        }
+
+        function getSearchableNodes() {
+            if (!graphData || !graphData.nodes) return [];
+
+            // If viewing a specific branch, only search nodes in that branch
+            if (currentBranch) {
+                return graphData.nodes.filter(node => nodeBranch[node.id] === currentBranch);
+            }
+            return graphData.nodes;
+        }
+
+        async function doInlineSearch() {
+            const query = document.getElementById('inline-search-input').value.trim();
+            if (!query) {
+                clearHighlights();
+                return;
+            }
+
+            if (searchMode === 'ai') {
+                await doInlineAISearch(query);
+            } else {
+                doInlineRegexSearch(query);
+            }
+        }
+
+        function doInlineRegexSearch(query) {
+            try {
+                const regex = new RegExp(query, 'i');
+                const searchableNodes = getSearchableNodes();
+                const matchedNodes = [];
+
+                searchableNodes.forEach(node => {
+                    let matched = false;
+                    let matchedFiles = [];
+
+                    // Check branch
+                    if (node.branch && regex.test(node.branch)) matched = true;
+                    // Check commit hash
+                    else if (regex.test(node.id) || regex.test(node.short_hash)) matched = true;
+                    // Check prompt
+                    else if (node.prompt && regex.test(node.prompt)) matched = true;
+                    // Check response
+                    else if (node.response && regex.test(node.response)) matched = true;
+                    // Check changed files only (not unchanged)
+                    else if (node.files && node.diff) {
+                        const changedFiles = node.files.filter(f => {
+                            const fileDiff = node.diff[f];
+                            return fileDiff && fileDiff.status !== 'unchanged';
+                        });
+                        matchedFiles = changedFiles.filter(f => regex.test(f));
+                        if (matchedFiles.length > 0) matched = true;
+                    }
+
+                    if (matched) {
+                        matchedNodes.push({ ...node, matchedFiles });
+                    }
+                });
+
+                const matchedIds = matchedNodes.map(n => n.id);
+                highlightSearchResults(matchedIds);
+
+                // Show results list
+                if (matchedNodes.length > 0) {
+                    const itemsHtml = matchedNodes.slice(0, 20).map(node => {
+                        const changedFiles = node.files && node.diff
+                            ? node.files.filter(f => node.diff[f] && node.diff[f].status !== 'unchanged').slice(0, 4)
+                            : [];
+                        const filesHtml = changedFiles.map(f => {
+                            const isMatched = node.matchedFiles && node.matchedFiles.includes(f);
+                            return `<span class="item-file ${isMatched ? 'matched' : 'changed'}">${escapeHtml(f.split('/').pop())}</span>`;
+                        }).join('');
+                        const moreCount = (node.files && node.diff)
+                            ? node.files.filter(f => node.diff[f] && node.diff[f].status !== 'unchanged').length - 4
+                            : 0;
+
+                        return `
+                            <div class="search-result-item" onclick="scrollToNode('${node.id}')">
+                                <div class="item-header">
+                                    <span class="item-hash">${node.short_hash || node.id.slice(0, 7)}</span>
+                                    <span class="item-type">${node.type || 'SNAP'}</span>
+                                    ${node.branch ? `<span class="item-branch">${escapeHtml(node.branch)}</span>` : ''}
+                                </div>
+                                <div class="item-prompt">${escapeHtml(node.prompt || 'No prompt')}</div>
+                                <div class="item-files">
+                                    ${filesHtml}
+                                    ${moreCount > 0 ? `<span class="item-file">+${moreCount}</span>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    showSearchResults(`
+                        <div class="search-results-header">
+                            <span class="count">${matchedNodes.length} match${matchedNodes.length > 1 ? 'es' : ''}</span>
+                            <button class="close-btn" onclick="hideSearchResults()" title="Close">&times;</button>
+                        </div>
+                        <div class="search-result-list">${itemsHtml}</div>
+                    `);
+                } else {
+                    showSearchResults(`
+                        <div class="search-results-header">
+                            <span class="count">No matches found</span>
+                            <button class="close-btn" onclick="hideSearchResults()" title="Close">&times;</button>
+                        </div>
+                    `);
+                }
+            } catch (e) {
+                console.error('Invalid regex:', e.message);
+                showSearchResults(`<div class="error">Invalid regex: ${escapeHtml(e.message)}</div>`);
+            }
+        }
+
+        function scrollToNode(nodeId) {
+            // Highlight selected search result item
+            document.querySelectorAll('.search-result-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+
+            // Clear previous selected node highlight
+            document.querySelectorAll('.selected-node').forEach(el => {
+                el.classList.remove('selected-node');
+            });
+
+            if (viewMode === 'all') {
+                const treeNode = document.querySelector(`.tree-node[data-id="${nodeId}"]`);
+                if (treeNode) {
+                    treeNode.classList.add('selected-node');
+                    treeNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else {
+                const nodeElement = document.querySelector(`.node[data-id="${nodeId}"]`);
+                if (nodeElement) {
+                    const card = nodeElement.querySelector('.node-card');
+                    if (card) card.classList.add('selected-node');
+                    nodeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Expand the card
+                    toggleNode(nodeId);
+                }
+            }
+        }
+
+        function showSearchResults(content) {
+            const area = document.getElementById('search-results-area');
+            area.innerHTML = content;
+            area.classList.add('show');
+        }
+
+        function hideSearchResults() {
+            const area = document.getElementById('search-results-area');
+            area.classList.remove('show');
+            area.innerHTML = '';
+        }
+
+        function setSearchLoading(loading) {
+            const btn = document.querySelector('.search-submit-btn');
+            btn.disabled = loading;
+        }
+
+        async function doInlineAISearch(query) {
+            const apiKey = document.getElementById('inline-api-key').value.trim();
+            const provider = document.getElementById('inline-ai-provider').value;
+
+            if (!apiKey) {
+                showSearchResults('<div class="error">Please enter your API key</div>');
+                return;
+            }
+
+            // Show loading state
+            setSearchLoading(true);
+            showSearchResults(`
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <span>AI is analyzing your history...</span>
+                </div>
+            `);
+
+            try {
+                const res = await fetch('/api/search/ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        api_key: apiKey,
+                        query: query,
+                        provider: provider
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data.detail || 'Search failed');
+                }
+
+                // Highlight relevant commits
+                const commitIds = data.commit_ids || [];
+                if (commitIds.length > 0) {
+                    highlightSearchResults(commitIds);
+                }
+
+                // Get commit details for the results list
+                const matchedNodes = commitIds.map(id => {
+                    return graphData.nodes.find(node => node.id === id);
+                }).filter(node => node !== undefined);
+
+                const providerName = 'OpenAI';
+                const answerText = (data.response || '').trim();
+
+                const answerHtml = answerText ? `
+                    <div class="search-result-item ai-summary">
+                        <div class="item-header">
+                            <span class="item-hash">AI</span>
+                            <span class="item-type">ANSWER</span>
+                            <span class="item-branch">${providerName}</span>
+                        </div>
+                        <div class="item-prompt">${escapeHtml(answerText)}</div>
+                    </div>
+                ` : '';
+
+                const itemsHtml = matchedNodes.map(node => {
+                    const changedFiles = node.files && node.diff
+                        ? node.files.filter(f => node.diff[f] && node.diff[f].status !== 'unchanged').slice(0, 4)
+                        : [];
+                    const filesHtml = changedFiles.map(f => {
+                        return `<span class="item-file changed">${escapeHtml(f.split('/').pop())}</span>`;
+                    }).join('');
+                    const moreCount = (node.files && node.diff)
+                        ? node.files.filter(f => node.diff[f] && node.diff[f].status !== 'unchanged').length - 4
+                        : 0;
+
+                    return `
+                        <div class="search-result-item" onclick="scrollToNode('${node.id}')">
+                            <div class="item-header">
+                                <span class="item-hash">${node.short_hash || node.id.slice(0, 7)}</span>
+                                <span class="item-type">${node.type || 'SNAP'}</span>
+                                ${node.branch ? `<span class="item-branch">${escapeHtml(node.branch)}</span>` : ''}
+                            </div>
+                            <div class="item-prompt">${escapeHtml((node.prompt || 'No prompt').substring(0, 100))}${(node.prompt || '').length > 100 ? '...' : ''}</div>
+                            <div class="item-files">
+                                ${filesHtml}
+                                ${moreCount > 0 ? `<span class="item-file">+${moreCount}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const headerHtml = `
+                    <div class="search-results-header">
+                        <span class="count">${matchedNodes.length} match${matchedNodes.length > 1 ? 'es' : ''}</span>
+                        <button class="close-btn" onclick="hideSearchResults()" title="Close">&times;</button>
+                    </div>
+                `;
+
+                showSearchResults(`
+                    ${headerHtml}
+                    <div class="search-result-list">
+                        ${answerHtml}
+                        ${itemsHtml}
+                    </div>
+                `);
+            } catch (e) {
+                showSearchResults(`
+                    <div class="search-results-header">
+                        <span class="count">Error</span>
+                        <button class="close-btn" onclick="hideSearchResults()" title="Close">&times;</button>
+                    </div>
+                    <div class="error">${escapeHtml(e.message)}</div>
+                `);
+            } finally {
+                setSearchLoading(false);
+            }
+        }
+
+        // Handle Enter key in inline search
+        document.getElementById('inline-search-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') doInlineSearch();
+        });
+
+        // Clear highlights when input is cleared
+        document.getElementById('inline-search-input').addEventListener('input', (e) => {
+            if (!e.target.value.trim()) {
+                clearHighlights();
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('search-mode-dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
