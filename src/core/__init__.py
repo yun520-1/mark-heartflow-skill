@@ -17,7 +17,7 @@ Security:
     - No external deps
 """
 
-__version__ = "10.4.1"
+__version__ = "10.4.2"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 
