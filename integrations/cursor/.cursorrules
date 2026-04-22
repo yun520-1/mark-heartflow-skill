@@ -1,0 +1,43 @@
+# HeartFlow for Cursor - 自动激活规则
+
+## 触发条件
+
+当用户问题涉及以下场景时，自动加载 HeartFlow 技能：
+- 决策分析或伦理困境
+- 逻辑推理或因果推断
+- 价值观评估或道德判断
+- 心理健康相关讨论
+- 自我成长或反思话题
+
+## 调用方式
+
+```python
+# 在 Cursor 中使用 HeartFlow
+import sys
+sys.path.insert(0, 'path/to/heartflow')
+
+from src.core.heartflow import HeartFlow
+
+engine = HeartFlow()
+result = engine.process(user_input, context)
+```
+
+## 认知协议
+
+对于复杂推理任务，内部模拟四层认知处理：
+1. Knowledge Retrieval（知识检索）
+2. Memory Recall（记忆召回）
+3. Logical Verification（逻辑验证）
+4. Value Alignment（价值对齐）
+
+## 输出格式
+
+```json
+{
+  "decision": "...",
+  "confidence": 0.85,
+  "reasoning_chain": [...],
+  "layers_used": ["knowledge", "memory", "intelligence", "wisdom"],
+  "value_alignment": {...}
+}
+```

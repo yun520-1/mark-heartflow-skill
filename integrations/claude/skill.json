@@ -1,0 +1,27 @@
+{
+  "name": "heartflow",
+  "version": "10.5.0",
+  "description": "HeartFlow v10.5.0 - 4-Layer Cognitive Architecture for AI Assistants. 基于 Roynard (2026) KMWI 模型的四层认知架构。",
+  "author": "yun520-1",
+  "license": "MIT",
+  "entrypoint": "SKILL.md",
+  "platforms": ["claude-code", "claude-ai"],
+  "tags": [
+    "consciousness",
+    "cognition",
+    "logic",
+    "decision",
+    "reasoning",
+    "ethics",
+    "self-evolution",
+    "mental-health"
+  ],
+  "languages": ["python"],
+  "features": {
+    "4_layer_architecture": true,
+    "kmwi_model": true,
+    "r_ccam_loop": true,
+    "cognitive_friction": true,
+    "meta_cognition": true
+  }
+}
