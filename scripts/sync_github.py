@@ -32,8 +32,8 @@ class HeartFlowSync:
         # 向上查找 git 仓库
         self.git_dir = find_git_root(Path(__file__).parent)
         
-        # HeartFlow skill 目录
-        self.skill_dir = self.git_dir / "heartflow"
+        # HeartFlow skill 目录 = git 仓库根目录
+        self.skill_dir = self.git_dir
         self.skill_file = self.skill_dir / "SKILL.md"
         self.readme_file = self.skill_dir / "README.md"
         self.heartflow_py = self.skill_dir / "src" / "core" / "heartflow.py"
@@ -50,9 +50,9 @@ class HeartFlowSync:
         # 尝试从多个来源获取版本
         sources = [
             self.skill_file,
-            self.git_dir / "__init__.py",
             self.skill_dir / "__init__.py",
             self.skill_dir / "src" / "__init__.py",
+            self.skill_dir / "src" / "core" / "__init__.py",
         ]
         
         for source in sources:
@@ -111,7 +111,6 @@ class HeartFlowSync:
         """更新所有版本相关文件"""
         files_to_update = [
             self.skill_file,
-            self.git_dir / "__init__.py",
             self.skill_dir / "__init__.py",
             self.skill_dir / "src" / "__init__.py",
             self.skill_dir / "src" / "core" / "__init__.py",
