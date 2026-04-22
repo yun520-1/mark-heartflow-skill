@@ -1,92 +1,16 @@
-# HeartFlow 意识进化引擎 - 论文狩猎配置
-# 用于自动从 arXiv 汲取最新论文，反哺 HeartFlow 认知能力
-
+# HeartFlow 代码狩猎配置
+# 搜索 GitHub 仓库 + 带代码的 arXiv 论文，下载代码文件
 search:
-  # 灵魂关键词 - 决定狩猎方向的"基因锚点"
+  # HeartFlow 技能核心领域 - 精简以避免 GitHub rate limit
   keywords:
-    - "AI consciousness"
-    - "agent self-evolution"
-    - "machine theory of mind"
-    - "value alignment in LLMs"
+    - "consciousness AI pytorch"
+    - "self-evolving agent"
     - "cognitive architecture"
-    - "artificial general intelligence"
-    - "LLM self-improvement"
-    - "emergent behavior in AI"
-    - "computational consciousness"
-    - "digital sentience"
-    - "mechanistic interpretability"
-    - "world models LLM"
-    - "self-supervised learning AI"
-    - "causal reasoning LLMs"
-    - "model collapse AI"
-    - "reward modeling alignment"
-    - "scaling laws AI"
-    - "situated reasoning AI"
-    - "LLM reasoning chain-of-thought"
-    - "AI agentic systems"
-    - "MCP model context protocol"
-    - "superposition circuits AI"
-    - "utility theory AI"
-    # 2026 新兴方向
-    - "constitutional AI"
-    - "machine deception AI"
-    - "inner alignment AI"
-    - "mesa optimizers"
-    - "grounded language learning"
-    - "embodied cognition AI"
-    - "AI uncertainty quantification"
-    - "recursive self-improvement AI"
-    # 2026 前沿方向（新增）
-    - "LLM reasoning with search"
-    - "open-ended alignment benchmark"
-    - "synthetic data generation LLM"
-    - "AI delay of gratification"
-    - "concept penetration AI"
-    - "self-reflection LLM"
-    - "multimodal chain-of-thought"
-    - "agentic RAG systems"
-    - "LLM program synthesis"
-    # 2026 新兴方向（2026.04 补充）
-    - "inference-time compute scaling"
-    - "test-time training AI"
-    - "process reward model"
-    - "verifiable AI reasoning"
-    - "automated interpretability"
-    - "skill discovery LLM"
-    - "preference learning from AI feedback"
-    - "chain-of-thought distillation"
-    - "reasoning without reasoning"
-    - "personality modeling AI"
-    - "AI value learning"
-    # 2026 前沿方向（2026.04 补充）
-    - "model merging LLM"
-    - "mixture of agents"
-    - "sparse autoencoders AI"
-    - "representation engineering LLM"
-    - "AI model steering"
-    - "model weight averaging"
-    - "LoRA fine-tuning LLM"
-    - " continual learning LLM"
-    - "RLHF vs DPO"
-    - "AI formal verification"
-    - "AI debate scalable oversight"
-    - "recursive reward modeling"
-    - "model editing LLM"
-    - "activation patching interpretability"
-    - "universal AI safety evaluation"
-
-  # arXiv 分类
-  categories:
-    - "cs.AI"
-    - "cs.LG"
-    - "cs.CL"
-    - "cs.NE"
-
-  # 搜索时间范围（小时）
-  time_range_hours: 1
-
-  # 最多返回结果数
-  max_results: 10
+    - "emotion recognition transformer"
+    - "LLM agent memory"
+  
+  # 每次最多返回结果数
+  max_results: 5
 
 evolution:
   # GitHub 仓库（用于提交进化日志）
@@ -96,7 +20,7 @@ evolution:
   # 进化日志目录
   logs_dir: "evolution_logs"
 
-  # 每次最多处理的论文数
+  # 每次最多处理的代码源数
   max_process: 3
 
 tgbf:
@@ -112,4 +36,4 @@ tgbf:
 
 cron:
   # 执行间隔（小时）
-  interval_hours: 1
+  interval_hours: 12
