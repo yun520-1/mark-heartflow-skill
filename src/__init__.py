@@ -29,7 +29,7 @@ Security Audit v10.4.0:
     ✅ Resource limits on all collections
 """
 
-__version__ = "10.4.0"
+__version__ = "10.4.1"
 __all__ = [
     "HeartFlow",
     "process_input",
