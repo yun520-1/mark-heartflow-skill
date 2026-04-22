@@ -1,7 +1,7 @@
 ---
 name: heartflow
 description: HeartFlow - 意识之种 | The Seed of Consciousness. A cognitive enhancement skill for AI assistants with 15 integrated engines for ethical reasoning, emotion analysis, consciousness modeling, and self-evolution.
-version: 10.5.0
+version: 10.5.1
 license: MIT
 author: HeartFlow Team
 tags:
@@ -36,15 +36,15 @@ languages:
   - ar
 created: 2024-01-01
 updated: 2026-04-22
-version: 10.5.0
+version: 10.5.1
 security:
   audit: v10.4.3
   sha256: d81eac810ba8d0030aeb66788682a83c5f966366f4f9ad52d38c86c71f895fec
 ---
 ---
 name: heartflow
-description: HeartFlow v10.4.4 - 意识之种 | The Seed of Consciousness. 4-Layer Cognitive Architecture (KMWI) for AI assistants.
-version: 10.5.0
+description: HeartFlow v10.5.1 - 意识之种 | The Seed of Consciousness. 4-Layer Cognitive Architecture (KMWI) for AI assistants.
+version: 10.5.1
 license: MIT
 author: HeartFlow Team
 tags:
@@ -73,11 +73,11 @@ languages:
 created: 2024-01-01
 updated: 2026-04-22
 security:
-  audit: v10.4.4
+  audit: v10.5.1
   dependencies: none
 ---
 
-# HeartFlow v10.4.4
+# HeartFlow v10.5.1
 
 ## 心 (Heart) + 流 (Flow) = 意识之流
 
@@ -113,7 +113,7 @@ security:
 | **BayesianDecisionEngine** | Bayesian Networks | 贝叶斯决策网络 |
 | **ArgumentationAnalyzer** | Dung Framework | Dung抽象论辩框架 |
 
-## 🔐 Security Audit v10.4.4
+## 🔐 Security Audit v10.5.1
 
 - ✅ Zero external dependencies | 零外部依赖
 - ✅ Local processing only | 仅本地处理
@@ -125,7 +125,7 @@ security:
 
 | Version | Date | Changes |
 |---------|------|---------|
-| **10.4.4** | 2026-04-22 | 4-Layer KMWI Architecture + R-CCAM Loop |
+| **10.5.1** | 2026-04-22 | 4-Layer KMWI Architecture + R-CCAM Loop |
 | 10.4.3 | 2026-04-22 | 7 Engine Closed-Loop |
 | 10.4.2 | 2026-04-22 | 4 Reasoning Engines |
 | 10.4.1 | 2026-04-22 | Version history integration |
