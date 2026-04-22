@@ -6,13 +6,12 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILL_DIR="$(dirname "$SCRIPT_DIR")"
-REPO_DIR="$(dirname "$SKILL_DIR")"
 
 echo "=========================================="
 echo "🔄 HeartFlow GitHub Sync & Push"
 echo "=========================================="
 
-cd "$REPO_DIR"
+cd "$SKILL_DIR"
 
 # 1. 运行同步技能
 echo ""

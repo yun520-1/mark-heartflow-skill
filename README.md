@@ -1,4 +1,4 @@
-# HeartFlow v10.4.3
+# HeartFlow v10.4.4
 
 ## 心 (Heart) + 流 (Flow) = The Flow of Consciousness
 
@@ -6,7 +6,7 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![Security Audit](https://img.shields.io/badge/Security-Audit-v10.4.3-green.svg)](#-security-audit-v1043)
+[![Security Audit](https://img.shields.io/badge/Security-Audit-v10.4.4-green.svg)](#-security-audit-v1043)
 
 ---
 
