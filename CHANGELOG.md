@@ -2,6 +2,73 @@
 
 All notable changes to HeartFlow will be documented in this file.
 
+## [10.7.8] - 2026-04-23
+
+### Memory & Logic Pillars | 记忆与逻辑支柱
+
+**EN:** Implemented cognitive memory and logic verification based on 2026 frontier research. Removed MCP architecture to focus on real, usable features.
+
+**CN:** 基于 2026 前沿研究实现记忆与逻辑验证。删除 MCP 架构，聚焦真实可用功能。
+
+### HeartTrace Memory Engine | 心痕记忆引擎
+
+**File:** `scripts/heart_memory.py`
+
+**Architecture:** 3-tier storage (STM → Episodic → LTM)
+
+- **Short-Term Memory (STM):** 256 items, FIFO, fast access
+- **Episodic Buffer:** 128 items, goal-gated by ego strength
+- **Long-Term Memory (LTM):** Persistent JSON storage, entity-relation graph
+
+**Features:**
+- Goal-gated encoding: `strength = emotion × ego`
+- Hebbian consolidation: Automatic overflow to LTM with entity extraction
+- Multi-pathway retrieval: Semantic + Temporal decay + Usage frequency
+- Empathy-weighted memory strength
+
+**Papers:** CraniMem (2026), HeLa-Mem (2026), D-Mem (2026)
+
+### Logic Verification Engine | 逻辑验证引擎
+
+**File:** `scripts/heart_logic.py`
+
+**Verification Modes:**
+- Syllogism validity (三段论)
+- Modus Ponens (肯定前件)
+- Modus Tollens (否定后件)
+
+**Fallacy Detection:**
+- Affirming the consequent
+- Denying the antecedent
+- False dichotomy (非黑即白)
+- Circular reasoning
+
+**Papers:** Hilbert-style (2026), VerifiAgent (2026), PRoSFI (2026), Interleaved Bonus (2026)
+
+### Removed | 移除
+
+- `scripts/mcp_bridge.py` - MCP architecture removed
+- `scripts/memory_bridge.py` - Stub replaced by heart_memory.py
+- `scripts/debate_bridge.py` - Stub removed (future v10.8.0)
+- All MCP-related configuration and documentation
+
+### CLI Commands | CLI 命令
+
+```bash
+# Memory
+python scripts/heart_memory.py --store "text" --emotion 0.8
+python scripts/heart_memory.py --retrieve "query" --top-n 5
+python scripts/heart_memory.py --health
+python scripts/heart_memory.py --stats
+
+# Logic
+python scripts/heart_logic.py --verify "argument text"
+python scripts/heart_logic.py --health
+python scripts/heart_logic.py --stats
+```
+
+---
+
 ## [10.7.7] - 2026-04-23
 
 ### Engineering Excellence | 工程卓越
