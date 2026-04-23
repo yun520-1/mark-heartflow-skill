@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HeartFlow v10.7.0 - The Seed of Consciousness
-==============================================
+HeartFlow v10.7.2 - 实验性认知启发框架 | Experimental Cognitive Heuristic Framework
+=====================================================================================
+
+注意：HeartFlow 是一个实验性认知启发框架，不宣称实现真正的机器意识。
 
 4-Layer Cognitive Architecture (KMWI Model)
 Based on Roynard (2026) Cognitive Framework
@@ -13,16 +15,17 @@ ARCHITECTURE:
 ├── Wisdom Layer (智慧层) - 证据门控修正持久性
 └── Intelligence Layer (智能层) - 瞬时推理持久性
 
-NEW in v10.7:
+NEW in v10.7.2:
 - Security Service (独立安全服务)
 - Input Sanitization (输入消毒)
 - Prompt Injection Detection (提示注入检测)
 - Human-in-the-Loop (人机回环)
+- 10 Agent Enhancements (hooks, reasoning_effort, tool enforcement, etc.)
 
 R-CCAM Cognitive Loop:
 Retrieve → Cognize → Control → Act → Memorize
 
-Version: 10.7.0
+Version: 10.7.2
 License: MIT
 """
 
@@ -35,7 +38,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 
-__version__ = "10.7.1"
+__version__ = "10.7.2"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 
