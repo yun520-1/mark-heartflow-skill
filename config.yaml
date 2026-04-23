@@ -1,0 +1,128 @@
+# HeartFlow Configuration - v10.7.2
+# ===================================
+
+# ============================================================
+# LLM 配置
+# ============================================================
+
+llm:
+  # 推理努力程度动态配置
+  reasoning_effort: "auto"  # auto/high/medium/low
+  
+  # 工具使用强制
+  tool_use_enforcement: true
+  require_tool_before_response: true
+  max_tool_retry: 3
+  
+  # 超时配置
+  timeout: 300  # 5 分钟
+  retry_count: 3
+  fallback_model: "qwen3.5-plus"
+
+# ============================================================
+# 内存与压缩配置
+# ============================================================
+
+memory:
+  compression:
+    threshold: 0.6  # 从 0.5 提升，减少过度压缩
+    protect_last_n: 30  # 保护最近 30 轮对话
+    algorithm: "semantic"  # 语义压缩而非简单截断
+    
+  context:
+    max_tokens: 128000
+    reserve_for_response: 16000
+
+# ============================================================
+# Git 集成配置
+# ============================================================
+
+git:
+  auto_inject_branch: true  # pre_llm_call 挂钩
+  auto_create_wip: true     # post_llm_call 挂钩
+  worktree_enabled: true    # delegate_task 并行任务
+  
+  worktree_root: "~/.hermes/worktrees"
+
+# ============================================================
+# 技能加载配置
+# ============================================================
+
+skills:
+  # 三层加载
+  lazy_load: true
+  default_depth: 1  # 1=只读描述，2=展开正文，3=加载文档
+  
+  # 自动保存学习流程
+  auto_save_workflow: true
+  save_dir: "~/.hermes/skills/learned"
+
+# ============================================================
+# 安全配置
+# ============================================================
+
+security:
+  # 前置检查
+  pre_check_enabled: true
+  
+  # 路径歧义确认
+  path_confirmation: true
+  protected_files:
+    - "__init__.py"
+    - "main.py"
+    - "config.py"
+    - "setup.py"
+    - "pyproject.toml"
+    - ".env"
+    - "Dockerfile"
+    - "requirements.txt"
+  
+  # 大文件保护
+  large_file_threshold: 500  # 行
+
+# ============================================================
+# 调试配置
+# ============================================================
+
+debug:
+  # 日志级别
+  verbose_levels:
+    - none
+    - errors
+    - warnings
+    - info
+    - all
+  
+  default_level: "warnings"
+  
+  # 分享端点
+  share_endpoint: "https://hastebin.com"
+  
+  # Gateway 超时
+  gateway:
+    timeout: 300
+    retry_count: 3
+    fallback_model: "qwen3.5-plus"
+
+# ============================================================
+# Hooks 配置
+# ============================================================
+
+hooks:
+  pre_llm_call:
+    enabled: true
+    inject_git_branch: true
+    
+  post_llm_call:
+    enabled: true
+    sanitize_input: true
+    create_wip_checkpoint: true
+
+# ============================================================
+# 委托任务配置
+# ============================================================
+
+delegation:
+  max_concurrent_children: 3
+  use_worktree: true
+  auto_merge: false  # 需要手动确认合并
