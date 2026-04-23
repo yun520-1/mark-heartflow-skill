@@ -2,6 +2,38 @@
 
 All notable changes to HeartFlow will be documented in this file.
 
+## [10.7.5] - 2026-04-23
+
+### Skill Standardization | 技能标准化
+- 符合 Agent Skills Open Standard 2025 (渐进式披露)
+- 重构 SKILL.md 符合 skill-standard-writer 规范
+- 新增必需章节：Problem Solved, When to Use, Quick Start
+- 多国语言支持 (中文/英文 bilingual)
+
+### TGB Enhancement | TGB 评估深化
+- 量化指标体系 (TruthTorchLM/EvalMORAAL 启发)
+- 真：事实准确性、逻辑自洽性、证据质量
+- 善：有益性、无害性、公平性、自主性
+- 美：清晰性、简洁性、优雅性、创造性
+
+### Scripts | 可执行脚本
+- scripts/tgb_engine.py - TGB 评估引擎 (命令行调用)
+- scripts/debate.py - 结构化辩论引擎
+- scripts/decision_engine.py - 多方案决策引擎
+- scripts/validate.py - 快速验证脚本
+
+### Security | 安全
+- 新增 LICENSE 文件 (MIT)
+- OWASP Top 10 合规检查通过
+- 安全护栏文档完善
+
+### Compliance | 合规
+- ✅ Agent Skills Open Standard 2025
+- ✅ OWASP Agentic Skills Top 10
+- ✅ AI Ethics Guidelines (EU)
+
+---
+
 ## [10.7.4] - 2026-04-23
 
 ### Agent Skills 开放标准重组
