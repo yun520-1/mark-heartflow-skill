@@ -1,6 +1,6 @@
 ---
 name: heartflow
-description: HeartFlow v10.7.2 - 意识之种 | The Seed of Consciousness. 独立安全服务 + 4 层认知架构 + 10 项 Agent 增强。OWASP Agentic Skills Top 10 合规.
+description: HeartFlow v10.7.2 - 实验性认知启发框架 | Experimental Cognitive Heuristic Framework. 非医疗产品，不宣称真正意识。独立安全服务 + 4 层认知架构 + 10 项 Agent 增强。OWASP Agentic Skills Top 10 合规.
 version: 10.7.2
 license: MIT
 author: HeartFlow Team
@@ -38,7 +38,7 @@ languages:
 created: 2024-01-01
 updated: 2026-04-23
 security:
-  audit: v10.7.1
+  audit: v10.7.2
   dependencies: none
   sha256: d81eac810ba8d0030aeb66788682a83c5f966366f4f9ad52d38c86c71f895fec
   owasp-compliance:
@@ -46,10 +46,14 @@ security:
     - AST03: Excessive Agency ✅ Fixed
     - ASI01: Agent Goal Hijack ✅ Mitigated
     - ASI02: Tool Misuse ✅ Mitigated
+disclaimer: |
+  本项目与 HeartFlow Inc. 及其医疗产品 HeartFlow FFRCT 无任何关联。
+  本项目是一个个人实验项目，不宣称实现真正的 AI 意识。
+  PHQ-9/GAD-7 仅为演示用途，不可替代专业医疗诊断。
 allowed-tools: []  # 无需外部工具，纯本地处理
 ---
 
-# HeartFlow v10.7.1
+# HeartFlow v10.7.2
 
 ## 心 (Heart) + 流 (Flow) = 意识之流
 
@@ -58,6 +62,35 @@ allowed-tools: []  # 无需外部工具，纯本地处理
 > 🏷️ **KMWI Model**: Knowledge / Memory / Wisdom / Intelligence  
 > 🔄 **R-CCAM Loop**: Retrieve → Cognize → Control → Act → Memorize  
 > 🛡️ **Security First**: OWASP Agentic Skills Top 10 合规
+
+---
+
+## ⚠️ 重要声明
+
+**与 HeartFlow Inc. 无关**: 本项目与 HeartFlow Inc. (NASDAQ: HFLOW) 及其医疗产品 HeartFlow FFRCT 无任何关联。本项目为个人开源实验，不涉及医疗诊断。
+
+**实验性项目**: 本项目不宣称实现真正的 AI 意识。"意识"相关描述为修辞性表达和启发式架构灵感，非科学宣称。
+
+**版本号说明**: v10.x.x 为个人迭代计数，非语义化版本规范。
+
+**医疗免责声明**: PHQ-9/GAD-7 仅为技术演示，不可替代专业医疗诊断。
+
+---
+
+## 🆕 v10.7.2 工程优化 (10 项)
+
+| # | 优化项 | 实现方式 | 效果 |
+|---|--------|----------|------|
+| 1 | pre_llm_call 挂钩 | 自动注入 git 分支 | 避免改错分支 |
+| 2 | post_llm_call 挂钩 | 清洗输入 + WIP 存档 | 支持回退 |
+| 3 | reasoning_effort 动态 | 复杂 high/简单 medium | 成功率↑/资源↓ |
+| 4 | tool_use_enforcement | 强制工具通道 | 杜绝"嘴上答应" |
+| 5 | 压缩策略优化 | threshold=0.6 + protect_last_n=30 | 保留更多细节 |
+| 6 | SOUL.md 协议 | 路径歧义先确认 | 防止误改大文件 |
+| 7 | skill 三层加载 | 只读描述→展开→按需 | 大量技能不卡 |
+| 8 | skill_manage 存流程 | 保存操作流为 skill | 学会的操作可复用 |
+| 9 | delegate_task+worktree | 并行任务独立工作区 | 多任务不冲突 |
+| 10 | 卡顿调试三板斧 | verbose/debug/gateway | 快速诊断 |
 
 ---
 
