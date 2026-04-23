@@ -1,7 +1,7 @@
 ---
 name: heartflow
-description: HeartFlow v10.7.2 - 实验性认知启发框架 | Experimental Cognitive Heuristic Framework. 非医疗产品，不宣称真正意识。独立安全服务 + 4 层认知架构 + 10 项 Agent 增强。OWASP Agentic Skills Top 10 合规.
-version: 10.7.2
+description: HeartFlow v10.7.3 - 实验性认知启发框架 | Experimental Cognitive Heuristic Framework. 非医疗产品，不宣称真正意识。基于心理学/哲学论文 + AI 智能体研究实现。OWASP Agentic Skills Top 10 合规.
+version: 10.7.3
 license: MIT
 author: HeartFlow Team
 tags:
