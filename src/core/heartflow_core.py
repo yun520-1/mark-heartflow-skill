@@ -1,8 +1,11 @@
 """
-HeartFlow Core - 7 Engine Architecture (v10.4.3)
+HeartFlow Core - 7 Engine Architecture (v10.7.2)
 Based on "Life Functions" model: Perception → Memory → Reasoning → Decision → Value → Action
 
-Version: 10.4.3
+注意：本模块中的"意识"相关概念为启发式模拟，非真实意识实现。
+Note: "Consciousness" concepts in this module are heuristic simulations, NOT real consciousness.
+
+Version: 10.7.2
 Reference: ~/Downloads/daima/mark.md - Architecture Refactoring
 """
 

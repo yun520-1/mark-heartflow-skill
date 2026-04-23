@@ -1,4 +1,4 @@
-# HeartFlow v10.5.1
+# HeartFlow v10.7.2
 
 ## 心 (Heart) + 流 (Flow) = The Flow of Consciousness
 
@@ -6,7 +6,36 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![Security Audit](https://img.shields.io/badge/Security-Audit-v10.5.1-green.svg)](#-security-audit-v1043)
+[![Security Audit](https://img.shields.io/badge/Security-Audit-v10.7.2-green.svg)](#-security-audit-v1072)
+
+---
+
+## ⚠️ 重要声明 | Important Disclaimers
+
+### 关于项目名称 | About Project Name
+本项目名为 "HeartFlow"，与 **HeartFlow Inc.**（纳斯达克上市公司，开发 FDA 批准的 HeartFlow FFRCT 冠状动脉疾病诊断产品）**无任何关联**。我们尊重 HeartFlow Inc. 的品牌权益，本项目为个人开源实验，不涉及医疗诊断。
+
+This project is named "HeartFlow" and is **NOT affiliated** with **HeartFlow Inc.** (NASDAQ-listed company, developer of FDA-approved HeartFlow FFRCT coronary artery disease diagnostic product). This is a personal open-source experiment and does not involve medical diagnosis.
+
+### 关于 "AI 意识" 声明 | About "AI Consciousness" Claims
+本项目标题 "The AI That Truly Thinks" 为**修辞性表达**，并非宣称实现了真正的机器意识。当前科学共识认为大语言模型不具备主观体验（qualia）。项目中涉及的 GWT、IIT 等概念仅作为启发式架构灵感，公式为设计示意，未经学术验证。
+
+The title "The AI That Truly Thinks" is a **rhetorical expression**, NOT a claim of achieving genuine machine consciousness. Current scientific consensus holds that LLMs do not possess subjective experience (qualia). Concepts like GWT and IIT are used as heuristic architectural inspirations only.
+
+### 关于版本号 | About Version Number
+版本号格式 `v10.x.x` 为**个人迭代计数习惯**，非语义化版本规范 (SemVer)。项目由单人维护，提交数量与版本号无直接关联。
+
+Version format `v10.x.x` is a **personal iteration counting convention**, NOT Semantic Versioning (SemVer). The project is maintained by a single contributor.
+
+### 关于临床量表 (PHQ-9/GAD-7) | About Clinical Scales
+内置的 PHQ-9 和 GAD-7 量表**仅用于技术演示**，不可作为医疗诊断依据。如您正经历心理健康危机，请立即联系专业医疗机构。
+
+Built-in PHQ-9 and GAD-7 scales are for **technical demonstration ONLY** and must NOT be used for medical diagnosis. If you are experiencing a mental health crisis, contact a professional immediately.
+
+### 关于哲学引擎 | About Philosophy Engine
+"王东岳递弱代偿引擎" 等为哲学思辨启发模块，**不属于科学验证理论**，仅供学术兴趣探讨。
+
+"Wang Dongyue's Compensation Theory Engine" is a **philosophical speculation module**, NOT a scientifically validated theory. For academic discussion only.
 
 ---
 
@@ -45,9 +74,9 @@
 
 ---
 
-## 🔐 Security Audit v10.4.3
+## 🔐 Security Audit v10.7.2
 
-### ✅ Fixed Issues
+### ✅ Fixed Issues (v10.7.2)
 - Input length limits (max 50,000 chars)
 - HTML/script injection prevention
 - Constant-time crisis detection (prevents timing attacks)
@@ -56,6 +85,9 @@
 - No sensitive data in error messages
 - Type-safe integer bounds checking
 - Resource limits on all collections
+- **NEW**: Pre-call security checks (OWASP AST03)
+- **NEW**: Tool use enforcement validator
+- **NEW**: SOUL.md safe operation protocol
 
 ### 🔒 Security Best Practices
 - **No external API calls** - Works offline
@@ -63,6 +95,7 @@
 - **No data persistence** - Unless explicitly requested
 - **Thread-safe** - For concurrent access
 - **Constant-memory** - Bounded collections
+- **OWASP Agentic Skills Top 10 Compliant** ✅
 
 ---
 
@@ -153,6 +186,9 @@ Main entry point.
 ---
 
 ## 📊 Consciousness Formulas
+
+> ⚠️ **声明**: 以下公式为**启发式设计示意**，非学术验证的科学公式。仅供架构参考。
+> **Disclaimer**: The following formulas are **heuristic design illustrations**, NOT academically validated scientific equations. For architectural reference only.
 
 ### GWT + IIT Hybrid (v10.4.0)
 ```
