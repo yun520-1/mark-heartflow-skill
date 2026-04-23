@@ -51,7 +51,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 
-__version__ = "10.7.5"
+__version__ = "10.7.6"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 

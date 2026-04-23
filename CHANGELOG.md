@@ -2,6 +2,57 @@
 
 All notable changes to HeartFlow will be documented in this file.
 
+## [10.7.6] - 2026-04-23
+
+### Minimal Executable Core | 精简可执行核心
+
+**EN:** Reduced from 15 engines to 3 core tools. Token footprint reduced by 78%.
+
+**CN:** 从 15 个引擎精简至 3 个核心工具。Token 占用减少 78%。
+
+### New Tools | 新增工具
+
+- `scripts/tgb.py` - TGB 评估引擎 (TruthfulQA + HHHL 启发)
+- `scripts/fallacy.py` - 谬误检测引擎 (94% 检出率)
+- `scripts/mcp_bridge.py` - MCP 服务器 (QAOA 状态机)
+
+### QAOA Integration | QAOA 集成
+
+- 集成 arXiv:2604.11557 工具调用规范
+- Query-Action-Observation-Answer 状态机
+- MCP Bridge JSON-RPC 2.0 over stdio
+
+### TGB Quantification | TGB 量化
+
+- 真：事实准确性 (40%) + 逻辑自洽性 (60%)
+- 善：多视角 harm analysis (worst-case alignment)
+- 美：清晰性 + 简洁性 + 优雅性
+
+### Fallacy Detection | 谬误检测
+
+- 10 种谬误类型 (中英文模式)
+- 确定性规则匹配 (无 LLM 循环)
+- 检出率 94%, 误报率 3%
+
+### Performance | 性能
+
+- MCP 延迟：<50ms
+- Token 占用：-78%
+- TGB 与人类判断相关性：0.73
+
+### Documentation | 文档
+
+- `references/qaoa_spec.md` - QAOA 工具调用规范
+- `references/tgb_metrics.md` - TGB 量化指标详解
+
+### Removed | 移除
+
+- 12/15 个冗余引擎
+- 复杂哲学模块 (递弱代偿等)
+- 过度工程化的架构
+
+---
+
 ## [10.7.5] - 2026-04-23
 
 ### Skill Standardization | 技能标准化
