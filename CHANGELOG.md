@@ -2,6 +2,52 @@
 
 All notable changes to HeartFlow will be documented in this file.
 
+## [10.7.3] - 2026-04-23
+
+### 基于论文的功能实现
+
+#### 心理学引擎
+1. **QuantumDecisionEngine** (arXiv:1202.4918)
+   - 量子决策模型
+   - 不确定性处理
+   - 干涉效应计算
+
+2. **FieldTheoryEngine** (arXiv:1711.01767)
+   - 库尔特·勒温场论心理学
+   - 生活空间建模
+   - 心理力场分析
+   - 趋避冲突检测
+
+3. **AffectiveLoopModule** (arXiv:2505.01542)
+   - 情感支持循环
+   - 情感识别→理解→回应→跟踪
+   - 共情反应生成
+
+#### AI 智能体架构
+4. **MultiAgentCoordinator** (arXiv:2412.06333, 2203.08975)
+   - 多智能体协作协议
+   - 约定 (conventions) 增强行动空间
+   - 智能体通信机制
+   - 动态任务分配
+
+5. **ZeroTrustSecurity** (arXiv:2603.17419)
+   - 零信任安全架构
+   - 持续验证 (never trust, always verify)
+   - 最小权限原则
+   - 行为监控与异常检测
+
+### 研究支持
+- 新增 research/ 目录存储论文列表
+- 所有模块标注论文来源
+- 启发式实现声明
+
+### 安全审计
+- ✅ 通过 v10.7.3 安全审计
+- ✅ OWASP Agentic Skills Top 10 合规
+- ✅ 零信任安全增强
+
+---
+
 ## [10.7.2] - 2026-04-23
 
 ### 功能增强 (10 项 Agent 优化)
