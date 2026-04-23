@@ -2,6 +2,39 @@
 
 All notable changes to HeartFlow will be documented in this file.
 
+## [10.7.4] - 2026-04-23
+
+### Agent Skills 开放标准重组
+
+#### 渐进式披露 (Progressive Disclosure)
+- 符合 Agent Skills 开放标准 (Anthropic 2025)
+- 三层加载机制：元数据 → 指令正文 → 资源文件
+- 优化 Token 使用效率 (~100 tokens 启动)
+
+#### TGB 评估深化
+- `references/tgb_truth_checklist.md` - 真理检查清单
+- `references/tgb_goodness_checklist.md` - 善良检查清单
+- `references/tgb_beauty_checklist.md` - 美丽检查清单
+- 量化评分标准 (事实准确性、逻辑自洽性、有益性、无害性等)
+
+#### 可执行脚本
+- `scripts/tgb_engine.py` - TGB 评估引擎
+- `scripts/debate.py` - 结构化辩论引擎
+- `scripts/decision_engine.py` - 多方案决策引擎
+
+#### 安全护栏
+- `references/safety_guardrails.md` - 安全边界和操作原则
+- 提示注入防护
+- 风险评估矩阵
+- 人机回环 (Human-in-the-Loop) 机制
+
+### 合规性
+- ✅ Agent Skills 开放标准兼容
+- ✅ OWASP Agentic Skills Top 10 合规
+- ✅ AI Ethics Guidelines (EU) 对齐
+
+---
+
 ## [10.7.3] - 2026-04-23
 
 ### 基于论文的功能实现
