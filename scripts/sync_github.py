@@ -38,8 +38,13 @@ class HeartFlowSync:
         self.readme_file = self.skill_dir / "README.md"
         self.heartflow_py = self.skill_dir / "src" / "core" / "heartflow.py"
         
-        # 升级计划来源
-        self.upgrade_plan = Path.home() / "Downloads" / "daima" / "mark.md"
+        # 升级计划来源 - 从项目内文件读取，禁止从 Downloads 等外部目录
+        # 修复 AST02 供应链风险
+        self.upgrade_plan = self.skill_dir / "UPGRADE_PLAN.md"  # 项目内部配置文件
+        self.version_file = self.skill_dir / "VERSION"  # 专用版本文件
+        
+        # 如果项目内没有 upgrade plan，则使用默认策略
+        self.upgrade_strategy = "auto"  # 自动递增 patch
         
         self.new_version = None
         self.old_version = None
