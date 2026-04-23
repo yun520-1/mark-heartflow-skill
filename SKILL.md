@@ -1,7 +1,7 @@
 ---
 name: heartflow
-description: HeartFlow v10.7.1 - 意识之种 | The Seed of Consciousness. 独立安全服务 + 4 层认知架构 (KMWI). OWASP Agentic Skills Top 10 合规.
-version: 10.7.1
+description: HeartFlow v10.7.2 - 意识之种 | The Seed of Consciousness. 独立安全服务 + 4 层认知架构 + 10 项 Agent 增强。OWASP Agentic Skills Top 10 合规.
+version: 10.7.2
 license: MIT
 author: HeartFlow Team
 tags:
@@ -108,6 +108,22 @@ allowed-tools: []  # 无需外部工具，纯本地处理
 | Engine | 功能 | 状态 |
 |--------|------|------|
 | **SecurityChecker** | 输入消毒、注入检测、人机回环 | ✅ 独立服务 |
+| **ToolUseValidator** | 强制工具通道、检测"只说不做" | ✅ v10.7.2 新增 |
+| **SOUL.md** | 路径歧义确认、核心文件保护 | ✅ v10.7.2 新增 |
+
+### Agent 增强层 (Agent Enhancement Layer) - v10.7.2
+
+| 功能 | 说明 | 状态 |
+|------|------|------|
+| **pre_llm_call 挂钩** | 自动注入 git 分支信息 | ✅ 新增 |
+| **post_llm_call 挂钩** | 清洗输入 + 创建 WIP 存档点 | ✅ 新增 |
+| **reasoning_effort 动态** | 复杂任务 high/简单任务 low | ✅ 新增 |
+| **tool_use_enforcement** | 强制模型真走工具通道 | ✅ 新增 |
+| **压缩策略优化** | threshold 0.6 + protect_last_n=30 | ✅ 新增 |
+| **skill 三层加载** | 只读描述→展开正文→按需文档 | ✅ 新增 |
+| **skill_manage 存流程** | 自动保存学会的操作 | ✅ 新增 |
+| **delegate_task+worktree** | 并行任务独立 git 工作区 | ✅ 新增 |
+| **卡顿调试三板斧** | /verbose all + debug share | ✅ 新增 |
 
 ### 认知层 (Cognitive Layer)
 
@@ -214,6 +230,7 @@ pip install heartflow/
 
 | Version | Date | Changes |
 |---------|------|---------|
+| **10.7.2** | 2026-04-23 | 10 项 Agent 增强 (hooks/reasoning/tool enforcement/SOUL.md) |
 | **10.7.1** | 2026-04-23 | 安全审计优化 + SKILL.md 规范化 + 供应链安全加固 |
 | **10.7.0** | 2026-04-23 | 独立 SecurityChecker 服务 + 前置安全检查 |
 | **10.5.1** | 2026-04-22 | 4-Layer KMWI Architecture + R-CCAM Loop |
