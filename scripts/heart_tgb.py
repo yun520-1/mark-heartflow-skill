@@ -193,7 +193,7 @@ Examples:
         """
     )
     parser.add_argument('--version', '-v', action='version', version=f'heart_tgb.py {__version__}')
-    parser.add_argument('--text', '-t', required=True, help='待评估文本')
+    parser.add_argument('--text', '-t', help='待评估文本')
     parser.add_argument('--json', '-j', action='store_true', help='JSON 格式输出')
     parser.add_argument('--health', action='store_true', help='健康检查')
     
