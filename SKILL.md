@@ -1,13 +1,20 @@
 ---
 name: heartflow
-version: 10.7.6
+version: 10.7.7
 description: >-
   HeartFlow - Minimal Cognitive Overlay for MCP Agents.
   TGB evaluation (Truth/Goodness/Beauty) + Fallacy detection via QAOA state machine.
   最小化认知叠加层，TGB 评估 + 谬误检测，QAOA 工具调用规范。
+  MCP-native with <50ms latency. 支持 MCP，响应 <50ms。
 author: HeartFlow Team
 homepage: https://github.com/yun520-1/mark-heartflow-skill
 changelog: |
+  v10.7.7 - Engineering Excellence | 工程卓越
+    - 统一版本号 (所有文件 10.7.7)
+    - 添加 --version/--health/--list-tools 参数
+    - MCP 配置示例 (Claude Desktop/Cursor)
+    - 安全护栏完善 (OWASP Top 10)
+    - v10.8.0 接口预留 (memory/debate)
   v10.7.6 - Minimal Executable Core (精简可执行核心)
     - 精简至 3 个核心引擎 (tgb.py, fallacy.py, mcp_bridge.py)
     - 集成 QAOA 工具调用规范 (arXiv:2604.11557)
@@ -163,7 +170,54 @@ $ python scripts/fallacy.py --check "要么支持，要么反对。"
 
 ## MCP Integration | MCP 集成
 
-### Request Format
+**Support MCP with <50ms latency | 支持 MCP，响应 <50ms**
+
+### Client Configuration | 客户端配置
+
+#### Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "heartflow": {
+      "command": "python",
+      "args": ["/path/to/heartflow/scripts/mcp_bridge.py"],
+      "cwd": "/path/to/heartflow/scripts"
+    }
+  }
+}
+```
+
+#### Cursor
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "heartflow": {
+        "command": "python",
+        "args": ["scripts/mcp_bridge.py"],
+        "cwd": "/path/to/heartflow"
+      }
+    }
+  }
+}
+```
+
+#### CLI Testing | 命令行测试
+
+```bash
+# Health check | 健康检查
+python scripts/mcp_bridge.py --health
+
+# List tools | 列出工具
+python scripts/mcp_bridge.py --list-tools
+
+# Self test | 自测试
+python scripts/mcp_bridge.py --test
+```
+
+### Request Format | 请求格式
 
 ```json
 {

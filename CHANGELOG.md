@@ -2,6 +2,70 @@
 
 All notable changes to HeartFlow will be documented in this file.
 
+## [10.7.7] - 2026-04-23
+
+### Engineering Excellence | 工程卓越
+
+**EN:** Unified versioning, enhanced MCP tooling, and comprehensive security documentation.
+
+**CN:** 统一版本号、增强 MCP 工具、完善安全文档。
+
+### Version Consistency | 版本一致性
+
+- All files updated to 10.7.7:
+  - `VERSION`
+  - `SKILL.md` (YAML frontmatter)
+  - `src/core/heartflow.py` (`__version__`)
+  - `scripts/tgb.py` (`__version__`)
+  - `scripts/fallacy.py` (`__version__`)
+  - `scripts/mcp_bridge.py` (`__version__`)
+
+### CLI Enhancements | CLI 增强
+
+- `--version` flag for all tools:
+  ```bash
+  python scripts/tgb.py --version
+  python scripts/fallacy.py --version
+  python scripts/mcp_bridge.py --version
+  ```
+
+- `--health` endpoint for MCP Bridge:
+  ```bash
+  python scripts/mcp_bridge.py --health
+  # Returns: {"status": "ok", "tools": [...], "version": "10.7.7"}
+  ```
+
+- `--list-tools` for tool discovery:
+  ```bash
+  python scripts/mcp_bridge.py --list-tools
+  ```
+
+### MCP Configuration | MCP 配置
+
+- Added Claude Desktop config example
+- Added Cursor config example
+- CLI testing commands documented
+
+### Security Documentation | 安全文档
+
+- Updated `references/safety_guardrails.md` to v10.7.7
+- Added OWASP Top 10 compliance section:
+  - AST02 Supply Chain
+  - AST03 Excessive Agency
+  - ASI01 Goal Hijack
+  - ASI02 Tool Abuse
+- Added MCP Bridge security constraints:
+  - Input validation
+  - Output sanitization
+  - Resource limits
+
+### v10.8.0 Preparation | v10.8.0 准备
+
+- `scripts/memory_bridge.py` - Stub for CraniMem/SCG-MEM integration
+- `scripts/debate_bridge.py` - Stub for HCP-MAD/MALLM integration
+
+---
+
 ## [10.7.6] - 2026-04-23
 
 ### Minimal Executable Core | 精简可执行核心
