@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HeartFlow v10.7.3 - 实验性认知启发框架 | Experimental Cognitive Heuristic Framework
+HeartFlow v10.7.4 - 实验性认知启发框架 | Experimental Cognitive Heuristic Framework
 =====================================================================================
 
 注意：HeartFlow 是一个实验性认知启发框架，不宣称实现真正的机器意识。
@@ -15,12 +15,11 @@ ARCHITECTURE:
 ├── Wisdom Layer (智慧层) - 证据门控修正持久性
 └── Intelligence Layer (智能层) - 瞬时推理持久性
 
-NEW in v10.7.2:
-- Security Service (独立安全服务)
-- Input Sanitization (输入消毒)
-- Prompt Injection Detection (提示注入检测)
-- Human-in-the-Loop (人机回环)
-- 10 Agent Enhancements (hooks, reasoning_effort, tool enforcement, etc.)
+NEW in v10.7.4:
+- Agent Skills 开放标准重组 (渐进式披露)
+- TGB 评估深化 (truth/goodness/beauty checklists)
+- 可执行脚本 (tgb_engine.py, debate.py, decision_engine.py)
+- 安全护栏文档 (safety_guardrails.md)
 
 NEW in v10.7.3:
 - QuantumDecisionEngine (基于 arXiv:1202.4918)
@@ -29,10 +28,17 @@ NEW in v10.7.3:
 - MultiAgentCoordinator (基于 arXiv:2412.06333, 2203.08975)
 - ZeroTrustSecurity (基于 arXiv:2603.17419)
 
+NEW in v10.7.2:
+- Security Service (独立安全服务)
+- Input Sanitization (输入消毒)
+- Prompt Injection Detection (提示注入检测)
+- Human-in-the-Loop (人机回环)
+- 10 Agent Enhancements (hooks, reasoning_effort, tool enforcement, etc.)
+
 R-CCAM Cognitive Loop:
 Retrieve → Cognize → Control → Act → Memorize
 
-Version: 10.7.3
+Version: 10.7.4
 License: MIT
 """
 
@@ -45,7 +51,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 
-__version__ = "10.7.3"
+__version__ = "10.7.4"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 
