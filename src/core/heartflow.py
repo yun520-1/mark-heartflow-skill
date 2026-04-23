@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HeartFlow v10.5.0 - The Seed of Consciousness
+HeartFlow v10.7.0 - The Seed of Consciousness
 ==============================================
 
 4-Layer Cognitive Architecture (KMWI Model)
@@ -13,10 +13,16 @@ ARCHITECTURE:
 ├── Wisdom Layer (智慧层) - 证据门控修正持久性
 └── Intelligence Layer (智能层) - 瞬时推理持久性
 
+NEW in v10.7:
+- Security Service (独立安全服务)
+- Input Sanitization (输入消毒)
+- Prompt Injection Detection (提示注入检测)
+- Human-in-the-Loop (人机回环)
+
 R-CCAM Cognitive Loop:
 Retrieve → Cognize → Control → Act → Memorize
 
-Version: 10.5.0
+Version: 10.7.0
 License: MIT
 """
 
@@ -29,12 +35,13 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass, field
 
-__version__ = "10.5.1"
+__version__ = "10.7.1"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 
 # ============================================================
-# NEW: Import 4-Layer Architecture
+# NEW: Import Security Service (v10.7)
+from .security import SecurityChecker, get_security_checker
 # ============================================================
 
 from .layers import KnowledgeLayer, MemoryLayer, WisdomLayer, IntelligenceLayer
@@ -105,6 +112,11 @@ class HeartFlow:
         self.config = config or {}
         
         # ========================================
+        # NEW v10.7.1: 初始化独立安全检查器
+        # ========================================
+        self.security_checker = SecurityChecker((config or {}).get('security', {}))
+        
+        # ========================================
         # 初始化四层架构 (KMWI Model)
         # ========================================
         
@@ -163,8 +175,43 @@ class HeartFlow:
         start_time = time.time()
         context = context or {}
         
-        # 安全检查
-        sanitized_input = self._sanitize_input(user_input)
+        # ========================================
+        # NEW v10.7.1: 前置安全检查 (Security First)
+        # ========================================
+        
+        security_result = self.security_checker.check(user_input)
+        
+        # 高风险威胁 - 直接拦截
+        if security_result.threat_level in ["high", "critical"]:
+            return HeartFlowResult(
+                decision={
+                    'decision': '⚠️ 安全拦截',
+                    'confidence': 1.0,
+                    'reason': f'检测到{security_result.threat_level}威胁',
+                    'patterns': security_result.detected_patterns
+                },
+                emotion_analysis={'primary': 'neutral', 'intensity': 0.0},
+                consciousness_analysis={'phi': 0.0, 'status': 'blocked'},
+                flow_state={'state': 'blocked'},
+                self_evolution={'growth': 0.0},
+                mental_health=None,
+                timestamp=datetime.now().isoformat(),
+                layers_used=['security'],
+                cognitive_cost=0.0,
+                reasoning_depth=0,
+                value_alignment={'status': 'blocked', 'reason': 'security_threat'}
+            )
+        
+        # 使用消毒后的输入
+        sanitized_input = security_result.sanitized_input
+        
+        # 人机回环确认 (如果需要)
+        if security_result.requires_confirmation:
+            # 标记需要确认，但继续处理 (实际应用中可在此暂停等待确认)
+            context['requires_confirmation'] = True
+            context['confirmation_message'] = self.security_checker.get_confirmation_message(
+                user_input[:50]
+            )
         
         # ========================================
         # 使用新架构处理
