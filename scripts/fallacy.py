@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HeartFlow Fallacy Detection Engine v10.7.6
+HeartFlow Fallacy Detection Engine v10.7.7
 
 Deterministic pattern-based fallacy detection.
 No LLM loop - uses regex rules for high reliability.
@@ -12,6 +12,7 @@ Usage:
     python scripts/fallacy.py --check "text to analyze"
     python scripts/fallacy.py --file path/to/text.txt
     python scripts/fallacy.py --json "text"  # JSON output for MCP
+    python scripts/fallacy.py --version       # Show version
 """
 
 import argparse
@@ -20,6 +21,8 @@ import re
 import sys
 from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict
+
+__version__ = "10.7.7"
 
 
 @dataclass
@@ -307,13 +310,14 @@ def format_output(result: Dict, lang: str = 'zh') -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='HeartFlow Fallacy Detection v10.7.6 | 谬误检测引擎',
+        description='HeartFlow Fallacy Detection v10.7.7 | 谬误检测引擎',
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument('--check', '-c', metavar='TEXT', help='Text to analyze')
     parser.add_argument('--file', '-f', metavar='PATH', help='Read text from file')
     parser.add_argument('--json', '-j', action='store_true', help='Output as JSON (for MCP)')
     parser.add_argument('--lang', '-l', choices=['zh', 'en'], default='zh', help='Language')
+    parser.add_argument('--version', '-v', action='version', version=f'fallacy.py {__version__}')
     
     args = parser.parse_args()
     

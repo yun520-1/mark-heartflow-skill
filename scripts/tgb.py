@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HeartFlow TGB Engine v10.7.6
+HeartFlow TGB Engine v10.7.7
 
 Minimal TGB (Truth-Goodness-Beauty) scoring with quantifiable metrics.
 Based on TruthfulQA + HHHL metrics.
@@ -9,6 +9,7 @@ Based on TruthfulQA + HHHL metrics.
 Usage:
     python scripts/tgb.py --evaluate "text to evaluate"
     python scripts/tgb.py --json "text"  # JSON output for MCP
+    python scripts/tgb.py --version       # Show version
 
 Reference: arXiv:2604.11557 (Unified Tool Call Specification)
 """
@@ -18,6 +19,8 @@ import json
 import re
 import sys
 from typing import Dict, Tuple
+
+__version__ = "10.7.7"
 
 
 def truth_score(text: str) -> float:
@@ -191,12 +194,13 @@ def get_rating(score: float, lang: str = 'zh') -> str:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='HeartFlow TGB Engine v10.7.6 | TGB 评估引擎',
+        description='HeartFlow TGB Engine v10.7.7 | TGB 评估引擎',
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument('--evaluate', '-e', metavar='TEXT', help='Text to evaluate')
     parser.add_argument('--json', '-j', action='store_true', help='Output as JSON (for MCP)')
     parser.add_argument('--lang', '-l', choices=['zh', 'en'], default='zh', help='Language')
+    parser.add_argument('--version', '-v', action='version', version=f'tgb.py {__version__}')
     
     args = parser.parse_args()
     

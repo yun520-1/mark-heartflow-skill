@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-HeartFlow MCP Bridge v10.7.6
+HeartFlow MCP Bridge v10.7.7
 
 MCP (Model Context Protocol) server wrapper for TGB and Fallacy tools.
 Implements QAOA (Query-Action-Observation-Answer) state machine.
@@ -9,8 +9,11 @@ Implements QAOA (Query-Action-Observation-Answer) state machine.
 Reference: arXiv:2604.11557 (Unified Tool Call Specification)
 
 Usage:
-    python scripts/mcp_bridge.py  # Run as MCP server (stdio)
-    python scripts/mcp_bridge.py --test  # Run self-test
+    python scripts/mcp_bridge.py           # Run as MCP server (stdio)
+    python scripts/mcp_bridge.py --test    # Run self-test
+    python scripts/mcp_bridge.py --health  # Health check
+    python scripts/mcp_bridge.py --version # Show version
+    python scripts/mcp_bridge.py --list-tools  # List available tools
 """
 
 import json
@@ -19,6 +22,8 @@ from typing import Dict, Any, Optional
 
 from tgb import evaluate as tgb_evaluate
 from fallacy import analyze as fallacy_analyze
+
+__version__ = "10.7.7"
 
 
 class QAOAStateMachine:
@@ -297,7 +302,47 @@ def run_test():
 
 
 def main():
-    if len(sys.argv) > 1 and sys.argv[1] == '--test':
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='HeartFlow MCP Bridge v10.7.7')
+    parser.add_argument('--test', action='store_true', help='Run self-test')
+    parser.add_argument('--health', action='store_true', help='Health check')
+    parser.add_argument('--version', '-v', action='version', version=f'mcp_bridge.py {__version__}')
+    parser.add_argument('--list-tools', action='store_true', help='List available tools')
+    
+    args = parser.parse_args()
+    
+    if args.health:
+        # Health check endpoint
+        health = {
+            "status": "ok",
+            "tools": ["tgb_eval", "fallacy_check"],
+            "version": __version__
+        }
+        print(json.dumps(health, indent=2))
+        sys.exit(0)
+    
+    if args.list_tools:
+        # List available tools
+        tools = {
+            "tools": [
+                {
+                    "name": "tgb_eval",
+                    "description": "Evaluate text using TGB (Truth/Goodness/Beauty) metrics",
+                    "input_schema": {"text": "string", "lang": "string (zh|en)"}
+                },
+                {
+                    "name": "fallacy_check",
+                    "description": "Detect logical fallacies in argument text",
+                    "input_schema": {"text": "string", "lang": "string (zh|en)"}
+                }
+            ],
+            "version": __version__
+        }
+        print(json.dumps(tools, indent=2, ensure_ascii=False))
+        sys.exit(0)
+    
+    if args.test:
         run_test()
     else:
         run_server()
