@@ -1,0 +1,73 @@
+#!/bin/bash
+# HeartFlow v10.7.9 统一命令行入口
+# 认知工具箱：TGB 评估 + 记忆检索 + 逻辑验证
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+show_help() {
+    echo "HeartFlow v10.7.9 - 认知工具箱"
+    echo "══════════════════════════════════════"
+    echo "用法：heartflow <命令> [参数]"
+    echo ""
+    echo "命令:"
+    echo "  tgb      --text <文本>        真善美评估"
+    echo "  memory   --store <文本>       存储记忆"
+    echo "  memory   --retrieve <查询>    检索记忆"
+    echo "  memory   --stats             记忆统计"
+    echo "  logic    --verify <论证>      逻辑验证"
+    echo "  logic    --check <文本>       谬误检测"
+    echo "  full     --text <文本>        全引擎分析"
+    echo "  health                        健康检查"
+    echo "  test                          运行验证测试"
+    echo ""
+    echo "示例:"
+    echo "  heartflow tgb --text \"根据 WHO 报告，全球抑郁症患者超过 3 亿人\""
+    echo "  heartflow memory --store \"今天学习了 HeartFlow\" --emotion 0.8"
+    echo "  heartflow logic --verify \"所有人都会死。苏格拉底是人。所以苏格拉底会死\""
+    echo "  heartflow health"
+}
+
+case "$1" in
+    tgb)
+        shift
+        python "$SCRIPT_DIR/heart_tgb.py" "$@"
+        ;;
+    memory)
+        shift
+        python "$SCRIPT_DIR/heart_memory.py" "$@"
+        ;;
+    logic)
+        shift
+        python "$SCRIPT_DIR/heart_logic.py" "$@"
+        ;;
+    full)
+        shift
+        TEXT="$2"
+        echo "══════════════════════════════════════"
+        echo "📊 HeartFlow 全引擎分析 v10.7.9"
+        echo "══════════════════════════════════════"
+        echo ""
+        echo "【1/2】TGB 真善美评估"
+        echo "──────────────────────────────────────"
+        python "$SCRIPT_DIR/heart_tgb.py" --text "$TEXT"
+        echo ""
+        echo "【2/2】逻辑验证"
+        echo "──────────────────────────────────────"
+        python "$SCRIPT_DIR/heart_logic.py" --verify "$TEXT"
+        ;;
+    health)
+        echo "✅ HeartFlow v10.7.9"
+        echo "══════════════════════════════════════"
+        python "$SCRIPT_DIR/heart_memory.py" --health 2>/dev/null
+        echo ""
+        python "$SCRIPT_DIR/heart_logic.py" --health 2>/dev/null
+        echo ""
+        python "$SCRIPT_DIR/heart_tgb.py" --health 2>/dev/null
+        ;;
+    test)
+        python "$SCRIPT_DIR/test_verify.py"
+        ;;
+    *)
+        show_help
+        ;;
+esac

@@ -1,13 +1,20 @@
 ---
 name: heartflow
-version: 10.7.8
+version: 10.7.9
 description: >-
   HeartFlow - Cognitive Memory & Logic Verification Engine.
   HeartTrace Memory (CraniMem/HeLa-Mem/D-Mem) + Logic Verification (Tableau/Hilbert).
   心痕记忆引擎 + 逻辑验证引擎，基于前沿认知科学研究。
+  TGB 真善美评估 + 10 种谬误检测 + 记忆逻辑联动。
 author: HeartFlow Team
 homepage: https://github.com/yun520-1/mark-heartflow-skill
 changelog: |
+  v10.7.9 - TGB Precision & Memory-Logic Integration
+    - TGB 评估引擎 v2: 分级评分 + 可解释证据链
+    - 记忆检索增强：语义 + 逻辑一致性联合排序
+    - 逻辑验证扩展：新增 5 种谬误检测
+    - 统一 CLI 入口：heartflow 命令
+    - 自动化验证脚本：test_verify.py
   v10.7.8 - Memory & Logic Pillars | 记忆与逻辑支柱
     - HeartTrace Memory: 三级存储 (STM/Episodic/LTM)
     - Logic Verification: 三段论/假言推理/谬误检测

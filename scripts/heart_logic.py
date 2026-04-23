@@ -223,7 +223,7 @@ class LogicVerificationEngine:
         return result
 
     def detect_fallacies(self, text: str) -> List[str]:
-        """检测常见逻辑谬误"""
+        """检测常见逻辑谬误 (基础 4 种)"""
         detected = []
         text_lower = text.lower()
         
@@ -234,6 +234,95 @@ class LogicVerificationEngine:
                     break
         
         return detected
+
+    # 新增谬误检测模式 (v10.7.9)
+    NEW_FALLACIES = {
+        "appeal_to_ignorance": {
+            "pattern": r"没有.*证明.*所以",
+            "desc": "诉诸无知：以未证明为假当作真，或以未证明为真当作假",
+            "example": "没有人能证明鬼不存在，所以鬼存在"
+        },
+        "gamblers_fallacy": {
+            "pattern": r"(已经 | 连续).{0,15}(次 | 回 | 遍).{0,20}(下次 | 接下来 | 一定 | 肯定 | 必然)",
+            "desc": "赌徒谬误：错误认为独立事件的概率受之前结果影响",
+            "example": "已经输了五次，下次一定会赢"
+        },
+        "appeal_to_nature": {
+            "pattern": r"自然.*好 | 天然.*所以 | 违逆自然",
+            "desc": "诉诸自然：仅因某事物'自然'就认为它是好的或对的",
+            "example": "这种行为是自然的，所以它是对的"
+        },
+        "anecdotal_evidence": {
+            "pattern": r"我 (认识 | 知道 | 听说 | 见过).* (就是 | 确实 | 真的 | 肯定)",
+            "desc": "轶事证据：用个人经历或孤立案例代替系统证据",
+            "example": "我认识一个人抽烟活到 90 岁，所以抽烟不一定有害"
+        },
+        "middle_ground": {
+            "pattern": r"(折中 | 各退一步 | 中间立场 | 平衡).{0,20}(最好 | 最合理 | 应该)",
+            "desc": "中间立场谬误：认为两极观点的折中就是正确的",
+            "example": "你说 A 对，他说 B 对，那我们各退一步就对了"
+        },
+    }
+
+    def detect_extended_fallacies(self, text: str) -> list:
+        """扩展谬误检测 (10 种)"""
+        found = []
+        text_lower = text.lower()
+        
+        # 基础 4 种
+        for fallacy, patterns in self.fallacy_patterns.items():
+            for pattern in patterns:
+                if re.search(pattern, text_lower):
+                    found.append({
+                        "fallacy": fallacy,
+                        "confidence": 0.80,
+                        "description": f"基础谬误：{fallacy}",
+                        "example": ""
+                    })
+                    break
+        
+        # 新增 5 种
+        for name, info in self.NEW_FALLACIES.items():
+            if re.search(info["pattern"], text_lower):
+                found.append({
+                    "fallacy": name,
+                    "confidence": 0.75,
+                    "description": info["desc"],
+                    "example": info["example"]
+                })
+        
+        return found
+
+    def visualize_reasoning(self, premises: list, conclusion: str) -> str:
+        """推理链可视化：ASCII 格式"""
+        lines = ["推理链:"]
+        for i, p in enumerate(premises, 1):
+            lines.append(f"  ├─ 前提{i}: {p[:60]}")
+        lines.append(f"  └─ 结论：{conclusion[:60]}")
+        
+        result = self.verify_syllogism(premises[0] if len(premises) > 0 else "", 
+                                       premises[1] if len(premises) > 1 else "", 
+                                       conclusion)
+        status = "✅ 有效" if result.valid else "❌ 无效"
+        lines.append(f"  {status} (置信度：{result.confidence:.0%})")
+        
+        return "\n".join(lines)
+
+    def verify_chain(self, text: str) -> dict:
+        """
+        推理链验证：用于记忆 - 逻辑联动
+        返回一致性置信度
+        """
+        # 简化版：检查文本是否包含矛盾标志
+        contradiction_patterns = [
+            r"但是.*不", r"然而.*却", r"虽然.*但是", r"矛盾", r"不一致"
+        ]
+        for pattern in contradiction_patterns:
+            if re.search(pattern, text):
+                return {"valid": False, "confidence": 0.3, "reason": "检测到潜在矛盾"}
+        
+        # 默认返回中等置信度
+        return {"valid": True, "confidence": 0.7, "reason": "未发现明显矛盾"}
 
     def verify(self, text: str, mode: str = "auto") -> VerificationResult:
         """

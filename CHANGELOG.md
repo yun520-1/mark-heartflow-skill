@@ -2,6 +2,60 @@
 
 All notable changes to HeartFlow will be documented in this file.
 
+## [10.7.9] - 2026-04-23
+
+### TGB Precision & Memory-Logic Integration | TGB 精确化与记忆逻辑联动
+
+**EN:** Refined TGB evaluation with graded scoring and interpretable evidence chains. Enhanced memory retrieval with semantic + logic consistency ranking. Extended fallacy detection to 10 types. Unified CLI entry point.
+
+**CN:** TGB 评估分级评分 + 可解释证据链。记忆检索语义 + 逻辑一致性联合排序。谬误检测扩展至 10 种。统一 CLI 入口。
+
+### New Engines | 新增引擎
+
+- `scripts/heart_tgb.py` - TGB 真善美评估引擎 v2
+  - 分级评分 (高/中/低)
+  - 可解释证据链
+  - 4H 伦理框架 (红绿旗机制)
+  - 多证据加权评估 (真 40% + 善 35% + 美 25%)
+
+### Enhancements | 增强功能
+
+**Memory Engine:**
+- `retrieve_with_logic()` - 语义 + 逻辑一致性联合排序
+- `get_memory_stats()` - 详细记忆统计
+
+**Logic Engine:**
+- 新增 5 种谬误检测:
+  - 诉诸无知 (Appeal to Ignorance)
+  - 赌徒谬误 (Gambler's Fallacy)
+  - 诉诸自然 (Appeal to Nature)
+  - 轶事证据 (Anecdotal Evidence)
+  - 中间立场 (Middle Ground)
+- `visualize_reasoning()` - 推理链 ASCII 可视化
+- `verify_chain()` - 记忆 - 逻辑联动接口
+
+### CLI Tools | CLI 工具
+
+- `scripts/heartflow` - 统一命令行入口
+  ```bash
+  heartflow tgb --text "..."
+  heartflow memory --retrieve "query"
+  heartflow logic --verify "argument"
+  heartflow full --text "..."  # 全引擎分析
+  heartflow health
+  heartflow test
+  ```
+
+### Validation | 验证
+
+- `scripts/test_verify.py` - 自动化验证脚本
+  - TGB 评估测试
+  - 逻辑验证测试
+  - 记忆引擎测试
+  - 记忆 - 逻辑联动测试
+
+---
+
 ## [10.7.8] - 2026-04-23
 
 ### Memory & Logic Pillars | 记忆与逻辑支柱

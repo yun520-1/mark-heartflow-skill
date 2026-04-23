@@ -151,6 +151,42 @@ class HeartTraceMemory:
             "empathy_weight": self.empathy_w
         }
 
+    def retrieve_with_logic(self, q: str, logic_engine, top_n: int = 5) -> list:
+        """
+        联合记忆检索：语义 + 逻辑一致性排序
+        - 先语义召回 top_n*2 条候选
+        - 再用逻辑引擎检查每条与查询的一致性
+        - 按一致性加分重新排序
+        """
+        candidates = self.retrieve(q, top_n=top_n * 2, freshness_w=0.4)
+        if not candidates:
+            return []
+        
+        scored = []
+        for mem in candidates:
+            # 检查记忆内容与查询的逻辑一致性
+            consistency_check = logic_engine.verify_chain(
+                f"查询：{q}\n记忆：{mem['text'][:200]}"
+            )
+            consistency_bonus = consistency_check.get("confidence", 0.5) * 0.2
+            adjusted_score = mem.get("strength", 0.5) + consistency_bonus
+            scored.append((adjusted_score, mem))
+        
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return [mem for _, mem in scored[:top_n]]
+
+    def get_memory_stats(self) -> dict:
+        """详细记忆统计"""
+        now = time.time()
+        return {
+            "stm_count": len(self.stm),
+            "episodic_count": len(self.episodic),
+            "ltm_entities": len(self.ltm),
+            "avg_strength": sum(m.get("strength", 0) for m in self.episodic) / max(1, len(self.episodic)),
+            "oldest_memory_age_days": round((now - min(m["timestamp"] for m in self.episodic)) / 86400, 1) if self.episodic else 0,
+            "total_retrievals": sum(m.get("retrieval_count", 0) for m in self.episodic),
+        }
+
 
 def main():
     parser = argparse.ArgumentParser(
