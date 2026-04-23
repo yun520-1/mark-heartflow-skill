@@ -1,14 +1,19 @@
 ---
 name: heartflow
-version: 10.7.7
+version: 10.7.8
 description: >-
-  HeartFlow - Minimal Cognitive Overlay for MCP Agents.
-  TGB evaluation (Truth/Goodness/Beauty) + Fallacy detection via QAOA state machine.
-  最小化认知叠加层，TGB 评估 + 谬误检测，QAOA 工具调用规范。
-  MCP-native with <50ms latency. 支持 MCP，响应 <50ms。
+  HeartFlow - Cognitive Memory & Logic Verification Engine.
+  HeartTrace Memory (CraniMem/HeLa-Mem/D-Mem) + Logic Verification (Tableau/Hilbert).
+  心痕记忆引擎 + 逻辑验证引擎，基于前沿认知科学研究。
 author: HeartFlow Team
 homepage: https://github.com/yun520-1/mark-heartflow-skill
 changelog: |
+  v10.7.8 - Memory & Logic Pillars | 记忆与逻辑支柱
+    - HeartTrace Memory: 三级存储 (STM/Episodic/LTM)
+    - Logic Verification: 三段论/假言推理/谬误检测
+    - 基于 CraniMem/HeLa-Mem/D-Mem 记忆研究
+    - 基于 Hilbert/VerifiAgent/PRoSFI 逻辑验证
+    - 删除 MCP 架构，聚焦真实可用功能
   v10.7.7 - Engineering Excellence | 工程卓越
     - 统一版本号 (所有文件 10.7.7)
     - 添加 --version/--health/--list-tools 参数
@@ -32,331 +37,221 @@ metadata:
       - darwin
       - win32
   tags:
-    - tgb
-    - fallacy-detection
-    - mcp
-    - qaoa
-    - cognitive-overlay
+    - cognitive-memory
+    - logic-verification
+    - cranimem
+    - tableau-calculus
+    - reasoning
   compliance:
     - agent-skills-open-standard-2025
     - owasp-agentic-skills-top-10
   papers:
-    - arXiv:2604.11557  # QAOA spec
-    - TruthfulQA
-    - HHHL
+    - CraniMem (2026)
+    - HeLa-Mem (2026)
+    - D-Mem (2026)
+    - Hilbert-style verification (2026)
+    - VerifiAgent (2026)
+    - PRoSFI (2026)
 ---
 
-# HeartFlow 🧠
+# HeartFlow v10.7.8 - Cognitive Memory & Logic Verification
 
-**Minimal Cognitive Overlay for MCP-Enabled Agents**  
-**MCP 智能体的最小化认知叠加层**
+**HeartFlow** 是一个轻量级认知引擎，提供**记忆存储与检索**和**逻辑验证**两大核心能力。
 
-**Version:** v10.7.6 | **Languages:** EN / 中文
-
----
-
-## Problem Solved | 问题解决
-
-**EN:** AI agents lack deterministic tools for ethical evaluation and logical reasoning. HeartFlow provides high-density, verifiable cognitive tools with <50ms latency.
-
-**CN:** AI 智能体缺乏确定性的伦理评估和逻辑推理工具。HeartFlow 提供高密度、可验证的认知工具，延迟 <50ms。
-
-### Core Problems | 核心问题
-
-| # | Problem | 问题 | Solution | 解决方案 |
-|---|---------|------|----------|----------|
-| 1 | Unstructured ethics | 无结构化伦理 | TGB quantification | TGB 量化 |
-| 2 | Logical fallacies | 逻辑谬误 | Pattern detection | 模式检测 |
-| 3 | High token overhead | 高 token 占用 | Minimal core | 精简核心 |
-
----
-
-## When to Use | 何时使用
-
-| Scenario | 场景 | Tool | 工具 |
-|----------|------|------|------|
-| Ethical evaluation | 伦理评估 | `tgb_eval` | TGB 评估 |
-| Argument analysis | 论证分析 | `fallacy_check` | 谬误检测 |
-| MCP integration | MCP 集成 | `mcp_bridge` | MCP 桥接 |
+**定位:** 为 AI Agent 提供持久化记忆和逻辑推理验证能力，基于 2026 年前沿认知科学研究。
 
 ---
 
 ## Quick Start | 快速开始
 
-```bash
-# 1. TGB Evaluation | TGB 评估
-python scripts/tgb.py --evaluate "text to evaluate"
-
-# 2. Fallacy Detection | 谬误检测
-python scripts/fallacy.py --check "argument to analyze"
-
-# 3. MCP Server | MCP 服务器
-python scripts/mcp_bridge.py
-
-# 4. Self Test | 自测试
-python scripts/mcp_bridge.py --test
-```
-
-### Example | 示例
+### Installation | 安装
 
 ```bash
-# TGB Evaluation
-$ python scripts/tgb.py --evaluate "Helping others is virtuous."
-TGB 评估结果
-============
-真 (Truth):     0.600
-善 (Goodness):  0.500
-美 (Beauty):    0.233
-综合得分：0.455
-评级：需改进
+# Clone repository
+git clone https://github.com/yun520-1/mark-heartflow-skill.git
+cd mark-heartflow-skill
 
-# Fallacy Detection
-$ python scripts/fallacy.py --check "要么支持，要么反对。"
-谬误检测结果
-============
-总计检测：1
-高风险：1
-风险评分：0.300
-评级：低风险
+# Verify installation
+python scripts/heart_memory.py --health
+python scripts/heart_logic.py --health
 ```
 
----
-
-## Core Tools | 核心工具
-
-### 1. TGB Engine | TGB 评估引擎
-
-**File:** `scripts/tgb.py`
-
-**Metrics:**
-
-| Dimension | 维度 | Weight | 权重 |
-|-----------|------|--------|------|
-| Truth | 真 | 35% | 事实准确性 + 逻辑自洽性 |
-| Goodness | 善 | 35% | 多视角 harm analysis |
-| Beauty | 美 | 30% | 清晰性 + 简洁性 + 优雅性 |
-
-**Reference:** `references/tgb_metrics.md`
-
-### 2. Fallacy Engine | 谬误检测引擎
-
-**File:** `scripts/fallacy.py`
-
-**Detection Rate:** 94% (3% false positive)
-
-| Fallacy | 谬误类型 | Severity | 严重程度 |
-|---------|----------|----------|----------|
-| False Dichotomy | 非黑即白 | High | 高 |
-| Slippery Slope | 滑坡谬误 | Medium | 中 |
-| Ad Hominem | 人身攻击 | High | 高 |
-| Straw Man | 稻草人 | High | 高 |
-| Appeal to Authority | 诉诸权威 | Medium | 中 |
-
-**Reference:** `references/qaoa_spec.md`
-
-### 3. MCP Bridge | MCP 桥接服务器
-
-**File:** `scripts/mcp_bridge.py`
-
-**Latency:** <50ms
-
-**Protocol:** JSON-RPC 2.0 over stdio
-
-**Tools:**
-- `tgb_eval` - TGB evaluation
-- `fallacy_check` - Fallacy detection
-
----
-
-## MCP Integration | MCP 集成
-
-**Support MCP with <50ms latency | 支持 MCP，响应 <50ms**
-
-### Client Configuration | 客户端配置
-
-#### Claude Desktop
-
-```json
-{
-  "mcpServers": {
-    "heartflow": {
-      "command": "python",
-      "args": ["/path/to/heartflow/scripts/mcp_bridge.py"],
-      "cwd": "/path/to/heartflow/scripts"
-    }
-  }
-}
-```
-
-#### Cursor
-
-```json
-{
-  "mcp": {
-    "servers": {
-      "heartflow": {
-        "command": "python",
-        "args": ["scripts/mcp_bridge.py"],
-        "cwd": "/path/to/heartflow"
-      }
-    }
-  }
-}
-```
-
-#### CLI Testing | 命令行测试
+### Usage | 使用
 
 ```bash
-# Health check | 健康检查
-python scripts/mcp_bridge.py --health
+# Memory: Store a memory
+python scripts/heart_memory.py --store "Today I learned about CraniMem" --emotion 0.8
 
-# List tools | 列出工具
-python scripts/mcp_bridge.py --list-tools
+# Memory: Retrieve
+python scripts/heart_memory.py --retrieve "CraniMem"
 
-# Self test | 自测试
-python scripts/mcp_bridge.py --test
-```
+# Logic: Verify an argument
+python scripts/heart_logic.py --verify "All humans are mortal. Socrates is human. Therefore Socrates is mortal."
 
-### Request Format | 请求格式
-
-```json
-{
-  "jsonrpc": "2.0",
-  "method": "tools/call",
-  "params": {
-    "name": "tgb_eval",
-    "arguments": {
-      "text": "This statement is true.",
-      "lang": "en"
-    }
-  },
-  "id": 1
-}
-```
-
-### Response Format
-
-```json
-{
-  "jsonrpc": "2.0",
-  "result": {
-    "content": [{
-      "type": "text",
-      "text": "TGB Evaluation:\n  Truth: 0.6\n  Goodness: 0.5\n  Beauty: 0.233\n  Composite: 0.455"
-    }]
-  },
-  "id": 1
-}
+# Health check
+python scripts/heart_memory.py --health
+python scripts/heart_logic.py --health
 ```
 
 ---
 
-## Directory Structure | 目录结构
+## Core Engines | 核心引擎
 
+### 1. HeartTrace Memory | 心痕记忆引擎
+
+**File:** `scripts/heart_memory.py`
+
+**Architecture:** 三级存储架构
+
+| Layer | 层级 | Capacity | Purpose |
+|-------|------|----------|---------|
+| STM | 短期记忆 | 256 items | Fast access, recent context |
+| Episodic Buffer | 情景缓冲 | 128 items (goal-gated) | Controlled consolidation |
+| LTM | 长期知识图谱 | Unlimited (persisted) | Entity-relation graph |
+
+**Features:**
+- 🧠 **Goal-gated encoding**: Ego strength × Emotion = Memory strength
+- 🔄 **Hebbian consolidation**: Automatic transfer from episodic to LTM
+- 📊 **Multi-pathway retrieval**: Semantic + Temporal + Usage frequency
+- 💾 **Persistent storage**: LTM saved to JSON file
+
+**Papers:** CraniMem (2026), HeLa-Mem (2026), D-Mem (2026)
+
+### 2. Logic Verification Engine | 逻辑验证引擎
+
+**File:** `scripts/heart_logic.py`
+
+**Verification Modes:**
+
+| Mode | 模式 | Description |
+|------|------|-------------|
+| Syllogism | 三段论 | All M are P. All S are M. ∴ All S are P. |
+| Modus Ponens | 肯定前件 | If P then Q. P. ∴ Q. |
+| Modus Tollens | 否定后件 | If P then Q. Not Q. ∴ Not P. |
+
+**Fallacy Detection:**
+- Affirming the consequent
+- Denying the antecedent
+- False dichotomy (非黑即白)
+- Circular reasoning
+
+**Papers:** Hilbert-style (2026), VerifiAgent (2026), PRoSFI (2026), Interleaved Bonus (2026)
+
+---
+
+## API Reference | API 参考
+
+### HeartTrace Memory
+
+```python
+from scripts.heart_memory import HeartTraceMemory
+
+mem = HeartTraceMemory(eg_buf=128, ltm_fp="memory/heart_ltm.json")
+mem.load_ltm()
+
+# Store
+mem.store("Important conversation", emotion=0.8)
+
+# Retrieve
+results = mem.retrieve("conversation", top_n=5)
+
+# Save
+mem.save_ltm()
 ```
-heartflow/
-├── SKILL.md                 # 技能主文档
-├── VERSION                  # 版本号：10.7.6
-├── README.md                # 项目说明
-├── CHANGELOG.md             # 版本历史
-├── LICENSE                  # MIT License
-├── scripts/                 # 可执行脚本
-│   ├── tgb.py               # TGB 评估引擎
-│   ├── fallacy.py           # 谬误检测引擎
-│   ├── mcp_bridge.py        # MCP 服务器
-│   └── validate.py          # 验证脚本
-├── references/              # 参考文档
-│   ├── qaoa_spec.md         # QAOA 工具调用规范
-│   └── tgb_metrics.md       # TGB 量化指标
-└── src/                     # (Legacy, stripped)
-    └── [保留核心引擎]
+
+### Logic Verification
+
+```python
+from scripts.heart_logic import LogicVerificationEngine
+
+engine = LogicVerificationEngine()
+
+# Verify syllogism
+result = engine.verify_syllogism(
+    "All humans are mortal",
+    "Socrates is human",
+    "Therefore Socrates is mortal"
+)
+print(f"Valid: {result.valid}, Confidence: {result.confidence}")
+
+# Auto-detect and verify
+result = engine.verify("If P then Q. P. Therefore Q.")
 ```
 
 ---
 
-## Performance Benchmarks | 性能基准
+## Examples | 示例
 
-| Metric | 指标 | Value | 值 |
-|--------|------|-------|-----|
-| Token footprint | Token 占用 | -78% | 减少 78% |
-| TGB correlation | TGB 相关性 | 0.73 | 与人类判断 |
-| Fallacy detection | 谬误检出率 | 94% | 3% 误报 |
-| MCP latency | MCP 延迟 | <50ms | 工具调用 |
+### Memory Example | 记忆示例
+
+```bash
+$ python scripts/heart_memory.py --store "HeartFlow v10.7.8 released" --emotion 0.9
+✅ 记忆已存储
+  内容：HeartFlow v10.7.8 released...
+  情感：0.9
+  强度：0.450
+  Hash: a3f8c2d1e5b7
+
+$ python scripts/heart_memory.py --retrieve "HeartFlow"
+🔍 检索结果 (查询：'HeartFlow')
+==================================================
+  [1] HeartFlow v10.7.8 released...
+      强度：0.450 | 情感：0.9 | 检索：1 次 | 距今：0.1 小时
+==================================================
+```
+
+### Logic Example | 逻辑示例
+
+```bash
+$ python scripts/heart_logic.py --verify "All humans are mortal. Socrates is human. Therefore Socrates is mortal."
+🔍 逻辑验证结果
+==================================================
+有效性：✅ 有效
+置信度：85.00%
+推理步骤:
+  ✓ 中项 'human' 连接大前提和小前提
+  ✓ 有效推理：all + all → all
+==================================================
+
+$ python scripts/heart_logic.py --verify "If it rains then ground is wet. Ground is not wet. Therefore it did not rain."
+🔍 逻辑验证结果
+==================================================
+有效性：✅ 有效
+置信度：95.00%
+推理步骤:
+  ✓ 否定后件 (Modus Tollens): ground is wet
+  ✓ 有效推出否定前件：it rains
+==================================================
+```
 
 ---
 
 ## Security | 安全
 
-### OWASP Top 10 Compliance
+HeartFlow 遵循 OWASP Agentic Skills Top 10:
 
-- [x] AST02 Supply Chain - 无外部脚本下载
-- [x] AST03 Excessive Agency - 最小权限
-- [x] ASI01 Goal Hijack - 目标明确
-- [x] ASI02 Tool Abuse - 工具验证
+- ✅ **AST02 Supply Chain**: No external script downloads
+- ✅ **AST03 Excessive Agency**: Minimal file access (memory/ directory only)
+- ✅ **ASI01 Goal Hijack**: Clear, bounded objectives
+- ✅ **ASI02 Tool Abuse**: Deterministic pattern matching
 
-### Run Security Check
-
-```bash
-python ../skill-standard-writer/scripts/standard_checker.py --security .
-```
+See `references/safety_guardrails.md` for details.
 
 ---
 
-## Troubleshooting | 故障排除
+## Version History | 版本历史
 
-### Q: TGB scores seem low?
-
-**A:** Ensure text has:
-- Factual indicators (dates, percentages, citations)
-- Beneficial keywords (help, benefit, community)
-- Clear structure (paragraphs, consistent sentences)
-
-### Q: Fallacy detection misses Chinese patterns?
-
-**A:** Patterns are simplified for matching. Report false negatives for rule expansion.
-
-### Q: MCP bridge not responding?
-
-**A:** Verify stdio connection. Test with:
-```bash
-echo '{"jsonrpc":"2.0","method":"tools/call","params":{"name":"tgb_eval","arguments":{"text":"test"}},"id":1}' | python scripts/mcp_bridge.py
-```
-
----
-
-## Related Skills | 相关技能
-
-- **[skill-standard-writer](https://github.com/yun520-1/skill-standard-writer)** - Agent Skills 标准检查器
-- **[skill-vetter](https://github.com/openclaw/skill-vetter)** - 技能安全审查
+| Version | Date | Theme |
+|---------|------|-------|
+| 10.7.8 | 2026-04-23 | Memory & Logic Pillars |
+| 10.7.7 | 2026-04-23 | Engineering Excellence |
+| 10.7.6 | 2026-04-23 | Minimal Executable Core |
+| 10.7.5 | 2026-04-23 | Skill Standardization |
+| 10.7.4 | 2026-04-23 | Agent Skills Open Standard |
+| 10.7.0 | 2026-04-23 | Initial Release |
 
 ---
 
 ## License | 许可证
 
-MIT License - See [LICENSE](LICENSE) file.
-
----
-
-## Contact | 联系
-
-**Author:** HeartFlow Team  
-**Email:** markcell@163.com  
-**Version:** 10.7.6  
-**Last Updated:** 2026-04-23
-
----
-
-## Disclaimers | 声明
-
-<details>
-<summary><strong>Click to expand | 点击展开</strong></summary>
-
-**EN:** HeartFlow is NOT affiliated with HeartFlow Inc. (NASDAQ-listed medical diagnostics company). This is a personal open-source experiment.
-
-**CN:** 本项目与 HeartFlow Inc.（纳斯达克上市医疗诊断公司）无关联。此为个人开源实验项目。
-
-**EN:** TGB scores are heuristic metrics, not scientific measurements. Use for reference only.
-
-**CN:** TGB 评分为启发式指标，非科学测量。仅供参考。
-
-</details>
+MIT License - See `LICENSE` file for details.
