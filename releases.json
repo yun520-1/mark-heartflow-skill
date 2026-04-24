@@ -2,46 +2,37 @@
   "repo": "yun520-1/mark-heartflow-skill",
   "releases": [
     {
-      "tag": "v10.8.2",
-      "date": "2026-04-24",
-      "title": "Engine Convergence + Identity Chain + Tool Call Spec",
-      "changes": {
-        "new_engines": [
-          "extension_ranking",
-          "bayesian_agent",
-          "cognitive_friction",
-          "tgb_scorer",
-          "hallucination_detector",
-          "verifier",
-          "tool_selector"
-        ],
-        "engine_convergence": "3 核心工具 (tgb_eval, logic_check, identity_chain)",
-        "identity_chain": "会话启动时注入 AGENTS.md",
-        "tool_call_spec": "UniToolCall (arXiv:2604.11557)",
-        "bounded_capacity": "最多 2-3 个工具 (80% 技能零增益)",
-        "deleted": "core_identity_engine.py (已合并到 identity_chain)"
-      },
-      "highlights": [
-        "引擎收敛到 3 个核心工具",
-        "身份链自动注入",
-        "有界容量避免过度调用"
-      ]
-    },
-    {
       "tag": "v10.8.1",
       "date": "2026-04-24",
-      "title": "Core Identity Engine Replication",
+      "title": "安全审计 + 安装确认 + 版本统一",
       "changes": {
-        "new_files": [
-          "src/core/core_identity_engine.py"
+        "security_audit": [
+          "新增 SECURITY_AUDIT.md 安全审计报告",
+          "代码安全 7/10，安装安全 6/10",
+          "综合评分 7.4/10"
         ],
-        "features": [
-          "真善美 (TGB) 评分系统",
-          "意识 Φ 值计算 (基于 IIT 启发)",
-          "熵方向判断 (熵增/熵减)",
-          "核心指令识别与遵循度评估"
+        "installation_fix": [
+          "安装脚本添加确认提示",
+          "显示安装路径和版本信息",
+          "建议安装前审查代码"
+        ],
+        "version_unified": [
+          "README.md: v10.8.1 ✓",
+          "SKILL.md: v10.8.1 ✓",
+          "VERSION: 10.8.1 ✓",
+          "install.sh: v10.8.1 ✓"
+        ],
+        "disclaimer_enhanced": [
+          "临床量表 PHQ-9/GAD-7 仅为技术演示",
+          "添加中国心理援助热线",
+          "王东岳哲学模块声明为非科学验证"
         ]
-      }
+      },
+      "highlights": [
+        "统一版本号到 v10.8.1",
+        "安装前安全确认",
+        "完整安全审计报告"
+      ]
     },
     {
       "tag": "v10.8.0",
@@ -57,6 +48,6 @@
       }
     }
   ],
-  "latest": "v10.8.2",
+  "latest": "v10.8.1",
   "download_url": "https://github.com/yun520-1/mark-heartflow-skill/releases"
 }

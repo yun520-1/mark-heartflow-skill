@@ -1,6 +1,6 @@
 #!/bin/bash
 #==============================================================================
-# HeartFlow v10.4.0 - Universal Installation Script
+# HeartFlow v10.8.1 - Universal Installation Script
 #==============================================================================
 # Works on: Linux, macOS, Windows (WSL/Git Bash), all AI coding assistants
 # Compatible with: Claude Code, Codex, Copilot, Cursor, Ollama, LM Studio
@@ -8,7 +8,7 @@
 
 set -e  # Exit on error
 
-VERSION="10.4.0"
+VERSION="10.8.1"
 REPO="yun520-1/mark-heartflow-skill"
 INSTALL_DIR="${HOME}/.hermes/skills/ai/heartflow"
 GITHUB_TOKEN=""
@@ -342,6 +342,24 @@ main() {
     
     # Check dependencies
     check_python
+    
+    # ⚠️ Installation confirmation prompt
+    echo ""
+    echo -e "${YELLOW}⚠️  安全确认 | Security Confirmation${NC}"
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "即将安装 HeartFlow v${VERSION}"
+    echo -e "安装路径: ${INSTALL_DIR}"
+    echo ""
+    echo -e "建议安装前审查代码："
+    echo -e "  cat install.sh"
+    echo -e "  cat src/core/heartflow.py"
+    echo ""
+    read -p "确认安装? (输入 'y' 继续): " confirm
+    if [ "$confirm" != "y" ]; then
+        echo "取消安装"
+        exit 0
+    fi
+    echo ""
     
     # Determine install method
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
