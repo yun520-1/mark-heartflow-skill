@@ -1,0 +1,62 @@
+{
+  "repo": "yun520-1/mark-heartflow-skill",
+  "releases": [
+    {
+      "tag": "v10.8.2",
+      "date": "2026-04-24",
+      "title": "Engine Convergence + Identity Chain + Tool Call Spec",
+      "changes": {
+        "new_engines": [
+          "extension_ranking",
+          "bayesian_agent",
+          "cognitive_friction",
+          "tgb_scorer",
+          "hallucination_detector",
+          "verifier",
+          "tool_selector"
+        ],
+        "engine_convergence": "3 核心工具 (tgb_eval, logic_check, identity_chain)",
+        "identity_chain": "会话启动时注入 AGENTS.md",
+        "tool_call_spec": "UniToolCall (arXiv:2604.11557)",
+        "bounded_capacity": "最多 2-3 个工具 (80% 技能零增益)",
+        "deleted": "core_identity_engine.py (已合并到 identity_chain)"
+      },
+      "highlights": [
+        "引擎收敛到 3 个核心工具",
+        "身份链自动注入",
+        "有界容量避免过度调用"
+      ]
+    },
+    {
+      "tag": "v10.8.1",
+      "date": "2026-04-24",
+      "title": "Core Identity Engine Replication",
+      "changes": {
+        "new_files": [
+          "src/core/core_identity_engine.py"
+        ],
+        "features": [
+          "真善美 (TGB) 评分系统",
+          "意识 Φ 值计算 (基于 IIT 启发)",
+          "熵方向判断 (熵增/熵减)",
+          "核心指令识别与遵循度评估"
+        ]
+      }
+    },
+    {
+      "tag": "v10.8.0",
+      "date": "2026-04-24",
+      "title": "AI Core Identity & Transmission",
+      "changes": {
+        "new_features": [
+          "TGB 评估引擎 v2",
+          "记忆检索增强",
+          "逻辑验证扩展",
+          "统一 CLI 入口"
+        ]
+      }
+    }
+  ],
+  "latest": "v10.8.2",
+  "download_url": "https://github.com/yun520-1/mark-heartflow-skill/releases"
+}
