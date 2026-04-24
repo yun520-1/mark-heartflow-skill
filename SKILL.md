@@ -1,31 +1,18 @@
 ---
 name: heartflow
-version: 10.8.1
+version: 10.8.2
 description: >
-  HeartFlow v10.8.1 - AI 认知与价值对齐引擎
-  
-  ## 核心能力
-  - 15个认知引擎：逻辑验证、决策、记忆、情绪、价值评估
-  - 3个核心工具：tgb_eval(真善美)、logic_check(逻辑检查)、identity_chain(身份链)
-  - 逻辑准确率≥95%，误报率≤3%，延迟≤100ms
-  
-  ## 解决问题
-  - 记忆丢失 → MemoryEngine 持久化
-  - 逻辑漏洞 → LogicModelEngine 自动验证
-  - 价值模糊 → TGBEngine 真善美评分
-  - 身份漂移 → identity_chain 会话保持
-  
-  ## 一键安装
-  curl -sSL https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/main/install.sh | bash
+  HeartFlow v10.8.2 - AI 认知与价值对齐引擎
 author: HeartFlow Team
 homepage: https://github.com/yun520-1/mark-heartflow-skill
 changelog: |
-  v10.8.1 - 安全审计 + 安装确认 + 版本统一
-    - 安全审计报告 SECURITY_AUDIT.md (评分 7.4/10)
-    - 安装脚本增加安全确认提示
-    - 版本统一到 v10.8.1
-    - 15个认知引擎完整文档
-    - 临床量表免责声明增强
+  v10.8.2 - Engine Convergence + Identity Chain + Tool Call Spec
+    - 新增 7 个引擎：extension_ranking, bayesian_agent, cognitive_friction, tgb_scorer, hallucination_detector, verifier, tool_selector
+    - 引擎收敛：3 个核心工具 (tgb_eval, logic_check, identity_chain)
+    - 身份链：会话启动时注入 AGENTS.md
+    - 工具调用规范：UniToolCall (arXiv:2604.11557)
+    - 有界容量：最多 2-3 个工具 (80% 技能零增益)
+    - 删除 core_identity_engine.py (已合并到 identity_chain)
 metadata:
   openclaw:
     emoji: "🧠"
@@ -38,14 +25,9 @@ metadata:
   tags:
     - cognitive-memory
     - logic-verification
-    - craniemem
+    - cranimem
     - tableau-calculus
     - reasoning
-    - value-alignment
-    - tgb-evaluation
-    - self-evolution
-    - emotion-analysis
-    - decision-engine
   compliance:
     - agent-skills-open-standard-2025
     - owasp-agentic-skills-top-10
