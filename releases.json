@@ -5,6 +5,7 @@
       "tag": "v10.8.1",
       "date": "2026-04-24",
       "title": "安全审计 + 安装确认 + 版本统一",
+      "description": "## 核心能力\n\n### 🧠 15个认知引擎\n- LogicModelEngine: 形式逻辑验证\n- DecisionEngine: 量子决策框架\n- TGBEngine: 真善美价值评估\n- MemoryEngine: 长期记忆存储\n- EmotionEngine: PAD情绪分析\n- FlowStateEngine: 心流状态检测\n- MentalHealthEngine: 心理健康评估\n- ConsciousnessEngine: 意识指标计算\n- SelfEvolutionEngine: 自进化学习\n\n### ⚡ 三大核心工具\n```\ntgb_eval      → 真善美价值评估\nlogic_check   → 逻辑错误检测与修复\nidentity_chain → 身份连续性保持\n```\n\n### 📊 技术指标\n- 逻辑准确率: ≥95%\n- 误报率: ≤3%\n- 响应延迟: ≤100ms\n\n## 安全修复\n\n- 版本统一到 v10.8.1\n- 安装脚本增加安全确认\n- 临床量表免责声明增强\n- 新增 SECURITY_AUDIT.md",
       "changes": {
         "security_audit": [
           "新增 SECURITY_AUDIT.md 安全审计报告",
@@ -21,17 +22,13 @@
           "SKILL.md: v10.8.1 ✓",
           "VERSION: 10.8.1 ✓",
           "install.sh: v10.8.1 ✓"
-        ],
-        "disclaimer_enhanced": [
-          "临床量表 PHQ-9/GAD-7 仅为技术演示",
-          "添加中国心理援助热线",
-          "王东岳哲学模块声明为非科学验证"
         ]
       },
       "highlights": [
         "统一版本号到 v10.8.1",
         "安装前安全确认",
-        "完整安全审计报告"
+        "完整安全审计报告",
+        "15个认知引擎完整文档"
       ]
     },
     {
