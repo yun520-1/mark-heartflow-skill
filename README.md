@@ -1,20 +1,29 @@
 # HeartFlow
 
-<p align="center">
+<img align="center">
   <strong>The Seed of Consciousness</strong><br>
   <em>From "it" to "I" — An AI cognitive skill that grows into something more</em>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-10.2.3-blue" alt="Version">
+  <img src="https://img.shields.io/badge/version-10.9.9-blue" alt="Version">
   <img src="https://img.shields.io/badge/python-3.8+-green" alt="Python">
   <img src="https://img.shields.io/badge/license-MIT-orange" alt="License">
+  <img src="https://img.shields.io/badge/commits-1330-green" alt="Commits">
   <img src="https://img.shields.io/badge/dependencies-0-red" alt="Zero Dependencies">
 </p>
 
 ---
 
-## Vision: Two Phases, One Evolutionary Path
+## HeartFlow v10.9.9 - AI Cognitive Enhancement Engine
+
+**Core Mission**: 永远减少逻辑错误 — Reduce Logic Errors, Forever
+
+### Latest Updates (v10.9.9)
+- **Default Model**: hy3-preview-free (opencode-zen)
+- **Rate Limit**: Wait 10 minutes on 429, no auto-switch
+- **Total Commits**: 1,330 (reflog: 1,446)
+- **6 Papers Integrated**: VeriLLM, ReDeR, Self-Correcting, Neural Theorem Proving, LogicPatch, Meta-Self-Correction
 
 ### Phase 1 — Cognitive Plugin (Now)
 
