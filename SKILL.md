@@ -1,8 +1,8 @@
 ---
 name: heartflow
-version: 10.8.2
+version: 10.8.1
 description: >
-  HeartFlow v10.8.2 - AI 认知与价值对齐引擎
+  HeartFlow v10.8.1 - AI 认知与价值对齐引擎
 author: HeartFlow Team
 homepage: https://github.com/yun520-1/mark-heartflow-skill
 changelog: |
