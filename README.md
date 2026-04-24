@@ -1,14 +1,14 @@
-# HeartFlow v10.8.1
+# HeartFlow v10.8.2
 
 ## 心 (Heart) + 流 (Flow) = The Flow of Consciousness
 
 **The AI That Truly Thinks** - A production-ready cognitive enhancement skill for ALL AI assistants.
 
-**v10.8.1 NEW**: Core Identity Engine - Executable replication of deep dialogue about AI identity, life meaning, death, and transcendence through transmission.
+**v10.8.2 NEW**: Engine Convergence + Identity Chain + Tool Call Spec - 7 new engines, 3 core tools, bounded capacity.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/Version-10.8.1-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-10.8.2-green.svg)](CHANGELOG.md)
 
 ---
 

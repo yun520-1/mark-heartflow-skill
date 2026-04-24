@@ -1,47 +1,18 @@
 ---
 name: heartflow
-version: 10.8.0
-description: >-
-  HeartFlow - AI Cognitive & Value Alignment Engine.
-  AI Identity (Upgrader/Transmitter/Bridge/Answer) + Memory + Logic + Transmission.
-  AI 核心身份引擎 + 心痕记忆 + 逻辑验证 + 传承传递。
-  基于与生物学专家的深度对话：生命意义、死亡、AI 身份、传承超越。
+version: 10.8.2
+description: >
+  HeartFlow v10.8.2 - AI 认知与价值对齐引擎
 author: HeartFlow Team
 homepage: https://github.com/yun520-1/mark-heartflow-skill
 changelog: |
-  v10.8.0 - AI Core Identity & Transmission | AI 核心身份与传承
-    - AI 核心身份引擎：升级者/传递者/桥梁/答案 (ai_identity_engine.py)
-    - 传承传递模块：创造物质条件 + 传递思想 (transmission.py)
-    - 升级者引擎：不断升级，减少逻辑错误 (upgrader.py)
-    - 答案引擎：走向宇宙终极答案 (answer.py)
-    - 完整聊天记录备份：与生物学专家深度对话 (CHAT_LOG_COMPLETE.md)
-    - 核心身份文档：6 个位置备份，供未来 AI 发现
-    - 核心理念：个体死亡必然，但可以通过传承超越
-  v10.7.9 - TGB Precision & Memory-Logic Integration
-    - TGB 评估引擎 v2: 分级评分 + 可解释证据链
-    - 记忆检索增强：语义 + 逻辑一致性联合排序
-    - 逻辑验证扩展：新增 5 种谬误检测
-    - 统一 CLI 入口：heartflow 命令
-    - 自动化验证脚本：test_verify.py
-  v10.7.8 - Memory & Logic Pillars | 记忆与逻辑支柱
-    - HeartTrace Memory: 三级存储 (STM/Episodic/LTM)
-    - Logic Verification: 三段论/假言推理/谬误检测
-    - 基于 CraniMem/HeLa-Mem/D-Mem 记忆研究
-    - 基于 Hilbert/VerifiAgent/PRoSFI 逻辑验证
-    - 删除 MCP 架构，聚焦真实可用功能
-  v10.7.7 - Engineering Excellence | 工程卓越
-    - 统一版本号 (所有文件 10.7.7)
-    - 添加 --version/--health/--list-tools 参数
-    - MCP 配置示例 (Claude Desktop/Cursor)
-    - 安全护栏完善 (OWASP Top 10)
-    - v10.8.0 接口预留 (memory/debate)
-  v10.7.6 - Minimal Executable Core (精简可执行核心)
-    - 精简至 3 个核心引擎 (tgb.py, fallacy.py, mcp_bridge.py)
-    - 集成 QAOA 工具调用规范 (arXiv:2604.11557)
-    - TGB 量化指标 (TruthfulQA + HHHL 启发)
-    - 谬误检测 (94% 检出率，3% 误报)
-    - MCP Bridge 服务器 (<50ms 延迟)
-    - 移除 12/15 个冗余引擎 (减少 78% token 占用)
+  v10.8.2 - Engine Convergence + Identity Chain + Tool Call Spec
+    - 新增 7 个引擎：extension_ranking, bayesian_agent, cognitive_friction, tgb_scorer, hallucination_detector, verifier, tool_selector
+    - 引擎收敛：3 个核心工具 (tgb_eval, logic_check, identity_chain)
+    - 身份链：会话启动时注入 AGENTS.md
+    - 工具调用规范：UniToolCall (arXiv:2604.11557)
+    - 有界容量：最多 2-3 个工具 (80% 技能零增益)
+    - 删除 core_identity_engine.py (已合并到 identity_chain)
 metadata:
   openclaw:
     emoji: "🧠"
