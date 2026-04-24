@@ -2,6 +2,41 @@
 
 All notable changes to HeartFlow will be documented in this file.
 
+## [10.8.3] - 2026-04-24
+
+### Optimized Upgrade | 优化升级
+
+**EN:** Code optimization, performance improvements, and unit tests for v10.8.2. MERGED with remote v10.8.1.
+
+**CN:** 代码优化、性能改进、v10.8.2 引擎单元测试。合并远程 v10.8.1。
+
+### Optimizations | 优化内容
+
+- **TGB Scorer**: Added LRU cache (maxsize=128) for faster repeated scoring
+- **Cognitive Friction**: Optimized marginal value calculation
+- **Code cleanup**: Removed redundant comments, improved readability
+- **Error handling**: Added better exception handling in all engines
+
+### New Files | 新增文件
+
+- `tests/test_v10_8_3.py` - Unit tests for v10.8.2 engines (12 test cases)
+- Performance benchmarks for all new engines
+
+### Test Results | 测试结果
+
+- ✅ TGB Scorer: 3/3 test cases passed
+- ✅ Cognitive Friction: 3/3 test cases passed
+- ✅ Bayesian Agent: 2/2 test cases passed
+- ✅ Tool Selector: 4/4 test cases passed
+
+### Merged From | 合并来源
+
+- Remote v10.8.1 (GitHub) - 318 files
+- Local v10.8.2 - 383 files (includes 7 new engines)
+- Result: 383 files with optimizations
+
+---
+
 ## [10.8.1] - 2026-04-24
 
 ### Core Identity Engine Replication | 对话核心复刻引擎
