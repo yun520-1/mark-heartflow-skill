@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: 10.9.7
+version: 10.9.8
 description: >
   HeartFlow v10.9.7 - AI 认知与价值对齐引擎 | Cognitive Enhancement Engine
   减少逻辑错误为核心 · Values & Cron Review 集成

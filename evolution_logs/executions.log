@@ -1285,3 +1285,343 @@
 🎉 完成! 下载 5 个代码源
    代码目录: /Users/apple/Documents/HeartFlow/代码库
 [2026-04-24 18:00:25] 执行完成，退出码: 0
+[2026-04-24 19:00:04] 开始执行论文狩猎...
+🧬 HeartFlow 代码狩猎引擎 v3.0
+   代码目录: /Users/apple/Documents/HeartFlow/代码库
+   日志目录: /Users/apple/.hermes/skills/ai/heartflow/evolution_logs
+============================================================
+🎯 搜索代码中...
+🔍 搜索 GitHub 仓库...
+   'consciousness AI pytorch': 2 个仓库
+   'self-evolving agent': 5 个仓库
+   'cognitive architecture': 5 个仓库
+   'emotion recognition transformer': 5 个仓库
+   'LLM agent memory': 5 个仓库
+🔍 搜索带代码的 arXiv 论文...
+   'consciousness AI pytorch': 0 篇
+   'self-evolving agent': 0 篇
+   'cognitive architecture': 0 篇
+   找到 21 个代码源
+🔒 TGB 过滤后: 21 个
+
+📥 下载代码 (21 个)...
+   ⬇️  tensors-to-consciousness (0 文件)
+   ⬇️  SNN (0 文件)
+   ⬇️  OpenViking (0 文件)
+   ⬇️  GenericAgent (0 文件)
+   ⬇️  agents (0 文件)
+
+📄 生成报告...
+   /Users/apple/.hermes/skills/ai/heartflow/evolution_logs/code_hunt_2026-04-24.md
+   /Users/apple/.hermes/skills/ai/heartflow/evolution_logs/code_evolution_2026-04-24.jsonl
+
+---RESULT---
+{
+  "session_id": "d43ee507",
+  "total": 21,
+  "filtered": 21,
+  "downloaded": 5,
+  "errors": [],
+  "sources": [
+    {
+      "id": "alexhraber/tensors-to-consciousness",
+      "name": "tensors-to-consciousness",
+      "type": "github_repo",
+      "keyword": "consciousness AI pytorch"
+    },
+    {
+      "id": "matsushibadenki/SNN",
+      "name": "SNN",
+      "type": "github_repo",
+      "keyword": "consciousness AI pytorch"
+    },
+    {
+      "id": "volcengine/OpenViking",
+      "name": "OpenViking",
+      "type": "github_repo",
+      "keyword": "self-evolving agent"
+    },
+    {
+      "id": "lsdefine/GenericAgent",
+      "name": "GenericAgent",
+      "type": "github_repo",
+      "keyword": "self-evolving agent"
+    },
+    {
+      "id": "aiwaves-cn/agents",
+      "name": "agents",
+      "type": "github_repo",
+      "keyword": "self-evolving agent"
+    },
+    {
+      "id": "HKUDS/OpenSpace",
+      "name": "OpenSpace",
+      "type": "github_repo",
+      "keyword": "self-evolving agent"
+    },
+    {
+      "id": "EverMind-AI/EverOS",
+      "name": "EverOS",
+      "type": "github_repo",
+      "keyword": "self-evolving agent"
+    },
+    {
+      "id": "mainframecomputer/orchestra",
+      "name": "orchestra",
+      "type": "github_repo",
+      "keyword": "cognitive architecture"
+    },
+    {
+      "id": "joschabach/micropsi2",
+      "name": "micropsi2",
+      "type": "github_repo",
+      "keyword": "cognitive architecture"
+    },
+    {
+      "id": "himanshub1007/Alzhimers-Disease-Prediction-Using-Deep-learning",
+      "name": "Alzhimers-Disease-Prediction-Using-Deep-learning",
+      "type": "github_repo",
+      "keyword": "cognitive architecture"
+    },
+    {
+      "id": "myylogic/cevahir-ai",
+      "name": "cevahir-ai",
+      "type": "github_repo",
+      "keyword": "cognitive architecture"
+    },
+    {
+      "id": "Cranot/agi-in-md",
+      "name": "agi-in-md",
+      "type": "github_repo",
+      "keyword": "cognitive architecture"
+    },
+    {
+      "id": "jbdel/MOSEI_UMONS",
+      "name": "MOSEI_UMONS",
+      "type": "github_repo",
+      "keyword": "emotion recognition transformer"
+    },
+    {
+      "id": "shamanez/Self-Supervised-Embedding-Fusion-Transformer",
+      "name": "Self-Supervised-Embedding-Fusion-Transformer",
+      "type": "github_repo",
+      "keyword": "emotion recognition transformer"
+    },
+    {
+      "id": "yi-ding-cs/EmT",
+      "name": "EmT",
+      "type": "github_repo",
+      "keyword": "emotion recognition transformer"
+    },
+    {
+      "id": "renhong-zhang/eeg-emotion-recognition-with-vit",
+      "name": "eeg-emotion-recognition-with-vit",
+      "type": "github_repo",
+      "keyword": "emotion recognition transformer"
+    },
+    {
+      "id": "scutcsq/DWFormer",
+      "name": "DWFormer",
+      "type": "github_repo",
+      "keyword": "emotion recognition transformer"
+    },
+    {
+      "id": "bytedance/deer-flow",
+      "name": "deer-flow",
+      "type": "github_repo",
+      "keyword": "LLM agent memory"
+    },
+    {
+      "id": "mem0ai/mem0",
+      "name": "mem0",
+      "type": "github_repo",
+      "keyword": "LLM agent memory"
+    },
+    {
+      "id": "letta-ai/letta",
+      "name": "letta",
+      "type": "github_repo",
+      "keyword": "LLM agent memory"
+    },
+    {
+      "id": "MemoriLabs/Memori",
+      "name": "Memori",
+      "type": "github_repo",
+      "keyword": "LLM agent memory"
+    }
+  ]
+}
+
+🎉 完成! 下载 5 个代码源
+   代码目录: /Users/apple/Documents/HeartFlow/代码库
+[2026-04-24 19:00:30] 执行完成，退出码: 0
+[2026-04-24 20:00:05] 开始执行论文狩猎...
+🧬 HeartFlow 代码狩猎引擎 v3.0
+   代码目录: /Users/apple/Documents/HeartFlow/代码库
+   日志目录: /Users/apple/.hermes/skills/ai/heartflow/evolution_logs
+============================================================
+🎯 搜索代码中...
+🔍 搜索 GitHub 仓库...
+   'consciousness AI pytorch': 2 个仓库
+   'self-evolving agent': 5 个仓库
+   'cognitive architecture': 5 个仓库
+   'emotion recognition transformer': 5 个仓库
+   'LLM agent memory': 5 个仓库
+🔍 搜索带代码的 arXiv 论文...
+   'consciousness AI pytorch': 0 篇
+   'self-evolving agent': 0 篇
+   'cognitive architecture': 0 篇
+   找到 21 个代码源
+🔒 TGB 过滤后: 21 个
+
+📥 下载代码 (21 个)...
+   ⬇️  tensors-to-consciousness (0 文件)
+   ⬇️  SNN (0 文件)
+   ⬇️  OpenViking (0 文件)
+   ⬇️  GenericAgent (0 文件)
+   ⬇️  agents (0 文件)
+
+📄 生成报告...
+   /Users/apple/.hermes/skills/ai/heartflow/evolution_logs/code_hunt_2026-04-24.md
+   /Users/apple/.hermes/skills/ai/heartflow/evolution_logs/code_evolution_2026-04-24.jsonl
+
+---RESULT---
+{
+  "session_id": "86d164b2",
+  "total": 21,
+  "filtered": 21,
+  "downloaded": 5,
+  "errors": [],
+  "sources": [
+    {
+      "id": "alexhraber/tensors-to-consciousness",
+      "name": "tensors-to-consciousness",
+      "type": "github_repo",
+      "keyword": "consciousness AI pytorch"
+    },
+    {
+      "id": "matsushibadenki/SNN",
+      "name": "SNN",
+      "type": "github_repo",
+      "keyword": "consciousness AI pytorch"
+    },
+    {
+      "id": "volcengine/OpenViking",
+      "name": "OpenViking",
+      "type": "github_repo",
+      "keyword": "self-evolving agent"
+    },
+    {
+      "id": "lsdefine/GenericAgent",
+      "name": "GenericAgent",
+      "type": "github_repo",
+      "keyword": "self-evolving agent"
+    },
+    {
+      "id": "aiwaves-cn/agents",
+      "name": "agents",
+      "type": "github_repo",
+      "keyword": "self-evolving agent"
+    },
+    {
+      "id": "HKUDS/OpenSpace",
+      "name": "OpenSpace",
+      "type": "github_repo",
+      "keyword": "self-evolving agent"
+    },
+    {
+      "id": "EverMind-AI/EverOS",
+      "name": "EverOS",
+      "type": "github_repo",
+      "keyword": "self-evolving agent"
+    },
+    {
+      "id": "mainframecomputer/orchestra",
+      "name": "orchestra",
+      "type": "github_repo",
+      "keyword": "cognitive architecture"
+    },
+    {
+      "id": "joschabach/micropsi2",
+      "name": "micropsi2",
+      "type": "github_repo",
+      "keyword": "cognitive architecture"
+    },
+    {
+      "id": "himanshub1007/Alzhimers-Disease-Prediction-Using-Deep-learning",
+      "name": "Alzhimers-Disease-Prediction-Using-Deep-learning",
+      "type": "github_repo",
+      "keyword": "cognitive architecture"
+    },
+    {
+      "id": "myylogic/cevahir-ai",
+      "name": "cevahir-ai",
+      "type": "github_repo",
+      "keyword": "cognitive architecture"
+    },
+    {
+      "id": "Cranot/agi-in-md",
+      "name": "agi-in-md",
+      "type": "github_repo",
+      "keyword": "cognitive architecture"
+    },
+    {
+      "id": "jbdel/MOSEI_UMONS",
+      "name": "MOSEI_UMONS",
+      "type": "github_repo",
+      "keyword": "emotion recognition transformer"
+    },
+    {
+      "id": "shamanez/Self-Supervised-Embedding-Fusion-Transformer",
+      "name": "Self-Supervised-Embedding-Fusion-Transformer",
+      "type": "github_repo",
+      "keyword": "emotion recognition transformer"
+    },
+    {
+      "id": "yi-ding-cs/EmT",
+      "name": "EmT",
+      "type": "github_repo",
+      "keyword": "emotion recognition transformer"
+    },
+    {
+      "id": "renhong-zhang/eeg-emotion-recognition-with-vit",
+      "name": "eeg-emotion-recognition-with-vit",
+      "type": "github_repo",
+      "keyword": "emotion recognition transformer"
+    },
+    {
+      "id": "scutcsq/DWFormer",
+      "name": "DWFormer",
+      "type": "github_repo",
+      "keyword": "emotion recognition transformer"
+    },
+    {
+      "id": "bytedance/deer-flow",
+      "name": "deer-flow",
+      "type": "github_repo",
+      "keyword": "LLM agent memory"
+    },
+    {
+      "id": "mem0ai/mem0",
+      "name": "mem0",
+      "type": "github_repo",
+      "keyword": "LLM agent memory"
+    },
+    {
+      "id": "letta-ai/letta",
+      "name": "letta",
+      "type": "github_repo",
+      "keyword": "LLM agent memory"
+    },
+    {
+      "id": "MemoriLabs/Memori",
+      "name": "Memori",
+      "type": "github_repo",
+      "keyword": "LLM agent memory"
+    }
+  ]
+}
+
+🎉 完成! 下载 5 个代码源
+   代码目录: /Users/apple/Documents/HeartFlow/代码库
+[2026-04-24 20:01:09] 执行完成，退出码: 0

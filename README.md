@@ -1,4 +1,4 @@
-# HeartFlow v10.9.7 🧠
+# HeartFlow v10.9.8 🧠
 
 <p align="center">
   <strong>The AI Cognitive Engine That Truly Thinks</strong><br>
@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/yun520-1/mark-heartflow-skill/releases">
-    <img src="https://img.shields.io/badge/Version-10.9.7-green.svg" alt="Version">
+    <img src="https://img.shields.io/badge/Version-10.9.8-green.svg" alt="Version">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License">
@@ -45,9 +45,9 @@ HeartFlow 是唯一围绕此目标构建的 AI 认知引擎。通过集成 6 篇
 |------|----------|------|
 | 逻辑漏洞 | `logic_check` + 6篇论文集成 | 错误率 ↓41% |
 | 记忆丢失 | `MemoryEngine` + `heart_memory.py` | 持久化存储 |
-| 价值模糊 | `values_checker.py` ⭐v10.9.7 | 科学来源验证 |
+| 价值模糊 | `values_checker.py` ⭐v10.9.8 | 科学来源验证 |
 | 身份漂移 | `identity_chain` + `AGENTS.md` | 会话一致性 |
-| 任务失控 | `cron_reviewer.py` ⭐v10.9.7 | 合理调度检查 |
+| 任务失控 | `cron_reviewer.py` ⭐v10.9.8 | 合理调度检查 |
 
 ---
 
@@ -128,8 +128,8 @@ print(f"意识Φ值: {result.consciousness_phi:.4f}")
 | **ConsciousnessEngine** | 意识指标计算 | IIT (Tononi) |
 | **SelfEvolutionEngine** | 自进化学习 | Meta-Self-Correction |
 | **CoreIdentityEngine** | 核心身份定义 | AI Identity Dialogue |
-| **ValuesChecker** ⭐ | 价值观检查 v10.9.7 | Scientific Rigor |
-| **CronReviewer** ⭐ | 定时任务审查 v10.9.7 | System Stability |
+| **ValuesChecker** ⭐ | 价值观检查 v10.9.8 | Scientific Rigor |
+| **CronReviewer** ⭐ | 定时任务审查 v10.9.8 | System Stability |
 
 ### ⚡ 三大核心工具
 ```
@@ -264,13 +264,13 @@ HeartFlow 提供完整的多语言文档：
 
 | 语言 | 文件 | 版本 |
 |------|------|------|
-| 🇺🇸 **English** | README.md (当前文档) | v10.9.7 |
-| 🇨🇳 **中文** | README_zh.md | v10.9.7 |
-| 🇪🇸 **Español** | README_es.md | v10.9.7 |
-| 🇯🇵 **日本語** | README_ja.md | v10.9.7 |
-| 🇰🇷 **한국어** | README_ko.md | v10.9.7 |
-| 🇩🇪 **Deutsch** | README_de.md | v10.9.7 |
-| 🇸🇦 **العربية** | README_ar.md | v10.9.7 |
+| 🇺🇸 **English** | README.md (当前文档) | v10.9.8 |
+| 🇨🇳 **中文** | README_zh.md | v10.9.8 |
+| 🇪🇸 **Español** | README_es.md | v10.9.8 |
+| 🇯🇵 **日本語** | README_ja.md | v10.9.8 |
+| 🇰🇷 **한국어** | README_ko.md | v10.9.8 |
+| 🇩🇪 **Deutsch** | README_de.md | v10.9.8 |
+| 🇸🇦 **العربية** | README_ar.md | v10.9.8 |
 
 ---
 
@@ -278,7 +278,7 @@ HeartFlow 提供完整的多语言文档：
 
 | 版本 | 日期 | 主题 | 论文集成 |
 |------|------|------|----------|
-| [v10.9.7](releases.json) | 2026-04-24 | Values & Cron Review | Scientific Rigor |
+| [v10.9.8](releases.json) | 2026-04-24 | Values & Cron Review | Scientific Rigor |
 | [v10.9.6](releases.json) | 2026-04-24 | Meta-Self-Correction | arXiv:2508.16789 |
 | [v10.9.5](releases.json) | 2026-04-24 | LogicPatch | arXiv:2603.09456 |
 | [v10.9.4](releases.json) | 2026-04-24 | Neural Theorem Proving | arXiv:2601.03192 |

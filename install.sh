@@ -8,7 +8,7 @@
 
 set -e  # Exit on error
 
-VERSION="10.8.1"
+VERSION="10.9.8"
 REPO="yun520-1/mark-heartflow-skill"
 INSTALL_DIR="${HOME}/.hermes/skills/ai/heartflow"
 GITHUB_TOKEN=""
