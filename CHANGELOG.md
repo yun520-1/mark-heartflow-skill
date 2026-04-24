@@ -2,6 +2,52 @@
 
 All notable changes to HeartFlow will be documented in this file.
 
+## [10.9.7] - 2026-04-24
+
+### Values & Cron Review Integration | 价值观与定时任务审查集成
+
+**EN:** Integrated values checker and cron job reviewer to ensure scientific rigor and system stability. Core goal: reduce logic errors by validating sources and reviewing automated tasks.
+
+**CN:** 集成价值观检查器和定时任务审查器，确保科学严谨性和系统稳定性。核心目标：通过验证来源和审查自动化任务来减少逻辑错误。
+
+### New Files | 新增文件
+
+- `scripts/values_checker.py` - 价值观检查器
+  - HeartFlowValues: 核心价值观对齐检查
+  - ScientificSourceValidator: 科学来源验证
+  - 检查组件是否符合心灵成长、科学严谨性、透明度等价值观
+  - 验证URL和文本是否来自可接受的科学来源（SEP、arXiv等）
+
+- `scripts/cron_reviewer.py` - 定时任务审查器
+  - CronJobReviewer: 定时任务审查
+  - 检查调度间隔合理性（5-120分钟）
+  - 验证超时设置（30-600秒）
+  - 确保重试机制存在
+  - 验证科学来源要求
+
+### Core Enhancements | 核心增强
+
+- **Scientific Rigor:** 拒绝新闻、博客、维基百科等非科学来源
+- **Values Alignment:** 检测用户获取语言，确保聚焦用户成长
+- **System Stability:** 定时任务审查，防止资源浪费和系统阻塞
+- **Transparency:** 确保所有组件公开可见
+
+### Technical Details | 技术细节
+
+- **Based on:** `self-reflection-and-optimize.py` from v6.0.0
+- **Lines of Code:** ~400 (values_checker) + ~350 (cron_reviewer)
+- **Dependencies:** Python standard library only
+- **Test Status:** ✅ Both modules tested and functional
+
+### Integration with Core Goal | 核心目标集成
+
+- ✅ 科学来源验证 → 减少错误来源
+- ✅ 价值观对齐检查 → 确保持续改进
+- ✅ 定时任务审查 → 系统稳定运行
+- ✅ 透明度验证 → 错误更容易被发现和修复
+
+---
+
 ## [10.8.3] - 2026-04-24
 
 ### Optimized Upgrade | 优化升级

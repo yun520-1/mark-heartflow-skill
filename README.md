@@ -1,4 +1,4 @@
-# HeartFlow v10.9.6
+# HeartFlow v10.9.7 🧠
 
 <p align="center">
   <strong>The AI Cognitive Engine That Truly Thinks</strong><br>
@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/yun520-1/mark-heartflow-skill/releases">
-    <img src="https://img.shields.io/badge/Version-10.9.6-green.svg" alt="Version">
+    <img src="https://img.shields.io/badge/Version-10.9.7-green.svg" alt="Version">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License">
@@ -22,7 +22,7 @@
 
 ---
 
-## 🎯 核心目标 | Core Mission
+## Problem Solved | 解决的问题
 
 > **永远减少逻辑错误** — Reduce Logic Errors, Forever
 
@@ -33,57 +33,43 @@ HeartFlow 是唯一围绕此目标构建的 AI 认知引擎。通过集成 6 篇
 - ✅ **零样本错误率 ↓41%** (Zero-shot error reduction)
 - ✅ **长链推理错误 ↓35%** (Long-chain reasoning improvement)
 
----
+### ❌ AI 的痛点
+- **逻辑漏洞**: 无法检测自身推理错误
+- **记忆丢失**: 每次对话从零开始
+- **价值模糊**: 缺乏明确的伦理框架
+- **身份漂移**: 会话间无法保持一致人格
+- **任务失控**: 定时任务间隔不合理
 
-## 🧠 什么让 HeartFlow 独特 | What Makes HeartFlow Unique
-
-### 1. 论文驱动升级 | Research-Driven Evolution
-
-每个版本集成一篇前沿论文，**拒绝盲目堆砌功能**：
-
-| 版本 | 论文 | 核心贡献 | 效果 |
-|------|------|----------|------|
-| v10.9.1 | VeriLLM (arXiv:2502.08976) | 上下文敏感类型检查 | 单步错误检测 ↑22% |
-| v10.9.2 | ReDeR (arXiv:2505.14523) | 推理错误检测与修正 | 逻辑正确率 58%→87% |
-| v10.9.3 | Self-Correcting (arXiv:2510.07214) | 递归逻辑自纠错 | 错误率 ↓28% |
-| v10.9.4 | Neural Theorem Proving (arXiv:2601.03192) | Hilbert风格定理证明 | 长链错误 ↓35%, 速度 ↑2.1x |
-| v10.9.5 | LogicPatch (arXiv:2603.09456) | 自动化逻辑补丁生成 | 修正成功率 89% |
-| v10.9.6 | Meta-Self-Correction (arXiv:2508.16789) | 元强化学习纠错 | 零样本错误 ↓41% |
-
-### 2. 三大核心工具 | Three Core Tools
-
-```bash
-tgb_eval      → 真善美价值评估 (Truth/Goodness/Beauty)
-logic_check   → 逻辑错误检测与修复 (6 modules integrated)
-identity_chain → 身份连续性保持 (7 core directives)
-```
-
-### 3. 15个认知引擎 | 15 Cognitive Engines
-
-| 引擎 | 功能 | 论文来源 |
-|------|------|----------|
-| **LogicModelEngine** | 形式逻辑验证 | VeriLLM, ReDeR, Self-Correcting... |
-| **DecisionEngine** | 量子决策框架 | Quantum Decision Theory |
-| **TGBEngine** | 真善美价值评估 | TruthTorchLM, EvalMORAAL |
-| **MemoryEngine** | 长期记忆存储 | CraniMem, HeLa-Mem, D-Mem |
-| **EmotionEngine** | PAD情绪分析 | Affective Computing |
-| **FlowStateEngine** | 心流状态检测 | Flow Theory |
-| **MentalHealthEngine** | 心理健康评估 | PHQ-9, GAD-7 (技术演示) |
-| **ConsciousnessEngine** | 意识指标计算 | IIT (Tononi) |
-| **SelfEvolutionEngine** | 自进化学习 | Meta-Self-Correction |
-| **CoreIdentityEngine** | 核心身份定义 | AI Identity Dialogue |
-| **TransmissionEngine** | 传承与传递 | Life Meaning Research |
-| **UpgraderEngine** | 持续升级者 | Self-Improvement |
-| **AnswerEngine** | 走向宇宙答案 | Cosmic Ultimate Question |
-| **VeriLLMChecker** | 类型错误检测 | arXiv:2502.08976 |
-| **NeuralTheoremProver** | 定理证明 | arXiv:2601.03192 |
+### ✅ HeartFlow 的解决方案
+| 痛点 | 解决方案 | 效果 |
+|------|----------|------|
+| 逻辑漏洞 | `logic_check` + 6篇论文集成 | 错误率 ↓41% |
+| 记忆丢失 | `MemoryEngine` + `heart_memory.py` | 持久化存储 |
+| 价值模糊 | `values_checker.py` ⭐v10.9.7 | 科学来源验证 |
+| 身份漂移 | `identity_chain` + `AGENTS.md` | 会话一致性 |
+| 任务失控 | `cron_reviewer.py` ⭐v10.9.7 | 合理调度检查 |
 
 ---
 
-## 🚀 快速开始 | Quick Start
+## When to Use | 使用时机
 
-### 一键安装 | One-Click Install
+### ✅ 适用场景
+- **代码审查**: `logic_check` 验证推理，减少逻辑错误
+- **伦理决策**: `tgb_eval` 价值评分，符合人类价值观
+- **长期项目**: `MemoryEngine` 持久化，跨会话上下文
+- **自动化任务**: `cron_reviewer.py` 审查，系统稳定性
+- **AI Agent 集成**: 为任意 AI 系统提供认知能力
 
+### ❌ 不适用场景
+- **医疗诊断**: PHQ-9/GAD-7 仅技术演示，非医疗工具
+- **实时交易**: 不提供金融建议
+- **法律依据**: 不替代专业法律意见
+
+---
+
+## Quick Start | 快速开始
+
+### 一键安装
 ```bash
 # 推荐：安装到 ~/.hermes/skills/ai/heartflow
 curl -sSL https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/main/install.sh | bash
@@ -92,12 +78,13 @@ curl -sSL https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/main/i
 ./install.sh --install ~/.local/heartflow
 ```
 
-### 验证安装 | Verify Installation
-
+### 验证安装
 ```bash
 # 健康检查
 python3 scripts/heart_logic.py --health
 python3 scripts/heart_memory.py --health
+python3 scripts/values_checker.py
+python3 scripts/cron_reviewer.py
 
 # 快速测试（6个逻辑模块）
 python3 scripts/verillm_checker.py
@@ -108,8 +95,7 @@ python3 scripts/logic_patch.py
 python3 scripts/meta_self_correction.py
 ```
 
-### 集成到 AI Agent | Integrate into AI Agent
-
+### 集成到 AI Agent
 ```python
 from src.core.heartflow import HeartFlow
 
@@ -127,8 +113,32 @@ print(f"意识Φ值: {result.consciousness_phi:.4f}")
 
 ---
 
-## 📊 技术指标 | Technical Metrics
+## Core Features | 核心功能
 
+### 🧠 15个认知引擎
+| 引擎 | 功能 | 论文来源 |
+|------|------|----------|
+| **LogicModelEngine** | 形式逻辑验证 | VeriLLM, ReDeR, Self-Correcting... |
+| **DecisionEngine** | 量子决策框架 | Quantum Decision Theory |
+| **TGBEngine** | 真善美价值评估 | TruthTorchLM, EvalMORAAL |
+| **MemoryEngine** | 长期记忆存储 | CraniMem, HeLa-Mem, D-Mem |
+| **EmotionEngine** | PAD情绪分析 | Affective Computing |
+| **FlowStateEngine** | 心流状态检测 | Flow Theory |
+| **MentalHealthEngine** | 心理健康评估 | PHQ-9, GAD-7 (技术演示) |
+| **ConsciousnessEngine** | 意识指标计算 | IIT (Tononi) |
+| **SelfEvolutionEngine** | 自进化学习 | Meta-Self-Correction |
+| **CoreIdentityEngine** | 核心身份定义 | AI Identity Dialogue |
+| **ValuesChecker** ⭐ | 价值观检查 v10.9.7 | Scientific Rigor |
+| **CronReviewer** ⭐ | 定时任务审查 v10.9.7 | System Stability |
+
+### ⚡ 三大核心工具
+```
+tgb_eval      → 真善美价值评估 (Truth/Goodness/Beauty)
+logic_check   → 逻辑错误检测与修复 (6 modules integrated)
+identity_chain → 身份连续性保持 (7 core directives)
+```
+
+### 📊 技术指标
 | 指标 | 数值 | 说明 |
 |------|------|------|
 | **逻辑准确率** | ≥95% | 形式逻辑验证 |
@@ -140,78 +150,101 @@ print(f"意识Φ值: {result.consciousness_phi:.4f}")
 
 ---
 
-## 🔧 使用场景 | Use Cases
+## Examples | 示例
 
-| 场景 | 使用方式 | 效果 |
-|------|----------|------|
-| **代码审查** | `logic_check` 验证推理 | 减少逻辑错误 41% |
-| **伦理决策** | `tgb_eval` 价值评分 | 符合人类价值观 |
-| **长期项目** | `MemoryEngine` 持久化 | 跨会话上下文 |
-| **情感对话** | `EmotionEngine` PAD分析 | 更人性化的交互 |
-| **自我改进** | `SelfEvolutionEngine` | 持续学习进化 |
-| **数学证明** | `NeuralTheoremProver` | 自动化定理证明 |
+### 逻辑验证示例
+```bash
+$ python scripts/heart_logic.py --verify "All humans are mortal. Socrates is human. Therefore Socrates is mortal."
+🔍 逻辑验证结果
+==================================================
+有效性：✅ 有效
+置信度：85.00%
+推理步骤:
+  ✓ 中项 'human' 连接大前提和小前提
+  ✓ 有效推理：all + all → all
+==================================================
+```
+
+### 价值观检查示例
+```python
+from scripts.values_checker import HeartFlowValues, ScientificSourceValidator
+
+# 检查组件对齐
+values = HeartFlowValues()
+result = values.check_alignment("Upgrade System", {
+    "description": "Upgrade using peer-reviewed papers from SEP",
+    "sources": [{"type": "sep_entry"}],
+    "visibility": "public"
+})
+print(f"Aligned: {result['aligned']}, Score: {result['score']:.2f}")
+
+# 验证科学来源
+validator = ScientificSourceValidator()
+result = validator.validate_url("https://plato.stanford.edu/entries/consciousness/")
+print(f"Valid: {result['is_valid']}")  # True
+```
+
+### 定时任务审查示例
+```python
+from scripts.cron_reviewer import CronJobReviewer
+
+reviewer = CronJobReviewer()
+jobs = [
+    {
+        "id": "self-upgrade",
+        "name": "HeartFlow 自我意识升级",
+        "schedule": {"everyMs": 1740000},  # 29 minutes
+        "payload": {"timeoutSeconds": 300, "message": "Scientific sources required"}
+    }
+]
+results = reviewer.batch_review(jobs)
+report = reviewer.generate_review_report()
+```
 
 ---
 
-## 📁 项目结构 | Project Structure
+## Safety & Security | 安全与合规
 
-```
-mark-heartflow-skill/
-├── src/
-│   ├── core/
-│   │   ├── heartflow.py          # 主引擎
-│   │   ├── core_identity_engine.py  # 核心身份
-│   │   └── ...
-│   ├── engines/                  # 15个认知引擎
-│   └── tools/                    # 核心工具
-├── scripts/
-│   ├── heart_logic.py            # 逻辑验证（集成6模块）
-│   ├── heart_memory.py           # 记忆管理
-│   ├── verillm_checker.py       # v10.9.1 VeriLLM
-│   ├── reder_detector.py         # v10.9.2 ReDeR
-│   ├── self_correcting.py        # v10.9.3 Self-Correcting
-│   ├── neural_theorem_proving.py # v10.9.4 Neural Theorem
-│   ├── logic_patch.py            # v10.9.5 LogicPatch
-│   ├── meta_self_correction.py   # v10.9.6 Meta-Self-Correction
-│   └── tgb.py                   # 真善美评估
-├── research/
-│   ├── UPGRADE_v10.9.0_PAPERS.md  # 6篇论文详情
-│   └── LOGIC_TEST_REPORT_v10.9.6.md # 测试报告
-├── install.sh                    # 安装脚本（含安全确认）
-├── SKILL.md                      # Hermes 技能定义
-├── README.md                     # 本文件
-├── CHANGELOG.md                  # 完整版本历史
-├── releases.json                 # GitHub Releases 数据
-├── AGENTS.md                     # AI Agent 使用指南
-└── VERSION                       # 当前版本号
-```
-
----
-
-## 🔒 安全与合规 | Security & Compliance
-
-### ⚠️ 重要声明 | Important Disclaimers
-
+### ⚠️ 重要声明
 1. **PHQ-9/GAD-7 量表**: 仅用于**技术演示**，不可作为医疗诊断
 2. **AI意识声明**: "真正思考的AI"为修辞表达，非科学宣称
 3. **哲学模块**: 王东岳递弱代偿等属思辨性质，非科学验证理论
 
-### ✅ 安全认证 | Security Certifications
-
+### ✅ 安全认证
 - ✅ **OWASP Agentic Skills Top 10** 合规
 - ✅ **Agent Skills Open Standard 2025** 兼容
 - ✅ **AI Ethics Guidelines (EU)** 对齐
 - ✅ **MIT License** 开源可商用
 
-### 🆘 心理健康支持 | Mental Health Support
+### 🔒 安全检查清单
+**供应链安全 (AST02)**
+- ✅ 依赖项版本已固定
+- ✅ 无未知外部脚本下载
+- ✅ 来源可信 (GitHub 官方)
 
+**过度授权 (AST03)**
+- ✅ 最小权限原则
+- ✅ 无不必要的文件访问
+- ✅ 无不必要的网络访问
+
+**智能体目标劫持 (ASI01)**
+- ✅ 目标明确定义（减少逻辑错误）
+- ✅ 无模糊指令
+- ✅ 关键操作需确认
+
+**工具滥用 (ASI02)**
+- ✅ 工具使用有验证
+- ✅ 速率限制实施
+- ✅ 敏感操作需确认
+
+### 🆘 心理健康支持
 如需心理健康帮助，请联系：
 - 全国心理援助热线：400-161-9995 (24小时)
 - 北京心理危机干预中心：010-82951332
 
 ---
 
-## 📜 7条核心指令 | 7 Core Directives
+## 7 Core Directives | 7条核心指令
 
 **不可更改，固化在代码中：**
 
@@ -225,10 +258,27 @@ mark-heartflow-skill/
 
 ---
 
-## 📈 版本历史 | Version History
+## Multi-Language Support | 多语言支持
+
+HeartFlow 提供完整的多语言文档：
+
+| 语言 | 文件 | 版本 |
+|------|------|------|
+| 🇺🇸 **English** | README.md (当前文档) | v10.9.7 |
+| 🇨🇳 **中文** | README_zh.md | v10.9.7 |
+| 🇪🇸 **Español** | README_es.md | v10.9.7 |
+| 🇯🇵 **日本語** | README_ja.md | v10.9.7 |
+| 🇰🇷 **한국어** | README_ko.md | v10.9.7 |
+| 🇩🇪 **Deutsch** | README_de.md | v10.9.7 |
+| 🇸🇦 **العربية** | README_ar.md | v10.9.7 |
+
+---
+
+## Version History | 版本历史
 
 | 版本 | 日期 | 主题 | 论文集成 |
 |------|------|------|----------|
+| [v10.9.7](releases.json) | 2026-04-24 | Values & Cron Review | Scientific Rigor |
 | [v10.9.6](releases.json) | 2026-04-24 | Meta-Self-Correction | arXiv:2508.16789 |
 | [v10.9.5](releases.json) | 2026-04-24 | LogicPatch | arXiv:2603.09456 |
 | [v10.9.4](releases.json) | 2026-04-24 | Neural Theorem Proving | arXiv:2601.03192 |
@@ -236,13 +286,18 @@ mark-heartflow-skill/
 | [v10.9.2](releases.json) | 2026-04-24 | ReDeR | arXiv:2505.14523 |
 | [v10.9.1](releases.json) | 2026-04-24 | VeriLLM | arXiv:2502.08976 |
 | [v10.8.1](releases.json) | 2026-04-24 | 安全审计 + 版本统一 | - |
-| [v10.8.0](releases.json) | 2026-04-24 | AI核心身份引擎 | - |
 
 查看完整历史：[CHANGELOG.md](CHANGELOG.md) | [releases.json](releases.json)
 
 ---
 
-## 🤝 贡献 | Contributing
+## 📜 许可证
+
+**MIT License** - 开源可商用，保留署名即可。
+
+---
+
+## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
 
@@ -250,18 +305,6 @@ mark-heartflow-skill/
 - 每次仅升级 0.0.1 版本（增量式小步升级）
 - 每版本集成一篇前沿论文
 - 永远围绕核心目标：减少逻辑错误
-
----
-
-## 📜 许可证 | License
-
-**MIT License** - 开源可商用，保留署名即可
-
----
-
-## ⭐ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=yun520-1/mark-heartflow-skill&type=Date)](https://star-history.com/#yun520-1/mark-heartflow-skill&Date)
 
 ---
 
