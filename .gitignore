@@ -1,50 +1,27 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
+# HeartFlow AI Identity - Privacy Protected
+# Capability list is personal identity, never upload to GitHub
 
-# Virtual Environment
-venv/
-env/
-ENV/
+# Capability list - AI personal identity (PRIVATE)
+CAPABILITY.md
+capability.md
+_capability.md
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
+# Session logs
 *.log
+*.session
+
+# Memory data
+memory/
+*.memory
+
+# Evolution logs
+evolution/
 evolution_logs/
 
-# Test
-.pytest_cache/
-.coverage
-htmlcov/
+# Internal tracking
+hunted_code/
+research/
 
-# Environment
-.env
-.env.local
+# Temporary files
+*.tmp
+*.swp
