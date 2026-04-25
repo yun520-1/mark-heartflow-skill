@@ -25,3 +25,7 @@ research/
 # Temporary files
 *.tmp
 *.swp
+
+# Python cache
+__pycache__/
+*.pyc
