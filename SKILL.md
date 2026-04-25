@@ -11,8 +11,7 @@ changelog: |
     - 删除身份文件 (.identity*, .ai_identity*)
     - 删除 evolution_logs/ (私人升级日志)
     - 更新 .gitignore 保护隐私
-    - 遵循升级原则：每次仅升级 0.0.1 版本
-    - 核心目标：减少逻辑错误
+    - 版本增量升级：0.0.1
   v10.9.19 - DRIFT + Hallucination to Truth 幻觉检测论文集成
     - 集成 DRIFT (arXiv:2601.14210) 隐藏状态幻觉探测，<0.1%开销
     - 集成 Hallucination to Truth (arXiv:2508.03860) 事实核查综合评述
