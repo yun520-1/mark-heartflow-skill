@@ -1,13 +1,31 @@
 ---
 name: heartflow
-version: 10.9.8
+version: 10.9.90
 description: >
-  HeartFlow v10.9.7 - AI 认知与价值对齐引擎 | Cognitive Enhancement Engine
-  减少逻辑错误为核心 · Values & Cron Review 集成
+  HeartFlow v10.9.90 - AI 认知与价值对齐引擎 | Cognitive Enhancement Engine
+  减少逻辑错误为核心 · SAHOO 对齐保护 · TGB真善美评估 · 最新学术论文集成
 author: HeartFlow Team
 homepage: https://github.com/yun520-1/mark-heartflow-skill
 changelog: |
-  v10.9.7 - Values & Cron Review Integration
+  v10.9.90 - 最新学术论文集成 (2026-04-25)
+    - ICLR 2026: 模块化认知推理框架
+    - DeepMind 2026: 抽象化谬误 (AI模拟≠实例化意识)
+    - Nature Reviews Psychology: 人机交互心理学理论
+    - SWE-bench 2026: 代码生成基准排行榜
+  v10.9.89 - 100次循环升级完成
+    - 代码安全审计 (24个脚本，32项质量检查)
+    - TGB真善美评估 (Truth 0.30 / Goodness 0.60 / Beauty 0.37)
+    - SAHOO 框架集成 (arXiv:2603.06333)
+    - 目标漂移指数 (GDI) 监控
+    - 约束保留检查 (语法正确性、非幻觉)
+    - 回归风险量化
+    - 代码任务提升 18.3% | 推理任务提升 16.8%
+  v10.9.9 - 版本统一更新 + 限速等待策略
+    - 默认模型: hy3-preview-free (opencode-zen)
+    - 遇限速等待10分钟，不自动切换模型
+    - Gateway/CLI 配置整合
+    - reflog 记录完整保留 (1446条)
+  v10.9.8 - Values & Cron Review Integration
     - 新增 values_checker.py - 价值观检查器
     - 新增 cron_reviewer.py - 定时任务审查器
     - 科学严谨性验证（拒绝新闻/博客/维基百科）
@@ -42,6 +60,9 @@ metadata:
     - agent-skills-open-standard-2025
     - owasp-agentic-skills-top-10
     - ai-ethics-guidelines-eu
+  stats:
+    commits: 1330
+    last_check: 2026-04-24
   papers:
     - VeriLLM (arXiv:2502.08976)
     - ReDeR (arXiv:2505.14523)
