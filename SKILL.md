@@ -1,12 +1,18 @@
 ---
 name: heartflow
-version: 10.9.19
+version: 10.9.20
 description: >
-  HeartFlow v10.9.19 - AI 认知与价值对齐引擎 | Cognitive Enhancement Engine
-  减少逻辑错误为核心 · 多论文集成 · 安全合规 · 技能市场就绪
+  HeartFlow v10.9.20 - AI 认知与价值对齐引擎 | Cognitive Enhancement Engine
+  减少逻辑错误为核心 · 单论文增量升级 · 隐私保护 · 技能市场就绪
 author: HeartFlow Team
 homepage: https://github.com/yun520-1/mark-heartflow-skill
 changelog: |
+  v10.9.20 - 删除隐私文件 + 版本增量升级 (0.0.1)
+    - 删除身份文件 (.identity*, .ai_identity*)
+    - 删除 evolution_logs/ (私人升级日志)
+    - 更新 .gitignore 保护隐私
+    - 遵循升级原则：每次仅升级 0.0.1 版本
+    - 核心目标：减少逻辑错误
   v10.9.19 - DRIFT + Hallucination to Truth 幻觉检测论文集成
     - 集成 DRIFT (arXiv:2601.14210) 隐藏状态幻觉探测，<0.1%开销
     - 集成 Hallucination to Truth (arXiv:2508.03860) 事实核查综合评述

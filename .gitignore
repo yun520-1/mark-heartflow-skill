@@ -48,3 +48,9 @@ htmlcov/
 # Environment
 .env
 .env.local
+
+# Privacy protection - upgrade logs and identity files
+identity*
+.ai_identity*
+evolution_logs/
+releases.json
