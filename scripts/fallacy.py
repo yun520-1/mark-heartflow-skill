@@ -22,7 +22,7 @@ import sys
 from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict
 
-__version__ = "10.7.7"
+__version__ = "10.9.18"
 
 
 @dataclass

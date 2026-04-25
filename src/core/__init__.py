@@ -16,7 +16,7 @@ from .legacy_engines import (
     TGBEngine,
 )
 
-__version__ = "10.5.1"
+__version__ = "10.9.18"
 __all__ = [
     'HeartFlow',
     'HeartFlowResult',

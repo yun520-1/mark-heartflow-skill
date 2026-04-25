@@ -18,7 +18,7 @@ import argparse
 from dataclasses import dataclass, asdict
 from typing import Dict, List, Tuple
 
-__version__ = "10.7.9"
+__version__ = "10.9.18"
 
 
 @dataclass

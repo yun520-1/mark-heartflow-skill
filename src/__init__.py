@@ -22,7 +22,7 @@ Security v10.7:
     ✅ Human-in-the-Loop Confirmation
 """
 
-__version__ = "10.7.0"
+__version__ = "10.9.18"
 __all__ = [
     "HeartFlow",
     "process_input",

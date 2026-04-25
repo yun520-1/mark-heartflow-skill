@@ -1,31 +1,50 @@
-# HeartFlow AI Identity - Privacy Protected
-# Capability list is personal identity, never upload to GitHub
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Capability list - AI personal identity (PRIVATE)
-CAPABILITY.md
-capability.md
-_capability.md
+# Virtual Environment
+venv/
+env/
+ENV/
 
-# Session logs
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
 *.log
-*.session
-
-# Memory data
-memory/
-*.memory
-
-# Evolution logs
-evolution/
 evolution_logs/
 
-# Internal tracking
-hunted_code/
-research/
+# Test
+.pytest_cache/
+.coverage
+htmlcov/
 
-# Temporary files
-*.tmp
-*.swp
-
-# Python cache
-__pycache__/
-*.pyc
+# Environment
+.env
+.env.local

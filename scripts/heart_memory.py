@@ -27,7 +27,7 @@ import argparse
 from collections import defaultdict
 from typing import Any, Dict, List
 
-__version__ = "10.7.8"
+__version__ = "10.9.18"
 
 
 class HeartTraceMemory:
