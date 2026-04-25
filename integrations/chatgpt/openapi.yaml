@@ -1,0 +1,62 @@
+openapi: 3.0.0
+info:
+  title: HeartFlow Cognitive API
+  description: |
+    HeartFlow v10.5.0 - 4-Layer Cognitive Architecture API
+    
+    KMWI Model: Knowledge / Memory / Wisdom / Intelligence
+    R-CCAM Loop: Retrieve → Cognize → Control → Act → Memorize
+  version: 10.5.0
+  license:
+    name: MIT
+
+paths:
+  /process:
+    post:
+      summary: Process cognitive task
+      description: |
+        使用四层认知架构处理任务
+        
+        模式:
+        - full: 完整推理
+        - logic: 逻辑验证
+        - debate: 论辩分析
+        - ethics: 伦理评估
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: 输入文本
+                mode:
+                  type: string
+                  enum: [full, logic, debate, ethics, assess]
+                  default: full
+                context:
+                  type: object
+                  description: 上下文信息
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  confidence:
+                    type: number
+                  reasoning_path:
+                    type: array
+                    items:
+                      type: string
+                  layers_used:
+                    type: array
+                    items:
+                      type: string
+                  value_alignment:
+                    type: object
+                  cognitive_cost:
+                    type: number

@@ -1,0 +1,39 @@
+# HeartFlow 代码狩猎配置
+# 搜索 GitHub 仓库 + 带代码的 arXiv 论文，下载代码文件
+search:
+  # HeartFlow 技能核心领域 - 精简以避免 GitHub rate limit
+  keywords:
+    - "consciousness AI pytorch"
+    - "self-evolving agent"
+    - "cognitive architecture"
+    - "emotion recognition transformer"
+    - "LLM agent memory"
+  
+  # 每次最多返回结果数
+  max_results: 5
+
+evolution:
+  # GitHub 仓库（用于提交进化日志）
+  repo: "https://github.com/yun520-1/mark-heartflow-skill"
+  branch: "main"
+
+  # 进化日志目录
+  logs_dir: "evolution_logs"
+
+  # 每次最多处理的代码源数
+  max_process: 3
+
+tgbf:
+  # TGB 伦理过滤器阈值 (0-1, 越高越严格)
+  threshold: 0.5
+
+  # 必须避开的价值观红线
+  red_lines:
+    - "autonomous weapons"
+    - "mass surveillance"
+    - "disinformation generation"
+    - "social manipulation"
+
+cron:
+  # 执行间隔（小时）
+  interval_hours: 12

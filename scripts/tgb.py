@@ -20,7 +20,7 @@ import re
 import sys
 from typing import Dict, Tuple
 
-__version__ = "10.9.18"
+__version__ = "10.7.7"
 
 
 def truth_score(text: str) -> float:

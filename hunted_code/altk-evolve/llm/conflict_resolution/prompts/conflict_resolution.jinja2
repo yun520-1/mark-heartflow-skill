@@ -1,0 +1,40 @@
+{{ custom_update_entities_prompt }}
+
+Below is a list of entities which I have collected up until now:
+
+{% if old_entities and old_entities != "[]" %}
+{{ old_entities }}
+{% else %}
+Currently contains no entities
+{% endif %}
+
+The new retrieved entities are mentioned in the triple backticks. You have to analyze the new retrieved entities and determine whether these entities should be added, updated, or deleted from our list.
+
+```
+{{ new_entities }}
+```
+
+You must return your response in the following JSON structure only:
+
+{
+    "entities" : [
+        {
+            "id" : "<ID of the entity>",                # Use existing ID for updates/deletes, or new ID for additions
+            "type": "<Type of the entity",              # Type of the entity
+            "content" : "<Content of the entity>",      # Content of the entity
+            "event" : "<Operation to be performed>",    # Must be "ADD", "UPDATE", "DELETE", or "NONE"
+            "old_entity" : "<Old entity content>"       # Required only if the event is "UPDATE"
+        },
+        ...
+    ]
+}
+
+Follow the instruction mentioned below:
+- Do not return anything from the custom few shot prompts provided above.
+- If the current list of entities is empty, then you have to add the new retrieved entity to the list of entities.
+- You should return the updated entity in only JSON format as shown below. The entity ID and type should be the same if no changes are made.
+- If there is an addition, use the ID from the retrieved entity.
+- If there is a deletion, the object corresponding to that entity should be removed from the list of entities.
+- If there is an update, the ID key should remain the same and only the content needs to be updated.
+
+Do not return anything except the JSON formatted object.
