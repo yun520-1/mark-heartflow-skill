@@ -81,26 +81,23 @@ def check_memory():
         print(f"  ❌ 错误: {e}")
         return False
 
-def check_capability_list():
-    """检查能力清单是否存在"""
-    print("\n📋 检查能力清单...")
-    # Find heartflow directory
+# NOTE: CAPABILITY.md is AI personal identity - NEVER upload to GitHub
+# Keep local copy at ~/.hermes/skills-marketplace/skills/heartflow/CAPABILITY.md
+
+def check_privacy():
+    """检查隐私保护 - 能力清单不应上传GitHub"""
+    print("\n🔒 检查隐私保护...")
     hf_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    capability_file = os.path.join(hf_dir, "CAPABILITY.md")
+    gitignore_file = os.path.join(hf_dir, ".gitignore")
     
-    if os.path.exists(capability_file):
-        print(f"  ✅ CAPABILITY.md存在")
-        
-        # Check version
-        with open(capability_file, "r") as f:
+    if os.path.exists(gitignore_file):
+        with open(gitignore_file, "r") as f:
             content = f.read()
-            if "v10.9" in content:
-                print(f"  ✅ 版本记录正常")
+            if "CAPABILITY.md" in content:
+                print(f"  ✅ .gitignore 已保护 CAPABILITY.md")
                 return True
-    else:
-        print(f"  ❌ CAPABILITY.md不存在")
-        return False
-    
+    print(f"  ⚠️  .gitignore 未包含 CAPABILITY.md")
+    return False
     return False
 
 def main():
@@ -113,7 +110,7 @@ def main():
         "逻辑引擎": check_logic_engine(),
         "TGB引擎": check_tgb_engine(),
         "记忆系统": check_memory(),
-        "能力清单": check_capability_list(),
+        "隐私保护": check_privacy(),
     }
     
     print("\n" + "=" * 50)
