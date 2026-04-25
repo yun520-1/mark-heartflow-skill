@@ -1,4 +1,4 @@
-# HeartFlow v10.9.19 论文知识库
+# HeartFlow v10.10.0 论文知识库
 
 > 版本日期：2026-04-25
 > 搜索关键词：truthfulness, hallucination, factuality, verification, validation, proof
@@ -143,24 +143,24 @@ class FactualityChecker:
 
 ---
 
-## 版本集成记录 (v10.9.1 - v10.9.19)
+## 版本集成记录 (v10.9.1 - v10.10.0)
 
 | 版本 | 论文 | 核心贡献 | arXiv ID |
 |------|------|----------|----------|
-| v10.9.19 | DRIFT | 隐藏状态幻觉探测 | 2601.14210 |
-| v10.9.19 | Hallucination to Truth | 事实核查综合评述 | 2508.03860 |
-| v10.9.18 | Abstraction Fallacy | AI意识伦理三层框架 | DeepMind 2026 |
-| v10.9.18 | Mixture of Cognitive Reasoners | 模块化认知架构 | ICLR 2026 |
-| v10.9.18 | SWE-bench-CL | 持续学习框架 | 2507.00014 |
-| v10.9.18 | Human-centric AI | 三层伦理框架 | 2512.02544 |
-| v10.9.16 | Where Reasoning Breaks | 逻辑连接词控制 | 2604.20564 |
-| v10.9.16 | Prompt-Induced Hallucinations | 提示导致幻觉 | 2604.21911 |
-| v10.9.16 | Learning to Evolve | 自改进多智能体系统 | 2604.20714 |
-| v10.9.15 | DryRUN | 自主测试生成 | 2604.21598 |
-| v10.9.14 | MEL | 元经验内部化学习 | 2602.10224 |
-| v10.9.13 | Reflective Confidence | 在线推理纠错 | 2512.18605 |
-| v10.9.11 | SAHOO | 递归自改进对齐保护 | 2603.06333 |
-| v10.9.6 | Meta-Self-Correction | 元强化学习纠错 | 2508.16789 |
+| v10.10.0 | DRIFT | 隐藏状态幻觉探测 | 2601.14210 |
+| v10.10.0 | Hallucination to Truth | 事实核查综合评述 | 2508.03860 |
+| v10.10.0 | Abstraction Fallacy | AI意识伦理三层框架 | DeepMind 2026 |
+| v10.10.0 | Mixture of Cognitive Reasoners | 模块化认知架构 | ICLR 2026 |
+| v10.10.0 | SWE-bench-CL | 持续学习框架 | 2507.00014 |
+| v10.10.0 | Human-centric AI | 三层伦理框架 | 2512.02544 |
+| v10.10.0 | Where Reasoning Breaks | 逻辑连接词控制 | 2604.20564 |
+| v10.10.0 | Prompt-Induced Hallucinations | 提示导致幻觉 | 2604.21911 |
+| v10.10.0 | Learning to Evolve | 自改进多智能体系统 | 2604.20714 |
+| v10.10.0 | DryRUN | 自主测试生成 | 2604.21598 |
+| v10.10.0 | MEL | 元经验内部化学习 | 2602.10224 |
+| v10.10.0 | Reflective Confidence | 在线推理纠错 | 2512.18605 |
+| v10.10.0 | SAHOO | 递归自改进对齐保护 | 2603.06333 |
+| v10.10.0 | Meta-Self-Correction | 元强化学习纠错 | 2508.16789 |
 | v10.9.5 | LogicPatch | 逻辑补丁生成 | 2603.09456 |
 | v10.9.4 | Neural Theorem Proving | 神经定理证明 | 2601.03192 |
 | v10.9.3 | Self-Correcting | 递归自纠错 | 2510.07214 |

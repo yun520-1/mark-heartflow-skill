@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-HeartFlow v10.9.11 - SAHOO Guard
+HeartFlow v10.10.0 - SAHOO Guard
 SAHOO 对齐保护器 - 目标漂移监控与约束保留检查
 
 核心目标：递归自我改进中的价值对齐保护
@@ -31,7 +31,7 @@ class SAHOOGuard:
     """
     
     def __init__(self):
-        self.version = "10.9.11"
+        self.version = "10.10.0"
         self.cycle_count = 0
         self.gdi_history: List[float] = []
         self.regression_risks: List[float] = []

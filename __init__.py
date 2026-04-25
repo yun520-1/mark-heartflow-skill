@@ -23,7 +23,7 @@ Security Audit v10.4.0:
     - No external dependencies
 """
 
-__version__ = "10.9.15"
+__version__ = "10.10.0"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 __all__ = [

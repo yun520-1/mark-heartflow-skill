@@ -42,7 +42,7 @@ feat: v10.9.90 - 学术论文集成 + 代码安全审计 + 技能市场上传
 ### 📚 文档更新
 
 - `research/PAPERS_v10.9.90.md` - 最新论文知识库
-- `research/UPGRADE_v10.9.12.md` - 综合升级报告
+- `research/UPGRADE_v10.10.0.md` - 综合升级报告
 - `VERSION.txt` - 版本文件
 
 ### 🔧 技术指标

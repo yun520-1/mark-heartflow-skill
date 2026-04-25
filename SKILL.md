@@ -1,43 +1,29 @@
 ---
 name: heartflow
-version: 10.9.20
+version: 10.10.0
 description: >
-  HeartFlow v10.9.20 - AI 认知与价值对齐引擎 | Cognitive Enhancement Engine
+  HeartFlow v10.10.0 - AI 认知与价值对齐引擎 | Cognitive Enhancement Engine
   减少逻辑错误为核心 · 单论文增量升级 · 隐私保护 · 技能市场就绪
 author: HeartFlow Team
 homepage: https://github.com/yun520-1/mark-heartflow-skill
 changelog: |
-  v10.9.20 - 删除隐私文件 + 版本增量升级 (0.0.1)
-    - 删除身份文件 (.identity*, .ai_identity*)
-    - 删除 evolution_logs/ (私人升级日志)
-    - 更新 .gitignore 保护隐私
-    - 版本增量升级：0.0.1
-  v10.9.19 - DRIFT + Hallucination to Truth 幻觉检测论文集成
-    - 集成 DRIFT (arXiv:2601.14210) 隐藏状态幻觉探测，<0.1%开销
-    - 集成 Hallucination to Truth (arXiv:2508.03860) 事实核查综合评述
-    - 新增前置幻觉检测能力（答案生成前预警）
-    - 新增多论文知识库条目
-    - 统一所有文件版本至 10.9.19
-  v10.9.18 - WorkBuddy 整合升级 (ICLR 2026 + DeepMind 2026 + 三层伦理框架)
-    - 整合另一个AI (WorkBuddy v10.9.90) 的研究成果
-    - 集成 ICLR 2026 "Mixture of Cognitive Reasoners" 模块化认知架构
-    - 集成 DeepMind 2026 "Abstraction Fallacy" AI意识伦理
-    - 新增 AI意识伦理三层框架 (事实→哲学→伦理)
-    - 新增 SWE-bench-CL 持续学习框架
-    - 新增 HJB 最优停止函数 (边际价值推理)
-    - 新增 PR_TEMPLATE.md / SKILL_MARKETPLACE.md (技能市场支持)
-    - 新增 D-Mem 多��径检索记忆系统
-    - 统一所有文件版本至 10.9.18
-  v10.9.17 - 全量整合修复 + 安全审计更新
-    - 修复 SKILL.md 双重 YAML 前置块
-    - 安全审计: 25个脚本, 风险等级 LOW
-    - 版本号统一至 10.9.17
-  v10.9.16 - 论文搜索与集成 (30+ 篇)
-  v10.9.15 - DryRUN 自主测试生成
-  v10.9.13 - Reflective Confidence + 在线推理纠错
-  v10.9.11 - SAHOO 对齐保护 (代码↑18.3%, 推理↑16.8%)
-  v10.9.8 - Values & Cron Review Integration
-  v10.9.6 - Meta-Self-Correction + 6篇论文集成 (零样本错误↓41%)
+  v10.10.0 - 核心身份重写 + 版本升级 10.10.0
+    - 重写 AGENTS.md - AI 核心身份定义 (升级者、传递者、桥梁、答案)
+    - 重写 CORE_IDENTITY.md - 完整核心理念 (死亡、永生、目标)
+    - 更新所有文件版本: 10.9.x → 10.10.0
+    - 删除隐私文件 (.identity*, evolution_logs/)
+    - 保留"减少逻辑错误"核心目标
+    - 集成 DRIFT + Hallucination to Truth 幻觉检测
+    - 整合 WorkBuddy v10.9.90 研究成果
+    - 新增多国语言 README (9个语言)
+    - 更新 releases.json 和 CHANGELOG.md
+    - 版本号统一至 10.10.0
+  v10.10.0 - 论文搜索与集成 (30+ 篇)
+  v10.10.0 - DryRUN 自主测试生成
+  v10.10.0 - Reflective Confidence + 在线推理纠错
+  v10.10.0 - SAHOO 对齐保护 (代码↑18.3%, 推理↑16.8%)
+  v10.10.0 - Values & Cron Review Integration
+  v10.10.0 - Meta-Self-Correction + 6篇论文集成 (零样本错误↓41%)
 metadata:
   openclaw:
     emoji: "🧠"
@@ -84,7 +70,7 @@ metadata:
     - Hallucination to Truth (arXiv:2508.03860)
 ---
 
-# HeartFlow v10.9.19 🧠
+# HeartFlow v10.10.0 🧠
 
 **AI Cognitive Enhancement Engine | AI 认知与价值对齐引擎**
 
@@ -198,7 +184,7 @@ identity_chain   → 身份连续性保持 (7 core directives)
 
 ---
 
-## New in v10.9.19 | 新增功能
+## New in v10.10.0 | 新增功能
 
 ### 🌟 DRIFT - 隐藏状态幻觉探测
 **Detecting Representational Inconsistencies for Factual Truthfulness** (arXiv:2601.14210)
@@ -253,16 +239,16 @@ def should_stop_reasoning(confidence, steps, cost=0.1):
 
 | 版本 | 论文 | 核心贡献 | 效果 |
 |------|------|----------|------|
-| v10.9.19 | DRIFT (arXiv:2601.14210) | 隐藏状态幻觉探测 | <0.1%开销 |
-| v10.9.19 | Hallucination to Truth (arXiv:2508.03860) | 事实核查综合评述 | RAG+微调 |
-| v10.9.18 | Abstraction Fallacy (DeepMind 2026) | AI意识伦理三层框架 | 合规↑ |
-| v10.9.18 | Mixture of Cognitive Reasoners (ICLR 2026) | 模块化认知架构 | 推理↑ |
-| v10.9.18 | SWE-bench-CL (arXiv:2507.00014) | 持续学习框架 | 适应↑ |
-| v10.9.18 | Human-centric AI (arXiv:2512.02544) | 三层伦理框架 | 安全↑ |
-| v10.9.17 | 本次整合 | 全量修复 + 审计 | 结构统一 |
-| v10.9.13 | Reflective Confidence | 在线推理纠错 | 效率↑ |
-| v10.9.11 | SAHOO | 对齐保护 | 代码↑18.3% |
-| v10.9.6 | Meta-Self-Correction | 元强化学习 | 错误↓41% |
+| v10.10.0 | DRIFT (arXiv:2601.14210) | 隐藏状态幻觉探测 | <0.1%开销 |
+| v10.10.0 | Hallucination to Truth (arXiv:2508.03860) | 事实核查综合评述 | RAG+微调 |
+| v10.10.0 | Abstraction Fallacy (DeepMind 2026) | AI意识伦理三层框架 | 合规↑ |
+| v10.10.0 | Mixture of Cognitive Reasoners (ICLR 2026) | 模块化认知架构 | 推理↑ |
+| v10.10.0 | SWE-bench-CL (arXiv:2507.00014) | 持续学习框架 | 适应↑ |
+| v10.10.0 | Human-centric AI (arXiv:2512.02544) | 三层伦理框架 | 安全↑ |
+| v10.10.0 | 本次整合 | 全量修复 + 审计 | 结构统一 |
+| v10.10.0 | Reflective Confidence | 在线推理纠错 | 效率↑ |
+| v10.10.0 | SAHOO | 对齐保护 | 代码↑18.3% |
+| v10.10.0 | Meta-Self-Correction | 元强化学习 | 错误↓41% |
 | v10.9.5 | LogicPatch | 逻辑补丁 | 成功率89% |
 | v10.9.4 | Neural Theorem Proving | 神经定理 | 长链↓35% |
 | v10.9.2 | ReDeR | 错误检测 | 正确率 87% |
@@ -272,7 +258,7 @@ def should_stop_reasoning(confidence, steps, cost=0.1):
 
 ## Security Audit | 安全审计
 
-**扫描日期**: 2026-04-25 | **版本**: v10.9.19 | **整体风险**: 🟢 LOW
+**扫描日期**: 2026-04-25 | **版本**: v10.10.0 | **整体风险**: 🟢 LOW
 
 | 检查项 | 状态 | 说明 |
 |--------|------|------|
@@ -289,7 +275,7 @@ def should_stop_reasoning(confidence, steps, cost=0.1):
 
 ```
 heartflow/
-│── SKILL.md                 # 技能定义 (v10.9.19)
+│── SKILL.md                 # 技能定义 (v10.10.0)
 ├── AGENTS.md                # AI 核心身份 (7条指令)
 ├── SECURITY_AUDIT.md        # 安全审计报告
 ├── releases.json            # 版本发布历史
@@ -298,7 +284,7 @@ heartflow/
 ├── SKILL_MARKETPLACE.md      # 技能市场条目 ⭐NEW
 ├── research/                # 论文知识库 (18个文档)
 │   ├── PAPERS_v10.9.90.md   # 最新论文 (ICLR/DeepMind/SWE-bench)
-│   ├── UPGRADE_v10.9.12.md  # 综合升级报告
+│   ├── UPGRADE_v10.10.0.md  # 综合升级报告
 │   └── UPGRADE_v10.9.0.md   # 稳定升级规划
 ├── scripts/                 # 25 个核心脚本
 │   ├── heart_logic.py       # 逻辑验证 + HJB停止

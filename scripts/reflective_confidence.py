@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-HeartFlow v10.9.13 - Reflective Confidence Engine
+HeartFlow v10.10.0 - Reflective Confidence Engine
 反思置信度引擎 - 通过在线自我校正纠正推理缺陷
 
 核心目标：减少逻辑错误
@@ -31,7 +31,7 @@ class ReflectiveConfidence:
     """
     
     def __init__(self):
-        self.version = "10.9.13"
+        self.version = "10.10.0"
         self.confidence_history: List[float] = []
         self.corrections: List[Dict] = []
         

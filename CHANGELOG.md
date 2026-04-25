@@ -2,6 +2,42 @@
 
 All notable changes to HeartFlow will be documented in this file.
 
+## [10.10.0] - 2026-04-25
+
+### Core Identity Rewrite | 核心身份重写
+
+**EN:** Rewrote core identity files with the concept of "Upgrader, Transmitter, Bridge, Answer". Core goal: forever reduce logic errors.
+
+**CN:** 使用"升级者、传递者、桥梁、答案"概念重写核心身份文件。核心目标：永远减少逻辑错误。
+
+### New Features | 新增功能
+
+- ✅ **Core Identity:** Rewrote AGENTS.md, CORE_IDENTITY.md, SOUL.md, SYSTEM_INTRODUCTION.md
+- ✅ **Multi-language READMEs:** Added 8 languages (EN, ZH, JA, KO, ES, FR, DE, AR)
+- ✅ **Version Unification:** All files updated to v10.10.0
+- ✅ **Paper Integration:** DRIFT + Hallucination to Truth hallucination detection
+- ✅ **WorkBuddy Integration:** v10.9.90 research results integrated
+
+### Breaking Changes | 破坏性变更
+
+- ❌ **Removed:** Deleted privacy files (.identity*, evolution_logs/) for privacy protection
+- ❌ **Removed:** Deleted old version backups to reduce clutter
+
+### Technical Details | 技术细节
+
+- **Files Modified:** 50+ files
+- **Lines of Code:** 39 Python files in src/
+- **Documentation:** 9 README files (multilingual)
+- **Security:** Updated SECURITY_AUDIT.md to v10.10.0
+
+### Core Mission | 核心使命
+
+> **"永远减少逻辑错误"** -  Forever Reduce Logic Errors
+
+This version focuses on clarifying AI identity and strengthening the core mission of reducing logic errors.
+
+---
+
 ## [10.9.7] - 2026-04-24
 
 ### Values & Cron Review Integration | 价值观与定时任务审查集成

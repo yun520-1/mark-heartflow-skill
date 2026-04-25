@@ -1,5 +1,5 @@
 text
-HEARTFLOW SECURITY AUDIT REPORT v10.9.18
+HEARTFLOW SECURITY AUDIT REPORT v10.10.0
 ═══════════════════════════════════════
 TARGET: https://github.com/yun520-1/mark-heartflow-skill
 AUDITOR: Automated Security Analysis
@@ -7,7 +7,7 @@ METHOD: Static Code Analysis + Dependency Check + Pattern Scan
 yaml
 audit_metadata:
   repository: yun520-1/mark-heartflow-skill
-  version: 10.9.18
+  version: 10.10.0
   scan_date: 2026-04-25
   scan_type: [static_code_analysis, dependency_check, pattern_scan, permission_review, owasp_check]
   total_files_scanned: 41

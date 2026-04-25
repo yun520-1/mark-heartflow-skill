@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Meta-Self-Correction v10.9.6
+Meta-Self-Correction v10.10.0
 元强化学习纠错 - 简化实现
 
 来源论文: Meta-Self-Correction: Learning to Correct Logical Errors via Meta-Reinforcement Learning
@@ -244,7 +244,7 @@ class MetaSelfCorrection:
 def demo():
     """演示Meta-Self-Correction"""
     print("=" * 60)
-    print("Meta-Self-Correction v10.9.6 - 演示")
+    print("Meta-Self-Correction v10.10.0 - 演示")
     print("=" * 60)
     
     corrector = MetaSelfCorrection()

@@ -205,4 +205,4 @@ __all__ = [
     'rollback_to_checkpoint',
 ]
 
-__version__ = "10.9.18"
+__version__ = "10.10.0"

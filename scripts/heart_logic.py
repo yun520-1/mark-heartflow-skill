@@ -32,7 +32,7 @@ import argparse
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass, field
 
-__version__ = "10.9.18"
+__version__ = "10.10.0"
 
 
 @dataclass
