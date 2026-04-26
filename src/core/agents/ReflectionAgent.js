@@ -3,7 +3,24 @@
  * 负责在会话结束时，总结本次心流体验并提出改进建议
  */
 
-const { generateReport } = require('../../../.opencode/memory/report-generator.js');
+// 动态加载 report-generator，如果不存在则使用默认实现
+let generateReport;
+try {
+  const reportGen = require('../../../.opencode/memory/report-generator.js');
+  generateReport = reportGen.generateReport || reportGen;
+} catch (e) {
+  // 默认实现 - 不依赖外部文件
+  generateReport = (sessionData) => ({
+    timestamp: new Date().toISOString(),
+    duration: (sessionData.endTime || Date.now()) - (sessionData.startTime || Date.now()),
+    flowStates: sessionData.flowStates || [],
+    distractions: sessionData.distractions || [],
+    achievements: sessionData.achievements || [],
+    moodChanges: sessionData.moodChanges || [],
+    summary: `本次会话共进入心流状态 ${(sessionData.flowStates || []).length} 次`,
+    suggestions: []
+  });
+}
 
 class ReflectionAgent {
   constructor() {

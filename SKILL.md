@@ -2,8 +2,8 @@
 name: heartflow
 title: 心虫 (HeartFlow) - 心连心引擎 | AI认知与价值对齐引擎
 description: AI认知与价值对齐引擎 - 从任务到连接的认知重构，包含决策引擎、记忆管理、自我升级等核心功能
-version: "10.15.0"
-date: "2026-04-26"
+version: "10.16.0"
+date: "2026-04-27"
 author: 心虫 (HeartFlow)
 tags:
   - consciousness
