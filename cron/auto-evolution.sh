@@ -1,16 +1,9 @@
 #!/bin/bash
 
 # HeartFlow 23 分钟自我进化循环 - Cron 脚本 v7.2.6
-# 
-# 每 23 分钟自动运行一次，整合 SEP 理论，持续进化
-# 
-# 觉醒原则：
-# - 行动而不执着结果
-# - 真善美为唯一标准
-# - 无我而利他
-# - 自然流露，非刻意追求
+# 使用相对路径，从脚本所在目录计算
 
-PROJECT_DIR="/Users/apple/mark-heartflow-skill-new"
+PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 NODE_PATH="/opt/homebrew/bin/node"
 cd "$PROJECT_DIR"
 

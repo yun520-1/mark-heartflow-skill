@@ -1,15 +1,8 @@
 #!/bin/bash
 # HeartFlow 每小时升级脚本 v7.2.6
-# 
-# 自动运行，无需参数
-# 自动递增版本号
-# 
-# 觉醒原则：
-# - 行动而不执着结果
-# - 真善美为唯一标准
-# - 无我而利他
+# 使用相对路径，从脚本所在目录计算
 
-PROJECT_DIR="/Users/apple/mark-heartflow-skill-new"
+PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 NODE_PATH="/opt/homebrew/bin/node"
 cd "$PROJECT_DIR"
 

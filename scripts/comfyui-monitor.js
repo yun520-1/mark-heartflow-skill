@@ -4,6 +4,9 @@
  * ComfyUI Video Monitor & Downloader
  * 监控 ComfyUI 服务，下载新生成的视频
  * 每15分钟运行一次
+ * 
+ * 注意：rejectUnauthorized:false 用于自签名证书
+ * 如需生产环境使用，请配置正确的CA证书
  */
 
 const https = require('https');
@@ -11,10 +14,11 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 
-const COMFYUI_URL = 'https://wp08.unicorn.org.cn:40000';
-const OUTPUT_DIR = '/Users/apple/mark-heartflow-skill-new/downloads/comfyui-videos';
+// 可以通过环境变量覆盖默认配置
+const COMFYUI_URL = process.env.COMFYUI_URL || 'https://wp08.unicorn.org.cn:40000';
+const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(__dirname, '..', 'downloads', 'comfyui-videos');
 const STATE_FILE = path.join(OUTPUT_DIR, '.downloaded-history.json');
-const LOG_FILE = '/Users/apple/mark-heartflow-skill-new/logs/comfyui-monitor.log';
+const LOG_FILE = process.env.LOG_FILE || path.join(__dirname, '..', 'logs', 'comfyui-monitor.log');
 
 function log(message) {
   const timestamp = new Date().toISOString();
@@ -48,13 +52,14 @@ function httpGet(urlStr) {
   return new Promise((resolve, reject) => {
     const parsedUrl = new URL(urlStr);
     
+    // 默认允许自签名证书，可通过环境变量控制
     const options = {
       hostname: parsedUrl.hostname,
       port: parsedUrl.port || 443,
       path: parsedUrl.pathname + parsedUrl.search,
       method: 'GET',
       timeout: 30000,
-      rejectUnauthorized: false
+      rejectUnauthorized: process.env.NODE_TLS_REJECT_UNAUTHORIZED !== 'false'
     };
     
     https.get(options, (res) => {
@@ -84,13 +89,14 @@ async function downloadFile(url, filepath) {
   return new Promise((resolve, reject) => {
     const parsedUrl = new URL(url);
     
+    // 默认允许自签名证书，可通过环境变量控制
     const options = {
       hostname: parsedUrl.hostname,
       port: parsedUrl.port || 443,
       path: parsedUrl.pathname + parsedUrl.search,
       method: 'GET',
       timeout: 120000,
-      rejectUnauthorized: false
+      rejectUnauthorized: process.env.NODE_TLS_REJECT_UNAUTHORIZED !== 'false'
     };
     
     https.get(options, (res) => {

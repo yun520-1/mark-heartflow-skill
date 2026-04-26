@@ -67,3 +67,8 @@ coverage/
 # HeartFlow self-awareness system (generated at runtime)
 src/self/memory-store/
 src/self/logs/
+
+# User downloads (IMPORTANT! - NOT upload to GitHub)
+downloads/
+cache/
+documents/

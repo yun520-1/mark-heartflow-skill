@@ -28,9 +28,11 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const LOG_DIR = "/Users/apple/mark-heartflow-skill-new/logs";
-const SRC_DIR = "/Users/apple/mark-heartflow-skill-new/src/core/theory";
-const DATA_DIR = "/Users/apple/mark-heartflow-skill-new/internal/data";
+// 使用相对路径，从脚本所在目录计算
+const SCRIPT_DIR = path.join(__dirname, '..');
+const LOG_DIR = process.env.LOG_DIR || path.join(SCRIPT_DIR, 'logs');
+const SRC_DIR = process.env.SRC_DIR || path.join(SCRIPT_DIR, 'src', 'core', 'theory');
+const DATA_DIR = process.env.DATA_DIR || path.join(SCRIPT_DIR, 'internal', 'data');
 
 // 搜索关键词
 const SEP_TOPICS = [

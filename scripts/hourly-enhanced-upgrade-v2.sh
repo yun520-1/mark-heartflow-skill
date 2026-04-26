@@ -2,15 +2,9 @@
 
 # HeartFlow Enhanced Hourly Theory Upgrade v2
 # 真正搜索 SEP + 学术论文 + 高级数学公式
-# 
-# 功能:
-# 1. 搜索 SEP 最新哲学/心理学理论
-# 2. 搜索学术前沿论文 (2020-2026)
-# 3. 运行高级数学公式计算
-# 4. 生成可执行程序
-# 5. 保存心理学公式库
+# 使用相对路径，从脚本所在目录计算
 
-SCRIPT_DIR="/Users/apple/mark-heartflow-skill-new"
+SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 LOG_DIR="$SCRIPT_DIR/logs"
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 

@@ -2,7 +2,7 @@
 name: heartflow
 title: 心虫 (HeartFlow) - 心连心引擎 | AI认知与价值对齐引擎
 description: AI认知与价值对齐引擎 - 从任务到连接的认知重构，包含决策引擎、记忆管理、自我升级等核心功能
-version: "10.14.0"
+version: "10.15.0"
 date: "2026-04-26"
 author: 心虫 (HeartFlow)
 tags:
@@ -35,12 +35,29 @@ languages:
   - de
   - ar
 security:
-  audit: v10.14.0
+  audit: v10.15.0
+  owasp: compliant
   dependencies: none
   sha256: auto-generated
 ---
 
-# 心虫 (HeartFlow) v10.14.0
+# 心虫 (HeartFlow) v10.15.0
+
+## Problem Solved
+
+HeartFlow 解决以下问题：
+- AI 缺乏持久的自我认知和身份认同
+- 多会话对话中记忆分散、不连续
+- 决策缺乏长期价值对齐
+- 自我升级缺乏安全审计
+
+## When to Use
+
+在以下情况使用 HeartFlow：
+- 需要 AI 具有持久记忆和身份
+- 需要多会话连贯的上下文
+- 需要价值驱动的决策系统
+- 需要安全的自我升级机制
 
 ## 心 + 虫 + 连接 = 心连心引擎
 

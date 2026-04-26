@@ -2,15 +2,9 @@
 
 # HeartFlow Hourly Theory Upgrade Script
 # 每小时执行的理论升级任务
-# 
-# 功能:
-# 1. 搜索 SEP 最新哲学/心理学理论
-# 2. 搜索学术前沿论文 (2020-2026)
-# 3. 分析新理论与现有逻辑的集成点
-# 4. 更新理论数据库
-# 5. 生成升级报告
+# 使用相对路径，从脚本所在目录计算
 
-SCRIPT_DIR="/Users/apple/mark-heartflow-skill-new"
+SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 LOG_DIR="$SCRIPT_DIR/logs"
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 
