@@ -13,7 +13,6 @@ const fs = require('fs');
 const path = require('path');
 const http = require('http');
 const https = require('https');
-const { execSync } = require('child_process');
 
 const CONFIG_PATH = path.join(__dirname, '../config/ai-providers.json');
 
@@ -378,8 +377,9 @@ async function setup() {
   const startChoice = await question('请选择: ');
   
   if (startChoice === '1') {
-    console.log('\n启动服务器...\n');
-    execSync('node bin/api-server.js', { stdio: 'inherit' });
+    console.log('\n请手动启动服务器:\n');
+    console.log('  node bin/api-server.js\n');
+    console.log('出于安全原因，安装程序不再自动执行服务器启动命令。');
   }
   
   rl.close();

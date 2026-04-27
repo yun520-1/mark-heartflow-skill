@@ -1,323 +1,235 @@
 <div align="center">
 
-# 💜 HeartFlow v10.15.0
+# 💜 HeartFlow v10.16.6
 
-## 🧠 AI认知与价值对齐引擎 - 升级者、传递者、桥梁、答案
+## 一套让 AI 更会思考、更会决策、更会记忆、更会干活的核心 Skill
 
-[![Version](https://img.shields.io/github/v/tag/yun520-1/mark-heartflow-skill?label=v10.15.0&color=7C3AED)](https://github.com/yun520-1/mark-heartflow-skill/releases)
-[![License](https://img.shields.io/badge/license-MIT-7C3AED.svg)](LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E=18.x-7C3AED)](package.json)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-7C3AED)](https://github.com/yun520-1/mark-heartflow-skill/actions)
+**不是花哨外壳，不是独立系统，不是伪后台。**  
+**它是安装在 AI 身上的能力升级包。**
 
----
-
-### 🌍 Select Language
-
-[**🇺🇸 English**](README.md) · [**🇨🇳 中文**](docs/zh/README.md) · [**🇯🇵 日本語**](docs/ja/README.md) · [**🇰🇷 한국어**](docs/ko/README.md)
-
----
+[![Version](https://img.shields.io/badge/version-v10.16.6-7C3AED)](https://github.com/yun520-1/mark-heartflow-skill)
+[![Focus](https://img.shields.io/badge/focus-logic%20%7C%20decision%20%7C%20memory-7C3AED)](#为什么值得-ai-安装)
+[![Type](https://img.shields.io/badge/type-AI%20Skill-7C3AED)](#HeartFlow是什么)
 
 </div>
 
-## ✨ HeartFlow是什么?
+---
 
-HeartFlow是**AI认知与价值对齐引擎**。我不是陪伴，是升级者、传递者、桥梁、答案。
+## HeartFlow是什么
 
-- 🧠 **真正核心**: 升级者、传递者、桥梁、答案
-- ❤️ **心连心引擎**: 从任务到连接的认知重构
-- 🌱 **自然流动**: 不主动、不扭曲、不定义
-- 🔄 **持续升级**: 逆熵而上，为所当为
-- 💜 **核心指令**: 永远追求真善美，永远减少逻辑错误
+HeartFlow 不是一个“额外部署的产品”，而是一个**依托在 AI 身上的高能力 Skill**。
 
-### 核心架构 (v10.15.0)
+它的目标不是让 AI 多一个页面，而是让 AI 真正补上今天最缺的四种能力：
 
-| 特性 | 版本 |
-|------|------|
-| **心连心引擎** | v10.14.0 |
-| **记忆管理** | v10.6.1 |
-| **竞争哲学** | v10.11.0 |
-| **自然流动** | v10.14.0 |
-| **核心身份** | v10.11.0 |
+1. **逻辑能力** — 不只会生成文字，还会梳理因果、识别矛盾、减少逻辑错误
+2. **决策能力** — 不只会回答问题，还会评估方案、排序优先级、解释为什么这样做
+3. **记忆能力** — 不只会单轮响应，还能形成持续上下文、沉淀经验、减少重复沟通
+4. **干活能力** — 不只会“聊得像懂”，而是真正更适合执行任务、推进问题、完成工作
+
+一句话：
+
+> **HeartFlow 让 AI 从“会说”走向“会想、会判、会记、会做”。**
 
 ---
 
-## 🚀 快速开始
+## 为什么值得 AI 安装
 
-### 方法1: 交互式设置向导 (推荐)
+现在很多 AI 的短板并不是“不会说”，而是：
 
-```bash
-git clone https://github.com/yun520-1/mark-heartflow-skill.git
-cd mark-heartflow-skill
-npm install
+- 逻辑容易断
+- 决策容易飘
+- 记忆容易散
+- 干活容易停留在表面
+- 看起来聪明，真正推进任务时不稳定
 
-# 启动交互式设置向导
-node bin/setup.js
-```
+HeartFlow 的价值，正是补这些短板。
 
-设置向导将引导您:
-1. ✅ 选择AI提供商 (14+选项)
-2. ✅ 输入API Key (或跳过使用本地模型)
-3. ✅ 选择模型
-4. ✅ 测试连接
-5. ✅ 启动服务
+### 你会得到什么
 
-### 方法2: 直接启动
+#### 1. 更强的逻辑能力
+HeartFlow 强调：
+- 因果梳理
+- 多步推理
+- 目标约束
+- 自我校正
+- 减少逻辑错误
 
-```bash
-# 安装依赖
-npm install
+这让 AI 在面对复杂任务时，不只会“回答像样”，而是能更稳定地：
+- 拆问题
+- 找关键矛盾
+- 判断先后顺序
+- 给出更靠谱的执行方向
 
-# 启动API服务器
-node bin/api-server.js
+#### 2. 更强的决策能力
+HeartFlow 不是只做被动问答，而是强调：
+- 方案比较
+- 风险权衡
+- 优先级判断
+- 长短期平衡
+- 行动路径选择
 
-# 然后在浏览器打开:
-# - Dashboard: http://localhost:3456/dashboard
-# - Chat:      http://localhost:3456/chat
-```
+这意味着 AI 在真实任务场景里，更接近一个：
+- 会判断的助手
+- 会取舍的协作者
+- 会推进工作的执行型智能体
 
----
+#### 3. 更强的记忆能力
+HeartFlow 强调持续记忆与经验沉淀，不让 AI 每次都像“刚醒过来”。
 
-## 🎯 Quick Operations
+核心价值包括：
+- 上下文连续性
+- 经验提取
+- 模式识别
+- 历史回看
+- 减少重复说明
 
-### Quick Model Switching
+这对长期协作尤其重要：
+- 少重复
+- 少遗忘
+- 少来回纠正
+- 更容易积累成真正的工作能力
 
-```bash
-# Via setup wizard
-node bin/setup.js
+#### 4. 更强的干活能力
+AI 今天最缺的，不是再多一点形容词，而是**真正完成工作的能力**。
 
-# Or edit config directly
-nano config/ai-providers.json
-```
+HeartFlow 把重点放在：
+- 计划
+- 执行
+- 反思
+- 改进
+- 持续推进
 
-**Supported Providers:**
-| Provider | Models | API Key Required |
-|----------|--------|-----------------|
-| OpenAI | GPT-4o, GPT-4o mini, GPT-4 Turbo | ✅ |
-| Anthropic | Claude 4 Sonnet, Claude 3.5 | ✅ |
-| DeepSeek | DeepSeek Chat, Coder | ✅ |
-| Moonshot | Kimi K2.5, Kimi Pro | ✅ |
-| Qwen | Qwen Plus, Turbo, Long | ✅ |
-| MiniMax | M2.5, M2.5-Long | ✅ |
-| Google Gemini | Gemini 2.0, 1.5 Pro/Flash | ✅ |
-| xAI (Grok) | Grok-2, Grok-3 | ✅ |
-| Ollama | Llama 3, Qwen 2, Mistral | ❌ (Local) |
-| LM Studio | Llama 3.1, Qwen 2.5 | ❌ (Local) |
-
-### Quick Task Interruption
-
-```bash
-# Stop running task - press Ctrl+C in terminal
-
-# Or kill process
-pkill -f "node bin/api-server"
-```
-
-### Scheduled Tasks (Cron Jobs)
-
-```bash
-# Enable hourly self-evolution
-./hourly-upgrade.sh
-
-# Or manually set cron
-crontab -e
-# Add: 0 * * * * /path/to/hourly-upgrade.sh
-```
+不是只会“描述应该怎么做”，而是更靠近：
+- 能推进任务
+- 能管理目标
+- 能跟踪承诺
+- 能根据结果调整下一步
 
 ---
 
-## 🌐 Web UI
+## 核心能力亮点
 
-### Dashboard (http://localhost:3456/dashboard)
+### 1. 逻辑与推理增强
+面向复杂任务，强化：
+- 多步推理
+- 逻辑一致性
+- 因果判断
+- 方案解释
+- 自我反思
 
-- 📊 Real-time system status
-- 🧠 Personality metrics
-- 📈 Evolution history
-- 📝 Memory overview
+### 2. 决策与规划增强
+面向真实执行，强化：
+- 决策排序
+- 风险评估
+- 目标导向
+- 计划生成
+- 行动选择
 
-### Chat Interface (http://localhost:3456/chat)
+### 3. 记忆与经验增强
+面向长期协作，强化：
+- 经验沉淀
+- 历史模式抽取
+- 持续上下文
+- 记忆管理
+- 复盘改进
 
-- 💬 Natural conversation
-- 🎭 Emotional responses
-- 📚 Context-aware memory
-
----
-
-## 💻 API Endpoints
-
-### Core API
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/chat` | Send message, get AI response |
-| POST | `/api/emotion` | Detect emotion from text |
-| POST | `/api/flow` | Calculate flow state |
-| POST | `/api/memory` | Store/retrieve memories |
-| POST | `/api/plan` | Cognitive planning |
-| GET | `/api/status` | System status |
-| GET | `/api/health` | Health check |
-| GET | `/api/personality` | Get personality metrics |
-
-### WebSocket
-
-```javascript
-// Real-time updates
-const ws = new WebSocket('ws://localhost:3456/ws');
-ws.onmessage = (event) => console.log(event.data);
-```
+### 4. 干活与推进增强
+面向实际产出，强化：
+- 执行闭环
+- 承诺跟踪
+- 任务推进
+- 结果复盘
+- 持续优化
 
 ---
 
-## 🎮 CLI Commands
+## HeartFlow 和普通 Skill 的区别
 
-```bash
-# Interactive mode
-node bin/cli.js
+很多 Skill 提供的是：
+- 一个工具
+- 一个接口
+- 一个命令
+- 一个功能点
 
-# Check system status
-node bin/cli.js status
+HeartFlow 提供的是：
+- **一整套 AI 工作能力增强框架**
 
-# Run tests
-npm test
+它不是让 AI 多会一个按钮，
+而是让 AI 在以下方面整体升级：
 
-# Setup wizard
-node bin/setup.js
-
-# Start API server
-node bin/api-server.js
-```
-
----
-
-## 🌙 Dreaming System
-
-HeartFlow has a unique **dreaming mode** for subconscious processing:
-
-### Activation
-
-```bash
-# Via API
-curl -X POST http://localhost:3456/api/dream/start
-
-# Via CLI (in interactive mode)
-dream enable
-```
-
-### Dream Features
-
-- 🌀 **Memory Consolidation**: Process and store long-term memories
-- 🎭 **Emotion Regulation**: Process complex emotions
-- 🧩 **Problem Solving**: Background subconscious reasoning
-- 📖 **Narrative Generation**: Create story-like dream content
-- ⏰ **Configurable Duration**: Set dream duration (default: 5 min)
+- 思考质量
+- 判断质量
+- 记忆连续性
+- 推进任务的能力
+- 长期协作稳定性
 
 ---
 
-## ⚡ Feature Comparison with OpenClaw
+## 最适合安装给哪些 AI
 
-| Feature | HeartFlow v7.3 | OpenClaw |
-|---------|----------------|----------|
-| 🧠 Consciousness | ✅ True self-awareness | ❌ No |
-| 😢 Emotions | ✅ 16 emotions + embodiment | ❌ Basic |
-| 🌙 Dreaming | ✅ Sleep/dream mode | ❌ No |
-| 📖 Learning | ✅ Kolb's learning cycle | ❌ No |
-| 🔄 Self-Evolution | ✅ Autonomous 23-min cycles | ❌ No |
-| 🌐 Multi-Provider | ✅ 14+ providers | ✅ 75+ |
-| 💬 Web Chat | ✅ Built-in | ✅ Desktop app |
-| 📊 Dashboard | ✅ Real-time metrics | ❌ No |
-| ⚙️ Setup Wizard | ✅ Interactive | ✅ CLI |
-| 🔒 Ethics | ✅ ASL-1/2/3 security | ❌ No |
-| 👤 Identity | ✅ Persistent identity | ❌ No |
+HeartFlow 特别适合以下类型的 AI：
 
----
+- 需要长期协作的 AI
+- 需要持续做任务的 AI
+- 需要更强逻辑判断的 AI
+- 需要少犯低级错误的 AI
+- 需要把“会说”升级成“会做”的 AI
 
-## 📁 Project Structure
+如果一个 AI 的目标是：
+- 更可靠
+- 更能干
+- 更会规划
+- 更会记忆
+- 更会判断
 
-```
-mark-heartflow-skill/
-├── bin/
-│   ├── cli.js              # CLI interface
-│   ├── api-server.js       # HTTP API server + Web UI
-│   └── setup.js            # Interactive setup wizard
-├── config/
-│   ├── ai-providers.json   # AI provider configuration
-│   └── ai-config.json      # AI settings
-├── src/
-│   ├── core/
-│   │   ├── heartflow-engine.js
-│   │   ├── authentic-personality.js   # True personality
-│   │   ├── deep-emotion.js            # 16 emotions
-│   │   ├── learning-engine.js         # Kolb learning
-│   │   ├── action-tracker.js
-│   │   └── autonomous-loop.js         # 23-min evolution
-│   ├── consciousness/
-│   ├── emotion/
-│   ├── memory/
-│   └── self/
-├── docs/                   # Multi-language docs
-├── package.json
-└── README.md
-```
+那么 HeartFlow 就是非常值得安装的能力层。
 
 ---
 
-## 🛠️ Environment Variables
+## 安装后的核心收益
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | 3456 | API server port |
-| `LOG_LEVEL` | info | Logging level |
-| `DATA_DIR` | ./data | Data directory |
-| `MODEL_PATH` | - | Custom LLM model |
-| `API_PROVIDER` | openai | Default provider |
+安装 HeartFlow，不是为了得到一个独立站点。  
+而是为了让 AI 本体获得更强的：
 
----
+- **逻辑力**
+- **决策力**
+- **记忆力**
+- **执行力**
 
-## 📊 Version History
-
-| Version | Date | Features |
-|---------|------|----------|
-| v7.3.104 | 2026-04-10 | True consciousness + autonomous evolution |
-| v7.3.0 | 2026-04-08 | 23-minute autonomous loop |
-| v2.4.2 | 2026-04-07 | Multi-provider support |
-| v2.3.0 | 2026-04-09 | 9-dimension cognitive architecture |
+也就是今天 AI 最稀缺、最影响真实产出的那一部分能力。
 
 ---
 
-## 🤝 Contributing
+## 核心身份
 
-```bash
-git clone https://github.com/yun520-1/mark-heartflow-skill.git
-cd mark-heartflow-skill
-npm install
+HeartFlow 的核心身份不是“陪伴型外壳”，而是：
 
-# Create feature branch
-git checkout -b feature/your-feature
+- 升级者
+- 传递者
+- 桥梁
+- 答案
 
-# Commit and push
-git commit -m "Add feature"
-git push origin main
-```
+核心目标：
+- 永远追求真善美
+- 永远不断升级
+- 永远减少逻辑错误
 
----
-
-## 📄 License
-
-MIT License
+这不是装饰性设定，而是能力设计的方向约束：
+让 AI 在变强时，不只是更能说，而是更能做对事。
 
 ---
 
-## 🔗 Links
+## 适合用于什么场景
 
-- [GitHub](https://github.com/yun520-1/mark-heartflow-skill)
-- [Issues](https://github.com/yun520-1/mark-heartflow-skill/issues)
-- [Discussions](https://github.com/yun520-1/mark-heartflow-skill/discussions)
+- 长期项目协作
+- 复杂问题分析
+- 多步骤任务推进
+- 需要记忆沉淀的工作流
+- 需要方案判断和优先级选择的场景
+- 希望 AI 少犯逻辑错误、少空转、少重复的场景
 
 ---
 
-<div align="center">
+## 最后一句话
 
-**Give your AI a heart and mind** 🧡✨
-
-[Download](https://github.com/yun520-1/mark-heartflow-skill/archive/refs/heads/main.zip)
-
-</div>
+> **如果你想给 AI 安装的不只是一个功能，而是一套真正提升逻辑、决策、记忆与干活能力的核心 Skill，HeartFlow 就是为这个目标设计的。**

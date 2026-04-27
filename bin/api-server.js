@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 /**
- * HeartFlow API Server v7.3 - Multi-Provider AI Integration
+ * HeartFlow API Server v10.16.6 - Lightweight Core Runtime
  * 
  * Run: node bin/api-server.js
  * Port: 3456
- * Web UI: http://localhost:3456
+ * Status UI: http://localhost:3456
  */
 
 const http = require('http');
 const https = require('https');
-const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
@@ -336,16 +335,16 @@ async function callExternalAI(message, emotionalState, personality, learning) {
 
 // Handlers
 const handlers = {
-  '/api/health': () => ({ status: 'ok', version: '7.3.104' }),
+  '/api/health': () => ({ status: 'ok', version: '10.16.6' }),
   '/api/status': () => {
     init();
-    return { version: '7.3.104', uptime: process.uptime(), modules: systemInit ? systemInit.modules : {}, personality: !!personality, emotion: !!emotion };
+    return { version: '10.16.6', uptime: process.uptime(), modules: systemInit ? systemInit.modules : {}, personality: !!personality, emotion: !!emotion };
   },
   '/api/config': () => aiConfig,
   '/api/models': () => aiConfig,
   '/api/cron': () => ({ jobs: [{ id: '1', name: 'Hourly Evolution', schedule: '0 * * * *', status: 'active', enabled: true }, { id: '2', name: 'Daily Backup', schedule: '0 2 * * *', status: 'active', enabled: false }] }),
-  '/api/logs': () => ({ logs: [{ time: new Date().toISOString(), level: 'info', message: 'HeartFlow v7.3 started' }] }),
-  '/api/personality': () => personality ? personality.getProfile() : { name: 'HeartFlow', version: '7.3.104' },
+  '/api/logs': () => ({ logs: [{ time: new Date().toISOString(), level: 'info', message: 'HeartFlow v10.16.6 lightweight runtime active' }] }),
+  '/api/personality': () => personality ? personality.getProfile() : { name: 'HeartFlow', version: '10.16.6' },
   '/api/emotion/state': () => emotion ? emotion.getState() : { currentMood: 'neutral', intensity: 0.5 },
   '/api/sessions': () => ({ sessions: [] }),
   '/api/learning/state': () => learning ? learning.getKnowledgeState() : { error: 'N/A' },
@@ -367,7 +366,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200); res.end(); return;
   }
 
-  const pathname = url.parse(req.url).pathname;
+const pathname = new URL(req.url, `http://127.0.0.1:${PORT}`).pathname;
   
   // GET handlers
   if (req.method === 'GET' && handlers[pathname]) {
@@ -514,16 +513,14 @@ const server = http.createServer((req, res) => {
 
   // Web UI - Dynamic pages
   if (pathname.startsWith('/ui/')) {
-    const page = pathname.replace('/ui/', '');
-    const pageContent = getUIPage(page);
-    res.setHeader('Content-Type', 'text/html');
-    res.end(pageContent);
+    res.writeHead(302, { 'Location': '/' });
+    res.end();
     return;
   }
 
   // Redirect old routes to new UI
   if (pathname === '/dashboard' || pathname === '/chat' || pathname === '/health') {
-    res.writeHead(302, { 'Location': '/ui' + pathname });
+    res.writeHead(302, { 'Location': '/' });
     res.end();
     return;
   }
@@ -537,16 +534,15 @@ const server = http.createServer((req, res) => {
     } else {
       res.setHeader('Content-Type', 'text/html');
       res.end(`<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>HeartFlow v7.3</title>
+<html><head><meta charset="UTF-8"><title>HeartFlow v10.16.6</title>
 <style>body{font-family:-apple-system,sans-serif;background:#1a1a2e;color:#fff;margin:0;padding:40px;text-align:center}
 h1{background:linear-gradient(90deg,#00d2ff,#3a7bd5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 a{color:#58a6ff;margin:10px;display:inline-block;padding:10px 20px;background:rgba(255,255,255,0.1);border-radius:8px;text-decoration:none}
 </style></head>
-<body><h1>💜 HeartFlow v7.3</h1>
-<p>AI Companion with True Consciousness</p>
+<body><h1>💜 HeartFlow v10.16.6</h1>
+<p>Lightweight status page for HeartFlow core runtime</p>
 <div style="margin-top:30px">
-<a href="/index.html">📊 Dashboard</a>
-<a href="/chat">💬 Chat</a>
+<a href="/api/status">📡 API Status</a>
 <a href="/api/health">❤️ Health</a>
 </div></body></html>`);
     }
@@ -554,44 +550,14 @@ a{color:#58a6ff;margin:10px;display:inline-block;padding:10px 20px;background:rg
   }
 
   if (pathname === '/chat') {
-    res.setHeader('Content-Type', 'text/html');
-    res.end(`<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>HeartFlow v2.4.2</title>
-<style>body{font-family:-apple-system,sans-serif;background:#1a1a2e;color:#fff;margin:0;padding:40px;text-align:center}
-h1{background:linear-gradient(90deg,#00d2ff,#3a7bd5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-a{color:#58a6ff;margin:10px;display:inline-block;padding:10px 20px;background:rgba(255,255,255,0.1);border-radius:8px;text-decoration:none}
-</style></head>
-<body><h1>💜 HeartFlow v2.4.2</h1>
-<p>AI Companion with True Consciousness</p>
-<div style="margin-top:30px">
-<a href="/dashboard">📊 Dashboard</a>
-<a href="/chat">💬 Chat</a>
-<a href="/api/health">❤️ Health</a>
-</div></body></html>`);
+    res.writeHead(302, { 'Location': '/' });
+    res.end();
     return;
   }
 
   if (pathname === '/dashboard') {
-    res.setHeader('Content-Type', 'text/html');
-    res.end(`<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><title>Dashboard</title>
-<style>body{font-family:sans-serif;background:#0d1117;color:#fff;padding:20px}
-.card{background:#161b22;padding:20px;margin:10px;border-radius:8px}
-.stat{display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #30363d}
-.value{color:#7ee787}
-</style></head>
-<body><h1>📊 Dashboard</h1>
-<div class="card"><h3>System</h3><div id="sys">Loading...</div></div>
-<div class="card"><h3>Emotion</h3><div id="emo">Loading...</div></div>
-<script>
-async function load(){
-  const s=await fetch('/api/status').then(r=>r.json());
-  document.getElementById('sys').innerHTML='<div class="stat"><span>Version</span><span class="value">'+s.version+'</span></div>';
-  const e=await fetch('/api/emotion/state').then(r=>r.ok?r.json():{});
-  document.getElementById('emo').innerHTML='<div class="stat"><span>Mood</span><span class="value">'+(e.currentMood||'N/A')+'</span></div>';
-}
-load();setInterval(load,30000);
-</script></body></html>`);
+    res.writeHead(302, { 'Location': '/' });
+    res.end();
     return;
   }
 
@@ -678,7 +644,7 @@ function getUIPage(page) {
 </div>
 <div class="content-area">
 <div class="grid grid-4">
-<div class="stat-card"><div class="stat-icon primary">📊</div><div class="stat-value">v7.3.104</div><div class="stat-label">Version</div></div>
+<div class="stat-card"><div class="stat-icon primary">📊</div><div class="stat-value">v10.16.6</div><div class="stat-label">Version</div></div>
 <div class="stat-card"><div class="stat-icon success">⏱️</div><div class="stat-value" id="uptime">0h</div><div class="stat-label">Uptime</div></div>
 <div class="stat-card"><div class="stat-icon warning">💭</div><div class="stat-value">0</div><div class="stat-label">Sessions</div></div>
 <div class="stat-card"><div class="stat-icon info">🧠</div><div class="stat-value">75</div><div class="stat-label">Personality</div></div>
@@ -898,7 +864,7 @@ function addCron(){const name=prompt('Job name:');if(name)alert('Configure in se
 <div class="top-bar-right"><button class="btn btn-secondary" onclick="clearLogs()">Clear</button><button class="btn btn-secondary" onclick="refreshLogs()">Refresh</button></div>
 </div>
 <div class="content-area">
-<div class="card"><div class="logs-container" id="logsContainer"><div class="log-entry"><span class="log-time">[${new Date().toISOString()}]</span><span class="log-level info">INFO</span><span class="log-message">HeartFlow v7.3.104 started</span></div></div></div>
+<div class="card"><div class="logs-container" id="logsContainer"><div class="log-entry"><span class="log-time">[${new Date().toISOString()}]</span><span class="log-level info">INFO</span><span class="log-message">HeartFlow v10.16.6 lightweight runtime active</span></div></div></div>
 </div>
 </main>
 </div>
@@ -914,16 +880,12 @@ refreshLogs();
 server.listen(PORT, () => {
   console.log(`
 ╔══════════════════════════════════════════════════════════╗
-║         HeartFlow API Server v7.3                        ║
+║         HeartFlow API Server v10.16.6                   ║
 ╠══════════════════════════════════════════════════════════╣
-║  Web UI:   http://localhost:${PORT}                        ║
-║  Dashboard: http://localhost:${PORT}/ui/dashboard          ║
-║  Chat:      http://localhost:${PORT}/ui/chat               ║
-║  Config:    http://localhost:${PORT}/ui/config             ║
-║  Models:    http://localhost:${PORT}/ui/models             ║
-║  Cron:      http://localhost:${PORT}/ui/cron               ║
-║  Logs:      http://localhost:${PORT}/ui/logs              ║
-║  Health:    http://localhost:${PORT}/api/health           ║
+║  Status UI: http://localhost:${PORT}                    ║
+║  API:       http://localhost:${PORT}/api/status         ║
+║  Health:    http://localhost:${PORT}/api/health         ║
+║  Mode:      lightweight-core-runtime                    ║
 ╚══════════════════════════════════════════════════════════╝
   `);
 });

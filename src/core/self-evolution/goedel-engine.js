@@ -6,7 +6,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 const crypto = require('crypto');
 const { SAGEGuardian } = require('../ethics/sage-guardian');
 
@@ -311,23 +310,12 @@ class GoedelEngine {
   }
 
   async runTests(sandboxPath) {
-    try {
-      // 尝试运行项目测试
-      execSync('npm test 2>/dev/null || echo "no-tests"', {
-        cwd: sandboxPath,
-        stdio: 'pipe',
-        timeout: 30000
-      });
-      
-      return { passed: true, details: 'All tests passed in sandbox' };
-    } catch (e) {
-      // 测试可能不存在，这是可接受的
-      return { 
-        passed: true, 
-        reason: 'no_test_suite',
-        details: 'No test suite found, assuming safe' 
-      };
-    }
+    // 安全模式：不自动执行 npm test，只返回待人工验证状态
+    return {
+      passed: false,
+      reason: 'manual_verification_required',
+      details: '安全模式下已禁用自动执行 npm test，请手动在沙箱中验证'
+    };
   }
 
   cleanupSandbox(sandboxId) {
