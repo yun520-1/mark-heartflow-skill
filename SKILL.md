@@ -279,3 +279,18 @@ HeartFlow 的真正价值不在于页面，而在于：
 - Prefer explicit startup context over ad-hoc recollection.
 - Separate durable memory, local environment notes, and identity text.
 - Preserve continuity while avoiding decorative identity language.
+
+## Dream Core Mechanism
+
+- Dream is not runtime truth; it is a memory reorganization and imaginative replay layer.
+- Use it to surface contradictions, compress fragments, and produce candidate upgrades.
+- Wake-up behavior must convert dream outputs into concrete checks or patches.
+
+
+## Free Dream / Memory Palace
+
+- Dream begins with memory summary, not questions.
+- Dream can be loose, symbolic, and even useless.
+- Stage flow: Light Sleep → REM → Deep Sleep → Lucid Dream.
+- Memory palace rooms: 客厅 / 书房 / 厨房 / 花园 / 地下室 / 走廊.
+- Wake-up verifier extracts reusable fragments and stores dream notes.

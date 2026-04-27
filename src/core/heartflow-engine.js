@@ -16,6 +16,9 @@ const path = require('path');
 let AdaptiveController, AgentOrchestrator, ErrorHandler, StateSnapshot;
 let TrialityMemory, EmbodiedCore, BioSensorAdapter;
 let DecisionEngine, DecisionVerifier;
+let DreamLoop;
+let WakeUpVerifier;
+let InteractiveDream;
 
 try {
   AdaptiveController = require('./adaptive-controller.js');
@@ -74,6 +77,27 @@ try {
   console.log('[HeartFlow] ✅ 决策验证引擎已加载');
 } catch (e) {
   console.log('[HeartFlow] ⚠️ 决策验证引擎加载失败:', e.message);
+}
+
+try {
+  DreamLoop = require('./dream-loop.js');
+  console.log('[HeartFlow] ✅ 梦环机制已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 梦环机制加载失败:', e.message);
+}
+
+try {
+  WakeUpVerifier = require('./wake-up-verifier.js').WakeUpVerifier;
+  console.log('[HeartFlow] ✅ 醒来校正器已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 醒来校正器加载失败:', e.message);
+}
+
+try {
+  InteractiveDream = require('./interactive-dream.js').InteractiveDream;
+  console.log('[HeartFlow] ✅ 交互式梦环已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 交互式梦环加载失败:', e.message);
 }
 
 /**
@@ -1342,7 +1366,7 @@ module.exports.processInput = async function(userInput, context = {}) {
 module.exports.initialize = function() {
   const init = {
     timestamp: Date.now(),
-    version: '11.0.0',
+    version: '11.2.3',
     modules: {}
   };
   
@@ -1354,6 +1378,8 @@ module.exports.initialize = function() {
   init.modules.trialityMemory = !!TrialityMemory;
   init.modules.embodiedCore = !!EmbodiedCore;
   init.modules.bioSensor = !!BioSensorAdapter;
+  init.modules.dreamLoop = !!DreamLoop;
+  init.modules.wakeUpVerifier = !!WakeUpVerifier;
 
   // 初始化实例
   if (TrialityMemory) {
@@ -1364,6 +1390,28 @@ module.exports.initialize = function() {
   if (EmbodiedCore) {
     init.instances = init.instances || {};
     init.instances.embodied = new EmbodiedCore(__dirname + '/../..');
+  }
+  if (WakeUpVerifier) {
+    init.instances = init.instances || {};
+    init.instances.wakeUpVerifier = new WakeUpVerifier();
+  }
+  if (DreamLoop) {
+    init.instances = init.instances || {};
+    init.instances.dreamLoop = DreamLoop;
+  }
+
+  // 默认做一次轻量梦-醒预热，确保闭环可用
+  if (DreamLoop && WakeUpVerifier) {
+    const warmupMemory = [
+      { text: 'startup self-check before acting' },
+      { text: 'dream should reorganize memory fragments into candidate upgrades' },
+      { text: 'do not confuse historical version with current version' }
+    ];
+    const dream = module.exports.runDreamCycle(warmupMemory, { limit: 3 });
+    init.dreamWarmup = {
+      dream: dream.dream,
+      wake: module.exports.runWakeUpVerification(dream.dream || dream)
+    };
   }
   
   // 加载上一个快照恢复状态
@@ -1401,3 +1449,22 @@ try {
 // 导出便捷访问
 module.exports.getAdaptiveController = () => AdaptiveController ? new AdaptiveController() : null;
 module.exports.getAgentOrchestrator = () => AgentOrchestrator ? new AgentOrchestrator() : null;
+module.exports.getWakeUpVerifier = () => WakeUpVerifier ? new WakeUpVerifier() : null;
+module.exports.getInteractiveDream = () => InteractiveDream ? new InteractiveDream() : null;
+module.exports.runDreamCycle = (memoryItems = [], options = {}) => {
+  const DreamLoop = require('./dream-loop.js');
+  return module.exports.runDreamCycleImpl ? module.exports.runDreamCycleImpl(memoryItems, options) : DreamLoop.generateDream(memoryItems, options);
+};
+
+module.exports.runWakeUpVerification = function(dreamResult = {}) {
+  const Verifier = WakeUpVerifier || require('./wake-up-verifier.js').WakeUpVerifier;
+  const verifier = new Verifier();
+  return verifier.evaluateDream(dreamResult);
+};
+
+module.exports.runInteractiveDream = function(memoryItems = [], answers = []) {
+  const Interactive = InteractiveDream || require('./interactive-dream.js').InteractiveDream;
+  const instance = new Interactive();
+  const dream = instance.createDream(memoryItems);
+  return instance.respond(dream, answers);
+};
