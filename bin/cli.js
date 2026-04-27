@@ -1,189 +1,155 @@
 #!/usr/bin/env node
 /**
- * HeartFlow CLI - Command Line Interface
- * 
- * Usage:
- *   heartflow                 # Show help
- *   heartflow status          # Show system status
- *   heartflow test            # Run tests
- *   heartflow emotion "text"  # Detect emotion
+ * HeartFlow CLI - Skill-oriented command line interface
+ *
+ * HeartFlow 当前定位：skill 核心，而不是独立应用。
+ * CLI 只保留真正服务于 HeartFlow 目标的命令：
+ * - status: 自检核心是否可用
+ * - plan: 将目标转成认知行动链
+ * - analyze: 理解输入状态并给出行动建议
+ * - test: 运行核心快速验证
  */
-
-const path = require('path');
-const readline = require('readline');
 
 const heartflow = require('../src/core/heartflow-engine.js');
 
+function printPlan(plan) {
+  console.log('\n=== HeartFlow Plan ===\n');
+  console.log(`Goal: ${plan.goal}`);
+  console.log(`Type: ${plan.type}`);
+  console.log(`Complexity: ${plan.metadata?.complexity || 'N/A'}`);
+  console.log(`Steps: ${plan.steps.length}\n`);
+
+  plan.steps.forEach((step, i) => {
+    console.log(`${i + 1}. [${step.type}] ${step.description}`);
+    if (step.expectedOutcome) {
+      console.log(`   → ${step.expectedOutcome}`);
+    }
+  });
+  console.log('');
+}
+
 const commands = {
-  // Show system status
   status: () => {
     console.log('\n=== HeartFlow Status ===\n');
     const init = heartflow.initialize();
-    
-    console.log('📦 Modules:');
-    for (const [name, loaded] of Object.entries(init.modules)) {
-      console.log(`   ${loaded ? '✅' : '❌'} ${name}`);
-    }
-    
-    console.log('\n🧠 Instances:');
-    if (init.instances) {
-      for (const [name, instance] of Object.entries(init.instances)) {
-        console.log(`   ✅ ${name}`);
-      }
-    }
-    
-    console.log('\n📊 Statistics:');
-    console.log(`   Memory: ${init.instances?.memory?.stats?.totalMemories || 0} memories`);
-    console.log(`   Cycles: ${init.instances?.embodied?.cognitiveState?.cycleCount || 0}`);
-    
+
+    const criticalModules = ['adaptive', 'orchestrator', 'errorHandler', 'snapshot', 'trialityMemory', 'embodiedCore'];
+    console.log('Core modules:');
+    criticalModules.forEach((name) => {
+      console.log(`  ${init.modules?.[name] ? '✅' : '❌'} ${name}`);
+    });
+
+    console.log('\nCore instances:');
+    console.log(`  ${init.instances?.memory ? '✅' : '❌'} memory`);
+    console.log(`  ${init.instances?.embodied ? '✅' : '❌'} embodied`);
+
+    console.log('\nRuntime confidence:');
+    console.log(`  Memories: ${init.instances?.memory?.stats?.totalMemories || 0}`);
+    console.log(`  Cycle count: ${init.instances?.embodied?.cognitiveState?.cycleCount || 0}`);
     console.log('');
     return { success: true };
   },
 
-  // Detect emotion from text
-  emotion: (text) => {
+  analyze: (text) => {
     if (!text) {
-      console.log('Usage: heartflow emotion "your text here"');
+      console.log('Usage: heartflow analyze "你当前的问题、状态或目标"');
       return { success: false, error: 'Missing text' };
     }
-    
-    const result = heartflow.detectEmotionFromText(text);
-    console.log('\n=== Emotion Detection ===\n');
-    console.log(`Input: "${text}"`);
-    console.log(` Pleasure: ${result.pleasure}`);
-    console.log(` Arousal: ${result.arousal}`);
-    console.log(` Dominance: ${result.dominance}`);
-    console.log(` Dominant: ${result.dominant || 'neutral'}`);
-    console.log('');
-    return result;
-  },
 
-  // Calculate flow state
-  flow: (args) => {
-    const pleasure = parseInt(args[0]) || 5;
-    const arousal = parseInt(args[1]) || 5;
-    const dominance = parseInt(args[2]) || 5;
-    const challenge = parseInt(args[3]) || 5;
-    const skill = parseInt(args[4]) || 5;
-    
-    const result = heartflow.calculateFlowState(pleasure, arousal, dominance, challenge, skill);
-    console.log('\n=== Flow State ===\n');
-    console.log(`State: ${result.state}`);
-    console.log(`Score: ${result.flowScore}`);
-    console.log(`Recommendation: ${result.recommendations?.[0] || 'none'}`);
-    console.log('');
-    return result;
-  },
-
-  // Store memory
-  remember: (text) => {
-    if (!text) {
-      console.log('Usage: heartflow remember "your memory"');
-      return { success: false, error: 'Missing text' };
-    }
-    
     const init = heartflow.initialize();
-    const memId = init.instances.memory.store({ content: text });
-    console.log(`\n✅ Memory stored: ${memId}\n`);
-    return { success: true, id: memId };
-  },
-
-  // Search memories
-  recall: (query) => {
-    const init = heartflow.initialize();
-    const memory = init.instances.memory;
-    
-    const emb = memory.generateMockEmbedding(query);
-    const results = memory.semanticSearch(emb, 5);
-    
-    console.log('\n=== Memory Search ===\n');
-    console.log(`Query: "${query}"`);
-    console.log(`Found: ${results.length} memories\n`);
-    
-    results.forEach((r, i) => {
-      console.log(`${i+1}. ${r.content?.substring(0, 50)}...`);
-      console.log(`   Similarity: ${r.similarity?.toFixed(2)}\n`);
+    const emotion = heartflow.detectEmotionFromText(text);
+    const flow = heartflow.calculateFlowState(
+      emotion.pleasure,
+      emotion.arousal,
+      emotion.dominance,
+      5,
+      5
+    );
+    const plan = init.instances.embodied.cognitivePlan({
+      description: text,
+      type: 'general',
+      context: { emotion, flow }
     });
-    
-    return results;
+
+    console.log('\n=== HeartFlow Analyze ===\n');
+    console.log(`Input: ${text}\n`);
+    console.log('State reading:');
+    console.log(`  Emotion: ${emotion.dominant || 'neutral'}`);
+    console.log(`  PAD: P=${emotion.pleasure}, A=${emotion.arousal}, D=${emotion.dominance}`);
+    console.log(`  Flow state: ${flow.state}`);
+    if (flow.recommendations?.length) {
+      console.log(`  Advice: ${flow.recommendations[0]}`);
+    }
+
+    console.log('\nNext action chain:');
+    plan.steps.slice(0, 4).forEach((step, i) => {
+      console.log(`  ${i + 1}. ${step.description}`);
+    });
+    console.log('');
+
+    return { emotion, flow, plan };
   },
 
-  // Cognitive planning
   plan: (description, type = 'general') => {
     if (!description) {
-      console.log('Usage: heartflow plan "description" [type]');
+      console.log('Usage: heartflow plan "目标描述" [general|coding|debugging|learning|creative]');
       return { success: false, error: 'Missing description' };
     }
-    
+
     const init = heartflow.initialize();
-    const result = init.instances.embodied.cognitivePlan({ description, type });
-    
-    console.log('\n=== Cognitive Plan ===\n');
-    console.log(`Goal: ${description}`);
-    console.log(`Type: ${type}`);
-    console.log(`Steps: ${result.steps.length}\n`);
-    
-    result.steps.forEach((step, i) => {
-      console.log(`${i+1}. [${step.type}] ${step.description}`);
-    });
-    console.log('');
-    
-    return result;
+    const plan = init.instances.embodied.cognitivePlan({ description, type });
+    printPlan(plan);
+    return plan;
   },
 
-  // Run tests
   test: () => {
-    console.log('\n=== Running Tests ===\n');
+    console.log('\n=== HeartFlow Core Test ===\n');
     const init = heartflow.initialize();
-    
-    // Quick sanity checks
+    const plan = init.instances.embodied.cognitivePlan({ description: '验证核心规划能力', type: 'general' });
+    const analysis = heartflow.detectEmotionFromText('我想减少错误并找到更清晰的方向');
+
     const tests = [
-      { name: 'Module Load', pass: Object.values(init.modules).every(m => m) },
-      { name: 'Emotion Detection', pass: !!heartflow.detectEmotionFromText('test') },
-      { name: 'Flow Calculation', pass: !!heartflow.calculateFlowState(5,5,5,5,5) },
-      { name: 'Memory Store', pass: !!init.instances.memory.store({content:'test'}) },
-      { name: 'Cognitive Plan', pass: !!init.instances.embodied.cognitivePlan({description:'test'}) }
+      { name: 'Core module load', pass: Object.values(init.modules).filter(Boolean).length >= 6 },
+      { name: 'Planning pipeline', pass: Array.isArray(plan.steps) && plan.steps.length >= 4 },
+      { name: 'State analysis', pass: typeof analysis.pleasure === 'number' && typeof analysis.arousal === 'number' },
+      { name: 'Flow reasoning', pass: !!heartflow.calculateFlowState(analysis.pleasure, analysis.arousal, analysis.dominance) }
     ];
-    
+
     let passed = 0;
-    tests.forEach(t => {
+    tests.forEach((t) => {
       console.log(`${t.pass ? '✅' : '❌'} ${t.name}`);
-      if (t.pass) passed++;
+      if (t.pass) passed += 1;
     });
-    
+
     console.log(`\nResult: ${passed}/${tests.length} passed\n`);
-    return { passed, total: tests.length };
+    return { passed, total: tests.length, success: passed === tests.length };
   },
 
-  // Show help
   help: () => {
     console.log(`
 === HeartFlow CLI ===
 
+HeartFlow 当前定位为 skill 核心，不再提供独立 API / Web / 平台接入壳层。
+
 Usage: heartflow [command] [args]
 
 Commands:
-  status              Show system status
-  emotion <text>     Detect emotion from text
-  flow [p] [a] [d] [c] [s]  Calculate flow state
-  remember <text>    Store a memory
-  recall <query>    Search memories
-  plan <desc> [type] Create cognitive plan
-  test               Run quick tests
-  help               Show this help
+  status                    Show core runtime status
+  analyze <text>            Read current state and suggest next actions
+  plan <goal> [type]        Build a cognitive action chain
+  test                      Run core self-check
+  help                      Show this help
 
 Examples:
-  heartflow emotion "I am happy today"
-  heartflow flow 5 5 5 5 5
-  heartflow remember "User likes detailed answers"
-  heartflow recall "preferences"
-  heartflow plan "implement auth" coding
+  heartflow status
+  heartflow analyze "我现在方向很多，有点乱，不知道先做什么"
+  heartflow plan "把一个复杂需求拆成执行步骤" general
+  heartflow plan "修复一个 bug 并验证" debugging
 `);
     return { success: true };
   }
 };
 
-// Main
 const args = process.argv.slice(2);
 const command = args[0] || 'help';
 

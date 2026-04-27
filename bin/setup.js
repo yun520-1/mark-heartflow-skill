@@ -120,8 +120,8 @@ async function installAsSkill(platform) {
     
     const binDest = path.join(skillDest, 'bin');
     fs.mkdirSync(binDest, { recursive: true });
-    fs.copyFileSync(path.join(skillSrc, 'bin', 'api-server.js'), path.join(binDest, 'api-server.js'));
     fs.copyFileSync(path.join(skillSrc, 'bin', 'cli.js'), path.join(binDest, 'cli.js'));
+    fs.copyFileSync(path.join(skillSrc, 'bin', 'setup.js'), path.join(binDest, 'setup.js'));
     console.log('✓ bin/');
     
     const configDest = path.join(skillDest, 'config');
@@ -145,11 +145,6 @@ async function installAsSkill(platform) {
       }
     }
     console.log('✓ src/');
-    
-    if (fs.existsSync(path.join(skillSrc, 'public'))) {
-      copyDirRecursive(path.join(skillSrc, 'public'), path.join(skillDest, 'public'));
-      console.log('✓ public/');
-    }
     
     console.log(`\n✅ 安装完成!`);
     console.log(`   路径: ${skillDest}`);
@@ -366,19 +361,14 @@ async function setup() {
     }
   }
   
-  // Step 5: Start
+  // Step 5: Finish
   header('💜 安装完成!');
   
-  console.log('\n  1. 启动 API 服务器 (推荐)');
-  console.log('  2. 退出\n');
-  
-  const startChoice = await question('请选择: ');
-  
-  if (startChoice === '1') {
-    console.log('\n请手动启动服务器:\n');
-    console.log('  node bin/api-server.js\n');
-    console.log('出于安全原因，安装程序不再自动执行服务器启动命令。');
-  }
+  console.log('\n可用命令:\n');
+  console.log('  heartflow help');
+  console.log('  heartflow status');
+  console.log('  heartflow emotion "你的文本"\n');
+  console.log('HeartFlow 当前定位为 skill，不再提供独立 API 服务器。');
   
   rl.close();
 }
