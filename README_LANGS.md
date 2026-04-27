@@ -7,7 +7,9 @@ This is the language hub for HeartFlow.
 
 ---
 
-## Select Language / 选择语言
+## Recommended Language Entry Files / 推荐入口文件
+
+以下文件是当前建议优先访问的语言入口：
 
 - 🇨🇳 [中文 Chinese](./README.md)
 - 🇺🇸 [English](./README_en.md)
@@ -17,6 +19,23 @@ This is the language hub for HeartFlow.
 - 🇩🇪 [Deutsch German](./README_de.md)
 - 🇪🇸 [Español Spanish](./README_es.md)
 - 🇸🇦 [العربية Arabic](./README_ar.md)
+
+---
+
+## Historical / Alternate Language Files
+
+仓库中还保留了一些较早版本、简版、或不同命名风格的语言文件，例如：
+
+- `README_zh.md`
+- `README.zh.md`
+- `README_ja.md`
+- `README.ja.md`
+- `README_ko.md`
+- `README.ko.md`
+- `README.es.md`
+
+这些文件当前**作为历史资料保留**，后续会逐步统一命名与内容。  
+These files are currently preserved as historical material and may be unified gradually later.
 
 ---
 
