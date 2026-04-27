@@ -14,8 +14,13 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 
-// 可以通过环境变量覆盖默认配置
-const COMFYUI_URL = process.env.COMFYUI_URL || 'https://wp08.unicorn.org.cn:40000';
+// 必须通过环境变量配置，无默认值
+const COMFYUI_URL = process.env.COMFYUI_URL;
+if (!COMFYUI_URL) {
+  console.error('❌ 错误: 必须设置 COMFYUI_URL 环境变量');
+  console.error('   示例: COMFYUI_URL=https://your-server.com node scripts/comfyui-monitor.js');
+  process.exit(1);
+}
 const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(__dirname, '..', 'downloads', 'comfyui-videos');
 const STATE_FILE = path.join(OUTPUT_DIR, '.downloaded-history.json');
 const LOG_FILE = process.env.LOG_FILE || path.join(__dirname, '..', 'logs', 'comfyui-monitor.log');

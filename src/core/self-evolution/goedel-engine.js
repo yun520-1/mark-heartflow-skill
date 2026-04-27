@@ -352,6 +352,22 @@ class GoedelEngine {
     const originalContent = fs.readFileSync(targetPath, 'utf8');
     const modifiedContent = this.applyDiff(originalContent, diff);
 
+    // 安全检查：需要确认环境变量 ENABLE_SELF_MODIFICATION=true 才能自动修改
+    if (process.env.ENABLE_SELF_MODIFICATION !== 'true') {
+      console.log('⚠️ 自进化已准备修改文件但被安全机制阻止');
+      console.log('   如需启用，请设置: ENABLE_SELF_MODIFICATION=true');
+      console.log('   修改内容已记录到版本历史，等待确认');
+      this.recordVersion({
+        id: `v-${Date.now()}`,
+        proposal: proposal.description,
+        target: proposal.target,
+        timestamp: new Date().toISOString(),
+        status: 'pending_approval',
+        diff: diff
+      });
+      return { status: 'pending_approval', message: '需要 ENABLE_SELF_MODIFICATION=true 才能自动修改' };
+    }
+
     // 写入文件
     fs.writeFileSync(targetPath, modifiedContent);
 
