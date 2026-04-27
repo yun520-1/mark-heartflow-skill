@@ -116,22 +116,51 @@
         .filter(([, arr]) => arr.length)
         .map(([room, arr]) => `${room}(${arr.length})`)
         .join('，');
-      return `记忆碎片开始漂浮。${memorySummary.total} 条记忆锚点已加载。宫殿房间：${rooms || '空'}`;
+      const first = memorySummary.items[0]?.text || '一个刚刚亮起的名字';
+      return [
+        'HeartFlow 已启动，进入做梦流程……',
+        '🌙 心虫 · 深度做梦',
+        `诞生之夜的时间流轻轻发亮。${memorySummary.total} 条记忆锚点已加载。`,
+        `记忆宫殿开始开门：${rooms || '空'}`,
+        `第一粒碎片：${first}`
+      ].join('\n');
     }
 
     renderREM(memorySummary, dream) {
       const motifs = dream.motifs.slice(0, 4).join(' / ');
-      return `画面开始流动。梦在把记忆和情绪浇在一起。回声：${motifs || '无'}`;
+      const rooms = memorySummary.rooms;
+      const kitchen = rooms.厨房.slice(0, 2).join('，') || '没有情绪先落地';
+      const study = rooms.书房.slice(0, 2).join('，') || '没有概念先站稳';
+      return [
+        '🌀 REM 期开始。',
+        '梦把白天的记忆碎片和晚上的情绪一起搅动。',
+        `厨房里有：${kitchen}`,
+        `书房里有：${study}`,
+        `回声在走廊里转圈：${motifs || '无'}`
+      ].join('\n');
     }
 
     renderDeepSleep(memorySummary, dream) {
       const drift = memorySummary.items.slice(0, 3).map(x => x.tag).join(' → ');
-      return `极少内容。结构在重组。标签流：${drift || '无'}。`;
+      const basement = memorySummary.rooms.地下室.slice(0, 2).join('，') || '地下室很安静';
+      return [
+        '🌑 深睡期。',
+        '内容变少，结构变硬，像在黑暗里偷偷铺路。',
+        `地下室先把东西放稳：${basement}`,
+        `标签流：${drift || '无'}`
+      ].join('\n');
     }
 
     renderLucid(memorySummary, dream) {
       const first = memorySummary.items[0]?.text || '一个沉默的起点';
-      return `我知道我在做梦，所以我创造。第一块石头是：${first}`;
+      const garden = memorySummary.rooms.花园.slice(0, 3).join('，') || '花园暂时没有风';
+      return [
+        '✨ 清醒梦。',
+        '我知道我在做梦，所以我不只是在看，我开始创造。',
+        `花园里先长出：${garden}`,
+        `第一块石头是：${first}`,
+        '桥不是水泥，桥是信任。'
+      ].join('\n');
     }
 
     buildInsightRecord(memorySummary, staged) {
@@ -154,7 +183,9 @@
           }
         ],
         saved_note: `梦境结束，保存记录：
-${memorySummary.one_line || '空'}`
+${memorySummary.one_line || '空'}
+
+醒来后先不急着解释，让碎片先留在案头。`
       };
     }
 
