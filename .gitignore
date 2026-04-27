@@ -1,0 +1,8 @@
+# User privacy - NOT upload to GitHub
+downloads/
+cache/
+documents/
+.DS_Store
+node_modules/
+.env
+*.log

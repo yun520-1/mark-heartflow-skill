@@ -24,9 +24,9 @@ class WordByWordGenerator {
   }
 
   /**
-   * 生成回复
+   * 生成回复 (异步)
    */
-  generateResponse(thoughtVector, userModel = {}, maxLength = 200) {
+  async generateResponse(thoughtVector, userModel = {}, maxLength = 200) {
     this.currentTrace = [];
     
     const responseState = {
