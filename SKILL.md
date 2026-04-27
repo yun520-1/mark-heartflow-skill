@@ -303,3 +303,11 @@ HeartFlow 的真正价值不在于页面，而在于：
 - Keep useless or strange fragments; they may become later insight.
 - Use Light Sleep / REM / Deep Sleep / Lucid Dream as the canonical sequence.
 - On waking, store a short dream journal plus a few insight records.
+
+
+## Dream + Memory Palace Integration Notes
+
+- Dream should treat memory palace rooms as staging areas, not storage bins.
+- The most useful dream fragments are often symbolic, partial, or even apparently useless.
+- A good dream run ends with: summary -> stage flow -> insights -> saved note.
+- Lucid dream should create, not merely inspect.
