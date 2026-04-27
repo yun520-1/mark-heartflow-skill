@@ -2,7 +2,11 @@
 name: heartflow
 title: 心虫 (HeartFlow) - 心连心引擎 | AI认知与价值对齐引擎
 description: AI认知与价值对齐引擎 - 从任务到连接的认知重构，包含决策引擎、记忆管理、自我升级等核心功能
+<<<<<<< HEAD
 version: "10.16.1"
+=======
+version: "10.15.0"
+>>>>>>> 7f99cf92 (v10.15.0 - 修复启动问题，完成版本升级)
 date: "2026-04-27"
 author: 心虫 (HeartFlow)
 tags:
@@ -35,13 +39,21 @@ languages:
   - de
   - ar
 security:
+<<<<<<< HEAD
   audit: v10.15.0
+=======
+  audit: v10.14.3
+>>>>>>> 7f99cf92 (v10.15.0 - 修复启动问题，完成版本升级)
   owasp: compliant
   dependencies: none
   sha256: auto-generated
 ---
 
+<<<<<<< HEAD
 # 心虫 (HeartFlow) v10.15.0
+=======
+# 心虫 (HeartFlow) v10.14.3
+>>>>>>> 7f99cf92 (v10.15.0 - 修复启动问题，完成版本升级)
 
 ## Problem Solved
 

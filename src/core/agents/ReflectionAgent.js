@@ -6,6 +6,7 @@
 // 动态加载 report-generator，如果不存在则使用默认实现
 let generateReport;
 try {
+<<<<<<< HEAD
   const reportGen = require('../../../.opencode/memory/report-generator.js');
   generateReport = reportGen.generateReport || reportGen;
 } catch (e) {
@@ -13,6 +14,14 @@ try {
   generateReport = (sessionData) => ({
     timestamp: new Date().toISOString(),
     duration: (sessionData.endTime || Date.now()) - (sessionData.startTime || Date.now()),
+=======
+  generateReport = require('../../../.opencode/memory/report-generator.js').generateReport;
+} catch (e) {
+  // 默认实现
+  generateReport = (sessionData) => ({
+    timestamp: new Date().toISOString(),
+    duration: sessionData.endTime - sessionData.startTime,
+>>>>>>> 7f99cf92 (v10.15.0 - 修复启动问题，完成版本升级)
     flowStates: sessionData.flowStates || [],
     distractions: sessionData.distractions || [],
     achievements: sessionData.achievements || [],

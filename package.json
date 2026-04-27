@@ -37,7 +37,11 @@
     "express": "^5.2.1",
     "pptxgenjs": "^4.0.1"
   },
+<<<<<<< HEAD
   "version": "10.16.1",
+=======
+  "version": "10.15.0",
+>>>>>>> 7f99cf92 (v10.15.0 - 修复启动问题，完成版本升级)
   "directories": {
     "doc": "docs",
     "test": "tests"
