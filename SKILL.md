@@ -87,6 +87,7 @@ HeartFlow 的目标是作为 **AI Skill** 被安装和加载，
 - `README.md`
 - `SKILL.md`
 - `INSTALL_FOR_AI.md`
+- `docs/install-troubleshooting.md`
 - `VERSION`
 
 默认本地路径：
