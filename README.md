@@ -7,7 +7,7 @@
 **不是独立系统。不是花哨外壳。**  
 **它是安装在 AI 身上的核心能力升级包。**
 
-[![Version](https://img.shields.io/badge/version-v11.2.10-7C3AED)](https://github.com/yun520-1/mark-heartflow-skill)
+[![Version](https://img.shields.io/badge/version-v11.2.11-7C3AED)](https://github.com/yun520-1/mark-heartflow-skill)
 [![Focus](https://img.shields.io/badge/focus-logic%20%7C%20decision%20%7C%20memory%20%7C%20execution-7C3AED)](#为什么值得安装)
 [![Type](https://img.shields.io/badge/type-AI%20Skill-7C3AED)](#heartflow是什么)
 
