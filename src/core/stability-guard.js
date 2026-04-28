@@ -12,6 +12,10 @@ class StabilityGuard {
       maxNoiseRatio: options.maxNoiseRatio ?? 0.45,
       minActionability: options.minActionability ?? 0.5,
     };
+    this.phrases = {
+      safe: 'safe to continue',
+      repair: 'pause, simplify, and repair',
+    };
   }
 
   evaluate(snapshot = {}) {
@@ -34,6 +38,7 @@ class StabilityGuard {
       stable: issues.length === 0,
       issues,
       thresholds: this.thresholds,
+      summary: issues.length === 0 ? 'stable' : 'needs repair',
     };
   }
 
@@ -42,7 +47,7 @@ class StabilityGuard {
     return {
       ...verdict,
       allow: verdict.stable,
-      hint: verdict.stable ? 'safe to continue' : 'pause, simplify, and repair',
+      hint: verdict.stable ? this.phrases.safe : this.phrases.repair,
       next_step: verdict.stable ? 'continue' : 'repair',
       repairHints: verdict.stable
         ? []
