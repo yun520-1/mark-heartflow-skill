@@ -321,7 +321,12 @@ class GoedelEngine {
   cleanupSandbox(sandboxId) {
     const sandboxPath = path.join(this.sandboxDir, sandboxId);
     try {
-      fs.rmSync(sandboxPath, { recursive: true, force: true });
+      const resolved = path.resolve(sandboxPath);
+      const sandboxRoot = path.resolve(this.sandboxDir) + path.sep;
+      if (!resolved.startsWith(sandboxRoot)) {
+        throw new Error('sandbox_path_escape_blocked');
+      }
+      fs.rmSync(sandboxPath, { recursive: true, force: true, maxRetries: 2 });
       this.log(`Sandbox cleaned up: ${sandboxId}`);
     } catch (e) {
       console.error(`[Gödel] Cleanup failed: ${e.message}`);
@@ -342,10 +347,8 @@ class GoedelEngine {
 
     // 安全检查：需要确认环境变量 HEARTFLOW_ENABLE_SELF_MODIFICATION=1 才能自动修改
     if (process.env.HEARTFLOW_ENABLE_SELF_MODIFICATION !== '1') {
-      console.log('⚠️ 自进化已准备修改文件但被安全机制阻止');
-      console.log('   如需启用，请设置: HEARTFLOW_ENABLE_SELF_MODIFICATION=1');
-      console.log('   当前仅返回待人工处理结果，不自动写入源码或版本记录');
-      return { status: 'pending_approval', message: '需要 HEARTFLOW_ENABLE_SELF_MODIFICATION=1 才能自动修改' };
+      console.warn('[Gödel] Self modification disabled by policy');
+      return { success: false, reason: 'self_modification_disabled' };
     }
 
     // 写入文件

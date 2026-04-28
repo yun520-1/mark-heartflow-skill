@@ -162,6 +162,9 @@ async function checkInternet() {
 }
 
 async function testAPI(provider) {
+  if (process.env.HEARTFLOW_ENABLE_SETUP_NETWORK_TEST !== '1') {
+    return { success: true, errorMsg: 'network_test_disabled' };
+  }
   return new Promise(resolve => {
     try {
       const url = new URL(provider.baseUrl);

@@ -134,17 +134,11 @@ class IntentLayer {
 
     for (let attempt = 0; attempt < RETRY_CONFIG.maxRetries; attempt++) {
       try {
-        const response = await fetch(this.llmEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.llmApiKey}`
-          },
-          body: JSON.stringify({
-            model: 'claude-3-sonnet-20240229',
-            max_tokens: 1000,
-            messages: [{ role: 'user', content: prompt }]
-          })
+        const safePrompt = this.redactPrompt(prompt);
+        const response = await this.postToLLM(this.llmEndpoint, {
+          model: 'claude-3-sonnet-20240229',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: safePrompt }]
         });
 
         if (!response.ok) {
@@ -194,6 +188,40 @@ class IntentLayer {
       }
     }
     return null;
+  }
+
+  redactPrompt(prompt) {
+    return String(prompt)
+      .replace(/([A-Za-z0-9_\-]{16,})/g, '[REDACTED]')
+      .replace(/(Bearer\s+)[A-Za-z0-9_\-\.]+/gi, '$1[REDACTED]');
+  }
+
+  async postToLLM(endpoint, payload) {
+    const { URL } = require('url');
+    const url = new URL(endpoint);
+    const mod = url.protocol === 'https:' ? require('https') : require('http');
+    const body = JSON.stringify(payload);
+    const options = {
+      method: 'POST',
+      hostname: url.hostname,
+      port: url.port || (url.protocol === 'https:' ? 443 : 80),
+      path: url.pathname,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': this.llmApiKey ? `Bearer ${this.llmApiKey}` : undefined,
+        'Content-Length': Buffer.byteLength(body),
+      }
+    };
+    return new Promise((resolve, reject) => {
+      const req = mod.request(options, res => {
+        let data = '';
+        res.on('data', c => data += c);
+        res.on('end', () => resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode, json: async () => JSON.parse(data) }));
+      });
+      req.on('error', reject);
+      req.write(body);
+      req.end();
+    });
   }
 
   /**
