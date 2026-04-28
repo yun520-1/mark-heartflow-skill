@@ -13,6 +13,17 @@ const fs = require('fs');
 const path = require('path');
 const { generateDream } = require('./dream-loop.js');
 
+function loadOptional(modulePath, label) {
+  try {
+    const mod = require(modulePath);
+    console.log(`[HeartFlow] ✅ ${label}已加载`);
+    return mod;
+  } catch (e) {
+    console.log(`[HeartFlow] ⚠️ ${label}加载失败:`, e.message);
+    return null;
+  }
+}
+
 // 加载新增模块
 let AdaptiveController, AgentOrchestrator, ErrorHandler, StateSnapshot;
 let TrialityMemory, EmbodiedCore, BioSensorAdapter;
@@ -22,6 +33,7 @@ let WakeUpVerifier;
 let InteractiveDream;
 let SelfHealing, StabilityGuard;
 let MADVerifier, UncertaintyEstimator, HeartbeatFallback, HealingMemoryRL;
+let ExecutionVerifier;
 
 try {
   AdaptiveController = require('./adaptive-controller.js');
@@ -115,6 +127,13 @@ try {
   console.log('[HeartFlow] ✅ 稳定性守卫已加载');
 } catch (e) {
   console.log('[HeartFlow] ⚠️ 稳定性守卫加载失败:', e.message);
+}
+
+try {
+  ExecutionVerifier = require('./execution-verifier.js').ExecutionVerifier;
+  console.log('[HeartFlow] ✅ 执行验证器已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 执行验证器加载失败:', e.message);
 }
 
 /**
@@ -1000,6 +1019,53 @@ module.exports.analyzeIntent = analyzeIntent;
 module.exports.evaluateWorkflowSwitch = evaluateWorkflowSwitch;
 module.exports.switchWorkflow = switchWorkflow;
 module.exports.getCurrentWorkflow = getCurrentWorkflow;
+
+// 心理分析 v0.0.1：四层分析（表层意图 / 情绪暗流 / 深层需求 / 防御机制）
+function analyzePsychology(userMessage, context = {}) {
+  const text = String(userMessage || '');
+  const lower = text.toLowerCase();
+  const isSuspicious = /免费|引流|套餐|资助|数据|分析|是不是|吧\?|\?|怀疑|套路/.test(text);
+
+  const surface = {
+    type: isSuspicious ? 'motivation_inference' : 'statement_analysis',
+    summary: isSuspicious ? '识别对话中的动机判断与商业怀疑' : '分析对话表达',
+    confidence: 0.75
+  };
+
+  const emotional = {
+    emotion: isSuspicious ? 'suspicious' : 'neutral',
+    intensity: isSuspicious ? 0.68 : 0.4,
+    cues: []
+  };
+  if (lower.includes('免费')) emotional.cues.push('对免费机制的警觉');
+  if (lower.includes('引流')) emotional.cues.push('商业转化联想');
+  if (lower.includes('国外')) emotional.cues.push('外部动机怀疑');
+  if (lower.includes('怀疑') || lower.includes('套路')) emotional.cues.push('防御性归因');
+
+  const deepNeed = {
+    need: isSuspicious ? 'avoid_being_manipulated' : 'understand_meaning',
+    summary: isSuspicious ? '想确认是否存在隐性代价、操控或包装过度' : '想理解说话内容的真实含义',
+    confidence: 0.8
+  };
+
+  const defense = {
+    mechanism: isSuspicious ? 'motive_attribution / cognitive_simplification / suspicious_projection' : 'none',
+    explanation: isSuspicious ? '把复杂行为快速收束为营销或动机问题，用怀疑降低不确定性' : '未见明显防御机制',
+    confidence: 0.74
+  };
+
+  return {
+    userMessage: text,
+    surface,
+    emotional,
+    deepNeed,
+    defense,
+    psychology_summary: `${surface.summary}；情绪=${emotional.emotion}；深层需求=${deepNeed.need}`,
+    nextReplyHint: '先承接怀疑，再补充证据链或指出逻辑跳跃'
+  };
+}
+
+module.exports.analyzePsychology = analyzePsychology;
 module.exports.getAvailableWorkflows = getAvailableWorkflows;
 module.exports.generateWorkflowReport = generateWorkflowReport;
 module.exports.resetWorkflow = resetWorkflow;
