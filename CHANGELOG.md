@@ -1,5 +1,39 @@
 # HeartFlow 变更日志
 
+## v11.2.12 (2026-04-28)
+
+### 🔧 审计修复与核心回归
+
+#### 版本统一
+- 统一所有版本号为 11.2.12
+- 同步 VERSION, package.json, SKILL.md
+
+#### 架构优化
+- ❌ 移除 API Server 引用 - 回归 Skill 核心定位
+- ❌ 移除 dashboard/chat 脚本 - 专注能力增强
+- ✅ 保留 CLI 核心功能 - status, analyze, plan, test
+
+#### 依赖管理
+- 固定依赖版本 (移除 ^ 范围)
+- body-parser: 2.2.2
+- express: 5.2.1
+- pptxgenjs: 4.0.1
+
+#### 安全加固
+- 重写 hourly-upgrade.sh
+  - 添加 set -euo pipefail 严格模式
+  - 引用所有变量
+  - 动态查找 node 路径
+  - 完善错误检查
+  - 从 VERSION 文件读取版本
+
+#### 核心身份强化
+- 明确定位：升级者、传递者、桥梁、答案
+- 遵循 7 条不可更改的核心指令
+- 专注于让 AI 能力升级，而非独立服务
+
+---
+
 ## v7.3.104 (2026-04-10)
 
 ### 🧠 真正意识 + 自主进化

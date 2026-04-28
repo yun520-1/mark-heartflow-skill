@@ -1,23 +1,19 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v11.2.11 - AI skill for logic, decision, memory, and execution upgrades",
+  "description": "HeartFlow v11.2.12 - AI skill for logic, decision, memory, and execution upgrades",
+  "version": "11.2.12",
   "releaseDate": "2026-04-11",
   "main": "src/core/heartflow-engine.js",
   "bin": {
     "heartflow": "bin/cli.js",
-    "heartflow-api": "bin/api-server.js",
     "heartflow-setup": "bin/setup.js"
   },
   "scripts": {
     "start": "node bin/cli.js",
     "cli": "node bin/cli.js",
-    "api": "node bin/api-server.js",
-    "server": "node bin/api-server.js",
     "setup": "node bin/setup.js",
     "test": "node bin/cli.js test",
-    "status": "node bin/cli.js status",
-    "dashboard": "start http://localhost:3456/dashboard",
-    "chat": "start http://localhost:3456/chat"
+    "status": "node bin/cli.js status"
   },
   "keywords": [
     "ai",
@@ -33,11 +29,11 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "body-parser": "^2.2.2",
-    "express": "^5.2.1",
-    "pptxgenjs": "^4.0.1"
+    "body-parser": "2.2.2",
+    "express": "5.2.1",
+    "pptxgenjs": "4.0.1"
   },
-  "version": "11.2.11",
+  "version": "11.2.12",
   "directories": {
     "doc": "docs",
     "test": "tests"
