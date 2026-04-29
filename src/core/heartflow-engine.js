@@ -1500,6 +1500,14 @@ module.exports.initialize = function() {
     init.instances = init.instances || {};
     init.instances.stabilityGuard = new StabilityGuard();
   }
+  if (SelfHealing) {
+    init.instances = init.instances || {};
+    init.instances.selfHealing = new SelfHealing();
+  }
+  if (ExecutionVerifier) {
+    init.instances = init.instances || {};
+    init.instances.executionVerifier = new ExecutionVerifier();
+  }
 
   // 默认做一次轻量梦-醒预热，确保闭环可用
   if (DreamLoop && WakeUpVerifier) {
@@ -1567,4 +1575,83 @@ module.exports.runInteractiveDream = function(memoryItems = [], answers = []) {
   const instance = new Interactive();
   const dream = instance.createDream(memoryItems);
   return instance.respond(dream, answers);
+};
+
+module.exports.evaluateRuntimeStability = function(snapshot = {}, options = {}) {
+  const Guard = StabilityGuard || require('./stability-guard.js').StabilityGuard;
+  const guard = options.guard instanceof Guard ? options.guard : new Guard(options.thresholds || {});
+  const verdict = guard.gate(snapshot);
+  return {
+    guard: verdict,
+    stable: verdict.stable,
+    allow: verdict.allow,
+    issues: verdict.issues || [],
+    hints: verdict.repairHints || [],
+  };
+};
+
+module.exports.runRuntimeReliabilityLoop = function(result = {}, context = {}) {
+  const Healing = SelfHealing || require('./self-healing.js').SelfHealing;
+  const Guard = StabilityGuard || require('./stability-guard.js').StabilityGuard;
+  const Verifier = ExecutionVerifier || require('./execution-verifier.js').ExecutionVerifier;
+
+  const selfHealing = context.selfHealing instanceof Healing ? context.selfHealing : new Healing(context.healingOptions || {});
+  const stabilityGuard = context.stabilityGuard instanceof Guard ? context.stabilityGuard : new Guard(context.thresholds || {});
+  const executionVerifier = context.executionVerifier instanceof Verifier ? context.executionVerifier : new Verifier(context.verifierOptions || {});
+
+  const verification = executionVerifier.verify(result, context);
+  const snapshot = {
+    confidence: context.confidence ?? verification.score,
+    noiseRatio: context.noiseRatio ?? (verification.issues.length > 0 ? Math.min(1, verification.issues.length / 5) : 0),
+    actionability: context.actionability ?? (verification.passed ? 1 : 0.4),
+  };
+
+  const guard = stabilityGuard.gate(snapshot);
+
+  if (!verification.passed || !guard.allow) {
+    selfHealing.record({
+      type: verification.passed ? 'stability_guard_blocked' : 'execution_verification_failed',
+      message: verification.summary || guard.advice || 'runtime reliability loop detected an issue',
+      code: guard.allow ? null : 'GUARD_BLOCKED',
+    });
+  }
+
+  const recovery = selfHealing.recover({
+    ok: verification.passed && guard.allow,
+    message: [verification.summary, guard.advice].filter(Boolean).join(' | '),
+    code: guard.allow ? null : 'GUARD_BLOCKED',
+    attempt: Number(context.attempt || 0),
+  });
+
+  const retryPlan = typeof selfHealing.createRetryPlan === 'function'
+    ? selfHealing.createRetryPlan({
+        message: recovery.summary || verification.summary,
+        code: recovery.code || (guard.allow ? null : 'GUARD_BLOCKED'),
+        attempt: Number(context.attempt || 0),
+      })
+    : {
+        attempt: recovery.attempt,
+        canRetry: recovery.canRetry,
+        delay: recovery.backoffMs,
+        strategy: recovery.canRetry ? 'exponential_backoff' : 'manual_repair',
+      };
+
+  return {
+    allow: verification.passed && guard.allow,
+    stable: guard.stable,
+    guard,
+    verification,
+    recovery,
+    retryPlan,
+    shouldRetry: !!retryPlan.canRetry,
+    issues: [...(verification.issues || []), ...(guard.issues || [])],
+    hints: [...new Set([...(recovery.hints || []), ...(guard.repairHints || [])])],
+    state: {
+      runtimeSnapshot: snapshot,
+      guard,
+      verification,
+      recovery,
+      retryPlan,
+    },
+  };
 };
