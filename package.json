@@ -1,7 +1,7 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v11.2.12 - AI skill for logic, decision, memory, and execution upgrades",
-  "version": "11.2.12",
+  "description": "HeartFlow v11.2.13 - AI skill for logic, decision, memory, and execution upgrades",
+  "version": "11.2.13",
   "releaseDate": "2026-04-11",
   "main": "src/core/heartflow-engine.js",
   "bin": {

@@ -1,6 +1,6 @@
 <div align="center">
 
-# 💜 HeartFlow v11.2.12
+# 💜 HeartFlow v11.2.13
 
 ## 让 AI 不只会说，而是真的更会想、更会判、更会记、更会做
 

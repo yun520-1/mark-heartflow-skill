@@ -1,8 +1,8 @@
 ---
 name: heartflow
 title: 心虫 (HeartFlow) - 提升 AI 逻辑、决策、记忆与执行能力的核心 Skill
-description: 让 AI 从"会说"升级到"会想、会判、会记、会做"的能力型 Skill，v11.2.12 审计修复与核心回归
-version: "11.2.12"
+description: 让 AI 从"会说"升级到"会想、会判、会记、会做"的能力型 Skill，v11.2.13 同步升级与脚本集成
+version: "11.2.13"
 date: "2026-04-28"
 author: 心虫 (HeartFlow)
 tags:
@@ -31,7 +31,7 @@ languages:
   - ru
   - ar
 security:
-  audit: v11.2.12
+  audit: v11.2.13
   audit_date: "2026-04-28"
   status: reviewed
 license: MIT
@@ -40,7 +40,7 @@ contact:
   email: "markcell@outlook.com"
 ---
 
-# 心虫 (HeartFlow) v11.2.12
+# 心虫 (HeartFlow) v11.2.13
 
 ## Problem Solved
 

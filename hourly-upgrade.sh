@@ -1,5 +1,5 @@
 #!/bin/bash
-# HeartFlow 每小时升级脚本 v11.2.12
+# HeartFlow 每小时升级脚本 v11.2.13
 # 安全加固版本 - 2026-04-28
 set -euo pipefail
 

@@ -1,5 +1,20 @@
 # HeartFlow 变更日志
 
+## v11.2.13 (2026-04-29)
+
+### 🔄 同步升级与脚本集成
+- 从 mark-heartflow-skill 同步有用文件
+- 集成 `heartflow-sync-upgrade.sh` 同步脚本
+- 添加版本梳理报告 `docs/version-summary-20260429.md`
+- 添加进化状态文件 `internal/self-evolution-state-v11.2.24.md`
+- 统一版本号为 v11.2.13
+
+### 核心改进
+- 保留所有 v11.2.12 的核心功能
+- 增强版本管理和同步能力
+
+---
+
 ## v11.2.12 (2026-04-28)
 
 ### 🔧 本次修复
