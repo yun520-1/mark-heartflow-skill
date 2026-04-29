@@ -13,8 +13,8 @@ This is the language hub for HeartFlow.
 
 - 🇨🇳 [中文 Chinese](./README.md)
 - 🇺🇸 [English](./README_en.md)
-- 🇯🇵 [日本語 Japanese](./README.ja.md)
-- 🇰🇷 [한국어 Korean](./README.ko.md)
+- 🇯🇵 [日本語 Japanese](./README_ja.md)
+- 🇰🇷 [한국어 Korean](./README_ko.md)
 - 🇫🇷 [Français French](./README_fr.md)
 - 🇩🇪 [Deutsch German](./README_de.md)
 - 🇪🇸 [Español Spanish](./README_es.md)
@@ -34,7 +34,7 @@ This is the language hub for HeartFlow.
 - `README.ko.md`
 - `README.es.md`
 
-这些文件当前**作为历史资料保留**，后续会逐步统一命名与内容。  
+这些文件当前作为历史资料保留，后续会逐步统一命名与内容。  
 These files are currently preserved as historical material and may be unified gradually later.
 
 ---
@@ -43,16 +43,4 @@ These files are currently preserved as historical material and may be unified gr
 
 - 当前主版本：`v11.3.0`
 - 主定位：安装在 AI 身上的核心能力升级包
-- 重点能力：logic / decision / memory / execution
-
-部分历史语言文件仍在逐步统一版本与文案。  
-Some historical language files are being gradually aligned to the latest version and homepage copy.
-
-如果你希望先快速了解项目，请优先阅读中文主首页：
-- [`README.md`](./README.md)
-
-如果你希望查看安装说明：
-- [`INSTALL_FOR_AI.md`](./INSTALL_FOR_AI.md)
-
-如果你希望查看技能定义：
-- [`SKILL.md`](./SKILL.md)
+- 主叙述：技能审查后的可执行、可验证、可修正系统
