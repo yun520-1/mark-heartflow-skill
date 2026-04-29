@@ -66,13 +66,12 @@ HeartFlow 要解决的，就是这些今天 AI 最缺、也最影响真实产出
 
 ## Multilingual Summary
 
-- **中文**: 强化逻辑、决策、记忆、执行的 AI Skill
-- **English**: AI skill for logic, decision, memory, and execution upgrades
-- **日本語**: 論理・意思決定・記憶・実行を強化する AI スキル
-- **Español**: skill de IA para lógica, decisión, memoria y ejecución
-- **Français**: compétence IA pour logique, décision, mémoire et exécution
-- **Deutsch**: KI-Skill für Logik, Entscheidung, Gedächtnis und Ausführung
-- **Português**: skill de IA para lógica, decisão, memória e execução
+- 🇨🇳 [中文](./README.md)
+- 🇺🇸 [English](./README_en.md)
+- 🇯🇵 [日本語](./README.ja.md)
+- 🇪🇸 [Español](./README_es.md)
+- 🇫🇷 [Français](./README_fr.md)
+- 🇩🇪 [Deutsch](./README_de.md)
 
 ## Core Features
 
