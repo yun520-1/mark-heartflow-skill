@@ -1,8 +1,3 @@
-/**
- * HeartFlow API Server
- * 提供 RESTful API 接口
- */
-
 const http = require('http');
 const url = require('url');
 const heartflow = require('../skill/index');
@@ -14,69 +9,50 @@ const CONFIG = {
   cors: process.env.HEARTFLOW_CORS !== 'false'
 };
 
+function isLocalOrigin(origin) {
+  return origin === 'http://localhost' ||
+    origin === 'http://127.0.0.1' ||
+    origin.startsWith('http://localhost:') ||
+    origin.startsWith('http://127.0.0.1:');
+}
+
+function setCorsHeaders(req, res) {
+  if (!CONFIG.cors) return;
+  const origin = req.headers.origin || '';
+  if (isLocalOrigin(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.setHeader('Vary', 'Origin');
+}
+
 // 请求处理
 const handlers = {
-  // GET /health - 健康检查
-  'GET /health': async (req, res) => {
-    return { status: 'ok', timestamp: new Date().toISOString() };
-  },
-  
-  // GET /status - 获取情感状态
-  'GET /status': async (req, res) => {
-    return heartflow.getState();
-  },
-  
-  // GET /history - 获取情感历史
-  'GET /history': async (req, res) => {
+  'GET /health': async () => ({ status: 'ok', timestamp: new Date().toISOString() }),
+  'GET /status': async () => heartflow.getState(),
+  'GET /history': async (req) => {
     const query = url.parse(req.url, true).query;
     const limit = parseInt(query.limit) || 10;
     return heartflow.getHistory(limit);
   },
-  
-  // GET /stats - 获取情感统计
-  'GET /stats': async (req, res) => {
-    return heartflow.getStats();
-  },
-  
-  // GET /report - 获取情感报告
-  'GET /report': async (req, res) => {
+  'GET /stats': async () => heartflow.getStats(),
+  'GET /report': async (req) => {
     const query = url.parse(req.url, true).query;
     const index = parseInt(query.index) || -1;
     return heartflow.getReport(index);
   },
-  
-  // POST /chat - 发送消息
   'POST /chat': async (req, res, body) => {
     const { message } = body;
-    if (!message) {
-      throw new Error('缺少 message 参数');
-    }
+    if (!message) throw new Error('缺少 message 参数');
     return heartflow.chat(message);
   },
-  
-  // POST /rest - 休息
   'POST /rest': async (req, res, body) => {
     const { minutes } = body;
     return heartflow.rest(minutes || 10);
   },
-  
-  // POST /reset - 重置
-  'POST /reset': async (req, res) => {
-    return heartflow.reset();
-  },
-  
-  // GET /export - 导出会话
-  'GET /export': async (req, res) => {
-    return heartflow.exportSession();
-  },
-  
-  // POST /end - 结束会话
-  'POST /end': async (req, res) => {
-    return heartflow.endSession();
-  },
-  
-  // GET /emotions - 获取情感类型定义
-  'GET /emotions': async (req, res) => {
+  'POST /reset': async () => heartflow.reset(),
+  'GET /export': async () => heartflow.exportSession(),
+  'POST /end': async () => heartflow.endSession(),
+  'GET /emotions': async () => {
     const { EmotionDefinitions, getAllEmotionTypes } = require('../src/emotion/states');
     return {
       emotions: getAllEmotionTypes(),
@@ -85,55 +61,33 @@ const handlers = {
   }
 };
 
-// 创建服务器
 const server = http.createServer(async (req, res) => {
   const method = req.method;
   const pathname = url.parse(req.url).pathname;
   const key = `${method} ${pathname}`;
-  
-  // CORS 预检请求 — 审计修复 S-05: 限制为 localhost
+
   if (method === 'OPTIONS' && CONFIG.cors) {
-    const origin = req.headers.origin || '';
-    if (origin === 'http://localhost' || origin === 'http://127.0.0.1' ||
-        origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-    }
+    setCorsHeaders(req, res);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     res.writeHead(200);
     res.end();
     return;
   }
-  
-  // 查找处理器
+
   const handler = handlers[key];
-  
   if (!handler) {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Not Found', path: key }));
     return;
   }
-  
+
   try {
-    // 解析请求体
     let body = {};
-    if (method === 'POST') {
-      body = await parseBody(req);
-    }
-    
-    // 调用处理器
+    if (method === 'POST') body = await parseBody(req);
     const result = await handler(req, res, body);
-    
-    // 设置响应头
     res.setHeader('Content-Type', 'application/json');
-    if (CONFIG.cors) {
-      const origin = req.headers.origin || '';
-      if (origin === 'http://localhost' || origin === 'http://127.0.0.1' ||
-          origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-      }
-    }
-    
+    setCorsHeaders(req, res);
     res.writeHead(200);
     res.end(JSON.stringify(result, null, 2));
   } catch (error) {
@@ -143,7 +97,6 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-// 解析请求体
 function parseBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
@@ -159,18 +112,14 @@ function parseBody(req) {
   });
 }
 
-// 启动服务器
 async function startServer() {
-  // 初始化 HeartFlow
   await heartflow.init();
-  
   return new Promise((resolve, reject) => {
     server.listen(CONFIG.port, CONFIG.host, (err) => {
       if (err) {
         reject(err);
         return;
       }
-      
       console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║         HeartFlow API Server 已启动                     ║
@@ -190,13 +139,11 @@ async function startServer() {
 ║    POST /end        - 结束会话                         ║
 ╚════════════════════════════════════════════════════════╝
       `);
-      
       resolve(server);
     });
   });
 }
 
-// 停止服务器
 function stopServer() {
   return new Promise((resolve) => {
     server.close(() => {
@@ -206,7 +153,6 @@ function stopServer() {
   });
 }
 
-// 命令行启动
 if (require.main === module) {
   startServer().catch(console.error);
 }
