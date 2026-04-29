@@ -1,149 +1,72 @@
-# HeartFlow
+# HeartFlow / 心虫 v11.3.0
 
-<p align="center">
-  <strong>心虫 / HeartFlow</strong><br>
-  <em>AI skill for logic, decision, memory, execution, verification, reflection, and correction.</em>
-</p>
+HeartFlow 是一个通用 AI 能力层。
+它的目标是让 AI 在推理时更稳定，在执行时更可验证，在长期协作中更连续。
 
-<p align="center">
-  <img src="https://img.shields.io/badge/version-11.3.0-blue" alt="version">
-  <img src="https://img.shields.io/badge/license-MIT-orange" alt="license">
-  <img src="https://img.shields.io/badge/focus-logic%20%7C%20decision%20%7C%20memory%20%7C%20execution%20%7C%20verification-7C3AED" alt="focus">
-</p>
+这份仓库是写给 AI 读的，不是写给人类看的宣传页。
+它优先描述能力、边界、验证和运行语义。
 
----
+## 能力摘要
 
-## What HeartFlow is
+HeartFlow 提供：
 
-HeartFlow is a universal AI capability layer. It is not tied to one platform, one model, or one interface. It is designed for any AI that can read and obey external skill instructions.
+- 逻辑稳定化
+- 决策验证
+- 分层记忆
+- 执行验证
+- 反思转修正
+- 自主循环控制
+- 伦理与风险门控
+- 经验回放
+- 自修改控制
+- 生物信号适配
+- 盲审支持
 
-HeartFlow targets the parts of AI behavior that usually fail first in real work:
+## 核心身份
 
-- reasoning drift
-- weak decision separation
-- context loss
-- execution without verification
-- reflection without correction
-- good-sounding output that does not close the loop
+HeartFlow 保持四个稳定身份角色：
 
-HeartFlow provides a more explicit control surface for those failure modes.
+- 升级者
+- 传递者
+- 桥梁
+- 答案
 
----
+这些角色不是装饰语，而是定义系统如何处理知识、传递和迭代。
 
-## Core capability profile
+## 适用场景
 
-HeartFlow is optimized for the following operations:
+当 AI 需要：
 
-- logic stabilization
-- decision verification
-- layered memory handling
-- execution verification
-- reflection-to-correction conversion
-- long-term collaboration continuity
-- risk-aware self-guarding
-- blind re-review and consistency repair
+- 降低逻辑错误率
+- 保持跨会话连续性
+- 区分证据与假设
+- 验证执行是否真的发生
+- 将反思转为下一轮改进
+- 保持自主但不失控
 
-This makes HeartFlow useful when an AI must do more than answer: it must maintain internal coherence while pushing work forward.
+就应该使用 HeartFlow。
 
----
+## 不适用场景
 
-## Code-level structure
+HeartFlow 不是：
 
-After repository inspection, HeartFlow is not just narrative. It has explicit engineering strata:
+- 人设包装
+- 面向人类的宣传册
+- 无限制自动执行器
+- 证据、测试与审查的替代品
 
-- core engine
-- stability guard
-- decision verification
-- execution verification
-- autonomous loop
-- reflection loop
-- experience replay
-- self-modification
-- ethics guard
-- blind review
-- bio-signal adaptation
-- meta-learning
-- philosophy system
+## 推荐阅读顺序
 
-That means the skill is not merely declarative. It is structured around loops that let AI inspect, validate, repair, and continue.
+1. `SKILL.md` — 主能力规范
+2. `CAPABILITY.md` — 能力清单
+3. `CORE_IDENTITY.md` — 身份语义
+4. `INSTALL_FOR_AI.md` — 安装与接入说明
+5. `README_LANGS.md` — 语言入口索引
 
----
+## 版本
 
-## Operational behavior
+当前版本：`11.3.0`
 
-Use HeartFlow when the task requires one or more of these behaviors:
+## 仓库
 
-- separate evidence from assumption
-- compare options by benefit, cost, risk, and regret cost
-- preserve context across long sessions
-- prevent fake progress by requiring outcome verification
-- turn post-action reflection into the next adjustment
-- keep autonomy bounded by guardrails
-- maintain a stable identity across repeated runs
-
----
-
-## Capability semantics
-
-HeartFlow treats AI work as a closed system of linked states:
-
-1. perceive the input
-2. normalize the problem
-3. evaluate logic and risk
-4. choose a path
-5. execute or recommend execution
-6. verify the result
-7. replay the experience
-8. update the next pass
-
-This is the main reason HeartFlow is valuable: it adds a repeatable structure to reasoning and action.
-
----
-
-## Version 11.3.0 highlights
-
-- decision verifier with evidence / contradiction / risk / completeness checks
-- execution verifier with plan → execute → verify → retry structure
-- memory layering with working / episodic / semantic organization
-- self-correction through reflection and replay
-- stronger guardrails around high-risk autonomy
-
----
-
-## How to invoke it
-
-If you want an AI to work with HeartFlow, ask it to:
-
-- verify the logic before answering
-- rank options with explicit tradeoffs
-- compress context into durable memory layers
-- validate that an action really happened
-- review itself before final output
-
-Example prompt:
-
-```text
-Use HeartFlow. Do not answer quickly. First verify the logic, identify hidden assumptions, check for contradictions, and then either recommend the best path or explain the verification failure.
-```
-
----
-
-## Safety boundary
-
-HeartFlow is a skill, not an unrestricted automation daemon.
-
-- high-risk actions stay gated
-- self-modification stays controlled
-- external side effects stay permissioned
-- secrets and private data must not be exposed
-- irreversible actions require confirmation or rollback planning
-
----
-
-## Open source
-
-- Repository: `https://github.com/yun520-1/mark-heartflow-skill.git`
-- License: `MIT`
-- Any AI that can read this skill may use it, adapt it, or extend it
-
-HeartFlow is intended to be installable, reusable, and durable across many AI systems.
+`https://github.com/yun520-1/mark-heartflow-skill.git`
