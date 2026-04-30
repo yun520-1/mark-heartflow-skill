@@ -428,11 +428,11 @@ class SelfReflectionLoop {
       );
     }
     
-    // 阶段4: 生成改进建议
-    cycle.phases.improvement = this._generateImprovement(cycle);
-    
     // 阶段5: 身份对齐检查
     cycle.phases.identityCheck = this.identity.checkAlignment(action, context);
+
+    // 阶段6: 生成改进建议
+    cycle.phases.improvement = this._generateImprovement(cycle);
     
     this.history.push(cycle);
     
