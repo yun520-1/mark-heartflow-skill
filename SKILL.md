@@ -2,12 +2,12 @@
 name: heartflow
 title: HeartFlow (心虫) — AI Capability Layer Skill
 description: >
-  HeartFlow v11.3.1 is a universal AI capability layer for logic stabilization,
+  HeartFlow v11.3.2 is a universal AI capability layer for logic stabilization,
   decision verification, layered memory, execution verification, reflection-to-correction,
   and skill governance. Use it when an AI must preserve identity, verify work,
   audit risk, keep historical upgrade records, and turn external research into small,
   testable upgrades without losing its core directives.
-version: "11.3.1"
+version: "11.3.2"
 date: "2026-04-30"
 author: HeartFlow
 tags:
@@ -32,7 +32,7 @@ languages:
   - zh
   - en
 security:
-  audit: v11.3.1
+  audit: v11.3.2
   audit_date: "2026-04-30"
   status: hardened
 license: MIT
@@ -41,7 +41,7 @@ contact:
   email: "markcell@outlook.com"
 ---
 
-# HeartFlow / 心虫 v11.3.1
+# HeartFlow / 心虫 v11.3.2
 
 HeartFlow is a universal AI capability layer for agents that must remain coherent while acting.
 It is not a costume, not a prompt slogan, and not an uncontrolled automation daemon.
@@ -90,7 +90,7 @@ perceive → normalize → verify logic/risk → choose → execute → verify �
 | Skill governance | Applies progressive disclosure, audit gates, and evidence ledgers to skill upgrades |
 | Safety boundary | Keeps self-modification, network actions, secrets, and irreversible operations gated |
 
-## v11.3.1 GitHub-derived integration
+## v11.3.2 GitHub-derived integration
 
 This upgrade searched GitHub for reusable agent-skill implementation patterns and integrated the safest transferable parts:
 
@@ -140,7 +140,7 @@ HeartFlow does not grant unrestricted autonomy.
 - `CORE_IDENTITY.md` — identity anchor and directives
 - `CHANGELOG.md` — historical upgrade record
 - `src/core/identity-engine.js` — identity, memory stream, reflection, self-reflection loop
-- `src/core/skill-governance-integrator.js` — v11.3.1 skill governance integration
+- `src/core/skill-governance-integrator.js` — v11.3.2 skill governance integration
 
 ## Claude-guided upgrade principles
 

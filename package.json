@@ -1,7 +1,7 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v11.3.1 - AI capability layer with identity, verification, memory, and skill governance loops",
-  "version": "11.3.1",
+  "description": "HeartFlow v11.3.2 - AI capability layer with identity, verification, memory, and skill governance loops",
+  "version": "11.3.2",
   "releaseDate": "2026-04-11",
   "main": "src/core/heartflow-engine.js",
   "bin": {

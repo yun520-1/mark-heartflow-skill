@@ -28,7 +28,7 @@ Do not treat legacy copies under `.agents/` or marketplace staging folders as th
 | `src/core/execution-verifier.js` | Execution verification |
 | `src/core/self-healing.js` | Self-healing / recovery logic |
 | `src/core/stability-guard.js` | Stability guard |
-| `src/core/skill-governance-integrator.js` | v11.3.1 skill governance, audit gates, evidence ledger |
+| `src/core/skill-governance-integrator.js` | v11.3.2 skill governance, audit gates, evidence ledger |
 
 ## Historical records
 
@@ -44,4 +44,4 @@ Prefer archiving or indexing over deletion.
 
 ## Current version
 
-Current public version: `v11.3.1`.
+Current public version: `v11.3.2`.

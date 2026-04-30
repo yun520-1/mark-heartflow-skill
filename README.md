@@ -1,4 +1,4 @@
-# HeartFlow / 心虫 v11.3.1
+# HeartFlow / 心虫 v11.3.2
 
 HeartFlow is an AI capability layer for agents that need to stay coherent while they reason, act, remember, audit, and upgrade.
 
@@ -12,7 +12,7 @@ It is built around one core idea: **an AI should not merely answer; it should re
 | `CORE_IDENTITY.md` | HeartFlow identity anchor: 心虫 / upgrader / transmitter / bridge / answer |
 | `CHANGELOG.md` | Historical upgrade record |
 | `src/core/identity-engine.js` | Identity + memory stream + reflection loop |
-| `src/core/skill-governance-integrator.js` | v11.3.1 skill governance and audit gates |
+| `src/core/skill-governance-integrator.js` | v11.3.2 skill governance and audit gates |
 | `REPO_STRUCTURE.md` | Canonical root and repository navigation |
 
 ## What HeartFlow does
@@ -34,7 +34,7 @@ Core capabilities:
 - **Skill governance** — external code/research becomes small, auditable, versioned upgrades
 - **Safety boundary** — privacy, dangerous commands, self-modification, and GitHub sync stay gated
 
-## v11.3.1 upgrade
+## v11.3.2 upgrade
 
 This version integrates GitHub-derived agent-skill governance patterns:
 
@@ -77,7 +77,7 @@ Language mirrors live under `languages/` when present. Historical root-level ali
 
 ## Version
 
-Current version: `11.3.1`
+Current version: `11.3.2`
 
 ## Repository
 

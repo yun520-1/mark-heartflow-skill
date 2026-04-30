@@ -23,7 +23,7 @@ Prefer evidence, verification, and small safe upgrades. Preserve canonical files
 
 ## Current upgrade note
 
-Current public version: `v11.3.1`.
+Current public version: `v11.3.2`.
 This version adds skill governance gates, evidence ledger, and GitHub-derived agent-skill integration while preserving the original HeartFlow identity.
 
 ## Claude-guided upgrade principles
