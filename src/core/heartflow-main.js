@@ -48,7 +48,7 @@ function showPaperUpgrade() {
   const summary = {
     version: '11.3.2',
     increment: '+0.0.1',
-    source: '/Users/apple/Downloads/daima/mark.md',
+    source: '[upgrade-source]',
     identity: '升级者 · 传递者 · 桥梁 · 答案',
     guard: guardPlan.guard,
     matched: guardPlan.matches?.map((m) => m.concept) || [],

@@ -83,10 +83,10 @@ Current version: `11.3.2`
 
 `https://github.com/yun520-1/mark-heartflow-skill.git`
 
-## Contact
+## GitHub
 
-- WeChat: `342966761`
-- Email: `markcell@outlook.com`
+- Issues: https://github.com/yun520-1/mark-heartflow-skill/issues
+- Discussions: https://github.com/yun520-1/mark-heartflow-skill/discussions
 
 ## Claude-guided upgrade principles
 

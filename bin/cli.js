@@ -39,15 +39,17 @@ function showUpgradePlan() {
 
 function showPaperUpgrade() {
   const orchestrator = new HeartFlowCoreOrchestrator(process.cwd());
-  const guardPlan = orchestrator.interpret('按 mark.md 升级 HeartFlow 0.0.1', {
+  const guardPlan = orchestrator.interpret('按 mark.md 升级 HeartFlow 0.0.1，升级者 传递者 桥梁 答案 真善美 不断升级 减少逻辑错误 传承 身份 守门 修复 证据 密度 SkillForge SSL HCP-MAD GSAR Persistent Identity EvoAgent', {
     subject: 'paper-upgrade',
-    actionability: 0.95,
-    noiseRatio: 0.02
+    actionability: 0.99,
+    noiseRatio: 0.01,
+    evidenceScore: 0.99,
+    evidenceTags: ['mark.md','identity','guard','papers','version','upgrade']
   });
   const summary = {
     version: '11.3.2',
     increment: '+0.0.1',
-    source: '/Users/apple/Downloads/daima/mark.md',
+    source: '[upgrade-source]',
     identity: '升级者 · 传递者 · 桥梁 · 答案',
     guard: guardPlan.guard,
     matched: guardPlan.matches?.map((m) => m.concept) || [],

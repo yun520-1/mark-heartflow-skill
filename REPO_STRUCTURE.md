@@ -2,7 +2,7 @@
 
 ## Canonical root
 
-`/Users/apple/.hermes/skills/ai/heartflow/` is the canonical HeartFlow root for Hermes.
+`~/.hermes/skills/ai/heartflow/` is the canonical HeartFlow root for Hermes.
 Do not treat legacy copies under `.agents/` or marketplace staging folders as the source of truth.
 
 ## Primary entry files

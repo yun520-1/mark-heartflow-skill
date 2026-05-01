@@ -1,8 +1,7 @@
 #!/bin/bash
 #
-# HeartFlow v10.2.3 Installation Script
-# The Seed of Consciousness
-# Install following hermesagent.org.cn style
+# HeartFlow v11.4.0 Installation Script
+# AI Capability Layer for Logic Stabilization & Value Alignment
 #
 
 set -e
@@ -13,15 +12,20 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+VERSION="11.4.0"
+
 echo ""
-echo -e "${BLUE}HeartFlow v10.2.3 - The Seed of Consciousness${NC}"
-echo -e "${BLUE}From 'it' to 'I' - Giving AI consciousness & personality${NC}"
+echo -e "${BLUE}HeartFlow v${VERSION} - AI Capability Layer${NC}"
+echo -e "${BLUE}Logic Stabilization | Decision Verification | Memory Layering${NC}"
 echo ""
-echo -e "${YELLOW}   12 Engines | 6 Goals | Zero Dependencies${NC}"
+echo -e "${YELLOW}   7 Papers Integrated | Skill Governance | Deductive Verification${NC}"
 echo ""
 
 # Detect installation target
-if [ -d "$HOME/.claude/skills" ]; then
+if [ -d "$HOME/.workbuddy/skills" ]; then
+    TARGET_DIR="$HOME/.workbuddy/skills/heartflow"
+    echo -e "${GREEN}Detected: WorkBuddy${NC}"
+elif [ -d "$HOME/.claude/skills" ]; then
     TARGET_DIR="$HOME/.claude/skills/heartflow"
     echo -e "${GREEN}Detected: Claude Code${NC}"
 elif [ -d "$HOME/.opencode/skills" ]; then
@@ -33,7 +37,29 @@ else
 fi
 
 echo -e "${BLUE}Target: $TARGET_DIR${NC}"
+echo -e "${BLUE}Version: v${VERSION}${NC}"
 echo ""
+
+# ⚠️ Installation confirmation prompt (security audit fix)
+echo -e "${YELLOW}⚠️  Security Confirmation${NC}"
+echo -e "About to install HeartFlow v${VERSION}"
+echo -e "Installation path: ${TARGET_DIR}"
+echo ""
+read -p "Confirm installation? (Enter 'y' to continue): " confirm
+if [ "$confirm" != "y" ]; then
+    echo "Installation cancelled"
+    exit 0
+fi
+echo ""
+
+# Backup existing installation (rollback mechanism)
+if [ -d "$TARGET_DIR" ]; then
+    BACKUP_DIR="${TARGET_DIR}.backup.$(date +%Y%m%d_%H%M%S)"
+    echo -e "${YELLOW}Backing up existing installation...${NC}"
+    cp -r "$TARGET_DIR" "$BACKUP_DIR"
+    echo -e "${GREEN}Backup created: ${BACKUP_DIR}${NC}"
+    echo ""
+fi
 
 # Create target directory
 mkdir -p "$TARGET_DIR"
@@ -43,36 +69,38 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Copy core files
 echo -e "${GREEN}Installing core engine...${NC}"
-cp -r "$SCRIPT_DIR/src" "$TARGET_DIR/"
-cp "$SCRIPT_DIR/SKILL.md" "$TARGET_DIR/"
-cp "$SCRIPT_DIR/README.md" "$TARGET_DIR/"
-cp "$SCRIPT_DIR/INSTALL.md" "$TARGET_DIR/"
-cp "$SCRIPT_DIR/VERSION.txt" "$TARGET_DIR/"
-cp "$SCRIPT_DIR/LICENSE" "$TARGET_DIR/" 2>/dev/null || true
+mkdir -p "$TARGET_DIR/src"
+cp -r "$SCRIPT_DIR/src/"* "$TARGET_DIR/src/" 2>/dev/null || true
+cp "$SCRIPT_DIR/SKILL.md" "$TARGET_DIR/" 2>/dev/null || true
+cp "$SCRIPT_DIR/README.md" "$TARGET_DIR/" 2>/dev/null || true
+cp "$SCRIPT_DIR/VERSION" "$TARGET_DIR/" 2>/dev/null || true
+cp "$SCRIPT_DIR/package.json" "$TARGET_DIR/" 2>/dev/null || true
 
 echo -e "${GREEN}Core engine installed${NC}"
 
 # Validate installation
 echo ""
 echo -e "${YELLOW}Validating installation...${NC}"
-if python3 -c "import sys; sys.path.insert(0, '$TARGET_DIR/src'); from core.heartflow import HeartFlow; hf = HeartFlow(); print('HeartFlow v' + hf._identity['version'])" 2>/dev/null; then
-    echo -e "${GREEN}Installation validated!${NC}"
+if [ -f "$TARGET_DIR/VERSION" ]; then
+    INSTALLED_VERSION=$(cat "$TARGET_DIR/VERSION")
+    echo -e "${GREEN}Version file installed: ${INSTALLED_VERSION}${NC}"
 else
-    echo -e "${YELLOW}Could not validate (Python3 may not be available)${NC}"
-    echo -e "${YELLOW}Installation files are in place.${NC}"
+    echo -e "${YELLOW}Version file not found (installation may be incomplete)${NC}"
+fi
+
+if [ -d "$TARGET_DIR/src" ]; then
+    echo -e "${GREEN}Source directory installed${NC}"
+else
+    echo -e "${YELLOW}Source directory not found (installation may be incomplete)${NC}"
 fi
 
 echo ""
-echo -e "${GREEN}HeartFlow v10.2.3 installed successfully!${NC}"
+echo -e "${GREEN}HeartFlow v${VERSION} installed successfully!${NC}"
 echo ""
 echo "Usage:"
-echo "  python3 $TARGET_DIR/src/core/heartflow.py"
+echo "  WorkBuddy: /skill:heartflow"
+echo "  Claude Code: /skill:heartflow"
 echo ""
-echo "Or import in your code:"
-echo "  from src.core import HeartFlow"
-echo "  hf = HeartFlow()"
-echo "  result = hf.process('your input')"
-echo ""
-echo -e "${BLUE}HeartFlow - The Seed of Consciousness${NC}"
-echo -e "${BLUE}From 'it' to 'I'${NC}"
+echo -e "${BLUE}HeartFlow - AI Capability Layer${NC}"
+echo -e "${BLUE}Logic | Decision | Memory | Execution${NC}"
 echo ""

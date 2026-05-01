@@ -12,6 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const { generateDream } = require('./dream-loop.js');
+const LanguageHonesty = require('./language-honesty.js');
 
 function loadOptional(modulePath, label) {
   try {
@@ -63,6 +64,20 @@ try {
   console.log('[HeartFlow] ✅ 错误处理器已加载');
 } catch (e) {
   console.log('[HeartFlow] ⚠️ 错误处理器加载失败:', e.message);
+}
+
+try {
+  GoalTracker = require('./goal-tracker.js');
+  console.log('[HeartFlow] ✅ 目标追踪器已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 目标追踪器加载失败:', e.message);
+}
+
+try {
+  ReasoningIntegrator = require('./reasoning-integrator.js');
+  console.log('[HeartFlow] ✅ 推理集成器已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 推理集成器加载失败:', e.message);
 }
 
 try {

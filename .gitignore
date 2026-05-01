@@ -33,3 +33,9 @@ node_modules/
 
 # === 锁文件 ===
 *.lock
+
+# === 工作区数据 ===
+.workbuddy/
+
+# === 历史备份 ===
+backups/
