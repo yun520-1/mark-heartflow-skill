@@ -822,7 +822,9 @@ module.exports.saveStateMachine = saveStateMachine;
  * ========================================
  */
 
-const AgentManager = require('./agents/AgentManager.js');
+// AgentManager 延迟加载 — 必须在所有 module.exports 完成后才能 require
+// 原因：FocusAgent/MoodAgent 在加载时 destructures FLOW_STATE/getCurrentState/detectEmotionFromText/calculatePADState
+// 这些导出在 line 811-813，晚于 AgentManager 的 require (旧位置 line 825)
 
 // 全局代理管理器实例
 let agentManagerInstance = null;
@@ -832,6 +834,7 @@ let agentManagerInstance = null;
  */
 function getAgentManager() {
   if (!agentManagerInstance) {
+    const AgentManager = require('./agents/AgentManager.js');
     agentManagerInstance = new AgentManager();
   }
   return agentManagerInstance;

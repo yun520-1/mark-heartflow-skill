@@ -3,7 +3,8 @@
  * 负责分析用户情绪，并给予情感支持
  */
 
-const { detectEmotionFromText, calculatePADState } = require('../heartflow-engine.js');
+// 延迟加载 — 避免循环 require 警告
+const heartflowEngine = require('../heartflow-engine.js');
 
 class MoodAgent {
   constructor() {
@@ -22,6 +23,8 @@ class MoodAgent {
    * @returns {object} 情绪分析结果
    */
   analyzeMood(userInput) {
+    const detectEmotionFromText = heartflowEngine.detectEmotionFromText;
+    const calculatePADState = heartflowEngine.calculatePADState;
     const emotion = detectEmotionFromText(userInput);
     const pad = calculatePADState(emotion.pleasure, emotion.arousal, emotion.dominance);
     

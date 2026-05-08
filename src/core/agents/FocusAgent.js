@@ -3,7 +3,8 @@
  * 负责监测用户专注度，并在分心时给出提示
  */
 
-const { FLOW_STATE, getCurrentState } = require('../heartflow-engine.js');
+// 注意：不在顶层 destructures — 等所有模块加载完再访问
+const heartflowEngine = require('../heartflow-engine.js');
 
 class FocusAgent {
   constructor() {
@@ -101,6 +102,8 @@ class FocusAgent {
    * @returns {string} 干预文本
    */
   intervene(state) {
+    const FLOW_STATE = heartflowEngine.FLOW_STATE;
+    const getCurrentState = heartflowEngine.getCurrentState;
     const duration = state?.duration || 0;
     
     if (duration > 10) {
