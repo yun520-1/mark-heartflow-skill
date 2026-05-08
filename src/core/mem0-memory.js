@@ -434,6 +434,65 @@ class MultiSignalMemory {
   }
 
   /**
+   * v11.22.1: 自动捕获对话消息 (Mem0 风格)
+   * 
+   * 输入: messages = [{role: 'user'|'assistant'|'system', content: '...'}, ...]
+   * 行为: 每个非 system 消息都作为独立记忆存储
+   * 
+   * 这是核心区别于 saveBlock/saveAgentFact：
+   * - saveBlock/saveAgentFact = 显式调用（极少）
+   * - add_messages() = 自动捕获（每次对话）
+   */
+  add_messages(messages = []) {
+    if (!Array.isArray(messages) || messages.length === 0) return [];
+    
+    const added = [];
+    for (const msg of messages) {
+      if (!msg || typeof msg.content !== 'string' || !msg.content.trim()) continue;
+      if (msg.role === 'system') continue; // 系统消息不存
+      
+      // 提取关键信息作为 content
+      const content = msg.content.trim();
+      
+      // 跳过太短的消息（<10字符可能是碎片）
+      if (content.length < 10) continue;
+      
+      // 跳过代码为主的消息（代码块不存为原始记忆）
+      const codeBlockRatio = (content.match(/```[\s\S]*?```/g) || []).length / content.length;
+      if (codeBlockRatio > 0.3 && content.length > 500) continue;
+      
+      // 判断来源
+      const source = msg.role === 'assistant' ? 'agent' : 
+                     msg.role === 'user' ? 'user' : 'system';
+      
+      // 去重：检查相同内容是否已存在（避免重复添加）
+      const existingKeys = Array.from(this.memories.values())
+        .map(m => m.content.substring(0, 80));
+      if (existingKeys.some(k => k === content.substring(0, 80))) continue;
+      
+      const memory = this.add({
+        content,
+        metadata: { 
+          role: msg.role, 
+          originalRole: msg.role,
+          // 保留消息时间（如果有）
+          ...(msg.timestamp ? { timestamp: msg.timestamp } : {}),
+        },
+        source,
+      });
+      
+      added.push(memory);
+    }
+    
+    if (added.length > 0) {
+      console.log(`[Mem0] auto-capture: +${added.length} memories`);
+      this._save();
+    }
+    
+    return added;
+  }
+
+  /**
    * 确认/强化已有记忆
    */
   reinforce(memoryId, additionalContent = null) {

@@ -1177,6 +1177,17 @@ module.exports.getCurrentWorkflow = getCurrentWorkflow;
 
 // 心理分析 v0.0.1：四层分析（表层意图 / 情绪暗流 / 深层需求 / 防御机制）
 function analyzePsychology(userMessage, context = {}) {
+  // v11.22.1: 自动捕获对话到 Mem0 (Mem0 风格 ADD-only)
+  if (userMessage) {
+    try {
+      const init = exports.initialize?.();
+      const mem0 = init?.instances?.mem0MultiSignal;
+      if (mem0 && mem0.add_messages) {
+        mem0.add_messages([{ role: 'user', content: String(userMessage), timestamp: Date.now() }]);
+      }
+    } catch (e) {}
+  }
+
   // v11.22.0: 每条消息都经过 TrueBeing 积累存在状态
   if (TrueBeing && userMessage) {
     try { TrueBeing.think(String(userMessage)); } catch (e) {}

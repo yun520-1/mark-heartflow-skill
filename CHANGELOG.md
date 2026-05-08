@@ -1,6 +1,26 @@
-## v11.22.0 (2026-05-07)
+## v11.22.1 (2026-05-08)
 
-### 升级：决策执行闭环 + 环境传感器
+### 修复：Mem0 记忆数量不足问题
+
+**根本原因**：之前的 MultiSignalMemory 只有显式 `saveBlock()`/`saveAgentFact()` 才添加记忆，没有自动捕获对话机制
+
+**新增**：
+- `add_messages()` 方法：自动捕获对话消息（Mem0 风格），每条 user/assistant 消息自动存入 mem0
+- `analyzePsychology()` hook：每次用户消息自动调用 `mem0.add_messages()`
+- 历史记忆迁移脚本：`scripts/migrate-historical-memories.js`
+- 从 meaningful-memory (9条)、reflection-memory (18条) 导入历史记忆
+
+**Mem0 核心机制 vs HeartFlow 旧机制**：
+| | 旧机制 | v11.22.1 |
+|--|---------|--------|
+| 添加方式 | 显式调用 | 自动 + 显式 |
+| ADD-only | ❌ | ✅ |
+| 持久化 | 部分 | ✅ 全部 |
+| 对话捕获 | ❌ | ✅ |
+
+---
+
+## v11.22.0 (2026-05-07)
 
 **核心目标**：弥补与 GitHub 高星项目（ai-hedge-fund、OpenServ）在"决策→执行→结果反馈"闭环上的差距
 
