@@ -1,7 +1,7 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v11.22.5: 会话持久化 - 空闲保存 + 启动注入 + 提炼到长期记忆",
-  "version": "11.22.5",
+  "description": "HeartFlow v11.22.6: 完整上下文管理器 - LOOM Section架构 + Mem0持久化 + Honcho混合记忆",
+  "version": "11.22.6",
   "releaseDate": "2026-04-11",
   "main": "src/core/heartflow-engine.js",
   "bin": {
