@@ -438,6 +438,143 @@ class CriticHealingBridge {
     return Math.max(0, baseBudget - attemptsUsed);
   }
 
+  /**
+   * SPC-inspired Adversarial Critique (v11.24.1)
+   * 
+   * Paper: SPC (arXiv 2504.19162) - Self-Play Critic via Adversarial Games
+   * Core: Instead of single critique, generate multiple adversarial perspectives
+   * and pick the one most likely to find hidden errors.
+   * 
+   * @param {Object} params - { task, decisions, context }
+   * @returns {Object} { critique, verdict, strategy, confidence }
+   */
+  runAdversarialCritique({ task = {}, decisions = [], context = {} } = {}) {
+    const taskText = typeof task === 'string' ? task : (task.description || task.prompt || JSON.stringify(task));
+    const goals = Array.isArray(context.goals) ? context.goals : [context.goal || 'complete task'];
+    
+    // Three adversarial perspectives (SPC-inspired)
+    const perspectives = [
+      {
+        id: 'skeptic',
+        label: 'Skeptic',
+        focus: '逻辑一致性',
+        prompt: '找出这个决策的核心矛盾和漏洞',
+        weight: 0.4,
+      },
+      {
+        id: 'risk_analyst',
+        label: 'Risk Analyst',
+        focus: '风险与后果',
+        prompt: '识别可能的负面后果和最坏情况',
+        weight: 0.35,
+      },
+      {
+        id: 'advocate',
+        label: 'Devil\'s Advocate',
+        focus: '替代方案',
+        prompt: '如果这个决策错了，最好的替代方案是什么',
+        weight: 0.25,
+      },
+    ];
+
+    const critiques = perspectives.map(p => {
+      const { label, focus, prompt, weight } = p;
+      // Generate critique from perspective
+      let critiqueText = '';
+      let errorLikelihood = 0.5;
+      let missingEvidence = false;
+
+      // Analyze each decision from this perspective
+      for (const decision of decisions) {
+        const decText = decision.decision || '';
+        const reasonText = decision.reason || '';
+        const confidence = typeof decision.confidence === 'number' ? decision.confidence : 0.5;
+
+        // Skeptic: look for logical contradictions
+        if (label === 'Skeptic') {
+          const hasEvidence = (decision.evidence || []).length > 0;
+          if (!hasEvidence) missingEvidence = true;
+          if (confidence > 0.8 && !hasEvidence) {
+            errorLikelihood = Math.min(1, errorLikelihood + 0.3);
+          }
+          // Look for overconfidence signals
+          if (confidence > 0.9 && (decText.length < 50 || reasonText.length < 30)) {
+            errorLikelihood = Math.min(1, errorLikelihood + 0.25);
+          }
+          critiqueText += `[Skeptic] 决策"${decText.slice(0, 40)}" - `;
+          if (missingEvidence) critiqueText += '缺乏证据支持; ';
+          if (confidence > 0.85) critiqueText += '高置信度但低理由; ';
+          critiqueText = critiqueText.replace(/; $/, '. ');
+        }
+
+        // Risk Analyst: identify failure modes
+        if (label === 'Risk Analyst') {
+          const riskKeywords = ['删除', '修改', '重写', '强制', '覆盖', '不可逆'];
+          const hasRisk = riskKeywords.some(k => decText.includes(k));
+          if (hasRisk) {
+            errorLikelihood = Math.min(1, errorLikelihood + 0.2);
+            critiqueText += `[Risk] 决策包含敏感操作; `;
+          }
+          if (decText.includes('删除') && !reasonText.includes('备份')) {
+            errorLikelihood = Math.min(1, errorLikelihood + 0.15);
+            critiqueText += '删除操作缺少备份说明; ';
+          }
+          critiqueText = critiqueText.replace(/; $/, '. ');
+        }
+
+        // Devil's Advocate: propose alternatives
+        if (label === 'Devil\'s Advocate') {
+          if (decisions.length < 2) {
+            errorLikelihood = Math.min(1, errorLikelihood + 0.15);
+            critiqueText += '没有备选方案; ';
+          }
+          critiqueText = critiqueText.replace(/; $/, '. ');
+        }
+      }
+
+      return {
+        perspective: label,
+        focus,
+        prompt,
+        weight,
+        critique: critiqueText || `${label}: no specific issues found`,
+        errorLikelihood: Number(errorLikelihood.toFixed(3)),
+        actionable: errorLikelihood > 0.4,
+      };
+    });
+
+    // Weighted verdict: combine perspectives
+    const totalWeight = critiques.reduce((sum, c) => sum + c.weight, 0);
+    const weightedError = critiques.reduce((sum, c) => sum + c.errorLikelihood * c.weight, 0) / totalWeight;
+    const hasMissingEvidence = critiques.some(c => c.missingEvidence);
+
+    // Select dominant strategy based on highest error likelihood
+    const dominant = critiques.reduce((worst, c) => c.errorLikelihood > worst.errorLikelihood ? c : worst);
+    const strategy = dominant.actionable
+      ? this._strategyFromErrorLikelihood(dominant.errorLikelihood)
+      : 'retry_after_analysis';
+
+    return {
+      critique: critiques,
+      verdict: weightedError > 0.6 ? 'likely_flawed' : weightedError > 0.4 ? 'needs_review' : 'acceptable',
+      errorLikelihood: Number(weightedError.toFixed(3)),
+      primaryConcern: dominant.perspective === 'Skeptic' ? 'evidence_gap'
+        : dominant.perspective === 'Risk Analyst' ? 'risk_unmitigated'
+        : 'insufficient_alternatives',
+      strategy,
+      confidence: Number((1 - weightedError).toFixed(3)),
+      hasMissingEvidence,
+      repairFocus: dominant.focus,
+      summary: `${dominant.label} perspective dominates (error likelihood: ${dominant.errorLikelihood})`,
+    };
+  }
+
+  _strategyFromErrorLikelihood(errorLikelihood) {
+    if (errorLikelihood > 0.7) return 'use_alternative_approach';
+    if (errorLikelihood > 0.5) return 'retry_with_modification';
+    return 'retry_after_analysis';
+  }
+
   // ============================================================
   // 状态与统计
   // ============================================================

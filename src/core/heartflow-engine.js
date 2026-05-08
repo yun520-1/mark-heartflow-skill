@@ -54,6 +54,9 @@ let ForgettingEngine;
 let AgentExecutionLoop;
 let AutoCompactionEngine;
 let RoleBasedCrew;
+let CodeReviewEngine;
+let DebuggingEngine;
+let TDDEngine;
 
 // [已归档] try {
 //   AdaptiveController = require('./adaptive-controller.js');
@@ -85,6 +88,49 @@ try {
 // } catch (e) {
 //   console.log('[HeartFlow] ⚠️ 多智能体编排器加载失败:', e.message);
 // }
+
+try {
+  AgentOrchestrator = require('./agent-orchestrator.js').AgentOrchestrator;
+  console.log('[HeartFlow] ✅ 多智能体编排器已加载');
+} catch (e) {
+  AgentOrchestrator = null;
+  console.log('[HeartFlow] ⚠️ 多智能体编排器加载失败:', e.message);
+}
+
+try {
+  const CognitiveEngine = require('./cognitive-engine.js').CognitiveEngine;
+  console.log('[HeartFlow] ✅ 认知引擎已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 认知引擎加载失败:', e.message);
+}
+
+try {
+  const CognitiveLoop = require('./cognitive-loop.js').CognitiveLoop;
+  console.log('[HeartFlow] ✅ 认知循环已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 认知循环加载失败:', e.message);
+}
+
+try {
+  const EmotionEngine = require('./emotion-engine.js').EmotionEngine;
+  console.log('[HeartFlow] ✅ 情感引擎已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 情感引擎加载失败:', e.message);
+}
+
+try {
+  const DecisionEngine = require('./decision-engine.js').DecisionEngine;
+  console.log('[HeartFlow] ✅ 决策引擎已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 决策引擎加载失败:', e.message);
+}
+
+try {
+  const SelfModifier = require('./self-modifier.js').SelfModifier;
+  console.log('[HeartFlow] ✅ 自我修改器已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 自我修改器加载失败:', e.message);
+}
 
 try {
   ErrorHandler = require('./error-handler.js');
@@ -245,6 +291,28 @@ console.log('[HeartFlow] ℹ️ Block Memory System 已移除 (与 TrialityMemor
   console.log('[HeartFlow] ✅ 执行验证器已加载');
 } catch (e) {
   console.log('[HeartFlow] ⚠️ 执行验证器加载失败:', e.message);
+}
+
+// v11.24.2 Workbuddy集成三模块
+try {
+  CodeReviewEngine = require('./code-review-engine.js');
+  console.log('[HeartFlow] ✅ 代码审查引擎已加载 (五维审查)');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 代码审查引擎加载失败:', e.message);
+}
+
+try {
+  DebuggingEngine = require('./debugging-engine.js');
+  console.log('[HeartFlow] ✅ 调试引擎已加载 (根因调试)');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 调试引擎加载失败:', e.message);
+}
+
+try {
+  TDDEngine = require('./tdd-engine.js');
+  console.log('[HeartFlow] ✅ TDD引擎已加载 (RED-GREEN-REFACTOR)');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ TDD引擎加载失败:', e.message);
 }
 
 // v11.6 道虫三模块：做减法
@@ -2378,3 +2446,8 @@ module.exports.getTrueBeing = () => TrueBeing;
 // v11.22.0 Memory Tier Manager export
 module.exports.MemoryTierManager = MemoryTierManager;
 module.exports.getMemoryTierManager = () => MemoryTierManager;
+
+// v11.24.2 Workbuddy Integration - Development Workflow Engines
+module.exports.CodeReviewEngine = CodeReviewEngine;
+module.exports.DebuggingEngine = DebuggingEngine;
+module.exports.TDDEngine = TDDEngine;

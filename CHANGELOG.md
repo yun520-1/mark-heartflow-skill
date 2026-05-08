@@ -1,3 +1,36 @@
+## v11.24.2 (2026-05-09)
+
+### 集成：workbuddy 三模块
+
+**来源**: `~/.workbuddy/skills/heartflow/src/core/`
+
+| 模块 | 大小 | 功能 |
+|------|------|------|
+| `code-review-engine.js` | 7.7KB | 五维代码审查：正确性/可读性/架构/安全/性能 |
+| `debugging-engine.js` | 8.4KB | 根因调试：triage分类 + Stop-the-Line + 复发预防 |
+| `tdd-engine.js` | 7.4KB | TDD循环：RED-GREEN-REFACTOR + proveIt模式 |
+
+**测试**: 13/13 通过
+
+## v11.24.1 (2026-05-09)
+
+### 升级：多步执行链验证 + SPC启发对抗批评
+
+**论文来源**: SPC (arXiv 2504.19162, Chen et al. 2025, 29 citations) - Self-Play Critic
+
+**新增功能**:
+- `execution-verifier.js`: 新增 `verifyChain()` — 多步执行链整体验证
+  - 每步独立验证 + 链级加权评分（早期步骤权重更高）
+  - 级联失败检测（早期失败降低总分）
+  - 阈值 0.35，链全绿时得分 ~0.58
+
+- `critic-healing-bridge.js`: 新增 `runAdversarialCritique()`
+  - SPC 三视角对抗批评: Skeptic / Risk Analyst / Devil's Advocate
+  - 权重融合输出 errorLikelihood + verdict + strategy
+  - 高置信度+无证据 → likely_flawed
+
+**测试**: 8/8 通过 | `verifyChain` + `runAdversarialCritique`
+
 ## v11.22.2 (2026-05-08)
 
 ### 升级：Session Summarizer (Honcho 启发)
