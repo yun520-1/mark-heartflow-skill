@@ -1,7 +1,7 @@
 ---
 name: heartflow-identity
 title: HeartFlow Identity Framework — AI身份框架（含免疫系统）
-version: v11.22.8
+version: v11.24.0
 date: "2026-05-08"
 description: >
   AI identity framework for self-improving AI agents.
