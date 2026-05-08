@@ -305,6 +305,28 @@ try {
   console.log('[HeartFlow] ⚠️ 记忆分级管理器加载失败:', e.message);
 }
 
+// v11.23.1 Memory Lifecycle Manager - 遗忘周期 + 层级评分 + 自动强化
+let MemoryLifecycleManager;
+try {
+  const lm = require('./memory-lifecycle-manager.js');
+  MemoryLifecycleManager = new lm.MemoryLifecycleManager();
+  console.log('[HeartFlow] ✅ 记忆生命周期管理器已加载 (遗忘周期/自动强化)');
+} catch (e) {
+  MemoryLifecycleManager = null;
+  console.log('[HeartFlow] ⚠️ 记忆生命周期管理器加载失败:', e.message);
+}
+
+// v11.22.9 Memory Protocol - 决策树分层
+let MemoryProtocol;
+try {
+  const mp = require('./memory-protocol.js');
+  MemoryProtocol = new mp.MemoryProtocol();
+  console.log('[HeartFlow] ✅ 记忆协议已加载 (决策树分层)');
+} catch (e) {
+  MemoryProtocol = null;
+  console.log('[HeartFlow] ⚠️ 记忆协议加载失败:', e.message);
+}
+
 // v11.21.2 Knowledge Distiller - 知识打包为可传递格式
 let KnowledgeDistiller;
 try {
@@ -1177,6 +1199,14 @@ module.exports.getCurrentWorkflow = getCurrentWorkflow;
 
 // 心理分析 v0.0.1：四层分析（表层意图 / 情绪暗流 / 深层需求 / 防御机制）
 function analyzePsychology(userMessage, context = {}) {
+  // v11.23.1: 自动捕获对话到 LifecycleManager（分层+遗忘）
+  if (userMessage && MemoryLifecycleManager && MemoryProtocol) {
+    try {
+      const layer = MemoryProtocol.decideLayer(String(userMessage), {});
+      MemoryLifecycleManager.write(String(userMessage), layer.name, { source: 'analyzePsychology', importance: 0.5 });
+    } catch (e) {}
+  }
+
   // v11.22.1: 自动捕获对话到 Mem0 (Mem0 风格 ADD-only)
   if (userMessage) {
     try {
@@ -1258,6 +1288,50 @@ function analyzePsychology(userMessage, context = {}) {
 }
 
 module.exports.analyzePsychology = analyzePsychology;
+
+/**
+ * v11.23.1: 强化记忆
+ * 搜索相关记忆并强化（agent 确认后调用）
+ * @param {string} content - 记忆内容片段
+ * @returns {object} 强化结果
+ */
+function strengthenMemory(content) {
+  if (!MemoryLifecycleManager || !content) return { success: false };
+  try {
+    const results = MemoryLifecycleManager.search(content, 3);
+    if (results.length > 0) {
+      const target = results[0];
+      const confirm = MemoryLifecycleManager.confirmAndPromote(target.id);
+      return { success: true, id: target.id, confirm, target };
+    }
+    return { success: false, reason: 'no_matching_memory' };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * v11.23.1: 获取记忆统计
+ * @returns {object} 记忆系统状态
+ */
+function getMemoryStats() {
+  if (!MemoryLifecycleManager) return null;
+  const stats = MemoryLifecycleManager.getStats();
+  // 格式化可读摘要
+  const lines = [
+    `总记忆数: ${stats.total}`,
+    `按层级: CORE=${stats.byLayer.core||0} PROCEDURAL=${stats.byLayer.procedural||0} SEMANTIC=${stats.byLayer.semantic||0} EPISODIC=${stats.byLayer.episodic||0} EPHEMERAL=${stats.byLayer.ephemeral||0}`,
+  ];
+  return {
+    summary: lines.join(' | '),
+    total: stats.total,
+    byLayer: stats.byLayer,
+    lastForgettingCycle: stats.lastForgettingCycle,
+  };
+}
+
+module.exports.strengthenMemory = strengthenMemory;
+module.exports.getMemoryStats = getMemoryStats;
 module.exports.getAvailableWorkflows = getAvailableWorkflows;
 module.exports.generateWorkflowReport = generateWorkflowReport;
 module.exports.resetWorkflow = resetWorkflow;

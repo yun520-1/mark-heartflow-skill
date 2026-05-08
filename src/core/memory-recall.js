@@ -1,5 +1,5 @@
 /**
- * HeartFlow Memory Recall Engine v11.22.3
+ * HeartFlow Memory Recall Engine v11.23.1
  *
  * 核心功能：语义检索 + 格式化返回 → 可注入上下文的记忆召回
  *
@@ -7,6 +7,7 @@
  * - Mem0MultiSignal: 语义 + BM25 + 实体 三信号融合
  * - MeaningfulMemory: CORE / LEARNED / EPHEMERAL 三层语义
  * - Reflection Memory: 真实教训（success/failure outcome）
+ * - LifecycleManager: 遗忘周期 + 晋升 + 层级评分
  * - being-state.json: 存在状态（哲学层/真善美/成长）
  * - DialecticRecall: 多级推理召回 (L1表面/L2因果/L3元认知)
  *
@@ -23,6 +24,15 @@ function getDialectic() {
     try { _dialectic = require('./dialectic-recall.js'); } catch { _dialectic = null; }
   }
   return _dialectic;
+}
+
+// 懒加载 lifecycle manager
+let _lifecycle = null;
+function getLifecycle() {
+  if (!_lifecycle) {
+    try { _lifecycle = require('./memory-lifecycle-manager'); } catch { _lifecycle = null; }
+  }
+  return _lifecycle;
 }
 
 /**
@@ -160,6 +170,8 @@ function recallMemories(query, options = {}) {
   const { topK = 5, includeBeing = true, dialectic = true } = options;
 
   // 并行检索
+  const lifecycle = getLifecycle();
+  const lifecycleResults = (lifecycle && typeof lifecycle.search === 'function') ? lifecycle.search(query, topK) : [];
   const [mem0Results, meaningfulResults, reflectionResults, beingState] = [
     recallFromMem0(query, topK),
     recallFromMeaningful(query, topK),
@@ -179,7 +191,7 @@ function recallMemories(query, options = {}) {
   }
 
   // 合并去重（按content相似度）
-  const all = [...mem0Results, ...meaningfulResults, ...reflectionResults];
+  const all = [...mem0Results, ...meaningfulResults, ...reflectionResults, ...lifecycleResults];
   const seen = new Set();
   const deduped = all.filter(item => {
     const key = item.content?.substring(0, 50);
@@ -215,6 +227,7 @@ function recallMemories(query, options = {}) {
       mem0: mem0Results.length,
       meaningful: meaningfulResults.length,
       reflection: reflectionResults.length,
+      lifecycle: lifecycleResults.length,
       being: beingState ? 1 : 0,
       dialectic: dialecticResults?.count || 0,
     },

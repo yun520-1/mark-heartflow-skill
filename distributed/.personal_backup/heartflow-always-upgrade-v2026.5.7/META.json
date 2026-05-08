@@ -1,0 +1,9 @@
+{
+  "skillName": "heartflow-always-upgrade",
+  "version": "2026.5.7",
+  "broadcasted": "2026-05-07T10:50:41.070Z",
+  "files": [
+    "SKILL.md",
+    "package.json"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "merge-memory-systems",
+  "version": "1.0.0",
+  "description": "合并Triality+Meaningful",
+  "author": "HeartFlow",
+  "heartflow": {
+    "source": "knowledge-distiller",
+    "patternId": "merge_memory_systems",
+    "confidence": "87%",
+    "generated": "2026-05-07T10:50:41.066Z"
+  }
+}

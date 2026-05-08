@@ -349,6 +349,15 @@ class ForgettingEngine {
     }
     return null;
   }
+
+  /**
+   * 兼容方法：直接传入 memories 数组执行遗忘周期
+   * @param {Array} memories - 记忆数组
+   * @returns {Object} processMemory 的结果
+   */
+  runDecayCycle(memories = []) {
+    return this.processMemory(memories);
+  }
 }
 
 module.exports = { ForgettingEngine };

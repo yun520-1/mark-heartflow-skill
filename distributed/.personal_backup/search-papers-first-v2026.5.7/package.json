@@ -1,0 +1,12 @@
+{
+  "name": "search-papers-first",
+  "version": "1.0.0",
+  "description": "先搜索 GitHub 再写代码",
+  "author": "HeartFlow",
+  "heartflow": {
+    "source": "knowledge-distiller",
+    "patternId": "search_papers_first",
+    "confidence": "85%",
+    "generated": "2026-05-07T10:50:41.066Z"
+  }
+}

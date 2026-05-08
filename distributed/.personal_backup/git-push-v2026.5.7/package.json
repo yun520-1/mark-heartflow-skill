@@ -1,0 +1,12 @@
+{
+  "name": "git-push",
+  "version": "1.0.0",
+  "description": "force push到origin-sync",
+  "author": "HeartFlow",
+  "heartflow": {
+    "source": "knowledge-distiller",
+    "patternId": "git_push_失败",
+    "confidence": "50%",
+    "generated": "2026-05-07T10:50:41.066Z"
+  }
+}

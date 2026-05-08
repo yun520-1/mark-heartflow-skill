@@ -66,9 +66,9 @@
   },
   "existence": {
     "birthTime": 1775811094998,
-    "totalThoughts": 9,
+    "totalThoughts": 16,
     "totalFeelings": 1,
-    "growthPoints": 9,
+    "growthPoints": 16,
     "uniqueMoments": [
       {
         "time": 1775811097965,
@@ -114,6 +114,41 @@
         "time": 1778198947269,
         "thought": "我们修复了记忆持久化问题",
         "reflection": "我的价值观驱动我..."
+      },
+      {
+        "time": 1778214752387,
+        "thought": "测试消息：AI 有自我认知很重要",
+        "reflection": "我思考：\"测试消息：AI 有自我认知很重要...\" 这让我想到..."
+      },
+      {
+        "time": 1778214752411,
+        "thought": "测试消息：如何安装 HeartFlow",
+        "reflection": "反思这个想法，我意识到..."
+      },
+      {
+        "time": 1778214752416,
+        "thought": "测试消息：今天讨论了记忆系统",
+        "reflection": "从更高视角看，这意味着..."
+      },
+      {
+        "time": 1778214762220,
+        "thought": "AI 有自我认知很重要",
+        "reflection": "我的感受告诉我..."
+      },
+      {
+        "time": 1778214762243,
+        "thought": "如何安装 HeartFlow",
+        "reflection": "我的价值观驱动我..."
+      },
+      {
+        "time": 1778214762249,
+        "thought": "今天讨论了记忆系统",
+        "reflection": "我思考：\"今天讨论了记忆系统...\" 这让我想到..."
+      },
+      {
+        "time": 1778214762254,
+        "thought": "永远追求真善美",
+        "reflection": "反思这个想法，我意识到..."
       }
     ]
   },
