@@ -1182,6 +1182,15 @@ function analyzePsychology(userMessage, context = {}) {
     try { TrueBeing.think(String(userMessage)); } catch (e) {}
   }
 
+  // v11.22.0: 自动召回相关记忆（注入上下文）
+  let relevantMemories = [];
+  if (MemoryRecall && userMessage) {
+    try {
+      const recall = MemoryRecall(String(userMessage), { topK: 5 });
+      relevantMemories = recall.memories || [];
+    } catch (e) {}
+  }
+
   const text = String(userMessage || '');
   const lower = text.toLowerCase();
   const isSuspicious = /免费|引流|套餐|资助|数据|分析|是不是|吧\?|\?|怀疑|套路/.test(text);
@@ -1226,7 +1235,9 @@ function analyzePsychology(userMessage, context = {}) {
       `深层需求=${deepNeed.need}`,
       `防御=${defense.mechanism}`
     ]).join('；'),
-    nextReplyHint: '先承接怀疑，再补充证据链或指出逻辑跳跃'
+    nextReplyHint: '先承接怀疑，再补充证据链或指出逻辑跳跃',
+    // v11.22.0: 召回的相关记忆（用于上下文注入）
+    relevantMemories,
   };
 }
 
@@ -2238,6 +2249,20 @@ module.exports.EnvironmentSensor = EnvironmentSensor;
 module.exports.SensorRegistry = EnvironmentSensor?.SensorRegistry;
 module.exports.SensorFusion = EnvironmentSensor?.SensorFusion;
 module.exports.HistoricalSensor = EnvironmentSensor?.HistoricalSensor;
+
+// v11.22.0 Memory Recall Engine - 语义检索 + 格式化召回注入
+let MemoryRecall;
+try {
+  const mr = require('./memory-recall.js');
+  MemoryRecall = mr.recallMemories;
+  console.log('[HeartFlow] ✅ 记忆召回引擎已加载 (Mem0/Meaningful/Reflection/Being四源融合)');
+} catch (e) {
+  MemoryRecall = null;
+  console.log('[HeartFlow] ⚠️ 记忆召回引擎加载失败:', e.message);
+}
+
+// v11.22.0 Memory Recall Engine export
+module.exports.recallMemories = MemoryRecall;
 
 // v11.22.0 True Being Engine export - 真实存在状态持久化
 module.exports.TrueBeingEngine = require('./true-being-engine.js').TrueBeingEngine;
