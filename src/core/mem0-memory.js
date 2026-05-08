@@ -314,6 +314,72 @@ class MultiSignalMemory {
       totalSearches: 0,
       avgRetrievalTime: 0,
     };
+
+    // v11.22.0: 轻量持久化
+    this._persistDir = path.join(__dirname, '..', '..', 'data', 'mem0');
+    this._persistFile = path.join(this._persistDir, 'mem0-memories.jsonl');
+    this._load();
+  }
+
+  // ──────────────────────────────────────────────
+  // v11.22.0: 持久化
+  // ──────────────────────────────────────────────
+
+  _load() {
+    try {
+      if (!fs.existsSync(this._persistFile)) return;
+      const lines = fs.readFileSync(this._persistFile, 'utf8').trim().split('\n').filter(Boolean);
+      for (const line of lines) {
+        try {
+          const item = JSON.parse(line);
+          if (!this.memories.has(item.id)) {
+            // 重建 MemoryItem
+            const mem = new MemoryItem(item);
+            this.memories.set(mem.id, mem);
+            // 重建 BM25 索引
+            this.bm25.add(mem.id, mem.content);
+            // 重建实体索引
+            (mem.entities || []).forEach(e => {
+              if (!this.entityIndex.has(e.normalized)) {
+                this.entityIndex.set(e.normalized, new Set());
+              }
+              this.entityIndex.get(e.normalized).add(mem.id);
+            });
+          }
+        } catch (e) {}
+      }
+      this._stats.totalMemories = this.memories.size;
+      if (this.memories.size > 0) {
+        console.log(`[Mem0] 从磁盘恢复 ${this.memories.size} 条记忆`);
+      }
+    } catch (e) {
+      console.warn('[Mem0] 恢复失败:', e.message);
+    }
+  }
+
+  _save() {
+    try {
+      if (!fs.existsSync(this._persistDir)) {
+        fs.mkdirSync(this._persistDir, { recursive: true });
+      }
+      const lines = [];
+      this.memories.forEach(mem => {
+        lines.push(JSON.stringify({
+          id: mem.id,
+          content: mem.content,
+          metadata: mem.metadata,
+          source: mem.source,
+          entities: mem.entities,
+          reinforcementCount: mem.reinforcementCount,
+          accessCount: mem.accessCount,
+          lastAccessed: mem.lastAccessed,
+          createdAt: mem.createdAt,
+        }));
+      });
+      fs.writeFileSync(this._persistFile, lines.join('\n') + '\n');
+    } catch (e) {
+      console.warn('[Mem0] 保存失败:', e.message);
+    }
   }
 
   /**
@@ -349,7 +415,8 @@ class MultiSignalMemory {
     memory.embedding = this._simpleEmbedding(content);
     
     this._stats.totalMemories++;
-    
+    this._save();  // v11.22.0: 持久化
+
     return memory;
   }
 

@@ -24,7 +24,8 @@ function recallFromMem0(query, topK = 5) {
     const mem0 = init?.instances?.mem0MultiSignal;
     if (!mem0) return [];
 
-    const results = mem0.search ? mem0.search(query, { topK }) : [];
+    const raw = mem0.search ? mem0.search(query, { topK }) : null;
+    const results = raw?.results || (Array.isArray(raw) ? raw : []);
     return results.map(r => ({
       source: 'mem0',
       id: r.id,
