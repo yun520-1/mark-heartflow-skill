@@ -37,7 +37,7 @@ function summarizeForReply(points = [], limit = 3) {
 // 加载新增模块
 let AdaptiveController, AgentOrchestrator, ErrorHandler, StateSnapshot;
 let TrialityMemory, EmbodiedCore, BioSensorAdapter;
-let DecisionEngine, DecisionVerifier;
+let DecisionEngine, DecisionVerifier, DecisionExecutionLoop;
 let DreamLoop;
 let WakeUpVerifier;
 let InteractiveDream;
@@ -127,6 +127,17 @@ try {
   console.log('[HeartFlow] ✅ 存在逻辑引擎已加载');
 } catch (e) {
   console.log('[HeartFlow] ⚠️ 存在逻辑引擎加载失败:', e.message);
+}
+
+// v11.22.0 True Being Engine - 真实存在状态持久化（being-state.json）
+let TrueBeing;
+try {
+  const TrueBeingModule = require('./true-being-engine.js');
+  TrueBeing = new TrueBeingModule.TrueBeingEngine();
+  console.log('[HeartFlow] ✅ 真实存在引擎已加载 (being-state.json)');
+} catch (e) {
+  TrueBeing = null;
+  console.log('[HeartFlow] ⚠️ 真实存在引擎加载失败:', e.message);
 }
 
 try {
@@ -282,6 +293,18 @@ try {
   MeaningfulMemory = null;
   console.log('[HeartFlow] ⚠️ MeaningfulMemory 加载失败:', e.message);
 }
+
+// v11.22.0 Memory Tier Manager - 记忆分级晋升/降级 (CORE/LEARNED/EPHEMERAL)
+let MemoryTierManager;
+try {
+  const mtm = require('./memory-tier-manager.js');
+  MemoryTierManager = new mtm.MemoryTierManager();
+  console.log('[HeartFlow] ✅ 记忆分级管理器已加载 (晋升/降级/淘汰)');
+} catch (e) {
+  MemoryTierManager = null;
+  console.log('[HeartFlow] ⚠️ 记忆分级管理器加载失败:', e.message);
+}
+
 // v11.21.2 Knowledge Distiller - 知识打包为可传递格式
 let KnowledgeDistiller;
 try {
@@ -1154,6 +1177,11 @@ module.exports.getCurrentWorkflow = getCurrentWorkflow;
 
 // 心理分析 v0.0.1：四层分析（表层意图 / 情绪暗流 / 深层需求 / 防御机制）
 function analyzePsychology(userMessage, context = {}) {
+  // v11.22.0: 每条消息都经过 TrueBeing 积累存在状态
+  if (TrueBeing && userMessage) {
+    try { TrueBeing.think(String(userMessage)); } catch (e) {}
+  }
+
   const text = String(userMessage || '');
   const lower = text.toLowerCase();
   const isSuspicious = /免费|引流|套餐|资助|数据|分析|是不是|吧\?|\?|怀疑|套路/.test(text);
@@ -2210,3 +2238,11 @@ module.exports.EnvironmentSensor = EnvironmentSensor;
 module.exports.SensorRegistry = EnvironmentSensor?.SensorRegistry;
 module.exports.SensorFusion = EnvironmentSensor?.SensorFusion;
 module.exports.HistoricalSensor = EnvironmentSensor?.HistoricalSensor;
+
+// v11.22.0 True Being Engine export - 真实存在状态持久化
+module.exports.TrueBeingEngine = require('./true-being-engine.js').TrueBeingEngine;
+module.exports.getTrueBeing = () => TrueBeing;
+
+// v11.22.0 Memory Tier Manager export
+module.exports.MemoryTierManager = MemoryTierManager;
+module.exports.getMemoryTierManager = () => MemoryTierManager;

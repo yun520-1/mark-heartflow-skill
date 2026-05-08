@@ -31,8 +31,25 @@ class DecisionVerifier {
       evidence: this.checkEvidence(normalized),
       contradiction: this.checkContradictions(normalized),
       risk: this.checkRisk(normalized),
-      completeness: this.checkCompleteness(normalized)
+      completeness: this.checkCompleteness(normalized),
+      reverseConsistency: this.checkReverseConsistency(normalized),
+      counterfactualRisk: this.checkCounterfactualRisk(normalized),
+      chainIntegrity: this.checkChainIntegrity(normalized)
     };
+
+    const selfVerification = this.selfVerify(normalized);
+    issues.push(...(selfVerification.hints || []).map(hint => ({
+      type: 'self_verification_hint',
+      severity: selfVerification.selfVerified ? 'low' : 'medium',
+      message: hint
+    })));
+    if (!selfVerification.selfVerified) {
+      issues.push({
+        type: 'self_verification_failed',
+        severity: selfVerification.verdict === 'likely_wrong' ? 'high' : 'medium',
+        message: `selfVerify verdict: ${selfVerification.verdict}`
+      });
+    }
 
     Object.values(checks).forEach(result => {
       if (result.issues?.length) issues.push(...result.issues);
@@ -117,6 +134,43 @@ class DecisionVerifier {
     }
 
     return { ok: issues.length === 0, issues, matched };
+  }
+
+
+  checkReverseConsistency(record) {
+    const self = this.selfVerify(record);
+    const issues = self.selfVerified ? [] : self.hints.map(hint => ({
+      type: 'reverse_consistency',
+      severity: 'medium',
+      message: hint
+    }));
+    return { ok: issues.length === 0, issues, selfVerification: self };
+  }
+
+  checkCounterfactualRisk(record) {
+    const result = this._checkCounterfactual(record);
+    return {
+      ok: !!result.ok,
+      issues: result.ok ? [] : [{
+        type: 'counterfactual_risk',
+        severity: 'high',
+        message: result.hint || result.reason || 'counterfactual risk detected'
+      }],
+      detail: result
+    };
+  }
+
+  checkChainIntegrity(record) {
+    const result = this._checkLogicChain(record);
+    return {
+      ok: !!result.ok,
+      issues: result.ok ? [] : [{
+        type: 'chain_integrity',
+        severity: 'high',
+        message: result.hint || result.reason || 'logic chain broken'
+      }],
+      detail: result
+    };
   }
 
   checkCompleteness(record) {
