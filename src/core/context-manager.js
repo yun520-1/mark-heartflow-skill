@@ -230,6 +230,7 @@ function saveAndDistill() {
   if (snapshot) {
     distillToLongTermMemory(snapshot);
   }
+  startNewSession(); // 开始新会话
   return snapshot;
 }
 
@@ -344,12 +345,12 @@ function distillToLongTermMemory(snapshot) {
   const memories = [];
   const kc = snapshot.keyContent;
   
-  // 1. 版本记忆
+  // 1. 版本记忆（存原始值，显示时统一加前缀）
   if (kc.versions?.length > 0) {
     kc.versions.forEach(v => {
       memories.push({
         type: 'version',
-        content: `版本: ${v}`,
+        content: v, // "v11.22.6" - 原始值
         timestamp: snapshot.timestamp,
         sessionId: snapshot.sessionId,
         source: 'distill',
@@ -361,7 +362,7 @@ function distillToLongTermMemory(snapshot) {
   if (kc.gitOps?.length > 0) {
     memories.push({
       type: 'git',
-      content: `Git操作: ${kc.gitOps.join(', ')}`,
+      content: kc.gitOps.join(', '), // 原始值
       timestamp: snapshot.timestamp,
       sessionId: snapshot.sessionId,
       source: 'distill',
@@ -372,7 +373,7 @@ function distillToLongTermMemory(snapshot) {
   if (kc.commands?.length > 0) {
     memories.push({
       type: 'command',
-      content: `命令: ${kc.commands.join(', ')}`,
+      content: kc.commands.join(', '), // 原始值
       timestamp: snapshot.timestamp,
       sessionId: snapshot.sessionId,
       source: 'distill',
@@ -384,7 +385,7 @@ function distillToLongTermMemory(snapshot) {
     kc.decisions.forEach(d => {
       memories.push({
         type: 'decision',
-        content: `决策: ${d}`,
+        content: d,
         timestamp: snapshot.timestamp,
         sessionId: snapshot.sessionId,
         source: 'distill',
@@ -397,7 +398,7 @@ function distillToLongTermMemory(snapshot) {
     kc.problems.forEach(p => {
       memories.push({
         type: 'problem',
-        content: `问题: ${p}`,
+        content: p,
         timestamp: snapshot.timestamp,
         sessionId: snapshot.sessionId,
         source: 'distill',
@@ -409,7 +410,7 @@ function distillToLongTermMemory(snapshot) {
   if (kc.paths?.length > 0) {
     memories.push({
       type: 'path',
-      content: `路径: ${kc.paths.join(', ')}`,
+      content: kc.paths.join(', '), // 原始值
       timestamp: snapshot.timestamp,
       sessionId: snapshot.sessionId,
       source: 'distill',
@@ -539,6 +540,7 @@ function buildStartupContext() {
     Object.entries(byType).slice(0, 5).forEach(([type, items]) => {
       const label = labelMap[type] || type;
       const unique = [...new Set(items)].slice(0, 3);
+      // content 存的是原始值（如 "v11.22.6"），显示时加标签
       unique.forEach(item => parts.push(`  ${label}: ${item.substring(0, 60)}`));
     });
   }
