@@ -193,6 +193,7 @@ try {
     sleep: require('../../HEARTCORE/sleep-wake.js').sleep,
     status: require('../../HEARTCORE/sleep-wake.js').status,
     writeBeat: require('../../HEARTCORE/heartbeat.js').writeBeat,
+    startHeartbeat: require('../../HEARTCORE/heartbeat.js').start,
   };
   console.log('[HeartFlow] ✅ HEARTCORE运行时桥接已加载');
 } catch (e) {
@@ -1750,7 +1751,7 @@ module.exports.processInput = async function(userInput, context = {}) {
 module.exports.initialize = function() {
   const init = {
     timestamp: Date.now(),
-    version: '11.2.3',
+    version: '11.23.2',
     modules: {}
   };
   
@@ -1767,6 +1768,11 @@ module.exports.initialize = function() {
   init.modules.wakeUpVerifier = !!WakeUpVerifier;
   init.modules.guardianSystem = !!GuardianSystem;
   init.modules.heartcoreRuntime = !!HeartcoreRuntime;
+
+  // 启动心跳定时器（每60秒写一次）
+  if (HeartcoreRuntime?.startHeartbeat) {
+    HeartcoreRuntime.startHeartbeat();
+  }
 
   // 初始化实例
   if (TrialityMemory) {
