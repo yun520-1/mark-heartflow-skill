@@ -536,7 +536,19 @@ function buildStartupContext() {
       byType[m.type].push(m.content);
     });
     
-    const labelMap = { version: '版本', git: 'Git', command: '命令', decision: '决策', problem: '问题', path: '路径', summary: '摘要' };
+    const labelMap = { 
+      version: '版本', 
+      git: 'Git', 
+      command: '命令', 
+      decision: '决策', 
+      problem: '问题', 
+      path: '路径', 
+      summary: '摘要',
+      core_directive: '核心指令',
+      lesson: '教训',
+      workflow: '工作流',
+      user_info: '用户信息'
+    };
     Object.entries(byType).slice(0, 5).forEach(([type, items]) => {
       const label = labelMap[type] || type;
       const unique = [...new Set(items)].slice(0, 3);
