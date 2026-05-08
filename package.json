@@ -1,7 +1,7 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v11.9.4 - AI capability layer with core identity recall, Constitutional AI, and self-verification",
-  "version": "11.22.3",
+  "description": "HeartFlow v11.22.4: 记忆上下文桥接器 - 完整保存对话 + 格式化召回 + 注入上下文",
+  "version": "11.22.4",
   "releaseDate": "2026-04-11",
   "main": "src/core/heartflow-engine.js",
   "bin": {
