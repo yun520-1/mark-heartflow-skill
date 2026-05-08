@@ -1,5 +1,5 @@
 /**
- * HeartFlow Memory Recall Engine v11.22.0
+ * HeartFlow Memory Recall Engine v11.22.3
  *
  * 核心功能：语义检索 + 格式化返回 → 可注入上下文的记忆召回
  *
@@ -8,12 +8,22 @@
  * - MeaningfulMemory: CORE / LEARNED / EPHEMERAL 三层语义
  * - Reflection Memory: 真实教训（success/failure outcome）
  * - being-state.json: 存在状态（哲学层/真善美/成长）
+ * - DialecticRecall: 多级推理召回 (L1表面/L2因果/L3元认知)
  *
  * 召回原则：
  * - 84KB total memory — 全部保留，无需删除
  * - 只做好引用和调取：检索 → 召回 → 注入
  * - 返回结构化结果，供外部决定如何使用
  */
+
+// 懒加载 dialectic-recall
+let _dialectic = null;
+function getDialectic() {
+  if (!_dialectic) {
+    try { _dialectic = require('./dialectic-recall.js'); } catch { _dialectic = null; }
+  }
+  return _dialectic;
+}
 
 /**
  * 从 Mem0 检索相关记忆
@@ -143,10 +153,11 @@ function recallBeingState(query) {
  * @param {object} options
  * @param {number} options.topK - 每源返回数量，默认5
  * @param {boolean} options.includeBeing - 是否包含存在状态，默认true
+ * @param {boolean} options.dialectic - 是否启用多级推理召回，默认true
  * @returns {object} 检索结果
  */
 function recallMemories(query, options = {}) {
-  const { topK = 5, includeBeing = true } = options;
+  const { topK = 5, includeBeing = true, dialectic = true } = options;
 
   // 并行检索
   const [mem0Results, meaningfulResults, reflectionResults, beingState] = [
@@ -155,6 +166,17 @@ function recallMemories(query, options = {}) {
     recallFromReflections(query, topK),
     includeBeing ? recallBeingState(query) : null,
   ];
+
+  // 多级推理召回 (Honcho Dialectic)
+  let dialecticResults = null;
+  if (dialectic) {
+    const d = getDialectic();
+    if (d?.dialecticRecall) {
+      try {
+        dialecticResults = d.dialecticRecall(query, { topK, context: {} });
+      } catch { dialecticResults = null; }
+    }
+  }
 
   // 合并去重（按content相似度）
   const all = [...mem0Results, ...meaningfulResults, ...reflectionResults];
@@ -174,6 +196,9 @@ function recallMemories(query, options = {}) {
       contextParts.push(`${i + 1}. [${item.source}] ${item.content?.substring(0, 200)}`);
     });
   }
+  if (dialecticResults?.results?.length > 0) {
+    contextParts.push('\n' + dialecticResults.context);
+  }
   if (beingState?.moments?.length > 0) {
     contextParts.push('\n【存在状态】');
     beingState.moments.forEach(m => {
@@ -191,12 +216,14 @@ function recallMemories(query, options = {}) {
       meaningful: meaningfulResults.length,
       reflection: reflectionResults.length,
       being: beingState ? 1 : 0,
+      dialectic: dialecticResults?.count || 0,
     },
     memories: deduped,
+    dialecticResults: dialecticResults?.results || null,
     beingState,
     context: contextParts.join('\n'),
     injectableContext: contextParts.join('\n'),
-    count: deduped.length,
+    count: deduped.length + (dialecticResults?.count || 0),
   };
 }
 
