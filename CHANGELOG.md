@@ -1,8 +1,30 @@
+## v11.22.2 (2026-05-08)
+
+### 升级：Session Summarizer (Honcho 启发)
+
+**灵感来源**：Honcho Memory Layer (⭐216) — Self-hosted AI memory for Hermes
+- Deriver: 每条消息 LLM 提取观察
+- Summary: 会话压缩
+- Dialectic: 多层推理召回
+- Dream: 8小时记忆整合
+
+**新增**：
+- `session-summarizer.js`: 会话摘要压缩器
+  - `addMessage()`: 捕获消息，自动累积
+  - `extractObservations()`: 关键词提取决策/事实/教训
+  - `summarizeCurrentSession()`: 满15条触发摘要
+  - `flushToMem0()`: 摘要→存入Mem0
+- Hook 进 `analyzePsychology()`: 每条消息自动加入摘要缓冲
+- Honcho 架构文档已记录 (GitHub: elkimek/honcho-self-hosted)
+
+**Honcho 关键洞察**：
+- Neuromancer XR (8B) 在 LoCoMo 记忆基准上 86.9% vs 通用 LLM 69.6%
+- Deriver 用 `z-ai/glm-4.7-flash` 每条消息提取观察
+- Dream 每8小时整合记忆
+
+---
+
 ## v11.22.1 (2026-05-08)
-
-### 修复：Mem0 记忆数量不足问题
-
-**根本原因**：之前的 MultiSignalMemory 只有显式 `saveBlock()`/`saveAgentFact()` 才添加记忆，没有自动捕获对话机制
 
 **新增**：
 - `add_messages()` 方法：自动捕获对话消息（Mem0 风格），每条 user/assistant 消息自动存入 mem0

@@ -1185,6 +1185,11 @@ function analyzePsychology(userMessage, context = {}) {
       if (mem0 && mem0.add_messages) {
         mem0.add_messages([{ role: 'user', content: String(userMessage), timestamp: Date.now() }]);
       }
+      // v11.22.2: 会话摘要器 (Honcho Summary)
+      const summarizer = init?.instances?.sessionSummarizer;
+      if (summarizer && summarizer.addMessage) {
+        summarizer.addMessage({ role: 'user', content: String(userMessage), timestamp: Date.now() });
+      }
     } catch (e) {}
   }
 
@@ -1785,6 +1790,14 @@ module.exports.initialize = function() {
     init.instances = init.instances || {};
     init.instances.mem0MultiSignal = new Mem0MultiSignal({ topK: 10, embeddingDim: 256 });
     init.modules.mem0MultiSignal = true;
+  }
+  // v11.22.2 Session Summarizer - 会话摘要压缩器 (Honcho Summary启发)
+  let SessionSummarizer;
+  try { SessionSummarizer = require('./session-summarizer.js').SessionSummarizer; } catch (e) {}
+  if (SessionSummarizer) {
+    init.instances = init.instances || {};
+    init.instances.sessionSummarizer = new SessionSummarizer({ summaryThreshold: 15 });
+    init.modules.sessionSummarizer = true;
   }
   // v11.7 德论模块（精简版）
   if (CooperativeArbitration) {
