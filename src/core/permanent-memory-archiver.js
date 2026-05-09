@@ -338,6 +338,29 @@ class PermanentMemoryArchiver {
       }
     }
 
+    // v11.30: 统一跨文件检索（通过 UnifiedMemoryArchive）
+    try {
+      const { UnifiedMemoryArchive } = require('./unified-memory-archive.js');
+      const unified = new UnifiedMemoryArchive();
+      const unifiedResults = unified.search(query, { topK: topK });
+      
+      // 合并统一检索结果
+      for (const r of unifiedResults) {
+        if (!seen.has(r.key || r.content)) {
+          seen.add(r.key || r.content);
+          merged.push({
+            key: r.key || 'migrated',
+            content: r.content,
+            source: r.source,
+            score: r.score,
+            layer: 'MIGRATED',
+          });
+        }
+      }
+    } catch (e) {
+      // 统一检索失败不影响主流程
+    }
+
     return merged.slice(0, topK).map(r => {
       // 搜索结果也触发访问计数更新
       if (mm.learned[r.key]) {
