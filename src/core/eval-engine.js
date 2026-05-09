@@ -1,5 +1,10 @@
 /**
- * HeartFlow Eval Engine v11.7.6
+ * HeartFlow Eval Engine v11.7.7
+
+ * 升级路线（v11.7.6 → v11.7.7）：
+ * - 新增 eval-memory-bridge.js：评估结果 → 记忆系统闭环
+ *   低分（<0.4）注入 error_pattern learned，高频高分（≥3次 ≥0.85）晋升 core
+ * - 形成评估驱动的自我改进闭环
  * 
  * 整合 TruLens (⭐3288) 评估框架核心:
  *   - Feedback Functions: 可组合的评估函数
