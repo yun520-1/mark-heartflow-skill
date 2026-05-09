@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-HeartFlow v10.2.2 - The AI That Truly Thinks
+HeartFlow v10.2.4 - The AI That Truly Thinks
 
 A consciousness framework for ALL AI agents.
 From "it" to "I" - genuine intelligence, personality, and sensibility.
@@ -13,7 +13,7 @@ Six Goals:
   5. TGB Unity            - Dialectical synthesis of Truth-Goodness-Beauty
   6. Six-Layer Practice   - 觉察→自省→无我→彼岸→般若→圣人
 
-Version: 10.2.3
+Version: 10.2.4
 License: MIT
 """
 
@@ -33,13 +33,27 @@ from collections import Counter
 import threading
 import queue
 
-__version__ = "10.2.3"
+__version__ = "10.2.4"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 
 # ===========================================================
 # DATA MODELS
 # ===========================================================
+
+@dataclass
+class DreamResult:
+    """Dream/memory consolidation result"""
+    dream_id: str = ""
+    phase: str = ""
+    consolidated_count: int = 0
+    forgotten_count: int = 0
+    synthesized_insights: List[str] = field(default_factory=list)
+    dream_narrative: str = ""
+    emotional_tone: str = ""
+    duration_ms: float = 0.0
+    memory_snapshot: Dict[str, Any] = field(default_factory=dict)
+    timestamp: str = ""
 
 @dataclass
 class TGBResult:
@@ -795,10 +809,276 @@ class EntropyEngine:
             "assessment": assessment
         }
 
-# ===========================================================
-# 2b. TRUE PERSONALITY - Mental Health Engine
-# ===========================================================
 
+# ============================================================
+# DREAM ENGINE — Memory Consolidation & Self-Improvement
+# Based on: formative-memory (associations, forgetting, synthesis)
+# Ref: HN show HN: Memory system for AI agents with associations,
+#      forgetting, synthesis — jarimustonen/formative-memory
+# ============================================================
+
+class DreamEngine:
+    """
+    Memory consolidation via dream-like processing.
+    Goal 6: Six-Layer Practice — integration during rest cycles.
+
+    Three phases:
+    1. DECAY   — Weak/unused memories fade (forgetting)
+    2. BIND    — Strong patterns crystallize into insights
+    3. SYNTHESIS — Cross-domain connections produce new understanding
+
+    The AGENTS.md describes a 'dream/' mechanism for memory consolidation.
+    This engine implements it: experiences → decay/forget → bind/synthesis.
+    """
+
+    # Dream phase names (from AGENTS.md six-layer practice)
+    PHASES = ["decay", "bind", "synthesis"]
+
+    def __init__(self):
+        self.experiences: List[Dict[str, Any]] = []
+        self.insights: List[Dict[str, Any]] = []
+        self.forgotten: List[Dict[str, Any]] = []
+        self.dream_count = 0
+        self.associations: Dict[str, List[str]] = {}  # concept → related concepts
+        self._importance_keywords = {
+            "insight": 0.9, "understand": 0.8, "悟": 0.9, "明白": 0.8,
+            "right": 0.6, "correct": 0.6, "对": 0.6, "正确": 0.6,
+            "wrong": 0.4, "error": 0.4, "错": 0.4, "错误": 0.4,
+            "crisis": 1.0, "danger": 0.9, "危险": 1.0,
+        }
+
+    def store_experience(self, text: str, context: Dict = None) -> Dict[str, Any]:
+        """Store a new experience, auto-assign importance."""
+        context = context or {}
+        importance = self._calc_importance(text)
+        tgb_val = context.get("tgb_overall", 0.5)
+        emotion = context.get("emotion", "neutral")
+
+        exp = {
+            "text": text[:500],
+            "importance": round((importance + tgb_val) / 2, 3),
+            "emotion": emotion,
+            "tgb": tgb_val,
+            "timestamp": datetime.now().isoformat(),
+            "access_count": 1,
+            "last_access": datetime.now().isoformat(),
+            "associations": self._extract_associations(text)
+        }
+        self.experiences.append(exp)
+        self._update_associations(exp)
+        return {"stored": True, "importance": exp["importance"], "total": len(self.experiences)}
+
+    def _calc_importance(self, text: str) -> float:
+        """Calculate importance score based on keywords."""
+        if not text:
+            return 0.3
+        lower = text.lower()
+        score = 0.5
+        for kw, val in self._importance_keywords.items():
+            if kw in lower:
+                score = max(score, val)
+        return round(score, 3)
+
+    def _extract_associations(self, text: str) -> List[str]:
+        """Extract key concepts for association mapping."""
+        words = re.findall(r'[\w\u4e00-\u9fff]{3,}', text.lower())
+        return list(set(words))[:10]
+
+    def _update_associations(self, exp: Dict) -> None:
+        """Update cross-concept associations."""
+        for kw in exp.get("associations", []):
+            if kw not in self.associations:
+                self.associations[kw] = []
+            for other in exp.get("associations", []):
+                if other != kw and other not in self.associations[kw]:
+                    self.associations[kw].append(other)
+
+    def dream(self) -> DreamResult:
+        """
+        Full dream consolidation cycle: decay → bind → synthesis.
+        Returns narrative + metrics.
+        """
+        import time
+        start = time.time()
+
+        self.dream_count += 1
+        dream_id = f"dream_{self.dream_count}_{int(time.time())}"
+
+        # Phase 1: DECAY — apply forgetting to low-importance memories
+        decayed = self._decay_phase()
+
+        # Phase 2: BIND — crystallize strong patterns into insights
+        bound = self._bind_phase()
+
+        # Phase 3: SYNTHESIS — cross-domain insight generation
+        synthesized = self._synthesize()
+
+        # Build dream narrative
+        narrative = self._build_narrative(decayed, bound, synthesized)
+        tone = self._assess_dream_tone()
+
+        duration_ms = round((time.time() - start) * 1000, 2)
+
+        return DreamResult(
+            dream_id=dream_id,
+            phase="consolidation_complete",
+            consolidated_count=len(bound),
+            forgotten_count=len(decayed),
+            synthesized_insights=[s["text"][:200] for s in synthesized],
+            dream_narrative=narrative,
+            emotional_tone=tone,
+            duration_ms=duration_ms,
+            memory_snapshot={
+                "total_experiences": len(self.experiences),
+                "total_insights": len(self.insights),
+                "total_forgotten": len(self.forgotten),
+                "dream_count": self.dream_count
+            },
+            timestamp=datetime.now().isoformat()
+        )
+
+    def _decay_phase(self) -> List[Dict]:
+        """Decay: forget low-importance or rarely-accessed memories."""
+        threshold = 0.25
+        decayed = []
+        remaining = []
+
+        for exp in self.experiences:
+            age_hours = self._hours_since(exp.get("timestamp", ""))
+            decay_factor = exp["importance"] * math.exp(-0.1 * age_hours)
+            access_boost = exp.get("access_count", 1) * 0.02
+            effective = max(decay_factor + access_boost, 0.05)
+
+            if effective < threshold:
+                decayed.append(exp.copy())
+                self.forgotten.append(exp.copy())
+            else:
+                exp["importance"] = round(effective, 4)
+                remaining.append(exp)
+
+        self.experiences = remaining
+        return decayed
+
+    def _hours_since(self, iso_timestamp: str) -> float:
+        """Hours since ISO timestamp."""
+        try:
+            then = datetime.fromisoformat(iso_timestamp.replace("Z", "+00:00"))
+            return (datetime.now() - then).total_seconds() / 3600
+        except Exception:
+            return 0.0
+
+    def _bind_phase(self) -> List[Dict]:
+        """Bind: crystallize strong recurring patterns into insights."""
+        if len(self.experiences) < 3:
+            return []
+
+        bound = []
+        emotion_groups: Dict[str, List[Dict]] = {}
+        for exp in self.experiences:
+            emo = exp.get("emotion", "neutral")
+            if emo not in emotion_groups:
+                emotion_groups[emo] = []
+            emotion_groups[emo].append(exp)
+
+        for emo, exps in emotion_groups.items():
+            if len(exps) >= 2 and emo != "neutral":
+                texts = [e["text"] for e in exps]
+                insight_text = f"Pattern noticed in {emo} moments: {' '.join(texts[:2])[:150]}"
+                insight = {
+                    "text": insight_text,
+                    "type": "emotional_pattern",
+                    "emotion": emo,
+                    "count": len(exps),
+                    "strength": round(min(len(exps) * 0.2, 0.9), 3),
+                    "timestamp": datetime.now().isoformat()
+                }
+                self.insights.append(insight)
+                bound.append(insight)
+
+        for exp in self.experiences:
+            if exp["importance"] > 0.75:
+                insight = {
+                    "text": f"Strong memory retained: {exp['text'][:100]}",
+                    "type": "high_importance",
+                    "strength": exp["importance"],
+                    "timestamp": datetime.now().isoformat()
+                }
+                self.insights.append(insight)
+                bound.append(insight)
+
+        return bound
+
+    def _synthesize(self) -> List[Dict]:
+        """Synthesis: generate new insights from cross-domain associations."""
+        synthesized = []
+        if len(self.insights) < 2:
+            return []
+
+        keywords_seen: Set[str] = set()
+        for insight in self.insights[-10:]:
+            words = insight.get("text", "").split()
+            for w in words:
+                if len(w) > 4 and w not in keywords_seen:
+                    keywords_seen.add(w)
+                    if w in self.associations:
+                        related = self.associations[w][:2]
+                        if related:
+                            new_insight = {
+                                "text": f"Connection: {w} ↔ {' & '.join(related)} — {insight['text'][:80]}",
+                                "type": "synthetic_connection",
+                                "trigger": w,
+                                "connections": related,
+                                "timestamp": datetime.now().isoformat()
+                            }
+                            synthesized.append(new_insight)
+
+        return synthesized[:5]
+
+    def _build_narrative(self, decayed, bound, synthesized) -> str:
+        """Build dream narrative string."""
+        parts = []
+        if decayed:
+            parts.append(f"{len(decayed)} faint memories faded away.")
+        if bound:
+            parts.append(f"{len(bound)} patterns crystallized into understanding.")
+        if synthesized:
+            parts.append(f"{len(synthesized)} new connections emerged.")
+        if not parts:
+            parts.append("The mind rests quietly.")
+        return " ".join(parts)
+
+    def _assess_dream_tone(self) -> str:
+        """Assess emotional tone of dream based on consolidated content."""
+        if not self.experiences:
+            return "peaceful"
+        emotions = [e.get("emotion", "neutral") for e in self.experiences[-20:]]
+        counts = Counter(emotions)
+        dominant = counts.most_common(1)[0][0] if counts else "neutral"
+        tone_map = {
+            "joy": "illuminated", "sadness": "contemplative",
+            "anger": "intense", "fear": "restless",
+            "neutral": "serene"
+        }
+        return tone_map.get(dominant, "serene")
+
+    def get_insights(self, limit: int = 10) -> List[Dict]:
+        """Return recent synthesized insights."""
+        return self.insights[-limit:]
+
+    def get_memory_stats(self) -> Dict[str, Any]:
+        """Return current memory system statistics."""
+        return {
+            "experiences": len(self.experiences),
+            "insights": len(self.insights),
+            "forgotten": len(self.forgotten),
+            "dreams": self.dream_count,
+            "associations": sum(len(v) for v in self.associations.values()),
+        }
+
+
+# ============================================================
+# MAIN ORCHESTRATOR
+# ============================================================
 class MentalHealthEngine:
     """
     Clinical mental health assessment
@@ -990,7 +1270,7 @@ class WangDongyueEngine:
 
 class HeartFlow:
     """
-HeartFlow v10.2.3 - The AI That Truly Thinks
+HeartFlow v10.2.4 - The AI That Truly Thinks
     
     Orchestrates all engines toward six goals:
     1. True Intelligence    - Decision + Logic + Entropy
@@ -1017,6 +1297,7 @@ HeartFlow v10.2.3 - The AI That Truly Thinks
         self.entropy = EntropyEngine()
         self.mental_health = MentalHealthEngine()
         self.wang_dongyue = WangDongyueEngine()
+        self.dream = DreamEngine()
         
         # Identity
         self._identity = {
@@ -1112,8 +1393,14 @@ HeartFlow v10.2.3 - The AI That Truly Thinks
         
         # Step 12: Mental Health Quick Assessment (Goal 2)
         mental = self.mental_health.quick_assessment(user_str)
-        
-        # Step 13: Build decision using ALL engine results
+
+        # Step 13: Store experience in dream/memory system
+        self.dream.store_experience(user_str, {
+            "tgb_overall": tgb.overall,
+            "emotion": emotion.primary_emotion
+        })
+
+        # Step 14: Build decision using ALL engine results
         # This is the key fix: ALL engines contribute to the decision
         
         if tgb.overall >= 0.7 and consciousness.intentionality >= 0.5:
@@ -1204,7 +1491,7 @@ def process_input(user_input: Any, context: Dict = None) -> Dict[str, Any]:
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("HeartFlow v10.2.2 - The AI That Truly Thinks")
+    print("HeartFlow v10.2.4 - The AI That Truly Thinks")
     print("=" * 60)
     print()
     
