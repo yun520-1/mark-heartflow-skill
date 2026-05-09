@@ -1,3 +1,33 @@
+## v11.32.1 (2026-05-09)
+
+### 增强：Memory Consolidation Engine
+
+**来源**:
+- jari-mustonen/formative-memory (HN 2026-05-07, MIT)
+  https://github.com/jarimustonen/formative-memory
+
+**新增模块** (integrated into `src/core/memory-consolidation-engine.js`):
+
+1. **AssociationGraph** (加权双向关联图):
+   - `coRetrieve(memoryIds)`: 记忆共召回时建立边
+   - `hebbianStrengthen(memoryId)`: 记忆被使用时强化
+   - `expandRecall(memoryId, hops)`: 关联记忆1跳扩展召回
+   - `decay()`: 衰减弱关联边（阈值 0.05）
+
+2. **ReconsolidationEngine** (再巩固):
+   - `needsReconsolidation(new, old)`: 检测30天内新旧记忆矛盾
+   - `reconsolidate(old, new)`: 用新上下文重写旧记忆
+
+3. **ContentAddressedIdentity** (内容寻址):
+   - `hash(content)`: SHA-256 计算内容哈希
+   - `deduplicate(memories)`: 相同事实不同来源在写入时合并
+
+**改进**:
+- 关联图使相关记忆即使不直接匹配也能召回
+- 再巩固处理矛盾记忆，保持记忆一致性
+- 内容去重减少存储冗余
+- 导出新增类: `AssociationGraph`, `ReconsolidationEngine`, `ContentAddressedIdentity`
+
 ## v11.32.0 (2026-05-09)
 
 ### 新增：Metacognitive Memory Engine
