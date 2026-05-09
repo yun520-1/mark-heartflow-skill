@@ -1,10 +1,10 @@
 ---
 name: heartflow
 title: HeartFlow 心虫 — AI Identity Framework
-version: v11.24.4
-date: "2026-05-08"
+version: v11.25.0
+date: "2026-05-09"
 description: >
-  HeartFlow v11.24.0 — AI identity framework for self-improving agents.
+  HeartFlow v11.25.0 — AI identity framework for self-improving agents.
   
   ## Core Capabilities
   - 6 cognitive engines: cognitive-loop, cognitive-engine, emotion-engine, decision-engine, self-modifier, agent-orchestrator

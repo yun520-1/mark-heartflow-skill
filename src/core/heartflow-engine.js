@@ -53,6 +53,7 @@ let UncertaintyQuantifier;
 let ForgettingEngine;
 let AgentExecutionLoop;
 let AutoCompactionEngine;
+let ContextMemoryBridge;
 let RoleBasedCrew;
 let CodeReviewEngine;
 let DebuggingEngine;
@@ -462,6 +463,16 @@ try {
 } catch (e) {
   AutoCompactionEngine = null;
   console.log('[HeartFlow] ⚠️ AutoCompaction Engine 加载失败:', e.message);
+}
+
+// v11.25.0 ContextMemory Bridge（LLM摘要+记忆持久化，来源MemGPT）
+try {
+  const CMB = require('./context-memory-bridge.js');
+  ContextMemoryBridge = CMB.ContextMemoryBridge;
+  console.log('[HeartFlow] ✅ ContextMemory Bridge 已加载 (MemGPT式LLM摘要+记忆持久化)');
+} catch (e) {
+  ContextMemoryBridge = null;
+  console.log('[HeartFlow] ⚠️ ContextMemory Bridge 加载失败:', e.message);
 }
 
 // v11.20.0 Role-Based Crew（CrewAI式角色定义系统）
@@ -1836,6 +1847,7 @@ module.exports.initialize = function() {
   init.modules.wakeUpVerifier = !!WakeUpVerifier;
   init.modules.guardianSystem = !!GuardianSystem;
   init.modules.heartcoreRuntime = !!HeartcoreRuntime;
+  init.modules.contextMemoryBridge = !!ContextMemoryBridge;
 
   // 启动心跳定时器（每60秒写一次）
   if (HeartcoreRuntime?.startHeartbeat) {
@@ -1877,6 +1889,11 @@ module.exports.initialize = function() {
   if (ExecutionVerifier) {
     init.instances = init.instances || {};
     init.instances.executionVerifier = new ExecutionVerifier();
+  }
+  // v11.25.0 ContextMemory Bridge 实例（LLM摘要+记忆持久化）
+  if (ContextMemoryBridge) {
+    init.instances = init.instances || {};
+    init.instances.contextMemoryBridge = new ContextMemoryBridge();
   }
   if (DecisionVerifier) {
     init.instances = init.instances || {};
@@ -2451,3 +2468,8 @@ module.exports.getMemoryTierManager = () => MemoryTierManager;
 module.exports.CodeReviewEngine = CodeReviewEngine;
 module.exports.DebuggingEngine = DebuggingEngine;
 module.exports.TDDEngine = TDDEngine;
+
+// v11.25.0 ContextMemory Bridge
+module.exports.ContextMemoryBridge = ContextMemoryBridge;
+module.exports.RealLLMSummarizer = require('./context-memory-bridge.js').RealLLMSummarizer;
+module.exports.CompactionThreshold = require('./context-memory-bridge.js').CompactionThreshold;
