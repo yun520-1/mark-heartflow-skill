@@ -1,8 +1,14 @@
 /**
- * Self-Reflection Memory v11.18.0
+ * Self-Reflection Memory v11.18.1
  * 
  * 来源: NirDiamant/Agent_Memory_Techniques - Self-Reflection Memory
  *       基于 Reflexion framework (Shinn et al., 2023)
+ * 
+ * v11.18.1 升级 (来自 mem0/meaningful-memory 架构):
+ * - 新增 Retrieval-Triggered Reinforcement（检索触发强化）
+ * - 每次 retrieve() 被调用时，recallCount++，stabilityHours *= 1.05
+ * - 符合间隔重复效应：越常被想起的记忆衰减越慢
+ * - 只对 failure outcome 的 reflection 强化（失败教训最重要）
  * 
  * 核心思想:
  * - 从失败/成功中事后分析，提取结构化教训
@@ -21,7 +27,11 @@
  *   strategyForNextTime: string, // 下次怎么做
  *   timestamp: number,
  *   keywords: string[],
- *   context: string            // 原始决策/推理上下文
+ *   context: string,           // 原始决策/推理上下文
+ *   // v11.18.1 新增字段: 检索触发强化
+ *   recallCount: number,       // 被检索次数（间隔重复计数器）
+ *   stabilityHours: number,    // 记忆稳定性（被检索越多越稳定）
+ *   lastRecall: number        // 上次被检索时间戳
  * }
  */
 
@@ -81,7 +91,11 @@ class ReflectionStore {
       keywords: reflection.keywords || this._extractKeywords(reflection),
       context: reflection.context || '',
       accessCount: 0,
-      lastAccessed: Date.now()
+      lastAccessed: Date.now(),
+      // v11.18.1: 检索触发强化字段
+      recallCount: 0,
+      stabilityHours: reflection.stabilityHours || 168, // 默认7天稳定性
+      lastRecall: null
     };
     this.reflections.push(entry);
     this._save();
@@ -133,17 +147,29 @@ class ReflectionStore {
       results = results.filter(r => r.outcome === outcomeFilter);
     }
     
-    // 按访问频率和新近度排序
+    // 按访问频率和新近度排序（v11.18.1: 融入 stabilityHours）
     results = results.sort((a, b) => {
-      const scoreA = (a.accessCount || 0) * 0.3 + (a.lastAccessed / 1e12) * 0.7;
-      const scoreB = (b.accessCount || 0) * 0.3 + (b.lastAccessed / 1e12) * 0.7;
+      const stabilityA = a.outcome === 'failure'
+        ? (a.stabilityHours || 168) * (1 + (a.recallCount || 0) * 0.05)
+        : 1;
+      const stabilityB = b.outcome === 'failure'
+        ? (b.stabilityHours || 168) * (1 + (b.recallCount || 0) * 0.05)
+        : 1;
+      const scoreA = (a.accessCount || 0) * 0.3 + (a.lastAccessed / 1e12) * 0.5 + stabilityA * 0.2;
+      const scoreB = (b.accessCount || 0) * 0.3 + (b.lastAccessed / 1e12) * 0.5 + stabilityB * 0.2;
       return scoreB - scoreA;
     }).slice(0, limit);
     
-    // 更新访问统计
+    // 更新访问统计 + 检索触发强化（v11.18.1: failure reflection 稳定性增强）
     for (const r of results) {
       r.accessCount = (r.accessCount || 0) + 1;
       r.lastAccessed = Date.now();
+      // 检索触发强化：failure 教训被想起时增强其稳定性
+      if (r.outcome === 'failure') {
+        r.recallCount = (r.recallCount || 0) + 1;
+        r.stabilityHours = Math.min(r.stabilityHours * 1.05, 8760); // 上限1年
+        r.lastRecall = Date.now();
+      }
     }
     this._save();
     
@@ -183,10 +209,37 @@ class ReflectionStore {
   stats() {
     const total = this.reflections.length;
     const byOutcome = { success: 0, partial: 0, failure: 0 };
+    const byRecall = { low: 0, medium: 0, high: 0 }; // 按强化程度分组
     for (const r of this.reflections) {
       byOutcome[r.outcome] = (byOutcome[r.outcome] || 0) + 1;
+      const rc = r.recallCount || 0;
+      if (rc === 0) byRecall.low++;
+      else if (rc < 3) byRecall.medium++;
+      else byRecall.high++;
     }
-    return { total, byOutcome };
+    return {
+      total,
+      byOutcome,
+      byRecall,
+      reinforced: this.reflections.filter(r => r.outcome === 'failure' && (r.recallCount || 0) > 0).length
+    };
+  }
+
+  /**
+   * 获取强化统计（v11.18.1）
+   * 返回 failure reflections 的强化程度分布
+   */
+  getReinforcementStats() {
+    const failures = this.reflections.filter(r => r.outcome === 'failure');
+    if (failures.length === 0) return { total: 0, reinforced: 0, reinforcementRate: 0 };
+    const reinforced = failures.filter(r => (r.recallCount || 0) > 0).length;
+    return {
+      total: failures.length,
+      reinforced,
+      reinforcementRate: reinforced / failures.length,
+      avgStabilityHours: failures.reduce((s, r) => s + (r.stabilityHours || 168), 0) / failures.length,
+      maxRecallCount: Math.max(...failures.map(r => r.recallCount || 0)),
+    };
   }
 
   size() { return this.reflections.length; }

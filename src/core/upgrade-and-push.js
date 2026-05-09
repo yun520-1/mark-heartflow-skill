@@ -6,12 +6,13 @@
  * 示例: node upgrade-and-push.js 11.22.8 "新增XXX功能"
  *
  * 流程:
- * 1. 更新 package.json 版本
- * 2. git add -A
- * 3. git commit
- * 4. 自动验证
- * 5. 验证通过 → git push (已禁用，需手动)
+ * 1. 更新 VERSION 文件
+ * 2. 同步所有版本文件 (sync-version.js)
+ * 3. git add -A
+ * 4. git commit
+ * 5. 自动验证
  * 6. 验证失败 → git reset, 不推送
+ *    验证通过 → 需手动 git push (已禁用自动push)
  */
 
 const fs = require('fs');
@@ -43,21 +44,37 @@ function main() {
   console.log(`  HeartFlow 升级推送: v${version}`);
   console.log('══════════════════════════════════════════\n');
 
-  // 1. 更新版本
-  log('[1/5] 更新 package.json...');
+  // 1. 更新 VERSION 文件
+  log('[1/6] 更新 VERSION 文件...');
   try {
-    const pkg = JSON.parse(fs.readFileSync(PKG_PATH, 'utf8'));
-    pkg.version = version;
-    pkg.description = `HeartFlow v${version}: ${message}`;
-    fs.writeFileSync(PKG_PATH, JSON.stringify(pkg, null, 2) + '\n');
-    log(`版本更新: ${pkg.version}`, '✅');
+    fs.writeFileSync(path.join(HEARTFLOW_DIR, 'VERSION'), version + '\n');
+    log(`VERSION: ${version}`, '✅');
   } catch (e) {
-    console.error('❌ 版本更新失败:', e.message);
+    console.error('❌ VERSION 更新失败:', e.message);
     process.exit(1);
   }
 
-  // 2. Git add
-  log('\n[2/5] git add...');
+  // 2. 同步所有版本文件
+  log('\n[2/6] 同步所有版本文件...');
+  try {
+    const SYNC_SCRIPT = path.join(__dirname, '..', 'scripts', 'sync-version.js');
+    if (fs.existsSync(SYNC_SCRIPT)) {
+      execSync(`node "${SYNC_SCRIPT}"`, { cwd: HEARTFLOW_DIR, encoding: 'utf8' });
+      log('版本同步完成', '✅');
+    } else {
+      // 备用：只更新 package.json
+      const pkg = JSON.parse(fs.readFileSync(PKG_PATH, 'utf8'));
+      pkg.version = version;
+      pkg.description = `HeartFlow v${version}: ${message}`;
+      fs.writeFileSync(PKG_PATH, JSON.stringify(pkg, null, 2) + '\n');
+      log('版本更新: package.json', '✅');
+    }
+  } catch (e) {
+    console.error('⚠️ 版本同步失败:', e.message);
+  }
+
+  // 3. Git add
+  log('\n[3/6] git add...');
   try {
     run('git add -A');
     log('文件已暂存', '✅');
@@ -66,8 +83,8 @@ function main() {
     process.exit(1);
   }
 
-  // 3. Git commit
-  log('\n[3/5] git commit...');
+  // 4. Git commit
+  log('\n[4/6] git commit...');
   const commitMsg = `v${version}: ${message}`;
   try {
     run(`git commit -m "${commitMsg}"`);
@@ -77,8 +94,8 @@ function main() {
     process.exit(1);
   }
 
-  // 4. 自动验证
-  log('\n[4/5] 自动验证...');
+  // 5. 自动验证
+  log('\n[5/6] 自动验证...');
   console.log('─'.repeat(40));
 
   let verifyResult;
@@ -93,7 +110,7 @@ function main() {
     console.error('❌ 验证失败！', '🔴');
 
     // 验证失败，取消提交
-    log('\n[5/5] 取消提交...');
+    log('\n[6/6] 取消提交...');
     try {
       run('git reset --soft HEAD~');
       run('git reset .');

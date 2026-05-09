@@ -1,11 +1,15 @@
 /**
- * HeartFlow Metacognitive Memory Engine v11.32.0
+ * HeartFlow Metacognitive Memory Engine v11.32.1
  * 
  * 来源:
  * - "Metacognitive monitoring and control in LLMs" (2025) - 置信度校准
  * - "The Forgetting Machine" (2025) - 自适应遗忘曲线
  * - "Sleep-dependent memory consolidation" (2025) - 双层记忆整合
  * - "Narrative identity construction" (2025) - 叙事身份构建
+ * 
+ * v11.32.1 升级:
+ * - NarrativeIdentityTracker.checkConsistency() 从存根实现升级为真实一致性检查
+ *   基于叙事身份要素(目标/价值观/偏好)进行文本匹配和冲突检测
  * 
  * 核心功能:
  * - 元认知置信度层
@@ -168,9 +172,125 @@ class NarrativeIdentityTracker {
   }
   
   checkConsistency(newResponse) {
-    // 检查新响应是否与叙事身份一致
-    // 返回一致性分数 0-1
-    return 1.0; // 默认一致
+    /**
+     * 检查新响应是否与叙事身份一致
+     * v11.32.1: 从存根升级为真实一致性检查
+     * 
+     * 检查逻辑:
+     * 1. 偏好匹配 - 检查响应是否违背已知偏好
+     * 2. 价值观对齐 - 检查响应是否与已建立价值观一致
+     * 3. 目标连贯性 - 检查响应是否有助于陈述的目标
+     * 4. 冲突检测 - 检测与历史陈述的明显矛盾
+     * 
+     * @param {string} newResponse - 待检查的响应文本
+     * @returns {object} { score: 0-1, conflicts: string[], aligned: string[] }
+     */
+    if (!newResponse || typeof newResponse !== 'string') {
+      return { score: 1.0, conflicts: [], aligned: [], reasoning: 'empty_input' };
+    }
+
+    const response = newResponse.toLowerCase();
+    const narrative = this.narrative;
+    const conflicts = [];
+    const aligned = [];
+
+    // 1. 偏好匹配检查
+    const preferenceEntries = Object.entries(narrative.preferences || {});
+    for (const [key, value] of preferenceEntries) {
+      const prefLower = key.toLowerCase();
+      const valLower = String(value).toLowerCase();
+      
+      // 检查偏好关键词是否在响应中出现
+      const prefMatch = prefLower.includes(valLower) || valLower.includes(prefLower);
+      if (!prefMatch && (response.includes(prefLower) || response.includes(valLower))) {
+        // 响应中提到了偏好相关词汇
+        if (response.includes('不') || response.includes('not') || response.includes("don't")) {
+          // 可能与偏好冲突
+          const conflict = `偏好冲突: 响应似乎否定了偏好「${key}」`;
+          if (!conflicts.includes(conflict)) conflicts.push(conflict);
+        }
+      }
+    }
+
+    // 2. 价值观对齐检查
+    const valueKeywords = {
+      '诚实': ['honest', 'truth', '真实', '诚实', 'transparency'],
+      '善良': ['help', 'care', '善良', '善意', 'kind', 'good'],
+      '自由': ['free', '自由', '选择', 'choice', 'autonomy'],
+      '成长': ['grow', 'learn', '成长', '进步', 'improve', 'develop'],
+      '安全': ['safe', '安全', 'protect', '保护', 'secure'],
+    };
+
+    for (const [valueName, keywords] of Object.entries(valueKeywords)) {
+      const storedHasValue = narrative.values.some(v => 
+        valueName.includes(v.value?.toLowerCase() || v.toLowerCase()) ||
+        v.value?.toLowerCase().includes(valueName.toLowerCase())
+      );
+      
+      if (storedHasValue) {
+        const keywordMatches = keywords.filter(kw => response.includes(kw)).length;
+        if (keywordMatches > 0) {
+          aligned.push(`价值观对齐「${valueName}」`);
+        }
+      }
+    }
+
+    // 3. 目标连贯性检查
+    const goalKeywords = ['goal', '目标', '计划', 'plan', 'intend', '想要', 'will', '要'];
+    const hasGoalContext = goalKeywords.some(kw => response.includes(kw));
+    
+    if (narrative.goals.length > 0 && hasGoalContext) {
+      const recentGoals = narrative.goals.slice(-3); // 检查最近3个目标
+      for (const goalEntry of recentGoals) {
+        const goalText = (goalEntry.goal || '').toLowerCase();
+        if (goalText && response.includes(goalText.substring(0, Math.min(5, goalText.length)))) {
+          aligned.push(`目标连贯「${goalEntry.goal}」`);
+        }
+      }
+    }
+
+    // 4. 冲突检测 - 常见矛盾模式
+    const contradictionPatterns = [
+      { positive: ['总是', 'always', '一直'], negative: ['从不', 'never', '从来不'] },
+      { positive: ['完全', 'totally', 'completely'], negative: ['一点也', 'not at all'] },
+      { positive: ['必须', 'must', 'have to'], negative: ['不必', "don't have to", '不需要'] },
+    ];
+
+    for (const pattern of contradictionPatterns) {
+      const hasPositive = pattern.positive.some(p => response.includes(p));
+      const hasNegative = pattern.negative.some(p => response.includes(p));
+      if (hasPositive && hasNegative) {
+        conflicts.push('检测到逻辑矛盾: 同时包含肯定和否定表达');
+        break;
+      }
+    }
+
+    // 计算最终一致性分数
+    let score = 1.0;
+    
+    // 冲突扣分
+    if (conflicts.length > 0) {
+      score -= Math.min(0.4, conflicts.length * 0.15);
+    }
+    
+    // 对齐加分(最多+0.1)
+    if (aligned.length > 0) {
+      score = Math.min(1.0, score + Math.min(0.1, aligned.length * 0.03));
+    }
+    
+    // 无叙事数据时降低分数
+    const hasNarrativeData = preferenceEntries.length > 0 || narrative.values.length > 0 || narrative.goals.length > 0;
+    if (!hasNarrativeData) {
+      score = 0.7; // 缺乏数据时返回中等分数
+    }
+
+    return {
+      score: Math.max(0, Math.min(1, score)),
+      conflicts,
+      aligned,
+      reasoning: conflicts.length > 0 ? 'conflict_detected' : aligned.length > 0 ? 'aligned' : 'neutral',
+      narrativeDataAvailable: hasNarrativeData,
+    };
   }
 }
 
