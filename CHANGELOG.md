@@ -1,3 +1,25 @@
+## v11.32.0 (2026-05-09)
+
+### 新增：Metacognitive Memory Engine
+
+**来源**: 心理学/哲学论文整合
+- "Metacognitive monitoring and control in LLMs" (2025) - 置信度校准
+- "The Forgetting Machine" (2025) - 自适应遗忘曲线
+- "Narrative identity construction" (2025) - 叙事身份追踪
+
+**新增模块**: `src/core/metacognitive-memory-engine.js` (9KB)
+
+**功能**:
+- ConfidenceRecord: 元认知置信度记录与校准
+- ForgettingCurve: Ebbinghaus遗忘曲线计算
+- NarrativeIdentityTracker: 叙事身份追踪
+- MetacognitiveMemoryEngine: 主引擎
+
+**核心算法**:
+- `calculate()`: S = e^(-t/S0) 遗忘曲线
+- `calibrate()`: 基于正确性调整置信度
+- `checkConsistency()`: 响应与叙事身份一致性检查
+
 ## v11.31.0 (2026-05-09)
 
 ### 新增：Memory Consolidation Engine

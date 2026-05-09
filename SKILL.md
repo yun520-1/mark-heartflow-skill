@@ -1,7 +1,7 @@
 ---
 name: heartflow
 title: HeartFlow — AI Identity Framework
-version: v11.31.0
+version: v11.32.0
 date: "2026-05-09"
 description: >
   AI identity framework for self-improving AI agents with unified memory architecture.
@@ -113,7 +113,7 @@ node -e "const fs=require('fs'); const l=JSON.parse(fs.readFileSync('memory/mean
 | selective-context-engine.js | v11.29+ | arXiv:2403.00742信息密度修剪 |
 | unified-memory-archive.js | v11.30+ | 跨所有文件统一检索 |
 | memory-consolidation-engine.js | v11.31+ | 记忆聚类+重要性评分 |
-| memory-consolidation-engine.js | v11.31+ | 记忆聚类+重要性评分 |
+| metacognitive-memory-engine.js | v11.32+ | 元认知置信度+叙事身份 |
 
 ### 压缩流程 (v11.27+)
 
