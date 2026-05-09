@@ -1,390 +1,299 @@
 /**
- * HeartFlow Memory Manager v11.33.3
+ * HeartFlow Memory Manager v11.33.4
  *
- * 统一记忆系统 — 整合所有记忆引擎为一个干净API
+ * 核心洞察（来自Mem0 52k⭐ + LangGraph 31k⭐）：
+ * - Mem0: 一个ADD入口，内部处理语义+BM25+实体。调用方不知道内部细节
+ * - LangGraph: 确定性状态图，每个节点只做一件事
  *
- * 架构：
- * ┌─────────────────────────────────────────────┐
- * │         MemoryManager (唯一入口)              │
- * │                                             │
- * │  ┌─────────┐  ┌─────────────────────────┐  │
- * │  │ Router  │→│ recall(query) / store()  │  │
- * │  └─────────┘  └─────────────────────────┘  │
- * │         ↓                                   │
- * │  ┌─────────────────────────────────────┐  │
- * │  │         7 引擎并行 / 串行             │  │
- * │  │                                     │  │
- * │  │  Mem0MultiSignal (语义+BM25+实体)   │  │
- * │  │  MeaningfulMemory  (三层语义)        │  │
- * │  │  TrialityMemory  (working+archive)   │  │
- * │  │  LifecycleEngine  (遗忘+晋升)         │  │
- * │  │  DialecticRecall (L1/L2/L3召回)     │  │
- * │  │  ReflectionMemory (success/failure)  │  │
- * │  │  BeingState     (存在状态)           │  │
- * │  └─────────────────────────────────────┘  │
- * └─────────────────────────────────────────────┘
+ * HeartFlow的旧问题：memory-manager查7引擎，heartflow-engine又单独加载9个实例。
+ * 两套系统并发跑，记忆重复、数据不一致。
  *
- * 数据目录：
- *   memory/states/   — 系统状态（being/tier/logic-core等）
- *   memory/stores/   — 可重建数据（meaningful-learned等）
- *   memory/texts/    — 文本记忆
- *   memory/sessions/ — 会话存档
+ * 新策略（Mem0-inspired）：
+ * - 一个store()入口，内部决定写哪些引擎
+ * - 一个recall()出口，内部决定查哪些引擎
+ * - 引擎对调用方完全透明，外部只看到统一的ADD/SEARCH
+ * - 写放大只发生一次，不在recall时重复
  *
- * 原则：
- * - 所有引擎独立加载，任意一个失败不影响整体
- * - 召回结果统一结构：{ source, content, score, metadata }
- * - 不删除任何历史数据，只做路由和索引
+ * 记忆类型（简化到3层）：
+ * - CORE: 核心身份/指令（高权重，长期保留）
+ * - LEARNED: 经验/教训（中等权重）
+ * - EPHEMERAL: 上下文/会话（低权重，可淘汰）
  */
 
 const fs = require('fs');
 const path = require('path');
 
 // ============================================================
-// 路径常量
+// 路径
 // ============================================================
-const MEMORY_DIR = path.join(__dirname, '..', '..', 'memory');
-const STATES_DIR = path.join(MEMORY_DIR, 'states');
-const STORES_DIR = path.join(MEMORY_DIR, 'stores');
-const TEXTS_DIR = path.join(MEMORY_DIR, 'texts');
-const SESSIONS_DIR = path.join(MEMORY_DIR, 'sessions');
+const MEM_DIR = path.join(__dirname, '..', '..', 'memory');
+const STORES_DIR = path.join(MEM_DIR, 'stores');
+const STATES_DIR = path.join(MEM_DIR, 'states');
 
 // ============================================================
-// 引擎懒加载
+// 记忆存储（文件IO封装）
 // ============================================================
-let _engines = {};
-let _initialized = false;
 
-function _lazy(name, requirePath) {
-  if (_engines[name]) return _engines[name];
-  try {
-    const mod = require(requirePath);
-    _engines[name] = mod.default || mod;
-    return _engines[name];
-  } catch (e) {
-    _engines[name] = null;
-    return null;
+class MemoryStore {
+  constructor(filePath, options = {}) {
+    this.filePath = filePath;
+    this.options = options;
+    this.data = [];
+    this._loaded = false;
   }
-}
 
-function _initEngines() {
-  if (_initialized) return;
-  _initialized = true;
-
-  // 尝试加载各引擎（失败不崩溃）
-  _lazy('mem0',          './mem0-memory.js');
-  _lazy('meaningful',     './meaningful-memory.js');
-  _lazy('triality',      './memory/triality-memory.js');
-  _lazy('lifecycle',     './memory-lifecycle-manager.js');
-  _lazy('dialectic',     './dialectic-recall.js');
-  _lazy('forgetting',    './forgetting-engine.js');
-  _lazy('reflection',    './self-reflection-memory.js');
-
-  // 状态文件直接读取
-  _loadStates();
-
-  // 加载 stores 元数据
-  _loadStores();
-}
-
-function _loadStates() {
-  const files = [
-    'being-state.json',
-    'logic-core-state.json',
-    'tier-meta.json',
-    'lifecycle-meta.json',
-    'core-result-state.json',
-  ];
-  _engines.states = {};
-  for (const f of files) {
+  load() {
+    if (this._loaded) return;
     try {
-      const fp = path.join(STATES_DIR, f);
-      if (fs.existsSync(fp)) {
-        _engines.states[f] = JSON.parse(fs.readFileSync(fp, 'utf8'));
+      if (fs.existsSync(this.filePath)) {
+        this.data = JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
+        if (!Array.isArray(this.data)) this.data = [];
       }
-    } catch {}
-  }
-}
-
-function _loadStores() {
-  const files = [
-    'meaningful-learned.json',
-    'meaningful-core.json',
-    'memory-store.json',
-  ];
-  _engines.stores = {};
-  for (const f of files) {
-    try {
-      const fp = path.join(STORES_DIR, f);
-      if (fs.existsSync(fp)) {
-        _engines.stores[f] = JSON.parse(fs.readFileSync(fp, 'utf8'));
-      }
-    } catch {}
-  }
-}
-
-// ============================================================
-// 主API
-// ============================================================
-
-class MemoryManager {
-  constructor() {
-    _initEngines();
-    this.stats = this._loadStats();
-  }
-
-  // ------------------------------------------------------
-  // 统一召回 — 核心API
-  // query        : 检索文本
-  // options      : { topK, sources, taskType }
-  // returns      : { results[], engine, totalMs }
-  // ------------------------------------------------------
-  recall(query, options = {}) {
-    const { topK = 8, sources = null, taskType = null } = options;
-    const start = Date.now();
-    _initEngines();
-
-    // 1. 路由：决定查哪些引擎
-    const targets = this._routeQuery(query, taskType);
-
-    // 2. 并行召回（限制 topK/引擎数）
-    const perEngine = Math.ceil(topK / targets.length);
-    const results = [];
-
-    for (const engine of targets) {
-      try {
-        const found = this._recallFrom(engine, query, perEngine);
-        results.push(...found);
-      } catch (e) {
-        // 单引擎失败不影响其他
-      }
+    } catch (e) {
+      this.data = [];
     }
+    this._loaded = true;
+  }
 
-    // 3. 排序 + 去重 + 截断
-    const deduped = this._deduplicate(results);
-    deduped.sort((a, b) => (b.score || 0) - (a.score || 0));
+  save() {
+    try {
+      const dir = path.dirname(this.filePath);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(this.filePath, JSON.stringify(this.data, null, 2));
+    } catch (e) {
+      // 非致命
+    }
+  }
 
-    return {
-      query,
-      results: deduped.slice(0, topK),
-      engines: targets.map(e => e.name),
-      totalMs: Date.now() - start,
+  add(entry) {
+    this.load();
+    // 去重
+    const exists = this.data.some(e => e.id === entry.id);
+    if (!exists) {
+      this.data.push(entry);
+      this.save();
+    }
+  }
+
+  search(query, options = {}) {
+    this.load();
+    const { limit = 10, weights = null } = options;
+    const queryLower = query.toLowerCase();
+    const queryWords = queryLower.split(/\s+/).filter(w => w.length > 1);
+
+    const results = this.data
+      .map(item => {
+        let score = 0;
+        const contentLower = (item.content || '').toLowerCase();
+
+        if (weights) {
+          // Mem0-style 多信号评分
+          score += weights.exactMatch ? (contentLower.includes(queryLower) ? 1 : 0) : 0;
+          score += weights.bm25 ? queryWords.filter(w => contentLower.includes(w)).length / Math.max(1, queryWords.length) : 0;
+          score += weights.recency ? (item.createdAt ? (Date.now() - item.createdAt < 86400000 * 7 ? 0.2 : 0) : 0) : 0;
+        } else {
+          // 简单词匹配
+          score = queryWords.filter(w => contentLower.includes(w)).length;
+        }
+
+        return { ...item, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit);
+
+    return results;
+  }
+
+  size() {
+    this.load();
+    return this.data.length;
+  }
+}
+
+// ============================================================
+// 单一记忆存储（Mem0-inspired）
+// 所有ADD通过一个store写，所有SEARCH通过一个store读
+// ============================================================
+
+class UnifiedMemoryStore {
+  constructor() {
+    // 三个存储文件（对应三层）
+    this.core = new MemoryStore(path.join(STORES_DIR, 'meaningful-learned.json'));
+    this.learned = new MemoryStore(path.join(STORES_DIR, 'meaningful-core.json'));
+    this.ephemeral = new MemoryStore(path.join(STORES_DIR, 'memory-store.json'));
+
+    // 索引（轻量追加日志，不重建）
+    this.indexFile = path.join(STORES_DIR, 'unified-index.json');
+    this.index = this._loadIndex();
+
+    this.stats = {
+      added: 0,
+      recalled: 0,
+      engines: ['core', 'learned', 'ephemeral'],
     };
   }
 
-  // ------------------------------------------------------
-  // 统一存储 — 写入记忆
-  // content     : 记忆文本
-  // metadata    : { source, type, tags }
-  // ------------------------------------------------------
-  store(content, metadata = {}) {
-    _initEngines();
-    const id = `mem_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  _loadIndex() {
+    try {
+      if (fs.existsSync(this.indexFile)) {
+        const data = JSON.parse(fs.readFileSync(this.indexFile, 'utf8'));
+        // 支持数组格式
+        if (Array.isArray(data)) return data;
+        // 兼容旧的对象格式
+        return [];
+      }
+    } catch {}
+    return [];
+  }
+
+  _saveIndex() {
+    try {
+      if (!fs.existsSync(STORES_DIR)) fs.mkdirSync(STORES_DIR, { recursive: true });
+      // 只保留最近500条
+      const idx = this.index.slice(-500);
+      fs.writeFileSync(this.indexFile, JSON.stringify(idx, null, 2));
+    } catch {}
+  }
+
+  // ========================================================
+  // 核心API 1: ADD（对应Mem0的add()）
+  // ========================================================
+  add(content, metadata = {}) {
+    const id = `m_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const layer = this._classify(content, metadata);
+
     const entry = {
       id,
       content,
       metadata,
+      layer,
       createdAt: Date.now(),
       accessCount: 0,
     };
 
-    // 1. 路由决定目标引擎
-    const type = this._classifyContent(content, metadata);
-    const targets = this._routeWrite(type, metadata);
+    // 写入对应层
+    const store = layer === 'CORE' ? this.core
+      : layer === 'LEARNED' ? this.learned
+      : this.ephemeral;
+    store.add(entry);
 
-    // 2. 写入各引擎（不阻塞）
-    for (const engine of targets) {
-      try {
-        this._writeTo(engine, entry);
-      } catch (e) {}
-    }
+    // 索引
+    this.index.push({ id, layer, content: content.slice(0, 50), createdAt: entry.createdAt });
+    this._saveIndex();
 
-    // 3. 更新索引
-    this._updateIndex(entry, type);
-
-    return { id, type, targets: targets.map(t => t.name) };
+    this.stats.added++;
+    return { id, layer, stored: true };
   }
 
-  // ------------------------------------------------------
-  // 状态读取
-  // ------------------------------------------------------
-  getState(key = null) {
-    _initEngines();
-    if (!key) return _engines.states;
-    return _engines.states[key + '.json'] || null;
-  }
+  // ========================================================
+  // 核心API 2: SEARCH（对应Mem0的search()）
+  // ========================================================
+  search(query, options = {}) {
+    const { limit = 8, layers = null } = options;
+    this.stats.recalled++;
 
-  // ------------------------------------------------------
-  // 统计信息
-  // ------------------------------------------------------
-  getStats() {
-    return { ...this.stats, engines: Object.keys(_engines).filter(k => _engines[k] !== null) };
-  }
+    const targets = layers || ['core', 'learned', 'ephemeral'];
+    const allResults = [];
 
-  // ====================================================
-  // 内部方法
-  // ====================================================
-
-  _routeQuery(query, taskType) {
-    // 根据任务类型 + 关键词决定查哪些引擎
-    const targets = [];
-
-    // 永远查：dialectic（轻量、快速、所有查询都用）
-    if (_engines.dialectic) targets.push({ name: 'dialectic', weight: 1.0 });
-
-    // 语义查询 → meaningful + mem0
-    if (!taskType || taskType === 'reasoning' || taskType === 'general') {
-      if (_engines.meaningful) targets.push({ name: 'meaningful', weight: 1.0 });
-      if (_engines.mem0) targets.push({ name: 'mem0', weight: 0.8 });
+    for (const layer of targets) {
+      const store = layer === 'core' ? this.core
+        : layer === 'learned' ? this.learned
+        : this.ephemeral;
+      const results = store.search(query, { limit: Math.ceil(limit / targets.length) });
+      allResults.push(...results.map(r => ({ ...r, layer })));
     }
 
-    // 决策/执行 → lifecycle + reflection
-    if (taskType === 'decision' || taskType === 'execution') {
-      if (_engines.lifecycle) targets.push({ name: 'lifecycle', weight: 1.0 });
-      if (_engines.reflection) targets.push({ name: 'reflection', weight: 0.9 });
-    }
+    // 去重 + 排序
+    const seen = new Set();
+    const deduped = allResults
+      .filter(r => {
+        const key = r.content.slice(0, 60);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .slice(0, limit);
 
-    // 技能/代码 → meaningful（procedural层）
-    if (taskType === 'skill' || taskType === 'code') {
-      if (_engines.meaningful) targets.push({ name: 'meaningful', weight: 1.2 });
-    }
-
-    return targets.length > 0 ? targets : [{ name: 'dialectic', weight: 1.0 }];
-  }
-
-  _routeWrite(type, metadata) {
-    const targets = [];
-    const typeMap = {
-      CORE: ['meaningful', 'lifecycle'],
-      LEARNED: ['meaningful', 'lifecycle'],
-      EPHEMERAL: ['dialectic'],
+    return {
+      query,
+      results: deduped,
+      count: deduped.length,
+      layers: targets,
+      stats: this.stats,
     };
-    const types = typeMap[type] || ['meaningful'];
-    for (const t of types) {
-      if (_engines[t]) targets.push(t);
-    }
-    return targets;
   }
 
-  _classifyContent(content, metadata) {
-    // 简单规则分类
-    const text = content.toLowerCase();
-    if (text.includes('永远') || text.includes('必须') || text.includes('核心指令')) return 'CORE';
-    if (text.includes('学会了') || text.includes('教训') || text.includes('经验')) return 'LEARNED';
+  // ========================================================
+  // 内部: 分类（简化决策树）
+  // ========================================================
+  _classify(content, metadata = {}) {
+    const text = (content || '').toLowerCase();
+    const { source, tags, layer: metaLayer } = metadata;
+
+    // 明确指定层
+    if (metaLayer) return metaLayer;
+
+    // 来源推断
+    if (source === 'core_identity' || source === 'core') return 'CORE';
+    if (source === 'user_correction' || source === 'learning') return 'LEARNED';
+
+    // 关键词判断
+    const coreSignals = ['我是', '核心指令', '永远', '必须', '使命', '心虫身份', 'heartflow是', 'identity', 'core directive'];
+    const learnedSignals = ['学会了', '教训', '经验', '发现了', '整合了', '优化了', '升级了'];
+
+    const coreMatches = coreSignals.filter(s => text.includes(s)).length;
+    const learnedMatches = learnedSignals.filter(s => text.includes(s)).length;
+
+    if (coreMatches >= 1) return 'CORE';
+    if (learnedMatches >= 1) return 'LEARNED';
     return 'EPHEMERAL';
   }
 
-  _recallFrom(engineName, query, topK) {
-    const eng = _engines[engineName];
-    if (!eng) return [];
-
-    // dialectic
-    if (engineName === 'dialectic') {
-      const fn = typeof eng.dialecticRecall === 'function' ? eng.dialecticRecall : null;
-      if (!fn) return [];
-      try {
-        const r = fn(query, { topK, includeMeta: false });
-        return (r.results || []).map(item => ({
-          source: 'dialectic',
-          content: item.content || item.firstMessage || '',
-          score: item._score || item._finalScore || 0.5,
-          metadata: { layer: item._layer },
-        }));
-      } catch { return []; }
-    }
-
-    // meaningful / mem0 / lifecycle / reflection
-    if (typeof eng.search === 'function') {
-      try {
-        const r = eng.search(query, { limit: topK });
-        return (r.results || []).map(item => ({
-          source: engineName,
-          content: item.content || item.text || '',
-          score: item.reinforcementCount ? item.reinforcementCount / 10 : (item.score || 0.5),
-          metadata: item.metadata || {},
-        }));
-      } catch { return []; }
-    }
-
-    return [];
-  }
-
-  _writeTo(engineName, entry) {
-    const eng = _engines[engineName];
-    if (!eng) return;
-
-    switch (engineName) {
-      case 'meaningful':
-      case 'lifecycle': {
-        if (eng.write) eng.write(entry.content, entry.metadata);
-        break;
-      }
-      default:
-        break;
-    }
-  }
-
-  _deduplicate(results) {
-    const seen = new Set();
-    return results.filter(r => {
-      const key = r.content.substring(0, 80);
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  }
-
-  _updateIndex(entry, type) {
-    // 追加到 unified-index.json（轻量追加日志）
-    try {
-      const idxFile = path.join(STORES_DIR, 'unified-index.json');
-      let idx = [];
-      if (fs.existsSync(idxFile)) {
-        idx = JSON.parse(fs.readFileSync(idxFile, 'utf8'));
-      }
-      idx.push({ id: entry.id, type, createdAt: entry.createdAt });
-      // 只保留最近500条
-      if (idx.length > 500) idx = idx.slice(-500);
-      fs.writeFileSync(idxFile, JSON.stringify(idx, null, 2));
-    } catch {}
-  }
-
-  _loadStats() {
-    const stats = { states: 0, stores: 0 };
-    try { stats.states = fs.readdirSync(STATES_DIR).length; } catch {}
-    try { stats.stores = fs.readdirSync(STORES_DIR).length; } catch {}
-    try { stats.texts = fs.readdirSync(TEXTS_DIR).length; } catch {}
-    try { stats.sessions = fs.readdirSync(SESSIONS_DIR).length; } catch {}
-    return stats;
+  // ========================================================
+  // 统计
+  // ========================================================
+  getStats() {
+    return {
+      ...this.stats,
+      layers: {
+        core: this.core.size(),
+        learned: this.learned.size(),
+        ephemeral: this.ephemeral.size(),
+      },
+    };
   }
 }
 
 // ============================================================
-// 单例导出
+// 顶层API（替换所有旧记忆调用）
 // ============================================================
+
 let _instance = null;
 
-function getMemoryManager() {
-  if (!_instance) _instance = new MemoryManager();
+function getMemoryStore() {
+  if (!_instance) _instance = new UnifiedMemoryStore();
   return _instance;
 }
 
-// 快捷API
-function recall(query, options) {
-  return getMemoryManager().recall(query, options);
+// 对外API
+function store(content, metadata = {}) {
+  return getMemoryStore().add(content, metadata);
 }
 
-function store(content, metadata) {
-  return getMemoryManager().store(content, metadata);
+function recall(query, options = {}) {
+  return getMemoryStore().search(query, options);
 }
 
 function getMemoryStats() {
-  return getMemoryManager().getStats();
+  return getMemoryStore().getStats();
 }
 
 module.exports = {
-  MemoryManager,
-  getMemoryManager,
-  recall,
+  UnifiedMemoryStore,
+  getMemoryStore,
   store,
+  recall,
   getMemoryStats,
 };

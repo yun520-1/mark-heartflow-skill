@@ -2418,10 +2418,10 @@ module.exports.routeMemoryWrite = function(content, metadata = {}) {
 };
 
 /**
- * 路由一次记忆查询
- * @param {string} query - 查询内容
- * @param {Object} options - { limit, taskType }
- * @returns {Object} search results with routing decision
+ * 统一记忆查询
+ * @param {string} query - 查询文本
+ * @param {Object} options - { limit, layers }
+ * @returns {Object} Mem0-style unified results
  */
 module.exports.routeMemoryRead = function(query, options = {}) {
   const { recall } = require('./memory-manager.js');
