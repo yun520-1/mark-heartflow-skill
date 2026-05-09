@@ -354,38 +354,38 @@ try {
 } catch (e) {
   console.log('[HeartFlow] ⚠️ 自我反思记忆加载失败:', e.message);
 }
-// v11.34.0 Memory Router
-let MemoryRouter;
-try {
-  MemoryRouter = require('./memory-router.js').MemoryRouter;
-  console.log('[HeartFlow] ✅ 记忆路由已加载 (类型分类→智能路由)');
-} catch (e) {
-  console.log('[HeartFlow] ⚠️ 记忆路由加载失败:', e.message);
-}
+// [v11.34 已归档] MemoryRouter - 功能已被 UnifiedMemoryStore 的统一 recall() 覆盖
+// let MemoryRouter;
+// try {
+//   MemoryRouter = require('./memory-router.js').MemoryRouter;
+//   console.log('[HeartFlow] ✅ 记忆路由已加载 (类型分类→智能路由)');
+// } catch (e) {
+//   console.log('[HeartFlow] ⚠️ 记忆路由加载失败:', e.message);
+// }
 
-// v11.34.0 Meaningful Memory - 三层语义记忆（CORE/LEARNED/EPHEMERAL）+ 艾宾浩斯遗忘曲线
-let MeaningfulMemory;
-try {
-  const mm = require('./meaningful-memory.js');
-  MeaningfulMemory = mm.MeaningfulMemory;
-  console.log('[HeartFlow] ✅ MeaningfulMemory 已加载 (心虫三层语义+遗忘曲线)');
-} catch (e) {
-  MeaningfulMemory = null;
-  console.log('[HeartFlow] ⚠️ MeaningfulMemory 加载失败:', e.message);
-}
+// [v11.34 已归档] MeaningfulMemory - 功能已被 UnifiedMemoryStore 覆盖，已在 init() 中禁用
+// let MeaningfulMemory;
+// try {
+//   const mm = require('./meaningful-memory.js');
+//   MeaningfulMemory = mm.MeaningfulMemory;
+//   console.log('[HeartFlow] ✅ MeaningfulMemory 已加载 (心虫三层语义+遗忘曲线)');
+// } catch (e) {
+//   MeaningfulMemory = null;
+//   console.log('[HeartFlow] ⚠️ MeaningfulMemory 加载失败:', e.message);
+// }
 
-// v11.34.0 Memory Tier Manager - 记忆分级晋升/降级 (CORE/LEARNED/EPHEMERAL)
-let MemoryTierManager;
-try {
-  const mtm = require('./memory-tier-manager.js');
-  MemoryTierManager = new mtm.MemoryTierManager();
-  console.log('[HeartFlow] ✅ 记忆分级管理器已加载 (晋升/降级/淘汰)');
-} catch (e) {
-  MemoryTierManager = null;
-  console.log('[HeartFlow] ⚠️ 记忆分级管理器加载失败:', e.message);
-}
+// [v11.34 已归档] MemoryTierManager - 功能已被 UnifiedMemoryStore 覆盖，且无内部调用
+// let MemoryTierManager;
+// try {
+//   const mtm = require('./memory-tier-manager.js');
+//   MemoryTierManager = new mtm.MemoryTierManager();
+//   console.log('[HeartFlow] ✅ 记忆分级管理器已加载 (晋升/降级/淘汰)');
+// } catch (e) {
+//   MemoryTierManager = null;
+//   console.log('[HeartFlow] ⚠️ 记忆分级管理器加载失败:', e.message);
+// }
 
-// [v11.34.0 已归档] MemoryLifecycleManager - 功能已被 UnifiedMemoryStore 覆盖
+// [v11.34 已归档] MemoryLifecycleManager - 功能已被 UnifiedMemoryStore 覆盖
 // let MemoryLifecycleManager;
 // try {
 //   const lm = require('./memory-lifecycle-manager.js');
@@ -396,17 +396,17 @@ try {
 //   console.log('[HeartFlow] ⚠️ 记忆生命周期管理器加载失败:', e.message);
 // }
 
-// v11.34.0 Memory Protocol - 决策树分层
-let MemoryProtocol;
-let MemoryDocumentationManager;
-try {
-  const mp = require('./memory-protocol.js');
-  MemoryProtocol = new mp.MemoryProtocol();
-  console.log('[HeartFlow] ✅ 记忆协议已加载 (决策树分层)');
-} catch (e) {
-  MemoryProtocol = null;
-  console.log('[HeartFlow] ⚠️ 记忆协议加载失败:', e.message);
-}
+// [v11.34 已归档] MemoryProtocol - 功能已被 UnifiedMemoryStore 覆盖，且无内部调用
+// let MemoryProtocol;
+// let MemoryDocumentationManager;
+// try {
+//   const mp = require('./memory-protocol.js');
+//   MemoryProtocol = new mp.MemoryProtocol();
+//   console.log('[HeartFlow] ✅ 记忆协议已加载 (决策树分层)');
+// } catch (e) {
+//   MemoryProtocol = null;
+//   console.log('[HeartFlow] ⚠️ 记忆协议加载失败:', e.message);
+// }
 
 // v11.34.0 MemoryDocumentationManager - 索引同步/摘要持久化/归档
 try {
@@ -446,16 +446,16 @@ try {
   console.log('[HeartFlow] ⚠️ TransmissionBroadcaster 加载失败:', e.message);
 }
 
-// v11.34.0 Mem0 MultiSignal Memory - 语义+BM25+实体三信号融合检索
-let Mem0MultiSignal;
-try {
-  const mem0 = require('./mem0-memory.js');
-  Mem0MultiSignal = mem0.MultiSignalMemory;
-  console.log('[HeartFlow] ✅ Mem0 MultiSignalMemory 已加载 (语义+BM25+实体融合)');
-} catch (e) {
-  Mem0MultiSignal = null;
-  console.log('[HeartFlow] ⚠️ Mem0 MultiSignalMemory 加载失败:', e.message);
-}
+// [v11.34 已归档] Mem0MultiSignal - 功能已被 UnifiedMemoryStore 覆盖，已在 init() 中禁用
+// let Mem0MultiSignal;
+// try {
+//   const mem0 = require('./mem0-memory.js');
+//   Mem0MultiSignal = mem0.MultiSignalMemory;
+//   console.log('[HeartFlow] ✅ Mem0 MultiSignalMemory 已加载 (语义+BM25+实体融合)');
+// } catch (e) {
+//   Mem0MultiSignal = null;
+//   console.log('[HeartFlow] ⚠️ Mem0 MultiSignalMemory 加载失败:', e.message);
+// }
 
 // v11.34.0 德论模块（精简版）
 // 只保留有真正价值的：CooperativeArbitration
@@ -2396,8 +2396,8 @@ module.exports.getReflectionLessons = function(taskType, context = {}) {
   return srm.getLessonsForContext(taskType, context);
 };
 
-// v11.34.0 Memory Router exports
-module.exports.getMemoryRouter = () => MemoryRouter ? new MemoryRouter() : null;
+// [v11.34 已归档] MemoryRouter - 功能已被 UnifiedMemoryStore + routeMemoryWrite/routeMemoryRead 覆盖
+// module.exports.getMemoryRouter = () => MemoryRouter ? new MemoryRouter() : null;
 
 /**
  * 路由一条记忆写入
@@ -2469,9 +2469,9 @@ module.exports.recallMemories = MemoryRecall;
 module.exports.TrueBeingEngine = require('./true-being-engine.js').TrueBeingEngine;
 module.exports.getTrueBeing = () => TrueBeing;
 
-// v11.34.0 Memory Tier Manager export
-module.exports.MemoryTierManager = MemoryTierManager;
-module.exports.getMemoryTierManager = () => MemoryTierManager;
+// [v11.34 已归档] MemoryTierManager - 功能已被 UnifiedMemoryStore 覆盖
+// module.exports.MemoryTierManager = MemoryTierManager;
+// module.exports.getMemoryTierManager = () => MemoryTierManager;
 
 // v11.34.0 Workbuddy Integration - Development Workflow Engines
 module.exports.CodeReviewEngine = CodeReviewEngine;
