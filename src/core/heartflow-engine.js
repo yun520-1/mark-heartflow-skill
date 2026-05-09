@@ -2430,7 +2430,7 @@ let MemoryRecall;
 try {
   const mr = require('./memory-recall.js');
   MemoryRecall = mr.recallMemories;
-  console.log('[HeartFlow] ✅ 记忆召回引擎已加载 (Mem0/Meaningful/Reflection/Being四源融合)');
+  console.log('[HeartFlow] ✅ 记忆召回引擎已加载 (7源: Mem0/Meaningful/Triality/Reflection/Lifecycle/Being/Dialectic)');
 } catch (e) {
   MemoryRecall = null;
   console.log('[HeartFlow] ⚠️ 记忆召回引擎加载失败:', e.message);

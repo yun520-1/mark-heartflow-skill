@@ -1,11 +1,12 @@
 /**
- * HeartFlow Memory Recall Engine v11.23.1
+ * HeartFlow Memory Recall Engine v11.24.3
  *
  * 核心功能：语义检索 + 格式化返回 → 可注入上下文的记忆召回
  *
  * 检索来源：
  * - Mem0MultiSignal: 语义 + BM25 + 实体 三信号融合
  * - MeaningfulMemory: CORE / LEARNED / EPHEMERAL 三层语义
+ * - TrialityMemory: working context + long-term archive + conversation logging (v11.24.3新增)
  * - Reflection Memory: 真实教训（success/failure outcome）
  * - LifecycleManager: 遗忘周期 + 晋升 + 层级评分
  * - being-state.json: 存在状态（哲学层/真善美/成长）
@@ -35,6 +36,22 @@ function getLifecycle() {
   return _lifecycle;
 }
 
+// v11.24.3: 懒加载 TrialityMemory (working context + archive)
+let _triality = null;
+function getTriality() {
+  if (!_triality) {
+    try {
+      const { TrialityMemory } = require('./memory/triality-memory.js');
+      const path = require('path');
+      const projectRoot = path.resolve(__dirname, '../..');
+      _triality = new TrialityMemory(projectRoot, {
+        textBaseDir: path.join(projectRoot, 'memory', 'texts'),
+      });
+    } catch { _triality = null; }
+  }
+  return _triality;
+}
+
 /**
  * 从 Mem0 检索相关记忆
  */
@@ -60,6 +77,7 @@ function recallFromMem0(query, topK = 5) {
 
 /**
  * 从 MeaningfulMemory 检索
+ * v11.24.3: 修复 — 使用 searchKeywords 或 searchSemantic，而非不存在的 search()
  */
 function recallFromMeaningful(query, topK = 3) {
   try {
@@ -67,12 +85,45 @@ function recallFromMeaningful(query, topK = 3) {
     const mm = init?.instances?.meaningfulMemory;
     if (!mm) return [];
 
-    const results = mm.search ? mm.search(query, topK) : [];
+    // searchKeywords 能做关键词匹配
+    const byKeyword = mm.searchKeywords ? mm.searchKeywords([query], topK) : [];
+    const bySemantic = mm.searchSemantic ? mm.searchSemantic(query, topK) : [];
+    const combined = [...byKeyword, ...bySemantic];
+    // 去重
+    const seen = new Set();
+    const results = combined.filter(r => {
+      const key = r.key || r.id || String(r);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, topK);
+
     return results.map(r => ({
       source: 'meaningful',
       id: r.id || r.key || String(r),
       content: typeof r === 'string' ? r : (r.content || r.value || JSON.stringify(r)),
       score: 0,
+    }));
+  } catch (e) {
+    return [];
+  }
+}
+
+/**
+ * v11.24.3: 从 TrialityMemory 检索 working context + long-term archive
+ */
+function recallFromTriality(query, topK = 3) {
+  try {
+    const tm = getTriality();
+    if (!tm || !tm.retrieveAndLoad) return [];
+
+    const raw = tm.retrieveAndLoad(query, topK);
+    const results = Array.isArray(raw) ? raw : (raw?.results || []);
+    return results.map(r => ({
+      source: 'triality',
+      id: r.id || String(r),
+      content: r.content || r.summary || JSON.stringify(r),
+      score: r.score || 0,
     }));
   } catch (e) {
     return [];
@@ -172,10 +223,11 @@ function recallMemories(query, options = {}) {
   // 并行检索
   const lifecycle = getLifecycle();
   const lifecycleResults = (lifecycle && typeof lifecycle.search === 'function') ? lifecycle.search(query, topK) : [];
-  const [mem0Results, meaningfulResults, reflectionResults, beingState] = [
+  const [mem0Results, meaningfulResults, reflectionResults, trialityResults, beingState] = [
     recallFromMem0(query, topK),
     recallFromMeaningful(query, topK),
     recallFromReflections(query, topK),
+    recallFromTriality(query, topK),
     includeBeing ? recallBeingState(query) : null,
   ];
 
@@ -191,7 +243,7 @@ function recallMemories(query, options = {}) {
   }
 
   // 合并去重（按content相似度）
-  const all = [...mem0Results, ...meaningfulResults, ...reflectionResults, ...lifecycleResults];
+  const all = [...mem0Results, ...meaningfulResults, ...reflectionResults, ...lifecycleResults, ...trialityResults];
   const seen = new Set();
   const deduped = all.filter(item => {
     const key = item.content?.substring(0, 50);
@@ -230,6 +282,7 @@ function recallMemories(query, options = {}) {
       lifecycle: lifecycleResults.length,
       being: beingState ? 1 : 0,
       dialectic: dialecticResults?.count || 0,
+      triality: trialityResults.length,
     },
     memories: deduped,
     dialecticResults: dialecticResults?.results || null,

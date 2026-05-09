@@ -1,3 +1,19 @@
+## v11.24.4 (2026-05-09)
+
+### 优化：记忆融合层接入 TrialityMemory + 修复 recall bug
+
+**记忆融合层问题**：
+- TrialityMemory (57KB, 64方法) 完全未接入 memory-recall.js
+- `recallFromMeaningful()` 调用不存在的 `mm.search()` 方法 → 永远返回空
+
+**修复内容**：
+- `memory-recall.js`: 新增 `recallFromTriality()` 懒加载 TrialityMemory
+- `memory-recall.js`: `recallFromMeaningful()` 改用 `searchKeywords()` + `searchSemantic()`
+- `memory-recall.js`: 7源检索：Mem0 / Meaningful / Triality / Reflection / Lifecycle / Being / Dialectic
+- `heartflow-engine.js`: 更新引擎启动日志
+
+**测试**: 模块加载正常，引擎 137 exports 正常
+
 ## v11.24.3 (2026-05-09)
 
 ### 集成：workbuddy TrialityMemory 全量文本持久化
