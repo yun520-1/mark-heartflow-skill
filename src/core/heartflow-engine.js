@@ -57,6 +57,7 @@ let ContextMemoryBridge;
 let RoleBasedCrew;
 let CodeReviewEngine;
 let DebuggingEngine;
+let DiagnosticCollector;
 let TDDEngine;
 
 // [已归档] try {
@@ -314,6 +315,15 @@ try {
   console.log('[HeartFlow] ✅ TDD引擎已加载 (RED-GREEN-REFACTOR)');
 } catch (e) {
   console.log('[HeartFlow] ⚠️ TDD引擎加载失败:', e.message);
+}
+
+// v11.25.0 DiagnosticCollector（来源: compound-eng-debugging）
+try {
+  DiagnosticCollector = require('./diagnostic-collector.js').DiagnosticCollector;
+  console.log('[HeartFlow] ✅ DiagnosticCollector 已加载 (系统诊断/根因分析)');
+} catch (e) {
+  DiagnosticCollector = null;
+  console.log('[HeartFlow] ⚠️ DiagnosticCollector 加载失败:', e.message);
 }
 
 // v11.6 道虫三模块：做减法
@@ -2470,6 +2480,7 @@ module.exports.DebuggingEngine = DebuggingEngine;
 module.exports.TDDEngine = TDDEngine;
 
 // v11.25.0 ContextMemory Bridge
+module.exports.DiagnosticCollector = DiagnosticCollector;
 module.exports.ContextMemoryBridge = ContextMemoryBridge;
 module.exports.RealLLMSummarizer = require('./context-memory-bridge.js').RealLLMSummarizer;
 module.exports.CompactionThreshold = require('./context-memory-bridge.js').CompactionThreshold;
