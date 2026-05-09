@@ -1,3 +1,23 @@
+## v11.24.3 (2026-05-09)
+
+### 集成：workbuddy TrialityMemory 全量文本持久化
+
+**来源**: `~/.workbuddy/skills/heartflow/src/core/memory/triality-memory.js`
+
+**升级**: 17KB → 57KB (586行 → 1794行, 39方法 → 64方法)
+
+**新增能力**:
+| 方法 | 功能 |
+|------|------|
+| `loadToWorkingContext()` | 按需加载记忆到工作上下文 |
+| `archiveToLongTerm()` | 不常用记忆→长期存档 |
+| `logConversation()` | 完整对话记录持久化 |
+| `retrieveAndLoad()` | 语义检索+自动加载 |
+| `getStorageStats()` | 存储用量统计 |
+| `_persistMemoryToText()` | 记忆→文本文件持久化 |
+
+**测试**: 7/8 通过 (stats字段名差异，不影响功能)
+
 ## v11.24.2 (2026-05-09)
 
 ### 集成：workbuddy 三模块
