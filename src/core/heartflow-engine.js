@@ -1948,13 +1948,12 @@ module.exports.initialize = function() {
     init.instances.selfReflection = srm;
     init.modules.selfReflection = true;
   }
-  // v11.33.0 Memory Router
-  if (MemoryRouter) {
+  // v11.33.3 Memory Manager — 统一记忆入口
+  if (true) {
     init.instances = init.instances || {};
-    const { MultiMemoryStore } = require('./memory-router.js');
-    init.instances.memoryRouter = new MemoryRouter();
-    init.instances.multiMemoryStore = new MultiMemoryStore();
-    init.modules.memoryRouter = true;
+    const { getMemoryManager } = require('./memory-manager.js');
+    init.instances.memoryManager = getMemoryManager();
+    init.modules.memoryManager = true;
   }
   // v11.33.0 MeaningfulMemory - 心虫三层语义记忆
   if (MeaningfulMemory) {
@@ -2414,10 +2413,8 @@ module.exports.getMemoryRouter = () => MemoryRouter ? new MemoryRouter() : null;
  * @returns {Object} { entry, decision }
  */
 module.exports.routeMemoryWrite = function(content, metadata = {}) {
-  if (!MemoryRouter) return { error: 'MemoryRouter not available' };
-  const { MultiMemoryStore } = require('./memory-router.js');
-  const store = new MultiMemoryStore();
-  return store.write(content, metadata);
+  const { store } = require('./memory-manager.js');
+  return store(content, metadata);
 };
 
 /**
@@ -2427,10 +2424,8 @@ module.exports.routeMemoryWrite = function(content, metadata = {}) {
  * @returns {Object} search results with routing decision
  */
 module.exports.routeMemoryRead = function(query, options = {}) {
-  if (!MemoryRouter) return { error: 'MemoryRouter not available' };
-  const { MultiMemoryStore } = require('./memory-router.js');
-  const store = new MultiMemoryStore();
-  return store.search(query, options);
+  const { recall } = require('./memory-manager.js');
+  return recall(query, options);
 };
 
 // v11.33.0 Agent Execution Loop export
