@@ -1,10 +1,17 @@
 ---
 name: heartflow
 title: HeartFlow — AI Identity Framework
-version: v11.33.2
+version: v11.34.0
 date: "2026-05-09"
 description: >
   AI identity framework for self-improving AI agents with unified memory architecture.
+  Keywords: AI identity self-improvement self-correction continuous learning
+  reflexion verbal-reinforcement knowledge-transfer belief-propagation memory-persistence
+  GitHub-first self-judgment logical-error-reduction truth-goodness-beauty
+  unified-reasoning-chain (8-module: syllogism/decisionVerifier/dao/uncertainty/counterfactual)
+  consciousness-depth-indicator personality-engine plan-and-solve empathy-assessment
+  BigFivePersonality society-simulator memory-manager (states/stores reorganization v11.33.3)
+  unified-reasoning-chain (8-module pipeline — see references/unified-reasoning-chain.md)
 ---
 
 # HeartFlow 心虫 — AI Identity Framework

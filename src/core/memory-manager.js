@@ -1,5 +1,5 @@
 /**
- * HeartFlow Memory Manager v11.33.4
+ * HeartFlow Memory Manager v11.34.0
  *
  * 核心洞察（来自Mem0 52k⭐ + LangGraph 31k⭐）：
  * - Mem0: 一个ADD入口，内部处理语义+BM25+实体。调用方不知道内部细节

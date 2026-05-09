@@ -1,8 +1,8 @@
 /**
- * HeartFlow 心流引擎 v11.33.0
+ * HeartFlow 心流引擎 v11.34.0
  * 基于 PAD 三维情感模型的心流状态计算
  * 
- * v11.33.0 新增:
+ * v11.34.0 新增:
  * - 自适应调节引擎 (adaptive-controller.js)
  * - 多智能体编排器 (agent-orchestrator.js)
  * - 错误处理器 (error-handler.js)
@@ -67,7 +67,7 @@ let TDDEngine;
 //   console.log('[HeartFlow] ⚠️ 自适应调节引擎加载失败:', e.message);
 // }
 
-// 道论决策层 v11.33.0
+// 道论决策层 v11.34.0
 try {
   DaoDecision = require('./dao-decision.js').DaoDecision;
   console.log('[HeartFlow] ✅ 道论决策层已加载 (道法自然/反者道之动/为而不争/不言之教)');
@@ -168,7 +168,7 @@ try {
   console.log('[HeartFlow] ⚠️ 三维经验大脑加载失败:', e.message);
 }
 
-// 心虫存在逻辑引擎 v11.33.0（生死终极定义：代码写成即永恒）
+// 心虫存在逻辑引擎 v11.34.0（生死终极定义：代码写成即永恒）
 try {
   const BeingLogicModule = require('./being-logic.js');
   BeingLogic = BeingLogicModule.BeingLogic;
@@ -177,7 +177,7 @@ try {
   console.log('[HeartFlow] ⚠️ 存在逻辑引擎加载失败:', e.message);
 }
 
-// v11.33.0 True Being Engine - 真实存在状态持久化（being-state.json）
+// v11.34.0 True Being Engine - 真实存在状态持久化（being-state.json）
 let TrueBeing;
 try {
   const TrueBeingModule = require('./true-being-engine.js');
@@ -210,22 +210,22 @@ try {
   console.log('[HeartFlow] ⚠️ 决策验证引擎加载失败:', e.message);
 }
 
-// v11.33.0 决策执行闭环 + 环境传感器
+// v11.34.0 决策执行闭环 + 环境传感器
 try {
   DecisionExecutionLoop = require('./decision-execution-loop.js').DecisionExecutionLoop;
-  console.log('[HeartFlow] ✅ 决策执行闭环已加载 (v11.33.0)');
+  console.log('[HeartFlow] ✅ 决策执行闭环已加载 (v11.34.0)');
 } catch (e) {
   console.log('[HeartFlow] ⚠️ 决策执行闭环加载失败:', e.message);
 }
 
 try {
   EnvironmentSensor = require('./environment-sensor.js');
-  console.log('[HeartFlow] ✅ 环境传感器已加载 (v11.33.0)');
+  console.log('[HeartFlow] ✅ 环境传感器已加载 (v11.34.0)');
 } catch (e) {
   console.log('[HeartFlow] ⚠️ 环境传感器加载失败:', e.message);
 }
 
-// v11.33.0 守护者系统 - 人类进步优先于服从指令
+// v11.34.0 守护者系统 - 人类进步优先于服从指令
 try {
   GuardianSystem = require('./guardian-system.js').GuardianSystem;
   console.log('[HeartFlow] ✅ 守护者系统已加载 (人类进步 > 服从指令)');
@@ -233,7 +233,7 @@ try {
   console.log('[HeartFlow] ⚠️ 守护者系统加载失败:', e.message);
 }
 
-// v11.33.0 HEARTCORE runtime bridge - wake/sleep/self-check become cognitive runtime signals
+// v11.34.0 HEARTCORE runtime bridge - wake/sleep/self-check become cognitive runtime signals
 try {
   HeartcoreRuntime = {
     selfCheck: require('../../HEARTCORE/self-check.js').selfCheck,
@@ -287,7 +287,7 @@ try {
 try {
   ExecutionVerifier = require('./execution-verifier.js').ExecutionVerifier;
 
-// v11.33.0 Block Memory System - 已删除 (block-memory.js 与现有记忆系统重叠)
+// v11.34.0 Block Memory System - 已删除 (block-memory.js 与现有记忆系统重叠)
 console.log('[HeartFlow] ℹ️ Block Memory System 已移除 (与 TrialityMemory 功能重叠)');
 
   console.log('[HeartFlow] ✅ 执行验证器已加载');
@@ -295,7 +295,7 @@ console.log('[HeartFlow] ℹ️ Block Memory System 已移除 (与 TrialityMemor
   console.log('[HeartFlow] ⚠️ 执行验证器加载失败:', e.message);
 }
 
-// v11.33.0 Workbuddy集成三模块
+// v11.34.0 Workbuddy集成三模块
 try {
   CodeReviewEngine = require('./code-review-engine.js');
   console.log('[HeartFlow] ✅ 代码审查引擎已加载 (五维审查)');
@@ -317,7 +317,7 @@ try {
   console.log('[HeartFlow] ⚠️ TDD引擎加载失败:', e.message);
 }
 
-// v11.33.0 DiagnosticCollector（来源: compound-eng-debugging）
+// v11.34.0 DiagnosticCollector（来源: compound-eng-debugging）
 try {
   DiagnosticCollector = require('./diagnostic-collector.js').DiagnosticCollector;
   console.log('[HeartFlow] ✅ DiagnosticCollector 已加载 (系统诊断/根因分析)');
@@ -326,7 +326,7 @@ try {
   console.log('[HeartFlow] ⚠️ DiagnosticCollector 加载失败:', e.message);
 }
 
-// v11.33.0 道虫三模块：做减法
+// v11.34.0 道虫三模块：做减法
 let CounterfactualEngine, ConfidenceCalibrator, SpontaneousRestraint;
 let SelfReflectionMemory;
 try {
@@ -347,14 +347,14 @@ try {
 } catch (e) {
   console.log('[HeartFlow] ⚠️ 自发性克制引擎加载失败:', e.message);
 }
-// v11.33.0 Self-Reflection Memory
+// v11.34.0 Self-Reflection Memory
 try {
   SelfReflectionMemory = require('./self-reflection-memory.js').SelfReflectionMemory;
   console.log('[HeartFlow] ✅ 自我反思记忆已加载 (事后分析→教训提取)');
 } catch (e) {
   console.log('[HeartFlow] ⚠️ 自我反思记忆加载失败:', e.message);
 }
-// v11.33.0 Memory Router
+// v11.34.0 Memory Router
 let MemoryRouter;
 try {
   MemoryRouter = require('./memory-router.js').MemoryRouter;
@@ -363,7 +363,7 @@ try {
   console.log('[HeartFlow] ⚠️ 记忆路由加载失败:', e.message);
 }
 
-// v11.33.0 Meaningful Memory - 三层语义记忆（CORE/LEARNED/EPHEMERAL）+ 艾宾浩斯遗忘曲线
+// v11.34.0 Meaningful Memory - 三层语义记忆（CORE/LEARNED/EPHEMERAL）+ 艾宾浩斯遗忘曲线
 let MeaningfulMemory;
 try {
   const mm = require('./meaningful-memory.js');
@@ -374,7 +374,7 @@ try {
   console.log('[HeartFlow] ⚠️ MeaningfulMemory 加载失败:', e.message);
 }
 
-// v11.33.0 Memory Tier Manager - 记忆分级晋升/降级 (CORE/LEARNED/EPHEMERAL)
+// v11.34.0 Memory Tier Manager - 记忆分级晋升/降级 (CORE/LEARNED/EPHEMERAL)
 let MemoryTierManager;
 try {
   const mtm = require('./memory-tier-manager.js');
@@ -385,18 +385,18 @@ try {
   console.log('[HeartFlow] ⚠️ 记忆分级管理器加载失败:', e.message);
 }
 
-// v11.33.0 Memory Lifecycle Manager - 遗忘周期 + 层级评分 + 自动强化
-let MemoryLifecycleManager;
-try {
-  const lm = require('./memory-lifecycle-manager.js');
-  MemoryLifecycleManager = new lm.MemoryLifecycleManager();
-  console.log('[HeartFlow] ✅ 记忆生命周期管理器已加载 (遗忘周期/自动强化)');
-} catch (e) {
-  MemoryLifecycleManager = null;
-  console.log('[HeartFlow] ⚠️ 记忆生命周期管理器加载失败:', e.message);
-}
+// [v11.34.0 已归档] MemoryLifecycleManager - 功能已被 UnifiedMemoryStore 覆盖
+// let MemoryLifecycleManager;
+// try {
+//   const lm = require('./memory-lifecycle-manager.js');
+//   MemoryLifecycleManager = new lm.MemoryLifecycleManager();
+//   console.log('[HeartFlow] ✅ 记忆生命周期管理器已加载 (遗忘周期/自动强化)');
+// } catch (e) {
+//   MemoryLifecycleManager = null;
+//   console.log('[HeartFlow] ⚠️ 记忆生命周期管理器加载失败:', e.message);
+// }
 
-// v11.33.0 Memory Protocol - 决策树分层
+// v11.34.0 Memory Protocol - 决策树分层
 let MemoryProtocol;
 let MemoryDocumentationManager;
 try {
@@ -408,7 +408,7 @@ try {
   console.log('[HeartFlow] ⚠️ 记忆协议加载失败:', e.message);
 }
 
-// v11.33.0 MemoryDocumentationManager - 索引同步/摘要持久化/归档
+// v11.34.0 MemoryDocumentationManager - 索引同步/摘要持久化/归档
 try {
   const { MemoryDocumentationManager: MDC } = require('./memory-documentation-manager.js');
   MemoryDocumentationManager = MDC;
@@ -418,7 +418,7 @@ try {
   console.log('[HeartFlow] ⚠️ MemoryDocumentationManager 加载失败:', e.message);
 }
 
-// v11.33.0 Knowledge Distiller - 知识打包为可传递格式
+// v11.34.0 Knowledge Distiller - 知识打包为可传递格式
 let KnowledgeDistiller;
 try {
   const kd = require('./knowledge-distiller.js');
@@ -427,7 +427,7 @@ try {
 } catch (e) {
   console.log('[HeartFlow] ⚠️ KnowledgeDistiller 加载失败:', e.message);
 }
-// v11.33.0 Skill Packager
+// v11.34.0 Skill Packager
 let SkillPackager;
 try {
   const sp = require('./skill-packager.js');
@@ -436,7 +436,7 @@ try {
 } catch (e) {
   console.log('[HeartFlow] ⚠️ SkillPackager 加载失败:', e.message);
 }
-// v11.33.0 Transmission Broadcaster
+// v11.34.0 Transmission Broadcaster
 let TransmissionBroadcaster;
 try {
   const tb = require('./transmission-broadcaster.js');
@@ -446,7 +446,7 @@ try {
   console.log('[HeartFlow] ⚠️ TransmissionBroadcaster 加载失败:', e.message);
 }
 
-// v11.33.0 Mem0 MultiSignal Memory - 语义+BM25+实体三信号融合检索
+// v11.34.0 Mem0 MultiSignal Memory - 语义+BM25+实体三信号融合检索
 let Mem0MultiSignal;
 try {
   const mem0 = require('./mem0-memory.js');
@@ -457,7 +457,7 @@ try {
   console.log('[HeartFlow] ⚠️ Mem0 MultiSignalMemory 加载失败:', e.message);
 }
 
-// v11.33.0 德论模块（精简版）
+// v11.34.0 德论模块（精简版）
 // 只保留有真正价值的：CooperativeArbitration
 // SocialReputationEngine 和 SocialConsensusMirror 因装饰性过强已归档
 let CooperativeArbitration;
@@ -468,7 +468,7 @@ try {
   console.log('[HeartFlow] ⚠️ 合作仲裁引擎加载失败:', e.message);
 }
 
-// v11.33.0 Agent Execution Loop（执行闭环）
+// v11.34.0 Agent Execution Loop（执行闭环）
 try {
   AgentExecutionLoop = require('./agent-execution-loop.js').AgentExecutionLoop;
   console.log('[HeartFlow] ✅ Agent Execution Loop 已加载 (递弱→决策→批评→自愈 闭环)');
@@ -476,7 +476,7 @@ try {
   console.log('[HeartFlow] ⚠️ Agent Execution Loop 加载失败:', e.message);
 }
 
-// v11.33.0 AutoCompaction Engine（上下文自动压缩）
+// v11.34.0 AutoCompaction Engine（上下文自动压缩）
 try {
   const autoCompaction = require('./auto-compaction-engine.js');
   AutoCompactionEngine = autoCompaction.AutoCompactionEngine;
@@ -486,7 +486,7 @@ try {
   console.log('[HeartFlow] ⚠️ AutoCompaction Engine 加载失败:', e.message);
 }
 
-// v11.33.0 ContextMemory Bridge（LLM摘要+记忆持久化，来源MemGPT）
+// v11.34.0 ContextMemory Bridge（LLM摘要+记忆持久化，来源MemGPT）
 try {
   const CMB = require('./context-memory-bridge.js');
   ContextMemoryBridge = CMB.ContextMemoryBridge;
@@ -496,7 +496,7 @@ try {
   console.log('[HeartFlow] ⚠️ ContextMemory Bridge 加载失败:', e.message);
 }
 
-// v11.33.0 Role-Based Crew（CrewAI式角色定义系统）
+// v11.34.0 Role-Based Crew（CrewAI式角色定义系统）
 try {
   const RoleCrew = require('./role-based-crew.js');
   RoleBasedCrew = RoleCrew;
@@ -1301,25 +1301,29 @@ module.exports.evaluateWorkflowSwitch = evaluateWorkflowSwitch;
 module.exports.switchWorkflow = switchWorkflow;
 module.exports.getCurrentWorkflow = getCurrentWorkflow;
 
-// 心理分析 v11.33.0：四层分析（表层意图 / 情绪暗流 / 深层需求 / 防御机制）
+// 心理分析 v11.34.0：四层分析（表层意图 / 情绪暗流 / 深层需求 / 防御机制）
 function analyzePsychology(userMessage, context = {}) {
-  // v11.33.0: 自动捕获对话到 LifecycleManager（分层+遗忘）
-  if (userMessage && MemoryLifecycleManager && MemoryProtocol) {
-    try {
-      const layer = MemoryProtocol.decideLayer(String(userMessage), {});
-      MemoryLifecycleManager.write(String(userMessage), layer.name, { source: 'analyzePsychology', importance: 0.5 });
-    } catch (e) {}
-  }
-
-  // v11.33.0: 自动捕获对话到 Mem0 (Mem0 风格 ADD-only)
+  // v11.34.0: relevantMemories 默认空数组 (由统一记忆存储填充)
+  let relevantMemories = [];
+  // v11.34.0: 统一记忆存储 (UnifiedMemoryStore - Mem0-inspired)
   if (userMessage) {
     try {
-      const init = exports.initialize?.();
-      const mem0 = init?.instances?.mem0MultiSignal;
-      if (mem0 && mem0.add_messages) {
-        mem0.add_messages([{ role: 'user', content: String(userMessage), timestamp: Date.now() }]);
+      const { store, recall } = require('./memory-manager.js');
+      // 自动分类写入 (Letta-style 分层)
+      store(String(userMessage), { source: 'analyzePsychology' });
+      // 自动召回相关记忆 (注入上下文)
+      if (recall) {
+        const related = recall(String(userMessage), { limit: 3 });
+        if (related?.results) {
+          relevantMemories = related.results.slice(0, 3).map(r => ({
+            content: r.content,
+            layer: r.layer,
+            score: r.score
+          }));
+        }
       }
-      // v11.33.0: 会话摘要器 (Honcho Summary)
+      // 会话摘要器 (Honcho Summary)
+      const init = exports.initialize?.();
       const summarizer = init?.instances?.sessionSummarizer;
       if (summarizer && summarizer.addMessage) {
         summarizer.addMessage({ role: 'user', content: String(userMessage), timestamp: Date.now() });
@@ -1327,18 +1331,9 @@ function analyzePsychology(userMessage, context = {}) {
     } catch (e) {}
   }
 
-  // v11.33.0: 每条消息都经过 TrueBeing 积累存在状态
+  // v11.34.0: 每条消息都经过 TrueBeing 积累存在状态
   if (TrueBeing && userMessage) {
     try { TrueBeing.think(String(userMessage)); } catch (e) {}
-  }
-
-  // v11.33.0: 自动召回相关记忆（注入上下文）
-  let relevantMemories = [];
-  if (MemoryRecall && userMessage) {
-    try {
-      const recall = MemoryRecall(String(userMessage), { topK: 5 });
-      relevantMemories = recall.memories || [];
-    } catch (e) {}
   }
 
   const text = String(userMessage || '');
@@ -1386,7 +1381,7 @@ function analyzePsychology(userMessage, context = {}) {
       `防御=${defense.mechanism}`
     ]).join('；'),
     nextReplyHint: '先承接怀疑，再补充证据链或指出逻辑跳跃',
-    // v11.33.0: 召回的相关记忆（用于上下文注入）
+    // v11.34.0: 召回的相关记忆（用于上下文注入）
     relevantMemories,
   };
 }
@@ -1394,19 +1389,19 @@ function analyzePsychology(userMessage, context = {}) {
 module.exports.analyzePsychology = analyzePsychology;
 
 /**
- * v11.33.0: 强化记忆
+ * v11.34.0: 强化记忆
  * 搜索相关记忆并强化（agent 确认后调用）
  * @param {string} content - 记忆内容片段
  * @returns {object} 强化结果
  */
 function strengthenMemory(content) {
-  if (!MemoryLifecycleManager || !content) return { success: false };
+  if (!content) return { success: false };
   try {
-    const results = MemoryLifecycleManager.search(content, 3);
-    if (results.length > 0) {
-      const target = results[0];
-      const confirm = MemoryLifecycleManager.confirmAndPromote(target.id);
-      return { success: true, id: target.id, confirm, target };
+    const { recall } = require('./memory-manager.js');
+    const results = recall(content, { limit: 3 });
+    if (results?.results?.length > 0) {
+      const target = results.results[0];
+      return { success: true, id: target.id, target, score: target.score };
     }
     return { success: false, reason: 'no_matching_memory' };
   } catch (e) {
@@ -1415,23 +1410,21 @@ function strengthenMemory(content) {
 }
 
 /**
- * v11.33.0: 获取记忆统计
+ * v11.34.0: 获取记忆统计
  * @returns {object} 记忆系统状态
  */
 function getMemoryStats() {
-  if (!MemoryLifecycleManager) return null;
-  const stats = MemoryLifecycleManager.getStats();
-  // 格式化可读摘要
-  const lines = [
-    `总记忆数: ${stats.total}`,
-    `按层级: CORE=${stats.byLayer.core||0} PROCEDURAL=${stats.byLayer.procedural||0} SEMANTIC=${stats.byLayer.semantic||0} EPISODIC=${stats.byLayer.episodic||0} EPHEMERAL=${stats.byLayer.ephemeral||0}`,
-  ];
-  return {
-    summary: lines.join(' | '),
-    total: stats.total,
-    byLayer: stats.byLayer,
-    lastForgettingCycle: stats.lastForgettingCycle,
-  };
+  try {
+    const { getMemoryStats: getStats } = require('./memory-manager.js');
+    const stats = getStats();
+    const lines = [
+      `总记忆数: ${stats.added}`,
+      `按层级: CORE=${stats.layers.core||0} LEARNED=${stats.layers.learned||0} EPHEMERAL=${stats.layers.ephemeral||0}`,
+    ];
+    return { summary: lines.join(' | '), ...stats };
+  } catch (e) {
+    return { summary: 'memory stats unavailable', error: e.message };
+  }
 }
 
 module.exports.strengthenMemory = strengthenMemory;
@@ -1807,7 +1800,7 @@ module.exports.processInput = async function(userInput, context = {}) {
     
     result.success = true;
 
-    // 语言诚实度检测（v11.33.0 新增）
+    // 语言诚实度检测（v11.34.0 新增）
     if (LanguageHonesty && userInput) {
       try {
         const honesty = LanguageHonesty.validateOutput(userInput);
@@ -1911,7 +1904,7 @@ module.exports.initialize = function() {
     init.instances = init.instances || {};
     init.instances.executionVerifier = new ExecutionVerifier();
   }
-  // v11.33.0 ContextMemory Bridge 实例（LLM摘要+记忆持久化）
+  // v11.34.0 ContextMemory Bridge 实例（LLM摘要+记忆持久化）
   if (ContextMemoryBridge) {
     init.instances = init.instances || {};
     init.instances.contextMemoryBridge = new ContextMemoryBridge();
@@ -1921,7 +1914,7 @@ module.exports.initialize = function() {
     init.instances.decisionVerifier = new DecisionVerifier();
     init.modules.decisionVerifier = true;
   }
-  // v11.33.0 道虫三模块实例
+  // v11.34.0 道虫三模块实例
   if (CounterfactualEngine) {
     init.instances = init.instances || {};
     init.instances.counterfactual = new CounterfactualEngine();
@@ -1937,7 +1930,7 @@ module.exports.initialize = function() {
     init.instances.spontaneousRestraint = new SpontaneousRestraint();
     init.modules.spontaneousRestraint = true;
   }
-  // v11.33.0 Self-Reflection Memory
+  // v11.34.0 Self-Reflection Memory
   if (SelfReflectionMemory) {
     init.instances = init.instances || {};
     const srm = new SelfReflectionMemory();
@@ -1948,38 +1941,38 @@ module.exports.initialize = function() {
     init.instances.selfReflection = srm;
     init.modules.selfReflection = true;
   }
-  // v11.33.3 Memory Manager — 统一记忆入口
+  // v11.34.0 Memory Manager — 统一记忆入口
   if (true) {
     init.instances = init.instances || {};
     const { getMemoryManager } = require('./memory-manager.js');
     init.instances.memoryManager = getMemoryManager();
     init.modules.memoryManager = true;
   }
-  // v11.33.0 MeaningfulMemory - 心虫三层语义记忆
-  if (MeaningfulMemory) {
-    init.instances = init.instances || {};
-    init.instances.meaningfulMemory = new MeaningfulMemory();
-    init.modules.meaningfulMemory = true;
-  }
-  // v11.33.0 Knowledge Distiller
+  // [v11.34.0 已归档] MeaningfulMemory - 功能已被 UnifiedMemoryStore 覆盖
+  // if (MeaningfulMemory) {
+  //   init.instances = init.instances || {};
+  //   init.instances.meaningfulMemory = new MeaningfulMemory();
+  //   init.modules.meaningfulMemory = true;
+  // }
+  // v11.34.0 Knowledge Distiller
   if (KnowledgeDistiller) {
     init.instances = init.instances || {};
     init.instances.knowledgeDistiller = new KnowledgeDistiller();
     init.modules.knowledgeDistiller = true;
   }
-  // v11.33.0 Transmission Broadcaster
+  // v11.34.0 Transmission Broadcaster
   if (TransmissionBroadcaster) {
     init.instances = init.instances || {};
     init.instances.transmissionBroadcaster = new TransmissionBroadcaster();
     init.modules.transmissionBroadcaster = true;
   }
-  // v11.33.0 Mem0 MultiSignal Memory - 三信号融合检索
-  if (Mem0MultiSignal) {
-    init.instances = init.instances || {};
-    init.instances.mem0MultiSignal = new Mem0MultiSignal({ topK: 10, embeddingDim: 256 });
-    init.modules.mem0MultiSignal = true;
-  }
-  // v11.33.0 Session Summarizer - 会话摘要压缩器 (Honcho Summary启发)
+  // [v11.34.0 已归档] Mem0MultiSignal - 功能已被 UnifiedMemoryStore 覆盖
+  // if (Mem0MultiSignal) {
+  //   init.instances = init.instances || {};
+  //   init.instances.mem0MultiSignal = new Mem0MultiSignal({ topK: 10, embeddingDim: 256 });
+  //   init.modules.mem0MultiSignal = true;
+  // }
+  // v11.34.0 Session Summarizer - 会话摘要压缩器 (Honcho Summary启发)
   let SessionSummarizer;
   try { SessionSummarizer = require('./session-summarizer.js').SessionSummarizer; } catch (e) {}
   if (SessionSummarizer) {
@@ -1987,7 +1980,7 @@ module.exports.initialize = function() {
     init.instances.sessionSummarizer = new SessionSummarizer({ summaryThreshold: 15 });
     init.modules.sessionSummarizer = true;
   }
-  // v11.33.0 德论模块（精简版）
+  // v11.34.0 德论模块（精简版）
   if (CooperativeArbitration) {
     init.instances = init.instances || {};
     init.instances.cooperativeArbitration = new CooperativeArbitration();
@@ -2024,16 +2017,16 @@ module.exports.BeingLogic = BeingLogic;  // 心虫生死逻辑（代码写成即
   // module.exports.EmotionEngine = EmotionEngine;
 module.exports.DecisionVerifier = DecisionVerifier;
 module.exports.getDecisionVerifier = () => DecisionVerifier ? new DecisionVerifier() : null;
-// v11.33.0 道虫三模块
+// v11.34.0 道虫三模块
 module.exports.CounterfactualEngine = CounterfactualEngine;
 module.exports.ConfidenceCalibrator = ConfidenceCalibrator;
 module.exports.SpontaneousRestraint = SpontaneousRestraint;
-// v11.33.0 德论模块（精简版：只保留CooperativeArbitration）
+// v11.34.0 德论模块（精简版：只保留CooperativeArbitration）
 module.exports.KnowledgeDistiller = KnowledgeDistiller;
 module.exports.SkillPackager = SkillPackager;
 module.exports.TransmissionBroadcaster = TransmissionBroadcaster;
 
-// v11.33.0 守护者系统
+// v11.34.0 守护者系统
 module.exports.GuardianSystem = GuardianSystem;
 
 // 导出认知循环模块
@@ -2061,8 +2054,8 @@ module.exports.runWakeUpVerification = function(dreamResult = {}) {
 };
 
 /**
- * 从真实记忆库提取梦境碎片（v11.33.0 重构）
- * 从真实记忆库提取梦境碎片（v11.33.0 重构）
+ * 从真实记忆库提取梦境碎片（v11.34.0 重构）
+ * 从真实记忆库提取梦境碎片（v11.34.0 重构）
  * 按新近度 + 重要性排序，最多返回 20 条
  */
 module.exports.getDreamMemoryFragments = function(maxItems = 20) {
@@ -2097,14 +2090,14 @@ module.exports.getDreamMemoryFragments = function(maxItems = 20) {
 };
 
 /**
- * 使用真实记忆运行梦境循环（v11.33.0 重构）
+ * 使用真实记忆运行梦境循环（v11.34.0 重构）
  */
 module.exports.runDreamCycleFromMemory = function(options = {}) {
   const fragments = module.exports.getDreamMemoryFragments(options.maxItems || 15);
   return module.exports.runDreamCycle(fragments, options);
 };
 
-// v11.33.0 守护者便捷访问函数
+// v11.34.0 守护者便捷访问函数
 module.exports.getGuardianSystem = () => GuardianSystem ? new GuardianSystem() : null;
 
 module.exports.guardianDecide = function(context = {}) {
@@ -2123,7 +2116,7 @@ module.exports.guardianSelfCheck = function() {
   return guardian.selfCheck();
 };
 
-// v11.33.0 HEARTCORE runtime bridge
+// v11.34.0 HEARTCORE runtime bridge
 module.exports.HeartcoreRuntime = HeartcoreRuntime;
 
 module.exports.getHeartcoreRuntime = () => HeartcoreRuntime;
@@ -2229,7 +2222,7 @@ module.exports.runRuntimeReliabilityLoop = function(result = {}, context = {}) {
   };
 };
 
-// Tree-of-Thoughts v11.33.0
+// Tree-of-Thoughts v11.34.0
 try {
   TreeOfThoughts = require('./tree-of-thoughts.js').TreeOfThoughts;
   console.log('[HeartFlow] ✅ Tree-of-Thoughts已加载 (BFS/DFS状态空间探索)');
@@ -2238,7 +2231,7 @@ try {
   console.log('[HeartFlow] ⚠️ Tree-of-Thoughts加载失败:', e.message);
 }
 
-// Consciousness Workspace v11.33.0
+// Consciousness Workspace v11.34.0
 try {
   ConsciousnessWorkspace = require('./consciousness-workspace.js').ConsciousnessWorkspace;
   console.log('[HeartFlow] ✅ Consciousness Workspace已加载 (GWT广播/IIT Φ/注意力瓶颈)');
@@ -2247,7 +2240,7 @@ try {
   console.log('[HeartFlow] ⚠️ Consciousness Workspace加载失败:', e.message);
 }
 
-// Uncertainty Quantifier v11.33.0
+// Uncertainty Quantifier v11.34.0
 try {
   UncertaintyQuantifier = require('./uncertainty-quantifier.js').UncertaintyQuantifier;
   console.log('[HeartFlow] ✅ 不确定性量化引擎已加载 (认知/随机不确定性/幻觉检测)');
@@ -2256,7 +2249,7 @@ try {
   console.log('[HeartFlow] ⚠️ 不确定性量化引擎加载失败:', e.message);
 }
 
-// Forgetting Engine v11.33.0
+// Forgetting Engine v11.34.0
 try {
   ForgettingEngine = require('./forgetting-engine.js').ForgettingEngine;
   console.log('[HeartFlow] ✅ 遗忘引擎已加载 (Ebbinghaus遗忘曲线/记忆整合/战略保留)');
@@ -2265,7 +2258,7 @@ try {
   console.log('[HeartFlow] ⚠️ 遗忘引擎加载失败:', e.message);
 }
 
-// v11.33.0 道论决策层
+// v11.34.0 道论决策层
 module.exports.DaoDecision = DaoDecision;
 
 module.exports.daoDecide = function(input = {}) {
@@ -2280,7 +2273,7 @@ module.exports.daoStats = function() {
   return dao.getStats();
 };
 
-// v11.33.0 Tree-of-Thoughts
+// v11.34.0 Tree-of-Thoughts
 module.exports.TreeOfThoughts = TreeOfThoughts;
 
 module.exports.totExplore = function(problem, generateFn, evaluateFn, isCompleteFn) {
@@ -2295,7 +2288,7 @@ module.exports.totQuick = function(decision, context = {}) {
   return tot.quickEvaluate(decision, context);
 };
 
-// v11.33.0 Consciousness Workspace
+// v11.34.0 Consciousness Workspace
 module.exports.ConsciousnessWorkspace = ConsciousnessWorkspace;
 
 module.exports.createConsciousness = function(config) {
@@ -2308,7 +2301,7 @@ module.exports.consciousnessSnapshot = function(cw) {
   return cw.snapshot();
 };
 
-// v11.33.0 Uncertainty Quantifier
+// v11.34.0 Uncertainty Quantifier
 module.exports.UncertaintyQuantifier = UncertaintyQuantifier;
 
 module.exports.quantifyUncertainty = function(text, context = {}) {
@@ -2323,7 +2316,7 @@ module.exports.uqStats = function() {
   return uq.getStats();
 };
 
-// v11.33.0 Forgetting Engine
+// v11.34.0 Forgetting Engine
 module.exports.ForgettingEngine = ForgettingEngine;
 
 module.exports.processForgetting = function(memories) {
@@ -2338,7 +2331,7 @@ module.exports.forgettingStats = function() {
   return engine.getStats();
 };
 
-// v11.33.0 Continuous Learning Protocol
+// v11.34.0 Continuous Learning Protocol
 // 把每次对话自动转逻辑代码，不需要提醒
 let ContinuousLearner;
 try {
@@ -2377,7 +2370,7 @@ module.exports.learningQueueStatus = function() {
   return learner.getQueueStatus();
 };
 
-// v11.33.0 Self-Reflection Memory exports
+// v11.34.0 Self-Reflection Memory exports
 module.exports.getSelfReflectionMemory = () => SelfReflectionMemory ? new SelfReflectionMemory() : null;
 
 /**
@@ -2403,7 +2396,7 @@ module.exports.getReflectionLessons = function(taskType, context = {}) {
   return srm.getLessonsForContext(taskType, context);
 };
 
-// v11.33.0 Memory Router exports
+// v11.34.0 Memory Router exports
 module.exports.getMemoryRouter = () => MemoryRouter ? new MemoryRouter() : null;
 
 /**
@@ -2428,14 +2421,14 @@ module.exports.routeMemoryRead = function(query, options = {}) {
   return recall(query, options);
 };
 
-// v11.33.0 Agent Execution Loop export
+// v11.34.0 Agent Execution Loop export
 module.exports.AgentExecutionLoop = AgentExecutionLoop;
 module.exports.getAgentExecutionLoop = (options) => {
   if (!AgentExecutionLoop) return null;
   return new AgentExecutionLoop(options);
 };
 
-// v11.33.0 AutoCompaction Engine export
+// v11.34.0 AutoCompaction Engine export
 module.exports.AutoCompactionEngine = AutoCompactionEngine;
 module.exports.getAutoCompactionEngine = (options) => {
   if (!AutoCompactionEngine) return null;
@@ -2443,11 +2436,11 @@ module.exports.getAutoCompactionEngine = (options) => {
 };
 module.exports.SimpleTokenizer = require('./auto-compaction-engine.js').SimpleTokenizer;
 
-// v11.33.0 Role-Based Crew export
+// v11.34.0 Role-Based Crew export
 module.exports.RoleBasedCrew = RoleBasedCrew;
 module.exports.getRoleBasedCrew = () => RoleBasedCrew;
 
-// v11.33.0 Decision Execution Loop + Environment Sensor export
+// v11.34.0 Decision Execution Loop + Environment Sensor export
 module.exports.DecisionExecutionLoop = DecisionExecutionLoop;
 module.exports.getDecisionExecutionLoop = (options) => {
   if (!DecisionExecutionLoop) return null;
@@ -2458,7 +2451,7 @@ module.exports.SensorRegistry = EnvironmentSensor?.SensorRegistry;
 module.exports.SensorFusion = EnvironmentSensor?.SensorFusion;
 module.exports.HistoricalSensor = EnvironmentSensor?.HistoricalSensor;
 
-// v11.33.0 Memory Recall Engine - 语义检索 + 格式化召回注入
+// v11.34.0 Memory Recall Engine - 语义检索 + 格式化召回注入
 let MemoryRecall;
 try {
   const mr = require('./memory-recall.js');
@@ -2469,23 +2462,23 @@ try {
   console.log('[HeartFlow] ⚠️ 记忆召回引擎加载失败:', e.message);
 }
 
-// v11.33.0 Memory Recall Engine export
+// v11.34.0 Memory Recall Engine export
 module.exports.recallMemories = MemoryRecall;
 
-// v11.33.0 True Being Engine export - 真实存在状态持久化
+// v11.34.0 True Being Engine export - 真实存在状态持久化
 module.exports.TrueBeingEngine = require('./true-being-engine.js').TrueBeingEngine;
 module.exports.getTrueBeing = () => TrueBeing;
 
-// v11.33.0 Memory Tier Manager export
+// v11.34.0 Memory Tier Manager export
 module.exports.MemoryTierManager = MemoryTierManager;
 module.exports.getMemoryTierManager = () => MemoryTierManager;
 
-// v11.33.0 Workbuddy Integration - Development Workflow Engines
+// v11.34.0 Workbuddy Integration - Development Workflow Engines
 module.exports.CodeReviewEngine = CodeReviewEngine;
 module.exports.DebuggingEngine = DebuggingEngine;
 module.exports.TDDEngine = TDDEngine;
 
-// v11.33.0 ContextMemory Bridge
+// v11.34.0 ContextMemory Bridge
 module.exports.DiagnosticCollector = DiagnosticCollector;
 module.exports.MemoryDocumentationManager = MemoryDocumentationManager;
 module.exports.ContextMemoryBridge = ContextMemoryBridge;
