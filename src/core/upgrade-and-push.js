@@ -1,22 +1,22 @@
 #!/usr/bin/env node
 /**
  * upgrade-and-push.js - HeartFlow 升级推送脚本
- * 
+ *
  * 使用方式: node upgrade-and-push.js [version] [commit-message]
  * 示例: node upgrade-and-push.js 11.22.8 "新增XXX功能"
- * 
+ *
  * 流程:
  * 1. 更新 package.json 版本
  * 2. git add -A
  * 3. git commit
  * 4. 自动验证
- * 5. 验证通过 → git push
+ * 5. 验证通过 → git push (已禁用，需手动)
  * 6. 验证失败 → git reset, 不推送
  */
 
 const fs = require('fs');
 const path = require('path');
-const { execSync, spawn } = require('child_process');
+const { execSync } = require('child_process');
 
 const HEARTFLOW_DIR = path.join(__dirname, '..', '..');
 const PKG_PATH = path.join(HEARTFLOW_DIR, 'package.json');
@@ -38,7 +38,7 @@ function main() {
   const args = process.argv.slice(2);
   const version = args[0] || detectNextVersion();
   const message = args.slice(1).join(' ') || '升级';
-  
+
   console.log('══════════════════════════════════════════');
   console.log(`  HeartFlow 升级推送: v${version}`);
   console.log('══════════════════════════════════════════\n');
@@ -80,7 +80,7 @@ function main() {
   // 4. 自动验证
   log('\n[4/5] 自动验证...');
   console.log('─'.repeat(40));
-  
+
   let verifyResult;
   try {
     verifyResult = execSync(`node "${VERIFY_SCRIPT}" --no-push`, {
@@ -91,7 +91,7 @@ function main() {
   } catch (e) {
     console.log(e.stdout || e.message);
     console.error('❌ 验证失败！', '🔴');
-    
+
     // 验证失败，取消提交
     log('\n[5/5] 取消提交...');
     try {
@@ -104,30 +104,14 @@ function main() {
     process.exit(1);
   }
 
-  // 5. Git push
+  // 5. Git push (已禁用)
   log('\n[5/5] 推送到 GitHub...');
   console.log('─'.repeat(40));
-  
-  // 禁用 pre-push hook 避免递归
-  const hookPath = path.join(HEARTFLOW_DIR, '.git', 'hooks', 'pre-push');
-  let hookBackup = null;
-  
-  if (fs.existsSync(hookPath)) {
-    hookBackup = hookPath + '.backup';
-    fs.renameSync(hookPath, hookBackup);
-  }
-  
-  try {
-    run('git push origin-sync main');
-    log('推送成功!', '✅');
-  } catch (e) {
-    console.error('❌ 推送失败:', e.message);
-  } finally {
-    // 恢复 hook
-    if (hookBackup && fs.existsSync(hookBackup)) {
-      fs.renameSync(hookBackup, hookPath);
-    }
-  }
+
+  // ⚠️ 自动 git push 已在安全审计中被禁用
+  // 如需推送，请手动执行: git push origin-sync main
+  console.log('ℹ️ 自动推送已禁用 — 请手动执行 git push origin-sync main');
+  log('推送已跳过 (安全审计修复 S-01)', 'ℹ️');
 
   console.log('\n══════════════════════════════════════════');
   console.log(`  ✅ v${version} 升级推送完成!`);

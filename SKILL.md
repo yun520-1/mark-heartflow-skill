@@ -83,6 +83,17 @@ node -e "const fs=require('fs'); const l=JSON.parse(fs.readFileSync('memory/mean
 
 ## 技术说明
 
+### ⚠️ 沟通规范（重要）
+
+**完成前必须汇报，不得静默后台执行。**
+
+- 开始任务后 → 先报进度
+- 每完成一步 → 报结果
+- 全部完成后 → 完整汇报
+- **绝对不能在"快完成"时停止回复**
+
+违反这条会被老大直接纠正，影响效率。
+
 这个框架被实现为：
 - `HEARTCORE/` — 心跳和自检逻辑
 - `src/core/` — 决策引擎、记忆管理（importance-scorer, importance-aware-strategy, auto-compaction-engine, permanent-memory-archiver, recall-trigger）、反思循环
@@ -101,6 +112,7 @@ node -e "const fs=require('fs'); const l=JSON.parse(fs.readFileSync('memory/mean
 | recall-trigger.js | v11.28+ | 话题匹配+上下文压力触发 |
 | selective-context-engine.js | v11.29+ | arXiv:2403.00742信息密度修剪 |
 | unified-memory-archive.js | v11.30+ | 跨所有文件统一检索 |
+| memory-consolidation-engine.js | v11.31+ | 记忆聚类+重要性评分 |
 | memory-consolidation-engine.js | v11.31+ | 记忆聚类+重要性评分 |
 
 ### 压缩流程 (v11.27+)
