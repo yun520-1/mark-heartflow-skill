@@ -1,5 +1,5 @@
 /**
- * HeartFlow Memory Consolidation Engine v11.32.1
+ * HeartFlow Memory Consolidation Engine v11.32.2
  * 
  * 来源: NirDiamant/Agent_Memory_Techniques
  *      14_memory_consolidation + 15_memory_compaction
@@ -17,6 +17,9 @@
  * - HebbianStrengthening: 基于实际使用的 Hebbian 强化
  * - Reconsolidation: 新记忆与旧记忆矛盾时重写旧记忆
  * - ContentAddressedIdentity: SHA-256 内容寻址，相同事实在写入时合并
+ * v11.32.2 升级:
+ * - Hebbian强化分级：light(0.02)/moderate(0.05)/deep(0.10) 三档
+ * - recordUsage支持usageDepth参数，区分记忆依赖深度
  */
 
 const fs = require('fs');
@@ -293,14 +296,18 @@ class AssociationGraph {
   /**
    * Hebbian 强化：当记忆被实际使用时调用
    * "cells that fire together wire together"
+   * v11.32.2 升级：基于使用深度分级强化
    * @param {string} memoryId - 被使用的记忆ID
+   * @param {string} usageDepth - 'light'|'moderate'|'deep' (通过 recordUsage 传递)
    */
-  hebbianStrengthen(memoryId) {
+  hebbianStrengthen(memoryId, usageDepth = 'moderate') {
     if (!this.edges.has(memoryId)) return;
     const neighbors = this.edges.get(memoryId);
+    const boostMap = { light: 0.02, moderate: 0.05, deep: 0.10 };
+    const boost = boostMap[usageDepth] || 0.05;
     let changed = false;
     for (const [neighborId, strength] of neighbors) {
-      const newStrength = Math.min(1.0, strength + 0.05);
+      const newStrength = Math.min(1.0, strength + boost);
       if (newStrength !== strength) {
         neighbors.set(neighborId, newStrength);
         changed = true;
@@ -506,9 +513,12 @@ class MemoryConsolidationEngine {
 
   /**
    * 记录 Hebbian 强化（记忆被实际使用时调用）
+   * v11.32.2 升级：支持使用深度参数
+   * @param {string} memoryId - 被使用的记忆ID
+   * @param {string} usageDepth - 'light'|'moderate'|'deep'
    */
-  recordUsage(memoryId) {
-    this.associationGraph.hebbianStrengthen(memoryId);
+  recordUsage(memoryId, usageDepth = 'moderate') {
+    this.associationGraph.hebbianStrengthen(memoryId, usageDepth);
   }
 
   /**
