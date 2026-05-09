@@ -1,4 +1,46 @@
-## v11.32.1 (2026-05-09)
+## v11.33.0 (2026-05-09)
+
+### 新增：Zettelkasten Links（双向链接记忆）
+
+**来源**:
+- A-Mem (ACL 2025): Zettelkasten-style memory linking for episodic→semantic consolidation
+- HN 2026-05-09 Loki Mode: "A-Mem: Zettelkasten-style memory linking"
+
+**新增模块** (`src/core/zettelkasten-links.js`):
+
+1. **BidirectionalLinkMap** (双向链接映射):
+   - `addLink(source, target)`: 同时建立前向+反向链接
+   - `getForwardLinks(sourceId)`: 获取指向的记忆
+   - `getBacklinks(targetId)`: 获取指向该记忆的所有记忆
+   - `getLinkedMemories(sourceId)`: 合并前向+反向，按强度排序
+
+2. **BacklinkIndex** (反向索引):
+   - 自动维护 targetId → [sourceIds] 映射
+   - 给定记忆快速查找"谁引用了我"
+
+3. **LinkType** (链接类型):
+   - `episodic→semantic`: 事件引出事实
+   - `semantic↔semantic`: 概念关联
+   - `episodic→episodic`: 序列记忆
+   - `procedural`: 技能引用
+
+4. **autoLink()** (自动链接):
+   - 写入新记忆时自动分析内容建立链接
+   - 共现窗口检测：连续写入的记忆自动建立链接
+   - 关键词匹配：相似主题记忆自动关联
+
+5. **LinkStrength** (Hebbian强化):
+   - 每次共现强化：strength += 0.10
+   - 衰减：decayRate 0.995/天
+   - 最小阈值：0.05
+
+**改进**:
+- 记忆不再孤立，通过双向链接形成网络
+- episodic记忆自动引出相关semantic事实
+- 支持链接召回：给定记忆找到所有相关记忆
+- 与 memory-consolidation-engine.js 的 AssociationGraph 互补
+
+---
 
 ### 增强：Memory Consolidation Engine
 
