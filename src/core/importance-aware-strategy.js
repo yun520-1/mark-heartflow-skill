@@ -197,6 +197,8 @@ class ImportanceAwareStrategy {
       compacted: finalCompacted,
       summary: summary || '[无压缩]',
       dropped: droppedCount,
+      // v11.26: 返回被删除的消息，供永久记忆归档
+      droppedMessages: lowScoreMessages,
       stats: {
         highScoreKept: highScoreMessages.length,
         recentKept: recentMessages.length,

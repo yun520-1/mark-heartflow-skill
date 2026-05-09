@@ -1,7 +1,7 @@
 {
   "name": "heartflow",
   "description": "HeartFlow v11.22.8: 新增自动验证流程 (upgrade-and-push.js + auto-verify.js)",
-  "version": "11.26.0",
+  "version": "11.27.0",
   "releaseDate": "2026-04-11",
   "main": "src/core/heartflow-engine.js",
   "bin": {

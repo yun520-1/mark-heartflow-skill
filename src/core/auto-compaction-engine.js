@@ -19,6 +19,7 @@ const fs = require('fs');
 const path = require('path');
 const { ImportanceScorer } = require('./importance-scorer.js');
 const { ImportanceAwareStrategy } = require('./importance-aware-strategy.js');
+const { PermanentMemoryArchiver } = require('./permanent-memory-archiver.js');
 
 // ============================================================
 // Token 估算器 (无外部依赖的简单实现)
@@ -290,6 +291,8 @@ class AutoCompactionEngine {
 
     this._compactionHistory = [];
     this._docManager = null;
+    // v11.26: 永久记忆归档器
+    this._archiver = null;
   }
 
   /**
@@ -349,6 +352,35 @@ class AutoCompactionEngine {
       }
     } catch (e) {
       // 静默失败，不阻断压缩流程
+    }
+  }
+
+  /**
+   * v11.26: 将被删除的消息归档到永久记忆
+   * @param {Array} droppedMessages - 被压缩删除的消息
+   * @param {Object} stats - 压缩统计
+   */
+  _archiveToPermanentMemory(droppedMessages, stats) {
+    if (!droppedMessages || droppedMessages.length === 0) return;
+    if (!this.config.persistSummaries) return;
+
+    try {
+      // 延迟加载归档器
+      if (!this._archiver) {
+        this._archiver = new PermanentMemoryArchiver();
+      }
+
+      const result = this._archiver.archive(droppedMessages, {
+        level: 'learned',  // 默认 learned
+        source: `compaction:${stats.strategy || 'importance'}`,
+      });
+
+      if (result.stored > 0) {
+        stats.permanentArchived = result.stored;
+        stats.permanentKeys = result.keys;
+      }
+    } catch (e) {
+      // 静默失败
     }
   }
 
@@ -454,6 +486,18 @@ class AutoCompactionEngine {
       } catch (e) {
         // 忽略回调错误
       }
+    }
+
+    // v11.26: 将被删除的消息归档到永久记忆（不是丢弃）
+    if (result.droppedMessages && result.droppedMessages.length > 0) {
+      this._archiveToPermanentMemory(result.droppedMessages, {
+        strategy,
+        originalMessages: messages.length,
+        compactedMessages: result.compacted.length,
+        dropped: result.dropped,
+        duration,
+        tokenCount: this.tokenizer.estimateMessages(result.compacted),
+      });
     }
 
     // v11.26: 压缩摘要自动存入 meaningful-memory
