@@ -255,7 +255,7 @@ class SummarizeStrategy {
 class AutoCompactionEngine {
   constructor(options = {}) {
     this.tokenizer = new SimpleTokenizer();
-    
+
     this.config = {
       // 默认 128k context 的 80% 预警
       warningThreshold: options.warningThreshold || 0.80,
@@ -267,6 +267,8 @@ class AutoCompactionEngine {
       strategy: options.strategy || 'trim',
       // 是否自动压缩
       autoCompact: options.autoCompact !== false,
+      // 是否将摘要存入 meaningful-memory（v11.26 新增）
+      persistSummaries: options.persistSummaries !== false,
       // 回调
       onCompactionStart: options.onCompactionStart || null,
       onCompactionEnd: options.onCompactionEnd || null,
@@ -281,9 +283,71 @@ class AutoCompactionEngine {
       totalDropped: 0,
       lastCompaction: null,
       strategyUsed: null,
+      summariesStored: 0,
     };
 
     this._compactionHistory = [];
+    this._docManager = null;
+  }
+
+  /**
+   * 获取 MemoryDocumentationManager（延迟加载）
+   */
+  _getDocManager() {
+    if (!this._docManager) {
+      try {
+        const { MemoryDocumentationManager } = require('./memory-documentation-manager.js');
+        this._docManager = new MemoryDocumentationManager();
+      } catch (e) {
+        this._docManager = null;
+      }
+    }
+    return this._docManager;
+  }
+
+  /**
+   * v11.26: 压缩后自动将摘要存入 meaningful-memory
+   */
+  _persistCompactionSummary(compacted, stats) {
+    if (!this.config.persistSummaries) return;
+    if (!compacted || compacted.length === 0) return;
+
+    try {
+      const docManager = this._getDocManager();
+      if (!docManager) return;
+
+      // 生成摘要文本
+      // 当 summarize 策略时: 取 isSummary 消息
+      // 当 trim 策略时: 取最后一条消息作为内容摘要
+      let summaryParts = compacted
+        .filter(m => m.isSummary || m.role === 'system')
+        .map(m => typeof m.content === 'string' ? m.content : JSON.stringify(m.content));
+
+      if (summaryParts.length === 0) {
+        // trim 策略: 用最后 N 条消息的关键词作为摘要
+        const recentContent = compacted
+          .slice(-5)
+          .map(m => typeof m.content === 'string' ? m.content : JSON.stringify(m.content))
+          .join(' | ');
+        summaryParts = [recentContent.substring(0, 300)];
+      }
+
+      const summary = summaryParts.join('\n').substring(0, 500);
+
+      const key = docManager.storeCompactionSummary(summary, {
+        originalCount: stats.originalMessages,
+        tokensSaved: stats.tokenCount,
+        duration: stats.duration,
+      });
+
+      if (key) {
+        this.stats.summariesStored++;
+        // 同时同步索引
+        docManager.syncIndex();
+      }
+    } catch (e) {
+      // 静默失败，不阻断压缩流程
+    }
   }
 
   // ============================================================
@@ -385,6 +449,16 @@ class AutoCompactionEngine {
         // 忽略回调错误
       }
     }
+
+    // v11.26: 压缩摘要自动存入 meaningful-memory
+    this._persistCompactionSummary(result.compacted, {
+      originalMessages: messages.length,
+      compactedMessages: result.compacted.length,
+      dropped: result.dropped,
+      strategy,
+      duration,
+      tokenCount: this.tokenizer.estimateMessages(result.compacted),
+    });
 
     return {
       ...result,

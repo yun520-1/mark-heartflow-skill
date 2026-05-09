@@ -398,6 +398,7 @@ try {
 
 // v11.22.9 Memory Protocol - 决策树分层
 let MemoryProtocol;
+let MemoryDocumentationManager;
 try {
   const mp = require('./memory-protocol.js');
   MemoryProtocol = new mp.MemoryProtocol();
@@ -405,6 +406,16 @@ try {
 } catch (e) {
   MemoryProtocol = null;
   console.log('[HeartFlow] ⚠️ 记忆协议加载失败:', e.message);
+}
+
+// v11.26 MemoryDocumentationManager - 索引同步/摘要持久化/归档
+try {
+  const { MemoryDocumentationManager: MDC } = require('./memory-documentation-manager.js');
+  MemoryDocumentationManager = MDC;
+  console.log('[HeartFlow] ✅ MemoryDocumentationManager 已加载 (索引同步/摘要持久化)');
+} catch (e) {
+  MemoryDocumentationManager = null;
+  console.log('[HeartFlow] ⚠️ MemoryDocumentationManager 加载失败:', e.message);
 }
 
 // v11.21.2 Knowledge Distiller - 知识打包为可传递格式
@@ -2481,6 +2492,7 @@ module.exports.TDDEngine = TDDEngine;
 
 // v11.25.0 ContextMemory Bridge
 module.exports.DiagnosticCollector = DiagnosticCollector;
+module.exports.MemoryDocumentationManager = MemoryDocumentationManager;
 module.exports.ContextMemoryBridge = ContextMemoryBridge;
 module.exports.RealLLMSummarizer = require('./context-memory-bridge.js').RealLLMSummarizer;
 module.exports.CompactionThreshold = require('./context-memory-bridge.js').CompactionThreshold;
