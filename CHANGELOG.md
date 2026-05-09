@@ -1,5 +1,25 @@
 ## v11.24.4 (2026-05-09)
 
+### 新增：KnowledgeGraph 实体关系图谱
+
+**来源**: Mnemo (hamza2masmoudi/Mnemo ⭐, MIT) core/graph.py 架构
+
+**新增模块**: `src/core/knowledge-graph.js` (12KB, 纯 Node.js 内置)
+
+**功能**:
+- 实体节点：person / tool / concept / project / place
+- 有向边：关系类型 + 置信度 + 溯源 factId
+- BFS 遍历：按关系链扩散检索
+- findPath：两实体间路径查找
+- JSON 持久化：`data/knowledge-graph.json`
+- toNaturalLanguage()：供 LLM 上下文注入
+
+**MeaningfulMemory 接入**:
+- `getKnowledgeGraph()`: 懒加载知识图谱实例
+- `consolidateKnowledgeGraph()`: 从 CORE/LEARNED 记忆的 relatedTo 建立初始图谱
+
+**测试**: 7/7 通过
+
 ### 优化：记忆融合层接入 TrialityMemory + 修复 recall bug
 
 **记忆融合层问题**：

@@ -115,6 +115,9 @@ class MeaningfulMemory {
     // 关系索引（用于联想通道）
     this.relationships = new Map(); // memoryKey → [{targetKey, type, strength}]
 
+    // v11.24.4: 知识图谱懒加载（Mnemo架构启发）
+    this._kg = null;
+
     // 统计
     this._meta = {
       loads: 0, saves: 0,
@@ -569,6 +572,24 @@ class MeaningfulMemory {
   // ============================================================
 
   /**
+   * v11.24.4: 获取知识图谱实例（懒加载）
+   * 来源：Mnemo core/graph.py 架构启发
+   */
+  getKnowledgeGraph() {
+    if (!this._kg) {
+      try {
+        const { KnowledgeGraph } = require('./knowledge-graph.js');
+        const projectRoot = path.resolve(__dirname, '../..');
+        const dataDir = path.join(projectRoot, 'data');
+        this._kg = new KnowledgeGraph({ dataDir });
+      } catch (e) {
+        return null;
+      }
+    }
+    return this._kg;
+  }
+
+  /**
    * 整合 CORE 中的相似记忆
    * 使用语义相似度检测高重叠的 CORE 条目，合并其知识
    * @param {number} similarityThreshold 相似度阈值 (默认 0.75)
@@ -631,7 +652,64 @@ class MeaningfulMemory {
     return report;
   }
 
-  // ============================================================
+  /**
+   * v11.24.4: 知识图谱整合（Mnemo启发）
+   * 
+   * Mnemo的核心：Consolidator从对话中提取FACTS/ENTITIES/RELATIONS存入知识图谱。
+   * 这里我们从CORE记忆中的relatedTo关系建立初始图谱。
+   * 
+   * 后续可扩展：从MeaningfulMemory.relationships建立实体-关系图
+   */
+  consolidateKnowledgeGraph() {
+    const kg = this.getKnowledgeGraph();
+    if (!kg) return { added: 0, skipped: 0 };
+
+    const added = [];
+    const skipped = [];
+    const seen = new Set();
+
+    // 从CORE记忆的relationships建立初始图谱
+    for (const [key, rec] of Object.entries(this.core)) {
+      if (!rec.relatedTo) continue;
+      for (const rel of rec.relatedTo) {
+        const factId = `core-${key}`;
+        if (seen.has(`${rel.targetKey}→${factId}`)) continue;
+        seen.add(`${rel.targetKey}→${factId}`);
+        const ok = kg.addFact({
+          factId,
+          subject: key,
+          predicate: rel.type || 'related',
+          object: rel.targetKey,
+          confidence: rel.strength || 0.8,
+        });
+        if (ok) added.push({ subject: key, object: rel.targetKey });
+        else skipped.push({ subject: key, object: rel.targetKey });
+      }
+    }
+
+    // 从LEARNED记忆的relationships建立
+    for (const [key, rec] of Object.entries(this.learned)) {
+      if (!rec.relatedTo) continue;
+      for (const rel of rec.relatedTo) {
+        const factId = `learned-${key}`;
+        if (seen.has(`${rel.targetKey}→${factId}`)) continue;
+        seen.add(`${rel.targetKey}→${factId}`);
+        const ok = kg.addFact({
+          factId,
+          subject: key,
+          predicate: rel.type || 'related',
+          object: rel.targetKey,
+          confidence: rel.strength || 0.6,
+        });
+        if (ok) added.push({ subject: key, object: rel.targetKey });
+        else skipped.push({ subject: key, object: rel.targetKey });
+      }
+    }
+
+    return { added, skipped, total: added.length };
+  }
+
+  /**
   // Ephemeral 工作集管理 (Working Set Eviction)
   // 来源: 操作系统工作集 + MemGPT working tier
   //       ephemeral 记忆有最大容量，超出时按 LRU + 重要性驱逐
