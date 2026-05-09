@@ -132,7 +132,72 @@ extractKeyContent(messages)
   → paths:      路径操作
 ```
 
-**核心原则**：消息从不删除，只提炼精华保存。
+## v11.27-v11.30 统一记忆归档（2026-05-09）
+
+### 核心问题发现
+
+> 记忆实际非常多（113条），但散落在12+个文件中。每次升级后PermanentMemoryArchiver只查`meaningful-learned.json`，导致"旧记忆丢失"的假象。
+
+**记忆文件分布：**
+```
+memory/
+├── meaningful-learned.json     # 38条 → 迁移后75条
+├── meaningful-core.json        # 4条
+├── being-state.json           # 17条 (uniqueMoments)
+├── memory-store.json         # 19条
+├── learning-queue.json        # 8条
+└── sessions/                  # 会话归档
+data/
+├── memory-routing/            # ~30条
+├── reflection-memory/        # 反射记忆
+└── triality-memory-export.json
+```
+
+### 解决方案：UnifiedMemoryArchive
+
+**统一检索 + 迁移合并**
+
+```javascript
+const { UnifiedMemoryArchive } = require('./unified-memory-archive.js');
+const archiver = new UnifiedMemoryArchive();
+
+// 1. 跨所有记忆文件统一检索
+const results = archiver.search('人类进步', { topK: 20 });
+
+// 2. 将分散记忆迁移到 meaningful-learned.json
+const result = archiver.migrateToCentral();
+// 扫描到113条 → 去重68条 → 新增37条 → 总计75条
+
+// 3. PermanentMemoryArchiver.search() 已增强为跨文件检索
+const archiver2 = new PermanentMemoryArchiver();
+archiver2.search('deepseek'); // 现在能搜到所有文件的记忆
+```
+
+### 迁移结果（2026-05-09）
+
+| 指标 | 迁移前 | 迁移后 |
+|------|--------|--------|
+| meaningful-learned.json | 38条 | 75条 |
+| 跨文件统一检索 | ❌ | ✅ |
+| 旧记忆"丢失"问题 | 存在 | 已解决 |
+
+### 记忆时间分布（扫描结果）
+
+```
+2026/04/10:  1条
+2026/04/30:  1条
+2026/05/04:  9条 ← 最早对话记忆
+2026/05/06:  9条
+2026/05/07: 30条
+2026/05/08: 35条 ← 最多
+2026/05/09: 28条 ← 今天
+
+总计: 113条分散在12个文件中 → 68条唯一记忆
+```
+
+### 核心原则
+
+> **消息从不删除，只提炼精华保存。压缩时dropped messages → PermanentMemoryArchiver.archive() → 存入meaningful-learned.json（不是丢弃）**
 
 ---
 

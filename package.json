@@ -1,8 +1,8 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v11.22.8: 新增自动验证流程 (upgrade-and-push.js + auto-verify.js)",
-  "version": "11.30.0",
-  "releaseDate": "2026-04-11",
+  "description": "HeartFlow v11.31.0: 新增记忆整合引擎 (ClusterEngine + ImportanceScorer)",
+  "version": "11.31.0",
+  "releaseDate": "2026-05-09",
   "main": "src/core/heartflow-engine.js",
   "bin": {
     "heartflow": "bin/cli.js",

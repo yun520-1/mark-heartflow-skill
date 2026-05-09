@@ -1,3 +1,32 @@
+## v11.31.0 (2026-05-09)
+
+### 新增：Memory Consolidation Engine
+
+**来源**: NirDiamant/Agent_Memory_Techniques (⭐2500+)
+      14_memory_consolidation + 15_memory_compaction
+
+**新增模块**: `src/core/memory-consolidation-engine.js` (9KB)
+
+**功能**:
+- ClusterEngine: 基于余弦相似度的记忆聚类（Union-Find算法）
+- ImportanceScorer: 基于Ebbinghaus遗忘曲线的重要性评分
+- MemoryNode: 记忆节点数据结构
+- 相似记忆自动合并
+- 24小时自动整合间隔
+
+**技术亮点**:
+- cosineSimilarity: 余弦相似度计算
+- cluster(): 记忆聚类分组
+- calculate(): 遗忘曲线重要性更新
+
+### 记忆系统升级总结
+
+**来源**: 从会话文件恢复378条记忆，总计453条
+
+**新增内容**:
+- LONG_TERM_MEMORY.md: 完整记忆文档化
+- memory/index.md: 记忆索引更新
+
 ## v11.24.4 (2026-05-09)
 
 ### 新增：KnowledgeGraph 实体关系图谱
