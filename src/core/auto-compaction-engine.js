@@ -17,6 +17,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const { ImportanceScorer } = require('./importance-scorer.js');
+const { ImportanceAwareStrategy } = require('./importance-aware-strategy.js');
 
 // ============================================================
 // Token 估算器 (无外部依赖的简单实现)
@@ -263,8 +265,8 @@ class AutoCompactionEngine {
       compactionThreshold: options.compactionThreshold || 0.90,
       // 默认上下文限制 (token)
       maxContextTokens: options.maxContextTokens || 100000,
-      // 压缩策略: 'trim' | 'summarize'
-      strategy: options.strategy || 'trim',
+      // 压缩策略: 'trim' | 'summarize' | 'importance'
+      strategy: options.strategy || 'importance',
       // 是否自动压缩
       autoCompact: options.autoCompact !== false,
       // 是否将摘要存入 meaningful-memory（v11.26 新增）
@@ -409,6 +411,10 @@ class AutoCompactionEngine {
     if (strategy === 'summarize') {
       const summarizer = new SummarizeStrategy(options.summarizeOptions);
       result = summarizer.compress(messages, maxTokens, this.tokenizer);
+    } else if (strategy === 'importance') {
+      // v11.26: 重要性感知压缩策略
+      const importanceStrategy = new ImportanceAwareStrategy(options.importanceOptions);
+      result = importanceStrategy.compress(messages, maxTokens, this.tokenizer);
     } else {
       const trimmer = new TrimStrategy(options.trimOptions);
       result = trimmer.compress(messages, maxTokens, this.tokenizer);
@@ -616,4 +622,7 @@ module.exports = {
   TrimStrategy,
   SummarizeStrategy,
   BlockMemoryCompaction,
+  // v11.26 新增
+  ImportanceScorer,
+  ImportanceAwareStrategy,
 };
