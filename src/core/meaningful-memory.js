@@ -1,6 +1,12 @@
 /**
- * HeartFlow Meaningful Memory Module v11.5.10
+ * HeartFlow Meaningful Memory Module v11.5.11
  * 
+ * 升级路线（v11.5.10 → v11.5.11）：
+ * - 集成 MemoryConsolidationEngine 的 AssociationGraph：
+ *   每次 search() 返回结果后，recordCoRetrieval() 将共召回的记忆ID
+ *   记录到 AssociationGraph，自动建立基于使用模式的 Hebbian 关联边。
+ *   这让 MeaningfulMemory 的检索能受益于 Hebbian 强化和扩展召回。
+ *
  * 升级路线（v11.5.9 → v11.5.10）：
  * - 合并 TrialityMemory 的三大能力：
  *   ① Ebbinghaus 遗忘曲线（遗忘引擎）
@@ -24,6 +30,19 @@ const crypto = require('crypto');
 const MEMORY_DIR = path.join(__dirname, '..', '..', 'memory');
 const CORE_FILE    = path.join(MEMORY_DIR, 'meaningful-core.json');
 const LEARNED_FILE = path.join(MEMORY_DIR, 'meaningful-learned.json');
+
+// v11.5.11: Lazy-load consolidation engine to avoid circular deps
+let _ConsolidationEngine = null;
+function getConsolidationEngine() {
+  if (!_ConsolidationEngine) {
+    try {
+      _ConsolidationEngine = require('./memory-consolidation-engine').MemoryConsolidationEngine;
+    } catch (e) {
+      return null;
+    }
+  }
+  return _ConsolidationEngine;
+}
 
 // ============================================================
 // 向量工具 - 委托给统一嵌入层
@@ -117,6 +136,11 @@ class MeaningfulMemory {
 
     // v11.24.4: 知识图谱懒加载（Mnemo架构启发）
     this._kg = null;
+
+    // v11.5.11: 关联图谱引擎（来自 MemoryConsolidationEngine）
+    // 每次 search() 记录共召回事件，自动建立 Hebbian 关联边
+    this._consolidationEngine = null;
+    this._coRetrievalKeys = []; // 暂存当前 search 结果的 key 列表，供 recordCoRetrieval 使用
 
     // 统计
     this._meta = {
@@ -514,9 +538,40 @@ class MeaningfulMemory {
       }
     }
 
-    return Array.from(scores.values())
+    // v11.5.11: 记录共召回事件到 AssociationGraph
+    // 每次 search() 返回的结果中的记忆，下次也可能一起被召回
+    const resultKeys = Array.from(scores.values())
       .sort((a, b) => b.score - a.score)
       .slice(0, topK);
+    this._coRetrievalKeys = resultKeys.map(r => r.key);
+    // 懒加载关联图谱引擎并记录
+    if (this._coRetrievalKeys.length >= 2) {
+      if (!this._consolidationEngine) {
+        const Engine = getConsolidationEngine();
+        if (Engine) this._consolidationEngine = new Engine();
+      }
+      if (this._consolidationEngine) {
+        this._consolidationEngine.recordCoRetrieval(this._coRetrievalKeys);
+      }
+    }
+
+    return resultKeys;
+  }
+
+  /**
+   * v11.5.11: 利用 AssociationGraph 扩展召回
+   * 基于 Hebbian 关联边扩展记忆检索范围
+   * @param {string} key - 起始记忆 key
+   * @param {number} maxHops - 最大跳数（默认1跳）
+   * @returns {string[]} 扩展后的记忆 key 列表
+   */
+  expandFromGraph(key, maxHops = 1) {
+    if (!this._consolidationEngine) {
+      const Engine = getConsolidationEngine();
+      if (Engine) this._consolidationEngine = new Engine();
+    }
+    if (!this._consolidationEngine) return [];
+    return this._consolidationEngine.getExpandedRecall(key, maxHops);
   }
 
   // ============================================================
