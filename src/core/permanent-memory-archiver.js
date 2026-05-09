@@ -301,7 +301,17 @@ class PermanentMemoryArchiver {
     if (!MemModule) return null;
 
     const mm = new MemModule.MeaningfulMemory();
-    return mm.recall(key);
+    const result = mm.recall(key);
+
+    // 召回时更新访问计数（触发强化）
+    if (result && mm.learned[key]) {
+      mm.learned[key].accessCount = (mm.learned[key].accessCount || 0) + 1;
+      mm.learned[key].lastAccess = Date.now();
+      // 持久化
+      this._persistLearned(mm.learned);
+    }
+
+    return result;
   }
 
   /**
@@ -328,7 +338,30 @@ class PermanentMemoryArchiver {
       }
     }
 
-    return merged.slice(0, topK);
+    return merged.slice(0, topK).map(r => {
+      // 搜索结果也触发访问计数更新
+      if (mm.learned[r.key]) {
+        mm.learned[r.key].accessCount = (mm.learned[r.key].accessCount || 0) + 1;
+        mm.learned[r.key].lastAccess = Date.now();
+      }
+      return r;
+    });
+  }
+
+  /**
+   * 持久化 learned 层到文件
+   */
+  _persistLearned(learned) {
+    try {
+      const MEMORY_DIR = path.join(__dirname, '..', '..', 'memory');
+      const LEARNED_FILE = path.join(MEMORY_DIR, 'meaningful-learned.json');
+      if (!fs.existsSync(MEMORY_DIR)) {
+        fs.mkdirSync(MEMORY_DIR, { recursive: true });
+      }
+      fs.writeFileSync(LEARNED_FILE, JSON.stringify(learned, null, 2));
+    } catch (e) {
+      console.warn('[PermanentMemoryArchiver] 持久化失败:', e.message);
+    }
   }
 
   getStats() {
