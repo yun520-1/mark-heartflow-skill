@@ -10,6 +10,8 @@
  */
 
 const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
 
 // ============================================================
 // 消息内容提取器
@@ -231,20 +233,50 @@ class PermanentMemoryArchiver {
 
     for (const mem of memories) {
       try {
-        mm.remember({
+        // 直接写入 learned 层，确保持久化
+        // 因为 mm.judge() 会把大多数 type 判为 ephemeral
+        const record = {
           key: mem.key,
           value: mem.value,
           type: mem.type,
           reason: mem.reason,
+          timestamp: Date.now(),
           source,
-          ...(level === 'core' ? { userConfirmed: true } : {}),
-          // 额外元数据存入 value（如果是对象）
+          level: 'learned',  // 强制 learned 层
+          importance: 50,  // 默认 importance
           _archivedMeta: mem.metadata,
-        });
+        };
+
+        // 写入 learned 对象
+        mm.learned[mem.key] = record;
+
+        // 更新向量索引
+        if (mm.vectors?.learned) {
+          const hash = crypto.createHash('sha256').update(String(mem.value) + mem.reason).digest();
+          const dim = 1536;
+          const emb = [];
+          for (let i = 0; i < dim; i++) {
+            emb.push((hash[i % hash.length] / 255) * 2 - 1);
+          }
+          mm.vectors.learned.set(mem.key, emb);
+        }
+
         storedKeys.push(mem.key);
       } catch (e) {
         // 忽略单条失败
       }
+    }
+
+    // 手动持久化到文件（直接写入，不依赖 mm._saveLearned()）
+    try {
+      const MEMORY_DIR = path.join(__dirname, '..', '..', 'memory');
+      const LEARNED_FILE = path.join(MEMORY_DIR, 'meaningful-learned.json');
+      if (!fs.existsSync(MEMORY_DIR)) {
+        fs.mkdirSync(MEMORY_DIR, { recursive: true });
+      }
+      fs.writeFileSync(LEARNED_FILE, JSON.stringify(mm.learned, null, 2));
+    } catch (e) {
+      console.warn('[PermanentMemoryArchiver] 持久化失败:', e.message);
     }
 
     this.stats.messagesArchived += messages.length;
