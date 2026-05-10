@@ -2485,3 +2485,59 @@ module.exports.MemoryDocumentationManager = MemoryDocumentationManager;
 module.exports.ContextMemoryBridge = ContextMemoryBridge;
 module.exports.RealLLMSummarizer = require('./context-memory-bridge.js').RealLLMSummarizer;
 module.exports.CompactionThreshold = require('./context-memory-bridge.js').CompactionThreshold;
+
+// v11.38.0 SuperLocalMemory Integration
+// FRQAD + 7-channel retrieval + Ebbinghaus Forgetting — integrated with ForgettingEngine
+let SuperLocalMemoryBridge;
+try {
+  SuperLocalMemoryBridge = require('./superlocal-memory.js').SuperLocalMemoryBridge;
+  console.log('[HeartFlow] ✅ SuperLocalMemory已加载 (FRQAD距离/7通道检索/量化遗忘)');
+} catch (e) {
+  SuperLocalMemoryBridge = null;
+  console.log('[HeartFlow] ⚠️ SuperLocalMemory加载失败:', e.message);
+}
+
+module.exports.getSuperLocalMemory = () => SuperLocalMemoryBridge ? new SuperLocalMemoryBridge() : null;
+module.exports.superLocalRetrieve = function(query, memories, options = {}) {
+  if (!SuperLocalMemoryBridge) return { error: 'SuperLocalMemory not loaded' };
+  const bridge = new SuperLocalMemoryBridge();
+  return bridge.retrieve(query, memories, options);
+};
+module.exports.superLocalDecay = function(memory, accessCount, intervalDays) {
+  if (!SuperLocalMemoryBridge) return { error: 'SuperLocalMemory not loaded' };
+  const bridge = new SuperLocalMemoryBridge();
+  return bridge.decayAndUpdate(memory, accessCount, intervalDays);
+};
+
+// v11.39.0 Skill Ecosystem Integration
+// SkillGuard-Robust + MESA-S + SkillOrchestra — integrated with GuardianSystem
+let SkillEcosystemBridge;
+try {
+  SkillEcosystemBridge = require('./skill-ecosystem.js').SkillEcosystemBridge;
+  console.log('[HeartFlow] ✅ SkillEcosystem已加载 (SkillGuard-Robust审计/MESA-S认知/SkillOrchestra路由)');
+} catch (e) {
+  SkillEcosystemBridge = null;
+  console.log('[HeartFlow] ⚠️ SkillEcosystem加载失败:', e.message);
+}
+
+module.exports.getSkillEcosystem = () => SkillEcosystemBridge ? new SkillEcosystemBridge() : null;
+module.exports.skillAudit = function(skillName, skillContent) {
+  if (!SkillEcosystemBridge) return { error: 'SkillEcosystem not loaded' };
+  const bridge = new SkillEcosystemBridge();
+  return bridge.preLoadAudit(skillName, skillContent);
+};
+module.exports.skillProbe = function(skillName, summary, context) {
+  if (!SkillEcosystemBridge) return { error: 'SkillEcosystem not loaded' };
+  const bridge = new SkillEcosystemBridge();
+  return bridge.metacognitiveProbe(skillName, summary, context);
+};
+module.exports.skillRoute = function(skillName, task, agents) {
+  if (!SkillEcosystemBridge) return { error: 'SkillEcosystem not loaded' };
+  const bridge = new SkillEcosystemBridge();
+  return bridge.routeTask(skillName, task, agents);
+};
+module.exports.skillPareto = function() {
+  if (!SkillEcosystemBridge) return { error: 'SkillEcosystem not loaded' };
+  const bridge = new SkillEcosystemBridge();
+  return bridge.paretoMaintain();
+};

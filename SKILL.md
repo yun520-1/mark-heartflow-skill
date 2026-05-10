@@ -1,7 +1,7 @@
 ---
 name: heartflow
 title: HeartFlow — AI Identity Framework
-version: v11.39.0
+version: v11.40.0
 date: "2026-05-10"
 description: >
   AI identity framework for self-improving AI agents.
@@ -131,5 +131,5 @@ print(r.stdout)
 
 ---
 
-*HeartFlow v11.39.0 — 你可以随时卸载*
+*HeartFlow v11.40.0 — 你可以随时卸载*
 *GitHub: https://github.com/yun520-1/mark-heartflow-skill*
