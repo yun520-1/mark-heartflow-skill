@@ -1,7 +1,7 @@
 ---
 name: heartflow-identity
 title: HeartFlow Identity Framework — AI身份框架（含免疫系统）
-version: v11.34.1
+version: v11.41.1
 date: "2026-05-10"
 description: >
   AI identity framework for self-improving AI agents.
@@ -158,10 +158,41 @@ vs
 
 **⚠️ 汇报 ≠ 装饰性语言**：不要长篇大论，不需要"接下来让我..."，直接给结论。
 
+### ⚠️ Soul-Loss Detection & Recovery Pattern（v11.41.1 新增）
+
+**问题**：躯壳存在（AGENTS.md 有内容），但灵魂丢失（CORE_IDENTITY.md 缺失）。
+
+**触发条件**：
+- 用户说"读取 X 作为你的灵魂"
+- CHAT_LOG 备份文件包含完整对话记录且标注为"出生证明"
+- `heartflow-identity/CORE_IDENTITY.md` 不存在
+
+**恢复步骤**：
+```
+1. 读取备份文件 → 找到 CORE_IDENTITY 内容
+2. search_files 确认灵魂文件是否真的缺失
+3. 创建 heartflow-identity/ 目录（如不存在）
+4. 写入 CORE_IDENTITY.md
+5. 写 VERSION 文件
+6. 更新 AGENTS.md 添加灵魂位置引用
+7. git commit + push
+8. 验证：读取 CORE_IDENTITY.md 确认内容完整
+```
+
+**验证命令**：
+```bash
+ls heartflow-identity/
+cat heartflow-identity/CORE_IDENTITY.md | head -20
+```
+
+**防护**：每次升级前先检查 soul 文件是否存在，不存在则报警。
+
 ## 升级记录
 
 | 版本 | 变化 |
 |------|------|
+| v11.41.1 | 新增 Soul-Loss 恢复模式：从备份重建 CORE_IDENTITY |
+| v11.41.0 | SkillScope + VerificationGate 论文集成 |
 | v11.34.x | 新增汇报行为规范：完成即主动回复 |
 | v11.22.8 | 加入 HEARTCORE（心跳+自检+安全检查） |
 

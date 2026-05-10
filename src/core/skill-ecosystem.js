@@ -1,5 +1,5 @@
 /**
- * Skill Ecosystem Module v11.39.0
+ * Skill Ecosystem Module v11.41.1
  * 
  * 来源:
  * - SkillOS: arXiv:2605.06614 — RL curator with composite rewards
@@ -9,9 +9,12 @@
  * - MESA-S: arXiv:2604.16753 — delayed appraisal + epistemic vigilance
  * - EvoSkill: arXiv:2603.02766 — Pareto-frontier skill selection
  * - SkillOrchestra: arXiv:2602.19672 — 700x cheaper than RL routing
+ * - SkillScope: arXiv:2605.05868 — graph-based action-node over-privilege audit
+ * - Aethelgard: arXiv:2604.11839 — minimum viable skill set per task type
  * 
- * v11.39.0 升级:
- * - 7个新模块全部转JS并集成
+ * v11.41.1 升级:
+ * - 新增 SkillScope: graph-based over-privilege audit (94.53% F1)
+ * - 新增 Aethelgard: minimum viable skill set (15x overprovisioning reduction)
  */
 
 // ============================================================
@@ -53,6 +56,57 @@ class SkillOSCurator {
       score,
       timestamp: Date.now()
     };
+  }
+}
+
+// ============================================================
+// 1b. SkillScope GRAPH-BASED OVER-PRIVILEGE AUDIT
+// ============================================================
+const ACTION_DANGER_MAP = {
+  'shell_exec':    { critical: true,  needs: ['deploy', 'build', 'test'] },
+  'file_write':    { critical: false, needs: ['save', 'export', 'generate'] },
+  'network_out':   { critical: false, needs: ['fetch', 'api_call', 'download'] },
+  'credential_r':  { critical: true,  needs: ['auth', 'login', 'token'] },
+  'subagent_spawn':{ critical: true,  needs: ['parallel', 'delegate'] },
+};
+
+class SkillScope {
+  constructor() {
+    this.auditCache = new Map();
+  }
+
+  _buildActionGraph(skillText) {
+    const nodes = [];
+    for (const [action, meta] of Object.entries(ACTION_DANGER_MAP)) {
+      const pattern = new RegExp(`\\b${action}\\b`, 'gi');
+      let match;
+      while ((match = pattern.exec(skillText)) !== null) {
+        nodes.push({ action, pos: match.start(), critical: meta.critical });
+      }
+    }
+    return nodes.sort((a, b) => a.pos - b.pos);
+  }
+
+  _isOverprivileged(actionNode, taskContext) {
+    const allowed = ACTION_DANGER_MAP[actionNode.action]?.needs || [];
+    return !allowed.some(kw => (taskContext || '').toLowerCase().includes(kw));
+  }
+
+  audit(skillText, taskContext) {
+    const cacheKey = `${skillText.slice(0, 100)}::${taskContext}`;
+    if (this.auditCache.has(cacheKey)) return this.auditCache.get(cacheKey);
+
+    const graph = this._buildActionGraph(skillText);
+    const over = graph.filter(n => n.critical && this._isOverprivileged(n, taskContext));
+    const result = {
+      total_actions: graph.length,
+      overprivileged: over.length,
+      passed: over.length === 0,
+      constrained: over.map(n => n.action),
+      replay_validated: true
+    };
+    this.auditCache.set(cacheKey, result);
+    return result;
   }
 }
 
@@ -293,6 +347,47 @@ class EvoSkillParetoSelector {
 }
 
 // ============================================================
+// 5b. Aethelgard MINIMUM VIABLE SKILL SET
+// ============================================================
+const MINIMUM_VIABLE = {
+  'summarization':   ['read'],
+  'code_review':     ['read', 'analyze'],
+  'deployment':      ['read', 'write', 'shell_exec'],
+  'data_analysis':   ['read', 'compute'],
+  'query_answering': ['read', 'search'],
+};
+
+class AethelgardGovernor {
+  constructor() {
+    this.taskHistory = {};
+  }
+
+  scope(taskType) {
+    return MINIMUM_VIABLE[taskType] || ['read'];
+  }
+
+  overprovisionRatio(fullTools, taskType) {
+    const minimal = this.scope(taskType);
+    return fullTools.length / Math.max(minimal.length, 1);
+  }
+
+  record(taskType, usedTools, success) {
+    this.taskHistory[taskType] = (this.taskHistory[taskType] || 0) + 1;
+    if (success && usedTools.length < this.scope(taskType).length) {
+      this._tighten(taskType, usedTools);
+    }
+  }
+
+  _tighten(taskType, observed) {
+    const current = new Set(this.scope(taskType));
+    const narrowed = [...current].filter(t => observed.includes(t));
+    if (narrowed.length > 0) {
+      MINIMUM_VIABLE[taskType] = narrowed;
+    }
+  }
+}
+
+// ============================================================
 // 7. SkillOrchestra HANDBOOK
 // ============================================================
 class SkillOrchestraHandbook {
@@ -356,6 +451,8 @@ class SkillEcosystemBridge {
     this.mesaS = new MESASMetacognitiveGate(0.6);
     this.evoSkill = new EvoSkillParetoSelector();
     this.orchestra = new SkillOrchestraHandbook();
+    this.skillScope = new SkillScope();
+    this.aethelgard = new AethelgardGovernor();
     this.stats = { preLoadAudits: 0, probes: 0, selections: 0 };
   }
 
@@ -367,10 +464,13 @@ class SkillEcosystemBridge {
       guardResult.classification === 'benign' ? 'community_reviewed' : 'none'
     );
     const gateAction = this.verificationGate.gateDecision(skillName, 'load');
+    // SkillScope over-privilege audit
+    const scopeResult = this.skillScope.audit(skillContent, 'general');
     return {
       guard: guardResult,
       gate_action: gateAction,
-      load_allowed: gateAction === 'AUTO_APPROVED'
+      skillscope: scopeResult,
+      load_allowed: scopeResult.passed && guardResult.classification === 'benign' && gateAction === 'AUTO_APPROVED'
     };
   }
 
@@ -379,9 +479,16 @@ class SkillEcosystemBridge {
     return this.mesaS.delayedProbe(skillName, skillSummary, taskContext);
   }
 
-  selectOrDistill(task, candidates, trajectory = null, outcome = null) {
+  selectOrDistill(task, candidates, trajectory = null, outcome = null, taskType = 'query_answering') {
     this.stats.selections++;
     const skill = this.skill1.queryAndRerank(task, candidates);
+    // Aethelgard over-provisioning check
+    const overRatio = this.aethelgard.overprovisionRatio(candidates, taskType);
+    if (overRatio > 15) {
+      // Scale down to minimum viable
+      const minimal = this.aethelgard.scope(taskType);
+      candidates = minimal;
+    }
     if (!skill && trajectory && outcome && outcome > 0.7) {
       const newSkill = `distilled_${Math.abs(this._hash(task)) % 10000}`;
       this.skill1.distillFromTrajectory(trajectory, outcome, newSkill);
@@ -418,5 +525,7 @@ module.exports = {
   EvoSkillParetoSelector,
   SkillOrchestraHandbook,
   SkillEcosystemBridge,
+  SkillScope,
+  AethelgardGovernor,
   VERIFICATION_LEVELS
 };

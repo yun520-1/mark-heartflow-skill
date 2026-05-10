@@ -116,6 +116,36 @@ class SkillGovernanceIntegrator {
       ledger: this.ledger.summarize()
     };
   }
+
+  /**
+   * preLoadPipeline — SkillForge-style pre-execution validation
+   * Orchestrates: SkillScope → VerificationGate → MESAS-Gate → RiskGate
+   * Returns: { skillscope, gate, mesa_trusted, risk, load_allowed }
+   */
+  preLoadPipeline(skillText, taskContext, skillName = 'heartflow') {
+    const scopeResult = SkillScopeAuditor.audit(skillText, taskContext);
+    const gateAction = this.verificationGate
+      ? this.verificationGate.gate(skillName, 'reversible')
+      : 'AUTO_APPROVED';
+    const mesaAllowed = this.mesa
+      ? this.mesa.probe(skillName, skillText.slice(0, 200), taskContext)
+      : true;
+    const riskResult = this.riskGate
+      ? this.riskGate.compute(scopeResult.passed ? 0.2 : 0.7, 0.1, scopeResult.passed ? 0.1 : 0.3)
+      : { allow: true, vi: 1 };
+
+    return {
+      skillscope: scopeResult,
+      gate: gateAction,
+      mesa_trusted: mesaAllowed,
+      risk: riskResult,
+      load_allowed: scopeResult.passed && gateAction === 'AUTO_APPROVED' && mesaAllowed && riskResult.allow
+    };
+  }
+
+  // Legacy aliases for compatibility with mark.md v11.37.1
+  get verification() { return this.verificationGate; }
+  set verification(v) { this.verificationGate = v; }
 }
 
 // ============================================================
@@ -859,6 +889,53 @@ class HeartFlowV1141 extends HeartFlowV1140 {
   }
 }
 
+// Extend HeartFlowV1141 with skill-lifecycle + skill-guard + preLoadPipeline
+class HeartFlowV1142 extends HeartFlowV1141 {
+  constructor(options = {}) {
+    super(options);
+    this.gates = [
+      ...this.gates,
+      'skillforge-loop',
+      'skillguard-robust',
+      'skill1-unified',
+      'skillos-curation'
+    ];
+  }
+
+  // SkillForge loop: failure → diagnose → optimize
+  forgeLoop(trace) {
+    const { SkillForgeLoop } = require('./skill-lifecycle');
+    const loop = new SkillForgeLoop();
+    const failures = loop.analyze(trace);
+    const diagnosis = loop.diagnose(failures);
+    return { failures, diagnosis, iteration: loop.getIteration() };
+  }
+
+  // SkillGuard-Robust classification
+  guardClassify(skillContent) {
+    const { SkillGuardRobust } = require('./skill-guard');
+    return SkillGuardRobust.classify(skillContent);
+  }
+
+  // Combined audit: governance + lifecycle + guard
+  auditWithPapers(files = {}) {
+    const base = super.auditWithPapers(files);
+
+    // SkillGuard-Robust scan
+    const guardResults = {};
+    for (const [name, text] of Object.entries(files)) {
+      const { SkillGuardRobust } = require('./skill-guard');
+      guardResults[name] = SkillGuardRobust.classify(String(text));
+    }
+
+    return {
+      ...base,
+      skillguard: { results: guardResults },
+      passed: base.passed && !Object.values(guardResults).some(r => r.classification === 'malicious')
+    };
+  }
+}
+
 module.exports = {
   DEFAULT_GATES,
   EvidenceLedger,
@@ -875,5 +952,7 @@ module.exports = {
   // v11.41.0: mark.md upgrade — SkillScope + VerificationGate
   SkillScopeAuditor,
   VerificationGate,
-  HeartFlowV1141
+  HeartFlowV1141,
+  // v11.42.0: mark.md upgrade — skill-lifecycle + skill-guard + preLoadPipeline
+  HeartFlowV1142
 };
