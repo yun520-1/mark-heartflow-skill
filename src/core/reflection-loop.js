@@ -532,6 +532,52 @@ Generate a concrete next step:`;
   }
 }
 
+// ============================================================
+// v11.43.1 PAPER INJECTION — reflection-loop.js
+// [4] GSAR (arXiv:2604.23366) | [9] EvoSkill (arXiv:2603.02766)
+// ============================================================
+const _p11 = require('./papers/v11_43_1_integration.js');
+
+ReflectionLoop.prototype.gsar = _p11.GSARGroundingGate;
+ReflectionLoop.prototype.evoskill = new _p11.EvoSkillDiscovery();
+
+/**
+ * GSAR-aware reflect — uses typed grounding to evaluate claims
+ * before storing reflection. Falls back to standard reflect on error.
+ */
+ReflectionLoop.prototype.reflectWithGSAR = async function(options = {}) {
+  try {
+    const evidence = options.evidence || {};
+    const claims = options.claims || [];
+    if (claims.length > 0) {
+      const gsr = _p11.GSARGroundingGate.evaluate(claims, evidence);
+      options.gsarResult = gsr;
+      if (gsr.decision === 'replan') {
+        options.strategy = REFLEXION_STRATEGY.REFLEXION;
+      }
+    }
+  } catch (e) {
+    // GSAR evaluation is best-effort; fall through to standard reflect
+  }
+  return this.reflect(options);
+};
+
+/**
+ * EvoSkill integration — analyze failures and propose new skills
+ * Threshold: 3+ failures before proposing a new skill
+ */
+ReflectionLoop.prototype.evolveFromFailures = function(traces) {
+  const failures = this.evoskill.analyzeFailures(traces);
+  if (failures.length >= 3) {
+    const skillName = this.evoskill.proposeSkill(failures);
+    if (skillName) {
+      console.log(`[EvoSkill] Proposed new skill: ${skillName} from ${failures.length} failures`);
+    }
+    return { failures, proposedSkill: skillName };
+  }
+  return { failures, proposedSkill: null };
+};
+
 module.exports = {
   ReflectionLoop,
   REFLEXION_STRATEGY,

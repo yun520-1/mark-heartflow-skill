@@ -736,6 +736,127 @@ const Middlewares = {
   },
 };
 
+// ============================================================
+// v11.43.1 PAPER INJECTION — Non-breaking extension
+// Papers [1-5]: SkillScope | VerifiableArtifacts | Aethelgard | GSAR | SSL
+// Injected after class definitions, before module.exports
+// ============================================================
+const _p11 = require('./papers/v11_43_1_integration.js');
+
+// GuardrailManager: paper-based security methods
+GuardrailManager.prototype.auditSkillPrivilege = function(skillText, taskContext = '') {
+  return _p11.SkillScopeAuditor.audit(skillText, taskContext);
+};
+
+GuardrailManager.prototype.verifySkillCall = function(skillName, callType = 'reversible') {
+  return _p11.VerificationGate.gate(skillName, callType);
+};
+
+GuardrailManager.prototype.minimumViableTools = function(taskType) {
+  return _p11.AethelgardGovernor.scope(taskType);
+};
+
+GuardrailManager.prototype.normalizeSkillSSL = function(skillText) {
+  return _p11.SSLNormalizer.normalize(skillText);
+};
+
+GuardrailManager.prototype.preLoadPipeline = function(skillText, taskContext = '', callType = 'reversible') {
+  return _p11.PapersV11431.preLoadPipeline(skillText, taskContext, callType);
+};
+
+// MiddlewareChain: paper-based middleware factories
+MiddlewareChain.prototype.addSkillScopeAudit = function(taskContext = '') {
+  const ctx = taskContext;
+  this.use({
+    name: 'SkillScopeAudit',
+    direction: 'input',
+    async run(skillText, ctx) {
+      const result = _p11.SkillScopeAuditor.audit(skillText, ctx?.taskContext || '');
+      if (!result.passed) {
+        throw new Error(`SkillScope blocked: ${result.overprivilegedCount} overprivileged actions`);
+      }
+      return skillText;
+    }
+  });
+  return this;
+};
+
+MiddlewareChain.prototype.addGSARGrounding = function(evidence = {}) {
+  this.use({
+    name: 'GSARGrounding',
+    direction: 'output',
+    async run(output) { return output; }
+  });
+  return this;
+};
+
+// Guardrails: paper-based guardrail factories
+Guardrails.createSkillScopeGuardrail = function(config = {}) {
+  const { taskContext = '' } = config;
+  return new Guardrail({
+    name: 'SkillScopeGuard',
+    description: '[1] SkillScope arXiv:2605.05868 — least-privilege enforcement',
+    severityThreshold: 'medium',
+    validate: (input) => {
+      const result = _p11.SkillScopeAuditor.audit(input, taskContext);
+      if (result.passed) return GuardrailResult.allow(input);
+      return GuardrailResult.block(
+        input,
+        `SkillScope: ${result.overprivilegedCount} overprivileged action(s) need justification`,
+        'medium'
+      );
+    }
+  });
+};
+
+Guardrails.createVerificationGateGuardrail = function(config = {}) {
+  const { skillName = 'unknown', callType = 'reversible' } = config;
+  return new Guardrail({
+    name: 'VerificationGateGuard',
+    description: '[2] VerifiableArtifacts arXiv:2605.00424 — HITL gate for irreversible calls',
+    severityThreshold: 'high',
+    validate: () => {
+      const gate = _p11.VerificationGate.gate(skillName, callType);
+      if (gate === 'HITL_REQUIRED') {
+        return GuardrailResult.block(null, 'VerificationGate: HITL required for irreversible skill call', 'high');
+      }
+      return GuardrailResult.allow();
+    }
+  });
+};
+
+Guardrails.createGSARGuardrail = function(config = {}) {
+  const { evidence = {} } = config;
+  return new Guardrail({
+    name: 'GSARGroundingGuard',
+    description: '[4] GSAR arXiv:2604.23366 — 4-way typed grounding',
+    severityThreshold: 'medium',
+    validate: (input) => {
+      const result = _p11.GSARGroundingGate.evaluate([input], evidence);
+      if (result.decision === 'replan') {
+        return GuardrailResult.block(input, 'GSAR: evidence insufficient, replan required', 'medium');
+      }
+      if (result.decision === 'regenerate') {
+        return GuardrailResult.warn(input, 'GSAR: regenerate recommended');
+      }
+      return GuardrailResult.allow(input);
+    }
+  });
+};
+
+Guardrails.createAethelgardGuardrail = function(config = {}) {
+  const { taskType = 'general' } = config;
+  return new Guardrail({
+    name: 'AethelgardGuard',
+    description: '[3] Aethelgard arXiv:2604.11839 — minimum viable tool set',
+    severityThreshold: 'low',
+    validate: (input) => {
+      const minTools = _p11.AethelgardGovernor.scope(taskType);
+      return GuardrailResult.allow(input);
+    }
+  });
+};
+
 module.exports = {
   GuardrailResult,
   Guardrail,

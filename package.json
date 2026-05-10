@@ -1,7 +1,7 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v11.42.1: Skill Governance + Lifecycle + Guard + Pareto + DAG",
-  "version": "v11.42.1",
+  "description": "HeartFlow v11.43.2: 15 Papers — FSRSv4 + Kalman + MultiAnchor + HippoRAG + EASE + CrossTimeReplay + SkillScope + VerifiableArtifacts + Aethelgard + GSAR + SSL + HCPMAD + SkillOS + Skill1 + EvoSkill + MemoryWorth",
+  "version": "v11.43.2",
   "releaseDate": "2026-05-10",
   "main": "src/core/heartflow-engine.js",
   "bin": {

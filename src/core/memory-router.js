@@ -456,4 +456,30 @@ class MultiMemoryStore {
 }
 
 
+// v11.43.2 PAPER INJECTION: memory-router.js
+// [3] HippoRAGMemory (arXiv:2406.13417)
+const _p11 = require('./papers/v11_43_2_integration.js');
+
+MemoryRouter.prototype.hippoRAG = new _p11.HippoRAGMemory();
+
+/** Index a memory in HippoRAG's entity graph */
+MemoryRouter.prototype.indexWithHippoRAG = function(memory) {
+  this.hippoRAG.index(memory);
+};
+
+/** Retrieve from HippoRAG entity graph (hippocampal pattern completion) */
+MemoryRouter.prototype.hippoRAGRetrieve = function(query, topK = 5) {
+  return this.hippoRAG.retrieve(query, topK);
+};
+
+MultiMemoryStore.prototype.hippoRAG = new _p11.HippoRAGMemory();
+
+MultiMemoryStore.prototype.indexWithHippoRAG = function(memory) {
+  this.hippoRAG.index(memory);
+};
+
+MultiMemoryStore.prototype.hippoRAGRetrieve = function(query, topK = 5) {
+  return this.hippoRAG.retrieve(query, topK);
+};
+
 module.exports = { MemoryRouter, MultiMemoryStore, MemoryType, quickClassify, inferType };

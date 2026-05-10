@@ -9,6 +9,9 @@
  * - Dynamic Skills: openreview_cjU3YbcRr8 — 10-operator lifecycle algebra
  */
 
+// v11.43.1: import paper modules
+const _p11 = require('./papers/v11_43_1_integration.js');
+
 // ============================================================
 // 10-OPERATOR LIFECYCLE ALGEBRA
 // openreview_cjU3YbcRr8
@@ -243,5 +246,7 @@ module.exports = {
   SkillLifecycleAlgebra,
   SkillForgeLoop,
   Skill1UnifiedPolicy,
-  SkillOSCurator
+  SkillOSCurator,
+  EvoSkillDiscovery: _p11.EvoSkillDiscovery,
+  MemoryWorth: _p11.MemoryWorth,
 };

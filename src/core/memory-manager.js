@@ -328,6 +328,31 @@ class UnifiedMemoryStore {
   }
 }
 
+// v11.43.2 PAPER INJECTION: memory-manager.js
+// [1] MemArchitectGovernor | [6] MemoryV11432
+const _p11 = require('./papers/v11_43_2_integration.js');
+
+UnifiedMemoryStore.prototype.memArchitect = new _p11.MemArchitectGovernor();
+UnifiedMemoryStore.prototype.memoryV11432 = _p11.MemoryV11432;
+
+/** Record feedback on a stored memory (FSRS v4 adaptive scheduling) */
+UnifiedMemoryStore.prototype.recordFeedback = function(memoryId, success) {
+  this.memArchitect.recordFeedback(memoryId, success);
+};
+
+/** Get FSRS v4 retrievability for all memories in this store */
+UnifiedMemoryStore.prototype.getRetrievability = function() {
+  return Array.from(this.core.store.data).map(m => ({
+    id: m.id,
+    retrievability: this.memArchitect._fsrs4_retrievability(m),
+  }));
+};
+
+/** Memory decay report for UI dashboard */
+UnifiedMemoryStore.prototype.decayReport = function() {
+  return this.memArchitect.getDecayReport();
+};
+
 // ============================================================
 // 顶层API（替换所有旧记忆调用）
 // ============================================================

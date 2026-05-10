@@ -267,4 +267,32 @@ class MemoryTierManager {
   }
 }
 
+// v11.43.2 PAPER INJECTION: Memory Layer Enhancement
+// [1] MemArchitectGovernor | [2] MultiAnchorIdentity
+const _p11 = require('./papers/v11_43_2_integration.js');
+
+MemoryTierManager.prototype.memArchitect = new _p11.MemArchitectGovernor();
+MemoryTierManager.prototype.multiAnchor = new _p11.MultiAnchorIdentity(fs, path);
+
+/** Record feedback for a memory's utility (FSRS v4 + Kalman) */
+MemoryTierManager.prototype.recordMemoryFeedback = function(memoryId, success) {
+  this.memArchitect.recordFeedback(memoryId, success);
+};
+
+/** Get FSRS v4 retrievability score for a memory */
+MemoryTierManager.prototype.getRetrievability = function(memory) {
+  return this.memArchitect._fsrs4_retrievability(memory);
+};
+
+/** Multi-anchor identity: save identity anchor content */
+MemoryTierManager.prototype.saveIdentityAnchor = function(anchorName, content) {
+  return this.multiAnchor.saveAnchor(anchorName, content);
+};
+
+/** Multi-anchor identity: inject current identity from all anchors */
+MemoryTierManager.prototype.injectIdentity = function() {
+  const loaded = this.multiAnchor.loadAnchors();
+  return { loaded, identity: this.multiAnchor.injectIdentity() };
+};
+
 module.exports = { MemoryTierManager, isProtected, CONFIG };

@@ -560,4 +560,27 @@ class AgentMemory {
   }
 }
 
+// v11.43.1 PAPER INJECTION: MemoryWorth [10] arXiv:2604
+const _p11 = require('./papers/v11_43_1_integration.js');
+const memoryWorth = new _p11.MemoryWorth();
+
+StatefulAgent.prototype.recordMemoryWorth = function(memoryId, success) {
+  memoryWorth.record(memoryId, success);
+};
+
+StatefulAgent.prototype.getMemoryWorth = function(memoryId) {
+  return memoryWorth.worth(memoryId);
+};
+
+StatefulAgent.prototype.shouldKeepMemory = function(memoryId, threshold = 0.5) {
+  return memoryWorth.shouldKeep(memoryId, threshold);
+};
+
+// Evict low-worth memories on demand
+StatefulAgent.prototype.evictLowWorthMemories = function(threshold = 0.5) {
+  const before = this.blocks.length;
+  this.blocks = this.blocks.filter(b => memoryWorth.shouldKeep(b.id || b.label, threshold));
+  return { evicted: before - this.blocks.length, remaining: this.blocks.length };
+};
+
 module.exports = { StatefulAgent, AgentMemory };

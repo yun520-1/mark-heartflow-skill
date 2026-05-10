@@ -659,6 +659,35 @@ class MemoryConsolidationEngine {
   }
 }
 
+// v11.43.2 PAPER INJECTION: Consolidation Enhancement
+// [4] EASE | [5] CrossTimeReplay
+const _p11 = require('./papers/v11_43_2_integration.js');
+
+MemoryConsolidationEngine.prototype.ease = new _p11.EASEMemoryCompressor();
+MemoryConsolidationEngine.prototype.replay = new _p11.CrossTimeReplay();
+
+/** Compress recent episodes using EASE (Episodic-Abstract Semantic Embedding) */
+MemoryConsolidationEngine.prototype.compressWithEASE = function(episodes) {
+  this.ease.compress(episodes);
+  return { concepts: this.ease.semanticStore.size };
+};
+
+/** Run cross-time replay consolidation */
+MemoryConsolidationEngine.prototype.runCrossTimeReplay = function(evaluatorFn) {
+  this.replay.replay(evaluatorFn || (() => 0.5));
+  return this.replay.getStats();
+};
+
+/** Query EASE semantic store */
+MemoryConsolidationEngine.prototype.queryEASE = function(concept) {
+  return this.ease.query(concept);
+};
+
+/** Get top memories from cross-time replay pool */
+MemoryConsolidationEngine.prototype.getTopReplayMemories = function(topK = 5) {
+  return this.replay.retrieveTop(topK);
+};
+
 module.exports = {
   MemoryConsolidationEngine,
   ClusterEngine,

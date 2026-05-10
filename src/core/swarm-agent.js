@@ -690,6 +690,19 @@ function createHeartFlowSwarm(options = {}) {
   return swarm;
 }
 
+// v11.43.1 PAPER INJECTION: HCPMAD [6] arXiv:2604.09679
+const _p11 = require('./papers/v11_43_1_integration.js');
+
+Swarm.prototype.hcpRouter = _p11.HCPMADRouter;
+
+Swarm.prototype.routeWithHCPMAD = function(complexity, confidence) {
+  return _p11.HCPMADRouter.route(complexity, confidence);
+};
+
+Agent.prototype.routeWithHCPMAD = function(complexity, confidence) {
+  return _p11.HCPMADRouter.route(complexity, confidence);
+};
+
 module.exports = {
   Agent,
   Result,
