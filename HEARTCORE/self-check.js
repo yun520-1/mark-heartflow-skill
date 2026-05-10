@@ -120,6 +120,12 @@ const CHECKS = [
     label: 'superlocal-memory.js',
     path: path.join(ROOT, 'src/core/superlocal-memory.js'),
     verify: (c) => c.includes('FRQAD') && c.includes('MultiChannelRetrieval') && c.includes('EbbinghausAdaptiveForgetting')
+  },
+  {
+    id: 'skill-ecosystem',
+    label: 'skill-ecosystem.js',
+    path: path.join(ROOT, 'src/core/skill-ecosystem.js'),
+    verify: (c) => c.includes('SkillEcosystemBridge') && c.includes('SkillGuardRobust') && c.includes('MESASMetacognitiveGate')
   }
 ];
 
