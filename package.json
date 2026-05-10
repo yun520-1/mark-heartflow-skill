@@ -1,7 +1,7 @@
 {
   "name": "heartflow",
   "description": "HeartFlow v11.32.0: 元认知记忆引擎 (MetacognitiveMemory)",
-  "version": "v11.37.0",
+  "version": "v11.38.0",
   "releaseDate": "2026-05-09",
   "main": "src/core/heartflow-engine.js",
   "bin": {

@@ -114,6 +114,12 @@ const CHECKS = [
     label: 'executable-rules.json',
     path: path.join(ROOT, 'data/executable-rules.json'),
     verify: (c) => c.includes('RULE-001') && c.includes('RULE-005')
+  },
+  {
+    id: 'superlocal-memory',
+    label: 'superlocal-memory.js',
+    path: path.join(ROOT, 'src/core/superlocal-memory.js'),
+    verify: (c) => c.includes('FRQAD') && c.includes('MultiChannelRetrieval') && c.includes('EbbinghausAdaptiveForgetting')
   }
 ];
 
