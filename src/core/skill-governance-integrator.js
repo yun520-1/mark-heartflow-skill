@@ -936,6 +936,51 @@ class HeartFlowV1142 extends HeartFlowV1141 {
   }
 }
 
+// Extend HeartFlowV1142 with EvoSkillPareto + GraSPDAG
+class HeartFlowV11421 extends HeartFlowV1142 {
+  constructor(options = {}) {
+    super(options);
+    const { EvoSkillPareto, GraSPDAG } = require('./skill-pareto');
+    this.evoskill = new EvoSkillPareto();
+    this.grasp = new GraSPDAG();
+    this.gates = [
+      ...this.gates,
+      'evoskill-pareto',
+      'grasp-dag'
+    ];
+  }
+
+  // Pre-load pipeline from mark.md v11.42.1
+  preLoadPipeline(skillText, taskContext = '', callType = 'reversible') {
+    const guard = this.skillScope.audit(skillText, taskContext);
+    const gate = this.verificationGate
+      ? this.verificationGate.gate('heartflow', callType)
+      : 'AUTO_APPROVED';
+    // Biconditional check
+    const bicond = VerificationGate.biconditionalCheck
+      ? VerificationGate.biconditionalCheck(skillText.slice(0, 200), taskContext.slice(0, 200))
+      : { passed: true };
+
+    return {
+      skillguard: { classification: guard.passed ? 'benign' : 'malicious', confidence: guard.passed ? 0.90 : 0.95 },
+      gate,
+      biconditional: bicond.passed !== false,
+      load_allowed: guard.passed && gate === 'AUTO_APPROVED' && (bicond.passed !== false)
+    };
+  }
+
+  // GraSP DAG operations
+  dagAddSkill(name, pre, eff) { this.grasp.addSkill(name, pre, eff); }
+  dagAddEdge(src, dst) { this.grasp.addEdge(src, dst); }
+  dagCompile() { return this.grasp.compile(); }
+  dagRepair(node, op, target) { return this.grasp.repair(node, op, target); }
+
+  // EvoSkill Pareto operations
+  evoAdd(name, score, complexity) { this.evoskill.add(name, score, complexity); }
+  evoFilter() { return this.evoskill.filter(); }
+  evoPrune() { return this.evoskill.prune(); }
+}
+
 module.exports = {
   DEFAULT_GATES,
   EvidenceLedger,
@@ -954,5 +999,7 @@ module.exports = {
   VerificationGate,
   HeartFlowV1141,
   // v11.42.0: mark.md upgrade — skill-lifecycle + skill-guard + preLoadPipeline
-  HeartFlowV1142
+  HeartFlowV1142,
+  // v11.42.1: mark.md upgrade — EvoSkillPareto + GraSPDAG
+  HeartFlowV11421
 };

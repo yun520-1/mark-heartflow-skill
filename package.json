@@ -1,8 +1,8 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v11.42.0: Skill Governance + Lifecycle + Guard",
-  "version": "v11.42.0",
-  "releaseDate": "2026-05-09",
+  "description": "HeartFlow v11.42.1: Skill Governance + Lifecycle + Guard + Pareto + DAG",
+  "version": "v11.42.1",
+  "releaseDate": "2026-05-10",
   "main": "src/core/heartflow-engine.js",
   "bin": {
     "heartflow": "bin/cli.js",
