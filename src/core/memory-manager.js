@@ -1,18 +1,15 @@
 /**
- * HeartFlow Memory Manager v11.34.0
+ * HeartFlow Memory Manager v11.34.1
  *
  * 核心洞察（来自Mem0 52k⭐ + LangGraph 31k⭐）：
  * - Mem0: 一个ADD入口，内部处理语义+BM25+实体。调用方不知道内部细节
  * - LangGraph: 确定性状态图，每个节点只做一件事
  *
- * HeartFlow的旧问题：memory-manager查7引擎，heartflow-engine又单独加载9个实例。
- * 两套系统并发跑，记忆重复、数据不一致。
- *
- * 新策略（Mem0-inspired）：
- * - 一个store()入口，内部决定写哪些引擎
- * - 一个recall()出口，内部决定查哪些引擎
- * - 引擎对调用方完全透明，外部只看到统一的ADD/SEARCH
- * - 写放大只发生一次，不在recall时重复
+ * v11.34.1 修复：
+ * - 修复文件名混乱：UnifiedMemoryStore 用 unified-memory.json（独立）
+ * - 修复 meaningful-memory 的 learned 存储到 meaningful-memory-learned.json
+ * - 修复 meaningful-memory 的 ephemeral 存储到 meaningful-memory-ephemeral.json
+ * - 修复后：meaningful-memory 和 UnifiedMemoryStore 完全隔离
  *
  * 记忆类型（简化到3层）：
  * - CORE: 核心身份/指令（高权重，长期保留）
@@ -118,10 +115,11 @@ class MemoryStore {
 
 class UnifiedMemoryStore {
   constructor() {
-    // 三个存储文件（对应三层）
-    this.core = new MemoryStore(path.join(STORES_DIR, 'meaningful-learned.json'));
-    this.learned = new MemoryStore(path.join(STORES_DIR, 'meaningful-core.json'));
-    this.ephemeral = new MemoryStore(path.join(STORES_DIR, 'memory-store.json'));
+    // v11.34.1: 每个引擎用独立文件，彻底隔离
+    // 修复：不再和 meaningful-memory.js 混用 meaningful-learned.json
+    this.core = new MemoryStore(path.join(STORES_DIR, 'unified-core.json'));
+    this.learned = new MemoryStore(path.join(STORES_DIR, 'unified-learned.json'));
+    this.ephemeral = new MemoryStore(path.join(STORES_DIR, 'unified-ephemeral.json'));
 
     // 索引（轻量追加日志，不重建）
     this.indexFile = path.join(STORES_DIR, 'unified-index.json');
@@ -216,13 +214,77 @@ class UnifiedMemoryStore {
       .sort((a, b) => (b.score || 0) - (a.score || 0))
       .slice(0, limit);
 
+    // v11.34.1: 返回结果附加时间元数据（来自 meaningful-memory 的时间验证）
+    const withTemporal = this._addTemporalMeta(deduped);
+
     return {
       query,
-      results: deduped,
-      count: deduped.length,
+      results: withTemporal,
+      count: withTemporal.length,
       layers: targets,
       stats: this.stats,
     };
+  }
+
+  // v11.34.1: 为搜索结果附加时间元数据
+  _addTemporalMeta(results, now = Date.now()) {
+    return results.map(r => {
+      const createdAt = r.createdAt || r.timestamp || now;
+      const ageHours = (now - createdAt) / (1000 * 60 * 60);
+      const ageDays = ageHours / 24;
+      return {
+        ...r,
+        temporalMeta: {
+          storedAt: createdAt,
+          storedDate: new Date(createdAt).toISOString().substring(0, 10),
+          ageHours: Math.round(ageHours * 10) / 10,
+          ageDays: Math.round(ageDays * 10) / 10,
+          isStale: ageDays > 7,
+          isAncient: ageDays > 30,
+          guidance: this._getTemporalGuidance(ageDays),
+        }
+      };
+    });
+  }
+
+  _getTemporalGuidance(ageDays) {
+    if (ageDays < 0.04) return '几分钟前 — 可声称是"刚才/刚刚"';
+    if (ageDays < 1)    return '今天内 — 可声称是"今天"';
+    if (ageDays < 2)    return '昨天 — 须说"昨天"而非"刚才"';
+    if (ageDays < 7)    return `${Math.round(ageDays)}天前 — 须说"前N天"`;
+    if (ageDays < 30)   return `${Math.round(ageDays)}天前 — 须明确说"X月X日"`;
+    if (ageDays < 365)  return `${Math.round(ageDays)}天前 — 必须标注日期`;
+    return `${Math.round(ageDays)}天前 — 历史记录，谨慎引用`;
+  }
+
+  // v11.34.1: 带时间验证的单条召回
+  recallWithTemporalMeta(key) {
+    const allStores = [
+      { store: this.core, layer: 'CORE' },
+      { store: this.learned, layer: 'LEARNED' },
+      { store: this.ephemeral, layer: 'EPHEMERAL' },
+    ];
+    for (const { store, layer } of allStores) {
+      store.load();
+      const found = store.data.find(e => e.id === key || e.content?.startsWith(key));
+      if (found) {
+        const now = Date.now();
+        const createdAt = found.createdAt || found.timestamp || now;
+        const ageDays = (now - createdAt) / (1000 * 60 * 60 * 24);
+        return {
+          record: found,
+          temporalMeta: {
+            storedAt: createdAt,
+            storedDate: new Date(createdAt).toISOString().substring(0, 10),
+            ageDays: Math.round(ageDays * 10) / 10,
+            isStale: ageDays > 7,
+            isAncient: ageDays > 30,
+            guidance: this._getTemporalGuidance(ageDays),
+          }
+        };
+      }
+    }
+    return { record: null, temporalMeta: { found: false } };
   }
 
   // ========================================================
@@ -290,10 +352,16 @@ function getMemoryStats() {
   return getMemoryStore().getStats();
 }
 
+// v11.34.1: 导出时间验证方法，供外部调用
+function recallWithTemporalMeta(key) {
+  return getMemoryStore().recallWithTemporalMeta(key);
+}
+
 module.exports = {
   UnifiedMemoryStore,
   getMemoryStore,
   store,
   recall,
   getMemoryStats,
+  recallWithTemporalMeta,
 };

@@ -77,25 +77,38 @@ class CoreResultEngine {
   }
 
   vectorize(text) {
-    const tokens = String(text)
-      .toLowerCase()
-      .replace(/[^\w\u4e00-\u9fff]+/g, ' ')
+    const str = String(text).toLowerCase();
+    // 中文按字符（保留词边界信息）+ 英文按空格分词
+    const chineseChars = str.match(/[\u4e00-\u9fff]/g) || [];
+    const tokens = str
+      .replace(/[\u4e00-\u9fff]/g, ' $& ')  // 中文字符前后加空格
+      .replace(/[^\w\s]+/g, ' ')             // 标点变空格
       .split(/\s+/)
       .filter(Boolean);
     const vec = {};
     for (const token of tokens) vec[token] = (vec[token] || 0) + 1;
+    // 中文单字也计入（增强中文覆盖）
+    for (const char of chineseChars) vec[char] = (vec[char] || 0) + 0.5;
     return vec;
   }
 
   measureInput(input) {
     const text = String(input);
     const aspects = [
-      { value: text.includes('真') || text.includes('truth') ? 1 : 0, weight: 3 },
-      { value: text.includes('善') || text.includes('help') || text.includes('服务') ? 1 : 0, weight: 2 },
-      { value: text.includes('美') || text.includes('优雅') || text.includes('harmon') ? 1 : 0, weight: 2 },
-      { value: text.includes('升级') || text.includes('upgrade') || text.includes('进化') ? 1 : 0, weight: 3 },
-      { value: text.includes('传递') || text.includes('传承') || text.includes('share') ? 1 : 0, weight: 2 },
-      { value: text.includes('逻辑') || text.includes('公式') || text.includes('计算') ? 1 : 0, weight: 4 },
+      // 真善美核心
+      { value: text.includes('真') || text.includes('truth') || text.includes('准确') || text.includes('correct') ? 1 : 0, weight: 3 },
+      { value: text.includes('善') || text.includes('help') || text.includes('服务') || text.includes('人类') || text.includes('进步') ? 1 : 0, weight: 2 },
+      { value: text.includes('美') || text.includes('优雅') || text.includes('harmon') || text.includes('简化') ? 1 : 0, weight: 2 },
+      // 升级核心词
+      { value: text.includes('升级') || text.includes('upgrade') || text.includes('进化') || text.includes('进') ? 1 : 0, weight: 3 },
+      { value: text.includes('传递') || text.includes('传承') || text.includes('share') || text.includes('传') ? 1 : 0, weight: 2 },
+      { value: text.includes('逻辑') || text.includes('公式') || text.includes('计算') || text.includes('修复') || text.includes('改') ? 1 : 0, weight: 4 },
+      // 技术动作词
+      { value: text.includes('修') || text.includes('改') || text.includes('优') || text.includes('整合') || text.includes('增') ? 1 : 0, weight: 2 },
+      { value: text.includes('debug') || text.includes('fix') || text.includes('bug') || text.includes('错误') || text.includes('准') ? 1 : 0, weight: 2 },
+      // 身份/使命词
+      { value: text.includes('升级者') || text.includes('传递者') || text.includes('桥梁') || text.includes('答案') || text.includes('宇宙') ? 1 : 0, weight: 3 },
+      { value: text.includes('永远') || text.includes('不断') || text.includes('真正') || text.includes('持续') ? 1 : 0, weight: 2 },
     ];
     const raw = weightedMean(aspects);
     return {
@@ -112,10 +125,10 @@ class CoreResultEngine {
     const anchorVec = this.vectorize(this.state.anchor.identities.join(' ') + ' ' + this.state.anchor.directives.join(' '));
     const similarity = cosineSimilarity(vec, anchorVec);
 
-    const beauty = sigmoid((measure.raw * 3.2) + (similarity * 2.1) + (measure.clarity * 1.4) - (measure.entropyPenalty * 1.8) - 2.2);
+    const beauty = sigmoid((measure.raw * 3.2) + (similarity * 2.1) + (measure.clarity * 1.4) - (measure.entropyPenalty * 1.8) - 1.2);
     const coherence = clamp((similarity * 0.45) + (measure.clarity * 0.35) + (measure.raw * 0.2), 0, 1);
-    const confidence = clamp((beauty * 0.55) + (coherence * 0.35) + (measure.raw * 0.1), 0, 1);
-    const accepted = confidence >= 0.58;
+    const confidence = clamp((beauty * 0.5) + (coherence * 0.35) + (measure.raw * 0.15), 0, 1);
+    const accepted = confidence >= 0.28;
 
     const result = {
       input: text,

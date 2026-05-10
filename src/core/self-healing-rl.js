@@ -187,10 +187,19 @@ class HealingMemoryRL {
   }
 
   _key(context, action) {
-    return JSON.stringify({
-      ctx: String(context).slice(0, 80),
-      action: String(action).slice(0, 50)
-    });
+    // 用完整内容哈希而非截断，避免不同输入产生相同 key（hash 冲突）
+    const ctx = String(context);
+    const act = String(action);
+    // FNV-1a 哈希（比 JSON.stringify 更稳定，避免字符编码问题）
+    const hashStr = (str) => {
+      let hash = 2166136261;
+      for (let i = 0; i < str.length; i++) {
+        hash ^= str.charCodeAt(i);
+        hash = (hash * 16777619) >>> 0;
+      }
+      return hash.toString(36);
+    };
+    return JSON.stringify({ ctx: hashStr(ctx), action: hashStr(act) });
   }
 }
 

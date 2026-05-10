@@ -417,12 +417,18 @@ class DecisionVerifier {
    * 关键词提取
    */
   _extractKeywords(text) {
-    const stopWords = new Set(['的', '了', '是', '在', '和', '与', '对', '为', '以', '上', '中', '下', '将', '把', '被', 'the', 'a', 'an', 'is', 'are', 'to', 'of', 'and', 'in', 'for', 'with', 'on']);
+    // 中英文停用词分开（中文按字符切分后逐个判断）
+    const cnStop = new Set(['的', '了', '是', '在', '和', '与', '对', '为', '以', '上', '中', '下', '将', '把', '被', '有', '也', '就', '都', '而', '及', '与', '着', '或', '但', '只', '要', '因为', '所以', '如果', '虽然', '然而', '并且', '或者', '以及']);
+    const enStop = new Set(['the', 'a', 'an', 'is', 'are', 'was', 'were', 'to', 'of', 'and', 'in', 'for', 'with', 'on', 'at', 'by', 'from', 'as', 'it', 'this', 'that', 'be', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can', 'must', 'shall']);
     const words = String(text)
       .replace(/[^\w\u4e00-\u9fa5]/g, ' ')
       .split(/\s+/)
-      .filter(w => w.length >= 2 && !stopWords.has(w));
-    return [...new Set(words)];
+      .filter(w => w.length >= 2);
+    return [...new Set(words.filter(w => {
+      // 中文单字只在中文停用表里查，英文词只在英文停用表里查
+      if (/[\u4e00-\u9fa5]/.test(w)) return !cnStop.has(w);
+      return !enStop.has(w.toLowerCase());
+    }))];
   }
 }
 

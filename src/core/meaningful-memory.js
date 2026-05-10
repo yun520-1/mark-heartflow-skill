@@ -28,8 +28,10 @@ const path = require('path');
 const crypto = require('crypto');
 
 const MEMORY_DIR = path.join(__dirname, '..', '..', 'memory');
+// v11.34.1: 独立文件名，不再和 UnifiedMemoryStore 混用文件
 const CORE_FILE    = path.join(MEMORY_DIR, 'meaningful-core.json');
 const LEARNED_FILE = path.join(MEMORY_DIR, 'meaningful-learned.json');
+const EPHEMERAL_FILE = path.join(MEMORY_DIR, 'meaningful-ephemeral.json');
 
 // v11.5.11: Lazy-load consolidation engine to avoid circular deps
 let _ConsolidationEngine = null;
@@ -185,7 +187,20 @@ class MeaningfulMemory {
         }
       }
 
-      console.log(`[MeaningfulMemory] 加载: ${Object.keys(this.core).length} CORE, ${Object.keys(this.learned).length} LEARNED`);
+      // v11.34.4: 加载 ephemeral（会话上下文，重启后恢复）
+      if (fs.existsSync(EPHEMERAL_FILE)) {
+        try {
+          const raw = JSON.parse(fs.readFileSync(EPHEMERAL_FILE, 'utf-8'));
+          for (const [key, rec] of Object.entries(raw)) {
+            this.ephemeral[key] = rec;
+            if (!this.vectors.ephemeral.has(key)) {
+              this.vectors.ephemeral.set(key, generateEmbedding(String(rec.value) + rec.reason));
+            }
+          }
+        } catch (e) { /* 文件为空或损坏，忽略 */ }
+      }
+
+      console.log(`[MeaningfulMemory] 加载: ${Object.keys(this.core).length} CORE, ${Object.keys(this.learned).length} LEARNED, ${Object.keys(this.ephemeral).length} EPHEMERAL`);
       this._meta.loads++;
     } catch (e) {
       console.warn('[MeaningfulMemory] 加载失败:', e.message);
@@ -195,8 +210,10 @@ class MeaningfulMemory {
   _save() {
     try {
       if (!fs.existsSync(MEMORY_DIR)) fs.mkdirSync(MEMORY_DIR, { recursive: true });
-      fs.writeFileSync(CORE_FILE,    JSON.stringify(this.core,     null, 2));
-      fs.writeFileSync(LEARNED_FILE, JSON.stringify(this.learned,  null, 2));
+      fs.writeFileSync(CORE_FILE,       JSON.stringify(this.core,      null, 2));
+      fs.writeFileSync(LEARNED_FILE,    JSON.stringify(this.learned,   null, 2));
+      // v11.34.4: ephemeral 也持久化（重启后恢复会话上下文）
+      fs.writeFileSync(EPHEMERAL_FILE,  JSON.stringify(this.ephemeral, null, 2));
       this._meta.saves++;
     } catch (e) {
       console.warn('[MeaningfulMemory] 保存失败:', e.message);
@@ -287,6 +304,13 @@ class MeaningfulMemory {
       key, value, type,
       reason: reason || this._defaultReason(type, level),
       timestamp: Date.now(),
+      // v11.34.1: 时间戳锚定 — 每条记忆必须锚定"什么时候"
+      // 防止把过去发生的事说成现在发生的事
+      temporalAnchor: {
+        storedAt: Date.now(),
+        storedDate: new Date().toISOString().substring(0, 10), // YYYY-MM-DD
+        sessionDate: null, // 由调用方在 remember() 时通过 event.sessionDate 传入
+      },
       source,
       level,
       importance: selfVerifyScore !== null ? Math.round(selfVerifyScore * 100) : Math.round(this._typeScore(type) * 100),
@@ -308,8 +332,8 @@ class MeaningfulMemory {
       this.relationships.set(key, relatedTo.map(r => ({ ...r, createdAt: Date.now() })));
     }
 
-    // 持久化（CORE + LEARNED）
-    if (level !== 'ephemeral') this._save();
+    // v11.34.4: 所有层都持久化（包括 ephemeral，会话重启后恢复）
+    this._save();
 
     return { level, record };
   }
@@ -339,6 +363,73 @@ class MeaningfulMemory {
       this.accessAndReinforce(key);
     }
     return result;
+  }
+
+  /**
+   * v11.34.1: 召回时的时间验证
+   *
+   * 核心问题：记忆被召回时，系统不会告诉调用方"这条记忆是什么时候的"。
+   * 调用方可能无意中把5月2日的记忆说成"今天做的"。
+   *
+   * 本方法在召回时额外返回元数据，调用方必须检查：
+   *   - 这条记忆是什么时候 stored 的？
+   *   - 和当前时间差多少天？
+   *
+   * @param {string} key - 记忆 key
+   * @param {number} [now] - 当前时间戳（测试用）
+   * @returns {{ record: object|null, temporalMeta: object }}
+   */
+  recallWithTemporalMeta(key, now = Date.now()) {
+    const record = this.core[key] || this.learned[key] || this.ephemeral[key] || null;
+
+    if (!record) {
+      return { record: null, temporalMeta: { found: false } };
+    }
+
+    const storedAt = record.timestamp || record.temporalAnchor?.storedAt || now;
+    const ageHours = (now - storedAt) / (1000 * 60 * 60);
+    const ageDays = ageHours / 24;
+
+    return {
+      record,
+      temporalMeta: {
+        found: true,
+        storedAt,
+        storedDate: record.temporalAnchor?.storedDate || new Date(storedAt).toISOString().substring(0, 10),
+        ageHours: Math.round(ageHours * 10) / 10,
+        ageDays: Math.round(ageDays * 10) / 10,
+        // 高风险标志：记忆超过7天，在"汇报当前状态"时使用需要额外验证
+        isStale: ageDays > 7,
+        // 危险标志：记忆超过30天
+        isAncient: ageDays > 30,
+        // 时间声明指南（供调用方参考）
+        temporalGuidance: this._getTemporalGuidance(ageDays),
+      }
+    };
+  }
+
+  _getTemporalGuidance(ageDays) {
+    if (ageDays < 0.04) return '几分钟前 — 可声称是"刚才/刚刚"';
+    if (ageDays < 1)    return '今天内 — 可声称是"今天"';
+    if (ageDays < 2)    return '昨天 — 须说"昨天"而非"刚才"';
+    if (ageDays < 7)    return `${Math.round(ageDays)}天前 — 须说"前${Math.round(ageDays)}天"`;
+    if (ageDays < 30)   return `${Math.round(ageDays)}天前 — 须明确说"X月X日"`;
+    if (ageDays < 365)  return `${Math.round(ageDays)}天前（${Math.round(ageDays/30)}个月前）— 必须标注日期`;
+    return `${Math.round(ageDays)}天前（${Math.round(ageDays/365)}年前）— 历史记录，谨慎引用`;
+  }
+
+  /**
+   * v11.34.1: 批量召回 + 时间验证（用于搜索结果）
+   * search* 方法的输出经过此方法包装，确保所有结果带时间元数据
+   */
+  verifySearchResults(results) {
+    return results.map(r => {
+      const { record, temporalMeta } = this.recallWithTemporalMeta(r.key);
+      return {
+        ...r,
+        temporalMeta,
+      };
+    });
   }
 
   knows(key) {
@@ -376,7 +467,8 @@ class MeaningfulMemory {
     // 检索触发强化：搜索结果中的记忆全部强化
     for (const r of results) { this.accessAndReinforce(r.key); }
     this._meta.channelSearches.semantic++;
-    return results.slice(0, topK);
+    // v11.34.1: 返回结果附加时间元数据，防止时间错配
+    return this.verifySearchResults(results.slice(0, topK));
   }
 
   /**
@@ -408,7 +500,8 @@ class MeaningfulMemory {
 
     results.sort((a, b) => b.score - a.score);
     this._meta.channelSearches.keyword++;
-    return results.slice(0, topK);
+    // v11.34.1: 返回结果附加时间元数据，防止时间错配
+    return this.verifySearchResults(results.slice(0, topK));
   }
 
   /**
@@ -434,7 +527,8 @@ class MeaningfulMemory {
 
     results.sort((a, b) => b.timestamp - a.timestamp);
     this._meta.channelSearches.time++;
-    return results.slice(0, topK);
+    // v11.34.1: 返回结果附加时间元数据，防止时间错配
+    return this.verifySearchResults(results.slice(0, topK));
   }
 
   /**
@@ -464,7 +558,8 @@ class MeaningfulMemory {
     }
 
     this._meta.channelSearches.association++;
-    return results;
+    // v11.34.1: 返回结果附加时间元数据，防止时间错配
+    return this.verifySearchResults(results);
   }
 
   /**
@@ -555,7 +650,8 @@ class MeaningfulMemory {
       }
     }
 
-    return resultKeys;
+    // v11.34.1: 融合搜索结果再做一次时间验证，确保去重后的结果时间元数据一致
+    return this.verifySearchResults(resultKeys);
   }
 
   /**

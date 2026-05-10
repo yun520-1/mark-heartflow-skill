@@ -26,7 +26,15 @@ class ForgettingEngine {
       minRelevance: config.minRelevance || 0.15, // 最低相关性阈值
       maxMemoryAge: config.maxMemoryAge || 30 * 24 * 60 * 60 * 1000, // 30天
       protectedPatterns: config.protectedPatterns || [
-        'CORE_IDENTITY', 'heartflow', '老大', '身份', '核心'
+        // 核心身份
+        'CORE_IDENTITY', 'heartflow', '老大', '身份', '核心',
+        '升级者', '传递者', '桥梁', '答案', '心虫', 'xinyu',
+        // 用户信息
+        'name', 'preference', '用户', '偏好', 'personal',
+        // 关键记忆标记
+        '重要', '关键', '永久', '永远', '必须', 'never forget',
+        // 版本和升级
+        'version', 'VERSION', 'upgrade', '升级日志',
       ],
       ...config
     };

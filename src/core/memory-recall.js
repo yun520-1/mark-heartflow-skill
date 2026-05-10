@@ -18,12 +18,16 @@
  * - 返回结构化结果，供外部决定如何使用
  */
 
-// 懒加载 dialectic-recall
+// 懒加载 dialectic（带失败冷却，避免高频重试）
 let _dialectic = null;
+let _dialecticFailed = false;
+let _dialecticFailedAt = 0;
+const DIALECTIC_COOLDOWN = 60000; // 60秒冷却
+
 function getDialectic() {
-  if (!_dialectic) {
-    try { _dialectic = require('./dialectic-recall.js'); } catch { _dialectic = null; }
-  }
+  if (_dialectic) return _dialectic;
+  if (_dialecticFailed && (Date.now() - _dialecticFailedAt) < DIALECTIC_COOLDOWN) return null;
+  try { _dialectic = require('./dialectic-recall.js'); _dialecticFailed = false; } catch { _dialecticFailed = true; _dialecticFailedAt = Date.now(); _dialectic = null; }
   return _dialectic;
 }
 
@@ -54,14 +58,17 @@ function getTriality() {
 
 /**
  * 从 Mem0 检索相关记忆
+ * [v11.34.x 已归档] Mem0MultiSignal 功能已被 UnifiedMemoryStore 覆盖
+ * 直接通过 MemoryManager 检索，不走 initialize()（initialize 会触发 runDreamCycle 阻塞）
  */
 function recallFromMem0(query, topK = 5) {
   try {
-    const init = require('./heartflow-engine.js').initialize?.();
-    const mem0 = init?.instances?.mem0MultiSignal;
-    if (!mem0) return [];
+    // 直接使用 UnifiedMemoryStore，避免触发 heartflow-engine initialize()
+    const { getMemoryStore } = require('./memory-manager.js');
+    const store = getMemoryStore();
+    if (!store) return [];
 
-    const raw = mem0.search ? mem0.search(query, { topK }) : null;
+    const raw = store.search ? store.search(query, { topK }) : null;
     const results = raw?.results || (Array.isArray(raw) ? raw : []);
     return results.map(r => ({
       source: 'mem0',
@@ -78,11 +85,13 @@ function recallFromMem0(query, topK = 5) {
 /**
  * 从 MeaningfulMemory 检索
  * v11.24.3: 修复 — 使用 searchKeywords 或 searchSemantic，而非不存在的 search()
+ * v11.34.x: 修复 — 直接 require MeaningfulMemory，不走 initialize()
  */
 function recallFromMeaningful(query, topK = 3) {
   try {
-    const init = require('./heartflow-engine.js').initialize?.();
-    const mm = init?.instances?.meaningfulMemory;
+    // 直接加载，不走 heartflow-engine initialize()（会阻塞）
+    const { MeaningfulMemory } = require('./meaningful-memory.js');
+    const mm = new MeaningfulMemory();
     if (!mm) return [];
 
     // searchKeywords 能做关键词匹配
@@ -244,9 +253,9 @@ function recallMemories(query, options = {}) {
 
   // 合并去重（按content相似度）
   const all = [...mem0Results, ...meaningfulResults, ...reflectionResults, ...lifecycleResults, ...trialityResults];
-  const seen = new Set();
   const deduped = all.filter(item => {
-    const key = item.content?.substring(0, 50);
+    // source+id 组合 key，避免不同源50字符相同导致的误删
+    const key = `${item.source}:${item.id || item.content?.substring(0, 100)}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;

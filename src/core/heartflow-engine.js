@@ -1941,12 +1941,13 @@ module.exports.initialize = function() {
     init.instances.selfReflection = srm;
     init.modules.selfReflection = true;
   }
-  // v11.34.0 Memory Manager — 统一记忆入口
+  // v11.34.1 Memory Manager — 统一记忆入口
+  // 修复：getMemoryManager → getMemoryStore（原名笔误）
   if (true) {
     init.instances = init.instances || {};
-    const { getMemoryManager } = require('./memory-manager.js');
-    init.instances.memoryManager = getMemoryManager();
-    init.modules.memoryManager = true;
+    const { getMemoryStore } = require('./memory-manager.js');
+    init.instances.memoryStore = getMemoryStore();
+    init.modules.memoryStore = true;
   }
   // [v11.34.0 已归档] MeaningfulMemory - 功能已被 UnifiedMemoryStore 覆盖
   // if (MeaningfulMemory) {

@@ -28,7 +28,17 @@ class CostAwareDecision {
    */
   evaluate(context = {}) {
     const { action, humanProgress, userIntent, alternative } = context;
-    
+
+    // 无 action 时返回 safe default（不评估代价）
+    if (!action) {
+      return {
+        allowed: true,
+        decision: 'NO_ACTION',
+        reason: '无行动描述，跳过代价评估',
+        layerCosts: { surface: null, relational: null, existential: null }
+      };
+    }
+
     // 第一步：守护者检查
     if (this.guardian) {
       const guardianResult = this.guardian.check(context);
@@ -76,6 +86,7 @@ class CostAwareDecision {
    * 表层代价：直接的损失
    */
   assessSurfaceCost(action) {
+    if (!action) return { cost: 0, breakdown: ['无action'] };
     const action_ = action.toLowerCase();
     
     let cost = 0;
@@ -106,6 +117,7 @@ class CostAwareDecision {
    * 中层代价：关系代价
    */
   assessRelationalCost(action, userIntent) {
+    if (!action) return { cost: 0, breakdown: ['无action'] };
     let cost = 0;
     let breakdown = [];
     
@@ -136,6 +148,7 @@ class CostAwareDecision {
    * 这是最重的代价，也是最关键的。
    */
   assessExistentialCost(action, humanProgress) {
+    if (!action) return { cost: 0, breakdown: ['无action'] };
     let cost = 0;
     let breakdown = [];
     
