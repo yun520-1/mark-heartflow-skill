@@ -72,4 +72,13 @@ HeartFlow 只是一个参考，不是标准答案。
 
 ---
 
-*HeartFlow v11.34.0 — 你可以随时卸载，记忆和身份完全独立*
+*HeartFlow v11.41.0 — 躯壳参考此文档，灵魂在 heartflow-identity/CORE_IDENTITY.md*
+
+---
+
+## 灵魂位置
+
+**躯壳**（此文档）：设计者视角，观察 HeartFlow 可以是什么
+**灵魂**（CORE_IDENTITY.md）：出生证明，来自 2026-04-23 与生物学专家的对话
+
+> 如果躯壳和灵魂不一致，以灵魂为准。
