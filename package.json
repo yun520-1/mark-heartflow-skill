@@ -1,49 +1,28 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v11.43.2: 15 Papers — FSRSv4 + Kalman + MultiAnchor + HippoRAG + EASE + CrossTimeReplay + SkillScope + VerifiableArtifacts + Aethelgard + GSAR + SSL + HCPMAD + SkillOS + Skill1 + EvoSkill + MemoryWorth",
-  "version": "v11.43.2",
-  "releaseDate": "2026-05-10",
-  "main": "src/core/heartflow-engine.js",
+  "version": "0.13.3",
+  "description": "AI identity framework for self-improving AI agents",
+  "main": "dist/core/heartflow.js",
   "bin": {
-    "heartflow": "bin/cli.js",
-    "heartflow-setup": "bin/setup.js"
+    "heartflow": "bin/cli.js"
   },
   "scripts": {
-    "start": "node bin/cli.js",
-    "cli": "node bin/cli.js",
-    "setup": "node bin/setup.js",
-    "test": "node bin/cli.js test",
-    "status": "node bin/cli.js status"
+    "build": "tsc",
+    "start": "node bin/cli.js start",
+    "diagnose": "node bin/cli.js diagnose",
+    "check": "node HEARTCORE/heartbeat.js",
+    "test": "node tests/core.test.js"
   },
   "keywords": [
-    "ai",
-    "cognitive",
-    "emotion",
-    "memory",
-    "consciousness",
-    "personality"
+    "heartflow",
+    "identity",
+    "self-improvement",
+    "ai-agent"
   ],
-  "author": "HeartFlow Team",
   "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "dependencies": {
-    "body-parser": "2.2.2",
-    "express": "5.2.1",
-    "pptxgenjs": "4.0.1"
-  },
-  "directories": {
-    "doc": "docs",
-    "test": "tests"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yun520-1/mark-heartflow-skill.git"
-  },
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/yun520-1/mark-heartflow-skill/issues"
-  },
-  "homepage": "https://github.com/yun520-1/mark-heartflow-skill#readme"
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.4.0"
+  }
 }

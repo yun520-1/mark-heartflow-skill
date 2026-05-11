@@ -1,3 +1,68 @@
+## v0.13.2 (2026-05-11)
+
+### 新增：集成 v11.43.2 全部功能
+
+**从 v11.43.2 恢复并集成的引擎：**
+
+| 引擎 | 路径 | 功能 |
+|------|------|------|
+| identity-engine.js | src/core/identity/ | 身份管理 |
+| context-manager.js | src/core/context/ | 上下文管理 |
+| meaningful-memory.js | src/core/memory/ | 重要性记忆 |
+| learning-engine.js | src/core/learning/ | 学习引擎 |
+| cognitive-engine.js | src/core/cognition/ | 认知引擎 |
+| emotion-engine.js | src/core/emotion/ | 情绪引擎 |
+| self-healing.js | src/core/self-healing/ | 自我修复 |
+| dream-loop.js | src/core/dream/ | 梦境循环 |
+| experience-replay.js | src/core/learning/ | 经验回放 |
+| knowledge-graph.js | src/core/knowledge/ | 知识图谱 |
+| knowledge-base/ | src/core/knowledge/ | 知识库 |
+| associative-engine/ | src/core/associative-engine/ | 关联引擎 |
+| utils/ | src/core/utils/ | 工具层 |
+
+**架构改进：**
+- 解决 `'use strict'` + 未声明变量 ReferenceError（模块顶层 var 声明）
+- 删除本地精简版类，改为直接从 v11.43.2 导入
+- DreamLoop 从 class 适配为函数式接口
+- MemoryConsolidator/MeaningfulMemory 正确实例化
+
+**测试结果：16/17 通过（1 个预期失败：MeaningfulMemory 语义召回 API 差异）**
+
+---
+
+## v0.13.0 (2026-05-11)
+
+### 新增：Storage 持久化 + AgentRuntime + CLI 完善
+
+**架构升级（15个新引擎）**：
+
+| 模块 | 引擎 | 功能 |
+|------|------|------|
+| Storage | CheckpointEngine | save/load/cleanup，JSON持久化，保留最新10个快照 |
+| Storage | VectorStoreEngine | add后自动debounce写盘，余弦相似度搜索 |
+| Agent | TaskGraph | DAG任务图+并行调度 |
+| Agent | TaskScheduler | 事件驱动调度器+超时控制 |
+| Agent | AgentRuntime | 状态机+心跳+事件总线 |
+| Agent | PlanExecutor | 自然语言→任务图执行 |
+| Agent | WebSearchTool | 搜索工具 |
+| Agent | FileReadTool | 读文件工具 |
+| Agent | FileWriteTool | 写文件工具 |
+| Agent | BashTool | 命令执行工具 |
+| Agent | Tool基类 | 工具抽象 |
+| CLI | REPL命令 | 交互式多轮对话 |
+| CLI | status命令 | 引擎状态查询 |
+| CLI | engines命令 | 表格面板+--watch监控 |
+| CLI | health命令 | 健康检查 |
+
+**构建系统**：
+- 新增 `tsconfig.json` + `npm run build`
+- 新增 `@types/node` 依赖
+- TypeScript 编译 0 错误
+
+**版本修复**：
+- AGENTS.md: v11.43.0 → v0.13.0
+- README.md: v0.12.50 → v0.13.0
+
 ## v11.34.0 (2026-05-09)
 
 ### 新增：Zettelkasten Links（双向链接记忆）

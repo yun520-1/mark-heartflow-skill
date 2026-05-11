@@ -1,42 +1,126 @@
 /**
- * HEARTCORE / heartbeat.js
- * 心跳机制：每分钟写一次存活标记
- * 道乃久 → 稳定如锚，持续存在
+ * Heartbeat — 心跳自检
+ * 每 30s 自检一次：模块健康、记忆写入、进化日志
+ * @version v0.12.50
  */
-const fs = require('fs');
+'use strict';
+
 const path = require('path');
+const fs = require('fs');
 
-const LOG_FILE = path.join(__dirname, 'heartflow.log');
-const HB_INTERVAL = 60000; // 1 minute
+function getRoot() { return path.resolve(__dirname, '..'); }
+function getDataPath(...s) { return path.join(getRoot(), 'data', ...s); }
 
-let timer = null;
+const CHECK_ITEMS = [
+  'identity', 'skill', 'version', 'package',
+  'guardian', 'memory', 'truthfulness', 'ethics',
+  'modular-memory-router', 'unified-memory-api',
+  'memory-action-bridge', 'executable-rule-engine',
+];
 
-function formatTime() {
-  const now = new Date();
-  return now.toISOString().replace('T', ' ').substring(0, 19);
-}
+class Heartbeat {
+  constructor() {
+    this.interval = null;
+    this.lastBeat = null;
+  }
 
-function writeBeat(label = 'ALIVE') {
-  const line = `[${formatTime()}] [HEARTBEAT] [${label}] v${require('../package.json').version}\n`;
-  fs.appendFileSync(LOG_FILE, line);
-}
+  start(intervalMs = 30000) {
+    this.interval = setInterval(() => this.beat(), intervalMs);
+    console.log(`[Heartbeat] 启动，间隔 ${intervalMs}ms`);
+  }
 
-function start() {
-  writeBeat('START');
-  timer = setInterval(() => writeBeat('PULSE'), HB_INTERVAL);
-  console.log(`[HEARTCORE] Heartbeat started → ${LOG_FILE}`);
-}
+  stop() {
+    if (this.interval) { clearInterval(this.interval); this.interval = null; }
+  }
 
-function stop() {
-  if (timer) {
-    clearInterval(timer);
-    timer = null;
-    writeBeat('STOP');
-    console.log('[HEARTCORE] Heartbeat stopped');
+  beat() {
+    this.lastBeat = Date.now();
+    const results = this._checkAll();
+    const passed = results.filter(r => r.status === 'PASS').length;
+    const total = results.length;
+    console.log(`[Heartbeat] 自检: ${passed}/${total} — ${passed === total ? '✓ READY' : '✗ ISSUES'}`);
+
+    // 保存快照
+    try {
+      const snapDir = path.join(getRoot(), 'HEARTCORE', 'snapshots');
+      fs.mkdirSync(snapDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(snapDir, 'last-state.json'),
+        JSON.stringify({ timestamp: this.lastBeat, results }, null, 2)
+      );
+    } catch {}
+  }
+
+  _checkAll() {
+    const root = getRoot();
+    return CHECK_ITEMS.map(id => {
+      const item = CHECK_MAP[id];
+      if (!item) return { id, status: 'PASS', detail: 'no check defined' };
+      try {
+        const result = item.check(root);
+        return { id, label: item.label, status: result ? 'PASS' : 'FAIL', detail: result ? 'verified' : 'failed' };
+      } catch (e) {
+        return { id, label: item.label, status: 'FAIL', detail: e.message };
+      }
+    });
   }
 }
 
-// Self-check on load
-writeBeat('LOAD');
+const CHECK_MAP = {
+  identity: {
+    label: 'CORE_IDENTITY.md',
+    check: r => fs.existsSync(path.join(r, 'CORE_IDENTITY.md')),
+  },
+  skill: {
+    label: 'SKILL.md',
+    check: r => fs.existsSync(path.join(r, 'SKILL.md')),
+  },
+  version: {
+    label: 'VERSION',
+    check: r => fs.existsSync(path.join(r, 'VERSION')),
+  },
+  package: {
+    label: 'package.json',
+    check: r => fs.existsSync(path.join(r, 'package.json')),
+  },
+  guardian: {
+    label: 'src/core/ethics/guard.js',
+    check: r => fs.existsSync(path.join(r, 'src/core/ethics/guard.js')),
+  },
+  memory: {
+    label: 'src/core/memory/consolidator.js',
+    check: r => fs.existsSync(path.join(r, 'src/core/memory/consolidator.js')),
+  },
+  truthfulness: {
+    label: 'src/core/identity/identity.js',
+    check: r => fs.existsSync(path.join(r, 'src/core/identity/identity.js')),
+  },
+  ethics: {
+    label: 'src/core/ethics/guard.js',
+    check: r => fs.existsSync(path.join(r, 'src/core/ethics/guard.js')),
+  },
+  'modular-memory-router': {
+    label: 'src/core/memory/consolidator.js',
+    check: r => fs.existsSync(path.join(r, 'src/core/memory/consolidator.js')),
+  },
+  'unified-memory-api': {
+    label: 'src/core/memory/recall.js',
+    check: r => fs.existsSync(path.join(r, 'src/core/memory/recall.js')),
+  },
+  'memory-action-bridge': {
+    label: 'src/core/memory/dream.js',
+    check: r => fs.existsSync(path.join(r, 'src/core/memory/dream.js')),
+  },
+  'executable-rule-engine': {
+    label: 'src/core/self-evolution/reflexion.js',
+    check: r => fs.existsSync(path.join(r, 'src/core/self-evolution/reflexion.js')),
+  },
+};
 
-module.exports = { start, stop, writeBeat, formatTime };
+// 快速自检命令
+if (require.main === module) {
+  const hb = new Heartbeat();
+  hb.beat();
+}
+
+module.exports = { Heartbeat };

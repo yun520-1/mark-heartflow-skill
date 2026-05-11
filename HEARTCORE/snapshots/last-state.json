@@ -1,7 +1,77 @@
 {
-  "wakeCount": 1,
-  "lastWakeTime": "2026-05-10T12:15:01.840Z",
-  "deepCheck": false,
-  "hoursSinceLastWake": 19.9,
-  "version": "v11.40.0"
+  "timestamp": 1778478792687,
+  "results": [
+    {
+      "id": "identity",
+      "label": "CORE_IDENTITY.md",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "skill",
+      "label": "SKILL.md",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "version",
+      "label": "VERSION",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "package",
+      "label": "package.json",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "guardian",
+      "label": "src/core/ethics/guard.js",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "memory",
+      "label": "src/core/memory/consolidator.js",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "truthfulness",
+      "label": "src/core/identity/identity.js",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "ethics",
+      "label": "src/core/ethics/guard.js",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "modular-memory-router",
+      "label": "src/core/memory/consolidator.js",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "unified-memory-api",
+      "label": "src/core/memory/recall.js",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "memory-action-bridge",
+      "label": "src/core/memory/dream.js",
+      "status": "PASS",
+      "detail": "verified"
+    },
+    {
+      "id": "executable-rule-engine",
+      "label": "src/core/self-evolution/reflexion.js",
+      "status": "PASS",
+      "detail": "verified"
+    }
+  ]
 }
