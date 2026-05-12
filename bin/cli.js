@@ -45,7 +45,7 @@ function cmdSetup() {
   // 5. 写入 package.json
   const pkg = {
     name: 'heartflow',
-    version: '0.13.8',
+    version: '0.13.10',
     description: 'AI identity framework for self-improving AI agents',
     main: 'src/core/heartflow.js',
     bin: { heartflow: 'bin/cli.js' },
@@ -105,31 +105,28 @@ function cmdCheck() {
 
 function cmdUpgrade() {
   log('检查升级...');
-  // 读取当前版本
-  let current = 'unknown';
-  try { current = fs.readFileSync(VERSION_FILE, 'utf8').trim(); } catch {}
+  const current = fs.readFileSync(VERSION_FILE, 'utf8').trim();
   log(`当前版本: ${current}`);
 
-  // 检查 GitHub 最新
+  // 从本地 CHANGELOG.md 提取最新版本
+  let latest = current;
   try {
-    const https = require('https');
-    const url = 'https://api.github.com/repos/yun520-1/mark-heartflow-skill/releases/latest';
-    const data = JSON.parse(execSync(`curl -sfL "${url}" 2>/dev/null`, { encoding: 'utf8' }));
-    const latest = data.tag_name || 'unknown';
-    log(`最新版本: ${latest}`);
-    if (current !== latest) {
-      log('有新版本可用！请访问 GitHub 下载。');
-    } else {
-      log('已是最新版本。');
-    }
-  } catch (e) {
-    log('无法检查最新版本（网络问题）。');
+    const changelog = fs.readFileSync(path.join(ROOT, 'CHANGELOG.md'), 'utf8');
+    const match = changelog.match(/^#+\s+HeartFlow\s+v?(\d+\.\d+\.\d+)/m);
+    if (match) latest = 'v' + match[1];
+  } catch {}
+
+  log(`最新版本: ${latest}`);
+  if (current !== latest) {
+    log('有新版本！请查看 CHANGELOG.md');
+  } else {
+    log('已是最新版本。');
   }
 }
 
 function usage() {
   console.log(`
-HeartFlow CLI v0.13.3
+HeartFlow CLI v0.13.10
 
 用法: heartflow <命令>
 
