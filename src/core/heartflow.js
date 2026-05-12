@@ -1,5 +1,5 @@
 /**
- * HeartFlow Core Engine v0.13.4
+ * HeartFlow Core Engine v0.13.7
  * =================================
  * 唯一主引擎。所有功能通过 HeartFlow 实例调用，无全局状态。
  *
@@ -8,9 +8,10 @@
  * - 声明式技能：skill_use() 驱动，非硬编码
  * - 现代 AI 框架：Mem0 记忆 + Reflexion 自省 + DSPy 风格编排
  * - 跨平台：Node.js / Python / Browser
+ * - v0.13.7: 吸收 memory-manager.js（UnifiedMemoryStore）+ memory.ts 三层记忆引擎
+ * - v0.13.7: 升级 recall.js 与 memory-manager.js 隔离存储
  * - v0.13.4: 升级真善美判定引擎（多层验证：数字/绝对化/模糊引用/矛盾）
- * - v0.13.4: IdentitySystem.judgeTruthfulness 扩展为4维检测
- * @version v0.13.4
+ * @version v0.13.7
  * @date 2026-05-12
  */
 
@@ -90,8 +91,8 @@ function _ensureV11432() {
 }
 
 // ─── 版本常量 ───────────────────────────────────────────────────────────────
-const VERSION = 'v0.13.6';
-const BUILD_DATE = '2026-05-11';
+const VERSION = 'v0.13.7';
+const BUILD_DATE = '2026-05-12';
 
 // ─── 路径配置 ────────────────────────────────────────────────────────────────
 function getRootPath() {
