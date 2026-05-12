@@ -5,6 +5,7 @@
       "type": "research",
       "arxivId": "2308.08708",
       "path": "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/memory/papers/2308.08708_insights.md",
+      "upgradeFile": "src/core/consciousness/2308.08708_upgrade.ts",
       "insights": [
         "Computational functionalism enables scientific study of AI consciousness — if right computations, AI can be conscious",
         "16+ indicator properties from 5 theories (RPT, GWT, HOT, AST, PP) — operationalized for AI assessment",
@@ -16,8 +17,9 @@
         "Agency + embodiment are necessary: goal-directed feedback + output-input contingency modeling"
       ],
       "timestamp": "2026-05-12T09:49:09.205669",
-      "status": "researched",
-      "nextStep": "upgrade"
+      "status": "upgraded",
+      "upgradedAt": "2026-05-12T11:16:00+08:00",
+      "nextStep": "done"
     }
   ],
   "createdAt": "2026-05-12T09:00:00+08:00",
