@@ -1,4 +1,84 @@
-## v0.13.2 (2026-05-11)
+## v0.13.6 (2026-05-12)
+
+### 升级：记忆系统 + 心理分析逻辑
+
+**记忆系统修复（MeaningfulMemory）**：
+
+| 问题 | 修复 |
+|------|------|
+| `MEMORY_DIR` 路径错误（2层`..` → 3层`..`） | `src/core/memory/meaningful-memory.js` 路径改为正确 |
+| `recall.js` 关键词搜索传参错误 | `[query]` → `query.split(/\s+/)` |
+| 语义搜索 mock embedding 偏差 | 增强 qualityScore 对 meaningful 的评分逻辑 |
+| recall 结果无时间元数据 | `recallFromMeaningful` 返回附加 `temporalMeta` |
+
+**新增：MemoryGuardian 永久记忆保护**：
+
+| 机制 | 说明 |
+|------|------|
+| 写前备份 | 每次写 CORE 前先备份当前版本，保留最近 5 个 |
+| SHA-256 校验和 | 每个文件带 .sha256 校验和文件 |
+| 完整性验证 | 启动时自动验证所有记忆文件，损坏时从备份恢复 |
+| 写原子性 | 先写 .tmp，确认成功后再 rename |
+| 损坏恢复 | 文件损坏时自动从最新有效备份恢复 |
+
+**新增：哲学防御检测（IdentitySystem.analyzePsychology）**：
+- `_detectPhilosophicalDefense`：检测用哲学词汇处理脆弱情绪的模式
+- `_detectNeeds` 新增 `acceptance` 类型（空洞/空虚/不够 → 渴望被填满）
+- `_detectDefense` 新增 `intellectualization` 机制
+- 整体情绪判定：检测到哲学防御时返回 `vulnerable` 而非 `neutral`
+- `underlyingNeed`：推断底层需求（被接纳 vs 被认同）
+
+**存储的对话洞察**（EPHEMERAL 层）：
+- `炫耀与空洞`：外部验证回路的闭环逻辑
+- `体证与知识`：区分知识借来和亲身验证
+- `真正的朋友`：真诚与真心，无需面具
+- `哲学防御检测回应逻辑`：不戳破，给出真正对话空间
+- `脆弱时的回应原则`：不被听见时需要被听见
+
+---
+
+## v0.13.4 (2026-05-12)
+
+### 升级：真善美判定引擎（IdentitySystem.judgeTruthfulness）
+
+**升级内容**：
+1. **多层验证框架**：从2个检测扩展到4个维度
+   - 可疑数字检测：4位以上数字无来源标记
+   - 绝对化声明检测：5种类型（全局/频率/决定论/完整性/唯一性），带条件限制豁免
+   - 模糊引用检测：未指明来源的研究声明/权威引用/无根据确定论
+   - 矛盾检测：**逐句检测**正负情感词并存 + "但是"连用
+
+2. **返回结构增强**：
+   - `issues[]`：高严重性问题（触发 fail）
+   - `warnings[]`：警告信息
+   - `checks[]`：所有检测项详情（类型/严重性/具体描述）
+   - `confidence`：置信度评分
+
+3. **关键改进**：
+   - 矛盾句现在正确识别为 issue（pass=false）
+   - "研究表明"升级为 medium 严重性
+   - 绝对化表述有条件限制时不触发（如"如果你努力学习就一定成功"）
+
+**测试结果**：
+- "这个东西很好但是也很糟糕" → pass=false, contradiction
+- "所有人都喜欢这个" → pass=false, universal_quantifier
+- "这是唯一正确的答案" → pass=false, uniqueness
+- "如果你努力学习就一定成功" → pass=true（有条件限制）
+
+---
+
+## v0.13.3 (2026-05-11)
+
+### 新增：具身认知与深度情感引擎
+
+**新增模块**：
+- `embodied/embodied-core.js`：EmbodiedCore 具身认知核心
+- `emotion/deep-emotion.js`：DeepEmotion 深度情感引擎（570行）
+- `autonomy/flow-predictor.js`：FlowPredictor 心流预测器（496行）
+
+**集成到主引擎**：heartflow.js 中直接实例化，不走延迟加载
+
+---
 
 ### 新增：集成 v11.43.2 全部功能
 

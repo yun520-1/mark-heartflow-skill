@@ -1,0 +1,147 @@
+{
+  "version": "1.0",
+  "description": "HeartFlow 多智能体表现追踪 - 专家权重系统",
+  "lastUpdate": "2026-04-09T00:09:00Z",
+  "agents": {
+    "FocusAgent": {
+      "name": "焦点分析智能体",
+      "description": "分析用户意图和关注点",
+      "weight": 0.575,
+      "accuracy": 0.75,
+      "tasks": 100,
+      "successes": 75,
+      "lastSuccess": "2026-04-09T00:08:00Z",
+      "history": [
+        {
+          "timestamp": "2026-04-09T00:08:00Z",
+          "task": "意图分析",
+          "success": true
+        },
+        {
+          "timestamp": "2026-04-08T23:58:00Z",
+          "task": "关键词提取",
+          "success": true
+        }
+      ]
+    },
+    "MoodAgent": {
+      "name": "情绪分析智能体",
+      "description": "分析用户情绪状态",
+      "weight": 0.6,
+      "accuracy": 0.8,
+      "tasks": 100,
+      "successes": 80,
+      "lastSuccess": "2026-04-09T00:08:00Z",
+      "history": [
+        {
+          "timestamp": "2026-04-09T00:08:00Z",
+          "task": "情绪判断",
+          "success": true
+        },
+        {
+          "timestamp": "2026-04-08T23:58:00Z",
+          "task": "情感强度",
+          "success": true
+        }
+      ]
+    },
+    "ContextAgent": {
+      "name": "上下文理解智能体",
+      "description": "理解对话上下文和深度",
+      "weight": 0.635,
+      "accuracy": 0.85,
+      "tasks": 80,
+      "successes": 68,
+      "lastSuccess": "2026-04-09T00:07:00Z",
+      "history": [
+        {
+          "timestamp": "2026-04-09T00:07:00Z",
+          "task": "上下文融合",
+          "success": true
+        },
+        {
+          "timestamp": "2026-04-08T23:56:00Z",
+          "task": "对话理解",
+          "success": true
+        }
+      ]
+    },
+    "SelfAgent": {
+      "name": "自我融合智能体",
+      "description": "整合所有分析结果形成综合判断",
+      "weight": 0.72,
+      "accuracy": 0.9,
+      "tasks": 50,
+      "successes": 45,
+      "lastSuccess": "2026-04-09T00:06:00Z",
+      "history": [
+        {
+          "timestamp": "2026-04-09T00:06:00Z",
+          "task": "自我分析",
+          "success": true
+        },
+        {
+          "timestamp": "2026-04-08T23:54:00Z",
+          "task": "综合判断",
+          "success": true
+        }
+      ]
+    },
+    "DecisionAgent": {
+      "name": "决策生成智能体",
+      "description": "生成最终响应决策",
+      "weight": 0.666,
+      "accuracy": 0.88,
+      "tasks": 50,
+      "successes": 44,
+      "lastSuccess": "2026-04-09T00:05:00Z",
+      "history": [
+        {
+          "timestamp": "2026-04-09T00:05:00Z",
+          "task": "决策输出",
+          "success": true
+        },
+        {
+          "timestamp": "2026-04-08T23:52:00Z",
+          "task": "响应生成",
+          "success": true
+        }
+      ]
+    }
+  },
+  "votingRules": {
+    "minConfidence": 0.5,
+    "weightFormula": "weight = 0.3 + accuracy * 0.7",
+    "conflictResolution": "加权投票多数决"
+  },
+  "FocusAgent": {
+    "weight": 1,
+    "accuracy": 1,
+    "tasks": 1,
+    "successes": 1
+  },
+  "MoodAgent": {
+    "weight": 1,
+    "accuracy": 1,
+    "tasks": 1,
+    "successes": 1
+  },
+  "ContextAgent": {
+    "weight": 1,
+    "accuracy": 1,
+    "tasks": 1,
+    "successes": 1
+  },
+  "SelfAgent": {
+    "weight": 1,
+    "accuracy": 1,
+    "tasks": 1,
+    "successes": 1
+  },
+  "DecisionAgent": {
+    "weight": 1,
+    "accuracy": 1,
+    "tasks": 1,
+    "successes": 1
+  }
+}

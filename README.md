@@ -1,4 +1,4 @@
-# HeartFlow v0.13.3
+# HeartFlow v0.13.6
 
 > **AI identity framework for self-improving AI agents.**
 > 让任意 AI agent 一行命令安装，获得完整的自我升级能力。

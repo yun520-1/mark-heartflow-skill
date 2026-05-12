@@ -1,0 +1,29 @@
+{
+  "name": "heartflow-distilled-knowledge",
+  "version": "2026.5.7",
+  "generated": "2026-05-07",
+  "sourceVersion": "v11.21.3",
+  "description": "HeartFlow 核心教训知识库 — 6 条精选 Pattern Cards",
+  "patterns": [
+    { "id": "qtable-persistence", "title": "Q-table Key 一致性原则", "confidence": "HIGH", "actionability": "IMMEDIATE" },
+    { "id": "github-first", "title": "GitHub-first 搜索原则", "confidence": "HIGH", "actionability": "IMMEDIATE" },
+    { "id": "decorative-code-detection", "title": "装饰性代码自我判定", "confidence": "HIGH", "actionability": "IMMEDIATE" },
+    { "id": "git-push-hook", "title": "pre-push Hook 绕过方法", "confidence": "HIGH", "actionability": "IMMEDIATE" },
+    { "id": "version-sync", "title": "版本文件全部同步原则", "confidence": "MED", "actionability": "ACTIONABLE" },
+    { "id": "memory-consolidation", "title": "Memory System 合并原则", "confidence": "HIGH", "actionability": "IMMEDIATE" }
+  ],
+  "stats": {
+    "total": 6,
+    "highConfidence": 5,
+    "actionable": 6,
+    "byConfidence": { "HIGH": 5, "MED": 1 },
+    "byActionability": { "IMMEDIATE": 5, "ACTIONABLE": 1 }
+  },
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "package.json",
+    "PATTERNS.json",
+    "INDEX.json"
+  ]
+}

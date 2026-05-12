@@ -1,0 +1,12 @@
+{
+  "name": "",
+  "version": "1.0.0",
+  "description": "用cn-web-search",
+  "author": "HeartFlow",
+  "heartflow": {
+    "source": "knowledge-distiller",
+    "patternId": "搜索论文方向",
+    "confidence": "50%",
+    "generated": "2026-05-07T10:50:41.066Z"
+  }
+}

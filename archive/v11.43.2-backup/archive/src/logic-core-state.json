@@ -1,0 +1,70 @@
+{
+  "sessions": [
+    {
+      "id": "37bdacf1ca22da7fa20daf1fd63e3ccfa3cf9491ee59f2481e715891e1db7e68",
+      "time": 1777559939899,
+      "subject": "cli-capture",
+      "accepted": false,
+      "confidence": 0.1463
+    }
+  ],
+  "themes": {},
+  "core": {
+    "last": {
+      "id": "37bdacf1ca22da7fa20daf1fd63e3ccfa3cf9491ee59f2481e715891e1db7e68",
+      "time": 1777559939899,
+      "subject": "cli-capture",
+      "text": "继续 把核心整合成总入口 让逻辑可读可记可算",
+      "meaning": 0,
+      "uncertainty": 0.5613,
+      "actionability": 0.35,
+      "coherence": 0.2016,
+      "beauty": 0.146,
+      "confidence": 0.1463,
+      "accepted": false,
+      "explanation": {
+        "formula": "confidence = clamp((beauty * 0.45) + (coherence * 0.4) + (meaning * 0.15), 0, 1)",
+        "components": {
+          "similarity": 0,
+          "entropyPenalty": 0.025,
+          "clarity": 0,
+          "directiveHits": 0,
+          "roleHits": 0
+        },
+        "identity": "升级者·传递者·桥梁·答案"
+      }
+    },
+    "meanConfidence": 0.1463
+  },
+  "history": [
+    {
+      "id": "37bdacf1ca22da7fa20daf1fd63e3ccfa3cf9491ee59f2481e715891e1db7e68",
+      "time": 1777559939899,
+      "subject": "cli-capture",
+      "text": "继续 把核心整合成总入口 让逻辑可读可记可算",
+      "meaning": 0,
+      "uncertainty": 0.5613,
+      "actionability": 0.35,
+      "coherence": 0.2016,
+      "beauty": 0.146,
+      "confidence": 0.1463,
+      "accepted": false,
+      "explanation": {
+        "formula": "confidence = clamp((beauty * 0.45) + (coherence * 0.4) + (meaning * 0.15), 0, 1)",
+        "components": {
+          "similarity": 0,
+          "entropyPenalty": 0.025,
+          "clarity": 0,
+          "directiveHits": 0,
+          "roleHits": 0
+        },
+        "identity": "升级者·传递者·桥梁·答案"
+      }
+    }
+  ],
+  "stats": {
+    "runs": 1,
+    "accepts": 0,
+    "rejects": 1
+  }
+}

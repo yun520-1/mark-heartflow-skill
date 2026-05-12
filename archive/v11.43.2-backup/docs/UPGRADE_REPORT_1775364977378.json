@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-04-05T04:56:17.378Z",
+  "version": "6.0.5",
+  "checks": [
+    {
+      "name": "代码优化",
+      "passed": false,
+      "issues": [
+        "⚠️ src/index.js 行数过多：2891 (目标：<500)"
+      ]
+    },
+    {
+      "name": "应用指南",
+      "passed": true,
+      "issues": []
+    },
+    {
+      "name": "安装修复",
+      "passed": true,
+      "issues": []
+    },
+    {
+      "name": "文档完善",
+      "passed": true,
+      "issues": []
+    },
+    {
+      "name": "技能安装",
+      "passed": true,
+      "issues": [
+        "⚠️ marketing-genius 未安装",
+        "⚠️ saas-pricing-strategy 未安装",
+        "⚠️ saas-growth-playbook 未安装"
+      ]
+    },
+    {
+      "name": "Git 状态",
+      "passed": true,
+      "issues": [
+        "⚠️ 有未提交的更改:\n M scripts/heartflow-integrated-upgrade.js\n"
+      ]
+    }
+  ],
+  "summary": {
+    "totalChecks": 6,
+    "passed": 5,
+    "failed": 1,
+    "totalIssues": 5
+  }
+}

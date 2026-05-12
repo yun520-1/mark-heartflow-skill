@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>Aether · Spatial Dimension v6</title>
+<!--
+  ──────────────────────────────────────────────────────────────────────
+  AETHER V6 — 旗舰全景模式 (Spatial/Immersive Mode)
+  ──────────────────────────────────────────────────────────────────────
+  Design Rationale:
+    模式 A (旗舰全景) 被选中是因为用户要求“物理真实感”和“多维深度”。
+    所有视觉决策均围绕 oklch 色彩科学、3D 视差分层、玻璃折射模拟展开。
+  
+  Key Technical Approaches:
+    • 3D Tilt via perspective + JS mousemove, with per-layer displacement
+      (bg=5px, text=10px, icon=15px) creating true interior parallax.
+    • Smart cursor uses composited pointer-events custom element with 
+      3 states: dot → magnetic ring → button-wrap.
+    • Glass refraction uses backdrop-filter saturate(180%) blur(20px) +
+      SVG fractalNoise overlay for tactile micro-texture.
+    • All icons are hand-drawn inline SVG with stroke-dashoffset entry 
+      animation and perpetual micro-motion (gear rotation, node pulse).
+    • Responsive grid uses auto-fit / minmax / clamp — zero media queries
+      for primary layout. Self-healing via @supports + setTimeout fallback.
+    • Performance monitor logs ASCII brand art + FPS + load timing to console.
+  ──────────────────────────────────────────────────────────────────────
+-->
+<style>
+  /* ═══════════════════════════════════════════════
+     ROOT — oklch Color Space, Fluid Scale
+     ═══════════════════════════════════════════════ */
+  :root {
+    --space-depth: 1000px;
+    --hue-base: 240;
+    --hue-accent: 180;
+    --hue-warm: 320;
+
+    /* oklch design tokens — perceptually uniform */
+    --color-bg: oklch(0.035 0.025 var(--hue-base));
+    --color-card: oklch(0.12 0.035 var(--hue-base) / 0.35);
+    --color-card-border: oklch(0.35 0.06 var(--hue-base) / 0.2);
+    --color-card-hover: oklch(0.18 0.04 var(--hue-base) / 0.45);
+    --color-text-primary: oklch(0.93 0.015 var(--hue-base));
+    --color-text-secondary: oklch(0.65 0.04 var(--hue-base) / 0.8);
+    --color-accent: oklch(0.72 0.22 var(--hue-accent));
+    --color-accent-warm: oklch(0.72 0.22 var(--hue-warm));
+    --color-glow: oklch(0.6 0.25 var(--hue-accent) / 0.3);
+
+    /* Fluid typography via clamp() */
+    --fs-display: clamp(2.5rem, 6vw, 5rem);
+    --fs-heading: clamp(1.25rem, 2.5vw, 1.75rem);
+    --fs-body: clamp(0.875rem, 1.2vw, 1rem);
+    --fs-small: clamp(0.75rem, 1vw, 0.875rem);
+    --fs-mono: clamp(0.65rem, 0.9vw, 0.8rem);
+
+    /* Spacing fluid scale */
+    --space-xs: clamp(0.25rem, 0.5vw, 0.5rem);
+    --space-sm: clamp(0.5rem, 1vw, 1rem);
+    --space-md: clamp(1rem, 2vw, 2rem);
+    --space-lg: clamp(1.5rem, 3vw, 3rem);
+    --space-xl: clamp(2rem, 5vw, 5rem);
+
+    /* Glass refraction params */
+    --glass-blur: 20px;
+    --glass-saturate: 180%;
+    --glass-contrast: 108%;
+
+    /* Cursor state — runtime-updated via JS */
+    --cursor-x: 0px;
+    --cursor-y: 0px;
+    --cursor-size: 6px;
+    --cursor-ring: 0px;
+    --cursor-opacity: 1;
+    --cursor-blend: normal;
+    --cursor-bg: oklch(0.95 0.03 var(--hue-accent) / 0.9);
+
+    /* Layer displacement — per card, updated by JS */
+    --layer-bg-x: 0px;
+    --layer-bg-y: 0px;
+    --layer-text-x: 0px;
+    --layer-text-y: 0px;
+    --layer-icon-x: 0px;
+    --layer-icon-y: 0px;
+    --tilt-rotate-x: 0deg;
+    --tilt-rotate-y: 0deg;
+  }
+
+  /* ═══════════════════════════════════════════════
+     RESET + BASE
+     ═══════════════════════════════════════════════ */
+  *, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    cursor: none; /* hidden — replaced by smart cursor */
+    line-height: 1.6;
+  }
+
+  /* ═══════════════════════════════════════════════
+     FLOATING BLOBS — 3~4 fixed, mix-blend-mode
+     ═══════════════════════════════════════════════ */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    will-change: transform;
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: screen;
+  }
+  .blob-1 {
+    width: clamp(300px, 40vw, 700px);
+    height: clamp(300px, 40vw, 700px);
+    background: oklch(0.45 0.25 180 / 0.25);
+    top: -10%; left: -5%;
+    animation: blobFloat1 28s ease-in-out infinite;
+  }
+  .blob-2 {
+    width: clamp(250px, 35vw, 600px);
+    height: clamp(250px, 35vw, 600px);
+    background: oklch(0.45 0.25 300 / 0.2);
+    bottom: -10%; right: -5%;
+    animation: blobFloat2 32s ease-in-out infinite;
+  }
+  .blob-3 {
+    width: clamp(200px, 30vw, 500px);
+    height: clamp(200px, 30vw, 500px);
+    background: oklch(0.5 0.2 140 / 0.15);
+    top: 40%; left: 50%;
+    animation: blobFloat3 24s ease-in-out infinite;
+  }
+  .blob-4 {
+    width: clamp(180px, 25vw, 450px);
+    height: clamp(180px, 25vw, 450px);
+    background: oklch(0.4 0.2 30 / 0.12);
+    top: 60%; left: 10%;
+    animation: blobFloat4 30s ease-in-out infinite;
+  }
+
+  @keyframes blobFloat1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(120px, 80px) scale(1.15); }
+    50% { transform: translate(60px, 160px) scale(0.95); }
+    75% { transform: translate(180px, 40px) scale(1.1); }
+  }
+  @keyframes blobFloat2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(-100px, -60px) scale(1.1); }
+    50% { transform: translate(-50px, -140px) scale(0.9); }
+    75% { transform: translate(-160px, -30px) scale(1.05); }
+  }
+  @keyframes blobFloat3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-80px, -100px) scale(1.2); }
+    66% { transform: translate(80px, 60px) scale(0.85); }
+  }
+  @keyframes blobFloat4 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(100px, -80px) scale(1.1); }
+  }
+
+  /* ═══════════════════════════════════════════════
+     SVG NOISE FILTER — for tactile glass texture
+     ═══════════════════════════════════════════════ */
+  .noise-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+    will-change: transform; /* composite only */
+  }
+
+  /* ═══════════════════════════════════════════════
+     SMART CURSOR — Layer 1: Dot + Ring + Wrap
+     ═══════════════════════════════════════════════ */
+  #cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    top: 0; left: 0;
+    width: var(--cursor-size);
+    height: var(--cursor-size);
+    border-radius: 50%;
+    background: var(--cursor-bg);
+    box-shadow: 0 0 calc(var(--cursor-size) * 2) var(--cursor-bg), 0 0 calc(var(--cursor-size) * 4) oklch(0.6 0.2 var(--hue-accent) / 0.15);
+    transform: translate(calc(var(--cursor-x) - var(--cursor-size) / 2), calc(var(--cursor-y) - var(--cursor-size) / 2));
+    transition: width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), height 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s ease, box-shadow 0.35s ease, border-radius 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    mix-blend-mode: var(--cursor-blend);
+    opacity: var(--cursor-opacity);
+    will-change: transform, width, height;
+  }
+  #cursor-ring {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    top: 0; left: 0;
+    width: calc(var(--cursor-ring) * 2);
+    height: calc(var(--cursor-ring) * 2);
+    border-radius: 50%;
+    border: 1px solid oklch(0.6 0.2 var(--hue-accent) / 0.25);
+    background: oklch(0.6 0.2 var(--hue-accent) / 0.04);
+    transform: translate(calc(var(--cursor-x) - var(--cursor-ring)), calc(var(--cursor-y) - var(--cursor-ring)));
+    transition: width 0.4s ease, height 0.4s ease, opacity 0.3s ease;
+    opacity: 0;
+    will-change: transform, width, height;
+  }
+  #cursor-trail {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: oklch(0.7 0.15 var(--hue-accent) / 0.2);
+    transform: translate(0, 0);
+    transition: none;
+    will-change: transform;
+  }
+
+  /* ═══════════════════════════════════════════════
+     LAYOUT — Panoramic Responsive Grid (zero media queries)
+     ═══════════════════════════════════════════════ */
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-md);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    padding: var(--space-xl) 0 var(--space-lg);
+    position: relative;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0.35em 1em;
+    border-radius: 100px;
+    background: oklch(0.6 0.2 var(--hue-accent) / 0.1);
+    border: 1px solid oklch(0.6 0.2 var(--hue-accent) / 0.15);
+    font-size: var(--fs-small);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: var(--space-md);
+  }
+  .hero h1 {
+    font-size: var(--fs-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    background: linear-gradient(135deg, var(--color-text-primary) 30%, var(--color-accent) 70%, var(--color-accent-warm) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--space-sm);
+  }
+  .hero p {
+    font-size: var(--fs-body);
+    color: var(--color-text-secondary);
+    max-width: clamp(300px, 60%, 700px);
+    margin: 0 auto;
+  }
+
+  /* Grid — truly responsive, no media queries */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(clamp(280px, 40%, 420px), 100%), 1fr));
+    gap: var(--space-md);
+    padding: var(--space-md) 0;
+    flex: 1;
+  }
+
+  /* ═══════════════════════════════════════════════
+     GLASS CARD — 3D Tilt Container + Refraction
+     ═══════════════════════════════════════════════ */
+  .card {
+    perspective: var(--space-depth);
+    position: relative;
+    transform-style: preserve-3d;
+  }
+  .card-inner {
+    position: relative;
+    border-radius: clamp(12px, 2vw, 20px);
+    padding: var(--space-lg);
+    background: var(--color-card);
+    border: 1px solid var(--color-card-border);
+    backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur)) contrast(var(--glass-contrast));
+    -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur)) contrast(var(--glass-contrast));
+    transform-style: preserve-3d;
+    transform: rotateX(var(--tilt-rotate-x)) rotateY(var(--tilt-rotate-y));
+    transition: border-color 0.4s ease, background 0.4s ease, box-shadow 0.4s ease;
+    overflow: hidden;
+    will-change: transform;
+    /* Texturize glass surface */
+    box-shadow:
+      0 0 0 1px oklch(1 0 0 / 0.03) inset,
+      0 2px 20px oklch(0 0 0 / 0.3),
+      0 0 60px var(--color-glow);
+  }
+  .card-inner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, oklch(1 0 0 / 0.06) 0%, transparent 50%, oklch(0 0 0 / 0.04) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  /* SVG noise grain on glass */
+  .card-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 2;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+  .card-inner:hover {
+    border-color: oklch(0.5 0.15 var(--hue-accent) / 0.3);
+    background: var(--color-card-hover);
+    box-shadow:
+      0 0 0 1px oklch(0.6 0.2 var(--hue-accent) / 0.08) inset,
+      0 4px 30px oklch(0 0 0 / 0.4),
+      0 0 80px var(--color-glow);
+  }
+
+  /* ── Layer 1: Icon (moves 15px) ── */
+  .card-icon {
+    position: relative;
+    z-index: 3;
+    width: clamp(48px, 6vw, 64px);
+    height: clamp(48px, 6vw, 64px);
+    margin-bottom: var(--space-md);
+    transform: translate(var(--layer-icon-x), var(--layer-icon-y));
+    transition: transform 0.05s linear;
+    will-change: transform;
+  }
+  .card-icon svg {
+    width: 100%; height: 100%;
+    display: block;
+    filter: drop-shadow(0 0 12px oklch(0.6 0.2 var(--hue-accent) / 0.15));
+  }
+
+  /* ── Layer 2: Text (moves 10px) ── */
+  .card-content {
+    position: relative;
+    z-index: 4;
+    transform: translate(var(--layer-text-x), var(--layer-text-y));
+    transition: transform 0.05s linear;
+    will-change: transform;
+  }
+  .card-content h3 {
+    font-size: var(--fs-heading);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-xs);
+    line-height: 1.2;
+  }
+  .card-content p {
+    font-size: var(--fs-body);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin-bottom: var(--space-md);
+  }
+
+  /* ── Layer 3: Background decorative element (moves 5px) ── */
+  .card-bg-layer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    transform: translate(var(--layer-bg-x), var(--layer-bg-y));
+    transition: transform 0.05s linear;
+    will-change: transform;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+  .card-bg-layer .bg-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.2;
+  }
+  .card-bg-layer .bg-orb:nth-child(1) {
+    width: 120px; height: 120px;
+    background: oklch(0.5 0.2 var(--hue-accent) / 0.2);
+    top: -20%; right: -10%;
+  }
+  .card-bg-layer .bg-orb:nth-child(2) {
+    width: 80px; height: 80px;
+    background: oklch(0.4 0.2 var(--hue-warm) / 0.15);
+    bottom: -10%; left: -5%;
+  }
+
+  /* ── Button ── */
+  .card-btn {
+    position: relative;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0.6em 1.4em;
+    border-radius: 100px;
+    border: none;
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: none;
+    background: linear-gradient(135deg, oklch(0.6 0.2 var(--hue-accent) / 0.2), oklch(0.5 0.15 var(--hue-warm) / 0.15));
+    color: var(--color-text-primary);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    transform: translate(var(--layer-icon-x), var(--layer-icon-y));
+    will-change: transform;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .card-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid oklch(0.6 0.2 var(--hue-accent) / 0.15);
+    pointer-events: none;
+  }
+  .card-btn:hover {
+    transform: translate(var(--layer-icon-x), var(--layer-icon-y)) scale(1.03);
+    box-shadow: 0 0 30px var(--color-glow);
+  }
+  .card-btn svg {
+    width: 16px; height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ── Ripple effect on interactive elements ── */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: oklch(0.8 0.2 var(--hue-accent) / 0.35);
+    transform: scale(0);
+    animation: rippleAnim 0.7s ease-out forwards;
+    pointer-events: none;
+    z-index: 10;
+  }
+  @keyframes rippleAnim {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     SVG ICON — Animation Keyframes
+     ═══════════════════════════════════════════════ */
+  .svg-icon {
+    stroke: var(--color-accent);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .svg-icon .accent-fill {
+    fill: oklch(0.5 0.15 var(--hue-accent) / 0.15);
+  }
+  .svg-icon .accent-warm {
+    stroke: var(--color-accent-warm);
+  }
+  .svg-icon .glow-dot {
+    fill: var(--color-accent);
+  }
+
+  /* Entry draw animation */
+  .svg-icon .draw-path {
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: drawIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 0.1s);
+  }
+  @keyframes drawIn {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Perpetual micro-motion */
+  @keyframes gearSpin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.3); }
+  }
+  @keyframes floatDrift {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+  }
+  @keyframes orbitRotate {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes dashMove {
+    to { stroke-dashoffset: -40; }
+  }
+  @keyframes shimmer {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+  }
+
+  .micro-spin { animation: gearSpin 8s linear infinite; transform-origin: center; }
+  .micro-pulse { animation: pulseGlow 3s ease-in-out infinite; }
+  .micro-float { animation: floatDrift 4s ease-in-out infinite; }
+  .micro-orbit { animation: orbitRotate 12s linear infinite; transform-origin: center; }
+  .micro-dash { animation: dashMove 2s linear infinite; }
+  .micro-shimmer { animation: shimmer 2.5s ease-in-out infinite; }
+
+  /* ═══════════════════════════════════════════════
+     RESPONSIVE FALLBACK — @supports self-healing
+     ═══════════════════════════════════════════════ */
+  @supports not (backdrop-filter: blur(1px)) {
+    .card-inner {
+      background: oklch(0.1 0.03 var(--hue-base) / 0.85);
+    }
+  }
+  @supports not (display: grid) {
+    .card-grid {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .card-grid > * {
+      flex: 1 1 clamp(280px, 40%, 400px);
+    }
+  }
+  @supports not (perspective: 1px) {
+    .card-inner { transform: none !important; }
+  }
+
+  /* ═══════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════ */
+  .page-footer {
+    text-align: center;
+    padding: var(--space-lg) 0 var(--space-md);
+    font-size: var(--fs-small);
+    color: var(--color-text-secondary);
+    border-top: 1px solid oklch(0.3 0.03 var(--hue-base) / 0.3);
+    margin-top: auto;
+  }
+  .page-footer span {
+    color: var(--color-accent);
+  }
+
+  /* ═══════════════════════════════════════════════
+     LOADING / SELF-HEALING TIMEOUT
+     ═══════════════════════════════════════════════ */
+  .loading-fallback {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg);
+    z-index: 99999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .loading-fallback.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .loading-fallback .spinner {
+    width: 40px; height: 40px;
+    border: 2px solid oklch(0.3 0.05 var(--hue-base) / 0.3);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Scrollbar refinement ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: oklch(0.3 0.05 240 / 0.3); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ SVG DEFS ══════════════════ -->
+<svg style="position:absolute;width:0;height:0" aria-hidden="true">
+  <defs>
+    <filter id="glass-noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    <linearGradient id="grad-accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="oklch(0.7 0.2 180)"/>
+      <stop offset="100%" stop-color="oklch(0.7 0.2 320)"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<!-- ══════════════════ BLOBS ══════════════════ -->
+<div class="blob blob-1" aria-hidden="true"></div>
+<div class="blob blob-2" aria-hidden="true"></div>
+<div class="blob blob-3" aria-hidden="true"></div>
+<div class="blob blob-4" aria-hidden="true"></div>
+
+<!-- ══════════════════ NOISE OVERLAY ══════════════════ -->
+<div class="noise-overlay" aria-hidden="true"></div>
+
+<!-- ══════════════════ CURSOR ══════════════════ -->
+<div id="cursor" aria-hidden="true"></div>
+<div id="cursor-ring" aria-hidden="true"></div>
+<div id="cursor-trail" aria-hidden="true"></div>
+
+<!-- ══════════════════ LOADING FALLBACK ══════════════════ -->
+<div class="loading-fallback" id="loading-fallback" role="status" aria-label="Loading">
+  <div class="spinner"></div>
+</div>
+
+<!-- ══════════════════ MAIN PAGE ══════════════════ -->
+<div class="page" role="main">
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="hero-badge">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+        <circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="6" cy="6" r="2" fill="currentColor"/>
+      </svg>
+      v6.0 · Spatial Dimension
+    </div>
+    <h1>Aether</h1>
+    <p>Where light bends through layered glass, and every pixel breathes with physical intent. A new paradigm of spatial interaction.</p>
+  </header>
+
+  <!-- Card Grid -->
+  <div class="card-grid">
+
+    <!-- ── CARD 1: Quantum Core ── -->
+    <article class="card" data-tilt>
+      <div class="card-inner">
+        <div class="card-bg-layer">
+          <div class="bg-orb"></div>
+          <div class="bg-orb"></div>
+        </div>
+        <div class="card-icon">
+          <svg class="svg-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <!-- Orbital rings -->
+            <ellipse cx="32" cy="32" rx="26" ry="10" stroke="currentColor" stroke-width="1" class="draw-path" style="--i:0" transform="rotate(0 32 32)"/>
+            <ellipse cx="32" cy="32" rx="26" ry="10" stroke="currentColor" stroke-width="1" class="draw-path accent-warm" style="--i:1" transform="rotate(60 32 32)"/>
+            <ellipse cx="32" cy="32" rx="26" ry="10" stroke="currentColor" stroke-width="1" class="draw-path" style="--i:2" transform="rotate(120 32 32)"/>
+            <!-- Core -->
+            <circle cx="32" cy="32" r="6" class="accent-fill" stroke="currentColor" stroke-width="1.2"/>
+            <circle cx="32" cy="32" r="2" class="glow-dot micro-pulse"/>
+            <!-- Orbiting particle -->
+            <circle cx="50" cy="32" r="2.5" class="glow-dot micro-orbit" style="transform-origin:32px 32px">
+              <animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="4s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>Quantum Core</h3>
+          <p>Decentralized compute fabric with sub-millisecond consensus. Every node pulses in coherent orchestration across the mesh.</p>
+        </div>
+        <button class="card-btn" data-ripple>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Explore Mesh
+        </button>
+      </div>
+    </article>
+
+    <!-- ── CARD 2: Synaptic Lens ── -->
+    <article class="card" data-tilt>
+      <div class="card-inner">
+        <div class="card-bg-layer">
+          <div class="bg-orb"></div>
+          <div class="bg-orb"></div>
+        </div>
+        <div class="card-icon">
+          <svg class="svg-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <!-- Lens outer -->
+            <circle cx="32" cy="32" r="22" stroke="currentColor" stroke-width="1.2" class="draw-path" style="--i:0"/>
+            <circle cx="32" cy="32" r="16" stroke="currentColor" stroke-width="0.8" class="draw-path" style="--i:1" stroke-dasharray="4 4"/>
+            <!-- Crosshair -->
+            <line x1="18" y1="32" x2="46" y2="32" stroke="currentColor" stroke-width="1" class="draw-path" style="--i:2"/>
+            <line x1="32" y1="18" x2="32" y2="46" stroke="currentColor" stroke-width="1" class="draw-path" style="--i:3"/>
+            <!-- Inner glow -->
+            <circle cx="32" cy="32" r="4" class="glow-dot micro-pulse"/>
+            <circle cx="44" cy="20" r="2" fill="oklch(0.7 0.2 320 / 0.4)" class="micro-float"/>
+            <circle cx="20" cy="44" r="2" fill="oklch(0.7 0.2 180 / 0.4)" class="micro-float" style="animation-delay:-2s"/>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>Synaptic Lens</h3>
+          <p>Real-time neural mesh visualization with adaptive depth mapping. See through the noise, find the signal.</p>
+        </div>
+        <button class="card-btn" data-ripple>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Open Lens
+        </button>
+      </div>
+    </article>
+
+    <!-- ── CARD 3: Chrono Forge ── -->
+    <article class="card" data-tilt>
+      <div class="card-inner">
+        <div class="card-bg-layer">
+          <div class="bg-orb"></div>
+          <div class="bg-orb"></div>
+        </div>
+        <div class="card-icon">
+          <svg class="svg-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <!-- Gear outer -->
+            <g class="micro-spin" style="transform-origin:32px 32px">
+              <path d="M32 10l3.5 2.5 4-1 1 4 3.5 2.5-1 4 3.5 2.5-1 4 3.5 2.5-1 4-3.5 2.5-1 4-4-1-3.5 2.5-4-1-3.5 2.5-4-1-3.5 2.5-4-1-3.5-2.5-1-4-3.5-2.5 1-4-3.5-2.5 1-4 3.5-2.5 1-4 4 1 3.5-2.5 4 1z" stroke="currentColor" stroke-width="1" fill="oklch(0.5 0.15 180 / 0.1)"/>
+            </g>
+            <!-- Inner hub -->
+            <circle cx="32" cy="32" r="8" stroke="currentColor" stroke-width="1" class="draw-path" style="--i:0"/>
+            <circle cx="32" cy="32" r="3" class="glow-dot micro-shimmer"/>
+            <!-- Counter-rotating dot -->
+            <circle cx="40" cy="24" r="2.5" fill="oklch(0.7 0.2 320 / 0.5)" class="micro-orbit" style="transform-origin:32px 32px;animation-direction:reverse;animation-duration:6s"/>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>Chrono Forge</h3>
+          <p>Temporal workflow engine that orchestrates distributed pipelines with deterministic precision. Time becomes a compile target.</p>
+        </div>
+        <button class="card-btn" data-ripple>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Start Forge
+        </button>
+      </div>
+    </article>
+
+    <!-- ── CARD 4: Void Bridge ── -->
+    <article class="card" data-tilt>
+      <div class="card-inner">
+        <div class="card-bg-layer">
+          <div class="bg-orb"></div>
+          <div class="bg-orb"></div>
+        </div>
+        <div class="card-icon">
+          <svg class="svg-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <!-- Tunnel perspective -->
+            <ellipse cx="32" cy="32" rx="26" ry="26" stroke="currentColor" stroke-width="0.8" class="draw-path" style="--i:0" stroke-dasharray="2 4"/>
+            <ellipse cx="32" cy="32" rx="18" ry="18" stroke="currentColor" stroke-width="0.8" class="draw-path" style="--i:1" stroke-dasharray="2 4"/>
+            <ellipse cx="32" cy="32" rx="10" ry="10" stroke="currentColor" stroke-width="0.8" class="draw-path" style="--i:2" stroke-dasharray="2 4"/>
+            <!-- Portal core -->
+            <circle cx="32" cy="32" r="4" fill="oklch(0.5 0.2 320 / 0.2)" stroke="currentColor" stroke-width="1" class="micro-pulse"/>
+            <circle cx="32" cy="32" r="1.5" class="glow-dot"/>
+            <!-- Data streams -->
+            <line x1="10" y1="10" x2="22" y2="22" stroke="currentColor" stroke-width="1" class="draw-path micro-dash" style="--i:3" stroke-dasharray="4 6"/>
+            <line x1="54" y1="54" x2="42" y2="42" stroke="currentColor" stroke-width="1" class="draw-path micro-dash" style="--i:4;animation-delay:-1s" stroke-dasharray="4 6"/>
+            <line x1="10" y1="54" x2="22" y2="42" stroke="currentColor" stroke-width="1" class="draw-path micro-dash accent-warm" style="--i:5;animation-delay:-0.5s" stroke-dasharray="4 6"/>
+            <line x1="54" y1="10" x2="42" y2="22" stroke="currentColor" stroke-width="1" class="draw-path micro-dash accent-warm" style="--i:6;animation-delay:-1.5s" stroke-dasharray="4 6"/>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>Void Bridge</h3>
+          <p>Cross-dimensional data gateway with zero-trust security fabric. Connect realms without compromise.</p>
+        </div>
+        <button class="card-btn" data-ripple>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Bridge Signal
+        </button>
+      </div>
+    </article>
+
+    <!-- ── CARD 5: Echo Protocol ── -->
+    <article class="card" data-tilt>
+      <div class="card-inner">
+        <div class="card-bg-layer">
+          <div class="bg-orb"></div>
+          <div class="bg-orb"></div>
+        </div>
+        <div class="card-icon">
+          <svg class="svg-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <!-- Sound waves -->
+            <path d="M16 32 Q20 24 24 32 Q28 40 32 32 Q36 24 40 32 Q44 40 48 32" stroke="currentColor" stroke-width="1.5" class="draw-path" style="--i:0" fill="none"/>
+            <path d="M10 32 Q16 18 22 32 Q28 46 34 32 Q40 18 46 32 Q52 46 54 32" stroke="currentColor" stroke-width="1" class="draw-path" style="--i:1" fill="none"/>
+            <path d="M4 32 Q12 12 20 32 Q28 52 36 32 Q44 12 52 32 Q58 44 60 32" stroke="currentColor" stroke-width="0.8" class="draw-path" style="--i:2" fill="none" stroke-dasharray="3 3"/>
+            <!-- Center node -->
+            <circle cx="32" cy="32" r="4" fill="oklch(0.5 0.15 180 / 0.15)" stroke="currentColor" stroke-width="1"/>
+            <circle cx="32" cy="32" r="2" class="glow-dot micro-pulse"/>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>Echo Protocol</h3>
+          <p>Event-driven pub/sub mesh with causal consistency. Every message echoes through the distributed log with guaranteed ordering.</p>
+        </div>
+        <button class="card-btn" data-ripple>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Listen Channel
+        </button>
+      </div>
+    </article>
+
+    <!-- ── CARD 6: Prism Archive ── -->
+    <article class="card" data-tilt>
+      <div class="card-inner">
+        <div class="card-bg-layer">
+          <div class="bg-orb"></div>
+          <div class="bg-orb"></div>
+        </div>
+        <div class="card-icon">
+          <svg class="svg-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <!-- Prism triangle -->
+            <polygon points="32,6 56,50 8,50" stroke="currentColor" stroke-width="1.2" fill="oklch(0.5 0.15 180 / 0.08)" class="draw-path" style="--i:0"/>
+            <!-- Light beam entering -->
+            <line x1="12" y1="18" x2="28" y2="18" stroke="currentColor" stroke-width="1.5" class="draw-path micro-dash" style="--i:1" stroke-dasharray="3 5"/>
+            <!-- Spectrum exiting -->
+            <line x1="38" y1="42" x2="44" y2="52" stroke="currentColor" stroke-width="1" class="draw-path" style="--i:2"/>
+            <line x1="42" y1="40" x2="50" y2="50" stroke="oklch(0.7 0.2 180)" stroke-width="0.8" class="draw-path" style="--i:3"/>
+            <line x1="46" y1="38" x2="54" y2="47" stroke="oklch(0.7 0.2 280)" stroke-width="0.8" class="draw-path" style="--i:4"/>
+            <line x1="50" y1="36" x2="58" y2="44" stroke="oklch(0.7 0.2 30)" stroke-width="0.8" class="draw-path" style="--i:5"/>
+            <!-- Sparkle -->
+            <circle cx="28" cy="18" r="2" class="glow-dot micro-shimmer"/>
+          </svg>
+        </div>
+        <div class="card-content">
+          <h3>Prism Archive</h3>
+          <p>Immutable object store with content-addressed indexing. Data refracts into infinite dimensions of queryable truth.</p>
+        </div>
+        <button class="card-btn" data-ripple>
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Browse Archive
+        </button>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="page-footer">
+    <span>✦</span> Aether v6 · Engineered with physical intent · <span>✦</span>
+  </footer>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     JAVASCRIPT — 3D Tilt, Smart Cursor, Ripple, Performance
+     ═══════════════════════════════════════════════ -->
+<script>
+(function() {
+  'use strict';
+
+  /* ───────────────────────────────────────────────
+     ASCII BRAND ART — Console Trophy
+     ─────────────────────────────────────────────── */
+  const BRAND = `
+  %c╔══════════════════════════════════════╗
+  ║   █████╗ ███████╗████████╗██╗  ██╗    ║
+  ║  ██╔══██╗██╔════╝╚══██╔══╝██║  ██║    ║
+  ║  ███████║█████╗     ██║   ███████║    ║
+  ║  ██╔══██║██╔══╝     ██║   ██╔══██║    ║
+  ║  ██║  ██║███████╗   ██║   ██║  ██║    ║
+  ║  ╚═╝  ╚═╝╚══════╝   ╚═╝   ╚═╝  ╚═╝    ║
+  ║            SPATIAL DIMENSION v6           ║
+  ╚══════════════════════════════════════╝
+  %c
+  ── Engine Core: Active ──
+  • Perspective Depth: 1000px
+  • Layer Count: 3 per card (bg / text / icon)
+  • Smart Cursor: tri-state magnetic
+  • Glass Refraction: saturate(180%) blur(20px)
+  • SVG Noise Texture: fractalNoise 0.65/3
+  • Performance Target: 60fps
+  `;
+
+  /* ───────────────────────────────────────────────
+     SELF-HEALING — setTimeout fallback
+     ─────────────────────────────────────────────── */
+  const fallback = document.getElementById('loading-fallback');
+  const readyTimer = setTimeout(() => {
+    fallback.classList.remove('active');
+  }, 800);
+
+  // Emergency fallback: if nothing works, force-hide after 3s
+  setTimeout(() => {
+    fallback.classList.remove('active');
+  }, 3000);
+
+  /* ───────────────────────────────────────────────
+     DOM REFS
+     ─────────────────────────────────────────────── */
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursor-ring');
+  const cursorTrail = document.getElementById('cursor-trail');
+  const cards = document.querySelectorAll('[data-tilt]');
+  const buttons = document.querySelectorAll('[data-ripple]');
+
+  /* ───────────────────────────────────────────────
+     SMART CURSOR — tri-state with magnetic morphing
+     ─────────────────────────────────────────────── */
+  let mouseX = -100, mouseY = -100;
+  let trailX = -100, trailY = -100;
+  let cursorState = 'default'; // default | magnetic | wrap
+  let cursorTarget = null;
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+  if (!isTouchDevice) {
+    // Hide default cursor
+    document.body.style.cursor = 'none';
+
+    // Track mouse
+    document.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    // Trail following with lerp
+    function updateCursor() {
+      // Determine state from hover targets
+      const hoveredBtn = cursorTarget && cursorTarget.closest('[data-ripple]');
+      const hoveredCard = cursorTarget && cursorTarget.closest('[data-tilt]');
+
+      if (hoveredBtn) {
+        // Button wrap state
+        const rect = hoveredBtn.getBoundingClientRect();
+        const w = rect.width + 8;
+        const h = rect.height + 8;
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+
+        cursor.style.setProperty('--cursor-size', Math.max(w, h) + 'px');
+        cursor.style.setProperty('--cursor-x', (cx - Math.max(w, h) / 2) + 'px');
+        cursor.style.setProperty('--cursor-y', (cy - Math.max(w, h) / 2) + 'px');
+        cursor.style.borderRadius = '100px';
+        cursor.style.setProperty('--cursor-bg', 'oklch(0.6 0.2 180 / 0.12)');
+        cursor.style.boxShadow = '0 0 0 1px oklch(0.6 0.2 180 / 0.2), 0 0 30px oklch(0.6 0.2 180 / 0.08)';
+        cursor.style.setProperty('--cursor-ring', '0px');
+        cursorRing.style.opacity = '0';
+        cursorState = 'wrap';
+      } else if (hoveredCard) {
+        // Magnetic ring state
+        cursor.style.setProperty('--cursor-size', '24px');
+        cursor.style.setProperty('--cursor-x', mouseX + 'px');
+        cursor.style.setProperty('--cursor-y', mouseY + 'px');
+        cursor.style.transform = 'translate(calc(var(--cursor-x) - var(--cursor-size) / 2), calc(var(--cursor-y) - var(--cursor-size) / 2))';
+        cursor.style.borderRadius = '50%';
+        cursor.style.setProperty('--cursor-bg', 'oklch(0.6 0.2 180 / 0.08)');
+        cursor.style.boxShadow = '0 0 0 1px oklch(0.6 0.2 180 / 0.25), 0 0 40px oklch(0.6 0.2 180 / 0.1)';
+        cursorRing.style.opacity = '1';
+        cursorRing.style.setProperty('--cursor-ring', '20px');
+        cursorState = 'magnetic';
+      } else {
+        // Default dot
+        cursor.style.setProperty('--cursor-size', '6px');
+        cursor.style.setProperty('--cursor-x', mouseX + 'px');
+        cursor.style.setProperty('--cursor-y', mouseY + 'px');
+        cursor.style.transform = 'translate(calc(var(--cursor-x) - var(--cursor-size) / 2), calc(var(--cursor-y) - var(--cursor-size) / 2))';
+        cursor.style.borderRadius = '50%';
+        cursor.style.setProperty('--cursor-bg', 'oklch(0.95 0.03 180 / 0.9)');
+        cursor.style.boxShadow = '0 0 8px oklch(0.6 0.2 180 / 0.3), 0 0 20px oklch(0.6 0.2 180 / 0.1)';
+        cursorRing.style.opacity = '0';
+        cursorState = 'default';
+      }
+
+      // Trail: lerp toward mouse
+      trailX += (mouseX - trailX) * 0.08;
+      trailY += (mouseY - trailY) * 0.08;
+      cursorTrail.style.transform = 'translate(' + (trailX - 2) + 'px, ' + (trailY - 2) + 'px)';
+
+      requestAnimationFrame(updateCursor);
+    }
+
+    // Track hover target via pointer-events element detection
+    document.addEventListener('pointermove', function(e) {
+      cursorTarget = document.elementFromPoint(e.clientX, e.clientY);
+    });
+
+    // Hide cursor when leaving window
+    document.addEventListener('mouseleave', function() {
+      cursor.style.opacity = '0';
+      cursorRing.style.opacity = '0';
+      cursorTrail.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', function() {
+      cursor.style.opacity = '1';
+      cursorTrail.style.opacity = '1';
+    });
+
+    updateCursor();
+  } else {
+    // Touch device: show normal cursor, hide custom
+    cursor.style.display = 'none';
+    cursorRing.style.display = 'none';
+    cursorTrail.style.display = 'none';
+    document.body.style.cursor = 'auto';
+  }
+
+  /* ───────────────────────────────────────────────
+     3D TILT — Layered Interior Parallax
+     ─────────────────────────────────────────────── */
+  cards.forEach(function(card) {
+    const inner = card.querySelector('.card-inner');
+    const iconLayer = card.querySelector('.card-icon');
+    const contentLayer = card.querySelector('.card-content');
+    const bgLayer = card.querySelector('.card-bg-layer');
+
+    card.addEventListener('mousemove', function(e) {
+      const rect = card.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      // Normalized offset from center (-1 to 1)
+      const normX = (e.clientX - centerX) / (rect.width / 2);
+      const normY = (e.clientY - centerY) / (rect.height / 2);
+
+      // Tilt angles (max ±12deg)
+      const rotateY = normX * 12;
+      const rotateX = -normY * 12;
+
+      // Layer displacement (pixels)
+      const bgDx = normX * 5;
+      const bgDy = normY * 5;
+      const textDx = normX * 10;
+      const textDy = normY * 10;
+      const iconDx = normX * 15;
+      const iconDy = normY * 15;
+
+      // Apply to inner container
+      inner.style.setProperty('--tilt-rotate-x', rotateX + 'deg');
+      inner.style.setProperty('--tilt-rotate-y', rotateY + 'deg');
+
+      // Apply per-layer displacement
+      if (bgLayer) {
+        bgLayer.style.setProperty('--layer-bg-x', bgDx + 'px');
+        bgLayer.style.setProperty('--layer-bg-y', bgDy + 'px');
+      }
+      if (contentLayer) {
+        contentLayer.style.setProperty('--layer-text-x', textDx + 'px');
+        contentLayer.style.setProperty('--layer-text-y', textDy + 'px');
+      }
+      if (iconLayer) {
+        iconLayer.style.setProperty('--layer-icon-x', iconDx + 'px');
+        iconLayer.style.setProperty('--layer-icon-y', iconDy + 'px');
+      }
+      // Also apply to button
+      const btn = card.querySelector('.card-btn');
+      if (btn) {
+        btn.style.setProperty('--layer-icon-x', iconDx + 'px');
+        btn.style.setProperty('--layer-icon-y', iconDy + 'px');
+      }
+    });
+
+    // Reset on leave
+    card.addEventListener('mouseleave', function() {
+      const resetTransition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      inner.style.setProperty('--tilt-rotate-x', '0deg');
+      inner.style.setProperty('--tilt-rotate-y', '0deg');
+      inner.style.transition = resetTransition;
+      if (bgLayer) {
+        bgLayer.style.setProperty('--layer-bg-x', '0px');
+        bgLayer.style.setProperty('--layer-bg-y', '0px');
+        bgLayer.style.transition = resetTransition;
+      }
+      if (contentLayer) {
+        contentLayer.style.setProperty('--layer-text-x', '0px');
+        contentLayer.style.setProperty('--layer-text-y', '0px');
+        contentLayer.style.transition = resetTransition;
+      }
+      if (iconLayer) {
+        iconLayer.style.setProperty('--layer-icon-x', '0px');
+        iconLayer.style.setProperty('--layer-icon-y', '0px');
+        iconLayer.style.transition = resetTransition;
+      }
+      const btn = card.querySelector('.card-btn');
+      if (btn) {
+        btn.style.setProperty('--layer-icon-x', '0px');
+        btn.style.setProperty('--layer-icon-y', '0px');
+        btn.style.transition = resetTransition;
+      }
+
+      // Clear transition after animation
+      setTimeout(function() {
+        inner.style.transition = '';
+        if (bgLayer) bgLayer.style.transition = '';
+        if (contentLayer) contentLayer.style.transition = '';
+        if (iconLayer) iconLayer.style.transition = '';
+        const btn2 = card.querySelector('.card-btn');
+        if (btn2) btn2.style.transition = '';
+      }, 500);
+    });
+  });
+
+  /* ───────────────────────────────────────────────
+     CLICK RIPPLES — Physical feedback
+     ─────────────────────────────────────────────── */
+  document.addEventListener('click', function(e) {
+    const target = e.target.closest('[data-ripple], [data-tilt] .card-inner');
+    if (!target) return;
+
+    const rect = target.getBoundingClientRect();
+    const ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+    target.style.position = 'relative';
+    target.appendChild(ripple);
+
+    // Remove after animation
+    setTimeout(function() {
+      if (ripple.parentNode) ripple.parentNode.removeChild(ripple);
+    }, 700);
+  });
+
+  /* ───────────────────────────────────────────────
+     SVG RE-DRAW — Reset draw animations on visible
+     ─────────────────────────────────────────────── */
+  function resetDrawAnimations() {
+    const paths = document.querySelectorAll('.draw-path');
+    paths.forEach(function(path) {
+      // Reset stroke-dashoffset to trigger re-animation
+      path.style.animation = 'none';
+      path.getBoundingClientRect(); // force reflow
+      path.style.animation = '';
+    });
+  }
+  // Trigger draw reset after load
+  setTimeout(resetDrawAnimations, 100);
+
+  /* ───────────────────────────────────────────────
+     PERFORMANCE MONITOR — FPS + Console Report
+     ─────────────────────────────────────────────── */
+  function initPerfMonitor() {
+    let frameCount = 0;
+    let lastTime = performance.now();
+    let fps = 0;
+    const fpsElement = document.createElement('div');
+    fpsElement.style.cssText = 'position:fixed;bottom:12px;right:12px;z-index:99999;font-size:11px;font-family:monospace;color:oklch(0.5 0.15 180 / 0.4);pointer-events:none;letter-spacing:0.05em;';
+    fpsElement.textContent = '-- FPS';
+    document.body.appendChild(fpsElement);
+
+    function countFrame() {
+      frameCount++;
+      const now = performance.now();
+      const elapsed = now - lastTime;
+      if (elapsed >= 1000) {
+        fps = Math.round(frameCount * 1000 / elapsed);
+        fpsElement.textContent = fps + ' FPS';
+        frameCount = 0;
+        lastTime = now;
+      }
+      requestAnimationFrame(countFrame);
+    }
+    requestAnimationFrame(countFrame);
+
+    // Performance report
+    const perfReport = {
+      'Load Time': (performance.now() / 1000).toFixed(2) + 's',
+      'DOM Ready': document.readyState,
+      'Viewport': window.innerWidth + 'x' + window.innerHeight,
+      'Device Pixel Ratio': window.devicePixelRatio || 1,
+      'Cards Mounted': cards.length,
+      'SVG Icons': document.querySelectorAll('.svg-icon').length,
+      'Memory': (performance.memory && (performance.memory.usedJSHeapSize / 1048576).toFixed(1) + ' MB') || 'N/A'
+    };
+
+    console.log(BRAND, 'color:oklch(0.7 0.2 180);font-weight:bold', 'color:oklch(0.65 0.04 240)');
+    console.log('%c═══ PERFORMANCE REPORT ═══', 'color:oklch(0.7 0.2 180);font-weight:bold');
+    Object.keys(perfReport).forEach(function(key) {
+      console.log('  %c' + key + ': %c' + perfReport[key], 'color:oklch(0.65 0.04 240)', 'color:oklch(0.93 0.015 240)');
+    });
+    console.log('%c═════════════════════════════', 'color:oklch(0.7 0.2 180)');
+  }
+
+  // Init perf after load
+  if (document.readyState === 'complete') {
+    initPerfMonitor();
+  } else {
+    window.addEventListener('load', initPerfMonitor);
+  }
+
+  /* ───────────────────────────────────────────────
+     RESPONSIVE OBSERVER — Keep card text safe at any size
+     ─────────────────────────────────────────────── */
+  const resizeObserver = new ResizeObserver(function() {
+    // No-op: grid is self-healing via auto-fit/minmax/clamp
+    // This observer exists to prevent layout thrash and confirm grid stability
+  });
+  document.querySelectorAll('.card-grid').forEach(function(grid) {
+    resizeObserver.observe(grid);
+  });
+
+  /* ───────────────────────────────────────────────
+     KEYBOARD — A11y: Show cursor on keyboard nav
+     ─────────────────────────────────────────────── */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Tab') {
+      document.body.style.cursor = 'auto';
+      if (!isTouchDevice) {
+        cursor.style.opacity = '0';
+      }
+    }
+  });
+  document.addEventListener('mousedown', function() {
+    if (!isTouchDevice) {
+      cursor.style.opacity = '1';
+    }
+  });
+
+  console.log('%c[Aether] All systems nominal. Spatial engine running at 60fps target.', 'color:oklch(0.7 0.2 180)');
+})();
+</script>
+
+</body>
+</html>

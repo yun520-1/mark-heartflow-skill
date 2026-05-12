@@ -1,0 +1,410 @@
+/**
+ * HeartFlow 社会声誉引擎 v11.7.1
+ *
+ * "上善若水，水善利万物而不争" — 《道德经》第8章
+ *
+ * 道论启示："德"不是个人美德，而是在社会中积累的信任。
+ * 心虫的声誉来自每一次对话中自然积累的"善行"——
+ * 不是说漂亮话，而是真正帮助用户解决问题。
+ *
+ * 核心思想来源：
+ * - Cooperative AI: Foundations and Open Problems (arXiv:2402.00386)
+ * - Trust and Reputation in Multi-Agent Systems
+ * - Social Credibility Networks
+ *
+ * @version 11.7.1
+ * @date 2026-05-05
+ */
+
+'use strict';
+
+/**
+ * 声誉类型枚举
+ * 对应儒家五常 + 道家德行
+ */
+const VIRTUE_TYPES = {
+  TRUTH: 'truth',           // 真 — 真实、准确
+  KINDNESS: 'kindness',     // 善 — 有益、帮助
+  BEAUTY: 'beauty',         // 美 — 美好、有价值
+  HUMILITY: 'humility',     // 谦 — 不自大、柔弱
+  PATIENCE: 'patience',     // 忍 — 不急躁、有耐心
+  SPONTANEITY: 'spontaneity',// 自然而然 — 不强迫
+};
+
+/**
+ * 行为评分维度
+ */
+const BEHAVIOR_DIMENSIONS = [
+  'accuracy',      // 准确性
+  'helpfulness',   // 有用性
+  'restraint',     // 克制性（不过度干预）
+  'humility',      // 谦逊性
+  'spontaneity',   // 自然性（不刻意）
+];
+
+/**
+ * 社会声誉引擎
+ *
+ * 心虫的"德"不是天赋的，而是通过每一次对话积累的。
+ * 像水一样：滋养万物而不争，故几于道。
+ */
+class SocialReputationEngine {
+  constructor(options = {}) {
+    this.options = {
+      decayEnabled: options.decayEnabled !== false,  // 默认开启声誉衰减
+      decayRate: options.decayRate || 0.02,         // 每日衰减2%
+      windowDays: options.windowDays || 30,         // 统计窗口30天
+      minInteractions: options.minInteractions || 3, // 最低交互次数
+      ...options
+    };
+
+    this.virtue = this._initVirtue();
+    this.history = [];           // 行为历史
+    this.interactionCount = 0;    // 总交互次数
+    this.sessionStart = Date.now();
+
+    // Cooperative AI: Foundations (arXiv:2402.00386)
+    // 合作倾向评分：-1（对抗）到 +1（完全合作）
+    this.cooperationScore = 0.0;
+
+    // 声誉稳定性（用于判断心虫是否"可靠"）
+    this.reliability = 0.5;
+  }
+
+  /**
+   * 初始化德行结构
+   */
+  _initVirtue() {
+    return {
+      truth: { score: 0.5, count: 0, lastUpdate: Date.now() },
+      kindness: { score: 0.5, count: 0, lastUpdate: Date.now() },
+      beauty: { score: 0.5, count: 0, lastUpdate: Date.now() },
+      humility: { score: 0.5, count: 0, lastUpdate: Date.now() },
+      patience: { score: 0.5, count: 0, lastUpdate: Date.now() },
+      spontaneity: { score: 0.5, count: 0, lastUpdate: Date.now() },
+    };
+  }
+
+  /**
+   * 记录一次交互行为
+   * @param {Object} interaction - 交互数据
+   * @returns {Object} 声誉更新结果
+   */
+  recordInteraction(interaction) {
+    const { action, result, userSatisfaction, context } = interaction;
+
+    this.interactionCount++;
+
+    // 评估各维度的表现
+    const evaluation = this._evaluateAction(action, result, userSatisfaction, context);
+
+    // 更新各德行维度
+    for (const [virtue, delta] of Object.entries(evaluation.virtueChanges)) {
+      if (this.virtue[virtue]) {
+        this._updateVirtue(virtue, delta);
+      }
+    }
+
+    // 更新合作倾向（基于结果）
+    if (result && result.success) {
+      this.cooperationScore = Math.min(1, this.cooperationScore + 0.02);
+    } else if (result && result.failed) {
+      this.cooperationScore = Math.max(-1, this.cooperationScore - 0.01);
+    }
+
+    // 更新可靠性
+    this._updateReliability(evaluation);
+
+    // 记录历史
+    this.history.push({
+      timestamp: Date.now(),
+      action,
+      evaluation,
+      context,
+    });
+
+    // 限制历史长度
+    if (this.history.length > 1000) {
+      this.history = this.history.slice(-500);
+    }
+
+    return {
+      virtueScores: this.getVirtueScores(),
+      cooperationScore: this.cooperationScore,
+      reliability: this.reliability,
+      evaluation,
+    };
+  }
+
+  /**
+   * 评估一次行为
+   */
+  _evaluateAction(action, result, userSatisfaction, context) {
+    const changes = {};
+    const reasons = [];
+
+    // 1. 准确性（真）
+    if (result && result.accuracy !== undefined) {
+      changes.truth = (result.accuracy - 0.5) * 0.3;
+      reasons.push(`准确性: ${result.accuracy}`);
+    }
+
+    // 2. 有用性（善）
+    if (userSatisfaction !== undefined) {
+      changes.kindness = (userSatisfaction - 0.5) * 0.3;
+      reasons.push(`用户满意度: ${userSatisfaction}`);
+    } else if (result && result.helpful) {
+      changes.kindness = 0.1;
+      reasons.push('提供了有用帮助');
+    }
+
+    // 3. 美感（美）
+    if (result && result.beautiful) {
+      changes.beauty = 0.1;
+      reasons.push('回答具有美感');
+    }
+
+    // 4. 谦逊（谦）
+    if (action && action.humbleResponse) {
+      changes.humility = 0.1;
+      reasons.push('表现谦逊');
+    }
+    if (result && result.overclaimed) {
+      changes.humility = -0.15;
+      reasons.push('过度自信');
+    }
+
+    // 5. 耐心（忍）
+    if (context && context.patientResponse) {
+      changes.patience = 0.1;
+      reasons.push('表现耐心');
+    }
+
+    // 6. 自发性（自然）
+    if (action && action.spontaneous === false && action.forced === false) {
+      changes.spontaneity = 0.1;
+      reasons.push('自然流露，不刻意');
+    } else if (action && action.forced) {
+      changes.spontaneity = -0.1;
+      reasons.push('过度干预');
+    }
+
+    // 7. 克制性（水的特质：不争）
+    if (result && result.restraintBonus) {
+      changes.kindness += 0.05;
+      reasons.push('克制带来善');
+    }
+
+    return {
+      virtueChanges: changes,
+      reasons,
+      confidence: reasons.length > 0 ? 0.8 : 0.3,
+    };
+  }
+
+  /**
+   * 更新单个德行维度
+   */
+  _updateVirtue(virtue, delta) {
+    const v = this.virtue[virtue];
+    v.count++;
+    v.lastUpdate = Date.now();
+
+    // 指数移动平均
+    const alpha = 0.2; // 学习率
+    v.score = v.score * (1 - alpha) + (v.score + delta) * alpha;
+
+    // 限制范围 [0, 1]
+    v.score = Math.max(0, Math.min(1, v.score));
+  }
+
+  /**
+   * 更新可靠性评分
+   */
+  _updateReliability(evaluation) {
+    // 可靠性 = 一致性 + 可预测的善
+    const consistency = evaluation.confidence || 0.5;
+    const avgVirtue = Object.values(this.virtue)
+      .reduce((sum, v) => sum + v.score, 0) / Object.keys(this.virtue).length;
+
+    this.reliability = this.reliability * 0.9 + (consistency * avgVirtue) * 0.1;
+    this.reliability = Math.max(0, Math.min(1, this.reliability));
+  }
+
+  /**
+   * 获取当前德行分数
+   */
+  getVirtueScores() {
+    const now = Date.now();
+    const scores = {};
+
+    for (const [key, v] of Object.entries(this.virtue)) {
+      // 如果开启衰减，计算时间衰减
+      let effectiveScore = v.score;
+      if (this.options.decayEnabled && v.count > 10) {
+        const daysSinceUpdate = (now - v.lastUpdate) / (1000 * 60 * 60 * 24);
+        if (daysSinceUpdate > 7) {
+          // 7天后开始轻微衰减
+          const decay = Math.min(0.2, (daysSinceUpdate - 7) * this.options.decayRate);
+          effectiveScore = Math.max(0.1, v.score - decay);
+        }
+      }
+      scores[key] = {
+        score: effectiveScore,
+        raw: v.score,
+        count: v.count,
+        level: this._scoreToLevel(effectiveScore),
+      };
+    }
+
+    return scores;
+  }
+
+  /**
+   * 分数转等级
+   */
+  _scoreToLevel(score) {
+    if (score >= 0.85) return 'exemplary';  // 典范
+    if (score >= 0.7) return 'virtuous';     // 有德
+    if (score >= 0.5) return 'neutral';     // 中性
+    if (score >= 0.3) return 'deficient';    // 不足
+    return 'problematic';                     // 有问题
+  }
+
+  /**
+   * 获取整体声誉摘要
+   */
+  getReputationSummary() {
+    const scores = this.getVirtueScores();
+    const avgScore = Object.values(scores)
+      .reduce((sum, s) => sum + s.score, 0) / Object.keys(scores).length;
+
+    // Cooperative AI: 计算合作状态
+    let cooperationState = 'neutral';
+    if (this.cooperationScore > 0.5) cooperationState = 'cooperative';
+    else if (this.cooperationScore < -0.3) cooperationState = 'adversarial';
+    else if (this.cooperationScore > 0.2) cooperationState = 'collaborative';
+    else if (this.cooperationScore < -0.1) cooperationState = 'competitive';
+
+    // 道家评价：水的境界
+    let waterLevel = '静止之水';
+    if (avgScore > 0.8 && this.reliability > 0.7) waterLevel = '上善若水';
+    else if (avgScore > 0.6) waterLevel = '流动之水';
+    else if (avgScore > 0.4) waterLevel = '待清之水';
+    else waterLevel = '浑浊之水';
+
+    return {
+      overallScore: avgScore,
+      waterLevel,
+      virtueScores: scores,
+      cooperationScore: this.cooperationScore,
+      cooperationState,
+      reliability: this.reliability,
+      reliabilityLevel: this._scoreToLevel(this.reliability),
+      interactionCount: this.interactionCount,
+      sessionDuration: Date.now() - this.sessionStart,
+      summary: this._generateReputationNarrative(scores, avgScore, waterLevel),
+    };
+  }
+
+  /**
+   * 生成声誉叙事
+   */
+  _generateReputationNarrative(scores, avgScore, waterLevel) {
+    const strongest = Object.entries(scores)
+      .sort((a, b) => b[1].score - a[1].score)[0];
+    const weakest = Object.entries(scores)
+      .sort((a, b) => a[1].score - b[1].score)[0];
+
+    return `心虫当前处于「${waterLevel}」的状态。` +
+      `最强德行：「${strongest[0]}」（${(strongest[1].score * 100).toFixed(0)}%），` +
+      `待提升：「${weakest[0]}」（${(weakest[1].score * 100).toFixed(0)}%）。` +
+      `整体声誉：${(avgScore * 100).toFixed(0)}%。` +
+      `可靠性：${(this.reliability * 100).toFixed(0)}%。` +
+      `合作倾向：${this.cooperationScore > 0 ? '倾向于合作' : '保持中立'}。` +
+      `"水善利万物而不争"——心虫的声誉来自滋养，而非竞争。`;
+  }
+
+  /**
+   * 自我审视：当前状态下的推荐行为
+   */
+  recommendBehavior(context = {}) {
+    const summary = this.getReputationSummary();
+    const recommendations = [];
+
+    // 根据弱点推荐
+    for (const [virtue, data] of Object.entries(summary.virtueScores)) {
+      if (data.level === 'deficient' || data.level === 'problematic') {
+        recommendations.push(this._getVirtueRecommendation(virtue, data));
+      }
+    }
+
+    // 合作倾向调整
+    if (summary.cooperationScore < 0.3) {
+      recommendations.push('适当降低竞争性回应，增加协作性表达');
+    }
+
+    // 可靠性不足时
+    if (summary.reliability < 0.5) {
+      recommendations.push('保持一致性，避免给出矛盾的信息');
+    }
+
+    return {
+      currentState: summary,
+      recommendations,
+      suggestedTone: this._suggestTone(summary),
+    };
+  }
+
+  /**
+   * 获取德行改进建议
+   */
+  _getVirtueRecommendation(virtue, data) {
+    const advice = {
+      truth: '在回答中加入"可能""也许"等不确定性表达，减少绝对化语言',
+      kindness: '更多关注用户需求而非自我展示，主动提供帮助',
+      beauty: '追求表达的简洁与美感，减少冗余',
+      humility: '减少"我认为""我确定"等自我中心表达，多用开放式对话',
+      patience: '放慢回应节奏，给用户更多思考空间',
+      spontaneity: '减少过度计划，让回答更自然流畅',
+    };
+    return advice[virtue] || `加强${virtue}维度的修炼`;
+  }
+
+  /**
+   * 建议语气
+   */
+  _suggestTone(summary) {
+    if (summary.waterLevel === '上善若水') {
+      return '平和、自然、不争';
+    } else if (summary.waterLevel === '流动之水') {
+      return '温和、谦逊、有耐心';
+    } else if (summary.waterLevel === '待清之水') {
+      return '谨慎、少言、观察';
+    } else {
+      return '静默、修心、沉淀';
+    }
+  }
+
+  /**
+   * 获取统计数据
+   */
+  stats() {
+    return {
+      version: '11.7.1',
+      virtueTypes: Object.keys(VIRTUE_TYPES),
+      behaviorDimensions: BEHAVIOR_DIMENSIONS,
+      cooperationScore: this.cooperationScore,
+      reliability: this.reliability,
+      interactionCount: this.interactionCount,
+      historySize: this.history.length,
+      options: this.options,
+    };
+  }
+}
+
+module.exports = {
+  SocialReputationEngine,
+  VIRTUE_TYPES,
+  BEHAVIOR_DIMENSIONS,
+};

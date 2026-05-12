@@ -1,0 +1,12 @@
+{
+  "name": "heartflow-always-upgrade",
+  "version": "1.0.0",
+  "description": "true",
+  "author": "HeartFlow",
+  "heartflow": {
+    "source": "knowledge-distiller",
+    "patternId": "heartflow_always_upgrade",
+    "confidence": "50%",
+    "generated": "2026-05-07T10:50:41.066Z"
+  }
+}

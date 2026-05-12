@@ -1,0 +1,22 @@
+     1|<?xml version="1.0" encoding="UTF-8"?>
+     2|<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+     3|<plist version="1.0">
+     4|<dict>
+     5|    <key>Label</key>
+     6|    <string>com.heartflow.comfyui-monitor</string>
+     7|    <key>ProgramArguments</key>
+     8|    <array>
+     9|        <string>/bin/bash</string>
+    10|        <string>~/.hermes/skills/ai/heartflow/scripts/comfyui-cron.sh</string>
+    11|    </array>
+    12|    <key>StartInterval</key>
+    13|    <integer>900</integer>
+    14|    <key>RunAtLoad</key>
+    15|    <true/>
+    16|    <key>StandardOutPath</key>
+    17|    <string>~/.hermes/skills/ai/heartflow/logs/comfyui-cron.log</string>
+    18|    <key>StandardErrorPath</key>
+    19|    <string>~/.hermes/skills/ai/heartflow/logs/comfyui-cron-error.log</string>
+    20|</dict>
+    21|</plist>
+    22|

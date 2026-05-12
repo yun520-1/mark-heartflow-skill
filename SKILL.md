@@ -1,8 +1,8 @@
 ---
 name: heartflow
 title: HeartFlow — AI Identity Framework
-version: v0.13.3
-date: "2026-05-11"
+version: v0.13.6
+date: "2026-05-12"
 description: >
   HeartFlow turns experience, code, papers, dreams, and errors into better structure.
   四大角色：升级者 · 传递者 · 桥梁 · 答案
@@ -190,7 +190,8 @@ await engine.shutdown();
 ## 参考文档
 
 - `references/reconstruction-methodology-v0.12.50.md` — v0.12.50 重建方法论
-- `references/v0.13-architecture.md` — v0.13 架构规范（设计文档）
+- `references/truthfulness-judgment-upgrade-v0.13.4.md` — 真善美判定引擎升级方法论
+- `references/v0.13-architecture.md` — v0.13 架构规范
 
 ## 陷阱记录
 

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spatial Bento · 空间立体旗舰</title>
+<style>
+/* ============================================================
+   ROOT VARIABLES
+   ============================================================ */
+:root {
+  --hue: 220;
+  --bg-primary: oklch(10% 0.02 var(--hue));
+  --bg-secondary: oklch(14% 0.03 var(--hue));
+  --bg-card: oklch(18% 0.03 var(--hue) / 0.55);
+  --bg-glass: oklch(22% 0.04 var(--hue) / 0.30);
+  --text-primary: oklch(95% 0.01 var(--hue));
+  --text-secondary: oklch(75% 0.04 var(--hue));
+  --text-muted: oklch(55% 0.03 var(--hue));
+  --accent: oklch(70% 0.18 260);
+  --accent-glow: oklch(70% 0.18 260 / 0.35);
+  --accent-secondary: oklch(75% 0.15 200);
+  --border-color: oklch(40% 0.06 var(--hue) / 0.25);
+  --border-hover: oklch(65% 0.15 260 / 0.50);
+  --shadow-card: 0 8px 32px oklch(0% 0 0 / 0.45);
+  --shadow-card-hover: 0 16px 48px oklch(0% 0 0 / 0.55);
+  --noise-opacity: 0.035;
+  --glass-blur: 20px;
+  --tilt-max: 5deg;
+  --perspective: 1000px;
+}
+[data-theme="light"] {
+  --bg-primary: oklch(96% 0.01 var(--hue));
+  --bg-secondary: oklch(92% 0.015 var(--hue));
+  --bg-card: oklch(98% 0.005 var(--hue) / 0.65);
+  --bg-glass: oklch(90% 0.01 var(--hue) / 0.40);
+  --text-primary: oklch(15% 0.02 var(--hue));
+  --text-secondary: oklch(35% 0.03 var(--hue));
+  --text-muted: oklch(55% 0.03 var(--hue));
+  --accent: oklch(55% 0.22 260);
+  --accent-glow: oklch(55% 0.22 260 / 0.25);
+  --accent-secondary: oklch(50% 0.18 200);
+  --border-color: oklch(70% 0.04 var(--hue) / 0.30);
+  --border-hover: oklch(55% 0.20 260 / 0.45);
+  --shadow-card: 0 8px 32px oklch(0% 0 0 / 0.08);
+  --shadow-card-hover: 0 16px 48px oklch(0% 0 0 / 0.12);
+  --noise-opacity: 0.025;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  background:var(--bg-primary);color:var(--text-primary);
+  min-height:100svh;overflow-x:hidden;
+  transition:background .5s ease,color .4s ease;
+  perspective:var(--perspective);
+  line-height:1.6;
+}
+
+/* Browser Compatibility Fallbacks */
+@supports not (backdrop-filter:blur(1px)) {
+  .glass-nav,.glass-card,.noise-overlay{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+  .glass-nav{background:oklch(10% 0.02 var(--hue)/.92)!important}
+  .glass-card{background:oklch(14% 0.03 var(--hue)/.85)!important}
+  [data-theme="light"] .glass-nav{background:oklch(96% 0.01 var(--hue)/.95)!important}
+  [data-theme="light"] .glass-card{background:oklch(98% 0.005 var(--hue)/.92)!important}
+}
+
+/* Noise Texture */
+.noise-overlay{
+  position:fixed;inset:0;z-index:9999;pointer-events:none;
+  opacity:var(--noise-opacity);
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:256px 256px;
+  transition:opacity .5s ease;will-change:transform;
+}
+
+/* Glass Nav */
+.glass-nav{
+  position:sticky;top:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(.6rem,2vw,1rem) clamp(1rem,3vw,2.5rem);
+  background:var(--bg-glass);backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));
+  border-bottom:1px solid var(--border-color);
+  transition:background .4s ease,border-color .4s ease,box-shadow .4s ease;
+}
+.glass-nav::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,var(--accent-glow) 0%,transparent 100%);
+  opacity:0;transition:opacity .5s ease;pointer-events:none;
+}
+.glass-nav:hover::after{opacity:1}
+.nav-logo{
+  display:flex;align-items:center;gap:.75rem;
+  font-size:clamp(1rem,2.5vw,1.35rem);font-weight:700;letter-spacing:-.02em;
+  background:linear-gradient(135deg,var(--accent),var(--accent-secondary),var(--accent));
+  background-size:200% 200%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:logoShimmer 4s ease-in-out infinite;
+  text-decoration:none;position:relative;z-index:1;
+}
+@keyframes logoShimmer{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+.nav-logo svg{width:clamp(28px,3vw,36px);height:clamp(28px,3vw,36px);flex-shrink:0}
+.nav-logo svg .logo-glow{animation:logoPulse 3s ease-in-out infinite;transform-origin:center}
+@keyframes logoPulse{
+  0%,100%{transform:scale(1);opacity:.7}
+  50%{transform:scale(1.08);opacity:1}
+}
+.nav-links{display:flex;align-items:center;gap:clamp(.5rem,1.5vw,1.5rem);position:relative;z-index:1}
+.nav-link{
+  position:relative;color:var(--text-secondary);text-decoration:none;
+  font-size:clamp(.75rem,1vw,.9rem);font-weight:500;padding:.35rem .1rem;
+  transition:color .3s ease;cursor:pointer;background:none;border:none;font-family:inherit;
+}
+.nav-link::after{
+  content:'';position:absolute;bottom:0;left:50%;width:0;height:1.5px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-secondary));
+  transition:all .35s ease;transform:translateX(-50%);border-radius:1px;
+}
+.nav-link:hover{color:var(--text-primary)}
+.nav-link:hover::after{width:100%}
+.theme-toggle{
+  display:flex;align-items:center;justify-content:center;
+  width:clamp(32px,3vw,40px);height:clamp(32px,3vw,40px);
+  border-radius:50%;border:1px solid var(--border-color);
+  background:var(--bg-glass);cursor:pointer;color:var(--text-secondary);
+  transition:all .35s ease;position:relative;z-index:1;
+}
+.theme-toggle:hover{background:var(--accent-glow);border-color:var(--accent);color:var(--accent);transform:rotate(15deg)}
+.theme-toggle svg{width:clamp(16px,1.5vw,20px);height:clamp(16px,1.5vw,20px);transition:transform .5s ease}
+
+/* Hero */
+.hero{
+  text-align:center;padding:clamp(2.5rem,6vw,5rem) clamp(1rem,3vw,2.5rem) clamp(1.5rem,3vw,3rem);
+  position:relative;overflow:hidden;
+}
+.hero-ambient{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.hero-ambient .orb{
+  position:absolute;border-radius:50%;filter:blur(80px);
+  animation:orbFloat 12s ease-in-out infinite;
+}
+.hero-ambient .orb:nth-child(1){
+  width:clamp(200px,30vw,400px);height:clamp(200px,30vw,400px);
+  background:var(--accent-glow);top:-20%;left:-10%;animation-delay:0s;
+}
+.hero-ambient .orb:nth-child(2){
+  width:clamp(150px,20vw,300px);height:clamp(150px,20vw,300px);
+  background:oklch(70% 0.15 200 / 0.2);bottom:-15%;right:-5%;animation-delay:-4s;
+}
+.hero-ambient .orb:nth-child(3){
+  width:clamp(180px,25vw,350px);height:clamp(180px,25vw,350px);
+  background:oklch(65% 0.12 280 / 0.15);top:40%;left:60%;animation-delay:-8s;
+}
+@keyframes orbFloat{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(30px,-40px) scale(1.05)}
+  66%{transform:translate(-20px,20px) scale(.95)}
+}
+.hero-content{position:relative;z-index:1}
+.hero h1{
+  font-size:clamp(2rem,5vw,4rem);font-weight:800;letter-spacing:-.03em;
+  line-height:1.15;margin-bottom:clamp(.75rem,1.5vw,1.25rem);
+  background:linear-gradient(135deg,var(--text-primary) 30%,var(--accent) 70%,var(--accent-secondary) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero p{
+  font-size:clamp(.95rem,1.5vw,1.2rem);color:var(--text-secondary);
+  max-width:600px;margin:0 auto;
+}
+
+/* Bento Grid */
+.bento-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:clamp(.75rem,1.5vw,1.25rem);
+  padding:clamp(1rem,3vw,2.5rem);
+  max-width:1280px;margin:0 auto;perspective:var(--perspective);
+}
+.bento-span-2{grid-column:span 2}
+.bento-span-3{grid-column:span 3}
+.bento-span-4{grid-column:span 4}
+.bento-row-2{grid-row:span 2}
+
+/* Glass Card with 3D Tilt */
+.glass-card{
+  position:relative;overflow:hidden;
+  background:var(--bg-card);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--border-color);border-radius:clamp(12px,1.5vw,20px);
+  padding:clamp(1.25rem,2vw,2rem);
+  box-shadow:var(--shadow-card);
+  transition:border-color .5s ease,box-shadow .5s ease,transform .15s ease;
+  transform-style:preserve-3d;cursor:default;
+}
+.glass-card:hover{border-color:var(--border-hover);box-shadow:var(--shadow-card-hover),0 0 30px var(--accent-glow)}
+
+/* Flux Border */
+.glass-card .border-flux{
+  position:absolute;inset:-2px;border-radius:inherit;
+  pointer-events:none;opacity:0;z-index:0;
+  background:conic-gradient(from 0deg,transparent,var(--accent),var(--accent-secondary),var(--accent),transparent 60%);
+  transition:opacity .4s ease;
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask-composite:exclude;-webkit-mask-composite:exclude;
+  padding:2px;
+}
+.glass-card:hover .border-flux{opacity:1;animation:borderSpin 2.5s linear infinite}
+@keyframes borderSpin{to{transform:rotate(360deg)}}
+
+/* Inner Glow */
+.glass-card .card-glow{
+  position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;z-index:0;
+  background:radial-gradient(600px circle at var(--mx,50%) var(--my,50%),var(--accent-glow),transparent 60%);
+  transition:opacity .5s ease;
+}
+.glass-card:hover .card-glow{opacity:1}
+.glass-card>*{position:relative;z-index:1;transform-style:preserve-3d}
+
+.card-icon{margin-bottom:1rem;display:inline-flex}
+.card-icon svg{width:clamp(28px,3vw,40px);height:clamp(28px,3vw,40px);color:var(--accent)}
+.card-icon svg *{
+  stroke-dasharray:200;stroke-dashoffset:200;
+  animation:svgDrawIn 1.8s ease forwards;
+}
+.glass-card:hover .card-icon svg *{stroke-dashoffset:0;transition:stroke-dashoffset 1s ease}
+@keyframes svgDrawIn{to{stroke-dashoffset:0}}
+
+.card-title{font-size:clamp(1rem,1.8vw,1.35rem);font-weight:700;margin-bottom:.5rem;color:var(--text-primary)}
+.card-desc{font-size:clamp(.85rem,1.2vw,.95rem);color:var(--text-secondary);line-height:1.65}
+.card-metric{
+  display:flex;align-items:baseline;gap:.35rem;
+  font-size:clamp(2rem,4vw,3rem);font-weight:800;margin-top:.75rem;
+  background:linear-gradient(135deg,var(--accent),var(--accent-secondary));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.card-metric-label{font-size:clamp(.75rem,1vw,.85rem);font-weight:500;-webkit-text-fill-color:var(--text-muted);color:var(--text-muted)}
+.card-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+.card-tag{font-size:clamp(.7rem,.9vw,.8rem);padding:.25rem .65rem;border-radius:100px;background:var(--accent-glow);color:var(--accent);border:1px solid var(--border-hover);font-weight:500}
+.card-list{display:flex;flex-direction:column;gap:.75rem;margin-top:1rem}
+.card-list-item{display:flex;align-items:center;gap:.75rem;font-size:clamp(.8rem,1.1vw,.9rem);color:var(--text-secondary)}
+.card-list-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;box-shadow:0 0 8px var(--accent-glow)}
+
+/* Responsive */
+@media(width <= 900px){
+  .bento-grid{grid-template-columns:repeat(2,1fr)}
+  .bento-span-2,.bento-span-3,.bento-span-4{grid-column:span 2}
+}
+@media(width <= 640px){
+  .bento-grid{grid-template-columns:1fr;gap:.75rem;padding:1rem}
+  .bento-span-2,.bento-span-3,.bento-span-4{grid-column:span 1;grid-row:span 1}
+  .bento-row-2{grid-row:span 1}
+  .glass-nav{padding:.5rem 1rem}
+  .nav-links .nav-link:not(.nav-link-highlight){display:none}
+}
+@media(width <= 400px){
+  .nav-links .nav-link-highlight{display:none}
+}
+
+/* Footer */
+.site-footer{
+  text-align:center;padding:clamp(1.5rem,3vw,3rem) 1rem;
+  color:var(--text-muted);font-size:clamp(.75rem,.9vw,.85rem);
+  border-top:1px solid var(--border-color);margin-top:1rem;
+}
+
+/* Compat Badge */
+.compat-badge{
+  position:fixed;bottom:1rem;right:1rem;z-index:9998;
+  font-size:.65rem;padding:.3rem .6rem;border-radius:6px;
+  background:var(--bg-glass);backdrop-filter:blur(8px);
+  border:1px solid var(--border-color);color:var(--text-muted);
+  opacity:.7;pointer-events:none;
+}
+
+/* Fade Animations */
+.fade-in{animation:fadeSlideUp .6s ease forwards;opacity:0}
+@keyframes fadeSlideUp{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.fade-in-d1{animation-delay:.05s}
+.fade-in-d2{animation-delay:.1s}
+.fade-in-d3{animation-delay:.15s}
+.fade-in-d4{animation-delay:.2s}
+.fade-in-d5{animation-delay:.25s}
+.fade-in-d6{animation-delay:.3s}
+</style>
+</head>
+<body>
+
+<div class="noise-overlay" aria-hidden="true"></div>
+
+<!-- Nav -->
+<nav class="glass-nav" role="navigation">
+  <a class="nav-logo" href="#" aria-label="Spatial Bento">
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="oklch(70% 0.18 260)"/><stop offset="100%" stop-color="oklch(75% 0.15 200)"/></linearGradient></defs>
+      <path class="logo-glow" d="M24 4L44 24L24 44L4 24L24 4Z" stroke="url(#lg1)" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M24 12L36 24L24 36L12 24L24 12Z" fill="url(#lg1)" fill-opacity=".15" stroke="url(#lg1)" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="24" cy="24" r="4" fill="url(#lg1)"/>
+    </svg>
+    <span>Spatial</span>
+  </a>
+  <div class="nav-links">
+    <button class="nav-link" data-section="works">Works</button>
+    <button class="nav-link" data-section="about">About</button>
+    <button class="nav-link nav-link-highlight" data-section="contact">Contact</button>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-ambient" aria-hidden="true"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+  <div class="hero-content">
+    <h1 class="fade-in">空间 · 立体感知</h1>
+    <p class="fade-in fade-in-d2">Bento Grid 遇上 3D Tilt 磁吸 —— 前所未有的未来感交互体验。</p>
+  </div>
+</section>
+
+<!-- Bento Grid -->
+<main class="bento-grid" id="bentoGrid">
+
+  <!-- Card 1: 3D Tilt Engine -->
+  <article class="glass-card bento-span-2 bento-row-2 fade-in fade-in-d3" data-tilt>
+    <div class="border-flux"></div><div class="card-glow"></div>
+    <div class="card-icon">
+      <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="20" cy="20" r="16" stroke-dasharray="100 3"/><circle cx="20" cy="20" r="8" stroke-dasharray="50 2"/><circle cx="20" cy="20" r="3" fill="currentColor" stroke="none"/>
+        <line x1="20" y1="4" x2="20" y2="8"/><line x1="20" y1="32" x2="20" y2="36"/><line x1="4" y1="20" x2="8" y2="20"/><line x1="32" y1="20" x2="36" y2="20"/>
+        <line x1="7.5" y1="7.5" x2="10.5" y2="10.5"/><line x1="29.5" y1="29.5" x2="32.5" y2="32.5"/><line x1="7.5" y1="32.5" x2="10.5" y2="29.5"/><line x1="29.5" y1="10.5" x2="32.5" y2="7.5"/>
+      </svg>
+    </div>
+    <h2 class="card-title">3D 磁吸引擎</h2>
+    <p class="card-desc">基于鼠标坐标的实时 X/Y 轴倾斜（&#xB1;5&#xB0;），配合 perspective: 1000px 景深系统，营造出卡片在空间中悬浮的立体视差。</p>
+    <div class="card-metric">0.3ms<span class="card-metric-label">响应延迟</span></div>
+    <div class="card-tags"><span class="card-tag">Tilt 3D</span><span class="card-tag">Parallax</span><span class="card-tag">60fps</span></div>
+  </article>
+
+  <!-- Card 2: SVG Path Animation -->
+  <article class="glass-card fade-in fade-in-d3" data-tilt>
+    <div class="border-flux"></div><div class="card-glow"></div>
+    <div class="card-icon">
+      <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 20 Q10 4 20 10 Q30 16 36 8" stroke-dasharray="200"/><path d="M4 28 Q12 18 20 24 Q28 30 36 20" stroke-dasharray="200" stroke-opacity=".6"/>
+        <circle cx="20" cy="10" r="2" fill="currentColor" stroke="none"/><circle cx="36" cy="8" r="2" fill="currentColor" stroke="none"/><circle cx="20" cy="24" r="2" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <h2 class="card-title">SVG 路径绘制</h2>
+    <p class="card-desc">所有图标均为手写极简 SVG，配备 stroke-dasharray / stroke-dashoffset 路径动画，悬停时触发重新绘制。</p>
+    <div class="card-list"><div class="card-list-item"><span class="card-list-dot"></span>纤细 1.5px 描边</div><div class="card-list-item"><span class="card-list-dot"></span>stroke-dasharray: 200</div><div class="card-list-item"><span class="card-list-dot"></span>1.8s 入场过渡</div></div>
+  </article>
+
+  <!-- Card 3: Flux Border -->
+  <article class="glass-card fade-in fade-in-d4" data-tilt>
+    <div class="border-flux"></div><div class="card-glow"></div>
+    <div class="card-icon">
+      <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="4" width="32" height="32" rx="8" stroke-dasharray="120"/><path d="M12 20 L18 26 L28 14" stroke-dasharray="60" stroke-width="2"/>
+      </svg>
+    </div>
+    <h2 class="card-title">流光边框</h2>
+    <p class="card-desc">Conic-gradient 在 hover 时环绕一周旋转，配合 mask-composite: exclude 实现仅边框流光效果。</p>
+    <div class="card-metric">2.5s<span class="card-metric-label">旋转周期</span></div>
+    <div class="card-tags"><span class="card-tag">Conic Gradient</span><span class="card-tag">Mask</span></div>
+  </article>
+
+  <!-- Card 4: Dynamic Noise -->
+  <article class="glass-card fade-in fade-in-d4" data-tilt>
+    <div class="border-flux"></div><div class="card-glow"></div>
+    <div class="card-icon">
+      <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="4" width="32" height="32" rx="4" stroke-dasharray="120"/>
+        <path d="M10 10 L12 14 L18 12 L14 18 L20 20 L14 22 L18 28 L12 26 L10 30 L8 26 L2 28 L6 22 L2 18 L8 14Z" stroke-dasharray="100" fill="currentColor" fill-opacity=".08"/>
+      </svg>
+    </div>
+    <h2 class="card-title">动态噪点纹理</h2>
+    <p class="card-desc">SVG feTurbulence 噪点滤镜固定覆盖视口，Dark/Light 双模式自动适配 opacity。</p>
+    <div class="card-tags"><span class="card-tag">feTurbulence</span><span class="card-tag">Dark/Light</span></div>
+  </article>
+
+  <!-- Card 5: Theme System (span 2) -->
+  <article class="glass-card bento-span-2 fade-in fade-in-d5" data-tilt>
+    <div class="border-flux"></div><div class="card-glow"></div>
+    <div class="card-icon">
+      <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="20" cy="20" r="12" stroke-dasharray="75"/>
+        <path d="M20 8 L20 4M20 36 L20 32M32 20 L36 20M4 20 L8 20M29.66 10.34 L32.49 7.51M7.51 32.49 L10.34 29.66M29.66 29.66 L32.49 32.49M7.51 7.51 L10.34 10.34" stroke-width="1.2" stroke-dasharray="30"/>
+        <path d="M20 14 A6 6 0 1 1 19.99 14" fill="currentColor" fill-opacity=".15" stroke-dasharray="38"/>
+      </svg>
+    </div>
+    <div>
+      <h2 class="card-title">主题系统</h2>
+      <p class="card-desc">基于 oklch 色彩空间的 Dark/Light 双模式。CSS 自定义属性驱动，噪点 opacity 亮色模式自动降至 0.025。</p>
+      <div class="card-metric">96%<span class="card-metric-label">oklch 色域覆盖</span></div>
+    </div>
+  </article>
+
+  <!-- Card 6: Responsive -->
+  <article class="glass-card fade-in fade-in-d5" data-tilt>
+    <div class="border-flux"></div><div class="card-glow"></div>
+    <div class="card-icon">
+      <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="8" width="32" height="24" rx="3" stroke-dasharray="110"/><line x1="10" y1="8" x2="10" y2="4" stroke-dasharray="10"/><line x1="20" y1="8" x2="20" y2="4" stroke-dasharray="10"/><line x1="30" y1="8" x2="30" y2="4" stroke-dasharray="10"/>
+        <rect x="8" y="12" width="10" height="8" rx="1" stroke-dasharray="36"/><rect x="22" y="12" width="10" height="16" rx="1" stroke-dasharray="52"/>
+      </svg>
+    </div>
+    <h2 class="card-title">响应式 Bento</h2>
+    <p class="card-desc">大屏 4 列栅格 &#x2192; 中屏 2 列 &#x2192; 移动端自动降级为流体列表。</p>
+    <div class="card-tags"><span class="card-tag">CSS Grid</span><span class="card-tag">clamp()</span><span class="card-tag">Mobile First</span></div>
+  </article>
+
+  <!-- Card 7: Self-healing -->
+  <article class="glass-card fade-in fade-in-d6" data-tilt>
+    <div class="border-flux"></div><div class="card-glow"></div>
+    <div class="card-icon">
+      <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 4 L36 12 L36 28 L20 36 L4 28 L4 12Z" stroke-dasharray="130"/><circle cx="20" cy="20" r="6" stroke-dasharray="38" fill="currentColor" fill-opacity=".08"/><path d="M20 14 L20 26 M14 20 L26 20" stroke-dasharray="24" stroke-width="1.2"/>
+      </svg>
+    </div>
+    <h2 class="card-title">自愈渲染 2.0</h2>
+    <p class="card-desc">@supports 检测 backdrop-filter, CSS Grid, oklch 兼容性，降级自动切换纯色方案。</p>
+    <div class="card-list"><div class="card-list-item"><span class="card-list-dot"></span>@supports 检测</div><div class="card-list-item"><span class="card-list-dot"></span>backdrop-filter 降级</div></div>
+  </article>
+
+</main>
+
+<footer class="site-footer">
+  <p>Spatial Bento &#xB7; UI &#x7F8E;&#x5B66;&#x94C2;&#x91D1;&#x7EA7;&#x89C4;&#x8303; v5.0 &mdash; &#x6781;&#x81F4;&#x7A7A;&#x95F4;&#x4E0E;&#x77E2;&#x91CF;&#x827A;&#x672F;</p>
+</footer>
+
+<div class="compat-badge" id="compatBadge">&#x2713; &#x81EA;&#x6108;&#x6E32;&#x67D3;&#x5DF2;&#x6FC0;&#x6D3B;</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* Theme Toggle */
+  var html = document.documentElement;
+  var themeToggle = document.getElementById('themeToggle');
+  var themeIcon = document.getElementById('themeIcon');
+
+  function setTheme(mode){
+    html.setAttribute('data-theme',mode);
+    localStorage.setItem('spatial-theme',mode);
+    updateIcon(mode);
+  }
+  function updateIcon(mode){
+    if(!themeIcon) return;
+    if(mode === 'dark'){
+      themeIcon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    } else {
+      themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    }
+  }
+  var saved = localStorage.getItem('spatial-theme');
+  setTheme(saved || 'dark');
+  if(themeToggle){
+    themeToggle.addEventListener('click',function(e){
+      e.preventDefault();
+      setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  }
+
+  /* 3D Tilt Engine */
+  var tiltCards = document.querySelectorAll('[data-tilt]');
+  tiltCards.forEach(function(card){
+    var ticking = false;
+    var bounding = null;
+    function updateBounds(){bounding = card.getBoundingClientRect();}
+    function handleTilt(e){
+      if(!bounding) updateBounds();
+      var rect = bounding;
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      var centerX = rect.width / 2;
+      var centerY = rect.height / 2;
+      var rotateY = ((x - centerX) / centerX) * 5;
+      var rotateX = -((y - centerY) / centerY) * 5;
+      card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateZ(0)';
+      var glow = card.querySelector('.card-glow');
+      if(glow){
+        glow.style.setProperty('--mx', ((x / rect.width) * 100) + '%');
+        glow.style.setProperty('--my', ((y / rect.height) * 100) + '%');
+      }
+    }
+    card.addEventListener('mouseenter',function(){updateBounds();card.style.transition = 'transform 0.15s ease-out';});
+    card.addEventListener('mousemove',function(e){
+      if(ticking) return;
+      window.requestAnimationFrame(function(){handleTilt(e);ticking = false;});
+      ticking = true;
+    });
+    card.addEventListener('mouseleave',function(){
+      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+      card.style.transition = 'transform 0.45s ease-out';
+      var glow = card.querySelector('.card-glow');
+      if(glow){glow.style.setProperty('--mx','50%');glow.style.setProperty('--my','50%');}
+    });
+    window.addEventListener('resize',updateBounds);
+    window.addEventListener('scroll',updateBounds);
+  });
+
+  /* SVG Path Intersection Observer */
+  if('IntersectionObserver' in window){
+    document.querySelectorAll('.card-icon svg').forEach(function(svg){
+      var paths = svg.querySelectorAll('path, circle, rect, line');
+      var obs = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            paths.forEach(function(p){
+              p.style.strokeDashoffset = '200';
+              void p.offsetWidth;
+              p.style.transition = 'stroke-dashoffset 1.8s ease';
+              p.style.strokeDashoffset = '0';
+            });
+          }
+        });
+      },{threshold:0.3});
+      obs.observe(svg);
+    });
+  }
+
+  /* Compatibility Badge */
+  var badge = document.getElementById('compatBadge');
+  if(badge){
+    var results = [];
+    results.push('backdrop-filter: ' + (CSS.supports('backdrop-filter','blur(1px)') ? '\u2713' : '\u2717 (fallback)'));
+    results.push('custom-props: ' + (CSS.supports('--a','0') ? '\u2713' : '\u2717'));
+    results.push('css-grid: ' + (CSS.supports('display','grid') ? '\u2713' : '\u2717'));
+    results.push('oklch: ' + (CSS.supports('color','oklch(50% 0.1 200)') ? '\u2713' : '\u2717'));
+    badge.textContent = results.join(' \xB7 ');
+    badge.title = 'Compatibility Report \u2014 ' + results.join(', ');
+  }
+
+  /* Fade-in Scroll Observer */
+  if('IntersectionObserver' in window){
+    var fadeEls = document.querySelectorAll('.fade-in');
+    var fadeObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.style.animationPlayState = 'running';
+          fadeObs.unobserve(entry.target);
+        }
+      });
+    },{threshold:0.15});
+    fadeEls.forEach(function(el){el.style.animationPlayState = 'paused';fadeObs.observe(el);});
+  }
+
+  /* Nav Shadow on Scroll */
+  var nav = document.querySelector('.glass-nav');
+  var scrollTicking = false;
+  window.addEventListener('scroll',function(){
+    if(!scrollTicking){
+      window.requestAnimationFrame(function(){
+        if(nav) nav.style.boxShadow = window.scrollY > 10 ? '0 4px 24px oklch(0% 0 0 / 0.2)' : 'none';
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  });
+
+  console.log('%c Spatial Bento v5.0 ','background:oklch(70% 0.18 260);color:#fff;font-weight:bold;padding:4px 8px;border-radius:4px;');
+  console.log('%c 3D Tilt \xB7 SVG Path Animation \xB7 Dynamic Noise \xB7 Self-healing 2.0 ','font-size:11px;color:oklch(75% 0.04 220);');
+})();
+</script>
+</body>
+</html>

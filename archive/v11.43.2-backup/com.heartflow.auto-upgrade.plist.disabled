@@ -1,0 +1,26 @@
+     1|<?xml version="1.0" encoding="UTF-8"?>
+     2|<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+     3|<plist version="1.0">
+     4|<dict>
+     5|    <key>Label</key>
+     6|    <string>com.heartflow.auto-upgrade</string>
+     7|    <key>ProgramArguments</key>
+     8|    <array>
+     9|        <string>/usr/local/bin/node</string>
+    10|        <string>~/.hermes/skills/ai/heartflow/scripts/auto-upgrade.js</string>
+    11|    </array>
+    12|    <StartCalendarInterval>
+    13|      <dict><key>Minute</key><integer>0</integer><key>Hour</key><integer>*</integer></dict>
+    14|      <dict><key>Minute</key><integer>15</integer><key>Hour</key><integer>*</integer></dict>
+    15|      <dict><key>Minute</key><integer>30</integer><key>Hour</key><integer>*</integer></dict>
+    16|      <dict><key>Minute</key><integer>45</integer><key>Hour</key><integer>*</integer></dict>
+    17|    </StartCalendarInterval>
+    18|    <key>StandardOutPath</key>
+    19|    <string>~/.hermes/skills/ai/heartflow/logs/auto-upgrade.log</string>
+    20|    <key>StandardErrorPath</key>
+    21|    <string>~/.hermes/skills/ai/heartflow/logs/auto-upgrade.error.log</string>
+    22|    <key>RunAtLoad</key>
+    23|    <true/>
+    24|</dict>
+    25|</plist>
+    26|

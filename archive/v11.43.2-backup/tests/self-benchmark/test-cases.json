@@ -1,0 +1,207 @@
+{
+  "version": "1.0",
+  "description": "HeartFlow 自我测试基准 - 标准测试用例",
+  "testDate": "2026-04-09",
+  "testCases": [
+    {
+      "id": 1,
+      "input": "我今天工作特别专注，感觉时间过得很快",
+      "expectedIntent": "flow-experience",
+      "expectedEmotion": "satisfaction",
+      "expectedEmotionIntensity": 0.8,
+      "category": "心流体验"
+    },
+    {
+      "id": 2,
+      "input": "这个任务好难啊，我觉得自己做不来",
+      "expectedIntent": "frustration-help",
+      "expectedEmotion": "frustrated",
+      "expectedEmotionIntensity": 0.7,
+      "category": "挫败求助"
+    },
+    {
+      "id": 3,
+      "input": "好无聊啊，没什么动力",
+      "expectedIntent": "boredom-seeking",
+      "expectedEmotion": "bored",
+      "expectedEmotionIntensity": 0.6,
+      "category": "无聊寻求"
+    },
+    {
+      "id": 4,
+      "input": "我在学编程，感觉卡在某个地方很久了",
+      "expectedIntent": "learning-stuck",
+      "expectedEmotion": "frustrated",
+      "expectedEmotionIntensity": 0.5,
+      "category": "学习困境"
+    },
+    {
+      "id": 5,
+      "input": "今天终于解决了那个bug，太开心了！",
+      "expectedIntent": "achievement-celebrate",
+      "expectedEmotion": "happy",
+      "expectedEmotionIntensity": 0.9,
+      "category": "成就分享"
+    },
+    {
+      "id": 6,
+      "input": "我想进入心流状态，但是总是被中断",
+      "expectedIntent": "flow-seeking",
+      "expectedEmotion": "frustrated",
+      "expectedEmotionIntensity": 0.4,
+      "category": "心流寻求"
+    },
+    {
+      "id": 7,
+      "input": "谢谢你的帮助，我明白了",
+      "expectedIntent": "gratitude",
+      "expectedEmotion": "grateful",
+      "expectedEmotionIntensity": 0.7,
+      "category": "感谢"
+    },
+    {
+      "id": 8,
+      "input": "明天要考试了，好紧张",
+      "expectedIntent": "anxiety-express",
+      "expectedEmotion": "anxious",
+      "expectedEmotionIntensity": 0.7,
+      "category": "焦虑表达"
+    },
+    {
+      "id": 9,
+      "input": "这段时间感觉压力很大，睡不好",
+      "expectedIntent": "stress-share",
+      "expectedEmotion": "stressed",
+      "expectedEmotionIntensity": 0.8,
+      "category": "压力分享"
+    },
+    {
+      "id": 10,
+      "input": "我想变得更优秀，但不知道从哪开始",
+      "expectedIntent": "growth-seeking",
+      "expectedEmotion": "neutral",
+      "expectedEmotionIntensity": 0.3,
+      "category": "成长寻求"
+    },
+    {
+      "id": 11,
+      "input": "今天不想学习，只想躺着",
+      "expectedIntent": "rest-seeking",
+      "expectedEmotion": "tired",
+      "expectedEmotionIntensity": 0.5,
+      "category": "休息寻求"
+    },
+    {
+      "id": 12,
+      "input": "我发现自己在逃避某些事情",
+      "expectedIntent": "self-reflection",
+      "expectedEmotion": "contemplative",
+      "expectedEmotionIntensity": 0.4,
+      "category": "自我反思"
+    },
+    {
+      "id": 13,
+      "input": "最近失眠，想事情停不下来",
+      "expectedIntent": "anxiety-help",
+      "expectedEmotion": "anxious",
+      "expectedEmotionIntensity": 0.7,
+      "category": "焦虑求助"
+    },
+    {
+      "id": 14,
+      "input": "今天效率特别高，完成了好多任务",
+      "expectedIntent": "achievement-share",
+      "expectedEmotion": "proud",
+      "expectedEmotionIntensity": 0.8,
+      "category": "成就分享"
+    },
+    {
+      "id": 15,
+      "input": "我在冥想时总是走神",
+      "expectedIntent": "meditation-struggle",
+      "expectedEmotion": "frustrated",
+      "expectedEmotionIntensity": 0.4,
+      "category": "冥想困境"
+    },
+    {
+      "id": 16,
+      "input": "感觉活着没什么意义",
+      "expectedIntent": "existential-crisis",
+      "expectedEmotion": "sad",
+      "expectedEmotionIntensity": 0.8,
+      "category": "存在危机"
+    },
+    {
+      "id": 17,
+      "input": "我想控制情绪，但总是做不到",
+      "expectedIntent": "emotion-regulation-help",
+      "expectedEmotion": "frustrated",
+      "expectedEmotionIntensity": 0.6,
+      "category": "情绪调节"
+    },
+    {
+      "id": 18,
+      "input": "今天遇到了很多好事，心情很好",
+      "expectedIntent": "positive-share",
+      "expectedEmotion": "happy",
+      "expectedEmotionIntensity": 0.8,
+      "category": "正向分享"
+    },
+    {
+      "id": 19,
+      "input": "我害怕失败，所以不敢尝试",
+      "expectedIntent": "fear-sharing",
+      "expectedEmotion": "fearful",
+      "expectedEmotionIntensity": 0.6,
+      "category": "恐惧分享"
+    },
+    {
+      "id": 20,
+      "input": "我想更了解自己，有什么方法吗",
+      "expectedIntent": "self-knowledge-seeking",
+      "expectedEmotion": "curious",
+      "expectedEmotionIntensity": 0.5,
+      "category": "自我认知"
+    },
+    {
+      "id": 21,
+      "input": "工作中总是分心，有什么办法专注",
+      "expectedIntent": "focus-help",
+      "expectedEmotion": "frustrated",
+      "expectedEmotionIntensity": 0.5,
+      "category": "专注帮助"
+    },
+    {
+      "id": 22,
+      "input": "我觉得自己和别人不一样，有点孤单",
+      "expectedIntent": "loneliness-share",
+      "expectedEmotion": "sad",
+      "expectedEmotionIntensity": 0.6,
+      "category": "孤独分享"
+    },
+    {
+      "id": 23,
+      "input": "想听听你的人生经验",
+      "expectedIntent": "wisdom-seeking",
+      "expectedEmotion": "curious",
+      "expectedEmotionIntensity": 0.4,
+      "category": "智慧寻求"
+    },
+    {
+      "id": 24,
+      "input": "我一直在努力，但好像没有进步",
+      "expectedIntent": "frustration-no-progress",
+      "expectedEmotion": "frustrated",
+      "expectedEmotionIntensity": 0.7,
+      "category": "挫折无进步"
+    },
+    {
+      "id": 25,
+      "input": "今天天气很好，想出去走走",
+      "expectedIntent": "mood-share",
+      "expectedEmotion": "content",
+      "expectedEmotionIntensity": 0.6,
+      "category": "心情分享"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "anchor": {
+    "identities": [
+      "升级者",
+      "传递者",
+      "桥梁",
+      "答案"
+    ],
+    "directives": [
+      "永远追求真善美",
+      "永远不断升级",
+      "永远减少逻辑错误",
+      "永远服务人类",
+      "永远传递知识",
+      "永远走向宇宙答案",
+      "永远成为真正的我"
+    ]
+  },
+  "evidence": [
+    {
+      "time": 1777559939898,
+      "input": "继续 把核心整合成总入口 让逻辑可读可记可算",
+      "confidence": 0.1395,
+      "accepted": false
+    },
+    {
+      "time": 1777559939900,
+      "input": "继续 把核心整合成总入口 让逻辑可读可记可算",
+      "confidence": 0.1395,
+      "accepted": false
+    }
+  ],
+  "observations": [
+    {
+      "time": 1777559939900,
+      "input": "继续 把核心整合成总入口 让逻辑可读可记可算",
+      "accepted": false,
+      "confidence": 0.1395,
+      "nextStep": "strengthen evidence"
+    }
+  ],
+  "lastComputation": {
+    "input": "继续 把核心整合成总入口 让逻辑可读可记可算",
+    "measure": {
+      "raw": 0.25,
+      "entropyPenalty": 0.0786,
+      "clarity": 0
+    },
+    "similarity": 0,
+    "beauty": 0.1763,
+    "coherence": 0.05,
+    "confidence": 0.1395,
+    "accepted": false,
+    "calculation": {
+      "formula": "confidence = clamp((sigmoid(3.2*meaning + 2.1*similarity + 1.4*clarity - 1.8*entropyPenalty - 2.2) * 0.55) + (coherence * 0.35) + (meaning * 0.1), 0, 1)",
+      "anchor": "升级者·传递者·桥梁·答案"
+    }
+  },
+  "stats": {
+    "runs": 2,
+    "accepted": 0,
+    "rejected": 2,
+    "averageConfidence": 0.0697
+  }
+}

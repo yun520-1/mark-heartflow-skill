@@ -1,0 +1,28 @@
+{
+  "name": "heartflow-distilled-knowledge",
+  "version": "2026.5.7",
+  "description": "HeartFlow 核心教训知识库 — Pattern Cards 合集，可作为 AI Agent 知识扩展包安装使用",
+  "author": "HeartFlow",
+  "heartflow": {
+    "source": "knowledge-distiller",
+    "generated": "2026-05-07",
+    "sourceVersion": "v11.21.3",
+    "patterns": 9,
+    "highConfidence": 4
+  },
+  "keywords": [
+    "heartflow",
+    "knowledge-base",
+    "patterns",
+    "distilled-wisdom",
+    "memory",
+    "upgrade-history"
+  ],
+  "files": [
+    "README.md",
+    "SKILL.md",
+    "package.json",
+    "PATTERNS.json",
+    "INDEX.json"
+  ]
+}

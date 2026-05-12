@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeartFlow Control Center</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">💜</div>
+        <div class="logo-text">Heart<span>Flow</span></div>
+      </div>
+
+      <nav>
+        <div class="nav-section">
+          <div class="nav-section-title">Main</div>
+          <a href="#dashboard" class="nav-item active" data-page="dashboard">
+            <span class="icon">📊</span> Dashboard
+          </a>
+          <a href="#chat" class="nav-item" data-page="chat">
+            <span class="icon">💬</span> Chat
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Configuration</div>
+          <a href="#config" class="nav-item" data-page="config">
+            <span class="icon">⚙️</span> Config
+          </a>
+          <a href="#settings" class="nav-item" data-page="settings">
+            <span class="icon">🎯</span> Identity
+          </a>
+          <a href="#models" class="nav-item" data-page="models">
+            <span class="icon">🤖</span> Models
+          </a>
+          <a href="#channels" class="nav-item" data-page="channels">
+            <span class="icon">📱</span> Channels
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Automation</div>
+          <a href="#cron" class="nav-item" data-page="cron">
+            <span class="icon">⏰</span> Cron Jobs
+            <span class="badge">3</span>
+          </a>
+          <a href="#hooks" class="nav-item" data-page="hooks">
+            <span class="icon">🪝</span> Hooks
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">System</div>
+          <a href="#sessions" class="nav-item" data-page="sessions">
+            <span class="icon">💭</span> Sessions
+          </a>
+          <a href="#logs" class="nav-item" data-page="logs">
+            <span class="icon">📋</span> Logs
+          </a>
+          <a href="#tools" class="nav-item" data-page="tools">
+            <span class="icon">🔧</span> Tools
+          </a>
+        </div>
+      </nav>
+
+      <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border);">
+        <div class="nav-item" style="cursor: pointer;" onclick="toggleDreamMode()">
+          <span class="icon">🌙</span> Dream Mode
+          <label class="toggle" style="margin-left: auto;">
+            <input type="checkbox" id="dreamToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <div class="breadcrumb">
+            <a href="#dashboard">Home</a>
+            <span class="separator">/</span>
+            <span id="currentPage">Dashboard</span>
+          </div>
+        </div>
+        <div class="top-bar-right">
+          <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span id="systemStatus">Online</span>
+          </div>
+          <div class="model-selector">
+            <span>🤖</span>
+            <select id="modelSelect" onchange="switchModel(this.value)">
+              <option value="gpt-4o">GPT-4o</option>
+              <option value="claude-sonnet-4">Claude 4</option>
+              <option value="deepseek-chat">DeepSeek</option>
+              <option value="ollama">Ollama (Local)</option>
+            </select>
+          </div>
+          <button class="icon-btn" onclick="refreshData()" title="Refresh">🔄</button>
+          <button class="icon-btn" onclick="showSettings()" title="Settings">⚙️</button>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div class="content-area" id="contentArea">
+        <!-- Content will be loaded dynamically -->
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

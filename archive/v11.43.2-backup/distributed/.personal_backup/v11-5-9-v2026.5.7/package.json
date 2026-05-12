@@ -1,0 +1,12 @@
+{
+  "name": "v11-5-9",
+  "version": "1.0.0",
+  "description": "Q-table持久化成功",
+  "author": "HeartFlow",
+  "heartflow": {
+    "source": "knowledge-distiller",
+    "patternId": "升级v11.5.9",
+    "confidence": "88%",
+    "generated": "2026-05-07T10:50:41.066Z"
+  }
+}

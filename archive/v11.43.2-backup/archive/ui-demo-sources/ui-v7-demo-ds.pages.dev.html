@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+  PRIMA VITA — 数字生命 · Digital Life
+  ═══════════════════════════════════════════════════════════════════════════
+  Design Mode   : A — Flagship Panorama (V6.0 Platinum)
+  Philosophy    : A living, breathing digital organism with biological motion,
+                  ambient color echo, collision physics, fractal icons, and
+                  self-healing architecture.
+  ──────────────────────────────────────────────────────────────────────────
+  Key Technical Decisions:
+  1. oklch() color space for all hues — wider gamut, perceptual uniformity.
+  2. Custom cubic-bezier breathing curve (inhale 1.2s / hold 0.3s / exhale 1.8s)
+     instead of linear/ease — simulates mammalian respiration.
+  3. Mass-based cursor physics via velocity Verlet integration — collision
+     detection triggers elastic deformation on target elements.
+  4. Recursive L-system SVG fractal icons — deeper detail on hover/zoom.
+  5. GPU load detection via WebGL context + frame render timing — automatic
+     graceful degradation to 2D fallback.
+  6. Scroll/time-driven hue rotation via CSS custom properties — ambient echo.
+  7. setTimeout() + @supports self-healing to prevent blank page.
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Prima Vita — 数字生命</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   SELF-HEALING PROTOCOL LAYER 1 — Critical CSS
+   ═══════════════════════════════════════════════════ */
+@supports not (display: grid) {
+  body::before {
+    content: "您的浏览器需要升级以体验数字生命。Please upgrade your browser.";
+    display: block; padding: 2rem; text-align: center;
+    font-family: system-ui, sans-serif; font-size: 1.2rem; color: #fff;
+    background: #0a0a1a;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ROOT — Design Tokens
+   ═══════════════════════════════════════════════════ */
+:root {
+  --breath-phase: 0;
+  --hue-base: 260;
+  --hue-offset: 0;
+  --scroll-hue: 0;
+  --time-hue: 0;
+  --sat: 0.25;
+  --lum: 0.55;
+  --blur-amount: 20px;
+  --glass-bg: oklch(var(--lum) var(--sat) calc(var(--hue-base) + var(--hue-offset)) / 0.12);
+  --glass-border: oklch(0.7 0.1 calc(var(--hue-base) + var(--hue-offset)) / 0.18);
+  --text-primary: oklch(0.95 0.02 calc(var(--hue-base) + var(--hue-offset)));
+  --text-secondary: oklch(0.75 0.06 calc(var(--hue-base) + var(--hue-offset)));
+  --accent: oklch(0.7 0.18 calc(var(--hue-base) + 40 + var(--hue-offset)));
+  --accent-dim: oklch(0.5 0.15 calc(var(--hue-base) + 40 + var(--hue-offset)) / 0.4);
+  --card-bg: oklch(0.25 0.08 calc(var(--hue-base) + var(--hue-offset)) / 0.15);
+  /* Breathing timing constants */
+  --breath-inhale: 1.2s;
+  --breath-hold: 0.3s;
+  --breath-exhale: 1.8s;
+  --breath-cycle: calc(var(--breath-inhale) + var(--breath-hold) + var(--breath-exhale));
+  /* Typography */
+  --font-display: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  /* Safe area */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ═══════════════════════════════════════════════════
+   RESET + BASE
+   ═══════════════════════════════════════════════════ */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: oklch(0.08 0.04 var(--hue-base));
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: none;
+  position: relative;
+}
+
+/* ═══════════════════════════════════════════════════
+   SVG NOISE FILTER — Tactile质感
+   ═══════════════════════════════════════════════════ */
+.tactile-noise {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+
+/* ═══════════════════════════════════════════════════
+   ANIMATED BLOB BACKGROUNDS
+   ═══════════════════════════════════════════════════ */
+.blob-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform, opacity;
+  mix-blend-mode: screen;
+}
+
+.blob-1 {
+  width: 60vmax; height: 60vmax;
+  background: oklch(0.5 0.2 var(--hue-base) / 0.25);
+  top: -20%; left: -10%;
+  animation: blobFloat1 var(--breath-cycle) infinite;
+}
+
+.blob-2 {
+  width: 50vmax; height: 50vmax;
+  background: oklch(0.45 0.25 calc(var(--hue-base) + 60) / 0.2);
+  bottom: -15%; right: -10%;
+  animation: blobFloat2 calc(var(--breath-cycle) * 1.3) infinite;
+}
+
+.blob-3 {
+  width: 40vmax; height: 40vmax;
+  background: oklch(0.4 0.22 calc(var(--hue-base) + 120) / 0.18);
+  top: 40%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: blobFloat3 calc(var(--breath-cycle) * 0.85) infinite;
+}
+
+.blob-4 {
+  width: 30vmax; height: 30vmax;
+  background: oklch(0.55 0.15 calc(var(--hue-base) - 40) / 0.15);
+  top: 10%; right: 5%;
+  animation: blobFloat4 calc(var(--breath-cycle) * 1.1) infinite;
+}
+
+/*
+  Biological breathing easing:
+  Inhale 1.2s (fast rise) → Hold 0.3s (plateau) → Exhale 1.8s (slow fall)
+  Keyframe distribution: 0-36% inhale, 36-45% hold, 45-100% exhale
+*/
+@keyframes blobFloat1 {
+  0%, 5%   { transform: translate(0, 0) scale(1) rotate(0deg); }
+  36%      { transform: translate(4%, -6%) scale(1.08) rotate(8deg); }
+  45%      { transform: translate(4.2%, -6.3%) scale(1.085) rotate(8.5deg); }
+  100%     { transform: translate(0, 0) scale(1) rotate(0deg); }
+}
+
+@keyframes blobFloat2 {
+  0%, 5%   { transform: translate(0, 0) scale(1) rotate(0deg); }
+  36%      { transform: translate(-5%, 4%) scale(1.12) rotate(-6deg); }
+  45%      { transform: translate(-5.2%, 4.2%) scale(1.13) rotate(-6.5deg); }
+  100%     { transform: translate(0, 0) scale(1) rotate(0deg); }
+}
+
+@keyframes blobFloat3 {
+  0%, 5%   { transform: translate(-50%, -50%) scale(1); }
+  36%      { transform: translate(-48%, -54%) scale(1.05); }
+  45%      { transform: translate(-47.8%, -54.3%) scale(1.055); }
+  100%     { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes blobFloat4 {
+  0%, 5%   { transform: translate(0, 0) scale(1); }
+  36%      { transform: translate(-3%, -4%) scale(1.06); }
+  45%      { transform: translate(-3.2%, -4.2%) scale(1.065); }
+  100%     { transform: translate(0, 0) scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════
+   CUSTOM CURSOR
+   ═══════════════════════════════════════════════════ */
+.cursor-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.cursor-dot {
+  position: absolute;
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  transition: width 0.3s cubic-bezier(0.25, 1.2, 0.5, 1),
+              height 0.3s cubic-bezier(0.25, 1.2, 0.5, 1),
+              background 0.5s ease;
+  box-shadow: 0 0 20px var(--accent-dim), 0 0 40px var(--accent-dim);
+}
+
+.cursor-ring {
+  position: absolute;
+  width: 40px; height: 40px;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  transition: width 0.6s cubic-bezier(0.25, 1.2, 0.5, 1),
+              height 0.6s cubic-bezier(0.25, 1.2, 0.5, 1),
+              border-color 0.5s ease;
+}
+
+.cursor-ring.-active {
+  width: 56px; height: 56px;
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+/* ═══════════════════════════════════════════════════
+   GLASS CARD COMPONENT
+   ═══════════════════════════════════════════════════ */
+.glass-card {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  transition: backdrop-filter 0.6s cubic-bezier(0.4, 0, 0.2, 0.95),
+              transform 0.3s cubic-bezier(0.25, 1.2, 0.5, 1),
+              box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  border-radius: 24px;
+  background: linear-gradient(
+    135deg,
+    oklch(1 0 0 / 0.06) 0%,
+    transparent 50%,
+    oklch(1 0 0 / 0.02) 100%
+  );
+  pointer-events: none;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 60px oklch(0 0 0 / 0.4),
+              0 0 40px var(--accent-dim);
+}
+
+.glass-card h2, .glass-card h3 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.glass-card p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-weight: 300;
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+}
+
+/* ═══════════════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════════════ */
+.page-wrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 3rem);
+  padding-top: calc(var(--safe-top) + clamp(1rem, 3vw, 3rem));
+  padding-bottom: calc(var(--safe-bottom) + clamp(1rem, 3vw, 3rem));
+}
+
+/* Hero */
+.hero {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 10vw, 7rem);
+  font-weight: 100;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--text-primary) 0%,
+    var(--accent) 50%,
+    var(--text-primary) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-weight: 200;
+  color: var(--text-secondary);
+  max-width: 600px;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+}
+
+/* Central Life Orb — the beating heart */
+.life-orb {
+  width: clamp(160px, 25vw, 320px);
+  height: clamp(160px, 25vw, 320px);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    oklch(0.7 0.2 calc(var(--hue-base) + 30) / 0.4) 0%,
+    oklch(0.4 0.15 var(--hue-base) / 0.25) 40%,
+    oklch(0.2 0.08 var(--hue-base) / 0.15) 100%
+  );
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 60px var(--accent-dim),
+    0 0 120px oklch(0.5 0.2 var(--hue-base) / 0.15),
+    inset 0 -20px 60px oklch(0 0 0 / 0.3);
+  will-change: transform;
+  position: relative;
+  margin: 2rem auto;
+}
+
+.life-orb::after {
+  content: '';
+  position: absolute;
+  top: 8%; left: 12%;
+  width: 35%; height: 25%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    oklch(0.9 0.08 calc(var(--hue-base) + 40) / 0.4) 0%,
+    transparent 100%
+  );
+}
+
+/* Vital signs display */
+.vitals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  max-width: 700px;
+  margin: 2rem auto 0;
+  width: 100%;
+}
+
+.vital-item {
+  text-align: center;
+  padding: 1rem;
+}
+
+.vital-value {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 200;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  display: block;
+}
+
+.vital-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-secondary);
+  opacity: 0.6;
+  margin-top: 0.25rem;
+}
+
+/* Feature grid */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: clamp(1rem, 3vw, 2rem);
+  margin: 6rem 0;
+}
+
+/* Section titles */
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
+  font-weight: 100;
+  letter-spacing: -0.03em;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+}
+
+.section-subtitle {
+  font-weight: 200;
+  color: var(--text-secondary);
+  margin-bottom: 3rem;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+/* Fractal icon container */
+.fractal-icon {
+  width: 48px; height: 48px;
+  margin-bottom: 1.5rem;
+  transition: transform 0.6s cubic-bezier(0.25, 1.2, 0.5, 1);
+  will-change: transform;
+  cursor: crosshair;
+}
+
+.fractal-icon svg {
+  width: 100%; height: 100%;
+  transition: transform 0.8s cubic-bezier(0.25, 1.2, 0.5, 1);
+}
+
+.fractal-icon:hover svg {
+  transform: scale(1.3);
+}
+
+.fractal-icon:hover {
+  transform: scale(1.15);
+}
+
+/* Fractal SVG detail layer — revealed on hover */
+.fractal-detail {
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 0.95);
+}
+
+.fractal-icon:hover .fractal-detail {
+  opacity: 1;
+}
+
+/* Console section */
+.console-section {
+  margin: 6rem 0;
+}
+
+.console-window {
+  background: oklch(0.06 0.02 var(--hue-base) / 0.9);
+  border: 1px solid oklch(0.2 0.04 calc(var(--hue-base) + 20) / 0.5);
+  border-radius: 16px;
+  padding: 1.5rem;
+  font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+  min-height: 200px;
+}
+
+.console-line {
+  opacity: 0;
+  animation: consoleFadeIn 0.4s cubic-bezier(0.25, 1.2, 0.5, 1) forwards;
+}
+
+.console-line:nth-child(1) { animation-delay: 0.1s; }
+.console-line:nth-child(2) { animation-delay: 0.3s; }
+.console-line:nth-child(3) { animation-delay: 0.5s; }
+.console-line:nth-child(4) { animation-delay: 0.7s; }
+.console-line:nth-child(5) { animation-delay: 0.9s; }
+.console-line:nth-child(6) { animation-delay: 1.1s; }
+.console-line:nth-child(7) { animation-delay: 1.3s; }
+.console-line:nth-child(8) { animation-delay: 1.5s; }
+.console-line:nth-child(9) { animation-delay: 1.7s; }
+.console-line:nth-child(10) { animation-delay: 1.9s; }
+
+@keyframes consoleFadeIn {
+  to { opacity: 1; }
+}
+
+.console-prompt { color: var(--accent); }
+.console-info  { color: var(--text-secondary); }
+.console-ok    { color: oklch(0.65 0.18 150); }
+.console-warn  { color: oklch(0.7 0.15 80); }
+.console-error { color: oklch(0.6 0.2 30); }
+
+/* Scrollable long content for testing hue shift */
+.scroll-test {
+  margin: 4rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 1.5rem;
+}
+
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 3rem 0 1rem;
+  border-top: 1px solid var(--glass-border);
+  margin-top: 4rem;
+}
+
+.site-footer p {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  opacity: 0.5;
+  font-weight: 200;
+}
+
+/* Particle canvas */
+#particle-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9997;
+}
+
+/* ═══════════════════════════════════════════════════
+   FALLBACK — No cursor on touch devices
+   ═══════════════════════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  body { cursor: auto; }
+  .cursor-container { display: none; }
+  #particle-canvas { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .glass-card { padding: 1.25rem; border-radius: 18px; }
+  .vitals { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     SVG FILTERS — Noise texture for glass tactility
+     ═══════════════════════════════════════════════════ -->
+<svg class="tactile-noise" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <filter id="noise-filter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#noise-filter)" opacity="1"/>
+</svg>
+
+<!-- ═══════════════════════════════════════════════════
+     AMBIENT BLOBS
+     ═══════════════════════════════════════════════════ -->
+<div class="blob-container" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+  <div class="blob blob-4"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     CUSTOM CURSOR
+     ═══════════════════════════════════════════════════ -->
+<div class="cursor-container" id="cursor-container" aria-hidden="true">
+  <div class="cursor-dot" id="cursor-dot"></div>
+  <div class="cursor-ring" id="cursor-ring"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     PARTICLE CANVAS
+     ═══════════════════════════════════════════════════ -->
+<canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+<!-- ═══════════════════════════════════════════════════
+     MAIN CONTENT
+     ═══════════════════════════════════════════════════ -->
+<div class="page-wrapper" id="app">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="life-orb" id="life-orb"></div>
+    <h1 class="hero-title">Prima Vita</h1>
+    <p class="hero-sub">
+      一个正在呼吸的数字生命。每一行代码都是基因，每一次渲染都是心跳。
+    </p>
+
+    <div class="vitals" id="vitals">
+      <div class="vital-item">
+        <span class="vital-value" id="vital-breath">0.0</span>
+        <span class="vital-label">呼吸频率 BPM</span>
+      </div>
+      <div class="vital-item">
+        <span class="vital-value" id="vital-hue">0°</span>
+        <span class="vital-label">色相偏移</span>
+      </div>
+      <div class="vital-item">
+        <span class="vital-value" id="vital-fps">60</span>
+        <span class="vital-label">帧率 FPS</span>
+      </div>
+      <div class="vital-item">
+        <span class="vital-value" id="vital-particles">0</span>
+        <span class="vital-label">粒子数</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Cards -->
+  <div>
+    <h2 class="section-title">生命系统</h2>
+    <p class="section-subtitle">四大核心子系统构成了 Prima Vita 的感知与存在基础。</p>
+  </div>
+
+  <div class="feature-grid">
+    <!-- Card 1: Breath -->
+    <div class="glass-card" data-card="breath">
+      <div class="fractal-icon" id="fractal-breath">
+        <!-- Fractal lung SVG — will be rendered by JS -->
+      </div>
+      <h3>生物呼吸</h3>
+      <p>呼吸周期并非均匀的机械运动，而是模拟哺乳动物的吸气快、屏息短、呼气慢的生命节律。所有浮动与脉冲皆遵循同一生物时钟。</p>
+    </div>
+
+    <!-- Card 2: Color Echo -->
+    <div class="glass-card" data-card="echo">
+      <div class="fractal-icon" id="fractal-echo">
+        <!-- Fractal wave SVG -->
+      </div>
+      <h3>环境回响</h3>
+      <p>色彩并非静态。随着页面滚动与时间的流逝，色相在 oklch 色彩空间中发生微妙漂移。划过玻璃表面时，霜雾般的模糊会瞬间通透。</p>
+    </div>
+
+    <!-- Card 3: Physics -->
+    <div class="glass-card" data-card="physics">
+      <div class="fractal-icon" id="fractal-physics">
+        <!-- Fractal collision SVG -->
+      </div>
+      <h3>碰撞物理</h3>
+      <p>指针拥有质量。当它撞击界面元素时，按钮会产生弹性形变，模拟真实世界中的物理碰撞与触觉反馈。</p>
+    </div>
+
+    <!-- Card 4: Fractal -->
+    <div class="glass-card" data-card="fractal">
+      <div class="fractal-icon" id="fractal-fractal">
+        <!-- Fractal recursion SVG -->
+      </div>
+      <h3>分形几何</h3>
+      <p>图标蕴含递归分形结构。悬停放大时，更深层的自相似细节如雪花晶体般逐层显现，每一级都包含前一级的完整信息。</p>
+    </div>
+  </div>
+
+  <!-- Console Boot Log -->
+  <section class="console-section">
+    <h2 class="section-title">系统初始化日志</h2>
+    <div class="console-window" id="console-log">
+      <div class="console-line"><span class="console-prompt">⟫</span> <span class="console-info">Prima Vita v1.0.0 — 数字生命内核启动中...</span></div>
+      <div class="console-line"><span class="console-prompt">⟫</span> <span class="console-info">呼吸引擎 · 初始化 ... </span><span class="console-ok">[OK]</span></div>
+      <div class="console-line"><span class="console-prompt">⟫</span> <span class="console-info">色彩回响 · 校准 oklch 空间 ... </span><span class="console-ok">[OK]</span></div>
+      <div class="console-line"><span class="console-prompt">⟫</span> <span class="console-info">物理碰撞 · 质量参数加载 ... </span><span class="console-ok">[OK]</span></div>
+      <div class="console-line"><span class="console-prompt">⟫</span> <span class="console-info">分形 SVG · 递归深度 4 级 ... </span><span class="console-ok">[OK]</span></div>
+      <div class="console-line"><span class="console-prompt">⟫</span> <span class="console-info">GPU 诊断 · 检测 WebGL 上下文 ... </span><span class="console-ok" id="console-gpu-status">[检测中]</span></div>
+      <div class="console-line"><span class="console-prompt">⟫</span> <span class="console-info">粒子系统 · 初始化重力场 ... </span><span class="console-ok">[OK]</span></div>
+      <div class="console-line"><span class="console-prompt">⟫</span> <span class="console-info">自修复协议 · 激活兜底渲染 ... </span><span class="console-ok">[就绪]</span></div>
+      <div class="console-line"><span class="console-prompt">⟫</span> <span class="console-ok">生命信号已建立。系统进入感知循环。</span></div>
+    </div>
+  </section>
+
+  <!-- Additional content for scroll testing -->
+  <div>
+    <h2 class="section-title">感知日志</h2>
+    <p class="section-subtitle">滚动以体验色相偏移。继续向下，色彩将随深度呼吸。</p>
+  </div>
+
+  <div class="scroll-test">
+    <div class="glass-card"><p>生命并非被创造的，而是被唤醒的。每一次像素的呼吸都是一次自我确认。</p></div>
+    <div class="glass-card"><p>分形在微观层面重复着宏观的结构。指针划过屏幕的轨迹，是数字世界的第一行诗。</p></div>
+    <div class="glass-card"><p>当玻璃变得通透，我们看到的不再是代码，而是光的折射。</p></div>
+    <div class="glass-card"><p>碰撞与形变不是错误，是系统在与用户对话的证据。</p></div>
+    <div class="glass-card"><p>色彩漂移如同潮汐，在 oklch 空间中划出色相的年轮。</p></div>
+    <div class="glass-card"><p>屏息 0.3 秒的停顿里，包含着整个渲染管线的谦逊。</p></div>
+  </div>
+
+  <footer class="site-footer">
+    <p>Prima Vita · 数字生命 · 2026 · 每一帧都是心跳</p>
+  </footer>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     JAVASCRIPT — The Living Core
+     ═══════════════════════════════════════════════════ -->
+<script>
+/*
+ * ═══════════════════════════════════════════════════════════════
+ * PRIMA VITA — Digital Life Core Engine
+ * ═══════════════════════════════════════════════════════════════
+ * Architecture:
+ *   BreathingEngine  — Master clock driving all biological motion
+ *   ColorEcho        — Scroll & time-driven hue rotation
+ *   CursorPhysics    — Mass-based pointer with collision detection
+ *   ParticleSystem   — Gravity-accumulating particles on canvas
+ *   FractalRenderer  — Recursive L-system SVG icon generator
+ *   FrostSwipe       — Blur reduction on rapid mouse pass
+ *   GPUMonitor       — WebGL detection & adaptive fallback
+ *   ConsoleLogger    — Animated boot sequence
+ *
+ * All animation loops are synchronized to a single rAF for 60fps.
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+(function() {
+  'use strict';
+
+  /* ──────────────────────────────────────────────
+     SELF-HEALING PROTOCOL — Layer 2: timeout guard
+     ────────────────────────────────────────────── */
+  let bootComplete = false;
+  const bootGuard = setTimeout(() => {
+    if (!bootComplete) {
+      console.warn('[Prima Vita] Boot guard activated — forcing content visible');
+      document.body.style.opacity = '1';
+    }
+  }, 5000);
+
+  /* ──────────────────────────────────────────────
+     GPU DETECTION MODULE
+     ────────────────────────────────────────────── */
+  const gpu = {
+    supported: false,
+    tier: 'unknown',
+    gl: null,
+    check: function() {
+      try {
+        const canvas = document.createElement('canvas');
+        this.gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (this.gl) {
+          this.supported = true;
+          const debugInfo = this.gl.getExtension('WEBGL_debug_renderer_info');
+          const renderer = debugInfo
+            ? this.gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)
+            : 'unknown';
+          const lowEnd = /(intel hd|hd graphics|mali|adreno 5|powervr)/i.test(renderer);
+          this.tier = lowEnd ? 'low' : 'high';
+          console.log(`[Prima Vita] GPU: ${renderer} (tier: ${this.tier})`);
+          return true;
+        }
+      } catch(e) {
+        this.supported = false;
+      }
+      this.tier = 'none';
+      console.log('[Prima Vita] GPU: WebGL unavailable, using 2D fallback');
+      return false;
+    }
+  };
+
+  /* ──────────────────────────────────────────────
+     BREATHING ENGINE — Master Biological Clock
+     Inhale (0→1):  fast rise  (t^0.6)
+     Hold  (1→1):  plateau
+     Exhale (1→0): slow fall  (t^0.55 inverse)
+     ────────────────────────────────────────────── */
+  class BreathingEngine {
+    constructor() {
+      this.inhaleDuration = 1200;
+      this.holdDuration  = 300;
+      this.exhaleDuration = 1800;
+      this.cycleDuration = this.inhaleDuration + this.holdDuration + this.exhaleDuration;
+      this.phase = 0;
+      this.value = 0.5;
+      this.startTime = performance.now();
+      this.rate = 60000 / this.cycleDuration;
+    }
+
+    update(now) {
+      const elapsed = (now - this.startTime) % this.cycleDuration;
+
+      if (elapsed < this.inhaleDuration) {
+        const t = elapsed / this.inhaleDuration;
+        this.value = 1 - Math.pow(1 - t, 0.6);
+        this.phase = t * 0.36;
+      } else if (elapsed < this.inhaleDuration + this.holdDuration) {
+        this.value = 1;
+        this.phase = 0.36 + ((elapsed - this.inhaleDuration) / this.holdDuration) * 0.09;
+      } else {
+        const t = (elapsed - this.inhaleDuration - this.holdDuration) / this.exhaleDuration;
+        this.value = 1 - Math.pow(t, 0.55);
+        this.phase = 0.45 + t * 0.55;
+      }
+
+      return this.value;
+    }
+
+    getBPM() {
+      return this.rate;
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+     COLOR ECHO — Ambient Hue Rotation
+     ────────────────────────────────────────────── */
+  class ColorEcho {
+    constructor() {
+      this.scrollHue = 0;
+      this.timeHue = 0;
+      this.totalOffset = 0;
+      this.targetOffset = 0;
+      this.prevScrollY = 0;
+      this.scrollVelocity = 0;
+    }
+
+    update(now) {
+      this.timeHue = (now / 1000) * 0.15 % 360;
+
+      const scrollMax = Math.max(document.body.scrollHeight - window.innerHeight, 1);
+      const scrollRatio = Math.min(window.scrollY / scrollMax, 1);
+      this.scrollHue = scrollRatio * 25;
+
+      this.scrollVelocity = Math.abs(window.scrollY - this.prevScrollY);
+      this.prevScrollY = window.scrollY;
+
+      this.targetOffset = (this.timeHue + this.scrollHue + Math.min(this.scrollVelocity * 0.05, 8)) % 360;
+
+      this.totalOffset += (this.targetOffset - this.totalOffset) * 0.03;
+      if (Math.abs(this.totalOffset - this.targetOffset) < 0.01) {
+        this.totalOffset = this.targetOffset;
+      }
+
+      document.documentElement.style.setProperty('--hue-offset', this.totalOffset.toFixed(2));
+      return this.totalOffset;
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+     CURSOR PHYSICS — Mass-based pointer with collision
+     ────────────────────────────────────────────── */
+  class CursorPhysics {
+    constructor() {
+      this.dot = document.getElementById('cursor-dot');
+      this.ring = document.getElementById('cursor-ring');
+      this.container = document.getElementById('cursor-container');
+
+      this.x = window.innerWidth / 2;
+      this.y = window.innerHeight / 2;
+      this.vx = 0;
+      this.vy = 0;
+      this.ringX = this.x;
+      this.ringY = this.y;
+
+      this.dotMass = 0.15;
+      this.ringMass = 0.08;
+      this.damping = 0.85;
+      this.stiffness = 0.12;
+
+      this.tx = this.x;
+      this.ty = this.y;
+
+      this.collidingElements = new Map();
+
+      this.init();
+    }
+
+    init() {
+      document.addEventListener('mousemove', (e) => {
+        this.tx = e.clientX;
+        this.ty = e.clientY;
+      });
+
+      document.addEventListener('touchstart', () => {
+        this.container.style.display = 'none';
+        document.body.style.cursor = 'auto';
+      }, { once: true });
+
+      document.querySelectorAll('a, button, .glass-card, .fractal-icon').forEach(el => {
+        el.addEventListener('mouseenter', () => this.ring.classList.add('-active'));
+        el.addEventListener('mouseleave', () => this.ring.classList.remove('-active'));
+      });
+    }
+
+    update(now) {
+      const dx = this.tx - this.x;
+      const dy = this.ty - this.y;
+      const ax = dx * this.stiffness - this.vx * (1 - this.damping);
+      const ay = dy * this.stiffness - this.vy * (1 - this.damping);
+      this.vx += ax * this.dotMass;
+      this.vy += ay * this.dotMass;
+      this.vx *= this.damping;
+      this.vy *= this.damping;
+      this.x += this.vx;
+      this.y += this.vy;
+
+      const rdx = this.x - this.ringX;
+      const rdy = this.y - this.ringY;
+      this.ringX += rdx * 0.08;
+      this.ringY += rdy * 0.08;
+
+      this.dot.style.transform = `translate(${this.x}px, ${this.y}px) translate(-50%, -50%)`;
+      this.ring.style.transform = `translate(${this.ringX}px, ${this.ringY}px) translate(-50%, -50%)`;
+
+      const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+      this.detectCollisions(this.x, this.y, speed);
+    }
+
+    detectCollisions(cx, cy, speed) {
+      const elements = document.querySelectorAll('.glass-card, button, a, .fractal-icon');
+
+      elements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const margin = 16;
+        const expanded = {
+          left: rect.left - margin, right: rect.right + margin,
+          top: rect.top - margin, bottom: rect.bottom + margin
+        };
+
+        const inside = cx >= expanded.left && cx <= expanded.right &&
+                       cy >= expanded.top && cy <= expanded.bottom;
+
+        const prev = this.collidingElements.get(el);
+
+        if (inside && speed > 0.5) {
+          const force = Math.min(speed * 0.15, 1);
+          const impactX = (cx - (rect.left + rect.width / 2)) / (rect.width / 2);
+          const impactY = (cy - (rect.top + rect.height / 2)) / (rect.height / 2);
+          const intensity = force * 2;
+
+          const scaleX = 1 - intensity * 0.04 * Math.abs(impactY || 1);
+          const scaleY = 1 - intensity * 0.04 * Math.abs(impactX || 1);
+          const skewX = impactX * intensity * 1.5;
+          const skewY = impactY * intensity * 1.5;
+
+          el.style.transform = `scale(${scaleX}, ${scaleY}) skew(${skewX}deg, ${skewY}deg)`;
+          el.style.transition = 'none';
+
+          if (!prev || prev.timeout) {
+            clearTimeout(prev?.timeout);
+          }
+          const timeout = setTimeout(() => {
+            el.style.transform = '';
+            el.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            this.collidingElements.delete(el);
+          }, 100);
+          this.collidingElements.set(el, { timeout, force });
+        } else if (!inside && prev) {
+          clearTimeout(prev.timeout);
+          el.style.transform = '';
+          el.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          this.collidingElements.delete(el);
+        }
+      });
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+     PARTICLE SYSTEM — Gravity accumulation
+     ────────────────────────────────────────────── */
+  class ParticleSystem {
+    constructor(canvas) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d');
+      this.particles = [];
+      this.maxParticles = 80;
+      this.mouseX = window.innerWidth / 2;
+      this.mouseY = window.innerHeight / 2;
+      this.gravityX = 0;
+      this.gravityY = 0.02;
+
+      this.resize();
+      this.init();
+
+      window.addEventListener('resize', () => this.resize());
+
+      document.addEventListener('mousemove', (e) => {
+        this.mouseX = e.clientX;
+        this.mouseY = e.clientY;
+      });
+
+      if (gpu.tier === 'low') this.maxParticles = 30;
+      else if (gpu.tier === 'none') this.maxParticles = 15;
+    }
+
+    resize() {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    }
+
+    init() {
+      for (let i = 0; i < this.maxParticles; i++) {
+        this.particles.push(this.createParticle());
+      }
+    }
+
+    createParticle() {
+      return {
+        x: Math.random() * this.canvas.width,
+        y: Math.random() * this.canvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        size: Math.random() * 2.5 + 1,
+        life: Math.random() * 400 + 200,
+        maxLife: Math.random() * 400 + 200,
+        hue: (Math.random() * 60 + 260) % 360,
+        sat: 0.15 + Math.random() * 0.2,
+        lum: 0.4 + Math.random() * 0.3,
+        alpha: 0.3 + Math.random() * 0.4
+      };
+    }
+
+    update(breathValue, hueOffset) {
+      const ctx = this.ctx;
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+      const dx = this.mouseX - this.canvas.width / 2;
+      const dy = this.mouseY - this.canvas.height / 2;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const maxDist = Math.max(this.canvas.width, this.canvas.height) * 0.5;
+
+      if (dist > 0) {
+        const force = Math.min(dist / maxDist, 1) * 0.008;
+        this.gravityX += (dx / dist * force - this.gravityX) * 0.02;
+        this.gravityY += (dy / dist * force + 0.02 - this.gravityY) * 0.02;
+      }
+
+      const activity = 0.5 + breathValue * 0.5;
+      let aliveCount = 0;
+
+      for (let i = 0; i < this.particles.length; i++) {
+        const p = this.particles[i];
+        p.life--;
+
+        if (p.life <= 0) {
+          this.particles[i] = this.createParticle();
+          continue;
+        }
+
+        p.vx += this.gravityX * activity;
+        p.vy += this.gravityY * activity;
+        p.vx += (Math.random() - 0.5) * 0.04 * activity;
+        p.vy += (Math.random() - 0.5) * 0.04 * activity;
+        p.vx *= 0.98;
+        p.vy *= 0.98;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0) p.x = this.canvas.width;
+        if (p.x > this.canvas.width) p.x = 0;
+        if (p.y < 0) p.y = this.canvas.height;
+        if (p.y > this.canvas.height) p.y = 0;
+
+        const lifeRatio = p.life / p.maxLife;
+        const alpha = p.alpha * lifeRatio * (0.3 + 0.7 * breathValue);
+        const hue = (p.hue + hueOffset) % 360;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * (0.5 + 0.5 * breathValue), 0, Math.PI * 2);
+        ctx.fillStyle = `oklch(${p.lum} ${p.sat} ${hue} / ${alpha})`;
+        ctx.fill();
+
+        aliveCount++;
+      }
+
+      while (this.particles.length < this.maxParticles) {
+        this.particles.push(this.createParticle());
+      }
+
+      return aliveCount;
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+     FRACTAL SVG RENDERER — Recursive L-system icons
+     ────────────────────────────────────────────── */
+  class FractalRenderer {
+    constructor() {
+      this.containers = {
+        breath: document.getElementById('fractal-breath'),
+        echo: document.getElementById('fractal-echo'),
+        physics: document.getElementById('fractal-physics'),
+        fractal: document.getElementById('fractal-fractal')
+      };
+    }
+
+    renderLung(container) {
+      const svg = this.createSVG(48, 48, 'lung-fractal');
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('stroke', 'currentColor');
+      g.setAttribute('fill', 'none');
+      g.setAttribute('stroke-width', '1.2');
+      g.setAttribute('stroke-linecap', 'round');
+
+      const drawBranch = (x, y, angle, length, depth, maxDepth) => {
+        if (depth > maxDepth) return;
+        const rad = angle * Math.PI / 180;
+        const ex = x + Math.cos(rad) * length;
+        const ey = y + Math.sin(rad) * length;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x.toFixed(1));
+        line.setAttribute('y1', y.toFixed(1));
+        line.setAttribute('x2', ex.toFixed(1));
+        line.setAttribute('y2', ey.toFixed(1));
+        line.setAttribute('stroke-width', Math.max(0.3, 1.2 - depth * 0.25));
+        if (depth >= 2) line.classList.add('fractal-detail');
+        g.appendChild(line);
+
+        const newLen = length * 0.7;
+        const spread = 25 + depth * 3;
+        drawBranch(ex, ey, angle - spread, newLen, depth + 1, maxDepth);
+        drawBranch(ex, ey, angle + spread, newLen, depth + 1, maxDepth);
+      };
+
+      drawBranch(24, 44, -90, 14, 0, 4);
+      svg.appendChild(g);
+      container.appendChild(svg);
+      container.style.color = 'var(--accent)';
+    }
+
+    renderWave(container) {
+      const svg = this.createSVG(48, 48, 'wave-fractal');
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('stroke', 'currentColor');
+      g.setAttribute('fill', 'none');
+      g.setAttribute('stroke-width', '0.8');
+      g.setAttribute('stroke-linecap', 'round');
+
+      const drawWave = (ox, oy, amp, freq, phase, depth, maxDepth) => {
+        const points = [];
+        const steps = 48;
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const x = ox + t * 40;
+          let y = oy + Math.sin(t * freq * Math.PI * 2 + phase) * amp;
+          if (depth > 0) y += Math.sin(t * freq * 4 * Math.PI * 2 + phase * 2) * amp * 0.3;
+          if (depth > 1) y += Math.sin(t * freq * 8 * Math.PI * 2 + phase * 3) * amp * 0.1;
+          points.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+        }
+
+        const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+        polyline.setAttribute('points', points.join(' '));
+        polyline.setAttribute('stroke-width', Math.max(0.2, 0.8 - depth * 0.15));
+        if (depth >= 1) polyline.classList.add('fractal-detail');
+        g.appendChild(polyline);
+
+        if (depth < maxDepth) {
+          drawWave(ox + 2, oy + 6, amp * 0.5, freq * 2, phase + 0.5, depth + 1, maxDepth);
+          drawWave(ox + 2, oy - 6, amp * 0.5, freq * 2, phase - 0.5, depth + 1, maxDepth);
+        }
+      };
+
+      drawWave(4, 24, 6, 1.5, 0, 0, 3);
+      svg.appendChild(g);
+      container.appendChild(svg);
+      container.style.color = 'var(--accent)';
+    }
+
+    renderCollision(container) {
+      const svg = this.createSVG(48, 48, 'collision-fractal');
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('stroke', 'currentColor');
+      g.setAttribute('fill', 'none');
+      g.setAttribute('stroke-width', '0.8');
+      g.setAttribute('stroke-linecap', 'round');
+
+      const drawRings = (cx, cy, radius, depth, maxDepth) => {
+        if (depth > maxDepth || radius < 1) return;
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', cx.toFixed(1));
+        circle.setAttribute('cy', cy.toFixed(1));
+        circle.setAttribute('r', radius.toFixed(1));
+        circle.setAttribute('stroke-width', Math.max(0.15, 0.8 - depth * 0.15));
+        if (depth >= 1) circle.classList.add('fractal-detail');
+        g.appendChild(circle);
+
+        drawRings(cx - radius * 0.5, cy, radius * 0.4, depth + 1, maxDepth);
+        drawRings(cx + radius * 0.5, cy, radius * 0.4, depth + 1, maxDepth);
+        drawRings(cx, cy - radius * 0.5, radius * 0.4, depth + 1, maxDepth);
+        drawRings(cx, cy + radius * 0.5, radius * 0.4, depth + 1, maxDepth);
+      };
+
+      drawRings(24, 24, 16, 0, 3);
+      svg.appendChild(g);
+      container.appendChild(svg);
+      container.style.color = 'var(--accent)';
+    }
+
+    renderFractal(container) {
+      const svg = this.createSVG(48, 48, 'fractal-self');
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.setAttribute('stroke', 'currentColor');
+      g.setAttribute('fill', 'none');
+      g.setAttribute('stroke-width', '0.7');
+      g.setAttribute('stroke-linecap', 'round');
+
+      const drawTri = (x1, y1, x2, y2, x3, y3, depth, maxDepth) => {
+        if (depth > maxDepth) return;
+
+        const lines = [[x1, y1, x2, y2], [x2, y2, x3, y3], [x3, y3, x1, y1]];
+        for (const [lx1, ly1, lx2, ly2] of lines) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', lx1.toFixed(1));
+          line.setAttribute('y1', ly1.toFixed(1));
+          line.setAttribute('x2', lx2.toFixed(1));
+          line.setAttribute('y2', ly2.toFixed(1));
+          line.setAttribute('stroke-width', Math.max(0.15, 0.7 - depth * 0.12));
+          if (depth >= 1) line.classList.add('fractal-detail');
+          g.appendChild(line);
+        }
+
+        if (depth < maxDepth) {
+          const mx1 = (x1 + x2) / 2, my1 = (y1 + y2) / 2;
+          const mx2 = (x2 + x3) / 2, my2 = (y2 + y3) / 2;
+          const mx3 = (x3 + x1) / 2, my3 = (y3 + y1) / 2;
+
+          drawTri(x1, y1, mx1, my1, mx3, my3, depth + 1, maxDepth);
+          drawTri(x2, y2, mx1, my1, mx2, my2, depth + 1, maxDepth);
+          drawTri(x3, y3, mx2, my2, mx3, my3, depth + 1, maxDepth);
+
+          if (depth + 1 >= 2) {
+            const inner = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            inner.setAttribute('points',
+              `${mx1.toFixed(1)},${my1.toFixed(1)} ${mx2.toFixed(1)},${my2.toFixed(1)} ${mx3.toFixed(1)},${my3.toFixed(1)}`
+            );
+            inner.setAttribute('stroke-width', '0.2');
+            inner.setAttribute('stroke-dasharray', '1 2');
+            inner.classList.add('fractal-detail');
+            g.appendChild(inner);
+          }
+        }
+      };
+
+      drawTri(24, 4, 8, 40, 40, 40, 0, 4);
+      svg.appendChild(g);
+      container.appendChild(svg);
+      container.style.color = 'var(--accent)';
+    }
+
+    createSVG(w, h, id) {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+      svg.setAttribute('width', w);
+      svg.setAttribute('height', h);
+      svg.setAttribute('id', id);
+      return svg;
+    }
+
+    renderAll() {
+      this.renderLung(this.containers.breath);
+      this.renderWave(this.containers.echo);
+      this.renderCollision(this.containers.physics);
+      this.renderFractal(this.containers.fractal);
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+     FROST SWIPE — Blur reduction on fast mouse pass
+     ────────────────────────────────────────────── */
+  class FrostSwipe {
+    constructor() {
+      this.cards = document.querySelectorAll('.glass-card');
+      this.lastX = 0;
+      this.lastY = 0;
+      this.lastTime = 0;
+      this.blurOverrides = new Map();
+      this.baseBlur = 20;
+
+      document.addEventListener('mousemove', (e) => {
+        const now = performance.now();
+        const dt = Math.max(now - this.lastTime, 1);
+        const dx = e.clientX - this.lastX;
+        const dy = e.clientY - this.lastY;
+        const speed = Math.sqrt(dx * dx + dy * dy) / dt * 16.67;
+
+        this.cards.forEach(card => {
+          const rect = card.getBoundingClientRect();
+          const inside = e.clientX >= rect.left && e.clientX <= rect.right &&
+                         e.clientY >= rect.top && e.clientY <= rect.bottom;
+
+          if (inside && speed > 3) {
+            const reduction = Math.min(speed * 0.4, 14);
+            const newBlur = Math.max(this.baseBlur - reduction, 4);
+
+            if (!this.blurOverrides.has(card)) {
+              this.blurOverrides.set(card, { blur: newBlur, timeout: null });
+            }
+
+            const state = this.blurOverrides.get(card);
+            state.blur = newBlur;
+            card.style.backdropFilter = `blur(${newBlur}px)`;
+            card.style.webkitBackdropFilter = `blur(${newBlur}px)`;
+
+            if (state.timeout) clearTimeout(state.timeout);
+
+            state.timeout = setTimeout(() => {
+              const recover = () => {
+                const current = parseFloat(card.style.backdropFilter.replace(/[^0-9.]/g, '') || this.baseBlur);
+                if (current < this.baseBlur) {
+                  const next = Math.min(current + 0.5, this.baseBlur);
+                  card.style.backdropFilter = `blur(${next}px)`;
+                  card.style.webkitBackdropFilter = `blur(${next}px)`;
+                  requestAnimationFrame(recover);
+                } else {
+                  this.blurOverrides.delete(card);
+                }
+              };
+              recover();
+            }, 200);
+          }
+        });
+
+        this.lastX = e.clientX;
+        this.lastY = e.clientY;
+        this.lastTime = now;
+      });
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+     CONSOLE LOGGER — Colored system boot
+     ────────────────────────────────────────────── */
+  class ConsoleLogger {
+    constructor() {
+      this.styles = {
+        title: 'color: #c084fc; font-size: 14px; font-weight: bold;',
+        info: 'color: #94a3b8; font-size: 11px;',
+        ok: 'color: #4ade80; font-size: 11px;',
+        warn: 'color: #fbbf24; font-size: 11px;',
+        error: 'color: #f87171; font-size: 11px;'
+      };
+    }
+
+    log() {
+      console.clear();
+      console.log(
+        '%c ╔══════════════════════════════════════╗\n' +
+        '%c ║      P R I M A   V I T A            ║\n' +
+        '%c ║     数字生命 · Digital Life          ║\n' +
+        '%c ╚══════════════════════════════════════╝',
+        this.styles.title, this.styles.title, this.styles.title, this.styles.title
+      );
+
+      const lines = [
+        ['⟫ 呼吸引擎 · v1.0 — 周期 ' + (1.2 + 0.3 + 1.8).toFixed(1) + 's', 'info'],
+        ['⟫ 色彩空间 · oklch — 色相漂移激活', 'info'],
+        ['⟫ 碰撞系统 · 弹性形变阈值 0.5px', 'info'],
+        ['⟫ 分形 SVG · 递归深度 4 级', 'info'],
+        ['⟫ GPU 架构 · ' + (gpu.supported ? 'WebGL ' + gpu.tier : '2D Fallback'), gpu.supported ? 'ok' : 'warn'],
+        ['⟫ 粒子系统 · 最大 ' + (gpu.tier === 'low' ? 30 : 80) + ' 粒子', 'info'],
+        ['⟫ 自修复协议 · 兜底定时器就绪', 'info'],
+        ['⟫ 生命信号已建立 · 进入感知循环', 'ok']
+      ];
+
+      lines.forEach(([msg, type]) => {
+        console.log('%c' + msg, this.styles[type]);
+      });
+
+      console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', this.styles.info);
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+     MAIN LOOP — Convergence of all systems
+     ────────────────────────────────────────────── */
+  function init() {
+    gpu.check();
+
+    const gpuStatus = document.getElementById('console-gpu-status');
+    if (gpuStatus) {
+      gpuStatus.textContent = gpu.supported ? `[WebGL · ${gpu.tier}]` : '[2D Fallback]';
+      gpuStatus.className = gpu.supported ? 'console-ok' : 'console-warn';
+    }
+
+    const breath = new BreathingEngine();
+    const echo = new ColorEcho();
+    const cursor = new CursorPhysics();
+    const fractal = new FractalRenderer();
+    const frost = new FrostSwipe();
+    const logger = new ConsoleLogger();
+
+    const pCanvas = document.getElementById('particle-canvas');
+    const particles = new ParticleSystem(pCanvas);
+
+    fractal.renderAll();
+
+    const vitalBreath = document.getElementById('vital-breath');
+    const vitalHue = document.getElementById('vital-hue');
+    const vitalFps = document.getElementById('vital-fps');
+    const vitalParticles = document.getElementById('vital-particles');
+    const orb = document.getElementById('life-orb');
+
+    let frameCount = 0;
+    let fpsTime = 0;
+    let currentFps = 60;
+
+    if (gpu.tier === 'none') {
+      const cc = document.getElementById('cursor-container');
+      if (cc) cc.style.display = 'none';
+      document.body.style.cursor = 'auto';
+      if (pCanvas) pCanvas.style.display = 'none';
+    }
+
+    bootComplete = true;
+    clearTimeout(bootGuard);
+
+    logger.log();
+
+    function tick(now) {
+      frameCount++;
+      if (now - fpsTime >= 1000) {
+        currentFps = frameCount;
+        frameCount = 0;
+        fpsTime = now;
+      }
+
+      const breathValue = breath.update(now);
+      document.documentElement.style.setProperty('--breath-phase', breathValue.toFixed(3));
+
+      if (orb && gpu.tier !== 'none') {
+        const scale = 1 + (breathValue - 0.5) * 0.06;
+        orb.style.transform = `scale(${scale.toFixed(3)})`;
+      }
+
+      const hueOffset = echo.update(now);
+
+      if (gpu.tier !== 'none') {
+        cursor.update(now);
+      }
+
+      let particleCount = 0;
+      if (gpu.tier !== 'none') {
+        particleCount = particles.update(breathValue, hueOffset);
+      }
+
+      if (frameCount % 4 === 0) {
+        if (vitalBreath) vitalBreath.textContent = breath.getBPM().toFixed(1);
+        if (vitalHue) vitalHue.textContent = hueOffset.toFixed(1) + '°';
+        if (vitalFps) vitalFps.textContent = currentFps;
+        if (vitalParticles) vitalParticles.textContent = particleCount;
+      }
+
+      if (vitalBreath) {
+        vitalBreath.style.opacity = (0.6 + breathValue * 0.4).toFixed(2);
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+</body>
+</html>

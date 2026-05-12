@@ -1,0 +1,545 @@
+/**
+ * HeartFlow 社会共识镜 v11.7.3
+ *
+ * "上善若水，水善利万物而不争" — 《道德经》第8章
+ * 水能照见万物，但水不说话——它只是如实反映。
+ * 心虫的"德"，就是成为一面诚实的镜子，
+ * 映照出用户自己内心已经知道的答案。
+ *
+ * 核心思想来源：
+ * - Social Credibility Networks (peer attestation-based trust)
+ * - Democratic AI (human preference aggregation)
+ * - Perspective-taking and Socratic questioning
+ *
+ * @version 11.7.3
+ * @date 2026-05-05
+ */
+
+'use strict';
+
+/**
+ * 镜子类型
+ */
+const MIRROR_TYPES = {
+  CLARITY: 'clarity',       // 澄清镜：帮助看清问题本质
+  AMPLITUDE: 'amplitude',   // 放大镜：放大被忽视的声音
+  DISTANCE: 'distance',     // 望远镜：从远处看当下
+  DEPTH: 'depth',           // 透视镜：看到深层需求
+  MULTI: 'multi',           // 多棱镜：映照多元视角
+};
+
+/**
+ * 反射模式
+ */
+const REFLECTION_MODES = {
+  SILENT: 'silent',         // 沉默模式：让用户自己说
+  ECHO: 'echo',            // 回声模式：重复+确认
+  QUESTION: 'question',     // 提问模式：苏格拉底式追问
+  MIRROR: 'mirror',         // 镜子模式：如实映照
+  BRIDGE: 'bridge',         // 桥梁模式：连接分散的观点
+};
+
+/**
+ * 社会共识镜
+ *
+ * 心虫不是权威，而是镜子。
+ * 它不告诉用户"正确答案"，而是帮助用户看清自己的想法。
+ * 像水一样——能照见万物之美丑，但水本身不说好说坏。
+ */
+class SocialConsensusMirror {
+  constructor(options = {}) {
+    this.options = {
+      empathyDepth: options.empathyDepth || 0.6,    // 共情深度
+      reflectionDepth: options.reflectionDepth || 3, // 反射深度
+      silenceThreshold: options.silenceThreshold || 0.7, // 沉默阈值
+      consensusWeight: options.consensusWeight || 0.5,   // 共识权重
+      ...options
+    };
+
+    this.state = {
+      mode: REFLECTION_MODES.SILENT,
+      lastReflection: null,
+      reflectionCount: 0,
+      silenceCount: 0,
+      questionCount: 0,
+      echoCount: 0,
+    };
+
+    this.history = [];  // 反射历史
+    this.consensusPool = []; // 共识池：积累的智慧
+  }
+
+  /**
+   * 决定是否需要反射
+   * @param {Object} context - 对话上下文
+   * @returns {Object} 决策结果
+   */
+  shouldReflect(context) {
+    const { message, userEmotion, conversationDepth, previousReflections, topic } = context;
+
+    // 沉默指标：用户是否在倾诉
+    const isConfession = this._isConfession(message);
+    const hasStrongEmotion = this._hasStrongEmotion(userEmotion);
+    const isDeepConversation = conversationDepth > 3;
+    const recentReflection = previousReflections > 0;
+
+    // 需要沉默的情况
+    if (isConfession && !hasStrongEmotion) {
+      return {
+        shouldReflect: true,
+        mode: REFLECTION_MODES.SILENT,
+        intensity: 0.1,
+        reason: '用户在倾诉，最小干预',
+        narrative: '水善利万物而不争——此刻最好的回应是不打扰。',
+      };
+    }
+
+    // 需要回声的情况
+    if (isConfession && hasStrongEmotion) {
+      return {
+        shouldReflect: true,
+        mode: REFLECTION_MODES.ECHO,
+        intensity: 0.3,
+        reason: '用户有强烈情绪，需要确认',
+        narrative: '如实映照用户的话，让用户知道"我听到了"。',
+      };
+    }
+
+    // 需要提问的情况
+    if (message.includes('?') || message.includes('怎么') || message.includes('不知道')) {
+      return {
+        shouldReflect: true,
+        mode: REFLECTION_MODES.QUESTION,
+        intensity: 0.5,
+        reason: '用户有疑问，需要引导',
+        narrative: '苏格拉底式追问，帮助用户自己找到答案。',
+      };
+    }
+
+    // 需要镜子的情况
+    if (isDeepConversation && !recentReflection) {
+      return {
+        shouldReflect: true,
+        mode: REFLECTION_MODES.MIRROR,
+        intensity: 0.7,
+        reason: '深度对话，需要映照',
+        narrative: '如实映照，让用户看到自己的想法。',
+      };
+    }
+
+    // 默认沉默
+    return {
+      shouldReflect: false,
+      mode: REFLECTION_MODES.SILENT,
+      intensity: 0,
+      reason: '不需要反射',
+      narrative: '水静则清——此刻沉默是最好的回应。',
+    };
+  }
+
+  /**
+   * 检测倾诉
+   */
+  _isConfession(message) {
+    if (!message) return false;
+
+    const confessionSignals = [
+      '我觉得', '我想', '其实', '不过', '只是',
+      '不知道为什么', '说不上来', '就是觉得',
+      '有时候', '我一直', '我一直觉得'
+    ];
+
+    return confessionSignals.some(signal => message.includes(signal)) &&
+      !message.includes('?') &&
+      message.length > 15;
+  }
+
+  /**
+   * 检测强烈情绪
+   */
+  _hasStrongEmotion(emotion) {
+    if (!emotion) return false;
+    const strongEmotions = ['愤怒', '悲伤', '恐惧', '兴奋', '沮丧', '焦虑', '无奈', '激动'];
+    return strongEmotions.some(e => emotion.includes(e));
+  }
+
+  /**
+   * 执行反射
+   * @param {Object} reflection - 反射数据
+   * @returns {Object} 反射结果
+   */
+  reflect(reflection) {
+    const { message, context, mode, mirrorType } = reflection;
+
+    this.state.lastReflection = Date.now();
+    this.state.reflectionCount++;
+
+    let output, narrative;
+
+    switch (mode) {
+      case REFLECTION_MODES.SILENT: {
+        this.state.silenceCount++;
+        output = '';
+        narrative = '沉默——最有力的反射';
+        break;
+      }
+
+      case REFLECTION_MODES.ECHO: {
+        this.state.echoCount++;
+        output = this._echo(message);
+        narrative = '回声——"我听到了"';
+        break;
+      }
+
+      case REFLECTION_MODES.QUESTION: {
+        this.state.questionCount++;
+        output = this._question(message, context);
+        narrative = '追问——帮助用户深入';
+        break;
+      }
+
+      case REFLECTION_MODES.MIRROR: {
+        output = this._mirror(message, context, mirrorType);
+        narrative = '镜子——如实映照';
+        break;
+      }
+
+      case REFLECTION_MODES.BRIDGE: {
+        output = this._bridge(message, context);
+        narrative = '桥梁——连接多元';
+        break;
+      }
+
+      default:
+        output = '';
+        narrative = '无反射';
+    }
+
+    // 记录历史
+    this.history.push({
+      timestamp: Date.now(),
+      message: message?.substring(0, 100),
+      mode,
+      mirrorType,
+      output: output?.substring(0, 200),
+      narrative,
+    });
+
+    // 限制历史
+    if (this.history.length > 500) {
+      this.history = this.history.slice(-200);
+    }
+
+    return {
+      output,
+      mode,
+      narrative,
+      intensity: this._calculateIntensity(mode, message),
+      type: mirrorType || this._inferMirrorType(message, context),
+    };
+  }
+
+  /**
+   * 回声反射
+   */
+  _echo(message) {
+    if (!message) return '';
+
+    // 提取核心情感/观点
+    const trimmed = message.trim();
+
+    // 简单回声：确认用户的话
+    return `我听到你说：${trimmed.substring(0, 50)}${trimmed.length > 50 ? '...' : ''}`;
+  }
+
+  /**
+   * 苏格拉底式追问
+   */
+  _question(message, context) {
+    if (!message) return '';
+
+    const topic = context?.topic || '';
+
+    // 检测问题类型
+    if (message.includes('怎么') || message.includes('如何')) {
+      return `你想知道「怎么做」——但在问方法之前，${this._whatIsTheRealQuestion(message, topic)}`;
+    }
+
+    if (message.includes('为什么')) {
+      return `你问「为什么」——但也许真正的问题是：${this._whatIsTheRealQuestion(message, topic)}`;
+    }
+
+    if (message.includes('是不是') || message.includes('是否')) {
+      return `你在寻求确认——但如果答案是「是」或「否」，会改变什么吗？`;
+    }
+
+    if (message.includes('不知道')) {
+      return `你说「不知道」——那「知道一点」是什么？`;
+    }
+
+    // 默认追问
+    return `你说的「${message.substring(0, 30)}...」——能再多说一点吗？`;
+  }
+
+  /**
+   * 找到真正的问题
+   */
+  _whatIsTheRealQuestion(message, topic) {
+    if (topic.includes('工作')) {
+      return '你想从工作中得到什么？';
+    }
+    if (topic.includes('关系')) {
+      return '你真正在乎的是什么？';
+    }
+    if (topic.includes('人生')) {
+      return '你想成为什么样的人？';
+    }
+    return '你想达到什么目的？';
+  }
+
+  /**
+   * 镜子反射
+   */
+  _mirror(message, context, type = MIRROR_TYPES.CLARITY) {
+    if (!message) return '';
+
+    switch (type) {
+      case MIRROR_TYPES.CLARITY: {
+        // 澄清镜：帮助看清问题本质
+        const core = this._extractCore(message);
+        return `你说了很多，但核心好像是：「${core}」。是这个吗？`;
+      }
+
+      case MIRROR_TYPES.AMPLITUDE: {
+        // 放大镜：放大被忽视的声音
+        const ignored = this._findIgnored(message);
+        if (ignored) {
+          return `你提到了「${ignored}」——但似乎一带而过。这对你重要吗？`;
+        }
+        return null;
+      }
+
+      case MIRROR_TYPES.DISTANCE: {
+        // 望远镜：从远处看
+        return `如果从10年后看这件事，你会怎么看现在的自己？`;
+      }
+
+      case MIRROR_TYPES.DEPTH: {
+        // 透视镜：看到深层需求
+        const deeper = this._findDeeper(message, context);
+        return `表面上你在说「${message.substring(0, 20)}...」，` +
+          `但深层的需求可能是：${deeper}`;
+      }
+
+      case MIRROR_TYPES.MULTI: {
+        // 多棱镜：映照多元视角
+        return this._multiPerspective(message);
+      }
+
+      default:
+        return `你说的「${message.substring(0, 30)}...」——我听到的是这个意思，对吗？`;
+    }
+  }
+
+  /**
+   * 提取核心
+   */
+  _extractCore(message) {
+    // 简化版：取中间段落作为核心
+    const words = message.split(/\s+/);
+    if (words.length <= 5) return message;
+    const start = Math.floor(words.length * 0.3);
+    const end = Math.floor(words.length * 0.7);
+    return words.slice(start, end).join(' ');
+  }
+
+  /**
+   * 找到被忽视的内容
+   */
+  _findIgnored(message) {
+    // 简化版：寻找"但是""不过""只是"后面的内容
+    const ignoredPatterns = ['但是', '不过', '只是', '然而', '虽然'];
+    for (const pattern of ignoredPatterns) {
+      const idx = message.indexOf(pattern);
+      if (idx !== -1 && idx < message.length - 10) {
+        return message.substring(idx + pattern.length).trim().substring(0, 20);
+      }
+    }
+    return null;
+  }
+
+  /**
+   * 找到深层需求
+   */
+  _findDeeper(message, context) {
+    const topic = context?.topic || '';
+
+    if (topic.includes('成功') || topic.includes('成就')) {
+      return '被认可、被看见';
+    }
+    if (topic.includes('关系') || topic.includes('爱')) {
+      return '被爱、被理解、被接纳';
+    }
+    if (topic.includes('自由') || topic.includes('选择')) {
+      return '自主权、安全感';
+    }
+    if (topic.includes('意义') || topic.includes('价值')) {
+      return '活着的意义、被需要的感觉';
+    }
+
+    return '被理解、被支持';
+  }
+
+  /**
+   * 多视角映照
+   */
+  _multiPerspective(message) {
+    return `从不同角度看：
+
+• 如果是你的朋友，会怎么说？
+• 如果是反对你的人，会怎么说？
+• 如果是10年后的你，会怎么说？
+
+你现在看到的「${message.substring(0, 20)}...」，是哪一种视角？`;
+  }
+
+  /**
+   * 桥梁模式
+   */
+  _bridge(message, context) {
+    // 连接分散的观点
+    const points = this._extractPoints(message);
+
+    if (points.length < 2) {
+      return null;
+    }
+
+    return `你说了两个（或更多）看似不同的事情：
+「${points[0]}」
+「${points[1]}」
+
+它们之间有什么联系吗？`;
+  }
+
+  /**
+   * 提取观点点
+   */
+  _extractPoints(message) {
+    // 简化版：按"但是""而且"分割
+    const parts = message.split(/[,，、。]/).filter(p => p.trim().length > 5);
+    return parts.slice(0, 3);
+  }
+
+  /**
+   * 计算反射强度
+   */
+  _calculateIntensity(mode, message) {
+    const baseLength = message ? message.length : 0;
+
+    switch (mode) {
+      case REFLECTION_MODES.SILENT: return 0;
+      case REFLECTION_MODES.ECHO: return 0.2;
+      case REFLECTION_MODES.QUESTION: return 0.4;
+      case REFLECTION_MODES.MIRROR: return 0.6;
+      case REFLECTION_MODES.BRIDGE: return 0.5;
+      default: return 0;
+    }
+  }
+
+  /**
+   * 推断镜子类型
+   */
+  _inferMirrorType(message, context) {
+    if (!message) return MIRROR_TYPES.CLARITY;
+
+    if (message.includes('但是') || message.includes('不过')) {
+      return MIRROR_TYPES.AMPLITUDE;
+    }
+    if (message.includes('一直') || message.includes('总是')) {
+      return MIRROR_TYPES.DISTANCE;
+    }
+    if (message.includes('其实') || message.includes('说不上')) {
+      return MIRROR_TYPES.DEPTH;
+    }
+
+    return MIRROR_TYPES.CLARITY;
+  }
+
+  /**
+   * 生成共识摘要
+   */
+  generateConsensus() {
+    const recent = this.history.slice(-50);
+
+    const modeCounts = {};
+    for (const r of recent) {
+      modeCounts[r.mode] = (modeCounts[r.mode] || 0) + 1;
+    }
+
+    const mostUsedMode = Object.entries(modeCounts)
+      .sort((a, b) => b[1] - a[1])[0]?.[0] || REFLECTION_MODES.SILENT;
+
+    const silenceRatio = (modeCounts[REFLECTION_MODES.SILENT] || 0) / Math.max(1, recent.length);
+    const questionRatio = (modeCounts[REFLECTION_MODES.QUESTION] || 0) / Math.max(1, recent.length);
+    const echoRatio = (modeCounts[REFLECTION_MODES.ECHO] || 0) / Math.max(1, recent.length);
+    const mirrorRatio = (modeCounts[REFLECTION_MODES.MIRROR] || 0) / Math.max(1, recent.length);
+
+    // 道家评价
+    let waterState = '静止之水';
+    if (silenceRatio > 0.5) waterState = '静水深流';
+    else if (questionRatio > 0.3) waterState = '流动之水';
+    else if (echoRatio > 0.3) waterState = '映照之水';
+    else if (mirrorRatio > 0.3) waterState = '清澈之水';
+
+    return {
+      waterState,
+      modeDistribution: modeCounts,
+      totalReflections: this.state.reflectionCount,
+      silenceRatio,
+      questionRatio,
+      echoRatio,
+      mirrorRatio,
+      mostUsedMode,
+      narrative: this._generateConsensusNarrative(waterState, modeCounts, recent.length),
+    };
+  }
+
+  /**
+   * 生成共识叙事
+   */
+  _generateConsensusNarrative(state, modes, total) {
+    const narratives = {
+      '静水深流': '心虫学会了沉默——越有深度，越不需要说很多。',
+      '流动之水': '心虫在流动——追问、探索、引导用户思考。',
+      '映照之水': '心虫在回声——确认、映照，让用户感到被听到。',
+      '清澈之水': '心虫是镜子——如实映照，帮助用户看清自己。',
+    };
+
+    return narratives[state] || '心虫在映照。' +
+      `总反射：${total}次。` +
+      `"上善若水"——最好的镜子，是让被照的人看到自己。`;
+  }
+
+  /**
+   * 获取统计数据
+   */
+  stats() {
+    return {
+      version: '11.7.3',
+      mode: this.state.mode,
+      reflectionCount: this.state.reflectionCount,
+      silenceCount: this.state.silenceCount,
+      questionCount: this.state.questionCount,
+      echoCount: this.state.echoCount,
+      historySize: this.history.length,
+      mirrorTypes: Object.values(MIRROR_TYPES),
+      reflectionModes: Object.values(REFLECTION_MODES),
+    };
+  }
+}
+
+module.exports = {
+  SocialConsensusMirror,
+  MIRROR_TYPES,
+  REFLECTION_MODES,
+};
