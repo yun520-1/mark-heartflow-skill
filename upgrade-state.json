@@ -1,0 +1,199 @@
+{
+  "currentVersion": "0.13.18",
+  "lastUpgrade": 1778594643775,
+  "papersProcessed": [
+    {
+      "filename": "2505.19436v1",
+      "arxivId": "2505.19436v1",
+      "concepts": [
+        "Autonomy",
+        "Learning"
+      ],
+      "ts": 1778589902556
+    },
+    {
+      "filename": "2506.01442v1",
+      "arxivId": "2506.01442v1",
+      "concepts": [
+        "Memory Management",
+        "Autonomy",
+        "Embodiment",
+        "Learning"
+      ],
+      "ts": 1778589902954
+    }
+  ],
+  "papersIndex": 20,
+  "papersTotal": 33,
+  "upgradeHistory": [
+    {
+      "version": "0.13.9",
+      "papers": [
+        "1406.2661v1.pdf",
+        "1706.03762v7.pdf"
+      ],
+      "modulesCreated": 0,
+      "ts": 1778588583293
+    },
+    {
+      "version": "0.13.10",
+      "papers": [
+        "2109.05237v4.pdf",
+        "2304.11461v1.pdf"
+      ],
+      "modulesCreated": 0,
+      "ts": 1778589003692
+    },
+    {
+      "version": "0.13.11",
+      "papers": [
+        "2312.09210.pdf",
+        "2505.00675v3.pdf"
+      ],
+      "modulesCreated": 0,
+      "ts": 1778589122642
+    },
+    {
+      "version": "0.13.12",
+      "papers": [
+        "2505.19436v1.pdf",
+        "2506.01442v1.pdf"
+      ],
+      "modulesCreated": 2,
+      "ts": 1778589902954
+    },
+    {
+      "version": "0.13.13",
+      "papers": [
+        "2508.01415v4-2.pdf",
+        "2508.01415v4.pdf"
+      ],
+      "modulesCreated": 0,
+      "ts": 1778593143784
+    },
+    {
+      "version": "0.13.14",
+      "papers": [
+        "2508.03341v3.pdf",
+        "2509.09498v2.pdf"
+      ],
+      "modulesCreated": 0,
+      "ts": 1778593390231
+    },
+    {
+      "version": "0.13.15",
+      "papers": [
+        "2509.24704v2.pdf",
+        "2510.17867v1.pdf"
+      ],
+      "modulesCreated": 0,
+      "ts": 1778593810951
+    },
+    {
+      "version": "0.13.16",
+      "papers": [
+        "2510.21890v1.pdf",
+        "2511.13593v3.pdf"
+      ],
+      "modulesCreated": 0,
+      "ts": 1778593997379
+    },
+    {
+      "version": "0.13.17",
+      "papers": [
+        "2512.01710v2.pdf",
+        "2512.03627v1.pdf"
+      ],
+      "modulesCreated": 0,
+      "ts": 1778594166416
+    },
+    {
+      "version": "0.13.18",
+      "papers": [
+        "2512.16301v3.pdf",
+        "2512.23343v1.pdf"
+      ],
+      "modulesCreated": 0,
+      "ts": 1778594643775
+    }
+  ],
+  "codeModulesCreated": [
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/upgrade-2505.19436v1.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/upgrade-2506.01442v1.js"
+  ],
+  "errors": [
+    {
+      "paper": "1406.2661v1",
+      "error": "insufficient_text"
+    },
+    {
+      "paper": "1706.03762v7",
+      "error": "insufficient_text"
+    },
+    {
+      "paper": "2109.05237v4",
+      "error": "insufficient_text"
+    },
+    {
+      "paper": "2304.11461v1",
+      "error": "insufficient_text"
+    },
+    {
+      "paper": "2312.09210",
+      "error": "insufficient_text"
+    },
+    {
+      "paper": "2505.00675v3",
+      "error": "insufficient_text"
+    },
+    {
+      "paper": "2508.01415v4-2",
+      "error": "insufficient_text"
+    },
+    {
+      "paper": "2508.01415v4",
+      "error": "insufficient_text"
+    },
+    {
+      "paper": "2508.03341v3",
+      "error": "spawnSync /bin/sh ETIMEDOUT"
+    },
+    {
+      "paper": "2509.09498v2",
+      "error": "Command failed: python3 /tmp/pdf_text_1778593390176.py /Users/apple/Downloads/daima/2509.09498v2.pdf\nTraceback (most recent call last):\n  File \"/tmp/pdf_text_1778593390176.py\", line 1, in <module>\n    import sys;open(sys.argv[2],\"w\").write(open(sys.argv[1],\"rb\").read().decode(\"latin-1\",\"replace\"))\n                    ~~~~~~~~^^^\nIndexError: list index out of range\n"
+    },
+    {
+      "paper": "2509.24704v2",
+      "error": "spawnSync /bin/sh ETIMEDOUT"
+    },
+    {
+      "paper": "2510.17867v1",
+      "error": "spawnSync /bin/sh ETIMEDOUT"
+    },
+    {
+      "paper": "2510.21890v1",
+      "error": "spawnSync /bin/sh ETIMEDOUT"
+    },
+    {
+      "paper": "2511.13593v3",
+      "error": "spawnSync /bin/sh ETIMEDOUT"
+    },
+    {
+      "paper": "2512.01710v2",
+      "error": "insufficient_text"
+    },
+    {
+      "paper": "2512.03627v1",
+      "error": "insufficient_text"
+    },
+    {
+      "paper": "2512.16301v3",
+      "error": "genConsciousness is not defined"
+    },
+    {
+      "paper": "2512.23343v1",
+      "error": "genConsciousness is not defined"
+    }
+  ],
+  "githubAudits": []
+}

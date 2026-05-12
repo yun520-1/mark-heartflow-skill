@@ -1,0 +1,17 @@
+{
+  "paper": "2508.03341v3.pdf",
+  "timestamp": "2026-05-12T13:10:18.004Z",
+  "found": {
+    "ai": [
+      "ReAct|self[- ]?refne|reflexon|chan[- ]?of[- ]?thought",
+      "memory|attenton|reasonng|plannng",
+      "agent|autonomous|emergence",
+      "truthfulness|hallucnaton|verfcaton"
+    ],
+    "architecture": [
+      "factory|observer|ppelne|mddleware",
+      "component|module|plugn|extenson"
+    ],
+    "code": []
+  }
+}

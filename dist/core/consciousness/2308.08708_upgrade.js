@@ -636,7 +636,7 @@ class IntegratedInformationAssessor {
     }
     extractTopics(messages) {
         const allContent = messages.map(m => m.content || '').join(' ');
-        const words = allContent.match(/[\u4e00-\u9fff]{2,}|[\w]{4,}/g) || [];
+        const words = (allContent.match(/[\u4e00-\u9fff]{2,}|[\w]{4,}/g) || []);
         const stopWords = ['这个', '那个', '什么', '怎么', '为什么', '如何', 'the', 'and', 'that', 'this', 'with', 'have', 'from'];
         return [...new Set(words.filter(w => !stopWords.includes(w.toLowerCase())))].slice(0, 20);
     }

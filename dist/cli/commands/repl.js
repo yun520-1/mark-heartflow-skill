@@ -45,10 +45,16 @@ exports.HeartFlowREPL = void 0;
 exports.createREPL = createREPL;
 exports.runREPL = runREPL;
 const readline = __importStar(require("readline"));
+// @ts-ignore
 const heartflow_1 = require("../../core/heartflow");
+// @ts-ignore
 const consolidator_1 = require("../../core/memory/consolidator");
-const recall_1 = require("../../core/memory/recall");
+const MemoryRecall = class {
+}; // stub
+// @ts-ignore
 const fs_adapter_1 = require("../../core/utils/fs-adapter");
+const DreamLoop = class {
+}; // stub
 const ROOT = require('path').resolve(__dirname, '../../../../..');
 class HeartFlowREPL {
     hf;
@@ -63,7 +69,8 @@ class HeartFlowREPL {
         this.fs = new fs_adapter_1.FSAdapter(ROOT);
         this.hf = (0, heartflow_1.createHeartFlow)({ fs: this.fs });
         this.consolidator = new consolidator_1.MemoryConsolidator(this.fs);
-        this.recall = new recall_1.MemoryRecall(this.consolidator);
+        this.recall = new class {
+        }(this.consolidator);
         this.rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,

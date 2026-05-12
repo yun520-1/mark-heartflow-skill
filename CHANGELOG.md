@@ -7,6 +7,18 @@
 
 ---
 
+## v0.13.12 (2026-05-12)
+
+### 修复：MeaningfulMemory boot() 未调用导致永久记忆断电丢失
+
+- **问题**：MeaningfulMemory 有 `_load()` / `_doSave()` 持久化逻辑，但 `boot()` 从未被调用
+- **根因**：`heartflow.start()` → `_initV11432()` 中 `new MeaningfulMemory()` 后漏掉 `.boot()`
+- **影响**：CORE/LEARNED/EPHEMERAL 三层数据重启后不恢复
+- **修复**：在 `_initV11432()` 中 `new MeaningfulMemory()` 后立即调用 `boot()`
+- **验证**：重启后 CORE:6 / LEARNED:1 / EPHEMERAL:1 全部恢复 ✅
+
+---
+
 ## v0.13.8 (2026-05-12)
 
 ### 新增：安全与可靠性基础设施

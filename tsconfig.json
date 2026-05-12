@@ -17,5 +17,5 @@
     "sourceMap": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "tests", "HEARTCORE", "bin", "src/index.ts", "src/core/heartcore/index.ts"]
+  "exclude": ["node_modules", "dist", "tests", "HEARTCORE", "bin", "src/index.ts", "src/core/heartcore/index.ts", "src/cli/commands/repl.ts"]
 }

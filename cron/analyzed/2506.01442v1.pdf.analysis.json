@@ -1,0 +1,16 @@
+{
+  "paper": "2506.01442v1.pdf",
+  "timestamp": "2026-05-12T13:10:14.542Z",
+  "found": {
+    "ai": [
+      "meta[- ]?learnng|self[- ]?mprovng|recursve",
+      "memory|attenton|reasonng|plannng",
+      "agent|autonomous|emergence",
+      "truthfulness|hallucnaton|verfcaton"
+    ],
+    "architecture": [
+      "component|module|plugn|extenson"
+    ],
+    "code": []
+  }
+}

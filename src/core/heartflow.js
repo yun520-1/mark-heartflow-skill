@@ -54,6 +54,7 @@ function _initV11432() {
   ContextManager = require('./context/context-manager.js');
   var mmMod = require('./memory/meaningful-memory.js');
   MeaningfulMemory = new mmMod.MeaningfulMemory();
+  MeaningfulMemory.boot(); // v0.13.12: 启动时恢复永久记忆（之前漏掉了）
   LearningEngine = require('./learning/learning-engine.js');
   DreamLoopModule = require('./dream/dream-loop.js');
   var ee = require('./emotion/emotion-engine.js');
@@ -89,7 +90,7 @@ function _ensureV11432() {
 }
 
 // ─── 版本常量 ───────────────────────────────────────────────────────────────
-const VERSION = 'v0.13.10';
+const VERSION = 'v0.13.12';
 const BUILD_DATE = '2026-05-11';
 
 // ─── 路径配置 ────────────────────────────────────────────────────────────────
@@ -184,12 +185,12 @@ class HeartFlow extends EventEmitter {
     this._consolidator.init().catch(err => {
       logger.error('[HeartFlow] 记忆系统初始化失败', { err: err.message });
     });
-    _ensureV11432();  // 初始化 v11.43.2 引擎
+    _ensureV11432();  // 初始化 v11.43.2 引擎（MeaningfulMemory 在此被赋值）
     // 将 v11.43.2 引擎绑定到实例
     this.recall = MemoryRecall;
     this.identityEngine = IdentityEngine;
     this.contextManager = ContextManager;
-    this.meaningfulMemory = MeaningfulMemory;
+    this.meaningfulMemory = MeaningfulMemory; // _initV11432() 已创建实例，直接引用
     this.learningEngine = LearningEngine;
     this.emotionEngine = EmotionEngine;
     this.selfHealing = SelfHealing;
@@ -210,10 +211,16 @@ class HeartFlow extends EventEmitter {
     logger.info(`[HeartFlow] 启动成功，session: ${this._sessionId}`);
   }
 
-  /** 停止引擎 */
-  stop() {
+  /** 停止引擎（异步，等待所有写操作完成） */
+  async stop() {
     this.dream.enabled = false;
     this._started = false;
+    // 等待记忆系统所有 pending writes 完成
+    await this._consolidator.drain();
+    // 停止 MeaningfulMemory（auto-save + 持久化）
+    if (this.meaningfulMemory && typeof this.meaningfulMemory.shutdown === 'function') {
+      await this.meaningfulMemory.shutdown();
+    }
     // ─── HEARTCORE v2 停止 ───────────────────────────────────
     this.heartbeat.stop();
     this.sleepWake.stop();
@@ -271,7 +278,7 @@ class HeartFlow extends EventEmitter {
     if (!fragment.id) fragment.id = `mem-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
     if (!fragment.timestamp) fragment.timestamp = Date.now();
     if (!fragment.sessionId) fragment.sessionId = this._sessionId;
-    const layer = this.consolidator.consolidate(fragment);
+    const layer = this._consolidator.consolidate(fragment);
     this.bus.emit('memory:stored', fragment);
     return layer;
   }
@@ -289,7 +296,7 @@ class HeartFlow extends EventEmitter {
   /**
    * 触发一次梦
    */
-  dreamNow() { return this.dream.generate(this.consolidator.getAll()); }
+  async dreamNow() { return this.dream.generate(await this._consolidator.getAll()); }
 
   /** 获取失败模式（用于自省）*/
   getFailurePatterns() { return this.reflexion.getFailurePatterns(); }
@@ -342,9 +349,9 @@ class HeartFlow extends EventEmitter {
         lastActivity: this.sleepWake.lastActivity,
       },
       memory: {
-        hot: this.consolidator.getHot().length,
-        warm: this.consolidator.getWarm().length,
-        cold: this.consolidator.getCold().length,
+        hot: (await this._consolidator.getHot()).length,
+        warm: (await this._consolidator.getWarm()).length,
+        cold: (await this._consolidator.getCold()).length,
       },
       subsystems: {
         memory: memHealth,

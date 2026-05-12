@@ -1,6 +1,6 @@
 {
   "name": "heartflow",
-  "version": "0.13.8",
+  "version": "0.13.12",
   "description": "AI identity framework for self-improving AI agents",
   "main": "dist/core/heartflow.js",
   "bin": {
