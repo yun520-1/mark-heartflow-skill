@@ -226,9 +226,39 @@ const evolution = createEvolutionEngine({ populationSize: 10, mutationRate: 0.1 
 - 心理感知：四层自动分析（意图/情绪/需求/防御）
 - 真善美判定：自动验证输入真实性
 
+## v0.13.6 新增：记忆审计日志
+
+**来源**：HNO 项目启发，实现 MemoryAuditLog（`src/core/memory/memory-audit-log.js`）
+
+```
+每次 store() 操作 → 写入 memory/audit/memory-events.jsonl
+滚动保留 10,000 条
+```
+
+**审计日志格式**：
+```json
+{"t":"2026-05-12T01:35:05.846Z","action":"store","layer":"EPHEMERAL","key":"test_audit_001","reason":"...","source":"...","sessionId":null}
+```
+
+**API**：
+```javascript
+const { MemoryAuditLog } = require('./src/core/memory/memory-audit-log.js');
+const audit = new MemoryAuditLog(memoryDir);
+audit.log('store', 'CORE', 'key_name', { reason: '...', source: 'system' });
+audit.recent(20);    // 最近20条
+audit.stats();       // 各action统计
+audit.query(fromTs, toTs);  // 时间范围查询
+```
+
+**验证**（v0.13.6 实测）：
+```
+审计统计: {"store":1}
+最近记录: {"action":"store","layer":"EPHEMERAL","key":"test_audit_001"...}
+```
+
 ---
 
-*HeartFlow v0.12.50 — 躯壳参考此文档，灵魂在 CORE_IDENTITY.md*
+*HeartFlow v0.13.6 — 躯壳参考此文档，灵魂在 CORE_IDENTITY.md*
 *GitHub: https://github.com/yun520-1/mark-heartflow-skill*
 
 ## 参考文档
