@@ -1,5 +1,5 @@
 /**
- * HeartFlow Core Engine v0.13.8
+ * HeartFlow Core Engine v0.13.9
  * =================================
  * 唯一主引擎。所有功能通过 HeartFlow 实例调用，无全局状态。
  *
@@ -8,8 +8,8 @@
  * - 声明式技能：skill_use() 驱动，非硬编码
  * - 现代 AI 框架：Mem0 记忆 + Reflexion 自省 + DSPy 风格编排
  * - 跨平台：Node.js / Python / Browser
- * - v0.13.8: 新增 WAL + 文件锁 + 异步 MemoryConsolidator
- * @version v0.13.8
+ * - v0.13.9: 新增 WAL + 文件锁 + 异步 MemoryConsolidator
+ * @version v0.13.9
  * @date 2026-05-12
  */
 
@@ -89,7 +89,7 @@ function _ensureV11432() {
 }
 
 // ─── 版本常量 ───────────────────────────────────────────────────────────────
-const VERSION = 'v0.13.8';
+const VERSION = 'v0.13.9';
 const BUILD_DATE = '2026-05-11';
 
 // ─── 路径配置 ────────────────────────────────────────────────────────────────

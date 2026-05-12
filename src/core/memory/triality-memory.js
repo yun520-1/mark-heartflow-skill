@@ -19,6 +19,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { atomicWriteJSON, atomicWrite, atomicWriteSync, atomicWriteJSONSync } = require('../../utils/atomic-write');
 
 class TrialityMemory {
   constructor(projectRoot, options = {}) {
@@ -44,6 +45,8 @@ class TrialityMemory {
     this.memories = [];
     this.vectors = new Map();
     this.relationships = new Map();
+    // O(1) 内存索引，消除 this.memories.find() 的 O(n) 查找
+    this.memoryIndex = new Map();
 
     // === 工作上下文 (Working Context) ===
     // 仅保存当前推理所需的记忆，其他移到长期存档
@@ -121,6 +124,7 @@ class TrialityMemory {
     
     this.memories.push(memoryRecord);
     this.vectors.set(id, memoryRecord.embedding);
+    this.memoryIndex.set(id, memoryRecord); // O(1) lookup
     this.addToLayer(memoryRecord);
     if (memory.relatedTo) {
       for (const rel of memory.relatedTo) {
@@ -156,8 +160,8 @@ class TrialityMemory {
       const memoryFile = path.join(this.workingContextDir, `${memoryRecord.id}.md`);
       const content = this._formatMemoryAsText(memoryRecord);
 
-      // 写入文本文件
-      fs.writeFileSync(memoryFile, content, 'utf8');
+      // 原子写入文本文件（防崩溃损坏）
+      atomicWriteSync(memoryFile, content);
 
       // 更新索引
       index.memories[memoryRecord.id] = {
@@ -229,7 +233,7 @@ class TrialityMemory {
    */
   _saveIndex(index) {
     try {
-      fs.writeFileSync(this.indexFile, JSON.stringify(index, null, 2), 'utf8');
+      atomicWriteJSONSync(this.indexFile, index);
     } catch (error) {
       console.error(`[TrialityMemory] 索引保存失败: ${error.message}`);
     }
@@ -351,7 +355,7 @@ class TrialityMemory {
       lines.push(`---`);
       lines.push(`*此对话由 TrialityMemory 自动记录 - ${new Date().toISOString()}*`);
 
-      fs.writeFileSync(filepath, lines.join('\n'), 'utf8');
+      atomicWriteSync(filepath, lines.join('\n'));
 
       // 更新索引
       const index = this._loadIndex();
@@ -692,7 +696,7 @@ class TrialityMemory {
     
     for (const [id, embedding] of this.vectors) {
       const sim = this.cosineSimilarity(queryEmbedding, embedding);
-      const memory = this.memories.find(m => m.id === id);
+      const memory = this.memoryIndex.get(id);
       if (memory) {
         similarities.push({
           id,
@@ -762,7 +766,7 @@ class TrialityMemory {
 
     const fusedResults = [];
     for (const id of allCandidateIds) {
-      const memory = this.memories.find(m => m.id === id);
+      const memory = this.memoryIndex.get(id);
       if (!memory || memory.compressed) continue;
 
       const vecScore = vectorScores.get(id) || 0;
@@ -1119,9 +1123,8 @@ class TrialityMemory {
       const current = queue.shift();
 
       if (visited.has(current.id) || current.depth > maxDepth) continue;
-      visited.add(current.id);
+      const memory = this.memoryIndex.get(current.id);
 
-      const memory = this.memories.find(m => m.id === current.id);
       if (memory) {
         narrative.push({ ...memory, depth: current.depth });
       }
@@ -1246,11 +1249,6 @@ class TrialityMemory {
       .sort((a, b) => a.timestamp - b.timestamp);
   }
 
-  queryByRelationType(relationType, memoryId) {
-    const relations = this.relationships.get(memoryId) || [];
-    const targets = relations.filter(r => r.relationType === relationType).map(r => r.targetId);
-    return targets.map(id => this.memories.find(m => m.id === id)).filter(Boolean);
-  }
 
   getStats() {
     return {
@@ -1344,10 +1342,11 @@ class TrialityMemory {
 
     // 执行清理
     this.memories = this.memories.filter(m => !toDelete.includes(m.id));
+    for (const id of toDelete) this.memoryIndex.delete(id); // 同步清理索引
 
     // 标记压缩
     for (const id of toCompress) {
-      const mem = this.memories.find(m => m.id === id);
+      const mem = this.memoryIndex.get(id);
       if (mem) mem.compressed = true;
     }
 
@@ -1614,7 +1613,7 @@ class TrialityMemory {
       
       // 标记被压缩的记忆
       for (const memId of filtered) {
-        const mem = this.memories.find(m => m.id === memId);
+        const mem = this.memoryIndex.get(memId);
         if (mem) mem.compressed = true;
       }
     }

@@ -1,7 +1,7 @@
 /**
  * Heartbeat — 心跳自检
  * 每 30s 自检一次：模块健康、记忆写入、进化日志
- * @version v0.13.8
+ * @version v0.13.9
  */
 'use strict';
 

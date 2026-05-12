@@ -4,7 +4,7 @@
  * 使用 flock-style 锁文件实现，防止多实例并发写入冲突。
  * 零外部依赖，使用 fs.promises + fcntl（Linux/macOS）。
  * 
- * @version v0.13.8
+ * @version v0.13.9
  */
 
 'use strict';
