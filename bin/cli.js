@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * HeartFlow CLI — v0.13.9
+ * HeartFlow CLI — v0.13.10
  * Commands: setup | start | diagnose | upgrade | check
  */
 'use strict';
@@ -17,7 +17,7 @@ function log(msg) { console.log(`[CLI] ${msg}`); }
 function err(msg) { console.error(`[CLI] ERROR: ${msg}`); process.exit(1); }
 
 function cmdSetup() {
-  log('开始安装 HeartFlow v0.13.9...');
+  log('开始安装 HeartFlow v0.13.10...');
 
   // 1. 创建 data 目录
   const dirs = ['data/memory', 'data/evolution', 'data/snapshots'];
@@ -41,7 +41,7 @@ function cmdSetup() {
   if (!fs.existsSync(refFile)) fs.writeFileSync(refFile, '[]');
 
   // 4. 写入 VERSION
-  fs.writeFileSync(VERSION_FILE, 'v0.13.9\n');
+  fs.writeFileSync(VERSION_FILE, 'v0.13.10\n');
   // 5. 写入 package.json
   const pkg = {
     name: 'heartflow',

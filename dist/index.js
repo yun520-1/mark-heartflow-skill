@@ -112,7 +112,7 @@ function createHeartFlow(config) {
             supervisor.boot();
             event_bus_js_1.globalEventBus.emit('identity:booted', 'heartflow', { version: '0.13.0' });
             ready = true;
-            console.log('[HeartFlow] v0.13.9 boot complete — 15 engines initialized');
+            console.log('[HeartFlow] v0.13.10 boot complete — 15 engines initialized');
         },
         async shutdown() {
             console.log('[HeartFlow] shutting down...');

@@ -48,6 +48,17 @@ class TrialityMemory {
     // O(1) 内存索引，消除 this.memories.find() 的 O(n) 查找
     this.memoryIndex = new Map();
 
+    // === SwiftMem-inspired 查询感知索引 (v0.13.10) ===
+    // 时序索引: topic → [memoryId] (对数时间范围查询)
+    this.temporalIndex = new Map();
+    // 语义Tag索引: tag → Set(memoryId) (O(1) 标签检索)
+    this.tagIndex = new Map();
+    // 分层语义DAG: topic → { subtopics: [], memoryIds: [] }
+    this.semanticDAG = new Map();
+    // LRU 缓存: query → cached result (避免重复计算)
+    this.recallCache = new Map();
+    this.recallCacheMax = 200;
+
     // === 工作上下文 (Working Context) ===
     // 仅保存当前推理所需的记忆，其他移到长期存档
     this.workingContext = {
@@ -126,6 +137,10 @@ class TrialityMemory {
     this.vectors.set(id, memoryRecord.embedding);
     this.memoryIndex.set(id, memoryRecord); // O(1) lookup
     this.addToLayer(memoryRecord);
+    // SwiftMem: 更新查询感知索引
+    this._indexMemoryTemporal(memoryRecord);
+    this._indexMemoryByTag(memoryRecord);
+    this._indexMemoryByTopic(memoryRecord);
     if (memory.relatedTo) {
       for (const rel of memory.relatedTo) {
         this.addRelationship({
@@ -742,6 +757,12 @@ class TrialityMemory {
       return this.getRecentNarrative(topK);
     }
 
+    // SwiftMem: LRU 缓存查询
+    const cached = this._getCachedRecall(text);
+    if (cached) {
+      return cached.slice(0, topK);
+    }
+
     const now = Date.now() * 1000;
 
     // 1. 向量搜索召回
@@ -753,12 +774,18 @@ class TrialityMemory {
     const keywordResults = this._keywordSearch(text, topK * 2);
     const keywordScores = new Map(keywordResults.map(r => [r.id, r.keywordScore]));
 
-    // 3. 时间衰减分数 (越近的记忆越高)
+    // 3. SwiftMem 时序索引: 利用 temporalIndex 加速候选筛选
     const timeScores = new Map();
-    for (const mem of this.memories) {
-      const ageHours = (now - mem.timestamp) / (1000 * 60 * 60);
-      const timeScore = 1 / (1 + Math.log1p(ageHours / 24));
-      timeScores.set(mem.id, timeScore);
+    const recentWindows = this._getRecentTemporalWindows(24); // 最近24小时窗口
+    for (const window of recentWindows) {
+      const memIds = this.temporalIndex.get(window) || [];
+      for (const id of memIds) {
+        const mem = this.memoryIndex.get(id);
+        if (!mem) continue;
+        const ageHours = (now - mem.timestamp) / (1000 * 60 * 60);
+        const timeScore = 1 / (1 + Math.log1p(ageHours / 24));
+        timeScores.set(id, timeScore);
+      }
     }
 
     // 4. 多路分数融合
@@ -782,7 +809,21 @@ class TrialityMemory {
     const results = fusedResults.slice(0, topK);
 
     console.log(`[TrialityMemory] recall: ${results.length}/${this.memories.length} 候选, 查询: "${text.substring(0, 30)}..."`);
+
+    // SwiftMem: 缓存结果
+    this._setCachedRecall(text, results);
+
     return results;
+  }
+
+  _getRecentTemporalWindows(hours) {
+    const now = Date.now() * 1000;
+    const currentWindow = Math.floor(now / (1000 * 60 * 60));
+    const windows = [];
+    for (let i = 0; i <= hours; i++) {
+      windows.push(currentWindow - i);
+    }
+    return windows;
   }
 
   _keywordSearch(text, topK) {
@@ -1243,6 +1284,96 @@ class TrialityMemory {
     return denominator === 0 ? 0 : dot / denominator;
   }
 
+  // === SwiftMem 查询感知索引 (v0.13.10) ===
+
+  /** 时序索引: 将记忆按时间窗口索引 */
+  _indexMemoryTemporal(memoryRecord) {
+    const window = Math.floor(memoryRecord.timestamp / (1000 * 60 * 60)); // 1小时窗口
+    if (!this.temporalIndex.has(window)) {
+      this.temporalIndex.set(window, []);
+    }
+    this.temporalIndex.get(window).push(memoryRecord.id);
+  }
+
+  /** 标签索引: 从记忆元数据提取标签并建立倒排索引 */
+  _indexMemoryByTag(memoryRecord) {
+    const tags = memoryRecord.metadata?.tags || [];
+    for (const tag of tags) {
+      if (!this.tagIndex.has(tag)) {
+        this.tagIndex.set(tag, new Set());
+      }
+      this.tagIndex.get(tag).add(memoryRecord.id);
+    }
+  }
+
+  /** 语义DAG索引: 按主题/话题分层 */
+  _indexMemoryByTopic(memoryRecord) {
+    const topic = memoryRecord.metadata?.topic || 'general';
+    if (!this.semanticDAG.has(topic)) {
+      this.semanticDAG.set(topic, { subtopics: new Set(), memoryIds: [] });
+    }
+    if (!this.semanticDAG.get(topic).memoryIds.includes(memoryRecord.id)) {
+      this.semanticDAG.get(topic).memoryIds.push(memoryRecord.id);
+    }
+  }
+
+  /** 检索结果缓存 (LRU) */
+  _getCachedRecall(queryText) {
+    return this.recallCache.get(queryText) || null;
+  }
+
+  _setCachedRecall(queryText, results) {
+    if (this.recallCache.size >= this.recallCacheMax) {
+      // 淘汰最老的条目
+      const firstKey = this.recallCache.keys().next().value;
+      this.recallCache.delete(firstKey);
+    }
+    this.recallCache.set(queryText, results);
+  }
+
+  /** 时序范围查询 (对数时间) */
+  queryByTimeRangeIndexed(startTime, endTime) {
+    const startWindow = Math.floor(startTime / (1000 * 60 * 60));
+    const endWindow = Math.floor(endTime / (1000 * 60 * 60));
+    const ids = [];
+    for (const [window, memIds] of this.temporalIndex) {
+      if (window >= startWindow && window <= endWindow) {
+        ids.push(...memIds);
+      }
+    }
+    return ids.map(id => this.memoryIndex.get(id)).filter(Boolean);
+  }
+
+  /** 按标签检索 (O(1) 标签匹配) */
+  queryByTags(tags) {
+    if (!tags || tags.length === 0) return [];
+    let resultSets = tags.map(tag => this.tagIndex.get(tag) || new Set());
+    // 取交集
+    const intersection = new Set();
+    for (const id of resultSets[0]) {
+      if (resultSets.every(s => s.has(id))) {
+        intersection.add(id);
+      }
+    }
+    return Array.from(intersection).map(id => this.memoryIndex.get(id)).filter(Boolean);
+  }
+
+  /** 按主题检索 (DAG遍历) */
+  queryByTopic(topic) {
+    const node = this.semanticDAG.get(topic);
+    if (!node) return [];
+    const ids = [...node.memoryIds];
+    // 递归获取子主题
+    for (const sub of node.subtopics) {
+      ids.push(...this.queryByTopic(sub));
+    }
+    return ids.map(id => this.memoryIndex.get(id)).filter(Boolean);
+  }
+
+  // === SwiftMem recall: 查询感知优化 ===
+
+
+
   queryByTimeRange(startTime, endTime) {
     return this.memories
       .filter(m => m.timestamp >= startTime && m.timestamp <= endTime)
@@ -1342,7 +1473,14 @@ class TrialityMemory {
 
     // 执行清理
     this.memories = this.memories.filter(m => !toDelete.includes(m.id));
-    for (const id of toDelete) this.memoryIndex.delete(id); // 同步清理索引
+    for (const id of toDelete) {
+      this.memoryIndex.delete(id); // 同步清理内存索引
+      // 清理 SwiftMem 索引
+      for (const [window, ids] of this.temporalIndex) {
+        const idx = ids.indexOf(id);
+        if (idx !== -1) ids.splice(idx, 1);
+      }
+    }
 
     // 标记压缩
     for (const id of toCompress) {
