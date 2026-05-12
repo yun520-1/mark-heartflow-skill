@@ -1,5 +1,5 @@
 {
-  "timestamp": 1778478792687,
+  "timestamp": 1778560564045,
   "results": [
     {
       "id": "identity",
@@ -26,49 +26,25 @@
       "detail": "verified"
     },
     {
-      "id": "guardian",
-      "label": "src/core/ethics/guard.js",
+      "id": "meaningful_memory",
+      "label": "src/core/memory/meaningful-memory.js",
       "status": "PASS",
       "detail": "verified"
     },
     {
-      "id": "memory",
+      "id": "consolidator",
       "label": "src/core/memory/consolidator.js",
       "status": "PASS",
       "detail": "verified"
     },
     {
-      "id": "truthfulness",
-      "label": "src/core/identity/identity.js",
+      "id": "dream_loop",
+      "label": "src/core/dream/dream-loop.js",
       "status": "PASS",
       "detail": "verified"
     },
     {
-      "id": "ethics",
-      "label": "src/core/ethics/guard.js",
-      "status": "PASS",
-      "detail": "verified"
-    },
-    {
-      "id": "modular-memory-router",
-      "label": "src/core/memory/consolidator.js",
-      "status": "PASS",
-      "detail": "verified"
-    },
-    {
-      "id": "unified-memory-api",
-      "label": "src/core/memory/recall.js",
-      "status": "PASS",
-      "detail": "verified"
-    },
-    {
-      "id": "memory-action-bridge",
-      "label": "src/core/memory/dream.js",
-      "status": "PASS",
-      "detail": "verified"
-    },
-    {
-      "id": "executable-rule-engine",
+      "id": "reflexion",
       "label": "src/core/self-evolution/reflexion.js",
       "status": "PASS",
       "detail": "verified"

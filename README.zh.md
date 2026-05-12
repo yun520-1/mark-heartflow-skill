@@ -1,4 +1,4 @@
-# HeartFlow v0.12.50
+# HeartFlow v0.13.8
 
 > AI 身份框架，用于自我进化的 AI 智能体。
 
@@ -24,7 +24,7 @@ node bin/cli.js start
 node HEARTCORE/heartbeat.js
 
 # 一键安装（任意 AI 可直接执行）
-curl -fsSL https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/v0.12.50/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/v0.13.8/install.sh | sh
 ```
 
 ## 核心模块
@@ -44,6 +44,6 @@ curl -fsSL https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/v0.12
 
 ## 版本
 
-**v0.12.50** — 2026-05-11 彻底重建
+**v0.13.8** — 2026-05-12 安全与可靠性升级
 
 GitHub: https://github.com/yun520-1/mark-heartflow-skill

@@ -1,4 +1,4 @@
-# HeartFlow v0.12.50 — Architecture
+# HeartFlow v0.13.8 — Architecture
 
 ## 设计原则
 
@@ -12,7 +12,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    HeartFlow Core v0.12.50               │
+│                    HeartFlow Core v0.13.8               │
 ├─────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌──────────────┐  ┌───────────────┐ │
 │  │  Identity   │  │  Capability  │  │    Safety     │ │
@@ -144,7 +144,7 @@ eventBus.on('memory:stored', async (data) => {
 
 ```bash
 # AI可执行的单行安装
-curl -fsSL https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/v0.12.50/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/v0.13.8/install.sh | sh
 ```
 
 安装脚本 < 100行，无外部依赖，任何AI都能理解和执行。

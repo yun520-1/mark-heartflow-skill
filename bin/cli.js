@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * HeartFlow CLI — v0.13.3
+ * HeartFlow CLI — v0.13.7
  * Commands: setup | start | diagnose | upgrade | check
  */
 'use strict';
@@ -41,12 +41,12 @@ function cmdSetup() {
   if (!fs.existsSync(refFile)) fs.writeFileSync(refFile, '[]');
 
   // 4. 写入 VERSION
-  fs.writeFileSync(VERSION_FILE, 'v0.13.3\n');
-
+  // 4. 写入 VERSION
+  fs.writeFileSync(VERSION_FILE, 'v0.13.7\n');
   // 5. 写入 package.json
   const pkg = {
     name: 'heartflow',
-    version: '0.12.50',
+    version: '0.13.7',
     description: 'AI identity framework for self-improving AI agents',
     main: 'src/core/heartflow.js',
     bin: { heartflow: 'bin/cli.js' },

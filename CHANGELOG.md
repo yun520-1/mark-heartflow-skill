@@ -1,3 +1,40 @@
+# HeartFlow Changelog
+
+> **版本说明**：v0.13.x 是 v11.x 的重构版本（2026-05 重启）。v11.x 时代的 CHANGELOG 记录了 45+ 个历史版本的功能升级，但 v0.13 重构时进行了大幅精简。以下记录中：
+> - ✅ = 当前版本仍保留
+> - ❌ = 已删除/未迁移（v0.13 重构时移除）
+> - ⚠️ = 部分保留或重新实现
+
+---
+
+## v0.13.8 (2026-05-12)
+
+### 新增：安全与可靠性基础设施
+
+- 新增 `src/utils/atomic-write.js` — 原子写入工具（先写 .tmp 再 rename）
+- 新增 `src/utils/safe-path.js` — safePath() 路径遍历防护
+- 新增 `src/utils/logger.js` — 分级日志（trace/debug/info/warn/error）
+- 新增 `src/utils/wal.js` — WAL 预写日志（崩溃恢复 + 多文件事务性）
+- 新增 `src/utils/file-lock.js` — 进程级文件锁（多实例并发防护）
+
+### 升级：异步记忆系统
+
+- `MemoryConsolidator` 全面异步化（load/save/consolidate 全部 async/await）
+- 使用 atomicWriteJSON 替代 writeFileSync，防文件损坏
+- heartflow.js 启动时异步初始化记忆系统（不阻塞）
+
+### 修复：heartbeat CHECK_MAP
+
+- 移除 8 个已不存在模块的过时检查项
+- 替换为 8 个当前实际存在文件的检查项
+
+### 修复：版本统一
+
+- 统一 VERSION / package.json / SKILL.md / cli.js / heartbeat.js 版本至 v0.13.8
+- 修复 README.md / AGENTS.md / ARCHITECTURE.md / INTEGRATION.md / CORE_IDENTITY.md 中的过时版本号
+
+---
+
 ## v0.13.6 (2026-05-12)
 
 ### 升级：记忆系统 + 心理分析逻辑

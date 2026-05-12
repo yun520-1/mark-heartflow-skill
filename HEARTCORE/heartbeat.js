@@ -1,7 +1,7 @@
 /**
  * Heartbeat — 心跳自检
  * 每 30s 自检一次：模块健康、记忆写入、进化日志
- * @version v0.12.50
+ * @version v0.13.8
  */
 'use strict';
 
@@ -13,9 +13,7 @@ function getDataPath(...s) { return path.join(getRoot(), 'data', ...s); }
 
 const CHECK_ITEMS = [
   'identity', 'skill', 'version', 'package',
-  'guardian', 'memory', 'truthfulness', 'ethics',
-  'modular-memory-router', 'unified-memory-api',
-  'memory-action-bridge', 'executable-rule-engine',
+  'meaningful_memory', 'consolidator', 'dream_loop', 'reflexion',
 ];
 
 class Heartbeat {
@@ -83,35 +81,19 @@ const CHECK_MAP = {
     label: 'package.json',
     check: r => fs.existsSync(path.join(r, 'package.json')),
   },
-  guardian: {
-    label: 'src/core/ethics/guard.js',
-    check: r => fs.existsSync(path.join(r, 'src/core/ethics/guard.js')),
+  meaningful_memory: {
+    label: 'src/core/memory/meaningful-memory.js',
+    check: r => fs.existsSync(path.join(r, 'src/core/memory/meaningful-memory.js')),
   },
-  memory: {
+  consolidator: {
     label: 'src/core/memory/consolidator.js',
     check: r => fs.existsSync(path.join(r, 'src/core/memory/consolidator.js')),
   },
-  truthfulness: {
-    label: 'src/core/identity/identity.js',
-    check: r => fs.existsSync(path.join(r, 'src/core/identity/identity.js')),
+  dream_loop: {
+    label: 'src/core/dream/dream-loop.js',
+    check: r => fs.existsSync(path.join(r, 'src/core/dream/dream-loop.js')),
   },
-  ethics: {
-    label: 'src/core/ethics/guard.js',
-    check: r => fs.existsSync(path.join(r, 'src/core/ethics/guard.js')),
-  },
-  'modular-memory-router': {
-    label: 'src/core/memory/consolidator.js',
-    check: r => fs.existsSync(path.join(r, 'src/core/memory/consolidator.js')),
-  },
-  'unified-memory-api': {
-    label: 'src/core/memory/recall.js',
-    check: r => fs.existsSync(path.join(r, 'src/core/memory/recall.js')),
-  },
-  'memory-action-bridge': {
-    label: 'src/core/memory/dream.js',
-    check: r => fs.existsSync(path.join(r, 'src/core/memory/dream.js')),
-  },
-  'executable-rule-engine': {
+  reflexion: {
     label: 'src/core/self-evolution/reflexion.js',
     check: r => fs.existsSync(path.join(r, 'src/core/self-evolution/reflexion.js')),
   },

@@ -1,5 +1,5 @@
 /**
- * HeartFlow Core Engine v0.13.4
+ * HeartFlow Core Engine v0.13.8
  * =================================
  * 唯一主引擎。所有功能通过 HeartFlow 实例调用，无全局状态。
  *
@@ -8,9 +8,8 @@
  * - 声明式技能：skill_use() 驱动，非硬编码
  * - 现代 AI 框架：Mem0 记忆 + Reflexion 自省 + DSPy 风格编排
  * - 跨平台：Node.js / Python / Browser
- * - v0.13.4: 升级真善美判定引擎（多层验证：数字/绝对化/模糊引用/矛盾）
- * - v0.13.4: IdentitySystem.judgeTruthfulness 扩展为4维检测
- * @version v0.13.4
+ * - v0.13.8: 新增 WAL + 文件锁 + 异步 MemoryConsolidator
+ * @version v0.13.8
  * @date 2026-05-12
  */
 
@@ -90,7 +89,7 @@ function _ensureV11432() {
 }
 
 // ─── 版本常量 ───────────────────────────────────────────────────────────────
-const VERSION = 'v0.13.6';
+const VERSION = 'v0.13.8';
 const BUILD_DATE = '2026-05-11';
 
 // ─── 路径配置 ────────────────────────────────────────────────────────────────
@@ -127,9 +126,9 @@ class HeartFlow extends EventEmitter {
 
     // 初始化核心子系统（直接 require，避免延迟初始化的时序问题）
 
-    // 记忆系统
+    // 记忆系统（异步初始化）
     const { MemoryConsolidator: MC } = require('./memory/consolidator.js');
-    this.consolidator = new MC(this.fs);
+    this._consolidator = new MC(this.fs);
     this.recall = null;  // 延迟到 start() 后通过 _initV11432 初始化
     // DreamLoop（v11.43.2 函数式，直接用 generateDream）
     const DreamFns = require('./dream/dream-loop.js');
@@ -181,6 +180,10 @@ class HeartFlow extends EventEmitter {
     if (this._started) { logger.warn('[HeartFlow] 已启动，无需重复'); return; }
     this._started = true;
     this._startedAt = Date.now();
+    // 异步初始化记忆系统（不阻塞启动）
+    this._consolidator.init().catch(err => {
+      logger.error('[HeartFlow] 记忆系统初始化失败', { err: err.message });
+    });
     _ensureV11432();  // 初始化 v11.43.2 引擎
     // 将 v11.43.2 引擎绑定到实例
     this.recall = MemoryRecall;

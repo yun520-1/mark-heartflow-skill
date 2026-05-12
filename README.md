@@ -1,4 +1,4 @@
-# HeartFlow v0.13.6
+# HeartFlow v0.13.8
 
 > **AI identity framework for self-improving AI agents.**
 > 让任意 AI agent 一行命令安装，获得完整的自我升级能力。
@@ -134,7 +134,7 @@ node src/core/heartflow.js
 
 ## 与其他 AI Agent 框架对比
 
-| 能力 | HeartFlow v0.13.3 | MemGPT | AutoGPT | LangChain Agents |
+| 能力 | HeartFlow v0.13.8 | MemGPT | AutoGPT | LangChain Agents |
 |------|-------------------|--------|---------|------------------|
 | 自我反思（Reflexion） | ✅ 原生集成 | ❌ | ❌ | ❌ |
 | 迭代精化（Self-Refine） | ✅ 原生集成 | ❌ | ❌ | ❌ |
@@ -162,7 +162,7 @@ node src/core/heartflow.js
 
 3. **伦理边界**：SAGE Guardian 提供 8 维度伦理判定，但无法覆盖所有法律管辖区域。在金融、医疗、法律等专业领域使用时，请确保符合当地法规。
 
-4. **版本兼容性**：v0.13.3 基于 Node.js ESM 模块系统运行。请确认你的 Node.js 版本 >= 16，或使用 `--input-type=commonjs` 标志。
+4. **版本兼容性**：HeartFlow 基于 Node.js CommonJS 模块系统运行。请确认你的 Node.js 版本 >= 16。
 
 5. **数据隔离**：本框架默认数据存储在本地文件系统。如在多用户环境部署，请自行配置适当的文件权限。
 
@@ -200,7 +200,7 @@ node --input-type=commonjs -e "const { HeartFlow } = require('./src/core/heartfl
 
 ## 核心文件
 
-- `src/core/heartflow.js` — 唯一主引擎入口（330 行核心逻辑）
+- `src/core/heartflow.js` — 唯一主引擎入口（377 行核心逻辑）
 - `src/core/self-evolution/` — 自进化引擎（Reflexion + Self-Refine）
 - `src/core/memory/` — 三层记忆系统
 - `src/core/heartcore/` — 心跳 + 启动自检
@@ -209,7 +209,7 @@ node --input-type=commonjs -e "const { HeartFlow } = require('./src/core/heartfl
 
 ---
 
-**版本**：v0.13.3
+**版本**：v0.13.8
 **更新日期**：2026-05-11
 **GitHub**：https://github.com/yun520-1/mark-heartflow-skill
 **升级历史**：1538 次真实 commit，可通过 `git log` 验证
