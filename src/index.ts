@@ -162,9 +162,9 @@ export function createHeartFlow(config?: SupervisorConfig): HeartFlowEngine {
       security.boot();
       supervisor.boot();
 
-      globalEventBus.emit('identity:booted', 'heartflow', { version: '0.13.0' });
+      globalEventBus.emit('identity:booted', 'heartflow', { version: '0.13.8' });
       ready = true;
-      console.log('[HeartFlow] v0.13.0 boot complete — 15 engines initialized');
+      console.log('[HeartFlow] v0.13.8 boot complete — 15 engines initialized');
     },
 
     async shutdown(): Promise<void> {

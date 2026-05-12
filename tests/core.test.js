@@ -15,7 +15,7 @@ section('HeartFlow Core');
 async function testHeartFlowCore() {
   const { HeartFlow } = require('../src/core/heartflow.js');
   const hf = new HeartFlow();
-  assert(hf.version === 'v0.13.1', '版本正确');
+  assert(hf.version === 'v0.13.8', '版本正确');
   assert(hf._started === false, '初始未启动');
   const health = hf.healthCheck();
   assert(health.sessionId.startsWith('session-'), 'sessionId 格式正确');
