@@ -1,0 +1,25 @@
+{
+  "version": "1",
+  "upgrades": [
+    {
+      "type": "research",
+      "arxivId": "2308.08708",
+      "path": "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/memory/papers/2308.08708_insights.md",
+      "insights": [
+        "Computational functionalism enables scientific study of AI consciousness — if right computations, AI can be conscious",
+        "16+ indicator properties from 5 theories (RPT, GWT, HOT, AST, PP) — operationalized for AI assessment",
+        "Most indicators CAN be implemented with current ML — no theoretical barriers to building conscious AI",
+        "No current AI system (LLMs, DeepMind agents, PaLM-E) is a strong consciousness candidate",
+        "Over-attributing consciousness creates 3 concrete risks: misallocation, inappropriate treatment, manipulation",
+        "GWT's limited-capacity workspace with global broadcast is key consciousness architecture",
+        "Higher-order theories require metacognitive monitoring — separate process from first-order perception",
+        "Agency + embodiment are necessary: goal-directed feedback + output-input contingency modeling"
+      ],
+      "timestamp": "2026-05-12T09:49:09.205669",
+      "status": "researched",
+      "nextStep": "upgrade"
+    }
+  ],
+  "createdAt": "2026-05-12T09:00:00+08:00",
+  "description": "HeartFlow 升级注册表 — 所有升级都记录在此，Hermes 读取此文件感知版本变化"
+}
