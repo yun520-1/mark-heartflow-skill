@@ -1,4 +1,4 @@
-# HeartFlow v0.13.10 — Architecture
+# HeartFlow v0.13.12 — Architecture
 
 ## 设计原则
 

@@ -573,8 +573,7 @@ class EmotionEnhancement {
             emotion: this.emotionState,
             intensity: this.intensity,
             valence: this.valence,
-            arousal: this.arousal,
-            historyLength: this.em            historyLength: this.em
+            historyLength: this.emotionHistory.length
         };
     }
 }

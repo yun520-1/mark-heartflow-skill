@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * HeartFlow CLI — v0.13.10
+ * HeartFlow CLI — v0.13.12
  * Commands: setup | start | diagnose | upgrade | check
  */
 'use strict';
