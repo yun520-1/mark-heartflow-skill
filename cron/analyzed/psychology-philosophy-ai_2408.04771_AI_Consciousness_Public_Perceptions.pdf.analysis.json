@@ -1,8 +1,11 @@
 {
-  "arxivId": "psychology-philosophy-ai/2408.04771_AI_Consciousness_Public_Perceptions",
+  "arxivId": "psychology_philosophy_ai_2408_04771_AI_Consciousness_Public_Perceptions",
   "filename": "psychology-philosophy-ai/2408.04771_AI_Consciousness_Public_Perceptions.pdf",
   "keywords": {
-    "ai": [],
+    "ai": [
+      "llm",
+      "agent"
+    ],
     "memory": [
       "context",
       "store"
@@ -27,6 +30,7 @@
       "framework"
     ]
   },
+  "abstract": "AI Consciousness and Public Perceptions:\nFour Futures1\nInes Fernandez2, Nicoleta Kyosovska2, Jay Luong2,3, Gabriel Mukobi4\nAbstract\nThe discourse on risks from advancedAIsystems(“AIs”)typicallyfocusesonmisuse,\naccidents and loss of control, but the question of AIs’ moral status could have\nnegative impacts which are of comparable significance and could be realised within\nsimilar timeframes. Our paper evaluates these impacts by investigating (1) the\nfactual question of whether future advanced AI s",
   "textLength": 48779,
-  "timestamp": "2026-05-13T01:13:31.692Z"
+  "timestamp": "2026-05-13T01:34:56.444Z"
 }

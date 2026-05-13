@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.37 - 论文驱动升级
+ * HeartFlow v0.13.39 - 论文驱动升级
  * 来源: psychology_philosophy_ai_2402_15195
- * 生成时间: 2026-05-13T01:33:29.843Z
+ * 生成时间: 2026-05-13T01:35:09.681Z
  * 
  * 论文摘要: —In the field of affective computing, where research need for more versatile, accessible, and comprehensive...
  * 
@@ -19,7 +19,7 @@
 // 第一部分：核心数据结构和类型定义
 // ============================================
 
-const Paper_psychology_philosophy_ai_2402_15195_VERSION = 'v0.13.37';
+const Paper_psychology_philosophy_ai_2402_15195_VERSION = 'v0.13.39';
 const Paper_psychology_philosophy_ai_2402_15195_SOURCE = 'psychology_philosophy_ai_2402_15195';
 
 /**
@@ -138,7 +138,7 @@ class ReasoningChain_Paper_psychology_philosophy_ai_2402_15195 {
 class Paper_psychology_philosophy_ai_2402_15195_Processor {
     constructor(config = {}) {
         this.name = 'Paper_psychology_philosophy_ai_2402_15195';
-        this.version = 'v0.13.37';
+        this.version = 'v0.13.39';
         this.source = 'psychology_philosophy_ai_2402_15195';
         
         // 思想存储
@@ -489,7 +489,7 @@ class Paper_psychology_philosophy_ai_2402_15195_Processor {
     demo() {
         this.log('===== Paper_psychology_philosophy_ai_2402_15195 演示 =====');
         this.log('来源论文: psychology_philosophy_ai_2402_15195');
-        this.log('版本: v0.13.37');
+        this.log('版本: v0.13.39');
         
         // 测试思维创建
         const t1 = this.think('这是一个测试输入，包含一些推理内容 because something happened');
@@ -534,6 +534,6 @@ export default {
     MemoryEntry: MemoryEntry_Paper_psychology_philosophy_ai_2402_15195,
     ReasoningChain: ReasoningChain_Paper_psychology_philosophy_ai_2402_15195,
     Processor: Paper_psychology_philosophy_ai_2402_15195_Processor,
-    version: 'v0.13.37',
+    version: 'v0.13.39',
     source: 'psychology_philosophy_ai_2402_15195'
 };

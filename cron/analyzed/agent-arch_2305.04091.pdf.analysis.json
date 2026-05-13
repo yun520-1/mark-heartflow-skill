@@ -1,13 +1,18 @@
 {
-  "arxivId": "agent-arch/2305.04091",
+  "arxivId": "agent_arch_2305_04091",
   "filename": "agent-arch/2305.04091.pdf",
   "keywords": {
     "ai": [
       "transformer",
       "attention",
-      "language model"
+      "language model",
+      "llm",
+      "gpt",
+      "agent"
     ],
-    "memory": [],
+    "memory": [
+      "semantic"
+    ],
     "reasoning": [
       "reasoning",
       "planning",
@@ -22,6 +27,7 @@
       "system"
     ]
   },
+  "abstract": "Plan-and-Solve Prompting: Improving Zero-Shot Chain-of-Thought\nReasoning by Large Language Models\nLeiWang1 WanyuXu2 YihuaiLan ZhiqiangHu3 YunshiLan4\nRoyKa-WeiLee3 Ee-PengLim1∗\n1SingaporeManagementUniversity\n2SouthwestJiaotongUniversity\n3SingaporeUniversityofTechnologyandDesign\n4EastChinaNormalUniversity\nAbstract\n35\nLargelanguagemodels(LLMs)haverecently\n30\nbeenshowntodeliverimpressiveperformance\ninvariousNLPtasks. Totacklemulti-steprea- 25\nsoningtasks,few-shotchain-of-thought(CoT)\n20\nprompting in",
   "textLength": 48602,
-  "timestamp": "2026-05-13T01:05:35.700Z"
+  "timestamp": "2026-05-13T01:34:49.697Z"
 }

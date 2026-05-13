@@ -1,10 +1,13 @@
 {
-  "arxivId": "agent-arch/2303.11366",
+  "arxivId": "agent_arch_2303_11366",
   "filename": "agent-arch/2303.11366.pdf",
   "keywords": {
     "ai": [
       "reinforcement learning",
-      "language model"
+      "language model",
+      "llm",
+      "gpt",
+      "agent"
     ],
     "memory": [
       "memory",
@@ -12,13 +15,16 @@
       "context",
       "store",
       "recall",
-      "buffer"
+      "buffer",
+      "episodic",
+      "semantic"
     ],
     "reasoning": [
       "reasoning",
       "planning",
       "logic",
-      "inference"
+      "inference",
+      "self-correction"
     ],
     "emotion": [
       "affect"
@@ -32,6 +38,7 @@
       "framework"
     ]
   },
+  "abstract": "Reflexion: Language Agents with\nVerbal Reinforcement Learning\nNoahShinn FedericoCassano\nNortheasternUniversity NortheasternUniversity\nnoahshinn024@gmail.com cassano.f@northeastern.edu\nEdwardBerman AshwinGopinath\nNortheasternUniversity MassachusettsInstituteofTechnology\nberman.ed@northeastern.edu agopi@mit.edu\nKarthikNarasimhan ShunyuYao\nPrincetonUniversity PrincetonUniversity\nkarthikn@princeton.edu shunyuy@princeton.edu\nAbstract\nLargelanguagemodels(LLMs)havebeenincreasinglyusedtointeractwithexte",
   "textLength": 54277,
-  "timestamp": "2026-05-13T01:05:32.478Z"
+  "timestamp": "2026-05-13T01:34:46.929Z"
 }

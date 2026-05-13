@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.37 - 论文驱动升级
+ * HeartFlow v0.13.39 - 论文驱动升级
  * 来源: psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised
- * 生成时间: 2026-05-13T01:33:28.984Z
+ * 生成时间: 2026-05-13T01:35:08.803Z
  * 
  * 论文摘要: Combining Theory of Mind and Kindness for
 Self-Supervised Human-AI Alignment
@@ -26,7 +26,7 @@ Asartif...
 // 第一部分：核心数据结构和类型定义
 // ============================================
 
-const Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised_VERSION = 'v0.13.37';
+const Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised_VERSION = 'v0.13.39';
 const Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised_SOURCE = 'psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised';
 
 /**
@@ -145,7 +145,7 @@ class ReasoningChain_Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self
 class Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised_Processor {
     constructor(config = {}) {
         this.name = 'Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised';
-        this.version = 'v0.13.37';
+        this.version = 'v0.13.39';
         this.source = 'psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised';
         
         // 思想存储
@@ -496,7 +496,7 @@ class Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised_Pro
     demo() {
         this.log('===== Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised 演示 =====');
         this.log('来源论文: psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised');
-        this.log('版本: v0.13.37');
+        this.log('版本: v0.13.39');
         
         // 测试思维创建
         const t1 = this.think('这是一个测试输入，包含一些推理内容 because something happened');
@@ -541,6 +541,6 @@ export default {
     MemoryEntry: MemoryEntry_Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised,
     ReasoningChain: ReasoningChain_Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised,
     Processor: Paper_psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised_Processor,
-    version: 'v0.13.37',
+    version: 'v0.13.39',
     source: 'psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised'
 };

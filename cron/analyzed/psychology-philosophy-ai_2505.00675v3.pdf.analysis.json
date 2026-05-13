@@ -1,10 +1,13 @@
 {
-  "arxivId": "psychology-philosophy-ai/2505.00675v3",
+  "arxivId": "psychology_philosophy_ai_2505_00675v3",
   "filename": "psychology-philosophy-ai/2505.00675v3.pdf",
   "keywords": {
     "ai": [
       "transformer",
-      "attention"
+      "attention",
+      "llm",
+      "gpt",
+      "agent"
     ],
     "memory": [
       "memory",
@@ -14,7 +17,9 @@
       "recall",
       "buffer",
       "cache",
-      "persistence"
+      "persistence",
+      "episodic",
+      "semantic"
     ],
     "reasoning": [
       "reasoning",
@@ -37,6 +42,7 @@
       "pipeline"
     ]
   },
+  "abstract": "Memoryisfundamentaltolargelanguagemodel(LLM)-basedagents,butexistingsurveysemphasizeapplication-leveluse",
   "textLength": 47920,
-  "timestamp": "2026-05-13T01:13:34.048Z"
+  "timestamp": "2026-05-13T01:34:58.568Z"
 }

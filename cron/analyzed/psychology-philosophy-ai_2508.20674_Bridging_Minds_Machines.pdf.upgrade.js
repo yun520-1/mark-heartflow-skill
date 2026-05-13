@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.36 - 论文驱动升级
+ * HeartFlow v0.13.38 - 论文驱动升级
  * 来源: psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines
- * 生成时间: 2026-05-13T01:33:23.916Z
+ * 生成时间: 2026-05-13T01:35:03.752Z
  * 
  * 论文摘要: Bridging Minds and Machines:
 Toward an Integration of AI and Cognitive Science
@@ -24,7 +24,7 @@ Rui Mao1, Qian Liu2, Xiao Li3, Erik Cambria1*, Amir Hussain4
 // 第一部分：核心数据结构和类型定义
 // ============================================
 
-const Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines_VERSION = 'v0.13.36';
+const Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines_VERSION = 'v0.13.38';
 const Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines_SOURCE = 'psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines';
 
 /**
@@ -143,7 +143,7 @@ class ReasoningChain_Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Ma
 class Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines_Processor {
     constructor(config = {}) {
         this.name = 'Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines';
-        this.version = 'v0.13.36';
+        this.version = 'v0.13.38';
         this.source = 'psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines';
         
         // 思想存储
@@ -494,7 +494,7 @@ class Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines_Processo
     demo() {
         this.log('===== Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines 演示 =====');
         this.log('来源论文: psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines');
-        this.log('版本: v0.13.36');
+        this.log('版本: v0.13.38');
         
         // 测试思维创建
         const t1 = this.think('这是一个测试输入，包含一些推理内容 because something happened');
@@ -539,6 +539,6 @@ export default {
     MemoryEntry: MemoryEntry_Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines,
     ReasoningChain: ReasoningChain_Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines,
     Processor: Paper_psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines_Processor,
-    version: 'v0.13.36',
+    version: 'v0.13.38',
     source: 'psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines'
 };

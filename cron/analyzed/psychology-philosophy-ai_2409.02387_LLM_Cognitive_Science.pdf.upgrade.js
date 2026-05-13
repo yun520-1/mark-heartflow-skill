@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.36 - 论文驱动升级
+ * HeartFlow v0.13.38 - 论文驱动升级
  * 来源: psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science
- * 生成时间: 2026-05-13T01:33:27.817Z
+ * 生成时间: 2026-05-13T01:35:07.660Z
  * 
  * 论文摘要: Large Language Models and Cognitive
 Science: A Comprehensive Review of
@@ -23,7 +23,7 @@ La...
 // 第一部分：核心数据结构和类型定义
 // ============================================
 
-const Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science_VERSION = 'v0.13.36';
+const Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science_VERSION = 'v0.13.38';
 const Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science_SOURCE = 'psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science';
 
 /**
@@ -142,7 +142,7 @@ class ReasoningChain_Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Sci
 class Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science_Processor {
     constructor(config = {}) {
         this.name = 'Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science';
-        this.version = 'v0.13.36';
+        this.version = 'v0.13.38';
         this.source = 'psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science';
         
         // 思想存储
@@ -493,7 +493,7 @@ class Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science_Processor 
     demo() {
         this.log('===== Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science 演示 =====');
         this.log('来源论文: psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science');
-        this.log('版本: v0.13.36');
+        this.log('版本: v0.13.38');
         
         // 测试思维创建
         const t1 = this.think('这是一个测试输入，包含一些推理内容 because something happened');
@@ -538,6 +538,6 @@ export default {
     MemoryEntry: MemoryEntry_Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science,
     ReasoningChain: ReasoningChain_Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science,
     Processor: Paper_psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science_Processor,
-    version: 'v0.13.36',
+    version: 'v0.13.38',
     source: 'psychology_philosophy_ai_2409_02387_LLM_Cognitive_Science'
 };

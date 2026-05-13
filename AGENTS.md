@@ -72,7 +72,7 @@ HeartFlow 只是一个参考，不是标准答案。
 
 ---
 
-*HeartFlow v0.13.36 — 躯壳参考此文档，灵魂在 CORE_IDENTITY.md*
+*HeartFlow v0.13.38 — 躯壳参考此文档，灵魂在 CORE_IDENTITY.md*
 
 ---
 

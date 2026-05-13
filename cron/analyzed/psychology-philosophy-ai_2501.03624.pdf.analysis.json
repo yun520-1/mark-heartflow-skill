@@ -32,5 +32,5 @@
   },
   "abstract": "LLAMADRS: Evaluating Open-Source LLMs on Real Clinical\nInterviews—To Reason or Not to Reason?\nGaoussouYoussoufKebe1 JeffreyM.Girard2 EinatLiebenthal3,\nJustinBaker3 FernandoDelaTorre1 Louis-PhilippeMorency1\n1CarnegieMellonUniversity,SchoolofComputerScience,Pittsburgh,PA,USA\n2UniversityofKansas,DepartmentofPsychology,Lawrence,KS,USA\n3McLeanHospital,HarvardMedicalSchool,Boston,MA,USA\n{gyk,ftorre,morency}@cs.cmu.edu\njmgirard@ku.edu\n{eliebenthal,jtbaker}@partners.org\nAbstract shortageoftrainedclinici",
   "textLength": 50523,
-  "timestamp": "2026-05-13T01:30:56.417Z"
+  "timestamp": "2026-05-13T01:35:01.408Z"
 }

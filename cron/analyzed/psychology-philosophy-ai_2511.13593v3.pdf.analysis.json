@@ -1,11 +1,14 @@
 {
-  "arxivId": "psychology-philosophy-ai/2511.13593v3",
+  "arxivId": "psychology_philosophy_ai_2511_13593v3",
   "filename": "psychology-philosophy-ai/2511.13593v3.pdf",
   "keywords": {
     "ai": [
       "transformer",
       "attention",
-      "language model"
+      "language model",
+      "llm",
+      "gpt",
+      "agent"
     ],
     "memory": [
       "memory",
@@ -13,7 +16,9 @@
       "context",
       "store",
       "recall",
-      "cache"
+      "cache",
+      "episodic",
+      "semantic"
     ],
     "reasoning": [
       "reasoning",
@@ -35,6 +40,7 @@
       "pipeline"
     ]
   },
+  "abstract": "O-Mem: Omni Memory System for Personalized, Long Horizon,\nSelf-Evolving Agents\nOPPOAIAgentTeam\nAbstract\nRecentadvancementsinLLM-poweredagentshavedemonstratedsignificantpotentialingeneratinghuman-\nlike responses; however, they continue to face challenges in maintaining long-term interactions within\ncomplexenvironments,primarilyduetolimitationsincontextualconsistencyanddynamicpersonalization.\nExisting memory systems often depend on semantic grouping prior to retrieval, which can overlook\nsemantica",
   "textLength": 48231,
-  "timestamp": "2026-05-13T01:13:35.411Z"
+  "timestamp": "2026-05-13T01:34:59.698Z"
 }

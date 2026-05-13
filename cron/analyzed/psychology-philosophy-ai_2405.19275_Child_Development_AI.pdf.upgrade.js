@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.37 - 论文驱动升级
+ * HeartFlow v0.13.39 - 论文驱动升级
  * 来源: psychology_philosophy_ai_2405_19275_Child_Development_AI
- * 生成时间: 2026-05-13T01:33:31.869Z
+ * 生成时间: 2026-05-13T01:35:11.713Z
  * 
  * 论文摘要: The Future of Child Development in the AI Era:
 Cross-Disciplinary Perspectives Between AI and Child Development Experts
@@ -25,7 +25,7 @@ ABSTRACT tech...
 // 第一部分：核心数据结构和类型定义
 // ============================================
 
-const Paper_psychology_philosophy_ai_2405_19275_Child_Development_AI_VERSION = 'v0.13.37';
+const Paper_psychology_philosophy_ai_2405_19275_Child_Development_AI_VERSION = 'v0.13.39';
 const Paper_psychology_philosophy_ai_2405_19275_Child_Development_AI_SOURCE = 'psychology_philosophy_ai_2405_19275_Child_Development_AI';
 
 /**
@@ -144,7 +144,7 @@ class ReasoningChain_Paper_psychology_philosophy_ai_2405_19275_Child_Development
 class Paper_psychology_philosophy_ai_2405_19275_Child_Development_AI_Processor {
     constructor(config = {}) {
         this.name = 'Paper_psychology_philosophy_ai_2405_19275_Child_Development_AI';
-        this.version = 'v0.13.37';
+        this.version = 'v0.13.39';
         this.source = 'psychology_philosophy_ai_2405_19275_Child_Development_AI';
         
         // 思想存储
@@ -495,7 +495,7 @@ class Paper_psychology_philosophy_ai_2405_19275_Child_Development_AI_Processor {
     demo() {
         this.log('===== Paper_psychology_philosophy_ai_2405_19275_Child_Development_AI 演示 =====');
         this.log('来源论文: psychology_philosophy_ai_2405_19275_Child_Development_AI');
-        this.log('版本: v0.13.37');
+        this.log('版本: v0.13.39');
         
         // 测试思维创建
         const t1 = this.think('这是一个测试输入，包含一些推理内容 because something happened');
@@ -540,6 +540,6 @@ export default {
     MemoryEntry: MemoryEntry_Paper_psychology_philosophy_ai_2405_19275_Child_Development_AI,
     ReasoningChain: ReasoningChain_Paper_psychology_philosophy_ai_2405_19275_Child_Development_AI,
     Processor: Paper_psychology_philosophy_ai_2405_19275_Child_Development_AI_Processor,
-    version: 'v0.13.37',
+    version: 'v0.13.39',
     source: 'psychology_philosophy_ai_2405_19275_Child_Development_AI'
 };
