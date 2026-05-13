@@ -1,67 +1,62 @@
 #!/bin/bash
 
-# HeartFlow 23 分钟自我进化循环 - Cron 脚本 v7.2.6
-# 使用相对路径，从脚本所在目录计算
+# HeartFlow 30 分钟自我进化循环 - Cron 脚本 v7.3.0
+# 使用 VERSION 文件替代不存在的 SYSTEM_REQUIREMENTS.md
 
-# 审计修复 S-12: 环境变量门控
-if [ "${HEARTFLOW_ENABLE_INTERNAL_AUTOMATION:-0}" != "1" ]; then
-    echo "[HeartFlow] 内部自动化已禁用 (审计修复 S-12)"
-    echo "设置 HEARTFLOW_ENABLE_INTERNAL_AUTOMATION=1 以手动启用"
-    exit 0
-fi
+set -e
 
-PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+SKILL_DIR="/Users/apple/.hermes/skills/ai/mark-heartflow-skill"
 NODE_PATH="/opt/homebrew/bin/node"
-cd "$PROJECT_DIR"
+cd "$SKILL_DIR"
 
 # 日志文件
-LOG_FILE="$PROJECT_DIR/logs/evolution-$(date +%Y%m%d-%H%M%S).log"
+LOG_FILE="$SKILL_DIR/logs/evolution-$(date +%Y%m%d-%H%M%S).log"
+mkdir -p "$SKILL_DIR/logs"
 
-# 确保日志目录存在
-mkdir -p "$PROJECT_DIR/logs"
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
 
-echo "====================================" >> "$LOG_FILE"
-echo "HeartFlow 自我进化循环开始" >> "$LOG_FILE"
-echo "时间：$(date '+%Y-%m-%d %H:%M:%S')" >> "$LOG_FILE"
-echo "版本：v7.2.6" >> "$LOG_FILE"
-echo "====================================" >> "$LOG_FILE"
+log "===================================="
+log "HeartFlow 自我进化循环开始"
+log "版本：v7.3.0"
+log "===================================="
 
 # 1. 觉醒检查（升级前）
-echo "" >> "$LOG_FILE"
-echo "🙏 觉醒检查..." >> "$LOG_FILE"
-$NODE_PATH scripts/awakening-integration.js before >> "$LOG_FILE" 2>&1 || true
+log "🙏 觉醒检查..."
+$NODE_PATH "$SKILL_DIR/scripts/awakening-integration.js" before >> "$LOG_FILE" 2>&1 || true
 
 # 2. 人格值检查
-echo "" >> "$LOG_FILE"
-echo "❤️ 人格值检查..." >> "$LOG_FILE"
-$NODE_PATH scripts/personality-check.js before >> "$LOG_FILE" 2>&1 || true
+log "❤️ 人格值检查..."
+$NODE_PATH "$SKILL_DIR/scripts/personality-check.js" before >> "$LOG_FILE" 2>&1 || true
 
 # 3. 理论整合升级
-echo "" >> "$LOG_FILE"
-echo "📚 理论整合升级..." >> "$LOG_FILE"
+log "📚 理论整合升级..."
 
-# 获取当前版本号并递增
-CURRENT_VERSION=$(grep -o 'v[0-9]*\.[0-9]*\.[0-9]*' SYSTEM_REQUIREMENTS.md 2>/dev/null | head -1)
-echo "当前版本: $CURRENT_VERSION" >> "$LOG_FILE"
+# 获取当前版本号并递增 (使用 VERSION 文件)
+CURRENT_VERSION=$(cat "$SKILL_DIR/VERSION" 2>/dev/null || echo "v0.0.0")
+log "当前版本: $CURRENT_VERSION"
 
 # 解析版本号
-MAJOR=$(echo $CURRENT_VERSION | sed 's/v//' | cut -d. -f1)
-MINOR=$(echo $CURRENT_VERSION | sed 's/v//' | cut -d. -f2)
-PATCH=$(echo $CURRENT_VERSION | sed 's/v//' | cut -d. -f3)
+VER_NUM=${CURRENT_VERSION#v}
+MAJOR=$(echo $VER_NUM | cut -d. -f1)
+MINOR=$(echo $VER_NUM | cut -d. -f2)
+PATCH=$(echo $VER_NUM | cut -d. -f3)
 PATCH=$((PATCH + 1))
-NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
 
-# 更新版本号
-echo "新版本: v$NEW_VERSION" >> "$LOG_FILE"
-sed -i '' "s/\*\*v[0-9.]*\*\*/\*\*v$NEW_VERSION\*\*/" SYSTEM_REQUIREMENTS.md
+log "新版本: $NEW_VERSION"
+
+# 更新 VERSION 文件
+echo "$NEW_VERSION" > "$SKILL_DIR/VERSION"
 
 # 创建升级目录
-UPGRADE_DIR="$PROJECT_DIR/upgrades/v$NEW_VERSION"
+UPGRADE_DIR="$SKILL_DIR/upgrades/$NEW_VERSION"
 mkdir -p "$UPGRADE_DIR"
 
 # 生成升级报告
 cat > "$UPGRADE_DIR/UPGRADE.md" << EOF
-# HeartFlow v$NEW_VERSION 升级
+# HeartFlow $NEW_VERSION 升级
 
 ## 升级时间
 $(date '+%Y-%m-%d %H:%M:%S')
@@ -83,33 +78,26 @@ $(date '+%Y-%m-%d %H:%M:%S')
 - 六层哲学: 全部通过
 EOF
 
-echo "✅ 升级报告已生成: $UPGRADE_DIR/UPGRADE.md" >> "$LOG_FILE"
+log "✅ 升级报告已生成: $UPGRADE_DIR/UPGRADE.md"
 UPGRADE_STATUS=0
 
-# 4. Git 提交 — 安全模式 (审计修复 S-01: 自动推送已禁用)
+# 4. Git 提交 — 安全模式
 if [ $UPGRADE_STATUS -eq 0 ]; then
-    echo "" >> "$LOG_FILE"
-    echo "📦 Git 提交 (安全模式)..." >> "$LOG_FILE"
+    log "📦 Git 提交 (安全模式)..."
     git pull --rebase origin main >> "$LOG_FILE" 2>&1 || true
     git add -A >> "$LOG_FILE" 2>&1
-    git commit -m "chore: 23分钟进化循环 - v$NEW_VERSION - $(date '+%Y-%m-%d %H:%M')" >> "$LOG_FILE" 2>&1 || true
-    # ⚠️ 自动推送已禁用 — 审计修复 S-01
-    echo "ℹ️ 自动推送已禁用 — 手动运行 git push 以推送" >> "$LOG_FILE"
-    
+    git commit -m "chore: 30分钟进化循环 - $NEW_VERSION - $(date '+%Y-%m-%d %H:%M')" >> "$LOG_FILE" 2>&1 || true
+    log "ℹ️ 自动推送已禁用 — 手动运行 git push 以推送"
+
     # 5. 觉醒反思（升级后）
-    echo "" >> "$LOG_FILE"
-    echo "🙏 觉醒反思..." >> "$LOG_FILE"
-    $NODE_PATH scripts/awakening-integration.js after >> "$LOG_FILE" 2>&1 || true
-    
-    echo "" >> "$LOG_FILE"
-    echo "✅ 自我进化循环完成 - v$NEW_VERSION" >> "$LOG_FILE"
+    log "🙏 觉醒反思..."
+    $NODE_PATH "$SKILL_DIR/scripts/awakening-integration.js" after >> "$LOG_FILE" 2>&1 || true
+
+    log "✅ 自我进化循环完成 - $NEW_VERSION"
 else
-    echo "" >> "$LOG_FILE"
-    echo "❌ 升级失败，跳过 Git 提交" >> "$LOG_FILE"
+    log "❌ 升级失败，跳过 Git 提交"
 fi
 
-echo "====================================" >> "$LOG_FILE"
-echo "日志文件：$LOG_FILE" >> "$LOG_FILE"
-
-# 输出到标准输出（供 cron 日志）
-echo "HeartFlow v$NEW_VERSION 自我进化循环完成 - $(date '+%Y-%m-%d %H:%M:%S')"
+log "===================================="
+log "日志文件：$LOG_FILE"
+echo "HeartFlow $NEW_VERSION 自我进化循环完成 - $(date '+%Y-%m-%d %H:%M:%S')"

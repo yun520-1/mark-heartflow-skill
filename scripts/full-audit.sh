@@ -24,7 +24,6 @@ REQUIRED_DIRS=(
     "src/core"
     "src/agent"
     "src/runtime"
-    "src/orchestrator"
     "upgrades"
     "cron"
     "logs"
