@@ -22,8 +22,15 @@ import { randomUUID } from 'crypto';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const SKILL_DIR = '/Users/apple/.hermes/skills/ai/mark-heartflow-skill';
-const PAPERS_DIR = '/Users/apple/Downloads/daima';
+// 动态路径：支持跨平台
+const SKILL_DIR = existsSync(join(__dirname, '..'))
+    ? join(__dirname, '..')
+    : process.env.HOME
+        ? join(process.env.HOME, '.hermes', 'skills', 'ai', 'mark-heartflow-skill')
+        : '/Users/apple/.hermes/skills/ai/mark-heartflow-skill';
+
+const PAPERS_DIR = process.env.HF_PAPERS_DIR
+    || (process.env.HOME ? join(process.env.HOME, 'Downloads', 'daima') : '/Users/apple/Downloads/daima');
 const QUEUE_FILE = join(SKILL_DIR, 'cron', 'paper-upgrade-queue.json');
 const ANALYZED_DIR = join(SKILL_DIR, 'cron', 'analyzed');
 const UPGRADES_DIR = join(SKILL_DIR, 'upgrades');
@@ -68,26 +75,69 @@ function getUnreadPapers(queue) {
     return queue.papers.filter(p => !queue.papersRead.includes(p));
 }
 
+/**
+ * 从 PDF 提取文本（安全版）
+ * 使用临时文件传递路径，避免 shell 注入
+ */
 function extractText(pdfPath) {
     try {
-        const result = spawnSync('python3', ['-c', `
-import pdfplumber
-import sys
-try:
-    with pdfplumber.open("${pdfPath.replace(/"/g, '\\"')}") as pdf:
-        text = ""
-        for page in pdf.pages[:15]:
-            t = page.extract_text()
-            if t: text += t + "\\n"
-        print(text[:80000] if text else "")
-except Exception as e:
-    print("ERROR:", str(e), file=sys.stderr)
-    sys.exit(1)
-`], { encoding: 'utf-8', maxBuffer: 50 * 1024 * 1024, timeout: 120000 });
+        // 安全：只取文件名，拒绝路径遍历
+        const safeBasename = pdfPath.split('/').pop().replace(/[^a-zA-Z0-9._-]/g, '_');
+        const tmpScript = join('/tmp', `hf_pdf_${randomUUID()}.py`);
+
+        const script = [
+            'import pdfplumber',
+            'import sys',
+            `with pdfplumber.open("${safeBasename}") as pdf:`,
+            '    text = ""',
+            '    for page in pdf.pages[:15]:',
+            '        t = page.extract_text()',
+            '        if t: text += t + "\\n"',
+            '    print(text[:80000] if text else "")',
+        ].join('\n');
+
+        writeFileSync(tmpScript, script);
+
+        const result = spawnSync('python3', [tmpScript], {
+            encoding: 'utf-8',
+            maxBuffer: 50 * 1024 * 1024,
+            timeout: 120000,
+            cwd: PAPERS_DIR,  // 限制工作目录
+        });
+
+        unlinkSync(tmpScript);
         return result.stdout || '';
     } catch (e) {
         log('[错误] PDF提取失败: ' + e.message);
         return '';
+    }
+}
+
+const ALLOWED_DOMAINS = ['arxiv.org', 'export.arxiv.org'];
+
+/**
+ * 阻止 X/代码注入：转义模板字符串特殊字符
+ */
+function safeString(str) {
+    if (!str) return '';
+    return str
+        .replace(/\\/g, '\\\\')
+        .replace(/`/g, '\\`')
+        .replace(/\$/g, '\\$');
+}
+
+/**
+ * URL 白名单验证（防 SSRF ）
+ */
+function validateUrl(url) {
+    try {
+        const u = new URL(url);
+        if (!ALLOWED_DOMAINS.includes(u.hostname)) {
+            throw new Error(`SSRF blocked: ${u.hostname}`);
+        }
+        return true;
+    } catch {
+        return false;
     }
 }
 
@@ -128,7 +178,12 @@ function generateUpgradeCode(analysis, version) {
     const procName = 'Paper_' + arxivId.replace(/[^a-zA-Z0-9]/g, '_');
     const cats = Object.entries(keywords).filter(([_, v]) => v.length > 0);
     const types = JSON.stringify(Object.keys(keywords).filter(k => keywords[k].length > 0));
-    
+
+    // 安全：转义所有用户输入（来自论文内容）
+    const safeAbstract = safeString(abstract.substring(0, 200));
+    const safeArxivId = safeString(arxivId);
+    const safeProcName = procName.replace(/[^a-zA-Z0-9_]/g, '_');
+
     // 论文核心关键词用于生成针对性代码
     const coreConcepts = [];
     if (keywords.memory.length > 0) coreConcepts.push('MEMORY_SYSTEM');
@@ -136,21 +191,21 @@ function generateUpgradeCode(analysis, version) {
     if (keywords.emotion.length > 0) coreConcepts.push('EMOTION_PROCESSOR');
     if (keywords.consciousness.length > 0) coreConcepts.push('CONSCIOUSNESS_MODULE');
     if (keywords.ai.length > 0) coreConcepts.push('AGENT_CORE');
-    
-    const conceptsStr = coreConcepts.join("', '");
+
+    const conceptsStr = coreConcepts.map(safeString).join("', '");
     
     // 生成 300+ 行代码
     const code = `/**
  * HeartFlow ${version} - 论文驱动升级
- * 来源: ${arxivId}
+ * 来源: ${safeArxivId}
  * 生成时间: ${new Date().toISOString()}
- * 
- * 论文摘要: ${abstract.substring(0, 200)}...
- * 
+ *
+ * 论文摘要: ${safeAbstract}...
+ *
  * 检测到的模式:
-${cats.map(([k, v]) => ` *   - ${k}: ${v.slice(0, 5).join(', ')}`).join('\n')}
- * 
- * 核心概念: ${coreConcepts.join(', ')}
+${cats.map(([k, v]) => ` *   - ${safeString(k)}: ${safeString(v.slice(0, 5).join(', '))}`).join('\n')}
+ *
+ * 核心概念: ${coreConcepts.map(safeString).join(', ')}
  */
 
 // ============================================
