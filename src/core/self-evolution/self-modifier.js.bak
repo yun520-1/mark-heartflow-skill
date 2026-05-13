@@ -58,45 +58,21 @@ class SelfModifier {
    * @param {object} suggestion - { file, find, replace, type, description }
    * @returns {object} { success, action, patchFile, reason, etc. }
    */
-  /**
-   * 元认知自我修改 - 生成补丁，人工审批后才生效
-   * 永远不自动应用，必须人工确认
-   * @version v0.13.2-FIXED
-   */
   applyModification(suggestion) {
-    // 安全模式：始终只生成补丁，不自动应用
-    // 历史证明自动应用会导致 OS 二进制文件被修改（27,592 行注入）
-    const SAFE_MODE = true;
-    const SAFE_PATHS = ['/bin/', '/usr/bin/', '/sbin/', '/usr/sbin/', '/etc/', '/System/', '/Library/'];
-
-    if (!this.enabled) {
+    const gateEnabled = process.env.HEARTFLOW_ENABLE_SELF_MODIFICATION === '1';
+    if (!this.enabled || !gateEnabled) {
       return {
         success: false,
         reason: 'self_modification_disabled',
-        action: 'patch_generated_only',
+        action: 'generate_patch_only',
         enabled: this.enabled,
-        safeMode: SAFE_MODE
+        gateEnabled
       };
     }
 
     const parsed = this.parseSuggestion(suggestion);
     if (!parsed) {
       return { success: false, reason: 'cannot_parse_suggestion' };
-    }
-
-    const fullPath = path.join(this.projectRoot, parsed.file);
-
-    // 危险路径拦截：禁止修改 OS 系统级路径
-    const isDangerous = SAFE_PATHS.some(dp => fullPath.startsWith(dp));
-    if (isDangerous) {
-      this.log(`[SECURITY BLOCK] 拒绝修改危险路径: ${fullPath}`);
-      return {
-        success: false,
-        reason: 'dangerous_path_blocked',
-        path: fullPath,
-        blocked: true,
-        safeMode: SAFE_MODE
-      };
     }
 
     const filePath = path.join(this.projectRoot, parsed.file);
@@ -114,9 +90,10 @@ class SelfModifier {
     const patchFileName = `self-mod-${Date.now()}.patch`;
     const patchPath = path.join(this.patchDir, patchFileName);
     const patch = this.generatePatch(originalContent, modifiedContent, parsed, patchFileName);
-
-    // 始终写补丁（不依赖 gateEnabled）
-    this.fs.writeFileSync(patchPath, patch);
+    
+    if (process.env.HEARTFLOW_ENABLE_SELF_MODIFICATION === '1') {
+      this.fs.writeFileSync(patchPath, patch);
+    }
 
     this.recordChange({
       file: parsed.file,
@@ -124,23 +101,18 @@ class SelfModifier {
       timestamp: new Date().toISOString(),
       action: 'patch_generated',
       patchFile: patchFileName,
-      requiresApproval: true,   // 强制人工审批
-      safeMode: SAFE_MODE
+      requiresApproval: true
     });
 
-    this.log(`[PATCH READY] ${patchFileName} - 需要人工审批后才能应用`);
+    this.log(`Patch generated: ${patchFileName}`);
 
     return {
       success: true,
       action: 'patch_generated',
       patchFile: patchFileName,
       patchPath,
-      requiresApproval: true,    // 强制人工审批
-      safeMode: SAFE_MODE,
-      instructions: `请审查补丁后手动应用:
-  1. 查看补丁: cat patches/${patchFileName}
-  2. 应用补丁: cd ~/.hermes/skills/ai/mark-heartflow-skill && patch -p1 < patches/${patchFileName}
-  3. 撤销: patch -R < patches/${patchFileName}`
+      requiresApproval: true,
+      instructions: `请审查补丁后手动应用: patch -p1 < patches/${patchFileName}`
     };
   }
 

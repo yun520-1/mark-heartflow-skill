@@ -1,0 +1,35 @@
+{
+  "arxivId": "psychology_philosophy_ai_2310_20689_Learning_From_Mistakes",
+  "filename": "psychology-philosophy-ai/2310.20689_Learning_From_Mistakes.pdf",
+  "keywords": {
+    "ai": [
+      "transformer",
+      "attention",
+      "language model",
+      "llm",
+      "gpt",
+      "agent"
+    ],
+    "memory": [
+      "memory",
+      "store"
+    ],
+    "reasoning": [
+      "reasoning",
+      "planning",
+      "logic",
+      "inference",
+      "verifier"
+    ],
+    "emotion": [],
+    "consciousness": [],
+    "architecture": [
+      "system",
+      "framework",
+      "pipeline"
+    ]
+  },
+  "abstract": "Preprint.\nLearning From Mistakes Makes LLM Better Reasoner\nShengnanAn∗♢,♣, ZexiongMa∗♡,♣, ZeqiLin†♣,NanningZheng†♢,\nJian-GuangLou♣, WeizhuChen♣\n♢IAIR,Xi’anJiaotongUniversity, ♣MicrosoftCorporation, ♡PekingUniversity\n♢{an1006634493@stu, nnzheng@mail}.xjtu.edu.cn,\n♡mazexiong@stu.pku.edu.cn,♣{Zeqi.Lin, jlou, wzchen}@microsoft.com\nAbstract\nLargelanguagemodels(LLMs)recentlyexhibitedremarkablereasoning\ncapabilitiesonsolvingmathproblems. Tofurtherimprovetheirreasoning\ncapabilities,thisworkexploreswheth",
+  "textLength": 47701,
+  "timestamp": "2026-05-13T02:41:47.036Z"
+}
