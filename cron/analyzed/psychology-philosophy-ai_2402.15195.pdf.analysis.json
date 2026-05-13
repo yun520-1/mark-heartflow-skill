@@ -1,14 +1,16 @@
 {
-  "arxivId": "psychology-philosophy-ai/2402.15195",
+  "arxivId": "psychology_philosophy_ai_2402_15195",
   "filename": "psychology-philosophy-ai/2402.15195.pdf",
   "keywords": {
     "ai": [
       "neural network",
       "transformer",
-      "attention"
+      "attention",
+      "agent"
     ],
     "memory": [
-      "context"
+      "context",
+      "semantic"
     ],
     "reasoning": [
       "reasoning",
@@ -31,6 +33,7 @@
       "pipeline"
     ]
   },
+  "abstract": "—In the field of affective computing, where research need for more versatile, accessible, and comprehensive",
   "textLength": 43503,
-  "timestamp": "2026-05-13T01:03:02.063Z"
+  "timestamp": "2026-05-13T01:33:29.842Z"
 }

@@ -1,16 +1,20 @@
 {
-  "arxivId": "psychology-philosophy-ai/2309.15402_Chain_of_Thought",
+  "arxivId": "psychology_philosophy_ai_2309_15402_Chain_of_Thought",
   "filename": "psychology-philosophy-ai/2309.15402_Chain_of_Thought.pdf",
   "keywords": {
     "ai": [
       "transformer",
       "attention",
-      "language model"
+      "language model",
+      "llm",
+      "gpt",
+      "agent"
     ],
     "memory": [
       "memory",
       "retrieval",
-      "context"
+      "context",
+      "semantic"
     ],
     "reasoning": [
       "reasoning",
@@ -18,7 +22,8 @@
       "chain of thought",
       "logic",
       "inference",
-      "problem solving"
+      "problem solving",
+      "verifier"
     ],
     "emotion": [
       "sentiment"
@@ -30,6 +35,7 @@
       "framework"
     ]
   },
+  "abstract": "Navigate through Enigmatic Labyrinth\nA Survey of Chain of Thought Reasoning: Advances, Frontiers and Future\nZhengChu1*,JingchangChen1*,QianglongChen2*,WeijiangYu2,TaoHe1\nHaotianWang1,WeihuaPeng2,MingLiu1,3†,BingQin1,3,TingLiu1\n1HarbinInstituteofTechnology,Harbin,China\n2HuaweiInc.,Shenzhen,China\n3PengChengLaboratory,Shenzhen,China\n{zchu,jcchen,mliu}@ir.hit.edu.cn, chenqianglong.ai@gmail.com\nAbstract\nDid Aristotle use a laptop? 1. Aristotle (384–322 BC)\nlives in Ancient Greek.\n2. The first laptop ",
   "textLength": 65839,
-  "timestamp": "2026-05-13T01:02:57.400Z"
+  "timestamp": "2026-05-13T01:33:25.693Z"
 }

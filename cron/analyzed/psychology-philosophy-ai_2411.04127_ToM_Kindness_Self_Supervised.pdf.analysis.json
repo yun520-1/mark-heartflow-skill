@@ -1,12 +1,15 @@
 {
-  "arxivId": "psychology-philosophy-ai/2411.04127_ToM_Kindness_Self_Supervised",
+  "arxivId": "psychology_philosophy_ai_2411_04127_ToM_Kindness_Self_Supervised",
   "filename": "psychology-philosophy-ai/2411.04127_ToM_Kindness_Self_Supervised.pdf",
   "keywords": {
     "ai": [
       "reinforcement learning",
       "transformer",
       "attention",
-      "language model"
+      "language model",
+      "llm",
+      "gpt",
+      "agent"
     ],
     "memory": [
       "context"
@@ -19,7 +22,8 @@
     "emotion": [
       "emotion",
       "affect",
-      "feeling"
+      "feeling",
+      "empathy"
     ],
     "consciousness": [],
     "architecture": [
@@ -29,6 +33,7 @@
       "framework"
     ]
   },
+  "abstract": "Combining Theory of Mind and Kindness for\nSelf-Supervised Human-AI Alignment\nJoshuaT.S.Hewson\nBrownUniversity,CarneyInstituteforBrainScience\nProvidence,RI02912\njoshua_hewson@brown.edu\nAbstract\nAsartificialintelligence(AI)becomesdeeplyintegratedintocriticalinfrastruc-\nturesandeverydaylife,ensuringitssafedeploymentisoneofhumanity’smost\nurgent challenges. Current AI models prioritize task optimization over safety,\nleading to risks of unintended harm. These risks are difficult to address due to\nthec",
   "textLength": 45737,
-  "timestamp": "2026-05-13T01:03:01.027Z"
+  "timestamp": "2026-05-13T01:33:28.984Z"
 }

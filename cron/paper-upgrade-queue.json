@@ -1,6 +1,6 @@
 {
-  "currentVersion": "v0.13.34",
-  "nextVersion": "v0.13.35",
+  "currentVersion": "v0.13.36",
+  "nextVersion": "v0.13.37",
   "papersDir": "/Users/apple/Downloads/daima",
   "skillDir": "/Users/apple/.hermes/skills/ai/mark-heartflow-skill",
   "papers": [
@@ -54,12 +54,19 @@
     "psychology-philosophy-ai/2505.00675v3.pdf",
     "psychology-philosophy-ai/2511.13593v3.pdf",
     "psychology-philosophy-ai/2501.03624.pdf",
-    "psychology-philosophy-ai/2504.21184_AffectEval.pdf"
+    "psychology-philosophy-ai/2504.21184_AffectEval.pdf",
+    "psychology-philosophy-ai/2508.20674_Bridging_Minds_Machines.pdf",
+    "psychology-philosophy-ai/2309.15402_Chain_of_Thought.pdf",
+    "psychology-philosophy-ai/2310.09297_Understanding_AI_Cognition.pdf",
+    "psychology-philosophy-ai/2409.02387_LLM_Cognitive_Science.pdf",
+    "psychology-philosophy-ai/2411.04127_ToM_Kindness_Self_Supervised.pdf",
+    "psychology-philosophy-ai/2402.15195.pdf",
+    "psychology-philosophy-ai/2405.19275_Child_Development_AI.pdf"
   ],
   "papersIndex": 28,
-  "lastUpgradeDate": "2026-05-13T01:13:35.412Z",
-  "upgradeCount": 34,
-  "totalCodeAdded": 28378,
+  "lastUpgradeDate": "2026-05-13T01:33:27.818Z",
+  "upgradeCount": 35,
+  "totalCodeAdded": 29467,
   "changelog": [
     "2026-05-13: 初始化 v2.0.0 runner，处理 2 篇新论文"
   ],

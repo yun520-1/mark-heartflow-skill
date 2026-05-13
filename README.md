@@ -1,4 +1,4 @@
-# HeartFlow v0.13.34
+# HeartFlow v0.13.36
 
 > **AI identity framework for self-improving AI agents.**
 > 让任意 AI agent 一行命令安装，获得完整的自我升级能力。
@@ -134,7 +134,7 @@ node src/core/heartflow.js
 
 ## 与其他 AI Agent 框架对比
 
-| 能力 | HeartFlow v0.13.34 | MemGPT | AutoGPT | LangChain Agents |
+| 能力 | HeartFlow v0.13.37 | MemGPT | AutoGPT | LangChain Agents |
 |------|-------------------|--------|---------|------------------|
 | 自我反思（Reflexion） | ✅ 原生集成 | ❌ | ❌ | ❌ |
 | 迭代精化（Self-Refine） | ✅ 原生集成 | ❌ | ❌ | ❌ |
@@ -209,7 +209,7 @@ node --input-type=commonjs -e "const { HeartFlow } = require('./src/core/heartfl
 
 ---
 
-**版本**：v0.13.34
+**版本**：v0.13.37
 **更新日期**：2026-05-11
 **GitHub**：https://github.com/yun520-1/mark-heartflow-skill
 **升级历史**：1538 次真实 commit，可通过 `git log` 验证
