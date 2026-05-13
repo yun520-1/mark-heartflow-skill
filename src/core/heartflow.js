@@ -36,7 +36,7 @@ var DreamLoopModule, EmotionEngine, SelfHealing, CognitiveEngine;
 var ExperienceReplay, KnowledgeGraph, TrialityMemory;
 var Agents, Autonomy, Consciousness, Ethics;
 var Reflexion, SelfRefine, IdentitySystem, MemoryConsolidator;
-var MemoryRecall, EthicsGuard;
+var MemoryRecall, EthicsGuard, PapersBridge;
 
 // 具身认知与情感类 (Top-level require for constructor)
 const { EmbodiedCore } = require('./embodied/embodied-core.js');
@@ -82,7 +82,13 @@ function _initV11432() {
   var mr = require('./memory/recall.js');
   MemoryRecall = mr.recallMemories || mr.recallMemoriesEnhanced || mr;
   EthicsGuard = require('./ethics/guard.js');
-    _v11432Ready = true;
+
+  // ─── Papers Bridge（8个Python模块的Node.js桥接）────────────
+  PapersBridge = require('./papers/papers-index.js');
+  // probe一次确保所有Python模块可用
+  PapersBridge.probeAll();
+
+  _v11432Ready = true;
     logger.info(`[HeartFlow] v${VERSION} 引擎已加载`);
 }
 
@@ -227,6 +233,18 @@ class HeartFlow extends EventEmitter {
     this.ethics = Ethics;
     this.dream.enabled = true;
     this.dream.lastDreamAt = Date.now();
+    // Papers Bridge — 8 Python modules via Node.js bridge
+    this.papers = {
+      bridge: PapersBridge,
+      dream: new PapersBridge.DreamGenerator(),
+      sleep: new PapersBridge.SleepCycleSimulator(),
+      consolidator: new PapersBridge.MemoryConsolidator(),
+      episodic: new PapersBridge.EpisodicMemory(),
+      emotionBridge: new PapersBridge.EmotionMemoryBridge(),
+      reflection: new PapersBridge.ReflectionEngine(),
+      planner: new PapersBridge.MemoryPlanner(),
+      verifier: new PapersBridge.AttentionLogicVerifier(),
+    };
     // ─── HEARTCORE v2 启动 ───────────────────────────────────
     this.heartbeat.start();
     this.sleepWake.start();
@@ -442,6 +460,12 @@ class HeartFlow extends EventEmitter {
         patterns: this.reflexion.getAllPatterns().length,
       },
       skills: this.registry.list().length,
+      papers: {
+        bridge: 'papers-index.js',
+        modules: this.papers ? Object.fromEntries(
+          Object.entries(this.papers).filter(([k]) => k !== 'bridge').map(([k, v]) => [k, v ? 'OK' : 'FAIL'])
+        ) : {},
+      },
     };
   }
 }
