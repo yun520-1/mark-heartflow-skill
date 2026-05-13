@@ -24,13 +24,18 @@ function extractText(pdfPath) {
     try {
         const result = spawnSync('python3', ['-c', `
 import pdfplumber
-with pdfplumber.open("${pdfPath.replace(/"/g, '\\"')}") as pdf:
-    text = ""
-    for page in pdf.pages[:15]:
-        t = page.extract_text()
-        if t: text += t + "\\n"
-    print(text[:80000] if text else "")
-`], { encoding: 'utf-8', maxBuffer: 50*1024*1024 });
+import sys
+try:
+    with pdfplumber.open("${pdfPath.replace(/"/g, '\\"')}") as pdf:
+        text = ""
+        for page in pdf.pages[:15]:
+            t = page.extract_text()
+            if t: text += t + "\\n"
+        print(text[:80000] if text else "")
+except Exception as e:
+    print("ERROR:", str(e), file=sys.stderr)
+    sys.exit(1)
+`], { encoding: 'utf-8', maxBuffer: 50*1024*1024, timeout: 60000 });
         return result.stdout || '';
     } catch (e) { log('[错误] PDF提取失败: ' + e.message); return ''; }
 }

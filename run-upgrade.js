@@ -6,6 +6,7 @@ var PAPER_DIR='/Users/apple/Downloads/daima';
 var STATE_FILE=path.join(SKILL_DIR,'upgrade-state.json');
 var LOG_FILE=path.join(SKILL_DIR,'auto-upgrade.log');
 var CORE_DIR=path.join(SKILL_DIR,'src','core');
+var NL='\n';
 function log(m){console.log('['+new Date().toISOString()+'] '+m);fs.appendFileSync(LOG_FILE,'['+new Date().toISOString()+'] '+m+String.fromCharCode(10));}
 function loadState(){if(fs.existsSync(STATE_FILE))return JSON.parse(fs.readFileSync(STATE_FILE,'utf8'));return{currentVersion:'0.13.8',lastUpgrade:null,papersProcessed:[],papersIndex:0,papersTotal:33,upgradeHistory:[],codeModulesCreated:[],errors:[],githubAudits:[]};}
 function saveState(s){fs.writeFileSync(STATE_FILE,JSON.stringify(s,null,2));}
@@ -30,7 +31,8 @@ c += "Conscious"+sfx+".prototype.computeAttention=function(query){var qLen=query
 c += "Conscious"+sfx+".prototype.updatePolicy=function(state,action,reward){this.rewardSignal=reward;var key=state+':'+action;if(!this.policy[key])this.policy[key]=0;this.policy[key]+=this.learningRate*(reward-this.policy[key]);return this.policy[key];};"+NL;
 c += 'Conscious'+sfx+".prototype.getLog=function(){return this.metacognitiveLog.slice(-100);};"+NL;
 c += 'Conscious'+sfx+'.prototype.reset=function(){this.awareness=0.0;this.focus=null;this.reflections=[];this.usedBudget=0;this.metacognitiveLog=[];this.policy={};};'+NL;
-c += 'module.exports.Conscious'+sfx+'=Conscious'+sfx+';'+NL+'return c;}'+NL;
+c += 'module.exports.Conscious'+sfx+'=Conscious'+sfx+';'
+'return c;}'+NL;
 function genEmotion(sfx){var c='';
 c += '// Emotion Engine\nfunction Emotion'+sfx+'(cfg){this.valence=0.0;this.arousal=0.0;this.dominance=0.0;this.currentEmotion=\'neutral\';this.emotionHistory=[];this.intensityThreshold=(cfg&&cfg.intensityThreshold)||0.3;this.decayRate=(cfg&&cfg.decayRate)||0.95;this.affectNet={};this.mood=0.0;this.emotions=[\'joy\',\'sadness\',\'anger\',\'fear\',\'surprise\',\'disgust\',\'trust\',\'anticipation\'];this.emotionWeights={joy:1,sadness:-0.8,anger:-0.6,fear:-0.7,surprise:0.5,disgust:-0.5,trust:0.6,anticipation:0.4};this.latentDrives={};this.emotionRegulation={};this.affectBreve={positive:0,negative:0}}'+NL;
 c += 'Emotion'+sfx+".prototype.feel=function(emotion,intensity){if(intensity===undefined)intensity=0.5;intensity=Math.max(0,Math.min(1,intensity));this.emotionHistory.push({emotion:emotion,intensity:intensity,ts:Date.now()});if(intensity>this.intensityThreshold){this.currentEmotion=emotion;this.updateVAD(emotion,intensity);this.affectBreve[emotion in this.emotionWeights&&this.emotionWeights[emotion]>0?'positive':'negative']+=intensity;}};"+NL;
@@ -43,4 +45,5 @@ c += 'Emotion'+sfx+".prototype.regulation=function(strategy){this.emotionRegulat
 c += 'Emotion'+sfx+".prototype.simulateAffect=function(prompt){var sentiment=0;if(prompt.indexOf('good')>=0||prompt.indexOf('great')>=0||prompt.indexOf('happy')>=0)sentiment=0.6;else if(prompt.indexOf('bad')>=0||prompt.indexOf('sad')>=0||prompt.indexOf('angry')>=0)sentiment=-0.5;this.valence=(this.valence*0.9+sentiment*0.1);this.arousal=Math.abs(this.valence);};"+NL;
 c += 'Emotion'+sfx+".prototype.getHistory=function(n){return this.emotionHistory.slice(-(n||50));};"+NL;
 c += 'Emotion'+sfx+'.prototype.reset=function(){this.valence=0.0;this.arousal=0.0;this.dominance=0.0;this.currentEmotion=\'neutral\';this.emotionHistory=[];this.affectBreve={positive:0,negative:0};this.emotionRegulation={};};'+NL;
-c += 'module.exports.Emotion'+sfx+'=Emotion'+sfx+';'+NL+'return c;}'+NL;
+c += 'module.exports.Emotion'+sfx+'=Emotion'+sfx+';'
+'return c;}'+NL;
