@@ -41,6 +41,10 @@ var MemoryRecall, EthicsGuard;
 // 具身认知与情感类 (Top-level require for constructor)
 const { EmbodiedCore } = require('./embodied/embodied-core.js');
 const { DeepEmotion } = require('./emotion/deep-emotion.js');
+const { EmotionStates, createEmotionState } = require('./emotion/EmotionStates.js');
+const { transition } = require('./emotion/EmotionTransition.js');
+const { getStyleGuide, generateStyleDirective } = require('./emotion/ResponseStyle.js');
+const { detectEmotionNeed } = require('./emotion/EmotionTrigger.js');
 const FlowPredictor = require('./autonomy/flow-predictor.js');
 
 // ─── 工具层（v11.43.2）────────────────────────────────────────────────────
@@ -185,6 +189,12 @@ class HeartFlow extends EventEmitter {
     this.deepEmotion = new DeepEmotion(this.fs.root);
     this.flowPredictor = FlowPredictor.flowPredictor;
 
+    // 表层情感系统（与 DeepEmotion 共存）
+    this.surfaceEmotion = {
+      current: null,
+      history: []
+    };
+
     logger.info(`[HeartFlow] ${VERSION} 初始化完成`);
   }
 
@@ -274,12 +284,51 @@ class HeartFlow extends EventEmitter {
     // 4. 真善美判定
     result.truthCheck = await this.identity.judgeTruthfulness(input);
 
-    // 5. 技能路由（声明式）
+    // 5. 表层情感检测与响应风格注入
+    const emotionNeed = detectEmotionNeed(input);
+    if (emotionNeed.needsEmotion || this.surfaceEmotion.current) {
+      const padState = this.deepEmotion.state.dimensions;
+      const trans = transition(input, padState, this.surfaceEmotion.current);
+      const newState = createEmotionState(trans.to, trans.intensity);
+      this._updateSurfaceEmotion(newState);
+      const style = getStyleGuide(trans.to, trans.intensity);
+      result.surfaceEmotion = {
+        emotion: trans.to,
+        intensity: trans.intensity,
+        styleGuide: style,
+        styleDirective: generateStyleDirective(trans.to, trans.intensity),
+        from: trans.from,
+        triggers: trans.triggers
+      };
+    }
+
+    // 6. 技能路由（声明式）
     const skillResults = await this._routeSkills(input);
     if (skillResults.length > 0) result.skills = skillResults;
 
     result.latency = Date.now() - start;
     return result;
+  }
+
+  /**
+   * 更新表层情感状态（含历史记录）
+   */
+  _updateSurfaceEmotion(newState) {
+    this.surfaceEmotion.history.push({
+      ...this.surfaceEmotion.current,
+      endedAt: new Date().toISOString()
+    });
+    this.surfaceEmotion.current = newState;
+    if (this.surfaceEmotion.history.length > 20) {
+      this.surfaceEmotion.history.shift();
+    }
+  }
+
+  /**
+   * 获取表层情感状态
+   */
+  getSurfaceEmotion() {
+    return this.surfaceEmotion.current;
   }
 
   /**
