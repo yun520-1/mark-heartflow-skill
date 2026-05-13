@@ -30,7 +30,7 @@ const {
   globalToolRegistry,
 } = require('./heartcore/index.js');
 
-// ─── v11.43.2 引擎变量声明（严格模式必须先声明才能赋值）──────────────────
+// ─── HeartFlow Engine Variables ──────────────────────────────────────────────
 var IdentityEngine, ContextManager, MeaningfulMemory, LearningEngine;
 var DreamLoopModule, EmotionEngine, SelfHealing, CognitiveEngine;
 var ExperienceReplay, KnowledgeGraph, TrialityMemory;
@@ -48,12 +48,12 @@ const { detectEmotionNeed } = require('./emotion/EmotionTrigger.js');
 const { generateEmpathy } = require('./emotion/EmpathyGenerator.js');
 const FlowPredictor = require('./autonomy/flow-predictor.js');
 
-// ─── 工具层（v11.43.2）────────────────────────────────────────────────────
+// ─── Utility Layer ──────────────────────────────────────────────────────────
 const { FSAdapter } = require('./utils/fs-adapter.js');
 const { Logger } = require('./utils/logger.js');
 const logger = new Logger(process.env.HF_LOG_LEVEL || 'info');
 
-// ─── v11.43.2 引擎初始化函数 ───────────────────────────────────────────────
+// ─── HeartFlow Engine Init ──────────────────────────────────────────────────
 function _initV11432() {
   IdentityEngine = require('./identity/identity-engine.js');
   ContextManager = require('./context/context-manager.js');
@@ -82,11 +82,11 @@ function _initV11432() {
   var mr = require('./memory/recall.js');
   MemoryRecall = mr.recallMemories || mr.recallMemoriesEnhanced || mr;
   EthicsGuard = require('./ethics/guard.js');
-  _v11432Ready = true;
-  logger.info('[HeartFlow] v11.43.2 引擎已加载');
+    _v11432Ready = true;
+    logger.info(`[HeartFlow] v${VERSION} 引擎已加载`);
 }
 
-// 延迟加载 v11.43.2 引擎（在第一次 boot 时初始化）
+// 延迟加载 HeartFlow Engine（在第一次 start 时初始化）
 var _v11432Ready = false;
 function _ensureV11432() {
   if (!_v11432Ready) {
@@ -148,7 +148,7 @@ class HeartFlow extends EventEmitter {
     const { MemoryConsolidator: MC } = require('./memory/consolidator.js');
     this._consolidator = new MC(this.fs);
     this.recall = null;  // 延迟到 start() 后通过 _initV11432 初始化
-    // DreamLoop（v11.43.2 函数式，直接用 generateDream）
+    // DreamLoop（函数式，直接用 generateDream）
     const DreamFns = require('./dream/dream-loop.js');
     this.dream = { generate: DreamFns.generateDream, enabled: false, lastDreamAt: null };
 

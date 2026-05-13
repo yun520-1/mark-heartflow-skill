@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.38 - 论文驱动升级
+ * HeartFlow v0.13.43 - 论文驱动升级
  * 来源: psychology_philosophy_ai_2504_21184_AffectEval
- * 生成时间: 2026-05-13T01:35:02.560Z
+ * 生成时间: 2026-05-13T08:19:38.076Z
  * 
  * 论文摘要: ,thispapermakesthefollowingcontributions: signalpre-processing,featureextraction,featureselection,andclas-...
  * 
@@ -19,7 +19,7 @@
 // 第一部分：核心数据结构和类型定义
 // ============================================
 
-const Paper_psychology_philosophy_ai_2504_21184_AffectEval_VERSION = 'v0.13.38';
+const Paper_psychology_philosophy_ai_2504_21184_AffectEval_VERSION = 'v0.13.43';
 const Paper_psychology_philosophy_ai_2504_21184_AffectEval_SOURCE = 'psychology_philosophy_ai_2504_21184_AffectEval';
 
 /**
@@ -138,7 +138,7 @@ class ReasoningChain_Paper_psychology_philosophy_ai_2504_21184_AffectEval {
 class Paper_psychology_philosophy_ai_2504_21184_AffectEval_Processor {
     constructor(config = {}) {
         this.name = 'Paper_psychology_philosophy_ai_2504_21184_AffectEval';
-        this.version = 'v0.13.38';
+        this.version = 'v0.13.43';
         this.source = 'psychology_philosophy_ai_2504_21184_AffectEval';
         
         // 思想存储
@@ -489,7 +489,7 @@ class Paper_psychology_philosophy_ai_2504_21184_AffectEval_Processor {
     demo() {
         this.log('===== Paper_psychology_philosophy_ai_2504_21184_AffectEval 演示 =====');
         this.log('来源论文: psychology_philosophy_ai_2504_21184_AffectEval');
-        this.log('版本: v0.13.38');
+        this.log('版本: v0.13.43');
         
         // 测试思维创建
         const t1 = this.think('这是一个测试输入，包含一些推理内容 because something happened');
@@ -534,6 +534,6 @@ export default {
     MemoryEntry: MemoryEntry_Paper_psychology_philosophy_ai_2504_21184_AffectEval,
     ReasoningChain: ReasoningChain_Paper_psychology_philosophy_ai_2504_21184_AffectEval,
     Processor: Paper_psychology_philosophy_ai_2504_21184_AffectEval_Processor,
-    version: 'v0.13.38',
+    version: 'v0.13.43',
     source: 'psychology_philosophy_ai_2504_21184_AffectEval'
 };
