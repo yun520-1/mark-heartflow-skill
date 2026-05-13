@@ -1,17 +1,14 @@
 {
   "enabled": true,
-  "defaultProvider": "test-provider",
-  "defaultModel": "GPT-5 Nano",
+  "defaultProvider": "custom",
+  "defaultModel": "gpt-4o-mini",
   "providers": {
-    "openai": {
+    "custom": {
       "enabled": true,
-      "apiKey": ""
-    },
-    "gpt-5-nano": {
-      "enabled": true,
-      "model": "GPT-5 Nano",
+      "model": "gpt-4o-mini",
+      "baseUrl": "https://api.clawto.link/v1",
       "apiKey": ""
     }
   },
-  "forceManualModelSelection": true
+  "forceManualModelSelection": false
 }
