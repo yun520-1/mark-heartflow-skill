@@ -27,6 +27,15 @@ node_modules/
 .env
 .env.*
 
+# === 论文分析输出 ===
+cron/analyzed/
+cron/downloads/
+cron/paper-upgrade-queue.json
+
+# === 升级 daemon ===
+upgrade-daemon.pid
+upgrade-state.json
+
 # === 升级记录 (可选: 如需保留历史可注释掉) ===
 # docs/upgrades/
 # upgrades/
