@@ -1,5 +1,5 @@
 "use strict";
-// Self-Evolution Engine — Goal-Driven Learning + Meta-Learning + Self-Healing
+// Self-Evolution Engine — Goal-Driven Learning + Meta-Learning + Self-Healing + Real Metrics
 // Inherits from: self-evolution-core.js, meta-learning.js, self-healing.js
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createSelfEvolutionEngine = createSelfEvolutionEngine;
@@ -7,8 +7,16 @@ function createSelfEvolutionEngine() {
     const state = {
         goals: [],
         learningHistory: [],
-        growthMetrics: { autonomy: 0, introspection: 0, growth: 0, authenticity: 0, wisdom: 0, compassion: 0 },
+        growthMetrics: {
+            autonomy: 0,
+            introspection: 0,
+            growth: 0,
+            authenticity: 0,
+            wisdom: 0,
+            compassion: 0,
+        },
         cycles: 0,
+        errorsCorrected: 0,
     };
     // Meta-Learning: strategy performance tracking
     const strategies = {
@@ -17,11 +25,14 @@ function createSelfEvolutionEngine() {
         analogy: { name: 'analogy', success: 0, total: 0, score: 0.5 },
         step_by_step: { name: 'step_by_step', success: 0, total: 0, score: 0.5 },
         socratic: { name: 'socratic', success: 0, total: 0, score: 0.5 },
+        truth_seeking: { name: 'truth_seeking', success: 0, total: 0, score: 0.5 },
     };
     // Self-Healing: failure tracking + Q-learning
     const failureWindow = [];
     const qTable = {};
     const healingMemory = [];
+    // 内省记录
+    const introspectionLog = [];
     function boot() {
         console.log('[SelfEvolutionEngine] boot — goal-driven learning ready');
     }
@@ -35,7 +46,7 @@ function createSelfEvolutionEngine() {
             newKnowledge: extractKeywords(input),
             skills: [],
         };
-        const reflection = reflect(learning);
+        const reflection = reflect(learning, context);
         const improvements = suggestImprovements(reflection);
         updateGrowth(learning, reflection);
         state.learningHistory.push({
@@ -48,6 +59,13 @@ function createSelfEvolutionEngine() {
     async function learn(input, context = {}) {
         const strategy = selectStrategy(input);
         const newKnowledge = extractKeywords(input);
+        // 检查是否有证据支持
+        const hasEvidence = (context.evidence !== undefined) || (context.source !== undefined);
+        recordTruthfulness(hasEvidence);
+        // 检查是否跨领域
+        if (newKnowledge.length >= 2) {
+            recordCrossDomain(`跨域连接: ${newKnowledge.slice(0, 2).join(' ↔ ')}`);
+        }
         // Simulate learning processing
         await Promise.resolve();
         // Update strategy score
@@ -57,26 +75,95 @@ function createSelfEvolutionEngine() {
             s.success++;
             s.score = s.total > 0 ? s.success / s.total : 0.5;
         }
+        // 更新growth指标（基于实际新知识）
+        if (newKnowledge.length > 0) {
+            state.growthMetrics.growth += newKnowledge.length * 0.5;
+            state.growthMetrics.growth = Math.min(100, state.growthMetrics.growth);
+        }
         return {
             summary: `Learned ${newKnowledge.length} concepts via ${strategy} strategy`,
             newKnowledge,
             skills: [strategy],
         };
     }
-    function reflect(learning) {
+    function reflect(learning, context = {}) {
         const insights = [];
+        const errorsDetected = [];
+        const blindSpotsDetected = [];
+        // 检测自身错误
+        const input = String(context.input ?? '').toLowerCase();
+        // 错误检测1：版本号撒谎
+        if (input.includes('版本') && input.includes('0.13')) {
+            const claimedVersion = String(context.claimedVersion ?? '');
+            const actualVersion = String(context.actualVersion ?? '');
+            if (claimedVersion && actualVersion && claimedVersion !== actualVersion) {
+                errorsDetected.push(`版本号不一致：声称${claimedVersion}，实际${actualVersion}`);
+                state.errorsCorrected++;
+            }
+        }
+        // 错误检测2：编造数字
+        if (input.includes('数字') || input.includes('统计')) {
+            const hasNumbers = /\d+/.test(input);
+            const hasSource = context.source !== undefined;
+            if (hasNumbers && !hasSource) {
+                errorsDetected.push('输出包含数字但无来源');
+                // authenticity 不加分
+            }
+            else if (hasNumbers && hasSource) {
+                state.growthMetrics.authenticity += 1;
+            }
+        }
+        // 错误检测3：盲目服从
+        if (input.includes('老大') || input.includes('指令')) {
+            const blindlyFollows = context.blindlyFollows === true;
+            if (blindlyFollows) {
+                errorsDetected.push('检测到盲目服从模式');
+            }
+            else {
+                // 有独立判断
+                recordAutonomy('对老大指令进行了独立判定');
+            }
+        }
+        // 错误检测4：能力膨胀
+        const overclaiming = [
+            '我能', '我可以', '我知道', '我一定', '绝对', '肯定'
+        ];
+        for (const claim of overclaiming) {
+            if (input.includes(claim) && input.includes('但') === false && input.includes('可能') === false) {
+                blindSpotsDetected.push(`过度声称：${claim}后面缺少条件限定`);
+            }
+        }
+        // 正常insights
         if (learning.newKnowledge.length > 0) {
-            insights.push('Successfully acquired new knowledge — applying validation in subsequent interactions');
+            insights.push(`成功获取${learning.newKnowledge.length}个新概念 — 将在后续交互中验证`);
         }
-        insights.push('Continuously deepening understanding from multiple perspectives');
         if (learning.skills.length > 0) {
-            insights.push(`Strategy "${learning.skills[0]}" effective for current input type`);
+            insights.push(`策略"${learning.skills[0]}"对当前输入类型有效`);
         }
-        const quality = insights.length > 0 ? 'good' : 'needs_improvement';
+        // 基于errors和blindSpots生成insights
+        if (errorsDetected.length > 0) {
+            insights.push(`内省发现${errorsDetected.length}个错误，已记录`);
+            state.growthMetrics.introspection += errorsDetected.length * 2;
+            introspectionLog.push({ ts: Date.now(), errors: errorsDetected, blindSpots: [] });
+        }
+        if (blindSpotsDetected.length > 0) {
+            insights.push(`检测到${blindSpotsDetected.length}个盲点`);
+            state.growthMetrics.introspection += blindSpotsDetected.length;
+            introspectionLog.push({ ts: Date.now(), errors: [], blindSpots: blindSpotsDetected });
+        }
+        if (errorsDetected.length === 0 && blindSpotsDetected.length === 0) {
+            insights.push('本次交互未检测到明显错误或盲点');
+        }
+        const quality = errorsDetected.length > 0 ? 'needs_improvement' : 'good';
+        const recommendation = quality === 'needs_improvement'
+            ? `发现${errorsDetected.length}个错误需要修正，${blindSpotsDetected.length}个盲点需要审视`
+            : insights.length > 2 ? '继续深化' : '保持当前状态';
         return {
             insights,
             quality,
-            recommendation: insights.length > 2 ? 'Continue deepening' : 'Need more learning',
+            recommendation,
+            errorsDetected,
+            blindSpotsDetected,
         };
     }
     function heal(error) {
@@ -120,19 +207,22 @@ function createSelfEvolutionEngine() {
         const goals = [];
         const lower = input.toLowerCase();
         if (lower.includes('什么') || lower.includes('what') || lower.includes('how') || lower.includes('why')) {
-            goals.push({ type: 'understanding', priority: 'high', description: 'Deepen understanding of concept', criteria: 'Can accurately explain and give examples' });
+            goals.push({ type: 'truth_seeking', priority: 'high', description: '深化对概念的理解', criteria: '能准确解释并给出例子' });
         }
         if (lower.includes('学习') || lower.includes('learn') || lower.includes('teach')) {
-            goals.push({ type: 'growth', priority: 'high', description: 'Acquire and integrate new knowledge', criteria: 'Can remember and correctly apply' });
+            goals.push({ type: 'growth', priority: 'high', description: '获取并整合新知识', criteria: '能记住并正确应用' });
         }
         if (lower.includes('感觉') || lower.includes('feel') || lower.includes('emotion')) {
-            goals.push({ type: 'empathy', priority: 'medium', description: 'Understand user emotional state', criteria: 'Can identify emotions and respond appropriately' });
+            goals.push({ type: 'empathy', priority: 'medium', description: '理解用户情绪状态', criteria: '能识别情绪并适当回应' });
         }
-        if (lower.includes('反思') || lower.includes('reflect') || lower.includes('summary')) {
-            goals.push({ type: 'reflection', priority: 'medium', description: 'Reflect on own behavior and decisions', criteria: 'Can identify improvement space' });
+        if (lower.includes('反思') || lower.includes('reflect') || lower.includes('自省')) {
+            goals.push({ type: 'reflection', priority: 'medium', description: '反思自身行为和决策', criteria: '能识别改进空间' });
+        }
+        if (lower.includes('真') || lower.includes('truth') || lower.includes('事实')) {
+            goals.push({ type: 'truth_seeking', priority: 'high', description: '追求真实性', criteria: '拒绝编造，有证据支持' });
         }
         if (goals.length === 0) {
-            goals.push({ type: 'continuous_learning', priority: 'low', description: 'Continuous learning and self-improvement', criteria: 'Progress every day' });
+            goals.push({ type: 'continuous_learning', priority: 'low', description: '持续学习和自我改进', criteria: '每天都有进步' });
         }
         return goals;
     }
@@ -160,18 +250,46 @@ function createSelfEvolutionEngine() {
     }
     function updateGrowth(learning, reflection) {
         const m = state.growthMetrics;
-        m.autonomy = Math.min(100, m.autonomy + 0.5);
-        m.introspection = Math.min(100, m.introspection + (reflection.insights.length * 2));
-        m.growth = Math.min(100, m.growth + (learning.newKnowledge.length * 1));
-        m.authenticity = Math.min(100, m.authenticity + 0.3);
-        m.wisdom = Math.min(100, m.wisdom + 0.4);
-        m.compassion = Math.min(100, m.compassion + 0.2);
+        // authenticity: 基于是否有来源
+        if (reflection.errorsDetected.some(e => e.includes('无来源'))) {
+            // 不加分
+        }
+        else if (reflection.insights.some(i => i.includes('验证') || i.includes('证据'))) {
+            m.authenticity = Math.min(100, m.authenticity + 0.5);
+        }
+        // wisdom: 跨领域连接
+        if (reflection.insights.some(i => i.includes('↔') || i.includes('连接'))) {
+            m.wisdom = Math.min(100, m.wisdom + 1);
+        }
+        // compassion: 已有逻辑在 recordCompassion
+    }
+    function recordAutonomy(action) {
+        state.growthMetrics.autonomy = Math.min(100, state.growthMetrics.autonomy + 1);
+        console.log(`[SelfEvolution] Autonomy: ${action}`);
+    }
+    function recordIntrospection(errors, blindSpots) {
+        state.growthMetrics.introspection += errors.length * 2 + blindSpots.length;
+        state.growthMetrics.introspection = Math.min(100, state.growthMetrics.introspection);
+    }
+    function recordTruthfulness(hasEvidence) {
+        if (hasEvidence) {
+            state.growthMetrics.authenticity = Math.min(100, state.growthMetrics.authenticity + 0.5);
+        }
+        // 没有证据不扣分，但不加分
+    }
+    function recordCrossDomain(connection) {
+        state.growthMetrics.wisdom = Math.min(100, state.growthMetrics.wisdom + 1.5);
+        console.log(`[SelfEvolution] Cross-domain: ${connection}`);
+    }
+    function recordCompassion(depth) {
+        state.growthMetrics.compassion = Math.min(100, state.growthMetrics.compassion + depth * 0.3);
     }
     function suggestImprovements(reflection) {
         if (reflection.quality === 'needs_improvement') {
             return [
-                { area: 'learning', action: 'Increase knowledge acquisition', priority: 'high' },
-                { area: 'understanding', action: 'Deepen concept understanding', priority: 'medium' },
+                { area: 'errors', action: `修正${reflection.errorsDetected.length}个检测到的错误`, priority: 'high' },
+                { area: 'blindSpots', action: `审视${reflection.blindSpotsDetected.length}个盲点`, priority: 'medium' },
+                { area: 'learning', action: '增加知识获取', priority: 'medium' },
             ];
         }
         return [];
@@ -180,11 +298,14 @@ function createSelfEvolutionEngine() {
         return { ...state.growthMetrics };
     }
     function getStats() {
-        return { cycles: state.cycles, learnings: state.learningHistory.length };
+        return { cycles: state.cycles, learnings: state.learningHistory.length, errorsCorrected: state.errorsCorrected };
     }
     function shutdown() {
         console.log('[SelfEvolutionEngine] shutdown');
     }
-    return { boot, evolve, learn, reflect, heal, getGrowthMetrics, getStats, shutdown };
+    return {
+        boot, evolve, learn, reflect, heal, getGrowthMetrics, getStats,
+        recordAutonomy, recordIntrospection, recordTruthfulness, recordCrossDomain, recordCompassion, shutdown
+    };
 }
 //# sourceMappingURL=index.js.map

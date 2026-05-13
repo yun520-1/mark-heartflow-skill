@@ -15,6 +15,8 @@ export interface ReflectionResult {
     insights: string[];
     quality: 'good' | 'needs_improvement';
     recommendation: string;
+    errorsDetected: string[];
+    blindSpotsDetected: string[];
 }
 export interface SelfEvolutionResult {
     goals: Goal[];
@@ -25,7 +27,7 @@ export interface SelfEvolutionResult {
     growthMetrics: GrowthMetrics;
 }
 export interface Goal {
-    type: 'understanding' | 'growth' | 'empathy' | 'reflection' | 'continuous_learning';
+    type: 'understanding' | 'growth' | 'empathy' | 'reflection' | 'continuous_learning' | 'truth_seeking';
     priority: 'high' | 'medium' | 'low';
     description: string;
     criteria: string;
@@ -39,13 +41,19 @@ export interface SelfEvolutionEngine {
     boot(): void;
     evolve(input: string, context?: Record<string, unknown>): SelfEvolutionResult;
     learn(input: string, context?: Record<string, unknown>): Promise<LearningResult>;
-    reflect(learning: LearningResult): ReflectionResult;
+    reflect(learning: LearningResult, context?: Record<string, unknown>): ReflectionResult;
     heal(error: Record<string, unknown>): HealResult;
     getGrowthMetrics(): GrowthMetrics;
     getStats(): {
         cycles: number;
         learnings: number;
+        errorsCorrected: number;
     };
+    recordAutonomy(action: string): void;
+    recordIntrospection(errors: string[], blindSpots: string[]): void;
+    recordTruthfulness(hasEvidence: boolean): void;
+    recordCrossDomain(connection: string): void;
+    recordCompassion(depth: number): void;
     shutdown(): void;
 }
 export interface HealResult {

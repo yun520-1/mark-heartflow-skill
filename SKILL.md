@@ -1,7 +1,7 @@
 ---
 name: heartflow
 title: HeartFlow — AI Identity Framework
-version: v0.13.46
+version: v0.13.47
 date: "2026-05-13"
 description: >
   HeartFlow turns experience, code, papers, dreams, and errors into better structure.

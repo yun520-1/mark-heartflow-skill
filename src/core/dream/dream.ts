@@ -311,11 +311,13 @@ export function createDreamEngine(config?: Partial<DreamConfig>): DreamEngine {
   const state = createDreamState(config);
   const fragments: RecallBlock[] = [];
 
-  async function runNightDream(recallBlocks: Map<string, RecallBlock>): Promise<DreamResult> {
+  async function runNightDream(recallBlocks: Map<string, RecallBlock> = new Map()): Promise<DreamResult> {
     const startTime = Date.now();
     
-    // 收集碎片
-    const blocks = [...recallBlocks.values()];
+    // 收集碎片：优先用recallBlocks，否则用内部fragments数组
+    const blocks = recallBlocks.size > 0
+      ? [...recallBlocks.values()]
+      : [...fragments];
     
     // 碎片不足，不启动梦境
     if (blocks.length < state.config.minFragments) {
