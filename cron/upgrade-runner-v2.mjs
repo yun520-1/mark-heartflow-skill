@@ -13,10 +13,11 @@
  *   7. 记录升级日志
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, appendFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, appendFileSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { spawnSync, execSync } from 'child_process';
+import { randomUUID } from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -82,7 +83,7 @@ try:
 except Exception as e:
     print("ERROR:", str(e), file=sys.stderr)
     sys.exit(1)
-`], { encoding: 'utf-8', maxBuffer: 50 * 1024 * 1024, timeout: 60000 });
+`], { encoding: 'utf-8', maxBuffer: 50 * 1024 * 1024, timeout: 120000 });
         return result.stdout || '';
     } catch (e) {
         log('[错误] PDF提取失败: ' + e.message);
