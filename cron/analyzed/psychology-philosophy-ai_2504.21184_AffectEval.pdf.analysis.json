@@ -1,0 +1,36 @@
+{
+  "arxivId": "psychology_philosophy_ai_2504_21184_AffectEval",
+  "filename": "psychology-philosophy-ai/2504.21184_AffectEval.pdf",
+  "keywords": {
+    "ai": [
+      "llm"
+    ],
+    "memory": [
+      "context",
+      "store"
+    ],
+    "reasoning": [
+      "logic"
+    ],
+    "emotion": [
+      "emotion",
+      "sentiment",
+      "affect",
+      "mood",
+      "valence",
+      "arousal"
+    ],
+    "consciousness": [],
+    "architecture": [
+      "module",
+      "component",
+      "layer",
+      "system",
+      "framework",
+      "pipeline"
+    ]
+  },
+  "abstract": ",thispapermakesthefollowingcontributions: signalpre-processing,featureextraction,featureselection,andclas-",
+  "textLength": 53697,
+  "timestamp": "2026-05-12T23:27:16.766Z"
+}

@@ -1,0 +1,36 @@
+{
+  "arxivId": "psychology_philosophy_ai_2501_03624",
+  "filename": "psychology-philosophy-ai/2501.03624.pdf",
+  "keywords": {
+    "ai": [
+      "transformer",
+      "language model",
+      "llm",
+      "gpt",
+      "agent"
+    ],
+    "memory": [
+      "context"
+    ],
+    "reasoning": [
+      "reasoning",
+      "logic",
+      "inference"
+    ],
+    "emotion": [
+      "emotion",
+      "affect",
+      "mood",
+      "empathy"
+    ],
+    "consciousness": [],
+    "architecture": [
+      "component",
+      "system",
+      "framework"
+    ]
+  },
+  "abstract": "LLAMADRS: Evaluating Open-Source LLMs on Real Clinical\nInterviews—To Reason or Not to Reason?\nGaoussouYoussoufKebe1 JeffreyM.Girard2 EinatLiebenthal3,\nJustinBaker3 FernandoDelaTorre1 Louis-PhilippeMorency1\n1CarnegieMellonUniversity,SchoolofComputerScience,Pittsburgh,PA,USA\n2UniversityofKansas,DepartmentofPsychology,Lawrence,KS,USA\n3McLeanHospital,HarvardMedicalSchool,Boston,MA,USA\n{gyk,ftorre,morency}@cs.cmu.edu\njmgirard@ku.edu\n{eliebenthal,jtbaker}@partners.org\nAbstract shortageoftrainedclinici",
+  "textLength": 50523,
+  "timestamp": "2026-05-12T23:27:15.575Z"
+}

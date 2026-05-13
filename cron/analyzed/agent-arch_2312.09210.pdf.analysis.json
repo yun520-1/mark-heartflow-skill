@@ -1,0 +1,16 @@
+{
+  "paper": "agent-arch/2312.09210.pdf",
+  "timestamp": "2026-05-12T15:16:10.532Z",
+  "found": {
+    "ai": [
+      "memory|attenton|reasonng|plannng"
+    ],
+    "architecture": [
+      "factory|observer|ppelne|mddleware",
+      "component|module|plugn|extenson"
+    ],
+    "code": [
+      "functon\\s+\\w+\\s*\\("
+    ]
+  }
+}

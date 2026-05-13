@@ -1,0 +1,15 @@
+{
+  "paper": "agent-arch/2305.04091.pdf",
+  "timestamp": "2026-05-12T15:16:09.369Z",
+  "found": {
+    "ai": [
+      "ReAct|self[- ]?refne|reflexon|chan[- ]?of[- ]?thought",
+      "memory|attenton|reasonng|plannng",
+      "agent|autonomous|emergence"
+    ],
+    "architecture": [
+      "component|module|plugn|extenson"
+    ],
+    "code": []
+  }
+}

@@ -7,10 +7,11 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/apple/.hermes/skills/ai/mark-heartflow-skill/cron/paper-upgrade-engine.sh</string>
+        <string>-c</string>
+        <string>cd /Users/apple/.hermes/skills/ai/mark-heartflow-skill && /opt/homebrew/bin/node cron/upgrade-runner.mjs >> logs/paper-upgrade-cron.log 2>&1</string>
     </array>
     <key>StartInterval</key>
-    <integer>3600</integer>
+    <integer>1200</integer>
     <key>RunAtLoad</key>
     <true/>
     <key>StandardOutPath</key>

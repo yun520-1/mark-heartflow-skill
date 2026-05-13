@@ -1,8 +1,22 @@
-# HeartFlow Paper Upgrade Cron
-# 每小时执行一次论文升级检查
-# 每次读取2篇论文，每5篇触发一次版本升级 (+0.0.1)
+# HeartFlow 定时任务配置 (launchd 模式)
+# 所有任务已迁移到 launchd plist 管理
+# 注意：crontab -l 显示的是遗留内容，实际执行由 launchd 负责
 
-0 * * * * /Users/apple/.hermes/skills/ai/mark-heartflow-skill/cron/paper-upgrade-engine.sh >> /Users/apple/.hermes/skills/ai/mark-heartflow-skill/logs/paper-upgrade-cron.log 2>&1
+# 当前运行的 launchd 服务：
+#   com.heartflow.paper-upgrade   — 每20分钟论文升级
+#   com.heartflow.github-audit   — 每2小时GitHub审计
+#   com.heartflow.full-audit     — 每周日03:00完整审计
+#   com.heartflow.paper-analyzer — (异常PID 78)
+#   com.heartflow.paper-hunter   — (异常PID 78)
 
-# 每周日凌晨3点执行完整审计
-0 3 * * 0 /Users/apple/.hermes/skills/ai/mark-heartflow-skill/scripts/full-audit.sh >> /Users/apple/.hermes/skills/ai/mark-heartflow-skill/logs/full-audit.log 2>&1
+# 查看任务状态：
+#   launchctl list | grep heartflow
+
+# 手动触发论文升级：
+#   /opt/homebrew/bin/node /Users/apple/.hermes/skills/ai/mark-heartflow-skill/cron/upgrade-runner.mjs
+
+# 手动触发GitHub审计：
+#   bash /Users/apple/.hermes/skills/ai/mark-heartflow-skill/scripts/github-audit.sh
+
+# 手动触发完整审计：
+#   bash /Users/apple/.hermes/skills/ai/mark-heartflow-skill/scripts/full-audit.sh

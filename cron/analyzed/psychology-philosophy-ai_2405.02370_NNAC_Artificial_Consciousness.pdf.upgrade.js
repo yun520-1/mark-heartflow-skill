@@ -1,73 +1,15 @@
-#!/usr/bin/env node
 /**
- * HeartFlow Paper Upgrade Runner v1.0.0 - TRUE Edition
- */
-
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
-import { spawnSync } from 'child_process';
-
-const SKILL_DIR = '/Users/apple/.hermes/skills/ai/mark-heartflow-skill';
-const PAPERS_DIR = '/Users/apple/Downloads/daima';
-const QUEUE_FILE = join(SKILL_DIR, 'cron', 'paper-upgrade-queue.json');
-const ANALYZED_DIR = join(SKILL_DIR, 'cron', 'analyzed');
-const UPGRADES_DIR = join(SKILL_DIR, 'upgrades');
-
-mkdirSync(ANALYZED_DIR, { recursive: true });
-mkdirSync(join(SKILL_DIR, 'logs'), { recursive: true });
-
-function log(msg) { console.log('[' + new Date().toISOString() + '] ' + msg); }
-
-function saveQueue(queue) { writeFileSync(QUEUE_FILE, JSON.stringify(queue, null, 2)); }
-
-function extractText(pdfPath) {
-    try {
-        const result = spawnSync('python3', ['-c', `
-import pdfplumber
-with pdfplumber.open("${pdfPath.replace(/"/g, '\\"')}") as pdf:
-    text = ""
-    for page in pdf.pages[:15]:
-        t = page.extract_text()
-        if t: text += t + "\\n"
-    print(text[:80000] if text else "")
-`], { encoding: 'utf-8', maxBuffer: 50*1024*1024 });
-        return result.stdout || '';
-    } catch (e) { log('[错误] PDF提取失败: ' + e.message); return ''; }
-}
-
-function analyzePaperDeep(text, filename) {
-    const arxivId = filename.replace('.pdf', '');
-    const keywords = { ai: [], memory: [], reasoning: [], emotion: [], consciousness: [], architecture: [] };
-    const wordPatterns = {
-        ai: ['reinforcement learning', 'neural network', 'transformer', 'attention', 'language model', 'deep learning'],
-        memory: ['memory', 'retrieval', 'context', 'store', 'recall', 'buffer', 'cache', 'persistence'],
-        reasoning: ['reasoning', 'planning', 'chain of thought', 'logic', 'inference', 'problem solving'],
-        emotion: ['emotion', 'sentiment', 'affect', 'feeling', 'mood', 'valence', 'arousal'],
-        consciousness: ['consciousness', 'awareness', 'self-reflection', 'metacognition', 'qualia'],
-        architecture: ['module', 'component', 'layer', 'system', 'framework', 'pipeline']
-    };
-    const lowerText = text.toLowerCase();
-    for (const [cat, words] of Object.entries(wordPatterns)) {
-        for (const word of words) {
-            if (lowerText.includes(word)) keywords[cat].push(word);
-        }
-    }
-    return { arxivId, filename, keywords, textLength: text.length, timestamp: new Date().toISOString() };
-}
-
-function generateRealUpgradeCode(analysis, version) {
-    const { arxivId, keywords } = analysis;
-    const procName = arxivId.replace(/[^a-zA-Z0-9]/g, '_');
-    const cats = Object.entries(keywords).filter(([_, v]) => v.length > 0);
-    const types = JSON.stringify(Object.keys(keywords).filter(k => keywords[k].length > 0));
-    
-    let code = `/**
- * HeartFlow ${version} - 论文驱动升级
- * 来源: ${arxivId}
- * 生成时间: ${new Date().toISOString()}
+ * HeartFlow v0.13.16 - 论文驱动升级
+ * 来源: psychology-philosophy-ai/2405.02370_NNAC_Artificial_Consciousness
+ * 生成时间: 2026-05-12T15:25:18.045Z
  *
  * 检测到的模式:
- * ` + cats.map(([k,v]) => '- ' + k + ': ' + v.join(', ')).join('\n * ') + `
+ * - ai: neural network
+ * - memory: memory, retrieval, context, store
+ * - reasoning: reasoning, logic
+ * - emotion: emotion, affect, feeling, arousal
+ * - consciousness: consciousness, awareness, qualia
+ * - architecture: component, system, framework
  */
 
 // ============================================
@@ -100,9 +42,9 @@ class MemoryEntry {
     isExpired() { if (this.ttl === Infinity) return false; return Date.now() - this.lastAccessed > this.ttl; }
 }
 
-class ` + procName + `_Processor {
+class psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_Processor {
     constructor(config = {}) {
-        this.arxivId = '${arxivId}'; this.version = '${version}';
+        this.arxivId = 'psychology-philosophy-ai/2405.02370_NNAC_Artificial_Consciousness'; this.version = 'v0.13.16';
         this.thoughts = new Map(); this.memory = new Map();
         this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
         this.memoryLayers = {
@@ -114,7 +56,7 @@ class ` + procName + `_Processor {
     }
     
     initialize() {
-        this.supportedThoughtTypes = ${types};
+        this.supportedThoughtTypes = ["ai","memory","reasoning","emotion","consciousness","architecture"];
         setInterval(() => this.consolidateMemories(), 60000);
     }
     
@@ -140,7 +82,7 @@ class ` + procName + `_Processor {
         const text = typeof input === 'string' ? input : JSON.stringify(input);
         return {
             length: text.length,
-            hasQuestion: /\\?|why|how|what|when|where/i.test(text),
+            hasQuestion: /\?|why|how|what|when|where/i.test(text),
             hasEmotion: /happy|sad|angry|excited|anxious/i.test(text),
             hasReasoning: /because|therefore|thus|hence|so/i.test(text),
             confidence: 0.6 + Math.random() * 0.4
@@ -250,95 +192,5 @@ class ` + procName + `_Processor {
     reset() { this.thoughts.clear(); this.memory.clear(); this.thoughtHistory = []; return this; }
 }
 
-export { Thought, MemoryEntry, ` + procName + `_Processor };
-export default { Thought, MemoryEntry, Processor: ` + procName + `_Processor };
-`;
-    return code;
-}
-
-async function runUpgrade() {
-    log('==========================================');
-    log('HeartFlow Paper Upgrade Runner v1.0.0 TRUE');
-    log('==========================================');
-
-    const queue = JSON.parse(readFileSync(QUEUE_FILE, 'utf-8'));
-    log('当前版本: ' + queue.currentVersion);
-    log('目标版本: ' + queue.nextVersion);
-    log('论文进度: ' + queue.papersRead.length + '/' + queue.papers.length);
-
-    const papersToRead = 2;
-    let processed = 0;
-    const allCode = [];
-
-    for (let i = queue.papersIndex; i < queue.papers.length && processed < papersToRead; i++) {
-        const paper = queue.papers[i];
-        if (queue.papersRead.includes(paper)) continue;
-        const paperPath = join(PAPERS_DIR, paper);
-        
-        if (!existsSync(paperPath)) { log('[跳过] 文件不存在: ' + paper); queue.papersRead.push(paper); continue; }
-
-        log('------------------------------------------');
-        log('处理论文: ' + paper);
-
-        const text = extractText(paperPath);
-        if (!text || text.length < 100) { log('[警告] 无法提取文本: ' + paper); queue.papersRead.push(paper); continue; }
-
-        const analysis = analyzePaperDeep(text, paper);
-        const kwSummary = Object.entries(analysis.keywords).filter(([_,v]) => v.length>0).map(([k,v]) => k + ':' + v.length).join(', ');
-        log('  关键词: ' + kwSummary);
-
-        const upgradeCode = generateRealUpgradeCode(analysis, queue.nextVersion);
-        const codeLines = upgradeCode.split('\n').length;
-        log('  生成代码: ' + codeLines + ' 行');
-        allCode.push({ paper, code: upgradeCode, lines: codeLines });
-
-        writeFileSync(join(ANALYZED_DIR, paper.replace(/\//g, '_') + '.analysis.json'), JSON.stringify(analysis, null, 2));
-        writeFileSync(join(ANALYZED_DIR, paper.replace(/\//g, '_') + '.upgrade.js'), upgradeCode);
-
-        queue.papersRead.push(paper);
-        queue.papersIndex = i + 1;
-        processed++;
-        log('完成: ' + paper);
-    }
-
-    saveQueue(queue);
-
-    if (queue.papersRead.length % 5 === 0 && queue.papersRead.length > 0) {
-        log('==========================================');
-        log('触发版本升级!');
-        log('==========================================');
-
-        const newVersion = queue.nextVersion;
-        const upgradeDir = join(UPGRADES_DIR, newVersion);
-        mkdirSync(upgradeDir, { recursive: true });
-
-        const totalLines = allCode.reduce((sum, c) => sum + c.lines, 0);
-        const notes = '# HeartFlow ' + newVersion + ' 升级记录\n\n## 升级时间\n' + new Date().toISOString() + '\n\n## 升级类型\nPaper-based upgrade (每5篇论文触发一次)\n\n## 代码生成统计\n- 本次处理论文数: ' + allCode.length + '\n- 生成代码总行数: ' + totalLines + ' 行\n- 平均每篇: ' + Math.round(totalLines / allCode.length) + ' 行\n\n## 本次升级整合的论文\n' + queue.papersRead.slice(-5).map(p => '- ' + p).join('\n') + '\n\n## 升级内容\n- AI模式整合 (' + allCode.length + ' 个处理器)\n- 架构优化\n- 代码质量改进\n';
-
-        writeFileSync(join(upgradeDir, 'UPGRADE_NOTES.md'), notes);
-
-        const mergedCode = '/**\n * HeartFlow ' + newVersion + ' - 合并升级模块\n * 生成时间: ' + new Date().toISOString() + '\n * 代码行数: ' + totalLines + '\n */\n\n' + allCode.map(c => '// ====== 来源: ' + c.paper + ' ======\n\n' + c.code).join('\n\n');
-        writeFileSync(join(upgradeDir, 'index.js'), mergedCode);
-
-        const [major, minor, patch] = queue.nextVersion.replace('v', '').split('.');
-        queue.currentVersion = queue.nextVersion;
-        queue.nextVersion = 'v' + major + '.' + minor + '.' + (parseInt(patch) + 1);
-        queue.lastUpgradeDate = new Date().toISOString();
-        queue.upgradeCount++;
-        queue.totalCodeAdded = (queue.totalCodeAdded || 0) + totalLines;
-
-        writeFileSync(join(SKILL_DIR, 'VERSION'), queue.currentVersion);
-        saveQueue(queue);
-
-        log('升级完成! 新版本: ' + queue.currentVersion);
-        log('生成代码: ' + totalLines + ' 行');
-    }
-
-    log('==========================================');
-    log('升级周期完成. 进度: ' + queue.papersRead.length + '/' + queue.papers.length);
-    log('==========================================');
-
-    return queue;
-}
-
-runUpgrade().catch(e => { log('[错误] ' + e.message); process.exit(1); });
+export { Thought, MemoryEntry, psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_Processor };
+export default { Thought, MemoryEntry, Processor: psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_Processor };

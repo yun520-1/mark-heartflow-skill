@@ -1,0 +1,38 @@
+{
+  "arxivId": "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures",
+  "filename": "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
+  "keywords": {
+    "ai": [
+      "reinforcement learning",
+      "transformer",
+      "language model"
+    ],
+    "memory": [
+      "memory",
+      "retrieval",
+      "context",
+      "store",
+      "recall"
+    ],
+    "reasoning": [
+      "reasoning",
+      "planning",
+      "logic",
+      "inference",
+      "problem solving"
+    ],
+    "emotion": [
+      "emotion",
+      "affect"
+    ],
+    "consciousness": [],
+    "architecture": [
+      "module",
+      "component",
+      "system",
+      "framework"
+    ]
+  },
+  "textLength": 60443,
+  "timestamp": "2026-05-12T15:25:16.932Z"
+}
