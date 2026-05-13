@@ -1,17 +1,37 @@
 {
-  "paper": "agent-arch/2304.03442.pdf",
-  "timestamp": "2026-05-12T15:07:18.932Z",
-  "found": {
+  "arxivId": "agent-arch/2304.03442",
+  "filename": "agent-arch/2304.03442.pdf",
+  "keywords": {
     "ai": [
-      "ReAct|self[- ]?refne|reflexon|chan[- ]?of[- ]?thought",
-      "meta[- ]?learnng|self[- ]?mprovng|recursve",
-      "memory|attenton|reasonng|plannng",
-      "agent|autonomous|emergence"
+      "attention",
+      "language model"
+    ],
+    "memory": [
+      "memory",
+      "retrieval",
+      "context",
+      "store",
+      "recall"
+    ],
+    "reasoning": [
+      "reasoning",
+      "planning",
+      "inference"
+    ],
+    "emotion": [
+      "affect"
+    ],
+    "consciousness": [
+      "awareness"
     ],
     "architecture": [
-      "state[- ]?machne|fnte[- ]?state",
-      "component|module|plugn|extenson"
-    ],
-    "code": []
-  }
+      "module",
+      "component",
+      "layer",
+      "system",
+      "framework"
+    ]
+  },
+  "textLength": 70561,
+  "timestamp": "2026-05-13T01:02:38.557Z"
 }

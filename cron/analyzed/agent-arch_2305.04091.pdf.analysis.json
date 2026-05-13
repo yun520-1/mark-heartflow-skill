@@ -1,15 +1,27 @@
 {
-  "paper": "agent-arch/2305.04091.pdf",
-  "timestamp": "2026-05-12T15:16:09.369Z",
-  "found": {
+  "arxivId": "agent-arch/2305.04091",
+  "filename": "agent-arch/2305.04091.pdf",
+  "keywords": {
     "ai": [
-      "ReAct|self[- ]?refne|reflexon|chan[- ]?of[- ]?thought",
-      "memory|attenton|reasonng|plannng",
-      "agent|autonomous|emergence"
+      "transformer",
+      "attention",
+      "language model"
     ],
+    "memory": [],
+    "reasoning": [
+      "reasoning",
+      "planning",
+      "chain of thought",
+      "logic",
+      "inference"
+    ],
+    "emotion": [],
+    "consciousness": [],
     "architecture": [
-      "component|module|plugn|extenson"
-    ],
-    "code": []
-  }
+      "component",
+      "system"
+    ]
+  },
+  "textLength": 48602,
+  "timestamp": "2026-05-13T01:02:39.849Z"
 }

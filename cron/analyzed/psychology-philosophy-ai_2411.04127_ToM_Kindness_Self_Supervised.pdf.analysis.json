@@ -1,0 +1,34 @@
+{
+  "arxivId": "psychology-philosophy-ai/2411.04127_ToM_Kindness_Self_Supervised",
+  "filename": "psychology-philosophy-ai/2411.04127_ToM_Kindness_Self_Supervised.pdf",
+  "keywords": {
+    "ai": [
+      "reinforcement learning",
+      "transformer",
+      "attention",
+      "language model"
+    ],
+    "memory": [
+      "context"
+    ],
+    "reasoning": [
+      "reasoning",
+      "planning",
+      "logic"
+    ],
+    "emotion": [
+      "emotion",
+      "affect",
+      "feeling"
+    ],
+    "consciousness": [],
+    "architecture": [
+      "module",
+      "component",
+      "system",
+      "framework"
+    ]
+  },
+  "textLength": 45737,
+  "timestamp": "2026-05-13T01:03:01.027Z"
+}

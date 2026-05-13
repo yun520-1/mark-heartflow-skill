@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.16 - 论文驱动升级
+ * HeartFlow v0.13.29 - 论文驱动升级
  * 来源: psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures
- * 生成时间: 2026-05-12T15:25:16.933Z
+ * 生成时间: 2026-05-13T01:02:42.934Z
  *
  * 检测到的模式:
  * - ai: reinforcement learning, transformer, language model
@@ -43,7 +43,7 @@ class MemoryEntry {
 
 class psychology_philosophy_ai_2309_02427_CoALA_Cognitive_Architectures_Processor {
     constructor(config = {}) {
-        this.arxivId = 'psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures'; this.version = 'v0.13.16';
+        this.arxivId = 'psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures'; this.version = 'v0.13.29';
         this.thoughts = new Map(); this.memory = new Map();
         this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
         this.memoryLayers = {

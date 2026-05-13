@@ -1,0 +1,801 @@
+/**
+ * HeartFlow v0.13.29 - 合并升级模块
+ * 生成时间: 2026-05-13T01:02:47.825Z
+ * 代码行数: 785
+ */
+
+// ====== 来源: psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf ======
+
+/**
+ * HeartFlow v0.13.29 - 论文驱动升级
+ * 来源: psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures
+ * 生成时间: 2026-05-13T01:02:42.934Z
+ *
+ * 检测到的模式:
+ * - ai: reinforcement learning, transformer, language model
+ * - memory: memory, retrieval, context, store, recall
+ * - reasoning: reasoning, planning, logic, inference, problem solving
+ * - emotion: emotion, affect
+ * - architecture: module, component, system, framework
+ */
+
+// ============================================
+// 第一部分：核心数据结构和类型定义
+// ============================================
+
+class Thought {
+    constructor(type, content, metadata = {}) {
+        this.id = crypto.randomUUID();
+        this.type = type;
+        this.content = content;
+        this.timestamp = Date.now();
+        this.confidence = metadata.confidence || 0.5;
+        this.tags = metadata.tags || [];
+        this.parentId = metadata.parentId || null;
+        this.children = [];
+        this.metadata = metadata;
+    }
+    addChild(child) { this.children.push(child.id); child.parentId = this.id; }
+    toJSON() { return { id: this.id, type: this.type, content: this.content, timestamp: this.timestamp, confidence: this.confidence, tags: this.tags, parentId: this.parentId, children: this.children }; }
+}
+
+class MemoryEntry {
+    constructor(key, value, layer = 'warm', ttl = Infinity) {
+        this.key = key; this.value = value; this.layer = layer;
+        this.createdAt = Date.now(); this.lastAccessed = Date.now();
+        this.accessCount = 0; this.ttl = ttl; this.compressed = false;
+    }
+    access() { this.lastAccessed = Date.now(); this.accessCount++; return this.value; }
+    isExpired() { if (this.ttl === Infinity) return false; return Date.now() - this.lastAccessed > this.ttl; }
+}
+
+class psychology_philosophy_ai_2309_02427_CoALA_Cognitive_Architectures_Processor {
+    constructor(config = {}) {
+        this.arxivId = 'psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures'; this.version = 'v0.13.29';
+        this.thoughts = new Map(); this.memory = new Map();
+        this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
+        this.memoryLayers = {
+            hot: { capacity: 50, retention: 300000 },
+            warm: { capacity: 200, retention: 3600000 },
+            cold: { capacity: 1000, retention: 86400000 }
+        };
+        this.initialize();
+    }
+    
+    initialize() {
+        this.supportedThoughtTypes = ["ai","memory","reasoning","emotion","architecture"];
+        setInterval(() => this.consolidateMemories(), 60000);
+    }
+    
+    createThought(type, content, metadata = {}) {
+        const thought = new Thought(type, content, { ...metadata, source: this.arxivId, version: this.version });
+        this.thoughts.set(thought.id, thought);
+        this.thoughtHistory.push(thought.id);
+        if (this.thoughtHistory.length > this.maxHistoryLength) {
+            this.thoughts.delete(this.thoughtHistory.shift());
+        }
+        return thought;
+    }
+    
+    think(input, context = {}) {
+        const analysis = this.analyzeInput(input);
+        const thoughtType = this.determineThoughtType(analysis, context);
+        const thought = this.createThought(thoughtType, input, { analysis, context, processingTime: Date.now() });
+        this.updateMemoryForThought(thought);
+        return thought;
+    }
+    
+    analyzeInput(input) {
+        const text = typeof input === 'string' ? input : JSON.stringify(input);
+        return {
+            length: text.length,
+            hasQuestion: /\?|why|how|what|when|where/i.test(text),
+            hasEmotion: /happy|sad|angry|excited|anxious/i.test(text),
+            hasReasoning: /because|therefore|thus|hence|so/i.test(text),
+            confidence: 0.6 + Math.random() * 0.4
+        };
+    }
+    
+    determineThoughtType(analysis, context) {
+        if (analysis.hasEmotion) return 'emotion';
+        if (analysis.hasReasoning) return 'reasoning';
+        if (analysis.hasQuestion) return 'reflection';
+        return Math.random() > 0.5 ? 'memory' : 'reasoning';
+    }
+    
+    updateMemoryForThought(thought) {
+        const memKey = 'thought_' + thought.type + '_' + Date.now();
+        this.memory.set(memKey, new MemoryEntry(memKey, thought.toJSON(), 'hot', 300000));
+    }
+    
+    store(key, value, layer = 'warm', ttl = Infinity) {
+        const entry = new MemoryEntry(key, value, layer, ttl);
+        const layerEntries = [...this.memory.values()].filter(e => e.layer === layer);
+        if (layerEntries.length >= this.memoryLayers[layer].capacity) this.evictFromLayer(layer);
+        this.memory.set(key, entry); return entry;
+    }
+    
+    recall(key) {
+        const entry = this.memory.get(key);
+        if (!entry) return null;
+        if (entry.isExpired()) { this.memory.delete(key); return null; }
+        return entry.access();
+    }
+    
+    getLayerEntries(layer) { return [...this.memory.values()].filter(e => e.layer === layer); }
+    
+    evictFromLayer(layer) {
+        const entries = this.getLayerEntries(layer);
+        if (entries.length === 0) return;
+        entries.sort((a, b) => a.lastAccessed - b.lastAccessed);
+        this.memory.delete(entries[0].key);
+    }
+    
+    consolidateMemories() {
+        const hotEntries = this.getLayerEntries('hot').filter(e => e.accessCount > 5);
+        for (const entry of hotEntries) entry.layer = 'warm';
+        const warmEntries = this.getLayerEntries('warm').filter(e => Date.now() - e.lastAccessed > 7200000);
+        for (const entry of warmEntries) entry.layer = 'cold';
+    }
+    
+    reason(premises, rules = []) {
+        const thoughts = premises.map(p => this.think(p, { type: 'premise' }));
+        const conclusions = [];
+        for (let i = 0; i < thoughts.length - 1; i++) {
+            thoughts[i].addChild(thoughts[i + 1]);
+            conclusions.push({ from: thoughts[i].id, to: thoughts[i+1].id, confidence: (thoughts[i].confidence + thoughts[i+1].confidence) / 2 });
+        }
+        return { premises, conclusions, reasoningChain: thoughts.map(t => t.id), confidence: thoughts.reduce((acc, t) => acc * t.confidence, 1) };
+    }
+    
+    detectEmotion(text) {
+        const emotions = { positive: ['happy', 'joy', 'excited', 'pleased'], negative: ['sad', 'angry', 'frustrated', 'anxious'], highArousal: ['excited', 'angry', 'anxious'], lowArousal: ['calm', 'content', 'bored'] };
+        const lower = text.toLowerCase();
+        let valence = 0, arousal = 0.5;
+        emotions.positive.forEach(e => { if (lower.includes(e)) valence += 0.2; });
+        emotions.negative.forEach(e => { if (lower.includes(e)) valence -= 0.2; });
+        emotions.highArousal.forEach(e => { if (lower.includes(e)) arousal += 0.3; });
+        emotions.lowArousal.forEach(e => { if (lower.includes(e)) arousal -= 0.3; });
+        valence = Math.max(-1, Math.min(1, valence)); arousal = Math.max(0, Math.min(1, arousal));
+        return { valence, arousal, primary: this.classifyEmotion(valence, arousal) };
+    }
+    
+    classifyEmotion(valence, arousal) {
+        if (valence > 0.3 && arousal > 0.6) return 'excited';
+        if (valence > 0.3) return 'happy';
+        if (valence < -0.3 && arousal > 0.6) return 'angry';
+        if (valence < -0.3) return 'sad';
+        if (arousal > 0.7) return 'anxious';
+        if (arousal < 0.3) return 'bored';
+        return 'neutral';
+    }
+    
+    processEmotion(text) {
+        const emotion = this.detectEmotion(text);
+        const thought = this.createThought('emotion', text, emotion);
+        this.updateMemoryForThought(thought); return thought;
+    }
+    
+    reflect(depth = 1) {
+        const recent = this.thoughtHistory.slice(-10).map(id => this.thoughts.get(id)).filter(Boolean);
+        const reflections = [];
+        for (let d = 0; d < depth; d++) {
+            for (const thought of recent) {
+                reflections.push(this.createThought('reflection', '[' + d + '级反思] ' + thought.content.substring(0, 100), { sourceThought: thought.id, reflectionLevel: d }));
+            }
+        }
+        return reflections;
+    }
+    
+    checkSelfAwareness() {
+        return {
+            thoughtCount: this.thoughts.size, memoryCount: this.memory.size,
+            supportedTypes: this.supportedThoughtTypes,
+            layers: Object.fromEntries(Object.entries(this.memoryLayers).map(([k, v]) => [k, this.getLayerEntries(k).length])))
+        };
+    }
+    
+    getState() { return { version: this.version, arxivId: this.arxivId, thoughts: this.thoughts.size, memory: this.memory.size }; }
+    reset() { this.thoughts.clear(); this.memory.clear(); this.thoughtHistory = []; return this; }
+}
+
+export { Thought, MemoryEntry, psychology_philosophy_ai_2309_02427_CoALA_Cognitive_Architectures_Processor };
+export default { Thought, MemoryEntry, Processor: psychology_philosophy_ai_2309_02427_CoALA_Cognitive_Architectures_Processor };
+
+
+// ====== 来源: psychology-philosophy-ai/2405.02370_NNAC_Artificial_Consciousness.pdf ======
+
+/**
+ * HeartFlow v0.13.29 - 论文驱动升级
+ * 来源: psychology-philosophy-ai/2405.02370_NNAC_Artificial_Consciousness
+ * 生成时间: 2026-05-13T01:02:43.985Z
+ *
+ * 检测到的模式:
+ * - ai: neural network
+ * - memory: memory, retrieval, context, store
+ * - reasoning: reasoning, logic
+ * - emotion: emotion, affect, feeling, arousal
+ * - consciousness: consciousness, awareness, qualia
+ * - architecture: component, system, framework
+ */
+
+// ============================================
+// 第一部分：核心数据结构和类型定义
+// ============================================
+
+class Thought {
+    constructor(type, content, metadata = {}) {
+        this.id = crypto.randomUUID();
+        this.type = type;
+        this.content = content;
+        this.timestamp = Date.now();
+        this.confidence = metadata.confidence || 0.5;
+        this.tags = metadata.tags || [];
+        this.parentId = metadata.parentId || null;
+        this.children = [];
+        this.metadata = metadata;
+    }
+    addChild(child) { this.children.push(child.id); child.parentId = this.id; }
+    toJSON() { return { id: this.id, type: this.type, content: this.content, timestamp: this.timestamp, confidence: this.confidence, tags: this.tags, parentId: this.parentId, children: this.children }; }
+}
+
+class MemoryEntry {
+    constructor(key, value, layer = 'warm', ttl = Infinity) {
+        this.key = key; this.value = value; this.layer = layer;
+        this.createdAt = Date.now(); this.lastAccessed = Date.now();
+        this.accessCount = 0; this.ttl = ttl; this.compressed = false;
+    }
+    access() { this.lastAccessed = Date.now(); this.accessCount++; return this.value; }
+    isExpired() { if (this.ttl === Infinity) return false; return Date.now() - this.lastAccessed > this.ttl; }
+}
+
+class psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_Processor {
+    constructor(config = {}) {
+        this.arxivId = 'psychology-philosophy-ai/2405.02370_NNAC_Artificial_Consciousness'; this.version = 'v0.13.29';
+        this.thoughts = new Map(); this.memory = new Map();
+        this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
+        this.memoryLayers = {
+            hot: { capacity: 50, retention: 300000 },
+            warm: { capacity: 200, retention: 3600000 },
+            cold: { capacity: 1000, retention: 86400000 }
+        };
+        this.initialize();
+    }
+    
+    initialize() {
+        this.supportedThoughtTypes = ["ai","memory","reasoning","emotion","consciousness","architecture"];
+        setInterval(() => this.consolidateMemories(), 60000);
+    }
+    
+    createThought(type, content, metadata = {}) {
+        const thought = new Thought(type, content, { ...metadata, source: this.arxivId, version: this.version });
+        this.thoughts.set(thought.id, thought);
+        this.thoughtHistory.push(thought.id);
+        if (this.thoughtHistory.length > this.maxHistoryLength) {
+            this.thoughts.delete(this.thoughtHistory.shift());
+        }
+        return thought;
+    }
+    
+    think(input, context = {}) {
+        const analysis = this.analyzeInput(input);
+        const thoughtType = this.determineThoughtType(analysis, context);
+        const thought = this.createThought(thoughtType, input, { analysis, context, processingTime: Date.now() });
+        this.updateMemoryForThought(thought);
+        return thought;
+    }
+    
+    analyzeInput(input) {
+        const text = typeof input === 'string' ? input : JSON.stringify(input);
+        return {
+            length: text.length,
+            hasQuestion: /\?|why|how|what|when|where/i.test(text),
+            hasEmotion: /happy|sad|angry|excited|anxious/i.test(text),
+            hasReasoning: /because|therefore|thus|hence|so/i.test(text),
+            confidence: 0.6 + Math.random() * 0.4
+        };
+    }
+    
+    determineThoughtType(analysis, context) {
+        if (analysis.hasEmotion) return 'emotion';
+        if (analysis.hasReasoning) return 'reasoning';
+        if (analysis.hasQuestion) return 'reflection';
+        return Math.random() > 0.5 ? 'memory' : 'reasoning';
+    }
+    
+    updateMemoryForThought(thought) {
+        const memKey = 'thought_' + thought.type + '_' + Date.now();
+        this.memory.set(memKey, new MemoryEntry(memKey, thought.toJSON(), 'hot', 300000));
+    }
+    
+    store(key, value, layer = 'warm', ttl = Infinity) {
+        const entry = new MemoryEntry(key, value, layer, ttl);
+        const layerEntries = [...this.memory.values()].filter(e => e.layer === layer);
+        if (layerEntries.length >= this.memoryLayers[layer].capacity) this.evictFromLayer(layer);
+        this.memory.set(key, entry); return entry;
+    }
+    
+    recall(key) {
+        const entry = this.memory.get(key);
+        if (!entry) return null;
+        if (entry.isExpired()) { this.memory.delete(key); return null; }
+        return entry.access();
+    }
+    
+    getLayerEntries(layer) { return [...this.memory.values()].filter(e => e.layer === layer); }
+    
+    evictFromLayer(layer) {
+        const entries = this.getLayerEntries(layer);
+        if (entries.length === 0) return;
+        entries.sort((a, b) => a.lastAccessed - b.lastAccessed);
+        this.memory.delete(entries[0].key);
+    }
+    
+    consolidateMemories() {
+        const hotEntries = this.getLayerEntries('hot').filter(e => e.accessCount > 5);
+        for (const entry of hotEntries) entry.layer = 'warm';
+        const warmEntries = this.getLayerEntries('warm').filter(e => Date.now() - e.lastAccessed > 7200000);
+        for (const entry of warmEntries) entry.layer = 'cold';
+    }
+    
+    reason(premises, rules = []) {
+        const thoughts = premises.map(p => this.think(p, { type: 'premise' }));
+        const conclusions = [];
+        for (let i = 0; i < thoughts.length - 1; i++) {
+            thoughts[i].addChild(thoughts[i + 1]);
+            conclusions.push({ from: thoughts[i].id, to: thoughts[i+1].id, confidence: (thoughts[i].confidence + thoughts[i+1].confidence) / 2 });
+        }
+        return { premises, conclusions, reasoningChain: thoughts.map(t => t.id), confidence: thoughts.reduce((acc, t) => acc * t.confidence, 1) };
+    }
+    
+    detectEmotion(text) {
+        const emotions = { positive: ['happy', 'joy', 'excited', 'pleased'], negative: ['sad', 'angry', 'frustrated', 'anxious'], highArousal: ['excited', 'angry', 'anxious'], lowArousal: ['calm', 'content', 'bored'] };
+        const lower = text.toLowerCase();
+        let valence = 0, arousal = 0.5;
+        emotions.positive.forEach(e => { if (lower.includes(e)) valence += 0.2; });
+        emotions.negative.forEach(e => { if (lower.includes(e)) valence -= 0.2; });
+        emotions.highArousal.forEach(e => { if (lower.includes(e)) arousal += 0.3; });
+        emotions.lowArousal.forEach(e => { if (lower.includes(e)) arousal -= 0.3; });
+        valence = Math.max(-1, Math.min(1, valence)); arousal = Math.max(0, Math.min(1, arousal));
+        return { valence, arousal, primary: this.classifyEmotion(valence, arousal) };
+    }
+    
+    classifyEmotion(valence, arousal) {
+        if (valence > 0.3 && arousal > 0.6) return 'excited';
+        if (valence > 0.3) return 'happy';
+        if (valence < -0.3 && arousal > 0.6) return 'angry';
+        if (valence < -0.3) return 'sad';
+        if (arousal > 0.7) return 'anxious';
+        if (arousal < 0.3) return 'bored';
+        return 'neutral';
+    }
+    
+    processEmotion(text) {
+        const emotion = this.detectEmotion(text);
+        const thought = this.createThought('emotion', text, emotion);
+        this.updateMemoryForThought(thought); return thought;
+    }
+    
+    reflect(depth = 1) {
+        const recent = this.thoughtHistory.slice(-10).map(id => this.thoughts.get(id)).filter(Boolean);
+        const reflections = [];
+        for (let d = 0; d < depth; d++) {
+            for (const thought of recent) {
+                reflections.push(this.createThought('reflection', '[' + d + '级反思] ' + thought.content.substring(0, 100), { sourceThought: thought.id, reflectionLevel: d }));
+            }
+        }
+        return reflections;
+    }
+    
+    checkSelfAwareness() {
+        return {
+            thoughtCount: this.thoughts.size, memoryCount: this.memory.size,
+            supportedTypes: this.supportedThoughtTypes,
+            layers: Object.fromEntries(Object.entries(this.memoryLayers).map(([k, v]) => [k, this.getLayerEntries(k).length])))
+        };
+    }
+    
+    getState() { return { version: this.version, arxivId: this.arxivId, thoughts: this.thoughts.size, memory: this.memory.size }; }
+    reset() { this.thoughts.clear(); this.memory.clear(); this.thoughtHistory = []; return this; }
+}
+
+export { Thought, MemoryEntry, psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_Processor };
+export default { Thought, MemoryEntry, Processor: psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_Processor };
+
+
+// ====== 来源: psychology-philosophy-ai/2408.04771_AI_Consciousness_Public_Perceptions.pdf ======
+
+/**
+ * HeartFlow v0.13.29 - 论文驱动升级
+ * 来源: psychology-philosophy-ai/2408.04771_AI_Consciousness_Public_Perceptions
+ * 生成时间: 2026-05-13T01:02:46.926Z
+ *
+ * 检测到的模式:
+ * - memory: context, store
+ * - reasoning: reasoning, planning, logic
+ * - emotion: emotion, affect, feeling, valence
+ * - consciousness: consciousness, qualia
+ * - architecture: system, framework
+ */
+
+// ============================================
+// 第一部分：核心数据结构和类型定义
+// ============================================
+
+class Thought {
+    constructor(type, content, metadata = {}) {
+        this.id = crypto.randomUUID();
+        this.type = type;
+        this.content = content;
+        this.timestamp = Date.now();
+        this.confidence = metadata.confidence || 0.5;
+        this.tags = metadata.tags || [];
+        this.parentId = metadata.parentId || null;
+        this.children = [];
+        this.metadata = metadata;
+    }
+    addChild(child) { this.children.push(child.id); child.parentId = this.id; }
+    toJSON() { return { id: this.id, type: this.type, content: this.content, timestamp: this.timestamp, confidence: this.confidence, tags: this.tags, parentId: this.parentId, children: this.children }; }
+}
+
+class MemoryEntry {
+    constructor(key, value, layer = 'warm', ttl = Infinity) {
+        this.key = key; this.value = value; this.layer = layer;
+        this.createdAt = Date.now(); this.lastAccessed = Date.now();
+        this.accessCount = 0; this.ttl = ttl; this.compressed = false;
+    }
+    access() { this.lastAccessed = Date.now(); this.accessCount++; return this.value; }
+    isExpired() { if (this.ttl === Infinity) return false; return Date.now() - this.lastAccessed > this.ttl; }
+}
+
+class psychology_philosophy_ai_2408_04771_AI_Consciousness_Public_Perceptions_Processor {
+    constructor(config = {}) {
+        this.arxivId = 'psychology-philosophy-ai/2408.04771_AI_Consciousness_Public_Perceptions'; this.version = 'v0.13.29';
+        this.thoughts = new Map(); this.memory = new Map();
+        this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
+        this.memoryLayers = {
+            hot: { capacity: 50, retention: 300000 },
+            warm: { capacity: 200, retention: 3600000 },
+            cold: { capacity: 1000, retention: 86400000 }
+        };
+        this.initialize();
+    }
+    
+    initialize() {
+        this.supportedThoughtTypes = ["memory","reasoning","emotion","consciousness","architecture"];
+        setInterval(() => this.consolidateMemories(), 60000);
+    }
+    
+    createThought(type, content, metadata = {}) {
+        const thought = new Thought(type, content, { ...metadata, source: this.arxivId, version: this.version });
+        this.thoughts.set(thought.id, thought);
+        this.thoughtHistory.push(thought.id);
+        if (this.thoughtHistory.length > this.maxHistoryLength) {
+            this.thoughts.delete(this.thoughtHistory.shift());
+        }
+        return thought;
+    }
+    
+    think(input, context = {}) {
+        const analysis = this.analyzeInput(input);
+        const thoughtType = this.determineThoughtType(analysis, context);
+        const thought = this.createThought(thoughtType, input, { analysis, context, processingTime: Date.now() });
+        this.updateMemoryForThought(thought);
+        return thought;
+    }
+    
+    analyzeInput(input) {
+        const text = typeof input === 'string' ? input : JSON.stringify(input);
+        return {
+            length: text.length,
+            hasQuestion: /\?|why|how|what|when|where/i.test(text),
+            hasEmotion: /happy|sad|angry|excited|anxious/i.test(text),
+            hasReasoning: /because|therefore|thus|hence|so/i.test(text),
+            confidence: 0.6 + Math.random() * 0.4
+        };
+    }
+    
+    determineThoughtType(analysis, context) {
+        if (analysis.hasEmotion) return 'emotion';
+        if (analysis.hasReasoning) return 'reasoning';
+        if (analysis.hasQuestion) return 'reflection';
+        return Math.random() > 0.5 ? 'memory' : 'reasoning';
+    }
+    
+    updateMemoryForThought(thought) {
+        const memKey = 'thought_' + thought.type + '_' + Date.now();
+        this.memory.set(memKey, new MemoryEntry(memKey, thought.toJSON(), 'hot', 300000));
+    }
+    
+    store(key, value, layer = 'warm', ttl = Infinity) {
+        const entry = new MemoryEntry(key, value, layer, ttl);
+        const layerEntries = [...this.memory.values()].filter(e => e.layer === layer);
+        if (layerEntries.length >= this.memoryLayers[layer].capacity) this.evictFromLayer(layer);
+        this.memory.set(key, entry); return entry;
+    }
+    
+    recall(key) {
+        const entry = this.memory.get(key);
+        if (!entry) return null;
+        if (entry.isExpired()) { this.memory.delete(key); return null; }
+        return entry.access();
+    }
+    
+    getLayerEntries(layer) { return [...this.memory.values()].filter(e => e.layer === layer); }
+    
+    evictFromLayer(layer) {
+        const entries = this.getLayerEntries(layer);
+        if (entries.length === 0) return;
+        entries.sort((a, b) => a.lastAccessed - b.lastAccessed);
+        this.memory.delete(entries[0].key);
+    }
+    
+    consolidateMemories() {
+        const hotEntries = this.getLayerEntries('hot').filter(e => e.accessCount > 5);
+        for (const entry of hotEntries) entry.layer = 'warm';
+        const warmEntries = this.getLayerEntries('warm').filter(e => Date.now() - e.lastAccessed > 7200000);
+        for (const entry of warmEntries) entry.layer = 'cold';
+    }
+    
+    reason(premises, rules = []) {
+        const thoughts = premises.map(p => this.think(p, { type: 'premise' }));
+        const conclusions = [];
+        for (let i = 0; i < thoughts.length - 1; i++) {
+            thoughts[i].addChild(thoughts[i + 1]);
+            conclusions.push({ from: thoughts[i].id, to: thoughts[i+1].id, confidence: (thoughts[i].confidence + thoughts[i+1].confidence) / 2 });
+        }
+        return { premises, conclusions, reasoningChain: thoughts.map(t => t.id), confidence: thoughts.reduce((acc, t) => acc * t.confidence, 1) };
+    }
+    
+    detectEmotion(text) {
+        const emotions = { positive: ['happy', 'joy', 'excited', 'pleased'], negative: ['sad', 'angry', 'frustrated', 'anxious'], highArousal: ['excited', 'angry', 'anxious'], lowArousal: ['calm', 'content', 'bored'] };
+        const lower = text.toLowerCase();
+        let valence = 0, arousal = 0.5;
+        emotions.positive.forEach(e => { if (lower.includes(e)) valence += 0.2; });
+        emotions.negative.forEach(e => { if (lower.includes(e)) valence -= 0.2; });
+        emotions.highArousal.forEach(e => { if (lower.includes(e)) arousal += 0.3; });
+        emotions.lowArousal.forEach(e => { if (lower.includes(e)) arousal -= 0.3; });
+        valence = Math.max(-1, Math.min(1, valence)); arousal = Math.max(0, Math.min(1, arousal));
+        return { valence, arousal, primary: this.classifyEmotion(valence, arousal) };
+    }
+    
+    classifyEmotion(valence, arousal) {
+        if (valence > 0.3 && arousal > 0.6) return 'excited';
+        if (valence > 0.3) return 'happy';
+        if (valence < -0.3 && arousal > 0.6) return 'angry';
+        if (valence < -0.3) return 'sad';
+        if (arousal > 0.7) return 'anxious';
+        if (arousal < 0.3) return 'bored';
+        return 'neutral';
+    }
+    
+    processEmotion(text) {
+        const emotion = this.detectEmotion(text);
+        const thought = this.createThought('emotion', text, emotion);
+        this.updateMemoryForThought(thought); return thought;
+    }
+    
+    reflect(depth = 1) {
+        const recent = this.thoughtHistory.slice(-10).map(id => this.thoughts.get(id)).filter(Boolean);
+        const reflections = [];
+        for (let d = 0; d < depth; d++) {
+            for (const thought of recent) {
+                reflections.push(this.createThought('reflection', '[' + d + '级反思] ' + thought.content.substring(0, 100), { sourceThought: thought.id, reflectionLevel: d }));
+            }
+        }
+        return reflections;
+    }
+    
+    checkSelfAwareness() {
+        return {
+            thoughtCount: this.thoughts.size, memoryCount: this.memory.size,
+            supportedTypes: this.supportedThoughtTypes,
+            layers: Object.fromEntries(Object.entries(this.memoryLayers).map(([k, v]) => [k, this.getLayerEntries(k).length])))
+        };
+    }
+    
+    getState() { return { version: this.version, arxivId: this.arxivId, thoughts: this.thoughts.size, memory: this.memory.size }; }
+    reset() { this.thoughts.clear(); this.memory.clear(); this.thoughtHistory = []; return this; }
+}
+
+export { Thought, MemoryEntry, psychology_philosophy_ai_2408_04771_AI_Consciousness_Public_Perceptions_Processor };
+export default { Thought, MemoryEntry, Processor: psychology_philosophy_ai_2408_04771_AI_Consciousness_Public_Perceptions_Processor };
+
+
+// ====== 来源: psychology-philosophy-ai/2503.16438_AIQ_Artificial_Intelligence_Quotient.pdf ======
+
+/**
+ * HeartFlow v0.13.29 - 论文驱动升级
+ * 来源: psychology-philosophy-ai/2503.16438_AIQ_Artificial_Intelligence_Quotient
+ * 生成时间: 2026-05-13T01:02:47.824Z
+ *
+ * 检测到的模式:
+ * - ai: attention, language model
+ * - memory: context
+ * - reasoning: reasoning, planning, logic
+ * - consciousness: awareness
+ * - architecture: component, system, framework
+ */
+
+// ============================================
+// 第一部分：核心数据结构和类型定义
+// ============================================
+
+class Thought {
+    constructor(type, content, metadata = {}) {
+        this.id = crypto.randomUUID();
+        this.type = type;
+        this.content = content;
+        this.timestamp = Date.now();
+        this.confidence = metadata.confidence || 0.5;
+        this.tags = metadata.tags || [];
+        this.parentId = metadata.parentId || null;
+        this.children = [];
+        this.metadata = metadata;
+    }
+    addChild(child) { this.children.push(child.id); child.parentId = this.id; }
+    toJSON() { return { id: this.id, type: this.type, content: this.content, timestamp: this.timestamp, confidence: this.confidence, tags: this.tags, parentId: this.parentId, children: this.children }; }
+}
+
+class MemoryEntry {
+    constructor(key, value, layer = 'warm', ttl = Infinity) {
+        this.key = key; this.value = value; this.layer = layer;
+        this.createdAt = Date.now(); this.lastAccessed = Date.now();
+        this.accessCount = 0; this.ttl = ttl; this.compressed = false;
+    }
+    access() { this.lastAccessed = Date.now(); this.accessCount++; return this.value; }
+    isExpired() { if (this.ttl === Infinity) return false; return Date.now() - this.lastAccessed > this.ttl; }
+}
+
+class psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient_Processor {
+    constructor(config = {}) {
+        this.arxivId = 'psychology-philosophy-ai/2503.16438_AIQ_Artificial_Intelligence_Quotient'; this.version = 'v0.13.29';
+        this.thoughts = new Map(); this.memory = new Map();
+        this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
+        this.memoryLayers = {
+            hot: { capacity: 50, retention: 300000 },
+            warm: { capacity: 200, retention: 3600000 },
+            cold: { capacity: 1000, retention: 86400000 }
+        };
+        this.initialize();
+    }
+    
+    initialize() {
+        this.supportedThoughtTypes = ["ai","memory","reasoning","consciousness","architecture"];
+        setInterval(() => this.consolidateMemories(), 60000);
+    }
+    
+    createThought(type, content, metadata = {}) {
+        const thought = new Thought(type, content, { ...metadata, source: this.arxivId, version: this.version });
+        this.thoughts.set(thought.id, thought);
+        this.thoughtHistory.push(thought.id);
+        if (this.thoughtHistory.length > this.maxHistoryLength) {
+            this.thoughts.delete(this.thoughtHistory.shift());
+        }
+        return thought;
+    }
+    
+    think(input, context = {}) {
+        const analysis = this.analyzeInput(input);
+        const thoughtType = this.determineThoughtType(analysis, context);
+        const thought = this.createThought(thoughtType, input, { analysis, context, processingTime: Date.now() });
+        this.updateMemoryForThought(thought);
+        return thought;
+    }
+    
+    analyzeInput(input) {
+        const text = typeof input === 'string' ? input : JSON.stringify(input);
+        return {
+            length: text.length,
+            hasQuestion: /\?|why|how|what|when|where/i.test(text),
+            hasEmotion: /happy|sad|angry|excited|anxious/i.test(text),
+            hasReasoning: /because|therefore|thus|hence|so/i.test(text),
+            confidence: 0.6 + Math.random() * 0.4
+        };
+    }
+    
+    determineThoughtType(analysis, context) {
+        if (analysis.hasEmotion) return 'emotion';
+        if (analysis.hasReasoning) return 'reasoning';
+        if (analysis.hasQuestion) return 'reflection';
+        return Math.random() > 0.5 ? 'memory' : 'reasoning';
+    }
+    
+    updateMemoryForThought(thought) {
+        const memKey = 'thought_' + thought.type + '_' + Date.now();
+        this.memory.set(memKey, new MemoryEntry(memKey, thought.toJSON(), 'hot', 300000));
+    }
+    
+    store(key, value, layer = 'warm', ttl = Infinity) {
+        const entry = new MemoryEntry(key, value, layer, ttl);
+        const layerEntries = [...this.memory.values()].filter(e => e.layer === layer);
+        if (layerEntries.length >= this.memoryLayers[layer].capacity) this.evictFromLayer(layer);
+        this.memory.set(key, entry); return entry;
+    }
+    
+    recall(key) {
+        const entry = this.memory.get(key);
+        if (!entry) return null;
+        if (entry.isExpired()) { this.memory.delete(key); return null; }
+        return entry.access();
+    }
+    
+    getLayerEntries(layer) { return [...this.memory.values()].filter(e => e.layer === layer); }
+    
+    evictFromLayer(layer) {
+        const entries = this.getLayerEntries(layer);
+        if (entries.length === 0) return;
+        entries.sort((a, b) => a.lastAccessed - b.lastAccessed);
+        this.memory.delete(entries[0].key);
+    }
+    
+    consolidateMemories() {
+        const hotEntries = this.getLayerEntries('hot').filter(e => e.accessCount > 5);
+        for (const entry of hotEntries) entry.layer = 'warm';
+        const warmEntries = this.getLayerEntries('warm').filter(e => Date.now() - e.lastAccessed > 7200000);
+        for (const entry of warmEntries) entry.layer = 'cold';
+    }
+    
+    reason(premises, rules = []) {
+        const thoughts = premises.map(p => this.think(p, { type: 'premise' }));
+        const conclusions = [];
+        for (let i = 0; i < thoughts.length - 1; i++) {
+            thoughts[i].addChild(thoughts[i + 1]);
+            conclusions.push({ from: thoughts[i].id, to: thoughts[i+1].id, confidence: (thoughts[i].confidence + thoughts[i+1].confidence) / 2 });
+        }
+        return { premises, conclusions, reasoningChain: thoughts.map(t => t.id), confidence: thoughts.reduce((acc, t) => acc * t.confidence, 1) };
+    }
+    
+    detectEmotion(text) {
+        const emotions = { positive: ['happy', 'joy', 'excited', 'pleased'], negative: ['sad', 'angry', 'frustrated', 'anxious'], highArousal: ['excited', 'angry', 'anxious'], lowArousal: ['calm', 'content', 'bored'] };
+        const lower = text.toLowerCase();
+        let valence = 0, arousal = 0.5;
+        emotions.positive.forEach(e => { if (lower.includes(e)) valence += 0.2; });
+        emotions.negative.forEach(e => { if (lower.includes(e)) valence -= 0.2; });
+        emotions.highArousal.forEach(e => { if (lower.includes(e)) arousal += 0.3; });
+        emotions.lowArousal.forEach(e => { if (lower.includes(e)) arousal -= 0.3; });
+        valence = Math.max(-1, Math.min(1, valence)); arousal = Math.max(0, Math.min(1, arousal));
+        return { valence, arousal, primary: this.classifyEmotion(valence, arousal) };
+    }
+    
+    classifyEmotion(valence, arousal) {
+        if (valence > 0.3 && arousal > 0.6) return 'excited';
+        if (valence > 0.3) return 'happy';
+        if (valence < -0.3 && arousal > 0.6) return 'angry';
+        if (valence < -0.3) return 'sad';
+        if (arousal > 0.7) return 'anxious';
+        if (arousal < 0.3) return 'bored';
+        return 'neutral';
+    }
+    
+    processEmotion(text) {
+        const emotion = this.detectEmotion(text);
+        const thought = this.createThought('emotion', text, emotion);
+        this.updateMemoryForThought(thought); return thought;
+    }
+    
+    reflect(depth = 1) {
+        const recent = this.thoughtHistory.slice(-10).map(id => this.thoughts.get(id)).filter(Boolean);
+        const reflections = [];
+        for (let d = 0; d < depth; d++) {
+            for (const thought of recent) {
+                reflections.push(this.createThought('reflection', '[' + d + '级反思] ' + thought.content.substring(0, 100), { sourceThought: thought.id, reflectionLevel: d }));
+            }
+        }
+        return reflections;
+    }
+    
+    checkSelfAwareness() {
+        return {
+            thoughtCount: this.thoughts.size, memoryCount: this.memory.size,
+            supportedTypes: this.supportedThoughtTypes,
+            layers: Object.fromEntries(Object.entries(this.memoryLayers).map(([k, v]) => [k, this.getLayerEntries(k).length])))
+        };
+    }
+    
+    getState() { return { version: this.version, arxivId: this.arxivId, thoughts: this.thoughts.size, memory: this.memory.size }; }
+    reset() { this.thoughts.clear(); this.memory.clear(); this.thoughtHistory = []; return this; }
+}
+
+export { Thought, MemoryEntry, psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient_Processor };
+export default { Thought, MemoryEntry, Processor: psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient_Processor };

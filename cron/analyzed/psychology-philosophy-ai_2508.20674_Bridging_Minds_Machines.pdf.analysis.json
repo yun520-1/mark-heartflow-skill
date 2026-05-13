@@ -1,5 +1,5 @@
 {
-  "arxivId": "psychology_philosophy_ai_2508_20674_Bridging_Minds_Machines",
+  "arxivId": "psychology-philosophy-ai/2508.20674_Bridging_Minds_Machines",
   "filename": "psychology-philosophy-ai/2508.20674_Bridging_Minds_Machines.pdf",
   "keywords": {
     "ai": [
@@ -8,18 +8,14 @@
       "transformer",
       "attention",
       "language model",
-      "deep learning",
-      "llm",
-      "gpt",
-      "agent"
+      "deep learning"
     ],
     "memory": [
       "memory",
       "retrieval",
       "context",
       "store",
-      "buffer",
-      "semantic"
+      "buffer"
     ],
     "reasoning": [
       "reasoning",
@@ -37,8 +33,7 @@
       "consciousness",
       "awareness",
       "self-reflection",
-      "metacognition",
-      "intentionality"
+      "metacognition"
     ],
     "architecture": [
       "layer",
@@ -46,7 +41,6 @@
       "framework"
     ]
   },
-  "abstract": "Bridging Minds and Machines:\nToward an Integration of AI and Cognitive Science\nRui Mao1, Qian Liu2, Xiao Li3, Erik Cambria1*, Amir Hussain4\n1Nanyang Technological University, Singapore.\n2University of Auckland, New Zealand.\n3University of Aberdeen, United Kingdom.\n4Edinburgh Napier University, United Kingdom.\n*Corresponding author(s). E-mail(s): cambria@ntu.edu.sg;\nContributing authors: rui.mao@ntu.edu.sg; liu.qian@auckland.ac.nz;\nxiao.li@abdn.ac.uk; a.hussain@napier.ac.uk;\nAbstract\nCognitive Sc",
   "textLength": 43994,
-  "timestamp": "2026-05-12T23:27:42.148Z"
+  "timestamp": "2026-05-13T01:02:55.402Z"
 }

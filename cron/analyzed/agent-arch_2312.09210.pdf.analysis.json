@@ -1,16 +1,24 @@
 {
-  "paper": "agent-arch/2312.09210.pdf",
-  "timestamp": "2026-05-12T15:16:10.532Z",
-  "found": {
+  "arxivId": "agent-arch/2312.09210",
+  "filename": "agent-arch/2312.09210.pdf",
+  "keywords": {
     "ai": [
-      "memory|attenton|reasonng|plannng"
+      "attention"
     ],
+    "memory": [],
+    "reasoning": [
+      "logic"
+    ],
+    "emotion": [
+      "affect"
+    ],
+    "consciousness": [],
     "architecture": [
-      "factory|observer|ppelne|mddleware",
-      "component|module|plugn|extenson"
-    ],
-    "code": [
-      "functon\\s+\\w+\\s*\\("
+      "component",
+      "layer",
+      "system"
     ]
-  }
+  },
+  "textLength": 54698,
+  "timestamp": "2026-05-13T01:02:41.273Z"
 }

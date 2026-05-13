@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.16 - 论文驱动升级
+ * HeartFlow v0.13.29 - 论文驱动升级
  * 来源: psychology-philosophy-ai/2405.02370_NNAC_Artificial_Consciousness
- * 生成时间: 2026-05-12T15:25:18.045Z
+ * 生成时间: 2026-05-13T01:02:43.985Z
  *
  * 检测到的模式:
  * - ai: neural network
@@ -44,7 +44,7 @@ class MemoryEntry {
 
 class psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_Processor {
     constructor(config = {}) {
-        this.arxivId = 'psychology-philosophy-ai/2405.02370_NNAC_Artificial_Consciousness'; this.version = 'v0.13.16';
+        this.arxivId = 'psychology-philosophy-ai/2405.02370_NNAC_Artificial_Consciousness'; this.version = 'v0.13.29';
         this.thoughts = new Map(); this.memory = new Map();
         this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
         this.memoryLayers = {

@@ -266,22 +266,33 @@ async function runUpgrade() {
     log('目标版本: ' + queue.nextVersion);
     log('论文进度: ' + queue.papersRead.length + '/' + queue.papers.length);
 
-    const papersToRead = 2;
+    const papersToRead = 4;
     let processed = 0;
+    let upgradedCount = queue.upgradedPapersSinceUpgrade || 0; // 持久化累计
     const allCode = [];
+
+    // 重置机制：只有当所有有效论文都读完才重置新一轮升级
+    const validPapers = queue.papers.filter(p => existsSync(join(PAPERS_DIR, p)));
+    const allRead = validPapers.length > 0 && validPapers.every(p => queue.papersRead.includes(p));
+    if (allRead) {
+        queue.papersIndex = 0;
+        queue.papersRead = [];
+        queue.upgradedPapersSinceUpgrade = 0;
+        log('[重置] 所有有效论文已读完，开始新一轮升级周期');
+    }
 
     for (let i = queue.papersIndex; i < queue.papers.length && processed < papersToRead; i++) {
         const paper = queue.papers[i];
-        if (queue.papersRead.includes(paper)) continue;
+        if (queue.papersRead.includes(paper)) { queue.papersIndex = i + 1; continue; }
         const paperPath = join(PAPERS_DIR, paper);
         
-        if (!existsSync(paperPath)) { log('[跳过] 文件不存在: ' + paper); queue.papersRead.push(paper); continue; }
+        if (!existsSync(paperPath)) { log('[跳过] 文件不存在: ' + paper); queue.papersIndex = i + 1; continue; }
 
         log('------------------------------------------');
         log('处理论文: ' + paper);
 
         const text = extractText(paperPath);
-        if (!text || text.length < 100) { log('[警告] 无法提取文本: ' + paper); queue.papersRead.push(paper); continue; }
+        if (!text || text.length < 100) { log('[警告] 无法提取文本: ' + paper); queue.papersIndex = i + 1; continue; }
 
         const analysis = analyzePaperDeep(text, paper);
         const kwSummary = Object.entries(analysis.keywords).filter(([_,v]) => v.length>0).map(([k,v]) => k + ':' + v.length).join(', ');
@@ -298,12 +309,14 @@ async function runUpgrade() {
         queue.papersRead.push(paper);
         queue.papersIndex = i + 1;
         processed++;
+        upgradedCount++;
         log('完成: ' + paper);
     }
 
+    queue.upgradedPapersSinceUpgrade = upgradedCount;
     saveQueue(queue);
 
-    if (queue.papersRead.length % 5 === 0 && queue.papersRead.length > 0) {
+    if (upgradedCount >= 4) {
         log('==========================================');
         log('触发版本升级!');
         log('==========================================');
@@ -313,7 +326,15 @@ async function runUpgrade() {
         mkdirSync(upgradeDir, { recursive: true });
 
         const totalLines = allCode.reduce((sum, c) => sum + c.lines, 0);
-        const notes = '# HeartFlow ' + newVersion + ' 升级记录\n\n## 升级时间\n' + new Date().toISOString() + '\n\n## 升级类型\nPaper-based upgrade (每5篇论文触发一次)\n\n## 代码生成统计\n- 本次处理论文数: ' + allCode.length + '\n- 生成代码总行数: ' + totalLines + ' 行\n- 平均每篇: ' + Math.round(totalLines / allCode.length) + ' 行\n\n## 本次升级整合的论文\n' + queue.papersRead.slice(-5).map(p => '- ' + p).join('\n') + '\n\n## 升级内容\n- AI模式整合 (' + allCode.length + ' 个处理器)\n- 架构优化\n- 代码质量改进\n';
+        
+        // 真善美检验：代码行数必须 >= 300
+        if (totalLines < 300) {
+            log('[真善美检验] 本次生成代码 ' + totalLines + ' 行 < 300行，暂不触发升级');
+            log('[真善美] 继续累积... 当前进度: ' + queue.papersRead.length + '篇');
+            return;
+        }
+        
+        const notes = '# HeartFlow ' + newVersion + ' 升级记录\n\n## 升级时间\n' + new Date().toISOString() + '\n\n## 升级类型\nPaper-based upgrade (每4篇论文触发一次)\n\n## 真善美检验\n- 代码行数: ' + totalLines + ' 行 (>= 300)\n- 本次处理论文数: ' + allCode.length + '\n- 平均每篇: ' + Math.round(totalLines / allCode.length) + ' 行\n\n## 本次升级整合的论文\n' + queue.papersRead.slice(-4).map(p => '- ' + p).join('\n') + '\n\n## 升级内容\n- AI模式整合 (' + allCode.length + ' 个处理器)\n- 架构优化\n- 代码质量改进\n';
 
         writeFileSync(join(upgradeDir, 'UPGRADE_NOTES.md'), notes);
 
@@ -326,6 +347,7 @@ async function runUpgrade() {
         queue.lastUpgradeDate = new Date().toISOString();
         queue.upgradeCount++;
         queue.totalCodeAdded = (queue.totalCodeAdded || 0) + totalLines;
+        queue.upgradedPapersSinceUpgrade = 0; // 重置计数器
 
         writeFileSync(join(SKILL_DIR, 'VERSION'), queue.currentVersion);
         saveQueue(queue);

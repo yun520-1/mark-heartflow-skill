@@ -1,0 +1,42 @@
+{
+  "arxivId": "psychology-philosophy-ai/2405.19275_Child_Development_AI",
+  "filename": "psychology-philosophy-ai/2405.19275_Child_Development_AI.pdf",
+  "keywords": {
+    "ai": [
+      "reinforcement learning",
+      "neural network",
+      "transformer",
+      "attention",
+      "language model",
+      "deep learning"
+    ],
+    "memory": [
+      "memory",
+      "context",
+      "store"
+    ],
+    "reasoning": [
+      "logic",
+      "problem solving"
+    ],
+    "emotion": [
+      "emotion",
+      "sentiment",
+      "affect",
+      "feeling",
+      "mood",
+      "arousal"
+    ],
+    "consciousness": [
+      "awareness"
+    ],
+    "architecture": [
+      "component",
+      "layer",
+      "system",
+      "framework"
+    ]
+  },
+  "textLength": 67956,
+  "timestamp": "2026-05-13T01:03:04.126Z"
+}

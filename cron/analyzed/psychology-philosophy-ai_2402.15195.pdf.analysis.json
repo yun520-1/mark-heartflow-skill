@@ -1,0 +1,36 @@
+{
+  "arxivId": "psychology-philosophy-ai/2402.15195",
+  "filename": "psychology-philosophy-ai/2402.15195.pdf",
+  "keywords": {
+    "ai": [
+      "neural network",
+      "transformer",
+      "attention"
+    ],
+    "memory": [
+      "context"
+    ],
+    "reasoning": [
+      "reasoning",
+      "logic"
+    ],
+    "emotion": [
+      "emotion",
+      "sentiment",
+      "affect",
+      "feeling",
+      "valence",
+      "arousal"
+    ],
+    "consciousness": [],
+    "architecture": [
+      "module",
+      "component",
+      "system",
+      "framework",
+      "pipeline"
+    ]
+  },
+  "textLength": 43503,
+  "timestamp": "2026-05-13T01:03:02.063Z"
+}
