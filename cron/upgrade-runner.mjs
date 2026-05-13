@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/opt/homebrew/bin/node
 /**
  * HeartFlow Paper Upgrade Runner v1.0.0 - TRUE Edition
  */

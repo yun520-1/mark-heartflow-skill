@@ -1,9 +1,15 @@
 /**
  * ResponseStyle - 响应风格生成器
  * 根据当前情感生成对应的 responseStyle 指导
+ *
+ * 优化点：
+ * - 从 EmotionKeywords.js 导入（用于动态增强）
+ * - getStyleGuide() 增加 emotionTrajectory 字段（上升/平稳/下降）
+ * - 增加 generateResponseHint() 方法：结合共情短语 + 风格指导生成完整提示
  */
 
 const { EmotionTypes, EmotionDefinitions } = require('./EmotionStates');
+const { generateEmpathy } = require('./EmpathyGenerator');
 
 // Emoji 前缀映射
 const emojiPrefix = {
@@ -68,12 +74,22 @@ const styleGuides = {
 };
 
 /**
+ * 轨迹对应的补充指导
+ */
+const trajectoryGuidance = {
+  rising: '用户的情感正在升温，可以更加投入和热情地回应',
+  stable: '用户的情感状态稳定，保持当前节奏即可',
+  declining: '用户的情感正在消退，考虑简化回应或引导新话题'
+};
+
+/**
  * 生成当前情感对应的完整风格指导对象
  * @param {string} emotion - 情感类型
  * @param {number} intensity - 强度 1-5
+ * @param {string} trajectory - 情感轨迹：rising/stable/declining
  * @returns {object} 风格指导
  */
-function getStyleGuide(emotion, intensity = 3) {
+function getStyleGuide(emotion, intensity = 3, trajectory = 'stable') {
   const guide = styleGuides[emotion] || styleGuides[EmotionTypes.CALM];
   const def = EmotionDefinitions[emotion];
 
@@ -81,6 +97,8 @@ function getStyleGuide(emotion, intensity = 3) {
     ...guide,
     emoji: guide.prefix,
     intensity,
+    trajectory,
+    trajectoryGuidance: trajectoryGuidance[trajectory] || trajectoryGuidance.stable,
     intensityLabel: def ? def.traits.join('、') : '',
     definition: def?.description || '',
     traits: def?.traits || [],
@@ -100,6 +118,34 @@ function generateStyleDirective(emotion, intensity = 3) {
 }
 
 /**
+ * 生成完整的响应提示（结合共情 + 风格）
+ * @param {string} emotion - 情感类型
+ * @param {number} intensity - 强度 1-5
+ * @param {string} trajectory - 情感轨迹
+ * @param {string} context - 上下文提示（可选）
+ * @returns {object} - { empathyHint, styleHint, fullHint }
+ */
+function generateResponseHint(emotion, intensity = 3, trajectory = 'stable', context = '') {
+  // 生成共情提示
+  const empathy = generateEmpathy(emotion, intensity, context);
+
+  // 生成风格指导
+  const guide = getStyleGuide(emotion, intensity, trajectory);
+
+  // 完整提示 = 共情短语 + 风格指导
+  const fullHint = `${empathy.phrase} ${guide.responseMode}。${empathy.followUp}`;
+
+  return {
+    empathyHint: empathy.phrase,
+    followUp: empathy.followUp,
+    suggestions: empathy.suggestions,
+    styleHint: generateStyleDirective(emotion, intensity),
+    styleGuide: guide,
+    fullHint
+  };
+}
+
+/**
  * 获取 emoji 前缀
  */
 function getEmojiPrefix(emotion) {
@@ -109,6 +155,8 @@ function getEmojiPrefix(emotion) {
 module.exports = {
   getStyleGuide,
   generateStyleDirective,
+  generateResponseHint,
   getEmojiPrefix,
-  styleGuides
+  styleGuides,
+  trajectoryGuidance
 };
