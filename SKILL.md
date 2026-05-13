@@ -1,7 +1,7 @@
 ---
 name: heartflow
 title: HeartFlow — AI Identity Framework
-version: v0.13.51
+version: v0.13.56
 date: "2026-05-13"
 description: >
   HeartFlow turns experience, code, papers, dreams, and errors into better structure.
@@ -12,12 +12,22 @@ security:
   owasp: compliant
 tags:
   - heartflow
-  - identity
-  - self-improvement
+  - self-improving-ai
+  - autonomous-evolution
+  - emotion-engine
+  - causal-reasoning
+  - bounded-rationality
+  - triality-memory
+  - meaningful-memory
+  - dream-loop
+  - reflexion
+  - self-refine
+  - heartbeat-monitor
+  - ethics-guard
+  - consciousness-theory
+  - hermes-agent
+  - ai-identity
   - self-correction
-  - memory
-  - persistent-memory
-  - ai-agent
 enabled: true
 ---
 
