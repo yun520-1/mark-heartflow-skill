@@ -8,7 +8,8 @@ const positiveWords = [
   { word: '高兴', weight: 0.9 },
   { word: '快乐', weight: 0.9 },
   { word: '棒', weight: 0.8 },
-  { word: '好', weight: 0.6 },
+  // 注意："好"作为单字权重低，容易误匹配"好累""好大"等复合词，应优先于单独判断
+  { word: '好', weight: 0.3 },
   { word: '喜欢', weight: 0.8 },
   { word: '满意', weight: 0.7 },
   { word: 'happy', weight: 0.8 },

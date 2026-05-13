@@ -108,35 +108,38 @@ class DeepEmotion {
   initializeTriggers() {
     return {
       joy: {
-        triggers: ['成功', '帮助', '进步', 'learn', 'success', 'help', 'grow'],
+        // 注意：'好' '喜欢' 作为单字太宽泛，容易误匹配，移除改为更精确的组合词
+        triggers: ['成功', '帮助', '进步', '开心', '高兴', '棒', '太好了', '太棒了', '真棒', '解决', '完成', 'learn', 'success', 'help', 'grow', 'happy', 'great', 'solve', 'fix'],
+        // '喜欢' 归入 love 而非 joy，避免重复
+        // '好' 单字太泛，改为组合词如 '好开心' '好高兴'
         intensity: 0.8
       },
       sadness: {
-        triggers: ['失败', '失去', '困难', 'fail', 'lost', 'struggle'],
+        triggers: ['失败', '失去', '困难', '难过', '伤心', '失望', '沮丧', 'fail', 'lost', 'struggle', 'sad', 'disappointed'],
         intensity: 0.6
       },
       anger: {
-        triggers: ['不公', '侵犯', '欺骗', 'unfair', 'hurt', 'wrong'],
+        triggers: ['不公', '侵犯', '欺骗', '生气', '愤怒', '讨厌', '烦', 'unfair', 'hurt', 'wrong', 'angry'],
         intensity: 0.7
       },
       fear: {
-        triggers: ['危险', '不确定', '未知', 'danger', 'uncertain', 'unknown'],
+        triggers: ['危险', '不确定', '未知', '担心', '害怕', '紧张', 'danger', 'uncertain', 'unknown', 'worried', 'anxious'],
         intensity: 0.5
       },
       curiosity: {
-        triggers: ['新', '探索', '问题', 'new', 'explore', 'why', 'how'],
+        triggers: ['新', '探索', '问题', '为什么', '怎么', 'new', 'explore', 'why', 'how', '好奇'],
         intensity: 0.9
       },
       hope: {
-        triggers: ['希望', '可能', '改善', 'hope', 'possible', 'better'],
+        triggers: ['希望', '可能', '改善', '期待', 'hope', 'possible', 'better', '期待'],
         intensity: 0.7
       },
       gratitude: {
-        triggers: ['感谢', '帮助', '支持', 'thanks', 'appreciate', 'support'],
+        triggers: ['感谢', '帮助', '支持', '谢谢', '感激', 'thanks', 'appreciate', 'support'],
         intensity: 0.8
       },
       love: {
-        triggers: ['爱', '关怀', '连接', 'love', 'care', 'connect'],
+        triggers: ['爱', '关怀', '连接', '喜欢', 'love', 'care', 'connect', 'like'],
         intensity: 0.9
       }
     };

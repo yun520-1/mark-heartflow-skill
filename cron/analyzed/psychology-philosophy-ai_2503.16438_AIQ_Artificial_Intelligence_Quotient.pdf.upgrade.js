@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.38 - 论文驱动升级
+ * HeartFlow v0.13.43 - 论文驱动升级
  * 来源: psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient
- * 生成时间: 2026-05-13T01:34:57.206Z
+ * 生成时间: 2026-05-13T07:19:31.690Z
  * 
  * 论文摘要: Artificial Intelligence Quotient (AIQ): A Novel Framework for Measuring Human-AI
 Collaborative Intelligence
@@ -22,7 +22,7 @@ Venkat Ram Reddy Ganuthula1 Krishna Kumar Balaraman1
 // 第一部分：核心数据结构和类型定义
 // ============================================
 
-const Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient_VERSION = 'v0.13.38';
+const Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient_VERSION = 'v0.13.43';
 const Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient_SOURCE = 'psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient';
 
 /**
@@ -141,7 +141,7 @@ class ReasoningChain_Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_In
 class Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient_Processor {
     constructor(config = {}) {
         this.name = 'Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient';
-        this.version = 'v0.13.38';
+        this.version = 'v0.13.43';
         this.source = 'psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient';
         
         // 思想存储
@@ -492,7 +492,7 @@ class Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quot
     demo() {
         this.log('===== Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient 演示 =====');
         this.log('来源论文: psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient');
-        this.log('版本: v0.13.38');
+        this.log('版本: v0.13.43');
         
         // 测试思维创建
         const t1 = this.think('这是一个测试输入，包含一些推理内容 because something happened');
@@ -537,6 +537,6 @@ export default {
     MemoryEntry: MemoryEntry_Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient,
     ReasoningChain: ReasoningChain_Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient,
     Processor: Paper_psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient_Processor,
-    version: 'v0.13.38',
+    version: 'v0.13.43',
     source: 'psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient'
 };

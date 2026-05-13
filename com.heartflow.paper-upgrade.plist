@@ -7,7 +7,9 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/apple/.hermes/skills/ai/mark-heartflow-skill/run-paper-upgrade.sh</string>
+        <string>-l</string>
+        <string>-c</string>
+        <string>export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"; /Users/apple/.hermes/skills/ai/mark-heartflow-skill/run-paper-upgrade.sh</string>
     </array>
     <key>StartInterval</key>
     <integer>1800</integer>

@@ -42,9 +42,10 @@ var MemoryRecall, EthicsGuard;
 const { EmbodiedCore } = require('./embodied/embodied-core.js');
 const { DeepEmotion } = require('./emotion/deep-emotion.js');
 const { EmotionStates, createEmotionState } = require('./emotion/EmotionStates.js');
-const { transition } = require('./emotion/EmotionTransition.js');
-const { getStyleGuide, generateStyleDirective } = require('./emotion/ResponseStyle.js');
+const { transition, padToEmotion } = require('./emotion/EmotionTransition.js');
+const { getStyleGuide, generateStyleDirective, generateResponseHint } = require('./emotion/ResponseStyle.js');
 const { detectEmotionNeed } = require('./emotion/EmotionTrigger.js');
+const { generateEmpathy } = require('./emotion/EmpathyGenerator.js');
 const FlowPredictor = require('./autonomy/flow-predictor.js');
 
 // ─── 工具层（v11.43.2）────────────────────────────────────────────────────
@@ -285,21 +286,36 @@ class HeartFlow extends EventEmitter {
     result.truthCheck = await this.identity.judgeTruthfulness(input);
 
     // 5. 表层情感检测与响应风格注入
-    const emotionNeed = detectEmotionNeed(input);
+    const padState = this.deepEmotion.state.dimensions;
+    const emotionNeed = detectEmotionNeed(input, padState);
     if (emotionNeed.needsEmotion || this.surfaceEmotion.current) {
-      const padState = this.deepEmotion.state.dimensions;
       const trans = transition(input, padState, this.surfaceEmotion.current);
       const newState = createEmotionState(trans.to, trans.intensity);
       this._updateSurfaceEmotion(newState);
-      const style = getStyleGuide(trans.to, trans.intensity);
+      const style = getStyleGuide(trans.to, trans.intensity, trans.trajectory);
       result.surfaceEmotion = {
         emotion: trans.to,
         intensity: trans.intensity,
+        confidence: trans.confidence,
+        trajectory: trans.trajectory,
         styleGuide: style,
         styleDirective: generateStyleDirective(trans.to, trans.intensity),
         from: trans.from,
-        triggers: trans.triggers
+        triggers: trans.triggers,
+        decayed: trans.decayed || false,
+        textAnalysis: emotionNeed.textAnalysis
       };
+
+      // 6. 共情注入：基于情感生成共情话语
+      if (emotionNeed.needsEmotion || trans.confidence > 0.3) {
+        const empathy = generateEmpathy(trans.to, trans.intensity);
+        result.empathy = {
+          phrase: empathy.phrase,
+          followUp: empathy.followUp,
+          suggestions: empathy.suggestions,
+          responseHint: generateResponseHint(trans.to, trans.intensity, trans.trajectory)
+        };
+      }
     }
 
     // 6. 技能路由（声明式）
