@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.28 - 论文驱动升级
+ * HeartFlow v0.13.32 - 论文驱动升级
  * 来源: agent-arch/2303.11366
- * 生成时间: 2026-05-13T01:02:36.648Z
+ * 生成时间: 2026-05-13T01:05:32.478Z
  *
  * 检测到的模式:
  * - ai: reinforcement learning, language model
@@ -44,7 +44,7 @@ class MemoryEntry {
 
 class agent_arch_2303_11366_Processor {
     constructor(config = {}) {
-        this.arxivId = 'agent-arch/2303.11366'; this.version = 'v0.13.28';
+        this.arxivId = 'agent-arch/2303.11366'; this.version = 'v0.13.32';
         this.thoughts = new Map(); this.memory = new Map();
         this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
         this.memoryLayers = {

@@ -90,8 +90,20 @@ function _ensureV11432() {
 }
 
 // ─── 版本常量 ───────────────────────────────────────────────────────────────
-const VERSION = 'v0.13.12';
-const BUILD_DATE = '2026-05-11';
+let VERSION = 'v0.13.12';
+let BUILD_DATE = '2026-05-11';
+try {
+  const root = path.resolve(__dirname, '..', '..');
+  const verFile = path.join(root, 'VERSION');
+  if (fs.existsSync(verFile)) {
+    const verContent = fs.readFileSync(verFile, 'utf8').trim();
+    if (verContent) {
+      VERSION = verContent;
+      const stats = fs.statSync(verFile);
+      BUILD_DATE = stats.mtime.toISOString().split('T')[0];
+    }
+  }
+} catch(e) { /* keep defaults */ }
 
 // ─── 路径配置 ────────────────────────────────────────────────────────────────
 function getRootPath() {

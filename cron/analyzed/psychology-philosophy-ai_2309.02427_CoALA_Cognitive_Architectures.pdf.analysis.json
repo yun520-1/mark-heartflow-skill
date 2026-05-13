@@ -1,18 +1,23 @@
 {
-  "arxivId": "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures",
+  "arxivId": "psychology_philosophy_ai_2309_02427_CoALA_Cognitive_Architectures",
   "filename": "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
   "keywords": {
     "ai": [
       "reinforcement learning",
       "transformer",
-      "language model"
+      "language model",
+      "llm",
+      "gpt",
+      "agent"
     ],
     "memory": [
       "memory",
       "retrieval",
       "context",
       "store",
-      "recall"
+      "recall",
+      "episodic",
+      "semantic"
     ],
     "reasoning": [
       "reasoning",
@@ -33,6 +38,7 @@
       "framework"
     ]
   },
+  "abstract": "Published in Transactions on Machine Learning Research (02/2024)\nCognitive Architectures for Language Agents\nTheodore R. Sumers∗ Shunyu Yao∗ Karthik Narasimhan Thomas L. Griffiths\nPrinceton University\n{sumers, shunyuy, karthikn, tomg}@princeton.edu\nReviewed on OpenReview: https://openreview.net/forum?id=1i6ZCvflQJ\nAbstract\nRecent efforts have augmented large language models (LLMs) with external resources (e.g.,\nthe Internet) or internal control flows (e.g., prompt chaining) for tasks requiring g",
   "textLength": 60443,
-  "timestamp": "2026-05-13T01:02:42.934Z"
+  "timestamp": "2026-05-13T01:09:54.228Z"
 }

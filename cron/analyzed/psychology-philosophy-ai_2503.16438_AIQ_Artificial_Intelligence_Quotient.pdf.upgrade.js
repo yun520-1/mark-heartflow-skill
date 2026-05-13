@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.29 - 论文驱动升级
+ * HeartFlow v0.13.34 - 论文驱动升级
  * 来源: psychology-philosophy-ai/2503.16438_AIQ_Artificial_Intelligence_Quotient
- * 生成时间: 2026-05-13T01:02:47.824Z
+ * 生成时间: 2026-05-13T01:13:32.631Z
  *
  * 检测到的模式:
  * - ai: attention, language model
@@ -43,7 +43,7 @@ class MemoryEntry {
 
 class psychology_philosophy_ai_2503_16438_AIQ_Artificial_Intelligence_Quotient_Processor {
     constructor(config = {}) {
-        this.arxivId = 'psychology-philosophy-ai/2503.16438_AIQ_Artificial_Intelligence_Quotient'; this.version = 'v0.13.29';
+        this.arxivId = 'psychology-philosophy-ai/2503.16438_AIQ_Artificial_Intelligence_Quotient'; this.version = 'v0.13.34';
         this.thoughts = new Map(); this.memory = new Map();
         this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
         this.memoryLayers = {

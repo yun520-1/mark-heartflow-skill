@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.30 - 论文驱动升级
+ * HeartFlow v0.13.34 - 论文驱动升级
  * 来源: psychology-philosophy-ai/2505.00675v3
- * 生成时间: 2026-05-13T01:02:49.350Z
+ * 生成时间: 2026-05-13T01:13:34.049Z
  *
  * 检测到的模式:
  * - ai: transformer, attention
@@ -44,7 +44,7 @@ class MemoryEntry {
 
 class psychology_philosophy_ai_2505_00675v3_Processor {
     constructor(config = {}) {
-        this.arxivId = 'psychology-philosophy-ai/2505.00675v3'; this.version = 'v0.13.30';
+        this.arxivId = 'psychology-philosophy-ai/2505.00675v3'; this.version = 'v0.13.34';
         this.thoughts = new Map(); this.memory = new Map();
         this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
         this.memoryLayers = {

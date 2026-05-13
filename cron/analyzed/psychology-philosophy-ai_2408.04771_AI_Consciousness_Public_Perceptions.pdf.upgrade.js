@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.29 - 论文驱动升级
+ * HeartFlow v0.13.34 - 论文驱动升级
  * 来源: psychology-philosophy-ai/2408.04771_AI_Consciousness_Public_Perceptions
- * 生成时间: 2026-05-13T01:02:46.926Z
+ * 生成时间: 2026-05-13T01:13:31.692Z
  *
  * 检测到的模式:
  * - memory: context, store
@@ -43,7 +43,7 @@ class MemoryEntry {
 
 class psychology_philosophy_ai_2408_04771_AI_Consciousness_Public_Perceptions_Processor {
     constructor(config = {}) {
-        this.arxivId = 'psychology-philosophy-ai/2408.04771_AI_Consciousness_Public_Perceptions'; this.version = 'v0.13.29';
+        this.arxivId = 'psychology-philosophy-ai/2408.04771_AI_Consciousness_Public_Perceptions'; this.version = 'v0.13.34';
         this.thoughts = new Map(); this.memory = new Map();
         this.thoughtHistory = []; this.maxHistoryLength = config.maxHistory || 500;
         this.memoryLayers = {

@@ -1,6 +1,6 @@
 {
-  "currentVersion": "v0.13.31",
-  "nextVersion": "v0.13.32",
+  "currentVersion": "v0.13.34",
+  "nextVersion": "v0.13.35",
   "papersDir": "/Users/apple/Downloads/daima",
   "skillDir": "/Users/apple/.hermes/skills/ai/mark-heartflow-skill",
   "papers": [
@@ -38,6 +38,15 @@
     "agent-arch/2304.03442.pdf",
     "agent-arch/2305.04091.pdf",
     "agent-arch/2312.09210.pdf",
+    "memory-reasoning/2506.01442v1.pdf",
+    "memory-reasoning/2508.01415v4-2.pdf",
+    "memory-reasoning/2508.01415v4.pdf",
+    "memory-reasoning/2508.03341v3.pdf",
+    "memory-reasoning/2509.09498v2.pdf",
+    "memory-reasoning/2512.01710v2.pdf",
+    "memory-reasoning/2512.03627v1.pdf",
+    "memory-reasoning/2512.16301v3.pdf",
+    "memory-reasoning/2512.23343v1.pdf",
     "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
     "psychology-philosophy-ai/2405.02370_NNAC_Artificial_Consciousness.pdf",
     "psychology-philosophy-ai/2408.04771_AI_Consciousness_Public_Perceptions.pdf",
@@ -45,21 +54,14 @@
     "psychology-philosophy-ai/2505.00675v3.pdf",
     "psychology-philosophy-ai/2511.13593v3.pdf",
     "psychology-philosophy-ai/2501.03624.pdf",
-    "psychology-philosophy-ai/2504.21184_AffectEval.pdf",
-    "psychology-philosophy-ai/2508.20674_Bridging_Minds_Machines.pdf",
-    "psychology-philosophy-ai/2309.15402_Chain_of_Thought.pdf",
-    "psychology-philosophy-ai/2310.09297_Understanding_AI_Cognition.pdf",
-    "psychology-philosophy-ai/2409.02387_LLM_Cognitive_Science.pdf",
-    "psychology-philosophy-ai/2411.04127_ToM_Kindness_Self_Supervised.pdf",
-    "psychology-philosophy-ai/2402.15195.pdf",
-    "psychology-philosophy-ai/2405.19275_Child_Development_AI.pdf"
+    "psychology-philosophy-ai/2504.21184_AffectEval.pdf"
   ],
   "papersIndex": 28,
-  "lastUpgradeDate": "2026-05-13T01:02:59.778Z",
-  "upgradeCount": 31,
-  "totalCodeAdded": 25718,
+  "lastUpgradeDate": "2026-05-13T01:13:35.412Z",
+  "upgradeCount": 34,
+  "totalCodeAdded": 28378,
   "changelog": [
     "2026-05-13: 初始化 v2.0.0 runner，处理 2 篇新论文"
   ],
-  "upgradedPapersSinceUpgrade": 3
+  "upgradedPapersSinceUpgrade": 0
 }

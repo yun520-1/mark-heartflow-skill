@@ -6,52 +6,8 @@
     <string>com.heartflow.github-audit</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/bin/bash</string>
-        <string>-c</string>
-        <string>cd /Users/apple/.hermes/skills/ai/mark-heartflow-skill && /opt/homebrew/bin/node -e "
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-
-const LOG_FILE = path.join(process.cwd(), 'logs', 'github-audit.log');
-const log = (msg) => console.log('[' + new Date().toISOString() + '] ' + msg);
-
-try {
-  // 1. Git状态
-  const gitStatus = execSync('git status --short', {encoding: 'utf8'}).trim();
-  log('[1/6] Git状态: ' + (gitStatus ? '有更改' : '干净'));
-  
-  // 2. 版本一致性
-  const QUEUE_FILE = path.join(process.cwd(), 'cron', 'paper-upgrade-queue.json');
-  const queue = JSON.parse(fs.readFileSync(QUEUE_FILE, 'utf8'));
-  const FILE_VER = fs.readFileSync('VERSION', 'utf8').trim();
-  log('[2/6] 版本: queue=' + queue.currentVersion + ', file=' + FILE_VER);
-  
-  // 3. 关键文件检查
-  const keyFiles = ['SKILL.md', 'src/index.ts', 'src/core/heartflow.js', 'package.json'];
-  keyFiles.forEach(f => {
-    const exists = fs.existsSync(f);
-    log('[3/6] ' + (exists ? '✅' : '❌') + ' ' + f);
-  });
-  
-  // 4. 语法检查
-  const coreFiles = execSync('find src/core -name \"*.js\" -type f 2>/dev/null | head -10', {encoding: 'utf8'}).trim().split('\n').filter(Boolean);
-  let errors = 0;
-  coreFiles.forEach(f => {
-    try {
-      execSync('node --check \"' + f + '\"', {stdio: 'pipe'});
-    } catch(e) {
-      log('[4/6] 语法错误: ' + f);
-      errors++;
-    }
-  });
-  log('[4/6] 语法检查: ' + (errors === 0 ? '✅ 通过' : '❌ ' + errors + '个错误'));
-  
-  log('✅ GitHub审计通过');
-} catch(e) {
-  log('❌ 审计失败: ' + e.message);
-}
-" >> logs/github-audit.log 2>&1</string>
+        <string>/opt/homebrew/bin/node</string>
+        <string>/Users/apple/.hermes/skills/ai/mark-heartflow-skill/cron/github-audit.mjs</string>
     </array>
     <key>StartInterval</key>
     <integer>7200</integer>
