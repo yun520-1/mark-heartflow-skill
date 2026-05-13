@@ -1,7 +1,7 @@
 /**
- * HeartFlow v0.13.37 - 论文驱动升级
+ * HeartFlow v0.13.43 - 论文驱动升级
  * 来源: psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness
- * 生成时间: 2026-05-13T01:34:53.297Z
+ * 生成时间: 2026-05-13T03:40:07.561Z
  * 
  * 论文摘要: NEUROMORPHIC CORRELATES OF ARTIFICIAL CONSCIOUSNESS
 AnwaarUlhaq
@@ -27,7 +27,7 @@ Theconceptofneur...
 // 第一部分：核心数据结构和类型定义
 // ============================================
 
-const Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_VERSION = 'v0.13.37';
+const Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_VERSION = 'v0.13.43';
 const Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_SOURCE = 'psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness';
 
 /**
@@ -146,7 +146,7 @@ class ReasoningChain_Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_C
 class Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_Processor {
     constructor(config = {}) {
         this.name = 'Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness';
-        this.version = 'v0.13.37';
+        this.version = 'v0.13.43';
         this.source = 'psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness';
         
         // 思想存储
@@ -497,7 +497,7 @@ class Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_Pr
     demo() {
         this.log('===== Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness 演示 =====');
         this.log('来源论文: psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness');
-        this.log('版本: v0.13.37');
+        this.log('版本: v0.13.43');
         
         // 测试思维创建
         const t1 = this.think('这是一个测试输入，包含一些推理内容 because something happened');
@@ -542,6 +542,6 @@ export default {
     MemoryEntry: MemoryEntry_Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness,
     ReasoningChain: ReasoningChain_Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness,
     Processor: Paper_psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness_Processor,
-    version: 'v0.13.37',
+    version: 'v0.13.43',
     source: 'psychology_philosophy_ai_2405_02370_NNAC_Artificial_Consciousness'
 };
