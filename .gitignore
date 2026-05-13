@@ -27,6 +27,9 @@ node_modules/
 .env
 .env.*
 
+# === 编译产物 ===
+dist/
+
 # === 论文分析输出 ===
 cron/analyzed/
 cron/downloads/
