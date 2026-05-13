@@ -1,0 +1,34 @@
+{
+  "arxivId": "psychology_philosophy_ai_2310_10701_ToM_Multi_Agent_Collaboration",
+  "filename": "psychology-philosophy-ai/2310.10701_ToM_Multi_Agent_Collaboration.pdf",
+  "keywords": {
+    "ai": [
+      "reinforcement learning",
+      "language model",
+      "llm",
+      "gpt",
+      "agent"
+    ],
+    "memory": [
+      "memory",
+      "context"
+    ],
+    "reasoning": [
+      "reasoning",
+      "planning",
+      "logic",
+      "inference"
+    ],
+    "emotion": [],
+    "consciousness": [],
+    "architecture": [
+      "module",
+      "layer",
+      "system",
+      "framework"
+    ]
+  },
+  "abstract": "Theory of Mind for Multi-Agent Collaboration via Large Language Models\nHuaoLi1,YuQuanChong2,SimonStepputtis2,JosephCampbell2,\nDanaHughes2,MichaelLewis1,KatiaSycara2\n1 UniversityofPittsburgh,Pittsburgh,PA\nhul52,cmlewis@pitt.edu\n2 CarnegieMellonUniversity,Pittsburgh,PA\nyuquanc,sstepput,jacampbe,danahugh,sycara@andrew.cmu.edu\nAbstract psychology(Hagendorff,2023),ourstudyconcen-\ntrates on collective machine behavior, evaluating\nWhileLargeLanguageModels(LLMs)have\nLLMs’proficiencyinmulti-agentcollabor",
+  "textLength": 49418,
+  "timestamp": "2026-05-13T02:20:30.964Z"
+}

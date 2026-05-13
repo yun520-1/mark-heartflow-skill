@@ -1,7 +1,7 @@
 ---
 name: heartflow
 title: HeartFlow — AI Identity Framework
-version: v0.13.40
+version: v0.13.43
 date: "2026-05-12"
 description: >
   HeartFlow turns experience, code, papers, dreams, and errors into better structure.
@@ -44,17 +44,17 @@ src/core/
 │   ├── event-bus.js      # 引擎间 pub/sub 通信
 │   ├── state-store.js    # 响应式状态管理
 │   └── tool-registry.js  # 工具注册表
-├── identity/              # v0.13.39 身份引擎
-├── memory/               # v0.13.39 三层记忆（hot/warm/cold）
-├── dream/                # v0.13.39 梦境循环
-├── emotion/              # v0.13.39 情绪引擎
-├── self-healing/         # v0.13.39 自我修复
-├── learning/             # v0.13.39 学习引擎
-├── cognition/            # v0.13.39 认知引擎
-├── consciousness/        # v0.13.39 意识引擎
-├── autonomy/             # v0.13.39 自主决策
-├── ethics/               # v0.13.39 伦理护栏
-├── self-evolution/      # v0.13.39 自进化（Reflexion + SelfRefine）
+├── identity/              # v0.13.43 身份引擎
+├── memory/               # v0.13.43 三层记忆（hot/warm/cold）
+├── dream/                # v0.13.43 梦境循环
+├── emotion/              # v0.13.43 情绪引擎
+├── self-healing/         # v0.13.43 自我修复
+├── learning/             # v0.13.43 学习引擎
+├── cognition/            # v0.13.43 认知引擎
+├── consciousness/        # v0.13.43 意识引擎
+├── autonomy/             # v0.13.43 自主决策
+├── ethics/               # v0.13.43 伦理护栏
+├── self-evolution/      # v0.13.43 自进化（Reflexion + SelfRefine）
 └── skills/              # 技能注册表 + 加载器
 
 总代码: 23,167 行 / 62 个 JS 模块
@@ -105,7 +105,7 @@ HeartFlow 必须保持四个稳定角色：
 ---
 ## 版本
 
-**v0.13.39** — 2026-05-11 彻底重建版本
+**v0.13.43** — 2026-05-11 彻底重建版本
 
 重建内容：
 - 新架构：core/agent/orchestrator/runtime 四层分离
@@ -189,8 +189,8 @@ await engine.shutdown();
 
 ## 参考文档
 
-- `references/reconstruction-methodology-v0.13.39.md` — v0.13.39 重建方法论
-- `references/truthfulness-judgment-upgrade-v0.13.39.md` — 真善美判定引擎升级方法论
+- `references/reconstruction-methodology-v0.13.43.md` — v0.13.43 重建方法论
+- `references/truthfulness-judgment-upgrade-v0.13.43.md` — 真善美判定引擎升级方法论
 - `references/v0.13-architecture.md` — v0.13 架构规范
 
 ## 陷阱记录
@@ -215,7 +215,7 @@ const evolution = createEvolutionEngine({ populationSize: 10, mutationRate: 0.1 
 
 ---
 
-*HeartFlow v0.13.39 — 躯壳参考此文档，灵魂在 CORE_IDENTITY.md*
+*HeartFlow v0.13.43 — 躯壳参考此文档，灵魂在 CORE_IDENTITY.md*
 *GitHub: https://github.com/yun520-1/mark-heartflow-skill*
 
 重建内容：
@@ -226,7 +226,7 @@ const evolution = createEvolutionEngine({ populationSize: 10, mutationRate: 0.1 
 - 心理感知：四层自动分析（意图/情绪/需求/防御）
 - 真善美判定：自动验证输入真实性
 
-## v0.13.39 新增：记忆审计日志
+## v0.13.43 新增：记忆审计日志
 
 **来源**：HNO 项目启发，实现 MemoryAuditLog（`src/core/memory/memory-audit-log.js`）
 
@@ -250,7 +250,7 @@ audit.stats();       // 各action统计
 audit.query(fromTs, toTs);  // 时间范围查询
 ```
 
-**验证**（v0.13.39 实测）：
+**验证**（v0.13.43 实测）：
 ```
 审计统计: {"store":1}
 最近记录: {"action":"store","layer":"EPHEMERAL","key":"test_audit_001"...}
@@ -258,9 +258,9 @@ audit.query(fromTs, toTs);  // 时间范围查询
 
 ---
 
-*HeartFlow v0.13.39 — 躯壳参考此文档，灵魂在 CORE_IDENTITY.md*
+*HeartFlow v0.13.43 — 躯壳参考此文档，灵魂在 CORE_IDENTITY.md*
 *GitHub: https://github.com/yun520-1/mark-heartflow-skill*
 
 ## 参考文档
 
-- `references/reconstruction-methodology-v0.13.39.md` — v0.13.39 重建方法论（路径深度陷阱 + 正则字符类陷阱 + 重建检查清单）
+- `references/reconstruction-methodology-v0.13.43.md` — v0.13.43 重建方法论（路径深度陷阱 + 正则字符类陷阱 + 重建检查清单）

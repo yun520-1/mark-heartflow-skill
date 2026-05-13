@@ -467,14 +467,21 @@
     "psychology-philosophy-ai/2111.10036_Software_Engineering_Responsible_AI.pdf",
     "psychology-philosophy-ai/2304.11461v1.pdf",
     "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
-    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
+    "psychology-philosophy-ai/10.3389.fpsyt.2021.680811.pdf",
+    "psychology-philosophy-ai/2024.emnlp-main.711.pdf",
+    "psychology-philosophy-ai/2025.acl-long.1049.pdf",
+    "psychology-philosophy-ai/2309.15402_Chain_of_Thought.pdf",
+    "psychology-philosophy-ai/2310.09297_Understanding_AI_Cognition.pdf",
+    "psychology-philosophy-ai/2310.10701_ToM_Multi_Agent_Collaboration.pdf",
+    "psychology-philosophy-ai/2310.19852_AI_Alignment_Survey.pdf"
   ],
   "totalCount": 458,
   "upgradedPapersSinceUpgrade": 0,
-  "currentVersion": "v0.13.40",
-  "nextVersion": "v0.13.41",
-  "papersIndex": 11,
-  "lastUpgradeDate": "2026-05-13T02:02:10.605Z",
-  "upgradeCount": 1,
-  "totalCodeAdded": 1563
+  "currentVersion": "v0.13.42",
+  "nextVersion": "v0.13.43",
+  "papersIndex": 458,
+  "lastUpgradeDate": "2026-05-13T02:20:32.590Z",
+  "upgradeCount": 2,
+  "totalCodeAdded": 2645
 }

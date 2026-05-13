@@ -1,6 +1,6 @@
 {
   "name": "heartflow",
-  "version": "0.13.38",
+  "version": "v0.13.43",
   "description": "AI identity framework for self-improving AI agents",
   "main": "dist/core/heartflow.js",
   "bin": {
@@ -21,8 +21,8 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^v0.13.39",
-    "tsx": "^v0.13.39",
-    "typescript": "^v0.13.39"
+    "@types/node": "^v0.13.43",
+    "tsx": "^v0.13.43",
+    "typescript": "^v0.13.43"
   }
 }
