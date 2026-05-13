@@ -32,10 +32,28 @@ class WAL {
     await this._atomicWrite(entries);
   }
 
-  /** 读取所有 WAL 条目 */
+  /** 读取所有 WAL 条目（带 JSON 损坏保护） */
   async _readAll() {
-    const raw = await fs.promises.readFile(this.walPath, 'utf8');
-    return JSON.parse(raw);
+    try {
+      const raw = await fs.promises.readFile(this.walPath, 'utf8');
+      const entries = JSON.parse(raw);
+      // Schema 验证：确保是数组
+      if (!Array.isArray(entries)) {
+        throw new Error(`WAL schema invalid: expected array, got ${typeof entries}`);
+      }
+      return entries;
+    } catch (e) {
+      if (e instanceof SyntaxError) {
+        // JSON 损坏，备份坏文件，初始化为空 WAL
+        const bak = this.walPath + '.corrupted.' + Date.now();
+        try {
+          await fs.promises.rename(this.walPath, bak);
+          console.error(`[WAL] JSON corrupted, backed up to ${bak}`);
+        } catch {}
+        return [];
+      }
+      throw e;
+    }
   }
 
   /** 原子写入完整 WAL 文件 */
@@ -48,16 +66,27 @@ class WAL {
   }
 
   /**
-   * 重放 WAL 并执行 executor
+   * 重放 WAL 并执行 executor（带 Schema 验证）
    * @param {Function} executor - (entry) => Promise<void>
    */
   async replay(executor) {
     const entries = await this._readAll().catch(() => []);
+    const validActions = ['store', 'update', 'delete'];
     for (const entry of entries) {
       try {
+        // Schema 验证：必须有 id、action、file
+        if (!entry.id || !entry.action || !entry.file) {
+          console.error(`[WAL] Skipping malformed entry: ${JSON.stringify(entry).slice(0, 100)}`);
+          continue;
+        }
+        if (!validActions.includes(entry.action)) {
+          console.error(`[WAL] Skipping invalid action "${entry.action}" in entry ${entry.id}`);
+          continue;
+        }
         await executor(entry);
       } catch (e) {
-        // 单条失败继续其他
+        console.error(`[WAL] Replay failed for entry ${entry.id}: ${e.message}`);
+        // 单条失败继续其他（不中断）
       }
     }
   }

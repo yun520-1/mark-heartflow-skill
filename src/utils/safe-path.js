@@ -31,10 +31,17 @@ function safePath(baseDir, ...segments) {
   if (!path.isAbsolute(baseDir)) {
     throw new Error(`safePath: baseDir must be absolute, got: ${baseDir}`);
   }
-  const resolved = path.resolve(baseDir, ...segments);
+  // 解析 symlink 并规范化路径（防止 symlink 路径遍历）
+  let resolved;
+  try {
+    resolved = fs.realpathSync(baseDir);
+  } catch {
+    resolved = baseDir;
+  }
+  resolved = path.resolve(resolved, ...segments);
   // path.resolve 会把 ../ 展开后与 baseDir 拼接
-  // 检查 resolved 是否在 baseDir 之下
-  if (!resolved.startsWith(baseDir + path.sep) && resolved !== baseDir) {
+  // 使用 realpath 后的 baseDir 检查，防止 symlink 绕过
+  if (!resolved.startsWith(path.normalize(baseDir) + path.sep) && resolved !== path.normalize(baseDir)) {
     throw new Error(`Path traversal detected: resolved=${resolved}, base=${baseDir}`);
   }
   return resolved;

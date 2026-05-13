@@ -27,36 +27,56 @@ class FileLock {
     this._acquired = false;
   }
 
-  /** 获取锁（同步，阻塞直到拿到） */
+  /** 获取锁（同步，阻塞直到拿到或抛出） */
   acquireSync() {
     const flags = process.platform === 'win32' ? 'r+' : 'r+';
-    this.fd = fs.openSync(this.lockPath, flags);
+    // 自动创建锁文件（如果不存在）
+    if (!fs.existsSync(this.lockPath)) {
+      try {
+        fs.writeFileSync(this.lockPath, JSON.stringify({ pid: null, ts: null }));
+      } catch (e) {
+        throw new Error(`[FileLock] Cannot create lock file: ${this.lockPath} — ${e.message}`);
+      }
+    }
+    try {
+      this.fd = fs.openSync(this.lockPath, flags);
+    } catch (e) {
+      throw new Error(`[FileLock] Cannot open lock file: ${this.lockPath} — ${e.message}`);
+    }
     try {
       if (process.platform === 'win32') {
-        // Windows: 用排他模式重新打开
         fs.closeSync(this.fd);
         this.fd = fs.openSync(this.lockPath, 'r+');
       }
-      // 写入进程 ID
       fs.writeFileSync(this.lockPath, JSON.stringify({
         pid: process.pid,
         ts: Date.now(),
       }));
       this._acquired = true;
     } catch (e) {
-      fs.closeSync(this.fd);
+      try { fs.closeSync(this.fd); } catch (_) {}
       this.fd = null;
-      throw e;
+      throw new Error(`[FileLock] Cannot acquire lock: ${e.message}`);
     }
   }
 
   /** 释放锁 */
   releaseSync() {
-    if (!this._acquired || this.fd === null) return;
+    if (!this._acquired || this.fd === null) {
+      // 锁未获取，尝试清理残留
+      try {
+        if (fs.existsSync(this.lockPath)) {
+          fs.writeFileSync(this.lockPath, JSON.stringify({ pid: null, ts: null }));
+        }
+      } catch {}
+      return;
+    }
     try {
-      // 写入空内容表示释放
       fs.writeFileSync(this.lockPath, JSON.stringify({ pid: null, ts: null }));
-    } catch {}
+    } catch (e) {
+      // 日志记录锁释放失败，不静默忽略
+      console.error('[FileLock] 释放锁失败:', e.message);
+    }
     try {
       fs.closeSync(this.fd);
     } catch {}
@@ -70,6 +90,10 @@ class FileLock {
    */
   tryAcquireSync() {
     try {
+      // 自动创建锁文件（如果不存在）
+      if (!fs.existsSync(this.lockPath)) {
+        fs.writeFileSync(this.lockPath, JSON.stringify({ pid: null, ts: null }));
+      }
       this.fd = fs.openSync(this.lockPath, 'r+');
       fs.writeFileSync(this.lockPath, JSON.stringify({
         pid: process.pid,
@@ -77,7 +101,7 @@ class FileLock {
       }));
       this._acquired = true;
       return true;
-    } catch {
+    } catch (e) {
       if (this.fd !== null) {
         try { fs.closeSync(this.fd); } catch {}
         this.fd = null;

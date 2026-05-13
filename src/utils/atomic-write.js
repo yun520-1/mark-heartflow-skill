@@ -11,6 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { randomUUID } = require('crypto');
 
 /**
  * 原子写入 JSON（异步 Promise 版本）
@@ -20,7 +21,7 @@ const path = require('path');
 async function atomicWriteJSON(filePath, data) {
   const dir = path.dirname(filePath);
   const base = path.basename(filePath);
-  const tmpFile = path.join(dir, `.${base}.${Date.now()}.${process.pid}.tmp`);
+  const tmpFile = path.join(dir, `.${base}.${randomUUID()}.tmp`);
   try {
     const content = JSON.stringify(data, null, 2);
     await fs.promises.writeFile(tmpFile, content, 'utf8');
@@ -39,7 +40,7 @@ async function atomicWriteJSON(filePath, data) {
 async function atomicWrite(filePath, content) {
   const dir = path.dirname(filePath);
   const base = path.basename(filePath);
-  const tmpFile = path.join(dir, `.${base}.${Date.now()}.${process.pid}.tmp`);
+  const tmpFile = path.join(dir, `.${base}.${randomUUID()}.tmp`);
   try {
     await fs.promises.writeFile(tmpFile, content, 'utf8');
     await fs.promises.rename(tmpFile, filePath);
@@ -57,7 +58,7 @@ async function atomicWrite(filePath, content) {
 function atomicWriteSync(filePath, content) {
   const dir = path.dirname(filePath);
   const base = path.basename(filePath);
-  const tmpFile = path.join(dir, `.${base}.${Date.now()}.${process.pid}.tmp`);
+  const tmpFile = path.join(dir, `.${base}.${randomUUID()}.tmp`);
   try {
     fs.writeFileSync(tmpFile, content, 'utf8');
     fs.renameSync(tmpFile, filePath);

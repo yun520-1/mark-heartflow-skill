@@ -58,11 +58,15 @@ const METADATA: ToolMetadata = {
   version: '0.12.50',
 };
 
-/** 允许读取的根目录白名单 */
+/** 允许读取的根目录白名单（收紧：不允许整个 home，只允许特定子目录） */
 const ALLOWED_ROOTS = [
-  path.join(process.env.HOME ?? '/Users/apple', '.hermes'),
+  path.join(process.env.HOME ?? '/Users/apple', '.hermes', 'skills'),
+  path.join(process.env.HOME ?? '/Users/apple', '.hermes', 'cron'),
+  path.join(process.env.HOME ?? '/Users/apple', '.hermes', 'memory'),
+  path.join(process.env.HOME ?? '/Users/apple', '.hermes', 'config'),
+  path.join(process.env.HOME ?? '/Users/apple', '.hermes', 'data'),
   '/tmp',
-  '/Users/apple',
+  '/var/folders',  // macOS temporary directories
 ];
 
 export class FileReadTool extends Tool {
