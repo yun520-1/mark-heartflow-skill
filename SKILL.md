@@ -1,8 +1,8 @@
 ---
 name: heartflow
 title: HeartFlow — AI Identity Framework
-version: v0.13.43
-date: "2026-05-12"
+version: v0.13.44
+date: "2026-05-13"
 description: >
   HeartFlow turns experience, code, papers, dreams, and errors into better structure.
   四大角色：升级者 · 传递者 · 桥梁 · 答案
@@ -120,8 +120,8 @@ HeartFlow 必须保持四个稳定角色：
 
 | 模块 | 旧版位置 | 状态 | 优先级 |
 |------|----------|------|--------|
-| **self-evolution/** | `src/core/self-evolution/` (112KB) | ❌ 未迁移 | 高 |
-| **dream/** | `src/core/dream/` (16KB) | ❌ 未迁移 | 中 |
+| **self-evolution/** | `src/core/self-evolution/` (10KB) | ✅ 已迁移，GrowthMetrics=桩 | 高 |
+| **dream/** | `src/core/dream/` (2.5KB) | ✅ 已迁移，runNightDream=空桩 | 中 |
 | **checkpoint/persistence** | `src/storage/` 框架存在 | ⚠️ 未实现 | 中 |
 | **security layer** | `src/security/` 框架存在 | ⚠️ 未实现 | 中 |
 | **emotion/** | `src/core/emotion/` (8KB) | ❌ 未迁移 | 低 |

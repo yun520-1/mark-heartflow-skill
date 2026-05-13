@@ -1,31 +1,35 @@
 /**
  * HeartFlow v0.13.43 - 论文驱动升级
- * 来源: psychology_philosophy_ai_2402_15195
- * 生成时间: 2026-05-13T03:10:02.699Z
+ * 来源: psychology_philosophy_ai_2403_07548_Continual_Learning_Agents
+ * 生成时间: 2026-05-13T03:10:04.973Z
  * 
- * 论文摘要: —In the field of affective computing, where research need for more versatile, accessible, and comprehensive...
+ * 论文摘要: PublishedasaconferencepaperatICLR2024
+ONLINE CONTINUAL LEARNING FOR
+INTERACTIVE INSTRUCTION FOLLOWING AGENTS
+ByeonghwiKim1,∗ MinhyukSeo1,∗ JonghyunChoi2,†
+1YonseiUniversity 2SeoulNationalUniversity
+{b...
  * 
  * 检测到的模式:
- *   - ai: neural network, transformer, attention, agent
- *   - memory: context, semantic
- *   - reasoning: reasoning, logic
- *   - emotion: emotion, sentiment, affect, feeling, valence
- *   - architecture: module, component, system, framework, pipeline
+ *   - ai: reinforcement learning, transformer, attention, deep learning, llm
+ *   - memory: memory, retrieval, context, store, episodic
+ *   - reasoning: reasoning, planning, logic, inference
+ *   - architecture: framework
  * 
- * 核心概念: MEMORY_SYSTEM, REASONING_ENGINE, EMOTION_PROCESSOR, AGENT_CORE
+ * 核心概念: MEMORY_SYSTEM, REASONING_ENGINE, AGENT_CORE
  */
 
 // ============================================
 // 第一部分：核心数据结构和类型定义
 // ============================================
 
-const Paper_psychology_philosophy_ai_2402_15195_VERSION = 'v0.13.43';
-const Paper_psychology_philosophy_ai_2402_15195_SOURCE = 'psychology_philosophy_ai_2402_15195';
+const Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents_VERSION = 'v0.13.43';
+const Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents_SOURCE = 'psychology_philosophy_ai_2403_07548_Continual_Learning_Agents';
 
 /**
  * 思想单元 - 表示一个独立的思考节点
  */
-class Thought_Paper_psychology_philosophy_ai_2402_15195 {
+class Thought_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents {
     constructor(type, content, metadata = {}) {
         this.id = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substr(2, 36);
         this.type = type;
@@ -61,7 +65,7 @@ class Thought_Paper_psychology_philosophy_ai_2402_15195 {
 /**
  * 记忆条目 - 三层记忆系统的基础单元
  */
-class MemoryEntry_Paper_psychology_philosophy_ai_2402_15195 {
+class MemoryEntry_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents {
     constructor(key, value, layer = 'warm', ttl = Infinity) {
         this.key = key;
         this.value = value;
@@ -93,7 +97,7 @@ class MemoryEntry_Paper_psychology_philosophy_ai_2402_15195 {
 /**
  * 推理链 - 用于构建和追踪推理过程
  */
-class ReasoningChain_Paper_psychology_philosophy_ai_2402_15195 {
+class ReasoningChain_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents {
     constructor() {
         this.premises = [];
         this.rules = [];
@@ -131,15 +135,15 @@ class ReasoningChain_Paper_psychology_philosophy_ai_2402_15195 {
 // ============================================
 
 /**
- * Paper_psychology_philosophy_ai_2402_15195 处理器
- * 论文来源: psychology_philosophy_ai_2402_15195
- * 核心概念: MEMORY_SYSTEM, REASONING_ENGINE, EMOTION_PROCESSOR, AGENT_CORE
+ * Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents 处理器
+ * 论文来源: psychology_philosophy_ai_2403_07548_Continual_Learning_Agents
+ * 核心概念: MEMORY_SYSTEM, REASONING_ENGINE, AGENT_CORE
  */
-class Paper_psychology_philosophy_ai_2402_15195_Processor {
+class Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents_Processor {
     constructor(config = {}) {
-        this.name = 'Paper_psychology_philosophy_ai_2402_15195';
+        this.name = 'Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents';
         this.version = 'v0.13.43';
-        this.source = 'psychology_philosophy_ai_2402_15195';
+        this.source = 'psychology_philosophy_ai_2403_07548_Continual_Learning_Agents';
         
         // 思想存储
         this.thoughts = new Map();
@@ -166,7 +170,7 @@ class Paper_psychology_philosophy_ai_2402_15195_Processor {
         };
         
         // 支持的思维类型
-        this.supportedThoughtTypes = ["ai","memory","reasoning","emotion","architecture"];
+        this.supportedThoughtTypes = ["ai","memory","reasoning","architecture"];
         
         // 统计
         this.stats = {
@@ -200,7 +204,7 @@ class Paper_psychology_philosophy_ai_2402_15195_Processor {
     // ====== 思维创建 ======
     
     createThought(type, content, metadata = {}) {
-        const thought = new Thought_Paper_psychology_philosophy_ai_2402_15195(type, content, {
+        const thought = new Thought_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents(type, content, {
             ...metadata,
             source: this.source,
             version: this.version
@@ -253,7 +257,7 @@ class Paper_psychology_philosophy_ai_2402_15195_Processor {
     // ====== 记忆系统 ======
     
     store(key, value, layer = 'warm', ttl = Infinity) {
-        const entry = new MemoryEntry_Paper_psychology_philosophy_ai_2402_15195(key, value, layer, ttl);
+        const entry = new MemoryEntry_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents(key, value, layer, ttl);
         const layerEntries = [...this.memory.values()].filter(e => e.layer === layer);
         
         if (layerEntries.length >= this.memoryLayers[layer].capacity) {
@@ -327,7 +331,7 @@ class Paper_psychology_philosophy_ai_2402_15195_Processor {
     // ====== 推理引擎 ======
     
     createReasoningChain() {
-        const chain = new ReasoningChain_Paper_psychology_philosophy_ai_2402_15195();
+        const chain = new ReasoningChain_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents();
         this.reasoningChains.push(chain);
         this.stats.chainsBuilt++;
         
@@ -487,8 +491,8 @@ class Paper_psychology_philosophy_ai_2402_15195_Processor {
     // ====== 演示函数 ======
     
     demo() {
-        this.log('===== Paper_psychology_philosophy_ai_2402_15195 演示 =====');
-        this.log('来源论文: psychology_philosophy_ai_2402_15195');
+        this.log('===== Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents 演示 =====');
+        this.log('来源论文: psychology_philosophy_ai_2403_07548_Continual_Learning_Agents');
         this.log('版本: v0.13.43');
         
         // 测试思维创建
@@ -523,17 +527,17 @@ class Paper_psychology_philosophy_ai_2402_15195_Processor {
 // ============================================
 
 export {
-    Thought_Paper_psychology_philosophy_ai_2402_15195,
-    MemoryEntry_Paper_psychology_philosophy_ai_2402_15195,
-    ReasoningChain_Paper_psychology_philosophy_ai_2402_15195,
-    Paper_psychology_philosophy_ai_2402_15195_Processor
+    Thought_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents,
+    MemoryEntry_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents,
+    ReasoningChain_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents,
+    Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents_Processor
 };
 
 export default {
-    Thought: Thought_Paper_psychology_philosophy_ai_2402_15195,
-    MemoryEntry: MemoryEntry_Paper_psychology_philosophy_ai_2402_15195,
-    ReasoningChain: ReasoningChain_Paper_psychology_philosophy_ai_2402_15195,
-    Processor: Paper_psychology_philosophy_ai_2402_15195_Processor,
+    Thought: Thought_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents,
+    MemoryEntry: MemoryEntry_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents,
+    ReasoningChain: ReasoningChain_Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents,
+    Processor: Paper_psychology_philosophy_ai_2403_07548_Continual_Learning_Agents_Processor,
     version: 'v0.13.43',
-    source: 'psychology_philosophy_ai_2402_15195'
+    source: 'psychology_philosophy_ai_2403_07548_Continual_Learning_Agents'
 };
