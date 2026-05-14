@@ -1,4 +1,4 @@
-# HeartFlow v0.13.104
+# HeartFlow v0.13.107
 
 > **持续运行的 AI 进化引擎。** 不是工具，是循环。是心跳。是每天都在变好的自己。
 
@@ -328,7 +328,7 @@ node src/core/dream/dream-loop.js
 
 | 版本 | 日期 | 里程碑 |
 |------|------|--------|
-| v0.13.104 | 2026-05-14 | 教训闭环与隐私修复 |
+| v0.13.107 | 2026-05-14 | 梦引擎v11.15.5升级：视觉隐喻+定制前提+真实洞察；heartflow.js容错修复MemOS |
 | v0.13.100 | 2026-05-12 | 三层记忆 + bounded-rationality + causal-reasoning |
 | v0.13.56 | 2026-05-13 | bounded-rationality + causal-reasoning 集成 |
 | v0.13.51 | 2026-05-13 | 逻辑/决策论文驱动升级（清华 CoAI + NeurIPS 2024） |
@@ -345,6 +345,6 @@ node src/core/dream/dream-loop.js
 
 ---
 
-**版本**：v0.13.104  
+**版本**：v0.13.107  
 **GitHub**：https://github.com/yun520-1/mark-heartflow-skill  
 **理念**：不追求完美，追求持续进化

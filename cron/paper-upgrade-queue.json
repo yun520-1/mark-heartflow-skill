@@ -99,7 +99,11 @@
     "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
     "psychology-philosophy-ai/1406.2661v1.pdf",
     "psychology-philosophy-ai/1706.03762v7.pdf",
-    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf"
+    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf",
+    "psychology-philosophy-ai/2109.05237v4.pdf",
+    "psychology-philosophy-ai/2304.11461v1.pdf",
+    "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"
   ],
   "papersAnalyzed": [
     "psychology-philosophy-ai/10.3389.fpsyt.2021.680811.pdf",
@@ -107,12 +111,16 @@
     "psychology-philosophy-ai/1706.03762v7.pdf",
     "psychology-philosophy-ai/2023.findings-emnlp.216.pdf",
     "psychology-philosophy-ai/2024.emnlp-main.711.pdf",
-    "psychology-philosophy-ai/2025.acl-long.1049.pdf"
+    "psychology-philosophy-ai/2025.acl-long.1049.pdf",
+    "psychology-philosophy-ai/2109.05237v4.pdf",
+    "psychology-philosophy-ai/2304.11461v1.pdf",
+    "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"
   ],
-  "currentVersion": "v0.13.105",
-  "nextVersion": "v0.13.106",
-  "lastUpgrade": "2026-05-14T06:40:33.075Z",
-  "upgradeCount": 45,
+  "currentVersion": "v0.13.107",
+  "nextVersion": "v0.13.108",
+  "lastUpgrade": "2026-05-14T07:10:41.628Z",
+  "upgradeCount": 47,
   "qualityHistory": [
     {
       "version": "v0.13.79",
@@ -248,6 +256,16 @@
       "version": "v0.13.105",
       "modules": 4,
       "timestamp": 1778740833075
+    },
+    {
+      "version": "v0.13.106",
+      "modules": 5,
+      "timestamp": 1778742036871
+    },
+    {
+      "version": "v0.13.107",
+      "modules": 6,
+      "timestamp": 1778742641628
     }
   ]
 }
