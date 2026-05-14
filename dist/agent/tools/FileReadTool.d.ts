@@ -11,7 +11,7 @@
  */
 import { Tool, ToolMetadata, ToolResult } from './Tool';
 declare const METADATA: ToolMetadata;
-/** 允许读取的根目录白名单 */
+/** 允许读取的根目录白名单（收紧：不允许整个 home，只允许特定子目录） */
 declare const ALLOWED_ROOTS: string[];
 export declare class FileReadTool extends Tool {
     protected readonly metadata: ToolMetadata;
@@ -22,7 +22,7 @@ export declare class FileReadTool extends Tool {
     private _isAllowed;
     /** 分页读取文件指定行范围 */
     private _readPaginated;
-    /** 快速统计总行数（不读取全部内容） */
+    /** 快速统计总行数（对大文件使用 wc -l 避免加载全部内容到内存） */
     private _countLines;
 }
 export { METADATA as FILE_READ_TOOL_METADATA, ALLOWED_ROOTS };

@@ -55,6 +55,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BLOCKED_PREFIXES = exports.FILE_WRITE_TOOL_METADATA = exports.FileWriteTool = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const os_1 = require("os");
 const Tool_1 = require("./Tool");
 const METADATA = {
     name: 'file_write',
@@ -97,8 +98,16 @@ const METADATA = {
     version: '0.12.50',
 };
 exports.FILE_WRITE_TOOL_METADATA = METADATA;
-/** 禁止写入的路径前缀 */
-const BLOCKED_PREFIXES = ['/etc', '/usr', '/var', '/bin', '/sbin', '/sys', '/proc', '/dev'];
+/** 禁止写入的路径前缀（扩展安全边界） */
+const BLOCKED_PREFIXES = [
+    '/etc', '/usr', '/var', '/bin', '/sbin', '/sys', '/proc', '/dev',
+    '/root', '/home', '/private', '/snap',
+    // 敏感配置和凭据文件
+    '.ssh', '.aws', '.env', '.git-credentials', '.netrc',
+    '.npmrc', '.pypirc', '.pip.conf',
+    // 关键配置
+    'credentials', 'secrets', 'keys', 'id_rsa', 'id_ed25519',
+];
 exports.BLOCKED_PREFIXES = BLOCKED_PREFIXES;
 class FileWriteTool extends Tool_1.Tool {
     metadata = METADATA;
@@ -112,19 +121,18 @@ class FileWriteTool extends Tool_1.Tool {
             const force = this.getArg(args, 'force', false) ?? false;
             const encoding = this.getArg(args, 'encoding', 'utf8') ?? 'utf8';
             // 解析路径
-            const filePath = this._resolvePath(rawPath);
-            // 安全校验：黑名单前缀
+            let filePath;
+            try {
+                filePath = this._resolvePath(rawPath);
+            }
+            catch (err) {
+                return { success: false, error: `Invalid path: ${String(err)}` };
+            }
+            // 安全校验：黑名单前缀（带路径分隔符检查防止 /etc-fake 绕过）
             if (this._isBlocked(filePath)) {
                 return {
                     success: false,
                     error: `Access denied: writing to "${filePath}" is not allowed`,
-                };
-            }
-            // 禁止覆盖已存在文件（除非 force）
-            if (!force && fs.existsSync(filePath)) {
-                return {
-                    success: false,
-                    error: `File already exists: ${filePath}. Use force=true to overwrite.`,
                 };
             }
             // 检测二进制内容（包含 null 字节）
@@ -139,14 +147,26 @@ class FileWriteTool extends Tool_1.Tool {
             if (!fs.existsSync(dir)) {
                 fs.mkdirSync(dir, { recursive: true });
             }
-            // 写入文件
-            const bytesWritten = fs.writeFileSync(filePath, content, encoding);
+            // 写入文件（原子操作防止 TOCTOU）
+            // 使用 'wx' 标志：独占创建，文件存在则失败
+            // force=true 时降级为覆盖写入
+            const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
+            try {
+                await fs.promises.writeFile(filePath, contentStr, { encoding: 'utf8', mode: 0o644, flag: force ? 'w' : 'wx' });
+            }
+            catch (err) {
+                const nodeErr = err;
+                if (nodeErr.code === 'EEXIST') {
+                    return { success: false, error: `File already exists: ${filePath}. Use force=true to overwrite.` };
+                }
+                throw err;
+            }
             return {
                 success: true,
                 output: {
                     path: filePath,
                     bytesWritten: Buffer.byteLength(content, encoding),
-                    created: !fs.existsSync(filePath) || force,
+                    created: !force,
                 },
                 metadata: { encoding },
             };
@@ -160,15 +180,19 @@ class FileWriteTool extends Tool_1.Tool {
     }
     /** 展开 ~ 并解析为绝对路径 */
     _resolvePath(rawPath) {
-        if (rawPath.startsWith('~/')) {
-            return path.join(process.env.HOME ?? '/Users/apple', rawPath.slice(2));
-        }
-        return path.isAbsolute(rawPath) ? rawPath : path.resolve(rawPath);
+        // Expand ~ to HOME for ALL occurrences, not just ~/ prefix
+        const home = (0, os_1.homedir)();
+        const expanded = rawPath.replace(/^~/, home).replace(/\/~/g, home);
+        return path.isAbsolute(expanded) ? expanded : path.resolve(expanded);
     }
-    /** 检查是否在黑名单前缀内 */
+    /** 检查是否在黑名单前缀内（带路径分隔符边界检查） */
     _isBlocked(filePath) {
         const normalized = path.normalize(filePath);
-        return BLOCKED_PREFIXES.some(prefix => normalized.startsWith(prefix));
+        const normalizedWithSep = normalized + path.sep;
+        return BLOCKED_PREFIXES.some(prefix => {
+            // 检查完整路径前缀 + 路径分隔符，防止 /etc-fake 绕过 /etc
+            return normalizedWithSep.startsWith(prefix + path.sep) || normalized === prefix;
+        });
     }
     /** 检测是否为二进制内容 */
     _isBinary(content) {

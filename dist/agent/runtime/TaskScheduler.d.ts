@@ -71,6 +71,7 @@ export declare class TaskScheduler {
     private _status;
     private _paused;
     private _stopped;
+    private _reentrant;
     private _runningTasks;
     private _pendingTasks;
     private _errors;

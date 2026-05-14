@@ -57,9 +57,10 @@ class GlobalWorkspace {
         if (salience < this.config.salienceThreshold) {
             return false;
         }
+        const safeContent = typeof content === 'string' ? content.substring(0, 500) : '';
         const item = {
             id: `${agentName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            content: content.substring(0, 500),
+            content: safeContent,
             salience,
             source: agentName,
             timestamp: Date.now(),

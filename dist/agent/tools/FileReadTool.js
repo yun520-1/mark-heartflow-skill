@@ -47,6 +47,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ALLOWED_ROOTS = exports.FILE_READ_TOOL_METADATA = exports.FileReadTool = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
+const os_1 = require("os");
 const Tool_1 = require("./Tool");
 const METADATA = {
     name: 'file_read',
@@ -90,11 +91,15 @@ const METADATA = {
     version: '0.12.50',
 };
 exports.FILE_READ_TOOL_METADATA = METADATA;
-/** 允许读取的根目录白名单 */
+/** 允许读取的根目录白名单（收紧：不允许整个 home，只允许特定子目录） */
 const ALLOWED_ROOTS = [
-    path.join(process.env.HOME ?? '/Users/apple', '.hermes'),
+    path.join((0, os_1.homedir)(), '.hermes', 'skills'),
+    path.join((0, os_1.homedir)(), '.hermes', 'cron'),
+    path.join((0, os_1.homedir)(), '.hermes', 'memory'),
+    path.join((0, os_1.homedir)(), '.hermes', 'config'),
+    path.join((0, os_1.homedir)(), '.hermes', 'data'),
     '/tmp',
-    '/Users/apple',
+    '/var/folders', // macOS temporary directories
 ];
 exports.ALLOWED_ROOTS = ALLOWED_ROOTS;
 class FileReadTool extends Tool_1.Tool {
@@ -149,14 +154,17 @@ class FileReadTool extends Tool_1.Tool {
     /** 展开 ~ 并解析为绝对路径 */
     _resolvePath(rawPath) {
         if (rawPath.startsWith('~/')) {
-            return path.join(process.env.HOME ?? '/Users/apple', rawPath.slice(2));
+            return path.join((0, os_1.homedir)(), rawPath.slice(2));
         }
         return path.isAbsolute(rawPath) ? rawPath : path.resolve(rawPath);
     }
     /** 检查路径是否在白名单目录内 */
     _isAllowed(filePath) {
+        // Reject path segments containing .. before normalization to prevent traversal bypass
+        if (filePath.includes('..'))
+            return false;
         const normalized = path.normalize(filePath);
-        return ALLOWED_ROOTS.some(root => normalized.startsWith(root));
+        return ALLOWED_ROOTS.some(root => normalized.startsWith(root + path.sep) || normalized === root);
     }
     /** 分页读取文件指定行范围 */
     _readPaginated(filePath, offset, limit, encoding) {
@@ -166,8 +174,20 @@ class FileReadTool extends Tool_1.Tool {
         const end = Math.min(start + limit, lines.length);
         return lines.slice(start, end).join('\n');
     }
-    /** 快速统计总行数（不读取全部内容） */
+    /** 快速统计总行数（对大文件使用 wc -l 避免加载全部内容到内存） */
     _countLines(filePath, encoding) {
+        const stat = fs.statSync(filePath);
+        // 对大于 1MB 的文件使用 wc -l 子进程来计数
+        if (stat.size > 1024 * 1024 && encoding === 'utf8') {
+            try {
+                const { execFileSync } = require('child_process');
+                const { stdout } = execFileSync('wc', ['-l', filePath], { encoding: 'utf8' });
+                return parseInt(stdout.trim().split(/\s+/)[0], 10) || 0;
+            }
+            catch {
+                // 回退到内存读取方式
+            }
+        }
         const content = fs.readFileSync(filePath, encoding);
         return content.split('\n').length;
     }

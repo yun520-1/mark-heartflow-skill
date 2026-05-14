@@ -37,6 +37,7 @@ class TaskScheduler {
     _status = 'idle';
     _paused = false;
     _stopped = false;
+    _reentrant = false;
     _runningTasks = new Set();
     _pendingTasks = [];
     _errors = [];
@@ -51,7 +52,12 @@ class TaskScheduler {
         this._pendingTasks = [];
         if (options.autoStart !== false) {
             // Defer start to next tick
-            setImmediate(() => this._autoStart());
+            try {
+                this._autoStart();
+            }
+            catch (err) {
+                console.error('[Scheduler]', err);
+            }
         }
     }
     async _autoStart() {
@@ -61,6 +67,8 @@ class TaskScheduler {
             this._status = 'failed';
             return;
         }
+        // No cycle — begin execution
+        await this.run();
     }
     // ─── 控制方法 ─────────────────────────────────────────────
     /**
@@ -90,9 +98,12 @@ class TaskScheduler {
                 break;
             while (this._paused) {
                 await this._sleep(100);
-                if (this._stopped)
+                if (this._stopped || this._status !== 'paused')
                     break;
             }
+            // 暂停后检查是否停止或不再是 paused 状态
+            if (this._stopped || this._status !== 'paused')
+                continue;
             // 等待该层所有任务完成
             await this._executeLayer(layer);
             // 检查是否全失败
@@ -123,12 +134,21 @@ class TaskScheduler {
      * 恢复调度
      */
     async resume() {
+        if (this._reentrant) {
+            console.warn('[TaskScheduler] resume re-entrant call blocked');
+            return;
+        }
         if (this._status !== 'paused')
             return;
         this._paused = false;
         this._status = 'running';
-        // 继续执行
-        await this.run();
+        this._reentrant = true;
+        try {
+            await this.run();
+        }
+        finally {
+            this._reentrant = false;
+        }
     }
     /**
      * 停止调度
@@ -233,8 +253,10 @@ class TaskScheduler {
             await this._emit('onCheckpoint', this.graph);
         }
         catch (e) {
-            // checkpoint 失败不阻塞执行
-            console.warn('[TaskScheduler] checkpoint failed:', e);
+            // Record checkpoint failure so it is visible in scheduler result
+            const msg = e instanceof Error ? e.message : String(e);
+            this._errors.push({ nodeId: '<checkpoint>', error: `checkpoint failed: ${msg}` });
+            console.warn('[TaskScheduler] checkpoint failed:', msg);
         }
     }
     _sleep(ms) {

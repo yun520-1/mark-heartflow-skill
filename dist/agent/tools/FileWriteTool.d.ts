@@ -19,14 +19,14 @@
  */
 import { Tool, ToolMetadata, ToolResult } from './Tool';
 declare const METADATA: ToolMetadata;
-/** 禁止写入的路径前缀 */
+/** 禁止写入的路径前缀（扩展安全边界） */
 declare const BLOCKED_PREFIXES: string[];
 export declare class FileWriteTool extends Tool {
     protected readonly metadata: ToolMetadata;
     execute(args: Record<string, unknown>, _ctx?: Record<string, unknown>): Promise<ToolResult>;
     /** 展开 ~ 并解析为绝对路径 */
     private _resolvePath;
-    /** 检查是否在黑名单前缀内 */
+    /** 检查是否在黑名单前缀内（带路径分隔符边界检查） */
     private _isBlocked;
     /** 检测是否为二进制内容 */
     private _isBinary;

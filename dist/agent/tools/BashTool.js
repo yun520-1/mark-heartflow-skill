@@ -1,11 +1,11 @@
 /**
  * BashTool — Shell 命令执行工具
- * @version v0.12.50
+ * @version v0.13.60
  *
  * 在本地 shell 中执行命令，返回 stdout/stderr/exitCode。
  *
  * 安全特性：
- *   - 危险命令黑名单（rm -rf / 等）
+ *   - 命令白名单模式（只允许预定义的安全操作）
  *   - 执行超时控制（默认 30s，可配置）
  *   - 不支持交互式命令（防止阻塞）
  *
@@ -15,7 +15,7 @@
  */
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DANGEROUS_PATTERNS = exports.BASH_TOOL_METADATA = exports.BashTool = void 0;
+exports.ALLOWED_COMMANDS = exports.BASH_TOOL_METADATA = exports.BashTool = void 0;
 const Tool_1 = require("./Tool");
 const METADATA = {
     name: 'bash',
@@ -54,21 +54,169 @@ const METADATA = {
             output: { success: true, output: { stdout: 'Hello World\n', stderr: '', exitCode: 0 } },
         },
     ],
-    version: '0.12.50',
+    version: '0.13.60',
 };
 exports.BASH_TOOL_METADATA = METADATA;
-/** 危险命令黑名单（正则） */
-const DANGEROUS_PATTERNS = [
-    /^\s*rm\s+-rf\s+\/\s*$/, // rm -rf /
-    /^\s*rm\s+-rf\s+\/.*--no-preserve-root/, // rm -rf /... --no-preserve-root
-    /^\s*dd\s+if=.*of=\/dev\//, // dd to /dev
-    /^\s*mkfs\./, // mkfs.*
-    /^\s*format\s+/, // format
-    /^\s*wget\s+.*\|\s*sh/, // wget ... | sh
-    /^\s*curl\s+.*\|\s*sh/, // curl ... | sh
-    /^:\(\)\{.*:\|:&.*\}/, // fork bomb
-];
-exports.DANGEROUS_PATTERNS = DANGEROUS_PATTERNS;
+const ALLOWED_COMMANDS = {
+    // 文件查看
+    ls: {
+        description: '列出目录内容',
+        params: {
+            '-a': { type: 'flag' },
+            '-l': { type: 'flag' },
+            '-R': { type: 'flag' },
+            '-t': { type: 'flag' },
+            '-h': { type: 'flag' },
+            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+        },
+    },
+    cat: {
+        description: '查看文件内容',
+        params: {
+            '-n': { type: 'flag' },
+            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+        },
+    },
+    head: {
+        description: '查看文件开头',
+        params: {
+            '-n': { type: 'number', max: 1000 },
+            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+        },
+    },
+    tail: {
+        description: '查看文件结尾',
+        params: {
+            '-n': { type: 'number', max: 1000 },
+            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+        },
+    },
+    wc: {
+        description: '统计行数/词数/字符数',
+        params: {
+            '-l': { type: 'flag' },
+            '-w': { type: 'flag' },
+            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+        },
+    },
+    grep: {
+        description: '文本搜索',
+        params: {
+            '-r': { type: 'flag' },
+            '-i': { type: 'flag' },
+            '-n': { type: 'flag' },
+            '-l': { type: 'flag' },
+            pattern: { type: 'string', pattern: /^[^\"\';|&`$]+$/ },
+            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+        },
+    },
+    find: {
+        description: '查找文件',
+        params: {
+            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            '-name': { type: 'string', pattern: /^[^\;\|\`]+$/ },
+            '-type': { type: 'literal', values: ['f', 'd', 'l'] },
+        },
+        validator: (args) => {
+            // find 禁止使用 -delete、-exec、| 等危险操作
+            return !args.some(a => ['-delete', '-exec', '-ok', '|', ';', '`'].includes(a));
+        },
+    },
+    // Git 命令
+    git: {
+        description: 'Git 版本控制',
+        params: {
+            'status': { type: 'literal' },
+            'log': { type: 'literal' },
+            'diff': { type: 'literal' },
+            '--oneline': { type: 'flag' },
+            '--graph': { type: 'flag' },
+            '-n': { type: 'number', max: 100 },
+        },
+        validator: (args) => {
+            // 禁止危险 git 操作
+            const dangerous = ['filter-branch', 'push', '--force', '-f', 'rebase'];
+            return !dangerous.some(d => args.includes(d));
+        },
+    },
+    // Node/npm
+    node: {
+        description: '执行 Node.js 脚本',
+        params: {
+            path: { type: 'string', pattern: /^\// }, // Only absolute paths, no -e/-p
+        },
+        validator: (args) => {
+            // Disallow -e, -p, -r flags that allow arbitrary code execution
+            return !args.some(a => a === '-e' || a === '-p' || a === '-r' || a === '--eval');
+        }
+    },
+    npm: {
+        description: 'npm 包管理',
+        params: {
+            'install': { type: 'literal' },
+            'run': { type: 'literal' },
+            '-y': { type: 'flag' },
+            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+        },
+        validator: (args) => {
+            // 禁止全局安装、危险脚本
+            // Disallow dangerous flags that allow code execution
+            // Disallow dangerous flags that allow code execution
+            const dangerous = ['-e', '-p', '-r', '--eval', '--check', '-c'];
+            return !args.some(a => dangerous.some(d => a === d || a.startsWith(d + '=')));
+        },
+    },
+    // 文件操作（安全限制下）
+    mkdir: {
+        description: '创建目录',
+        params: {
+            '-p': { type: 'flag' },
+            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+        },
+        validator: (args) => {
+            // 禁止在 /etc、/var 等系统目录创建
+            return !args.some(a => /^\/(etc|var|usr|bin|sbin|sys|proc|dev)/.test(a));
+        },
+    },
+    touch: {
+        description: '创建空文件',
+        params: {
+            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+        },
+    },
+    // 进程/系统信息
+    ps: {
+        description: '进程状态',
+        params: {
+            'aux': { type: 'literal' },
+        },
+    },
+    env: {
+        description: '查看环境变量',
+        params: {},
+    },
+    whoami: {
+        description: '当前用户',
+        params: {},
+    },
+    pwd: {
+        description: '当前目录',
+        params: {},
+    },
+    date: {
+        description: '当前日期',
+        params: {},
+    },
+    // 简单输出
+    echo: {
+        description: '输出文本',
+        params: {
+            '-n': { type: 'flag' },
+            text: { type: 'string', pattern: /^[^\;\|\`\$\\]{0,500}$/ },
+        },
+    },
+};
+exports.ALLOWED_COMMANDS = ALLOWED_COMMANDS;
 class BashTool extends Tool_1.Tool {
     metadata = METADATA;
     async execute(args, ctx) {
@@ -80,11 +228,12 @@ class BashTool extends Tool_1.Tool {
             const extraEnv = this.getArg(args, 'env', {}) ?? {};
             // 解析 workspacePath
             const workspacePath = ctx?.workspacePath;
-            // 安全校验：危险命令
-            if (this._isDangerous(command)) {
+            // 安全校验：白名单模式
+            const validation = this._validateCommand(command.trim());
+            if (!validation.valid) {
                 return {
                     success: false,
-                    error: `Command blocked: potentially dangerous command detected: ${command.slice(0, 50)}...`,
+                    error: `Command not allowed: ${validation.reason}`,
                 };
             }
             // 执行命令
@@ -99,7 +248,7 @@ class BashTool extends Tool_1.Tool {
                     env,
                     encoding: 'utf8',
                     timeout: timeout * 1000,
-                    maxBuffer: 10 * 1024 * 1024, // 10MB
+                    maxBuffer: 10 * 1024 * 1024,
                 });
                 stderr = '';
                 exitCode = 0;
@@ -123,9 +272,82 @@ class BashTool extends Tool_1.Tool {
             };
         }
     }
-    /** 检测危险命令 */
-    _isDangerous(command) {
-        return DANGEROUS_PATTERNS.some(pattern => pattern.test(command.trim()));
+    /**
+     * 白名单命令验证
+     * @returns { valid: boolean, reason?: string }
+     */
+    _validateCommand(command) {
+        // 第一道门：检查 shell 元字符（黑名单防止绕过白名单）
+        // 注意：不在字符类中放空格（会误杀 "ls -la" 等合法带空格命令）
+        // 只匹配真正的 shell 操作符和危险构造
+        const shellMetachars = /[;&|`$\x00{}\[\]!<>~#%^*\n\\]|&&|\|\||;;|<<|>>|<>|&\||\(|\\\(|\\\)/;
+        if (shellMetachars.test(command)) {
+            return { valid: false, reason: `Forbidden shell metacharacter in command` };
+        }
+        // 解析命令和参数
+        const parts = this._parseCommand(command);
+        if (parts.length === 0) {
+            return { valid: false, reason: 'Empty command' };
+        }
+        const cmdName = parts[0];
+        const cmdArgs = parts.slice(1);
+        // 检查命令是否在白名单中
+        const allowed = ALLOWED_COMMANDS[cmdName];
+        if (!allowed) {
+            return { valid: false, reason: `Command "${cmdName}" is not in whitelist` };
+        }
+        // 验证每个参数
+        const unknownArgs = cmdArgs.filter(arg => {
+            return !arg.startsWith('-') && !Object.keys(allowed.params).includes(arg);
+        });
+        if (unknownArgs.length > 0 && allowed.params.text) {
+            // echo/text 类型允许任意字符串参数
+        }
+        else if (unknownArgs.length > 0) {
+            return { valid: false, reason: `Unknown argument(s): ${unknownArgs.join(', ')}` };
+        }
+        // 运行命令特定的验证器
+        if (allowed.validator && !allowed.validator(cmdArgs)) {
+            return { valid: false, reason: `Command "${cmdName}" has forbidden operation` };
+        }
+        return { valid: true };
+    }
+    /**
+     * 简单命令解析（处理引号和转义）
+     */
+    _parseCommand(command) {
+        const parts = [];
+        let current = '';
+        let inQuote = false;
+        let quoteChar = '';
+        for (let i = 0; i < command.length; i++) {
+            const c = command[i];
+            if (inQuote) {
+                if (c === quoteChar) {
+                    inQuote = false;
+                }
+                else {
+                    current += c;
+                }
+            }
+            else if (c === '"' || c === "'") {
+                inQuote = true;
+                quoteChar = c;
+            }
+            else if (c === ' ' || c === '\t') {
+                if (current.length > 0) {
+                    parts.push(current);
+                    current = '';
+                }
+            }
+            else {
+                current += c;
+            }
+        }
+        if (current.length > 0) {
+            parts.push(current);
+        }
+        return parts;
     }
 }
 exports.BashTool = BashTool;

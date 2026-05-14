@@ -111,8 +111,8 @@ class WebSearchTool extends Tool_1.Tool {
      */
     async _searchViaCurl(query, maxResults) {
         const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1`;
-        const { execSync } = await import('child_process');
-        const output = execSync(`curl -s -L --max-time 10 "${url}"`, {
+        const { execFileSync } = await import('child_process');
+        const output = execFileSync('curl', ['-s', '-L', '--max-time', '10', url], {
             encoding: 'utf8',
             maxBuffer: 1024 * 1024,
         });

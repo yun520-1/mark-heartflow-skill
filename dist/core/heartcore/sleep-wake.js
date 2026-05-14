@@ -44,6 +44,13 @@ class SleepWake {
     }
     /** Explicitly request wake-up */
     wake(reason = 'manual') {
+        if (this._phase === 'awake' || this._phase === 'waking')
+            return false;
+        if (this._phase === 'sleeping') {
+            // Allow wake from intermediate sleeping phase (move directly to dormant)
+            this._phase = 'dormant';
+            this._notify('dormant', reason);
+        }
         if (this._phase !== 'dormant')
             return false;
         return this._enterAwake(reason);

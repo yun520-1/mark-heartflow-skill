@@ -100,7 +100,15 @@ class StartupCheck {
         const results = [];
         const blockers = [];
         for (const [subsystem, fn] of this._checks) {
-            const result = await Promise.resolve(fn());
+            const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Check timeout')), 5000));
+            const checkPromise = Promise.resolve(fn());
+            let result;
+            try {
+                result = await Promise.race([checkPromise, timeoutPromise]);
+            }
+            catch (e) {
+                result = { subsystem, ok: false, error: e?.message ?? String(e), latencyMs: Date.now() - start };
+            }
             results.push(result);
             if (!result.ok && this._critical.has(subsystem)) {
                 blockers.push(subsystem);
@@ -123,7 +131,7 @@ class StartupCheck {
         if (report.blocked) {
             const msg = `[StartupCheck] Blocked by: ${report.blockers.join(', ')}`;
             const err = new Error(msg);
-            err.report = report;
+            Object.defineProperty(err, 'report', { value: report, writable: true, configurable: true });
             throw err;
         }
         return report;

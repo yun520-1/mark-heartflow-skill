@@ -174,12 +174,14 @@ class TaskGraph {
                     layer.push(id);
                 }
             }
+            // Cycle detected: no nodes with in-degree 0 remain but graph is incomplete
             if (layer.length === 0 && completed.size < this._nodes.size) {
-                // 环检测: 无法继续但还有未完成节点
                 const remaining = Array.from(this._nodes.keys()).filter(id => !completed.has(id));
                 throw new Error(`Cycle detected among nodes: ${remaining.join(', ')}`);
             }
-            layers.push(layer);
+            if (layer.length > 0) {
+                layers.push(layer);
+            }
             for (const id of layer) {
                 completed.add(id);
                 for (const depId of this._adjList.get(id) ?? []) {

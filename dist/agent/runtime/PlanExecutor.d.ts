@@ -37,7 +37,7 @@ export interface ParseResult {
 export interface ExecuteResult {
     success: boolean;
     graph: TaskGraph;
-    scheduler: TaskScheduler;
+    scheduler: TaskScheduler | null;
     parseMs: number;
     executeMs: number;
     totalMs: number;
