@@ -164,14 +164,9 @@ identity/*.js → 7条核心指令
 ```javascript
 const { HeartFlow } = require('./src/core/heartflow.js');
 
-const hf = new HeartFlow({
-  enableLessonLoop: true,   // 启用教训闭环
-  enableDream: true,         // 启用梦引擎
-  enableHeartbeat: true     // 启用心跳监控
-});
-
-hf.start();                  // 启动所有引擎
-hf.stop();                  // 停止所有引擎
+const hf = new HeartFlow({});
+hf.start();                  // 启动所有引擎（必须先调用）
+hf.stop();                   // 停止所有引擎
 
 hf.healthCheck();           // 全量健康检查
 hf.getStatus();             // 获取运行状态
@@ -179,17 +174,24 @@ hf.getStatus();             // 获取运行状态
 
 ### 记忆引擎（memory/）
 ```javascript
+// 重要：需要先调用 hf.start() 后才能访问记忆引擎
+hf.start();
+
 // 存储记忆
-hf.remember({ content: '...', type: 'preference', importance: 0.9 });
+hf.meaningfulMemory.remember({ key: 'user_pref', value: '简洁中文', type: 'preference' });
 
-// 获取记忆
-hf.memory.recall('查询内容');        // Q-Table检索
-hf.memory.getHot();                  // 获取HOT层
-hf.memory.getWarm();                 // 获取WARM层
-hf.memory.getCold();                 // 获取COLD层
+// 召回记忆
+hf.meaningfulMemory.recall('user_pref');  // 返回记忆对象
+hf.meaningfulMemory.knows('user_pref');   // 返回 boolean
 
-// 三层整合
-hf.memory.consolidate();             // 触发整合
+// 三层访问
+hf.meaningfulMemory.getCore();      // CORE层
+hf.meaningfulMemory.getLearned();    // LEARNED层
+hf.meaningfulMemory.getEphemeral();  // EPHEMERAL层
+
+// 检索
+hf.meaningfulMemory.searchSemantic('查询');  // 语义检索
+hf.meaningfulMemory.searchKeywords('关键词'); // 关键词检索
 ```
 
 ### 情感引擎（emotion/）
@@ -257,13 +259,21 @@ hf.evolve(feedback);                 // 接收反馈升级
 
 ### 教训引擎（self-evolution/lesson-aware-loop.mjs）
 ```javascript
-const { LessonLoop } = require('./src/core/self-evolution/lesson-aware-loop.js');
+// 教训闭环是 ESM 模块，导出为函数形式
+const lessonLoop = require('./src/core/self-evolution/lesson-aware-loop.mjs');
 
-const loop = new LessonLoop();
-loop.load();                        // 加载教训库
-loop.checkBefore('coding');         // 执行前检查
-loop.updateAfter('error', lesson);   // 反思后更新
-loop.getStats();                    // 获取教训统计
+// 打印教训状态
+lessonLoop.printLessonStatus();
+
+// 教训感知执行
+lessonLoop.lessonAwareExecute('git push', 'context');
+
+// 记录失败教训
+lessonLoop.recordFailure({
+  skill: 'coding',
+  errorPattern: '越修越坏',
+  correction: '先验证再执行'
+});
 ```
 
 ### 心跳引擎（内置）

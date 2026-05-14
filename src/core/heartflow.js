@@ -76,7 +76,6 @@ function _initV11432() {
   Ethics = require('./ethics/sage-guardian.js');
   Reflexion = require('./self-evolution/reflexion.js');
   SelfRefine = require('./self-evolution/self-refine.js');
-  MemOS = require('./memory/mem-os.js');
   IdentitySystem = require('./identity/identity.js');
   MemoryConsolidator = require('./memory/consolidator.js').MemoryConsolidator;
   var mr = require('./memory/recall.js');
@@ -101,7 +100,7 @@ function _ensureV11432() {
 }
 
 // ─── 版本常量 ───────────────────────────────────────────────────────────────
-let VERSION = 'v0.13.111';
+let VERSION = 'v0.13.113';
 let BUILD_DATE = '2026-05-11';
 try {
   const root = path.resolve(__dirname, '..', '..');
@@ -259,6 +258,134 @@ class HeartFlow extends EventEmitter {
     this.consciousness = Consciousness;
     this.ethics = Ethics;
     this.dream.enabled = true;
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778748060607 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"Transformer","definition":"","source":"psychology-philosophy-ai/1706.03762v7.pdf"},{"term":"That","definition":"","source":"psychology-philosophy-ai/1706.03762v7.pdf"},{"term":"These","definition":"","source":"psychology-philosophy-ai/1706.03762v7.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778748062405 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"It","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"Weclarify","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"Big Five\nYou","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"You","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"Both","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"They","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"You","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
+  // Algorithm Library from papers
+  this.algoLib_1778748062405 = {
+    name: 'algorithmLibrary',
+    type: 'algorithms',
+    
+    algorithms: [{"description":"uatingthecurrentitemwithinamulti-turnstructure issimilartoLIWC+SVM,butitextractsfeatures","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"description":"traits, namely Agreeableness, Conscientiousness,","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"description":"firstly extracts psycholinguistic features","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"description":"DDGCN by a non-negligible","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"description":"surpasses the single-turn","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"description":"that directly requests the LLM to infer","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"}],
+    
+    // 执行算法步骤
+    execute(steps, context = {}) {
+      const results = [];
+      steps.forEach((step, i) => {
+        results.push({
+          step: i + 1,
+          action: step.description || step,
+          status: 'completed'
+        });
+      });
+      return results;
+    },
+    
+    // 获取建议
+    suggest(context) {
+      return this.algorithms.slice(0, 3);
+    }
+  };
+
+  // Metric Tracker from papers
+  this.metricTracker_1778748062405 = {
+    name: 'metricTracker',
+    type: 'metrics',
+    
+    metrics: [{"name":"f1score","value":null,"source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"}],
+    history: [],
+    
+    track(value) {
+      this.history.push({ value, timestamp: Date.now() });
+      return this.history[this.history.length - 1];
+    },
+    
+    getStats() {
+      if (this.history.length === 0) return null;
+      const values = this.history.map(h => h.value);
+      return {
+        current: values[values.length - 1],
+        avg: values.reduce((a, b) => a + b, 0) / values.length,
+        min: Math.min(...values),
+        max: Math.max(...values)
+      };
+    }
+  };
+
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778747458055 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"There","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"Prominentrecentworkinthis","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"This","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"Samples","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"This","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
 
   // Concept Engine from papers (Knowledge Distillation)
   this.conceptEngine_1778746253896 = {
