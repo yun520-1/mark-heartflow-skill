@@ -104,7 +104,7 @@ function _ensureV11432() {
 }
 
 // ─── 版本常量 ───────────────────────────────────────────────────────────────
-let VERSION = 'v0.13.127';
+let VERSION = 'v0.13.128';
 let BUILD_DATE = '2026-05-11';
 try {
   const root = path.resolve(__dirname, '..', '..');
@@ -262,6 +262,32 @@ class HeartFlow extends EventEmitter {
     this.consciousness = Consciousness;
     this.ethics = Ethics;
     this.dream.enabled = true;
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778761928842 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"There","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"Prominentrecentworkinthis","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"This","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"Samples","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"This","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
 
   // Concept Engine from papers (Knowledge Distillation)
   this.conceptEngine_1778760723292 = {

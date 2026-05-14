@@ -208,7 +208,7 @@ function loadFromDisk(store: MemoryStore): number {
 function saveToDisk(store: MemoryStore): void {
   try {
     ensureDir();
-    atomicWriteJSONSync(PERMANENT_FILE, JSON.parse(exportMemory(store)));
+    atomicWriteJSONSync(PERMANENT_FILE, exportMemory(store));
   } catch (e) {
     const err = e instanceof Error ? e.message : String(e);
     console.warn(`[MemoryEngine] saveToDisk failed: ${err} — data may be lost on shutdown`);

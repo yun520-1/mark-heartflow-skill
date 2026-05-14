@@ -138,13 +138,17 @@
     "psychology-philosophy-ai/2109.05237v4.pdf",
     "psychology-philosophy-ai/2304.11461v1.pdf",
     "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
-    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
+    "psychology-philosophy-ai/1406.2661v1.pdf"
   ],
-  "papersAnalyzed": [],
-  "currentVersion": "v0.13.127",
-  "nextVersion": "v0.13.128",
-  "lastUpgrade": "2026-05-14T12:12:06.679Z",
-  "upgradeCount": 67,
+  "papersAnalyzed": [
+    "psychology-philosophy-ai/10.3389.fpsyt.2021.680811.pdf",
+    "psychology-philosophy-ai/1406.2661v1.pdf"
+  ],
+  "currentVersion": "v0.13.128",
+  "nextVersion": "v0.13.129",
+  "lastUpgrade": "2026-05-14T12:32:08.844Z",
+  "upgradeCount": 68,
   "qualityHistory": [
     {
       "version": "v0.13.79",
@@ -390,6 +394,11 @@
       "version": "v0.13.127",
       "modules": 6,
       "timestamp": 1778760726679
+    },
+    {
+      "version": "v0.13.128",
+      "modules": 1,
+      "timestamp": 1778761928844
     }
   ]
 }

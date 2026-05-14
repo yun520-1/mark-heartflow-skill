@@ -15,6 +15,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { homedir } from 'os';
+import { execFileSync } from 'child_process';
 import { Tool, ToolMetadata, ToolResult } from './Tool';
 
 const METADATA: ToolMetadata = {
@@ -161,9 +162,8 @@ export class FileReadTool extends Tool {
     // 对大于 1MB 的文件使用 wc -l 子进程来计数
     if (stat.size > 1024 * 1024 && encoding === 'utf8') {
       try {
-        const { execFileSync } = require('child_process');
-        const { stdout } = execFileSync('wc', ['-l', filePath], { encoding: 'utf8' });
-        return parseInt(stdout.trim().split(/\s+/)[0], 10) || 0;
+      const output = execFileSync('wc', ['-l', filePath], { encoding: 'utf8' });
+      return parseInt(output.trim().split(/\s+/)[0], 10) || 0;
       } catch {
         // 回退到内存读取方式
       }

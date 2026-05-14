@@ -158,7 +158,7 @@ export class FileWriteTool extends Tool {
   private _resolvePath(rawPath: string): string {
     // Expand ~ to HOME for ALL occurrences, not just ~/ prefix
     const home = homedir();
-    const expanded = rawPath.replace(/^~/, home).replace(/\/~/g, home);
+    const expanded = rawPath.replace(/^~/, home);
     return path.isAbsolute(expanded) ? expanded : path.resolve(expanded);
   }
 
