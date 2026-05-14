@@ -180,22 +180,20 @@ class WordByWordGenerator {
   }
 
   saveTrace() {
-    try {
-      const dir = path.dirname(this.stateFile);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      
-      const traceData = {
-        trace: this.currentTrace,
-        finalResponse: this.currentTrace.find(t => t.step === 'complete')?.data?.response || '',
-        timestamp: new Date().toISOString()
-      };
-      
-      fs.writeFileSync(this.stateFile, JSON.stringify(traceData, null, 2));
-    } catch (e) {
-      console.error('[WordByWordGenerator] Save failed:', e.message);
+    const dir = path.dirname(this.stateFile);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
+
+    const traceData = {
+      trace: this.currentTrace,
+      finalResponse: this.currentTrace.find(t => t.step === 'complete')?.data?.response || '',
+      timestamp: new Date().toISOString()
+    };
+
+    fs.promises.writeFile(this.stateFile, JSON.stringify(traceData, null, 2)).catch(e => {
+      console.error('[WordByWordGenerator] Save failed:', e.message);
+    });
   }
 
   getLastTrace() {

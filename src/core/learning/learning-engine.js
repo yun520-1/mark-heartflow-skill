@@ -577,13 +577,18 @@ class LearningEngine {
 
     // Apply text replacement based on type
     if (type === 'regex') {
-      try {
-        const regex = new RegExp(find, 'g');
-        return input.replace(regex, replace);
-      } catch (e) {
-        // Fallback to string replacement on invalid regex
-        return input.split(find).join(replace);
+      // 先验证正则是否合法，避免异常
+      const isValidRegex = RegExp.prototype.isPrototypeOf(new RegExp(find));
+      if (isValidRegex) {
+        try {
+          const regex = new RegExp(find, 'g');
+          return input.replace(regex, replace);
+        } catch (e) {
+          // Fallback to string replacement on invalid regex
+        }
       }
+      // 无效正则，静默退化为字符串替换（不抛异常）
+      return input.split(find).join(replace);
     }
 
     // Default: string replacement (handles both literal and simple text)

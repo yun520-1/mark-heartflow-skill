@@ -84,9 +84,30 @@ class SelfModifier {
       return { success: false, reason: 'cannot_parse_suggestion' };
     }
 
-    const fullPath = path.resolve(path.join(this.projectRoot, parsed.file));
+    // 先对输入路径做遍历检查，在解析symlink之前
+    const joinedPath = path.join(this.projectRoot, parsed.file);
+    if (joinedPath.includes('..')) {
+      this.log(`[SECURITY BLOCK] 拒绝包含 .. 的路径: ${parsed.file}`);
+      return {
+        success: false,
+        reason: 'path_traversal_in_input',
+        path: parsed.file,
+        blocked: true,
+        safeMode: SAFE_MODE
+      };
+    }
+
+    // 解析 symlinks 以防止通过符号链接绕过检查
+    let fullPath;
+    try {
+      fullPath = fs.realpathSync(joinedPath);
+    } catch (e) {
+      // 文件不存在时 realpathSync 抛异常，用 joinedPath 继续
+      fullPath = joinedPath;
+    }
 
     // 危险路径拦截：禁止修改 OS 系统级路径
+    // 使用 realpath 解析后的路径进行检查，防止 .. 遍历
     const isDangerous = SAFE_PATHS.some(dp => fullPath.startsWith(dp));
     if (isDangerous) {
       this.log(`[SECURITY BLOCK] 拒绝修改危险路径: ${fullPath}`);

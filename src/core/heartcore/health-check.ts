@@ -54,15 +54,34 @@ export class HealthCheck {
     if (!fn) return null;
     try {
       const result = await Promise.resolve(fn());
-      this._lastResults.set(name, result);
-      return result;
-    } catch (e: any) {
+      // On success, reset consecutiveFailures to 0
+      const prev = this._lastResults.get(name);
+      const prevFailures = prev?.consecutiveFailures ?? 0;
+      if (result && typeof result === 'object') {
+        (result as SubsystemHealth).consecutiveFailures = 0;
+        this._lastResults.set(name, result);
+        return result;
+      } else if (prevFailures > 0) {
+        // Result is not an object but we had failures — update cached entry
+        const reset: SubsystemHealth = {
+          name,
+          level: 'healthy',
+          message: prev?.message ?? 'ok',
+          lastCheck: Date.now(),
+          consecutiveFailures: 0,
+        };
+        this._lastResults.set(name, reset);
+        return reset;
+      }
+      // Result is healthy scalar, nothing to update
+      return null;
+    } catch (e: unknown) {
       const consecutiveFailures = (this._lastResults.get(name)?.consecutiveFailures ?? 0) + 1;
       const level: HealthLevel = consecutiveFailures >= this._failureThreshold ? 'critical' : 'warning';
       const failed: SubsystemHealth = {
         name,
         level,
-        message: e?.message ?? String(e),
+        message: (e as Error)?.message ?? String(e),
         lastCheck: Date.now(),
         consecutiveFailures,
       };

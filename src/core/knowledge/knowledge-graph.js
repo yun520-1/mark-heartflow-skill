@@ -293,7 +293,7 @@ class KnowledgeGraph {
     const lower = entity.toLowerCase();
     if (['he', 'she', 'they', 'person', 'user', '老大', '用户'].some(t => lower.includes(t))) return 'person';
     if (['tool', 'function', 'module', 'engine', 'script', '引擎', '模块'].some(t => lower.includes(t))) return 'tool';
-    if (['project', 'system', 'repo', 'project'].some(t => lower.includes(t))) return 'project';
+    if (['project', 'system', 'repo'].some(t => lower.includes(t))) return 'project';
     if (['python', 'javascript', 'java', 'rust', '语言'].some(t => lower.includes(t))) return 'concept';
     return 'concept';
   }

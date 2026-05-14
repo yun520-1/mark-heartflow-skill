@@ -159,7 +159,7 @@ export class StartupCheck {
     if (report.blocked) {
       const msg = `[StartupCheck] Blocked by: ${report.blockers.join(', ')}`;
       const err = new Error(msg);
-      (err as any).report = report;
+      Object.defineProperty(err, 'report', { value: report, writable: true, configurable: true });
       throw err;
     }
     return report;

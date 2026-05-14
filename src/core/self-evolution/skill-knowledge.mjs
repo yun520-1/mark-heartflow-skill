@@ -14,6 +14,7 @@
  */
 
 import { promises as fs } from 'fs';
+import { homedir } from 'os';
 import { dirname, join } from 'path';
 
 // ============================================================================
@@ -22,7 +23,7 @@ import { dirname, join } from 'path';
 
 const KNOWLEDGE_DIR = process.env.HERMES_DATA_DIR 
   ? join(process.env.HERMES_DATA_DIR, 'skill-knowledge')
-  : join(process.env.HOME || '~', '.hermes', 'data', 'skill-knowledge');
+  : join(homedir(), '.hermes', 'data', 'skill-knowledge');
 
 const KNOWLEDGE_FILE = join(KNOWLEDGE_DIR, 'knowledge.json');
 const LEARNINGS_FILE = join(KNOWLEDGE_DIR, 'learnings.json');

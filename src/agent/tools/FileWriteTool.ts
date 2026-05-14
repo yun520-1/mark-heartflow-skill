@@ -20,8 +20,9 @@
 
 'use strict';
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from "fs";
+import * as path from "path";
+import { homedir } from 'os';
 import { Tool, ToolMetadata, ToolResult } from './Tool';
 
 const METADATA: ToolMetadata = {
@@ -93,7 +94,12 @@ export class FileWriteTool extends Tool {
       const encoding = this.getArg<string>(args, 'encoding', 'utf8') ?? 'utf8';
 
       // 解析路径
-      const filePath = this._resolvePath(rawPath);
+      let filePath: string;
+      try {
+        filePath = this._resolvePath(rawPath);
+      } catch (err) {
+        return { success: false, error: `Invalid path: ${String(err)}` };
+      }
 
       // 安全校验：黑名单前缀（带路径分隔符检查防止 /etc-fake 绕过）
       if (this._isBlocked(filePath)) {
@@ -120,23 +126,15 @@ export class FileWriteTool extends Tool {
       // 写入文件（原子操作防止 TOCTOU）
       // 使用 'wx' 标志：独占创建，文件存在则失败
       // force=true 时降级为覆盖写入
-      let fd: number;
+      const contentStr = typeof content === 'string' ? content : JSON.stringify(content);
       try {
-        const flags = force ? 'w' : 'wx';
-        fd = fs.openSync(filePath, flags, 0o644);
-      } catch (err: unknown) {
-        if (err instanceof Error && err.code === 'EEXIST') {
-          return {
-            success: false,
-            error: `File already exists: ${filePath}. Use force=true to overwrite.`,
-          };
+        await fs.promises.writeFile(filePath, contentStr, { encoding: 'utf8', mode: 0o644, flag: force ? 'w' : 'wx' });
+      } catch (err) {
+        const nodeErr = err as NodeJS.ErrnoException;
+        if (nodeErr.code === 'EEXIST') {
+          return { success: false, error: `File already exists: ${filePath}. Use force=true to overwrite.` };
         }
         throw err;
-      }
-      try {
-        fs.writeSync(fd, content, 'utf8' as BufferEncoding);
-      } finally {
-        fs.closeSync(fd);
       }
 
       return {
@@ -159,7 +157,7 @@ export class FileWriteTool extends Tool {
   /** 展开 ~ 并解析为绝对路径 */
   private _resolvePath(rawPath: string): string {
     // Expand ~ to HOME for ALL occurrences, not just ~/ prefix
-    const home = process.env.HOME ?? '/Users/apple';
+    const home = homedir();
     const expanded = rawPath.replace(/^~/, home).replace(/\/~/g, home);
     return path.isAbsolute(expanded) ? expanded : path.resolve(expanded);
   }

@@ -94,7 +94,7 @@ export class TaskScheduler {
 
     if (options.autoStart !== false) {
       // Defer start to next tick
-      setImmediate(() => this._autoStart()).catch(err => console.error('[Scheduler]', err));
+      try { this._autoStart(); } catch (err) { console.error('[Scheduler]', err); }
     }
   }
 
@@ -105,6 +105,8 @@ export class TaskScheduler {
       this._status = 'failed';
       return;
     }
+    // No cycle — begin execution
+    await this.run();
   }
 
   // ─── 控制方法 ─────────────────────────────────────────────
@@ -137,8 +139,11 @@ export class TaskScheduler {
       if (this._stopped) break;
       while (this._paused) {
         await this._sleep(100);
-        if (this._stopped) break;
+        if (this._stopped || (this._status as string) !== 'paused') break;
       }
+
+      // 暂停后检查是否停止或不再是 paused 状态
+      if (this._stopped || (this._status as string) !== 'paused') continue;
 
       // 等待该层所有任务完成
       await this._executeLayer(layer);

@@ -345,15 +345,16 @@ class GoedelEngine {
       return { success: false, reason: 'tests_failed' };
     }
 
-    const targetPath = path.join(this.srcDir, proposal.target);
-    const originalContent = fs.readFileSync(targetPath, 'utf8');
-    const modifiedContent = this.applyDiff(originalContent, diff);
-
     // 安全检查：需要确认环境变量 HEARTFLOW_ENABLE_SELF_MODIFICATION=1 才能自动修改
+    // 此检查必须在任何文件读取或写入之前执行
     if (process.env.HEARTFLOW_ENABLE_SELF_MODIFICATION !== '1') {
       console.warn('[Gödel] Self modification disabled by policy');
       return { success: false, reason: 'self_modification_disabled' };
     }
+
+    const targetPath = path.join(this.srcDir, proposal.target);
+    const originalContent = fs.readFileSync(targetPath, 'utf8');
+    const modifiedContent = this.applyDiff(originalContent, diff);
 
     // 写入文件（仅在显式开启时写入）
     fs.writeFileSync(targetPath, modifiedContent);

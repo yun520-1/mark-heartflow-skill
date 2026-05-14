@@ -21,6 +21,7 @@ import {
   buildCorrectionPrompt,
 } from './reflexion-prompts.mjs';
 import { promises as fs } from 'fs';
+import { homedir } from 'os';
 import { join, dirname } from 'path';
 
 // ============================================================================
@@ -44,7 +45,7 @@ import { join, dirname } from 'path';
 // ============================================================================
 
 const SKILL_DIR = process.env.HERMES_SKILL_DIR 
-  || join(process.env.HOME || '~', '.hermes', 'skills');
+  || join(homedir(), '.hermes', 'skills');
 
 // ============================================================================
 // Core Workflow

@@ -62,7 +62,9 @@ function loadDepthHistory() {
 
 function saveDepthHistory() {
   try {
-    fs.writeFileSync(DEPTH_FILE, JSON.stringify(_depthHistory, null, 2));
+    const tmpFile = DEPTH_FILE + '.tmp';
+    fs.writeFileSync(tmpFile, JSON.stringify(_depthHistory, null, 2));
+    fs.renameSync(tmpFile, DEPTH_FILE);
   } catch {}
 }
 

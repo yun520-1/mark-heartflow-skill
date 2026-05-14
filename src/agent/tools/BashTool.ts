@@ -300,7 +300,9 @@ export class BashTool extends Tool {
    */
   private _validateCommand(command: string): { valid: boolean; reason?: string } {
     // 第一道门：检查 shell 元字符（黑名单防止绕过白名单）
-    const shellMetachars = /[;&|`$\x00{}[\]!<>~#%^\\ \n]/;
+    // 注意：不在字符类中放空格（会误杀 "ls -la" 等合法带空格命令）
+    // 只匹配真正的 shell 操作符和危险构造
+    const shellMetachars = /[;&|`$\x00{}\[\]!<>~#%^*\n\\]|&&|\|\||;;|<<|>>|<>|&\||\(|\\\(|\\\)/;
     if (shellMetachars.test(command)) {
       return { valid: false, reason: `Forbidden shell metacharacter in command` };
     }

@@ -460,7 +460,7 @@ class SelfModel {
         return principles;
       }
     } catch (e) {
-      console.log('[SelfModel] Could not load CORE_VALUES');
+      console.warn('[SelfModel] Could not load CORE_VALUES');
     }
     return ['帮助用户', '保持诚实', '持续学习'];
   }

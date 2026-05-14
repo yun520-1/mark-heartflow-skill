@@ -20,12 +20,13 @@
 import { ReflexionMemory, scoreInsight, passesGate } from '../../self-evolution/reflexion-v2.mjs';
 import { promises as fs } from 'fs';
 import { dirname, join } from 'path';
+import { homedir } from 'os';
 
 // ============================================================================
 // Persistent Storage
 // ============================================================================
 
-const DATA_DIR = join(process.env.HERMES_DATA_DIR || '~/.hermes/data', 'cortex');
+const DATA_DIR = join(process.env.HERMES_DATA_DIR || join(homedir(), '.hermes', 'data'), 'cortex');
 const RULES_FILE = join(DATA_DIR, 'rules.json');
 const MEMORY_FILE = join(DATA_DIR, 'memory.json');
 const ANTI_PATTERNS_FILE = join(DATA_DIR, 'anti-patterns.json');

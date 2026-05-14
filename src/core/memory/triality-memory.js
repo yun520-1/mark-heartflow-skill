@@ -1231,7 +1231,7 @@ class TrialityMemory {
 
     let memoriesWithScore = this.memories.map(m => {
       // 时间得分：越近越高，7天外为0
-      const ageHours = (now - m.timestamp / 1000) / (1000 * 60 * 60);
+      const ageHours = (now - m.timestamp) / 1000 / (1000 * 60 * 60);
       const recencyScore = Math.max(0, 1 - ageHours / (24 * 7));
 
       // 访问次数加成（高频访问的记忆更有价值）
@@ -1737,7 +1737,7 @@ class TrialityMemory {
       cycle: cycleNum,
       phase: isREM ? 'REM' : (isDeepSleep ? 'NREM-Deep' : 'NREM-Light'),
       compressed: 0,
-      promoted: 0,
+      promotedCount: 0,
       connectionsFormed: 0,
       newConnections: [],
       promoted: [],

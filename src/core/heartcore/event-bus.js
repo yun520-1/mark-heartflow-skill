@@ -24,10 +24,10 @@ class EventBus {
     this._log.push(event);
     if (this._log.length > 1000) this._log.splice(0, this._log.length - 1000); // cap log size
     for (const h of this._handlers.get(type) ?? []) {
-      try { h(event); } catch { /* continue to next handler */ }
+      try { h(event); } catch (err) { console.error('[EventBus] Handler error:', err); }
     }
     for (const h of this._handlers.get('*') ?? []) {
-      try { h(event); } catch { /* continue to next handler */ }
+      try { h(event); } catch (err) { console.error('[EventBus] Handler error:', err); }
     }
   }
 

@@ -12,8 +12,9 @@
 
 'use strict';
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from "fs";
+import * as path from "path";
+import { homedir } from 'os';
 import { Tool, ToolMetadata, ToolResult } from './Tool';
 
 const METADATA: ToolMetadata = {
@@ -60,11 +61,11 @@ const METADATA: ToolMetadata = {
 
 /** 允许读取的根目录白名单（收紧：不允许整个 home，只允许特定子目录） */
 const ALLOWED_ROOTS = [
-  path.join(process.env.HOME ?? '/Users/apple', '.hermes', 'skills'),
-  path.join(process.env.HOME ?? '/Users/apple', '.hermes', 'cron'),
-  path.join(process.env.HOME ?? '/Users/apple', '.hermes', 'memory'),
-  path.join(process.env.HOME ?? '/Users/apple', '.hermes', 'config'),
-  path.join(process.env.HOME ?? '/Users/apple', '.hermes', 'data'),
+  path.join(homedir(), '.hermes', 'skills'),
+  path.join(homedir(), '.hermes', 'cron'),
+  path.join(homedir(), '.hermes', 'memory'),
+  path.join(homedir(), '.hermes', 'config'),
+  path.join(homedir(), '.hermes', 'data'),
   '/tmp',
   '/var/folders',  // macOS temporary directories
 ];
@@ -132,7 +133,7 @@ export class FileReadTool extends Tool {
   /** 展开 ~ 并解析为绝对路径 */
   private _resolvePath(rawPath: string): string {
     if (rawPath.startsWith('~/')) {
-      return path.join(process.env.HOME ?? '/Users/apple', rawPath.slice(2));
+      return path.join(homedir(), rawPath.slice(2));
     }
     return path.isAbsolute(rawPath) ? rawPath : path.resolve(rawPath);
   }
@@ -154,8 +155,19 @@ export class FileReadTool extends Tool {
     return lines.slice(start, end).join('\n');
   }
 
-  /** 快速统计总行数（不读取全部内容） */
+  /** 快速统计总行数（对大文件使用 wc -l 避免加载全部内容到内存） */
   private _countLines(filePath: string, encoding: string): number {
+    const stat = fs.statSync(filePath);
+    // 对大于 1MB 的文件使用 wc -l 子进程来计数
+    if (stat.size > 1024 * 1024 && encoding === 'utf8') {
+      try {
+        const { execFileSync } = require('child_process');
+        const { stdout } = execFileSync('wc', ['-l', filePath], { encoding: 'utf8' });
+        return parseInt(stdout.trim().split(/\s+/)[0], 10) || 0;
+      } catch {
+        // 回退到内存读取方式
+      }
+    }
     const content = fs.readFileSync(filePath, encoding as BufferEncoding);
     return content.split('\n').length;
   }

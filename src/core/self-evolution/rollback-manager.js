@@ -118,12 +118,40 @@ class RollbackManager {
 
     // 恢复文件 - 从版本历史中获取内容并写入
     const srcDir = path.join(this.projectRoot, 'src');
-    const filePath = path.join(srcDir, previousVersion.target);
+
+    // 安全检查：验证 target 是安全的相对路径（无 .. 遍历）
+    const target = previousVersion.target || '';
+    
+    // 严格路径验证：必须是相对于 srcDir 的子路径
+    const normalizedTarget = path.normalize(target);
+    if (normalizedTarget.includes('..') || !normalizedTarget.match(/^[a-zA-Z0-9_\-./]+$/)) {
+      this.log(`Cannot restore: unsafe target path "${target}"`, 'ERROR');
+      return { success: false, reason: 'unsafe_target_path', target };
+    }
+    
+    // 使用 path.resolve 合并后验证，确保在 srcDir 内部
+    const filePath = path.join(srcDir, normalizedTarget);
+    const resolvedPath = path.resolve(filePath);
+    const resolvedSrcDir = path.resolve(srcDir);
+    if (!resolvedPath.startsWith(resolvedSrcDir + path.sep) && resolvedPath !== resolvedSrcDir) {
+      this.log(`Cannot restore: path traversal detected "${target}"`, 'ERROR');
+      return { success: false, reason: 'path_traversal_blocked', target };
+    }
+
+    // 备份文件也必须在 srcDir 内
+    const backupPath = filePath + '.rollback-backup';
+    const resolvedBackup = path.resolve(backupPath);
+    if (!resolvedBackup.startsWith(resolvedSrcDir + path.sep)) {
+      this.log(`Cannot restore: backup path outside srcDir`, 'ERROR');
+      return { success: false, reason: 'backup_path_traversal', target };
+    }
 
     try {
       if (previousVersion.content) {
-        // 直接使用存储的文件内容进行恢复
-        fs.writeFileSync(filePath, previousVersion.content, 'utf8');
+        // 原子写入：先写 .new，再 rename
+        fs.writeFileSync(backupPath + '.new', previousVersion.content, 'utf8');
+        fs.renameSync(backupPath + '.new', filePath);
+        this.log(`Restored file: ${previousVersion.target} (id: ${previousVersion.id})`);
         this.log(`Restored file: ${previousVersion.target} (id: ${previousVersion.id})`);
 
         // 更新当前版本记录，指向已恢复的文件

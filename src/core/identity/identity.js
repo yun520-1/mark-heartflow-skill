@@ -12,10 +12,21 @@ function getRootPath() {
   return path.resolve(__dirname, '../../../..');
 }
 
+// Attention Logic Verifier (from daima/src/)
+let _AttentionLogicVerifier;
+try {
+  const alv = require('../self-evolution/attention-logic-verifier.js');
+  _AttentionLogicVerifier = alv.AttentionLogicVerifier;
+} catch (e) {
+  _AttentionLogicVerifier = null;
+}
+
 class IdentitySystem {
   constructor() {
     this.identityPath = path.join(getRootPath(), 'CORE_IDENTITY.md');
     this._identity = null;
+    // Attention Logic Verifier（来自 daima/src/）
+    this._alv = _AttentionLogicVerifier ? new _AttentionLogicVerifier() : null;
     this._load();
   }
 
@@ -118,6 +129,25 @@ class IdentitySystem {
         issues.push(`contradiction_${c.type}`);
       }
     });
+
+    // 5. Attention Logic Verifier（来自 daima/src/attention_logic_verifier.py）
+    if (this._alv) {
+      try {
+        const alvResult = this._alv.verify(input);
+        checks.push({
+          type: 'attention_logic',
+          severity: alvResult.verdict === 'pass' ? 'low' : 'medium',
+          detail: `logic=${alvResult.logicScore} support=${alvResult.supportScore} contradiction=${alvResult.contradictionScore} action=${alvResult.actionabilityScore}`,
+          alvVerdict: alvResult.verdict,
+          focusTokens: alvResult.focusTokens,
+        });
+        if (alvResult.verdict === 'needs_revision' && alvResult.logicScore < 0.5) {
+          issues.push('low_actionability');
+        }
+      } catch (e) {
+        // silently skip ALV errors
+      }
+    }
 
     const passed = issues.length === 0;
 

@@ -111,7 +111,9 @@ class ExperienceReplay {
       if (fs.existsSync(this.reportFile)) {
         return JSON.parse(fs.readFileSync(this.reportFile, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('[ExperienceReplay] loadReports failed:', e?.message ?? e);
+    }
     return [];
   }
 

@@ -38,7 +38,6 @@ class SkillLoader {
         return null;
       }
       const content = fs.readFileSync(skill.path, 'utf8');
-      this.loaded.set(skillName, content);
       return content;
     } catch (e) {
       console.warn(`[SkillLoader] 读取技能失败: ${skillName}`, e.message);

@@ -715,11 +715,11 @@ class CoreIdentityEngine {
         coreDirectives: this.identity.coreDirectives
       },
       memory: {
-        nodes: this.memory.nodes.length,
+        nodes: this.memory.nodes,
         stats: this.memory.getStats()
       },
       selfReflection: this.selfReflection.getStats(),
-      reflections: this.reflection.reflections.length
+      reflections: this.reflection.reflections
     };
     
     const dir = path.dirname(this.stateFile);
@@ -735,7 +735,7 @@ class CoreIdentityEngine {
     } catch (e) {
       console.error('[CoreIdentityEngine] 保存状态失败:', e.message);
       if (fs.existsSync(tmpFile)) {
-        try { fs.unlinkSync(tmpFile); } catch {}
+        try { fs.unlinkSync(tmpFile); } catch (err) { console.error('[CoreIdentityEngine] 清理临时文件失败:', err?.message || String(err)); }
       }
     }
   }
@@ -748,6 +748,17 @@ class CoreIdentityEngine {
       if (fs.existsSync(this.stateFile)) {
         const state = JSON.parse(fs.readFileSync(this.stateFile, 'utf8'));
         console.log(`[CoreIdentityEngine] 状态已加载: ${state.timestamp}`);
+
+        // Restore memory nodes
+        if (Array.isArray(state.memory?.nodes)) {
+          this.memory.nodes = state.memory.nodes;
+        }
+
+        // Restore reflections
+        if (Array.isArray(state.reflections)) {
+          this.reflection.reflections = state.reflections;
+        }
+
         return state;
       }
     } catch (error) {

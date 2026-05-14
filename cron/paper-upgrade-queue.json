@@ -113,18 +113,42 @@
     "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
     "psychology-philosophy-ai/1406.2661v1.pdf",
     "psychology-philosophy-ai/1706.03762v7.pdf",
-    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf"
+    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf",
+    "psychology-philosophy-ai/2109.05237v4.pdf",
+    "psychology-philosophy-ai/2304.11461v1.pdf",
+    "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
+    "psychology-philosophy-ai/1406.2661v1.pdf",
+    "psychology-philosophy-ai/1706.03762v7.pdf",
+    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf",
+    "psychology-philosophy-ai/2109.05237v4.pdf",
+    "psychology-philosophy-ai/2304.11461v1.pdf",
+    "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
+    "psychology-philosophy-ai/1406.2661v1.pdf",
+    "psychology-philosophy-ai/1706.03762v7.pdf",
+    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf",
+    "psychology-philosophy-ai/2109.05237v4.pdf",
+    "psychology-philosophy-ai/2304.11461v1.pdf",
+    "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"
   ],
   "papersAnalyzed": [
     "psychology-philosophy-ai/10.3389.fpsyt.2021.680811.pdf",
     "psychology-philosophy-ai/1406.2661v1.pdf",
     "psychology-philosophy-ai/1706.03762v7.pdf",
-    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf"
+    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf",
+    "psychology-philosophy-ai/2024.emnlp-main.711.pdf",
+    "psychology-philosophy-ai/2025.acl-long.1049.pdf",
+    "psychology-philosophy-ai/2109.05237v4.pdf",
+    "psychology-philosophy-ai/2304.11461v1.pdf",
+    "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"
   ],
-  "currentVersion": "v0.13.113",
-  "nextVersion": "v0.13.114",
-  "lastUpgrade": "2026-05-14T08:41:02.411Z",
-  "upgradeCount": 53,
+  "currentVersion": "v0.13.123",
+  "nextVersion": "v0.13.124",
+  "lastUpgrade": "2026-05-14T11:11:46.858Z",
+  "upgradeCount": 63,
   "qualityHistory": [
     {
       "version": "v0.13.79",
@@ -300,6 +324,56 @@
       "version": "v0.13.113",
       "modules": 4,
       "timestamp": 1778748062411
+    },
+    {
+      "version": "v0.13.114",
+      "modules": 5,
+      "timestamp": 1778749266375
+    },
+    {
+      "version": "v0.13.115",
+      "modules": 6,
+      "timestamp": 1778749871229
+    },
+    {
+      "version": "v0.13.116",
+      "modules": 1,
+      "timestamp": 1778751073123
+    },
+    {
+      "version": "v0.13.117",
+      "modules": 4,
+      "timestamp": 1778751679183
+    },
+    {
+      "version": "v0.13.118",
+      "modules": 5,
+      "timestamp": 1778752883477
+    },
+    {
+      "version": "v0.13.119",
+      "modules": 6,
+      "timestamp": 1778753488720
+    },
+    {
+      "version": "v0.13.120",
+      "modules": 1,
+      "timestamp": 1778754690855
+    },
+    {
+      "version": "v0.13.121",
+      "modules": 4,
+      "timestamp": 1778755296759
+    },
+    {
+      "version": "v0.13.122",
+      "modules": 5,
+      "timestamp": 1778756501697
+    },
+    {
+      "version": "v0.13.123",
+      "modules": 6,
+      "timestamp": 1778757106858
     }
   ]
 }

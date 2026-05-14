@@ -18,9 +18,10 @@
 import { improveSkill, getImprovementSummary } from './skill-improve-workflow.mjs';
 import { decayOldEntries } from './skill-knowledge.mjs';
 import { promises as fs } from 'fs';
+import { homedir } from 'os';
 import { join } from 'path';
 
-const DATA_DIR = join(process.env.HOME || '~', '.hermes', 'data', 'skill-knowledge');
+const DATA_DIR = join(homedir(), '.hermes', 'data', 'skill-knowledge');
 const ERROR_LOG = join(DATA_DIR, 'error-log.json');
 
 // ============================================================================
