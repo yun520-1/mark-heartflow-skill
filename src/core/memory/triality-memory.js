@@ -856,8 +856,8 @@ class TrialityMemory {
   forget(options = {}) {
     const { maxAge = 30 * 24 * 60 * 60 * 1000, minImportance = 5, maxMemories = 1000 } = options;
     const before = this.memories.length;
-    const now = Date.now() * 1000;
-    const cutoff = now - maxAge * 1000;
+    const now = Date.now();
+    const cutoff = now - maxAge;
 
     this.memories = this.memories.filter(mem => {
       if (mem.accessCount > 10) return true;

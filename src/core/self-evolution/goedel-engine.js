@@ -210,6 +210,12 @@ class GoedelEngine {
     if (!fs.existsSync(targetPath)) {
       return { valid: false, reason: 'file_not_found' };
     }
+    // 路径穿越检查：确保解析后仍在 srcDir 内
+    const resolvedTarget = path.resolve(targetPath);
+    const resolvedSrcDir = path.resolve(this.srcDir);
+    if (!resolvedTarget.startsWith(resolvedSrcDir + path.sep)) {
+      return { valid: false, reason: 'path_traversal_blocked' };
+    }
 
     this.log(`Proposal accepted: ${modification.description}`);
     
