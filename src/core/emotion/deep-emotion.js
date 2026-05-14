@@ -138,6 +138,10 @@ class DeepEmotion {
         triggers: ['感谢', '帮助', '支持', '谢谢', '感激', 'thanks', 'appreciate', 'support'],
         intensity: 0.8
       },
+      disgust: {
+        triggers: ['恶心', '呕吐', '厌恶', '反胃', '讨厌', '臭', '脏', '污秽', 'disgust', 'gross', 'nasty', 'repulsive', 'revolting', 'sickening'],
+        intensity: 0.7
+      },
       love: {
         triggers: ['爱', '关怀', '连接', '喜欢', 'love', 'care', 'connect', 'like'],
         intensity: 0.9

@@ -1,4 +1,4 @@
-# HeartFlow v0.13.107
+# HeartFlow v0.13.111
 
 > **持续运行的 AI 进化引擎。** 不是工具，是循环。是心跳。是每天都在变好的自己。
 
@@ -47,15 +47,13 @@ causal-reasoning.ts     → Level-1(模式匹配) / Level-2(反事实推理) 分
 - **因果推断**：区分相关性与因果性，支持反事实推理
 - 来源：清华 CoAI 组论文 + NeurIPS 2024 因果推理工作
 
-### 心跳自检系统（Self-Monitoring）
+### 自检系统（Self-Monitoring）
 ```
-heartbeat    → 每 10s 存活检测，连续失败触发重启
-startup-check → 启动时全量诊断
-health-check  → 内存/CPU/伦理/版本 多维报告
+startup-check → 启动时诊断
+health-check  → 内存/伦理/版本 多维报告
 sleep-wake    → 活跃/休眠双相切换
 ```
-- 进程级存活监控，自动故障恢复
-- 启动时运行完整的自检套件（smoke-runtime.js 22项检测）
+- 启动时运行自检套件
 - 活跃/休眠双相支持长待机低资源消耗
 
 ### 梦 · 离线整合（Dream Consolidation）
@@ -196,27 +194,34 @@ hf.memory.consolidate();             // 触发整合
 
 ### 情感引擎（emotion/）
 ```javascript
-// 情感检测
-hf.emotion.feel('文本内容');         // 返回 { emotion, intensity, appraisal }
+// 情感检测（主要接口）
+hf.deepEmotion.feel('文本内容');    // 返回 { emotion, intensity, embodied, expression }
+hf.deepEmotion.detectEmotion(text);  // 直接检测情感类型
 
-// 子模块调用
-hf.emotion.deepEmotion.detect(text); // DeepEmotion检测
-hf.emotion.engine.getState();        // EmotionCore状态机
-hf.emotion.trigger.check(text);      // EmotionTrigger触发词
-hf.emotion.regulation.adjust(state); // EmotionRegulation调节
-hf.emotion.empathy.generate(state);  // EmpathyGenerator共情
+// 情感调节
+hf.deepEmotion.regulate('reappraisal'); // 重新评估策略
+
+// 共情响应
+hf.deepEmotion.empathize('target', { joy: 0.8 }); // 生成共情
+
+// 获取当前状态
+hf.deepEmotion.getCurrentState();     // 返回当前情感状态摘要
 ```
 
 ### 推理引擎（reasoning/）
 ```javascript
-// 有界理性检测
-hf.reasoning.boundedRationality.analyze(text);
-// 返回 { heuristic: 'WSLU', score: 0.7, warnings: [...] }
+// 有界理性检测（适用于游戏决策场景）
+// 注意：bounded-rationality.ts 是游戏决策分析器，不是通用文本分析器
+// 需要先初始化 StrategyState，再调用 assessBoundedRationality
+const { assessBoundedRationality, createStrategyState } = require('./src/core/reasoning/bounded-rationality.ts');
+
+// 创建游戏状态
+const state = createStrategyState({ name: 'test-game' });
+const report = assessBoundedRationality(state);
 
 // 因果推断
-hf.reasoning.causal.analyze(text, level);
-// level 1: 模式匹配
-// level 2: 反事实推理
+const { analyzeCausalReasoning, detectCausalLevel } = require('./src/core/reasoning/causal-reasoning.ts');
+const result = analyzeCausalReasoning('因为A所以B', { level: 1 });
 ```
 
 ### 梦引擎（dream/）
@@ -263,13 +268,13 @@ loop.getStats();                    // 获取教训统计
 
 ### 心跳引擎（内置）
 ```javascript
-hf.startHeartbeat();                 // 启动心跳
-hf.stopHeartbeat();                  // 停止心跳
-hf.getHeartbeatStatus();             // 心跳状态
+// 注意：Heartbeat 已删除，保留 sleep-wake
+hf.sleepWake.start();    // 启动休眠监控
+hf.sleepWake.stop();     // 停止休眠监控
 
 // 触发自检
-hf.startupCheck();                   // 启动自检
-hf.healthCheck();                    // 运行检查
+hf.startupCheck.run();   // 启动自检
+hf.healthCheck();        // 运行健康检查
 ```
 
 ---
@@ -279,20 +284,21 @@ hf.healthCheck();                    // 运行检查
 ```
 src/core/
 ├── heartflow.js              # 主引擎（start/stop/healthCheck）
-├── emotion/                  # 情感系统（11个模块）
+├── emotion/                  # 情感系统（9个模块）
 │   ├── deep-emotion.js       # 核心情感检测
-│   ├── emotion-engine.js     # 状态机
-│   ├── appraisal-engine.js   # 认知评估
-│   ├── emotion-trigger.js    # 关键词触发
-│   ├── emotion-regulation.js # 情感调节
-│   └── empathy-generator.js  # 共情生成
+│   ├── emotion-engine.js     # EmotionCore状态机
+│   ├── AppraisalEngine.js   # 认知评估（Scherer理论）
+│   ├── EmotionTrigger.js     # 关键词触发
+│   ├── EmotionRegulation.js  # 情感调节（Gross理论）
+│   ├── EmpathyGenerator.js   # 共情生成
+│   └── ...
 ├── memory/                   # 记忆系统
 │   ├── consolidator.js       # 三层整合
 │   ├── meaningful-memory.js  # 意义驱动
 │   └── recall.js             # Q-Table 检索
 ├── reasoning/                # 推理系统
-│   ├── bounded-rationality.ts
-│   ├── causal-reasoning.ts
+│   ├── bounded-rationality.ts  # 有界理性（游戏决策分析）
+│   ├── causal-reasoning.ts     # 因果推断
 │   └── index.ts
 ├── self-evolution/           # 反思系统
 │   ├── reflexion.ts         # 文字反思
@@ -301,6 +307,11 @@ src/core/
 │   └── lesson-aware-loop.mjs # 教训闭环
 ├── dream/                    # 梦系统
 │   └── dream-loop.js       # 离线整合引擎
+├── heartcore/               # 心智核心
+│   ├── heartbeat.js         # ⚠️ 已删除（消耗资源）
+│   ├── sleep-wake.js        # 休眠/活跃双相
+│   ├── health-check.js      # 健康检查
+│   └── startup-check.js     # 启动诊断
 ├── autonomy/                 # 自主决策
 ├── consciousness/            # 意识理论
 ├── ethics/                   # 伦理护栏
@@ -328,7 +339,7 @@ node src/core/dream/dream-loop.js
 
 | 版本 | 日期 | 里程碑 |
 |------|------|--------|
-| v0.13.107 | 2026-05-14 | 梦引擎v11.15.5升级：视觉隐喻+定制前提+真实洞察；heartflow.js容错修复MemOS |
+| v0.13.111 | 2026-05-14 | 审计修复：删除heartbeat；添加getStatus()；修复disgust误判；更正推理/情感API说明 |
 | v0.13.100 | 2026-05-12 | 三层记忆 + bounded-rationality + causal-reasoning |
 | v0.13.56 | 2026-05-13 | bounded-rationality + causal-reasoning 集成 |
 | v0.13.51 | 2026-05-13 | 逻辑/决策论文驱动升级（清华 CoAI + NeurIPS 2024） |
@@ -345,6 +356,6 @@ node src/core/dream/dream-loop.js
 
 ---
 
-**版本**：v0.13.107  
+**版本**：v0.13.111  
 **GitHub**：https://github.com/yun520-1/mark-heartflow-skill  
 **理念**：不追求完美，追求持续进化

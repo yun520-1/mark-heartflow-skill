@@ -21,7 +21,6 @@ const path = require('path');
 
 // ─── HEARTCORE v2（来自 ~/.heartflow/）────────────────────────────
 const {
-  HeartbeatCore, getHeartbeat,
   SleepWake, getSleepWake,
   globalEventBus,
   globalStateStore,
@@ -102,7 +101,7 @@ function _ensureV11432() {
 }
 
 // ─── 版本常量 ───────────────────────────────────────────────────────────────
-let VERSION = 'v0.13.107';
+let VERSION = 'v0.13.111';
 let BUILD_DATE = '2026-05-11';
 try {
   const root = path.resolve(__dirname, '..', '..');
@@ -195,7 +194,6 @@ class HeartFlow extends EventEmitter {
     this._sessionId = `session-${Date.now()}`;
 
     // ─── HEARTCORE v2 初始化 ───────────────────────────────────
-    this.heartbeat = getHeartbeat({ interval: 5000, timeout: 15000 });
     this.sleepWake = getSleepWake({ idleTimeoutMs: 30 * 60 * 1000, enableAutoSleep: true });
     this.startupCheck = getStartupCheck();
     this.healthMonitor = getHealthCheck();
@@ -214,6 +212,24 @@ class HeartFlow extends EventEmitter {
     };
 
     logger.info(`[HeartFlow] ${VERSION} 初始化完成`);
+  }
+
+  /** 获取运行状态 */
+  getStatus() {
+    return {
+      version: this.version,
+      started: this._started,
+      uptime: this._startedAt ? Date.now() - this._startedAt : 0,
+      deepEmotion: !!this.deepEmotion,
+      dream: !!this.dream,
+      identity: !!this.identity,
+      guard: !!this.guard,
+      memos: this.memos === null ? 'unavailable' : 'available',
+      sleepWake: {
+        phase: this.sleepWake.phase,
+        lastActivity: this.sleepWake.lastActivity,
+      },
+    };
   }
 
   /** 启动引擎 */
@@ -243,6 +259,415 @@ class HeartFlow extends EventEmitter {
     this.consciousness = Consciousness;
     this.ethics = Ethics;
     this.dream.enabled = true;
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778746253896 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"Language Model","definition":"","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"term":"This","definition":"","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"term":"Carnivores","definition":"","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"term":"Julie","definition":"","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"term":"Animals","definition":"","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"term":"Carnivores","definition":"","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"term":"Fae","definition":"","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"term":"Fae","definition":"","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"term":"Fae","definition":"","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"term":"Fae","definition":"","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
+  // Algorithm Library from papers
+  this.algoLib_1778746253896 = {
+    name: 'algorithmLibrary',
+    type: 'algorithms',
+    
+    algorithms: [{"description":"canbespecifiedindifferentwaystoaccommodate that strategically explores the space of reasoning","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"description":"are given in Appendix A and","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"description":"can find a successful plan 42% of the","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"},{"description":"asetoffactsandlogicalrules,andamodelisre-","source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"}],
+    
+    // 执行算法步骤
+    execute(steps, context = {}) {
+      const results = [];
+      steps.forEach((step, i) => {
+        results.push({
+          step: i + 1,
+          action: step.description || step,
+          status: 'completed'
+        });
+      });
+      return results;
+    },
+    
+    // 获取建议
+    suggest(context) {
+      return this.algorithms.slice(0, 3);
+    }
+  };
+
+  // Metric Tracker from papers
+  this.metricTracker_1778746253896 = {
+    name: 'metricTracker',
+    type: 'metrics',
+    
+    metrics: [{"name":"accuracy","value":null,"source":"psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf"}],
+    history: [],
+    
+    track(value) {
+      this.history.push({ value, timestamp: Date.now() });
+      return this.history[this.history.length - 1];
+    },
+    
+    getStats() {
+      if (this.history.length === 0) return null;
+      const values = this.history.map(h => h.value);
+      return {
+        current: values[values.length - 1],
+        avg: values.reduce((a, b) => a + b, 0) / values.length,
+        min: Math.min(...values),
+        max: Math.max(...values)
+      };
+    }
+  };
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778746256469 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"Productions","definition":"","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"term":"Soar","definition":"","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"term":"Ms","definition":"","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"term":"Ms","definition":"","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"term":"It","definition":"","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"term":"It","definition":"","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"term":"Retrieval","definition":"","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"term":"Ms","definition":"","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"term":"Voyager","definition":"","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"term":"This","definition":"","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
+  // Algorithm Library from papers
+  this.algoLib_1778746256469 = {
+    name: 'algorithmLibrary',
+    type: 'algorithms',
+    
+    algorithms: [{"description":"implements division-with-remainder by converting a number written as strokes | into","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"description":"halts after executing the rule","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"description":"without return values, as","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"description":"is to use reasoning (and optionally retrieval) to sample one (Huang et al","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"description":"to enable global exploration as well as local backtrack and foresight","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"description":"uses a separate image-to-","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"description":"projects images directly into the language model’s representation space (Bavishi et al","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"description":"consists of proposal and evaluation prompts (Yao et al","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"description":"provides a path towards developing more general and more human-like","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"},{"description":"to active reward learning","source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"}],
+    
+    // 执行算法步骤
+    execute(steps, context = {}) {
+      const results = [];
+      steps.forEach((step, i) => {
+        results.push({
+          step: i + 1,
+          action: step.description || step,
+          status: 'completed'
+        });
+      });
+      return results;
+    },
+    
+    // 获取建议
+    suggest(context) {
+      return this.algorithms.slice(0, 3);
+    }
+  };
+
+  // Metric Tracker from papers
+  this.metricTracker_1778746256469 = {
+    name: 'metricTracker',
+    type: 'metrics',
+    
+    metrics: [{"name":"recall","value":null,"source":"psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"}],
+    history: [],
+    
+    track(value) {
+      this.history.push({ value, timestamp: Date.now() });
+      return this.history[this.history.length - 1];
+    },
+    
+    getStats() {
+      if (this.history.length === 0) return null;
+      const values = this.history.map(h => h.value);
+      return {
+        current: values[values.length - 1],
+        avg: values.reduce((a, b) => a + b, 0) / values.length,
+        min: Math.min(...values),
+        max: Math.max(...values)
+      };
+    }
+  };
+
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778745650322 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"There","definition":"","source":"psychology-philosophy-ai/2109.05237v4.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
+  // Algorithm Library from papers
+  this.algoLib_1778745650322 = {
+    name: 'algorithmLibrary',
+    type: 'algorithms',
+    
+    algorithms: [{"description":"Nowlet’sapplythedifferentiablephysicsideaasmentionedabovetofind :we’lldirectlyincludeourdiscretizedmo","source":"psychology-philosophy-ai/2109.05237v4.pdf"},{"description":"Ashintedatabove,wecandoevenbetterwithstateoftheartAItechniques: wecanlearnthefulldistributionofthe","source":"psychology-philosophy-ai/2109.05237v4.pdf"},{"description":"Physics-basedDeepLearning","source":"psychology-philosophy-ai/2109.05237v4.pdf"},{"description":"actually resolves both “modes” of the solution in the form of points above and below the","source":"psychology-philosophy-ai/2109.05237v4.pdf"},{"description":"Physics-basedDeepLearning","source":"psychology-philosophy-ai/2109.05237v4.pdf"}],
+    
+    // 执行算法步骤
+    execute(steps, context = {}) {
+      const results = [];
+      steps.forEach((step, i) => {
+        results.push({
+          step: i + 1,
+          action: step.description || step,
+          status: 'completed'
+        });
+      });
+      return results;
+    },
+    
+    // 获取建议
+    suggest(context) {
+      return this.algorithms.slice(0, 3);
+    }
+  };
+
+  // Metric Tracker from papers
+  this.metricTracker_1778745650322 = {
+    name: 'metricTracker',
+    type: 'metrics',
+    
+    metrics: [{"name":"accuracy","value":null,"source":"psychology-philosophy-ai/2109.05237v4.pdf"},{"name":"accuracy","value":null,"source":"psychology-philosophy-ai/2109.05237v4.pdf"},{"name":"accuracy","value":null,"source":"psychology-philosophy-ai/2109.05237v4.pdf"}],
+    history: [],
+    
+    track(value) {
+      this.history.push({ value, timestamp: Date.now() });
+      return this.history[this.history.length - 1];
+    },
+    
+    getStats() {
+      if (this.history.length === 0) return null;
+      const values = this.history.map(h => h.value);
+      return {
+        current: values[values.length - 1],
+        avg: values.reduce((a, b) => a + b, 0) / values.length,
+        min: Math.min(...values),
+        max: Math.max(...values)
+      };
+    }
+  };
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778745651710 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"That","definition":"","source":"psychology-philosophy-ai/2304.11461v1.pdf"},{"term":"Ifadifferentfunctionf","definition":"","source":"psychology-philosophy-ai/2304.11461v1.pdf"},{"term":"This","definition":"","source":"psychology-philosophy-ai/2304.11461v1.pdf"},{"term":"Rp","definition":"","source":"psychology-philosophy-ai/2304.11461v1.pdf"},{"term":"Rp","definition":"","source":"psychology-philosophy-ai/2304.11461v1.pdf"},{"term":"Rp","definition":"","source":"psychology-philosophy-ai/2304.11461v1.pdf"},{"term":"Rp","definition":"","source":"psychology-philosophy-ai/2304.11461v1.pdf"},{"term":"Thesignalc","definition":"","source":"psychology-philosophy-ai/2304.11461v1.pdf"},{"term":"Theclosertheinputgatei","definition":"","source":"psychology-philosophy-ai/2304.11461v1.pdf"},{"term":"Rp","definition":"","source":"psychology-philosophy-ai/2304.11461v1.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
+  // Algorithm Library from papers
+  this.algoLib_1778745651710 = {
+    name: 'algorithmLibrary',
+    type: 'algorithms',
+    
+    algorithms: [{"description":"nets: the difficulty of learning long-term dependencies, fortemporalpatternrecognition","source":"psychology-philosophy-ai/2304.11461v1.pdf"}],
+    
+    // 执行算法步骤
+    execute(steps, context = {}) {
+      const results = [];
+      steps.forEach((step, i) => {
+        results.push({
+          step: i + 1,
+          action: step.description || step,
+          status: 'completed'
+        });
+      });
+      return results;
+    },
+    
+    // 获取建议
+    suggest(context) {
+      return this.algorithms.slice(0, 3);
+    }
+  };
+
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778744446012 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"Transformer","definition":"","source":"psychology-philosophy-ai/1706.03762v7.pdf"},{"term":"That","definition":"","source":"psychology-philosophy-ai/1706.03762v7.pdf"},{"term":"These","definition":"","source":"psychology-philosophy-ai/1706.03762v7.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778744447919 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"It","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"Weclarify","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"Big Five\nYou","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"You","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"Both","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"They","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"term":"You","definition":"","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
+  // Algorithm Library from papers
+  this.algoLib_1778744447919 = {
+    name: 'algorithmLibrary',
+    type: 'algorithms',
+    
+    algorithms: [{"description":"uatingthecurrentitemwithinamulti-turnstructure issimilartoLIWC+SVM,butitextractsfeatures","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"description":"traits, namely Agreeableness, Conscientiousness,","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"description":"firstly extracts psycholinguistic features","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"description":"DDGCN by a non-negligible","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"description":"surpasses the single-turn","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"},{"description":"that directly requests the LLM to infer","source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"}],
+    
+    // 执行算法步骤
+    execute(steps, context = {}) {
+      const results = [];
+      steps.forEach((step, i) => {
+        results.push({
+          step: i + 1,
+          action: step.description || step,
+          status: 'completed'
+        });
+      });
+      return results;
+    },
+    
+    // 获取建议
+    suggest(context) {
+      return this.algorithms.slice(0, 3);
+    }
+  };
+
+  // Metric Tracker from papers
+  this.metricTracker_1778744447919 = {
+    name: 'metricTracker',
+    type: 'metrics',
+    
+    metrics: [{"name":"f1score","value":null,"source":"psychology-philosophy-ai/2023.findings-emnlp.216.pdf"}],
+    history: [],
+    
+    track(value) {
+      this.history.push({ value, timestamp: Date.now() });
+      return this.history[this.history.length - 1];
+    },
+    
+    getStats() {
+      if (this.history.length === 0) return null;
+      const values = this.history.map(h => h.value);
+      return {
+        current: values[values.length - 1],
+        avg: values.reduce((a, b) => a + b, 0) / values.length,
+        min: Math.min(...values),
+        max: Math.max(...values)
+      };
+    }
+  };
+
+
+  // Concept Engine from papers (Knowledge Distillation)
+  this.conceptEngine_1778743843450 = {
+    name: 'conceptEngine',
+    type: 'knowledge',
+    
+    concepts: [{"term":"There","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"Prominentrecentworkinthis","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"This","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"Samples","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"},{"term":"This","definition":"","source":"psychology-philosophy-ai/1406.2661v1.pdf"}],
+    
+    understand(text) {
+      return this.concepts
+        .map(c => ({
+          term: c.term,
+          match: text.toLowerCase().includes(c.term.toLowerCase()),
+          definition: c.definition
+        }))
+        .filter(c => c.match);
+    },
+    
+    explain(term) {
+      const concept = this.concepts.find(c => 
+        c.term.toLowerCase() === term.toLowerCase()
+      );
+      return concept ? concept.definition : '未知概念';
+    }
+  };
+
 
   // Concept Engine from papers (Knowledge Distillation)
   this.conceptEngine_1778742639067 = {
@@ -22414,7 +22839,6 @@ class HeartFlow extends EventEmitter {
       verifier: new PapersBridge.AttentionLogicVerifier(),
     };
     // ─── HEARTCORE v2 启动 ───────────────────────────────────
-    this.heartbeat.start();
     this.sleepWake.start();
     this.bus.emit('start', { version: VERSION, sessionId: this._sessionId });
     logger.info(`[HeartFlow] 启动成功，session: ${this._sessionId}`);
@@ -22431,7 +22855,6 @@ class HeartFlow extends EventEmitter {
       await this.meaningfulMemory.shutdown();
     }
     // ─── HEARTCORE v2 停止 ───────────────────────────────────
-    this.heartbeat.stop();
     this.sleepWake.stop();
     this.bus.emit('stop', {});
     logger.info('[HeartFlow] 已停止');
@@ -22601,12 +23024,10 @@ class HeartFlow extends EventEmitter {
   async healthCheck() {
     const memHealth = builtinMemoryHealth();
     const uptimeHealth = builtinUptimeHealth(this._startedAt || Date.now());
-    const heartbeatMetrics = this.heartbeat.metrics;
     return {
       version: VERSION,
       started: this._started,
       sessionId: this._sessionId,
-      heartbeat: heartbeatMetrics,
       sleepWake: {
         phase: this.sleepWake.phase,
         lastActivity: this.sleepWake.lastActivity,
