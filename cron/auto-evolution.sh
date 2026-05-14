@@ -5,7 +5,7 @@
 
 set -e
 
-SKILL_DIR="/Users/apple/.hermes/skills/ai/mark-heartflow-skill"
+SKILL_DIR="${SKILL_DIR:-$HOME/.hermes/skills/ai/mark-heartflow-skill}"
 NODE_PATH="/opt/homebrew/bin/node"
 cd "$SKILL_DIR"
 

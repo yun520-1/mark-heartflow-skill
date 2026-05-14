@@ -1,6 +1,6 @@
 {
   "name": "heartflow",
-  "version": "0.13.142",
+  "version": "0.13.141",
   "description": "AI identity framework for self-improving AI agents",
   "main": "src/core/heartflow.js",
   "scripts": {

@@ -7,8 +7,8 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { spawnSync } from 'child_process';
 
-const SKILL_DIR = '/Users/apple/.hermes/skills/ai/mark-heartflow-skill';
-const PAPERS_DIR = '/Users/apple/Downloads/daima';
+const SKILL_DIR = process.env.SKILL_DIR || (require('os').homedir() + '/.hermes/skills/ai/mark-heartflow-skill');
+const PAPERS_DIR = process.env.PAPERS_DIR || (require('os').homedir() + '/Downloads/daima');
 const QUEUE_FILE = join(SKILL_DIR, 'cron', 'paper-upgrade-queue.json');
 const ANALYZED_DIR = join(SKILL_DIR, 'cron', 'analyzed');
 const UPGRADES_DIR = join(SKILL_DIR, 'upgrades');
@@ -22,11 +22,13 @@ function saveQueue(queue) { writeFileSync(QUEUE_FILE, JSON.stringify(queue, null
 
 function extractText(pdfPath) {
     try {
+        // FIX C-01: Pass pdfPath as sys.argv[1] argument, not string interpolation
         const result = spawnSync('python3', ['-c', `
-import pdfplumber
 import sys
+import pdfplumber
+path = sys.argv[1]
 try:
-    with pdfplumber.open("${pdfPath.replace(/"/g, '\\"')}") as pdf:
+    with pdfplumber.open(path) as pdf:
         text = ""
         for page in pdf.pages[:15]:
             t = page.extract_text()
@@ -35,7 +37,7 @@ try:
 except Exception as e:
     print("ERROR:", str(e), file=sys.stderr)
     sys.exit(1)
-`], { encoding: 'utf-8', maxBuffer: 50*1024*1024, timeout: 60000 });
+`, pdfPath], { encoding: 'utf-8', maxBuffer: 50*1024*1024, timeout: 60000 });
         return result.stdout || '';
     } catch (e) { log('[错误] PDF提取失败: ' + e.message); return ''; }
 }

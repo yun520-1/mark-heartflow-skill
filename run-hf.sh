@@ -1,4 +1,5 @@
 #!/bin/bash
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
-cd /Users/apple/.hermes/skills/ai/mark-heartflow-skill
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR"
 node src/core/heartflow.js "$@"

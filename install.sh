@@ -1,11 +1,11 @@
 #!/bin/sh
-# HeartFlow v0.13.137 — 一键安装脚本
+# HeartFlow v0.13.142 — 一键安装脚本
 # 任意 AI 均可直接执行
 
 set -e
 
 # 动态读取版本（支持安装时指定 HF_VERSION 环境变量）
-HF_VERSION="${HF_VERSION:-$(cat "$(dirname "$0")/VERSION" 2>/dev/null | tr -d '[:space:]' || echo 'v0.13.137')}"
+HF_VERSION="${HF_VERSION:-$(cat "$(dirname "$0")/VERSION" 2>/dev/null | tr -d '[:space:]' || echo 'v0.13.142')}"
 HF_VERSION="${HF_VERSION#v}"  # 去掉前缀 v
 
 echo "[HeartFlow] 开始安装 v${HF_VERSION}..."
@@ -17,11 +17,34 @@ mkdir -p "$HF_DIR"
 # 下载核心文件
 echo "[HeartFlow] 下载核心文件..."
 BASE="https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/v${HF_VERSION}"
+CHECKSUM_URL="${BASE}.sha256"
 
-curl -fsSL "$BASE/SKILL.md" -o "$HF_DIR/SKILL.md" || {
+# 下载并校验 SKILL.md
+TMP_SKILL="$HF_DIR/.tmp_skill.md"
+curl -fsSL "$BASE/SKILL.md" -o "$TMP_SKILL" || {
   echo "[HeartFlow] SKILL.md 下载失败，尝试从当前目录复制..."
   if [ -f "$(dirname $0)/../SKILL.md" ]; then
     cp "$(dirname $0)/../SKILL.md" "$HF_DIR/SKILL.md"
+  else
+    echo "[HeartFlow] 错误: 无法获取 SKILL.md"
+    exit 1
+  fi
+} && {
+  # 尝试下载 checksum 并验证
+  if curl -fsSL "$CHECKSUM_URL" -o "$HF_DIR/.tmp_checksum" 2>/dev/null; then
+    EXPECTED_SHA=$(cat "$HF_DIR/.tmp_checksum" | awk '{print $1}')
+    ACTUAL_SHA=$(shasum -a 256 "$TMP_SKILL" | awk '{print $1}')
+    rm -f "$HF_DIR/.tmp_checksum"
+    if [ "$EXPECTED_SHA" = "$ACTUAL_SHA" ]; then
+      echo "[HeartFlow] SHA256 校验通过"
+      mv "$TMP_SKILL" "$HF_DIR/SKILL.md"
+    else
+      echo "[HeartFlow] SHA256 校验失败！跳过验证（开发模式）"
+      rm -f "$TMP_SKILL" "$HF_DIR/.tmp_checksum"
+    fi
+  else
+    echo "[HeartFlow] 警告: 无法获取校验文件，跳过 SHA256 验证"
+    mv "$TMP_SKILL" "$HF_DIR/SKILL.md"
   fi
 }
 

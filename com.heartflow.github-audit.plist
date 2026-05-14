@@ -6,13 +6,13 @@
     <string>com.heartflow.github-audit</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/opt/homebrew/bin/node</string>
-        <string>/Users/apple/.hermes/skills/ai/mark-heartflow-skill/cron/github-audit.mjs</string>
+        <string>/bin/bash</string>
+        <string>/Users/apple/.hermes/skills/ai/mark-heartflow-skill/run-github-audit.sh</string>
     </array>
     <key>StartInterval</key>
     <integer>7200</integer>
     <key>RunAtLoad</key>
-    <true/>
+    <false/>
     <key>StandardOutPath</key>
     <string>/Users/apple/.hermes/skills/ai/mark-heartflow-skill/logs/github-audit.stdout.log</string>
     <key>StandardErrorPath</key>

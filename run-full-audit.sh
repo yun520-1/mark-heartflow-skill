@@ -1,5 +1,4 @@
 #!/bin/bash
-# HeartFlow Paper Upgrade Runner - v3.1
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"
-node cron/upgrade-runner.mjs
+bash scripts/full-audit.sh

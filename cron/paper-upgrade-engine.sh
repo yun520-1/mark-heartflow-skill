@@ -7,9 +7,9 @@
 
 set -e
 
-SKILL_DIR="/Users/apple/.hermes/skills/ai/mark-heartflow-skill"
+SKILL_DIR="${SKILL_DIR:-$HOME/.hermes/skills/ai/mark-heartflow-skill}"
 QUEUE_FILE="$SKILL_DIR/cron/paper-upgrade-queue.json"
-PAPERS_DIR="/Users/apple/Downloads/daima"
+PAPERS_DIR="${PAPERS_DIR:-$HOME/Downloads/daima}"
 LOG_FILE="$SKILL_DIR/logs/paper-upgrade-$(date +%Y%m%d).log"
 SRC_DIR="$SKILL_DIR/src"
 

@@ -7,7 +7,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/apple/.hermes/skills/ai/mark-heartflow-skill/scripts/full-audit.sh</string>
+        <string>/Users/apple/.hermes/skills/ai/mark-heartflow-skill/run-full-audit.sh</string>
     </array>
     <key>StartCalendarInterval</key>
     <dict>
@@ -19,7 +19,7 @@
         <integer>0</integer>
     </dict>
     <key>RunAtLoad</key>
-    <true/>
+    <false/>
     <key>StandardOutPath</key>
     <string>/Users/apple/.hermes/skills/ai/mark-heartflow-skill/logs/full-audit.stdout.log</string>
     <key>StandardErrorPath</key>

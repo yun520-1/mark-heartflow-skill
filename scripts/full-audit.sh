@@ -6,7 +6,7 @@
 
 set -e
 
-SKILL_DIR="/Users/apple/.hermes/skills/ai/mark-heartflow-skill"
+SKILL_DIR="${SKILL_DIR:-$HOME/.hermes/skills/ai/mark-heartflow-skill}"
 LOG_DIR="$SKILL_DIR/logs"
 mkdir -p "$LOG_DIR"
 

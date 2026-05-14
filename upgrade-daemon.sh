@@ -2,7 +2,9 @@
 # HeartFlow Paper Upgrade Daemon
 # 持续运行，每30分钟执行一次升级检查
 
-SKILL_DIR="/Users/apple/.hermes/skills/ai/mark-heartflow-skill"
+# 使用脚本自身目录作为技能目录（动态路径）
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SKILL_DIR="$SCRIPT_DIR"
 LOG_DIR="$SKILL_DIR/logs"
 DAEMON_LOG="$LOG_DIR/upgrade-daemon.log"
 PID_FILE="$SKILL_DIR/upgrade-daemon.pid"
@@ -46,7 +48,7 @@ process.exit(unread > 0 ? 0 : 1);
     
     if [ $? -eq 0 ]; then
         log "发现有未处理论文，执行升级..."
-        node cron/upgrade-runner-v2.mjs 2>&1 | tee -a "$DAEMON_LOG"
+        node cron/upgrade-runner.mjs 2>&1 | tee -a "$DAEMON_LOG"
         EXIT_CODE=${PIPESTATUS[0]}
         
         if [ $EXIT_CODE -eq 0 ]; then

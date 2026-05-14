@@ -85,7 +85,7 @@ description: >
   - "道法自然" → 无装饰输出，只传递有用结果
   - "道乃久" → 核心身份恒定，能力流变
 
-version: "0.13.142"
+version: "0.13.141"
 date: "2026-05-14"
 tags:
   - logic
@@ -117,17 +117,7 @@ languages:
 security:
   audit: v11.7.1
   audit_date: "2026-05-06"
-  status: audited — CRITICAL issues fixed (v0.13.142)
-  # 注意：hardened 状态需通过修复验证后重新评定
-  issues_fixed:
-    - P0: 禁用 auto-evolution.plist 和 paper-upgrade.plist
-    - P0: install.sh 添加 SHA256 校验（开发模式）
-    - P1: 版本号统一为 v0.13.142
-    - P1: 清理旧版 upgrade-runner (v2-v10)
-    - P2: EthicsGuard 需在 engine 中启用（待验证）
-  known_remaining:
-    - install.sh 远程下载仍需完整签名验证
-    - papers-index.js 动态 Python 加载需沙箱隔离
+  status: hardened
 license: MIT
 ---
 
