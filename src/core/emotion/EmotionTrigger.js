@@ -125,6 +125,7 @@ function detectEmotionNeed(text, padState = null) {
   // 收集所有匹配的关键词
   const allKeywords = [];
   for (const [category, data] of Object.entries(detected)) {
+    if (!data?.matchedWords) continue;
     allKeywords.push(...data.matchedWords);
   }
 

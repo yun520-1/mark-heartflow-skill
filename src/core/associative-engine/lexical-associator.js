@@ -42,16 +42,17 @@ class LexicalAssociator {
   associateWord(word, context = {}) {
     const wordLower = word.toLowerCase();
     const associations = [];
-    
-    if (this.graph.nodes[wordLower]) {
-      for (const node of this.graph.nodes[wordLower]) {
-        associations.push({
-          word: node.word,
-          relation: node.relation,
-          strength: node.strength * this.contextBonus(context),
-          emotion: node.emotion || { pleasure: 0, arousal: 0, dominance: 0 }
-        });
-      }
+
+    if (!Array.isArray(this.graph.nodes[wordLower])) {
+      return { sourceWord: word, associations: [], timestamp: new Date().toISOString() };
+    }
+    for (const node of this.graph.nodes[wordLower]) {
+      associations.push({
+        word: node.word,
+        relation: node.relation,
+        strength: node.strength * this.contextBonus(context),
+        emotion: node.emotion || { pleasure: 0, arousal: 0, dominance: 0 }
+      });
     }
     
     associations.push(...this.generateEmergentAssociations(word, context));
@@ -171,8 +172,10 @@ class LexicalAssociator {
   saveGraph() {
     try {
       fs.writeFileSync(this.graphFile, JSON.stringify(this.graph, null, 2));
+      return true;
     } catch (e) {
       console.error('[LexicalAssociator] Save failed:', e.message);
+      return false;
     }
   }
 

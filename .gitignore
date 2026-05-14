@@ -29,6 +29,9 @@ node_modules/
 
 # === 编译产物 ===
 dist/
+__pycache__/
+*.pyc
+*.pyo
 
 # === 论文分析输出 ===
 cron/analyzed/

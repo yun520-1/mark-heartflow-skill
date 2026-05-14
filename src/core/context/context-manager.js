@@ -60,7 +60,11 @@ function loadMeta() {
     if (fs.existsSync(META_FILE)) {
       _sessionMeta = JSON.parse(fs.readFileSync(META_FILE, 'utf8'));
     }
-  } catch {}
+  } catch (e) {
+    console.warn(`[ContextManager] loadMeta failed, backing up corrupted file: ${e.message}`);
+    const backupPath = META_FILE + '.corrupt.' + Date.now();
+    try { fs.renameSync(META_FILE, backupPath); } catch {}
+  }
   if (!_sessionMeta) {
     _sessionMeta = {
       sessionId: `sess_${Date.now()}`,
@@ -77,8 +81,20 @@ function saveMeta() {
   if (!_sessionMeta) return;
   try {
     fs.writeFileSync(META_FILE, JSON.stringify(_sessionMeta, null, 2));
-  } catch {}
+  } catch (e) {
+    console.error(`[ContextManager] saveMeta failed: ${e.message}`);
+  }
 }
+
+// SIGTERM handling — flush buffer before exit
+process.on('SIGTERM', () => {
+  if (_messageBuffer && _messageBuffer.length > 0) {
+    try {
+      fs.appendFileSync(MESSAGES_FILE, _messageBuffer.map(m => JSON.stringify(m)).join('\n') + '\n');
+    } catch {}
+  }
+  process.exit(0);
+});
 
 // ============================================================
 // 消息保存（核心：user + assistant 所有消息都保存）

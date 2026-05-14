@@ -75,12 +75,14 @@ class HealthCheck {
       this._lastResults.set(name, result);
       return result;
     } catch (e) {
+      const prevFailures = this._lastResults.get(name)?.consecutiveFailures ?? 0;
+      const consecutiveFailures = prevFailures + 1;
       const failed = {
         name,
-        level: 'critical',
+        level: consecutiveFailures >= this._failureThreshold ? 'critical' : 'warning',
         message: e?.message ?? String(e),
         lastCheck: Date.now(),
-        consecutiveFailures: (this._lastResults.get(name)?.consecutiveFailures ?? 0) + 1,
+        consecutiveFailures,
       };
       this._lastResults.set(name, failed);
       return failed;

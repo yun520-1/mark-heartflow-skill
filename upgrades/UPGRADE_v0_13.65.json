@@ -1,0 +1,20 @@
+{
+  "version": "v0.13.65",
+  "timestamp": "2026-05-13T15:30:11.076Z",
+  "papers": [
+    "psychology-philosophy-ai/1706.03762v7.pdf",
+    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf"
+  ],
+  "concepts": [
+    "memory",
+    "emotion",
+    "learning",
+    "reasoning",
+    "self",
+    "planning",
+    "ethics",
+    "autonomy"
+  ],
+  "lines": 347,
+  "module": "upgrade_1778686211075.js"
+}

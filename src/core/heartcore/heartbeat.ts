@@ -98,6 +98,10 @@ export class HeartbeatCore {
   }
 
   private _tick(): void {
+    if (this._state === 'dead') {
+      this.stop(); // Halt timer loop on terminal state
+      return;
+    }
     const elapsed = Date.now() - this._lastBeat;
     if (elapsed > this._options.timeout) {
       this._setState('dead');

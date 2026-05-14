@@ -6,13 +6,11 @@
     <string>com.heartflow.paper-upgrade</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/bin/bash</string>
-        <string>-l</string>
-        <string>-c</string>
-        <string>export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"; /Users/apple/.hermes/skills/ai/mark-heartflow-skill/run-paper-upgrade.sh</string>
+        <string>/opt/homebrew/bin/node</string>
+        <string>/Users/apple/.hermes/skills/ai/mark-heartflow-skill/cron/upgrade-runner-v7.mjs</string>
     </array>
     <key>StartInterval</key>
-    <integer>1800</integer>
+    <integer>600</integer>
     <key>RunAtLoad</key>
     <true/>
     <key>StandardOutPath</key>

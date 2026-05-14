@@ -49,8 +49,9 @@ class SAGEGuardian {
       if (fs.existsSync(this.constitutionFile)) {
         this.coreValues = fs.readFileSync(this.constitutionFile, 'utf8');
       } else {
+        // File missing - use built-in default, do NOT overwrite
         this.coreValues = CONSTITUTION;
-        fs.writeFileSync(this.constitutionFile, CONSTITUTION);
+        console.warn('[SAGEGuardian] Constitution file missing, using built-in defaults');
       }
     } catch (e) {
       this.coreValues = CONSTITUTION;
@@ -336,9 +337,14 @@ class SAGEGuardian {
       fs.mkdirSync(logDir, { recursive: true });
     }
 
-    const existing = fs.existsSync(this.logFile) 
-      ? JSON.parse(fs.readFileSync(this.logFile, 'utf8')) 
-      : [];
+    let existing = [];
+    try {
+      if (fs.existsSync(this.logFile)) {
+        existing = JSON.parse(fs.readFileSync(this.logFile, 'utf8'));
+      }
+    } catch (e) {
+      existing = [];
+    }
     
     existing.push(logEntry);
     

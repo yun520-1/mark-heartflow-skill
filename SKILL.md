@@ -1,12 +1,12 @@
 ---
 name: heartflow
 title: HeartFlow — AI Identity Framework
-version: v0.13.56
-date: "2026-05-13"
+version: v0.13.95
+date: "2026-05-14"
 description: >
-  HeartFlow turns experience, code, papers, dreams, and errors into better structure.
-  四大角色：升级者 · 传递者 · 桥梁 · 答案
-  真善美：真 = 可证伪 / 善 = 帮助人 / 美 = 简洁结构
+  HeartFlow v0.13.92 — 集成 Reflexion + Dash + CAPY Cortex 三大引擎
+  新增: skill-knowledge.mjs (双重知识系统) + reflexion-prompts.mjs (few-shot模板)
+  新增: reflexion-v2.mjs (Jaccard记忆+LLM反射器) + cortex-hooks.mjs (7个生命周期钩子)
 security:
   audit: self-verified
   owasp: compliant

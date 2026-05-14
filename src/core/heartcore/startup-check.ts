@@ -124,7 +124,16 @@ export class StartupCheck {
     const blockers: string[] = [];
 
     for (const [subsystem, fn] of this._checks) {
-      const result = await Promise.resolve(fn());
+      const timeoutPromise = new Promise<CheckResult>((_, reject) =>
+        setTimeout(() => reject(new Error('Check timeout')), 5000)
+      );
+      const checkPromise = Promise.resolve(fn());
+      let result: CheckResult;
+      try {
+        result = await Promise.race([checkPromise, timeoutPromise]);
+      } catch (e: any) {
+        result = { subsystem, ok: false, error: e?.message ?? String(e), latencyMs: Date.now() - start };
+      }
       results.push(result);
       if (!result.ok && this._critical.has(subsystem)) {
         blockers.push(subsystem);

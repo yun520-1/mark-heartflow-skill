@@ -45,7 +45,7 @@ export interface ParseResult {
 export interface ExecuteResult {
   success: boolean;
   graph: TaskGraph;
-  scheduler: TaskScheduler;
+  scheduler: TaskScheduler | null;
   parseMs: number;
   executeMs: number;
   totalMs: number;
@@ -225,7 +225,7 @@ export class PlanExecutor {
       return {
         success: false,
         graph,
-        scheduler: null as unknown as TaskScheduler,
+        scheduler: null,
         parseMs,
         executeMs: Date.now() - start,
         totalMs: Date.now() - start,
@@ -249,7 +249,7 @@ export class PlanExecutor {
       return {
         success: false,
         graph: parseResult.graph,
-        scheduler: null as unknown as TaskScheduler,
+        scheduler: null,
         parseMs: Date.now() - start,
         executeMs: 0,
         totalMs: Date.now() - start,

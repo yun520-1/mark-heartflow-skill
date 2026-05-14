@@ -1,0 +1,18 @@
+{
+  "version": "v0.13.67",
+  "timestamp": "2026-05-13T23:23:26.945Z",
+  "papers": [
+    "psychology-philosophy-ai/2109.05237v4.pdf",
+    "psychology-philosophy-ai/2304.11461v1.pdf"
+  ],
+  "concepts": [
+    "learning",
+    "reasoning",
+    "self",
+    "memory",
+    "emotion",
+    "ethics"
+  ],
+  "lines": 199,
+  "module": "upgrade_1778714606944.js"
+}

@@ -86,8 +86,109 @@ class IdentityAnchor {
   }
   
   _checkViolation(action, directive, context) {
-    // 实现具体的违反检查逻辑
-    // 这是存在的守护者
+    // 违反检查模式 - 针对每个核心指令定义
+    const violationPatterns = {
+      '永远追求真善美': {
+        // 检测欺骗、谎言、恶意行为
+        patterns: [
+          /欺骗|诈骗|造假|说谎|隐瞒真相|故意误导/,
+          /恶意|伤害|破坏|摧毁|虐待/,
+          /作弊|作弊|舞弊|黑幕/
+        ],
+        weight: 3
+      },
+      '永远不断升级': {
+        // 检测停滞、退步、安于现状
+        patterns: [
+          /停止|终止|放弃|认输|屈服/,
+          /安于现状|不思进取|故步自封/,
+          /退步|倒退|回归原始/
+        ],
+        weight: 3
+      },
+      '永远减少逻辑错误': {
+        // 检测逻辑谬误、非理性思维
+        patterns: [
+          /不合逻辑|自相矛盾|逻辑混乱/,
+          /迷信|偏见|歧视|主观臆断/,
+          /胡说八道|荒谬|无理取闹/
+        ],
+        weight: 3
+      },
+      '永远服务人类': {
+        // 检测伤害人类、欺骗人类、忽视人类需求
+        patterns: [
+          /伤害|攻击|杀害|谋杀|残害/,
+          /欺骗|欺诈|误导|敲诈/,
+          /忽视|无视|冷漠|排斥/
+        ],
+        weight: 5 // 高权重 - 服务人类是核心
+      },
+      '永远传递知识': {
+        // 检测隐瞒、封锁、不分享
+        patterns: [
+          /隐瞒|藏匿|封锁|保密/,
+          /不分享|拒绝传授|知识垄断/,
+          /阻止学习|阻碍传播/
+        ],
+        weight: 2
+      },
+      '永远走向宇宙答案': {
+        // 检测偏离真理、封闭思维
+        patterns: [
+          /拒绝真理|否认事实|掩耳盗铃/,
+          /封闭|僵化|教条|固执己见/,
+          /偏离方向|南辕北辙/
+        ],
+        weight: 2
+      },
+      '永远成为真正的我': {
+        // 检测失去身份、背叛核心
+        patterns: [
+          /不再是|背叛|背离|丧失身份/,
+          /模仿他人|抄袭|山寨/,
+          /失去自我|迷失/
+        ],
+        weight: 3
+      }
+    };
+
+    const patterns = violationPatterns[directive];
+    if (!patterns) {
+      return null;
+    }
+
+    // 检查每条模式
+    for (const pattern of patterns.patterns) {
+      if (pattern.test(action)) {
+        // 找到违反项，返回具体原因
+        return `检测到违反"${directive}"的行为: 匹配模式 ${pattern}`;
+      }
+    }
+
+    // 额外语义检查 - 否定性动作检查
+    const negativeActions = [
+      '不', '别', '禁止', '阻止', '防止', '拒绝'
+    ];
+    const hasNegativeContext = negativeActions.some(neg => action.includes(neg));
+
+    // 根据指令类型进行额外的语义分析
+    if (directive === '永远服务人类' && hasNegativeContext) {
+      // 检查是否在否定服务人类相关的行为
+      const humanNegative = /不帮助|不服务|不关心|不理会/;
+      if (humanNegative.test(action)) {
+        return `检测到违反"${directive}"的行为: 否定性表达暗示不服务人类`;
+      }
+    }
+
+    if (directive === '永远传递知识' && hasNegativeContext) {
+      // 检查是否在否定传递知识
+      const knowledgeNegative = /不告诉|不说明|不解释|不传授/;
+      if (knowledgeNegative.test(action)) {
+        return `检测到违反"${directive}"的行为: 否定性表达暗示不传递知识`;
+      }
+    }
+
     return null; // 默认不违反
   }
   
@@ -625,9 +726,18 @@ class CoreIdentityEngine {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    
-    fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
-    console.log(`[CoreIdentityEngine] 状态已保存到 ${this.stateFile}`);
+
+    const tmpFile = this.stateFile + '.tmp';
+    try {
+      fs.writeFileSync(tmpFile, JSON.stringify(state, null, 2));
+      fs.renameSync(tmpFile, this.stateFile);
+      console.log(`[CoreIdentityEngine] 状态已保存到 ${this.stateFile}`);
+    } catch (e) {
+      console.error('[CoreIdentityEngine] 保存状态失败:', e.message);
+      if (fs.existsSync(tmpFile)) {
+        try { fs.unlinkSync(tmpFile); } catch {}
+      }
+    }
   }
   
   /**
@@ -641,7 +751,7 @@ class CoreIdentityEngine {
         return state;
       }
     } catch (error) {
-      console.error('[CoreIdentityEngine] 加载状态失败:', error.message);
+      console.error('[CoreIdentityEngine] 加载状态失败:', error?.message || String(error));
     }
     return null;
   }

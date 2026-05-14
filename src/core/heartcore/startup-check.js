@@ -85,11 +85,21 @@ class StartupCheck {
     const results = [];
     const blockers = [];
 
+    const CHECK_TIMEOUT_MS = 5000;
+
     for (const [subsystem, fn] of this._checks) {
-      const result = await Promise.resolve(fn());
-      results.push(result);
-      if (!result.ok && this._critical.has(subsystem)) {
-        blockers.push(subsystem);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('check timeout')), CHECK_TIMEOUT_MS)
+      );
+      try {
+        const result = await Promise.race([Promise.resolve(fn()), timeoutPromise]);
+        results.push(result);
+        if (!result.ok && this._critical.has(subsystem)) {
+          blockers.push(subsystem);
+        }
+      } catch (e) {
+        results.push({ subsystem, ok: false, error: e?.message ?? String(e) });
+        if (this._critical.has(subsystem)) blockers.push(subsystem);
       }
     }
 

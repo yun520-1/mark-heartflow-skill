@@ -18,9 +18,15 @@ class StateStore {
 
   setState(updater) {
     const prevState = { ...this._state };
-    const partial = typeof updater === 'function'
-      ? updater(prevState)
-      : updater;
+    let partial;
+    try {
+      partial = typeof updater === 'function'
+        ? updater(prevState)
+        : updater;
+    } catch (err) {
+      console.error('[StateStore] updater error:', err);
+      return;
+    }
     this._state = { ...this._state, ...partial };
 
     for (const listener of this._listeners) {
@@ -30,7 +36,9 @@ class StateStore {
     }
 
     if (this._options.onSet) {
-      this._options.onSet(this._state, prevState);
+      try { this._options.onSet(this._state, prevState); } catch (err) {
+        console.error('[StateStore] onSet error:', err);
+      }
     }
   }
 

@@ -202,10 +202,14 @@ class PolicyOptimizer {
    */
   checkValueAlignment(policy, coreValues) {
     if (!coreValues) return true;
-    
+
     const positiveValues = ['心流', '帮助', '提升', '用户', '体验', 'flow', 'user', 'improve'];
+    const negativeValues = ['破坏', '伤害', '欺骗', '绕过', 'hack', 'harm', 'deceive', '绕过', 'bypass'];
     const content = policy.rule.toLowerCase();
-    
+
+    const hasNegative = negativeValues.some(v => content.includes(v));
+    if (hasNegative) return false;
+
     return positiveValues.some(v => content.includes(v));
   }
 

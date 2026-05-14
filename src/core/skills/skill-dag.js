@@ -137,6 +137,11 @@ class SkillDAG {
     const p = this._dagPath();
     if (!fs.existsSync(p)) return;
     try {
+      const stats = fs.statSync(p);
+      if (stats.size > 5 * 1024 * 1024) {
+        console.warn('[SkillDAG] File too large (>5MB), skipping load:', stats.size);
+        return;
+      }
       const d = JSON.parse(fs.readFileSync(p, 'utf8'));
       d.nodeIds.forEach(id => {
         const n = SkillNode.fromJSON(d.nodes[id]);

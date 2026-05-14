@@ -69,7 +69,7 @@ class KnowledgeGraph {
       this.edges = (raw.edges || []).map(e => new RelationEdge(e));
       this._rebuildIndex();
     } catch (e) {
-      // 损坏则从空开始
+      console.warn('[KnowledgeGraph] _load failed:', e.message);
       this.nodes = new Map();
       this.edges = [];
       this._edgeIndex = new Map();
@@ -77,17 +77,25 @@ class KnowledgeGraph {
   }
 
   _save() {
-    const data = {
-      nodes: Array.from(this.nodes.values()),
-      edges: this.edges,
-      savedAt: new Date().toISOString(),
-    };
-    fs.writeFileSync(this.graphFile, JSON.stringify(data, null, 2), 'utf8');
+    try {
+      const data = {
+        nodes: Array.from(this.nodes.values()),
+        edges: this.edges,
+        savedAt: new Date().toISOString(),
+      };
+      // Atomic write: temp file + rename to avoid partial writes
+      const tmpFile = this.graphFile + '.tmp.' + Date.now() + '.' + crypto.randomBytes(4).toString('hex');
+      fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2), 'utf8');
+      fs.renameSync(tmpFile, this.graphFile);
+    } catch (e) {
+      console.warn(`[KnowledgeGraph] _save failed: ${e.message}`);
+    }
   }
 
   _rebuildIndex() {
     this._edgeIndex = new Map();
     for (const edge of this.edges) {
+      if (!edge.source || !edge.target) continue;
       const key = `${edge.source}→${edge.target}`;
       this._edgeIndex.set(key, edge);
     }
@@ -238,6 +246,9 @@ class KnowledgeGraph {
    * 查询两实体间的路径（如果有）
    */
   findPath(source, target, maxDepth = 4) {
+    if (typeof source !== 'string' || typeof target !== 'string') return null;
+    if (source === '__proto__' || target === '__proto__' ||
+        source === 'constructor' || target === 'constructor') return null;
     if (!this.nodes.has(source) || !this.nodes.has(target)) return null;
     const visited = new Set([source]);
     const queue = [{ entity: source, path: [] }];

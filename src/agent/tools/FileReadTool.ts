@@ -139,8 +139,10 @@ export class FileReadTool extends Tool {
 
   /** 检查路径是否在白名单目录内 */
   private _isAllowed(filePath: string): boolean {
+    // Reject path segments containing .. before normalization to prevent traversal bypass
+    if (filePath.includes('..')) return false;
     const normalized = path.normalize(filePath);
-    return ALLOWED_ROOTS.some(root => normalized.startsWith(root));
+    return ALLOWED_ROOTS.some(root => normalized.startsWith(root + path.sep) || normalized === root);
   }
 
   /** 分页读取文件指定行范围 */

@@ -35,7 +35,15 @@ class SelfEvolutionCore {
     try {
       if (fs.existsSync(stateFile)) {
         const data = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
-        this.state = { ...this.state, ...data };
+        // Deep merge for arrays — only replace if loaded data has content
+        this.state = {
+          ...this.state,
+          ...data,
+          learningHistory: (data.learningHistory?.length ?? 0) > 0
+            ? data.learningHistory
+            : this.state.learningHistory,
+          goals: (data.goals?.length ?? 0) > 0 ? data.goals : this.state.goals,
+        };
       }
     } catch (e) {
       console.log('[SelfEvolution] 加载状态失败，使用默认');

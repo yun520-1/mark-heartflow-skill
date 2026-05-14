@@ -17,7 +17,7 @@ class EmotionEngine {
       joy: ['开心', '高兴', '棒', '好', '成功', 'happy', 'great'],
       anxiety: ['紧张', '焦虑', '担心', '害怕', 'anxious', 'worried'],
       sadness: ['难过', '伤心', '失望', 'sad', 'disappointed'],
-      anger: ['生气', '愤怒', '讨厌', '愤怒', 'angry'],
+      anger: ['生气', '愤怒', '讨厌', '愤慨', 'angry'],
       surprise: ['惊讶', '意外', '震惊', 'surprised', 'shock']
     };
     
@@ -28,6 +28,7 @@ class EmotionEngine {
    * 生成情感描述符
    */
   generateAffectDescriptors(userMessage) {
+    userMessage = userMessage || '';
     const text = userMessage.toLowerCase();
     const found = [];
 

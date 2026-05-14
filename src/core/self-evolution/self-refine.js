@@ -7,6 +7,7 @@
 
 class SelfRefine {
   constructor(reflexion) {
+    if (!reflexion) throw new Error('SelfRefine requires a valid Reflexion instance');
     this.reflexion = reflexion;
   }
 

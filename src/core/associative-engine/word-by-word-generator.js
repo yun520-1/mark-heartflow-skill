@@ -173,6 +173,10 @@ class WordByWordGenerator {
       timestamp: Date.now(),
       sequence: this.currentTrace.length + 1
     });
+    // Cap trace size to prevent unbounded memory growth
+    if (this.currentTrace.length > 100) {
+      this.currentTrace.splice(0, this.currentTrace.length - 100);
+    }
   }
 
   saveTrace() {

@@ -152,7 +152,7 @@ const ALLOWED_COMMANDS: Record<string, AllowedCommand> = {
     },
     validator: (args) => {
       // 禁止危险 git 操作
-      const dangerous = ['filter-branch', 'filter-branch', 'push', '--force', 'rebase'];
+      const dangerous = ['filter-branch', 'push', '--force', '-f', 'rebase'];
       return !dangerous.some(d => args.includes(d));
     },
   },
@@ -300,7 +300,7 @@ export class BashTool extends Tool {
    */
   private _validateCommand(command: string): { valid: boolean; reason?: string } {
     // 第一道门：检查 shell 元字符（黑名单防止绕过白名单）
-    const shellMetachars = /[;&|`$(){}[\]!<>~#%^\\]/;
+    const shellMetachars = /[;&|`$\x00{}[\]!<>~#%^\\ \n]/;
     if (shellMetachars.test(command)) {
       return { valid: false, reason: `Forbidden shell metacharacter in command` };
     }

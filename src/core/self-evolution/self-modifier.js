@@ -84,7 +84,7 @@ class SelfModifier {
       return { success: false, reason: 'cannot_parse_suggestion' };
     }
 
-    const fullPath = path.join(this.projectRoot, parsed.file);
+    const fullPath = path.resolve(path.join(this.projectRoot, parsed.file));
 
     // 危险路径拦截：禁止修改 OS 系统级路径
     const isDangerous = SAFE_PATHS.some(dp => fullPath.startsWith(dp));

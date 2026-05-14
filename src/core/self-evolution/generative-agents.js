@@ -569,22 +569,15 @@ class MemoryStream {
    */
   enforceMaxSize() {
     while (this.memories.length > this.maxMemories) {
-      // Remove oldest, lowest importance memories first
-      const sorted = [...this.memories].sort((a, b) => {
-        // Prefer to keep recent and important
-        const ageA = a.createdAt;
-        const ageB = b.createdAt;
-        const impA = a.importance;
-        const impB = b.importance;
-        return (ageB + impB * 1e10) - (ageA + impA * 1e10);
-      });
-      
-      // Remove oldest low-importance memories
-      const toRemove = sorted.pop();
-      const idx = this.memories.findIndex(m => m.id === toRemove.id);
-      if (idx >= 0) {
-        this.memories.splice(idx, 1);
+      // Find oldest-lowest-importance in O(n) instead of full O(n log n) sort
+      let minScore = Infinity;
+      let minIdx = -1;
+      for (let i = 0; i < this.memories.length; i++) {
+        const m = this.memories[i];
+        const score = (m.createdAt || 0) + (m.importance || 0) * 1e10;
+        if (score < minScore) { minScore = score; minIdx = i; }
       }
+      if (minIdx >= 0) this.memories.splice(minIdx, 1);
     }
   }
 

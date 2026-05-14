@@ -22,12 +22,18 @@ class ExperienceReplay {
       if (fs.existsSync(this.patternFile)) {
         return JSON.parse(fs.readFileSync(this.patternFile, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn(`[ExperienceReplay] loadPatterns failed: ${e.message}`);
+    }
     return { patterns: [], lastUpdate: null };
   }
 
   savePatterns() {
-    fs.writeFileSync(this.patternFile, JSON.stringify(this.patterns, null, 2));
+    try {
+      fs.writeFileSync(this.patternFile, JSON.stringify(this.patterns, null, 2));
+    } catch (e) {
+      console.warn('[ExperienceReplay] savePatterns failed:', e.message);
+    }
   }
 
   initializeKnownPatterns() {
@@ -238,7 +244,11 @@ class ExperienceReplay {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(this.suggestionFile, JSON.stringify(allSuggestions, null, 2));
+    try {
+      fs.writeFileSync(this.suggestionFile, JSON.stringify(allSuggestions, null, 2));
+    } catch (e) {
+      console.warn('[ExperienceReplay] saveSuggestions failed:', e.message);
+    }
   }
 
   /**

@@ -146,6 +146,10 @@ class GoedelEngine {
   log(message) {
     const timestamp = new Date().toISOString();
     const entry = `[${timestamp}] ${message}\n`;
+    const logDir = path.dirname(this.evolutionLog);
+    if (!fs.existsSync(logDir)) {
+      fs.mkdirSync(logDir, { recursive: true });
+    }
     fs.appendFileSync(this.evolutionLog, entry);
     console.log(`[Gödel] ${message}`);
   }
@@ -354,14 +358,15 @@ class GoedelEngine {
     // 写入文件（仅在显式开启时写入）
     fs.writeFileSync(targetPath, modifiedContent);
 
-    // 记录版本
+    // 记录版本（包括文件内容以便回滚）
     const version = {
       id: `v-${Date.now()}`,
       proposal: proposal.description,
       target: proposal.target,
       timestamp: new Date().toISOString(),
       hash: this.hashContent(modifiedContent),
-      previousHash: this.hashContent(originalContent)
+      previousHash: this.hashContent(originalContent),
+      content: modifiedContent  // 存储内容以便回滚
     };
 
     this.recordVersion(version);
@@ -919,7 +924,7 @@ class GoedelEngine {
   /**
    * 生成元层补丁
    */
-  generateMetaSelfPatch() {
+  generateMetaSelfPatch(improvement) {
     if (process.env.HEARTFLOW_ENABLE_SELF_MODIFICATION !== '1') {
       return {
         success: false,

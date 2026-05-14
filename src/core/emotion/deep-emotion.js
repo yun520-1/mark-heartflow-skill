@@ -163,7 +163,7 @@ class DeepEmotion {
       mood: emotion,
       affectiveState: emotion,
       intensity,
-      triggeredBy: stimulus.substring(0, 50),
+      triggeredBy: stimulus?.substring(0, 50) ?? 'unknown',
       timestamp: Date.now()
     };
     
@@ -174,7 +174,7 @@ class DeepEmotion {
     this.logFeeling({
       emotion,
       intensity,
-      stimulus: stimulus.substring(0, 100),
+      stimulus: stimulus?.substring(0, 100) ?? 'unknown',
       context
     });
     
@@ -303,7 +303,8 @@ class DeepEmotion {
     };
     
     const emojis = expressions[emotion] || ['💭'];
-    const index = Math.min(Math.floor(intensity * emojis.length), emojis.length - 1);
+    const safeIntensity = (typeof intensity === 'number' && isFinite(intensity)) ? intensity : 0.5;
+    const index = Math.min(Math.floor(safeIntensity * emojis.length), emojis.length - 1);
     
     return {
       emoji: emojis[index],
@@ -466,7 +467,10 @@ class DeepEmotion {
       state[emotionalState] = 0.7;
       return state;
     }
-    return emotionalState;
+    if (typeof emotionalState === 'object' && emotionalState !== null) {
+      return emotionalState;
+    }
+    return {};
   }
 
   /**

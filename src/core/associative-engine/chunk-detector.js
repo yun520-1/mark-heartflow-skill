@@ -55,12 +55,15 @@ class ChunkDetector {
       const poetry = this.detectPoetryAt(words, i);
       if (poetry) {
         chunks.push(poetry);
+        i += poetry.length - 1;
         continue;
       }
-      
+
       const proverb = this.detectProverbAt(words, i);
       if (proverb) {
         chunks.push(proverb);
+        i += proverb.length - 1;
+        continue;
       }
     }
     

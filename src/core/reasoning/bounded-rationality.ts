@@ -130,8 +130,8 @@ export function detectHeuristic(state: StrategyState): HeuristicType {
 
     if (prev.result === 'WIN' && curr.result === 'WIN') {
       // WIN-WIN: stayed same action → WSLU pattern
-      if (state.actionHistory[state.actionHistory.length - (recent.length - i + 1)] ===
-          state.actionHistory[state.actionHistory.length - (recent.length - i)]) {
+      if (state.actionHistory[state.actionHistory.length - (recent.length - i)] ===
+          state.actionHistory[state.actionHistory.length - (recent.length - i) + 1]) {
         wsluCount++;
       }
     }
@@ -141,8 +141,8 @@ export function detectHeuristic(state: StrategyState): HeuristicType {
     }
     if (prev.result === 'WIN' && curr.result === 'LOSE') {
       // WIN-LOSE: win then lose → might have upgraded (WSLU would stay on win)
-      const prevAction = state.actionHistory[state.actionHistory.length - (recent.length - i + 1)];
-      const currAction = state.actionHistory[state.actionHistory.length - (recent.length - i)];
+      const prevAction = state.actionHistory[state.actionHistory.length - (recent.length - i)];
+      const currAction = state.actionHistory[state.actionHistory.length - (recent.length - i) + 1];
       if (prevAction !== currAction) wsluCount++; // changed after win
     }
   }

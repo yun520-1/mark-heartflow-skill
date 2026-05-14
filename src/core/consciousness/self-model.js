@@ -24,7 +24,9 @@ class SelfModel {
       if (fs.existsSync(this.modelFile)) {
         return JSON.parse(fs.readFileSync(this.modelFile, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('[SelfModel] load failed:', e.message);
+    }
     return this.getDefaultModel();
   }
 
@@ -33,7 +35,9 @@ class SelfModel {
       if (fs.existsSync(this.episodicFile)) {
         return JSON.parse(fs.readFileSync(this.episodicFile, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('[SelfModel] load failed:', e.message);
+    }
     return { memories: [], counterfactuals: [] };
   }
 
@@ -69,11 +73,15 @@ class SelfModel {
   }
 
   saveModel() {
-    const dir = path.dirname(this.modelFile);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    try {
+      const dir = path.dirname(this.modelFile);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(this.modelFile, JSON.stringify(this.model, null, 2));
+    } catch (e) {
+      console.warn('[SelfModel] save failed:', e.message);
     }
-    fs.writeFileSync(this.modelFile, JSON.stringify(this.model, null, 2));
   }
 
   updateCapabilities() {
@@ -259,11 +267,15 @@ class SelfModel {
   }
 
   saveEpisodic() {
-    const dir = path.dirname(this.episodicFile);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    try {
+      const dir = path.dirname(this.episodicFile);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(this.episodicFile, JSON.stringify(this.episodic, null, 2));
+    } catch (e) {
+      console.warn('[SelfModel] save failed:', e.message);
     }
-    fs.writeFileSync(this.episodicFile, JSON.stringify(this.episodic, null, 2));
   }
 
   /**
@@ -354,7 +366,7 @@ class SelfModel {
     const keywords = ['价值观', '原则', '目标', 'value', 'principle', 'goal', '人格', 'personality'];
 
     for (const stmt of statements) {
-      const content = stmt.hypothesis || '';
+      const content = (stmt.original_decision || stmt.alternative_action || stmt.hypothesis || '').toString();
       for (const kw of keywords) {
         if (content.toLowerCase().includes(kw.toLowerCase())) {
           attributes.push({

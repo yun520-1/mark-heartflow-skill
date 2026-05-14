@@ -568,8 +568,26 @@ class LearningEngine {
   }
 
   _applyModificationToCase(modification, testCase) {
-    // 模拟应用
-    return testCase.expected;
+    if (!modification || !modification.find) {
+      return testCase.expected;
+    }
+
+    const input = testCase.input || '';
+    const { find, replace = '', type } = modification;
+
+    // Apply text replacement based on type
+    if (type === 'regex') {
+      try {
+        const regex = new RegExp(find, 'g');
+        return input.replace(regex, replace);
+      } catch (e) {
+        // Fallback to string replacement on invalid regex
+        return input.split(find).join(replace);
+      }
+    }
+
+    // Default: string replacement (handles both literal and simple text)
+    return input.split(find).join(replace);
   }
 
   // ============================================================
@@ -620,22 +638,26 @@ class LearningEngine {
       for (const file of files) {
         const filepath = path.join(this._memoryDir, `${file}.json`);
         if (this.fs.existsSync(filepath)) {
-          const data = JSON.parse(this.fs.readFileSync(filepath));
-          switch (file) {
-            case 'experiences':
-              this.experiences = data.experiences || [];
-              break;
-            case 'patterns':
-              this.patterns = data.patterns || [];
-              break;
-            case 'strategies':
-              this.successfulStrategies = data.successful || [];
-              this.failedStrategies = data.failed || [];
-              break;
-            case 'archive':
-              this.evolutionArchive = data.archive || [];
-              this.currentGeneration = data.generation || 0;
-              break;
+          try {
+            const data = JSON.parse(this.fs.readFileSync(filepath));
+            switch (file) {
+              case 'experiences':
+                this.experiences = data.experiences || [];
+                break;
+              case 'patterns':
+                this.patterns = data.patterns || [];
+                break;
+              case 'strategies':
+                this.successfulStrategies = data.successful || [];
+                this.failedStrategies = data.failed || [];
+                break;
+              case 'archive':
+                this.evolutionArchive = data.archive || [];
+                this.currentGeneration = data.generation || 0;
+                break;
+            }
+          } catch (e) {
+            console.log(`[LearningEngine] Skip corrupted file ${file}.json`);
           }
         }
       }
@@ -667,10 +689,19 @@ class LearningEngine {
 
       for (const [name, data] of Object.entries(files)) {
         const filepath = path.join(this._memoryDir, `${name}.json`);
-        this.fs.writeFileSync(filepath, JSON.stringify({
-          ...data,
-          updated: Date.now(),
-        }, null, 2));
+        const tmpPath = filepath + '.tmp';
+        try {
+          this.fs.writeFileSync(tmpPath, JSON.stringify({
+            ...data,
+            updated: Date.now(),
+          }, null, 2));
+          this.fs.renameSync(tmpPath, filepath);
+        } catch (e) {
+          console.log(`[LearningEngine] Failed to save ${name}.json: ${e.message}`);
+          if (this.fs.existsSync(tmpPath)) {
+            try { this.fs.unlinkSync(tmpPath); } catch {}
+          }
+        }
       }
     } catch (e) {
       console.log('[LearningEngine] Memory save failed:', e.message);

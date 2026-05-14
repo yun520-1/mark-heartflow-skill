@@ -19,6 +19,24 @@ class SkillLoader {
     if (!skill) return null;
     if (!skill.enabled) return null;
     try {
+      // Validate path resolves within expected skills directory (prevent path traversal)
+      let skillsRoot = path.resolve(__dirname, '../../skills');
+      let resolvedPath = path.resolve(skill.path);
+      // macOS filesystem is case-insensitive; normalize to lowercase to prevent bypass
+      if (process.platform === 'darwin') {
+        skillsRoot = skillsRoot.toLowerCase();
+        resolvedPath = resolvedPath.toLowerCase();
+      }
+      if (!resolvedPath.startsWith(skillsRoot + path.sep)) {
+        console.warn(`[SkillLoader] blocked path traversal attempt: ${skill.path}`);
+        return null;
+      }
+      // Enforce max file size (1MB)
+      const stat = fs.statSync(skill.path);
+      if (stat.size > 1024 * 1024) {
+        console.warn(`[SkillLoader] skill file too large (${stat.size} bytes): ${skillName}`);
+        return null;
+      }
       const content = fs.readFileSync(skill.path, 'utf8');
       this.loaded.set(skillName, content);
       return content;

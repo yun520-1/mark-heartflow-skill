@@ -350,7 +350,7 @@ class CognitiveLoop {
     if (this.modules.memory) {
       const memoryRecord = {
         content: input,
-        timestamp: Date.now() * 1000,
+        timestamp: Date.now(),
         metadata: {
           cycleId: trace.cycleId,
           pad: trace.phases.cognition?.pad,

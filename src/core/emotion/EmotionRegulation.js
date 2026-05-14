@@ -27,7 +27,7 @@ const REGULATION_STRATEGIES = {
     english: 'Cognitive Reappraisal',
     description: '改变对情境的解释，使情绪向积极方向转变',
     effectiveness: 0.8,
-   适用场景: ['焦虑', '担忧', '愤怒', '恐惧'],
+  '适用场景': ['焦虑', '担忧', '愤怒', '恐惧'],
     examples: [
       '虽然遇到了困难，但这也是学习的机会',
       '这个问题看起来难，但一定有解决办法',
@@ -41,7 +41,7 @@ const REGULATION_STRATEGIES = {
     english: 'Expression Suppression',
     description: '抑制情绪的外在表达，不改变内在情绪体验',
     effectiveness: 0.3,
-    适用场景: ['愤怒', '激动'],
+  '适用场景': ['愤怒', '激动'],
     examples: [
       '深呼吸，先冷静下来',
       '我需要控制一下自己的情绪'
@@ -53,7 +53,7 @@ const REGULATION_STRATEGIES = {
     english: 'Emotional Acceptance',
     description: '承认并接受当前情绪，不评判、不压抑',
     effectiveness: 0.6,
-    适用场景: ['悲伤', '恐惧', '焦虑', '持续负面情绪'],
+  '适用场景': ['悲伤', '恐惧', '焦虑', '持续负面情绪'],
     examples: [
       '我现在感到难过，这是正常的',
       '我允许自己今天感到疲惫',
@@ -66,7 +66,7 @@ const REGULATION_STRATEGIES = {
     english: 'Mindfulness',
     description: '以旁观者视角觉察情绪，不陷入不评判',
     effectiveness: 0.7,
-    适用场景: ['强烈情绪', '焦虑', '愤怒', '持续压力'],
+  '适用场景': ['强烈情绪', '焦虑', '愤怒', '持续压力'],
     examples: [
       '我注意到自己现在感到焦虑，但它只是暂时的',
       '情绪像云一样来来去去，我允许它们存在'
@@ -78,10 +78,10 @@ const REGULATION_STRATEGIES = {
     english: 'Attentional Deployment',
     description: '将注意力从负面情绪转移到其他事物',
     effectiveness: 0.5,
-    适用场景: ['持续担忧', '悲伤', '愤怒'],
+  '适用场景': ['持续担忧', '悲伤', '愤怒'],
     examples: [
       '让我先换个话题',
-      '我们来聊聊别的事情吧'
+      '我们来聊聊别件事情吧'
     ],
     padEffect: { valence: +0.2, arousal: -0.1 }
   },
@@ -90,7 +90,7 @@ const REGULATION_STRATEGIES = {
     english: 'Situation Selection',
     description: '主动选择或创造能带来积极情绪的情境',
     effectiveness: 0.9,
-    适用场景: ['长期负面', '疲惫'],
+  '适用场景': ['长期负面', '疲惫'],
     examples: [
       '我需要休息一下，换个环境',
       '也许可以先做点让自己开心的事'
@@ -102,7 +102,7 @@ const REGULATION_STRATEGIES = {
     english: 'Situation Modification',
     description: '改变当前情境的某些方面使其改善',
     effectiveness: 0.7,
-    适用场景: ['愤怒', '焦虑', '受挫'],
+  '适用场景': ['愤怒', '焦虑', '受挫'],
     examples: [
       '让我重新调整一下计划',
       '也许可以换个方式来处理'
@@ -177,6 +177,13 @@ class EmotionRegulation {
     }
 
     // 获取策略示例
+    if (!strategy?.examples?.length) {
+      return {
+        ...strategy,
+        example: '专注当下，慢慢来',
+        effectiveness: strategy?.effectiveness || 0.5
+      };
+    }
     const example = strategy.examples[Math.floor(Math.random() * strategy.examples.length)];
 
     return {

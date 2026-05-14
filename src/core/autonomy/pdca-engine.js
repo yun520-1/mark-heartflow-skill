@@ -199,9 +199,9 @@ class PDCAEngine {
         if (this.config.requireConfirmationForDestructiveActions) {
           return { success: false, error: 'Requires confirmation for code modification' };
         }
-        
+
         const modResult = await this.goedelEngine.evolve({
-          target: 'src/core/test.js',
+          target: subtask.target || 'src/core/test.js',
           description: subtask.action + ' ' + subtask.target,
           priority: 'low'
         });

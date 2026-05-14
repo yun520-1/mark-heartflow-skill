@@ -82,10 +82,10 @@ class BoundaryNegotiation {
   /**
    * 处理用户响应
    */
-  handleResponse(requestId, response) {
+  handleResponse(requestId, response, action = null) {
     const validResponses = ['是', '否', '仅此一次', '记住选择', 'yes', 'no', 'once', 'remember'];
-    
-    if (!validResponses.includes(response.toLowerCase())) {
+
+    if (!response || typeof response !== 'string' || !validResponses.includes(response.toLowerCase())) {
       return { success: false, reason: 'invalid_response' };
     }
 
@@ -93,11 +93,20 @@ class BoundaryNegotiation {
                          response.toLowerCase() === '否' || response === 'no' ? 'denied' :
                          response.toLowerCase() === '仅此一次' || response === 'once' ? 'once' : 'remember';
 
-    this.permissions.explicit.push({
+    const permissionRecord = {
       requestId,
       response: responseType,
       timestamp: new Date().toISOString()
-    });
+    };
+
+    // Store action details if provided (enables hasPermission matching)
+    if (action) {
+      permissionRecord.actionType = action.type || action.constructor?.name || 'unknown';
+      permissionRecord.actionGoal = action.goal || action.description || '';
+      permissionRecord.actionInput = action.input ? JSON.stringify(action.input) : '';
+    }
+
+    this.permissions.explicit.push(permissionRecord);
 
     this.savePermissions();
 
@@ -113,12 +122,23 @@ class BoundaryNegotiation {
    * 检查是否已有权限
    */
   hasPermission(action) {
-    const remembered = this.permissions.explicit.filter(p => 
+    const remembered = this.permissions.explicit.filter(p =>
       p.response === 'remember' || p.response === 'granted'
     );
 
+    const actionType = action.type || action.constructor?.name || 'unknown';
+    const actionGoal = action.goal || action.description || '';
+    const actionInput = action.input ? JSON.stringify(action.input) : '';
+
     for (const perm of remembered) {
-      if (JSON.stringify(action).includes(perm.requestId)) {
+      // Match by action type and meaningful content
+      const typeMatch = perm.actionType === actionType;
+      const goalMatch = perm.actionGoal && actionGoal &&
+        (perm.actionGoal.includes(actionGoal) || actionGoal.includes(perm.actionGoal));
+      const inputMatch = perm.actionInput && actionInput &&
+        (perm.actionInput.includes(actionInput) || actionInput.includes(perm.actionInput));
+
+      if (typeMatch && (goalMatch || inputMatch)) {
         return { has: true, type: perm.response };
       }
     }

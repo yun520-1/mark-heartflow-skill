@@ -80,22 +80,22 @@ function getUnreadPapers(queue) {
  * 使用临时文件传递路径，避免 shell 注入
  */
 function extractText(pdfPath) {
+    // 安全：只取文件名，拒绝路径遍历
+    const safeBasename = pdfPath.split('/').pop().replace(/[^a-zA-Z0-9._-]/g, '_');
+    const tmpScript = join('/tmp', `hf_pdf_${randomUUID()}.py`);
+
+    const script = [
+        'import pdfplumber',
+        'import sys',
+        `with pdfplumber.open("${safeBasename}") as pdf:`,
+        '    text = ""',
+        '    for page in pdf.pages[:15]:',
+        '        t = page.extract_text()',
+        '        if t: text += t + "\\n"',
+        '    print(text[:80000] if text else "")',
+    ].join('\n');
+
     try {
-        // 安全：只取文件名，拒绝路径遍历
-        const safeBasename = pdfPath.split('/').pop().replace(/[^a-zA-Z0-9._-]/g, '_');
-        const tmpScript = join('/tmp', `hf_pdf_${randomUUID()}.py`);
-
-        const script = [
-            'import pdfplumber',
-            'import sys',
-            `with pdfplumber.open("${safeBasename}") as pdf:`,
-            '    text = ""',
-            '    for page in pdf.pages[:15]:',
-            '        t = page.extract_text()',
-            '        if t: text += t + "\\n"',
-            '    print(text[:80000] if text else "")',
-        ].join('\n');
-
         writeFileSync(tmpScript, script);
 
         const result = spawnSync('python3', [tmpScript], {
@@ -105,11 +105,13 @@ function extractText(pdfPath) {
             cwd: PAPERS_DIR,  // 限制工作目录
         });
 
-        unlinkSync(tmpScript);
         return result.stdout || '';
     } catch (e) {
         log('[错误] PDF提取失败: ' + e.message);
         return '';
+    } finally {
+        // 确保临时脚本被清理
+        try { unlinkSync(tmpScript); } catch {}
     }
 }
 

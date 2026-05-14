@@ -72,9 +72,7 @@ class EmotionCore {
       : null;
 
     // 2. 深层情感更新（调用 DeepEmotion）
-    const deepResult = this.deepEmotion
-      ? this.deepEmotion.feel(userInput, context)
-      : null;
+    const deepResult = this.deepEmotion?.feel(userInput, context) ?? null;
 
     // 3. 表层情感转换（关键词 + PAD）
     const padState = deepResult

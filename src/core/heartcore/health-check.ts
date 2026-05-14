@@ -57,12 +57,14 @@ export class HealthCheck {
       this._lastResults.set(name, result);
       return result;
     } catch (e: any) {
+      const consecutiveFailures = (this._lastResults.get(name)?.consecutiveFailures ?? 0) + 1;
+      const level: HealthLevel = consecutiveFailures >= this._failureThreshold ? 'critical' : 'warning';
       const failed: SubsystemHealth = {
         name,
-        level: 'critical',
+        level,
         message: e?.message ?? String(e),
         lastCheck: Date.now(),
-        consecutiveFailures: (this._lastResults.get(name)?.consecutiveFailures ?? 0) + 1,
+        consecutiveFailures,
       };
       this._lastResults.set(name, failed);
       return failed;

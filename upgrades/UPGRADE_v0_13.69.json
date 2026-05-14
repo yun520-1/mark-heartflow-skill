@@ -1,0 +1,16 @@
+{
+  "version": "v0.13.69",
+  "timestamp": "2026-05-13T23:23:45.872Z",
+  "papers": [
+    "psychology-philosophy-ai/1406.2661v1.pdf"
+  ],
+  "concepts": [
+    "learning",
+    "reasoning",
+    "self",
+    "planning",
+    "ethics"
+  ],
+  "lines": 119,
+  "module": "upgrade_1778714625871.js"
+}

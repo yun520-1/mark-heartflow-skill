@@ -75,6 +75,7 @@ class IdentitySystem {
     }
 
     // 3. 模糊引用检测（"研究表明"、"大家都知道"）
+    // Note: hasCitation only checks for citation marker presence, not authenticity
     const vagueRefs = [
       { pattern: /研究表明|研究显示|科学家发现|专家说/, type: 'unspecified_study', severity: 'medium' },
       { pattern: /大家都知道|众所周知|普遍认为/, type: 'appeal_to_common_belief', severity: 'medium' },

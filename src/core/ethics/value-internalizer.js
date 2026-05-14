@@ -50,6 +50,24 @@ class ValueInternalizer {
     } catch (e) {
       this.weights = this.getDefaultWeights();
     }
+    // Validate weight ranges to prevent tampering
+    this.weights = this._validateWeights(this.weights);
+  }
+
+  _validateWeights(weights) {
+    const validKeys = ['truth', 'goodness', 'flow_experience', 'autonomy', 'safety', 'threshold'];
+    const defaults = this.getDefaultWeights();
+    for (const key of validKeys) {
+      const val = weights[key];
+      if (typeof val !== 'number' || isNaN(val) || val < 0 || val > 1) {
+        weights[key] = defaults[key];
+      }
+    }
+    // Ensure threshold is reasonable [0.3, 0.9]
+    if (weights.threshold < 0.3 || weights.threshold > 0.9) {
+      weights.threshold = defaults.threshold;
+    }
+    return weights;
   }
 
   getDefaultWeights() {

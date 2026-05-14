@@ -94,7 +94,7 @@ export class TaskScheduler {
 
     if (options.autoStart !== false) {
       // Defer start to next tick
-      setImmediate(() => this._autoStart());
+      setImmediate(() => this._autoStart()).catch(err => console.error('[Scheduler]', err));
     }
   }
 
@@ -297,8 +297,10 @@ export class TaskScheduler {
       await this.graph.checkpoint();
       await this._emit('onCheckpoint', this.graph);
     } catch (e) {
-      // checkpoint 失败不阻塞执行
-      console.warn('[TaskScheduler] checkpoint failed:', e);
+      // Record checkpoint failure so it is visible in scheduler result
+      const msg = e instanceof Error ? e.message : String(e);
+      this._errors.push({ nodeId: '<checkpoint>', error: `checkpoint failed: ${msg}` });
+      console.warn('[TaskScheduler] checkpoint failed:', msg);
     }
   }
 

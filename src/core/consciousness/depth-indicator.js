@@ -54,7 +54,9 @@ function loadDepthHistory() {
     if (fs.existsSync(DEPTH_FILE)) {
       _depthHistory = JSON.parse(fs.readFileSync(DEPTH_FILE, 'utf8'));
     }
-  } catch {}
+  } catch (e) {
+    console.warn('[DepthIndicator] loadDepthHistory failed:', e.message);
+  }
   _initialized = true;
 }
 
@@ -433,8 +435,8 @@ function getDepthStats() {
   return {
     count: _depthHistory.length,
     avg: Math.round(avg * 100) / 100,
-    min: Math.min(...depths),
-    max: Math.max(...depths),
+    min: depths.length > 0 ? Math.min(...depths) : 0,
+    max: depths.length > 0 ? Math.max(...depths) : 0,
     trend,
   };
 }

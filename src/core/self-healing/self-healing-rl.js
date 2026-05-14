@@ -92,10 +92,11 @@ class HealingMemoryRL {
   learn(context, action, reward) {
     const key = this._key(context, action);
     const prev = this.Q[key] || 0;
+    // Cap Q-values to prevent divergence (max 100)
     const maxFutureQ = Object.keys(this.Q).length > 0
-      ? Math.max(...Object.values(this.Q), 0)
+      ? Math.min(100, Math.max(...Object.values(this.Q), 0))
       : 0;
-    this.Q[key] = prev + this.lr * (reward + this.gamma * maxFutureQ - prev);
+    this.Q[key] = Math.max(-10, Math.min(100, prev + this.lr * (reward + this.gamma * maxFutureQ - prev)));
     this._save(); // 每次学习后持久化
   }
 
@@ -153,9 +154,10 @@ class HealingMemoryRL {
    */
   rankedPatches(failureCtx) {
     const ctx = String(failureCtx);
+    // Use exact match to avoid overly permissive substring matching
     const candidates = this.memory.filter(x => {
       const xCtx = String(x.pattern);
-      return xCtx === ctx || ctx.includes(xCtx) || xCtx.includes(ctx);
+      return xCtx === ctx;
     });
     if (!candidates.length) return this.memory.slice(-8).reverse().map(x => x.patch);
     return candidates

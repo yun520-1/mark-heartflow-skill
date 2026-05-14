@@ -116,14 +116,37 @@ class RollbackManager {
 
     this.log(`Rolling back from ${currentVersion.id} to ${previousVersion.id}`);
 
-    // 恢复文件
+    // 恢复文件 - 从版本历史中获取内容并写入
     const srcDir = path.join(this.projectRoot, 'src');
     const filePath = path.join(srcDir, previousVersion.target);
-    
-    if (fs.existsSync(filePath)) {
-      // 这里应该从版本控制系统恢复
-      // 简化实现：记录回滚日志
-      this.log(`Would restore: ${previousVersion.target}`);
+
+    try {
+      if (previousVersion.content) {
+        // 直接使用存储的文件内容进行恢复
+        fs.writeFileSync(filePath, previousVersion.content, 'utf8');
+        this.log(`Restored file: ${previousVersion.target} (id: ${previousVersion.id})`);
+
+        // 更新当前版本记录，指向已恢复的文件
+        const currentVersionEntry = {
+          id: `v-${Date.now()}`,
+          proposal: 'rollback',
+          target: previousVersion.target,
+          timestamp: new Date().toISOString(),
+          hash: previousVersion.hash,
+          previousHash: currentVersion.hash,
+          content: previousVersion.content
+        };
+
+        // 追加回滚版本记录
+        const versions = this.loadVersions();
+        versions.push(currentVersionEntry);
+        fs.writeFileSync(this.versionFile, JSON.stringify(versions, null, 2));
+      } else {
+        this.log(`Cannot restore: no content stored for ${previousVersion.target}`, 'WARN');
+      }
+    } catch (err) {
+      this.log(`Restore failed: ${err.message}`, 'ERROR');
+      return { success: false, reason: 'restore_failed', error: err.message };
     }
 
     // 设置冷却期

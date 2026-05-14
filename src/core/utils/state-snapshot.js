@@ -140,16 +140,18 @@ class StateSnapshot {
   async takeSnapshot(label = 'auto') {
     try {
       const state = await this.captureCurrentState();
-      
+
       const snapshotId = `snap_${Date.now()}`;
       const snapshotFile = path.join(this.snapshotDir, `${SNAPSHOT_CONFIG.snapshotFilePrefix}${snapshotId}.json`);
 
+      // Write snapshot file FIRST, then update metadata
+      // If crash occurs after file write but before metadata save,
+      // orphaned snapshot file is harmless; missing metadata entry is recoverable
       const snapshotData = {
         id: snapshotId,
         label,
         ...state
       };
-
       fs.writeFileSync(snapshotFile, JSON.stringify(snapshotData, null, 2));
 
       this.metadata.snapshots.push({
@@ -158,14 +160,13 @@ class StateSnapshot {
         timestamp: state.timestamp,
         interactionCount: this.interactionCount
       });
-
       this.metadata.lastSnapshotId = snapshotId;
-
-      this.cleanOldSnapshots();
       this.saveMetadata();
 
+      this.cleanOldSnapshots();
+
       console.log(`[StateSnapshot] Created snapshot ${snapshotId} (${label})`);
-      
+
       return {
         success: true,
         snapshotId,

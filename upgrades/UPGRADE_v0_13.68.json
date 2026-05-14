@@ -1,0 +1,21 @@
+{
+  "version": "v0.13.68",
+  "timestamp": "2026-05-13T23:23:36.001Z",
+  "papers": [
+    "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"
+  ],
+  "concepts": [
+    "memory",
+    "consciousness",
+    "learning",
+    "reasoning",
+    "self",
+    "planning",
+    "ethics",
+    "emotion",
+    "autonomy"
+  ],
+  "lines": 346,
+  "module": "upgrade_1778714616000.js"
+}

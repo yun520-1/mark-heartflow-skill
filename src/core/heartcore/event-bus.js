@@ -16,14 +16,19 @@ class EventBus {
       this._handlers.set(type, new Set());
     }
     this._handlers.get(type).add(handler);
-    return () => this._handlers.get(type)?.delete(handler);
+    return () => { const set = this._handlers.get(type); if (set) set.delete(handler); };
   }
 
   emit(type, source, data) {
     const event = { type, timestamp: Date.now(), source, data };
     this._log.push(event);
-    this._handlers.get(type)?.forEach(h => h(event));
-    this._handlers.get('*')?.forEach(h => h(event));
+    if (this._log.length > 1000) this._log.splice(0, this._log.length - 1000); // cap log size
+    for (const h of this._handlers.get(type) ?? []) {
+      try { h(event); } catch { /* continue to next handler */ }
+    }
+    for (const h of this._handlers.get('*') ?? []) {
+      try { h(event); } catch { /* continue to next handler */ }
+    }
   }
 
   getLog() {

@@ -30,9 +30,13 @@ interface DeepEmotionBase {
 }
 
 export async function createEmotionEngine(_projectRoot?: string): Promise<EmotionEngine> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mod = await import('./deep-emotion.js') as any;
-  const DeepEmotion = mod.DeepEmotion;
+  let DeepEmotion: new (projectRoot?: string) => DeepEmotionBase;
+  try {
+    const mod = await import('./deep-emotion.js');
+    DeepEmotion = mod.DeepEmotion;
+  } catch (e) {
+    throw new Error(`Failed to load deep-emotion.js: ${e instanceof Error ? e.message : String(e)}`);
+  }
   const instance = new DeepEmotion(_projectRoot) as unknown as DeepEmotionBase;
 
   return {

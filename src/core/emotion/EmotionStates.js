@@ -103,7 +103,15 @@ function getIntensityDescription(level) {
 function createEmotionState(emotionName, intensity = null) {
   const definition = getEmotionDefinition(emotionName);
   if (!definition) {
-    throw new Error(`未知的情感类型：${emotionName}`);
+    // Return default calm emotion state instead of throwing
+    const defaultDef = getEmotionDefinition(EmotionTypes.CALM);
+    return {
+      emotion: EmotionTypes.CALM,
+      intensity: intensity || defaultDef.defaultIntensity,
+      intensityLabel: getIntensityDescription(intensity || defaultDef.defaultIntensity),
+      definition: defaultDef,
+      timestamp: new Date().toISOString()
+    };
   }
   return {
     emotion: emotionName,

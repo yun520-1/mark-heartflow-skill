@@ -326,7 +326,7 @@ class ActorModel {
     if (/find|search|look/i.test(stateLower)) {
       return 'Search the current area thoroughly';
     }
-    if /pick|grab|take/i.test(stateLower)) {
+    if (/pick|grab|take/i.test(stateLower)) {
       return 'Pick up the relevant object';
     }
     if (/use|interact|apply/i.test(stateLower)) {
