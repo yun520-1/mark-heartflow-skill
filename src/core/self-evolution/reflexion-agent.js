@@ -465,8 +465,15 @@ class ReflexionAgent {
         action = this.actor.generateAction(currentState, this.memoryBuffer.getFormatted());
       }
 
-      // Execute action
-      const result = await environmentFn(action, currentState);
+      // Execute action — wrap in try-catch so promise rejection does not crash Reflexion loop
+      let result;
+      try {
+        result = await environmentFn(action, currentState);
+      } catch (envErr) {
+        const errMsg = envErr instanceof Error ? envErr.message : String(envErr);
+        console.warn('[ReflexionAgent] environmentFn failed:', errMsg);
+        result = { done: false, success: false, failure: false, observation: `environment error: ${errMsg}` };
+      }
       const observation = result.observation || result;
       
       // Track trajectory

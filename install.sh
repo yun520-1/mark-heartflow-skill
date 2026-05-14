@@ -1,10 +1,14 @@
 #!/bin/sh
-# HeartFlow v0.12.50 — 一键安装脚本
+# HeartFlow v0.13.137 — 一键安装脚本
 # 任意 AI 均可直接执行
 
 set -e
 
-echo "[HeartFlow] 开始安装 v0.12.50..."
+# 动态读取版本（支持安装时指定 HF_VERSION 环境变量）
+HF_VERSION="${HF_VERSION:-$(cat "$(dirname "$0")/VERSION" 2>/dev/null | tr -d '[:space:]' || echo 'v0.13.137')}"
+HF_VERSION="${HF_VERSION#v}"  # 去掉前缀 v
+
+echo "[HeartFlow] 开始安装 v${HF_VERSION}..."
 
 # 检测目录
 HF_DIR="${HF_DIR:-$HOME/.heartflow}"
@@ -12,7 +16,7 @@ mkdir -p "$HF_DIR"
 
 # 下载核心文件
 echo "[HeartFlow] 下载核心文件..."
-BASE="https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/v0.12.50"
+BASE="https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/v${HF_VERSION}"
 
 curl -fsSL "$BASE/SKILL.md" -o "$HF_DIR/SKILL.md" || {
   echo "[HeartFlow] SKILL.md 下载失败，尝试从当前目录复制..."
@@ -42,13 +46,13 @@ echo "[HeartFlow] 初始化数据..."
 [ ! -f "$HF_DIR/data/evolution/reflexion-patterns.json" ] && echo '[]' > "$HF_DIR/data/evolution/reflexion-patterns.json"
 
 # 写入版本
-echo "v0.12.50" > "$HF_DIR/VERSION"
+echo "v${HF_VERSION}" > "$HF_DIR/VERSION"
 
 # 写入 package.json
-cat > "$HF_DIR/package.json" << 'EOF'
+cat > "$HF_DIR/package.json" << EOF
 {
   "name": "heartflow",
-  "version": "0.12.50",
+  "version": "${HF_VERSION}",
   "description": "AI identity framework for self-improving AI agents",
   "main": "src/core/heartflow.js",
   "scripts": {
@@ -76,7 +80,7 @@ fi
 echo ""
 echo "[HeartFlow] 安装完成！"
 echo "  安装目录: $HF_DIR"
-echo "  版本: v0.12.50"
+echo "  版本: v${HF_VERSION}"
 echo ""
 echo "下一步："
 echo "  cd $HF_DIR && node bin/cli.js diagnose"

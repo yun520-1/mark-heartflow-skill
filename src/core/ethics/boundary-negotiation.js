@@ -28,7 +28,15 @@ class BoundaryNegotiation {
   }
 
   savePermissions() {
-    fs.writeFileSync(this.permissionsFile, JSON.stringify(this.permissions, null, 2));
+    // Atomic write: temp + rename prevents corruption on crash
+    const tmp = this.permissionsFile + '.tmp';
+    try {
+      fs.writeFileSync(tmp, JSON.stringify(this.permissions, null, 2), 'utf8');
+      fs.renameSync(tmp, this.permissionsFile);
+    } catch (e) {
+      try { fs.unlinkSync(tmp); } catch {}
+      console.warn('[BoundaryNegotiation] savePermissions failed:', e.message);
+    }
   }
 
   /**
@@ -168,7 +176,8 @@ class BoundaryNegotiation {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(this.negotiationFile, JSON.stringify(logs, null, 2));
+    fs.writeFileSync(this.negotiationFile + '.tmp', JSON.stringify(logs, null, 2), 'utf8');
+    fs.renameSync(this.negotiationFile + '.tmp', this.negotiationFile);
   }
 
   getStatus() {

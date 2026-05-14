@@ -55,8 +55,9 @@ export async function getMemoryStats() {
 
   // Try to read from state.db if available
   try {
-    const sqlite3 = await import('sqlite3');
-    const db = new sqlite3.Database(DB_PATH);
+    const sqlite3Module = await import('sqlite3');
+    const { Database } = sqlite3Module.default ?? sqlite3Module;
+    const db = new Database(DB_PATH);
     
     // True user messages
     const userRow = db.prepare(`

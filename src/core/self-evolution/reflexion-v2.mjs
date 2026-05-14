@@ -132,7 +132,7 @@ export class ReflexionMemory {
    */
   async saveToFile(path) {
     await fs.mkdir(dirname(path), { recursive: true });
-    const data = JSON.stringify({ entries: this.entries }, null, 0);
+    const data = JSON.stringify({ entries: this.entries }, null, 2);
     await fs.writeFile(path, data, 'utf8');
   }
 

@@ -43,6 +43,12 @@ class Reflexion {
       timestamp: Date.now(),
     };
     patterns.push(entry);
+    // Cap: max 200 entries, max 10KB per entry (prevents memory bloat from huge outcomes/errors)
+    const MAX_ENTRY_SIZE = 10 * 1024;
+    if (JSON.stringify(entry).length > MAX_ENTRY_SIZE) {
+      entry.outcome = '[TRUNCATED] ' + String(entry.outcome).substring(0, 500);
+      entry.error = entry.error ? String(entry.error).substring(0, 200) : null;
+    }
     if (patterns.length > 200) patterns.splice(0, patterns.length - 200);
     const tmp = this.patternsPath + '.tmp';
     try {

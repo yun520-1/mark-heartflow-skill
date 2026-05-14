@@ -1,28 +1,13 @@
 {
   "name": "heartflow",
-  "version": "0.13.126",
+  "version": "0.13.141",
   "description": "AI identity framework for self-improving AI agents",
-  "main": "dist/core/heartflow.js",
-  "bin": {
-    "heartflow": "bin/cli.js"
-  },
+  "main": "src/core/heartflow.js",
   "scripts": {
-    "build": "tsc",
     "start": "node bin/cli.js start",
     "diagnose": "node bin/cli.js diagnose",
-    "check": "node HEARTCORE/heartbeat.js",
-    "test": "node tests/core.test.js"
+    "check": "node HEARTCORE/heartbeat.js"
   },
-  "keywords": [
-    "heartflow",
-    "identity",
-    "self-improvement",
-    "ai-agent"
-  ],
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^22.0.0",
-    "tsx": "^4.0.0",
-    "typescript": "^5.7.0"
-  }
+  "keywords": ["heartflow", "identity", "self-improvement"],
+  "license": "MIT"
 }

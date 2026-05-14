@@ -89,6 +89,10 @@ class SelfEvolutionCore {
       goalsCount: goals.length,
       improvementsCount: improvements.length
     });
+    // Cap at 500 entries to prevent unbounded state growth
+    if (this.state.learningHistory.length > 500) {
+      this.state.learningHistory.splice(0, this.state.learningHistory.length - 500);
+    }
     
     this.saveState();
     

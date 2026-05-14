@@ -153,18 +153,31 @@ class SkillDAG {
     } catch (e) {
       console.warn('[SkillDAG] _load failed:', e.message);
     }
+    // Ensure d is always valid to prevent partial state on corrupted JSON
+    if (!d || typeof d !== 'object') {
+      d = { nodeIds: [], nodes: {}, edges: {}, revEdges: {} };
+    }
   }
 
   _save() {
+    // Atomic write: temp file + rename to prevent corruption on crash
     const d = {
       nodeIds: Array.from(this.nodes.keys()),
       nodes: Object.fromEntries(
         Array.from(this.nodes.entries()).map(([id, n]) => [id, n.toJSON()])
       ),
-      edges: Object.fromEntries(this.edges),
-      revEdges: Object.fromEntries(this.revEdges),
+      edges: this.edges,
+      revEdges: this.revEdges,
+      metadata: { savedAt: Date.now(), nodeCount: this.nodes.size }
     };
-    fs.writeFileSync(this._dagPath(), JSON.stringify(d, null, 2));
+    const tmp = this._dagPath() + '.tmp';
+    try {
+      fs.writeFileSync(tmp, JSON.stringify(d, null, 2), 'utf8');
+      fs.renameSync(tmp, this._dagPath());
+    } catch (e) {
+      try { fs.unlinkSync(tmp); } catch {}
+      console.warn('[SkillDAG] _save failed:', e.message);
+    }
   }
 
   // ─── Indexing ─────────────────────────────────────────────────────────────

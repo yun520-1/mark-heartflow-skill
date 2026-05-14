@@ -247,11 +247,14 @@ class TrialityMemory {
    * @private
    */
   _saveIndex(index) {
-    try {
-      atomicWriteJSONSync(this.indexFile, index);
-    } catch (error) {
-      console.error(`[TrialityMemory] 索引保存失败: ${error.message}`);
-    }
+    // Mutex pattern: queue concurrent writes so they serialize, not overwrite
+    this._indexWritePromise = (this._indexWritePromise || Promise.resolve()).then(async () => {
+      try {
+        atomicWriteJSONSync(this.indexFile, index);
+      } catch (error) {
+        console.error(`[TrialityMemory] 索引保存失败: ${error.message}`);
+      }
+    });
   }
 
   /**

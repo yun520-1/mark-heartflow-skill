@@ -162,7 +162,7 @@ export class FileReadTool extends Tool {
     // 对大于 1MB 的文件使用 wc -l 子进程来计数
     if (stat.size > 1024 * 1024 && encoding === 'utf8') {
       try {
-      const output = execFileSync('wc', ['-l', filePath], { encoding: 'utf8' });
+      const output = execFileSync('wc', ['-l', filePath], { encoding: 'utf8', shell: false });
       return parseInt(output.trim().split(/\s+/)[0], 10) || 0;
       } catch {
         // 回退到内存读取方式
