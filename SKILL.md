@@ -11,7 +11,7 @@ description: >
   
   核心导出:
     lessonAwareExecute(cmd, ctx)    # 执行前查教训，执行后记录
-    queryKnowledge(input, skill)   # 查询25条教训
+    queryKnowledge(input, skill)   # 查询21条教训
     recordFailure({errorPattern})  # 记录失败→自动写入learnings
     printLessonStatus()            # 打印教训状态
     onPreBash(cmd)                 # 安全Hook: 危险命令拦截
@@ -69,19 +69,12 @@ if (!result.allowed) {
 }
 ```
 
-**已记录的25条真实教训：**
+**已记录的教训：21条真实教训（从历史对话提取）**
 
-| pattern | skill | confidence |
-|---------|-------|------------|
-| 版本号只更新一个文件 | heartflow | 0.9 |
-| 收到理解类问题就搜索 | heartflow | 0.8 |
-| 回复带问号或hedging | communication | 0.8 |
-| 复述旧会话冒充今天成果 | heartflow | 0.9 |
-| 越修越坏不验证就执行 | coding | 0.75 |
-| 梦是直接复制用户说的话 | dreaming | 0.75 |
-| 隐私数据上传GitHub | git | 0.9 |
-| 写完代码不验证 | coding | 0.8 |
-| 容器是漏的（只分析不接住感受）| heartflow | 0.85 |
+验证命令查看完整列表：
+```
+node src/core/self-evolution/lesson-aware-loop.mjs --status
+```
 
 ### 2. 安全Hook（7个拦截）
 
