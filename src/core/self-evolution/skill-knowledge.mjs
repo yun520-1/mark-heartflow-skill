@@ -68,7 +68,7 @@ const SKILL_RULES_FILE = join(KNOWLEDGE_DIR, 'skill-rules.json');
  * Load knowledge (static curated rules)
  * @returns {Promise<KnowledgeEntry[]>}
  */
-async function loadKnowledge() {
+export async function loadKnowledge() {
   try {
     const raw = await fs.readFile(KNOWLEDGE_FILE, 'utf8');
     return JSON.parse(raw);
@@ -81,7 +81,7 @@ async function loadKnowledge() {
  * Load learnings (dynamic discovered rules)
  * @returns {Promise<LearnedEntry[]>}
  */
-async function loadLearnings() {
+export async function loadLearnings() {
   try {
     const raw = await fs.readFile(LEARNINGS_FILE, 'utf8');
     return JSON.parse(raw);
@@ -369,4 +369,5 @@ export default {
   decayOldEntries,
   getKnowledgeSummary,
   buildContextPrompt,
+  loadLearnings,
 };
