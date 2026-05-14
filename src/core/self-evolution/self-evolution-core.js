@@ -99,7 +99,7 @@ class SelfEvolutionCore {
       learning: learning.summary,
       reflection: reflection.insights,
       improvements,
-      growthMetrics: this.state.growthMetrics,
+      growthMetrics: { ...this.state.growthMetrics },
       cycleTime
     };
   }
@@ -314,7 +314,7 @@ class SelfEvolutionCore {
     return {
       version: this.version,
       goals: this.state.goals,
-      growthMetrics: this.state.growthMetrics,
+      growthMetrics: { ...this.state.growthMetrics },
       totalCycles: this.state.learningHistory.length,
       recentCycles: this.state.learningHistory.slice(-5)
     };

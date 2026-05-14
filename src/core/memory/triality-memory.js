@@ -268,7 +268,7 @@ class TrialityMemory {
       const memoryFile = path.join(this.workingContextDir, `${id}.md`);
       if (fs.existsSync(memoryFile)) {
         // 复制到工作上下文
-        const workingFile = path.join(this.workingContextDir, `working`, `${id}.md`);
+        const workingFile = path.join(this.workingContextDir, `${id}.md`);
         fs.copyFileSync(memoryFile, workingFile);
         loaded.push(id);
       }

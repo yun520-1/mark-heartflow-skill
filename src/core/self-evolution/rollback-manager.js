@@ -152,7 +152,6 @@ class RollbackManager {
         fs.writeFileSync(backupPath + '.new', previousVersion.content, 'utf8');
         fs.renameSync(backupPath + '.new', filePath);
         this.log(`Restored file: ${previousVersion.target} (id: ${previousVersion.id})`);
-        this.log(`Restored file: ${previousVersion.target} (id: ${previousVersion.id})`);
 
         // 更新当前版本记录，指向已恢复的文件
         const currentVersionEntry = {
@@ -168,7 +167,10 @@ class RollbackManager {
         // 追加回滚版本记录
         const versions = this.loadVersions();
         versions.push(currentVersionEntry);
-        fs.writeFileSync(this.versionFile, JSON.stringify(versions, null, 2));
+        // 原子写入版本记录
+        const vTmp = this.versionFile + '.tmp';
+        fs.writeFileSync(vTmp, JSON.stringify(versions, null, 2));
+        fs.renameSync(vTmp, this.versionFile);
       } else {
         this.log(`Cannot restore: no content stored for ${previousVersion.target}`, 'WARN');
       }

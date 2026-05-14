@@ -84,28 +84,28 @@ const ALLOWED_COMMANDS: Record<string, AllowedCommand> = {
       '-R': { type: 'flag' },
       '-t': { type: 'flag' },
       '-h': { type: 'flag' },
-      path: { type: 'string', pattern: /^[~\/\w\.\-\[\]]+$/ },
+      path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
     },
   },
   cat: {
     description: '查看文件内容',
     params: {
       '-n': { type: 'flag' },
-      path: { type: 'string', pattern: /^[~\/\w\.\-\[\]]+$/ },
+      path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
     },
   },
   head: {
     description: '查看文件开头',
     params: {
       '-n': { type: 'number', max: 1000 },
-      path: { type: 'string', pattern: /^[~\/\w\.\-\[\]]+$/ },
+      path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
     },
   },
   tail: {
     description: '查看文件结尾',
     params: {
       '-n': { type: 'number', max: 1000 },
-      path: { type: 'string', pattern: /^[~\/\w\.\-\[\]]+$/ },
+      path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
     },
   },
   wc: {
@@ -113,7 +113,7 @@ const ALLOWED_COMMANDS: Record<string, AllowedCommand> = {
     params: {
       '-l': { type: 'flag' },
       '-w': { type: 'flag' },
-      path: { type: 'string', pattern: /^[~\/\w\.\-\[\]]+$/ },
+      path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
     },
   },
   grep: {
@@ -123,14 +123,14 @@ const ALLOWED_COMMANDS: Record<string, AllowedCommand> = {
       '-i': { type: 'flag' },
       '-n': { type: 'flag' },
       '-l': { type: 'flag' },
-      pattern: { type: 'string', pattern: /^[^\"\']+$/ },
-      path: { type: 'string', pattern: /^[~\/\w\.\-\[\]]+$/ },
+      pattern: { type: 'string', pattern: /^[^\"\';|&`$]+$/ },
+      path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
     },
   },
   find: {
     description: '查找文件',
     params: {
-      path: { type: 'string', pattern: /^[~\/\w\.\-\[\]]+$/ },
+      path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
       '-name': { type: 'string', pattern: /^[^\;\|\`]+$/ },
       '-type': { type: 'literal', values: ['f', 'd', 'l'] },
     },
@@ -160,10 +160,12 @@ const ALLOWED_COMMANDS: Record<string, AllowedCommand> = {
   node: {
     description: '执行 Node.js 脚本',
     params: {
-      '-e': { type: 'string', pattern: /^[^;&|`$]+$/ },
-      '-p': { type: 'string', pattern: /^[^;&|`$]+$/ },
-      script: { type: 'string', pattern: /^[~\/\w\.\-]+\.js$/ },
+      path: { type: 'string', pattern: /^\// },  // Only absolute paths, no -e/-p
     },
+    validator: (args) => {
+      // Disallow -e, -p, -r flags that allow arbitrary code execution
+      return !args.some(a => a === '-e' || a === '-p' || a === '-r' || a === '--eval');
+    }
   },
   npm: {
     description: 'npm 包管理',
@@ -171,11 +173,14 @@ const ALLOWED_COMMANDS: Record<string, AllowedCommand> = {
       'install': { type: 'literal' },
       'run': { type: 'literal' },
       '-y': { type: 'flag' },
-      script: { type: 'string', pattern: /^[\w\-]+$/ },
+      path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
     },
     validator: (args) => {
       // 禁止全局安装、危险脚本
-      return !args.includes('-g') && !args.includes('sudo');
+      // Disallow dangerous flags that allow code execution
+      // Disallow dangerous flags that allow code execution
+      const dangerous = ['-e', '-p', '-r', '--eval', '--check', '-c'];
+      return !args.some(a => dangerous.some(d => a === d || a.startsWith(d + '=')));
     },
   },
   // 文件操作（安全限制下）
@@ -183,7 +188,7 @@ const ALLOWED_COMMANDS: Record<string, AllowedCommand> = {
     description: '创建目录',
     params: {
       '-p': { type: 'flag' },
-      path: { type: 'string', pattern: /^[~\/\w\.\-\[\]]+$/ },
+      path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
     },
     validator: (args) => {
       // 禁止在 /etc、/var 等系统目录创建
@@ -193,7 +198,7 @@ const ALLOWED_COMMANDS: Record<string, AllowedCommand> = {
   touch: {
     description: '创建空文件',
     params: {
-      path: { type: 'string', pattern: /^[~\/\w\.\-\[\]]+$/ },
+      path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
     },
   },
   // 进程/系统信息

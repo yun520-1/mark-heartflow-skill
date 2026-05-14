@@ -42,7 +42,9 @@ class StateSnapshot {
       if (!fs.existsSync(this.snapshotDir)) {
         fs.mkdirSync(this.snapshotDir, { recursive: true });
       }
-      fs.writeFileSync(this.metadataFile, JSON.stringify(this.metadata, null, 2));
+      const metaTmp = this.metadataFile + '.tmp';
+      fs.writeFileSync(metaTmp, JSON.stringify(this.metadata, null, 2));
+      fs.renameSync(metaTmp, this.metadataFile);
     } catch (e) {
       console.error('[StateSnapshot] Failed to save metadata:', e.message);
     }
@@ -152,7 +154,9 @@ class StateSnapshot {
         label,
         ...state
       };
-      fs.writeFileSync(snapshotFile, JSON.stringify(snapshotData, null, 2));
+      const snapTmp = snapshotFile + '.tmp';
+      fs.writeFileSync(snapTmp, JSON.stringify(snapshotData, null, 2));
+      fs.renameSync(snapTmp, snapshotFile);
 
       this.metadata.snapshots.push({
         id: snapshotId,
@@ -233,7 +237,9 @@ class StateSnapshot {
         state.current_emotion = snapshot.emotionVector.currentEmotion;
       }
 
-      fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
+      const stateTmp = stateFile + '.tmp';
+      fs.writeFileSync(stateTmp, JSON.stringify(state, null, 2));
+      fs.renameSync(stateTmp, stateFile);
 
       this.interactionCount = snapshot.interactionCount || 0;
 

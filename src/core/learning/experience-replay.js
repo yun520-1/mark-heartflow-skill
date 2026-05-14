@@ -30,7 +30,9 @@ class ExperienceReplay {
 
   savePatterns() {
     try {
-      fs.writeFileSync(this.patternFile, JSON.stringify(this.patterns, null, 2));
+      const tmp = this.patternFile + '.tmp';
+      fs.writeFileSync(tmp, JSON.stringify(this.patterns, null, 2));
+      fs.renameSync(tmp, this.patternFile);
     } catch (e) {
       console.warn('[ExperienceReplay] savePatterns failed:', e.message);
     }
@@ -246,11 +248,13 @@ class ExperienceReplay {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    try {
-      fs.writeFileSync(this.suggestionFile, JSON.stringify(allSuggestions, null, 2));
-    } catch (e) {
-      console.warn('[ExperienceReplay] saveSuggestions failed:', e.message);
-    }
+      try {
+        const tmp = this.suggestionFile + '.tmp';
+        fs.writeFileSync(tmp, JSON.stringify(allSuggestions, null, 2));
+        fs.renameSync(tmp, this.suggestionFile);
+      } catch (e) {
+        console.warn('[ExperienceReplay] saveSuggestions failed:', e.message);
+      }
   }
 
   /**

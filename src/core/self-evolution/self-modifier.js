@@ -100,10 +100,10 @@ class SelfModifier {
     // 解析 symlinks 以防止通过符号链接绕过检查
     let fullPath;
     try {
-      fullPath = fs.realpathSync(joinedPath);
+      fullPath = this.fs.realpathSync(joinedPath);
     } catch (e) {
       // 文件不存在时 realpathSync 抛异常，用 joinedPath 继续
-      fullPath = joinedPath;
+      fullPath = path.normalize(joinedPath);
     }
 
     // 危险路径拦截：禁止修改 OS 系统级路径

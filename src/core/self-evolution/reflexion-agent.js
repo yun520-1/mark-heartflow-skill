@@ -184,7 +184,7 @@ class SelfReflectionModel {
 
   checkRepeatedActions(lines) {
     if (lines.length < 3) return false;
-    const lastActions = lines.slice(-3).map(l => l.match(/Action="([^"]+)"/)?.[1]).filter(Boolean);
+    const lastActions = lines.slice(-3).map(l => l.match(/Action="([^"]+)"/)?.[1]).filter(v => typeof v === 'string');
     return lastActions.length >= 2 && lastActions.every(a => a === lastActions[0]);
   }
 }
@@ -257,9 +257,8 @@ class EvaluatorModel {
     // Uses heuristic as proxy
     const hScore = this.heuristicEvaluate(trajectory, context);
     
-    // Add some variance to simulate LLM judgment
-    const variance = (Math.random() - 0.5) * 0.1;
-    return Math.max(0, Math.min(1, hScore + variance));
+    // Use deterministic evaluation only — variance in LLM evaluation poisons Q-tables
+    return Math.max(0, Math.min(1, hScore));
   }
 
   isPassing(score) {

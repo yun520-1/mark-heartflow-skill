@@ -349,11 +349,10 @@ class SAGEGuardian {
     existing.push(logEntry);
     
     // 保持日志在合理大小
-    if (existing.length > 1000) {
-      fs.writeFileSync(this.logFile, JSON.stringify(existing.slice(-500), null, 2));
-    } else {
-      fs.writeFileSync(this.logFile, JSON.stringify(existing, null, 2));
-    }
+    const logData = existing.length > 1000 ? existing.slice(-500) : existing;
+    const logTmp = this.logFile + '.tmp';
+    fs.writeFileSync(logTmp, JSON.stringify(logData, null, 2));
+    fs.renameSync(logTmp, this.logFile);
 
     console.log(`[SAGE] Security decision logged: ${decision.level}`);
     return { success: true };

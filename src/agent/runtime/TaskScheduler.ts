@@ -78,6 +78,7 @@ export class TaskScheduler {
   private _status: SchedulerStatus = 'idle';
   private _paused = false;
   private _stopped = false;
+  private _reentrant = false;
   private _runningTasks = new Set<string>();
   private _pendingTasks: string[] = [];
   private _errors: Array<{ nodeId: string; error: string }> = [];
@@ -179,11 +180,19 @@ export class TaskScheduler {
    * 恢复调度
    */
   async resume(): Promise<void> {
+    if (this._reentrant) {
+      console.warn('[TaskScheduler] resume re-entrant call blocked');
+      return;
+    }
     if (this._status !== 'paused') return;
     this._paused = false;
     this._status = 'running';
-    // 继续执行
-    await this.run();
+    this._reentrant = true;
+    try {
+      await this.run();
+    } finally {
+      this._reentrant = false;
+    }
   }
 
   /**

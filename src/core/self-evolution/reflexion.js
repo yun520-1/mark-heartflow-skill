@@ -27,7 +27,12 @@ class Reflexion {
   }
 
   reflect(result) {
-    const patterns = JSON.parse(fs.readFileSync(this.patternsPath, 'utf8'));
+    let patterns;
+    try {
+      patterns = JSON.parse(fs.readFileSync(this.patternsPath, 'utf8'));
+    } catch {
+      patterns = [];
+    }
     const { task, outcome, error, feedback } = result;
     const entry = {
       id: `ref-${Date.now()}`,
@@ -39,24 +44,32 @@ class Reflexion {
     };
     patterns.push(entry);
     if (patterns.length > 200) patterns.splice(0, patterns.length - 200);
-    fs.writeFileSync(this.patternsPath, JSON.stringify(patterns, null, 2));
+    const tmp = this.patternsPath + '.tmp';
+    try {
+      fs.writeFileSync(tmp, JSON.stringify(patterns, null, 2));
+      fs.renameSync(tmp, this.patternsPath);
+    } catch {
+      try { fs.unlinkSync(tmp); } catch {}
+    }
     return entry;
   }
 
-  _verdict(outcome, error, feedback) {
-    if (error) return 'failure';
-    if (feedback && (feedback.rating < 3 || feedback.thumbsDown)) return 'failure';
-    if (outcome && String(outcome).startsWith('success')) return 'success';
-    return 'neutral';
-  }
-
   getFailurePatterns(limit = 20) {
-    const patterns = JSON.parse(fs.readFileSync(this.patternsPath, 'utf8'));
+    let patterns;
+    try {
+      patterns = JSON.parse(fs.readFileSync(this.patternsPath, 'utf8'));
+    } catch {
+      patterns = [];
+    }
     return patterns.filter(p => p.selfVerdict === 'failure').slice(-limit);
   }
 
   getAllPatterns() {
-    return JSON.parse(fs.readFileSync(this.patternsPath, 'utf8'));
+    try {
+      return JSON.parse(fs.readFileSync(this.patternsPath, 'utf8'));
+    } catch {
+      return [];
+    }
   }
 }
 
