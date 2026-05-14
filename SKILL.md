@@ -1,12 +1,20 @@
 ---
 name: heartflow
 title: HeartFlow — AI Identity Framework
-version: v0.13.95
+version: v0.13.101
 date: "2026-05-14"
 description: >
-  HeartFlow v0.13.92 — 集成 Reflexion + Dash + CAPY Cortex 三大引擎
-  新增: skill-knowledge.mjs (双重知识系统) + reflexion-prompts.mjs (few-shot模板)
-  新增: reflexion-v2.mjs (Jaccard记忆+LLM反射器) + cortex-hooks.mjs (7个生命周期钩子)
+  HeartFlow — 自主进化的 AI 身份引擎。让 AI 记住教训、持续改进、闭环升级。
+
+  核心功能：
+  • 教训驱动闭环：25条真实教训，从错误中学习
+  •  Reflexion + Dash + Cortex 三大引擎集成
+  • 7个安全Hook：拦截危险命令、验证文件写入
+  • 双重知识系统：curated静态规则 + learned动态规则
+  • 心跳监控 + 梦境生成 + 伦理守卫
+
+  一行启动：skill_view("heartflow") 直接加载
+  验证命令：node src/core/self-evolution/lesson-aware-loop.mjs --status
 security:
   audit: self-verified
   owasp: compliant
