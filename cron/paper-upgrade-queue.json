@@ -82,24 +82,35 @@
     "psychology-philosophy-ai/2109.05237v4.pdf",
     "psychology-philosophy-ai/2304.11461v1.pdf",
     "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
-    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
+    "psychology-philosophy-ai/1406.2661v1.pdf",
+    "psychology-philosophy-ai/1706.03762v7.pdf",
+    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf",
+    "psychology-philosophy-ai/2109.05237v4.pdf",
+    "psychology-philosophy-ai/2304.11461v1.pdf",
+    "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
+    "psychology-philosophy-ai/1406.2661v1.pdf",
+    "psychology-philosophy-ai/1706.03762v7.pdf",
+    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf",
+    "psychology-philosophy-ai/2109.05237v4.pdf",
+    "psychology-philosophy-ai/2304.11461v1.pdf",
+    "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
+    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf",
+    "psychology-philosophy-ai/1406.2661v1.pdf",
+    "psychology-philosophy-ai/1706.03762v7.pdf",
+    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf"
   ],
   "papersAnalyzed": [
     "psychology-philosophy-ai/10.3389.fpsyt.2021.680811.pdf",
     "psychology-philosophy-ai/1406.2661v1.pdf",
     "psychology-philosophy-ai/1706.03762v7.pdf",
-    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf",
-    "psychology-philosophy-ai/2024.emnlp-main.711.pdf",
-    "psychology-philosophy-ai/2025.acl-long.1049.pdf",
-    "psychology-philosophy-ai/2109.05237v4.pdf",
-    "psychology-philosophy-ai/2304.11461v1.pdf",
-    "psychology-philosophy-ai/2305.14992_LLM_Reasoning_World_Model.pdf",
-    "psychology-philosophy-ai/2309.02427_CoALA_Cognitive_Architectures.pdf"
+    "psychology-philosophy-ai/2023.findings-emnlp.216.pdf"
   ],
-  "currentVersion": "v0.13.95",
-  "nextVersion": "v0.13.96",
-  "lastUpgrade": "2026-05-14T04:09:56.603Z",
-  "upgradeCount": 35,
+  "currentVersion": "v0.13.105",
+  "nextVersion": "v0.13.106",
+  "lastUpgrade": "2026-05-14T06:40:33.075Z",
+  "upgradeCount": 45,
   "qualityHistory": [
     {
       "version": "v0.13.79",
@@ -185,6 +196,56 @@
       "version": "v0.13.95",
       "modules": 6,
       "timestamp": 1778731796603
+    },
+    {
+      "version": "v0.13.96",
+      "modules": 1,
+      "timestamp": 1778732998316
+    },
+    {
+      "version": "v0.13.97",
+      "modules": 4,
+      "timestamp": 1778733602868
+    },
+    {
+      "version": "v0.13.98",
+      "modules": 5,
+      "timestamp": 1778734806821
+    },
+    {
+      "version": "v0.13.99",
+      "modules": 6,
+      "timestamp": 1778735411838
+    },
+    {
+      "version": "v0.13.100",
+      "modules": 1,
+      "timestamp": 1778736613433
+    },
+    {
+      "version": "v0.13.101",
+      "modules": 4,
+      "timestamp": 1778737217990
+    },
+    {
+      "version": "v0.13.102",
+      "modules": 5,
+      "timestamp": 1778738421914
+    },
+    {
+      "version": "v0.13.103",
+      "modules": 6,
+      "timestamp": 1778739026837
+    },
+    {
+      "version": "v0.13.104",
+      "modules": 1,
+      "timestamp": 1778740228739
+    },
+    {
+      "version": "v0.13.105",
+      "modules": 4,
+      "timestamp": 1778740833075
     }
   ]
 }

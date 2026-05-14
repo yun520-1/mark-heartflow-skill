@@ -1,7 +1,7 @@
 ---
 name: heartflow
 title: HeartFlow — Self-Evolving AI Identity Engine
-version: v0.13.103
+version: v0.13.105
 date: "2026-05-14"
 description: >
   HeartFlow — 自主进化的 AI 身份引擎。让任意 AI agent 一行命令安装，立即获得教训闭环、自我进化、安全护栏。
