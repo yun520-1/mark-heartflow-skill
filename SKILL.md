@@ -2,7 +2,17 @@
 name: heartflow
 title: HeartFlow (心虫) — AI Capability Layer Skill
 description: >
-  HeartFlow v0.13.141 — Guardian system v2 with HAAS governance architecture, Dao Decision Layer, Tree-of-Thoughts, Consciousness Workspace, Uncertainty Quantifier, MetaCognitive Assessor (meta-d'), Reflective Confidence, and Forgetting Engine.
+  HeartFlow v0.13.161 — 一键启动 Daemon 模式，引擎常驻内存，Hermes 加载 skill 时零初始化。
+
+  ## 一键启动（Daemon 模式）
+  ```bash
+  cd ~/.hermes/skills/ai/mark-heartflow-skill
+  ./start.sh              # 启动 daemon（首次预热 ~2s，后续秒级响应）
+  ./start.sh status        # 查看状态
+  ./start.sh health        # 健康检查
+  ./start.sh stop          # 停止 daemon
+  ```
+  Daemon 模式下引擎预热后常驻内存，Hermes 每次 skill 加载无需重新初始化，大幅降低 Token 消耗。
 
   ## Install in 30 seconds
   ```bash

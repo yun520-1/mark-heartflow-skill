@@ -48,6 +48,7 @@ exports.ALLOWED_ROOTS = exports.FILE_READ_TOOL_METADATA = exports.FileReadTool =
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const os_1 = require("os");
+const child_process_1 = require("child_process");
 const Tool_1 = require("./Tool");
 const METADATA = {
     name: 'file_read',
@@ -180,9 +181,8 @@ class FileReadTool extends Tool_1.Tool {
         // 对大于 1MB 的文件使用 wc -l 子进程来计数
         if (stat.size > 1024 * 1024 && encoding === 'utf8') {
             try {
-                const { execFileSync } = require('child_process');
-                const { stdout } = execFileSync('wc', ['-l', filePath], { encoding: 'utf8' });
-                return parseInt(stdout.trim().split(/\s+/)[0], 10) || 0;
+                const output = (0, child_process_1.execFileSync)('wc', ['-l', filePath], { encoding: 'utf8', shell: false });
+                return parseInt(output.trim().split(/\s+/)[0], 10) || 0;
             }
             catch {
                 // 回退到内存读取方式

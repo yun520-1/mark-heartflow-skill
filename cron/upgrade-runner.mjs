@@ -4,11 +4,14 @@
  */
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
 
-const SKILL_DIR = process.env.SKILL_DIR || (require('os').homedir() + '/.hermes/skills/ai/mark-heartflow-skill');
-const PAPERS_DIR = process.env.PAPERS_DIR || (require('os').homedir() + '/Downloads/daima');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const SKILL_DIR = process.env.SKILL_DIR || (join(__dirname, '..', '..', '..'));
+const PAPERS_DIR = process.env.PAPERS_DIR || (join(__dirname, '..', '..', '..', '..', '..', 'Downloads', 'daima'));
 const QUEUE_FILE = join(SKILL_DIR, 'cron', 'paper-upgrade-queue.json');
 const ANALYZED_DIR = join(SKILL_DIR, 'cron', 'analyzed');
 const UPGRADES_DIR = join(SKILL_DIR, 'upgrades');

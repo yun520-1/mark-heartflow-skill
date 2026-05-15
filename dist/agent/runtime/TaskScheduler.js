@@ -67,8 +67,15 @@ class TaskScheduler {
             this._status = 'failed';
             return;
         }
-        // No cycle — begin execution
-        await this.run();
+        // No cycle — begin execution; wrap to prevent unhandled promise rejection
+        try {
+            await this.run();
+        }
+        catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            console.error('[Scheduler] run() failed:', msg);
+            this._status = 'failed';
+        }
     }
     // ─── 控制方法 ─────────────────────────────────────────────
     /**
@@ -247,13 +254,12 @@ class TaskScheduler {
         });
     }
     async _autoCheckpoint() {
-        this._tasksSinceCheckpoint = 0;
         try {
             await this.graph.checkpoint();
             await this._emit('onCheckpoint', this.graph);
+            this._tasksSinceCheckpoint = 0; // reset only on success
         }
         catch (e) {
-            // Record checkpoint failure so it is visible in scheduler result
             const msg = e instanceof Error ? e.message : String(e);
             this._errors.push({ nodeId: '<checkpoint>', error: `checkpoint failed: ${msg}` });
             console.warn('[TaskScheduler] checkpoint failed:', msg);

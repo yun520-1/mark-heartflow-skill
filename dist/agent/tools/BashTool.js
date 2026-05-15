@@ -57,6 +57,7 @@ const METADATA = {
     version: '0.13.60',
 };
 exports.BASH_TOOL_METADATA = METADATA;
+const PATH_PATTERN = /^(\/[\w\.\-]+)+$/;
 const ALLOWED_COMMANDS = {
     // 文件查看
     ls: {
@@ -67,28 +68,28 @@ const ALLOWED_COMMANDS = {
             '-R': { type: 'flag' },
             '-t': { type: 'flag' },
             '-h': { type: 'flag' },
-            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            path: { type: 'string', pattern: PATH_PATTERN },
         },
     },
     cat: {
         description: '查看文件内容',
         params: {
             '-n': { type: 'flag' },
-            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            path: { type: 'string', pattern: PATH_PATTERN },
         },
     },
     head: {
         description: '查看文件开头',
         params: {
             '-n': { type: 'number', max: 1000 },
-            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            path: { type: 'string', pattern: PATH_PATTERN },
         },
     },
     tail: {
         description: '查看文件结尾',
         params: {
             '-n': { type: 'number', max: 1000 },
-            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            path: { type: 'string', pattern: PATH_PATTERN },
         },
     },
     wc: {
@@ -96,7 +97,7 @@ const ALLOWED_COMMANDS = {
         params: {
             '-l': { type: 'flag' },
             '-w': { type: 'flag' },
-            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            path: { type: 'string', pattern: PATH_PATTERN },
         },
     },
     grep: {
@@ -107,13 +108,13 @@ const ALLOWED_COMMANDS = {
             '-n': { type: 'flag' },
             '-l': { type: 'flag' },
             pattern: { type: 'string', pattern: /^[^\"\';|&`$]+$/ },
-            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            path: { type: 'string', pattern: PATH_PATTERN },
         },
     },
     find: {
         description: '查找文件',
         params: {
-            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            path: { type: 'string', pattern: PATH_PATTERN },
             '-name': { type: 'string', pattern: /^[^\;\|\`]+$/ },
             '-type': { type: 'literal', values: ['f', 'd', 'l'] },
         },
@@ -156,7 +157,7 @@ const ALLOWED_COMMANDS = {
             'install': { type: 'literal' },
             'run': { type: 'literal' },
             '-y': { type: 'flag' },
-            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            path: { type: 'string', pattern: PATH_PATTERN },
         },
         validator: (args) => {
             // 禁止全局安装、危险脚本
@@ -171,7 +172,7 @@ const ALLOWED_COMMANDS = {
         description: '创建目录',
         params: {
             '-p': { type: 'flag' },
-            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            path: { type: 'string', pattern: PATH_PATTERN },
         },
         validator: (args) => {
             // 禁止在 /etc、/var 等系统目录创建
@@ -181,7 +182,7 @@ const ALLOWED_COMMANDS = {
     touch: {
         description: '创建空文件',
         params: {
-            path: { type: 'string', pattern: /^[~\/\w\.\-]+$/ },
+            path: { type: 'string', pattern: PATH_PATTERN },
         },
     },
     // 进程/系统信息

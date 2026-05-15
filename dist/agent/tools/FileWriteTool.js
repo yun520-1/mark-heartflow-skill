@@ -182,7 +182,7 @@ class FileWriteTool extends Tool_1.Tool {
     _resolvePath(rawPath) {
         // Expand ~ to HOME for ALL occurrences, not just ~/ prefix
         const home = (0, os_1.homedir)();
-        const expanded = rawPath.replace(/^~/, home).replace(/\/~/g, home);
+        const expanded = rawPath.replace(/^~/, home);
         return path.isAbsolute(expanded) ? expanded : path.resolve(expanded);
     }
     /** 检查是否在黑名单前缀内（带路径分隔符边界检查） */

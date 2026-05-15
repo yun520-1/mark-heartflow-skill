@@ -1,0 +1,20 @@
+{
+  "task": "heartflow_distributed_upgrade",
+  "created": "2026-05-15T00:12:00+08:00",
+  "total_upgrades": 50,
+  "target_hours": 8,
+  "concurrent_agents": 6,
+  "papers_per_upgrade": 4,
+  "papers_source_dir": "/Users/apple/Downloads/daima",
+  "skill_dir": "/Users/apple/.hermes/skills/ai/mark-heartflow-skill",
+  "upgrades_output": "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/distributed_upgrades",
+  "papers_queue": "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/cron/paper-upgrade-queue.json",
+  "schedule": {
+    "start_time": "2026-05-15T00:15:00+08:00",
+    "interval_minutes": 9.6,
+    "batches": 50,
+    "concurrent_per_batch": 6
+  },
+  "status": "initialized",
+  "notes": "50次论文驱动升级，并发6个子代理，每批处理4篇论文，8小时内完成"
+}
