@@ -7,9 +7,9 @@
  * - 最小内核：< 2000 行
  * - 声明式技能：skill_use() 驱动，非硬编码
  * - 现代 AI 框架：Mem0 记忆 + Reflexion 自省 + DSPy 风格编排
- * - 跨平台：Node.js / Python / Browser
+ * HeartFlow Core Engine v0.13.163
  * - v0.13.10: 新增 WAL + 文件锁 + 异步 MemoryConsolidator
- * @version v0.13.162
+ * @version v0.13.163
  * @date 2026-05-12
  */
 
