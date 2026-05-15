@@ -9,7 +9,7 @@
  * - 现代 AI 框架：Mem0 记忆 + Reflexion 自省 + DSPy 风格编排
  * - 跨平台：Node.js / Python / Browser
  * - v0.13.10: 新增 WAL + 文件锁 + 异步 MemoryConsolidator
- * @version v0.13.161
+ * @version v0.13.162
  * @date 2026-05-12
  */
 
@@ -201,17 +201,9 @@ class HeartFlow extends EventEmitter {
     this.registry = new SkillRegistry(this.fs);
     this.skillLoader = new SkillLoader(this.fs, this.registry);
 
-    // 论文驱动处理器 (v0.13.143~158 集成)
-    try {
-      const PaperProcessors = require('./paper-processors/index.js');
-      this.paperProcessors = PaperProcessors;
-      this.paperProcessorCount = Object.keys(PaperProcessors).filter(k => k.endsWith('_Processor')).length;
-      console.log('[HeartFlow] Loaded ' + this.paperProcessorCount + ' paper processors');
-    } catch(e) {
-      console.warn('[HeartFlow] Paper processors not available:', e.message);
-      this.paperProcessors = {};
-      this.paperProcessorCount = 0;
-    }
+    // 论文驱动处理器 (v0.13.143~158 集成) — 懒加载
+    this._paperProcessors = null;
+    this._paperProcessorCount = 0;
 
     // 状态
     this.bus = new HeartFlowBus();
@@ -288,32 +280,19 @@ class HeartFlow extends EventEmitter {
     this.ethics = Ethics;
     this.dream.enabled = true;
 
-  this.algoLib_1778749266373 = {
-    name: 'algorithmLibrary',
-    type: 'algorithms',
-    
-    algorithms: [{"description":"nets: the difficulty of learning long-term dependencies, fortemporalpatternrecognition","source":"psychology-philosophy-ai/2304.11461v1.pdf"}],
-    
-    // 执行算法步骤
-    execute(steps, context = {}) {
-      const results = [];
-      steps.forEach((step, i) => {
-        results.push({
-          step: i + 1,
-          action: step.description || step,
-          status: 'completed'
-        });
-      });
-      return results;
-    },
-    
-    // 获取建议
-    suggest(context) {
-      return this.algorithms.slice(0, 3);
-    }
-  };
+    // 论文处理器懒加载
+    let _pp = null;
+    let _ppCount = 0;
+    this.paperProcessors = () => {
+      if (!_pp) {
+        try { _pp = require('./paper-processors/index.js'); _ppCount = Object.keys(_pp).filter(k => k.endsWith('_Processor')).length; console.log('[HeartFlow] Lazy loaded ' + _ppCount + ' paper processors'); }
+        catch(e) { _pp = {}; _ppCount = 0; console.warn('[HeartFlow] Paper processors unavailable:', e.message); }
+      }
+      return _pp;
+    };
+    this.paperProcessorCount = () => _ppCount;
 
-    // ─── HEARTCORE v2 启动 ───────────────────────────────────
+    // ─── HEARTCORE v2 启动
     this.sleepWake.start();
     this.bus.emit('start', { version: VERSION, sessionId: this._sessionId });
     logger.info(`[HeartFlow] 启动成功，session: ${this._sessionId}`);
