@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Data directories
+data/
+memory/
+logs/
+
+# Git
+.git/
+.gitignore
+
+# Development
+.vscode/
+.idea/
+*.swp
+
+# Test data
+test_data/
+
+# Large documentation
+*.md
+!README.md
