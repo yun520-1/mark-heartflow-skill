@@ -2,7 +2,7 @@
 name: heartflow
 title: HeartFlow (心虫) — AI Capability Layer Skill
 description: >
-  HeartFlow v11.7.1 - AI 认知与价值对齐引擎
+  HeartFlow v1.0.6 - AI 认知与价值对齐引擎
 
   ## 16大核心能力
   - 逻辑稳定、决策验证(Self-Verification arXiv 2312.09210)、决策自修复(Reflexion+CRITIC)
