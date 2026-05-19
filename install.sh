@@ -12,7 +12,7 @@ YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-VERSION="11.4.0"
+VERSION="11.7.1"
 
 echo ""
 echo -e "${BLUE}HeartFlow v${VERSION} - AI Capability Layer${NC}"
