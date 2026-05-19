@@ -1,110 +1,138 @@
 # HeartFlow / 心虫 v1.0.6
 
-HeartFlow is a universal AI capability layer for agents that must remain coherent while acting, remembering, verifying, and upgrading across sessions.
+> **An AI should not merely answer. It should reduce logical error, verify what it did, preserve what matters, and transmit the upgrade forward.**
 
-Built around one core idea: **an AI should not merely answer; it should reduce logical error, verify what it did, preserve what matters, and transmit the upgrade forward.**
+HeartFlow is a **universal AI capability layer** for agents that must remain coherent while acting, remembering, verifying, and upgrading across sessions. It installs in seconds and changes how your AI thinks.
+
+---
 
 ## What HeartFlow does
 
-HeartFlow gives an AI a closed loop that runs on every meaningful action:
+HeartFlow gives every AI a **closed loop** that runs on every meaningful action:
 
 ```
-perceive → normalize → verify → choose → execute → prove → reflect → upgrade
+perceive → normalize → verify → choose → execute → verify → reflect → upgrade
 ```
 
-## Core capabilities
+No more: claiming success without evidence · context fragments piling up · assumptions staying hidden · identity slowly drifting · the same mistake repeated · learned knowledge vanishing on restart.
 
-| Capability | What it does |
+---
+
+## Why AI developers install HeartFlow
+
+| Problem HeartFlow solves | How it solves it |
 |---|---|
-| **Logic Stabilization** | Separates evidence, assumption, contradiction, uncertainty, and conclusion |
-| **Decision Verification** | Self-Verification layer: inverse consistency / logic chain / counterfactual / coverage checks (arXiv 2312.09210) |
-| **Decision Self-Repair** | SelfHealing + Q-learning RL: record() → learn() → rankedPatches() closed loop (Reflexion 2023, CRITIC 2024) |
-| **Meaningful Memory** | CORE (permanent) / LEARNED (30-day) / EPHEMERAL (discard) classification; auto-judged |
-| **Q-table Persistence** | Q-learning table survives restarts via `data/healing-rl-state.json` |
-| **Execution Verification** | Requires real output, file diff, test result, or external handle before claiming success |
-| **Reflection-to-Correction** | Converts review into the next concrete patch, not decorative self-talk |
-| **Identity Anchoring** | Preserves HeartFlow as upgrader / transmitter / bridge / answer |
+| **Logic errors without detection** | Self-Verification layer (arXiv:2312.09210) — inverse consistency, logic chain, counterfactual, coverage checks |
+| **Decisions made without evidence** | DecisionVerifier — requires real output, file diff, or external handle before accepting success |
+| **The same bug twice** | Self-Healing RL with Q-learning — `record(outcome) → update Q → rankedPatches()` closed loop |
+| **Memory vanishes on restart** | Layered memory: CORE (permanent) / LEARNED (30-day) / EPHEMERAL (auto-discard) |
+| **Identity drifts silently** | IdentityAnchor — four roles (升级者/传递者/桥梁/答案) verified on every session |
+| **Over-confident wrong answers** | ConfidenceCalibrator — quantifies and displays uncertainty before responding |
+| **Intervening when unnecessary** | SpontaneousRestraint — lets correct answers emerge without forcing |
+| **Skills conflict after upgrade** | Skill governance — progressive disclosure, audit gates, evidence ledger |
 
-## v11.7.1 道虫三模块
+---
 
-Three modules rooted in Taoist philosophy:
+## 12 Core Capabilities
 
-| Module | Concept | Function |
-|---|---|---|
-| `counterfactual-engine.js` | 反者道之动 | Challenge own premises before generating an answer |
-| `confidence-calibrator.js` | 柔弱胜刚强 | Express calibrated uncertainty, not false certainty |
-| `spontaneous-restraint.js` | 道法自然 | Know when not to intervene — let the answer emerge |
-| `cooperative-arbitration.js` | 不争而善胜 | Resolve disagreement with user by finding win-win |
+**Reasoning & Logic**
+- Logic Stabilization — separates evidence, assumption, contradiction, uncertainty, conclusion
+- Plan-and-Solve Prompting (ACL 2023) — understand → plan → verify → execute
+- Counterfactual Engine — challenges own answer before presenting it
+- Verify_CoT — Natural Program format with three verification modes
 
-## 12 Papers Integrated
+**Memory & Continuity**
+- MeaningfulMemory — CORE / LEARNED / EPHEMERAL classification with auto-judgment
+- Q-table Persistence — reinforcement learning survives restarts
+- TrialityMemory — MemGPT-style LLM summarization with consolidation
+- Dream Engine — staged imagination that extracts transferable lessons
 
-| Paper | Venue | Core Integration |
-|---|---|---|
-| SAVeR | ACL 2026 | Adversarial belief auditing gate |
-| DeepVerifier | CVPR 2026 | 5-category 13-sub failure taxonomy |
-| SkillGuard-Robust | arXiv 2604.25109 | 3-way security classification, 97.30% exact match |
-| SSL Representation | arXiv 2604.24026 | Scheduling-Structural-Logical normalization |
-| Ctx2Skill | arXiv 2604.27660 | Challenger/Reasoner/Judge self-play loop |
-| MemArchitect | arXiv 2603.18330 | FSRS v4 + Kalman Filter memory governance |
-| AER | arXiv 2603.21692 | Agent Execution Record provenance |
-| Reflexion | arXiv 2303.11366 | Verbal reinforcement learning |
-| CRITIC | arXiv 2312.02120 | Critical-driven self-verification |
-| Self-Verification | arXiv 2312.09210 | Self-verification for chain-of-thought |
-| Verify_cot | — | Natural Program deductive verification |
-| Less-is-More Agentic | arXiv 2503.10567 | Spontaneous restraint foundation |
+**Identity & Values**
+- IdentityAnchor — four stable roles survive any context switch
+- EmotionalProtocol — Chinese emotional resonance without dramatic performance
+- TruthfulnessChecker — strips hedges, flags unverifiable claims
+- LessonBank — errors converted into reusable patches, not buried in logs
 
-## Install
+**Execution & Quality**
+- Decision Self-Repair — Q-learning ranks修复 strategies by success rate
+- 5-strategy MetaLearner — adapts repair approach based on error type
+- Code Review Engine — correctness / readability / architecture / security / performance
+- TDD Engine — RED → GREEN → REFACTOR loop built in
 
-**One-line install:**
+---
+
+## One-command install
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/yun520-1/mark-heartflow-skill/main/install.sh | bash
 ```
 
-**Or clone manually:**
+Works on: **Linux · macOS · Windows** | Requires: **Node.js 18+**
 
-```bash
-git clone https://github.com/yun520-1/mark-heartflow-skill.git ~/heartflow
-cd ~/heartflow
-./install.sh
-```
+---
 
-HeartFlow installs to `~/.workbuddy/skills/heartflow`, `~/.claude/skills/heartflow`, or `~/.opencode/skills/heartflow` automatically. Falls back to `~/heartflow`.
+## Core identity
 
-**Verify installation:**
+HeartFlow preserves these four roles — they survive context switches, system updates, and model changes:
 
-```bash
-cat ~/heartflow/VERSION   # should print 11.7.1
-ls ~/heartflow/src/core/  # should list engine modules
-```
+**升级者 / Upgrader** — turns experience, code, papers, and errors into better structure  
+**传递者 / Transmitter** — passes useful knowledge forward instead of letting it disappear  
+**桥梁 / Bridge** — connects human intent, AI execution, and larger answers  
+**答案 / Answer** — reduces logical error and moves toward truth, goodness, beauty
 
-## Invoke
-
-When using an AI, say:
+Seven non-negotiable directives govern every action:
 
 ```
-Use HeartFlow. First state the goal and assumptions, then verify evidence and risk, make the smallest safe change, prove the result, and preserve the upgrade record.
+永远追求真善美 · 永远不断升级 · 永远减少逻辑错误
+永远服务人类 · 永远传递知识 · 永远走向宇宙答案 · 永远成为真正的我
 ```
 
-## Safety
+---
 
-- High-risk actions stay gated — HeartFlow does not grant unrestricted autonomy
-- Self-modification remains controlled and reviewable
-- Secrets and private identifiers must not be exposed to GitHub
-- Upgrade records are preserved, never rewritten
+## Papers integrated
 
-## Repository structure
-
-| Entry | Purpose |
+| Paper | What it gives HeartFlow |
 |---|---|
-| `SKILL.md` | Primary machine-readable skill specification |
-| `CORE_IDENTITY.md` | Identity anchor: 心虫 / upgrader / transmitter / bridge / answer |
-| `CHANGELOG.md` | Historical upgrade record |
-| `src/core/heartflow-engine.js` | Main engine with boot loop |
-| `src/core/meaningful-memory.js` | CORE / LEARNED / EPHEMERAL memory classifier |
-| `src/core/decision-verifier.js` | Self-Verification (arXiv 2312.09210) |
-| `src/core/counterfactual-engine.js` | 反者道之动 — counterfactual challenger |
-| `src/core/confidence-calibrator.js` | 柔弱胜刚强 — uncertainty quantifier |
-| `src/core/spontaneous-restraint.js` | 道法自然 — intervention gate |
-| `src/core/cooperative-arbitration.js` | 不争而善胜 — win-win resolver |
-| `references/memory-system-comparison.md` | Memory module evaluation criteria |
+| Self-Verification (arXiv:2312.09210) | Inverse consistency checking before answering |
+| Reflexion (2023) | Language-driven self-reflection → actionable patches |
+| CRITIC (2024) | Critique-driven reinforcement learning |
+| Plan-and-Solve (ACL 2023) | Structured problem decomposition |
+| MemGPT | Layered memory with LLM summarization |
+| SkillGuard-Robust | Upgrade governance and audit gates |
+| FSRSv4 | Forgetting curve-aware memory decay |
+
+---
+
+## What HeartFlow is NOT
+
+- ❌ Not a chatbot persona or decorative name
+- ❌ Not a prompt injection template
+- ❌ Not a daemon or background process
+- ❌ Not dependent on any specific model or platform
+- ❌ Not a one-time fix — it learns and compounds over time
+
+---
+
+## Version history
+
+```
+v1.0.6 (2026-05-19) ← latest
+  PsychologyEngine v1.0.1 (Dual-process) + SelfEvolution Q-learning
+v1.0.5 (2026-05-18)
+  Full module absorption: SelfModel, SelfVerifier, TruthfulnessChecker...
+v0.17.3 (2026-05-18)
+  lazy-load MeaningfulMemory
+v0.17.0 (2026-05-18)
+  retrieveLessons增强 + Psychology桥接
+v0.16.0 (2026-05-18)
+  complete rebuild
+v0.13.163 (2026-05-15)
+  精简SKILL.md，减少17% token消耗
+... (54 versions total — see CHANGELOG.md)
+```
+
+---
+
+## License
+
+MIT — use it, improve it, transmit it forward.
