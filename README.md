@@ -1,4 +1,4 @@
-# HeartFlow / 心虫 v11.7.1
+# HeartFlow / 心虫 v1.0.6
 
 HeartFlow is a universal AI capability layer for agents that must remain coherent while acting, remembering, verifying, and upgrading across sessions.
 
