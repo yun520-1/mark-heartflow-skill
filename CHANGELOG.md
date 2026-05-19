@@ -7,6 +7,77 @@
 
 ---
 
+## v1.0.6 (2026-05-19)
+
+### ✨ v1.0.6
+
+Core upgrade: PsychologyEngine v1.0.1 (Dual-process), SelfEvolution Q-learning, DreamEngine consolidation, identity drift detection, TruthfulnessChecker, EmotionalProtocol, 5-strategy MetaLearner
+
+---
+
+
+## v1.0.5 (2026-05-18)
+
+### ✨ v1.0.5
+
+Full module absorption: SelfModel, SelfVerifier, TruthfulnessChecker, EmotionalProtocol, LessonBank, SecurityChecker, KnowledgeGraph, RetrievalAnchor, MetaLearner
+
+---
+
+
+## v0.17.3 (2026-05-18)
+
+### 🔄 v0.17.3
+
+lazy-load MeaningfulMemory: constructor now instantiates lazily
+
+---
+
+
+## v0.17.2 (2026-05-18)
+
+### 🔄 v0.17.2
+
+add psychology-standalone.js + demo.js + rewritten dream engine
+
+---
+
+
+## v0.17.1 (2026-05-18)
+
+### 🔄 v0.17.1
+
+add Chinese emotion keywords to PsychologyEngine
+
+---
+
+
+## v0.17.0 (2026-05-18)
+
+### 🔄 v0.17.0
+
+retrieveLessons增强 + Psychology桥接 + EPHEM
+
+---
+
+
+## v0.16.0 (2026-05-18)
+
+### 🔄 v0.16.0
+
+HeartFlow complete rebuild
+
+---
+
+
+## v0.13.163 (2026-05-15)
+
+### 🔄 v0.13.163
+
+精简SKILL.md，移除3个历史章节到独立文件，减少17% token消耗
+
+---
+
 ## v0.13.100 (2026-05-12)
 
 ### 修复：MeaningfulMemory boot() 未调用导致永久记忆断电丢失
