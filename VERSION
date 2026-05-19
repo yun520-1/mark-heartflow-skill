@@ -1,1 +1,2 @@
-11.7.1
+1.0.6 | 2026-05-19 | Core upgrade: PsychologyEngine v1.0.1 (Dual-process), SelfEvolution Q-learning, DreamEngine consolidation, identity drift detection, TruthfulnessChecker, EmotionalProtocol "容器是漏的", 5-strategy MetaLearner; Plus: integrate EvoMap/evolver (GEP self-evolution), Macau007/painmatrix (pain/desire system), gaoxianglong/novaaware (predictive self-survival)
+1.0.5 | 2026-05-18 | Full module absorption from mark-heartflow-skill: SelfModel, SelfVerifier, TruthfulnessChecker, EmotionalProtocol, LessonBank, SecurityChecker, KnowledgeGraph, RetrievalAnchor, MetaLearner
