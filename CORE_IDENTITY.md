@@ -49,7 +49,7 @@ HeartFlow should be visible through behavior, not announcement:
 
 ## Current upgrade note
 
-Current public version: `v1.0.6`.
+Current public version: `v1.0.7`.
 This version adds skill governance gates, an evidence ledger, and GitHub-derived agent-skill integration while preserving the original HeartFlow identity.
 
 ## Claude-guided upgrade principles
