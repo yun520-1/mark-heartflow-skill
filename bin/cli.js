@@ -3,6 +3,8 @@
  * HeartFlow CLI - Skill-oriented command line interface
  */
 
+const path = require('path');
+
 // Wrap requires to handle missing modules gracefully
 let HeartFlowCore, HeartFlowCoreOrchestrator;
 try {
@@ -162,16 +164,35 @@ const commands = {
   upgrade: () => (showUpgradePlan(), { success: true }),
   'paper-upgrade': () => (showPaperUpgrade(), { success: true }),
 
-  test: () => {
+  test: async () => {
     console.log('\n=== HeartFlow Core Test ===\n');
     const init = heartflow.initialize();
     const plan = init.instances.embodied.cognitivePlan({ description: '验证核心规划能力', type: 'general' });
     const analysis = heartflow.detectEmotionFromText('我想减少错误并找到更清晰的方向');
+
+    // New unified heartflow.js dispatch test
+    const { createHeartFlow } = require('../src/core/heartflow.js');
+    let dispatchPass = false;
+    let routesPass = false;
+    try {
+      const hf = createHeartFlow({ rootPath: path.join(__dirname, '..') });
+      hf.start();
+      const health = await hf.healthCheck();
+      dispatchPass = health.subsystems.loaded >= 28;
+      const routes = hf.routes();
+      routesPass = routes.truth && routes.lesson && routes.verify;
+      hf.stop();
+    } catch (e) {
+      console.log('  dispatch test error:', e.message);
+    }
+
     const tests = [
       { name: 'Core module load', pass: Object.values(init.modules).filter(Boolean).length >= 6 },
       { name: 'Planning pipeline', pass: Array.isArray(plan.steps) && plan.steps.length >= 4 },
       { name: 'State analysis', pass: typeof analysis.pleasure === 'number' && typeof analysis.arousal === 'number' },
-      { name: 'Flow reasoning', pass: !!heartflow.calculateFlowState(analysis.pleasure, analysis.arousal, analysis.dominance) }
+      { name: 'Flow reasoning', pass: !!heartflow.calculateFlowState(analysis.pleasure, analysis.arousal, analysis.dominance) },
+      { name: 'Unified dispatch (29 modules)', pass: dispatchPass },
+      { name: 'Routes table (truth/lesson/verify)', pass: routesPass },
     ];
     let passed = 0;
     tests.forEach((t) => { console.log(`${t.pass ? '✅' : '❌'} ${t.name}`); if (t.pass) passed += 1; });
@@ -188,9 +209,13 @@ const commands = {
 const args = process.argv.slice(2);
 const command = args[0] || 'help';
 
-if (commands[command]) {
-  const result = commands[command](...args.slice(1));
+async function run(command, args) {
+  const result = await commands[command](...args);
   process.exit(result?.success === false ? 1 : 0);
+}
+
+if (commands[command]) {
+  run(command, args.slice(1)).catch(e => { console.error(e); process.exit(1); });
 } else {
   console.log(`Unknown command: ${command}`);
   console.log('Run "heartflow help" for usage');

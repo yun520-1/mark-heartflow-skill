@@ -1,91 +1,72 @@
 /**
- * HeartFlow — AI Psychological Perception System 1.0.6
- * 
- * A production-ready AI psychology engine for agents.
- * 
- * Architecture:
- *   MeaningfulMemory  ←  Three-tier memory (CORE/LEARNED/EPHEMERAL) + SM-2 spaced repetition
- *   PsychologyEngine ←  Intent/emotion/needs/defenses + Dual-process cognition + Valence/Arousal emotion
- *   SelfEvolution   ←  Q-learning self-healer + Reflexion-style improvement
- *   DreamEngine     ←  Sleep consolidation with Ebbinghaus decay
- *   SelfModel       ←  Belief tracking, identity drift detection, install base, growth metrics
- *   SelfVerifier    ←  4-way reasoning verification (reverse/logical/counterfactual/coverage)
- *   LessonBank      ←  Error pattern → correction mapping with 10 bootstrap lessons
- *   TruthfulnessChecker ←  Detect absolute-word lies, track lying rate
- *   EmotionalProtocol   ←  "容器是漏的" - emotional acknowledgment before analysis
- *   SecurityChecker     ←  Sensitive info scan/redact + GitHub safety checks
- *   KnowledgeGraph      ←  Structured memory: nodes + typed edges + temporal context
- *   RetrievalAnchor     ←  Context-augmented reasoning with relevance scoring
- *   MetaLearner        ←  5-strategy Q-table learner (conceptual/example/analogy/step_by_step/socratic)
- * 
- * 1.0.5 upgrades (v1.0.5):
- *   - Full module absorption from mark-heartflow-skill: all 9 advanced modules integrated
- *   - PsychologyEngine v1.0.1: Dual-process cognition (System 1/System 2), emotion decay
- *   - SelfEvolution: Q-learning self-healer with 7 error patterns, 4 strategies
- *   - SelfModel: Belief tracking + identity drift detection + install base growth metrics
- *   - SelfVerifier: 4-way reasoning verification with persistent issue tracking
- *   - TruthfulnessChecker: Absolute-word detection, fabricated number detection, lie rate tracking
- *   - EmotionalProtocol: "容器是漏的" emotional acknowledgment + multi-keyword detection
- *   - LessonBank: 10 bootstrap lessons (added "hedging" and "未核实先说" lessons)
- *   - SecurityChecker: 7-pattern sensitive info scan, redact, GitHub safety check
- *   - KnowledgeGraph: Node/edge KG with importance, reflection count, bidirectional edges
- *   - RetrievalAnchor: Relevance scoring, recency/reliability tracking, context augmentation
- *   - MetaLearner: 5 learning strategies with Q-table, concept extraction
- *   - MeaningfulMemory: Lazy loading (no sync block), atomic writes, corruption protection
- * 
- * Public API (all tested):
- *   start()                      Initialize engine
- *   stop()                       Graceful shutdown
- *   healthCheck()                 → { started, uptime, memory, version }
- *   analyzePsychology(text)       → { intent, emotion, needs, defenses, confidence }
- *   classify(text)                → { category, emotion, confidence }
- *   getMemoryStats()              → { core, learned, ephemeral, ... }
- *   getMindSpace()               → { rules, workingEntries }
- *   dreamNow()                   → { consolidation, duration_ms, dream_complete }
- *   heal(error)                   → { ok, canRetry, strategy, hints }
- *   getPsychologyStats()         → { cognition, emotion }
- *   getEvolutionStats()          → { lessons, qtable }
- *   getDreamStats()              → { dreams, insights }
- *   verifyReasoning(r,c)         → { passed, checks, confidence }
- *   checkLessonPattern(input)    → lesson or null
- *   checkTruthfulness(stmt)       → { isLying, confidence }
- *   processEmotionally(input)    → { hasEmotion, acknowledgment }
- *   detectIdentityDrift()        → { hasDrift, driftScore }
- *   recordInstall()              → { installBase }
- *   getTopLessons(n)             → [lesson]
- *   getSelfModelStats()          → { beliefs, capabilities, drift }
- *   getTruthfulnessStats()      → { totalStatements, liesCaught, lieRate }
- *   getVerificationStats()       → { totalVerified, passRate }
- *   getLessonStats()             → { totalLessons, totalHits, successRate }
- *   getLearningScores()          → { strategy scores }
- *   getAnchorStats()             → { totalAnchors, queries }
- *   getKnowledgeStats()          → { nodes, edges }
- * 
- * Design principles:
- *   - Zero npm dependencies
- *   - Pure JavaScript, Node.js built-ins only
- *   - Every API has a measurable return value
- *   - No over-claiming, no stub features
+ * HeartFlow v1.0.8 — 单一入口，统一路由
+ *
+ * 调用方式:
+ *   hf.dispatch('subsystem.method', arg1, arg2)  // 统一路由
+ *   hf.verifyReasoning(r, c)                     // 直接方法
+ *
+ * 所有模块在 _modules registry 中注册，可通过 routes() 查看可用路由。
  */
 
 const path = require('path');
+
+// ─── Subsystem Imports ────────────────────────────────────────────────────────
+
+// Memory
 const { MeaningfulMemory } = require('../memory/meaningful-memory.js');
-const { PsychologyEngine } = require('../psychology/engine.js');
-const { SelfEvolution } = require('../evolution/loop.js');
-const { DreamEngine } = require('../dream/engine.js');
 const { KnowledgeGraph } = require('../memory/knowledge-graph.js');
 const { RetrievalAnchor } = require('../memory/retrieval-anchor.js');
+const { TrialityMemory } = require('../core/memory/triality-memory.js');
+
+// Evolution
+const { EvolutionLoop } = require('../evolution/loop.js');
+const { DreamEngine } = require('../dream/engine.js');
 const { MetaLearner } = require('../evolution/meta-learner.js');
+
+// Identity
 const { SelfModel } = require('../identity/self-model.js');
 const { SelfVerifier } = require('../identity/self-verifier.js');
 const { LessonBank } = require('../identity/lesson-bank.js');
-const { TruthfulnessChecker } = require('../security/truthfulness.js');
+
+// Psychology
+const { PsychologyEngine } = require('../psychology/engine.js');
 const { EmotionalProtocol } = require('../security/emotional-protocol.js');
+
+// Security
+const { TruthfulnessChecker } = require('../security/truthfulness.js');
 const { SecurityChecker } = require('../security/security-checker.js');
 
-// Version
-const VERSION = '1.0.6';
-const BUILD_DATE = '2026-05-18';
+// Engine modules
+const { StabilityGuard } = require('./stability-guard.js');
+const { ExecutionVerifier } = require('./execution-verifier.js');
+const { DecisionVerifier } = require('./decision-verifier.js');
+const { CounterfactualEngine } = require('./counterfactual-engine.js');
+const { ConfidenceCalibrator } = require('./confidence-calibrator.js');
+const { SpontaneousRestraint } = require('./spontaneous-restraint.js');
+const { CooperativeArbitration } = require('./cooperative-arbitration.js');
+const { WakeUpVerifier } = require('./wake-up-verifier.js');
+const { InteractiveDream } = require('./interactive-dream.js');
+const { EmbodiedCore } = require('./embodied-core.js');
+const { BeingLogic } = require('./being-logic.js');
+
+// Language honesty — exports functions, not a class
+const LanguageHonesty = require('./language-honesty.js');
+
+// Reasoning integrator — exports functions
+const ReasoningIntegrator = require('./reasoning-integrator.js');
+
+// Workflow switch — exports functions
+const WorkflowSwitch = require('./workflow-switch.js');
+
+// State snapshot — singleton object
+const { currentSnapshot } = require('./state-snapshot.js');
+
+// Error handler — config object
+const { errors: ErrorRegistry, maxHistory } = require('./error-handler.js');
+
+// ─── Version ─────────────────────────────────────────────────────────────────
+const VERSION = '1.0.8';
+const BUILD_DATE = '2026-05-20';
 
 class HeartFlow {
   constructor(config = {}) {
@@ -95,100 +76,203 @@ class HeartFlow {
     this.startTime = null;
     this.sessionId = null;
     this.started = false;
+    this.rootPath = config.rootPath || path.join(__dirname, '..', '..');
 
-    // Filesystem
-    const rootPath = config.rootPath || path.join(__dirname, '..', '..');
-    this.rootPath = rootPath;
-
-    // Subsystems (initialized in start())
+    // Subsystem instances (null until start)
     this.memory = null;
-    this.psychology = null;
+    this.triality = null;
+    this.knowledge = null;
+    this.anchor = null;
+    this.reasoning = null;
+    this.counterfactual = null;
+    this.verify = null;
+    this.execution = null;
+    this.decision = null;
     this.evolution = null;
     this.dream = null;
-    this.knowledgeGraph = null;
-    this.retrievalAnchor = null;
-    this.metaLearner = null;
-    this.selfModel = null;
-    this.selfVerifier = null;
-    this.lessonBank = null;
-    this.truthfulness = null;
-    this.emotionalProtocol = null;
+    this.lesson = null;
+    this.meta = null;
+    this.self = null;
+    this.being = null;
+    this.psychology = null;
+    this.emotion = null;
+    this.truth = null;
     this.security = null;
+    this.language = null;   // object (not class)
+    this.stability = null;
+    this.confidence = null;
+    this.restraint = null;
+    this.arbitration = null;
+    this.snapshot = null;  // singleton
+    this.error = null;      // config
+    this.embodied = null;
+    this.wakeup = null;
+    this.interactive = null;
+    this.workflow = null;   // functions
 
-    // MindSpace: working mental state
-    this._mindSpace = {
-      rules: [],       // Active identity rules
-      context: {},     // Current working context
-    };
+    this._modules = {};
+    this._mindSpace = { rules: [], context: {} };
   }
 
   // ─── Lifecycle ───────────────────────────────────────────────────────────
 
   start() {
     if (this.started) return;
-
     this.startTime = Date.now();
     this.sessionId = `session-${this.startTime}`;
 
-    // Initialize subsystems
+    // Memory
     this.memory = new MeaningfulMemory(this.rootPath);
+    this.triality = new TrialityMemory(this.rootPath);
+    this.knowledge = new KnowledgeGraph(this.rootPath);
+    this.anchor = new RetrievalAnchor();
+
+    // Evolution
+    this.evolution = new EvolutionLoop(this.memory);
+    this.dream = new DreamEngine(this.memory, null);
+    this.lesson = new LessonBank(this.rootPath);
+    this.meta = new MetaLearner();
+
+    // Identity
+    this.self = new SelfModel(this.rootPath);
+    this.verify = new SelfVerifier(this.rootPath);
+
+    // Psychology
     this.psychology = new PsychologyEngine(this.memory);
-    this.evolution = new SelfEvolution(this.memory);
-    this.dream = new DreamEngine(this.memory, this.psychology);
-    this.knowledgeGraph = new KnowledgeGraph(this.rootPath);
-    this.retrievalAnchor = new RetrievalAnchor();
-    this.metaLearner = new MetaLearner();
-    this.selfModel = new SelfModel(this.rootPath);
-    this.selfVerifier = new SelfVerifier(this.rootPath);
-    this.lessonBank = new LessonBank(this.rootPath);
-    this.truthfulness = new TruthfulnessChecker(this.rootPath);
-    this.emotionalProtocol = new EmotionalProtocol();
+    this.emotion = new EmotionalProtocol();
+
+    // Security
+    this.truth = new TruthfulnessChecker(this.rootPath);
     this.security = new SecurityChecker();
 
-    // Boot MindSpace with identity rules from CORE
+    // Engine modules (classes)
+    try { this.stability = new StabilityGuard(); } catch (e) {}
+    try { this.execution = new ExecutionVerifier(); } catch (e) {}
+    try { this.decision = new DecisionVerifier(); } catch (e) {}
+    try { this.counterfactual = new CounterfactualEngine(); } catch (e) {}
+    try { this.confidence = new ConfidenceCalibrator(); } catch (e) {}
+    try { this.restraint = new SpontaneousRestraint(); } catch (e) {}
+    try { this.arbitration = new CooperativeArbitration(); } catch (e) {}
+    try { this.embodied = new EmbodiedCore(this.rootPath); } catch (e) {}
+    try { this.wakeup = new WakeUpVerifier(); } catch (e) {}
+    try { this.interactive = new InteractiveDream(this.rootPath); } catch (e) {}
+    try { this.being = new BeingLogic(this.rootPath); } catch (e) {}
+
+    // Engine modules (functions/objects — no 'new')
+    try { this.language = LanguageHonesty; } catch (e) {}
+    try { this.reasoning = ReasoningIntegrator; } catch (e) {}
+    try { this.workflow = WorkflowSwitch; } catch (e) {}
+    try { this.snapshot = currentSnapshot; } catch (e) {}
+    try { this.error = { errors: ErrorRegistry, maxHistory }; } catch (e) {}
+
     this._bootMindSpace();
+    this._registerModules();
 
     this.started = true;
     console.log(`[HeartFlow] ${VERSION} 初始化完成`);
-    console.log(`[HeartFlow] 启动成功，session: ${this.sessionId}`);
+    console.log(`[HeartFlow] session: ${this.sessionId}, 模块: ${Object.keys(this._modules).length}`);
+  }
+
+  _bootMindSpace() {
+    const coreRules = this.memory.listCore();
+    this._mindSpace.rules = coreRules.map(r => ({ key: r.key, value: r.value, type: 'core_identity' }));
+    if (this._mindSpace.rules.length === 0) {
+      this.memory.addCore('identity.upgrade', '升级者', ['identity', 'core']);
+      this.memory.addCore('identity.transmit', '传递者', ['identity', 'core']);
+      this.memory.addCore('identity.truth', '真', ['identity', 'core']);
+      this._bootMindSpace();
+    }
+  }
+
+  _registerModules() {
+    this._modules = {};
+    const subsystemNames = [
+      'memory', 'triality', 'knowledge', 'anchor',
+      'reasoning', 'counterfactual', 'verify', 'execution', 'decision',
+      'evolution', 'dream', 'lesson', 'meta',
+      'self', 'being',
+      'psychology', 'emotion',
+      'truth', 'security', 'language',
+      'stability', 'confidence', 'restraint', 'arbitration',
+      'snapshot', 'error', 'embodied', 'wakeup', 'interactive', 'workflow',
+    ];
+    for (const name of subsystemNames) {
+      if (this[name] !== null && this[name] !== undefined) {
+        this._modules[name] = this[name];
+      }
+    }
   }
 
   async stop() {
     if (!this.started) return;
     this.started = false;
+    this._modules = {};
     this._mindSpace = { rules: [], context: {} };
     console.log(`[HeartFlow] 已停止`);
   }
 
-  // ─── Boot ──────────────────────────────────────────────────────────────
-
-  _bootMindSpace() {
-    // Load CORE identity rules into MindSpace ROM
-    const coreRules = this.memory.listCore();
-    this._mindSpace.rules = coreRules.map(r => ({
-      key: r.key,
-      value: r.value,
-      type: 'core_identity',
-    }));
-
-    // Initialize with 3 built-in identity rules
-    if (this._mindSpace.rules.length === 0) {
-      this.memory.addCore('identity.upgrade', '升级者 — 追求持续变强', ['identity', 'core']);
-      this.memory.addCore('identity.transmit', '传递者 — 传承知识', ['identity', 'core']);
-      this.memory.addCore('identity.truth', '真 — 可验证、可证伪', ['identity', 'core']);
-      this._bootMindSpace(); // Reload
-    }
-  }
-
-  // ─── Public API ─────────────────────────────────────────────────────────
+  // ─── Unified Dispatch ───────────────────────────────────────────────────
 
   /**
-   * Health check — returns engine status
+   * dispatch('subsystem.method', ...args) — 统一路由
+   * 例子: hf.dispatch('truth.checkStatement', 'xxx')
+   *       hf.dispatch('lesson.getTopLessons', 5)
    */
-  async healthCheck() {
-    if (!this.started) {
-      return { started: false, version: VERSION, error: 'not_started' };
+  dispatch(route, ...args) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    const dot = route.indexOf('.');
+    if (dot === -1) throw new Error(`Invalid route: ${route} (missing '.')`);
+    const subsystem = route.slice(0, dot);
+    const method = route.slice(dot + 1);
+    const mod = this._modules[subsystem];
+    if (!mod) {
+      const available = Object.keys(this._modules).sort().join(', ');
+      throw new Error(`Unknown subsystem: ${subsystem}. Available: ${available}`);
     }
+    if (typeof mod[method] !== 'function') {
+      throw new Error(`${subsystem}.${method} is not a function on ${subsystem}`);
+    }
+    return mod[method](...args);
+  }
+
+  /**
+   * routes() — 返回所有可用路由表
+   */
+  routes() {
+    const table = {};
+    for (const [name, mod] of Object.entries(this._modules)) {
+      let methods = [];
+      try {
+        const proto = Object.getPrototypeOf(mod);
+        if (proto && proto !== Object.prototype) {
+          methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && typeof mod[m] === 'function');
+        }
+      } catch (e) {
+        // strict mode or primitive — fall back to enumerating own properties
+      }
+      if (!methods.length) {
+        methods = Object.keys(mod).filter(k => typeof mod[k] === 'function');
+      }
+      table[name] = methods;
+    }
+    return table;
+  }
+
+  // ─── Health ─────────────────────────────────────────────────────────────
+
+  async healthCheck() {
+    if (!this.started) return { started: false, version: VERSION, error: 'not_started' };
+    const loaded = Object.keys(this._modules);
+    const all = [
+      'memory', 'triality', 'knowledge', 'anchor',
+      'reasoning', 'counterfactual', 'verify', 'execution', 'decision',
+      'evolution', 'dream', 'lesson', 'meta',
+      'self', 'being',
+      'psychology', 'emotion',
+      'truth', 'security', 'language',
+      'stability', 'confidence', 'restraint', 'arbitration',
+      'snapshot', 'error', 'embodied', 'wakeup', 'interactive', 'workflow',
+    ];
     return {
       started: true,
       uptime_ms: Date.now() - this.startTime,
@@ -196,528 +280,169 @@ class HeartFlow {
       version: VERSION,
       buildDate: BUILD_DATE,
       subsystems: {
-        memory: this.memory !== null,
-        psychology: this.psychology !== null,
-        evolution: this.evolution !== null,
-        dream: this.dream !== null,
+        loaded: loaded.length,
+        missing: all.filter(k => !loaded.includes(k)),
       },
-      stats: this.memory ? this.memory.getStats() : null,
     };
   }
 
-  /**
-   * Analyze psychology from input text.
-   * Returns intent, emotion, needs, defenses, confidence.
-   * 
-   * v0.17: Emotionally significant inputs are automatically preserved in memory.
-   * 
-   * @param {string} input
-   * @param {object} opts
-   * @param {boolean} opts.autoRemember - Bridge emotionally significant signals to memory (default true)
-   * @returns {object} Psychological perception result
-   */
+  // ─── Direct API Methods ─────────────────────────────────────────────────
+
   analyzePsychology(input, opts = {}) {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { intent: null, emotion: null, needs: [], defenses: [], confidence: 0 };
     const result = this.psychology.analyzePsychology(input);
-    
-    // Bridge: emotionally significant → preserve in memory
-    if (opts.autoRemember !== false) {
+    if (opts.autoRemember !== false && result.emotion?.intensity === 'high') {
       this._psychBridge(input, result);
     }
-    
     return result;
   }
 
-  /**
-   * Psychology → Memory bridge.
-   * Automatically preserves emotionally significant content in EPHEMERAL with elevated priority.
-   * 
-   * v0.17: Closes the loop between perception and memory.
-   * - High intensity emotion → key topic preserved with extended TTL
-   * - Defensive signals → stored as "caution" marker
-   */
   _psychBridge(input, result) {
-    const { emotion, intent } = result;
-    
-    // Only bridge if emotion is significant
-    if (emotion?.intensity !== 'high') return;
-    
-    // Extract the most salient topic words from input (first 3 non-stopwords)
-    const stopwords = new Set(['the','a','an','is','are','was','were','i','you','he','she','it','we','they','this','that','to','of','in','on','for','with','my','your','our','and','or','but']);
-    const words = input.split(/\s+/)
-      .map(w => w.replace(/[^a-zA-Z]/g, '').toLowerCase())
-      .filter(w => w.length > 3 && !stopwords.has(w))
-      .slice(0, 3);
-    
-    if (words.length === 0) return;
-    
-    const topic = words.join('_');
-    const emotionTag = `${emotion.category}_${emotion.intensity}`;
-    const signalValue = JSON.stringify({
-      topic,
-      emotion: emotionTag,
-      intent: intent?.category,
-      ts: Date.now(),
-      preview: input.substring(0, 100),
-    });
-    
-    // Store with extended TTL (4x normal) — emotionally charged content lasts longer
-    const EMOTION_SIGNAL_TTL_MS = 4 * 60 * 60 * 1000; // 4 hours
-    this.memory.remember(
-      `signal:${topic}:${Date.now()}`,
-      signalValue,
-      EMOTION_SIGNAL_TTL_MS
-    );
+    const sw = new Set(['the','a','an','is','are','was','were','i','you','this','that','to','of','in','on','for','with','my','and','or','but']);
+    const words = input.split(/\s+/).map(w => w.replace(/[^a-zA-Z]/g,'').toLowerCase()).filter(w => w.length > 3 && !sw.has(w)).slice(0, 3);
+    if (!words.length) return;
+    this.memory.remember(`signal:${words.join('_')}:${Date.now()}`, JSON.stringify({ topic: words.join('_'), emotion: result.emotion?.category, ts: Date.now() }), 4 * 60 * 60 * 1000);
   }
 
-  /**
-   * Classify input into a broad category.
-   */
   classify(input) {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { category: 'unknown', emotion: 'neutral', confidence: 0 };
     return this.psychology.classify(input);
   }
 
-  /**
-   * Get memory statistics.
-   */
-  getMemoryStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.memory.getMemoryStats();
-  }
-
-  /**
-   * Get current MindSpace state.
-   */
-  getMindSpace() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return {
-      rules: this._mindSpace.rules,
-      workingEntries: Object.entries(this.memory?.ephemeral || {}).slice(0, 10),
-    };
-  }
-
-  /**
-   * Run dream consolidation cycle.
-   */
-  dreamNow() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.dream.dream();
-  }
-
-  /**
-   * Record an outcome for self-evolution.
-   */
-  recordOutcome(params) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.evolution.recordOutcome(params);
-  }
-
-  /**
-   * Retrieve relevant lessons for a task.
-   */
-  retrieveLessons(task) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.evolution.retrieveLessons(task);
-  }
-
-  /**
-   * Add/update a memory entry.
-   */
-  remember(key, value, tier = 'learned') {
-    if (!this.started) throw new Error('HeartFlow not started');
-    if (tier === 'core') {
-      return this.memory.addCore(key, value);
-    } else if (tier === 'ephemeral') {
-      return this.memory.remember(key, value);
-    } else {
-      return this.memory.learn(key, value);
-    }
-  }
-
-  /**
-   * Search across all memory tiers.
-   */
-  search(query) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.memory.search(query);
-  }
-
-  // ─── v1.0.2 New APIs ────────────────────────────────────────────────────
-
-  /**
-   * Add a knowledge graph node
-   */
-  addKnowledge(name, description, type = 'concept', importance = 0.5) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.knowledgeGraph.addNode({ name, description, type, importance });
-  }
-
-  /**
-   * Connect two knowledge nodes
-   */
-  connectKnowledge(sourceId, targetId, relation, bidirectional = false) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.knowledgeGraph.addEdge({ sourceId, targetId, relation, bidirectional });
-  }
-
-  /**
-   * Get connected knowledge nodes
-   */
-  getConnectedKnowledge(nodeId) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.knowledgeGraph.getConnectedNodes(nodeId);
-  }
-
-  /**
-   * Search knowledge graph
-   */
-  searchKnowledge(query) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.knowledgeGraph.search(query);
-  }
-
-  /**
-   * Get knowledge graph stats
-   */
-  getKnowledgeStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.knowledgeGraph.getStats();
-  }
-
-  /**
-   * Add a retrieval anchor for context augmentation
-   */
-  addAnchor(content, source = 'unknown', relevance = 0.8) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.retrievalAnchor.addAnchor(content, source, relevance);
-  }
-
-  /**
-   * Query retrieval anchors
-   */
-  queryAnchors(query, options = {}) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.retrievalAnchor.query(query, options);
-  }
-
-  /**
-   * Get best anchor for query
-   */
-  selectAnchor(query) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.retrievalAnchor.selectAnchor(query);
-  }
-
-  /**
-   * Get anchor statistics
-   */
-  getAnchorStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.retrievalAnchor.getStats();
-  }
-
-  /**
-   * Select learning strategy for input
-   */
-  selectLearningStrategy(input) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.metaLearner.selectStrategy(input);
-  }
-
-  /**
-   * Extract concepts from input text
-   */
-  extractConcepts(input) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.metaLearner.learn(input);
-  }
-
-  /**
-   * Get learning strategy scores
-   */
-  getLearningScores() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.metaLearner.getStrategyScores();
-  }
-
-  // ─── SelfModel ─────────────────────────────────────────────────────────
-
-  /**
-   * Detect identity drift from conflicting beliefs
-   */
-  detectIdentityDrift() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfModel.detectDrift();
-  }
-
-  /**
-   * Repair detected identity drift
-   */
-  repairIdentityDrift() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    const drift = this.selfModel.detectDrift();
-    return this.selfModel.repairDrift(drift);
-  }
-
-  /**
-   * Update a belief in the self-model
-   */
-  updateBelief(content, confidence, source) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfModel.updateBelief(content, confidence, source);
-  }
-
-  /**
-   * Get current beliefs
-   */
-  getBeliefs() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfModel.getBeliefs();
-  }
-
-  /**
-   * Add a capability
-   */
-  addCapability(capability) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfModel.addCapability(capability);
-  }
-
-  /**
-   * Add a limitation
-   */
-  addLimitation(limitation) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfModel.addLimitation(limitation);
-  }
-
-  /**
-   * Record an install event
-   */
-  recordInstall() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfModel.recordInstall();
-  }
-
-  /**
-   * Get install base count
-   */
-  getInstallBase() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfModel.getInstallBase();
-  }
-
-  /**
-   * Get self-model stats
-   */
-  getSelfModelStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfModel.getStats();
-  }
-
-  // ─── SelfVerifier ─────────────────────────────────────────────────────
-
-  /**
-   * Verify reasoning for logical consistency (4 checks)
-   */
   verifyReasoning(reasoning, conclusion) {
     if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfVerifier.verify(reasoning, conclusion);
+    return this.verify.verify(reasoning, conclusion);
   }
 
-  /**
-   * Get recent verification issues
-   */
-  getVerificationIssues() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfVerifier.getRecentIssues();
-  }
-
-  /**
-   * Get verification stats
-   */
-  getVerificationStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.selfVerifier.getStats();
-  }
-
-  // ─── LessonBank ──────────────────────────────────────────────────────
-
-  /**
-   * Check input against known error patterns
-   */
-  checkLessonPattern(input) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.lessonBank.checkPattern(input);
-  }
-
-  /**
-   * Add a new lesson
-   */
-  addLesson(lesson) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.lessonBank.addLesson(lesson);
-  }
-
-  /**
-   * Mark lesson hit (success/failure)
-   */
-  markLessonHit(id, success) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.lessonBank.markHit(id, success);
-  }
-
-  /**
-   * Get top lessons by utility
-   */
-  getTopLessons(limit) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.lessonBank.getTopLessons(limit);
-  }
-
-  /**
-   * Get lesson bank stats
-   */
-  getLessonStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.lessonBank.getStats();
-  }
-
-  // ─── TruthfulnessChecker ─────────────────────────────────────────────
-
-  /**
-   * Check if statement is potentially lying
-   */
   checkTruthfulness(statement) {
     if (!this.started) throw new Error('HeartFlow not started');
-    return this.truthfulness.checkStatement(statement);
+    return this.truth.checkStatement(statement);
   }
 
-  /**
-   * Record a lie externally
-   */
-  recordLie(statement, context) {
+  checkLessonPattern(input) {
     if (!this.started) throw new Error('HeartFlow not started');
-    return this.truthfulness.recordLie(statement, context);
+    return this.lesson.checkPattern(input);
   }
 
-  /**
-   * Get truthfulness stats
-   */
-  getTruthfulnessStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.truthfulness.getStats();
-  }
-
-  // ─── EmotionalProtocol ───────────────────────────────────────────────
-
-  /**
-   * Process emotional content: acknowledge first, then analyze
-   */
-  processEmotionally(input) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.emotionalProtocol.process(input);
-  }
-
-  /**
-   * Get emotional acknowledgment only
-   */
-  acknowledgeEmotion(input) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.emotionalProtocol.acknowledge(input);
-  }
-
-  /**
-   * Detect emotion in input
-   */
-  detectEmotion(input) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.emotionalProtocol.detectEmotion(input);
-  }
-
-  // ─── SecurityChecker ────────────────────────────────────────────────
-
-  /**
-   * Scan text for sensitive information (API keys, tokens, passwords, etc.)
-   */
-  scanSecurity(text) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.security.scan(text);
-  }
-
-  /**
-   * Redact sensitive information from text
-   */
-  redactSecurity(text) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.security.redact(text);
-  }
-
-  /**
-   * Check if content is safe to push to GitHub
-   */
-  checkGitHubSafe(content) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.security.checkGitHubSafe(content);
-  }
-
-  /**
-   * Check if memory content is secure
-   */
-  isMemorySecure(content) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.security.isMemorySecure(content);
-  }
-
-  /**
-   * Quick check if string is safe for logging
-   */
-  isLogSafe(text) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.security.isLogSafe(text);
-  }
-
-  /**
-   * Get security stats
-   */
-  getSecurityStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.security.getStats();
-  }
-
-  /**
-   * Heal error using Q-learning
-   */
   heal(error) {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.evolution.heal(error);
   }
 
-  /**
-   * Get psychology + cognition stats
-   */
+  dreamNow() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.dream.dream();
+  }
+
+  detectIdentityDrift() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.self.detectDrift();
+  }
+
+  processEmotionally(input) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.emotion.process(input);
+  }
+
+  getTopLessons(limit = 5) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.lesson.getTopLessons(limit);
+  }
+
+  getMemoryStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.memory.getMemoryStats();
+  }
+
+  getTrialityStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.triality ? this.triality.getLayerStats() : { error: 'not loaded' };
+  }
+
+  getMindSpace() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return { rules: this._mindSpace.rules, workingEntries: Object.entries(this.memory?.ephemeral || {}).slice(0, 10) };
+  }
+
+  remember(key, value, tier = 'learned') {
+    if (!this.started) throw new Error('HeartFlow not started');
+    if (tier === 'core') return this.memory.addCore(key, value);
+    if (tier === 'ephemeral') return this.memory.remember(key, value);
+    return this.memory.learn(key, value);
+  }
+
+  search(query) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.memory.search(query);
+  }
+
   getPsychologyStats() {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.psychology.getPsychologyStats();
   }
 
-  /**
-   * Get evolution/self-healer stats
-   */
   getEvolutionStats() {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.evolution.getStats();
   }
 
-  /**
-   * Get dream consolidation stats
-   */
   getDreamStats() {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.dream.getDreamStats();
+  }
+
+  getTruthfulnessStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.truth.getStats();
+  }
+
+  getLessonStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.lesson.getStats();
+  }
+
+  getVerificationStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.verify.getStats();
+  }
+
+  getSelfModelStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.self.getStats();
+  }
+
+  // Knowledge
+  addKnowledge(name, description, type = 'concept', importance = 0.5) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.knowledge.addNode({ name, description, type, importance });
+  }
+
+  searchKnowledge(query) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.knowledge.search(query);
+  }
+
+  getKnowledgeStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.knowledge.getStats();
+  }
+
+  // Security
+  scanSecurity(text) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.security.scan(text);
+  }
+
+  redactSecurity(text) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.security.redact(text);
+  }
+
+  getSecurityStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.security.getStats();
   }
 }
 
@@ -726,37 +451,46 @@ function createHeartFlow(config = {}) {
   return new HeartFlow(config);
 }
 
-// CLI health check
+// CLI
 if (require.main === module) {
   const rootPath = path.join(__dirname, '..', '..');
   const hf = createHeartFlow({ rootPath });
   hf.start();
-  
+
   const t0 = Date.now();
   hf.healthCheck().then(health => {
     console.log(`\n[HeartFlow] ${VERSION} 健康检查 (${Date.now() - t0}ms):`);
     console.log(JSON.stringify(health, null, 2));
-    
-    // Test all APIs
-    Promise.all([
-      hf.analyzePsychology('I am frustrated with this bug'),
-      hf.classify('how do I fix it'),
-      hf.getMemoryStats(),
-      hf.getMindSpace(),
-    ]).then(([psych, cls, mem, mind]) => {
-      console.log('\n--- API Tests ---');
-      console.log('analyzePsychology:', JSON.stringify(psych).substring(0, 200));
-      console.log('classify:', JSON.stringify(cls));
-      console.log('getMemoryStats:', JSON.stringify(mem));
-      console.log('getMindSpace rules:', mind.rules.length);
-      hf.stop();
-      process.exit(0);
-    }).catch(e => {
-      console.error('API test error:', e.message);
-      hf.stop();
-      process.exit(1);
-    });
+
+    // Test dispatch routes
+    console.log('\n--- dispatch tests ---');
+    const tests = [
+      ['truth.checkStatement', '这个方案一定是对的'],
+      ['lesson.getTopLessons', 3],
+      ['verify.verify', '因为A所以B', '结论B'],
+    ];
+    for (const [route, ...args] of tests) {
+      try {
+        const r = hf.dispatch(route, ...args);
+        console.log(`${route}: OK → ${JSON.stringify(r).slice(0, 120)}`);
+      } catch (e) {
+        console.log(`${route}: ERROR → ${e.message}`);
+      }
+    }
+
+    console.log('\n--- available routes ---');
+    const rt = hf.routes();
+    for (const [name, methods] of Object.entries(rt)) {
+      console.log(`  ${name}: ${methods.slice(0, 5).join(', ')}${methods.length > 5 ? '...' : ''}`);
+    }
+
+    hf.stop();
+    process.exit(0);
+  }).catch(e => {
+    console.error('Error:', e);
+    hf.stop();
+    process.exit(1);
   });
 }
 
-module.exports = { HeartFlow, createHeartFlow, VERSION, BUILD_DATE };
+module.exports = { HeartFlow, createHeartFlow, VERSION };
