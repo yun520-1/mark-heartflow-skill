@@ -3,9 +3,21 @@
  * HeartFlow CLI - Skill-oriented command line interface
  */
 
+// Wrap requires to handle missing modules gracefully
+let HeartFlowCore, HeartFlowCoreOrchestrator;
+try {
+  // These modules may not exist in all installations
+  const coreModule = require('../src/core/heartflow-core');
+  const orchestratorModule = require('../src/core/heartflow-core-orchestrator');
+  HeartFlowCore = coreModule.HeartFlowCore;
+  HeartFlowCoreOrchestrator = orchestratorModule.HeartFlowCoreOrchestrator;
+} catch (e) {
+  // Modules not found - upgrade commands will be disabled
+  HeartFlowCore = null;
+  HeartFlowCoreOrchestrator = null;
+}
+
 const heartflow = require('../src/core/heartflow-engine.js');
-const { HeartFlowCore } = require('../src/core/heartflow-core');
-const { HeartFlowCoreOrchestrator } = require('../src/core/heartflow-core-orchestrator');
 
 function printPlan(plan) {
   console.log('\n=== HeartFlow Plan ===\n');
@@ -21,6 +33,11 @@ function printPlan(plan) {
 }
 
 function showUpgradePlan() {
+  if (!HeartFlowCore) {
+    console.log('\n=== HeartFlow Upgrade Plan ===\n');
+    console.log('HeartFlowCore module not available.\n');
+    return;
+  }
   const core = new HeartFlowCore(process.cwd());
   const plan = core.planUpgradeSync({
     targetRepo: 'https://github.com/yun520-1/mark-heartflow-skill',
@@ -38,6 +55,11 @@ function showUpgradePlan() {
 }
 
 function showPaperUpgrade() {
+  if (!HeartFlowCoreOrchestrator) {
+    console.log('\n=== HeartFlow Paper Upgrade ===\n');
+    console.log('HeartFlowCoreOrchestrator module not available.\n');
+    return;
+  }
   const orchestrator = new HeartFlowCoreOrchestrator(process.cwd());
   const guardPlan = orchestrator.interpret('按 mark.md 升级 HeartFlow 0.0.1，升级者 传递者 桥梁 答案 真善美 不断升级 减少逻辑错误 传承 身份 守门 修复 证据 密度 SkillForge SSL HCP-MAD GSAR Persistent Identity EvoAgent', {
     subject: 'paper-upgrade',
@@ -47,7 +69,7 @@ function showPaperUpgrade() {
     evidenceTags: ['mark.md','identity','guard','papers','version','upgrade']
   });
   const summary = {
-    version: '11.3.2',
+    version: '1.0.6',
     increment: '+0.0.1',
     source: '[upgrade-source]',
     identity: '升级者 · 传递者 · 桥梁 · 答案',
@@ -93,7 +115,7 @@ const commands = {
   status: () => {
     console.log('\n=== HeartFlow Status ===\n');
     const init = heartflow.initialize();
-    const criticalModules = ['adaptive', 'orchestrator', 'errorHandler', 'snapshot', 'trialityMemory', 'embodiedCore'];
+    const criticalModules = ['errorHandler', 'snapshot', 'trialityMemory', 'embodiedCore'];
     console.log('Core modules:');
     criticalModules.forEach((name) => console.log(`  ${init.modules?.[name] ? '✅' : '❌'} ${name}`));
     console.log('\nCore instances:');

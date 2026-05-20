@@ -23,7 +23,7 @@ Prefer evidence, verification, and small safe upgrades. Preserve canonical files
 
 ## Current upgrade note
 
-Current public version: `v11.7.1`.
+Current public version: `v1.0.6`.
 This version adds 道虫三模块 (CounterfactualEngine / ConfidenceCalibrator / SpontaneousRestraint), CooperativeArbitration, 12-paper integration, Q-table persistence, and Meaningful Memory CORE/LEARNED/EPHEMERAL classification.
 
 ## Claude-guided upgrade principles
