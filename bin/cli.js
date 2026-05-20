@@ -69,7 +69,7 @@ function showPaperUpgrade() {
     evidenceTags: ['mark.md','identity','guard','papers','version','upgrade']
   });
   const summary = {
-    version: '1.0.6',
+    version: '1.0.7',
     increment: '+0.0.1',
     source: '[upgrade-source]',
     identity: '升级者 · 传递者 · 桥梁 · 答案',

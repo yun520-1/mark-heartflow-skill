@@ -1,4 +1,4 @@
-# HeartFlow 能力清单 v1.0.6
+# HeartFlow 能力清单 v1.0.7
 
 ## 一、核心能力体系
 
