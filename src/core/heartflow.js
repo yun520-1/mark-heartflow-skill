@@ -59,10 +59,10 @@ const ReasoningIntegrator = require('./reasoning-integrator.js');
 const WorkflowSwitch = require('./workflow-switch.js');
 
 // State snapshot — singleton object
-const { currentSnapshot } = require('./state-snapshot.js');
+const StateSnapshot = require('./state-snapshot.js');
 
-// Error handler — config object
-const { errors: ErrorRegistry, maxHistory } = require('./error-handler.js');
+// Error handler — singleton object
+const ErrorHandler = require('./error-handler.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
 const VERSION = '1.0.8';
@@ -161,9 +161,11 @@ class HeartFlow {
     // Engine modules (functions/objects — no 'new')
     try { this.language = LanguageHonesty; } catch (e) {}
     try { this.reasoning = ReasoningIntegrator; } catch (e) {}
-    try { this.workflow = WorkflowSwitch; } catch (e) {}
-    try { this.snapshot = currentSnapshot; } catch (e) {}
-    try { this.error = { errors: ErrorRegistry, maxHistory }; } catch (e) {}
+
+    // Classes requiring 'new'
+    try { this.workflow = new WorkflowSwitch(); } catch (e) {}
+    try { this.snapshot = StateSnapshot; } catch (e) {}  // singleton export
+    try { this.error = ErrorHandler; } catch (e) {}      // singleton export
 
     this._bootMindSpace();
     this._registerModules();
