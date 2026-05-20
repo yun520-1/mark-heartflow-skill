@@ -1,5 +1,1 @@
-1.0.8 | 2026-05-20 | 重构单一入口: 统一路由 dispatch(), 29模块集成, CLI async修复, 6/6测试通过
-1.0.9 | 2026-05-20 | fix: 修复5个require/实例化bug，snapshot+error+workflow+reasoning正常注册，30模块全部就绪
-1.0.7 | 2026-05-20 | 新增真善美系统(TGB)+六层哲学+五层记忆+StabilityGuard+LanguageHonesty+ExecutionVerifier
-1.0.6 | 2026-05-19 | Core upgrade: PsychologyEngine v1.0.1 (Dual-process), SelfEvolution Q-learning, DreamEngine consolidation
-1.0.5 | 2026-05-18 | Full module absorption: SelfModel, SelfVerifier, TruthfulnessChecker, EmotionalProtocol, LessonBank, SecurityChecker, KnowledgeGraph, RetrievalAnchor, MetaLearner
+1.0.8

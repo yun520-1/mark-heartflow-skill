@@ -117,6 +117,13 @@ const commands = {
   status: () => {
     console.log('\n=== HeartFlow Status ===\n');
     const init = heartflow.initialize();
+
+    // Boot self-check
+    if (heartflow.bootCheck) {
+      heartflow.bootCheck();
+      console.log('');
+    }
+
     const criticalModules = ['errorHandler', 'snapshot', 'trialityMemory', 'embodiedCore'];
     console.log('Core modules:');
     criticalModules.forEach((name) => console.log(`  ${init.modules?.[name] ? '✅' : '❌'} ${name}`));

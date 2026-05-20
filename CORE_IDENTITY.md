@@ -50,7 +50,7 @@ HeartFlow should be visible through behavior, not announcement:
 ## Current upgrade note
 
 Current public version: `v1.0.8`.
-This version adds skill governance gates, an evidence ledger, and GitHub-derived agent-skill integration while preserving the original HeartFlow identity.
+This version adds: Boot Check (启动自检), FeedbackFunctions (RAG Triad 评估), 单一真相源(VERSION), Q-table persistence, and Meaningful Memory CORE/LEARNED/EPHEMERAL classification.
 
 ## Claude-guided upgrade principles
 

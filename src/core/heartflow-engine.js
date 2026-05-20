@@ -14,6 +14,10 @@ const path = require('path');
 const { generateDream } = require('./dream-loop.js');
 const LanguageHonesty = require('./language-honesty.js');
 
+// v1.0.0 新增模块
+const { bootCheck } = require('./boot-check');
+const { FeedbackFunctions, EvalResult } = require('./feedback-functions');
+
 function loadOptional(modulePath, label) {
   try {
     const mod = require(modulePath);
@@ -1430,9 +1434,10 @@ module.exports.processInput = async function(userInput, context = {}) {
  * @returns {object} 初始化结果
  */
 module.exports.initialize = function() {
+  const _pkg = require('../../package.json');
   const init = {
     timestamp: Date.now(),
-    version: '11.2.3',
+    version: _pkg.version,
     modules: {}
   };
   
@@ -1652,3 +1657,22 @@ module.exports.runRuntimeReliabilityLoop = function(result = {}, context = {}) {
     },
   };
 };
+
+// ============================================================
+// v1.0.0 新增导出
+// ============================================================
+
+/**
+ * 启动自检 (boot-check.js)
+ * 验证核心文件 + 版本一致 + 身份锚点
+ */
+module.exports.bootCheck = bootCheck;
+
+/**
+ * RAG Triad 评估函数 (feedback-functions.js)
+ * 用法:
+ *   const ff = FeedbackFunctions.answerRelevance();
+ *   const result = await ff.run({ question, response });
+ */
+module.exports.FeedbackFunctions = FeedbackFunctions;
+module.exports.EvalResult = EvalResult;

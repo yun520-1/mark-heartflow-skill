@@ -39,3 +39,23 @@ node_modules/
 
 # === 历史备份 ===
 backups/
+
+# === 运行时数据文件 (根目录) ===
+# meaningful-memory 运行时数据
+meaningful-*.json
+self-model.json
+self-model.json.tmp.*
+self-verification.json
+truthfulness-stats.json
+lesson-bank.json
+
+# 临时文件和构建产物
+check-exports.js
+dist/
+cron/
+src/dream/
+src/evolution/
+src/psychology/
+heartflow-identity/
+pre-launch-check-*.md
+references/capability-audit.md

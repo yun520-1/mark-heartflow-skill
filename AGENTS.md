@@ -23,8 +23,8 @@ Prefer evidence, verification, and small safe upgrades. Preserve canonical files
 
 ## Current upgrade note
 
-Current public version: `v1.0.7`.
-This version adds 道虫三模块 (CounterfactualEngine / ConfidenceCalibrator / SpontaneousRestraint), CooperativeArbitration, 12-paper integration, Q-table persistence, and Meaningful Memory CORE/LEARNED/EPHEMERAL classification.
+Current public version: `v1.0.8`.
+This version adds: Boot Check (启动自检), FeedbackFunctions (RAG Triad 评估), Q-table persistence, and Meaningful Memory CORE/LEARNED/EPHEMERAL classification.
 
 ## Claude-guided upgrade principles
 - Think before coding: state assumptions explicitly.

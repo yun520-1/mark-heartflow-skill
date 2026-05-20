@@ -44,4 +44,4 @@ Prefer archiving or indexing over deletion.
 
 ## Current version
 
-Current public version: `v11.3.2`.
+Current public version: `v1.0.8`.
