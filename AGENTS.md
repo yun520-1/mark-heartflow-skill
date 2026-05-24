@@ -23,7 +23,7 @@ Prefer evidence, verification, and small safe upgrades. Preserve canonical files
 
 ## Current upgrade note
 
-Current public version: `0.3.2`.
+Current public version: `1.1.2.0`.
 
 ## Claude-guided upgrade principles
 - Think before coding: state assumptions explicitly.

@@ -55,7 +55,7 @@ const CORE_CHECKS = [
     label: 'meaningful-memory.js',
     path: path.join(ROOT, 'src/core/meaningful-memory.js'),
     verify: (c) => c.includes('MeaningfulMemory') && c.length > 3000,
-    required: false,
+    required: true,
   },
   {
     id: 'self-healing-rl',
@@ -73,7 +73,8 @@ const CORE_CHECKS = [
   },
 ];
 
-// 模块加载检查
+// Module load checks — now includes MeaningfulMemory (required)
+// MeaningfulMemory is the primary memory engine; triality-memory is still loaded separately
 const MODULE_CHECKS = [
   { id: 'meaningful-memory', label: 'MeaningfulMemory', path: './meaningful-memory.js' },
   { id: 'self-healing-rl', label: 'HealingMemoryRL', path: './self-healing-rl.js' },

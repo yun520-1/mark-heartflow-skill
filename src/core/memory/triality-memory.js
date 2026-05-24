@@ -50,9 +50,64 @@ class TrialityMemory {
   }
 
   initializeSchema() {
-    this.memories = [];
-    this.vectors = new Map();
-    this.relationships = new Map();
+    // 只在第一次（db不存在）时清空，不每次启动都清空
+    if (!this._schemaInitialized) {
+      this.memories = [];
+      this.vectors = new Map();
+      this.relationships = new Map();
+      this._loadFromExport(); // 启动时从文件恢复记忆
+      this._schemaInitialized = true;
+    }
+  }
+
+  _getExportPath() {
+    return path.join(path.dirname(this.dbPath), 'triality-memory-export.json');
+  }
+
+  _loadFromExport() {
+    const exportPath = this._getExportPath();
+    if (fs.existsSync(exportPath)) {
+      try {
+        const raw = fs.readFileSync(exportPath, 'utf-8');
+        const data = JSON.parse(raw);
+        if (data.memories && Array.isArray(data.memories)) {
+          for (const mem of data.memories) {
+            this.memories.push(mem);
+            if (mem.embedding) this.vectors.set(mem.id, mem.embedding);
+          }
+          if (data.relationships) {
+            for (const [k, v] of Object.entries(data.relationships)) {
+              this.relationships.set(k, v);
+            }
+          }
+          this.stats.totalMemories = this.memories.length;
+          console.log(`[TrialityMemory] 从 ${exportPath} 恢复 ${data.memories.length} 条记忆`);
+        }
+      } catch (e) {
+        console.warn('[TrialityMemory] 恢复记忆失败:', e.message);
+      }
+    }
+  }
+
+  _autoSave() {
+    if (this._saveTimer) clearTimeout(this._saveTimer);
+    this._saveTimer = setTimeout(() => {
+      this._doSave();
+    }, 2000); // 2秒防抖
+  }
+
+  _doSave() {
+    const exportPath = this._getExportPath();
+    try {
+      const data = {
+        memories: this.memories,
+        relationships: Object.fromEntries(this.relationships),
+        exportedAt: new Date().toISOString()
+      };
+      fs.writeFileSync(exportPath, JSON.stringify(data, null, 2));
+    } catch (e) {
+      console.warn('[TrialityMemory] 自动保存失败:', e.message);
+    }
   }
 
   store(memory) {
@@ -90,6 +145,7 @@ class TrialityMemory {
     
     this.stats.totalMemories = this.memories.length;
     console.log(`[TrialityMemory] 记忆存储: ${id} (${this.memories.length} total)`);
+    this._autoSave(); // 自动持久化
     return id;
   }
 

@@ -1,12 +1,12 @@
 ---
 name: heartflow
-version: "1.1.1.0"
+version: "1.1.2.0"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v1.1.0.0 — AI 认知与自愈引擎。
+  HeartFlow v1.1.2.0 — AI 认知与自愈引擎。
   核心能力：启动自检(Boot Check)、RAG三元组评估(FeedbackFunctions)、
   三层记忆(Meaningful Memory)、自愈RL(Q-table)、决策验证、
-  遗忘引擎(Forgetting Engine) — 视觉压缩启发的记忆衰减机制。
+  遗忘引擎(Forgetting Engine)、心理诊断引擎(Top 20 Index)。
   不是 persona，不是 prompt 模板，是可验证的能力层。
 tags:
   - cognitive
@@ -16,7 +16,7 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v1.1.1.0
+# HeartFlow / 心虫 v1.1.2.0
 
 **An AI capability layer that survives context switches, model changes, and restarts.**
 
@@ -78,10 +78,74 @@ Install it once. Every session after that, your AI:
 | PsychologyEngine v1.0.1 | Dual-process emotional resonance without dramatic performance |
 
 ### Boot & Self-Check
-| Capability | What it does |
-|---|---|
-| bootCheck() | Validates 7 core files + 8 modules on startup; reports DEGRADED if any REQUIRED file fails |
-| FeedbackFunctions | RAG Triad evaluation: answer relevance / context relevance / groundedness / toxicity |
+||| Capability | What it does |
+|||---|---|
+||| bootCheck() | Validates 7 core files + 8 modules on startup; reports DEGRADED if any REQUIRED file fails |
+||| FeedbackFunctions | RAG Triad evaluation: answer relevance / context relevance / groundedness / toxicity |
+
+### Conversation Psychology Diagnostic (Top 20 Index)
+
+**来源**：agent-psychology 技能 · 心理学七大分支蒸馏版
+
+**诊断路径**：提取症状关键词 → 查 Top 20 定位核心理论 → 应用对应 SOP
+
+#### Top 20 心理理论索引（对话诊断用）
+
+| 排名 | 理论 | 分支 | 对话诊断核心用途 |
+|------|------|------|-----------------|
+| 1 | 工作记忆 | 认知 | 容量有限→信息分块、简化、突出重点 |
+| 2 | 认知负荷 | 认知 | 复杂信息分段、避免同时多选项 |
+| 3 | 注意力残留 | 认知 | 话题切换需显式声明，避免混淆 |
+| 4 | 认知流畅性 | 认知 | 好读≠正确，需验证 |
+| 5 | 情绪感染 | 情绪 | AI应保持理性锚定，不复制用户情绪 |
+| 6 | 归因偏差 | 社会 | 先想自己再看对方 |
+| 7 | 认知失调 | 社会 | 不直接否定用户，提供选择权 |
+| 8 | 确认偏误 | 社会 | 主动提供反面信息 |
+| 9 | 社会角色 | 社会 | 明确角色期待 |
+| 10 | 信任修复 | 社会 | 解释错因+提供验证方式 |
+| 11 | Grice准则 | 语言 | 遵循合作原则四准则 |
+| 12 | 开放性 | 人格 | 影响用户尝试新功能的意愿 |
+| 13 | 反馈循环 | 工程 | 操作→反馈→调整的闭环 |
+| 14 | 错误分类与恢复 | 工程 | 错误类型→原因→修复策略 |
+| 15 | 情绪分类 | 情绪 | 先判别情绪类型再选策略 |
+| 16 | 维果茨基ZPD | 发展 | 脚手架应在最近发展区内 |
+| 17 | 大五人格 | 人格 | 五维度影响交互模式 |
+| 18 | 诺曼四原则 | 工程 | 可视性、反馈、约束、映射 |
+| 19 | 框架效应 | 认知 | 措辞方式影响用户决策 |
+| 20 | 言语行为理论 | 语言 | 区分字面意思和真实意图 |
+
+#### 核心机制浓缩（诊断时直接取用）
+
+**认知相关**：
+- 信息加工：认知按串行步骤处理，失误可沿"感知→编码→比较→决策→反应"逐环节定位
+- 工作记忆：四组件分工协作容量约4个独立客体，超过即遗漏或混淆
+- 框架效应：AI回复措辞方式直接影响用户后续行为
+
+**情绪相关**：
+- 沙赫特-辛格：相同生理唤醒因认知标签不同转化为不同情绪——通过帮助用户重新归因转化情绪
+- 情绪分类：先判别情绪类型——原发（需接纳）、继发（探查底层）、工具性（识别操控意图）
+- 格林伯格情绪图式：逐一探查——触发情境→身体感受→语言表征→行为倾向→核心情绪
+
+**社会相关**：
+- 基本归因错误：用户把AI错误归因于"能力不足"，忽略问题本身的复杂性
+- 行动者-观察者偏差：用户把自己失误归情境、AI失误归特质
+- 自我价值定向：AI输出若威胁用户自我价值，会触发防御性反应
+
+**工程相关**：
+- 诺曼四原则：诊断AI交互是否符合——功能是否可见、反馈是否及时、约束是否合理、映射是否自然
+- 人机分配：诊断是否在用AI做它不擅长的事（如价值判断），或人做机器更擅长的事
+- 错误预防：AI是否主动预防用户的常见错误（模糊输入、过度信任、忽略验证）
+
+#### AI对话诊断 SOP
+
+1. 提取用户表达的**症状关键词**（如"听不懂""不准确""太复杂"）
+2. 查 Top 20 定位核心理论
+3. 按理论应用诊断：
+   - 🔴 问题描述
+   - 场景：真实对话摘录
+   - 理论：用哪个心理学理论
+   - 分析：为什么是问题
+   - 建议：具体改进方式
 
 ---
 
@@ -228,7 +292,8 @@ npm install heartflow
 
 ## Version history (last 10)
 
-- **1.0.8** (2026-05-20) — Boot Check + FeedbackFunctions + 单一真相源(VERSION)
+- **1.1.2.0** (2026-05-30) — 吸收 agent-psychology Top 20 心理理论索引，新增心理诊断引擎；吸收 context-bridge-pro 项目注册表模式；吸收 yanzhenskill 错误代码规范
+- **1.1.1.0** (2026-05-20) — Boot Check + FeedbackFunctions + 单一真相源(VERSION)
 - **1.0.7** (2026-05-20) — 真善美系统(TGB)+六层哲学+五层记忆+StabilityGuard
 - **1.0.6** (2026-05-19) — PsychologyEngine v1.0.1 (Dual-process), SelfEvolution Q-learning
 - **1.0.5** (2026-05-18) — Full module absorption: SelfModel, TruthfulnessChecker, LessonBank
