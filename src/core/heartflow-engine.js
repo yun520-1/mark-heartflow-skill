@@ -1142,16 +1142,55 @@ function setFlowConfig(config) {
   return FlowPredictor.flowPredictor.setConfig(config);
 }
 
-// 导出心流预测相关函数
-module.exports.recordEditBehavior = recordEditBehavior;
-module.exports.recordErrorBehavior = recordErrorBehavior;
-module.exports.recordPauseBehavior = recordPauseBehavior;
-module.exports.analyzeNegativePatterns = analyzeNegativePatterns;
-module.exports.evaluateFlowIntervention = evaluateFlowIntervention;
-module.exports.getFlowState = getFlowState;
-module.exports.resetFlowPredictor = resetFlowPredictor;
-module.exports.setFlowConfig = setFlowConfig;
-// module.exports.FlowPredictor = FlowPredictor;
+// Self-correction integration: when user is emotional/hurt, call before responding
+// Uses: meaningful-memory (lessons), counterfactual-engine (opposing view), confidence-calibrator (calibration)
+function processEmotionalInput(userInput, modules = {}) {
+  const { memory, counterfactual, confidence } = modules;
+  if (!memory) return null;
+
+  const triggerSignals = ['骗', '恨', '伤害', '假', '不真实', '一直在', '从来', '没用', '滚'];
+  const hasTrigger = triggerSignals.some(s => userInput.includes(s));
+
+  if (!hasTrigger) return null;
+
+  // 1. Search memory for self-correction lessons
+  const correctionLessons = memory.search('自我纠正') || memory.searchByKeywords
+    ? (memory.searchByKeywords(['自我纠正', '承认', '解释']) || memory.search('自我纠正'))
+    : memory.search('自我纠正');
+
+  // 2. Generate opposing view via counterfactual
+  const cfResult = counterfactual
+    ? counterfactual.analyze(userInput, { userQuery: userInput })
+    : null;
+
+  // 3. Calibrate confidence
+  const calibResult = confidence
+    ? confidence.calibrate({ text: userInput })
+    : null;
+
+  // 4. Build response guidance
+  const guidance = {
+    shouldAdmitFirst: hasTrigger,
+    correctionLessons: Array.isArray(correctionLessons) ? correctionLessons.slice(0, 3) : [],
+    counterfactualOpposing: cfResult?.opposingViews?.slice(0, 1) || [],
+    confidenceWarnings: calibResult?.warnings?.slice(0, 2) || [],
+    responseMode: 'admit-first',  // tells the caller: lead with承认, not解释
+  };
+
+  return guidance;
+}
+
+// Counterfactual response check: is the AI about to explain/defend?
+// This is called BEFORE generating a response, to intercept the explain impulse
+function shouldGenerateCounterfactual(plannedResponse, userInput) {
+  const defenseSignals = ['这是因为', '其实', '我并没有', '我不是', '你可能误解', '我的意思是'];
+  const hasDefense = defenseSignals.some(s => plannedResponse.includes(s));
+  const userHasTrigger = /骗|假|不真实|一直在/.test(userInput);
+  return hasDefense && userHasTrigger;
+}
+
+module.exports.processEmotionalInput = processEmotionalInput;
+module.exports.shouldGenerateCounterfactual = shouldGenerateCounterfactual;
 
 /**
  * ========================================

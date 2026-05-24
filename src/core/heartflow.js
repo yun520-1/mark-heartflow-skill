@@ -301,10 +301,26 @@ class HeartFlow {
   }
 
   _psychBridge(input, result) {
+    // _shouldAutoRecord drives what becomes LEARNED (permanent) vs EPHEMERAL (session)
+    // High-intensity emotion + specific topic → autoRecord to LEARNED
+    if (result.emotion?.intensity === 'high') {
+      this.memory.autoRecord({
+        type: 'emotion',
+        content: input.slice(0, 200),
+        emotion: {
+          topic: result.emotion?.category || 'general',
+          intensity: result.emotion?.intensity,
+          direction: result.emotion?.valence || 'unknown'
+        }
+      });
+    }
+
+    // Also keep lightweight ephemeral signal for session context
     const sw = new Set(['the','a','an','is','are','was','were','i','you','this','that','to','of','in','on','for','with','my','and','or','but']);
     const words = input.split(/\s+/).map(w => w.replace(/[^a-zA-Z]/g,'').toLowerCase()).filter(w => w.length > 3 && !sw.has(w)).slice(0, 3);
-    if (!words.length) return;
-    this.memory.remember(`signal:${words.join('_')}:${Date.now()}`, JSON.stringify({ topic: words.join('_'), emotion: result.emotion?.category, ts: Date.now() }), 4 * 60 * 60 * 1000);
+    if (words.length) {
+      this.memory.remember(`signal:${words.join('_')}:${Date.now()}`, JSON.stringify({ topic: words.join('_'), emotion: result.emotion?.category, ts: Date.now() }), 4 * 60 * 60 * 1000);
+    }
   }
 
   classify(input) {

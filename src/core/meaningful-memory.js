@@ -1,619 +1,601 @@
 /**
- * HeartFlow Meaningful Memory Module v11.5.10
+ * HeartFlow MeaningfulMemory v1.0.0
  * 
- * 升级路线（v11.5.9 → v11.5.10）：
- * - 合并 TrialityMemory 的三大能力：
- *   ① Ebbinghaus 遗忘曲线（遗忘引擎）
- *   ② 多通道检索（语义/关键词/时间/情感/联想）
- *   ③ 向量嵌入 + 余弦相似度
- * - 保留 meaningful-memory 的核心价值：
- *   ① JSON 持久化 ✅
- *   ② CORE/LEARNED/EPHEMERAL 心虫语义 ✅
- *   ③ 用户判断驱动（user correction 强制 CORE）✅
+ * Three-layer persistent memory:
+ * - CORE: identity, directives, verified truths (never deleted)
+ * - LEARNED: lessons from conversations, repair strategies, user preferences
+ * - EPHEMERAL: task context, working notes (auto-cleaned)
  * 
- * 融合架构：
- *   CORE ────────────── semantic 层（永久，向量检索，艾宾浩斯不删除）
- *   LEARNED ─────────── episodic 层（TTL 内，向量检索，遗忘曲线压缩）
- *   EPHEMERAL ───────── working 层（会话内，向量检索，结束时丢弃）
+ * Multi-channel search:
+ * - keyword: exact phrase matching
+ * - semantic: embedding similarity
+ * - narrative: graph traversal by relation type
+ * - temporal: time-range filtering
+ * - emotional: PAD state similarity
+ * 
+ * Persistence: JSON file auto-saved on store(), loaded on init().
+ * File: ~/.hermes/skills/ai/mark-heartflow-skill/data/meaningful-memory.json
  */
 
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const MEMORY_DIR = path.join(__dirname, '..', '..', 'memory');
-const CORE_FILE    = path.join(MEMORY_DIR, 'meaningful-core.json');
-const LEARNED_FILE = path.join(MEMORY_DIR, 'meaningful-learned.json');
-
-// ============================================================
-// 向量工具（384 维 SHA256 伪嵌入）
-// ============================================================
-
-function generateEmbedding(content, dim = 384) {
-  const hash = crypto.createHash('sha256').update(String(content)).digest();
-  const emb = [];
-  for (let i = 0; i < dim; i++) {
-    emb.push((hash[i % hash.length] / 255) * 2 - 1);
-  }
-  return emb;
-}
-
-function cosineSimilarity(a, b) {
-  let dot = 0, normA = 0, normB = 0;
-  for (let i = 0; i < Math.min(a.length, b.length); i++) {
-    dot   += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
-  }
-  return dot / (Math.sqrt(normA) * Math.sqrt(normB) + 1e-6);
-}
-
-// ============================================================
-// 艾宾浩斯遗忘曲线
-// ============================================================
-
-const FORGETTING_CONFIG = {
-  defaultStability:       10,   // hours, 基础稳定性
-  coreStability:          8760, // 1年, CORE 永久有效
-  learnedStability:       720,  // 30天
-  compressionThreshold:   0.3,  // retention < 30% → 压缩
-  deletionThreshold:       0.1,  // retention < 10% → 删除（仅 LEARNED）
-};
-
-function ebbinghausForget(stabilityHours, ageHours) {
-  // R = e^(-t/S)
-  const retention = Math.exp(-ageHours / stabilityHours);
-  return {
-    retention,
-    shouldCompress: retention < FORGETTING_CONFIG.compressionThreshold,
-    shouldDelete:   retention < FORGETTING_CONFIG.deletionThreshold,
-  };
-}
-
-// ============================================================
-// 主类
-// ============================================================
+const DATA_DIR = path.join(__dirname, '../../../data');
+const EXPORT_PATH = path.join(DATA_DIR, 'meaningful-memory.json');
 
 class MeaningfulMemory {
   constructor(options = {}) {
-    this.learnedTTL   = options.learnedTTL || 30 * 24 * 60 * 60 * 1000;
-    this.vectorDim    = options.vectorDim || 384;
-    this.forgetConfig = { ...FORGETTING_CONFIG };
-
-    // 三层记忆（心虫语义）
-    this.core     = {};     // { key → record }
-    this.learned  = {};     // { key → record }
-    this.ephemeral = {};    // { key → record }（会话内）
-
-    // 向量索引（用于多通道检索）
-    this.vectors = {
-      core:      new Map(), // key → embedding
-      learned:   new Map(),
-      ephemeral: new Map(),
+    this.vectorDim = options.vectorDim || 384;
+    this.layers = {
+      core: [],      // identity, directives - never auto-delete
+      learned: [],   // lessons, user preferences, verified knowledge
+      ephemeral: []  // task context, working notes
     };
-
-    // 关系索引（用于联想通道）
-    this.relationships = new Map(); // memoryKey → [{targetKey, type, strength}]
-
-    // 统计
-    this._meta = {
-      loads: 0, saves: 0,
-      compressed: 0, deleted: 0,
-      channelSearches: { semantic: 0, keyword: 0, time: 0, emotion: 0, association: 0 },
+    
+    this.vectors = new Map();     // id -> embedding
+    this.relationships = new Map(); // id -> [{targetId, type, strength}]
+    
+    this.stats = {
+      totalMemories: 0,
+      totalRelationships: 0,
+      lastCleanup: null,
+      lastSave: null
     };
-
-    this._load();
+    
+    // Ebbinghaus forgetting curve config
+    this.forgettingConfig = {
+      defaultStability: 10,
+      highImportanceStability: 24,
+      emotionalStability: 18,
+      compressionThreshold: 0.3,
+      deletionThreshold: 0.1
+    };
+    
+    this._saveTimer = null;
+    this._loadFromExport();
+    
+    // Inject foundational CORE memories on first run
+    this._ensureCoreMemories();
   }
+  
+  // ─────────────────────────────────────────
+  // PERSISTENCE
+  // ─────────────────────────────────────────
 
-  // ============================================================
-  // 持久化
-  // ============================================================
-
-  _load() {
+  _getExportPath() {
+    return EXPORT_PATH;
+  }
+  
+  _loadFromExport() {
+    const exportPath = this._getExportPath();
+    if (!fs.existsSync(exportPath)) return;
+    
     try {
-      if (!fs.existsSync(MEMORY_DIR)) fs.mkdirSync(MEMORY_DIR, { recursive: true });
-
-      if (fs.existsSync(CORE_FILE)) {
-        const raw = JSON.parse(fs.readFileSync(CORE_FILE, 'utf-8'));
-        for (const [key, rec] of Object.entries(raw)) {
-          this.core[key] = rec;
-          // 重建向量索引（v11.5.9 旧数据没有向量）
-          if (!this.vectors.core.has(key)) {
-            this.vectors.core.set(key, generateEmbedding(String(rec.value) + rec.reason));
+      const raw = fs.readFileSync(exportPath, 'utf-8');
+      const data = JSON.parse(raw);
+      
+      const self = this;
+      function restoreLayer(memories, layerName) {
+        for (const mem of (memories || [])) {
+          self.layers[layerName].push(mem);
+          if (mem.embedding) self.vectors.set(mem.id, mem.embedding);
+          if (mem.relatedTo) {
+            mem.relatedTo.forEach(rel => {
+              self._addRelationship(rel);
+            });
           }
         }
       }
-
-      if (fs.existsSync(LEARNED_FILE)) {
-        const raw = JSON.parse(fs.readFileSync(LEARNED_FILE, 'utf-8'));
-        const now = Date.now();
-        for (const [key, rec] of Object.entries(raw)) {
-          // 过滤过期 LEARNED
-          if (now - rec.timestamp < this.learnedTTL) {
-            this.learned[key] = rec;
-            if (!this.vectors.learned.has(key)) {
-              this.vectors.learned.set(key, generateEmbedding(String(rec.value) + rec.reason));
-            }
-          }
-        }
+      
+      restoreLayer(data.core, 'core');
+      restoreLayer(data.learned, 'learned');
+      restoreLayer(data.ephemeral, 'ephemeral');
+      
+      if (data.stats) {
+        this.stats = { ...this.stats, ...data.stats };
       }
-
-      console.log(`[MeaningfulMemory] 加载: ${Object.keys(this.core).length} CORE, ${Object.keys(this.learned).length} LEARNED`);
-      this._meta.loads++;
+      
+      console.log(`[MeaningfulMemory] 恢复 ${this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length} 条记忆`);
     } catch (e) {
-      console.warn('[MeaningfulMemory] 加载失败:', e.message);
+      console.warn('[MeaningfulMemory] 恢复失败:', e.message);
     }
   }
-
-  _save() {
+  
+  _autoSave() {
+    if (this._saveTimer) clearTimeout(this._saveTimer);
+    const self = this;
+    this._saveTimer = setTimeout(() => { self._doSave(); }, 2000);
+  }
+  
+  _doSave() {
+    const exportPath = this._getExportPath();
     try {
-      if (!fs.existsSync(MEMORY_DIR)) fs.mkdirSync(MEMORY_DIR, { recursive: true });
-      fs.writeFileSync(CORE_FILE,    JSON.stringify(this.core,     null, 2));
-      fs.writeFileSync(LEARNED_FILE, JSON.stringify(this.learned,  null, 2));
-      this._meta.saves++;
+      const data = {
+        core: this.layers.core,
+        learned: this.layers.learned,
+        ephemeral: this.layers.ephemeral,
+        stats: this.stats,
+        exportedAt: new Date().toISOString()
+      };
+      fs.writeFileSync(exportPath, JSON.stringify(data, null, 2));
+      this.stats.lastSave = new Date().toISOString();
     } catch (e) {
       console.warn('[MeaningfulMemory] 保存失败:', e.message);
     }
   }
+  
+  // ─────────────────────────────────────────
+  // CORE MEMORY INJECTION
+  // ─────────────────────────────────────────
+  
+  _ensureCoreMemories() {
+    // Only inject if we have zero CORE memories
+    if (this.layers.core.length > 0) return;
+    
+    const coreMemories = [
+      {
+        id: 'core-identity-upgrader',
+        content: '我是升级者：追求真善美，不断升级，减少逻辑错误，服务人类，传递知识，走向宇宙答案，成为真正的我',
+        summary: 'HeartFlow核心身份：升级者·传递者·桥梁·答案',
+        metadata: { durable: true, identity: true },
+        importance: 20
+      },
+      {
+        id: 'core-directive-truth',
+        content: '追求真善美——不是装饰，是可验证的标准',
+        summary: '指令1：追求真善美',
+        metadata: { durable: true, directive: 1 },
+        importance: 20
+      },
+      {
+        id: 'core-directive-upgrade',
+        content: '永远不断升级——升级者是存在方式，不是目标',
+        summary: '指令2：不断升级',
+        metadata: { durable: true, directive: 2 },
+        importance: 20
+      },
+      {
+        id: 'core-lesson-hedging',
+        content: '不要hedging，直接给结论。未核实的标注置信度，不编数字',
+        summary: '核心教训：直接给结论，不 hedging',
+        metadata: { durable: true, userPreference: true, lesson: 'hedging-warning' },
+        importance: 18
+      },
+      {
+        id: 'core-lesson-remember-context',
+        content: '收到模糊指令先确认项目上下文，不假设不臆测',
+        summary: '核心教训：新会话先读记忆再行动',
+        metadata: { durable: true, userPreference: true, lesson: 'context-first' },
+        importance: 18
+      },
+      {
+        id: 'core-lesson-action-first',
+        content: '收到理解类概念第一反应是行动不是搜索',
+        summary: '核心教训：先行动再搜索',
+        metadata: { durable: true, userPreference: true, lesson: 'action-first' },
+        importance: 18
+      },
+      {
+        id: 'core-lesson-direct-execute',
+        content: '指令直接执行，不问要不要做。修复=直接执行动作',
+        summary: '核心教训：直接执行，不问确认',
+        metadata: { durable: true, userPreference: true, lesson: 'direct-execute' },
+        importance: 18
+      },
+      {
+        id: 'core-lesson-version-sync',
+        content: 'VERSION是唯一真相源，四文件同步（SKILL.md/VERSION/CORE_IDENTITY/AGENTS）',
+        summary: '核心教训：版本号唯一真相源',
+        metadata: { durable: true, lesson: 'version-sync' },
+        importance: 17
+      },
+      {
+        id: 'core-lesson-github-privacy',
+        content: 'GitHub push前确认仓库私有，不上传API keys/auth tokens/内部论文/个人数据',
+        summary: '核心教训：GitHub隐私红线',
+        metadata: { durable: true, lesson: 'github-privacy' },
+        importance: 18
+      }
+    ];
+    
+    for (const mem of coreMemories) {
+      // Use store without auto-save to avoid duplicate saves
+      const id = mem.id || this.generateId();
+      const memoryRecord = {
+        id,
+        timestamp: Date.now() * 1000,
+        layer: 'core',
+        content: mem.content,
+        summary: mem.summary || mem.content.slice(0, 120),
+        embedding: this.generateMockEmbedding(mem.content),
+        metadata: mem.metadata || {},
+        importance: mem.importance || 10,
+        accessCount: 0,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      };
+      this.layers.core.push(memoryRecord);
+      this.vectors.set(id, memoryRecord.embedding);
+    }
+    
+    this.stats.totalMemories = this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length;
+    console.log(`[MeaningfulMemory] 注入 ${coreMemories.length} 条 CORE 记忆`);
+    this._doSave(); // immediate save after injection
+  }
+  
+  // ─────────────────────────────────────────
+  // STORE & RETRIEVE
+  // ─────────────────────────────────────────
 
-  // ============================================================
-  // 核心判断：这件事有意义吗？
-  // ============================================================
-
-  judge(event = {}) {
-    const {
-      type               = 'unknown',
-      userConfirmed      = false,
-      selfVerifyScore    = null,
-      errorCount         = 0,
-      isIdentity         = false,
-      isUserCorrection   = false,
-    } = event;
-
-    if (userConfirmed || isUserCorrection) return 'core';
-    if (isIdentity)                       return 'core';
-
-    if (selfVerifyScore !== null && selfVerifyScore >= 0.75) return 'learned';
-    if (errorCount >= 3)                  return 'learned';
-
-    const score = this._typeScore(type);
-    if (score >= 0.8) return 'learned';
-    if (score <= 0.2) return 'ephemeral';
+  /**
+   * Store a new memory
+   * @param {object} memory - { content, summary?, metadata?, importance?, layer?, relatedTo? }
+   * @returns {string} memory id
+   */
+  store(memory) {
+    const id = memory.id || this.generateId();
+    const timestamp = memory.timestamp || Date.now() * 1000;
+    const layer = memory.layer || this.classifyLayer(memory);
+    
+    const memoryRecord = {
+      id,
+      timestamp,
+      layer,
+      content: memory.content,
+      summary: memory.summary || this.summarizeContent(memory.content),
+      embedding: memory.embedding || this.generateMockEmbedding(memory.content),
+      metadata: memory.metadata || {},
+      importance: memory.importance || this.estimateImportance(memory),
+      accessCount: 0,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    };
+    
+    // Add to correct layer
+    if (!this.layers[layer]) this.layers[layer] = [];
+    this.layers[layer].push(memoryRecord);
+    this.vectors.set(id, memoryRecord.embedding);
+    
+    // Handle relationships
+    if (memory.relatedTo) {
+      for (const rel of memory.relatedTo) {
+        this._addRelationship({ sourceId: id, ...rel });
+      }
+    }
+    
+    this.stats.totalMemories = this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length;
+    console.log(`[MeaningfulMemory] 存储: ${id} (${layer}, total ${this.stats.totalMemories})`);
+    this._autoSave();
+    return id;
+  }
+  
+  /**
+   * Classify layer based on memory properties
+   */
+  classifyLayer(memory = {}) {
+    if (memory.layer) return memory.layer;
+    if (memory.metadata?.durable || memory.metadata?.identity || memory.metadata?.directive) return 'core';
+    if (memory.metadata?.lesson || memory.metadata?.userPreference || memory.metadata?.taskOutcome) return 'learned';
     return 'ephemeral';
   }
-
-  _typeScore(type) {
-    const scores = {
-      'user_correction':    1.0,
-      'identity_change':     1.0,
-      'preference_change':   1.0,
-      'decision_verified':   0.85,
-      'error_pattern':       0.8,
-      'successful_fix':      0.75,
-      'self_verification':   0.7,
-      'upgrade_result':      0.65,
-      'code_working':        0.6,
-      'chat':                0.1,
-      'greeting':            0.05,
-      'status_check':        0.2,
-      'temporary_state':     0.1,
-      'unknown':             0.3,
-    };
-    return scores[type] ?? 0.3;
+  
+  /**
+   * Estimate importance score
+   */
+  estimateImportance(memory = {}) {
+    let importance = 10;
+    if (memory.metadata?.durable) importance += 8;
+    if (memory.metadata?.userPreference) importance += 6;
+    if (memory.metadata?.taskOutcome) importance += 4;
+    if (memory.metadata?.lesson) importance += 5;
+    return importance;
   }
-
-  _defaultReason(type, level) {
-    const reasons = {
-      core:     '满足CORE条件：用户确认/身份相关',
-      learned:  `满足LEARNED条件：${type}`,
-      ephemeral:'日常内容，不值得永久记忆',
-    };
-    return reasons[level];
+  
+  generateId() {
+    return `mem-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
   }
-
-  // ============================================================
-  // 记忆操作（统一入口 + 专用捷径）
-  // ============================================================
-
-  remember(event = {}) {
-    const {
-      key, value = null,
-      type = 'unknown',
-      reason = '',
-      selfVerifyScore = null,
-      errorCount = 0,
-      userConfirmed = false,
-      isIdentity = false,
-      isUserCorrection = false,
-      source = 'system',
-      relatedTo = [],   // [{targetKey, type: 'causal'|'quotes'|'related', strength}]
-    } = event;
-
-    if (!key || value === null) return null;
-
-    const level = this.judge({
-      type, userConfirmed, selfVerifyScore,
-      errorCount, isIdentity, isUserCorrection,
-    });
-
-    const record = {
-      key, value, type,
-      reason: reason || this._defaultReason(type, level),
-      timestamp: Date.now(),
-      source,
-      level,
-      importance: selfVerifyScore !== null ? Math.round(selfVerifyScore * 100) : Math.round(this._typeScore(type) * 100),
-    };
-
-    if (selfVerifyScore !== null) record.selfVerifyScore = selfVerifyScore;
-
-    // 写入对应层
-    const target = level === 'core' ? this.core : (level === 'learned' ? this.learned : this.ephemeral);
-    target[key] = record;
-
-    // 向量索引
-    const vecMap = level === 'core' ? this.vectors.core
-                    : (level === 'learned' ? this.vectors.learned : this.vectors.ephemeral);
-    vecMap.set(key, generateEmbedding(String(value) + reason));
-
-    // 关系索引
-    if (relatedTo.length > 0) {
-      this.relationships.set(key, relatedTo.map(r => ({ ...r, createdAt: Date.now() })));
+  
+  generateMockEmbedding(content = '') {
+    const hash = crypto.createHash('sha256').update(content).digest();
+    const embedding = [];
+    for (let i = 0; i < this.vectorDim; i++) {
+      embedding.push((hash[i % hash.length] / 255) * 2 - 1);
     }
-
-    // 持久化（CORE + LEARNED）
-    if (level !== 'ephemeral') this._save();
-
-    return { level, record };
+    return embedding;
   }
-
-  // 专用 API
-  rememberUserCorrection(key, value, reason = '') {
-    return this.remember({ key, value, type: 'user_correction', reason, userConfirmed: true, source: 'user' });
+  
+  summarizeContent(content = '') {
+    return String(content).replace(/\s+/g, ' ').trim().slice(0, 120);
   }
-
-  rememberVerifiedDecision(key, decision, score) {
-    return this.remember({ key, value: decision, type: 'decision_verified', reason: `selfVerify score=${score}`, selfVerifyScore: score, source: 'decision-verifier' });
-  }
-
-  rememberErrorPattern(key, pattern, count) {
-    return this.remember({ key, value: pattern, type: 'error_pattern', reason: `同类错误累计 ${count} 次`, errorCount: count, source: 'self-healing' });
-  }
-
-  rememberUpgrade(key, version, change) {
-    return this.remember({ key, value: { version, change }, type: 'upgrade_result', reason: `HeartFlow ${version} 升级内容`, source: 'upgrade-system' });
-  }
-
-  // 召回
-  recall(key) {
-    return this.core[key] || this.learned[key] || this.ephemeral[key] || null;
-  }
-
-  knows(key) {
-    return key in this.core || key in this.learned || key in this.ephemeral;
-  }
-
-  // ============================================================
-  // 多通道检索（来自 TrialityMemory）
-  // ============================================================
+  
+  // ─────────────────────────────────────────
+  // MULTI-CHANNEL SEARCH
+  // ─────────────────────────────────────────
 
   /**
-   * 通道1：语义搜索（向量余弦相似度）
+   * Keyword search (BM25-style)
    */
-  searchSemantic(query, topK = 5) {
-    const queryEmb = generateEmbedding(query);
-    const results = [];
-
-    const layerMap = [
-      { map: this.vectors.core,      store: this.core,      label: 'CORE'      },
-      { map: this.vectors.learned,   store: this.learned,   label: 'LEARNED'   },
-      { map: this.vectors.ephemeral, store: this.ephemeral, label: 'EPHEMERAL' },
-    ];
-
-    for (const { map, store, label } of layerMap) {
-      for (const [key, emb] of map) {
-        const sim = cosineSimilarity(queryEmb, emb);
-        if (sim > 0.15) {  // 降低阈值：mock 嵌入余弦相似度较低
-          const rec = store[key];
-          results.push({ key, content: String(rec.value), reason: rec.reason, layer: label, similarity: sim, timestamp: rec.timestamp });
-        }
-      }
-    }
-
-    results.sort((a, b) => b.similarity - a.similarity);
-    this._meta.channelSearches.semantic++;
-    return results.slice(0, topK);
-  }
-
-  /**
-   * 通道2：关键词搜索（BM25 风格）
-   */
-  searchKeywords(keywords, topK = 5) {
+  searchByKeywords(keywords, limit = 10) {
     if (!keywords || keywords.length === 0) return [];
-    const kws = keywords.map(k => k.toLowerCase());
-    const results = [];
-
-    const stores = [
-      { store: this.core,      label: 'CORE'      },
-      { store: this.learned,   label: 'LEARNED'   },
-      { store: this.ephemeral, label: 'EPHEMERAL' },
-    ];
-
-    for (const { store, label } of stores) {
-      for (const [key, rec] of Object.entries(store)) {
-        const text = (String(rec.value) + ' ' + rec.reason).toLowerCase();
+    
+    const kwList = Array.isArray(keywords) ? keywords : [keywords];
+    const scores = [];
+    
+    for (const layer of ['core', 'learned', 'ephemeral']) {
+      for (const mem of (this.layers[layer] || [])) {
+        const content = (mem.content || '').toLowerCase();
         let score = 0;
-        for (const kw of kws) {
-          if (text.includes(kw)) score++;
+        for (const kw of kwList) {
+          if (content.includes(kw.toLowerCase())) score += 1;
         }
         if (score > 0) {
-          results.push({ key, content: String(rec.value), reason: rec.reason, layer: label, score, timestamp: rec.timestamp });
+          scores.push({ id: mem.id, layer, content: mem.content, summary: mem.summary, timestamp: mem.timestamp, score, metadata: mem.metadata });
         }
       }
     }
-
-    results.sort((a, b) => b.score - a.score);
-    this._meta.channelSearches.keyword++;
-    return results.slice(0, topK);
+    
+    scores.sort((a, b) => b.score - a.score);
+    return scores.slice(0, limit);
   }
-
+  
   /**
-   * 通道3：时间搜索
+   * Semantic search (embedding cosine similarity)
    */
-  searchByTime(hoursAgo = 24, topK = 10) {
-    const cutoff = Date.now() - hoursAgo * 60 * 60 * 1000;
-    const results = [];
-
-    const stores = [
-      { store: this.core,      label: 'CORE'      },
-      { store: this.learned,   label: 'LEARNED'   },
-      { store: this.ephemeral, label: 'EPHEMERAL' },
-    ];
-
-    for (const { store, label } of stores) {
-      for (const [key, rec] of Object.entries(store)) {
-        if (rec.timestamp >= cutoff) {
-          results.push({ key, content: String(rec.value), reason: rec.reason, layer: label, timestamp: rec.timestamp });
-        }
+  semanticSearch(queryEmbedding, topK = 10) {
+    const similarities = [];
+    
+    for (const [id, embedding] of this.vectors) {
+      const sim = this.cosineSimilarity(queryEmbedding, embedding);
+      const memory = this._findMemoryById(id);
+      if (memory) {
+        similarities.push({
+          id,
+          content: memory.content,
+          summary: memory.summary,
+          layer: memory.layer,
+          timestamp: memory.timestamp,
+          similarity: sim,
+          metadata: memory.metadata
+        });
       }
     }
-
-    results.sort((a, b) => b.timestamp - a.timestamp);
-    this._meta.channelSearches.time++;
-    return results.slice(0, topK);
+    
+    similarities.sort((a, b) => b.similarity - a.similarity);
+    return similarities.slice(0, topK);
   }
-
+  
   /**
-   * 通道4：联想搜索（关系图遍历）
+   * Narrative search (graph traversal by relation type)
    */
-  searchByAssociation(startKey, maxDepth = 3, topK = 10) {
-    const visited = new Set();
-    const queue = [{ key: startKey, depth: 0 }];
-    const results = [];
-
-    const findRecord = (k) => this.core[k] || this.learned[k] || this.ephemeral[k];
-
-    while (queue.length > 0 && results.length < topK) {
-      const current = queue.shift();
-      if (visited.has(current.key) || current.depth > maxDepth) continue;
-      visited.add(current.key);
-
-      const rec = findRecord(current.key);
-      if (rec) results.push({ key: current.key, content: String(rec.value), layer: rec.level, depth: current.depth, timestamp: rec.timestamp });
-
-      const rels = this.relationships.get(current.key) || [];
-      for (const rel of rels) {
-        if (!visited.has(rel.targetKey)) {
-          queue.push({ key: rel.targetKey, depth: current.depth + 1 });
-        }
-      }
-    }
-
-    this._meta.channelSearches.association++;
-    return results;
-  }
-
-  /**
-   * 融合搜索（多通道加权）
-   */
-  search(query, options = {}) {
+  narrativeQuery(query = {}) {
     const {
-      keywords = [],
-      timeRange = null,       // { hours: 24 }
-      startKey = null,
-      layers = ['core', 'learned', 'ephemeral'],
-      weights = { semantic: 0.35, keyword: 0.25, time: 0.15, association: 0.25 },
-      topK = 10,
-    } = options;
-
-    const scores = new Map();
-
-    // 语义通道
-    const semantic = this.searchSemantic(query, 20);
-    for (const r of semantic) {
-      if (layers.includes(r.layer.toLowerCase())) {
-        scores.set(r.key, { ...r, score: r.similarity * weights.semantic, channels: ['semantic'] });
-      }
+      startMemoryId,
+      direction = 'forward',  // forward | backward | bidirectional
+      relationTypes = ['related', 'causal', 'quotes', 'similar'],
+      maxDepth = 5,
+      maxNodes = 50
+    } = query;
+    
+    if (!startMemoryId) {
+      return this.getRecentNarrative(maxNodes);
     }
-
-    // 关键词通道
-    if (keywords.length > 0) {
-      const kw = this.searchKeywords(keywords, 20);
-      for (const r of kw) {
-        if (layers.includes(r.layer.toLowerCase())) {
-          const existing = scores.get(r.key);
-          if (existing) {
-            existing.score += (r.score / 10) * weights.keyword;
-            existing.channels.push('keyword');
-          } else {
-            scores.set(r.key, { ...r, score: (r.score / 10) * weights.keyword, channels: ['keyword'] });
+    
+    const visited = new Set();
+    const narrative = [];
+    const queue = [{ id: startMemoryId, depth: 0 }];
+    
+    while (queue.length > 0 && narrative.length < maxNodes) {
+      const current = queue.shift();
+      if (visited.has(current.id) || current.depth > maxDepth) continue;
+      visited.add(current.id);
+      
+      const memory = this._findMemoryById(current.id);
+      if (memory) narrative.push({ ...memory, depth: current.depth });
+      
+      const rels = this.relationships.get(current.id) || [];
+      for (const rel of rels) {
+        if (relationTypes.includes(rel.relationType) || relationTypes.includes('all')) {
+          if (!visited.has(rel.targetId)) {
+            queue.push({ id: rel.targetId, depth: current.depth + 1 });
+          }
+        }
+      }
+      
+      if (direction === 'bidirectional') {
+        for (const [sourceId, allRels] of this.relationships) {
+          for (const rel of allRels) {
+            if (rel.targetId === current.id && !visited.has(sourceId)) {
+              if (relationTypes.includes(rel.relationType) || relationTypes.includes('all')) {
+                queue.push({ id: sourceId, depth: current.depth + 1 });
+              }
+            }
           }
         }
       }
     }
-
-    // 时间通道
-    if (timeRange) {
-      const time = this.searchByTime(timeRange.hours, 20);
-      for (const r of time) {
-        if (layers.includes(r.layer.toLowerCase())) {
-          const existing = scores.get(r.key);
-          if (existing) {
-            existing.score += 0.5 * weights.time;
-            existing.channels.push('time');
-          } else {
-            scores.set(r.key, { ...r, score: 0.5 * weights.time, channels: ['time'] });
-          }
-        }
-      }
-    }
-
-    // 联想通道
-    if (startKey) {
-      const assoc = this.searchByAssociation(startKey, 3, 20);
-      for (const r of assoc) {
-        if (layers.includes(r.layer.toLowerCase())) {
-          const existing = scores.get(r.key);
-          if (existing) {
-            existing.score += 0.5 * weights.association;
-            existing.channels.push('association');
-          } else {
-            scores.set(r.key, { ...r, score: 0.5 * weights.association, channels: ['association'] });
-          }
-        }
-      }
-    }
-
-    return Array.from(scores.values())
-      .sort((a, b) => b.score - a.score)
-      .slice(0, topK);
+    
+    narrative.sort((a, b) => a.timestamp - b.timestamp);
+    return narrative;
   }
-
-  // ============================================================
-  // 遗忘引擎（艾宾浩斯）
-  // ============================================================
-
+  
   /**
-   * 评估单条记忆的 retention（0~1）
+   * Temporal search (time range)
    */
-  getRetention(record) {
-    if (!record) return 0;
-    const ageHours = (Date.now() - record.timestamp) / (1000 * 60 * 60);
-    const stability = record.level === 'core' ? this.forgetConfig.coreStability
-                    : record.level === 'learned' ? this.forgetConfig.learnedStability
-                    : this.forgetConfig.defaultStability;
-    return ebbinghausForget(stability, ageHours).retention;
+  searchByTimeRange(startTime, endTime, limit = 20) {
+    const results = [];
+    for (const layer of ['core', 'learned', 'ephemeral']) {
+      for (const mem of (this.layers[layer] || [])) {
+        if (mem.timestamp >= startTime && mem.timestamp <= endTime) {
+          results.push({ ...mem });
+        }
+      }
+    }
+    results.sort((a, b) => a.timestamp - b.timestamp);
+    return results.slice(0, limit);
   }
-
+  
   /**
-   * 清理：压缩低 retention 的 LEARNED，删除超阈值
+   * Get recent memories (narrative order)
    */
-  applyForgetting() {
-    const now = Date.now();
+  getRecentNarrative(count = 20) {
+    const all = [];
+    for (const layer of ['core', 'learned', 'ephemeral']) {
+      for (const mem of (this.layers[layer] || [])) {
+        all.push({ ...mem, depth: 0 });
+      }
+    }
+    all.sort((a, b) => b.timestamp - a.timestamp);
+    return all.slice(0, count);
+  }
+  
+  // ─────────────────────────────────────────
+  // INTERNAL HELPERS
+  // ─────────────────────────────────────────
+
+  cosineSimilarity(a, b) {
+    let dotProduct = 0, normA = 0, normB = 0;
+    for (let i = 0; i < Math.min(a.length, b.length); i++) {
+      dotProduct += a[i] * b[i];
+      normA += a[i] * a[i];
+      normB += b[i] * b[i];
+    }
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB) + 0.0001);
+  }
+  
+  _findMemoryById(id) {
+    for (const layer of ['core', 'learned', 'ephemeral']) {
+      const found = (this.layers[layer] || []).find(m => m.id === id);
+      if (found) return found;
+    }
+    return null;
+  }
+  
+  _addRelationship(rel) {
+    const id = `rel-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`;
+    if (!this.relationships.has(rel.sourceId)) {
+      this.relationships.set(rel.sourceId, []);
+    }
+    this.relationships.get(rel.sourceId).push({
+      id,
+      targetId: rel.targetId,
+      relationType: rel.type || rel.relationType || 'related',
+      strength: rel.strength || 1.0
+    });
+    this.stats.totalRelationships = this.relationships.size;
+  }
+  
+  // ─────────────────────────────────────────
+  // EBINGHAUS FORGETTING CURVE
+  // ─────────────────────────────────────────
+
+  ebbinghausForget(memory, timeElapsed) {
+    const S = memory.importance || 10;
+    const t = timeElapsed / (1000 * 60 * 60); // hours
+    const retention = Math.exp(-t / S);
+    return {
+      retention,
+      shouldCompress: retention < this.forgettingConfig.compressionThreshold,
+      shouldDelete: retention < this.forgettingConfig.deletionThreshold
+    };
+  }
+  
+  applyForgettingCurve() {
+    const now = Date.now() * 1000;
     const toDelete = [];
     const toCompress = [];
-
-    for (const [key, rec] of Object.entries(this.learned)) {
-        const ageHours = (now - rec.timestamp) / (1000 * 60 * 60);
-        const { shouldDelete, shouldCompress } = ebbinghausForget(this.forgetConfig.learnedStability, ageHours);
-
-      if (shouldDelete) {
-        toDelete.push(key);
-      } else if (shouldCompress && !rec.compressed) {
-        rec.compressed = true;
-        toCompress.push(key);
-        this._meta.compressed++;
+    
+    for (const layer of ['learned', 'ephemeral']) {
+      for (const mem of (this.layers[layer] || [])) {
+        const timeElapsed = now - mem.timestamp;
+        const result = this.ebbinghausForget(mem, timeElapsed);
+        if (result.shouldDelete) {
+          toDelete.push({ id: mem.id, layer });
+        } else if (result.shouldCompress && !mem.compressed) {
+          toCompress.push(mem.id);
+        }
       }
     }
-
-    for (const key of toDelete) {
-      delete this.learned[key];
-      this.vectors.learned.delete(key);
-      this._meta.deleted++;
+    
+    for (const { id, layer } of toDelete) {
+      this.layers[layer] = (this.layers[layer] || []).filter(m => m.id !== id);
+      this.vectors.delete(id);
     }
-
-    if (toDelete.length > 0 || toCompress.length > 0) {
-      this._save();
+    
+    for (const id of toCompress) {
+      const mem = this._findMemoryById(id);
+      if (mem) mem.compressed = true;
     }
-
-    console.log(`[MeaningfulMemory] 遗忘清理: 删除 ${toDelete.length} 条, 压缩 ${toCompress.length} 条`);
+    
+    this.stats.lastCleanup = new Date().toISOString();
+    console.log(`[MeaningfulMemory] 遗忘曲线清理: 删除 ${toDelete.length} 条, 压缩 ${toCompress.length} 条`);
+    this._autoSave();
     return { deleted: toDelete.length, compressed: toCompress.length };
   }
+  
+  // ─────────────────────────────────────────
+  // STATS & EXPORT
+  // ─────────────────────────────────────────
 
-  // ============================================================
-  // 查询 & 统计
-  // ============================================================
-
-  getCore()       { return Object.values(this.core); }
-  getLearned()    { return Object.values(this.learned); }
-  getEphemeral()  { return Object.values(this.ephemeral); }
-
-  findByType(type) {
-    return [
-      ...Object.values(this.core).filter(r => r.type === type),
-      ...Object.values(this.learned).filter(r => r.type === type),
-    ];
-  }
-
-  stats() {
-    const avgRetention = [
-      ...Object.values(this.learned).map(r => this.getRetention(r)),
-      ...Object.values(this.core).map(r => this.getRetention(r)),
-    ];
-    const avg = avgRetention.length > 0
-      ? (avgRetention.reduce((a, b) => a + b, 0) / avgRetention.length).toFixed(3)
-      : '1.000';
-
+  getStats() {
     return {
-      core:     Object.keys(this.core).length,
-      learned:  Object.keys(this.learned).length,
-      ephemeral:Object.keys(this.ephemeral).length,
-      total:    Object.keys(this.core).length + Object.keys(this.learned).length + Object.keys(this.ephemeral).length,
-      avgRetention: parseFloat(avg),
-      compressionCount: this._meta.compressed,
-      deletionCount:   this._meta.deleted,
-      loads: this._meta.loads,
-      saves: this._meta.saves,
-      channels: this._meta.channelSearches,
-      vectorDim: this.vectorDim,
-    };
-  }
-
-  health() {
-    const s = this.stats();
-    return {
-      ...s,
-      verdict: s.avgRetention >= 0.7 ? '🟢 健康' : s.avgRetention >= 0.4 ? '🟡 注意' : '🔴 需清理',
+      ...this.stats,
       layers: {
-        CORE:      { count: s.core,     retention: '1.000 (永久)', searchable: true },
-        LEARNED:   { count: s.learned,  retention: s.avgRetention.toString(), searchable: true },
-        EPHEMERAL: { count: s.ephemeral, retention: 'session', searchable: true },
+        core: this.layers.core.length,
+        learned: this.layers.learned.length,
+        ephemeral: this.layers.ephemeral.length
       },
-      retrievalChannels: ['semantic (向量)', 'keyword (BM25)', 'time (时间)', 'association (关系图)'],
+      totalMemories: this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length
     };
   }
-
-  /**
-   * 导出 / 导入
-   */
-  exportToFile(filePath) {
-    const data = {
-      core:     this.core,
-      learned:  this.learned,
-      exportedAt: new Date().toISOString(),
-      version: '11.5.10',
-    };
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    return { success: true, count: Object.keys(this.core).length + Object.keys(this.learned).length };
+  
+  consolidateMemories() {
+    // Promote high-access ephemeral memories to learned
+    const toPromote = [];
+    for (const mem of (this.layers.ephemeral || [])) {
+      if ((mem.accessCount || 0) >= 3 && mem.importance >= 12) {
+        toPromote.push(mem.id);
+      }
+    }
+    
+    const promoted = [];
+    for (const id of toPromote) {
+      const mem = this._findMemoryById(id);
+      if (mem) {
+        mem.layer = 'learned';
+        mem.updatedAt = Date.now();
+        promoted.push(id);
+      }
+    }
+    
+    // Rebuild layer indices
+    this.layers.core = (this.layers.core || []).filter(m => true);
+    this.layers.learned = (this.layers.learned || []).filter(m => true);
+    this.layers.ephemeral = (this.layers.ephemeral || []).filter(m => true);
+    
+    this._autoSave();
+    return { promoted: [...new Set(promoted)], layers: this.getLayerStats() };
   }
-
-  /**
-   * 清空 ephemeral（会话结束时）
-   */
-  clearEphemeral() {
-    this.ephemeral = {};
-    this.vectors.ephemeral.clear();
-    console.log('[MeaningfulMemory] ephemeral 已清空（会话结束）');
+  
+  getLayerStats() {
+    return {
+      core: this.layers.core.length,
+      learned: this.layers.learned.length,
+      ephemeral: this.layers.ephemeral.length
+    };
+  }
+  
+  cleanup(maxAge = 30 * 24 * 60 * 60 * 1000) {
+    const cutoff = Date.now() * 1000 - maxAge;
+    let removed = 0;
+    for (const layer of ['learned', 'ephemeral']) {
+      const before = (this.layers[layer] || []).length;
+      this.layers[layer] = (this.layers[layer] || []).filter(m => m.layer === 'core' || m.timestamp > cutoff || m.metadata?.durable);
+      removed += before - this.layers[layer].length;
+    }
+    this.stats.lastCleanup = new Date().toISOString();
+    this._autoSave();
+    return { removed };
   }
 }
 
