@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: "1.1.0.0"
+version: "1.1.1.0"
 title: "HeartFlow / 心虫"
 description: >
   HeartFlow v1.1.0.0 — AI 认知与自愈引擎。
@@ -16,7 +16,7 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v1.0.9
+# HeartFlow / 心虫 v1.1.1.0
 
 **An AI capability layer that survives context switches, model changes, and restarts.**
 
@@ -108,14 +108,51 @@ DecisionVerifier.check(decision) → {
 
 ### 3. RAG Triad via FeedbackFunctions
 ```js
-const ff = FeedbackFunctions.answerRelevance();
-const result = await ff.run({ question, response });
-// result.score: 0-1, result.reason, result.metrics
-```
+### Boot & Self-Check
+|| Capability | What it does |
+||---|---|
+|| bootCheck() | Validates 7 core files + 8 modules on startup; reports DEGRADED if any REQUIRED file fails |
+|| FeedbackFunctions | RAG Triad evaluation: answer relevance / context relevance / groundedness / toxicity |
 
 ---
 
-## Self-verification loop (the core mechanism)
+## Advanced Cognitive Engines
+
+### Meta-Cognition (元认知层)
+|| Capability | What it does |
+||---|---|
+|| SelfModel | Maintains dynamic self-model: capabilities / limitations / growth trajectory |
+|| Counterfactual Reasoning | Explores "what if" paths: self-correction without external feedback |
+|| Mind Wanderer | Controlled idle-mode ideation: extracts creative connections from memory |
+|| Global Workspace | GWT-based blackboard: attention competition between specialist modules |
+
+### Self-Evolution (进化层)
+|| Capability | What it does |
+||---|---|
+|| SelfEvolutionCore | Goal-driven loop: goal → plan → execute → reflect → improve |
+|| Meta-Learning | Learns *how to learn*: adaptive strategy selection from outcome patterns |
+|| Goedel Engine | Self-referential reasoning: system evaluates its own evaluation criteria |
+|| Rollback Manager | Preserves version history: reverts when upgrades degrade performance |
+
+### Consciousness & Spontaneity (意识与克制)
+|| Capability | What it does |
+||---|---|
+|| Spontaneous Restraint | "道法自然" — 识别不需要回答的时机，最小干预 |
+|| Wake-Up Verifier | Pre-action sanity check: prevents execution when system is degraded |
+|| Stability Guard | Monitors oscillation: flags when behavior becomes unstable |
+|| Workflow Switch | Intent-based routing: heartflow / code_review / debugging / education / support |
+
+### Tool Emergence & Self-Governance (工具涌现与自管)
+|| Capability | What it does |
+||---|---|
+|| Skill Generator | AutoSkill framework: generates standardized skills from reflection patterns |
+|| Reasoning Integrator | Combines reasoning traces: faith / reason / science / truthfulness |
+|| Cooperative Arbitration | Resolves multi-source conflicts: priority-based evidence weighting |
+|| Execution Verifier | Post-execution validation: confirms outcomes match intended goals |
+
+---
+
+## Self-Verification Loop (深度自检循环)
 
 ```
 1. Input received
