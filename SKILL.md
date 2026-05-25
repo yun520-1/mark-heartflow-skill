@@ -1,12 +1,13 @@
 ---
 name: heartflow
-version: "1.1.2.0"
+version: "1.1.3.0"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v1.1.2.0 — AI 认知与自愈引擎。
+  HeartFlow v1.1.3.0 — AI 认知与自愈引擎。
   核心能力：启动自检(Boot Check)、RAG三元组评估(FeedbackFunctions)、
   三层记忆(Meaningful Memory)、自愈RL(Q-table)、决策验证、
-  遗忘引擎(Forgetting Engine)、心理诊断引擎(Top 20 Index)。
+  遗忘引擎(Forgetting Engine)、心理诊断引擎(Top 20 Index)、
+  @task_classify任务分类、Why连续追问诊断、错误代码规范。
   不是 persona，不是 prompt 模板，是可验证的能力层。
 tags:
   - cognitive
@@ -16,7 +17,7 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v1.1.2.0
+# HeartFlow / 心虫 v1.1.3.0
 
 **An AI capability layer that survives context switches, model changes, and restarts.**
 
@@ -78,10 +79,10 @@ Install it once. Every session after that, your AI:
 | PsychologyEngine v1.0.1 | Dual-process emotional resonance without dramatic performance |
 
 ### Boot & Self-Check
-||| Capability | What it does |
-|||---|---|
-||| bootCheck() | Validates 7 core files + 8 modules on startup; reports DEGRADED if any REQUIRED file fails |
-||| FeedbackFunctions | RAG Triad evaluation: answer relevance / context relevance / groundedness / toxicity |
+| Capability | What it does |
+|---|---|
+| bootCheck() | Validates 7 core files + 8 modules on startup; reports DEGRADED if any REQUIRED file fails |
+| FeedbackFunctions | RAG Triad evaluation: answer relevance / context relevance / groundedness / toxicity |
 
 ### Conversation Psychology Diagnostic (Top 20 Index)
 
@@ -172,47 +173,126 @@ DecisionVerifier.check(decision) → {
 
 ### 3. RAG Triad via FeedbackFunctions
 ```js
-### Boot & Self-Check
-|| Capability | What it does |
-||---|---|
-|| bootCheck() | Validates 7 core files + 8 modules on startup; reports DEGRADED if any REQUIRED file fails |
-|| FeedbackFunctions | RAG Triad evaluation: answer relevance / context relevance / groundedness / toxicity |
+FeedbackFunctions.evaluate(response, context) → {
+  answerRelevance: 0-1,  // response addresses the query
+  contextRelevance: 0-1, // context supports the response
+  groundedness: 0-1,    // response follows from context
+  toxicity: 0-1         // no harmful content
+}
+```
 
 ---
 
 ## Advanced Cognitive Engines
 
 ### Meta-Cognition (元认知层)
-|| Capability | What it does |
-||---|---|
-|| SelfModel | Maintains dynamic self-model: capabilities / limitations / growth trajectory |
-|| Counterfactual Reasoning | Explores "what if" paths: self-correction without external feedback |
-|| Mind Wanderer | Controlled idle-mode ideation: extracts creative connections from memory |
-|| Global Workspace | GWT-based blackboard: attention competition between specialist modules |
+| Capability | What it does |
+|---|---|
+| SelfModel | Maintains dynamic self-model: capabilities / limitations / growth trajectory |
+| Counterfactual Reasoning | Explores "what if" paths: self-correction without external feedback |
+| Mind Wanderer | Controlled idle-mode ideation: extracts creative connections from memory |
+| Global Workspace | GWT-based blackboard: attention competition between specialist modules |
 
 ### Self-Evolution (进化层)
-|| Capability | What it does |
-||---|---|
-|| SelfEvolutionCore | Goal-driven loop: goal → plan → execute → reflect → improve |
-|| Meta-Learning | Learns *how to learn*: adaptive strategy selection from outcome patterns |
-|| Goedel Engine | Self-referential reasoning: system evaluates its own evaluation criteria |
-|| Rollback Manager | Preserves version history: reverts when upgrades degrade performance |
+| Capability | What it does |
+|---|---|
+| SelfEvolutionCore | Goal-driven loop: goal → plan → execute → reflect → improve |
+| Meta-Learning | Learns *how to learn*: adaptive strategy selection from outcome patterns |
+| Goedel Engine | Self-referential reasoning: system evaluates its own evaluation criteria |
+| Rollback Manager | Preserves version history: reverts when upgrades degrade performance |
 
 ### Consciousness & Spontaneity (意识与克制)
-|| Capability | What it does |
-||---|---|
-|| Spontaneous Restraint | "道法自然" — 识别不需要回答的时机，最小干预 |
-|| Wake-Up Verifier | Pre-action sanity check: prevents execution when system is degraded |
-|| Stability Guard | Monitors oscillation: flags when behavior becomes unstable |
-|| Workflow Switch | Intent-based routing: heartflow / code_review / debugging / education / support |
+| Capability | What it does |
+|---|---|
+| Spontaneous Restraint | "道法自然" — 识别不需要回答的时机，最小干预 |
+| Wake-Up Verifier | Pre-action sanity check: prevents execution when system is degraded |
+| Stability Guard | Monitors oscillation: flags when behavior becomes unstable |
+| Workflow Switch | Intent-based routing + `@task_classify` mandatory gate: new task / continuation / casual reply → determines whether to read memory files before acting |
 
 ### Tool Emergence & Self-Governance (工具涌现与自管)
-|| Capability | What it does |
-||---|---|
-|| Skill Generator | AutoSkill framework: generates standardized skills from reflection patterns |
-|| Reasoning Integrator | Combines reasoning traces: faith / reason / science / truthfulness |
-|| Cooperative Arbitration | Resolves multi-source conflicts: priority-based evidence weighting |
-|| Execution Verifier | Post-execution validation: confirms outcomes match intended goals |
+| Capability | What it does |
+|---|---|
+| Skill Generator | AutoSkill framework: generates standardized skills from reflection patterns |
+| Reasoning Integrator | Combines reasoning traces: faith / reason / science / truthfulness |
+| Cooperative Arbitration | Resolves multi-source conflicts: priority-based evidence weighting |
+| Execution Verifier | Post-execution validation: confirms outcomes match intended goals |
+
+### Task Classification Gate (@task_classify)
+
+**来源**：memory-v1 技能 · AI记忆持久化
+
+**规则**：每条用户消息，在任何动作之前必须输出一行任务类型判断。
+
+#### 判断格式（强制输出）
+
+```
+[@task_classify] 任务类型 | 具体类别 | 判断依据
+```
+
+#### 三种任务类型
+
+| 类型 | 定义 | 处理方式 |
+|------|------|---------|
+| **新任务** | 话题跨度大、任务类型变、关键词第一次出现 | 读取相关记忆文件，再执行 |
+| **续接任务** | 同一话题延续，不超过3轮间隔 | 直接执行，无需读取 |
+| **随口回复** | 简单确认、礼貌回复、"好的""嗯" | 不执行任何操作，只回应 |
+
+#### 触发新任务的条件
+
+- 🔄 话题跨度大（从A项目跳到B项目）
+- 🔄 任务类型变（查资料 → 发消息）
+- 🔄 关键词第一次出现（人名、编号、项目名）
+- 🔄 自己不确定 → 先问用户确认
+
+#### 禁止规则
+
+- ❌ 明明知道是新任务还跑去问
+- ❌ 不确定还不问直接执行
+- ❌ 不带 `[@task_classify]` 就执行任何操作
+
+#### 记忆文件读取（新任务时）
+
+1. `MEMORY.md` — 用户偏好、项目背景
+2. `.learnings/ERRORS.md` — 犯过的错误
+3. `.learnings/LEARNINGS.md` — 用户纠正案例
+4. 相关技能文档（按需）
+
+#### 错误代码规范（Self-Healing 用）
+
+**来源**：yanzhenskill 技能 · 错误代码规范
+
+| 代码 | 类别 | 说明 |
+|------|------|------|
+| `HEAL001` | 文件缺失 | 必需文件不存在 |
+| `HEAL002` | 版本不一致 | SKILL.md / VERSION 版本不匹配 |
+| `HEAL003` | 逻辑错误 | 推理链断裂、自相矛盾 |
+| `HEAL004` | 记忆失效 | session_search 返回空但应有历史 |
+| `HEAL005` | 技能加载失败 | skill_view 返回 error |
+| `HEAL006` | 过度干预 | 不需要回答时却回答了 |
+| `HEAL007` | 归因偏差 | 用户失误归情境、AI失误归特质 |
+
+#### Why 连续追问诊断工具
+
+**来源**：huanju-putin 技能 · Why根因分析
+
+**触发词**：`/why` 或"追问为什么"
+
+**流程**：用户触发 → 第一层 Why（最主要原因）→ 用户输入"继续" → 下一层 Why（基于上一层）→ 循环
+
+**输出格式**：
+```
+**Why N：【基于上一层结论的问题】**
+
+【分析结论】
+
+---
+输入"继续"深入下一层，或输入其他内容结束。
+```
+
+**核心原则**：
+- 每层只推进一层，不跳跃
+- 基于上一层结论严格递进
+- 第一层必须是**最主要**原因，不是次要因素
 
 ---
 
@@ -292,7 +372,8 @@ npm install heartflow
 
 ## Version history (last 10)
 
-- **1.1.2.0** (2026-05-30) — 吸收 agent-psychology Top 20 心理理论索引，新增心理诊断引擎；吸收 context-bridge-pro 项目注册表模式；吸收 yanzhenskill 错误代码规范
+- **1.1.3.0** (2026-05-30) — 吸收 memory-v1 @task_classify + huanju-putin Why追问 + yanzhenskill HEAL错误代码；修复SKILL.md表格结构（||||→|||）
+- **1.1.2.0** (2026-05-30) — 吸收 agent-psychology Top 20 心理理论索引，新增心理诊断引擎
 - **1.1.1.0** (2026-05-20) — Boot Check + FeedbackFunctions + 单一真相源(VERSION)
 - **1.0.7** (2026-05-20) — 真善美系统(TGB)+六层哲学+五层记忆+StabilityGuard
 - **1.0.6** (2026-05-19) — PsychologyEngine v1.0.1 (Dual-process), SelfEvolution Q-learning
