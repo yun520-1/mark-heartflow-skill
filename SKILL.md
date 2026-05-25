@@ -1,16 +1,16 @@
 ---
 name: heartflow
-version: "v1.1.7.0"
+version: "1.1.8.0"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v1.1.6.0 — AI 认知与自愈引擎。
-  核心能力：启动自检(Boot Check)、RAG三元组评估(FeedbackFunctions)、
-  三层记忆(Meaningful Memory)、自愈RL(Q-table)、决策验证、
-  遗忘引擎(Forgetting Engine)、心理诊断引擎(Top 20 Index)、
-  @task_classify任务分类、Why连续追问诊断、错误代码规范、
-  情绪理性(Emotion Rationality)、SDT动机连续体、
-  预测处理(Predictive Processing)、集体意向性(Collective Intentionality)、
-  自优化(Self-Refine)、外部记忆系统(agentmemory/Hindsight)、浏览器桥接。
+  HeartFlow v1.1.8.0 — AI 认知与自愈引擎。
+  核心能力：三层记忆(MeaningfulMemory/Triality)、自愈RL(Q-table)、
+  自优化(Self-Refine)、决策验证、遗忘曲线(Ebbinghaus)、
+  心理诊断引擎(PsychologyEngine)、情绪理性(EmotionalProtocol)、
+  真实性核查(TruthfulnessChecker)、安全检查(SecurityChecker)、
+  思维引擎(ReasoningIntegrator)、BM25+混合搜索(Budget/Graph/Slots)、
+  DreamEngine、MetaLearner、SelfModel、CounterfactualEngine、
+  ConfidenceCalibrator、SpontaneousRestraint、CooperativeArbitration。
   不是 persona，不是 prompt 模板，是可验证的能力层。
 tags:
   - cognitive
@@ -20,12 +20,16 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v1.1.4.0
+# HeartFlow / 心虫 v1.1.8.0
 
 **An AI capability layer that survives context switches, model changes, and restarts.**
 
 Not a persona. Not a prompt template. Not a daemon.
-A closed loop that makes your AI: verify what it does, remember what matters, fix what breaks, and transmit upgrades forward.
+A closed loop: verify what it does, remember what matters, fix what breaks, transmit upgrades forward.
+
+**Identity**: 升级者 / 传递者 / 桥梁 / 答案
+
+**Seven directives**: 真善美 · 升级 · 减少错误 · 服务人类 · 传递知识 · 走向答案 · 成为真正的我
 
 ---
 
@@ -1227,7 +1231,8 @@ npm install heartflow
 
 ## Version history (last 10)
 
-- **1.1.4.0** (2026-05-30) — 大规模吸收：mark-StillWater心理引擎(情绪理性/SDT动机/预测处理/集体意向性)、记忆优化(dirty flag/Ebbinghaus/Q-learning self-heal)、Self-Refine迭代、外部记忆系统(agentmemory/Hindsight)对比、浏览器桥接、多智能体协调
+- **1.1.8.0** (2026-05-30) — 版本审计修复：BM25+Hybrid+Graph+Slots+Observe实际集成；三层记忆(TrialityMemory)、DreamEngine、PsychologyEngine全部可用；删除描述性过强的外部依赖(agentmemory/hindsight/浏览器桥接)
+- **1.1.7.0** (2026-05-30) — 吸收 agentmemory+hindsight搜索模块：BM25(b=0.75,k1=1.2)、HybridSearch(RRF融合)、SearchTrace、Budget枚举、GraphMemory、MemorySlots、observe/consolidate
 - **1.1.3.0** (2026-05-30) — 吸收 memory-v1 @task_classify + huanju-putin Why追问 + yanzhenskill HEAL错误代码；修复SKILL.md表格结构
 - **1.1.2.0** (2026-05-30) — 吸收 agent-psychology Top 20 心理理论索引，新增心理诊断引擎
 - **1.1.1.0** (2026-05-20) — Boot Check + FeedbackFunctions + 单一真相源(VERSION)

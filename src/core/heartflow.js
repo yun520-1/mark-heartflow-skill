@@ -12,6 +12,26 @@ const path = require('path');
 
 // ─── Subsystem Imports ────────────────────────────────────────────────────────
 
+// Search modules
+const { BM25Engine } = require('./search/bm25.js');
+const { HybridSearchEngine } = require('./search/hybrid-search.js');
+
+// Budget & Token counting
+const { Budget, countTokens, resolveThinkingBudget, exceedsTokenLimit, getBudgetDescription } = require('./budget.js');
+
+// Graph memory
+const Graph = require('./memory/graph.js');
+
+// Core utilities
+const CoreUtils = require('./utils.js');
+
+// Search trace & transparency
+const { SearchTrace, SearchPhaseMetrics, WeightComponents, QueryInfo, SearchSummary } = require('./search/search-trace.js');
+
+// Memory slots & observe
+const { MemorySlots } = require('./memory/slots.js');
+const { observe, consolidate } = require('./memory/observe.js');
+
 // Memory
 const { MeaningfulMemory } = require('../memory/meaningful-memory.js');
 const { KnowledgeGraph } = require('../memory/knowledge-graph.js');
@@ -65,8 +85,8 @@ const StateSnapshot = require('./state-snapshot.js');
 const ErrorHandler = require('./error-handler.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '1.0.8';
-const BUILD_DATE = '2026-05-20';
+const VERSION = '1.1.8.0';
+const BUILD_DATE = '2026-05-30';
 
 class HeartFlow {
   constructor(config = {}) {
@@ -109,6 +129,21 @@ class HeartFlow {
     this.wakeup = null;
     this.interactive = null;
     this.workflow = null;   // functions
+
+    // New modules
+    this.bm25 = null;
+    this.hybrid = null;
+    this.budget = null;
+    this.graph = null;
+    this.utils = null;
+    this.slots = null;
+    this.observe = null;
+    this.consolidate = null;
+    this.SearchTrace = SearchTrace;
+    this.SearchPhaseMetrics = SearchPhaseMetrics;
+    this.WeightComponents = WeightComponents;
+    this.QueryInfo = QueryInfo;
+    this.SearchSummary = SearchSummary;
 
     this._modules = {};
     this._mindSpace = { rules: [], context: {} };
@@ -167,6 +202,25 @@ class HeartFlow {
     try { this.snapshot = StateSnapshot; } catch (e) {}  // singleton export
     try { this.error = ErrorHandler; } catch (e) {}      // singleton export
 
+    // ─── New modules initialization ─────────────────────────────────────────
+    // Search modules
+    try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { console.warn('[HeartFlow] BM25 init error:', e.message); }
+    try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { console.warn('[HeartFlow] HybridSearch init error:', e.message); }
+
+    // Budget & Utils (function exports, not classes)
+    this.budget = { Budget, countTokens, resolveThinkingBudget, exceedsTokenLimit, getBudgetDescription };
+    this.utils = CoreUtils;
+
+    // Graph (singleton functions)
+    this.graph = Graph;
+
+    // Slots & Observe (reference from heartflow context)
+    try {
+      this.slots = new MemorySlots({ dataDir: path.join(this.rootPath, 'data') });
+    } catch (e) { console.warn('[HeartFlow] MemorySlots init error:', e.message); }
+    this.observe = observe;
+    this.consolidate = consolidate;
+
     this._bootMindSpace();
     this._registerModules();
 
@@ -197,6 +251,8 @@ class HeartFlow {
       'truth', 'security', 'language',
       'stability', 'confidence', 'restraint', 'arbitration',
       'snapshot', 'error', 'embodied', 'wakeup', 'interactive', 'workflow',
+      // New modules
+      'bm25', 'hybrid', 'budget', 'graph', 'utils',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -274,6 +330,8 @@ class HeartFlow {
       'truth', 'security', 'language',
       'stability', 'confidence', 'restraint', 'arbitration',
       'snapshot', 'error', 'embodied', 'wakeup', 'interactive', 'workflow',
+      // New modules
+      'bm25', 'hybrid', 'budget', 'graph', 'utils',
     ];
     return {
       started: true,
