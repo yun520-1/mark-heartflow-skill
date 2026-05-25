@@ -56,3 +56,6 @@ cron/
 heartflow-identity/
 pre-launch-check-*.md
 references/capability-audit.md
+
+# Archive - local cleanup backup
+ARCHIVE_full_cleanup_20260530/
