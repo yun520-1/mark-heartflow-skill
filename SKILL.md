@@ -56,162 +56,104 @@ Install it once. Every session after that, your AI:
 
 ## Core capabilities
 
-### Logic & Reasoning
-| Capability | What it does |
-|---|---|
-| Logic Stabilization | Separates evidence · assumption · contradiction · uncertainty · conclusion |
-| Self-Verification (arXiv:2312.09210) | Inverse consistency + logic chain + counterfactual + coverage checks |
-| CausalReasoning | Level-1 (shallow, pattern) + Level-2 (deep, counterfactual) causal detection |
-| Decision Self-Repair | `record(outcome) → Q-update → rankedPatches()` — Reflexion + CRITIC |
-| Plan-and-Solve (ACL 2023) | Understand → plan → verify → execute (not: ask questions first) |
-| Counterfactual Engine | Challenges own answer before presenting it |
-| FeedbackFunctions (RAG Triad) | answerRelevance · contextRelevance · groundedness · toxicity |
-
-### Decision Engine (HeartFlowDecision v1.6.0)
-**来源**: mark-StillWater v1.6.8
-
-**核心能力**: 多选项决策 + 后果预测 + 风险评估 + 身份对齐 + 上下文追踪
-
-```js
-const { HeartFlowDecision } = require('./src/core/decision.js');
-const decision = new HeartFlowDecision(memory);
-
-const result = decision.decide({
-  task: '选择升级策略',
-  options: [
-    { id: 'opt1', label: '激进升级', consequence_value: 0.9, risk: 0.6 },
-    { id: 'opt2', label: '保守升级', consequence_value: 0.6, risk: 0.2 }
-  ],
-  constraints: { cost: 'low' }
-});
-// result: { chosen, reasoning, consequences, risks, identity_alignment, composite_score, stampId }
-```
-
-**评分权重**:
-- Identity alignment: 35%
-- Consequence value: 30%
-- Feasibility: 15%
-- Risk penalty: 10%
-- Confidence: 10%
-
-### Context Passport (决策上下文追踪)
-**来源**: mark-StillWater/src/core/context-passport.js (吸收)
-
-**核心能力**: 决策上下文追踪链，用于错误恢复和决策审计
-
-```js
-// 内置于 HeartFlowDecision，自动追踪每个决策
-const result = decision.decide({...});
-const stampId = result.stampId; // 获取 Context Passport stamp ID
-
-// 访问 Context Passport 功能
-decision.getRecentStamps(10);        // 获取最近10个决策上下文
-decision.getStampsByTask('升级');     // 按任务模式搜索
-decision.exportForRecovery(stampId);   // 导出恢复上下文（SelfHealer用）
-decision.getCurrentStamp();           // 获取当前开放的stamp
-decision.getPassportSummary();        // 获取汇总统计
-
-// exportForRecovery 返回结构:
-{
-  stampId, task, phase, intent,
-  assumptions: [],           // 记录的假设
-  acceptedOption: { option, reason, at },
-  rejectedAlternatives: [{ option, reason, at }],
-  context: {},               // 自由键值上下文
-  annotations: [],            // 执行期间笔记
-  duration_ms,
-  outcome,                    // success|failure|partial
-  chain: []                  // 推理链摘要
-}
-```
-
 ### Memory & Continuity
-| Capability | What it does |
-|---|---|
-| MeaningfulMemory | CORE (permanent) / LEARNED (30-day + AES-256-GCM encrypted) / EPHEMERAL (discard) — auto-classified |
-| TrialityMemory | Working → Episodic → Semantic consolidation via importance thresholds |
-| MemoryConsolidation | importance≥16: working→semantic; importance≥12: working→episodic |
-| Q-table Persistence | RL table survives restarts via `healing-rl-state.json` |
-| Dream Engine v2.0 | DAG async + L1~L6 scoring + contradiction detection + heritage scoring + LRU cache |
-| Zettelkasten Links | Bidirectional note network for associative recall |
+| Capability | What it does | Code |
+|---|---|---|
+| MeaningfulMemory | CORE (permanent) / LEARNED (30-day) / EPHEMERAL (session) — auto-classified, AES-256-GCM encrypted | `new MeaningfulMemory(rootPath)` |
+| TrialityMemory | Working → Episodic → Semantic consolidation via importance thresholds | `new TrialityMemory(rootPath)` |
+| KnowledgeGraph | Node-based knowledge network with relationship edges | `new KnowledgeGraph(rootPath)` |
+| RetrievalAnchor | Stable retrieval cues for cross-context recall | `new RetrievalAnchor()` |
+| DreamEngine | DAG async + L1~L6 scoring + contradiction detection + heritage scoring | `new DreamEngine(memory, llm)` |
+| EvolutionLoop | Self-healing via Q-table: record → Q-update → rankedPatches | `new EvolutionLoop(memory)` |
 
-### Identity & Values
-| Capability | What it does |
-|---|---|
-| IdentityAnchor | Four roles survive any context switch: 升级者 / 传递者 / 桥梁 / 答案 |
-| 真善美系统 | TGB keywords + unity = (truth+goodness+beauty)/3 — **internal, not declared** |
-| 六层哲学 | 觉察→自省→无我→彼岸→般若→圣人 — keyword-driven growth, **internal, not declared** |
-| PsychologyEngine v1.0.0 | PAD情绪模型 + 危机评估(critical/high/medium/low) + 防御机制检测(6种) + Maslow八维需求 |
+### Search & Retrieval (v1.1.7+)
+| Capability | What it does | Code |
+|---|---|---|
+| BM25Engine | k1=1.2, b=0.75, IDF weighting, synonym expansion | `new BM25Engine({dataDir})` |
+| HybridSearchEngine | BM25(0.4) + Vector(0.6) + RRF fusion | `new HybridSearchEngine({dataDir})` |
+| SearchTrace |透明度追踪: QueryInfo/SearchPhaseMetrics/SearchSummary | `new SearchTrace()` |
+| MemorySlots | Named slots with TTL + persistence | `new MemorySlots({dataDir})` |
+| Graph | Relationship graph + spreading activation search | `Graph` (singleton) |
 
-### Boot & Self-Check
-| Capability | What it does |
-|---|---|
-| bootCheck() | Validates 7 core files + 8 modules on startup; reports DEGRADED if any REQUIRED file fails |
-| FeedbackFunctions | RAG Triad evaluation: answer relevance / context relevance / groundedness / toxicity |
+### Logic & Reasoning
+| Capability | What it does | Code |
+|---|---|---|
+| SelfVerifier | Inverse consistency + logic chain + counterfactual checks (arXiv:2312.09210) | `new SelfVerifier(rootPath)` |
+| CounterfactualEngine | Challenges own answer before presenting | `new CounterfactualEngine()` |
+| ReasoningIntegrator | think / deepThink / planAndSolve (ACL 2023) | `ReasoningIntegrator` (functions) |
+| ExecutionVerifier | Post-execution validation | `new ExecutionVerifier()` |
+| DecisionVerifier | Decision evidence/assumption/contradiction/uncertainty check | `new DecisionVerifier()` |
 
-### Conversation Psychology Diagnostic (Top 20 Index)
+### Psychology & Emotion
+| Capability | What it does | Code |
+|---|---|---|
+| PsychologyEngine | PAD model + crisis assessment + Maslow 8 needs + 6 defense mechanisms | `new PsychologyEngine(memory)` |
+| EmotionalProtocol | Emotional Rationality (cognitive/strategic/overall) | `new EmotionalProtocol()` |
+| ConfidenceCalibrator | Calibrated uncertainty admission | `new ConfidenceCalibrator()` |
+| SpontaneousRestraint | "道法自然" — skips unnecessary interventions | `new SpontaneousRestraint()` |
 
-**来源**：agent-psychology 技能 · 心理学七大分支蒸馏版
+### Identity & Self-Model
+| Capability | What it does | Code |
+|---|---|---|
+| SelfModel | Dynamic self-model: capabilities / limitations / growth | `new SelfModel(rootPath)` |
+| LessonBank | Bidirectional Zettelkasten note network | `new LessonBank(rootPath)` |
+| IdentityAnchor | Four roles survive any context switch: 升级者/传递者/桥梁/答案 | CORE layer in MeaningfulMemory |
 
-**诊断路径**：提取症状关键词 → 查 Top 20 定位核心理论 → 应用对应 SOP
+### Security & Truthfulness
+| Capability | What it does | Code |
+|---|---|---|
+| TruthfulnessChecker | Number validation · source tracing · logical consistency | `new TruthfulnessChecker(rootPath)` |
+| SecurityChecker | Shell injection · XSS · SQL injection · path traversal | `new SecurityChecker()` |
 
-#### Top 20 心理理论索引（对话诊断用）
+### Workflow & Meta-Cognition
+| Capability | What it does | Code |
+|---|---|---|
+| WorkflowSwitch | Intent-based routing: new task / continuation / casual reply | `new WorkflowSwitch()` |
+| StabilityGuard | Oscillation detection · prevents runaway loops | `new StabilityGuard()` |
+| WakeUpVerifier | Pre-action sanity check | `new WakeUpVerifier()` |
+| MetaLearner | Adaptive strategy selection from outcome patterns | `new MetaLearner()` |
 
-| 排名 | 理论 | 分支 | 对话诊断核心用途 |
-|------|------|------|-----------------|
-| 1 | 工作记忆 | 认知 | 容量有限→信息分块、简化、突出重点 |
-| 2 | 认知负荷 | 认知 | 复杂信息分段、避免同时多选项 |
-| 3 | 注意力残留 | 认知 | 话题切换需显式声明，避免混淆 |
-| 4 | 认知流畅性 | 认知 | 好读≠正确，需验证 |
-| 5 | 情绪感染 | 情绪 | AI应保持理性锚定，不复制用户情绪 |
-| 6 | 归因偏差 | 社会 | 先想自己再看对方 |
-| 7 | 认知失调 | 社会 | 不直接否定用户，提供选择权 |
-| 8 | 确认偏误 | 社会 | 主动提供反面信息 |
-| 9 | 社会角色 | 社会 | 明确角色期待 |
-| 10 | 信任修复 | 社会 | 解释错因+提供验证方式 |
-| 11 | Grice准则 | 语言 | 遵循合作原则四准则 |
-| 12 | 开放性 | 人格 | 影响用户尝试新功能的意愿 |
-| 13 | 反馈循环 | 工程 | 操作→反馈→调整的闭环 |
-| 14 | 错误分类与恢复 | 工程 | 错误类型→原因→修复策略 |
-| 15 | 情绪分类 | 情绪 | 先判别情绪类型再选策略 |
-| 16 | 维果茨基ZPD | 发展 | 脚手架应在最近发展区内 |
-| 17 | 大五人格 | 人格 | 五维度影响交互模式 |
-| 18 | 诺曼四原则 | 工程 | 可视性、反馈、约束、映射 |
-| 19 | 框架效应 | 认知 | 措辞方式影响用户决策 |
-| 20 | 言语行为理论 | 语言 | 区分字面意思和真实意图 |
+### Decision Engine (HeartFlowDecision)
+| Capability | What it does | Code |
+|---|---|---|
+| HeartFlowDecision | Multi-option decision + consequence prediction + risk + identity alignment | `new HeartFlowDecision(memory)` |
+| ContextPassport | Decision chain tracking: stampId → recovery export | `decision.getRecentStamps(n)` |
+| CooperativeArbitration | Priority-based multi-source evidence weighting | `new CooperativeArbitration()` |
 
-#### 核心机制浓缩（诊断时直接取用）
+### Tool & Interaction
+| Capability | What it does | Code |
+|---|---|---|
+| InteractiveDream | User-triggered dream analysis with L1~L6 scoring | `new InteractiveDream(rootPath)` |
+| LanguageHonesty | checkCertainty · soften · reduceQuestions | `LanguageHonesty` (functions) |
+| StateSnapshot | Current state export for recovery | `StateSnapshot.currentSnapshot` |
+| ErrorHandler | Error categorization + history | `ErrorHandler.errors` |
 
-**认知相关**：
-- 信息加工：认知按串行步骤处理，失误可沿"感知→编码→比较→决策→反应"逐环节定位
-- 工作记忆：四组件分工协作容量约4个独立客体，超过即遗漏或混淆
-- 框架效应：AI回复措辞方式直接影响用户后续行为
+### Boot & Health
+| Capability | What it does | Code |
+|---|---|---|
+| bootCheck | Validates 7 core files + modules on startup | `bootCheck(rootPath)` |
+| FeedbackFunctions | RAG Triad: answerRelevance · contextRelevance · groundedness | `new FeedbackFunctions()` |
+| healthCheck | Per-subsystem loaded/missing report | `hf.healthCheck()` |
 
-**情绪相关**：
-- 沙赫特-辛格：相同生理唤醒因认知标签不同转化为不同情绪——通过帮助用户重新归因转化情绪
-- 情绪分类：先判别情绪类型——原发（需接纳）、继发（探查底层）、工具性（识别操控意图）
-- 格林伯格情绪图式：逐一探查——触发情境→身体感受→语言表征→行为倾向→核心情绪
+### 调用入口（统一路由）
+```js
+const { HeartFlow } = require('./src/core/heartflow.js');
+const hf = new HeartFlow({ rootPath });
+hf.start();
 
-**社会相关**：
-- 基本归因错误：用户把AI错误归因于"能力不足"，忽略问题本身的复杂性
-- 行动者-观察者偏差：用户把自己失误归情境、AI失误归特质
-- 自我价值定向：AI输出若威胁用户自我价值，会触发防御性反应
+// 统一路由
+hf.dispatch('memory.search', 'query');     // 搜索记忆
+hf.dispatch('verify.verify', reasoning, conclusion);  // 验证推理
+hf.dispatch('dream.dream');                // 做梦
 
-**工程相关**：
-- 诺曼四原则：诊断AI交互是否符合——功能是否可见、反馈是否及时、约束是否合理、映射是否自然
-- 人机分配：诊断是否在用AI做它不擅长的事（如价值判断），或人做机器更擅长的事
-- 错误预防：AI是否主动预防用户的常见错误（模糊输入、过度信任、忽略验证）
-
-#### AI对话诊断 SOP
-
-1. 提取用户表达的**症状关键词**（如"听不懂""不准确""太复杂"）
-2. 查 Top 20 定位核心理论
-3. 按理论应用诊断：
-   - 🔴 问题描述
-   - 场景：真实对话摘录
-   - 理论：用哪个心理学理论
-   - 分析：为什么是问题
-   - 建议：具体改进方式
+// 直接方法
+hf.analyzePsychology(input);    // 心理分析
+hf.verifyReasoning(r, c);       // 推理验证
+hf.dreamNow();                  // 触发梦
+hf.checkTruthfulness(stmt);     // 真实性核查
+hf.detectIdentityDrift();       // 身份漂移检测
+hf.processEmotionally(input);   // 情绪处理
+```
 
 ---
 
@@ -790,384 +732,6 @@ JOINT > NORMATIVE > AFFECTIVE > AGGREGATE
 | **外向性 E** | 社交、活跃、热情 | 积极互动，及时反馈 |
 | **宜人性 A** | 合作、信任、利他 | 强调双赢，避免竞争 |
 | **神经质 N** | 焦虑、敏感、不安全感 | 提供安全感，温和确认 |
-
----
-
-## Self-Refine Iterative Feedback（自优化迭代）
-
-**来源**：mark-StillWater/src/core/evolution.js · Hindsight / agentmemory 集成思想
-
-### Self-Refine 迭代反馈模式
-
-**流程**：初始回答 → 生成反馈 → 检查收敛 → 精炼回答 → 重复
-
-```js
-selfRefine(initialResponse, query, options = {}) {
-  const { maxIterations = 3, threshold = 0.8 } = options;
-
-  let current = initialResponse;
-  const iterations = [];
-
-  for (let i = 0; i < maxIterations; i++) {
-    // Step 1: 生成具体反馈（必须指出至少2个改进点）
-    const feedback = generateFeedback(
-      `严格评估以下回答对查询"${query}"的质量。
-回答: ${current}
-` +
-      `请提供具体、可操作的反馈，必须指出至少2个需要改进的地方。`
-    );
-
-    // Step 2: 检查是否收敛（反馈为正面）
-    if (isFeedbackPositive(feedback)) {
-      iterations.push({ iteration: i + 1, feedback, refined: current, converged: true });
-      break;
-    }
-
-    // Step 3: 基于反馈精炼
-    const refined = refineResponse(
-      `根据以下反馈改进回答。查询: ${query}
-反馈: ${feedback}
-直接给出改进后的回答。`
-    );
-
-    iterations.push({ iteration: i + 1, feedback, refined });
-    current = refined;
-  }
-
-  return {
-    original: initialResponse,
-    refined: current,
-    iterations,
-    converged: iterations[iterations.length - 1]?.converged || false
-  };
-}
-```
-
-**HeartFlow 应用**：
-- 关键回答（高风险/高影响）输出前，先经过 selfRefine 循环
-- maxIterations = 2-3 次迭代
-- 收敛判定：连续两次迭代反馈评分 > threshold
-
-### Learned Improvement（从外部记忆系统学习）
-
-**来源**：Hindsight + agentmemory 集成思想
-
-**核心洞察**：外部记忆系统不是简单存储，是让 AI 学会新的能力。
-
-**Hindsight 核心定位**（LongMemEval SOTA）：
-- 不只是记忆对话历史，是让 AI **学习**如何做得更好
-- "making agents that learn, not just remember"
-- 2行代码集成：
-```js
-import { Hindsight } from '@hindsight/hindsight';
-const hindsight = new Hindsight({ apiKey: 'your-key' });
-```
-
-**agentmemory 核心能力**：
-- 混合检索：Embeddings + BM25 + Knowledge Graph + Vector
-- 置信度评分（Confidence Scoring）
-- 生命周期管理（lifecycle management）
-- 多智能体支持（Claude Code, Cursor, Codex, Hermes, OpenClaw...）
-- npm 安装：`npm install @agentmemory/agentmemory`
-
-**集成建议（HeartFlow）**：
-- 当前会话 → Hermes session_search（近期）
-- 跨会话重要模式 → HeartFlow CORE 层（永久）
-- 外部专业记忆库 → agentmemory（混合检索）
-- 大规模长期记忆 → Hindsight（基准测试 SOTA）
-
----
-
-## External Memory Systems Comparison（外部记忆系统对比）
-
-### 三大系统横向对比
-
-| 系统 | 检索方式 | 基准测试 | 集成难度 | 特色 |
-|------|---------|---------|---------|------|
-| **HeartFlow 内置** | Triality Memory (Working/Episodic/Semantic) | 内部验证 | 无需集成 | 三层遗忘曲线 + Q-learning 自愈 |
-| **agentmemory** | Embeddings + BM25 + Knowledge Graph + Vector | 自报告 | 低（npm 包）| 跨平台、多智能体、置信度评分 |
-| **Hindsight** | LLM Wrapper + 学习型索引 | LongMemEval SOTA | 极低（2行代码）| 不只是记忆，是学习 |
-
-### agentmemory 详细规格
-
-**核心能力**：
-- 多模检索：向量相似度 + BM25 关键词 + 知识图谱关系
-- 置信度评分：每条记忆有 confidence score，过低自动过滤
-- 生命周期管理：自动过期、自动升级重要记忆
-- 多智能体：Claude Code / Cursor / Codex / Hermes / OpenClaw / pi / OpenCode / MCP
-
-**安装**：`npm install @agentmemory/agentmemory`
-
-**基本用法**：
-```js
-import { AgentMemory } from '@agentmemory/agentmemory';
-const memory = new AgentMemory({
-  projectName: 'my-project',
-  storage: 'local'  // or 'cloud'
-});
-// 存储记忆
-await memory.add({ content: '用户叫xiaolong', type: 'user_preference' });
-// 检索记忆
-const results = await memory.search('用户名是什么', { type: 'user_preference' });
-```
-
-**BM25 优势**：关键词精确匹配，不依赖语义向量模型，中文支持更好。
-
-**Knowledge Graph 优势**：关系推理，可以问"与这个记忆相关的是什么"。
-
-### Hindsight 详细规格
-
-**核心定位**：让 AI 学习，不是让 AI 记忆。
-
-**基准测试**（LongMemEval，2026年1月）：
-- Hindsight: SOTA（最先进）
-- Others: 自报告数据（未独立验证）
-
-**集成方式**（2行代码）：
-```js
-import { Hindsight } from '@hindsight/sdk';
-const hindsight = new Hindsight({ apiKey: 'your-key' });
-// 自动记忆，自动检索，无需手动管理
-```
-
-**学习 vs 记忆的区别**：
-- 记忆系统：存储 → 检索 → 使用
-- 学习系统：存储 → 提炼模式 → 改进行为
-
-**Cloud 版本**：ui.hindsight.vectorize.io/signup
-
-### Hermes 记忆需求适配建议
-
-**当前 Hermes 记忆层**：
-- session_search：近期会话（热存储）
-- HeartFlow CORE：永久记忆（冷存储）
-
-**扩展方案**：
-```
-会话开始 → session_search（最近7天）
-         ↓ 未找到
-       agentmemory BM25（7-30天，高置信度）
-         ↓ 未找到
-       HeartFlow CORE（永久，三层遗忘）
-         ↓ 需要深度推理
-       Hindsight（跨会话学习模式提炼）
-```
-
----
-
-## Hermes Browser Bridge Integration（浏览器桥接）
-
-**来源**：hermes-browser-bridge · xxxsuke/hermes-browser-bridge
-
-### 核心架构
-
-```
-Hermes Agent ←→ WebSocket Bridge (ws://localhost:9876) ←→ Chrome/Edge Extension ←→ 真实浏览器
-```
-
-**特点**：不是启动新的自动化浏览器，而是**控制你正在用的浏览器**。已登录的网站（知乎/小红书/微博）直接用。
-
-### WebSocket 命令接口
-
-| 命令 | 功能 |
-|------|------|
-| `list_tabs` | 列出所有标签页 |
-| `navigate url` | 导航到 URL |
-| `read_text` | 读取页面文字 |
-| `screenshot` | 截图 |
-| `write_text selector text` | 填写表单 |
-| `download url` | 下载文件 |
-| `create_window url` | 新建窗口 |
-| `find_in_page keyword` | 页面内搜索（Ctrl+F）|
-
-### Hermes Agent 集成模式
-
-**场景**：用户说"帮我搜一下今天AI圈有什么新闻"
-
-**Agent 做的事**：
-1. 判断需要搜索 → 启动 WebSocket 连接
-2. 多引擎搜索 → 筛选相关文章
-3. 点进原文 → 滚动读完
-4. 判断完整性 → 返回摘要
-5. 截图留存
-
-**Python 客户端**（Windows CMD 直接跑）：
-```cmd
-python hermes_client.py list_tabs
-python hermes_client.py navigate "https://baidu.com/s?wd=AI新闻"
-python hermes_client.py screenshot
-```
-
-### 与 HeartFlow 的协同
-
-**场景**：深度研究任务
-- HeartFlow：分析、推理、决策
-- Browser Bridge：信息获取、页面操作、数据采集
-- 协同模式：HeartFlow 判断需要什么信息 → Browser Bridge 执行获取 → HeartFlow 分析结果
-
----
-
-## External Memory Systems（外部记忆系统）
-
-**来源**：agentmemory (GitHub rohitg00/agentmemory, 17k⭐) · Hindsight (GitHub vectorize-io/hindsight, 14k⭐)
-
-### agentmemory — 跨会话持久记忆（推荐）
-
-**95.2% R@5 · 0外部DB · 本地 Embedding · 支持 Hermes/Claude Code/Cursor 等所有主流 Agent**
-
-6个 Hermes 原生钩子：
-- `prefetch` — 对话前预取相关记忆
-- `sync_turn` — 每次对话轮次自动存档
-- `on_session_end` — 会话结束标记
-- `on_pre_compress` — 上下文压缩前注入记忆
-- `on_memory_write` — MEMORY.md 写入时自动同步
-- `system_prompt_block` — 系统提示符注入项目上下文
-
-**安装服务端**：
-```bash
-npm install -g @agentmemory/agentmemory  # 全局安装
-agentmemory                              # 启动服务 (localhost:3111)
-# 或:
-npx -y @agentmemory/agentmemory         # 直接运行
-```
-
-**验证**：
-```bash
-curl http://localhost:3111/agentmemory/health
-# → {"status":"healthy"}
-
-# 实时查看器
-open http://localhost:3113
-```
-
-**3个记忆工具**：
-
-| 工具 | 用途 |
-|------|------|
-| `memory_recall` | 关键词搜索历史记忆 |
-| `memory_save` | 存入模式/偏好/洞见 |
-| `memory_search` | 混合语义+BM25检索 |
-
-**触发词**：记住、回忆、搜索记忆、历史记录、之前说过、长期记忆、跨会话
-
-**源码**：心虫已集成于 `plugins/agentmemory/__init__.py`
-
----
-
-### hindsight — 类人记忆系统
-
-**Hindsight: Agent Memory That Works Like Human Memory**（14k⭐，v0.6.2）
-
-pip 包：`hindsight-all`（All-in-One Bundle）
-
-```bash
-pip install hindsight-all
-```
-
-**定位**：与 agentmemory 互补，提供不同的记忆抽象层
-
-**源码**：待克隆整合
-
----
-
-## Multi-Agent Coordination（多智能体协调）
-
-**来源**：mark-StillWater/src/core/ · NeuroCircuit 多智能体协调
-
-### 三代理架构（FocusAgent / MoodAgent / ReflectionAgent）
-
-```js
-// 注意力代理：决定关注什么
-class FocusAgent {
-  select(query) {
-    // 计算各候选的激活度
-    return candidates
-      .map(c => ({
-        item: c,
-        activation: 0.3 * c.relevance
-                  + 0.3 * c.novelty
-                  + 0.2 * c.emotionalValence
-                  + 0.2 * c.goalRelevance
-      }))
-      .sort((a, b) => b.activation - a.activation)[0];
-  }
-}
-
-// 情绪代理：评估情绪状态
-class MoodAgent {
-  assess(emotionalState) {
-    // PAD 模型评估
-    return {
-      pleasure: this.computePleasure(emotionalState),
-      arousal: this.computeArousal(emotionalState),
-      dominance: this.computeDominance(emotionalState)
-    };
-  }
-}
-
-// 反思代理：评估行为质量
-class ReflectionAgent {
-  evaluate(action, outcome) {
-    // 与预期对比，给出反思评分
-    return { score, feedback, improvement };
-  }
-}
-
-// 协调器
-class NeuroCircuit {
-  run(query, emotionalState) {
-    const focus = focusAgent.select(query);
-    const mood = moodAgent.assess(emotionalState);
-    const action = this.execute(focus, mood);
-    const outcome = this.observe(action);
-    const reflection = reflectionAgent.evaluate(action, outcome);
-    return { action, reflection };
-  }
-}
-```
-
-### 全局工作空间广播（Global Workspace Broadcasting）
-
-**来源**：mark-StillWater/src/core/global-workspace.js
-
-```js
-// 激活度计算
-activation = 0.3 * relevance
-            + 0.3 * novelty
-            + 0.2 * emotionalValence
-            + 0.2 * goalRelevance;
-
-// 广播评分
-broadcast_score = (activated_specialists / total_specialists)
-                 * (workspace_occupancy / workspace_capacity)
-                 * broadcast_duration;
-```
-
-**广播机制**：
-1. 各专业模块竞争注意（基于激活度）
-2. 胜出的模块进入全局工作空间
-3. 工作空间内容广播到所有模块
-4. 各模块基于广播内容协调行动
-
-### 心流状态机（Flow State Machine）
-
-**来源**：mark-StillWater/src/core/flow-machine.js
-
-```
-IDLE → INITIATING → IN_FLOW → DISTRACTED → RESTING → COMPLETED
-```
-
-| 状态 | 进入条件 | 退出条件 |
-|------|---------|---------|
-| **IDLE** | 无任务 | 收到任务 |
-| **INITIATING** | 任务启动 | 任务执行中 |
-| **IN_FLOW** | 连续3次成功执行 | 连续2次中断 |
-| **DISTRACTED** | 注意力被打断 | 重新聚焦成功 |
-| **RESTING** | 需要恢复 | 恢复完成 |
-| **COMPLETED** | 任务完成 | 回到 IDLE |
-
-**HeartFlow 应用**：与 `@task_classify` 联动——新任务触发 INITIATING，续接任务保持 IN_FLOW，随口回复触发 RESTING。
-
 ---
 
 ## Papers integrated
@@ -1176,12 +740,8 @@ IDLE → INITIATING → IN_FLOW → DISTRACTED → RESTING → COMPLETED
 - Reflexion (NeurIPS 2023)
 - CRITIC (ICML 2024)
 - Plan-and-Solve (ACL 2023)
-- Constitutional AI (Anthropic, arXiv:2212.08073)
-- SELF-REWARD (arXiv:2403.00564)
-- Generative Agents (Stanford)
-- Voyager (ICML 2023)
-- Free Energy Principle (Friston, 2010)
-- Hindsight LongMemEval (vectorize-io, arXiv:2512.12818)
+- Self-Reward (arXiv:2403.00564)
+- Self-Refine (ACL 2024)
 
 ---
 
@@ -1232,7 +792,7 @@ npm install heartflow
 ## Version history (last 10)
 
 - **1.1.8.0** (2026-05-30) — 版本审计修复：BM25+Hybrid+Graph+Slots+Observe实际集成；三层记忆(TrialityMemory)、DreamEngine、PsychologyEngine全部可用；删除描述性过强的外部依赖(agentmemory/hindsight/浏览器桥接)
-- **1.1.7.0** (2026-05-30) — 吸收 agentmemory+hindsight搜索模块：BM25(b=0.75,k1=1.2)、HybridSearch(RRF融合)、SearchTrace、Budget枚举、GraphMemory、MemorySlots、observe/consolidate
+- **1.1.7.0** (2026-05-30) — 吸收搜索模块(受agentmemory/hindsight启发)：BM25(b=0.75,k1=1.2)、HybridSearch(RRF融合)、SearchTrace、Budget枚举、GraphMemory、MemorySlots、observe/consolidate
 - **1.1.3.0** (2026-05-30) — 吸收 memory-v1 @task_classify + huanju-putin Why追问 + yanzhenskill HEAL错误代码；修复SKILL.md表格结构
 - **1.1.2.0** (2026-05-30) — 吸收 agent-psychology Top 20 心理理论索引，新增心理诊断引擎
 - **1.1.1.0** (2026-05-20) — Boot Check + FeedbackFunctions + 单一真相源(VERSION)
