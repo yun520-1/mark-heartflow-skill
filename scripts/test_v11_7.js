@@ -11,10 +11,12 @@ function test(name, fn) {
   try {
     fn();
     console.log('✅ ' + name);
+    passed++;
     return true;
   } catch (e) {
     console.log('❌ ' + name);
     console.log('   错误: ' + e.message);
+    failed++;
     return false;
   }
 }
@@ -35,7 +37,7 @@ const { CooperativeArbitration, ARBITRATIONMode, RESOLUTION_STRATEGIES } =
 
   const ca = new CooperativeArbitration({ empathyDepth: 0.8 });
 
-  passed += test('CooperativeArbitration 实例化', () => {
+  test('CooperativeArbitration 实例化', () => {
     if (!ca) throw new Error('应为实例');
   });
 
@@ -46,15 +48,15 @@ const { CooperativeArbitration, ARBITRATIONMode, RESOLUTION_STRATEGIES } =
     emotionalTone: '平静',
   });
 
-  passed += test('assessState() 正常运行', () => {
+  test('assessState() 正常运行', () => {
     if (!a1.mode) throw new Error('应有mode');
   });
 
-  passed += test('对齐度计算', () => {
+  test('对齐度计算', () => {
     if (a1.alignment === undefined) throw new Error('应有alignment');
   });
 
-  passed += test('状态叙事生成', () => {
+  test('状态叙事生成', () => {
     if (!a1.narrative) throw new Error('应有narrative');
   });
 
@@ -65,20 +67,20 @@ const { CooperativeArbitration, ARBITRATIONMode, RESOLUTION_STRATEGIES } =
     context: { topic: '工作方法' },
   });
 
-  passed += test('resolve() 正常运行', () => {
+  test('resolve() 正常运行', () => {
     if (!r2.strategy) throw new Error('应有strategy');
   });
 
-  passed += test('解决策略选择', () => {
+  test('解决策略选择', () => {
     const validStrategies = Object.values(RESOLUTION_STRATEGIES);
     if (!validStrategies.includes(r2.strategy)) throw new Error('无效策略');
   });
 
-  passed += test('双赢结果', () => {
+  test('双赢结果', () => {
     if (r2.winWin !== true) throw new Error('应为双赢');
   });
 
-  passed += test('仲裁动作生成', () => {
+  test('仲裁动作生成', () => {
     if (!r2.action) throw new Error('应有action');
     if (!r2.action.type) throw new Error('应有action.type');
   });
@@ -90,20 +92,20 @@ const { CooperativeArbitration, ARBITRATIONMode, RESOLUTION_STRATEGIES } =
     emotionalTone: '平静',
   });
 
-  passed += test('共生状态检测', () => {
+  test('共生状态检测', () => {
     if (a2.mode !== ARBITRATIONMode.SYMBIOSIS) throw new Error('应为symbiosis');
   });
 
-  passed += test('自然合作不需要介入', () => {
+  test('自然合作不需要介入', () => {
     if (a2.needsArbitration !== false) throw new Error('不应需要仲裁');
   });
 
-  passed += test('evaluateHealth()', () => {
+  test('evaluateHealth()', () => {
     const health = ca.evaluateHealth();
     if (!health.healthLevel) throw new Error('应有healthLevel');
   });
 
-  passed += test('stats()', () => {
+  test('stats()', () => {
     const stats = ca.stats();
     if (stats.version !== '11.7.2') throw new Error('版本应为11.7.2');
   });
@@ -128,15 +130,15 @@ console.log('\n=== 引擎集成 ===');
 try {
   const engine = require(path.join(HF_ROOT, 'src/core/heartflow-engine.js'));
 
-  passed += test('HeartFlow Engine 加载成功', () => {
+  test('HeartFlow Engine 加载成功', () => {
     if (!engine) throw new Error('engine 不应为 null');
   });
 
-  passed += test('v11.7 新模块导出', () => {
+  test('v11.7 新模块导出', () => {
     if (!engine.CooperativeArbitration) throw new Error('CooperativeArbitration 未导出');
   });
 
-  passed += test('v11.7 新模块实例化', () => {
+  test('v11.7 新模块实例化', () => {
     const ca = new engine.CooperativeArbitration();
     if (!ca) throw new Error('实例化失败');
   });

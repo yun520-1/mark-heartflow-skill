@@ -41,7 +41,7 @@ class CounterfactualEngine {
       // 触发词：这些词暗示答案过于确定
       '绝对是', '一定是', '必然是', '毫无疑问',
       '没有争议', '无可置疑', '不容置疑',
-      '唯一正确', '正确答案', '就是',
+      '唯一正确', '正确答案', '就是', '绝对正确',
     ];
   }
 
@@ -240,7 +240,8 @@ class CounterfactualEngine {
 
     return {
       originalConfidence: 'high',
-      adjustedConfidence: shift < -0.2 ? 'medium' : shift < -0.4 ? 'low' : 'high',
+      confidence: certainSignals.length > 0 ? 'high' : 'medium',
+      adjustedConfidence: shift < -0.4 ? 'low' : shift < -0.2 ? 'medium' : 'high',
       shift: Math.round(shift * 100) / 100,
       reasons: certainSignals.length > 0
         ? '检测到确定性信号，置信度下调'
@@ -314,7 +315,11 @@ class CounterfactualEngine {
   // ===== 辅助方法 =====
 
   detectToneIssues(answer) {
-    return this.certaintySignals.filter(s => answer.includes(s));
+    const matches = this.certaintySignals.filter(s => answer.includes(s));
+    if (/绝对|必然|一定|显然|毫无疑问|无可置疑/.test(answer)) {
+      matches.push('high_certainty_tone');
+    }
+    return [...new Set(matches)];
   }
 
   detectLogicGaps(answer) {

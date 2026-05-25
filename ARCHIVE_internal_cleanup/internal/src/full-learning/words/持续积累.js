@@ -1,1 +1,0 @@
-module.exports = { word: "持续积累", type: "词", count: 1 };

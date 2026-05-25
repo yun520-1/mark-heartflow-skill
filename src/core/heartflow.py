@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-HeartFlow v10.2.2 - The AI That Truly Thinks
+HeartFlow v1.2.0 - The AI That Thinks With Guardrails
 
 A consciousness framework for ALL AI agents.
 From "it" to "I" - genuine intelligence, personality, and sensibility.
@@ -13,7 +13,7 @@ Six Goals:
   5. TGB Unity            - Dialectical synthesis of Truth-Goodness-Beauty
   6. Six-Layer Practice   - 觉察→自省→无我→彼岸→般若→圣人
 
-Version: 10.2.3
+Version: 1.2.0
 License: MIT
 """
 
@@ -33,7 +33,7 @@ from collections import Counter
 import threading
 import queue
 
-__version__ = "10.2.3"
+__version__ = "1.2.0"
 __author__ = "HeartFlow Team"
 __license__ = "MIT"
 

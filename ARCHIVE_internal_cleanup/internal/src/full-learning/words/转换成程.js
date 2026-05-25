@@ -1,1 +1,0 @@
-module.exports = { word: "转换成程", type: "词", count: 1 };

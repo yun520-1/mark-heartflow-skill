@@ -1,5 +1,5 @@
 /**
- * HeartFlow v1.1.9 — 单一入口，统一路由
+ * HeartFlow v1.2.0 — 单一入口，统一路由
  *
  * 调用方式:
  *   hf.dispatch('subsystem.method', arg1, arg2)  // 统一路由
@@ -30,7 +30,7 @@ const { SearchTrace, SearchPhaseMetrics, WeightComponents, QueryInfo, SearchSumm
 
 // Memory slots & observe
 const { Slots } = require('./memory/slots.js');
-const { observe, consolidate } = require('./memory/observe.js');
+const { createObserve } = require('./memory/observe.js');
 
 // Memory
 const { MeaningfulMemory } = require('../memory/meaningful-memory.js');
@@ -60,6 +60,7 @@ const { SecurityChecker } = require('../security/security-checker.js');
 const { StabilityGuard } = require('./stability-guard.js');
 const { ExecutionVerifier } = require('./execution-verifier.js');
 const { DecisionVerifier } = require('./decision-verifier.js');
+const { HeartFlowDecision } = require('./decision.js');
 const { CounterfactualEngine } = require('./counterfactual-engine.js');
 const { ConfidenceCalibrator } = require('./confidence-calibrator.js');
 const { SpontaneousRestraint } = require('./spontaneous-restraint.js');
@@ -85,8 +86,8 @@ const StateSnapshot = require('./state-snapshot.js');
 const ErrorHandler = require('./error-handler.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '1.1.9.0';
-const BUILD_DATE = '2026-05-30';
+const VERSION = '1.2.0';
+const BUILD_DATE = '2026-05-25';
 
 class HeartFlow {
   constructor(config = {}) {
@@ -108,6 +109,7 @@ class HeartFlow {
     this.verify = null;
     this.execution = null;
     this.decision = null;
+    this.decisionVerifier = null;
     this.evolution = null;
     this.dream = null;
     this.lesson = null;
@@ -163,10 +165,10 @@ class HeartFlow {
     this.anchor = new RetrievalAnchor();
 
     // Evolution
-    this.evolution = new EvolutionLoop(this.memory);
+    this.evolution = new EvolutionLoop({ rootPath: this.rootPath, memory: this.memory }).boot();
     this.dream = new DreamEngine(this.memory, null);
     this.lesson = new LessonBank(this.rootPath);
-    this.meta = new MetaLearner();
+    this.meta = new MetaLearner({ rootPath: this.rootPath, memory: this.memory }).boot();
 
     // Identity
     this.self = new SelfModel(this.rootPath);
@@ -183,7 +185,8 @@ class HeartFlow {
     // Engine modules (classes)
     try { this.stability = new StabilityGuard(); } catch (e) {}
     try { this.execution = new ExecutionVerifier(); } catch (e) {}
-    try { this.decision = new DecisionVerifier(); } catch (e) {}
+    try { this.decision = new HeartFlowDecision(this.memory); } catch (e) {}
+    try { this.decisionVerifier = new DecisionVerifier(); } catch (e) {}
     try { this.counterfactual = new CounterfactualEngine(); } catch (e) {}
     try { this.confidence = new ConfidenceCalibrator(); } catch (e) {}
     try { this.restraint = new SpontaneousRestraint(); } catch (e) {}
@@ -218,8 +221,14 @@ class HeartFlow {
     try {
       this.slots = new Slots({ dataDir: path.join(this.rootPath, 'data') });
     } catch (e) { console.warn('[HeartFlow] Slots init error:', e.message); }
-    this.observe = observe;
-    this.consolidate = consolidate;
+    try {
+      this.observe = createObserve(this.memory, { autoConsolidate: false });
+      this.consolidate = {
+        consolidate: (...args) => this.observe.consolidate(...args),
+        stop: () => this.observe.stop(),
+        stats: () => this.observe.stats(),
+      };
+    } catch (e) { console.warn('[HeartFlow] Observe init error:', e.message); }
 
     this._bootMindSpace();
     this._registerModules();
@@ -244,7 +253,7 @@ class HeartFlow {
     this._modules = {};
     const subsystemNames = [
       'memory', 'triality', 'knowledge', 'anchor',
-      'reasoning', 'counterfactual', 'verify', 'execution', 'decision',
+      'reasoning', 'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
       'evolution', 'dream', 'lesson', 'meta',
       'self', 'being',
       'psychology', 'emotion',
@@ -252,7 +261,7 @@ class HeartFlow {
       'stability', 'confidence', 'restraint', 'arbitration',
       'snapshot', 'error', 'embodied', 'wakeup', 'interactive', 'workflow',
       // New modules
-      'bm25', 'hybrid', 'budget', 'graph', 'utils',
+      'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -263,6 +272,15 @@ class HeartFlow {
 
   async stop() {
     if (!this.started) return;
+    for (const mod of Object.values(this._modules)) {
+      if (mod && typeof mod.destroy === 'function') {
+        try { mod.destroy(); } catch (e) {}
+      } else if (mod && typeof mod.stop === 'function') {
+        try { mod.stop(); } catch (e) {}
+      } else if (mod && typeof mod.shutdown === 'function') {
+        try { mod.shutdown(); } catch (e) {}
+      }
+    }
     this.started = false;
     this._modules = {};
     this._mindSpace = { rules: [], context: {} };
@@ -323,7 +341,7 @@ class HeartFlow {
     const loaded = Object.keys(this._modules);
     const all = [
       'memory', 'triality', 'knowledge', 'anchor',
-      'reasoning', 'counterfactual', 'verify', 'execution', 'decision',
+      'reasoning', 'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
       'evolution', 'dream', 'lesson', 'meta',
       'self', 'being',
       'psychology', 'emotion',
@@ -331,7 +349,7 @@ class HeartFlow {
       'stability', 'confidence', 'restraint', 'arbitration',
       'snapshot', 'error', 'embodied', 'wakeup', 'interactive', 'workflow',
       // New modules
-      'bm25', 'hybrid', 'budget', 'graph', 'utils',
+      'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
     ];
     return {
       started: true,

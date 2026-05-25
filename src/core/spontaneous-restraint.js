@@ -148,7 +148,8 @@ class SpontaneousRestraint {
     }
 
     // 5. 检查重复：用户是否在重复同一个问题
-    if (this.isRepetition(userMessage, context.history)) {
+    const history = Array.isArray(context) ? context : context.history;
+    if (this.isRepetition(userMessage, history)) {
       result.interventionLevel = 'minimal';
       result.restraintReason = '用户可能在重复问题，需要确认而非重复回答';
       result.reasons.push('检测到重复信号');
@@ -176,6 +177,11 @@ class SpontaneousRestraint {
    * 而是给出引导，让答案在用户心中自然形成
    */
   emerge(question = '', context = {}) {
+    const isSpecificHowTo = /怎么|如何/.test(question) && /安装|配置|修复|实现|运行|部署|下载|创建|写|改|调试|python|node|npm|git/i.test(question);
+    if (isSpecificHowTo) {
+      return { mode: 'direct', response: null };
+    }
+
     // 涌现策略：当问题足够抽象或开放时
     const isAbstract = /怎么|为什么|是什么|人生|意义|价值/.test(question);
     const isOpen = question.length < 20;
@@ -255,6 +261,7 @@ class SpontaneousRestraint {
    * 判断是否为重复问题
    */
   isRepetition(message, history = []) {
+    if (!Array.isArray(history) && Array.isArray(history.history)) history = history.history;
     if (history.length < 1) return false;
 
     const recent = history.slice(-3);

@@ -95,7 +95,7 @@ class CooperativeArbitration {
 
     // 检测模式
     let mode = ARBITRATIONMode.NEUTRAL;
-    if (alignment > 0.7 && tension < 0.3) {
+    if (alignment > 0.7 && tension <= 0.3) {
       mode = ARBITRATIONMode.SYMBIOSIS;
     } else if (alignment > 0.5) {
       mode = ARBITRATIONMode.COOPERATION;
@@ -129,10 +129,15 @@ class CooperativeArbitration {
    */
   _calculateAlignment(pos1, pos2) {
     if (!pos1 || !pos2) return 0.5;
+    const normalized1 = String(pos1).replace(/[^\w\u4e00-\u9fff]/g, '').toLowerCase();
+    const normalized2 = String(pos2).replace(/[^\w\u4e00-\u9fff]/g, '').toLowerCase();
+    if (normalized1 && normalized2 && (normalized1.includes(normalized2) || normalized2.includes(normalized1))) {
+      return 0.9;
+    }
 
     // 提取关键词
-    const words1 = new Set(pos1.toLowerCase().split(/\s+/).filter(w => w.length > 2));
-    const words2 = new Set(pos2.toLowerCase().split(/\s+/).filter(w => w.length > 2));
+    const words1 = this._tokenizePosition(pos1);
+    const words2 = this._tokenizePosition(pos2);
 
     // Jaccard 相似度
     const intersection = new Set([...words1].filter(x => words2.has(x)));
@@ -145,6 +150,19 @@ class CooperativeArbitration {
     const penalty = contradictions.length * 0.15;
 
     return Math.max(0, Math.min(1, jaccard - penalty));
+  }
+
+  _tokenizePosition(text) {
+    const raw = String(text || '').toLowerCase();
+    const tokens = new Set(raw.split(/\s+/).filter(w => w.length > 2));
+    const cjk = raw.match(/[\u4e00-\u9fff]{2,}/g) || [];
+    for (const segment of cjk) {
+      for (let i = 0; i < segment.length - 1; i++) {
+        tokens.add(segment.slice(i, i + 2));
+      }
+      if (segment.length <= 8) tokens.add(segment);
+    }
+    return tokens;
   }
 
   /**

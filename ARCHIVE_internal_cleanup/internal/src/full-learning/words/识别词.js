@@ -1,1 +1,0 @@
-module.exports = { word: "识别词", type: "词", count: 1 };

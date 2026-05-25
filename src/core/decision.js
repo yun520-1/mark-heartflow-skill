@@ -259,8 +259,8 @@ class HeartFlowDecision {
     // 3. Consequence value (estimated)
     const consequence_value = option.consequence_value || 0.7;
 
-    // 4. Risk penalty
-    const risk_penalty = (option.risk || 0) * 0.3;
+    // 4. Risk penalty: higher risk must lower the final score.
+    const risk_penalty = Math.max(0, Math.min(1, option.risk || 0)) * 0.3;
 
     // 5. Confidence (from option or default)
     const confidence = option.confidence || 0.7;
@@ -270,7 +270,7 @@ class HeartFlowDecision {
       feasibility * 0.15 +
       identity_alignment * 0.35 +
       consequence_value * 0.30 +
-      risk_penalty * 0.10 +
+      (1 - risk_penalty) * 0.10 +
       confidence * 0.10
     );
 

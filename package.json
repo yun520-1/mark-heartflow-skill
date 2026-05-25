@@ -1,3 +1,36 @@
 {
-  "version": "1.1.9.0"
+  "name": "mark-heartflow-skill",
+  "version": "1.2.0",
+  "description": "HeartFlow AI cognitive and self-healing skill runtime.",
+  "main": "src/core/heartflow.js",
+  "bin": {
+    "heartflow": "bin/cli.js"
+  },
+  "scripts": {
+    "check": "find src scripts bin plugins -name '*.js' -not -path '*/node_modules/*' -print0 | xargs -0 -n 1 node --check",
+    "smoke": "node scripts/smoke-runtime.js",
+    "test": "npm run check && npm run smoke && node scripts/test_v11_6.js && node scripts/test_v11_7.js"
+  },
+  "files": [
+    "SKILL.md",
+    "VERSION",
+    "CORE_IDENTITY.md",
+    "bin/",
+    "src/**/*.js",
+    "src/**/*.json",
+    "src/**/*.md",
+    "src/**/*.py",
+    "scripts/**/*.js",
+    "scripts/**/*.sh",
+    "scripts/**/*.py",
+    "plugins/**/*.py",
+    "plugins/**/*.yaml",
+    "plugins/**/*.yml",
+    "plugins/**/*.md",
+    "plugins/**/*.sh",
+    "docs/",
+    "languages/",
+    "references/"
+  ],
+  "license": "MIT"
 }

@@ -26,6 +26,9 @@ node_modules/
 .DS_Store
 .env
 .env.*
+__pycache__/
+**/__pycache__/
+*.pyc
 
 # === 证书密钥 ===
 *.pem
@@ -59,3 +62,4 @@ references/capability-audit.md
 
 # Archive - local cleanup backup
 ARCHIVE_full_cleanup_20260530/
+ARCHIVE_internal_cleanup/

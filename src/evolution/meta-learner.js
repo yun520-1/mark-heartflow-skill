@@ -6,13 +6,14 @@
 const { MetaLearning } = require('../core/self-evolution/meta-learning.js');
 
 class MetaLearner {
-    constructor(hf) {
+    constructor(hf = {}) {
         this.hf = hf;
+        this.projectRoot = hf.rootPath || hf.projectRoot || process.cwd();
         this.core = null;
     }
 
     boot() {
-        this.core = new MetaLearning();
+        this.core = new MetaLearning(this.projectRoot);
         return this;
     }
 

@@ -6,14 +6,15 @@
 const { SelfEvolutionCore } = require('../core/self-evolution/self-evolution-core.js');
 
 class EvolutionLoop {
-    constructor(hf) {
+    constructor(hf = {}) {
         this.hf = hf;
+        this.projectRoot = hf.rootPath || hf.projectRoot || process.cwd();
         this.core = null;
         this.cycleCount = 0;
     }
 
     boot() {
-        this.core = new SelfEvolutionCore();
+        this.core = new SelfEvolutionCore(this.projectRoot);
         return this;
     }
 

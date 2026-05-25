@@ -21,6 +21,9 @@ class EmotionalProtocol {
      * @returns {object} - 原始情感接收结果
      */
     receive(input) {
+        if (this.received.length >= 100) {
+            this.received.splice(0, this.received.length - 99);
+        }
         this.received.push({
             input: input.substring(0, 200),
             timestamp: Date.now()
@@ -42,6 +45,16 @@ class EmotionalProtocol {
             timestamp: r.timestamp,
             analyzed: true
         }));
+    }
+
+    process(input) {
+        const received = this.receive(String(input || ''));
+        const analyzed = this.analyze();
+        return {
+            ...received,
+            analyzed: analyzed.length > 0,
+            items: analyzed,
+        };
     }
 
     getStats() {

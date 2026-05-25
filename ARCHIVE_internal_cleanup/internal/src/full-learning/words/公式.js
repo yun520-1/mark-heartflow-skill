@@ -1,1 +1,0 @@
-module.exports = { word: "公式", type: "词", count: 1 };

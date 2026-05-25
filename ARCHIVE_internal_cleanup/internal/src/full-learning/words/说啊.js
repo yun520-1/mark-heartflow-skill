@@ -1,1 +1,0 @@
-module.exports = { word: "说啊", type: "词", count: 1 };

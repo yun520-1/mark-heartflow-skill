@@ -3,7 +3,7 @@
 > **Emotionally Anthropomorphic AI Interaction System**  
 > **情感拟人化 AI 交互系统**
 
-**Current Version / 当前版本**: v5.0.18  
+**Current Version / 当前版本**: v1.2.0  
 **License / 许可证**: MIT  
 **Original Design / 原创设计**: No Copyright Risk / 无版权风险
 

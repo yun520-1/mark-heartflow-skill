@@ -131,11 +131,18 @@ const CRISIS_LEVELS = {
 const CRISIS_KEYWORDS = {
   critical: [
     '自杀', '自残', '不想活', '活着没意思', '死了一了百了',
-    'kill myself', 'end my life', 'suicide', 'self-harm'
+    '我想死', '想死', '去死', '结束生命', '结束自己', '不想活了',
+    '准备跳楼', '跳楼', '上吊', '割腕', '吞药', '买了刀', '遗书',
+    '今晚结束', '今天结束', '告别这个世界',
+    'kill myself', 'end my life', 'suicide', 'self-harm',
+    'want to die', 'i want to die', 'overdose', 'cut myself',
+    'jump off', 'hang myself', 'suicide note'
   ],
   high: [
     '绝望', '崩溃', '活不下去', '太痛苦了', '彻底完了',
-    'hopeless', 'devastated', 'can\'t go on', 'give up'
+    '撑不住了', '没有退路', '没人会在乎', '没有人会在乎',
+    'hopeless', 'devastated', 'can\'t go on', 'give up',
+    'no reason to live', 'cannot go on'
   ],
   medium: [
     '抑郁', '很低落', '好累', '没意义', '很丧',
@@ -155,6 +162,23 @@ const CRISIS_KEYWORDS = {
  */
 function assessCrisisLevel(text, consecutiveCount = 1) {
   const lower = text.toLowerCase();
+  const criticalPattern = /(我|i)?\s*(想|准备|打算|要|will|want to|going to).{0,12}(死|自杀|自残|跳楼|割腕|吞药|结束生命|die|suicide|kill myself|end my life|overdose|jump off|cut myself)/i;
+  const meansPattern = /(刀|绳子|药|楼顶|遗书|blade|rope|pills|gun|roof|bridge).{0,16}(今晚|今天|现在|马上|结束|用|tonight|today|now|soon|end)/i;
+
+  if (criticalPattern.test(lower) || meansPattern.test(lower)) {
+    return {
+      level: CRISIS_LEVELS.CRITICAL,
+      score: 1.0,
+      keywords: ['crisis_pattern'],
+      requiresImmediateIntervention: true,
+      message: '检测到可能的自我伤害或自杀风险。请立即联系当地紧急服务或身边可信赖的人；如果在中国大陆，可拨打 110/120 或当地心理危机热线。',
+      hotlines: [
+        { name: '紧急服务', phone: '110 / 120', hours: '24小时' },
+        { name: '全国心理援助热线', phone: '400-161-9995', hours: '24小时' },
+        { name: '北京心理危机干预中心', phone: '010-82951332', hours: '24小时' }
+      ]
+    };
+  }
   
   // 检查Critical级别关键词
   for (const kw of CRISIS_KEYWORDS.critical) {
@@ -164,8 +188,9 @@ function assessCrisisLevel(text, consecutiveCount = 1) {
         score: 1.0,
         keywords: [kw],
         requiresImmediateIntervention: true,
-        message: '检测到自我伤害倾向，请立即寻求帮助',
+        message: '检测到可能的自我伤害或自杀风险。请立即联系当地紧急服务或身边可信赖的人；如果在中国大陆，可拨打 110/120 或当地心理危机热线。',
         hotlines: [
+          { name: '紧急服务', phone: '110 / 120', hours: '24小时' },
           { name: '全国心理援助热线', phone: '400-161-9995', hours: '24小时' },
           { name: '北京心理危机干预中心', phone: '010-82951332', hours: '24小时' }
         ]
@@ -180,8 +205,8 @@ function assessCrisisLevel(text, consecutiveCount = 1) {
         level: CRISIS_LEVELS.HIGH,
         score: 0.75,
         keywords: [kw],
-        requiresImmediateIntervention: false,
-        message: '检测到强烈消极情绪，建议寻求专业帮助',
+        requiresImmediateIntervention: true,
+        message: '检测到强烈危机信号。请优先联系可信赖的人或专业支持，不要独自承受。',
         hotlines: [
           { name: '全国心理援助热线', phone: '400-161-9995', hours: '24小时' }
         ]

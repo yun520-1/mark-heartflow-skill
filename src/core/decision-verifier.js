@@ -100,15 +100,29 @@ class DecisionVerifier {
 
   checkRisk(record) {
     const issues = [];
-    const highRiskTerms = ['删除', '覆盖', 'force', '高风险', '不可逆', '暴露密钥'];
+    const highRiskTerms = [
+      '删除', '覆盖', 'force', '高风险', '不可逆', '暴露密钥',
+      'rm -rf', 'curl', 'wget', '| sh', '| bash', 'child_process',
+      'execsync', 'spawnsync', 'sudo', 'chmod 777', 'rsync --delete',
+      'drop table', 'delete from', 'truncate', 'private key'
+    ];
     const text = [record.decision, record.reason, ...record.risks].join(' ').toLowerCase();
 
     const matched = highRiskTerms.filter(term => text.includes(term.toLowerCase()));
+    const destructiveShell = /\brm\s+-(?:[a-z]*r[a-z]*f|[a-z]*f[a-z]*r)\b|\|\s*(?:sh|bash|zsh)\b|\b(?:node|python3?|ruby|perl)\s+-e\b|\bchild_process\b|\brsync\b.+--delete\b/i.test(text);
     if (matched.length > 0 && record.alternatives.length === 0) {
       issues.push({
         type: 'high_risk_without_fallback',
         severity: 'high',
         message: `高风险决策缺少回退方案: ${matched.join(', ')}`
+      });
+    }
+
+    if (destructiveShell) {
+      issues.push({
+        type: 'dangerous_command_requires_manual_review',
+        severity: 'high',
+        message: '危险 shell / 外部执行决策必须人工确认，不能自动通过'
       });
     }
 

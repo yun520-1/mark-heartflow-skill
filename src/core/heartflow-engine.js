@@ -1163,9 +1163,13 @@ function processEmotionalInput(userInput, modules = {}) {
   if (!hasTrigger) return null;
 
   // 1. Search memory for self-correction lessons
-  const correctionLessons = memory.search('自我纠正') || memory.searchByKeywords
-    ? (memory.searchByKeywords(['自我纠正', '承认', '解释']) || memory.search('自我纠正'))
-    : memory.search('自我纠正');
+  let correctionLessons = [];
+  if (typeof memory.searchByKeywords === 'function') {
+    correctionLessons = memory.searchByKeywords(['自我纠正', '承认', '解释']) || [];
+  }
+  if ((!Array.isArray(correctionLessons) || correctionLessons.length === 0) && typeof memory.search === 'function') {
+    correctionLessons = memory.search('自我纠正') || [];
+  }
 
   // 2. Generate opposing view via counterfactual
   const cfResult = counterfactual

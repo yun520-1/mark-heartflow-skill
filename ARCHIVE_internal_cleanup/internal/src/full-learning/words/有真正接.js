@@ -1,1 +1,0 @@
-module.exports = { word: "有真正接", type: "词", count: 1 };
