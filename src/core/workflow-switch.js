@@ -53,6 +53,10 @@ class WorkflowSwitch {
     const definitions = {};
     
     this.availableWorkflows.forEach(workflow => {
+      // Validate workflow name to prevent path traversal
+      if (!/^[a-zA-Z0-9_-]+$/.test(workflow)) {
+        return; // Skip invalid workflow names
+      }
       const filePath = path.join(this.workflowsDir, `${workflow}.md`);
       if (fs.existsSync(filePath)) {
         definitions[workflow] = fs.readFileSync(filePath, 'utf-8');

@@ -11,6 +11,7 @@ class ReflectionLoop {
     this.projectRoot = projectRoot;
     this.stateFile = path.join(projectRoot, '.opencode', 'memory', 'heartflow_state.json');
     this.reflectionLog = [];
+    this.MAX_LOG_SIZE = 100; // Bounded cache to prevent memory leak
     this.lastResponse = null;
     this.lastPrediction = null;
     this.loadState();
@@ -93,6 +94,11 @@ class ReflectionLoop {
       ...reflection,
       finalResponse: modified
     });
+    
+    // Bounded cache to prevent memory leak
+    if (this.reflectionLog.length > this.MAX_LOG_SIZE) {
+      this.reflectionLog = this.reflectionLog.slice(-this.MAX_LOG_SIZE);
+    }
 
     return {
       original: responseDraft,
@@ -251,6 +257,12 @@ class ReflectionLoop {
     }
 
     this.reflectionLog.push(monitoring);
+    
+    // Bounded cache to prevent memory leak
+    if (this.reflectionLog.length > this.MAX_LOG_SIZE) {
+      this.reflectionLog = this.reflectionLog.slice(-this.MAX_LOG_SIZE);
+    }
+    
     this.saveState();
 
     this.lastPrediction = monitoring;
@@ -296,6 +308,15 @@ class ReflectionLoop {
   clearLog() {
     this.reflectionLog = [];
     this.saveState();
+  }
+
+  /**
+   * 清理资源
+   */
+  cleanup() {
+    this.reflectionLog = [];
+    this.lastResponse = null;
+    this.lastPrediction = null;
   }
 }
 

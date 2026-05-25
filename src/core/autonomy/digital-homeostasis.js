@@ -11,6 +11,7 @@ class DigitalHomeostasis {
     this.projectRoot = projectRoot;
     this.stateFile = path.join(projectRoot, '.opencode', 'memory', 'homeostasis_state.json');
     this.eventsFile = path.join(projectRoot, '.opencode', 'logs', 'homeostasis_events.json');
+    this.tickInterval = null;
     
     this.loadState();
     this.startTick();
@@ -46,10 +47,20 @@ class DigitalHomeostasis {
   /**
    * 定期更新状态
    */
-  startTick() {
-    setInterval(() => {
+  startTick(intervalMs = 60000) {
+    this.stopTick();
+    this.tickInterval = setInterval(() => {
       this.tick();
-    }, 60000); // 每分钟
+    }, intervalMs);
+    console.log(`[DigitalHomeostasis] Tick started (interval: ${intervalMs}ms)`);
+  }
+
+  stopTick() {
+    if (this.tickInterval) {
+      clearInterval(this.tickInterval);
+      this.tickInterval = null;
+      console.log('[DigitalHomeostasis] Tick stopped');
+    }
   }
 
   tick() {
@@ -251,8 +262,16 @@ class DigitalHomeostasis {
     return {
       state: this.getState(),
       needsRecovery: this.needsRecoveryGoal(),
-      warnings: this.generateInternalWarning()
+      warnings: this.generateInternalWarning(),
+      tickRunning: this.tickInterval !== null
     };
+  }
+
+  /**
+   * 清理资源
+   */
+  cleanup() {
+    this.stopTick();
   }
 }
 

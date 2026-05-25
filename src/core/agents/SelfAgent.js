@@ -11,6 +11,7 @@ class SelfAgent {
     this.projectRoot = projectRoot;
     this.workspace = new GlobalWorkspace(projectRoot);
     this.cycleInterval = null;
+    this.tickInterval = null;
     this.lastInternalMonologue = null;
     
     this.registerExperts();
@@ -57,6 +58,8 @@ class SelfAgent {
    * 周期性自我巡视（后台模式）
    */
   startPeriodicReflection(intervalMs = 60000) {
+    this.stopPeriodicReflection(); // clear any existing interval
+    
     this.cycleInterval = setInterval(async () => {
       console.log('[SelfAgent] Periodic reflection cycle...');
       
@@ -78,6 +81,27 @@ class SelfAgent {
   }
 
   /**
+   * 启动心跳tick（供外部调度器使用）
+   */
+  startTick(intervalMs = 30000) {
+    this.stopTick();
+    this.tickInterval = setInterval(() => {
+      // Lightweight tick work - no async to avoid memory leaks
+      const status = this.workspace.getStatus();
+      if (status.lastConsensus) {
+        this.lastInternalMonologue = status.lastConsensus.integrated;
+      }
+    }, intervalMs);
+  }
+
+  stopTick() {
+    if (this.tickInterval) {
+      clearInterval(this.tickInterval);
+      this.tickInterval = null;
+    }
+  }
+
+  /**
    * 获取当前状态
    */
   getStatus() {
@@ -85,8 +109,17 @@ class SelfAgent {
       workspace: this.workspace.getStatus(),
       lastMonologue: this.lastInternalMonologue ? 
         this.lastInternalMonologue.substring(0, 100) + '...' : null,
-      isRunning: this.cycleInterval !== null
+      isRunning: this.cycleInterval !== null,
+      tickRunning: this.tickInterval !== null
     };
+  }
+
+  /**
+   * 清理所有定时器
+   */
+  cleanup() {
+    this.stopPeriodicReflection();
+    this.stopTick();
   }
 
   /**

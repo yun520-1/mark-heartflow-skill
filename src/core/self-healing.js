@@ -11,13 +11,16 @@
  */
 
 const { HealingMemoryRL } = require('./self-healing-rl.js');
+const EventEmitter = require('events');
 
-class SelfHealing {
+class SelfHealing extends EventEmitter {
   constructor(options = {}) {
+    super();
     this.maxRetries = options.maxRetries ?? 2;
     this.backoffMs = options.backoffMs ?? 150;
     this.failureWindow = [];
     this.rl = new HealingMemoryRL(options.maxMemory ?? 100);
+    this.learnedMemory = new Map(); // pattern -> { strategy, qValue }
     this._pendingCtx = new Map(); // pending repair attempts for RL update
   }
 

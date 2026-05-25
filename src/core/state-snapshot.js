@@ -12,6 +12,7 @@ class StateSnapshot {
   constructor() {
     this.ensureDir();
     this.currentSnapshot = null;
+    this._writeLock = null;
   }
 
   ensureDir() {
@@ -20,7 +21,7 @@ class StateSnapshot {
     }
   }
 
-  // 创建快照
+  // 创建快照 - 使用WAL保证原子性
   create(state, label = 'default') {
     const snapshot = {
       timestamp: Date.now(),
@@ -30,8 +31,30 @@ class StateSnapshot {
 
     const filename = `snapshot_${label}_${Date.now()}.json`;
     const filepath = path.join(SNAPSHOT_DIR, filename);
+    const walPath = path.join(SNAPSHOT_DIR, `.wal_${filename}`);
     
-    fs.writeFileSync(filepath, JSON.stringify(snapshot, null, 2));
+    // WAL Phase 1: Write to temp WAL file first
+    try {
+      fs.writeFileSync(walPath, JSON.stringify(snapshot, null, 2), 'utf8');
+    } catch (e) {
+      // Clean up WAL on failure
+      if (fs.existsSync(walPath)) {
+        try { fs.unlinkSync(walPath); } catch (_) {}
+      }
+      throw e;
+    }
+    
+    // WAL Phase 2: Atomic rename (on POSIX systems)
+    try {
+      fs.renameSync(walPath, filepath);
+    } catch (e) {
+      // Rollback: remove WAL file on rename failure
+      if (fs.existsSync(walPath)) {
+        try { fs.unlinkSync(walPath); } catch (_) {}
+      }
+      throw e;
+    }
+    
     this.currentSnapshot = snapshot;
     
     return { filename, timestamp: snapshot.timestamp };

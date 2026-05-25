@@ -306,7 +306,7 @@ class MetaEngine {
    */
   async selfEdit(skillPath, updates) {
     try {
-      const path = require('path');
+      // Use module-level path (avoid redundant require)
       const homedir = require('os').homedir();
       const allowedDir = path.join(homedir, '.hermes', 'skills');
       const resolvedPath = path.resolve(skillPath);

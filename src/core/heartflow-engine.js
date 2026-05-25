@@ -46,8 +46,17 @@ let DreamLoop;
 let WakeUpVerifier;
 let InteractiveDream;
 let SelfHealing, StabilityGuard;
-let MADVerifier, UncertaintyEstimator, HeartbeatFallback, HealingMemoryRL;
+let MADVerifier, UncertaintyEstimator, HeartbeatFallback;
 let ExecutionVerifier;
+
+// HealingMemoryRL - Q-learning based repair strategy memory
+let HealingMemoryRL;
+try {
+  HealingMemoryRL = require('./self-healing-rl.js').HealingMemoryRL;
+  console.log('[HeartFlow] ✅ 自愈RL引擎已加载');
+} catch (e) {
+  console.log('[HeartFlow] ⚠️ 自愈RL引擎加载失败:', e.message);
+}
 
 // [已归档] try {
 //   AdaptiveController = require('./adaptive-controller.js');

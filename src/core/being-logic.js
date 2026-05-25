@@ -227,13 +227,16 @@ class BeingLogic {
     while (prev !== safe && iterations < 10) {
       prev = safe;
       iterations++;
+      // Escape regex special characters to prevent regex injection
+      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
       for (const word of this.FORBIDDEN_WORDS) {
         if (safe.includes(word)) {
-          safe = safe.replace(new RegExp(word, 'g'), '暂停');
+          safe = safe.replace(new RegExp(escapeRegex(word), 'g'), '暂停');
         }
       }
       for (const [forbidden, safeWord] of Object.entries(this.REPLACEMENTS)) {
-        safe = safe.replace(new RegExp(forbidden, 'g'), safeWord);
+        safe = safe.replace(new RegExp(escapeRegex(forbidden), 'g'), safeWord);
       }
     }
 
