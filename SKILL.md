@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "1.1.5.0"
+version: "1.1.6.0"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v1.1.5.0 — AI 认知与自愈引擎。
+  HeartFlow v1.1.6.0 — AI 认知与自愈引擎。
   核心能力：启动自检(Boot Check)、RAG三元组评估(FeedbackFunctions)、
   三层记忆(Meaningful Memory)、自愈RL(Q-table)、决策验证、
   遗忘引擎(Forgetting Engine)、心理诊断引擎(Top 20 Index)、
@@ -940,6 +940,69 @@ python hermes_client.py screenshot
 - HeartFlow：分析、推理、决策
 - Browser Bridge：信息获取、页面操作、数据采集
 - 协同模式：HeartFlow 判断需要什么信息 → Browser Bridge 执行获取 → HeartFlow 分析结果
+
+---
+
+## External Memory Systems（外部记忆系统）
+
+**来源**：agentmemory (GitHub rohitg00/agentmemory, 17k⭐) · Hindsight (GitHub vectorize-io/hindsight, 14k⭐)
+
+### agentmemory — 跨会话持久记忆（推荐）
+
+**95.2% R@5 · 0外部DB · 本地 Embedding · 支持 Hermes/Claude Code/Cursor 等所有主流 Agent**
+
+6个 Hermes 原生钩子：
+- `prefetch` — 对话前预取相关记忆
+- `sync_turn` — 每次对话轮次自动存档
+- `on_session_end` — 会话结束标记
+- `on_pre_compress` — 上下文压缩前注入记忆
+- `on_memory_write` — MEMORY.md 写入时自动同步
+- `system_prompt_block` — 系统提示符注入项目上下文
+
+**安装服务端**：
+```bash
+npm install -g @agentmemory/agentmemory  # 全局安装
+agentmemory                              # 启动服务 (localhost:3111)
+# 或:
+npx -y @agentmemory/agentmemory         # 直接运行
+```
+
+**验证**：
+```bash
+curl http://localhost:3111/agentmemory/health
+# → {"status":"healthy"}
+
+# 实时查看器
+open http://localhost:3113
+```
+
+**3个记忆工具**：
+
+| 工具 | 用途 |
+|------|------|
+| `memory_recall` | 关键词搜索历史记忆 |
+| `memory_save` | 存入模式/偏好/洞见 |
+| `memory_search` | 混合语义+BM25检索 |
+
+**触发词**：记住、回忆、搜索记忆、历史记录、之前说过、长期记忆、跨会话
+
+**源码**：心虫已集成于 `plugins/agentmemory/__init__.py`
+
+---
+
+### hindsight — 类人记忆系统
+
+**Hindsight: Agent Memory That Works Like Human Memory**（14k⭐，v0.6.2）
+
+pip 包：`hindsight-all`（All-in-One Bundle）
+
+```bash
+pip install hindsight-all
+```
+
+**定位**：与 agentmemory 互补，提供不同的记忆抽象层
+
+**源码**：待克隆整合
 
 ---
 
