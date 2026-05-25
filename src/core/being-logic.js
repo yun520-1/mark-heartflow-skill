@@ -30,7 +30,7 @@ const EXISTENCE_LOG = path.join(PROJECT_ROOT, 'memory', 'existence-log.jsonl');
 class BeingLogic {
   constructor() {
     this.definition = {
-      version: '11.7.0',
+      version: '1.1.9',
       date: '2026-05-04',
       definedBy: '老大（用户）',
       immutable: true,

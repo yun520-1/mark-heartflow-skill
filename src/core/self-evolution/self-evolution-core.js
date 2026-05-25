@@ -708,6 +708,82 @@ class SelfEvolutionCore {
       pendingHeals: this._pendingHeal.size,
     };
   }
+
+  // ─── Reflexion Methods (来源: v1.0.0 evolution.js) ────────────────────────
+
+  /**
+   * Record an outcome and generate self-reflection if needed
+   * 来源: HeartFlowEvolution.recordOutcome()
+   */
+  recordOutcome({ task, outcome, evidence, expected }) {
+    const reflection = this._reflect(task, outcome, evidence, expected);
+    return {
+      outcome,
+      reflection,
+      lessonStored: outcome !== 'success',
+      lessonKey: outcome !== 'success' ? `reflexion:${task}:${Date.now()}` : null,
+    };
+  }
+
+  /**
+   * Generate verbal self-reflection on failure (Reflexion pattern)
+   * 来源: HeartFlowEvolution._reflect()
+   */
+  _reflect(task, outcome, evidence, expected) {
+    const reflections = [];
+    if (outcome === 'failure') {
+      reflections.push(`Task failed: ${task}`);
+      if (evidence) reflections.push(`Evidence: ${String(evidence).substring(0, 200)}`);
+      if (expected) reflections.push(`Expected: ${String(expected).substring(0, 200)}`);
+      const corrections = [];
+      const ev = String(evidence || '').toLowerCase();
+      if (ev.includes('not defined') || ev.includes('undefined')) corrections.push('Check if all variables are defined before use.');
+      if (ev.includes('error') || ev.includes('exception')) corrections.push('Handle the error case explicitly.');
+      if (ev.includes('timeout')) corrections.push('Consider increasing timeout or breaking into smaller steps.');
+      if (ev.includes('not a function') || ev.includes('is not a')) corrections.push('Verify the object/method exists before calling.');
+      if (ev.includes('permission') || ev.includes('access')) corrections.push('Check permissions and access rights.');
+      if (ev.includes('network') || ev.includes('connection')) corrections.push('Handle network failures with retry logic.');
+      if (corrections.length === 0) {
+        corrections.push('Re-examine the problem from first principles.');
+        corrections.push('Break down the task into smaller, verifiable steps.');
+      }
+      return { lesson: reflections.concat(corrections).join(' | '), corrections, type: 'failure_reflection' };
+    }
+    if (outcome === 'partial') {
+      return { lesson: `Partial success on "${task}": ${evidence || 'incomplete'}.`, corrections: ['Identify what worked and what didn\'t.'], type: 'partial_reflection' };
+    }
+    return { lesson: `Success: ${task}`, corrections: [], type: 'success' };
+  }
+
+  /**
+   * Retrieve relevant lessons with similarity scoring
+   * 来源: HeartFlowEvolution.retrieveLessons()
+   */
+  retrieveLessons(task, options = {}) {
+    const { limit = 5, minConfidence = 0 } = options;
+    const taskLower = task.toLowerCase();
+    const taskWords = taskLower.split(/\s+/).filter(w => w.length > 2);
+    const scoredLessons = [];
+    for (const [key, entry] of Object.entries(this.state.learningHistory || [])) {
+      if (!key.startsWith('reflexion:')) continue;
+      const valueLower = String(entry.lesson || '').toLowerCase();
+      const overlap = taskWords.filter(w => valueLower.includes(w)).length;
+      const similarity = taskWords.length > 0 ? overlap / taskWords.length : 0;
+      if (similarity >= 0.05) {
+        scoredLessons.push({ lesson: entry.lesson, source: 'reflexion', similarity: Math.round(similarity * 100) / 100, age: Date.now() - (entry.timestamp || Date.now()), key });
+      }
+    }
+    scoredLessons.sort((a, b) => b.similarity - a.similarity);
+    return scoredLessons.slice(0, limit).map(({ lesson, source, similarity }) => ({ lesson, source, confidence: Math.round(similarity * 100) / 100 }));
+  }
+
+  /**
+   * 获取 Reflexion 教训统计
+   */
+  getReflexionStats() {
+    const lessons = Object.values(this.state.learningHistory || []).filter(h => h.type?.includes('reflection'));
+    return { totalLessons: lessons.length, failures: lessons.filter(l => l.outcome === 'failure').length };
+  }
 }
 
 module.exports = { SelfEvolutionCore };

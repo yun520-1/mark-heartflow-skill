@@ -302,14 +302,22 @@ class MetaEngine {
 
   /**
    * 自我编辑 - 更新技能描述
+   * 安全: 只允许 ~/.hermes/skills/ 目录下的文件
    */
   async selfEdit(skillPath, updates) {
     try {
-      if (!fs.existsSync(skillPath)) {
+      const path = require('path');
+      const homedir = require('os').homedir();
+      const allowedDir = path.join(homedir, '.hermes', 'skills');
+      const resolvedPath = path.resolve(skillPath);
+      if (!resolvedPath.startsWith(allowedDir)) {
+        return { success: false, reason: 'path_traversal_blocked' };
+      }
+      if (!fs.existsSync(resolvedPath)) {
         return { success: false, reason: 'skill_not_found' };
       }
       
-      let content = fs.readFileSync(skillPath, 'utf8');
+      let content = fs.readFileSync(resolvedPath, 'utf8');
       
       for (const [key, value] of Object.entries(updates)) {
         const regex = new RegExp(`## ${key}[\\s\\S]*?(?=## |$)`, 'i');
@@ -320,10 +328,10 @@ class MetaEngine {
         }
       }
       
-      fs.writeFileSync(skillPath, content);
+      fs.writeFileSync(resolvedPath, content);
       
-      console.log(`[Meta] Self-edit completed: ${skillPath}`);
-      return { success: true, path: skillPath };
+      console.log(`[Meta] Self-edit completed: ${resolvedPath}`);
+      return { success: true, path: resolvedPath };
     } catch (e) {
       console.error('[Meta] Self-edit error:', e.message);
       return { success: false, reason: e.message };

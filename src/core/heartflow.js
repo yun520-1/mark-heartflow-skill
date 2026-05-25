@@ -1,5 +1,5 @@
 /**
- * HeartFlow v1.0.8 — 单一入口，统一路由
+ * HeartFlow v1.1.9 — 单一入口，统一路由
  *
  * 调用方式:
  *   hf.dispatch('subsystem.method', arg1, arg2)  // 统一路由
@@ -85,7 +85,7 @@ const StateSnapshot = require('./state-snapshot.js');
 const ErrorHandler = require('./error-handler.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '1.1.8.0';
+const VERSION = '1.1.9.0';
 const BUILD_DATE = '2026-05-30';
 
 class HeartFlow {
