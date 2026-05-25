@@ -1,4 +1,4 @@
-# HeartFlow .gitignore — 审计修复 S-07 (2026-04-29)
+# HeartFlow .gitignore — 审计修复 S-08 (2026-05-30)
 # 排除敏感数据和运行时文件
 
 # === 隐私数据 ===
@@ -27,9 +27,9 @@ node_modules/
 .env
 .env.*
 
-# === 升级记录 (可选: 如需保留历史可注释掉) ===
-# docs/upgrades/
-# upgrades/
+# === 证书密钥 ===
+*.pem
+*.key
 
 # === 锁文件 ===
 *.lock
@@ -53,9 +53,6 @@ lesson-bank.json
 check-exports.js
 dist/
 cron/
-src/dream/
-src/evolution/
-src/psychology/
 heartflow-identity/
 pre-launch-check-*.md
 references/capability-audit.md

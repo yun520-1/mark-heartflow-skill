@@ -1,7 +1,7 @@
 {
   "name": "heartflow",
-  "description": "HeartFlow v1.0.8 - AI capability layer with identity, verification, memory, and skill governance loops",
-  "version": "1.1.0.0",
+  "description": "HeartFlow v1.1.5.0 - AI 认知与自愈引擎。叙事梦、三层记忆、自愈RL、决策验证、心理诊断",
+  "version": "1.1.5.0",
   "releaseDate": "2026-04-11",
   "main": "src/core/heartflow-engine.js",
   "bin": {

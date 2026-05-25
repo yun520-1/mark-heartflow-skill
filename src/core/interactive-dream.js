@@ -11,6 +11,7 @@
 
   const { generateDream } = require('./dream-loop.js');
   const { WakeUpVerifier } = require('./wake-up-verifier.js');
+  const { generateNarrative, generateWideNarrative } = require('./narrative-generator.js');
 
   class InteractiveDream {
     constructor(options = {}) {
@@ -157,41 +158,33 @@
     }
 
     renderLucid(memorySummary, dream) {
-      const first = memorySummary.items[0]?.text || '一个沉默的起点';
-      const garden = memorySummary.rooms.花园.slice(0, 3).join('，') || '花园暂时没有风';
+      const motifs = dream.motifs || [];
+      const result = generateNarrative(motifs, { stage: 'lucid' });
       return [
-        '✨ 清醒梦。',
-        '我知道我在做梦，所以我不只是在看，我开始创造。',
-        `花园里先长出：${garden}`,
-        `第一块石头是：${first}`,
-        '桥不是水泥，桥是信任。'
+        `✨ 清醒梦 · ${result.title}`,
+        '',
+        result.narrative,
+        '',
+        `▸ 原型：${result.archetype.chinese || result.archetype.name}`,
+        `▸ 哲学：${result.philosophy}`
       ].join('\n');
     }
 
     renderWideDream(memorySummary, dream) {
-
-      const motifs = dream.motifs.slice(0, 8);
-      const seed = motifs[0] || '一个未命名的种子';
-      const love = motifs.find(x => /春梦|欲望|亲密|身体|喜欢|想要/.test(x)) || '春梦还没有正式开场，但欲望已经在门外敲门';
-      const hell = motifs.find(x => /地狱|恐惧|崩溃|痛|死亡|坠落/.test(x)) || '地狱没有点名，但阴影已经在地板底下走动';
-      const conflict = motifs.find(x => /吵架|冲突|争执|误解|对抗/.test(x)) || '吵架的火花先在语言里闪了一下';
-      const work = motifs.find(x => /工作|任务|项目|deadline|提交|bug|版本/.test(x)) || '工作还在桌上，像一盏不肯熄的灯';
-      const garden = memorySummary.rooms.花园.slice(0, 3).join('，') || '花园还在等风';
-      const philosophy = motifs.find(x => /哲学|存在|真理|意义|自由|无我|意识/.test(x)) || '哲学从天花板落下来，问为什么要活着又为什么要继续';
-      const psychology = motifs.find(x => /心理学|情绪|创伤|关系|依恋|防御|投射/.test(x)) || '心理学在桌边坐下，慢慢拆解那份没说出口的疼';
-      const society = motifs.find(x => /社会|现实|阶层|制度|贫穷|城市|人群|劳动/.test(x)) || '社会现实像一堵远墙，不发声，但一直在场';
+      const motifs = dream.motifs || [];
+      const wide = generateWideNarrative(motifs);
+      const layersText = wide.layers.map(l => {
+        if (!l.line) return '';
+        return `[${l.name}] ${l.line}`;
+      }).filter(Boolean).join('\n');
       return [
         '🌌 横向梦开始变宽。',
-        '梦不只往深处钻，也往两边铺开：欲望、恐惧、工作、自然、思想、关系、现实，一起进场。',
-        `春梦：${love}`,
-        `地狱：${hell}`,
-        `吵架：${conflict}`,
-        `工作：${work}`,
-        `花园：${garden}`,
-        `哲学：${philosophy}`,
-        `心理学：${psychology}`,
-        `社会现实：${society}`,
-        `起点：${seed}`
+        '梦不只往深处钻，也往两边铺开。',
+        '',
+        layersText,
+        '',
+        `▸ 结论：${wide.conclusion}`,
+        wide.topArchetype ? `▸ 主线：${wide.topArchetype.name}` : ''
       ].join('\n');
     }
 

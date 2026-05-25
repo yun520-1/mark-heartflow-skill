@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "1.1.4.0"
+version: "1.1.5.0"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v1.1.4.0 — AI 认知与自愈引擎。
+  HeartFlow v1.1.5.0 — AI 认知与自愈引擎。
   核心能力：启动自检(Boot Check)、RAG三元组评估(FeedbackFunctions)、
   三层记忆(Meaningful Memory)、自愈RL(Q-table)、决策验证、
   遗忘引擎(Forgetting Engine)、心理诊断引擎(Top 20 Index)、
