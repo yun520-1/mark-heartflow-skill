@@ -1,12 +1,13 @@
 ---
 name: heartflow
-version: "1.2.0"
+version: "1.2.1"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v1.2.0 — AI 认知与自愈引擎。
+  HeartFlow v1.2.1 — AI 认知与自愈引擎。
   核心能力：三层记忆(MeaningfulMemory/Triality)、自愈RL(Q-table)、
   自优化(Self-Refine+Reflexion)、决策验证、遗忘曲线(Ebbinghaus)、
-  心理诊断引擎(PsychologyEngine)、情绪理性(EmotionalProtocol)、
+  心理诊断引擎(PsychologyEngine v1.1.0)、共情检测(EmpathyDetector)、
+  情绪理性(EmotionalProtocol)、
   4框架伦理哲学(PhilosophyEngine)、身份规则系统(IdentityRules)、
   真实性核查(TruthfulnessChecker)、安全检查(SecurityChecker)、
   思维引擎(ReasoningIntegrator)、BM25+混合搜索(Budget/Graph/Slots)、
@@ -737,6 +738,7 @@ JOINT > NORMATIVE > AFFECTIVE > AGGREGATE
 
 ## Papers integrated
 
+- **The Functional Architecture of Human Empathy** (Decety & Jackson, 2004) - Citation: 3210 | v1.2.1 ⭐ NEW
 - Self-Verification (arXiv:2312.09210)
 - Reflexion (NeurIPS 2023)
 - CRITIC (ICML 2024)

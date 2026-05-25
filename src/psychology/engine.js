@@ -9,6 +9,7 @@
  */
 
 const psychology = require('../core/psychology.js');
+const empathy = require('./empathy-detector.js');
 
 class PsychologyEngine {
     constructor(memory) {
@@ -85,6 +86,14 @@ class PsychologyEngine {
     }
     
     /**
+     * 检测共情水平
+     * 来源: Decety & Jackson (2004) - The Functional Architecture of Human Empathy
+     */
+    getEmpathy(input) {
+        return empathy.detectEmpathy(input);
+    }
+    
+    /**
      * 重置危机计数
      */
     resetCrisisCounter() {
@@ -96,12 +105,13 @@ class PsychologyEngine {
     getPsychologyStats() {
         return {
             enabled: true,
-            version: 'v1.0.0',
-            perceptionLayers: ['intention', 'emotion', 'needs', 'defense', 'crisis'],
+            version: 'v1.1.0',
+            perceptionLayers: ['intention', 'emotion', 'needs', 'defense', 'crisis', 'empathy'],
             padModel: psychology.PAD_MODEL,
             crisisLevels: psychology.CRISIS_LEVELS,
             defenseMechanisms: Object.keys(psychology.DEFENSE_MECHANISMS).length,
-            maslowTiers: 8
+            maslowTiers: 8,
+            empathyArchitecture: ['emotionalContagion', 'empathicConcern', 'perspectiveTaking', 'selfOtherDistinction']
         };
     }
 }
