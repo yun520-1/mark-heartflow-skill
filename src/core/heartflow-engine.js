@@ -58,6 +58,13 @@ try {
   console.log('[HeartFlow] ⚠️ 自愈RL引擎加载失败:', e.message);
 }
 
+// CognitiveAppraisal - Leventhal's Common-Sense Model
+const CognitiveAppraisal = require('./cognitive-appraisal.js');
+
+// EmotionalMemoryBridge - 情感记忆桥 v1.0.0
+// 整合 cognitive-appraisal + meaningful-memory + psychology
+const EmotionalMemoryBridge = require('./emotional-memory-bridge.js');
+
 // [已归档] try {
 //   AdaptiveController = require('./adaptive-controller.js');
 //   console.log('[HeartFlow] ✅ 自适应调节引擎已加载');
@@ -1728,3 +1735,16 @@ module.exports.bootCheck = bootCheck;
  */
 module.exports.FeedbackFunctions = FeedbackFunctions;
 module.exports.EvalResult = EvalResult;
+
+/**
+ * Cognitive Appraisal - Leventhal's Common-Sense Model
+ * 来源: "Illness cognition: Using common sense to understand treatment" (1564 citations)
+ */
+module.exports.CognitiveAppraisal = CognitiveAppraisal;
+
+/**
+ * Emotional Memory Bridge v1.0.0
+ * 整合 cognitive-appraisal + meaningful-memory + psychology
+ * 功能: 情绪显著性评估 / 认知模式提取 / 记忆转化 / 自我调节健康评估
+ */
+module.exports.EmotionalMemoryBridge = EmotionalMemoryBridge;
