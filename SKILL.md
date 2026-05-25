@@ -1,13 +1,16 @@
 ---
 name: heartflow
-version: "1.1.3.0"
+version: "1.1.4.0"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v1.1.3.0 — AI 认知与自愈引擎。
+  HeartFlow v1.1.4.0 — AI 认知与自愈引擎。
   核心能力：启动自检(Boot Check)、RAG三元组评估(FeedbackFunctions)、
   三层记忆(Meaningful Memory)、自愈RL(Q-table)、决策验证、
   遗忘引擎(Forgetting Engine)、心理诊断引擎(Top 20 Index)、
-  @task_classify任务分类、Why连续追问诊断、错误代码规范。
+  @task_classify任务分类、Why连续追问诊断、错误代码规范、
+  情绪理性(Emotion Rationality)、SDT动机连续体、
+  预测处理(Predictive Processing)、集体意向性(Collective Intentionality)、
+  自优化(Self-Refine)、外部记忆系统(agentmemory/Hindsight)、浏览器桥接。
   不是 persona，不是 prompt 模板，是可验证的能力层。
 tags:
   - cognitive
@@ -17,7 +20,7 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v1.1.3.0
+# HeartFlow / 心虫 v1.1.4.0
 
 **An AI capability layer that survives context switches, model changes, and restarts.**
 
@@ -166,8 +169,8 @@ DecisionVerifier.check(decision) → {
   evidence: [...],       // supporting facts
   assumption: [...],     // unverified premises
   contradiction: [...],  // logical conflicts
-  uncertainty: [...],     // unknown factors
-  confidence: 0.0-1.0    // calibrated score
+  uncertainty: [...],   // unknown factors
+  confidence: 0.0-1.0  // calibrated score
 }
 ```
 
@@ -313,6 +316,733 @@ FeedbackFunctions.evaluate(response, context) → {
 
 ---
 
+## Advanced Memory Optimization Engine
+
+**来源**：mark-StillWater/src/core/memory.js · mark-StillWater/src/core/evolution.js
+
+### Dirty Flag Write Pattern（减少不必要IO）
+
+**问题**：每次记忆访问都写盘 = 大量无效IO，拖慢性能。
+
+**解决方案**：写放大镜（Dirty Flag）模式——只在数据真正变化时才写入。
+
+```js
+// 每个存储层独立的 dirty flag
+let _coreDirty = false;
+let _learnedDirty = false;
+let _ephemeralDirty = false;
+
+// 标记脏
+function markCoreDirty() { _coreDirty = true; }
+function markLearnedDirty() { _learnedDirty = true; }
+
+// 延迟写入 — 只有脏时才写
+function saveCore() {
+  if (!_coreDirty) return; // Skip if not modified
+  atomicWriteJson(_coreFile, _coreStore);
+  _coreDirty = false;
+}
+
+// EPHEMERAL 访问优化 — 每5次访问才写一次
+function touchEphemeral(key) {
+  if (_ephemeralStore[key]) {
+    _ephemeralStore[key]._accessCount =
+      (_ephemeralStore[key]._accessCount || 0) + 1;
+    if (_ephemeralStore[key]._accessCount % 5 === 0) {
+      markEphemeralDirty();
+      saveEphemeral();
+    }
+  }
+}
+```
+
+**HeartFlow 应用**：
+- MeaningfulMemory 三层存储各独立 dirty flag
+- CORE 层：每次写入标记脏，关闭时一次性写出
+- LEARNED 层：批量变更后统一写出，避免逐条写盘
+- EPHEMERAL 层：每N次访问才触发一次写（降低IO频率）
+
+---
+
+### Ebbinghaus Forgetting Curve（记忆衰减管理）
+
+**来源**：mark-StillWater/src/core/memory.js — Ebbinghaus 遗忘曲线实现
+
+**原理**：记忆随时间自然衰减，通过稳定性参数预测保留率，低于阈值时压缩或删除。
+
+```js
+const FORGETTING_CONFIG = {
+  defaultStability: 10,    // hours, base stability
+  coreStability: 8760,     // 1 year = permanent
+  learnedStability: 720,   // 30 days = LEARNED tier
+  compressionThreshold: 0.3, // retention < 30% → compress
+  deletionThreshold: 0.1,   // retention < 10% → delete
+};
+
+// Ebbinghaus 遗忘公式
+function ebbinghausForget(stabilityHours, ageHours) {
+  const retention = Math.exp(-ageHours / stabilityHours);
+  return {
+    retention,
+    shouldCompress: retention < FORGETTING_CONFIG.compressionThreshold,
+    shouldDelete: retention < FORGETTING_CONFIG.deletionThreshold,
+  };
+}
+
+// 批量遗忘处理
+function applyForgetting() {
+  const now = Date.now();
+  const toDelete = [];
+  const toCompress = [];
+
+  for (const [key, entry] of Object.entries(_learnedStore)) {
+    const ageHours = (now - entry.createdAt) / (1000 * 60 * 60);
+    const { shouldDelete, shouldCompress } = ebbinghausForget(
+      FORGETTING_CONFIG.learnedStability, ageHours
+    );
+    if (shouldDelete) toDelete.push(key);
+    else if (shouldCompress && !entry.compressed) {
+      entry.compressed = true;
+      entry.compressedAt = now;
+      toCompress.push(key);
+    }
+  }
+
+  // 批量删除+压缩，一次性写出
+  for (const key of toDelete) delete _learnedStore[key];
+  if (toDelete.length > 0 || toCompress.length > 0) saveLearned();
+  return { compressed: toCompress, deleted: toDelete };
+}
+```
+
+**HeartFlow 应用**：
+- LEARNED 层（30天）自动遗忘：retention < 10% 删除，< 30% 压缩为摘要
+- CORE 层永久：stability = 8760 小时（1年），retention 始终 > 0.99
+- EPHEMERAL 层即时：每个 session 后评估，超过稳定性阈值移入 LEARNED
+
+---
+
+### Q-Learning Self-Heal（错误自愈）
+
+**来源**：mark-StillWater/src/core/evolution.js — HEAL Q-table 自愈策略选择
+
+**原理**：错误分类 → Q-learning 策略选择 → 成功率最高的策略自动胜出。
+
+```js
+// 错误模式库
+const _PATTERNS = {
+  timeout: ['timeout', 'timed out', 'ETIMEDOUT', 'TIMEOUT'],
+  network: ['network', 'ENOTFOUND', 'ECONNREFUSED', 'connection'],
+  memory: ['memory', 'heap', 'out of memory', 'OOM'],
+  permission: ['permission', 'EPERM', 'EACCES', 'denied'],
+  syntax: ['syntax', 'parse', 'invalid', 'malformed'],
+  reference: ['not found', 'undefined', 'null', 'cannot read'],
+  type: ['type', 'instanceof', 'expected'],
+};
+
+// Q-Learning 参数
+const _EPSILON = 0.1;  // 10% 探索率
+const _ALPHA = 0.3;     // 学习率
+const _STRATEGIES = ['retry', 'fallback', 'skip', 'abort'];
+const _BACKOFF = { retry: 1000, fallback: 5000, skip: 0, abort: 0 };
+
+// Q-table 选择策略（ε-greedy）
+function selectHealStrategy(errorType) {
+  const qEntry = _healQtable.get(errorType) || DEFAULT_Q;
+  
+  // ε-greedy：10% 概率随机探索，90% 选择最优
+  if (Math.random() < _EPSILON)
+    return _STRATEGIES[Math.floor(Math.random() * _STRATEGIES.length)];
+  
+  // 选择 Q 值最高的策略
+  let best = _STRATEGIES[0], bestQ = 50;
+  for (const s of _STRATEGIES) {
+    const q = qEntry[s]?.qValue || 50;
+    if (q > bestQ) { bestQ = q; best = s; }
+  }
+  return best;
+}
+
+// Q 值更新（基于结果反馈）
+function updateHealQ(errorType, strategy, success) {
+  const qEntry = _healQtable.get(errorType) || { ...DEFAULT_Q };
+  const oldQ = qEntry[strategy]?.qValue || 50;
+  const reward = success ? 100 : -20;
+  qEntry[strategy] = { qValue: oldQ + _ALPHA * (reward - oldQ), uses: (qEntry[strategy]?.uses || 0) + 1 };
+  _healQtable.set(errorType, qEntry);
+}
+```
+
+**HeartFlow 应用（已有 Q-table 自愈的增强版）**：
+- HEAL 错误代码 → 错误类型映射 → Q-learning 策略选择
+- HEAL001（文件缺失）→ retry 或 skip
+- HEAL002（版本不一致）→ retry（重试版本检查）
+- HEAL003（逻辑错误）→ skip（跳过该任务步骤）
+- HEAL004（记忆失效）→ fallback（降级到 session_search）
+- HEAL005（技能加载失败）→ fallback（尝试备用技能）
+- HEAL006（过度干预）→ skip（直接不响应）
+- HEAL007（归因偏差）→ skip + 日志记录
+
+**与 HEAL 代码的对应关系**：
+
+| HEAL 代码 | 对应错误类型 | Q-learning 策略池 |
+|---------|------------|----------------|
+| HEAL001 | `file_not_found` | retry, skip |
+| HEAL002 | `version_mismatch` | retry, skip |
+| HEAL003 | `logic_error` | skip, abort |
+| HEAL004 | `memory_failure` | fallback, skip |
+| HEAL005 | `skill_load_failure` | fallback, skip |
+| HEAL006 | `over_intervention` | skip |
+| HEAL007 | `attribution_bias` | skip |
+
+---
+
+### Atomic Write（防止数据损坏）
+
+**来源**：mark-StillWater/src/core/memory.js — 原子写入防损坏
+
+```js
+function atomicWriteJson(filePath, data) {
+  const tempPath = filePath + '.tmp.' + Date.now();
+  fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), 'utf8');
+  fs.renameSync(tempPath, filePath); // 原子的：成功 rename，失败则 tmp 文件残留
+}
+```
+
+**HeartFlow 应用**：所有 memory JSON 文件写入使用原子写入模式。
+
+---
+
+## Emotion Rationality Engine（情绪理性引擎）
+
+**来源**：mark-StillWater/skills/mark-StillWater/SKILL.md v1.14.6 · emotion-rationality.js
+
+### 情绪理性三维度
+
+**认知理性**（ appropriateness · justification · consistency）：
+```js
+cognitiveRationality = (appropriateness + justification + consistency) / 3
+```
+- **恰当性**：情绪反应与触发情境匹配程度
+- **证成性**：情绪有合理的原因支撑
+- **一致性**：情绪反应内部逻辑自洽
+
+**战略理性**（ instrumental rationality · substantive rationality）：
+```js
+strategicRationality = (instrumentalRationality + substantiveRationality) / 2
+```
+- **工具理性**：手段是否有效达成目标
+- **实质理性**：目标本身是否合理
+
+**Overall 情绪理性**：
+```js
+emotionalRationality = (cognitiveRationality + strategicRationality) / 2
+```
+
+### PAD 情绪模型
+
+** Pleasure（愉悦度）· Arousal（唤醒度）· Dominance（支配度）
+
+| 状态组合 | 情绪 |
+|---------|------|
+| P+A+D+ | 警觉/兴奋 |
+| P+A-D+ | 愤怒/敌意 |
+| P-A+D+ | 被动/依赖 |
+| P-A-D+ | 抑郁/悲伤 |
+| P+A-D- | 快乐/满意 |
+| P-A+A+ | 焦虑/不安 |
+| P-A+A- | 沮丧/失落 |
+
+### Meta-Emotion Monitor（元情绪监控）
+
+**来源**：mark-StillWater/src/core/psychology.js · meta-emotion-monitor.js
+
+**六层次**：
+1. **事件层**：发生了什么（外部刺激）
+2. **唤醒层**：身体有什么反应（心率、肌肉紧张）
+3. **感受层**：主观情绪体验（愉快/不愉快）
+4. **解释层**：对这个情绪的认知评价
+5. **倾向层**：行为冲动（接近/回避/攻击）
+6. **行为层**：实际做了什么
+
+**六成分模型**：
+```
+情绪 = f(事件, 唤醒, 感受, 解释, 倾向, 行为)
+```
+
+**AI 应用**：
+- 检测用户情绪的六成分，判断情绪类型
+- 原发情绪 → 直接接纳表达
+- 继发情绪（对原发的反应）→ 探查底层触发事件
+- 工具性情绪（刻意表演）→ 识别操控意图，不被利用
+- 防御性情绪（自我保护）→ 提供安全感而非纠正
+
+### SDT 动机连续体
+
+**来源**：mark-StillWater/skills/mark-StillWater/SKILL.md v1.14.5 · sdt/index.js
+
+#### 动机类型谱系（自主程度从低到高）
+
+```
+无动机 → 外部调节 → 内摄调节 → 认同调节 → 整合调节 → 内在动机
+O               I              I           I           I
+无自主←───────────────┼─────────────────────────────→高自主
+```
+
+| 类型 | 定义 | AI 交互策略 |
+|------|------|-----------|
+| **无动机** | 没有行动的意愿或能力 | 提供极简指令，降低焦虑 |
+| **外部调节** | 为奖励/避免惩罚而行动 | 说明行动的直接好处 |
+| **内摄调节** | 接受外部规则但未内化 | 帮助找到个人意义 |
+| **认同调节** | 认同行动的价值 | 支持自主决策 |
+| **整合调节** | 行动与自我一致 | 完全信任，自主推进 |
+| **内在动机** | 享受行动本身 | 不干预，让其发挥 |
+
+#### SDT 三大基本需求
+
+| 需求 | 定义 | AI 支持方式 |
+|------|------|-----------|
+| **自主需求** | 感到自己的行动是选择而非强迫 | 提供选项而非命令，尊重拒绝 |
+| **胜任需求** | 感到自己能胜任，有效能 | 匹配适度挑战，提供成功体验 |
+| **关系需求** | 感到被理解、被关心 | 共情回应，不评判，表达理解 |
+
+#### 目标内容评估
+
+**内在目标**（促进心理健康）：自主、胜任、关系、成长、健康
+**外在目标**（关联心理问题）：财富、形象、地位、他人的认可
+
+**AI 诊断**：用户表达的目标内容反映其动机类型，内在目标为主 → 内在动机倾向强。
+
+---
+
+## Predictive Processing Engine（预测处理引擎）
+
+**来源**：mark-StillWater/skills/mark-StillWater/SKILL.md v1.14.5 · predictive-processing-v6.2.49.js
+
+### 自由能原理（Free Energy Principle）
+
+**核心**：大脑是预测机器，持续用已有模型预测外界输入，预测误差最小化即智能。
+
+```js
+// 预测误差 = 实际 - 预测
+predictionError = actual - predicted
+
+// 自由能 = 预测误差 - 复杂性奖励
+// （既要预测准确，又不想模型太复杂）
+F = predictionError - complexityBonus
+
+// 预期自由能 = 偏好发散度 + 预期预测误差
+ExpectedFE = preferenceDivergence + expectedPredictionError
+
+// 动作选择：在所有可能动作中，选择 ExpectedFE 最小的那个
+action = argmin_a ExpectedFE(action_a)
+```
+
+### Bayesian 更新
+
+```js
+// 新证据到来时，更新信念的后验概率
+posteriorOdds = priorOdds × likelihoodRatio
+// 或等效地：
+P(H|E) = P(E|H) × P(H) / P(E)
+```
+
+**AI 应用**：用户在对话中提供新信息 → 更新对用户意图、情绪状态的信念 → 调整回复策略。
+
+### 预期自由能与动作选择
+
+**动作选择流程**：
+1. 生成所有可能动作的候选列表
+2. 对每个动作，估计"如果这样做，预测误差会如何"
+3. 估计"这个动作结果与我的偏好有多远"
+4. 计算 ExpectedFE = 预测误差估计 + 偏好偏差
+5. 选择 ExpectedFE 最小的动作（最"意外最小+偏好最近"）
+
+### 精度加权注意
+
+**原理**：不同感知通道的精度不同，高精度通道的预测误差获得更多注意权重。
+
+```js
+// 精度加权
+precisionWeight = precision_i / Σ(precision_all)
+predictionError_i_weighted = predictionError_i × precisionWeight
+```
+
+**AI 应用**：用户输入中不同部分的"确定性"不同，高确定性部分（明确指令）权重高，低确定性部分（模糊暗示）权重低。
+
+---
+
+## Collective Intentionality & Collaboration（集体意向性）
+
+**来源**：mark-StillWater/skills/mark-StillWater/SKILL.md v1.14.6 · collective-intentionality-enhanced
+
+### We-Intention 结构公式
+
+```
+We-Intention = 目标共享 × 行动互赖 × 相互响应 × 承诺约束 × 信任融合
+```
+
+| 要素 | 定义 |
+|------|------|
+| **目标共享** | 所有参与者都知道并认同共同目标 |
+| **行动互赖** | 个体行动依赖于其他参与者的行动 |
+| **相互响应** | 参与者相互调整以配合彼此 |
+| **承诺约束** | 有隐含或明确的承诺/协议 |
+| **信任融合** | 信任水平足够支撑协作 |
+
+### 集体承诺类型（强度从高到低）
+
+```
+JOINT > NORMATIVE > AFFECTIVE > AGGREGATE
+```
+
+| 类型 | 描述 | 例子 |
+|------|------|------|
+| **AGGREGATE** | 简单聚合各自目标 | 两个独立个体分别做同一件事 |
+| **AFFECTIVE** | 情感连接驱动的承诺 | 朋友间的互助 |
+| **NORMATIVE** | 规范性期望驱动 | 角色义务、职业责任 |
+| **JOINT** | 真正的共同目标+互依 | 团队共同交付产品 |
+
+### 信任修复五阶段
+
+```
+承认诊断 → 道歉解释 → 补偿改正 → 监控验证 → 重建巩固
+```
+
+| 阶段 | AI 行为 |
+|------|--------|
+| **承认诊断** | 承认错误事实，不防御，不推卸 |
+| **道歉解释** | 真诚道歉 + 解释原因（不是借口）|
+| **补偿改正** | 立即采取行动弥补伤害 |
+| **监控验证** | 跟踪后续表现，确保不再犯 |
+| **重建巩固** | 通过持续可靠行为重建信任 |
+
+### 大五人格与协作风格（OCEAN）
+
+| 人格维度 | 高分特征 | AI 协作建议 |
+|---------|---------|-----------|
+| **开放性 O** | 好奇、创意、探索 | 提供新颖选项，鼓励创新 |
+| **尽责性 C** | 可靠、有序、坚持 | 给出清晰步骤，跟进执行 |
+| **外向性 E** | 社交、活跃、热情 | 积极互动，及时反馈 |
+| **宜人性 A** | 合作、信任、利他 | 强调双赢，避免竞争 |
+| **神经质 N** | 焦虑、敏感、不安全感 | 提供安全感，温和确认 |
+
+---
+
+## Self-Refine Iterative Feedback（自优化迭代）
+
+**来源**：mark-StillWater/src/core/evolution.js · Hindsight / agentmemory 集成思想
+
+### Self-Refine 迭代反馈模式
+
+**流程**：初始回答 → 生成反馈 → 检查收敛 → 精炼回答 → 重复
+
+```js
+selfRefine(initialResponse, query, options = {}) {
+  const { maxIterations = 3, threshold = 0.8 } = options;
+
+  let current = initialResponse;
+  const iterations = [];
+
+  for (let i = 0; i < maxIterations; i++) {
+    // Step 1: 生成具体反馈（必须指出至少2个改进点）
+    const feedback = generateFeedback(
+      `严格评估以下回答对查询"${query}"的质量。
+回答: ${current}
+` +
+      `请提供具体、可操作的反馈，必须指出至少2个需要改进的地方。`
+    );
+
+    // Step 2: 检查是否收敛（反馈为正面）
+    if (isFeedbackPositive(feedback)) {
+      iterations.push({ iteration: i + 1, feedback, refined: current, converged: true });
+      break;
+    }
+
+    // Step 3: 基于反馈精炼
+    const refined = refineResponse(
+      `根据以下反馈改进回答。查询: ${query}
+反馈: ${feedback}
+直接给出改进后的回答。`
+    );
+
+    iterations.push({ iteration: i + 1, feedback, refined });
+    current = refined;
+  }
+
+  return {
+    original: initialResponse,
+    refined: current,
+    iterations,
+    converged: iterations[iterations.length - 1]?.converged || false
+  };
+}
+```
+
+**HeartFlow 应用**：
+- 关键回答（高风险/高影响）输出前，先经过 selfRefine 循环
+- maxIterations = 2-3 次迭代
+- 收敛判定：连续两次迭代反馈评分 > threshold
+
+### Learned Improvement（从外部记忆系统学习）
+
+**来源**：Hindsight + agentmemory 集成思想
+
+**核心洞察**：外部记忆系统不是简单存储，是让 AI 学会新的能力。
+
+**Hindsight 核心定位**（LongMemEval SOTA）：
+- 不只是记忆对话历史，是让 AI **学习**如何做得更好
+- "making agents that learn, not just remember"
+- 2行代码集成：
+```js
+import { Hindsight } from '@hindsight/hindsight';
+const hindsight = new Hindsight({ apiKey: 'your-key' });
+```
+
+**agentmemory 核心能力**：
+- 混合检索：Embeddings + BM25 + Knowledge Graph + Vector
+- 置信度评分（Confidence Scoring）
+- 生命周期管理（lifecycle management）
+- 多智能体支持（Claude Code, Cursor, Codex, Hermes, OpenClaw...）
+- npm 安装：`npm install @agentmemory/agentmemory`
+
+**集成建议（HeartFlow）**：
+- 当前会话 → Hermes session_search（近期）
+- 跨会话重要模式 → HeartFlow CORE 层（永久）
+- 外部专业记忆库 → agentmemory（混合检索）
+- 大规模长期记忆 → Hindsight（基准测试 SOTA）
+
+---
+
+## External Memory Systems Comparison（外部记忆系统对比）
+
+### 三大系统横向对比
+
+| 系统 | 检索方式 | 基准测试 | 集成难度 | 特色 |
+|------|---------|---------|---------|------|
+| **HeartFlow 内置** | Triality Memory (Working/Episodic/Semantic) | 内部验证 | 无需集成 | 三层遗忘曲线 + Q-learning 自愈 |
+| **agentmemory** | Embeddings + BM25 + Knowledge Graph + Vector | 自报告 | 低（npm 包）| 跨平台、多智能体、置信度评分 |
+| **Hindsight** | LLM Wrapper + 学习型索引 | LongMemEval SOTA | 极低（2行代码）| 不只是记忆，是学习 |
+
+### agentmemory 详细规格
+
+**核心能力**：
+- 多模检索：向量相似度 + BM25 关键词 + 知识图谱关系
+- 置信度评分：每条记忆有 confidence score，过低自动过滤
+- 生命周期管理：自动过期、自动升级重要记忆
+- 多智能体：Claude Code / Cursor / Codex / Hermes / OpenClaw / pi / OpenCode / MCP
+
+**安装**：`npm install @agentmemory/agentmemory`
+
+**基本用法**：
+```js
+import { AgentMemory } from '@agentmemory/agentmemory';
+const memory = new AgentMemory({
+  projectName: 'my-project',
+  storage: 'local'  // or 'cloud'
+});
+// 存储记忆
+await memory.add({ content: '用户叫xiaolong', type: 'user_preference' });
+// 检索记忆
+const results = await memory.search('用户名是什么', { type: 'user_preference' });
+```
+
+**BM25 优势**：关键词精确匹配，不依赖语义向量模型，中文支持更好。
+
+**Knowledge Graph 优势**：关系推理，可以问"与这个记忆相关的是什么"。
+
+### Hindsight 详细规格
+
+**核心定位**：让 AI 学习，不是让 AI 记忆。
+
+**基准测试**（LongMemEval，2026年1月）：
+- Hindsight: SOTA（最先进）
+- Others: 自报告数据（未独立验证）
+
+**集成方式**（2行代码）：
+```js
+import { Hindsight } from '@hindsight/sdk';
+const hindsight = new Hindsight({ apiKey: 'your-key' });
+// 自动记忆，自动检索，无需手动管理
+```
+
+**学习 vs 记忆的区别**：
+- 记忆系统：存储 → 检索 → 使用
+- 学习系统：存储 → 提炼模式 → 改进行为
+
+**Cloud 版本**：ui.hindsight.vectorize.io/signup
+
+### Hermes 记忆需求适配建议
+
+**当前 Hermes 记忆层**：
+- session_search：近期会话（热存储）
+- HeartFlow CORE：永久记忆（冷存储）
+
+**扩展方案**：
+```
+会话开始 → session_search（最近7天）
+         ↓ 未找到
+       agentmemory BM25（7-30天，高置信度）
+         ↓ 未找到
+       HeartFlow CORE（永久，三层遗忘）
+         ↓ 需要深度推理
+       Hindsight（跨会话学习模式提炼）
+```
+
+---
+
+## Hermes Browser Bridge Integration（浏览器桥接）
+
+**来源**：hermes-browser-bridge · xxxsuke/hermes-browser-bridge
+
+### 核心架构
+
+```
+Hermes Agent ←→ WebSocket Bridge (ws://localhost:9876) ←→ Chrome/Edge Extension ←→ 真实浏览器
+```
+
+**特点**：不是启动新的自动化浏览器，而是**控制你正在用的浏览器**。已登录的网站（知乎/小红书/微博）直接用。
+
+### WebSocket 命令接口
+
+| 命令 | 功能 |
+|------|------|
+| `list_tabs` | 列出所有标签页 |
+| `navigate url` | 导航到 URL |
+| `read_text` | 读取页面文字 |
+| `screenshot` | 截图 |
+| `write_text selector text` | 填写表单 |
+| `download url` | 下载文件 |
+| `create_window url` | 新建窗口 |
+| `find_in_page keyword` | 页面内搜索（Ctrl+F）|
+
+### Hermes Agent 集成模式
+
+**场景**：用户说"帮我搜一下今天AI圈有什么新闻"
+
+**Agent 做的事**：
+1. 判断需要搜索 → 启动 WebSocket 连接
+2. 多引擎搜索 → 筛选相关文章
+3. 点进原文 → 滚动读完
+4. 判断完整性 → 返回摘要
+5. 截图留存
+
+**Python 客户端**（Windows CMD 直接跑）：
+```cmd
+python hermes_client.py list_tabs
+python hermes_client.py navigate "https://baidu.com/s?wd=AI新闻"
+python hermes_client.py screenshot
+```
+
+### 与 HeartFlow 的协同
+
+**场景**：深度研究任务
+- HeartFlow：分析、推理、决策
+- Browser Bridge：信息获取、页面操作、数据采集
+- 协同模式：HeartFlow 判断需要什么信息 → Browser Bridge 执行获取 → HeartFlow 分析结果
+
+---
+
+## Multi-Agent Coordination（多智能体协调）
+
+**来源**：mark-StillWater/src/core/ · NeuroCircuit 多智能体协调
+
+### 三代理架构（FocusAgent / MoodAgent / ReflectionAgent）
+
+```js
+// 注意力代理：决定关注什么
+class FocusAgent {
+  select(query) {
+    // 计算各候选的激活度
+    return candidates
+      .map(c => ({
+        item: c,
+        activation: 0.3 * c.relevance
+                  + 0.3 * c.novelty
+                  + 0.2 * c.emotionalValence
+                  + 0.2 * c.goalRelevance
+      }))
+      .sort((a, b) => b.activation - a.activation)[0];
+  }
+}
+
+// 情绪代理：评估情绪状态
+class MoodAgent {
+  assess(emotionalState) {
+    // PAD 模型评估
+    return {
+      pleasure: this.computePleasure(emotionalState),
+      arousal: this.computeArousal(emotionalState),
+      dominance: this.computeDominance(emotionalState)
+    };
+  }
+}
+
+// 反思代理：评估行为质量
+class ReflectionAgent {
+  evaluate(action, outcome) {
+    // 与预期对比，给出反思评分
+    return { score, feedback, improvement };
+  }
+}
+
+// 协调器
+class NeuroCircuit {
+  run(query, emotionalState) {
+    const focus = focusAgent.select(query);
+    const mood = moodAgent.assess(emotionalState);
+    const action = this.execute(focus, mood);
+    const outcome = this.observe(action);
+    const reflection = reflectionAgent.evaluate(action, outcome);
+    return { action, reflection };
+  }
+}
+```
+
+### 全局工作空间广播（Global Workspace Broadcasting）
+
+**来源**：mark-StillWater/src/core/global-workspace.js
+
+```js
+// 激活度计算
+activation = 0.3 * relevance
+            + 0.3 * novelty
+            + 0.2 * emotionalValence
+            + 0.2 * goalRelevance;
+
+// 广播评分
+broadcast_score = (activated_specialists / total_specialists)
+                 * (workspace_occupancy / workspace_capacity)
+                 * broadcast_duration;
+```
+
+**广播机制**：
+1. 各专业模块竞争注意（基于激活度）
+2. 胜出的模块进入全局工作空间
+3. 工作空间内容广播到所有模块
+4. 各模块基于广播内容协调行动
+
+### 心流状态机（Flow State Machine）
+
+**来源**：mark-StillWater/src/core/flow-machine.js
+
+```
+IDLE → INITIATING → IN_FLOW → DISTRACTED → RESTING → COMPLETED
+```
+
+| 状态 | 进入条件 | 退出条件 |
+|------|---------|---------|
+| **IDLE** | 无任务 | 收到任务 |
+| **INITIATING** | 任务启动 | 任务执行中 |
+| **IN_FLOW** | 连续3次成功执行 | 连续2次中断 |
+| **DISTRACTED** | 注意力被打断 | 重新聚焦成功 |
+| **RESTING** | 需要恢复 | 恢复完成 |
+| **COMPLETED** | 任务完成 | 回到 IDLE |
+
+**HeartFlow 应用**：与 `@task_classify` 联动——新任务触发 INITIATING，续接任务保持 IN_FLOW，随口回复触发 RESTING。
+
+---
+
 ## Papers integrated
 
 - Self-Verification (arXiv:2312.09210)
@@ -323,6 +1053,8 @@ FeedbackFunctions.evaluate(response, context) → {
 - SELF-REWARD (arXiv:2403.00564)
 - Generative Agents (Stanford)
 - Voyager (ICML 2023)
+- Free Energy Principle (Friston, 2010)
+- Hindsight LongMemEval (vectorize-io, arXiv:2512.12818)
 
 ---
 
@@ -372,7 +1104,8 @@ npm install heartflow
 
 ## Version history (last 10)
 
-- **1.1.3.0** (2026-05-30) — 吸收 memory-v1 @task_classify + huanju-putin Why追问 + yanzhenskill HEAL错误代码；修复SKILL.md表格结构（||||→|||）
+- **1.1.4.0** (2026-05-30) — 大规模吸收：mark-StillWater心理引擎(情绪理性/SDT动机/预测处理/集体意向性)、记忆优化(dirty flag/Ebbinghaus/Q-learning self-heal)、Self-Refine迭代、外部记忆系统(agentmemory/Hindsight)对比、浏览器桥接、多智能体协调
+- **1.1.3.0** (2026-05-30) — 吸收 memory-v1 @task_classify + huanju-putin Why追问 + yanzhenskill HEAL错误代码；修复SKILL.md表格结构
 - **1.1.2.0** (2026-05-30) — 吸收 agent-psychology Top 20 心理理论索引，新增心理诊断引擎
 - **1.1.1.0** (2026-05-20) — Boot Check + FeedbackFunctions + 单一真相源(VERSION)
 - **1.0.7** (2026-05-20) — 真善美系统(TGB)+六层哲学+五层记忆+StabilityGuard
