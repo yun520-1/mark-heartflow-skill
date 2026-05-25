@@ -29,7 +29,7 @@ const CoreUtils = require('./utils.js');
 const { SearchTrace, SearchPhaseMetrics, WeightComponents, QueryInfo, SearchSummary } = require('./search/search-trace.js');
 
 // Memory slots & observe
-const { MemorySlots } = require('./memory/slots.js');
+const { Slots } = require('./memory/slots.js');
 const { observe, consolidate } = require('./memory/observe.js');
 
 // Memory
@@ -216,8 +216,8 @@ class HeartFlow {
 
     // Slots & Observe (reference from heartflow context)
     try {
-      this.slots = new MemorySlots({ dataDir: path.join(this.rootPath, 'data') });
-    } catch (e) { console.warn('[HeartFlow] MemorySlots init error:', e.message); }
+      this.slots = new Slots({ dataDir: path.join(this.rootPath, 'data') });
+    } catch (e) { console.warn('[HeartFlow] Slots init error:', e.message); }
     this.observe = observe;
     this.consolidate = consolidate;
 

@@ -1,9 +1,30 @@
 /**
  * DreamEngine - 梦境引擎
- * 基于 dist/core/memory/dream.js
+ * 修复版：内联 stub（原 dist/core/memory/dream.js 已移除）
  */
 
-const { createDreamState, dream, getDreamStats } = require('../../dist/core/memory/dream.js');
+function createDreamState(opts = {}) {
+    return {
+        consolidationStrength: opts.consolidationStrength ?? 0.5,
+        patternThreshold: opts.patternThreshold ?? 3,
+        strengthenAbove: opts.strengthenAbove ?? 0.75,
+        weakenBelow: opts.weakenBelow ?? 0.25,
+        dreamCount: 0,
+        lastDreamAt: null,
+    };
+}
+
+function dream(state, recall) {
+    // Stub: no-op dream, returns empty results
+    return { insights: [], strengthened: [], weakened: [] };
+}
+
+function getDreamStats(state) {
+    return {
+        dreamCount: state?.dreamCount ?? 0,
+        lastDreamAt: state?.lastDreamAt ?? null,
+    };
+}
 
 class DreamEngine {
     constructor(memory, psychology) {
@@ -20,7 +41,6 @@ class DreamEngine {
             strengthenAbove: 0.75,
             weakenBelow: 0.25,
         });
-        // 获取 memory 的 recall 块
         if (this.memory && typeof this.memory.getRecentBlocks === 'function') {
             const blocks = this.memory.getRecentBlocks(50);
             const blocksMap = new Map();
