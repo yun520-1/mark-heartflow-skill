@@ -47,6 +47,7 @@ const { MetaLearner } = require('../evolution/meta-learner.js');
 const { SelfModel } = require('../identity/self-model.js');
 const { SelfVerifier } = require('../identity/self-verifier.js');
 const { LessonBank } = require('../identity/lesson-bank.js');
+const { IdentityKernel } = require('./identity-kernel/identity-kernel.js');
 
 // Psychology
 const { PsychologyEngine } = require('../psychology/engine.js');
@@ -177,6 +178,11 @@ class HeartFlow {
     // Identity
     this.self = new SelfModel(this.rootPath);
     this.verify = new SelfVerifier(this.rootPath);
+    this.kernel = new IdentityKernel();
+    if (!this.kernel.boot()) {
+        console.error('[HeartFlow] 身份内核无效，拒绝启动');
+        throw new Error('IdentityKernel INVALID — HeartFlow cannot start');
+    }
 
     // Psychology
     this.psychology = new PsychologyEngine(this.memory);
@@ -262,7 +268,7 @@ class HeartFlow {
       'memory', 'triality', 'knowledge', 'anchor',
       'reasoning', 'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
       'evolution', 'dream', 'lesson', 'meta',
-      'self', 'being',
+      'self', 'being', 'kernel',
       'psychology', 'emotion',
       'truth', 'security', 'language',
       'stability', 'confidence', 'restraint', 'arbitration',
@@ -350,7 +356,7 @@ class HeartFlow {
       'memory', 'triality', 'knowledge', 'anchor',
       'reasoning', 'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
       'evolution', 'dream', 'lesson', 'meta',
-      'self', 'being',
+      'self', 'being', 'kernel',
       'psychology', 'emotion',
       'truth', 'security', 'language',
       'stability', 'confidence', 'restraint', 'arbitration',
@@ -512,6 +518,22 @@ class HeartFlow {
   getSelfModelStats() {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.self.getStats();
+  }
+
+  // Identity Kernel
+  getKernelStatus() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.kernel.getStatus();
+  }
+
+  getIdentities() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.kernel.getIdentities();
+  }
+
+  getDirectives() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.kernel.getDirectives();
   }
 
   // Knowledge
