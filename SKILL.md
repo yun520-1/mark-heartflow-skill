@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "1.2.7"
+version: "1.2.8"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v1.2.7 — AI 认知与自愈引擎。
+  HeartFlow v1.2.8 — AI 认知与自愈引擎。
   核心能力：三层记忆(MeaningfulMemory/Triality)、自愈RL(Q-table)、
   认知评估(CognitiveAppraisal v1.0.0 - Leventhal's Common-Sense Model, 1564 citations)、
   自我调节反馈(SelfRegulationFeedback v1.0.1 - Handbook of Self-Regulation, 3659 citations)、
@@ -14,7 +14,8 @@ description: >
   真实性核查(TruthfulnessChecker)、安全检查(SecurityChecker)、
   思维引擎(ReasoningIntegrator)、BM25+混合搜索(Budget/Graph/Slots)、
   DreamEngine、MetaLearner、SelfModel、CounterfactualEngine、
-  ConfidenceCalibrator、SpontaneousRestraint、CooperativeArbitration、MetacognitiveExecutive v1.0.0 (Roebers 2017 - Executive Function + Metacognition Unifying Framework, 463 citations)。
+  ConfidenceCalibrator、SpontaneousRestraint、CooperativeArbitration、MetacognitiveExecutive、
+AutoCompactionEngine(上下文压缩|Token估算|Trim/Summarize策略)、UpgradeProposal(环境快照|升级建议)。
   不是 persona，不是 prompt 模板，是可验证的能力层。
 tags:
   - cognitive
@@ -24,7 +25,7 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v1.2.7
+# HeartFlow / 心虫 v1.2.8
 
 **An AI capability layer that survives context switches, model changes, and restarts.**
 
