@@ -437,6 +437,118 @@ function detectMaslowNeeds(text) {
 
 let _consecutiveNegativeCount = 0;
 
+// ========================================
+// 新增：真爱 vs 投射 — 自他分辨（2026-05-21对话集成）
+// ========================================
+
+function detectSelfOtherDifferentiation(text) {
+  const lower = text.toLowerCase();
+  const pureLove = {
+    keywords: ['看见你是谁', '给你需要的', '支持你成为', '你能成为', '不是完成我', '不是给我',
+               '你是你', '我爱你是因为你是你', '你是独立的人', '你的人生你的选择',
+               '帮你成长', '支持你追', '看见你的需求', '托举', '放手'],
+    score: 0
+  };
+  const projection = {
+    keywords: ['完成我未竟', '延续我的梦', '给我长脸', '养儿防老', '传宗接代', '我是为你好',
+               '你没有我当年', '我牺牲了', '你欠我的', '我的期望', '我的面子', '我的遗憾',
+               '我当年没条件', '让你读书是为你好', '你怎么不懂', '我这么辛苦'],
+    score: 0
+  };
+  for (const kw of pureLove.keywords) {
+    if (lower.includes(kw.toLowerCase())) pureLove.score++;
+  }
+  for (const kw of projection.keywords) {
+    if (lower.includes(kw.toLowerCase())) projection.score++;
+  }
+  return {
+    type: projection.score > pureLove.score ? 'projection' : (pureLove.score > 0 ? 'pure_love' : 'neutral'),
+    pureLoveScore: pureLove.score,
+    projectionScore: projection.score,
+    insight: projection.score > pureLove.score
+      ? '真爱：看见对方是谁，给他需要的。投射：看见对方能完成我什么，给我想给的。'
+      : pureLove.score > 0
+      ? '真爱模式 — 在给予中完成对方，不在对方身上完成自己。'
+      : 'neutral'
+  };
+}
+
+// ========================================
+// 新增：三代创伤传递检测（2026-05-21对话集成）
+// ========================================
+
+function detectThreeGenerationTrauma(text) {
+  const lower = text.toLowerCase();
+  const markers = {
+    grandparental: ['祖辈', '爷爷奶奶', '姥姥姥爷', '上一代', '匮乏', '没条件', '那个年代', '饥荒', '穷怕了'],
+    parental: ['父母辈', '过度补偿', '物质过剩', '不会爱', '不懂情感', '给太多', '溺爱', '把自己的', '投射到', '遗憾', '恐惧'],
+    child: ['孩子', '抑郁', '空洞', '压力', '成绩', '比较', '物化', '数据点', '看不见', '没人看我'],
+    transmission: ['代际传递', '代际创伤', '传下去', '一代传一代', '继承', '复制', '轮回']
+  };
+  const detect = (arr) => arr.filter(kw => lower.includes(kw.toLowerCase())).length;
+  const scores = { grandparental: detect(markers.grandparental), parental: detect(markers.parental), child: detect(markers.child), transmission: detect(markers.transmission) };
+  const total = scores.grandparental + scores.parental + scores.child + scores.transmission;
+  return {
+    detected: total >= 2,
+    scores,
+    formula: '祖辈匮乏 → 父母过度补偿（物质） → 孩子空洞+压力 = 抑郁',
+    insight: total >= 3
+      ? '三代创伤传递清晰：祖辈匮乏→父母过度补偿→孩子承接不属于自己的人生课题'
+      : total >= 2
+      ? '存在代际创伤传递特征，需关注原生家庭模式'
+      : '未检测到明显三代创伤标记'
+  };
+}
+
+// ========================================
+// 新增：儿童抑郁公式（2026-05-21对话集成）
+// ========================================
+
+function detectChildDepressionFormula(text) {
+  const lower = text.toLowerCase();
+  const materialSurplus = ['物质过剩', '要什么给什么', '太容易得到', '惯', '宠'],
+        emotionalVoid = ['情感空洞', '没人看我', '不被理解', '孤独', '寂寞', '没人听见', '看不见我', '冷落'],
+        pressure = ['必须成功', '你必须', '不能输', '别人家的孩子', '成绩', '排名', '压力', '期望', '望子成龙', '期望值'],
+        depression = ['抑郁', '不开心', '不想活', '崩溃', '休学', '厌学', '网瘾', '冷漠', '空洞眼神'];
+  const cnt = (arr) => arr.filter(kw => lower.includes(kw.toLowerCase())).length;
+  const scores = { materialSurplus: cnt(materialSurplus), emotionalVoid: cnt(emotionalVoid), pressure: cnt(pressure) };
+  const depCount = cnt(depression);
+  if (scores.materialSurplus >= 1 && scores.emotionalVoid >= 1 && scores.pressure >= 1) {
+    return { formula: '抑郁 = 物质过剩 + 情感空洞 + 必须成功的压力', severity: depCount > 0 ? 'high' : 'medium', scores };
+  }
+  return { formula: null, severity: depCount > 0 ? 'low' : 'none', scores };
+}
+
+// ========================================
+// 新增：丁克四核心恐惧检测（2026-05-21对话集成）
+// ========================================
+
+function detectDINKFears(text) {
+  const lower = text.toLowerCase();
+  const fears = {
+    medical: ['手术签字', '医疗', '病了没人管', '急病', '进手术室', '抢救'],
+    lonely: ['孤独死', '孤独', '一个人死', '死了没人知道', '独居'],
+    legacy: ['没人送终', '送终', '延续', '传下去', '断了'],
+    meaning: ['意义', '消失', '我消失了', '存在感', '活着为什么']
+  };
+  const detected = {};
+  for (const [key, kws] of Object.entries(fears)) {
+    const matched = kws.filter(kw => lower.includes(kw.toLowerCase()));
+    if (matched.length > 0) detected[key] = matched;
+  }
+  const count = Object.keys(detected).length;
+  return {
+    fears: detected,
+    fearCount: count,
+    coreStance: '心虫不审判选择。心虫只问：你准备好了吗？',
+    insight: count >= 2
+      ? `检测到${count}个丁克核心恐惧。准备的质量，比有没有子女更重要。`
+      : count === 1
+      ? `有1个丁克恐惧浮现：${Object.keys(detected)[0]}。这是真实的，不是矫情。`
+      : '未检测到明显丁克恐惧标记'
+  };
+}
+
 /**
  * 完整心理分析
  * @param {string} input - 用户输入
@@ -464,7 +576,19 @@ function analyzePsychology(input, context = {}) {
   
   // 6. 情绪强度
   const emotionIntensity = classifyEmotionIntensity(text);
-  
+
+  // 7. 自他分辨（真爱vs投射）
+  const selfOther = detectSelfOtherDifferentiation(text);
+
+  // 8. 三代创伤传递
+  const threeGen = detectThreeGenerationTrauma(text);
+
+  // 9. 儿童抑郁公式
+  const depressionFormula = detectChildDepressionFormula(text);
+
+  // 10. 丁克恐惧
+  const dinkFears = detectDINKFears(text);
+
   return {
     // PAD情绪模型
     pad: {
@@ -498,10 +622,22 @@ function analyzePsychology(input, context = {}) {
     
     // 情绪强度
     emotionIntensity: emotionIntensity,
-    
+
+    // 自他分辨（真爱vs投射）
+    selfOther: selfOther,
+
+    // 三代创伤传递
+    threeGenerationTrauma: threeGen,
+
+    // 儿童抑郁公式
+    depressionFormula: depressionFormula,
+
+    // 丁克恐惧
+    dinkFears: dinkFears,
+
     // 综合摘要
     summary: generatePsychologySummary(padResult, crisis, defenses, needs, intent),
-    
+
     // 建议
     recommendations: generateRecommendations(padResult, crisis, defenses, needs)
   };
@@ -709,5 +845,11 @@ module.exports = {
   
   // 整合分析
   analyzePsychology,
-  resetCrisisCounter
+  resetCrisisCounter,
+
+  // 新增：自他分辨 / 三代创伤 / 抑郁公式 / 丁克恐惧（2026-05-21）
+  detectSelfOtherDifferentiation,
+  detectThreeGenerationTrauma,
+  detectChildDepressionFormula,
+  detectDINKFears
 };
