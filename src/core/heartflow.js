@@ -347,7 +347,7 @@ class HeartFlow {
     'lesson.addLesson', 'lesson.getTopLessons',
     'lesson.beforeTask', 'lesson.recordFailure', 'lesson.getStats', 'lesson.getAll',
     // dream
-    'dream.dream', 'dream.quickDream', 'dream.getCacheStats',
+    'dream.dream',
     // verify
     'verify.verify',
     // emotion
@@ -359,7 +359,7 @@ class HeartFlow {
     // restraint
     'restraint.shouldIntervene',
     // graph
-    'graph.addNode', 'graph.search',
+    'graph.addNode',
     // slots
     'slots.get', 'slots.set', 'slots.delete',
     // metaPrompt — 用户端加强
