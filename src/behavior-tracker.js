@@ -14,7 +14,7 @@ const behaviorTracker = {
       if (fs.existsSync(DATA_FILE)) {
         this.data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
       }
-    } catch (e) { this.data = { goals: [] }; }
+    } catch (e) { console.warn('[BehaviorTracker] load failed:', e.message); }
     return this;
   },
 
@@ -22,7 +22,7 @@ const behaviorTracker = {
     try {
       fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
       fs.writeFileSync(DATA_FILE, JSON.stringify(this.data, null, 2));
-    } catch (e) {}
+    } catch (e) { console.warn('[BehaviorTracker] save failed:', e.message); }
     return this;
   },
 

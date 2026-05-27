@@ -426,7 +426,7 @@ async function step19_versionSync(result) {
   // package.json
   const pkgFile = path.join(ROOT, 'package.json');
   if (fs.existsSync(pkgFile)) {
-    try { const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8')); versions.package = pkg.version; } catch (e) {}
+    try { const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8')); versions.package = pkg.version; } catch (e) { console.warn('[SelfDiagnostic] package.json parse failed:', e.message); }
   }
   
   // SKILL.md frontmatter + title
