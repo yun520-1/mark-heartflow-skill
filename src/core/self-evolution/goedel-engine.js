@@ -253,7 +253,7 @@ class GoedelEngine {
     pad.dominance -= emotionSensitivity * 0.5;
   }`,
       'default': `  // Gödel 优化建议: ${proposal.description}
-  // TODO: Implement optimization`
+  // TODO(v1.3.6): Implement optimization`
     };
 
     const funcMatch = proposal.target.match(/(\w+)\.js$/);
@@ -945,7 +945,7 @@ class GoedelEngine {
 diff --git a/src/core/self-evolution/goedel-engine.js b/src/core/self-evolution/goedel-engine.js
 --- a/src/core/self-evolution/goedel-engine.js
 +++ b/src/core/self-evolution/goedel-engine.js
-@@ // TODO: 应用改进
+// TODO(v1.3.6): 应用改进
 - // 当前采样策略需要优化
 + // 优化采样策略：增加多样性权重
 `;
