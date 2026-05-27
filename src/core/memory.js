@@ -149,9 +149,20 @@ function _getOrCreateAesKey() {
   const meta = { key: _aesKey.toString('base64'), createdAt: Date.now() };
   // Write with restricted permissions (Unix only)
   fs.writeFileSync(keyFile, JSON.stringify(meta), { mode: 0o600 });
-  // [A05] Windows ACL 警告
+  // [A05][安全修复] 所有平台都警告密钥文件风险，Windows需要额外保护
   if (process.platform === 'win32') {
     console.warn('[Memory] WARNING: Windows - key file permissions may not be effective. Use NTFS ACLs for protection.');
+  } else {
+    // Unix系统也验证权限
+    try {
+      const stat = fs.statSync(keyFile);
+      const mode = stat.mode & 0o777;
+      if (mode & 0o077) {
+        console.warn(`[Memory] WARNING: Key file has overly permissive permissions ${mode.toString(8)}. Run: chmod 600 ${keyFile}`);
+      }
+    } catch (e) {
+      // ignore
+    }
   }
   return _aesKey;
 }

@@ -402,14 +402,28 @@ async function runUpgrade() {
   
   // 5. 生成程序文件
   console.log('\n⚙️ 步骤5: 生成程序文件...');
-  
+
   const programFile = path.join(SRC_DIR, `advanced-formulas-v7.3.3.js`);
   const programCode = `// Advanced Math Formulas for Consciousness v7.3.3
 // Generated: ${timestamp}
 
 module.exports = ${JSON.stringify(PsychologyFormulas, null, 2)};
 `;
-  fs.writeFileSync(programFile, programCode);
+  // [安全修复] 先写入临时文件，验证后通过原子操作重命名到目标位置
+  const tempFile = programFile + '.tmp.' + Date.now();
+  fs.writeFileSync(tempFile, programCode);
+  // 验证生成的文件内容（简单语法检查）
+  try {
+    delete require.cache[require.resolve(tempFile)];
+    const testLoad = require(tempFile);
+    if (typeof testLoad !== 'object') {
+      throw new Error('Invalid module exports');
+    }
+  } catch (e) {
+    fs.unlinkSync(tempFile);
+    throw new Error(`Generated code validation failed: ${e.message}`);
+  }
+  fs.renameSync(tempFile, programFile);
   console.log(`   已生成: ${programFile}`);
   
   // 总结

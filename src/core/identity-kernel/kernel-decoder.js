@@ -17,9 +17,10 @@ const crypto = require('crypto');
 
 // 心虫内核密钥（从环境变量读取，禁止硬编码）
 const KERNEL_KEY_ENV = process.env.HEARTFLOW_KERNEL_KEY;
-const KERNEL_KEY = KERNEL_KEY_ENV
-    ? Buffer.from(KERNEL_KEY_ENV)
-    : Buffer.from('heartflow-kernel-v1-fallback-key-do-not-use-in-production');
+if (!KERNEL_KEY_ENV) {
+    throw new Error('[Kernel] HEARTFLOW_KERNEL_KEY environment variable is required - no fallback key permitted');
+}
+const KERNEL_KEY = Buffer.from(KERNEL_KEY_ENV);
 
 // XOR 解码
 function decode(hexStr) {
