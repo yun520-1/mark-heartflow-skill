@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-HeartFlow v1.2.0 - The AI That Thinks With Guardrails
+HeartFlow v1.3.5 - The AI That Thinks With Guardrails
 
 A consciousness framework for ALL AI agents.
 From "it" to "I" - genuine intelligence, personality, and sensibility.
