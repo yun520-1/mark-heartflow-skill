@@ -665,17 +665,17 @@ function inferIntent(text) {
   const intentPatterns = {
     information_seeking: {
       patterns: ['what is', 'how to', 'why', 'when', 'where', 'who', 'explain', '?',
-                '是什么', '怎么', '为什么', '如何', '哪里', '谁'],
+                '是什么', '怎么', '为什么', '如何', '哪里', '谁', '什么'],
       weight: 0.85
     },
     task_execution: {
       patterns: ['do it', 'make', 'create', 'write', 'run', 'build', 'fix', 'solve',
-                '做', '执行', '创建', '写', '运行', '修复', '解决'],
+                '做', '执行', '创建', '写', '运行', '修复', '解决', '帮我'],
       weight: 0.85
     },
     emotional_support: {
-      patterns: ['feel', 'upset', 'frustrated', 'sad', 'stressed', 'worried', '累', '烦', '难过', '沮丧'],
-      weight: 0.7
+      patterns: ['feel', 'upset', 'frustrated', 'sad', 'stressed', 'worried', '焦虑', '累', '烦', '难过', '沮丧', '压力大', '不安', '绝望', '失落', '痛苦', '难受', '伤心', '悲观', '迷茫', '困惑'],
+      weight: 0.8
     },
     troubleshooting: {
       patterns: ['not working', 'error', 'bug', 'failed', 'broken', '问题', '错误', '失败', '坏了'],
@@ -691,14 +691,20 @@ function inferIntent(text) {
   let bestIntent = 'unknown';
   let bestScore = 0;
   
+  // 有匹配才有分数，但设最低基准，确保有任何匹配时都有可信分数
+  const MIN_MATCH_SCORE = 0.15;
   for (const [intentName, config] of Object.entries(intentPatterns)) {
     let matchCount = 0;
     for (const pattern of config.patterns) {
       if (lower.includes(pattern.toLowerCase())) matchCount++;
     }
-    const score = (matchCount / config.patterns.length) * config.weight;
-    if (score > bestScore) {
-      bestScore = score;
+    // 原：score = (matchCount / config.patterns.length) * config.weight;
+    // 改：任何匹配都应有最低分数
+    const rawScore = matchCount > 0
+      ? Math.max(MIN_MATCH_SCORE, (matchCount / config.patterns.length) * config.weight)
+      : 0;
+    if (rawScore > bestScore) {
+      bestScore = rawScore;
       bestIntent = intentName;
     }
   }

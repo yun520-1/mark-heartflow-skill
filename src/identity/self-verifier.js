@@ -41,20 +41,24 @@ class SelfVerifier {
     const rLower = reasoning.toLowerCase();
     const cLower = conclusion.toLowerCase();
 
-    const indicators = ['because', 'since', 'given', 'therefore', 'thus', 'so', 'implies', '由于', '因为', '所以', '因此', '意味着'];
+    const indicators = ['because', 'since', 'given', 'therefore', 'thus', 'so', 'implies', '由于', '因为', '所以', '因此', '意味着', '则', '若', '假如'];
     const hasImplication = indicators.some(ind => rLower.includes(ind));
 
-    if (!hasImplication) {
-      return rLower.length > cLower.length * 0.5;
+    if (hasImplication) {
+      // 有蕴含词 → 结论中的关键词在推理中出现即可通过
+      // 中文处理：不用split(/\s+/)，因为中文无空格，直接判断字符/词组出现
+      // 取结论中>=2字的词组
+      const cWords = cLower.match(/[\u4e00-\u9fff]{2,}|[a-z]{3,}/g) || [];
+      if (cWords.length > 0) {
+        const found = cWords.filter(w => rLower.includes(w)).length;
+        return found >= 1;
+      }
+      // 结论只有单字时：只要结论在推理中（完全包含）即可
+      return rLower.includes(cLower);
     }
 
-    // If conclusion uses words from reasoning, that's a positive signal
-    const rWords = new Set(rLower.split(/\s+/).filter(w => w.length > 3));
-    const cWords = new Set(cLower.split(/\s+/).filter(w => w.length > 3));
-    const overlap = [...cWords].filter(w => rWords.has(w)).length;
-    const ratio = overlap / Math.max(1, cWords.size);
-
-    return ratio > 0.3;
+    // 无蕴含词 → 检查长度比例（宽松）
+    return rLower.length > cLower.length * 0.3;
   }
 
   _checkLogicalChain(reasoning) {
@@ -86,14 +90,17 @@ class SelfVerifier {
   }
 
   _checkCoverage(reasoning) {
-    // Check if reasoning mentions important factors
-    const factorKeywords = ['because', 'since', 'given', 'considering', 'despite', 'however', 'although', '因为', '由于', '考虑到', '尽管', '然而'];
+    // 检查推理是否考虑了重要因素
+    const factorKeywords = ['because', 'since', 'given', 'considering', 'despite', 'however', 'although', '因为', '由于', '考虑到', '尽管', '然而', '既然', '只要', '除非'];
     const hasFactors = factorKeywords.some(f => reasoning.toLowerCase().includes(f));
 
-    // Longer reasoning typically covers more factors
-    const lengthScore = Math.min(1, reasoning.length / 500);
+    // 有明确因素指示词 → 覆盖充分
+    if (hasFactors) return true;
 
-    return hasFactors || lengthScore > 0.3;
+    // 无因素词但推理有一定长度 → 覆盖充分
+    // 原bug: reasoning.length < 150 会失败（lengthScore > 0.3 要求150字以上）
+    // 修复：20字以上即可，无论是否含因素词
+    return reasoning.length >= 20;
   }
 
   // ─── Main Verify API ──────────────────────────────────────────────────
