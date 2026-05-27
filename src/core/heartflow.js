@@ -43,6 +43,7 @@ const { EvolutionLoop } = require('../evolution/loop.js');
 const { DreamEngine } = require('../dream/engine.js');
 const { DreamConsolidation } = require('./dream-consolidation.js');
 const { MetaLearner } = require('../evolution/meta-learner.js');
+const { MetaPromptEngine } = require('./meta-prompt-engine.js');
 
 // Identity
 const { SelfModel } = require('../identity/self-model.js');
@@ -224,6 +225,9 @@ class HeartFlow {
     // Mental Effort Tracker — cognitive resource management
     try { this.mentalEffort = new MentalEffortTracker(); } catch (e) { this._initErrors.push({module: 'mentalEffort', error: e.message}); }
 
+    // MetaPromptEngine — 用户端加强：用大模型优化大模型调用
+    try { this.metaPrompt = new MetaPromptEngine(this); } catch (e) { this._initErrors.push({module: 'metaPrompt', error: e.message}); }
+
     // Engine modules (functions/objects — no 'new')
     try { this.language = LanguageHonesty; } catch (e) {}
     try { this.reasoning = ReasoningIntegrator; } catch (e) {}
@@ -295,6 +299,7 @@ class HeartFlow {
       // New modules
       'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
       'metaJudgment', 'metaMemory', 'skillGenerator',
+      'metaPrompt',  // 用户端加强：用大模型优化大模型调用
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -348,6 +353,9 @@ class HeartFlow {
     'graph.addNode', 'graph.search',
     // slots
     'slots.get', 'slots.set', 'slots.delete',
+    // metaPrompt — 用户端加强
+    'metaPrompt.optimize', 'metaPrompt.think', 'metaPrompt.refine',
+    'metaPrompt.beamSearch', 'metaPrompt.getStats',
   ]);
 
   /**
