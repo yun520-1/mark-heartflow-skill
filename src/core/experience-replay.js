@@ -160,7 +160,9 @@ class ExperienceReplay {
 
     for (const pattern of patterns) {
       const suggestion = {
-        id: `suggestion-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+const { randomBytes } = require('crypto');
+// 生成唯一建议ID
+const suggestionId = `suggestion-${Date.now()}-${randomBytes(4).toString('hex')}`;
         pattern: pattern.key,
         skill_area: pattern.skill_area,
         current_issue: pattern.suggestion,

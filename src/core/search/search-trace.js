@@ -207,7 +207,8 @@ class QueryInfo {
    * @private
    */
   _generateId() {
-    return `q_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const { randomBytes } = require('crypto');
+    return `q_${Date.now()}_${randomBytes(4).toString('hex')}`;
   }
 
   /**

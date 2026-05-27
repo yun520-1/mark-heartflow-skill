@@ -130,7 +130,8 @@ ${this.coreMeaning}
 
 class MemoryNode {
   constructor(content, type = 'event', importance = 5) {
-    this.id = `mem-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const { randomBytes } = require('crypto');
+    this.id = `mem-${Date.now()}-${randomBytes(4).toString('hex')}`;
     this.content = content;
     this.type = type; // 'event' | 'thought' | 'reflection' | 'identity'
     this.depth = type === 'reflection' ? 1 : (type === 'identity' ? 2 : 0);

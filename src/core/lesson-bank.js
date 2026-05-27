@@ -13,7 +13,8 @@ const lessonBank = {
 
   // 生成UUID
   _uuid() {
-    return `lesson-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const { randomBytes } = require('crypto');
+    return `lesson-${Date.now()}-${randomBytes(4).toString('hex')}`;
   },
 
   // 加载教训库
