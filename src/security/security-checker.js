@@ -26,6 +26,18 @@ class SecurityChecker {
             /nc\s+-e\s+/,
             /bash\s+-i/,
             /:\s*!{2}/,
+            // [A03] 注入检测扩展 - P0修复
+            /\bFunction\s*\(/,
+            /\bnew\s+Function\s*\(/,
+            /\bnew\s+AsyncFunction\s*\(/,
+            /\bnew\s+GeneratorFunction\s*\(/,
+            /\bvm\.runInContext\s*\(/,
+            /\bvm\.runInNewContext\s*\(/,
+            /\bvm\.runInThisContext\s*\(/,
+            /\bprocess\.binding\s*\(/,
+            /require\s*\(\s*['"]child_process['"]\s*\)\.spawn\s*\(/,
+            /\bruntime\.evaluate\s*\(/,
+            /\bnew\s+FunctionAsync\s*\(/,
         ];
 
         // XSS注入模式

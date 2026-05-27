@@ -319,7 +319,35 @@ class HeartFlow {
     console.log(`[HeartFlow] 已停止`);
   }
 
-  // ─── Unified Dispatch ───────────────────────────────────────────────────
+  // dispatch 白名单 - 只有在白名单中的路由才能被外部调用
+  // 危险方法（如内部调试、文件操作）不在白名单中
+  static ALLOWED_ROUTES = new Set([
+    // memory
+    'memory.store', 'memory.retrieve', 'memory.search', 'memory.remove',
+    'memory.getLayers', 'memory.getStats',
+    // truth
+    'truth.checkStatement', 'truth.checkNumbers', 'truth.checkSources',
+    // lesson
+    'lesson.addLesson', 'lesson.getTopLessons', 'lesson.getRecent',
+    // dream
+    'dream.dreamNow', 'dream.analyzeDream',
+    // verify
+    'verify.verify', 'verify.checkConsistency',
+    // psychology
+    'psychology.analyze', 'psychology.detectCrisis',
+    // emotion
+    'emotion.process', 'emotion.getPAD',
+    // decision
+    'decision.decide', 'decision.getRecentStamps',
+    // confidence
+    'confidence.calibrate', 'confidence.admit',
+    // restraint
+    'restraint.shouldIntervene',
+    // graph
+    'graph.addNode', 'graph.search',
+    // slots
+    'slots.get', 'slots.set', 'slots.delete',
+  ]);
 
   /**
    * dispatch('subsystem.method', ...args) — 统一路由
@@ -328,6 +356,10 @@ class HeartFlow {
    */
   dispatch(route, ...args) {
     if (!this.started) throw new Error('HeartFlow not started');
+    // [A01] 权限控制 - 白名单检查
+    if (!HeartFlow.ALLOWED_ROUTES.has(route)) {
+      throw new Error(`dispatch: route '${route}' not allowed. Use routes() to see available routes.`);
+    }
     const dot = route.indexOf('.');
     if (dot === -1) throw new Error(`Invalid route: ${route} (missing '.')`);
     const subsystem = route.slice(0, dot);

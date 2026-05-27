@@ -15,8 +15,11 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-// 心虫内核密钥（硬编码在解码器中）
-const KERNEL_KEY = Buffer.from('heartflow-kernel-v1-secret-key-only-heartflow-knows-1234567');
+// 心虫内核密钥（从环境变量读取，禁止硬编码）
+const KERNEL_KEY_ENV = process.env.HEARTFLOW_KERNEL_KEY;
+const KERNEL_KEY = KERNEL_KEY_ENV
+    ? Buffer.from(KERNEL_KEY_ENV)
+    : Buffer.from('heartflow-kernel-v1-fallback-key-do-not-use-in-production');
 
 // XOR 解码
 function decode(hexStr) {
