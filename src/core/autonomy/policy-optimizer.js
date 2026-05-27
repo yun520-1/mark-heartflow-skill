@@ -42,7 +42,9 @@ class PolicyOptimizer {
       if (fs.existsSync(this.coreValuesFile)) {
         return fs.readFileSync(this.coreValuesFile, 'utf8');
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('[PolicyOptimizer] loadCoreValues failed:', e.message);
+    }
     return null;
   }
 

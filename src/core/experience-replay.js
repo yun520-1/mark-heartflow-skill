@@ -22,7 +22,9 @@ class ExperienceReplay {
       if (fs.existsSync(this.patternFile)) {
         return JSON.parse(fs.readFileSync(this.patternFile, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('[ExperienceReplay] loadPatterns failed:', e.message);
+    }
     return { patterns: [], lastUpdate: null };
   }
 
@@ -105,7 +107,9 @@ class ExperienceReplay {
       if (fs.existsSync(this.reportFile)) {
         return JSON.parse(fs.readFileSync(this.reportFile, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('[ExperienceReplay] loadReports failed:', e.message);
+    }
     return [];
   }
 
@@ -315,7 +319,9 @@ class ExperienceReplay {
       if (fs.existsSync(this.suggestionFile)) {
         return JSON.parse(fs.readFileSync(this.suggestionFile, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('[ExperienceReplay] getHistory failed:', e.message);
+    }
     return [];
   }
 

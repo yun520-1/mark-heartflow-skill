@@ -221,7 +221,9 @@ class GoalGenerator {
         try {
           const content = fs.readFileSync(path.join(this.memoryDir, file), 'utf8');
           logs.push(JSON.parse(content));
-        } catch (e) {}
+        } catch (e) {
+          console.warn('[GoalGenerator] loadMemoryLogs failed:', e.message);
+        }
       }
     }
     return logs;

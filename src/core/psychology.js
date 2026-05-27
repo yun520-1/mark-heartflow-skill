@@ -162,6 +162,13 @@ const CRISIS_KEYWORDS = {
  */
 function assessCrisisLevel(text, consecutiveCount = 1) {
   const lower = text.toLowerCase();
+  // [P1] ReDoS防护 - 先检查长度再测试正则
+  const MAX_CRISIS_TEXT_LENGTH = 500;
+  if (lower.length > MAX_CRISIS_TEXT_LENGTH) {
+    // 长文本只做基础检测，不使用复杂正则
+    const hasKeyword = /(死|自杀|自残|die|suicide)/i.test(lower);
+    return hasKeyword ? { level: CRISIS_LEVELS.HIGH, score: 0.7 } : { level: CRISIS_LEVELS.LOW, score: 0.1 };
+  }
   const criticalPattern = /(我|i)?\s*(想|准备|打算|要|will|want to|going to).{0,12}(死|自杀|自残|跳楼|割腕|吞药|结束生命|die|suicide|kill myself|end my life|overdose|jump off|cut myself)/i;
   const meansPattern = /(刀|绳子|药|楼顶|遗书|blade|rope|pills|gun|roof|bridge).{0,16}(今晚|今天|现在|马上|结束|用|tonight|today|now|soon|end)/i;
 
@@ -557,6 +564,12 @@ function detectDINKFears(text) {
  */
 function analyzePsychology(input, context = {}) {
   const text = String(input || '');
+  // [P1] 输入长度限制 - 防止内存耗尽和ReDoS
+  const MAX_INPUT_LENGTH = 50000; // 50KB
+  if (text.length > MAX_INPUT_LENGTH) {
+    return { error: 'Input too large', maxLength: MAX_INPUT_LENGTH };
+  }
+
   
   // 1. PAD情绪分析
   const padResult = detectPADFromText(text);

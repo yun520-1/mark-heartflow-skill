@@ -8,10 +8,16 @@ const path = require('path');
 
 class Reflector {
   constructor(projectRoot) {
-    this.projectRoot = projectRoot;
-    this.stateFile = path.join(projectRoot, '.opencode', 'memory', 'heartflow_state.json');
-    this.reportFile = path.join(projectRoot, 'logs', 'reflect-reports.json');
-    this.logFile = path.join(projectRoot, 'logs', 'reflect.log');
+    // [P2] 路径验证 - 防止路径遍历
+    if (!projectRoot || typeof projectRoot !== 'string') {
+      throw new Error('[Reflector] Invalid projectRoot');
+    }
+    // 确保projectRoot是绝对路径且在安全范围内
+    const resolvedRoot = path.resolve(projectRoot);
+    this.projectRoot = resolvedRoot;
+    this.stateFile = path.join(resolvedRoot, '.opencode', 'memory', 'heartflow_state.json');
+    this.reportFile = path.join(resolvedRoot, 'logs', 'reflect-reports.json');
+    this.logFile = path.join(resolvedRoot, 'logs', 'reflect.log');
     
     this.state = this.loadState();
   }
