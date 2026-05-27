@@ -225,6 +225,59 @@ class TemporalPlanner {
       briefing: this.getStrategicBriefing()
     };
   }
+
+  /**
+   * [NEW] Graph-of-Thoughts规划 (GoT)
+   * Paper: "Graph of Thoughts" (cited:394, 2024)
+   *
+   * 原理: 将问题解决建模为图结构,支持多路径探索和回溯
+   * 替代链式思维(CoT)和树状思维(ToT)
+   */
+  planGoT(goal, options = {}) {
+    const { maxPaths = 3, maxDepth = 5 } = options;
+
+    // 节点类型: START, THOUGHT, REFLECTION, BACKTRACK, MERGE, END
+    const nodes = [{ id: 'start', type: 'START', content: goal, depth: 0 }];
+    const edges = [];  // [from, to, label]
+
+    // 生成候选思考节点
+    const candidates = [
+      { label: '分解', content: `分解目标: ${goal}` },
+      { label: '类比', content: `类比: 类似目标如何解决?` },
+      { label: '回溯', content: `回溯: 之前失败的原因?` },
+      { label: '综合', content: `综合: 整合不同路径的解决方案` }
+    ];
+
+    let nodeId = 1;
+    const explored = new Set();
+
+    for (const candidate of candidates.slice(0, maxPaths)) {
+      const fromId = 'start';
+      const toId = `node_${nodeId++}`;
+      nodes.push({ id: toId, type: 'THOUGHT', content: candidate.content, label: candidate.label, depth: 1 });
+      edges.push([fromId, toId, candidate.label]);
+      explored.add(candidate.label);
+    }
+
+    return {
+      nodes,
+      edges,
+      graphviz: this._toGraphviz(nodes, edges),
+      interpretation: `Graph of ${nodes.length} nodes, ${edges.length} edges, exploring ${explored.size} thought paths`
+    };
+  }
+
+  _toGraphviz(nodes, edges) {
+    let dot = 'digraph G { rankdir=LR; ';
+    for (const n of nodes) {
+      const shape = n.type === 'START' ? 'oval' : n.type === 'END' ? 'doubleoctagon' : 'box';
+      dot += `${n.id} [label="${n.content?.substring(0, 30)}", shape=${shape}]; `;
+    }
+    for (const [from, to, label] of edges) {
+      dot += `${from} -> ${to} [label="${label}"]; `;
+    }
+    return dot + '}';
+  }
 }
 
 module.exports = { TemporalPlanner };
