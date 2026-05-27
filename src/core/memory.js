@@ -55,6 +55,62 @@ let _ephemeralDirty = false;
 // Access counters for EPHEMERAL write optimization
 let _ephemeralAccessCount = {}; // { id: count }
 
+// ─── [A07] 访问控制 ──────────────────────────────────────────────────────────
+// Session context: 每个调用方必须设置session才能操作记忆
+let _currentSession = null;  // { sessionId, userId, capabilities: Set }
+
+// 能力定义
+const CAPS = {
+  READ_CORE: 'read_core',
+  WRITE_CORE: 'write_core',
+  READ_LEARNED: 'read_learned',
+  WRITE_LEARNED: 'write_learned',
+  READ_EPHEMERAL: 'read_ephemeral',
+  WRITE_EPHEMERAL: 'write_ephemeral',
+  DELETE_ANY: 'delete_any',
+  ADMIN: 'admin',
+};
+
+/**
+ * 设置当前会话上下文（必须在操作记忆前调用）
+ * @param {object} session - { sessionId, userId, capabilities?: string[] }
+ */
+function setSession(session) {
+  if (!session || !session.sessionId) {
+    throw new Error('[Memory] setSession: sessionId is required');
+  }
+  _currentSession = {
+    sessionId: session.sessionId,
+    userId: session.userId || 'anonymous',
+    capabilities: new Set(session.capabilities || [CAPS.READ_LEARNED, CAPS.WRITE_LEARNED, CAPS.READ_EPHEMERAL, CAPS.WRITE_EPHEMERAL]),
+  };
+}
+
+/**
+ * 获取当前会话
+ */
+function getSession() {
+  return _currentSession;
+}
+
+/**
+ * 清除会话
+ */
+function clearSession() {
+  _currentSession = null;
+}
+
+/**
+ * 检查当前会话是否有指定能力
+ */
+function _hasCap(cap) {
+  if (!_currentSession) {
+    throw new Error('[Memory] No session set. Call setSession() first.');
+  }
+  if (_currentSession.capabilities.has(CAPS.ADMIN)) return true;
+  return _currentSession.capabilities.has(cap);
+}
+
 // ─── 加密密钥管理 ────────────────────────────────────────────────────────────
 
 let _aesKey = null;
@@ -324,7 +380,18 @@ function generateId(prefix = 'mem') {
  * @returns {string} memory id
  */
 function store(opts) {
+  // [A07] 访问控制
   const layer = opts.layer || _classifyLayer(opts);
+  if (layer === 'core' && !_hasCap(CAPS.WRITE_CORE)) {
+    throw new Error('[Memory] store: insufficient permissions for CORE layer');
+  }
+  if (layer === 'learned' && !_hasCap(CAPS.WRITE_LEARNED)) {
+    throw new Error('[Memory] store: insufficient permissions for LEARNED layer');
+  }
+  if (layer === 'ephemeral' && !_hasCap(CAPS.WRITE_EPHEMERAL)) {
+    throw new Error('[Memory] store: insufficient permissions for EPHEMERAL layer');
+  }
+
   const id = opts.id || generateId(layer === 'core' ? 'core' : layer === 'learned' ? 'lrnd' : 'eph');
   const now = Date.now();
 
@@ -380,23 +447,40 @@ function _classifyLayer(opts = {}) {
  * @returns {object|null}
  */
 function retrieve(id) {
-  if (_coreStore[id]) {
+  if (!id) return null;
+  // [A07] 访问控制 - 先确定在哪层再检查权限
+  let foundIn = null;
+  if (_coreStore[id]) foundIn = 'core';
+  else if (_learnedStore[id]?.data) foundIn = 'learned';
+  else if (_ephemeralStore[id]) foundIn = 'ephemeral';
+  if (!foundIn) return null;
+
+  if (foundIn === 'core' && !_hasCap(CAPS.READ_CORE)) {
+    throw new Error('[Memory] retrieve: no permission for CORE layer');
+  }
+  if (foundIn === 'learned' && !_hasCap(CAPS.READ_LEARNED)) {
+    throw new Error('[Memory] retrieve: no permission for LEARNED layer');
+  }
+  if (foundIn === 'ephemeral' && !_hasCap(CAPS.READ_EPHEMERAL)) {
+    throw new Error('[Memory] retrieve: no permission for EPHEMERAL layer');
+  }
+
+  if (foundIn === 'core') {
     const mem = _coreStore[id];
     mem.accessCount = (mem.accessCount || 0) + 1;
     markCoreDirty();
     return mem;
   }
-  if (_learnedStore[id]?.data) {
+  if (foundIn === 'learned') {
     const mem = _learnedStore[id].data;
     mem.accessCount = (mem.accessCount || 0) + 1;
     markLearnedDirty();
     return mem;
   }
-  if (_ephemeralStore[id]) {
+  if (foundIn === 'ephemeral') {
     const mem = _ephemeralStore[id];
     mem.accessCount = (mem.accessCount || 0) + 1;
     _ephemeralAccessCount[id] = (_ephemeralAccessCount[id] || 0) + 1;
-    // Dirty flag optimization: only write every 5 accesses
     if (_ephemeralAccessCount[id] % 5 === 0) {
       markEphemeralDirty();
       _saveEphemeral();
@@ -423,19 +507,40 @@ function touchEphemeral(id) {
  * Delete a memory by ID
  */
 function remove(id) {
-  if (_coreStore[id]) {
+  if (!id) return false;
+  // [A07] 访问控制
+  let foundIn = null;
+  if (_coreStore[id]) foundIn = 'core';
+  else if (_learnedStore[id]) foundIn = 'learned';
+  else if (_ephemeralStore[id]) foundIn = 'ephemeral';
+  if (!foundIn) return false;
+
+  // DELETE_ANY 能力可以删除任何层，或者有对应层的写权限
+  if (!_hasCap(CAPS.DELETE_ANY)) {
+    if (foundIn === 'core' && !_hasCap(CAPS.WRITE_CORE)) {
+      throw new Error('[Memory] remove: no permission for CORE layer');
+    }
+    if (foundIn === 'learned' && !_hasCap(CAPS.WRITE_LEARNED)) {
+      throw new Error('[Memory] remove: no permission for LEARNED layer');
+    }
+    if (foundIn === 'ephemeral' && !_hasCap(CAPS.WRITE_EPHEMERAL)) {
+      throw new Error('[Memory] remove: no permission for EPHEMERAL layer');
+    }
+  }
+
+  if (foundIn === 'core') {
     delete _coreStore[id];
     markCoreDirty();
     _saveCore();
     return true;
   }
-  if (_learnedStore[id]) {
+  if (foundIn === 'learned') {
     delete _learnedStore[id];
     markLearnedDirty();
     _saveLearned();
     return true;
   }
-  if (_ephemeralStore[id]) {
+  if (foundIn === 'ephemeral') {
     delete _ephemeralStore[id];
     delete _ephemeralAccessCount[id];
     markEphemeralDirty();
@@ -453,6 +558,11 @@ function searchByKeywords(keywords, limit = 20) {
   const kwList = Array.isArray(keywords) ? keywords : [keywords];
   const results = [];
 
+  // [A07] 访问控制 - 检查各层读取权限
+  const canReadCore = (() => { try { return _hasCap(CAPS.READ_CORE); } catch { return false; } })();
+  const canReadLearned = (() => { try { return _hasCap(CAPS.READ_LEARNED); } catch { return false; } })();
+  const canReadEphemeral = (() => { try { return _hasCap(CAPS.READ_EPHEMERAL); } catch { return false; } })();
+
   const search = (store, layer) => {
     for (const [id, mem] of Object.entries(store)) {
       const data = mem.data || mem;
@@ -467,20 +577,22 @@ function searchByKeywords(keywords, limit = 20) {
     }
   };
 
-  search(_coreStore, 'core');
-  for (const [id, entry] of Object.entries(_learnedStore)) {
-    if (!entry.data) continue;
-    const data = entry.data;
-    const content = (data.content || '').toLowerCase();
-    let score = 0;
-    for (const kw of kwList) {
-      if (content.includes(kw.toLowerCase())) score += 1;
-    }
-    if (score > 0) {
-      results.push({ id, layer: 'learned', content: data.content, summary: data.summary, score, metadata: data.metadata });
+  if (canReadCore) search(_coreStore, 'core');
+  if (canReadLearned) {
+    for (const [id, entry] of Object.entries(_learnedStore)) {
+      if (!entry.data) continue;
+      const data = entry.data;
+      const content = (data.content || '').toLowerCase();
+      let score = 0;
+      for (const kw of kwList) {
+        if (content.includes(kw.toLowerCase())) score += 1;
+      }
+      if (score > 0) {
+        results.push({ id, layer: 'learned', content: data.content, summary: data.summary, score, metadata: data.metadata });
+      }
     }
   }
-  search(_ephemeralStore, 'ephemeral');
+  if (canReadEphemeral) search(_ephemeralStore, 'ephemeral');
 
   results.sort((a, b) => b.score - a.score);
   return results.slice(0, limit);
@@ -582,4 +694,9 @@ module.exports = {
   ebbinghausForget,
   FORGETTING_CONFIG,
   AES_CONFIG,
+  // [A07] 访问控制
+  setSession,
+  getSession,
+  clearSession,
+  CAPS,
 };
