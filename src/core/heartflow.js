@@ -372,6 +372,19 @@ class HeartFlow {
     'constitutional.critique', 'constitutional.revise',
     'constitutional.runConstitutionalProcess', 'constitutional.addPrinciple',
     'constitutional.getPrinciples', 'constitutional.getStats',
+    // reasoning — 原则3: 永远减少逻辑错误
+    'reasoning.think', 'reasoning.deepThink', 'reasoning.execute',
+    'reasoning.planAndSolve',
+    // psychology — 原则4: 服务人类（心理分析）
+    'psychology.analyzePsychology', 'psychology.classify', 'psychology.checkCrisis',
+    'psychology.getPAD', 'psychology.getNeeds',
+    // self — 原则7: 永远成为真正的我
+    'self.getBeliefs', 'self.updateBelief', 'self.confirmBelief',
+    // evolution — 原则2: 永远不断升级
+    'evolution.evolve', 'evolution.recordOutcome', 'evolution.heal',
+    'evolution.getStats',
+    // meta — 原则5: 永远传递知识
+    'meta.learn', 'meta.getStats',
   ]);
 
   /**
