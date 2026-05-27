@@ -1,5 +1,5 @@
 /**
- * HeartFlow — AI Psychological Perception System v0.16.0
+ * HeartFlow — AI Psychological Perception System v0.16.1
  * 
  * A minimal, production-ready AI psychology engine for agents.
  * 
@@ -33,7 +33,7 @@ const { SelfEvolution } = require('../evolution/loop.js');
 const { DreamEngine } = require('../dream/engine.js');
 
 // Version
-const VERSION = 'v0.16.1';
+const VERSION = 'v0.16.2';
 const BUILD_DATE = '2026-05-28';
 
 class HeartFlow {

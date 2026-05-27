@@ -143,10 +143,17 @@ class MeaningfulMemory {
   // ─── EPHEMERAL — Working Memory (Session-Scoped) ───────────────────────
 
   remember(key, value, ttlMs = 3600000) {
+    if (!key || typeof key !== 'string') {
+      return { success: false, reason: 'invalid_key', key };
+    }
+    if (ttlMs <= 0) {
+      ttlMs = 1; // Minimum 1ms to prevent immediate expiry
+    }
     this.ephemeral[key] = {
       value,
       ttl: ttlMs,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      _accessCount: 0, // Initialize access counter for consolidation
     };
     this._saveEphemeral();
     return { success: true, key, tier: 'EPHEMERAL' };
@@ -160,6 +167,8 @@ class MeaningfulMemory {
       this._saveEphemeral();
       return null;
     }
+    // Increment access count for consolidation tracking
+    entry._accessCount = (entry._accessCount || 0) + 1;
     return { ...entry };
   }
 
@@ -230,6 +239,9 @@ class MeaningfulMemory {
    * Search across all tiers
    */
   search(query) {
+    if (!query || typeof query !== 'string') {
+      return [];
+    }
     const q = query.toLowerCase();
     const results = [];
     

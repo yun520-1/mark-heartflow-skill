@@ -28,7 +28,17 @@ class SelfEvolution {
    * @param {string} [params.expected] - What was expected
    * @returns {object} Reflection result with lesson
    */
-  recordOutcome({ task, outcome, evidence, expected }) {
+  recordOutcome(params) {
+    if (!params || typeof params !== 'object') {
+      throw new Error('recordOutcome requires an object parameter');
+    }
+    const { task, outcome, evidence, expected } = params;
+    if (!task || typeof task !== 'string') {
+      throw new Error('recordOutcome requires task (string)');
+    }
+    if (!outcome || !['success', 'failure', 'partial'].includes(outcome)) {
+      throw new Error('recordOutcome requires outcome (success|failure|partial)');
+    }
     const reflection = this._reflect(task, outcome, evidence, expected);
     
     // Store as ephemeral if failure (temporary lesson)

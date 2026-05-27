@@ -35,7 +35,7 @@ async function runTests() {
   const health = await hf.healthCheck();
   assert(health.started === true, 'started=true');
   assert(health.uptime_ms >= 0, `uptime_ms >= 0 (got ${health.uptime_ms})`);
-  assert(health.version === 'v0.16.1', `version = v0.16.1`);
+  assert(health.version === 'v0.16.2', `version = v0.16.2`);
   assert(health.sessionId.startsWith('session-'), `sessionId starts with session-`);
   assert(health.subsystems.memory === true, 'subsystems.memory = true');
   assert(health.subsystems.psychology === true, 'subsystems.psychology = true');
