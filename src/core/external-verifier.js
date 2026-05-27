@@ -17,13 +17,21 @@ const externalVerifier = {
   loadCache() {
     try {
       if (fs.existsSync(CACHE_FILE)) {
-        this.cache = JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8'));
+        const raw = fs.readFileSync(CACHE_FILE, 'utf8');
+        const parsed = JSON.parse(raw);
+        // 验证数据结构
+        if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.entries)) {
+          throw new Error('Invalid cache structure');
+        }
+        this.cache = parsed;
         // 清理过期条目（24小时）
         const now = Date.now();
         const DAY = 86400000;
         this.cache.entries = this.cache.entries.filter(e => now - e.verifiedAt < DAY);
       }
     } catch (e) {
+      // 安全修复：记录错误而非静默失败
+      console.warn('[ExternalVerifier] Cache load failed, starting fresh:', e.message);
       this.cache = { entries: [] };
     }
     return this;
@@ -35,7 +43,8 @@ const externalVerifier = {
       fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
       fs.writeFileSync(CACHE_FILE, JSON.stringify(this.cache, null, 2));
     } catch (e) {
-      // 忽略
+      // 安全修复：记录错误而非静默失败
+      console.error('[ExternalVerifier] Cache save failed:', e.message);
     }
     return this;
   },

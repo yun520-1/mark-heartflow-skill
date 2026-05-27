@@ -464,12 +464,17 @@ class MetaJudgment {
       if (fs.existsSync(JUDGMENT_HISTORY_PATH)) {
         const raw = fs.readFileSync(JUDGMENT_HISTORY_PATH, 'utf-8');
         const data = JSON.parse(raw);
-        this.history = data.history || [];
-        this.confidenceClaims = data.confidenceClaims || [];
+        // 安全修复：验证数据结构
+        if (!data || typeof data !== 'object') {
+          throw new Error('Invalid judgment history format');
+        }
+        this.history = Array.isArray(data.history) ? data.history : [];
+        this.confidenceClaims = Array.isArray(data.confidenceClaims) ? data.confidenceClaims : [];
         console.log(`[MetaJudgment] 恢复 ${this.history.length} 条判断记录`);
       }
     } catch (e) {
-      console.warn('[MetaJudgment] 历史恢复失败:', e.message);
+      // 安全修复：使用错误级别日志
+      console.error('[MetaJudgment] 历史恢复失败:', e.message);
     }
   }
 
@@ -490,7 +495,8 @@ class MetaJudgment {
         savedAt: new Date().toISOString()
       }, null, 2));
     } catch (e) {
-      console.warn('[MetaJudgment] 保存失败:', e.message);
+      // 安全修复：使用错误级别日志
+      console.error('[MetaJudgment] 保存失败:', e.message);
     }
   }
 

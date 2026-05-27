@@ -588,11 +588,25 @@ function searchByKeywords(keywords, limit = 20) {
         if (content.includes(kw.toLowerCase())) score += 1;
       }
       if (score > 0) {
-        results.push({ id, layer: 'learned', content: data.content, summary: data.summary, score, metadata: data.metadata });
+        results.push({ id, layer: 'learned', content: data.content, summary: data.summary, score, metadata: data.metadata, timestamp: data.timestamp });
       }
     }
   }
   if (canReadEphemeral) search(_ephemeralStore, 'ephemeral');
+
+  // [NEW] 近期偏好 + 位置衰减 (Lost in the Middle优化)
+  // 论文: Liu et al. 2024 "Lost in the Middle" - LLM对中间位置信息Recall最差
+  const now = Date.now();
+  const RECENCY_HOURS = 24; // 24小时内优先
+  const RECENCY_BOOST = 1.5; // 近期结果加权
+
+  for (const r of results) {
+    const ageHours = (now - (r.timestamp || 0)) / (1000 * 60 * 60);
+    if (ageHours < RECENCY_HOURS) {
+      r.score = Math.round(r.score * RECENCY_BOOST * 100) / 100;
+      r.recencyBoost = true;
+    }
+  }
 
   results.sort((a, b) => b.score - a.score);
   return results.slice(0, limit);

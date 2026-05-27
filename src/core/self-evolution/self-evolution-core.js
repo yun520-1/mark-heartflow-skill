@@ -866,6 +866,67 @@ class SelfEvolutionCore {
     const lessons = Object.values(this.state.learningHistory || []).filter(h => h.type?.includes('reflection'));
     return { totalLessons: lessons.length, failures: lessons.filter(l => l.outcome === 'failure').length };
   }
+
+  /**
+   * [NEW] 推理质量奖励计算 (DeepSeek-R1风格)
+   * 基于强化学习的推理质量评估
+   * Paper: DeepSeek-R1 (2025) - RL for reasoning incentive
+   *
+   * @param {object} reasoning - { steps[], conclusion, evidence[], timeSpent }
+   * @returns {object} - { reward: -1~1, quality: string, breakdown }
+   */
+  computeReasoningReward(reasoning) {
+    const { steps = [], conclusion, evidence = [], timeSpent = 0 } = reasoning;
+
+    // 步骤得分：步骤越多且有逻辑连接，得分越高
+    const stepScore = steps.length > 0
+      ? Math.min(1, (steps.filter(s => s.logicalConnection).length / steps.length) * 0.4 + 0.2)
+      : 0;
+
+    // 证据得分：有证据支撑的结论得分高
+    const evidenceScore = evidence.length > 0
+      ? Math.min(0.9, evidence.length * 0.15)
+      : 0.1;
+
+    // 时间效率得分：合理时间范围内完成
+    const timeScore = timeSpent > 0
+      ? timeSpent < 60 ? 0.3 : timeSpent < 300 ? 0.5 : 0.1
+      : 0.2;
+
+    // 自我一致性：结论与步骤是否一致
+    const consistencyScore = conclusion && steps.length > 0
+      ? this._checkConsistency(conclusion, steps)
+      : 0.2;
+
+    // 综合奖励
+    const reward = (stepScore * 0.3 + evidenceScore * 0.3 + timeScore * 0.1 + consistencyScore * 0.3);
+
+    return {
+      reward: Math.round(reward * 100) / 100,
+      quality: reward > 0.7 ? 'excellent' : reward > 0.4 ? 'good' : reward > 0.2 ? 'fair' : 'poor',
+      breakdown: { stepScore, evidenceScore, timeScore, consistencyScore }
+    };
+  }
+
+  /**
+   * 检查结论与步骤的一致性
+   */
+  _checkConsistency(conclusion, steps) {
+    const conclusionLower = String(conclusion).toLowerCase();
+    let matches = 0;
+    for (const step of steps) {
+      if (step.content && typeof step.content === 'string') {
+        const stepLower = step.content.toLowerCase();
+        // 检查步骤关键词是否出现在结论中
+        const words = stepLower.split(/\s+/).filter(w => w.length > 4);
+        for (const word of words) {
+          if (conclusionLower.includes(word)) matches++;
+        }
+      }
+    }
+    const maxPossible = steps.length * 5;
+    return maxPossible > 0 ? Math.min(1, matches / maxPossible) : 0.5;
+  }
 }
 
 module.exports = { SelfEvolutionCore };

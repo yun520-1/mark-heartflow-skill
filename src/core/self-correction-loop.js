@@ -109,7 +109,8 @@ const selfCorrectionLoop = {
       fs.mkdirSync(dataDir, { recursive: true });
       fs.writeFileSync(filePath, JSON.stringify(this.corrections, null, 2));
     } catch (e) {
-      // 忽略写入错误
+      // 安全修复：记录错误而非静默失败
+      console.error('[SelfCorrection] Persist failed:', e.message);
     }
   },
 
@@ -120,9 +121,17 @@ const selfCorrectionLoop = {
       const path = require('path');
       const filePath = path.join(__dirname, '../../data/corrections.json');
       if (fs.existsSync(filePath)) {
-        this.corrections = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        const raw = fs.readFileSync(filePath, 'utf8');
+        const parsed = JSON.parse(raw);
+        // 验证数据类型
+        if (!Array.isArray(parsed)) {
+          throw new Error('Invalid corrections data: expected array');
+        }
+        this.corrections = parsed;
       }
     } catch (e) {
+      // 安全修复：记录错误并重置
+      console.warn('[SelfCorrection] Load failed, starting fresh:', e.message);
       this.corrections = [];
     }
   }
