@@ -47,7 +47,8 @@ let _reverseRelations = new Map(); // { targetId: [ { sourceId, type, weight } ]
  * 生成唯一节点ID
  */
 function generateNodeId(prefix = 'node') {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const { randomBytes } = require('crypto');
+  return `${prefix}-${Date.now()}-${randomBytes(4).toString('hex')}`;
 }
 
 /**

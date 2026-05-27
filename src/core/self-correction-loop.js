@@ -7,8 +7,9 @@ const selfCorrectionLoop = {
 
   // 记录修正
   record(type, original, corrected, reason) {
+    const { randomBytes } = require('crypto');
     const entry = {
-      id: `correction-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      id: `correction-${Date.now()}-${randomBytes(4).toString('hex')}`,
       type,
       original: String(original).slice(0, 200),
       corrected: String(corrected).slice(0, 200),
