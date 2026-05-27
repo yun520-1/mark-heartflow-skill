@@ -58,19 +58,22 @@ class SelfVerifier {
   }
 
   _checkLogicalChain(reasoning) {
-    // Look for hidden assumption indicators
-    const assumptionIndicators = ['assume', 'assuming', 'presume', 'suppose', 'likely', 'probably', 'perhaps', 'maybe', '当然', '假设', '可能', '应该'];
+    // Look for hidden assumption indicators — 有这些词说明推理有隐藏前提
+    const assumptionIndicators = ['assume', 'assuming', 'presume', 'suppose', 'likely', 'probably', 'perhaps', 'maybe', '当然', '假设', '可能', '应该', '估计'];
     const hasAssumption = assumptionIndicators.some(ind => reasoning.toLowerCase().includes(ind));
 
-    // If reasoning is very short, likely has hidden assumptions
-    if (reasoning.length < 50) return false;
+    // 如果推理包含假设指示词，检查是否有连接词来支撑
+    // 如果没有假设指示词，说明推理是直接推导，不需要额外连接词
+    if (hasAssumption) {
+      // 有假设 → 必须有连接词才算有效链
+      const connectors = ['and', 'but', 'however', 'therefore', 'thus', 'then', 'so',
+        '而且', '但是', '然而', '所以', '因此', '则', '故', '于是', '既然', '由于', '因为', '所以'];
+      const connectorCount = connectors.filter(c => reasoning.toLowerCase().includes(c)).length;
+      return connectorCount > 0;
+    }
 
-    // If reasoning has conjunctions connecting clauses, more likely to have chain
-    const connectors = ['and', 'but', 'however', 'therefore', 'thus', 'then', 'so', '而且', '但是', '然而', '所以'];
-    const connectorCount = connectors.filter(c => reasoning.toLowerCase().includes(c)).length;
-
-    // Chain is valid if it has connectors or no strong assumptions
-    return connectorCount > 0 || !hasAssumption;
+    // 无假设 → 直接推导，逻辑链有效（无论长度）
+    return true;
   }
 
   _checkCounterfactual(reasoning, conclusion) {
