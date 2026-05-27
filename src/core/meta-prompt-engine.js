@@ -129,6 +129,223 @@ class MetaPromptEngine {
   }
 
   /**
+   * Self-Refine 迭代循环 (arXiv:2303.17651)
+   * 核心流程：生成 → 反馈 → 修正 → 循环收敛
+   *
+   * @param {Object} input
+   * @param {string} input.content - 初始内容（待迭代修正）
+   * @param {string} input.task - 任务类型，默认 'general'
+   * @param {number} input.maxRounds - 最大迭代轮数，默认 3
+   * @param {number} input.convergenceThreshold - 收敛阈值（0-100），低于此分差认为收敛，默认 5
+   * @param {boolean} input.verbose - 是否返回每轮详细历史，默认 false
+   *
+   * @returns {Object} {
+   *   final: 最终修正结果,
+   *   history: [{ round, content, feedback, score, improvement }],  // verbose=true 时完整
+   *   converged: boolean,   // 是否已收敛
+   *   rounds: number,       // 实际迭代轮数
+   *   totalImprovement: number  // 相对于初始内容的总提升分
+   * }
+   */
+  async addRefineLoop({ content, task = 'general', maxRounds = 3, convergenceThreshold = 5, verbose = false }) {
+    this.stats.refinements++;
+
+    // 历史记录
+    const history = [];
+    let current = content;
+    let prevScore = 0;
+    let converged = false;
+    let rounds = 0;
+
+    // 第一轮：先对初始内容评分（无反馈修正）
+    const initialScore = await this._scoreOutput({ output: current, task });
+    prevScore = initialScore;
+
+    for (let i = 1; i <= maxRounds; i++) {
+      rounds = i;
+
+      // Step 1: 生成反馈（基于当前内容）
+      const feedback = await this._generateFeedback({ output: current });
+
+      // Step 2: 基于反馈生成分数（模拟修正后的预期质量）
+      const withFeedback = await this._applyFeedback({ output: current, feedback });
+
+      // 模拟 Self-Refine 的修正质量评估：
+      // 如果反馈质量高（包含具体建议而非泛泛之词），则预估分更高
+      const feedbackScore = await this._scoreRefinedOutput({
+        output: current,
+        feedback,
+        task
+      });
+
+      // Step 3: 修正内容（实际应用中这里调用LLM，这里做启发式模拟）
+      const refined = await this._refineContent({ output: current, feedback, task });
+
+      // Step 4: 对修正后内容评分
+      const newScore = await this._scoreOutput({ output: refined.content, task });
+      const improvement = newScore - prevScore;
+
+      // 记录历史
+      const roundEntry = {
+        round: i,
+        content: current,
+        feedback: typeof feedback === 'string' ? feedback : JSON.stringify(feedback),
+        refinedContent: refined.content,
+        score: newScore,
+        prevScore,
+        improvement,
+        converged: false
+      };
+
+      history.push(roundEntry);
+
+      // 检查收敛条件
+      if (Math.abs(improvement) <= convergenceThreshold && i > 1) {
+        converged = true;
+        history[history.length - 1].converged = true;
+        break;
+      }
+
+      // 更新状态
+      current = refined.content;
+      prevScore = newScore;
+    }
+
+    const totalImprovement = prevScore - initialScore;
+
+    const result = {
+      final: current,
+      converged,
+      rounds,
+      totalImprovement,
+      history: verbose ? history : history.map(h => ({
+        round: h.round,
+        score: h.score,
+        improvement: h.improvement,
+        converged: h.converged
+      }))
+    };
+
+    return result;
+  }
+
+  // ─── Self-Refine 迭代循环辅助方法 ─────────────────────────────────────────────
+
+  /**
+   * 对输出内容进行质量评分
+   * @private
+   */
+  async _scoreOutput({ output, task }) {
+    let score = 60; // 基础分
+
+    const str = String(output);
+
+    // 长度激励（太短缺乏深度，太长可能冗余）
+    if (str.length > 50) score += 10;
+    if (str.length > 200) score += 5;
+    if (str.length > 1000) score -= 5;
+
+    // 结构化激励
+    if (/①|②|③|④/.test(str)) score += 10;
+    if (/首先|其次|最后/.test(str)) score += 8;
+    if (/第一|第二|第三/.test(str)) score += 8;
+    if (/→|=>|-&gt;/.test(str)) score += 5;
+
+    // 质量关键词激励
+    const qualityKeywords = ['分析', '原因', '结论', '建议', '方法', '步骤', '证据', '对比'];
+    qualityKeywords.forEach(kw => {
+      if (str.includes(kw)) score += 2;
+    });
+
+    // 任务匹配激励
+    const taskBoost = {
+      analysis: ['分析', '分解', '结构'],
+      creation: ['创作', '方案', '设计'],
+      reasoning: ['推理', '逻辑', '论证'],
+      summary: ['总结', '概括', '要点'],
+      general: []
+    };
+    (taskBoost[task] || []).forEach(kw => {
+      if (str.includes(kw)) score += 5;
+    });
+
+    // 扣分项
+    if (/不知道|不清楚|不确定/.test(str) && str.length < 100) score -= 15;
+    if (/哈哈|呵呵|嘿嘿/.test(str)) score -= 10;
+
+    return Math.min(100, Math.max(0, score));
+  }
+
+  /**
+   * 评估带反馈的修正质量
+   * @private
+   */
+  async _scoreRefinedOutput({ output, feedback, task }) {
+    let score = 50; // 基准分
+
+    const fbStr = String(feedback);
+
+    // 反馈具体性激励
+    if (fbStr.includes('?')) score += 10; // 提问式反馈通常更具体
+    if (/具体|明确|量化/.test(fbStr)) score += 10;
+    if (fbStr.length > 30) score += 5;
+
+    // 反馈覆盖多维度
+    const dims = ['完整性', '准确性', '深度', '结构', '逻辑'];
+    dims.forEach(d => {
+      if (fbStr.includes(d)) score += 5;
+    });
+
+    return Math.min(100, Math.max(0, score));
+  }
+
+  /**
+   * 根据反馈修正内容（Self-Refine 的修正步骤）
+   * @private
+   */
+  async _refineContent({ output, feedback, task }) {
+    const fb = String(feedback);
+    const out = String(output);
+
+    // 启发式修正：检测反馈中的问题点，对内容做针对性增强
+    let refined = out;
+
+    // 如果反馈提到"不完整"，尝试补充结构
+    if (/不完整|缺少|遗漏/.test(fb)) {
+      if (!/①|②|③/.test(refined)) {
+        refined = refined + '\n\n补充说明：针对上述内容，补充关键要点。';
+      }
+    }
+
+    // 如果反馈提到"结构"，增加结构化标记
+    if (/结构|层次|组织/.test(fb)) {
+      if (!/首先|其次|最后/.test(refined)) {
+        refined = refined.replace(/^/, '首先，明确核心要点。\n');
+      }
+    }
+
+    // 如果反馈提到"深度"或"具体"，扩展内容
+    if (/深度|具体|详细/.test(fb) && out.length < 500) {
+      refined = refined + '\n\n进一步说明：需要更深入的分析和具体案例支撑。';
+    }
+
+    // 如果反馈提到"逻辑"，检查并补充过渡
+    if (/逻辑|连贯|衔接/.test(fb)) {
+      refined = refined + '\n\n因此，基于以上分析，可以得出结论。';
+    }
+
+    // 收敛标记：如果反馈中包含"良好"|"不错"|"可以"等正面词，不做修改
+    if (/良好|不错|可以|满意/.test(fb)) {
+      refined = out; // 保持原样
+    }
+
+    return {
+      content: refined,
+      note: '启发式修正；完整实现建议调用LLM进行实际内容改写'
+    };
+  }
+
+  /**
    * 束搜索优化（Automatic Prompt Optimization简化版）
    * 给定任务描述，生成N个候选prompt，评分选最优
    * @param {Object} input

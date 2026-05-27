@@ -44,6 +44,8 @@ const { DreamEngine } = require('../dream/engine.js');
 const { DreamConsolidation } = require('./dream-consolidation.js');
 const { MetaLearner } = require('../evolution/meta-learner.js');
 const { MetaPromptEngine } = require('./meta-prompt-engine.js');
+const { GoTEngine } = require('./graph-of-thoughts.js');
+const { ConstitutionalEngine } = require('./constitutional-ai.js');
 
 // Identity
 const { SelfModel } = require('../identity/self-model.js');
@@ -228,6 +230,12 @@ class HeartFlow {
     // MetaPromptEngine — 用户端加强：用大模型优化大模型调用
     try { this.metaPrompt = new MetaPromptEngine(this); } catch (e) { this._initErrors.push({module: 'metaPrompt', error: e.message}); }
 
+    // Graph of Thoughts — 多路径推理图探索
+    try { this.got = new GoTEngine(); } catch (e) { this._initErrors.push({module: 'got', error: e.message}); }
+
+    // Constitutional AI — 原则驱动的自我对齐
+    try { this.constitutional = new ConstitutionalEngine(); } catch (e) { this._initErrors.push({module: 'constitutional', error: e.message}); }
+
     // Engine modules (functions/objects — no 'new')
     try { this.language = LanguageHonesty; } catch (e) {}
     try { this.reasoning = ReasoningIntegrator; } catch (e) {}
@@ -300,6 +308,8 @@ class HeartFlow {
       'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
       'metaJudgment', 'metaMemory', 'skillGenerator',
       'metaPrompt',  // 用户端加强：用大模型优化大模型调用
+      'got',         // Graph of Thoughts：多路径推理图
+      'constitutional', // Constitutional AI：原则自我对齐
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -355,7 +365,13 @@ class HeartFlow {
     'slots.get', 'slots.set', 'slots.delete',
     // metaPrompt — 用户端加强
     'metaPrompt.optimize', 'metaPrompt.think', 'metaPrompt.refine',
-    'metaPrompt.beamSearch', 'metaPrompt.getStats',
+    'metaPrompt.beamSearch', 'metaPrompt.getStats', 'metaPrompt.addRefineLoop',
+    // got — Graph of Thoughts
+    'got.explore', 'got.findBestPath', 'got.visualize',
+    // constitutional — Constitutional AI
+    'constitutional.critique', 'constitutional.revise',
+    'constitutional.runConstitutionalProcess', 'constitutional.addPrinciple',
+    'constitutional.getPrinciples', 'constitutional.getStats',
   ]);
 
   /**
