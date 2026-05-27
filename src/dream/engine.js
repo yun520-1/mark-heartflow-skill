@@ -76,6 +76,31 @@ class DreamEngine {
         return getDreamStats(this.state);
     }
 
+    /**
+     * 快速梦境（无记忆整合，轻量）
+     */
+    quickDream(context = '') {
+        if (!this.state) this.boot();
+        this.state.dreamCount++;
+        return {
+            insights: [],
+            mode: 'quick',
+            context: context.substring(0, 100),
+        };
+    }
+
+    /**
+     * 获取缓存统计（当前无缓存，返回空结构）
+     */
+    getCacheStats() {
+        return {
+            cacheSize: 0,
+            maxCache: 0,
+            hitRate: 0,
+            note: '缓存未实现，调用dream()替代',
+        };
+    }
+
     shutdown() {
         this.state = null;
         this.recall = null;
