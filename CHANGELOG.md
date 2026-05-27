@@ -10,7 +10,7 @@ All notable changes to HeartFlow will be documented in this file.
 - **Key validation missing** (meaningful-memory.js:145) — Empty/invalid keys accepted. Now returns error.
 - **search() crashed on null** (meaningful-memory.js:233) — `query.toLowerCase()` without null check. Now returns empty array.
 - **recordOutcome() no validation** (evolution/loop.js:188-190) — Missing params threw unclear TypeError. Now validates task/outcome.
-- **Version comment mismatch** (heartflow.js:2) — Doc said v0.16.0, code was v0.16.1. Now synchronized.
+- **Version comment mismatch** (heartflow.js:2) — Doc said v0.16.1, code was v0.16.2. Now synchronized to v0.16.2.
 
 ### Security
 - Input validation added to prevent crashes on malformed input

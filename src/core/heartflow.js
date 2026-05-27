@@ -1,5 +1,5 @@
 /**
- * HeartFlow — AI Psychological Perception System v0.16.1
+ * HeartFlow — AI Psychological Perception System v0.16.2
  * 
  * A minimal, production-ready AI psychology engine for agents.
  * 

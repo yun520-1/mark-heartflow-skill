@@ -120,7 +120,7 @@ node tests/run.js                   # Full test suite (56 tests)
 
 5. **FIXED: recordOutcome() no validation** (evolution/loop.js:188-190) — Missing required params would throw unclear TypeError. Now validates task and outcome parameters.
 
-6. **FIXED: Version comment mismatch** (heartflow.js:2) — Doc comment said v0.16.0 but code was v0.16.1. Now synchronized.
+6. **FIXED: Version comment mismatch** (heartflow.js:2) — Doc comment said v0.16.1 but code was v0.16.2. Now synchronized to v0.16.2.
 
 ### Future Improvements
 
