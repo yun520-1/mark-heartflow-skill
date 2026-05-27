@@ -94,9 +94,9 @@ function detectEmotionalContagion(text) {
   const totalCount = positiveCount + negativeCount;
   if (totalCount === 0) return { score: 0, indicators: [], intensity: 0 };
   
-  // 情绪强度: 正负情绪的绝对值平均
-  const intensity = totalCount >= 2 ? (positiveCount > negativeCount ? 0.5 : -0.5)
-                    : totalCount >= 3 ? (positiveCount > negativeCount ? 0.8 : -0.8)
+  // P1 FIX: Reorder ternary chain - check >=3 first to avoid >=2 matching first
+  const intensity = totalCount >= 3 ? (positiveCount > negativeCount ? 0.8 : -0.8)
+                    : totalCount >= 2 ? (positiveCount > negativeCount ? 0.5 : -0.5)
                     : (positiveCount > negativeCount ? 0.3 : -0.3);
   
   // 分数: 有情绪词即有传染, 多个强化

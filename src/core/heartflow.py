@@ -832,6 +832,10 @@ class MentalHealthEngine:
     def assess_phq9(self, answers: List[int]) -> Dict[str, Any]:
         if not answers or len(answers) != 9:
             return {"score": 0, "level": "未评估", "risk": "low"}
+        # P1 FIX: Validate each answer is 0-3 (PHQ-9 scale)
+        for i, val in enumerate(answers):
+            if not isinstance(val, int) or val < 0 or val > 3:
+                return {"score": 0, "level": "输入无效", "risk": "low", "error": f"PHQ-9第{i+1}题答案需为0-3整数"}
         total = sum(answers)
         if total < 5: level, risk = "正常", "low"
         elif total < 10: level, risk = "轻度", "low"
@@ -843,6 +847,10 @@ class MentalHealthEngine:
     def assess_gad7(self, answers: List[int]) -> Dict[str, Any]:
         if not answers or len(answers) != 7:
             return {"score": 0, "level": "未评估", "risk": "low"}
+        # P1 FIX: Validate each answer is 0-3 (GAD-7 scale)
+        for i, val in enumerate(answers):
+            if not isinstance(val, int) or val < 0 or val > 3:
+                return {"score": 0, "level": "输入无效", "risk": "low", "error": f"GAD-7第{i+1}题答案需为0-3整数"}
         total = sum(answers)
         if total < 5: level, risk = "正常", "low"
         elif total < 10: level, risk = "轻度", "low"

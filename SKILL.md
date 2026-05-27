@@ -22,7 +22,7 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v1.3.7
+# HeartFlow / 心虫 v1.3.9
 
 **An AI capability layer that survives context switches, model changes, and restarts.**
 
