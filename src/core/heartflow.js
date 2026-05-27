@@ -99,7 +99,7 @@ const StateSnapshot = require('./state-snapshot.js');
 const ErrorHandler = require('./error-handler.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '1.3.5';
+const VERSION = '1.3.7';
 const BUILD_DATE = '2026-05-30';
 
 class HeartFlow {
