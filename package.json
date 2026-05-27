@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "v0.16.0",
+  "version": "0.16.1",
   "description": "HeartFlow - AI Psychological Perception System",
   "main": "src/core/heartflow.js",
   "scripts": {

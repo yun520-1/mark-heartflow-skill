@@ -1,10 +1,10 @@
 ---
 name: heartflow
-description: HeartFlow v0.16.0 — AI Psychological Perception System. Use when user asks to analyze psychology, detect emotion/intent, use memory tiers, run self-evolution, or trigger dream consolidation. Examples: <example>user: "analyze this message", assistant: calls analyzePsychology()</example> <example>user: "run a dream cycle", assistant: calls dreamNow()</example> <example>user: "remember this as core identity", assistant: calls remember(key, value, 'core')</example>
-version: v0.16.0
+description: HeartFlow v0.16.1 — AI Psychological Perception System. Use when user asks to analyze psychology, detect emotion/intent, use memory tiers, run self-evolution, or trigger dream consolidation. Examples: <example>user: "analyze this message", assistant: calls analyzePsychology()</example> <example>user: "run a dream cycle", assistant: calls dreamNow()</example> <example>user: "remember this as core identity", assistant: calls remember(key, value, 'core')</example>
+version: v0.16.1
 ---
 
-# HeartFlow v0.16.0
+# HeartFlow v0.16.1
 
 **AI Psychological Perception System** — A minimal, production-ready psychology engine for AI agents.
 
@@ -90,6 +90,55 @@ node src/core/heartflow.js          # Run health check + API test
 node tests/run.js                   # Full test suite (56 tests)
 ```
 
+## Pitfalls
+
+### Known Issues & Limitations
+
+1. **Emotion detection is keyword-based only** — No transformer models; relies on `emotionMap` keyword matching. Cannot detect subtle or nuanced emotions.
+
+2. **Intent inference is pattern-matching** — Uses simple substring matching against `intentPatterns`. May misclassify ambiguous inputs.
+
+3. **No crisis detection** — Does not have guardrails for mental health crisis detection. Do not use for psychological assessment in clinical contexts.
+
+4. **Memory consolidation is naive** — Ephemeral→Learned promotion only checks access count and age (30 min). No quality-based ranking.
+
+5. **Self-evolution lessons are ephemeral** — Failed task lessons are stored with 24hr TTL in ephemeral memory and may be lost on restart.
+
+6. **No Q-table persistence** — The SelfEvolution loop does not persist lessons to disk. On restart, past lessons are lost.
+
+7. **File path safety** — `rootPath` validation allows paths containing "heartflow" substring, which could be bypassed.
+
+### Future Improvements
+
+- Add proper crisis detection with referral protocol
+- Implement transformer-based emotion classification
+- Persist lessons to JSON file
+- Add cultural/contextual bias detection
+- Implement LIWC-style linguistic feature extraction
+
+## References
+
+### Psychology Assessment AI Best Practices
+- **BERT/RoBERTa fine-tuning** for mental health text classification
+- **Crisis detection guardrails** with immediate escalation protocol
+- **Clinical scale mapping** (PHQ-9, GAD-7 equivalents)
+- **Multi-modal approaches** (speech prosody + text) for richer emotional analysis
+- Source: Web research on psychology assessment AI best practices (2024)
+
+### Cognitive Bias Detection
+- Pattern-based bias identification
+- Self-reflection loops for bias correction
+- Confidence calibration for reasoning tasks
+
+### Related Skills
+- `heartflow-audit-workflow` — Third-party audit for HeartFlow
+- `heartflow-auto-upgrade-cron` — Automated upgrade pipeline
+- `heartflow-truthfulness` — Memory truthfulness verification
+
 ## Version
 
-v0.16.0 | 2026-05-17 | Zero npm dependencies | ~3300 lines
+v0.16.1 | 2026-05-28 | Zero npm dependencies | ~1030 lines
+
+## Changelog
+
+See CHANGELOG.md for full history.

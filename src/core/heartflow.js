@@ -33,8 +33,8 @@ const { SelfEvolution } = require('../evolution/loop.js');
 const { DreamEngine } = require('../dream/engine.js');
 
 // Version
-const VERSION = 'v0.16.0';
-const BUILD_DATE = '2026-05-17';
+const VERSION = 'v0.16.1';
+const BUILD_DATE = '2026-05-28';
 
 class HeartFlow {
   constructor(config = {}) {

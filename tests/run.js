@@ -1,5 +1,5 @@
 /**
- * HeartFlow v0.16.0 Test Suite
+ * HeartFlow v0.16.1 Test Suite
  * 
  * Tests all public APIs with real execution + return value verification.
  * Run: node tests/run.js
@@ -25,7 +25,7 @@ function assert(condition, message) {
 }
 
 async function runTests() {
-  console.log('\n=== HeartFlow v0.16.0 Test Suite ===\n');
+  console.log('\n=== HeartFlow v0.16.1 Test Suite ===\n');
 
   const hf = createHeartFlow({ rootPath: DATA_DIR });
   hf.start();
@@ -35,7 +35,7 @@ async function runTests() {
   const health = await hf.healthCheck();
   assert(health.started === true, 'started=true');
   assert(health.uptime_ms >= 0, `uptime_ms >= 0 (got ${health.uptime_ms})`);
-  assert(health.version === 'v0.16.0', `version = v0.16.0`);
+  assert(health.version === 'v0.16.1', `version = v0.16.1`);
   assert(health.sessionId.startsWith('session-'), `sessionId starts with session-`);
   assert(health.subsystems.memory === true, 'subsystems.memory = true');
   assert(health.subsystems.psychology === true, 'subsystems.psychology = true');
