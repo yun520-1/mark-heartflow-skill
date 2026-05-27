@@ -181,7 +181,7 @@ class HeartFlow {
 
     // Evolution
     this.evolution = new EvolutionLoop({ rootPath: this.rootPath, memory: this.memory }).boot();
-    this.dream = new DreamEngine(this.memory, null);
+    this.dream = new DreamEngine({});
     this.dreamConsolidation = new DreamConsolidation(this.memory);
     this.lesson = new LessonBank(this.rootPath);
     this.metaJudgment = new MetaJudgment(this.rootPath);
@@ -206,22 +206,23 @@ class HeartFlow {
     this.truth = new TruthfulnessChecker(this.rootPath);
     this.security = new SecurityChecker();
 
-    // Engine modules (classes)
-    try { this.stability = new StabilityGuard(); } catch (e) {}
-    try { this.execution = new ExecutionVerifier(); } catch (e) {}
-    try { this.decision = new HeartFlowDecision(this.memory); } catch (e) {}
-    try { this.decisionVerifier = new DecisionVerifier(); } catch (e) {}
-    try { this.counterfactual = new CounterfactualEngine(); } catch (e) {}
-    try { this.confidence = new ConfidenceCalibrator(); } catch (e) {}
-    try { this.restraint = new SpontaneousRestraint(); } catch (e) {}
-    try { this.arbitration = new CooperativeArbitration(); } catch (e) {}
-    try { this.embodied = new EmbodiedCore(this.rootPath); } catch (e) {}
-    try { this.wakeup = new WakeUpVerifier(); } catch (e) {}
-    try { this.interactive = new InteractiveDream(this.rootPath); } catch (e) {}
-    try { this.being = new BeingLogic(this.rootPath); } catch (e) {}
+    // Engine modules (classes) — track errors for healthCheck
+    this._initErrors = [];
+    try { this.stability = new StabilityGuard(); } catch (e) { this._initErrors.push({module: 'stability', error: e.message}); }
+    try { this.execution = new ExecutionVerifier(); } catch (e) { this._initErrors.push({module: 'execution', error: e.message}); }
+    try { this.decision = new HeartFlowDecision(this.memory); } catch (e) { this._initErrors.push({module: 'decision', error: e.message}); }
+    try { this.decisionVerifier = new DecisionVerifier(); } catch (e) { this._initErrors.push({module: 'decisionVerifier', error: e.message}); }
+    try { this.counterfactual = new CounterfactualEngine(); } catch (e) { this._initErrors.push({module: 'counterfactual', error: e.message}); }
+    try { this.confidence = new ConfidenceCalibrator(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
+    try { this.restraint = new SpontaneousRestraint(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
+    try { this.arbitration = new CooperativeArbitration(); } catch (e) { this._initErrors.push({module: 'arbitration', error: e.message}); }
+    try { this.embodied = new EmbodiedCore(this.rootPath); } catch (e) { this._initErrors.push({module: 'embodied', error: e.message}); }
+    try { this.wakeup = new WakeUpVerifier(); } catch (e) { this._initErrors.push({module: 'wakeup', error: e.message}); }
+    try { this.interactive = new InteractiveDream(this.rootPath); } catch (e) { this._initErrors.push({module: 'interactive', error: e.message}); }
+    try { this.being = new BeingLogic(this.rootPath); } catch (e) { this._initErrors.push({module: 'being', error: e.message}); }
 
     // Mental Effort Tracker — cognitive resource management
-    try { this.mentalEffort = new MentalEffortTracker(); } catch (e) {}
+    try { this.mentalEffort = new MentalEffortTracker(); } catch (e) { this._initErrors.push({module: 'mentalEffort', error: e.message}); }
 
     // Engine modules (functions/objects — no 'new')
     try { this.language = LanguageHonesty; } catch (e) {}
@@ -330,7 +331,7 @@ class HeartFlow {
     // lesson
     'lesson.addLesson', 'lesson.getTopLessons', 'lesson.getRecent',
     // dream
-    'dream.dreamNow', 'dream.analyzeDream',
+    'dream.dream', 'dream.quickDream', 'dream.getCacheStats',
     // verify
     'verify.verify', 'verify.checkConsistency',
     // psychology
@@ -425,6 +426,7 @@ class HeartFlow {
         loaded: loaded.length,
         missing: all.filter(k => !loaded.includes(k)),
       },
+      initErrors: this._initErrors.length > 0 ? this._initErrors : undefined,
     };
   }
 
