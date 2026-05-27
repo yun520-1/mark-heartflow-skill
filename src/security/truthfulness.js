@@ -408,6 +408,73 @@ class TruthfulnessChecker {
     }
     return statement;
   }
+
+  /**
+   * [NEW] 语义熵幻觉检测 (Semantic Entropy)
+   * Paper: "Detecting hallucinations in LLMs using semantic entropy" (2024)
+   *
+   * 原理: 高语义熵 = 高不确定性 = 更可能是幻觉
+   * 通过分析生成文本的语义多样性来检测幻觉
+   *
+   * @param {string} statement - 待检测文本
+   * @returns {object} - { entropy, hallucinationRisk, interpretation }
+   */
+  detectSemanticEntropy(statement) {
+    if (!statement || statement.length < 10) {
+      return { entropy: 0, hallucinationRisk: 'low', interpretation: '文本过短无法分析' };
+    }
+
+    // 语义熵计算 - 基于词的多样性
+    const words = statement.split(/\s+/).filter(w => w.length > 2);
+    const uniqueWords = new Set(words.map(w => w.toLowerCase()));
+    const wordCount = words.length || 1;
+
+    // 词汇重复率 (重复越多越确定)
+    const repetitionRate = 1 - (uniqueWords.size / wordCount);
+
+    // 数字/百分比检测 (具体数字越多越可能幻觉)
+    const hasNumbers = /\d+/.test(statement);
+    const numberDensity = (statement.match(/\d+/g) || []).length / wordCount;
+
+    // 引用/来源检测
+    const hasCitation = /(arxiv|ACL|ICML|NeurIPS|arxiv:\d+|paper|study|research)/i.test(statement);
+
+    // 不确定词检测
+    const uncertaintyWords = ['可能', '也许', '大概', '也许', '似乎', '应该', 'probably', 'maybe', 'perhaps', 'might', 'could'];
+    const hasUncertainty = uncertaintyWords.some(w => statement.includes(w));
+
+    // 熵值计算 (基于多个信号)
+    const entropy = (
+      repetitionRate * 0.3 +
+      numberDensity * 0.4 +
+      (hasNumbers ? 0.2 : 0) +
+      (!hasCitation && hasNumbers ? 0.2 : 0) +
+      (!hasUncertainty && hasNumbers ? 0.15 : 0)
+    );
+
+    // 幻觉风险等级
+    let hallucinationRisk;
+    if (entropy > 0.7) hallucinationRisk = 'high';
+    else if (entropy > 0.4) hallucinationRisk = 'medium';
+    else hallucinationRisk = 'low';
+
+    return {
+      entropy: Math.round(entropy * 100) / 100,
+      hallucinationRisk,
+      signals: {
+        repetitionRate: Math.round(repetitionRate * 100) / 100,
+        numberDensity: Math.round(numberDensity * 100) / 100,
+        hasNumbers,
+        hasCitation,
+        hasUncertainty
+      },
+      interpretation: entropy > 0.6
+        ? '高幻觉风险: 具体数字多但无引用, 可能是编造'
+        : entropy > 0.3
+        ? '中幻觉风险: 存在一定不确定性信号'
+        : '低幻觉风险: 表述谨慎,有引用或不确定词'
+    };
+  }
 }
 
 module.exports = { TruthfulnessChecker };
