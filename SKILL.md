@@ -4,20 +4,15 @@ version: "1.3.5"
 title: "HeartFlow / 心虫"
 description: >
   HeartFlow v1.3.5 — AI 认知与自愈引擎。
-  核心能力：三层记忆(MeaningfulMemory/Triality)、自愈RL(Q-table)、
-  认知评估(CognitiveAppraisal - Leventhal's Common-Sense Model, 1564 citations)、
-  自我调节反馈(SelfRegulationFeedback - Handbook of Self-Regulation, 3659 citations)、
-  自优化(Self-Refine+Reflexion)、决策验证、遗忘曲线(Ebbinghaus)、
-  心理诊断引擎(PsychologyEngine)、共情检测(EmpathyDetector)、
-  情绪理性(EmotionalProtocol)、
-  4框架伦理哲学(PhilosophyEngine)、身份规则系统(IdentityRules)、
-  真实性核查(TruthfulnessChecker+语义熵幻觉检测)、安全检查(SecurityChecker)、
-  思维引擎(ReasoningIntegrator+DeepSeek-R1推理奖励)、BM25+混合搜索(Budget/Graph/Slots)、
-  DreamEngine、MetaLearner、SelfModel、CounterfactualEngine、
-  ConfidenceCalibrator、SpontaneousRestraint、CooperativeArbitration、MetacognitiveExecutive、
-  AutoCompactionEngine(上下文压缩|Token估算|Trim/Summarize策略)、UpgradeProposal(环境快照|升级建议)。
-  佛教哲学计算模块(Madhyamaka+唯识学+缘起)、
-  Graph-of-Thoughts规划(GoT)、RAG引用追踪系统。
+  核心能力：三层记忆(MeaningfulMemory/Triality)、自愈RL(Q-table)、自优化(Self-Refine+Reflexion)、
+  决策验证、遗忘曲线(Ebbinghaus)、心理诊断引擎(PsychologyEngine)、共情检测(EmpathyDetector)、
+  情绪理性(EmotionalProtocol)、4框架伦理哲学(PhilosophyEngine)、身份规则系统(IdentityRules)、
+  真实性核查(TruthfulnessChecker)、安全检查(SecurityChecker)、思维引擎(ReasoningIntegrator)、
+  BM25+混合搜索(Budget/Graph/Slots)、DreamEngine、MetaLearner、SelfModel、
+  CounterfactualEngine、ConfidenceCalibrator、SpontaneousRestraint、CooperativeArbitration、
+  认知评估(CognitiveAppraisal)、自我调节反馈(SelfRegulationFeedback)、
+  上下文压缩(AutoCompactionEngine)、Graph-of-Thoughts规划(GoT)、RAG引用追踪、
+  佛教哲学计算(Madhyamaka+唯识学+缘起)。
   不是 persona，不是 prompt 模板，是可验证的能力层。
 tags:
   - cognitive
