@@ -713,4 +713,40 @@ module.exports = {
   getSession,
   clearSession,
   CAPS,
+  // [NEW] 引用追踪系统 (RAG增强)
+  // Paper: "A Survey on RAG Meeting LLMs" (cited:523, 2024)
+  addCitation,
+  getCitations,
+  traceEvidence,
 };
+
+/**
+ * [NEW] 引用追踪存储
+ * 记录每条记忆的来源证据
+ */
+const _citationStore = {};  // { memoryId: { citations: [], source, verfied: bool } }
+
+function addCitation(memoryId, citation) {
+  if (!_citationStore[memoryId]) {
+    _citationStore[memoryId] = { citations: [], source: null, verified: false };
+  }
+  _citationStore[memoryId].citations.push({
+    ...citation,
+    timestamp: Date.now()
+  });
+}
+
+function getCitations(memoryId) {
+  return _citationStore[memoryId] || { citations: [], source: null, verified: false };
+}
+
+function traceEvidence(memoryId, evidence) {
+  // 追踪证据链：原始陈述 → 证据 → 结论
+  return {
+    memoryId,
+    claim: evidence.claim || '',
+    evidenceChain: evidence.chain || [],
+    sourceReliability: evidence.reliability || 'unknown',
+    trace: evidence.chain?.map((e, i) => `Step ${i+1}: ${e}`).join(' → ') || 'No trace'
+  };
+}
