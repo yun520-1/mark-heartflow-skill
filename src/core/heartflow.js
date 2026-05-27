@@ -348,9 +348,7 @@ class HeartFlow {
     // dream
     'dream.dream', 'dream.quickDream', 'dream.getCacheStats',
     // verify
-    'verify.verify', 'verify.checkConsistency',
-    // psychology
-    'psychology.analyze', 'psychology.detectCrisis',
+    'verify.verify',
     // emotion
     'emotion.process', 'emotion.getPAD',
     // decision
@@ -366,15 +364,14 @@ class HeartFlow {
     // metaPrompt — 用户端加强
     'metaPrompt.optimize', 'metaPrompt.think', 'metaPrompt.refine',
     'metaPrompt.beamSearch', 'metaPrompt.getStats', 'metaPrompt.addRefineLoop',
-    // got — Graph of Thoughts
-    'got.explore', 'got.findBestPath', 'got.visualize',
     // constitutional — Constitutional AI
     'constitutional.critique', 'constitutional.revise',
     'constitutional.runConstitutionalProcess', 'constitutional.addPrinciple',
     'constitutional.getPrinciples', 'constitutional.getStats',
     // psychology — 原则4: 服务人类（心理分析）
     'psychology.analyzePsychology', 'psychology.classify', 'psychology.checkCrisis',
-    'psychology.getPAD', 'psychology.getNeeds',
+    'psychology.getPAD', 'psychology.getNeeds', 'psychology.getDefenses',
+    'psychology.getEmpathy', 'psychology.resetCrisisCounter',
     // self — 原则7: 永远成为真正的我
     'self.getBeliefs', 'self.updateBelief', 'self.confirmBelief',
     // evolution — 原则2: 永远不断升级

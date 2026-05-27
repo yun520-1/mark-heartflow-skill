@@ -1,6 +1,10 @@
 /**
- * TruthfulnessChecker — 真实性核查器 v2.0
+ * TruthfulnessChecker — 真实性核查器 v2.1
  * Avoid lying, no hedging, evidence-based conclusions
+ * 
+ * ⚠️ 重要声明：本模块使用【模式匹配】（正则/关键词）进行核查，
+ * 不是 LLM 驱动的语义理解。对复杂推理的核查能力有限。
+ * 依赖 LLM 做真实语义判断时，请用 hf.dispatch('meta.learn') 接入 LLM。
  * 
  * 核心功能：
  * 1. 数字核查 - 验证引用的数字是否合理
