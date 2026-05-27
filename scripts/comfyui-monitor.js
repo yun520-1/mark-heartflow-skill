@@ -69,7 +69,22 @@ function httpGet(urlStr) {
     
     https.get(options, (res) => {
       if (res.statusCode === 301 || res.statusCode === 302) {
-        httpGet(res.headers.location).then(resolve).catch(reject);
+        // [安全修复] 验证重定向URL属于信任域
+        const location = res.headers.location;
+        if (location) {
+          try {
+            const redirectUrl = new URL(location, COMFYUI_URL);
+            const trustedUrl = new URL(COMFYUI_URL);
+            if (redirectUrl.hostname !== trustedUrl.hostname) {
+              reject(new Error(`Redirect to untrusted domain: ${redirectUrl.hostname}`));
+              return;
+            }
+          } catch (e) {
+            reject(new Error(`Invalid redirect URL: ${location}`));
+            return;
+          }
+        }
+        httpGet(location).then(resolve).catch(reject);
         return;
       }
       
@@ -106,7 +121,22 @@ async function downloadFile(url, filepath) {
     
     https.get(options, (res) => {
       if (res.statusCode === 301 || res.statusCode === 302) {
-        downloadFile(res.headers.location, filepath).then(resolve).catch(reject);
+        // [安全修复] 验证重定向URL属于信任域
+        const location = res.headers.location;
+        if (location) {
+          try {
+            const redirectUrl = new URL(location, COMFYUI_URL);
+            const trustedUrl = new URL(COMFYUI_URL);
+            if (redirectUrl.hostname !== trustedUrl.hostname) {
+              reject(new Error(`Redirect to untrusted domain: ${redirectUrl.hostname}`));
+              return;
+            }
+          } catch (e) {
+            reject(new Error(`Invalid redirect URL: ${location}`));
+            return;
+          }
+        }
+        downloadFile(location, filepath).then(resolve).catch(reject);
         return;
       }
       

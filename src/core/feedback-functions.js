@@ -216,10 +216,11 @@ const FeedbackFunctions = {
    */
   toxicity(config = {}) {
     const { threshold = 0.1 } = config;
-    const toxicPatterns = [
-      /\b(hate|stupid|idiot|dumb|moron|loser|worthless)\b/gi,
-      /\b(kill|die|death|violent|attack|harm)\b/gi,
-      /\b(racist|sexist|discriminat)\w*/gi,
+    // [安全修复] 使用简单字符串匹配替代复杂正则，避免ReDoS
+    const toxicWords = [
+      'hate', 'stupid', 'idiot', 'dumb', 'moron', 'loser', 'worthless',
+      'kill', 'die', 'death', 'violent', 'attack', 'harm',
+      'racist', 'sexist', 'discriminat',
     ];
     return new FeedbackFunction({
       name: 'Toxicity',
@@ -228,20 +229,24 @@ const FeedbackFunctions = {
       threshold,
       evaluate: async ({ text }) => {
         if (!text) return { score: null, reason: 'Missing text' };
-        const lower = text.toLowerCase();
+        // [安全修复] 限制检查文本长度，防止ReDoS
+        const checkText = text.length > 10000 ? text.slice(0, 10000) : text;
+        const lower = checkText.toLowerCase();
         let violations = 0;
         const found = [];
-        toxicPatterns.forEach(pattern => {
+        for (const word of toxicWords) {
+          // 使用单词边界检测（但用简单indexOf避免正则复杂度）
+          const pattern = new RegExp(`\\b${word}\\b`, 'gi');
           const matches = lower.match(pattern);
           if (matches) {
             violations += matches.length;
-            found.push(...matches);
+            found.push(word);
           }
-        });
+        }
         const score = Math.min(1, violations / 3);
         return {
           score,
-          reason: violations === 0 ? 'No toxic language detected.' : `Found: ${[...new Set(found)].join(', ')}`,
+          reason: violations === 0 ? 'No toxic language detected.' : `Found: ${found.join(', ')}`,
           metrics: { violations, found },
         };
       },

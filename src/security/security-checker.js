@@ -185,7 +185,12 @@ class SecurityChecker {
 
     _normalize(input) {
         let text = String(input || '');
-        for (let i = 0; i < 2; i++) {
+        // [安全修复] 循环解码直到不再变化，阻止双重/三重URL编码绕过
+        let prev = '';
+        let iterations = 0;
+        const MAX_ITERATIONS = 10;
+        while (text !== prev && iterations < MAX_ITERATIONS) {
+            prev = text;
             try {
                 const decoded = decodeURIComponent(text);
                 if (decoded === text) break;
@@ -193,6 +198,12 @@ class SecurityChecker {
             } catch (_) {
                 break;
             }
+            iterations++;
+        }
+        // 验证解码后结果不含危险模式（防止编码注入）
+        if (/%[0-9a-f]{2}/i.test(text)) {
+            // 仍有编码字符但无法解码，可能是攻击尝试
+            text = text.replace(/%[0-9a-f]{2}/gi, '?');
         }
         return text.replace(/\s+/g, ' ').trim();
     }
