@@ -15,7 +15,7 @@ if command -v agentmemory &>/dev/null; then
     echo "  ✓ agentmemory 已安装"
 else
     echo "  安装中..."
-    npm install -g @agentmemory/agentmemory 2>/dev/null || \
+    npm install --global-style @agentmemory/agentmemory 2>/dev/null || \
     npx -y @agentmemory/agentmemory --version && echo "  ✓ npx 方式可用"
 fi
 

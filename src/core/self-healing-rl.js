@@ -6,9 +6,11 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const MEMORY_DIR = path.join(__dirname, '../../memory');
 const QTABLE_FILE = path.join(MEMORY_DIR, 'q-table.json');
+const QTABLE_HMAC_KEY = process.env.HEARTFLOW_QTABLE_HMAC_KEY || 'heartflow-qtable-hmac-key-v1';
 
 class HealingMemoryRL {
   constructor(maxMemory = 100) {
@@ -36,6 +38,17 @@ class HealingMemoryRL {
       if (!fs.existsSync(QTABLE_FILE)) return;
       const raw = fs.readFileSync(QTABLE_FILE, 'utf-8');
       const data = JSON.parse(raw);
+      // [A04] HMAC完整性校验
+      if (data._hmac) {
+        const { _hmac, qTable, history, savedAt, ...rest } = data;
+        const computed = crypto.createHmac('sha256', QTABLE_HMAC_KEY)
+          .update(JSON.stringify({ qTable, history, savedAt, ...rest }))
+          .digest('hex');
+        if (computed !== _hmac) {
+          console.warn('[HealingMemoryRL] Q-table HMAC mismatch, starting fresh');
+          return;
+        }
+      }
       if (data.qTable) {
         this.qTable = new Map(Object.entries(data.qTable));
       }
@@ -43,18 +56,17 @@ class HealingMemoryRL {
         this.history = data.history.slice(-this.maxMemory);
       }
     } catch (e) {
-      // Ignore load errors - start fresh
+      console.warn('[HealingMemoryRL] Q-table load error, starting fresh:', e.message);
     }
   }
 
   _saveQTable() {
     try {
       this._ensureMemoryDir();
-      const data = {
-        qTable: Object.fromEntries(this.qTable),
-        history: this.history.slice(-50),
-        savedAt: new Date().toISOString()
-      };
+      const { _hmac, ...rest } = { qTable: Object.fromEntries(this.qTable), history: this.history.slice(-50), savedAt: new Date().toISOString() };
+      const sigPayload = { qTable: rest.qTable, history: rest.history, savedAt: rest.savedAt };
+      const hmac = crypto.createHmac('sha256', QTABLE_HMAC_KEY).update(JSON.stringify(sigPayload)).digest('hex');
+      const data = { ...sigPayload, _hmac: hmac };
       fs.writeFileSync(QTABLE_FILE, JSON.stringify(data, null, 2), 'utf-8');
     } catch (e) {
       console.error('[HealingMemoryRL] _saveQTable failed:', e.message);

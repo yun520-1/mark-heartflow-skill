@@ -81,6 +81,12 @@ class SecurityChecker {
             /(\.\.%5c){1,}/gi,
             /\/(etc\/passwd|boot\.ini|windows\/win\.ini)/gi,
             /\/(windows|system32|system64)\//gi,
+            // [A03] P2扩展 - 更多编码变体
+            /(\.%2e){2,}/gi,           // ..%2e%2e etc
+            /(%00){1,}/gi,              // null byte
+            /\.\.%252f/gi,             // double encoded /
+            /\.\.%255c/gi,             // double encoded \
+            /\uff0e\uff0e\//gi,         // Unicode FULL STOP dots + slash
         ];
 
         this.checked = 0;

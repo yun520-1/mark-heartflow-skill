@@ -93,6 +93,10 @@ function _getOrCreateAesKey() {
   const meta = { key: _aesKey.toString('base64'), createdAt: Date.now() };
   // Write with restricted permissions (Unix only)
   fs.writeFileSync(keyFile, JSON.stringify(meta), { mode: 0o600 });
+  // [A05] Windows ACL 警告
+  if (process.platform === 'win32') {
+    console.warn('[Memory] WARNING: Windows - key file permissions may not be effective. Use NTFS ACLs for protection.');
+  }
   return _aesKey;
 }
 
@@ -146,6 +150,8 @@ function aesDecrypt(payload) {
 /**
  * Atomic write: write to temp file then rename
  * Guarantees: either complete write or no write at all
+ * Note: On Windows, fs.renameSync is not fully atomic. For Windows,
+ * consider using 'write-file-atomic' package or external locking.
  */
 function atomicWriteJson(filePath, data) {
   const dir = path.dirname(filePath);

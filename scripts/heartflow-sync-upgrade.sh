@@ -3,7 +3,7 @@
 # 从 ~/.hermes/skills/ai/heartflow 同步到 ~/.agents/skills/mark-heartflow-skill
 # 每次执行同步 + 版本号 +0.0.1
 
-set -e
+set -euo pipefail
 
 SOURCE="$HOME/.hermes/skills/ai/heartflow"
 TARGET="$HOME/.agents/skills/mark-heartflow-skill"
@@ -15,6 +15,16 @@ mkdir -p "$LOG_DIR"
 mkdir -p "$TARGET/scripts"
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"; }
+
+# [A05] trap错误处理
+cleanup() {
+  local exit_code=$?
+  if [ $exit_code -ne 0 ]; then
+    log "❌ 脚本异常退出 (code: $exit_code)"
+  fi
+  return $exit_code
+}
+trap cleanup EXIT
 
 log "=== HeartFlow 定时同步升级 ==="
 
@@ -45,7 +55,7 @@ if [ -n "$TARGET_VER" ]; then
 fi
 
 # 同步（排除 .git、临时文件、logs 和本地脚本）
-rsync -a --delete \
+rsync -a --checksum --delete \
   --exclude='.git' \
   --exclude='.DS_Store' \
   --exclude='__pycache__' \
