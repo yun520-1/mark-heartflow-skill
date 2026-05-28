@@ -109,12 +109,11 @@ function loadKernel(kernelData) {
         _permisiveFallback: !allSigsValid && errors.some(e => e.includes('验签失败')),
     };
     
-    // 宽松模式：如果是签名失败导致的无效，且有默认密钥标志，则降级为有效
+    // 严格模式：未知密钥必须拒绝启动
     if (result._permisiveFallback && !process.env.HEARTFLOW_KERNEL_KEY) {
-        console.warn('[Kernel] 签名验证失败（未知密钥），启用宽松模式');
-        result.valid = true;
-        result.errors = [];
-        result.allSigsValid = true;
+        console.error('[Kernel] 签名验证失败（未知密钥），拒绝启动');
+        result.valid = false;
+        result.errors.push('UNKNOWN_KERNEL_KEY');
     }
 
     return result;

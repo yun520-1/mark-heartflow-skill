@@ -111,9 +111,11 @@ const lessonBank = {
   getRelevant(context, limit = 3) {
     if (!context) return [];
     const ctx = context.toLowerCase();
+    const ctxSlice = ctx.slice(0, 20);
     return this.lessons
       .filter(l =>
-        l.context && l.context.toLowerCase().includes(ctx.slice(0, 20))
+        (l.content && l.content.toLowerCase().includes(ctxSlice)) ||
+        (l.context && l.context.toLowerCase().includes(ctxSlice))
       )
       .sort((a, b) => (b.importance * b.frequency) - (a.importance * a.frequency))
       .slice(0, limit);

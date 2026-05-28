@@ -10,10 +10,12 @@ const crypto = require('crypto');
 
 const MEMORY_DIR = path.join(__dirname, '../../memory');
 const QTABLE_FILE = path.join(MEMORY_DIR, 'q-table.json');
-const QTABLE_HMAC_KEY = process.env.HEARTFLOW_QTABLE_HMAC_KEY || 'heartflow-qtable-default-key-v1';
-if (!process.env.HEARTFLOW_QTABLE_HMAC_KEY) {
-  console.warn('[HealingMemoryRL] HEARTFLOW_QTABLE_HMAC_KEY not set, using default key (set env var for production)');
-}
+const QTABLE_HMAC_KEY = process.env.HEARTFLOW_QTABLE_HMAC_KEY || (() => {
+  const crypto = require('crypto');
+  const key = crypto.randomBytes(32).toString('base64');
+  console.warn(`[HealingMemoryRL] HEARTFLOW_QTABLE_HMAC_KEY not set, generated random key: ${key}`);
+  return key;
+})();
 if (!/^[A-Za-z0-9+/=_-]+$/.test(QTABLE_HMAC_KEY)) {
   throw new Error('[HealingMemoryRL] HEARTFLOW_QTABLE_HMAC_KEY must contain only printable ASCII characters');
 }
