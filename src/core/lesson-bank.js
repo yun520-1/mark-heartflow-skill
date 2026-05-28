@@ -56,8 +56,12 @@ const lessonBank = {
       }
       // 按重要性*频率排序，取前10
       index.topLessons = this.lessons
-        .sort((a, b) => (b.importance * b.frequency) - (a.importance * a.frequency))
-        .slice(0, 10)
+      .sort((a, b) => {
+        const scoreA = a.importance * Math.max(a.frequency, 1) * Math.max(a.accessCount || 1, 1);
+        const scoreB = b.importance * Math.max(b.frequency, 1) * Math.max(b.accessCount || 1, 1);
+        return scoreB - scoreA;
+      })
+      .slice(0, 10)
         .map(l => l.id);
       fs.mkdirSync(path.dirname(INDEX_FILE), { recursive: true });
       fs.writeFileSync(INDEX_FILE, JSON.stringify(index, null, 2));
@@ -117,7 +121,11 @@ const lessonBank = {
         (l.content && l.content.toLowerCase().includes(ctxSlice)) ||
         (l.context && l.context.toLowerCase().includes(ctxSlice))
       )
-      .sort((a, b) => (b.importance * b.frequency) - (a.importance * a.frequency))
+      .sort((a, b) => {
+        const scoreA = a.importance * Math.max(a.frequency, 1) * Math.max(a.accessCount || 1, 1);
+        const scoreB = b.importance * Math.max(b.frequency, 1) * Math.max(b.accessCount || 1, 1);
+        return scoreB - scoreA;
+      })
       .slice(0, limit);
   },
 
