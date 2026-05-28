@@ -51,7 +51,7 @@ const { ConstitutionalEngine } = require('./constitutional-ai.js');
 const { SelfModel } = require('../identity/self-model.js');
 const { SelfVerifier } = require('../identity/self-verifier.js');
 const { LessonBank } = require('../identity/lesson-bank.js');
-const { IdentityKernel } = require('./identity-kernel/identity-kernel.js');
+
 
 // Psychology
 const { PsychologyEngine } = require('../psychology/engine.js');
@@ -99,7 +99,7 @@ const StateSnapshot = require('./state-snapshot.js');
 const ErrorHandler = require('./error-handler.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '1.3.10';
+const VERSION = '1.3.14';
 const BUILD_DATE = '2026-05-30';
 
 class HeartFlow {
@@ -195,11 +195,6 @@ class HeartFlow {
     // Identity
     this.self = new SelfModel(this.rootPath);
     this.verify = new SelfVerifier(this.rootPath);
-    this.kernel = new IdentityKernel();
-    if (!this.kernel.boot()) {
-        console.error('[HeartFlow] 身份内核无效，拒绝启动');
-        throw new Error('IdentityKernel INVALID — HeartFlow cannot start');
-    }
 
     // Psychology
     this.psychology = new PsychologyEngine(this.memory);
@@ -299,7 +294,7 @@ class HeartFlow {
       'memory', 'triality', 'knowledge', 'anchor',
       'reasoning', 'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
       'evolution', 'dream', 'lesson', 'meta',
-      'self', 'being', 'kernel',
+      'self', 'being',
       'psychology', 'emotion',
       'truth', 'security', 'language',
       'stability', 'confidence', 'restraint', 'arbitration',
@@ -440,7 +435,7 @@ class HeartFlow {
       'memory', 'triality', 'knowledge', 'anchor',
       'reasoning', 'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
       'evolution', 'dream', 'lesson', 'meta',
-      'self', 'being', 'kernel',
+      'self', 'being',
       'psychology', 'emotion',
       'truth', 'security', 'language',
       'stability', 'confidence', 'restraint', 'arbitration',
@@ -669,22 +664,6 @@ class HeartFlow {
   getSelfModelStats() {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.self.getStats();
-  }
-
-  // Identity Kernel
-  getKernelStatus() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.kernel.getStatus();
-  }
-
-  getIdentities() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.kernel.getIdentities();
-  }
-
-  getDirectives() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.kernel.getDirectives();
   }
 
   // Knowledge
