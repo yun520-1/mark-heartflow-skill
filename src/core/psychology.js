@@ -46,25 +46,45 @@ function calculatePADState(pleasure, arousal, dominance) {
 /**
  * PAD情绪状态组合表
  */
+// PAD情绪状态组合表（精细化版本）
+// P=愉悦度(+正/-负), A=唤醒度(+高/-低), D=支配度(+高/-低)
 const PAD_EMOTION_MAP = {
+  // 高愉悦 + 高唤醒 + 高支配 = 警觉/兴奋
   'P+A+D+': { name: 'alert', zh: '警觉/兴奋' },
-  'P+A-D+': { name: 'angry', zh: '愤怒/敌意' },
-  'P-A+D+': { name: 'dependent', zh: '被动/依赖' },
-  'P-A-D+': { name: 'depressed', zh: '抑郁/悲伤' },
-  'P+A-D-': { name: 'happy', zh: '快乐/满意' },
+  // 高愉悦 + 高唤醒 + 低支配 = 快乐/满意
+  'P+A+D-': { name: 'happy', zh: '快乐/满意' },
+  // 高愉悦 + 低唤醒 + 高支配 = 平静/满足
+  'P+A-D+': { name: 'content', zh: '平静/满足' },
+  // 高愉悦 + 低唤醒 + 低支配 = 放松/自在
+  'P+A-D-': { name: 'relaxed', zh: '放松/自在' },
+  // 低愉悦 + 高唤醒 + 高支配 = 愤怒/敌意
+  'P-A+D+': { name: 'angry', zh: '愤怒/敌意' },
+  // 低愉悦 + 高唤醒 + 低支配 = 焦虑/不安
   'P-A+A+': { name: 'anxious', zh: '焦虑/不安' },
-  'P-A+A-': { name: 'frustrated', zh: '沮丧/失落' }
+  // 低愉悦 + 高唤醒 + 低支配（负愉悦+高唤醒）= 害怕/恐惧
+  'P-A+A-': { name: 'fearful', zh: '害怕/恐惧' },
+  // 低愉悦 + 低唤醒 + 高支配 = 被动/依赖
+  'P-A+D+': { name: 'dependent', zh: '被动/依赖' },
+  // 低愉悦 + 低唤醒 = 抑郁/悲伤
+  'P-A-D+': { name: 'depressed', zh: '抑郁/悲伤' },
+  'P-A-D-': { name: 'apathetic', zh: '冷漠/麻木' },
 };
 
 /**
  * 根据PAD值获取情绪标签
  */
 function getEmotionFromPAD(p, a, d) {
-  const pp = p >= 0 ? 'P+' : 'P-';
-  const aa = a >= 0 ? 'A+' : 'A-';
-  const dd = d >= 0 ? 'D+' : 'D-';
-  const key = pp + aa + dd;
-  return PAD_EMOTION_MAP[key] || { name: 'neutral', zh: '中性' };
+  // 连续值判断，替代二元阈值(P+/P-)
+  if (p > 2 && a <= 0) return { name: 'happy', zh: '快乐/满足' };
+  if (p > 0 && a < -1) return { name: 'relaxed', zh: '放松/自在' };
+  if (p > 0 && a > 2 && d > 0) return { name: 'alert', zh: '警觉/兴奋' };
+  if (p < 0 && a > 2 && d < -1) return { name: 'fearful', zh: '害怕/恐惧' };
+  if (p < 0 && a > 2 && d < 0) return { name: 'anxious', zh: '焦虑/不安' };
+  if (p < -1 && a > 1 && d > 0) return { name: 'angry', zh: '愤怒/敌意' };
+  if (p < -2 && a <= 0) return { name: 'depressed', zh: '悲伤/抑郁' };
+  if (p < 0 && a <= 0 && d > 0) return { name: 'dependent', zh: '被动/依赖' };
+  if (p < 0 && a < 0 && d < 0) return { name: 'apathetic', zh: '冷漠/麻木' };
+  return { name: 'neutral', zh: '中性' };
 }
 
 /**
@@ -72,44 +92,83 @@ function getEmotionFromPAD(p, a, d) {
  */
 function detectPADFromText(text) {
   const lower = text.toLowerCase();
-  
+ 
   let pleasure = 0;
   let arousal = 0;
   let dominance = 0;
-  
-  // 愉悦度关键词
-  const positiveWords = ['开心', '高兴', '好', '棒', '顺利', '完成', '成功', '喜欢', '满意', 
+ 
+  // === 情绪词根预检测（优先级最高，精确匹配 PAD 值）===
+  // 快乐/愉悦（P++，A=0，D=0）
+  if (/开心|高兴|快乐|幸福|满足|愉悦/.test(text)) {
+    pleasure += 4; arousal = 0; dominance = 0;
+    const emotion = getEmotionFromPAD(pleasure, arousal, dominance);
+    return { ...calculatePADState(pleasure, arousal, dominance), emotion: emotion.name, emotionZh: emotion.zh };
+  }
+  // 愤怒（P--，A++，D+）
+  if (/愤怒|生气|恼火|火大|发火|气愤/.test(text)) {
+    pleasure -= 4; arousal += 3; dominance += 2;
+    const emotion = getEmotionFromPAD(pleasure, arousal, dominance);
+    return { ...calculatePADState(pleasure, arousal, dominance), emotion: emotion.name, emotionZh: emotion.zh };
+  }
+  // 恐惧/害怕（P--，A++，D-）
+  if (/害怕|恐惧|怕|惊慌|吓/.test(text)) {
+    pleasure -= 3; arousal += 3; dominance -= 2;
+    const emotion = getEmotionFromPAD(pleasure, arousal, dominance);
+    return { ...calculatePADState(pleasure, arousal, dominance), emotion: emotion.name, emotionZh: emotion.zh };
+  }
+  // 悲伤/难过（P--，A=0，D=0）
+  if (/难过|悲伤|伤心|痛苦|失落|沮丧/.test(text)) {
+    pleasure -= 4; arousal = 0; dominance = 0;
+    const emotion = getEmotionFromPAD(pleasure, arousal, dominance);
+    return { ...calculatePADState(pleasure, arousal, dominance), emotion: emotion.name, emotionZh: emotion.zh };
+  }
+  // 焦虑（P-，A++，D-）
+  if (/焦虑|焦急|不安|忐忑/.test(text)) {
+    pleasure -= 2; arousal += 3; dominance -= 1;
+    const emotion = getEmotionFromPAD(pleasure, arousal, dominance);
+    return { ...calculatePADState(pleasure, arousal, dominance), emotion: emotion.name, emotionZh: emotion.zh };
+  }
+  // 兴奋（P++，A++，D+）
+  if (/兴奋|激动|亢奋/.test(text)) {
+    pleasure += 3; arousal += 3; dominance += 1;
+    const emotion = getEmotionFromPAD(pleasure, arousal, dominance);
+    return { ...calculatePADState(pleasure, arousal, dominance), emotion: emotion.name, emotionZh: emotion.zh };
+  }
+  // 平静/放松（P+，A-，D+）
+  if (/平静|放松|舒缓|安宁|淡定|从容/.test(text)) {
+    pleasure += 2; arousal -= 2; dominance += 1;
+    const emotion = getEmotionFromPAD(pleasure, arousal, dominance);
+    return { ...calculatePADState(pleasure, arousal, dominance), emotion: emotion.name, emotionZh: emotion.zh };
+  }
+ 
+  // === 一般关键词匹配（兜底逻辑）===
+  const positiveWords = ['好', '棒', '顺利', '完成', '成功', '喜欢', '满意',
                         'happy', 'good', 'great', 'love', 'excellent', 'wonderful', '不错', '挺好'];
   const negativeWords = ['烦', '累', '难', '挫败', '无聊', '讨厌', '糟糕', '失败', '困惑', '失望',
                         'tired', 'frustrated', 'boring', 'hate', 'bad', 'terrible', 'sad', 'upset'];
-  
   positiveWords.forEach(w => { if (lower.includes(w)) pleasure += 2; });
   negativeWords.forEach(w => { if (lower.includes(w)) pleasure -= 2; });
-  
-  // 唤醒度关键词
-  const highArousalWords = ['兴奋', '激动', '紧张', '焦虑', '快速', '紧急', '担心', '害怕',
-                             'excited', 'nervous', 'anxious', 'worried', 'scared', 'urgent'];
-  const lowArousalWords = ['平静', '放松', '困', '慢', '无聊', '疲惫', '冷静', '淡定',
+ 
+  const highArousalWords = ['紧张', '焦虑', '快速', '紧急', '担心',
+                             'excited', 'nervous', 'anxious', 'worried', 'urgent'];
+  const lowArousalWords = ['平静', '放松', '困', '慢', '无聊', '疲惫', '冷静',
                            'calm', 'relaxed', 'tired', 'bored', 'peaceful'];
-  
   highArousalWords.forEach(w => { if (lower.includes(w)) arousal += 2; });
   lowArousalWords.forEach(w => { if (lower.includes(w)) arousal -= 2; });
-  
-  // 支配度关键词
-  const highDominanceWords = ['我', '决定', '控制', '选择', '主动', '可以', '能',
-                             'I', 'decide', 'control', 'choose', 'can', 'will'];
-  const lowDominanceWords = ['被迫', '必须', '应该', '没办法', '无奈', '不得不',
-                             'must', 'have to', 'forced', 'should', 'need to'];
-  
+ 
+  // 支配度：仅在非情绪词根句中检测，"我"字不自动触发D+
+  const highDominanceWords = ['决定', '控制', '选择', '主动', '必须', '一定',
+                             'decide', 'control', 'choose', 'must', 'will'];
+  const lowDominanceWords = ['被迫', '没办法', '无奈', '不得不', '被动',
+                             'forced', 'have to'];
   highDominanceWords.forEach(w => { if (lower.includes(w)) dominance += 2; });
   lowDominanceWords.forEach(w => { if (lower.includes(w)) dominance -= 2; });
-  
+ 
   const p = Math.max(-10, Math.min(10, pleasure));
   const a = Math.max(-10, Math.min(10, arousal));
   const d = Math.max(-10, Math.min(10, dominance));
-  
+ 
   const emotion = getEmotionFromPAD(p, a, d);
-  
   return {
     ...calculatePADState(p, a, d),
     emotion: emotion.name,
