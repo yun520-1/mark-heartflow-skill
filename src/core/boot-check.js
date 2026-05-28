@@ -25,6 +25,13 @@ const CORE_CHECKS = [
     required: true,
   },
   {
+    id: 'identity-core',
+    label: 'identity-core.md',
+    path: path.join(ROOT, 'memory/identity-core.md'),
+    verify: (c) => c.includes('心虫身份核心') && c.includes('我是谁'),
+    required: true,
+  },
+  {
     id: 'skill',
     label: 'SKILL.md',
     path: path.join(ROOT, 'SKILL.md'),
