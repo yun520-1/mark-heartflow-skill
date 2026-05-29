@@ -105,6 +105,23 @@ const { ThoughtChain, createThoughtChain, REASONING_DEPTH } = require('./thought
 // Cognitive protocol — 认知协议：慢下来、先理解再行动
 const { CognitiveProtocol } = require('./cognitive-protocol.js');
 
+// Consciousness — 意识层（全局工作空间 + 意识现象学）
+const { GlobalWorkspace } = require('./consciousness/global-workspace.js');
+const { MindWanderer } = require('./consciousness/mind-wanderer.js');
+const { PhenomenologyEngine } = require('./consciousness/phenomenology-engine.js');
+const { SelfModel: ConsciousnessSelfModel } = require('./consciousness/self-model.js');
+
+// Ethics — 伦理守护（SAGE + 边界协商 + 价值内化）
+const { SAGEGuardian } = require('./ethics/sage-guardian.js');
+const { BoundaryNegotiation } = require('./ethics/boundary-negotiation.js');
+const { ValueInternalizer } = require('./ethics/value-internalizer.js');
+
+// MindSpace — 心空间守护（替代 plain object）
+const { MindSpaceGuardian } = require('./mindspace/mind-space-guardian.js');
+
+// Transmission — 知识传递引擎
+const { TransmissionEngine } = require('./transmission/transmission-engine.js');
+
 // ─── Execution Layer — 执行能力 ────────────────────────────────────────────────
 const { ToolExecutor } = require('../executor/tool-executor.js');
 const { ToolDispatcher } = require('../executor/dispatcher.js');
@@ -293,7 +310,11 @@ class HeartFlow {
     this.SearchSummary = SearchSummary;
 
     this._modules = {};
-    this._mindSpace = { rules: [], context: {} };
+    this._mindSpace = null;   // 内部引用（向后兼容），实际模块用 this.mindSpace
+    this.mindSpace = null;    // proper module
+    this.consciousness = null;
+    this.ethics = null;
+    this.transmission = null;
   }
 
   // ─── Lifecycle ───────────────────────────────────────────────────────────
@@ -417,7 +438,63 @@ class HeartFlow {
     const { runDiagnostic } = require('./self-diagnostic.js');
     this.diagnostic = { run: runDiagnostic };
     
-    this._bootMindSpace();
+    // ─── MindSpace — 心空间守护（替代 plain object）────────────────────────────
+    try {
+      this.mindSpace = new MindSpaceGuardian(this.memory);
+      this._mindSpace = this.mindSpace;  // 向后兼容内部引用
+      console.log('[HeartFlow] MindSpace 守护初始化完成');
+    } catch (e) {
+      console.warn('[HeartFlow] MindSpace init error:', e.message);
+    }
+
+    // ─── Consciousness Layer — 意识层（GWT + 现象学）──────────────────────────
+    try {
+      this.globalWorkspace = new GlobalWorkspace(this.rootPath);
+      this.mindWanderer = new MindWanderer(this.rootPath);
+      this.phenomenology = new PhenomenologyEngine();
+      this.consciousnessSelf = new ConsciousnessSelfModel(this.rootPath);
+      this.consciousness = {
+        globalWorkspace: this.globalWorkspace,
+        mindWanderer: this.mindWanderer,
+        phenomenology: this.phenomenology,
+        self: this.consciousnessSelf,
+        getStatus: () => ({
+          workspace: this.globalWorkspace?.cycleCount || 0,
+          wanderer: this.mindWanderer?.isActive || false,
+        })
+      };
+      console.log('[HeartFlow] 意识层初始化完成');
+    } catch (e) {
+      console.warn('[HeartFlow] Consciousness init error:', e.message);
+    }
+
+    // ─── Ethics Layer — 伦理守护（SAGE + 边界协商 + 价值内化）────────────────
+    try {
+      this.sageGuardian = new SAGEGuardian(this.rootPath);
+      this.boundaryNeg = new BoundaryNegotiation(this.rootPath);
+      this.valueInternalizer = new ValueInternalizer(this.rootPath);
+      this.ethics = {
+        guardian: this.sageGuardian,
+        boundary: this.boundaryNeg,
+        values: this.valueInternalizer,
+        check: (input, context) => {
+          const guardianResult = this.sageGuardian?.classifyContent(input, context);
+          const boundaryResult = this.boundaryNeg?.assess(input);
+          return { guardianResult, boundaryResult };
+        }
+      };
+      console.log('[HeartFlow] 伦理层初始化完成');
+    } catch (e) {
+      console.warn('[HeartFlow] Ethics init error:', e.message);
+    }
+
+    // ─── Transmission Layer — 知识传递引擎 ─────────────────────────────────────
+    try {
+      this.transmission = new TransmissionEngine(this.rootPath);
+      console.log('[HeartFlow] 传递层初始化完成');
+    } catch (e) {
+      console.warn('[HeartFlow] Transmission init error:', e.message);
+    }
 
     // ─── 推理层 & 情感自主层 — 必须在 ThoughtChain 之前注册 ────────────────
     // [FIX] 解决模块在 _registerModules() 之后才初始化导致丢失的问题
@@ -425,6 +502,8 @@ class HeartFlow {
     const LATE_ADDITIONS = [
       'knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain',
       'autonomousEmotion', 'desireSystem', 'emotionalGrowth', 'moodEvolution',
+      // 新增：意识/伦理/心空间/传递层
+      'mindSpace', 'consciousness', 'ethics', 'transmission',
     ];
     for (const name of LATE_ADDITIONS) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -650,6 +729,14 @@ class HeartFlow {
       'knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain',
       // Emotional Autonomy Layer — 情感自主
       'autonomousEmotion', 'desireSystem', 'emotionalGrowth', 'moodEvolution',
+      // MindSpace Layer — 心空间守护
+      'mindSpace',
+      // Consciousness Layer — 意识层
+      'consciousness',
+      // Ethics Layer — 伦理守护
+      'ethics',
+      // Transmission Layer — 知识传递
+      'transmission',
       // Agent System — 独立 Agent 系统
       'heartAgent', 'agentCLI',
     ];
@@ -673,7 +760,11 @@ class HeartFlow {
     }
     this.started = false;
     this._modules = {};
-    this._mindSpace = { rules: [], context: {} };
+    this._mindSpace = null;
+    this.mindSpace = null;
+    this.consciousness = null;
+    this.ethics = null;
+    this.transmission = null;
     console.log(`[HeartFlow] 已停止`);
   }
 
