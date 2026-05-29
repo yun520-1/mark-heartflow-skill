@@ -5,7 +5,51 @@
  */
 
 const path = require('path');
+const fs = require('fs');
 const HF_ROOT = path.join(__dirname, '..');
+
+// ========== 版本一致性预检（VERSION 是唯一真相源） ==========
+const VERSION_FILE = path.join(HF_ROOT, 'VERSION');
+const EXPECTED_VERSION = fs.readFileSync(VERSION_FILE, 'utf8').trim();
+console.log(`\n[版本预检] 期望版本: ${EXPECTED_VERSION}`);
+
+// 需要检查版本的模块（version: 'X.X.X' 在 stats() 里返回的）
+const VERSIONED_MODULES = [
+  'src/core/cooperative-arbitration.js',
+  'src/core/spontaneous-restraint.js',
+  'src/core/counterfactual-engine.js',
+  'src/core/confidence-calibrator.js',
+];
+
+let versionErrors = [];
+for (const mod of VERSIONED_MODULES) {
+  const modPath = path.join(HF_ROOT, mod);
+  if (!fs.existsSync(modPath)) continue;
+  const content = fs.readFileSync(modPath, 'utf8');
+  // 找 stats() 函数后面的 version 字段（更简单的方式）
+  const statsIdx = content.indexOf('stats()');
+  if (statsIdx < 0) return; // 没有 stats 就跳过
+  // 从 stats() 之后截 500 字符，找 version:
+  const afterStats = content.slice(statsIdx, statsIdx + 500);
+  const verMatch = afterStats.match(/version:\s*'([^']+)'/);
+  if (verMatch) {
+    const modVer = verMatch[1];
+    if (modVer !== EXPECTED_VERSION) {
+      versionErrors.push(`${mod}: 模块版本 ${modVer} ≠ VERSION ${EXPECTED_VERSION}`);
+      console.log(`  ❌ ${mod}: ${modVer}`);
+    } else {
+      console.log(`  ✅ ${mod.split('/').pop()}: ${modVer}`);
+    }
+  }
+}
+
+if (versionErrors.length > 0) {
+  console.log('\n❌ 版本不一致，测试终止。');
+  console.log('请先运行: node scripts/version_sync.py');
+  versionErrors.forEach(e => console.log('  - ' + e));
+  process.exit(1);
+}
+console.log('[版本预检] 通过\n');
 
 function test(name, fn) {
   try {
@@ -107,7 +151,7 @@ const { CooperativeArbitration, ARBITRATIONMode, RESOLUTION_STRATEGIES } =
 
   test('stats()', () => {
     const stats = ca.stats();
-    if (stats.version !== '11.7.2') throw new Error('版本应为11.7.2');
+    if (stats.version !== EXPECTED_VERSION) throw new Error(`版本应为${EXPECTED_VERSION}`);
   });
 
   console.log('\n  仲裁样本:');
@@ -150,11 +194,11 @@ try {
 
 // ========== 报告 ==========
 console.log('\n' + '='.repeat(50));
-console.log('v11.7.0 测试完成: ' + passed + ' 通过, ' + failed + ' 失败');
+console.log(`测试完成: ${passed} 通过, ${failed} 失败`);
 console.log('='.repeat(50));
 
 if (failed === 0) {
-  console.log('✅ v11.7.0 全部测试通过');
+  console.log(`✅ 版本 ${EXPECTED_VERSION} 全部测试通过`);
 } else {
   console.log('❌ 有 ' + failed + ' 个测试失败');
   process.exit(1);
