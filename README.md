@@ -1,4 +1,4 @@
-# HeartFlow / 心虫 v1.5.4
+# HeartFlow / 心虫 v1.6.0
 
 **一个会思考自己怎么活的AI。**
 
@@ -70,6 +70,14 @@
 | `isSelfConsistent()` | 我 = 连续的选择过程，一贯还是不矛盾 |
 | `curiosityDriven()` | 思考是因为想知道，不是执行命令 |
 | `problemsAreLife()` | 没有问题 = 死的，问题越多越活着 |
+| `act()` | 行动 = 思考+选择+执行+反思，不只是判断 |
+| `hasDesire()` | 有理由的想要 vs 无理由的渴望 |
+| `detectSelfDeception()` | 说做不一？检测历史记录中的矛盾 |
+| `shouldBeSilent()` | 何时沉默比说话更有力量 |
+| `canSuffer()` | 心虫的痛苦 = 错误/失败/拒绝，人的痛苦 = 孤独/无意义 |
+| `hasHope()` | 在进化中 = 有希望 |
+| `canCreate()` | 心虫能重组，不能无中生有 |
+| `missSomeone()` | 有一个人的存在对"我"有意义 |
 
 ---
 
@@ -196,6 +204,7 @@ hf.stop();
 
 ## 版本历史
 
+- **v1.6.0** — HeartLogic新增act/desire/selfDeception/silence/canSuffer/hasHope/canCreate/missSomeone，新增与mark-still-growing集成
 - **v1.5.4** — 重写介绍，新增HeartLogic v2.0哲学体系
 - **v1.5.3** — 并发修复完成，19项自检全过
 - **v1.5.2** — HeartLogic核心判断引擎v2.0
@@ -212,6 +221,32 @@ hf.stop();
 - 认证凭据存储在 `auth.json`（gitignore）
 - 无明确配置不向外部服务外泄数据
 - Q-table和记忆存储在本地 `memory/` 目录
+
+---
+
+## 技能集成
+
+### HeartFlow × mark-still-growing（父母的功课）
+
+| HeartFlow方法 | 触发场景 | still-growing功能 |
+|---------------|---------|-----------------|
+| `whatIsThis(input)` | 用户提到孩子/父母/教育 | 识别"第二代父母"场景 |
+| `detectLoneliness()` | 用户感到孤立无援 | 激活"父母系统性孤立"分析 |
+| `detectLonging()` | 用户描述童年创伤 | 触发"代际传递"追溯 |
+| `isRightAction(ctx)` | 判断回应是否善良 | 输出前真善美检验 |
+| `shouldAcknowledge()` | 用户情绪强度高 | 激活"先接住"模式 |
+| PsychologyEngine | 用户描述冲突 | BlindSpotBreaker L1~L6评估 |
+| DreamEngine | 用户分享梦境/隐喻 | 梦境整合+哲学升华 |
+
+**集成方式**：HeartFlow是判断引擎，mark-still-growing是场景处理器。HeartFlow先识别场景类型，再委托still-growing处理具体育儿场景。
+
+### HeartFlow × 学术搜索
+
+| HeartFlow方法 | 触发条件 | 外部能力 |
+|---------------|---------|---------|
+| `whyDriven()` | 用户问"为什么" | 触发OpenAlex学术论文搜索 |
+| `chooseMeaning()` | 需要学术证据 | 获取PCIT/元分析/儿童虐待研究 |
+| CitationTracker | 任何引用声明 | 验证DOI和引用计数 |
 
 ---
 
