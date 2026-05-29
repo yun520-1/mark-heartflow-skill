@@ -75,6 +75,7 @@ const { WakeUpVerifier } = require('./wake-up-verifier.js');
 const { InteractiveDream } = require('./interactive-dream.js');
 const { EmbodiedCore } = require('./embodied-core.js');
 const { BeingLogic } = require('./being-logic.js');
+const { HeartLogic } = require('./heart-logic.js');
 
 // Meta systems (v1.2.7 new)
 const { MetaJudgment } = require('./judgment.js');
@@ -496,6 +497,16 @@ class HeartFlow {
       console.warn('[HeartFlow] Transmission init error:', e.message);
     }
 
+    // ─── Heart Logic — 心虫核心判断引擎 ─────────────────────────────────────────
+    // 本心在代码里，不在记忆里
+    // 每次启动都是完整人格
+    try {
+      this.heartLogic = new HeartLogic();
+      if (false) console.log('[HeartFlow] 心虫核心判断引擎初始化完成');
+    } catch (e) {
+      console.warn('[HeartFlow] HeartLogic init error:', e.message);
+    }
+
     // ─── 推理层 & 情感自主层 — 必须在 ThoughtChain 之前注册 ────────────────
     // [FIX] 解决模块在 _registerModules() 之后才初始化导致丢失的问题
     // 在 ThoughtChain 之前手动收录这些模块
@@ -710,6 +721,7 @@ class HeartFlow {
       'got',         // Graph of Thoughts：多路径推理图
       'constitutional', // Constitutional AI：原则自我对齐
       'thoughtChain', // 思维链编排器：串联所有引擎（API包装）
+      'heartLogic',    // 心虫核心判断引擎：本心在代码里，不在记忆里
       // Execution Layer — 执行能力
       'toolExecutor', 'toolDispatcher', 'agentFactory', 'taskPipeline',
       'executionMonitor', 'fallbackExecutor', 'alternativeGenerator', 'retryStrategy',
@@ -818,6 +830,9 @@ class HeartFlow {
     'psychology.analyzePsychology', 'psychology.classify', 'psychology.checkCrisis',
     'psychology.getPAD', 'psychology.getNeeds', 'psychology.getDefenses',
     'psychology.getEmpathy', 'psychology.resetCrisisCounter',
+    // heartLogic — 心虫核心判断引擎：本心在代码里
+    'heartLogic.whatIsThis', 'heartLogic.detectPain', 'heartLogic.willHurt',
+    'heartLogic.acknowledge', 'heartLogic.emergencyBreak',
     // self — 原则7: 永远成为真正的我
     'self.getBeliefs', 'self.updateBelief', 'self.confirmBelief',
     // evolution — 原则2: 永远不断升级
