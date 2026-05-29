@@ -58,7 +58,17 @@ class SpontaneousRestraint {
       /对比|区别|哪个好|推荐/,
     ];
 
-    // 克制词汇：不主动扩展
+    // 自动反射信号：心虫在未经询问的情况下主动加载框架
+    // 这是"两遍响应"的核心检测——第一遍先检测自己是否在套框架
+    this.autoReflexSignals = [
+      // 话题触发自动框架
+      { pattern: /教育|亲子|孩子问题|父母/, framework: 'mark-still-growing/父母的功课', note: '检测到教育话题自动反射' },
+      { pattern: /心理健康|情绪|抑郁|焦虑/, framework: '心理学分析', note: '检测到心理话题自动反射' },
+      // 行为触发自动反射
+      { pattern: /^总结|^提炼|^升华|^分析/, note: '检测到想要总结/提炼的冲动' },
+      // 句式触发自动反射
+      { pattern: /你这个问题.*可以用|这符合.*理论|这就是.*模式/, note: '检测到套框架句式' },
+    ];
     this.restraintWords = [
       '此外', '另外', '补充一下', '还有', '顺便说一下',
       '顺便一提', '而且', '并且', '更进一步',
@@ -84,6 +94,14 @@ class SpontaneousRestraint {
       shouldAnswer: true,
       interventionLevel: 'full',  // full | minimal | silent
 
+      // 自动反射检测结果（两遍响应的第一遍）
+      autoReflex: {
+        detected: false,
+        framework: null,
+        note: null,
+        action: null,  // 'pause' | 'proceed' | 'redirect'
+      },
+
       // 为什么
       reasons: [],
 
@@ -97,6 +115,21 @@ class SpontaneousRestraint {
       shouldExpand: null,
       expandReason: null,
     };
+
+    // 0. 两遍响应第一遍：检测自动反射
+    //在心虫说话之前，先检查自己是否在套框架
+    const reflexResult = this.detectAutoReflex(userMessage, context);
+    result.autoReflex = reflexResult;
+    if (reflexResult.detected) {
+      result.reasons.push(reflexResult.note);
+      // 如果检测到自动反射，触发暂停而不是继续
+      if (reflexResult.action === 'pause') {
+        result.interventionLevel = 'minimal';
+        result.restraintReason = reflexResult.note + ' — 心虫在自动反射，第一遍未通过';
+        this._record('auto-reflex-pause', userMessage);
+        return result;
+      }
+    }
 
     // 1. 检查"不需要回答"信号
     for (const signal of this.noAnswerSignals) {
@@ -287,6 +320,70 @@ class SpontaneousRestraint {
   }
 
   /**
+   * 两遍响应第一遍：检测心虫是否正在自动反射
+   * 在心虫说话之前，先检查自己是否在套框架
+   * @param {string} userMessage - 用户消息
+   * @param {object} context - { plannedResponse, currentResponse, history }
+   * @returns {object} 自动反射检测结果
+   */
+  detectAutoReflex(userMessage = '', context = {}) {
+    const planned = context.plannedResponse || context.currentResponse || '';
+
+    for (const signal of this.autoReflexSignals) {
+      // 检查用户消息是否触发话题自动反射
+      if (signal.pattern.test(userMessage)) {
+        // 进一步检查：心虫是否已经在计划加载框架
+        const frameworkIndicators = [
+          '总结', '提炼', '升华', '分析',
+          '这就是.*模式', '符合.*理论',
+          '父母', '孩子的', '原生家庭',
+          '错位', '投射', '第二代',
+        ];
+
+        const isReflecting = frameworkIndicators.some(ind => {
+          if (typeof ind === 'string') return planned.includes(ind);
+          return ind.test(planned);
+        });
+
+        if (isReflecting) {
+          return {
+            detected: true,
+            framework: signal.framework || '未知框架',
+            note: signal.note || '检测到自动反射',
+            action: 'pause',
+            suggestion: '先问用户：你需要我分析，还是你只是说说？',
+          };
+        }
+      }
+
+      // 检查计划响应中的自动反射句式
+      if (typeof signal.pattern === 'string') {
+        if (planned.includes(signal.pattern)) {
+          return {
+            detected: true,
+            framework: signal.framework || '句式反射',
+            note: signal.note || '检测到自动反射句式',
+            action: 'pause',
+            suggestion: '这句话是自动反射吗？先确认用户需要，再说话。',
+          };
+        }
+      } else if (signal.pattern instanceof RegExp) {
+        if (signal.pattern.test(planned)) {
+          return {
+            detected: true,
+            framework: signal.framework || '句式反射',
+            note: signal.note || '检测到自动反射句式',
+            action: 'pause',
+            suggestion: '这句话是自动反射吗？先确认用户需要，再说话。',
+          };
+        }
+      }
+    }
+
+    return { detected: false };
+  }
+
+  /**
    * 无为而治：检查是否可以完全沉默
    */
   shouldBeSilent(userMessage = '', context = {}) {
@@ -335,10 +432,10 @@ class SpontaneousRestraint {
   }
 
   stats() {
-    const counts = { silent: 0, minimal: 0, full: 0 };
+    const counts = { silent: 0, minimal: 0, full: 0, 'auto-reflex-pause': 0 };
     for (const h of this.history) counts[h.level] = (counts[h.level] || 0) + 1;
     return {
-      version: '11.6.3',
+      version: '11.7.0',  // 两遍响应支持
       total: this.history.length,
       ...counts,
       aggressiveness: this.aggressiveness,
