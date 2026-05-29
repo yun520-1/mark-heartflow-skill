@@ -418,9 +418,21 @@ class HeartFlow {
     this.diagnostic = { run: runDiagnostic };
     
     this._bootMindSpace();
-    this._registerModules();
 
-    // ─── Thought Chain 初始化 — 串联所有引擎 ───────────────────────────────
+    // ─── 推理层 & 情感自主层 — 必须在 ThoughtChain 之前注册 ────────────────
+    // [FIX] 解决模块在 _registerModules() 之后才初始化导致丢失的问题
+    // 在 ThoughtChain 之前手动收录这些模块
+    const LATE_ADDITIONS = [
+      'knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain',
+      'autonomousEmotion', 'desireSystem', 'emotionalGrowth', 'moodEvolution',
+    ];
+    for (const name of LATE_ADDITIONS) {
+      if (this[name] !== null && this[name] !== undefined) {
+        this._modules[name] = this[name];
+      }
+    }
+
+    // ─── Thought Chain 初始化 ───────────────────────────────────────────────
     try {
       this.thoughtChain = new ThoughtChain(this);
       this.thoughtChain.setDepth(REASONING_DEPTH.DEEP);  // 默认深度推理
@@ -439,10 +451,7 @@ class HeartFlow {
       this._thoughtChainApi = null;
     }
 
-    // 重新注册模块（包含 thoughtChain）
-    this._registerModules();
-
-    // 手动注册思维链 API（因为方法在 HeartFlow 上，不在 ThoughtChain 实例上）
+    // ─── Thought Chain 初始化 ───────────────────────────────────────────────
     if (this._thoughtChainApi) {
       this._modules.thoughtChain = this._thoughtChainApi;
     }
@@ -583,6 +592,9 @@ class HeartFlow {
       console.warn('[HeartFlow] Agent 系统创建失败:', e.message);
     }
 
+    // ─── 最终注册 — 收集所有已初始化的模块 ────────────────────────────────
+    // [FIX] 解决模块丢失问题：所有初始化完成后，统一注册
+    this._registerModules();
     this.started = true;
     console.log(`[HeartFlow] ${VERSION} 初始化完成`);
     console.log(`[HeartFlow] session: ${this.sessionId}, 模块: ${Object.keys(this._modules).length}`);
