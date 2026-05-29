@@ -177,10 +177,6 @@ const { DesireSystem } = require('../emotion/desire-system.js');
 const { EmotionalGrowth } = require('../emotion/emotional-growth.js');
 const { MoodEvolution } = require('../emotion/mood-evolution.js');
 
-// ─── Agent System — 独立 Agent 系统 ─────────────────────────────────────────
-const { MarkCode } = require('../agent-core/heart-agent.js');
-const { AgentCLI } = require('../agent-core/cli.js');
-
 // ─── Version ─────────────────────────────────────────────────────────────────
 const VERSION = '1.5.1';
 const BUILD_DATE = '2026-05-28';
@@ -299,10 +295,6 @@ class HeartFlow {
     this.desireSystem = null;  // 欲望系统
     this.emotionalGrowth = null;  // 情感成长
     this.moodEvolution = null;  // 心境演化
-
-    // Agent System — 独立 Agent 系统
-    this.heartAgent = null;  // Agent 实例
-    this.agentCLI = null;  // Agent CLI
 
     this.SearchTrace = SearchTrace;
     this.SearchPhaseMetrics = SearchPhaseMetrics;
@@ -666,23 +658,7 @@ class HeartFlow {
       console.warn('[HeartFlow] 情感自主层初始化失败:', e.message);
     }
 
-    // ─── Agent System — 独立 Agent 系统 ─────────────────────────────────────
-    try {
-      this.heartAgent = new MarkCode({
-        apiKey: this.config.apiKey || process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY,
-        apiType: this.config.apiType || process.env.API_TYPE || 'anthropic',
-        model: this.config.model || 'claude-sonnet-4-20250514',
-        maxTokens: this.config.maxTokens || 4096,
-        temperature: this.config.temperature || 0.7,
-        rootPath: this.rootPath
-      });
-      this.agentCLI = new AgentCLI();
-      if (false) console.log('[HeartFlow] Agent 系统已创建（需手动初始化）');
-    } catch (e) {
-      console.warn('[HeartFlow] Agent 系统创建失败:', e.message);
-    }
-
-    // ─── 最终注册 — 收集所有已初始化的模块 ────────────────────────────────
+    this.SearchTrace
     // [FIX] 解决模块丢失问题：所有初始化完成后，统一注册
     this._registerModules();
     this.started = true;
@@ -749,8 +725,6 @@ class HeartFlow {
       'ethics',
       // Transmission Layer — 知识传递
       'transmission',
-      // Agent System — 独立 Agent 系统
-      'heartAgent', 'agentCLI',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -881,10 +855,6 @@ class HeartFlow {
     'desireSystem.satisfy', 'desireSystem.getActiveDesires', 'desireSystem.getCurrentNeeds', 'desireSystem.getSummary',
     'emotionalGrowth.recordExperience', 'emotionalGrowth.getPatterns', 'emotionalGrowth.getGrowthSummary',
     'moodEvolution.snapshot', 'moodEvolution.getCurrentTrend', 'moodEvolution.getBaseline', 'moodEvolution.getStats',
-    // Agent System — 独立 Agent 系统
-    'heartAgent.process', 'heartAgent.sendToApi', 'heartAgent.initialize', 'heartAgent.healthCheck',
-    'heartAgent.session.start', 'heartAgent.session.end', 'heartAgent.session.getHistory',
-    'agentCLI.initialize', 'agentCLI.startSession', 'agentCLI.runOnce',
   ]);
 
   /**
