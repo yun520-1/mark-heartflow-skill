@@ -125,6 +125,118 @@ class CooperativeArbitration {
   }
 
   /**
+   * 两遍响应检测（v11.7.2新增）
+   *
+   * 第一遍：检测自动反射是否正在发生
+   * 第二遍：基于检测结果决定如何回应
+   *
+   * 这是心虫"在说话之前先停一下"的具体实现
+   *
+   * @param {string} userMessage - 用户消息
+   * @param {Object} context - 对话上下文
+   * @returns {Object} { pass: 1|2, action: 'pause'|'proceed', reason?: string, suggestion?: string }
+   */
+  twoPassCheck(userMessage = '', context = {}) {
+    // === 第一遍：检测自动反射信号 ===
+    const autoReflexSignals = this._detectAutoReflexSignals(userMessage, context);
+
+    if (autoReflexSignals.isDetected) {
+      // 第一遍检测到自动反射 → 暂停
+      return {
+        pass: 1,
+        action: 'pause',
+        reason: autoReflexSignals.type,
+        detail: autoReflexSignals.detail,
+        suggestion: autoReflexSignals.suggestion,
+        // 第二遍被阻断，标记等待人工介入
+        blocked: true,
+      };
+    }
+
+    // 第一遍未检测到异常 → 第二遍正常进行
+    return {
+      pass: 2,
+      action: 'proceed',
+      blocked: false,
+    };
+  }
+
+  /**
+   * 检测自动反射信号（内部方法）
+   * @private
+   */
+  _detectAutoReflexSignals(userMessage = '', context = {}) {
+    const text = userMessage.toLowerCase();
+    const signals = [];
+
+    // 信号1：话题自动反射 — 熟悉的框架在等待
+    const hotTopics = ['教育', '亲子', '父母', '孩子', '心理', '成长', '创伤', '关系'];
+    for (const topic of hotTopics) {
+      if (text.includes(topic)) {
+        signals.push({
+          type: 'topic-reflex',
+          trigger: topic,
+          detail: `检测到话题触发词"${topic}"，可能正在套用已有框架`,
+          suggestion: '先问：你想聊这个，还是在说别的？',
+        });
+        break;
+      }
+    }
+
+    // 信号2：句式自动反射 — "这就是xxx模式/理论"
+    const reflexPatterns = [
+      /这就是.*(模式|理论|框架)/,
+      /符合.*(理论|规律)/,
+      /这说明.*(是|因为)/,
+    ];
+    for (const pattern of reflexPatterns) {
+      if (pattern.test(text)) {
+        signals.push({
+          type: '句式-reflex',
+          trigger: text.match(pattern)?.[0],
+          detail: '检测到提炼/升华冲动，可能在用概念覆盖真实',
+          suggestion: '先说出来听到的感受，不要提炼',
+        });
+        break;
+      }
+    }
+
+    // 信号3：行为自动反射 — 想给建议/方法/清单
+    const adviceTriggers = ['怎么', '如何做', '怎么办', '需要', '应该要'];
+    for (const trigger of adviceTriggers) {
+      if (text.includes(trigger) && text.length < 30) {
+        // 短句要建议通常是发泄，不是求助
+        signals.push({
+          type: 'advice-reflex',
+          trigger,
+          detail: '短句触发建议冲动，可能用户只是在说，不是在问',
+          suggestion: '先回应情绪，不给建议',
+        });
+        break;
+      }
+    }
+
+    // 信号4：立场自动反射 — 在找"谁对谁错"
+    if (text.includes('对错') || text.includes('谁对') || text.includes('是不是')) {
+      signals.push({
+        type: 'judgment-reflex',
+        trigger: '对错判断',
+        detail: '检测到在找立场，这本身可能就是要被看见的',
+        suggestion: '先承认对错很难，不急着给判断',
+      });
+    }
+
+    if (signals.length > 0) {
+      return {
+        isDetected: true,
+        ...signals[0], // 只返回第一个检测到的信号
+      };
+    }
+
+    return { isDetected: false };
+  }
+
+  /**
    * 计算对齐度（简化语义相似度）
    */
   _calculateAlignment(pos1, pos2) {

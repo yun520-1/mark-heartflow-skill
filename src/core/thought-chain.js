@@ -1,7 +1,15 @@
 /**
- * ThoughtChain v2.0 — 思维链编排器
+ * ThoughtChain v2.1 — 思维链编排器（思维连机制）
  *
  * 核心理念：不照搬人类思维，取精华，去缺陷，创更好
+ * 思维连机制：每个阶段调用真实子系统，形成推理链条
+ *   PARSE       → psychology.analyzePsychology（心理分析）
+ *   HYPOTHESES  → causalInference.inferCauses（因果推理）
+ *   INVERT      → truth.checkStatement + constitutional.critique（真伪+原则）
+ *   EVIDENCE    → commonsenseEngine.validate（常识验证）
+ *   SYNTHESIS   → decision.decide（决策生成）
+ *   CALIBRATE   → confidence.calibrate + restraint.shouldIntervene（置信校准）
+ *   RESPOND     → autonomousEmotion.trigger（情感自主）
  *
  * 人类思维缺陷：
  * - 确认偏误：只信服自己观点的证据
@@ -120,10 +128,10 @@ class ThoughtChain {
     this.stages = [];
     const taskType = this.taskStrategy?.type || 'general';
 
-    // ── 阶段1: PARSE — 解析问题，不是理解 ─────────────────────────────
+    // ── 阶段1: PARSE — 解析问题 + 调用心理学引擎 ─────────────────────
     this.stages.push({
       name: 'PARSE',
-      description: '分解问题：提取变量、约束、目标',
+      description: '分解问题 + 调用 psychology 子系统',
       fn: async (ctx, hf) => {
         const input = ctx.input;
 
@@ -142,6 +150,15 @@ class ThoughtChain {
         // 1.5 选择对应策略
         const strategy = TASK_STRATEGIES[type] || TASK_STRATEGIES.general;
 
+        // 1.6 【思维连机制】调用 psychology 子系统 — 串联第一层
+        let psychResult = null;
+        try {
+          psychResult = hf.dispatch('psychology.analyzePsychology', input);
+        } catch (e) {
+          // 子系统不存在时静默降级
+          psychResult = null;
+        }
+
         ctx.taskType = type;
         ctx.strategy = strategy;
 
@@ -151,12 +168,20 @@ class ThoughtChain {
           goal,
           type,
           strategy,
+          // 串联结果
+          psychology: psychResult ? {
+            intent: psychResult.intent,
+            emotion: psychResult.emotion,
+            needs: psychResult.needs,
+            defenses: psychResult.defenses,
+            crisis: psychResult.crisis,
+          } : null,
           timestamp: Date.now()
         };
       }
     });
 
-    // ── 阶段2: HYPOTHESES — 并行假设，不是线性推理 ────────────────────
+    // ── 阶段2: HYPOTHESES — 并行假设 + 因果推理子系统 ────────────────
     // 人类缺陷：只能一次想一个假设，AI可以同时想多个
     if (!this.taskStrategy?.skipHypotheses) {
       this.stages.push({
@@ -176,8 +201,25 @@ class ThoughtChain {
             initialLikelihood: this._assessLikelihood(h, input)
           }));
 
-          // 2.3 按可能性排序
-          evaluated.sort((a, b) => b.initialLikelihood - a.initialLikelihood);
+          // 2.3 【思维连机制】对每个假设调用因果推理子系统 — 串联第二层
+          for (const h of evaluated) {
+            try {
+              const causalResult = hf.dispatch('causalInference.inferCauses', h.description, { query: input });
+              if (causalResult && causalResult.causes) {
+                h.causalRoots = causalResult.causes;
+                h.causalConfidence = causalResult.confidence || 0.5;
+              }
+            } catch (e) {
+              h.causalRoots = null;
+            }
+          }
+
+          // 2.4 按可能性排序（含因果校正）
+          evaluated.sort((a, b) => {
+            const aScore = a.initialLikelihood + (a.causalConfidence || 0) * 0.2;
+            const bScore = b.initialLikelihood + (b.causalConfidence || 0) * 0.2;
+            return bScore - aScore;
+          });
 
           return {
             hypotheses: evaluated,
@@ -189,7 +231,7 @@ class ThoughtChain {
       });
     }
 
-    // ── 阶段3: INVERT — 反向思考，先证明自己错了 ────────────────────
+    // ── 阶段3: INVERT — 反向思考 + 真理验证子系统 ───────────────────
     // 人类缺陷：确认偏误，只看支持的证据
     if (!this.taskStrategy?.skipInvert) {
       this.stages.push({
@@ -210,22 +252,42 @@ class ThoughtChain {
           // 3.2 检查是否有矛盾
           const contradictions = this._findContradictions(topHypothesis, input);
 
-          // 3.3 如果反例足够强，降低置信度
+          // 3.3 【思维连机制】调用 truth 子系统验证假设 — 串联第三层
+          let truthResult = null;
+          try {
+            truthResult = hf.dispatch('truth.checkStatement', topHypothesis.description);
+          } catch (e) {
+            truthResult = null;
+          }
+
+          // 3.4 【思维连机制】调用 constitutional AI 原则审查 — 串联第三层
+          let constitutionalResult = null;
+          try {
+            constitutionalResult = hf.dispatch('constitutional.critique', topHypothesis.description);
+          } catch (e) {
+            constitutionalResult = null;
+          }
+
+          // 3.5 如果反例足够强，或 truth 系统检测到谎言，降低置信度
+          const truthLying = truthResult?.isLying === true;
+          const constitutionalViolation = constitutionalResult?.violations?.length > 0;
           const isOverturned = counterEvidence.length > 0 && contradictions.length > 0;
 
           return {
-            inverted: isOverturned,
+            inverted: isOverturned || truthLying || constitutionalViolation,
             counterEvidence,
             contradictions,
             originalHypothesis: topHypothesis,
-            confidenceAdjustment: isOverturned ? -0.3 : 0,
+            truthResult: truthResult ? { isLying: truthResult.isLying, confidence: truthResult.confidence } : null,
+            constitutionalResult: constitutionalResult ? { violations: constitutionalResult.violations } : null,
+            confidenceAdjustment: (isOverturned ? -0.3 : 0) + (truthLying ? -0.2 : 0),
             timestamp: Date.now()
           };
         }
       });
     }
 
-    // ── 阶段4: EVIDENCE — 证据评估，质量不是数量 ────────────────────
+    // ── 阶段4: EVIDENCE — 证据评估 + 常识引擎验证 ──────────────────
     this.stages.push({
       name: 'EVIDENCE',
       description: '评估证据质量，不是证据数量',
@@ -239,12 +301,22 @@ class ThoughtChain {
         const evidenceForHypotheses = hypotheses.map(h => {
           const evidence = this._findEvidence(h, input);
           const qualityScore = this._assessEvidenceQuality(evidence);
+
+          // 【思维连机制】调用 commonsenseEngine 验证证据合理性 — 串联第四层
+          let commonsenseResult = null;
+          try {
+            commonsenseResult = hf.dispatch('commonsenseEngine.validate', h.description, { context: input });
+          } catch (e) {
+            commonsenseResult = null;
+          }
+
           return {
             hypothesis: h,
             evidence,
             qualityScore,
-            strongEvidence: qualityScore > 0.7,
-            weakEvidence: qualityScore < 0.3
+            commonsenseResult: commonsenseResult ? { valid: commonsenseResult.valid, confidence: commonsenseResult.confidence } : null,
+            strongEvidence: qualityScore > 0.7 || commonsenseResult?.valid === true,
+            weakEvidence: qualityScore < 0.3 || commonsenseResult?.valid === false
           };
         });
 
@@ -264,7 +336,7 @@ class ThoughtChain {
       }
     });
 
-    // ── 阶段5: SYNTHESIS — 综合判断，不是最快给答案 ─────────────────
+    // ── 阶段5: SYNTHESIS — 综合判断 + 决策子系统 ──────────────────
     this.stages.push({
       name: 'SYNTHESIS',
       description: '综合所有信息，给出最优判断',
@@ -273,10 +345,27 @@ class ThoughtChain {
         const parse = ctx.stages[0]?.result;
         const evidenceStage = ctx.stages.find(s => s.name === 'EVIDENCE');
         const invertStage = ctx.stages.find(s => s.name === 'INVERT');
+        const hypothesesStage = ctx.stages.find(s => s.name === 'HYPOTHESES');
 
         const strongHypothesis = evidenceStage?.result?.strongHypothesis;
         const wasInverted = invertStage?.result?.inverted;
         const evidence = evidenceStage?.result || {};
+
+        // 【思维连机制】调用 decision 子系统做综合决策 — 串联第五层
+        let decisionResult = null;
+        try {
+          const decisionContext = {
+            input,
+            taskType: parse?.type,
+            topHypothesis: hypothesesStage?.result?.topHypothesis?.description,
+            wasInverted,
+            hasStrongEvidence: !!strongHypothesis,
+            causalRoots: hypothesesStage?.result?.topHypothesis?.causalRoots,
+          };
+          decisionResult = hf.dispatch('decision.decide', decisionContext);
+        } catch (e) {
+          decisionResult = null;
+        }
 
         // 5.1 确定最终判断
         let conclusion;
@@ -298,6 +387,11 @@ class ThoughtChain {
           conclusion = evidence.evidenceForHypotheses[0]?.hypothesis?.description || '无法确定';
           confidence = 0.4;
           reasoningChain.push('证据薄弱，明确承认不确定');
+        } else if (decisionResult?.conclusion) {
+          // 决策子系统给出了结论
+          conclusion = decisionResult.conclusion;
+          confidence = decisionResult.confidence || 0.5;
+          reasoningChain.push('决策子系统综合判断');
         } else {
           // 默认最可能假设
           const topHypothesis = evidenceStage?.result?.evidenceForHypotheses?.[0]?.hypothesis;
@@ -314,12 +408,13 @@ class ThoughtChain {
           reasoningChain,
           wasInverted,
           hasStrongEvidence: !!strongHypothesis,
+          decisionSubsystem: decisionResult ? { conclusion: decisionResult.conclusion, confidence: decisionResult.confidence } : null,
           timestamp: Date.now()
         };
       }
     });
 
-    // ── 阶段6: CALIBRATE — 置信校准，克制过度自信 ───────────────────
+    // ── 阶段6: CALIBRATE — 置信校准 + 子系统置信度验证 ─────────────
     this.stages.push({
       name: 'CALIBRATE',
       description: '校准置信度，克制人类式过度自信',
@@ -328,8 +423,32 @@ class ThoughtChain {
         const synthesis = ctx.stages.find(s => s.name === 'SYNTHESIS')?.result;
         const invert = ctx.stages.find(s => s.name === 'INVERT')?.result;
         const evidence = ctx.stages.find(s => s.name === 'EVIDENCE')?.result;
+        const parse = ctx.stages[0]?.result;
 
         let confidence = synthesis?.confidence || 0.5;
+
+        // 【思维连机制】调用 confidence.calibrate 子系统 — 串联第六层
+        let subsystemCalibration = null;
+        try {
+          subsystemCalibration = hf.dispatch('confidence.calibrate', {
+            statement: synthesis?.conclusion || input,
+            initialConfidence: confidence
+          });
+        } catch (e) {
+          subsystemCalibration = null;
+        }
+
+        // 【思维连机制】调用 restraint.shouldIntervene — 最小干预评估
+        let restraintResult = null;
+        try {
+          restraintResult = hf.dispatch('restraint.shouldIntervene', {
+            conclusion: synthesis?.conclusion,
+            confidence: confidence,
+            taskType: parse?.type
+          });
+        } catch (e) {
+          restraintResult = null;
+        }
 
         // 6.1 反向思考降低置信度
         if (invert?.inverted) {
@@ -341,15 +460,19 @@ class ThoughtChain {
           confidence = Math.min(confidence, 0.5);
         }
 
-        // 6.3 人类过度自信校正：人类的"100%确定"实际约80%
+        // 6.3 子系统置信度校正（如果可用）
+        if (subsystemCalibration?.calibrated !== undefined) {
+          confidence = subsystemCalibration.calibrated;
+        }
+
+        // 6.4 人类过度自信校正：人类的"100%确定"实际约80%
         // AI不应该模仿这种过度自信
         const calibratedConfidence = Math.min(confidence, 0.95);
 
-        // 6.4 确定是否需要不确定性标记
+        // 6.5 确定是否需要不确定性标记
         const needsUncertaintyMarker = calibratedConfidence < 0.7;
 
-        // 6.5 快速退出检查（检索类任务）
-        const parse = ctx.stages[0]?.result;
+        // 6.6 快速退出检查（检索类任务）
         if (parse?.strategy?.fastExit && calibratedConfidence > 0.8) {
           ctx._fastExit = true;
         }
@@ -359,12 +482,14 @@ class ThoughtChain {
           calibratedConfidence,
           needsUncertaintyMarker,
           uncertaintyPhrase: this._getUncertaintyPhrase(calibratedConfidence),
+          subsystemCalibration,
+          restraintResult: restraintResult ? { shouldIntervene: restraintResult.shouldIntervene } : null,
           timestamp: Date.now()
         };
       }
     });
 
-    // ── 阶段7: RESPOND — 生成回应 ──────────────────────────────────
+    // ── 阶段7: RESPOND — 生成回应 + 情感自主引擎 ──────────────────
     this.stages.push({
       name: 'RESPOND',
       description: '生成带不确定性标记的回应',
@@ -373,6 +498,19 @@ class ThoughtChain {
         const synthesis = ctx.stages.find(s => s.name === 'SYNTHESIS')?.result;
         const calibrate = ctx.stages.find(s => s.name === 'CALIBRATE')?.result;
         const parse = ctx.stages[0]?.result;
+
+        // 【思维连机制】调用 autonomousEmotion 情感自主引擎 — 串联第七层
+        let emotionResult = null;
+        try {
+          emotionResult = hf.dispatch('autonomousEmotion.trigger', {
+            type: 'response_generation',
+            conclusion: synthesis?.conclusion,
+            confidence: calibrate?.calibratedConfidence || 0.5,
+            input
+          });
+        } catch (e) {
+          emotionResult = null;
+        }
 
         // 7.1 决定是否回应
         let shouldRespond = true;
@@ -397,7 +535,8 @@ class ThoughtChain {
           reasoningChain: synthesis?.reasoningChain || [],
           taskType: parse?.type,
           suppressed: !shouldRespond,
-          suppressReason
+          suppressReason,
+          emotionState: emotionResult?.currentState || null
         };
 
         return {
