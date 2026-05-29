@@ -428,24 +428,26 @@ class ThoughtChain {
         let confidence = synthesis?.confidence || 0.5;
 
         // 【思维连机制】调用 confidence.calibrate 子系统 — 串联第六层
+        // [FIX] confidence.calibrate(string, number) 不是 (object)
         let subsystemCalibration = null;
         try {
-          subsystemCalibration = hf.dispatch('confidence.calibrate', {
-            statement: synthesis?.conclusion || input,
-            initialConfidence: confidence
-          });
+          subsystemCalibration = hf.dispatch('confidence.calibrate',
+            synthesis?.conclusion || input,
+            confidence
+          );
         } catch (e) {
           subsystemCalibration = null;
         }
 
         // 【思维连机制】调用 restraint.shouldIntervene — 最小干预评估
+        // [FIX] restraint.shouldIntervene(string, number, string) 参数顺序修正
         let restraintResult = null;
         try {
-          restraintResult = hf.dispatch('restraint.shouldIntervene', {
-            conclusion: synthesis?.conclusion,
-            confidence: confidence,
-            taskType: parse?.type
-          });
+          restraintResult = hf.dispatch('restraint.shouldIntervene',
+            synthesis?.conclusion || '',
+            confidence,
+            parse?.type || 'general'
+          );
         } catch (e) {
           restraintResult = null;
         }
