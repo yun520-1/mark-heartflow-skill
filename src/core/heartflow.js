@@ -164,7 +164,7 @@ const { MarkCode } = require('../agent-core/heart-agent.js');
 const { AgentCLI } = require('../agent-core/cli.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '1.5.0';
+const VERSION = '1.5.1';
 const BUILD_DATE = '2026-05-28';
 
 class HeartFlow {

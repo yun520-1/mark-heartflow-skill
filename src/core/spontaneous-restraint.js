@@ -435,7 +435,7 @@ class SpontaneousRestraint {
     const counts = { silent: 0, minimal: 0, full: 0, 'auto-reflex-pause': 0 };
     for (const h of this.history) counts[h.level] = (counts[h.level] || 0) + 1;
     return {
-      version: '11.7.0',  // 两遍响应支持
+      version: '11.7.2',  // 与协作仲裁引擎对齐
       total: this.history.length,
       ...counts,
       aggressiveness: this.aggressiveness,
