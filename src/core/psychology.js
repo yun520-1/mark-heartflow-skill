@@ -1024,48 +1024,233 @@ function _getTopicScope() {
 }
 
 /**
- * 话题检测：从用户输入识别当前话题
+ * 语义级话题检测（v2.1）
+ * 升级自关键词匹配：用 TF-IDF + cosine similarity 做语义匹配
+ * 解决：同一词在不同话题含义不同（如"质量"在供应商vs医学）
+ * 原理：文本 → n-gram tokenization → TF-IDF向量 → cosine similarity with topic centroids
+ */
+const _TOPIC_CENTROIDS = {
+  '供应商管理': ['供应商','采购','来料','不良率','审厂','体系审核','质量管理','IATF16949','ISO9001','交期','VDA6.3','供应商开发','来料检验','SQE','供应商绩效','PPM'],
+  '苏格拉底哲学': ['苏格拉底','socrates','elenchus','反诘','产婆术','无知','认识你自己','美德即知识','未经审视','柏拉图','申辩篇','哲学','追问','德尔斐'],
+  '心经': ['心经','般若波罗蜜多','色即是空','五蕴','揭谛','观自在','舍利子','涅槃','咒','空性','无所得','波罗蜜','是大神咒'],
+  '心虫开发': ['心虫','heartflow','heart-logic','版本','升级','修复','bug','代码','模块','引擎','启动','skill','hermes'],
+  '育儿教育': ['孩子','亲子','父母','教育','学习','成绩','管教','打骂','青春期','升学','高考','儿童','家长','班主任'],
+  '情感支持': ['累','烦','难过','痛苦','焦虑','压力','迷茫','无助','绝望','崩溃','难受','伤心','低落','情绪'],
+  '自我成长': ['成长','改变','觉醒','认知','思维','模式','习惯','突破','修行','觉察','意识','突破'],
+  'AI技术': ['AI','LLM','模型','训练','微调','推理','RAG','Agent','token','embedding','神经网络','深度学习','大模型'],
+  '工作事务': ['工作','报告','会议','客户','老板','同事','辞职','面试','加薪','绩效','职场','上班','下班'],
+};
+
+// 预计算每个话题的IDF
+const _TOPIC_IDF = {};
+{
+  const allTokens = new Set();
+  for (const tokens of Object.values(_TOPIC_CENTROIDS)) {
+    for (const t of tokens) allTokens.add(t);
+  }
+  const N = Object.keys(_TOPIC_CENTROIDS).length;
+  for (const [topic, tokens] of Object.entries(_TOPIC_CENTROIDS)) {
+    _TOPIC_IDF[topic] = {};
+    for (const t of allTokens) {
+      // IDF = log(N / df)，df=包含该词的话题数
+      const df = Object.values(_TOPIC_CENTROIDS).filter(ts => ts.includes(t)).length;
+      _TOPIC_IDF[topic][t] = df > 0 ? Math.log(N / df) : 0;
+    }
+  }
+}
+
+function _tokenize(text) {
+  // 简单中文n-gram分词：2-gram + 3-gram
+  const clean = text.toLowerCase().replace(/[^\u4e00-\u9fff\w\s]/g, ' ');
+  const tokens = [];
+  const words = clean.split(/\s+/).filter(w => w.length > 0);
+  for (const w of words) {
+    if (/[\u4e00-\u9fff]/.test(w)) {
+      // 中文：2-gram + 3-gram
+      for (let i = 0; i < w.length - 1; i++) tokens.push(w.slice(i, i + 2));
+      for (let i = 0; i < w.length - 2; i++) tokens.push(w.slice(i, i + 3));
+    } else {
+      // 英文/数字：保留原词
+      if (w.length >= 2) tokens.push(w);
+    }
+  }
+  return tokens;
+}
+
+function _tf(tokens) {
+  const freq = {};
+  for (const t of tokens) freq[t] = (freq[t] || 0) + 1;
+  const max = Math.max(...Object.values(freq), 1);
+  // 归一化TF
+  for (const k in freq) freq[k] = freq[k] / max;
+  return freq;
+}
+
+function _cosineSim(vecA, vecB) {
+  let dot = 0, normA = 0, normB = 0;
+  const keys = new Set([...Object.keys(vecA), ...Object.keys(vecB)]);
+  for (const k of keys) {
+    const a = vecA[k] || 0, b = vecB[k] || 0;
+    dot += a * b;
+    normA += a * a;
+    normB += b * b;
+  }
+  return normA > 0 && normB > 0 ? dot / (Math.sqrt(normA) * Math.sqrt(normB)) : 0;
+}
+
+function _topicCentroid(topic) {
+  const tokens = _TOPIC_CENTROIDS[topic] || [];
+  const tf = _tf(tokens);
+  const vec = {};
+  for (const [token, tfVal] of Object.entries(tf)) {
+    vec[token] = tfVal * (_TOPIC_IDF[topic]?.[token] || 1);
+  }
+  return vec;
+}
+
+// 预计算话题centroids（一次性）
+const _CENTROIDS = {};
+for (const topic of Object.keys(_TOPIC_CENTROIDS)) {
+  _CENTROIDS[topic] = _topicCentroid(topic);
+}
+
+/**
+ * 语义级话题检测
  * @param {string} text - 用户输入
- * @returns {object} { topic: string, keywords: string[], isNewTopic: boolean }
+ * @returns {object} { topic, confidence, isMetaContinue, method }
  */
 function detectTopic(text) {
   const lower = text.toLowerCase();
-  
-  // 话题关键词库
-  const topicKeywords = {
-    '供应商管理': ['供应商', '采购', '来料', '不良率', '审厂', '供应商审核', '质量管理', 'IATF16949', 'ISO9001', '交期', 'VDA6.3', '体系审核'],
-    '苏格拉底哲学': ['苏格拉底', 'socrates', 'elenchus', '反诘', '产婆术', '无知', '认识你自己', '美德即知识', '未经审视'],
-    '心经': ['心经', '般若波罗蜜多', '色即是空', '五蕴', '揭谛', '观自在', '舍利子', '涅槃', '咒'],
-    '心虫开发': ['心虫', 'heartflow', 'heart-logic', '启动', '版本', '升级', '修复bug', '代码', '模块'],
-    '育儿教育': ['孩子', '亲子', '父母', '教育', '学习', '成绩', '管教', '打骂', '青春期', '升学', '高考'],
-    '情感支持': ['累', '烦', '难过', '痛苦', '焦虑', '压力', '迷茫', '无助', '绝望', '崩溃', '难受', '伤心'],
-    '自我成长': ['成长', '改变', '觉醒', '认知', '思维', '模式', '习惯', '突破', '修行'],
-    'AI技术': ['AI', 'LLM', '模型', '训练', '微调', '推理', 'RAG', 'Agent', 'token', 'embedding'],
-    '工作事务': ['工作', '报告', '会议', '客户', '老板', '同事', '辞职', '面试', '加薪', '绩效'],
-  };
 
+  // 元指令：继续之前的话题（最高优先级）
+  const metaPatterns = ['继续', '继续说', '继续回答', '继续讨论', '继续思考', '继续上一个', '接着说', '后来呢'];
+  const isMetaContinue = metaPatterns.some(p => lower.includes(p));
+
+  // Step 1: 关键词命中（高精度）
   const matched = {};
-  for (const [topic, kws] of Object.entries(topicKeywords)) {
+  for (const [topic, kws] of Object.entries(_TOPIC_CENTROIDS)) {
     const hits = kws.filter(kw => lower.includes(kw.toLowerCase()));
     if (hits.length > 0) matched[topic] = hits;
   }
 
-  // 元指令：继续之前的话题
-  const metaPatterns = ['继续', '继续说', '继续回答', '继续讨论', '继续思考', '继续上一个'];
-  const isMetaContinue = metaPatterns.some(p => lower.includes(p));
+  // Step 2: 如果有高置信度关键词命中（≥3个词），直接返回
+  if (Object.values(matched).some(hits => hits.length >= 3)) {
+    const best = Object.entries(matched).sort((a, b) => b[1].length - a[1].length)[0];
+    return {
+      topic: best[0],
+      confidence: 1.0,
+      isMetaContinue,
+      matchedTopics: matched,
+      keywords: best[1],
+      method: 'keyword_strong',
+      insight: `命中${best[1].length}个词，确定话题[${best[0]}]`
+    };
+  }
 
-  // 话题标签（用于显示）
+  // Step 3: 语义级检测（TF-IDF cosine similarity）
+  const tokens = _tokenize(text);
+  if (tokens.length < 3) {
+    // 太短，用关键词结果或默认通用
+    const primaryTopic = Object.keys(matched).length > 0
+      ? Object.entries(matched).sort((a, b) => b[1].length - a[1].length)[0][0]
+      : '通用对话';
+    return {
+      topic: primaryTopic,
+      confidence: Object.keys(matched).length > 0 ? 0.5 : 0.1,
+      isMetaContinue,
+      matchedTopics: matched,
+      keywords: matched[primaryTopic] || [],
+      method: 'short_text',
+      insight: '文本太短，降级到关键词模式'
+    };
+  }
+
+  const inputTF = _tf(tokens);
+  const inputVec = {};
+  for (const [token, tfVal] of Object.entries(inputTF)) {
+    // 用平均IDF
+    let avgIDF = 0, count = 0;
+    for (const topic of Object.keys(_TOPIC_CENTROIDS)) {
+      if (_TOPIC_IDF[topic]?.[token]) { avgIDF += _TOPIC_IDF[topic][token]; count++; }
+    }
+    inputVec[token] = tfVal * (count > 0 ? avgIDF / count : 1);
+  }
+
+  // 计算与每个话题的cosine相似度
+  const scores = {};
+  for (const [topic, centroid] of Object.entries(_CENTROIDS)) {
+    scores[topic] = _cosineSim(inputVec, centroid);
+  }
+
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const bestTopic = sorted[0][0];
+  const bestScore = sorted[0][1];
+
+  // 阈值：cosine < 0.15 → 通用对话（语义不相关）
+  const SEMANTIC_THRESHOLD = 0.15;
+
+  if (bestScore < SEMANTIC_THRESHOLD && Object.keys(matched).length === 0) {
+    return {
+      topic: '通用对话',
+      confidence: 0.1,
+      isMetaContinue,
+      matchedTopics: matched,
+      keywords: [],
+      method: 'semantic_low',
+      semanticScores: Object.fromEntries(sorted.slice(0, 3)),
+      insight: `语义相似度太低(${bestScore.toFixed(3)})，判定为通用对话`
+    };
+  }
+
+  // 综合判断：有语义匹配 或 有弱关键词命中
+  const hasSemantic = bestScore >= SEMANTIC_THRESHOLD;
+  const hasKeyword = Object.keys(matched).length > 0;
+
+  if (hasSemantic && hasKeyword) {
+    // 两者都有，选得分更高的
+    const keywordBest = Object.entries(matched).sort((a, b) => b[1].length - a[1].length)[0];
+    const keywordTopic = keywordBest[0];
+    const semanticTopic = bestTopic;
+    // 如果语义最高分话题不在关键词命中里，且关键词命中≥1，取关键词结果（更直接）
+    if (keywordTopic === semanticTopic) {
+      return {
+        topic: keywordTopic,
+        confidence: Math.min(0.7 + keywordBest[1].length * 0.1, 0.95),
+        isMetaContinue,
+        matchedTopics: matched,
+        keywords: keywordBest[1],
+        method: 'hybrid',
+        semanticScores: Object.fromEntries(sorted.slice(0, 3)),
+        insight: `关键词+语义双命中[${keywordTopic}]，置信度${(0.7 + keywordBest[1].length * 0.1).toFixed(2)}`
+      };
+    }
+  }
+
+  if (hasSemantic) {
+    return {
+      topic: bestTopic,
+      confidence: Math.min(bestScore * 2, 0.9),
+      isMetaContinue,
+      matchedTopics: matched,
+      keywords: _TOPIC_CENTROIDS[bestTopic]?.filter(k => lower.includes(k.toLowerCase())) || [],
+      method: 'semantic',
+      semanticScores: Object.fromEntries(sorted.slice(0, 3)),
+      insight: `语义匹配[${bestTopic}]，相似度${bestScore.toFixed(3)}`
+    };
+  }
+
+  // 回退：弱关键词
   const primaryTopic = Object.keys(matched).length > 0
     ? Object.entries(matched).sort((a, b) => b[1].length - a[1].length)[0][0]
     : '通用对话';
-
   return {
     topic: primaryTopic,
-    matchedTopics: matched,
+    confidence: 0.3,
     isMetaContinue,
+    matchedTopics: matched,
     keywords: matched[primaryTopic] || [],
-    // 诊断用
-    allMatches: matched
+    method: 'keyword_weak',
+    insight: `弱关键词命中[${primaryTopic}]，置信度0.3`
   };
 }
 

@@ -1,7 +1,12 @@
 /**
- * HeartFlow HealingMemoryRL v11.5.6
+ * HeartFlow HealingMemoryRL v11.6.0
  * Q-learning based repair strategy memory for self-healing.
  * Paper: Reflexion (2023), CRITIC (2024)
+ *
+ * v11.6.0 新增：autoCleanupRL() 增强
+ * - Q-table条目元数据追踪（lastAccessedAt, accessCount）
+ * - 三重清理条件：太久没访问 + 访问次数少 + Q值低
+ * - "无所得故"：放下不需要的教训
  */
 
 const fs = require('fs');
@@ -10,6 +15,7 @@ const crypto = require('crypto');
 
 const MEMORY_DIR = path.join(__dirname, '../../memory');
 const QTABLE_FILE = path.join(MEMORY_DIR, 'q-table.json');
+const QMetaFile = path.join(MEMORY_DIR, 'q-meta.json');
 
 // [修复] HMAC Key 缓存，避免每次导入生成新key
 let _cachedHmacKey = null;
@@ -50,6 +56,36 @@ function _getHmacKey() {
 
 const QTABLE_HMAC_KEY = _getHmacKey();
 
+// Q-table条目元数据（独立文件，与q-table分开）
+let _qMeta = {};
+
+function _loadQMeta() {
+  try {
+    if (fs.existsSync(QMetaFile)) {
+      _qMeta = JSON.parse(fs.readFileSync(QMetaFile, 'utf-8'));
+    } else {
+      _qMeta = {};
+    }
+  } catch (e) {
+    _qMeta = {};
+  }
+}
+
+function _saveQMeta() {
+  try {
+    fs.writeFileSync(QMetaFile, JSON.stringify(_qMeta, null, 2), 'utf-8');
+  } catch (e) { /* ignore */ }
+}
+
+function _touchEntry(ck) {
+  if (!_qMeta[ck]) {
+    _qMeta[ck] = { createdAt: Date.now(), lastAccessedAt: Date.now(), accessCount: 0 };
+  }
+  _qMeta[ck].lastAccessedAt = Date.now();
+  _qMeta[ck].accessCount = (_qMeta[ck].accessCount || 0) + 1;
+  _saveQMeta();
+}
+
 class HealingMemoryRL {
   constructor(maxMemory = 100) {
     this.maxMemory = maxMemory;
@@ -63,6 +99,7 @@ class HealingMemoryRL {
     this.decorrelationWindow = 3; // 最近N次不同strategy才更新
     // Load persisted Q-table on init
     this._loadQTable();
+    _loadQMeta();
   }
 
   _ensureMemoryDir() {
@@ -79,7 +116,6 @@ class HealingMemoryRL {
       // [A04] HMAC完整性校验
       if (data._hmac) {
         const { _hmac, qTable, history, savedAt, ...rest } = data;
-        // 若 env key 为空/undefined，跳过 env 检查，强制用 keyFile
         const envKey = process.env.HEARTFLOW_QTABLE_HMAC_KEY;
         const effectiveKey = (envKey !== undefined && envKey !== null && envKey !== '')
           ? envKey
@@ -88,8 +124,7 @@ class HealingMemoryRL {
           .update(JSON.stringify({ qTable, history, savedAt, ...rest }))
           .digest('hex');
         if (computed !== _hmac) {
-          console.warn('[HealingMemoryRL] Q-table HMAC mismatch (file corrupted or env changed), restoring from backup');
-          // 读取备份（去掉 _hmac 字段后就是旧格式），不丢失数据
+          console.warn('[HealingMemoryRL] Q-table HMAC mismatch, restoring from backup');
           if (data.qTable) {
             this.qTable = new Map(Object.entries(data.qTable));
             this.history = Array.isArray(data.history) ? data.history.slice(-this.maxMemory) : [];
@@ -124,16 +159,11 @@ class HealingMemoryRL {
 
   /**
    * Set machine/environment context for Q-key discrimination
-   * Call this before updateFromRepair/getBestStrategy in multi-machine scenarios
-   * @param {object} ctx - { machineId, environment, region }
    */
   setContext(ctx = {}) {
     this._ctx = { machineId: ctx.machineId || 'default', environment: ctx.environment || 'unknown', region: ctx.region || 'unknown' };
   }
 
-  /**
-   * Build a context-aware Q-key from error pattern + environment
-   */
   _contextKey(errorPattern) {
     const { machineId, environment, region } = this._ctx;
     return `${errorPattern}@${machineId}:${environment}:${region}`;
@@ -141,9 +171,6 @@ class HealingMemoryRL {
 
   /**
    * Update Q-value from repair outcome
-   * @param {string} errorPattern - error key (normalized message)
-   * @param {string} strategy - repair strategy used
-   * @param {boolean} success - whether the repair succeeded
    */
   updateFromRepair(errorPattern, strategy, success) {
     const ck = this._contextKey(errorPattern);
@@ -155,6 +182,7 @@ class HealingMemoryRL {
     const reward = success ? 1.0 : -0.5;
     const learningRate = 0.2;
     entry[strategy] = currentQ + learningRate * (reward - currentQ);
+    _touchEntry(ck);
     this._saveQTable();
   }
 
@@ -163,6 +191,7 @@ class HealingMemoryRL {
    */
   getBestStrategy(errorPattern) {
     const ck = this._contextKey(errorPattern);
+    _touchEntry(ck);
     const entry = this.qTable.get(ck);
     if (!entry) return null;
     let best = null;
@@ -181,6 +210,7 @@ class HealingMemoryRL {
    */
   getRankedStrategies(errorPattern) {
     const ck = this._contextKey(errorPattern);
+    _touchEntry(ck);
     const entry = this.qTable.get(ck) || {};
     return Object.entries(entry)
       .sort((a, b) => b[1] - a[1])
@@ -200,14 +230,10 @@ class HealingMemoryRL {
 
   /**
    * Get available strategies given error + context, using RL Q-value ranking + fallback hints
-   * @param {string} errorPattern - normalized error message
-   * @param {string[]} hints - available hint strategies from rule-based repair hints
-   * @returns {string[]} - strategies ranked by Q-value, augmented with hints
    */
   getAvailableStrategies(errorPattern, hints = []) {
     const ranked = this.getRankedStrategies(errorPattern);
     const rankedStrats = ranked.map(r => r.strategy);
-    // Deduplicate: RL strategies first, then hints that aren't already in Q-table
     const seen = new Set(rankedStrats);
     for (const h of hints) {
       if (!seen.has(h)) seen.add(h);
@@ -225,13 +251,9 @@ class HealingMemoryRL {
     }
   }
 
-
   /**
    * 持续前进：Q-table 条目清除
    * "无所得故" — Q-table 条目不是用来拥有的，是用来放下的
-   * 当某个错误模式不再相关时，主动清除其 Q-table 条目
-   * @param {string} errorPattern - 要清除的错误模式
-   * @returns {object} 清除结果
    */
   letGoOf(errorPattern) {
     if (!errorPattern) return { result: false, reason: 'no_pattern' };
@@ -242,8 +264,9 @@ class HealingMemoryRL {
     const entry = this.qTable.get(ck);
     const strategyCount = Object.keys(entry).length;
     this.qTable.delete(ck);
+    delete _qMeta[ck];
     this._saveQTable();
-    // 记录放下事件
+    _saveQMeta();
     if (!this._letGoLog) this._letGoLog = [];
     this._letGoLog.push({
       pattern: errorPattern.slice(0, 50),
@@ -262,28 +285,45 @@ class HealingMemoryRL {
 
   /**
    * 自动清理 Q-table：定期清除过期的低价值条目
-   * "超越评判标准，不垢不净，不增不减" — Q-table 不是越大越好
+   * "无所得故" — Q-table条目不是用来拥有的，是用来放下的
+   * @param {number} maxAge - 最大存活时间(ms)，默认90天
+   * @param {number} minAccesses - 最低访问次数，低于此值视为冷门条目
+   * @param {number} minQ - 最低Q值
+   * @returns {object} 清理结果
    */
-  autoCleanupRL(maxAge = 90 * 24 * 60 * 60 * 1000, minQ = 0.3) {
+  autoCleanupRL(maxAge = 90 * 24 * 60 * 60 * 1000, minAccesses = 2, minQ = 0.3) {
+    _loadQMeta();
     const now = Date.now();
     let cleaned = 0;
+    let reasons = [];
+
     for (const [key, entry] of this.qTable.entries()) {
-      // 检查最后更新时间（从history推断）
-      const historyEntry = this.history.find(h => h.errorPattern === key.split('@')[0]);
-      if (historyEntry) {
-        const age = now - historyEntry.ts;
-        const maxQ = Math.max(...Object.values(entry));
-        if (age > maxAge && maxQ < minQ) {
-          this.qTable.delete(key);
-          cleaned++;
-        }
+      const meta = _qMeta[key];
+      // 无meta：跳过（保守策略，避免误删旧数据）
+      if (!meta) continue;
+
+      const age = now - meta.lastAccessedAt;
+      const maxQ = Object.values(entry).reduce((m, v) => Math.max(m, v), 0);
+
+      // 三重清理条件：太久没访问 + 访问次数少 + Q值低
+      if (age > maxAge && (meta.accessCount || 0) < minAccesses && maxQ < minQ) {
+        this.qTable.delete(key);
+        delete _qMeta[key];
+        cleaned++;
+        reasons.push({ key: key.slice(0, 40), age: Math.round(age / 86400000) + 'd', q: maxQ.toFixed(2) });
       }
     }
-    if (cleaned > 0) this._saveQTable();
+
+    if (cleaned > 0) {
+      _saveQMeta();
+      this._saveQTable();
+    }
+
     return {
       cleaned,
       remaining: this.qTable.size,
-      insight: '超越评判标准，超越评判：Q-table 不是越大越好，放下不需要的，才能记住真正重要的。'
+      reasons: reasons.slice(0, 5),
+      insight: '放下了不需要的教训，Q-table只留真正有用的。无所得故，心无罣碍。'
     };
   }
 
