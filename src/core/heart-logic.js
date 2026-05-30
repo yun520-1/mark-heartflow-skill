@@ -1265,8 +1265,19 @@ class HeartLogic {
       insight: '深入洞察时，照见一切现象的本质：一切在变，没有永恒不变的自我'
     };
   }
-
-
-
+  // 苏格拉底哲学：追问才能逼近真相
+  questionBeforeAnswer(question, intendedAnswer) {
+    const isVague = !question || question.length < 5;
+    const assumesContext = intendedAnswer.includes('根据') || intendedAnswer.includes('之前提到');
+    const isDefinitive = intendedAnswer.startsWith('应该') || intendedAnswer.startsWith('必须');
+    if (isVague || assumesContext || isDefinitive) {
+      return { canAnswer: false, reason: 'assumption_detected', insight: '追问才能逼近真相。' };
+    }
+    return { canAnswer: true, answer: intendedAnswer };
+  }
+  admitNotKnowing(question) {
+    return { admitted: true, response: '我不知道，但可以和你一起追问。', insight: '承认无知是思考的开始。' };
+  }
 }
+
 module.exports = { HeartLogic };
