@@ -138,9 +138,9 @@ const lessonBank = {
   },
 
   // ========================================
-  // 心经 × lesson-bank 整合 v1.7.0
+  // 心虫哲学 × lesson-bank 整合 v1.7.0
   // 核心："无所得故" — 教训不是用来拥有的，是用来放下的
-  // "揭谛揭谛" — 走了一步，再走一步，不停留
+  // 持续前进 — 走了一步，再走一步，不停留
   // ========================================
 
   letGoOf(lessonId) {
@@ -162,7 +162,7 @@ const lessonBank = {
       lessonId,
       content: lesson.content.slice(0, 50),
       totalLetGo: this._letGoLog.length,
-      insight: '揭谛揭谛：放下了，继续走。彼岸不在别处，在每一步脚下。'
+      insight: '持续前进：放下了，继续走。答案不在远方，在每一步的脚下。'
     };
   },
 
@@ -179,7 +179,7 @@ const lessonBank = {
       keyword,
       totalFound: toLetGo.length,
       totalLetGo: results.filter(r => r.result).length,
-      insight: `揭谛揭谛：放下了${results.filter(r => r.result).length}条教训，继续往前走。`
+      insight: `持续前进：放下了${results.filter(r => r.result).length}条教训，继续往前走。`
     };
   },
 
@@ -201,7 +201,7 @@ const lessonBank = {
       totalAfter: this.lessons.length - results.filter(r => r.result).length,
       deleted: results.filter(r => r.result).length,
       kept: keep.length,
-      insight: '不垢不净，不增不减：教训不是越多越好，放下不需要的，才能记住真正重要的。'
+      insight: '超越评判标准，超越评判：教训不是越多越好，放下不需要的，才能记住真正重要的。'
     };
   },
 

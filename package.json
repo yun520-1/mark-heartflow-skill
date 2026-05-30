@@ -1,6 +1,6 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "MarkCode AI - 独立 Agent 系统，直接链接 API，具备完整执行能力。",
   "main": "src/core/heartflow.js",
   "bin": {
