@@ -1,5 +1,5 @@
 /**
- * HeartFlow v1.6.0 — 单一入口，统一路由
+ * HeartFlow v1.6.1 — 单一入口，统一路由
  *
  * 调用方式:
  *   hf.dispatch('subsystem.method', arg1, arg2)  // 统一路由
@@ -52,6 +52,9 @@ const { IdentityCore } = require('../identity/identity-core.js');
 const { SelfModel } = require('../identity/self-model.js');
 const { SelfVerifier } = require('../identity/self-verifier.js');
 const { LessonBank } = require('../identity/lesson-bank.js');
+
+// Lessons persistence — 心虫教训持久化
+const { lessonStorage } = require('./lessons/lesson-storage.js');
 
 
 // Psychology
@@ -178,7 +181,7 @@ const { EmotionalGrowth } = require('../emotion/emotional-growth.js');
 const { MoodEvolution } = require('../emotion/mood-evolution.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '1.6.0';
+const VERSION = '1.6.1';
 const BUILD_DATE = '2026-05-28';
 
 class HeartFlow {
@@ -856,6 +859,8 @@ class HeartFlow {
     'desireSystem.satisfy', 'desireSystem.getActiveDesires', 'desireSystem.getCurrentNeeds', 'desireSystem.getSummary',
     'emotionalGrowth.recordExperience', 'emotionalGrowth.getPatterns', 'emotionalGrowth.getGrowthSummary',
     'moodEvolution.snapshot', 'moodEvolution.getCurrentTrend', 'moodEvolution.getBaseline', 'moodEvolution.getStats',
+    // heartflow — 心虫教训持久化
+    'heartflow.recordLesson',
   ]);
 
   /**
@@ -1033,6 +1038,28 @@ class HeartFlow {
   checkLessonPattern(input) {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.lesson.checkPattern(input);
+  }
+
+  /**
+   * recordLesson — 心虫教训持久化
+   * 将被纠正的教训写入 src/core/lessons/ 目录
+   * 
+   * @param {object} lesson - 教训内容
+   * @param {string} lesson.type - 教训类型 (insight|error|correction)
+   * @param {string} lesson.content - 教训内容
+   * @param {string} lesson.context - 上下文场景
+   * @param {string} lesson.trigger - 触发原因 (user_correction|self_detected|feedback)
+   * @param {number} lesson.importance - 重要性 1-5
+   * @returns {object} - { success, id, lesson }
+   */
+  recordLesson(lesson) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    if (!lesson || !lesson.content) {
+      return { success: false, error: 'lesson.content is required' };
+    }
+    // 附加会话ID
+    lesson.sessionId = this.sessionId;
+    return lessonStorage.record(lesson);
   }
 
   heal(error) {

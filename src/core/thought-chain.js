@@ -152,11 +152,20 @@ class ThoughtChain {
 
         // 1.6 【思维连机制】调用 psychology 子系统 — 串联第一层
         let psychResult = null;
+        let empathyResult = null;
         try {
           psychResult = hf.dispatch('psychology.analyzePsychology', input);
         } catch (e) {
           // 子系统不存在时静默降级
           psychResult = null;
+        }
+        
+        // 1.7 【心理推断深度集成】调用共情检测 — empathy-detector 结果注入上下文
+        try {
+          empathyResult = hf.dispatch('psychology.getEmpathy', input);
+        } catch (e) {
+          // 共情检测失败时静默降级
+          empathyResult = null;
         }
 
         ctx.taskType = type;
@@ -168,13 +177,21 @@ class ThoughtChain {
           goal,
           type,
           strategy,
-          // 串联结果
+          // 串联结果：心理分析 + 共情检测
           psychology: psychResult ? {
             intent: psychResult.intent,
             emotion: psychResult.emotion,
             needs: psychResult.needs,
             defenses: psychResult.defenses,
             crisis: psychResult.crisis,
+            // 【心理推断深度集成】注入共情检测结果
+            empathy: empathyResult ? {
+              score: empathyResult.score,
+              level: empathyResult.level,
+              empathyType: empathyResult.empathyType,
+              components: empathyResult.components,
+              summary: empathyResult.summary
+            } : null,
           } : null,
           timestamp: Date.now()
         };
@@ -538,7 +555,9 @@ class ThoughtChain {
           taskType: parse?.type,
           suppressed: !shouldRespond,
           suppressReason,
-          emotionState: emotionResult?.currentState || null
+          emotionState: emotionResult?.currentState || null,
+          // 【心理推断深度集成】共情检测结果注入上下文
+          empathy: parse?.psychology?.empathy || null
         };
 
         return {
