@@ -12,6 +12,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { atomicWrite } = require('../../utils/atomic-write');
 const crypto = require('crypto');
 
 class TrialityMemory {
@@ -96,7 +97,7 @@ class TrialityMemory {
     }, 2000); // 2秒防抖
   }
 
-  _doSave() {
+  async _doSave() {
     const exportPath = this._getExportPath();
     try {
       const data = {
@@ -104,7 +105,7 @@ class TrialityMemory {
         relationships: Object.fromEntries(this.relationships),
         exportedAt: new Date().toISOString()
       };
-      fs.writeFileSync(exportPath, JSON.stringify(data, null, 2));
+      await atomicWrite(exportPath, JSON.stringify(data, null, 2));
     } catch (e) {
       console.warn('[TrialityMemory] 自动保存失败:', e.message);
     }
@@ -362,19 +363,19 @@ class TrialityMemory {
     };
   }
 
-  exportToFile(filePath) {
+  async exportToFile(filePath) {
     const data = {
       memories: this.memories,
       relationships: Array.from(this.relationships.entries()),
       exportedAt: new Date().toISOString()
     };
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    await atomicWrite(filePath, JSON.stringify(data, null, 2));
 
     return { success: true, count: this.memories.length };
   }
 
-  importFromFile(filePath) {
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  async importFromFile(filePath) {
+    const data = JSON.parse(await fs.promises.readFile(filePath, 'utf8'));
     if (data.memories) {
       for (const mem of data.memories) {
         this.store(mem);

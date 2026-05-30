@@ -11,6 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { atomicWrite } = require('./utils/atomic-write');
 const crypto = require('crypto');
 
 const MEMORY_DIR = path.join(__dirname, '../../memory');
@@ -71,10 +72,8 @@ function _loadQMeta() {
   }
 }
 
-function _saveQMeta() {
-  try {
-    fs.writeFileSync(QMetaFile, JSON.stringify(_qMeta, null, 2), 'utf-8');
-  } catch (e) { /* ignore */ }
+async function _saveQMeta() {
+  await atomicWrite(QMetaFile, JSON.stringify(_qMeta, null, 2));
 }
 
 function _touchEntry(ck) {
@@ -83,7 +82,7 @@ function _touchEntry(ck) {
   }
   _qMeta[ck].lastAccessedAt = Date.now();
   _qMeta[ck].accessCount = (_qMeta[ck].accessCount || 0) + 1;
-  _saveQMeta();
+  _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
 }
 
 class HealingMemoryRL {
@@ -144,17 +143,13 @@ class HealingMemoryRL {
     }
   }
 
-  _saveQTable() {
-    try {
-      this._ensureMemoryDir();
-      const { _hmac, ...rest } = { qTable: Object.fromEntries(this.qTable), history: this.history.slice(-50), savedAt: new Date().toISOString() };
-      const sigPayload = { qTable: rest.qTable, history: rest.history, savedAt: rest.savedAt };
-      const hmac = crypto.createHmac('sha256', QTABLE_HMAC_KEY).update(JSON.stringify(sigPayload)).digest('hex');
-      const data = { ...sigPayload, _hmac: hmac };
-      fs.writeFileSync(QTABLE_FILE, JSON.stringify(data, null, 2), 'utf-8');
-    } catch (e) {
-      console.error('[HealingMemoryRL] _saveQTable failed:', e.message);
-    }
+  async _saveQTable() {
+    this._ensureMemoryDir();
+    const { _hmac, ...rest } = { qTable: Object.fromEntries(this.qTable), history: this.history.slice(-50), savedAt: new Date().toISOString() };
+    const sigPayload = { qTable: rest.qTable, history: rest.history, savedAt: rest.savedAt };
+    const hmac = crypto.createHmac('sha256', QTABLE_HMAC_KEY).update(JSON.stringify(sigPayload)).digest('hex');
+    const data = { ...sigPayload, _hmac: hmac };
+    await atomicWrite(QTABLE_FILE, JSON.stringify(data, null, 2));
   }
 
   /**
@@ -183,7 +178,7 @@ class HealingMemoryRL {
     const learningRate = 0.2;
     entry[strategy] = currentQ + learningRate * (reward - currentQ);
     _touchEntry(ck);
-    this._saveQTable();
+    this._saveQTable().catch(e => console.error('[HealingMemoryRL] _saveQTable failed:', e.message));
   }
 
   /**
@@ -265,8 +260,8 @@ class HealingMemoryRL {
     const strategyCount = Object.keys(entry).length;
     this.qTable.delete(ck);
     delete _qMeta[ck];
-    this._saveQTable();
-    _saveQMeta();
+    this._saveQTable().catch(e => console.error('[HealingMemoryRL] _saveQTable failed:', e.message));
+    _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
     if (!this._letGoLog) this._letGoLog = [];
     this._letGoLog.push({
       pattern: errorPattern.slice(0, 50),
@@ -315,8 +310,8 @@ class HealingMemoryRL {
     }
 
     if (cleaned > 0) {
-      _saveQMeta();
-      this._saveQTable();
+      _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
+      this._saveQTable().catch(e => console.error('[HealingMemoryRL] _saveQTable failed:', e.message));
     }
 
     return {

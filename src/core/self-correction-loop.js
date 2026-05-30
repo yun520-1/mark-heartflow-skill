@@ -6,7 +6,7 @@ const selfCorrectionLoop = {
   corrections: [],
 
   // 记录修正
-  record(type, original, corrected, reason) {
+  async record(type, original, corrected, reason) {
     const { randomBytes } = require('crypto');
     const entry = {
       id: `correction-${Date.now()}-${randomBytes(4).toString('hex')}`,
@@ -17,7 +17,7 @@ const selfCorrectionLoop = {
       timestamp: new Date().toISOString()
     };
     this.corrections.push(entry);
-    this._persist();
+    this._persistAsync().catch(e => console.error('[SelfCorrection] Persist failed:', e.message));
     return entry;
   },
 

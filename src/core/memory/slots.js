@@ -15,6 +15,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { atomicWrite } = require('../utils/atomic-write');
 const crypto = require('crypto');
 
 // ============================================================
@@ -426,7 +427,7 @@ class Slots {
    * 保存槽到文件
    * @returns {boolean} 是否成功
    */
-  save() {
+  async save() {
     if (!this._dirty && this._saveTimer) {
       clearTimeout(this._saveTimer);
       this._saveTimer = null;
@@ -440,7 +441,7 @@ class Slots {
       };
 
       const filePath = this._getFilePath();
-      fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+      await atomicWrite(filePath, JSON.stringify(data, null, 2));
       
       this._dirty = false;
       return true;

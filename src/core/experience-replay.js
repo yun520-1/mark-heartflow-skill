@@ -4,6 +4,7 @@
  */
 
 const fs = require('fs');
+const { atomicWrite } = require('./utils/atomic-write');
 const path = require('path');
 
 class ExperienceReplay {
@@ -28,8 +29,8 @@ class ExperienceReplay {
     return { patterns: [], lastUpdate: null };
   }
 
-  savePatterns() {
-    fs.writeFileSync(this.patternFile, JSON.stringify(this.patterns, null, 2));
+  async savePatterns() {
+    await atomicWrite(this.patternFile, JSON.stringify(this.patterns, null, 2));
   }
 
   initializeKnownPatterns() {
@@ -226,7 +227,7 @@ class ExperienceReplay {
   /**
    * 保存建议
    */
-  saveSuggestions(suggestions) {
+  async saveSuggestions(suggestions) {
     let allSuggestions = [];
     try {
       if (fs.existsSync(this.suggestionFile)) {
@@ -245,7 +246,7 @@ class ExperienceReplay {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(this.suggestionFile, JSON.stringify(allSuggestions, null, 2));
+    await atomicWrite(this.suggestionFile, JSON.stringify(allSuggestions, null, 2));
   }
 
   /**

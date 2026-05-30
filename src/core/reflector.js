@@ -4,6 +4,7 @@
  */
 
 const fs = require('fs');
+const { atomicWrite } = require('./utils/atomic-write');
 const path = require('path');
 
 class Reflector {
@@ -263,7 +264,7 @@ class Reflector {
   /**
    * 保存报告
    */
-  saveReport(report) {
+  async saveReport(report) {
     let reports = [];
     try {
       if (fs.existsSync(this.reportFile)) {
@@ -282,7 +283,7 @@ class Reflector {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(this.reportFile, JSON.stringify(reports, null, 2));
+    await atomicWrite(this.reportFile, JSON.stringify(reports, null, 2));
   }
 
   /**

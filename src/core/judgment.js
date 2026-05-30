@@ -12,6 +12,7 @@
  */
 
 const fs = require('fs');
+const { atomicWrite } = require('./utils/atomic-write');
 const path = require('path');
 const crypto = require('crypto');
 
@@ -484,12 +485,12 @@ class MetaJudgment {
     this._saveTimer = setTimeout(() => this._doSave(), 2000);
   }
 
-  _doSave() {
+  async _doSave() {
     try {
       if (!fs.existsSync(DATA_DIR)) {
         fs.mkdirSync(DATA_DIR, { recursive: true });
       }
-      fs.writeFileSync(JUDGMENT_HISTORY_PATH, JSON.stringify({
+      await atomicWrite(JUDGMENT_HISTORY_PATH, JSON.stringify({
         history: this.history,
         confidenceClaims: this.confidenceClaims,
         savedAt: new Date().toISOString()

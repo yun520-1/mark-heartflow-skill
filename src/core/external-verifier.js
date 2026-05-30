@@ -7,6 +7,7 @@ const { claimExtractor } = require('./claim-extractor');
 const { confidenceAnnotator } = require('./confidence-annotator');
 const fs = require('fs');
 const path = require('path');
+const { atomicWrite } = require('./utils/atomic-write');
 
 const CACHE_FILE = path.join(__dirname, '../../data/verification-cache.json');
 
@@ -37,16 +38,11 @@ const externalVerifier = {
     return this;
   },
 
-  // 保存缓存
-  saveCache() {
-    try {
-      fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
-      fs.writeFileSync(CACHE_FILE, JSON.stringify(this.cache, null, 2));
-    } catch (e) {
-      // 安全修复：记录错误而非静默失败
-      console.error('[ExternalVerifier] Cache save failed:', e.message);
-    }
-    return this;
+  // 保存缓存（异步原子写入）
+  async saveCacheAsync() {
+    const fs = require('fs');
+    fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
+    await atomicWrite(CACHE_FILE, JSON.stringify(this.cache, null, 2));
   },
 
   // 从缓存获取
@@ -84,7 +80,7 @@ const externalVerifier = {
     }
 
     this.cache.entries.push(result);
-    this.saveCache();
+    this.saveCacheAsync().catch(e => console.error("[ExternalVerifier] Cache save failed:", e.message));
     return result;
   },
 
@@ -113,7 +109,7 @@ const externalVerifier = {
   // 清理缓存
   clearCache() {
     this.cache = { entries: [] };
-    this.saveCache();
+    this.saveCacheAsync().catch(e => console.error("[ExternalVerifier] Cache save failed:", e.message));
     return { cleared: true };
   }
 };
