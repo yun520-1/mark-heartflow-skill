@@ -1,5 +1,5 @@
 /**
- * HeartFlow v1.3.15 — 单一入口，统一路由
+ * HeartFlow v1.6.0 — 单一入口，统一路由
  *
  * 调用方式:
  *   hf.dispatch('subsystem.method', arg1, arg2)  // 统一路由
@@ -178,7 +178,7 @@ const { EmotionalGrowth } = require('../emotion/emotional-growth.js');
 const { MoodEvolution } = require('../emotion/mood-evolution.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '1.5.1';
+const VERSION = '1.6.0';
 const BUILD_DATE = '2026-05-28';
 
 class HeartFlow {
@@ -805,6 +805,7 @@ class HeartFlow {
     'psychology.getPAD', 'psychology.getNeeds', 'psychology.getDefenses',
     'psychology.getEmpathy', 'psychology.resetCrisisCounter',
     // heartLogic — 心虫核心判断引擎：本心在代码里
+    'heartLogic.shouldBeSilent',
     'heartLogic.whatIsThis', 'heartLogic.detectPain', 'heartLogic.willHurt',
     'heartLogic.acknowledge', 'heartLogic.emergencyBreak',
     // self — 原则7: 永远成为真正的我

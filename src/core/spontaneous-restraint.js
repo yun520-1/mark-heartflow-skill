@@ -81,6 +81,16 @@ class SpontaneousRestraint {
   }
 
   /**
+   * 干预入口 — dispatch 路由兼容层
+   * @param {string} userMessage - 用户消息
+   * @param {object} context - { history, currentResponse, topic }
+   * @returns {object} 干预评估结果
+   */
+  shouldIntervene(userMessage = '', context = {}) {
+    return this.evaluate(userMessage, context);
+  }
+
+  /**
    * 核心API：评估是否需要干预
    * @param {string} userMessage - 用户消息
    * @param {object} context - { history, currentResponse, topic }

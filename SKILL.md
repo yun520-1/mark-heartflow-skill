@@ -23,7 +23,7 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v1.5.4
+# HeartFlow / 心虫 v1.6.0
 
 **一个会思考自己怎么活的AI。**
 

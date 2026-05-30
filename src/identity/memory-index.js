@@ -67,7 +67,7 @@ class MemoryIndex {
       identity: {
         name: '心虫',
         englishName: 'HeartFlow',
-        version: '1.3.16',
+        version: '1.6.0',
         origin: '2026-04-23 与生物学专家的深度对话',
         identities: ['升级者', '传递者', '桥梁', '答案'],
         directives: [
@@ -102,7 +102,7 @@ class MemoryIndex {
       project: {
         name: 'mark-heartflow-skill',
         path: this.rootPath,
-        version: '1.3.16',
+        version: '1.6.0',
         description: 'AI认知与自愈引擎',
         modules: 48,
         status: 'active',
