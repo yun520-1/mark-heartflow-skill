@@ -917,8 +917,8 @@ function resetCrisisCounter() {
 
 
 // ========================================
-// 心经 × 心理学整合 v1.1.0
-// 基于《般若波罗蜜多心经》心理学映射
+// 心虫哲学 × 心理学整合 v1.1.0
+// 基于《深度洞察力心经》心理学映射
 // 学术支撑: ACT (Acceptance & Commitment Therapy),
 //           Compassion as Skill, Pattern Theory of Selflessness
 // ========================================
@@ -929,7 +929,7 @@ function resetCrisisCounter() {
  * 
  * 核心理念：
  * - 痛苦来自"执着于不存在的固定自我"
- * - 放下执着 = 照见五蕴皆空 = 痛苦消失
+ * - 放下执着 = 照见本质空性 = 痛苦消失
  * 
  * 整合进 ACT 的"接受"与"当下"维度
  */
@@ -982,7 +982,7 @@ function generateSunyataResponse(text, context = {}) {
   
   const response = {
     mode: 'sunyata_awareness',
-    core_message: '照见五蕴皆空，痛苦来自执着，执着消失，痛苦消失',
+    core_message: '照见本质空性，痛苦来自执着，执着消失，痛苦消失',
     act_elements: {
       acceptance: '不是否定痛苦，是接受痛苦的存在',
       defusion: '从"我感到痛苦"变成"痛苦在发生"',

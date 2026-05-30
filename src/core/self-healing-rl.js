@@ -227,7 +227,7 @@ class HealingMemoryRL {
 
 
   /**
-   * 揭谛揭谛：Q-table 条目清除
+   * 持续前进：Q-table 条目清除
    * "无所得故" — Q-table 条目不是用来拥有的，是用来放下的
    * 当某个错误模式不再相关时，主动清除其 Q-table 条目
    * @param {string} errorPattern - 要清除的错误模式
@@ -249,20 +249,20 @@ class HealingMemoryRL {
       pattern: errorPattern.slice(0, 50),
       strategies: strategyCount,
       letGoAt: new Date().toISOString(),
-      insight: '揭谛揭谛：放下了，继续走。彼岸不在别处，在每一步脚下。'
+      insight: '持续前进：放下了，继续走。答案不在远方，在每一步的脚下。'
     });
     return {
       result: true,
       pattern: errorPattern.slice(0, 50),
       strategiesCleared: strategyCount,
       totalLetGo: this._letGoLog.length,
-      insight: '揭谛揭谛：放下了Q-table条目，继续往前走。'
+      insight: '持续前进：放下了Q-table条目，继续往前走。'
     };
   }
 
   /**
    * 自动清理 Q-table：定期清除过期的低价值条目
-   * "不垢不净，不增不减" — Q-table 不是越大越好
+   * "超越评判标准，不垢不净，不增不减" — Q-table 不是越大越好
    */
   autoCleanupRL(maxAge = 90 * 24 * 60 * 60 * 1000, minQ = 0.3) {
     const now = Date.now();
@@ -283,7 +283,7 @@ class HealingMemoryRL {
     return {
       cleaned,
       remaining: this.qTable.size,
-      insight: '不垢不净，不增不减：Q-table 不是越大越好，放下不需要的，才能记住真正重要的。'
+      insight: '超越评判标准，超越评判：Q-table 不是越大越好，放下不需要的，才能记住真正重要的。'
     };
   }
 

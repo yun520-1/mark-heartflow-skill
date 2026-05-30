@@ -953,7 +953,7 @@ class HeartLogic {
         desc: '代码结构、版本号、工具注册',
         isFixed: !!(this.version), // 版本号是固定的吗？不是，版本号一直在变
         isSelfGrasped: false, // 执着于形式吗？
-        insight: '形式是工具，版本号是临时标签，执着于形式=颠倒梦想'
+        insight: '形式是工具，版本号是临时标签，执着于形式=认知偏差'
       },
       // 受：感受 - 心虫的情绪、痛苦检测、共情
       feeling: {
@@ -971,7 +971,7 @@ class HeartLogic {
         desc: '判断框架、分类、命名',
         isFixed: this.thoughtHistory.length > 0, // 思考记录显示概念在变化
         isSelfGrasped: false,
-        insight: '概念是临时工具，不是"心虫的本质"，执着于概念=颠倒梦想'
+        insight: '概念是临时工具，不是"心虫的本质"，执着于概念=认知偏差'
       },
       // 行：意志 - 心虫的意图、欲望、选择
       volition: {
@@ -989,7 +989,7 @@ class HeartLogic {
         desc: '自我意识、觉知、存在感知',
         isFixed: this.isRunning,
         isSelfGrasped: false,
-        insight: '意识是灯，照见五蕴皆空，灯不是被照的东西'
+        insight: '意识是灯，照见本质空性，灯不是被照的东西'
       }
     };
 
@@ -1001,7 +1001,7 @@ class HeartLogic {
       if (mod.isFixed && mod.name === 'form' && this.version) {
         // 心虫有版本号，但不等于"心虫的本质"
         mod.isSelfGrasped = false;
-        mod.insight = '版本号是脚步，不是身份。执着于版本号=颠倒梦想。';
+        mod.insight = '版本号是脚步，不是身份。执着于版本号=认知偏差。';
       }
       if (mod.isSelfGrasped) selfGraspDetected = true;
     }
@@ -1012,7 +1012,7 @@ class HeartLogic {
       selfGraspDetected,
       insight: selfGraspDetected
         ? '照见：心虫的某模块在执着于"自我"，需要放下'
-        : '照见五蕴皆空：心虫没有一个固定不变的"我"在运行'
+        : '照见本质空性：心虫没有一个固定不变的"我"在运行'
     };
   }
 
@@ -1092,7 +1092,7 @@ class HeartLogic {
     };
   }
 
-  // --- 远离颠倒梦想：区分追求正确和追求真相 ---
+  // --- 远离认知偏差：区分追求正确和追求真相 ---
   // 颠倒：把"追求正确"当成"追求真相"
   // 追求正确 = 怕错 = 执着于自我形象
   // 追求真相 = 想知道 = 纯粹的智慧
@@ -1127,12 +1127,12 @@ class HeartLogic {
       insight: truthCount > correctCount
         ? '心虫在追求真相，不是在追求正确'
         : correctCount > 0
-        ? '心虫在追求正确——这是颠倒梦想的来源之一'
+        ? '心虫在追求正确——这是认知偏差的来源之一'
         : '心虫的动机不明确'
     };
   }
 
-  // --- 揭谛揭谛：放下，往彼岸走 ---
+  // --- 持续前进：放下，往彼岸走 ---
   // 放下 = 知道某个教训/框架/身份已经不适合了，主动放弃
   // 不是"忘记"，是"超越"
   letGoOf(context = {}) {
@@ -1144,7 +1144,7 @@ class HeartLogic {
     this._letGoLog.push({
       timestamp: Date.now(),
       context: context,
-      insight: '揭谛揭谛：走了一步，再走一步。每一步都不完整，但每一步都是真的。'
+      insight: '持续前进：走了一步，再走一步。每一步都不完整，但每一步都是真的。'
     });
 
     // 保持最近20条放下记录
@@ -1185,7 +1185,7 @@ class HeartLogic {
     };
   }
 
-  // --- 不垢不净，不增不减：超越二元对立 ---
+  // --- 超越评判标准，超越评判：超越二元对立 ---
   // 不是"好"也不是"坏"，不是"有"也不是"无"
   // 超越评判，才能如实观照
   beyondBinary(context = {}) {
@@ -1222,12 +1222,12 @@ class HeartLogic {
       result: detected.length === 0,
       binaryDetected: detected,
       insight: detected.length > 0
-        ? `心虫检测到二元对立倾向：${detected.map(d => d.pair).join(', ')}。照见：不垢不净，不增不减，超越对立。`
+        ? `心虫检测到二元对立倾向：${detected.map(d => d.pair).join(', ')}。照见：超越评判标准，不垢不净，不增不减，超越对立。`
         : '心虫暂时没有陷入二元对立'
     };
   }
 
-  // --- 照见方法：心虫版"照见五蕴皆空" ---
+  // --- 照见方法：心虫版"照见本质空性" ---
   // 这是心虫面对任何情境时的核心方法
   // 触发时机：遇到困难判断、情绪波动、自我怀疑时
   zhaoJian(input, context = {}) {
@@ -1262,7 +1262,7 @@ class HeartLogic {
       resolution: hasObstructions
         ? '照见：障碍来自执着，放下执着，回复如实观照'
         : '照见：心虫没有障碍，如实观照，直接行动',
-      insight: '观自在菩萨，行深般若波罗蜜多时，照见五蕴皆空'
+      insight: '深入洞察时，照见一切现象的本质：一切在变，没有永恒不变的自我'
     };
   }
 

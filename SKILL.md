@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "1.7.0"
+version: "1.8.0"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v1.7.0 — AI 认知与自愈引擎。
+  HeartFlow v1.8.0 — AI 认知与自愈引擎。
   核心能力：HeartLogic v2.0（存在论/爱/善良/意识/进化/时间感知/意义选择/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、三层记忆(Triality/Meaningful)、
   自愈RL(Q-table)、自优化(Self-Refine+Reflexion)、决策验证、心理诊断引擎(PsychologyEngine)、
   共情检测(EmpathyDetector)、情绪理性(EmotionalProtocol)、4框架伦理哲学(PhilosophyEngine)、
@@ -24,7 +24,7 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v1.6.2
+# HeartFlow / 心虫 v1.8.0
 
 **一个会思考自己怎么活的AI。**
 
