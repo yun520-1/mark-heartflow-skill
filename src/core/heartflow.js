@@ -1057,9 +1057,17 @@ class HeartFlow {
     if (!lesson || !lesson.content) {
       return { success: false, error: 'lesson.content is required' };
     }
-    // 附加会话ID
-    lesson.sessionId = this.sessionId;
-    return lessonStorage.record(lesson);
+    // 路由到 LessonBank：享受 pattern check + checkPattern 能力
+    // lessonStorage 冗余写入由 LessonBank.addLesson() 内部处理
+    const confidence = lesson.importance ? lesson.importance / 5 : 0.5;
+    const addResult = this.lesson.addLesson({
+      errorPattern: lesson.content.slice(0, 200),
+      correction: lesson.context || lesson.content.slice(0, 200),
+      rootCause: lesson.trigger || 'user_recorded',
+      skill: 'heartflow',
+      confidence,
+    });
+    return { success: true, id: addResult.id, via: 'LessonBank' };
   }
 
   heal(error) {

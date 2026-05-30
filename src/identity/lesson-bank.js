@@ -10,6 +10,17 @@
 const fs = require('fs');
 const path = require('path');
 
+// lessonStorage 冗余写入：LessonBank 和 lessonStorage 双写，保持同步
+let _lessonStorage = null;
+function _getLessonStorage() {
+  if (_lessonStorage) return _lessonStorage;
+  try {
+    const mod = require('../core/lessons/lesson-storage.js');
+    _lessonStorage = mod.lessonStorage;
+  } catch { _lessonStorage = null; }
+  return _lessonStorage;
+}
+
 class LessonBank {
   constructor(rootPath) {
     this.rootPath = rootPath;
@@ -191,6 +202,20 @@ class LessonBank {
     };
 
     this._persist();
+    // lessonStorage 冗余写入：双写保持同步
+    try {
+      const ls = _getLessonStorage();
+      if (ls) {
+        ls.record({
+          type: 'correction',
+          content: correction || errorPattern,
+          context: rootCause || '',
+          trigger: skill || 'heartflow',
+          importance: Math.round((confidence || 0.5) * 5),
+          sessionId: null
+        });
+      }
+    } catch { /* ignore lessonStorage write failure */ }
     return { id: key, success: true };
   }
 
