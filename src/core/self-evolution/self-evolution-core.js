@@ -537,16 +537,17 @@ class SelfEvolutionCore {
    * @returns {string} - 选中的策略
    */
   _selectHealStrategy(errorType) {
-    // ε-greedy：10% 概率随机探索，90% 选择最优
-    if (Math.random() < this._EPSILON) {
-      return this._STRATEGIES[Math.floor(Math.random() * this._STRATEGIES.length)];
+    // ε-greedy 已下沉至 getBestStrategy 内部（self-healing-rl.js）
+    // 此处不再重复 ε-greedy，避免双层探索导致行为不可预测
+
+    // 用RL选择（ε-greedy 在 getBestStrategy 内部处理）
+    const best = this.rl.getBestStrategy(errorType);
+    if (best) {
+      // 兼容新旧返回格式：字符串（旧）或对象（新）
+      return typeof best === 'string' ? best : (best.strategy || best);
     }
 
-    // 用RL选择
-    const best = this.rl.getBestStrategy(errorType);
-    if (best) return best;
-
-    // 默认策略
+    // 无Q表记录时：扫描所有策略找最高Q值
     let bestStrategy = 'retry', bestQ = -Infinity;
     for (const s of this._STRATEGIES) {
       const q = this.rl.qTable.get(errorType)?.[s] ?? 0.5;

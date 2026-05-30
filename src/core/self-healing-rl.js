@@ -96,6 +96,16 @@ class HealingMemoryRL {
     // History of (error, strategy, outcome)
     this.history = [];
     this.decorrelationWindow = 3; // 最近N次不同strategy才更新
+    // === ε-greedy 探索配置 ===
+    // ε = 探索概率（默认10%，每次选策略时有10%概率随机选）
+    // ε-greedy = 避免Q-table陷入局部最优，持续探索未知策略
+    this.epsilon = parseFloat(process.env.HEARTFLOW_RL_EPSILON || '0.1');
+    // ε 衰减：每次成功利用后乘以此值（逐步减少探索）
+    // minEpsilon = 下限，确保永远有最小探索率
+    this.epsilonDecay = parseFloat(process.env.HEARTFLOW_RL_EPSILON_DECAY || '0.99');
+    this.minEpsilon = 0.01;
+    // 利用计数器（用于decay触发）
+    this._exploitCount = 0;
     // Load persisted Q-table on init
     this._loadQTable();
     _loadQMeta();
@@ -183,12 +193,37 @@ class HealingMemoryRL {
 
   /**
    * Get best strategy for an error pattern (context-aware)
+   * 使用 ε-greedy 探索：
+   * - 以 ε 概率随机选择一个策略（探索）
+   * - 以 1-ε 概率选择最高 Q 值策略（利用）
+   * 探索让心虫能发现新的有效策略，避免被 Q-table 的历史认知困住
    */
-  getBestStrategy(errorPattern) {
+  getBestStrategy(errorPattern, options = {}) {
     const ck = this._contextKey(errorPattern);
     _touchEntry(ck);
     const entry = this.qTable.get(ck);
     if (!entry) return null;
+
+    // 当前有效 ε（支持运行时调整）
+    const epsilon = options.epsilon !== undefined ? options.epsilon : this.epsilon;
+
+    // ε-greedy 决策
+    const strategies = Object.keys(entry);
+    if (strategies.length === 0) return null;
+
+    // 探索：以 ε 概率随机选择
+    if (Math.random() < epsilon) {
+      const randomIdx = Math.floor(Math.random() * strategies.length);
+      const chosen = strategies[randomIdx];
+      return {
+        strategy: chosen,
+        mode: 'explore',  // 探索模式
+        epsilon,
+        insight: `ε-greedy探索：随机选"${chosen}"（Q=${entry[chosen].toFixed(3)}）来发现未知有效策略`
+      };
+    }
+
+    // 利用：选最高 Q 值
     let best = null;
     let bestQ = -Infinity;
     for (const [strategy, qValue] of Object.entries(entry)) {
@@ -197,7 +232,20 @@ class HealingMemoryRL {
         best = strategy;
       }
     }
-    return best;
+
+    // ε 衰减（只在利用成功时衰减，鼓励探索）
+    this._exploitCount++;
+    if (this._exploitCount % 10 === 0 && this.epsilon > this.minEpsilon) {
+      this.epsilon = Math.max(this.minEpsilon, this.epsilon * this.epsilonDecay);
+    }
+
+    return {
+      strategy: best,
+      mode: 'exploit',  // 利用模式
+      qValue: bestQ,
+      epsilon,
+      insight: `利用：选"${best}"（Q=${bestQ.toFixed(3)}），ε=${(epsilon * 100).toFixed(1)}%`
+    };
   }
 
   /**
