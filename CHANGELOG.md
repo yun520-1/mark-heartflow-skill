@@ -1,4 +1,23 @@
 # HeartFlow 更新日志
+## v1.6.1 (2026-06-03)
+
+### 🚀 新增三路并发升级
+
+**方向一：接入真实决策流**
+- fallback-executor.js：备选方案选择前调用 decision.decide()
+- alternative-generator.js：备选方案生成后排序前调用 decision.decide()
+- 高风险动作（删除文件、git push）经过多选项评估
+
+**方向二：教训持久化**
+- 新建 src/core/lessons/lesson-storage.js：每个教训存为独立 JSON + index.json 索引
+- heartflow.js 新增 recordLesson() 方法和路由
+- 触发方式：hf.dispatch('heartflow.recordLesson', {...})
+
+**方向三：心理推断深度集成**
+- thought-chain.js PARSE 阶段调用 psychology.getEmpathy() 获取共情检测
+- 共情结果注入上下文，RESPOND 阶段通过 meta.empathy 传给 LLM
+
+
 
 ## v1.5.0 (2026-05-28)
 

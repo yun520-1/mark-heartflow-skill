@@ -11,6 +11,7 @@ class FallbackExecutor {
   constructor(options = {}) {
     this.alternativeGenerator = new AlternativeGenerator();
     this.retryStrategy = new RetryStrategy();
+    this.decision = options.decision || null;
     this.maxFallbacks = options.maxFallbacks || 3;
     this.fallbackHistory = [];
   }
@@ -82,8 +83,31 @@ class FallbackExecutor {
           break;
         }
 
-        // 选择最佳备选方案
-        const selectedAlternative = alternatives[0];
+        // 选择最佳备选方案 - 通过决策流验证
+        let selectedAlternative = alternatives[0];
+        if (this.decision) {
+          try {
+            const decisionResult = this.decision.decide({
+              task: typeof task === 'string' ? task : (task.description || 'unknown'),
+              options: alternatives.map((alt, idx) => ({
+                id: idx,
+                label: alt.name,
+                description: alt.description || alt.name,
+                tool: alt.tool
+              })),
+              constraints: {
+                fallbackLevel,
+                previousError: error.message
+              }
+            });
+            if (decisionResult && decisionResult.chosen !== null && decisionResult.chosen !== undefined) {
+              selectedAlternative = alternatives[decisionResult.chosen.id] || alternatives[0];
+            }
+          } catch (e) {
+            // 决策失败时使用默认选择
+            console.warn('Decision verification failed, using default selection:', e.message);
+          }
+        }
         currentExecutor = selectedAlternative.executor;
         fallbackLevel++;
 

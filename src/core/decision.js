@@ -1,5 +1,5 @@
 /**
- * HeartFlow Decision Engine v1.6.0 — Decision with consequence prediction
+ * HeartFlow Decision Engine v1.6.1 — Decision with consequence prediction
  * 
  * Features:
  *   - Multi-option evaluation with identity alignment

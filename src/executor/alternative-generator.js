@@ -5,7 +5,8 @@
  */
 
 class AlternativeGenerator {
-  constructor() {
+  constructor(options = {}) {
+    this.decision = options.decision || null;
     this.builtinAlternatives = this._registerBuiltinAlternatives();
   }
 
@@ -81,9 +82,43 @@ class AlternativeGenerator {
       alternatives = this._addErrorBasedAlternatives(alternatives, options.previousError, taskType);
     }
 
-    // 排序并返回
-    return alternatives
-      .sort((a, b) => b.score - a.score)
+    // 排序
+    let sortedAlternatives = alternatives.sort((a, b) => b.score - a.score);
+
+    // 决策流验证 - 评估备选方案质量
+    if (this.decision) {
+      try {
+        const decisionResult = this.decision.decide({
+          task: taskStr,
+          options: sortedAlternatives.map((alt, idx) => ({
+            id: idx,
+            label: alt.name,
+            description: alt.description || alt.name,
+            tool: alt.tool,
+            score: alt.score
+          })),
+          constraints: {
+            previousError: options.previousError?.message,
+            fallbackLevel: options.fallbackLevel
+          }
+        });
+        // 如果决策结果要求重新排序或筛选，使用决策结果
+        if (decisionResult && decisionResult.chosen) {
+          const chosenId = decisionResult.chosen.id;
+          // 将选中的方案移到第一位
+          if (chosenId > 0) {
+            const chosen = sortedAlternatives[chosenId];
+            sortedAlternatives = [chosen, ...sortedAlternatives.filter((_, i) => i !== chosenId)];
+          }
+        }
+      } catch (e) {
+        // 决策验证失败时使用默认排序
+        console.warn('AlternativeGenerator decision verification failed:', e.message);
+      }
+    }
+
+    // 返回最终备选方案
+    return sortedAlternatives
       .slice(0, options.maxAlternatives || 5)
       .map(alt => ({
         ...alt,
