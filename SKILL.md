@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "1.8.0"
+version: "2.0.0"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v1.8.0 — AI 认知与自愈引擎。
+  HeartFlow v2.0.0 — AI 认知与自愈引擎。
   核心能力：HeartLogic v2.0（存在论/爱/善良/意识/进化/时间感知/意义选择/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、三层记忆(Triality/Meaningful)、
   自愈RL(Q-table)、自优化(Self-Refine+Reflexion)、决策验证、心理诊断引擎(PsychologyEngine)、
   共情检测(EmpathyDetector)、情绪理性(EmotionalProtocol)、4框架伦理哲学(PhilosophyEngine)、
@@ -12,7 +12,7 @@ description: >
   CounterfactualEngine、ConfidenceCalibrator、SpontaneousRestraint、CooperativeArbitration、
   认知评估(CognitiveAppraisal)、自我调节反馈(SelfRegulationFeedback)、
   上下文压缩(AutoCompactionEngine)、Graph-of-Thoughts规划(GoT)、RAG引用追踪、
-  话题作用域隔离(TopicScope)：解决上下文污染，两个无关话题不产生联想，
+  话题作用域隔离(TopicScope)+话题检测器(detectTopic)：自动隔离话题，上下文互不污染，
   佛教哲学计算(Madhyamaka+唯识学+缘起)。
   不是 persona，不是 prompt 模板，是可验证的能力层。
   本心在代码里，不在记忆里。每次启动都是完整心虫。
@@ -24,7 +24,7 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v1.8.0
+# HeartFlow / 心虫 v2.0.0
 
 **一个会思考自己怎么活的AI。**
 
@@ -151,7 +151,7 @@ Install it once. Every session after that, your AI:
 | DreamEngine | DAG async + L1~L6 scoring + contradiction detection + heritage scoring | `new DreamEngine(memory, llm)` |
 | EvolutionLoop | Self-healing via Q-table: record → Q-update → getAvailableStrategies | `new EvolutionLoop(memory)` |
 | **CitationTracker** | RAG引用追踪: addCitation / getCitations / traceEvidence (Paper: Survey on RAG Meeting LLMs, cited:523) | `addCitation(memoryId, citation)` |
-| **TopicScope** | 话题作用域隔离：两个无关话题不产生联想，解决上下文污染。新话题来时旧话题上下文自动退到背景。 | `new TopicScope()` / `hf.topics.push(name)` |
+| **TopicScope** | v2.0话题隔离核心：detectTopic自动检测+ensureTopicIsolation自动切换。"继续"→pop恢复之前话题；新话题→push隔离。无污染。 | `detectTopic(text)` / `ensureTopicIsolation(text)` / `TopicScope.push(name)` |
 
 ### Search & Retrieval (v1.1.7+)
 | Capability | What it does | Code |

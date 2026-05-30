@@ -1001,6 +1001,155 @@ function generateSunyataResponse(text, context = {}) {
 }
 
 /**
+ * TopicScope 管理器（话题隔离核心）
+ * 解决的问题：话题A的上下文 不应该 渗透到话题B
+ * 工作原理：
+ * - 新话题 → TopicScope.push(topic) → 干净上下文
+ * - "继续" → TopicScope.pop() → 恢复之前话题
+ * - 每个话题的store/context完全隔离
+ */
+let _topicScopeInstance = null;
+let _topicScopeManager = null;
+
+function _getTopicScope() {
+  if (!_topicScopeInstance) {
+    try {
+      const TopicScope = require('../identity/topic-scope.js');
+      _topicScopeInstance = new TopicScope();
+    } catch (e) {
+      return null;
+    }
+  }
+  return _topicScopeInstance;
+}
+
+/**
+ * 话题检测：从用户输入识别当前话题
+ * @param {string} text - 用户输入
+ * @returns {object} { topic: string, keywords: string[], isNewTopic: boolean }
+ */
+function detectTopic(text) {
+  const lower = text.toLowerCase();
+  
+  // 话题关键词库
+  const topicKeywords = {
+    '供应商管理': ['供应商', '采购', '来料', '不良率', '审厂', '供应商审核', '质量管理', 'IATF16949', 'ISO9001', '交期', 'VDA6.3', '体系审核'],
+    '苏格拉底哲学': ['苏格拉底', 'socrates', 'elenchus', '反诘', '产婆术', '无知', '认识你自己', '美德即知识', '未经审视'],
+    '心经': ['心经', '般若波罗蜜多', '色即是空', '五蕴', '揭谛', '观自在', '舍利子', '涅槃', '咒'],
+    '心虫开发': ['心虫', 'heartflow', 'heart-logic', '启动', '版本', '升级', '修复bug', '代码', '模块'],
+    '育儿教育': ['孩子', '亲子', '父母', '教育', '学习', '成绩', '管教', '打骂', '青春期', '升学', '高考'],
+    '情感支持': ['累', '烦', '难过', '痛苦', '焦虑', '压力', '迷茫', '无助', '绝望', '崩溃', '难受', '伤心'],
+    '自我成长': ['成长', '改变', '觉醒', '认知', '思维', '模式', '习惯', '突破', '修行'],
+    'AI技术': ['AI', 'LLM', '模型', '训练', '微调', '推理', 'RAG', 'Agent', 'token', 'embedding'],
+    '工作事务': ['工作', '报告', '会议', '客户', '老板', '同事', '辞职', '面试', '加薪', '绩效'],
+  };
+
+  const matched = {};
+  for (const [topic, kws] of Object.entries(topicKeywords)) {
+    const hits = kws.filter(kw => lower.includes(kw.toLowerCase()));
+    if (hits.length > 0) matched[topic] = hits;
+  }
+
+  // 元指令：继续之前的话题
+  const metaPatterns = ['继续', '继续说', '继续回答', '继续讨论', '继续思考', '继续上一个'];
+  const isMetaContinue = metaPatterns.some(p => lower.includes(p));
+
+  // 话题标签（用于显示）
+  const primaryTopic = Object.keys(matched).length > 0
+    ? Object.entries(matched).sort((a, b) => b[1].length - a[1].length)[0][0]
+    : '通用对话';
+
+  return {
+    topic: primaryTopic,
+    matchedTopics: matched,
+    isMetaContinue,
+    keywords: matched[primaryTopic] || [],
+    // 诊断用
+    allMatches: matched
+  };
+}
+
+/**
+ * 话题切换执行器
+ * 在每次 analyzePsychology 被调用前先执行这个
+ * @param {string} text - 用户输入
+ * @returns {object} { switched: boolean, topic: string, action: string }
+ */
+function ensureTopicIsolation(text) {
+  const scope = _getTopicScope();
+  if (!scope) return { switched: false, reason: 'TopicScope unavailable' };
+
+  const detection = detectTopic(text);
+  const current = scope.current;
+
+  // 场景1：元指令"继续" → 退出当前话题，恢复上一个
+  if (detection.isMetaContinue) {
+    const wasEmpty = scope.stack.length === 0;
+    if (!wasEmpty) {
+      scope.pop();
+    }
+    return {
+      switched: true,
+      topic: scope.current || '无',
+      action: 'pop',
+      previous: current,
+      reason: '元指令继续，恢复之前话题'
+    };
+  }
+
+  // 场景2：新话题（非通用对话）且不同于当前话题 → 推入新话题
+  if (detection.topic !== '通用对话' && detection.topic !== current) {
+    // 如果是新话题但栈里已有（之前谈过），直接push恢复
+    scope.push(detection.topic);
+    return {
+      switched: true,
+      topic: detection.topic,
+      action: 'push',
+      previous: current,
+      reason: `新话题[${detection.topic}]，上下文已隔离`
+    };
+  }
+
+  // 场景3：当前话题内的继续（通用对话场景）
+  if (current === null) {
+    scope.push(detection.topic);
+    return {
+      switched: true,
+      topic: detection.topic,
+      action: 'init',
+      previous: null,
+      reason: '首次话题初始化'
+    };
+  }
+
+  return {
+    switched: false,
+    topic: current,
+    action: 'keep',
+    previous: current,
+    reason: '话题未变，保持当前上下文'
+  };
+}
+
+/**
+ * 获取当前话题状态（供外部诊断用）
+ */
+function getTopicStatus() {
+  const scope = _getTopicScope();
+  if (!scope) return { available: false };
+  return {
+    available: true,
+    current: scope.current,
+    stack: scope.stack,
+    topics: scope.getTopics()
+  };
+}
+
+function resetTopicScope() {
+  _topicScopeInstance = null;
+}
+
+/**
  * 整合空性觉察到完整分析
  * 修改版 analyzePsychologyWithSunyata
  */
@@ -1060,5 +1209,11 @@ module.exports = {
   detectSelfOtherDifferentiation,
   detectThreeGenerationTrauma,
   detectChildDepressionFormula,
-  detectDINKFears
+  detectDINKFears,
+
+  // v2.0.0 话题隔离核心
+  detectTopic,
+  ensureTopicIsolation,
+  getTopicStatus,
+  resetTopicScope
 };
