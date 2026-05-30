@@ -1,7 +1,7 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "1.9.0",
-  "description": "MarkCode AI - 独立 Agent 系统，直接链接 API，具备完整执行能力。",
+  "version": "2.0.0",
+  "description": "HeartFlow 心虫 - 自主进化 AI 引擎，具备完整执行能力。",
   "main": "src/core/heartflow.js",
   "bin": {
     "heartflow": "bin/cli.js",
@@ -9,6 +9,7 @@
     "hf-agent": "src/agent-core/cli.js"
   },
   "scripts": {
+    "start": "node bin/cli.js",
     "check": "find src scripts bin plugins -name '*.js' -not -path '*/node_modules/*' -print0 | xargs -0 -n 1 node --check",
     "smoke": "node scripts/smoke-runtime.js",
     "test": "npm run check && npm run smoke",
@@ -20,6 +21,7 @@
     "SKILL.md",
     "VERSION",
     "CORE_IDENTITY.md",
+    ".env.example",
     "bin/",
     "src/**/*.js",
     "src/**/*.json",
@@ -36,5 +38,8 @@
     "languages/",
     "references/"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "pptxgenjs": "^3.12.0"
+  }
 }
