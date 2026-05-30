@@ -157,8 +157,17 @@ class ProcessTool {
       return { success: false, error: 'kill 需要 pid 参数' };
     }
 
+    // [P0安全] 验证pid为数字，防止注入
+    if (!/^\d+$/.test(String(pid))) {
+      return { success: false, error: 'kill: pid必须是数字' };
+    }
+
+    // [P0安全] 白名单signal，防止注入
+    const ALLOWED_SIGNALS = ['SIGTERM', 'SIGKILL', 'SIGINT', 'SIGUSR1', 'SIGUSR2', 'SIGHUP'];
+    const safeSignal = ALLOWED_SIGNALS.includes(signal) ? signal : 'SIGTERM';
+
     return new Promise((resolve) => {
-      exec(`kill -${signal} ${pid}`, (error, stdout, stderr) => {
+      exec(`kill -${safeSignal} ${pid}`, (error, stdout, stderr) => {
         if (error) {
           resolve({
             success: false,
@@ -184,6 +193,11 @@ class ProcessTool {
 
     if (!pid) {
       return { success: false, error: 'info 需要 pid 参数' };
+    }
+
+    // [P0安全] 验证pid为数字，防止注入
+    if (!/^\d+$/.test(String(pid))) {
+      return { success: false, error: 'info: pid必须是数字' };
     }
 
     return new Promise((resolve) => {
