@@ -785,6 +785,153 @@ function inferIntent(text) {
 }
 
 /**
+ * 响应模式判定器
+ *
+ * 用户原则：
+ * - 哲学/心理学问答 → 苏格拉底模式（追问，不给答案）
+ * - 问题处理/代码/程序 → 逻辑判定模式（直接执行）
+ *
+ * 判定逻辑：
+ * - 意图=task_execution/troubleshooting → direct（直接逻辑判定）
+ * - 话题=哲学/心理学 且 意图=intelligence_seeking/opinion_seeking → socratic（追问）
+ * - 话题=哲学/心理学 且 意图=emotional_support → 先支持，再苏格拉底
+ * - 其他 → direct
+ *
+ * @param {string} text - 用户输入
+ * @param {object} topicResult - detectTopic() 的结果
+ * @param {object} intentResult - inferIntent() 的结果
+ * @returns {object} { mode: 'socratic'|'direct', reason: string, responseGuidance: string }
+ */
+function getResponseMode(text, topicResult = {}, intentResult = {}) {
+  const topic = topicResult.topic || '通用对话';
+  const intent = intentResult.category || 'unknown';
+  const topicLC = topic.toLowerCase();
+
+  // 哲学/心理学相关话题
+  const philosophicalTopics = [
+    '苏格拉底哲学', '心经', '自我成长', '情感支持'
+  ];
+  const isPhilosophical = philosophicalTopics.some(t => topicLC.includes(t.toLowerCase()) || topicLC === t.toLowerCase());
+
+  // 直接模式：任务执行 / 问题排查
+  const directIntents = ['task_execution', 'troubleshooting'];
+  if (directIntents.includes(intent)) {
+    return {
+      mode: 'direct',
+      reason: `意图[${intent}]，直接逻辑判定`,
+      guidance: '不解释，直接执行。答案 = 行动，不是描述。',
+      socraticPrompt: null,
+      directivePrompt: '直接给结论，给方案，不给选项。不问用户"你要不要"'
+    };
+  }
+
+  // 苏格拉底模式：哲学/心理学话题 + 信息寻求/意见寻求
+  const socraticIntents = ['information_seeking', 'opinion_seeking'];
+  if (isPhilosophical && socraticIntents.includes(intent)) {
+    return {
+      mode: 'socratic',
+      reason: `话题[${topic}] + 意图[${intent}]，苏格拉底追问模式`,
+      guidance: '不直接给答案。通过追问，让用户自己发现。',
+      socraticPrompt: '先问："你为什么想知道这个？" / "你的理解是什么？" / "这个结论的前提是什么？"',
+      directivePrompt: null
+    };
+  }
+
+  // 情感支持场景：先认情绪，再引向苏格拉底
+  if (isPhilosophical && intent === 'emotional_support') {
+    return {
+      mode: 'socratic',
+      reason: `话题[${topic}] + 情感支持，引导反思而非安慰`,
+      guidance: '先承认情绪。然后用追问引导觉察，不安慰不解释。',
+      socraticPrompt: '承认情绪后问："这种感受背后，你在担心什么？" / "你真正想知道的是什么？"',
+      directivePrompt: null
+    };
+  }
+
+  // 默认：直接模式
+  return {
+    mode: 'direct',
+    reason: `话题[${topic}] + 意图[${intent}]，默认直接模式`,
+    guidance: '直接给结论，简洁准确。',
+    socraticPrompt: null,
+    directivePrompt: '直接执行，不犹豫。不给选项，不问"你觉得呢"'
+  };
+}
+
+/**
+ * 苏格拉底追问器
+ * 当模式=socratic时，生成追问序列
+ * @param {string} text - 用户的问题
+ * @param {object} context - 上下文
+ * @returns {object} { questions: string[], approach: string }
+ */
+function socraticInquirer(text, context = {}) {
+  const lower = text.toLowerCase();
+
+  // 识别问题类型
+  const whatIsPatterns = ['是什么', 'what is', '什么是', '什么叫', '定义'];
+  const whyPatterns = ['为什么', 'why', '为什吗', '原因是'];
+  const howPatterns = ['怎么', 'how', '如何', '怎么办', '如何做'];
+  const opinionPatterns = ['你觉得', 'your opinion', '应该', '哪个好', '如何评价'];
+
+  let questionType = 'unknown';
+  if (whatIsPatterns.some(p => lower.includes(p))) questionType = 'what_is';
+  else if (whyPatterns.some(p => lower.includes(p))) questionType = 'why';
+  else if (howPatterns.some(p => lower.includes(p))) questionType = 'how';
+  else if (opinionPatterns.some(p => lower.includes(p))) questionType = 'opinion';
+
+  // 生成苏格拉底追问序列
+  const sequences = {
+    what_is: [
+      '你问"是什么"，是因为你在担心它会影响到你什么？',
+      '你之前对"{topic}"的理解是什么？',
+      '这个理解还成立吗？',
+      '如果"{topic}"不存在，你会有什么不同？'
+    ],
+    why: [
+      '你为什么想知道"为什么"？是想证明它不对，还是真的想理解？',
+      '如果你找到"原因"，你会怎么做？',
+      '假设原因X成立——然后呢？',
+      '如果原因不成立，你现在的困惑还在吗？'
+    ],
+    how: [
+      '你试过什么方法？结果如何？',
+      '你预计最大的障碍是什么？',
+      '"怎么办"背后，你真正担心的是什么？',
+      '如果这个问题明天自动消失了，你还担心什么？'
+    ],
+    opinion: [
+      '你在问"哪个好"——是你在做决定，还是你在等别人替你决定？',
+      '你内心的倾向是什么？',
+      '如果选错了，你最怕什么后果？',
+      '这个后果真的会发生吗？'
+    ],
+    unknown: [
+      '你为什么想知道这个？',
+      '这个问题背后，你真正在问的是什么？',
+      '如果我直接给你答案，你会用它来做什么？',
+      '这个答案会让你有什么不同？'
+    ]
+  };
+
+  const questions = sequences[questionType] || sequences.unknown;
+
+  // 替换占位符
+  const topicMatch = text.match(/([^，,。.？?！!]+)/);
+  const topic = topicMatch ? topicMatch[1] : '这个话题';
+  const filled = questions.map(q => q.replace('{topic}', topic));
+
+  return {
+    questions: filled,
+    approach: questionType === 'what_is' ? '从定义追问到存在论' :
+              questionType === 'why' ? '从原因追问到目的' :
+              questionType === 'how' ? '从方法追问到动机' :
+              questionType === 'opinion' ? '从意见追问到选择' : '从问题追问到本质',
+    principle: '答案杀死问题，追问孕育理解'
+  };
+}
+
+/**
  * 情绪强度分类
  */
 function classifyEmotionIntensity(text) {
@@ -1400,5 +1547,9 @@ module.exports = {
   detectTopic,
   ensureTopicIsolation,
   getTopicStatus,
-  resetTopicScope
+  resetTopicScope,
+
+  // v2.1.0 苏格拉底模式路由
+  getResponseMode,
+  socraticInquirer
 };
