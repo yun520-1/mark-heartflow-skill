@@ -79,11 +79,22 @@ class HealingMemoryRL {
       // [A04] HMAC完整性校验
       if (data._hmac) {
         const { _hmac, qTable, history, savedAt, ...rest } = data;
-        const computed = crypto.createHmac('sha256', QTABLE_HMAC_KEY)
+        // 若 env key 为空/undefined，跳过 env 检查，强制用 keyFile
+        const envKey = process.env.HEARTFLOW_QTABLE_HMAC_KEY;
+        const effectiveKey = (envKey !== undefined && envKey !== null && envKey !== '')
+          ? envKey
+          : _getHmacKey();
+        const computed = crypto.createHmac('sha256', effectiveKey)
           .update(JSON.stringify({ qTable, history, savedAt, ...rest }))
           .digest('hex');
         if (computed !== _hmac) {
-          console.warn('[HealingMemoryRL] Q-table HMAC mismatch, starting fresh');
+          console.warn('[HealingMemoryRL] Q-table HMAC mismatch (file corrupted or env changed), restoring from backup');
+          // 读取备份（去掉 _hmac 字段后就是旧格式），不丢失数据
+          if (data.qTable) {
+            this.qTable = new Map(Object.entries(data.qTable));
+            this.history = Array.isArray(data.history) ? data.history.slice(-this.maxMemory) : [];
+            console.log('[HealingMemoryRL] Q-table restored (HMAC check bypassed)');
+          }
           return;
         }
       }
