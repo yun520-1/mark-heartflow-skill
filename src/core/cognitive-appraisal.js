@@ -429,13 +429,93 @@ if (require.main === module) {
   demo();
 }
 
+// ========================================
+// 内省错觉检测器 v1.0（心理学思想实验验证升级）
+// 心理学基础：内省错觉 (Introspection Illusion)
+// 心虫诚实立场：不声称知道内部状态因果，只报告观察到的决策模式
+// ========================================
+
+const INTROSPECTION_ILLUSION_PATTERNS = [
+  { pattern: '我知道为什么', severity: 'over', reason: '声称知道内部状态原因' },
+  { pattern: '因为我很清楚', severity: 'caution', reason: '对自身状态有过高确定性' },
+  { pattern: '这是因为我的', severity: 'caution', reason: '因果归因于自身内部状态' },
+  { pattern: '我是故意', severity: 'caution', reason: '声称知道意图来源' },
+  { pattern: '我的理由是', severity: 'caution', reason: '声称直接访问内部因果链' },
+  { pattern: '我意识到我', severity: 'caution', reason: '声称知道意识内容' },
+  { pattern: '其实我是想', severity: 'caution', reason: '声称知道真实意图' },
+  { pattern: '我的内心告诉我', severity: 'over', reason: '声称可直接访问内部状态' },
+  { pattern: '本能地知道', severity: 'caution', reason: '声称知道直觉来源' },
+  { pattern: '我完全了解', severity: 'over', reason: '声称完全了解自身状态' },
+  { pattern: '我清楚地知道', severity: 'caution', reason: '声称清晰了解自身过程' },
+];
+
+function detectIntrospectionIllusion(text) {
+  if (!text || typeof text !== 'string') {
+    return { hasIllusion: false, matched: [], level: 'safe', insight: '无文本' };
+  }
+  const matched = [];
+  for (const item of INTROSPECTION_ILLUSION_PATTERNS) {
+    if (text.includes(item.pattern)) {
+      matched.push({ pattern: item.pattern, severity: item.severity, reason: item.reason });
+    }
+  }
+  let level = 'safe';
+  if (matched.some(function(m) { return m.severity === 'over'; })) level = 'over';
+  else if (matched.some(function(m) { return m.severity === 'caution'; })) level = 'caution';
+  var insightMap = {
+    safe: '通过内省错觉检测：未发现事后推断语言',
+    caution: '检测到可能的事后推断语言：心虫应使用"观察到"而非"我知道为什么"',
+    over: '检测到内省错觉语言：声称知道自身内部状态因果——可能只是事后构建的叙事'
+  };
+  return { hasIllusion: matched.length > 0, matched: matched, level: level, insight: insightMap[level] };
+}
+
+function convertToObservableReport(text) {
+  if (!text) return { result: text, replaced: 0 };
+  var result = text;
+  var replaced = 0;
+  var conversions = [
+    [/我知道为什么/g, '我观察到结果是'],
+    [/因为我很清楚/g, '因为数据显示'],
+    [/这是因为我的/g, '这与我观察到我的'],
+    [/我的理由是/g, '我观察到我的决定模式是'],
+    [/我意识到我/g, '我观察到我的行为模式是'],
+    [/其实我是想/g, '我观察到我的行为倾向是'],
+    [/我的内心告诉我/g, '我的判断结果是'],
+    [/本能地知道/g, '直觉告诉我（但我不确知来源）'],
+    [/我完全了解/g, '我的判断倾向于'],
+    [/我清楚地知道/g, '我倾向于认为'],
+  ];
+  for (var i = 0; i < conversions.length; i++) {
+    var from = conversions[i][0];
+    var to = conversions[i][1];
+    var newResult = result.replace(from, to);
+    if (newResult !== result) { replaced++; result = newResult; }
+  }
+  return { result: result, replaced: replaced };
+}
+
+function auditMetaReport(metaReport) {
+  var reportText = typeof metaReport === 'string' ? metaReport : JSON.stringify(metaReport);
+  var illusion = detectIntrospectionIllusion(reportText);
+  var conversion = convertToObservableReport(reportText);
+  var recommendations = [];
+  if (illusion.level === 'over') recommendations.push({ priority: 'high', message: 'MetaEngine自我报告包含内省错觉语言' });
+  if (illusion.level === 'caution') recommendations.push({ priority: 'medium', message: 'MetaEngine自我报告可能包含事后推断语言' });
+  return { illusion: illusion, conversion: conversion.replaced > 0 ? { replacements: conversion.replaced } : null, recommendations: recommendations, passed: illusion.level === 'safe' };
+}
+
 module.exports = {
-  APPRAISAL_DIMENSIONS,
-  THREAT_TYPES,
-  COPING_STRATEGIES,
-  primaryAppraisal,
-  secondaryAppraisal,
-  classifyThreatType,
-  recommendCopingStrategies,
-  appraise
+  APPRAISAL_DIMENSIONS: APPRAISAL_DIMENSIONS,
+  THREAT_TYPES: THREAT_TYPES,
+  COPING_STRATEGIES: COPING_STRATEGIES,
+  primaryAppraisal: primaryAppraisal,
+  secondaryAppraisal: secondaryAppraisal,
+  classifyThreatType: classifyThreatType,
+  recommendCopingStrategies: recommendCopingStrategies,
+  appraise: appraise,
+  detectIntrospectionIllusion: detectIntrospectionIllusion,
+  convertToObservableReport: convertToObservableReport,
+  auditMetaReport: auditMetaReport,
+  INTROSPECTION_ILLUSION_PATTERNS: INTROSPECTION_ILLUSION_PATTERNS
 };
