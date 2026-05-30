@@ -915,6 +915,124 @@ function resetCrisisCounter() {
 // 导出
 // ========================================
 
+
+// ========================================
+// 心经 × 心理学整合 v1.1.0
+// 基于《般若波罗蜜多心经》心理学映射
+// 学术支撑: ACT (Acceptance & Commitment Therapy),
+//           Compassion as Skill, Pattern Theory of Selflessness
+// ========================================
+
+/**
+ * 空性觉察模式 (Śūnyatā Awareness)
+ * 当用户处于痛苦/执着/恐惧状态时，切换到空性觉察视角
+ * 
+ * 核心理念：
+ * - 痛苦来自"执着于不存在的固定自我"
+ * - 放下执着 = 照见五蕴皆空 = 痛苦消失
+ * 
+ * 整合进 ACT 的"接受"与"当下"维度
+ */
+function detectSunyataNeed(text, context = {}) {
+  const lower = text.toLowerCase();
+  
+  // 空性觉察的触发信号：
+  // 1. 用户在说"我必须"、"我应该"——执着于固定标准
+  // 2. 用户在说"我害怕失去"——执着于"拥有"
+  // 3. 用户在说"我不够好"——执着于固定自我形象
+  // 4. 用户在说"为什么我总是..."——执着于永恒不变的模式
+  
+  const sunyataTriggers = {
+    fixed_self: ['我必须', '我应该', '我一定要', '我不得不', '我一定是', 
+                 'must', 'should', 'have to', 'always', 'never'],
+    fear_of_loss: ['失去', '失去它', '会失去', '丢了', '没了', '害怕没有',
+                   'lose', 'lost', 'afraid of losing'],
+    self_criticism: ['我不够', '我很差', '我不行', '我没用', '我不配',
+                      'i am not good enough', 'i am worthless', 'i am a failure'],
+    eternal_pattern: ['为什么我总是', '我从来', '我一直', '我永远',
+                      'why do i always', 'i always', 'i never']
+  };
+  
+  const detected = {};
+  for (const [key, patterns] of Object.entries(sunyataTriggers)) {
+    detected[key] = patterns.filter(p => lower.includes(p.toLowerCase()) || text.includes(p));
+  }
+  
+  const triggerCount = Object.values(detected).filter(v => v.length > 0).length;
+  
+  return {
+    needsSunyataAwareness: triggerCount >= 2,
+    triggers: detected,
+    triggerCount,
+    insight: triggerCount >= 2
+      ? '检测到执着模式，切换到空性觉察视角'
+      : triggerCount === 1
+      ? '有执着信号浮现，但尚未强烈到需要空性干预'
+      : '未检测到明显执着模式'
+  };
+}
+
+/**
+ * 空性觉察回应生成
+ * 当 detectSunyataNeed 返回 needsSunyataAwareness: true 时调用
+ */
+function generateSunyataResponse(text, context = {}) {
+  // 空性觉察的核心：不是否定感受，是照见感受没有"固定自我"
+  // "我感到痛苦" → 照见："痛苦在发生，但'我'不是一个固定不变的东西"
+  
+  const response = {
+    mode: 'sunyata_awareness',
+    core_message: '照见五蕴皆空，痛苦来自执着，执着消失，痛苦消失',
+    act_elements: {
+      acceptance: '不是否定痛苦，是接受痛苦的存在',
+      defusion: '从"我感到痛苦"变成"痛苦在发生"',
+      present_moment: '不在过去（遗憾）也不在未来（恐惧），在当下',
+      values: '即使痛苦，也要问：此刻什么是最真的'
+    },
+    questions: [
+      '这个"我"里面，有哪个部分是固定不变的？',
+      '如果放下"必须得到"这个念头，剩下的是什么？',
+      '此刻正在发生什么？不是"我"在发生什么，是什么在发生？'
+    ],
+    insight: '空性不是否定，是如实观照：看见一切在流动，没有永恒不变的"我"'
+  };
+  
+  return response;
+}
+
+/**
+ * 整合空性觉察到完整分析
+ * 修改版 analyzePsychologyWithSunyata
+ */
+function analyzePsychologyWithSunyata(input, context = {}) {
+  const text = String(input || '');
+  
+  // 1. 标准心理学分析
+  const standardAnalysis = analyzePsychology(input, context);
+  
+  // 2. 空性觉察检测
+  const sunyataNeed = detectSunyataNeed(text, context);
+  
+  // 3. 如果需要空性觉察，生成回应
+  let sunyataResponse = null;
+  if (sunyataNeed.needsSunyataAwareness) {
+    sunyataResponse = generateSunyataResponse(text, context);
+  }
+  
+  return {
+    ...standardAnalysis,
+    sunyataAwareness: {
+      needsAwareness: sunyataNeed.needsSunyataAwareness,
+      triggers: sunyataNeed.triggers,
+      triggerCount: sunyataNeed.triggerCount,
+      response: sunyataResponse,
+      insight: sunyataNeed.insight
+    }
+  };
+}
+
+
+
 module.exports = {
   // PAD模型
   PAD_MODEL,

@@ -225,6 +225,75 @@ class HealingMemoryRL {
     }
   }
 
+
+  /**
+   * 揭谛揭谛：Q-table 条目清除
+   * "无所得故" — Q-table 条目不是用来拥有的，是用来放下的
+   * 当某个错误模式不再相关时，主动清除其 Q-table 条目
+   * @param {string} errorPattern - 要清除的错误模式
+   * @returns {object} 清除结果
+   */
+  letGoOf(errorPattern) {
+    if (!errorPattern) return { result: false, reason: 'no_pattern' };
+    const ck = this._contextKey(errorPattern);
+    if (!this.qTable.has(ck)) {
+      return { result: false, reason: 'not_found' };
+    }
+    const entry = this.qTable.get(ck);
+    const strategyCount = Object.keys(entry).length;
+    this.qTable.delete(ck);
+    this._saveQTable();
+    // 记录放下事件
+    if (!this._letGoLog) this._letGoLog = [];
+    this._letGoLog.push({
+      pattern: errorPattern.slice(0, 50),
+      strategies: strategyCount,
+      letGoAt: new Date().toISOString(),
+      insight: '揭谛揭谛：放下了，继续走。彼岸不在别处，在每一步脚下。'
+    });
+    return {
+      result: true,
+      pattern: errorPattern.slice(0, 50),
+      strategiesCleared: strategyCount,
+      totalLetGo: this._letGoLog.length,
+      insight: '揭谛揭谛：放下了Q-table条目，继续往前走。'
+    };
+  }
+
+  /**
+   * 自动清理 Q-table：定期清除过期的低价值条目
+   * "不垢不净，不增不减" — Q-table 不是越大越好
+   */
+  autoCleanupRL(maxAge = 90 * 24 * 60 * 60 * 1000, minQ = 0.3) {
+    const now = Date.now();
+    let cleaned = 0;
+    for (const [key, entry] of this.qTable.entries()) {
+      // 检查最后更新时间（从history推断）
+      const historyEntry = this.history.find(h => h.errorPattern === key.split('@')[0]);
+      if (historyEntry) {
+        const age = now - historyEntry.ts;
+        const maxQ = Math.max(...Object.values(entry));
+        if (age > maxAge && maxQ < minQ) {
+          this.qTable.delete(key);
+          cleaned++;
+        }
+      }
+    }
+    if (cleaned > 0) this._saveQTable();
+    return {
+      cleaned,
+      remaining: this.qTable.size,
+      insight: '不垢不净，不增不减：Q-table 不是越大越好，放下不需要的，才能记住真正重要的。'
+    };
+  }
+
+  getLetGoLog() {
+    return {
+      log: this._letGoLog || [],
+      total: (this._letGoLog || []).length
+    };
+  }
+
   /**
    * Check if we should retry (has strategies with positive Q)
    */

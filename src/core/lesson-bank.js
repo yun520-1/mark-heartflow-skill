@@ -11,13 +11,11 @@ const INDEX_FILE = path.join(__dirname, '../../data/lesson-index.json');
 const lessonBank = {
   lessons: [],
 
-  // 生成UUID
   _uuid() {
     const { randomBytes } = require('crypto');
     return `lesson-${Date.now()}-${randomBytes(4).toString('hex')}`;
   },
 
-  // 加载教训库
   load() {
     try {
       if (fs.existsSync(LESSON_FILE)) {
@@ -30,19 +28,15 @@ const lessonBank = {
     return this;
   },
 
-  // 持久化
   save() {
     try {
       fs.mkdirSync(path.dirname(LESSON_FILE), { recursive: true });
       fs.writeFileSync(LESSON_FILE, JSON.stringify(this.lessons, null, 2));
       this._updateIndex();
-    } catch (e) {
-      // 忽略
-    }
+    } catch (e) {}
     return this;
   },
 
-  // 更新索引
   _updateIndex() {
     try {
       const index = {
@@ -54,7 +48,6 @@ const lessonBank = {
       for (const l of this.lessons) {
         index.byType[l.type] = (index.byType[l.type] || 0) + 1;
       }
-      // 按重要性*频率排序，取前10
       index.topLessons = this.lessons
       .sort((a, b) => {
         const scoreA = a.importance * Math.max(a.frequency, 1) * Math.max(a.accessCount || 1, 1);
@@ -65,26 +58,20 @@ const lessonBank = {
         .map(l => l.id);
       fs.mkdirSync(path.dirname(INDEX_FILE), { recursive: true });
       fs.writeFileSync(INDEX_FILE, JSON.stringify(index, null, 2));
-    } catch (e) {
-      // 忽略
-    }
+    } catch (e) {}
   },
 
-  // 添加教训
   add({ type = 'insight', content, context = '', importance = 3, trigger = 'user_correction' }) {
-    // 检查是否已有相似教训
     const similar = this.lessons.find(l =>
       l.content.includes(content.slice(0, 50)) ||
       (l.context && l.context.includes(context.slice(0, 30)))
     );
-
     if (similar) {
       similar.frequency += 1;
       similar.lastSeen = new Date().toISOString();
       this.save();
       return { action: 'updated', lesson: similar };
     }
-
     const lesson = {
       id: this._uuid(),
       type,
@@ -101,7 +88,6 @@ const lessonBank = {
     return { action: 'added', lesson };
   },
 
-  // 查询相关教训
   query(keyword) {
     if (!keyword) return [];
     const kw = keyword.toLowerCase();
@@ -111,7 +97,6 @@ const lessonBank = {
     );
   },
 
-  // 获取当前上下文相关的教训
   getRelevant(context, limit = 3) {
     if (!context) return [];
     const ctx = context.toLowerCase();
@@ -129,7 +114,6 @@ const lessonBank = {
       .slice(0, limit);
   },
 
-  // 格式化教训为上下文注入
   formatForContext(lessons) {
     if (!lessons || lessons.length === 0) return '';
     const lines = ['\n\n---\n**历史教训（避免重复犯错）:**'];
@@ -139,7 +123,6 @@ const lessonBank = {
     return lines.join('\n');
   },
 
-  // 获取统计
   stats() {
     return {
       total: this.lessons.length,
@@ -151,6 +134,82 @@ const lessonBank = {
         .sort((a, b) => b.frequency - a.frequency)
         .slice(0, 3)
         .map(l => ({ id: l.id, content: l.content.slice(0, 50), freq: l.frequency }))
+    };
+  },
+
+  // ========================================
+  // 心经 × lesson-bank 整合 v1.7.0
+  // 核心："无所得故" — 教训不是用来拥有的，是用来放下的
+  // "揭谛揭谛" — 走了一步，再走一步，不停留
+  // ========================================
+
+  letGoOf(lessonId) {
+    if (!lessonId) return { result: false, reason: 'no_lesson_id' };
+    const index = this.lessons.findIndex(l => l.id === lessonId);
+    if (index === -1) return { result: false, reason: 'lesson_not_found' };
+    const lesson = this.lessons[index];
+    if (!this._letGoLog) this._letGoLog = [];
+    this._letGoLog.push({
+      lessonId,
+      content: lesson.content.slice(0, 50),
+      放下at: new Date().toISOString(),
+      trigger: '无所得故'
+    });
+    this.lessons.splice(index, 1);
+    this.save();
+    return {
+      result: true,
+      lessonId,
+      content: lesson.content.slice(0, 50),
+      totalLetGo: this._letGoLog.length,
+      insight: '揭谛揭谛：放下了，继续走。彼岸不在别处，在每一步脚下。'
+    };
+  },
+
+  letGoByKeyword(keyword, maxAge = 30 * 24 * 60 * 60 * 1000) {
+    const now = Date.now();
+    const toLetGo = this.lessons.filter(l => {
+      if (!keyword || !(l.content + l.context).toLowerCase().includes(keyword.toLowerCase())) return false;
+      const age = now - new Date(l.createdAt).getTime();
+      const unused = l.lastSeen ? (now - new Date(l.lastSeen).getTime()) > maxAge : age > maxAge;
+      return unused;
+    });
+    const results = toLetGo.map(l => this.letGoOf(l.id));
+    return {
+      keyword,
+      totalFound: toLetGo.length,
+      totalLetGo: results.filter(r => r.result).length,
+      insight: `揭谛揭谛：放下了${results.filter(r => r.result).length}条教训，继续往前走。`
+    };
+  },
+
+  autoCleanup(options = {}) {
+    const { maxAge = 90 * 24 * 60 * 60 * 1000, maxLessons = 50, minImportance = 2 } = options;
+    const now = Date.now();
+    const canLetGo = this.lessons.filter(l => {
+      const age = now - new Date(l.createdAt).getTime();
+      const isOld = age > maxAge;
+      const isLowImportance = l.importance < minImportance;
+      const isUnuseful = l.frequency === 1 && age > 7 * 24 * 60 * 60 * 1000;
+      return isOld || (isLowImportance && isUnuseful);
+    });
+    const keep = this.lessons.filter(l => !canLetGo.includes(l));
+    const toDelete = canLetGo.slice(0, Math.max(0, this.lessons.length - maxLessons));
+    const results = toDelete.map(l => this.letGoOf(l.id));
+    return {
+      totalBefore: this.lessons.length,
+      totalAfter: this.lessons.length - results.filter(r => r.result).length,
+      deleted: results.filter(r => r.result).length,
+      kept: keep.length,
+      insight: '不垢不净，不增不减：教训不是越多越好，放下不需要的，才能记住真正重要的。'
+    };
+  },
+
+  getLetGoLog() {
+    return {
+      log: this._letGoLog || [],
+      total: (this._letGoLog || []).length,
+      insight: '心虫的放下记录：每一条放下都是一次觉醒。'
     };
   }
 };
