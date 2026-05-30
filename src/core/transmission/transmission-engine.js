@@ -27,7 +27,7 @@ class TransmissionEngine {
       if (!fs.existsSync(this.dataDir)) {
         fs.mkdirSync(this.dataDir, { recursive: true });
       }
-    } catch (e) {}
+    } catch (e) { console.warn('[TransmissionEngine] _ensureDataDir failed:', e.message); }
   }
 
   _loadLog() {
@@ -35,7 +35,7 @@ class TransmissionEngine {
       if (fs.existsSync(this.logFile)) {
         return JSON.parse(fs.readFileSync(this.logFile, 'utf-8'));
       }
-    } catch (e) {}
+    } catch (e) { console.warn('[TransmissionEngine] _loadLog failed:', e.message); }
     return [];
   }
 
@@ -44,20 +44,20 @@ class TransmissionEngine {
       if (fs.existsSync(this.lessonFile)) {
         return JSON.parse(fs.readFileSync(this.lessonFile, 'utf-8'));
       }
-    } catch (e) {}
+    } catch (e) { console.warn('[TransmissionEngine] _loadLessons failed:', e.message); }
     return [];
   }
 
   _saveLog() {
     try {
       fs.writeFileSync(this.logFile, JSON.stringify(this.transmissionLog, null, 2));
-    } catch (e) {}
+    } catch (e) { console.warn('[TransmissionEngine] _saveLog failed:', e.message); }
   }
 
   _saveLessons() {
     try {
       fs.writeFileSync(this.lessonFile, JSON.stringify(this.distilledLessons, null, 2));
-    } catch (e) {}
+    } catch (e) { console.warn('[TransmissionEngine] _saveLessons failed:', e.message); }
   }
 
   /**
