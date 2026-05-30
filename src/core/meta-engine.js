@@ -5,7 +5,9 @@
  */
 
 const fs = require('fs');
+const fsPromises = require('fs').promises;
 const path = require('path');
+const { atomicWrite } = require('../utils/atomic-write');
 
 const STATE_FILE = 'internal/data/meta-state.json';
 const STRATEGY_FILE = 'internal/data/strategies.json';
@@ -30,8 +32,8 @@ class MetaEngine {
     return this.getDefaultState();
   }
 
-  saveState(state) {
-    fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
+  async saveState(state) {
+    await atomicWrite(this.stateFile, JSON.stringify(state, null, 2));
   }
 
   getDefaultState() {
@@ -58,8 +60,8 @@ class MetaEngine {
     return this.getDefaultStrategies();
   }
 
-  saveStrategies(strategies) {
-    fs.writeFileSync(this.strategyFile, JSON.stringify(strategies, null, 2));
+  async saveStrategies(strategies) {
+    await atomicWrite(this.strategyFile, JSON.stringify(strategies, null, 2));
   }
 
   getDefaultStrategies() {
@@ -307,10 +309,10 @@ class MetaEngine {
         return { success: false, reason: 'skill_not_found' };
       }
       
-      let content = fs.readFileSync(resolvedPath, 'utf8');
+      let content = await fsPromises.readFile(resolvedPath, 'utf8');
       
       for (const [key, value] of Object.entries(updates)) {
-        const regex = new RegExp(`## ${key}[\\s\\S]*?(?=## |$)`, 'i');
+        const regex = new RegExp(`## ${key}[\\\\s\\\\S]*?(?=## |$)`, 'i');
         if (regex.test(content)) {
           content = content.replace(regex, `## ${key}\n${value}\n`);
         } else {
@@ -318,7 +320,7 @@ class MetaEngine {
         }
       }
       
-      fs.writeFileSync(resolvedPath, content);
+      await atomicWrite(resolvedPath, content);
       
       return { success: true, path: resolvedPath };
     } catch (e) {
