@@ -98,7 +98,7 @@ class ExecutorAgent extends BaseAgent {
         };
       }
       // 路径安全检查：禁止绝对路径到敏感目录
-      const unsafePatterns = /^(/etc|/var|/usr|/sys|/proc|~|\.\.\/)/i;
+      const unsafePatterns = /^(\/etc|\/var|\/usr|\/sys|\/proc|~|\.\.\/)/i;
       if (unsafePatterns.test(task.file)) {
         return {
           type: 'rejected',

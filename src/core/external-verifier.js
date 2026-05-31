@@ -7,7 +7,7 @@ const { claimExtractor } = require('./claim-extractor');
 const { confidenceAnnotator } = require('./confidence-annotator');
 const fs = require('fs');
 const path = require('path');
-const { atomicWrite } = require('./utils/atomic-write');
+const { atomicWrite } = require('../utils/atomic-write');
 
 const CACHE_FILE = path.join(__dirname, '../../data/verification-cache.json');
 

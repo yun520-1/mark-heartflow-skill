@@ -4,7 +4,7 @@
  */
 
 const fs = require('fs');
-const { atomicWrite } = require('./utils/atomic-write');
+const { atomicWrite } = require('../utils/atomic-write');
 const path = require('path');
 
 class ExperienceReplay {
