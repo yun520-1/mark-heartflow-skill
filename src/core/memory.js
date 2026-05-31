@@ -426,7 +426,8 @@ function store(opts) {
       encrypted: encrypted.encrypted,
       iv: encrypted.iv,
       authTag: encrypted.authTag,
-      data: record, // keep plaintext for in-memory access
+      // 注意：不再存储明文 data:record
+      // 读取时通过 aesDecrypt(payload.encrypted) 按需解密
     };
     markLearnedDirty();
     _saveLearned();
@@ -458,7 +459,7 @@ function retrieve(id) {
   // [A07] 访问控制 - 先确定在哪层再检查权限
   let foundIn = null;
   if (_coreStore[id]) foundIn = 'core';
-  else if (_learnedStore[id]?.data) foundIn = 'learned';
+  else if (_learnedStore[id]) foundIn = 'learned';
   else if (_ephemeralStore[id]) foundIn = 'ephemeral';
   if (!foundIn) return null;
 
@@ -479,7 +480,7 @@ function retrieve(id) {
     return mem;
   }
   if (foundIn === 'learned') {
-    const mem = _learnedStore[id].data;
+    const mem = aesDecrypt(_learnedStore[id].encrypted);
     mem.accessCount = (mem.accessCount || 0) + 1;
     markLearnedDirty();
     return mem;
@@ -659,7 +660,7 @@ function consolidate() {
       encrypted: encrypted.encrypted,
       iv: encrypted.iv,
       authTag: encrypted.authTag,
-      data: mem,
+      // 注意：不再存储明文 data:mem
     };
     toDelete.push(id);
     promoted.push(id);
