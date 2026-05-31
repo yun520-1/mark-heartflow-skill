@@ -42,11 +42,24 @@ class BashTool {
       }
     };
 
-    // 危险命令列表
+    // 允许的命令白名单（安全模式）
+    this.allowedCommands = [
+      'node', 'python3', 'python', 'git', 'npm', 'pip', 'pip3',
+      'curl', 'wget', 'grep', 'sed', 'awk', 'cat', 'head', 'tail',
+      'find', 'xargs', 'sort', 'uniq', 'wc', 'jq', 'mkdir', 'ls',
+      'cd', 'pwd', 'echo', 'printf', 'date', 'which', 'command',
+      'kill', 'sleep', 'true', 'false', 'test', 'dirname', 'basename',
+      'realpath', 'readlink', 'touch', 'cp', 'mv', 'rm'
+    ];
+
+    // 危险命令黑名单（兜底）
     this.dangerousCommands = [
       'rm -rf', 'rm -r /', 'mkfs', 'dd if=',
       '> /dev/', 'chmod -R 777', 'curl | sh',
-      'wget | sh', 'ssh', 'telnet'
+      'wget | sh', 'ssh', 'telnet', 'eval', 'exec ',
+      'base64 -d', 'openssl enc', 'nc -e', 'bash -i',
+      'sudo su', 'su root', ':(){:|:&};:', '> /tmp/lol',
+      'chmod +x', 'wget.*\\| sh', 'curl.*\\| sh'
     ];
 
     // 输出限制
@@ -150,23 +163,40 @@ class BashTool {
   }
 
   /**
-   * 安全检查
+   * 安全检查 — 白名单优先，黑名单兜底
    */
   _checkSafety(command) {
-    const lowerCommand = command.toLowerCase();
+    const trimmed = command.trim();
+    const lowerCommand = trimmed.toLowerCase();
 
+    // 1. 黑名单检查（直接阻止）
     for (const pattern of this.dangerousCommands) {
-      if (lowerCommand.includes(pattern.toLowerCase())) {
-        return {
-          safe: false,
-          level: 'dangerous',
-          reason: `包含危险模式: ${pattern}`,
-          pattern
-        };
+      if (pattern.includes('.*')) {
+        // 正则模式
+        try {
+          const regex = new RegExp(pattern, 'i');
+          if (regex.test(lowerCommand)) {
+            return {
+              safe: false,
+              level: 'dangerous',
+              reason: `包含危险模式: ${pattern}`,
+              pattern
+            };
+          }
+        } catch (e) { /* ignore invalid regex */ }
+      } else {
+        if (lowerCommand.includes(pattern.toLowerCase())) {
+          return {
+            safe: false,
+            level: 'dangerous',
+            reason: `包含危险模式: ${pattern}`,
+            pattern
+          };
+        }
       }
     }
 
-    // 检查是否有管道到 shell
+    // 2. 管道到 shell 检查
     if (/\|.*sh\s*$/.test(lowerCommand) || /\bsh\s*\|/.test(lowerCommand)) {
       return {
         safe: false,
@@ -176,7 +206,40 @@ class BashTool {
       };
     }
 
-    // 检查是否有 sudo
+    // 3. 提取首命令
+    const firstCmd = lowerCommand.split(/\s+/)[0].replace(/^-/, '');
+    if (!firstCmd) {
+      return { safe: true, level: 'normal' };
+    }
+
+    // 4. 白名单检查（精确匹配或别名）
+    const isAllowed = this.allowedCommands.some(cmd => {
+      // 精确匹配
+      if (lowerCommand === cmd) return true;
+      // 命令替换形式 $(cmd ...) 或 `cmd ...`
+      if (/\$\([^\)]+\)/.test(trimmed) || /`[^`]+`/.test(trimmed)) {
+        const innerLower = trimmed.replace(/\$\([^)]+\)/g, '').replace(/`[^`]+`/g, '');
+        return innerLower.trim().split(/\s+/)[0] === cmd;
+      }
+      // npm/node 带路径形式: ./node_modules/.bin/xxx
+      if (trimmed.includes('/')) {
+        const segments = trimmed.split(/\s+/);
+        const lastSegment = segments[segments.length - 1];
+        if (lastSegment.startsWith('./') && lastSegment.endsWith(cmd)) return true;
+      }
+      return false;
+    });
+
+    if (!isAllowed) {
+      return {
+        safe: false,
+        level: 'dangerous',
+        reason: `命令不在白名单中: ${firstCmd}`,
+        pattern: firstCmd
+      };
+    }
+
+    // 5. sudo 警告
     if (/sudo\s+/.test(command)) {
       return {
         safe: true,
