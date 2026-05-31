@@ -42,12 +42,13 @@ fi
 # 3. hermes-browser-bridge (已克隆)
 echo ""
 echo "[3/3] hermes-browser-bridge..."
-if [ -d "/Users/apple/.hermes/plugins/hermes-browser-bridge" ]; then
+HF_BROWSER_BRIDGE_DIR="${HOME}/.hermes/plugins/hermes-browser-bridge"
+if [ -d "$HF_BROWSER_BRIDGE_DIR" ]; then
     echo "  ✓ 已克隆至 ~/.hermes/plugins/hermes-browser-bridge"
 else
     echo "  克隆中..."
     git clone https://github.com/xxxsuke/hermes-browser-bridge.git \
-        ~/.hermes/plugins/hermes-browser-bridge
+        "$HF_BROWSER_BRIDGE_DIR"
 fi
 
 # 依赖
@@ -61,5 +62,5 @@ echo " 安装完成!"
 echo ""
 echo " agentmemory: npx -y @agentmemory/agentmemory"
 echo " 查看界面:   http://localhost:3113"
-echo " browser:    python ~/.hermes/plugins/hermes-browser-bridge/bridge.py"
+echo " browser:    python $HF_BROWSER_BRIDGE_DIR/bridge.py"
 echo "========================================="
