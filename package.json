@@ -1,6 +1,6 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "HeartFlow 心虫 - 自主进化 AI 引擎，具备完整执行能力。",
   "main": "src/core/heartflow.js",
   "bin": {

@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: "2.0.3"
+version: "2.0.4"
 title: "HeartFlow / 心虫"
 description: >
   HeartFlow v2.0.3 — AI 认知与自愈引擎。

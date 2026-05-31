@@ -1,6 +1,10 @@
 /**
  * 教训库 - 跨会话持久化记忆的核心
  * 用户纠正时自动写入，下次遇到同类场景先查教训库
+ *
+ * ⚠️ 隐私说明：教训库会持久化用户交互产生的经验数据。
+ * 如不需要跨会话记忆，可删除 data/lesson-bank.json 和 data/lesson-index.json。
+ * 该文件不含敏感凭据，但包含用户交互模式和学习历史。
  */
 const fs = require('fs');
 const path = require('path');

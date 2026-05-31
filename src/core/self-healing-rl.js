@@ -380,6 +380,89 @@ class HealingMemoryRL {
   }
 
   /**
+   * 计算Q值分布的混淆度（熵/方差）
+   * 基于RL不确定性探索原理：
+   * - 熵高 → 策略之间势均力敌，不确定哪个最好 → 提高探索率
+   * - 熵低 → 一个策略明显优于其他 → 降低探索率
+   * @returns {object} 混淆度详情
+   */
+  getConfusionScore(errorPattern) {
+    const ck = this._contextKey(errorPattern);
+    const entry = this.qTable.get(ck);
+    if (!entry || Object.keys(entry).length === 0) {
+      return { confusion: 1.0, entropy: 0, stdDev: 0, strategies: 0, insight: '无历史数据，最大混淆' };
+    }
+    const values = Object.values(entry);
+    const n = values.length;
+    const mean = values.reduce((s, v) => s + v, 0) / n;
+
+    // 标准差（方差的平方根）
+    const variance = values.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / n;
+    const stdDev = Math.sqrt(variance);
+
+    // 归一化标准差（0=完全确定, 1=完全混乱）
+    // 最大stdDev在均匀分布时约为0.5/√3 ≈ 0.289（Q值在[0,1]范围）
+    const normalizedStdDev = Math.min(1.0, stdDev / 0.3);
+
+    // 策略之间的最大差距（另一个混淆指标）
+    const maxDiff = n > 1 ? (Math.max(...values) - Math.min(...values)) : 0;
+
+    return {
+      confusion: parseFloat(normalizedStdDev.toFixed(3)),  // 0-1，越高越混乱
+      entropy: parseFloat(stdDev.toFixed(4)),
+      maxDiff: parseFloat(maxDiff.toFixed(3)),
+      mean: parseFloat(mean.toFixed(3)),
+      strategies: n,
+      insight: n > 1 && maxDiff < 0.2
+        ? '多策略势均力敌，Q值混乱 → 提高探索率'
+        : 'Q值分布清晰，某个策略领先 → 降低探索率'
+    };
+  }
+
+  /**
+   * 基于Q值混淆度获取自适应探索率
+   * 混淆度高 → 探索率高（想发现更好的策略）
+   * 混淆度低 → 探索率低（已有明确最优策略）
+   * @param {number} baseEpsilon - 基础探索率
+   * @returns {object} 自适应epsilon及原因
+   */
+  getAdaptiveExploration(baseEpsilon = null) {
+    const epsilon = baseEpsilon !== null ? baseEpsilon : this.epsilon;
+    // 如果没有context key，返回基础epsilon
+    const ctxKeys = [...this.qTable.keys()];
+    if (ctxKeys.length === 0) {
+      return { epsilon, reason: '无Q表数据，使用基础探索率' };
+    }
+
+    // 计算所有context的平均混淆度
+    let totalConfusion = 0;
+    for (const key of ctxKeys) {
+      const entry = this.qTable.get(key);
+      if (entry && Object.keys(entry).length > 1) {
+        const values = Object.values(entry);
+        const mean = values.reduce((s, v) => s + v, 0) / values.length;
+        const variance = values.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / values.length;
+        const stdDev = Math.sqrt(variance);
+        totalConfusion += Math.min(1.0, stdDev / 0.3);
+      }
+    }
+    const avgConfusion = ctxKeys.length > 0 ? totalConfusion / ctxKeys.length : 1.0;
+
+    // 自适应epsilon：基础值 * (1 + confusion)
+    // confusion=0时，epsilon不变；confusion=1时，epsilon翻倍
+    const adaptiveEpsilon = Math.min(0.9, epsilon * (1 + avgConfusion * 0.5));
+
+    return {
+      epsilon: parseFloat(adaptiveEpsilon.toFixed(3)),
+      baseEpsilon: epsilon,
+      avgConfusion: parseFloat(avgConfusion.toFixed(3)),
+      reason: avgConfusion > 0.5
+        ? `Q值混乱（${(avgConfusion*100).toFixed(0)}%）→ 提高探索率`
+        : `Q值清晰 → 保持基础探索率`
+    };
+  }
+
+  /**
    * Check if we should retry (has strategies with positive Q)
    */
   shouldRetry(errorPattern) {

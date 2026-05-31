@@ -824,11 +824,14 @@ class HeartFlow {
     'evolution.getStats',
     // thoughtChain — 思维链编排器
     'thoughtChain.think', 'thoughtChain.thinkFast', 'thoughtChain.thinkDeep',
-    // Execution Layer — 执行能力
-    'toolExecutor.execute', 'toolExecutor.listTools', 'toolExecutor.getHistory', 'toolExecutor.healthCheck',
-    'toolDispatcher.handle', 'toolDispatcher.listTools', 'toolDispatcher.healthCheck',
-    'agentFactory.executeTask', 'agentFactory.getAllStatus', 'agentFactory.healthCheck',
-    'taskPipeline.handleTask', 'taskPipeline.getStatus', 'taskPipeline.getHistory', 'taskPipeline.healthCheck',
+    // ⚠️ 安全修复：移除危险执行路由，仅保留只读/健康检查
+    // toolExecutor.execute / toolDispatcher.handle / agentFactory.executeTask / taskPipeline.handleTask
+    // 已移除 — 这些操作能力过大，应通过 Hermes 核心层调用，不通过 HeartFlow dispatch
+    // Execution Layer — 执行能力（仅保留只读）
+    'toolExecutor.listTools', 'toolExecutor.getHistory', 'toolExecutor.healthCheck',
+    'toolDispatcher.listTools', 'toolDispatcher.healthCheck',
+    'agentFactory.getAllStatus', 'agentFactory.healthCheck',
+    'taskPipeline.getStatus', 'taskPipeline.getHistory', 'taskPipeline.healthCheck',
     // Planning Layer — 规划能力
     'adaptivePlanner.plan', 'adaptivePlanner.adapt', 'adaptivePlanner.quickAdjust', 'adaptivePlanner.getStatus',
     'strategySelector.selectStrategy', 'strategySelector.getStrategies',

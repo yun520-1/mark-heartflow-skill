@@ -132,7 +132,10 @@ function _getOrCreateAesKey() {
     return _aesKey;
   }
 
-  // Generate a session key and store in a restricted file
+  // ⚠️ 安全修复：密钥持久化存储，非真正的一次性session key
+  // 风险：如果 .aes-key 文件被复制，攻击者可解密所有 LEARNED 层记忆
+  // 正确做法：使用 ENV_AES_KEY（HEARTFLOW_AES_KEY=xxx）而非文件存储
+  // 生成或加载持久化密钥
   const keyFile = path.join(DATA_DIR, '.aes-key');
   if (fs.existsSync(keyFile)) {
     try {
@@ -344,7 +347,11 @@ function applyForgetting() {
   const toDelete = [];
   const toCompress = [];
 
+  // ⚠️ 安全修复：LEARNED 层新格式（v2.0.3+）不存储 data 字段，仅有加密内容
+  // 无法在不解密的情况下判断年龄，跳过 LEARNED 层的遗忘处理
+  // 如需遗忘功能，应在加密前将 metadata（timestamp, importance）存入独立索引
   for (const [id, entry] of Object.entries(_learnedStore)) {
+    // 新格式无 data 字段，无法判断年龄 — 跳过
     if (!entry.data || !entry.data.timestamp) continue;
 
     const ageHours = (now - entry.data.timestamp) / (1000 * 60 * 60);
