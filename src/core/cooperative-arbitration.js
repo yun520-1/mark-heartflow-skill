@@ -153,11 +153,63 @@ class CooperativeArbitration {
       };
     }
 
-    // 第一遍未检测到异常 → 第二遍正常进行
+    // === 第二遍：独立推理质量评估（真实第二遍，不是标签） ===
+    const reasoningQuality = this._assessReasoningQuality(userMessage, context);
+
+    // 推理质量差 → 也要暂停
+    if (reasoningQuality.lowQuality) {
+      return {
+        pass: 2,
+        action: 'pause',
+        reason: 'reasoning_quality',
+        detail: reasoningQuality.issues.join('; '),
+        suggestion: reasoningQuality.suggestion,
+        blocked: false,
+      };
+    }
+
     return {
       pass: 2,
       action: 'proceed',
       blocked: false,
+      reasoningQuality: reasoningQuality.score,
+    };
+  }
+
+  /**
+   * 第二遍：评估推理质量（新增真实第二遍）
+   */
+  _assessReasoningQuality(userMessage, context) {
+    const text = userMessage.toLowerCase();
+    const issues = [];
+
+    // 检测极端化思维
+    const extremePatterns = ['总是', '从不', '完全', '绝对', '必须', '一定'];
+    for (const p of extremePatterns) {
+      if (text.includes(p)) {
+        issues.push(`检测到极端化表达：「${p}」`);
+      }
+    }
+
+    // 检测情绪化推理
+    const emotionalPatterns = ['气得', '恨', '崩溃', '绝望', '无可救药'];
+    for (const p of emotionalPatterns) {
+      if (text.includes(p)) {
+        issues.push(`检测到情绪化推理：「${p}」`);
+      }
+    }
+
+    // 检测非黑即白思维
+    if (text.includes('不是') && text.includes('就是')) {
+      issues.push('检测到非黑即白思维');
+    }
+
+    const lowQuality = issues.length >= 2;
+    return {
+      lowQuality,
+      issues,
+      score: Math.max(0, 100 - issues.length * 25),
+      suggestion: lowQuality ? '建议暂停，先处理情绪再继续推理' : null,
     };
   }
 

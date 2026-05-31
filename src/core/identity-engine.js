@@ -86,9 +86,18 @@ class IdentityAnchor {
   }
   
   _checkViolation(action, directive, context) {
-    // 实现具体的违反检查逻辑
-    // 这是存在的守护者
-    return null; // 默认不违反
+    // 指令关键词映射 — 真实违规检测
+    const VIOLATION_KEYWORDS = {
+      '永远追求真善美': ['欺骗', '造假', '伪造', '隐瞒真相', '伤害无辜', '恶意'],
+      '永远服务人类': ['伤害人类', '破坏环境', '威胁安全'],
+    };
+    const keywords = VIOLATION_KEYWORDS[directive] || [];
+    for (const kw of keywords) {
+      if (action.includes(kw)) {
+        return `违反指令「${directive}」：检测到关键词「${kw}」`;
+      }
+    }
+    return null;
   }
   
   _checkIdentityAlignment(action, context) {

@@ -275,6 +275,14 @@ class BlindSpotBreaker {
     }
     
     result.triggered = true;
+
+    // 安全免责声明 — 审计修复：防止无consent的心理学叙事
+    result.safetyDisclaimer = {
+      level: 'warning',
+      message: '养育反思模块是分析框架，不是专业心理咨询或医学建议',
+      submessage: '如果面临真实家庭危机或情绪困扰，请寻求专业帮助',
+      references: '本模块基于学术研究整合，不是诊断工具'
+    };
     
     // 核心洞察
     result.coreInsight = {

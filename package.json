@@ -10,6 +10,7 @@
   },
   "scripts": {
     "start": "node bin/cli.js",
+    "demo": "node demo.js",
     "check": "find src scripts bin plugins -name '*.js' -not -path '*/node_modules/*' -print0 | xargs -0 -n 1 node --check",
     "smoke": "node scripts/smoke-runtime.js",
     "test": "npm run check && npm run smoke",

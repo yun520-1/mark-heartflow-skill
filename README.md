@@ -9,6 +9,52 @@
 
 ---
 
+## 🚀 三分钟快速体验
+
+```bash
+# 克隆
+git clone https://github.com/yun520-1/mark-heartflow-skill.git
+cd mark-heartflow-skill
+
+# 运行演示（无需安装依赖）
+node demo.js
+```
+
+**你会看到：**
+- ✅ HeartLogic 存在感知（isAlive/isAware/isEvolving）
+- ✅ 心理分析引擎（PAD情绪模型 + 危机评估）
+- ✅ 真实性核查（statement verification）
+- ✅ 决策验证（decision verifier）
+
+**想深入？**
+```bash
+npm test          # 运行完整测试
+npm run demo      # 再次体验演示
+cat README.md     # 完整文档
+```
+
+---
+
+## 💼 商业定位
+
+**给谁用：**
+- AI Agent 开发者（需要稳定的认知引擎）
+- 大模型团队（需要心理分析 + 真实性核查）
+- AI 研究者（需要自我进化 + 自愈RL）
+
+**能解决什么问题：**
+| 问题 | 心虫方案 |
+|------|---------|
+| AI 判断错误不自知 | DecisionVerifier 反事实检验 |
+| 身份漂移，长程对话崩溃 | IdentityAnchor 四身份锚定 |
+| 记忆混乱，幻觉引用 | MeaningfulMemory 三层分类加密 |
+| 心理学分析弱 | PAD模型 + Maslow需求 + 危机评估 |
+| 错误重复犯 | Q-table自愈RL |
+
+**合作方式：** 技术授权 / 团队加入 / 联合研发
+
+---
+
 ## 核心定位
 
 ```

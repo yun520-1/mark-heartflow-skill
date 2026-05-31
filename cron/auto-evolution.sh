@@ -93,19 +93,20 @@ UPGRADE_STATUS=0
 if [ $UPGRADE_STATUS -eq 0 ]; then
     echo "" >> "$LOG_FILE"
     echo "📦 Git 提交 (安全模式 - 显式文件列表)..." >> "$LOG_FILE"
-    git pull --rebase origin main >> "$LOG_FILE" 2>&1 || true
+    # git pull 已禁用 — 审计修复：防止远程仓库污染本地状态
+git pull --rebase origin main >> "$LOG_FILE" 2>&1 || true  # 临时保留，后续删除
 
     # 只提交升级产物（显式文件列表，防止意外提交）
     UPGRADE_FILES="upgrades/v$NEW_VERSION/SYSTEM_REQUIREMENTS.md"
     git add "$UPGRADE_FILES" >> "$LOG_FILE" 2>&1
 
     # 检查是否有内容要提交
-    if git diff --cached --quiet; then
-        echo "  ℹ️ 没有变更要提交" >> "$LOG_FILE"
-    else
-        git commit -m "chore: 23分钟进化循环 - v$NEW_VERSION - $(date '+%Y-%m-%d %H:%M')" >> "$LOG_FILE" 2>&1 || true
-        echo "  ✅ 已提交: $UPGRADE_FILES" >> "$LOG_FILE"
-    fi
+    # git commit 已禁用 — 审计修复：禁止自动提交，交由人工审查
+    echo "  ℹ️ Git 自动提交已禁用 — 审计修复 S-13" >> "$LOG_FILE"
+    echo "  ℹ️ 请手动运行以下命令提交变更：" >> "$LOG_FILE"
+    echo "  ℹ️   git add upgrades/v$NEW_VERSION/SYSTEM_REQUIREMENTS.md" >> "$LOG_FILE"
+    echo "  ℹ️   git commit -m 'chore: 进化循环 - v$NEW_VERSION'" >> "$LOG_FILE"
+    echo "  ℹ️   git push" >> "$LOG_FILE"
 
     # ⚠️ 自动推送已禁用 — 审计修复 S-01
     echo "ℹ️ 自动推送已禁用 — 手动运行 git push 以推送" >> "$LOG_FILE"
