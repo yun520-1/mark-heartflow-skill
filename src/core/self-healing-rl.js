@@ -1,12 +1,14 @@
 /**
- * HeartFlow HealingMemoryRL v11.6.0
+ * HeartFlow HealingMemoryRL v11.6.1
  * Q-learning based repair strategy memory for self-healing.
- * Paper: Reflexion (2023), CRITIC (2024)
+ * Paper: Reflexion (2023), CRITIC (2024), Titans (2025)
  *
- * v11.6.0 新增：autoCleanupRL() 增强
- * - Q-table条目元数据追踪（lastAccessedAt, accessCount）
- * - 三重清理条件：太久没访问 + 访问次数少 + Q值低
- * - "无所得故"：放下不需要的教训
+ * v11.6.1 新增：getMemoryImportance()
+ * - 基于 Titans 论文的 Memory Importance Score
+ * - 公式：importance = recencyScore * accessScore * qScore
+ * - recencyScore: 时间衰减，越久远越低
+ * - accessScore: 访问频率评分
+ * - qScore: Q值评分
  */
 
 const fs = require('fs');
@@ -406,6 +408,72 @@ class HealingMemoryRL {
     if (data.history) {
       this.history = data.history.slice(-this.maxMemory);
     }
+  }
+
+  /**
+   * 计算单条记忆的重要性评分（基于 Titans 论文）
+   * @param {string} key - Q-table 的 context key
+   * @param {object} entry - Q-table 条目（strategy -> Q值）
+   * @returns {object} 重要性评分详情
+   */
+  _calcMemoryImportance(key, entry) {
+    _loadQMeta();
+    const meta = _qMeta[key] || { accessCount: 0, lastAccessedAt: Date.now() };
+
+    const now = Date.now();
+    const ageMs = now - meta.lastAccessedAt;
+    const ageDays = ageMs / (1000 * 60 * 60 * 24);
+
+    // recencyScore: 时间衰减评分 (1.0 = 刚访问, 0.0 = 很旧)
+    // 使用指数衰减：TITAN_HALF_LIFE_DAYS=30天半衰期
+    const TITAN_HALF_LIFE_DAYS = 30;
+    const recencyScore = Math.exp(-0.693 * ageDays / TITAN_HALF_LIFE_DAYS);
+
+    // accessScore: 访问频率评分 (0-1，访问越多越高)
+    const accessScore = Math.min(1.0, (meta.accessCount || 0) / 10);
+
+    // qScore: Q值评分（最高Q值归一化）
+    const maxQ = Object.values(entry).reduce((m, v) => Math.max(m, v), 0);
+    const qScore = Math.max(0, Math.min(1.0, maxQ)); // Q值通常0-1
+
+    // 综合重要性评分：三个维度相乘
+    const importance = recencyScore * accessScore * qScore;
+
+    return {
+      recencyScore: parseFloat(recencyScore.toFixed(4)),
+      accessScore: parseFloat(accessScore.toFixed(4)),
+      qScore: parseFloat(qScore.toFixed(4)),
+      importance: parseFloat(importance.toFixed(4)),
+      ageDays: parseFloat(ageDays.toFixed(2)),
+      accessCount: meta.accessCount || 0,
+      strategies: Object.keys(entry).length
+    };
+  }
+
+  /**
+   * 获取所有记忆的重要性评分（用于监控/分析）
+   * @returns {array} 按重要性排序的记忆条目
+   */
+  getMemoryImportance() {
+    _loadQMeta();
+    const results = [];
+
+    for (const [key, entry] of this.qTable.entries()) {
+      const score = this._calcMemoryImportance(key, entry);
+      results.push({
+        key: key.slice(0, 60),
+        ...score
+      });
+    }
+
+    // 按重要性降序排序
+    results.sort((a, b) => b.importance - a.importance);
+
+    return {
+      total: results.length,
+      items: results.slice(0, 20), // 只返回Top20
+      insight: 'Titans-inspired: 记忆重要性 = recency × access × Q-value'
+    };
   }
 }
 
