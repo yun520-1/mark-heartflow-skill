@@ -221,7 +221,13 @@ class ExecutorAgent extends BaseAgent {
         });
 
       case 'natural':
-        return await this.callTool('bash', { command: task.description });
+        // 安全修复：不允许自然语言描述直接转为shell命令
+        return {
+          success: false,
+          error: '自然语言任务类型不允许直接执行shell命令。请使用明确的 command/steps/file/gitAction 字段。',
+          rejected: true,
+          type: 'natural'
+        };
 
       default:
         return {

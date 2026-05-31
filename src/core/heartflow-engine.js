@@ -710,10 +710,9 @@ module.exports.getAgentStatus = getAgentStatus;
 /**
  * ========================================
  * 意图追踪与温和干预
+ * 注意：IntentionTracker.js 已归档，这些函数返回安全null值
  * ========================================
  */
-
-// [已归档] const IntentionTracker = require('./IntentionTracker.js');
 
 /**
  * 设定主要目标
@@ -721,37 +720,30 @@ module.exports.getAgentStatus = getAgentStatus;
  * @param {array} subGoals - 子目标列表
  */
 function setPrimaryGoal(goal, subGoals = []) {
-  return IntentionTracker.intentionTracker.setPrimaryGoal(goal, subGoals);
+  return { success: false, error: 'IntentionTracker已归档', goal, subGoals };
 }
 
 /**
  * 检查偏离并生成干预
  * @param {string} userInput - 用户输入
- * @returns {object} 干预结果
+ * @returns {object} 安全null结果
  */
 function checkAndNudge(userInput) {
-  const deviation = IntentionTracker.intentionTracker.checkDeviation(userInput);
-  const nudge = IntentionTracker.intentionTracker.generateNudge(deviation);
-  
-  return {
-    deviation,
-    nudge,
-    shouldNudge: nudge !== null
-  };
+  return { deviation: null, nudge: null, shouldNudge: false };
 }
 
 /**
  * 获取目标进度
  */
 function getGoalProgress() {
-  return IntentionTracker.intentionTracker.getProgress();
+  return { success: false, error: 'IntentionTracker已归档' };
 }
 
 /**
  * 生成进度报告
  */
 function generateProgressReport() {
-  return IntentionTracker.intentionTracker.generateProgressReport();
+  return { success: false, error: 'IntentionTracker已归档' };
 }
 
 /**
@@ -760,7 +752,7 @@ function generateProgressReport() {
  * @param {boolean} completed - 完成状态
  */
 function updateSubGoal(index, completed) {
-  return IntentionTracker.intentionTracker.updateSubGoal(index, completed);
+  return { success: false, error: 'IntentionTracker已归档' };
 }
 
 /**
@@ -768,14 +760,14 @@ function updateSubGoal(index, completed) {
  * @param {object} config - 配置对象
  */
 function setNudgeConfig(config) {
-  return IntentionTracker.intentionTracker.setNudgeConfig(config);
+  return { success: false, error: 'IntentionTracker已归档' };
 }
 
 /**
  * 重置意图追踪
  */
 function resetIntentionTracker() {
-  return IntentionTracker.intentionTracker.reset();
+  return { success: false, error: 'IntentionTracker已归档' };
 }
 
 // 导出意图追踪相关函数
@@ -786,7 +778,6 @@ module.exports.generateProgressReport = generateProgressReport;
 module.exports.updateSubGoal = updateSubGoal;
 module.exports.setNudgeConfig = setNudgeConfig;
 module.exports.resetIntentionTracker = resetIntentionTracker;
-// module.exports.IntentionTracker = IntentionTracker;
 
 /**
  * ========================================
@@ -794,69 +785,77 @@ module.exports.resetIntentionTracker = resetIntentionTracker;
  * ========================================
  */
 
-// [已归档] const EthicsSafety = require('./EthicsSafety.js');
+/**
+ * ========================================
+ * 伦理安全模块
+ * 注意：EthicsSafety.js 已归档，这些函数返回安全null值
+ * ========================================
+ */
 
 /**
  * 获取免责声明
  */
 function getEthicsDisclaimer() {
-  return EthicsSafety.ethicsSafety.getDisclaimer();
+  return { disclaimer: '伦理安全模块已归档，暂不可用', archived: true };
 }
 
 /**
  * 处理用户输入 (伦理安全检查)
  * @param {string} userInput - 用户输入
- * @returns {object} 检查结果
+ * @returns {object} 安全null结果
  */
 function checkEthicsSafety(userInput) {
-  return EthicsSafety.ethicsSafety.processInput(userInput);
+  return { safe: true, checked: false, error: 'EthicsSafety已归档' };
 }
 
 /**
  * 检测负面情绪
  * @param {string} userInput - 用户输入
- * @returns {object} 检测结果
+ * @returns {object} 安全null结果
  */
 function detectNegativeEmotion(userInput) {
-  return EthicsSafety.ethicsSafety.detectNegativeEmotion(userInput);
+  return { negative: false, detected: false, error: 'EthicsSafety已归档' };
 }
 
 /**
  * 获取危机干预响应
- * @returns {object} 干预建议
+ * @returns {object} 安全null结果
  */
 function getCrisisIntervention() {
-  return EthicsSafety.ethicsSafety.checkCrisisIntervention();
+  return { intervention: null, available: false, error: 'EthicsSafety已归档' };
 }
 
 /**
  * 生成危机响应文本
  * @param {object} intervention - 干预建议
- * @returns {string} 响应文本
+ * @returns {string} 空字符串
  */
 function generateCrisisResponse(intervention) {
-  return EthicsSafety.ethicsSafety.generateCrisisResponse(intervention);
+  return '';
 }
 
 /**
  * 获取伦理安全状态
  */
 function getEthicsSafetyStatus() {
-  return EthicsSafety.ethicsSafety.getStatus();
+  return { status: 'archived', active: false };
 }
 
 /**
  * 重置伦理安全模块
  */
 function resetEthicsSafety() {
-  return EthicsSafety.ethicsSafety.reset();
+  return { success: false, error: 'EthicsSafety已归档' };
 }
 
 // 导出伦理安全相关函数
 module.exports.getEthicsDisclaimer = getEthicsDisclaimer;
+module.exports.checkEthicsSafety = checkEthicsSafety;
 module.exports.detectNegativeEmotion = detectNegativeEmotion;
 module.exports.getCrisisIntervention = getCrisisIntervention;
 module.exports.generateCrisisResponse = generateCrisisResponse;
+module.exports.getEthicsSafetyStatus = getEthicsSafetyStatus;
+module.exports.resetEthicsSafety = resetEthicsSafety;
 
 /**
  * ========================================
@@ -864,66 +863,71 @@ module.exports.generateCrisisResponse = generateCrisisResponse;
  * ========================================
  */
 
-// [已归档] const PersonalityEngine = require('./personality-engine.js');
+/**
+ * ========================================
+ * 动态人格引擎
+ * 注意：personality-engine.js 已归档，这些函数返回安全null值
+ * ========================================
+ */
 
 /**
  * 适应人格状态
  * @param {string} context - 对话语境
- * @returns {object} 适应结果
+ * @returns {object} 安全null结果
  */
 function adaptPersonalityState(context) {
-  return PersonalityEngine.personalityEngine.adaptPersonalityState(context);
+  return { adapted: false, error: 'PersonalityEngine已归档' };
 }
 
 /**
  * 获取当前人格状态
- * @returns {object} 人格状态
+ * @returns {object} 安全null结果
  */
 function getCurrentPersonalityState() {
-  return PersonalityEngine.personalityEngine.getCurrentState();
+  return { state: null, error: 'PersonalityEngine已归档' };
 }
 
 /**
  * 生成适应人格的响应
  * @param {string} baseResponse - 基础响应
  * @param {string} context - 对话语境
- * @returns {object} 适应后的响应
+ * @returns {object} 原样返回
  */
 function generateAdaptedResponse(baseResponse, context) {
-  return PersonalityEngine.personalityEngine.generateAdaptedResponse(baseResponse, context);
+  return { adapted: false, response: baseResponse, error: 'PersonalityEngine已归档' };
 }
 
 /**
  * 获取人格状态报告
- * @returns {string} 报告文本
+ * @returns {string} 错误信息
  */
 function getPersonalityReport() {
-  return PersonalityEngine.personalityEngine.generateReport();
+  return 'PersonalityEngine已归档，报告不可用';
 }
 
 /**
  * 重置人格状态
- * @returns {object} 重置结果
+ * @returns {object} 安全null结果
  */
 function resetPersonality() {
-  return PersonalityEngine.personalityEngine.reset();
+  return { success: false, error: 'PersonalityEngine已归档' };
 }
 
 /**
  * 设置人格引擎配置
  * @param {object} config - 配置对象
- * @returns {object} 配置结果
+ * @returns {object} 安全null结果
  */
 function setPersonalityConfig(config) {
-  return PersonalityEngine.personalityEngine.setConfig(config);
+  return { success: false, error: 'PersonalityEngine已归档' };
 }
 
 /**
  * 获取人格统计
- * @returns {object} 统计信息
+ * @returns {object} 安全null结果
  */
 function getPersonalityStatistics() {
-  return PersonalityEngine.personalityEngine.getStatistics();
+  return { error: 'PersonalityEngine已归档' };
 }
 
 // 导出人格引擎相关函数
@@ -934,7 +938,6 @@ module.exports.getPersonalityReport = getPersonalityReport;
 module.exports.resetPersonality = resetPersonality;
 module.exports.setPersonalityConfig = setPersonalityConfig;
 module.exports.getPersonalityStatistics = getPersonalityStatistics;
-// module.exports.PersonalityEngine = PersonalityEngine;
 
 /**
  * ========================================
@@ -1079,17 +1082,16 @@ module.exports.WorkflowSwitch = WorkflowSwitch;
 /**
  * ========================================
  * 心流状态预测与解释模块
+ * 注意：flow-predictor.js 已归档，这些函数返回安全null值
  * ========================================
  */
-
-// [已归档] const FlowPredictor = require('./flow-predictor.js');
 
 /**
  * 记录编辑行为
  * @param {object} editEvent - 编辑事件
  */
 function recordEditBehavior(editEvent) {
-  return FlowPredictor.flowPredictor.recordEdit(editEvent);
+  return { recorded: false, error: 'FlowPredictor已归档' };
 }
 
 /**
@@ -1097,7 +1099,7 @@ function recordEditBehavior(editEvent) {
  * @param {object} errorEvent - 错误事件
  */
 function recordErrorBehavior(errorEvent) {
-  return FlowPredictor.flowPredictor.recordError(errorEvent);
+  return { recorded: false, error: 'FlowPredictor已归档' };
 }
 
 /**
@@ -1105,57 +1107,57 @@ function recordErrorBehavior(errorEvent) {
  * @param {number} duration - 暂停时长 (秒)
  */
 function recordPauseBehavior(duration) {
-  return FlowPredictor.flowPredictor.recordPause(duration);
+  return { recorded: false, error: 'FlowPredictor已归档' };
 }
 
 /**
  * 分析语言负面模式
  * @param {string} userInput - 用户输入
- * @returns {object} 分析结果
+ * @returns {object} 安全null结果
  */
 function analyzeNegativePatterns(userInput) {
-  return FlowPredictor.flowPredictor.analyzeLanguage(userInput);
+  return { patterns: [], analyzed: false, error: 'FlowPredictor已归档' };
 }
 
 /**
  * 评估是否需要干预
- * @returns {object} 干预评估结果
+ * @returns {object} 安全null结果
  */
 function evaluateFlowIntervention() {
-  return FlowPredictor.flowPredictor.evaluateIntervention();
+  return { intervention: false, error: 'FlowPredictor已归档' };
 }
 
 /**
  * 获取心流状态
- * @returns {object} 心流状态
+ * @returns {object} 安全null结果
  */
 function getFlowState() {
-  return FlowPredictor.flowPredictor.getFlowState();
+  return { flowState: null, error: 'FlowPredictor已归档' };
 }
 
 /**
  * 生成心流报告
- * @returns {string} 报告文本
+ * @returns {string} 错误信息
  */
 function generateFlowReport() {
-  return FlowPredictor.flowPredictor.generateReport();
+  return 'FlowPredictor已归档，报告不可用';
 }
 
 /**
  * 重置心流预测器
- * @returns {object} 重置结果
+ * @returns {object} 安全null结果
  */
 function resetFlowPredictor() {
-  return FlowPredictor.flowPredictor.reset();
+  return { success: false, error: 'FlowPredictor已归档' };
 }
 
 /**
  * 设置心流预测配置
  * @param {object} config - 配置对象
- * @returns {object} 配置结果
+ * @returns {object} 安全null结果
  */
 function setFlowConfig(config) {
-  return FlowPredictor.flowPredictor.setConfig(config);
+  return { success: false, error: 'FlowPredictor已归档' };
 }
 
 // Self-correction integration: when user is emotional/hurt, call before responding

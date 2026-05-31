@@ -1290,6 +1290,9 @@ class HeartFlow {
    * 使用方式：
    *   const result = await hf.run('ls -la');
    *   const result = await hf.bash('npm test');
+   *
+   * 安全说明：run/bash/read/write 受 toolDispatcher 管理，不在 ALLOWED_ROUTES 白名单内。
+   * ALLOWED_ROUTES 仅保护 dispatch() 路由。这些直接方法应仅在信任的上下文中调用。
    */
   async run(command) {
     if (!this.started) throw new Error('HeartFlow not started');
@@ -1301,6 +1304,7 @@ class HeartFlow {
 
   /**
    * bash 的别名
+   * 安全说明：执行任意shell命令，请确保 command 来源可信
    */
   async bash(command) {
     return this.run(command);
@@ -1311,6 +1315,8 @@ class HeartFlow {
    *
    * 使用方式：
    *   const result = await hf.read('/path/to/file.txt');
+   *
+   * 安全说明：文件读取受 toolDispatcher 管理
    */
   async read(filePath) {
     if (!this.started) throw new Error('HeartFlow not started');
@@ -1328,6 +1334,8 @@ class HeartFlow {
    *
    * 使用方式：
    *   await hf.write('/path/to/file.txt', 'Hello World');
+   *
+   * 安全说明：文件写入受 toolDispatcher 管理
    */
   async write(filePath, content) {
     if (!this.started) throw new Error('HeartFlow not started');
