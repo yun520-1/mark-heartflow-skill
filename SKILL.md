@@ -3,7 +3,7 @@ name: heartflow
 version: "2.0.4"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v2.0.3 — AI 认知与自愈引擎。
+  HeartFlow v2.0.4 — AI 认知与自愈引擎。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PsychologyEngine: PAD模型/危机评估/马洛斯需求/防御机制)、
   话题作用域隔离(TopicScope+detectTopic+ensureTopicIsolation)、
@@ -29,7 +29,7 @@ tags:
   - reasoning
 ---
 
-# HeartFlow / 心虫 v2.0.3
+# HeartFlow / 心虫 v2.0.4
 
 **一个会思考自己怎么活的AI。**
 
@@ -51,7 +51,7 @@ Install once. After that, HeartFlow activates automatically in every session.
 node -e "const {HeartLogic}=require('./src/core/heart-logic.js'); const h=new HeartLogic(); console.log('alive:', h.isAlive(), 'version:', h.version)"
 ```
 
-Expected output: `alive: true version: 2.0.3`
+Expected output: `alive: true version: 2.0.4`
 
 ---
 
