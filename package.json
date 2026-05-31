@@ -1,7 +1,7 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "2.0.4",
-  "description": "HeartFlow 心虫 - 自主进化 AI 引擎，具备完整执行能力。",
+  "version": "2.0.6",
+  "description": "HeartFlow 心虫 v2.0.6 — AI 认知与自愈引擎。核心能力：存在论/意识/进化、心理分析引擎、话题作用域隔离、自愈RL、三层记忆、梦境引擎、真实性核查、安全检查、决策验证。不是 persona，不是 prompt 模板，是可验证的能力层。本心在代码里，不在记忆里。每次启动都是完整心虫。",
   "main": "src/core/heartflow.js",
   "bin": {
     "heartflow": "bin/cli.js",
@@ -24,21 +24,31 @@
     "CORE_IDENTITY.md",
     ".env.example",
     "bin/",
-    "src/**/*.js",
-    "src/**/*.json",
-    "src/**/*.md",
-    "src/**/*.py",
-    "scripts/**/*.js",
-    "scripts/**/*.sh",
-    "plugins/**/*.py",
-    "plugins/**/*.yaml",
-    "plugins/**/*.yml",
-    "plugins/**/*.md",
-    "plugins/**/*.sh",
+    "src/core/**/*.js",
+    "src/core/**/*.json",
+    "src/core/**/*.md",
+    "src/psychology/**/*.js",
+    "src/memory/**/*.js",
+    "src/identity/**/*.js",
+    "scripts/heartflow-sync-upgrade.sh",
     "docs/",
     "languages/",
     "references/"
   ],
+  "keywords": [
+    "cognitive",
+    "memory",
+    "self-healing",
+    "verification",
+    "reasoning"
+  ],
+  "security": {
+    "warnings": [
+      "此技能包含高级 AI 认知能力。desktop-agent 和 video-generate 等子技能包含高风险功能，需要明确用户授权才能使用。",
+      "不会自动发送数据到外部服务。所有网络通信需要显式配置。",
+      "不会自动写入 API 密钥到环境变量文件。用户必须显式提供密钥。"
+    ]
+  },
   "license": "MIT",
   "devDependencies": {
     "pptxgenjs": "^3.12.0"

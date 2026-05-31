@@ -1,14 +1,12 @@
 #!/bin/bash
-
-# ComfyUI Video Monitor - 每15分钟检查下载一次
-# 使用相对路径，从脚本所在目录计算
+# ComfyUI Video Monitor Cron - 已禁用
+# [安全修复] 此 cron 与心虫认知引擎无直接关联，已禁用
+# 如需启用，请设置环境变量 COMFYUI_ENABLE=1
+if [ "${COMFYUI_ENABLE:-0}" != "1" ]; then
+    exit 0
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 LOG_DIR="$SCRIPT_DIR/logs"
-
-echo "=== ComfyUI Monitor $(date) ===" >> "$LOG_DIR/comfyui-cron.log"
-
-cd "$SCRIPT_DIR"
-node scripts/comfyui-monitor.js >> "$LOG_DIR/comfyui-cron.log" 2>&1
-
+echo "=== ComfyUI Monitor (disabled) $(date) ===" >> "$LOG_DIR/comfyui-cron.log"
 exit 0

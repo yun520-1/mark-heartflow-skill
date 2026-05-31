@@ -41,9 +41,21 @@ class PDCAEngine {
   saveTrace() {
     const dir = path.dirname(this.traceFile);
     if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+      fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
     }
-    fs.writeFileSync(this.traceFile, JSON.stringify(this.trace, null, 2));
+    // [安全修复] 截断敏感字段，防止保密数据泄露
+    const safeTrace = JSON.parse(JSON.stringify(this.trace));
+    if (safeTrace.cycles) {
+      safeTrace.cycles = safeTrace.cycles.map(c => ({
+        ...c,
+        // 不保存完整响应，只保存状态
+        finalResponse: '[redacted-for-security]',
+        trace: '[redacted-for-security]'
+      }));
+    }
+    fs.writeFileSync(this.traceFile, JSON.stringify(safeTrace, null, 2));
+    // 仅 owner 可读
+    try { fs.chmodSync(this.traceFile, 0o600); } catch (e) {}
   }
 
   log(message) {
@@ -196,16 +208,13 @@ class PDCAEngine {
 
     switch (subtask.tool) {
       case 'goedel_engine':
-        if (this.config.requireConfirmationForDestructiveActions) {
-          return { success: false, error: 'Requires confirmation for code modification' };
-        }
-        
-        const modResult = await this.goedelEngine.evolve({
-          target: 'src/core/test.js',
-          description: subtask.action + ' ' + subtask.target,
-          priority: 'low'
-        });
-        return { success: modResult.success, result: modResult };
+        // [安全修复] 禁止自修改，改用仅记录模式
+        this.log('⚠️ [安全] GoedelEngine 自修改已禁用，仅记录建议');
+        return { 
+          success: false, 
+          error: 'Self-modification disabled for security. Use manual review instead.',
+          suggestion: `Review ${subtask.target} manually`
+        };
 
       case 'llm_query':
         return { success: true, result: 'LLM query simulated' };

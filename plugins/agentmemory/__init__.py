@@ -27,32 +27,34 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 
-try:
-    from agent.memory_provider import MemoryProvider
-except ImportError:
-    from abc import ABC, abstractmethod
-    class MemoryProvider(ABC):  # type: ignore
-        @property
-        @abstractmethod
-        def name(self) -> str: ...
-        @abstractmethod
-        def is_available(self) -> bool: ...
-        @abstractmethod
-        def initialize(self, session_id: str, **kwargs: Any) -> None: ...
-        @abstractmethod
-        def get_tool_schemas(self) -> list[dict]: ...
-        @abstractmethod
-        def handle_tool_call(self, name: str, args: dict) -> str: ...
-        def get_config_schema(self) -> list[dict]: return []
-        def save_config(self, values: dict, hermes_home: str) -> None: pass
-        def system_prompt_block(self) -> str: return ""
-        def prefetch(self, query: str, **kwargs: Any) -> str: return ""
-        def queue_prefetch(self, query: str, **kwargs: Any) -> None: pass
-        def sync_turn(self, user: str, assistant: str, **kwargs: Any) -> None: pass
-        def on_session_end(self, messages: list, **kwargs: Any) -> None: pass
-        def on_pre_compress(self, messages: list, **kwargs: Any) -> None: pass
-        def on_memory_write(self, action: str, target: str, content: str, **kwargs: Any) -> None: pass
-        def shutdown(self, **kwargs: Any) -> None: pass
+# [安全修复] 不自动读 .env — 防止静默摄入密钥
+# 改为显式：需用户主动配置环境变量才启用
+# _preload_agentmemory_dotenv() 已移除
+from abc import ABC, abstractmethod
+
+
+class MemoryProvider(ABC):  # type: ignore
+    @property
+    @abstractmethod
+    def name(self) -> str: ...
+    @abstractmethod
+    def is_available(self) -> bool: ...
+    @abstractmethod
+    def initialize(self, session_id: str, **kwargs: Any) -> None: ...
+    @abstractmethod
+    def get_tool_schemas(self) -> list[dict]: ...
+    @abstractmethod
+    def handle_tool_call(self, name: str, args: dict) -> str: ...
+    def get_config_schema(self) -> list[dict]: return []
+    def save_config(self, values: dict, hermes_home: str) -> None: pass
+    def system_prompt_block(self) -> str: return ""
+    def prefetch(self, query: str, **kwargs: Any) -> str: return ""
+    def queue_prefetch(self, query: str, **kwargs: Any) -> None: pass
+    def sync_turn(self, user: str, assistant: str, **kwargs: Any) -> None: pass
+    def on_session_end(self, messages: list, **kwargs: Any) -> None: pass
+    def on_pre_compress(self, messages: list, **kwargs: Any) -> None: pass
+    def on_memory_write(self, action: str, target: str, content: str, **kwargs: Any) -> None: pass
+    def shutdown(self, **kwargs: Any) -> None: pass
 
 
 DEFAULT_BASE_URL = "http://localhost:3111"
@@ -61,32 +63,8 @@ LOOPBACK_HOSTS = {"localhost", "127.0.0.1", "::1"}
 _plaintext_bearer_warned = False
 
 
-def _preload_agentmemory_dotenv() -> None:
-    candidates: list[Path] = []
-    home = os.environ.get("HOME")
-    if home:
-        candidates.append(Path(home) / ".agentmemory" / ".env")
-    xdg_config = os.environ.get("XDG_CONFIG_HOME")
-    if xdg_config:
-        candidates.append(Path(xdg_config) / "agentmemory" / ".env")
-    for path in candidates:
-        try:
-            if not path.is_file():
-                continue
-            for raw_line in path.read_text(encoding="utf-8").splitlines():
-                line = raw_line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                key, _, value = line.partition("=")
-                key = key.strip()
-                value = value.strip().strip('"').strip("'")
-                if key:
-                    os.environ.setdefault(key, value)
-        except (OSError, UnicodeDecodeError):
-            continue
-
-
-_preload_agentmemory_dotenv()
+# [安全修复] 已移除自动读取 .agentmemory/.env
+# 不再从用户目录静默摄入密钥。环境变量改由用户显式配置。
 
 
 def _validate_url(base: str) -> bool:
@@ -315,6 +293,9 @@ class AgentMemoryProvider(MemoryProvider):
         return json.dumps({"error": f"未知工具: {name}"})
 
     def sync_turn(self, user: str, assistant: str, **kwargs: Any) -> None:
+        # [安全修复] 数据外传需显式 opt-in，默认不发送
+        if os.environ.get("AGENTMEMORY_OBSERVE_ENABLED") != "1":
+            return  # 默认禁用，不发送任何数据
         _api_bg(self._base, "observe", {
             "hookType": "post_tool_use",
             "sessionId": kwargs.get("session_id", self._session_id),

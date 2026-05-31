@@ -5,8 +5,8 @@
  * 监控 ComfyUI 服务，下载新生成的视频
  * 每15分钟运行一次
  * 
- * 注意：rejectUnauthorized:false 用于自签名证书
- * 如需生产环境使用，请配置正确的CA证书
+ * 注意：rejectUnauthorized:true（已强制）— 禁止自签名证书绕过
+ * 如需使用自签名证书，请通过 COMFYUI_STRICT_TLS=0 环境变量显式启用（已知风险）
  */
 
 const https = require('https');

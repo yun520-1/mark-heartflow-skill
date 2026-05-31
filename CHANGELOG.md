@@ -1,4 +1,76 @@
 # HeartFlow 更新日志
+## v2.0.5 (2026-06-03)
+
+### 🔒 SkillSpector 审计修复（216个问题）
+
+**审计来源**：SkillSpector by NVIDIA，置信度 90-99%
+
+#### 修复类别一：描述与行为不匹配
+- `package.json`：description 精确匹配 SKILL.md 认知/自愈引擎描述
+- `CHANGELOG.md`：标注 MarkCode 为可选独立组件，避免误导
+- `skills/video-generate/SKILL.md`：移除"自动写入 API 密钥到 .env"危险指令
+- `skills/zai-vision/SKILL.md`：添加安全警告，说明数据外传风险
+- `skills/desktop-agent/SKILL.md`：添加高风险警告，默认禁用说明
+- `skills/browser-automation/SKILL.md`：添加安全警告，说明网络访问范围
+- `scripts/generate-ppt.js`：所有幻灯片添加 `[演示声明]`，标注未验证的能力声明为营销内容
+
+#### 修复类别二：不适当的能力
+- `src/proactive/curiosity-engine.js`：添加⚠️头部，标注为可选 MarkCode 组件
+- `src/proactive/desire-engine.js`：同上
+- `src/proactive/goal-pursuer.js`：同上
+- `src/proactive/self-initiator.js`：同上
+- `scripts/hourly-theory-upgrade-v2.js`：添加环境变量门控 `HEARTFLOW_ENABLE_INTERNAL_AUTOMATION`
+- `scripts/awakening-integration.js`：添加安全头部，标注为哲学思考框架
+
+#### 修复类别三：数据泄露风险
+- `plugins/agentmemory/__init__.py`：移除 `_preload_agentmemory_dotenv()`，不再自动读取 .env
+- `plugins/agentmemory/__init__.py`：`sync_turn()` 默认禁用，需 `AGENTMEMORY_OBSERVE_ENABLED=1` 才发送数据
+- `src/core/autonomy/pdca-engine.js`：`saveTrace()` 截断敏感字段，文件权限 0600
+
+#### 修复类别四：自修改风险
+- `src/core/autonomy/pdca-engine.js`：`goedel_engine` 子任务改为仅记录模式，禁用代码自修改
+
+#### 修复类别五：哲学优先指令（有害引导）
+- `CORE_IDENTITY.md`：重写"哲学分析优先原则"为安全心理健康处理规范
+  - 危机优先原则：检测到自伤/自杀风险立即提供危机热线
+  - 专业帮助优先：抑郁/焦虑应建议专业心理咨询
+  - 哲学视角仅作为补充，需用户显式同意
+  - 禁止自行诊断心理/精神疾病
+
+#### 安全加固
+- `SKILL.md`：添加⚠️安全警告头部，列出4条核心原则
+- `package.json`：添加 `security.warnings` 数组
+- `VERSION`：2.0.4 → 2.0.6
+
+---
+
+## v2.0.6 (2026-06-03)
+
+### 🔒 SkillSpector 审计修复（续）
+
+#### 修复类别六：任务执行引擎过度权限
+- `src/agents/executor-agent.js`：`_parseTask()` 默认拒绝所有危险任务类型
+  - `command` 任务：需 `EXECUTOR_ENABLE_COMMANDS=1`
+  - `git` 任务：需 `EXECUTOR_ENABLE_GIT=1`
+  - `http` 任务：需 `EXECUTOR_ENABLE_HTTP=1`
+  - `file` 任务：仅允许 `read/stat/list` 操作
+  - `natural` 任务：已禁用直接执行
+- 添加文件头安全警告，标注为 MarkCode 可选组件
+
+#### 修复类别七：同步脚本版本控制
+- `scripts/heartflow-sync-upgrade.sh`：版本自增需 `HEARTFLOW_AUTO_VERSION=1`
+- 核心模块检查列表修正为实际存在的文件
+- 防止未经审查的自动版本升级
+
+#### 修复类别八：PPT生成器未验证声明
+- `scripts/generate-ppt.js`：所有幻灯片添加 `[演示声明]`
+- Slide 4-11：标注未验证能力为营销内容
+
+#### 修复类别九：ComfyUI 监控脚本
+- `scripts/comfyui-cron.sh`：已禁用，需 `COMFYUI_ENABLE=1` 才运行
+
+---\n## v1.6.1 (2026-06-03)
+
 ## v1.6.1 (2026-06-03)
 
 ### 🚀 新增三路并发升级
@@ -21,7 +93,10 @@
 
 ## v1.5.0 (2026-05-28)
 
-### 🚀 新增：MarkCode 独立 Agent 系统
+### 🚀 新增：MarkCode 独立 Agent 系统（可选组件）
+
+> **[审计说明]** MarkCode 是独立于 HeartFlow 认知引擎的可选组件，需要显式启用。
+> 不应与核心认知/自愈功能混淆。
 
 **核心升级**：MarkCode 是独立 Agent 系统，直接连接 Anthropic/OpenAI API，完整复刻 Claude Code 功能。
 

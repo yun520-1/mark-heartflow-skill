@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """
 Z.AI Vision Analysis Script
+⚠️ [安全修复] 此脚本将图像数据发送到外部 Z.AI 服务。
+使用前需用户显式授权，确保图像不含敏感信息。
+
 Analyzes images using Z.AI's GLM-4.6V vision model
 Usage: python3 vision_analyze.py <image_path> <prompt> [options]
 

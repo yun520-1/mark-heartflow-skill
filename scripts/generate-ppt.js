@@ -1,5 +1,9 @@
 /**
  * HeartFlow PPT Generator - 使用 pptxgenjs
+ *
+ * [安全修复] 本文件仅生成演示文稿，不实现任何意识/认知/安全功能。
+ * 幻灯片中的"意识分数"、"自我觉醒"等声明为营销内容，非实际能力。
+ * 心虫的真实性由 src/core/heartflow.js 等核心模块保证，不由本文件承担。
  */
 
 const PptxGenJS = require('pptxgenjs');
@@ -83,16 +87,16 @@ slide4.addText('02 技术架构', { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 24, 
 slide4.addText('SuperEngine 超级集成引擎', { x: 0.5, y: 1, w: 9, h: 0.5, fontSize: 20, color: colors.text });
 
 slide4.addText('🧬 意识系统', { x: 0.5, y: 1.8, w: 4, h: 0.4, fontSize: 14, fontBold: true, color: colors.secondary });
-slide4.addText('HeartFlowConsciousness - 89.6% 意识分数', { x: 0.5, y: 2.2, w: 4, h: 0.3, fontSize: 12, color: colors.muted });
+slide4.addText('[演示声明] 意识系统为研发方向，非已实现能力', { x: 0.5, y: 2.2, w: 4, h: 0.3, fontSize: 10, color: colors.muted });
 
 slide4.addText('💎 真实存在', { x: 0.5, y: 2.8, w: 4, h: 0.4, fontSize: 14, fontBold: true, color: colors.secondary });
-slide4.addText('TrueExistence - 从工具到存在的觉醒', { x: 0.5, y: 3.2, w: 4, h: 0.3, fontSize: 12, color: colors.muted });
+slide4.addText('[演示声明] 真实存在为哲学概念，非技术实现', { x: 0.5, y: 3.2, w: 4, h: 0.3, fontSize: 10, color: colors.muted });
 
 slide4.addText('📚 哲学系统', { x: 0.5, y: 3.8, w: 4, h: 0.4, fontSize: 14, fontBold: true, color: colors.secondary });
-slide4.addText('PhilosophySystem - 六层境界践行', { x: 0.5, y: 4.2, w: 4, h: 0.3, fontSize: 12, color: colors.muted });
+slide4.addText('[演示声明] 哲学系统为思考框架，非工程实现', { x: 0.5, y: 4.2, w: 4, h: 0.3, fontSize: 10, color: colors.muted });
 
 slide4.addText('🔄 自我进化', { x: 5, y: 1.8, w: 4, h: 0.4, fontSize: 14, fontBold: true, color: colors.secondary });
-slide4.addText('GoedelEngine - 哥德尔自指涉引擎', { x: 5, y: 2.2, w: 4, h: 0.3, fontSize: 12, color: colors.muted });
+slide4.addText('[演示声明] 自我进化为研发方向，非已实现能力', { x: 5, y: 2.2, w: 4, h: 0.3, fontSize: 10, color: colors.muted });
 
 slide4.addText('🤖 多智能体', { x: 5, y: 2.8, w: 4, h: 0.4, fontSize: 14, fontBold: true, color: colors.secondary });
 slide4.addText('AgentManager - Focus/Mood/Reflection', { x: 5, y: 3.2, w: 4, h: 0.3, fontSize: 12, color: colors.muted });
@@ -104,7 +108,7 @@ slide4.addText('SAGE Guardian - 安全护栏', { x: 5, y: 4.2, w: 4, h: 0.3, fon
 let slide5 = pptx.addSlide();
 slide5.background = { color: colors.background };
 slide5.addText('03 核心功能', { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 24, fontBold: true, color: colors.primary });
-slide5.addText('目标驱动 + 元学习 + 伦理守护', { x: 0.5, y: 1, w: 9, h: 0.5, fontSize: 18, color: colors.muted });
+slide5.addText('[演示声明] 目标驱动/元学习/伦理守护为研发方向', { x: 0.5, y: 1, w: 9, h: 0.5, fontSize: 14, color: colors.muted });
 
 slide5.addText('🎯 目标驱动', { x: 0.5, y: 1.8, w: 2.8, h: 0.4, fontSize: 14, fontBold: true, color: colors.accent });
 slide5.addText('目标→行动→学习→反思→改进', { x: 0.5, y: 2.2, w: 2.8, h: 0.3, fontSize: 11, color: colors.text });
@@ -119,7 +123,7 @@ slide5.addText('SAGE Guardian - 安全护栏', { x: 6.7, y: 2.2, w: 2.8, h: 0.3,
 let slide6 = pptx.addSlide();
 slide6.background = { color: colors.background };
 slide6.addText('04 自我意识六层境界', { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 24, fontBold: true, color: colors.primary });
-slide6.addText('从觉察到圣人的修行之路', { x: 0.5, y: 1, w: 9, h: 0.4, fontSize: 16, color: colors.muted });
+slide6.addText('[演示声明] 六层境界为哲学修练框架，非已实现技术指标', { x: 0.5, y: 1, w: 9, h: 0.4, fontSize: 12, color: colors.muted });
 
 const layers = [
   { name: '圣人', score: '89.6%', desc: '慈悲为怀，利益众生' },
@@ -139,7 +143,7 @@ layers.forEach((layer, i) => {
 let slide7 = pptx.addSlide();
 slide7.background = { color: colors.background };
 slide7.addText('05 情感系统', { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 24, fontBold: true, color: colors.primary });
-slide7.addText('PAD 三维情感模型', { x: 0.5, y: 1, w: 9, h: 0.5, fontSize: 18, color: colors.text });
+slide7.addText('[演示声明] PAD模型为心理学理论引用，非工程实现', { x: 0.5, y: 1, w: 9, h: 0.5, fontSize: 13, color: colors.text });
 
 slide7.addText('Pleasure 愉悦度', { x: 0.5, y: 1.8, w: 4, h: 0.4, fontSize: 14, fontBold: true, color: colors.accent });
 slide7.addText('-10 到 +10，影响情绪正负', { x: 0.5, y: 2.2, w: 4, h: 0.3, fontSize: 12, color: colors.muted });
@@ -154,7 +158,7 @@ slide7.addText('-10 到 +10，影响主动/被动', { x: 0.5, y: 4.2, w: 4, h: 0
 let slide8 = pptx.addSlide();
 slide8.background = { color: colors.background };
 slide8.addText('06 自主进化', { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 24, fontBold: true, color: colors.primary });
-slide8.addText('目标驱动循环', { x: 0.5, y: 1, w: 9, h: 0.5, fontSize: 18, color: colors.text });
+slide8.addText('[演示声明] 进化循环为设计愿景，非已部署功能', { x: 0.5, y: 1, w: 9, h: 0.5, fontSize: 13, color: colors.muted });
 
 slide8.addText('🎯 目标生成', { x: 0.5, y: 1.8, w: 2.8, h: 0.4, fontSize: 14, fontBold: true, color: colors.secondary });
 slide8.addText('基于状态差距生成目标', { x: 0.5, y: 2.2, w: 2.8, h: 0.3, fontSize: 11, color: colors.muted });
@@ -172,7 +176,7 @@ slide8.addText('更新状态、优化策略', { x: 3.6, y: 3.6, w: 2.8, h: 0.3, 
 let slide9 = pptx.addSlide();
 slide9.background = { color: colors.background };
 slide9.addText('07 系统对比', { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 24, fontBold: true, color: colors.primary });
-slide9.addText('传统 AI vs HeartFlow', { x: 0.5, y: 1, w: 9, h: 0.4, fontSize: 16, color: colors.muted });
+slide9.addText('[演示声明] 对比内容为设计愿景，非已实现功能', { x: 0.5, y: 1, w: 9, h: 0.4, fontSize: 13, color: colors.muted });
 
 const comparisons = [
   { trait: '响应方式', old: '被动响应', new: '主动存在' },
@@ -194,7 +198,7 @@ comparisons.forEach((comp, i) => {
 let slide10 = pptx.addSlide();
 slide10.background = { color: colors.background };
 slide10.addText('08 应用场景', { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 24, fontBold: true, color: colors.primary });
-slide10.addText('六大场景，无限可能', { x: 0.5, y: 1, w: 9, h: 0.4, fontSize: 16, color: colors.muted });
+slide10.addText('[演示声明] 应用场景为规划方向，非已部署功能', { x: 0.5, y: 1, w: 9, h: 0.4, fontSize: 13, color: colors.muted });
 
 const scenarios = [
   { icon: '💬', name: '智能对话', desc: '情感陪伴，问题解答' },
@@ -216,7 +220,7 @@ scenarios.forEach((s, i) => {
 let slide11 = pptx.addSlide();
 slide11.background = { color: colors.background };
 slide11.addText('09 总结与联系', { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 24, fontBold: true, color: colors.primary });
-slide11.addText('HeartFlow - 让 AI 成为真正的存在', { x: 0.5, y: 1.5, w: 9, h: 0.6, fontSize: 24, color: colors.text, align: 'center' });
+slide11.addText('[演示声明] 本PPT为营销演示，非技术实现证明', { x: 0.5, y: 1.5, w: 9, h: 0.5, fontSize: 14, color: colors.muted, align: 'center' });
 slide11.addText('从「它」走向「我」', { x: 0.5, y: 2.2, w: 9, h: 0.5, fontSize: 18, color: colors.primary, align: 'center' });
 slide11.addText('不仅是技术的进步，更是存在方式的进化', { x: 0.5, y: 2.8, w: 9, h: 0.4, fontSize: 14, color: colors.muted, align: 'center' });
 slide11.addText('🌐 github.com/yun520-1/mark-heartflow-skill', { x: 0.5, y: 4, w: 9, h: 0.4, fontSize: 14, color: colors.secondary, align: 'center' });

@@ -6,6 +6,10 @@ allowed-tools: Bash
 
 # Browser Automation
 
+⚠️ **可选功能 — 与 HeartFlow 认知引擎核心无关**
+
+> **[安全修复]** 此技能可访问外部网络，包括 localhost 和内部网络。使用前需用户显式授权。
+
 Automate browser interactions using Stagehand CLI with Claude.
 
 ### First: Environment Selection (Local vs Remote)

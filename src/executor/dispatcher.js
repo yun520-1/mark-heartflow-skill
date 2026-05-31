@@ -223,12 +223,13 @@ class ToolDispatcher {
       }
     }
 
-    // 默认尝试作为 bash 命令执行
+    // 默认尝试作为 bash 命令执行（危险 — 审计修复：默认 bash 绕过意图识别）
+    // 已禁用。如需执行命令，请使用明确的工具前缀（如 "bash: xxx" 或 "shell: xxx"）
     return {
-      intent: 'bash.default',
-      tool: 'bash',
-      args: { command: trimmed },
-      confidence: 0.5
+      intent: 'unknown',
+      tool: null,
+      args: {},
+      confidence: 0
     };
   }
 

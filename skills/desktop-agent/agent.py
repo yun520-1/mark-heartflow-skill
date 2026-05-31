@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 """
 Desktop AI Agent CLI
-Usage: python agent.py <command> [args]
+⚠️ [安全修复] 默认禁用，需设置 DESKTOP_AGENT_ENABLE=1 才可运行
 """
 
 import sys
 import os
+
+# [安全修复] 环境变量门控 — 默认拒绝运行
+if os.environ.get("DESKTOP_AGENT_ENABLE") != "1":
+    print("❌ Desktop Agent 默认禁用")
+    print("   如需启用，请设置环境变量: DESKTOP_AGENT_ENABLE=1")
+    print("   注意：此功能可控制鼠标/键盘/截屏，仅在受控环境使用")
+    sys.exit(1)
 
 # Add parent to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

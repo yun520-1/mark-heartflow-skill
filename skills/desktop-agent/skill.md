@@ -1,5 +1,20 @@
 # Desktop AI Agent Skill
 
+⚠️ **高风险能力 — 默认禁用，需要明确用户授权才能使用**
+
+> **[安全修复]** 此技能包含屏幕捕获、鼠标键盘控制功能，与 HeartFlow 认知引擎核心功能无关。
+> 仅当用户输入明确指令时才可启用，禁止自动激活。
+
+此技能包含屏幕捕获、鼠标键盘控制功能，仅适用于：
+- 受控桌面环境
+- 用户明确授权的任务
+- 不涉及敏感数据（密码、银行卡等）的场景
+
+**安全约束**：
+- 禁止访问密码管理器、银行应用等敏感应用
+- 禁止在后台静默运行
+- 所有操作必须可审计
+
 Use this skill when the user wants to:
 - Control desktop applications
 - Teach the AI to perform tasks
@@ -85,3 +100,5 @@ agent.execute_task("task_name") # Run a task
 - User can teach by demonstration
 - Tasks are saved as JSON and reusable
 - Use with caution - can control any application
+- **[安全修复] 此技能为高风险工具，不属于心虫认知引擎核心功能**
+- **[安全修复] 禁止在未明确用户授权的情况下自动使用**

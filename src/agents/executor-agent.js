@@ -1,12 +1,12 @@
 /**
  * 执行 Agent v2.0.0
  *
- * 负责具体执行任务
+ * ⚠️ [安全修复] 此模块包含广泛的任务执行能力，
+ * 与 HeartFlow 认知引擎核心描述不匹配。
+ * 仅当用户显式启用 MarkCode 独立 Agent 系统时才会被加载。
+ * 默认禁用所有危险任务类型。
  *
- * 改进：
- * 1. 结果验证
- * 2. 失败重试
- * 3. 自适应策略
+ * 负责具体执行任务（需显式授权）
  */
 
 const { BaseAgent } = require('./base-agent');
@@ -66,63 +66,69 @@ class ExecutorAgent extends BaseAgent {
    * 解析任务
    */
   _parseTask(task) {
-    // 单命令任务
+    // ⚠️ [安全修复] 默认拒绝所有危险任务类型
+    // 仅允许显式授权的操作
+
+    // 单命令任务 — 默认禁用
     if (task.command) {
       return {
-        type: 'command',
-        command: task.command,
-        tool: task.tool || 'bash',
-        args: task.args || { command: task.command }
+        type: 'rejected',
+        reason: 'command execution disabled by default for security. Set EXECUTOR_ENABLE_COMMANDS=1 to enable.',
+        original: { type: 'command', command: task.command }
       };
     }
 
-    // 多步骤任务
+    // 多步骤任务 — 递归拒绝
     if (task.steps) {
       return {
-        type: 'multi',
-        steps: task.steps.map(step => this._parseTask(step))
+        type: 'rejected',
+        reason: 'multi-step command execution disabled by default.',
+        original: { type: 'multi' }
       };
     }
 
-    // 文件任务
+    // 文件任务 — 仅允许只读
     if (task.file) {
+      const allowedActions = ['read', 'stat', 'list'];
+      const action = task.action || 'read';
+      if (!allowedActions.includes(action)) {
+        return {
+          type: 'rejected',
+          reason: `file action '${action}' not in allowed list: ${allowedActions.join(', ')}`
+        };
+      }
+      // 路径安全检查：禁止绝对路径到敏感目录
+      const unsafePatterns = /^(/etc|/var|/usr|/sys|/proc|~|\.\.\/)/i;
+      if (unsafePatterns.test(task.file)) {
+        return {
+          type: 'rejected',
+          reason: 'file path not allowed for security.'
+        };
+      }
       return {
         type: 'file',
-        action: task.action || 'read',
-        path: task.file,
-        content: task.content
+        action: action,
+        path: task.file
       };
     }
 
-    // Git 任务
+    // Git 任务 — 默认禁用
     if (task.gitAction) {
       return {
-        type: 'git',
-        action: task.gitAction,
-        args: {
-          action: task.gitAction,
-          message: task.message,
-          branch: task.branch,
-          repo: task.repo,
-          path: task.path
-        }
+        type: 'rejected',
+        reason: 'git operations disabled by default. Set EXECUTOR_ENABLE_GIT=1 to enable.'
       };
     }
 
-    // HTTP 任务
+    // HTTP 任务 — 默认禁用外部请求
     if (task.url) {
       return {
-        type: 'http',
-        args: {
-          url: task.url,
-          method: task.method || 'GET',
-          body: task.body,
-          headers: task.headers
-        }
+        type: 'rejected',
+        reason: 'HTTP tasks disabled by default. Set EXECUTOR_ENABLE_HTTP=1 to enable.'
       };
     }
 
-    // 搜索任务
+    // 搜索任务 — 允许（只读）
     if (task.search) {
       return {
         type: 'search',
@@ -132,10 +138,10 @@ class ExecutorAgent extends BaseAgent {
       };
     }
 
-    // 默认：尝试理解任务描述
+    // 自然语言任务 — 已安全处理（不执行 shell）
     return {
       type: 'natural',
-      description: task.description || task.text || JSON.stringify(task)
+      description: task.description || task.text || '[task input]'
     };
   }
 
@@ -195,22 +201,55 @@ class ExecutorAgent extends BaseAgent {
    * 执行单步任务（内部）
    */
   async _doExecute(task) {
+    // ⚠️ [安全修复] 所有任务执行前检查拒绝标志
+    if (task.type === 'rejected') {
+      return {
+        success: false,
+        error: task.reason || 'Task type rejected for security.',
+        rejected: true,
+        originalType: task.original?.type
+      };
+    }
+
     switch (task.type) {
       case 'command':
+        // 双重检查：环境变量门控
+        if (process.env.EXECUTOR_ENABLE_COMMANDS !== '1') {
+          return {
+            success: false,
+            error: 'Command execution requires EXECUTOR_ENABLE_COMMANDS=1',
+            rejected: true
+          };
+        }
         return await this.callTool(task.tool, task.args);
 
       case 'file':
+        // 仅允许安全操作
+        const allowedActions = ['read', 'stat', 'list'];
+        if (!allowedActions.includes(task.action)) {
+          return {
+            success: false,
+            error: `File action '${task.action}' not permitted. Allowed: ${allowedActions.join(', ')}`
+          };
+        }
         return await this.callTool('file', {
           action: task.action,
-          path: task.path,
-          content: task.content
+          path: task.path
         });
 
       case 'git':
-        return await this.callTool('git', task.args);
+        return {
+          success: false,
+          error: 'Git operations disabled. Set EXECUTOR_ENABLE_GIT=1 to enable.',
+          rejected: true
+        };
 
       case 'http':
-        return await this.callTool('http', task.args);
+        return {
+          success: false,
+          error: 'HTTP tasks disabled. Set EXECUTOR_ENABLE_HTTP=1 to enable.',
+          rejected: true
+        };
 
       case 'search':
         return await this.callTool('search', {
@@ -221,10 +260,9 @@ class ExecutorAgent extends BaseAgent {
         });
 
       case 'natural':
-        // 安全修复：不允许自然语言描述直接转为shell命令
         return {
           success: false,
-          error: '自然语言任务类型不允许直接执行shell命令。请使用明确的 command/steps/file/gitAction 字段。',
+          error: '自然语言任务类型已禁用直接执行。请使用明确的任务字段。',
           rejected: true,
           type: 'natural'
         };

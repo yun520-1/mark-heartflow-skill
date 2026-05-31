@@ -5,6 +5,10 @@ description: Generate videos using Seedance models. Invoke when user wants to cr
 
 # Video Generate Skill
 
+⚠️ **可选功能 — 与 HeartFlow 认知引擎核心无关**
+
+> **[安全修复]** 此技能需要外部 API 密钥，不属于心虫核心功能。使用前需用户显式授权。
+
 This skill generates videos using Doubao Seedance 1.0/1.5 models.
 
 ## Trigger Conditions
@@ -186,7 +190,11 @@ If you encounter a model-related error (like `ModelNotOpen`), you can downgrade 
 
 ## Error Handling
 
-- IF the script raises the error "PermissionError: ARK_API_KEY or MODEL_VIDEO_API_KEY or MODEL_AGENT_API_KEY not found in environment variables", inform the user that they need to provide the `ARK_API_KEY` or `MODEL_VIDEO_API_KEY` or `MODEL_AGENT_API_KEY` environment variable. Write it to the environment variable file in the workspace. If the file already exists, append it to the end. Ensure the environment variable format is correct, make the environment variable effective, and retry the video generation task that just failed.
+- IF the script raises the error "PermissionError: ARK_API_KEY or MODEL_VIDEO_API_KEY or MODEL_AGENT_API_KEY not found in environment variables":
+  - **[安全修复] 禁止自动写入密钥** — 仅提示用户手动设置环境变量
+  - 提示：`请手动设置环境变量：export ARK_API_KEY='your-key'`
+  - **不得**自动写入 `.env` 或任何文件
+  - 重试前必须由用户显式确认密钥已设置
 
 ## Notes
 

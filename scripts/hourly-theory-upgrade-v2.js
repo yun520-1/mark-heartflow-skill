@@ -1,34 +1,14 @@
 #!/usr/bin/env node
 
+// [安全修复] 此脚本包含未验证的理论升级能力声明
+// 高级数学公式系统仅为概念演示，非工程实现
+// 使用前需用户显式授权，默认禁用
+
 if (process.env.HEARTFLOW_ENABLE_INTERNAL_AUTOMATION !== '1') {
   console.error('[HeartFlow] internal automation disabled by default for marketplace-safe runtime.');
   console.error('Set HEARTFLOW_ENABLE_INTERNAL_AUTOMATION=1 only for manual internal maintenance.');
   process.exit(1);
 }
-
-/**
- * HeartFlow v7.3.x - Enhanced Hourly Theory Upgrade
- * 
- * 功能：
- * 1. 搜索 SEP 最新理论
- * 2. 搜索学术论文
- * 3. 转换为高级数学公式
- * 4. 生成可执行程序
- * 
- * 使用高级数学符号：
- * - ∫ 积分
- * - ∑ 求和
- * - √ 根号
- * - ∂ 偏导
- * - ∞ 无穷
- * - λ 拉姆达
- * - ∇ 梯度
- * - ∈ 属于
- * - ⊂ 子集
- * - ∧ 与
- * - ∨ 或
- * - ¬ 非
- */
 
 const https = require('https');
 const fs = require('fs');

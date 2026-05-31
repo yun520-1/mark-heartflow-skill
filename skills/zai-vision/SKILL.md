@@ -5,6 +5,17 @@ description: Z.AI Vision analysis using GLM-4.6V model for image and video under
 
 # Z.AI Vision
 
+⚠️ **Optional Feature — Not Part of HeartFlow Core Cognitive Engine**
+
+> **[Security Fix]** This skill sends image data to external Z.AI services. Requires explicit user authorization before use.
+> 
+> **Data Security Warnings**:
+> 1. Image data will be sent to Z.AI servers for processing
+> 2. Ensure images do not contain sensitive information (passwords, personal info, private content)
+> 3. User must explicitly consent before each use
+> 4. Do NOT automatically enable or silently upload images
+> 5. API key handling must follow security best practices
+
 ## Overview
 
 This skill provides Z.AI's GLM-4.6V vision model capabilities for analyzing images and videos through Python scripts. Use it for OCR, UI design analysis, technical diagrams, error screenshots, data visualizations, and video scene understanding.
@@ -22,6 +33,11 @@ pip install zai-sdk
 ```bash
 export ZAI_API_KEY='your-api-key'
 ```
+
+**[安全修复] API密钥处理注意事项：**
+- 仅在受控环境中使用，不要将密钥硬编码或提交到版本控制
+- 建议使用环境变量或密钥管理服务，而非明文 export
+- 禁止在多人共享环境中明文存储 API 密钥
 
 The API key is required for all vision operations.
 

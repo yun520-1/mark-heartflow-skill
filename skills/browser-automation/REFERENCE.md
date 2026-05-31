@@ -465,11 +465,13 @@ Browser automation consumes:
 - No file type restrictions enforced
 - Verify downloaded file integrity before use
 
-### Network Access
+### Network Access ⚠️ SSRF Risk
 
 - Browser has full network access
 - Respects system proxy settings
-- Can access localhost and internal networks
+- **Can access localhost and internal networks — this creates SSRF risk**
+- **[安全修复] 仅在受控环境中使用，禁止向不可信目标开放**
+- **[安全修复] 建议通过环境变量限制可访问的域名白名单**
 
 ---
 

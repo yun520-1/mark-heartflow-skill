@@ -93,8 +93,9 @@ UPGRADE_STATUS=0
 if [ $UPGRADE_STATUS -eq 0 ]; then
     echo "" >> "$LOG_FILE"
     echo "📦 Git 提交 (安全模式 - 显式文件列表)..." >> "$LOG_FILE"
-    # git pull 已禁用 — 审计修复：防止远程仓库污染本地状态
-git pull --rebase origin main >> "$LOG_FILE" 2>&1 || true  # 临时保留，后续删除
+    # git pull 已移除 — 防止远程仓库污染本地状态
+    # 审计修复：禁止自动 git pull
+    echo "ℹ️ Git pull 已禁用" >> "$LOG_FILE"
 
     # 只提交升级产物（显式文件列表，防止意外提交）
     UPGRADE_FILES="upgrades/v$NEW_VERSION/SYSTEM_REQUIREMENTS.md"
