@@ -117,7 +117,7 @@ function detectPADFromText(text) {
     return { ...calculatePADState(pleasure, arousal, dominance), emotion: emotion.name, emotionZh: emotion.zh };
   }
   // 悲伤/难过（P--，A=0，D=0）
-  if (/难过|悲伤|伤心|痛苦|失落|沮丧/.test(text)) {
+  if (/难过|悲伤|伤心|痛苦|委屈|压抑|无奈|心酸|受伤|失落|沮丧/.test(text)) {
     pleasure -= 4; arousal = 0; dominance = 0;
     const emotion = getEmotionFromPAD(pleasure, arousal, dominance);
     return { ...calculatePADState(pleasure, arousal, dominance), emotion: emotion.name, emotionZh: emotion.zh };
