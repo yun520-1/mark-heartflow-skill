@@ -366,7 +366,7 @@ class HeartFlow {
     try {
       const { factChecker } = require('./fact-checker.js');
       this.truth = {
-        checkStatement: (stmt) => factChecker.checkFact(stmt),
+        checkStatement: async (stmt) => factChecker.checkFact(stmt),
         checkNumbers: (stmt) => factChecker.checkNumber(stmt),
         checkSources: (stmt) => factChecker.checkAcademicClaim(stmt),
         getStats: () => ({ type: 'fact-checker' }),
