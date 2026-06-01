@@ -237,7 +237,7 @@ Install it once. Every session after that, your AI:
 |---|---|---|
 | WorkflowSwitch | Intent-based routing: new task / continuation / casual reply | `new WorkflowSwitch()` |
 | StabilityGuard | Oscillation detection · prevents runaway loops | `new StabilityGuard()` |
-| WakeUpVerifier | Pre-action sanity check | `new WakeUpVerifier()` |
+| WakeUpVerifier | Pre-action sanity check (已禁用) |
 
 ### Decision Engine
 | Capability | What it does | Code |
@@ -254,7 +254,7 @@ Install it once. Every session after that, your AI:
 ### Tool & Interaction
 | Capability | What it does | Code |
 |---|---|---|
-| InteractiveDream | User-triggered dream analysis with L1~L6 scoring | `new InteractiveDream(rootPath)` |
+| InteractiveDream | User-triggered dream analysis with L1~L6 scoring (已禁用) |
 | LanguageHonesty | checkCertainty · soften · reduceQuestions | `LanguageHonesty` (functions) |
 | StateSnapshot | Current state export for recovery | `StateSnapshot.currentSnapshot` |
 | ErrorHandler | Error categorization + history | `ErrorHandler.errors` |
@@ -951,7 +951,7 @@ npm install mark-heartflow-skill
 - **1.1.1.0** (2026-05-20) — Boot Check + FeedbackFunctions + 单一真相源(VERSION)
 - **1.0.7** (2026-05-20) — 真善美系统(TGB)+六层哲学+五层记忆+StabilityGuard
 - **1.0.6** (2026-05-19) — PsychologyEngine v1.0.1 (Dual-process), SelfEvolution Q-learning
-- **1.0.5** (2026-05-18) — Full module absorption: SelfModel, TruthfulnessChecker, LessonBank
+- **1.0.5** (2026-05-18) — Full module absorption: SelfModel, fact-checker, LessonBank
 - **1.0.0** — First stable release after v0.x legacy merge
 
 ---

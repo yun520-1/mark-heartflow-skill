@@ -162,7 +162,7 @@ const { EmotionalGrowth } = require('../emotion/emotional-growth.js');
 const { MoodEvolution } = require('../emotion/mood-evolution.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '1.6.2';
+const VERSION = '2.0.10';
 const BUILD_DATE = '2026-06-03';
 
 class HeartFlow {
@@ -326,7 +326,8 @@ class HeartFlow {
     this.memory = new MeaningfulMemory(this.rootPath);
     this.triality = new TrialityMemory(this.rootPath);
     this.knowledge = new KnowledgeGraph(this.rootPath);
-    this.anchor = new RetrievalAnchor();
+    // RetrievalAnchor — 已禁用（未被调用）
+    // this.anchor = new RetrievalAnchor();
 
     // Evolution
     this.evolution = new EvolutionLoop({ rootPath: this.rootPath, memory: this.memory }).boot();
@@ -346,7 +347,19 @@ class HeartFlow {
 
     // Psychology
     this.psychology = new PsychologyEngine(this.memory);
-    this.emotion = new EmotionalProtocol();
+    // Emotion — 委托 PsychologyEngine（EmotionalProtocol 已移除，功能整合进 PsychologyEngine）
+    this.emotion = {
+      process: (input) => {
+        if (!this.psychology) return { pad: { pleasure: 0, arousal: 0, dominance: 0 }, intensity: 0, type: 'neutral' };
+        const r = this.psychology.analyzePsychology(input);
+        return { pad: r.emotion, intensity: r.emotion.intensity || 0, type: r.intention.category || 'unknown' };
+      },
+      getPAD: (input) => {
+        if (!this.psychology) return { pleasure: 0, arousal: 0, dominance: 0 };
+        const r = this.psychology.analyzePsychology(input);
+        return { pleasure: r.emotion.pleasure, arousal: r.emotion.arousal, dominance: r.emotion.dominance };
+      }
+    };
 
     // Security — 已移除（精简版）
 
@@ -359,40 +372,21 @@ class HeartFlow {
     try { this.counterfactual = new CounterfactualEngine(); } catch (e) { this._initErrors.push({module: 'counterfactual', error: e.message}); }
     try { this.confidence = new ConfidenceCalibrator(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
     try { this.restraint = new SpontaneousRestraint(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
-    try { this.arbitration = new CooperativeArbitration(); } catch (e) { this._initErrors.push({module: 'arbitration', error: e.message}); }
-    try { this.embodied = new EmbodiedCore(this.rootPath); } catch (e) { this._initErrors.push({module: 'embodied', error: e.message}); }
-    try { this.wakeup = new WakeUpVerifier(); } catch (e) { this._initErrors.push({module: 'wakeup', error: e.message}); }
-    try { this.interactive = new InteractiveDream(this.rootPath); } catch (e) { this._initErrors.push({module: 'interactive', error: e.message}); }
-    try { this.being = new BeingLogic(this.rootPath); } catch (e) { this._initErrors.push({module: 'being', error: e.message}); }
-
-    // TopicScope — 话题作用域隔离（上下文污染解决方案）
-    this.topics = new TopicScope();
-
-    // Mental Effort Tracker — cognitive resource management
-    try { this.mentalEffort = new MentalEffortTracker(); } catch (e) { this._initErrors.push({module: 'mentalEffort', error: e.message}); }
-
-    // MetaPromptEngine — 用户端加强：用大模型优化大模型调用
-    try { this.metaPrompt = new MetaPromptEngine(this); } catch (e) { this._initErrors.push({module: 'metaPrompt', error: e.message}); }
-
-    // Graph of Thoughts — 多路径推理图探索
-    try { this.got = new GoTEngine(); } catch (e) { this._initErrors.push({module: 'got', error: e.message}); }
-
-    // Constitutional AI — 原则驱动的自我对齐
-    try { this.constitutional = new ConstitutionalEngine(); } catch (e) { this._initErrors.push({module: 'constitutional', error: e.message}); }
-
-    // Engine modules (functions/objects — no 'new')
-    try { this.language = LanguageHonesty; } catch (e) {}
-    try { this.reasoning = ReasoningIntegrator; } catch (e) {}
-
-    // Classes requiring 'new'
+    // RetrievalAnchor — 已禁用（未被调用）
+    // EmbodiedCore — 已禁用（未被调用）
+    // BeingLogic — 已禁用（未被调用）
+    // MentalEffortTracker — 已禁用（未被调用）
+    // MetaPromptEngine — 已禁用（未被调用）
+    // GoTEngine — 已禁用（未被调用）
+    // ConstitutionalEngine — 已禁用（未被调用）
     try { this.workflow = new WorkflowSwitch(); } catch (e) {}
     try { this.snapshot = StateSnapshot; } catch (e) {}  // singleton export
     try { this.error = ErrorHandler; } catch (e) {}      // singleton export
 
     // ─── New modules initialization ─────────────────────────────────────────
-    // Search modules
-    try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { console.warn('[HeartFlow] BM25 init error:', e.message); }
-    try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { console.warn('[HeartFlow] HybridSearch init error:', e.message); }
+    // Search modules — BM25Engine/HybridSearchEngine 已禁用（无 BM25Engine/HybridSearchEngine 类）
+    // try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { console.warn('[HeartFlow] BM25 init error:', e.message); }
+    // try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { console.warn('[HeartFlow] HybridSearch init error:', e.message); }
 
     // Budget & Utils (function exports, not classes)
     this.budget = { Budget, countTokens, resolveThinkingBudget, exceedsTokenLimit, getBudgetDescription };
@@ -525,24 +519,22 @@ class HeartFlow {
       this._modules.thoughtChain = this._thoughtChainApi;
     }
 
-    // ─── Execution Layer — 执行能力 ─────────────────────────────────────────
+    // ─── Execution Layer — 执行能力（已禁用，精简版）──────────────
+    // ToolExecutor/ToolDispatcher/AgentFactory/TaskPipeline/ExecutionMonitor/
+    // FallbackExecutor/AlternativeGenerator/RetryStrategy 已移除
+    // 如需执行能力，独立安装对应 skill
     try {
-      this.toolExecutor = new ToolExecutor({ rootPath: this.rootPath });
-      this.toolDispatcher = new ToolDispatcher({ rootPath: this.rootPath });
-      this.agentFactory = new AgentFactory({ rootPath: this.rootPath });
-      this.taskPipeline = new TaskPipeline({ rootPath: this.rootPath });
-      this.taskPipeline.initialize();
-
-      // 执行监控与回退
-      this.executionMonitor = new ExecutionMonitor();
-      this.fallbackExecutor = new FallbackExecutor();
-      this.alternativeGenerator = new AlternativeGenerator();
-      this.retryStrategy = new RetryStrategy();
-
-      if (false) console.log('[HeartFlow] 执行层初始化完成');
-    } catch (e) {
-      console.warn('[HeartFlow] 执行层初始化失败:', e.message);
-    }
+      if (false) {
+        this.toolExecutor = new ToolExecutor({ rootPath: this.rootPath });
+        this.toolDispatcher = new ToolDispatcher({ rootPath: this.rootPath });
+        this.agentFactory = new AgentFactory({ rootPath: this.rootPath });
+        this.taskPipeline = new TaskPipeline({ rootPath: this.rootPath });
+        this.executionMonitor = new ExecutionMonitor();
+        this.fallbackExecutor = new FallbackExecutor();
+        this.alternativeGenerator = new AlternativeGenerator();
+        this.retryStrategy = new RetryStrategy();
+      }
+    } catch (e) {}
 
     // ─── Planning Layer — 规划能力 ─────────────────────────────────────────
     try {
