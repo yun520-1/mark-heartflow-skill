@@ -162,7 +162,7 @@ const { EmotionalGrowth } = require('../emotion/emotional-growth.js');
 const { MoodEvolution } = require('../emotion/mood-evolution.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '2.0.11';
+const VERSION = '2.0.12';
 const BUILD_DATE = '2026-06-03';
 
 class HeartFlow {
@@ -263,11 +263,6 @@ class HeartFlow {
     this.longTermMemory = null;  // 长期记忆
     this.crossSessionIndex = null;  // 跨会话索引
 
-    // Multimodal Layer — 多模态
-    this.visionProcessor = null;  // 视觉处理器
-    this.imageAnalyzer = null;  // 图像分析器
-    this.modalFusion = null;  // 模态融合
-
     // Reasoning Layer — 推理
     this.knowledgeBase = null;  // 知识库
     this.commonsenseEngine = null;  // 常识推理引擎
@@ -362,6 +357,19 @@ class HeartFlow {
     };
 
     // Security — 已移除（精简版）
+
+    // Truth — 事实核查模块（使用factChecker包装）
+    try {
+      const { factChecker } = require('./fact-checker.js');
+      this.truth = {
+        checkStatement: (stmt) => factChecker.checkFact(stmt),
+        checkNumbers: (stmt) => factChecker.checkNumber(stmt),
+        checkSources: (stmt) => factChecker.checkAcademicClaim(stmt),
+        getStats: () => ({ type: 'fact-checker' }),
+      };
+    } catch (e) {
+      this._initErrors.push({ module: 'truth', error: e.message });
+    }
 
     // Engine modules (classes) — track errors for healthCheck
     this._initErrors = [];
@@ -817,10 +825,8 @@ class HeartFlow {
     'projectContext.setProject', 'projectContext.addTask', 'projectContext.getSummary', 'projectContext.getState',
     'longTermMemory.add', 'longTermMemory.get', 'longTermMemory.search', 'longTermMemory.getStats',
     'crossSessionIndex.indexEntity', 'crossSessionIndex.search', 'crossSessionIndex.getSessionEntities', 'crossSessionIndex.getStats',
-    // Multimodal Layer — 多模态
-    'visionProcessor.process', 'visionProcessor.getInfo',
-    'imageAnalyzer.analyze', 'imageAnalyzer.generateDescription', 'imageAnalyzer.cacheAnalysis',
-    'modalFusion.fuse', 'modalFusion.generateResponse', 'modalFusion.getStats',
+    // Multimodal — 已移除（精简版）
+
     // Reasoning Layer — 推理
     'knowledgeBase.addFact', 'knowledgeBase.query', 'knowledgeBase.getCategories', 'knowledgeBase.getStats',
     'commonsenseEngine.reason', 'commonsenseEngine.validate', 'commonsenseEngine.getHistory', 'commonsenseEngine.getStats',
