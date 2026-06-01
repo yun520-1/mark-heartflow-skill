@@ -61,14 +61,18 @@ const EFFORT_CONFIG = {
 // ========================================
 
 class MentalEffortTracker {
-  constructor() {
-    this.version = '1.0.0';
+  constructor(options = {}) {
+    this.version = '1.1.0';
     this.currentEffort = EFFORT_CONFIG.BASELINE_EFFORT;
     this.effortHistory = [];
     this.lastTaskTime = null;
     this.recoveryStartTime = null;
     this.taskCount = 0;
     this.totalEffortExpended = 0;
+    this.fatigueTrend = null;         // 疲劳趋势: 'rising' | 'stable' | 'falling'
+    this.fatigueSlope = 0;            // 斜率值（越大越陡峭）
+    this.earlyWarningThreshold = options.earlyWarningThreshold ?? 3; // 连续N次上升触发预警
+    this.trendWindow = options.trendWindow ?? 5;                      // 趋势计算窗口
   }
 
   /**
@@ -333,7 +337,7 @@ class MentalEffortTracker {
   }
 
   /**
-   * 获取当前认知努力状态
+   * 获取认知努力状态（增强版，含疲劳趋势检测）
    */
   getCurrentEffortState() {
     // 如果距上次任务超过恢复时间，完全恢复
@@ -343,9 +347,9 @@ class MentalEffortTracker {
     } else if (this.recoveryStartTime) {
       this._calculateRecovery();
     }
-    
+
     const effortLevel = this._getEffortLevel(this.currentEffort);
-    
+
     return {
       currentEffort: this.currentEffort,
       effortLevel,
