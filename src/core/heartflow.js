@@ -60,11 +60,6 @@ const { lessonStorage } = require('./lessons/lesson-storage.js');
 
 // Psychology
 const { PsychologyEngine } = require('../psychology/engine.js');
-const { EmotionalProtocol } = require('../security/emotional-protocol.js');
-
-// Security
-const { TruthfulnessChecker } = require('../security/truthfulness.js');
-const { SecurityChecker } = require('../security/security-checker.js');
 
 // Engine modules
 const { StabilityGuard } = require('./stability-guard.js');
@@ -127,16 +122,6 @@ const { MindSpaceGuardian } = require('./mindspace/mind-space-guardian.js');
 // Transmission — 知识传递引擎
 const { TransmissionEngine } = require('./transmission/transmission-engine.js');
 
-// ─── Execution Layer — 执行能力 ────────────────────────────────────────────────
-const { ToolExecutor } = require('../executor/tool-executor.js');
-const { ToolDispatcher } = require('../executor/dispatcher.js');
-const { AgentFactory } = require('../agents/agent-factory.js');
-const { TaskPipeline } = require('./task-pipeline.js');
-const { ExecutionMonitor } = require('../executor/execution-monitor.js');
-const { FallbackExecutor } = require('../executor/fallback-executor.js');
-const { AlternativeGenerator } = require('../executor/alternative-generator.js');
-const { RetryStrategy } = require('../executor/retry-strategy.js');
-
 // ─── Planning Layer — 规划能力 ────────────────────────────────────────────────
 const { AdaptivePlanner } = require('../planner/adaptive-planner.js');
 const { StrategySelector } = require('../planner/strategy-selector.js');
@@ -163,11 +148,6 @@ const { SessionMemory } = require('../memory/session-memory.js');
 const { ProjectContext } = require('../memory/project-context.js');
 const { LongTermMemory } = require('../memory/long-term-memory.js');
 const { CrossSessionIndex } = require('../memory/cross-session-index.js');
-
-// ─── Multimodal Layer — 多模态 ────────────────────────────────────────────────
-const { VisionProcessor } = require('../multimodal/vision-processor.js');
-const { ImageAnalyzer } = require('../multimodal/image-analyzer.js');
-const { ModalFusion } = require('../multimodal/modal-fusion.js');
 
 // ─── Reasoning Layer — 推理 ──────────────────────────────────────────────────
 const { KnowledgeBase } = require('../reasoning/knowledge-base.js');
@@ -368,9 +348,7 @@ class HeartFlow {
     this.psychology = new PsychologyEngine(this.memory);
     this.emotion = new EmotionalProtocol();
 
-    // Security
-    this.truth = new TruthfulnessChecker(this.rootPath);
-    this.security = new SecurityChecker();
+    // Security — 已移除（精简版）
 
     // Engine modules (classes) — track errors for healthCheck
     this._initErrors = [];
@@ -633,15 +611,8 @@ class HeartFlow {
       console.warn('[HeartFlow] 跨会话记忆初始化失败:', e.message);
     }
 
-    // ─── Multimodal Layer — 多模态 ─────────────────────────────────────────────
-    try {
-      this.visionProcessor = new VisionProcessor();
-      this.imageAnalyzer = new ImageAnalyzer();
-      this.modalFusion = new ModalFusion();
-      if (false) console.log('[HeartFlow] 多模态层初始化完成');
-    } catch (e) {
-      console.warn('[HeartFlow] 多模态层初始化失败:', e.message);
-    }
+    // ─── Multimodal Layer — 多模态（已移除，精简版）
+    // visionProcessor/imageAnalyzer/modalFusion 已移除
 
     // ─── Reasoning Layer — 推理 ───────────────────────────────────────────────
     try {
@@ -1253,20 +1224,20 @@ class HeartFlow {
     return this.knowledge.getStats();
   }
 
-  // Security
+  // Security — 已移除（精简版）
   scanSecurity(text) {
     if (!this.started) throw new Error('HeartFlow not started');
-    return this.security.scan(text);
+    return { error: 'Security module removed in simplified version' };
   }
 
   redactSecurity(text) {
     if (!this.started) throw new Error('HeartFlow not started');
-    return this.security.redact(text);
+    return text;
   }
 
   getSecurityStats() {
     if (!this.started) throw new Error('HeartFlow not started');
-    return this.security.getStats();
+    return { error: 'Security module removed in simplified version' };
   }
 
   // ─── Execution Layer — 执行能力 ───────────────────────────────────────────────
@@ -1299,10 +1270,7 @@ class HeartFlow {
    */
   async run(command) {
     if (!this.started) throw new Error('HeartFlow not started');
-    if (!this.toolDispatcher) {
-      return { success: false, error: 'ToolDispatcher 未初始化' };
-    }
-    return await this.toolDispatcher.handle(command);
+    return { success: false, error: 'Execution layer removed in simplified version' };
   }
 
   /**

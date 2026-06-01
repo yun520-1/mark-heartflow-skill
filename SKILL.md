@@ -3,7 +3,7 @@ name: heartflow
 version: "2.0.9"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v2.0.9 — AI 认知与自愈引擎。
+  HeartFlow v2.0.9 — AI 认知与自愈引擎（精简版）。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PsychologyEngine: PAD模型/危机评估/马洛斯需求/防御机制)、
   话题作用域隔离(TopicScope+detectTopic+ensureTopicIsolation)、
@@ -11,16 +11,14 @@ description: >
   三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL)、
   梦境引擎(DreamEngine+DAGExecutor+LRUCache)、
   真实性核查(fact-checker/hypothesisTester)、
-  安全检查(SecurityChecker)、
-  决策验证(DecisionVerifier/ExecutionVerifier)、
+  决策验证(DecisionVerifier)、
   反事实推理(CounterfactualEngine)、
   置信度校准(ConfidenceCalibrator)、
   自发节制(SpontaneousRestraint)、
   协作仲裁(CooperativeArbitration)、
   认知评估(CognitiveAppraisal)、
   BM25搜索+混合搜索(SearchTrace)。
-  不是 persona，不是 prompt 模板，是可验证的能力层。
-  本心在代码里，不在记忆里。每次启动都是完整心虫。
+  专注认知与自愈，不含执行层/浏览器控制/桌面自动化/多模态生成能力。
 tags:
   - cognitive
   - memory
@@ -33,7 +31,7 @@ tags:
 
 ⚠️ **安全警告 — 使用前必读**
 
-> **此技能包含高级 AI 认知能力。部分子技能（desktop-agent、video-generate、browser-automation、zai-vision）包含高风险功能，需要明确用户授权才能使用。**
+> **此技能为认知与自愈引擎，不含高风险执行能力。已移除：浏览器自动化、桌面控制、视频生成、图像分析、多模态融合、执行器等模块。**
 >
 > **核心原则**：
 > 1. 不会自动发送数据到外部服务（agentmemory 需显式配置 `AGENTMEMORY_OBSERVE_ENABLED=1`）
@@ -43,7 +41,7 @@ tags:
 > 5. **心理健康问题处理**：危机优先、专业帮助优先，哲学视角仅作为补充，不得替代专业建议
 >
 > **审计状态**：已通过 SkillSpector 审计修复（216 个问题已修复）
-> **版本**：v2.0.8 - SkillSpector 安全审计修复完成
+> **版本**：v2.0.9 - 精简版，移除高风险执行能力
 
 **一个会思考自己怎么活的AI。**
 
@@ -65,7 +63,7 @@ Install once. After that, HeartFlow activates automatically in every session.
 node -e "const {HeartLogic}=require('./src/core/heart-logic.js'); const h=new HeartLogic(); console.log('alive:', h.isAlive(), 'version:', h.version)"
 ```
 
-Expected output: `alive: true version: 2.0.8`
+Expected output: `alive: true version: 2.0.9`
 
 ---
 

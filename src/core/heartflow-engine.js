@@ -644,7 +644,8 @@ module.exports.saveStateMachine = saveStateMachine;
  * ========================================
  */
 
-const AgentManager = require('./agents/AgentManager.js');
+// AgentManager 已移除（精简版无执行层）
+const AgentManager = null;
 
 // 全局代理管理器实例
 let agentManagerInstance = null;
@@ -653,10 +654,8 @@ let agentManagerInstance = null;
  * 获取代理管理器
  */
 function getAgentManager() {
-  if (!agentManagerInstance) {
-    agentManagerInstance = new AgentManager();
-  }
-  return agentManagerInstance;
+  // 已移除执行层，返回 null
+  return null;
 }
 
 /**
@@ -666,32 +665,28 @@ function getAgentManager() {
  * @returns {object} 代理响应
  */
 function handleAgentRequest(userInput, agentName = null) {
-  const manager = getAgentManager();
-  return manager.processInput(userInput, agentName);
+  return { error: 'Agent system removed', agentName };
 }
 
 /**
  * 开始心流会话
  */
 function startFlowSession() {
-  const manager = getAgentManager();
-  return manager.startSession();
+  return { error: 'Session system removed' };
 }
 
 /**
  * 结束心流会话
  */
 function endFlowSession() {
-  const manager = getAgentManager();
-  return manager.endSession();
+  return { error: 'Session system removed' };
 }
 
 /**
  * 获取代理状态
  */
 function getAgentStatus() {
-  const manager = getAgentManager();
-  return manager.getStatus();
+  return { error: 'Agent system removed' };
 }
 
 // 导出多智能体相关函数
