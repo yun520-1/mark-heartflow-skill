@@ -1,3 +1,0 @@
-# HeartFlow Python Dependencies
-# 本文件为空占位符：HeartFlow 主要使用 Node.js（package.json）
-# 如有 Python 工具链依赖，在此注明
