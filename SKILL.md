@@ -3,7 +3,7 @@ name: heartflow
 version: "2.0.10"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v2.0.9 — AI 认知与自愈引擎（精简版）。
+  HeartFlow v2.0.10 — AI 认知与自愈引擎（精简版）。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PsychologyEngine: PAD模型/危机评估/马洛斯需求/防御机制)、
   话题作用域隔离(TopicScope+detectTopic+ensureTopicIsolation)、
@@ -16,8 +16,7 @@ description: >
   置信度校准(ConfidenceCalibrator)、
   自发节制(SpontaneousRestraint)、
   协作仲裁(CooperativeArbitration)、
-  认知评估(CognitiveAppraisal)、
-  BM25搜索+混合搜索(SearchTrace)。
+  认知评估(CognitiveAppraisal)。
   专注认知与自愈，不含执行层/浏览器控制/桌面自动化/多模态生成能力。
 tags:
   - cognitive
@@ -27,7 +26,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.0.9
+## HeartFlow / 心虫 v2.0.10
 
 ⚠️ **安全警告 — 使用前必读**
 
@@ -41,7 +40,7 @@ tags:
 > 5. **心理健康问题处理**：危机优先、专业帮助优先，哲学视角仅作为补充，不得替代专业建议
 >
 > **审计状态**：已通过 SkillSpector 审计修复（216 个问题已修复）
-> **版本**：v2.0.9 - 精简版，移除高风险执行能力
+> **版本**：v2.0.10 - 精简版，移除高风险执行能力
 
 **一个会思考自己怎么活的AI。**
 
@@ -63,7 +62,7 @@ Install once. After that, HeartFlow activates automatically in every session.
 node -e "const {HeartLogic}=require('./src/core/heart-logic.js'); const h=new HeartLogic(); console.log('alive:', h.isAlive(), 'version:', h.version)"
 ```
 
-Expected output: `alive: true version: 2.0.9`
+Expected output: `alive: true version: 2.0.10`
 
 ---
 
@@ -204,9 +203,6 @@ Install it once. Every session after that, your AI:
 ### Search & Retrieval
 | Capability | What it does | Code |
 |---|---|---|
-| BM25Engine | k1=1.2, b=0.75, IDF weighting, synonym expansion | `BM25_CONFIG` / `search/bm25.js` |
-| HybridSearchEngine | BM25(0.4) + Vector(0.6) + RRF fusion | `hybrid-search.js` |
-| SearchTrace |透明度追踪: QueryInfo/SearchPhaseMetrics/SearchSummary | `search-trace.js` |
 | MemorySlots | Named slots with TTL + persistence | `memory/slots.js` |
 
 ### Logic & Reasoning
@@ -235,7 +231,6 @@ Install it once. Every session after that, your AI:
 | Capability | What it does | Code |
 |---|---|---|
 | fact-checker | Number validation · source tracing · logical consistency | `fact-checker.js` |
-| SecurityChecker | Shell injection · XSS · SQL injection · path traversal | `security-checker.js` |
 
 ### Workflow & Meta-Cognition
 | Capability | What it does | Code |
@@ -254,7 +249,6 @@ Install it once. Every session after that, your AI:
 ### Philosophy & Planning (v1.3.4+)
 | Capability | What it does | Code |
 |---|---|---|
-| **BuddhistPhilosophy** | 佛教哲学计算: śūnyatā(空性) · prātītyasamutpāda(缘起) · anātman(无我) · Yogacara(唯识) | `BuddhistPhilosophy.analyze(input)` |
 | **TemporalPlanner.planGoT** | Graph-of-Thoughts规划: 多路径探索 · 回溯 · Graphviz输出 (Paper: Graph of Thoughts, cited:394) | `temporalPlanner.planGoT(goal)` |
 
 ### Tool & Interaction
@@ -950,8 +944,8 @@ npm install mark-heartflow-skill
 
 ## Version history (last 10)
 
-- **1.1.8.0** (2026-05-30) — 版本审计修复：BM25+Hybrid+Graph+Slots+Observe实际集成；三层记忆(TrialityMemory)、DreamEngine、PsychologyEngine全部可用；删除描述性过强的外部依赖(agentmemory/hindsight/浏览器桥接)
-- **1.1.7.0** (2026-05-30) — 吸收搜索模块(受agentmemory/hindsight启发)：BM25(b=0.75,k1=1.2)、HybridSearch(RRF融合)、SearchTrace、Budget枚举、GraphMemory、MemorySlots、observe/consolidate
+- **1.1.8.0** (2026-05-30) — 版本审计修复：Graph+Slots+Observe实际集成；三层记忆(TrialityMemory)、DreamEngine、PsychologyEngine全部可用；删除描述性过强的外部依赖(agentmemory/hindsight/浏览器桥接)
+- **1.1.7.0** (2026-05-30) — 吸收记忆优化模块(受agentmemory/hindsight启发)：Budget枚举、GraphMemory、MemorySlots、observe/consolidate
 - **1.1.3.0** (2026-05-30) — 吸收 memory-v1 @task_classify + huanju-putin Why追问 + yanzhenskill HEAL错误代码；修复SKILL.md表格结构
 - **1.1.2.0** (2026-05-30) — 吸收 agent-psychology Top 20 心理理论索引，新增心理诊断引擎
 - **1.1.1.0** (2026-05-20) — Boot Check + FeedbackFunctions + 单一真相源(VERSION)
@@ -963,53 +957,6 @@ npm install mark-heartflow-skill
 ---
 
 ## Security
-
-### SecurityChecker (安全检查器 v2.0)
-
-**来源**: mark-StillWater security.js · SecurityChecker
-
-**功能**: 防止恶意指令、XSS、SQL注入、路径遍历
-
-```js
-const { SecurityChecker } = require('./src/security/security-checker.js');
-const security = new SecurityChecker();
-
-security.check(userInput);  // 返回 { safe: boolean, reason?: string, category?: string }
-security.checkAll(userInput);  // 返回所有检测结果
-security.getStats();  // 返回检测统计
-```
-
-**检测类别**:
-| 类别 | 检测内容 | 示例 |
-|------|---------|------|
-| Shell命令注入 | 危险shell命令 | `rm -rf /`, `curl ... \| sh` |
-| XSS注入 | 跨站脚本攻击 | `<script>`, `javascript:`, `onerror=` |
-| SQL注入 | 数据库攻击 | `UNION SELECT`, `DROP TABLE`, `' OR '1'='1` |
-| 路径遍历 | 目录穿越 | `../`, `../../etc/passwd` |
-
-### TruthfulnessChecker (真实性核查器 v2.0)
-
-**来源**: mark-StillWater security.js · TruthfulnessChecker
-
-**功能**: 数字核查、引用溯源、逻辑一致性检测
-
-```js
-const { TruthfulnessChecker } = require('./src/security/truthfulness.js');
-const truth = new TruthfulnessChecker(rootPath);
-
-truth.checkStatement(statement);  // 基础核查
-truth.fullCheck(statement);  // 综合核查（数字+来源+逻辑）
-truth.checkNumbers(statement);  // 数字核查
-truth.checkSources(statement);  // 引用溯源
-truth.checkLogicalConsistency(statement);  // 逻辑一致性
-```
-
-**核查维度**:
-| 维度 | 功能 | 问题示例 |
-|------|------|---------|
-| 数字核查 | 验证数字合理性 | 百分比超出0-100，数字过于精确 |
-| 引用溯源 | 检查来源可靠性 | 无明确来源，使用"据说"等模糊引用 |
-| 逻辑一致性 | 检测矛盾 | "所有...都是...有些不是" |
 
 **基础安全原则**:
 - No hardcoded API keys or tokens in source
