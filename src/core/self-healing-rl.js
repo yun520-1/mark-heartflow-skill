@@ -1,5 +1,5 @@
 /**
- * HeartFlow HealingMemoryRL v11.6.2
+ * HeartFlow HealingMemoryRL v11.6.3
  * Q-learning based repair strategy memory for self-healing.
  * Paper: Reflexion (2023), CRITIC (2024), Titans (2025)
  *
@@ -527,6 +527,74 @@ class HealingMemoryRL {
     const ck = this._contextKey(errorPattern);
     return this._reflections.filter(r =>
       r.errorPattern.startsWith(errorPattern.slice(0, 40))
+    );
+  }
+
+  /**
+   * 言语自修正：基于 Reflexion (2023) 的 verbal reinforcement learning
+   * 当策略失败时，生成自然语言描述的错误分析 + 新策略建议
+   * 下次 getBestStrategy 会优先选择 verbal 生成的新策略
+   *
+   * 核心思想：
+   * - 不是只调整 Q 值，而是生成可读的失败诊断
+   * - 将诊断存储为 verbal trace，用于未来策略决策
+   * - 新策略名称包含失败原因摘要，使未来选择更具信息量
+   *
+   * @param {string} errorPattern - 错误模式
+   * @param {string} failedStrategy - 失败的策略名
+   * @param {string} diagnosis - 失败诊断（语义分析）
+   * @param {string} suggestedStrategy - 建议的新策略名
+   * @returns {object} 自修正结果
+   */
+  verbalSelfCorrect(errorPattern, failedStrategy, diagnosis, suggestedStrategy) {
+    const ck = this._contextKey(errorPattern);
+    if (!this.qTable.has(ck)) {
+      this.qTable.set(ck, {});
+    }
+    const entry = this.qTable.get(ck);
+
+    // 存储 verbal trace（反思的语义版本）
+    if (!this._verbalTraces) this._verbalTraces = [];
+    const trace = {
+      errorPattern: errorPattern.slice(0, 80),
+      failedStrategy,
+      diagnosis: diagnosis.slice(0, 200),
+      suggestedStrategy,
+      timestamp: Date.now()
+    };
+    this._verbalTraces.push(trace);
+    if (this._verbalTraces.length > 30) this._verbalTraces.shift();
+
+    // 对失败策略做强惩罚（比普通 reflect 更重）
+    const oldQ = entry[failedStrategy] ?? 0.5;
+    entry[failedStrategy] = Math.max(0, oldQ - 0.25);
+
+    // 新策略初始 Q 值设为中等（0.5），给予机会但不偏袒
+    entry[suggestedStrategy] = 0.5;
+
+    this.qTable.set(ck, entry);
+    this._saveQTable().catch(e => console.error('[HealingMemoryRL] verbalSelfCorrect save failed:', e.message));
+
+    return {
+      failedStrategy,
+      newQ: entry[failedStrategy],
+      suggestedStrategy,
+      initialQ: 0.5,
+      traceId: this._verbalTraces.length - 1,
+      insight: `Reflexion引导：\"${failedStrategy}\" → \"${suggestedStrategy}\"（Q惩罚${((oldQ - entry[failedStrategy]) * 100).toFixed(0)}%）`
+    };
+  }
+
+  /**
+   * 获取言语自修正的 verbal traces 历史
+   * @param {string} errorPattern - 可选，按错误模式过滤
+   * @returns {array} verbal traces
+   */
+  getVerbalTraces(errorPattern = null) {
+    if (!this._verbalTraces) return [];
+    if (!errorPattern) return this._verbalTraces;
+    return this._verbalTraces.filter(t =>
+      t.errorPattern.startsWith(errorPattern.slice(0, 40))
     );
   }
 
