@@ -60,13 +60,13 @@ const PAD_EMOTION_MAP = {
   // 低愉悦 + 高唤醒 + 高支配 = 愤怒/敌意
   'P-A+D+': { name: 'angry', zh: '愤怒/敌意' },
   // 低愉悦 + 高唤醒 + 低支配 = 焦虑/不安
-  'P-A+A+': { name: 'anxious', zh: '焦虑/不安' },
-  // 低愉悦 + 高唤醒 + 低支配（负愉悦+高唤醒）= 害怕/恐惧
-  'P-A+A-': { name: 'fearful', zh: '害怕/恐惧' },
+  'P-A+D-': { name: 'anxious', zh: '焦虑/不安' },
+  // 低愉悦 + 高唤醒 + 低支配 = 害怕/恐惧
+  'P-A+D-': { name: 'fearful', zh: '害怕/恐惧' },  // [修复] 合并到D-键（原P-A+A- typo）
   // 低愉悦 + 低唤醒 + 高支配 = 被动/依赖
-  'P-A+D+': { name: 'dependent', zh: '被动/依赖' },
-  // 低愉悦 + 低唤醒 = 抑郁/悲伤
-  'P-A-D+': { name: 'depressed', zh: '抑郁/悲伤' },
+  'P-A-D+': { name: 'dependent', zh: '被动/依赖' },
+  // 低愉悦 + 低唤醒 + 高支配 = 抑郁/悲伤
+  'P-A-D+': { name: 'depressed', zh: '抑郁/悲伤' }, // [修复] 合并到D+键（原P-A+D+重复）
   'P-A-D-': { name: 'apathetic', zh: '冷漠/麻木' },
 };
 
