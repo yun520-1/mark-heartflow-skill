@@ -1,9 +1,12 @@
 /**
- * HeartFlow HealingMemoryRL v11.6.1
+ * HeartFlow HealingMemoryRL v11.6.2
  * Q-learning based repair strategy memory for self-healing.
  * Paper: Reflexion (2023), CRITIC (2024), Titans (2025)
  *
- * v11.6.1 新增：getMemoryImportance()
+ * v11.6.2 新增：reflect() + getReflections()
+ * - 基于 Reflexion 2023 自我反思机制
+ * - 策略失败时生成失败假设，存储反思历史
+ * - 下次选策略时参考，避免重蹈覆辙
  * - 基于 Titans 论文的 Memory Importance Score
  * - 公式：importance = recencyScore * accessScore * qScore
  * - recencyScore: 时间衰减，越久远越低
@@ -460,6 +463,71 @@ class HealingMemoryRL {
         ? `Q值混乱（${(avgConfusion*100).toFixed(0)}%）→ 提高探索率`
         : `Q值清晰 → 保持基础探索率`
     };
+  }
+
+  /**
+   * 自我反思：分析策略失败原因（基于 Reflexion 2023, CRITIC 2024）
+   * 当策略失败时，生成"失败假设"存储下来，
+   * 下次选择策略时参考，避免重蹈覆辙。
+   * @param {string} errorPattern - 错误模式
+   * @param {string} failedStrategy - 失败的策略名
+   * @param {string} failureHypothesis - 失败原因假设（可选，自动生成）
+   * @returns {object} 反思结果
+   */
+  reflect(errorPattern, failedStrategy, failureHypothesis = null) {
+    const ck = this._contextKey(errorPattern);
+    const entry = this.qTable.get(ck) || {};
+    const currentQ = entry[failedStrategy] ?? 0.5;
+
+    // 自动生成失败假设（基于Q值和上下文）
+    const autoHypothesis = failureHypothesis || (() => {
+      const qLevel = currentQ > 0.6 ? '高' : currentQ > 0.3 ? '中' : '低';
+      const strategies = Object.keys(entry);
+      const otherStrats = strategies.filter(s => s !== failedStrategy);
+      const betterStrats = otherStrats.filter(s => (entry[s] || 0) > currentQ);
+      if (betterStrats.length > 0) {
+        return `策略"${failedStrategy}"（Q=${currentQ.toFixed(2)}，${qLevel}置信）输给${betterStrats.length}个替代策略，可能不适合此错误模式`;
+      }
+      return `策略"${failedStrategy}"（Q=${currentQ.toFixed(2)}）失败，所有策略Q值相近，当前模式需要新的策略方向`;
+    })();
+
+    // 存储反思结果
+    if (!this._reflections) this._reflections = [];
+    const reflection = {
+      errorPattern: errorPattern.slice(0, 80),
+      failedStrategy,
+      hypothesis: autoHypothesis,
+      qValue: currentQ,
+      reflectedAt: new Date().toISOString()
+    };
+    this._reflections.push(reflection);
+    // 只保留最近20条反思
+    if (this._reflections.length > 20) this._reflections.shift();
+
+    // 对该策略在当前context降低Q值（强化反思效果）
+    entry[failedStrategy] = Math.max(0, currentQ - 0.15);
+    this.qTable.set(ck, entry);
+    this._saveQTable().catch(e => console.error('[HealingMemoryRL] reflect save failed:', e.message));
+
+    return {
+      strategy: failedStrategy,
+      hypothesis: autoHypothesis,
+      newQ: entry[failedStrategy],
+      insight: `反思：${autoHypothesis} → Q值调整为${entry[failedStrategy].toFixed(3)}`
+    };
+  }
+
+  /**
+   * 获取失败策略的反思历史
+   * @param {string} errorPattern - 错误模式
+   * @returns {array} 反思历史
+   */
+  getReflections(errorPattern) {
+    if (!this._reflections) return [];
+    const ck = this._contextKey(errorPattern);
+    return this._reflections.filter(r =>
+      r.errorPattern.startsWith(errorPattern.slice(0, 40))
+    );
   }
 
   /**
