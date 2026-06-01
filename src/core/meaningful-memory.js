@@ -281,7 +281,11 @@ class MeaningfulMemory {
       content: memory.content,
       summary: memory.summary || this.summarizeContent(memory.content),
       embedding: memory.embedding || this.generateMockEmbedding(memory.content),
-      metadata: memory.metadata || {},
+      metadata: {
+        ...(memory.metadata || {}),
+        // 当前话题自动打标签（TopicScope push 时同步过来）
+        topic: this._currentTopic || memory.metadata?.topic || null
+      },
       importance: memory.importance || this.estimateImportance(memory),
       accessCount: 0,
       createdAt: Date.now(),
@@ -356,10 +360,15 @@ class MeaningfulMemory {
     if (!keywords || keywords.length === 0) return [];
     
     const kwList = Array.isArray(keywords) ? keywords : [keywords];
+    const currentTopic = this._currentTopic; // TopicScope 注入的话题标签
     const scores = [];
     
     for (const layer of ['core', 'learned', 'ephemeral']) {
       for (const mem of (this.layers[layer] || [])) {
+        // 话题隔离：当前有话题时，只返回当前话题的记忆
+        if (currentTopic && mem.metadata?.topic && mem.metadata.topic !== currentTopic) {
+          continue;
+        }
         const content = (mem.content || '').toLowerCase();
         let score = 0;
         for (const kw of kwList) {
@@ -379,12 +388,17 @@ class MeaningfulMemory {
    * Semantic search (embedding cosine similarity)
    */
   semanticSearch(queryEmbedding, topK = 10) {
+    const currentTopic = this._currentTopic; // TopicScope 注入的话题标签
     const similarities = [];
     
     for (const [id, embedding] of this.vectors) {
       const sim = this.cosineSimilarity(queryEmbedding, embedding);
       const memory = this._findMemoryById(id);
       if (memory) {
+        // 话题隔离：当前有话题时，只返回当前话题的记忆
+        if (currentTopic && memory.metadata?.topic && memory.metadata.topic !== currentTopic) {
+          continue;
+        }
         similarities.push({
           id,
           content: memory.content,
@@ -543,6 +557,12 @@ class MeaningfulMemory {
     
     for (const layer of ['learned', 'ephemeral']) {
       for (const mem of (this.layers[layer] || [])) {
+        // 话题隔离：保留当前话题 + 无话题标签的记忆
+        const currentTopic = this._currentTopic;
+        const memTopic = mem.metadata?.topic;
+        if (currentTopic && memTopic && memTopic !== currentTopic) {
+          continue; // 跳过其他话题的记忆（不删除）
+        }
         const timeElapsed = now - mem.timestamp;
         const result = this.ebbinghausForget(mem, timeElapsed);
         if (result.shouldDelete) {

@@ -324,6 +324,10 @@ class HeartFlow {
     // RetrievalAnchor — 已禁用（未被调用）
     // this.anchor = new RetrievalAnchor();
 
+    // TopicScope — 话题隔离，主动实例化并桥接到 MeaningfulMemory
+    const { TopicScope } = require('../identity/topic-scope.js');
+    this.topicScope = new TopicScope().setMemoryBridge(this.memory);
+
     // Evolution
     this.evolution = new EvolutionLoop({ rootPath: this.rootPath, memory: this.memory }).boot();
     this.dream = new DreamEngine({});

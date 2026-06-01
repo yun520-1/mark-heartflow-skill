@@ -66,9 +66,12 @@ const lessonBank = {
   },
 
   add({ type = 'insight', content, context = '', importance = 3, trigger = 'user_correction' }) {
+    if (!content || typeof content !== 'string') {
+      return { action: 'rejected', reason: 'empty_content' };
+    }
     const similar = this.lessons.find(l =>
-      l.content.includes(content.slice(0, 50)) ||
-      (l.context && l.context.includes(context.slice(0, 30)))
+      l.content && content.length >= 10 && l.content.includes(content.slice(0, 50)) ||
+      (l.context && context.length >= 10 && l.context.includes(context.slice(0, 30)))
     );
     if (similar) {
       similar.frequency += 1;
@@ -78,12 +81,13 @@ const lessonBank = {
     }
     const lesson = {
       id: this._uuid(),
-      type,
-      content,
-      context,
-      importance,
+      type: type || 'insight',
+      content: String(content),
+      context: String(context),
+      importance: Math.max(1, Math.min(10, Number(importance) || 3)),
       frequency: 1,
-      trigger,
+      accessCount: 0,
+      trigger: trigger || 'user_correction',
       createdAt: new Date().toISOString(),
       lastSeen: new Date().toISOString()
     };
@@ -105,7 +109,7 @@ const lessonBank = {
     if (!context) return [];
     const ctx = context.toLowerCase();
     const ctxSlice = ctx.slice(0, 20);
-    return this.lessons
+    const matches = this.lessons
       .filter(l =>
         (l.content && l.content.toLowerCase().includes(ctxSlice)) ||
         (l.context && l.context.toLowerCase().includes(ctxSlice))
@@ -116,6 +120,13 @@ const lessonBank = {
         return scoreB - scoreA;
       })
       .slice(0, limit);
+    // Track access and persistence signal
+    for (const m of matches) {
+      m.accessCount = (m.accessCount || 0) + 1;
+      m.lastSeen = new Date().toISOString();
+    }
+    if (matches.length > 0) this.save();
+    return matches;
   },
 
   formatForContext(lessons) {
