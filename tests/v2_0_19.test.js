@@ -155,6 +155,15 @@ function test(name, fn) {
     const r = hf.dispatch('transmission.getDistilledLessons');
     return Array.isArray(r);
   });
+  // === Phase 6: verify 完整能力 ===
+  await test('verify.verify: 条件句应 pass', () => {
+    const r = hf.dispatch('verify.verify', '如果A=B, 那么B=A', 'B=A');
+    return r && r.passed === true;
+  });
+  await test('verify.getStats: 统计', () => {
+    const r = hf.dispatch('verify.getStats');
+    return r && typeof r.totalVerified === 'number' && typeof r.passes === 'number';
+  });
 
   // === 集成度：模块加载 ===
   await test('_initErrors 不应存在（所有 try 成功）', () => {
