@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: "2.0.17"
+version: "2.0.19"
 title: "HeartFlow / 心虫"
 description: >
   HeartFlow v2.0.13 — AI 认知与自愈引擎（精简版）。
@@ -26,7 +26,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.0.17
+## HeartFlow / 心虫 v2.0.19
 
 ⚠️ **安全警告 — 使用前必读**
 
