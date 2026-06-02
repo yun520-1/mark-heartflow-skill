@@ -134,6 +134,28 @@ function test(name, fn) {
     return Array.isArray(r);
   });
 
+  // === Phase 5: dream + transmission 暴露 ===
+  await test('dream.getStats: 梦统计', () => {
+    const r = hf.dispatch('dream.getDreamStats');
+    return r && typeof r === 'object';
+  });
+  await test('dream.getCacheStats: 梦缓存统计', () => {
+    const r = hf.dispatch('dream.getCacheStats');
+    return r && typeof r === 'object';
+  });
+  await test('transmission.getStats: 传递引擎统计', () => {
+    const r = hf.dispatch('transmission.getStats');
+    return r && typeof r === 'object';
+  });
+  await test('transmission.getTransmissionLog: 传递日志', () => {
+    const r = hf.dispatch('transmission.getTransmissionLog');
+    return Array.isArray(r);
+  });
+  await test('transmission.getDistilledLessons: 蒸馏教训', () => {
+    const r = hf.dispatch('transmission.getDistilledLessons');
+    return Array.isArray(r);
+  });
+
   // === 集成度：模块加载 ===
   await test('_initErrors 不应存在（所有 try 成功）', () => {
     return hf._initErrors.length === 0;

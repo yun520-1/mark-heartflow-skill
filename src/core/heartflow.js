@@ -881,7 +881,8 @@ class HeartFlow {
     'lesson.addLesson', 'lesson.getTopLessons',
     'lesson.beforeTask', 'lesson.recordFailure', 'lesson.getStats', 'lesson.getAll',
     // dream
-    'dream.dream',
+    'dream.dream', 'dream.boot', 'dream.quickDream', 'dream.getDreamStats',
+    'dream.getCacheStats', 'dream.shutdown',
     // verify
     'verify.verify',
     // emotion
@@ -967,6 +968,10 @@ class HeartFlow {
     'topics.push', 'topics.pop', 'topics.store', 'topics.get',
     'topics.setContext', 'topics.getContext', 'topics.clearContext',
     'topics.clearAll', 'topics.current', 'topics.stack', 'topics.getTopics', 'topics.diagnose',
+    // transmission — 知识传递引擎
+    'transmission.distill', 'transmission.transfer', 'transmission.transferBatch',
+    'transmission.getTransmissionLog', 'transmission.getDistilledLessons',
+    'transmission.getStats', 'transmission.prune',
   ]);
 
   /**
