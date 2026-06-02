@@ -164,6 +164,21 @@ function test(name, fn) {
     const r = hf.dispatch('verify.getStats');
     return r && typeof r.totalVerified === 'number' && typeof r.passes === 'number';
   });
+  // === Phase 7: v2.0.20 安全审计修复 ===
+  await test('code-verifier: bash 走 shell 验证器（不是 JS）', () => {
+    const cv = require('../src/core/code-verifier.js').codeVerifier;
+    const sh = cv.verifyShContent('#!/bin/bash\necho "hi"');
+    const js = cv.verifyJSContent('#!/bin/bash\necho "hi"');
+    return sh.ok === true && js.ok === false;  // JS 验证器会报错（无 {} 平衡）
+  });
+  await test('blind-spot-breaker: USER_CLAIMED 而非 CONFIRMADO', () => {
+    const BSB = require('../src/core/blind-spot-breaker.js');
+    const c = new BSB(hf.rootPath);
+    const r = c.process('用户说了一句事实', { facts: ['用户说的话'] });
+    // assertions 在 r.confidence.assertions（不是 r.deconstruction.assertions）
+    const arr = r && r.confidence && r.confidence.assertions;
+    return Array.isArray(arr) && arr[0] && arr[0].tag === 'USER_CLAIMED';
+  });
 
   // === 集成度：模块加载 ===
   await test('_initErrors 不应存在（所有 try 成功）', () => {

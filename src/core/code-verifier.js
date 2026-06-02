@@ -89,14 +89,27 @@ const codeVerifier = {
   verifySh(filePath) {
     try {
       const content = fs.readFileSync(filePath, 'utf8');
-      const errors = [];
-      if (!content.includes('#!/bin/bash') && !content.includes('#!/bin/sh')) {
-        errors.push('缺少 shebang (#!/bin/bash)');
-      }
-      return { ok: errors.length === 0, errors };
+      return this.verifyShContent(content);
     } catch (e) {
       return { ok: false, errors: [e.message] };
     }
+  },
+
+  // 验证Shell内容（v2.0.20 安全审计修复：避免 bash 走 JS 验证器）
+  verifyShContent(content) {
+    const errors = [];
+
+    if (!content.includes('#!/bin/bash') && !content.includes('#!/bin/sh') && !content.includes('#!/usr/bin/env')) {
+      errors.push('缺少 shebang (#!/bin/bash 或 #!/bin/sh)');
+    }
+
+    // 简单检查未闭合引号
+    const singleQuotes = (content.match(/'/g) || []).length;
+    const doubleQuotes = (content.match(/"/g) || []).length;
+    if (singleQuotes % 2 !== 0) errors.push('单引号未闭合');
+    if (doubleQuotes % 2 !== 0) errors.push('双引号未闭合');
+
+    return { ok: errors.length === 0, errors };
   },
 
   // 自动验证（根据扩展名）
@@ -114,12 +127,22 @@ const codeVerifier = {
     const blocks = [];
     let match;
     while ((match = codeBlockRegex.exec(markdown)) !== null) {
-      const lang = match[1] || 'text';
+      const lang = (match[1] || 'text').toLowerCase();
       const code = match[2];
-      if (['js', 'javascript', 'python', 'py', 'sh', 'bash', 'shell'].includes(lang.toLowerCase())) {
-        const result = lang.startsWith('py') ? this.verifyPyContent(code) : this.verifyJSContent(code);
-        blocks.push({ lang, code, result });
+      // ⚠️ 安全审计修复（v2.0.20）：按语言分派到对应验证器
+      // 之前 bash/sh 错派到 verifyJSContent 导致误判
+      let result;
+      if (lang === 'js' || lang === 'javascript') {
+        result = this.verifyJSContent(code);
+      } else if (lang === 'py' || lang === 'python') {
+        result = this.verifyPyContent(code);
+      } else if (lang === 'sh' || lang === 'bash' || lang === 'shell') {
+        result = this.verifyShContent(code);
+      } else {
+        // 未知语言：不做验证（避免误判）
+        result = { ok: true, errors: [], skipped: true, reason: 'unsupported language' };
       }
+      blocks.push({ lang, code, result });
     }
     return blocks;
   }

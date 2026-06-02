@@ -82,6 +82,8 @@ class BlindSpotBreaker {
     // 断言分类标签
     this.assertionTags = {
       CONFIRMADO: { tag: '[确认]', color: 'green', desc: '有可验证来源' },
+      // ⚠️ 安全审计修复（v2.0.20）：区分"用户声明"与"已验证事实"
+      USER_CLAIMED: { tag: '[用户声明]', color: 'gray', desc: '仅用户陈述，未独立验证' },
       INFERIDO: { tag: '[推断]', color: 'yellow', desc: '逻辑推断' },
       DESCONHECIDO: { tag: '[未知]', color: 'red', desc: '不知道' },
     };
@@ -518,9 +520,11 @@ class BlindSpotBreaker {
     result.confidenceBand = this._getConfidenceBand(result.overallConfidence);
     
     for (const fact of deconstruction.facts) {
+      // ⚠️ 安全审计修复（v2.0.20）：改 USER_CLAIMED 而非 CONFIRMADO
+      // 用户声明≠可验证事实，避免下游误信
       result.assertions.push({
         text: fact.text,
-        tag: 'CONFIRMADO',
+        tag: 'USER_CLAIMED',
         evidenceLevel: fact.evidenceLevel,
       });
     }

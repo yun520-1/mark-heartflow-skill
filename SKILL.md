@@ -1,16 +1,16 @@
 ---
 name: heartflow
-version: "2.0.19"
+version: "2.0.21"
 title: "HeartFlow / 心虫"
 description: >
-  HeartFlow v2.0.13 — AI 认知与自愈引擎（精简版）。
+  HeartFlow v2.0.21 — AI 认知与自愈引擎（精简版 + 安全审计加固）。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PsychologyEngine: PAD模型/危机评估/马洛斯需求/防御机制)、
   话题作用域隔离(TopicScope+detectTopic+ensureTopicIsolation)、
   自愈RL(Q-table+autoCleanupRL+q-meta追踪)、
   三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL)、
   梦境引擎(DreamEngine+DAGExecutor+LRUCache)、
-  真实性核查(fact-checker/hypothesisTester)、
+  真实性核查(fact-checker/hypothesisTester/isLying)、
   决策验证(DecisionVerifier)、
   反事实推理(CounterfactualEngine)、
   置信度校准(ConfidenceCalibrator)、
@@ -18,6 +18,7 @@ description: >
   协作仲裁(CooperativeArbitration)、
   认知评估(CognitiveAppraisal)。
   专注认知与自愈，不含执行层/浏览器控制/桌面自动化/多模态生成能力。
+  v2.0.20 安全加固：去掉虚假能力宣传（bash_execute等）、区分 USER_CLAIMED 与 CONFIRMADO、bash 验证器独立。
 tags:
   - cognitive
   - memory
@@ -26,7 +27,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.0.19
+## HeartFlow / 心虫 v2.0.21
 
 ⚠️ **安全警告 — 使用前必读**
 

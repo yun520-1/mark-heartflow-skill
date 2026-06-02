@@ -1,4 +1,7 @@
 # HeartFlow 更新日志
+
+> ⚠️ **本 CHANGELOG 包含历史记录与审计修复段。v1.5.0-v2.0.6 段描述的"MarkCode / 执行能力 / multimodal / executor-agent"等模块大部分已移除（src/agent-core/, src/multimodal/, src/agents/executor-agent.js, scripts/heartflow-sync-upgrade.sh, scripts/comfyui-cron.sh 均不存在），仅作为"已修复"历史保留。当前能力以 SKILL.md frontmatter 与 `src/` 实际存在代码为准。**
+
 ## v2.0.19 (2026-06-05)
 
 ### 🏗️ 大重构 — 保留 + 整合 + 升级（心虫自主决策）
