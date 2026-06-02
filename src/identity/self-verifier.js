@@ -25,14 +25,14 @@ class SelfVerifier {
       if (fs.existsSync(this.filePath)) {
         return JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
       }
-    } catch { /* ignore */ }
+    } catch { /* 合理的降级：状态文件损坏时返回默认值 */ }
     return { recentIssues: [], totalVerified: 0, passes: 0, fails: 0 };
   }
 
   _persist() {
     try {
       fs.writeFileSync(this.filePath, JSON.stringify(this._state, null, 2));
-    } catch { /* ignore */ }
+    } catch { /* 持久化失败不影响运行 */ }
   }
 
   // ─── Core Verification Checks ─────────────────────────────────────────

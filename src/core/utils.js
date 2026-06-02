@@ -321,8 +321,9 @@ class KeyedLock {
     while (this._locks.has(key)) {
       try {
         await this._locks.get(key);
-      } catch {
+      } catch (e) {
         // 锁已释放，继续执行
+        process.stderr.write('[utils] Lock release error for key "' + key + '": ' + e.message + '\n');
       }
     }
 

@@ -110,7 +110,7 @@ class MindWanderer {
             content: data.last_session
           });
         }
-      } catch (e) {}
+      } catch (e) { /* 合理的降级：跳过损坏的会话文件 */ }
     }
 
     return memories;

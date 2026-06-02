@@ -57,7 +57,6 @@ class GoedelEngine {
         return JSON.parse(fs.readFileSync(this.codeMapFile, 'utf8'));
       }
     } catch (e) {
-      if(false) { console.log('[Gödel] Creating new code map'); }
     }
     return this.buildCodeMap();
   }
@@ -68,7 +67,6 @@ class GoedelEngine {
         return fs.readFileSync(this.coreValuesFile, 'utf8');
       }
     } catch (e) {
-      if(false) { console.log('[Gödel] No CORE_VALUES.md found'); }
     }
     return null;
   }
@@ -116,7 +114,6 @@ class GoedelEngine {
     scanDir(this.srcDir);
     fs.writeFileSync(this.codeMapFile, JSON.stringify(map, null, 2));
     
-    if(false) { console.log(`[Gödel] Code map built: ${Object.keys(map.files).length} files`); }
     return map;
   }
 
@@ -147,7 +144,6 @@ class GoedelEngine {
     const timestamp = new Date().toISOString();
     const entry = `[${timestamp}] ${message}\n`;
     fs.appendFileSync(this.evolutionLog, entry);
-    if(false) { console.log(`[Gödel] ${message}`); }
   }
 
   /**
@@ -690,7 +686,6 @@ class GoedelEngine {
         return JSON.parse(fs.readFileSync(archiveFile, 'utf8'));
       }
     } catch (e) {
-      if(false) { console.log('[Goedel] 智能体档案库不存在，创建新的'); }
     }
     return { agents: [], version: 1 };
   }
@@ -744,7 +739,6 @@ class GoedelEngine {
       status: 'pending' // pending/validated/rejected
     };
 
-    if(false) { console.log(`[Goedel] 生成变体: ${variant.id} (来自 ${variant.parentId})`); }
     
     return { baseAgent, variant };
   }
@@ -801,7 +795,6 @@ class GoedelEngine {
       delta: this.calculateDelta(variant.benchmarkScores, currentScores)
     };
 
-    if(false) { console.log(`[Goedel] 变体验证: ${variant.status} (${improved ? '优于' : '劣于'}当前)`); }
     
     return variant;
   }
@@ -863,7 +856,6 @@ class GoedelEngine {
     }
 
     this.saveAgentArchive(archive);
-    if(false) { console.log(`[Goedel] 变体 ${variant.id} 已添加到档案库`); }
   }
 
   /**
@@ -871,7 +863,6 @@ class GoedelEngine {
    * 不仅修改任务执行代码，还修改"生成改进方案的逻辑"本身
    */
   async metaCognitiveSelfModification() {
-    if(false) { console.log('[Goedel] 开始元认知自我修改循环...'); }
 
     const reflection = {
       startTime: new Date().toISOString(),
@@ -895,7 +886,6 @@ class GoedelEngine {
       const patch = await this.generateMetaPatch(improvement);
       reflection.patch = patch;
       
-      if(false) { console.log(`[Goedel] 元认知改进补丁已生成: ${patch.file}`); }
     }
 
     reflection.endTime = new Date().toISOString();

@@ -17,7 +17,7 @@ function _getLessonStorage() {
   try {
     const mod = require('../core/lessons/lesson-storage.js');
     _lessonStorage = mod.lessonStorage;
-  } catch { _lessonStorage = null; }
+  } catch { /* 可选模块不存在时降级为 null */ _lessonStorage = null; }
   return _lessonStorage;
 }
 
@@ -44,14 +44,14 @@ class LessonBank {
         const raw = JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
         if (raw.lessons) return raw;
       }
-    } catch { /* ignore */ }
+    } catch { /* 合理的降级：教训库文件损坏时返回默认值 */ }
     return this._createDefault();
   }
 
   _persist() {
     try {
       fs.writeFileSync(this.filePath, JSON.stringify(this._state, null, 2));
-    } catch { /* ignore */ }
+    } catch { /* 持久化失败不影响运行 */ }
   }
 
   _bootstrapLessons() {
@@ -215,7 +215,7 @@ class LessonBank {
           sessionId: null
         });
       }
-    } catch { /* ignore lessonStorage write failure */ }
+    } catch { /* 外部存储写入失败不影响本地操作 */ }
     return { id: key, success: true };
   }
 

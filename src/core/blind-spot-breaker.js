@@ -267,6 +267,15 @@ class BlindSpotBreaker {
       intergenerationalPattern: null,
       reflectionQuestions: [],
       finalInsight: null,
+      // 安全免责声明 — SkillSpector审计修复
+      // 本模块生成的心理学推断是探索性假设，不是诊断结论
+      // 不替代专业心理咨询或医学建议
+      safetyDisclaimer: {
+        level: 'warning',
+        boundary: '本模块基于学术研究整合，生成的推断是探索性假设，不是诊断结论',
+        guidance: '如果面临真实家庭危机或情绪困扰，请寻求专业心理咨询或医学帮助',
+        notProfessionalAdvice: true
+      }
     };
     
     // 检测是否为养育问题

@@ -65,14 +65,14 @@ class SelfModel {
       if (fs.existsSync(this.filePath)) {
         return JSON.parse(fs.readFileSync(this.filePath, 'utf8'));
       }
-    } catch { /* ignore */ }
+    } catch { /* 合理的降级：模型文件损坏时返回默认值 */ }
     return this._createDefault();
   }
 
   _persist() {
     try {
       fs.writeFileSync(this.filePath, JSON.stringify(this._state, null, 2));
-    } catch { /* ignore */ }
+    } catch { /* 持久化失败不影响运行 */ }
   }
 
   // ─── Belief Management ────────────────────────────────────────────────

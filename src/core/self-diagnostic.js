@@ -38,7 +38,8 @@ function isEmptyFile(filePath) {
   try {
     const stat = fs.statSync(filePath);
     return stat.size === 0;
-  } catch {
+  } catch (e) {
+    process.stderr.write('[self-diagnostic] isEmptyFile failed for ' + filePath + ': ' + e.message + '\n');
     return true;
   }
 }
@@ -359,7 +360,7 @@ async function step16_identityCheck(result) {
         );
         mmIdentityOk = hasCoreIdentity;
       }
-    } catch (e) {}
+    } catch (e) { process.stderr.write('[self-diagnostic] Failed to check MM identity: ' + e.message + '\n'); }
   }
   
   // 身份：hf注册 + CORE层存储，两者有其一即可
@@ -466,7 +467,7 @@ async function step19_versionSync(result) {
         pkg.version = canonical;
         fs.writeFileSync(pkgFile, JSON.stringify(pkg, null, 2) + '\n');
         fixes.push(`package.json: ${versions.package} → ${canonical}`);
-      } catch (e) {}
+      } catch (e) { process.stderr.write('[self-diagnostic] Failed to update package.json version: ' + e.message + '\n'); }
     }
     
     // 修复 SKILL.md frontmatter

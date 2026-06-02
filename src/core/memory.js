@@ -1,4 +1,5 @@
 /**
+ * @deprecated — use src/core/meaningful-memory.js instead
  * HeartFlow Memory — Ebbinghaus + AES-256-GCM 三层记忆系统
  * 
  * 整合来源（SKILL.md lines 348-540）：
@@ -142,8 +143,9 @@ function _getOrCreateAesKey() {
       const meta = JSON.parse(fs.readFileSync(keyFile, 'utf-8'));
       _aesKey = Buffer.from(meta.key, 'base64');
       return _aesKey;
-    } catch {
+    } catch (e) {
       // corrupted, regenerate
+      process.stderr.write('[memory] AES key file corrupted, regenerating: ' + e.message + '\n');
     }
   }
 
