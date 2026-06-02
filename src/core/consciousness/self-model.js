@@ -77,14 +77,15 @@ class SelfModel {
   }
 
   updateCapabilities() {
+    // ⚠️ 安全审计修复（v2.0.20）：删去不存在的工具，避免描述-行为不匹配
+    // 与 limitations 列表保持一致：此模块无 bash/web/file_write 能力
     const capabilities = {
       tools: [
-        'file_read', 'file_write', 'file_edit', 'glob', 'grep',
-        'bash_execute', 'web_search', 'webfetch',
+        'file_read', 'glob', 'grep',
         'skill_load', 'skill_invoke'
       ],
       skills: [
-        'reflect', 'flow引导', 'emotion-regulation', 
+        'reflect', 'flow引导', 'emotion-regulation',
         'task-decomposition', 'interrupt-handler'
       ],
       knowledge: [
