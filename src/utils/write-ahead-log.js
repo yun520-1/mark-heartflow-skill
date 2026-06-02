@@ -111,7 +111,7 @@ class WriteAheadLog {
         return JSON.stringify({ seq: p.seq, type: p.type, data: p.data, ts: p.ts, hash: h });
       });
       await fs.writeFile(this._logPath, newLines.join('\n') + '\n');
-    } catch { /* empty WAL */ }
+    } catch { /* WAL 文件为空或损坏，合理降级：已提交数据不受影响 */ }
   }
 }
 

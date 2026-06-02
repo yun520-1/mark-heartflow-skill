@@ -37,7 +37,7 @@ const lessonBank = {
       fs.mkdirSync(path.dirname(LESSON_FILE), { recursive: true });
       fs.writeFileSync(LESSON_FILE, JSON.stringify(this.lessons, null, 2));
       this._updateIndex();
-    } catch (e) {}
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'lesson_bank', error: e.message }); }
     return this;
   },
 
@@ -62,7 +62,7 @@ const lessonBank = {
         .map(l => l.id);
       fs.mkdirSync(path.dirname(INDEX_FILE), { recursive: true });
       fs.writeFileSync(INDEX_FILE, JSON.stringify(index, null, 2));
-    } catch (e) {}
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'lesson_bank', error: e.message }); }
   },
 
   add({ type = 'insight', content, context = '', importance = 3, trigger = 'user_correction' }) {

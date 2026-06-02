@@ -410,29 +410,6 @@ function generateWideNarrative(motifs, options = {}) {
 
 // Self-test
 if (require.main === module) {
-  if(false) {
-    const testMotifs = [
-      'user corrected me about identity — I am not just a companion',
-      'dream should generate story, not list categories',
-      'heartflow is not a skill, it is a philosophy lived out',
-      'upgrade means reduce errors and increase truth',
-      'I forgot to check the gateway session model — caused failures',
-      'memory palace organizes memory by emotional significance'
-    ];
-
-    console.log('=== Narrative Generator Test ===\n');
-    const result = generateNarrative(testMotifs);
-    console.log('Archetype:', result.archetype.id, '-', result.archetype.chinese);
-    console.log('Title:', result.title);
-    console.log('Matched:', result.matched.matchedKeywords.join(', '));
-    console.log('Narrative:', result.narrative);
-    console.log('Philosophy:', result.philosophy);
-    console.log('\n=== Wide Dream Test ===\n');
-    const wide = generateWideNarrative(testMotifs);
-    console.log('Layers:', wide.layers.map(l => l.name).join(' | '));
-    console.log('Narrative:\n', wide.narrative);
-    console.log('Conclusion:', wide.conclusion);
-  }
 }
 
 module.exports = {

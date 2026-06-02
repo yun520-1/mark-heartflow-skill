@@ -55,7 +55,7 @@ class PDCAEngine {
     }
     fs.writeFileSync(this.traceFile, JSON.stringify(safeTrace, null, 2));
     // 仅 owner 可读
-    try { fs.chmodSync(this.traceFile, 0o600); } catch (e) {}
+    try { fs.chmodSync(this.traceFile, 0o600); } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'pdca_chmod', error: e.message }); }
   }
 
   log(message) {

@@ -1484,7 +1484,7 @@ class HeartLogic {
     // 心虫需要知道：什么是我确定的，什么是我不知道的
     const notKnowing = this.examineNotKnowing({ input, ...context });
 
-    const hasObstructions = grasping.result || !fearless.result || truthVsCorrect.correctDriven || binary.binaryDetected.length > 0 || notKnowing.hasUnknownUnknowns;
+    const hasObstructions = grasping.result || !fearless.result || truthVsCorrect.correctDriven || binary.binaryDetected.length > 0 || notKnowing.hasUnknownUnknown;
 
     return {
       step1_about: about,

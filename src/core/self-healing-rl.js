@@ -47,14 +47,14 @@ function _getHmacKey() {
         _cachedHmacKey = meta.key;
         return _cachedHmacKey;
       }
-    } catch { /* corrupted, regenerate */ }
+    } catch (e) { process.stderr.write('[self-healing-rl] HMAC key file corrupted, regenerating: ' + e.message + '\n'); }
   }
 
   // 生成新key并持久化
   const newKey = crypto.randomBytes(32).toString('base64');
   try {
     fs.writeFileSync(keyFile, JSON.stringify({ key: newKey, createdAt: Date.now() }, null, 2), { mode: 0o600 });
-  } catch { /* ignore */ }
+  } catch (e) { process.stderr.write('[self-healing-rl] Failed to persist new HMAC key: ' + e.message + '\n'); }
   _cachedHmacKey = newKey;
   console.warn(`[HealingMemoryRL] HEARTFLOW_QTABLE_HMAC_KEY not set, generated and saved new key`);
   return _cachedHmacKey;

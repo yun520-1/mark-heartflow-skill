@@ -24,7 +24,7 @@ class SelfModel {
       if (fs.existsSync(this.modelFile)) {
         return JSON.parse(fs.readFileSync(this.modelFile, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) { /* 合理的降级：模型文件损坏时返回默认模型 */ }
     return this.getDefaultModel();
   }
 
@@ -33,7 +33,7 @@ class SelfModel {
       if (fs.existsSync(this.episodicFile)) {
         return JSON.parse(fs.readFileSync(this.episodicFile, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) { /* 合理的降级：情景记忆文件损坏时返回空数据 */ }
     return { memories: [], counterfactuals: [] };
   }
 

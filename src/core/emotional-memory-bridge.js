@@ -28,21 +28,21 @@ let _psy = null;
 
 function getMeaningfulMemory() {
   if (!_mm) {
-    try { _mm = require('./meaningful-memory.js'); } catch(e) { _mm = null; }
+    try { _mm = require('./meaningful-memory.js'); } catch(e) { /* 可选模块不存在时降级为 null */ _mm = null; }
   }
   return _mm;
 }
 
 function getCognitiveAppraisal() {
   if (!_ca) {
-    try { _ca = require('./cognitive-appraisal.js'); } catch(e) { _ca = null; }
+    try { _ca = require('./cognitive-appraisal.js'); } catch(e) { /* 可选模块不存在时降级为 null */ _ca = null; }
   }
   return _ca;
 }
 
 function getPsychology() {
   if (!_psy) {
-    try { _psy = require('./psychology.js'); } catch(e) { _psy = null; }
+    try { _psy = require('./psychology.js'); } catch(e) { /* 可选模块不存在时降级为 null */ _psy = null; }
   }
   return _psy;
 }
@@ -315,45 +315,6 @@ function assessSelfRegulationHealth(text, appraisalResult, padState, historyLeng
 // ========================================
 
 function demo() {
-  if(false) {
-    console.log('=== Emotional Memory Bridge 演示 ===\n');
-    
-    const testCases = [
-      '我觉得自己什么都做不好，总是让父母失望',
-      '今天工作上有个问题，但我相信自己能解决',
-      '我不知道该怎么办，完全没有头绪',
-      '压力太大了，感觉快要崩溃了，不知道还能撑多久'
-    ];
-    
-    const ca = getCognitiveAppraisal();
-    const psy = getPsychology();
-    
-    testCases.forEach((text, idx) => {
-      console.log(`[${idx + 1}] "${text}"`);
-      
-      const appraisalResult = ca ? ca.appraise(text) : {};
-      const padResult = psy ? psy.detectPADFromText(text) : { intensity: 0 };
-      
-      const salience = assessEmotionalSalience(text, appraisalResult, padResult);
-      const regHealth = assessSelfRegulationHealth(text, appraisalResult, padResult);
-      
-      console.log(`  威胁类型: ${appraisalResult.threatType || 'unknown'}`);
-      console.log(`  情绪显著性: ${(salience.score * 100).toFixed(0)}% [${salience.factors.join(', ')}]`);
-      console.log(`  自我调节状态: ${regHealth.status}`);
-      if (regHealth.indicators.length > 0) {
-        console.log(`  指标: ${regHealth.indicators.join(', ')}`);
-      }
-      if (regHealth.recommendations.length > 0) {
-        console.log(`  建议: ${regHealth.recommendations[0]}`);
-      }
-      console.log('');
-    });
-    
-    console.log('论文来源:');
-    console.log('  - Leventhal Common-Sense Model (cognitive-appraisal.js)');
-    console.log('  - Self-Regulation Theory (psychology.js)');
-    console.log('  - MeaningfulMemory CORE/LEARNED/EPHEMERAL 三层架构');
-  }
 }
 
 // ========================================

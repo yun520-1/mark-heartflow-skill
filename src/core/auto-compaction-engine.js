@@ -417,7 +417,7 @@ class AutoCompactionEngine {
       if (this.config.onWarning) {
         try {
           this.config.onWarning(checkResult);
-        } catch (e) { /* ignore */ }
+        } catch (e) { /* 回调异常不影响压缩流程 */ }
       }
     }
 
