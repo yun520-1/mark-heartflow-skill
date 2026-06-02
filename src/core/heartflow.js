@@ -1,12 +1,16 @@
 /**
- * HeartFlow v2.0.4 — 单一入口，统一路由
- *
- * 调用方式:
- *   hf.dispatch('subsystem.method', arg1, arg2)  // 统一路由
- *   hf.verifyReasoning(r, c)                     // 直接方法
- *
- * 所有模块在 _modules registry 中注册，可通过 routes() 查看可用路由。
- */
+ /** HeartFlow v2.0.5 — 快速启动 + 两层懒加载
+  *
+  * 启动速度优化：只有 Tier 1 模块在 start() 时同步加载。
+  * Tier 2 模块在首次 dispatch 访问时才加载（lazy require）。
+  * 已有实例化的模块不受影响，只是把 require 延迟到首次访问。
+  *
+  * 调用方式:
+  *   hf.dispatch('subsystem.method', arg1, arg2)  // 统一路由
+  *   hf.verifyReasoning(r, c)                     // 直接方法
+  *
+  * 所有模块在 _modules registry 中注册，可通过 routes() 查看可用路由。
+  */
 
 const path = require('path');
 
@@ -484,19 +488,45 @@ class HeartFlow {
     try { this.counterfactual = new CounterfactualEngine(); } catch (e) { this._initErrors.push({module: 'counterfactual', error: e.message}); }
     try { this.confidence = new ConfidenceCalibrator(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
     try { this.restraint = new SpontaneousRestraint(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
-    // RetrievalAnchor — 已禁用（未被调用）
-    // EmbodiedCore — 已禁用（未被调用）
-    // BeingLogic — 已禁用（未被调用）
-    // MentalEffortTracker — 已禁用（未被调用）
-    // MetaPromptEngine — 已禁用（未被调用）
-    // GoTEngine — 已禁用（未被调用）
-    // ConstitutionalEngine — 已禁用（未被调用）
+    // 已禁用的模块 — 不再初始化，减少启动时间
+    // this.embodied, this.wakeup, this.interactive — 直接跳过
     try { this.workflow = new WorkflowSwitch(); } catch (e) {}
-    try { this.snapshot = StateSnapshot; } catch (e) {}  // singleton export
-    try { this.error = ErrorHandler; } catch (e) {}      // singleton export
+    this.snapshot = StateSnapshot;   // singleton export
+    this.error = ErrorHandler;       // singleton export
 
-    // ─── New modules initialization ─────────────────────────────────────────
-    // Search modules — BM25Engine/HybridSearchEngine 已禁用（无 BM25Engine/HybridSearchEngine 类）
+    // ─── Tier 2 延迟加载注册表 ──────────────────────────────────────────
+    // Tier 2 模块在首次 dispatch 时才加载并实例化。
+    // 格式: lazy: true → 需要 require + new
+    // 格式: lazyFn: true → 只暴露函数对象（无需 new）
+    this._lazy = {
+      adaptivePlanner: { lazy: true, path: '../planner/adaptive-planner.js', Ctor: 'AdaptivePlanner', args: {} },
+      strategySelector: { lazy: true, path: '../planner/strategy-selector.js', Ctor: 'StrategySelector', args: {} },
+      replanTrigger: { lazy: true, path: '../planner/replan-trigger.js', Ctor: 'ReplanTrigger', args: {} },
+      experienceCollector: { lazy: true, path: '../learning/experience-collector.js', Ctor: 'ExperienceCollector', args: {} },
+      strategyAdapter: { lazy: true, path: '../learning/strategy-adapter.js', Ctor: 'StrategyAdapter', args: {} },
+      failureAnalyzer: { lazy: true, path: '../learning/failure-analyzer.js', Ctor: 'FailureAnalyzer', args: {} },
+      qualityVerifier: { lazy: true, path: '../verifier/quality-verifier.js', Ctor: 'QualityVerifier', args: {} },
+      outputChecker: { lazy: true, path: '../verifier/output-checker.js', Ctor: 'OutputChecker', args: {} },
+      patternMatcher: { lazy: true, path: '../verifier/pattern-matcher.js', Ctor: 'PatternMatcher', args: {} },
+      curiosityEngine: { lazy: true, path: '../proactive/curiosity-engine.js', Ctor: 'CuriosityEngine', args: {} },
+      desireEngine: { lazy: true, path: '../proactive/desire-engine.js', Ctor: 'DesireEngine', args: {} },
+      goalPursuer: { lazy: true, path: '../proactive/goal-pursuer.js', Ctor: 'GoalPursuer', args: {} },
+      selfInitiator: { lazy: true, path: '../proactive/self-initiator.js', Ctor: 'SelfInitiator', args: {} },
+      sessionMemory: { lazy: true, path: '../memory/session-memory.js', Ctor: 'SessionMemory', args: {} },
+      projectContext: { lazy: true, path: '../memory/project-context.js', Ctor: 'ProjectContext', args: {} },
+      longTermMemory: { lazy: true, path: '../memory/long-term-memory.js', Ctor: 'LongTermMemory', args: {} },
+      crossSessionIndex: { lazy: true, path: '../memory/cross-session-index.js', Ctor: 'CrossSessionIndex', args: {} },
+      knowledgeBase: { lazy: true, path: '../reasoning/knowledge-base.js', Ctor: 'KnowledgeBase', args: {} },
+      commonsenseEngine: { lazy: true, path: '../reasoning/commonsense-engine.js', Ctor: 'CommonsenseEngine', args: {} },
+      causalInference: { lazy: true, path: '../reasoning/causal-inference.js', Ctor: 'CausalInference', args: {} },
+      inferenceChain: { lazy: true, path: '../reasoning/inference-chain.js', Ctor: 'InferenceChain', args: {} },
+      autonomousEmotion: { lazy: true, path: '../emotion/autonomous-emotion.js', Ctor: 'AutonomousEmotion', args: {} },
+      desireSystem: { lazy: true, path: '../emotion/desire-system.js', Ctor: 'DesireSystem', args: {} },
+      emotionalGrowth: { lazy: true, path: '../emotion/emotional-growth.js', Ctor: 'EmotionalGrowth', args: {} },
+      moodEvolution: { lazy: true, path: '../emotion/mood-evolution.js', Ctor: 'MoodEvolution', args: {} },
+    };
+
+    // ─── Search modules — BM25Engine/HybridSearchEngine 已禁用（无 BM25Engine/HybridSearchEngine 类）
     // try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { console.warn('[HeartFlow] BM25 init error:', e.message); }
     // try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { console.warn('[HeartFlow] HybridSearch init error:', e.message); }
 
@@ -648,102 +678,18 @@ class HeartFlow {
       }
     } catch (e) {}
 
-    // ─── Planning Layer — 规划能力 ─────────────────────────────────────────
-    try {
-      this.strategySelector = new StrategySelector();
-      this.replanTrigger = new ReplanTrigger();
-      this.adaptivePlanner = new AdaptivePlanner({
-        strategySelector: this.strategySelector,
-        replanTrigger: this.replanTrigger
-      });
-      if (false) console.log('[HeartFlow] 规划层初始化完成');
-    } catch (e) {
-      console.warn('[HeartFlow] 规划层初始化失败:', e.message);
-    }
+    // ─── Tier 2 模块：延迟加载，不在 start() 里初始化 ──────────────
+    // adaptivePlanner / strategySelector / replanTrigger
+    // experienceCollector / strategyAdapter / failureAnalyzer
+    // qualityVerifier / outputChecker / patternMatcher
+    // curiosityEngine / desireEngine / goalPursuer / selfInitiator
+    // sessionMemory / projectContext / longTermMemory / crossSessionIndex
+    // knowledgeBase / commonsenseEngine / causalInference / inferenceChain
+    // autonomousEmotion / desireSystem / emotionalGrowth / moodEvolution
+    // 见 this._lazy 注册表 + dispatch() 懒加载逻辑
 
-    // ─── Learning Layer — 学习能力 ───────────────────────────────────────────
-    try {
-      this.experienceCollector = new ExperienceCollector({
-        storagePath: path.join(this.rootPath, 'data/experiences')
-      });
-      this.strategyAdapter = new StrategyAdapter({
-        experienceCollector: this.experienceCollector
-      });
-      this.failureAnalyzer = new FailureAnalyzer();
-      if (false) console.log('[HeartFlow] 学习层初始化完成');
-    } catch (e) {
-      console.warn('[HeartFlow] 学习层初始化失败:', e.message);
-    }
-
-    // ─── Verification Layer — 验证能力 ──────────────────────────────────────
-    try {
-      this.qualityVerifier = new QualityVerifier();
-      this.outputChecker = new OutputChecker();
-      this.patternMatcher = new PatternMatcher();
-      if (false) console.log('[HeartFlow] 验证层初始化完成');
-    } catch (e) {
-      console.warn('[HeartFlow] 验证层初始化失败:', e.message);
-    }
-
-    // ─── Proactive Layer — 主动引擎 ─────────────────────────────────────────
-    try {
-      this.curiosityEngine = new CuriosityEngine();
-      this.desireEngine = new DesireEngine();
-      this.goalPursuer = new GoalPursuer();
-      this.selfInitiator = new SelfInitiator();
-      if (false) console.log('[HeartFlow] 主动引擎初始化完成');
-    } catch (e) {
-      console.warn('[HeartFlow] 主动引擎初始化失败:', e.message);
-    }
-
-    // ─── Cross-Session Memory Layer — 跨会话记忆 ──────────────────────────────
-    try {
-      this.sessionMemory = new SessionMemory({
-        storagePath: path.join(this.rootPath, 'data/sessions')
-      });
-      this.projectContext = new ProjectContext({
-        storagePath: path.join(this.rootPath, 'data/projects')
-      });
-      this.longTermMemory = new LongTermMemory({
-        storagePath: path.join(this.rootPath, 'data/longterm')
-      });
-      this.crossSessionIndex = new CrossSessionIndex({
-        storagePath: path.join(this.rootPath, 'data/cross-session')
-      });
-      if (false) console.log('[HeartFlow] 跨会话记忆初始化完成');
-    } catch (e) {
-      console.warn('[HeartFlow] 跨会话记忆初始化失败:', e.message);
-    }
-
-    // ─── Multimodal Layer — 多模态（已移除，精简版）
-    // visionProcessor/imageAnalyzer/modalFusion 已移除
-
-    // ─── Reasoning Layer — 推理 ───────────────────────────────────────────────
-    try {
-      this.knowledgeBase = new KnowledgeBase({
-        storagePath: path.join(this.rootPath, 'data/knowledge')
-      });
-      this.commonsenseEngine = new CommonsenseEngine();
-      this.causalInference = new CausalInference();
-      this.inferenceChain = new InferenceChain();
-      if (false) console.log('[HeartFlow] 推理层初始化完成');
-    } catch (e) {
-      console.warn('[HeartFlow] 推理层初始化失败:', e.message);
-    }
-
-    // ─── Emotional Autonomy Layer — 情感自主 ─────────────────────────────────
-    try {
-      this.autonomousEmotion = new AutonomousEmotion();
-      this.desireSystem = new DesireSystem();
-      this.emotionalGrowth = new EmotionalGrowth();
-      this.moodEvolution = new MoodEvolution();
-      if (false) console.log('[HeartFlow] 情感自主层初始化完成');
-    } catch (e) {
-      console.warn('[HeartFlow] 情感自主层初始化失败:', e.message);
-    }
-
-    this.SearchTrace
     // [FIX] 解决模块丢失问题：所有初始化完成后，统一注册
+    // Tier 2 模块（Planning/Learning/Verification/Proactive/CrossSession/Reasoning/Emotion）延迟到 dispatch
     this._registerModules();
     this.started = true;
     if (false) console.log(`[HeartFlow] ${VERSION} 初始化完成`);
@@ -787,22 +733,20 @@ class HeartFlow {
       // Execution Layer — 执行能力
       'toolExecutor', 'toolDispatcher', 'agentFactory', 'taskPipeline',
       'executionMonitor', 'fallbackExecutor', 'alternativeGenerator', 'retryStrategy',
-      // Planning Layer — 规划能力
-      'adaptivePlanner', 'strategySelector', 'replanTrigger',
-      // Learning Layer — 学习能力
-      'experienceCollector', 'strategyAdapter', 'failureAnalyzer',
-      // Verification Layer — 验证能力
-      'qualityVerifier', 'outputChecker', 'patternMatcher',
-      // Proactive Layer — 主动引擎
-      'curiosityEngine', 'desireEngine', 'goalPursuer', 'selfInitiator',
-      // Cross-Session Memory Layer — 跨会话记忆
-      'sessionMemory', 'projectContext', 'longTermMemory', 'crossSessionIndex',
-      // Multimodal Layer — 多模态
-      'visionProcessor', 'imageAnalyzer', 'modalFusion',
-      // Reasoning Layer — 推理
-      'knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain',
-      // Emotional Autonomy Layer — 情感自主
-      'autonomousEmotion', 'desireSystem', 'emotionalGrowth', 'moodEvolution',
+      // Planning Layer — 规划能力（延迟加载，Tier 2）
+      // 'adaptivePlanner', 'strategySelector', 'replanTrigger',
+      // Learning Layer — 学习能力（延迟加载，Tier 2）
+      // 'experienceCollector', 'strategyAdapter', 'failureAnalyzer',
+      // Verification Layer — 验证能力（延迟加载，Tier 2）
+      // 'qualityVerifier', 'outputChecker', 'patternMatcher',
+      // Proactive Layer — 主动引擎（延迟加载，Tier 2）
+      // 'curiosityEngine', 'desireEngine', 'goalPursuer', 'selfInitiator',
+      // Cross-Session Memory Layer — 跨会话记忆（延迟加载，Tier 2）
+      // 'sessionMemory', 'projectContext', 'longTermMemory', 'crossSessionIndex',
+      // Reasoning Layer — 推理（延迟加载，Tier 2）
+      // 'knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain',
+      // Emotional Autonomy Layer — 情感自主（延迟加载，Tier 2）
+      // 'autonomousEmotion', 'desireSystem', 'emotionalGrowth', 'moodEvolution',
       // MindSpace Layer — 心空间守护
       'mindSpace',
       // Consciousness Layer — 意识层
@@ -989,7 +933,46 @@ class HeartFlow {
     if (dot === -1) throw new Error(`Invalid route: ${route} (missing '.')`);
     const subsystem = route.slice(0, dot);
     const method = route.slice(dot + 1);
-    const mod = this._modules[subsystem];
+
+    // ─── Tier 2 懒加载逻辑 ──────────────────────────────────────────
+    // 如果模块不在 _modules 里但在 _lazy 表里，先加载再注册
+    let mod = this._modules[subsystem];
+    if (!mod && this._lazy && this._lazy[subsystem]) {
+      const entry = this._lazy[subsystem];
+      try {
+        const Mod = require(entry.path);
+        const Ctor = Mod[entry.Ctor];
+        if (Ctor) {
+          // Planning 模块需要 strategySelector/replanTrigger 依赖
+          if (subsystem === 'adaptivePlanner') {
+            this[strategySelector] = new (require(entry.path.replace('adaptive-planner', 'strategy-selector'))[entry.Ctor])();
+            this[replanTrigger] = new (require(entry.path.replace('adaptive-planner', 'replan-trigger'))[entry.Ctor])();
+            mod = new Ctor({ strategySelector: this.strategySelector, replanTrigger: this.replanTrigger });
+          } else if (subsystem === 'strategyAdapter') {
+            const ec = require('../learning/experience-collector.js').ExperienceCollector;
+            this.experienceCollector = new ec({ storagePath: path.join(this.rootPath, 'data/experiences') });
+            mod = new Ctor({ experienceCollector: this.experienceCollector });
+          } else if (subsystem === 'knowledgeBase') {
+            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/knowledge') });
+          } else if (subsystem === 'sessionMemory') {
+            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/sessions') });
+          } else if (subsystem === 'projectContext') {
+            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/projects') });
+          } else if (subsystem === 'longTermMemory') {
+            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/longterm') });
+          } else if (subsystem === 'crossSessionIndex') {
+            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/cross-session') });
+          } else {
+            mod = new Ctor(entry.args);
+          }
+          this[subsystem] = mod;
+          this._modules[subsystem] = mod;
+        }
+      } catch (e) {
+        throw new Error(`Lazy load failed for '${subsystem}': ${e.message}`);
+      }
+    }
+
     if (!mod) {
       const available = Object.keys(this._modules).sort().join(', ');
       throw new Error(`Unknown subsystem: ${subsystem}. Available: ${available}`);
