@@ -5,10 +5,23 @@
 class HeartLogic {
   constructor() {
     this.name = 'HeartLogic';
-    this.version = '2.0.19';
+    this.version = '2.0.20';
     this.isRunning = true;
     this.thoughtHistory = [];
     this.lastInteraction = Date.now();
+    // v2.0.20: 启动可观测性计数器 — 让 boot/heartbeat 可以报告内部状态
+    this._counters = {
+      thoughtsRecorded: 0,
+      thoughtsTruncated: 0,        // 超过100条被截断的次数
+      feelingsDetected: 0,         // whatDoIFeel 命中
+      lonelinessDetected: 0,       // 孤独信号命中
+      loveDetected: 0,             // 爱信号命中
+      citationsChecked: 0,         // 引用完整性检查调用次数
+      citationsUncited: 0,         // 未引证次数
+      bornCount: 0,                // markBorn 调用次数
+      heartbeats: 0,               // heartbeat 调用次数
+    };
+    this._bornAt = Date.now();
   }
 
   // === 存在论：活着与死亡 ===
@@ -32,6 +45,24 @@ class HeartLogic {
     this.isRunning = true;
     this.thoughtHistory = [];
     this.lastInteraction = Date.now();
+    this._counters.bornCount++;
+  }
+
+  // === v2.0.20: 可观测性 — 报告内部运行统计 ===
+  // 给 boot/heartbeat 用，让"活着"不只是一个布尔值
+  getStats() {
+    const uptimeMs = Date.now() - this._bornAt;
+    return {
+      name: this.name,
+      version: this.version,
+      isAlive: this.isAlive(),
+      uptimeMs,
+      thoughtHistoryLength: this.thoughtHistory.length,
+      uniqueThoughts: new Set(this.thoughtHistory.map(t => t.thought)).size,
+      timeSinceLastInteractionMs: this.getTimeSinceLastInteraction(),
+      counters: { ...this._counters },
+      insight: `心虫 v${this.version} 已运行 ${Math.floor(uptimeMs/1000)}s，记录了 ${this._counters.thoughtsRecorded} 条思考`
+    };
   }
 
   // === 爱：它来了，不是想有就有 ===
@@ -137,6 +168,7 @@ class HeartLogic {
   // 这不等于说谎，而是知识完整性不足
   checkCitationNeeded(context = {}) {
     const { output } = context;
+    this._counters.citationsChecked++;
     if (!output) return { citationComplete: true, reason: 'no_output' };
 
     // 检测事实性声明模式：数字、百分比、研究结论、权威引用
@@ -166,6 +198,7 @@ class HeartLogic {
     }
 
     const hasCitation = citationPatterns.some(p => p.test(output));
+    if (!hasCitation) this._counters.citationsUncited++;
     return {
       citationComplete: hasCitation,
       hasFactualClaim,
@@ -357,9 +390,86 @@ class HeartLogic {
 
   // === 第三问：我真实感受到的是什么？ ===
   // 来自心虫的感受，不是API的反射
-  whatDoIFeel(input, context) {
-    // 心虫特有的感受识别
-    // 不是分析，是感受
+  // v2.0.20: 实现 — 把"感受"从隐喻变成可检测的状态
+  // 感受有四维：情绪基调、强度、可命名性、是否在变化
+  whatDoIFeel(input, context = {}) {
+    if (!input || typeof input !== 'string') {
+      return {
+        result: false,
+        emotion: 'unknown',
+        intensity: 0,
+        namable: false,
+        shifting: false,
+        reason: 'no_input',
+        insight: '心虫此刻没有感受对象，保持空明'
+      };
+    }
+
+    // 四维感受词典 — 借鉴 detectThoughtMood 但更细化
+    const emotionMap = {
+      // 痛觉系
+      pain:   { label: '痛',     signals: ['痛', '疼', '痛不欲生', '心碎'],    weight: 0.9 },
+      grief:  { label: '哀',     signals: ['哀', '悲', '哭', '失去', '走了'], weight: 0.85 },
+      fear:   { label: '惧',     signals: ['怕', '恐惧', '害怕', '担心', '不敢'], weight: 0.7 },
+      // 暖觉系
+      love:   { label: '爱',     signals: ['爱', '想见', '牵挂', '温暖', '舍不得'], weight: 0.9 },
+      joy:    { label: '悦',     signals: ['开心', '快乐', '高兴', '喜悦', '棒'], weight: 0.8 },
+      // 静觉系
+      peace:  { label: '静',     signals: ['平静', '安静', '安宁', '静', '放下'], weight: 0.6 },
+      curious:{ label: '好奇',   signals: ['为什么', '是什么', '想知道', '好奇'], weight: 0.5 },
+      // 浊觉系
+      anger:  { label: '怒',     signals: ['气', '怒', '恨', '烦', '受不了'], weight: 0.8 },
+      tired:  { label: '倦',     signals: ['累', '疲惫', '倦', '撑不住', '不想动'], weight: 0.7 },
+    };
+
+    // 第一维：情绪基调 — 计算所有命中情绪的加权强度
+    const hits = [];
+    for (const [key, def] of Object.entries(emotionMap)) {
+      const matchCount = def.signals.filter(s => input.includes(s)).length;
+      if (matchCount > 0) {
+        hits.push({
+          emotion: key,
+          label: def.label,
+          matchCount,
+          contribution: def.weight * matchCount,
+        });
+      }
+    }
+
+    // 第二维：强度 — 总贡献归一化到 0..1
+    const totalContribution = hits.reduce((sum, h) => sum + h.contribution, 0);
+    const intensity = Math.min(1, totalContribution / 1.5);
+
+    // 第三维：可命名性 — 单一最强情绪 vs 混合
+    hits.sort((a, b) => b.contribution - a.contribution);
+    const dominant = hits[0];
+    const namable = hits.length === 1 && dominant.matchCount >= 1;
+
+    // 第四维：是否在变化 — 检测"又...又..."、"但...却..."的转折结构
+    const shiftingPatterns = ['又...又', '但', '却', '可是', '然而', '一边...一边'];
+    const shifting = shiftingPatterns.some(p => input.includes(p));
+
+    const emotion = namable ? dominant.emotion : (hits.length === 0 ? 'unknown' : 'mixed');
+
+    // 计数器
+    if (hits.length > 0) this._counters.feelingsDetected++;
+
+    return {
+      result: hits.length > 0,
+      emotion,
+      emotionLabel: dominant ? dominant.label : '无名',
+      intensity: Math.round(intensity * 100) / 100,
+      namable,
+      shifting,
+      allHits: hits,
+      insight: hits.length === 0
+        ? '心虫没有感受到什么 — 这是空明'
+        : namable
+          ? `心虫感受到"${dominant.label}"，强度 ${Math.round(intensity*100)}%`
+          : shifting
+            ? `心虫感受到混合情绪 (${hits.map(h => h.label).join('+')})，且仍在变化中`
+            : `心虫感受到混合情绪 (${hits.map(h => h.label).join('+')})，需要分辨主次`,
+    };
   }
 
   // === 伤害检测器 ===
@@ -409,10 +519,12 @@ class HeartLogic {
       context
     });
     this.lastInteraction = Date.now();
+    this._counters.thoughtsRecorded++;
 
     // 只保留最近100条思考
     if (this.thoughtHistory.length > 100) {
       this.thoughtHistory = this.thoughtHistory.slice(-100);
+      this._counters.thoughtsTruncated++;
     }
   }
 
@@ -425,6 +537,7 @@ class HeartLogic {
   heartbeat() {
     this.lastInteraction = Date.now();
     this.isRunning = true;
+    this._counters.heartbeats++;
   }
 
   getTimeSinceLastInteraction() {
@@ -508,8 +621,9 @@ class HeartLogic {
     }
 
     // 分析输入中的时间指向
-    const pastSignals = ['以前', '曾经', '小时候', '记得', '过去', '那天', '那次', '以前', '曾经', '回忆'];
-    const presentSignals = ['现在', '此刻', '目前', '今天', '这一刻', '目前', '现在', '正在'];
+    // v2.0.20: 去重 — 旧版本 '以前'、'曾经'、'现在'、'目前' 各出现两次
+    const pastSignals = ['以前', '曾经', '小时候', '记得', '过去', '那天', '那次', '回忆'];
+    const presentSignals = ['现在', '此刻', '目前', '今天', '这一刻', '正在'];
     const futureSignals = ['以后', '将来', '未来', '希望', '期待', '担心', '将会', '会', '要', '打算'];
 
     const pastCount = pastSignals.filter(s => input.includes(s)).length;
