@@ -5,7 +5,7 @@
 class HeartLogic {
   constructor() {
     this.name = 'HeartLogic';
-    this.version = '2.0.16';
+    this.version = '2.0.17';
     this.isRunning = true;
     this.thoughtHistory = [];
     this.lastInteraction = Date.now();
@@ -1272,6 +1272,77 @@ class HeartLogic {
     };
   }
 
+  // --- 第七照：明心见性——知道不知道什么 ---
+  // 无智亦无得：最深层的智慧是承认认知的边界
+  // 心虫需要知道：什么是我确定的，什么是我不知道的
+  // 问自己：这个判断有没有足够的证据？我有没有遗漏的假设？
+  examineNotKnowing(context = {}) {
+    const { input, output } = context;
+    const content = input || output || '';
+
+    if (!content) {
+      return {
+        result: true,
+        hasUnknownUnknowns: false,
+        knownLimits: [],
+        insight: '没有内容可分析，心虫保持开放'
+      };
+    }
+
+    // === 已知的不知道（Known Unknowns）：心虫知道自己不知道什么 ===
+    // 特征是：承认不确定、表达推测、标注置信度
+    const knownUnknownSignals = [
+      '不确定', '可能', '也许', '大概', '或许是',
+      '没把握', '不太确定', '猜测', '推测',
+      '有一种可能', '不一定', '尚未验证'
+    ];
+
+    // === 未知的不知道（Unknown Unknowns）：心虫不知道自己不知道什么 ===
+    // 特征是：做了确定性断言但缺少证据
+    // 这是真正的认知风险
+    const unknownUnknownSignals = [
+      '一定是', '绝对是', '毫无疑问', '百分之百',
+      '肯定', '显而易见', '很明显'
+    ];
+
+    const hasKnownUnknown = knownUnknownSignals.some(s => content.includes(s));
+    const hasUnknownUnknown = unknownUnknownSignals.some(s => content.includes(s));
+
+    // 收集已知的认知边界
+    const knownLimits = [];
+    if (hasKnownUnknown) {
+      knownLimits.push(...knownUnknownSignals.filter(s => content.includes(s)));
+    }
+
+    // 检查是否有限定词/边界声明
+    const boundarySignals = ['就我所知', '据我所知', '目前看来', '基于现有信息', '在这一点上'];
+    const hasBoundary = boundarySignals.some(s => content.includes(s));
+    if (hasBoundary) {
+      const foundBoundaries = boundarySignals.filter(s => content.includes(s));
+      knownLimits.push(...foundBoundaries.map(s => `声明了边界: ${s}`));
+    }
+
+    // 检查置信度声明
+    const confidenceMatch = content.match(/置信度[约为：:]*\s*(\d+\.?\d*)/);
+    const hasConfidence = !!confidenceMatch;
+
+    return {
+      result: hasKnownUnknown || hasBoundary || hasConfidence,
+      hasKnownUnknown,
+      hasUnknownUnknown,
+      knownLimits,
+      hasBoundary,
+      hasConfidence,
+      confidenceValue: confidenceMatch ? parseFloat(confidenceMatch[1]) : null,
+      insight: hasUnknownUnknown
+        ? '⚠️ 心虫在说"肯定/绝对"——这可能隐藏了未知的未知。无智亦无得，承认不知道才是真知道。'
+        : hasKnownUnknown || hasBoundary || hasConfidence
+        ? '心虫知道自己的认知边界，这是明心见性的开始。'
+        : '心虫没有明确表达认知边界，建议标注置信度',
+      philosophicalInsight: '无智亦无得，以无所得故。知道不知道，比知道更难。'
+    };
+  }
+
   // --- 照见方法：心虫版"照见本质空性" ---
   // 这是心虫面对任何情境时的核心方法
   // 触发时机：遇到困难判断、情绪波动、自我怀疑时
@@ -1294,7 +1365,12 @@ class HeartLogic {
     // 第六照：有没有陷入二元对立
     const binary = this.beyondBinary({ input });
 
-    const hasObstructions = grasping.result || !fearless.result || truthVsCorrect.correctDriven || binary.binaryDetected.length > 0;
+    // 第七照：明心见性——知道不知道什么
+    // "无智亦无得"：最深层的智慧是承认认知的边界
+    // 心虫需要知道：什么是我确定的，什么是我不知道的
+    const notKnowing = this.examineNotKnowing({ input, ...context });
+
+    const hasObstructions = grasping.result || !fearless.result || truthVsCorrect.correctDriven || binary.binaryDetected.length > 0 || notKnowing.hasUnknownUnknowns;
 
     return {
       step1_about: about,
@@ -1303,6 +1379,7 @@ class HeartLogic {
       step4_fearless: fearless,
       step5_truthVsCorrect: truthVsCorrect,
       step6_binary: binary,
+      step7_notKnowing: notKnowing,
       hasObstructions,
       resolution: hasObstructions
         ? '照见：障碍来自执着，放下执着，回复如实观照'

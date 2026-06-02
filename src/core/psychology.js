@@ -337,70 +337,192 @@ const DEFENSE_MECHANISMS = {
   dismissal: {
     name: 'dismissal',
     zh: '否认/Dismissal',
-    patterns: ['whatever', 'i don\'t care', 'doesn\'t matter', '不重要', '无所谓', '无所谓了', '随便']
+    patterns: [
+      'whatever', 'i don\'t care', 'doesn\'t matter',
+      '不重要', '无所谓', '无所谓了', '随便',
+      // [v2.0.17] 扩展: 中文轻蔑/否定感受表达
+      '没必要', '这有什么', '你想多了', '算了吧'
+    ]
   },
   deflection: {
     name: 'deflection',
     zh: '转移/Deflection',
-    patterns: ['you don\'t understand', 'that\'s not what i', 'nevermind', 'forget it', '不是那个意思', '你不懂', '算了']
+    patterns: [
+      'you don\'t understand', 'that\'s not what i', 'nevermind', 'forget it',
+      '不是那个意思', '你不懂', '算了',
+      // [v2.0.17] 扩展: 转移话题/推开对话
+      '反正', '不管了', '换了话题', '说点别的'
+    ]
   },
   hostility: {
     name: 'hostility',
     zh: '敌意/Hostility',
-    patterns: ['stupid', 'useless', 'terrible', 'worst', 'hate', '垃圾', '废物', '讨厌', '恨', '有病']
+    patterns: [
+      'stupid', 'useless', 'terrible', 'worst', 'hate',
+      '垃圾', '废物', '讨厌', '恨', '有病',
+      // [v2.0.17] 扩展: 指责对方/归罪
+      '你说谎', '你不公平', '你错了', '都怪你'
+    ]
   },
   evasion: {
     name: 'evasion',
     zh: '逃避/Evasion',
-    patterns: ['i don\'t know', 'not sure', 'maybe', '不知道', '不确定', '也许吧', '可能吧']
+    patterns: [
+      'i don\'t know', 'not sure', 'maybe',
+      '不知道', '不确定', '也许吧', '可能吧',
+      // [v2.0.17] 扩展: 回避回答
+      '我不知道', '没注意', '说不清', '不想说'
+    ]
   },
   justification: {
     name: 'justification',
     zh: '合理化/Justification',
-    patterns: ['but i', 'i was just', 'i thought', 'it\'s not my fault', '但是我', '我只是', '我又不知道']
+    patterns: [
+      'but i', 'i was just', 'i thought', 'it\'s not my fault',
+      '但是我', '我只是', '我又不知道',
+      // [v2.0.17] 扩展: 找理由/推卸
+      '没办法', '只能这样', '我不容易', '他先的'
+    ]
   },
   denial: {
     name: 'denial',
     zh: '拒绝承认/Denial',
-    patterns: ['i didn\'t', 'that\'s not true', 'no i wasn\'t', '我没', '不是我的问题', '不可能']
+    patterns: [
+      'i didn\'t', 'that\'s not true', 'no i wasn\'t',
+      '我没', '不是我的问题', '不可能',
+      // [v2.0.17] 扩展: 直接否认
+      // 注: '没有' 经过 wordBoundary 后处理, 排除"我没有"误命中
+      '没有', '别瞎说', '我才没有'
+    ]
+  },
+  // [v2.0.17] 新增: 理性化 - 用"我就是这种人"为不当行为开脱
+  rationalization: {
+    name: 'rationalization',
+    zh: '理性化/Rationalization',
+    patterns: [
+      '我就是这样的人', '性格如此', '改不了', '习惯了'
+    ]
+  },
+  // [v2.0.17] 新增: 投射 - 把自己的问题归咎于他人
+  projection: {
+    name: 'projection',
+    zh: '投射/Projection',
+    patterns: [
+      '都是你的错', '你不也', '你自己呢', '你先管好你自己'
+    ]
   }
 };
 
 /**
- * 检测防御机制
- * @param {string} text - 用户输入
- * @returns {array} 检测到的防御机制列表
+ * 检查 pattern 是否在 text 中匹配（带 wordBoundary 语义）
+ * - 纯 ASCII pattern: 用 \b 词边界，避免子串误命中
+ * - 中文/混合 pattern: 用普通子串匹配
+ * - 特殊排除: denial 中的 "没有" 紧跟 "我" 视为 "我没有" 不算否认
+ * @param {string} lowerText - 已转小写的待检测文本
+ * @param {string} lowerPattern - 已转小写的pattern
+ * @returns {boolean}
  */
-function detectDefenseMechanisms(text) {
-  const lower = text.toLowerCase();
-  const detected = [];
-  
-  for (const [key, defense] of Object.entries(DEFENSE_MECHANISMS)) {
-    let matchCount = 0;
-    const matchedPatterns = [];
-    
-    for (const pattern of defense.patterns) {
-      if (lower.includes(pattern.toLowerCase())) {
-        matchCount++;
-        matchedPatterns.push(pattern);
+function patternMatches(lowerText, lowerPattern) {
+  // 1. 纯 ASCII pattern (含空格/标点的英文短语)
+  if (/^[\x00-\x7F]+$/.test(lowerPattern)) {
+    const escaped = lowerPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp('\\b' + escaped + '\\b', 'i');
+    return regex.test(lowerText);
+  }
+
+  // 2. 中文/混合 pattern: 普通子串
+  if (!lowerText.includes(lowerPattern)) return false;
+
+  // 3. 特殊排除: "没有" 前面是 "我" → "我没有" 不算 denial
+  //    "有没有"（前面是"有"）仍算 denial
+  if (lowerPattern === '没有') {
+    const idx = lowerText.indexOf(lowerPattern);
+    if (idx > 0) {
+      const before = lowerText[idx - 1];
+      if (before === '我') {
+        // "我没有" = "I don't have"，陈述事实而非否认
+        // 尝试找其他位置的 "没有" 命中
+        const nextIdx = lowerText.indexOf(lowerPattern, idx + 1);
+        if (nextIdx === -1) return false;
+        // 跳过 "我没有"，看后续命中
+        const afterIdx = lowerText.indexOf(lowerPattern, idx + lowerPattern.length);
+        if (afterIdx === -1) return false;
+        // 找到了第二个 "没有"，检查它的前面
+        if (afterIdx > 0 && lowerText[afterIdx - 1] === '我') {
+          return false; // 第二个也是 "我没有"
+        }
+        return true;
       }
     }
-    
-    if (matchCount > 0) {
-      // [修复] 确保至少一个匹配时置信度 >= 0.5
-      const baseConfidence = Math.min(matchCount / defense.patterns.length * 0.6 + 0.4, 1);
+  }
+
+  return true;
+}
+
+/**
+ * 检测防御机制
+ * [v2.0.17] 优化:
+ *   - 大小写无关 (对 text 和 pattern 都 lowercase)
+ *   - ASCII pattern 用 \b 词边界 (避免子串误命中)
+ *   - "没有" 前面是 "我" 排除 ("我没有" ≠ 否认)
+ *   - 上下文组合评分: 单词=0.3，2+词=0.6, 相邻位置(距离<20)额外+0.1
+ * @param {string} text - 用户输入
+ * @returns {array} 检测到的防御机制列表 [{mechanism, zh, confidence, matchedPatterns}, ...]
+ */
+function detectDefenseMechanisms(text) {
+  if (typeof text !== 'string' || text.length === 0) return [];
+
+  const lower = text.toLowerCase();
+  const detected = [];
+
+  for (const [key, defense] of Object.entries(DEFENSE_MECHANISMS)) {
+    const matchedPatterns = [];
+    const matchPositions = [];
+
+    for (const pattern of defense.patterns) {
+      const lowerPattern = pattern.toLowerCase();
+
+      if (patternMatches(lower, lowerPattern)) {
+        matchedPatterns.push(pattern);
+        // 记录匹配位置（取第一个出现的位置）
+        const idx = lower.indexOf(lowerPattern);
+        if (idx !== -1) matchPositions.push(idx);
+      }
+    }
+
+    if (matchedPatterns.length > 0) {
+      // 上下文组合评分:
+      //   单个词命中 = 0.3 (弱信号)
+      //   2+ 词命中  = 0.6 (上下文组合，强信号)
+      //   2+ 词相邻  = +0.1 bonus (位置距离 < 20字符, 进一步强化)
+      let confidence = matchedPatterns.length >= 2 ? 0.6 : 0.3;
+
+      if (matchPositions.length >= 2) {
+        const sorted = [...matchPositions].sort((a, b) => a - b);
+        let hasClosePair = false;
+        for (let i = 1; i < sorted.length; i++) {
+          if (sorted[i] - sorted[i - 1] < 20) {
+            hasClosePair = true;
+            break;
+          }
+        }
+        if (hasClosePair) {
+          confidence = Math.min(0.8, confidence + 0.1);
+        }
+      }
+
       detected.push({
         mechanism: defense.name,
         zh: defense.zh,
-        confidence: baseConfidence,
+        confidence: Number(confidence.toFixed(2)),
         matchedPatterns: matchedPatterns
       });
     }
   }
-  
-  // 按置信度排序
+
+  // 按置信度降序
   detected.sort((a, b) => b.confidence - a.confidence);
-  
+
   return detected;
 }
 

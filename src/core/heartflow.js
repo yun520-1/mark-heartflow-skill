@@ -162,7 +162,9 @@ const { EmotionalGrowth } = require('../emotion/emotional-growth.js');
 const { MoodEvolution } = require('../emotion/mood-evolution.js');
 
 // ─── Version ─────────────────────────────────────────────────────────────────
-const VERSION = '2.0.12';
+// VERSION 从 ./version.js 单一来源读取；禁止在此文件硬编码版本号。
+// 运行时永远等于 package.json 的 version 字段；如需升级版本，调用 bumpVersion()
+const { VERSION } = require('./version.js');
 const BUILD_DATE = '2026-06-03';
 
 class HeartFlow {

@@ -1,0 +1,514 @@
+{
+  "reachable": [
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/being-logic.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/budget.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/cognitive-protocol.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/confidence-calibrator.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/consciousness/global-workspace.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/consciousness/mind-wanderer.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/consciousness/phenomenology-engine.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/consciousness/self-model.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/constitutional-ai.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/cooperative-arbitration.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/counterfactual-engine.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/decision-verifier.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/decision.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/dream-consolidation.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/dream-loop.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/dream.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/embodied-core.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/error-handler.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/ethics/boundary-negotiation.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/ethics/sage-guardian.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/ethics/value-internalizer.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/execution-verifier.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/fact-checker.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/graph-of-thoughts.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/heart-logic.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/heartflow.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/hypothesis-tester.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/interactive-dream.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/judgment.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/language-honesty.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/lesson-bank.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/lesson-retrieval.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/lessons/lesson-storage.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/meaningful-memory.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/memory/graph.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/memory/observe.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/memory/slots.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/memory/triality-memory.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/mental-effort-tracker.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/meta-prompt-engine.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/metaMemory.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/mindspace/mind-space-guardian.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/narrative-generator.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/openalex-client.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/psychology.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/reasoning-integrator.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/search/bm25.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/search/hybrid-search.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/search/search-trace.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/self-diagnostic.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/self-evolution/meta-learning.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/self-evolution/self-evolution-core.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/self-healing-rl.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/skill-generator.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/spontaneous-restraint.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/stability-guard.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/state-snapshot.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/thought-chain.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/transmission/transmission-engine.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/utils.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/wake-up-verifier.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core/workflow-switch.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/dream/engine.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/emotion/autonomous-emotion.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/emotion/desire-system.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/emotion/emotional-growth.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/emotion/mood-evolution.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/evolution/loop.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/evolution/meta-learner.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/identity/identity-core.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/identity/lesson-bank.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/identity/memory-index.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/identity/self-model.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/identity/self-verifier.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/identity/topic-scope.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/learning/experience-collector.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/learning/failure-analyzer.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/learning/strategy-adapter.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/memory/cross-session-index.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/memory/knowledge-graph.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/memory/long-term-memory.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/memory/meaningful-memory.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/memory/project-context.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/memory/retrieval-anchor.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/memory/session-memory.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/planner/adaptive-planner.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/planner/replan-trigger.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/planner/strategy-selector.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/proactive/curiosity-engine.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/proactive/desire-engine.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/proactive/goal-pursuer.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/proactive/self-initiator.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/psychology/empathy-detector.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/psychology/engine.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/reasoning/causal-inference.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/reasoning/commonsense-engine.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/reasoning/inference-chain.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/reasoning/knowledge-base.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/utils/atomic-write.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/verifier/output-checker.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/verifier/pattern-matcher.js",
+    "/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/verifier/quality-verifier.js"
+  ],
+  "zombies": [
+    {
+      "path": "src/behavior-tracker.js",
+      "mtime": "2026-05-27",
+      "loc": 107,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/assertions.js",
+      "mtime": "2026-05-25",
+      "loc": 83,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/associative-engine/associative-engine.js",
+      "mtime": "2026-05-19",
+      "loc": 175,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/associative-engine/chunk-detector.js",
+      "mtime": "2026-05-19",
+      "loc": 244,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/associative-engine/lexical-associator.js",
+      "mtime": "2026-05-19",
+      "loc": 193,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/associative-engine/narrative-retriever.js",
+      "mtime": "2026-05-19",
+      "loc": 233,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/associative-engine/semantic-converger.js",
+      "mtime": "2026-05-19",
+      "loc": 268,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/associative-engine/word-by-word-generator.js",
+      "mtime": "2026-05-19",
+      "loc": 221,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/auto-compaction-engine.js",
+      "mtime": "2026-05-26",
+      "loc": 549,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/autonomy/digital-homeostasis.js",
+      "mtime": "2026-05-25",
+      "loc": 279,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/autonomy/goal-generator.js",
+      "mtime": "2026-05-27",
+      "loc": 280,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/autonomy/pdca-engine.js",
+      "mtime": "2026-05-31",
+      "loc": 326,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/autonomy/policy-optimizer.js",
+      "mtime": "2026-05-27",
+      "loc": 285,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/autonomy/temporal-planner.js",
+      "mtime": "2026-05-27",
+      "loc": 284,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/blind-spot-breaker.js",
+      "mtime": "2026-05-31",
+      "loc": 836,
+      "skillMentioned": false,
+      "readmeMentioned": true
+    },
+    {
+      "path": "src/core/boot-check.js",
+      "mtime": "2026-05-28",
+      "loc": 161,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/claim-extractor.js",
+      "mtime": "2026-05-25",
+      "loc": 83,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/code-verifier.js",
+      "mtime": "2026-05-25",
+      "loc": 129,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/cognitive-appraisal.js",
+      "mtime": "2026-05-30",
+      "loc": 522,
+      "skillMentioned": false,
+      "readmeMentioned": true
+    },
+    {
+      "path": "src/core/confidence-annotator.js",
+      "mtime": "2026-06-01",
+      "loc": 77,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/emotional-memory-bridge.js",
+      "mtime": "2026-05-29",
+      "loc": 373,
+      "skillMentioned": false,
+      "readmeMentioned": true
+    },
+    {
+      "path": "src/core/experience-replay.js",
+      "mtime": "2026-05-31",
+      "loc": 325,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/external-verifier.js",
+      "mtime": "2026-05-31",
+      "loc": 120,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/feedback-functions.js",
+      "mtime": "2026-05-27",
+      "loc": 285,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/heartflow-engine.js",
+      "mtime": "2026-06-01",
+      "loc": 1748,
+      "skillMentioned": true,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/identity-engine.js",
+      "mtime": "2026-05-31",
+      "loc": 694,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/learning-engine.js",
+      "mtime": "2026-05-19",
+      "loc": 599,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/memory.js",
+      "mtime": "2026-05-31",
+      "loc": 766,
+      "skillMentioned": true,
+      "readmeMentioned": true
+    },
+    {
+      "path": "src/core/meta-engine.js",
+      "mtime": "2026-05-31",
+      "loc": 367,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/metacognitive-executive.js",
+      "mtime": "2026-05-25",
+      "loc": 536,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/philosophy-engine.js",
+      "mtime": "2026-05-25",
+      "loc": 171,
+      "skillMentioned": false,
+      "readmeMentioned": true
+    },
+    {
+      "path": "src/core/philosophy-execution.js",
+      "mtime": "2026-05-30",
+      "loc": 466,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/reflection-loop.js",
+      "mtime": "2026-05-25",
+      "loc": 324,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/reflector.js",
+      "mtime": "2026-05-31",
+      "loc": 315,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/self-correction-loop.js",
+      "mtime": "2026-05-30",
+      "loc": 145,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/self-evolution/goedel-engine.js",
+      "mtime": "2026-05-29",
+      "loc": 980,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/self-evolution/rollback-manager.js",
+      "mtime": "2026-05-19",
+      "loc": 222,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/self-healing.js",
+      "mtime": "2026-05-25",
+      "loc": 152,
+      "skillMentioned": true,
+      "readmeMentioned": true
+    },
+    {
+      "path": "src/core/semantic-anchor.js",
+      "mtime": "2026-05-19",
+      "loc": 283,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/skill-verifier.js",
+      "mtime": "2026-05-25",
+      "loc": 86,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/task-pipeline.js",
+      "mtime": "2026-06-01",
+      "loc": 228,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/upgrade-proposal.js",
+      "mtime": "2026-05-26",
+      "loc": 78,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/utils/error-handler.js",
+      "mtime": "2026-05-19",
+      "loc": 229,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/utils/retry-util.js",
+      "mtime": "2026-05-19",
+      "loc": 119,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/core/utils/state-snapshot.js",
+      "mtime": "2026-05-19",
+      "loc": 368,
+      "skillMentioned": false,
+      "readmeMentioned": true
+    },
+    {
+      "path": "src/core/verification-engine.js",
+      "mtime": "2026-05-25",
+      "loc": 93,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/evolution/self-regulation-feedback.js",
+      "mtime": "2026-05-25",
+      "loc": 284,
+      "skillMentioned": false,
+      "readmeMentioned": true
+    },
+    {
+      "path": "src/identity/identity-rules.js",
+      "mtime": "2026-05-25",
+      "loc": 74,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/memory/forgetting.js",
+      "mtime": "2026-05-20",
+      "loc": 208,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/pattern-detector.js",
+      "mtime": "2026-05-25",
+      "loc": 40,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/psychology/breathing-exercise.js",
+      "mtime": "2026-05-25",
+      "loc": 74,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/psychology/cognitive-restructuring.js",
+      "mtime": "2026-05-25",
+      "loc": 68,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/psychology/emotional-check-in.js",
+      "mtime": "2026-05-25",
+      "loc": 59,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/psychology/grounding-technique.js",
+      "mtime": "2026-05-25",
+      "loc": 67,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/psychology/pause-and-reflect.js",
+      "mtime": "2026-05-25",
+      "loc": 45,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/psychology/self-compassion-script.js",
+      "mtime": "2026-05-25",
+      "loc": 55,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    },
+    {
+      "path": "src/utils/write-ahead-log.js",
+      "mtime": "2026-05-30",
+      "loc": 119,
+      "skillMentioned": false,
+      "readmeMentioned": false
+    }
+  ],
+  "halfZombies": [],
+  "totals": {
+    "totalJs": 159,
+    "reachable": 102,
+    "zombies": 57,
+    "halfZombies": 0
+  }
+}
