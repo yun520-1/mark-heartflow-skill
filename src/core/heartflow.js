@@ -884,7 +884,7 @@ class HeartFlow {
     'dream.dream', 'dream.boot', 'dream.quickDream', 'dream.getDreamStats',
     'dream.getCacheStats', 'dream.shutdown',
     // verify
-    'verify.verify',
+    'verify.verify', 'verify.getStats', 'verify.getRecentIssues',
     // emotion
     'emotion.process', 'emotion.getPAD',
     // decision
