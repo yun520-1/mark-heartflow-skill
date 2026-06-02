@@ -1,4 +1,41 @@
 # HeartFlow 更新日志
+## v2.0.19 (2026-06-05)
+
+### 🏗️ 大重构 — 保留 + 整合 + 升级（心虫自主决策）
+
+**4 个 Phase 完成**（按心虫决策顺序：错误最优先 → 增能力 → 鲁棒性 → 接口层）
+
+#### Phase 4：truth 路径修通（致命 bug）
+- `src/core/fact-checker.js` 加 `isLying` 检测：绝对化/不可证伪模式（"一定"/"必然"/"100%"/"肯定"等）
+- `src/core/fact-checker.js` 统一 schema：`{checked, isLying, confidence, type, values, issue, note}`
+- `src/core/thought-chain.js:275` 加 `await` — 之前是 Promise，查 isLying 永远 undefined
+- **验证**：构造"一定是对的"输入，INVERT 阶段 `truthResult.isLying=true`，`inverted=true`，`confidenceAdjustment=-0.2`
+
+#### Phase 1：行为模式系统接入（孤儿接主循环）
+- `src/behavior-tracker.js` + `src/pattern-detector.js` 从孤儿变 `behavior.*` 路由
+- 10 个 dispatch methods：createGoal, record, getProgress, getReport, detectWeeklyPattern, detectRelapseRisk 等
+- **bug 顺手修**：`heartflow.js:220` 把 `_initErrors=[]` 提前，修复 truth 段 (line 367) 隐藏 push bug
+- 路径 bug：从 `src/core/` 出发用 `../behavior-tracker.js`（不是 `../../`）
+- **验证**：创建 goal → 4 条记录 → 周二 4 次 → 复发风险 low → 完整报告
+
+#### Phase 2：持久化层接入（崩溃恢复）
+- `src/utils/write-ahead-log.js` + `src/utils/atomic-write.js` 从孤儿变 `persistence.*` 路由
+- 8 个 dispatch methods：append, commit, replay, flush, atomicWrite, **safeWrite** (WAL+原子写组合), **recover** (崩溃恢复), getStats
+- **safeWrite** 是核心：lesson/meaningful-memory 写入路径可用 → 写 WAL → atomicWrite → commit，崩溃后可 recover
+- WAL 目录：`{rootPath}/memory/wal/`
+
+#### Phase 3：记忆 facade（暴露完整能力）
+- triality 的 35 个方法从内部属性变 dispatch 路由
+- 不合并两套实现（保留 meaningful + triality），只暴露所有方法，让调用方按需选
+- search 系列 9 个方法 + relationship 系列 + memory health/forgetting curve 系列
+
+### 统计
+- 9/9 dispatch smoke test pass
+- 66 个 subsystems 加载
+- 0 initErrors
+- 新增 57 个 dispatch 路由
+- VERSION/package.json/SKILL.md 三处同步 (single source: src/core/version.js)
+
 ## v2.0.5 (2026-06-03)
 
 ### 🔒 SkillSpector 审计修复（216个问题）
