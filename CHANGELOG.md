@@ -36,6 +36,13 @@
 - 新增 57 个 dispatch 路由
 - VERSION/package.json/SKILL.md 三处同步 (single source: src/core/version.js)
 
+#### Phase 5：暴露 dream + transmission 完整能力
+- `dream.*` 新增 5 routes: `boot`, `quickDream`, `getDreamStats`, `getCacheStats`, `shutdown`
+- `transmission.*` 新增 7 routes: `distill`, `transfer`, `transferBatch`, `getTransmissionLog`, `getDistilledLessons`, `getStats`, `prune`
+- 测试 +5 (22→27)
+- **总计 27/27 pass, push 2 次 (26e465a, 6e1b928)**
+- 5 Phase 累计: 65 个新 dispatch 路由
+
 ## v2.0.5 (2026-06-03)
 
 ### 🔒 SkillSpector 审计修复（216个问题）
