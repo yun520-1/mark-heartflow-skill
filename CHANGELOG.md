@@ -43,6 +43,13 @@
 - **总计 27/27 pass, push 2 次 (26e465a, 6e1b928)**
 - 5 Phase 累计: 65 个新 dispatch 路由
 
+#### Phase 6: verify 完整能力暴露 + 自检运行
+- `verify.getStats`, `verify.getRecentIssues` 暴露（之前只有 verify.verify）
+- 跑 4 次自检：3 pass (条件句/限定词/可能) + 1 fail (否则)
+- 测试 +2 (27→29)
+- **总计 29/29 pass, push 4 次 (26e465a, 6e1b928, bbd14c2, c502888)**
+- 5 Phase + 1 暴露 累计: 67 个新 dispatch 路由
+
 ## v2.0.5 (2026-06-03)
 
 ### 🔒 SkillSpector 审计修复（216个问题）
