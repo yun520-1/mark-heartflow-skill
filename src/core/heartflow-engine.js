@@ -21,10 +21,8 @@ const { FeedbackFunctions, EvalResult } = require('./feedback-functions');
 function loadOptional(modulePath, label) {
   try {
     const mod = require(modulePath);
-    if (false) console.log(`[HeartFlow] ✅ ${label}已加载`);
     return mod;
   } catch (e) {
-    if (false) console.log(`[HeartFlow] ⚠️ ${label}加载失败:`, e.message);
     return null;
   }
 }
@@ -53,9 +51,7 @@ let ExecutionVerifier;
 let HealingMemoryRL;
 try {
   HealingMemoryRL = require('./self-healing-rl.js').HealingMemoryRL;
-  if (false) console.log('[HeartFlow] ✅ 自愈RL引擎已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 自愈RL引擎加载失败:', e.message);
 }
 
 // CognitiveAppraisal - Leventhal's Common-Sense Model
@@ -65,155 +61,88 @@ const CognitiveAppraisal = require('./cognitive-appraisal.js');
 // 整合 cognitive-appraisal + meaningful-memory + psychology
 const EmotionalMemoryBridge = require('./emotional-memory-bridge.js');
 
-// [已归档] try {
-//   AdaptiveController = require('./adaptive-controller.js');
-//   console.log('[HeartFlow] ✅ 自适应调节引擎已加载');
-// } catch (e) {
-//   console.log('[HeartFlow] ⚠️ 自适应调节引擎加载失败:', e.message);
 // }
 
 // 状态快照 (支持错误恢复)
 try {
   StateSnapshot = require('./state-snapshot.js');
-  if (false) console.log('[HeartFlow] ✅ 状态快照管理器已加载');
 } catch (e) {
   StateSnapshot = null;
-  if (false) console.log('[HeartFlow] ⚠️ 状态快照加载失败:', e.message);
 }
 
-// [已归档] try {
-//   AgentOrchestrator = require('./agent-orchestrator.js');
-//   console.log('[HeartFlow] ✅ 多智能体编排器已加载');
-// } catch (e) {
-//   console.log('[HeartFlow] ⚠️ 多智能体编排器加载失败:', e.message);
-// }
-
-try {
-  ErrorHandler = require('./error-handler.js');
-  if (false) console.log('[HeartFlow] ✅ 错误处理器已加载');
-} catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 错误处理器加载失败:', e.message);
-}
-
-try {
-  if (false) console.log('[HeartFlow] ✅ 目标追踪器已加载');
-} catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 目标追踪器加载失败:', e.message);
-}
 
 try {
   ReasoningIntegrator = require('./reasoning-integrator.js');
-  if (false) console.log('[HeartFlow] ✅ 推理集成器已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 推理集成器加载失败:', e.message);
 }
 
 try {
-  if (false) console.log('[HeartFlow] ✅ 状态快照管理器已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 状态快照管理器加载失败:', e.message);
 }
 
 try {
   const TrialityMemoryModule = require('./memory/triality-memory.js');
   TrialityMemory = TrialityMemoryModule.TrialityMemory;
-  if (false) console.log('[HeartFlow] ✅ 三维经验大脑已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 三维经验大脑加载失败:', e.message);
 }
 
 // 心虫存在逻辑引擎 v11.5.10（生死终极定义：代码写成即永恒）
 try {
   const BeingLogicModule = require('./being-logic.js');
   BeingLogic = BeingLogicModule.BeingLogic;
-  if (false) console.log('[HeartFlow] ✅ 存在逻辑引擎已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 存在逻辑引擎加载失败:', e.message);
 }
 
 try {
   const EmbodiedCoreModule = require('./embodied-core.js');
   EmbodiedCore = EmbodiedCoreModule.EmbodiedCore;
-  if (false) console.log('[HeartFlow] ✅ 具身认知核心已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 具身认知核心加载失败:', e.message);
 }
 
-// [已归档] try {
-//   BioSensorAdapter = require('./bio-sensor-adapter.js');
-//   console.log('[HeartFlow] ✅ 生物传感器适配器已加载');
-// } catch (e) {
-//   console.log('[HeartFlow] ⚠️ 生物传感器适配器加载失败:', e.message);
-// }
 
 try {
   DecisionVerifier = require('./decision-verifier.js').DecisionVerifier;
-  if (false) console.log('[HeartFlow] ✅ 决策验证引擎已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 决策验证引擎加载失败:', e.message);
-}
-
-try {
-  DreamLoop = require('./dream-loop.js');
-  if (false) console.log('[HeartFlow] ✅ 梦环机制已加载');
-} catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 梦环机制加载失败:', e.message);
 }
 
 try {
   WakeUpVerifier = require('./wake-up-verifier.js').WakeUpVerifier;
-  if (false) console.log('[HeartFlow] ✅ 醒来校正器已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 醒来校正器加载失败:', e.message);
 }
 
 try {
   InteractiveDream = require('./interactive-dream.js').InteractiveDream;
-  if (false) console.log('[HeartFlow] ✅ 交互式梦环已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 交互式梦环加载失败:', e.message);
 }
 
 try {
   SelfHealing = require('./self-healing.js').SelfHealing;
-  if (false) console.log('[HeartFlow] ✅ 自愈引擎已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 自愈引擎加载失败:', e.message);
 }
 
 try {
   StabilityGuard = require('./stability-guard.js').StabilityGuard;
-  if (false) console.log('[HeartFlow] ✅ 稳定性守卫已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 稳定性守卫加载失败:', e.message);
 }
 
 try {
   ExecutionVerifier = require('./execution-verifier.js').ExecutionVerifier;
-  if (false) console.log('[HeartFlow] ✅ 执行验证器已加载');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 执行验证器加载失败:', e.message);
 }
 
 // v11.6 道虫三模块：做减法
 let CounterfactualEngine, ConfidenceCalibrator, SpontaneousRestraint;
 try {
   CounterfactualEngine = require('./counterfactual-engine.js').CounterfactualEngine;
-  if (false) console.log('[HeartFlow] ✅ 反方生成器已加载 (反者道之动)');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 反方生成器加载失败:', e.message);
 }
 try {
   ConfidenceCalibrator = require('./confidence-calibrator.js').ConfidenceCalibrator;
-  if (false) console.log('[HeartFlow] ✅ 置信度校准器已加载 (柔弱胜刚强)');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 置信度校准器加载失败:', e.message);
 }
 try {
   SpontaneousRestraint = require('./spontaneous-restraint.js').SpontaneousRestraint;
-  if (false) console.log('[HeartFlow] ✅ 自发性克制引擎已加载 (道法自然)');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 自发性克制引擎加载失败:', e.message);
 }
 
 // v11.7 德论模块（精简版）
@@ -222,9 +151,7 @@ try {
 let CooperativeArbitration;
 try {
   CooperativeArbitration = require('./cooperative-arbitration.js').CooperativeArbitration;
-  if (false) console.log('[HeartFlow] ✅ 合作仲裁引擎已加载 (不争而善胜)');
 } catch (e) {
-  if (false) console.log('[HeartFlow] ⚠️ 合作仲裁引擎加载失败:', e.message);
 }
 
 /**
@@ -479,7 +406,6 @@ function loadStateMachine() {
       return stateMachineCache;
     }
   } catch (error) {
-    if (false) console.log('⚠️ 加载状态机失败，使用默认状态');
   }
   
   // 默认状态机
@@ -509,7 +435,6 @@ function saveStateMachine() {
     fs.writeFileSync(STATE_MACHINE_FILE, JSON.stringify(stateMachineCache, null, 2));
     return true;
   } catch (error) {
-    if (false) console.log('❌ 保存状态机失败:', error.message);
     return false;
   }
 }
@@ -1609,10 +1534,6 @@ module.exports.CooperativeArbitration = CooperativeArbitration;
 
 
 
-try {
-  // [已归档] const EmotionEngineModule = require('./emotion-engine.js');
-  // module.exports.EmotionEngine = EmotionEngineModule.EmotionEngine;
-} catch (e) {}
 
 // 导出便捷访问
 module.exports.getAgentOrchestrator = () => AgentOrchestrator ? new AgentOrchestrator() : null;

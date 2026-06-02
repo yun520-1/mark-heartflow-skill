@@ -39,7 +39,7 @@ class StateSnapshot {
     } catch (e) {
       // Clean up WAL on failure
       if (fs.existsSync(walPath)) {
-        try { fs.unlinkSync(walPath); } catch (_) {}
+        try { fs.unlinkSync(walPath); } catch (_) { /* 最佳努力清理：原始错误已传播 */ }
       }
       throw e;
     }
@@ -50,7 +50,7 @@ class StateSnapshot {
     } catch (e) {
       // Rollback: remove WAL file on rename failure
       if (fs.existsSync(walPath)) {
-        try { fs.unlinkSync(walPath); } catch (_) {}
+        try { fs.unlinkSync(walPath); } catch (_) { /* 最佳努力清理：原始错误已传播 */ }
       }
       throw e;
     }

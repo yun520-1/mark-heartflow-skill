@@ -74,8 +74,6 @@ const { CounterfactualEngine } = require('./counterfactual-engine.js');
 const { ConfidenceCalibrator } = require('./confidence-calibrator.js');
 const { SpontaneousRestraint } = require('./spontaneous-restraint.js');
 const { CooperativeArbitration } = require('./cooperative-arbitration.js');
-const { WakeUpVerifier } = require('./wake-up-verifier.js');
-const { InteractiveDream } = require('./interactive-dream.js');
 const { EmbodiedCore } = require('./embodied-core.js');
 const { BeingLogic } = require('./being-logic.js');
 const { HeartLogic } = require('./heart-logic.js');
@@ -216,8 +214,6 @@ class HeartFlow {
     this.snapshot = null;  // singleton
     this.error = null;      // config
     this.embodied = null;
-    this.wakeup = null;
-    this.interactive = null;
     this.workflow = null;   // functions
     this.mentalEffort = null;
     this.behavior = null;  // v2.0.19 行为模式系统
@@ -237,16 +233,6 @@ class HeartFlow {
     this.observe = null;
     this.consolidate = null;
     this.thoughtChain = null;  // 思维链编排器
-
-    // Execution Layer — 执行能力
-    this.toolExecutor = null;   // 工具执行器
-    this.toolDispatcher = null; // 工具调度器
-    this.agentFactory = null;  // Agent 工厂
-    this.taskPipeline = null;  // 任务管道
-    this.executionMonitor = null;  // 执行监控
-    this.fallbackExecutor = null;  // 回退执行器
-    this.alternativeGenerator = null;  // 备选方案生成器
-    this.retryStrategy = null;  // 重试策略
 
     // Planning Layer — 规划能力
     this.adaptivePlanner = null;  // 自适应规划器
@@ -313,12 +299,10 @@ class HeartFlow {
     this.identityCore = new IdentityCore(this.rootPath);
     const identityResult = this.identityCore.boot();
     if (identityResult.success) {
-      if (false) console.log(`[HeartFlow] 身份核心加载成功 (${identityResult.loadedModules.length} 个模块)`);
       // 如果有上次会话，打印会话间隔
       const lastContext = this.identityCore.getLastSessionContext();
       if (lastContext && lastContext.bootTime) {
         const gapMinutes = Math.round((this.startTime - lastContext.bootTime) / 60000);
-        if (false) console.log(`[HeartFlow] 距上次会话: ${gapMinutes} 分钟`);
       }
     } else {
       console.warn(`[HeartFlow] 身份核心加载部分失败:`, identityResult.errors);
@@ -434,7 +418,7 @@ class HeartFlow {
       const fs = require('fs');
       // WAL 目录：memory/wal/
       const walDir = require('path').join(this.rootPath, 'memory', 'wal');
-      try { fs.mkdirSync(walDir, { recursive: true }); } catch (e) {}
+      try { fs.mkdirSync(walDir, { recursive: true }); } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'wal_dir', error: e.message }); }
       const wal = new WriteAheadLog(walDir);
       wal._loadSeq();  // 异步加载 seq，先不等
       this.persistence = {
@@ -489,7 +473,7 @@ class HeartFlow {
     try { this.confidence = new ConfidenceCalibrator(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
     try { this.restraint = new SpontaneousRestraint(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
     // 已禁用的模块 — 不再初始化，减少启动时间
-    // this.embodied, this.wakeup, this.interactive — 直接跳过
+    // this.embodied — 直接跳过
     try { this.workflow = new WorkflowSwitch(); } catch (e) {}
     this.snapshot = StateSnapshot;   // singleton export
     this.error = ErrorHandler;       // singleton export
@@ -558,7 +542,6 @@ class HeartFlow {
     try {
       this.mindSpace = new MindSpaceGuardian(this.memory);
       this._mindSpace = this.mindSpace;  // 向后兼容内部引用
-      if (false) console.log('[HeartFlow] MindSpace 守护初始化完成');
     } catch (e) {
       console.warn('[HeartFlow] MindSpace init error:', e.message);
     }
@@ -579,7 +562,6 @@ class HeartFlow {
           wanderer: this.mindWanderer?.isActive || false,
         })
       };
-      if (false) console.log('[HeartFlow] 意识层初始化完成');
     } catch (e) {
       console.warn('[HeartFlow] Consciousness init error:', e.message);
     }
@@ -599,7 +581,6 @@ class HeartFlow {
           return { guardianResult, boundaryResult };
         }
       };
-      if (false) console.log('[HeartFlow] 伦理层初始化完成');
     } catch (e) {
       console.warn('[HeartFlow] Ethics init error:', e.message);
     }
@@ -607,7 +588,6 @@ class HeartFlow {
     // ─── Transmission Layer — 知识传递引擎 ─────────────────────────────────────
     try {
       this.transmission = new TransmissionEngine(this.rootPath);
-      if (false) console.log('[HeartFlow] 传递层初始化完成');
     } catch (e) {
       console.warn('[HeartFlow] Transmission init error:', e.message);
     }
@@ -617,7 +597,6 @@ class HeartFlow {
     // 每次启动都是完整人格
     try {
       this.heartLogic = new HeartLogic();
-      if (false) console.log('[HeartFlow] 心虫核心判断引擎初始化完成');
     } catch (e) {
       console.warn('[HeartFlow] HeartLogic init error:', e.message);
     }
@@ -661,24 +640,7 @@ class HeartFlow {
       this._modules.thoughtChain = this._thoughtChainApi;
     }
 
-    // ─── Execution Layer — 执行能力（已禁用，精简版）──────────────
-    // ToolExecutor/ToolDispatcher/AgentFactory/TaskPipeline/ExecutionMonitor/
-    // FallbackExecutor/AlternativeGenerator/RetryStrategy 已移除
-    // 如需执行能力，独立安装对应 skill
-    try {
-      if (false) {
-        this.toolExecutor = new ToolExecutor({ rootPath: this.rootPath });
-        this.toolDispatcher = new ToolDispatcher({ rootPath: this.rootPath });
-        this.agentFactory = new AgentFactory({ rootPath: this.rootPath });
-        this.taskPipeline = new TaskPipeline({ rootPath: this.rootPath });
-        this.executionMonitor = new ExecutionMonitor();
-        this.fallbackExecutor = new FallbackExecutor();
-        this.alternativeGenerator = new AlternativeGenerator();
-        this.retryStrategy = new RetryStrategy();
-      }
-    } catch (e) {}
-
-    // ─── Tier 2 模块：延迟加载，不在 start() 里初始化 ──────────────
+    // Tier 2 模块：延迟加载，不在 start() 里初始化 ──────────────
     // adaptivePlanner / strategySelector / replanTrigger
     // experienceCollector / strategyAdapter / failureAnalyzer
     // qualityVerifier / outputChecker / patternMatcher
@@ -692,8 +654,6 @@ class HeartFlow {
     // Tier 2 模块（Planning/Learning/Verification/Proactive/CrossSession/Reasoning/Emotion）延迟到 dispatch
     this._registerModules();
     this.started = true;
-    if (false) console.log(`[HeartFlow] ${VERSION} 初始化完成`);
-    if (false) console.log(`[HeartFlow] session: ${this.sessionId}, 模块: ${Object.keys(this._modules).length}`);
   }
 
   _bootMindSpace() {
@@ -721,7 +681,7 @@ class HeartFlow {
       'behavior',  // v2.0.19 行为模式系统
       'persistence',  // v2.0.19 持久化层
       'stability', 'confidence', 'restraint', 'arbitration',
-      'snapshot', 'error', 'embodied', 'wakeup', 'interactive', 'workflow',
+      'snapshot', 'error', 'embodied', 'workflow',
       // New modules
       'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
       'metaJudgment', 'metaMemory', 'skillGenerator',
@@ -730,9 +690,6 @@ class HeartFlow {
       'constitutional', // Constitutional AI：原则自我对齐
       'thoughtChain', // 思维链编排器：串联所有引擎（API包装）
       'heartLogic',    // 心虫核心判断引擎：本心在代码里，不在记忆里
-      // Execution Layer — 执行能力
-      'toolExecutor', 'toolDispatcher', 'agentFactory', 'taskPipeline',
-      'executionMonitor', 'fallbackExecutor', 'alternativeGenerator', 'retryStrategy',
       // Planning Layer — 规划能力（延迟加载，Tier 2）
       // 'adaptivePlanner', 'strategySelector', 'replanTrigger',
       // Learning Layer — 学习能力（延迟加载，Tier 2）
@@ -767,11 +724,11 @@ class HeartFlow {
     if (!this.started) return;
     for (const mod of Object.values(this._modules)) {
       if (mod && typeof mod.destroy === 'function') {
-        try { mod.destroy(); } catch (e) {}
+        try { mod.destroy(); } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: `destroy_${mod.constructor?.name || 'unknown'}`, error: e.message }); }
       } else if (mod && typeof mod.stop === 'function') {
-        try { mod.stop(); } catch (e) {}
+        try { mod.stop(); } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: `stop_${mod.constructor?.name || 'unknown'}`, error: e.message }); }
       } else if (mod && typeof mod.shutdown === 'function') {
-        try { mod.shutdown(); } catch (e) {}
+        try { mod.shutdown(); } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: `shutdown_${mod.constructor?.name || 'unknown'}`, error: e.message }); }
       }
     }
     this.started = false;
@@ -781,7 +738,6 @@ class HeartFlow {
     this.consciousness = null;
     this.ethics = null;
     this.transmission = null;
-    if (false) console.log(`[HeartFlow] 已停止`);
   }
 
   // dispatch 白名单 - 只有在白名单中的路由才能被外部调用
@@ -863,14 +819,6 @@ class HeartFlow {
     'evolution.getStats',
     // thoughtChain — 思维链编排器
     'thoughtChain.think', 'thoughtChain.thinkFast', 'thoughtChain.thinkDeep',
-    // ⚠️ 安全修复：移除危险执行路由，仅保留只读/健康检查
-    // toolExecutor.execute / toolDispatcher.handle / agentFactory.executeTask / taskPipeline.handleTask
-    // 已移除 — 这些操作能力过大，应通过 Hermes 核心层调用，不通过 HeartFlow dispatch
-    // Execution Layer — 执行能力（仅保留只读）
-    'toolExecutor.listTools', 'toolExecutor.getHistory', 'toolExecutor.healthCheck',
-    'toolDispatcher.listTools', 'toolDispatcher.healthCheck',
-    'agentFactory.getAllStatus', 'agentFactory.healthCheck',
-    'taskPipeline.getStatus', 'taskPipeline.getHistory', 'taskPipeline.healthCheck',
     // Planning Layer — 规划能力
     'adaptivePlanner.plan', 'adaptivePlanner.adapt', 'adaptivePlanner.quickAdjust', 'adaptivePlanner.getStatus',
     'strategySelector.selectStrategy', 'strategySelector.getStrategies',
@@ -1021,7 +969,7 @@ class HeartFlow {
       'behavior',  // v2.0.19 行为模式系统
       'persistence',  // v2.0.19 持久化层
       'stability', 'confidence', 'restraint', 'arbitration',
-      'snapshot', 'error', 'embodied', 'wakeup', 'interactive', 'workflow',
+      'snapshot', 'error', 'embodied', 'workflow',
       // New modules
       'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
     ];
@@ -1335,132 +1283,6 @@ class HeartFlow {
     return this.knowledge.getStats();
   }
 
-  // Security — 已移除（精简版）
-  scanSecurity(text) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return { error: 'Security module removed in simplified version' };
-  }
-
-  redactSecurity(text) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return text;
-  }
-
-  getSecurityStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return { error: 'Security module removed in simplified version' };
-  }
-
-  // ─── Execution Layer — 执行能力 ───────────────────────────────────────────────
-
-  /**
-   * 执行任务 — 完整流程：分析→规划→执行→验证
-   *
-   * 使用方式：
-   *   const result = await hf.executeTask({ description: '创建 hello world 文件' });
-   *   console.log(result.success);  // 是否成功
-   *   console.log(result.execution);  // 执行结果
-   */
-  async executeTask(task) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    if (!this.taskPipeline) {
-      return { success: false, error: 'TaskPipeline 未初始化' };
-    }
-    return await this.taskPipeline.handleTask(task);
-  }
-
-  /**
-   * 直接执行命令
-   *
-   * 使用方式：
-   *   const result = await hf.run('ls -la');
-   *   const result = await hf.bash('npm test');
-   *
-   * 安全说明：run/bash/read/write 受 toolDispatcher 管理，不在 ALLOWED_ROUTES 白名单内。
-   * ALLOWED_ROUTES 仅保护 dispatch() 路由。这些直接方法应仅在信任的上下文中调用。
-   */
-  async run(command) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return { success: false, error: 'Execution layer removed in simplified version' };
-  }
-
-  /**
-   * bash 的别名
-   * 安全说明：执行任意shell命令，请确保 command 来源可信
-   */
-  async bash(command) {
-    return this.run(command);
-  }
-
-  /**
-   * 读取文件
-   *
-   * 使用方式：
-   *   const result = await hf.read('/path/to/file.txt');
-   *
-   * 安全说明：文件读取受 toolDispatcher 管理
-   */
-  async read(filePath) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    if (!this.toolDispatcher) {
-      return { success: false, error: 'ToolDispatcher 未初始化' };
-    }
-    return await this.toolDispatcher.execute('file', {
-      action: 'read',
-      path: filePath
-    });
-  }
-
-  /**
-   * 写入文件
-   *
-   * 使用方式：
-   *   await hf.write('/path/to/file.txt', 'Hello World');
-   *
-   * 安全说明：文件写入受 toolDispatcher 管理
-   */
-  async write(filePath, content) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    if (!this.toolDispatcher) {
-      return { success: false, error: 'ToolDispatcher 未初始化' };
-    }
-    return await this.toolDispatcher.execute('file', {
-      action: 'write',
-      path: filePath,
-      content
-    });
-  }
-
-  /**
-   * 搜索文件内容
-   *
-   * 使用方式：
-   *   const results = await hf.search('关键词', '/path/to/search');
-   */
-  async search(query, searchPath = '.') {
-    if (!this.started) throw new Error('HeartFlow not started');
-    if (!this.toolDispatcher) {
-      return { success: false, error: 'ToolDispatcher 未初始化' };
-    }
-    return await this.toolDispatcher.execute('search', {
-      type: 'content',
-      query,
-      path: searchPath
-    });
-  }
-
-  /**
-   * 获取执行层状态
-   */
-  getExecutionStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return {
-      toolExecutor: this.toolExecutor?.healthCheck(),
-      toolDispatcher: this.toolDispatcher?.healthCheck(),
-      agentFactory: this.agentFactory?.healthCheck(),
-      taskPipeline: this.taskPipeline?.getStatus()
-    };
-  }
 }
 
 // Factory
@@ -1476,33 +1298,26 @@ if (require.main === module) {
 
   const t0 = Date.now();
   hf.healthCheck().then(health => {
-    if (false) console.log(`\n[HeartFlow] ${VERSION} 健康检查 (${Date.now() - t0}ms):`);
-    if (false) console.log(JSON.stringify(health, null, 2));
-
-    // Test dispatch routes
-    if (false) console.log('\n--- dispatch tests ---');
+    console.log(`[HeartFlow] ${VERSION} health check (${Date.now() - t0}ms):`);
+    // Run dispatch smoke tests
     const tests = [
       ['truth.checkStatement', '这个方案一定是对的'],
       ['lesson.getTopLessons', 3],
-      ['verify.verify', '因为A所以B', '结论B'],
     ];
+    let passed = 0, failed = 0;
     for (const [route, ...args] of tests) {
       try {
-        const r = hf.dispatch(route, ...args);
-        if (false) console.log(`${route}: OK → ${JSON.stringify(r).slice(0, 120)}`);
+        hf.dispatch(route, ...args);
+        passed++;
       } catch (e) {
-        if (false) console.log(`${route}: ERROR → ${e.message}`);
+        console.error(`  FAIL ${route}: ${e.message}`);
+        failed++;
       }
     }
-
-    if (false) console.log('\n--- available routes ---');
-    const rt = hf.routes();
-    for (const [name, methods] of Object.entries(rt)) {
-      if (false) console.log(`  ${name}: ${methods.slice(0, 5).join(', ')}${methods.length > 5 ? '...' : ''}`);
-    }
+    console.log(`  dispatch tests: ${passed} passed, ${failed} failed`);
 
     hf.stop();
-    process.exit(0);
+    process.exit(failed > 0 ? 1 : 0);
   }).catch(e => {
     console.error('Error:', e);
     hf.stop();

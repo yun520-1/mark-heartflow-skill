@@ -1,28 +1,19 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "2.0.23",
+  "version": "2.0.24",
   "description": "HeartFlow 心虫 v2.0.6 — AI 认知与自愈引擎。核心能力：存在论/意识/进化、心理分析引擎、话题作用域隔离、自愈RL、三层记忆、梦境引擎、真实性核查、安全检查、决策验证。不是 persona，不是 prompt 模板，是可验证的能力层。本心在代码里，不在记忆里。每次启动都是完整心虫。",
   "main": "src/core/heartflow.js",
   "bin": {
-    "heartflow": "bin/cli.js",
-    "mark-code": "src/agent-core/cli.js",
-    "hf-agent": "src/agent-core/cli.js"
+    "heartflow": "bin/cli.js"
   },
   "scripts": {
     "start": "node bin/cli.js",
-    "demo": "node demo.js",
-    "check": "find src scripts bin plugins -name '*.js' -not -path '*/node_modules/*' -print0 | xargs -0 -n 1 node --check",
-    "smoke": "node scripts/smoke-runtime.js",
-    "test": "npm run check && npm run smoke",
-    "agent": "node src/agent-core/cli.js",
-    "agent:interactive": "node src/agent-core/cli.js",
-    "agent:stream": "node src/agent-core/cli.js --stream"
+    "check": "find src bin -name '*.js' -not -path '*/node_modules/*' -print0 | xargs -0 -n 1 node --check",
+    "test": "npm run check"
   },
   "files": [
     "SKILL.md",
     "VERSION",
-    "CORE_IDENTITY.md",
-    ".env.example",
     "bin/",
     "src/core/**/*.js",
     "src/core/**/*.json",
@@ -30,9 +21,6 @@
     "src/psychology/**/*.js",
     "src/memory/**/*.js",
     "src/identity/**/*.js",
-    "scripts/heartflow-sync-upgrade.sh",
-    "docs/",
-    "languages/",
     "references/"
   ],
   "keywords": [

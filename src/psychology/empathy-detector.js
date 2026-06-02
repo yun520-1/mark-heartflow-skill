@@ -366,32 +366,6 @@ function computeEmpathyScore(text) {
  * 演示函数
  */
 function demo() {
-  if(false) {
-    const testTexts = [
-      '我很难过，你还好吗？',
-      '我觉得你应该很开心吧，祝贺你！',
-      '我最近压力很大，总是睡不好，很担心你的情况。',
-      '这个任务完成了。',
-      '听说你遇到困难了，我很心疼你，想帮你分担一些。'
-    ];
-    
-    console.log('=== Decety & Jackson (2004) 共情架构测试 ===\n');
-    console.log('来源论文: The Functional Architecture of Human Empathy');
-    console.log('引用数: 3210\n');
-    
-    testTexts.forEach((text, i) => {
-      console.log(`[${i+1}] 输入: "${text}"`);
-      const result = detectEmpathy(text);
-      console.log(`    分数: ${result.score} (${result.level})`);
-      console.log(`    类型: ${result.empathyType}`);
-      console.log(`    摘要: ${result.summary}`);
-      console.log('');
-    });
-    
-    console.log('=== 组件详情 ===');
-    const detailed = detectEmpathy('我最近压力很大，总是睡不好，很担心你的情况。');
-    console.log('示例深度分析:', JSON.stringify(detailed, null, 2));
-  }
 }
 
 // 导出

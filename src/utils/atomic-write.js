@@ -25,7 +25,7 @@ async function atomicWrite(filePath, content, options = {}) {
     await fs.rename(tmpPath, filePath);
   } catch (err) {
     // 清理临时文件（如果存在）
-    try { await fs.unlink(tmpPath); } catch { /* ignore */ }
+    try { await fs.unlink(tmpPath); } catch { /* 最佳努力清理：原始错误已传播 */ }
     throw err;
   }
 }

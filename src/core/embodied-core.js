@@ -34,14 +34,13 @@ class EmbodiedCore {
   }
 
   loadExecutors() {
+    // 安全审计修复：只保留认知类 agent，不暴露执行工具
+    // code-generation / code-analysis / search 与 skill 定位不符（认知与自愈）
     return {
       SelfAgent: { type: 'agent', weight: 1.0 },
       MoodAgent: { type: 'agent', weight: 0.9 },
       FocusAgent: { type: 'agent', weight: 0.9 },
-      ReflectionAgent: { type: 'agent', weight: 0.8 },
-      'code-analysis': { type: 'tool', capability: 'analyze', weight: 1.0 },
-      'code-generation': { type: 'tool', capability: 'generate', weight: 1.0 },
-      'search': { type: 'tool', capability: 'search', weight: 0.8 }
+      ReflectionAgent: { type: 'agent', weight: 0.8 }
     };
   }
 

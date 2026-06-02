@@ -46,7 +46,7 @@ const CORE_CHECKS = [
       try {
         const p = JSON.parse(c);
         return p.version !== undefined && p.version.length > 0;
-      } catch { return false; }
+      } catch { /* JSON 解析失败视为验证不通过 */ return false; }
     },
     required: true,
   },

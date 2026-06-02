@@ -29,7 +29,7 @@ class LessonStorage {
       if (fs.existsSync(INDEX_FILE)) {
         return JSON.parse(fs.readFileSync(INDEX_FILE, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) { /* 合理的降级：索引文件损坏时返回空数据 */ }
     return { lessons: [], lastUpdated: null };
   }
 
@@ -98,7 +98,7 @@ class LessonStorage {
       if (fs.existsSync(filePath)) {
         return JSON.parse(fs.readFileSync(filePath, 'utf8'));
       }
-    } catch (e) {}
+    } catch (e) { /* 合理的降级：教训文件损坏时返回 null */ }
     return null;
   }
 

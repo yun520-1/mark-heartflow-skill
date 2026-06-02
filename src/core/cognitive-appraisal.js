@@ -394,35 +394,6 @@ function generateAppraisalMessage(threatType, primary, secondary, copingStrategi
 // ========================================
 
 function demo() {
-  if(false) {
-    console.log('=== 认知评估系统演示 ===\n');
-    
-    const testCases = [
-      '项目搞砸了，被老板狠狠骂了一顿，感觉要被开除了',
-      '第一次做这个项目，虽然难但我想试试',
-      '以前遇到过类似情况，我一定能处理好',
-      '我完全不知道该怎么办，没有任何头绪'
-    ];
-    
-    testCases.forEach((text, idx) => {
-      console.log(`[${idx + 1}] 测试: "${text}"`);
-      const result = appraise(text);
-      console.log(`  威胁类型: ${result.threatType}`);
-      console.log(`  初级评估: ${(result.primaryAppraisal.overall * 100).toFixed(0)}%`);
-      console.log(`  次级评估: ${(result.secondaryAppraisal.overall * 100).toFixed(0)}%`);
-      console.log(`  消息: ${result.message}`);
-      
-      if (result.copingStrategies.length > 0) {
-        console.log('  应对策略:');
-        result.copingStrategies.forEach(s => {
-          console.log(`    - [${s.priority}] ${s.message}`);
-        });
-      }
-      console.log('');
-    });
-    
-    console.log('论文来源: Leventhal et al. "Illness cognition: Using common sense to understand treatment" (1564 citations)');
-  }
 }
 
 if (require.main === module) {
