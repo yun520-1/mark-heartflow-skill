@@ -270,9 +270,12 @@ class ThoughtChain {
           const contradictions = this._findContradictions(topHypothesis, input);
 
           // 3.3 【思维连机制】调用 truth 子系统验证假设 — 串联第三层
+          // v2.0.19 修：加 await 让 isLying 字段能被消费
+          // 心虫层 truth.checkStatement 内部用 async 包装（fact-checker.checkFact），
+          // 不 await 拿到的是 Promise，truthResult?.isLying 永远 undefined → INVERT 失效
           let truthResult = null;
           try {
-            truthResult = hf.dispatch('truth.checkStatement', topHypothesis.description);
+            truthResult = await hf.dispatch('truth.checkStatement', topHypothesis.description);
           } catch (e) {
             truthResult = null;
           }
@@ -280,7 +283,7 @@ class ThoughtChain {
           // 3.4 【思维连机制】调用 constitutional AI 原则审查 — 串联第三层
           let constitutionalResult = null;
           try {
-            constitutionalResult = hf.dispatch('constitutional.critique', topHypothesis.description);
+            constitutionalResult = await hf.dispatch('constitutional.critique', topHypothesis.description);
           } catch (e) {
             constitutionalResult = null;
           }

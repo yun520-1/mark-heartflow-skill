@@ -216,6 +216,12 @@ class HeartFlow {
     this.interactive = null;
     this.workflow = null;   // functions
     this.mentalEffort = null;
+    this.behavior = null;  // v2.0.19 行为模式系统
+    this.persistence = null;  // v2.0.19 持久化层
+
+    // [v2.0.19 FIX] _initErrors 必须在所有 try/catch 之前初始化
+    // 之前在 line 418 才初始化，导致 truth 段 (line 377) push 失败时会崩
+    this._initErrors = [];
 
     // New modules
     this.bm25 = null;
@@ -375,6 +381,98 @@ class HeartFlow {
       };
     } catch (e) {
       this._initErrors.push({ module: 'truth', error: e.message });
+    }
+
+    // Behavior — 行为模式系统（v2.0.19 接入）
+    // 集成孤儿模块 behavior-tracker.js + pattern-detector.js
+    // 暴露 dispatch: behavior.* — 以前没接入主循环
+    // 路径：src/core/heartflow.js → src/behavior-tracker.js (一级 ../)
+    try {
+      const { behaviorTracker } = require('../behavior-tracker.js');
+      const { patternDetector } = require('../pattern-detector.js');
+      this.behavior = {
+        // Goal 生命周期
+        createGoal: (args) => behaviorTracker.createGoal(args),
+        record: (goalId, args) => behaviorTracker.record(goalId, args),
+        getProgress: (goalId) => behaviorTracker.getProgress(goalId),
+        formatProgress: (goalId) => behaviorTracker.formatProgress(goalId),
+        getAllGoals: () => behaviorTracker.data.goals,
+        // Pattern 分析（pattern-detector）
+        detectWeeklyPattern: (records) => patternDetector.detectWeeklyPattern(records),
+        detectTriggerPattern: (records) => patternDetector.detectTriggerPattern(records),
+        detectRelapseRisk: (goal) => patternDetector.detectRelapseRisk(goal),
+        // 综合报告
+        getReport: (goalId) => {
+          const p = behaviorTracker.getProgress(goalId);
+          if (!p) return null;
+          const goal = behaviorTracker.data.goals.find(g => g.id === goalId);
+          const weekly = patternDetector.detectWeeklyPattern(goal.records);
+          const triggers = patternDetector.detectTriggerPattern(goal.records);
+          const risk = patternDetector.detectRelapseRisk(goal);
+          return { ...p, weekly, triggers, risk };
+        },
+        getStats: () => ({
+          goals: behaviorTracker.data.goals.length,
+          totalRecords: behaviorTracker.data.goals.reduce((n, g) => n + g.records.length, 0),
+          type: 'behavior-tracker+pattern-detector',
+        }),
+      };
+    } catch (e) {
+      this._initErrors.push({ module: 'behavior', error: e.message });
+    }
+
+    // Persistence — 持久化层（v2.0.19 接入）
+    // 集成孤儿模块 write-ahead-log.js + atomic-write.js
+    // 暴露 dispatch: persistence.* — 崩溃安全写入
+    try {
+      const { WriteAheadLog, OP_TYPES } = require('../utils/write-ahead-log.js');
+      const { atomicWrite } = require('../utils/atomic-write.js');
+      const fs = require('fs');
+      // WAL 目录：memory/wal/
+      const walDir = require('path').join(this.rootPath, 'memory', 'wal');
+      try { fs.mkdirSync(walDir, { recursive: true }); } catch (e) {}
+      const wal = new WriteAheadLog(walDir);
+      wal._loadSeq();  // 异步加载 seq，先不等
+      this.persistence = {
+        // WAL 原始 API
+        append: (opType, data) => wal.append(opType, data),
+        commit: (seq) => wal.commit(seq),
+        replay: () => wal.replay(),
+        flush: () => wal.flush(),
+        // 原子写
+        atomicWrite: (filePath, content, options) => atomicWrite(filePath, content, options),
+        // 组合：safeWrite = WAL 记录 + 原子写
+        // 用途：lesson 写入、meaningful-memory 更新等关键路径
+        safeWrite: async (filePath, content) => {
+          const seq = await wal.append('write', { file: filePath, content: content.toString().slice(0, 50000) });
+          await atomicWrite(filePath, content);
+          await wal.commit(seq);
+          return { ok: true, seq, file: filePath };
+        },
+        // 崩溃恢复：扫描 WAL，提交未完成的事务
+        recover: async () => {
+          const pending = await wal.replay();
+          const results = [];
+          for (const entry of pending) {
+            try {
+              if (entry.data?.file && entry.data?.content) {
+                await atomicWrite(entry.data.file, entry.data.content);
+                results.push({ seq: entry.seq, file: entry.data.file, recovered: true });
+              }
+            } catch (e) {
+              results.push({ seq: entry.seq, file: entry.data?.file, recovered: false, error: e.message });
+            }
+          }
+          return results;
+        },
+        getStats: () => ({
+          type: 'wal+atomic',
+          walDir,
+          opTypes: OP_TYPES,
+        }),
+      };
+    } catch (e) {
+      this._initErrors.push({ module: 'persistence', error: e.message });
     }
 
     // Engine modules (classes) — track errors for healthCheck
@@ -674,6 +772,8 @@ class HeartFlow {
       'self', 'being', 'topics',
       'psychology', 'emotion',
       'truth', 'security', 'language',
+      'behavior',  // v2.0.19 行为模式系统
+      'persistence',  // v2.0.19 持久化层
       'stability', 'confidence', 'restraint', 'arbitration',
       'snapshot', 'error', 'embodied', 'wakeup', 'interactive', 'workflow',
       // New modules
@@ -760,6 +860,23 @@ class HeartFlow {
     'memory.getLayers', 'memory.getStats',
     // truth
     'truth.checkStatement', 'truth.checkNumbers', 'truth.checkSources',
+    // behavior — v2.0.19 行为模式系统
+    'behavior.createGoal', 'behavior.record', 'behavior.getProgress',
+    'behavior.formatProgress', 'behavior.getAllGoals',
+    'behavior.detectWeeklyPattern', 'behavior.detectTriggerPattern', 'behavior.detectRelapseRisk',
+    'behavior.getReport', 'behavior.getStats',
+    // persistence — v2.0.19 持久化层
+    'persistence.append', 'persistence.commit', 'persistence.replay', 'persistence.flush',
+    'persistence.atomicWrite', 'persistence.safeWrite', 'persistence.recover', 'persistence.getStats',
+    // triality — 三层记忆（v2.0.19 暴露完整能力）
+    'triality.store', 'triality.getLayerStats', 'triality.getStats',
+    'triality.semanticSearch', 'triality.narrativeQuery', 'triality.getRecentNarrative',
+    'triality.queryByTimeRange', 'triality.queryByRelationType',
+    'triality.searchBySemantic', 'triality.searchByKeywords', 'triality.searchByTimeRange',
+    'triality.searchByEmotion', 'triality.searchByAssociation', 'triality.multiChannelSearch',
+    'triality.addRelationship', 'triality.addToLayer', 'triality.consolidateMemories',
+    'triality.applyForgettingCurve', 'triality.getMemoryHealth',
+    'triality.cleanup', 'triality.exportToFile', 'triality.importFromFile',
     // lesson — 主动集成点：AI在行动前/失败后调用
     'lesson.addLesson', 'lesson.getTopLessons',
     'lesson.beforeTask', 'lesson.recordFailure', 'lesson.getStats', 'lesson.getAll',
@@ -913,6 +1030,8 @@ class HeartFlow {
       'self', 'being', 'topics',
       'psychology', 'emotion',
       'truth', 'security', 'language',
+      'behavior',  // v2.0.19 行为模式系统
+      'persistence',  // v2.0.19 持久化层
       'stability', 'confidence', 'restraint', 'arbitration',
       'snapshot', 'error', 'embodied', 'wakeup', 'interactive', 'workflow',
       // New modules
