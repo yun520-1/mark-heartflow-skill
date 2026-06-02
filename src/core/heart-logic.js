@@ -5,7 +5,7 @@
 class HeartLogic {
   constructor() {
     this.name = 'HeartLogic';
-    this.version = '2.0.17';
+    this.version = '2.0.18';
     this.isRunning = true;
     this.thoughtHistory = [];
     this.lastInteraction = Date.now();
