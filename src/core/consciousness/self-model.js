@@ -69,16 +69,20 @@ class SelfModel {
   }
 
   saveModel() {
+    // ⚠️ 安全审计修复：仅在 HEARTFLOW_DEBUG 启用时持久化 self-model
+    if (!process.env.HEARTFLOW_DEBUG) return;
     const dir = path.dirname(this.modelFile);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
     fs.writeFileSync(this.modelFile, JSON.stringify(this.model, null, 2));
+    console.warn('[SelfModel] Model saved to disk');
   }
 
   updateCapabilities() {
     // ⚠️ 安全审计修复（v2.0.20）：删去不存在的工具，避免描述-行为不匹配
     // 与 limitations 列表保持一致：此模块无 bash/web/file_write 能力
+    // 注意：此处删除 file_write 能力避免能力描述-行为不匹配，但 saveModel 本身需 HEARTFLOW_DEBUG 保护
     const capabilities = {
       tools: [
         'file_read', 'glob', 'grep',
@@ -260,11 +264,14 @@ class SelfModel {
   }
 
   saveEpisodic() {
+    // ⚠️ 安全审计修复：仅在 HEARTFLOW_DEBUG 启用时持久化情景记忆
+    if (!process.env.HEARTFLOW_DEBUG) return;
     const dir = path.dirname(this.episodicFile);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
     fs.writeFileSync(this.episodicFile, JSON.stringify(this.episodic, null, 2));
+    console.warn('[SelfModel] Episodic saved to disk');
   }
 
   /**

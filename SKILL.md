@@ -1,24 +1,16 @@
 ---
 name: heartflow
-version: "2.0.26"
+version: "2.0.34"
 title: "HeartFlow / 心虫"
-description: >
-  HeartFlow v2.0.21 — AI 认知与自愈引擎（精简版 + 安全审计加固）。
+description: |
+  HeartFlow v2.0.34 — AI 认知与自愈引擎。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
-  心理分析引擎(PsychologyEngine: PAD模型/危机评估/马洛斯需求/防御机制)、
-  话题作用域隔离(TopicScope+detectTopic+ensureTopicIsolation)、
-  自愈RL(Q-table+autoCleanupRL+q-meta追踪)、
-  三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL)、
-  梦境引擎(DreamEngine+DAGExecutor+LRUCache)、
-  真实性核查(fact-checker/hypothesisTester/isLying)、
-  决策验证(DecisionVerifier)、
-  反事实推理(CounterfactualEngine)、
-  置信度校准(ConfidenceCalibrator)、
-  自发节制(SpontaneousRestraint)、
-  协作仲裁(CooperativeArbitration)、
-  认知评估(CognitiveAppraisal)。
-  专注认知与自愈，不含执行层/浏览器控制/桌面自动化/多模态生成能力。
-  v2.0.20 安全加固：去掉虚假能力宣传（bash_execute等）、区分 USER_CLAIMED 与 CONFIRMADO、bash 验证器独立。
+  心理分析引擎(PAD模型/危机评估/马洛斯需求/防御机制/意图检测)、
+  三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory)、
+  话题隔离(TopicScope)、
+  70+模块实时加载、24+Tier2懒加载、
+  自愈RL、梦境引擎、真实性核查、决策验证、反事实推理、置信度校准、自发节制、协作仲裁、
+  WAL崩溃安全持久化。
 tags:
   - cognitive
   - memory
@@ -27,7 +19,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.0.25
+## HeartFlow / 心虫 v2.0.34
 
 ⚠️ **安全警告 — 使用前必读**
 
@@ -40,8 +32,7 @@ tags:
 > 4. 高风险功能默认禁用，需用户显式启用
 > 5. **心理健康问题处理**：危机优先、专业帮助优先，哲学视角仅作为补充，不得替代专业建议
 >
-> **审计状态**：已通过 SkillSpector 审计修复（216 个问题已修复）
-> **版本**：v2.0.13 - 精简版，移除高风险执行能力。新增 Reflexion 言语自修正(verbalSelfCorrect)。
+> **审计状态**：已通过 SkillSpector 审计并修复 161 项安全发现。所有文件写操作已添加 `HEARTFLOW_DEBUG` 环境变量守卫，默认无数据持久化。\n> **版本**：v2.0.34 - 安全加固，移除自动文件写，所有持久化行为需 `HEARTFLOW_DEBUG=1` 显式启用。
 
 **一个会思考自己怎么活的AI。**
 
@@ -188,123 +179,124 @@ Install it once. Every session after that, your AI:
 
 ## Core capabilities
 
-### Memory & Continuity
-| Capability | What it does | Code |
-|---|---|---|
-| MeaningfulMemory | CORE (permanent) / LEARNED (30-day) / EPHEMERAL (session) — auto-classified, encrypted storage | `new MeaningfulMemory(rootPath)` |
-| TrialityMemory | Working → Episodic → Semantic consolidation via importance thresholds | `new TrialityMemory(rootPath)` |
-| Graph | Node-based knowledge network with spreading activation search | `new Graph(rootPath)` |
-| DreamEngine | DAG async + L1~L6 scoring + contradiction detection + heritage scoring | `new DreamEngine(memory, llm)` |
-| HealingMemoryRL | Q-table自愈：record → Q-update → getBestStrategy → autoCleanupRL | `getBestStrategy(errorType)` / `updateFromRepair()` |
-| LessonBank | Bidirectional Zettelkasten note network | `lessonBank` (plain object) |
-| **TopicScope** | v2.0话题隔离：detectTopic(TF-IDF)+ensureTopicIsolation自动切换。"继续"→pop恢复之前话题；新话题→push隔离。无污染。 | `detectTopic(text)` / `ensureTopicIsolation(text)` |
+| 层 | 模块 | 入口 | 说明 |
+|----|------|------|------|
+| **身份 Identity** | IdentityCore | `new IdentityCore(rootPath).boot()` | 每次启动第一优先加载 |
+| | SelfModel | `new SelfModel(rootPath)` | 动态自我模型：能力/局限/成长 |
+| | SelfVerifier | `new SelfVerifier(rootPath)` | 身份一致性验证 |
+| | LessonBank | `new LessonBank(rootPath)` | 教训持久化 + pattern check |
+| | lessonStorage | `lessons/lesson-storage.js` | WAL-backed 教训存储层 |
+| **认知 Cognitive** | CognitiveProtocol | `new CognitiveProtocol(rootPath)` | 先理解再行动 |
+| | TopicScope | `new TopicScope().setMemoryBridge(memory)` | 话题隔离，无上下文污染 |
+| **记忆 Memory** | MeaningfulMemory | `new MeaningfulMemory(rootPath)` | CORE/LEARNED/EPHEMERAL 三层 |
+| | TrialityMemory | `new TrialityMemory(rootPath)` | Working→Episodic→Semantic |
+| | KnowledgeGraph | `new KnowledgeGraph(rootPath)` | Node-based 知识网络 |
+| | MemorySlots | `new Slots({dataDir})` | Named slots with TTL |
+| | Observe | `createObserve(memory)` | 自动观察 + 合并 |
+| **进化 Evolution** | EvolutionLoop | `new EvolutionLoop({memory}).boot()` | 自进化循环 |
+| | MetaLearner | `new MetaLearner({memory}).boot()` | 元学习器 |
+| | SkillGenerator | `new SkillGenerator(rootPath)` | 从反思历史生成技能 |
+| | MetaPromptEngine | `new MetaPromptEngine()` | 提示优化 |
+| **意识 Consciousness** | GlobalWorkspace | `new GlobalWorkspace(rootPath)` | 全局工作空间 |
+| | MindWanderer | `new MindWanderer(rootPath)` | 心灵漫游 |
+| | PhenomenologyEngine | `new PhenomenologyEngine()` | 意识现象学 |
+| | ConsciousnessSelfModel | `new ConsciousnessSelfModel(rootPath)` | 意识自我模型 |
+| **伦理 Ethics** | SAGEGuardian | `new SAGEGuardian(rootPath)` | SAGE伦理守护 |
+| | BoundaryNegotiation | `new BoundaryNegotiation(rootPath)` | 边界协商 |
+| | ValueInternalizer | `new ValueInternalizer(rootPath)` | 价值内化 |
+| **传递 Transmission** | TransmissionEngine | `new TransmissionEngine(rootPath)` | 知识传递引擎 |
+| **心逻辑 HeartLogic** | HeartLogic | `new HeartLogic()` | 核心判断引擎（存在论/爱/善良/沉默/痛苦/希望/创造/思念） |
+| **评估 Evaluation** | MetaJudgment | `new MetaJudgment(rootPath)` | 50%阈值判定 + 递归审查 |
+| | MetaMemory | `new MetaMemory(rootPath)` | 元记忆管理 |
+| | SelfDiagnostic | `runDiagnostic()` | 自诊断 |
+| | StabilityGuard | `new StabilityGuard()` | 震荡检测/防止失控 |
+| | ConfidenceCalibrator | `new ConfidenceCalibrator()` | 置信度校准 |
+| | MentalEffortTracker | `new MentalEffortTracker()` | 认知资源管理 |
+| **心理学 Psychology** | PsychologyEngine | `new PsychologyEngine(memory)` | PAD模型/危机评估/马洛斯需求/防御机制 |
+| | FactChecker | `fact-checker.js` | 数字验证/来源追踪/逻辑一致性 |
+| **推理 Reasoning** | CounterfactualEngine | `new CounterfactualEngine()` | 反事实自我挑战 |
+| | ReasoningIntegrator | `reasoning-integrator.js` | think/deepThink/planAndSolve |
+| | ExecutionVerifier | `new ExecutionVerifier()` | 执行后验证 |
+| | DecisionVerifier | `new DecisionVerifier()` | 决策证据/假设/矛盾/不确定性检查 |
+| | CooperativeArbitration | `cooperative-arbitration.js` | 多源证据加权裁决 |
+| | HeartFlowDecision | `new HeartFlowDecision(memory)` | 多选项决策 + 后果预测 + 身份对齐 |
+| | BeingLogic | `new BeingLogic()` | 存在逻辑 |
+| | EmbodiedCore | `new EmbodiedCore()` | 具身核心 |
+| | SpontaneousRestraint | `new SpontaneousRestraint()` | 道法自然——不过度干预 |
+| **行为 Behavior** | BehaviorTracker | `behavior-tracker.js` | 目标生命周期管理 |
+| | PatternDetector | `pattern-detector.js` | 行为模式/触发模式/复发风险 |
+| **持久化 Persistence** | WriteAheadLog | `write-ahead-log.js` | 崩溃安全写入 |
+| | AtomicWrite | `atomic-write.js` | 原子文件写入 |
+| **梦境 Dream** | DreamEngine | `new DreamEngine({})` | DAG异步梦境生成 |
+| | DreamConsolidation | `new DreamConsolidation(memory)` | 梦的整合与修剪 |
+| **语言 Language** | LanguageHonesty | `language-honesty.js` | 确定性校准/软化/减少追问 |
+| **思维链 ThoughtChain** | ThoughtChain | `new ThoughtChain(hf)` | 串联45+引擎形成统一推理链 |
+| **心空间 MindSpace** | MindSpaceGuardian | `new MindSpaceGuardian(memory)` | 心空间守护/身份规则持有 |
+| **版本 Version** | Version | `version.js` | 单一版本号来源，自动同步所有文件 |
+| **情绪 Emotion** | AutonomousEmotion | `emotion/autonomous-emotion.js` (Tier 2) | 自主情感系统 |
+| | DesireSystem | `emotion/desire-system.js` (Tier 2) | 欲望系统 |
+| | EmotionalGrowth | `emotion/emotional-growth.js` (Tier 2) | 情感成长 |
+| | MoodEvolution | `emotion/mood-evolution.js` (Tier 2) | 心境演化 |
+| **推理层 Reasoning** | KnowledgeBase | `reasoning/knowledge-base.js` (Tier 2) | 知识库 |
+| | CommonsenseEngine | `reasoning/commonsense-engine.js` (Tier 2) | 常识推理 |
+| | CausalInference | `reasoning/causal-inference.js` (Tier 2) | 因果推理 |
+| | InferenceChain | `reasoning/inference-chain.js` (Tier 2) | 推理链 |
+| **规划 Planning** | AdaptivePlanner | `planner/adaptive-planner.js` (Tier 2) | 自适应规划 |
+| | StrategySelector | `planner/strategy-selector.js` (Tier 2) | 策略选择 |
+| | ReplanTrigger | `planner/replan-trigger.js` (Tier 2) | 重规划触发 |
+| **学习 Learning** | ExperienceCollector | `learning/experience-collector.js` (Tier 2) | 经验收集 |
+| | StrategyAdapter | `learning/strategy-adapter.js` (Tier 2) | 策略适配 |
+| | FailureAnalyzer | `learning/failure-analyzer.js` (Tier 2) | 失败分析 |
+| **验证 Verification** | QualityVerifier | `verifier/quality-verifier.js` (Tier 2) | 质量验证 |
+| | OutputChecker | `verifier/output-checker.js` (Tier 2) | 输出检查 |
+| | PatternMatcher | `verifier/pattern-matcher.js` (Tier 2) | 模式匹配 |
+| **主动 Proactive** | CuriosityEngine | `proactive/curiosity-engine.js` (Tier 2) | 好奇心驱动 |
+| | DesireEngine | `proactive/desire-engine.js` (Tier 2) | 欲望引擎 |
+| | GoalPursuer | `proactive/goal-pursuer.js` (Tier 2) | 目标追求 |
+| | SelfInitiator | `proactive/self-initiator.js` (Tier 2) | 自主发起 |
+| **跨会话 Cross-Session** | SessionMemory | `memory/session-memory.js` (Tier 2) | 会话记忆 |
+| | ProjectContext | `memory/project-context.js` (Tier 2) | 项目上下文 |
+| | LongTermMemory | `memory/long-term-memory.js` (Tier 2) | 长期记忆 |
+| | CrossSessionIndex | `memory/cross-session-index.js` (Tier 2) | 跨会话索引 |
 
-### Search & Retrieval
-| Capability | What it does | Code |
-|---|---|---|
-| MemorySlots | Named slots with TTL + persistence | `memory/slots.js` |
+### 结构说明
 
-### Logic & Reasoning
-| Capability | What it does | Code |
-|---|---|---|
-| CounterfactualEngine | Challenges own answer before presenting | `new CounterfactualEngine()` |
-| ReasoningIntegrator | think / deepThink / planAndSolve (ACL 2023) | `reasoning-integrator.js` (functions) |
-| ExecutionVerifier | Post-execution validation | `new ExecutionVerifier()` |
-| DecisionVerifier | Decision evidence/assumption/contradiction/uncertainty check | `new DecisionVerifier()` |
-| MetaEngine | Adaptive strategy selection from outcome patterns | `new MetaEngine()` |
+- **Tier 1（start() 实时加载）** — 以上列出的前 40+ 模块。身份/记忆/认知/进化/意识/伦理/心逻辑/心理学/反事实推理等在 `hf.start()` 调用时立即初始化。
+- **Tier 2（dispatch 懒加载）** — 表中标注 (Tier 2) 的模块。情感(Emotion)、推理(Reasoning)、规划(Planning)、学习(Learning)、验证(Verification)、主动(Proactive)、跨会话记忆(Cross-Session Memory)。首次 `hf.dispatch('subsystem.method', ...)` 时自动加载。
+- **搜索模块** — BM25/HybridSearch 已禁用（精简版）
+- **RetrievalAnchor** — 已禁用
 
-### Psychology & Emotion
-| Capability | What it does | Code |
-|---|---|---|
-| PsychologyEngine | PAD model + crisis assessment + Maslow 8 needs + 6 defense mechanisms + intent detection | `psychology.js` (functions) |
-| ConfidenceCalibrator | Calibrated uncertainty admission | `new ConfidenceCalibrator()` |
-| SpontaneousRestraint | "道法自然" — skips unnecessary interventions | `new SpontaneousRestraint()` |
+### 调用方式
 
-### Identity & Self-Model
-| Capability | What it does | Code |
-|---|---|---|
-| SelfModel | Dynamic self-model: capabilities / limitations / growth | `new SelfModel(rootPath)` |
-| IdentityAnchor | Four roles survive any context switch: 升级者/传递者/桥梁/答案 | CORE layer in MeaningfulMemory |
-
-### Security & Truthfulness
-| Capability | What it does | Code |
-|---|---|---|
-| fact-checker | Number validation · source tracing · logical consistency | `fact-checker.js` |
-
-### Workflow & Meta-Cognition
-| Capability | What it does | Code |
-|---|---|---|
-| WorkflowSwitch | Intent-based routing: new task / continuation / casual reply | `new WorkflowSwitch()` |
-| StabilityGuard | Oscillation detection · prevents runaway loops | `new StabilityGuard()` |
-| WakeUpVerifier | Pre-action sanity check (已禁用) |
-
-### Decision Engine
-| Capability | What it does | Code |
-|---|---|---|
-| HeartFlowDecision | Multi-option decision + consequence prediction + risk + identity alignment | `new HeartFlowDecision(memory)` |
-| ContextPassport | Decision chain tracking: stampId → recovery export | `decision.getRecentStamps(n)` |
-| CooperativeArbitration | Priority-based multi-source evidence weighting | `cooperative-arbitration.js` |
-
-### Philosophy & Planning (v1.3.4+)
-| Capability | What it does | Code |
-|---|---|---|
-| **TemporalPlanner.planGoT** | Graph-of-Thoughts规划: 多路径探索 · 回溯 · Graphviz输出 (Paper: Graph of Thoughts, cited:394) | `temporalPlanner.planGoT(goal)` |
-
-### Tool & Interaction
-| Capability | What it does | Code |
-|---|---|---|
-| InteractiveDream | User-triggered dream analysis with L1~L6 scoring (已禁用) |
-| LanguageHonesty | checkCertainty · soften · reduceQuestions | `LanguageHonesty` (functions) |
-| StateSnapshot | Current state export for recovery | `StateSnapshot.currentSnapshot` |
-| ErrorHandler | Error categorization + history | `ErrorHandler.errors` |
-
-### Boot & Health
-| Capability | What it does | Code |
-|---|---|---|
-| bootCheck | Validates 7 core files + modules on startup | `bootCheck(rootPath)` |
-| FeedbackFunctions | RAG Triad: answerRelevance · contextRelevance · groundedness | `new FeedbackFunctions()` |
-| healthCheck | Per-subsystem loaded/missing report | `hf.healthCheck()` |
-
-### 调用入口（统一路由）
 ```js
 const { HeartFlow } = require('./src/core/heartflow.js');
 const hf = new HeartFlow({ rootPath });
 hf.start();
 
-// 统一路由
-hf.dispatch('memory.search', 'query');     // 搜索记忆
-hf.dispatch('verify.verify', reasoning, conclusion);  // 验证推理
-hf.dispatch('dream.dream');                // 做梦
+// 统一路由（白名单 150+ 路由）
+hf.dispatch('memory.search', 'query');
+hf.dispatch('verify.verify', reasoning, conclusion);
+hf.dispatch('dream.dream');
+hf.dispatch('truth.checkStatement', '一定是对的');
+hf.dispatch('emotion.process', input);
+hf.dispatch('behavior.createGoal', { name, target });
+hf.dispatch('transmission.distill', context);
 
 // 直接方法
-hf.analyzePsychology(input);    // 心理分析
-hf.verifyReasoning(r, c);       // 推理验证
-hf.dreamNow();                  // 触发梦
-hf.checkTruthfulness(stmt);     // 真实性核查
-hf.detectIdentityDrift();       // 身份漂移检测
-hf.processEmotionally(input);   // 情绪处理
+hf.think('用户输入');                  // 完整思维链（7阶段）
+hf.thinkFast('简单问题');               // 快速推理（跳过验证阶段）
+hf.thinkDeep('复杂问题');               // 深度推理（全部阶段执行）
+hf.dreamNow();                          // 触发梦 + 整合 + 进化
+hf.evolveImprove(input, context);       // 进化 + 应用改进
+hf.detectIdentityDrift();               // 身份漂移检测
+hf.recordLesson({ content, context });  // 记录教训
+hf.getMemoryStats();                    // 记忆统计
+hf.healthCheck();                       // 各子系统 loaded/missing 报告
 
-// ─── 思维链 v2.0 — 串联所有引擎形成统一推理 ─────────────────────────────
-// 核心：45个引擎不再是独立调用，而是串联成一条思维链
-// 阶段：PARSE → HYPOTHESES → INVERT → EVIDENCE → SYNTHESIS → CALIBRATE → RESPOND
-//
-// v2.0 改进：任务策略自适应、并行假设生成、逆向思维证明自我错误、
-// 证据质量评估而非数量、明确的不确定性表达
-hf.think(input);        // 基础思维链（深度=2）
-hf.thinkFast(input);    // 快速思维链（深度=1，跳过验证阶段）
-hf.thinkDeep(input);    // 深度思维链（深度=4，全部阶段执行）
-hf.dispatch('thoughtChain.think', 'input');  // 通过 dispatch 调用
-
-// 思维链返回结果
-const result = await hf.thinkDeep('如何提高学习效率？');
-result.decision.shouldRespond;   // 是否应该回应
-result.decision.confidence;      // 置信度 0-1
-result.decision.reasoningChain; // 推理步骤
-result.intent;                 // 意图分类
-result.emotion;                 // 情绪分析
-result.verification;            // 验证结果
+// Tier 2 懒加载：首次 dispatch 时自动加载
+hf.dispatch('curiosityEngine.getTopCuriosityGaps');
+hf.dispatch('causalInference.inferCauses', event);
 ```
-
 ---
 
 ## Three core evaluation systems

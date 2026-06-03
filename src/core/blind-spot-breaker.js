@@ -236,6 +236,7 @@ class BlindSpotBreaker {
 
   /**
    * 检测是否为养育问题
+   * ⚠️ 安全修复：至少需要3个关键词匹配才触发养育分析，避免过度推断
    */
   _isParentingProblem(problem) {
     const lowerProblem = problem.toLowerCase();
@@ -245,7 +246,7 @@ class BlindSpotBreaker {
         matchCount++;
       }
     }
-    return matchCount >= 1;
+    return matchCount >= 3;
   }
 
   /**
@@ -258,6 +259,7 @@ class BlindSpotBreaker {
    * - Fonagy 1997 - 反思是依恋安全的基础
    */
   _assessParentingReflection(problem, deconstruction, confidence) {
+    // ⚠️ 安全修复：此方法仅在_input含有至少3个育儿关键词时触发，且输出标记为'用户声明'级别
     const result = {
       isParentingProblem: false,
       triggered: false,

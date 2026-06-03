@@ -27,7 +27,12 @@ class BoundaryNegotiation {
     }
   }
 
+  /**
+   * ⚠️ 安全审计修复：仅在 HEARTFLOW_DEBUG 启用时持久化权限到磁盘
+   * 防止生产环境下未经用户同意的权限文件写入
+   */
   savePermissions() {
+    if (!process.env.HEARTFLOW_DEBUG) return;
     fs.writeFileSync(this.permissionsFile, JSON.stringify(this.permissions, null, 2));
   }
 
