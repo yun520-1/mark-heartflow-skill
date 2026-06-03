@@ -39,6 +39,23 @@ class SpontaneousRestraint {
       /真好啊|太棒了|太美了/,
     ];
 
+    // 修辞性问题：用户提问但并非寻求答案
+    this.rhetoricalSignals = [
+      // 汉语常见修辞句式
+      /谁不想.*呢|谁不.*呢|谁没有.*呢/,
+      /有谁.*吗|有谁.*呢/,
+      /难道.*吗|难道.*么|难不成/,
+      /何必.*呢|何苦.*呢|何不|何须/,
+      /不是.*吗|不是吗|不也是/,
+      /哪有.*啊|哪有.*呢/,
+      /还不是.*吗|还不是/,
+      /有什么用|有什么意义|有什么意思|有什么用呢/,
+      // 反问句式
+      /关.*什么事|跟.*有什么关系|凭什么/,
+      // 绝望反问
+      /又能怎样|又能如何|还能怎么办/,
+    ];
+
     // 需要最小干预的情况
     this.minimalSignals = [
       // 用户在倾诉，只需要倾听
@@ -148,6 +165,18 @@ class SpontaneousRestraint {
         result.interventionLevel = 'silent';
         result.restraintReason = '用户不需要答案，情绪/确认/放弃优先';
         result.reasons.push('检测到"不需要答案"信号');
+        this._record('silent', userMessage);
+        return result;
+      }
+    }
+
+    // 1b. 检查修辞性问题（提问但不需要答案）
+    for (const signal of this.rhetoricalSignals) {
+      if (signal.test(userMessage)) {
+        result.shouldAnswer = false;
+        result.interventionLevel = 'silent';
+        result.restraintReason = '修辞性问题，用户在表达情绪而非寻求答案';
+        result.reasons.push('检测到修辞性问题');
         this._record('silent', userMessage);
         return result;
       }
