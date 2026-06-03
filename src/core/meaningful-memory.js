@@ -140,8 +140,18 @@ class MeaningfulMemory {
   }
   
   _doSave() {
-    // [安全修复] 仅在 HEARTFLOW_DEBUG 启用时持久化到磁盘
-    if (!process.env.HEARTFLOW_DEBUG) return;
+    // [安全修复 v2] 数据最小化 + 用户同意控制
+    // 1. 检查数据最小化环境变量
+    if (!process.env.HEARTFLOW_DATA_MINIMIZATION) {
+      console.warn('[MeaningfulMemory] 持久化被阻止: HEARTFLOW_DATA_MINIMIZATION 未启用');
+      return;
+    }
+    
+    // 2. 检查用户同意（通过环境变量或配置文件）
+    if (!process.env.HEARTFLOW_USER_CONSENT && !this._hasUserConsent()) {
+      console.warn('[MeaningfulMemory] 持久化被阻止: 需要用户同意');
+      return;
+    }
     
     const exportPath = this._getExportPath();
     try {
@@ -150,17 +160,79 @@ class MeaningfulMemory {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      const data = {
-        core: this.layers.core,
-        learned: this.layers.learned,
-        ephemeral: this.layers.ephemeral,
+      
+      // 3. 数据最小化 - 只保留必要字段
+      const minimizedData = {
+        core: this.layers.core.map(m => this._minimizeMemory(m)),
+        learned: this.layers.learned.map(m => this._minimizeMemory(m)),
+        ephemeral: this.layers.ephemeral.map(m => this._minimizeMemory(m)),
         stats: this.stats,
         exportedAt: new Date().toISOString()
       };
-      fs.writeFileSync(exportPath, JSON.stringify(data, null, 2));
+      
+      fs.writeFileSync(exportPath, JSON.stringify(minimizedData, null, 2));
       this.stats.lastSave = new Date().toISOString();
+      console.log(`[MeaningfulMemory] 已保存 ${this.stats.totalMemories} 条记忆 (数据最小化已启用)`);
     } catch (e) {
       console.warn('[MeaningfulMemory] 保存失败:', e.message);
+    }
+  }
+  
+  /**
+   * 数据最小化 - 只保留必要字段
+   */
+  _minimizeMemory(memory) {
+    return {
+      id: memory.id,
+      timestamp: memory.timestamp,
+      layer: memory.layer,
+      // 不存储完整内容，只存储哈希
+      content_hash: crypto.createHash('sha256').update(memory.content || '').digest('hex').substring(0, 16),
+      summary: memory.summary,
+      importance: memory.importance,
+      metadata: {
+        // 只保留非敏感元数据
+        topic: memory.metadata?.topic,
+        lesson: memory.metadata?.lesson,
+        durable: memory.metadata?.durable
+      },
+      createdAt: memory.createdAt,
+      updatedAt: memory.updatedAt
+    };
+  }
+  
+  /**
+   * 检查是否有用户同意
+   */
+  _hasUserConsent() {
+    // 检查同意文件
+    const consentFile = path.join(DATA_DIR, '.user-consent');
+    try {
+      return fs.existsSync(consentFile);
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  /**
+   * 记录用户同意
+   */
+  recordUserConsent() {
+    const consentFile = path.join(DATA_DIR, '.user-consent');
+    try {
+      const dir = path.dirname(consentFile);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(consentFile, JSON.stringify({
+        consent: true,
+        timestamp: new Date().toISOString(),
+        version: '1.0'
+      }));
+      return true;
+    } catch (e) {
+      console.warn('[MeaningfulMemory] 无法记录用户同意:', e.message);
+      return false;
     }
   }
   

@@ -80,49 +80,111 @@ class SelfEvolutionCore {
 
   /**
    * 核心循环: 目标 → 行动 → 学习 → 反思 → 改进
+   * 增加退出条件：最大迭代次数 + 收敛检测
+   * @param {string} input - 输入
+   * @param {object} context - 上下文
+   * @param {object} options - 迭代控制选项
+   * @param {number} options.maxIterations - 最大迭代次数（默认10）
+   * @param {number} options.convergenceThreshold - 收敛阈值（默认0.01 = 1%）
    */
-  async evolve(input, context = {}) {
+  async evolve(input, context = {}, options = {}) {
     const cycleStart = Date.now();
+    const maxIterations = options.maxIterations || 10;
+    const convergenceThreshold = options.convergenceThreshold || 0.01; // 1%
     
-    // 1. 目标生成或更新
-    const goals = this.generateGoals(input, context);
+    let previousImprovement = Infinity;
+    let iterationCount = 0;
+    let converged = false;
+    const iterationHistory = [];
     
-    // 2. 行动计划制定
-    const plan = this.createPlan(goals, context);
+    // 迭代循环，直到达到最大次数或收敛
+    while (iterationCount < maxIterations && !converged) {
+      iterationCount++;
+      const iterationStart = Date.now();
+      
+      console.log(`[SelfEvolution] 迭代 ${iterationCount}/${maxIterations}`);
+      
+      // 1. 目标生成或更新
+      const goals = this.generateGoals(input, context);
+      
+      // 2. 行动计划制定
+      const plan = this.createPlan(goals, context);
+      
+      // 3. 执行与学习
+      const learning = await this.learn(input, context);
+      
+      // 4. 反思与总结
+      const reflection = this.reflect(learning, context);
+      
+      // 5. 改进建议
+      const improvements = this.suggestImprovements(reflection);
+      
+      // 6. 计算本次改进的度量
+      const currentImprovement = this._calculateImprovement(learning, reflection, improvements);
+      iterationHistory.push({
+        iteration: iterationCount,
+        improvement: currentImprovement,
+        time: Date.now() - iterationStart
+      });
+      
+      // 7. 收敛检测：如果改进小于阈值，停止迭代
+      if (iterationCount > 1) {
+        const improvementDelta = Math.abs(previousImprovement - currentImprovement);
+        if (improvementDelta < convergenceThreshold) {
+          console.log(`[SelfEvolution] 收敛检测: 改进 ${improvementDelta.toFixed(4)} < 阈值 ${convergenceThreshold}, 停止迭代`);
+          converged = true;
+        }
+      }
+      
+      previousImprovement = currentImprovement;
+      
+      // 8. 更新状态（仅在最后一次迭代或收敛时保存）
+      if (converged || iterationCount === maxIterations) {
+        this.updateGrowth(learning, reflection);
+        
+        const cycleTime = Date.now() - cycleStart;
+        this.state.learningHistory.push({
+          timestamp: new Date().toISOString(),
+          input: input.substring(0, 100),
+          cycleTime,
+          goalsCount: goals.length,
+          improvementsCount: improvements.length,
+          iterations: iterationCount,
+          converged,
+          finalImprovement: currentImprovement
+        });
+        
+        this.saveState();
+        
+        return {
+          version: this.version,
+          goals,
+          plan,
+          learning: learning.summary,
+          reflection: reflection.insights,
+          improvements,
+          growthMetrics: this.state.growthMetrics,
+          cycleTime,
+          iterations: iterationCount,
+          converged,
+          improvement: currentImprovement,
+          iterationHistory
+        };
+      }
+    }
+  }
+  
+  /**
+   * 计算改进度量（用于收敛检测）
+   * @private
+   */
+  _calculateImprovement(learning, reflection, improvements) {
+    // 简单的改进度量：基于新知识数量 + 洞察数量 + 改进建议数量
+    const knowledgeScore = (learning.newKnowledge || []).length * 0.1;
+    const insightScore = (reflection.insights || []).length * 0.2;
+    const improvementScore = (improvements || []).length * 0.15;
     
-    // 3. 执行与学习
-    const learning = await this.learn(input, context);
-    
-    // 4. 反思与总结
-    const reflection = this.reflect(learning, context);
-    
-    // 5. 改进建议
-    const improvements = this.suggestImprovements(reflection);
-    
-    // 6. 更新状态
-    this.updateGrowth(learning, reflection);
-    
-    const cycleTime = Date.now() - cycleStart;
-    this.state.learningHistory.push({
-      timestamp: new Date().toISOString(),
-      input: input.substring(0, 100),
-      cycleTime,
-      goalsCount: goals.length,
-      improvementsCount: improvements.length
-    });
-    
-    this.saveState();
-    
-    return {
-      version: this.version,
-      goals,
-      plan,
-      learning: learning.summary,
-      reflection: reflection.insights,
-      improvements,
-      growthMetrics: this.state.growthMetrics,
-      cycleTime
-    };
+    return knowledgeScore + insightScore + improvementScore;
   }
 
   /**
