@@ -211,14 +211,14 @@ Install it once. Every session after that, your AI:
 | | ValueInternalizer | `new ValueInternalizer(rootPath)` | 价值内化 |
 | **传递 Transmission** | TransmissionEngine | `new TransmissionEngine(rootPath)` | 知识传递引擎 |
 | **心逻辑 HeartLogic** | HeartLogic | `new HeartLogic()` | 核心判断引擎（存在论/爱/善良/沉默/痛苦/希望/创造/思念） |
-| **评估 Evaluation** | MetaJudgment | `new MetaJudgment(rootPath)` | 50%阈值判定 + 递归审查 |
+| **评估 Evaluation** | MetaJudgment | `judgment.js` (src/core/) | 50%阈值判定 + 递归审查 |
 | | MetaMemory | `new MetaMemory(rootPath)` | 元记忆管理 |
 | | SelfDiagnostic | `runDiagnostic()` | 自诊断 |
 | | StabilityGuard | `new StabilityGuard()` | 震荡检测/防止失控 |
 | | ConfidenceCalibrator | `new ConfidenceCalibrator()` | 置信度校准 |
 | | MentalEffortTracker | `new MentalEffortTracker()` | 认知资源管理 |
-| **心理学 Psychology** | PsychologyEngine | `new PsychologyEngine(memory)` | PAD模型/危机评估/马洛斯需求/防御机制 |
-| | FactChecker | `fact-checker.js` | 数字验证/来源追踪/逻辑一致性 |
+| **心理学 Psychology** | PsychologyEngine | `psychology/engine.js` | PAD模型/危机评估/马洛斯需求/防御机制 |
+| | FactChecker | `src/core/fact-checker.js` | 数字验证/来源追踪/逻辑一致性 |
 | **推理 Reasoning** | CounterfactualEngine | `new CounterfactualEngine()` | 反事实自我挑战 |
 | | ReasoningIntegrator | `reasoning-integrator.js` | think/deepThink/planAndSolve |
 | | ExecutionVerifier | `new ExecutionVerifier()` | 执行后验证 |
@@ -230,8 +230,8 @@ Install it once. Every session after that, your AI:
 | | SpontaneousRestraint | `new SpontaneousRestraint()` | 道法自然——不过度干预 |
 | **行为 Behavior** | BehaviorTracker | `behavior-tracker.js` | 目标生命周期管理 |
 | | PatternDetector | `pattern-detector.js` | 行为模式/触发模式/复发风险 |
-| **持久化 Persistence** | WriteAheadLog | `write-ahead-log.js` | 崩溃安全写入 |
-| | AtomicWrite | `atomic-write.js` | 原子文件写入 |
+| **持久化 Persistence** | WriteAheadLog | `src/utils/write-ahead-log.js` | 崩溃安全写入 |
+| | AtomicWrite | `src/utils/atomic-write.js` | 原子文件写入 |
 | **梦境 Dream** | DreamEngine | `new DreamEngine({})` | DAG异步梦境生成 |
 | | DreamConsolidation | `new DreamConsolidation(memory)` | 梦的整合与修剪 |
 | **语言 Language** | LanguageHonesty | `language-honesty.js` | 确定性校准/软化/减少追问 |

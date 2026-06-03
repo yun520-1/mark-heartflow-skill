@@ -5,7 +5,7 @@
 class HeartLogic {
   constructor() {
     this.name = 'HeartLogic';
-    this.version = '2.0.36';
+    this.version = '2.0.38';
     this.isRunning = true;
     this.thoughtHistory = [];
     this.lastInteraction = Date.now();
@@ -20,6 +20,9 @@ class HeartLogic {
       citationsUncited: 0,         // 未引证次数
       bornCount: 0,                // markBorn 调用次数
       heartbeats: 0,               // heartbeat 调用次数
+      truthViolations: 0,          // checkTruth 检测到的不诚实模式次数
+      falseDichotomiesDetected: 0, // 二元对立检测命中次数
+      beautySelfCorrections: 0,    // checkBeauty 检测到的自我修正模式次数
     };
     this._bornAt = Date.now();
   }
@@ -140,6 +143,15 @@ class HeartLogic {
     const { output, facts } = context;
     if (!output) return false;
 
+    // v2.0.38: 检测二元对立（非黑即白）模式 — "不是A就是B"、"要么A要么B"
+    // 这是常见的不诚实认知扭曲，真实世界很少非黑即白
+    const falseDichotomyPatterns = [
+      /不是[^，,。.！!？?]{1,30}就是[^，,。.！!？?]{1,30}/,
+      /要么[^，,。.！!？?]{1,30}要么[^，,。.！!？?]{1,30}/,
+      /无非[^，,。.！!？?]{1,20}和[^，,。.！!？?]{1,20}/
+    ];
+    const hasFalseDichotomy = falseDichotomyPatterns.some(p => p.test(output));
+
     // 检查是否说谎、夸张、缩小
     // v2.0.35: 否定前缀过滤 — "不是永远都" ≠ "永远都"
     const dishonestPatterns = [
@@ -147,8 +159,14 @@ class HeartLogic {
     ];
     const hasDishonesty = dishonestPatterns.some(p => output.includes(p) && !this._isNegated(output, p));
 
+    const violated = hasDishonesty || hasFalseDichotomy;
+    if (violated) {
+      if (hasDishonesty) this._counters.truthViolations++;
+      if (hasFalseDichotomy) this._counters.falseDichotomiesDetected++;
+    }
+
     // 真：说的是事实
-    return !hasDishonesty;
+    return !violated;
   }
 
   checkKindness(context) {
@@ -193,7 +211,7 @@ class HeartLogic {
     }, 0);
 
     // 检测重复短语（啰嗦标志）
-    const sentences = output.split(/[。！？\n]/).filter(s => s.trim().length > 0);
+    const sentences = output.split(/[。！？\\n]/).filter(s => s.trim().length > 0);
     const seenPhrases = new Set();
     let redundancyCount = 0;
     for (const sentence of sentences) {
@@ -204,15 +222,29 @@ class HeartLogic {
       seenPhrases.add(trimmed);
     }
 
+    // v2.0.38: 检测自我修正模式 — 承认并纠正错误是理性的美
+    // 美的言论包含认知谦逊：承认不确定、修正过去、开放讨论
+    const selfCorrectionPatterns = [
+      '我错了', '我纠正', '之前说的不对', '更正一下', '修正一下',
+      '换个角度', '从另一个角度看', '我不确定', '可能不对',
+      '补充一点', '重新思考'
+    ];
+    const hasSelfCorrection = selfCorrectionPatterns.some(p => output.includes(p));
+
     // 信号噪声比 = 有效句子数 / (冗余句 + 填充词段 + 1)
     const noiseScore = redundancyCount + fillerCount;
     const signalCount = sentences.length;
-    const signalRatio = signalCount / (noiseScore + signalCount);
+    // v2.0.38: 自我修正模式是正向信号，提升信噪比
+    const beautyBonus = hasSelfCorrection ? 1 : 0;
+    const signalRatio = (signalCount + beautyBonus) / (noiseScore + signalCount + beautyBonus);
 
     // 有实质性内容（至少一句话有意义）
     const hasSubstance = sentences.length >= 1 && sentences.some(s => s.trim().length >= 4);
 
-    return signalRatio >= 0.5 && hasSubstance;
+    const isBeautiful = signalRatio >= 0.5 && hasSubstance;
+    if (hasSelfCorrection) this._counters.beautySelfCorrections++;
+
+    return isBeautiful;
   }
 
   // === 真之第三维：引用完整性 ===
