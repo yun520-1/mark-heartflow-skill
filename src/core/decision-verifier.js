@@ -84,7 +84,7 @@ class DecisionVerifier {
       evidence: Array.isArray(record.evidence) ? record.evidence : (record.evidence ? [record.evidence] : []),
       risks: Array.isArray(record.risks) ? record.risks : (record.risk ? [record.risk] : []),
       alternatives: Array.isArray(record.alternatives) ? record.alternatives : [],
-      confidence: typeof record.confidence === 'number' ? record.confidence : Number(record.confidence || 0.5),
+      confidence: typeof record.confidence === 'number' && !Number.isNaN(record.confidence) ? record.confidence : Number(record.confidence || 0.5),
       expectedOutcome: record.expectedOutcome || '',
       userGoal: record.userGoal || '',
       constraints: Array.isArray(record.constraints) ? record.constraints : []
@@ -231,6 +231,10 @@ class DecisionVerifier {
     // 4. 验证覆盖率
     const coverage = this._checkCoverage(norm);
     checks.push(coverage);
+
+    // 5. 偏差检测放大: 决策越短/无理由 → 风险越高
+    const amplification = this._checkAmplification(norm);
+    checks.push(amplification);
 
     const passed = checks.filter(c => c.ok).length;
     const total = checks.length;
@@ -398,6 +402,34 @@ class DecisionVerifier {
       reason: ok ? 'decision covers required dimensions' : 'decision may be incomplete',
       hint: ok ? null : '决策可能缺少目标维度（操作对象/约束条件）'
     };
+  }
+
+  /**
+   * 偏差检测放大：决策越短 → 隐含风险越高，无理由决策标记为不通过
+   * 防止空洞或占位决策通过验证
+   */
+  _checkAmplification(norm) {
+    const { decision, reason } = norm;
+    const decisionLen = String(decision).length;
+    const reasonLen = String(reason).length;
+
+    // 空决策 = 严重问题
+    if (decisionLen === 0) {
+      return { ok: false, type: 'amplification', reason: 'empty decision cannot be verified', hint: '决策不能为空' };
+    }
+
+    // 过短决策（<5字符）且无理由支撑 → 可疑
+    if (decisionLen < 5 && reasonLen < 5) {
+      return { ok: false, type: 'amplification', reason: 'short decision without rationale', hint: `决策仅 "${String(decision)}"（${decisionLen}字符），建议补充理由` };
+    }
+
+    // 只有决策标记词（"OK"/"done"/"好的"）不够
+    const markerOnly = /^(ok|okay|done|好的|可以|收到)$/i.test(String(decision).trim());
+    if (markerOnly) {
+      return { ok: false, type: 'amplification', reason: 'marker-only decision lacks substance', hint: '单纯状态确认不能作为决策通过验证' };
+    }
+
+    return { ok: true, type: 'amplification', reason: 'decision length is adequate' };
   }
 
   /**
