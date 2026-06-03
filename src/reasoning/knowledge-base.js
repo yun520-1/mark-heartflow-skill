@@ -9,7 +9,23 @@ const path = require('path');
 
 class KnowledgeBase {
   constructor(options = {}) {
-    this.storagePath = options.storagePath || path.join(__dirname, '../../data/knowledge');
+    // 路径验证 - 防止路径遍历攻击
+    const inputPath = options.storagePath || path.join(__dirname, '../../data/knowledge');
+    const resolvedPath = path.resolve(inputPath);
+    const normalizedPath = path.normalize(resolvedPath);
+    
+    // 验证路径安全性
+    if (normalizedPath !== resolvedPath || !path.isAbsolute(resolvedPath)) {
+      throw new Error('[KnowledgeBase] Invalid storage path');
+    }
+    
+    // 确保路径在预期范围内
+    const expectedBase = path.resolve(__dirname, '..', '..', 'data');
+    if (!resolvedPath.startsWith(expectedBase)) {
+      throw new Error('[KnowledgeBase] Storage path outside allowed directory');
+    }
+    
+    this.storagePath = resolvedPath;
     this.categories = new Map();
     this.autoSave = options.autoSave !== false;
     this._ensureStoragePath();
