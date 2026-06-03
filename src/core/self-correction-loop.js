@@ -17,7 +17,7 @@ const selfCorrectionLoop = {
       timestamp: new Date().toISOString()
     };
     this.corrections.push(entry);
-    this._persistAsync().catch(e => console.error('[SelfCorrection] Persist failed:', e.message));
+    this._persist().catch(e => console.error('[SelfCorrection] Persist failed:', e.message));
     return entry;
   },
 
@@ -61,8 +61,10 @@ const selfCorrectionLoop = {
   },
 
   // 用户纠正回调
-  onUserCorrection(type, original, userCorrection) {
-    const entry = this.record(type, original, userCorrection, 'user_feedback');
+  // ⚠️ 安全修复：await this.record() 确保获取实际 entry 而非 Promise 对象
+  // 同时修复 _persistAsync() -> _persist()（_persistAsync 未定义）
+  async onUserCorrection(type, original, userCorrection) {
+    const entry = await this.record(type, original, userCorrection, 'user_feedback');
     return {
       recorded: true,
       correctionId: entry.id,

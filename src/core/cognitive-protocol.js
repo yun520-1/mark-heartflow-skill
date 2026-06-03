@@ -66,8 +66,10 @@ class CognitiveProtocol {
       currentSession: path.join(this.dataDir, 'cognitive-current-session.json')
     };
 
-    // 确保数据目录存在
-    this._ensureDataDir();
+    // 确保数据目录存在（仅在 HEARTFLOW_DEBUG 模式下创建）
+    if (process.env.HEARTFLOW_DEBUG) {
+      this._ensureDataDir();
+    }
 
     // 问题存储（问题+根因）- 在 files 初始化之后
     this.problemBank = this._loadProblemBank();
@@ -585,8 +587,12 @@ class CognitiveProtocol {
     return [];
   }
 
+  /**
+   * ⚠️ 安全审计修复：仅在 HEARTFLOW_DEBUG 启用时持久化问题银行到磁盘
+   */
   _saveProblemBank() {
     try {
+      if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.problemBank, JSON.stringify(this.problemBank, null, 2));
     } catch (e) {
       console.warn('[CognitiveProtocol] 保存问题银行失败:', e.message);
@@ -604,24 +610,36 @@ class CognitiveProtocol {
     return [];
   }
 
+  /**
+   * ⚠️ 安全审计修复：仅在 HEARTFLOW_DEBUG 启用时持久化暂停任务到磁盘
+   */
   _savePausedTasks() {
     try {
+      if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.pausedTasks, JSON.stringify(this.pausedTasks, null, 2));
     } catch (e) {
       console.warn('[CognitiveProtocol] 保存暂停任务失败:', e.message);
     }
   }
 
+  /**
+   * ⚠️ 安全审计修复：仅在 HEARTFLOW_DEBUG 启用时持久化检查点到磁盘
+   */
   _saveCheckpoints() {
     try {
+      if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.checkpoints, JSON.stringify(this.checkpoints, null, 2));
     } catch (e) {
       console.warn('[CognitiveProtocol] 保存检查点失败:', e.message);
     }
   }
 
+  /**
+   * ⚠️ 安全审计修复：仅在 HEARTFLOW_DEBUG 启用时持久化当前会话到磁盘
+   */
   _saveCurrentSession() {
     try {
+      if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.currentSession, JSON.stringify({
         currentTask: this.currentTask,
         currentLevel: this.currentLevel,
