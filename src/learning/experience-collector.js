@@ -9,7 +9,23 @@ const path = require('path');
 
 class ExperienceCollector {
   constructor(options = {}) {
-    this.storagePath = options.storagePath || path.join(__dirname, '../../data/experiences');
+    // 路径验证 - 防止路径遍历攻击
+    const inputPath = options.storagePath || path.join(__dirname, '../../data/experiences');
+    const resolvedPath = path.resolve(inputPath);
+    const normalizedPath = path.normalize(resolvedPath);
+    
+    // 验证路径安全性
+    if (normalizedPath !== resolvedPath || !path.isAbsolute(resolvedPath)) {
+      throw new Error('[ExperienceCollector] Invalid storage path');
+    }
+    
+    // 确保路径在预期范围内
+    const expectedBase = path.resolve(__dirname, '..', '..', 'data');
+    if (!resolvedPath.startsWith(expectedBase)) {
+      throw new Error('[ExperienceCollector] Storage path outside allowed directory');
+    }
+    
+    this.storagePath = resolvedPath;
     this.experiences = new Map();
     this.maxExperiences = options.maxExperiences || 1000;
     this.autoSave = options.autoSave !== false;

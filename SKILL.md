@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "2.0.34"
+version: "2.0.37"
 title: "HeartFlow / 心虫"
 description: |
-  HeartFlow v2.0.34 — AI 认知与自愈引擎。
+  HeartFlow v2.0.37 — AI 认知与自愈引擎。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PAD模型/危机评估/马洛斯需求/防御机制/意图检测)、
   三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory)、
@@ -11,6 +11,10 @@ description: |
   70+模块实时加载、24+Tier2懒加载、
   自愈RL、梦境引擎、真实性核查、决策验证、反事实推理、置信度校准、自发节制、协作仲裁、
   WAL崩溃安全持久化。
+
+  **已知低危未修复项（~64个）**：路径遍历/命令注入/XSS/敏感信息泄露/资源耗尽风险。
+  已修复：高危5个 + 中危6个 + 低危第一批5个（6个文件）+ 低危第二批5个（10个文件）+ shouldBeSilent危机检测。
+  未修复低危项不影响核心功能，生产环境建议设置 HEARTFLOW_DATA_MINIMIZATION=1 + NODE_ENV=production。
 tags:
   - cognitive
   - memory
