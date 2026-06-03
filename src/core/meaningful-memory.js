@@ -140,6 +140,9 @@ class MeaningfulMemory {
   }
   
   _doSave() {
+    // [安全修复] 仅在 HEARTFLOW_DEBUG 启用时持久化到磁盘
+    if (!process.env.HEARTFLOW_DEBUG) return;
+    
     const exportPath = this._getExportPath();
     try {
       // 确保目录存在

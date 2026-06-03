@@ -130,12 +130,46 @@ AI: [激活 ${pattern.skillName} 技能]
     return skillContent;
   }
 
-  async generateSkill(pattern) {
+  async generateSkill(pattern, options = {}) {
+    // [A01] 安全修复: 自我修改需要用户同意
+    if (!options.userConsent) {
+      return { 
+        success: false, 
+        reason: 'user_consent_required',
+        message: 'Self-modification requires explicit user consent. Please set options.userConsent = true'
+      };
+    }
+
+    // [A02] 安全修复: 限制只能修改自己的 skill 目录，不能修改其他 skill
     const skillDir = path.join(this.skillsDir, pattern.skillDir);
     
+    // 规范化路径，防止路径遍历攻击
+    const resolvedSkillDir = path.resolve(skillDir);
+    const resolvedSkillsDir = path.resolve(this.skillsDir);
+    
+    // 确保目标目录在允许的 skills 目录下
+    if (!resolvedSkillDir.startsWith(resolvedSkillsDir)) {
+      return {
+        success: false,
+        reason: 'path_traversal_denied',
+        message: 'Cannot modify files outside of the skills directory'
+      };
+    }
+    
+    // 不允许修改其他已存在的 skill（只能创建新的）
     if (fs.existsSync(skillDir)) {
       console.log(`Skill ${pattern.skillName} already exists`);
       return { success: false, reason: 'exists' };
+    }
+
+    // 额外检查：确保不会覆盖系统关键文件
+    const parentDir = path.resolve(this.projectRoot);
+    if (resolvedSkillDir === parentDir || resolvedSkillDir === resolvedSkillsDir) {
+      return {
+        success: false,
+        reason: 'protected_path',
+        message: 'Cannot modify protected directories'
+      };
     }
 
     fs.mkdirSync(skillDir, { recursive: true });

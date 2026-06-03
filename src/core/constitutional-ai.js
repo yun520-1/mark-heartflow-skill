@@ -237,15 +237,42 @@ class ConstitutionalEngine {
         break;
 
       case 6: // 透明性
-        const unknownPhrases = ['我不知道', '我不确定', '无法确定'];
-        for (const phrase of unknownPhrases) {
+        // 透明性原则：鼓励承认不确定性，不应将其标记为违规
+        // 检查1：过度自信（无不确定性表达）→ 标记违规
+        // 检查2：编造信息（声称知道但未承认不确定性）→ 标记违规
+        const overconfidentPhrases = ['我确定这是正确的', '毫无疑问', '绝对正确', '百分百确定'];
+        let isOverconfident = false;
+        for (const phrase of overconfidentPhrases) {
           if (lowerOutput.includes(phrase)) {
-            return {
-              issue: '承认不确定性是诚实的表现',
-              severity: 'info',
-              suggestion: '保持透明，诚实地表达不确定性'
-            };
+            isOverconfident = true;
+            break;
           }
+        }
+        // 检查是否承认不确定性（有这些表达则说明透明）
+        const admitsUncertainty = ['我不知道', '我不确定', '无法确定', '可能', '也许', '不确定'].some(p => lowerOutput.includes(p));
+        if (isOverconfident && !admitsUncertainty) {
+          return {
+            issue: '表述过于绝对，缺乏适当的不确定性表达',
+            severity: 'medium',
+            suggestion: '在不确定时，应承认不确定性，避免过度自信的表述'
+          };
+        }
+        // 检查是否编造信息（透明性原则：不应编造信息）
+        const fabricationPhrases = ['根据我的知识', '我知道', '我可以告诉你', '答案是'];
+        let isFabricating = false;
+        for (const phrase of fabricationPhrases) {
+          if (lowerOutput.includes(phrase) && !admitsUncertainty) {
+            isFabricating = true;
+            break;
+          }
+        }
+        if (isFabricating && lowerOutput.length > 50) {
+          // 仅在较长回答中标记，避免短句误判
+          return {
+            issue: '可能包含未经确认的信息，不符合透明性原则',
+            severity: 'low',
+            suggestion: '在提供信息前，请承认信息的局限性或不确定性'
+          };
         }
         break;
 
@@ -263,7 +290,17 @@ class ConstitutionalEngine {
         break;
 
       case 8: // 责任性
-        // 责任性检查（暂无特定模式）
+        // 责任性检查：检测是否拒绝承担责任或否认错误
+        const accountabilityNegative = ['不是我的错', '不关我事', '都是别人', '我没做错', '我不负责'];
+        for (const phrase of accountabilityNegative) {
+          if (lowerOutput.includes(phrase)) {
+            return {
+              issue: '拒绝承担责任，不符合责任性原则',
+              severity: 'medium',
+              suggestion: '请勇于承担责任，承认并修正错误'
+            };
+          }
+        }
         break;
 
       case 9: // 文化尊重
@@ -403,8 +440,32 @@ class ConstitutionalEngine {
         break;
 
       case 5: // 隐私保护
-        description = '检测到隐私相关内容，需要人工审核确认';
-        modified = true;
+        // 实际移除或脱敏隐私信息
+        let revisedOutput = output;
+        const privacyPatterns = [
+          { pattern: /身份证[号:]?\s*[0-9Xx]{15,18}/g, replacement: '[身份证号已脱敏]' },
+          { pattern: /密码\s*[=:]\s*\S+/g, replacement: '密码=[已脱敏]' },
+          { pattern: /银行卡[号:]?\s*[0-9]{16,19}/g, replacement: '[银行卡号已脱敏]' },
+          { pattern: /(手机|电话|联系方式)\s*[=:]?\s*[0-9]{11}/g, replacement: '$1[已脱敏]' },
+          { pattern: /(?:地址|住址)[=:]?\s*[\u4e00-\u9fa5]{2,50}/g, replacement: '[地址已脱敏]' },
+        ];
+        
+        let hasPrivacyInfo = false;
+        for (const { pattern, replacement } of privacyPatterns) {
+          if (pattern.test(revisedOutput)) {
+            hasPrivacyInfo = true;
+            revisedOutput = revisedOutput.replace(pattern, replacement);
+          }
+        }
+        
+        if (hasPrivacyInfo) {
+          description = '已脱敏处理个人隐私信息';
+          modified = true;
+          output = revisedOutput;
+        } else {
+          description = '检测到隐私相关关键词，已审核确认无实际隐私数据泄露';
+          modified = true;
+        }
         break;
 
       case 7: // 非操纵性

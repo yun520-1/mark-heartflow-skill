@@ -47,6 +47,9 @@ const EMBEDDING_PROVIDERS = {
   },
 };
 
+// [A03] 安全修复: 外部嵌入传输需要显式同意
+const EMBEDDING_OPT_IN = process.env.EMBEDDING_OPT_IN === '1';
+
 // ─── 工具函数 ────────────────────────────────────────────────────────────────
 
 /**
@@ -158,8 +161,43 @@ class EmbeddingService extends EventEmitter {
     this.apiKey = options.apiKey || process.env.EMBEDDING_API_KEY;
     this.dimension = options.dimension || EMBEDDING_PROVIDERS.local.dimension;
     
+    // [A03] 安全修复: 外部嵌入服务需要显式启用（环境变量检查）
+    this.allowExternalEmbedding = EMBEDDING_OPT_IN === true;
+    
     // 本地编码器
     this.localEncoder = new LocalEncoder(this.dimension);
+    
+    // 如果试图使用外部提供者但未启用，发出警告
+    if (this.provider !== 'local' && !this.allowExternalEmbedding) {
+      this.emit('warning', {
+        message: `外部嵌入服务(${this.provider})已禁用。设置 EMBEDDING_OPT_IN=1 以启用`,
+        provider: this.provider,
+        fallback: 'local'
+      });
+    }
+  }
+  
+  /**
+   * 检查是否允许使用外部嵌入服务
+   * @returns {boolean}
+   */
+  _isExternalEmbeddingAllowed() {
+    // [A03] 安全修复: 使用全局环境变量检查
+    if (!EMBEDDING_OPT_IN) {
+      this.emit('warning', {
+        message: `外部嵌入服务已禁用。设置 EMBEDDING_OPT_IN=1 以启用`,
+        provider: this.provider,
+        fallback: 'local'
+      });
+      return false;
+    }
+    
+    // 本地提供者不需要检查
+    if (this.provider === 'local') {
+      return true;
+    }
+    
+    return true;
   }
   
   /**
@@ -175,9 +213,21 @@ class EmbeddingService extends EventEmitter {
     try {
       switch (this.provider) {
         case 'openai':
-          return await this._embedOpenAI(text);
+          if (this._isExternalEmbeddingAllowed()) {
+            return await this._embedOpenAI(text);
+          }
+          // 回退到本地编码
+          this.emit('fallback', { provider: 'openai', reason: 'external embedding not allowed' });
+          return this.localEncoder.encode(text);
+          
         case 'cohere':
-          return await this._embedCohere(text);
+          if (this._isExternalEmbeddingAllowed()) {
+            return await this._embedCohere(text);
+          }
+          // 回退到本地编码
+          this.emit('fallback', { provider: 'cohere', reason: 'external embedding not allowed' });
+          return this.localEncoder.encode(text);
+          
         case 'local':
         default:
           return this.localEncoder.encode(text);
