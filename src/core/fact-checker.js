@@ -133,8 +133,20 @@ const factChecker = {
   // 验证数字
   checkNumber(claim) {
     if (!claim || typeof claim !== 'string') return { checked: false };
-    const numbers = claim.match(/\b[1-9]\d{2,}(?:,\d{3})*(?:\.\d+)?\b/g) || [];
+    let numbers = claim.match(/\b[1-9]\d{2,}(?:,\d{3})*(?:\.\d+)?\b/g) || [];
     if (numbers.length === 0) return { checked: false };
+
+    // v2.0.29: 过滤年份（1900-2099），年份是时间信息不是可疑数字
+    const currentYear = new Date().getFullYear();
+    numbers = numbers.filter(n => {
+      const num = parseInt(n.replace(/,/g, ''));
+      // 跳过 1900-2099 范围的整四位年份（如 2024, 1998）
+      if (num >= 1900 && num <= 2099 && /^\d{4}$/.test(n)) return false;
+      // 跳过无需引用的合理度量（如语言长度、数量在常见范围内）
+      return true;
+    });
+    if (numbers.length === 0) return { checked: false };
+
     return {
       checked: true,
       type: 'number',
