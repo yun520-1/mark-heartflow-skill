@@ -43,6 +43,33 @@ const ABSOLUTISM_PATTERNS = [
 ];
 
 /**
+ * 空洞概括模式 — 不可证伪的模糊泛化
+ * 这些词/短语让声称听起来有依据，实则无法核实。
+ * 区分于绝对化：空洞概括是"回避具体"，绝对化是"堵死反例"。
+ */
+const HOLLOW_GENERALITY_PATTERNS = [
+  // 中文空洞概括
+  { pattern: /人们(?:普遍|通常|经常|总是)?说/, reason: '模糊主体，无法溯源' },
+  { pattern: /有人(?:说|认为|指出|表示)/, reason: '匿名声称，不可核实' },
+  { pattern: /据(?:说|传|报道|了解)/, reason: '不指明来源的转述' },
+  { pattern: /研究(?:表明|显示|指出|发现)/, reason: '不指明具体研究的笼统引用' },
+  { pattern: /专家(?:说|认为|指出|表示)/, reason: '匿名专家，无法核实' },
+  { pattern: /调查(?:表明|显示|指出|发现)/, reason: '不指明具体调查' },
+  { pattern: /众所周知/, reason: '把假设当共识' },
+  { pattern: /不言而喻/, reason: '禁止质疑的共识假设' },
+  { pattern: /众所周知/, reason: '把假设当共识' },
+  // 英文空洞概括
+  { pattern: /\bsome\s+people\s+say\b/i, reason: '模糊主体，无法溯源' },
+  { pattern: /\bit\s+is\s+(?:widely\s+)?believed\b/i, reason: '匿名共识，笼统声称' },
+  { pattern: /\bstudies?\s+(?:show|suggest|indicate|find|reveal)\b/i, reason: '不指明具体研究的笼统引用' },
+  { pattern: /\bresearch\s+(?:shows|suggests|indicates|finds|reveals)\b/i, reason: '不指明具体研究的笼统引用' },
+  { pattern: /\bexperts?\s+(?:say|believe|claim|agree)\b/i, reason: '匿名专家，无法核实' },
+  { pattern: /\bits?\s+generally\s+accepted\b/i, reason: '模糊共识，不可证伪' },
+  { pattern: /\bcommon\s+(?:knowledge|sense)\b/i, reason: '把假设当常识' },
+  { pattern: /\bas\s+we\s+all\s+know\b/i, reason: '把假设当共识' },
+];
+
+/**
  * 检测声明中的绝对化模式
  * @param {string} claim
  * @returns {{isLying: boolean, matches: Array, confidence: string, reason?: string}}
@@ -83,6 +110,38 @@ function detectAbsolutism(claim) {
   };
 }
 
+/**
+ * 检测声明中的空洞概括模式
+ * @param {string} claim
+ * @returns {{isHollow: boolean, matches: Array, confidence: string, reason?: string}}
+ */
+function detectHollowGenerality(claim) {
+  if (!claim || typeof claim !== 'string') {
+    return { isHollow: false, matches: [], confidence: 'high' };
+  }
+
+  const matches = [];
+  for (const p of HOLLOW_GENERALITY_PATTERNS) {
+    const m = claim.match(p.pattern);
+    if (m) {
+      matches.push({ pattern: m[0], reason: p.reason });
+    }
+  }
+
+  if (matches.length === 0) {
+    return { isHollow: false, matches: [], confidence: 'high' };
+  }
+
+  return {
+    isHollow: true,
+    matches,
+    confidence: matches.length >= 2 ? 'high' : 'medium',
+    reason: matches.length >= 2
+      ? `多重空洞概括: ${matches.map(m => m.pattern).join('、')}`
+      : `空洞概括: ${matches[0].pattern} (${matches[0].reason})`,
+  };
+}
+
 const factChecker = {
   /**
    * 核查声明 — 统一入口
@@ -90,19 +149,24 @@ const factChecker = {
    * @returns {Promise<{
    *   checked: boolean,
    *   isLying: boolean,
+   *   isHollow: boolean,
    *   confidence: string,
    *   type: string,
    *   values: Array,
    *   note?: string,
    *   issue?: string,
-   *   absolutism?: object
+   *   absolutism?: object,
+   *   hollow?: object
    * }>}
    */
   async checkFact(claim) {
     // 1. 绝对化检测（心虫层最核心）
     const absolutism = detectAbsolutism(claim);
 
-    // 2. 数字/百分比/日期检测
+    // 2. 空洞概括检测（v2.0.30+）
+    const hollow = detectHollowGenerality(claim);
+
+    // 3. 数字/百分比/日期检测
     const results = await Promise.all([
       this.checkNumber(claim),
       this.checkPercentage(claim),
@@ -110,23 +174,27 @@ const factChecker = {
     ]);
     const factResult = results.find(r => r.checked) || { checked: false };
 
-    // 3. 合并 schema
+    // 4. 合并 schema
     // isLying 优先于具体事实检测：绝对化声明即使有数字，也是可疑
+    // isHollow 作为辅助维度：空洞概括单独标记，不覆盖 isLying
+    const isSuspicious = absolutism.isLying || hollow.isHollow;
     return {
-      checked: factResult.checked || absolutism.isLying,
+      checked: factResult.checked || absolutism.isLying || hollow.isHollow,
       isLying: absolutism.isLying,
+      isHollow: hollow.isHollow,
       confidence: absolutism.isLying
         ? absolutism.confidence
-        : (factResult.confidence || 'medium'),
+        : (hollow.isHollow ? hollow.confidence : (factResult.confidence || 'medium')),
       type: absolutism.isLying
         ? 'absolutism'
-        : (factResult.type || 'none'),
+        : (hollow.isHollow ? 'hollow_generality' : (factResult.type || 'none')),
       values: factResult.values || [],
       note: absolutism.isLying
         ? absolutism.reason
-        : factResult.note,
+        : (hollow.isHollow ? hollow.reason : factResult.note),
       issue: factResult.issue,
       absolutism: absolutism.isLying ? absolutism : undefined,
+      hollow: hollow.isHollow ? hollow : undefined,
     };
   },
 
@@ -219,6 +287,8 @@ const factChecker = {
 
 module.exports = {
   factChecker,
-  detectAbsolutism,  // 暴露给测试
-  ABSOLUTISM_PATTERNS,  // 暴露给上层
+  detectAbsolutism,      // 暴露给测试
+  detectHollowGenerality, // 暴露给测试（v2.0.30+）
+  ABSOLUTISM_PATTERNS,   // 暴露给上层
+  HOLLOW_GENERALITY_PATTERNS, // 暴露给上层（v2.0.30+）
 };
