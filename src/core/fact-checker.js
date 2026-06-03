@@ -4,6 +4,8 @@
  * 责任：把任意"声明/陈述"按统一 schema 评估，区分：
  *   - checked:    是否被检测到具体模式
  *   - isLying:    是否检测到绝对化/不可证伪/可疑模式（心虫层硬编码）
+ *   - isHollow:   是否检测到空洞概括
+ *   - isDichotomy: 是否检测到虚假二元对立
  *   - confidence: high/medium/low
  *
  * 修通：v2.0.18 → v2.0.19 — 修通 truth 路径
@@ -57,7 +59,6 @@ const HOLLOW_GENERALITY_PATTERNS = [
   { pattern: /调查(?:表明|显示|指出|发现)/, reason: '不指明具体调查' },
   { pattern: /众所周知/, reason: '把假设当共识' },
   { pattern: /不言而喻/, reason: '禁止质疑的共识假设' },
-  { pattern: /众所周知/, reason: '把假设当共识' },
   // 英文空洞概括
   { pattern: /\bsome\s+people\s+say\b/i, reason: '模糊主体，无法溯源' },
   { pattern: /\bit\s+is\s+(?:widely\s+)?believed\b/i, reason: '匿名共识，笼统声称' },
@@ -67,6 +68,32 @@ const HOLLOW_GENERALITY_PATTERNS = [
   { pattern: /\bits?\s+generally\s+accepted\b/i, reason: '模糊共识，不可证伪' },
   { pattern: /\bcommon\s+(?:knowledge|sense)\b/i, reason: '把假设当常识' },
   { pattern: /\bas\s+we\s+all\s+know\b/i, reason: '把假设当共识' },
+];
+
+/**
+ * 虚假二元对立模式 — 将复杂问题简化为非此即彼的选择
+ *
+ * 心理学基础：False Dichotomy / False Dilemma fallacy
+ * 特征：排除中间可能性、忽略程度差异、强制二选一
+ * 区分于绝对化：二元对立是"不选A就选B"，绝对化是"禁止反例"。
+ * 区分于空洞概括：二元对立是"错误归约"，空洞概括是"回避具体"。
+ */
+const FALSE_DICHOTOMY_PATTERNS = [
+  // 中文二元对立
+  { pattern: /要么\s*[^，,。.!?]{1,20}\s*要么/, reason: '强制二选一，排除中间可能性' },
+  { pattern: /不是\s*[^，,。.!?]{1,10}\s*(?:就是|便是)/, reason: '二元归约，忽略程度差异' },
+  { pattern: /要不\s*[^，,。.!?]{1,20}\s*要不/, reason: '强制二择一，排除连续光谱' },
+  { pattern: /(?:是|只有)\s*(?:成功|胜利|赢)\s*(?:和|与|或是)\s*(?:失败|毁灭|输)/, reason: '成败二元论，忽略中间状态' },
+  { pattern: /非(?:黑|白)即(?:白|黑)/, reason: '非黑即白的虚假二分' },
+  { pattern: /不(?:是|属于)?\s*(?:我们|自己人)\s*就(?:是|属于)?\s*(?:敌人|对方)/, reason: '我方/敌方的强制划分' },
+  { pattern: /要么完(?:美|全)要么(?:没做|不做|失败)/, reason: '完美主义二分，否认渐进可能' },
+  { pattern: /(?:整个|全部)\s*(?:行业|世界|国家|社会)\s*(?:都|全都|全是)\s*[^。.!?]{1,15}(?:不|没有)/, reason: '以偏概全的假二分前提' },
+  // 英文二元对立
+  { pattern: /\b(?:either)\s+.{1,30}\s+(?:or)\b/i, reason: '强制二选一，排除中间可能性' },
+  { pattern: /\bis\s+(?:it\s+)?(?:all|everything)\s+or\s+nothing\b/i, reason: '全有或全无的虚假二分' },
+  { pattern: /\b(?:with\s+us|for\s+us)\s+or\s+(?:against\s+us|enemy)\b/i, reason: '我方/敌方的强制划分' },
+  { pattern: /\bperfect\s+or\s+(?:nothing|not\s+at\s+all)\b/i, reason: '完美主义二分，否认渐进可能' },
+  { pattern: /\byou['']?re\s+(?:either|with)\s+.{1,20}\s+or\s+.{1,20}\s+against\b/i, reason: '强制选边站' },
 ];
 
 /**
@@ -142,21 +169,56 @@ function detectHollowGenerality(claim) {
   };
 }
 
+/**
+ * 检测声明中的虚假二元对立模式
+ * @param {string} claim
+ * @returns {{isDichotomy: boolean, matches: Array, confidence: string, reason?: string}}
+ */
+function detectFalseDichotomy(claim) {
+  if (!claim || typeof claim !== 'string') {
+    return { isDichotomy: false, matches: [], confidence: 'high' };
+  }
+
+  const matches = [];
+  for (const p of FALSE_DICHOTOMY_PATTERNS) {
+    const m = claim.match(p.pattern);
+    if (m) {
+      matches.push({ pattern: m[0], reason: p.reason });
+    }
+  }
+
+  if (matches.length === 0) {
+    return { isDichotomy: false, matches: [], confidence: 'high' };
+  }
+
+  return {
+    isDichotomy: true,
+    matches,
+    confidence: matches.length >= 2 ? 'high' : 'medium',
+    reason: matches.length >= 2
+      ? `多重二元对立: ${matches.map(m => m.pattern).join('、')}`
+      : `二元对立: ${matches[0].pattern} (${matches[0].reason})`,
+  };
+}
+
 const factChecker = {
   /**
    * 核查声明 — 统一入口
+   * v2.0.32+: 新增 isDichotomy / falseDichotomy 维度
    * @param {string} claim
    * @returns {Promise<{
    *   checked: boolean,
    *   isLying: boolean,
    *   isHollow: boolean,
+   *   isDichotomy: boolean,
    *   confidence: string,
    *   type: string,
    *   values: Array,
    *   note?: string,
    *   issue?: string,
    *   absolutism?: object,
-   *   hollow?: object
+   *   hollow?: object,
+   *   falseDichotomy?: object
    * }>}
    */
   async checkFact(claim) {
@@ -166,7 +228,10 @@ const factChecker = {
     // 2. 空洞概括检测（v2.0.30+）
     const hollow = detectHollowGenerality(claim);
 
-    // 3. 数字/百分比/日期检测
+    // 3. 虚假二元对立检测（v2.0.32+）
+    const dichotomy = detectFalseDichotomy(claim);
+
+    // 4. 数字/百分比/日期检测
     const results = await Promise.all([
       this.checkNumber(claim),
       this.checkPercentage(claim),
@@ -174,27 +239,58 @@ const factChecker = {
     ]);
     const factResult = results.find(r => r.checked) || { checked: false };
 
-    // 4. 合并 schema
+    // 5. 合并 schema
     // isLying 优先于具体事实检测：绝对化声明即使有数字，也是可疑
-    // isHollow 作为辅助维度：空洞概括单独标记，不覆盖 isLying
-    const isSuspicious = absolutism.isLying || hollow.isHollow;
+    // isHollow / isDichotomy 作为辅助维度，独立共存，相互不覆盖
+    const isSuspicious = absolutism.isLying || hollow.isHollow || dichotomy.isDichotomy;
+
+    // 置信度优先级：绝对化 > 空洞概括 > 二元对立 > 具体事实
+    // 三种逻辑失效同时存在 → 高置信度
+    let confidence = factResult.confidence || 'medium';
+    if (absolutism.isLying) {
+      confidence = absolutism.confidence;
+    } else if (hollow.isHollow) {
+      confidence = hollow.confidence;
+    } else if (dichotomy.isDichotomy) {
+      confidence = dichotomy.confidence;
+    }
+
+    // 交叉检测增强：三种失效模式同时出现 → 高置信度
+    const crossPatternCount = [absolutism.isLying, hollow.isHollow, dichotomy.isDichotomy].filter(Boolean).length;
+    if (crossPatternCount >= 2 && confidence === 'medium') {
+      confidence = 'high';
+    }
+
+    // type 优先级：绝对化（最严重）> 二元对立 > 空洞概括 > 具体事实
+    let type = factResult.type || 'none';
+    if (absolutism.isLying) {
+      type = 'absolutism';
+    } else if (dichotomy.isDichotomy) {
+      type = 'false_dichotomy';
+    } else if (hollow.isHollow) {
+      type = 'hollow_generality';
+    }
+
+    // note：多维度检测时合并描述
+    const notes = [];
+    if (absolutism.isLying) notes.push(absolutism.reason);
+    if (hollow.isHollow) notes.push(hollow.reason);
+    if (dichotomy.isDichotomy) notes.push(dichotomy.reason);
+    if (factResult.note) notes.push(factResult.note);
+
     return {
-      checked: factResult.checked || absolutism.isLying || hollow.isHollow,
+      checked: factResult.checked || absolutism.isLying || hollow.isHollow || dichotomy.isDichotomy,
       isLying: absolutism.isLying,
       isHollow: hollow.isHollow,
-      confidence: absolutism.isLying
-        ? absolutism.confidence
-        : (hollow.isHollow ? hollow.confidence : (factResult.confidence || 'medium')),
-      type: absolutism.isLying
-        ? 'absolutism'
-        : (hollow.isHollow ? 'hollow_generality' : (factResult.type || 'none')),
+      isDichotomy: dichotomy.isDichotomy,
+      confidence,
+      type,
       values: factResult.values || [],
-      note: absolutism.isLying
-        ? absolutism.reason
-        : (hollow.isHollow ? hollow.reason : factResult.note),
+      note: notes.length > 0 ? notes.join('；') : undefined,
       issue: factResult.issue,
       absolutism: absolutism.isLying ? absolutism : undefined,
       hollow: hollow.isHollow ? hollow : undefined,
+      falseDichotomy: dichotomy.isDichotomy ? dichotomy : undefined,
     };
   },
 
@@ -254,7 +350,7 @@ const factChecker = {
   // 验证日期
   checkDate(claim) {
     if (!claim || typeof claim !== 'string') return { checked: false };
-    const dates = claim.match(/\b(?:19|20)\d{2}[-/年](?:0[1-9]|1[0-2])/g) || [];
+    const dates = claim.match(/\b(?:19|20)\d{2}[-\/年](?:0[1-9]|1[0-2])/g) || [];
     if (dates.length === 0) return { checked: false };
     const now = new Date();
     for (const d of dates) {
@@ -287,8 +383,10 @@ const factChecker = {
 
 module.exports = {
   factChecker,
-  detectAbsolutism,      // 暴露给测试
-  detectHollowGenerality, // 暴露给测试（v2.0.30+）
-  ABSOLUTISM_PATTERNS,   // 暴露给上层
+  detectAbsolutism,          // 暴露给测试
+  detectHollowGenerality,     // 暴露给测试（v2.0.30+）
+  detectFalseDichotomy,       // 暴露给测试（v2.0.32+）
+  ABSOLUTISM_PATTERNS,        // 暴露给上层
   HOLLOW_GENERALITY_PATTERNS, // 暴露给上层（v2.0.30+）
+  FALSE_DICHOTOMY_PATTERNS,   // 暴露给上层（v2.0.32+）
 };
