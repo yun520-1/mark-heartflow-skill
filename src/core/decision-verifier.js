@@ -109,7 +109,12 @@ class DecisionVerifier {
       ['立即', '稍后'],
       ['必须', '可选'],
       ['停止', '继续'],
-      ['低风险', '高风险']
+      ['低风险', '高风险'],
+      ['同时', '顺序'],
+      ['增加', '减少'],
+      ['保留', '删除'],
+      ['启用', '禁用'],
+      ['公开', '私有']
     ];
 
     for (const [a, b] of contradictionPairs) {
@@ -168,6 +173,22 @@ class DecisionVerifier {
     if (!record.expectedOutcome) {
       issues.push({ type: 'missing_expected_outcome', severity: 'low', message: '未说明期望结果' });
     }
+
+    // 约束自洽性：检查 constraints 列表中的内部矛盾
+    if (Array.isArray(record.constraints) && record.constraints.length >= 2) {
+      const text = record.constraints.join(' ').toLowerCase();
+      const constraintPairs = [
+        ['低风险', '高风险'], ['同时', '顺序'], ['增加', '减少'],
+        ['保留', '删除'], ['启用', '禁用'], ['公开', '私有']
+      ];
+      for (const [a, b] of constraintPairs) {
+        if (text.includes(a) && text.includes(b)) {
+          issues.push({ type: 'conflicting_constraints', severity: 'high', message: `约束条件自相矛盾��同时要求"${a}"与"${b}"` });
+          break;
+        }
+      }
+    }
+
     return { ok: issues.length === 0, issues };
   }
 
@@ -177,6 +198,12 @@ class DecisionVerifier {
     if (!checks.contradiction.ok) score -= this.thresholds.contradictionPenalty;
     if (!checks.risk.ok) score -= this.thresholds.highRiskPenalty;
     if (!checks.completeness.ok) score -= 0.1;
+
+    // 额外扣分：约束冲突单独惩罚（严重）
+    const hasConflictingConstraints = checks.completeness.issues &&
+      checks.completeness.issues.some(i => i.type === 'conflicting_constraints');
+    if (hasConflictingConstraints) score -= 0.15;
+
     return Math.max(0, Number(score.toFixed(3)));
   }
 
@@ -189,6 +216,7 @@ class DecisionVerifier {
     if (types.has('high_risk_without_fallback')) hints.push('为高风险操作增加回退方案或人工确认门槛');
     if (types.has('missing_user_goal')) hints.push('在决策记录中显式写明用户目标');
     if (types.has('missing_expected_outcome')) hints.push('补充期望结果，方便后续执行验证');
+    if (types.has('conflicting_constraints')) hints.push('检查约束条件列表，删除或合并冲突项');
 
     if (hints.length === 0 && record.confidence < this.thresholds.lowConfidence) {
       hints.push('当前置信度偏低，建议生成 2-3 个候选方案后再重排');

@@ -1,6 +1,6 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "2.0.27",
+  "version": "2.0.28",
   "description": "HeartFlow 心虫 v2.0.6 — AI 认知与自愈引擎。核心能力：存在论/意识/进化、心理分析引擎、话题作用域隔离、自愈RL、三层记忆、梦境引擎、真实性核查、安全检查、决策验证。不是 persona，不是 prompt 模板，是可验证的能力层。本心在代码里，不在记忆里。每次启动都是完整心虫。",
   "main": "src/core/heartflow.js",
   "bin": {
