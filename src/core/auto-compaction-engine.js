@@ -284,9 +284,16 @@ class AutoCompactionEngine {
       totalDropped: 0,
       lastCompaction: null,
       strategyUsed: null,
+      // --- 可观测性增强 v1.3.0 ---
+      // 压缩效率趋势 (每次压缩的比例变化)
+      compressionRatios: [],          // 每次压缩前的 context 使用率
+      compressionEfficiency: [],      // 每次压缩的节省比例 (节省token/原token)
+      totalSavedTokens: 0,            // 累计节省 token 数
+      maxConsecutiveCompactions: 0,   // 最大连续压缩次数 (反映上下文压力)
     };
 
     this._compactionHistory = [];
+    this._consecutiveCompactions = 0;   // 当前连续压缩计数
   }
 
   // ============================================================
@@ -354,6 +361,11 @@ class AutoCompactionEngine {
     }
 
     const duration = Date.now() - startTime;
+    const originalTokenCount = this.tokenizer.estimateMessages(messages);
+    const compactedTokenCount = this.tokenizer.estimateMessages(result.compacted);
+    const savedTokens = Math.max(0, originalTokenCount - compactedTokenCount);
+    const efficiency = originalTokenCount > 0 ? savedTokens / originalTokenCount : 0;
+    const beforeRatio = originalTokenCount / this.config.maxContextTokens;
 
     // 更新统计
     this.stats.totalRuns++;
@@ -361,6 +373,15 @@ class AutoCompactionEngine {
     this.stats.totalDropped += result.dropped;
     this.stats.lastCompaction = Date.now();
     this.stats.strategyUsed = strategy;
+
+    // --- 可观测性增强: 记录压缩效率趋势 ---
+    this.stats.compressionRatios.push(beforeRatio);
+    this.stats.compressionEfficiency.push(efficiency);
+    this.stats.totalSavedTokens += savedTokens;
+    this._consecutiveCompactions++;
+    if (this._consecutiveCompactions > this.stats.maxConsecutiveCompactions) {
+      this.stats.maxConsecutiveCompactions = this._consecutiveCompactions;
+    }
 
     // 记录历史
     this._compactionHistory.push({
@@ -447,9 +468,19 @@ class AutoCompactionEngine {
   // ============================================================
 
   getStats() {
+    const hist = this._compactionHistory;
+    const avgEfficiency = this.stats.compressionEfficiency.length > 0
+      ? this.stats.compressionEfficiency.reduce((a, b) => a + b, 0) / this.stats.compressionEfficiency.length
+      : 0;
     return {
       ...this.stats,
-      historyLength: this._compactionHistory.length,
+      historyLength: hist.length,
+      averageCompressionEfficiency: Number(avgEfficiency.toFixed(4)),
+      totalSavedTokens: this.stats.totalSavedTokens,
+      maxConsecutiveCompactions: this.stats.maxConsecutiveCompactions,
+      // 简化历史大小以避免超大对象
+      compressionRatios: this.stats.compressionRatios.slice(-10),
+      compressionEfficiency: this.stats.compressionEfficiency.slice(-10),
     };
   }
 
@@ -463,7 +494,7 @@ class AutoCompactionEngine {
         strategy: this.config.strategy,
         autoCompact: this.config.autoCompact,
       },
-      stats: this.stats,
+      stats: this.getStats(),
       recentCompactions: recent.map(h => ({
         timestamp: new Date(h.timestamp).toISOString(),
         dropped: h.dropped,
@@ -471,6 +502,36 @@ class AutoCompactionEngine {
         duration: h.duration,
       })),
     };
+  }
+
+  /**
+   * 生成人类可读的诊断报告
+   * @returns {string} 格式化的状态报告
+   */
+  getReport() {
+    const stats = this.getStats();
+    const lines = [];
+    lines.push('═══════════════════════════════════════');
+    lines.push('  AutoCompaction 引擎诊断报告');
+    lines.push('═══════════════════════════════════════');
+    lines.push(`  运行总次数:           ${stats.totalRuns}`);
+    lines.push(`  压缩执行次数:         ${stats.compactions}`);
+    lines.push(`  警告触发次数:         ${stats.warnings}`);
+    lines.push(`  累计丢弃消息:         ${stats.totalDropped}`);
+    lines.push(`  累计节省 Token:      ${stats.totalSavedTokens.toLocaleString()}`);
+    if (stats.compactions > 0) {
+      lines.push(`  平均压缩效率:         ${(stats.averageCompressionEfficiency * 100).toFixed(1)}%`);
+      lines.push(`  历史最高连续压缩:     ${stats.maxConsecutiveCompactions} 次`);
+      lines.push(`  最近压缩比率趋势:     [${stats.compressionRatios.map(r => (r * 100).toFixed(0) + '%').join(' → ')}]`);
+      lines.push(`  最近压缩效率趋势:     [${stats.compressionEfficiency.map(e => (e * 100).toFixed(0) + '%').join(' → ')}]`);
+    }
+    lines.push(`  当前策略:             ${this.config.strategy}`);
+    lines.push(`  上下文限制:           ${this.config.maxContextTokens.toLocaleString()} tokens`);
+    lines.push(`  预警阈值:             ${(this.config.warningThreshold * 100).toFixed(0)}%`);
+    lines.push(`  压缩阈值:             ${(this.config.compactionThreshold * 100).toFixed(0)}%`);
+    lines.push(`  最近压缩记录:         ${stats.recentCompactions ? stats.recentCompactions.length : 0} 条`);
+    lines.push('───────────────────────────────────────');
+    return lines.join('\n');
   }
 
   /**
@@ -484,8 +545,13 @@ class AutoCompactionEngine {
       totalDropped: 0,
       lastCompaction: null,
       strategyUsed: null,
+      compressionRatios: [],
+      compressionEfficiency: [],
+      totalSavedTokens: 0,
+      maxConsecutiveCompactions: 0,
     };
     this._compactionHistory = [];
+    this._consecutiveCompactions = 0;
   }
 }
 
