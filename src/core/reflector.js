@@ -15,6 +15,13 @@ class Reflector {
     }
     // 确保projectRoot是绝对路径且在安全范围内
     const resolvedRoot = path.resolve(projectRoot);
+    
+    // 验证路径安全性 - 防止路径遍历攻击
+    const normalizedPath = path.normalize(resolvedRoot);
+    if (normalizedPath !== resolvedRoot || !path.isAbsolute(resolvedRoot)) {
+      throw new Error('[Reflector] Invalid projectRoot path');
+    }
+    
     this.projectRoot = resolvedRoot;
     this.stateFile = path.join(resolvedRoot, '.opencode', 'memory', 'heartflow_state.json');
     this.reportFile = path.join(resolvedRoot, 'logs', 'reflect-reports.json');
@@ -48,9 +55,14 @@ class Reflector {
     };
   }
 
-  log(message) {
+  log(message, data = null) {
     const timestamp = new Date().toISOString();
-    const entry = `[${timestamp}] ${message}\n`;
+    // 统一使用 JSON Lines 格式（每行一个 JSON）
+    const entry = JSON.stringify({
+      timestamp,
+      message,
+      ...(data ? { data } : {})
+    }) + '\n';
     fs.appendFileSync(this.logFile, entry);
   }
 

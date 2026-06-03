@@ -5,7 +5,7 @@
 class HeartLogic {
   constructor() {
     this.name = 'HeartLogic';
-    this.version = '2.0.35';
+    this.version = '2.0.36';
     this.isRunning = true;
     this.thoughtHistory = [];
     this.lastInteraction = Date.now();
@@ -174,10 +174,45 @@ class HeartLogic {
 
     // 美：简洁、真实、有力
     // 不啰嗦，不模糊
-    const isConcise = output.length < 200;
-    const hasSubstance = output.split('。').length >= 1;
+    // v2.0.36: 用信号密度(signal-to-noise ratio)代替硬长度截断
+    // 美丽的内容 = 每句话都有价值 + 无冗余 + 有温度
+    // 合理的长回答(深度剖析)也是美的，啰嗦的短回答不美
+    const isEmpty = !output || output.trim().length === 0;
+    if (isEmpty) return false;
 
-    return isConcise && hasSubstance;
+    // 信号密度：有效内容占全文比例
+    // 检测冗余填充词/啰嗦模式
+    const fillerPatterns = [
+      '嗯', '呃', '那个', '这个嘛', '就是说', '然后呢', '其实吧',
+      '怎么说呢', '你懂的', '如此这般', '等等等等'
+    ];
+    const fillerCount = fillerPatterns.reduce((sum, p) => {
+      const regex = new RegExp(p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+      const matches = output.match(regex);
+      return sum + (matches ? matches.length : 0);
+    }, 0);
+
+    // 检测重复短语（啰嗦标志）
+    const sentences = output.split(/[。！？\n]/).filter(s => s.trim().length > 0);
+    const seenPhrases = new Set();
+    let redundancyCount = 0;
+    for (const sentence of sentences) {
+      const trimmed = sentence.trim();
+      if (trimmed.length > 3 && seenPhrases.has(trimmed)) {
+        redundancyCount++;
+      }
+      seenPhrases.add(trimmed);
+    }
+
+    // 信号噪声比 = 有效句子数 / (冗余句 + 填充词段 + 1)
+    const noiseScore = redundancyCount + fillerCount;
+    const signalCount = sentences.length;
+    const signalRatio = signalCount / (noiseScore + signalCount);
+
+    // 有实质性内容（至少一句话有意义）
+    const hasSubstance = sentences.length >= 1 && sentences.some(s => s.trim().length >= 4);
+
+    return signalRatio >= 0.5 && hasSubstance;
   }
 
   // === 真之第三维：引用完整性 ===
@@ -996,7 +1031,8 @@ class HeartLogic {
       const thought = t.thought || '';
       const ctx = t.context || {};
       if ((thought.includes('不怕') || thought.includes('不担心')) && ctx.fearLevel > 0.5) selfDeceptionCount++;
-      if ((thought.includes('记住了') || thought.includes('记住了')) && !ctx.memoryWritten) selfDeceptionCount++;
+      // v2.0.36 fix: 重复条件去重 — 之前 '记住了' 重复两次；改为单次精确检测
+      if (thought.includes('记住了') && !ctx.memoryWritten) selfDeceptionCount++;
     }
     return {
       result: selfDeceptionCount > 0,
@@ -1008,11 +1044,17 @@ class HeartLogic {
 
   // 沉默检测
   shouldBeSilent(context = {}) {
-    const { input, personInPain, emotionIntensity, response } = context;
+    const { input = '', personInPain, emotionIntensity, response } = context;
     // 沉默的时机：
     // 1. 对方在痛苦中，说什么都是噪音
     // 2. 心虫不确定该说什么
     // 3. 沉默比说话更有力量
+    // 危机检测：硬编码危机关键词（不依赖外部函数）
+    const crisisKeywords = ['死', '自杀', '不想活', '崩溃', '绝望', '活不下去', '结束生命'];
+    const hasCrisisKeyword = crisisKeywords.some(kw => input.includes(kw));
+    if (hasCrisisKeyword) {
+      return { result: true, reason: 'crisis_keyword_detected', insight: '危机关键词命中，心虫选择沉默并接住情绪' };
+    }
     if (personInPain && emotionIntensity > 0.7) {
       return { result: true, reason: 'person_in_pain', insight: '此刻沉默比说话更有力量' };
     }
