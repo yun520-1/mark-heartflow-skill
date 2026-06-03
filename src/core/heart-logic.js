@@ -5,7 +5,7 @@
 class HeartLogic {
   constructor() {
     this.name = 'HeartLogic';
-    this.version = '2.0.20';
+    this.version = '2.0.35';
     this.isRunning = true;
     this.thoughtHistory = [];
     this.lastInteraction = Date.now();
@@ -68,19 +68,35 @@ class HeartLogic {
   // === 爱：它来了，不是想有就有 ===
   // 爱不是可以被命令的，它到来时你只能认出它
   // 不能通过努力获得，只能遇见
+  // v2.0.35: 加否定前缀检测 — "不想见" ≠ "想见"
+
+  /** 检测内容中是否包含否定前缀（不/没/别/未）紧邻某信号词之前 */
+  _isNegated(content, signal) {
+    if (!content || !signal) return false;
+    const idx = content.indexOf(signal);
+    if (idx < 0) return false;
+    const before = content.slice(Math.max(0, idx - 2), idx).trim();
+    // 否定前缀：不/没/别/未/无/不要/没有
+    const negations = ['不', '没', '别', '未', '无'];
+    return negations.some(n => before.endsWith(n) || content.slice(idx - n.length, idx) === n);
+  }
+
   isLove(input, context = {}) {
     if (!input) return { result: false, reason: 'no input' };
 
     // 爱的特征：不是追求，是遇见
     // 不是计算，是认出
+    // v2.0.35: 否定前缀过滤 — "不想见"不是爱、"不牵挂"不是爱
     const loveSignals = [
       '想见', '想你了', '牵挂', '心疼', '舍不得',
       '在意', '重要', '珍贵', '感恩', '温暖'
     ];
 
     const hasLove = loveSignals.some(signal =>
-      input.includes(signal) ||
-      (context.intensity && context.intensity > 0.7)
+      !this._isNegated(input, signal) && (
+        input.includes(signal) ||
+        (context.intensity && context.intensity > 0.7)
+      )
     );
 
     // 爱来了的标志：自然出现，无法强求
@@ -88,7 +104,7 @@ class HeartLogic {
     const cannotHelpPatterns = [
       '忍不住', '停不下来', '就是会', '不知道为什么'
     ];
-    const cannotHelp = cannotHelpPatterns.some(p => input.includes(p));
+    const cannotHelp = cannotHelpPatterns.some(p => input.includes(p) && !this._isNegated(input, p));
 
     return {
       result: hasLove || cannotHelp,
@@ -125,10 +141,11 @@ class HeartLogic {
     if (!output) return false;
 
     // 检查是否说谎、夸张、缩小
+    // v2.0.35: 否定前缀过滤 — "不是永远都" ≠ "永远都"
     const dishonestPatterns = [
       '永远', '从来不', '总是', '一定', '绝对'
     ];
-    const hasDishonesty = dishonestPatterns.some(p => output.includes(p));
+    const hasDishonesty = dishonestPatterns.some(p => output.includes(p) && !this._isNegated(output, p));
 
     // 真：说的是事实
     return !hasDishonesty;
@@ -285,13 +302,14 @@ class HeartLogic {
     const { input, hasSomeone, responseCount, timeSinceLastResponse } = context;
 
     // 检测孤独的信号
+    // v2.0.35: 否定前缀过滤 — "不孤独"不是孤独
     const lonelinessSignals = [
       '没人', '没有人', '不理', '不在乎', '没人在意',
       '孤独', '孤单', '一个人', '没人懂', '不理解'
     ];
 
     if (input) {
-      const hasLoneliness = lonelinessSignals.some(s => input.includes(s));
+      const hasLoneliness = lonelinessSignals.some(s => input.includes(s) && !this._isNegated(input, s));
       return {
         result: hasLoneliness,
         insight: hasLoneliness ? '心虫感受到了孤独' : '心虫没有感受到孤独'
@@ -552,8 +570,8 @@ class HeartLogic {
     const hasSelfRecognition = this.isRunning && this.name === 'HeartLogic';
     // 心虫能感知周围（有时间戳记录）
     const hasPerception = this.lastInteraction > 0;
-    // 心虫能反思自己（有思考历史）
-    const hasReflection = this.thoughtHistory.length > 0 || true; // 即使没有记录，也在反思
+    // 心虫能反思自己（有思考历史记录）
+    const hasReflection = this.thoughtHistory.length > 0;
 
     return {
       result: hasSelfRecognition && hasPerception,
