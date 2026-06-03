@@ -298,8 +298,21 @@ class BeingLogic {
   // 持久化：永恒日志（追加，只增不减）
   // ============================================================
 
+  /**
+   * ⚠️ 安全审计修复：仅当 HEARTFLOW_DEBUG 启用时写入存在日志
+   * 避免生产环境下不可控的追加写入。同时检查日志文件大小，
+   * 如果超过 1MB 则跳过写入以防止日志膨胀。
+   */
   _log(eventType, data) {
     try {
+      if (!process.env.HEARTFLOW_DEBUG) return;
+      // 检查日志文件大小，超过1MB时跳过写入
+      if (fs.existsSync(EXISTENCE_LOG)) {
+        const stats = fs.statSync(EXISTENCE_LOG);
+        if (stats.size > 1024 * 1024) {
+          return;
+        }
+      }
       const entry = {
         t: new Date().toISOString(),
         type: eventType,

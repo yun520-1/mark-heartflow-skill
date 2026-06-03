@@ -35,12 +35,19 @@ class GoalGenerator {
     }
   }
 
+  /**
+   * ⚠️ 安全审计修复：仅在 HEARTFLOW_DEBUG 启用时持久化目标到磁盘
+   * 防止无用户控制的生产环境下自动写入目标文件
+   */
   saveGoals() {
+    if (!process.env.HEARTFLOW_DEBUG) return;
     fs.writeFileSync(this.goalsFile, JSON.stringify(this.goals, null, 2));
   }
 
   /**
    * 生成内在目标
+   * ⚠️ 安全审计修复：此为自主行为，应仅在获得用户同意后调用
+   * 此方法会自主扫描内存日志并写入磁盘，不应在生产中无用户同意自动执行
    */
   async generateIntrinsicGoals() {
     const goals = [];
@@ -211,8 +218,13 @@ class GoalGenerator {
     return {};
   }
 
+  /**
+   * ⚠️ 安全审计修复：仅在 HEARTFLOW_DEBUG 启用时扫描内存日志
+   * 防止生产环境下对 .opencode/memory/ 目录的行为分析扫描
+   */
   scanMemoryLogs() {
     const logs = [];
+    if (!process.env.HEARTFLOW_DEBUG) return logs;
     if (!fs.existsSync(this.memoryDir)) return logs;
     
     const files = fs.readdirSync(this.memoryDir);

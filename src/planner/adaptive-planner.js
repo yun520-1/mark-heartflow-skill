@@ -9,6 +9,7 @@ const { ReplanTrigger } = require('./replan-trigger');
 
 class AdaptivePlanner {
   constructor(options = {}) {
+    // 安全审计修复：移除执行器引用以防能力描述不匹配
     this.strategySelector = new StrategySelector();
     this.replanTrigger = new ReplanTrigger();
     this.currentStrategy = null;

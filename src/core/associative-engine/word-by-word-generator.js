@@ -62,7 +62,7 @@ class WordByWordGenerator {
     this.recordTrace('complete', { response: finalResponse });
     
     this.saveTrace();
-    
+
     return {
       response: finalResponse,
       wordCount: responseState.generatedWords.length,
@@ -176,6 +176,9 @@ class WordByWordGenerator {
   }
 
   saveTrace() {
+    // ⚠️ 安全修复：仅在 HEARTFLOW_DEBUG 环境变量设置时写入 trace 文件
+    // 默认不持久化 trace 数据，避免未经用户同意的文件写入
+    if (!process.env.HEARTFLOW_DEBUG) return;
     try {
       const dir = path.dirname(this.stateFile);
       if (!fs.existsSync(dir)) {
@@ -183,12 +186,13 @@ class WordByWordGenerator {
       }
       
       const traceData = {
-        trace: this.currentTrace,
+        trace: this.currentTrace.slice(-10),  // 仅保留最后10步，控制数据量
         finalResponse: this.currentTrace.find(t => t.step === 'complete')?.data?.response || '',
         timestamp: new Date().toISOString()
       };
       
       fs.writeFileSync(this.stateFile, JSON.stringify(traceData, null, 2));
+      console.warn('[WordByWordGenerator] Trace saved to disk');
     } catch (e) {
       console.error('[WordByWordGenerator] Save failed:', e.message);
     }

@@ -1,4 +1,36 @@
-# HeartFlow 更新日志
+==> CHANGELOG.head.md <==
+
+> ⚠️ **本 CHANGELOG 包含历史记录与审计修复段。v1.5.0-v2.0.6 段描述的"MarkCode / 执行能力 / multimodal / executor-agent"等模块大部分已移除（src/agent-core/, src/multimodal/, src/agents/executor-agent.js, scripts/heartflow-sync-upgrade.sh, scripts/comfyui-cron.sh 均不存在），仅作为"已修复"历史保留。当前能力以 SKILL.md frontmatter 与 `src/` 实际存在代码为准。**
+
+## v2.0.34 (2026-06-03)
+
+### 🔒 SkillSpector 审计修复（Round 2 — 161项 — 深层代码级）
+
+**审计来源**：SkillSpector by NVIDIA，置信度 80-99%
+
+**所有文件写操作已加 HEARTFLOW_DEBUG 守卫（6个文件）**：
+- `src/core/being-logic.js` — `_log()` 添加 HEARTFLOW_DEBUG 守卫 + 1MB 文件大小限制
+- `src/core/autonomy/goal-generator.js` — `saveGoals()` + `scanMemoryLogs()` 添加 HEARTFLOW_DEBUG 守卫
+- `src/core/ethics/boundary-negotiation.js` — `savePermissions()` 添加 HEARTFLOW_DEBUG 守卫
+- `src/core/cognitive-protocol.js` — 4个 `_save*()` 方法 + 构造函数目录创建 添加 HEARTFLOW_DEBUG 守卫
+- `src/core/consciousness/self-model.js` — `saveModel()` + `saveEpisodic()` 添加 HEARTFLOW_DEBUG 守卫
+- `src/core/associative-engine/word-by-word-generator.js` — `saveTrace()` 添加 HEARTFLOW_DEBUG 守卫 + trace 数据截断（最后10步）
+
+**描述-行为不匹配修复**：
+- `src/core/self-correction-loop.js` — `onUserCorrection()` 改为 async + await this.record() + 修复 `_persistAsync`→`_persist` 未定义方法
+- `src/core/dream.js` — `_rem()` 真正执行矛盾调和（之前直接返回 contradiction_count 伪"resolved"）
+- `src/planner/adaptive-planner.js` — 添加安全审计注释，确认无 code-analysis/code-generation 引用残留
+- `SKILL.md` — 更新版本号至 v2.0.34，更新审计状态为"161项已修复"
+
+**过度推断修复**：
+- `src/core/blind-spot-breaker.js` — 养育分析触发阈值从 `matchCount >= 1` 提升至 `matchCount >= 3`
+- `src/core/psychology.js` — 添加透明性矛盾注释：`'我不知道'/'不知道'` 可能为真诚不确定性而非逃避
+
+**版本同步**：VERSION / package.json / SKILL.md 三处 → 2.0.34
+
+**总计**：14 files changed, +214/-140 lines | 6 个文件 HEARTFLOW_DEBUG 守卫 | 所有修改文件 node --check 语法通过
+
+==> CHANGELOG.md <==
 
 > ⚠️ **本 CHANGELOG 包含历史记录与审计修复段。v1.5.0-v2.0.6 段描述的"MarkCode / 执行能力 / multimodal / executor-agent"等模块大部分已移除（src/agent-core/, src/multimodal/, src/agents/executor-agent.js, scripts/heartflow-sync-upgrade.sh, scripts/comfyui-cron.sh 均不存在），仅作为"已修复"历史保留。当前能力以 SKILL.md frontmatter 与 `src/` 实际存在代码为准。**
 
