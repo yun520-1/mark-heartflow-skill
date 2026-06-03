@@ -1,5 +1,6 @@
 /**
  * Error Handler - 全局错误边界与异常处理
+ * 安全修复：添加敏感信息过滤，防止信息泄露
  */
 
 const fs = require('fs');
@@ -12,16 +13,67 @@ const ERROR_CONFIG = {
   gracefulMessage: '我遇到了一些内部波动，让我们重新聚焦当前任务，你刚才说到哪里了？'
 };
 
+// 敏感信息过滤规则
+const SENSITIVE_PATTERNS = [
+  { pattern: /(sk-|pk-|api[_-]?key[_-]?)[a-zA-Z0-9]{20,}/gi, replacement: '[API_KEY]' },
+  { pattern: /(PASSWORD|SECRET|TOKEN|AUTH)[=:]\s*[^\s]+/gi, replacement: '$1=[REDACTED]' },
+  { pattern: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, replacement: '[IP_ADDRESS]' },
+  { pattern: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, replacement: '[EMAIL]' },
+  { pattern: /\/[a-zA-Z0-9_\-./]+(?:\/|[a-zA-Z0-9_\-.])|[A-Z]:\\[^\s]+/g, replacement: '[PATH]' }
+];
+
+/**
+ * 过滤敏感信息
+ */
+function filterSensitiveInfo(text) {
+  if (!text || typeof text !== 'string') return text;
+  
+  let filtered = text;
+  for (const { pattern, replacement } of SENSITIVE_PATTERNS) {
+    filtered = filtered.replace(pattern, replacement);
+  }
+  return filtered;
+}
+
+/**
+ * 过滤对象中的敏感信息
+ */
+function filterSensitiveInObject(obj, depth = 0) {
+  if (depth > 3) return obj; // 防止无限递归
+  
+  if (typeof obj === 'string') {
+    return filterSensitiveInfo(obj);
+  }
+  
+  if (typeof obj === 'object' && obj !== null) {
+    const filtered = Array.isArray(obj) ? [] : {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (typeof value === 'string') {
+        filtered[key] = filterSensitiveInfo(value);
+      } else if (typeof value === 'object' && value !== null) {
+        filtered[key] = filterSensitiveInObject(value, depth + 1);
+      } else {
+        filtered[key] = value;
+      }
+    }
+    return filtered;
+  }
+  
+  return obj;
+}
+
 class ErrorHandler {
   constructor(projectRoot) {
     this.projectRoot = projectRoot;
     this.logFile = path.join(projectRoot, ERROR_CONFIG.logFile);
     this.retryCounts = new Map();
     this.errorHistory = [];
+    this.isProduction = process.env.NODE_ENV === 'production';
   }
 
   /**
    * 错误处理主函数
+   * 安全修复：过滤敏感信息
    */
   handleError(error, context = {}) {
     const errorInfo = this.formatError(error, context);
@@ -53,7 +105,8 @@ class ErrorHandler {
     return {
       action: 'graceful_degradation',
       userMessage: ERROR_CONFIG.gracefulMessage,
-      internalMessage: error.message,
+      // 生产环境不暴露内部错误信息
+      internalMessage: this.isProduction ? '[ERROR_DETAILS_REDACTED]' : filterSensitiveInfo(error.message),
       recoverable: false
     };
   }
@@ -61,10 +114,11 @@ class ErrorHandler {
   formatError(error, context) {
     return {
       timestamp: new Date().toISOString(),
-      name: error.name,
-      message: error.message,
-      stack: error.stack || '',
-      context: context,
+      name: filterSensitiveInfo(error.name),
+      message: filterSensitiveInfo(error.message || String(error)),
+      // 生产环境不记录堆栈
+      stack: this.isProduction ? null : filterSensitiveInfo(error.stack || ''),
+      context: filterSensitiveInObject(context),
       operation: context.operation || 'unknown'
     };
   }
@@ -76,10 +130,14 @@ class ErrorHandler {
         fs.mkdirSync(dir, { recursive: true });
       }
 
-      const logEntry = `[${errorInfo.timestamp}] ${errorInfo.name}: ${errorInfo.message}\n` +
+      const safeMessage = filterSensitiveInfo(errorInfo.message);
+      const safeStack = errorInfo.stack ? filterSensitiveInfo(errorInfo.stack) : '';
+      const safeContext = filterSensitiveInObject(errorInfo.context);
+
+      const logEntry = `[${errorInfo.timestamp}] ${safeMessage}\n` +
         `  Operation: ${errorInfo.operation}\n` +
-        `  Context: ${JSON.stringify(errorInfo.context)}\n` +
-        (errorInfo.stack ? `  Stack: ${errorInfo.stack}\n` : '') +
+        `  Context: ${JSON.stringify(safeContext)}\n` +
+        (safeStack ? `  Stack: ${safeStack}\n` : '') +
         '---\n';
 
       fs.appendFileSync(this.logFile, logEntry);

@@ -1,21 +1,94 @@
 /**
  * OpenAlex 学术论文客户端 - 验证学术声明
  * api.openalex.org 完全免费，无限速
+ * 修复：添加超时控制和指数退避重试
  */
 const https = require('https');
 
 const openalexClient = {
-  // HTTP GET 封装
-  _get(url) {
+  // 超时配置（毫秒）
+  TIMEOUT: 30000,  // 30秒超时
+  MAX_RETRIES: 3,   // 最多重试3次
+  BASE_DELAY: 1000,  // 基础延迟1秒
+  
+  /**
+   * HTTP GET 封装 - 带超时和重试
+   * @param {string} url - 请求URL
+   * @param {number} retryCount - 当前重试次数（内部使用）
+   * @returns {Promise<object>} - 解析后的JSON响应
+   */
+  _get(url, retryCount = 0) {
     return new Promise((resolve, reject) => {
-      https.get(url, { headers: { 'Accept': 'application/json' } }, (res) => {
+      const timeoutId = setTimeout(() => {
+        req.destroy();
+        reject(new Error(`请求超时 (${this.TIMEOUT}ms): ${url}`));
+      }, this.TIMEOUT);
+      
+      const req = https.get(url, { 
+        headers: { 
+          'Accept': 'application/json',
+          'User-Agent': 'HeartFlow/1.0'
+        } 
+      }, (res) => {
+        // 检查状态码
+        if (res.statusCode === 429 || res.statusCode >= 500) {
+          clearTimeout(timeoutId);
+          req.destroy();
+          
+          // 需要重试
+          if (retryCount < this.MAX_RETRIES) {
+            const delay = this.BASE_DELAY * Math.pow(2, retryCount); // 指数退避
+            console.warn(`[OpenAlex] 状态码 ${res.statusCode}, ${retryCount + 1}/${this.MAX_RETRIES} 次重试 (延迟 ${delay}ms)`);
+            
+            setTimeout(() => {
+              this._get(url, retryCount + 1)
+                .then(resolve)
+                .catch(reject);
+            }, delay);
+            return;
+          } else {
+            reject(new Error(`达到最大重试次数 (${this.MAX_RETRIES}), 最后状态码: ${res.statusCode}`));
+            return;
+          }
+        }
+        
+        if (res.statusCode !== 200) {
+          clearTimeout(timeoutId);
+          req.destroy();
+          reject(new Error(`HTTP ${res.statusCode}: ${res.statusMessage}`));
+          return;
+        }
+        
         let data = '';
         res.on('data', chunk => data += chunk);
         res.on('end', () => {
-          try { resolve(JSON.parse(data)); }
-          catch (e) { reject(new Error(`JSON解析失败: ${data.slice(0, 100)}`)); }
+          clearTimeout(timeoutId);
+          try { 
+            resolve(JSON.parse(data)); 
+          } catch (e) { 
+            reject(new Error(`JSON解析失败: ${data.slice(0, 100)}`)); 
+          }
         });
-      }).on('error', reject);
+      });
+      
+      req.on('error', (err) => {
+        clearTimeout(timeoutId);
+        
+        // 网络错误重试
+        if (retryCount < this.MAX_RETRIES && 
+            (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.code === 'ENOTFOUND')) {
+          const delay = this.BASE_DELAY * Math.pow(2, retryCount);
+          console.warn(`[OpenAlex] 网络错误 ${err.code}, ${retryCount + 1}/${this.MAX_RETRIES} 次重试 (延迟 ${delay}ms)`);
+          
+          setTimeout(() => {
+            this._get(url, retryCount + 1)
+              .then(resolve)
+              .catch(reject);
+          }, delay);
+        } else {
+          reject(err);
+        }
+      });
     });
   },
 
