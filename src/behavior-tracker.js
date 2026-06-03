@@ -1,10 +1,29 @@
 /**
  * 行为追踪引擎 - 记录和追踪行为改变
  */
+
 const fs = require('fs');
 const path = require('path');
 
-const DATA_FILE = path.join(__dirname, '../data/behavior-tracker.json');
+// 路径验证 - 防止路径遍历攻击
+const DATA_DIR = path.join(__dirname, '../data');
+const resolvedDataDir = path.resolve(DATA_DIR);
+const normalizedDataDir = path.normalize(resolvedDataDir);
+
+if (normalizedDataDir !== resolvedDataDir || !normalizedDataDir.startsWith(path.resolve('.'))) {
+  throw new Error('[BehaviorTracker] Invalid data directory path');
+}
+
+const DATA_FILE = path.join(resolvedDataDir, 'behavior-tracker.json');
+
+// 确保数据目录存在
+try {
+  if (!fs.existsSync(resolvedDataDir)) {
+    fs.mkdirSync(resolvedDataDir, { recursive: true });
+  }
+} catch (e) {
+  console.error('[BehaviorTracker] Failed to create data directory:', e.message);
+}
 
 const behaviorTracker = {
   data: { goals: [] },

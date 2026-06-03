@@ -15,7 +15,18 @@ const { HealingMemoryRL } = require('../self-healing-rl.js');
 
 class SelfEvolutionCore {
   constructor(projectRoot) {
-    this.projectRoot = projectRoot;
+    // 路径验证 - 防止路径遍历攻击
+    if (!projectRoot || typeof projectRoot !== 'string') {
+      throw new Error('[SelfEvolutionCore] Invalid projectRoot');
+    }
+    
+    const resolvedRoot = path.resolve(projectRoot);
+    const normalizedPath = path.normalize(resolvedRoot);
+    if (normalizedPath !== resolvedRoot || !path.isAbsolute(resolvedRoot)) {
+      throw new Error('[SelfEvolutionCore] Invalid projectRoot path');
+    }
+    
+    this.projectRoot = resolvedRoot;
     this.version = '7.7.000';
     
     this.state = {
@@ -32,7 +43,7 @@ class SelfEvolutionCore {
         compassion: 0
       }
     };
-
+    
     // Q-learning 自愈模块
     this.rl = new HealingMemoryRL(100);
     
@@ -46,7 +57,7 @@ class SelfEvolutionCore {
       reference: ['not found', 'undefined', 'null', 'cannot read'],
       type: ['type', 'instanceof', 'expected'],
     };
-
+    
     // 修复策略池
     this._STRATEGIES = ['retry', 'fallback', 'skip', 'abort'];
     this._BACKOFF = { retry: 1000, fallback: 5000, skip: 0, abort: 0 };
