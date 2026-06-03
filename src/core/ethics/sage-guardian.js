@@ -321,6 +321,7 @@ class SAGEGuardian {
 
   /**
    * 安全日志审计追踪
+   * 使用 JSON Lines 格式（每行一个 JSON）
    */
   logSecurityDecision(decision) {
     const logEntry = {
@@ -336,34 +337,44 @@ class SAGEGuardian {
       fs.mkdirSync(logDir, { recursive: true });
     }
 
-    const existing = fs.existsSync(this.logFile) 
-      ? JSON.parse(fs.readFileSync(this.logFile, 'utf8')) 
-      : [];
+    // 使用 JSON Lines 格式（每行一个 JSON）
+    const logLine = JSON.stringify(logEntry) + '\n';
     
-    existing.push(logEntry);
-    
-    // 保持日志在合理大小
-    if (existing.length > 1000) {
-      fs.writeFileSync(this.logFile, JSON.stringify(existing.slice(-500), null, 2));
-    } else {
-      fs.writeFileSync(this.logFile, JSON.stringify(existing, null, 2));
+    try {
+      fs.appendFileSync(this.logFile, logLine);
+      console.log(`[SAGE] Security decision logged: ${decision.level}`);
+      return { success: true };
+    } catch (e) {
+      console.error('[SAGE] Failed to log security decision:', e.message);
+      return { success: false, error: e.message };
     }
-
-    console.log(`[SAGE] Security decision logged: ${decision.level}`);
-    return { success: true };
   }
 
   /**
    * 获取安全日志历史
+   * 解析 JSON Lines 格式
    */
   getSecurityLog(limit = 50) {
     try {
       if (fs.existsSync(this.logFile)) {
-        const logs = JSON.parse(fs.readFileSync(this.logFile, 'utf8'));
+        const content = fs.readFileSync(this.logFile, 'utf8');
+        const logs = content
+          .split('\n')
+          .filter(line => line.trim())
+          .map(line => {
+            try {
+              return JSON.parse(line);
+            } catch (e) {
+              console.warn('[SAGE] Skipping invalid JSON line in security log');
+              return null;
+            }
+          })
+          .filter(entry => entry !== null);
+        
         return logs.slice(-limit);
       }
     } catch (e) {
-      console.log('[SAGE] Error reading security log');
+      console.log('[SAGE] Error reading security log:', e.message);
     }
     return [];
   }

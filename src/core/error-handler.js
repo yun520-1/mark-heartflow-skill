@@ -1,13 +1,28 @@
 /**
- * HeartFlow 错误处理器 v2.0.25
+ * HeartFlow 错误处理器 v2.0.26
  * 统一捕获和处理系统异常
  * 增强：错误类型细分 + 严重等级 + 恢复建议
+ * 安全修复：统一错误处理，防止信息泄露
  */
 
 const fs = require('fs');
 const path = require('path');
 
 const ERROR_LOG = path.join(__dirname, 'error-handler.log');
+
+// 敏感信息过滤规则
+const SENSITIVE_PATTERNS = [
+  // 文件路径
+  { pattern: /\/[a-zA-Z0-9_\-./]+(\/|[a-zA-Z0-9_\-.])/g, replacement: '[PATH]' },
+  // API 密钥（常见格式）
+  { pattern: /(sk-|pk-|api[_-]?key[_-]?)[a-zA-Z0-9]{20,}/gi, replacement: '[API_KEY]' },
+  // 环境变量中的敏感信息
+  { pattern: /(PASSWORD|SECRET|TOKEN|AUTH)[=:]\s*[^\s]+/gi, replacement: '$1=[REDACTED]' },
+  // IP 地址
+  { pattern: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/g, replacement: '[IP_ADDRESS]' },
+  // 电子邮件
+  { pattern: /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, replacement: '[EMAIL]' }
+];
 
 class ErrorHandler {
   constructor() {
@@ -19,9 +34,29 @@ class ErrorHandler {
       byType: {},
       bySeverity: { critical: 0, warning: 0, info: 0 }
     };
+    
+    // 判断是否生产环境
+    this.isProduction = process.env.NODE_ENV === 'production' || 
+                       process.env.HEARTFLOW_ENV === 'production';
   }
 
-  // 严重等级：critical > warning > info
+  /**
+   * 过滤敏感信息
+   * @private
+   */
+  _filterSensitiveInfo(text) {
+    if (!text || typeof text !== 'string') return text;
+    
+    let filtered = text;
+    for (const { pattern, replacement } of SENSITIVE_PATTERNS) {
+      filtered = filtered.replace(pattern, replacement);
+    }
+    return filtered;
+  }
+
+  /**
+   * 严重等级：critical > warning > info
+   */
   _getSeverity(error) {
     const msg = (error.message || '').toLowerCase();
     const criticalPatterns = [
@@ -41,16 +76,25 @@ class ErrorHandler {
     return 'info';
   }
 
-  // 捕获并记录错误
+  /**
+   * 捕获并记录错误
+   * 安全修复：生产环境不返回堆栈信息
+   */
   capture(error, context = {}) {
     const type = this.classifyError(error);
     const severity = this._getSeverity(error);
 
+    // 过滤敏感信息
+    const safeMessage = this._filterSensitiveInfo(error.message || String(error));
+    const safeStack = this.isProduction ? null : this._filterSensitiveInfo(error.stack);
+    const safeContext = this._filterSensitiveInfoInContext(context);
+
     const errorRecord = {
       timestamp: Date.now(),
-      message: error.message || String(error),
-      stack: error.stack,
-      context,
+      message: safeMessage,
+      // 生产环境不记录堆栈（可能包含敏感路径）
+      stack: safeStack,
+      context: safeContext,
       type,
       severity,
       recovery: this.getRecoverySuggestion(type, error)
@@ -70,7 +114,30 @@ class ErrorHandler {
     return errorRecord;
   }
 
-  // 根据错误类型给出恢复建议
+  /**
+   * 过滤上下文中的敏感信息
+   * @private
+   */
+  _filterSensitiveInfoInContext(context) {
+    if (!context || typeof context !== 'object') return context;
+    
+    const filtered = {};
+    for (const [key, value] of Object.entries(context)) {
+      if (typeof value === 'string') {
+        filtered[key] = this._filterSensitiveInfo(value);
+      } else if (typeof value === 'object' && value !== null) {
+        // 递归过滤（限制深度）
+        filtered[key] = this._filterSensitiveInfoInContext(value);
+      } else {
+        filtered[key] = value;
+      }
+    }
+    return filtered;
+  }
+
+  /**
+   * 根据错误类型给出恢复建议
+   */
   getRecoverySuggestion(type, error) {
     const msg = (error.message || '').toLowerCase();
     const suggestions = {
@@ -87,7 +154,9 @@ class ErrorHandler {
     return suggestions[type] || suggestions.unknown;
   }
 
-  // 分类错误（v2.0.25 细分版）
+  /**
+   * 分类错误（v2.0.25 细分版）
+   */
   classifyError(error) {
     const msg = (error.message || '').toLowerCase();
     if (msg.includes('timeout') || msg.includes('timed out')) return 'timeout';
@@ -101,18 +170,40 @@ class ErrorHandler {
     return 'unknown';
   }
 
-  // 记录错误到文件
+  /**
+   * 记录错误到文件
+   * 安全修复：日志中也过滤敏感信息
+   */
   logError(record) {
-    const entry = `[${new Date(record.timestamp).toISOString()}] [${record.severity.toUpperCase()}] ${record.type}: ${record.message}\n  recovery: ${record.recovery}\n`;
-    fs.appendFileSync(ERROR_LOG, entry);
+    const safeMessage = this._filterSensitiveInfo(record.message);
+    const safeRecovery = this._filterSensitiveInfo(record.recovery);
+    
+    const entry = `[${new Date(record.timestamp).toISOString()}] [${record.severity.toUpperCase()}] ${record.type}: ${safeMessage}\n  recovery: ${safeRecovery}\n`;
+    
+    try {
+      fs.appendFileSync(ERROR_LOG, entry);
+    } catch (e) {
+      // 避免递归错误
+      console.error('[ErrorHandler] 无法写入日志:', e.message);
+    }
   }
 
-  // 获取错误历史
+  /**
+   * 获取错误历史
+   * 安全修复：返回前过滤敏感信息
+   */
   getHistory(count = 10) {
-    return this.errors.slice(-count);
+    const history = this.errors.slice(-count);
+    return history.map(record => ({
+      ...record,
+      message: this._filterSensitiveInfo(record.message),
+      stack: this.isProduction ? '[REDACTED_IN_PRODUCTION]' : record.stack
+    }));
   }
 
-  // 获取错误统计
+  /**
+   * 获取错误统计
+   */
   getStats() {
     const stats = {};
     for (const e of this.errors) {

@@ -1016,9 +1016,12 @@ class HeartLogic {
     if (personInPain && emotionIntensity > 0.7) {
       return { result: true, reason: 'person_in_pain', insight: '此刻沉默比说话更有力量' };
     }
-    const uncertaintySignals = ['不确定', '不知道', '看不清', '复杂'];
+    // '不知道' 单独出现才是 uncertainty；'我不知道' 是诚实承认，不应沉默
+    const uncertaintySignals = ['不确定', '看不清', '复杂'];
     const isUncertain = uncertaintySignals.some(s => (input || '').includes(s));
-    if (isUncertain) {
+    // 单独检测'不知道'（排除'我不知道'、'我们不知道'等）
+    const hasBareBudong = (input || '').includes('不知道') && !(input || '').includes('我不知道');
+    if (isUncertain || hasBareBudong) {
       return { result: true, reason: 'uncertainty', insight: '不确定时，沉默是诚实的选择' };
     }
     // 检查是否在重复说过的
