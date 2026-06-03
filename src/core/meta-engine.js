@@ -295,16 +295,31 @@ class MetaEngine {
   /**
    * 自我编辑 - 更新技能描述
    * 安全: 只允许 ~/.hermes/skills/ 目录下的文件
+   * [A01] 安全修复: 使用 normalize 替代 resolve，防止路径遍历攻击
    */
   async selfEdit(skillPath, updates) {
     try {
       // Use module-level path (avoid redundant require)
       const homedir = require('os').homedir();
       const allowedDir = path.join(homedir, '.hermes', 'skills');
-      const resolvedPath = path.resolve(skillPath);
+      
+      // [A01] 安全修复: 使用 normalize 替代 resolve
+      // normalize 会解析 ../ 但不会解析为绝对路径
+      // 然后再用 resolve 获取真实路径进行验证
+      const normalizedPath = path.normalize(skillPath);
+      
+      // 检查路径遍历攻击: 规范化后不应包含 ../
+      if (normalizedPath.includes('../') || normalizedPath.includes('..\\')) {
+        return { success: false, reason: 'path_traversal_detected' };
+      }
+      
+      const resolvedPath = path.resolve(normalizedPath);
+      
+      // 确保解析后的路径在允许的目录内
       if (!resolvedPath.startsWith(allowedDir)) {
         return { success: false, reason: 'path_traversal_blocked' };
       }
+      
       if (!fs.existsSync(resolvedPath)) {
         return { success: false, reason: 'skill_not_found' };
       }
@@ -312,7 +327,7 @@ class MetaEngine {
       let content = await fsPromises.readFile(resolvedPath, 'utf8');
       
       for (const [key, value] of Object.entries(updates)) {
-        const regex = new RegExp(`## ${key}[\\\\s\\\\S]*?(?=## |$)`, 'i');
+        const regex = new RegExp(`## ${key}[\\s\\S]*?(?=## |$)`, 'i');
         if (regex.test(content)) {
           content = content.replace(regex, `## ${key}\n${value}\n`);
         } else {

@@ -489,7 +489,9 @@ function retrieve(id) {
     return mem;
   }
   if (foundIn === 'learned') {
-    const mem = aesDecrypt(_learnedStore[id].encrypted);
+    // [修复] aesDecrypt 需要完整的 payload 对象 {encrypted, iv, authTag}
+    const payload = _learnedStore[id];
+    const mem = aesDecrypt(payload);
     mem.accessCount = (mem.accessCount || 0) + 1;
     markLearnedDirty();
     return mem;

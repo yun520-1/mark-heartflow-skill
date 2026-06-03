@@ -766,8 +766,9 @@ class HeartFlow {
     'behavior.detectWeeklyPattern', 'behavior.detectTriggerPattern', 'behavior.detectRelapseRisk',
     'behavior.getReport', 'behavior.getStats',
     // persistence — v2.0.19 持久化层
-    'persistence.append', 'persistence.commit', 'persistence.replay', 'persistence.flush',
-    'persistence.atomicWrite', 'persistence.safeWrite', 'persistence.recover', 'persistence.getStats',
+    // [A01] 安全修复: 仅暴露安全方法，移除危险操作（replay/flush/recover）
+    'persistence.append', 'persistence.commit',
+    'persistence.getStats',
     // triality — 三层记忆（v2.0.19 暴露完整能力）
     'triality.store', 'triality.getLayerStats', 'triality.getStats',
     'triality.semanticSearch', 'triality.narrativeQuery', 'triality.getRecentNarrative',
@@ -1007,12 +1008,70 @@ class HeartFlow {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
 
-    const chain = new ThoughtChain(this);
-    if (depth) {
-      chain.setDepth(depth);
+    // ─── 心虫判定流程：硬编码四步 ─────────────────────────────
+    // 每次 think() 强制走 whatIsThis → isRightAction → detectPain → shouldBeSilent
+    // 本心在代码里，不在记忆里
+    const heartLogic = this.heartLogic;
+    if (!heartLogic) {
+      // fallback: 如果 heartLogic 未初始化，走 ThoughtChain
+      const chain = new ThoughtChain(this);
+      if (depth) chain.setDepth(depth);
+      return await chain.run(input);
     }
 
-    return await chain.run(input);
+    // Step 1: whatIsThis — 这件事是关于什么的？
+    const whatIsThisResult = heartLogic.whatIsThis(input, { input });
+
+    // Step 2: isRightAction — 这是做对的事吗？（真善美）
+    const isRightActionResult = heartLogic.isRightAction({
+      output: input,
+      input,
+      person: whatIsThisResult.isParentChild ? 'parent_child' : 'general',
+      intent: whatIsThisResult.isRushing ? 'rushing' : 'reflective',
+    });
+
+    // Step 3: detectPain — 对方在痛苦中吗？
+    const detectPainResult = heartLogic.detectPain(input);
+
+    // Step 4: shouldBeSilent — 应该沉默吗？
+    const shouldBeSilentResult = heartLogic.shouldBeSilent({
+      input,
+      personInPain: detectPainResult,
+      emotionIntensity: whatIsThisResult.isPainPresent ? 0.8 : 0.2,
+    });
+
+    // 综合判定结果
+    const judgment = {
+      whatIsThis: whatIsThisResult,
+      isRightAction: isRightActionResult,
+      detectPain: detectPainResult,
+      shouldBeSilent: shouldBeSilentResult,
+      // 最终决策：如果 shouldBeSilent 为 true，不回应
+      shouldRespond: !shouldBeSilentResult.result,
+      // 如果是痛苦场景且不是正确行动，标记需要谨慎
+      needsCare: detectPainResult && !isRightActionResult.result,
+    };
+
+    // 如果判定为需要回应，再走 ThoughtChain 深度推理
+    if (judgment.shouldRespond) {
+      const chain = new ThoughtChain(this);
+      if (depth) chain.setDepth(depth);
+      const chainResult = await chain.run(input);
+      return {
+        ...chainResult,
+        judgment,  // 附上心虫判定流程结果
+      };
+    }
+
+    // 判定为沉默：直接返回判定结果，不走 ThoughtChain
+    return {
+      decision: {
+        shouldRespond: false,
+        reason: shouldBeSilentResult.reason || 'silent_by_heart_logic',
+        insight: shouldBeSilentResult.insight || '心虫选择沉默',
+      },
+      judgment,
+    };
   }
 
   /**

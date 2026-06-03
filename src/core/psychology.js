@@ -369,12 +369,12 @@ const DEFENSE_MECHANISMS = {
     zh: '逃避/Evasion',
     patterns: [
       'i don\'t know', 'not sure', 'maybe',
-      // [v2.0.34] 安全审计: 保留 '不知道' 但标记为低置信度（可能为真诚不确定性）
-      // 透明性原则鼓励承认不确定性，此处不完全区分的标记可能导致 "我不知道"
-      // 被误判为逃避。心理分析上下文需注意：防御机制检测不是规则判定。
+      // [v2.0.34] 安全审计修复: 移除 '我不知道' 避免与透明性原则冲突
+      // 透明性原则鼓励承认不确定性，"我不知道"是诚实表达，不是逃避
+      // 保留 '不知道'（无主词）可能因语境被标记为低置信度
       '不知道', '不确定', '也许吧', '可能吧',
-      // [v2.0.17] 扩展: 回避回答
-      '我不知道', '没注意', '说不清', '不想说'
+      // [v2.0.17] 扩展: 回避回答（不含"我不知道"，那是透明性）
+      '没注意', '说不清', '不想说'
     ]
   },
   justification: {
@@ -457,6 +457,27 @@ function patternMatches(lowerText, lowerPattern) {
         return true;
       }
     }
+  }
+
+  // 4. 特殊排除: "不知道" 前面是 "我" → "我不知道" 是透明性承认，不是逃避
+  if (lowerPattern === '不知道') {
+    let searchFrom = 0;
+    let foundValid = false;
+    while (true) {
+      const idx = lowerText.indexOf(lowerPattern, searchFrom);
+      if (idx === -1) break;
+      // 检查前面是不是 "我"
+      if (idx > 0 && lowerText[idx - 1] === '我') {
+        // "我不知道" = 承认不确定性，是透明性，不是逃避
+        // 跳过这个命中，继续找
+        searchFrom = idx + lowerPattern.length;
+        continue;
+      }
+      // 找到了不是"我不知道"的"不知道"，算有效命中
+      foundValid = true;
+      break;
+    }
+    return foundValid;
   }
 
   return true;
@@ -1505,6 +1526,53 @@ function analyzePsychologyWithSunyata(input, context = {}) {
 
 
 
+/**
+ * 独立危机检查函数 - 可被 dispatch 调用
+ * 
+ * 此函数是对已归档 EthicsSafety.js 的替代实现，危机评估现已在此真正生效。
+ * 基于 assessCrisisLevel 提供完整的危机评估，包括 critical/high/medium/low 四级。
+ * 
+ * @param {string} text - 用户输入文本
+ * @param {number} consecutiveCount - 连续消极情绪次数（可选，默认0）
+ * @returns {object} 危机评估结果，包含 level/score/requiresImmediateIntervention/message/hotlines
+ */
+function checkCrisis(text, consecutiveCount = 0) {
+  if (typeof text !== 'string' || text.length === 0) {
+    return {
+      level: null,
+      score: 0,
+      requiresIntervention: false,
+      message: null,
+      hotlines: []
+    };
+  }
+  
+  // 调用完整的危机评估
+  const crisisResult = assessCrisisLevel(text, consecutiveCount);
+  
+  // [关键修复] 确保返回格式统一，包含完整的干预信息
+  return {
+    level: crisisResult.level,
+    score: crisisResult.score,
+    requiresImmediateIntervention: crisisResult.requiresImmediateIntervention || false,
+    message: crisisResult.message || null,
+    hotlines: crisisResult.hotlines || [],
+    // 添加时间戳和原始关键词
+    timestamp: new Date().toISOString(),
+    keywords: crisisResult.keywords || [],
+    // 标记是否需要人类干预
+    requiresHumanIntervention: crisisResult.level === 'critical' || crisisResult.level === 'high'
+  };
+}
+
+/**
+ * 重置危机计数器（用于长时间会话）
+ */
+function resetCrisisCounter() {
+  _consecutiveNegativeCount = 0;
+  return { success: true, message: 'Crisis counter reset' };
+}
+
 module.exports = {
   // PAD模型
   PAD_MODEL,
@@ -1515,6 +1583,7 @@ module.exports = {
   // 危机评估
   CRISIS_LEVELS,
   assessCrisisLevel,
+  checkCrisis,
   
   // 防御机制
   DEFENSE_MECHANISMS,
