@@ -14,170 +14,115 @@
 
 const path = require('path');
 
-// ─── Subsystem Imports ────────────────────────────────────────────────────────
+// ★ 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
+const _lazyCache = {};
+function _lazy(key, loader) {
+  return function() {
+    if (!_lazyCache[key]) _lazyCache[key] = loader();
+    return _lazyCache[key];
+  };
+}
 
 // Search modules
-const { BM25Engine } = require('./search/bm25.js');
-const { HybridSearchEngine } = require('./search/hybrid-search.js');
+const _BM25Engine = _lazy('bm25', () => require('./search/bm25.js'));
+const _HybridSearchEngine = _lazy('hybridSearch', () => require('./search/hybrid-search.js'));
+const _Budget = _lazy('budget', () => require('./budget.js'));
+const _Graph = _lazy('graph', () => require('./memory/graph.js'));
+const _CoreUtils = _lazy('utils', () => require('./utils.js'));
+const _SearchTrace = _lazy('searchTrace', () => require('./search/search-trace.js'));
+const _Slots = _lazy('slots', () => require('./memory/slots.js'));
+const _Observe = _lazy('observe', () => require('./memory/observe.js'));
+const _MeaningfulMemory = _lazy('meaningfulMemory', () => require('../memory/meaningful-memory.js'));
+const _KnowledgeGraph = _lazy('knowledgeGraph', () => require('../memory/knowledge-graph.js'));
+const _RetrievalAnchor = _lazy('retrievalAnchor', () => require('../memory/retrieval-anchor.js'));
+const _TrialityMemory = _lazy('trialityMemory', () => require('./memory/triality-memory.js'));
+const _EvolutionLoop = _lazy('evolutionLoop', () => require('../evolution/loop.js'));
+const _DreamEngine = _lazy('dreamEngine', () => require('../dream/engine.js'));
+const _DreamConsolidation = _lazy('dreamConsolidation', () => require('./dream-consolidation.js'));
+const _MetaLearner = _lazy('metaLearner', () => require('../evolution/meta-learner.js'));
+const _MetaPromptEngine = _lazy('metaPromptEngine', () => require('./meta-prompt-engine.js'));
+const _GoTEngine = _lazy('gotEngine', () => require('./graph-of-thoughts.js'));
+const _ConstitutionalEngine = _lazy('constitutionalEngine', () => require('./constitutional-ai.js'));
+const _IdentityCore = _lazy('identityCore', () => require('../identity/identity-core.js'));
+const _SelfModel = _lazy('selfModel', () => require('../identity/self-model.js'));
+const _SelfVerifier = _lazy('selfVerifier', () => require('../identity/self-verifier.js'));
+const _LessonBank = _lazy('lessonBank', () => require('../identity/lesson-bank.js'));
+const _TopicScope = _lazy('topicScope', () => require('../identity/topic-scope.js'));
+const _LessonStorage = _lazy('lessonStorage', () => require('./lessons/lesson-storage.js'));
+const _PsychologyEngine = _lazy('psychologyEngine', () => require('../psychology/engine.js'));
+const _StabilityGuard = _lazy('stabilityGuard', () => require('./stability-guard.js'));
+const _ExecutionVerifier = _lazy('executionVerifier', () => require('./execution-verifier.js'));
+const _DecisionVerifier = _lazy('decisionVerifier', () => require('./decision-verifier.js'));
+const _HeartFlowDecision = _lazy('heartFlowDecision', () => require('./decision.js'));
+const _CounterfactualEngine = _lazy('counterfactualEngine', () => require('./counterfactual-engine.js'));
+const _ConfidenceCalibrator = _lazy('confidenceCalibrator', () => require('./confidence-calibrator.js'));
+const _SpontaneousRestraint = _lazy('spontaneousRestraint', () => require('./spontaneous-restraint.js'));
+const _CooperativeArbitration = _lazy('cooperativeArbitration', () => require('./cooperative-arbitration.js'));
+const _EmbodiedCore = _lazy('embodiedCore', () => require('./embodied-core.js'));
+const _BeingLogic = _lazy('beingLogic', () => require('./being-logic.js'));
+const _HeartLogic = _lazy('heartLogic', () => require('./heart-logic.js'));
+const _MetaJudgment = _lazy('metaJudgment', () => require('./judgment.js'));
+const _MetaMemory = _lazy('metaMemory', () => require('./metaMemory.js'));
+const _SkillGenerator = _lazy('skillGenerator', () => require('./skill-generator.js'));
+const _MentalEffortTracker = _lazy('mentalEffortTracker', () => require('./mental-effort-tracker.js'));
+const _LanguageHonesty = _lazy('languageHonesty', () => require('./language-honesty.js'));
+const _ReasoningIntegrator = _lazy('reasoningIntegrator', () => require('./reasoning-integrator.js'));
+const _WorkflowSwitch = _lazy('workflowSwitch', () => require('./workflow-switch.js'));
+const _StateSnapshot = _lazy('stateSnapshot', () => require('./state-snapshot.js'));
+const _ErrorHandler = _lazy('errorHandler', () => require('./error-handler.js'));
+const _ThoughtChain = _lazy('thoughtChain', () => require('./thought-chain.js'));
+const _CognitiveProtocol = _lazy('cognitiveProtocol', () => require('./cognitive-protocol.js'));
+const _GlobalWorkspace = _lazy('globalWorkspace', () => require('./consciousness/global-workspace.js'));
+const _MindWanderer = _lazy('mindWanderer', () => require('./consciousness/mind-wanderer.js'));
+const _PhenomenologyEngine = _lazy('phenomenologyEngine', () => require('./consciousness/phenomenology-engine.js'));
+const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => require('./consciousness/self-model.js'));
+const _SAGEGuardian = _lazy('sageGuardian', () => require('./ethics/sage-guardian.js'));
+const _BoundaryNegotiation = _lazy('boundaryNegotiation', () => require('./ethics/boundary-negotiation.js'));
+const _ValueInternalizer = _lazy('valueInternalizer', () => require('./ethics/value-internalizer.js'));
+const _MindSpaceGuardian = _lazy('mindSpaceGuardian', () => require('./mindspace/mind-space-guardian.js'));
+const _TransmissionEngine = _lazy('transmissionEngine', () => require('./transmission/transmission-engine.js'));
+const _AdaptivePlanner = _lazy('adaptivePlanner', () => require('../planner/adaptive-planner.js'));
+const _StrategySelector = _lazy('strategySelector', () => require('../planner/strategy-selector.js'));
+const _ReplanTrigger = _lazy('replanTrigger', () => require('../planner/replan-trigger.js'));
+const _ExperienceCollector = _lazy('experienceCollector', () => require('../learning/experience-collector.js'));
+const _StrategyAdapter = _lazy('strategyAdapter', () => require('../learning/strategy-adapter.js'));
+const _FailureAnalyzer = _lazy('failureAnalyzer', () => require('../learning/failure-analyzer.js'));
+const _QualityVerifier = _lazy('qualityVerifier', () => require('../verifier/quality-verifier.js'));
+const _OutputChecker = _lazy('outputChecker', () => require('../verifier/output-checker.js'));
+const _PatternMatcher = _lazy('patternMatcher', () => require('../verifier/pattern-matcher.js'));
+const _CuriosityEngine = _lazy('curiosityEngine', () => require('../proactive/curiosity-engine.js'));
+const _DesireEngine = _lazy('desireEngine', () => require('../proactive/desire-engine.js'));
+const _GoalPursuer = _lazy('goalPursuer', () => require('../proactive/goal-pursuer.js'));
+const _SelfInitiator = _lazy('selfInitiator', () => require('../proactive/self-initiator.js'));
+const _SessionMemory = _lazy('sessionMemory', () => require('../memory/session-memory.js'));
+const _ProjectContext = _lazy('projectContext', () => require('../memory/project-context.js'));
+const _LongTermMemory = _lazy('longTermMemory', () => require('../memory/long-term-memory.js'));
+const _CrossSessionIndex = _lazy('crossSessionIndex', () => require('../memory/cross-session-index.js'));
+const _KnowledgeBase = _lazy('knowledgeBase', () => require('../reasoning/knowledge-base.js'));
+const _CommonsenseEngine = _lazy('commonsenseEngine', () => require('../reasoning/commonsense-engine.js'));
+const _CausalInference = _lazy('causalInference', () => require('../reasoning/causal-inference.js'));
+const _InferenceChain = _lazy('inferenceChain', () => require('../reasoning/inference-chain.js'));
+const _AutonomousEmotion = _lazy('autonomousEmotion', () => require('../emotion/autonomous-emotion.js'));
+const _DesireSystem = _lazy('desireSystem', () => require('../emotion/desire-system.js'));
+const _EmotionalGrowth = _lazy('emotionalGrowth', () => require('../emotion/emotional-growth.js'));
+const _MoodEvolution = _lazy('moodEvolution', () => require('../emotion/mood-evolution.js'));
+const _VERSION = _lazy('version', () => require('./version.js'));
 
-// Budget & Token counting
-const { Budget, countTokens, resolveThinkingBudget, exceedsTokenLimit, getBudgetDescription } = require('./budget.js');
-
-// Graph memory
-const Graph = require('./memory/graph.js');
-
-// Core utilities
-const CoreUtils = require('./utils.js');
-
-// Search trace & transparency
-const { SearchTrace, SearchPhaseMetrics, WeightComponents, QueryInfo, SearchSummary } = require('./search/search-trace.js');
-
-// Memory slots & observe
-const { Slots } = require('./memory/slots.js');
-const { createObserve } = require('./memory/observe.js');
-
-// Memory
-const { MeaningfulMemory } = require('../memory/meaningful-memory.js');
-const { KnowledgeGraph } = require('../memory/knowledge-graph.js');
-const { RetrievalAnchor } = require('../memory/retrieval-anchor.js');
-const { TrialityMemory } = require('../core/memory/triality-memory.js');
-
-// Evolution
-const { EvolutionLoop } = require('../evolution/loop.js');
-const { DreamEngine } = require('../dream/engine.js');
-const { DreamConsolidation } = require('./dream-consolidation.js');
-const { MetaLearner } = require('../evolution/meta-learner.js');
-const { MetaPromptEngine } = require('./meta-prompt-engine.js');
-const { GoTEngine } = require('./graph-of-thoughts.js');
-const { ConstitutionalEngine } = require('./constitutional-ai.js');
-
-// Identity
-const { IdentityCore } = require('../identity/identity-core.js');
-const { SelfModel } = require('../identity/self-model.js');
-const { SelfVerifier } = require('../identity/self-verifier.js');
-const { LessonBank } = require('../identity/lesson-bank.js');
-const { TopicScope } = require('../identity/topic-scope.js');
-
-// Lessons persistence — 心虫教训持久化
-const { lessonStorage } = require('./lessons/lesson-storage.js');
-
-
-// Psychology
-const { PsychologyEngine } = require('../psychology/engine.js');
-
-// Engine modules
-const { StabilityGuard } = require('./stability-guard.js');
-const { ExecutionVerifier } = require('./execution-verifier.js');
-const { DecisionVerifier } = require('./decision-verifier.js');
-const { HeartFlowDecision } = require('./decision.js');
-const { CounterfactualEngine } = require('./counterfactual-engine.js');
-const { ConfidenceCalibrator } = require('./confidence-calibrator.js');
-const { SpontaneousRestraint } = require('./spontaneous-restraint.js');
-const { CooperativeArbitration } = require('./cooperative-arbitration.js');
-const { EmbodiedCore } = require('./embodied-core.js');
-const { BeingLogic } = require('./being-logic.js');
-const { HeartLogic } = require('./heart-logic.js');
-
-// Meta systems (v1.2.7 new)
-const { MetaJudgment } = require('./judgment.js');
-const { MetaMemory } = require('./metaMemory.js');
-const { SkillGenerator } = require('./skill-generator.js');
-
-// Mental Effort Tracker — cognitive resource management
-const { MentalEffortTracker } = require('./mental-effort-tracker.js');
-
-// Language honesty — exports functions, not a class
-const LanguageHonesty = require('./language-honesty.js');
-
-// Reasoning integrator — exports functions
-const ReasoningIntegrator = require('./reasoning-integrator.js');
-
-// Workflow switch — exports functions
-const WorkflowSwitch = require('./workflow-switch.js');
-
-// State snapshot — singleton object
-const StateSnapshot = require('./state-snapshot.js');
-
-// Error handler — singleton object
-const ErrorHandler = require('./error-handler.js');
-
-// Thought chain orchestrator — 串联所有引擎形成统一思维链
-const { ThoughtChain, createThoughtChain, REASONING_DEPTH } = require('./thought-chain.js');
-
-// Cognitive protocol — 认知协议：慢下来、先理解再行动
-const { CognitiveProtocol } = require('./cognitive-protocol.js');
-
-// Consciousness — 意识层（全局工作空间 + 意识现象学）
-const { GlobalWorkspace } = require('./consciousness/global-workspace.js');
-const { MindWanderer } = require('./consciousness/mind-wanderer.js');
-const { PhenomenologyEngine } = require('./consciousness/phenomenology-engine.js');
-const { SelfModel: ConsciousnessSelfModel } = require('./consciousness/self-model.js');
-
-// Ethics — 伦理守护（SAGE + 边界协商 + 价值内化）
-const { SAGEGuardian } = require('./ethics/sage-guardian.js');
-const { BoundaryNegotiation } = require('./ethics/boundary-negotiation.js');
-const { ValueInternalizer } = require('./ethics/value-internalizer.js');
-
-// MindSpace — 心空间守护（替代 plain object）
-const { MindSpaceGuardian } = require('./mindspace/mind-space-guardian.js');
-
-// Transmission — 知识传递引擎
-const { TransmissionEngine } = require('./transmission/transmission-engine.js');
-
-// ─── Planning Layer — 规划能力 ────────────────────────────────────────────────
-const { AdaptivePlanner } = require('../planner/adaptive-planner.js');
-const { StrategySelector } = require('../planner/strategy-selector.js');
-const { ReplanTrigger } = require('../planner/replan-trigger.js');
-
-// ─── Learning Layer — 学习能力 ────────────────────────────────────────────────
-const { ExperienceCollector } = require('../learning/experience-collector.js');
-const { StrategyAdapter } = require('../learning/strategy-adapter.js');
-const { FailureAnalyzer } = require('../learning/failure-analyzer.js');
-
-// ─── Verification Layer — 验证能力 ──────────────────────────────────────────
-const { QualityVerifier } = require('../verifier/quality-verifier.js');
-const { OutputChecker } = require('../verifier/output-checker.js');
-const { PatternMatcher } = require('../verifier/pattern-matcher.js');
-
-// ─── Proactive Layer — 主动引擎 ──────────────────────────────────────────────
-const { CuriosityEngine } = require('../proactive/curiosity-engine.js');
-const { DesireEngine } = require('../proactive/desire-engine.js');
-const { GoalPursuer } = require('../proactive/goal-pursuer.js');
-const { SelfInitiator } = require('../proactive/self-initiator.js');
-
-// ─── Cross-Session Memory Layer — 跨会话记忆 ─────────────────────────────────
-const { SessionMemory } = require('../memory/session-memory.js');
-const { ProjectContext } = require('../memory/project-context.js');
-const { LongTermMemory } = require('../memory/long-term-memory.js');
-const { CrossSessionIndex } = require('../memory/cross-session-index.js');
-
-// ─── Reasoning Layer — 推理 ──────────────────────────────────────────────────
-const { KnowledgeBase } = require('../reasoning/knowledge-base.js');
-const { CommonsenseEngine } = require('../reasoning/commonsense-engine.js');
-const { CausalInference } = require('../reasoning/causal-inference.js');
-const { InferenceChain } = require('../reasoning/inference-chain.js');
-
-// ─── Emotional Autonomy Layer — 情感自主 ─────────────────────────────────────
-const { AutonomousEmotion } = require('../emotion/autonomous-emotion.js');
-const { DesireSystem } = require('../emotion/desire-system.js');
-const { EmotionalGrowth } = require('../emotion/emotional-growth.js');
-const { MoodEvolution } = require('../emotion/mood-evolution.js');
-
-// ─── Version ─────────────────────────────────────────────────────────────────
-// VERSION 从 ./version.js 单一来源读取；禁止在此文件硬编码版本号。
-// 运行时永远等于 package.json 的 version 字段；如需升级版本，调用 bumpVersion()
-const { VERSION } = require('./version.js');
 const BUILD_DATE = '2026-06-03';
 
 class HeartFlow {
   constructor(config = {}) {
-    this.version = VERSION;
+    this.version = null;  // 启动时惰性解析
+    this.version = _VERSION().VERSION;
     this.buildDate = BUILD_DATE;
     this.config = config;
     this.startTime = null;
     this.sessionId = null;
     this.started = false;
     this.rootPath = config.rootPath || path.join(__dirname, '..', '..');
+
+    // [v2.0.19 FIX] _initErrors 必须在所有 try/catch 之前初始化
+    this._initErrors = [];
 
     // Subsystem instances (null until start)
     this.identityCore = null;  // 身份核心 — 每次启动第一优先加载
@@ -273,11 +218,15 @@ class HeartFlow {
     this.emotionalGrowth = null;  // 情感成长
     this.moodEvolution = null;  // 心境演化
 
-    this.SearchTrace = SearchTrace;
-    this.SearchPhaseMetrics = SearchPhaseMetrics;
-    this.WeightComponents = WeightComponents;
-    this.QueryInfo = QueryInfo;
-    this.SearchSummary = SearchSummary;
+    const STMod = _SearchTrace();
+    this.SearchTrace = STMod.SearchTrace;
+    this.SearchPhaseMetrics = STMod.SearchPhaseMetrics;
+    this.WeightComponents = STMod.WeightComponents;
+    this.QueryInfo = STMod.QueryInfo;
+    this.SearchSummary = STMod.SearchSummary;
+
+    // 记录搜索相关的类供外部引用
+    this._STRefs = { SearchTrace: this.SearchTrace, SearchPhaseMetrics: this.SearchPhaseMetrics, WeightComponents: this.WeightComponents, QueryInfo: this.QueryInfo, SearchSummary: this.SearchSummary };
 
     this._modules = {};
     this._mindSpace = null;   // 内部引用（向后兼容），实际模块用 this.mindSpace
@@ -293,10 +242,11 @@ class HeartFlow {
     if (this.started) return;
     this.startTime = Date.now();
     this.sessionId = `session-${this.startTime}`;
+    // 惰性解析版本号
+    this.version = _VERSION().VERSION;
 
     // ─── 身份核心 — 第一优先加载 ─────────────────────────────
-    // 确保每次启动都能接上之前的记忆
-    this.identityCore = new IdentityCore(this.rootPath);
+    this.identityCore = new (_IdentityCore().IdentityCore)(this.rootPath);
     const identityResult = this.identityCore.boot();
     if (identityResult.success) {
       // 如果有上次会话，打印会话间隔
@@ -309,40 +259,35 @@ class HeartFlow {
     }
 
     // ─── 认知协议 — 慢下来，先理解再行动 ─────────────────────
-    this.cognitive = new CognitiveProtocol(this.rootPath, this.identityCore);
-    // 启动后打印上下文摘要
+    this.cognitive = new (_CognitiveProtocol().CognitiveProtocol)(this.rootPath, this.identityCore);
     this.cognitive.printStartupContext();
 
     // Memory
-    this.memory = new MeaningfulMemory(this.rootPath);
-    this.triality = new TrialityMemory(this.rootPath);
-    this.knowledge = new KnowledgeGraph(this.rootPath);
-    // RetrievalAnchor — 已禁用（未被调用）
-    // this.anchor = new RetrievalAnchor();
+    this.memory = new (_MeaningfulMemory().MeaningfulMemory)(this.rootPath);
+    this.triality = new (_TrialityMemory().TrialityMemory)(this.rootPath);
+    this.knowledge = new (_KnowledgeGraph().KnowledgeGraph)(this.rootPath);
 
     // TopicScope — 话题隔离，主动实例化并桥接到 MeaningfulMemory
-    const { TopicScope } = require('../identity/topic-scope.js');
-    this.topicScope = new TopicScope().setMemoryBridge(this.memory);
+    this.topicScope = new (_TopicScope().TopicScope)().setMemoryBridge(this.memory);
 
     // Evolution
-    this.evolution = new EvolutionLoop({ rootPath: this.rootPath, memory: this.memory }).boot();
-    this.dream = new DreamEngine({});
-    this.dreamConsolidation = new DreamConsolidation(this.memory);
-    this.lesson = new LessonBank(this.rootPath);
-    this.metaJudgment = new MetaJudgment(this.rootPath);
-    this.metaMemory = new MetaMemory(this.rootPath);
-    this.skillGenerator = new SkillGenerator(this.rootPath);
-    this.meta = new MetaLearner({ rootPath: this.rootPath, memory: this.memory }).boot();
+    this.evolution = new (_EvolutionLoop().EvolutionLoop)({ rootPath: this.rootPath, memory: this.memory }).boot();
+    this.dream = new (_DreamEngine().DreamEngine)({});
+    this.dreamConsolidation = new (_DreamConsolidation().DreamConsolidation)(this.memory);
+    this.lesson = new (_LessonBank().LessonBank)(this.rootPath);
+    this.metaJudgment = new (_MetaJudgment().MetaJudgment)(this.rootPath);
+    this.metaMemory = new (_MetaMemory().MetaMemory)(this.rootPath);
+    this.skillGenerator = new (_SkillGenerator().SkillGenerator)(this.rootPath);
+    this.meta = new (_MetaLearner().MetaLearner)({ rootPath: this.rootPath, memory: this.memory }).boot();
 
     // Identity
-    this.self = new SelfModel(this.rootPath);
-    this.verify = new SelfVerifier(this.rootPath);
-    // QuestionTracker — 问题追踪器
-    this.questions = null;  // 已废弃，改用 TopicScope（话题隔离）
+    this.self = new (_SelfModel().SelfModel)(this.rootPath);
+    this.verify = new (_SelfVerifier().SelfVerifier)(this.rootPath);
+    this.questions = null;  // 已废弃，改用 TopicScope
 
     // Psychology
-    this.psychology = new PsychologyEngine(this.memory);
-    // Emotion — 委托 PsychologyEngine（EmotionalProtocol 已移除，功能整合进 PsychologyEngine）
+    this.psychology = new (_PsychologyEngine().PsychologyEngine)(this.memory);
+    // Emotion — 委托 PsychologyEngine
     this.emotion = {
       process: (input) => {
         if (!this.psychology) return { pad: { pleasure: 0, arousal: 0, dominance: 0 }, intensity: 0, type: 'neutral' };
@@ -356,9 +301,7 @@ class HeartFlow {
       }
     };
 
-    // Security — 已移除（精简版）
-
-    // Truth — 事实核查模块（使用factChecker包装）
+    // Truth
     try {
       const { factChecker } = require('./fact-checker.js');
       this.truth = {
@@ -371,25 +314,19 @@ class HeartFlow {
       this._initErrors.push({ module: 'truth', error: e.message });
     }
 
-    // Behavior — 行为模式系统（v2.0.19 接入）
-    // 集成孤儿模块 behavior-tracker.js + pattern-detector.js
-    // 暴露 dispatch: behavior.* — 以前没接入主循环
-    // 路径：src/core/heartflow.js → src/behavior-tracker.js (一级 ../)
+    // Behavior
     try {
       const { behaviorTracker } = require('../behavior-tracker.js');
       const { patternDetector } = require('../pattern-detector.js');
       this.behavior = {
-        // Goal 生命周期
         createGoal: (args) => behaviorTracker.createGoal(args),
         record: (goalId, args) => behaviorTracker.record(goalId, args),
         getProgress: (goalId) => behaviorTracker.getProgress(goalId),
         formatProgress: (goalId) => behaviorTracker.formatProgress(goalId),
         getAllGoals: () => behaviorTracker.data.goals,
-        // Pattern 分析（pattern-detector）
         detectWeeklyPattern: (records) => patternDetector.detectWeeklyPattern(records),
         detectTriggerPattern: (records) => patternDetector.detectTriggerPattern(records),
         detectRelapseRisk: (goal) => patternDetector.detectRelapseRisk(goal),
-        // 综合报告
         getReport: (goalId) => {
           const p = behaviorTracker.getProgress(goalId);
           if (!p) return null;
@@ -409,35 +346,27 @@ class HeartFlow {
       this._initErrors.push({ module: 'behavior', error: e.message });
     }
 
-    // Persistence — 持久化层（v2.0.19 接入）
-    // 集成孤儿模块 write-ahead-log.js + atomic-write.js
-    // 暴露 dispatch: persistence.* — 崩溃安全写入
+    // Persistence
     try {
       const { WriteAheadLog, OP_TYPES } = require('../utils/write-ahead-log.js');
       const { atomicWrite } = require('../utils/atomic-write.js');
       const fs = require('fs');
-      // WAL 目录：memory/wal/
       const walDir = require('path').join(this.rootPath, 'memory', 'wal');
-      try { fs.mkdirSync(walDir, { recursive: true }); } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'wal_dir', error: e.message }); }
+      try { fs.mkdirSync(walDir, { recursive: true }); } catch (e) { /* wal dir already exists or fails */ }
       const wal = new WriteAheadLog(walDir);
-      wal._loadSeq();  // 异步加载 seq，先不等
+      wal._loadSeq();
       this.persistence = {
-        // WAL 原始 API
         append: (opType, data) => wal.append(opType, data),
         commit: (seq) => wal.commit(seq),
         replay: () => wal.replay(),
         flush: () => wal.flush(),
-        // 原子写
         atomicWrite: (filePath, content, options) => atomicWrite(filePath, content, options),
-        // 组合：safeWrite = WAL 记录 + 原子写
-        // 用途：lesson 写入、meaningful-memory 更新等关键路径
         safeWrite: async (filePath, content) => {
           const seq = await wal.append('write', { file: filePath, content: content.toString().slice(0, 50000) });
           await atomicWrite(filePath, content);
           await wal.commit(seq);
           return { ok: true, seq, file: filePath };
         },
-        // 崩溃恢复：扫描 WAL，提交未完成的事务
         recover: async () => {
           const pending = await wal.replay();
           const results = [];
@@ -453,30 +382,23 @@ class HeartFlow {
           }
           return results;
         },
-        getStats: () => ({
-          type: 'wal+atomic',
-          walDir,
-          opTypes: OP_TYPES,
-        }),
+        getStats: () => ({ type: 'wal+atomic', walDir, opTypes: OP_TYPES }),
       };
     } catch (e) {
       this._initErrors.push({ module: 'persistence', error: e.message });
     }
 
-    // Engine modules (classes) — track errors for healthCheck
-    this._initErrors = [];
-    try { this.stability = new StabilityGuard(); } catch (e) { this._initErrors.push({module: 'stability', error: e.message}); }
-    try { this.execution = new ExecutionVerifier(); } catch (e) { this._initErrors.push({module: 'execution', error: e.message}); }
-    try { this.decision = new HeartFlowDecision(this.memory); } catch (e) { this._initErrors.push({module: 'decision', error: e.message}); }
-    try { this.decisionVerifier = new DecisionVerifier(); } catch (e) { this._initErrors.push({module: 'decisionVerifier', error: e.message}); }
-    try { this.counterfactual = new CounterfactualEngine(); } catch (e) { this._initErrors.push({module: 'counterfactual', error: e.message}); }
-    try { this.confidence = new ConfidenceCalibrator(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
-    try { this.restraint = new SpontaneousRestraint(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
-    // 已禁用的模块 — 不再初始化，减少启动时间
-    // this.embodied — 直接跳过
-    try { this.workflow = new WorkflowSwitch(); } catch (e) {}
-    this.snapshot = StateSnapshot;   // singleton export
-    this.error = ErrorHandler;       // singleton export
+    // Engine modules
+    try { this.stability = new (_StabilityGuard().StabilityGuard)(); } catch (e) { this._initErrors.push({module: 'stability', error: e.message}); }
+    try { this.execution = new (_ExecutionVerifier().ExecutionVerifier)(); } catch (e) { this._initErrors.push({module: 'execution', error: e.message}); }
+    try { this.decision = new (_HeartFlowDecision().HeartFlowDecision)(this.memory); } catch (e) { this._initErrors.push({module: 'decision', error: e.message}); }
+    try { this.decisionVerifier = new (_DecisionVerifier().DecisionVerifier)(); } catch (e) { this._initErrors.push({module: 'decisionVerifier', error: e.message}); }
+    try { this.counterfactual = new (_CounterfactualEngine().CounterfactualEngine)(); } catch (e) { this._initErrors.push({module: 'counterfactual', error: e.message}); }
+    try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
+    try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
+    try { this.workflow = new (_WorkflowSwitch().WorkflowSwitch)(); } catch (e) { /* workflow optional */ }
+    this.snapshot = _StateSnapshot();
+    this.error = _ErrorHandler();
 
     // ─── Tier 2 延迟加载注册表 ──────────────────────────────────────────
     // Tier 2 模块在首次 dispatch 时才加载并实例化。
@@ -515,43 +437,43 @@ class HeartFlow {
     // try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { console.warn('[HeartFlow] HybridSearch init error:', e.message); }
 
     // Budget & Utils (function exports, not classes)
-    this.budget = { Budget, countTokens, resolveThinkingBudget, exceedsTokenLimit, getBudgetDescription };
-    this.utils = CoreUtils;
+    const BudgetMod = _Budget();
+    this.budget = { Budget: BudgetMod.Budget, countTokens: BudgetMod.countTokens, resolveThinkingBudget: BudgetMod.resolveThinkingBudget, exceedsTokenLimit: BudgetMod.exceedsTokenLimit, getBudgetDescription: BudgetMod.getBudgetDescription };
+    this.utils = _CoreUtils();
 
     // Graph (singleton functions)
-    this.graph = Graph;
+    this.graph = _Graph();
 
-    // Slots & Observe (reference from heartflow context)
+    // Slots & Observe
     try {
-      this.slots = new Slots({ dataDir: path.join(this.rootPath, 'data') });
-    } catch (e) { console.warn('[HeartFlow] Slots init error:', e.message); }
+      this.slots = new (_Slots().Slots)({ dataDir: path.join(this.rootPath, 'data') });
+    } catch (e) { /* slots optional */ }
     try {
-      this.observe = createObserve(this.memory, { autoConsolidate: true });
+      const observeMod = _Observe();
+      this.observe = observeMod.createObserve(this.memory, { autoConsolidate: true });
       this.consolidate = {
         consolidate: (...args) => this.observe.consolidate(...args),
         stop: () => this.observe.stop(),
         stats: () => this.observe.stats(),
       };
-    } catch (e) { console.warn('[HeartFlow] Observe init error:', e.message); }
+    } catch (e) { /* observe optional */ }
 
     // ─── Diagnostic ───────────────────────────────────────────────────────────
     const { runDiagnostic } = require('./self-diagnostic.js');
     this.diagnostic = { run: runDiagnostic };
-    
-    // ─── MindSpace — 心空间守护（替代 plain object）────────────────────────────
-    try {
-      this.mindSpace = new MindSpaceGuardian(this.memory);
-      this._mindSpace = this.mindSpace;  // 向后兼容内部引用
-    } catch (e) {
-      console.warn('[HeartFlow] MindSpace init error:', e.message);
-    }
 
-    // ─── Consciousness Layer — 意识层（GWT + 现象学）──────────────────────────
+    // ─── MindSpace — 心空间守护 ────────────────────────────────────────────────
     try {
-      this.globalWorkspace = new GlobalWorkspace(this.rootPath);
-      this.mindWanderer = new MindWanderer(this.rootPath);
-      this.phenomenology = new PhenomenologyEngine();
-      this.consciousnessSelf = new ConsciousnessSelfModel(this.rootPath);
+      this.mindSpace = new (_MindSpaceGuardian().MindSpaceGuardian)(this.memory);
+      this._mindSpace = this.mindSpace;
+    } catch (e) { /* mindspace optional */ }
+
+    // ─── Consciousness Layer ───────────────────────────────────────────────────
+    try {
+      this.globalWorkspace = new (_GlobalWorkspace().GlobalWorkspace)(this.rootPath);
+      this.mindWanderer = new (_MindWanderer().MindWanderer)(this.rootPath);
+      this.phenomenology = new (_PhenomenologyEngine().PhenomenologyEngine)();
+      this.consciousnessSelf = new (_ConsciousnessSelfModel().SelfModel)(this.rootPath);
       this.consciousness = {
         globalWorkspace: this.globalWorkspace,
         mindWanderer: this.mindWanderer,
@@ -562,15 +484,13 @@ class HeartFlow {
           wanderer: this.mindWanderer?.isActive || false,
         })
       };
-    } catch (e) {
-      console.warn('[HeartFlow] Consciousness init error:', e.message);
-    }
+    } catch (e) { /* consciousness optional */ }
 
-    // ─── Ethics Layer — 伦理守护（SAGE + 边界协商 + 价值内化）────────────────
+    // ─── Ethics Layer ──────────────────────────────────────────────────────────
     try {
-      this.sageGuardian = new SAGEGuardian(this.rootPath);
-      this.boundaryNeg = new BoundaryNegotiation(this.rootPath);
-      this.valueInternalizer = new ValueInternalizer(this.rootPath);
+      this.sageGuardian = new (_SAGEGuardian().SAGEGuardian)(this.rootPath);
+      this.boundaryNeg = new (_BoundaryNegotiation().BoundaryNegotiation)(this.rootPath);
+      this.valueInternalizer = new (_ValueInternalizer().ValueInternalizer)(this.rootPath);
       this.ethics = {
         guardian: this.sageGuardian,
         boundary: this.boundaryNeg,
@@ -581,25 +501,17 @@ class HeartFlow {
           return { guardianResult, boundaryResult };
         }
       };
-    } catch (e) {
-      console.warn('[HeartFlow] Ethics init error:', e.message);
-    }
+    } catch (e) { /* ethics optional */ }
 
-    // ─── Transmission Layer — 知识传递引擎 ─────────────────────────────────────
+    // ─── Transmission Layer ────────────────────────────────────────────────────
     try {
-      this.transmission = new TransmissionEngine(this.rootPath);
-    } catch (e) {
-      console.warn('[HeartFlow] Transmission init error:', e.message);
-    }
+      this.transmission = new (_TransmissionEngine().TransmissionEngine)(this.rootPath);
+    } catch (e) { /* transmission optional */ }
 
-    // ─── Heart Logic — 心虫核心判断引擎 ─────────────────────────────────────────
-    // 本心在代码里，不在记忆里
-    // 每次启动都是完整人格
+    // ─── Heart Logic ──────────────────────────────────────────────────────────
     try {
-      this.heartLogic = new HeartLogic();
-    } catch (e) {
-      console.warn('[HeartFlow] HeartLogic init error:', e.message);
-    }
+      this.heartLogic = new (_HeartLogic().HeartLogic)();
+    } catch (e) { /* heartLogic optional */ }
 
     // ─── 推理层 & 情感自主层 — 必须在 ThoughtChain 之前注册 ────────────────
     // [FIX] 解决模块在 _registerModules() 之后才初始化导致丢失的问题
@@ -618,40 +530,25 @@ class HeartFlow {
 
     // ─── Thought Chain 初始化 ───────────────────────────────────────────────
     try {
-      this.thoughtChain = new ThoughtChain(this);
-      this.thoughtChain.setDepth(REASONING_DEPTH.DEEP);  // 默认深度推理
+      const TCMod = _ThoughtChain();
+      this.thoughtChain = new (TCMod.ThoughtChain)(this);
+      this.thoughtChain.setDepth(TCMod.REASONING_DEPTH.DEEP);
 
-      // 包装对象：让 dispatch 可以调用 think 系列方法
-      // dispatch 期望 hf.modules['thoughtChain'].think(...)
       this._thoughtChainApi = {
         think: (input) => this.think(input),
         thinkFast: (input) => this.thinkFast(input),
         thinkDeep: (input) => this.thinkDeep(input),
         getSummary: (result) => this.thoughtChain?.getSummary(result),
-        REASONING_DEPTH,
+        REASONING_DEPTH: TCMod.REASONING_DEPTH,
       };
     } catch (e) {
-      console.warn('[HeartFlow] ThoughtChain init error:', e.message);
+      this._initErrors.push({ module: 'thoughtChain', error: e.message });
       this._thoughtChainApi = null;
     }
 
-    // ─── Thought Chain 初始化 ───────────────────────────────────────────────
     if (this._thoughtChainApi) {
       this._modules.thoughtChain = this._thoughtChainApi;
     }
-
-    // Tier 2 模块：延迟加载，不在 start() 里初始化 ──────────────
-    // adaptivePlanner / strategySelector / replanTrigger
-    // experienceCollector / strategyAdapter / failureAnalyzer
-    // qualityVerifier / outputChecker / patternMatcher
-    // curiosityEngine / desireEngine / goalPursuer / selfInitiator
-    // sessionMemory / projectContext / longTermMemory / crossSessionIndex
-    // knowledgeBase / commonsenseEngine / causalInference / inferenceChain
-    // autonomousEmotion / desireSystem / emotionalGrowth / moodEvolution
-    // 见 this._lazy 注册表 + dispatch() 懒加载逻辑
-
-    // [FIX] 解决模块丢失问题：所有初始化完成后，统一注册
-    // Tier 2 模块（Planning/Learning/Verification/Proactive/CrossSession/Reasoning/Emotion）延迟到 dispatch
     this._registerModules();
     this.started = true;
   }
@@ -958,7 +855,7 @@ class HeartFlow {
   // ─── Health ─────────────────────────────────────────────────────────────
 
   async healthCheck() {
-    if (!this.started) return { started: false, version: VERSION, error: 'not_started' };
+    if (!this.started) return { started: false, version: this.version, error: 'not_started' };
     const loaded = Object.keys(this._modules);
     const all = [
       'memory', 'triality', 'knowledge', 'anchor',
@@ -978,7 +875,7 @@ class HeartFlow {
       started: true,
       uptime_ms: Date.now() - this.startTime,
       sessionId: this.sessionId,
-      version: VERSION,
+      version: this.version,
       buildDate: BUILD_DATE,
       subsystems: {
         loaded: loaded.length,
@@ -1384,4 +1281,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { HeartFlow, createHeartFlow, VERSION, MentalEffortTracker };
+module.exports = { HeartFlow, createHeartFlow, VERSION: _VERSION().VERSION, MentalEffortTracker: _MentalEffortTracker().MentalEffortTracker };
