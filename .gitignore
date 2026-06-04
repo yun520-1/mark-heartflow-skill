@@ -1,65 +1,9 @@
-# HeartFlow .gitignore — 审计修复 S-08 (2026-05-30)
-# 排除敏感数据和运行时文件
-
-# === 隐私数据 ===
-config/
-memory/
-data/
-internal/data/
-internal/memory/
-internal/api/
-
-# === 日志 ===
-logs/
-evolution_logs/
-*.log
-
-# === 补丁和临时文件 ===
-patches/
-temp/
-cache/
-downloads/
-documents/
-
-# === 运行时 ===
 node_modules/
-.DS_Store
+data/
+memory/
+auth.json
 .env
-.env.*
-__pycache__/
-**/__pycache__/
-*.pyc
-
-# === 证书密钥 ===
-*.pem
-*.key
-
-# === 锁文件 ===
-*.lock
-
-# === 工作区数据 ===
-.workbuddy/
-
-# === 历史备份 ===
-backups/
-
-# === 运行时数据文件 (根目录) ===
-# meaningful-memory 运行时数据
-meaningful-*.json
-self-model.json
-self-model.json.tmp.*
-self-verification.json
-truthfulness-stats.json
-lesson-bank.json
-
-# 临时文件和构建产物
-check-exports.js
-dist/
-cron/
-heartflow-identity/
-pre-launch-check-*.md
-references/capability-audit.md
-
-# Archive - local cleanup backup
-ARCHIVE_full_cleanup_20260530/
-ARCHIVE_internal_cleanup/
+*.log
+.DS_Store
+src/core/.upgrade-manifest.json
+UPGRADE_REPORT.txt
