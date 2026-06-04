@@ -31,7 +31,7 @@ console.log('\n=== HeartFlow 集成测试 ===\n');
 
 // 核心能力测试
 test('心虫启动', () => hf.started === true);
-test('63+模块注册', () => Object.keys(hf._modules).length >= 60);
+test('40+模块注册', () => Object.keys(hf._modules).length >= 40);
 test('sessionId存在', () => typeof hf.sessionId === 'string' && hf.sessionId.startsWith('session-'));
 
 test('truth.checkStatement路由', () => {

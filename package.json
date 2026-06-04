@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node bin/cli.js",
     "check": "find src bin -name '*.js' -not -path '*/node_modules/*' -print0 | xargs -0 -n 1 node --check",
-    "test": "npm run check"
+    "test": "node tests/integration.test.js && node tests/v2_0_19.test.js",
+    "demo": "node -e \"const {createHeartFlow}=require('./src/core/heartflow.js'); const fs=require('fs'); const hf=createHeartFlow({rootPath:\".\"}); hf.start(); console.log('Version:',fs.readFileSync('./VERSION','utf8').trim()); hf.stop();\""
   },
   "files": [
     "SKILL.md",
