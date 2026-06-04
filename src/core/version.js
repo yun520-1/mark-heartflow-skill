@@ -26,10 +26,19 @@ const VERSION_FILE = path.join(PROJECT_ROOT, 'VERSION');
 const SKILL_MD = path.join(PROJECT_ROOT, 'SKILL.md');
 
 /**
- * 内部：从 package.json 读 version
- * 如果读失败（极端情况），退回 '0.0.0'，绝不抛异常影响模块加载
+ * 内部：优先从 VERSION 文件读版本，package.json 做回退
+ * VERSION 文件是版本号的单一真实来源（由 bumpVersion 维护）
+ * package.json 可能因历史原因不同步
  */
-function _readFromPackage() {
+function _readVersion() {
+  // 1) 优先从 VERSION 文件
+  if (fs.existsSync(VERSION_FILE)) {
+    try {
+      const raw = fs.readFileSync(VERSION_FILE, 'utf-8').trim();
+      if (/^\d+\.\d+\.\d+$/.test(raw)) return raw;
+    } catch (e) { /* fall through */ }
+  }
+  // 2) 回退到 package.json
   try {
     const raw = fs.readFileSync(PACKAGE_JSON, 'utf-8');
     const pkg = JSON.parse(raw);
@@ -40,10 +49,10 @@ function _readFromPackage() {
 }
 
 /**
- * VERSION 常量 — 运行时从 package.json 读取
- * 任何时候 require('./version') 拿到的都是最新的 package.json 版本
+ * VERSION 常量 — 运行时从 VERSION 文件读取（回退到 package.json）
+ * 任何时候 require('./version') 拿到的都是真实版本号
  */
-const VERSION = _readFromPackage();
+const VERSION = _readVersion();
 
 /**
  * getVersion() — 返回结构化版本信息

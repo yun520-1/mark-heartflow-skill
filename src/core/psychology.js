@@ -1062,19 +1062,6 @@ function generateRecommendations(pad, crisis, defenses, needs) {
   return recommendations;
 }
 
-/**
- * 重置连续消极计数
- */
-function resetCrisisCounter() {
-  _consecutiveNegativeCount = 0;
-  return { reset: true };
-}
-
-// ========================================
-// 导出
-// ========================================
-
-
 // ========================================
 // 心虫哲学 × 心理学整合 v1.1.0
 // 基于《深度洞察力心经》心理学映射

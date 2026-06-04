@@ -2,6 +2,44 @@
 
 > ⚠️ **本 CHANGELOG 包含历史记录与审计修复段。v1.5.0-v2.0.6 段描述的"MarkCode / 执行能力 / multimodal / executor-agent"等模块大部分已移除（src/agent-core/, src/multimodal/, src/agents/executor-agent.js, scripts/heartflow-sync-upgrade.sh, scripts/comfyui-cron.sh 均不存在），仅作为"已修复"历史保留。当前能力以 SKILL.md frontmatter 与 `src/` 实际存在代码为准。**
 
+## v2.0.53 (2026-06-04)
+
+### 🧠 dream-consolidation.js 功能升级：记忆衰退评分、多周期梦境模拟、冲突检测
+
+**目标模块**：`src/core/dream-consolidation.js` (3587B → 23701B)
+
+**新增功能**：
+- **记忆衰退评分系统** — 指数衰减模型，6级半衰期（core/identity/consolidated/lesson/pattern/default），访问频率修正半衰期延长，强化加成（每次访问+0.3保留分数）
+- **梦质量度量** — 4维度加权评估：巩固质量(35%)、修剪效率(25%)、综合连贯性(40%)，综合分数0-1
+- **多周期梦境模拟** — 1-8周期自动调度，5阶段睡眠感知（NREM1浅/2中/3深/REM/过渡），渐进式启用（前2周期不修剪，首周期不综合）
+- **洞察优先级排序** — 5因子加权：情感强度(+15)、问题解决(+10)、学习成长(+8)、文本长度(5)、新近性(+5/10)
+- **巩固冲突检测** — 语义矛盾检测（肯定vs否定模式）、数值偏差检测（>30%差异标记），带严重性和修复建议
+- **记忆强化加权** — 5因子：类型权重(core+0.3)、访问频率、新近性(1小时内+0.15)、质量评分、基础权重0.5
+- **梦叙事生成** — 结构化报告：巩固/修剪/综合/冲突/质量/睡眠阶段
+- **梦境历史统计** — 总次数、平均质量、阶段分布、冲突总数
+- **衰退参数动态配置** — 半衰期/强化/频率/最低分可运行时调整
+
+**总计**：`dream-consolidation.js` 从 95 行扩展至 ~450 行 | node --check 语法通过 | VERSION/SKILL.md 同步
+
+## v2.0.43 (2026-06-04)
+
+### 🧠 claim-extractor.js 功能升级：置信度分级、来源追踪、矛盾检测
+
+**目标模块**：`src/core/claim-extractor.js` (2472B → 20086B)
+
+**新增功能**：
+- **置信度分级系统** — 每个声明独立计算置信度分数（0-1），含 `ConfidenceLevel` 枚举（HIGH/MEDIUM/LOW/UNVERIFIED）
+- **声明分类枚举** — `ClaimCategory`（FACT/OPINION/STATISTIC/CITATION/COMPARISON/CAUSATION/TEMPORAL/PREDICTION）
+- **错误分类枚举** — `ErrorCategory`（UNVERIFIED/CONTRADICTORY/IMPRECISE/OUTDATED/MISATTRIBUTED）
+- **来源追踪** — 每个声明记录 `positions`（偏移量、行号、上下文片段）和 `sourceContext`
+- **矛盾检测** — 4种检测类型：数值邻近矛盾、百分比溢出的矛盾、因果链冲突、置信度不一致
+- **优先验证** — `getPriorityVerifications()` 按风险等级排序需要优先验证的声明
+- **验证报告生成** — `generateReport()` 输出完整的置信度分布、分类分布、矛盾统计
+- **声明元数据** — 每个声明含 `extractedAt` 时间戳、`confidenceSignals` 信号列表、`errorCategory`
+- **向后兼容** — `formatAnnotations()` 保留旧接口，`categorize()` 兼容新旧两种数据格式
+
+**总计**：`claim-extractor.js` +504/-0 lines | node --check 语法通过 | VERSION/SKILL.md 同步
+
 ## v2.0.34 (2026-06-03)
 
 ### 🔒 SkillSpector 审计修复（Round 2 — 161项 — 深层代码级）

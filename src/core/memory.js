@@ -1,11 +1,19 @@
 /**
- * @deprecated — use src/core/meaningful-memory.js instead
- * HeartFlow Memory — Ebbinghaus + AES-256-GCM 三层记忆系统
+ * @deprecated — REMOVED in v12.0.0. Use src/core/meaningful-memory.js instead.
  * 
+ * This file is kept for reference only. It is NOT loaded by heartflow.js
+ * or any other module. All functionality has been superseded by
+ * meaningful-memory.js (CORE/LEARNED/EPHEMERAL three-layer system with
+ * multi-channel search, Ebbinghaus forgetting curve, and topic isolation).
+ * 
+ * Legacy references (SKILL.md, CHANGELOG.md) are informational only.
+ * 
+ * Original description:
+ * HeartFlow Memory — Ebbinghaus + AES-256-GCM 三层记忆系统
  * 整合来源（SKILL.md lines 348-540）：
  *   mark-StillWater/src/core/memory.js — Dirty Flag + Ebbinghaus + Atomic Write
  * 
- * 核心能力：
+ * 核心能力（已废弃）：
  * 1. Ebbinghaus 遗忘曲线：R = e^(-t/S)，低于阈值自动压缩/删除
  * 2. AES-256-GCM 加密（LEARNED 层）—— 敏感知识加密存储
  * 3. 三层记忆：CORE (永久) / LEARNED (30天+加密) / EPHEMERAL (会话)

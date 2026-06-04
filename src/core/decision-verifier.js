@@ -183,7 +183,7 @@ class DecisionVerifier {
       ];
       for (const [a, b] of constraintPairs) {
         if (text.includes(a) && text.includes(b)) {
-          issues.push({ type: 'conflicting_constraints', severity: 'high', message: `约束条件自相矛盾��同时要求"${a}"与"${b}"` });
+          issues.push({ type: 'conflicting_constraints', severity: 'high', message: `约束条件自相矛盾，同时要求"${a}"与"${b}"` });
           break;
         }
       }

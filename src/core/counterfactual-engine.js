@@ -398,7 +398,7 @@ class CounterfactualEngine {
     return {
       historySize: this.history.length,
       mode: this.mode,
-      version: '1.5.3',
+      version: '2.0.3',
       premiseSignals: this.premiseSignals.length,
       certaintySignals: this.certaintySignals.length,
     };

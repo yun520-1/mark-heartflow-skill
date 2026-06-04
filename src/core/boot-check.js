@@ -80,8 +80,8 @@ const CORE_CHECKS = [
   },
 ];
 
-// Module load checks — now includes MeaningfulMemory (required)
-// MeaningfulMemory is the primary memory engine; triality-memory is still loaded separately
+// Module load checks — MeaningfulMemory is the primary memory engine
+// triality-memory.js has been merged into meaningful-memory.js
 const MODULE_CHECKS = [
   { id: 'meaningful-memory', label: 'MeaningfulMemory', path: './meaningful-memory.js' },
   { id: 'self-healing-rl', label: 'HealingMemoryRL', path: './self-healing-rl.js' },

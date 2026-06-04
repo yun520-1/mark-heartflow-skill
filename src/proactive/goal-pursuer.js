@@ -35,7 +35,7 @@ class GoalPursuer {
     const strongestDesire = dominantDesires[0];
     const strongestCuriosity = topCuriosityGaps[0];
 
-    if (strongestDesire && strongestDesire.curiosityStrength > this.goalThreshold) {
+    if (strongestDesire && (strongestDesire.currentStrength || 0) > this.goalThreshold) {
       return {
         shouldPursue: true,
         reason: `欲望驱动: ${strongestDesire.name}`,

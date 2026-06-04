@@ -8,7 +8,7 @@
  * Tracks judgment history and computes reliability scores based on
  * the accuracy of past confidence claims after 5+ judgments.
  * 
- * Integrates with: MeaningfulMemory, TrialityMemory
+ * Integrates with: MeaningfulMemory
  */
 
 const fs = require('fs');
@@ -18,20 +18,12 @@ const crypto = require('crypto');
 
 // Graceful dependency loading with fallbacks
 let MeaningfulMemory = null;
-let TrialityMemory = null;
 
 try {
   const MM = require('./meaningful-memory.js');
   MeaningfulMemory = MM.MeaningfulMemory;
 } catch (e) {
   // MeaningfulMemory not available
-}
-
-try {
-  const TM = require('./memory/triality-memory.js');
-  TrialityMemory = TM.TrialityMemory;
-} catch (e) {
-  // TrialityMemory not available
 }
 
 const DATA_DIR = path.join(__dirname, '../../data');

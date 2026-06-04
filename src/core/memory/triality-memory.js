@@ -12,7 +12,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { atomicWrite } = require('../../utils/atomic-write');
 const crypto = require('crypto');
 
 class TrialityMemory {
@@ -47,7 +46,7 @@ class TrialityMemory {
       fs.mkdirSync(dataDir, { recursive: true });
     }
     this.initializeSchema();
-
+    console.log('[TrialityMemory] 三维经验大脑初始化完成');
   }
 
   initializeSchema() {
@@ -82,7 +81,7 @@ class TrialityMemory {
             }
           }
           this.stats.totalMemories = this.memories.length;
-
+          console.log(`[TrialityMemory] 从 ${exportPath} 恢复 ${data.memories.length} 条记忆`);
         }
       } catch (e) {
         console.warn('[TrialityMemory] 恢复记忆失败:', e.message);
@@ -97,7 +96,7 @@ class TrialityMemory {
     }, 2000); // 2秒防抖
   }
 
-  async _doSave() {
+  _doSave() {
     const exportPath = this._getExportPath();
     try {
       const data = {
@@ -105,7 +104,7 @@ class TrialityMemory {
         relationships: Object.fromEntries(this.relationships),
         exportedAt: new Date().toISOString()
       };
-      await atomicWrite(exportPath, JSON.stringify(data, null, 2));
+      fs.writeFileSync(exportPath, JSON.stringify(data, null, 2));
     } catch (e) {
       console.warn('[TrialityMemory] 自动保存失败:', e.message);
     }
@@ -145,7 +144,7 @@ class TrialityMemory {
     }
     
     this.stats.totalMemories = this.memories.length;
-
+    console.log(`[TrialityMemory] 记忆存储: ${id} (${this.memories.length} total)`);
     this._autoSave(); // 自动持久化
     return id;
   }
@@ -333,7 +332,7 @@ class TrialityMemory {
     }
 
     narrative.sort((a, b) => a.timestamp - b.timestamp);
-
+    console.log(`[TrialityMemory] 叙事查询: ${narrative.length} 个记忆节点`);
     return narrative;
   }
 
@@ -363,25 +362,25 @@ class TrialityMemory {
     };
   }
 
-  async exportToFile(filePath) {
+  exportToFile(filePath) {
     const data = {
       memories: this.memories,
       relationships: Array.from(this.relationships.entries()),
       exportedAt: new Date().toISOString()
     };
-    await atomicWrite(filePath, JSON.stringify(data, null, 2));
-
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    console.log(`[TrialityMemory] 导出到: ${filePath}`);
     return { success: true, count: this.memories.length };
   }
 
-  async importFromFile(filePath) {
-    const data = JSON.parse(await fs.promises.readFile(filePath, 'utf8'));
+  importFromFile(filePath) {
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     if (data.memories) {
       for (const mem of data.memories) {
         this.store(mem);
       }
     }
-
+    console.log(`[TrialityMemory] 从 ${filePath} 导入`);
     return { success: true, count: data.memories?.length || 0 };
   }
 
@@ -391,7 +390,7 @@ class TrialityMemory {
     this.memories = this.memories.filter(m => m.timestamp > cutoff);
     this.stats.lastCleanup = new Date().toISOString();
     const removed = before - this.memories.length;
-
+    console.log(`[TrialityMemory] 清理: 移除 ${removed} 条旧记忆`);
     return { removed, remaining: this.memories.length };
   }
 
@@ -453,7 +452,7 @@ class TrialityMemory {
       if (mem) mem.compressed = true;
     }
 
-
+    console.log(`[TrialityMemory] 遗忘曲线清理: 删除 ${toDelete.length} 条, 压缩 ${toCompress.length} 条`);
     return { deleted: toDelete.length, compressed: toCompress.length };
   }
 

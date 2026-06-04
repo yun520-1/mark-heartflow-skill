@@ -220,7 +220,7 @@ class SpontaneousRestraint {
     }
 
     // 5. 检查重复：用户是否在重复同一个问题
-    const history = Array.isArray(context) ? context : context.history;
+    const history = Array.isArray(context) ? context : (context && context.history ? context.history : []);
     if (this.isRepetition(userMessage, history)) {
       result.interventionLevel = 'minimal';
       result.restraintReason = '用户可能在重复问题，需要确认而非重复回答';
@@ -474,7 +474,7 @@ class SpontaneousRestraint {
     const counts = { silent: 0, minimal: 0, full: 0, 'auto-reflex-pause': 0 };
     for (const h of this.history) counts[h.level] = (counts[h.level] || 0) + 1;
     return {
-      version: '1.5.3',  // 与协作仲裁引擎对齐
+      version: '11.6.3',  // 与文件头部注释对齐
       total: this.history.length,
       ...counts,
       aggressiveness: this.aggressiveness,

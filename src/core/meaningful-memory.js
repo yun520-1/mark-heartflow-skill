@@ -21,6 +21,23 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
+// 语义搜索（懒加载，首次使用时才加载模型）
+let _semanticSearch = null;
+function getSemanticSearch() {
+  if (!_semanticSearch) {
+    try {
+      const { SemanticSearch } = require('./search/semantic-search.js');
+      const { env } = require('@xenova/transformers');
+      env.allowRemoteModels = false; // 只用本地模型
+      _semanticSearch = new SemanticSearch({ model: 'Xenova/all-MiniLM-L6-v2' });
+    } catch (e) {
+      // transformers.js 未安装，降级
+      _semanticSearch = null;
+    }
+  }
+  return _semanticSearch;
+}
+
 const DATA_DIR = path.join(__dirname, '../../data');
 const EXPORT_PATH = path.join(DATA_DIR, 'meaningful-memory.json');
 
@@ -210,6 +227,7 @@ class MeaningfulMemory {
     try {
       return fs.existsSync(consentFile);
     } catch (e) {
+      console.warn('[MeaningfulMemory] 检查用户同意文件失败:', e.message);
       return false;
     }
   }
@@ -315,7 +333,7 @@ class MeaningfulMemory {
       const id = mem.id || this.generateId();
       const memoryRecord = {
         id,
-        timestamp: Date.now() * 1000,
+        timestamp: Date.now(),
         layer: 'core',
         content: mem.content,
         summary: mem.summary || mem.content.slice(0, 120),
@@ -346,7 +364,7 @@ class MeaningfulMemory {
    */
   store(memory) {
     const id = memory.id || this.generateId();
-    const timestamp = memory.timestamp || Date.now() * 1000;
+    const timestamp = memory.timestamp || Date.now();
     const layer = memory.layer || this.classifyLayer(memory);
     
     const memoryRecord = {
@@ -412,6 +430,13 @@ class MeaningfulMemory {
   }
   
   generateMockEmbedding(content = '') {
+    // 优先使用真实语义嵌入
+    const ss = getSemanticSearch();
+    if (ss && ss.isAvailable()) {
+      // 返回一个标记，后续在 semanticSearch 中使用真实嵌入
+      return null; // 真实嵌入在 store() 时异步生成
+    }
+    // 降级：sha256 伪嵌入
     const hash = crypto.createHash('sha256').update(content).digest();
     const embedding = [];
     for (let i = 0; i < this.vectorDim; i++) {
@@ -461,11 +486,36 @@ class MeaningfulMemory {
   
   /**
    * Semantic search (embedding cosine similarity)
+   * 使用真实语义模型或降级到伪嵌入
    */
   semanticSearch(queryEmbedding, topK = 10) {
-    const currentTopic = this._currentTopic; // TopicScope 注入的话题标签
+    const currentTopic = this._currentTopic;
     const similarities = [];
     
+    // 如果有真实语义模型可用
+    const ss = getSemanticSearch();
+    if (ss && ss.isAvailable()) {
+      // 遍历所有文档，用余弦相似度计算
+      for (const [id, embedding] of this.vectors) {
+        if (!embedding) continue; // 无嵌入的跳过
+        const sim = this.cosineSimilarity(queryEmbedding, embedding);
+        const memory = this._findMemoryById(id);
+        if (memory) {
+          if (currentTopic && memory.metadata?.topic && memory.metadata.topic !== currentTopic) {
+            continue;
+          }
+          similarities.push({
+            id, content: memory.content, summary: memory.summary,
+            layer: memory.layer, timestamp: memory.timestamp,
+            similarity: sim, metadata: memory.metadata
+          });
+        }
+      }
+      similarities.sort((a, b) => b.similarity - a.similarity);
+      return similarities.slice(0, topK);
+    }
+    
+    // 降级：使用向量存储中的伪嵌入
     for (const [id, embedding] of this.vectors) {
       const sim = this.cosineSimilarity(queryEmbedding, embedding);
       const memory = this._findMemoryById(id);
@@ -626,7 +676,7 @@ class MeaningfulMemory {
   }
   
   applyForgettingCurve() {
-    const now = Date.now() * 1000;
+    const now = Date.now();
     const toDelete = [];
     const toCompress = [];
     
@@ -664,6 +714,184 @@ class MeaningfulMemory {
     return { deleted: toDelete.length, compressed: toCompress.length };
   }
   
+  // ─────────────────────────────────────────
+  // MULTI-CHANNEL SEARCH (extended from triality-memory)
+  // ─────────────────────────────────────────
+
+  /**
+   * 情感通道 - 按 PAD 向量检索相似情感状态的记忆
+   * (移植自 triality-memory.js)
+   */
+  searchByEmotion(targetPAD, limit = 10) {
+    const similarities = [];
+    for (const layer of ['core', 'learned', 'ephemeral']) {
+      for (const mem of (this.layers[layer] || [])) {
+        if (!mem.metadata?.pad) {
+          similarities.push({ id: mem.id, layer, content: mem.content, similarity: 0 });
+          continue;
+        }
+        const memPAD = mem.metadata.pad;
+        const sim = 1 - (
+          Math.abs(targetPAD.pleasure - memPAD.pleasure) +
+          Math.abs(targetPAD.arousal - memPAD.arousal) +
+          Math.abs(targetPAD.dominance - memPAD.dominance)
+        ) / 30;
+        similarities.push({ id: mem.id, layer, content: mem.content, summary: mem.summary, timestamp: mem.timestamp, similarity: sim, metadata: mem.metadata });
+      }
+    }
+    similarities.sort((a, b) => b.similarity - a.similarity);
+    return similarities.slice(0, limit).filter(s => s.similarity > 0.5);
+  }
+
+  /**
+   * 传播激活通道 - 沿着联想图谱检索相关记忆
+   * (移植自 triality-memory.js)
+   */
+  searchByAssociation(startMemoryId, maxDepth = 3, limit = 20) {
+    return this.narrativeQuery({
+      startMemoryId,
+      direction: 'bidirectional',
+      maxDepth,
+      maxNodes: limit
+    });
+  }
+
+  /**
+   * 融合多通道检索
+   * (移植自 triality-memory.js)
+   */
+  multiChannelSearch(query, options = {}) {
+    const {
+      keywords = [],
+      semanticEmbedding = null,
+      timeRange = null,
+      emotionPAD = null,
+      startMemoryId = null,
+      weights = { semantic: 0.3, keyword: 0.2, time: 0.1, emotion: 0.2, association: 0.2 }
+    } = options;
+
+    const results = new Map();
+
+    // 语义通道
+    if (semanticEmbedding) {
+      const semantic = this.semanticSearch(semanticEmbedding, 10);
+      for (const r of semantic) {
+        results.set(r.id, { ...r, channel: 'semantic', score: r.similarity * weights.semantic });
+      }
+    }
+
+    // 关键词通道
+    if (keywords.length > 0) {
+      const keyword = this.searchByKeywords(keywords, 10);
+      for (const r of keyword) {
+        const existing = results.get(r.id) || r;
+        const newScore = (existing.score || 0) + (r.score / 10) * weights.keyword;
+        results.set(r.id, { ...existing, score: newScore });
+      }
+    }
+
+    // 时间通道
+    if (timeRange) {
+      const time = this.searchByTimeRange(timeRange.start, timeRange.end, 10);
+      for (const r of time) {
+        const existing = results.get(r.id) || r;
+        const newScore = (existing.score || 0) + 0.5 * weights.time;
+        results.set(r.id, { ...existing, score: newScore });
+      }
+    }
+
+    // 情感通道
+    if (emotionPAD) {
+      const emotion = this.searchByEmotion(emotionPAD, 10);
+      for (const r of emotion) {
+        const existing = results.get(r.id) || r;
+        const newScore = (existing.score || 0) + r.similarity * weights.emotion;
+        results.set(r.id, { ...existing, score: newScore });
+      }
+    }
+
+    // 联想通道
+    if (startMemoryId) {
+      const assoc = this.searchByAssociation(startMemoryId, 3, 10);
+      for (const r of assoc) {
+        const existing = results.get(r.id) || r;
+        const newScore = (existing.score || 0) + 0.5 * weights.association;
+        results.set(r.id, { ...existing, score: newScore });
+      }
+    }
+
+    // 排序返回
+    return Array.from(results.values())
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .slice(0, options.limit || 20);
+  }
+
+  /**
+   * 获取记忆健康状态
+   * (移植自 triality-memory.js)
+   */
+  getMemoryHealth() {
+    const now = Date.now();
+    let totalRetention = 0;
+    let compressedCount = 0;
+
+    for (const layer of ['learned', 'ephemeral']) {
+      for (const mem of (this.layers[layer] || [])) {
+        const timeElapsed = now - mem.timestamp;
+        const result = this.ebbinghausForget(mem, timeElapsed);
+        totalRetention += result.retention;
+        if (mem.compressed) compressedCount++;
+      }
+    }
+
+    return {
+      totalMemories: this.stats.totalMemories,
+      averageRetention: this.stats.totalMemories > 0 ? (totalRetention / this.stats.totalMemories).toFixed(2) : 0,
+      compressedCount,
+      forgettingParameters: this.forgettingConfig,
+      channels: ['semantic', 'keyword', 'time', 'emotion', 'association'],
+      layers: this.getLayerStats()
+    };
+  }
+
+  /**
+   * 导出记忆到文件
+   * (移植自 triality-memory.js)
+   */
+  exportToFile(filePath) {
+    const data = {
+      core: this.layers.core,
+      learned: this.layers.learned,
+      ephemeral: this.layers.ephemeral,
+      relationships: Array.from(this.relationships.entries()),
+      vectors: Array.from(this.vectors.entries()),
+      stats: this.stats,
+      exportedAt: new Date().toISOString()
+    };
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    console.log(`[MeaningfulMemory] 导出到: ${filePath}`);
+    return { success: true, count: this.stats.totalMemories };
+  }
+
+  /**
+   * 从文件导入记忆
+   * (移植自 triality-memory.js)
+   */
+  importFromFile(filePath) {
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    if (data.core) {
+      for (const mem of data.core) this.store({ ...mem, layer: 'core' });
+    }
+    if (data.learned) {
+      for (const mem of data.learned) this.store({ ...mem, layer: 'learned' });
+    }
+    if (data.ephemeral) {
+      for (const mem of data.ephemeral) this.store({ ...mem, layer: 'ephemeral' });
+    }
+    console.log(`[MeaningfulMemory] 从 ${filePath} 导入`);
+    return { success: true, count: (data.core?.length || 0) + (data.learned?.length || 0) + (data.ephemeral?.length || 0) };
+  }
+
   // ─────────────────────────────────────────
   // STATS & EXPORT
   // ─────────────────────────────────────────
@@ -717,7 +945,7 @@ class MeaningfulMemory {
   }
   
   cleanup(maxAge = 30 * 24 * 60 * 60 * 1000) {
-    const cutoff = Date.now() * 1000 - maxAge;
+    const cutoff = Date.now() - maxAge;
     let removed = 0;
     for (const layer of ['learned', 'ephemeral']) {
       const before = (this.layers[layer] || []).length;

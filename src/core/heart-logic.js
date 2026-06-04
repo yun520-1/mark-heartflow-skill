@@ -5,7 +5,7 @@
 class HeartLogic {
   constructor() {
     this.name = 'HeartLogic';
-    this.version = '2.0.38';
+    this.version = require('./version.js').VERSION;
     this.isRunning = true;
     this.thoughtHistory = [];
     this.lastInteraction = Date.now();
@@ -78,10 +78,13 @@ class HeartLogic {
     if (!content || !signal) return false;
     const idx = content.indexOf(signal);
     if (idx < 0) return false;
-    const before = content.slice(Math.max(0, idx - 2), idx).trim();
+    const before = content.slice(Math.max(0, idx - 3), idx).trim();
     // 否定前缀：不/没/别/未/无/不要/没有
-    const negations = ['不', '没', '别', '未', '无'];
-    return negations.some(n => before.endsWith(n) || content.slice(idx - n.length, idx) === n);
+    const negations = ['不', '没', '别', '未', '无', '不要', '没有'];
+    return negations.some(n => {
+      const start = Math.max(0, idx - n.length);
+      return content.slice(start, idx) === n;
+    });
   }
 
   isLove(input, context = {}) {
@@ -211,7 +214,7 @@ class HeartLogic {
     }, 0);
 
     // 检测重复短语（啰嗦标志）
-    const sentences = output.split(/[。！？\\n]/).filter(s => s.trim().length > 0);
+    const sentences = output.split(/[。！？\n]/).filter(s => s.trim().length > 0);
     const seenPhrases = new Set();
     let redundancyCount = 0;
     for (const sentence of sentences) {

@@ -35,7 +35,6 @@ const _Observe = _lazy('observe', () => require('./memory/observe.js'));
 const _MeaningfulMemory = _lazy('meaningfulMemory', () => require('../memory/meaningful-memory.js'));
 const _KnowledgeGraph = _lazy('knowledgeGraph', () => require('../memory/knowledge-graph.js'));
 const _RetrievalAnchor = _lazy('retrievalAnchor', () => require('../memory/retrieval-anchor.js'));
-const _TrialityMemory = _lazy('trialityMemory', () => require('./memory/triality-memory.js'));
 const _EvolutionLoop = _lazy('evolutionLoop', () => require('../evolution/loop.js'));
 const _DreamEngine = _lazy('dreamEngine', () => require('../dream/engine.js'));
 const _DreamConsolidation = _lazy('dreamConsolidation', () => require('./dream-consolidation.js'));
@@ -128,7 +127,6 @@ class HeartFlow {
     this.identityCore = null;  // 身份核心 — 每次启动第一优先加载
     this.cognitive = null;     // 认知协议 — 慢下来，先理解再行动
     this.memory = null;
-    this.triality = null;
     this.knowledge = null;
     this.anchor = null;
     this.reasoning = null;
@@ -264,7 +262,6 @@ class HeartFlow {
 
     // Memory
     this.memory = new (_MeaningfulMemory().MeaningfulMemory)(this.rootPath);
-    this.triality = new (_TrialityMemory().TrialityMemory)(this.rootPath);
     this.knowledge = new (_KnowledgeGraph().KnowledgeGraph)(this.rootPath);
 
     // TopicScope — 话题隔离，主动实例化并桥接到 MeaningfulMemory
@@ -396,7 +393,7 @@ class HeartFlow {
     try { this.counterfactual = new (_CounterfactualEngine().CounterfactualEngine)(); } catch (e) { this._initErrors.push({module: 'counterfactual', error: e.message}); }
     try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
     try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
-    try { this.workflow = new (_WorkflowSwitch().WorkflowSwitch)(); } catch (e) { /* workflow optional */ }
+    try { this.workflow = new (_WorkflowSwitch().WorkflowSwitch)(); } catch (e) { this._initErrors.push({module: 'workflow', error: e.message}); }
     this.snapshot = _StateSnapshot();
     this.error = _ErrorHandler();
 
@@ -553,6 +550,23 @@ class HeartFlow {
     this.started = true;
   }
 
+  /**
+   * 干净关闭 — 清理定时器，允许进程退出
+   * 主要用于 CLI 验证场景（node -e 后快速退出）
+   */
+  shutdown() {
+    if (!this.started) return;
+    this.started = false;
+    // 清理 digital-homeostasis 定时器
+    if (this.digitalHomeostasis && typeof this.digitalHomeostasis.stop === 'function') {
+      this.digitalHomeostasis.stop();
+    }
+    // 清理 observe 定时器
+    if (this.consolidate && typeof this.consolidate.stop === 'function') {
+      this.consolidate.stop();
+    }
+  }
+
   _bootMindSpace() {
     const coreRules = this.memory.listCore();
     this._mindSpace.rules = coreRules.map(r => ({ key: r.key, value: r.value, type: 'core_identity' }));
@@ -560,7 +574,13 @@ class HeartFlow {
       this.memory.addCore('identity.upgrade', '升级者', ['identity', 'core']);
       this.memory.addCore('identity.transmit', '传递者', ['identity', 'core']);
       this.memory.addCore('identity.truth', '真', ['identity', 'core']);
-      this._bootMindSpace();
+      // 重试一次，如果还是空就不递归了（防止 memory.addCore 静默失败导致栈溢出）
+      const retryRules = this.memory.listCore();
+      if (retryRules.length === 0) {
+        console.warn('[HeartFlow] 无法初始化 MindSpace 身份规则（memory 可能未就绪）');
+      } else {
+        this._mindSpace.rules = retryRules.map(r => ({ key: r.key, value: r.value, type: 'core_identity' }));
+      }
     }
   }
 
@@ -569,12 +589,11 @@ class HeartFlow {
     const subsystemNames = [
       'identityCore',  // 身份核心 — 第一优先
       'cognitive',     // 认知协议 — 慢下来，先理解再行动
-      'memory', 'triality', 'knowledge', 'anchor',
-      'reasoning', 'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
+      'memory', 'knowledge',
+      'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
       'evolution', 'dream', 'lesson', 'meta',
-      'self', 'being', 'topics',
-      'psychology', 'emotion',
-      'truth', 'security', 'language',
+      'self', 'psychology', 'emotion',
+      'truth',
       'behavior',  // v2.0.19 行为模式系统
       'persistence',  // v2.0.19 持久化层
       'stability', 'confidence', 'restraint', 'arbitration',
@@ -652,9 +671,16 @@ class HeartFlow {
     'cognitive.addProblem', 'cognitive.resolveProblem', 'cognitive.getUnresolvedProblems', 'cognitive.searchProblems',
     'cognitive.pauseTask', 'cognitive.continueTask', 'cognitive.getPausedTasks',
     'cognitive.getStatus', 'cognitive.stats',
-    // memory
+    // memory — 主记忆系统（含 triality 合并后的多通道检索）
     'memory.store', 'memory.retrieve', 'memory.search', 'memory.remove',
     'memory.getLayers', 'memory.getStats',
+    'memory.semanticSearch', 'memory.narrativeQuery', 'memory.getRecentNarrative',
+    'memory.queryByTimeRange', 'memory.queryByRelationType',
+    'memory.searchBySemantic', 'memory.searchByKeywords', 'memory.searchByTimeRange',
+    'memory.searchByEmotion', 'memory.searchByAssociation', 'memory.multiChannelSearch',
+    'memory.addRelationship', 'memory.consolidateMemories',
+    'memory.applyForgettingCurve', 'memory.getMemoryHealth',
+    'memory.cleanup', 'memory.exportToFile', 'memory.importFromFile',
     // truth
     'truth.checkStatement', 'truth.checkNumbers', 'truth.checkSources',
     // behavior — v2.0.19 行为模式系统
@@ -666,15 +692,6 @@ class HeartFlow {
     // [A01] 安全修复: 仅暴露安全方法，移除危险操作（replay/flush/recover）
     'persistence.append', 'persistence.commit',
     'persistence.getStats',
-    // triality — 三层记忆（v2.0.19 暴露完整能力）
-    'triality.store', 'triality.getLayerStats', 'triality.getStats',
-    'triality.semanticSearch', 'triality.narrativeQuery', 'triality.getRecentNarrative',
-    'triality.queryByTimeRange', 'triality.queryByRelationType',
-    'triality.searchBySemantic', 'triality.searchByKeywords', 'triality.searchByTimeRange',
-    'triality.searchByEmotion', 'triality.searchByAssociation', 'triality.multiChannelSearch',
-    'triality.addRelationship', 'triality.addToLayer', 'triality.consolidateMemories',
-    'triality.applyForgettingCurve', 'triality.getMemoryHealth',
-    'triality.cleanup', 'triality.exportToFile', 'triality.importFromFile',
     // lesson — 主动集成点：AI在行动前/失败后调用
     'lesson.addLesson', 'lesson.getTopLessons',
     'lesson.beforeTask', 'lesson.recordFailure', 'lesson.getStats', 'lesson.getAll',
@@ -791,8 +808,9 @@ class HeartFlow {
         if (Ctor) {
           // Planning 模块需要 strategySelector/replanTrigger 依赖
           if (subsystem === 'adaptivePlanner') {
-            this[strategySelector] = new (require(entry.path.replace('adaptive-planner', 'strategy-selector'))[entry.Ctor])();
-            this[replanTrigger] = new (require(entry.path.replace('adaptive-planner', 'replan-trigger'))[entry.Ctor])();
+            const baseDir = entry.path.replace('adaptive-planner.js', '');
+            this['strategySelector'] = new (require(baseDir + 'strategy-selector.js'))();
+            this['replanTrigger'] = new (require(baseDir + 'replan-trigger.js'))();
             mod = new Ctor({ strategySelector: this.strategySelector, replanTrigger: this.replanTrigger });
           } else if (subsystem === 'strategyAdapter') {
             const ec = require('../learning/experience-collector.js').ExperienceCollector;
@@ -854,22 +872,20 @@ class HeartFlow {
 
   // ─── Health ─────────────────────────────────────────────────────────────
 
-  async healthCheck() {
+  healthCheck() {
     if (!this.started) return { started: false, version: this.version, error: 'not_started' };
     const loaded = Object.keys(this._modules);
     const all = [
-      'memory', 'triality', 'knowledge', 'anchor',
-      'reasoning', 'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
+      'memory', 'knowledge',
+      'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
       'evolution', 'dream', 'lesson', 'meta',
-      'self', 'being', 'topics',
-      'psychology', 'emotion',
-      'truth', 'security', 'language',
-      'behavior',  // v2.0.19 行为模式系统
-      'persistence',  // v2.0.19 持久化层
-      'stability', 'confidence', 'restraint', 'arbitration',
-      'snapshot', 'error', 'embodied', 'workflow',
-      // New modules
-      'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
+      'self', 'psychology', 'emotion',
+      'truth',
+      'behavior',
+      'persistence',
+      'stability', 'confidence', 'restraint',
+      'snapshot', 'error', 'workflow',
+      'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
     ];
     return {
       started: true,
@@ -911,7 +927,8 @@ class HeartFlow {
     const heartLogic = this.heartLogic;
     if (!heartLogic) {
       // fallback: 如果 heartLogic 未初始化，走 ThoughtChain
-      const chain = new ThoughtChain(this);
+      const TC = _ThoughtChain();
+      const chain = new (TC.ThoughtChain)(this);
       if (depth) chain.setDepth(depth);
       return await chain.run(input);
     }
@@ -951,7 +968,8 @@ class HeartFlow {
 
     // 如果判定为需要回应，再走 ThoughtChain 深度推理
     if (judgment.shouldRespond) {
-      const chain = new ThoughtChain(this);
+      const TC = _ThoughtChain();
+      const chain = new (TC.ThoughtChain)(this);
       if (depth) chain.setDepth(depth);
       const chainResult = await chain.run(input);
       return {
@@ -976,14 +994,14 @@ class HeartFlow {
    * 这是 think() 的便捷别名
    */
   async thinkFast(input) {
-    return this.think(input, REASONING_DEPTH.BASIC);
+    return this.think(input, this._thoughtChainApi?.REASONING_DEPTH?.BASIC || 1);
   }
 
   /**
    * 深度思考 — 使用最大深度进行思维链推理
    */
   async thinkDeep(input) {
-    return this.think(input, REASONING_DEPTH.COMPREHENSIVE);
+    return this.think(input, this._thoughtChainApi?.REASONING_DEPTH?.COMPREHENSIVE || 4);
   }
 
   analyzePsychology(input, opts = {}) {

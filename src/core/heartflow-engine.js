@@ -39,6 +39,7 @@ function summarizeForReply(points = [], limit = 3) {
 // 加载新增模块
 let AdaptiveController, AgentOrchestrator, ErrorHandler, StateSnapshot;
 let TrialityMemory, EmbodiedCore, BioSensorAdapter;
+let MeaningfulMemory;
 let DecisionEngine, DecisionVerifier;
 let DreamLoop;
 let WakeUpVerifier;
@@ -83,6 +84,13 @@ try {
 try {
   const TrialityMemoryModule = require('./memory/triality-memory.js');
   TrialityMemory = TrialityMemoryModule.TrialityMemory;
+} catch (e) {
+}
+
+// 主记忆系统 (MeaningfulMemory)
+try {
+  const MMMod = require('./meaningful-memory.js');
+  MeaningfulMemory = MMMod.MeaningfulMemory;
 } catch (e) {
 }
 
@@ -1428,14 +1436,19 @@ module.exports.initialize = function() {
   init.modules.errorHandler = !!ErrorHandler;
   init.modules.snapshot = !!StateSnapshot;
   init.modules.trialityMemory = !!TrialityMemory;
+  init.modules.meaningfulMemory = !!MeaningfulMemory;
   init.modules.beingLogic = !!BeingLogic;
   init.modules.embodiedCore = !!EmbodiedCore;
   init.modules.bioSensor = !!BioSensorAdapter;
   init.modules.dreamLoop = !!DreamLoop;
   init.modules.wakeUpVerifier = !!WakeUpVerifier;
 
-  // 初始化实例
-  if (TrialityMemory) {
+  // 初始化实例 - 优先使用 MeaningfulMemory，降级到 TrialityMemory
+  if (MeaningfulMemory) {
+    init.instances = init.instances || {};
+    init.instances.memory = new MeaningfulMemory({ rootPath: __dirname + '/../..' });
+    init.memoryHealth = init.instances.memory.getMemoryHealth();
+  } else if (TrialityMemory) {
     init.instances = init.instances || {};
     init.instances.memory = new TrialityMemory(__dirname + '/../..');
     init.memoryHealth = init.instances.memory.getMemoryHealth();
