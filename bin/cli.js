@@ -18,7 +18,7 @@ const path = require('path');
 function loadEngine() {
     const hfDir = path.dirname(__dirname); // = skill根目录
     const { HeartFlow } = require(path.join(hfDir, 'src', 'core', 'heartflow.js'));
-    const hf = new HeartFlow();
+    const hf = new HeartFlow({ rootPath: hfDir });
     hf.start();
     return hf;
 }
