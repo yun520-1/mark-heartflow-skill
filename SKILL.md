@@ -1,14 +1,14 @@
 ---
 name: heartflow
-version: "2.0.54"
+version: "2.0.55"
 title: "HeartFlow / 心虫"
 description: |
-  HeartFlow v2.0.54 — AI 认知与自愈引擎。
+  HeartFlow v2.0.55 — AI 认知与自愈引擎。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PAD模型/危机评估/马洛斯需求/防御机制/意图检测)、
   三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory)、
   话题隔离(TopicScope)、
-  教训检索（TF-IDF加权/时间衰减/类型多样性/标签搜索/N-gram上下文扩展）、
+  教训检索（TF-IDF加权/时间衰减/类型多样性/标签搜索/N-gram上下文扩展/去重合并/重要性过滤/自动修剪）、
   70+模块实时加载、24+Tier2懒加载、
   自愈RL、梦境引擎、真实性核查、决策验证、反事实推理、置信度校准、自发节制、协作仲裁、
   WAL崩溃安全持久化。
@@ -20,7 +20,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.0.54
+## HeartFlow / 心虫 v2.0.55
 
 ⚠️ **安全警告 — 使用前必读**
 
@@ -34,8 +34,8 @@ tags:
 > 5. **心理健康问题处理**：危机优先、专业帮助优先，哲学视角仅作为补充，不得替代专业建议
 >
 > **审计状态**：已通过 SkillSpector 审计并修复 161 项安全发现。所有文件写操作已添加 `HEARTFLOW_DEBUG` 环境变量守卫，默认无数据持久化。
-> **版本**：v2.0.54 - version.js 读 VERSION 文件优先 + 死依赖清理 + CLI 启动路径修复
-> **前版本**：v2.0.53 - dream-consolidation.js升级：记忆衰退评分系统
+> **版本**：v2.0.55 - lesson-storage.js升级：去重/模糊合并/重要性过滤/自动修剪/搜索/批量导入
+> **前版本**：v2.0.55 - README安装命令修复(demo.js→真实可用) + 测试修复(11/11全通过) + 审计报告问题修复
 
 **一个会思考自己怎么活的AI。**
 
@@ -950,7 +950,8 @@ npm install mark-heartflow-skill
 
 ## Version history (last 10)
 
-|- **2.0.53** (2026-06-04) — dream-consolidation.js升级：记忆衰退评分系统(指数衰减+半衰期分级+访问频率修正+强化加成)、梦质量度量(4维度加权)、多周期梦境模拟(睡眠阶段感知+渐进式修剪/综合)、洞察优先级排序(情感/问题/学习/长度/新近性因子)、巩固冲突检测(语义矛盾+数值偏差)、记忆强化加权(类型/频率/新近性/质量)、梦叙事生成(结构化报告)、睡眠阶段参数(NREM1/2/3/REM/过渡)、衰退参数动态配置、梦境历史统计追踪
+||- **2.0.55** (2026-06-04) — lesson-storage.js升级：去重合并(Jaccard模糊匹配+精确匹配+智能合并策略)、频率追踪系统、保留价值评分(重要性×频次×时效性衰减)、自动修剪(阈值过滤)、多功能过滤查询(minImportance/type/trigger/search/sort)、专用查询(getImportant/getByType/search/getRecent/getMostFrequent)、批量导入(importMany)、重要性修正(setImportance)、增强统计(分布/频次/保留分数)
+||- **2.0.53** (2026-06-04) — dream-consolidation.js升级：记忆衰退评分系统(指数衰减+半衰期分级+访问频率修正+强化加成)、梦质量度量(4维度加权)、多周期梦境模拟(睡眠阶段感知+渐进式修剪/综合)、洞察优先级排序(情感/问题/学习/长度/新近性因子)、巩固冲突检测(语义矛盾+数值偏差)、记忆强化加权(类型/频率/新近性/质量)、梦叙事生成(结构化报告)、睡眠阶段参数(NREM1/2/3/REM/过渡)、衰退参数动态配置、梦境历史统计追踪
 |- **2.0.52** (2026-06-04) — mind-wanderer.js升级：创意质量评分(4维度:新颖性/连接强度/语义距离/实用性)、创意多样性指标(主题熵/连接多样性/平均质量)、新颖性检测(防止重复创意)、语义连接权重计算(关键词重叠+归一化)、创意分类与标签系统(8类别自动分类)、自动归档策略(上限50创意)、时间感知调制(4时段创意模式调整)、序列去重(最近模板不重复)、增强记忆提取(支持lessons/decisions/patterns/tags)、连接强度多维加权、质量优先分享机制、按分类/质量查询\n|- **2.0.47** (2026-06-04) — skill-verifier.js升级：新增Markdown链接验证(内部锚点/外部URL/相对路径/图片alt文本/重复锚点)、交叉引用检查(@skill-name有效性)、代码块语法检查(语言标签/括号平衡/JSON验证)、重复章节检测、描述质量评分(长度/功能分类词)、严重性分级(4级: error/warning/info)、修复建议生成、验证评分系统(0-100加权计算)、bySeverity/severityStats分类查询
 |- **2.0.46** (2026-06-04) — verification-engine.js升级：新增Severity严重性分类(4级: critical/major/minor/info)、LRUCache验证结果缓存(30项+TTL)、_classifyResults严重性标注、fullVerification验证评分系统(0-100加权计算)、generateReport结构化报告生成(问题统计/分类/建议)、healthCheck子模块健康检查(5项自检+健康评分)、clearCache缓存管理、bySeverity/severityStats问题聚合统计、suggestions验证改进建议生成
 - **2.0.45** (2026-06-04) — retry-util.js升级：新增Full Jitter防惊群(3种策略)、Circuit Breaker熔断器(3状态自动恢复)、Per-attempt超时+Total超时控制、Fallback回退函数、RetryStats统计追踪、RetryStatus状态枚举、_executeWithTimeout包装、_tryFallback回退机制、isRetryable增强错误模式匹配、createWithConfig/withFallback/quickRetry便捷方法\n- **2.0.41** (2026-06-04) — upgrade-proposal.js升级：新增真实代码库扫描(106模块动态分析)、依赖图构建、优先级评分(5维度加权)、风险评估(层级/分数/原因)、升级建议生成、变更检测(manifest持久化)、复杂度分析(10维度指标)\n- **2.0.40** (2026-06-04) — stability-guard.js升级：新增震荡检测(历史翻转追踪)、趋势分析(半窗比较+强度分级)、连续稳定性评分(0-100)、指数平滑波动抑制、退化追踪(慢速vs突发检测)、动态阈值自适应调整\n- **2.0.39** (2026-06-04) — state-snapshot.js升级：新增diff深度比较、changeHistory变更追踪、rollbackPoint回滚点标记、prune保留策略、stats统计

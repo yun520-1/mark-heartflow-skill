@@ -25,8 +25,11 @@
 git clone https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
 
-# 运行演示（无需安装依赖）
-node demo.js
+# 验证安装（无需安装依赖）
+node -e "const {createHeartFlow}=require('./src/core/heartflow.js'); const fs=require('fs'); const hf=createHeartFlow({rootPath:'.'}); hf.start(); console.log('✅ 心虫启动成功 v'+fs.readFileSync('./VERSION','utf8').trim()); hf.stop();"
+
+# 运行测试
+node tests/integration.test.js
 ```
 
 **你会看到：**
