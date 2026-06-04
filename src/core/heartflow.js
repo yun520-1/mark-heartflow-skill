@@ -106,6 +106,7 @@ const _DesireSystem = _lazy('desireSystem', () => require('../emotion/desire-sys
 const _EmotionalGrowth = _lazy('emotionalGrowth', () => require('../emotion/emotional-growth.js'));
 const _MoodEvolution = _lazy('moodEvolution', () => require('../emotion/mood-evolution.js'));
 const _VERSION = _lazy('version', () => require('./version.js'));
+const _CodeEngine = _lazy('codeEngine', () => require('./code-engine.js'));
 
 const BUILD_DATE = '2026-06-03';
 
@@ -215,6 +216,7 @@ class HeartFlow {
     this.desireSystem = null;  // 欲望系统
     this.emotionalGrowth = null;  // 情感成长
     this.moodEvolution = null;  // 心境演化
+    this.codeEngine = null;     // 代码引擎 — 代码分析/审查/修复
 
     const STMod = _SearchTrace();
     this.SearchTrace = STMod.SearchTrace;
@@ -393,6 +395,7 @@ class HeartFlow {
     try { this.counterfactual = new (_CounterfactualEngine().CounterfactualEngine)(); } catch (e) { this._initErrors.push({module: 'counterfactual', error: e.message}); }
     try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
     try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
+    try { this.codeEngine = new (_CodeEngine().CodeEngine)(); } catch (e) { this._initErrors.push({module: 'codeEngine', error: e.message}); }
     try { this.workflow = new (_WorkflowSwitch().WorkflowSwitch)(); } catch (e) { this._initErrors.push({module: 'workflow', error: e.message}); }
     this.snapshot = _StateSnapshot();
     this.error = _ErrorHandler();
@@ -606,6 +609,7 @@ class HeartFlow {
       'constitutional', // Constitutional AI：原则自我对齐
       'thoughtChain', // 思维链编排器：串联所有引擎（API包装）
       'heartLogic',    // 心虫核心判断引擎：本心在代码里，不在记忆里
+      'codeEngine',    // 代码引擎：代码分析/审查/修复
       // Planning Layer — 规划能力（延迟加载，Tier 2）
       // 'adaptivePlanner', 'strategySelector', 'replanTrigger',
       // Learning Layer — 学习能力（延迟加载，Tier 2）
@@ -779,6 +783,9 @@ class HeartFlow {
     'transmission.distill', 'transmission.transfer', 'transmission.transferBatch',
     'transmission.getTransmissionLog', 'transmission.getDistilledLessons',
     'transmission.getStats', 'transmission.prune',
+    // codeEngine — 代码引擎
+    'codeEngine.analyzeCode', 'codeEngine.reviewCode', 'codeEngine.auditCodebase',
+    'codeEngine.suggestFix', 'codeEngine.compareVersions',
   ]);
 
   /**
@@ -826,6 +833,8 @@ class HeartFlow {
             mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/longterm') });
           } else if (subsystem === 'crossSessionIndex') {
             mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/cross-session') });
+          } else if (subsystem === 'codeEngine') {
+            mod = new Ctor({ rootPath: this.rootPath });
           } else {
             mod = new Ctor(entry.args);
           }
@@ -1046,6 +1055,20 @@ class HeartFlow {
   verifyReasoning(reasoning, conclusion) {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.verify.verify(reasoning, conclusion);
+  }
+
+  /**
+   * reviewCode — 便捷方法：分析并审查代码
+   * 使用 codeEngine 分析代码质量、安全性和最佳实践
+   * 
+   * @param {string} code - 源代码
+   * @param {string} lang - 语言（如 'javascript', 'python'）
+   * @returns {object} - { issues, suggestions, score }
+   */
+  reviewCode(code, lang) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    if (!this.codeEngine) throw new Error('codeEngine not available');
+    return this.codeEngine.reviewCode(code, lang);
   }
 
   checkTruthfulness(statement) {

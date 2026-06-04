@@ -110,7 +110,7 @@ function bumpVersion(type = 'patch', opts = {}) {
     throw new Error(`bumpVersion: invalid type "${type}", must be patch|minor|major`);
   }
 
-  const from = _readFromPackage();
+  const from = _readVersion();
   const to = _bumpVersionString(type, from);
   const synced = [];
 
