@@ -1,15 +1,16 @@
 ---
 name: heartflow
-version: "2.0.60"
+version: "2.1.1"
 title: "HeartFlow / 心虫"
 description: |
-  HeartFlow v2.0.60 — AI 认知与自愈引擎。
+  HeartFlow v2.1.0 — AI 认知与自愈引擎 + 代码引擎。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PAD模型/危机评估/马洛斯需求/防御机制/意图检测)、
   三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory)、
   话题隔离(TopicScope)、
   教训检索（TF-IDF加权/时间衰减/类型多样性/标签搜索/N-gram上下文扩展/去重合并/重要性过滤/自动修剪）、
   70+模块实时加载、24+Tier2懒加载、
+  代码引擎（CodeEngine：结构分析/逻辑审查/全库审计/修复建议/版本对比）、
   自愈RL、梦境引擎、真实性核查、决策验证、反事实推理、置信度校准、自发节制、协作仲裁、
   WAL崩溃安全持久化。
 tags:
@@ -20,7 +21,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.0.60
+## HeartFlow / 心虫 v2.1.1
 
 ⚠️ **安全警告 — 使用前必读**
 
@@ -34,8 +35,8 @@ tags:
 > 5. **心理健康问题处理**：危机优先、专业帮助优先，哲学视角仅作为补充，不得替代专业建议
 >
 > **审计状态**：已通过 SkillSpector 审计并修复 161 项安全发现。所有文件写操作已添加 `HEARTFLOW_DEBUG` 环境变量守卫，默认无数据持久化。
-> **版本**：v2.0.60 - boundary-negotiation.js升级：动态风险评分/权限过期与自动吊销/使用追踪/渐进式授权/相似度模糊匹配
-> **前版本**：v2.0.59 - 自动升级：代码保护审计修复
+> **版本**：v2.1.1 - code-verifier.js升级：TypeScript/TSX验证/JSON验证/安全漏洞扫描/异步错误检测/复杂度分析/导入解析验证/综合质量评分(0-100)
+> **前版本**：v2.1.0 - CodeEngine代码引擎(analyzeCode/reviewCode/auditCodebase/suggestFix/compareVersions)
 
 **一个会思考自己怎么活的AI。**
 
@@ -235,6 +236,7 @@ Install it once. Every session after that, your AI:
 | **语言 Language** | LanguageHonesty | `language-honesty.js` | 确定性校准/软化/减少追问 |
 | **思维链 ThoughtChain** | ThoughtChain | `new ThoughtChain(hf)` | 串联45+引擎形成统一推理链 |
 | **心空间 MindSpace** | MindSpaceGuardian | `new MindSpaceGuardian(memory)` | 心空间守护/身份规则持有 |
+| **代码 Code** | CodeEngine | `code-engine.js` | 代码分析/审查/修复/审计/版本对比 |
 | **版本 Version** | Version | `version.js` | 单一版本号来源，自动同步所有文件 |
 | **情绪 Emotion** | AutonomousEmotion | `emotion/autonomous-emotion.js` (Tier 2) | 自主情感系统 |
 | | DesireSystem | `emotion/desire-system.js` (Tier 2) | 欲望系统 |
@@ -950,6 +952,8 @@ npm install mark-heartflow-skill
 
 ## Version history (last 10)
 
+||- **2.1.1** (2026-06-04) — **code-verifier.js 重大升级 + SKILL.md 模块索引补全**。code-verifier.js 新增7大能力：TypeScript/TSX验证、JSON验证、安全漏洞扫描、异步错误检测、复杂度分析、导入解析验证、综合质量评分。替换version.js中bug(_readFromPackage→_readVersion)。补全 SKILL.md 模块索引表（CodeEngine 行）。版本号 2.1.0 → 2.1.1。
+||- **2.1.0** (2026-06-04) — **重大升级：CodeEngine 代码引擎**。新增 code-engine.js（2849行），提供5大能力：analyzeCode（代码结构解析）、reviewCode（逻辑级审查：空值/边界/安全/死代码/类型转换/异步错误/反模式）、auditCodebase（全库审计：依赖图/循环引用/复杂度热点/代码重复）、suggestFix（自动修复建议）、compareVersions（结构化版本对比）。替代原 code-verifier.js。集成到 heartflow.js dispatch 路由和便捷方法。版本号 2.0.61 → 2.1.0。
 |- **2.0.58** (2026-06-04) — associative-engine.js升级：输入预处理与验证(InputValidation:空/过短/过长/类型检查)、错误隔离(各层独立try/catch安全执行)、并行处理(L1+L2并行执行)、层间一致性检查(CoherenceChecker:L1↔L2/L2↔L3/L4思想向量)、处理质量度量(ProcessingMetrics:分层耗时/状态追踪/质量评分)、优雅降级(层失败时的有意义回退响应)、引擎统计(getStats:成功率/平均耗时/质量分)
 |- **2.0.53** (2026-06-04) — dream-consolidation.js升级：记忆衰退评分系统(指数衰减+半衰期分级+访问频率修正+强化加成)、梦质量度量(4维度加权)、多周期梦境模拟(睡眠阶段感知+渐进式修剪/综合)、洞察优先级排序(情感/问题/学习/长度/新近性因子)、巩固冲突检测(语义矛盾+数值偏差)、记忆强化加权(类型/频率/新近性/质量)、梦叙事生成(结构化报告)、睡眠阶段参数(NREM1/2/3/REM/过渡)、衰退参数动态配置、梦境历史统计追踪
 |- **2.0.52** (2026-06-04) — mind-wanderer.js升级：创意质量评分(4维度:新颖性/连接强度/语义距离/实用性)、创意多样性指标(主题熵/连接多样性/平均质量)、新颖性检测(防止重复创意)、语义连接权重计算(关键词重叠+归一化)、创意分类与标签系统(8类别自动分类)、自动归档策略(上限50创意)、时间感知调制(4时段创意模式调整)、序列去重(最近模板不重复)、增强记忆提取(支持lessons/decisions/patterns/tags)、连接强度多维加权、质量优先分享机制、按分类/质量查询\n|- **2.0.47** (2026-06-04) — skill-verifier.js升级：新增Markdown链接验证(内部锚点/外部URL/相对路径/图片alt文本/重复锚点)、交叉引用检查(@skill-name有效性)、代码块语法检查(语言标签/括号平衡/JSON验证)、重复章节检测、描述质量评分(长度/功能分类词)、严重性分级(4级: error/warning/info)、修复建议生成、验证评分系统(0-100加权计算)、bySeverity/severityStats分类查询
