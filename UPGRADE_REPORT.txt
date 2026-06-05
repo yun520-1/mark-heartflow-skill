@@ -1,0 +1,81 @@
+# UPGRADE REPORT — meta-learner.js v2.0.0
+
+**Date**: 2026-06-05
+**Module**: src/evolution/meta-learner.js
+**Version**: 2.2.5 → 2.2.6
+**Size**: 785 bytes → ~20KB (37 lines → ~390 lines)
+
+## Before
+
+`meta-learner.js` was a 785-byte thin proxy that delegated everything to `MetaLearning` core:
+- `boot()` — just created MetaLearning instance
+- `learn(lesson)` — if core.learn existed, delegated; otherwise returned `{ learned: true, lesson }`
+- `getStats()` — returned `{ enabled: !!this.core, version: 'v1.0.0' }`
+- `shutdown()` — empty
+
+No independent logic, no quality assessment, no pattern extraction, no classification, no recall, no diagnostics.
+
+## After
+
+Complete meta-learning engine with 6 new capabilities:
+
+### 1. Lesson Quality Scoring (4 dimensions)
+- **Completeness** (30%): detects causal words (因为/所以/导致/解决/after/because/result/fix)
+- **Specificity** (30%): detects contextual words (场景/当/遇到/in/when/at/during/scenario)
+- **Actionability** (25%): detects prescriptive words (应该/可以/建议/should/must/next)
+- **Measurability** (15%): detects quantitative words (秒/分钟/次/%/ms/sec/times/rate)
+- Length bonus (up to 0.15)
+- 4 quality grades: EXCELLENT (≥0.7), GOOD (≥0.5), FAIR (≥0.3), POOR (<0.3)
+
+### 2. Lesson Category Enum (8 types)
+- TECHNICAL, BEHAVIORAL, STRATEGIC, ARCHITECTURAL, PROCESS, SECURITY, COMMUNICATION, GENERAL
+- Each with keyword pattern table for auto-classification
+- Threshold protection: falls back to GENERAL if confidence < 0.05
+
+### 3. Pattern Extraction (8 reusable patterns)
+- `conditional-rule`: "当X时，应该Y" / "when...should"
+- `causal-chain`: "因为X，所以Y" / "because...result"
+- `prevention`: "避免/不要/never/avoid"
+- `verification`: "检查/确认/verify/check"
+- `ordered-steps`: "先X再Y/first...then/step"
+- `error-handling`: "失败/异常/error/exception"
+- `recommendation`: "推荐/建议/recommend/suggest"
+- `comparison`: "优于/better than/instead of"
+
+### 4. Confidence-Weighted Recall
+- Relevance scoring: keyword overlap (60%) + confidence (30%) + quality (10%)
+- Category filtering support
+- Minimum confidence threshold
+- Max count limit
+- Access count tracking
+- Sorted by combined score
+
+### 5. Learning Statistics & Self-Diagnostics
+- Total/high-quality lesson counts
+- By-category and by-quality distribution
+- Average quality score tracking
+- Quality trend analysis (improving/stable/declining)
+- Dominant category detection
+- Low-quality ratio warning
+- History capacity monitoring
+- Auto-pruning when exceeding threshold
+- Generate recommendations for improvement
+
+### 6. Defensive Programming
+- Input parsing: supports string or `{ content, context, source }`
+- Empty/short content handling (returns POOR quality)
+- Stop word filtering for keyword extraction
+- Safe numeric boundaries in scoring
+- Category threshold protection
+- Auto-prune to prevent unbounded growth
+
+## Backward Compatibility
+All original interfaces preserved:
+- `boot()` — same signature and return
+- `learn(lesson)` — same signature, enhanced return with additional fields
+- `getStats()` — same signature, enhanced return
+- `shutdown()` — same signature and behavior
+- Constructor: `new MetaLearner({ rootPath, memory })` — unchanged
+
+## Module Exports
+- `{ MetaLearner, LessonCategory, LessonQuality }` — all three available

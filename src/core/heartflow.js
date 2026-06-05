@@ -1,5 +1,5 @@
 /**
- /** HeartFlow v2.0.5 — 快速启动 + 两层懒加载
+ /** HeartFlow v2.2.5 — 快速启动 + 两层懒加载
   *
   * 启动速度优化：只有 Tier 1 模块在 start() 时同步加载。
   * Tier 2 模块在首次 dispatch 访问时才加载（lazy require）。
