@@ -3057,6 +3057,145 @@ class CodeEngine {
     }
   }
 
+
+    // ═══════════════════════════════════════════════════════════════
+    // 核心功能 6: 依赖图构建（移植自 CLAUDE 心虫 code-planner）
+    // ═══════════════════════════════════════════════════════════════
+
+    /**
+     * 从步骤列表构建模块依赖图
+     * 使用 DFS 三色标记法检测循环依赖，Kahn 算法拓扑排序
+     * @param {Object[]} steps - 步骤列表 [{ id, file, deps[] }]
+     * @returns {{graph:Object, cycles:Array, order:string[]}}
+     */
+    buildDependencyGraph(steps) {
+        const graph = new Map();
+        const stepToFile = new Map();
+        for (const s of steps) {
+            if (s.file && !graph.has(s.file)) graph.set(s.file, []);
+            if (s.id !== undefined && s.file) stepToFile.set(s.id, s.file);
+        }
+        for (const s of steps) {
+            if (s.file && s.deps) {
+                const deps = s.deps.map(d => stepToFile.get(d)).filter(d => d && d !== s.file);
+                if (deps.length) graph.set(s.file, deps);
+            }
+        }
+        // DFS 三色标记法检测循环依赖
+        const cycles = [], WHITE = 0, GRAY = 1, BLACK = 2;
+        const color = new Map();
+        for (const f of graph.keys()) color.set(f, WHITE);
+        const dfs = (node, path = []) => {
+            color.set(node, GRAY);
+            path.push(node);
+            for (const dep of (graph.get(node) || [])) {
+                if (!graph.has(dep)) continue;
+                if (color.get(dep) === GRAY) {
+                    const idx = path.indexOf(dep);
+                    const cp = path.slice(idx);
+                    cp.push(dep);
+                    cycles.push({ path: cp, message: '循环依赖: ' + cp.join(' → ') });
+                } else if (color.get(dep) === WHITE) {
+                    dfs(dep, path);
+                }
+            }
+            path.pop();
+            color.set(node, BLACK);
+        };
+        for (const f of graph.keys()) if (color.get(f) === WHITE) dfs(f, []);
+        // Kahn 拓扑排序
+        const cyclic = new Set();
+        for (const c of cycles) for (const f of c.path) cyclic.add(f);
+        const inDeg = new Map();
+        for (const f of graph.keys()) inDeg.set(f, 0);
+        for (const [, deps] of graph) for (const d of deps) if (inDeg.has(d)) inDeg.set(d, inDeg.get(d) + 1);
+        const order = [], queue = [];
+        for (const [f, d] of inDeg) if (d === 0 && !cyclic.has(f)) queue.push(f);
+        while (queue.length) {
+            const n = queue.shift();
+            order.push(n);
+            for (const d of (graph.get(n) || [])) {
+                if (inDeg.has(d)) {
+                    const nd = inDeg.get(d) - 1;
+                    inDeg.set(d, nd);
+                    if (nd === 0) queue.push(d);
+                }
+            }
+        }
+        const obj = {};
+        for (const [f, deps] of graph) obj[f] = deps;
+        return { graph: obj, cycles, order };
+    }
+
+    /**
+     * 多文件项目规划 — 根据需求生成 src/ 目录结构
+     * @param {string} name - 项目名
+     * @param {string} req - 需求描述
+     * @param {string} [lang='javascript'] - 语言
+     * @returns {Object} 项目计划
+     */
+    planProject(name, req, lang) {
+        lang = lang || 'javascript';
+        const T = {
+            javascript: { base: 'src', layers: { entry: 'index.js', routes: 'routes', controllers: 'controllers', services: 'services', models: 'models', middleware: 'middleware', utils: 'utils', config: 'config', db: 'db' }, ext: '.js' },
+            typescript: { base: 'src', layers: { entry: 'index.ts', routes: 'routes', controllers: 'controllers', services: 'services', models: 'models', middleware: 'middleware', utils: 'utils', config: 'config', db: 'db', types: 'types' }, ext: '.ts' },
+            python: { base: 'app', layers: { entry: '__init__.py', routes: 'api', controllers: 'controllers', services: 'services', models: 'models', middleware: 'middleware', utils: 'utils', config: 'config', db: 'db' }, ext: '.py' },
+            go: { base: '', layers: { entry: 'main.go', routes: 'handlers', controllers: 'controllers', services: 'services', models: 'models', middleware: 'middleware', utils: 'utils', config: 'config', db: 'db' }, ext: '.go' }
+        };
+        const t = T[lang] || T.javascript;
+        const b = t.base ? t.base + '/' : '';
+        const analysis = this._analyzeReq(req);
+        const files = [];
+        let id = 1;
+        const add = (path, deps, layer, desc) => files.push({ id: id++, path, action: 'create', deps: deps || [], layer: layer || '', description: desc || '' });
+        add(b + t.layers.entry, [], 'entry', name + ' 入口');
+        if (analysis.hasAPI) {
+            add(b + t.layers.routes + '/index' + t.ext, [], 'routes', '路由入口');
+            for (const api of analysis.apis) add(b + t.layers.routes + '/' + api.name + t.ext, [b + t.layers.controllers + '/' + api.name + t.ext], 'routes', api.name + ' 路由');
+        }
+        if (analysis.hasControllers) {
+            for (const c of analysis.controllers) add(b + t.layers.controllers + '/' + c.name + t.ext, [b + t.layers.services + '/' + (c.serviceName || c.name) + t.ext], 'controllers', c.name + ' 控制器');
+        }
+        if (analysis.hasServices) {
+            for (const s of analysis.services) add(b + t.layers.services + '/' + s.name + t.ext, [b + t.layers.models + '/' + (s.modelName || 'index') + t.ext, b + t.layers.utils + '/logger' + t.ext], 'services', s.name + ' 服务');
+        }
+        if (analysis.hasModels) {
+            for (const m of analysis.models) add(b + t.layers.models + '/' + m.name + t.ext, [b + t.layers.db + '/connection' + t.ext], 'models', m.name + ' 模型');
+        }
+        if (analysis.hasDatabase) add(b + t.layers.db + '/connection' + t.ext, [], 'db', '数据库连接');
+        if (analysis.hasMiddleware) {
+            for (const mw of analysis.middleware) add(b + t.layers.middleware + '/' + mw.name + t.ext, [], 'middleware', mw.name + ' 中间件');
+        }
+        add(b + t.layers.utils + '/logger' + t.ext, [], 'utils', '日志工具');
+        add(b + t.layers.utils + '/helpers' + t.ext, [], 'utils', '辅助函数');
+        add(b + t.layers.config + '/index' + t.ext, [], 'config', '项目配置');
+        if (lang === 'typescript') add(b + 'types/index.ts', [], 'types', '类型定义');
+        const dg = this.buildDependencyGraph(files);
+        return { projectName: name, files, entry: b + t.layers.entry, dependencyOrder: dg.order, graph: dg.graph, cycles: dg.cycles, template: t.layers, language: lang, createdAt: new Date().toISOString() };
+    }
+
+    /** @private 分析需求中的功能模块 */
+    _analyzeReq(req) {
+        const l = req.toLowerCase();
+        const a = { hasAPI: false, hasControllers: false, hasServices: false, hasModels: false, hasDatabase: false, hasMiddleware: false, apis: [], controllers: [], services: [], models: [], middleware: [] };
+        if (['api', 'endpoint', 'route', 'rest', 'graphql', 'http'].some(k => l.includes(k))) {
+            a.hasAPI = true;
+            for (const p of [/users?/i, /auth/i, /products?/i, /orders?/i, /data/i]) {
+                const m = req.match(p);
+                if (m) a.apis.push({ name: m[0], method: l.includes('create') ? 'POST' : l.includes('delete') ? 'DELETE' : 'GET' });
+            }
+            if (!a.apis.length) a.apis.push({ name: 'index', method: 'GET' });
+        }
+        if (['controller', 'handler', '处理'].some(k => l.includes(k))) { a.hasControllers = true; for (const api of a.apis) a.controllers.push({ name: api.name, serviceName: api.name + 'Service' }); }
+        if (['service', 'business', 'logic', '业务'].some(k => l.includes(k))) { a.hasServices = true; for (const api of a.apis) a.services.push({ name: api.name + 'Service', modelName: api.name }); }
+        if (['model', 'schema', 'entity', '数据模型', '表'].some(k => l.includes(k)) || a.hasAPI) { a.hasModels = true; for (const api of a.apis) a.models.push({ name: api.name }); }
+        if (['database', 'db', 'mongodb', 'mysql', 'postgres', 'sqlite', 'redis', '数据库'].some(k => l.includes(k))) a.hasDatabase = true;
+        if (['middleware', 'auth', '验证', '权限', 'cors'].some(k => l.includes(k))) { a.hasMiddleware = true; if (l.includes('auth') || l.includes('验证')) a.middleware.push({ name: 'auth' }); if (l.includes('cors')) a.middleware.push({ name: 'cors' }); }
+        if (a.hasAPI && !a.hasControllers) { a.hasControllers = true; a.controllers.push({ name: 'index', serviceName: 'indexService' }); }
+        if (a.hasAPI && !a.hasServices) { a.hasServices = true; a.services.push({ name: 'indexService', modelName: 'index' }); }
+        return a;
+    }
+
 }
 // ============================================================================
 // 导出

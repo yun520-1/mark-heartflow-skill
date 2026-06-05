@@ -6,6 +6,7 @@ auth.json
 *.onnx
 self-verification.json
 *.log
+backups/
 .DS_Store
 src/core/.upgrade-manifest.json
 UPGRADE_REPORT.txt
