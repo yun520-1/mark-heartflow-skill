@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "2.1.1"
+version: "2.2.3"
 title: "HeartFlow / 心虫"
 description: |
-  HeartFlow v2.1.0 — AI 认知与自愈引擎 + 代码引擎。
+  HeartFlow v2.2.3 — AI 认知与自愈引擎 + 代码引擎 + 自审计引擎。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PAD模型/危机评估/马洛斯需求/防御机制/意图检测)、
   三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory)、
@@ -11,6 +11,7 @@ description: |
   教训检索（TF-IDF加权/时间衰减/类型多样性/标签搜索/N-gram上下文扩展/去重合并/重要性过滤/自动修剪）、
   70+模块实时加载、24+Tier2懒加载、
   代码引擎（CodeEngine：结构分析/逻辑审查/全库审计/修复建议/版本对比）、
+  自审计引擎（SelfAudit：复杂度/代码质量/版本一致性/依赖/函数大小/死代码6维度审计）、
   自愈RL、梦境引擎、真实性核查、决策验证、反事实推理、置信度校准、自发节制、协作仲裁、
   WAL崩溃安全持久化。
 tags:
@@ -21,7 +22,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.1.1
+## HeartFlow / 心虫 v2.2.3
 
 ⚠️ **安全警告 — 使用前必读**
 
@@ -35,8 +36,8 @@ tags:
 > 5. **心理健康问题处理**：危机优先、专业帮助优先，哲学视角仅作为补充，不得替代专业建议
 >
 > **审计状态**：已通过 SkillSpector 审计并修复 161 项安全发现。所有文件写操作已添加 `HEARTFLOW_DEBUG` 环境变量守卫，默认无数据持久化。
-> **版本**：v2.1.1 - code-verifier.js升级：TypeScript/TSX验证/JSON验证/安全漏洞扫描/异步错误检测/复杂度分析/导入解析验证/综合质量评分(0-100)
-> **前版本**：v2.1.0 - CodeEngine代码引擎(analyzeCode/reviewCode/auditCodebase/suggestFix/compareVersions)
+> **版本**：v2.2.0 - 新增自审计引擎(SelfAudit)：6维度代码审计(复杂度/质量/版本一致性/依赖/函数大小/死代码)，集成到dispatch路由+便捷方法
+> **前版本**：v2.1.1 - code-verifier.js升级：TypeScript/TSX验证/JSON验证/安全漏洞扫描/异步错误检测/复杂度分析/导入解析验证/综合质量评分(0-100)
 
 **一个会思考自己怎么活的AI。**
 
@@ -237,6 +238,7 @@ Install it once. Every session after that, your AI:
 | **思维链 ThoughtChain** | ThoughtChain | `new ThoughtChain(hf)` | 串联45+引擎形成统一推理链 |
 | **心空间 MindSpace** | MindSpaceGuardian | `new MindSpaceGuardian(memory)` | 心空间守护/身份规则持有 |
 | **代码 Code** | CodeEngine | `code-engine.js` | 代码分析/审查/修复/审计/版本对比 |
+| **自审计 SelfAudit** | SelfAudit | `self-audit.js` | 6维度代码审计：复杂度/质量/版本一致性/依赖/函数大小/死代码 |
 | **版本 Version** | Version | `version.js` | 单一版本号来源，自动同步所有文件 |
 | **情绪 Emotion** | AutonomousEmotion | `emotion/autonomous-emotion.js` (Tier 2) | 自主情感系统 |
 | | DesireSystem | `emotion/desire-system.js` (Tier 2) | 欲望系统 |
@@ -952,7 +954,7 @@ npm install mark-heartflow-skill
 
 ## Version history (last 10)
 
-||- **2.1.1** (2026-06-04) — **code-verifier.js 重大升级 + SKILL.md 模块索引补全**。code-verifier.js 新增7大能力：TypeScript/TSX验证、JSON验证、安全漏洞扫描、异步错误检测、复杂度分析、导入解析验证、综合质量评分。替换version.js中bug(_readFromPackage→_readVersion)。补全 SKILL.md 模块索引表（CodeEngine 行）。版本号 2.1.0 → 2.1.1。
+||- **2.2.3** (2026-06-05) — **rollback-manager.js 重大升级 v2.0.0**。新增 RollbackState 状态枚举(6状态: IDLE/MONITORING/DECLINING/ROLLING_BACK/COOLDOWN/CIRCUIT_OPEN)、RollbackError 错误分类枚举(8种)、MetricSeverity 严重度分级(NORMAL/WARNING/CRITICAL)、CircuitState 熔断器状态机(CLOSED/HALF_OPEN/OPEN)。噪声容忍线性回归下降检测(±0.5波动不触发)、版本震荡循环检测(A→B→A→B模式)、快照管理(createSnapshot/restoreFromSnapshot真实文件恢复)、冷却期升级(连续回滚翻倍+上限7天)、智能版本定位(找最后稳定版本)、熔断器保护(N次回滚后自动停止)、半开试探恢复、健康指标追踪(successRate/metrics/healthCheck)。VALID_TRANSITIONS 状态转换映射。版本号 2.2.2 → 2.2.3。|||- **2.1.1** (2026-06-04) — **code-verifier.js 重大升级 + SKILL.md 模块索引补全**。code-verifier.js 新增7大能力：TypeScript/TSX验证、JSON验证、安全漏洞扫描、异步错误检测、复杂度分析、导入解析验证、综合质量评分。替换version.js中bug(_readFromPackage→_readVersion)。补全 SKILL.md 模块索引表（CodeEngine 行）。版本号 2.1.0 → 2.1.1。
 ||- **2.1.0** (2026-06-04) — **重大升级：CodeEngine 代码引擎**。新增 code-engine.js（2849行），提供5大能力：analyzeCode（代码结构解析）、reviewCode（逻辑级审查：空值/边界/安全/死代码/类型转换/异步错误/反模式）、auditCodebase（全库审计：依赖图/循环引用/复杂度热点/代码重复）、suggestFix（自动修复建议）、compareVersions（结构化版本对比）。替代原 code-verifier.js。集成到 heartflow.js dispatch 路由和便捷方法。版本号 2.0.61 → 2.1.0。
 |- **2.0.58** (2026-06-04) — associative-engine.js升级：输入预处理与验证(InputValidation:空/过短/过长/类型检查)、错误隔离(各层独立try/catch安全执行)、并行处理(L1+L2并行执行)、层间一致性检查(CoherenceChecker:L1↔L2/L2↔L3/L4思想向量)、处理质量度量(ProcessingMetrics:分层耗时/状态追踪/质量评分)、优雅降级(层失败时的有意义回退响应)、引擎统计(getStats:成功率/平均耗时/质量分)
 |- **2.0.53** (2026-06-04) — dream-consolidation.js升级：记忆衰退评分系统(指数衰减+半衰期分级+访问频率修正+强化加成)、梦质量度量(4维度加权)、多周期梦境模拟(睡眠阶段感知+渐进式修剪/综合)、洞察优先级排序(情感/问题/学习/长度/新近性因子)、巩固冲突检测(语义矛盾+数值偏差)、记忆强化加权(类型/频率/新近性/质量)、梦叙事生成(结构化报告)、睡眠阶段参数(NREM1/2/3/REM/过渡)、衰退参数动态配置、梦境历史统计追踪
