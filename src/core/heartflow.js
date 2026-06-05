@@ -108,6 +108,7 @@ const _MoodEvolution = _lazy('moodEvolution', () => require('../emotion/mood-evo
 const _VERSION = _lazy('version', () => require('./version.js'));
 const _CodeEngine = _lazy('codeEngine', () => require('./code-engine.js'));
 const _SelfAudit = _lazy('selfAudit', () => require('./self-audit.js'));
+const _TableForge = _lazy('tableForge', () => require('./table-forge.js'));
 
 const BUILD_DATE = '2026-06-03';
 
@@ -613,6 +614,7 @@ class HeartFlow {
       'thoughtChain', // 思维链编排器：串联所有引擎（API包装）
       'heartLogic',    // 心虫核心判断引擎：本心在代码里，不在记忆里
       'codeEngine',    // 代码引擎：代码分析/审查/修复
+      'tableForge',    // 制表引擎：结构化数据→Excel表格
       // Planning Layer — 规划能力（延迟加载，Tier 2）
       // 'adaptivePlanner', 'strategySelector', 'replanTrigger',
       // Learning Layer — 学习能力（延迟加载，Tier 2）
@@ -1319,6 +1321,17 @@ class HeartFlow {
   getKnowledgeStats() {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.knowledge.getStats();
+  }
+
+  // TableForge — 制表引擎
+  forgeTable(data, format = 'auto') {
+    const tf = new (require('./table-forge.js'))();
+    return tf.forge(data, format);
+  }
+
+  detectTableFormat(data) {
+    const tf = new (require('./table-forge.js'))();
+    return tf.detectFormat(data);
   }
 
 }

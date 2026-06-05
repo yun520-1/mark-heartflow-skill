@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "2.2.3"
+version: "2.3.0"
 title: "HeartFlow / 心虫"
 description: |
-  HeartFlow v2.2.3 — AI 认知与自愈引擎 + 代码引擎 + 自审计引擎。
+  HeartFlow v2.3.0 — AI 认知与自愈引擎 + 代码引擎 + 自审计引擎 + 制表引擎。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PAD模型/危机评估/马洛斯需求/防御机制/意图检测)、
   三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory)、
@@ -12,6 +12,7 @@ description: |
   70+模块实时加载、24+Tier2懒加载、
   代码引擎（CodeEngine：结构分析/逻辑审查/全库审计/修复建议/版本对比）、
   自审计引擎（SelfAudit：复杂度/代码质量/版本一致性/依赖/函数大小/死代码6维度审计）、
+  制表引擎（TableForge：格式检测/列类型识别/结构化数据→Excel/数据清洗/结构校验/检验报告模板）、
   自愈RL、梦境引擎、真实性核查、决策验证、反事实推理、置信度校准、自发节制、协作仲裁、
   WAL崩溃安全持久化。
 tags:
@@ -22,7 +23,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.2.3
+## HeartFlow / 心虫 v2.3.0
 
 ⚠️ **安全警告 — 使用前必读**
 
