@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "2.2.3"
+version: "2.2.6"
 title: "HeartFlow / 心虫"
 description: |
-  HeartFlow v2.2.3 — AI 认知与自愈引擎 + 代码引擎 + 自审计引擎。
+  HeartFlow v2.2.6 — AI 认知与自愈引擎 + 代码引擎 + 自审计引擎 + 元学习器升级。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PAD模型/危机评估/马洛斯需求/防御机制/意图检测)、
   三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory)、
@@ -22,7 +22,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.3.0
+## HeartFlow / 心虫 v2.2.6
 
 ⚠️ **安全警告 — 使用前必读**
 
@@ -954,6 +954,7 @@ npm install mark-heartflow-skill
 
 ## Version history (last 10)
 
+||- **2.2.6** (2026-06-05) — **meta-learner.js 重大升级 v2.0.0**。从785字节薄代理升级为完整元学习引擎：教训质量评分(4维度: 完整性/特异性/可操作性/可测量性, 0-1加权)、LessonCategory枚举(8类: technical/behavioral/strategic/architectural/process/security/communication/general)、LessonQuality枚举(4级: excellent/good/fair/poor)、自动分类(关键词匹配+阈值保护)、模式提取(8种可复用模式: conditional-rule/causal-chain/prevention/verification/ordered-steps/error-handling/recommendation/comparison)、置信度计算(质量+模式+类别加权)、关键词提取(停用词过滤)、相关性召回(关键词重叠+类别+模式+质量加权)、学习统计追踪(类别/质量分布、平均分、趋势分析)、自我诊断(质量趋势/类别多样性/低质量比例/可操作建议)、自动修剪(保留高质量教训)。向后兼容：原有接口不变。版本号 2.2.5 → 2.2.6。
 ||- **2.2.3** (2026-06-05) — **rollback-manager.js 重大升级 v2.0.0**。新增 RollbackState 状态枚举(6状态: IDLE/MONITORING/DECLINING/ROLLING_BACK/COOLDOWN/CIRCUIT_OPEN)、RollbackError 错误分类枚举(8种)、MetricSeverity 严重度分级(NORMAL/WARNING/CRITICAL)、CircuitState 熔断器状态机(CLOSED/HALF_OPEN/OPEN)。噪声容忍线性回归下降检测(±0.5波动不触发)、版本震荡循环检测(A→B→A→B模式)、快照管理(createSnapshot/restoreFromSnapshot真实文件恢复)、冷却期升级(连续回滚翻倍+上限7天)、智能版本定位(找最后稳定版本)、熔断器保护(N次回滚后自动停止)、半开试探恢复、健康指标追踪(successRate/metrics/healthCheck)。VALID_TRANSITIONS 状态转换映射。版本号 2.2.2 → 2.2.3。|||- **2.1.1** (2026-06-04) — **code-verifier.js 重大升级 + SKILL.md 模块索引补全**。code-verifier.js 新增7大能力：TypeScript/TSX验证、JSON验证、安全漏洞扫描、异步错误检测、复杂度分析、导入解析验证、综合质量评分。替换version.js中bug(_readFromPackage→_readVersion)。补全 SKILL.md 模块索引表（CodeEngine 行）。版本号 2.1.0 → 2.1.1。
 ||- **2.1.0** (2026-06-04) — **重大升级：CodeEngine 代码引擎**。新增 code-engine.js（2849行），提供5大能力：analyzeCode（代码结构解析）、reviewCode（逻辑级审查：空值/边界/安全/死代码/类型转换/异步错误/反模式）、auditCodebase（全库审计：依赖图/循环引用/复杂度热点/代码重复）、suggestFix（自动修复建议）、compareVersions（结构化版本对比）。替代原 code-verifier.js。集成到 heartflow.js dispatch 路由和便捷方法。版本号 2.0.61 → 2.1.0。
 |- **2.0.58** (2026-06-04) — associative-engine.js升级：输入预处理与验证(InputValidation:空/过短/过长/类型检查)、错误隔离(各层独立try/catch安全执行)、并行处理(L1+L2并行执行)、层间一致性检查(CoherenceChecker:L1↔L2/L2↔L3/L4思想向量)、处理质量度量(ProcessingMetrics:分层耗时/状态追踪/质量评分)、优雅降级(层失败时的有意义回退响应)、引擎统计(getStats:成功率/平均耗时/质量分)
