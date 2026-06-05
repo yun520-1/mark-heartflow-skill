@@ -107,6 +107,7 @@ const _EmotionalGrowth = _lazy('emotionalGrowth', () => require('../emotion/emot
 const _MoodEvolution = _lazy('moodEvolution', () => require('../emotion/mood-evolution.js'));
 const _VERSION = _lazy('version', () => require('./version.js'));
 const _CodeEngine = _lazy('codeEngine', () => require('./code-engine.js'));
+const _SelfAudit = _lazy('selfAudit', () => require('./self-audit.js'));
 
 const BUILD_DATE = '2026-06-03';
 
@@ -217,6 +218,7 @@ class HeartFlow {
     this.emotionalGrowth = null;  // 情感成长
     this.moodEvolution = null;  // 心境演化
     this.codeEngine = null;     // 代码引擎 — 代码分析/审查/修复
+    this.selfAudit = null;      // 自审计引擎 — 6维度代码审计
 
     const STMod = _SearchTrace();
     this.SearchTrace = STMod.SearchTrace;
@@ -396,6 +398,7 @@ class HeartFlow {
     try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
     try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
     try { this.codeEngine = new (_CodeEngine().CodeEngine)(); } catch (e) { this._initErrors.push({module: 'codeEngine', error: e.message}); }
+    try { this.selfAudit = _SelfAudit(); } catch (e) { this._initErrors.push({module: 'selfAudit', error: e.message}); }
     try { this.workflow = new (_WorkflowSwitch().WorkflowSwitch)(); } catch (e) { this._initErrors.push({module: 'workflow', error: e.message}); }
     this.snapshot = _StateSnapshot();
     this.error = _ErrorHandler();
@@ -786,6 +789,12 @@ class HeartFlow {
     // codeEngine — 代码引擎
     'codeEngine.analyzeCode', 'codeEngine.reviewCode', 'codeEngine.auditCodebase',
     'codeEngine.suggestFix', 'codeEngine.compareVersions',
+    // selfAudit — 自审计引擎
+    'selfAudit.runAudit', 'selfAudit.auditFullCodebase', 'selfAudit.auditSingleModule',
+    'selfAudit.auditComplexity', 'selfAudit.auditCodeQuality',
+    'selfAudit.auditVersionConsistency', 'selfAudit.auditDependencies',
+    'selfAudit.auditFunctionSize', 'selfAudit.auditDeadCode',
+    'selfAudit.formatAuditSummary', 'selfAudit.evaluateDimensionStatus',
   ]);
 
   /**
@@ -835,6 +844,9 @@ class HeartFlow {
             mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/cross-session') });
           } else if (subsystem === 'codeEngine') {
             mod = new Ctor({ rootPath: this.rootPath });
+          } else if (subsystem === 'selfAudit') {
+            // selfAudit 是函数对象模块（非 class），直接引用
+            mod = Mod;
           } else {
             mod = new Ctor(entry.args);
           }
@@ -1069,6 +1081,35 @@ class HeartFlow {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!this.codeEngine) throw new Error('codeEngine not available');
     return this.codeEngine.reviewCode(code, lang);
+  }
+
+  /**
+   * auditCodebase — 便捷方法：执行全库6维度自审计
+   * 使用 selfAudit 分析代码质量、复杂度、版本一致性、依赖等
+   * 
+   * @param {object} [options] - 审计选项
+   * @param {boolean} [options.silent=false] - 静默模式（不打印结果）
+   * @returns {object} - { dimensions, summary, score, status }
+   */
+  auditCodebase(options = {}) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    if (!this.selfAudit) throw new Error('selfAudit not available');
+    const result = this.selfAudit.runAudit(options);
+    if (!options.silent) {
+      const summary = this.selfAudit.formatAuditSummary(result);
+      console.log('[HeartFlow] 自审计报告:\n' + summary);
+    }
+    return result;
+  }
+
+  /**
+   * runAudit — 便捷方法：执行自审计（简写，适合 cron 调用）
+   * 等价于 auditCodebase({ silent: true })
+   * 
+   * @returns {object} - 审计结果
+   */
+  runAudit() {
+    return this.auditCodebase({ silent: true });
   }
 
   checkTruthfulness(statement) {
