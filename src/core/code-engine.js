@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * HeartFlow 心虫 v2.2.2 — CodeEngine (代码引擎)
+ * HeartFlow 心虫 v2.3.0 — CodeEngine (代码引擎)
  * ============================================================================
  *
  * 代码分析、审查与审计引擎，是心虫认知系统的 Tier 1 核心模块。
@@ -22,7 +22,7 @@
  *
  * @module code-engine
  * @author HeartFlow Core Team
- * @version 2.2.2
+ * @version 2.3.0
  * @license Proprietary
  */
 
@@ -3350,6 +3350,107 @@ class CodeEngine {
             ' 把端到端基线跑通。然后人工标注50~200页自有业务文档作为评测集。有了真实数字再决定优化方向。克制住一上来就玩前沿技术的冲动。';
 
         return plan;
+    }
+
+    // ===========================================================================
+    // 新增: 图片读取与分析（vision 能力）
+    // 使用 macOS 内置 sips + tesseract OCR，零外部依赖
+    // ===========================================================================
+
+    /**
+     * 读取图片文件，获取元数据 + OCR 文字
+     * @param {string} imagePath - 本地图片路径或 URL
+     * @param {Object} [opts] - 选项
+     * @param {string} [opts.lang='eng'] - OCR 语言（'eng'|'chi_sim'|'eng+chi_sim'）
+     * @param {number} [opts.psm=3] - Tesseract PSM 模式（3=自动, 6=统一文本块）
+     * @param {boolean} [opts.ocr=true] - 是否执行 OCR
+     * @returns {Object} { format, width, height, dpi, hasAlpha, space, text, error? }
+     */
+    readImage(imagePath, opts = {}) {
+        const cp = require('child_process');
+        const fs = require('fs');
+        const path = require('path');
+        const lang = opts.lang || 'eng';
+        const psm = opts.psm || 3;
+        const doOcr = opts.ocr !== false;
+
+        let localPath = imagePath;
+
+        // 如果是 URL，先下载
+        if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+            const tmpDir = '/tmp';
+            const ext = path.extname(new URL(imagePath).pathname) || '.jpg';
+            localPath = path.join(tmpDir, 'hf_img_' + Date.now() + ext);
+            const curl = cp.spawnSync('curl', ['-sL', '-o', localPath, imagePath], { timeout: 30000, encoding: 'utf-8' });
+            if (curl.status !== 0) {
+                return { error: `下载图片失败: ${curl.stderr?.slice(0, 100) || 'timeout'}` };
+            }
+            if (!fs.existsSync(localPath) || fs.statSync(localPath).size === 0) {
+                return { error: '下载的图片为空' };
+            }
+        }
+
+        if (!fs.existsSync(localPath)) {
+            return { error: `文件不存在: ${localPath}` };
+        }
+
+        const result = {};
+
+        // ---- 1. 文件类型检测 ----
+        try {
+            const file = cp.spawnSync('file', [localPath], { timeout: 5000, encoding: 'utf-8' });
+            if (file.status === 0) result.format = file.stdout.trim();
+        } catch (e) { /* silent */ }
+
+        // ---- 2. sips 元数据（macOS 内置） ----
+        try {
+            const sips = cp.spawnSync('sips', ['-g', 'all', localPath], { timeout: 5000, encoding: 'utf-8' });
+            if (sips.status === 0) {
+                const meta = {};
+                for (const line of sips.stdout.split('\n')) {
+                    const m = line.match(/^\s+(\w+):\s+(.+)$/);
+                    if (m) meta[m[1]] = m[2].trim();
+                }
+                result.width = parseInt(meta.pixelWidth) || null;
+                result.height = parseInt(meta.pixelHeight) || null;
+                result.dpiWidth = meta.dpiWidth ? parseFloat(meta.dpiWidth) : null;
+                result.dpiHeight = meta.dpiHeight ? parseFloat(meta.dpiHeight) : null;
+                result.hasAlpha = meta.hasAlpha === 'yes';
+                result.colorSpace = meta.space || null;
+                result.fileSize = fs.statSync(localPath).size;
+            }
+        } catch (e) { /* silent */ }
+
+        // ---- 3. Tesseract OCR ----
+        if (doOcr) {
+            try {
+                const tesseract = cp.spawnSync('tesseract', [
+                    localPath, 'stdout',
+                    '-l', lang,
+                    '--psm', String(psm),
+                ], { timeout: 60000, encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 });
+
+                if (tesseract.status === 0) {
+                    result.text = tesseract.stdout.trim();
+                } else {
+                    const errMsg = tesseract.stderr?.trim() || '';
+                    if (errMsg.includes('Failed to init')) {
+                        result.ocrError = `语言包未安装: ${lang}。当前可用: eng`;
+                    } else {
+                        result.ocrError = errMsg.slice(0, 200);
+                    }
+                }
+            } catch (e) {
+                result.ocrError = `OCR 执行异常: ${e.message}`;
+            }
+        }
+
+        // ---- 4. 清理临时文件 ----
+        if (imagePath.startsWith('http')) {
+            try { fs.unlinkSync(localPath); } catch (e) { /* silent */ }
+        }
+
+        return result;
     }
 
 }
