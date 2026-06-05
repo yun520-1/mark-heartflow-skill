@@ -866,6 +866,8 @@ class CodeEngine {
     this._checkDeadCode(cleanCode, lang, code, issues);
     this._checkSecurityPatterns(cleanCode, lang, issues);
     this._checkCommonAntiPatterns(cleanCode, lang, issues);
+    this._checkPerformanceIssues(cleanCode, lang, issues);
+    this._checkConcurrencySafety(cleanCode, lang, issues);
 
     // 统计严重级别
     const criticalCount = issues.filter(i => i.severity === 'critical').length;
@@ -2851,8 +2853,211 @@ class CodeEngine {
       changeCount: changes.length,
     };
   }
-}
 
+  /**
+   * 检查性能问题
+   * @private
+   * @param {string} cleanCode - 去除注释的代码
+   * @param {string} lang - 语言
+   * @param {Object[]} issues - 问题列表（追加模式）
+   */
+  _checkPerformanceIssues(cleanCode, lang, issues) {
+    const lines = getLines(cleanCode);
+
+    // 1. 嵌套循环 O(n²) 检测
+    let loopDepth = 0;
+    let loopLines = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (/\b(for|while)\s*\(/.test(line)) {
+        loopDepth++;
+        loopLines.push(i + 1);
+      }
+    }
+    if (loopDepth >= 2) {
+      issues.push({
+        type: 'nested-loop',
+        severity: 'medium',
+        line: loopLines[0],
+        code: lines[loopLines[0] - 1].trim(),
+        message: '嵌套循环可能导致 O(n²) 复杂度',
+        detail: `检测到 ${loopDepth} 层循环嵌套，当数据量大时性能显著下降`,
+        suggestion: '考虑使用 Map/Set 索引、提前退出或分治策略优化'
+      });
+    }
+
+    // 2. JSON.parse(JSON.stringify(obj)) 深拷贝检测
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (/JSON\s*\.\s*parse\s*\(\s*JSON\s*\.\s*stringify/.test(line)) {
+        issues.push({
+          type: 'inefficient-deep-copy',
+          severity: 'medium',
+          line: i + 1,
+          code: line.trim(),
+          message: '低效的深拷贝方式',
+          detail: 'JSON.parse(JSON.stringify(obj)) 会丢失函数、undefined、Symbol、循环引用',
+          suggestion: '使用 structuredClone() 或 lodash.cloneDeep()'
+        });
+      }
+    }
+
+    // 3. 正则表达式性能问题
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const regexMatch = line.match(/\.match\s*\(\s*\/([^\/]*)\/([^\)]*)\)/);
+      if (regexMatch && !regexMatch[2].includes('g')) {
+        const pattern = regexMatch[1];
+        if (pattern.length > 10) {
+          issues.push({
+            type: 'regex-performance',
+            severity: 'low',
+            line: i + 1,
+            code: line.trim(),
+            message: '正则未使用全局匹配标志',
+            detail: `较长的正则模式缺少 g 标志可能导致只匹配第一个结果`,
+            suggestion: '在正则末尾添加 g 标志: /pattern/g'
+          });
+        }
+      }
+    }
+
+    // 4. 链式迭代多次遍历
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (/\.filter\s*\(.*\)\s*\.\s*map/.test(line) || /\.filter\s*\(.*\)\s*\.\s*forEach/.test(line)) {
+        issues.push({
+          type: 'chained-iteration',
+          severity: 'low',
+          line: i + 1,
+          code: line.trim(),
+          message: '链式迭代导致多次遍历',
+          detail: 'filter + map/forEach 链会遍历数组两次，大数据量时性能损失明显',
+          suggestion: '使用 reduce() 或 flatMap() 单次遍历完成'
+        });
+      }
+    }
+
+    // 5. 频繁 DOM 操作（仅 JS/TS）
+    if (lang === 'javascript' || lang === 'typescript') {
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (/\.innerHTML\s*=/.test(line) && /for\s*\(|while\s*\(|forEach\s*\(/.test(lines.slice(Math.max(0, i-5), i+1).join('\n'))) {
+          issues.push({
+            type: 'dom-in-loop',
+            severity: 'high',
+            line: i + 1,
+            code: line.trim(),
+            message: '循环中操作 DOM',
+            detail: '在循环中直接修改 innerHTML 会导致多次重排/重绘',
+            suggestion: '使用 DocumentFragment 或拼接字符串后一次性赋值'
+          });
+          break;
+        }
+      }
+    }
+  }
+
+  /**
+   * 检查并发/竞态安全问题
+   * @private
+   * @param {string} cleanCode - 去除注释的代码
+   * @param {string} lang - 语言
+   * @param {Object[]} issues - 问题列表（追加模式）
+   */
+  _checkConcurrencySafety(cleanCode, lang, issues) {
+    const lines = getLines(cleanCode);
+
+    // JS/TS 检查
+    if (lang === 'javascript' || lang === 'typescript') {
+      // 1. Promise.all 中共享变量的竞态条件
+      const allContent = cleanCode;
+      const promiseAllMatch = allContent.match(/Promise\.all\s*\(/);
+      if (promiseAllMatch) {
+        const promiseBlock = allContent.substring(promiseAllMatch.index);
+        const varMatch = promiseBlock.match(/(?:let|var|const)\s+(\w+)\s*[=;]/);
+        if (varMatch) {
+          const varName = varMatch[1];
+          const assignmentCount = (promiseBlock.match(new RegExp(`${varName}\\s*=`, 'g')) || []).length;
+          if (assignmentCount > 1) {
+            issues.push({
+              type: 'race-condition',
+              severity: 'high',
+              line: lines.findIndex(l => l.includes('Promise.all')) + 1,
+              code: 'Promise.all(...)',
+              message: 'Promise.all 中存在共享变量竞态条件',
+              detail: `变量 "${varName}" 在多个 promise 回调中被赋值，最终值不可预测`,
+              suggestion: '使用 Promise.allSettled() 或为每个 promise 创建独立作用域'
+            });
+          }
+        }
+      }
+
+      // 2. 全局变量在异步操作中被修改
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (/(?:let|var)\s+(\w+)\s*;/.test(line) && !/^\s*(?:for|while)\s*\(/.test(line)) {
+          const globalVar = line.match(/(?:let|var)\s+(\w+)\s*;/);
+          if (globalVar) {
+            const varName = globalVar[1];
+            const asyncPattern = new RegExp(`${varName}\\s*=\\s*[^;]+\\s*(?:;|$)`);
+            let inAsyncScope = false;
+            for (let j = Math.max(0, i - 10); j < Math.min(lines.length, i + 50); j++) {
+              if (/\bthen\s*\(|async\s+\w+\s*\(|setTimeout|setInterval/.test(lines[j])) {
+                inAsyncScope = true;
+              }
+              if (inAsyncScope && asyncPattern.test(lines[j]) && j > i) {
+                issues.push({
+                  type: 'shared-mutable-state',
+                  severity: 'medium',
+                  line: j + 1,
+                  code: lines[j].trim(),
+                  message: '异步作用域中修改共享变量',
+                  detail: `变量 "${varName}" 在模块顶层声明，被异步回调修改可能导致竞态`,
+                  suggestion: '使用局部变量或闭包隔离异步状态'
+                });
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Python 检查
+    if (lang === 'python') {
+      const hasThreading = /\bthreading\b/.test(cleanCode);
+      const hasLock = /\bthreading\.Lock\b|\bthreading\.RLock\b/.test(cleanCode);
+      if (hasThreading && !hasLock) {
+        const threadLine = lines.findIndex(l => l.includes('threading.Thread'));
+        issues.push({
+          type: 'missing-thread-lock',
+          severity: 'high',
+          line: threadLine >= 0 ? threadLine + 1 : 1,
+          code: threadLine >= 0 ? lines[threadLine].trim() : 'threading',
+          message: '多线程环境中未使用锁保护共享状态',
+          detail: '检测到 threading.Thread 但未找到 Lock/RLock，共享变量存在竞态风险',
+          suggestion: '添加 threading.Lock() 保护共享变量写入，使用 with lock: 确保释放'
+        });
+      }
+
+      const hasAsyncIO = /\basyncio\b/.test(cleanCode);
+      const hasGlobalVar = /\bglobal\b/.test(cleanCode);
+      if (hasAsyncIO && hasGlobalVar) {
+        issues.push({
+          type: 'async-global-state',
+          severity: 'medium',
+          line: lines.findIndex(l => l.includes('global')) + 1 || 1,
+          code: 'global ...',
+          message: 'asyncio 协程中使用了全局变量',
+          detail: '在 asyncio 环境中使用 global 变量可能导致协程间状态混乱',
+          suggestion: '使用 asyncio.Queue() 或显式参数传递代替全局变量'
+        });
+      }
+    }
+  }
+
+}
 // ============================================================================
 // 导出
 // ============================================================================
