@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * HeartFlow 心虫 v2.0.61 — CodeEngine (代码引擎)
+ * HeartFlow 心虫 v2.2.2 — CodeEngine (代码引擎)
  * ============================================================================
  *
  * 代码分析、审查与审计引擎，是心虫认知系统的 Tier 1 核心模块。
@@ -22,7 +22,7 @@
  *
  * @module code-engine
  * @author HeartFlow Core Team
- * @version 2.0.61
+ * @version 2.2.2
  * @license Proprietary
  */
 
@@ -3194,6 +3194,162 @@ class CodeEngine {
         if (a.hasAPI && !a.hasControllers) { a.hasControllers = true; a.controllers.push({ name: 'index', serviceName: 'indexService' }); }
         if (a.hasAPI && !a.hasServices) { a.hasServices = true; a.services.push({ name: 'indexService', modelName: 'index' }); }
         return a;
+    }
+
+    // ===========================================================================
+    // 新增: RAG 知识库架构设计（基于真实工程落地经验）
+    // 来源: RAG知识库发展到什么程度了？大模型知识库避坑与进阶指南
+    // ===========================================================================
+
+    /**
+     * 设计 RAG 知识库系统架构
+     * @param {Object} opts - 需求参数
+     * @param {string} [opts.lang='zh'] - 语言偏好 ('zh'|'en')
+     * @param {string} [opts.docType='general'] - 文档类型 ('general'|'scanned'|'chart-heavy'|'academic'|'compliance'|'mixed')
+     * @param {string} [opts.deploy='local'] - 部署模式 ('local'|'cloud-api'|'hybrid')
+     * @param {boolean} [opts.needVision=false] - 是否需要视觉原生检索
+     * @param {boolean} [opts.needGraph=false] - 是否需要知识图谱
+     * @param {number} [opts.scale=1000] - 预计文档页数
+     * @returns {Object} 架构方案
+     */
+    designRAGSystem(opts = {}) {
+        const lang = opts.lang || 'zh';
+        const docType = opts.docType || 'general';
+        const deploy = opts.deploy || 'local';
+        const needVision = opts.needVision || false;
+        const needGraph = opts.needGraph || false;
+        const scale = opts.scale || 1000;
+
+        const plan = {
+            name: '',
+            parser: { main: '', fallback: '', tier: '' },
+            embedding: 'BGE-M3',
+            vectorDB: 'Milvus',
+            chunkStrategy: 'recursive',
+            visionPipeline: null,
+            graphPipeline: null,
+            llm: '',
+            features: [],
+            warnings: [],
+            tiers: { parsing: '', retrieval: '', evaluation: '' },
+        };
+
+        // ---- 文档类型 -> 解析器选型 ----
+        if (docType === 'general' || docType === 'mixed') {
+            if (lang === 'zh') {
+                plan.parser.main = 'MinerU';      // 上海AI实验室，中文首选
+                plan.parser.tier = '范式一 Pipeline';
+                plan.parser.fallback = 'GOT-OCR2.0';
+            } else {
+                plan.parser.main = 'Marker';       // 英文学术/教材首选
+                plan.parser.tier = '范式一 Pipeline';
+                plan.parser.fallback = 'Docling';
+            }
+        } else if (docType === 'scanned') {
+            plan.parser.main = 'GOT-OCR2.0';       // 端到端VLM，处理扫描件
+            plan.parser.tier = '范式二 端到端 VLM';
+            plan.parser.fallback = 'PaddleOCR';
+        } else if (docType === 'chart-heavy') {
+            plan.parser.main = 'MinerU';
+            plan.parser.tier = '范式三 视觉原生检索';
+            plan.parser.fallback = 'ColPali';
+            plan.visionPipeline = {
+                encoder: 'ColQwen2',
+                vectorDB: 'Qdrant',                 // 原生支持 Multi-vector
+                patchGrid: '1024 patches/page',
+                storageMultiplier: '~100x vs text-only',
+                rerank: true,
+            };
+        } else if (docType === 'academic') {
+            plan.parser.main = 'Marker';
+            plan.parser.tier = '范式一 Pipeline';
+            plan.parser.fallback = 'UniMERNet';      // 公式识别
+            plan.features.push('公式还原 LaTeX', '表格结构化');
+        } else if (docType === 'compliance') {
+            plan.parser.main = 'Docling';             // IBM 开源，合规审计友好
+            plan.parser.tier = '范式一 Pipeline';
+            plan.parser.fallback = 'PP-StructureV3';  // 纯CPU可跑
+            plan.features.push('条款语义边界', '合规审计', '纯本地部署');
+        }
+
+        // ---- 视觉原生检索 ----
+        if (needVision || docType === 'chart-heavy') {
+            if (!plan.visionPipeline) {
+                plan.visionPipeline = {
+                    encoder: 'ColPali',
+                    vectorDB: 'Qdrant',
+                    patchGrid: '1024 patches/page',
+                    storageMultiplier: '~100x vs text-only',
+                };
+            }
+            plan.vectorDB = 'Qdrant';
+            plan.warnings.push(
+                '视觉原生RAG: 存储成本暴增~100x，检索延迟变高，需要多模态大模型(如Qwen2.5-VL/GPT-4V)生成回答'
+            );
+        } else {
+            plan.vectorDB = scale > 10000 ? 'Milvus' : (deploy === 'local' ? 'PGVector' : 'Milvus');
+        }
+
+        // ---- 知识图谱 RAG（克制使用） ----
+        if (needGraph) {
+            plan.graphPipeline = {
+                engine: 'Neo4j + LLM',
+                framework: 'LightRAG',
+                useCase: '多跳推理（A影响B，B影响C）、全局主题分析',
+                warning: '基础文本RAG没做到极限之前，别碰图谱。关系抽取维护成本高，收益微乎其微',
+            };
+            plan.warnings.push('GraphRAG: 克制使用，仅当每天有大量"X和Y的关系"类问题时才上');
+        }
+
+        // ---- 分块策略 ----
+        if (scale < 500) {
+            plan.chunkStrategy = 'RecursiveCharacterTextSplitter（固定500-1000字符）';
+        } else if (docType === 'academic' || docType === 'compliance') {
+            plan.chunkStrategy = '递归语义分块 RSC（BGE-M3 计算句子相似度，语义突变处下刀）';
+            plan.features.push('语义级切分');
+        } else {
+            plan.chunkStrategy = '层级分块：文档级→段落级→句子级三级索引';
+        }
+        // 表格独立分块（铁律）
+        plan.features.push('表格独立分块（HTML/Markdown格式，支持按列/行检索）');
+
+        // ---- LLM 选型 ----
+        if (needVision) {
+            plan.llm = lang === 'zh' ? 'Qwen2.5-VL' : 'GPT-4V / Claude';
+        } else {
+            plan.llm = lang === 'zh' ? 'DeepSeek / Qwen' : 'GPT-4 / Claude';
+        }
+
+        // ---- 部署模式 ----
+        if (deploy === 'cloud-api') {
+            plan.warnings.push('数据能出域则用阿里云百炼/百度智能文档API，中文场景比Azure稳');
+        } else if (deploy === 'hybrid') {
+            plan.features.push('路由层：根据文档类型和数据敏感度分流，不用一招通吃');
+        }
+
+        // ---- 三段架构铁律 ----
+        plan.tiers = {
+            parsing: `主解析器(${plan.parser.main})处理90%常规文档 → 兜底链路(${plan.parser.fallback})处理失败/低置信度文档 → 离线校验(人工抽样标注+CER/WER/TEDS)`,
+            retrieval: `${plan.embedding} 嵌入 → ${plan.vectorDB} 存储 → 多通道并行召回 → 重排层融合`,
+            evaluation: '解析精度(CER/WER/TEDS) → 检索质量(Recall@K/MRR) → 端到端体验(RAGAS/LLM-as-a-Judge)',
+        };
+
+        // ---- 黄金组合命名 ----
+        if (docType === 'chart-heavy' || needVision) {
+            plan.name = `T1-视觉图表密集${lang === 'zh' ? '中文' : '英文'}方案`;
+        } else if (docType === 'academic' || docType === 'compliance') {
+            plan.name = `T2-${docType === 'academic' ? '学术' : '合规'}优先方案`;
+        } else if (deploy === 'cloud-api') {
+            plan.name = 'T3-中小团队快速上线方案';
+        } else {
+            plan.name = `T4-${docType === 'general' ? '通用' : '定制'}方案`;
+        }
+
+        // ---- 实施建议 ----
+        plan.advice = '第一周不管效果多烂，先用 ' + plan.parser.main +
+            ' 把端到端基线跑通。然后人工标注50~200页自有业务文档作为评测集。有了真实数字再决定优化方向。克制住一上来就玩前沿技术的冲动。';
+
+        return plan;
     }
 
 }
