@@ -15,10 +15,10 @@ try {
 
     const result = {
         input,
-        whatIsThis: step1,
-        isRightAction: step2,
-        detectPain: pain,
-        shouldBeSilent: shouldSilent,
+        whatIsThis: step1,        // 场景判断
+        isRightAction: step2,     // 行动审查
+        detectPain: pain,         // 痛苦检测
+        shouldBeSilent: shouldSilent, // 沉默判断
         canRespond: !shouldSilent?.result,
         judgment: shouldSilent?.result ? '沉默' : pain?.result ? '先接住情绪' : '可以回应',
     };
