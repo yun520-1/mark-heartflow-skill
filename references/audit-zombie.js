@@ -10,7 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = '/Users/apple/.hermes/skills/ai/mark-heartflow-skill';
+const ROOT = '__PROJECT_ROOT__';
 const SRC = path.join(ROOT, 'src');
 
 // 入口：heartflow.js + 顶层 test-boot.js 引用的
