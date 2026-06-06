@@ -1,6 +1,6 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "2.5.3",
+  "version": "2.5.4",
   "description": "HeartFlow 心虫 v2.5.3 — AI 认知与自愈引擎 + 深度梦境引擎 v3.1。",
   "main": "src/core/heartflow.js",
   "bin": {

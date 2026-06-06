@@ -438,9 +438,19 @@ class HeartFlow {
       moodEvolution: { lazy: true, path: '../emotion/mood-evolution.js', Ctor: 'MoodEvolution', args: {} },
     };
 
-    // ─── Search modules — BM25Engine/HybridSearchEngine 已禁用（无 BM25Engine/HybridSearchEngine 类）
-    // try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { console.warn('[HeartFlow] BM25 init error:', e.message); }
-    // try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { console.warn('[HeartFlow] HybridSearch init error:', e.message); }
+    // ─── RetrievalRouter — 统一检索路由层（三段架构：分类→并行召回→重排+质量门）
+    try {
+      const { RetrievalRouter } = require('./retrieval-router.js');
+      this.retrievalRouter = new RetrievalRouter();
+      this.retrievalRouter.inject({
+        meaningfulMemory: this.memory,
+        hybridSearch: this.hybrid,
+        knowledgeGraph: this.knowledge,
+        lessonRetrieval: this.lesson,
+      });
+    } catch (e) {
+      this._initErrors.push({ module: 'retrievalRouter', error: e.message });
+    }
 
     // Budget & Utils (function exports, not classes)
     const BudgetMod = _Budget();
@@ -638,6 +648,8 @@ class HeartFlow {
       'ethics',
       // Transmission Layer — 知识传递
       'transmission',
+      // RetrievalRouter — 统一检索路由
+      'retrievalRouter',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -798,6 +810,8 @@ class HeartFlow {
     'selfAudit.auditVersionConsistency', 'selfAudit.auditDependencies',
     'selfAudit.auditFunctionSize', 'selfAudit.auditDeadCode',
     'selfAudit.formatAuditSummary', 'selfAudit.evaluateDimensionStatus',
+    // retrievalRouter — 统一检索路由
+    'retrievalRouter.retrieve', 'retrievalRouter.inject',
   ]);
 
   /**
@@ -1003,6 +1017,24 @@ class HeartFlow {
       // 记忆记录失败不影响主流程
     }
 
+    // ─── 检索路由 — 在 ThoughtChain 之前，为推理提供上下文 ──────
+    let retrievalContext = null;
+    if (this.retrievalRouter && judgment.shouldRespond) {
+      try {
+        const routeResult = this.retrievalRouter.retrieve(input, { topK: 5 });
+        if (routeResult.results && routeResult.results.length > 0) {
+          retrievalContext = {
+            results: routeResult.results,
+            quality: routeResult.quality,
+            type: routeResult.type,
+            needsFallback: routeResult.needsFallback,
+          };
+        }
+      } catch (e) {
+        // 检索失败不影响主流程
+      }
+    }
+
     // 如果判定为需要回应，再走 ThoughtChain 深度推理
     if (judgment.shouldRespond) {
       const TC = _ThoughtChain();
@@ -1012,6 +1044,7 @@ class HeartFlow {
       return {
         ...chainResult,
         judgment,  // 附上心虫判定流程结果
+        retrieval: retrievalContext,  // 附上检索路由结果
       };
     }
 

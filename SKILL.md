@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: "2.5.3"
+version: "2.5.4"
 title: "HeartFlow / 心虫"
 description: |
   HeartFlow v2.5.3 — AI 认知与自愈引擎 + 深度梦境引擎 v3.1 + 独立永久记忆系统 + 记忆读写工具 + 记忆注入器。
@@ -22,7 +22,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.3.1
+## HeartFlow / 心虫 v2.5.4
 
 ⚠️ **安全警告 — 使用前必读**
 
