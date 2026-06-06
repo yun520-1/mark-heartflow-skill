@@ -995,6 +995,9 @@ class HeartFlow {
     try {
       if (this.heartMemory) {
         this.heartMemory.recordFromThink(judgment, input);
+        // 每次判定后自动导出压缩文本，供跨会话引用
+        const text = this.heartMemory.exportToText(100);
+        this._lastMemoryExport = text;
       }
     } catch (e) {
       // 记忆记录失败不影响主流程
