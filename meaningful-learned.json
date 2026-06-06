@@ -8,5 +8,14 @@
     "accessCount": 0,
     "lastAccessed": 1780710898871,
     "createdAt": 1780710898871
+  },
+  "test:dream": {
+    "value": "今天做了一个关于目标的梦",
+    "tags": [
+      "consolidated"
+    ],
+    "accessCount": 0,
+    "lastAccessed": 1780712929907,
+    "createdAt": 1780712929907
   }
 }

@@ -2,6 +2,22 @@
 
 > ⚠️ **本 CHANGELOG 包含历史记录与审计修复段。v1.5.0-v2.0.6 段描述的"MarkCode / 执行能力 / multimodal / executor-agent"等模块大部分已移除（src/agent-core/, src/multimodal/, src/agents/executor-agent.js, scripts/heartflow-sync-upgrade.sh, scripts/comfyui-cron.sh 均不存在），仅作为"已修复"历史保留。当前能力以 SKILL.md frontmatter 与 `src/` 实际存在代码为准。**
 
+## v2.5.2 (2026-06-08)
+
+### 🐛 做梦系统修复：DreamEngine 未传入 heartMemory
+
+**问题**：`heartflow.js` 第279行 `new DreamEngine({})` 未传入 memory 实例，导致 `dream.memory = undefined`，`_collectTodayMemory` 始终返回空数组，所有梦都是"空梦"（空白的房间）。
+
+**修复**：
+- `new DreamEngine(this.heartMemory)` — 传入 HeartFlowMemory 实例
+- `dreamNow()` 新增 `recordDream()` 调用 — 自动将梦写入 `dream-history.jsonl`
+- `DreamConsolidation` 也改为使用 `this.heartMemory`
+
+**验证结果**：
+- 基于记忆生成叙事梦成功："有一个动作在反复发生…我是在解决问题，还是在练习失败？"
+- `dream-history.jsonl` 自动记录
+- dream 模块与记忆系统完整打通
+
 ## v2.0.53 (2026-06-04)
 
 ### 🧠 dream-consolidation.js 功能升级：记忆衰退评分、多周期梦境模拟、冲突检测
