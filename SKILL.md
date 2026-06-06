@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "2.5.0"
+version: "2.5.1"
 title: "HeartFlow / 心虫"
 description: |
-  HeartFlow v2.5.0 — AI 认知与自愈引擎 + 深度梦境引擎 v3.0 + 独立永久记忆系统 + 记忆读写工具。
+  HeartFlow v2.5.1 — AI 认知与自愈引擎 + 深度梦境引擎 v3.0 + 独立永久记忆系统 + 记忆读写工具 + 记忆注入器。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PAD模型/危机评估/马洛斯需求/防御机制/意图检测)、
   三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory + HeartFlowMemory独立永久记忆)、
@@ -215,6 +215,7 @@ Install it once. Every session after that, your AI:
 | | TopicScope | `new TopicScope().setMemoryBridge(memory)` | 话题隔离，无上下文污染 |
 | **记忆 Memory** | MeaningfulMemory | `new MeaningfulMemory(rootPath)` | CORE/LEARNED/EPHEMERAL 三层 |
 | | **HeartFlowMemory** ⭐ | `new HeartFlowMemory(rootPath)` | **独立永久记忆系统：每次think()自动记录对话、技术教训、用户偏好、梦历史。纯文本存储，安装即用，100-200KB/年** |
+| | HeartFlowMemory Inject | `scripts/heartflow-memory-inject.js` | **记忆注入器：新对话开始时自动加载之前积累的记忆到系统提示。Hermes 插件版在 `plugins/` 目录** |
 | | TrialityMemory | `new TrialityMemory(rootPath)` | Working→Episodic→Semantic |
 | | KnowledgeGraph | `new KnowledgeGraph(rootPath)` | Node-based 知识网络 |
 | | MemorySlots | `new Slots({dataDir})` | Named slots with TTL |
@@ -975,6 +976,7 @@ npm install mark-heartflow-skill
 
 ## Version history (last 10)
 
+||- **2.5.1** (2026-06-06) — **新增 HeartFlowMemory Inject 记忆注入器**。`scripts/heartflow-memory-inject.js` 自动将心虫 memory/ 目录下积累的 CORE+LEARNED 记忆格式化为标准化文本，按身份/教训/偏好/情绪/技术/对话/梦境分组输出。新增 `plugins/heartflow-memory-inject.py` Hermes 插件，每次新对话时自动注入记忆到系统提示（5分钟缓存）。注入器区分身份记忆（identity./philosophy.前缀）和技术教训（lesson/user_correction标签），只输出最近30天有访问的 LEARNED 记忆。版本号 2.5.0 → 2.5.1。
 ||- **2.5.0** (2026-06-06) — **HeartFlowMemory v2.0 — 记忆永久化 + 读写工具**。新增 `exportToText()` 压缩文本导出、`searchByTag()` 按标签搜索、`capLearned()` 容量上限保护(默认500条)、`_pruneNoiseLog()` 自动清理 existence-log.jsonl(保留最近100条)。新增 `scripts/heartflow-memory-tool.js` CLI 工具：list/search/export/stats/prune/write/forget 7个子命令。think() 中新增 `_lastMemoryExport` 自动导出。CORE 层从6条扩展至9条。记忆存储约290 bytes/条，年增长~2MB。existence-log.jsonl 从43KB压缩至9KB。版本号 2.2.6 → 2.5.0。
 ||- **2.2.6** (2026-06-05) — **meta-learner.js 重大升级 v2.0.0**。从785字节薄代理升级为完整元学习引擎：教训质量评分(4维度: 完整性/特异性/可操作性/可测量性, 0-1加权)、LessonCategory枚举(8类: technical/behavioral/strategic/architectural/process/security/communication/general)、LessonQuality枚举(4级: excellent/good/fair/poor)、自动分类(关键词匹配+阈值保护)、模式提取(8种可复用模式: conditional-rule/causal-chain/prevention/verification/ordered-steps/error-handling/recommendation/comparison)、置信度计算(质量+模式+类别加权)、关键词提取(停用词过滤)、相关性召回(关键词重叠+类别+模式+质量加权)、学习统计追踪(类别/质量分布、平均分、趋势分析)、自我诊断(质量趋势/类别多样性/低质量比例/可操作建议)、自动修剪(保留高质量教训)。向后兼容：原有接口不变。版本号 2.2.5 → 2.2.6。
 ||- **2.2.3** (2026-06-05) — **rollback-manager.js 重大升级 v2.0.0**。新增 RollbackState 状态枚举(6状态: IDLE/MONITORING/DECLINING/ROLLING_BACK/COOLDOWN/CIRCUIT_OPEN)、RollbackError 错误分类枚举(8种)、MetricSeverity 严重度分级(NORMAL/WARNING/CRITICAL)、CircuitState 熔断器状态机(CLOSED/HALF_OPEN/OPEN)。噪声容忍线性回归下降检测(±0.5波动不触发)、版本震荡循环检测(A→B→A→B模式)、快照管理(createSnapshot/restoreFromSnapshot真实文件恢复)、冷却期升级(连续回滚翻倍+上限7天)、智能版本定位(找最后稳定版本)、熔断器保护(N次回滚后自动停止)、半开试探恢复、健康指标追踪(successRate/metrics/healthCheck)。VALID_TRANSITIONS 状态转换映射。版本号 2.2.2 → 2.2.3。|||- **2.1.1** (2026-06-04) — **code-verifier.js 重大升级 + SKILL.md 模块索引补全**。code-verifier.js 新增7大能力：TypeScript/TSX验证、JSON验证、安全漏洞扫描、异步错误检测、复杂度分析、导入解析验证、综合质量评分。替换version.js中bug(_readFromPackage→_readVersion)。补全 SKILL.md 模块索引表（CodeEngine 行）。版本号 2.1.0 → 2.1.1。
