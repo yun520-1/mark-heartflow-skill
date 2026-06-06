@@ -1,9 +1,9 @@
 ---
 name: heartflow
-version: "2.5.2"
+version: "2.5.3"
 title: "HeartFlow / 心虫"
 description: |
-  HeartFlow v2.5.2 — AI 认知与自愈引擎 + 深度梦境引擎 v3.0 + 独立永久记忆系统 + 记忆读写工具 + 记忆注入器。
+  HeartFlow v2.5.3 — AI 认知与自愈引擎 + 深度梦境引擎 v3.1 + 独立永久记忆系统 + 记忆读写工具 + 记忆注入器。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PAD模型/危机评估/马洛斯需求/防御机制/意图检测)、
   三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory + HeartFlowMemory独立永久记忆)、
