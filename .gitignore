@@ -1,6 +1,6 @@
 node_modules/
 data/
-memory/
+/memory/
 auth.json
 .env
 *.onnx
