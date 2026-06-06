@@ -1,12 +1,12 @@
 ---
 name: heartflow
-version: "2.2.6"
+version: "2.5.0"
 title: "HeartFlow / 心虫"
 description: |
-  HeartFlow v2.2.6 — AI 认知与自愈引擎 + 代码引擎 + 自审计引擎 + 元学习器升级。
+  HeartFlow v2.5.0 — AI 认知与自愈引擎 + 深度梦境引擎 v3.0 + 独立永久记忆系统。
   核心能力：HeartLogic（存在论/爱/善良/意识/进化/时间感知/意义/直觉/欲望/自欺/沉默/痛苦/希望/创造/思念）、
   心理分析引擎(PAD模型/危机评估/马洛斯需求/防御机制/意图检测)、
-  三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory)、
+  三层记忆(MeaningfulMemory+CORE/LEARNED/EPHEMERAL + TrialityMemory + HeartFlowMemory独立永久记忆)、
   话题隔离(TopicScope)、
   教训检索（TF-IDF加权/时间衰减/类型多样性/标签搜索/N-gram上下文扩展/去重合并/重要性过滤/自动修剪）、
   70+模块实时加载、24+Tier2懒加载、
@@ -22,7 +22,7 @@ tags:
   - reasoning
 ---
 
-## HeartFlow / 心虫 v2.2.6
+## HeartFlow / 心虫 v2.3.1
 
 ⚠️ **安全警告 — 使用前必读**
 
@@ -194,6 +194,7 @@ Install it once. Every session after that, your AI:
 | **认知 Cognitive** | CognitiveProtocol | `new CognitiveProtocol(rootPath)` | 先理解再行动 |
 | | TopicScope | `new TopicScope().setMemoryBridge(memory)` | 话题隔离，无上下文污染 |
 | **记忆 Memory** | MeaningfulMemory | `new MeaningfulMemory(rootPath)` | CORE/LEARNED/EPHEMERAL 三层 |
+| | **HeartFlowMemory** ⭐ | `new HeartFlowMemory(rootPath)` | **独立永久记忆系统：每次think()自动记录对话、技术教训、用户偏好、梦历史。纯文本存储，安装即用，100-200KB/年** |
 | | TrialityMemory | `new TrialityMemory(rootPath)` | Working→Episodic→Semantic |
 | | KnowledgeGraph | `new KnowledgeGraph(rootPath)` | Node-based 知识网络 |
 | | MemorySlots | `new Slots({dataDir})` | Named slots with TTL |

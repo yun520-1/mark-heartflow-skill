@@ -30,9 +30,11 @@ const _Budget = _lazy('budget', () => require('./budget.js'));
 const _Graph = _lazy('graph', () => require('./memory/graph.js'));
 const _CoreUtils = _lazy('utils', () => require('./utils.js'));
 const _SearchTrace = _lazy('searchTrace', () => require('./search/search-trace.js'));
+const _TopicScope = _lazy('topicScope', () => require('./memory/topic-scope.js'));
 const _Slots = _lazy('slots', () => require('./memory/slots.js'));
 const _Observe = _lazy('observe', () => require('./memory/observe.js'));
 const _MeaningfulMemory = _lazy('meaningfulMemory', () => require('../memory/meaningful-memory.js'));
+const _HeartFlowMemory = _lazy('heartFlowMemory', () => require('../memory/heartflow-memory.js'));
 const _KnowledgeGraph = _lazy('knowledgeGraph', () => require('../memory/knowledge-graph.js'));
 const _RetrievalAnchor = _lazy('retrievalAnchor', () => require('../memory/retrieval-anchor.js'));
 const _EvolutionLoop = _lazy('evolutionLoop', () => require('../evolution/loop.js'));
@@ -46,7 +48,7 @@ const _IdentityCore = _lazy('identityCore', () => require('../identity/identity-
 const _SelfModel = _lazy('selfModel', () => require('../identity/self-model.js'));
 const _SelfVerifier = _lazy('selfVerifier', () => require('../identity/self-verifier.js'));
 const _LessonBank = _lazy('lessonBank', () => require('../identity/lesson-bank.js'));
-const _TopicScope = _lazy('topicScope', () => require('../identity/topic-scope.js'));
+const _TopicScopeIdentity = _lazy('topicScopeIdentity', () => require('../identity/topic-scope.js'));
 const _LessonStorage = _lazy('lessonStorage', () => require('./lessons/lesson-storage.js'));
 const _PsychologyEngine = _lazy('psychologyEngine', () => require('../psychology/engine.js'));
 const _StabilityGuard = _lazy('stabilityGuard', () => require('./stability-guard.js'));
@@ -266,6 +268,7 @@ class HeartFlow {
 
     // Memory
     this.memory = new (_MeaningfulMemory().MeaningfulMemory)(this.rootPath);
+    this.heartMemory = new (_HeartFlowMemory().HeartFlowMemory)(this.rootPath);
     this.knowledge = new (_KnowledgeGraph().KnowledgeGraph)(this.rootPath);
 
     // TopicScope — 话题隔离，主动实例化并桥接到 MeaningfulMemory
@@ -977,15 +980,25 @@ class HeartFlow {
 
     // 综合判定结果
     const judgment = {
-      whatIsThis: whatIsThisResult,
-      isRightAction: isRightActionResult,
-      detectPain: detectPainResult,
-      shouldBeSilent: shouldBeSilentResult,
+      whatIsThis: whatIsThisResult,        // 场景判断
+      isRightAction: isRightActionResult,  // 行动审查
+      detectPain: detectPainResult,        // 痛苦检测
+      shouldBeSilent: shouldBeSilentResult, // 沉默判断
       // 最终决策：如果 shouldBeSilent 为 true，不回应
       shouldRespond: !shouldBeSilentResult.result,
       // 如果是痛苦场景且不是正确行动，标记需要谨慎
       needsCare: detectPainResult && !isRightActionResult.result,
     };
+
+    // ─── 心虫记忆自动记录 ─────────────────────────────────
+    // 每次 think() 自动记录用户输入和判定结果
+    try {
+      if (this.heartMemory) {
+        this.heartMemory.recordFromThink(judgment, input);
+      }
+    } catch (e) {
+      // 记忆记录失败不影响主流程
+    }
 
     // 如果判定为需要回应，再走 ThoughtChain 深度推理
     if (judgment.shouldRespond) {
@@ -1159,14 +1172,14 @@ class HeartFlow {
 
   async dreamNow() {
     if (!this.started) throw new Error('HeartFlow not started');
-    // 1. Run dream generation
+    // 1. Run dream generation (v2.3: 基于记忆生成叙事梦)
     const dreamResult = this.dream.dream();
     // 2. Run consolidation (prune + synthesize themes)
     const consolidation = this.dreamConsolidation.dream({ consolidate: false, prune: true, synthesize: true });
     // 3. Feed themes into evolution loop → generate upgrade goals
     let evolutionResult = null;
-    if (consolidation.synthesis && consolidation.synthesis.themes && consolidation.synthesis.themes.length > 0) {
-      const themes = consolidation.synthesis.themes.slice(0, 3);
+    const themes = dreamResult.themes || [];
+    if (themes.length > 0) {
       try {
         evolutionResult = await this.evolution.evolve(themes.join(' '), { source: 'dream_consolidation', themes });
       } catch (e) {
@@ -1177,6 +1190,8 @@ class HeartFlow {
       dream: dreamResult,
       consolidation,
       evolution: evolutionResult,
+      narrative: dreamResult.narrative || '',
+      insights: dreamResult.insights || [],
     };
   }
 
