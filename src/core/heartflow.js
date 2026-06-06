@@ -276,8 +276,8 @@ class HeartFlow {
 
     // Evolution
     this.evolution = new (_EvolutionLoop().EvolutionLoop)({ rootPath: this.rootPath, memory: this.memory }).boot();
-    this.dream = new (_DreamEngine().DreamEngine)({});
-    this.dreamConsolidation = new (_DreamConsolidation().DreamConsolidation)(this.memory);
+    this.dream = new (_DreamEngine().DreamEngine)(this.heartMemory);
+    this.dreamConsolidation = new (_DreamConsolidation().DreamConsolidation)(this.heartMemory);
     this.lesson = new (_LessonBank().LessonBank)(this.rootPath);
     this.metaJudgment = new (_MetaJudgment().MetaJudgment)(this.rootPath);
     this.metaMemory = new (_MetaMemory().MetaMemory)(this.rootPath);
@@ -1177,9 +1177,13 @@ class HeartFlow {
     if (!this.started) throw new Error('HeartFlow not started');
     // 1. Run dream generation (v2.3: 基于记忆生成叙事梦)
     const dreamResult = this.dream.dream();
-    // 2. Run consolidation (prune + synthesize themes)
+    // 2. Record dream to heartMemory (persist dream history)
+    if (this.heartMemory && typeof this.heartMemory.recordDream === 'function') {
+      try { this.heartMemory.recordDream(dreamResult); } catch (e) {}
+    }
+    // 3. Run consolidation (prune + synthesize themes)
     const consolidation = this.dreamConsolidation.dream({ consolidate: false, prune: true, synthesize: true });
-    // 3. Feed themes into evolution loop → generate upgrade goals
+    // 4. Feed themes into evolution loop → generate upgrade goals
     let evolutionResult = null;
     const themes = dreamResult.themes || [];
     if (themes.length > 0) {
