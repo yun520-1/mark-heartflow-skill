@@ -1,81 +1,40 @@
-# UPGRADE REPORT — meta-learner.js v2.0.0
+=== HeartFlow 升级报告 ===
+版本: 2.6.10 → 2.6.11
+日期: 2026-06-07
+模块: src/utils/atomic-write.js (1057B → 12.3KB)
 
-**Date**: 2026-06-05
-**Module**: src/evolution/meta-learner.js
-**Version**: 2.2.5 → 2.2.6
-**Size**: 785 bytes → ~20KB (37 lines → ~390 lines)
+== 升级内容 ==
 
-## Before
+目标：atomic-write.js — 最小的 HeartFlow 模块（1057字节），仅包含一个单函数 atomicWrite，无错误分类、无重试、无验证、无批量操作。
 
-`meta-learner.js` was a 785-byte thin proxy that delegated everything to `MetaLearning` core:
-- `boot()` — just created MetaLearning instance
-- `learn(lesson)` — if core.learn existed, delegated; otherwise returned `{ learned: true, lesson }`
-- `getStats()` — returned `{ enabled: !!this.core, version: 'v1.0.0' }`
-- `shutdown()` — empty
+升级内容：
+1. ErrorType 枚举（9种）：WRITE_ERROR / RENAME_ERROR / VERIFY_ERROR / INVALID_INPUT / BACKUP_ERROR / DIRECTORY_ERROR / PERMISSION_ERROR / DISK_FULL / UNKNOWN
+2. classifyError() 错误分类引擎：基于 err.code + err.message 双通道分类
+3. getRetryDelay() 指数退避延迟计算：100ms → 300ms → 700ms（含 0-50% 随机抖动）
+4. shouldRetry() 重试决策：3次上限，不可重试错误（INVALID_INPUT/DIRECTORY_ERROR）跳过
+5. getFallbackPaths() 多路径回退：同目录 → 系统 tmp → 用户 home，三级自动降级
+6. verifyWrite() 写入后读取验证：内容一致性检查 + 结构化 VerifyResult
+7. createBackup() 写入前备份：自动备份到 .bak 后缀
+8. atomicWriteJson() 原子 JSON 写入：自动 JSON.stringify + pretty-print
+9. batchAtomicWrite() 批量操作：多文件并发写入，返回汇总统计
+10. writeWithBackup() 带轮转备份写入：maxBackups=5 版本化备份，自动轮转
+11. _stats 统计追踪：writes / retries / failures / fallbackWrites / backupFailures
+12. getStats() / resetStats() 统计查询/重置
+13. 向后兼容：失败时仍 throw Error（err.result 附带结构化结果）
+14. 静默模式：options.throw=false 返回 { ok: false } 不抛异常
 
-No independent logic, no quality assessment, no pattern extraction, no classification, no recall, no diagnostics.
+== 测试结果 ==
+- 语法检查: PASS
+- 加载/导出: PASS（14个导出）
+- 基本写入: PASS
+- JSON 写入: PASS
+- 批量写入: PASS
+- 写入验证: PASS
+- 备份轮转: PASS
+- 向后兼容（throw）: PASS
+- 静默模式（throw:false）: PASS
+- 统计追踪: PASS
 
-## After
-
-Complete meta-learning engine with 6 new capabilities:
-
-### 1. Lesson Quality Scoring (4 dimensions)
-- **Completeness** (30%): detects causal words (因为/所以/导致/解决/after/because/result/fix)
-- **Specificity** (30%): detects contextual words (场景/当/遇到/in/when/at/during/scenario)
-- **Actionability** (25%): detects prescriptive words (应该/可以/建议/should/must/next)
-- **Measurability** (15%): detects quantitative words (秒/分钟/次/%/ms/sec/times/rate)
-- Length bonus (up to 0.15)
-- 4 quality grades: EXCELLENT (≥0.7), GOOD (≥0.5), FAIR (≥0.3), POOR (<0.3)
-
-### 2. Lesson Category Enum (8 types)
-- TECHNICAL, BEHAVIORAL, STRATEGIC, ARCHITECTURAL, PROCESS, SECURITY, COMMUNICATION, GENERAL
-- Each with keyword pattern table for auto-classification
-- Threshold protection: falls back to GENERAL if confidence < 0.05
-
-### 3. Pattern Extraction (8 reusable patterns)
-- `conditional-rule`: "当X时，应该Y" / "when...should"
-- `causal-chain`: "因为X，所以Y" / "because...result"
-- `prevention`: "避免/不要/never/avoid"
-- `verification`: "检查/确认/verify/check"
-- `ordered-steps`: "先X再Y/first...then/step"
-- `error-handling`: "失败/异常/error/exception"
-- `recommendation`: "推荐/建议/recommend/suggest"
-- `comparison`: "优于/better than/instead of"
-
-### 4. Confidence-Weighted Recall
-- Relevance scoring: keyword overlap (60%) + confidence (30%) + quality (10%)
-- Category filtering support
-- Minimum confidence threshold
-- Max count limit
-- Access count tracking
-- Sorted by combined score
-
-### 5. Learning Statistics & Self-Diagnostics
-- Total/high-quality lesson counts
-- By-category and by-quality distribution
-- Average quality score tracking
-- Quality trend analysis (improving/stable/declining)
-- Dominant category detection
-- Low-quality ratio warning
-- History capacity monitoring
-- Auto-pruning when exceeding threshold
-- Generate recommendations for improvement
-
-### 6. Defensive Programming
-- Input parsing: supports string or `{ content, context, source }`
-- Empty/short content handling (returns POOR quality)
-- Stop word filtering for keyword extraction
-- Safe numeric boundaries in scoring
-- Category threshold protection
-- Auto-prune to prevent unbounded growth
-
-## Backward Compatibility
-All original interfaces preserved:
-- `boot()` — same signature and return
-- `learn(lesson)` — same signature, enhanced return with additional fields
-- `getStats()` — same signature, enhanced return
-- `shutdown()` — same signature and behavior
-- Constructor: `new MetaLearner({ rootPath, memory })` — unchanged
-
-## Module Exports
-- `{ MetaLearner, LessonCategory, LessonQuality }` — all three available
+== 影响范围 ==
+atomicWrite 被 8 个模块引用：heartflow.js / meta-engine.js / external-verifier.js / experience-replay.js / reflector.js / memory/slots.js / self-healing-rl.js / memory.js
+向后兼容：所有现有调用者无需修改（失败时仍 throw）
