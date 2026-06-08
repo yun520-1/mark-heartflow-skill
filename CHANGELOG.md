@@ -2,7 +2,19 @@
      2|
      3|> ⚠️ **本 CHANGELOG 包含历史记录与审计修复段。v1.5.0-v2.0.6 段描述的"MarkCode / 执行能力 / multimodal / executor-agent"等模块大部分已移除（src/agent-core/, src/multimodal/, src/agents/executor-agent.js, scripts/heartflow-sync-upgrade.sh, scripts/comfyui-cron.sh 均不存在），仅作为"已修复"历史保留。当前能力以 SKILL.md frontmatter 与 `src/` 实际存在代码为准。**
      4|
-     5|## v2.8.4 (2026-06-08)
+     5|## v2.8.8 (2026-06-08)
+
+### 🔧 版本统一 + README 重写 + 审计修复
+
+- 版本号统一：heartflow.js header / README.md / AGENTS.md / data/memory-index.json → 全部 2.8.8
+- README.md 重写：更新为 AI-first 文档风格，展示完整能力与架构
+- 隐私检查通过：无 /Users/apple/、微信ID、邮箱泄露
+- 链接修复：更新 SKILL.md 中已移除脚本引用
+- memory/ 运行时数据正确排除
+- Daemon 常驻模式新增（bin/daemon.js + daemon-client.js）
+- Prefill 注入已配置（~/.hermes/prefill_heartflow.json）
+
+## v2.8.4 (2026-06-08)
 
 ### 🔧 审计清理 + 版本统一
 
