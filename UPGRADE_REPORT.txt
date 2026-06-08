@@ -1,41 +1,43 @@
 # HeartFlow 模块升级报告
 
 ## 版本
-- **从**: 2.8.9
-- **到**: 2.8.10
+- **从**: 2.8.11
+- **到**: 2.8.12
 - **升级时间**: 2026-06-09
 
 ## 升级模块
-**src/planner/strategy-selector.js** — 策略选择器 (5723B → 16978B)
+**src/planner/replan-trigger.js** — 重规划触发器 (5150B → 21663B)
 
 ### 升级内容
 
-1. **状态/错误枚举** — 新增 STRATEGY_STATE (6种) 和 STRATEGY_ERROR (4种) 枚举
-2. **输入验证层** — `_safeInput()` 处理 null/undefined/数字，空输入自动回退 sequential
-3. **停用词过滤** — `_extractMeaningfulWords()` 201个中英文停用词表，过滤单字和纯数字
-4. **震荡检测** — `detectOscillation()` 双通道检测(learningPatterns + 策略内部统计)，失败率>60%触发 0.1~0.4 惩罚
-5. **质量评估** — `assessQuality()` 基于覆盖率和特异性加权计算 good/fair/poor 三级
-6. **策略评分** — `updateStrategyScore()` 贝叶斯式成功率追踪，`selectStrategy()` 动态调整置信度
-7. **统计追踪** — `getStats()` 暴露各策略得分/使用次数/最佳策略/震荡状态
-8. **配置系统** — `configure()` 运行时调整 oscillationWindow/maxPatterns 等参数
-9. **分析信息** — 返回结果新增 `analysis` 字段含 meaningfulWords/oscillationPenalty/reason
-10. **防御性编程** — 所有公开方法对 null/undefined/空输入安全
-11. **模块级导出** — 主类 + STRATEGY_STATE + STRATEGY_ERROR + STOP_WORDS
+1. **REPLAN_STATE 状态枚举** — 8种状态 (IDLE/EVALUATING/COOLDOWN/REPLANNING/COMPLETED/OSCILLATING/STALLED/FAILED)，带 STATE_TRANSITIONS 合法转换映射
+2. **REPLAN_TYPE 类型枚举** — 10种重规划类型 (failure/performance/stall/oscillation/confidence/timeout/critical/dependency/cooldown_expired/external)
+3. **REPLAN_URGENCY 紧迫度枚举** — 4级紧迫度 (critical/high/medium/low)，带 URGENCY_WEIGHT 数值映射
+4. **震荡检测** — `_detectOscillation()` 基于滑动窗口平均间隔检测高频重规划模式，自动记录震荡事件
+5. **冷却期机制** — `_enterCooldown()` 进入冷却期，震荡时冷却期加倍，最大冷却期 1 小时
+6. **停滞检测** — `_isStalled()` 基于 context.stallSignal 追踪连续停滞，超阈值自动触发重规划
+7. **历史追踪** — `replanHistory` 记录每次触发类型/紧迫度/时间戳，`oscillationEvents` 记录震荡事件
+8. **统计分析** — `getStats()` 暴露总评估数/重规划率/类型分布/紧迫度分布/震荡计数/停滞计数
+9. **自适应阈值调整** — `_adjustThresholds()` 根据失败/超时/性能/置信度类型自动调整阈值参数
+10. **健康检查** — `healthCheck()` 检测重规划率过高/震荡频繁/冷却期膨胀等异常
+11. **历史查询** — `getReplanHistory(options)` 支持按 type/urgency/limit 过滤查询
+12. **重规划报告** — `getReplanReport()` 返回完整重规划决策报告（类型/紧迫度/状态/冷却期/震荡/统计）
+13. **重置机制** — `reset(keepThresholds)` 支持保留阈值的选择性重置
+14. **模块级导出** — 主类 + REPLAN_STATE + REPLAN_TYPE + REPLAN_URGENCY + STATE_TRANSITIONS + URGENCY_WEIGHT + DEFAULT_CONFIG
 
 ### 向后兼容验证
-- ✅ `selectStrategy(task, context, options)` 接口签名不变
-- ✅ 返回值保持 `name/confidence/taskType/environment` 字段
-- ✅ `registerStrategy(name, strategy)` 不变
-- ✅ `getStrategies()` 返回格式兼容
-- ✅ AdaptivePlanner 引用不受影响（已测试 plan/adapt 流程）
+- ✅ `shouldReplan(executionResult, currentPlan, context)` 接口签名不变，返回 boolean
+- ✅ `getReplanReasons()` 接口签名不变，返回 string[]
+- ✅ `incrementCounter(key)` / `resetCounter(key)` / `resetAllCounters()` / `getCounter(key)` / `updateThresholds()` 全部保留
+- ✅ AdaptivePlanner 引用不受影响（shouldReplan 调用完全兼容）
 - ✅ heartflow.js 懒加载模式不受影响
 
 ### 验证结果
 - ✅ `node --check` 语法检查通过
-- ✅ `require + new` 实例化通过
-- ✅ 5种策略按关键词正确路由
-- ✅ 空/空值/数字输入不崩溃，返回 safe 默认值
-- ✅ 震荡检测: 4/5 失败率触发 0.40 惩罚
-- ✅ 策略评分: updateStrategyScore 正确追踪成功率
-- ✅ AdaptivePlanner: plan/adapt 流程完整
-- ✅ 版本同步: VERSION/package.json 一致 (2.8.10)
+- ✅ `require + new` 实例化通过（ReplanTrigger + 所有枚举导出）
+- ✅ shouldReplan 失败→true，正常→false 正确路由
+- ✅ 冷却期机制正常：触发高紧迫度重规划后自动进入冷却期
+- ✅ 自适应阈值：failure 触发 maxRetries 从3→2，timeout 触发 timeLimit 从300000→270000
+- ✅ 统计追踪：getStats() 返回完整统计信息
+- ✅ 健康检查：healthCheck() 正常检测异常状态
+- ✅ 版本同步：VERSION/package.json 一致 (2.8.12)

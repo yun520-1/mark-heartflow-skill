@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: "2.8.10"
+version: "2.8.12"
 title: "HeartFlow / 心虫"
 description: |
   HeartFlow 心虫 — 认知引擎。
@@ -207,6 +207,9 @@ hf.healthCheck();
 | `HEAL005` | 技能加载失败 | skill_view 返回 error |
 | `HEAL006` | 过度干预 | 不需要回答时却回答了 |
 | `HEAL007` | 归因偏差 | 用户失误归情境、AI失误归特质 |
+|---|---|---|
+| **2.8.12** (2026-06-09) — replan-trigger.js 升级：状态机 + 震荡检测 + 冷却期 + 自适应阈值 + 历史追踪 + 统计分析
+| **2.8.11** (2026-06-09) — identity-rules.js 升级：七重自毁检测 + 退化螺旋识别 + 安全护栏 + 恢复机制
 
 ---
 
