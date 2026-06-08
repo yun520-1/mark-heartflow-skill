@@ -48,6 +48,12 @@ const COMPLEXITY_CRIT_THRESHOLD = 20;
 /** 死代码引用阈值：少于等于此引用次数的导出视为可疑 */
 const DEAD_CODE_REF_THRESHOLD = 1;
 
+/** 死代码审计：最大扫描文件数（防止 OOM） */
+const DEAD_CODE_MAX_FILES = 200;
+
+/** 死代码审计：每个文件最大导出检查数 */
+const DEAD_CODE_MAX_EXPORTS_PER_FILE = 20;
+
 // ============================================================================
 // 辅助函数
 // ============================================================================
@@ -557,17 +563,35 @@ function auditDeadCode(files) {
   // 收集所有文件的导出
   const fileExports = {}; // file -> { exportName: refCount }
 
-  for (const filePath of files) {
+  // 限制文件数量防止 OOM
+  const scanFiles = files.length > DEAD_CODE_MAX_FILES
+    ? files.slice(0, DEAD_CODE_MAX_FILES)
+    : files;
+
+  // 限制总内容大小防止 OOM（最多扫描 5MB 文件内容）
+  let totalContentSize = 0;
+  const MAX_CONTENT_BYTES = 5 * 1024 * 1024; // 5MB
+
+  // 预读取所有文件内容（只读一次，避免反复 I/O）
+  const fileContentCache = new Map();
+  for (const filePath of scanFiles) {
+    if (totalContentSize >= MAX_CONTENT_BYTES) break;
     const content = readFileSafe(filePath);
-    if (content === null) continue;
-    const exports = extractExports(content);
-    if (exports.length > 0) {
-      fileExports[relativePath(filePath)] = exports;
+    if (content !== null) {
+      totalContentSize += Buffer.byteLength(content, 'utf-8');
+      fileContentCache.set(filePath, content);
     }
   }
 
-  // 构建所有文件内容的大字符串用于引用计数（更准确的方案是逐文件检查）
-  // 但我们使用更精确的方式：对每个导出，检查除自身外的所有文件
+  for (const [filePath, content] of fileContentCache) {
+    const exports = extractExports(content);
+    if (exports.length > 0) {
+      // 限制每个文件的导出检查数量
+      const limitedExports = exports.slice(0, DEAD_CODE_MAX_EXPORTS_PER_FILE);
+      fileExports[relativePath(filePath)] = limitedExports;
+    }
+  }
+
   const suspiciousExports = [];
 
   for (const [file, exportNames] of Object.entries(fileExports)) {
@@ -575,11 +599,9 @@ function auditDeadCode(files) {
       let totalRefs = 0;
       let refFiles = [];
 
-      for (const otherPath of files) {
+      for (const [otherPath, otherContent] of fileContentCache) {
         if (otherPath === path.join(ROOT, file)) continue; // 跳过自身
-        const content = readFileSafe(otherPath);
-        if (content === null) continue;
-        const count = countReferences(content, name);
+        const count = countReferences(otherContent, name);
         if (count > 0) {
           totalRefs += count;
           refFiles.push(relativePath(otherPath));

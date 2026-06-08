@@ -2,7 +2,15 @@
      2|
      3|> ⚠️ **本 CHANGELOG 包含历史记录与审计修复段。v1.5.0-v2.0.6 段描述的"MarkCode / 执行能力 / multimodal / executor-agent"等模块大部分已移除（src/agent-core/, src/multimodal/, src/agents/executor-agent.js, scripts/heartflow-sync-upgrade.sh, scripts/comfyui-cron.sh 均不存在），仅作为"已修复"历史保留。当前能力以 SKILL.md frontmatter 与 `src/` 实际存在代码为准。**
      4|
-     5|## v2.5.4 (2026-06-08)
+     5|## v2.8.4 (2026-06-08)
+
+### 🔧 审计清理 + 版本统一
+
+- 统一版本号：SKILL.md / package.json / VERSION / README.md 全部统一为 v2.8.4
+- 隐私修复：删除 README.md 中的邮箱，diag.js/diagnose-memory.js 硬编码路径改为动态
+- 排除 memory/ 运行时数据，git rm --cached memory/being-state.json
+
+## v2.5.4 (2026-06-08)
 
 ### 🧠 RetrievalRouter：统一检索路由层
 

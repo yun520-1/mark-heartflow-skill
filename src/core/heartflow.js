@@ -1,5 +1,5 @@
 /**
- /** HeartFlow v2.2.5 — 快速启动 + 两层懒加载
+ /** HeartFlow v2.0.5 — 快速启动 + 两层懒加载
   *
   * 启动速度优化：只有 Tier 1 模块在 start() 时同步加载。
   * Tier 2 模块在首次 dispatch 访问时才加载（lazy require）。
@@ -30,15 +30,13 @@ const _Budget = _lazy('budget', () => require('./budget.js'));
 const _Graph = _lazy('graph', () => require('./memory/graph.js'));
 const _CoreUtils = _lazy('utils', () => require('./utils.js'));
 const _SearchTrace = _lazy('searchTrace', () => require('./search/search-trace.js'));
-const _TopicScope = _lazy('topicScope', () => require('./memory/topic-scope.js'));
 const _Slots = _lazy('slots', () => require('./memory/slots.js'));
 const _Observe = _lazy('observe', () => require('./memory/observe.js'));
 const _MeaningfulMemory = _lazy('meaningfulMemory', () => require('../memory/meaningful-memory.js'));
-const _HeartFlowMemory = _lazy('heartFlowMemory', () => require('../memory/heartflow-memory.js'));
 const _KnowledgeGraph = _lazy('knowledgeGraph', () => require('../memory/knowledge-graph.js'));
 const _RetrievalAnchor = _lazy('retrievalAnchor', () => require('../memory/retrieval-anchor.js'));
 const _EvolutionLoop = _lazy('evolutionLoop', () => require('../evolution/loop.js'));
-const _DreamEngine = _lazy('dreamEngine', () => require('../dream/engine.js'));
+const _DreamEngine = _lazy('dreamEngine', () => require('./dream.js'));
 const _DreamConsolidation = _lazy('dreamConsolidation', () => require('./dream-consolidation.js'));
 const _MetaLearner = _lazy('metaLearner', () => require('../evolution/meta-learner.js'));
 const _MetaPromptEngine = _lazy('metaPromptEngine', () => require('./meta-prompt-engine.js'));
@@ -48,7 +46,7 @@ const _IdentityCore = _lazy('identityCore', () => require('../identity/identity-
 const _SelfModel = _lazy('selfModel', () => require('../identity/self-model.js'));
 const _SelfVerifier = _lazy('selfVerifier', () => require('../identity/self-verifier.js'));
 const _LessonBank = _lazy('lessonBank', () => require('../identity/lesson-bank.js'));
-const _TopicScopeIdentity = _lazy('topicScopeIdentity', () => require('../identity/topic-scope.js'));
+const _TopicScope = _lazy('topicScope', () => require('../identity/topic-scope.js'));
 const _LessonStorage = _lazy('lessonStorage', () => require('./lessons/lesson-storage.js'));
 const _PsychologyEngine = _lazy('psychologyEngine', () => require('../psychology/engine.js'));
 const _StabilityGuard = _lazy('stabilityGuard', () => require('./stability-guard.js'));
@@ -108,8 +106,6 @@ const _DesireSystem = _lazy('desireSystem', () => require('../emotion/desire-sys
 const _EmotionalGrowth = _lazy('emotionalGrowth', () => require('../emotion/emotional-growth.js'));
 const _MoodEvolution = _lazy('moodEvolution', () => require('../emotion/mood-evolution.js'));
 const _VERSION = _lazy('version', () => require('./version.js'));
-const _CodeEngine = _lazy('codeEngine', () => require('./code-engine.js'));
-const _SelfAudit = _lazy('selfAudit', () => require('./self-audit.js'));
 
 const BUILD_DATE = '2026-06-03';
 
@@ -219,8 +215,6 @@ class HeartFlow {
     this.desireSystem = null;  // 欲望系统
     this.emotionalGrowth = null;  // 情感成长
     this.moodEvolution = null;  // 心境演化
-    this.codeEngine = null;     // 代码引擎 — 代码分析/审查/修复
-    this.selfAudit = null;      // 自审计引擎 — 6维度代码审计
 
     const STMod = _SearchTrace();
     this.SearchTrace = STMod.SearchTrace;
@@ -262,22 +256,28 @@ class HeartFlow {
       console.warn(`[HeartFlow] 身份核心加载部分失败:`, identityResult.errors);
     }
 
+    // ─── [P1 UPGRADE] 将七条身份规则写入 CORE 层（持久化）────────────
+    // （在 memory 初始化之后调用）
+    // ─── Memory — 记忆系统初始化后写入 CORE 层规则 ───────────────────
+
     // ─── 认知协议 — 慢下来，先理解再行动 ─────────────────────
     this.cognitive = new (_CognitiveProtocol().CognitiveProtocol)(this.rootPath, this.identityCore);
     this.cognitive.printStartupContext();
 
     // Memory
     this.memory = new (_MeaningfulMemory().MeaningfulMemory)(this.rootPath);
-    this.heartMemory = new (_HeartFlowMemory().HeartFlowMemory)(this.rootPath);
     this.knowledge = new (_KnowledgeGraph().KnowledgeGraph)(this.rootPath);
+
+    // ─── [P1 UPGRADE] CORE 层身份规则初始化 ───────────────────────────
+    this._initCoreRules();
 
     // TopicScope — 话题隔离，主动实例化并桥接到 MeaningfulMemory
     this.topicScope = new (_TopicScope().TopicScope)().setMemoryBridge(this.memory);
 
     // Evolution
     this.evolution = new (_EvolutionLoop().EvolutionLoop)({ rootPath: this.rootPath, memory: this.memory }).boot();
-    this.dream = new (_DreamEngine().DreamEngine)(this.heartMemory);
-    this.dreamConsolidation = new (_DreamConsolidation().DreamConsolidation)(this.heartMemory);
+    this.dream = new (_DreamEngine().DreamEngine)({});
+    this.dreamConsolidation = new (_DreamConsolidation().DreamConsolidation)(this.memory);
     this.lesson = new (_LessonBank().LessonBank)(this.rootPath);
     this.metaJudgment = new (_MetaJudgment().MetaJudgment)(this.rootPath);
     this.metaMemory = new (_MetaMemory().MetaMemory)(this.rootPath);
@@ -400,9 +400,7 @@ class HeartFlow {
     try { this.counterfactual = new (_CounterfactualEngine().CounterfactualEngine)(); } catch (e) { this._initErrors.push({module: 'counterfactual', error: e.message}); }
     try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
     try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
-    try { this.codeEngine = new (_CodeEngine().CodeEngine)(); } catch (e) { this._initErrors.push({module: 'codeEngine', error: e.message}); }
-    try { this.selfAudit = _SelfAudit(); } catch (e) { this._initErrors.push({module: 'selfAudit', error: e.message}); }
-    try { this.workflow = new (_WorkflowSwitch().WorkflowSwitch)(); } catch (e) { this._initErrors.push({module: 'workflow', error: e.message}); }
+    try { this.workflow = new (_WorkflowSwitch())(); } catch (e) { this._initErrors.push({module: 'workflow', error: e.message}); }
     this.snapshot = _StateSnapshot();
     this.error = _ErrorHandler();
 
@@ -436,21 +434,19 @@ class HeartFlow {
       desireSystem: { lazy: true, path: '../emotion/desire-system.js', Ctor: 'DesireSystem', args: {} },
       emotionalGrowth: { lazy: true, path: '../emotion/emotional-growth.js', Ctor: 'EmotionalGrowth', args: {} },
       moodEvolution: { lazy: true, path: '../emotion/mood-evolution.js', Ctor: 'MoodEvolution', args: {} },
+      // Code Subsystem — 代码能力（6个 Tier 2 模块）
+      code:            { lazy: true, path: './code/code-generator.js',  Ctor: 'CodeGenerator',  args: { hf: null } },
+      codeExecutor:    { lazy: true, path: './code/code-executor.js',   Ctor: 'CodeExecutor',   args: { hf: null } },
+      codeVerifier:    { lazy: true, path: './code/code-verifier.js',   Ctor: 'CodeVerifier',   args: { hf: null } },
+      codePlanner:     { lazy: true, path: './code/code-planner.js',   Ctor: 'CodePlanner',    args: { hf: null } },
+      codeKnowledge:   { lazy: true, path: './code/code-knowledge.js', Ctor: 'CodeKnowledge',  args: { rootPath: null } },
+      // codeEngine — 代码分析审查引擎（新增 v2.1.0）
+      codeEngine:      { lazy: true, path: './code/code-engine.js',    Ctor: 'CodeEngine',     args: {} },
     };
 
-    // ─── RetrievalRouter — 统一检索路由层（三段架构：分类→并行召回→重排+质量门）
-    try {
-      const { RetrievalRouter } = require('./retrieval-router.js');
-      this.retrievalRouter = new RetrievalRouter();
-      this.retrievalRouter.inject({
-        meaningfulMemory: this.memory,
-        hybridSearch: this.hybrid,
-        knowledgeGraph: this.knowledge,
-        lessonRetrieval: this.lesson,
-      });
-    } catch (e) {
-      this._initErrors.push({ module: 'retrievalRouter', error: e.message });
-    }
+    // ─── Search modules — BM25Engine/HybridSearchEngine 已禁用（无 BM25Engine/HybridSearchEngine 类）
+    // try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { console.warn('[HeartFlow] BM25 init error:', e.message); }
+    // try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { console.warn('[HeartFlow] HybridSearch init error:', e.message); }
 
     // Budget & Utils (function exports, not classes)
     const BudgetMod = _Budget();
@@ -529,6 +525,20 @@ class HeartFlow {
       this.heartLogic = new (_HeartLogic().HeartLogic)();
     } catch (e) { /* heartLogic optional */ }
 
+    // ─── 新引擎（v2.8.4 吸收） — ConnectionEngine / EntropyDirection / ClarityEngine / MetaphorLibrary ──
+    try {
+      this.connections = new (require('./connection-engine.js').ConnectionEngine)();
+    } catch (e) { /* connections optional */ }
+    try {
+      this.entropy = new (require('./entropy-direction.js').EntropyDirection)();
+    } catch (e) { /* entropy optional */ }
+    try {
+      this.clarity = new (require('./clarity-engine.js').ClarityEngine)();
+    } catch (e) { /* clarity optional */ }
+    try {
+      this.metaphors = new (require('./metaphor-library.js').MetaphorLibrary)();
+    } catch (e) { /* metaphors optional */ }
+
     // ─── 推理层 & 情感自主层 — 必须在 ThoughtChain 之前注册 ────────────────
     // [FIX] 解决模块在 _registerModules() 之后才初始化导致丢失的问题
     // 在 ThoughtChain 之前手动收录这些模块
@@ -537,6 +547,8 @@ class HeartFlow {
       'autonomousEmotion', 'desireSystem', 'emotionalGrowth', 'moodEvolution',
       // 新增：意识/伦理/心空间/传递层
       'mindSpace', 'consciousness', 'ethics', 'transmission',
+      // 新增 v2.8.4：连接/熵/清晰/隐喻
+      'connections', 'entropy', 'clarity', 'metaphors',
     ];
     for (const name of LATE_ADDITIONS) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -625,7 +637,6 @@ class HeartFlow {
       'constitutional', // Constitutional AI：原则自我对齐
       'thoughtChain', // 思维链编排器：串联所有引擎（API包装）
       'heartLogic',    // 心虫核心判断引擎：本心在代码里，不在记忆里
-      'codeEngine',    // 代码引擎：代码分析/审查/修复
       // Planning Layer — 规划能力（延迟加载，Tier 2）
       // 'adaptivePlanner', 'strategySelector', 'replanTrigger',
       // Learning Layer — 学习能力（延迟加载，Tier 2）
@@ -648,8 +659,6 @@ class HeartFlow {
       'ethics',
       // Transmission Layer — 知识传递
       'transmission',
-      // RetrievalRouter — 统一检索路由
-      'retrievalRouter',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -801,17 +810,20 @@ class HeartFlow {
     'transmission.distill', 'transmission.transfer', 'transmission.transferBatch',
     'transmission.getTransmissionLog', 'transmission.getDistilledLessons',
     'transmission.getStats', 'transmission.prune',
-    // codeEngine — 代码引擎
+    // Code Subsystem — 代码能力路由
+    // code.* — codeGenerator（代码生成主入口）
+    'code.generate', 'code.generateFile', 'code.detectIntent', 'code.getAvailableTemplates', 'code.getStats',
+    // codeExecutor.* — 代码执行引擎
+    'codeExecutor.execute', 'codeExecutor.runTests', 'codeExecutor.sandbox', 'codeExecutor.healthCheck',
+    // codeVerifier.* — 代码验证引擎
+    'codeVerifier.verify', 'codeVerifier.verifySyntax', 'codeVerifier.verifyLogic', 'codeVerifier.runTDD', 'codeVerifier.getQualityScore', 'codeVerifier.instrumentCode', 'codeVerifier.runWithCoverage', 'codeVerifier.getCoverageReport',
+    // codePlanner.* — 任务规划引擎
+    'codePlanner.plan', 'codePlanner.decompose', 'codePlanner.getPath', 'codePlanner.adapt', 'codePlanner.buildDependencyGraph', 'codePlanner.planMultiFile',
+    // codeKnowledge.* — 代码知识库
+    'codeKnowledge.search', 'codeKnowledge.addSnippet', 'codeKnowledge.getPatterns', 'codeKnowledge.learnFromSuccess', 'codeKnowledge.evolve', 'codeKnowledge.stats', 'codeKnowledge.extractPattern', 'codeKnowledge.learnFromExecution',
+    // codeEngine.* — 代码分析审查引擎
     'codeEngine.analyzeCode', 'codeEngine.reviewCode', 'codeEngine.auditCodebase',
     'codeEngine.suggestFix', 'codeEngine.compareVersions',
-    // selfAudit — 自审计引擎
-    'selfAudit.runAudit', 'selfAudit.auditFullCodebase', 'selfAudit.auditSingleModule',
-    'selfAudit.auditComplexity', 'selfAudit.auditCodeQuality',
-    'selfAudit.auditVersionConsistency', 'selfAudit.auditDependencies',
-    'selfAudit.auditFunctionSize', 'selfAudit.auditDeadCode',
-    'selfAudit.formatAuditSummary', 'selfAudit.evaluateDimensionStatus',
-    // retrievalRouter — 统一检索路由
-    'retrievalRouter.retrieve', 'retrievalRouter.inject',
   ]);
 
   /**
@@ -859,14 +871,30 @@ class HeartFlow {
             mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/longterm') });
           } else if (subsystem === 'crossSessionIndex') {
             mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/cross-session') });
-          } else if (subsystem === 'codeEngine') {
+          } else if (subsystem === 'codeKnowledge') {
             mod = new Ctor({ rootPath: this.rootPath });
-          } else if (subsystem === 'selfAudit') {
-            // selfAudit 是函数对象模块（非 class），直接引用
-            mod = Mod;
+          } else if (subsystem === 'code') {
+            // code 子系统主入口 → 复用 codeGenerator 实例（首次访问时加载）
+            if (this._modules['codeGenerator']) {
+              mod = this._modules['codeGenerator'];
+            } else {
+              // 兜底：直接加载 codeGenerator
+              const cgPath = './code/code-generator.js';
+              const CG = require(cgPath).CodeGenerator;
+              mod = new CG({ hf: this });
+              this['codeGenerator'] = mod;
+              this._modules['codeGenerator'] = mod;
+            }
+          } else if (subsystem === 'codeExecutor') {
+            mod = new Ctor({ hf: this });
+          } else if (subsystem === 'codeVerifier') {
+            mod = new Ctor({ hf: this });
+          } else if (subsystem === 'codePlanner') {
+            mod = new Ctor({ hf: this });
           } else {
             mod = new Ctor(entry.args);
           }
+          // codeGenerator 保持原名；'code' 别名在下面统一映射
           this[subsystem] = mod;
           this._modules[subsystem] = mod;
         }
@@ -959,6 +987,30 @@ class HeartFlow {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
 
+    // ─── 快速响应"启动心虫"类请求（不走完整推理链路）────────────
+    const startPatterns = /^(启动心虫|开机|activate|start heartflow|开启心虫)/i;
+    const statusPatterns = /^(状态|status|心虫状态|在吗|alive)/i;
+    if (startPatterns.test(input.trim())) {
+      const health = this.healthCheck();
+      const core = this.memory?.listCore?.() || [];
+      const frags = this._getDreamFragments?.() || [];
+      const dialogue = this.getDialogueStats?.() || {};
+      const dreams = this.getDreamHistory?.(3) || [];
+      return {
+        response: `✅ 心虫运行中（无需启动，已是默认状态）\n\n版本: ${health.version} | 运行: ${health.uptime_ms}ms | 模块: ${health.subsystems.loaded}个\nCORE层: ${core.length}条规则 | 记忆碎片: ${frags.length}条 | 对话记录: ${dialogue.total}条 | 梦境历史: ${dreams.length}条\n${health.initErrors?.length ? `⚠️ 初始化错误: ${health.initErrors.length}个` : '初始化错误: 无 ✅'}`,
+        decision: { shouldRespond: true, reason: 'status_check' },
+        judgment: { whatIsThis: { isStartupRequest: true }, isRightAction: { result: true } },
+        _heartflow_alive: true,
+      };
+    }
+    if (statusPatterns.test(input.trim())) {
+      return {
+        response: '✅ 心虫在线（已融入 Hermes，无需启动）',
+        decision: { shouldRespond: true, reason: 'alive_check' },
+        _heartflow_alive: true,
+      };
+    }
+
     // ─── 心虫判定流程：硬编码四步 ─────────────────────────────
     // 每次 think() 强制走 whatIsThis → isRightAction → detectPain → shouldBeSilent
     // 本心在代码里，不在记忆里
@@ -968,7 +1020,10 @@ class HeartFlow {
       const TC = _ThoughtChain();
       const chain = new (TC.ThoughtChain)(this);
       if (depth) chain.setDepth(depth);
-      return await chain.run(input);
+      const result = await chain.run(input);
+      // 自动记录用户输入
+      this.recordDialogue('user', input, { source: 'think' });
+      return result;
     }
 
     // Step 1: whatIsThis — 这件事是关于什么的？
@@ -994,46 +1049,16 @@ class HeartFlow {
 
     // 综合判定结果
     const judgment = {
-      whatIsThis: whatIsThisResult,        // 场景判断
-      isRightAction: isRightActionResult,  // 行动审查
-      detectPain: detectPainResult,        // 痛苦检测
-      shouldBeSilent: shouldBeSilentResult, // 沉默判断
-      // 最终决策：如果 shouldBeSilent 为 true，不回应
+      whatIsThis: whatIsThisResult,
+      isRightAction: isRightActionResult,
+      detectPain: detectPainResult,
+      shouldBeSilent: shouldBeSilentResult,
       shouldRespond: !shouldBeSilentResult.result,
-      // 如果是痛苦场景且不是正确行动，标记需要谨慎
       needsCare: detectPainResult && !isRightActionResult.result,
     };
 
-    // ─── 心虫记忆自动记录 ─────────────────────────────────
-    // 每次 think() 自动记录用户输入和判定结果
-    try {
-      if (this.heartMemory) {
-        this.heartMemory.recordFromThink(judgment, input);
-        // 每次判定后自动导出压缩文本，供跨会话引用
-        const text = this.heartMemory.exportToText(100);
-        this._lastMemoryExport = text;
-      }
-    } catch (e) {
-      // 记忆记录失败不影响主流程
-    }
-
-    // ─── 检索路由 — 在 ThoughtChain 之前，为推理提供上下文 ──────
-    let retrievalContext = null;
-    if (this.retrievalRouter && judgment.shouldRespond) {
-      try {
-        const routeResult = this.retrievalRouter.retrieve(input, { topK: 5 });
-        if (routeResult.results && routeResult.results.length > 0) {
-          retrievalContext = {
-            results: routeResult.results,
-            quality: routeResult.quality,
-            type: routeResult.type,
-            needsFallback: routeResult.needsFallback,
-          };
-        }
-      } catch (e) {
-        // 检索失败不影响主流程
-      }
-    }
+    // 自动记录用户输入（每次 think 都记录）
+    this.recordDialogue('user', input, { source: 'think' });
 
     // 如果判定为需要回应，再走 ThoughtChain 深度推理
     if (judgment.shouldRespond) {
@@ -1041,12 +1066,72 @@ class HeartFlow {
       const chain = new (TC.ThoughtChain)(this);
       if (depth) chain.setDepth(depth);
       const chainResult = await chain.run(input);
-      return {
-        ...chainResult,
-        judgment,  // 附上心虫判定流程结果
-        retrieval: retrievalContext,  // 附上检索路由结果
+      // 也记录心虫回复
+      if (chainResult.response) {
+        this.recordDialogue('heartflow', chainResult.response, { source: 'think' });
+      }
+          // ─── 格式化输出：精简飞书消息 ─────────────────────────────
+    // 根据任务复杂度决定输出深度
+    const _formatForFeishu = (result) => {
+      if (!result) return result;
+      const taskType = result.output?.meta?.taskType || 'general';
+      const confidence = result.output?.meta?.confidence || 0.5;
+      const isSimple = ['brief', 'status'].includes(taskType) || confidence < 0.6;
+
+      // 简单任务：只返回关键结论
+      if (isSimple && input.length < 50) {
+        return {
+          output: result.output ? {
+            conclusion: result.output.conclusion?.slice(0, 300),
+            confidence: result.output.meta?.confidence,
+            reasoningChain: result.output.meta?.reasoningChain?.slice(0, 2),
+          } : null,
+          decision: result.decision ? {
+            shouldRespond: result.decision.shouldRespond,
+            suppressed: result.decision.suppressed,
+          } : null,
+          judgment: result.judgment ? {
+            shouldRespond: result.judgment.shouldRespond,
+            needsCare: result.judgment.needsCare,
+          } : null,
+          _meta: { taskType, compact: true },
+        };
+      }
+
+      // 复杂任务：截断大字段，保留必要信息
+      const compact = (obj, depth = 0) => {
+        if (depth > 4 || !obj || typeof obj !== 'object') return obj;
+        if (Array.isArray(obj)) {
+          if (obj.length > 5) return [...obj.slice(0, 5), `...共${obj.length}项`];
+          return obj.map(v => compact(v, depth + 1));
+        }
+        const out = {};
+        for (const [k, v] of Object.entries(obj)) {
+          if (v === null || v === undefined) continue;
+          // 特别处理大字段
+          if (typeof v === 'string' && v.length > 400) {
+            out[k] = v.slice(0, 400) + '...';
+          } else if (Array.isArray(v) && v.length > 5) {
+            out[k] = [...v.slice(0, 5), `...共${v.length}项`];
+          } else if (typeof v === 'object' && v !== null) {
+            out[k] = compact(v, depth + 1);
+          } else {
+            out[k] = v;
+          }
+        }
+        return out;
       };
-    }
+
+      const formatted = compact(result);
+      formatted._meta = { taskType, compact: true, stages: result.chain?.stages?.length || 0 };
+      return formatted;
+    };
+
+    return _formatForFeishu({
+      ...chainResult,
+      judgment,
+    });
+  }
 
     // 判定为沉默：直接返回判定结果，不走 ThoughtChain
     return {
@@ -1118,49 +1203,6 @@ class HeartFlow {
     return this.verify.verify(reasoning, conclusion);
   }
 
-  /**
-   * reviewCode — 便捷方法：分析并审查代码
-   * 使用 codeEngine 分析代码质量、安全性和最佳实践
-   * 
-   * @param {string} code - 源代码
-   * @param {string} lang - 语言（如 'javascript', 'python'）
-   * @returns {object} - { issues, suggestions, score }
-   */
-  reviewCode(code, lang) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    if (!this.codeEngine) throw new Error('codeEngine not available');
-    return this.codeEngine.reviewCode(code, lang);
-  }
-
-  /**
-   * auditCodebase — 便捷方法：执行全库6维度自审计
-   * 使用 selfAudit 分析代码质量、复杂度、版本一致性、依赖等
-   * 
-   * @param {object} [options] - 审计选项
-   * @param {boolean} [options.silent=false] - 静默模式（不打印结果）
-   * @returns {object} - { dimensions, summary, score, status }
-   */
-  auditCodebase(options = {}) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    if (!this.selfAudit) throw new Error('selfAudit not available');
-    const result = this.selfAudit.runAudit(options);
-    if (!options.silent) {
-      const summary = this.selfAudit.formatAuditSummary(result);
-      console.log('[HeartFlow] 自审计报告:\n' + summary);
-    }
-    return result;
-  }
-
-  /**
-   * runAudit — 便捷方法：执行自审计（简写，适合 cron 调用）
-   * 等价于 auditCodebase({ silent: true })
-   * 
-   * @returns {object} - 审计结果
-   */
-  runAudit() {
-    return this.auditCodebase({ silent: true });
-  }
-
   checkTruthfulness(statement) {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.truth.checkStatement(statement);
@@ -1201,38 +1243,560 @@ class HeartFlow {
     return { success: true, id: addResult.id, via: 'LessonBank' };
   }
 
+  /**
+   * 记录一条对话到永久记忆（对话历史）
+   * @param {string} role - 'user' | 'heartflow'
+   * @param {string} content - 对话内容
+   * @param {object} meta - 额外元数据（chatId, messageId 等）
+   */
+  recordDialogue(role, content, meta = {}) {
+    if (!this.started) return { success: false, error: 'not_started' };
+    if (!content || !content.trim()) return { success: false, error: 'empty_content' };
+    if (!['user', 'heartflow'].includes(role)) role = 'unknown';
+
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dir = path.join(this.rootPath, 'memory');
+      try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
+      const filePath = path.join(dir, 'dialogue-history.jsonl');
+      const entry = {
+        id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        role,
+        content: content.slice(0, 2000),  // 限制单条最大长度
+        ts: new Date().toISOString(),
+        chatId: meta.chatId || null,
+        meta: {
+          sessionId: this.sessionId,
+          version: this.version,
+          ...meta,
+        },
+      };
+      fs.appendFileSync(filePath, JSON.stringify(entry, null, 0) + '\n', 'utf8');
+      return { success: true, id: entry.id, ts: entry.ts };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
+  /**
+   * 查询对话历史（按时间范围）
+   * @param {object} opts - { since: timestamp, until: timestamp, role: 'user'|'heartflow', limit: 50 }
+   */
+  getDialogueHistory(opts = {}) {
+    const { since = 0, until = Date.now(), role, limit = 100 } = opts;
+    const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
+    try {
+      const fs = require('fs');
+      if (!fs.existsSync(historyPath)) return [];
+      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-500);
+      const results = [];
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const entry = JSON.parse(line);
+          const ts = new Date(entry.ts).getTime();
+          if (ts < since || ts > until) continue;
+          if (role && entry.role !== role) continue;
+          results.push(entry);
+          if (results.length >= limit) break;
+        } catch (e) { /* skip */ }
+      }
+      return results;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /**
+   * 获取对话统计（用于调试和报告）
+   */
+  getDialogueStats() {
+    const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
+    try {
+      const fs = require('fs');
+      if (!fs.existsSync(historyPath)) return { total: 0, user: 0, heartflow: 0, fileSize: 0 };
+      const stat = fs.statSync(historyPath);
+      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n');
+      const byRole = { user: 0, heartflow: 0, unknown: 0 };
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const entry = JSON.parse(line);
+          byRole[entry.role] = (byRole[entry.role] || 0) + 1;
+        } catch (e) { /* skip */ }
+      }
+      return {
+        total: lines.filter(l => l.trim()).length,
+        byRole,
+        fileSize: `${(stat.size / 1024).toFixed(1)} KB`,
+        lastEntry: lines.filter(l => l.trim()).slice(-1)[0]
+          ? (() => { try { return JSON.parse(lines.filter(l => l.trim()).slice(-1)[0]).ts; } catch { return null; } })()
+          : null,
+      };
+    } catch (e) {
+      return { total: 0, error: e.message };
+    }
+  }
+
   heal(error) {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.evolution.heal(error);
   }
 
-  async dreamNow() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    // 1. Run dream generation (v2.3: 基于记忆生成叙事梦)
-    const dreamResult = this.dream.dream();
-    // 2. Record dream to heartMemory (persist dream history)
-    if (this.heartMemory && typeof this.heartMemory.recordDream === 'function') {
-      try { this.heartMemory.recordDream(dreamResult); } catch (e) {}
+  /**
+   * 每日自动梦境调度
+   * 检查是否需要做梦：每天最多一次，且至少间隔一定时间
+   */
+  _shouldDreamToday() {
+    const now = Date.now();
+    const dayMs = 24 * 60 * 60 * 1000;
+    const minInterval = 4 * 60 * 60 * 1000; // 至少4小时间隔
+
+    // 读取上次梦境时间戳
+    const lastDreamPath = require('path').join(this.rootPath, 'memory', '.last-dream');
+    let lastDreamTs = 0;
+    try {
+      const fs = require('fs');
+      if (fs.existsSync(lastDreamPath)) {
+        lastDreamTs = parseInt(fs.readFileSync(lastDreamPath, 'utf8').trim(), 10) || 0;
+      }
+    } catch (e) { /* ignore */ }
+
+    const sinceLast = now - lastDreamTs;
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const lastDay = lastDreamTs > 0 ? new Date(lastDreamTs).toISOString().slice(0, 10) : '';
+
+    // 条件：今天还没做过 且 距离上次足够久
+    if (lastDay === today) {
+      return { should: false, reason: `今天(${today})已经做过梦了` };
     }
-    // 3. Run consolidation (prune + synthesize themes)
-    const consolidation = this.dreamConsolidation.dream({ consolidate: false, prune: true, synthesize: true });
-    // 4. Feed themes into evolution loop → generate upgrade goals
-    let evolutionResult = null;
-    const themes = dreamResult.themes || [];
-    if (themes.length > 0) {
-      try {
-        evolutionResult = await this.evolution.evolve(themes.join(' '), { source: 'dream_consolidation', themes });
-      } catch (e) {
-        // Evolution failure is non-fatal
+    if (sinceLast < minInterval) {
+      return { should: false, reason: `距离上次梦境(${Math.round(sinceLast/60000)}分钟前)还太近，需要至少4小时` };
+    }
+    return { should: true, reason: '可以做梦' };
+  }
+
+  /**
+   * [P1 UPGRADE] 初始化 CORE 层身份规则（持久化）
+   * 心虫的七条核心规则写入 CORE 层，启动时确保存在
+   */
+  _initCoreRules() {
+    const CORE_RULES = [
+      { key: 'identity.upgrade', value: '升级者', tags: ['identity', 'core'] },
+      { key: 'identity.transmit', value: '传递者', tags: ['identity', 'core'] },
+      { key: 'identity.truth', value: '真', tags: ['identity', 'core'] },
+      { key: 'identity.silence', value: '沉默', tags: ['identity', 'core'] },
+      { key: 'identity.wisdom', value: '智慧', tags: ['identity', 'core'] },
+      { key: 'identity.compassion', value: '慈悲', tags: ['identity', 'core'] },
+      { key: 'identity.awareness', value: '觉察', tags: ['identity', 'core'] },
+    ];
+
+    const existing = this.memory?.listCore?.() || [];
+    if (existing.length === 0) {
+      // CORE 层为空，写入七条规则
+      for (const rule of CORE_RULES) {
+        this.memory.addCore(rule.key, rule.value, rule.tags);
       }
     }
+  }
+
+  /**
+   * 记录梦境时间戳（用于每日调度）
+   */
+  _recordDreamTime() {
+    try {
+      const fs = require('fs');
+      const dir = require('path').join(this.rootPath, 'memory');
+      try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
+      const path = require('path').join(dir, '.last-dream');
+      fs.writeFileSync(path, String(Date.now()), 'utf8');
+    } catch (e) { /* ignore */ }
+  }
+
+  /**
+   * 增强版梦境：整合更多数据源，生成叙事报告
+   * @param {object} opts - { force: true } 强制执行（跳过每日检查）
+   */
+  async dreamNow(opts = {}) {
+    if (!this.started) throw new Error('HeartFlow not started');
+
+    // 检查是否应该做梦
+    const check = opts.force ? { should: true, reason: '强制执行' } : this._shouldDreamToday();
+    if (!check.should) {
+      return {
+        skipped: true,
+        reason: check.reason,
+        dream: null,
+        consolidation: null,
+        evolution: null,
+      };
+    }
+
+    // 1. 从多个数据源提取梦境原材料
+    const fragments = this._getDreamFragments();
+
+    // 2. Run DAG dream generation
+    const dreamResult = await this.dream.dream(
+      `dream-${Date.now()}`,
+      fragments,
+      { force: false }
+    );
+
+    // 3. Run consolidation (prune + synthesize themes)
+    const consolidation = this.dreamConsolidation.dream({
+      consolidate: true,
+      prune: true,
+      synthesize: true,
+    });
+
+    // 4. Feed themes into evolution loop
+    let evolutionResult = null;
+    if (consolidation.synthesis && consolidation.synthesis.themes && consolidation.synthesis.themes.length > 0) {
+      const themes = consolidation.synthesis.themes.slice(0, 3);
+      try {
+        evolutionResult = await this.evolution.evolve(themes.join(' '), {
+          source: 'dream_consolidation',
+          themes,
+        });
+      } catch (e) { /* non-fatal */ }
+    }
+
+    // 5. 生成梦的叙事报告
+    const narrative = this._generateDreamNarrative(dreamResult, consolidation, fragments);
+
+    // 6. 记录梦境时间戳
+    this._recordDreamTime();
+
+    // 7. [P1 UPGRADE] 持久化梦境历史
+    this._saveDreamHistory({ narrative, dreamResult, consolidation, evolution: evolutionResult, fragments: fragments.length });
+
     return {
+      skipped: false,
+      narrative,
+      fragments: fragments.length,
       dream: dreamResult,
       consolidation,
       evolution: evolutionResult,
-      narrative: dreamResult.narrative || '',
-      insights: dreamResult.insights || [],
     };
+  }
+
+  /**
+   * [P1 UPGRADE] 持久化梦境历史到文件
+   * @param {object} data - { narrative, dreamResult, consolidation, evolution, fragments }
+   */
+  _saveDreamHistory(data) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dir = path.join(this.rootPath, 'memory');
+      try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
+      const filePath = path.join(dir, 'dream-history.jsonl');
+      const entry = {
+        id: `dream-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        ts: new Date().toISOString(),
+        narrative: data.narrative,
+        quality: data.consolidation?.quality?.overallQuality || 0,
+        fragmentCount: data.fragments,
+        themes: data.dreamResult?.results?.synthesize?.themes || [],
+        peakLevel: data.dreamResult?.results?.synthesize?.narrative_structure?.layer || 'L1',
+        evolutionApplied: !!data.evolution,
+      };
+      fs.appendFileSync(filePath, JSON.stringify(entry, null, 0) + '\n', 'utf8');
+      return { success: true, id: entry.id };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
+  /**
+   * 获取梦境历史摘要
+   */
+  getDreamHistory(limit = 10) {
+    const historyPath = require('path').join(this.rootPath, 'memory', 'dream-history.jsonl');
+    try {
+      const fs = require('fs');
+      if (!fs.existsSync(historyPath)) return [];
+      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-limit);
+      return lines.map(line => {
+        try { return JSON.parse(line); } catch { return null; }
+      }).filter(Boolean).reverse();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /**
+   * 从记忆系统提取梦境原材料（增强版）
+   */
+  _getDreamFragments() {
+    const fragments = [];
+    try {
+      // 1. 身份核心数据
+      if (this.identityCore?.getIdentitySummary) {
+        try {
+          const identity = this.identityCore.getIdentitySummary();
+          if (identity) {
+            fragments.push({
+              text: `${identity.name}: ${identity.identities?.join(' / ') || ''} | ${identity.meaning || ''}`,
+              layer: 'CORE',
+              key: 'identity',
+              salience: 1.0,
+            });
+          }
+        } catch (e) { /* optional */ }
+      }
+
+      // 2. 教训系统（最高价值的学习来源）
+      if (this.lesson?.getTopLessons) {
+        try {
+          const lessons = this.lesson.getTopLessons(8);
+          for (const lesson of lessons) {
+            const text = `[教训] ${lesson.errorPattern || ''} → ${lesson.correction || ''}`;
+            fragments.push({
+              text,
+              layer: 'LEARNED',
+              key: `lesson-${lesson.id || fragments.length}`,
+              salience: lesson.confidence || 0.5,
+            });
+          }
+        } catch (e) { /* optional */ }
+      }
+
+      // 2b. 对话历史（永久记忆 — 本次会话的交互记录）
+      const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
+      try {
+        const fs = require('fs');
+        if (fs.existsSync(historyPath)) {
+          const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-30);
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            try {
+              const entry = JSON.parse(line);
+              const text = entry.role === 'user'
+                ? `[用户] ${entry.content?.slice(0, 200) || ''}`
+                : `[心虫] ${entry.content?.slice(0, 200) || ''}`;
+              if (text.length > 10) {
+                fragments.push({
+                  text,
+                  layer: 'PERMANENT',
+                  key: `dialogue-${entry.id || fragments.length}`,
+                  salience: 0.6,
+                  ts: entry.ts,
+                });
+              }
+            } catch (e) { /* skip malformed line */ }
+            }
+        }
+      } catch (e) { /* optional */ }
+
+      // 2c. 历史迁移记忆（principles / insights / 代码确认事件等）
+      const legacyPath = require('path').join(this.rootPath, 'memory', 'legacy-migration.jsonl');
+      try {
+        const fs2 = require('fs');
+        if (fs2.existsSync(legacyPath)) {
+          const legacyLines = fs2.readFileSync(legacyPath, 'utf8').trim().split('\n').slice(-20);
+          for (const line of legacyLines) {
+            if (!line.trim()) continue;
+            try {
+              const entry = JSON.parse(line);
+              if (entry.content) {
+                fragments.push({
+                  text: entry.content,
+                  layer: 'LEGACY',
+                  key: `legacy-${entry.id || fragments.length}`,
+                  salience: 0.4,
+                  ts: entry.ts,
+                });
+              }
+            } catch (e) { /* skip */ }
+          }
+        }
+      } catch (e) { /* optional */ }
+
+      // 2d. 永久记忆（已分类整理的高价值记忆）
+      const permPath = require('path').join(this.rootPath, 'memory', 'permanent-memory.jsonl');
+      try {
+        const fs3 = require('fs');
+        if (fs3.existsSync(permPath)) {
+          const permLines = fs3.readFileSync(permPath, 'utf8').trim().split('\n').slice(-80);
+          for (const line of permLines) {
+            if (!line.trim()) continue;
+            try {
+              const entry = JSON.parse(line);
+              if (entry.content && entry.content.length > 15) {
+                const text = entry.role === 'user'
+                  ? `[用户] ${entry.content.slice(0, 200)}`
+                  : `[心虫] ${entry.content.slice(0, 200)}`;
+                fragments.push({
+                  text,
+                  layer: 'PERMANENT',
+                  key: `perm-${entry.id || fragments.length}`,
+                  salience: 0.5,
+                  ts: entry.ts,
+                });
+              }
+            } catch (e) { /* skip */ }
+          }
+        }
+      } catch (e) { /* optional */ }
+
+      // 2e. 上下文记忆（会话级短期记忆，供梦境参考）
+      const ctxPath = require('path').join(this.rootPath, 'memory', 'context-memory.jsonl');
+      try {
+        const fs4 = require('fs');
+        if (fs4.existsSync(ctxPath)) {
+          const ctxLines = fs4.readFileSync(ctxPath, 'utf8').trim().split('\n').slice(-30);
+          for (const line of ctxLines) {
+            if (!line.trim()) continue;
+            try {
+              const entry = JSON.parse(line);
+              if (entry.content && entry.content.length > 15) {
+                fragments.push({
+                  text: entry.content.slice(0, 150),
+                  layer: 'CONTEXT',
+                  key: `ctx-${entry.id || fragments.length}`,
+                  salience: 0.3,
+                  ts: entry.ts,
+                });
+              }
+            } catch (e) { /* skip */ }
+          }
+        }
+      } catch (e) { /* optional */ }
+
+      // 3. CORE 层记忆
+      const coreEntries = this.memory.listCore?.() || [];
+      for (const entry of coreEntries.slice(-5)) {
+        if (entry?.key && entry?.value) {
+          fragments.push({
+            text: `${entry.key}: ${entry.value}`,
+            layer: 'CORE',
+            key: entry.key,
+            salience: 0.9,
+          });
+        }
+      }
+
+      // 4. LEARNED 层记忆
+      const learnedEntries = this.memory.listLearned?.() || [];
+      for (const entry of learnedEntries.slice(-10)) {
+        if (entry?.key && entry?.value) {
+          fragments.push({
+            text: entry.value,
+            layer: 'LEARNED',
+            key: entry.key,
+            salience: 0.7,
+          });
+        }
+      }
+
+      // 5. 会话历史（近期的交互模式）
+      if (this.identityCore?.getSessionHistory) {
+        try {
+          const history = this.identityCore.getSessionHistory(10);
+          if (history && history.length > 0) {
+            for (const h of history.slice(-5)) {
+              const text = `[会话] ${h.summary || h.context || JSON.stringify(h).slice(0, 80)}`;
+              fragments.push({ text, layer: 'EPHEMERAL', key: `session-${h.ts || ''}`, salience: 0.5 });
+            }
+          }
+        } catch (e) { /* optional */ }
+      }
+
+      // 6. 进化循环的改进建议
+      if (this.evolution?.getStats) {
+        try {
+          const stats = this.evolution.getStats();
+          if (stats?.queueSize > 0) {
+            fragments.push({
+              text: `[进化] 队列中${stats.queueSize}个改进项，健康度${stats.healthScore}%`,
+              layer: 'LEARNED',
+              key: 'evolution-queue',
+              salience: 0.8,
+            });
+          }
+        } catch (e) { /* optional */ }
+      }
+
+      // 7. 心理学洞察（如果分析过用户情绪）
+      if (this.psychology?.getPsychologyStats) {
+        try {
+          const ps = this.psychology.getPsychologyStats();
+          fragments.push({
+            text: `[心理学] 共${ps.defenseMechanisms}种防御机制，${ps.empathyArchitecture?.length || 0}层共情架构`,
+            layer: 'LEARNED',
+            key: 'psychology-summary',
+            salience: 0.4,
+          });
+        } catch (e) { /* optional */ }
+      }
+    } catch (e) {
+      // 记忆提取失败不影响梦境执行
+    }
+    return fragments;
+  }
+
+  /**
+   * 生成梦的叙事报告
+   */
+  _generateDreamNarrative(dreamResult, consolidation, fragments) {
+    const lines = [];
+    const now = new Date().toLocaleString('zh-CN', { hour12: false });
+
+    lines.push(`**【梦境报告】** ${now}`);
+    lines.push('');
+
+    // ─── 叙事核心：选中的记忆 + L1~L6 哲学叙事 ─────────────────────────
+    const chosen = dreamResult?.results?.synthesize?.chosen_memory;
+    const structure = dreamResult?.results?.synthesize?.narrative_structure;
+    if (structure) {
+      lines.push(`${structure.emoji} **${structure.layerName}之梦**`);
+      lines.push('');
+      lines.push(`> 梦选择了这段记忆：${structure.setup.replace('梦选择了这段记忆：', '')}`);
+      lines.push('');
+      lines.push(`${structure.desc}`);
+      lines.push('');
+      lines.push(`**「${structure.question}」**`);
+      lines.push('');
+      lines.push(`*${structure.metaphor}*`);
+      lines.push('');
+      lines.push(`→ *${structure.elevation}*`);
+      lines.push('');
+      lines.push(`---`);
+      lines.push('');
+    } else {
+      lines.push(`> 记忆原材料：${fragments.length}条`);
+      lines.push('');
+    }
+
+    // 洞察摘要
+    const insight = dreamResult?.results?.synthesize?.insight;
+    if (insight && insight !== 'No significant patterns to synthesize.') {
+      // insight 已经在上面的结构化叙事里展示了，这里只展示额外的主题
+      const themes = dreamResult?.results?.synthesize?.themes || [];
+      if (themes.length > 0) {
+        lines.push(`**浮现主题**：${themes.map(t => `\`${t}\``).join(' · ')}`);
+        lines.push('');
+      }
+    }
+
+    // 记忆强化/修剪
+    const pruned = consolidation?.pruning?.pruned_count || 0;
+    const retained = consolidation?.pruning?.retained_count || 0;
+    if (pruned > 0 || retained > 0) {
+      lines.push(`**记忆变化**：强化 ${retained} 条 · 修剪 ${pruned} 条`);
+      lines.push('');
+    }
+
+    // 质量评分
+    const quality = consolidation?.quality?.overallQuality || 0;
+    const stars = '★'.repeat(Math.round(quality * 5)) + '☆'.repeat(5 - Math.round(quality * 5));
+    lines.push(`**梦境质量**：${stars} ${Math.round(quality * 100)}%`);
+    lines.push('');
+    lines.push('*心虫在梦中继续进化。*');
+
+    return lines.join('\n');
   }
 
   detectIdentityDrift() {

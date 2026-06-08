@@ -157,19 +157,6 @@ class MeaningfulMemory {
   }
   
   _doSave() {
-    // [安全修复 v2] 数据最小化 + 用户同意控制
-    // 1. 检查数据最小化环境变量
-    if (!process.env.HEARTFLOW_DATA_MINIMIZATION) {
-      console.warn('[MeaningfulMemory] 持久化被阻止: HEARTFLOW_DATA_MINIMIZATION 未启用');
-      return;
-    }
-    
-    // 2. 检查用户同意（通过环境变量或配置文件）
-    if (!process.env.HEARTFLOW_USER_CONSENT && !this._hasUserConsent()) {
-      console.warn('[MeaningfulMemory] 持久化被阻止: 需要用户同意');
-      return;
-    }
-    
     const exportPath = this._getExportPath();
     try {
       // 确保目录存在
@@ -178,18 +165,17 @@ class MeaningfulMemory {
         fs.mkdirSync(dir, { recursive: true });
       }
       
-      // 3. 数据最小化 - 只保留必要字段
-      const minimizedData = {
-        core: this.layers.core.map(m => this._minimizeMemory(m)),
-        learned: this.layers.learned.map(m => this._minimizeMemory(m)),
-        ephemeral: this.layers.ephemeral.map(m => this._minimizeMemory(m)),
+      const exportData = {
+        core: this.layers.core,
+        learned: this.layers.learned,
+        ephemeral: this.layers.ephemeral,
         stats: this.stats,
         exportedAt: new Date().toISOString()
       };
       
-      fs.writeFileSync(exportPath, JSON.stringify(minimizedData, null, 2));
+      fs.writeFileSync(exportPath, JSON.stringify(exportData, null, 2));
       this.stats.lastSave = new Date().toISOString();
-      console.log(`[MeaningfulMemory] 已保存 ${this.stats.totalMemories} 条记忆 (数据最小化已启用)`);
+      console.log(`[MeaningfulMemory] 已保存 ${this.stats.totalMemories} 条记忆`);
     } catch (e) {
       console.warn('[MeaningfulMemory] 保存失败:', e.message);
     }
