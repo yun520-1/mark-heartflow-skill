@@ -396,7 +396,10 @@ const skillVerifier = {
 
     // 7. 禁止外部绝对路径
     const absPaths = content.match(/\/[a-z]+\/[a-z]+\/[^\s'"]+/gi) || [];
-    const unsafePaths = absPaths.filter(p => !p.includes('/Users/apple/') && !p.includes('~'));
+    const unsafePaths = absPaths.filter(p => {
+      const homeDir = (process.env.HOME || '~').toLowerCase();
+      return !p.toLowerCase().includes(homeDir) && !p.includes('~');
+    });
     if (unsafePaths.length > 0) {
       rawErrors.push(`[路径] 包含外部绝对路径: ${unsafePaths.slice(0, 2).join(', ')}`);
     }
