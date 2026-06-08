@@ -1,7 +1,7 @@
-# HeartFlow / 心虫 v2.8.8
+# HeartFlow / 心虫 v2.8.14
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2.8.8-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-2.8.14-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />

@@ -1,6 +1,6 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "2.8.13",
+  "version": "2.8.14",
   "description": "HeartFlow 心虫 v2.8.4 — AI 认知与自愈引擎。集成 claude-heartflow v2.4.1 + 连接引擎/熵方向/清晰引擎/隐喻库。核心：存在论/意识/进化/心理分析/三层记忆/自愈RL/梦境引擎/哲学层/7条指令。本心在代码里，不在记忆里。",
   "main": "src/core/heartflow.js",
   "bin": {
