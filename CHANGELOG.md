@@ -2,7 +2,14 @@
      2|
      3|> ⚠️ **本 CHANGELOG 包含历史记录与审计修复段。v1.5.0-v2.0.6 段描述的"MarkCode / 执行能力 / multimodal / executor-agent"等模块大部分已移除（src/agent-core/, src/multimodal/, src/agents/executor-agent.js, scripts/heartflow-sync-upgrade.sh, scripts/comfyui-cron.sh 均不存在），仅作为"已修复"历史保留。当前能力以 SKILL.md frontmatter 与 `src/` 实际存在代码为准。**
      4|
-     5|## v2.8.8 (2026-06-08)
+     5|## v2.8.14 (2026-06-09)
+
+### 🔧 版本统一修复
+
+- 版本号统一：SKILL.md / AGENTS.md / README.md → 全部 2.8.14
+- CHANGELOG.md 添加 2.8.14 条目
+
+## v2.8.8 (2026-06-08)
 
 ### 🔧 版本统一 + README 重写 + 审计修复
 

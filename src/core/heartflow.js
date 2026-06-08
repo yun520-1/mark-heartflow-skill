@@ -1,5 +1,5 @@
 /**
- /** HeartFlow v2.8.9 — 快速启动 + 两层懒加载
+ /** HeartFlow v2.8.14 — 快速启动 + 两层懒加载
   *
   * 启动速度优化：只有 Tier 1 模块在 start() 时同步加载。
   * Tier 2 模块在首次 dispatch 访问时才加载（lazy require）。
@@ -340,11 +340,7 @@ class HeartFlow {
           const risk = patternDetector.detectRelapseRisk(goal);
           return { ...p, weekly, triggers, risk };
         },
-        getStats: () => ({
-          goals: behaviorTracker.data.goals.length,
-          totalRecords: behaviorTracker.data.goals.reduce((n, g) => n + g.records.length, 0),
-          type: 'behavior-tracker+pattern-detector',
-        }),
+        getStats: () => behaviorTracker.getStats(),
       };
     } catch (e) {
       this._initErrors.push({ module: 'behavior', error: e.message });
