@@ -158,7 +158,7 @@ class SpontaneousRestraint {
       }
     }
 
-    // 1. 检查"不需要回答"信号
+    // 1. 检查"不需要答案"信号
     for (const signal of this.noAnswerSignals) {
       if (signal.test(userMessage)) {
         result.shouldAnswer = false;

@@ -1600,20 +1600,23 @@ module.exports.runRuntimeReliabilityLoop = function(result = {}, context = {}) {
 
   const guard = stabilityGuard.gate(snapshot);
 
-  if (!verification.passed || !guard.allow) {
-    selfHealing.record({
-      type: verification.passed ? 'stability_guard_blocked' : 'execution_verification_failed',
-      message: verification.summary || guard.advice || 'runtime reliability loop detected an issue',
-      code: guard.allow ? null : 'GUARD_BLOCKED',
-    });
-  }
-
   const recovery = selfHealing.recover({
     ok: verification.passed && guard.allow,
     message: [verification.summary, guard.advice].filter(Boolean).join(' | '),
     code: guard.allow ? null : 'GUARD_BLOCKED',
     attempt: Number(context.attempt || 0),
   });
+
+  // ⚠️ 修复：先 recover() 建立 pendingCtx，再 record() 带 repairOutcome 更新 Q-table
+  if (!verification.passed || !guard.allow) {
+    // 使用与 recover() 相同的 message，确保 _pendingCtx key 匹配
+    const recordMsg = verification.summary || guard.advice || 'runtime reliability loop detected an issue';
+    selfHealing.record({
+      type: verification.passed ? 'stability_guard_blocked' : 'execution_verification_failed',
+      message: recordMsg,
+      code: guard.allow ? null : 'GUARD_BLOCKED',
+    }, false); // repairOutcome=false → 让 RL 知道这次修复失败了
+  }
 
   const retryPlan = typeof selfHealing.createRetryPlan === 'function'
     ? selfHealing.createRetryPlan({

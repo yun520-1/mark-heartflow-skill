@@ -85,9 +85,13 @@ class HeartFlowMemory {
   }
 
   _saveJson(filePath, data) {
-    const tmp = filePath + '.tmp.' + Date.now();
-    fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
-    fs.renameSync(tmp, filePath);
+    try {
+      const tmp = filePath + '.tmp.' + Date.now();
+      fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
+      fs.renameSync(tmp, filePath);
+    } catch (e) {
+      console.warn(`[HeartFlowMemory] 保存失败 (${filePath}): ${e.message}`);
+    }
   }
 
   _appendJsonl(filePath, entry) {

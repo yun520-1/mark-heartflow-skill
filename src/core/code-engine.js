@@ -3352,6 +3352,174 @@ class CodeEngine {
         return plan;
     }
 
+
+  // ========================================================================
+  // 6. incrementalAnalyze — 增量代码分析
+  // ========================================================================
+
+  incrementalAnalyze(oldCode, newCode, language) {
+    if (typeof oldCode !== "string" || typeof newCode !== "string") {
+      return { error: "need old and new code", changed: false };
+    }
+    if (oldCode === newCode) {
+      return { changed: false };
+    }
+    const lang = language || detectLanguage(newCode);
+    const oldAnalysis = this.analyzeCode(oldCode, lang);
+    const newAnalysis = this.analyzeCode(newCode, lang);
+    const oldReview = this.reviewCode(oldCode, lang);
+    const newReview = this.reviewCode(newCode, lang);
+    const oldFuncs = new Set(oldAnalysis.functions.map(f => f.name).filter(Boolean));
+    const newFuncs = new Set(newAnalysis.functions.map(f => f.name).filter(Boolean));
+    const changedFunctions = [];
+    for (const fn of newFuncs) {
+      if (!oldFuncs.has(fn)) changedFunctions.push({ name: fn, change: "added" });
+    }
+    for (const fn of oldFuncs) {
+      if (!newFuncs.has(fn)) changedFunctions.push({ name: fn, change: "removed" });
+    }
+    for (const fn of newFuncs) {
+      if (oldFuncs.has(fn)) {
+        const ofn = oldAnalysis.functions.find(f => f.name === fn);
+        const nfn = newAnalysis.functions.find(f => f.name === fn);
+        if (ofn && nfn && ofn.lineCount !== nfn.lineCount) {
+          changedFunctions.push({ name: fn, change: "modified", oldLines: ofn.lineCount, newLines: nfn.lineCount });
+        }
+      }
+    }
+    const oldIssueKeys = new Set((oldReview.issues || []).map(i => i.type + ":" + i.line));
+    const newIssues = (newReview.issues || []).filter(i => !oldIssueKeys.has(i.type + ":" + i.line));
+    const newIssueKeys = new Set((newReview.issues || []).map(i => i.type + ":" + i.line));
+    const fixedIssues = (oldReview.issues || []).filter(i => !newIssueKeys.has(i.type + ":" + i.line));
+    return {
+      changed: true,
+      changedFunctions,
+      newIssues,
+      fixedIssues,
+      oldIssueCount: (oldReview.issues || []).length,
+      newIssueCount: (newReview.issues || []).length,
+      complexityDelta: (newAnalysis.complexity || 0) - (oldAnalysis.complexity || 0)
+    };
+  }
+
+  // ========================================================================
+  // 7. impactAnalysis — 代码变更影响分析
+  // ========================================================================
+
+  impactAnalysis(filePath, oldContent, newContent, options = {}) {
+    const searchDirs = options.searchDirs || [path.dirname(filePath)];
+    const oldExports = this._extractExports(oldContent);
+    const newExports = this._extractExports(newContent);
+    const changedExports = [];
+    for (const exp of newExports) {
+      if (!oldExports.includes(exp)) changedExports.push({ name: exp, change: "added" });
+    }
+    for (const exp of oldExports) {
+      if (!newExports.includes(exp)) changedExports.push({ name: exp, change: "removed" });
+    }
+    const impactedFiles = [];
+    const fileName = path.basename(filePath, path.extname(filePath));
+    const importPatterns = changedExports.map(e => e.name);
+    for (const dir of searchDirs) {
+      this._walkDir(dir, (fpath) => {
+        if (fpath === filePath) return;
+        if (!fpath.endsWith(".js") && !fpath.endsWith(".mjs") && !fpath.endsWith(".ts")) return;
+        try {
+          const content = fs.readFileSync(fpath, "utf8");
+          const importsFromFile = content.includes("./" + fileName) || content.includes(fileName);
+          if (!importsFromFile) return;
+          const affectedExports = importPatterns.filter(exp => content.includes(exp));
+          if (affectedExports.length > 0) {
+            impactedFiles.push({ file: fpath, affectedExports, lines: content.split("\n").length });
+          }
+        } catch (e) {}
+      });
+    }
+    return {
+      fileChanged: filePath,
+      changedExports,
+      impactedFiles,
+      totalImpacted: impactedFiles.length,
+      risk: impactedFiles.length > 5 ? "high" : impactedFiles.length > 2 ? "medium" : "low"
+    };
+  }
+
+  _extractExports(content) {
+    const exports = [];
+    const meMatch = content.match(/module\.exports\s*=\s*\{([^}]+)\}/);
+    if (meMatch) {
+      meMatch[1].split(",").forEach(s => {
+        const name = s.trim().split(":")[0].trim();
+        if (name) exports.push(name);
+      });
+    }
+    const meLines = content.match(/module\.exports\.(\w+)\s*=/g);
+    if (meLines) {
+      meLines.forEach(l => {
+        const m = l.match(/module\.exports\.(\w+)/);
+        if (m) exports.push(m[1]);
+      });
+    }
+    return [...new Set(exports)];
+  }
+
+  _walkDir(dir, callback) {
+    const fs = require("fs");
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fpath = path.join(dir, entry.name);
+        if (entry.isDirectory() && !entry.name.startsWith(".") && entry.name !== "node_modules") {
+          this._walkDir(fpath, callback);
+        } else if (entry.isFile()) {
+          callback(fpath);
+        }
+      }
+    } catch (e) {}
+  }
+
+  // ========================================================================
+  // 8. generatePatch — 自动生成代码补丁
+  // ========================================================================
+
+  generatePatch(issue, fullSource, options = {}) {
+    if (!issue || !fullSource) {
+      return { error: "need issue and source", patch: null, canApply: false };
+    }
+    const suggestion = this.suggestFix(issue);
+    if (!suggestion.fixedCode || suggestion.fixedCode === issue.code) {
+      return { patch: null, canApply: false, reason: "cannot generate fix" };
+    }
+    const fileLines = fullSource.split("\n");
+    const lineIndex = (issue.line || 0) - 1;
+    const patchLines = [];
+    patchLines.push("--- a/original");
+    patchLines.push("+++ b/fixed");
+    if (lineIndex >= 0 && lineIndex < fileLines.length) {
+      const ctxStart = Math.max(0, lineIndex - 2);
+      const ctxEnd = Math.min(fileLines.length, lineIndex + 3);
+      patchLines.push("@@ -" + (ctxStart + 1) + "," + (ctxEnd - ctxStart) + " +" + (ctxStart + 1) + "," + (ctxEnd - ctxStart) + " @@");
+      for (let i = ctxStart; i < lineIndex; i++) {
+        patchLines.push(" " + fileLines[i]);
+      }
+      patchLines.push("-" + fileLines[lineIndex]);
+      patchLines.push("+" + suggestion.fixedCode);
+      for (let i = lineIndex + 1; i < ctxEnd; i++) {
+        patchLines.push(" " + fileLines[i]);
+      }
+    }
+    const patch = patchLines.join("\n");
+    const canApply = suggestion.confidence >= 0.7 && !suggestion.type?.includes("manual");
+    return {
+      patch, canApply,
+      confidence: suggestion.confidence,
+      explanation: suggestion.explanation,
+      type: suggestion.type,
+      originalLine: lineIndex >= 0 ? fileLines[lineIndex] : null,
+      fixedLine: suggestion.fixedCode,
+      lineNumber: issue.line
+    };
+  }
 }
 // ============================================================================
 // 导出

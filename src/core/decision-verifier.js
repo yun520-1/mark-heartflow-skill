@@ -119,7 +119,7 @@ class DecisionVerifier {
 
     for (const [a, b] of contradictionPairs) {
       if (joined.includes(a) && joined.includes(b)) {
-        issues.push({ type: 'contradiction', severity: 'high', message: `发现潜在矛盾：同时出现“${a}”与“${b}”` });
+        issues.push({ type: 'contradiction', severity: 'high', message: `发现潜在矛盾：同时出现"${a}"与"${b}"` });
       }
     }
 

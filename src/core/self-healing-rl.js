@@ -19,6 +19,24 @@ const path = require('path');
 const { atomicWrite } = require('../utils/atomic-write');
 const crypto = require('crypto');
 
+// === 全局 Q-table 写入防抖锁 ===
+const _writeLock = { locked: false, queue: [], pendingTimer: null, dirty: false };
+function _debouncedSave(instance) {
+  if (_writeLock.locked) {
+    _writeLock.dirty = true;
+    return;
+  }
+  _writeLock.locked = true;
+  _writeLock.dirty = false;
+  instance._saveQTable().finally(() => {
+    _writeLock.locked = false;
+    if (_writeLock.dirty) {
+      _writeLock.dirty = false;
+      _debouncedSave(instance);
+    }
+  });
+}
+
 const MEMORY_DIR = path.join(__dirname, '../../memory');
 const QTABLE_FILE = path.join(MEMORY_DIR, 'q-table.json');
 const QMetaFile = path.join(MEMORY_DIR, 'q-meta.json');
@@ -193,7 +211,7 @@ class HealingMemoryRL {
     const learningRate = 0.2;
     entry[strategy] = currentQ + learningRate * (reward - currentQ);
     _touchEntry(ck);
-    this._saveQTable().catch(e => console.error('[HealingMemoryRL] _saveQTable failed:', e.message));
+    _debouncedSave(this);
   }
 
   /**
@@ -313,7 +331,7 @@ class HealingMemoryRL {
     const strategyCount = Object.keys(entry).length;
     this.qTable.delete(ck);
     delete _qMeta[ck];
-    this._saveQTable().catch(e => console.error('[HealingMemoryRL] _saveQTable failed:', e.message));
+    _debouncedSave(this);
     _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
     if (!this._letGoLog) this._letGoLog = [];
     this._letGoLog.push({
@@ -364,7 +382,7 @@ class HealingMemoryRL {
 
     if (cleaned > 0) {
       _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
-      this._saveQTable().catch(e => console.error('[HealingMemoryRL] _saveQTable failed:', e.message));
+      _debouncedSave(this);
     }
 
     return {

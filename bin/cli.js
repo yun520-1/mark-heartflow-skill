@@ -55,8 +55,21 @@ try {
             respond(result || { status: 'ok', loaded: Object.keys(hf._modules || {}).length });
             break;
         }
+        case 'think': {
+            const text = args.join(' ').trim();
+            if (!text) {
+                respondError('think: text is required');
+            }
+            const hf = loadEngine();
+            hf.think(text).then(result => {
+                respond(result || { error: 'no result' });
+            }).catch(err => {
+                respondError(err.message);
+            });
+            break;
+        }
         default: {
-            respondError(`unknown command: ${command}. Use: analyze <text> | status`);
+            respondError(`unknown command: ${command}. Use: analyze <text> | think <text> | status`);
         }
     }
 } catch (err) {

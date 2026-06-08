@@ -1,7 +1,7 @@
-# HeartFlow / 心虫 v2.2.5
+# HeartFlow / 心虫 v2.8.4
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2.2.5-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-2.8.4-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/github/issues/yun520-1/mark-heartflow-skill?style=flat-square" alt="issues" />
@@ -149,7 +149,7 @@ hf.stop();
 ## 📊 版本时间线
 
 ```
-v2.2.5 ─── 最新 (2026-06-05)
+v2.8.4 ─── 最新 (2026-06-08)
 ├─ v2.0.53 ─ dream-consolidation.js 升级：记忆衰退评分+多周期梦境模拟+冲突检测
 ├─ v2.0.43 ─ claim-extractor.js 升级：置信度分级+来源追踪+矛盾检测
 ├─ v2.0.34 ─ SkillSpector 审计修复 Round 2（161项）
@@ -191,7 +191,6 @@ v2.2.5 ─── 最新 (2026-06-05)
 
 ## 📬 联系方式
 
-- **邮箱**：markcell@outlook.com
 - **GitHub Issues**：https://github.com/yun520-1/mark-heartflow-skill/issues
 - **GitHub Releases**：https://github.com/yun520-1/mark-heartflow-skill/releases
 
