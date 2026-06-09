@@ -1,59 +1,46 @@
-# HeartFlow 模块升级报告
+# HeartFlow Upgrade Report — v2.8.17 → v2.8.18
 
-## 版本
-- **从**: 2.8.12
-- **到**: 2.8.13
-- **升级时间**: 2026-06-09
+## 升级日期
+2026-06-09
 
 ## 升级模块
-**src/pattern-detector.js** — 行为模式检测器 (1307B → 28537B)
+`src/reasoning/commonsense-engine.js` (5755B → 25822B)
 
-### 升级内容
+## 升级内容
 
-1. **ErrorCode 枚举** — 8 种错误码 (INPUT_NULL/INPUT_EMPTY/INVALID_TYPE/GOAL_MISSING/RECORDS_TOO_FEW/ANALYSIS_FAILED/OSCILLATION_DETECTED/NONE)，每类附带 ERROR_SUGGESTIONS 友好提示
+### 新增枚举
+- **ErrorCategory** — 7种错误类型（INPUT_NULL/INPUT_EMPTY/INPUT_TYPE/KNOWLEDGE_EMPTY/INFERENCE_FAILED/OSCILLATION/UNKNOWN），每类带可读建议
+- **ConfidenceLevel** — 4级置信度（high/medium/low/none）
+- **InferenceType** — 10种推理类型（causal/attribute/probabilistic/counterfactual/analogical/deductive/abductive/statistical/causal_chain/unknown）
+- **INFERENCE_PATTERNS** — 推理模式注册表（5种类型×关键词+权重）
 
-2. **TrendDirection 枚举** — 5 种趋势方向 (rising/falling/stable/oscillating/insufficient)
+### 新增功能
+1. **输入验证层** — `_validateInput()` 统一入口，null/undefined/类型检查/空值检测
+2. **震荡检测** — `_detectOscillation()` 滑动窗口+同类型错误占比分析，>60%触发警告
+3. **多因素置信度校准** — `_calibrateConfidence()` 7因素加权：相关性/知识量/类别多样性/一致性/震荡惩罚/不确定性/否定
+4. **增强推理模式** — 6种独立推理构建器（因果/类比/演绎/溯因/统计/属性/反事实/概率）
+5. **双向相关性评估** — Jaccard相似度+双向文本匹配
+6. **错误历史追踪** — `_recordError()` 自动记录，`getErrorStats()` 分类统计
+7. **自我诊断** — `getDiagnostics()` 完整报告（推理量/置信度分布/推理类型分布/错误统计/健康分）
+8. **健康检查** — `healthCheck()` 5维度评估（知识库/错误率/震荡/功能性/容量）
+9. **批量推理** — `reasonBatch()` 并行处理多输入
+10. **防御性编程** — `_safeString()`/`_clamp()` 安全工具函数
+11. **重置** — `reset()` 一键清除所有状态
 
-3. **ConfidenceLevel 枚举** — 4 级置信度 (high/medium/low/insufficient)，基于数据充足度的 logistic 式评分
-
-4. **输入验证系统** — `_validateRecords()` 和 `_validateGoal()` 统一入口，null/undefined/类型/空值/上限检查，不崩溃返回错误对象
-
-5. **多因素复发风险评估** — `detectRelapseRisk()` 从简单计数升级为 4 因素加权评分 (近期失败率/连续失败/总体失败率/近期零成功)，含风险震荡检测
-
-6. **趋势分析** — `analyzeTrend()` 基于半窗比较的趋势方向判断，含变化率、分段统计、置信度
-
-7. **震荡检测** — `detectOscillation()` 通用序列翻转检测，支持双态/多态震荡分类，可配置窗口和阈值
-
-8. **逐日趋势分析** — `detectWeeklyPattern()` 新增可选趋势分析，比较上下半段的活跃日变化
-
-9. **综合报告** — `generateReport()` 一站式输出周规律/触发词/风险评估/趋势/震荡
-
-10. **统计追踪** — `getStats()` 暴露 totalAnalyses/weeklyDetections/triggerDetections/riskAssessments/oscillationWarnings/trendAnalyses/validationErrors
-
-11. **健康检查** — `healthCheck()` 检测验证错误率过高和震荡频繁等异常
-
-12. **可配置系统** — `configure()` 运行时调整 8 个参数，带边界保护
-
-13. **防御性编程** — `_safeText()`/`_safeNumber()`/`_clamp()` 安全工具函数，所有方法覆盖空值/边界
-
-14. **Proxy 包装** — 旧调用者 `patternDetector.method()` 完全兼容，新增 `new PatternDetector()` 支持多实例
-
-15. **模块级导出** — 主类 + ErrorCode + TrendDirection + ConfidenceLevel + DEFAULT_CONFIG
-
-### 向后兼容验证
-- ✅ `detectWeeklyPattern(records)` 接口签名不变，返回新增 confidence/confidenceLevel/trend 字段
-- ✅ `detectTriggerPattern(records)` 接口签名不变，返回新增 ratio/types/firstSeen 字段
-- ✅ `detectRelapseRisk(goal)` 接口签名不变，返回新增 riskScore/factors/confidence 字段
-- ✅ heartflow.js 中 3 处调用全部兼容
-- ✅ Proxy 包装确保 `patternDetector` 单例可直接调用所有方法
+### 向后兼容
+- 所有原有接口签名不变（`reason()`, `validate()`, `getHistory()`, `getStats()`）
+- `reason()` 返回新增 `analysis`, `confidenceLevel`, `oscillationDetected` 可选字段
+- 错误输入返回 `{ success: false, error }` 而非崩溃
 
 ### 验证结果
-- ✅ `node --check` 语法检查通过
-- ✅ `require + new` 实例化通过（PatternDetector + 所有枚举导出）
-- ✅ 旧接口兼容：detectWeeklyPattern/detectTriggerPattern/detectRelapseRisk 全部正常
-- ✅ 空值安全：null/undefined/空数组/无效对象返回错误对象不崩溃
-- ✅ 趋势分析正常：rising/falling/stable/insufficient 正确路由
-- ✅ 震荡检测正常：翻转率计算+双态/多态分类
-- ✅ 统计追踪：getStats() 返回完整统计信息
-- ✅ 健康检查：healthCheck() 正常检测异常状态
-- ✅ 版本同步：VERSION/package.json/SKILL.md 一致 (2.8.13)
+- `node --check` ✅ 语法通过
+- `require()` ✅ 加载成功
+- `new CommonsenseEngine()` ✅ 实例化成功
+- `engine.reason('水会向下流动')` ✅ 返回 `success: true, confidence: 0.592, level: medium`
+- `engine.reason(null)` ✅ 返回 `success: false, error.category: INPUT_NULL`
+- `engine.reasonBatch()` ✅ 批量处理3输入中1个成功
+- `engine.healthCheck()` ✅ 返回完整健康报告
+- `engine.getDiagnostics()` ✅ 返回完整诊断
+
+### 模块级导出
+`module.exports = { CommonsenseEngine, ErrorCategory, ConfidenceLevel, InferenceType, INFERENCE_PATTERNS }`
