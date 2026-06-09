@@ -1,3 +1,15 @@
+## [v2.8.17] - 2026-06-09
+### Added
+- code-writer.js v1.0.0: 代码编写引擎（意图分析+模板生成+代码审查）
+- 15种意图识别（sort/filter/analyze/transform/search/validate/cache/fetch/file/aggregate/parse/generate/merge/pipeline/utility）
+- 8个完整代码模板（排序/过滤/统计/HTTP请求/缓存/验证/文件操作/管道）
+- 多步管道组合（writePipeline）
+- 代码安全审查（reviewCode）
+- 参数自动提取（字段名/URL/条件/TTL）
+- self-initiator 对接 CodeWriter（generateCode 改用意图分析引擎）
+- self-initiator 新增 reviewCode/analyzeIntent/writePipeline 接口
+- heartflow.js 注册 codeWriter 模块
+
 ## [v2.8.16] - 2026-06-09
 ### Added
 - self-initiator.js v2.0.0: 从"发起者"升级为"迷你Agent引擎"
