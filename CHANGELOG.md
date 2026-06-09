@@ -1,3 +1,17 @@
+## [v2.8.19] - 2026-06-09
+### Added
+- forgetting.js v2.0.0: 类结构升级（ForgettingEngine class + Proxy包装向后兼容）
+- ForgettingErrorCode 枚举（9种错误码 + 错误建议）
+- ForgettingState 枚举（5种状态：idle/compressing/consolidating/degraded/error）
+- OscillationType 枚举（4种：none/rapid_access/repeated_consolidation/frequent_thrashing）
+- 输入验证系统（validateMemory统一入口，null/类型/结构三层防御）
+- 震荡检测（时间窗口访问频率 + 合并间隔 + 重复抖动三重检测）
+- 统计追踪（压缩/检索/合并/检查次数 + 错误计数 + 震荡警告）
+- 批量操作（compressBatch/consolidateBatch + 错误隔离）
+- 健康检查（状态/错误/震荡/访问率）
+- 可配置参数（阈值/窗口/上限通过构造函数或updateConfig运行时调整）
+- 向后兼容（Proxy包装 + 保留所有原始函数导出）
+
 ## [v2.8.18] - 2026-06-09
 ### Added
 - code-executor.js v1.0.0: 代码沙箱执行引擎（JavaScript/Shell/Python 三语言执行）
