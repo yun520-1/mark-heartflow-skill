@@ -1,46 +1,39 @@
-# HeartFlow Upgrade Report — v2.8.17 → v2.8.18
+# HeartFlow Upgrade Report — v2.8.18 → v2.8.19
 
-## 升级日期
-2026-06-09
+## Target Module
+- **Module**: `src/memory/forgetting.js`
+- **Size**: 7385B → 24987B (+17582B)
+- **Type**: Plain-functions utility → Class-based engine (Proxy backward-compatible)
 
-## 升级模块
-`src/reasoning/commonsense-engine.js` (5755B → 25822B)
+## Upgrade Summary
 
-## 升级内容
+### Added
+1. **ForgettingErrorCode 枚举** — 9种错误码（INPUT_NULL/INPUT_EMPTY/MEMORY_INVALID/TIMESTAMP_INVALID/BATCH_FAILED/THRESHOLD_INVALID/STATE_ERROR/OSILLATION_DETECTED/UNKNOWN）+ ERROR_SUGGESTIONS 建议表
+2. **ForgettingState 枚举** — 5种引擎状态（idle/compressing/consolidating/degraded/error）
+3. **OscillationType 枚举** — 4种震荡类型（none/rapid_access/repeated_consolidation/frequent_thrashing）
+4. **ForgettingEngine 类** — 状态化引擎，可配置构造函数参数（defaultThreshold/consolidationThreshold/oscillationWindow/oscillationThreshold/maxBatchSize/maxHistorySize/thrashingThreshold）
+5. **输入验证系统** — validateMemory() 统一入口，三层防御（null→类型→结构），所有公开方法带边界检查
+6. **震荡检测** — 三重检测机制：快速访问频率（>5次/秒）、重复合并间隔（<1秒）、频繁抖动（同ID压缩重复率>70%）
+7. **统计追踪** — 6维度计数器（totalCompressions/retrievals/consolidations/forgetChecks/errors/oscillationWarnings）+ 批量操作计数
+8. **批量操作** — compressBatch(memories) + consolidateBatch(memoryGroups)，错误隔离，partial结果返回
+9. **健康检查** — healthCheck() 返回状态/错误/震荡/访问率
+10. **运行时配置** — updateConfig() 深度合并，类型+范围验证
+11. **向后兼容** — Proxy包装单例 + 保留所有原始函数导出（getForgettingLevel/compressMemory/consolidateMemories等）
 
-### 新增枚举
-- **ErrorCategory** — 7种错误类型（INPUT_NULL/INPUT_EMPTY/INPUT_TYPE/KNOWLEDGE_EMPTY/INFERENCE_FAILED/OSCILLATION/UNKNOWN），每类带可读建议
-- **ConfidenceLevel** — 4级置信度（high/medium/low/none）
-- **InferenceType** — 10种推理类型（causal/attribute/probabilistic/counterfactual/analogical/deductive/abductive/statistical/causal_chain/unknown）
-- **INFERENCE_PATTERNS** — 推理模式注册表（5种类型×关键词+权重）
+### Backward Compatibility
+- `module.exports` 返回 Proxy 包装的 ForgettingEngine 单例，可直接调用 f.compress(memory)
+- 所有原始函数通过 `module.exports.getForgettingLevel` 等保持可用
+- 类通过 `module.exports.ForgettingEngine` 访问
+- 枚举通过 `module.exports.ForgettingErrorCode` 等访问
 
-### 新增功能
-1. **输入验证层** — `_validateInput()` 统一入口，null/undefined/类型检查/空值检测
-2. **震荡检测** — `_detectOscillation()` 滑动窗口+同类型错误占比分析，>60%触发警告
-3. **多因素置信度校准** — `_calibrateConfidence()` 7因素加权：相关性/知识量/类别多样性/一致性/震荡惩罚/不确定性/否定
-4. **增强推理模式** — 6种独立推理构建器（因果/类比/演绎/溯因/统计/属性/反事实/概率）
-5. **双向相关性评估** — Jaccard相似度+双向文本匹配
-6. **错误历史追踪** — `_recordError()` 自动记录，`getErrorStats()` 分类统计
-7. **自我诊断** — `getDiagnostics()` 完整报告（推理量/置信度分布/推理类型分布/错误统计/健康分）
-8. **健康检查** — `healthCheck()` 5维度评估（知识库/错误率/震荡/功能性/容量）
-9. **批量推理** — `reasonBatch()` 并行处理多输入
-10. **防御性编程** — `_safeString()`/`_clamp()` 安全工具函数
-11. **重置** — `reset()` 一键清除所有状态
-
-### 向后兼容
-- 所有原有接口签名不变（`reason()`, `validate()`, `getHistory()`, `getStats()`）
-- `reason()` 返回新增 `analysis`, `confidenceLevel`, `oscillationDetected` 可选字段
-- 错误输入返回 `{ success: false, error }` 而非崩溃
-
-### 验证结果
-- `node --check` ✅ 语法通过
-- `require()` ✅ 加载成功
-- `new CommonsenseEngine()` ✅ 实例化成功
-- `engine.reason('水会向下流动')` ✅ 返回 `success: true, confidence: 0.592, level: medium`
-- `engine.reason(null)` ✅ 返回 `success: false, error.category: INPUT_NULL`
-- `engine.reasonBatch()` ✅ 批量处理3输入中1个成功
-- `engine.healthCheck()` ✅ 返回完整健康报告
-- `engine.getDiagnostics()` ✅ 返回完整诊断
-
-### 模块级导出
-`module.exports = { CommonsenseEngine, ErrorCategory, ConfidenceLevel, InferenceType, INFERENCE_PATTERNS }`
+### Testing Results
+- SYNTAX OK: node --check 通过
+- LOAD OK: require 成功
+- INSTANTIATE OK: new ForgettingEngine() 成功
+- COMPRESS OK: 正确返回压缩级别（faded）
+- RETRIEVE OK: 正确返回置信度（0.9）
+- CHECK_FORGET OK: 返回 boolean + precision
+- CONSOLIDATE OK: 返回带主题的合并记忆
+- BATCH OK: 2成功 0失败
+- OSCILLATION: 正确检测到快速访问震荡
+- LEGACY: 原始函数仍然可用
