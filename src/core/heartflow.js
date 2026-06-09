@@ -779,6 +779,8 @@ class HeartFlow {
     'desireEngine.registerDesire', 'desireEngine.satisfy', 'desireEngine.getDominantDesires', 'desireEngine.getSummary',
     'goalPursuer.shouldPursue', 'goalPursuer.getActiveGoals', 'goalPursuer.getStatus',
     'selfInitiator.shouldAct', 'selfInitiator.initiate', 'selfInitiator.getPendingConfirmations', 'selfInitiator.getStatus',
+    'selfInitiator.generateCode', 'selfInitiator.reviewCode', 'selfInitiator.analyzeIntent', 'selfInitiator.writePipeline',
+    'selfInitiator.generatePlan', 'selfInitiator.runTests',
     // Cross-Session Memory Layer — 跨会话记忆
     'sessionMemory.startSession', 'sessionMemory.resumeSession', 'sessionMemory.getState', 'sessionMemory.set', 'sessionMemory.get',
     'projectContext.setProject', 'projectContext.addTask', 'projectContext.getSummary', 'projectContext.getState',
