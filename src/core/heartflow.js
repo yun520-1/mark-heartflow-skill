@@ -1955,7 +1955,8 @@ if (require.main === module) {
   hf.start();
 
   const t0 = Date.now();
-  hf.healthCheck().then(health => {
+  try {
+    const health = hf.healthCheck ? hf.healthCheck() : {};
     console.log(`[HeartFlow] ${VERSION} health check (${Date.now() - t0}ms):`);
     // Run dispatch smoke tests
     const tests = [
@@ -1976,11 +1977,11 @@ if (require.main === module) {
 
     hf.stop();
     process.exit(failed > 0 ? 1 : 0);
-  }).catch(e => {
+  } catch (e) {
     console.error('Error:', e);
     hf.stop();
     process.exit(1);
-  });
+  }
 }
 
 module.exports = { HeartFlow, createHeartFlow, VERSION: _VERSION().VERSION, MentalEffortTracker: _MentalEffortTracker().MentalEffortTracker };
