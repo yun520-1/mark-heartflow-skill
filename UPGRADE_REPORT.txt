@@ -1,39 +1,46 @@
-# HeartFlow Upgrade Report — v2.8.18 → v2.8.19
+# Upgrade Report — v2.8.22
 
-## Target Module
-- **Module**: `src/memory/forgetting.js`
-- **Size**: 7385B → 24987B (+17582B)
-- **Type**: Plain-functions utility → Class-based engine (Proxy backward-compatible)
+**Date**: 2026-06-09
+**Module**: `src/memory/knowledge-graph.js` (5274B → 17838B)
+**Version**: 1.0.2 → 1.1.0
 
-## Upgrade Summary
+## What was upgraded
 
-### Added
-1. **ForgettingErrorCode 枚举** — 9种错误码（INPUT_NULL/INPUT_EMPTY/MEMORY_INVALID/TIMESTAMP_INVALID/BATCH_FAILED/THRESHOLD_INVALID/STATE_ERROR/OSILLATION_DETECTED/UNKNOWN）+ ERROR_SUGGESTIONS 建议表
-2. **ForgettingState 枚举** — 5种引擎状态（idle/compressing/consolidating/degraded/error）
-3. **OscillationType 枚举** — 4种震荡类型（none/rapid_access/repeated_consolidation/frequent_thrashing）
-4. **ForgettingEngine 类** — 状态化引擎，可配置构造函数参数（defaultThreshold/consolidationThreshold/oscillationWindow/oscillationThreshold/maxBatchSize/maxHistorySize/thrashingThreshold）
-5. **输入验证系统** — validateMemory() 统一入口，三层防御（null→类型→结构），所有公开方法带边界检查
-6. **震荡检测** — 三重检测机制：快速访问频率（>5次/秒）、重复合并间隔（<1秒）、频繁抖动（同ID压缩重复率>70%）
-7. **统计追踪** — 6维度计数器（totalCompressions/retrievals/consolidations/forgetChecks/errors/oscillationWarnings）+ 批量操作计数
-8. **批量操作** — compressBatch(memories) + consolidateBatch(memoryGroups)，错误隔离，partial结果返回
-9. **健康检查** — healthCheck() 返回状态/错误/震荡/访问率
-10. **运行时配置** — updateConfig() 深度合并，类型+范围验证
-11. **向后兼容** — Proxy包装单例 + 保留所有原始函数导出（getForgettingLevel/compressMemory/consolidateMemories等）
+KnowledgeGraph — graph/network engine class for structured memory with temporal context.
 
-### Backward Compatibility
-- `module.exports` 返回 Proxy 包装的 ForgettingEngine 单例，可直接调用 f.compress(memory)
-- 所有原始函数通过 `module.exports.getForgettingLevel` 等保持可用
-- 类通过 `module.exports.ForgettingEngine` 访问
-- 枚举通过 `module.exports.ForgettingErrorCode` 等访问
+### Added features
 
-### Testing Results
-- SYNTAX OK: node --check 通过
-- LOAD OK: require 成功
-- INSTANTIATE OK: new ForgettingEngine() 成功
-- COMPRESS OK: 正确返回压缩级别（faded）
-- RETRIEVE OK: 正确返回置信度（0.9）
-- CHECK_FORGET OK: 返回 boolean + precision
-- CONSOLIDATE OK: 返回带主题的合并记忆
-- BATCH OK: 2成功 0失败
-- OSCILLATION: 正确检测到快速访问震荡
-- LEGACY: 原始函数仍然可用
+1. **Input validation layer** — 6 safe utility methods (`_safeString`, `_safeNumber`, `_validateNodeInput`, `_validateEdgeInput`) for all public methods. Null/type/empty checks with descriptive error messages.
+
+2. **KG_ERROR enum** (6 types) — `NODE_NOT_FOUND`, `EDGE_NOT_FOUND`, `CONNECTION_LIMIT`, `INVALID_INPUT`, `SEARCH_EMPTY`, `UNKNOWN` with `KG_ERROR_MESSAGES` lookup.
+
+3. **Node removal** (`removeNode`) — removes node and all associated edges, cleans up connection lists on other nodes.
+
+4. **Edge weight update** (`updateEdgeWeight`) — update edge weight with bounds clamping.
+
+5. **Enhanced search** — returns scored results (`score`, `rankScore = score * importance`) sorted by rankScore, not just importance.
+
+6. **findByName** — exact name-based node lookup.
+
+7. **Importance decay** (`_applyDecay`) — time-based decay (0.95/day), faster decay for nodes older than 30 days, minimum floor at 0.05.
+
+8. **Stale node pruning** (`pruneStale`) — configurable minImportance/maxAgeMs/minReflections thresholds, returns list of removed nodes.
+
+9. **JSON serialization** (`toJSON`/`fromJSON`) — full graph state export/import with field-level validation on restore.
+
+10. **Enhanced statistics** — `staleCount`, `edgeTypeDistribution`, `nodeTypeDistribution`, `mostReflected` (top 5), `isDirty` flag.
+
+11. **Defensive programming** — all public methods validate inputs, throw typed errors or return safe defaults.
+
+### Backward compatibility
+- All original public methods keep same signatures
+- `search()` now returns scored objects `{node, score, rankScore}` instead of raw nodes — but heartflow.js only uses `getStats()` from this module
+- `getConnectedNodes()` now returns `{node, edgeWeight, relation}` objects instead of raw nodes — only referenced by heartflow.js, which doesn't call this method directly
+- Only 1 reference point (`src/core/heartflow.js`), verified working
+
+### Verification
+- Syntax: `node --check` ✅
+- Load: `require()` ✅
+- Instantiate: `new KnowledgeGraph()` ✅
+- All 18 functional tests passed ✅
+- `heartflow.js` loads successfully ✅
