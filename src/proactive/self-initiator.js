@@ -352,28 +352,95 @@ class SelfInitiator {
   }
 
   // ========================================================================
-  // 4. 代码能力引擎
+  // 4. 代码能力引擎（升级版 — 对接 CodeWriter）
   // ========================================================================
 
   /**
-   * 生成代码 — 根据描述自动编写代码
+   * 生成代码 — 使用 CodeWriter 引擎
    *
    * @param {string} description - 代码功能描述
    * @param {string} [language='javascript'] - 目标语言
-   * @returns {Object} { code, language, confidence }
+   * @returns {Object} { code, language, confidence, intent }
    */
   generateCode(description, language = 'javascript') {
     if (!description || description.trim().length === 0) {
       return { error: '需要功能描述', code: null, confidence: 0 };
     }
 
+    // 尝试使用 CodeWriter
+    try {
+      const { CodeWriter } = require('../core/code/code-writer.js');
+      const writer = new CodeWriter();
+      const result = writer.write(description, { language, includeTests: false });
+
+      if (result.code) {
+        return {
+          code: result.code,
+          language: result.language,
+          confidence: result.confidence,
+          intent: result.intent,
+          params: result.params,
+          source: 'codewriter',
+          generatedAt: result.generatedAt
+        };
+      }
+    } catch (err) {
+      // CodeWriter 不可用时回退到内置模板
+      this._lastCodeGenError = err.message;
+    }
+
+    // fallback: 内置模板
     const code = this._generateCodeFromDesc(description, language);
     return {
       code,
       language,
-      confidence: code ? 0.7 : 0,
+      confidence: code ? 0.5 : 0,
+      source: 'fallback',
       generatedAt: Date.now()
     };
+  }
+
+  /**
+   * 审查代码 — 使用 CodeWriter 引擎
+   */
+  reviewCode(code) {
+    if (!code) return { valid: false, issues: ['代码为空'] };
+    try {
+      const { CodeWriter } = require('../core/code/code-writer.js');
+      const writer = new CodeWriter();
+      return writer.reviewCode(code);
+    } catch (err) {
+      // 简单回退
+      const issues = [];
+      if (code.includes('eval(')) issues.push({ type: 'security', message: '使用了 eval', severity: 'warn' });
+      return { valid: true, issues, issueCount: issues.length };
+    }
+  }
+
+  /**
+   * 分析代码需求意图
+   */
+  analyzeIntent(description) {
+    try {
+      const { CodeWriter } = require('../core/code/code-writer.js');
+      const writer = new CodeWriter();
+      return writer.analyzeIntent(description);
+    } catch (err) {
+      return { primaryIntent: null, confidence: 0, allIntents: [], params: {}, error: err.message };
+    }
+  }
+
+  /**
+   * 写管道代码（多步组合）
+   */
+  writePipeline(steps) {
+    try {
+      const { CodeWriter } = require('../core/code/code-writer.js');
+      const writer = new CodeWriter();
+      return writer.writePipeline(steps);
+    } catch (err) {
+      return { code: null, error: err.message, steps: [] };
+    }
   }
 
   _generateCodeFromDesc(description, language) {
