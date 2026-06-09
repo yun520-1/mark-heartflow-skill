@@ -1,3 +1,15 @@
+## [v2.8.16] - 2026-06-09
+### Added
+- self-initiator.js v2.0.0: 从"发起者"升级为"迷你Agent引擎"
+- 新增代码生成引擎（7种模式：排序/过滤/统计/转换/搜索/验证/缓存/文件/HTTP）
+- 新增代码执行能力（语法检查+沙箱执行+超时保护）
+- 新增脚本执行（沙箱安全检查+危险命令拦截）
+- 新增执行模式枚举（CODE/SCRIPT/TOOL/AGENT/PLAN）
+- 新增任务状态机（8状态）和错误分类（7类别）
+- 新增重试机制（指数退避+震荡检测）
+- 新增配置系统（8可调参数）
+- 保持向后兼容：原有 shouldAct/initiate/confirmPending 接口不变
+
      1|==> CHANGELOG.head.md <==
      2|
      3|> ⚠️ **本 CHANGELOG 包含历史记录与审计修复段。v1.5.0-v2.0.6 段描述的"MarkCode / 执行能力 / multimodal / executor-agent"等模块大部分已移除（src/agent-core/, src/multimodal/, src/agents/executor-agent.js, scripts/heartflow-sync-upgrade.sh, scripts/comfyui-cron.sh 均不存在），仅作为"已修复"历史保留。当前能力以 SKILL.md frontmatter 与 `src/` 实际存在代码为准。**
