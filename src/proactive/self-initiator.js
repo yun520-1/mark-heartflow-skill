@@ -248,6 +248,7 @@ class SelfInitiator {
 
   /**
    * 代码执行任务 — 编写、运行、验证
+   * 优先使用 CodeExecutor 引擎，不可用时回退到内置执行器
    */
   async _runCodeTask(task) {
     task.state = TASK_STATE.RUNNING;
@@ -258,16 +259,27 @@ class SelfInitiator {
         throw this._makeError(ERROR_CATEGORY.INPUT, '代码为空或超出长度限制');
       }
 
-      // Step 2: 语法检查
-      const syntaxCheck = this._checkSyntax(task.code);
-      if (!syntaxCheck.valid) {
-        throw this._makeError(ERROR_CATEGORY.SYNTAX, syntaxCheck.error);
+      // Step 2: 尝试使用 CodeExecutor
+      let execResult;
+      try {
+        const { CodeExecutor } = require('../core/code/code-executor.js');
+        const executor = new CodeExecutor();
+        execResult = await executor.execute(task.code, {
+          language: task.metadata?.language || 'javascript',
+          timeout: this.config.execTimeout,
+          maxOutput: this.config.outputMaxLength
+        });
+      } catch (execErr) {
+        // CodeExecutor 不可用 → 回退到内置执行器
+        this._lastCodeGenError = execErr.message;
+        const syntaxCheck = this._checkSyntax(task.code);
+        if (!syntaxCheck.valid) {
+          throw this._makeError(ERROR_CATEGORY.SYNTAX, syntaxCheck.error);
+        }
+        execResult = await this._execCodeWithTimeout(task.code, this.config.execTimeout);
       }
 
-      // Step 3: 执行（with timeout）
-      const execResult = await this._execCodeWithTimeout(task.code, this.config.execTimeout);
-
-      // Step 4: 验证结果
+      // Step 3: 验证结果
       const verified = this._verifyResult(execResult);
 
       this._completeTask(task.id, {
@@ -276,7 +288,7 @@ class SelfInitiator {
         stderr: execResult.stderr?.substring(0, 2000),
         exitCode: execResult.exitCode,
         verified,
-        code: task.code.substring(0, 500)  // 截断存储
+        code: task.code.substring(0, 500)
       });
 
     } catch (err) {
@@ -286,6 +298,7 @@ class SelfInitiator {
 
   /**
    * 脚本执行任务 — 运行Shell命令
+   * 优先使用 CodeExecutor 引擎
    */
   async _runScriptTask(task) {
     task.state = TASK_STATE.RUNNING;
@@ -295,16 +308,32 @@ class SelfInitiator {
         throw this._makeError(ERROR_CATEGORY.INPUT, '脚本内容为空');
       }
 
-      // 安全检查：沙箱模式下禁止危险命令
-      if (this.config.sandboxEnabled) {
-        const danger = this._checkDangerousCommands(task.script);
-        if (danger) {
-          throw this._makeError(ERROR_CATEGORY.PERMISSION,
-            `沙箱拦截危险命令: ${danger}`);
+      // 尝试使用 CodeExecutor
+      let execResult;
+      try {
+        const { CodeExecutor } = require('../core/code/code-executor.js');
+        const executor = new CodeExecutor();
+        // 先做沙箱检查
+        if (this.config.sandboxEnabled) {
+          const sandboxResult = await executor.sandbox(task.script, { language: 'shell' });
+          execResult = sandboxResult;
+        } else {
+          execResult = await executor.execute(task.script, {
+            language: 'shell',
+            timeout: this.config.execTimeout
+          });
         }
+      } catch (execErr) {
+        // 回退到内置执行器
+        this._lastCodeGenError = execErr.message;
+        if (this.config.sandboxEnabled) {
+          const danger = this._checkDangerousCommands(task.script);
+          if (danger) {
+            throw this._makeError(ERROR_CATEGORY.PERMISSION, `沙箱拦截危险命令: ${danger}`);
+          }
+        }
+        execResult = await this._execScriptWithTimeout(task.script, this.config.execTimeout);
       }
-
-      const execResult = await this._execScriptWithTimeout(task.script, this.config.execTimeout);
 
       this._completeTask(task.id, {
         status: execResult.exitCode === 0 ? 'completed' : 'failed',
@@ -315,6 +344,46 @@ class SelfInitiator {
 
     } catch (err) {
       this._handleExecError(task, err);
+    }
+  }
+
+  /**
+   * 生成代码执行计划 — 使用 CodePlanner
+   */
+  generatePlan(goal, options = {}) {
+    try {
+      const { CodePlanner } = require('../core/code/code-planner.js');
+      const planner = new CodePlanner();
+      const plan = planner.plan(goal, options);
+      return {
+        plan,
+        source: 'codeplanner',
+        steps: plan.steps?.length || 0,
+        estimatedComplexity: plan.estimatedComplexity
+      };
+    } catch (err) {
+      // 回退到简单计划
+      const steps = this._generatePlanSteps({ title: goal });
+      return {
+        plan: { steps, goal, estimatedComplexity: 'medium' },
+        source: 'fallback',
+        steps: steps.length,
+        estimatedComplexity: 'medium'
+      };
+    }
+  }
+
+  /**
+   * 运行测试 — 使用 CodeExecutor
+   */
+  async runTests(code, testCode, options = {}) {
+    try {
+      const { CodeExecutor } = require('../core/code/code-executor.js');
+      const executor = new CodeExecutor();
+      const result = await executor.runTests(code, testCode, options);
+      return result;
+    } catch (err) {
+      return { status: 'error', error: err.message, passed: false, total: 0 };
     }
   }
 

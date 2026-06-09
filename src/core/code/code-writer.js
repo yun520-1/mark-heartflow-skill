@@ -1,15 +1,17 @@
 /**
- * CodeWriter — 心虫代码编写引擎 v1.0.0
+ * CodeWriter — 心虫代码编写引擎 v1.1.0
  *
- * 根据自然语言需求描述，生成可直接执行的 JavaScript 代码。
+ * 根据自然语言需求描述，生成可直接执行的代码（支持 JavaScript / Python）。
  * 不同于 self-initiator 的模板匹配，CodeWriter 基于意图分析
  * 生成结构化、可运行、带错误处理的代码。
  *
  * 核心能力：
  * - 意图识别（分析需求描述→确定代码类别）
- * - 代码生成（基于意图+参数生成完整代码）
+ * - 代码生成（基于意图+参数生成完整代码，多语言支持）
  * - 代码组合（多步需求→组合多个代码片段）
  * - 代码审查（检查生成代码的完整性和安全性）
+ * - 测试生成（为每个模板生成对应的测试代码）
+ * - 代码格式化（缩进、尾随空格、空行规范化）
  *
  * @module code-writer
  */
@@ -35,7 +37,10 @@ const INTENT = {
   GENERATE:     'generate',    // 生成数据
   MERGE:        'merge',       // 合并
   UTILITY:      'utility',     // 通用工具
-  PIPELINE:     'pipeline'     // 管道处理
+  PIPELINE:     'pipeline',    // 管道处理
+  PLOT:         'plot',        // 数据可视化
+  ENCODE:       'encode',      // 编码/解码
+  BATCH:        'batch'        // 批量处理
 };
 
 /** 意图置信度 */
@@ -65,11 +70,14 @@ const INTENT_RULES = [
   { intent: INTENT.GENERATE,  keywords: ['生成', 'generate', '创建', 'create', '构造', '制造', '生成数据'], weight: 2 },
   { intent: INTENT.MERGE,     keywords: ['合并', 'merge', '合并', '拼接', 'concat', '连接', 'join', '组合'], weight: 2 },
   { intent: INTENT.PIPELINE,  keywords: ['管道', 'pipeline', '流程', '链式', 'chain', 'stream', '流水线', '多步'], weight: 2 },
+  { intent: INTENT.PLOT,      keywords: ['可视化', 'plot', 'chart', '图表', '图形', '画图', '绘图', '柱状图', '折线图', '散点图', '饼图', '画'], weight: 2 },
+  { intent: INTENT.ENCODE,    keywords: ['编码', 'encode', '解码', 'decode', 'base64', '加密', '解密', 'hash', '加密解密'], weight: 2 },
+  { intent: INTENT.BATCH,     keywords: ['批量', 'batch', '批处理', 'bulk', '多个', '循环处理', '全部', '遍历'], weight: 2 },
   { intent: INTENT.UTILITY,   keywords: ['工具', 'util', '函数', 'helper', '帮助', '通用'], weight: 1 }
 ];
 
 // ============================================================================
-// 代码模板（每个意图对应一个完整可运行的代码模板）
+// JavaScript 代码模板
 // ============================================================================
 
 const CODE_TEMPLATES = {
@@ -554,6 +562,259 @@ class DataPipeline {
 `;
   },
 
+  // 可视化
+  [INTENT.PLOT]: (params) => {
+    return `/**
+ * ${params.description || '数据可视化'}
+ * 使用字符/控制台绘制简单的图表
+ */
+function plotBar(data, options = {}) {
+  const {
+    width = 40,
+    label = '值',
+    symbol = '█'
+  } = options;
+
+  if (!Array.isArray(data) || data.length === 0) {
+    console.warn('[plotBar] 输入数据为空');
+    return;
+  }
+
+  const max = Math.max(...data.map(d => typeof d === 'number' ? d : d.value));
+  const labels = data.map(d => typeof d === 'object' ? d.label : String(d));
+  const values = data.map(d => typeof d === 'number' ? d : d.value);
+
+  console.log(\`--- 柱状图: \${label} ---\`);
+  for (let i = 0; i < data.length; i++) {
+    const barLen = Math.max(1, Math.round((values[i] / max) * width));
+    const bar = symbol.repeat(barLen);
+    console.log(\`\${String(labels[i]).padEnd(10)} | \${bar} \${values[i]}\`);
+  }
+  console.log(\`--- 总计: \${values.length} 项 ---\`);
+}
+
+function plotLine(values, options = {}) {
+  const { height = 10, width = 50, label = '折线' } = options;
+  if (!Array.isArray(values) || values.length === 0) return;
+
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const range = max - min || 1;
+
+  console.log(\`--- 折线图: \${label} ---\`);
+  for (let row = 0; row <= height; row++) {
+    const threshold = max - (row / height) * range;
+    let line = '';
+    for (let col = 0; col < Math.min(values.length, width); col++) {
+      const idx = Math.floor((col / width) * values.length);
+      line += values[idx] >= threshold ? '*' : ' ';
+    }
+    const valLabel = (min + (height - row) / height * range).toFixed(1);
+    console.log(\`\${String(valLabel).padStart(8)} |\${line}\`);
+  }
+  console.log('          ' + '-'.repeat(Math.min(values.length, width)));
+}
+
+// 使用示例
+// plotBar([3, 7, 2, 9, 5], { label: '分数' });
+// plotLine([1, 3, 2, 5, 7, 4, 6, 8, 9, 10]);
+`;
+  },
+
+  // 编码/解码
+  [INTENT.ENCODE]: (params) => {
+    return `/**
+ * ${params.description || '编码/解码工具'}
+ * 提供 Base64、URL、Hex 等编解码功能
+ */
+
+/**
+ * Base64 编码
+ * @param {string} str - 输入字符串
+ * @returns {string} Base64 编码结果
+ */
+function base64Encode(str) {
+  if (typeof str !== 'string') {
+    console.warn('[base64Encode] 输入必须是字符串');
+    return '';
+  }
+  try {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+      (match, p1) => String.fromCharCode('0x' + p1)));
+  } catch (err) {
+    return btoa(str);
+  }
+}
+
+/**
+ * Base64 解码
+ * @param {string} encoded - Base64 编码的字符串
+ * @returns {string} 解码后的字符串
+ */
+function base64Decode(encoded) {
+  if (typeof encoded !== 'string') return '';
+  try {
+    return decodeURIComponent(Array.from(atob(encoded), c =>
+      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+  } catch {
+    try { return atob(encoded); } catch { return ''; }
+  }
+}
+
+/**
+ * URL 编码
+ */
+function urlEncode(str) {
+  return encodeURIComponent(str);
+}
+
+/**
+ * URL 解码
+ */
+function urlDecode(str) {
+  return decodeURIComponent(str);
+}
+
+/**
+ * Hex 编码
+ */
+function hexEncode(str) {
+  return Array.from(str, c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Hex 解码
+ */
+function hexDecode(hex) {
+  const bytes = [];
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes.push(parseInt(hex.substr(i, 2), 16));
+  }
+  return String.fromCharCode(...bytes);
+}
+
+// 使用示例
+// console.log(base64Encode('Hello 世界'));  // 编码
+// console.log(base64Decode('SGVsbG8g5LiW55WM')); // 解码
+// console.log(hexEncode('ABC')); // '414243'
+// console.log(hexDecode('414243')); // 'ABC'
+`;
+  },
+
+  // 批量处理
+  [INTENT.BATCH]: (params) => {
+    return `/**
+ * ${params.description || '批量处理工具'}
+ * 批量处理数组/列表中的数据，支持并发控制
+ */
+
+/**
+ * 批量处理函数
+ * @param {Array} items - 待处理的项目列表
+ * @param {Function} processor - 处理函数 (item, index) => result
+ * @param {Object} [options] - 配置选项
+ * @param {number} [options.batchSize=5] - 每批处理数量
+ * @param {number} [options.delay=0] - 批次间延迟（毫秒）
+ * @param {boolean} [options.parallel=false] - 是否并行处理
+ * @returns {Promise<{results: Array, errors: Array, total: number, succeeded: number, failed: number}>}
+ */
+async function batchProcess(items, processor, options = {}) {
+  const {
+    batchSize = 5,
+    delay = 0,
+    parallel = false
+  } = options;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return { results: [], errors: [], total: 0, succeeded: 0, failed: 0 };
+  }
+  if (typeof processor !== 'function') {
+    throw new Error('[batchProcess] processor 必须是函数');
+  }
+
+  const results = [];
+  const errors = [];
+
+  if (parallel) {
+    // 并行处理（带并发限制）
+    const running = new Set();
+    for (let i = 0; i < items.length; i++) {
+      const run = (async () => {
+        try {
+          results[i] = { index: i, value: await processor(items[i], i) };
+        } catch (err) {
+          errors.push({ index: i, item: items[i], error: err.message });
+        }
+      })();
+      running.add(run);
+      run.finally(() => running.delete(run));
+
+      if (running.size >= batchSize) {
+        await Promise.race(running);
+      }
+    }
+    await Promise.all(running);
+  } else {
+    // 分批串行处理
+    for (let i = 0; i < items.length; i += batchSize) {
+      const batch = items.slice(i, i + batchSize);
+      const batchPromises = batch.map((item, batchIdx) => {
+        const idx = i + batchIdx;
+        return (async () => {
+          try {
+            return { index: idx, value: await processor(item, idx) };
+          } catch (err) {
+            errors.push({ index: idx, item, error: err.message });
+            return null;
+          }
+        })();
+      });
+
+      const batchResults = await Promise.all(batchPromises);
+      for (const r of batchResults) {
+        if (r) results[r.index] = r;
+      }
+
+      if (delay > 0 && i + batchSize < items.length) {
+        await new Promise(r => setTimeout(r, delay));
+      }
+    }
+  }
+
+  return {
+    results: results.filter(Boolean).map(r => r.value),
+    errors,
+    total: items.length,
+    succeeded: results.filter(Boolean).length,
+    failed: errors.length
+  };
+}
+
+/**
+ * 分块处理（同步版本）
+ * @param {Array} items - 待处理项目
+ * @param {Function} processor - 同步处理函数
+ * @param {number} [chunkSize=10] - 每块大小
+ * @returns {Array} 处理结果
+ */
+function chunkProcess(items, processor, chunkSize = 10) {
+  if (!Array.isArray(items)) return [];
+  const results = [];
+  for (let i = 0; i < items.length; i += chunkSize) {
+    const chunk = items.slice(i, i + chunkSize);
+    const processed = chunk.map((item, idx) => processor(item, i + idx));
+    results.push(...processed);
+  }
+  return results;
+}
+
+// 使用示例
+// const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+// const result = await batchProcess(data, async (n) => n * 2, { batchSize: 3 });
+// console.log(result.results); // [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+`;
+  },
+
   // 通用工具（fallback）
   [INTENT.UTILITY]: (params) => {
     return `/**
@@ -604,6 +865,310 @@ function pick(obj, keys) {
 // console.log(deepClone({ a: 1, b: { c: 2 } }));
 // console.log(chunk([1,2,3,4,5], 2)); // [[1,2],[3,4],[5]]
 // console.log(unique([1,2,2,3,3,4])); // [1,2,3,4]
+`;
+  }
+};
+
+// ============================================================================
+// Python 代码模板
+// ============================================================================
+
+const PYTHON_TEMPLATES = {
+  [INTENT.SORT]: (params) => {
+    const field = params.field || null;
+    return `def sort_data(data, key=None, ascending=True):
+    \"\"\"
+    ${params.description || '排序函数'}
+    
+    Args:
+        data: 输入数据列表
+        key: 排序字段（数据为字典时使用）
+        ascending: 升序/降序
+    
+    Returns:
+        排序后的新列表
+    \"\"\"
+    if not isinstance(data, list):
+        print('[sort_data] 输入不是列表')
+        return []
+    if not data:
+        return []
+    
+    if key:
+        def sort_key(item):
+            v = item.get(key, '') if isinstance(item, dict) else item
+            return v if v is not None else ''
+        return sorted(data, key=sort_key, reverse=not ascending)
+    else:
+        return sorted(data, reverse=not ascending)
+
+
+# 使用示例
+# result = sort_data([3, 1, 4, 1, 5, 9])
+# print(result)  # [1, 1, 3, 4, 5, 9]
+`;
+  },
+
+  [INTENT.FILTER]: (params) => {
+    const condition = params.condition || 'item is not None';
+    return `def filter_data(data, predicate=None):
+    \"\"\"
+    ${params.description || '过滤函数'}
+    
+    Args:
+        data: 输入数据列表
+        predicate: 过滤条件函数 (item) -> bool
+    
+    Returns:
+        过滤后的列表
+    \"\"\"
+    if not isinstance(data, list):
+        print('[filter_data] 输入不是列表')
+        return []
+    
+    if predicate is None:
+        predicate = lambda item: ${condition}
+    
+    return [item for item in data if predicate(item)]
+
+
+# 使用示例
+# result = filter_data([1, 2, 3, 4, 5], lambda n: n > 2)
+# print(result)  # [3, 4, 5]
+`;
+  },
+
+  [INTENT.ANALYZE]: (params) => {
+    const field = params.field || null;
+    return `import statistics
+from collections import Counter
+
+
+def analyze_data(data, field=None):
+    \"\"\"
+    ${params.description || '统计分析'}
+    
+    Args:
+        data: 输入数据列表
+        field: 统计字段（数据为字典时使用）
+    
+    Returns:
+        统计结果字典
+    \"\"\"
+    if not isinstance(data, list) or not data:
+        return {'count': 0, 'error': '数据为空'}
+    
+    # 提取数值
+    if field:
+        numbers = [d[field] for d in data if isinstance(d, dict) and field in d and isinstance(d[field], (int, float))]
+    else:
+        numbers = [d for d in data if isinstance(d, (int, float))]
+    
+    stats = {
+        'count': len(data),
+        'numeric_count': len(numbers),
+        'sum': sum(numbers) if numbers else 0,
+        'avg': None,
+        'min': None,
+        'max': None,
+        'median': None,
+        'std': None,
+        'distribution': {}
+    }
+    
+    if numbers:
+        stats['avg'] = round(sum(numbers) / len(numbers), 2)
+        stats['min'] = min(numbers)
+        stats['max'] = max(numbers)
+        stats['median'] = statistics.median(numbers)
+        stats['std'] = round(statistics.stdev(numbers), 2) if len(numbers) > 1 else 0
+    
+    return stats
+
+
+# 使用示例
+# stats = analyze_data([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+# print(stats)
+`;
+  },
+
+  [INTENT.FILE]: (params) => {
+    return `import os
+import json
+import csv
+from pathlib import Path
+
+
+class FileManager:
+    \"\"\"
+    ${params.description || '文件操作工具'}
+    安全的文件读写操作
+    \"\"\"
+    
+    def __init__(self, base_dir=None):
+        self.base_dir = Path(base_dir).resolve() if base_dir else Path.cwd()
+    
+    def _safe_path(self, target):
+        resolved = (self.base_dir / target).resolve()
+        if not str(resolved).startswith(str(self.base_dir)):
+            raise PermissionError(f'路径越界: "{target}" 超出基目录 "{self.base_dir}"')
+        return resolved
+    
+    def read(self, filepath, encoding='utf-8'):
+        try:
+            full = self._safe_path(filepath)
+            if not full.exists():
+                return {'success': False, 'error': f'文件不存在: {filepath}'}
+            content = full.read_text(encoding=encoding)
+            return {'success': True, 'content': content, 'size': len(content)}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def write(self, filepath, content, encoding='utf-8'):
+        try:
+            full = self._safe_path(filepath)
+            full.parent.mkdir(parents=True, exist_ok=True)
+            full.write_text(content, encoding=encoding)
+            return {'success': True, 'path': str(filepath), 'size': len(content)}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def list(self, dir_path='.'):
+        try:
+            full = self._safe_path(dir_path)
+            if not full.exists():
+                return {'success': False, 'error': f'目录不存在: {dir_path}'}
+            files = [p.name for p in full.iterdir() if p.is_file()]
+            dirs = [p.name for p in full.iterdir() if p.is_dir()]
+            return {'success': True, 'files': files, 'dirs': dirs, 'total': len(files) + len(dirs)}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def read_csv(self, filepath, has_header=True):
+        try:
+            full = self._safe_path(filepath)
+            with open(full, 'r', encoding='utf-8') as f:
+                if has_header:
+                    reader = csv.DictReader(f)
+                    return {'success': True, 'data': list(reader), 'count': len(list(reader))}
+                else:
+                    reader = csv.reader(f)
+                    return {'success': True, 'data': list(reader), 'count': len(list(reader))}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+    
+    def read_json(self, filepath):
+        try:
+            full = self._safe_path(filepath)
+            with open(full, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return {'success': True, 'data': data}
+        except Exception as e:
+            return {'success': False, 'error': str(e)}
+
+
+# 使用示例
+# fm = FileManager('./data')
+# fm.write('test.txt', 'Hello World')
+# print(fm.read('test.txt'))
+# print(fm.list('.'))
+`;
+  },
+
+  [INTENT.VALIDATE]: (params) => {
+    return `import re
+
+
+def validate(input_data, rules):
+    \"\"\"
+    ${params.description || '数据验证器'}
+    
+    Args:
+        input_data: 输入数据（字典）
+        rules: 验证规则字典
+    
+    Returns:
+        验证结果字典
+    \"\"\"
+    if not isinstance(input_data, dict):
+        return {'valid': False, 'errors': ['输入数据无效']}
+    if not isinstance(rules, dict):
+        return {'valid': False, 'errors': ['验证规则无效']}
+    
+    errors = []
+    
+    for field, rule in rules.items():
+        value = input_data.get(field)
+        
+        # 必填检查
+        if rule.get('required') and (value is None or value == ''):
+            errors.append({'field': field, 'rule': 'required', 'message': f'"{field}" 是必填字段'})
+            continue
+        
+        # 跳过未提供的可选字段
+        if value is None:
+            continue
+        
+        # 类型检查
+        expected_type = rule.get('type')
+        if expected_type:
+            if expected_type == 'array' and not isinstance(value, (list, tuple)):
+                errors.append({'field': field, 'rule': 'type', 'message': f'"{field}" 应为 {expected_type} 类型'})
+                continue
+            elif expected_type == 'number' and not isinstance(value, (int, float)):
+                errors.append({'field': field, 'rule': 'type', 'message': f'"{field}" 应为 {expected_type} 类型'})
+                continue
+            elif expected_type == 'string' and not isinstance(value, str):
+                errors.append({'field': field, 'rule': 'type', 'message': f'"{field}" 应为 {expected_type} 类型'})
+                continue
+        
+        # 范围检查（数字）
+        if isinstance(value, (int, float)):
+            min_val = rule.get('min')
+            max_val = rule.get('max')
+            if min_val is not None and value < min_val:
+                errors.append({'field': field, 'rule': 'min', 'message': f'"{field}" 最小值为 {min_val}', 'actual': value})
+            if max_val is not None and value > max_val:
+                errors.append({'field': field, 'rule': 'max', 'message': f'"{field}" 最大值为 {max_val}', 'actual': value})
+        
+        # 长度检查（字符串/列表）
+        if isinstance(value, (str, list, tuple)):
+            min_len = rule.get('min_length')
+            max_len = rule.get('max_length')
+            if min_len is not None and len(value) < min_len:
+                errors.append({'field': field, 'rule': 'min_length', 'message': f'"{field}" 最少 {min_len} 个字符'})
+            if max_len is not None and len(value) > max_len:
+                errors.append({'field': field, 'rule': 'max_length', 'message': f'"{field}" 最多 {max_len} 个字符'})
+        
+        # 正则检查
+        pattern = rule.get('pattern')
+        if pattern and isinstance(value, str) and not re.match(pattern, value):
+            errors.append({'field': field, 'rule': 'pattern', 'message': f'"{field}" 格式不正确'})
+        
+        # 枚举检查
+        enum_vals = rule.get('enum')
+        if enum_vals and isinstance(enum_vals, (list, tuple)) and value not in enum_vals:
+            errors.append({'field': field, 'rule': 'enum', 'message': f'"{field}" 必须是 {enum_vals} 之一'})
+    
+    return {
+        'valid': len(errors) == 0,
+        'errors': errors,
+        'error_count': len(errors),
+        'passed': len(rules) - len(errors),
+        'total': len(rules)
+    }
+
+
+# 使用示例
+# result = validate(
+#     {'name': 'Alice', 'age': 25, 'email': 'alice@example.com'},
+#     {
+#         'name': {'required': True, 'type': 'string', 'min_length': 2, 'max_length': 50},
+#         'age': {'required': True, 'type': 'number', 'min': 0, 'max': 150},
+#         'email': {'required': True, 'pattern': r'^[^@]+@[^@]+\\.[^@]+$'}
+#     }
+# )
+# print(result)
 `;
   }
 };
@@ -713,8 +1278,8 @@ class CodeWriter {
    * 根据需求描述生成代码
    * @param {string} description - 自然语言描述
    * @param {Object} [options]
-   * @param {string} [options.language='javascript']
-   * @param {boolean} [options.includeTests=false]
+   * @param {string} [options.language='javascript'] - 生成语言 ('javascript' | 'python')
+   * @param {boolean} [options.includeTests=false] - 是否包含测试代码
    * @returns {Object} { code, intent, confidence, testCode?, language }
    */
   write(description, options = {}) {
@@ -732,12 +1297,50 @@ class CodeWriter {
       };
     }
 
-    // 生成代码
-    const template = CODE_TEMPLATES[analysis.primaryIntent];
+    // 选择语言模板
+    const templateMap = language === 'python' ? PYTHON_TEMPLATES : CODE_TEMPLATES;
+    const template = templateMap[analysis.primaryIntent];
+
     if (!template) {
+      // Fallback: 如果该语言没有该意图的模板，尝试另一个语言
+      const fallbackMap = language === 'python' ? CODE_TEMPLATES : PYTHON_TEMPLATES;
+      const fallbackTemplate = fallbackMap[analysis.primaryIntent];
+      if (fallbackTemplate) {
+        // 仍返回 fallback，但标记
+        let code = fallbackTemplate(analysis.params);
+        this.generatedCount++;
+
+        let testCode = null;
+        if (includeTests) {
+          testCode = this._generateTest(analysis.primaryIntent, analysis.params, language);
+        }
+
+        this._generationLog.push({
+          description: description.substring(0, 100),
+          intent: analysis.primaryIntent,
+          confidence: analysis.confidence,
+          codeLength: code.length,
+          language,
+          timestamp: Date.now()
+        });
+
+        return {
+          code,
+          intent: analysis.primaryIntent,
+          confidence: analysis.confidence,
+          language,
+          params: analysis.params,
+          ambiguity: analysis.ambiguity,
+          allIntents: analysis.allIntents,
+          testCode,
+          generatedAt: Date.now(),
+          _fallback: true
+        };
+      }
+
       return {
         code: null,
-        error: `不支持意图类型: ${analysis.primaryIntent}`,
+        error: `不支持意图类型: ${analysis.primaryIntent}（语言: ${language}）`,
         intent: analysis.primaryIntent,
         confidence: analysis.confidence,
         language
@@ -750,7 +1353,7 @@ class CodeWriter {
     // 生成测试代码
     let testCode = null;
     if (includeTests) {
-      testCode = this._generateTest(analysis.primaryIntent, analysis.params);
+      testCode = this._generateTest(analysis.primaryIntent, analysis.params, language);
     }
 
     this._generationLog.push({
@@ -758,6 +1361,7 @@ class CodeWriter {
       intent: analysis.primaryIntent,
       confidence: analysis.confidence,
       codeLength: code.length,
+      language,
       timestamp: Date.now()
     });
 
@@ -820,50 +1424,133 @@ class CodeWriter {
       { pattern: /eval\s*\(/g, msg: '使用了 eval，存在安全风险' },
       { pattern: /child_process\.exec[^S]/g, msg: '使用了 exec 命令执行' },
       { pattern: /require\s*\(\s*['"][^'"]*['"]\s*\)/g, msg: '包含 require 依赖，需确认环境可用' },
+      { pattern: /Function\s*\(/g, msg: '使用了 Function 构造函数，存在安全风险' },
+      { pattern: /new\s+Function\s*\(/g, msg: '使用了 new Function，存在安全风险' },
+      { pattern: /process\.env/g, msg: '引用了环境变量，注意敏感信息泄露' },
+      { pattern: /fs\.\w+Sync/g, msg: '使用了同步文件操作，可能阻塞事件循环' },
+      { pattern: /child_process/g, msg: '包含子进程操作，需注意安全性' },
     ];
     for (const dp of dangerPatterns) {
+      dp.pattern.lastIndex = 0;
       if (dp.pattern.test(code)) {
         issues.push({ type: 'security', message: dp.msg, severity: 'warn' });
       }
     }
 
+    // 代码长度检查
+    if (code.length > this.maxCodeLength) {
+      issues.push({
+        type: 'size',
+        message: `代码长度 ${code.length} 超过最大限制 ${this.maxCodeLength}`,
+        severity: 'warn'
+      });
+    }
+
+    if (code.length < 30) {
+      issues.push({
+        type: 'size',
+        message: `代码过短（${code.length} 字符），可能不完整`,
+        severity: 'info'
+      });
+    }
+
     // 完整性检查
-    if (!code.includes('function') && !code.includes('class') && !code.includes('async')) {
+    if (!code.includes('function') && !code.includes('class') && !code.includes('async')
+        && !code.includes('def ') && !code.includes('class ')) {
       issues.push({ type: 'structure', message: '代码中未检测到函数/类定义', severity: 'info' });
     }
 
-    if (!code.includes('使用示例') && !code.includes('//')) {
+    // 注释完整性检查
+    const lines = code.split('\n');
+    const commentLines = lines.filter(l => l.trim().startsWith('//') || l.trim().startsWith('#')
+      || l.trim().startsWith('/*') || l.trim().startsWith('*') || l.trim().startsWith('"""'));
+    const commentRatio = lines.length > 0 ? commentLines.length / lines.length : 0;
+
+    if (commentRatio < 0.05 && lines.length > 10) {
+      issues.push({
+        type: 'documentation',
+        message: `注释覆盖率偏低（${(commentRatio * 100).toFixed(1)}%），建议增加注释`,
+        severity: 'info'
+      });
+    }
+
+    if (!code.includes('使用示例') && !code.includes('//') && !code.includes('#')) {
       issues.push({ type: 'documentation', message: '缺少使用示例', severity: 'info' });
+    }
+
+    // 检查是否有未闭合的括号/引号
+    const openBraces = (code.match(/\{/g) || []).length;
+    const closeBraces = (code.match(/\}/g) || []).length;
+    if (openBraces !== closeBraces) {
+      issues.push({
+        type: 'syntax',
+        message: `花括号不匹配: 打开 ${openBraces} 个，关闭 ${closeBraces} 个`,
+        severity: 'warn'
+      });
+    }
+
+    const openParens = (code.match(/\(/g) || []).length;
+    const closeParens = (code.match(/\)/g) || []).length;
+    if (openParens !== closeParens) {
+      issues.push({
+        type: 'syntax',
+        message: `括号不匹配: 打开 ${openParens} 个，关闭 ${closeParens} 个`,
+        severity: 'warn'
+      });
     }
 
     return {
       valid: issues.filter(i => i.severity === 'error').length === 0,
       issues,
       issueCount: issues.length,
-      warnings: issues.filter(i => i.severity === 'warn').length
+      warnings: issues.filter(i => i.severity === 'warn').length,
+      commentRatio: +(commentRatio * 100).toFixed(1)
     };
   }
 
   /**
-   * 获取生成统计
+   * 格式化代码
+   * @param {string} code - 原始代码
+   * @returns {string} 格式化后的代码
    */
-  getStats() {
-    const intents = {};
-    for (const log of this._generationLog) {
-      intents[log.intent] = (intents[log.intent] || 0) + 1;
-    }
-    return {
-      totalGenerated: this.generatedCount,
-      logCount: this._generationLog.length,
-      intentDistribution: intents,
-      recentGenerations: this._generationLog.slice(-10).reverse()
-    };
+  formatCode(code) {
+    if (!code) return '';
+
+    let formatted = code;
+
+    // 1. 缩进标准化：将混合缩进统一为 2 空格
+    // 将 tab 替换为 2 空格
+    formatted = formatted.replace(/\t/g, '  ');
+    // 将超过 4 的缩进（4空格→2空格，8空格→4空格等）
+    formatted = formatted.replace(/^(  )+/gm, (match) => {
+      return '  '.repeat(Math.ceil(match.length / 2));
+    });
+
+    // 2. 尾随空格清理
+    formatted = formatted.replace(/[ \t]+$/gm, '');
+
+    // 3. 空行规范化
+    // 将连续 3 个及以上的空行减少为 2 个
+    formatted = formatted.replace(/\n{4,}/g, '\n\n\n');
+    // 文件开头和结尾的空行
+    formatted = formatted.replace(/^\n+/, '');
+    formatted = formatted.replace(/\n+$/, '\n');
+
+    // 4. 在特定符号前后添加/移除空格（基本的美化）
+    // 逗号后加空格（如果缺失）
+    formatted = formatted.replace(/,(?!\s)/g, ', ');
+
+    return formatted;
   }
 
   /**
    * 生成测试代码
+   * @param {string} intent - 意图
+   * @param {Object} params - 参数
+   * @param {string} language - 语言
+   * @returns {string} 测试代码
    */
-  _generateTest(intent, params) {
+  _generateTest(intent, params, language = 'javascript') {
     const nameMap = {
       [INTENT.SORT]: 'sortData',
       [INTENT.FILTER]: 'filterData',
@@ -873,24 +1560,272 @@ class CodeWriter {
       [INTENT.VALIDATE]: 'validate',
       [INTENT.FILE]: 'FileManager',
       [INTENT.PIPELINE]: 'DataPipeline',
+      [INTENT.PLOT]: 'plotBar',
+      [INTENT.ENCODE]: 'base64Encode',
+      [INTENT.BATCH]: 'batchProcess',
       [INTENT.UTILITY]: 'deepClone'
     };
 
     const funcName = nameMap[intent] || 'main';
 
-    return `// === 测试: ${params.description?.substring(0, 50) || funcName} ===
-function test${funcName}() {
-  try {
-    // 基本功能测试
-    console.log('测试 ${funcName}...');
-    console.log('✅ 测试通过');
-  } catch (err) {
-    console.error('❌ 测试失败:', err.message);
+    if (language === 'python') {
+      return this._generatePythonTest(intent, params, funcName);
+    }
+
+    return this._generateJSTest(intent, params, funcName);
   }
+
+  /**
+   * 生成 JavaScript 测试代码
+   */
+  _generateJSTest(intent, params, funcName) {
+    const testCases = this._getTestCases(intent, funcName);
+
+    let testCode = `// === 测试: ${params.description?.substring(0, 50) || funcName} ===
+function test${funcName}() {
+  console.log('测试 ${funcName}...');
+  let passed = 0;
+  let failed = 0;
+`;
+
+    for (const tc of testCases) {
+      testCode += `
+  // ${tc.name}
+  try {
+    ${tc.setup || ''}
+    const result = ${tc.call};
+    ${tc.assert}
+    console.log('  ✅ ${tc.name}');
+    passed++;
+  } catch (err) {
+    console.error('  ❌ ${tc.name}:', err.message);
+    failed++;
+  }
+`;
+    }
+
+    testCode += `
+  console.log(\`测试完成: \${passed} 通过, \${failed} 失败\`);
+  return { passed, failed };
 }
 
+// 运行测试
 // test${funcName}();
 `;
+    return testCode;
+  }
+
+  /**
+   * 生成 Python 测试代码
+   */
+  _generatePythonTest(intent, params, funcName) {
+    const testCases = this._getTestCases(intent, funcName);
+
+    let testCode = `# === 测试: ${params.description?.substring(0, 50) || funcName} ===
+
+def test_${funcName}():
+    """测试 ${funcName}"""
+    print(f'测试 ${funcName}...')
+    passed = 0
+    failed = 0
+`;
+
+    for (const tc of testCases) {
+      testCode += `
+    # ${tc.name}
+    try:
+${tc.setup ? '        ' + tc.setup.replace(/\n/g, '\n        ') : ''}
+        result = ${tc.call}
+        ${tc.assert.replace(/\n/g, '\n        ')}
+        print('  ✅ ${tc.name}')
+        passed += 1
+    except Exception as e:
+        print(f'  ❌ ${tc.name}: {e}')
+        failed += 1
+`;
+    }
+
+    testCode += `
+    print(f'测试完成: {passed} 通过, {failed} 失败')
+    return {'passed': passed, 'failed': failed}
+
+# 运行测试
+# test_${funcName}()
+`;
+    return testCode;
+  }
+
+  /**
+   * 获取测试用例（意图相关的测试数据和断言）
+   */
+  _getTestCases(intent, funcName) {
+    const cases = {
+      [INTENT.SORT]: [
+        {
+          name: '基本排序 - 数字数组升序',
+          setup: 'const input = [3, 1, 4, 1, 5, 9];',
+          call: 'sortData(input)',
+          assert: 'if (!Array.isArray(result)) throw new Error(\"结果不是数组\");\n    if (result[0] !== 1 || result[result.length-1] !== 9) throw new Error(\"排序结果不正确\");\n    if (result.length !== 6) throw new Error(\"数组长度变化\");'
+        },
+        {
+          name: '空数组处理',
+          setup: 'const input = [];',
+          call: 'sortData(input)',
+          assert: 'if (!Array.isArray(result)) throw new Error(\"空数组应返回空数组\");\n    if (result.length !== 0) throw new Error(\"空数组结果长度不为0\");'
+        },
+        {
+          name: '降序排序',
+          setup: 'const input = [3, 1, 4];',
+          call: 'sortData(input, false)',
+          assert: 'if (result[0] !== 4) throw new Error(\"降序排序失败\");'
+        }
+      ],
+      [INTENT.FILTER]: [
+        {
+          name: '基本过滤 - 大于2',
+          setup: 'const input = [1, 2, 3, 4, 5];',
+          call: 'filterData(input, n => n > 2)',
+          assert: 'if (!Array.isArray(result)) throw new Error(\"结果不是数组\");\n    if (result.length !== 3) throw new Error(\"过滤结果长度错误\");\n    if (!result.every(n => n > 2)) throw new Error(\"过滤条件不满足\");'
+        },
+        {
+          name: '空数组',
+          setup: 'const input = [];',
+          call: 'filterData(input, n => n > 0)',
+          assert: 'if (!Array.isArray(result)) throw new Error(\"空数组应返回数组\");\n    if (result.length !== 0) throw new Error(\"空数组结果不为空\");'
+        }
+      ],
+      [INTENT.ANALYZE]: [
+        {
+          name: '基本统计分析',
+          setup: 'const input = [1, 2, 3, 4, 5];',
+          call: 'analyzeData(input)',
+          assert: 'if (result.count !== 5) throw new Error(\"count 错误\");\n    if (result.sum !== 15) throw new Error(\"sum 错误\");\n    if (result.avg !== 3) throw new Error(\"avg 错误\");\n    if (result.min !== 1) throw new Error(\"min 错误\");\n    if (result.max !== 5) throw new Error(\"max 错误\");'
+        },
+        {
+          name: '空数组',
+          setup: 'const input = [];',
+          call: 'analyzeData(input)',
+          assert: 'if (result.count !== 0) throw new Error(\"空数组 count 应为 0\");'
+        }
+      ],
+      [INTENT.FETCH]: [
+        {
+          name: '请求结构完整性',
+          setup: '',
+          call: 'typeof fetchData',
+          assert: 'if (result !== \"function\") throw new Error(\"fetchData 应为一个函数\");'
+        }
+      ],
+      [INTENT.CACHE]: [
+        {
+          name: '缓存基本功能',
+          setup: 'const cache = new DataCache({ maxSize: 10, ttl: 60000 });',
+          call: 'cache.set(\"key1\", \"value1\")',
+          assert: 'if (result !== true) throw new Error(\"set 应返回 true\");\n    const val = cache.get(\"key1\");\n    if (val !== \"value1\") throw new Error(\"get 返回值不匹配\");'
+        },
+        {
+          name: '缓存未命中',
+          setup: 'const cache = new DataCache({ maxSize: 10, ttl: 60000 });',
+          call: 'cache.get(\"nonexistent\")',
+          assert: 'if (result !== undefined) throw new Error(\"不存在的键应返回 undefined\");'
+        }
+      ],
+      [INTENT.VALIDATE]: [
+        {
+          name: '有效数据验证',
+          setup: 'const input = { name: \"Alice\", age: 25 };\n    const rules = { name: { required: true, type: \"string\" }, age: { required: true, type: \"number\", min: 0 } };',
+          call: 'validate(input, rules)',
+          assert: 'if (result.valid !== true) throw new Error(\"有效数据应验证通过\");\n    if (result.errorCount !== 0) throw new Error(\"错误计数应为 0\");'
+        },
+        {
+          name: '无效数据验证',
+          setup: 'const input = { name: \"\" };\n    const rules = { name: { required: true, minLength: 2 } };',
+          call: 'validate(input, rules)',
+          assert: 'if (result.valid !== false) throw new Error(\"无效数据应验证失败\");'
+        }
+      ],
+      [INTENT.FILE]: [
+        {
+          name: 'FileManager 实例化',
+          setup: '',
+          call: 'typeof FileManager',
+          assert: 'if (result !== \"function\") throw new Error(\"FileManager 应为一个类\");'
+        }
+      ],
+      [INTENT.PIPELINE]: [
+        {
+          name: '管道基本功能',
+          setup: 'const input = [1, 2, 3, 4, 5];\n    const pipeline = new DataPipeline(input);',
+          call: 'pipeline.filter(n => n > 2).map(n => n * 2).run()',
+          assert: 'if (!Array.isArray(result.data)) throw new Error(\"管道结果应为数组\");\n    if (result.data.length !== 3) throw new Error(\"管道过滤长度错误\");'
+        }
+      ],
+      [INTENT.PLOT]: [
+        {
+          name: 'plotBar 参数验证',
+          setup: '',
+          call: 'typeof plotBar',
+          assert: 'if (result !== \"function\") throw new Error(\"plotBar 应为一个函数\");'
+        },
+        {
+          name: 'plotLine 参数验证',
+          setup: '',
+          call: 'typeof plotLine',
+          assert: 'if (result !== \"function\") throw new Error(\"plotLine 应为一个函数\");'
+        }
+      ],
+      [INTENT.ENCODE]: [
+        {
+          name: 'Base64 编码',
+          setup: '',
+          call: 'base64Encode(\"Hello\")',
+          assert: 'if (typeof result !== \"string\" || result.length === 0) throw new Error(\"编码结果应为非空字符串\");'
+        },
+        {
+          name: 'Base64 解码',
+          setup: 'const encoded = base64Encode(\"Hello\");',
+          call: 'base64Decode(encoded)',
+          assert: 'if (result !== \"Hello\") throw new Error(\"解码结果不匹配\");'
+        }
+      ],
+      [INTENT.BATCH]: [
+        {
+          name: 'batchProcess 函数存在性',
+          setup: '',
+          call: 'typeof batchProcess',
+          assert: 'if (result !== \"function\") throw new Error(\"batchProcess 应为一个函数\");'
+        },
+        {
+          name: 'chunkProcess 函数存在性',
+          setup: '',
+          call: 'typeof chunkProcess',
+          assert: 'if (result !== \"function\") throw new Error(\"chunkProcess 应为一个函数\");'
+        }
+      ],
+      [INTENT.UTILITY]: [
+        {
+          name: 'deepClone 基本功能',
+          setup: 'const obj = { a: 1, b: { c: 2 } };',
+          call: 'deepClone(obj)',
+          assert: 'if (result.a !== 1) throw new Error(\"克隆值不匹配\");\n    if (result.b.c !== 2) throw new Error(\"嵌套克隆不匹配\");\n    if (result === obj) throw new Error(\"应返回新对象\");'
+        },
+        {
+          name: 'chunk 函数',
+          setup: '',
+          call: 'chunk([1,2,3,4,5], 2)',
+          assert: 'if (result.length !== 3) throw new Error(\"chunk 结果长度错误\");\n    if (result[0].length !== 2) throw new Error(\"chunk 第一块长度错误\");'
+        }
+      ]
+    };
+
+    return cases[intent] || [
+      {
+        name: '基本功能测试',
+        setup: '',
+        call: `${funcName}()`,
+        assert: 'console.log(\`测试 ${funcName} 基本功能\`);'
+      }
+    ];
   }
 
   /**
@@ -900,7 +1835,8 @@ function test${funcName}() {
     return Object.values(INTENT).map(intent => ({
       intent,
       keywords: INTENT_RULES.find(r => r.intent === intent)?.keywords || [],
-      hasTemplate: !!CODE_TEMPLATES[intent]
+      hasTemplate: !!CODE_TEMPLATES[intent],
+      hasPythonTemplate: !!PYTHON_TEMPLATES[intent]
     }));
   }
 }

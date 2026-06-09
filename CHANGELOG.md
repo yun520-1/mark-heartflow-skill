@@ -1,3 +1,11 @@
+## [v2.8.18] - 2026-06-09
+### Added
+- code-executor.js v1.0.0: 代码沙箱执行引擎（JavaScript/Shell/Python 三语言执行）
+- code-planner.js v1.0.0: 代码任务规划引擎（需求分解→依赖图→执行路径）
+- code-writer.js v1.1.0: 升级测试生成+Python模板+意图扩展
+- self-initiator.js v2.2.0: 对接 CodeExecutor/CodePlanner，新增 generatePlan/runTests 接口
+- 新注册到 heartflow.js 的 10 个代码相关接口
+
 ## [v2.8.17] - 2026-06-09
 ### Added
 - code-writer.js v1.0.0: 代码编写引擎（意图分析+模板生成+代码审查）
