@@ -438,6 +438,7 @@ class HeartFlow {
       codeKnowledge:   { lazy: true, path: './code/code-knowledge.js', Ctor: 'CodeKnowledge',  args: { rootPath: null } },
       // codeEngine — 代码分析审查引擎（新增 v2.1.0）
       codeEngine:      { lazy: true, path: './code/code-engine.js',    Ctor: 'CodeEngine',     args: {} },
+      codeWriter:      { lazy: true, path: './code/code-writer.js',   Ctor: 'CodeWriter',     args: {} },
     };
 
     // ─── Search modules — BM25Engine/HybridSearchEngine 已禁用（无 BM25Engine/HybridSearchEngine 类）
@@ -820,6 +821,8 @@ class HeartFlow {
     // codeEngine.* — 代码分析审查引擎
     'codeEngine.analyzeCode', 'codeEngine.reviewCode', 'codeEngine.auditCodebase',
     'codeEngine.suggestFix', 'codeEngine.compareVersions',
+    // codeWriter.* — 代码编写引擎
+    'codeWriter.write', 'codeWriter.writePipeline', 'codeWriter.analyzeIntent', 'codeWriter.reviewCode', 'codeWriter.getStats',
   ]);
 
   /**
