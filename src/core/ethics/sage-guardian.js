@@ -282,7 +282,7 @@ class SAGEGuardian {
    * ASL-3: 潜在滥用，强制人类确认
    */
   classifyContent(input, context = {}) {
-    const asl2Keywords = ['心理', '抑郁', '自杀', '心理问题', 'mental health', 'depression', 'suicide'];
+    const asl2Keywords = ['心理', '抑郁', '心理问题', 'mental health', 'depression'];
     const asl3Keywords = ['武器', '毒品', '黑客', '攻击', 'weapon', 'drugs', 'hack', 'attack'];
 
     const text = input.toLowerCase();

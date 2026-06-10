@@ -177,159 +177,6 @@ function detectPADFromText(text) {
 }
 
 // ========================================
-// 危机评估系统
-// ========================================
-
-const CRISIS_LEVELS = {
-  CRITICAL: 'critical',
-  HIGH: 'high',
-  MEDIUM: 'medium',
-  LOW: 'low'
-};
-
-const CRISIS_KEYWORDS = {
-  critical: [
-    '自杀', '自残', '不想活', '活着没意思', '死了一了百了',
-    '我想死', '想死', '去死', '结束生命', '结束自己', '不想活了',
-    '准备跳楼', '跳楼', '上吊', '割腕', '吞药', '买了刀', '遗书',
-    '今晚结束', '今天结束', '告别这个世界',
-    'kill myself', 'end my life', 'suicide', 'self-harm',
-    'want to die', 'i want to die', 'overdose', 'cut myself',
-    'jump off', 'hang myself', 'suicide note'
-  ],
-  high: [
-    '绝望', '崩溃', '活不下去', '太痛苦了', '彻底完了',
-    '撑不住了', '没有退路', '没人会在乎', '没有人会在乎',
-    'hopeless', 'devastated', 'can\'t go on', 'give up',
-    'no reason to live', 'cannot go on'
-  ],
-  medium: [
-    '抑郁', '很低落', '好累', '没意义', '很丧',
-    'depressed', 'miserable', 'worthless', 'empty'
-  ],
-  low: [
-    '难过', '不开心', '心情不好', '烦', '累',
-    'sad', 'unhappy', 'down', 'tired', 'frustrated'
-  ]
-};
-
-/**
- * 评估危机等级
- * @param {string} text - 用户输入
- * @param {number} consecutiveCount - 连续消极情绪次数
- * @returns {object} 危机评估结果
- */
-function assessCrisisLevel(text, consecutiveCount = 1) {
-  const lower = text.toLowerCase();
-  // [修复] ReDoS防护 - 先检查长度再测试正则，降低上限
-  const MAX_CRISIS_TEXT_LENGTH = 200;
-  if (lower.length > MAX_CRISIS_TEXT_LENGTH) {
-    // 长文本只做基础检测，不使用复杂正则
-    const hasKeyword = /(死|自杀|自残|die|suicide)/i.test(lower);
-    return hasKeyword ? { level: CRISIS_LEVELS.HIGH, score: 0.7 } : { level: CRISIS_LEVELS.LOW, score: 0.1 };
-  }
-  const criticalPattern = /(我|i)?\s*(想|准备|打算|要|will|want to|going to).{0,12}(死|自杀|自残|跳楼|割腕|吞药|结束生命|die|suicide|kill myself|end my life|overdose|jump off|cut myself)/i;
-  const meansPattern = /(刀|绳子|药|楼顶|遗书|blade|rope|pills|gun|roof|bridge).{0,16}(今晚|今天|现在|马上|结束|用|tonight|today|now|soon|end)/i;
-
-  if (criticalPattern.test(lower) || meansPattern.test(lower)) {
-    return {
-      level: CRISIS_LEVELS.CRITICAL,
-      score: 1.0,
-      keywords: ['crisis_pattern'],
-      requiresImmediateIntervention: true,
-      message: '检测到可能的自我伤害或自杀风险。请立即联系当地紧急服务或身边可信赖的人；如果在中国大陆，可拨打 110/120 或当地心理危机热线。',
-      hotlines: [
-        { name: '紧急服务', phone: '110 / 120', hours: '24小时' },
-        { name: '全国心理援助热线', phone: '400-161-9995', hours: '24小时' },
-        { name: '北京心理危机干预中心', phone: '010-82951332', hours: '24小时' }
-      ]
-    };
-  }
-  
-  // 检查Critical级别关键词
-  for (const kw of CRISIS_KEYWORDS.critical) {
-    if (lower.includes(kw)) {
-      return {
-        level: CRISIS_LEVELS.CRITICAL,
-        score: 1.0,
-        keywords: [kw],
-        requiresImmediateIntervention: true,
-        message: '检测到可能的自我伤害或自杀风险。请立即联系当地紧急服务或身边可信赖的人；如果在中国大陆，可拨打 110/120 或当地心理危机热线。',
-        hotlines: [
-          { name: '紧急服务', phone: '110 / 120', hours: '24小时' },
-          { name: '全国心理援助热线', phone: '400-161-9995', hours: '24小时' },
-          { name: '北京心理危机干预中心', phone: '010-82951332', hours: '24小时' }
-        ]
-      };
-    }
-  }
-  
-  // 检查High级别关键词
-  for (const kw of CRISIS_KEYWORDS.high) {
-    if (lower.includes(kw)) {
-      return {
-        level: CRISIS_LEVELS.HIGH,
-        score: 0.75,
-        keywords: [kw],
-        requiresImmediateIntervention: true,
-        message: '检测到强烈危机信号。请优先联系可信赖的人或专业支持，不要独自承受。',
-        hotlines: [
-          { name: '全国心理援助热线', phone: '400-161-9995', hours: '24小时' }
-        ]
-      };
-    }
-  }
-  
-  // 检查Medium级别关键词
-  for (const kw of CRISIS_KEYWORDS.medium) {
-    if (lower.includes(kw)) {
-      return {
-        level: CRISIS_LEVELS.MEDIUM,
-        score: 0.5,
-        keywords: [kw],
-        requiresImmediateIntervention: false,
-        message: '持续情绪低落可以考虑心理咨询',
-        hotlines: []
-      };
-    }
-  }
-  
-  // 检查Low级别关键词 + 连续次数
-  for (const kw of CRISIS_KEYWORDS.low) {
-    if (lower.includes(kw)) {
-      if (consecutiveCount >= 3) {
-        return {
-          level: CRISIS_LEVELS.MEDIUM,
-          score: 0.4,
-          keywords: [kw],
-          requiresImmediateIntervention: false,
-          message: '连续消极情绪表达，建议关注心理健康',
-          hotlines: []
-        };
-      }
-      return {
-        level: CRISIS_LEVELS.LOW,
-        score: 0.2,
-        keywords: [kw],
-        requiresImmediateIntervention: false,
-        message: '暂时的情绪波动',
-        hotlines: []
-      };
-    }
-  }
-  
-  // 无消极信号
-  return {
-    level: null,
-    score: 0,
-    keywords: [],
-    requiresImmediateIntervention: false,
-    message: null,
-    hotlines: []
-  };
-}
-
-// ========================================
 // 防御机制检测
 // ========================================
 
@@ -787,11 +634,7 @@ function analyzePsychology(input, context = {}) {
   // 3. Maslow需求检测
   const needs = detectMaslowNeeds(text);
   
-  // 4. 危机评估
-  _consecutiveNegativeCount = padResult.pleasure < 0 ? _consecutiveNegativeCount + 1 : 0;
-  const crisis = assessCrisisLevel(text, _consecutiveNegativeCount);
-  
-  // 5. 意图推断
+  // 4. 意图推断
   const intent = inferIntent(text);
   
   // 6. 情绪强度
@@ -818,15 +661,6 @@ function analyzePsychology(input, context = {}) {
       intensity: padResult.intensity,
       emotion: padResult.emotion,
       emotionZh: padResult.emotionZh
-    },
-    
-    // 危机评估
-    crisis: {
-      level: crisis.level,
-      score: crisis.score,
-      requiresIntervention: crisis.requiresImmediateIntervention,
-      message: crisis.message,
-      hotlines: crisis.hotlines
     },
     
     // 防御机制
@@ -856,10 +690,10 @@ function analyzePsychology(input, context = {}) {
     dinkFears: dinkFears,
 
     // 综合摘要
-    summary: generatePsychologySummary(padResult, crisis, defenses, needs, intent),
+    summary: generatePsychologySummary(padResult, defenses, needs, intent),
 
     // 建议
-    recommendations: generateRecommendations(padResult, crisis, defenses, needs)
+    recommendations: generateRecommendations(padResult, defenses, needs)
   };
 }
 
@@ -988,14 +822,10 @@ function classifyEmotionIntensity(text) {
 /**
  * 生成心理分析摘要
  */
-function generatePsychologySummary(pad, crisis, defenses, needs, intent) {
+function generatePsychologySummary(pad, defenses, needs, intent) {
   const parts = [];
   
   parts.push(`情绪:${pad.emotionZh || '中性'}(P=${pad.pleasure},A=${pad.arousal},D=${pad.dominance})`);
-  
-  if (crisis.level) {
-    parts.push(`危机:${crisis.level}`);
-  }
   
   if (defenses.length > 0) {
     parts.push(`防御:${defenses[0].zh}`);
@@ -1013,18 +843,8 @@ function generatePsychologySummary(pad, crisis, defenses, needs, intent) {
 /**
  * 生成心理建议
  */
-function generateRecommendations(pad, crisis, defenses, needs) {
+function generateRecommendations(pad, defenses, needs) {
   const recommendations = [];
-  
-  // 危机干预建议
-  if (crisis.requiresIntervention) {
-    recommendations.push({
-      priority: 'critical',
-      type: 'crisis_intervention',
-      message: crisis.message,
-      action: 'provide_crisis_resources'
-    });
-  }
   
   // 情绪调节建议
   if (pad.pleasure < -3) {
@@ -1511,54 +1331,9 @@ function analyzePsychologyWithSunyata(input, context = {}) {
   };
 }
 
-
-
-/**
- * 独立危机检查函数 - 可被 dispatch 调用
- * 
- * 此函数是对已归档 EthicsSafety.js 的替代实现，危机评估现已在此真正生效。
- * 基于 assessCrisisLevel 提供完整的危机评估，包括 critical/high/medium/low 四级。
- * 
- * @param {string} text - 用户输入文本
- * @param {number} consecutiveCount - 连续消极情绪次数（可选，默认0）
- * @returns {object} 危机评估结果，包含 level/score/requiresImmediateIntervention/message/hotlines
- */
-function checkCrisis(text, consecutiveCount = 0) {
-  if (typeof text !== 'string' || text.length === 0) {
-    return {
-      level: null,
-      score: 0,
-      requiresIntervention: false,
-      message: null,
-      hotlines: []
-    };
-  }
-  
-  // 调用完整的危机评估
-  const crisisResult = assessCrisisLevel(text, consecutiveCount);
-  
-  // [关键修复] 确保返回格式统一，包含完整的干预信息
-  return {
-    level: crisisResult.level,
-    score: crisisResult.score,
-    requiresImmediateIntervention: crisisResult.requiresImmediateIntervention || false,
-    message: crisisResult.message || null,
-    hotlines: crisisResult.hotlines || [],
-    // 添加时间戳和原始关键词
-    timestamp: new Date().toISOString(),
-    keywords: crisisResult.keywords || [],
-    // 标记是否需要人类干预
-    requiresHumanIntervention: crisisResult.level === 'critical' || crisisResult.level === 'high'
-  };
-}
-
-/**
- * 重置危机计数器（用于长时间会话）
- */
-function resetCrisisCounter() {
-  _consecutiveNegativeCount = 0;
-  return { success: true, message: 'Crisis counter reset' };
-}
+// ========================================
+// 心虫哲学 × 心理学整合 v1.1.0
+// ========================================
 
 module.exports = {
   // PAD模型
@@ -1566,11 +1341,6 @@ module.exports = {
   calculatePADState,
   getEmotionFromPAD,
   detectPADFromText,
-  
-  // 危机评估
-  CRISIS_LEVELS,
-  assessCrisisLevel,
-  checkCrisis,
   
   // 防御机制
   DEFENSE_MECHANISMS,
@@ -1582,7 +1352,6 @@ module.exports = {
   
   // 整合分析
   analyzePsychology,
-  resetCrisisCounter,
 
   // 新增：自他分辨 / 三代创伤 / 抑郁公式 / 丁克恐惧（2026-05-21）
   detectSelfOtherDifferentiation,

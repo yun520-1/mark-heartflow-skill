@@ -147,7 +147,9 @@ function cmdExport(hfm) {
   const all = hfm.getAllMemory();
   const lines = [];
 
-  lines.push(`# HeartFlow 记忆导出 (${new Date().toLocaleString('zh-CN')})`);
+  lines.push('# HeartFlow 记忆导出');
+  lines.push('⚠️ 安全警告：此导出包含 CORE 层永久身份数据，不要随意分享');
+  lines.push(`导出时间: ${new Date().toLocaleString('zh-CN')}`);
   lines.push(`总计: CORE ${all.stats.core} / LEARNED ${all.stats.learned} / EPHEMERAL ${all.stats.ephemeral}`);
   lines.push('');
 

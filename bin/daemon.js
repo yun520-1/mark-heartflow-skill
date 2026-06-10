@@ -9,6 +9,10 @@
  *   - 返回 {status, psychology, judgment, inject}
  *   - 超时30秒无请求自动退出
  *
+ * 安全说明：
+ *   - socket 权限 700（仅当前用户）
+ *   - shutdown 需传递 SHUTDOWN_TOKEN 环境变量
+ *
  * 用法:
  *   node daemon.js             # 前台运行
  *   node daemon.js &           # 后台运行
@@ -117,10 +121,16 @@ function handleRequest(reqJson) {
             response.version = getVersion();
             response.engineLoaded = engineLoaded;
         } else if (req.cmd === 'shutdown') {
-            response.status = 'ok';
-            response.message = 'shutting_down';
-            // 安排关闭
-            setTimeout(() => process.exit(0), 100);
+            // 安全：需传递 SHUTDOWN_TOKEN 环境变量
+            const expectedToken = process.env.SHUTDOWN_TOKEN;
+            if (expectedToken && req.token !== expectedToken) {
+                response.status = 'error';
+                response.error = 'unauthorized: invalid shutdown token';
+            } else {
+                response.status = 'ok';
+                response.message = 'shutting_down';
+                setTimeout(() => process.exit(0), 100);
+            }
         } else {
             response.error = `unknown command: ${req.cmd}`;
         }
@@ -185,9 +195,9 @@ function startDaemon() {
     });
 
     server.listen(SOCKET_PATH, () => {
-        // 设置 socket 文件权限为 666，允许所有用户访问
+        // 设置 socket 文件权限为 700，仅当前用户可访问
         try {
-            fs.chmodSync(SOCKET_PATH, 0o666);
+            fs.chmodSync(SOCKET_PATH, 0o700);
         } catch(e) {}
         console.error(`[HeartFlow Daemon] 已启动，监听: ${SOCKET_PATH}`);
         console.error(`[HeartFlow Daemon] 版本: ${getVersion()}`);

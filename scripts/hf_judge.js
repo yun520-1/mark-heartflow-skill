@@ -1,5 +1,6 @@
 const path = require('path');
-const rootPath = path.join(require('os').homedir(), '.hermes/skills/ai/mark-heartflow-skill');
+// Use __dirname-based relative path instead of hardcoded absolute path
+const rootPath = path.resolve(__dirname, '..');
 
 try {
     const { HeartLogic } = require(path.join(rootPath, 'src/core/heart-logic.js'));

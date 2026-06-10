@@ -363,18 +363,36 @@ class TrialityMemory {
   }
 
   exportToFile(filePath) {
+    // [A01] 安全修复: 路径验证 — 仅允许导出到项目 data 目录
+    const allowedDir = path.join(path.dirname(this.dbPath || __dirname), '..', '..', '..', 'data');
+    const resolvedPath = path.resolve(filePath);
+    if (!resolvedPath.startsWith(path.resolve(allowedDir))) {
+      console.error(`[TrialityMemory] 安全拦截: 不允许导出到 ${resolvedPath}（必须在 data 目录内）`);
+      return { success: false, error: 'path_not_allowed' };
+    }
     const data = {
       memories: this.memories,
       relationships: Array.from(this.relationships.entries()),
       exportedAt: new Date().toISOString()
     };
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    console.log(`[TrialityMemory] 导出到: ${filePath}`);
+    fs.writeFileSync(resolvedPath, JSON.stringify(data, null, 2));
+    console.log(`[TrialityMemory] 导出到: ${resolvedPath}`);
     return { success: true, count: this.memories.length };
   }
 
   importFromFile(filePath) {
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    // [A01] 安全修复: 路径验证 — 仅允许从项目 data 目录导入
+    const allowedDir = path.resolve(path.join(path.dirname(this.dbPath || __dirname), '..', '..', '..', 'data'));
+    const resolvedPath = path.resolve(filePath);
+    if (!resolvedPath.startsWith(allowedDir)) {
+      console.error(`[TrialityMemory] 安全拦截: 不允许从 ${resolvedPath} 导入（必须在 data 目录内）`);
+      return { success: false, error: 'path_not_allowed' };
+    }
+    if (!fs.existsSync(resolvedPath)) {
+      console.error(`[TrialityMemory] 文件不存在: ${resolvedPath}`);
+      return { success: false, error: 'file_not_found' };
+    }
+    const data = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
     if (data.memories) {
       for (const mem of data.memories) {
         this.store(mem);
