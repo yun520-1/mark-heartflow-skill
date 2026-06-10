@@ -783,9 +783,9 @@ class HeartFlow {
     'constitutional.runConstitutionalProcess', 'constitutional.addPrinciple',
     'constitutional.getPrinciples', 'constitutional.getStats',
     // psychology — 原则4: 服务人类（心理分析）
-    'psychology.analyzePsychology', 'psychology.classify', 'psychology.checkCrisis',
+    'psychology.analyzePsychology', 'psychology.classify',
     'psychology.getPAD', 'psychology.getNeeds', 'psychology.getDefenses',
-    'psychology.getEmpathy', 'psychology.resetCrisisCounter',
+    'psychology.getEmpathy',
     // heartLogic — 心虫核心判断引擎：本心在代码里
     'heartLogic.shouldBeSilent',
     'heartLogic.whatIsThis', 'heartLogic.detectPain', 'heartLogic.willHurt',

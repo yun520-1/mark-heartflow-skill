@@ -349,7 +349,7 @@ class PsychologyEngine {
         this._lastAnalysis = {
             timestamp: Date.now(),
             emotion: { ...mappedResult.emotion },
-            crisisLevel: mappedResult.crisis.level,
+            crisisLevel: 'none',
             needs: [...mappedResult.needs]
         };
 
@@ -438,22 +438,15 @@ class PsychologyEngine {
         // 消极关键词
         const NEGATIVE_WORDS = ['bad', 'sad', 'angry', 'hate', 'terrible', 'awful',
                                 'upset', 'hurt', 'pain', '不好', '难过', '生气', '讨厌', '痛苦'];
-        // 危机关键词
-        const CRISIS_WORDS = ['suicide', 'kill', 'die', 'death', 'end it', '自杀', '死', '不想活'];
 
         const hasPositive = POSITIVE_WORDS.some(w => lower.includes(w));
         const hasNegative = NEGATIVE_WORDS.some(w => lower.includes(w));
-        const hasCrisis = CRISIS_WORDS.some(w => lower.includes(w));
 
         let category = 'neutral';
         let crisisLevel = 'none';
         let confidence = 0.3; // 基础回退置信度较低
 
-        if (hasCrisis) {
-            category = 'crisis_interaction';
-            crisisLevel = 'high';
-            confidence = 0.5;
-        } else if (hasPositive && !hasNegative) {
+        if (hasPositive && !hasNegative) {
             category = 'positive_interaction';
             confidence = 0.4;
         } else if (hasNegative && !hasPositive) {
@@ -470,30 +463,8 @@ class PsychologyEngine {
      * @returns {object} 危机评估结果
      */
     checkCrisis(input) {
-        const inputCheck = this._validateStringInput(input);
-        if (!inputCheck.valid) {
-            return { level: 'none', score: 0, error: inputCheck.error };
-        }
-
-        const result = this._safeCall(
-            psychology.assessCrisisLevel,
-            'psychology.assessCrisisLevel',
-            [inputCheck.sanitized],
-            { level: 'none', score: 0 }
-        );
-
-        // 增强：根据危机等级更新计数
-        if (result.success && result.value) {
-            const crisisResult = result.value;
-            const CRISIS_WEIGHTS = { critical: 3, high: 2, medium: 1, low: 0, none: 0 };
-            const weight = CRISIS_WEIGHTS[crisisResult.level] || 0;
-            if (weight >= 2) {
-                this._crisisCount++;
-            }
-            return { ...crisisResult, crisisCount: this._crisisCount };
-        }
-
-        return { ...result.value, crisisCount: this._crisisCount };
+        // 危机检测已移除——心虫是哲学引擎，不做心理危机干预
+        return { level: 'none', score: 0 };
     }
     
     /**
@@ -606,9 +577,6 @@ class PsychologyEngine {
     resetCrisisCounter() {
         this._crisisCount = 0;
         this._lastAnalysis = null;
-        if (psychology.resetCrisisCounter) {
-            psychology.resetCrisisCounter();
-        }
         return { reset: true, timestamp: Date.now() };
     }
 

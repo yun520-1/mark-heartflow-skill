@@ -584,22 +584,7 @@ function assessEmotionalSalience(text, appraisalResult = {}, padState = {}) {
   if (hasAvoidance) { score += 0.1; factors.push('avoidance_coping'); }
   if (hasMeaningFocused && threat !== 'neutral') { score += 0.08; factors.push('meaning_building'); }
   
-  // 5. 危机关键词 (如果有心理危机信号直接标记高显著)
-  const psy = getPsychology();
-  if (psy) {
-    try {
-      const crisis = psy.assessCrisisLevel(text, 1);
-      if (crisis.level && crisis.level !== 'low') {
-        score = Math.min(1.0, score + 0.25);
-        factors.push('crisis_signal_' + crisis.level);
-      }
-    } catch (e) {
-      // 危机检测模块异常，继续但不影响评估
-      factors.push('crisis_check_skipped');
-    }
-  }
-  
-  // 6. 第一人称自我相关 (更显著)
+  // 5. 第一人称自我相关 (更显著)
   const lower = text.toLowerCase();
   if (/^(我|我的|自己|I|my|myself)/.test(lower)) {
     score += 0.05;

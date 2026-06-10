@@ -240,6 +240,7 @@ class PDCAEngine {
   }
 
   saveTrace() {
+    if (!process.env.HEARTFLOW_DEBUG) return;
     const dir = path.dirname(this.traceFile);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true, mode: 0o700 });

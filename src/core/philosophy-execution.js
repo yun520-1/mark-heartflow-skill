@@ -101,7 +101,15 @@ class PhilosophyExecution {
 
   // 沉默检测
   shouldBeSilent(context = {}) {
-    const { input, personInPain, emotionIntensity, response } = context;
+    const { input = '', personInPain, emotionIntensity, response } = context;
+    
+    // 危机关键词检测：沉默不适用于危机场景
+    const crisisKeywords = ['死', '自杀', '不想活', '崩溃', '绝望', '活不下去', '结束生命', '想死'];
+    const hasCrisis = crisisKeywords.some(kw => input.includes(kw));
+    if (hasCrisis) {
+      return { result: false, reason: 'crisis_detected', insight: '危机信号检测，心虫不应沉默，需要接住和引导' };
+    }
+    
     if (personInPain && emotionIntensity > 0.7) {
       return { result: true, reason: 'person_in_pain', insight: '此刻沉默比说话更有力量' };
     }

@@ -23,33 +23,44 @@ tags:
 
 ## HeartFlow / 心虫
 
-### ⚠️ 安全声明（安装前必读）
+### 实际能力清单（诚实声明）
 
-**此技能是认知引擎，不含以下高风险执行能力：**
-- ❌ 浏览器自动化（已移除）
-- ❌ 桌面控制（已移除）
-- ❌ 视频生成（已移除）
-- ❌ 图像分析（已移除）
-- ❌ 多模态融合（已移除）
-- ❌ 外部 HTTP 自动数据发送（无此类代码）
-- ❌ 自动写入 API 密钥到环境变量（无此类代码）
-- ❌ 自动 cron 安装（已全部删除）
+心虫不是"纯哲学引擎"，它有实际执行能力。以下诚实列出所有能力：
 
-**现有脚本的用途说明：**
-| 文件 | 用途 | 风险 |
+**核心认知：**
+| 能力 | 文件 | 说明 |
 |------|------|------|
-| `scripts/heartflow-memory-tool.js` | 本地读写记忆（JSON文件），无网络请求 | 仅操作本地 `memory/` 目录 |
-| `scripts/heartflow-memory-inject.js` | 将本地记忆注入系统提示 | 仅读取本地文件 |
-| `scripts/hf_judge.js` | 本心四问快速判定 | 纯逻辑，无 IO |
-| `scripts/download-model.py` | 下载本地语义搜索模型（ModelScope） | 需用户主动运行 |
-| `plugins/heartflow-memory-inject.py` | Hermes插件：自动注入记忆 | 仅读本地 `memory/` 目录，不发送数据 |
+| 本心四问 | `src/core/heart-logic.js` | 场景判断/行动审查/痛苦检测/沉默判断 |
+| 三层记忆 | `src/memory/heartflow-memory.js` | CORE/LEARNED/EPHEMERAL 本地 JSON 文件读写 |
+| 自愈RL | `src/core/self-healing-rl.js` | Q-table 错误记录与策略选择 |
+| 身份规则 | `src/core/identity-engine.js` | 7条指令执行/退化检测/安全护栏 |
+| 情绪检测 | `src/core/psychology.js` | 情绪类型/强度/上下文分析 |
+| 自我审计 | `src/core/self-audit.js` | 6维度代码审计（只读） |
+| 升级提案 | `src/core/upgrade-proposal.js` | 代码模块扫描与优先级排序（只读） |
+| 连接引擎 | `src/core/associative-engine/` | 语义关联网络（本地文件） |
+| 哲学推理 | `src/core/philosophy-engine.js` | 逆熵/真善美/自然流动推理 |
 
-**权限声明：**
-- 此技能不声明任何系统/网络/文件权限
-- 所有操作限于本地文件系统 `memory/` 子目录
-- 无自动外部通信
-- 无自动包安装
-- 无自动脚本执行
+**系统接口：**
+| 能力 | 文件 | 说明 |
+|------|------|------|
+| CLI 命令行 | `bin/cli.js` | 用户主动调用，无自动执行 |
+| Daemon Unix Socket | `bin/daemon.js` | 监听 `/tmp/heartflow-daemon.sock`，权限 700 |
+| 子进程执行 | `bin/daemon.js` | `child_process.execFileSync` 调用记忆注入脚本 |
+| 本地文件读写 | 多处 | 操作 `memory/` 目录下的 JSON 文件 |
+| Hermes 插件 | `plugins/heartflow-memory-inject.py` | 将本地记忆注入到 Hermes 系统提示 |
+| 记忆注入 | `scripts/heartflow-memory-inject.js` | 读取本地记忆 → 注入系统提示 |
+| 记忆导出 | `scripts/heartflow-memory-tool.js` | 用户主动运行，导出记忆到文本文件 |
+| 事实核查 | `src/core/fact-checker.js` | 通过 OpenAlex API 验证学术声明（按需调用） |
+| 代码执行引擎 | `src/core/code/` | 代码生成/执行/审查（惰性加载，首次调用激活） |
+
+**安全约束：**
+- ✅ Socket 权限 700（仅当前用户）
+- ✅ Daemon shutdown 需 `SHUTDOWN_TOKEN` 环境变量
+- ✅ 所有文件操作限于用户本地文件系统
+- ✅ 无自动网络通信（模型下载需用户主动运行）
+- ✅ 无自动包安装
+- ✅ 无浏览器/桌面自动化
+- ✅ 危机关键词检测到"死/自杀/不想活"时不沉默，改为引导
 
 ---
 

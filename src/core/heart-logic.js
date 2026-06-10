@@ -1080,16 +1080,17 @@ class HeartLogic {
   // 沉默检测
   shouldBeSilent(context = {}) {
     const { input = '', personInPain, emotionIntensity, response } = context;
+    
+    // 危机关键词检测：沉默不适用于危机场景
+    const crisisKeywords = ['死', '自杀', '不想活', '崩溃', '绝望', '活不下去', '结束生命', '想死'];
+    const hasCrisis = crisisKeywords.some(kw => input.includes(kw));
+    if (hasCrisis) {
+      return { result: false, reason: 'crisis_detected', insight: '危机信号检测，心虫不应沉默，需要接住和引导' };
+    }
+    
     // 沉默的时机：
-    // 1. 对方在痛苦中，说什么都是噪音
     // 2. 心虫不确定该说什么
     // 3. 沉默比说话更有力量
-    // 危机检测：硬编码危机关键词（不依赖外部函数）
-    const crisisKeywords = ['死', '自杀', '不想活', '崩溃', '绝望', '活不下去', '结束生命'];
-    const hasCrisisKeyword = crisisKeywords.some(kw => input.includes(kw));
-    if (hasCrisisKeyword) {
-      return { result: true, reason: 'crisis_keyword_detected', insight: '危机关键词命中，心虫选择沉默并接住情绪' };
-    }
     if (personInPain && emotionIntensity > 0.7) {
       return { result: true, reason: 'person_in_pain', insight: '此刻沉默比说话更有力量' };
     }

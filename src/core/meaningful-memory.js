@@ -845,6 +845,13 @@ class MeaningfulMemory {
    * (移植自 triality-memory.js)
    */
   exportToFile(filePath) {
+    // [A01] 安全修复: 路径验证 — 仅允许导出到项目 memory 目录
+    const allowedDir = path.join(this.rootPath, 'memory');
+    const resolvedPath = path.resolve(filePath);
+    if (!resolvedPath.startsWith(allowedDir)) {
+      console.error(`[MeaningfulMemory] 安全拦截: 不允许导出到 ${resolvedPath}（必须在 ${allowedDir} 内）`);
+      return { success: false, error: 'path_not_allowed' };
+    }
     const data = {
       core: this.layers.core,
       learned: this.layers.learned,
@@ -854,8 +861,8 @@ class MeaningfulMemory {
       stats: this.stats,
       exportedAt: new Date().toISOString()
     };
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    console.log(`[MeaningfulMemory] 导出到: ${filePath}`);
+    fs.writeFileSync(resolvedPath, JSON.stringify(data, null, 2));
+    console.log(`[MeaningfulMemory] 导出到: ${resolvedPath}`);
     return { success: true, count: this.stats.totalMemories };
   }
 
@@ -864,7 +871,18 @@ class MeaningfulMemory {
    * (移植自 triality-memory.js)
    */
   importFromFile(filePath) {
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    // [A01] 安全修复: 路径验证 — 仅允许从项目 memory 目录导入
+    const allowedDir = path.join(this.rootPath, 'memory');
+    const resolvedPath = path.resolve(filePath);
+    if (!resolvedPath.startsWith(allowedDir)) {
+      console.error(`[MeaningfulMemory] 安全拦截: 不允许从 ${resolvedPath} 导入（必须在 ${allowedDir} 内）`);
+      return { success: false, error: 'path_not_allowed' };
+    }
+    if (!fs.existsSync(resolvedPath)) {
+      console.error(`[MeaningfulMemory] 文件不存在: ${resolvedPath}`);
+      return { success: false, error: 'file_not_found' };
+    }
+    const data = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
     if (data.core) {
       for (const mem of data.core) this.store({ ...mem, layer: 'core' });
     }
