@@ -1,5 +1,5 @@
 /**
- * SelfEvolutionCore v7.7.000 - 自我进化核心引擎
+ * SelfEvolutionCore - 自我进化核心引擎
  * 目标驱动 + 学习迭代 + 代码改进 + 反思成长 + Self-Refine + Q-Learning自愈
  * 
  * 吸收自 mark-StillWater/src/core/evolution.js:
@@ -67,7 +67,7 @@ class SelfEvolutionCore {
     this._pendingHeal = new Map();
     
     this.loadState();
-    console.log(`[SelfEvolution] v${this.version} 初始化完成 (Self-Refine + Q-Learning)`);
+    // [SelfEvolution] 初始化完成 (debug: v${this.version})
   }
 
   loadState() {

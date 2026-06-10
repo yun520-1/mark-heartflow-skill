@@ -74,9 +74,11 @@ try {
             break;
         }
         case 'status': {
+            const hfDir = path.dirname(__dirname);
+            const version = getVersion(hfDir);
             const hf = loadEngine();
             const result = hf.dispatch('identityCore.getMemoryStats');
-            respond(result || { status: 'ok', loaded: Object.keys(hf._modules || {}).length });
+            respond(Object.assign({ version }, result || { status: 'ok', loaded: Object.keys(hf._modules || {}).length }));
             break;
         }
         case 'think': {

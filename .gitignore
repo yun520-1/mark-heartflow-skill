@@ -13,3 +13,12 @@ cron/
 dist/
 /memory/
 !memory/.gitkeep
+
+# .opencode 运行时文件
+.opencode/*.log
+.opencode/logs/
+.opencode/*.json
+.opencode/*.cron
+.opencode/memory/*.json
+.opencode/personality/*.json
+.opencode/strategies/*.json

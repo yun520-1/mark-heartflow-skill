@@ -1,5 +1,5 @@
 /**
- /** HeartFlow v2.8.14 — 快速启动 + 两层懒加载
+ /** HeartFlow v2.9.1 — 快速启动 + 两层懒加载
   *
   * 启动速度优化：只有 Tier 1 模块在 start() 时同步加载。
   * Tier 2 模块在首次 dispatch 访问时才加载（lazy require）。
@@ -106,6 +106,12 @@ const _DesireSystem = _lazy('desireSystem', () => require('../emotion/desire-sys
 const _EmotionalGrowth = _lazy('emotionalGrowth', () => require('../emotion/emotional-growth.js'));
 const _MoodEvolution = _lazy('moodEvolution', () => require('../emotion/mood-evolution.js'));
 const _VERSION = _lazy('version', () => require('./version.js'));
+
+// ★ 代码引擎 — 惰性加载
+const _CodeEngine = _lazy('codeEngine', () => require('./code-engine.js'));
+const _CodeExecutor = _lazy('codeExecutor', () => require('./code/code-executor.js'));
+const _CodePlanner = _lazy('codePlanner', () => require('./code/code-planner.js'));
+const _CodeWriter = _lazy('codeWriter', () => require('./code/code-writer.js'));
 
 const BUILD_DATE = '2026-06-03';
 
@@ -536,6 +542,30 @@ class HeartFlow {
       this.metaphors = new (require('./metaphor-library.js').MetaphorLibrary)();
     } catch (e) { /* metaphors optional */ }
 
+    // ─── 规划层 — AdaptivePlanner（v2.9.1 激活） ─────────────────────────
+    try {
+      const APMod = _AdaptivePlanner();
+      this.adaptivePlanner = new (APMod.AdaptivePlanner)();
+    } catch (e) { this._initErrors.push({ module: 'adaptivePlanner', error: e.message }); }
+
+    // ─── 代码引擎 — CodeEngine（v2.9.1 激活） ────────────────────────────
+    try {
+      const CEMod = _CodeEngine();
+      this.codeEngine = new (CEMod.CodeEngine)();
+    } catch (e) { this._initErrors.push({ module: 'codeEngine', error: e.message }); }
+    try {
+      const CEMod2 = _CodeExecutor();
+      this.codeExecutor = new (CEMod2.CodeExecutor)();
+    } catch (e) { /* codeExecutor optional */ }
+    try {
+      const CEMod3 = _CodePlanner();
+      this.codePlanner = new (CEMod3.CodePlanner)();
+    } catch (e) { /* codePlanner optional */ }
+    try {
+      const CEMod4 = _CodeWriter();
+      this.codeWriter = new (CEMod4.CodeWriter)();
+    } catch (e) { /* codeWriter optional */ }
+
     // ─── 推理层 & 情感自主层 — 必须在 ThoughtChain 之前注册 ────────────────
     // [FIX] 解决模块在 _registerModules() 之后才初始化导致丢失的问题
     // 在 ThoughtChain 之前手动收录这些模块
@@ -546,6 +576,9 @@ class HeartFlow {
       'mindSpace', 'consciousness', 'ethics', 'transmission',
       // 新增 v2.8.4：连接/熵/清晰/隐喻
       'connections', 'entropy', 'clarity', 'metaphors',
+      // 新增 v2.9.1：规划层 & 代码引擎
+      'adaptivePlanner', 'strategySelector', 'replanTrigger',
+      'codeEngine', 'codeExecutor', 'codePlanner', 'codeWriter',
     ];
     for (const name of LATE_ADDITIONS) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -634,8 +667,10 @@ class HeartFlow {
       'constitutional', // Constitutional AI：原则自我对齐
       'thoughtChain', // 思维链编排器：串联所有引擎（API包装）
       'heartLogic',    // 心虫核心判断引擎：本心在代码里，不在记忆里
-      // Planning Layer — 规划能力（延迟加载，Tier 2）
-      // 'adaptivePlanner', 'strategySelector', 'replanTrigger',
+      // Planning Layer — 规划能力
+      'adaptivePlanner', 'strategySelector', 'replanTrigger',
+      // Code Engine — 代码执行
+      'codeEngine', 'codeExecutor', 'codePlanner', 'codeWriter',
       // Learning Layer — 学习能力（延迟加载，Tier 2）
       // 'experienceCollector', 'strategyAdapter', 'failureAnalyzer',
       // Verification Layer — 验证能力（延迟加载，Tier 2）
@@ -825,6 +860,8 @@ class HeartFlow {
     'codeEngine.suggestFix', 'codeEngine.compareVersions',
     // codeWriter.* — 代码编写引擎
     'codeWriter.write', 'codeWriter.writePipeline', 'codeWriter.analyzeIntent', 'codeWriter.reviewCode', 'codeWriter.getStats',
+    // adaptivePlanner.* — 自适应规划引擎
+    'adaptivePlanner.plan', 'adaptivePlanner.adapt', 'adaptivePlanner.quickAdjust', 'adaptivePlanner.getStatus',
   ]);
 
   /**

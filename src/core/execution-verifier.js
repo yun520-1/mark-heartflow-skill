@@ -498,3 +498,31 @@ class ExecutionVerifier {
       'timing': 0.1,
       'side-effects': 0.05
     };
+
+    let weightedSum = 0;
+    let totalWeight = 0;
+    const dimensionScores = {};
+
+    for (const check of checks) {
+      const weight = weights[check.name] || 0.1;
+      totalWeight += weight;
+      if (check.ok) {
+        weightedSum += weight;
+        dimensionScores[check.name] = { score: 1.0, weight, weighted: weight };
+      } else {
+        dimensionScores[check.name] = { score: 0.0, weight, weighted: 0 };
+      }
+    }
+
+    const weighted = totalWeight > 0 ? weightedSum / totalWeight : 0;
+
+    return {
+      weighted,
+      dimensions: dimensionScores,
+      totalChecks: checks.length,
+      passedChecks: checks.filter(c => c.ok).length
+    };
+  }
+}
+
+module.exports = { ExecutionVerifier, ResultStatus, ErrorCategory, RETRY_STRATEGIES };
