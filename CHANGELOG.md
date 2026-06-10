@@ -1,3 +1,48 @@
+## [v2.9.0] - 2026-06-10
+### Changed
+- 版本升级 2.8.33 → 2.9.0（审计后发布）
+- 清理旧代码副本 `skills/heartflow/`（1.4MB 重复代码树）
+- README.md 版本号同步到 2.9.0
+- package.json description 精简，移除过时引用版本号
+
+### Security
+- 安全审计通过：无硬编码密钥，无CORS漏洞，无路径泄露
+
+## [v2.8.33] - 2026-06-10
+### Added
+- pattern-matcher.js v1.2.0: 新增通配符匹配模式（`*`/`?`），`matchSummary()` 模式概览方法
+
+## [v2.8.31] - 2026-06-10
+### Fixed
+- claim-extractor.js v2.0.44: 修复 `_assessClaimConfidence` 中 category 重复判断条件 bug
+
+### Added
+- `containsContradiction()`: 快速矛盾检测（O(n²)短路版，比 detectContradictions 更高效）
+- extractComparisons: 新增英文比较模式（more/less/better/worse/higher/lower/faster/slower/greater/fewer/than）
+
+## [v2.8.28] - 2026-06-09
+### Added
+- cognitive-protocol.js v1.1.0: 问题优先级系统（PROBLEM_PRIORITY 枚举 + 自动推断）
+- getPrioritizedProblems(): 按 critical/high/medium/low 排序未解决问题
+- detectProblemPatterns(): 基于标签聚类检测重复模式（recurring issue categories）
+- _inferPriority(): 从问题描述/根因自动推断优先级（crash→critical, error→high 等）
+- stats() 新增 unresolvedByPriority + recurringPatterns 字段
+- 导出 PROBLEM_PRIORITY 供外部使用
+
+## [v2.8.25] - 2026-06-09
+### Added
+- counterfactual-engine.js v2.0.4: 新增虚假二分检测（false dichotomy）、反方多样性评分、内部置信度评估
+- detectFalseDichotomy(): 识别"要么/要么""不是/就是"等排他性框架，提示被忽略的中间选项
+- evaluateDiversity(): Jaccard 相似度衡量反方观点语义多样性，避免重复观点
+- __internalConfidence(): 对引擎自身输出的自我评估，基于覆盖面与一致性
+- stats() 新增 capabilities 字段展示可用能力
+
+## [v2.8.23] - 2026-06-09
+### Changed
+- commonsense-engine.js v2.1.0: 多词实体检测增强（n-gram Jaccard 相似度）
+- _assessRelevance 新增 bigram/trigram 匹配，提升 multi-word concepts 召回率
+- 新增 _nGrams() 工具函数（bigram + trigram 集合生成）
+
 ## [v2.8.19] - 2026-06-09
 ### Added
 - forgetting.js v2.0.0: 类结构升级（ForgettingEngine class + Proxy包装向后兼容）

@@ -1,46 +1,55 @@
-# Upgrade Report — v2.8.22
+HeartFlow 心虫 自主升级报告
+══════════════════════════════════════════════
+执行时间: 2026-06-10
+升级前版本: 2.8.33
+升级后版本: 2.8.34
 
-**Date**: 2026-06-09
-**Module**: `src/memory/knowledge-graph.js` (5274B → 17838B)
-**Version**: 1.0.2 → 1.1.0
+┌─────────────────────────────────────────────┐
+│ 升级模块: emotional-memory-bridge.js        │
+│ 文件路径: src/core/emotional-memory-bridge.js │
+│ 原大小: 11,472 bytes (333 lines)             │
+│ 新大小: 36,811 bytes                         │
+└─────────────────────────────────────────────┘
 
-## What was upgraded
+新增功能:
+──────────────────────────────────────────────
+1. 输入验证系统 (validateInput)
+   - 类型检查、长度检查、范围检查、必填项验证
+   - 所有公开函数入口统一验证
 
-KnowledgeGraph — graph/network engine class for structured memory with temporal context.
+2. 错误分类系统 (classifyError, ErrorType, ErrorSeverity)
+   - 8种错误类型枚举 (MODULE_UNAVAILABLE, STORE_FAILED, INVALID_INPUT 等)
+   - 4级严重度 (FATAL/HIGH/MEDIUM/LOW)
+   - 每种错误带恢复建议和降级方案
+   - 错误分类配置表 (ERROR_CLASSIFICATION)
 
-### Added features
+3. 重试机制 (withRetry)
+   - 带线性退避的自动重试
+   - 可配置重试次数和延迟
+   - 返回尝试次数和最终错误
 
-1. **Input validation layer** — 6 safe utility methods (`_safeString`, `_safeNumber`, `_validateNodeInput`, `_validateEdgeInput`) for all public methods. Null/type/empty checks with descriptive error messages.
+4. 显著性衰减模型 (applySalienceDecay)
+   - 指数衰减: S = S0 * 0.5^(t/T)
+   - CORE记忆衰减速度是普通记忆的1/3
+   - EPHEMERAL记忆加速衰减（3x）
+   - 最小显著性保护 (0.1)
 
-2. **KG_ERROR enum** (6 types) — `NODE_NOT_FOUND`, `EDGE_NOT_FOUND`, `CONNECTION_LIMIT`, `INVALID_INPUT`, `SEARCH_EMPTY`, `UNKNOWN` with `KG_ERROR_MESSAGES` lookup.
+5. 记忆去重系统 (checkDuplicate, computeTextSimilarity)
+   - 先做SHA256指纹快速匹配
+   - 再计算三元组Jaccard相似度做模糊匹配
+   - 去重缓存自动过期（1小时窗口）
+   - 缓存容量限制（最大100条）
 
-3. **Node removal** (`removeNode`) — removes node and all associated edges, cleans up connection lists on other nodes.
+6. 持久化验证 (verifyPersistence)
+   - 多方法验证存储结果 (search/recall/query/get)
+   - 优雅降级：所有验证方法失败时标记"未验证"而非失败
 
-4. **Edge weight update** (`updateEdgeWeight`) — update edge weight with bounds clamping.
+7. 批量记忆合并 (batchAppraisalToMemory)
+   - 批量处理多个认知评估
+   - 部分失败容错（成功项返回，失败项记录错误）
+   - 详细汇总统计 (total/succeeded/failed/stored/duplicate)
 
-5. **Enhanced search** — returns scored results (`score`, `rankScore = score * importance`) sorted by rankScore, not just importance.
-
-6. **findByName** — exact name-based node lookup.
-
-7. **Importance decay** (`_applyDecay`) — time-based decay (0.95/day), faster decay for nodes older than 30 days, minimum floor at 0.05.
-
-8. **Stale node pruning** (`pruneStale`) — configurable minImportance/maxAgeMs/minReflections thresholds, returns list of removed nodes.
-
-9. **JSON serialization** (`toJSON`/`fromJSON`) — full graph state export/import with field-level validation on restore.
-
-10. **Enhanced statistics** — `staleCount`, `edgeTypeDistribution`, `nodeTypeDistribution`, `mostReflected` (top 5), `isDirty` flag.
-
-11. **Defensive programming** — all public methods validate inputs, throw typed errors or return safe defaults.
-
-### Backward compatibility
-- All original public methods keep same signatures
-- `search()` now returns scored objects `{node, score, rankScore}` instead of raw nodes — but heartflow.js only uses `getStats()` from this module
-- `getConnectedNodes()` now returns `{node, edgeWeight, relation}` objects instead of raw nodes — only referenced by heartflow.js, which doesn't call this method directly
-- Only 1 reference point (`src/core/heartflow.js`), verified working
-
-### Verification
-- Syntax: `node --check` ✅
-- Load: `require()` ✅
-- Instantiate: `new KnowledgeGraph()` ✅
-- All 18 functional tests passed ✅
-- `heartflow.js` loads successfully ✅
+8. 错误处理增强
+   - appraisalToMemory 改为 async（支持重试和验证）
+   - 所有模块依赖使用 try-catch 保护
+   - 去重检查失败时优雅降级（继续存储）
