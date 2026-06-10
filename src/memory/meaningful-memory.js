@@ -164,6 +164,17 @@ class MeaningfulMemory {
     return { success: true, key, tier: 'LEARNED' };
   }
 
+  /**
+   * store — 统一写入口（v2.9.1 新增）
+   * 自动选择层级：core 前缀→CORE，否则→LEARNED
+   */
+  store(key, value, tags = []) {
+    if (key.startsWith('core:') || key.startsWith('identity.')) {
+      return this.addCore(key, value, tags);
+    }
+    return this.learn(key, value, tags);
+  }
+
   recall(key) {
     this._ensureLearnedLoaded();
     if (this.learned[key]) {

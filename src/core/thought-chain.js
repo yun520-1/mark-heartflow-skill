@@ -563,11 +563,18 @@ class ThoughtChain {
           empathy: parse?.psychology?.empathy || null
         };
 
+        // 如果没有结论且置信度低，明确说不知道
+        let conclusion = prefix + (synthesis?.conclusion || '');
+        if (!synthesis?.conclusion && (calibrate?.calibratedConfidence || 0.5) < 0.5) {
+          conclusion = '不知道，缺少关键信息';
+          meta.conclusion = conclusion;
+        }
+
         return {
           shouldRespond,
           suppressReason,
           prefix,
-          conclusion: prefix + (synthesis?.conclusion || ''),
+          conclusion,
           meta,
           timestamp: Date.now()
         };
@@ -650,6 +657,11 @@ class ThoughtChain {
 
     // 基于关键词生成假设
     const keywords = input.split(/\s+/).filter(w => w.length > 2).slice(0, 3);
+
+    // 关键词太少时返回空数组（不生成占位假设）
+    if (keywords.length < 2) {
+      return hypotheses;
+    }
 
     for (let i = 0; i < count; i++) {
       hypotheses.push({
@@ -761,7 +773,6 @@ class ThoughtChain {
     if (confidence >= 0.7) return '可能';
     if (confidence >= 0.6) return '不太确定，但倾向于';
     if (confidence >= 0.5) return '根据现有信息，猜测';
-    if (confidence >= 0.4) return '目前信息不足以确定，但';
     return '不知道，缺少关键信息';
   }
 
