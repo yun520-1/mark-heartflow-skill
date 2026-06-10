@@ -1,5 +1,5 @@
 /**
- * HeartFlow Counterfactual Engine v2.0.3
+ * HeartFlow Counterfactual Engine v2.0.4
  *
  * "反者道之动" — 反向思考的力量
  *
@@ -19,6 +19,9 @@
  * 2. 前提攻击：质疑答案所依赖的隐含前提
  * 3. 归因还原：将答案还原到对话起源，验证是否走偏
  * 4. 修正输出：在原答案中加入"反方视角"，让用户看到多维
+ * 5. 虚假二分检测：识别"要么/要么"的排他性框架，提示中间选项
+ * 6. 反方多样性评分：确保生成的观点在语义上真正不同
+ * 7. 内部置信度：对自身输出的自我评估
  */
 
 class CounterfactualEngine {
@@ -314,6 +317,80 @@ class CounterfactualEngine {
 
   // ===== 辅助方法 =====
 
+  /**
+   * 检测虚假二分（false dichotomy）
+   * 识别"要么/要么"排他性框架，提示中间选项
+   */
+  detectFalseDichotomy(answer) {
+    const patterns = [
+      /要么.*要么/g, /不是.*就是/g, /只能.*或者/g,
+      /只有.*才/g, /要么选择.*要么选择/g,
+      /非.*即/g, /不是A就是B/g,
+    ];
+    const matches = [];
+    for (const pattern of patterns) {
+      const found = answer.match(pattern);
+      if (found) matches.push(...found);
+    }
+    if (matches.length > 0) {
+      return {
+        detected: true,
+        patterns: [...new Set(matches)],
+        suggestion: '检测到排他性框架，可能存在被忽略的中间选项或第三选择',
+        severity: matches.length > 2 ? 'high' : 'medium',
+      };
+    }
+    return { detected: false };
+  }
+
+  /**
+   * 反方多样性评分：确保生成的观点在语义上真正不同
+   * 使用简单 Jaccard 相似度衡量观点间的重叠
+   */
+  evaluateDiversity(views) {
+    if (!views || views.length < 2) return { score: 1.0, note: '观点数量不足，无法评估多样性' };
+    let totalSimilarity = 0;
+    let pairs = 0;
+    for (let i = 0; i < views.length; i++) {
+      for (let j = i + 1; j < views.length; j++) {
+        const a = (views[i].challenge || '').split(/\s+/);
+        const b = (views[j].challenge || '').split(/\s+/);
+        const setA = new Set(a);
+        const setB = new Set(b);
+        const intersection = [...setA].filter(x => setB.has(x)).length;
+        const union = new Set([...setA, ...setB]).size;
+        totalSimilarity += union > 0 ? intersection / union : 0;
+        pairs++;
+      }
+    }
+    const avgSimilarity = pairs > 0 ? totalSimilarity / pairs : 0;
+    const diversityScore = 1 - avgSimilarity;
+    return {
+      score: Math.round(diversityScore * 100) / 100,
+      note: diversityScore < 0.3
+        ? '观点高度重叠，建议增加多样性'
+        : diversityScore > 0.7
+          ? '观点充分多样'
+          : '观点有一定的多样性',
+      viewCount: views.length,
+    };
+  }
+
+  /**
+   * 内部置信度：对引擎自身输出的自我评估
+   * 基于分析覆盖面和内部一致性
+   */
+  __internalConfidence(analysisResult) {
+    if (!analysisResult || !analysisResult.relevant) return 0;
+    let score = 0.5;
+    if (analysisResult.opposingViews && analysisResult.opposingViews.length > 0) score += 0.2;
+    if (analysisResult.premiseChallenges && analysisResult.premiseChallenges.length > 0) score += 0.15;
+    if (analysisResult.refinement && analysisResult.refinement.needed) score += 0.1;
+    const diversity = this.evaluateDiversity(analysisResult.opposingViews || []);
+    if (diversity.score > 0.5) score += 0.05;
+    return Math.round(Math.min(score, 1.0) * 100) / 100;
+  }
+
   detectToneIssues(answer) {
     const matches = this.certaintySignals.filter(s => answer.includes(s));
     if (/绝对|必然|一定|显然|毫无疑问|无可置疑/.test(answer)) {
@@ -398,9 +475,14 @@ class CounterfactualEngine {
     return {
       historySize: this.history.length,
       mode: this.mode,
-      version: '2.0.3',
+      version: '2.0.4',
       premiseSignals: this.premiseSignals.length,
       certaintySignals: this.certaintySignals.length,
+      capabilities: {
+        falseDichotomy: true,
+        diversityEval: true,
+        internalConfidence: true,
+      },
     };
   }
 

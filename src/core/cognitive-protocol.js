@@ -1,12 +1,13 @@
 /**
- * CognitiveProtocol - 认知协议 v1.0.0
+ * CognitiveProtocol - 认知协议 v1.1.0
  *
- * 实现5个核心改进：
+ * 实现6个核心改进：
  * 1. 启动后先读"我是谁、最近在想什么、卡在哪里"
  * 2. 任务分层层级：全局层/模块层/实现层
  * 3. 主动总结，不要等溢出（检查点机制）
  * 4. 问题代替信息存储（问题+根因格式）
  * 5. 分次思考（暂停/继续机制）
+ * 6. 问题优先级与模式聚类（severity + recurring pattern detection）
  *
  * 设计原则：
  * - 慢下来，先理解再行动
@@ -24,6 +25,16 @@ const TASK_LEVEL = {
   GLOBAL: 'global',      // 这个东西是干什么的？为什么存在？
   MODULE: 'module',     // 哪个模块管这个？模块之间的关系是什么？
   IMPLEMENTATION: 'implementation'  // 具体代码怎么写？
+};
+
+/**
+ * 问题优先级枚举
+ */
+const PROBLEM_PRIORITY = {
+  CRITICAL: 'critical',
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low'
 };
 
 /**
@@ -388,13 +399,16 @@ class CognitiveProtocol {
    * @param {string} problem - 问题描述
    * @param {string} rootCause - 根因
    * @param {string} solution - 解决方案（可选）
+   * @param {string} priority - 优先级（默认自动推断）
    */
-  addProblem(problem, rootCause, solution = null) {
+  addProblem(problem, rootCause, solution = null, priority = null) {
+    const inferredPriority = priority || this._inferPriority(problem, rootCause);
     const entry = {
       id: `problem-${Date.now()}`,
       problem,
       rootCause,
       solution,
+      priority: inferredPriority,
       resolved: false,
       resolvedAt: null,
       createdAt: new Date().toISOString(),
@@ -405,6 +419,57 @@ class CognitiveProtocol {
     this._saveProblemBank();
 
     return entry;
+  }
+
+  /**
+   * 从问题描述和根因推断优先级
+   */
+  _inferPriority(problem, rootCause) {
+    const text = `${problem} ${rootCause || ''}`.toLowerCase();
+    const criticalPatterns = ['崩溃', 'crash', '数据丢失', 'data loss', '安全漏洞', 'security', '无限循环', 'deadlock'];
+    const highPatterns = ['失败', 'fail', '错误', 'error', '异常', 'exception', '阻塞', 'block'];
+    const mediumPatterns = ['性能', 'performance', '警告', 'warning', '不兼容', 'incompatible'];
+
+    if (criticalPatterns.some(p => text.includes(p))) return PROBLEM_PRIORITY.CRITICAL;
+    if (highPatterns.some(p => text.includes(p))) return PROBLEM_PRIORITY.HIGH;
+    if (mediumPatterns.some(p => text.includes(p))) return PROBLEM_PRIORITY.MEDIUM;
+    return PROBLEM_PRIORITY.LOW;
+  }
+
+  /**
+   * 获取按优先级排序的未解决问题
+   */
+  getPrioritizedProblems() {
+    const order = [PROBLEM_PRIORITY.CRITICAL, PROBLEM_PRIORITY.HIGH, PROBLEM_PRIORITY.MEDIUM, PROBLEM_PRIORITY.LOW];
+    return this.problemBank
+      .filter(p => !p.resolved)
+      .sort((a, b) => order.indexOf(a.priority) - order.indexOf(b.priority));
+  }
+
+  /**
+   * 检测问题模式聚类：找出重复出现的同类问题
+   * @param {number} minOccurrences - 最少出现次数才算模式（默认2）
+   * @returns {Array} 聚类结果
+   */
+  detectProblemPatterns(minOccurrences = 2) {
+    const tagCounts = {};
+    for (const p of this.problemBank) {
+      for (const tag of p.tags) {
+        if (!tagCounts[tag]) tagCounts[tag] = { tag, count: 0, problems: [] };
+        tagCounts[tag].count++;
+        tagCounts[tag].problems.push(p);
+      }
+    }
+    return Object.values(tagCounts)
+      .filter(t => t.count >= minOccurrences)
+      .map(t => ({
+        pattern: t.tag,
+        occurrences: t.count,
+        unresolved: t.problems.filter(p => !p.resolved).length,
+        firstSeen: new Date(Math.min(...t.problems.map(p => new Date(p.createdAt).getTime()))),
+        lastSeen: new Date(Math.max(...t.problems.map(p => new Date(p.createdAt).getTime())))
+      }))
+      .sort((a, b) => b.occurrences - a.occurrences);
   }
 
   /**
@@ -674,6 +739,14 @@ class CognitiveProtocol {
    * 统计信息
    */
   stats() {
+    const unresolved = this.problemBank.filter(p => !p.resolved);
+    const byPriority = {};
+    for (const p of unresolved) {
+      const pri = p.priority || PROBLEM_PRIORITY.LOW;
+      byPriority[pri] = (byPriority[pri] || 0) + 1;
+    }
+    const patterns = this.detectProblemPatterns();
+
     return {
       state: this.state,
       currentTask: this.currentTask ? this.currentTask.substring(0, 50) : null,
@@ -683,9 +756,11 @@ class CognitiveProtocol {
       pausedTasks: this.pausedTasks.length,
       problemsTotal: this.problemBank.length,
       problemsResolved: this.problemBank.filter(p => p.resolved).length,
-      problemsUnresolved: this.problemBank.filter(p => !p.resolved).length
+      problemsUnresolved: unresolved.length,
+      unresolvedByPriority: byPriority,
+      recurringPatterns: patterns.length > 0 ? patterns.map(p => `${p.pattern}(${p.occurrences}x)`) : []
     };
   }
 }
 
-module.exports = { CognitiveProtocol, TASK_LEVEL, COGNITIVE_STATE };
+module.exports = { CognitiveProtocol, TASK_LEVEL, COGNITIVE_STATE, PROBLEM_PRIORITY };

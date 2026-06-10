@@ -1,5 +1,5 @@
 /**
- * 常识推理引擎 (Commonsense Engine) v2.0.0
+ * 常识推理引擎 (Commonsense Engine) v2.1.0
  *
  * 基于常识知识的推理
  * 升级内容（v2.0.0）：
@@ -10,6 +10,9 @@
  * - 增强推理模式（类比/演绎/溯因/统计/因果链）
  * - 自我诊断与健康检查
  * - 错误统计追踪
+ * 升级内容（v2.1.0）：
+ * - 多词实体检测（bigram/trigram 语义单元匹配）
+ * - n-gram Jaccard 增强，提升多词概念（如"machine learning"）的召回率
  */
 
 const { KnowledgeBase } = require('./knowledge-base.js');
@@ -85,6 +88,18 @@ function _safeString(val, fallback = '') {
  */
 function _clamp(val, min, max) {
   return Math.min(max, Math.max(min, val));
+}
+
+/**
+ * 生成 n-gram 集合 (n=2: bigram, n=3: trigram)
+ * 用于多词实体匹配，提升 multi-word concepts 的召回率
+ */
+function _nGrams(words, n) {
+  const grams = new Set();
+  for (let i = 0; i <= words.length - n; i++) {
+    grams.add(words.slice(i, i + n).join(' ').toLowerCase());
+  }
+  return grams;
 }
 
 // ============ 主类 ============
@@ -305,19 +320,37 @@ class CommonsenseEngine {
   }
 
   /**
-   * 评估相关性
+   * 评估相关性 — 支持多词实体（bigram/trigram）匹配
    */
   _assessRelevance(analysis, fact) {
-    const statementWords = new Set(analysis.words.map(w => w.toLowerCase()));
+    const words = analysis.words.map(w => w.toLowerCase());
+    const statementWords = new Set(words);
     const factText = `${fact.statement} ${fact.explanation} ${fact.key}`.toLowerCase();
     const factWords = new Set(factText.split(/\s+/));
 
-    // Jaccard 相似度
+    // 1. 单词级别 Jaccard 相似度
     const intersection = [...statementWords].filter(w => factWords.has(w)).length;
     const union = new Set([...statementWords, ...factWords]).size;
     const jaccard = union > 0 ? intersection / union : 0;
 
-    // 双向匹配加成：检查 fact 的 statement 是否包含输入的词，以及输入是否包含 fact 的词
+    // 2. n-gram 匹配增强（bigram + trigram）
+    let nGramScore = 0;
+    if (words.length >= 2) {
+      const inputBigrams = _nGrams(words, 2);
+      const factBigrams = _nGrams(factWords, 2);
+      const bigramIntersect = [...inputBigrams].filter(g => factBigrams.has(g)).length;
+      const bigramUnion = new Set([...inputBigrams, ...factBigrams]).size;
+      nGramScore += bigramUnion > 0 ? (bigramIntersect / bigramUnion) * 0.25 : 0;
+    }
+    if (words.length >= 3) {
+      const inputTrigrams = _nGrams(words, 3);
+      const factTrigrams = _nGrams(factWords, 3);
+      const trigramIntersect = [...inputTrigrams].filter(g => factTrigrams.has(g)).length;
+      const trigramUnion = new Set([...inputTrigrams, ...factTrigrams]).size;
+      nGramScore += trigramUnion > 0 ? (trigramIntersect / trigramUnion) * 0.15 : 0;
+    }
+
+    // 3. 双向匹配加成
     let bidirectionalScore = 0;
     const inputLower = analysis.original.toLowerCase();
     const factLower = fact.statement.toLowerCase();
@@ -329,7 +362,7 @@ class CommonsenseEngine {
       bidirectionalScore += 0.3;
     }
 
-    return Math.min(1.0, jaccard * 0.6 + bidirectionalScore * 0.4);
+    return Math.min(1.0, jaccard * 0.45 + nGramScore + bidirectionalScore * 0.3);
   }
 
   /**

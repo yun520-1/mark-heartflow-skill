@@ -1,9 +1,9 @@
 /**
  * 声明提取器 - 从文本中提取可验证的声明
- * v2.0.43 升级: 置信度分级、来源追踪、矛盾检测、声明元数据
+ * v2.0.44 升级: 修复重复条件bug、英文比较模式、快速矛盾检测
  */
 const claimExtractor = {
-  version: '2.0.43',
+  version: '2.0.44',
 
   // 置信度级别枚举
   ConfidenceLevel: {
@@ -108,7 +108,7 @@ const claimExtractor = {
     }
 
     // 百分比或统计数字 → 需要验证
-    if (category === 'statistic' || category === 'statistic') {
+    if (category === 'statistic') {
       if (/\d+%/.test(value)) {
         score -= 0.1;
         signals.push('statistical_claim');
@@ -287,7 +287,7 @@ const claimExtractor = {
 
   // 提取比较声明（带元数据）
   extractComparisons(text, opts = {}) {
-    const matches = text.match(/\b(?:比|超过|低于|多于|少于|大于|小于|高[于]?|低[于]?|多[于]?|少[于]?)\s*\S+/g) || [];
+    const matches = text.match(/\b(?:比|超过|低于|多于|少于|大于|小于|高[于]?|低[于]?|多[于]?|少[于]?|more|less|better|worse|higher|lower|faster|slower|greater|fewer|than\s+\S+)\s*\S+/gi) || [];
     const seen = new Map();
     for (const m of matches) {
       if (!seen.has(m)) {
@@ -434,6 +434,48 @@ const claimExtractor = {
     }
 
     return contradictions;
+  },
+
+  /**
+   * 快速矛盾检测 - 只返回是否有矛盾，不返回详细信息
+   * 比 detectContradictions 更快，适合批量扫描
+   * @param {Object} claims - extractAll 返回的声明对象
+   * @returns {boolean}
+   */
+  containsContradiction(claims) {
+    if (!claims || typeof claims !== 'object') return false;
+    const allClaims = Object.values(claims).flat().filter(Boolean);
+    if (allClaims.length < 2) return false;
+
+    // 1. 相近数值检测
+    const nums = allClaims.filter(c => c.numericValue && c.numericValue > 0);
+    for (let i = 0; i < nums.length; i++) {
+      for (let j = i + 1; j < nums.length; j++) {
+        if (Math.abs(nums[i].numericValue - nums[j].numericValue) < 5 &&
+            nums[i].value !== nums[j].value) return true;
+      }
+    }
+
+    // 2. 百分比溢出
+    const pcts = allClaims.filter(c => c.category === 'statistic' && typeof c.value === 'string' && c.value.endsWith('%'));
+    if (pcts.length >= 3) {
+      const vals = pcts.map(c => parseFloat(c.value)).filter(v => !isNaN(v)).sort((a, b) => b - a);
+      if (vals.length >= 2 && vals[0] + vals[1] > 100 && vals[0] > 50) return true;
+    }
+
+    // 3. 因果冲突
+    const causal = allClaims.filter(c => c.category === 'causation');
+    if (causal.length >= 2) {
+      for (let i = 0; i < causal.length; i++) {
+        for (let j = i + 1; j < causal.length; j++) {
+          const a = causal[i].value || '';
+          const b = causal[j].value || '';
+          if ((/导致|引起/.test(a)) && (/不影响|不导致|不会/.test(b))) return true;
+        }
+      }
+    }
+
+    return false;
   },
 
   // 分类（增强版：保留元数据）
