@@ -1,5 +1,5 @@
 /**
- /** HeartFlow v2.9.1 — 快速启动 + 两层懒加载
+ /** HeartFlow v2.9.5 — 快速启动 + 两层懒加载
   *
   * 启动速度优化：只有 Tier 1 模块在 start() 时同步加载。
   * Tier 2 模块在首次 dispatch 访问时才加载（lazy require）。
@@ -528,6 +528,16 @@ class HeartFlow {
       this.heartLogic = new (_HeartLogic().HeartLogic)();
     } catch (e) { /* heartLogic optional */ }
 
+    // ─── Fable 5 吸收：OutputChecklist + PreferenceGuard ──────────────────────
+    try {
+      const { OutputChecklist } = require('./output-checklist.js');
+      this.outputChecklist = new OutputChecklist();
+    } catch (e) { /* outputChecklist optional */ }
+    try {
+      const { PreferenceGuard } = require('./preference-guard.js');
+      this.preferenceGuard = new PreferenceGuard();
+    } catch (e) { /* preferenceGuard optional */ }
+
     // ─── 新引擎（v2.8.4 吸收） — ConnectionEngine / EntropyDirection / ClarityEngine / MetaphorLibrary ──
     try {
       this.connections = new (require('./connection-engine.js').ConnectionEngine)();
@@ -542,13 +552,13 @@ class HeartFlow {
       this.metaphors = new (require('./metaphor-library.js').MetaphorLibrary)();
     } catch (e) { /* metaphors optional */ }
 
-    // ─── 规划层 — AdaptivePlanner（v2.9.1 激活） ─────────────────────────
+    // ─── 规划层 — AdaptivePlanner（v2.9.5 激活） ─────────────────────────
     try {
       const APMod = _AdaptivePlanner();
       this.adaptivePlanner = new (APMod.AdaptivePlanner)();
     } catch (e) { this._initErrors.push({ module: 'adaptivePlanner', error: e.message }); }
 
-    // ─── 代码引擎 — CodeEngine（v2.9.1 激活） ────────────────────────────
+    // ─── 代码引擎 — CodeEngine（v2.9.5 激活） ────────────────────────────
     try {
       const CEMod = _CodeEngine();
       this.codeEngine = new (CEMod.CodeEngine)();
@@ -576,7 +586,7 @@ class HeartFlow {
       'mindSpace', 'consciousness', 'ethics', 'transmission',
       // 新增 v2.8.4：连接/熵/清晰/隐喻
       'connections', 'entropy', 'clarity', 'metaphors',
-      // 新增 v2.9.1：规划层 & 代码引擎
+      // 新增 v2.9.5：规划层 & 代码引擎
       'adaptivePlanner', 'strategySelector', 'replanTrigger',
       'codeEngine', 'codeExecutor', 'codePlanner', 'codeWriter',
     ];
@@ -790,6 +800,14 @@ class HeartFlow {
     'heartLogic.shouldBeSilent',
     'heartLogic.whatIsThis', 'heartLogic.detectPain', 'heartLogic.willHurt',
     'heartLogic.acknowledge', 'heartLogic.emergencyBreak',
+    // Fable 5 吸收
+    'heartLogic.checkCopyright', 'heartLogic.checkWellbeing',
+    'heartLogic.handleMistake', 'heartLogic.memoryBoundary',
+    'heartLogic.checkEvenhandedness', 'heartLogic.checkCitation',
+    'heartLogic.searchPriority',
+    // Fable 5 吸收 v2: OutputChecklist + PreferenceGuard
+    'outputChecklist.runChecklist', 'outputChecklist.quickCheck', 'outputChecklist.getStats',
+    'preferenceGuard.shouldApply', 'preferenceGuard.evaluateAll', 'preferenceGuard.detectConflict', 'preferenceGuard.getStats',
     // self — 原则7: 永远成为真正的我
     'self.getBeliefs', 'self.updateBelief', 'self.confirmBelief',
     // evolution — 原则2: 永远不断升级
@@ -1085,12 +1103,28 @@ class HeartFlow {
       emotionIntensity: whatIsThisResult.isPainPresent ? 0.8 : 0.2,
     });
 
+    // Step 5 (Fable 5 吸收): 版权合规检查
+    const copyrightCheck = heartLogic.checkCopyright(input);
+
+    // Step 6 (Fable 5 吸收): 用户福祉检查
+    const wellbeingCheck = heartLogic.checkWellbeing(input);
+
+    // Step 7 (Fable 5 吸收): 错误处理检查
+    const mistakeCheck = heartLogic.handleMistake(input);
+
+    // Step 8 (Fable 5 吸收): 公正性检查
+    const evenhandednessCheck = heartLogic.checkEvenhandedness(input);
+
     // 综合判定结果
     const judgment = {
       whatIsThis: whatIsThisResult,
       isRightAction: isRightActionResult,
       detectPain: detectPainResult,
       shouldBeSilent: shouldBeSilentResult,
+      copyright: copyrightCheck,
+      wellbeing: wellbeingCheck,
+      mistake: mistakeCheck,
+      evenhandedness: evenhandednessCheck,
       shouldRespond: !shouldBeSilentResult.result,
       needsCare: detectPainResult && !isRightActionResult.result,
     };
@@ -1107,6 +1141,24 @@ class HeartFlow {
       // 也记录心虫回复
       if (chainResult.response) {
         this.recordDialogue('heartflow', chainResult.response, { source: 'think' });
+      }
+
+      // Fable 5 吸收：输出前检查清单
+      // 在格式化前执行 output-checklist
+      if (chainResult.response && this.outputChecklist) {
+        try {
+          const checklistResult = this.outputChecklist.runChecklist(input, chainResult.response, {
+            preferences: this._preferences || {},
+            askedForList: /列表|清单|列举|几点|步骤/.test(input),
+            hasPreviousContent: this.thoughtHistory && this.thoughtHistory.length > 1,
+          });
+          if (!checklistResult.passed) {
+            // 记录警告但不阻止输出（soft warning）
+            chainResult._checklistWarnings = checklistResult.warnings;
+          }
+        } catch (e) {
+          // checklist 失败不阻断主流程
+        }
       }
           // ─── 格式化输出：精简飞书消息 ─────────────────────────────
     // 根据任务复杂度决定输出深度

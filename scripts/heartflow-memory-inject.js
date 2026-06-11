@@ -85,9 +85,14 @@ function main() {
 
   if (preferences.length > 0) {
     lines.push('');
-    lines.push('【用户偏好】');
+    lines.push('【用户偏好（谨慎应用）】');
+    lines.push('  规则：Always类型始终应用 | Behavioral类型直接相关时应用 | Contextual类型仅查询直接引用时应用');
+    lines.push('  不应用场景：技术问题（除非专业认证直接相关）、创意内容（除非明确要求）、无关领域');
     for (const e of preferences) {
-      lines.push(`  • ${e.value}`);
+      const typeHint = e.value.includes('always') || e.value.includes('永远') ? '[always]' :
+                       e.value.includes('prefer') || e.value.includes('喜欢') ? '[contextual]' :
+                       '[behavioral]';
+      lines.push(`  ${typeHint} ${e.value}`);
     }
   }
 
