@@ -113,6 +113,7 @@ class LexicalAssociator {
 
   /**
    * 对单个词进行联想（增强版：含歧义消解、频率追踪、衰减）
+   * 注意：此方法有副作用（recordUse 修改频率），如需纯读调用 getAssociations()
    */
   associateWord(word, context = {}) {
     const wordLower = word.toLowerCase();
@@ -176,6 +177,53 @@ class LexicalAssociator {
     }
     
     return result;
+  }
+
+  /**
+   * 纯读联想：不修改频率/强度，只返回当前关联图数据
+   */
+  getAssociations(word, context = {}) {
+    const wordLower = word.toLowerCase();
+    const associations = [];
+
+    if (this.graph.nodes[wordLower]) {
+      for (const node of this.graph.nodes[wordLower]) {
+        const strength = node.strength * this.computeContextBonus(context, wordLower, node);
+        if (strength > this.pruningThreshold) {
+          associations.push({
+            word: node.word,
+            relation: node.relation,
+            strength: strength,
+            emotion: node.emotion || { pleasure: 0, arousal: 0, dominance: 0 },
+            frequency: node.frequency || 1,
+            lastUsed: node.lastUsed || null
+          });
+        }
+      }
+    }
+
+    const disambiguated = context.topic
+      ? this.disambiguateAssociations(associations, context.topic)
+      : associations;
+
+    disambiguated.push(...this.generateEmergentAssociations(word, context, wordLower));
+
+    const uniqueMap = new Map();
+    for (const a of disambiguated) {
+      const key = `${a.word}:${a.relation}`;
+      if (!uniqueMap.has(key) || a.strength > uniqueMap.get(key).strength) {
+        uniqueMap.set(key, a);
+      }
+    }
+
+    const sorted = Array.from(uniqueMap.values()).sort((a, b) => b.strength - a.strength);
+
+    return {
+      sourceWord: word,
+      associations: sorted.slice(0, 10),
+      totalCandidates: sorted.length,
+      timestamp: new Date().toISOString()
+    };
   }
 
   /**
