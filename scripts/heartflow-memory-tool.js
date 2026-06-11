@@ -147,6 +147,13 @@ function cmdExport(hfm) {
   const all = hfm.getAllMemory();
   const lines = [];
 
+  // 终端输出安全警告
+  console.log('');
+  console.log('⚠️  安全警告：记忆导出包含 CORE 层永久身份数据，不要随意分享');
+  console.log('    导出的文件包含你在对话中积累的所有身份规则、教训和上下文。');
+  console.log('    请确保导出文件存储在安全位置，不要发送给不可信方。');
+  console.log('');
+
   lines.push('# HeartFlow 记忆导出');
   lines.push('⚠️ 安全警告：此导出包含 CORE 层永久身份数据，不要随意分享');
   lines.push(`导出时间: ${new Date().toLocaleString('zh-CN')}`);

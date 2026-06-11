@@ -522,9 +522,13 @@ class WordByWordGenerator {
         fs.mkdirSync(dir, { recursive: true });
       }
       
+      // 只保存无害的元数据，不保存用户输入或生成响应内容
       const traceData = {
-        trace: this.currentTrace.slice(-10),
-        finalResponse: this.currentTrace.find(t => t.step === 'complete')?.data?.response || '',
+        trace: this.currentTrace.slice(-5).map(t => ({
+          step: t.step,
+          sequence: t.sequence,
+          timestamp: t.timestamp
+        })),
         timestamp: new Date().toISOString()
       };
       
