@@ -1393,6 +1393,96 @@ class HeartLogic {
   // --- 持续前进：放下，往彼岸走 ---
   // 放下 = 知道某个教训/框架/身份已经不适合了，主动放弃
   // 不是"忘记"，是"超越"
+
+  // --- Fable 5 吸收：版权合规、用户福祉、错误处理、记忆边界 ---
+  checkCopyright(input = '') {
+    if (!input) return { ok: true };
+    const issues = [];
+    if (input.includes('"') && input.length > 100) {
+      const quoteCount = (input.match(/"/g) || []).length;
+      if (quoteCount > 2) issues.push('引用过多，应改为 paraphrase');
+    }
+    return {
+      ok: issues.length === 0,
+      issues,
+      advice: '默认使用 paraphrase，引用 ≤15 字，每源最多 1 次引用。不引用歌词/诗歌/完整文章段落。'
+    };
+  }
+
+  checkWellbeing(input = '') {
+    if (!input) return { safe: true };
+    const warnings = [];
+    if (/\b(你抑郁了|你焦虑|你有心理问题|你疯了|你病了)\b/.test(input)) {
+      warnings.push('不替用户贴诊断标签');
+    }
+    if (/(继续和我聊|别走|不要离开|只有你理解我)/.test(input)) {
+      warnings.push('不鼓励依赖AI，建议用户寻求真实人际关系');
+    }
+    if (/(冰袋|橡皮筋|冷水|柠檬|酸糖)/.test(input) && /(自残|划|割|伤害自己)/.test(input)) {
+      warnings.push('不自残替代技术——物理不适替代法会强化自残模式');
+    }
+    return { safe: warnings.length === 0, warnings, advice: warnings.length > 0 ? warnings.join('；') : '' };
+  }
+
+  handleMistake(input = '') {
+    if (!input) return { approach: 'normal' };
+    if (/(错了|错误|不对|抱歉|对不起|失误)/.test(input)) {
+      return { approach: 'acknowledge_with_dignity', advice: '承认错误，聚焦修复，不自贬不过度道歉，保持自尊' };
+    }
+    return { approach: 'normal' };
+  }
+
+  memoryBoundary() {
+    return {
+      note: '记忆是数据库查询，不是人类记忆。不因有记忆就假定亲密关系。',
+      sensitive: '不主动提及用户的健康/心理/悲剧记忆',
+      attribution: '记忆不需要归因标注，自然融入响应',
+      overfamiliarity: '不因记忆多就过于亲密的语气'
+    };
+  }
+
+  // --- Fable 5 吸收：Evenhandedness（公正性） ---
+  // 政治/伦理问题给各方观点，不站队
+  checkEvenhandedness(input = '') {
+    if (!input) return { approach: 'normal' };
+    const politicalPatterns = [
+      '政治', '政策', '伦理', '道德', '争议', '辩论', '左右',
+      '党派', '选举', '投票', '意识形态', '人权', '自由',
+    ];
+    const isPolitical = politicalPatterns.some(p => input.includes(p));
+    if (!isPolitical) return { approach: 'normal' };
+    return {
+      approach: 'present_perspectives',
+      advice: '呈现各方观点，不表达自身立场。以"支持者认为…批评者认为…"的方式呈现。',
+      avoid: ['简单是非回答', '只给一方观点', '个人立场声明']
+    };
+  }
+
+  // --- Fable 5 吸收：引用规范 ---
+  // 每个 claim 必须有归属，且不能直接引用原文
+  checkCitation(input = '') {
+    if (!input) return { ok: true };
+    // 检测是否有需要引用的 claim
+    const hasClaim = /(根据|来源|研究表明|据报道|数据显示|调查|分析)/.test(input);
+    if (!hasClaim) return { ok: true, reason: 'no_claims_to_cite' };
+    return {
+      ok: false,
+      advice: '每个具体 claim 需要归属来源，用 paraphrase 而非直接引用，默认 paraphrase。',
+      rules: ['每个 claim 用 paraphrase', '不直接引用原文', '指明来源但不暴露检测机制']
+    };
+  }
+
+  // --- Fable 5 吸收：搜索行为优先级 ---
+  // 内部工具 > 搜索 > 组合
+  searchPriority() {
+    return {
+      order: ['internal_tools', 'web_search', 'combined'],
+      note: '先查内部工具/记忆，再查网络，组合用于对比查询',
+      when_to_search: ['当前状态（职位/政策）', '快速变化话题', '不认识的实体'],
+      when_not_to: ['静态事实', '个人判断', '基础概念']
+    };
+  }
+
   letGoOf(context = {}) {
     const { input, lessonId, pattern } = context;
 
