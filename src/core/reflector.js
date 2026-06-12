@@ -34,7 +34,7 @@ const GOAL_DESCRIPTIONS = {
   EMOTION_STABILITY: '提升情绪稳定性：降低波动幅度，维持积极趋势',
   TASK_COMPLETION: '提升任务完成率：优化分解粒度，减少未完成任务',
   FEEDBACK_POSITIVITY: '提升用户满意度：改进响应质量，增加积极反馈',
-  PERSONALITY_GROWTH: '促进人格成长：推动各维度均衡发展',
+  PERSONALITY_GROWTH: '促进人格成长：通过事件记录自然浮现',
   SESSION_CONSISTENCY: '提升会话连贯性：减少中断后的上下文丢失'
 };
 
@@ -393,17 +393,17 @@ class Reflector {
       this.updateGoal('FEEDBACK_POSITIVITY', currEff, prevEff);
     }
 
-    // 人格趋势
+    // 人格趋势（事件响应模式，不再基于avgScore打分）
     if (lastReport.personalityAnalysis && currentAnalysis.personalityAnalysis) {
-      const prevP = parseFloat(lastReport.personalityAnalysis.avgScore) || 0;
-      const currP = parseFloat(currentAnalysis.personalityAnalysis.avgScore) || 0;
+      const prevCount = lastReport.personalityAnalysis.eventCount || 0;
+      const currCount = currentAnalysis.personalityAnalysis.eventCount || 0;
 
       changes.personality = {
-        avgScoreDelta: Math.round((currP - prevP) * 10) / 10,
-        direction: currP > prevP ? 'improving' : currP < prevP ? 'declining' : 'stable'
+        eventCountDelta: currCount - prevCount,
+        direction: currCount > prevCount ? 'growing' : currCount < prevCount ? 'contracting' : 'stable'
       };
 
-      this.updateGoal('PERSONALITY_GROWTH', currP, prevP);
+      this.updateGoal('PERSONALITY_GROWTH', Math.min(currCount, 10), Math.min(prevCount, 10));
     }
 
     // 统计趋势方向
@@ -624,64 +624,48 @@ class Reflector {
   }
 
   /**
-   * 分析人格状态
-   * @param {Object} personality - 人格数据
+   * 分析人格状态（事件驱动模式）
+   * 人格不是预设维度，而是事件触发的响应记录。
+   * 空白本身就是一种性格——不预设任何倾向，只记录事件触发的反应。
+   * @param {Object} personality - 事件响应记录
    */
   analyzePersonality(personality) {
-    // 输入验证
+    // 输入验证：允许空对象（空白人格）
     if (!personality || typeof personality !== 'object' || Array.isArray(personality)) {
       return {
-        status: 'invalid_input',
-        avgScore: 0,
-        level: '未知',
-        dimensions: {},
-        summary: '人格数据格式无效'
+        status: 'blank',
+        eventCount: 0,
+        summary: '人格为空——空白本身就是一种性格'
       };
     }
 
     const keys = Object.keys(personality);
+
+    // 空对象 = 空白人格，不是"无数据"
     if (keys.length === 0) {
       return {
-        status: 'no_data',
-        avgScore: 0,
-        level: '未知',
-        dimensions: {},
-        summary: '人格状态未知'
+        status: 'blank',
+        eventCount: 0,
+        summary: '人格为空——空白本身就是一种性格，等待事件触动'
       };
     }
 
-    // 过滤有效数值
-    const values = keys
-      .map(k => personality[k])
-      .filter(v => typeof v === 'number' && v >= 0 && v <= 10);
+    // 统计事件触发的响应记录数
+    const eventKeys = keys.filter(k => k.startsWith('event_') || k.startsWith('response_'));
+    const numericValues = keys.filter(k => typeof personality[k] === 'number');
 
-    if (values.length === 0) {
-      return {
-        status: 'invalid_data',
-        avgScore: 0,
-        level: '未知',
-        dimensions: personality,
-        summary: '人格维度值无效（需0-10范围）'
-      };
-    }
-
-    const avg = values.reduce((a, b) => a + b, 0) / values.length;
-    const level = avg >= 7 ? 'high' : avg >= 4 ? 'medium' : 'low';
-
-    // 找出最强和最弱维度
-    const sortedKeys = [...keys].sort((a, b) => (personality[b] || 0) - (personality[a] || 0));
-    const strongest = sortedKeys[0];
-    const weakest = sortedKeys[sortedKeys.length - 1];
+    // 如果有数值型维度残留（旧数据兼容），统计但不打分
+    const eventResponseSummary = eventKeys.length > 0
+      ? `已记录 ${eventKeys.length} 次事件响应`
+      : numericValues.length > 0
+        ? `存在 ${numericValues.length} 个遗留维度值（将随事件驱动模式自然消退）`
+        : `包含 ${keys.length} 个属性`;
 
     return {
-      status: 'available',
-      avgScore: Math.round(avg * 10) / 10,
-      level,
-      dimensions: personality,
-      strongest,
-      weakest,
-      dimensionCount: values.length,
-      summary: `人格平均分 ${Math.round(avg * 10) / 10}/10，水平${level}，最强维度"${strongest}"，最弱维度"${weakest}"`
+      status: 'emergent',
+      eventCount: eventKeys.length || keys.length,
+      eventKeys: eventKeys.length > 0 ? eventKeys.slice(0, 5) : undefined,
+      summary: `人格通过事件触动浮现中——${eventResponseSummary}`
     };
   }
 
@@ -916,8 +900,8 @@ class Reflector {
     // 人格分析
     console.log(`\n🧠 人格分析:`);
     console.log(subLine);
-    console.log(`   平均分: ${report.personalityAnalysis?.avgScore || 'N/A'}`);
-    console.log(`   水平: ${report.personalityAnalysis?.level || 'N/A'}`);
+    console.log(`   状态: ${report.personalityAnalysis?.status || 'N/A'}`);
+    console.log(`   事件记录: ${report.personalityAnalysis?.eventCount || 0} 次`);
 
     // 趋势分析
     if (report.trendAnalysis) {
