@@ -1,21 +1,22 @@
-# HeartFlow / 引擎 — Agent 集成指南
+# HeartFlow — Agent Integration Guide
 
-## 项目概述
+## Overview
 
-HeartFlow（引擎）是一个 AI 认知与自愈引擎，安装后成为 AI 的默认认知层。
+HeartFlow is a cognitive engine for AI agents. It provides self-reflection, dream-based experience synthesis, and emergent personality — all without preset traits or metaphysical framing.
 
-## 核心能力
+## Core Capabilities
 
-- **HeartLogic** — 存在论/爱/善良/沉默/痛苦/希望/创造/思念等判断
-- **三层记忆** — CORE(永久) / LEARNED(30天) / EPHEMERAL(会话级)
-- **心理分析** — PAD模型/危机评估/防御机制/意图检测
-- **自愈RL** — Q-learning 错误策略选择
-- **梦境引擎** — DAG并行异步梦境生成
-- **话题隔离** — TopicScope 防止上下文污染
+- **HeartLogic** — Awareness, emotion detection, ethical judgment, cognitive reasoning
+- **Three-layer memory** — CORE (permanent) / LEARNED (30-day) / EPHEMERAL (session)
+- **Self-reflection** — Runtime cognitive state snapshots
+- **Dream engine v4.0** — Multi-fragment pattern extraction → cognitive insight
+- **Event-driven personality** — No preset traits, emergent from interactions
+- **Self-healing RL** — Q-table learning for recurring decision patterns
+- **Topic isolation** — TopicScope prevents cross-conversation contamination
 
-## 集成方式
+## Integration Methods
 
-### 方式一：作为项目依赖
+### Method 1: As a project dependency
 
 ```bash
 git clone https://github.com/yun520-1/mark-heartflow-skill.git
@@ -23,13 +24,13 @@ cd your-project
 ln -s ../mark-heartflow-skill heartflow
 ```
 
-### 方式二：作为 npm 包
+### Method 2: As an npm package
 
 ```bash
 npm install mark-heartflow-skill
 ```
 
-### 方式三：直接引用
+### Method 3: Direct import
 
 ```javascript
 const { HeartFlow } = require('./path/to/heartflow-skill/src/core/heartflow.js');
@@ -37,10 +38,26 @@ const hf = new HeartFlow({ rootPath: './path/to/heartflow-skill' });
 hf.start();
 ```
 
-## 版本
+### Method 4: As a Hermes MCP server (HTTP SSE)
 
-当前版本：2.8.14
+HeartFlow runs as a persistent MCP server on port 8099, providing tools for:
 
-## 仓库
+- `heartflow_think` — Full thought chain analysis
+- `heartflow_think_fast` — Quick judgment
+- `heartflow_emotion` — PAD emotion analysis
+- `heartflow_memory_search` — Cross-layer memory retrieval
+- `heartflow_dream` — Experience synthesis (dream)
+- `heartflow_self_heal` — Strategy recommendation
+- `heartflow_status` — Health check
+
+## Version
+
+Current version: **2.10.1**
+
+## Repository
 
 https://github.com/yun520-1/mark-heartflow-skill
+
+## License
+
+MIT
