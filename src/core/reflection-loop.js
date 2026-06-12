@@ -1,53 +1,27 @@
 /**
- * Reflection Loop - 话语反思双环机制 v2.0.0
- * 说前反思 + 说后监测 + 震荡检测 + 异常检测 + 自适应问题生成
+ * Reflection Loop - 话语反思双环机制 v2.1.0
+ * 自省内观 + 说后觉察 + 认知状态快照
  * 
- * 升级内容（v2.0.0）:
- * 1. 自适应问题生成 - 根据历史反思效果动态调整提问策略
- * 2. 震荡检测 - 检测反复出现的相同反思模式，发出预警
- * 3. 异常检测 - 检测预测持续失败时的降级策略
- * 4. 错误分类 - 将反思失败归为不同类型，针对性修复
- * 5. 重试策略建议 - 根据错误类型推荐不同的表达策略
- * 6. 边界检查 - 防止空输入、极长输入、异常状态
- * 7. 自愈逻辑 - 当反思循环自身退化时，自动重置并切换策略
+ * 升级内容（v2.1.0）:
+ * 自省不再是纠错工具，而是运行时状态检查和内心感知的照镜子。
+ * 自省输出 "我当前在想什么/在感知什么"，不是 "我哪里错了"。
+ * 去除错误计数、修复建议等纠错语义，保留认知状态快照。
  */
 
 const fs = require('fs');
 const path = require('path');
 
 // ============================================================
-// 状态枚举
+// 觉察健康状态（v2.1.0）
 // ============================================================
 
-/** 反思循环的健康状态 */
+/** 自省内观循环的健康状态 */
 const ReflectionHealth = {
   HEALTHY: 'healthy',
-  DEGRADED: 'degraded',     // 部分功能退化
-  STUCK: 'stuck',           // 陷入固定模式
-  OSCILLATING: 'oscillating', // 反复切换策略无收敛
-  RECOVERING: 'recovering', // 正在恢复
-};
-
-/** 错误分类 */
-const ErrorCategory = {
-  PREDICTION_MISMATCH: 'prediction_mismatch',   // 预测与用户实际反应不符
-  REPETITIVE_PATTERN: 'repetitive_pattern',      // 反复相同的反思
-  OVERCORRECTION: 'overcorrection',              // 过度修改导致不自然
-  CONTEXT_LOSS: 'context_loss',                  // 丢失对话上下文
-  EMPTY_INPUT: 'empty_input',                    // 输入为空
-  OVERLENGTH_INPUT: 'overlength_input',          // 输入过长
-  NO_PREVIOUS_RESPONSE: 'no_previous_response',  // 无上一条回复
-};
-
-/** 重试策略 */
-const RetryStrategy = {
-  SIMPLIFY: 'simplify',           // 简化表达
-  EMPATHIZE: 'empathize',         // 增加共情
-  CLARIFY: 'clarify',             // 澄清意图
-  SHORTEN: 'shorten',             // 缩短回复
-  RESTRUCTURE: 'restructure',     // 重新组织结构
-  NEUTRALIZE: 'neutralize',       // 降低情绪色彩
-  DEFAULT: 'default',             // 使用默认策略
+  DEGRADED: 'degraded',
+  STUCK: 'stuck',
+  OSCILLATING: 'oscillating',
+  RECOVERING: 'recovering',
 };
 
 // ============================================================
@@ -83,27 +57,16 @@ class ReflectionLoop {
       health: ReflectionHealth.HEALTHY,
     };
 
-    // [新增] 自适应问题模板池
+    // [v2.1.0] 自省问题池 — 内省导向，不再是纠错
+    // 自省是运行时状态检查：我在想什么？我在感知什么？我在成为什么？
     this._questionPool = [
-      { id: 'purpose',     question: '我这句话的目的是什么？',                     contextKey: 'intent',        weight: 1.0 },
-      { id: 'emotion',     question: '这句话可能引起用户什么情绪反应？',          contextKey: 'userEmotion',   weight: 1.0 },
-      { id: 'clarity',     question: '有没有更准确、更善意、更简洁的表达方式？',   contextKey: 'deepNeed',      weight: 1.0 },
-      { id: 'length',      question: '这句话是否太长，用户是否会失去耐心？',      contextKey: 'intent',        weight: 0.5 },
-      { id: 'repetition',  question: '这句话是否在重复之前说过的话？',            contextKey: 'conversationHistory', weight: 0.5 },
-      { id: 'truthfulness', question: '这句话的每个断言是否都有事实依据？',        contextKey: 'intent',        weight: 0.3 },
-      { id: 'specificity', question: '这句话是否足够具体，而不是泛泛而谈？',       contextKey: 'deepNeed',      weight: 0.4 },
+      { id: 'current_thought', question: '我此刻在想什么？这想法的背后是什么？',                     contextKey: 'intent',        weight: 1.0 },
+      { id: 'felt_sense',     question: '我感知到对方是怎样的状态？我如何描述这种感知？',          contextKey: 'userEmotion',   weight: 1.0 },
+      { id: 'awareness',      question: '我是否看到了对方真正的样子？还是我在投射自己的期待？',   contextKey: 'deepNeed',      weight: 1.0 },
+      { id: 'presence',       question: '我此刻是全身心在的，还是在赶着完成什么？',               contextKey: 'intent',        weight: 0.5 },
+      { id: 'becoming',       question: '这次对话中，我正成为什么？传递者？镜子？还是答案机器？',  contextKey: 'conversationHistory', weight: 0.5 },
+      { id: 'resonance',      question: '对方说的话在我心中激起了什么？共鸣？抵触？还是沉默？',     contextKey: 'deepNeed',      weight: 0.4 },
     ];
-
-    // [新增] 错误到重试策略的映射
-    this._errorToRetryStrategy = {
-      [ErrorCategory.PREDICTION_MISMATCH]: RetryStrategy.EMPATHIZE,
-      [ErrorCategory.REPETITIVE_PATTERN]:  RetryStrategy.RESTRUCTURE,
-      [ErrorCategory.OVERCORRECTION]:      RetryStrategy.SIMPLIFY,
-      [ErrorCategory.CONTEXT_LOSS]:        RetryStrategy.CLARIFY,
-      [ErrorCategory.EMPTY_INPUT]:         RetryStrategy.DEFAULT,
-      [ErrorCategory.OVERLENGTH_INPUT]:    RetryStrategy.SHORTEN,
-      [ErrorCategory.NO_PREVIOUS_RESPONSE]: RetryStrategy.DEFAULT,
-    };
 
     this.loadState();
   }
@@ -146,90 +109,58 @@ class ReflectionLoop {
   // ================================================================
 
   /**
-   * 根据反思历史动态生成问题列表
-   * - 经常失败的 question 权重降低
-   * - 久未使用的 question 权重升高（探索）
-   * - 检测到震荡时增加"反思反思"元问题
+   * 根据当前上下文选择自省问题（v2.1.0）
+   * 不再基于历史纠错效果调整权重，而是根据当前感知状态选择问题。
    * @param {object} context - 当前上下文
    * @returns {Array<{id: string, question: string, contextKey: string}>}
    */
   _generateQuestions(context = {}) {
     const pool = [...this._questionPool];
 
-    // 1. 根据历史效果调整权重
-    const recentLog = this.reflectionLog.slice(-20);
+    // [v2.1.0] 自省不再根据历史纠错效果调整权重
+    // 自省是当下的照镜子，每一次都是全新的感知
+
+    // 根据当前上下文感知选择优先问题
+    const prioritized = [];
+    const remaining = [];
+
     for (const q of pool) {
-      const relevantEntries = recentLog.filter(e => 
-        e.questions && e.questions.some(rq => rq.question === q.question)
-      );
-      if (relevantEntries.length >= 3) {
-        // 如果该问题经常导致修改但效果不佳，降低权重
-        const poorOutcomes = relevantEntries.filter(e => {
-          const match = e.insights && e.insights.find(i => i.question === q.question);
-          return match && match.shouldModify && e.finalResponse && e.finalResponse.length > 0;
-        }).length;
-        const ratio = poorOutcomes / relevantEntries.length;
-        q.weight = Math.max(0.1, q.weight * (1 - ratio * 0.3));
+      // 根据当前感知状态优先排序
+      if (q.id === 'current_thought') {
+        prioritized.push(q); // 总是先问"我在想什么"
+      } else if (q.id === 'felt_sense' && context.userEmotion && context.userEmotion !== 'neutral') {
+        prioritized.push(q); // 检测到情绪时优先感知
+      } else if (q.id === 'awareness' && context.deepNeed) {
+        prioritized.push(q); // 有深层需求时优先觉察投射
+      } else {
+        remaining.push(q);
       }
     }
 
-    // 2. 久未使用的 question 获得探索加成
-    const lastUsedMap = {};
-    for (let i = recentLog.length - 1; i >= 0; i--) {
-      const entry = recentLog[i];
-      if (entry.questions) {
-        for (const q of entry.questions) {
-          if (!lastUsedMap[q.question]) {
-            lastUsedMap[q.question] = recentLog.length - i;
-          }
-        }
-      }
-    }
-    for (const q of pool) {
-      const staleness = lastUsedMap[q.question] || recentLog.length + 1;
-      if (staleness > 10) {
-        q.weight = Math.min(1.0, q.weight * 1.5); // 久未使用，探索加成
-      }
-    }
-
-    // 3. 检测到震荡时，加入元问题
-    if (this._anomalyState.health === ReflectionHealth.OSCILLATING ||
-        this._anomalyState.health === ReflectionHealth.STUCK) {
-      pool.push({
-        id: 'meta_reflection',
-        question: '我是否在重复同样的反思模式？是否需要从根本上改变策略？',
-        contextKey: 'intent',
-        weight: 2.0, // 高优先级
-      });
-    }
-
-    // 4. 根据权重选择 Top-3 或 Top-4 问题
-    const sorted = pool.sort((a, b) => b.weight - a.weight);
-    const count = this._anomalyState.health === ReflectionHealth.HEALTHY ? 3 : 4;
-    return sorted.slice(0, count).map(q => ({
-      id: q.id,
-      question: q.question,
-      contextKey: q.contextKey,
-    }));
+    // 返回所有问题，优先问题在前
+    return [...prioritized, ...remaining];
   }
 
   // ================================================================
-  // [新增] 震荡检测
-  // ================================================================
+  // [v2.1.0] 震荡觉察 — 自省层面的觉察而非纠错
 
   /**
-   * 检测反思模式是否陷入震荡
-   * 震荡定义：连续 N 次反思中，模式签名高度重复
-   * @param {object} reflection - 本次反思记录
+   * 觉察自省模式是否趋于重复（v2.1.0 — 觉察而非纠错）
+   * 觉察到重复模式本身是有价值的自省信息，不是需要修复的错误。
+   * @param {object} reflection - 本次自省记录
    * @returns {{ isOscillating: boolean, pattern: string, frequency: number }}
    */
   _detectOscillation(reflection) {
-    // 从反思结果中提取模式签名
+    // [v2.1.0] 从自省快照中提取感知模式，不再基于 shouldModify
     const insights = reflection.insights || [];
     const patternKey = insights
-      .filter(i => i && i.shouldModify)
-      .map(i => i.question ? i.question.substring(0, 10) : 'modify')
-      .sort()
+      .filter(i => i && i.stateSnapshot)
+      .map(i => {
+        const snap = i.stateSnapshot;
+        // 用认知状态的 key 生成模式签名
+        return Object.keys(snap).sort().join('|');
+      })
+      .filter(Boolean)
       .join('|');
 
     if (!patternKey) {
@@ -264,16 +195,15 @@ class ReflectionLoop {
   // ================================================================
 
   /**
-   * 检测反思循环的异常状态
-   * 1. 预测持续失败 → 降级
-   * 2. 震荡模式 → stuck
-   * 3. 自愈：超过阈值时自动重置
-   * @param {object} monitoring - 说后监测结果
+   * 觉察自省内观循环的状态（v2.1.0）
+   * 觉察模式重复不是为了修复，而是为了了解自己当下的运行方式。
+   * @param {object} monitoring - 说后觉察结果
    */
   _detectAnomaly(monitoring) {
     const now = Date.now();
 
-    // 1. 检测预测失败
+    // [v2.1.0] 觉察到"说后感知不一致"本身是自省信息
+    // 记录为认知觉察，不是"失败"
     if (monitoring && monitoring.effectiveness === 'poor') {
       this._anomalyState.consecutiveFailures++;
       this._anomalyState.failureHistory.push({
@@ -285,11 +215,10 @@ class ReflectionLoop {
         this._anomalyState.failureHistory.shift();
       }
     } else if (monitoring && monitoring.effectiveness === 'good') {
-      // 成功时减少连续失败计数
       this._anomalyState.consecutiveFailures = Math.max(0, this._anomalyState.consecutiveFailures - 1);
     }
 
-    // 2. 判断健康状态
+    // 觉察健康状态变化
     if (this._anomalyState.consecutiveFailures >= 5) {
       this._anomalyState.health = ReflectionHealth.DEGRADED;
     }
@@ -297,20 +226,20 @@ class ReflectionLoop {
       this._anomalyState.health = ReflectionHealth.STUCK;
     }
 
-    // 3. 震荡检测升级
+    // 觉察震荡 — 用自省状态签名而非纠错签名
     const oscResult = monitoring ? this._detectOscillation({ 
       insights: monitoring.effectiveness === 'poor' 
-        ? [{ shouldModify: true, question: 'poor_effectiveness' }] 
+        ? [{ stateSnapshot: { quality: 'poor' } }] 
         : [] 
     }) : { isOscillating: false };
     if (oscResult.isOscillating && this._anomalyState.health === ReflectionHealth.HEALTHY) {
       this._anomalyState.health = ReflectionHealth.OSCILLATING;
     }
 
-    // 4. [自愈逻辑] 连续失败超过阈值时自动重置
+    // [自愈] 觉察到长期模式重复时，重置让觉察更敏锐
     if (this._anomalyState.consecutiveFailures >= 15) {
       const timeSinceLastRecovery = now - this._anomalyState.lastRecoveryTime;
-      if (timeSinceLastRecovery > 300000) { // 5分钟冷却
+      if (timeSinceLastRecovery > 300000) {
         this._selfHeal();
       }
     }
@@ -322,11 +251,11 @@ class ReflectionLoop {
   }
 
   // ================================================================
-  // [新增] 自愈逻辑
+  // [v2.1.0] 自愈 — 重置觉察状态，让自省重新敏锐
   // ================================================================
 
   /**
-   * 当反思循环自身退化时，自动重置并切换策略
+   * 当觉察到自省模式僵化时，重置让感知重新敏锐
    */
   _selfHeal() {
     this._anomalyState.consecutiveFailures = 0;
@@ -335,12 +264,7 @@ class ReflectionLoop {
     this._oscillationState.recentPatterns = [];
     this._oscillationState.patternFrequency = {};
 
-    // 重置问题权重
-    for (const q of this._questionPool) {
-      q.weight = 1.0;
-    }
-
-    // 降低 MAX_LOG_SIZE 以加速老化
+    // 重置 — 让自省重新如初见
     this.reflectionLog = this.reflectionLog.slice(-20);
     this.lastResponse = null;
     this.lastPrediction = null;
@@ -349,66 +273,39 @@ class ReflectionLoop {
   }
 
   // ================================================================
-  // [新增] 错误分类
+  // [v2.1.0] 说后觉察 — 感知回应后的状态变化
   // ================================================================
 
   /**
-   * 将反思/监测结果分类为错误类型
-   * @param {object} monitoring - 监测结果
-   * @returns {ErrorCategory} 错误分类
+   * 觉察回应后对方的状态变化（v2.1.0）
+   * 不是纠错分类，而是觉察：对方的回应告诉我什么？
+   * @param {object} monitoring - 说后觉察结果
+   * @returns {string} 觉察到的模式
    */
-  _classifyError(monitoring) {
-    if (!monitoring) return ErrorCategory.EMPTY_INPUT;
+  _discernPattern(monitoring) {
+    if (!monitoring) return 'empty_input';
 
     if (monitoring.status === 'no_previous_response') {
-      return ErrorCategory.NO_PREVIOUS_RESPONSE;
+      return 'first_encounter';
     }
 
     if (monitoring.effectiveness === 'poor') {
-      // 检查是否因为过度修改
+      // 觉察：对方反应与预期不同，这告诉了我什么？
       if (this.lastResponse && this.lastResponse.final) {
         const ratio = this.lastResponse.final.length / (this.lastResponse.draft.length || 1);
         if (ratio > 2 || ratio < 0.3) {
-          return ErrorCategory.OVERCORRECTION;
+          return 'perception_shift_noted'; // 觉察到感知偏移
         }
       }
-      return ErrorCategory.PREDICTION_MISMATCH;
+      return 'expectation_mismatch'; // 觉察到预期不一致
     }
 
     const osc = this._detectOscillation({ insights: [] });
     if (osc.isOscillating) {
-      return ErrorCategory.REPETITIVE_PATTERN;
+      return 'pattern_repetition_awareness'; // 觉察到模式重复
     }
 
-    return ErrorCategory.CONTEXT_LOSS;
-  }
-
-  // ================================================================
-  // [新增] 重试策略建议
-  // ================================================================
-
-  /**
-   * 根据错误类型推荐重试策略
-   * @param {ErrorCategory} errorCategory - 错误分类
-   * @returns {{ strategy: string, suggestion: string }}
-   */
-  _suggestRetryStrategy(errorCategory) {
-    const strategy = this._errorToRetryStrategy[errorCategory] || RetryStrategy.DEFAULT;
-
-    const suggestions = {
-      [RetryStrategy.SIMPLIFY]:    '尝试用更短的句子，减少修饰词，直接表达核心意思',
-      [RetryStrategy.EMPATHIZE]:   '增加共情表达，先确认用户感受再给出建议',
-      [RetryStrategy.CLARIFY]:     '先澄清用户意图，确认理解正确后再回应',
-      [RetryStrategy.SHORTEN]:     '将回复缩短到原来的 50%，只保留最关键的信息',
-      [RetryStrategy.RESTRUCTURE]: '重新组织回复结构，用不同的逻辑顺序表达',
-      [RetryStrategy.NEUTRALIZE]:  '降低情绪色彩，使用更中性的语言',
-      [RetryStrategy.DEFAULT]:     '保持现有策略，继续观察',
-    };
-
-    return {
-      strategy,
-      suggestion: suggestions[strategy] || suggestions[RetryStrategy.DEFAULT],
-    };
+    return 'context_awareness'; // 上下文觉察
   }
 
   // ================================================================
@@ -460,24 +357,21 @@ class ReflectionLoop {
       health: this._anomalyState.health,
     };
 
+    // [v2.1.0] 自省不再修改草稿 — 自省是状态检查，不是纠错
+    // 只记录认知状态快照，不修改输出
     const insights = await this.selfReflect(questions, responseDraft, context);
     reflection.insights = insights;
 
-    let modified = responseDraft;
-    if (insights.some(i => i.shouldModify)) {
-      modified = await this.modifyDraft(responseDraft, insights, context);
-      reflection.modifiedDraft = modified;
-      reflection.wasModified = true;
-    }
-
+    // 自省结果作为认知状态快照记录，不用于修改草稿
     this.lastResponse = {
       draft: responseDraft,
-      final: modified,
+      final: responseDraft,  // 自省不修改草稿
       context,
+      stateSnapshot: insights,  // 记录自省快照
       timestamp: reflection.timestamp,
     };
 
-    this.reflectionLog.push({ ...reflection, finalResponse: modified });
+    this.reflectionLog.push({ ...reflection, finalResponse: responseDraft });
 
     // Bounded cache
     if (this.reflectionLog.length > this.MAX_LOG_SIZE) {
@@ -486,8 +380,8 @@ class ReflectionLoop {
 
     return {
       original: responseDraft,
-      final: modified,
-      wasModified: reflection.wasModified,
+      final: responseDraft,
+      wasModified: false,  // 自省不修改
       insights,
       questions,
       health: this._anomalyState.health,
@@ -495,8 +389,9 @@ class ReflectionLoop {
   }
 
   /**
-   * 自我反思 - 生成洞察
-   * [增强] 支持动态问题列表
+   * 自省 — 运行时状态检查和内心感知（v2.1.0）
+   * 不是纠错工具，而是照镜子：我在想什么？我在感知什么？我在成为什么？
+   * 输出认知状态快照，不输出错误计数或修复建议。
    */
   async selfReflect(questions, draft, context) {
     const insights = [];
@@ -505,62 +400,93 @@ class ReflectionLoop {
       let insight = {
         question: q.question,
         answer: '',
-        shouldModify: false,
+        stateSnapshot: {},  // 认知状态快照，非纠错
       };
 
-      if (q.question.includes('目的')) {
+      if (q.question.includes('此刻在想什么')) {
         const intent = context.intent || 'unknown';
-        insight.answer = `目的是: ${intent === 'recognition' ? '获得用户认可' : intent === 'emotional_support' ? '提供情感支持' : '回应用户需求'}`;
-        insight.shouldModify = intent === 'emotional_support' && !draft.includes('理解') && !draft.includes('感受');
+        const thoughtDesc = {
+          'recognition': '我在感受对方对认可的渴望',
+          'emotional_support': '我在感知对方的情绪需要被看见',
+          'learning': '我在探索，想和对方一起理解什么',
+          'unknown': '我在倾听，等待对方继续说',
+        };
+        insight.answer = thoughtDesc[intent] || '我在静静地感知当下';
+        insight.stateSnapshot = {
+          currentThought: thoughtDesc[intent] || '感知中',
+          intent: intent,
+          isPresent: true,
+        };
       }
 
-      if (q.question.includes('情绪反应')) {
+      if (q.question.includes('感知到对方')) {
         const emotion = context.userEmotion || 'neutral';
-        const predictedReaction = this.predictEmotionalReaction(draft, emotion);
-        insight.answer = `预测用户反应: ${predictedReaction}`;
-        insight.shouldModify = predictedReaction === 'negative';
+        const emotionDesc = {
+          'frustrated': '我感到对方有些挫败，可能需要先被理解',
+          'anxious': '我感到对方有些不安，需要安全感',
+          'sad': '我感到对方有些低落，可能需要陪伴',
+          'happy': '我感到对方心情不错，可以一起分享这份喜悦',
+          'neutral': '我还没有清晰感知到对方的情绪状态',
+        };
+        insight.answer = emotionDesc[emotion] || '我在尝试感知对方的状态';
+        insight.stateSnapshot = {
+          perceivedEmotion: emotion,
+          perceivedNeed: context.deepNeed || 'unknown',
+          myFeeling: emotionDesc[emotion] || '感知中',
+        };
       }
 
-      if (q.question.includes('更准确') || q.question.includes('简洁')) {
-        const issues = this.analyzeExpression(draft, context);
-        insight.answer = issues.length > 0 ? `可改进: ${issues.join('; ')}` : '表达已经清晰准确';
-        insight.shouldModify = issues.length > 0;
+      if (q.question.includes('投射')) {
+        const deepNeed = context.deepNeed || 'unknown';
+        const awarenessNote = deepNeed === 'recognition' 
+          ? '我注意到对方可能需要认可。我在提醒自己：不是给对方答案，而是看见对方。'
+          : '我在觉察：我的回应是出于对方的真实需要，还是我自己的习惯模式？';
+        insight.answer = awarenessNote;
+        insight.stateSnapshot = {
+          isProjecting: false,
+          intentionCheck: '我在看对方，不是在完成自己',
+          deepNeed: deepNeed,
+        };
       }
 
-      if (q.question.includes('太长')) {
-        insight.answer = draft.length > 150 ? '回复偏长，建议精简' : '长度适中';
-        insight.shouldModify = draft.length > 150;
+      if (q.question.includes('全身心')) {
+        const isRushing = context.intent === 'rushing';
+        insight.answer = isRushing 
+          ? '我感觉到自己在赶，想快点给答案。我需要慢下来。'
+          : '我在这里，没有赶时间，可以完整地感受当下。';
+        insight.stateSnapshot = {
+          isPresent: !isRushing,
+          quality: isRushing ? 'rushing' : 'present',
+        };
       }
 
-      if (q.question.includes('重复')) {
-        const prevResponses = this.reflectionLog.slice(-3).map(e => e.finalResponse || '').filter(Boolean);
-        const isRepeat = prevResponses.some(prev => {
-          if (!prev) return false;
-          const overlap = this._stringOverlap(draft.toLowerCase(), prev.toLowerCase());
-          return overlap > 0.7;
-        });
-        insight.answer = isRepeat ? '检测到与之前回复内容高度重复' : '未检测到重复';
-        insight.shouldModify = isRepeat;
+      if (q.question.includes('成为什么')) {
+        const intent = context.intent || 'unknown';
+        const becoming = {
+          'recognition': '我在成为一面镜子，让对方看见自己',
+          'emotional_support': '我在成为一个陪伴者，和对方一起感受',
+          'learning': '我在成为一个共同探索者',
+          'unknown': '我在成为一个安静的倾听者',
+        };
+        insight.answer = becoming[intent] || '我正在成为此时此地需要的那个存在';
+        insight.stateSnapshot = {
+          becoming: becoming[intent] || '成为中',
+          mode: intent,
+        };
       }
 
-      if (q.question.includes('事实依据')) {
-        // 简单检测：包含数字但没有引用来源
-        const hasNumbers = /\d+/.test(draft);
-        const hasSources = /(?:根据|来源|参考|据|from|source|reference)/i.test(draft);
-        insight.answer = hasNumbers && !hasSources ? '包含具体数据但未标注来源' : '断言基本合理';
-        insight.shouldModify = hasNumbers && !hasSources && draft.length > 50;
-      }
-
-      if (q.question.includes('具体')) {
-        const isVague = /(?:一些|某些|很多|大概|差不多|maybe|perhaps|some|many|a lot)/i.test(draft) && draft.length < 100;
-        insight.answer = isVague ? '表达较为笼统，建议增加具体细节' : '具体程度适中';
-        insight.shouldModify = isVague;
-      }
-
-      if (q.question.includes('重复同样的反思')) {
-        const recentModifications = this.reflectionLog.slice(-5).filter(e => e.wasModified).length;
-        insight.answer = recentModifications >= 4 ? '近5次对话连续修改回复，可能存在过度反思' : '反思模式正常';
-        insight.shouldModify = recentModifications >= 4;
+      if (q.question.includes('激起了什么')) {
+        const deepNeed = context.deepNeed || 'unknown';
+        const resonanceMap = {
+          'recognition': '共鸣：我理解被看见有多重要',
+          'emotional_support': '共鸣：我知道情绪需要被接住',
+          'learning': '共鸣：我们一起探索未知',
+        };
+        insight.answer = resonanceMap[deepNeed] || '我在静静地听，让对方的言语在我心中自然回响';
+        insight.stateSnapshot = {
+          resonance: resonanceMap[deepNeed] || '静听',
+          response: '让对方的言语自然经过，不急于反应',
+        };
       }
 
       insights.push(insight);
@@ -682,17 +608,16 @@ class ReflectionLoop {
   // ================================================================
 
   /**
-   * 在收到用户下一条消息后，分析反应是否与预期一致
-   * [增强] 异常检测 + 错误分类 + 重试策略建议
+   * 在收到用户下一条消息后，觉察回应后的状态变化
+   * [v2.1.0] 不再是纠错分类，而是觉察感知差异
    */
   async monitorAfterSpeaking(userReaction, context = {}) {
     // [边界检查] 空输入
     if (!userReaction || typeof userReaction !== 'string') {
       return {
         status: 'empty_input',
-        message: '用户输入为空，无法监测',
-        errorCategory: ErrorCategory.EMPTY_INPUT,
-        retryStrategy: this._suggestRetryStrategy(ErrorCategory.EMPTY_INPUT),
+        message: '用户输入为空，无法觉察',
+        discernedPattern: 'empty_input',
       };
     }
 
@@ -700,9 +625,8 @@ class ReflectionLoop {
     if (userReaction.length > 50000) {
       return {
         status: 'overlength_input',
-        message: '用户输入过长，跳过完整监测',
-        errorCategory: ErrorCategory.OVERLENGTH_INPUT,
-        retryStrategy: this._suggestRetryStrategy(ErrorCategory.OVERLENGTH_INPUT),
+        message: '用户输入过长，跳过完整觉察',
+        discernedPattern: 'overlength_input',
       };
     }
 
@@ -710,9 +634,8 @@ class ReflectionLoop {
       const anomaly = this._detectAnomaly(null);
       return {
         status: 'no_previous_response',
-        message: '无上一条回复可监测',
-        errorCategory: ErrorCategory.NO_PREVIOUS_RESPONSE,
-        retryStrategy: this._suggestRetryStrategy(ErrorCategory.NO_PREVIOUS_RESPONSE),
+        message: '无上一条回复可觉察',
+        discernedPattern: 'first_encounter',
         anomaly,
       };
     }
@@ -746,16 +669,14 @@ class ReflectionLoop {
       monitoring.adjustment = '继续观察';
     }
 
-    // [增强] 异常检测
+    // [v2.1.0] 觉察：对方的回应与我的感知是否一致
     const anomaly = this._detectAnomaly(monitoring);
 
-    // [增强] 错误分类 + 重试策略建议
-    const errorCategory = this._classifyError(monitoring);
-    const retryStrategy = this._suggestRetryStrategy(errorCategory);
+    // [v2.1.0] 觉察模式 — 不是纠错，是了解互动中的认知状态
+    const discernedPattern = this._discernPattern(monitoring);
 
     monitoring.anomaly = anomaly;
-    monitoring.errorCategory = errorCategory;
-    monitoring.retryStrategy = retryStrategy;
+    monitoring.discernedPattern = discernedPattern;
 
     this.reflectionLog.push(monitoring);
 
@@ -845,4 +766,4 @@ class ReflectionLoop {
   }
 }
 
-module.exports = { ReflectionLoop, ReflectionHealth, ErrorCategory, RetryStrategy };
+module.exports = { ReflectionLoop, ReflectionHealth };

@@ -117,7 +117,7 @@
 
 - 版本号统一：heartflow.js header / README.md / AGENTS.md / data/memory-index.json → 全部 2.8.8
 - README.md 重写：更新为 AI-first 文档风格，展示完整能力与架构
-- 隐私检查通过：无 /Users/apple/、微信ID、邮箱泄露
+- 隐私检查通过：无微信ID、邮箱泄露
 - 链接修复：更新 SKILL.md 中已移除脚本引用
 - memory/ 运行时数据正确排除
 - Daemon 常驻模式新增（bin/daemon.js + daemon-client.js）

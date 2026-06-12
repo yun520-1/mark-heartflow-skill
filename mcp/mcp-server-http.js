@@ -46,8 +46,8 @@ const TOOLS = [
   },
   {
     name: 'heartflow_dream',
-    description: '梦境生成：基于输入主题生成叙事性梦境文本。返回包含场景、叙事和转折点的梦境文本。',
-    inputSchema: { type: 'object', properties: { theme: { type: 'string', description: '梦境主题或引导语（可选）' }, intensity: { type: 'number', description: '梦境强度 0.0-1.0（可选，默认0.7）' } } }
+    description: '梦境升华（炼金）：从多个记忆碎片中提取共同模式，熔炼为新的认知洞察。不是叙事生成，是记忆的升华与重构。',
+    inputSchema: { type: 'object', properties: { theme: { type: 'string', description: '梦境主题或引导语（可选）——作为模式筛选线索' }, intensity: { type: 'number', description: '梦境深度 0.0-1.0（可选，默认0.7）' } } }
   },
   {
     name: 'heartflow_memory_search',
@@ -157,16 +157,41 @@ async function handleThinkFast(args) {
 async function handleDream(args) {
   const { theme = '', intensity = 0.7 } = args;
   let dreamResult = null;
-  if (heartflow && heartflow.dream) {
+
+  // 优先使用新的升华引擎（src/dream/engine.js）
+  try {
+    const DreamEnginePath = path.join(HF_DIR, 'src', 'dream', 'engine.js');
+    if (fs.existsSync(DreamEnginePath)) {
+      const { DreamEngine } = require(DreamEnginePath);
+      const memory = heartflow && heartflow.memory ? heartflow.memory : null;
+      const engine = new DreamEngine(memory, null);
+      engine.boot();
+      dreamResult = engine.dream(theme);
+    }
+  } catch (e) {
+    // 降级到旧的 DAG 引擎
+  }
+
+  // 降级方案：使用旧的 DAG dream 引擎
+  if (!dreamResult && heartflow && heartflow.dream) {
     try {
       if (typeof heartflow.dream.dream === 'function') {
-        dreamResult = await heartflow.dream.dream(`dream-${Date.now()}`, [{ text: theme || 'default dream', type: 'user_prompt' }], { force: true });
+        const oldResult = await heartflow.dream.dream(`dream-${Date.now()}`, [{ text: theme || 'default dream', type: 'user_prompt' }], { force: true });
+        dreamResult = {
+          narrative: JSON.stringify(oldResult, null, 2),
+          patterns: [],
+          essence: '',
+          structure: oldResult.level_breakdown || {},
+          upgrade: [],
+          sublimationQuality: 0,
+          dreamComplete: true,
+        };
       } else if (typeof heartflow.dreamNow === 'function') {
         dreamResult = await heartflow.dreamNow({ theme: theme || undefined, intensity: Math.max(0, Math.min(1, intensity)) });
       }
-    } catch (e) { dreamResult = { error: e.message }; }
+    } catch (e) { dreamResult = { error: e.message, narrative: '梦境升华引擎暂不可用。' }; }
   }
-  return { dream: dreamResult || { text: '梦境生成器暂不可用' }, timestamp: Date.now() };
+  return { dream: dreamResult || { narrative: '梦境升华引擎暂不可用', essence: '', patterns: [], upgrade: [] }, timestamp: Date.now() };
 }
 
 function handleMemorySearch(args) {

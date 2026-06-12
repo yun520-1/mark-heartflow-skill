@@ -347,7 +347,7 @@ class MetaEngine {
     return {
       version: '1.0.0',
       cycle_count: 0,
-      personality_values: { autonomy: 5, introspection: 5, growth: 5 },
+      personality_values: {}, // 空白人格——不预设任何性格倾向
       emotional_state: { valence: 5, arousal: 5, dominance: 5 },
       current_task: null,
       active_strategy: null,
@@ -432,11 +432,9 @@ class MetaEngine {
     const state = this.loadState();
     const heartflowState = this.loadHeartflowState();
     
-    state.personality_values = {
-      autonomy: heartflowState.personality?.autonomy || 5,
-      introspection: heartflowState.personality?.introspection || 5,
-      growth: heartflowState.personality?.growth || 5
-    };
+    // 人格状态：事件驱动模式，不预设维度
+    // 从 heartflowState 读取事件响应记录（如有）
+    state.event_responses = heartflowState.personality || {};
     
     state.emotional_state = this.inferEmotionalState(heartflowState);
     state.cycle_count++;
@@ -505,7 +503,8 @@ class MetaEngine {
   }
 
   calculateStrategyScore(strategy, state) {
-    const personalityFactor = (state.personality_values.introspection / 10) * 0.3;
+    // 人格因素：事件驱动模式，无预设维度，用中性值 0.5
+    const personalityFactor = 0.5 * 0.3;
     const emotionFactor = (state.emotional_state.valence / 10) * 0.3;
     const successFactor = (strategy.success_rate || 0.5) * 0.4;
     
@@ -518,9 +517,6 @@ class MetaEngine {
     const reasons = [];
     if (state.emotional_state.valence < 4) {
       reasons.push('用户情绪偏低，需要情绪调节');
-    }
-    if (state.personality_values.introspection > 7) {
-      reasons.push('用户自省能力强，适合深度引导');
     }
     if (strategy.key === 'flow_引导') {
       reasons.push('当前任务适合心流引导');

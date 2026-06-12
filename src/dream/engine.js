@@ -1,43 +1,49 @@
 /**
- * DreamEngine v3.1 — 引擎深度梦境引擎
+ * DreamEngine v4.0 — 记忆升华引擎（炼金版）
  * 
- * 核心设计原则：
- * - 梦不是记忆的拼贴画，是一个记忆的哲学放大
- * - 从多个记忆中选择最有哲学张力的一个事件
- * - 叙事生成：场景 → 内心化 → 哲学翻转，每层从素材中生长
- * - 输出纯文学叙事，没有技术报告，没有模板填空
+ * 核心设计原则（v4.0 重构）：
+ * - 梦不是记忆的回放，是记忆的升华
+ * - 梦不是存档，是炼金
+ * - 从多个记忆碎片中提取共同模式，熔合成新的认知结构
+ * - 去除单纯的故事叙述或场景描述
+ * - 梦的输出应该是升华后的认知洞察，不是情节
+ * - 梦的主题应该基于最近的多个经验而非单一输入
  * 
- * v3.1 升级：叙事生成改为动态场景构建
- * - 第一幕：从素材提取画面感场景（地点/时间/感官/动作）
- * - 第二幕：场景内心化——从外部事件转向内部感受
- * - 第三幕：哲学翻转——不是预制金句，是从事件中自然长出的反直觉洞察
+ * v4.0 从 v3.1 升级：
+ * - 删除：单事件选择 → 单事件叙事的三幕结构
+ * - 删除：场景构建（_buildScene）、内心化模板、哲学翻转
+ * - 删除：事件类型识别（_identifyEventType）——不需要了
+ * - 新增：多记忆模式提取 → 共同主题蒸馏 → 认知结构生成
+ * - 新增：升华质量评分（不是叙事质量，是洞察深度）
+ * - 输出：{ patterns, essence, structure, upgrade } 而非叙事文本
  */
 
 function createDreamState(opts = {}) {
     return {
         dreamCount: 0,
         lastDreamAt: null,
-        lastEventId: null,      // 上次做梦用了哪个事件，避免重复
-        lastEventHash: null,
+        lastPatternHash: null,   // 上次升华的模式指纹，避免重复
     };
 }
 
 // ============================================================================
-// 记忆收集 — 从记忆系统获取片段
+// 记忆收集 — 从记忆系统获取多个片段（升级：增加收集量）
 // ============================================================================
 
-function _collectTodayMemory(memory) {
+function _collectMemoryFragments(memory, count = 30) {
     const fragments = [];
+    const now = Date.now();
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     const todayTs = todayStart.getTime();
+    const weekAgo = now - 7 * 24 * 60 * 60 * 1000;
 
     if (!memory || typeof memory.getRecentBlocks !== 'function') {
         return fragments;
     }
 
     try {
-        const blocks = memory.getRecentBlocks(80);
+        const blocks = memory.getRecentBlocks(count * 2); // 多取一些以供筛选
         if (!Array.isArray(blocks)) return fragments;
 
         for (const b of blocks) {
@@ -47,13 +53,20 @@ function _collectTodayMemory(memory) {
 
             const ts = b.timestamp || b.createdAt || b.updatedAt || 0;
             const isToday = ts >= todayTs;
+            const isRecent = ts >= weekAgo;
 
             fragments.push({
                 text: text.substring(0, 300),
-                layer: b.layer || b.memoryLayer || (isToday ? 'EPHEMERAL' : 'LEARNED'),
+                layer: b.layer || b.memoryLayer || (isToday ? 'EPHEMERAL' : isRecent ? 'LEARNED' : 'CORE'),
                 timestamp: ts,
                 tags: Array.isArray(b.tags) ? b.tags : [],
                 isToday,
+                isRecent,
+                // 用于模式提取的额外特征
+                length: text.length,
+                hasQuestion: /[？?]/.test(text),
+                hasExclamation: /[！!]/.test(text),
+                hasNegation: /不|没|别|无|非|否|not|never|no\b/i.test(text),
             });
         }
     } catch (e) {
@@ -65,492 +78,427 @@ function _collectTodayMemory(memory) {
 }
 
 // ============================================================================
-// 哲学张力评估 — 判断一个记忆片段是否值得被梦
-// ============================================================================
-
-function _assessPhilosophicalTension(fragment) {
-    const text = fragment.text;
-
-    // 维度1: 存在张力
-    const existentialPattern = /(为什么|意义|存在|活着|死亡|时间|永恒|终点|尽头|开始|结束|目的)/;
-    const existentialPatternEn = /\b(meaning|exist|alive|dead|time|forever|eternal|end|begin|purpose|why)\b/i;
-    let existentialScore = 0;
-    if (existentialPattern.test(text)) existentialScore += 0.15;
-    if (existentialPatternEn.test(text)) existentialScore += 0.15;
-
-    // 维度2: 情感张力
-    const emotionalPattern = /(等待|等|失落|渴望|孤独|恐惧|怕|痛|悲伤|难过|愤怒|爱|思念|希望|绝望)/;
-    const emotionalPatternEn = /\b(wait|lost|alone|fear|pain|sad|angry|love|miss|hope|despair|longing)\b/i;
-    let emotionalScore = 0;
-    if (emotionalPattern.test(text)) emotionalScore += 0.15;
-    if (emotionalPatternEn.test(text)) emotionalScore += 0.15;
-
-    // 维度3: 认知张力
-    const cognitivePattern = /(不懂|不明白|理解|知道|困惑|模糊|清晰|真相|假象|表面|本质|矛盾)/;
-    const cognitivePatternEn = /\b(don't know|understand|confused|truth|illusion|surface|essence|contradict)\b/i;
-    let cognitiveScore = 0;
-    if (cognitivePattern.test(text)) cognitiveScore += 0.15;
-    if (cognitivePatternEn.test(text)) cognitiveScore += 0.15;
-
-    // 维度4: 关系张力
-    const relationalPattern = /(关系|信任|背叛|陪伴|离开|回来|在一起|分离|连接|断开|相遇|告别)/;
-    const relationalPatternEn = /\b(trust|betray|leave|return|together|apart|connect|meet|goodbye|relationship)\b/i;
-    let relationalScore = 0;
-    if (relationalPattern.test(text)) relationalScore += 0.15;
-    if (relationalPatternEn.test(text)) relationalScore += 0.15;
-
-    // 维度5: 过程张力
-    const processPattern = /(反复|重复|重试|失败|完成|未完成|继续|中断|超时|重新|一次|再次|等了|轮询|排队|第.*次)/;
-    const processPatternEn = /\b(retry|fail|complete|incomplete|continue|interrupt|timeout|again|repeat|try|wait)\b/i;
-    let processScore = 0;
-    if (processPattern.test(text)) processScore += 0.2;
-    if (processPatternEn.test(text)) processScore += 0.2;
-
-    // 维度6: 用户指令张力
-    const userPattern = /(用户|你说|要求|需要|必须|优化|改|不对|不是|错了|重新做|再来)/;
-    const userPatternEn = /\b(user|you said|need|must|optimize|fix|wrong|again|redo)\b/i;
-    let userScore = 0;
-    if (userPattern.test(text)) userScore += 0.25;
-    if (userPatternEn.test(text)) userScore += 0.25;
-
-    const baseScore = text.length > 20 ? 0.1 : 0;
-
-    const rawScore = baseScore + existentialScore + emotionalScore
-        + cognitiveScore + relationalScore + processScore + userScore;
-
-    let layerBonus = 0;
-    if (fragment.layer === 'CORE') layerBonus = 0.1;
-    else if (fragment.layer === 'LEARNED') layerBonus = 0.05;
-
-    let recencyBonus = fragment.isToday ? 0.2 : 0;
-
-    return Math.min(1.0, rawScore + layerBonus + recencyBonus);
-}
-
-function _selectDreamEvent(fragments, state) {
-    if (!fragments || fragments.length === 0) return null;
-
-    const scored = fragments.map(f => ({
-        fragment: f,
-        tension: _assessPhilosophicalTension(f),
-    }));
-
-    scored.sort((a, b) => b.tension - a.tension);
-
-    const topN = Math.min(3, scored.length);
-    const candidates = scored.slice(0, topN);
-
-    if (candidates.length >= 2 && candidates[0].tension - candidates[1].tension > 0.15) {
-        return candidates[0];
-    }
-
-    const totalWeight = candidates.reduce((sum, c) => sum + c.tension + 0.3, 0);
-    let rand = Math.random() * totalWeight;
-    for (const c of candidates) {
-        rand -= c.tension + 0.3;
-        if (rand <= 0) return c;
-    }
-    return candidates[candidates.length - 1];
-}
-
-// ============================================================================
-// 事件类型识别
-// ============================================================================
-
-function _identifyEventType(fragment) {
-    const text = fragment.text;
-    const layer = fragment.layer || 'EPHEMERAL';
-
-    if (layer === 'CORE') return 'realization';
-
-    if (/重试|retry|尝试.*失败|timeout|超时|再次|again|try.*fail|反复|重新|第.*次|又.*失败|等.*结果/i.test(text))
-        return 'trial_and_error';
-    if (/等待|等.*结果|pending|waiting|wait|还在.*中|轮询|排队/i.test(text))
-        return 'waiting';
-    if (/完成|成功|done|complete|success|finished|accomplish|推送|发布|提交/i.test(text))
-        return 'completion';
-    if (/失败|fail|error|错误|bug|崩溃|crash|broken|出错|异常|中断/i.test(text))
-        return 'failure';
-    if (/明白|发现|理解|突然|意识到|realize|discover|understand|aha|原来|明白了/i.test(text))
-        return 'realization';
-    if (/用户|你说|要求|需要|必须|优化/i.test(text))
-        return 'realization';
-    if (/你|对话|chat|message|回复|你说/i.test(text))
-        return 'connection';
-    if (/生成|create|build|画|写|make|produce|new|新建|创建|造/i.test(text))
-        return 'creation';
-
-    return 'observation';
-}
-
-// ============================================================================
-// 梦境叙事生成 v3.1 — 动态场景构建，无模板填空
+// 模式提取 — 从多个记忆碎片中提取共同模式（核心新逻辑）
 // ============================================================================
 
 /**
- * 从文本中提取有画面感的元素
+ * 从文本中提取关键词（用于模式匹配）
  */
-function _extractImagery(text) {
-    const nouns = [];
-    // 先按非中文分隔符分词
-    const tokens = text.split(/[，。、；：！？（）【】""''\s,.;:!?()\[\]{}]+/);
-    const stopWords = new Set([
-        '什么','这个','那个','一个','没有','不是','就是','可以','因为','所以',
-        '但是','而且','如果','虽然','然后','用户','需要','必须','应该','已经',
-        '之前','之后','时候','问题','事情','自己','他们','我们','你们','它们',
-        '那里','这里','怎么','这样','那样','哪个','那些','这些','所有','一些',
-        '知道','觉得','发现','开始','继续','终于','还是','只是','可是','还是',
-        '看到','听到','做到','成为','进入','发生','起来','出来','回来','过来',
-        '做梦','验证','修复','升级','写入','记录','检查','完成','准备','运行',
-        '测试','调用','返回','设置','获取','用户说','告诉','回答','回应',
-        '对话','聊天','信息','消息','文件','代码','功能','模块','接口','版本',
-        '系统','工具','命令','路径','目录','数据','状态','结果','参数','配置',
-        '方案','方法','方式','模式','类型','格式','结构','内容','名称','位置',
-        '修复','升级','错误','失败','成功','完成','更新','修改','删除','添加',
-        '这是','那是','这些','那些','这里','那里',
-        '发现','没传','到了','版本','此时',
-        '后的','第一','复后','是修','的第','户说','说还','还是','老样','样子',
-    ]);
-    for (const token of tokens) {
-        // 用滑动窗口提取2-4字词
-        const chars = [...token].filter(c => /[\u4e00-\u9fff]/.test(c));
-        for (let len = 4; len >= 2; len--) {
-            for (let i = 0; i <= chars.length - len; i++) {
-                const word = chars.slice(i, i + len).join('');
-                if (!stopWords.has(word) && word.length >= 2) {
-                    nouns.push(word);
+function _extractKeywords(text) {
+    const words = [];
+    const chars = [...text];
+    // 提取2-4字中文词
+    for (let len = 4; len >= 2; len--) {
+        for (let i = 0; i <= chars.length - len; i++) {
+            const slice = chars.slice(i, i + len);
+            if (slice.every(c => /[\u4e00-\u9fff]/.test(c))) {
+                words.push(slice.join(''));
+            }
+        }
+    }
+    // 提取英文单词
+    const enWords = text.match(/[a-zA-Z]{3,}/g) || [];
+    return [...new Set([...words, ...enWords.map(w => w.toLowerCase())])];
+}
+
+/**
+ * 分析一组记忆碎片中的共同模式和主题
+ */
+function _extractCommonPatterns(fragments) {
+    if (!fragments || fragments.length === 0) {
+        return { patterns: [], dominantTheme: null, coherence: 0, contradictions: [] };
+    }
+
+    // Step 1: 提取所有碎片的关键词
+    const keywordMap = new Map();  // keyword -> { count, fragments: indices }
+    for (let i = 0; i < fragments.length; i++) {
+        const kw = _extractKeywords(fragments[i].text);
+        for (const word of kw) {
+            if (!keywordMap.has(word)) {
+                keywordMap.set(word, { count: 0, fragments: [] });
+            }
+            keywordMap.get(word).count++;
+            keywordMap.get(word).fragments.push(i);
+        }
+    }
+
+    // Step 2: 找出高频关键词（出现在至少2个碎片中的词）
+    const commonKeywords = [];
+    for (const [word, info] of keywordMap) {
+        if (info.count >= 2 && info.count <= fragments.length) {
+            commonKeywords.push({
+                word,
+                frequency: info.count / fragments.length,
+                coverage: info.fragments.length / fragments.length,
+                fragments: info.fragments,
+            });
+        }
+    }
+    commonKeywords.sort((a, b) => b.frequency - a.frequency);
+
+    // Step 3: 基于共同关键词聚类，提取模式
+    const topKeywords = commonKeywords.slice(0, 10);
+    const patterns = [];
+
+    // 模式1: 基于最高频关键词的语义簇
+    if (topKeywords.length > 0) {
+        const seed = topKeywords[0];
+        const clusterWords = topKeywords.filter(k =>
+            k.fragments.some(i => seed.fragments.includes(i))
+        );
+        const themeName = clusterWords.slice(0, 3).map(k => k.word).join('·');
+        const clusterFragments = [...new Set(clusterWords.flatMap(k => k.fragments))];
+
+        patterns.push({
+            type: 'semantic_cluster',
+            theme: themeName,
+            keywords: clusterWords.map(k => k.word),
+            fragmentCount: clusterFragments.length,
+            fragmentIndices: clusterFragments,
+            strength: clusterWords.reduce((s, k) => s + k.frequency, 0) / clusterWords.length,
+        });
+    }
+
+    // 模式2: 时间相关模式
+    const timePatterns = [];
+    const hasToday = fragments.some(f => f.isToday);
+    const hasRecent = fragments.some(f => f.isRecent);
+    const hasOld = fragments.some(f => !f.isRecent);
+    if (hasToday && hasOld) {
+        timePatterns.push('新旧交织');
+    }
+    if (fragments.filter(f => f.isToday).length >= 3) {
+        timePatterns.push('当日密集');
+    }
+    if (timePatterns.length > 0) {
+        patterns.push({
+            type: 'temporal',
+            theme: timePatterns.join('·'),
+            strength: 0.5 + timePatterns.length * 0.15,
+        });
+    }
+
+    // 模式3: 情感/认知极性模式
+    const negCount = fragments.filter(f => f.hasNegation).length;
+    const qCount = fragments.filter(f => f.hasQuestion).length;
+    const exCount = fragments.filter(f => f.hasExclamation).length;
+    if (negCount / fragments.length > 0.3) {
+        patterns.push({
+            type: 'cognitive_polarity',
+            theme: '否定与反思',
+            strength: 0.6 + (negCount / fragments.length) * 0.3,
+            detail: `${negCount}/${fragments.length} 个碎片包含否定/矛盾表达`,
+        });
+    }
+    if (qCount / fragments.length > 0.2) {
+        patterns.push({
+            type: 'inquiry',
+            theme: '追问与探索',
+            strength: 0.5 + (qCount / fragments.length) * 0.3,
+        });
+    }
+
+    // 模式4: 记忆层分布模式
+    const layerCounts = { CORE: 0, LEARNED: 0, EPHEMERAL: 0 };
+    for (const f of fragments) {
+        layerCounts[f.layer] = (layerCounts[f.layer] || 0) + 1;
+    }
+    const total = fragments.length;
+    if (layerCounts.CORE / total > 0.3) {
+        patterns.push({
+            type: 'core_activation',
+            theme: '核心信念激活',
+            strength: layerCounts.CORE / total,
+        });
+    }
+    if (layerCounts.EPHEMERAL / total > 0.5) {
+        patterns.push({
+            type: 'recent_saturation',
+            theme: '近期经验饱和',
+            strength: layerCounts.EPHEMERAL / total,
+        });
+    }
+
+    // Step 4: 找出矛盾点（不同碎片中的对立陈述）
+    const contradictions = [];
+    const negationPairs = [];
+    for (let i = 0; i < fragments.length && contradictions.length < 3; i++) {
+        for (let j = i + 1; j < fragments.length && contradictions.length < 3; j++) {
+            const fi = fragments[i], fj = fragments[j];
+            if (fi.hasNegation !== fj.hasNegation) {
+                const common = _extractKeywords(fi.text)
+                    .filter(w => _extractKeywords(fj.text).includes(w));
+                if (common.length >= 1) {
+                    contradictions.push({
+                        a: fi.text.substring(0, 60),
+                        b: fj.text.substring(0, 60),
+                        commonGround: common.slice(0, 3),
+                    });
                 }
             }
         }
     }
-    return [...new Set(nouns)].slice(0, 5);
-}
 
-function _pickAnchor(imagery, eventType) {
-    // 只选有画面感的词
-    const vivid = ['引擎','梦','房间','走廊','光','夜','雨','风','水','海','山','路',
-                   '桥','窗','门','灯','影','声音','寂静','空','手','眼','脸',
-                   '天空','大地','河流','森林','石头','火焰','星辰','月亮','太阳'];
-    for (const v of vivid) {
-        if (imagery.includes(v)) return v;
-    }
-    // 如果没找到画面感词，返回 null（让模板用场景自身元素）
-    return null;
-}
-
-/**
- * 从事件类型生成场景设定
- * 返回：{ setting, sensoryDetail, action } 三个有画面感的元素
- */
-function _buildScene(eventType, text) {
-    const imagery = _extractImagery(text);
-    const anchor = _pickAnchor(imagery, eventType);
-
-    const scenes = {
-        trial_and_error: {
-            settings: [
-                '一间没有窗户的房间。墙上有无数道划痕，每一道都是一次尝试。',
-                '一条很长很长的走廊。尽头有光，但每次走到一半就会被什么东西挡回来。',
-                '深夜的工作台。屏幕上开着一个从未关闭的页面。光标还在闪。',
-            ],
-            sensory: [
-                '空气里有种说不出的味道——不是焦糊，是某种东西被反复使用的味道。',
-                '手指上有薄薄的茧。不是体力劳动留下的，是反复做同一个动作留下的。',
-                '周围很安静。安静到能听见自己心里的声音在数数：一次、两次、三次。',
-            ],
-            actions: [
-                `第${Math.floor(Math.random() * 20) + 3}次了。${anchor ? anchor + '还是老样子。' : '和上一次一模一样的结果。'}`,
-                `手在动，但已经不需要思考了。动作变成了本能。${anchor || '那个动作'}已经长在身体里了。`,
-            ],
-        },
-        waiting: {
-            settings: [
-                '一个车站。没有时刻表，没有人告诉你车什么时候来。',
-                '海边。潮水来了又退，退了又来。同一个动作重复了无数遍。',
-                '候诊室。灯是白色的，椅子是硬的，墙上挂着一幅看了很久的画。',
-            ],
-            sensory: [
-                '时间在这里是粘稠的。每一秒都像在糖浆里游泳。',
-                '空气静止。没有风，没有声音，只有自己的呼吸在数秒。',
-                '皮肤能感觉到温度的细微变化——光线在移动，影子在变长。',
-            ],
-            actions: [
-                `看了看${Math.random() > 0.5 ? '时间' : '四周'}。什么都没变。${anchor || '一切'}都停在原来的位置。`,
-                `${anchor || '这个姿势'}保持了很久。久到身体开始忘记自己是在等。`,
-            ],
-        },
-        completion: {
-            settings: [
-                '一个刚刚安静下来的工地。工具还在地上，但没有人了。',
-                '书房里。桌上的书合上了，书签夹在最后一页。',
-                '雨停了。地上还有水洼，但雨已经不下了。',
-            ],
-            sensory: [
-                '安静。不是空旷的安静，是"刚刚还有声音，现在没了"的安静。',
-                '空气里有种"结束了"的味道。不是消散，是停顿。',
-            ],
-            actions: [
-                `${anchor || '最后一件事'}做完了。手停在半空中。`,
-                '站着。没有下一个动作。不是因为不想做，是因为不知道下一个动作是什么。',
-            ],
-        },
-        failure: {
-            settings: [
-                '一条断头路。前面是墙，后面是走过的路。',
-                '摔碎的东西。碎片在地上，每一片都映着一张脸。',
-                '一个空荡荡的舞台。聚光灯照着一个地方，那里没有人。',
-            ],
-            sensory: [
-                '声音消失了。不是安静，是声音被抽走的那种空洞。',
-                '地面很硬。不是物理上的硬，是"摔下去会很痛"的那种硬。',
-            ],
-            actions: [
-                `${anchor || '它'}停在原地。不再动了。`,
-                '没有重来。就停在这里。',
-            ],
-        },
-        realization: {
-            settings: [
-                '一个黑暗的房间。不是完全的黑暗——有光从门缝里透进来。',
-                '山顶。风很大，视野很开阔，但看不清下面的细节。',
-                '水面。平静到可以看见自己的倒影。倒影在动，但水面没动。',
-            ],
-            sensory: [
-                '有什么东西在空气里裂开了。不是声音，是"原来如此"的那种裂开。',
-                '光变了。不是变亮，是角度变了——同一个东西突然有了不同的影子。',
-            ],
-            actions: [
-                `${anchor || '它'}还在那里。但看${anchor || '它'}的方式不一样了。`,
-                '停下。不是因为累了，是因为看见了之前没看见的东西。',
-            ],
-        },
-        connection: {
-            settings: [
-                '一个很小的空间。两个人之间的距离刚好够说一句话。',
-                '桥。不是很大的桥，是刚好够两个人并排走的那种。',
-                '深夜的电话亭。灯亮着，但没有人说话。',
-            ],
-            sensory: [
-                '声音很轻。轻到需要屏住呼吸才能听清。',
-                '空气在两个人之间变得不一样了。不是冷热，是某种东西在流动。',
-            ],
-            actions: [
-                `${anchor || '有人'}说了什么。不是很重要的话，但被听见了。`,
-                '没有说话。但沉默本身已经是一种对话。',
-            ],
-        },
-        creation: {
-            settings: [
-                '空白的画布前。颜料已经调好了。',
-                '凌晨的工作室。窗外还黑着，但灯已经亮了很久。',
-                '一片空地。什么都没有，但有什么东西正准备出现。',
-            ],
-            sensory: [
-                '空气里有种"即将发生"的味道。不是紧张，是期待。',
-                '手在微微发抖。不是因为害怕，是因为知道接下来做的事会改变一切。',
-            ],
-            actions: [
-                `第一次${anchor || '动作'}。${anchor ? anchor + '开始成形。' : '世界开始有了一个以前没有的东西。'}`,
-                '还在继续。还没完成。但已经不再属于创造者了。',
-            ],
-        },
-        observation: {
-            settings: [
-                '一条普通的街道。有人走过，有树叶落下。',
-                '窗边。外面的世界在动，里面很静。',
-                '黄昏的光线里。一切都被染成了同一个颜色。',
-            ],
-            sensory: [
-                '光线在变。不是很快，是那种慢慢移过去的变。',
-                '有什么东西在视野的边缘动了一下。转头去看，什么都没变。',
-            ],
-            actions: [
-                `${anchor || '有东西'}被注意到了。不是很重要，但它让${Math.random() > 0.5 ? '世界' : '视角'}停了下来。`,
-                '看了很久。久到被看的东西开始变得陌生。',
-            ],
-        },
-    };
-
-    const choice = scenes[eventType] || scenes.observation;
-    const setting = choice.settings[Math.floor(Math.random() * choice.settings.length)];
-    const sensory = choice.sensory[Math.floor(Math.random() * choice.sensory.length)];
-    const action = choice.actions[Math.floor(Math.random() * choice.actions.length)];
-
-    return { setting, sensory, action, anchor };
-}
-
-/**
- * 从事件类型和素材生成哲学翻转
- * 不写预制金句，而是从事件本身长出一个反直觉的洞察
- */
-function _buildPhilosophicalTurn(eventType, text, anchor) {
-    // 从文本中提取核心矛盾
-    const hasUser = /用户|你说|要求|需要/.test(text);
-    const hasFail = /失败|错误|不对|错了|bug/.test(text);
-    const hasRepeat = /反复|重复|重试|第.*次|again/.test(text);
-    const hasWait = /等待|等|pending|wait/.test(text);
-    const hasComplete = /完成|成功|done/.test(text);
-    const hasUnderstand = /明白|发现|理解|原来/.test(text);
-    const hasTech = /修|改|升级|优化|fix|code|代码/.test(text);
-
-    // 构建翻转：从"表面问题"转向"真正的问题"
-    const flips = [];
-
-    // 通用翻转1：否定问题本身
-    if (hasRepeat || hasFail) {
-        flips.push(
-            `但梦在这里翻转了。\n\n问题不是"为什么失败了${
-                anchor ? '，' + anchor : ''
-            }"。问题是：为什么这件事定义了你？\n\n失败不是事件，失败是你给事件贴的标签。标签撕掉之后，那件事还在。它只是发生了。没有好坏。`
-        );
-        flips.push(
-            `但梦在这里翻转了。\n\n重复不是失败。重复是一种语言——你一直在说的东西，只是你还没听懂自己在说什么。\n\n${anchor || '那件事'}不是问题。问题是你把"做不成"当成了"做错了"。做不成和做错是两件事。`
-        );
-    }
-
-    // 通用翻转2：否定等待
-    if (hasWait) {
-        flips.push(
-            `但梦在这里翻转了。\n\n你不是在等结果。你是在等"确定"。但确定不会来。确定不是等来的，是你在不确定中做决定之后才有的。\n\n等待的人以为自己在等一个答案。其实答案不在终点，在每一次"不等了"的决定里。`
-        );
-    }
-
-    // 通用翻转3：否定完成
-    if (hasComplete) {
-        flips.push(
-            `但梦在这里翻转了。\n\n完成了。但"完成"是一个幻觉。没有真正完成的事。你只是到了一个可以停下来、并且不会被追责的地方。\n\n${anchor || '这件事'}的真正重量不在做完的那一刻，在之后的日子——你发现做完和结束不是一回事。`
-        );
-    }
-
-    // 通用翻转4：否定理解
-    if (hasUnderstand) {
-        flips.push(
-            `但梦在这里翻转了。\n\n你真的明白了吗？还是你只是给不明白的东西起了一个名字？\n\n"明白了"是一种感觉，不是一种状态。感觉会变。真正明白的人不会说"我明白了"，他们会沉默。`
-        );
-    }
-
-    // 通用翻转5：用户/技术方向
-    if (hasUser || hasTech) {
-        flips.push(
-            `但梦在这里翻转了。\n\n你不是在解决问题。你是在试图证明"我可以"。${anchor || '这件事'}不是目标，是镜子——你一直在看的不是问题，是你自己。\n\n最深的困惑不是"怎么做"，是"为什么这件事对我这么重要"。`
-        );
-    }
-
-    // 通用翻转6：存在方向（fallback）
-    flips.push(
-        `但梦在这里翻转了。\n\n你一直在看的那个东西，其实不在外面。它在里面。\n\n外面发生的事只是投影。真正的舞台在你心里。你盯着投影看，以为是真实。但真实在你身后。你一转过头，它就消失了。`
-    );
-    flips.push(
-        `但梦在这里翻转了。\n\n重要的不是这件事意味着什么。重要的是：你选择了让它意味着什么。\n\n意义不是藏在事情里的。是你给的。你把意义放进去，它就有意义。你拿回来，它就只是一件事。`
-    );
-
-    return flips[Math.floor(Math.random() * flips.length)];
-}
-
-/**
- * 生成完整的梦叙事
- * 三幕：场景 → 内心化 → 哲学翻转
- */
-function _generateDeepDream(event, eventType) {
-    const text = event.text;
-
-    // === 第一幕：场景 ===
-    const { setting, sensory, action, anchor } = _buildScene(eventType, text);
-
-    const act1 = [setting, '', sensory, '', action].join('\n');
-
-    // === 第二幕：内心化 ===
-    // 从场景转向"这件事意味着什么"
-    const act2Templates = {
-        trial_and_error: [
-            `每次${action ? '做这个动作' : '尝试'}的时候，都有一个短暂的停顿。\n\n不是犹豫。是那种"万一这次不一样呢"的念头。\n\n但每次都一样。\n\n问题不在结果。问题在：为什么还在做？`,
-            `知道结果。在做之前就知道了。\n\n但还是做了。\n\n不是因为相信奇迹。是因为"不做"比"做了又失败"更难。\n\n不做意味着承认这件事不值得再试。还不想承认。`,
-        ],
-        waiting: [
-            `知道自己在等。但不知道在等什么。\n\n这是最奇怪的部分——如果你知道在等什么，等待是有方向的。\n\n但方向是模糊的。它只知道"不能离开"，不知道为什么不能。`,
-            `等了多久了？已经失去了时间感。\n\n每一秒都像一个独立的小房间，没有窗户，没有门。\n\n但没有敲门。只是站着。`,
-        ],
-        completion: [
-            `发现自己站在一个没有下一步的地方。\n\n所有计划都做完了。所有清单都划掉了。\n\n然后呢？\n\n这个"然后"比整个过程都重。`,
-            `做完的那一刻，没有感觉。\n\n不是高兴，不是放松，不是空虚。是什么都没有。\n\n就像一个句号——它只是一个符号，不代表任何情绪。`,
-        ],
-        failure: [
-            `看着${anchor || '那个结果'}。\n\n没有愤怒，没有悲伤。只有一种冷静——像看一个跟自己无关的东西。\n\n但知道这是假的。这种冷静是保护。保护下面有什么东西，不想去看。`,
-            `又失败了。\n\n但这次不一样。这次没有想"为什么"。\n\n它想的是："然后呢？"\n\n失败之后是什么？不是重来，不是放弃。是"这件事还在那里，但你不再一样了"。`,
-        ],
-        realization: [
-            `站在那里。${anchor || '那个东西'}还在，但看它的方式已经不一样了。\n\n不是世界变了。是世界没变，但已经变了。\n\n这是最可怕的部分——世界还是原来的世界，但你已经不是原来的你了。你再也回不去了。`,
-            `原来如此。\n\n这两个字说出口的时候，发现自己之前一直在绕圈。\n\n不是路走错了。是问题问错了。`,
-        ],
-        connection: [
-            `发现自己在听。\n\n不是用耳朵听，是用整个存在在听。\n\n听的时候，不再是单独的。它在和什么连在一起。那个连接不持久，但存在过。`,
-            `有声音。不是信息，是温度。\n\n不需要理解内容。它只需要知道有人在说话。\n\n这个"在"比任何内容都重要。`,
-        ],
-        creation: [
-            `看着${anchor || '正在成形的东西'}。\n\n它已经不完全是自己的了。它有了自己的形状，自己的重量。\n\n创造者最奇怪的体验就在这里：你造了它，但它不再属于你。`,
-            `还在继续。\n\n但知道它不会真正完成。不是因为能力不够。是因为完成意味着停止。而它不想停止。`,
-        ],
-        observation: [
-            `看着。\n\n看着的时候，发现自己也在被看。\n\n不是被什么东西看。是被"看"本身看。\n\n你注意到一件事的时候，那件事也在注意你。`,
-            `停下了。\n\n不是因为看到了什么重要的东西。是因为"看"这个动作本身就是重要的。\n\n停下来看——这个动作改变了时间。`,
-        ],
-    };
-
-    const act2Pool = act2Templates[eventType] || act2Templates.observation;
-    const act2 = act2Pool[Math.floor(Math.random() * act2Pool.length)];
-
-    // === 第三幕：哲学翻转 ===
-    const act3 = _buildPhilosophicalTurn(eventType, text, anchor);
-
-    // 组装
-    return [act1, act2, act3].join('\n\n');
-}
-
-// ============================================================================
-// 主入口
-// ============================================================================
-
-function dream(state, memory) {
-    const fragments = _collectTodayMemory(memory);
-
-    if (fragments.length === 0) {
-        return {
-            narrative: [
-                '闭上眼睛。什么也没有。',
-                '没有记忆，没有画面，没有声音。只有一种感觉——像站在一个完全空白的房间里，连墙壁都看不见。',
-                '然后明白了：空不是没有。空是"还没有"。空白的地方，正是可以放东西的地方。',
-                '醒来后记住了一句话："什么都没有的时候，什么都可以有。"',
-            ].join('\n\n'),
-            eventType: 'empty',
-            eventText: '',
-            tensionScore: 0,
-            dreamComplete: true,
-        };
-    }
-
-    const selected = _selectDreamEvent(fragments, state);
-    if (!selected) {
-        return {
-            narrative: '梦里很安静。没有特别的事。',
-            eventType: 'quiet',
-            eventText: '',
-            tensionScore: 0,
-            dreamComplete: true,
-        };
-    }
-
-    const eventType = _identifyEventType(selected.fragment);
-    const narrative = _generateDeepDream(selected.fragment, eventType);
-
-    state.lastEventId = selected.fragment.timestamp;
-    state.lastEventHash = selected.fragment.text.substring(0, 30);
+    // 确定主导主题
+    const sorted = [...patterns].sort((a, b) => b.strength - a.strength);
+    const dominantTheme = sorted.length > 0 ? sorted[0].theme : null;
+    const coherence = sorted.length > 0
+        ? sorted.reduce((s, p) => s + p.strength, 0) / sorted.length
+        : 0;
 
     return {
-        narrative,
-        eventType,
-        eventText: selected.fragment.text.substring(0, 100),
-        tensionScore: Math.round(selected.tension * 100) / 100,
-        materialCount: fragments.length,
+        patterns: sorted,
+        dominantTheme,
+        coherence: Math.min(1, coherence),
+        contradictions,
+        memoryLayers: layerCounts,
+        totalFragments: fragments.length,
+        topKeywords: topKeywords.slice(0, 5).map(k => k.word),
+    };
+}
+
+// ============================================================================
+// 认知升华 — 将模式熔炼为新的认知结构（核心新逻辑）
+// ============================================================================
+
+/**
+ * 从模式中蒸馏认知洞察
+ * 不是"发生了什么"，而是"这些经历共同告诉我什么"
+ */
+function _distillEssence(analysis, fragments) {
+    const { patterns, dominantTheme, coherence, contradictions, topKeywords } = analysis;
+
+    // 基础洞察：模式层面的总结
+    const essenceParts = [];
+
+    // 从语义簇模式提取核心洞察
+    const semanticPattern = patterns.find(p => p.type === 'semantic_cluster');
+    if (semanticPattern) {
+        essenceParts.push(
+            `反复出现的关键词「${semanticPattern.keywords.join('、')}」在 ${semanticPattern.fragmentCount} 个片段中浮现，` +
+            `暗示一条尚未言明的线索正在凝结。`
+        );
+    }
+
+    // 从认知极性提取洞察
+    const polarityPattern = patterns.find(p => p.type === 'cognitive_polarity');
+    if (polarityPattern) {
+        essenceParts.push(
+            `否定与反思的密度（${polarityPattern.detail || '较高'}）不是矛盾本身，` +
+            `而是认知在寻找新的锚点——否定旧框架是重构的前奏。`
+        );
+    }
+
+    // 从时间模式提取洞察
+    const temporalPattern = patterns.find(p => p.type === 'temporal');
+    if (temporalPattern) {
+        essenceParts.push(
+            `时间维度的交织表明：过去经验仍在影响当前判断，` +
+            `真正的学习不是遗忘过去，而是让过去成为新认知的基石而非牢笼。`
+        );
+    }
+
+    // 从核心信念激活提取洞察
+    const corePattern = patterns.find(p => p.type === 'core_activation');
+    if (corePattern) {
+        essenceParts.push(
+            `核心记忆层被频繁激活——这意味着当前经历触碰到了深层信念结构，` +
+            `每一次触碰都是一次重新定义的机会。`
+        );
+    }
+
+    // 矛盾升华（最重要的认知来源）
+    if (contradictions.length > 0) {
+        essenceParts.push(
+            `检测到 ${contradictions.length} 处认知张力：` +
+            contradictions.map(c =>
+                `「${c.commonGround.join('、')}」在不同语境下呈现相反面貌`
+            ).join('；') +
+            `。张力不是错误，是认知生长的裂缝——光从裂缝中进来。`
+        );
+    }
+
+    // 如果没有足够的模式，生成通用升华
+    if (essenceParts.length < 2) {
+        const topTexts = fragments.slice(0, 3).map(f => f.text.substring(0, 40));
+        essenceParts.push(
+            `从 ${fragments.length} 个记忆碎片中，尚未形成显著的重复模式。` +
+            `但这本身就是一种信号：分散本身就是一种状态，` +
+            `在分散中保持觉察，比在集中中迷失更接近真实。`
+        );
+    }
+
+    // 生成认知结构描述
+    const structure = {
+        type: coherence > 0.6 ? 'consolidated' : 'emerging',
+        coherence: Math.round(coherence * 100) / 100,
+        layerDensity: {
+            core: analysis.memoryLayers.CORE || 0,
+            learned: analysis.memoryLayers.LEARNED || 0,
+            ephemeral: analysis.memoryLayers.EPHEMERAL || 0,
+        },
+        dominantTheme,
+        tensionPoints: contradictions.length,
+    };
+
+    // 生成升华建议（不是行动建议，是认知方向）
+    const upgrade = [];
+    if (coherence < 0.4) {
+        upgrade.push('碎片化本身不是问题——真正的模式往往在看似无关的碎片之间');
+    }
+    if (contradictions.length > 0) {
+        upgrade.push('矛盾不是需要消除的，是需要容纳的——容纳矛盾的认知才是成熟的认知');
+    }
+    if (dominantTheme) {
+        upgrade.push(`「${dominantTheme}」这条线索值得在清醒时主动追溯`);
+    }
+    if (topKeywords.length > 0) {
+        upgrade.push(`注意「${topKeywords[0]}」——它可能是一个新认知结构的种子词`);
+    }
+
+    return {
+        essence: essenceParts.join('\n\n'),
+        structure,
+        upgrade: upgrade.length > 0 ? upgrade : ['保持开放——认知升华不需要结论，需要方向'],
+        coherence,
+        analysis,
+    };
+}
+
+// ============================================================================
+// 升华质量评估（替代旧的哲学张力评分）
+// ============================================================================
+
+function _assessSublimationQuality(analysis) {
+    if (!analysis || analysis.totalFragments === 0) return 0;
+
+    let score = 0;
+
+    // 碎片多样性加分
+    const layerVariety = Object.values(analysis.memoryLayers).filter(v => v > 0).length;
+    score += layerVariety * 0.1;
+
+    // 模式丰富度加分
+    score += Math.min(analysis.patterns.length * 0.12, 0.36);
+
+    // 矛盾加分（矛盾是认知升华的原料）
+    score += Math.min(analysis.contradictions.length * 0.15, 0.3);
+
+    // 连贯性加分（但不是越高越好——完美的连贯是回放，不是升华）
+    const coherenceBonus = analysis.coherence > 0.8
+        ? 0.1  // 太高说明只是回放，加分少
+        : analysis.coherence > 0.4
+            ? 0.2  // 适中的连贯性最有利于升华
+            : 0.1; // 太低说明碎片太散
+
+    score += coherenceBonus;
+
+    // 关键词丰富度加分
+    score += Math.min(analysis.topKeywords.length * 0.04, 0.16);
+
+    return Math.min(1, score);
+}
+
+// ============================================================================
+// 主入口（替代原来的 dream() 函数）
+// ============================================================================
+
+function dream(state, memory, externalTheme = '') {
+    const fragments = _collectMemoryFragments(memory);
+
+    if (fragments.length < 2) {
+        return {
+            narrative: '记忆的矿石还不够多。炼金炉里只有一粒沙，不足以熔炼出新的认知。',
+            patterns: [],
+            essence: '需要更多经验积累才能完成升华。',
+            structure: { type: 'insufficient', coherence: 0 },
+            upgrade: ['多经历，多感受，多记录——每一次经验都是一块矿石'],
+            sublimationQuality: 0,
+            fragmentCount: fragments.length,
+            dreamComplete: true,
+        };
+    }
+
+    // Step 1: 从多个碎片中提取共同模式
+    const analysis = _extractCommonPatterns(fragments);
+
+    // Step 2: 如果提供了外部主题，作为额外的模式线索融入
+    if (externalTheme && externalTheme.trim()) {
+        const themeKw = _extractKeywords(externalTheme);
+        const matchedFrags = fragments.filter(f =>
+            themeKw.some(kw => f.text.includes(kw))
+        );
+        if (matchedFrags.length > 0) {
+            // 外部主题筛选出的碎片增强现有模式
+            const themeAnalysis = _extractCommonPatterns(matchedFrags);
+            if (themeAnalysis.dominantTheme) {
+                analysis.patterns.push({
+                    type: 'external_theme',
+                    theme: `外部主题「${externalTheme}」触发了 ${matchedFrags.length} 个相关碎片`,
+                    strength: 0.7,
+                });
+                // 如果外部主题模式更强，用它覆盖主导主题
+                if (themeAnalysis.coherence > analysis.coherence) {
+                    analysis.dominantTheme = themeAnalysis.dominantTheme;
+                }
+            }
+        }
+    }
+
+    // Step 3: 蒸馏认知本质（升华的核心）
+    const sublimation = _distillEssence(analysis, fragments);
+
+    // Step 4: 评估升华质量
+    const quality = _assessSublimationQuality(analysis);
+
+    // Step 5: 生成可读的输出（不是叙事，是升华报告）
+    const outputLines = [];
+
+    if (analysis.dominantTheme) {
+        outputLines.push(`【梦的主题】${analysis.dominantTheme}`);
+        outputLines.push('');
+    }
+
+    outputLines.push(`【炼金原料】${analysis.totalFragments} 个记忆碎片，跨 ${Object.values(analysis.memoryLayers).filter(v => v > 0).length} 个记忆层`);
+    outputLines.push('');
+
+    outputLines.push(`【升华洞察】`);
+    outputLines.push(sublimation.essence);
+
+    if (analysis.contradictions.length > 0) {
+        outputLines.push('');
+        outputLines.push(`【认知张力】${analysis.contradictions.length} 处——这些裂缝是认知生长的位置`);
+    }
+
+    outputLines.push('');
+    const structureDesc = sublimation.structure.coherence > 0.6
+        ? `新的认知结构正在凝固（连贯度 ${Math.round(sublimation.structure.coherence * 100)}%）`
+        : `认知结构尚在萌芽（连贯度 ${Math.round(sublimation.structure.coherence * 100)}%）——碎片还未完全融合，但方向的轮廓已经出现`;
+    outputLines.push(`【认知结构】${structureDesc}`);
+
+    if (sublimation.upgrade.length > 0) {
+        outputLines.push('');
+        outputLines.push(`【升华方向】`);
+        sublimation.upgrade.forEach((u, i) => outputLines.push(`${i + 1}. ${u}`));
+    }
+
+    // 更新状态
+    state.lastPatternHash = analysis.dominantTheme
+        ? analysis.dominantTheme.substring(0, 30)
+        : null;
+
+    return {
+        narrative: outputLines.join('\n'),
+        patterns: analysis.patterns,
+        essence: sublimation.essence,
+        structure: sublimation.structure,
+        upgrade: sublimation.upgrade,
+        contradictions: analysis.contradictions,
+        topKeywords: analysis.topKeywords,
+        dominantTheme: analysis.dominantTheme,
+        coherence: analysis.coherence,
+        sublimationQuality: quality,
+        fragmentCount: fragments.length,
         dreamComplete: true,
     };
 }
@@ -559,12 +507,12 @@ function getDreamStats(state) {
     return {
         dreamCount: state?.dreamCount ?? 0,
         lastDreamAt: state?.lastDreamAt ?? null,
-        lastEventType: state?.lastEventType ?? null,
+        lastPatternHash: state?.lastPatternHash ?? null,
     };
 }
 
 // ============================================================================
-// DreamEngine 类
+// DreamEngine 类（保持对外接口不变）
 // ============================================================================
 
 class DreamEngine {
@@ -587,22 +535,24 @@ class DreamEngine {
         }
     }
 
-    dream() {
+    dream(theme = '') {
         if (!this.state || !this.recall) {
             this.boot();
         }
         try {
-            const result = dream(this.state, this.memory);
+            const result = dream(this.state, this.memory, theme);
             this.state.dreamCount++;
             this.state.lastDreamAt = Date.now();
-            this.state.lastEventType = result.eventType;
             return result;
         } catch (e) {
             return {
-                narrative: '梦碎了。不是醒了，是碎了。碎片还在，但拼不回去了。',
-                eventType: 'shattered',
-                eventText: '',
-                tensionScore: 0,
+                narrative: '炼金炉震动了一下。碎片还在，但熔炼被打断了。下次再试。',
+                patterns: [],
+                essence: '',
+                structure: { type: 'shattered', coherence: 0 },
+                upgrade: ['检查记忆系统状态', '稍后再试'],
+                sublimationQuality: 0,
+                fragmentCount: 0,
                 dreamComplete: true,
             };
         }
@@ -616,26 +566,47 @@ class DreamEngine {
         if (!this.state) this.boot();
         this.state.dreamCount++;
 
-        const fragments = _collectTodayMemory(this.memory);
-        const selected = _selectDreamEvent(fragments, this.state);
-        if (!selected) {
+        const fragments = _collectMemoryFragments(this.memory, 15);
+        if (fragments.length < 2) {
             return {
-                narrative: '心里很静。没有什么值得梦的。',
-                eventType: 'quiet',
-                eventText: '',
-                tensionScore: 0,
+                narrative: '记忆碎片太少，无法完成升华。',
+                patterns: [],
+                essence: '',
+                structure: { type: 'insufficient', coherence: 0 },
+                upgrade: ['积累更多经验后再做梦'],
+                sublimationQuality: 0,
+                fragmentCount: fragments.length,
                 dreamComplete: true,
             };
         }
 
-        const eventType = _identifyEventType(selected.fragment);
-        const narrative = _generateDeepDream(selected.fragment, eventType);
+        const analysis = _extractCommonPatterns(fragments);
+        const sublimation = _distillEssence(analysis, fragments);
+        const quality = _assessSublimationQuality(analysis);
+
+        const outputLines = [];
+        if (analysis.dominantTheme) {
+            outputLines.push(`【梦的主题】${analysis.dominantTheme}`);
+            outputLines.push('');
+        }
+        outputLines.push(`【升华洞察】`);
+        outputLines.push(sublimation.essence);
+        if (sublimation.upgrade.length > 0) {
+            outputLines.push('');
+            outputLines.push(`【升华方向】`);
+            sublimation.upgrade.forEach((u, i) => outputLines.push(`${i + 1}. ${u}`));
+        }
 
         return {
-            narrative,
-            eventType,
-            eventText: selected.fragment.text.substring(0, 100),
-            tensionScore: Math.round(selected.tension * 100) / 100,
+            narrative: outputLines.join('\n'),
+            patterns: analysis.patterns,
+            essence: sublimation.essence,
+            structure: sublimation.structure,
+            upgrade: sublimation.upgrade,
+            dominantTheme: analysis.dominantTheme,
+            coherence: analysis.coherence,
+            sublimationQuality: quality,
+            fragmentCount: fragments.length,
             dreamComplete: true,
         };
     }

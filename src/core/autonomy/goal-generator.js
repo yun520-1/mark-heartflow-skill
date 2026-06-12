@@ -155,10 +155,7 @@ class GoalGenerator {
     this.heartflowStateFile = path.join(this.memoryDir, 'heartflow_state.json');
 
     this.idealState = {
-      autonomy: 8.0,
-      introspection: 8.0,
-      growth: 8.0,
-      authenticity: 8.0
+      // 人格事件驱动——无预设维度，留空
     };
 
     this.loadGoals();
@@ -529,43 +526,33 @@ class GoalGenerator {
   }
 
   /**
-   * 状态差距分析
+   * 事件响应分析（替代原状态差距分析）
+   * 人格是事件驱动的——不预设理想状态，只记录事件触发的响应模式
    */
   async analyzeStateGaps() {
     const goals = [];
     const state = this.loadHeartflowState();
+    const personality = state.personality || {};
 
-    const current = {
-      autonomy: state.personality?.autonomy || 5,
-      introspection: state.personality?.introspection || 5,
-      growth: state.personality?.growth || 5,
-      authenticity: state.personality?.authenticity || 5
-    };
+    // 统计事件响应记录数
+    const eventKeys = Object.keys(personality).filter(
+      k => k.startsWith('event_') || k.startsWith('response_')
+    );
 
-    for (const [dimension, ideal] of Object.entries(this.idealState)) {
-      const gap = ideal - (current[dimension] || 5);
-
-      if (gap > 1.5) {
-        const goalDescriptions = {
-          autonomy: '提升自主性：增加用户自主决策空间，减少过度引导',
-          introspection: '提升自省能力：增加反思性对话频率',
-          growth: '促进成长：识别用户成长节点并提供适当挑战',
-          authenticity: '增强真实性：减少套路化回复，增加真诚表达'
-        };
-
-        goals.push({
-          goal_id: this._generateGoalId('gap', dimension),
-          description: goalDescriptions[dimension] || `提升${dimension}`,
-          priority: Math.min(10, Math.max(1, Math.round(gap * 2 + 4))),
-          success_criteria: `${dimension}分数提升至${ideal}以上`,
-          source: 'state_gap',
-          dimension,
-          current_value: current[dimension],
-          target_value: ideal,
-          isNew: true,
-          tags: ['state_gap', dimension]
-        });
-      }
+    // 如果已有事件记录但分布不均，生成促进探索的目标
+    if (eventKeys.length > 0) {
+      goals.push({
+        goal_id: this._generateGoalId('gap', 'event_response'),
+        description: '促进人格自然浮现：记录更多事件触发的响应模式',
+        priority: 4,
+        success_criteria: '事件响应记录持续积累',
+        source: 'state_gap',
+        dimension: 'event_response',
+        current_value: eventKeys.length,
+        target_value: eventKeys.length + 5,
+        isNew: true,
+        tags: ['state_gap', 'event_response']
+      });
     }
 
     return goals;

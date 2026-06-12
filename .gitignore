@@ -26,3 +26,6 @@ dist/
 # Python 缓存
 __pycache__/
 *.pyc
+
+# 本地 launchd 配置（含绝对路径，不上传）
+mcp/*.plist
