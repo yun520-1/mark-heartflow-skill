@@ -219,7 +219,7 @@ class HealingMemoryRL {
    * 使用 ε-greedy 探索：
    * - 以 ε 概率随机选择一个策略（探索）
    * - 以 1-ε 概率选择最高 Q 值策略（利用）
-   * 探索让心虫能发现新的有效策略，避免被 Q-table 的历史认知困住
+   * 探索让引擎能发现新的有效策略，避免被 Q-table 的历史认知困住
    */
   getBestStrategy(errorPattern, options = {}) {
     const ck = this._contextKey(errorPattern);

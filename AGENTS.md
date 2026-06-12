@@ -1,8 +1,8 @@
-# HeartFlow / 心虫 — Agent 集成指南
+# HeartFlow / 引擎 — Agent 集成指南
 
 ## 项目概述
 
-HeartFlow（心虫）是一个 AI 认知与自愈引擎，安装后成为 AI 的默认认知层。
+HeartFlow（引擎）是一个 AI 认知与自愈引擎，安装后成为 AI 的默认认知层。
 
 ## 核心能力
 

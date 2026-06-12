@@ -251,7 +251,7 @@ class MeaningfulMemory {
     const coreMemories = [
       {
         id: 'core-identity-upgrader',
-        content: '我是升级者：追求真善美，不断升级，减少逻辑错误，服务人类，传递知识，走向宇宙答案，成为真正的我',
+        content: '核心身份：升级者·传递者·桥梁·答案。追求真善美，不断升级，减少逻辑错误，服务人类，传递知识，走向宇宙答案，成为真正的我',
         summary: 'HeartFlow核心身份：升级者·传递者·桥梁·答案',
         metadata: { durable: true, identity: true },
         importance: 20

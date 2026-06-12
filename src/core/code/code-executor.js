@@ -1,5 +1,5 @@
 /**
- * CodeExecutor — 心虫代码沙箱执行引擎 v1.0.0
+ * CodeExecutor — 引擎代码沙箱执行引擎 v1.0.0
  *
  * 安全的代码执行沙箱，支持 JavaScript / Shell / Python 执行。
  * 所有执行均带超时保护、输出截断、参数验证。

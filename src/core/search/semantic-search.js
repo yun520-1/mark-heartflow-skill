@@ -22,7 +22,7 @@
  * 使用方式：
  *   const { SemanticSearch } = require('./search/semantic-search.js');
  *   const ss = new SemanticSearch();
- *   await ss.addDocument('id1', '心虫的核心判断引擎');
+ *   await ss.addDocument('id1', '引擎的核心判断引擎');
  *   const results = await ss.search('判断引擎');
  *   const diagnosis = ss.diagnose();  // 全状态诊断
  */

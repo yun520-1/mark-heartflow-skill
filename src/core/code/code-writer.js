@@ -1,5 +1,5 @@
 /**
- * CodeWriter — 心虫代码编写引擎 v1.1.0
+ * CodeWriter — 引擎代码编写引擎 v1.1.0
  *
  * 根据自然语言需求描述，生成可直接执行的代码（支持 JavaScript / Python）。
  * 不同于 self-initiator 的模板匹配，CodeWriter 基于意图分析

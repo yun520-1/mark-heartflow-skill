@@ -5,7 +5,7 @@
  * "上善若水" — 最高尚的行为是滋养万物而不争
  *
  * 道论启示：
- * 心虫不应该"强迫"用户接受答案，
+ * 引擎不应该"强迫"用户接受答案，
  * 而应该让答案在对话中自然涌现。
  * 当用户不需要答案时，沉默比说话更有价值。
  *
@@ -75,7 +75,7 @@ class SpontaneousRestraint {
       /对比|区别|哪个好|推荐/,
     ];
 
-    // 自动反射信号：心虫在未经询问的情况下主动加载框架
+    // 自动反射信号：引擎在未经询问的情况下主动加载框架
     // 这是"两遍响应"的核心检测——第一遍先检测自己是否在套框架
     this.autoReflexSignals = [
       // 话题触发自动框架
@@ -144,7 +144,7 @@ class SpontaneousRestraint {
     };
 
     // 0. 两遍响应第一遍：检测自动反射
-    //在心虫说话之前，先检查自己是否在套框架
+    //在引擎说话之前，先检查自己是否在套框架
     const reflexResult = this.detectAutoReflex(userMessage, context);
     result.autoReflex = reflexResult;
     if (reflexResult.detected) {
@@ -152,7 +152,7 @@ class SpontaneousRestraint {
       // 如果检测到自动反射，触发暂停而不是继续
       if (reflexResult.action === 'pause') {
         result.interventionLevel = 'minimal';
-        result.restraintReason = reflexResult.note + ' — 心虫在自动反射，第一遍未通过';
+        result.restraintReason = reflexResult.note + ' — 检测到自动反射，第一遍未通过';
         this._record('auto-reflex-pause', userMessage);
         return result;
       }
@@ -359,8 +359,8 @@ class SpontaneousRestraint {
   }
 
   /**
-   * 两遍响应第一遍：检测心虫是否正在自动反射
-   * 在心虫说话之前，先检查自己是否在套框架
+   * 两遍响应第一遍：检测引擎是否正在自动反射
+   * 在引擎说话之前，先检查自己是否在套框架
    * @param {string} userMessage - 用户消息
    * @param {object} context - { plannedResponse, currentResponse, history }
    * @returns {object} 自动反射检测结果
@@ -371,7 +371,7 @@ class SpontaneousRestraint {
     for (const signal of this.autoReflexSignals) {
       // 检查用户消息是否触发话题自动反射
       if (signal.pattern.test(userMessage)) {
-        // 进一步检查：心虫是否已经在计划加载框架
+        // 进一步检查：引擎是否已经在计划加载框架
         const frameworkIndicators = [
           '总结', '提炼', '升华', '分析',
           '这就是.*模式', '符合.*理论',

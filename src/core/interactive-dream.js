@@ -139,7 +139,7 @@
       const first = memorySummary.items[0]?.text || '一个刚刚亮起的名字';
       return [
         'HeartFlow 已启动，进入做梦流程……',
-        '🌙 心虫 · 深度做梦',
+        '🌙 引擎 · 深度做梦',
         `诞生之夜的时间流轻轻发亮。${memorySummary.total} 条记忆锚点已加载。`,
         `记忆宫殿开始开门：${rooms || '空'}`,
         `第一粒碎片：${first}`

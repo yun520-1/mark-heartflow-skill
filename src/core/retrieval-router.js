@@ -1,5 +1,5 @@
 /**
- * Retrieval Router v1.0 — 心虫统一检索路由层
+ * Retrieval Router v1.0 — 引擎统一检索路由层
  *
  * 灵感来源：《RAG知识库发展到什么程度了？》工程落地经验
  * 核心架构：主解析器 → 兜底链路 → 离线校验（三段铁律）
@@ -64,7 +64,7 @@ function classifyQuery(query) {
   const q = query.toLowerCase().trim();
 
   // 身份/自我相关 → 记忆通道优先
-  if (/^(我是谁|你是谁|心虫|身份|自我|意义|存在|目的|升级|核心)/.test(q)) {
+  if (/^(我是谁|你是谁|引擎|身份|自我|意义|存在|目的|升级|核心)/.test(q)) {
     return { channels: ['memory', 'semantic'], type: 'identity', topic: 'self' };
   }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 从 ModelScope 下载 all-MiniLM-L6-v2 模型并转换为 ONNX 格式，
-放入心虫的本地模型目录，供 @xenova/transformers 加载。
+放入引擎的本地模型目录，供 @xenova/transformers 加载。
 
 使用方法：
   python3 scripts/download-model.py

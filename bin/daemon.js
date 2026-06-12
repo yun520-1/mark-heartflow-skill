@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * HeartFlow Daemon — 心虫常驻进程
+ * HeartFlow Daemon — 引擎常驻进程
  *
  * 启动后：
  *   - 加载 HeartFlow 引擎（一次性）

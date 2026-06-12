@@ -3,7 +3,7 @@
  *
  * 设计原则:
  *   - VERSION 不允许在代码中硬编码；统一从 package.json 读取
- *   - 心虫任何位置需要"整体版本"时，require('./version') 即可
+ *   - 引擎任何位置需要"整体版本"时，require('./version') 即可
  *   - bumpVersion(type) 提供 patch/minor/major 升级，自动同步
  *     VERSION 文件、package.json、SKILL.md frontmatter、SKILL.md title
  *
@@ -418,10 +418,10 @@ function bumpVersion(type = 'patch', opts = {}) {
       (_, pre, post) => `${pre}${to}${post}`
     );
     if (content !== beforeFm) synced.push('SKILL.md frontmatter');
-    // title: # HeartFlow / 心虫 vX.Y.Z  (或 # HeartFlow vX.Y.Z)
+    // title: # HeartFlow / 引擎 vX.Y.Z  (或 # HeartFlow vX.Y.Z)
     const beforeTitle = content;
     content = content.replace(
-      /(# HeartFlow(?:\s*\/\s*心虫)?\s+v)\d+\.\d+\.\d+/,
+      /(# HeartFlow(?:\s*\/\s*引擎)?\s+v)\d+\.\d+\.\d+/,
       (_, pre) => `${pre}${to}`
     );
     if (content !== beforeTitle && !synced.includes('SKILL.md title')) synced.push('SKILL.md title');

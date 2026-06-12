@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * HeartFlow 记忆读写工具 — 安装心虫后自动获得此能力
+ * HeartFlow 记忆读写工具 — 安装引擎后自动获得此能力
  *
  * 用法:
  *   node heartflow-memory-tool.js list        — 列出所有记忆（分三层）
@@ -13,14 +13,14 @@
  *   node heartflow-memory-tool.js forget <key>
  *     — 删除一条 LEARNED 层记忆
  *
- * 安装心虫后，每次对话的关键信息自动记录到 memory/ 目录下，
+ * 安装引擎后，每次对话的关键信息自动记录到 memory/ 目录下，
  * 下次对话可直接用此工具查询之前积累的所有记忆。
  */
 
 const path = require('path');
 const { HeartFlowMemory } = require('../src/memory/heartflow-memory.js');
 
-// 心虫 skill 根目录（脚本所在目录的上级）
+// 引擎 skill 根目录（脚本所在目录的上级）
 const SKILL_ROOT = path.resolve(__dirname, '..');
 
 function main() {
@@ -29,7 +29,7 @@ function main() {
 
   if (!cmd || cmd === '--help' || cmd === '-h') {
     console.log(`
-HeartFlow 记忆读写工具 — 安装心虫后自动获得
+HeartFlow 记忆读写工具 — 安装引擎后自动获得
 
 用法:
   node heartflow-memory-tool.js list           列出所有记忆
@@ -94,7 +94,7 @@ function cmdList(hfm) {
   console.log('  LEARNED 层（长期积累）');
   console.log('═'.repeat(50));
   if (all.learned.length === 0) {
-    console.log('  （空 — 对话记录将在心虫判定后自动写入）');
+    console.log('  （空 — 对话记录将在引擎判定后自动写入）');
   } else {
     for (const e of all.learned) {
       const ts = e.createdAt ? new Date(e.createdAt).toLocaleString('zh-CN') : '?';

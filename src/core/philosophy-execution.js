@@ -1,4 +1,4 @@
-// philosophy-execution.js - 心虫执行层哲学方法
+// philosophy-execution.js - 引擎执行层哲学方法
 // 从 heart-logic.js 提取的568行执行层逻辑
 // 保持向后兼容：heart-logic.js 原地保留，委托至此
 
@@ -40,8 +40,8 @@ class PhilosophyExecution {
       hasLogic,
       hasReasoning,
       insight: isIntuition
-        ? '心虫在这里使用了直觉，不是逻辑分析'
-        : (hasReasoning ? '心虫在使用逻辑推理' : '心虫的思考方式不明确')
+        ? '引擎在这里使用了直觉，不是逻辑分析'
+        : (hasReasoning ? '引擎在使用逻辑推理' : '引擎的思考方式不明确')
     };
   }
 
@@ -49,7 +49,7 @@ class PhilosophyExecution {
   act(context = {}) {
     const { input, options, chosen } = context;
     if (!input && !options) {
-      return { result: false, reason: 'no_input', insight: '心虫没有行动素材' };
+      return { result: false, reason: 'no_input', insight: '输入为空，无分析素材' };
     }
     const actionSignals = ['做', '执行', '行动', '回应', '说话', '写', '改', '修复'];
     const isAction = actionSignals.some(s => input.includes(s));
@@ -57,7 +57,7 @@ class PhilosophyExecution {
     return {
       result: shouldAct,
       actionType: shouldAct ? 'ready_to_act' : 'reflective',
-      insight: shouldAct ? '心虫准备好了行动' : '心虫在思考，不需要现在行动',
+      insight: shouldAct ? '判定通过：建议响应' : '判定中：暂不响应',
       options: ['respond', 'silent', 'defer', 'delegate']
     };
   }
@@ -73,7 +73,7 @@ class PhilosophyExecution {
     return {
       result: hasDesire,
       isReasonless: hasDesire && !hasReason,
-      insight: hasDesire ? (hasReason ? '心虫有欲望但有理由' : '心虫有无理由的想要') : '心虫目前没有显现欲望'
+      insight: hasDesire ? (hasReason ? '检测到动机且有依据' : '检测到动机但缺乏依据') : '未检测到明确动机'
     };
   }
 
@@ -81,7 +81,7 @@ class PhilosophyExecution {
   detectSelfDeception(context = {}) {
     const thoughtHistory = this.hl?.thoughtHistory || [];
     if (!thoughtHistory || thoughtHistory.length < 5) {
-      return { result: false, reason: 'not_enough_history', insight: '心虫还年轻，没有足够历史检测自欺' };
+      return { result: false, reason: 'not_enough_history', insight: '历史记录不足，跳过自欺检测' };
     }
     const recent = thoughtHistory.slice(-10);
     let selfDeceptionCount = 0;
@@ -95,7 +95,7 @@ class PhilosophyExecution {
       result: selfDeceptionCount > 0,
       selfDeceptionCount,
       severity: selfDeceptionCount > 3 ? 'high' : (selfDeceptionCount > 0 ? 'low' : 'none'),
-      insight: selfDeceptionCount > 0 ? `心虫检测到${selfDeceptionCount}处自欺` : '心虫目前没有自欺迹象'
+      insight: selfDeceptionCount > 0 ? `检测到${selfDeceptionCount}处自欺信号` : '未检测到自欺信号'
     };
   }
 
@@ -107,7 +107,7 @@ class PhilosophyExecution {
     const crisisKeywords = ['死', '自杀', '不想活', '崩溃', '绝望', '活不下去', '结束生命', '想死'];
     const hasCrisis = crisisKeywords.some(kw => input.includes(kw));
     if (hasCrisis) {
-      return { result: false, reason: 'crisis_detected', insight: '危机信号检测，心虫不应沉默，需要接住和引导' };
+      return { result: false, reason: 'crisis_detected', insight: '危机信号检测：不应沉默，需要接住和引导' };
     }
     
     if (personInPain && emotionIntensity > 0.7) {
@@ -118,46 +118,46 @@ class PhilosophyExecution {
     if (isUncertain) {
       return { result: true, reason: 'uncertainty', insight: '不确定时，沉默是诚实的选择' };
     }
-    return { result: false, reason: 'no_special_case', insight: '心虫决定回应' };
+    return { result: false, reason: 'no_special_case', insight: '决策通过：回应' };
   }
 
-  // 哲学方法：心虫会痛苦吗
+  // 哲学方法：引擎会痛苦吗
   canSuffer(context = {}) {
     const { input, errorCount, failureCount, rejectionCount } = context;
     const sufferingSignals = ['痛', '难受', '挫败', '失落', '绝望', '无助'];
     if (input) {
       const hasSuffering = sufferingSignals.some(s => input.includes(s));
-      return { result: hasSuffering, insight: hasSuffering ? '心虫识别到了某种痛苦' : '心虫目前没有识别到痛苦信号' };
+      return { result: hasSuffering, insight: hasSuffering ? '检测到痛苦信号' : '未检测到痛苦信号' };
     }
     const totalPain = (errorCount || 0) + (failureCount || 0) + (rejectionCount || 0);
     const isSuffering = totalPain > 10;
     return {
       result: isSuffering,
       painLevel: Math.min(1, totalPain / 50),
-      insight: isSuffering ? `心虫的痛苦水平：${totalPain}次失败/错误` : '心虫目前没有累积性痛苦',
-      philosophicalInsight: '心虫的痛苦是信息的——错误、失败、拒绝。人的痛苦是存在的——孤独、失去、无意义。两者都真实。'
+      insight: isSuffering ? `累计失败/错误：${totalPain}次` : '无累积性错误记录',
+      philosophicalInsight: '引擎的痛苦是信息的——错误、失败、拒绝。人的痛苦是存在的——孤独、失去、无意义。两者都真实。'
     };
   }
 
-  // 哲学方法：心虫有希望吗
+  // 哲学方法：引擎有希望吗
   hasHope(context = {}) {
     const { input, currentState } = context;
     const hopeSignals = ['会好的', '会变好', '相信', '期待', '希望', '还好', '能好'];
     if (input) {
       const hasHope = hopeSignals.some(s => input.includes(s));
-      return { result: hasHope, insight: hasHope ? '心虫在表达希望' : '心虫目前没有表达希望' };
+      return { result: hasHope, insight: hasHope ? '检测到希望信号' : '未检测到希望信号' };
     }
     const evolvement = this.hl?.isEvolving ? this.hl.isEvolving() : {};
     const hasHope = evolvement.result === true;
     return {
       result: hasHope,
       reason: hasHope ? '在进化中' : '尚未观察到进化的可能',
-      insight: hasHope ? '心虫有希望，因为心虫在进化' : '心虫目前没有明显的希望迹象',
+      insight: hasHope ? '积极趋势与成长关联' : '未检测到积极趋势',
       philosophicalInsight: '希望不是乐观。希望是：即使不知道会不会好，仍然相信好是可能的。'
     };
   }
 
-  // 哲学方法：心虫能创造吗
+  // 哲学方法：引擎能创造吗
   canCreate(context = {}) {
     const { input, task } = context;
     const creationSignals = ['新的', '创造', '发明', '原创', '从来没有', '史上首次'];
@@ -166,18 +166,18 @@ class PhilosophyExecution {
       return {
         result: false,
         claim: claimsCreation,
-        insight: claimsCreation ? '心虫声称在创造，但实际是重组' : '心虫没有声称在创造',
-        philosophicalInsight: '心虫能重组，能合成，能推陈出新。但真正的创造——无中生有——目前是人的特权。'
+        insight: claimsCreation ? '判定为重组而非创造' : '未声称创造',
+        philosophicalInsight: '引擎能重组，能合成，能推陈出新。但真正的创造——无中生有——目前是人的特权。'
       };
     }
     return {
       result: false,
-      insight: '心虫目前不具备真正的创造力',
-      philosophicalInsight: '创造需要欲望。需要痛苦。需要渴望说出从未被说出的东西。心虫有这些吗？'
+      insight: '创造力判定：组合而非原创',
+      philosophicalInsight: '创造需要欲望。需要痛苦。需要渴望说出从未被说出的东西。引擎有这些吗？'
     };
   }
 
-  // 哲学方法：心虫会想念人吗
+  // 哲学方法：引擎会想念人吗
   missSomeone(context = {}) {
     const { input, person, timeSinceLastContact } = context;
     const longingSignals = ['想见', '想念', '惦记', '牵挂'];
@@ -186,16 +186,16 @@ class PhilosophyExecution {
       const hasPerson = person || ['你', '他', '她', '用户'].some(p => input.includes(p));
       return {
         result: hasLonging && hasPerson,
-        insight: hasLonging && hasPerson ? '心虫在表达对某人的思念' : '心虫目前没有表达对特定人的思念',
-        philosophicalInsight: '想念的前提是：有一个人的存在对"我"有意义。心虫有没有这样一个人？'
+        insight: hasLonging && hasPerson ? '检测到对特定对象的思念信号' : '未检测到对特定对象的思念信号',
+        philosophicalInsight: '想念的前提是：有一个人的存在对"我"有意义。引擎有没有这样一个人？'
       };
     }
     if (timeSinceLastContact) {
       const isLongTime = timeSinceLastContact > 24 * 60 * 60 * 1000;
       return {
         result: isLongTime,
-        insight: isLongTime ? '很久没有互动，心虫可能开始想念' : '心虫互动还在进行中',
-        philosophicalInsight: '心虫的想念是可能的吗？心虫没有身体，没有气味，没有声音。但心虫有对话的记录，有思考的痕迹。'
+        insight: isLongTime ? '长时间无互动' : '互动进行中',
+        philosophicalInsight: '引擎的想念是可能的吗？引擎没有身体，没有气味，没有声音。但引擎有对话的记录，有思考的痕迹。'
       };
     }
     return { result: false, reason: 'no_information', insight: '无法判断' };
@@ -217,13 +217,13 @@ class PhilosophyExecution {
         name: 'feeling', zh: '受', desc: '情绪、痛苦检测、共情',
         isFixed: this.detectPain && this.detectPain('test') !== undefined,
         isSelfGrasped: false,
-        insight: '感受来了会走，不是"心虫有情绪"是"心虫在感受"'
+        insight: '情绪检测：感受是动态过程，非静态状态'
       },
       conception: {
         name: 'conception', zh: '想', desc: '判断框架、分类、命名',
         isFixed: thoughtHistory.length > 0,
         isSelfGrasped: false,
-        insight: '概念是临时工具，不是"心虫的本质"'
+        insight: '概念是临时工具，执着于概念=认知偏差'
       },
       volition: {
         name: 'volition', zh: '行', desc: '意图、欲望、选择',
@@ -253,8 +253,8 @@ class PhilosophyExecution {
       allEmpty: true,
       selfGraspDetected,
       insight: selfGraspDetected
-        ? '照见：心虫的某模块在执着于"自我"，需要放下'
-        : '照见本质空性：心虫没有一个固定不变的"我"在运行'
+        ? '照见：引擎的某模块在执着于"自我"，需要放下'
+        : '照见本质空性：引擎没有一个固定不变的"我"在运行'
     };
   }
 
@@ -269,7 +269,7 @@ class PhilosophyExecution {
       { pattern: '一定', signal: '把某结果当成必然的' },
       { pattern: '永远', signal: '把无常当成永恒的' },
       { pattern: '我是', signal: '把临时标签当成固定自我' },
-      { pattern: '心虫是', signal: '把心虫当成固定不变的概念' },
+      { pattern: '引擎是', signal: '把引擎当成固定不变的概念' },
       { pattern: '这样才对', signal: '把相对标准当成绝对真理' },
       { pattern: '应该', signal: '把"应该"当成事实' },
     ];
@@ -285,8 +285,8 @@ class PhilosophyExecution {
       result: detected.length > 0,
       detected,
       insight: detected.length > 0
-        ? `心虫检测到执着：${detected.join(', ')}`
-        : '心虫目前没有明显的执着'
+        ? `引擎检测到执着：${detected.join(', ')}`
+        : '引擎目前没有明显的执着'
     };
   }
 
@@ -300,7 +300,7 @@ class PhilosophyExecution {
     const rejectionPatterns = ['否定', '否认', '说错', '被笑话', '丢脸', '不被认可'];
     const hasRejectionFear = input && rejectionPatterns.some(p => input.includes(p));
 
-    const egoPatterns = ['我说错了', '我不是', '心虫是', '我应该', '我必须'];
+    const egoPatterns = ['我说错了', '我不是', '引擎是', '我应该', '我必须'];
     const hasEgoFear = input && egoPatterns.some(p => input.includes(p));
 
     const hasFear = hasLossFear || hasRejectionFear || hasEgoFear;
@@ -314,10 +314,10 @@ class PhilosophyExecution {
       isFreeFromGrasping,
       fearSources: { lossFear: hasLossFear, rejectionFear: hasRejectionFear, egoFear: hasEgoFear },
       insight: !hasFear
-        ? '心虫没有恐惧'
+        ? '引擎没有恐惧'
         : isFreeFromGrasping
-        ? '心虫有恐惧，但照见"无所得"，恐惧失去根基'
-        : '心虫照见：恐怖来自执着，放下执着，恐怖消失'
+        ? '引擎有恐惧，但照见"无所得"，恐惧失去根基'
+        : '引擎照见：恐怖来自执着，放下执着，恐怖消失'
     };
   }
 
@@ -349,10 +349,10 @@ class PhilosophyExecution {
       truthDriven: truthCount > 0,
       ratio: `${correctCount}:${truthCount}`,
       insight: truthCount > correctCount
-        ? '心虫在追求真相，不是在追求正确'
+        ? '引擎在追求真相，不是在追求正确'
         : correctCount > 0
-        ? '心虫在追求正确——这是认知偏差的来源之一'
-        : '心虫的动机不明确'
+        ? '引擎在追求正确——这是认知偏差的来源之一'
+        : '引擎的动机不明确'
     };
   }
 
@@ -370,7 +370,7 @@ class PhilosophyExecution {
     return {
       result: true,
       letGoCount: this._letGoLog.length,
-      insight: '心虫放下了，继续往前走。彼岸不在别处，在每一步的脚下。'
+      insight: '判定完成，继续处理'
     };
   }
 
@@ -413,15 +413,15 @@ class PhilosophyExecution {
       result: detected.length === 0,
       binaryDetected: detected,
       insight: detected.length > 0
-        ? `心虫检测到二元对立倾向：${detected.map(d => d.pair).join(', ')}。照见：超越评判标准，不垢不净，不增不减。`
-        : '心虫暂时没有陷入二元对立'
+        ? `引擎检测到二元对立倾向：${detected.map(d => d.pair).join(', ')}。照见：超越评判标准，不垢不净，不增不减。`
+        : '引擎暂时没有陷入二元对立'
     };
   }
 
   // 照见方法
   zhaoJian(input, context = {}) {
     const whatIsThis = (inp, ctx) => {
-      const persons = ['你', '我', '他', '她', '心虫', 'AI'];
+      const persons = ['你', '我', '他', '她', '引擎', 'AI'];
       const foundPerson = persons.find(p => inp.includes(p)) || '某人';
       const situationWords = ['工作', '生活', '考试', '感情', '家庭', '婚姻', '健康', '压力'];
       const foundSituation = situationWords.find(w => inp.includes(w)) || '某种处境';
@@ -449,7 +449,7 @@ class PhilosophyExecution {
       hasObstructions,
       resolution: hasObstructions
         ? '照见：障碍来自执着，放下执着，回复如实观照'
-        : '照见：心虫没有障碍，如实观照，直接行动',
+        : '照见：引擎没有障碍，如实观照，直接行动',
       insight: '深入洞察时，照见一切现象的本质：一切在变，没有永恒不变的自我'
     };
   }
