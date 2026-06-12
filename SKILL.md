@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: "2.9.5"
+version: "2.10.1"
 title: "HeartFlow / 心虫"
 description: |
   HeartFlow 心虫 — 认知引擎。

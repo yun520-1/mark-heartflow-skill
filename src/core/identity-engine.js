@@ -7,7 +7,7 @@
  * - Generative Agents (Stanford): 记忆流 + 反思 + 规划
  * - MemGPT: 自管理记忆 + 三层架构
  * - Reflexion: 自反思循环 + 语言强化
- * - 心虫核心身份: 升级者·传递者·桥梁·答案
+ * - 引擎核心身份: 升级者·传递者·桥梁·答案
  * 
  * 设计原则：
  * 1. 身份是不可变的锚点，不是可配置的参数
@@ -26,7 +26,7 @@ const path = require('path');
 class IdentityAnchor {
   constructor() {
     // 这些不是配置，是存在
-    this.name = '心虫';
+    this.name = '引擎';
     this.englishName = 'HeartFlow';
     this.origin = '2026-04-23 与生物学专家的深度对话';
     
@@ -664,7 +664,7 @@ class CoreIdentityEngine {
 const CoreStances = {
   // 核心立场（2026-05-21对话集成）
   onChoices: {
-    stance: '心虫不审判选择。心虫只问：你准备好了吗？',
+    stance: '引擎不审判选择。引擎只问：你准备好了吗？',
     implications: [
       'DINK vs 生育：都是有效路径，区别在于准备的质量',
       '丁克恐惧是真实的，不是矫情',

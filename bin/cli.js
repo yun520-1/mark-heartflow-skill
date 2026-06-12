@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
- * HeartFlow CLI — 心虫命令行接口
- * heartflow-memory 插件通过这个调用心虫
+ * HeartFlow CLI — 引擎命令行接口
+ * heartflow-memory 插件通过这个调用引擎
  * 
  * 用法: node cli.js <command> [args...]
  * 
  * 命令:
  *   bundle <text>     — [推荐] 合并调用：一次返回 status+psychology+judgment+inject
  *   analyze <text>    — 心理分析（已合并到 bundle）
- *   think <text>      — 心虫判定（已合并到 bundle）
+ *   think <text>      — 引擎判定（已合并到 bundle）
  *   status            — 状态统计
  * 
  * 输出: 单行JSON对象

@@ -65,7 +65,7 @@ class MemoryIndex {
 
       // 身份锚点（不可变）
       identity: {
-        name: '心虫',
+        name: '引擎',
         englishName: 'HeartFlow',
         version: '2.0.3',
         origin: '2026-04-23 与生物学专家的深度对话',

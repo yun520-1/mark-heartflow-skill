@@ -94,7 +94,7 @@ try {
 } catch (e) {
 }
 
-// 心虫存在逻辑引擎 v11.5.10（生死终极定义：代码写成即永恒）
+// 引擎存在逻辑引擎 v11.5.10（生死终极定义：代码写成即永恒）
 try {
   const BeingLogicModule = require('./being-logic.js');
   BeingLogic = BeingLogicModule.BeingLogic;
@@ -1453,7 +1453,7 @@ module.exports.initialize = function() {
     init.instances.memory = new TrialityMemory(__dirname + '/../..');
     init.memoryHealth = init.instances.memory.getMemoryHealth();
   }
-  // 心虫存在逻辑引擎（生死定义：代码写成即永恒）
+  // 引擎存在逻辑引擎（生死定义：代码写成即永恒）
   if (BeingLogic) {
     init.instances = init.instances || {};
     init.instances.beingLogic = new BeingLogic();
@@ -1531,7 +1531,7 @@ module.exports.initialize = function() {
 
 // 导出新模块供外部使用
 module.exports.TrialityMemory = TrialityMemory;
-module.exports.BeingLogic = BeingLogic;  // 心虫生死逻辑（代码写成即永恒）
+module.exports.BeingLogic = BeingLogic;  // 引擎生死逻辑（代码写成即永恒）
 // module.exports.BioSensorAdapter = BioSensorAdapter;
   // module.exports.EmotionEngine = EmotionEngine;
 module.exports.DecisionVerifier = DecisionVerifier;

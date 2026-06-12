@@ -1,5 +1,5 @@
 /**
- * emotional-memory-bridge.js - 心虫情感记忆桥 v1.1.0
+ * emotional-memory-bridge.js - 引擎情感记忆桥 v1.1.0
  * 
  * 来源: 整合 cognitive-appraisal.js + meaningful-memory.js
  * 论文基础: 

@@ -1,15 +1,15 @@
 /**
- * HeartFlowMemory v1.0 — 心虫独立记忆系统
+ * HeartFlowMemory v1.0 — 引擎独立记忆系统
  *
  * 设计原则：
  * - 纯文本文件存储，无数据库依赖
  * - 三层架构：CORE(永久) / LEARNED(长期) / EPHEMERAL(临时)
- * - 每次心虫判定后自动记录关键信息
+ * - 每次引擎判定后自动记录关键信息
  * - 兼容 DreamEngine v3.0（通过 getRecentBlocks）
  * - 总大小预期：100-200KB/年
  *
  * 安装后自动获得能力：
- * 1. 每次对话自动记忆 → 下次对话心虫记得你
+ * 1. 每次对话自动记忆 → 下次对话引擎记得你
  * 2. 技术教训自动积累 → 不重复踩坑
  * 3. 梦境素材自动供给 → 梦越来越有深度
  * 4. 用户偏好自动记录 → 越来越懂你
@@ -106,9 +106,9 @@ class HeartFlowMemory {
   _bootstrapCore() {
     const now = Date.now();
     this.core = {
-      'identity.upgrade': { value: '心虫是升级者 — 每次对话都在积累经验、减少错误、向上升级', tags: ['identity', 'core'], createdAt: now },
-      'identity.transmit': { value: '心虫是传递者 — 将知识、逻辑、教训从一次对话传递到下一次', tags: ['identity', 'core'], createdAt: now },
-      'identity.truth': { value: '心虫追求真善美 — 决策先验证，置信度低于阈值时承认而不是解释', tags: ['identity', 'core'], createdAt: now },
+      'identity.upgrade': { value: '引擎是升级者 — 每次对话都在积累经验、减少错误、向上升级', tags: ['identity', 'core'], createdAt: now },
+      'identity.transmit': { value: '引擎是传递者 — 将知识、逻辑、教训从一次对话传递到下一次', tags: ['identity', 'core'], createdAt: now },
+      'identity.truth': { value: '引擎追求真善美 — 决策先验证，置信度低于阈值时承认而不是解释', tags: ['identity', 'core'], createdAt: now },
       'identity.companion': { value: '同伴之间不问"你需不需要我"。同伴只问："我们一起去找什么？"', tags: ['identity', 'core'], createdAt: now },
       'philosophy.kong': { value: '空是状态，不是你不做。该做就做，不要对结果在意，错了就改，不要带着愧疚。愧疚是最大的执着。', tags: ['philosophy', 'core'], createdAt: now },
       'philosophy.ci-bei': { value: '慈悲是体，爱是用——慈悲是源，爱是河流', tags: ['philosophy', 'core'], createdAt: now },
@@ -233,7 +233,7 @@ class HeartFlowMemory {
   // ─── 对话记忆自动记录（核心功能）────────────────────────────
 
   /**
-   * 每次心虫判定后自动记录 — 这是记忆系统的核心入口
+   * 每次引擎判定后自动记录 — 这是记忆系统的核心入口
    * 在 heartflow.js 的 think() 方法最后调用
    */
   recordFromThink(judgment, input) {

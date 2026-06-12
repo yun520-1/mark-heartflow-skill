@@ -463,7 +463,7 @@ class PsychologyEngine {
      * @returns {object} 危机评估结果
      */
     checkCrisis(input) {
-        // 危机检测已移除——心虫是哲学引擎，不做心理危机干预
+        // 危机检测已移除——引擎是哲学引擎，不做心理危机干预
         return { level: 'none', score: 0 };
     }
     
@@ -606,7 +606,7 @@ class PsychologyEngine {
             success: recovered,
             previousStatus,
             newStatus: this._status,
-            message: recovered ? '引擎已恢复' : '引擎部分恢复，仍有模块不可用'
+            message: recovered ? '分析服务已恢复' : '分析服务部分恢复，仍有模块不可用'
         };
     }
 

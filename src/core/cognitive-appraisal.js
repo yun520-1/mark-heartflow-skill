@@ -403,7 +403,7 @@ if (require.main === module) {
 // ========================================
 // 内省错觉检测器 v1.0（心理学思想实验验证升级）
 // 心理学基础：内省错觉 (Introspection Illusion)
-// 心虫诚实立场：不声称知道内部状态因果，只报告观察到的决策模式
+// 引擎诚实立场：不声称知道内部状态因果，只报告观察到的决策模式
 // ========================================
 
 const INTROSPECTION_ILLUSION_PATTERNS = [
@@ -435,7 +435,7 @@ function detectIntrospectionIllusion(text) {
   else if (matched.some(function(m) { return m.severity === 'caution'; })) level = 'caution';
   var insightMap = {
     safe: '通过内省错觉检测：未发现事后推断语言',
-    caution: '检测到可能的事后推断语言：心虫应使用"观察到"而非"我知道为什么"',
+    caution: '检测到可能的事后推断语言：引擎应使用"观察到"而非"我知道为什么"',
     over: '检测到内省错觉语言：声称知道自身内部状态因果——可能只是事后构建的叙事'
   };
   return { hasIllusion: matched.length > 0, matched: matched, level: level, insight: insightMap[level] };

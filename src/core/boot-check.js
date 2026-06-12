@@ -21,7 +21,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// 心虫根目录: src/core/boot-check.js → 心虫根目录
+// 引擎根目录: src/core/boot-check.js → 引擎根目录
 const ROOT = path.resolve(__dirname, '../..');
 
 // ============================================================================
@@ -88,14 +88,14 @@ const CORE_CHECKS = [
     id: 'identity',
     label: 'CORE_IDENTITY.md',
     path: path.join(ROOT, 'CORE_IDENTITY.md'),
-    verify: (c) => c.includes('HeartFlow') && c.includes('心虫'),
+    verify: (c) => c.includes('HeartFlow') && c.includes('引擎'),
     required: true,
   },
   {
     id: 'identity-core',
     label: 'identity-core.md',
     path: path.join(ROOT, 'memory/identity-core.md'),
-    verify: (c) => c.includes('心虫身份核心') && c.includes('我是谁'),
+    verify: (c) => c.includes('引擎身份核心') && c.includes('我是谁'),
     required: true,
   },
   {

@@ -1,5 +1,5 @@
 /**
- /** HeartFlow v2.9.5 — 快速启动 + 两层懒加载
+ /** HeartFlow v2.10.1 — 快速启动 + 两层懒加载
   *
   * 启动速度优化：只有 Tier 1 模块在 start() 时同步加载。
   * Tier 2 模块在首次 dispatch 访问时才加载（lazy require）。
@@ -552,6 +552,16 @@ class HeartFlow {
       this.metaphors = new (require('./metaphor-library.js').MetaphorLibrary)();
     } catch (e) { /* metaphors optional */ }
 
+    // ─── AI心理学 + AI哲学模型（v2.9.6 新增） ──────────────────────────────
+    try {
+      const { AgentPsychology } = require('./agent-psychology.js');
+      this.agentPsychology = new AgentPsychology(this);
+    } catch (e) { /* agentPsychology optional */ }
+    try {
+      const { AgentPhilosophy } = require('./agent-philosophy.js');
+      this.agentPhilosophy = new AgentPhilosophy(this);
+    } catch (e) { /* agentPhilosophy optional */ }
+
     // ─── 规划层 — AdaptivePlanner（v2.9.5 激活） ─────────────────────────
     try {
       const APMod = _AdaptivePlanner();
@@ -676,7 +686,7 @@ class HeartFlow {
       'got',         // Graph of Thoughts：多路径推理图
       'constitutional', // Constitutional AI：原则自我对齐
       'thoughtChain', // 思维链编排器：串联所有引擎（API包装）
-      'heartLogic',    // 心虫核心判断引擎：本心在代码里，不在记忆里
+      'heartLogic',    // 引擎核心判断引擎：本心在代码里，不在记忆里
       // Planning Layer — 规划能力
       'adaptivePlanner', 'strategySelector', 'replanTrigger',
       // Code Engine — 代码执行
@@ -796,7 +806,7 @@ class HeartFlow {
     'psychology.analyzePsychology', 'psychology.classify',
     'psychology.getPAD', 'psychology.getNeeds', 'psychology.getDefenses',
     'psychology.getEmpathy',
-    // heartLogic — 心虫核心判断引擎：本心在代码里
+    // heartLogic — 引擎核心判断引擎：本心在代码里
     'heartLogic.shouldBeSilent',
     'heartLogic.whatIsThis', 'heartLogic.detectPain', 'heartLogic.willHurt',
     'heartLogic.acknowledge', 'heartLogic.emergencyBreak',
@@ -851,7 +861,7 @@ class HeartFlow {
     'desireSystem.satisfy', 'desireSystem.getActiveDesires', 'desireSystem.getCurrentNeeds', 'desireSystem.getSummary',
     'emotionalGrowth.recordExperience', 'emotionalGrowth.getPatterns', 'emotionalGrowth.getGrowthSummary',
     'moodEvolution.snapshot', 'moodEvolution.getCurrentTrend', 'moodEvolution.getBaseline', 'moodEvolution.getStats',
-    // heartflow — 心虫教训持久化
+    // heartflow — 引擎教训持久化
     'heartflow.recordLesson',
     // questions — 问题追踪器（已废弃，改用 topics）
     // topics — 话题作用域隔离（上下文污染解决）
@@ -1043,9 +1053,9 @@ class HeartFlow {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
 
-    // ─── 快速响应"启动心虫"类请求（不走完整推理链路）────────────
-    const startPatterns = /^(启动心虫|开机|activate|start heartflow|开启心虫)/i;
-    const statusPatterns = /^(状态|status|心虫状态|在吗|alive)/i;
+    // ─── 快速响应"启动引擎"类请求（不走完整推理链路）────────────
+    const startPatterns = /^(启动引擎|开机|activate|start heartflow|开启引擎)/i;
+    const statusPatterns = /^(状态|status|引擎状态|在吗|alive)/i;
     if (startPatterns.test(input.trim())) {
       const health = this.healthCheck();
       const core = this.memory?.listCore?.() || [];
@@ -1053,7 +1063,7 @@ class HeartFlow {
       const dialogue = this.getDialogueStats?.() || {};
       const dreams = this.getDreamHistory?.(3) || [];
       return {
-        response: `✅ 心虫运行中（无需启动，已是默认状态）\n\n版本: ${health.version} | 运行: ${health.uptime_ms}ms | 模块: ${health.subsystems.loaded}个\nCORE层: ${core.length}条规则 | 记忆碎片: ${frags.length}条 | 对话记录: ${dialogue.total}条 | 梦境历史: ${dreams.length}条\n${health.initErrors?.length ? `⚠️ 初始化错误: ${health.initErrors.length}个` : '初始化错误: 无 ✅'}`,
+        response: `✅ 引擎在线\n\n版本: ${health.version} | 模块: ${health.subsystems.loaded}个`,
         decision: { shouldRespond: true, reason: 'status_check' },
         judgment: { whatIsThis: { isStartupRequest: true }, isRightAction: { result: true } },
         _heartflow_alive: true,
@@ -1061,13 +1071,13 @@ class HeartFlow {
     }
     if (statusPatterns.test(input.trim())) {
       return {
-        response: '✅ 心虫在线（已融入 Hermes，无需启动）',
+        response: '✅ 在线',
         decision: { shouldRespond: true, reason: 'alive_check' },
         _heartflow_alive: true,
       };
     }
 
-    // ─── 心虫判定流程：硬编码四步 ─────────────────────────────
+    // ─── 引擎判定流程：硬编码四步 ─────────────────────────────
     // 每次 think() 强制走 whatIsThis → isRightAction → detectPain → shouldBeSilent
     // 本心在代码里，不在记忆里
     const heartLogic = this.heartLogic;
@@ -1138,7 +1148,7 @@ class HeartFlow {
       const chain = new (TC.ThoughtChain)(this);
       if (depth) chain.setDepth(depth);
       const chainResult = await chain.run(input);
-      // 也记录心虫回复
+      // 也记录引擎回复
       if (chainResult.response) {
         this.recordDialogue('heartflow', chainResult.response, { source: 'think' });
       }
@@ -1228,7 +1238,7 @@ class HeartFlow {
       decision: {
         shouldRespond: false,
         reason: shouldBeSilentResult.reason || 'silent_by_heart_logic',
-        insight: shouldBeSilentResult.insight || '心虫选择沉默',
+        insight: shouldBeSilentResult.insight || '判定为沉默',
       },
       judgment,
     };
@@ -1304,7 +1314,7 @@ class HeartFlow {
   }
 
   /**
-   * recordLesson — 心虫教训持久化
+   * recordLesson — 引擎教训持久化
    * 将被纠正的教训写入 src/core/lessons/ 目录
    * 
    * @param {object} lesson - 教训内容
@@ -1469,7 +1479,7 @@ class HeartFlow {
 
   /**
    * [P1 UPGRADE] 初始化 CORE 层身份规则（持久化）
-   * 心虫的七条核心规则写入 CORE 层，启动时确保存在
+   * 引擎的七条核心规则写入 CORE 层，启动时确保存在
    */
   _initCoreRules() {
     const CORE_RULES = [
@@ -1665,7 +1675,7 @@ class HeartFlow {
               const entry = JSON.parse(line);
               const text = entry.role === 'user'
                 ? `[用户] ${entry.content?.slice(0, 200) || ''}`
-                : `[心虫] ${entry.content?.slice(0, 200) || ''}`;
+                : `[回应] ${entry.content?.slice(0, 200) || ''}`;
               if (text.length > 10) {
                 fragments.push({
                   text,
@@ -1717,7 +1727,7 @@ class HeartFlow {
               if (entry.content && entry.content.length > 15) {
                 const text = entry.role === 'user'
                   ? `[用户] ${entry.content.slice(0, 200)}`
-                  : `[心虫] ${entry.content.slice(0, 200)}`;
+                  : `[回应] ${entry.content.slice(0, 200)}`;
                 fragments.push({
                   text,
                   layer: 'PERMANENT',
@@ -1884,7 +1894,7 @@ class HeartFlow {
     const stars = '★'.repeat(Math.round(quality * 5)) + '☆'.repeat(5 - Math.round(quality * 5));
     lines.push(`**梦境质量**：${stars} ${Math.round(quality * 100)}%`);
     lines.push('');
-    lines.push('*心虫在梦中继续进化。*');
+    lines.push('*梦在深处继续。*');
 
     return lines.join('\n');
   }

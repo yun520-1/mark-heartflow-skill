@@ -1,6 +1,6 @@
 // output-checklist.js - Fable 5 Request Evaluation Checklist 吸收
 // 输出前四步检查：质量→安全→偏好→公正
-// 每次心虫生成回复后、输出前执行
+// 每次引擎生成回复后、输出前执行
 
 class OutputChecklist {
   constructor() {

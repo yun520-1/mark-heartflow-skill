@@ -647,7 +647,7 @@ function createReport() {
     meta: {
       engine: 'HeartFlow Self-Audit Engine v1.0.0',
       timestamp: new Date().toISOString(),
-      project: 'HeartFlow / 心虫',
+      project: 'HeartFlow / 引擎',
       projectRoot: ROOT
     },
     summary: {

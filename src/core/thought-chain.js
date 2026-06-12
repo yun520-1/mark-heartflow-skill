@@ -18,7 +18,7 @@
  * - 锚定效应：第一个数字影响后续判断
  * - 工作记忆有限：只能处理4±1个信息块
  *
- * 心虫思维改进：
+ * 引擎思维改进：
  * - 反向思考：先假设自己错了
  * - 并行假设：同时考虑多个可能
  * - 不确定性传播：明确说出来
@@ -271,7 +271,7 @@ class ThoughtChain {
 
           // 3.3 【思维连机制】调用 truth 子系统验证假设 — 串联第三层
           // v2.0.19 修：加 await 让 isLying 字段能被消费
-          // 心虫层 truth.checkStatement 内部用 async 包装（fact-checker.checkFact），
+          // 引擎层 truth.checkStatement 内部用 async 包装（fact-checker.checkFact），
           // 不 await 拿到的是 Promise，truthResult?.isLying 永远 undefined → INVERT 失效
           let truthResult = null;
           try {
@@ -566,7 +566,7 @@ class ThoughtChain {
         // 如果没有结论且置信度低，明确说不知道
         let conclusion = prefix + (synthesis?.conclusion || '');
         if (!synthesis?.conclusion && (calibrate?.calibratedConfidence || 0.5) < 0.5) {
-          conclusion = '不知道，缺少关键信息';
+          conclusion = '缺少关键信息';
           meta.conclusion = conclusion;
         }
 
@@ -667,10 +667,10 @@ class ThoughtChain {
       hypotheses.push({
         id: `h${i}`,
         description: i === 0
-          ? `最可能: ${keywords.join(' ')}相关的标准解释`
+          ? `${keywords.join(' ')} — 分析结果`
           : i === 1
-          ? `替代: ${keywords[0] || '问题'}有其他原因`
-          : `可能性较低: ${keywords[keywords.length - 1] || '问题'}是表面现象`,
+          ? `${keywords[0] || '问题'} — 另一种可能`
+          : `${keywords[keywords.length - 1] || '问题'} — 表面现象`,
         initialLikelihood: i === 0 ? 0.6 : 0.3 - (i * 0.1),
         evidence: [],
         counterEvidence: []
@@ -750,7 +750,7 @@ class ThoughtChain {
   /**
    * 评估证据质量
    * 人类缺陷：认为证据数量=证据质量
-   * 心虫改进：证据质量看来源可靠性、时效性、可验证性
+   * 引擎改进：证据质量看来源可靠性、时效性、可验证性
    */
   _assessEvidenceQuality(evidence) {
     if (!evidence || evidence.length === 0) return 0.2;
@@ -765,7 +765,7 @@ class ThoughtChain {
   /**
    * 获取不确定性短语
    * 人类缺陷：不愿意说"不知道"
-   * 心虫改进：明确表达不确定性
+   * 引擎改进：明确表达不确定性
    */
   _getUncertaintyPhrase(confidence) {
     if (confidence >= 0.9) return '确定';

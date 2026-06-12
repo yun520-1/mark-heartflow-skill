@@ -1,11 +1,11 @@
 /**
- * hooks-adapter.js — 心虫 × Claude Code Hooks 适配器
+ * hooks-adapter.js — 引擎 × Claude Code Hooks 适配器
  *
- * 将 Claude Code 插件系统的 4 个核心 hooks 事件映射为心虫内部事件。
+ * 将 Claude Code 插件系统的 4 个核心 hooks 事件映射为引擎内部事件。
  *
  * ## 映射关系
  *
- * | Claude Code Hook        | 心虫事件                   | 触发时机                 |
+ * | Claude Code Hook        | 引擎事件                   | 触发时机                 |
  * |------------------------|---------------------------|-------------------------|
  * | SessionStart           | cognitive.boot            | 启动时加载认知底层        |
  * | UserPromptSubmit       | psychology.scan+intent    | 每次用户输入触发心理扫描+意图检测 |
@@ -53,7 +53,7 @@ for (const ev of Object.values(HOOK_EVENTS)) {
  * SessionStart 默认处理器 — 加载认知底层
  *
  * 对应 Claude Code 的 hooks.json 中 SessionStart 阶段执行引导脚本。
- * 在心虫中，这等价于：
+ * 在引擎中，这等价于：
  *   - 初始化身份核心（identityCore）
  *   - 加载三层记忆系统
  *   - 注册元认知协议
@@ -73,7 +73,7 @@ function _defaultSessionStart({ sessionId, config = {} }) {
         memory:      true,  // 加载记忆系统
         meta:        true,  // 加载元认知协议
       },
-      // 需要注入到心虫上下文的认知底层数据
+      // 需要注入到引擎上下文的认知底层数据
       bootPayload: {
         timestamp: Date.now(),
         config: {
@@ -99,7 +99,7 @@ function _defaultSessionStart({ sessionId, config = {} }) {
  * UserPromptSubmit 默认处理器 — 心理扫描 + 意图检测
  *
  * 对应 Claude Code 的 hooks.json 中 UserPromptSubmit 阶段运行安全规则检查。
- * 在心虫中，这等价于：
+ * 在引擎中，这等价于：
  *   - 心理状态扫描（psychology.analyzePsychology）
  *   - 意图检测（truth.checkStatement / counterfactual）
  *   - 用户需求识别
@@ -123,7 +123,7 @@ function _defaultUserPromptSubmit({ text, context = {} }) {
         scanRequired: true,
         intentDetection: true,
       },
-      // 注入到心虫处理管道的上下文数据
+      // 注入到引擎处理管道的上下文数据
       injection: {
         preProcess: [
           'psychology.analyzePsychology',
@@ -149,7 +149,7 @@ function _defaultUserPromptSubmit({ text, context = {} }) {
  * PostToolUse 默认处理器 — 代码审查 + 安全审计
  *
  * 对应 Claude Code 的 hooks.json 中 PostToolUse 阶段检查 Edit/Write/Bash 结果。
- * 在心虫中，这等价于：
+ * 在引擎中，这等价于：
  *   - 代码分析（codeEngine.analyzeCode）
  *   - 安全审计（codeEngine.reviewCode / auditCodebase）
  *   - 修复建议生成
@@ -182,7 +182,7 @@ function _defaultPostToolUse({ toolName, toolInput = {}, result = {} }) {
         patterns: [],     // 匹配的安全模式列表
         warnings: [],     // 检测到的警告
       },
-      // 注入到心虫后处理管道的上下文数据
+      // 注入到引擎后处理管道的上下文数据
       injection: {
         postProcess: isCodeTool
           ? ['codeEngine.analyzeCode', 'codeEngine.reviewCode']
@@ -209,7 +209,7 @@ function _defaultPostToolUse({ toolName, toolInput = {}, result = {} }) {
  * Stop 默认处理器 — 教训提取 + 记忆合并
  *
  * 对应 Claude Code 的 hooks.json 中 Stop 阶段执行最终审查。
- * 在心虫中，这等价于：
+ * 在引擎中，这等价于：
  *   - 教训提取（lesson.extract / lesson.storage）
  *   - 记忆合并（dreamConsolidation / memory.consolidate）
  *   - 自我进化更新（self-evolution）
@@ -232,7 +232,7 @@ function _defaultStop({ sessionId, summary = {} }) {
         updateEvolution: true,
         consolidateDreams: false,  // 默认关闭，由配置控制
       },
-      // 注入到心虫结束处理管道的上下文数据
+      // 注入到引擎结束处理管道的上下文数据
       injection: {
         finalize: [
           'lesson.extractLessons',

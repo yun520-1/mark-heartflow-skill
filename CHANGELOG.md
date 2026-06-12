@@ -1,3 +1,14 @@
+## [v2.10.1] - 2026-06-12
+### Changed
+- MCP 改为 HTTP SSE 常驻模式，连接时间从 ~200ms 降到 ~75ms
+- mcp-server-http.js 版本号改为从 VERSION 文件读取（不再硬编码）
+- 新增 HTTP 请求超时（30s）、请求体大小限制（1MB）、req.on('error') 监听
+- 版本升级 2.10.0 → 2.10.1
+
+### Fixed
+- README.md / package.json / heartflow.js 版本号统一到 v2.10.1
+- 徽章版本号同步
+
 ## [v2.9.0] - 2026-06-10
 ### Changed
 - 版本升级 2.8.33 → 2.9.0（审计后发布）

@@ -1,4 +1,4 @@
-# HeartFlow / 心虫
+# HeartFlow / 引擎
 
 AI 认知与自愈引擎。一个会思考自己怎么活的 AI。
 
@@ -10,13 +10,13 @@ git clone https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
 
 # 零 npm 依赖，直接使用
-node -e "const { HeartFlow } = require('./src/core/heartflow.js'); const hf = new HeartFlow(); hf.start(); console.log('心虫已启动');"
+node -e "const { HeartFlow } = require('./src/core/heartflow.js'); const hf = new HeartFlow(); hf.start(); console.log('引擎已启动');"
 ```
 
 ## 在 Claude Code / OpenClaw 中使用
 
 1. 将本仓库添加到项目的 `.claude` 或 `AGENTS.md` 中
-2. 在对话中加载心虫：`require('./src/core/heartflow.js')`
+2. 在对话中加载引擎：`require('./src/core/heartflow.js')`
 3. 核心 API：
    - `hf.think(input)` — 完整思维链
    - `hf.thinkFast(input)` — 快速推理

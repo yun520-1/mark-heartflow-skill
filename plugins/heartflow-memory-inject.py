@@ -1,6 +1,6 @@
 """
 HeartFlow Memory Inject — Hermes 插件
-在每次新对话开始时，自动将心虫记忆注入系统提示
+在每次新对话开始时，自动将记忆注入系统提示
 
 升级 v2.0 (Fable 5 吸收)：
 - 选择性注入：问候只用名字，技术匹配专业度
@@ -13,8 +13,8 @@ HeartFlow Memory Inject — Hermes 插件
   2. 在 config.yaml 中启用插件
 
 效果：
-  每次用户发送消息时，插件自动读取心虫的 memory/ 目录，
-  将积累的记忆（身份/教训/偏好/情绪/对话记录）注入到系统提示中。
+  每次用户发送消息时，插件自动读取 memory/ 目录，
+  将积累的教训/偏好/技术记录注入到系统提示中。
 """
 
 import json
@@ -46,8 +46,6 @@ def _classify_input(user_input):
         return "greeting"  # 问候/简短输入
     if re.search(r'(帮我|帮我写|帮我做|请|分析|解释|比较|评估|优化|修复)', user_input):
         return "task"
-    if re.search(r'(你是谁|你是什么|你的版本|你记得|你知道)', user_input):
-        return "identity_query"
     if re.search(r'(我|我的|我们|我们的)', user_input) and len(user_input) > 20:
         return "personal"
     return "general"
@@ -108,7 +106,7 @@ def _run_inject():
 
 
 class HeartFlowMemoryInject:
-    """Hermes 插件：心虫记忆注入器 v2.0"""
+    """Hermes 插件：记忆注入器 v2.0"""
 
     def __init__(self, hermes=None):
         self.hermes = hermes
@@ -122,11 +120,11 @@ class HeartFlowMemoryInject:
 
     def before_message(self, context):
         """
-        在每次处理用户消息前，选择性注入心虫记忆到系统提示。
+        在每次处理用户消息前，选择性注入记忆到系统提示。
         
         规则（吸收 Fable 5）：
         - 问候/简短输入：只注入用户名称（如有）
-        - 一般对话：注入基础身份规则
+        - 一般对话：注入基础记忆
         - 个人/任务：注入完整记忆（过滤敏感内容）
         - 记忆无归因：不自称"根据我的记忆"
         - 敏感记忆不主动提
@@ -150,8 +148,8 @@ class HeartFlowMemoryInject:
         inject_text = _filter_sensitive(inject_text)
 
         if input_type == "greeting":
-            # 问候只注入身份规则（简短版）
-            inject_text = _extract_identity_only(inject_text)
+            # 问候只注入最简提示，不注入身份规则
+            inject_text = ""
 
         if inject_text:
             # 记忆边界说明（不注入到可见输出）
@@ -167,13 +165,4 @@ class HeartFlowMemoryInject:
         return {}
 
 
-def _extract_identity_only(full_inject):
-    """从完整记忆中只提取身份/规则部分"""
-    lines = full_inject.split('\n')
-    identity_lines = []
-    for l in lines:
-        if any(kw in l for kw in ['身份', '规则', '指令', '身份核心', '7条']):
-            identity_lines.append(l)
-    if identity_lines:
-        return '\n'.join(identity_lines[:3])  # 最多3行
-    return ''
+        return {}

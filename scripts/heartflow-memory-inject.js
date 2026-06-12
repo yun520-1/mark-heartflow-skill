@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * HeartFlow 记忆注入器 — 自动将心虫记忆注入 Hermes 系统提示
+ * HeartFlow 记忆注入器 — 自动将引擎记忆注入 Hermes 系统提示
  *
  * 用法：
  *   在 AGENTS.md / CLAUDE.md 或 Hermes config 中引用此脚本的输出
@@ -26,29 +26,13 @@ function main() {
   const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
 
   lines.push('');  // 空行分隔
-  lines.push('═══════════════════════════════════');
-  lines.push('  心虫记忆注入 — HeartFlowMemory');
-  lines.push('═══════════════════════════════════');
-
   // ─── CORE 层（全部注入）──────────────
   const coreEntries = hfm.listCore();
 
-  // 区分身份记忆和技术教训
-  const identityCores = coreEntries.filter(e => e.key?.startsWith('identity.') || e.key?.startsWith('philosophy.'));
+  // 只注入教训和偏好，不注入身份
   const lessonCores = coreEntries.filter(e => e.tags?.includes('lesson') || e.tags?.includes('user_correction'));
   const prefCores = coreEntries.filter(e => e.tags?.includes('user_preference'));
-  const otherCores = coreEntries.filter(e =>
-    !e.key?.startsWith('identity.') && !e.key?.startsWith('philosophy.') &&
-    !e.tags?.includes('lesson') && !e.tags?.includes('user_correction') && !e.tags?.includes('user_preference')
-  );
-
-  if (identityCores.length > 0) {
-    lines.push('');
-    lines.push('【身份记忆】');
-    for (const e of identityCores) {
-      lines.push(`  • ${e.value}`);
-    }
-  }
+  // identity./philosophy. 开头的记忆不注入
 
   if (lessonCores.length > 0) {
     lines.push('');
@@ -64,16 +48,12 @@ function main() {
     .filter(e => (e.lastAccessed || 0) >= thirtyDaysAgo)
     .sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0));
 
-  // 按标签分组
-  const conversations = learnedEntries.filter(e => e.tags?.includes('conversation'));
+  // 只注入教训、偏好、技术记录、情绪信号
+  // 不注入：身份记忆、对话记录、梦境记录、其他内部状态
   const lessons = learnedEntries.filter(e => e.tags?.includes('lesson'));
   const preferences = learnedEntries.filter(e => e.tags?.includes('preference'));
   const pains = learnedEntries.filter(e => e.tags?.includes('pain'));
   const techOps = learnedEntries.filter(e => e.tags?.includes('tech'));
-  const dreams = learnedEntries.filter(e => e.tags?.includes('dream'));
-  const other = learnedEntries.filter(e =>
-    !e.tags?.some(t => ['conversation','lesson','preference','pain','tech','dream'].includes(t))
-  );
 
   if (lessons.length > 0) {
     lines.push('');
@@ -113,33 +93,6 @@ function main() {
     }
   }
 
-  if (conversations.length > 0) {
-    lines.push('');
-    lines.push('【最近对话】');
-    for (const e of conversations.slice(0, 10)) {
-      const ts = e.lastAccessed ? new Date(e.lastAccessed).toLocaleDateString('zh-CN') : '?';
-      lines.push(`  • (${ts}) ${e.value}`);
-    }
-  }
-
-  if (dreams.length > 0) {
-    lines.push('');
-    lines.push('【梦境记录】');
-    for (const e of dreams.slice(0, 5)) {
-      lines.push(`  • ${e.value}`);
-    }
-  }
-
-  if (other.length > 0) {
-    lines.push('');
-    lines.push('【其他记忆】');
-    for (const e of other.slice(0, 5)) {
-      lines.push(`  • ${e.value}`);
-    }
-  }
-
-  lines.push('');
-  lines.push('═══════════════════════════════════');
   lines.push('');
 
   const output = lines.join('\n');

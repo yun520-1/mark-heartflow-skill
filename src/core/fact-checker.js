@@ -3,7 +3,7 @@
  *
  * 责任：把任意"声明/陈述"按统一 schema 评估，区分：
  *   - checked:    是否被检测到具体模式
- *   - isLying:    是否检测到绝对化/不可证伪/可疑模式（心虫层硬编码）
+ *   - isLying:    是否检测到绝对化/不可证伪/可疑模式（引擎层硬编码）
  *   - isHollow:   是否检测到空洞概括
  *   - isDichotomy: 是否检测到虚假二元对立
  *   - confidence: high/medium/low
@@ -17,8 +17,8 @@
 const { openalexClient } = require('./openalex-client');
 
 /**
- * 绝对化/不可证伪模式（心虫层硬编码）
- * 心虫层判断：这些词让声明变成"无法反驳的绝对"，
+ * 绝对化/不可证伪模式（引擎层硬编码）
+ * 引擎层判断：这些词让声明变成"无法反驳的绝对"，
  * 比起事实问题，更可能是说谎/忽悠/无意识夸大。
  *
  * 保留为 fast-path（高频明确 case），未来 L1-L6 评估层次会接更深的判断。
@@ -222,7 +222,7 @@ const factChecker = {
    * }>}
    */
   async checkFact(claim) {
-    // 1. 绝对化检测（心虫层最核心）
+    // 1. 绝对化检测（引擎层最核心）
     const absolutism = detectAbsolutism(claim);
 
     // 2. 空洞概括检测（v2.0.30+）

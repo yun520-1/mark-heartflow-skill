@@ -4,7 +4,7 @@
  * "反者道之动" — 反向思考的力量
  *
  * 道论启示：真正的智慧来自对自身的质疑。
- * 当心虫给出答案时，它需要同时生成"反方"——
+ * 当引擎给出答案时，它需要同时生成"反方"——
  * 不是为了辩论，而是为了让答案更接近真实。
  *
  * 核心思想来源：
@@ -50,7 +50,7 @@ class CounterfactualEngine {
 
   /**
    * 核心API：给定答案，生成反方视角
-   * @param {string} answer - 心虫给出的答案
+   * @param {string} answer - 引擎给出的答案
    * @param {object} context - { userQuery, reasoning, evidence }
    * @returns {object} 反方分析结果
    */

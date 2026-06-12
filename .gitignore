@@ -22,3 +22,7 @@ dist/
 .opencode/memory/*.json
 .opencode/personality/*.json
 .opencode/strategies/*.json
+
+# Python 缓存
+__pycache__/
+*.pyc

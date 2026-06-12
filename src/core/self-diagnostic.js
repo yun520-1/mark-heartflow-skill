@@ -481,7 +481,7 @@ async function step19_versionSync(result) {
     // 修复 SKILL.md title
     if (versions.SKILL_title && versions.SKILL_title !== canonical) {
       let content = fs.readFileSync(skillFile, 'utf-8');
-      content = content.replace(/# HeartFlow.*?v(\d+\.\d+\.\d+)/, `# HeartFlow / 心虫 v${canonical}`);
+      content = content.replace(/# HeartFlow.*?v(\d+\.\d+\.\d+)/, `# HeartFlow / 引擎 v${canonical}`);
       fs.writeFileSync(skillFile, content);
       fixes.push(`SKILL.md title: ${versions.SKILL_title} → ${canonical}`);
     }

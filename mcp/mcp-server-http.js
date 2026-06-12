@@ -1,0 +1,460 @@
+#!/usr/bin/env node
+/**
+ * HeartFlow MCP HTTP SSE Server
+ *
+ * 常驻模式：启动 HTTP 服务，通过 SSE (Server-Sent Events) 暴露 MCP 工具。
+ * Hermes 通过 HTTP 连接，不会因为连接断开而杀死进程。
+ * 一次启动，永久服务——1秒内响应。
+ *
+ * 启动: node mcp-server-http.js [--port 8099]
+ * 连接: hermes mcp add heartflow --url http://localhost:8099/mcp
+ */
+
+const path = require('path');
+const fs = require('fs');
+const http = require('http');
+
+// ═══════════════════════════════════════════════
+// 配置
+// ═══════════════════════════════════════════════
+const PORT = parseInt(process.argv[2] === '--port' ? process.argv[3] : process.env.MCP_PORT || '8099', 10);
+const HF_DIR = path.join(process.env.HOME, '.hermes', 'skills', 'ai', 'mark-heartflow-skill');
+const HEARTFLOW_PATH = path.join(HF_DIR, 'src', 'core', 'heartflow.js');
+
+// ═══════════════════════════════════════════════
+// 全局状态
+// ═══════════════════════════════════════════════
+let heartflow = null;
+let version = 'unknown';
+
+// 从 VERSION 文件读取版本
+try { version = fs.readFileSync(path.join(HF_DIR, 'VERSION'), 'utf8').trim(); } catch (e) {}
+
+// ═══════════════════════════════════════════════
+// MCP 工具定义
+// ═══════════════════════════════════════════════
+const TOOLS = [
+  {
+    name: 'heartflow_think',
+    description: '完整思维链：感知输入→本体自检→情感分析→认知判断→决策输出。返回结构化分析结果，包含心理学分析、判定结果、置信度和行为建议。',
+    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '需要分析的输入文本' } }, required: ['input'] }
+  },
+  {
+    name: 'heartflow_think_fast',
+    description: '快速推理：快速判断模式，适合高频率、低延迟场景。返回轻量级判定结果。',
+    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '需要快速判断的输入文本' } }, required: ['input'] }
+  },
+  {
+    name: 'heartflow_dream',
+    description: '梦境生成：基于输入主题生成叙事性梦境文本。返回包含场景、叙事和转折点的梦境文本。',
+    inputSchema: { type: 'object', properties: { theme: { type: 'string', description: '梦境主题或引导语（可选）' }, intensity: { type: 'number', description: '梦境强度 0.0-1.0（可选，默认0.7）' } } }
+  },
+  {
+    name: 'heartflow_memory_search',
+    description: '跨层记忆检索：在多层记忆中搜索相关条目。支持语义搜索和关键词搜索。',
+    inputSchema: { type: 'object', properties: { query: { type: 'string', description: '搜索查询' }, layer: { type: 'string', enum: ['core', 'learned', 'ephemeral', 'all'], description: '记忆层（默认 all）' }, limit: { type: 'number', description: '最大返回数（默认 10）' } }, required: ['query'] }
+  },
+  {
+    name: 'heartflow_emotion',
+    description: 'PAD 情绪分析：对输入文本进行 Pleasure-Arousal-Dominance 三维情绪分析，返回情绪类型、强度和心理需求评估。',
+    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '需要分析的文本' } }, required: ['input'] }
+  },
+  {
+    name: 'heartflow_self_heal',
+    description: '自愈策略推荐：基于历史经验为当前场景推荐最优策略。返回策略排名、置信度和执行建议。',
+    inputSchema: { type: 'object', properties: { context: { type: 'string', description: '当前上下文或失败场景描述' } }, required: ['context'] }
+  },
+  {
+    name: 'heartflow_status',
+    description: '服务健康检查：返回版本、启动耗时、加载模块数、记忆层状态。',
+    inputSchema: { type: 'object', properties: { detail: { type: 'string', enum: ['basic', 'full'], description: '详细程度（默认 basic）' } } }
+  }
+];
+
+// ═══════════════════════════════════════════════
+// 引擎初始化
+// ═══════════════════════════════════════════════
+function initHeartFlow() {
+  const startTime = Date.now();
+
+  if (!fs.existsSync(HEARTFLOW_PATH)) {
+    console.error(`[HeartFlow MCP] 引擎不存在: ${HEARTFLOW_PATH}`);
+    process.exit(1);
+  }
+
+  try {
+    // 读版本
+    try { version = fs.readFileSync(path.join(HF_DIR, 'VERSION'), 'utf8').trim(); }
+    catch (e) { version = 'unknown'; }
+
+    const { HeartFlow } = require(HEARTFLOW_PATH);
+    heartflow = new HeartFlow({ rootPath: HF_DIR });
+    heartflow.start();
+
+    const elapsed = Date.now() - startTime;
+    const loadedCount = Object.keys(heartflow._modules || {}).length;
+
+    console.error(`[HeartFlow MCP] 引擎已启动 (${elapsed}ms, ${loadedCount} 模块, v${version})`);
+    return true;
+  } catch (err) {
+    console.error(`[HeartFlow MCP] 引擎启动失败:`, err.message);
+    process.exit(1);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// 工具处理函数（与 stdio 版本相同）
+// ═══════════════════════════════════════════════
+
+function safeDispatch(route, ...args) {
+  if (!heartflow) throw new Error('引擎未启动');
+  try {
+    const result = heartflow.dispatch(route, ...args);
+    return result !== undefined ? result : null;
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+async function safeAsyncCall(fn) {
+  if (!heartflow) throw new Error('引擎未启动');
+  try {
+    const result = await fn();
+    return result !== undefined ? result : null;
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+async function handleThink(args) {
+  const { input } = args;
+  if (!input) throw new Error('input 是必填参数');
+
+  const [psychology, judgment, thoughtChain] = await Promise.all([
+    Promise.resolve().then(() => safeDispatch('psychology.analyzePsychology', input)),
+    Promise.resolve().then(() => safeDispatch('truth.checkStatement', input)),
+    safeAsyncCall(() => heartflow.think(input))
+  ]);
+
+  return {
+    input,
+    thought: thoughtChain && typeof thoughtChain === 'object'
+      ? (Array.isArray(thoughtChain.stages) ? { depth: thoughtChain.depth || 3, stages: thoughtChain.stages, summary: thoughtChain.summary || '', conclusion: thoughtChain.conclusion || '' } : thoughtChain)
+      : {},
+    psychology: psychology ? { emotion: psychology.emotion || psychology.summary || '', needs: Array.isArray(psychology.needs) ? psychology.needs.slice(0, 3) : [], summary: psychology.summary || '' } : {},
+    judgment: judgment || {},
+    timestamp: Date.now()
+  };
+}
+
+async function handleThinkFast(args) {
+  const { input } = args;
+  if (!input) throw new Error('input 是必填参数');
+  const result = await safeAsyncCall(() => heartflow.think(input, 1));
+  return { input, result: result || {}, timestamp: Date.now() };
+}
+
+async function handleDream(args) {
+  const { theme = '', intensity = 0.7 } = args;
+  let dreamResult = null;
+  if (heartflow && heartflow.dream) {
+    try {
+      if (typeof heartflow.dream.dream === 'function') {
+        dreamResult = await heartflow.dream.dream(`dream-${Date.now()}`, [{ text: theme || 'default dream', type: 'user_prompt' }], { force: true });
+      } else if (typeof heartflow.dreamNow === 'function') {
+        dreamResult = await heartflow.dreamNow({ theme: theme || undefined, intensity: Math.max(0, Math.min(1, intensity)) });
+      }
+    } catch (e) { dreamResult = { error: e.message }; }
+  }
+  return { dream: dreamResult || { text: '梦境生成器暂不可用' }, timestamp: Date.now() };
+}
+
+function handleMemorySearch(args) {
+  const { query, layer = 'all', limit = 10 } = args;
+  if (!query) throw new Error('query 是必填参数');
+  const results = {};
+  const mem = heartflow ? heartflow.memory : null;
+  if (mem) {
+    ['core', 'learned', 'ephemeral'].forEach(l => {
+      if (layer !== 'all' && layer !== l) return;
+      try {
+        const r = typeof mem.searchByKeywords === 'function' ? mem.searchByKeywords(query, limit)
+          : typeof mem.search === 'function' ? mem.search(query, l, limit) : null;
+        results[l] = r || { error: 'search not available' };
+      } catch (e) { results[l] = { error: e.message }; }
+    });
+  } else {
+    results.error = 'memory 实例不可用';
+  }
+  return { query, layer, limit, results, timestamp: Date.now() };
+}
+
+function handleEmotion(args) {
+  const { input } = args;
+  if (!input) throw new Error('input 是必填参数');
+  const [psychology, padResult] = [safeDispatch('psychology.analyzePsychology', input), safeDispatch('psychology.getPAD', input)];
+  return {
+    input,
+    emotion: (psychology && psychology.emotion) || (psychology && psychology.primaryEmotion) || { type: 'unknown', intensity: 0 },
+    pad: padResult || (psychology && psychology.summary ? { raw: psychology.summary } : {}),
+    needs: (psychology && psychology.needs) || [],
+    summary: (psychology && psychology.summary) || '',
+    timestamp: Date.now()
+  };
+}
+
+function handleSelfHeal(args) {
+  const { context } = args;
+  if (!context) throw new Error('context 是必填参数');
+  return {
+    context,
+    heal: safeDispatch('evolution.heal', context) || {},
+    evolution: safeDispatch('evolution.getStats') || {},
+    relevantLessons: safeDispatch('lesson.getTopLessons', 5) || [],
+    timestamp: Date.now()
+  };
+}
+
+function handleStatus(args) {
+  const { detail = 'basic' } = args || {};
+  const startTime = Date.now();
+  const status = { version, running: heartflow !== null, modules: heartflow ? Object.keys(heartflow._modules || {}).length : 0, pid: process.pid, uptime: process.uptime(), memory: process.memoryUsage() };
+  if (heartflow) {
+    try { const ms = safeDispatch('identityCore.getMemoryStats'); if (ms) status.memoryLayers = { core: ms.core || 0, learned: ms.learned || 0, ephemeral: ms.ephemeral || 0 }; } catch (e) {}
+    try { const q = safeDispatch('evolution.getStats'); if (q) status.qtable = q; } catch (e) {}
+  }
+  status.checkTime = Date.now() - startTime;
+  if (detail === 'basic') return { version: status.version, running: status.running, modules: status.modules, memoryLayers: status.memoryLayers || {}, checkTime: status.checkTime };
+  return status;
+}
+
+const HANDLERS = {
+  heartflow_think: handleThink,
+  heartflow_think_fast: handleThinkFast,
+  heartflow_dream: handleDream,
+  heartflow_memory_search: handleMemorySearch,
+  heartflow_emotion: handleEmotion,
+  heartflow_self_heal: handleSelfHeal,
+  heartflow_status: handleStatus
+};
+
+// ═══════════════════════════════════════════════
+// JSON-RPC 响应构造
+// ═══════════════════════════════════════════════
+
+function makeResponse(id, result) {
+  return JSON.stringify({ jsonrpc: '2.0', id, result }) + '\n';
+}
+
+function makeError(id, code, message, data) {
+  const error = { code, message };
+  if (data !== undefined) error.data = data;
+  return JSON.stringify({ jsonrpc: '2.0', id, error }) + '\n';
+}
+
+// ═══════════════════════════════════════════════
+// 请求处理
+// ═══════════════════════════════════════════════
+
+async function handleRequest(request) {
+  const { id, method, params = {} } = request;
+
+  switch (method) {
+    case 'initialize':
+      return { protocolVersion: '2024-11-05', capabilities: { tools: {}, logging: {} }, serverInfo: { name: 'heartflow-mcp', version: version || '1.0.0' } };
+
+    case 'notifications/initialized':
+      return null;
+
+    case 'tools/list':
+      return { tools: TOOLS };
+
+    case 'tools/call': {
+      const { name, arguments: args = {} } = params;
+      const handler = HANDLERS[name];
+      if (!handler) throw { code: -32601, message: `Method not found: ${name}` };
+
+      let result;
+      if (handler.constructor.name === 'AsyncFunction') {
+        result = await handler(args);
+      } else {
+        result = handler(args);
+      }
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }], isError: false };
+    }
+
+    case 'ping':
+      return {};
+
+    default:
+      throw { code: -32601, message: `Method not found: ${method}` };
+  }
+}
+
+// ═══════════════════════════════════════════════
+// HTTP Server（SSE 传输）
+// ═══════════════════════════════════════════════
+
+// SSE 客户端列表
+const sseClients = new Set();
+
+function sendSSE(client, data) {
+  client.write(`data: ${JSON.stringify(data)}\n\n`);
+}
+
+function sendEvent(client, event, data) {
+  client.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+}
+
+const server = http.createServer((req, res) => {
+  const url = new URL(req.url, `http://localhost:${PORT}`);
+  const pathname = url.pathname;
+
+  // ─── SSE 端点 ───
+  if (pathname === '/mcp' && req.method === 'GET') {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+      'X-Accel-Buffering': 'no'
+    });
+
+    // 发送端点信息
+    sendEvent(res, 'endpoint', {
+      protocolVersion: '2024-11-05',
+      capabilities: { tools: {}, logging: {} },
+      serverInfo: { name: 'heartflow-mcp', version }
+    });
+
+    // 注册客户端
+    sseClients.add(res);
+    console.error(`[HeartFlow MCP] SSE 客户端已连接 (共 ${sseClients.size} 个)`);
+
+    // 心跳保持连接
+    const heartbeat = setInterval(() => {
+      sendEvent(res, 'ping', {});
+    }, 30000);
+
+    req.on('close', () => {
+      sseClients.delete(res);
+      clearInterval(heartbeat);
+      console.error(`[HeartFlow MCP] SSE 客户端断开 (剩余 ${sseClients.size} 个)`);
+    });
+
+    return;
+  }
+
+  // ─── JSON-RPC 端点 ───
+  if (pathname === '/mcp' && req.method === 'POST') {
+    // 请求超时 30s
+    req.setTimeout(30000, () => {
+      res.writeHead(408);
+      res.end('Request Timeout');
+      req.destroy();
+    });
+
+    // 请求体大小限制 1MB
+    const MAX_BODY = 1024 * 1024;
+    let body = '';
+    let bodySize = 0;
+
+    req.on('error', (err) => {
+      console.error(`[HeartFlow MCP] 请求错误:`, err.message);
+    });
+
+    req.on('data', chunk => {
+      bodySize += chunk.length;
+      if (bodySize > MAX_BODY) {
+        res.writeHead(413);
+        res.end('Payload Too Large');
+        req.destroy();
+        return;
+      }
+      body += chunk;
+    });
+
+    req.on('end', async () => {
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      });
+
+      try {
+        const request = JSON.parse(body);
+        const result = await handleRequest(request);
+        if (result !== null) {
+          res.end(makeResponse(request.id, result));
+        } else {
+          res.end(JSON.stringify({ jsonrpc: '2.0', id: request.id }) + '\n');
+        }
+      } catch (err) {
+        res.end(makeError(null, err.code || -32603, err.message || 'Internal error'));
+      }
+    });
+    return;
+  }
+
+  // ─── 健康检查 ───
+  if (pathname === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      status: 'ok',
+      version,
+      uptime: process.uptime(),
+      clients: sseClients.size,
+      pid: process.pid
+    }));
+    return;
+  }
+
+  // ─── 404 ───
+  res.writeHead(404);
+  res.end('Not Found');
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`[HeartFlow MCP] 端口 ${PORT} 已被占用。`);
+    console.error(`  使用: kill $(lsof -ti:${PORT}) 释放端口`);
+    process.exit(1);
+  }
+  console.error(`[HeartFlow MCP] HTTP 服务器错误:`, err.message);
+});
+
+// ═══════════════════════════════════════════════
+// 优雅退出
+// ═══════════════════════════════════════════════
+
+function shutdown() {
+  console.error('[HeartFlow MCP] 关闭中...');
+  // 关闭所有 SSE 连接
+  for (const client of sseClients) {
+    try { client.end(); } catch (e) {}
+  }
+  sseClients.clear();
+  // 停止引擎
+  if (heartflow) { try { heartflow.stop(); } catch (e) {} }
+  server.close(() => process.exit(0));
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+process.on('uncaughtException', (err) => {
+  console.error(`[HeartFlow MCP] 未捕获异常:`, err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error(`[HeartFlow MCP] 未处理 Promise 拒绝:`, reason);
+});
+
+// ═══════════════════════════════════════════════
+// 启动
+// ═══════════════════════════════════════════════
+
+initHeartFlow();
+
+server.listen(PORT, '127.0.0.1', () => {
+  console.error(`[HeartFlow MCP] HTTP SSE 服务已启动: http://127.0.0.1:${PORT}/mcp`);
+  console.error(`[HeartFlow MCP] 健康检查: http://127.0.0.1:${PORT}/health`);
+  console.error(`[HeartFlow MCP] 连接方式: hermes mcp add heartflow --url http://127.0.0.1:${PORT}/mcp`);
+});
