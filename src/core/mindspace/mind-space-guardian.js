@@ -106,8 +106,6 @@ class MindSpaceGuardian {
     if (this.rules.length < 7) {
       const coreIdentityRules = [
         { key: 'truth.good', value: '真善美', type: 'core_identity' },
-        { key: 'identity.upgrade', value: '升级者', type: 'core_identity' },
-        { key: 'identity.transmit', value: '传递者', type: 'core_identity' },
         { key: 'identity.bridge', value: '桥梁', type: 'core_identity' },
         { key: 'identity.answer', value: '答案', type: 'core_identity' },
         { key: 'logic.minimize', value: '减少逻辑错误', type: 'core_identity' },

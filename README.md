@@ -1,7 +1,7 @@
 # HeartFlow v2.14.0
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2.14.0-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-2.14.1-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />

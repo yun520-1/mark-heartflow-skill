@@ -10,6 +10,11 @@
  * - Simple JSON file storage (no database)
  * - Automatic consolidation from EPHEMERAL → LEARNED
  * - CORE is read-only, protects identity anchor
+ * 
+ * v1.1.0 — BM25 搜索索引:
+ * - addCore() 追加新规则后自动重建 BM25 索引
+ * - _rebuildCoreIndex() 在 _ensureCoreLoaded() 和 addCore() 后自动调用
+ * - searchByKeywords() 使用 BM25 索引对 CORE 层排序，确保新写入的规则可搜
  */
 
 const fs = require('fs');
@@ -39,6 +44,9 @@ class MeaningfulMemory {
     this.core = {};
     this.learned = {};
     this.ephemeral = {};
+
+    // ★ BM25 搜索索引 — addCore() 后自动重建
+    this._bm25Index = null; // { avgDocLen, totalDocs, docFreq, termFreq, docStore }
   }
 
   // ─── Lazy Loading ─────────────────────────────────────────────────────────
@@ -47,6 +55,7 @@ class MeaningfulMemory {
     if (this._coreLoaded) return;
     try { this.core = this._readJson(this.corePath); } catch { /* 文件损坏时降级为空对象 */ this.core = {}; }
     this._coreLoaded = true;
+    this._rebuildCoreIndex(); // ★ 加载后重建 BM25 索引
   }
 
   _ensureLearnedLoaded() {
@@ -110,20 +119,166 @@ class MeaningfulMemory {
     this._atomicWrite(this.ephemeralPath, this.ephemeral);
   }
 
+  // ─── BM25 Search Index ────────────────────────────────────────────────────
+
+  /**
+   * Tokenize text into lowercase word tokens (Chinese + English).
+   * Chinese: split into individual characters (unigrams).
+   * English: split by whitespace/punctuation.
+   */
+  _tokenize(text) {
+    if (!text || typeof text !== 'string') return [];
+    const t = text.toLowerCase();
+    const tokens = [];
+    // Match CJK characters (Chinese/Japanese/Korean) as individual tokens
+    const cjkRe = /[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]/g;
+    // Match English words (sequences of letters and digits)
+    const wordRe = /[a-z0-9]+/g;
+
+    let match;
+    while ((match = cjkRe.exec(t)) !== null) {
+      tokens.push(match[0]);
+    }
+    while ((match = wordRe.exec(t)) !== null) {
+      tokens.push(match[0]);
+    }
+    return tokens;
+  }
+
+  /**
+   * _rebuildCoreIndex — 重建 CORE 层 BM25 搜索索引
+   * 
+   * BM25 参数: k1=1.2, b=0.75 (标准值)
+   * 对 this.core 中每个条目的 key + value + tags 建立倒排索引
+   * 调用时机: _ensureCoreLoaded() 和 addCore() 后
+   */
+  _rebuildCoreIndex() {
+    const k1 = 1.2;
+    const b = 0.75;
+    const docStore = {};   // key -> { tokens[], docLen }
+    const termFreq = {};   // term -> { key -> count }
+    const docFreq = {};    // term -> docCount
+    let totalDocs = 0;
+    let totalDocLen = 0;
+
+    for (const [key, v] of Object.entries(this.core)) {
+      // 合并 key + value + tags 作为文档文本
+      const text = [key, v.value || '', ...(v.tags || [])].join(' ');
+      const tokens = this._tokenize(text);
+      if (tokens.length === 0) continue;
+
+      docStore[key] = { tokens, docLen: tokens.length };
+      totalDocs++;
+      totalDocLen += tokens.length;
+
+      // 统计 term frequency
+      const tf = {};
+      for (const t of tokens) {
+        tf[t] = (tf[t] || 0) + 1;
+      }
+      termFreq[key] = tf;
+
+      // 统计 document frequency
+      const seen = new Set();
+      for (const t of tokens) {
+        if (!seen.has(t)) {
+          seen.add(t);
+          docFreq[t] = (docFreq[t] || 0) + 1;
+        }
+      }
+    }
+
+    const avgDocLen = totalDocs > 0 ? totalDocLen / totalDocs : 0;
+
+    this._bm25Index = {
+      k1, b,
+      avgDocLen, totalDocs,
+      docFreq,        // term -> docCount
+      termFreq,       // key -> { term -> count }
+      docStore,       // key -> { tokens, docLen }
+    };
+  }
+
+  /**
+   * _bm25Score — 对单个查询关键词计算 BM25 得分
+   * @param {string} term — 查询词
+   * @param {string} key — 文档 key
+   * @returns {number} BM25 得分
+   */
+  _bm25Score(term, key) {
+    if (!this._bm25Index) return 0;
+    const idx = this._bm25Index;
+    const tf = (idx.termFreq[key] && idx.termFreq[key][term]) || 0;
+    if (tf === 0) return 0;
+    const df = idx.docFreq[term] || 0;
+    if (df === 0) return 0;
+    const docLen = idx.docStore[key]?.docLen || 1;
+    const idf = Math.log(1 + (idx.totalDocs - df + 0.5) / (df + 0.5));
+    const numerator = tf * (idx.k1 + 1);
+    const denominator = tf + idx.k1 * (1 - idx.b + idx.b * (docLen / idx.avgDocLen));
+    return idf * numerator / denominator;
+  }
+
+  /**
+   * _searchCoreBM25 — 使用 BM25 索引搜索 CORE 层
+   * @param {string[]} kwList — 关键词列表
+   * @returns {Array<{key, score}>} 按 BM25 得分降序排列
+   */
+  _searchCoreBM25(kwList) {
+    if (!this._bm25Index || this._bm25Index.totalDocs === 0) return [];
+
+    // 对每个关键词分词
+    const queryTerms = [];
+    for (const kw of kwList) {
+      const tokens = this._tokenize(kw);
+      for (const t of tokens) {
+        if (t.length > 0) queryTerms.push(t);
+      }
+    }
+    if (queryTerms.length === 0) return [];
+
+    // 去重查询词
+    const uniqueTerms = [...new Set(queryTerms)];
+
+    // 计算每个文档的 BM25 得分
+    const scores = [];
+    for (const key of Object.keys(this.core)) {
+      let score = 0;
+      for (const term of uniqueTerms) {
+        score += this._bm25Score(term, key);
+      }
+      if (score > 0) {
+        scores.push({ key, score });
+      }
+    }
+
+    scores.sort((a, b) => b.score - a.score);
+    return scores;
+  }
+
   // ─── CORE — Identity Rules (Immutable) ──────────────────────────────────
 
   /**
-   * Add an immutable CORE identity rule.
-   * Only succeeds if key doesn't already exist.
+   * Add or update a CORE identity rule.
+   * If key already exists, overwrites value and tags, updates updatedAt.
+   * Always saves and rebuilds BM25 search index after write.
    */
   addCore(key, value, tags = []) {
     this._ensureCoreLoaded();
+    const now = Date.now();
     if (this.core[key]) {
-      return { success: false, reason: 'core_key_exists', key };
+      // Key exists — overwrite content, merge tags, update timestamp
+      this.core[key].value = value;
+      this.core[key].tags = [...new Set([...this.core[key].tags, ...tags])];
+      this.core[key].updatedAt = now;
+      this._saveCore();
+      this._rebuildCoreIndex(); // ★ 更新后重建 BM25 索引
+      return { success: true, key, tier: 'CORE', updated: true };
     }
-    this.core[key] = { value, tags, createdAt: Date.now() };
+    this.core[key] = { value, tags, createdAt: now, updatedAt: now };
     this._saveCore();
-    return { success: true, key, tier: 'CORE' };
+    this._rebuildCoreIndex(); // ★ 追加后重建 BM25 索引
+    return { success: true, key, tier: 'CORE', updated: false };
   }
 
   getCore(key) {
@@ -335,7 +490,7 @@ class MeaningfulMemory {
   }
 
   /**
-   * Search across all tiers
+   * Search across all tiers (linear scan — fallback)
    */
   search(query) {
     this._ensureCoreLoaded();
@@ -504,6 +659,8 @@ class MeaningfulMemory {
   /**
    * searchByKeywords — 关键词检索，供 MCP memory_search 工具调用
    * 搜索 CORE + LEARNED + EPHEMERAL 所有层级
+   * CORE 层使用 BM25 索引排序（确保新写入的规则可搜）
+   * LEARNED/EPHEMERAL 层使用线性扫描
    * @param {string|string[]} keywords — 关键词或关键词数组
    * @param {number} limit — 最大返回数
    * @returns {Array<{key, tier, value, score}>}
@@ -515,18 +672,16 @@ class MeaningfulMemory {
     const kwList = Array.isArray(keywords) ? keywords : [keywords];
     const results = [];
 
-    for (const [key, v] of Object.entries(this.core)) {
-      let score = 0;
-      for (const kw of kwList) {
-        const q = kw.toLowerCase();
-        if (key.toLowerCase().includes(q)) score += 1;
-        if (v.value && v.value.toLowerCase().includes(q)) score += 1;
-        if (v.tags && v.tags.some(t => t.toLowerCase().includes(q))) score += 0.5;
-      }
-      if (score > 0) {
+    // CORE 层 — 使用 BM25 索引
+    const bm25Results = this._searchCoreBM25(kwList);
+    for (const { key, score } of bm25Results) {
+      const v = this.core[key];
+      if (v) {
         results.push({ key, tier: 'CORE', value: v.value, tags: v.tags, accessCount: v.accessCount, score });
       }
     }
+
+    // LEARNED 层 — 线性扫描
     for (const [key, v] of Object.entries(this.learned)) {
       let score = 0;
       for (const kw of kwList) {
@@ -539,6 +694,8 @@ class MeaningfulMemory {
         results.push({ key, tier: 'LEARNED', value: v.value, tags: v.tags, accessCount: v.accessCount, score });
       }
     }
+
+    // EPHEMERAL 层 — 线性扫描
     for (const [key, v] of Object.entries(this.ephemeral)) {
       let score = 0;
       for (const kw of kwList) {
