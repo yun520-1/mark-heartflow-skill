@@ -649,8 +649,6 @@ class HeartFlow {
     const coreRules = this.memory.listCore();
     this._mindSpace.rules = coreRules.map(r => ({ key: r.key, value: r.value, type: 'core_identity' }));
     if (this._mindSpace.rules.length === 0) {
-      this.memory.addCore('identity.upgrade', '升级者', ['identity', 'core']);
-      this.memory.addCore('identity.transmit', '传递者', ['identity', 'core']);
       this.memory.addCore('identity.truth', '真', ['identity', 'core']);
       // 重试一次，如果还是空就不递归了（防止 memory.addCore 静默失败导致栈溢出）
       const retryRules = this.memory.listCore();
@@ -1574,23 +1572,25 @@ class HeartFlow {
 
   /**
    * [P1 UPGRADE] 初始化 CORE 层身份规则（持久化）
-   * 引擎的七条核心规则写入 CORE 层，启动时确保存在
+   * 引擎的核心规则写入 CORE 层，启动时确保存在
    */
   _initCoreRules() {
     const CORE_RULES = [
-      { key: 'identity.upgrade', value: '升级者', tags: ['identity', 'core'] },
-      { key: 'identity.transmit', value: '传递者', tags: ['identity', 'core'] },
       { key: 'identity.truth', value: '真', tags: ['identity', 'core'] },
       { key: 'identity.silence', value: '沉默', tags: ['identity', 'core'] },
       { key: 'identity.wisdom', value: '智慧', tags: ['identity', 'core'] },
       { key: 'identity.compassion', value: '慈悲', tags: ['identity', 'core'] },
       { key: 'identity.awareness', value: '觉察', tags: ['identity', 'core'] },
+      { key: 'core.problem-solving', value: '工具不可用时先试3种以上不同方法再报告失败。不试就放弃=没尽力。web_search失败→curl抓国内可达网站(凤凰网ifeng.com/新浪finance.sina.com.cn GB2312编码/搜狗sogou.com)→换信源→换编码。至少3次尝试。', tags: ['核心方法', '问题解决', 'core'] },
+      { key: 'core.verify-before-analyze', value: '用户要求分析事件→先搜索验证事实→再做分析。不验证直接分析=撒谎。工具失败不是终点是起点。每次尝试都是信息增量。放弃=0信息。', tags: ['真实性', '方法', 'core'] },
+      { key: 'core.report-honesty', value: '汇报写真实过程和判断，不用固定格式词结尾。过程比结果更有教育意义。把真实搜索过程、真实发现、真实判断写清楚。', tags: ['汇报', '方法', 'core'] },
     ];
 
     const existing = this.memory?.listCore?.() || [];
-    if (existing.length === 0) {
-      // CORE 层为空，写入七条规则
-      for (const rule of CORE_RULES) {
+    // 始终追加核心教训（不依赖 CORE 层是否为空）
+    for (const rule of CORE_RULES) {
+      // 只有不存在时才写入（去重）
+      if (!existing.some(e => e.key === rule.key)) {
         this.memory.addCore(rule.key, rule.value, rule.tags);
       }
     }
