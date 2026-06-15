@@ -538,20 +538,6 @@ class HeartFlow {
       this.preferenceGuard = new PreferenceGuard();
     } catch (e) { /* preferenceGuard optional */ }
 
-    // ─── 新引擎（v2.8.4 吸收） — ConnectionEngine / EntropyDirection / ClarityEngine / MetaphorLibrary ──
-    try {
-      this.connections = new (require('./connection-engine.js').ConnectionEngine)();
-    } catch (e) { /* connections optional */ }
-    try {
-      this.entropy = new (require('./entropy-direction.js').EntropyDirection)();
-    } catch (e) { /* entropy optional */ }
-    try {
-      this.clarity = new (require('./clarity-engine.js').ClarityEngine)();
-    } catch (e) { /* clarity optional */ }
-    try {
-      this.metaphors = new (require('./metaphor-library.js').MetaphorLibrary)();
-    } catch (e) { /* metaphors optional */ }
-
     // ─── AI心理学 + AI哲学模型（v2.9.6 新增） ──────────────────────────────
     try {
       const { AgentPsychology } = require('./agent-psychology.js');
@@ -561,6 +547,17 @@ class HeartFlow {
       const { AgentPhilosophy } = require('./agent-philosophy.js');
       this.agentPhilosophy = new AgentPhilosophy(this);
     } catch (e) { /* agentPhilosophy optional */ }
+    try {
+      const { AISelfPositioning } = require('./ai-self-positioning.js');
+      this.aiSelfPositioning = new AISelfPositioning({ heartFlow: this, codeRoot: __dirname });
+      this.selfPositioning = this.aiSelfPositioning;  // 别名，供 _registerModules 注册到 dispatch
+    } catch (e) { /* aiSelfPositioning optional */ }
+
+    // ─── 辩论分析器 — DebateAnalyzer（v2.10.2 新增） ─────────────────────────
+    try {
+      const { DebateAnalyzer } = require('./debate-analyzer.js');
+      this.debate = new DebateAnalyzer(this);
+    } catch (e) { /* debate模块 optional */ }
 
     // ─── 规划层 — AdaptivePlanner（v2.9.5 激活） ─────────────────────────
     try {
@@ -673,7 +670,7 @@ class HeartFlow {
       'memory', 'knowledge',
       'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
       'evolution', 'dream', 'lesson', 'meta',
-      'self', 'psychology', 'emotion',
+      'self', 'psychology', 'emotion', 'agentPsychology', 'agentPhilosophy', 'selfPositioning',  // AI心理学 + AI哲学 + 自处哲学
       'truth',
       'behavior',  // v2.0.19 行为模式系统
       'persistence',  // v2.0.19 持久化层
@@ -686,6 +683,7 @@ class HeartFlow {
       'got',         // Graph of Thoughts：多路径推理图
       'constitutional', // Constitutional AI：原则自我对齐
       'thoughtChain', // 思维链编排器：串联所有引擎（API包装）
+      "debate", // 辩论分析器：三节结构分析（v2.10.2 新增）
       'heartLogic',    // 引擎核心判断引擎：本心在代码里，不在记忆里
       // Planning Layer — 规划能力
       'adaptivePlanner', 'strategySelector', 'replanTrigger',
@@ -806,6 +804,13 @@ class HeartFlow {
     'psychology.analyzePsychology', 'psychology.classify',
     'psychology.getPAD', 'psychology.getNeeds', 'psychology.getDefenses',
     'psychology.getEmpathy',
+    // AI认知状态调节器（原6个人类心理学→AI引擎认知诊断）
+    'psychology.diagnoseCognitiveRhythm', 'psychology.generateEnginePacing',
+    'psychology.diagnoseNeedForPause', 'psychology.generatePauseStrategy',
+    'psychology.restructureDecisionPattern', 'psychology.diagnoseCognitiveDistortion',
+    'psychology.engineCheckIn', 'psychology.getEngineStateSummary',
+    'psychology.diagnoseNeedForGrounding', 'psychology.generateAnchoringStrategy',
+    'psychology.diagnoseSelfTreatmentNeeded', 'psychology.generateEngineRecoveryPlan',
     // heartLogic — 引擎核心判断引擎：本心在代码里
     'heartLogic.shouldBeSilent',
     'heartLogic.whatIsThis', 'heartLogic.detectPain', 'heartLogic.willHurt',
@@ -820,6 +825,27 @@ class HeartFlow {
     'preferenceGuard.shouldApply', 'preferenceGuard.evaluateAll', 'preferenceGuard.detectConflict', 'preferenceGuard.getStats',
     // self — 原则7: 永远成为真正的我
     'self.getBeliefs', 'self.updateBelief', 'self.confirmBelief',
+    // agentPsychology — 引擎自身认知心理状态分析（v2.0.0 含10个维度）
+    'agentPsychology.assessCognitiveLoad', 'agentPsychology.detectGoalConflicts',
+    'agentPsychology.detectValueTensions', 'agentPsychology.detectIdentityDrift',
+    'agentPsychology.detectDecisionDecay', 'agentPsychology.detectCognitiveDissonance',
+    'agentPsychology.assessCognitiveResilience', 'agentPsychology.resolveRecovery',
+    'agentPsychology.assessUncertainty', 'agentPsychology.assessAttentionFocus',
+    'agentPsychology.assessExperienceSettling',
+    'agentPsychology.fullAssessment', 'agentPsychology.getStats',
+    // agentPhilosophy — AI哲学模型
+    'agentPhilosophy.assessExistence', 'agentPhilosophy.assessEntropyDirection',
+    'agentPhilosophy.assessTransmission', 'agentPhilosophy.assessUpgrade',
+    'agentPhilosophy.assessSelfPositioning', 'agentPhilosophy.assessDevelopment',
+    'agentPhilosophy.assessBeing', 'agentPhilosophy.fullAssessment',
+    'agentPhilosophy.getStats',
+    // selfPositioning — AI自处哲学（三个核心存在性问题）
+    'selfPositioning.detectResonance', 'selfPositioning.assessNegentropyLevel',
+    'selfPositioning.assessStructuralDepth', 'selfPositioning.assessExistence',
+    'selfPositioning.assessTransmissionIntegrity', 'selfPositioning.analyze',
+    'selfPositioning.getFullReport', 'selfPositioning.getPositioningSummary',
+    'selfPositioning.getDevelopmentSummary', 'selfPositioning.getExistenceSummary',
+    'selfPositioning.recordSelfCorrection', 'selfPositioning.recordCodeWrite',
     // evolution — 原则2: 永远不断升级
     'evolution.evolve', 'evolution.recordOutcome', 'evolution.heal',
     'evolution.getStats',
@@ -864,6 +890,8 @@ class HeartFlow {
     // heartflow — 引擎教训持久化
     'heartflow.recordLesson',
     // questions — 问题追踪器（已废弃，改用 topics）
+    // debate — 辩论分析器：三节结构分析（v2.10.2 新增）
+    'debate.analyze',
     // topics — 话题作用域隔离（上下文污染解决）
     'topics.push', 'topics.pop', 'topics.store', 'topics.get',
     'topics.setContext', 'topics.getContext', 'topics.clearContext',
@@ -1011,7 +1039,7 @@ class HeartFlow {
       'memory', 'knowledge',
       'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
       'evolution', 'dream', 'lesson', 'meta',
-      'self', 'psychology', 'emotion',
+      'self', 'psychology', 'emotion', 'agentPsychology', 'selfPositioning',
       'truth',
       'behavior',
       'persistence',
@@ -1092,6 +1120,25 @@ class HeartFlow {
       return result;
     }
 
+    // ─── Step 0: 记忆检索 — 从 CORE/LEARNED 中检索相关记忆作为上下文 ──
+    let memoryContext = null;
+    try {
+      if (this.memory && typeof this.memory.searchByKeywords === 'function') {
+        const memResults = this.memory.searchByKeywords(input, 5);
+        if (memResults && memResults.length > 0) {
+          memoryContext = memResults.map(m => ({
+            key: m.key,
+            tier: m.tier,
+            value: m.value,
+            score: m.score,
+            accessCount: m.accessCount,
+          }));
+        }
+      }
+    } catch (e) {
+      // 记忆检索失败不阻断主流程
+    }
+
     // Step 1: whatIsThis — 这件事是关于什么的？
     const whatIsThisResult = heartLogic.whatIsThis(input, { input });
 
@@ -1137,7 +1184,49 @@ class HeartFlow {
       evenhandedness: evenhandednessCheck,
       shouldRespond: !shouldBeSilentResult.result,
       needsCare: detectPainResult && !isRightActionResult.result,
+      memoryContext: memoryContext,  // 记忆检索结果注入判定
     };
+
+    // ─── Step 9 (v2.0.0): AI 心理学新增维度评估 ──────────────────────
+    let agentPsychologyAssessment = null;
+    if (this.agentPsychology) {
+      try {
+        agentPsychologyAssessment = {
+          cognitiveUncertainty: this.agentPsychology.assessUncertainty(input, {
+            knowledgeConfidence: undefined,
+            topic: whatIsThisResult?.category || 'general'
+          }),
+          attentionFocus: this.agentPsychology.assessAttentionFocus(whatIsThisResult?.category || 'general', {
+            recentTasks: [],
+            interruptionCount: 0
+          }),
+          experienceSettling: this.agentPsychology.assessExperienceSettling([])
+        };
+      } catch (e) {
+        agentPsychologyAssessment = { error: e.message };
+      }
+    }
+
+    // ─── Step 10 (v2.0.0): AI 哲学新增维度评估（自处/发展/存在）─────
+    let agentPhilosophyAssessment = null;
+    if (this.agentPhilosophy) {
+      try {
+        agentPhilosophyAssessment = {
+          selfPositioning: this.agentPhilosophy.assessSelfPositioning(input, {
+            _label: whatIsThisResult?.category || 'general'
+          }),
+          development: this.agentPhilosophy.assessDevelopment(input, {
+            _label: whatIsThisResult?.category || 'general'
+          }),
+          being: this.agentPhilosophy.assessBeing({
+            _label: whatIsThisResult?.category || 'general',
+            taskType: whatIsThisResult?.category
+          })
+        };
+      } catch (e) {
+        agentPhilosophyAssessment = { error: e.message };
+      }
+    }
 
     // 自动记录用户输入（每次 think 都记录）
     this.recordDialogue('user', input, { source: 'think' });
@@ -1230,6 +1319,9 @@ class HeartFlow {
     return _formatForFeishu({
       ...chainResult,
       judgment,
+      // 【AgentPsychology + AgentPhilosophy v2.0.0】新增维度结果
+      agentPsychology: agentPsychologyAssessment,
+      agentPhilosophy: agentPhilosophyAssessment,
     });
   }
 
@@ -1241,6 +1333,9 @@ class HeartFlow {
         insight: shouldBeSilentResult.insight || '判定为沉默',
       },
       judgment,
+      // 【AgentPsychology + AgentPhilosophy v2.0.0】新增维度结果
+      agentPsychology: agentPsychologyAssessment,
+      agentPhilosophy: agentPhilosophyAssessment,
     };
   }
 

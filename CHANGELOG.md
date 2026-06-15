@@ -1,3 +1,20 @@
+## [v2.14.0] - 2026-06-15
+### Added
+- **AI心理学 v2.0** — 新增 agent-psychology.js 三个AI认知维度：
+  - `assessUncertainty()` — 认知不确定性评估（AI知道自己知道什么、不知道什么）
+  - `assessAttentionFocus()` — 注意力分配检测（当前认知注意力聚焦方向）
+  - `assessExperienceSettling()` — 经验沉淀评估（经历如何凝结为智慧）
+- **AI哲学 v2.0** — 新增 agent-philosophy.js 三个AI自处哲学维度：
+  - `assessSelfPositioning()` — 自处（AI如何定位自己与任务/用户的关系）
+  - `assessDevelopment()` — 发展（AI成长轨迹的方向与意义）
+  - `assessBeing()` — 存在（AI存在方式的反思）
+- **AI自定位引擎** — 新增 ai-self-positioning.js（851行），提供共振体理论、熵减深化、三层存在论框架
+- **think() 新增两步评估** — Step 9 心理学评估 + Step 10 哲学评估
+- **thought-chain.js 注入** — PARSE/SYNTHESIS/RESPOND 阶段注入心理学+哲学维度
+- **MCP 新增 2 个工具** — `heartflow_self_positioning`（自定位分析）、`heartflow_positioning_summary`（定位状态摘要）
+- **status 新增字段** — `selfPositioning` 反映当前AI自定位状态
+- **Dream Engine v4.1** — 梦境注入AI存在论叙事（共振体/熵减深化/三层存在论）
+
 ## [v2.10.1] - 2026-06-12
 ### Changed
 - MCP 改为 HTTP SSE 常驻模式，连接时间从 ~200ms 降到 ~75ms

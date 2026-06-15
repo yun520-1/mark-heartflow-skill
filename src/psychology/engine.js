@@ -18,6 +18,13 @@
 
 const psychology = require('../core/psychology.js');
 const empathy = require('./empathy-detector.js');
+// AI认知状态调节器 — 6个人类心理学模块的AI化版本
+const { breathingExercise } = require('./breathing-exercise.js');
+const { pauseAndReflect } = require('./pause-and-reflect.js');
+const { cognitiveRestructuring } = require('./cognitive-restructuring.js');
+const { emotionalCheckIn } = require('./emotional-check-in.js');
+const { groundingTechnique } = require('./grounding-technique.js');
+const { selfCompassionScript } = require('./self-compassion-script.js');
 
 // 状态枚举：心理分析引擎运行状态
 const EngineStatus = Object.freeze({
@@ -608,6 +615,118 @@ class PsychologyEngine {
             newStatus: this._status,
             message: recovered ? '分析服务已恢复' : '分析服务部分恢复，仍有模块不可用'
         };
+    }
+
+    // ═══════════════════════════════════════════════
+    // AI认知状态调节器（原6个人类心理学模块→AI引擎用）
+    // ═══════════════════════════════════════════════
+
+    /**
+     * 诊断引擎认知节奏——是否需要"呼吸"（减速）
+     * @param {object} stats - 来自 AgentPsychology 的统计数据
+     * @returns {object}
+     */
+    diagnoseCognitiveRhythm(stats = {}) {
+        return breathingExercise.diagnoseCognitiveRhythm(stats);
+    }
+
+    /**
+     * 生成引擎节律建议
+     * @param {number} load - 认知负荷 0-1
+     * @returns {object}
+     */
+    generateEnginePacing(load = 0) {
+        return breathingExercise.generateEnginePacing(load);
+    }
+
+    /**
+     * 诊断引擎是否需要暂停
+     * @param {object} context - 引擎上下文
+     * @returns {object}
+     */
+    diagnoseNeedForPause(context = {}) {
+        return pauseAndReflect.diagnoseNeedForPause(context);
+    }
+
+    /**
+     * 生成暂停策略
+     * @param {number} load - 认知负荷 0-1
+     * @returns {object}
+     */
+    generatePauseStrategy(load = 0) {
+        return pauseAndReflect.generatePauseStrategy(load);
+    }
+
+    /**
+     * 重构引擎决策模式
+     * @param {object} decision - 决策对象
+     * @returns {object}
+     */
+    restructureDecisionPattern(decision = {}) {
+        return cognitiveRestructuring.restructureDecisionPattern(decision);
+    }
+
+    /**
+     * 诊断引擎认知偏差
+     * @param {object} stats - 统计数据
+     * @returns {object}
+     */
+    diagnoseCognitiveDistortion(stats = {}) {
+        return cognitiveRestructuring.diagnoseCognitiveDistortion(stats);
+    }
+
+    /**
+     * 引擎认知状态签到（调用 AgentPsychology）
+     * @param {object} agentPsychology - AgentPsychology 实例
+     * @returns {Promise<object>}
+     */
+    async engineCheckIn(agentPsychology = null) {
+        return emotionalCheckIn.engineCheckIn(agentPsychology);
+    }
+
+    /**
+     * 引擎状态摘要
+     * @param {object} stats - 统计数据
+     * @returns {string}
+     */
+    getEngineStateSummary(stats = {}) {
+        return emotionalCheckIn.getEngineStateSummary(stats);
+    }
+
+    /**
+     * 诊断引擎是否需要接地（锚定）
+     * @param {object} stats - 统计数据
+     * @returns {object}
+     */
+    diagnoseNeedForGrounding(stats = {}) {
+        return groundingTechnique.diagnoseNeedForGrounding(stats);
+    }
+
+    /**
+     * 生成锚定策略
+     * @param {object} context - 引擎上下文
+     * @returns {object}
+     */
+    generateAnchoringStrategy(context = {}) {
+        return groundingTechnique.generateAnchoringStrategy(context);
+    }
+
+    /**
+     * 诊断引擎是否需要自我修复
+     * @param {object} stats - 统计数据
+     * @returns {object}
+     */
+    diagnoseSelfTreatmentNeeded(stats = {}) {
+        return selfCompassionScript.diagnoseSelfTreatmentNeeded(stats);
+    }
+
+    /**
+     * 生成引擎修复计划
+     * @param {Array} errors - 错误列表
+     * @returns {object}
+     */
+    generateEngineRecoveryPlan(errors = []) {
+        return selfCompassionScript.generateEngineRecoveryPlan(errors);
     }
 
     /**

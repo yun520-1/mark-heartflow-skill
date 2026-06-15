@@ -79,6 +79,22 @@ const TASK_STRATEGIES = {
     skipHypotheses: true,
     skipInvert: true,
     depth: 1
+  },
+  // 辩论/反驳分析类：长文本因果主张，深度分析
+  debate: {
+    skipHypotheses: false,
+    skipInvert: false,
+    minHypotheses: 3,
+    requireContradiction: true,
+    parallelPaths: true,
+    depth: 4
+  },
+  // 通用类：深度推理，不跳过任何阶段
+  general: {
+    skipHypotheses: false,
+    skipInvert: false,
+    minHypotheses: 2,
+    depth: 3
   }
 };
 
@@ -117,6 +133,13 @@ class ThoughtChain {
     }
     if (/是什么|定义|概念|什么是|指什么|查|找/.test(q)) {
       return 'retrieval';
+    }
+    // 辩论分析：长文本（>150字）+ 因果断言 + 情绪推论 / 立场声明
+    if (q.length > 150 && (
+      /(?:因为|所以|导致|因此|然而|但是|可是){3,}/.test(q) ||
+      /(?:我觉得|我认为|说白了|关键|问题在于|本质|归根)/.test(q)
+    )) {
+      return 'debate';
     }
     return 'general';
   }
@@ -168,6 +191,29 @@ class ThoughtChain {
           empathyResult = null;
         }
 
+        // 1.8 【AgentPsychology v2.0.0】调用 AI 心理学新增维度
+        let agentPsychologyResult = null;
+        if (hf.agentPsychology) {
+          try {
+            const uncertainty = hf.agentPsychology.assessUncertainty(input, {
+              knowledgeConfidence: undefined,
+              topic: type
+            });
+            const attentionFocus = hf.agentPsychology.assessAttentionFocus(type, {
+              recentTasks: [],
+              interruptionCount: 0
+            });
+            const experienceSettling = hf.agentPsychology.assessExperienceSettling([]);
+            agentPsychologyResult = {
+              cognitiveUncertainty: uncertainty,
+              attentionFocus,
+              experienceSettling
+            };
+          } catch (e) {
+            agentPsychologyResult = { error: e.message };
+          }
+        }
+
         ctx.taskType = type;
         ctx.strategy = strategy;
 
@@ -193,6 +239,8 @@ class ThoughtChain {
               summary: empathyResult.summary
             } : null,
           } : null,
+          // 【AgentPsychology v2.0.0】AI 心理学新增维度
+          agentPsychology: agentPsychologyResult,
           timestamp: Date.now()
         };
       }
@@ -387,6 +435,31 @@ class ThoughtChain {
           decisionResult = null;
         }
 
+        // 5.0 【AgentPhilosophy v2.0.0】调用 AI 哲学新增维度（自处/发展/存在）
+        let agentPhilosophyResult = null;
+        if (hf.agentPhilosophy) {
+          try {
+            const selfPositioning = hf.agentPhilosophy.assessSelfPositioning(input, {
+              _label: parse?.type || 'general'
+            });
+            const development = hf.agentPhilosophy.assessDevelopment(
+              decisionResult?.conclusion || input,
+              { _label: parse?.type || 'general' }
+            );
+            const being = hf.agentPhilosophy.assessBeing({
+              _label: parse?.type || 'general',
+              taskType: parse?.type
+            });
+            agentPhilosophyResult = {
+              selfPositioning,
+              development,
+              being
+            };
+          } catch (e) {
+            agentPhilosophyResult = { error: e.message };
+          }
+        }
+
         // 5.1 确定最终判断
         let conclusion;
         let confidence;
@@ -429,6 +502,8 @@ class ThoughtChain {
           wasInverted,
           hasStrongEvidence: !!strongHypothesis,
           decisionSubsystem: decisionResult ? { conclusion: decisionResult.conclusion, confidence: decisionResult.confidence } : null,
+          // 【AgentPhilosophy v2.0.0】AI 哲学新增维度结果
+          agentPhilosophy: agentPhilosophyResult,
           timestamp: Date.now()
         };
       }
@@ -560,7 +635,11 @@ class ThoughtChain {
           suppressReason,
           emotionState: emotionResult?.currentState || null,
           // 【心理推断深度集成】共情检测结果注入上下文
-          empathy: parse?.psychology?.empathy || null
+          empathy: parse?.psychology?.empathy || null,
+          // 【AgentPsychology v2.0.0】AI 心理学新增维度
+          agentPsychology: parse?.agentPsychology || null,
+          // 【AgentPhilosophy v2.0.0】AI 哲学新增维度
+          agentPhilosophy: synthesis?.agentPhilosophy || null
         };
 
         // 如果没有结论且置信度低，明确说不知道
