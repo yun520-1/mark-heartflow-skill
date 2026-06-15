@@ -444,7 +444,7 @@ function handleStatus(args) {
   // 如果引擎已启动，获取更多信息
   if (heartflow) {
     try {
-      const memoryStats = safeDispatch('identityCore.getMemoryStats');
+      const memoryStats = safeDispatch('memory.getStats');
       if (memoryStats) {
         status.memoryLayers = {
           core: memoryStats.core || 0,
