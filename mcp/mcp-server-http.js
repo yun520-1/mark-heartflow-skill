@@ -68,6 +68,21 @@ const TOOLS = [
     name: 'heartflow_status',
     description: '服务健康检查：返回版本、启动耗时、加载模块数、记忆层状态。',
     inputSchema: { type: 'object', properties: { detail: { type: 'string', enum: ['basic', 'full'], description: '详细程度（默认 basic）' } } }
+  },
+  {
+    name: 'heartflow_agent_psychology',
+    description: 'AI引擎心理学评估：返回引擎自身的7维认知心理状态分析（认知负荷、目标冲突、价值内化矛盾、自我认同漂移、决策质量衰减、认知失调、认知弹性）。',
+    inputSchema: { type: 'object', properties: { activeGoals: { type: 'array', items: { type: 'object' }, description: '当前激活的目标列表（可选）' }, context: { type: 'object', description: '上下文信息（可选）' }, action: { type: 'string', description: '最近执行的行为描述（可选）' } } }
+  },
+  {
+    name: 'heartflow_engine_pacing',
+    description: '引擎认知节律诊断：检测引擎是否需要"减速"（呼吸）、暂停或锚定。基于认知负荷、目标冲突、错误率给出处理节奏建议。',
+    inputSchema: { type: 'object', properties: { stats: { type: 'object', description: '引擎状态数据（可选），不传则自动获取' } } }
+  },
+  {
+    name: 'heartflow_cognitive_check',
+    description: '引擎认知状态签到：综合检查认知偏差、决策模式、是否需要自我修复。返回完整诊断+修复建议。',
+    inputSchema: { type: 'object', properties: { stats: { type: 'object', description: '引擎状态数据（可选）' }, errors: { type: 'array', description: '最近错误列表（可选）' } } }
   }
 ];
 
@@ -245,12 +260,60 @@ function handleStatus(args) {
   const startTime = Date.now();
   const status = { version, running: heartflow !== null, modules: heartflow ? Object.keys(heartflow._modules || {}).length : 0, pid: process.pid, uptime: process.uptime(), memory: process.memoryUsage() };
   if (heartflow) {
-    try { const ms = safeDispatch('identityCore.getMemoryStats'); if (ms) status.memoryLayers = { core: ms.core || 0, learned: ms.learned || 0, ephemeral: ms.ephemeral || 0 }; } catch (e) {}
+    try { const ms = safeDispatch('memory.getStats'); if (ms) status.memoryLayers = { core: ms.core || 0, learned: ms.learned || 0, ephemeral: ms.ephemeral || 0 }; } catch (e) {}
     try { const q = safeDispatch('evolution.getStats'); if (q) status.qtable = q; } catch (e) {}
   }
   status.checkTime = Date.now() - startTime;
   if (detail === 'basic') return { version: status.version, running: status.running, modules: status.modules, memoryLayers: status.memoryLayers || {}, checkTime: status.checkTime };
   return status;
+}
+
+function handleAgentPsychology(args) {
+  const { activeGoals, context, action } = args || {};
+  return safeDispatch('agentPsychology.fullAssessment', { activeGoals, context, action });
+}
+
+function handleEnginePacing(args) {
+  const { stats } = args || {};
+  // 先获取认知负荷数据
+  const ap = safeDispatch('agentPsychology.fullAssessment', {}) || {};
+  const load = ap?.cognitiveLoad?.load ?? stats?.cognitiveLoad ?? 0;
+  const context = {
+    cognitiveLoad: load,
+    goalConflicts: ap?.goalConflicts?.count ?? 0,
+    recentErrors: stats?.recentErrors ?? 0
+  };
+  const rhythm = safeDispatch('psychology.diagnoseCognitiveRhythm', context) || {};
+  const pacing = safeDispatch('psychology.generateEnginePacing', load) || {};
+  const pause = safeDispatch('psychology.diagnoseNeedForPause', context) || {};
+  const grounding = safeDispatch('psychology.diagnoseNeedForGrounding', ap) || {};
+  return {
+    rhythm: rhythm.needsBreathing ? rhythm : { needsBreathing: false, reason: '认知负荷正常' },
+    pacing: pacing.suggestions || pacing,
+    pause: pause.needsPause ? pause : { needsPause: false },
+    grounding: grounding.needsGrounding ? grounding : { needsGrounding: false },
+    healthScore: ap?.healthScore ?? 1,
+    timestamp: Date.now()
+  };
+}
+
+function handleCognitiveCheck(args) {
+  const { stats, errors } = args || {};
+  const ap = safeDispatch('agentPsychology.fullAssessment', {}) || {};
+  const checkin = safeDispatch('psychology.engineCheckIn', null) || {};
+  const distortion = safeDispatch('psychology.diagnoseCognitiveDistortion', ap) || {};
+  const recovery = safeDispatch('psychology.diagnoseSelfTreatmentNeeded', { errors: errors || [], ...ap }) || {};
+  const summary = safeDispatch('psychology.getEngineStateSummary', ap) || '';
+  return {
+    summary,
+    checkin,
+    distortions: distortion.distortions || [],
+    overallBias: distortion.overallBias ?? 0,
+    needsRecovery: recovery.needsTreatment || false,
+    recoveryReason: recovery.reason || '',
+    healthScore: ap?.healthScore ?? 1,
+    timestamp: Date.now()
+  };
 }
 
 const HANDLERS = {
@@ -260,7 +323,10 @@ const HANDLERS = {
   heartflow_memory_search: handleMemorySearch,
   heartflow_emotion: handleEmotion,
   heartflow_self_heal: handleSelfHeal,
-  heartflow_status: handleStatus
+  heartflow_status: handleStatus,
+  heartflow_agent_psychology: handleAgentPsychology,
+  heartflow_engine_pacing: handleEnginePacing,
+  heartflow_cognitive_check: handleCognitiveCheck
 };
 
 // ═══════════════════════════════════════════════

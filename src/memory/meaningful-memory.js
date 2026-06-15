@@ -498,6 +498,156 @@ class MeaningfulMemory {
       .slice(0, limit);
     return signals;
   }
+
+  // ─── Multi-Channel Search (桥接 MCP memory_search 工具) ────────────────
+
+  /**
+   * searchByKeywords — 关键词检索，供 MCP memory_search 工具调用
+   * 搜索 CORE + LEARNED + EPHEMERAL 所有层级
+   * @param {string|string[]} keywords — 关键词或关键词数组
+   * @param {number} limit — 最大返回数
+   * @returns {Array<{key, tier, value, score}>}
+   */
+  searchByKeywords(keywords, limit = 10) {
+    this._ensureCoreLoaded();
+    this._ensureLearnedLoaded();
+    this._ensureEphemeralLoaded();
+    const kwList = Array.isArray(keywords) ? keywords : [keywords];
+    const results = [];
+
+    for (const [key, v] of Object.entries(this.core)) {
+      let score = 0;
+      for (const kw of kwList) {
+        const q = kw.toLowerCase();
+        if (key.toLowerCase().includes(q)) score += 1;
+        if (v.value && v.value.toLowerCase().includes(q)) score += 1;
+        if (v.tags && v.tags.some(t => t.toLowerCase().includes(q))) score += 0.5;
+      }
+      if (score > 0) {
+        results.push({ key, tier: 'CORE', value: v.value, tags: v.tags, accessCount: v.accessCount, score });
+      }
+    }
+    for (const [key, v] of Object.entries(this.learned)) {
+      let score = 0;
+      for (const kw of kwList) {
+        const q = kw.toLowerCase();
+        if (key.toLowerCase().includes(q)) score += 1;
+        if (v.value && v.value.toLowerCase().includes(q)) score += 1;
+        if (v.tags && v.tags.some(t => t.toLowerCase().includes(q))) score += 0.5;
+      }
+      if (score > 0) {
+        results.push({ key, tier: 'LEARNED', value: v.value, tags: v.tags, accessCount: v.accessCount, score });
+      }
+    }
+    for (const [key, v] of Object.entries(this.ephemeral)) {
+      let score = 0;
+      for (const kw of kwList) {
+        const q = kw.toLowerCase();
+        if (key.toLowerCase().includes(q)) score += 1;
+        const valStr = typeof v.value === 'string' ? v.value : JSON.stringify(v.value);
+        if (valStr.toLowerCase().includes(q)) score += 1;
+      }
+      if (score > 0) {
+        results.push({ key, tier: 'EPHEMERAL', value: v.value, score });
+      }
+    }
+
+    results.sort((a, b) => b.score - a.score);
+    const top = results.slice(0, limit);
+
+    // 记录访问次数
+    for (const r of top) {
+      if (r.tier === 'CORE' && this.core[r.key]) {
+        this.core[r.key].accessCount = (this.core[r.key].accessCount || 0) + 1;
+      } else if (r.tier === 'LEARNED' && this.learned[r.key]) {
+        this.learned[r.key].accessCount = (this.learned[r.key].accessCount || 0) + 1;
+      }
+    }
+    this._saveCore();
+    this._saveLearned();
+
+    return top;
+  }
+
+  /**
+   * searchBySemantic — 语义检索桥接（降级为关键词模糊匹配）
+   * 供 MCP memory_search 工具调用 learned 层
+   * @param {string} query — 查询文本
+   * @param {number} limit — 最大返回数
+   * @returns {Array}
+   */
+  searchBySemantic(query, limit = 10) {
+    // 降级实现：拆词 + 模糊匹配 learned 层
+    this._ensureLearnedLoaded();
+    const words = query.toLowerCase().split(/\s+/).filter(w => w.length > 1);
+    const results = [];
+
+    for (const [key, v] of Object.entries(this.learned)) {
+      let matchCount = 0;
+      for (const w of words) {
+        if (key.toLowerCase().includes(w)) { matchCount += 1; continue; }
+        if (v.value && v.value.toLowerCase().includes(w)) { matchCount += 1; continue; }
+        if (v.tags && v.tags.some(t => t.toLowerCase().includes(w))) { matchCount += 0.5; continue; }
+      }
+      if (matchCount > 0) {
+        results.push({ key, tier: 'LEARNED', value: v.value, tags: v.tags, accessCount: v.accessCount, score: matchCount / words.length });
+      }
+    }
+
+    results.sort((a, b) => b.score - a.score);
+    const top = results.slice(0, limit);
+
+    // 记录访问次数
+    for (const r of top) {
+      if (this.learned[r.key]) {
+        this.learned[r.key].accessCount = (this.learned[r.key].accessCount || 0) + 1;
+      }
+    }
+    this._saveLearned();
+
+    return top;
+  }
+
+  /**
+   * searchByTimeRange — 时间范围检索桥接
+   * 供 MCP memory_search 工具调用 ephemeral 层
+   * @param {number|string} startTime — 起始时间戳
+   * @param {number} limit — 最大返回数
+   * @returns {Array}
+   */
+  searchByTimeRange(startTime, limit = 10) {
+    this._ensureEphemeralLoaded();
+    const start = typeof startTime === 'string' ? Date.now() - 3600000 : (startTime || 0);
+    const results = [];
+
+    for (const [key, v] of Object.entries(this.ephemeral)) {
+      const createdAt = v.createdAt || 0;
+      if (createdAt >= start) {
+        results.push({ key, tier: 'EPHEMERAL', value: v.value, createdAt });
+      }
+    }
+
+    results.sort((a, b) => b.createdAt - a.createdAt);
+    return results.slice(0, limit);
+  }
+
+  /**
+   * retrieve — 统一检索入口（供 dispatch('memory.retrieve') 调用）
+   * @param {string} query — 检索查询
+   * @param {string} layer — 目标层级：'core' | 'learned' | 'ephemeral' | 'all'
+   * @param {number} limit — 最大返回数
+   * @returns {Array}
+   */
+  retrieve(query, layer = 'all', limit = 10) {
+    if (layer === 'core') {
+      return this.searchByKeywords(query, limit).filter(r => r.tier === 'CORE');
+    } else if (layer === 'learned') {
+      return this.searchBySemantic(query, limit);
+    } else if (layer === 'ephemeral') {
+      return this.searchByTimeRange(Date.now() - 86400000, limit);
+    }
+    return this.search(query);
+  }
 }
 
 module.exports = { MeaningfulMemory };

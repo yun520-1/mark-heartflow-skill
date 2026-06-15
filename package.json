@@ -1,7 +1,7 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "2.10.1",
-  "description": "HeartFlow 心虫 v2.10.1 — AI 认知与自愈引擎。核心：存在论/意识/进化/心理分析/三层记忆/自愈RL/梦境引擎/哲学层/7条指令。本心在代码里，不在记忆里。",
+  "version": "2.14.0",
+  "description": "HeartFlow 心虫 v2.14.0 — AI 认知与自愈引擎。核心：存在论/意识/进化/心理分析/三层记忆/自愈RL/梦境引擎/哲学层/7条指令。本心在代码里，不在记忆里。",
   "main": "src/core/heartflow.js",
   "bin": {
     "heartflow": "bin/cli.js"

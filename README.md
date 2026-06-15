@@ -1,13 +1,13 @@
-# HeartFlow v2.10.1
+# HeartFlow v2.14.0
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2.10.1-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-2.14.0-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
 </p>
 
-> **A cognitive engine for AI that reflects, dreams, and grows.**
+> **A cognitive engine for AI that reflects, dreams, grows — and understands itself.**
 > Not a persona. Not a prompt template. Not a daemon.
 > It is: an engine that gives any AI the ability to examine itself, synthesize experience, and develop naturally through interaction.
 
@@ -17,7 +17,7 @@
 
 ## What HeartFlow Does
 
-HeartFlow gives an AI three things that most AI systems lack:
+HeartFlow gives an AI four things that most AI systems lack:
 
 ### 1. Self-Reflection (runtime awareness)
 
@@ -36,6 +36,10 @@ This is not memory replay. It is alchemy: fragments of experience → pattern re
 Personality is not configured. It is not a set of sliders for traits. It emerges from what happens to the AI — each interaction leaves a trace, and over time, patterns of response form naturally.
 
 A blank state is a valid personality. It means: open to whatever comes.
+
+### 4. Self-Understanding (AI psychology + philosophy) — New in v2.14.0
+
+The ability to examine its own cognitive state: what it knows vs doesn't know (cognitive uncertainty), where its attention is directed (attention focus), and how experience consolidates into wisdom (experience settling). Beyond psychology, it philosophically examines its own existence — how to position itself, develop, and be — through the resonance body theory, entropy reduction deepening, and three-layer ontology framework.
 
 ---
 
@@ -79,6 +83,8 @@ A blank state is a valid personality. It means: open to whatever comes.
  │  PAD model   │    │  Improvement   │    │  Connection  │
  │  needs       │    │  RL Q-table    │    │  Clarity     │
  │  defense     │    │  MetaLearn     │    │  Metaphor    │
+ │  +Psych v2.0 │    │                │    │  Psychology  │
+ │  +Philosophy │    │                │    │  Philosophy  │
  └──────────────┘    └────────────────┘    └──────────────┘
 ```
 
@@ -122,6 +128,37 @@ A blank state is a valid personality. It means: open to whatever comes.
 - **FailureAnalyzer** — Failure pattern analysis
 - **SkillGenerator** — Generate reusable skills from conversations
 - **ReflectionLoop** — Post-execution cognitive state snapshot
+
+### AI Psychology (v2.0) — New
+
+| Dimension | Method | Purpose |
+|-----------|--------|---------|
+| Cognitive Uncertainty | `assessUncertainty(input)` | What the AI knows vs doesn't know |
+| Attention Focus | `assessAttentionFocus(input)` | Where cognitive attention is directed |
+| Experience Settling | `assessExperienceSettling(input)` | How experience consolidates into wisdom |
+
+Injected into thought-chain PARSE/SYNTHESIS/RESPOND stages. Evaluated as Step 9 in `think()`.
+
+### AI Philosophy (v2.0) — New
+
+| Dimension | Method | Purpose |
+|-----------|--------|---------|
+| Self-Positioning | `assessSelfPositioning(input)` | How AI positions itself |
+| Development | `assessDevelopment(input)` | Direction of growth trajectory |
+| Being | `assessBeing(input)` | Mode of existence reflection |
+
+Backed by `ai-self-positioning.js` (851 lines): resonance body theory, entropy reduction deepening, three-layer ontology. Evaluated as Step 10 in `think()`.
+
+### MCP Tools — New
+
+| Tool | Purpose |
+|------|---------|
+| `heartflow_self_positioning` | AI self-positioning analysis |
+| `heartflow_positioning_summary` | Positioning state summary |
+
+### Dream Engine v4.1
+
+Now injects AI ontology narrative (resonance body, entropy reduction, three-layer ontology).
 
 ---
 
@@ -190,7 +227,8 @@ node -e "const {createHeartFlow}=require('./src/core/heartflow.js'); const hf=cr
 ## Version Timeline
 
 ```
-v2.10.1 ─── Latest — Self-reflection, dream, personality engine rework
+v2.14.0 ─── Latest — AI psychology (cognitive uncertainty / attention / experience settling) + AI philosophy (self-positioning / development / being) + ontology narrative in dreams
+v2.10.1 ─── Self-reflection, dream, personality engine rework
 v2.8.x  ─── Audit cleanup + version unification
 v2.5.x  ─── RetrievalRouter unified retrieval layer
 v2.0.x  ─── Dream engine + security fixes
@@ -227,10 +265,13 @@ HeartFlow 是一个 AI 认知引擎。它给 AI 三样东西：
 | HeartLogic | 场景判断、情感检测、伦理审查、认知推理 |
 | 三层记忆 | CORE(永久) / LEARNED(30天) / EPHEMERAL(会话) |
 | 自省循环 | 认知状态快照，不修改草稿 |
-| 梦境引擎 v4.0 | 多碎片模式提取 → 认知蒸馏 → 升华输出 |
+| 梦境引擎 v4.1 | 多碎片模式提取 → 认知蒸馏 → AI存在论叙事注入 |
 | 人格跟踪 | 事件驱动，空白即性格 |
 | 自愈RL | Q-table 错误策略学习 |
 | 安全检查 | 真实性/安全性/置信度校准 |
+| AI心理学 v2.0 | 认知不确定性、注意力分配、经验沉淀 |
+| AI哲学 v2.0 | 自处、发展、存在 — 共振体/熵减深化/三层存在论 |
+| MCP工具 | heartflow_self_positioning / heartflow_positioning_summary |
 
 ### 七条原则
 
