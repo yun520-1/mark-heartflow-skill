@@ -112,7 +112,7 @@ const TOOLS = [
   },
   {
     name: 'heartflow_status',
-    description: '服务健康检查：返回版本、启动耗时、加载模块数、记忆层状态。',
+    description: '服务健康检查：返回版本、运行状态、模块数、记忆层状态。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -343,12 +343,14 @@ function handleMemorySearch(args) {
     }
     if (layer === 'all' || layer === 'ephemeral') {
       try {
-        const r = typeof mem.searchByTimeRange === 'function'
+        // ephemeral 层：先用关键词搜索所有层后过滤，再回退到时间范围搜索
+        const all = typeof mem.search === 'function' ? mem.search(query) : null;
+        results.ephemeral = all
+          ? all.filter(r => r.tier === 'EPHEMERAL').slice(0, limit)
+          : typeof mem.searchByTimeRange === 'function'
           ? mem.searchByTimeRange(query, limit)
-          : typeof mem.search === 'function'
-          ? mem.search(query, 'ephemeral', limit)
           : null;
-        results.ephemeral = r || { error: 'searchByTimeRange not available' };
+        if (!results.ephemeral) results.ephemeral = { error: 'search not available' };
       } catch (e) { results.ephemeral = { error: e.message }; }
     }
   } else {
@@ -431,14 +433,11 @@ function handleStatus(args) {
 
   const startTime = Date.now();
 
-  // 基础信息
+  // 基础信息（不暴露 pid/uptime/memory 等进程信息）
   const status = {
     version,
     running: heartflow !== null,
     modules: heartflow ? Object.keys(heartflow._modules || {}).length : 0,
-    pid: process.pid,
-    uptime: process.uptime(),
-    memory: process.memoryUsage()
   };
 
   // 如果引擎已启动，获取更多信息

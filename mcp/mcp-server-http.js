@@ -258,7 +258,7 @@ function handleSelfHeal(args) {
 function handleStatus(args) {
   const { detail = 'basic' } = args || {};
   const startTime = Date.now();
-  const status = { version, running: heartflow !== null, modules: heartflow ? Object.keys(heartflow._modules || {}).length : 0, pid: process.pid, uptime: process.uptime(), memory: process.memoryUsage() };
+  const status = { version, running: heartflow !== null, modules: heartflow ? Object.keys(heartflow._modules || {}).length : 0 };
   if (heartflow) {
     try { const ms = safeDispatch('memory.getStats'); if (ms) status.memoryLayers = { core: ms.core || 0, learned: ms.learned || 0, ephemeral: ms.ephemeral || 0 }; } catch (e) {}
     try { const q = safeDispatch('evolution.getStats'); if (q) status.qtable = q; } catch (e) {}
@@ -492,9 +492,7 @@ const server = http.createServer((req, res) => {
     res.end(JSON.stringify({
       status: 'ok',
       version,
-      uptime: process.uptime(),
       clients: sseClients.size,
-      pid: process.pid
     }));
     return;
   }

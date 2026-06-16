@@ -38,6 +38,7 @@ function getMemoryInject(hfDir) {
     try {
         const injectPath = path.join(hfDir, 'scripts', 'heartflow-memory-inject.js');
         if (fs.existsSync(injectPath)) {
+            // 子进程调用记忆注入脚本，受控调用（固定路径、超时、无 shell）
             const result = require('child_process').execFileSync('node', [injectPath], {
                 cwd: hfDir, timeout: 8000, encoding: 'utf8', maxBuffer: 10240
             });
