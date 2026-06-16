@@ -63,7 +63,16 @@ HeartFlow 记忆读写工具 — 安装引擎后自动获得
       cmdPrune(hfm);
       break;
     case 'write':
-      cmdWrite(hfm, args[1], args.slice(2).join(' '));
+      // 格式: write <key> <value> [tags...]
+      if (args.length >= 4) {
+        // 至少 key + value + 1 tag
+        cmdWrite(hfm, args[1], args[2], args.slice(3));
+      } else if (args.length === 3) {
+        // key + value, 无 tags
+        cmdWrite(hfm, args[1], args[2], []);
+      } else {
+        console.log('用法: node heartflow-memory-tool.js write <key> <value> [tags...]');
+      }
       break;
     case 'forget':
       cmdForget(hfm, args[1]);
@@ -222,12 +231,13 @@ function cmdPrune(hfm) {
   if (removed > 0) console.log(`已移除 ${removed} 条过期记忆`);
 }
 
-function cmdWrite(hfm, key, value) {
+function cmdWrite(hfm, key, value, tags) {
   if (!key || !value) {
-    console.log('用法: node heartflow-memory-tool.js write <key> <value>');
+    console.log('用法: node heartflow-memory-tool.js write <key> <value> [tags...]');
     return;
   }
-  const result = hfm.learn(key, value, ['manual']);
+  const tagsToUse = tags && tags.length > 0 ? tags : ['manual'];
+  const result = hfm.learn(key, value, tagsToUse);
   if (result.success) {
     console.log(`已写入 LEARNED 层: [${key}] = ${value}`);
   }

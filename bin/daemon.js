@@ -3,8 +3,8 @@
  * HeartFlow Daemon — 引擎常驻进程
  *
  * 启动后：
- *   - 加载 HeartFlow 引擎（一次性）
  *   - 监听 Unix socket /tmp/heartflow-daemon.sock
+ *   - 收到 bundle 请求时延迟加载 HeartFlow 引擎（首次请求时加载）
  *   - 通过 socket 接收 JSON 请求 {cmd: "bundle", text: "..."}
  *   - 返回 {status, psychology, judgment, inject}
  *   - 超时30秒无请求自动退出
@@ -53,6 +53,7 @@ function getMemoryInject() {
     try {
         const injectPath = path.join(HF_DIR, 'scripts', 'heartflow-memory-inject.js');
         if (fs.existsSync(injectPath)) {
+            // 子进程调用记忆注入脚本，受控调用（固定路径、超时、无 shell）
             const result = require('child_process').execFileSync('node', [injectPath], {
                 cwd: HF_DIR, timeout: 8000, encoding: 'utf8', maxBuffer: 10240
             });
@@ -123,7 +124,10 @@ function handleRequest(reqJson) {
         } else if (req.cmd === 'shutdown') {
             // 安全：需传递 SHUTDOWN_TOKEN 环境变量
             const expectedToken = process.env.SHUTDOWN_TOKEN;
-            if (expectedToken && req.token !== expectedToken) {
+            if (!expectedToken) {
+                response.status = 'error';
+                response.error = 'shutdown not configured: SHUTDOWN_TOKEN environment variable not set';
+            } else if (req.token !== expectedToken) {
                 response.status = 'error';
                 response.error = 'unauthorized: invalid shutdown token';
             } else {
@@ -212,9 +216,8 @@ function startDaemon() {
     // 启动空闲超时定时器
     resetIdleTimer(server);
     
-    // 初始状态：引擎已加载（heartflow.js 构造时就启动了）
-    // 打印初始化完成
-    console.error(`[HeartFlow Daemon] 引擎就绪`);
+    // 初始状态：引擎延迟加载，第一个 bundle 请求时触发 loadEngine()
+    console.error(`[HeartFlow Daemon] 守护进程就绪（引擎延迟加载，等待 bundle 请求）`);
     return server;
 }
 

@@ -11,7 +11,7 @@
  *   1. 自动读取 memory/ 目录下的 CORE + LEARNED 记忆
  *   2. 只输出最近 30 天内访问过的记忆（排除过期内容）
  *   3. 输出格式标准化，适合嵌入系统提示
- *   4. 注入后自动更新 lastAccessed 时间戳
+ *   4. 注入后自动更新 LEARNED 层条目的 lastAccessed 时间戳
  */
 
 const path = require('path');
@@ -29,10 +29,10 @@ function main() {
   // ─── CORE 层（全部注入）──────────────
   const coreEntries = hfm.listCore();
 
-  // 只注入教训和偏好，不注入身份
-  const lessonCores = coreEntries.filter(e => e.tags?.includes('lesson') || e.tags?.includes('user_correction'));
-  const prefCores = coreEntries.filter(e => e.tags?.includes('user_preference'));
-  // identity./philosophy. 开头的记忆不注入
+  // 只注入教训和偏好，不注入身份/哲学（通过 key 前缀过滤 identity./philosophy.）
+  const lessonCores = coreEntries.filter(e => (e.tags?.includes('lesson') || e.tags?.includes('user_correction')) && !e.key?.startsWith('identity.') && !e.key?.startsWith('philosophy.'));
+  const prefCores = coreEntries.filter(e => e.tags?.includes('user_preference') && !e.key?.startsWith('identity.') && !e.key?.startsWith('philosophy.'));
+  // 注意：前缀过滤与 tag 过滤共同作用，identity./philosophy. 开头的条目即使有 lesson/user_preference 标签也不会注入
 
   if (lessonCores.length > 0) {
     lines.push('');
@@ -96,6 +96,18 @@ function main() {
   lines.push('');
 
   const output = lines.join('\n');
+
+  // 4. 更新 LEARNED 层注入条目的 lastAccessed 时间戳
+  const allInjected = [...lessonCores, ...prefCores, ...lessons, ...preferences, ...pains, ...techOps];
+  for (const entry of allInjected) {
+    if (entry.key && hfm.learned[entry.key]) {
+      hfm.learned[entry.key].lastAccessed = Date.now();
+    }
+  }
+  // 保存更新后的 learned 层
+  if (allInjected.length > 0 && hfm.learned) {
+    hfm._saveJson(hfm.learnedPath, hfm.learned);
+  }
 
   // 输出到 stdout（供 AGENTS.md / Hermes 引用）
   process.stdout.write(output);
