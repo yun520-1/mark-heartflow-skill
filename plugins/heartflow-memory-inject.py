@@ -13,8 +13,9 @@ HeartFlow Memory Inject — Hermes 插件
   2. 在 config.yaml 中启用插件
 
 效果：
-  每次用户发送消息时，插件自动读取 memory/ 目录，
-  将积累的教训/偏好/技术记录注入到系统提示中。
+  每次用户发送消息时，插件通过调用 heartflow-memory-inject.js
+  获取记忆注入内容（结果缓存 5 分钟避免重复调用），
+  并根据输入类型选择性注入。非问候场景注入完整记忆。
 """
 
 import json
@@ -76,6 +77,7 @@ def _run_inject():
         return _last_inject
 
     try:
+        # 受控子进程调用：固定脚本路径、超时限制、shell=False（subprocess.run 默认）
         result = subprocess.run(
             ["node", MEMORY_INJECT_SCRIPT],
             capture_output=True,
@@ -123,7 +125,7 @@ class HeartFlowMemoryInject:
         在每次处理用户消息前，选择性注入记忆到系统提示。
         
         规则（吸收 Fable 5）：
-        - 问候/简短输入：只注入用户名称（如有）
+        - 问候/简短输入：只注入最简提示，不注入记忆
         - 一般对话：注入基础记忆
         - 个人/任务：注入完整记忆（过滤敏感内容）
         - 记忆无归因：不自称"根据我的记忆"
@@ -148,7 +150,8 @@ class HeartFlowMemoryInject:
         inject_text = _filter_sensitive(inject_text)
 
         if input_type == "greeting":
-            # 问候只注入最简提示，不注入身份规则
+            # 问候场景：注入最简提示，不注入身份规则和完整记忆
+            # 注意：此处不注入用户名称，因为 context 中未提供可靠的用户名提取
             inject_text = ""
 
         if inject_text:
