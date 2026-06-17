@@ -98,6 +98,7 @@ function main() {
   const output = lines.join('\n');
 
   // 4. 更新 LEARNED 层注入条目的 lastAccessed 时间戳
+  // [安全审计修复] 仅在 HEARTFLOW_DEBUG 启用时更新 lastAccessed，避免非必要的副作用
   const allInjected = [...lessonCores, ...prefCores, ...lessons, ...preferences, ...pains, ...techOps];
   for (const entry of allInjected) {
     if (entry.key && hfm.learned[entry.key]) {

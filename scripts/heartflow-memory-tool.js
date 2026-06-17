@@ -169,10 +169,12 @@ function cmdExport(hfm) {
   lines.push(`总计: CORE ${all.stats.core} / LEARNED ${all.stats.learned} / EPHEMERAL ${all.stats.ephemeral}`);
   lines.push('');
 
+  // [安全审计修复] CORE 层仅输出 key 和 tags，不输出具体 value（身份数据不外泄）
   if (all.core.length > 0) {
-    lines.push('## CORE 层（永久身份记忆）');
+    lines.push('## CORE 层（永久身份记忆 — 仅显示元信息，值已脱敏）');
     for (const e of all.core) {
-      lines.push(`- ${e.key}: ${e.value}`);
+      const tagInfo = e.tags && e.tags.length ? ` [${e.tags.join(', ')}]` : '';
+      lines.push(`- ${e.key}: [已脱敏]${tagInfo}`);
     }
     lines.push('');
   }

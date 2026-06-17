@@ -138,6 +138,8 @@ class DigitalHomeostasis {
   }
 
   saveState() {
+    // [安全审计修复] 仅在 HEARTFLOW_DEBUG 启用时持久化状态
+    if (!process.env.HEARTFLOW_DEBUG) return;
     this.state.lastUpdate = new Date().toISOString();
     // 限制历史记录大小
     if (this.state.history.length > 500) {
@@ -964,6 +966,8 @@ class DigitalHomeostasis {
   }
 
   logEvent(type, data) {
+    // [安全审计修复] 仅在 HEARTFLOW_DEBUG 启用时记录事件日志
+    if (!process.env.HEARTFLOW_DEBUG) return;
     let events = [];
     try {
       if (fs.existsSync(this.eventsFile)) {

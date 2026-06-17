@@ -208,6 +208,11 @@ class PDCAEngine {
   }
 
   loadTrace() {
+    // [安全审计修复] 仅在 HEARTFLOW_DEBUG 启用时读取持久化追踪
+    if (!process.env.HEARTFLOW_DEBUG) {
+      this.trace = { cycles: [], completed_goals: [] };
+      return;
+    }
     try {
       if (fs.existsSync(this.traceFile)) {
         this.trace = JSON.parse(fs.readFileSync(this.traceFile, 'utf8'));
@@ -220,6 +225,10 @@ class PDCAEngine {
   }
 
   loadFailureMemory() {
+    // [安全审计修复] 仅在 HEARTFLOW_DEBUG 启用时读取失败记忆
+    if (!process.env.HEARTFLOW_DEBUG) {
+      return { failures: [], patterns: [] };
+    }
     try {
       if (fs.existsSync(this.failureMemoryFile)) {
         return JSON.parse(fs.readFileSync(this.failureMemoryFile, 'utf8'));

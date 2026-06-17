@@ -416,22 +416,26 @@ class BlindSpotBreaker {
    * 生成养育最终洞察
    */
   _generateParentingFinalInsight(problem, deconstruction, result) {
-    const insights = [];
+    // ⚠️ 安全审计修复：以下洞察为探索性假设，不是专业诊断
+    // 本模块不替代专业心理咨询、医学建议或治疗
+    const disclaimer = '【安全声明】以下养育反思为学术框架驱动的探索性假设，不是专业诊断或治疗建议。如有真实家庭危机或情绪困扰，请寻求专业心理咨询或医学帮助。';
     
-    // 核心洞察
-    insights.push('在孩子的"问题"背后，往往隐藏着未被父母识别的情绪和未处理的童年经历。');
+    const insights = [disclaimer];
+    
+    // 核心洞察（探索性假设，以"可能"表述）
+    insights.push('【探索性假设】在孩子的"问题"背后，可能隐藏着未被父母识别的情绪和未处理的童年经历。');
     
     // 如果检测到情绪触发
     if (result.emotionalTriggers.length > 0) {
       const emotions = result.emotionalTriggers.map(t => t.emotion).join('、');
-      insights.push(`你的情绪反应（${emotions}）可能不是来自孩子当前的行为，而是来自你自己未被处理的过去。`);
+      insights.push(`【探索性假设】你的情绪反应（${emotions}）可能不是来自孩子当前的行为，而是来自你自己未被处理的过去。`);
     }
     
-    // 代际洞察
-    insights.push('你在养育中感到困难的地方，可能正是你父母当年养育你的方式留下的痕迹。');
+    // 代际洞察（探索性假设）
+    insights.push('【探索性假设】你在养育中感到困难的地方，可能正是你父母当年养育你的方式留下的痕迹。');
     
-    // 解决方案
-    insights.push('真正的改变不是"修复孩子"，而是觉察自己在互动中的自动化反应模式。');
+    // 解决方案（探索性假设）
+    insights.push('【建议方向】真正的改变不是"修复孩子"，而是觉察自己在互动中的自动化反应模式。');
     
     return insights.join(' ');
   }

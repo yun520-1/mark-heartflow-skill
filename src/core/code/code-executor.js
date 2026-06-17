@@ -16,7 +16,7 @@
 
 'use strict';
 
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
@@ -280,7 +280,7 @@ class CodeExecutor {
    */
   _checkShellAvailable() {
     try {
-      execSync('echo "shell_ok"', { timeout: 3000, encoding: 'utf-8' });
+      execFileSync('echo', ['"shell_ok"'], { timeout: 3000, encoding: 'utf-8' });
       return true;
     } catch {
       return false;
@@ -293,13 +293,22 @@ class CodeExecutor {
    */
   _checkPythonAvailable() {
     try {
-      const result = execSync('python3 --version 2>&1 || python --version 2>&1', {
+      const result = execFileSync('python3', ['--version'], {
         timeout: 5000,
         encoding: 'utf-8'
       });
       return result.includes('Python');
     } catch {
-      return false;
+      // fallback to 'python'
+      try {
+        const result = execFileSync('python', ['--version'], {
+          timeout: 5000,
+          encoding: 'utf-8'
+        });
+        return result.includes('Python');
+      } catch {
+        return false;
+      }
     }
   }
 
@@ -688,7 +697,7 @@ ${code}`
    */
   _getPythonCommand() {
     try {
-      execSync('python3 --version', { timeout: 2000, encoding: 'utf-8', stdio: 'ignore' });
+      execFileSync('python3', ['--version'], { timeout: 2000, encoding: 'utf-8', stdio: 'ignore' });
       return 'python3';
     } catch {
       return 'python';
