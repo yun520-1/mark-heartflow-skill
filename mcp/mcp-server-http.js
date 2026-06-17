@@ -83,6 +83,22 @@ const TOOLS = [
     name: 'heartflow_cognitive_check',
     description: '引擎认知状态签到：综合检查认知偏差、决策模式、是否需要自我修复。返回完整诊断+修复建议。',
     inputSchema: { type: 'object', properties: { stats: { type: 'object', description: '引擎状态数据（可选）' }, errors: { type: 'array', description: '最近错误列表（可选）' } } }
+  },
+  // v3.0 — 交流层工具
+  {
+    name: 'heartflow_translate',
+    description: '翻译：将用户自然语言翻译为结构化LLM指令。返回意图、实体、约束、语气和隐性需求分析。',
+    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '用户输入文本' } }, required: ['input'] }
+  },
+  {
+    name: 'heartflow_agent_think',
+    description: '代理思考：通过心虫的交流层处理用户输入→翻译→LLM调用→翻译→返回。作为用户和LLM之间的智能桥梁。',
+    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '用户输入文本' }, llmResponse: { type: 'string', description: '可选的LLM原始响应，不传则只做翻译分析' } } }
+  },
+  {
+    name: 'heartflow_bridge_status',
+    description: '桥状态：返回心虫作为交流层的状态——翻译器、代理层、人格核心的加载情况和配置。',
+    inputSchema: { type: 'object', properties: {} }
   }
 ];
 
@@ -158,6 +174,72 @@ async function handleThink(args) {
       : {},
     psychology: psychology ? { emotion: psychology.emotion || psychology.summary || '', needs: Array.isArray(psychology.needs) ? psychology.needs.slice(0, 3) : [], summary: psychology.summary || '' } : {},
     judgment: judgment || {},
+    timestamp: Date.now()
+  };
+}
+
+// v3.0 — 交流层 handler
+function handleTranslate(args) {
+  const { input } = args || {};
+  if (!input) throw new Error('input 是必填参数');
+  const result = safeDispatch('translator.userToLLM', input, {});
+  const intent = safeDispatch('translator.intentClassifier', input, {});
+  const tone = safeDispatch('translator.toneAnalyzer', input, {});
+  const entities = safeDispatch('translator.entityExtractor', input);
+  const needs = safeDispatch('translator.implicitNeedDetector', input, { tone });
+  const confidence = safeDispatch('translator.confidenceAnnotator', result, input);
+  return {
+    input,
+    translation: result,
+    intent,
+    tone,
+    entities,
+    implicitNeeds: needs,
+    confidence,
+    timestamp: Date.now()
+  };
+}
+
+function handleAgentThink(args) {
+  const { input, llmResponse } = args || {};
+  if (!input) throw new Error('input 是必填参数');
+  // 用户→LLM翻译
+  const userTranslation = safeDispatch('translator.userToLLM', input, {});
+  // 桥身份声明
+  const identity = safeDispatch('personaCore.bridgeIdentity');
+  // 立场检测
+  const stance = safeDispatch('personaCore.stanceDetector', input, {});
+  // 价值对齐
+  const valueCheck = safeDispatch('personaCore.valueAligner', { userInput: input, bridgeIdentity: identity });
+  // 如果有LLM响应，做LLM→用户翻译
+  let llmTranslation = null;
+  if (llmResponse) {
+    llmTranslation = safeDispatch('translator.llmToUser', llmResponse, {});
+  }
+  return {
+    input,
+    translation: userTranslation,
+    bridge: identity ? { declaration: identity.declaration, type: identity.type } : null,
+    stance,
+    valueAlignment: valueCheck,
+    llmTranslation,
+    timestamp: Date.now()
+  };
+}
+
+function handleBridgeStatus() {
+  const translator = safeDispatch('translator.userToLLM', 'status', {});
+  const identity = safeDispatch('personaCore.bridgeIdentity');
+  return {
+    version: '3.0.0',
+    bridgeType: identity?.type || 'unknown',
+    bridgeDeclaration: identity?.declaration || '',
+    translatorReady: !!translator,
+    modules: {
+      translator: ['userToLLM', 'llmToUser', 'intentClassifier', 'toneAnalyzer', 'entityExtractor', 'implicitNeedDetector', 'responseCompressor', 'confidenceAnnotator'],
+      agentLayer: ['agentBridge', 'contextBuilder', 'responseInterceptor', 'translationPipeline', 'qualityFilter', 'followupSuggester', 'conflictResolver', 'uncertaintyHandler'],
+      personaCore: ['bridgeIdentity', 'judgmentInjector', 'stanceDetector', 'agentCommentary', 'valueAligner', 'personalityTone', 'metaPosition'],
+    },
     timestamp: Date.now()
   };
 }
@@ -327,7 +409,11 @@ const HANDLERS = {
   heartflow_status: handleStatus,
   heartflow_agent_psychology: handleAgentPsychology,
   heartflow_engine_pacing: handleEnginePacing,
-  heartflow_cognitive_check: handleCognitiveCheck
+  heartflow_cognitive_check: handleCognitiveCheck,
+  // v3.0 — 交流层 handler
+  heartflow_translate: handleTranslate,
+  heartflow_agent_think: handleAgentThink,
+  heartflow_bridge_status: handleBridgeStatus,
 };
 
 // ═══════════════════════════════════════════════

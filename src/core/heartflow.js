@@ -113,6 +113,31 @@ const _CodeExecutor = _lazy('codeExecutor', () => require('./code/code-executor.
 const _CodePlanner = _lazy('codePlanner', () => require('./code/code-planner.js'));
 const _CodeWriter = _lazy('codeWriter', () => require('./code/code-writer.js'));
 
+// v3.0 — 交流层模块
+const _UserToLLM = _lazy('userToLLM', () => require('../translator/user-to-llm.js'));
+const _LLMToUser = _lazy('llmToUser', () => require('../translator/llm-to-user.js'));
+const _IntentClassifier = _lazy('intentClassifier', () => require('../translator/intent-classifier.js'));
+const _ToneAnalyzer = _lazy('toneAnalyzer', () => require('../translator/tone-analyzer.js'));
+const _EntityExtractor = _lazy('entityExtractor', () => require('../translator/entity-extractor.js'));
+const _ImplicitNeedDetector = _lazy('implicitNeedDetector', () => require('../translator/implicit-need-detector.js'));
+const _ResponseCompressor = _lazy('responseCompressor', () => require('../translator/response-compressor.js'));
+const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('../translator/confidence-annotator.js'));
+const _AgentBridge = _lazy('agentBridge', () => require('../agent-layer/agent-bridge.js'));
+const _ContextBuilder = _lazy('contextBuilder', () => require('../agent-layer/context-builder.js'));
+const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../agent-layer/response-interceptor.js'));
+const _TranslationPipeline = _lazy('translationPipeline', () => require('../agent-layer/translation-pipeline.js'));
+const _QualityFilter = _lazy('qualityFilter', () => require('../agent-layer/quality-filter.js'));
+const _FollowupSuggester = _lazy('followupSuggester', () => require('../agent-layer/followup-suggester.js'));
+const _ConflictResolver = _lazy('conflictResolver', () => require('../agent-layer/conflict-resolver.js'));
+const _UncertaintyHandler = _lazy('uncertaintyHandler', () => require('../agent-layer/uncertainty-handler.js'));
+const _BridgeIdentity = _lazy('bridgeIdentity', () => require('../persona-core/bridge-identity.js'));
+const _JudgmentInjector = _lazy('judgmentInjector', () => require('../persona-core/judgment-injector.js'));
+const _StanceDetector = _lazy('stanceDetector', () => require('../persona-core/stance-detector.js'));
+const _AgentCommentary = _lazy('agentCommentary', () => require('../persona-core/agent-commentary.js'));
+const _ValueAligner = _lazy('valueAligner', () => require('../persona-core/value-aligner.js'));
+const _PersonalityTone = _lazy('personalityTone', () => require('../persona-core/personality-tone.js'));
+const _MetaPosition = _lazy('metaPosition', () => require('../persona-core/meta-position.js'));
+
 const BUILD_DATE = '2026-06-03';
 
 class HeartFlow {
@@ -624,6 +649,74 @@ class HeartFlow {
     if (this._thoughtChainApi) {
       this._modules.thoughtChain = this._thoughtChainApi;
     }
+    // v3.0 — 交流层模块初始化
+    try {
+      const utl = new (_UserToLLM().UserToLLM)();
+      const ltu = new (_LLMToUser().LLMToUser)();
+      const ic = new (_IntentClassifier().IntentClassifier)();
+      const ta = new (_ToneAnalyzer().ToneAnalyzer)();
+      const ee = new (_EntityExtractor().EntityExtractor)();
+      const ind = new (_ImplicitNeedDetector().ImplicitNeedDetector)();
+      const rc = new (_ResponseCompressor().ResponseCompressor)();
+      const ca = new (_ConfidenceAnnotator().ConfidenceAnnotator)();
+      this.translator = {
+        userToLLM: (input, ctx) => utl.translate(input, ctx),
+        llmToUser: (output, ctx) => ltu.translate(output, ctx),
+        intentClassifier: (input, ctx) => ic.classify(input, ctx),
+        toneAnalyzer: (input, ctx) => ta.analyze(input, ctx),
+        entityExtractor: (input) => ee.extract(input),
+        implicitNeedDetector: (input, ctx) => ind.detect(input, ctx),
+        responseCompressor: (text, opts) => rc.compress(text, opts),
+        confidenceAnnotator: (translation, source) => ca.annotate(translation, source),
+        // 保留子模块引用
+        _userToLLM: utl, _llmToUser: ltu, _intentClassifier: ic,
+        _toneAnalyzer: ta, _entityExtractor: ee, _implicitNeedDetector: ind,
+        _responseCompressor: rc, _confidenceAnnotator: ca,
+      };
+    } catch (e) { this._initErrors.push({ module: 'translator', error: e.message }); }
+    try {
+      const ab = new (_AgentBridge().AgentBridge)({ heartflow: this });
+      const cb = new (_ContextBuilder().ContextBuilder)();
+      const ri = new (_ResponseInterceptor().ResponseInterceptor)();
+      const tp = new (_TranslationPipeline().TranslationPipeline)();
+      const qf = new (_QualityFilter().QualityFilter)();
+      const fs = new (_FollowupSuggester().FollowupSuggester)();
+      const cr = new (_ConflictResolver().ConflictResolver)();
+      const uh = new (_UncertaintyHandler().UncertaintyHandler)();
+      this.agentLayer = {
+        agentBridge: (input, opts) => ab.process(input, opts),
+        contextBuilder: (input, ut, hf, uc) => cb.build(input, ut, hf, uc),
+        responseInterceptor: (resp, hf, ut) => ri.intercept(resp, hf, ut),
+        translationPipeline: { runUser: (i, c) => tp.runUserPipeline(i, c), runLLM: (o, c) => tp.runLLMPipeline(o, c) },
+        qualityFilter: (text) => qf.filter(text),
+        followupSuggester: (hf, ut) => fs.suggest(hf, ut),
+        conflictResolver: (resp, hf) => cr.resolve(resp, hf),
+        uncertaintyHandler: (conf, ctx) => uh.handle(conf, ctx),
+        _agentBridge: ab, _contextBuilder: cb, _responseInterceptor: ri,
+        _translationPipeline: tp, _qualityFilter: qf, _followupSuggester: fs,
+        _conflictResolver: cr, _uncertaintyHandler: uh,
+      };
+    } catch (e) { this._initErrors.push({ module: 'agentLayer', error: e.message }); }
+    try {
+      const bi = new (_BridgeIdentity().BridgeIdentity)();
+      const ji = new (_JudgmentInjector().JudgmentInjector)();
+      const sd = new (_StanceDetector().StanceDetector)();
+      const ac = new (_AgentCommentary().AgentCommentary)();
+      const va = new (_ValueAligner().ValueAligner)();
+      const pt = new (_PersonalityTone().PersonalityTone)();
+      const mp = new (_MetaPosition().MetaPosition)();
+      this.personaCore = {
+        bridgeIdentity: () => bi.getIdentity(),
+        judgmentInjector: (hf, ut) => ji.inject(hf, ut),
+        stanceDetector: (input, hf) => sd.detect(input, hf),
+        agentCommentary: (hf, ut, ur) => ac.generate(hf, ut, ur),
+        valueAligner: (ctx) => va.check(ctx),
+        personalityTone: (text, ctx) => pt.apply(text, ctx),
+        metaPosition: () => mp.getDeclaration(),
+        _bridgeIdentity: bi, _judgmentInjector: ji, _stanceDetector: sd,
+        _agentCommentary: ac, _valueAligner: va, _personalityTone: pt, _metaPosition: mp,
+      };
+    } catch (e) { this._initErrors.push({ module: 'personaCore', error: e.message }); }
     this._registerModules();
     this.started = true;
   }
@@ -707,6 +800,8 @@ class HeartFlow {
       'ethics',
       // Transmission Layer — 知识传递
       'transmission',
+      // v3.0 — 交流层
+      'translator', 'agentLayer', 'personaCore',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -916,6 +1011,21 @@ class HeartFlow {
     'codeWriter.write', 'codeWriter.writePipeline', 'codeWriter.analyzeIntent', 'codeWriter.reviewCode', 'codeWriter.getStats',
     // adaptivePlanner.* — 自适应规划引擎
     'adaptivePlanner.plan', 'adaptivePlanner.adapt', 'adaptivePlanner.quickAdjust', 'adaptivePlanner.getStatus',
+    // translator — v3.0 语义翻译器
+    'translator.userToLLM', 'translator.llmToUser',
+    'translator.intentClassifier', 'translator.toneAnalyzer',
+    'translator.entityExtractor', 'translator.implicitNeedDetector',
+    'translator.responseCompressor', 'translator.confidenceAnnotator',
+    // agentLayer — v3.0 代理层
+    'agentLayer.agentBridge', 'agentLayer.contextBuilder',
+    'agentLayer.responseInterceptor', 'agentLayer.translationPipeline',
+    'agentLayer.qualityFilter', 'agentLayer.followupSuggester',
+    'agentLayer.conflictResolver', 'agentLayer.uncertaintyHandler',
+    // personaCore — v3.0 人格核心
+    'personaCore.bridgeIdentity', 'personaCore.judgmentInjector',
+    'personaCore.stanceDetector', 'personaCore.agentCommentary',
+    'personaCore.valueAligner', 'personaCore.personalityTone',
+    'personaCore.metaPosition',
   ]);
 
   /**
