@@ -1,3 +1,12 @@
+## [v3.0.0] - 2026-06-16
+### Added
+- **交流层架构** — 3模块23文件完整集成
+  - **translator/** (8模块): userToLLM, llmToUser, intentClassifier, toneAnalyzer, entityExtractor, implicitNeedDetector, responseCompressor, confidenceAnnotator
+  - **agent-layer/** (8模块): agentBridge, contextBuilder, responseInterceptor, translationPipeline, qualityFilter, followupSuggester, conflictResolver, uncertaintyHandler
+  - **persona-core/** (7模块): bridgeIdentity, stanceDetector, valueAligner, metaPosition, judgmentInjector, agentCommentary, personalityTone
+- **thinkAsBridge()** — 完整交流层顶层入口（翻译→判定→桥处理→人格注入→批注）
+- **MCP工具** — 新增3个: heartflow_translate, heartflow_agent_think, heartflow_bridge_status
+
 ## [v2.14.0] - 2026-06-15
 ### Added
 - **AI心理学 v2.0** — 新增 agent-psychology.js 三个AI认知维度：

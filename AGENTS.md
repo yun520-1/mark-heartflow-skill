@@ -52,7 +52,7 @@ HeartFlow runs as a persistent MCP server on port 8099, providing tools for:
 
 ## Version
 
-Current version: **2.10.1**
+Current version: **3.0.0**
 
 ## Repository
 
