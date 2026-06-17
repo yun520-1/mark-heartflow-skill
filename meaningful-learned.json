@@ -5,7 +5,7 @@
       "dream",
       "test"
     ],
-    "accessCount": 0,
+    "accessCount": 1,
     "lastAccessed": 1780710898871,
     "createdAt": 1780710898871
   },
@@ -14,7 +14,7 @@
     "tags": [
       "consolidated"
     ],
-    "accessCount": 0,
+    "accessCount": 1,
     "lastAccessed": 1780712929907,
     "createdAt": 1780712929907
   },
@@ -23,14 +23,14 @@
     "tags": [
       "test"
     ],
-    "accessCount": 1,
+    "accessCount": 2,
     "lastAccessed": 1781068796238,
     "createdAt": 1781068796238
   },
   "dispatch_test": {
     "value": "via_route",
     "tags": [],
-    "accessCount": 0,
+    "accessCount": 1,
     "lastAccessed": 1781068796242,
     "createdAt": 1781068796242
   }
