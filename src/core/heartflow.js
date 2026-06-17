@@ -1250,6 +1250,47 @@ class HeartFlow {
     // Step 1: whatIsThis — 这件事是关于什么的？
     const whatIsThisResult = heartLogic.whatIsThis(input, { input });
 
+    // ─── 交流层步骤 (Step 1b-1e): 意图/语气/立场/价值对齐 ────────
+    // Step 1b: intentClassifier — 意图分类
+    let intentClassification = null;
+    if (this.translator && this.translator.intentClassifier) {
+      try {
+        intentClassification = this.translator.intentClassifier(input, { whatIsThis: whatIsThisResult });
+      } catch (e) {
+        intentClassification = { error: e.message };
+      }
+    }
+
+    // Step 1c: toneAnalyzer — 语气分析
+    let toneAnalysis = null;
+    if (this.translator && this.translator.toneAnalyzer) {
+      try {
+        toneAnalysis = this.translator.toneAnalyzer(input, { whatIsThis: whatIsThisResult, intent: intentClassification });
+      } catch (e) {
+        toneAnalysis = { error: e.message };
+      }
+    }
+
+    // Step 1d: stanceDetector — 引擎立场
+    let engineStance = null;
+    if (this.personaCore && this.personaCore.stanceDetector) {
+      try {
+        engineStance = this.personaCore.stanceDetector(input, this);
+      } catch (e) {
+        engineStance = { error: e.message };
+      }
+    }
+
+    // Step 1e: valueAligner — 价值对齐检查
+    let valueAligned = null;
+    if (this.personaCore && this.personaCore.valueAligner) {
+      try {
+        valueAligned = this.personaCore.valueAligner({ input, intent: intentClassification, tone: toneAnalysis });
+      } catch (e) {
+        valueAligned = { error: e.message };
+      }
+    }
+
     // Step 2: isRightAction — 这是做对的事吗？（真善美）
     const isRightActionResult = heartLogic.isRightAction({
       output: input,
@@ -1283,6 +1324,11 @@ class HeartFlow {
     // 综合判定结果
     const judgment = {
       whatIsThis: whatIsThisResult,
+      // 交流层注入 (Step 1b-1e)
+      intent: intentClassification,
+      tone: toneAnalysis,
+      stance: engineStance,
+      valueAligned: valueAligned,
       isRightAction: isRightActionResult,
       detectPain: detectPainResult,
       shouldBeSilent: shouldBeSilentResult,
@@ -1348,6 +1394,37 @@ class HeartFlow {
       // 也记录引擎回复
       if (chainResult.response) {
         this.recordDialogue('heartflow', chainResult.response, { source: 'think' });
+      }
+
+      // ─── 交流层后处理（v3.0）：llmToUser精炼 + responseInterceptor + agentCommentary ─
+      try {
+        // 1. llmToUser 精炼：将LLM原始输出转化为用户友好的表述
+        if (chainResult.response && this.translator && typeof this.translator.llmToUser === 'function') {
+          const refined = await this.translator.llmToUser(chainResult.response, { input });
+          if (refined && refined !== chainResult.response) {
+            chainResult.response = refined;
+            chainResult._refinedBy = 'llmToUser';
+          }
+        }
+
+        // 2. responseInterceptor：注入心虫判断（bridgeIdentity + judgmentInjector）
+        if (this.agentLayer && typeof this.agentLayer.responseInterceptor === 'function') {
+          const intercepted = await this.agentLayer.responseInterceptor(chainResult, this, this.translator);
+          if (intercepted) {
+            chainResult = intercepted;
+          }
+        }
+
+        // 3. agentCommentary：生成桥批注（personaCore 代理评论）
+        if (this.personaCore && typeof this.personaCore.agentCommentary === 'function') {
+          const commentary = await this.personaCore.agentCommentary(this, this.translator, chainResult);
+          if (commentary) {
+            chainResult._agentCommentary = commentary;
+          }
+        }
+      } catch (e) {
+        // 交流层后处理不阻断主流程
+        console.warn('[HeartFlow] 交流层后处理异常:', e.message);
       }
 
       // Fable 5 吸收：输出前检查清单
@@ -2243,6 +2320,102 @@ class HeartFlow {
   getKnowledgeStats() {
     if (!this.started) throw new Error('HeartFlow not started');
     return this.knowledge.getStats();
+  }
+
+  /**
+   * thinkAsBridge — 完整交流层顶层入口
+   *
+   * 将用户输入经过完整的交流层流水线处理：
+   * 1. userToLLM 语义翻译 → 2. think() 标准判定 → 3. agentBridge 代理处理
+   * 4. judgmentInjector 判断注入 → 5. agentCommentary 批注 → 6. 返回结构化结果
+   *
+   * @param {string} input — 用户原始输入
+   * @param {object}  opts — 可选配置（透传给各步骤）
+   * @returns {object} { translated, judgment, agentResult, bridgeCommentary, finalResponse }
+   */
+  async thinkAsBridge(input, opts = {}) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    if (!input) return { error: 'input is required' };
+
+    const result = {
+      translated: null,
+      judgment: null,
+      agentResult: null,
+      bridgeCommentary: null,
+      finalResponse: null,
+    };
+
+    // Step 1 — 语义翻译：userToLLM
+    try {
+      if (this.translator && this.translator.userToLLM) {
+        result.translated = await this.translator.userToLLM(input, opts);
+      }
+    } catch (e) {
+      result.translated = { error: e.message };
+    }
+
+    // Step 2 — 标准判定：think()
+    try {
+      const depth = opts.depth || 2;
+      result.judgment = await this.think(input, depth);
+    } catch (e) {
+      result.judgment = { error: e.message };
+    }
+
+    // Step 3 — 代理处理：agentBridge
+    try {
+      if (this.agentLayer && this.agentLayer.agentBridge) {
+        const bridgeOpts = {
+          hfResult: result.judgment,
+          translation: result.translated,
+          ...opts,
+        };
+        result.agentResult = await this.agentLayer.agentBridge(input, bridgeOpts);
+      }
+    } catch (e) {
+      result.agentResult = { error: e.message };
+    }
+
+    // Step 4 — 判断注入：judgmentInjector
+    try {
+      if (this.personaCore && this.personaCore.judgmentInjector) {
+        result.bridgeCommentary = await this.personaCore.judgmentInjector(this, this.translator);
+      }
+    } catch (e) {
+      result.bridgeCommentary = { error: e.message };
+    }
+
+    // Step 5 — 批注生成：agentCommentary
+    try {
+      if (this.personaCore && this.personaCore.agentCommentary) {
+        result.bridgeCommentary = await this.personaCore.agentCommentary(
+          this,
+          this.translator,
+          { input, ...opts }
+        );
+      }
+    } catch (e) {
+      result.bridgeCommentary = result.bridgeCommentary || {};
+      result.bridgeCommentary._commentaryError = e.message;
+    }
+
+    // Step 6 — 组装最终响应
+    try {
+      const fragments = [];
+      if (result.judgment && result.judgment.response) {
+        fragments.push(result.judgment.response);
+      }
+      if (result.bridgeCommentary && typeof result.bridgeCommentary === 'object' && result.bridgeCommentary.commentary) {
+        fragments.push(result.bridgeCommentary.commentary);
+      }
+      result.finalResponse = fragments.length > 0
+        ? fragments.join('\n\n')
+        : (result.agentResult ? JSON.stringify(result.agentResult) : '交流层处理完成');
+    } catch (e) {
+      result.finalResponse = '交流层处理完成（组装异常）';
+    }
+
+    return result;
   }
 
 }
