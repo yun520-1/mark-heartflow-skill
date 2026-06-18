@@ -14,6 +14,7 @@
  * - 代码格式化（缩进、尾随空格、空行规范化）
  *
  * @module code-writer
+ * @permission execute_code — 生成可直接执行的代码，请谨慎使用
  */
 
 'use strict';

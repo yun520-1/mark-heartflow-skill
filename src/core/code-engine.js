@@ -3135,6 +3135,7 @@ class CodeEngine {
      * @returns {Object} 项目计划
      */
     planProject(name, req, lang) {
+        console.warn('[CodeEngine 安全警告] planProject() 是实验性功能，生成的项目结构仅供参考。请勿在生产环境中不加审查地直接使用。能力过宽可能生成不必要的文件/目录，请人工审核后按需裁剪。');
         lang = lang || 'javascript';
         const T = {
             javascript: { base: 'src', layers: { entry: 'index.js', routes: 'routes', controllers: 'controllers', services: 'services', models: 'models', middleware: 'middleware', utils: 'utils', config: 'config', db: 'db' }, ext: '.js' },
@@ -3199,6 +3200,8 @@ class CodeEngine {
     // ===========================================================================
     // 新增: RAG 知识库架构设计（基于真实工程落地经验）
     // 来源: RAG知识库发展到什么程度了？大模型知识库避坑与进阶指南
+    // ⚠️ 安全警告: 此功能（RAG系统架构设计）超出认知/哲学分析引擎的核心用途，
+    //   属于附加的咨询/架构建议能力。调用时请注意能力边界，不要误导调用方。
     // ===========================================================================
 
     /**

@@ -531,7 +531,7 @@ class AssociativeEngine {
   }
 
   /**
-   * 获取完整轨迹 (/flow trace)
+   * 获取完整轨迹 (/flow trace) — 已脱敏，去掉 userInput 敏感字段
    */
   getFullTrace() {
     if (!this.lastProcessing) {
@@ -541,8 +541,11 @@ class AssociativeEngine {
     const t = this.lastProcessing;
     
     return {
-      userInput: t.userInput,
-      validation: t.validation,
+      timestamp: t.timestamp,
+      validation: t.validation ? {
+        issues: t.validation.issues,
+        status: t.validation.status
+      } : null,
       degraded: t.degraded,
       coherence: t.coherence ? {
         overallScore: t.coherence.overallScore,
@@ -551,7 +554,7 @@ class AssociativeEngine {
         issues: t.coherence.allIssues.slice(0, 10)
       } : null,
       L1_associations: {
-        words: t.layers.L1.words,
+        wordCount: t.layers.L1.words?.length || 0,
         sample: t.layers.L1.allAssociations?.slice(0, 5) || [],
         status: t.layers.L1Status
       },
@@ -584,12 +587,72 @@ class AssociativeEngine {
     };
   }
 
+  /**
+   * 获取最近处理记录（已脱敏，最多返回最近3条，去掉 userInput）
+   */
   getLastProcessing() {
-    return this.lastProcessing;
+    if (!this.processingLog || this.processingLog.length === 0) {
+      return [];
+    }
+    return this.processingLog.slice(-3).map(entry => ({
+      timestamp: entry.timestamp,
+      validation: entry.validation,
+      degraded: entry.degraded,
+      coherence: entry.coherence ? {
+        overallScore: entry.coherence.overallScore,
+        overallCoherent: entry.coherence.overallCoherent,
+        issueCount: entry.coherence.allIssues.length,
+        issues: entry.coherence.allIssues.slice(0, 10)
+      } : null,
+      L1_associations: {
+        wordCount: entry.layers.L1.words?.length || 0,
+        sample: entry.layers.L1.allAssociations?.slice(0, 5) || [],
+        status: entry.layers.L1Status
+      },
+      L2_chunks: {
+        detected: entry.layers.L2.chunks?.length || 0,
+        items: entry.layers.L2.chunks || [],
+        status: entry.layers.L2Status
+      },
+      L3_narrative: {
+        matched: entry.layers.L3.matchedPrototype?.name || '无匹配',
+        confidence: entry.layers.L3.confidence,
+        alternatives: entry.layers.L3.alternativeMatches,
+        status: entry.layers.L3Status
+      },
+      L4_convergence: {
+        coreConcepts: entry.layers.L4.thoughtVector?.activatedConcepts?.slice(0, 5) || [],
+        idioms: entry.layers.L4.activatedIdioms || [],
+        matchedStory: entry.layers.L4.matchedNarrative,
+        understoodIntent: entry.layers.L4.understoodIntent,
+        emotionVector: entry.layers.L4.thoughtVector?.emotion,
+        status: entry.layers.L4Status
+      },
+      L5_generation: {
+        response: entry.layers.L5.response,
+        wordCount: entry.layers.L5.wordCount,
+        trace: entry.layers.L5.trace?.slice(0, 20) || [],
+        status: entry.layers.L5Status
+      },
+      processingTime: entry.totalTime
+    }));
   }
 
+  /**
+   * 获取最近处理日志（已脱敏，去掉 userInput，最多最近10条）
+   */
   getProcessingLog() {
-    return this.processingLog.slice(-10);
+    return this.processingLog.slice(-10).map(entry => ({
+      timestamp: entry.timestamp,
+      validation: entry.validation,
+      degraded: entry.degraded,
+      processingTime: entry.totalTime,
+      L1Status: entry.layers.L1Status,
+      L2Status: entry.layers.L2Status,
+      L3Status: entry.layers.L3Status,
+      L4Status: entry.layers.L4Status,
+      L5Status: entry.layers.L5Status
+    }));
   }
 
   /**

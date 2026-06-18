@@ -7,16 +7,30 @@
   python3 scripts/download-model.py
   
 模型将下载到: src/core/search/models/ 目录
+
+⚠️ 安全说明（完整性校验）：
+   本脚本从远程源（ModelScope）下载模型文件，未自动验证文件完整性。
+   下载完成后脚本会自动计算并打印每个文件的 SHA256 哈希值，
+   请手动与官方发布值比对，确保文件未被篡改。
 """
 
 import os
 import sys
 import json
 import shutil
+import hashlib
 
 MODEL_NAME = 'sentence-transformers/all-MiniLM-L6-v2'
 TARGET_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
                           '..', 'src', 'core', 'search', 'models', 'all-MiniLM-L6-v2')
+
+def compute_sha256(filepath):
+    """计算文件的 SHA256 哈希值"""
+    sha256_hash = hashlib.sha256()
+    with open(filepath, 'rb') as f:
+        for byte_block in iter(lambda: f.read(8192), b''):
+            sha256_hash.update(byte_block)
+    return sha256_hash.hexdigest()
 
 def download_from_modelscope():
     """从 ModelScope 下载模型"""
@@ -35,6 +49,13 @@ def download_from_modelscope():
             size = os.path.getsize(full)
             files.append((rel, size))
             print(f'  {rel} ({size/1024/1024:.1f}MB)' if size > 1024*1024 else f'  {rel}')
+    
+    # 计算并打印所有文件的 SHA256 哈希值
+    print(f'\n[download-model] 🔐 文件完整性校验 (SHA256):')
+    for rel, _ in sorted(files, key=lambda x: x[0]):
+        full_path = os.path.join(model_dir, rel)
+        sha256 = compute_sha256(full_path)
+        print(f'  {sha256}  {rel}')
     
     return model_dir
 
@@ -96,6 +117,14 @@ def convert_to_onnx(model_dir, target_dir):
     for f in os.listdir(target_dir):
         fp = os.path.join(target_dir, f)
         print(f'  {f} ({os.path.getsize(fp)/1024/1024:.1f}MB)' if os.path.getsize(fp) > 1024*1024 else f'  {f}')
+    
+    # 计算并打印目标目录文件的 SHA256 哈希值
+    print(f'\n[download-model] 🔐 目标文件完整性校验 (SHA256):')
+    for f in sorted(os.listdir(target_dir)):
+        fp = os.path.join(target_dir, f)
+        if os.path.isfile(fp):
+            sha256 = compute_sha256(fp)
+            print(f'  {sha256}  {f}')
 
 def main():
     print(f'[download-model] 目标目录: {TARGET_DIR}')
