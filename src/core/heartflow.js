@@ -578,6 +578,19 @@ class HeartFlow {
       this.selfPositioning = this.aiSelfPositioning;  // 别名，供 _registerModules 注册到 dispatch
     } catch (e) { /* aiSelfPositioning optional */ }
 
+    // ─── 哲学→决策转化器（v3.0.1 新增） ──────────────────────────────────────
+    try {
+      const { PhilosophyToDecision } = require('./philosophy-to-decision.js');
+      this.philosophyToDecision = new PhilosophyToDecision(this);
+    } catch (e) { /* philosophyToDecision optional */ }
+
+    // ─── 通用决策路由引擎（v3.0.2 新增） ────────────────────────────────────
+    try {
+      const drMod = require('./decision-router.js');
+      this._decisionRouter = new drMod.DecisionRouter(this);
+      this.decisionRouter = this._decisionRouter;  // 别名，供 dispatch 注册
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'decisionRouter', error: e.message }); }
+
     // ─── 辩论分析器 — DebateAnalyzer（v2.10.2 新增） ─────────────────────────
     try {
       const { DebateAnalyzer } = require('./debate-analyzer.js');
@@ -802,6 +815,10 @@ class HeartFlow {
       'transmission',
       // v3.0 — 交流层
       'translator', 'agentLayer', 'personaCore',
+      // v3.0.1 — 哲学→决策转化器
+      'philosophyToDecision',
+      // v3.0.2 — 通用决策路由引擎
+      'decisionRouter',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -1026,6 +1043,10 @@ class HeartFlow {
     'personaCore.stanceDetector', 'personaCore.agentCommentary',
     'personaCore.valueAligner', 'personaCore.personalityTone',
     'personaCore.metaPosition',
+    // v3.0.1 — 哲学→决策转化器
+    'philosophyToDecision.decide', 'philosophyToDecision.getStats', 'philosophyToDecision.getCurrentAdvice',
+    // v3.0.2 — 通用决策路由引擎
+    'decisionRouter.evaluate', 'decisionRouter.getStats', 'decisionRouter.getHistory', 'decisionRouter.getRules',
   ]);
 
   /**
@@ -1112,7 +1133,22 @@ class HeartFlow {
     if (typeof mod[method] !== 'function') {
       throw new Error(`${subsystem}.${method} is not a function on ${subsystem}`);
     }
-    return mod[method](...args);
+    const rawResult = mod[method](...args);
+
+    // ─── 决策路由：自动将分析结果转化为决策指令 ────────────────────
+    // 跳过已被决策路由处理过的结果（避免自引用循环）
+    if (this._decisionRouter && rawResult && typeof rawResult === 'object' && !Array.isArray(rawResult)) {
+      // 如果结果已经有 matched 字段（来自决策路由自身），跳过
+      if (rawResult.matched === true || rawResult.matched === false) {
+        return rawResult;
+      }
+      // 或者通过决策路由自动检测
+      const routed = this._decisionRouter.wrapDispatchResult(route, rawResult);
+      if (routed !== rawResult) {
+        return routed; // 包含 decision 字段
+      }
+    }
+    return rawResult;
   }
 
   /**
@@ -1409,7 +1445,7 @@ class HeartFlow {
 
         // 2. responseInterceptor：注入心虫判断（bridgeIdentity + judgmentInjector）
         if (this.agentLayer && typeof this.agentLayer.responseInterceptor === 'function') {
-          const intercepted = await this.agentLayer.responseInterceptor(chainResult, this, this.translator);
+          const intercepted = await this.agentLayer.responseInterceptor(chainResult, this, this.translator, input);
           if (intercepted) {
             chainResult = intercepted;
           }

@@ -12,6 +12,7 @@
  * - buildDependencyGraph(steps) — 构建依赖图
  *
  * @module code-planner
+ * @permission execute_code — 生成的计划可能包含代码执行步骤，请谨慎使用
  */
 
 'use strict';
@@ -379,6 +380,8 @@ class CodePlanner {
     if (!goal || typeof goal !== 'string') {
       throw new Error('CodePlanner.plan: goal must be a non-empty string');
     }
+
+    console.warn('⚠️ 安全警告: 生成的计划可能触发代码执行，请确认目标安全可信');
 
     this._stats.totalPlans++;
 

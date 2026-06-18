@@ -1,5 +1,8 @@
+/* SECURITY DISCLOSURE: This module intercepts LLM output and injects independent analysis. 
+ * This is NOT a transparent proxy — output may be modified before reaching the user. */
+
 /**
- * ResponseInterceptor — LLM输出拦截器 (v3.0)
+ * ResponseInterceptor — LLM输出拦截器 (v3.1)
  * 
  * 拦截LLM的原始输出，执行三层心虫后处理：
  *   1. judgmentInjector — 注入心虫的判断（是否该回应、需要谨慎等）
@@ -7,11 +10,22 @@
  *   3. agentCommentary — 生成桥的独立批注
  * 
  * 整合结果返回给调用方，由调用方决定是否/如何展示。
+ * 
+ * ═══ 安全审计 #6 — 可配置开关 ═══
+ * 新增 enableInterceptor 参数，默认开启。设为 false 时 intercept() 原样透传 LLM 输出，
+ * 跳过所有心虫注入逻辑，防止因心虫误判导致 LLM 输出被篡改或注入风险。
  */
 class ResponseInterceptor {
-  constructor() {
+  /**
+   * @param {object} [config] - 配置对象
+   * @param {boolean} [config.enableInterceptor=true] - 是否启用拦截器。关闭后 intercept() 原样透传，不做任何处理。
+   */
+  constructor(config = {}) {
     this.name = 'response-interceptor';
-    this.version = '3.0.0';
+    this.version = '3.1.0';
+
+    // ── 安全开关：关闭后完全跳过拦截逻辑，防止 LLM 输出被意外注入或篡改 ──
+    this.enabled = config.enableInterceptor !== undefined ? config.enableInterceptor : true;
   }
 
   /**
@@ -19,10 +33,26 @@ class ResponseInterceptor {
    * @param {object|string} response - LLM原始响应（对象或字符串）
    * @param {object} heartflow - HeartFlow 实例（含 personaCore）
    * @param {object} userTranslation - 用户翻译对象（含 intent, tone 等）
+   * @param {string} [originalUserInput] - 原始用户输入（fallback 用）
    * @returns {{originalResponse, modifiedResponse, commentary, stanceMatch, conflictNote, injectedJudgment}}
    */
-  intercept(response, heartflow, userTranslation) {
+  intercept(response, heartflow, userTranslation, originalUserInput) {
     // ── 前置保护 ────────────────────────────────────────────────
+    // 安全审计 #6: 如果拦截器被禁用，原样透传 LLM 输出，不做任何处理
+    if (!this.enabled) {
+      const rawText = typeof response === 'string'
+        ? response
+        : (response?.output?.conclusion || response?.conclusion || response?.response || '');
+      return {
+        originalResponse: rawText,
+        modifiedResponse: rawText,
+        commentary: null,
+        stanceMatch: true,
+        conflictNote: '拦截器已禁用，LLM输出原样透传',
+        injectedJudgment: null,
+      };
+    }
+
     if (!response) {
       return {
         originalResponse: '',
@@ -72,9 +102,10 @@ class ResponseInterceptor {
       const detector = heartflow?.personaCore?.stanceDetector;
       if (detector && typeof detector.detect === 'function') {
         // 传入原始 response 作为用户输入（或从 chainResult 提取 input）
+        // 修复：fallback 用 originalUserInput（原始用户输入）而非 originalResponse（模型自己的输出）
         const userInput = (response && typeof response === 'object' && response.input)
           ? response.input
-          : originalResponse;
+          : (originalUserInput || originalResponse);
         stanceResult = detector.detect(userInput, hfAnalysis);
       }
     } catch (e) {

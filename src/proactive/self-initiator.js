@@ -1,7 +1,7 @@
 /**
  * 自主发起者 (Self Initiator) v2.0.0
  *
- * 升级：从"发起者"升级为"迷你Agent"——不仅能决定做什么，
+ * 升级：从"发起者"升级为"辅助执行器"——不仅能决定做什么，
  * 还能直接编写代码、执行脚本、调用工具，代替Agent运行。
  *
  * 核心能力：
@@ -16,6 +16,8 @@
  * - 沙箱模式默认启用
  * - 执行超时保护
  * - 错误隔离（单步失败不阻断管道）
+ *
+ * @permission execute_code — 代码执行与脚本运行能力，请谨慎使用
  */
 
 const { GoalPursuer } = require('./goal-pursuer.js');
@@ -75,7 +77,7 @@ const DEFAULTS = {
 };
 
 // ============================================================================
-// SelfInitiator v2.0 — 迷你 Agent 引擎
+// SelfInitiator v2.0 — 辅助执行器
 // ============================================================================
 
 class SelfInitiator {
@@ -252,6 +254,8 @@ class SelfInitiator {
    */
   async _runCodeTask(task) {
     task.state = TASK_STATE.RUNNING;
+
+    console.warn('⚠️ 安全警告: 执行用户提供的代码可能带来安全风险');
 
     try {
       // Step 1: 验证代码

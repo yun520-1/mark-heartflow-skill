@@ -126,6 +126,7 @@ The `status` endpoint now includes `selfPositioning` field reflecting the curren
 - ⚠️ Network communication: OpenAlex API for academic fact-checking (user-initiated only)
 - ✅ No automatic package installation
 - ✅ No browser/desktop automation
+- ⚠️ **Contains code execution capability (JavaScript/Shell/Python via `code-executor.js`) — use with caution, enable only when needed**
 
 ---
 
@@ -188,6 +189,8 @@ node scripts/heartflow-memory-tool.js write <key> <value>
 | Self Model | `src/core/self-model.js` | Identity drift detection |
 | Verification Engine | `src/core/verification-engine.js` | Multi-signal verification |
 | Fact Checker | `src/core/fact-checker.js` | Academic claim verification |
+| Code Executor | `src/core/code/code-executor.js` | JavaScript/Shell/Python code execution (30s timeout, output truncation, sandbox) |
+| Code Engine | `src/core/code/code-engine.js` | Code analysis, review, and security audit |
 
 ---
 

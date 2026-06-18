@@ -1,3 +1,6 @@
+/* SECURITY DISCLOSURE: This module intercepts LLM output and injects independent analysis. 
+ * This is NOT a transparent proxy — output may be modified before reaching the user. */
+
 /**
  * TranslationPipeline — 翻译流程编排器（v2.0）
  * 编排整个翻译流程：用户→LLM→用户的完整流水线。

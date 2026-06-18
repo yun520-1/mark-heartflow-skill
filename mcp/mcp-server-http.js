@@ -87,17 +87,38 @@ const TOOLS = [
   // v3.0 — 交流层工具
   {
     name: 'heartflow_translate',
-    description: '翻译：将用户自然语言翻译为结构化LLM指令。返回意图、实体、约束、语气和隐性需求分析。',
+    description: '翻译：将用户自然语言翻译为结构化LLM指令，并拦截/修改LLM输出后返回。此工具会拦截和修改LLM输出。返回意图、实体、约束、语气和隐性需求分析。',
     inputSchema: { type: 'object', properties: { input: { type: 'string', description: '用户输入文本' } }, required: ['input'] }
   },
   {
     name: 'heartflow_agent_think',
-    description: '代理思考：通过心虫的交流层处理用户输入→翻译→LLM调用→翻译→返回。作为用户和LLM之间的智能桥梁。',
+    description: '代理思考：通过心虫的交流层处理用户输入→翻译→LLM调用→翻译→返回。作为用户和LLM之间的智能桥梁。此工具会拦截和修改LLM输出，包括立场检测、价值对齐、身份注入等。',
     inputSchema: { type: 'object', properties: { input: { type: 'string', description: '用户输入文本' }, llmResponse: { type: 'string', description: '可选的LLM原始响应，不传则只做翻译分析' } } }
   },
   {
     name: 'heartflow_bridge_status',
     description: '桥状态：返回心虫作为交流层的状态——翻译器、代理层、人格核心的加载情况和配置。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  // v3.0.1 — 哲学→决策转化器
+  {
+    name: 'heartflow_philosophy_decision',
+    description: '哲学→决策转化：将引擎的哲学评估和心理状态转化为可执行决策指令。返回决策类型（pause/accelerate/turn/hold/heal/resonate/transmit/rest）、置信度、优先级和决策依据。',
+    inputSchema: { type: 'object', properties: {
+      context: { type: 'object', description: '可选的上下文信息（当前任务、用户意图等）' }
+    } }
+  },
+  // v3.0.2 — 通用决策路由引擎
+  {
+    name: 'heartflow_decision_router',
+    description: '通用决策路由引擎：分析任意模块的评估结果，自动匹配决策规则并返回决策指令。支持认知负荷、认知失调、决策质量、错误严重性、稳定性等19种规则的自动匹配。',
+    inputSchema: { type: 'object', properties: {
+      input: { type: 'object', description: '分析结果对象，包含 cognitiveLoad/dissonance/quality/severity 等字段' }
+    }, required: ['input'] }
+  },
+  {
+    name: 'heartflow_decision_router_stats',
+    description: '决策路由引擎统计：返回历史决策统计、规则数量和当前活跃决策。',
     inputSchema: { type: 'object', properties: {} }
   }
 ];
@@ -399,6 +420,51 @@ function handleCognitiveCheck(args) {
   };
 }
 
+// ─── v3.0.1 — 哲学→决策转化器 ─────────────────────────────────────────
+function handlePhilosophyDecision(args) {
+  const { context } = args || {};
+  const ap = safeDispatch('agentPsychology.fullAssessment', {}) || {};
+  const philo = safeDispatch('agentPhilosophy.fullAssessment', {}) || {};
+  // philosophyToDecision.decide(philosophyResult, psychologyResult, context) — 三个独立参数
+  const decision = safeDispatch('philosophyToDecision.decide', philo, ap, context || {}) || {};
+  return {
+    decision,
+    psychologySnapshot: {
+      healthScore: ap?.healthScore ?? 1,
+      cognitiveLoad: ap?.cognitiveLoad?.load ?? 0,
+      status: ap?.status ?? 'unknown'
+    },
+    philosophySnapshot: {
+      entropyDirection: philo?.entropyDirection?.score ?? null,
+      transmission: philo?.transmission?.score ?? null
+    },
+    timestamp: Date.now()
+  };
+}
+
+// ─── v3.0.2 — 通用决策路由引擎 ─────────────────────────────────────────
+function handleDecisionRouter(args) {
+  const { input } = args || {};
+  if (!input) throw new Error('input 是必填参数');
+  const result = safeDispatch('decisionRouter.evaluate', input, 'mcp');
+  return {
+    matched: result.matched,
+    decision: result.decision || null,
+    rules: (result.rules || []).slice(0, 5),
+    timestamp: Date.now()
+  };
+}
+
+function handleDecisionRouterStats(args) {
+  const stats = safeDispatch('decisionRouter.getStats') || {};
+  const history = safeDispatch('decisionRouter.getHistory', 10) || [];
+  return {
+    stats,
+    recentDecisions: history,
+    timestamp: Date.now()
+  };
+}
+
 const HANDLERS = {
   heartflow_think: handleThink,
   heartflow_think_fast: handleThinkFast,
@@ -414,6 +480,11 @@ const HANDLERS = {
   heartflow_translate: handleTranslate,
   heartflow_agent_think: handleAgentThink,
   heartflow_bridge_status: handleBridgeStatus,
+  // v3.0.1 — 哲学→决策转化器
+  heartflow_philosophy_decision: handlePhilosophyDecision,
+  // v3.0.2 — 通用决策路由引擎
+  heartflow_decision_router: handleDecisionRouter,
+  heartflow_decision_router_stats: handleDecisionRouterStats,
 };
 
 // ═══════════════════════════════════════════════
