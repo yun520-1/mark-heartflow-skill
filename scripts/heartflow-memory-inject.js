@@ -97,17 +97,20 @@ function main() {
 
   const output = lines.join('\n');
 
-  // 4. 更新 LEARNED 层注入条目的 lastAccessed 时间戳
-  // [安全审计修复] 仅在 HEARTFLOW_DEBUG 启用时更新 lastAccessed，避免非必要的副作用
-  const allInjected = [...lessonCores, ...prefCores, ...lessons, ...preferences, ...pains, ...techOps];
-  for (const entry of allInjected) {
-    if (entry.key && hfm.learned[entry.key]) {
-      hfm.learned[entry.key].lastAccessed = Date.now();
+  // 4. 更新 LEARNED 层注入条目的 lastAccessed 时间戳（仅调试模式）
+  // [安全审计修复] 仅在 HEARTFLOW_DEBUG 环境变量存在时才更新 lastAccessed，
+  // 避免每次读取记忆都产生写持久状态的副作用，保持"只读注入"的语义。
+  if (process.env.HEARTFLOW_DEBUG) {
+    const allInjected = [...lessonCores, ...prefCores, ...lessons, ...preferences, ...pains, ...techOps];
+    for (const entry of allInjected) {
+      if (entry.key && hfm.learned[entry.key]) {
+        hfm.learned[entry.key].lastAccessed = Date.now();
+      }
     }
-  }
-  // 保存更新后的 learned 层
-  if (allInjected.length > 0 && hfm.learned) {
-    hfm._saveJson(hfm.learnedPath, hfm.learned);
+    // 保存更新后的 learned 层
+    if (allInjected.length > 0 && hfm.learned) {
+      hfm._saveJson(hfm.learnedPath, hfm.learned);
+    }
   }
 
   // 输出到 stdout（供 AGENTS.md / Hermes 引用）

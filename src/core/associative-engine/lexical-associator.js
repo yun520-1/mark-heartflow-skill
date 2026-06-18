@@ -236,7 +236,7 @@ class LexicalAssociator {
     
     for (const word of words) {
       if (word.length > 1) {
-        const result = this.associateWord(word, context);
+        const result = this.getAssociations(word, context);
         allAssociations.push(...result.associations);
         wordFrequencies[word] = (wordFrequencies[word] || 0) + 1;
       }
@@ -267,7 +267,7 @@ class LexicalAssociator {
     const perWordAssoc = {};
     for (const word of words) {
       if (word.length > 1) {
-        perWordAssoc[word] = this.associateWord(word, context).associations.map(a => a.word);
+        perWordAssoc[word] = this.getAssociations(word, context).associations.map(a => a.word);
       }
     }
     

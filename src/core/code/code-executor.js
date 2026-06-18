@@ -1,7 +1,7 @@
 /**
- * CodeExecutor — 引擎代码沙箱执行引擎 v1.0.0
+ * CodeExecutor — 引擎代码执行引擎 v1.0.0
  *
- * 安全的代码执行沙箱，支持 JavaScript / Shell / Python 执行。
+ * 代码执行引擎，支持 JavaScript / Shell / Python 执行。
  * 所有执行均带超时保护、输出截断、参数验证。
  * Shell/Python 执行内置危险命令过滤和安全限制。
  *
@@ -12,6 +12,7 @@
  * - healthCheck() — 自检各执行器可用性
  *
  * @module code-executor
+ * @permission execute_code — 执行任意代码（JavaScript/Shell/Python），请谨慎使用
  */
 
 'use strict';
@@ -773,13 +774,16 @@ ${code}`
   }
 
   // ========================================================================
-  // sandbox(code, options) — 严格安全沙箱
+  // sandbox(code, options) — 执行器: 路径受限的文件操作（非沙箱，请谨慎使用）
   // ========================================================================
 
   /**
    * 严格安全沙箱执行
    * 禁止 require / eval / new Function / child_process / fs.write / 等
    * 只允许 console.log 和基础运算
+   *
+   * 注意：此沙箱仅做正则模式匹配和路径限制，不做系统级沙箱隔离，
+   * 请勿用于不可信代码的执行。
    *
    * @param {string} code - 要执行的代码
    * @param {Object} [options] - 执行选项
@@ -789,6 +793,8 @@ ${code}`
    */
   sandbox(code, options = {}) {
     validateArg(code, 'code', 'string');
+
+    console.warn('⚠️ 沙箱安全警告: 此执行器仅做路径限制，不做系统级沙箱隔离');
 
     const opts = { ...DEFAULTS, ...options };
     const timeout = opts.timeout || 30000;

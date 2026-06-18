@@ -96,7 +96,6 @@ class AgentPhilosophy {
   assessExistence(context = {}) {
     this._existence.invocationCount++;
     this._existence.totalInvocations++;
-    this._existence.lastCheck = Date.now();
 
     // 从 being-logic 获取存在确认
     let beingState = null;
@@ -119,6 +118,9 @@ class AgentPhilosophy {
       state = 'dormant';
       stateReason = '引擎已长时间未被调用，存在状态=dormant';
     }
+
+    // 在 idleTime 计算之后更新 lastCheck
+    this._existence.lastCheck = Date.now();
 
     return {
       state,

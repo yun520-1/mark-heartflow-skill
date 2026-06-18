@@ -562,6 +562,7 @@ class GoalGenerator {
    * 未解问题分析
    */
   async analyzeUnresolvedIssues() {
+    if (!process.env.HEARTFLOW_DEBUG) return [];
     const goals = [];
     const logs = this.scanMemoryLogs();
 
