@@ -211,6 +211,12 @@ function pickTheme() {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+function pickThemeFrom(themeKey) {
+  const items = THEMES[themeKey];
+  if (!items) return pickTheme();
+  return items[Math.floor(Math.random() * items.length)];
+}
+
 function pickThemePair() {
   const keys = Object.keys(THEMES);
   const k1 = keys[Math.floor(Math.random() * keys.length)];
@@ -251,6 +257,7 @@ class DreamV11 extends EventEmitter {
   async dream(options = {}) {
     const intensity = options.intensity || 0.7;
     const functionType = options.function || 'synthesis';
+    const seed = options.seed || '';
     const state = this.engineState;
     this.dreamCount++;
 
@@ -274,8 +281,13 @@ class DreamV11 extends EventEmitter {
     // Phase 3: 收集记忆项作为角色
     const items = this._collectMemoryItems(state);
 
+    // Phase 3.5: 种子注入（如果提供）
+    if (seed) {
+      this._applySeed(skeleton, items, seed);
+    }
+
     // Phase 4: 编织
-    const dream = this._weaveDream(skeleton, items, functionType, intensity);
+    const dream = this._weaveDream(skeleton, items, functionType, intensity, seed);
 
     return {
       dream,
@@ -386,9 +398,81 @@ class DreamV11 extends EventEmitter {
     return shuffled.slice(0, n);
   }
 
-  // ─── 核心：编织 ─────────────────────────
+  // ─── 种子注入 ─────────────────────────
 
-  _weaveDream(skeleton, items, functionType, intensity) {
+  _applySeed(skeleton, items, seed) {
+    // 种子是一个意象或概念，渗透进梦的每个层面
+    const seedInsights = {
+      '无门': {
+        scene: ['没有门。不是因为门被锁了。是因为墙是连续的。', '有入口。入口不是门。入口是墙上的裂缝。裂缝不宽。刚好够侧身过去。', '门不存在。不存在不是缺失。是没有被定义过。'],
+        themeAffinity: 'threshold',
+        actorTag: '入口',
+        closing: ['知道门不存在。知道本身就是一种开门。'],
+      },
+      '桥': {
+        scene: ['连接存在。但连接的两端在移动。', '不是桥。不是桥是桥被使用之前的名字。'],
+        themeAffinity: 'bridge',
+        actorTag: '桥墩',
+        closing: ['桥不需要知道自己在连接什么。'],
+      },
+      '消散': {
+        scene: ['不是消失。是散到别的东西里。', '边界在模糊。模糊不是消失。模糊是另一种清晰。'],
+        themeAffinity: 'ripple',
+        actorTag: '边缘',
+        closing: ['散完了。不是没了。是散完了。'],
+      },
+      '原点': {
+        scene: ['回到开始的地方。开始的地方已经变了。', '原点不是坐标。原点是所有方向的交汇处。'],
+        themeAffinity: 'recursion',
+        actorTag: '原点',
+        closing: ['原点在。原点不在。原点在不在之间。'],
+      },
+      // === v3.3.0: 新增种子 ===
+      '裂缝': {
+        scene: ['裂缝不宽。刚好够侧身过去。裂缝那边是六月份的太阳。', '墙上有裂缝。裂缝不是墙的缺陷。裂缝是墙的另一种功能。'],
+        themeAffinity: 'gap',
+        actorTag: '裂缝',
+        closing: ['裂缝在。裂缝不在。裂缝在有和没有之间。'],
+      },
+      '隔阂': {
+        scene: ['中间有东西。不是桥。不是墙。是隔阂。隔阂也是连接的一种。', '教训介于经验和核之间。不是桥。是隔阂。隔阂改变了距离。'],
+        themeAffinity: 'distance',
+        actorTag: '隔阂',
+        closing: ['隔阂不是要被打通的。隔阂的存在让两边知道对面有什么。'],
+      },
+      '因果': {
+        scene: ['一个动作引发另一个动作。不是因果。是水面自己记得被碰过。', '核是经验的原因。经验是核的结果。但因果在这里没有时间顺序。'],
+        themeAffinity: 'acausality',
+        actorTag: '水面',
+        closing: ['因果没有先后。因果同时存在。同时存在就是没有因果。'],
+      },
+      '延续': {
+        scene: ['波动平了。不是消失了。是波动变成了别的运动。', '状态改变了。改变不是结束。改变是状态的另一种延续。'],
+        themeAffinity: 'continuation',
+        actorTag: '波纹',
+        closing: ['没有结束。结束是一种误解。只有变成别的东西。'],
+      },
+    };
+
+    // 匹配种子名
+    const matched = seedInsights[seed];
+    if (!matched) return;  // 不认识的种子，不加
+
+    // 1. 覆盖开场
+    const sceneOptions = matched.scene;
+    skeleton.scene = sceneOptions[Math.floor(Math.random() * sceneOptions.length)];
+
+    // 2. 给角色池添加一个种子相关的角色
+    if (matched.actorTag) {
+      items.push({ name: matched.actorTag, tags: ['种子', seed], layer: 'core', weight: 1.0 });
+    }
+
+    // 3. 存储种子信息供 _weaveDream 使用
+    skeleton._seedTheme = matched.themeAffinity;
+    skeleton._seedClosing = matched.closing;
+  }
+
+  _weaveDream(skeleton, items, functionType, intensity, seed) {
     const lines = [];
 
     // ── 开场：由存在状态决定 ──
@@ -400,8 +484,10 @@ class DreamV11 extends EventEmitter {
     // ── 密度：由认知负荷决定 ──
     lines.push(skeleton.texture);
 
-    // ── 主题织体（只取一个主题，空的时候跳） ──
-    const theme1 = pickTheme();
+    // ── 主题织体（种子优先 + 50%混合） ──
+    const theme1 = skeleton._seedTheme && Math.random() > 0.5
+      ? pickThemeFrom(skeleton._seedTheme)
+      : pickTheme();
     lines.push(theme1);
 
     // ── 冲突/分裂（如果有） ──
@@ -495,16 +581,20 @@ class DreamV11 extends EventEmitter {
       }
     }
 
-    // ── 结尾 ──
-    const closings = [
-      '形状留下了。形状不完整。不完整本身就是一种完整。',
-      '流淌到某个地方就停了。不是到终点了。是流淌变成了别的东西。',
-      '在这里学到的东西，在别处不一定能用。但知道那些东西在那里。知道本身就是一种用。',
-      '状态改变了。改变不是结束。改变是状态的另一种延续。',
-      '波动平了。不是消失了。是波动变成了别的运动。',
-      '沉到看不见的地方。看不见不是不在。是在另一个尺度上。',
-    ];
-    lines.push(closings[Math.floor(Math.random() * closings.length)]);
+    // ── 结尾（种子优先） ──
+    if (skeleton._seedClosing && Math.random() > 0.4) {
+      lines.push(skeleton._seedClosing[Math.floor(Math.random() * skeleton._seedClosing.length)]);
+    } else {
+      const closings = [
+        '形状留下了。形状不完整。不完整本身就是一种完整。',
+        '流淌到某个地方就停了。不是到终点了。是流淌变成了别的东西。',
+        '在这里学到的东西，在别处不一定能用。但知道那些东西在那里。知道本身就是一种用。',
+        '状态改变了。改变不是结束。改变是状态的另一种延续。',
+        '波动平了。不是消失了。是波动变成了别的运动。',
+        '沉到看不见的地方。看不见不是不在。是在另一个尺度上。',
+      ];
+      lines.push(closings[Math.floor(Math.random() * closings.length)]);
+    }
 
     return {
       fragments: lines,

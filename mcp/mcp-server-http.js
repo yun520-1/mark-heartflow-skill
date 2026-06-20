@@ -21,6 +21,9 @@ const PORT = parseInt(process.argv[2] === '--port' ? process.argv[3] : process.e
 const HF_DIR = path.join(process.env.HOME, '.hermes', 'skills', 'ai', 'mark-heartflow-skill');
 const HEARTFLOW_PATH = path.join(HF_DIR, 'src', 'core', 'heartflow.js');
 
+// 安全配置
+const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null; // 可选的认证token
+
 // ═══════════════════════════════════════════════
 // 全局状态
 // ═══════════════════════════════════════════════
@@ -120,6 +123,24 @@ const TOOLS = [
     name: 'heartflow_decision_router_stats',
     description: '决策路由引擎统计：返回历史决策统计、规则数量和当前活跃决策。',
     inputSchema: { type: 'object', properties: {} }
+  },
+  // v3.1.0 新增工具
+  {
+    name: 'heartflow_module_health',
+    description: '模块健康检查：检查所有已加载模块的健康状态，返回健康评分和问题模块列表。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_upgrade_stats',
+    description: '升级统计：返回智能升级引擎的统计信息，包括升级次数、关键词分布、平均质量等。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_code_quality',
+    description: '代码质量分析：分析指定代码的质量评分，返回详细的质量报告。',
+    inputSchema: { type: 'object', properties: {
+      code: { type: 'string', description: '要分析的代码' }
+    }, required: ['code'] }
   }
 ];
 
@@ -465,6 +486,76 @@ function handleDecisionRouterStats(args) {
   };
 }
 
+// ─── v3.1.0 — 新增工具 ─────────────────────────────────────────
+function handleModuleHealth(args) {
+  try {
+    const { ModuleHealthChecker } = require(path.join(HF_DIR, 'src/core/module-health-checker.js'));
+    const checker = new ModuleHealthChecker(heartflow);
+    const report = checker.check();
+    const summary = checker.getSummary();
+    return {
+      report,
+      summary,
+      timestamp: Date.now()
+    };
+  } catch (e) {
+    return { error: e.message, timestamp: Date.now() };
+  }
+}
+
+function handleUpgradeStats(args) {
+  try {
+    const { SmartUpgradeEngine } = require(path.join(HF_DIR, 'src/core/smart-upgrade-engine.js'));
+    const engine = new SmartUpgradeEngine(HF_DIR);
+    const stats = engine.getStats();
+    return {
+      stats,
+      timestamp: Date.now()
+    };
+  } catch (e) {
+    return { error: e.message, timestamp: Date.now() };
+  }
+}
+
+function handleCodeQuality(args) {
+  const { code } = args || {};
+  if (!code) throw new Error('code 是必填参数');
+  
+  // 简单的代码质量分析
+  const patterns = {
+    hasClass: /class\s+\w+/,
+    hasExport: /module\.exports|export\s+/,
+    hasConstructor: /constructor\s*\(/,
+    hasMethods: /(?:method|function)\s*\w+\s*\(/,
+    hasDocumentation: /\/\*\*[\s\S]*?\*\//,
+    hasErrorHandling: /try\s*\{|\.catch\(|throw\s+/,
+    hasTypes: /@param|@returns|:\s*(string|number|boolean)/,
+    hasTests: /describe\s*\(|it\s*\(|test\s*\(/
+  };
+  
+  let score = 0;
+  const details = {};
+  
+  for (const [name, pattern] of Object.entries(patterns)) {
+    const found = pattern.test(code);
+    details[name] = found;
+    if (found) score += 12;
+  }
+  
+  const lines = code.split('\n').length;
+  if (lines >= 100 && lines <= 5000) {
+    score += 10;
+    details.goodLength = true;
+  }
+  
+  return {
+    score: Math.min(score, 100),
+    details,
+    lines,
+    timestamp: Date.now()
+  };
+}
+
 const HANDLERS = {
   heartflow_think: handleThink,
   heartflow_think_fast: handleThinkFast,
@@ -485,6 +576,10 @@ const HANDLERS = {
   // v3.0.2 — 通用决策路由引擎
   heartflow_decision_router: handleDecisionRouter,
   heartflow_decision_router_stats: handleDecisionRouterStats,
+  // v3.1.0 — 新增工具
+  heartflow_module_health: handleModuleHealth,
+  heartflow_upgrade_stats: handleUpgradeStats,
+  heartflow_code_quality: handleCodeQuality,
 };
 
 // ═══════════════════════════════════════════════
@@ -558,6 +653,20 @@ function sendEvent(client, event, data) {
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const pathname = url.pathname;
+
+  // ─── 安全认证检查 ───
+  if (AUTH_TOKEN) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.startsWith('Bearer ') 
+      ? authHeader.slice(7) 
+      : url.searchParams.get('token');
+    
+    if (token !== AUTH_TOKEN) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized', message: 'Invalid or missing token' }));
+      return;
+    }
+  }
 
   // ─── SSE 端点 ───
   if (pathname === '/mcp' && req.method === 'GET') {

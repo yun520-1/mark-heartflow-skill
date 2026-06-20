@@ -633,10 +633,10 @@ ${code}`
       };
     }
 
-    // 写入临时文件执行
+    // 写入临时文件执行（使用crypto.randomUUID()提高安全性）
     const tmpFile = path.join(
       require('os').tmpdir(),
-      `code_exec_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.py`
+      `code_exec_${require('crypto').randomUUID()}.py`
     );
 
     try {
@@ -832,13 +832,101 @@ ${code}`
       const sandboxedCode = `
 "use strict";
 // 沙箱安全限制：禁止访问危险全局对象
-const __sandbox_blocked = [
+const __blockedNames = new Set([
   'require', 'eval', 'Function', 'child_process', 'process',
   'global', 'globalThis', 'setTimeout', 'setInterval', 'setImmediate',
   'clearTimeout', 'clearInterval', 'clearImmediate',
-  '__dirname', '__filename', 'module', 'exports'
-];
+  '__dirname', '__filename', 'module', 'exports',
+  'fetch', 'XMLHttpRequest', 'WebSocket',
+  'import', 'importScripts',
+  'fs', 'path', 'os', 'http', 'https', 'net', 'tls', 'dns', 'crypto',
+  'Worker', 'SharedWorker', 'ServiceWorker',
+  'navigator', 'location', 'history', 'localStorage', 'sessionStorage',
+  'indexedDB', 'caches', 'cookieStore'
+]);
 
+// 创建被禁止的标识符，调用时抛出错误
+function __blockedFn(name) {
+  return function() {
+    throw new Error('沙箱禁止使用 ' + name);
+  };
+}
+
+// 在局部作用域中覆盖危险标识符（使用 var 避免严格模式限制）
+var require = __blockedFn('require');
+var eval_ = __blockedFn('eval');
+var Function = __blockedFn('Function');
+var child_process = __blockedFn('child_process');
+var process = __blockedFn('process');
+var global = __blockedFn('global');
+var setTimeout = __blockedFn('setTimeout');
+var setInterval = __blockedFn('setInterval');
+var setImmediate = __blockedFn('setImmediate');
+var clearTimeout = __blockedFn('clearTimeout');
+var clearInterval = __blockedFn('clearInterval');
+var clearImmediate = __blockedFn('clearImmediate');
+var __dirname = __blockedFn('__dirname');
+var __filename = __blockedFn('__filename');
+var module = __blockedFn('module');
+var exports = __blockedFn('exports');
+var fetch = __blockedFn('fetch');
+var XMLHttpRequest = __blockedFn('XMLHttpRequest');
+var WebSocket = __blockedFn('WebSocket');
+var importScripts = __blockedFn('importScripts');
+var Worker = __blockedFn('Worker');
+var SharedWorker = __blockedFn('SharedWorker');
+var ServiceWorker = __blockedFn('ServiceWorker');
+var navigator = __blockedFn('navigator');
+var location = __blockedFn('location');
+var history = __blockedFn('history');
+var localStorage = __blockedFn('localStorage');
+var sessionStorage = __blockedFn('sessionStorage');
+var indexedDB = __blockedFn('indexedDB');
+var caches = __blockedFn('caches');
+var cookieStore = __blockedFn('cookieStore');
+var fs = __blockedFn('fs');
+var path = __blockedFn('path');
+var os = __blockedFn('os');
+var http = __blockedFn('http');
+var https = __blockedFn('https');
+var net = __blockedFn('net');
+var tls = __blockedFn('tls');
+var dns = __blockedFn('dns');
+var crypto = __blockedFn('crypto');
+
+// 使用 Proxy 拦截 globalThis 访问（如果可用）
+let __globalThisProxy;
+try {
+  const __handler = {
+    get: function(target, prop, receiver) {
+      if (__blockedNames.has(prop)) {
+        throw new Error('沙箱禁止访问 globalThis.' + prop);
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+    has: function(target, prop) {
+      if (__blockedNames.has(prop)) {
+        return false;
+      }
+      return Reflect.has(target, prop);
+    },
+    set: function(target, prop, value) {
+      if (__blockedNames.has(prop)) {
+        throw new Error('沙箱禁止设置 globalThis.' + prop);
+      }
+      return Reflect.set(target, prop, value);
+    }
+  };
+  __globalThisProxy = new Proxy(globalThis, __handler);
+} catch (e) {
+  // 如果 Proxy 不可用，忽略
+  __globalThisProxy = globalThis;
+}
+
+// 在局部作用域中覆盖 globalThis（使用 Proxy）
+var globalThis = __globalThisProxy;
+
+// 在 IIFE 内部执行用户代码
 (function() {
 ${code}
 })();

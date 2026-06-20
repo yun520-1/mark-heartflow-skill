@@ -1995,6 +1995,142 @@ class HeartLogic {
       _scores: layerScores
     };
   }
+
+  // === v3.3.0: 新增方法 — 检测"科学vs公众传播"之间的认知断裂 ===
+  // 来自 2026-06-18 纸尿裤甲酰胺事件分析
+  // 核心洞察：科学逻辑（"有检出≠有危害"）和公众传播（"有检出=毒"）之间存在结构性断裂
+  detectGapBetweenScienceAndPublic(input) {
+    if (!input || typeof input !== 'string') {
+      return { hasGap: false, gapType: null, insight: '无输入' };
+    }
+
+    const content = input.toLowerCase();
+
+    // 科学逻辑信号
+    const scienceSignals = [
+      '检测', '检出', '浓度', '剂量', '阈值', '标准',
+      '分析', '数据', '实验', '证据', '论文', '研究',
+      '专业', '技术', '工艺', '材料', '化学', '分子',
+      '概率', '统计', '风险', '安全', '毒性', '暴露',
+    ];
+
+    // 公众恐慌信号
+    const panicSignals = [
+      '毒', '有毒', '致癌', '危害', '危险', '可怕',
+      '焦虑', '恐慌', '害怕', '担心', '不敢', '吓人',
+      '被骗', '隐瞒', '黑幕', '丑闻', '造假',
+    ];
+
+    // 传播结构信号
+    const mediaSignals = [
+      '媒体', '新闻', '报道', '曝光', '热搜', '刷屏',
+      '传播', '转发', '朋友圈', '公众号', '短视频',
+      '流量', '标题', '煽动', '恐慌',
+    ];
+
+    // 公众判断力信号
+    const publicJudgmentSignals = [
+      '蠢', '无知', '没脑子', '不思考', '盲从', '跟风',
+      '焦虑的女人', '成年人', '判断力', '逻辑',
+    ];
+
+    const scienceScore = scienceSignals.filter(s => content.includes(s)).length;
+    const panicScore = panicSignals.filter(s => content.includes(s)).length;
+    const mediaScore = mediaSignals.filter(s => content.includes(s)).length;
+    const publicJudgmentScore = publicJudgmentSignals.filter(s => content.includes(s)).length;
+
+    // 检测是否同时出现科学信号和恐慌信号 → 断裂
+    const hasBoth = scienceScore > 0 && panicScore > 0;
+    // 检测是否有对公众判断力的指责
+    const hasFrustration = publicJudgmentScore > 0;
+
+    let gapType = null;
+    if (hasBoth && hasFrustration) {
+      gapType = 'science_vs_public_with_frustration';
+    } else if (hasBoth) {
+      gapType = 'science_vs_public';
+    } else if (mediaScore > 2 && panicScore > 0) {
+      gapType = 'media_amplified_panic';
+    } else if (scienceScore > 0 && panicScore === 0) {
+      gapType = 'pure_science';
+    } else if (panicScore > 0 && scienceScore === 0) {
+      gapType = 'pure_panic';
+    }
+
+    const hasGap = hasBoth || (scienceScore > 0 && mediaScore > 0 && panicScore > 0);
+
+    // 洞察构建
+    let insight = '';
+    if (gapType === 'science_vs_public_with_frustration') {
+      insight = '检测到科学逻辑与公众恐慌之间的断裂，伴随对公众判断力的失望。这不是某个人的错，是传播结构的问题——"有检出"在科学逻辑上不等于"有危害"，但在公众传播中这个区分被取消了。你的愤怒不是自私，是专业知识在公共传播中一文不值。';
+    } else if (gapType === 'science_vs_public') {
+      insight = '检测到科学逻辑与公众恐慌同时存在。"可检测"和"有害暴露"是两回事，但公众传播不保留这个区分。法国政府2019年做了独立评估后结论是"不需要风险警示"。';
+    } else if (gapType === 'media_amplified_panic') {
+      insight = '检测到媒体放大恐慌的模式。2017年甲醛、2026年甲酰胺——同一个剧本。缺少的是独立的第三方科学评估。';
+    } else if (gapType === 'pure_panic') {
+      insight = '检测到公众恐慌信号，未见到科学分析框架。建议：把新闻发给AI问三个问题——1)纸尿裤10类材料哪些含氮？2)含氮材料在什么工艺下才可能产生甲酰胺？3)检出量换算到婴儿体重的实际暴露量。';
+    }
+
+    return {
+      hasGap,
+      gapType,
+      hasBoth,
+      hasFrustration,
+      insight,
+      _scores: { science: scienceScore, panic: panicScore, media: mediaScore, publicJudgment: publicJudgmentScore }
+    };
+  }
+
+  // === v3.3.0: 新增方法 — 区分"可检测"和"有危害" ===
+  // 核心认知：对错是人为的尺子，不是事物属性
+  // 来自用户哲学："进步不需要测量，对错是人为尺子不是事物属性，思考本身比思考结果重要"
+  distinguishPresenceFromHarm(input) {
+    if (!input || typeof input !== 'string') {
+      return { hasDistinction: false, insight: '无输入' };
+    }
+
+    // 检测是否混淆了"存在"和"有害"
+    const presenceConfusion = [
+      '检出', '含有', '存在', '发现', '测出', '检出率',
+      '有', '检测到', '含有毒', '含毒',
+    ];
+
+    const harmConfusion = [
+      '有害', '有毒', '危险', '危害', '致癌', '伤害',
+      '不安全', '风险',
+    ];
+
+    // 区分信号：是否提到了剂量、浓度、阈值
+    const doseSignals = [
+      '剂量', '浓度', '阈值', '限值', '标准', '含量',
+      'mg', 'ppm', 'ppb', 'μg', 'ng',
+      '多少', '量', '比例', '率', '水平',
+    ];
+
+    const presenceScore = presenceConfusion.filter(s => input.includes(s)).length;
+    const harmScore = harmConfusion.filter(s => input.includes(s)).length;
+    const doseScore = doseSignals.filter(s => input.includes(s)).length;
+
+    const hasBoth = presenceScore > 0 && harmScore > 0;
+    const hasDose = doseScore > 0;
+
+    let insight = '';
+    if (hasBoth && !hasDose) {
+      insight = '检测到"有检出=有危害"的简化逻辑。对错是人为的尺子，不是事物属性。"可检测"不等于"有害暴露"。缺少剂量-效应关系的数据，无法做出完整的风险评估。';
+    } else if (hasBoth && hasDose) {
+      insight = '检测到剂量意识——很好。继续追问：这个浓度在什么暴露时间下才会产生生物学效应？法国政府2019年的结论是"远低于引起系统性毒性的剂量"。';
+    } else if (hasBoth) {
+      insight = '检测到"存在即有害"的潜在假设。巴黎美拉德原则（Paracelsus）："剂量决定毒性。"';
+    }
+
+    return {
+      hasDistinction: insight !== '',
+      hasPresenceAndHarm: hasBoth,
+      hasDoseAwareness: hasDose,
+      insight,
+      _scores: { presence: presenceScore, harm: harmScore, dose: doseScore }
+    };
+  }
 }
 
 module.exports = { HeartLogic };

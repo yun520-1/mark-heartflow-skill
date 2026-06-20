@@ -132,9 +132,9 @@ class Observe {
       lastConsolidate: null,
     };
     
-    // 定时固化
+    // 定时固化（仅在 daemon 模式下）
     this._consolidateTimer = null;
-    if (this.consolidateInterval > 0) {
+    if (process.env.HEARTFLOW_DAEMON && this.consolidateInterval > 0) {
       this._startConsolidateTimer();
     }
   }

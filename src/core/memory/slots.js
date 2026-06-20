@@ -78,8 +78,8 @@ class Slots {
     // 加载持久化的槽
     this._load();
 
-    // 启动清理定时器
-    if (this.cleanupInterval > 0) {
+    // 启动清理定时器（仅在 daemon 模式下）
+    if (process.env.HEARTFLOW_DAEMON && this.cleanupInterval > 0) {
       this._startCleanupTimer();
     }
   }

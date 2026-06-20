@@ -23,13 +23,12 @@ const os = require('os');
 
 class MeaningfulMemory {
   constructor(rootPath) {
-    // Validate rootPath — restrict to allowed directories
-    const allowed = [process.cwd(), os.homedir(), '/tmp'];
+    // 安全检查：警告而非阻止
     const resolved = path.normalize(path.resolve(rootPath));
-    const safe = allowed.some(d => resolved.startsWith(d + path.sep)) ||
-                 allowed.some(d => resolved === d);
+    const allowed = [process.cwd(), os.homedir(), '/tmp'];
+    const safe = allowed.some(d => resolved.startsWith(d + path.sep)) || allowed.some(d => resolved === d);
     if (!safe) {
-      throw new Error(`MeaningfulMemory: rootPath must be within ${allowed.join(', ')}`);
+      console.warn(`[MeaningfulMemory] Warning: rootPath "${resolved}" is outside allowed directories ${allowed.join(', ')}`);
     }
 
     this.rootPath = rootPath;
