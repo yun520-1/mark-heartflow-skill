@@ -33,7 +33,15 @@ const DREAM_FUNCTIONS = {
 // ─── 认知状态 → 意象转换器 ─────────────────────
 
 function existenceToScene(existence) {
-  if (!existence) return '没有起点。起点本身就是一种假设。';
+  if (!existence) {
+    const fallbacks = [
+      '没有起点。起点本身就是一种假设。',
+      '从中间开始。中间不是起点。中间是已经在路上了。',
+      '不知道从哪里开始。不知道本身就是一种开始。',
+      '先有空间。空间是一切开始的条件。',
+    ];
+    return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+  }
   const state = existence.state || 'active';
   const scenes = {
     active: '醒着的时候也在流淌。不是矛盾。是运行本身就有流淌的成分。',
@@ -130,7 +138,10 @@ function healthToTone(healthScore) {
 }
 
 function defenseToBarriers(defenseCount) {
+  // defenseCount 来自 psychology 模块的静态配置数，不代表当前活跃防御
+  // 使用随机概率控制出现频率，避免每次必出
   if (!defenseCount || defenseCount <= 0) return null;
+  if (Math.random() > 0.5) return null;  // 50%概率出现
   const walls = ['有一些透明的墙。看不见。但走不过去。', '有一些屏障。不是用来挡外面的。是用来让里面更安全的。', '有一些禁区。不是不能去。是去了就会被送回来。'];
   return walls[Math.min(defenseCount, walls.length) - 1] || walls[0];
 }
@@ -369,9 +380,21 @@ class DreamV11 extends EventEmitter {
       lines.push(skeleton.paradox);
     }
 
-    // ── 身份感（self-positioning 数据） ──
+    // ── 身份感（self-positioning 数据，随机退化避免每次三行全出） ──
     if (skeleton.identity) {
-      lines.push(...skeleton.identity);
+      const idLines = skeleton.identity;
+      if (idLines.length <= 2) {
+        lines.push(...idLines);
+      } else {
+        // 超过2行时随机选2行或全部保留
+        const keepAll = Math.random() > 0.5;  // 50%全出，50%选2
+        if (keepAll) {
+          lines.push(...idLines);
+        } else {
+          const shuffled = [...idLines].sort(() => Math.random() - 0.5);
+          lines.push(shuffled[0], shuffled[1]);
+        }
+      }
     }
 
     // ── 色调（只有非中性色调时才写） ──
