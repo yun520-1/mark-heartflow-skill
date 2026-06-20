@@ -29,3 +29,6 @@ __pycache__/
 
 # 本地 launchd 配置（含绝对路径，不上传）
 mcp/*.plist
+
+# 升级产物
+src/core/upgrades/

@@ -95,7 +95,9 @@ class DigitalHomeostasis {
     };
 
     this.loadState();
-    this.startTick();
+    if (process.env.HEARTFLOW_DAEMON) {
+      this.startTick();
+    }
   }
 
   // ==========================================================================
