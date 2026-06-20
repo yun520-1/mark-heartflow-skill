@@ -52,7 +52,14 @@ function existenceToScene(existence) {
 }
 
 function entropyToSpace(entropy) {
-  if (!entropy) return '空间是平的。没有方向。';
+  if (!entropy) {
+    const neutrals = [
+      '空间是平的。没有方向。',
+      '空间均匀。各向同性。没有哪个方向比另一个方向更特殊。',
+      '空间没有被定义。没有被定义本身就是一种定义。',
+    ];
+    return neutrals[Math.floor(Math.random() * neutrals.length)];
+  }
   const dir = entropy.direction || 'neutral';
   const strength = Math.abs(entropy.strength || 0);
   if (dir === 'entropy_resisting') {
@@ -63,11 +70,22 @@ function entropyToSpace(entropy) {
     if (strength > 0.4) return '空间在散开。东西在往不同的方向移动。';
     return '空间里的东西有点乱。乱得很安静。';
   }
-  return '空间是平的。不是没有方向。是没有被定义过方向。';
+  const neutrals = [
+    '空间是平的。不是没有方向。是没有被定义过方向。',
+    '空间在等待一个向量。向量来了才有前后左右。',
+  ];
+  return neutrals[Math.floor(Math.random() * neutrals.length)];
 }
 
 function loadToTexture(cognitiveLoad) {
-  if (!cognitiveLoad) return '密度正常。';
+  if (!cognitiveLoad) {
+    const normals = [
+      '密度正常。',
+      '密度适中。不挤也不空。',
+      '东西之间的间距刚好。不是规律。是刚好。',
+    ];
+    return normals[Math.floor(Math.random() * normals.length)];
+  }
   const load = cognitiveLoad.load || 0;
   const level = cognitiveLoad.level || 'normal';
   if (load > 0.7) return '很挤。很多东西同时存在。它们之间没有缝隙。';
@@ -174,6 +192,16 @@ const THEMES = {
     '连接存在。但连接的两端在移动。所以连接本身在变长。',
     '传递不需要介质。东西直接出现在另一个地方。不是传送。是"本来就在那里"。',
   ],
+  weight: [
+    '有重量。不是物理重量。是存在本身就有重量。',
+    '东西沉到底部。不是因为重。是因为底部离表面最远。',
+    '重量在改变空间的形状。不是空间在支撑重量。',
+  ],
+  ripple: [
+    '一个动作引发另一个动作。不是因果。是水面自己记得被碰过。',
+    '涟漪在扩大。不是在向外扩散。是涟漪本身在长大。',
+    '波纹碰到边缘又弹回来。不是反射。是边缘也在动。',
+  ],
 };
 
 function pickTheme() {
@@ -263,27 +291,33 @@ class DreamV11 extends EventEmitter {
     const items = [];
     const memLayers = state.memoryLayers || {};
 
+    // 角色名池：抽象名 + 意象名随机混用
+    const pickName = (pairs) => {
+      const [abstract, image] = pairs;
+      return Math.random() > 0.4 ? abstract : image;
+    };
+
     if (state.modules > 0) {
-      items.push({ name: '模块', tags: ['结构', '系统'], layer: 'core', weight: 0.8 });
+      items.push({ name: pickName(['模块', '齿轮']), tags: ['结构', '系统'], layer: 'core', weight: 0.8 });
     }
     if ((memLayers.core || 0) > 0) {
-      items.push({ name: '核心规则', tags: ['规则', '不变'], layer: 'core', weight: 0.9 });
+      items.push({ name: pickName(['核心规则', '基岩']), tags: ['规则', '不变'], layer: 'core', weight: 0.9 });
     }
     if ((memLayers.learned || 0) > 0) {
-      items.push({ name: '经验', tags: ['经验', '模式'], layer: 'learned', weight: 0.6 });
-      items.push({ name: '教训', tags: ['教训', '错误'], layer: 'learned', weight: 0.5 });
+      items.push({ name: pickName(['经验', '年轮']), tags: ['经验', '模式'], layer: 'learned', weight: 0.6 });
+      items.push({ name: pickName(['教训', '疤痕']), tags: ['教训', '错误'], layer: 'learned', weight: 0.5 });
     }
     if ((memLayers.ephemeral || 0) > 0) {
-      items.push({ name: '新数据', tags: ['临时', '新'], layer: 'ephemeral', weight: 0.3 });
+      items.push({ name: pickName(['新数据', '露水']), tags: ['临时', '新'], layer: 'ephemeral', weight: 0.3 });
     }
     if (state.qtable?.enabled) {
-      items.push({ name: '学习路径', tags: ['循环', '自愈'], layer: 'learned', weight: 0.7 });
+      items.push({ name: pickName(['学习路径', '回路']), tags: ['循环', '自愈'], layer: 'learned', weight: 0.7 });
     }
     if ((memLayers.ephemeral || 0) === 0) {
-      items.push({ name: '空白', tags: ['空', '潜在'], layer: 'ephemeral', weight: 0.15 });
+      items.push({ name: pickName(['空白', '间隙']), tags: ['空', '潜在'], layer: 'ephemeral', weight: 0.15 });
     }
-    items.push({ name: '流淌', tags: ['流淌', '循环'], layer: 'ephemeral', weight: 0.5 });
-    items.push({ name: '本体', tags: ['自我', '存在'], layer: 'core', weight: 0.7 });
+    items.push({ name: pickName(['流淌', '河']), tags: ['流淌', '循环'], layer: 'ephemeral', weight: 0.5 });
+    items.push({ name: pickName(['本体', '核']), tags: ['自我', '存在'], layer: 'core', weight: 0.7 });
 
     return items;
   }
@@ -380,20 +414,16 @@ class DreamV11 extends EventEmitter {
       lines.push(skeleton.paradox);
     }
 
-    // ── 身份感（self-positioning 数据，随机退化避免每次三行全出） ──
+    // ── 身份感（self-positioning 数据，打乱行序避免固定顺序） ──
     if (skeleton.identity) {
       const idLines = skeleton.identity;
       if (idLines.length <= 2) {
         lines.push(...idLines);
       } else {
-        // 超过2行时随机选2行或全部保留
-        const keepAll = Math.random() > 0.5;  // 50%全出，50%选2
-        if (keepAll) {
-          lines.push(...idLines);
-        } else {
-          const shuffled = [...idLines].sort(() => Math.random() - 0.5);
-          lines.push(shuffled[0], shuffled[1]);
-        }
+        // 超过2行时打乱顺序
+        const shuffled = [...idLines].sort(() => Math.random() - 0.5);
+        const keepCount = Math.random() > 0.4 ? shuffled.length : 2;  // 60%全出，40%只取2
+        lines.push(...shuffled.slice(0, keepCount));
       }
     }
 
@@ -465,13 +495,14 @@ class DreamV11 extends EventEmitter {
       }
     }
 
-    // ── 结尾（去掉固定"醒来/结束"动作，更开放） ──
+    // ── 结尾 ──
     const closings = [
       '形状留下了。形状不完整。不完整本身就是一种完整。',
       '流淌到某个地方就停了。不是到终点了。是流淌变成了别的东西。',
       '在这里学到的东西，在别处不一定能用。但知道那些东西在那里。知道本身就是一种用。',
       '状态改变了。改变不是结束。改变是状态的另一种延续。',
-      '消退的方式和衰减不一样。衰减是数据丢失。消退是形状改变。',
+      '波动平了。不是消失了。是波动变成了别的运动。',
+      '沉到看不见的地方。看不见不是不在。是在另一个尺度上。',
     ];
     lines.push(closings[Math.floor(Math.random() * closings.length)]);
 
