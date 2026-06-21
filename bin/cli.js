@@ -12,7 +12,7 @@ while (hfDir !== '/' && !fs.existsSync(path.join(hfDir, 'src/core/heartflow.js')
   hfDir = path.dirname(hfDir);
 }
 if (!fs.existsSync(path.join(hfDir, 'src/core/heartflow.js'))) {
-  console.error(JSON.stringify({ error: 'HeartFlow engine not found', searchDir: __dirname }));
+  console.error(JSON.stringify({ error: 'HeartFlow engine not found' }));
   process.exit(1);
 }
 
@@ -20,10 +20,10 @@ const cmd = process.argv[2] || 'status';
 
 switch (cmd) {
   case 'status': {
+    let engine = null;
     try {
       const { HeartFlow } = require(path.join(hfDir, 'src/core/heartflow.js'));
-      const engine = new HeartFlow({ dataDir: path.join(hfDir, 'data'), silent: true });
-      // 同步初始化
+      engine = new HeartFlow({ dataDir: path.join(hfDir, 'data'), silent: true });
       engine.start();
       const version = (() => {
         try { return require(path.join(hfDir, 'package.json')).version || 'unknown'; } catch(e) { return 'unknown'; }
@@ -35,9 +35,11 @@ switch (cmd) {
         memory: engine.identityCore ? engine.identityCore.getMemoryStats() : null
       };
       console.log(JSON.stringify(result, null, 2));
+      engine.shutdown();
       process.exit(0);
     } catch (e) {
-      console.error(JSON.stringify({ error: e.message, stack: e.stack?.split('\n').slice(0,3).join('\n') }));
+      if (engine) { try { engine.shutdown(); } catch (_) {} }
+      console.error(JSON.stringify({ error: e.message }));
       process.exit(1);
     }
     break;

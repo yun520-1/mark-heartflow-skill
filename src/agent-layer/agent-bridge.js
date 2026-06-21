@@ -49,11 +49,11 @@ class AgentBridge {
     this._stats.calls++;
 
     const _stage = (name) => {
-      const s = Date.now();
-      return { name, ok: false, duration: 0, error: null };
+      return { name, ok: false, duration: 0, error: null, _startTime: Date.now() };
     };
     const _end = (s) => {
-      s.duration = Date.now() - startTime;
+      s.duration = Date.now() - s._startTime;
+      delete s._startTime;
       return s;
     };
 
@@ -172,7 +172,8 @@ class AgentBridge {
           ? this.contextBuilder.build(input, translation, thinkResult, opts.userContext)
           : { userMessage: input, translation, judgment: thinkResult?.judgment };
         if (this.judgmentInjector && injectedJudgment) {
-          llmContext._bridgeJudgment = injectedJudgment;
+          // SkillSpector fix: 使用公开字段名（非下划线前缀），让调用方可审计注入内容
+          llmContext.bridgeJudgment = injectedJudgment;
         }
         const llmResponse = await opts.llmCaller(llmContext);
         bridgeResponse = llmResponse;
@@ -188,17 +189,18 @@ class AgentBridge {
     const totalDuration = Date.now() - startTime;
     this._stats.totalDuration += totalDuration;
 
-    const judgment = thinkResult?.judgment || { shouldRespond: true, isRightAction: true, needsCare: false };
-
-    // 如果有 injectedJudgment，用它覆盖/补充 judgment
-    if (injectedJudgment) {
-      Object.assign(judgment, injectedJudgment);
-    }
+    // SkillSpector fix: 保持原始 judgment 和 injected judgment 分离，避免静默覆盖
+    const originalJudgment = { ...(thinkResult?.judgment || { shouldRespond: true, isRightAction: true, needsCare: false }) };
+    const judgment = injectedJudgment
+      ? { ...originalJudgment, ...injectedJudgment }
+      : originalJudgment;
 
     return {
       originalInput: input,
       translation,
       judgment,
+      originalJudgment,  // SkillSpector fix: 暴露原始判断，供调用方审计
+      injectedJudgment,  // SkillSpector fix: 暴露注入的判断
       bridgeResponse,
       bridgeCommentary,
       stance,

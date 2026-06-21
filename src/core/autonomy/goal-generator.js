@@ -563,6 +563,8 @@ class GoalGenerator {
    */
   async analyzeUnresolvedIssues() {
     if (!process.env.HEARTFLOW_DEBUG) return [];
+    // SkillSpector fix: 需要显式启用记忆扫描（隐私保护）
+    if (!this.config.enableMemoryScanning) return [];
     const goals = [];
     const logs = this.scanMemoryLogs();
 
@@ -670,6 +672,8 @@ class GoalGenerator {
   scanMemoryLogs() {
     const logs = [];
     if (!process.env.HEARTFLOW_DEBUG) return logs;
+    // SkillSpector fix: 需要显式启用记忆扫描
+    if (!this.config.enableMemoryScanning) return logs;
     if (!fs.existsSync(this.memoryDir)) return logs;
 
     const files = fs.readdirSync(this.memoryDir);

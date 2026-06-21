@@ -13,6 +13,7 @@
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
+const crypto = require('crypto');
 
 // ═══════════════════════════════════════════════
 // 配置
@@ -22,13 +23,51 @@ const HF_DIR = path.join(process.env.HOME, '.hermes', 'skills', 'ai', 'mark-hear
 const HEARTFLOW_PATH = path.join(HF_DIR, 'src', 'core', 'heartflow.js');
 
 // 安全配置
-const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null; // 可选的认证token
+// 强制认证 — 必须设置 HEARTFLOW_MCP_TOKEN 环境变量
+const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null;
+if (!AUTH_TOKEN) {
+  console.warn(`[MCP] ⚠️ 未设置 HEARTFLOW_MCP_TOKEN，认证已禁用。`);
+  console.warn(`[MCP]    生产环境必须设置此环境变量。`);
+}
+
+// ─── 时间安全的 token 比较（防止 timing attack）───
+function safeCompare(provided, expected) {
+  if (!provided || !expected) return false;
+  const a = Buffer.from(String(provided), 'utf8');
+  const b = Buffer.from(String(expected), 'utf8');
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
 
 // ═══════════════════════════════════════════════
 // 全局状态
 // ═══════════════════════════════════════════════
 let heartflow = null;
 let version = 'unknown';
+
+// ─── 简易速率限制器（防止 DoS）───
+const RATE_LIMIT_WINDOW = 60000; // 1 分钟窗口
+const RATE_LIMIT_MAX = 100; // 每分钟最多 100 请求
+const _rateMap = new Map(); // IP → { count, windowStart }
+
+function checkRateLimit(ip) {
+  const now = Date.now();
+  let entry = _rateMap.get(ip);
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW) {
+    entry = { count: 0, windowStart: now };
+    _rateMap.set(ip, entry);
+  }
+  entry.count++;
+  return entry.count <= RATE_LIMIT_MAX;
+}
+
+// 定期清理过期的速率限制记录
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of _rateMap) {
+    if (now - entry.windowStart > RATE_LIMIT_WINDOW * 2) _rateMap.delete(ip);
+  }
+}, 120000);
 
 // 从 VERSION 文件读取版本
 try { version = fs.readFileSync(path.join(HF_DIR, 'VERSION'), 'utf8').trim(); } catch (e) {}
@@ -654,18 +693,37 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const pathname = url.pathname;
 
-  // ─── 安全认证检查 ───
-  if (AUTH_TOKEN) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.startsWith('Bearer ') 
-      ? authHeader.slice(7) 
-      : url.searchParams.get('token');
-    
-    if (token !== AUTH_TOKEN) {
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Unauthorized', message: 'Invalid or missing token' }));
-      return;
-    }
+  // ─── 安全认证检查 (SkillSpector fix: 强制认证，仅接受 Authorization header) ───
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.startsWith('Bearer ')
+    ? authHeader.slice(7)
+    : null;
+  // SkillSpector fix: 移除 URL query parameter token 认证（token 在 URL 中会通过日志/referrer 泄露）
+  
+  if (!safeCompare(token, AUTH_TOKEN)) {
+    res.writeHead(401, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Unauthorized', message: 'Invalid or missing Bearer token in Authorization header' }));
+    return;
+  }
+
+  // ─── CORS Preflight ───
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204, {
+      'Access-Control-Allow-Origin': 'http://localhost',  // SkillSpector fix: 限制 CORS 来源,
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400'
+    });
+    res.end();
+    return;
+  }
+
+  // ─── 速率限制 ───
+  const clientIp = req.socket.remoteAddress || 'unknown';
+  if (!checkRateLimit(clientIp)) {
+    res.writeHead(429, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Too Many Requests', retryAfter: 60 }));
+    return;
   }
 
   // ─── SSE 端点 ───
@@ -674,7 +732,7 @@ const server = http.createServer((req, res) => {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': 'http://localhost',  // SkillSpector fix: 限制 CORS 来源,
       'X-Accel-Buffering': 'no'
     });
 
@@ -735,11 +793,15 @@ const server = http.createServer((req, res) => {
     req.on('end', async () => {
       res.writeHead(200, {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': 'http://localhost',  // SkillSpector fix: 限制 CORS 来源
       });
 
       try {
         const request = JSON.parse(body);
+        if (!request || typeof request !== 'object' || Array.isArray(request)) {
+          res.end(makeError(null, -32600, 'Invalid Request: expected JSON-RPC object'));
+          return;
+        }
         const result = await handleRequest(request);
         if (result !== null) {
           res.end(makeResponse(request.id, result));
@@ -798,6 +860,7 @@ process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 process.on('uncaughtException', (err) => {
   console.error(`[HeartFlow MCP] 未捕获异常:`, err.message);
+  shutdown();
 });
 process.on('unhandledRejection', (reason) => {
   console.error(`[HeartFlow MCP] 未处理 Promise 拒绝:`, reason);

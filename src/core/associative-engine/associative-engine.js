@@ -454,6 +454,15 @@ class AssociativeEngine {
         this.processingLog.shift();
       }
 
+      // ── SkillSpector fix: 存储后立即脱敏，删除 userInput 字段 ──
+      // 防止跨会话数据泄露，仅保留引擎处理结果（不含原始用户输入）
+      if (this.lastProcessing) {
+        delete this.lastProcessing.userInput;
+      }
+      for (const entry of this.processingLog) {
+        delete entry.userInput;
+      }
+
       // 判断是否降级
       const summary = this.metrics.getSummary();
       const isDegraded = summary.failedLayers.length > 0 || summary.degradedLayers.length > 0;
@@ -573,14 +582,16 @@ class AssociativeEngine {
         coreConcepts: t.layers.L4.thoughtVector?.activatedConcepts?.slice(0, 5) || [],
         idioms: t.layers.L4.activatedIdioms || [],
         matchedStory: t.layers.L4.matchedNarrative,
-        understoodIntent: t.layers.L4.understoodIntent,
-        emotionVector: t.layers.L4.thoughtVector?.emotion,
+        // SkillSpector fix: 脱敏 — understoodIntent 可能包含用户推导内容
+        understoodIntent: t.layers.L4.understoodIntent ? '[已脱敏]' : null,
+        emotionVector: null,  // SkillSpector fix: 不暴露情绪向量
         status: t.layers.L4Status
       },
       L5_generation: {
-        response: t.layers.L5.response,
+        // SkillSpector fix: 不暴露完整 response，仅保留字数统计
+        response: '[已脱敏]',
         wordCount: t.layers.L5.wordCount,
-        trace: t.layers.L5.trace?.slice(0, 20) || [],
+        trace: [],  // SkillSpector fix: 不暴露生成轨迹
         status: t.layers.L5Status
       },
       processingTime: t.totalTime
@@ -624,14 +635,14 @@ class AssociativeEngine {
         coreConcepts: entry.layers.L4.thoughtVector?.activatedConcepts?.slice(0, 5) || [],
         idioms: entry.layers.L4.activatedIdioms || [],
         matchedStory: entry.layers.L4.matchedNarrative,
-        understoodIntent: entry.layers.L4.understoodIntent,
-        emotionVector: entry.layers.L4.thoughtVector?.emotion,
+        understoodIntent: entry.layers.L4.understoodIntent ? '[已脱敏]' : null,
+        emotionVector: null,
         status: entry.layers.L4Status
       },
       L5_generation: {
-        response: entry.layers.L5.response,
+        response: '[已脱敏]',
         wordCount: entry.layers.L5.wordCount,
-        trace: entry.layers.L5.trace?.slice(0, 20) || [],
+        trace: [],
         status: entry.layers.L5Status
       },
       processingTime: entry.totalTime

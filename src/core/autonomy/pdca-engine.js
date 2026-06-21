@@ -8,7 +8,7 @@
  * - 超时保护: 可配置超时 + 阶梯式等待
  * - 智能重试: 指数退避 + 差异化策略
  * - 状态感知: 记忆失败模式避免重复犯错
- * - 执行沙盒: 实际文件系统操作（安全受限模式）
+ * - 执行器: 实际文件系统操作（无沙箱隔离，仅做路径和命令过滤）
  */
 
 const fs = require('fs');
@@ -728,13 +728,23 @@ class PDCAEngine {
           category: ErrorCategory.SECURITY
         };
 
-      case 'llm_query': {
-        // 实际LLM查询模拟 - 检查日志文件是否存在并返回内容
-        const logPaths = [
-          path.join(this.projectRoot, '.opencode', 'logs', 'latest.log'),
-          path.join(this.projectRoot, 'logs', 'app.log'),
-          path.join(this.projectRoot, 'error.log')
-        ];
+      case 'llm_query':
+      case 'read_project_logs': {
+        // 读取项目日志文件（非 LLM 查询）— 仅读取项目根目录下的日志
+        const ALLOWED_LOG_BASES = ['.opencode/logs', 'logs'];
+        const logPaths = [];
+        for (const base of ALLOWED_LOG_BASES) {
+          const resolved = path.resolve(this.projectRoot, base);
+          const rel = path.relative(this.projectRoot, resolved);
+          // 防止路径穿越
+          if (rel.startsWith('..') || path.isAbsolute(rel)) continue;
+          if (base === '.opencode/logs') {
+            logPaths.push(path.join(resolved, 'latest.log'));
+          } else {
+            logPaths.push(path.join(resolved, 'app.log'));
+          }
+        }
+        logPaths.push(path.join(this.projectRoot, 'error.log'));
         
         let foundLogs = false;
         let logContent = '';
@@ -761,7 +771,7 @@ class PDCAEngine {
           };
         }
         
-        return { success: true, result: 'LLM query simulated (no log files found)' };
+        return { success: true, result: 'No project log files found in expected locations' };
       }
 
       case 'read_logs': {

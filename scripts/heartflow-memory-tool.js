@@ -19,11 +19,12 @@
 
 const path = require('path');
 const { HeartFlowMemory } = require('../src/memory/heartflow-memory.js');
+const { atomicWrite } = require('../src/utils/atomic-write.js');
 
 // 引擎 skill 根目录（脚本所在目录的上级）
 const SKILL_ROOT = path.resolve(__dirname, '..');
 
-function main() {
+async function main() {
   const args = process.argv.slice(2);
   const cmd = args[0];
 
@@ -54,7 +55,7 @@ HeartFlow 记忆读写工具 — 安装引擎后自动获得
       cmdSearch(hfm, args[1]);
       break;
     case 'export':
-      cmdExport(hfm);
+      await cmdExport(hfm);
       break;
     case 'stats':
       cmdStats(hfm);
@@ -152,7 +153,7 @@ function cmdSearch(hfm, query) {
   }
 }
 
-function cmdExport(hfm) {
+async function cmdExport(hfm) {
   const all = hfm.getAllMemory();
   const lines = [];
 
@@ -199,7 +200,7 @@ function cmdExport(hfm) {
 
   const output = lines.join('\n');
   const exportPath = path.join(hfm.memDir, 'memory-export.txt');
-  require('fs').writeFileSync(exportPath, output, 'utf8');
+  await atomicWrite(exportPath, output);
   console.log(`已导出到: ${exportPath}`);
   console.log(`共 ${lines.length} 行`);
 }
@@ -238,10 +239,32 @@ function cmdWrite(hfm, key, value, tags) {
     console.log('用法: node heartflow-memory-tool.js write <key> <value> [tags...]');
     return;
   }
+
+  // ── SkillSpector fix: 输入验证 ──
+  if (!/^[a-zA-Z0-9_\-\u4e00-\u9fff]{1,128}$/.test(key)) {
+    console.error('⚠️  安全拒绝: key 只允许字母、数字、下划线、连字符、中文，最长 128 字符');
+    return;
+  }
+  if (value.length > 10240) {
+    console.error('⚠️  安全拒绝: value 超过 10KB 上限');
+    return;
+  }
+  // 禁止注入攻击
+  const DANGEROUS_PATTERNS = [/__proto__/i, /constructor\s*\[/i, /prototype/i];
+  for (const p of DANGEROUS_PATTERNS) {
+    if (p.test(key) || p.test(value)) {
+      console.error('⚠️  安全拒绝: key/value 包含危险模式');
+      return;
+    }
+  }
+
   const tagsToUse = tags && tags.length > 0 ? tags : ['manual'];
-  const result = hfm.learn(key, value, tagsToUse);
+  // 附加来源标签用于溯源
+  const auditedTags = [...tagsToUse, 'source:cli', `ts:${Date.now()}`];
+  const result = hfm.learn(key, value, auditedTags);
   if (result.success) {
     console.log(`已写入 LEARNED 层: [${key}] = ${value}`);
+    console.log(`  来源标签: ${auditedTags.join(', ')}`);
   }
 }
 
@@ -250,9 +273,24 @@ function cmdForget(hfm, key) {
     console.log('用法: node heartflow-memory-tool.js forget <key>');
     return;
   }
+
+  // ── SkillSpector fix: 删除前验证 ──
+  if (!/^[a-zA-Z0-9_\-\u4e00-\u9fff]{1,128}$/.test(key)) {
+    console.error('⚠️  安全拒绝: key 格式非法');
+    return;
+  }
+
+  // 检查是否存在
+  const before = hfm.recall(key);
+  if (!before) {
+    console.log(`未找到: [${key}]`);
+    return;
+  }
+
   const result = hfm.forget(key);
   if (result.success) {
     console.log(`已删除: [${key}]`);
+    console.log(`  审计: 删除操作已记录, key=${key}, ts=${Date.now()}`);
   } else {
     console.log(`未找到: [${key}]`);
   }

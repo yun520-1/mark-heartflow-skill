@@ -603,6 +603,28 @@ class DreamV11 extends EventEmitter {
       functionType,
     };
   }
+
+  // ─── 统计接口 ─────────────────────────────
+
+  getDreamStats() {
+    return {
+      dreamCount: this.dreamCount,
+      engineState: this.engineState ? Object.keys(this.engineState).length : 0,
+      hasModules: {
+        psychology: !!this.psychology,
+        agentPsychology: !!this.agentPsychology,
+        agentPhilosophy: !!this.agentPhilosophy,
+        emotion: !!this.emotion,
+      },
+    };
+  }
+
+  getCacheStats() {
+    return {
+      cached: false,
+      dreamCount: this.dreamCount,
+    };
+  }
 }
 
 function createDreamV11(engineState = {}) {

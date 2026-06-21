@@ -1,5 +1,5 @@
 /**
- /** HeartFlow v2.10.1 — 快速启动 + 两层懒加载
+ /** HeartFlow v3.4.4 — 快速启动 + 两层懒加载
   *
   * 启动速度优化：只有 Tier 1 模块在 start() 时同步加载。
   * Tier 2 模块在首次 dispatch 访问时才加载（lazy require）。
@@ -32,7 +32,7 @@ const _CoreUtils = _lazy('utils', () => require('./utils.js'));
 const _SearchTrace = _lazy('searchTrace', () => require('./search/search-trace.js'));
 const _Slots = _lazy('slots', () => require('./memory/slots.js'));
 const _Observe = _lazy('observe', () => require('./memory/observe.js'));
-const _MeaningfulMemory = _lazy('meaningfulMemory', () => require('../memory/meaningful-memory.js'));
+const _MeaningfulMemory = _lazy('meaningfulMemory', () => require('../memory/memory-adapter.js'));
 const _KnowledgeGraph = _lazy('knowledgeGraph', () => require('../memory/knowledge-graph.js'));
 const _RetrievalAnchor = _lazy('retrievalAnchor', () => require('../memory/retrieval-anchor.js'));
 const _EvolutionLoop = _lazy('evolutionLoop', () => require('../evolution/loop.js'));
@@ -291,8 +291,38 @@ class HeartFlow {
     this.cognitive.printStartupContext();
 
     // Memory
-    this.memory = new (_MeaningfulMemory().MeaningfulMemory)(this.rootPath);
+    this.memory = new (_MeaningfulMemory().MemoryAdapter)(this.rootPath);
     this.knowledge = new (_KnowledgeGraph().KnowledgeGraph)(this.rootPath);
+
+    // Triality — 三层记忆兼容层（triality-memory 已合并到 meaningful-memory）
+    const mem = this.memory;
+    this.triality = {
+      getStats() {
+        const s = mem.getStats();
+        return {
+          totalMemories: (s.core || 0) + (s.learned || 0) + (s.ephemeral || 0),
+          vectorDimension: 384,
+          layers: { core: s.core, learned: s.learned, ephemeral: s.ephemeral },
+        };
+      },
+      getLayerStats() {
+        const s = mem.getStats();
+        return {
+          working: { count: s.ephemeral || 0 },
+          episodic: { count: s.learned || 0 },
+          semantic: { count: s.core || 0 },
+        };
+      },
+      getMemoryHealth() {
+        return { averageRetention: 1.0 };
+      },
+      searchByKeywords(keywords, limit) {
+        if (typeof mem.searchByKeywords === 'function') {
+          return mem.searchByKeywords(keywords, limit);
+        }
+        return [];
+      },
+    };
 
     // ─── [P1 UPGRADE] CORE 层身份规则初始化 ───────────────────────────
     this._initCoreRules();
@@ -463,6 +493,26 @@ class HeartFlow {
       codePlanner:     { lazy: true, path: './code/code-planner.js',   Ctor: 'CodePlanner',    args: { hf: null } },
       codeKnowledge:   { lazy: true, path: './code/code-knowledge.js', Ctor: 'CodeKnowledge',  args: { rootPath: null } },
       codeWriter:      { lazy: true, path: './code/code-writer.js',   Ctor: 'CodeWriter',     args: {} },
+      // claude-clarity v1.8.2 吸收集成 — 知识图谱/大五人格/共情评估/意图层
+      knowledgeGraph:  { lazy: true, path: './knowledge-graph.js',    Ctor: 'KnowledgeGraph',  args: { dataDir: null } },
+      bigFive:         { lazy: true, path: './BigFivePersonality.js', Ctor: '',                args: {} },
+      empathy:         { lazy: true, path: './EmpathyAssessment.js',  Ctor: '',                args: {} },
+      intentLayer:     { lazy: true, path: './intent-layer.js',       Ctor: 'IntentLayer',      args: {} },
+      // v3.4.1 — 思考门控/认知安全/心流预测
+      deliberationGate:{ lazy: true, path: './deliberation-gate.js',  Ctor: 'DeliberationGate', args: {} },
+      epistemicSafety: { lazy: true, path: './epistemic-safety.js',   Ctor: '',                 args: {} },
+      flowPredictor:   { lazy: true, path: './flow-predictor.js',     Ctor: 'FlowPredictor',    args: {} },
+      // v3.4.2 — Fable 5 安全协议引擎
+      safetyGuardrails:{ lazy: true, path: './safety-guardrails.js',  Ctor: '',                 args: {} },
+      // v3.4.3 — 用户模型/行动追踪/目的引擎
+      userModel:       { lazy: true, path: './user-model.js',        Ctor: 'UserModel',         args: {} },
+      actionTracker:   { lazy: true, path: './action-tracker.js',    Ctor: 'ActionTracker',     args: {} },
+      purposeEngine:   { lazy: true, path: './purpose-engine.js',    Ctor: 'PurposeEngine',     args: {} },
+      // v3.4.4 — 风险分析/自适应控制/意图追踪/审计日志
+      riskAnalyzer:    { lazy: true, path: './risk-benefit-analyzer.js', Ctor: 'RiskBenefitAnalyzer', args: {} },
+      adaptiveCtrl:    { lazy: true, path: './adaptive-controller.js',   Ctor: 'AdaptiveController',  args: {} },
+      intentionTrack:  { lazy: true, path: './IntentionTracker.js',      Ctor: 'IntentionTracker',    args: {} },
+      auditLogger:     { lazy: true, path: './audit-logger.js',          Ctor: 'AuditLogger',         args: {} },
     };
 
     // ─── Search modules — BM25Engine/HybridSearchEngine 已禁用（无 BM25Engine/HybridSearchEngine 类）
@@ -766,6 +816,7 @@ class HeartFlow {
       'truth',
       'behavior',  // v2.0.19 行为模式系统
       'persistence',  // v2.0.19 持久化层
+      'triality',     // v2.0.19 三层记忆兼容层
       'stability', 'confidence', 'restraint', 'arbitration',
       'snapshot', 'error', 'embodied', 'workflow',
       // New modules
@@ -871,6 +922,9 @@ class HeartFlow {
     // [A01] 安全修复: 仅暴露安全方法，移除危险操作（replay/flush/recover）
     'persistence.append', 'persistence.commit',
     'persistence.getStats',
+    // triality — v2.0.19 三层记忆兼容层
+    'triality.getStats', 'triality.getLayerStats',
+    'triality.getMemoryHealth', 'triality.searchByKeywords',
     // lesson — 主动集成点：AI在行动前/失败后调用
     'lesson.addLesson', 'lesson.getTopLessons',
     'lesson.beforeTask', 'lesson.recordFailure', 'lesson.getStats', 'lesson.getAll',
@@ -1032,6 +1086,45 @@ class HeartFlow {
     'philosophyToDecision.decide', 'philosophyToDecision.getStats', 'philosophyToDecision.getCurrentAdvice',
     // v3.0.2 — 通用决策路由引擎
     'decisionRouter.evaluate', 'decisionRouter.getStats', 'decisionRouter.getHistory', 'decisionRouter.getRules',
+    // v3.4.0 — claude-clarity v1.8.2 吸收集成
+    'knowledgeGraph.addEdge', 'knowledgeGraph.query', 'knowledgeGraph.getRelated',
+    'knowledgeGraph.getStats', 'knowledgeGraph.clear', 'knowledgeGraph.save', 'knowledgeGraph.load',
+    'knowledgeGraph.searchEntities', 'knowledgeGraph.findPath',
+    'bigFive.updateScore', 'bigFive.adjustFromBehavior', 'bigFive.getProfile',
+    'bigFive.getLevel', 'bigFive.getCollaborationTips',
+    'empathy.quickAssessment', 'empathy.calculateScore', 'empathy.analyzeText',
+    'intentLayer.inferIntent', 'intentLayer.formatResult',
+    // v3.4.1 — 思考门控/认知安全/心流预测
+    'deliberationGate.quickAssess', 'deliberationGate.deepAssess', 'deliberationGate.canFastExit',
+    'deliberationGate.getHistory', 'deliberationGate.getStats',
+    'epistemicSafety.epistemicCheck', 'epistemicSafety.formatReport',
+    'flowPredictor.recordEdit', 'flowPredictor.recordError', 'flowPredictor.recordPause',
+    'flowPredictor.analyzeLanguage', 'flowPredictor.evaluateIntervention',
+    'flowPredictor.getFlowState', 'flowPredictor.getStats', 'flowPredictor.reset',
+    // v3.4.2 — Fable 5 安全协议引擎
+    'safetyGuardrails.childSafetyScan', 'safetyGuardrails.detectSelfHarmSubstitution',
+    'safetyGuardrails.detectDisorderedEating', 'safetyGuardrails.checkCrisisSharingProtocol',
+    'safetyGuardrails.checkEvenhandedness', 'safetyGuardrails.detectMemoryForbiddenPhrases',
+    'safetyGuardrails.detectPromptInjection', 'safetyGuardrails.evaluateRequest',
+    'safetyGuardrails.filterOutput', 'safetyGuardrails.safetyPipeline',
+    // v3.4.3 — 用户模型/行动追踪/目的引擎
+    'userModel.getModel', 'userModel.predictReaction', 'userModel.updateModel',
+    'userModel.setEmotionalState', 'userModel.setSensitivity', 'userModel.setPreferredStyle',
+    'userModel.resetModel', 'userModel.getSummary',
+    'actionTracker.commit', 'actionTracker.execute', 'actionTracker.act',
+    'actionTracker.reportResult', 'actionTracker.getStats', 'actionTracker.getSummary',
+    'actionTracker.getActiveCommitments', 'actionTracker.getHistory',
+    'actionTracker.checkIntentBehaviorAlignment', 'actionTracker.assessQuality',
+    'actionTracker.advanceChangeStage', 'actionTracker.learnFromAction',
+    'purposeEngine.essence', 'purposeEngine.orderScore', 'purposeEngine.govern',
+    'purposeEngine.codePriority', 'purposeEngine.growthAudit',
+    'purposeEngine.markCodified', 'purposeEngine.registerInsight', 'purposeEngine.status',
+    // v3.4.4 — 风险分析/自适应控制/意图追踪/审计日志
+    'riskAnalyzer.analyzeBenefitBehindRisk', 'riskAnalyzer.analyzeRiskBehindBenefit', 'riskAnalyzer.getStats',
+    'adaptiveCtrl.adjustInterventionPolicy', 'adaptiveCtrl.setEnabled', 'adaptiveCtrl.getStatus', 'adaptiveCtrl.getHistory',
+    'intentionTrack.setPrimaryGoal', 'intentionTrack.checkDeviation', 'intentionTrack.generateNudge',
+    'intentionTrack.updateSubGoal', 'intentionTrack.getProgress', 'intentionTrack.reset',
+    'auditLogger.log', 'auditLogger.readRecent', 'auditLogger.getStats',
   ]);
 
   /**
@@ -1057,8 +1150,52 @@ class HeartFlow {
       const entry = this._lazy[subsystem];
       try {
         const Mod = require(entry.path);
-        const Ctor = Mod[entry.Ctor];
-        if (Ctor) {
+
+        // 特殊模块：纯对象（无构造函数）
+        if (subsystem === 'bigFive') {
+          mod = require('./BigFivePersonality.js');
+        } else if (subsystem === 'empathy') {
+          mod = require('./EmpathyAssessment.js');
+        } else if (subsystem === 'knowledgeGraph') {
+          mod = new (require('./knowledge-graph.js').KnowledgeGraph)({ dataDir: path.join(this.rootPath, 'data') });
+        } else if (subsystem === 'intentLayer') {
+          mod = new (require('./intent-layer.js').IntentLayer)({ projectRoot: this.rootPath });
+        } else if (subsystem === 'epistemicSafety') {
+          // epistemic-safety 是纯函数导出（无构造函数）
+          mod = require('./epistemic-safety.js');
+        } else if (subsystem === 'deliberationGate') {
+          mod = new (require('./deliberation-gate.js').DeliberationGate)();
+        } else if (subsystem === 'flowPredictor') {
+          mod = new (require('./flow-predictor.js').FlowPredictor)();
+        } else if (subsystem === 'safetyGuardrails') {
+          // safety-guardrails 是纯函数导出（无构造函数）
+          mod = require('./safety-guardrails.js');
+        } else if (subsystem === 'userModel') {
+          mod = new (require('./user-model.js').UserModel)();
+        } else if (subsystem === 'actionTracker') {
+          mod = new (require('./action-tracker.js').ActionTracker)();
+        } else if (subsystem === 'purposeEngine') {
+          mod = new (require('./purpose-engine.js').PurposeEngine)();
+        } else if (subsystem === 'riskAnalyzer') {
+          mod = new (require('./risk-benefit-analyzer.js').RiskBenefitAnalyzer)();
+        } else if (subsystem === 'adaptiveCtrl') {
+          mod = new (require('./adaptive-controller.js').AdaptiveController)();
+        } else if (subsystem === 'intentionTrack') {
+          mod = new (require('./IntentionTracker.js').IntentionTracker)();
+        } else if (subsystem === 'auditLogger') {
+          mod = new (require('./audit-logger.js').AuditLogger)();
+        }
+
+        // 特殊模块注册到 _modules（标准路径在下面的 if(Ctor) 块内完成注册）
+        if (mod) {
+          this[subsystem] = mod;
+          this._modules[subsystem] = mod;
+        }
+
+        // 标准懒加载：需要构造函数
+        if (!mod) {
+          const Ctor = Mod[entry.Ctor];
+          if (Ctor) {
           // Planning 模块需要 strategySelector/replanTrigger 依赖
           if (subsystem === 'adaptivePlanner') {
             const baseDir = entry.path.replace('adaptive-planner.js', '');
@@ -1105,7 +1242,8 @@ class HeartFlow {
           // codeGenerator 保持原名；'code' 别名在下面统一映射
           this[subsystem] = mod;
           this._modules[subsystem] = mod;
-        }
+        }  // end if (Ctor)
+        }  // end if (!mod)
       } catch (e) {
         throw new Error(`Lazy load failed for '${subsystem}': ${e.message}`);
       }

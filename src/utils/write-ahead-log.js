@@ -30,10 +30,17 @@ class WriteAheadLog {
     try {
       const content = await fs.readFile(this._logPath, 'utf8');
       const lines = content.trim().split('\n').filter(Boolean);
-      if (lines.length > 0) {
-        const last = JSON.parse(lines[lines.length - 1]);
-        this._seq = last.seq || 0;
+      // 从末尾向前扫描，找到第一个可解析的条目来确定最大 seq
+      for (let i = lines.length - 1; i >= 0; i--) {
+        try {
+          const entry = JSON.parse(lines[i]);
+          if (entry.seq && typeof entry.seq === 'number') {
+            this._seq = entry.seq;
+            return;
+          }
+        } catch { /* 此行损坏，继续向前扫描 */ }
       }
+      this._seq = 0;
     } catch {
       this._seq = 0;
     }
@@ -71,19 +78,33 @@ class WriteAheadLog {
     try {
       const content = await fs.readFile(this._logPath, 'utf8');
       const lines = content.trim().split('\n').filter(Boolean);
-      const pending = [];
 
+      // First pass: find the highest committed sequence number
+      let lastCommittedSeq = 0;
       for (const line of lines) {
-        const entry = JSON.parse(line);
-        const expectedHash = this._hashEntry(entry.seq, entry.type, entry.data, entry.ts);
-        if (entry.hash !== expectedHash) continue;
+        try {
+          const entry = JSON.parse(line);
+          if (entry.type === OP_TYPES.COMMIT) {
+            const committedThrough = entry.data?.committedThrough || 0;
+            if (committedThrough > lastCommittedSeq) {
+              lastCommittedSeq = committedThrough;
+            }
+          }
+        } catch { /* skip malformed lines */ }
+      }
 
-        if (entry.type === OP_TYPES.COMMIT) {
-          break;
-        }
-        if (entry.type === OP_TYPES.WRITE) {
-          pending.push(entry);
-        }
+      // Second pass: collect uncommitted WRITE entries after the last commit
+      const pending = [];
+      for (const line of lines) {
+        try {
+          const entry = JSON.parse(line);
+          const expectedHash = this._hashEntry(entry.seq, entry.type, entry.data, entry.ts);
+          if (entry.hash !== expectedHash) continue;
+
+          if (entry.type === OP_TYPES.WRITE && entry.seq > lastCommittedSeq) {
+            pending.push(entry);
+          }
+        } catch { /* skip malformed lines */ }
       }
       return pending;
     } catch {

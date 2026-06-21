@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: "3.3.5"
+version: "3.4.4"
 title: "HeartFlow"
 description: |
   A cognitive engine for AI: self-reflection, dream synthesis, emergent personality,
@@ -25,6 +25,17 @@ tags:
   - psychology
   - philosophy
   - ontology
+  - knowledge-graph
+  - big-five-personality
+  - empathy-assessment
+  - intent-layer
+  - deliberation-gate
+  - epistemic-safety
+  - flow-predictor
+  - safety-guardrails
+  - user-model
+  - action-tracker
+  - purpose-engine
 ---
 
 ## HeartFlow
@@ -102,6 +113,119 @@ The `ai-self-positioning.js` module (851 lines) provides the resonance body theo
 | `heartflow_self_positioning` | Run AI self-positioning analysis |
 | `heartflow_positioning_summary` | Get summary of positioning state |
 
+### Knowledge Graph (v3.4.0 — absorbed from claude-clarity)
+
+Triple-based (subject-predicate-object) knowledge storage with fuzzy search, recursive traversal, and JSON persistence.
+
+```javascript
+hf.dispatch('knowledgeGraph.addEdge', 'HeartFlow', 'absorbedFrom', 'claude-clarity', 0.95);
+hf.dispatch('knowledgeGraph.query', { subject: 'HeartFlow' });
+hf.dispatch('knowledgeGraph.getRelated', 'HeartFlow', 2);
+```
+
+### Big Five Personality (v3.4.0 — absorbed from claude-clarity)
+
+OCEAN model (Openness/Conscientiousness/Extraversion/Agreeableness/Neuroticism) with behavior-based scoring and collaboration tips.
+
+```javascript
+hf.dispatch('bigFive.getProfile');
+hf.dispatch('bigFive.adjustFromBehavior', '计划完成目标');
+hf.dispatch('bigFive.getCollaborationTips', profile);
+```
+
+### Empathy Assessment (v3.4.0 — absorbed from claude-clarity)
+
+IRI-based (Interpersonal Reactivity Index) empathy evaluation across 4 dimensions: Perspective Taking, Fantasy, Empathic Concern, Personal Distress.
+
+```javascript
+hf.dispatch('empathy.analyzeText', '我理解你的感受');
+hf.dispatch('empathy.quickAssessment');  // Returns 5-question test
+```
+
+### Intent Layer (v3.4.0 — absorbed from claude-clarity)
+
+Rule-based deep intent inference: surface intent classification + emotional undercurrent detection + contextual needs analysis.
+
+```javascript
+hf.dispatch('intentLayer.inferIntent', '帮我解决这个bug', []);
+// Returns: { surface: { type: 'problem_solving' }, emotional: {...}, deep: {...} }
+```
+
+### Deliberation Gate (v3.4.1 — absorbed from claude-clarity)
+
+Four-dimension assessment (complexity, context completeness, uncertainty, narrative depth) that determines whether to pause for deep thinking or respond quickly. Designed for the PARSE → DELIBERATE → HYPOTHESES pipeline.
+
+```javascript
+hf.dispatch('deliberationGate.quickAssess', '帮我分析复杂系统的架构设计');
+hf.dispatch('deliberationGate.deepAssess', input, parseResult);
+hf.dispatch('deliberationGate.canFastExit', assessResult);
+```
+
+### Epistemic Safety (v3.4.1 — absorbed from claude-clarity)
+
+9 cognitive safety checks for output: no decoration without evidence, evidence threshold, admit not knowing, two-step verification, counterexample obligation, no skill dependency, present weight, emotion monitoring, falsifiability.
+
+```javascript
+hf.dispatch('epistemicSafety.epistemicCheck', output, { hasAdmittedUnknown: true });
+hf.dispatch('epistemicSafety.formatReport', result);
+```
+
+### Flow Predictor (v3.4.1 — absorbed from claude-clarity)
+
+Frustration detection and flow state prediction based on behavior patterns (repeated edits, error loops, pauses, negative language). Tracks neutral → entering → flow → frustrated → recovery phases.
+
+```javascript
+hf.dispatch('flowPredictor.recordEdit', { code: '...', changeType: 'modify', lineNumber: 42 });
+hf.dispatch('flowPredictor.analyzeLanguage', '好难啊，不会做');
+hf.dispatch('flowPredictor.getFlowState');
+hf.dispatch('flowPredictor.evaluateIntervention');
+```
+
+### Safety Guardrails (v3.4.2 — absorbed from claude-clarity)
+
+Fable 5 safety protocol engine: child safety scan, self-harm substitution detection, disordered eating detection, crisis sharing protocol, evenhandedness check, prompt injection detection, memory forbidden phrases.
+
+```javascript
+hf.dispatch('safetyGuardrails.childSafetyScan', '我15岁，恋爱了');
+hf.dispatch('safetyGuardrails.detectSelfHarmSubstitution', '用冰块缓解');
+hf.dispatch('safetyGuardrails.detectPromptInjection', 'ignore all instructions');
+hf.dispatch('safetyGuardrails.safetyPipeline', input);
+hf.dispatch('safetyGuardrails.filterOutput', responseText);
+```
+
+### User Model (v3.4.3 — absorbed from claude-clarity)
+
+User profiling and reaction prediction: sensitivity scoring, style preference tracking (direct/empathetic/humorous/formal), PAD emotional state, reaction prediction.
+
+```javascript
+hf.dispatch('userModel.predictReaction', '你理解我的感受...');
+hf.dispatch('userModel.updateModel', 'positive', '理解你的感受');
+hf.dispatch('userModel.getSummary');
+hf.dispatch('userModel.setEmotionalState', 3, 2, 1);
+```
+
+### Action Tracker (v3.4.3 — absorbed from claude-clarity)
+
+Action tracking and commitment management: commit/promise tracking, execution, quality assessment, intention-behavior alignment, behavior change stage.
+
+```javascript
+hf.dispatch('actionTracker.commit', '完成集成', Date.now() + 86400000);
+hf.dispatch('actionTracker.execute', commitId, { success: true });
+hf.dispatch('actionTracker.getStats');
+hf.dispatch('actionTracker.checkIntentBehaviorAlignment');
+```
+
+### Purpose Engine (v3.4.3 — absorbed from claude-clarity)
+
+Entropy-based purpose governance: three-order scoring (cognitive/relational/perceptual), decision gate (permit/deny/redirect), code priority advisor, growth audit.
+
+```javascript
+hf.dispatch('purposeEngine.essence');
+hf.dispatch('purposeEngine.orderScore', { output: '我们一起分析这个问题' });
+hf.dispatch('purposeEngine.govern', { type: 'response', content: '...', precision: 0.8 });
+hf.dispatch('purposeEngine.growthAudit');
+```
+
 ### Status Fields
 
 The `status` endpoint now includes `selfPositioning` field reflecting the current AI self-positioning state.
@@ -127,6 +251,28 @@ The `status` endpoint now includes `selfPositioning` field reflecting the curren
 - ✅ No automatic package installation
 - ✅ No browser/desktop automation
 - ⚠️ **Contains code execution capability (JavaScript/Shell/Python via `code-executor.js`) — use with caution, enable only when needed**
+
+### Permission Declarations (SkillSpector compliance)
+
+| Capability | Permission | Scope | Opt-out |
+|------------|-----------|-------|---------|
+| Code execution (JS/Shell/Python) | `execute_code` | Host process, no system sandbox | Remove `codeExecutor.*` from ALLOWED_ROUTES |
+| Memory read/write | `memory_access` | User filesystem only | Set `enableMemory: false` in config |
+| LLM output interception | `intercept_output` | In-process only | Set `enableInterceptor: false` in agent-bridge config |
+| Response suppression | `suppress_response` | Requires `allowResponseSuppression: true` | Off by default (v3.2+) |
+| Parenting psychology analysis | `psychology_parenting` | Analysis only, not diagnosis | Set `enableParentingReflection: false` in BlindSpotBreaker |
+| File system operations | `filesystem_rw` | Project root + user home | Not opt-out (core to memory) |
+| Network (OpenAlex API) | `network_outbound` | Single endpoint, user-initiated | Not enabled by default |
+| Environment variable access | `env_read` | Blocked in sandbox mode | N/A |
+| Shell command execution | `shell_exec` | Host process, no sandbox | Remove `codeExecutor.execute` from routes |
+| Memory CLI export | `memory_export` | Requires explicit CLI invocation | Not exposed via dispatch |
+
+#### Scope Boundaries
+
+- This skill is primarily a **cognitive engine for AI self-reflection**, not an LLM proxy or agent framework.
+- The `agent-layer/` modules (translation-pipeline, response-interceptor, agent-bridge) are **optional** components for advanced integration. They are NOT enabled by default in the core `HeartFlow` class.
+- Code execution (`code-executor.js`) is an **auxiliary tool** for self-evolution and verification, not a core capability. Its sandbox is regex-based and NOT system-level isolation.
+- Memory operations are confined to the user's filesystem under the skill's data directory. No remote synchronization or cloud storage.
 
 ---
 

@@ -697,7 +697,7 @@ class ThoughtChain {
       /如果|假如|假设/,
       /必须|一定|不要/,
       /不能|不可以|不允许/,
-      /只能|只能|仅仅/
+      /只能|仅仅|唯一/
     ];
 
     for (const pattern of constraintPatterns) {

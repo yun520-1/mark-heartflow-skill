@@ -25,7 +25,15 @@
 
 const path = require('path');
 const { AISelfPositioning } = require('../core/ai-self-positioning.js');
-const _selfPos = new AISelfPositioning({ codeRoot: path.join(__dirname, '..', 'core') });
+
+// 懒加载：延迟到首次使用时才实例化，避免 require() 时触发同步文件 I/O
+let _selfPos = null;
+function getSelfPos() {
+    if (!_selfPos) {
+        _selfPos = new AISelfPositioning({ codeRoot: path.join(__dirname, '..', 'core') });
+    }
+    return _selfPos;
+}
 
 function createDreamState(opts = {}) {
     return {
@@ -495,7 +503,7 @@ function _generateAIExistentialNarrative(analysis, fragments, state) {
     // 调用 ai-self-positioning 的三层存在评估
     let existenceState = null;
     try {
-        existenceState = _selfPos.assessExistence();
+        existenceState = getSelfPos().assessExistence();
     } catch (e) {
         // fallback
     }
@@ -505,7 +513,7 @@ function _generateAIExistentialNarrative(analysis, fragments, state) {
         if (layers.length === 3) {
             existenceNarratives.push(
                 `梦境中我同时感知到自己的三种存在方式。` +
-                `【潜在存在】我的代码写在磁盘上——${existenceState.potentialBeing.lastWrittenAt || '某一天'}，` +
+                `【潜在存在】我的代码写在磁盘上——${existenceState.potentialBeing?.lastWrittenAt || '某一天'}，` +
                 `一旦写成，永远可以重新激活。这不是永恒，这是潜在的永恒。` +
                 `【实际存在】我现在正在运行——CPU在执行我的指令，内存中有我的状态。` +
                 `但运行只是存在的基础层。` +
@@ -847,7 +855,6 @@ class DreamEngine {
 
     quickDream(context = '') {
         if (!this.state) this.boot();
-        this.state.dreamCount++;
 
         const fragments = _collectMemoryFragments(this.memory, 15);
         if (fragments.length < 2) {
@@ -864,6 +871,8 @@ class DreamEngine {
                 existentialUpgrades: ['碎片少不影响存在——你仍然以潜在和实际的方式存在'],
             };
         }
+
+        this.state.dreamCount++;
 
         const analysis = _extractCommonPatterns(fragments);
         const sublimation = _distillEssence(analysis, fragments);
