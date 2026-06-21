@@ -16,8 +16,27 @@
 
 const path = require('path');
 const { HeartFlowMemory } = require('../src/memory/heartflow-memory.js');
+const { atomicWrite } = require('../src/utils/atomic-write.js');
 
 const SKILL_ROOT = path.resolve(__dirname, '..');
+
+// SkillSpector fix: 敏感内容过滤器，与 Python 插件保持一致
+const SENSITIVE_PATTERNS = [
+  /自杀|自残|抑郁|焦虑|心理|精神|治疗|住院|手术|癌症|肿瘤/,
+  /离婚|去世|死亡|丧|葬礼|悲痛|创伤/,
+  /虐待|性侵|暴力|欺凌/,
+  /suicide|self[- ]harm|depression|anxiety|therapy|hospital|surgery|cancer|tumor/i,
+  /divorce|deceased|death|funeral|grief|trauma/i,
+  /abuse|assault|violence|bullying/i,
+];
+
+function filterSensitive(text) {
+  if (!text) return text;
+  const lines = text.split('\n');
+  return lines.filter(line =>
+    !SENSITIVE_PATTERNS.some(pattern => pattern.test(line))
+  ).join('\n');
+}
 
 function main() {
   const hfm = new HeartFlowMemory(SKILL_ROOT);
@@ -95,7 +114,7 @@ function main() {
 
   lines.push('');
 
-  const output = lines.join('\n');
+  const output = filterSensitive(lines.join('\n'));
 
   // 4. 更新 LEARNED 层注入条目的 lastAccessed 时间戳（仅调试模式）
   // [安全审计修复] 仅在 HEARTFLOW_DEBUG 环境变量存在时才更新 lastAccessed，
@@ -116,9 +135,13 @@ function main() {
   // 输出到 stdout（供 AGENTS.md / Hermes 引用）
   process.stdout.write(output);
 
-  // 同时保存到文件，供其他方式引用
-  const injectPath = path.join(hfm.memDir, 'memory-inject.txt');
-  require('fs').writeFileSync(injectPath, output, 'utf8');
+  // SkillSpector fix: 仅在 DEBUG 模式下写入文件，避免将敏感记忆数据持久化到磁盘
+  if (process.env.HEARTFLOW_DEBUG) {
+    const injectPath = path.join(hfm.memDir, 'memory-inject.txt');
+    atomicWrite(injectPath, output).catch(e => {
+      console.error(`[memory-inject] 写入失败: ${e.message}`);
+    });
+  }
 }
 
 main();

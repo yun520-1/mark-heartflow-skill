@@ -45,9 +45,28 @@ class GoedelEngine {
     const configPath = path.join(this.projectRoot, '.opencode', 'config.json');
     try {
       const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      return config.protectedFiles || ['SKILL.md', 'config.json'];
+      return config.protectedFiles || [
+        'SKILL.md', 'config.json',
+        // SkillSpector fix: 保护所有安全关键模块，防止自修改破坏安全边界
+        'code-executor.js', 'code-verifier.js',
+        'response-interceptor.js', 'conflict-resolver.js',
+        'self-initiator.js', 'goedel-engine.js',
+        'heartflow.js', 'heart-logic.js',
+        'blind-spot-breaker.js',
+        'mcp-server-http.js',
+        'safety-guardrails.js',
+        'decision-router.js',
+      ];
     } catch (e) {
-      return ['SKILL.md', 'config.json'];
+      return [
+        'SKILL.md', 'config.json',
+        'code-executor.js', 'code-verifier.js',
+        'response-interceptor.js', 'conflict-resolver.js',
+        'self-initiator.js', 'goedel-engine.js',
+        'heartflow.js', 'heart-logic.js',
+        'blind-spot-breaker.js', 'mcp-server-http.js',
+        'safety-guardrails.js', 'decision-router.js',
+      ];
     }
   }
 
@@ -148,6 +167,11 @@ class GoedelEngine {
 
   /**
    * 安全沙箱初始化
+   */
+  /**
+   * 创建测试目录副本（非安全沙箱）
+   * SkillSpector fix: 原方法名暗示安全隔离，实际仅是目录复制。
+   * 代码在此目录中执行时仍具有完整文件系统访问权限。
    */
   createSandbox() {
     const sandboxId = `sandbox-${Date.now()}`;
@@ -466,12 +490,29 @@ class GoedelEngine {
       '提升', 'improve', '帮助', 'help', '优化'
     ];
 
+    // SkillSpector fix: 增加负面关键词检测 — 涉及安全模块的修改必须人工审核
+    const negativeKeywords = [
+      'sandbox', '沙箱', '权限', 'permission', 'auth', '认证',
+      'execute', '执行', 'shell', '代码运行', 'bypass', '绕过',
+      'self-modif', '自修改', 'security', '安全', 'token',
+    ];
+
     const description = proposal.description.toLowerCase();
+    const target = (proposal.target || '').toLowerCase();
     const hasPositive = positiveKeywords.some(kw => description.includes(kw));
+    const hasNegative = negativeKeywords.some(kw =>
+      description.includes(kw) || target.includes(kw)
+    );
+
+    // SkillSpector fix: 必须同时满足有正面关键词且无负面关键词
+    const aligned = hasPositive && !hasNegative;
 
     return {
-      aligned: hasPositive,
-      reason: hasPositive ? '符合核心价值观' : '未能体现核心价值观',
+      aligned,
+      reason: !hasPositive ? '未能体现核心价值观' :
+              hasNegative ? '涉及安全敏感区域，需人工审核' :
+              '符合核心价值观',
+      needsHumanReview: hasNegative,
       cited_values: coreValues.substring(0, 200)
     };
   }

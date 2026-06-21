@@ -34,6 +34,20 @@ class UserToLLM {
    * @returns {object} { intent, confidence, entities, constraints, tone, implicitNeeds, originalInput }
    */
   translate(input, context = {}) {
+    if (!input || typeof input !== 'string') {
+      return {
+        originalInput: input || '',
+        intent: 'default',
+        confidence: 0,
+        entities: {},
+        constraints: [],
+        tone: 'neutral',
+        implicitNeeds: [],
+        llmInstruction: '',
+        timestamp: Date.now(),
+        error: 'invalid_input'
+      };
+    }
     const result = this._classifyIntent(input);
     const entities = this._extractEntities(input);
     const constraints = this._extractConstraints(input, result);

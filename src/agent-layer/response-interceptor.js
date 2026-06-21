@@ -22,10 +22,16 @@ class ResponseInterceptor {
    */
   constructor(config = {}) {
     this.name = 'response-interceptor';
-    this.version = '3.1.0';
+    this.version = '3.2.0';
 
     // ── 安全开关：关闭后完全跳过拦截逻辑，防止 LLM 输出被意外注入或篡改 ──
     this.enabled = config.enableInterceptor !== undefined ? config.enableInterceptor : true;
+
+    // ── 响应抑制开关 (SkillSpector fix) ──────────────────────────
+    // 当 allowResponseSuppression = false（默认），即使心虫判定 shouldRespond=false，
+    // 也不会替换 LLM 原始输出，仅附加注释元信息。
+    // 设为 true 时允许用沉默占位符替换原始回复（需调用方显式授权）。
+    this.allowResponseSuppression = config.allowResponseSuppression === true ? true : false;
   }
 
   /**
@@ -173,10 +179,22 @@ class ResponseInterceptor {
       conflictNote = conflictNote.join(' | ');
     }
 
-    // ── 5. 如果心虫判定不应回应，标记为沉默 ─────────────────────
+    // ── 5. 如果心虫判定不应回应，处理沉默建议 ─────────────────────
+    // SkillSpector fix: 默认不替换原始回复，仅附加元信息注释。
+    // 只有当 allowResponseSuppression 显式设为 true 时才替换。
     const judgment = hfAnalysis?.decision || (response && typeof response === 'object' ? response.decision : null);
+    let responseSuppressed = false;
     if (judgment && judgment.shouldRespond === false) {
-      modifiedResponse = '[心虫判定此场景更适合倾听]';
+      if (this.allowResponseSuppression) {
+        modifiedResponse = '[心虫判定此场景更适合倾听]';
+        responseSuppressed = true;
+      } else {
+        // 不替换原始回复，仅记录判定结果到 conflictNote
+        const silenceNote = '[心虫建议：此场景可能更适合倾听，但保留原始回复供调用方判断]';
+        conflictNote = conflictNote
+          ? conflictNote + ' | ' + silenceNote
+          : silenceNote;
+      }
     }
 
     return {
@@ -190,6 +208,7 @@ class ResponseInterceptor {
       stanceMatch,
       conflictNote,
       injectedJudgment,
+      responseSuppressed,
     };
   }
 

@@ -26,7 +26,11 @@
 class BlindSpotBreaker {
   constructor(options = {}) {
     this.name = 'BlindSpotBreaker';
-    this.version = '0.3.5.1';
+    this.version = '0.3.5.2';
+
+    // ── SkillSpector fix: 养育反思模块需显式启用 ──
+    // 设为 false 可完全禁用养育反思层，避免无 consent 的心理学推断
+    this.enableParentingReflection = options.enableParentingReflection !== false;
     
     // 四层处理结果
     this.layers = {
@@ -259,6 +263,21 @@ class BlindSpotBreaker {
    * - Fonagy 1997 - 反思是依恋安全的基础
    */
   _assessParentingReflection(problem, deconstruction, confidence) {
+    // ── SkillSpector fix: 检查养育反思是否启用 ──
+    if (!this.enableParentingReflection) {
+      return {
+        isParentingProblem: false,
+        triggered: false,
+        coreInsight: null,
+        emotionalTriggers: [],
+        childhoodConnection: null,
+        intergenerationalPattern: null,
+        reflectionQuestions: [],
+        finalInsight: null,
+        safetyDisclaimer: { level: 'info', message: '养育反思模块已禁用' }
+      };
+    }
+
     // ⚠️ 安全修复：此方法仅在_input含有至少3个育儿关键词时触发，且输出标记为'用户声明'级别
     const result = {
       isParentingProblem: false,
@@ -294,6 +313,9 @@ class BlindSpotBreaker {
       level: 'warning',
       message: '养育反思模块是分析框架，不是专业心理咨询或医学建议',
       submessage: '如果面临真实家庭危机或情绪困扰，请寻求专业帮助',
+      // SkillSpector fix: 强化免责声明
+      notSubstituteForProfessionalHelp: true,
+      disclaimerPrefix: '【重要提示】以下内容仅为学术框架驱动的思考辅助，不替代专业心理咨询、医学诊断或治疗。',
       references: '本模块基于学术研究整合，不是诊断工具'
     };
     

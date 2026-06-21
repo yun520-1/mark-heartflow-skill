@@ -12,7 +12,12 @@ try {
     const step1 = hl.whatIsThis(input);
     const step2 = typeof hl.isRightAction === 'function' ? hl.isRightAction({ input }) : null;
     const pain = typeof hl.detectPain === 'function' ? hl.detectPain(input) : null;
-    const shouldSilent = typeof hl.shouldBeSilent === 'function' ? hl.shouldBeSilent(input) : null;
+    // SkillSpector fix: shouldBeSilent 需要 context 对象，不能直接传 string
+    const painResult = pain?.result || false;
+    const emotionIntensity = pain?.intensity || 0;
+    const shouldSilent = typeof hl.shouldBeSilent === 'function'
+      ? hl.shouldBeSilent({ input, personInPain: painResult, emotionIntensity })
+      : null;
 
     const result = {
         input,

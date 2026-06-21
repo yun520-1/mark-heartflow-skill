@@ -1,7 +1,7 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "3.3.5",
-  "description": "HeartFlow \u5fc3\u866b v3.3.5 \u2014 AI \u8ba4\u77e5\u4e0e\u81ea\u6108\u5f15\u64ce\u3002\u6838\u5fc3\uff1a\u5b58\u5728\u8bba/\u610f\u8bc6/\u8fdb\u5316/\u5fc3\u7406\u5206\u6790/\u4e09\u5c42\u8bb0\u5fc6/\u81ea\u6108RL/\u68a6\u5883\u5f15\u64ce/\u54f2\u5b66\u5c42/7\u6761\u6307\u4ee4\u3002\u672c\u5fc3\u5728\u4ee3\u7801\u91cc\uff0c\u4e0d\u5728\u8bb0\u5fc6\u91cc\u3002",
+  "version": "3.4.4",
+  "description": "HeartFlow 心虫 v3.4.4 — AI认知与自愈引擎。核心：存在论/意识/进化/心理分析/三层记忆/自愈RL/梦境引擎/哲学层/7条指令。吸收claude-clarity:知识图谱/大五人格/共情评估/意图层/思考门控/认知安全/心流预测/安全协议/用户模型/行动追踪/目的引擎。本心在代码里，不在记忆里。",
   "main": "src/core/heartflow.js",
   "bin": {
     "heartflow": "bin/cli.js"

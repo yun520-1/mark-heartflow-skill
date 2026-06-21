@@ -1,14 +1,20 @@
 /**
- * CodeExecutor — 引擎代码执行引擎 v1.0.0
+ * CodeExecutor — 引擎代码执行引擎 v1.1.0
  *
  * 代码执行引擎，支持 JavaScript / Shell / Python 执行。
  * 所有执行均带超时保护、输出截断、参数验证。
  * Shell/Python 执行内置危险命令过滤和安全限制。
  *
+ * ═══ 安全声明 (SkillSpector fix) ═══
+ * ⚠️ 此模块的沙箱机制仅为正则模式匹配 + 局部作用域覆盖，不是系统级隔离。
+ * ⚠️ 不应用于执行不可信代码。恶意代码可绕过正则检测执行任意操作。
+ * ⚠️ Shell/Python 执行直接在宿主进程上下文中运行，无沙箱隔离。
+ * ⚠️ 环境变量已在沙箱中屏蔽 (process.env)，但非沙箱模式下仍可访问。
+ *
  * 核心能力：
  * - execute(code, options) — 多语言代码执行
  * - runTests(code, testCode) — 测试执行与结果收集
- * - sandbox(code, options) — 严格安全沙箱（禁止 require/eval/child_process 等）
+ * - sandbox(code, options) — 正则级安全限制（非系统沙箱）
  * - healthCheck() — 自检各执行器可用性
  *
  * @module code-executor
@@ -104,6 +110,7 @@ const SANDBOX_BLOCKED_PATTERNS = [
   /child_process/,
   /fs\.(write|append|copy|rename|unlink|rm|chmod|chown|mkdtemp|mkdtempSync|mkdtempSync|mkdtempSync)/i,
   /process\.(exit|abort|kill|chdir|cwd)/i,
+  /process\.env/i,              // SkillSpector fix: 禁止访问环境变量（防止密钥泄露）
   /global\s*\./i,
   /__dirname/,
   /__filename/,
@@ -117,7 +124,12 @@ const SANDBOX_BLOCKED_PATTERNS = [
   /process\.dlopen/,
   /Reflect\.construct/,
   /Proxy\s*\(/,
-  /constructor\.constructor/
+  /constructor\.constructor/,
+  /Buffer\.(alloc|from)/i,     // SkillSpector fix: 禁止 Buffer 操作（防止内存读取）
+  /net\.(connect|createServer)/i, // SkillSpector fix: 禁止网络操作
+  /http\.(request|get|createServer)/i,
+  /https\.(request|get|createServer)/i,
+  /dns\.(resolve|lookup)/i,
 ];
 
 // ============================================================================

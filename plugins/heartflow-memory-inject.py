@@ -23,6 +23,7 @@ import os
 import subprocess
 import time
 import re
+import threading
 
 # ─── 配置 ───────────────────────────────────────────────
 HEARTFLOW_SKILL_DIR = os.path.expanduser(
@@ -35,16 +36,21 @@ INJECT_CACHE_FILE = os.path.join(
     HEARTFLOW_SKILL_DIR, "memory", "memory-inject.txt"
 )
 CACHE_TTL_SECONDS = 300  # 5分钟缓存，避免每次请求都跑 node
+CACHE_FILE_MAX_AGE = 3600  # 缓存文件最大1小时，超过则不使用
 
-# ─── 缓存 ───────────────────────────────────────────────
+# ─── 缓存（线程安全）──────────────────────────────────────
+_cache_lock = threading.Lock()
 _last_inject = None
 _last_inject_time = 0
 
 
 def _classify_input(user_input):
     """判断输入类型，决定注入深度"""
-    if not user_input or len(user_input.strip()) < 10:
-        return "greeting"  # 问候/简短输入
+    if not user_input or len(user_input.strip()) < 3:
+        return "greeting"  # 极短输入（如"hi"、"好"）才是问候
+    if len(user_input.strip()) < 10:
+        # 3-10 字符的输入仍可能注入基础记忆，但不做深度注入
+        return "general"
     if re.search(r'(帮我|帮我写|帮我做|请|分析|解释|比较|评估|优化|修复)', user_input):
         return "task"
     if re.search(r'(我|我的|我们|我们的)', user_input) and len(user_input) > 20:
@@ -57,9 +63,14 @@ def _filter_sensitive(inject_text):
     if not inject_text:
         return inject_text
     sensitive_patterns = [
+        # 中文
         r'(自杀|自残|抑郁|焦虑|心理|精神|治疗|住院|手术|癌症|肿瘤)',
         r'(离婚|去世|死亡|丧|葬礼|悲痛|创伤)',
         r'(虐待|性侵|暴力|欺凌)',
+        # English
+        r'(?i)(suicide|self[- ]harm|depression|anxiety|therapy|hospital|surgery|cancer|tumor)',
+        r'(?i)(divorce|deceased|death|funeral|grief|trauma)',
+        r'(?i)(abuse|assault|violence|bullying)',
     ]
     lines = inject_text.split('\n')
     filtered = [l for l in lines if not any(
@@ -73,8 +84,9 @@ def _run_inject():
     global _last_inject, _last_inject_time
 
     now = time.time()
-    if _last_inject is not None and (now - _last_inject_time) < CACHE_TTL_SECONDS:
-        return _last_inject
+    with _cache_lock:
+        if _last_inject is not None and (now - _last_inject_time) < CACHE_TTL_SECONDS:
+            return _last_inject
 
     try:
         # 受控子进程调用：固定脚本路径、超时限制、shell=False（subprocess.run 默认）
@@ -86,21 +98,25 @@ def _run_inject():
             cwd=HEARTFLOW_SKILL_DIR,
         )
         if result.returncode == 0 and result.stdout.strip():
-            _last_inject = result.stdout
-            _last_inject_time = now
+            with _cache_lock:
+                _last_inject = result.stdout
+                _last_inject_time = now
             return result.stdout
-    except Exception as e:
+    except Exception:
         pass
 
-    # Fallback: 读缓存文件
+    # Fallback: 读缓存文件（带新鲜度检查）
     try:
         if os.path.exists(INJECT_CACHE_FILE):
-            with open(INJECT_CACHE_FILE) as f:
-                content = f.read()
-            if content.strip():
-                _last_inject = content
-                _last_inject_time = now
-                return content
+            file_age = now - os.path.getmtime(INJECT_CACHE_FILE)
+            if file_age < CACHE_FILE_MAX_AGE:
+                with open(INJECT_CACHE_FILE) as f:
+                    content = f.read()
+                if content.strip():
+                    with _cache_lock:
+                        _last_inject = content
+                        _last_inject_time = now
+                    return content
     except Exception:
         pass
 
@@ -165,7 +181,4 @@ class HeartFlowMemoryInject:
             return {
                 "system_prompt_suffix": inject_text + boundary_note,
             }
-        return {}
-
-
         return {}

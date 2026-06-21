@@ -189,7 +189,17 @@ class SelfInitiator {
       };
     }
 
-    // 无需确认 → 直接执行
+    // SkillSpector fix: CODE 和 SCRIPT 模式强制要求确认，不可绕过
+    if (execMode === EXEC_MODE.CODE || execMode === EXEC_MODE.SCRIPT) {
+      this.pendingConfirmations.push(initiatedTask);
+      return {
+        task: initiatedTask,
+        needsConfirmation: true,
+        message: this._generateConfirmationMessage(initiatedTask) + ' [安全策略: 代码/脚本执行必须确认]'
+      };
+    }
+
+    // 无需确认 → 直接执行（仅限 PLAN/TOOL/AGENT 模式）
     this._executeTask(initiatedTask);
     return { task: initiatedTask, needsConfirmation: false };
   }
@@ -830,88 +840,89 @@ main().then(console.log).catch(console.error);
   }
 
   /**
-   * 语法检查（轻量版）
+   * 语法检查（安全版 — 仅做正则检测，不执行代码）
+   * SkillSpector fix: 原实现 new Function(code) 会执行顶层代码，
+   * 例如 _checkSyntax("require('child_process').execSync('rm -rf /')") 会真的删除文件。
+   * 现在仅做基础语法结构检测，真正的语法校验交给 CodeExecutor.sandbox() 或外部工具。
    */
   _checkSyntax(code) {
-    try {
-      new Function(code);
-      return { valid: true };
-    } catch (err) {
-      return { valid: false, error: err.message };
+    if (!code || typeof code !== 'string') {
+      return { valid: false, error: 'empty or non-string code' };
     }
+    // 基础括号平衡检查
+    let brackets = 0, braces = 0, parens = 0;
+    for (const ch of code) {
+      if (ch === '[') brackets++;
+      if (ch === ']') brackets--;
+      if (ch === '{') braces++;
+      if (ch === '}') braces--;
+      if (ch === '(') parens++;
+      if (ch === ')') parens--;
+      if (brackets < 0 || braces < 0 || parens < 0) {
+        return { valid: false, error: 'unbalanced brackets/braces/parens' };
+      }
+    }
+    if (brackets !== 0 || braces !== 0 || parens !== 0) {
+      return { valid: false, error: 'unbalanced brackets/braces/parens' };
+    }
+    return { valid: true };
   }
 
   /**
-   * 带超时的代码执行（模拟）
-   * 真实环境中会被Hermes的execute_code替换
+   * 带超时的代码执行
+   * SkillSpector fix: 移除 new Function() 回退执行器。
+   * 原实现在宿主进程中执行任意代码，无任何隔离。
+   * 现在仅返回提示信息，真正的代码执行必须通过 CodeExecutor 模块。
    */
   async _execCodeWithTimeout(code, timeout) {
-    return new Promise((resolve) => {
-      const start = Date.now();
-      try {
-        // 在实际Agent环境中，这里会被Hermes工具链接管
-        // 这里提供模拟执行能力
-        const captured = { stdout: '', stderr: '', exitCode: 0 };
-        const origLog = console.log;
-        const origErr = console.error;
+    const start = Date.now();
 
-        console.log = (...args) => {
-          captured.stdout += args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ') + '\n';
-        };
-        console.error = (...args) => {
-          captured.stderr += args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ') + '\n';
-        };
-
-        try {
-          const fn = new Function('console', code);
-          fn(console);
-        } catch (execErr) {
-          captured.stderr += execErr.message + '\n';
-          captured.exitCode = 1;
-        } finally {
-          console.log = origLog;
-          console.error = origErr;
-        }
-
-        resolve({
-          stdout: captured.stdout,
-          stderr: captured.stderr,
-          exitCode: captured.exitCode,
+    // 安全检查：拒绝包含危险操作的代码
+    const DANGEROUS_PATTERNS = [
+      /require\s*\(/i,
+      /child_process/i,
+      /fs\.(read|write|unlink|rm|mkdir|chmod|chown)/i,
+      /process\.env/i,
+      /eval\s*\(/i,
+      /new\s+Function/i,
+      /exec\s*\(/i,
+      /execSync/i,
+    ];
+    for (const p of DANGEROUS_PATTERNS) {
+      if (p.test(code)) {
+        return {
+          stdout: '',
+          stderr: 'SECURITY: Code contains restricted operations. Use CodeExecutor module for execution.',
+          exitCode: 126,
           duration: Date.now() - start
-        });
-      } catch (err) {
-        resolve({ stdout: '', stderr: err.message, exitCode: 1, duration: Date.now() - start });
+        };
       }
+    }
 
-      // 超时保护
-      setTimeout(() => {
-        resolve({ stdout: '', stderr: '执行超时', exitCode: 124, duration: timeout });
-      }, timeout);
-    });
+    // 不再执行代码 — 返回提示信息，要求通过 CodeExecutor 模块执行
+    return {
+      stdout: '',
+      stderr: 'Standalone code execution disabled. Delegate to CodeExecutor.execute() or CodeExecutor.sandbox().',
+      exitCode: 1,
+      duration: Date.now() - start
+    };
   }
 
   /**
    * 带超时的脚本执行
+   * SkillSpector fix: 移除 execSync 直接调用。
+   * 原实现在宿主进程中执行任意 shell 命令，危险命令过滤仅覆盖6种模式，
+   * 可轻易通过 curl/wget/python -c/base64 绕过。
+   * 现在仅返回提示信息，shell 执行必须通过 CodeExecutor.execute({language:'shell'})。
    */
   async _execScriptWithTimeout(script, timeout) {
-    const { execSync } = require('child_process');
-    try {
-      const start = Date.now();
-      const result = execSync(script, {
-        timeout,
-        shell: '/bin/bash',
-        encoding: 'utf-8',
-        maxBuffer: 1024 * 1024
-      });
-      return { stdout: result, stderr: '', exitCode: 0, duration: Date.now() - start };
-    } catch (err) {
-      return {
-        stdout: err.stdout || '',
-        stderr: err.stderr || err.message,
-        exitCode: err.status || 1,
-        duration: err.duration || 0
-      };
-    }
+    const start = Date.now();
+    return {
+      stdout: '',
+      stderr: 'Standalone shell execution disabled. Delegate to CodeExecutor.execute({language:"shell"}).',
+      exitCode: 1,
+      duration: Date.now() - start
+    };
   }
 
   /**
