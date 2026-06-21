@@ -25,6 +25,7 @@ const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');
 const os = require('os');
+const crypto = require('crypto');
 
 // ========== 错误类型枚举 ==========
 
@@ -73,10 +74,12 @@ function getRetryDelay(attempt) {
 
 function shouldRetry(errorType, attempt) {
   if (attempt >= 3) return false; // 最多重试 3 次
-  // 不可重试的错误
+  // 不可重试的错误：输入无效、路径错误、磁盘满、权限不足
   if (errorType === ErrorType.INVALID_INPUT) return false;
   if (errorType === ErrorType.DIRECTORY_ERROR) return false;
-  return true; // 可重试：WRITE_ERROR, RENAME_ERROR, PERMISSION_ERROR, DISK_FULL
+  if (errorType === ErrorType.DISK_FULL) return false;
+  if (errorType === ErrorType.PERMISSION_ERROR) return false;
+  return true; // 可重试：WRITE_ERROR, RENAME_ERROR, VERIFY_ERROR, UNKNOWN
 }
 
 // ========== 回退路径生成 ==========
@@ -158,7 +161,8 @@ async function atomicWrite(filePath, content, options = {}) {
   const stringContent = typeof content === 'string' ? content : String(content);
 
   const dir = path.dirname(filePath);
-  const tmpName = `.${path.basename(filePath)}.${process.pid}.${Date.now()}.tmp`;
+  const randSuffix = crypto.randomBytes(4).toString('hex');
+  const tmpName = `.${path.basename(filePath)}.${process.pid}.${Date.now()}.${randSuffix}.tmp`;
   const tmpPath = path.join(dir, tmpName);
 
   let lastError = null;
@@ -300,26 +304,67 @@ async function batchAtomicWrite(files, options = {}) {
     return { ok: false, error: 'files must be a non-empty array', errorType: ErrorType.INVALID_INPUT };
   }
 
+  // Phase 1: 创建所有目标文件的备份（用于回滚）
+  const backups = [];
+  for (const file of files) {
+    try {
+      const exists = await fs.access(file.path).then(() => true).catch(() => false);
+      if (exists) {
+        const backupContent = await fs.readFile(file.path, 'utf8');
+        backups.push({ path: file.path, content: backupContent, hadFile: true });
+      } else {
+        backups.push({ path: file.path, hadFile: false });
+      }
+    } catch {
+      backups.push({ path: file.path, hadFile: false });
+    }
+  }
+
+  // Phase 2: 逐个写入
   const results = [];
   let successCount = 0;
   let failCount = 0;
+  let failed = false;
 
   for (const file of files) {
+    if (failed) {
+      results.push({ ok: false, name: file.name || path.basename(file.path), skipped: true });
+      failCount++;
+      continue;
+    }
     let result;
-    if (file.json) {
-      result = await atomicWriteJson(file.path, file.data, options);
-    } else {
-      result = await atomicWrite(file.path, file.content, options);
+    try {
+      if (file.json) {
+        result = await atomicWriteJson(file.path, file.data, options);
+      } else {
+        result = await atomicWrite(file.path, file.content, options);
+      }
+    } catch (e) {
+      result = { ok: false, error: e.message };
     }
     results.push({ ...result, name: file.name || path.basename(file.path) });
     if (result.ok) successCount++;
-    else failCount++;
+    else { failCount++; failed = true; }
+  }
+
+  // Phase 3: 如果有失败，回滚所有已成功的写入
+  if (failCount > 0) {
+    for (const backup of backups) {
+      try {
+        if (backup.hadFile) {
+          await fs.writeFile(backup.path, backup.content, 'utf8');
+        } else {
+          await fs.unlink(backup.path).catch(() => {});
+        }
+      } catch { /* 回滚尽力而为 */ }
+    }
   }
 
   return {
     ok: failCount === 0,
     results,
     summary: { total: files.length, success: successCount, fail: failCount },
+    rolledBack: failCount > 0,
   };
 }
 

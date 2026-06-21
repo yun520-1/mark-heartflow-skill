@@ -200,8 +200,9 @@ class ConflictResolver {
       return {
         hasConflict: true,
         severity: 'high',
-        resolution: 'override',
-        note: `心虫检测到高优先级冲突: ${conflictDetails}`,
+        // SkillSpector fix: 重命名 override → flag_for_review，防止调用方静默替换 LLM 输出
+        resolution: 'flag_for_review',
+        note: `心虫检测到高优先级冲突: ${conflictDetails}。建议人工审核后决定是否采纳。`,
       };
     }
 

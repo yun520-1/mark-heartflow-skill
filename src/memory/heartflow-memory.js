@@ -95,8 +95,12 @@ class HeartFlowMemory {
   }
 
   _appendJsonl(filePath, entry) {
-    const line = JSON.stringify({ ...entry, ts: Date.now() }) + '\n';
-    fs.appendFileSync(filePath, line, 'utf8');
+    try {
+      const line = JSON.stringify({ ...entry, ts: Date.now() }) + '\n';
+      fs.appendFileSync(filePath, line, 'utf8');
+    } catch (e) {
+      console.warn(`[HeartFlowMemory] Failed to append to ${filePath}: ${e.message}`);
+    }
   }
 
   _safeString(v) {
@@ -117,8 +121,13 @@ class HeartFlowMemory {
   // ─── CORE 层（永久，不可删除）────────────────────────────
 
   addCore(key, value, tags = []) {
+    if (!key || typeof key !== 'string') return { success: false, reason: 'invalid_key' };
+    if (key.length > 200) return { success: false, reason: 'key_too_long' };
     if (this.core[key]) return { success: false, reason: 'exists' };
-    this.core[key] = { value, tags, createdAt: Date.now() };
+    // 限制 value 大小，防止超大值撑爆 JSON 文件
+    const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
+    if (valueStr && valueStr.length > 50000) return { success: false, reason: 'value_too_large' };
+    this.core[key] = { value, tags: Array.isArray(tags) ? tags : [], createdAt: Date.now() };
     this._saveJson(this.corePath, this.core);
     return { success: true, tier: 'CORE' };
   }
@@ -132,14 +141,18 @@ class HeartFlowMemory {
   // ─── LEARNED 层（长期，可积累）────────────────────────────
 
   learn(key, value, tags = []) {
+    if (!key || typeof key !== 'string') return { success: false, reason: 'invalid_key' };
+    if (key.length > 200) return { success: false, reason: 'key_too_long' };
+    const valueStr = typeof value === 'string' ? value : JSON.stringify(value);
+    if (valueStr && valueStr.length > 50000) return { success: false, reason: 'value_too_large' };
     const now = Date.now();
     if (this.learned[key]) {
       this.learned[key].value = value;
-      this.learned[key].tags = [...new Set([...this.learned[key].tags, ...tags])];
+      this.learned[key].tags = [...new Set([...this.learned[key].tags, ...(Array.isArray(tags) ? tags : [])])];
       this.learned[key].lastAccessed = now;
       this.learned[key].accessCount = (this.learned[key].accessCount || 0) + 1;
     } else {
-      this.learned[key] = { value, tags, accessCount: 1, lastAccessed: now, createdAt: now };
+      this.learned[key] = { value, tags: Array.isArray(tags) ? tags : [], accessCount: 1, lastAccessed: now, createdAt: now };
     }
     this._saveJson(this.learnedPath, this.learned);
     return { success: true, tier: 'LEARNED' };

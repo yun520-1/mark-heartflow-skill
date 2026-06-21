@@ -24,9 +24,20 @@ class IntentClassifier {
   }
 
   classify(input, context = {}) {
+    if (!input || typeof input !== 'string') {
+      return {
+        primary: 'general',
+        scores: {},
+        confidence: 0,
+        isAmbiguous: false,
+        allIntents: [],
+        error: 'invalid_input'
+      };
+    }
+
     const q = input.toLowerCase();
     const scores = {};
-    
+
     for (const [cat, config] of Object.entries(this.categories)) {
       scores[cat] = 0;
       for (const p of config.patterns) {
@@ -34,9 +45,10 @@ class IntentClassifier {
       }
     }
 
-    // 从 context 中提取已有分类（heart-logic 的 whatIsThis 结果）
-    if (context.whatIsThis?.category) {
-      scores[context.whatIsThis.category] = (scores[context.whatIsThis.category] || 0) + 2;
+    // 从 context 中提取已有分类（仅接受已定义的类别，防止注入任意类别）
+    const ctxCategory = context.whatIsThis?.category;
+    if (ctxCategory && this.categories[ctxCategory]) {
+      scores[ctxCategory] = (scores[ctxCategory] || 0) + 2;
     }
 
     // 找最高分

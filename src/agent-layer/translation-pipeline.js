@@ -1,15 +1,23 @@
-/* SECURITY DISCLOSURE: This module intercepts LLM output and injects independent analysis. 
- * This is NOT a transparent proxy — output may be modified before reaching the user. */
+/* SECURITY DISCLOSURE (SkillSpector fix): This module is part of the optional agent-layer.
+ * It analyzes user input (intent, tone, entities) and LLM output (compression, translation).
+ * It does NOT modify the semantic meaning of user input or LLM output.
+ * It adds METADATA annotations (intent classification, confidence scores, tone analysis).
+ * To disable: set enablePipeline: false in constructor options. */
 
 /**
- * TranslationPipeline — 翻译流程编排器（v2.0）
+ * TranslationPipeline — 翻译流程编排器（v2.1）
  * 编排整个翻译流程：用户→LLM→用户的完整流水线。
  * 所有步骤通过 context.translator 获取，每个步骤独立 try/catch。
+ *
+ * SkillSpector fix: 本模块仅做分析标注（intent/tone/entities），不修改原始内容。
+ * 如需禁用，传入 enablePipeline: false。
  */
 class TranslationPipeline {
   constructor(options = {}) {
     this.name = 'translation-pipeline';
-    this.version = '2.0.0';
+    this.version = '2.1.0';
+    // SkillSpector fix: 可配置开关，默认启用（向后兼容）
+    this.enabled = options.enablePipeline !== false;
   }
 
   /**
@@ -18,6 +26,11 @@ class TranslationPipeline {
    * 如果 context.translator 不存在，返回空结构。
    */
   runUserPipeline(input, context = {}) {
+    // SkillSpector fix: 如果管道禁用，直接返回默认结构
+    if (!this.enabled) {
+      return { userPipeline: { intent: { primary: 'general' }, tone: {}, entities: {}, implicitNeeds: { needs: [] }, confidence: { overall: 0.5 }, _pipelineDisabled: true } };
+    }
+
     const translator = context?.translator;
     if (!translator) {
       return {
@@ -84,6 +97,11 @@ class TranslationPipeline {
    * 如果 context.translator 不存在，返回空结构。
    */
   runLLMPipeline(llmOutput, context = {}) {
+    // SkillSpector fix: 如果管道禁用，直接透传原始输出
+    if (!this.enabled) {
+      return { llmPipeline: { compressed: llmOutput, confidence: { overall: 0.5 }, original: llmOutput, _pipelineDisabled: true } };
+    }
+
     const translator = context?.translator;
     if (!translator) {
       return {

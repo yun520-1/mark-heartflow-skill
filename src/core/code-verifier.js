@@ -32,6 +32,11 @@ const codeVerifier = {
     const errors = [];
     const warnings = [];
 
+    // 检测 shell shebang — 明显不是 JS 内容
+    if (/^#!\s*\/(?:bin|usr\/bin)\/(?:ba)?sh/.test(content)) {
+      errors.push('内容包含 shell shebang，不是有效的 JavaScript');
+    }
+
     // 括号平衡
     const open = (content.match(/\{/g) || []).length;
     const close = (content.match(/\}/g) || []).length;

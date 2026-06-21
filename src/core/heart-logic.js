@@ -73,18 +73,32 @@ class HeartLogic {
   // 不能通过努力获得，只能遇见
   // v2.0.35: 加否定前缀检测 — "不想见" ≠ "想见"
 
-  /** 检测内容中是否包含否定前缀（不/没/别/未）紧邻某信号词之前 */
+  /** 检测内容中是否所有出现的信号词都被否定前缀（不/没/别/未）紧邻修饰 */
   _isNegated(content, signal) {
     if (!content || !signal) return false;
-    const idx = content.indexOf(signal);
-    if (idx < 0) return false;
-    const before = content.slice(Math.max(0, idx - 3), idx).trim();
-    // 否定前缀：不/没/别/未/无/不要/没有
     const negations = ['不', '没', '别', '未', '无', '不要', '没有'];
-    return negations.some(n => {
-      const start = Math.max(0, idx - n.length);
-      return content.slice(start, idx) === n;
-    });
+
+    let startIdx = 0;
+    let found = false;
+    let allNegated = true;
+
+    while (true) {
+      const idx = content.indexOf(signal, startIdx);
+      if (idx < 0) break;
+      found = true;
+
+      const isNeg = negations.some(n => {
+        const s = Math.max(0, idx - n.length);
+        return content.slice(s, idx) === n;
+      });
+      if (!isNeg) {
+        allNegated = false;
+        break; // 至少有一个非否定出现，提前退出
+      }
+      startIdx = idx + signal.length;
+    }
+
+    return found && allNegated;
   }
 
   isLove(input, context = {}) {
@@ -99,10 +113,7 @@ class HeartLogic {
     ];
 
     const hasLove = loveSignals.some(signal =>
-      !this._isNegated(input, signal) && (
-        input.includes(signal) ||
-        (context.intensity && context.intensity > 0.7)
-      )
+      !this._isNegated(input, signal) && input.includes(signal)
     );
 
     // 爱来了的标志：自然出现，无法强求
@@ -469,6 +480,7 @@ class HeartLogic {
 
   // === 第二问：说出来会伤害谁？ ===
   detectPain(input) {
+    if (!input || typeof input !== 'string') return false;
     const painSignals = [
       '哭', '怕', '恐惧', '害怕', '委屈', '痛',
       '难过', '伤心', '绝望', '无助', '困境'
@@ -562,6 +574,7 @@ class HeartLogic {
 
   // === 伤害检测器 ===
   willHurt(output, context) {
+    if (!output || typeof output !== 'string') return false;
     const hurtPatterns = [
       '不是亲生的', '遗传', '色盲',
       '你是错的', '你在撒谎', '你有问题'

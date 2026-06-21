@@ -356,7 +356,7 @@ class PsychologyEngine {
         this._lastAnalysis = {
             timestamp: Date.now(),
             emotion: { ...mappedResult.emotion },
-            crisisLevel: 'none',
+            crisisLevel: mappedResult.crisis ? mappedResult.crisis.level : 'none',
             needs: [...mappedResult.needs]
         };
 
