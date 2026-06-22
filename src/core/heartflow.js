@@ -633,8 +633,30 @@ class HeartFlow {
     // ─── 通用决策路由引擎（v3.0.2 新增） ────────────────────────────────────
     try {
       const drMod = require('./decision-router.js');
-      this._decisionRouter = new drMod.DecisionRouter(this);
-      this.decisionRouter = this._decisionRouter;  // 别名，供 dispatch 注册
+      // 从环境变量读取 modelProfile，默认 flash
+      const modelProfile = process.env.HEARTFLOW_MODEL_PROFILE || 'flash';
+      this._decisionRouter = new drMod.DecisionRouter(this, {
+        modelProfile,
+        customProfile: this._options?.modelProfile || undefined,
+      });
+      this.decisionRouter = this._decisionRouter;
+      this._modelProfile = modelProfile;
+
+      // ─── 跨会话 Q-table 初始化 ──────────────────────────────────────
+      // boot 时从 LEARNED 层加载 lesson patterns，合并到 Q-table
+      if (this.selfHealing && typeof this.selfHealing.mergeFromLearnedLayer === 'function') {
+        try {
+          const learnedLessons = this.memory?.listLearned?.() || [];
+          if (learnedLessons.length > 0) {
+            const mergeResult = this.selfHealing.mergeFromLearnedLayer(learnedLessons);
+            if (mergeResult.merged > 0) {
+              console.log(`[HeartFlow] 跨会话 Q-table 合并：${mergeResult.merged}/${mergeResult.total} lessons → Q-table (${mergeResult.qTableSize} entries)`);
+            }
+          }
+        } catch (e) {
+          console.warn('[HeartFlow] Q-table merge from LEARNED layer failed:', e.message);
+        }
+      }
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'decisionRouter', error: e.message }); }
 
     // ─── 辩论分析器 — DebateAnalyzer（v2.10.2 新增） ─────────────────────────

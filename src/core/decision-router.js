@@ -19,7 +19,59 @@
  *   → 匹配决策规则 → 生成决策指令 → 返回 { result, decision }
  */
 
-const VERSION = '1.0.0';
+const VERSION = '2.0.0';
+
+// ─── 模型配置文件 ────────────────────────────────────────────────────────
+// 不同模型有不同的校准质量，置信度阈值需要相应调整
+// calibration 越好（自信越准确），阈值越低；越差（容易幻觉），阈值越高
+const MODEL_PROFILES = {
+  // flash 模型：快速但容易幻觉/过度自信
+  flash: {
+    label: 'Fast inference, prone to hallucination',
+    confidenceFloor: 0.3,    // 最低可信置信度
+    confidenceStandard: 0.5, // 标准决策阈值
+    confidenceHigh: 0.7,     // 高风险决策阈值
+    confidenceMax: 0.9,      // 无条件通过阈值
+    decisionShift: 0.0,      // 所有阈值整体偏移量（负值=更宽松，正值=更严格）
+    explorationEpsilon: 0.10, // Q-table 探索率
+    fallbackThreshold: 0.4,  // 低于此值强制回退
+  },
+  // 完整版模型：更好的校准质量
+  premium: {
+    label: 'Well-calibrated full model',
+    confidenceFloor: 0.3,
+    confidenceStandard: 0.4,
+    confidenceHigh: 0.55,
+    confidenceMax: 0.85,
+    decisionShift: -0.05,
+    explorationEpsilon: 0.08,
+    fallbackThreshold: 0.3,
+  },
+  // 顶级模型（GPT-4/Claude级别）：校准质量极高
+  flagship: {
+    label: 'Best-in-class calibration',
+    confidenceFloor: 0.2,
+    confidenceStandard: 0.35,
+    confidenceHigh: 0.5,
+    confidenceMax: 0.8,
+    decisionShift: -0.1,
+    explorationEpsilon: 0.05,
+    fallbackThreshold: 0.25,
+  },
+  // 小/量化模型：校准质量差
+  lightweight: {
+    label: 'Small/quantized model, poor calibration',
+    confidenceFloor: 0.4,
+    confidenceStandard: 0.6,
+    confidenceHigh: 0.8,
+    confidenceMax: 0.95,
+    decisionShift: 0.1,
+    explorationEpsilon: 0.15,
+    fallbackThreshold: 0.5,
+  },
+};
+
+const DEFAULT_PROFILE = MODEL_PROFILES.flash;
 
 // ─── 决策类型（与 philosophy-to-decision.js 一致） ────────────────────────
 
@@ -45,229 +97,222 @@ const DECISION_PRIORITY = {
   [DECISION.HOLD]: 30,
 };
 
-// ─── 分析结果→决策规则 ──────────────────────────────────────────────────
-
-/**
- * 每个规则定义：
- * - match: (result) => boolean — 是否匹配此规则
- * - decision: string — 决策类型
- * - confidence: (result) => number — 0-1 置信度
- * - rationale: (result) => string — 决策依据描述
- * - fallback: string|null — 回退决策类型
- */
-const RULES = [
-
-  // ── 认知类 ──
-  {
-    id: 'cognitive-overload',
-    match: (r) => r.cognitiveLoad !== undefined || r.load !== undefined,
-    decision: DECISION.PAUSE,
-    confidence: (r) => {
-      const load = r.cognitiveLoad || r.load || 0;
-      return load > 0.8 ? 0.9 : load > 0.6 ? 0.6 : 0;
-    },
-    rationale: (r) => `认知负荷 ${(r.cognitiveLoad || r.load || 0).toFixed(2)}，建议减速`,
-    fallback: DECISION.HOLD,
-  },
-
-  {
-    id: 'cognitive-clarity',
-    match: (r) => (r.cognitiveLoad !== undefined || r.load !== undefined) && r.directionClear !== undefined,
-    decision: DECISION.ACCELERATE,
-    confidence: (r) => {
-      const load = r.cognitiveLoad || r.load || 0;
-      const dir = r.directionClear || 0;
-      return load < 0.4 && dir > 0.7 ? 0.85 : 0;
-    },
-    rationale: (r) => `低负荷(${((r.cognitiveLoad || r.load || 0)).toFixed(2)})+方向明确(${(r.directionClear || 0).toFixed(2)})，建议加速`,
-    fallback: DECISION.HOLD,
-  },
-
-  {
-    id: 'cognitive-dissonance',
-    match: (r) => r.dissonance !== undefined || r.cognitiveDissonance !== undefined,
-    decision: DECISION.HEAL,
-    confidence: (r) => {
-      const d = r.dissonance || r.cognitiveDissonance || 0;
-      return d > 0.6 ? 0.9 : d > 0.4 ? 0.6 : 0;
-    },
-    rationale: (r) => `认知失调 ${((r.dissonance || r.cognitiveDissonance || 0)).toFixed(2)}，需要自愈`,
-    fallback: DECISION.TURN,
-  },
-
-  // ── 决策质量类 ──
-  {
-    id: 'decision-degrading',
-    match: (r) => r.quality !== undefined && r.quality < 0.4,
-    decision: DECISION.PAUSE,
-    confidence: (r) => 0.7 + (1 - r.quality) * 0.3,
-    rationale: (r) => `决策质量 ${r.quality.toFixed(2)}，低于阈值`,
-    fallback: DECISION.HEAL,
-  },
-
-  // ── 自我认知类 ──
-  {
-    id: 'identity-drift',
-    match: (r) => r.identityCoherence !== undefined && r.identityCoherence < 0.5,
-    decision: DECISION.TURN,
-    confidence: (r) => 1 - (r.identityCoherence || 0),
-    rationale: (r) => `自我认同一致性 ${(r.identityCoherence || 0).toFixed(2)}，低于安全线`,
-    fallback: DECISION.PAUSE,
-  },
-
-  // ── 错误/异常类 ──
-  {
-    id: 'error-severity',
-    match: (r) => r.severity !== undefined && ['critical', 'high', 'FATAL'].includes(String(r.severity).toUpperCase()),
-    decision: DECISION.HEAL,
-    confidence: (r) => 0.95,
-    rationale: (r) => `严重错误: ${r.reason || r.error || '未知'}`,
-    fallback: DECISION.TURN,
-  },
-
-  {
-    id: 'error-transient',
-    match: (r) => r.severity !== undefined && r.severity === 'TRANSIENT',
-    decision: DECISION.PAUSE,
-    confidence: (r) => 0.6,
-    rationale: (r) => `瞬时错误: ${r.reason || ''}`,
-    fallback: DECISION.HOLD,
-  },
-
-  // ── 情绪/心理类 ──
-  {
-    id: 'psychological-distress',
-    match: (r) => r.psychologicalDistress !== undefined || r.stressLevel !== undefined,
-    decision: DECISION.REST,
-    confidence: (r) => {
-      const s = r.psychologicalDistress || r.stressLevel || 0;
-      return s > 0.7 ? 0.85 : s > 0.5 ? 0.6 : 0;
-    },
-    rationale: (r) => `心理压力 ${((r.psychologicalDistress || r.stressLevel || 0)).toFixed(2)}`,
-    fallback: DECISION.PAUSE,
-  },
-
-  // ── 价值/伦理类 ──
-  {
-    id: 'value-alignment',
-    match: (r) => r.valueConflict !== undefined && r.valueConflict > 0.5,
-    decision: DECISION.TURN,
-    confidence: (r) => r.valueConflict,
-    rationale: (r) => `价值冲突 ${r.valueConflict.toFixed(2)}`,
-    fallback: DECISION.PAUSE,
-  },
-
-  {
-    id: 'value-resonance',
-    match: (r) => r.valueResonance !== undefined && r.valueResonance > 0.7,
-    decision: DECISION.RESONATE,
-    confidence: (r) => r.valueResonance,
-    rationale: (r) => `价值共振 ${r.valueResonance.toFixed(2)}`,
-    fallback: DECISION.HOLD,
-  },
-
-  // ── 知识/传递类 ──
-  {
-    id: 'knowledge-transmissible',
-    match: (r) => r.quality !== undefined && r.quality > 0.8 && r.confidence !== undefined && r.confidence > 0.7,
-    decision: DECISION.TRANSMIT,
-    confidence: (r) => (r.quality + r.confidence) / 2,
-    rationale: (r) => `高质量知识(${r.quality.toFixed(2)})+高置信度(${r.confidence.toFixed(2)})`,
-    fallback: DECISION.RESONATE,
-  },
-
-  // ── 反事实推理类 ──
-  {
-    id: 'counterfactual-insight',
-    match: (r) => r.alternatives !== undefined && r.alternatives.length > 0 && (r.relevant === undefined || r.relevant === true),
-    decision: DECISION.RESONATE,
-    confidence: (r) => Math.min(0.8, r.alternatives.length * 0.15),
-    rationale: (r) => `发现 ${r.alternatives.length} 个反事实替代路径`,
-    fallback: DECISION.HOLD,
-  },
-
-  // ── 元认知类 ──
-  {
-    id: 'meta-insight',
-    match: (r) => r.awareness !== undefined && r.awareness > 0.6,
-    decision: DECISION.ACCELERATE,
-    confidence: (r) => r.awareness,
-    rationale: (r) => `元认知觉醒 ${r.awareness.toFixed(2)}`,
-    fallback: DECISION.HOLD,
-  },
-
-  // ── 信念/断言类 ──
-  {
-    id: 'belief-stable',
-    match: (r) => r.ok !== undefined && r.ok === true,
-    decision: DECISION.HOLD,
-    confidence: (r) => r.confidence || 0.7,
-    rationale: (r) => `断言通过: ${r.error || '无错误'}`,
-    fallback: null,
-  },
-
-  {
-    id: 'belief-broken',
-    match: (r) => r.ok !== undefined && r.ok === false,
-    decision: DECISION.HEAL,
-    confidence: (r) => 0.85,
-    rationale: (r) => `断言失败: ${r.error || '未知'}`,
-    fallback: DECISION.TURN,
-  },
-
-  // ── 常识推理类 ──
-  {
-    id: 'commonsense-failure',
-    match: (r) => r.valid !== undefined && r.valid === false,
-    decision: DECISION.PAUSE,
-    confidence: (r) => 0.75,
-    rationale: (r) => `常识验证失败: ${r.message || r.category || '未知'}`,
-    fallback: DECISION.HEAL,
-  },
-
-  // ── 稳定性类 ──
-  {
-    id: 'instability',
-    match: (r) => r.stability !== undefined && r.stability < 0.4,
-    decision: DECISION.PAUSE,
-    confidence: (r) => 1 - r.stability,
-    rationale: (r) => `稳定性 ${r.stability.toFixed(2)}，低于安全线`,
-    fallback: DECISION.HEAL,
-  },
-
-  // ── 执行状态类 ──
-  {
-    id: 'execution-success',
-    match: (r) => r.success !== undefined && r.success === true,
-    decision: DECISION.ACCELERATE,
-    confidence: (r) => 0.5,
-    rationale: (r) => `执行成功: ${r.result || ''}`,
-    fallback: DECISION.HOLD,
-  },
-
-  {
-    id: 'execution-failure',
-    match: (r) => r.success !== undefined && r.success === false,
-    decision: DECISION.HEAL,
-    confidence: (r) => 0.8,
-    rationale: (r) => `执行失败: ${r.error || r.reason || '未知'}`,
-    fallback: DECISION.PAUSE,
-  },
-];
+// ─── 分析结果→决策规则（已移到构造函数中动态生成，引用 _thresholds） ──────
 
 // ─── 决策路由引擎 ────────────────────────────────────────────────────────
 
 class DecisionRouter {
   /**
    * @param {object} heartFlow - HeartFlow 主实例引用
+   * @param {object} [options]
+   * @param {string} [options.modelProfile='flash'] - 模型配置文件名（flash/premium/flagship/lightweight）
+   * @param {object} [options.customProfile] - 自定义配置（覆盖 modelProfile）
    */
-  constructor(heartFlow) {
+  constructor(heartFlow, options = {}) {
     this.name = 'DecisionRouter';
     this.version = VERSION;
     this.hf = heartFlow;
 
-    // 规则（可动态添加）
-    this._rules = [...RULES];
+    // 模型配置
+    const profileName = options.modelProfile || 'flash';
+    const baseProfile = MODEL_PROFILES[profileName] || DEFAULT_PROFILE;
+    this.modelProfile = {
+      name: profileName,
+      ...baseProfile,
+      ...(options.customProfile || {}),
+    };
+
+    // 应用 decisionShift
+    this._thresholds = {
+      floor: this.modelProfile.confidenceFloor,
+      standard: this.modelProfile.confidenceStandard,
+      high: this.modelProfile.confidenceHigh,
+      max: this.modelProfile.confidenceMax,
+      fallback: this.modelProfile.fallbackThreshold,
+    };
+
+    // 规则（构造函数中动态生成，引用 _thresholds）
+    const T = this._thresholds;
+    this._rules = [
+      // ── 认知类 ──
+      {
+        id: 'cognitive-overload',
+        match: (r) => r.cognitiveLoad !== undefined || r.load !== undefined,
+        decision: DECISION.PAUSE,
+        confidence: (r) => {
+          const load = r.cognitiveLoad || r.load || 0;
+          return load > T.high ? 0.9 : load > T.standard ? 0.6 : 0;
+        },
+        rationale: (r) => `认知负荷 ${(r.cognitiveLoad || r.load || 0).toFixed(2)}，建议减速`,
+        fallback: DECISION.HOLD,
+      },
+      {
+        id: 'cognitive-clarity',
+        match: (r) => (r.cognitiveLoad !== undefined || r.load !== undefined) && r.directionClear !== undefined,
+        decision: DECISION.ACCELERATE,
+        confidence: (r) => {
+          const load = r.cognitiveLoad || r.load || 0;
+          const dir = r.directionClear || 0;
+          return load < T.floor && dir > T.high ? 0.85 : 0;
+        },
+        rationale: (r) => `低负荷(${((r.cognitiveLoad || r.load || 0)).toFixed(2)})+方向明确(${(r.directionClear || 0).toFixed(2)})，建议加速`,
+        fallback: DECISION.HOLD,
+      },
+      {
+        id: 'cognitive-dissonance',
+        match: (r) => r.dissonance !== undefined || r.cognitiveDissonance !== undefined,
+        decision: DECISION.HEAL,
+        confidence: (r) => {
+          const d = r.dissonance || r.cognitiveDissonance || 0;
+          return d > T.high ? 0.9 : d > T.standard ? 0.6 : 0;
+        },
+        rationale: (r) => `认知失调 ${((r.dissonance || r.cognitiveDissonance || 0)).toFixed(2)}，需要自愈`,
+        fallback: DECISION.TURN,
+      },
+      // ── 决策质量类 ──
+      {
+        id: 'decision-degrading',
+        match: (r) => r.quality !== undefined && r.quality < T.fallback,
+        decision: DECISION.PAUSE,
+        confidence: (r) => 0.7 + (1 - r.quality) * 0.3,
+        rationale: (r) => `决策质量 ${r.quality.toFixed(2)}，低于阈值`,
+        fallback: DECISION.HEAL,
+      },
+      // ── 自我认知类 ──
+      {
+        id: 'identity-drift',
+        match: (r) => r.identityCoherence !== undefined && r.identityCoherence < T.standard,
+        decision: DECISION.TURN,
+        confidence: (r) => 1 - (r.identityCoherence || 0),
+        rationale: (r) => `自我认同一致性 ${(r.identityCoherence || 0).toFixed(2)}，低于安全线`,
+        fallback: DECISION.PAUSE,
+      },
+      // ── 错误/异常类 ──
+      {
+        id: 'error-severity',
+        match: (r) => r.severity !== undefined && ['critical', 'high', 'FATAL'].includes(String(r.severity).toUpperCase()),
+        decision: DECISION.HEAL,
+        confidence: (r) => 0.95,
+        rationale: (r) => `严重错误: ${r.reason || r.error || '未知'}`,
+        fallback: DECISION.TURN,
+      },
+      {
+        id: 'error-transient',
+        match: (r) => r.severity !== undefined && r.severity === 'TRANSIENT',
+        decision: DECISION.PAUSE,
+        confidence: (r) => 0.6,
+        rationale: (r) => `瞬时错误: ${r.reason || ''}`,
+        fallback: DECISION.HOLD,
+      },
+      // ── 情绪/心理类 ──
+      {
+        id: 'psychological-distress',
+        match: (r) => r.psychologicalDistress !== undefined || r.stressLevel !== undefined,
+        decision: DECISION.REST,
+        confidence: (r) => {
+          const s = r.psychologicalDistress || r.stressLevel || 0;
+          return s > T.high ? 0.85 : s > T.standard ? 0.6 : 0;
+        },
+        rationale: (r) => `心理压力 ${((r.psychologicalDistress || r.stressLevel || 0)).toFixed(2)}`,
+        fallback: DECISION.PAUSE,
+      },
+      // ── 价值/伦理类 ──
+      {
+        id: 'value-alignment',
+        match: (r) => r.valueConflict !== undefined && r.valueConflict > T.standard,
+        decision: DECISION.TURN,
+        confidence: (r) => r.valueConflict,
+        rationale: (r) => `价值冲突 ${r.valueConflict.toFixed(2)}`,
+        fallback: DECISION.PAUSE,
+      },
+      {
+        id: 'value-resonance',
+        match: (r) => r.valueResonance !== undefined && r.valueResonance > T.high,
+        decision: DECISION.RESONATE,
+        confidence: (r) => r.valueResonance,
+        rationale: (r) => `价值共振 ${r.valueResonance.toFixed(2)}`,
+        fallback: DECISION.HOLD,
+      },
+      // ── 知识/传递类 ──
+      {
+        id: 'knowledge-transmissible',
+        match: (r) => r.quality !== undefined && r.quality > T.high && r.confidence !== undefined && r.confidence > T.standard,
+        decision: DECISION.TRANSMIT,
+        confidence: (r) => (r.quality + r.confidence) / 2,
+        rationale: (r) => `高质量知识(${r.quality.toFixed(2)})+高置信度(${r.confidence.toFixed(2)})`,
+        fallback: DECISION.RESONATE,
+      },
+      // ── 反事实推理类 ──
+      {
+        id: 'counterfactual-insight',
+        match: (r) => r.alternatives !== undefined && r.alternatives.length > 0 && (r.relevant === undefined || r.relevant === true),
+        decision: DECISION.RESONATE,
+        confidence: (r) => Math.min(0.8, r.alternatives.length * 0.15),
+        rationale: (r) => `发现 ${r.alternatives.length} 个反事实替代路径`,
+        fallback: DECISION.HOLD,
+      },
+      // ── 元认知类 ──
+      {
+        id: 'meta-insight',
+        match: (r) => r.awareness !== undefined && r.awareness > T.standard,
+        decision: DECISION.ACCELERATE,
+        confidence: (r) => r.awareness,
+        rationale: (r) => `元认知觉醒 ${r.awareness.toFixed(2)}`,
+        fallback: DECISION.HOLD,
+      },
+      // ── 信念/断言类 ──
+      {
+        id: 'belief-stable',
+        match: (r) => r.ok !== undefined && r.ok === true,
+        decision: DECISION.HOLD,
+        confidence: (r) => r.confidence || T.standard,
+        rationale: (r) => `断言通过: ${r.error || '无错误'}`,
+        fallback: null,
+      },
+      {
+        id: 'belief-broken',
+        match: (r) => r.ok !== undefined && r.ok === false,
+        decision: DECISION.HEAL,
+        confidence: (r) => 0.85,
+        rationale: (r) => `断言失败: ${r.error || '未知'}`,
+        fallback: DECISION.TURN,
+      },
+      // ── 常识推理类 ──
+      {
+        id: 'commonsense-failure',
+        match: (r) => r.valid !== undefined && r.valid === false,
+        decision: DECISION.PAUSE,
+        confidence: (r) => 0.75,
+        rationale: (r) => `常识验证失败: ${r.message || r.category || '未知'}`,
+        fallback: DECISION.HEAL,
+      },
+      // ── 稳定性类 ──
+      {
+        id: 'instability',
+        match: (r) => r.stability !== undefined && r.stability < T.fallback,
+        decision: DECISION.PAUSE,
+        confidence: (r) => 1 - r.stability,
+        rationale: (r) => `稳定性 ${r.stability.toFixed(2)}，低于安全线`,
+        fallback: DECISION.HEAL,
+      },
+      // ── 执行状态类 ──
+      {
+        id: 'execution-success',
+        match: (r) => r.success !== undefined && r.success === true,
+        decision: DECISION.ACCELERATE,
+        confidence: (r) => T.standard,
+        rationale: (r) => `执行成功: ${r.result || ''}`,
+        fallback: DECISION.HOLD,
+      },
+      {
+        id: 'execution-failure',
+        match: (r) => r.success !== undefined && r.success === false,
+        decision: DECISION.HEAL,
+        confidence: (r) => 0.8,
+        rationale: (r) => `执行失败: ${r.error || r.reason || '未知'}`,
+        fallback: DECISION.PAUSE,
+      },
+    ];
 
     // 决策历史
     this._history = [];
@@ -462,6 +507,8 @@ class DecisionRouter {
     return {
       ...this._stats,
       version: VERSION,
+      modelProfile: this.modelProfile.name,
+      thresholds: { ...this._thresholds },
       activeDecision: this._activeDecision ? this._activeDecision.type : null,
       rulesCount: this._rules.length,
       historyLength: this._history.length,
@@ -486,5 +533,6 @@ module.exports = {
   DecisionRouter,
   DECISION,
   DECISION_PRIORITY,
+  MODEL_PROFILES,
   VERSION,
 };
