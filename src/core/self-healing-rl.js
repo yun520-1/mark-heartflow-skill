@@ -712,6 +712,101 @@ class HealingMemoryRL {
       insight: 'Titans-inspired: 记忆重要性 = recency × access × Q-value'
     };
   }
+
+  /**
+   * 跨会话 Q-table 合并：从 LEARNED 层加载 lesson patterns，合并到 Q-table
+   *
+   * 每个 lesson pattern 被视为一个"虚拟策略尝试"：
+   *   - pattern = contextKey
+   *   - successRate = 该 lesson 的成功率 -> 转为 Q-value
+   *   - accessCount = lesson 被引用的次数 -> Q-value 的置信度权重
+   *
+   * 合并策略：新 Q-value = (oldQ * oldWeight + lessonQ * lessonWeight) / (oldWeight + lessonWeight)
+   * 其中 weight = min(1, accessCount / 5) -- 5次以上引用视为"经验丰富"
+   *
+   * @param {Array} learnedLessons - 从 LEARNED 层读取的 lesson 数组
+   *   [{ key, value, successRate, accessCount }]
+   * @returns {object} 合并结果
+   */
+  mergeFromLearnedLayer(learnedLessons = []) {
+    if (!learnedLessons || learnedLessons.length === 0) {
+      return { merged: 0, skipped: 0, total: 0 };
+    }
+
+    let merged = 0;
+    let skipped = 0;
+
+    for (const lesson of learnedLessons) {
+      const pattern = lesson.key || lesson.pattern || '';
+      if (!pattern) { skipped++; continue; }
+
+      const successRate = lesson.successRate !== undefined ? lesson.successRate : 0.5;
+      const accessCount = lesson.accessCount || 1;
+      const lessonQ = successRate;
+      const lessonWeight = Math.min(1.0, accessCount / 5);
+
+      const ck = `${pattern}@${this._ctx.machineId}:${this._ctx.environment}:${this._ctx.region}`;
+
+      if (!this.qTable.has(ck)) {
+        this.qTable.set(ck, {});
+      }
+      const entry = this.qTable.get(ck);
+
+      const strategyKey = `lesson_${pattern.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30)}`;
+      const oldQ = entry[strategyKey] ?? 0.5;
+      const oldWeight = 1.0;
+
+      const newQ = (oldQ * oldWeight + lessonQ * lessonWeight) / (oldWeight + lessonWeight);
+      entry[strategyKey] = parseFloat(newQ.toFixed(4));
+
+      if (_qMeta[ck]) {
+        _qMeta[ck].accessCount = (_qMeta[ck].accessCount || 0) + 1;
+        _qMeta[ck].lastAccessedAt = Date.now();
+      } else {
+        _qMeta[ck] = { createdAt: Date.now(), lastAccessedAt: Date.now(), accessCount: 1 };
+      }
+
+      merged++;
+    }
+
+    _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
+    _debouncedSave(this);
+
+    return {
+      merged,
+      skipped,
+      total: learnedLessons.length,
+      qTableSize: this.qTable.size,
+      insight: `跨会话合并：${merged}条lesson合并到Q-table，${skipped}条跳过`
+    };
+  }
+
+  /**
+   * 导出 Q-table 为可序列化的 lesson 格式（供跨会话传递）
+   * @returns {Array} lessons 数组
+   */
+  exportAsLessons() {
+    const lessons = [];
+    for (const [ck, entry] of this.qTable.entries()) {
+      const pattern = ck.split('@')[0];
+      const strategies = Object.entries(entry);
+      if (strategies.length === 0) continue;
+
+      const best = strategies.sort((a, b) => b[1] - a[1])[0];
+      const maxQ = best[1];
+      const totalAttempts = strategies.reduce((s, e) => s + (e[1] > 0.5 ? 1 : 0), 0);
+
+      lessons.push({
+        key: pattern,
+        value: `lesson_${pattern.slice(0, 40)}: best=${best[0]}, Q=${maxQ.toFixed(3)}`,
+        successRate: parseFloat(maxQ.toFixed(3)),
+        accessCount: Math.max(1, totalAttempts),
+        source: 'qtable_export',
+        exportedAt: new Date().toISOString(),
+      });
+    }
+    return lessons;
+  }
 }
 
 module.exports = { HealingMemoryRL };
