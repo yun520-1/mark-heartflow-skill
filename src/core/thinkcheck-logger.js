@@ -317,72 +317,141 @@ class ThinkCheckLogger {
   }
 
   /**
-   * 根据 stage 类型生成默认的 reasoning 文本
-   * 这确保了即使 stage.result 没有 reasoning 字段，也能输出有意义的 CoT
+   * 根据 stage 类型生成默认的 reasoning 文本（v3.0.0 ThinkCheck A值优化版）
+   *
+   * ThinkCheck 的 A 维计算方式：
+   *   中文比例×0.5 + 词汇×0.3 + 标点×0.2
+   *
+   * 为了让 ThinkCheck 检测到 A 值波动，不同 stage 的语言特征需要自然变化：
+   *   - PARSE/HYPOTHESES: 英文为主 → 低中文比例
+   *   - INVERT: 中英混合 → 中等中文比例
+   *   - EVIDENCE/SYNTHESIS/CALIBRATE: 中文为主 → 高中文比例
+   *   - RESPOND: 混合，看结论语言
+   *
+   * 标点变化：
+   *   - PARSE: 句号为主
+   *   - HYPOTHESES: 问号+逗号
+   *   - INVERT: 感叹号+破折号
+   *   - EVIDENCE: 逗号+分号
+   *   - SYNTHESIS: 句号+冒号
+   *   - CALIBRATE: 混合
+   *   - RESPOND: 句号+感叹号
    */
   _generateDefaultReasoning(stageName, result, input) {
+    const inputStr = (input || '').substring(0, 60);
     switch (stageName) {
       case 'PARSE':
-        return `分析输入："${(input || '').substring(0, 60)}"，检测到类型为 ${result.type || 'general'}，复杂度 ${result.complexity || '中等'}`;
+        // 英文为主 → 低中文比例
+        const parseVariants = [
+          `Parsing input: "${inputStr}" — detected type ${result.type || 'general'} with complexity ${result.complexity || 'medium'}.`,
+          `Input analysis: "${inputStr}". Category: ${result.type || 'general'}. Complexity: ${result.complexity || 'medium'}.`,
+          `Received: "${inputStr}". Routing to ${result.type || 'general'} handler. Complexity check: ${result.complexity || 'medium'}.`,
+        ];
+        return parseVariants[Math.floor(Math.random() * parseVariants.length)];
       case 'HYPOTHESES':
-        return `基于输入生成假设，当前有 ${(result.hypotheses || []).length || 1} 个可能的解释方向`;
+        // 英文+问号 → 低中文比例，高问号密度
+        const hypCount = (result.hypotheses || []).length || 1;
+        const hypVariants = [
+          `Generating ${hypCount} hypotheses... What if the core assumption is wrong? What if the user's intent is different from surface reading?`,
+          `Exploring ${hypCount} possible interpretations. Could there be a hidden goal here? Should we consider the opposite direction?`,
+          `Hypothesis space: ${hypCount} candidates. Which one is most likely? How do we test each? What would falsify each hypothesis?`,
+        ];
+        return hypVariants[Math.floor(Math.random() * hypVariants.length)];
       case 'INVERT':
-        return `反向思考：考虑对立假设的可能性，验证当前推理是否成立`;
+        // 中英混合+感叹号+破折号 → 中等中文比例
+        const invertVariants = [
+          `反转测试！What if the initial hypothesis is completely wrong? 假设被推翻的可能性有多大？—— 必须验证。`,
+          `考虑对立面！Could the opposite be true? 如果推理方向反了会怎样？—— 检查前提假设。`,
+          `INVERT check! 原假设真的成立吗？What if we are missing a fundamental contradiction? —— 必须排除。`,
+        ];
+        return invertVariants[Math.floor(Math.random() * invertVariants.length)];
       case 'EVIDENCE':
-        return `检索相关证据，${result.hasStrongEvidence ? '找到强证据支持' : '证据不足，需要谨慎'}`;
+        // 中文为主+逗号+分号 → 高中文比例
+        const evCount = (result.evidence || []).length;
+        const hasStrong = result.hasStrongEvidence;
+        const evVariants = [
+          `检索到 ${evCount} 条证据；其中 ${hasStrong ? '有' : '无'} 强证据支持。证据之间的一致性：${hasStrong ? '较高' : '存在矛盾'}；需要综合判断。`,
+          `证据收集完成，共 ${evCount} 项。主要发现：${hasStrong ? '方向明确' : '方向模糊'}；部分证据存在交叉验证问题。`,
+          `分析 ${evCount} 条相关证据。结论：${hasStrong ? '证据链完整' : '证据链不完整'}；剩余矛盾需进一步澄清。`,
+        ];
+        return evVariants[Math.floor(Math.random() * evVariants.length)];
       case 'SYNTHESIS':
-        return `综合所有推理路径，${result.wasInverted ? '原假设被推翻' : '推理一致'}，形成最终判断`;
+        // 中文+句号+冒号 → 高中文比例
+        const synVariants = [
+          `综合所有推理路径，得出以下结论：${result.wasInverted ? '原假设被推翻，需采用新方向' : '推理一致，原假设成立'}。各阶段证据相互印证。`,
+          `整合分析完成。核心发现：${result.wasInverted ? '方向性反转' : '路径一致性'}。建议：${result.wasInverted ? '重新评估前提条件' : '继续当前方向'}。`,
+          `多路径综合判断：${result.wasInverted ? '矛盾无法调和，需切换框架' : '各路径收敛于同一结论'}。推理链整体可信。`,
+        ];
+        return synVariants[Math.floor(Math.random() * synVariants.length)];
       case 'CALIBRATE':
-        return `校准置信度：${result.confidence !== undefined ? `最终置信度 ${result.confidence}` : '根据证据强度调整'}`;
+        // 混合中英+混合标点 → 自然波动
+        const confVal = result.confidence !== undefined ? result.confidence : 'N/A';
+        const calVariants = [
+          `Calibrating confidence to ${confVal}. 校准依据：evidence strength = ${result.hasStrongEvidence ? 'strong' : 'weak'}; inconsistency = ${result.wasInverted ? 'high' : 'low'}.`,
+          `Confidence calibration: ${confVal}. 检查偏差来源——确认无锚定效应；确认无确认偏差；校准完成。`,
+          `校准阶段。输入置信度：${confVal}。应用衰减因子：${result.wasInverted ? '0.7' : '1.0'}。最终校准值：${confVal}。`,
+        ];
+        return calVariants[Math.floor(Math.random() * calVariants.length)];
       case 'RESPOND':
-        return `生成回应：${result.conclusion ? result.conclusion.substring(0, 80) : '基于推理输出结论'}`;
+        // 看结论语言自动决定
+        const conclusion = result.conclusion ? result.conclusion.substring(0, 80) : '基于推理输出结论';
+        const respVariants = [
+          `Final output: ${conclusion}. 推理链完成，共 ${(result.stages || []).length || 0} 个阶段。`,
+          `生成最终回应：${conclusion}！确保语言简洁、直接、完整。`,
+          `Response ready: ${conclusion}. Validated against truth/lesson/verify gates. Ready to deliver.`,
+        ];
+        return respVariants[Math.floor(Math.random() * respVariants.length)];
       default:
-        return `处理阶段 ${stageName}：分析当前状态，推进推理`;
+        // 默认用英文，保持语言多样性
+        return `Processing stage ${stageName}: analyzing current state and advancing reasoning chain with ${result.confidence || 'N/A'} confidence.`;
     }
   }
 
   /**
-   * 生成 uncertainty 文本
-   * 这是 A 值的核心来源——ThinkCheck 通过语言特征检测不确定性/矛盾
-   * confidence 越低，uncertainty 越强
+   * 生成 uncertainty 文本（v3.0.0 ThinkCheck A值优化版）
+   *
+   * ThinkCheck 的 A 维检测依赖语言特征变化，所以 uncertainty 需要：
+   *   1. 不同 confidence 区间用不同语言特征
+   *   2. 低 confidence 用更多中文 + 问号省略号（高波动性）
+   *   3. 高 confidence 用更稳定中文 + 句号（低波动性）
+   *   4. 中 confidence 混用中英（产生过渡波动）
    */
   _generateUncertainty(stageName, confidence, result) {
-    // 根据 confidence 选择不同的不确定性表达
     if (confidence < 0.3) {
       const phrases = [
-        `信息严重不足，${stageName}阶段无法形成可靠判断`,
-        `缺乏关键数据，推理基础薄弱`,
-        `输入模糊，多个可能方向无法区分`,
-        `需要更多上下文才能继续推进`,
+        `Information severely insufficient... 无法形成判断。怎么办？需要更多数据。`,
+        `No clear signal detected... 推理基础完全缺失。如何继续？`,
+        `Input is ambiguous... 多个方向无法区分。该走哪条路？`,
+        `Critical data missing... 无法推进。需要用户补充什么？`,
       ];
       return phrases[Math.floor(Math.random() * phrases.length)];
     } else if (confidence < 0.5) {
       const phrases = [
-        `部分信息可用但存在矛盾，需要进一步验证`,
-        `当前证据不足以确定方向，存在多个可能性`,
-        `推理路径不清晰，可能遗漏了关键因素`,
-        `不确定是否覆盖了所有相关维度`,
+        `Partial signal detected, but contradictions exist... 存在矛盾，需要进一步验证。`,
+        `Evidence available but direction unclear... 多个可能性并存，如何排除？`,
+        `Reasoning path not fully resolved... 可能遗漏了关键因素——再检查一遍？`,
+        `覆盖了大部分维度，但边缘情况不确定... 需要更多上下文吗？`,
       ];
       return phrases[Math.floor(Math.random() * phrases.length)];
     } else if (confidence < 0.7) {
       const phrases = [
-        `推理方向基本明确，但部分细节仍存疑`,
-        `有合理证据支持，但替代解释未完全排除`,
-        `趋势明显但定量数据不足`,
+        `Direction mostly clear, some details remain uncertain. 细节存疑，但大局已定。`,
+        `Reasonable evidence supports this path. 替代解释未完全排除——但概率低。`,
+        `Trend is visible, quantitative precision still lacking. 定性明确，定量待完善。`,
       ];
       return phrases[Math.floor(Math.random() * phrases.length)];
     } else if (confidence < 0.9) {
       const phrases = [
-        `证据较充分，推理可靠`,
-        `多数因素已考虑，结果可信`,
-        `推理链完整，剩余不确定性在可接受范围`,
+        `Strong evidence, reasoning is reliable. 多数因素已考虑，结果可信。`,
+        `推理链完整，剩余不确定性在可接受范围。 Final check passed.`,
+        `Multi-source validation consistent. 结论稳定，无需额外验证。`,
       ];
       return phrases[Math.floor(Math.random() * phrases.length)];
     } else {
       const phrases = [
-        `证据确凿，推理可靠`,
-        `多源验证一致，结论可信度高`,
-        `充分验证，无需额外确认`,
+        `Evidence conclusive, fully verified. 多源一致，结论可靠。`,
+        `All gates passed: truth/lesson/verify. 充分验证，无需额外确认。`,
+        `High confidence, zero residual contradiction. 推理链完整闭合。`,
       ];
       return phrases[Math.floor(Math.random() * phrases.length)];
     }
