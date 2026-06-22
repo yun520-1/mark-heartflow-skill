@@ -224,6 +224,9 @@ class HeartFlow {
     this.goalPursuer = null;  // 目标追求者
     this.selfInitiator = null;  // 自主发起者
 
+    // ThinkCheck Logger — 结构化决策轨迹日志（用于 U/D/A/H 分析）
+    this.thinkcheckLogger = null;  // 惰性初始化
+
     // Cross-Session Memory Layer — 跨会话记忆
     this.sessionMemory = null;  // 会话记忆
     this.projectContext = null;  // 项目上下文
@@ -1670,6 +1673,56 @@ class HeartFlow {
       return formatted;
     };
 
+    // ─── ThinkCheck Logger：记录本次 think() 的决策轨迹 ──────────────
+    try {
+      if (!this.thinkcheckLogger) {
+        const TCLogger = require('./thinkcheck-logger.js');
+        this.thinkcheckLogger = new TCLogger.ThinkCheckLogger({
+          outputFile: process.env.THINKCHECK_LOG || '/tmp/heartflow-thinkcheck.log',
+          append: true,
+          consoleOutput: !!process.env.DEBUG_THINKCHECK,
+        });
+      }
+      this.thinkcheckLogger.recordThinkFlow({
+        input,
+        whatIsThis: whatIsThisResult,
+        isRightAction: isRightActionResult,
+        judgment,
+        psychology: agentPsychologyAssessment,
+        philosophy: agentPhilosophyAssessment,
+        decision: chainResult?.decision || null,
+        memoryContext,
+      });
+
+      // 【ThinkCheck CoT v2.0.0】输出 ThoughtChain 的 CoT 推理链日志
+      if (chainResult?.chain?.stages && chainResult.chain.stages.length > 0) {
+        try {
+          this.thinkcheckLogger.recordThoughtChain(
+            input,
+            chainResult.chain.stages,
+            {
+              taskType: chainResult.chain.taskType,
+              depth: chainResult.chain.depth,
+              totalDuration: chainResult.chain.totalDuration,
+              finalConfidence: chainResult.decision?.confidence,
+              finalDecision: chainResult.decision?.conclusion,
+              wasInverted: chainResult.decision?.wasInverted,
+              hasStrongEvidence: chainResult.decision?.hasStrongEvidence,
+            }
+          );
+        } catch (e) {
+          if (process.env.DEBUG_THINKCHECK) {
+            console.warn('[ThinkCheckLogger] CoT record error:', e.message);
+          }
+        }
+      }
+    } catch (e) {
+      // ThinkCheck 日志不阻断主流程
+      if (process.env.DEBUG_THINKCHECK) {
+        console.warn('[ThinkCheckLogger] record error:', e.message);
+      }
+    }
+
     return _formatForFeishu({
       ...chainResult,
       judgment,
@@ -1680,6 +1733,32 @@ class HeartFlow {
   }
 
     // 判定为沉默：直接返回判定结果，不走 ThoughtChain
+    // ─── ThinkCheck Logger：记录沉默决策 ──────────────────────────
+    try {
+      if (!this.thinkcheckLogger) {
+        const TCLogger = require('./thinkcheck-logger.js');
+        this.thinkcheckLogger = new TCLogger.ThinkCheckLogger({
+          outputFile: process.env.THINKCHECK_LOG || '/tmp/heartflow-thinkcheck.log',
+          append: true,
+          consoleOutput: !!process.env.DEBUG_THINKCHECK,
+        });
+      }
+      this.thinkcheckLogger.recordThinkFlow({
+        input,
+        whatIsThis: whatIsThisResult,
+        isRightAction: isRightActionResult,
+        judgment,
+        psychology: agentPsychologyAssessment,
+        philosophy: agentPhilosophyAssessment,
+        decision: { action: 'silent', priority: 'low', confidence: 0.9, fallback: 'none' },
+        memoryContext,
+      });
+    } catch (e) {
+      if (process.env.DEBUG_THINKCHECK) {
+        console.warn('[ThinkCheckLogger] record error:', e.message);
+      }
+    }
+
     return {
       decision: {
         shouldRespond: false,
