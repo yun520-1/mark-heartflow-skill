@@ -188,19 +188,18 @@ node -e "const {createHeartFlow}=require('./src/core/heartflow.js'); const hf=cr
 
 ## Why HeartFlow Exists
 
-HeartFlow was built by someone who spent 17 years in manufacturing quality management —药品QC → 卫品 quality manager → medical device quality head — and then taught himself AI to build a cognitive engine from scratch.
+HeartFlow was built by someone who spent 17 years in manufacturing quality management and then taught himself AI to build a cognitive engine from scratch.
 
 The insight is simple: **real intelligence is not a bigger model. It's a system that understands itself and evolves through experience.**
 
-HeartFlow is not a research paper implementation. It is a working engine with 110+ modules, running in production, used daily for real analysis.
+HeartFlow is not a research paper implementation. It is a working engine with 53+ modules, running in production, used daily for real analysis.
 
 ---
 
 ## About the Author
 
-17 years in quality management (pharmaceutical → hygiene products → medical devices), self-taught programmer and AI developer. Built HeartFlow from scratch to explore what AI cognition could look like when designed by someone who understands both factory floors and philosophy.
+Self-taught programmer and AI developer. Built HeartFlow from scratch to explore what AI cognition could look like.
 
-**Resume**: [RESUME.md](./RESUME.md)  
 **GitHub**: [github.com/yun520-1](https://github.com/yun520-1)
 
 ---
@@ -271,11 +270,11 @@ MIT
 
 ## 为什么需要心虫
 
-心虫的作者在制造业质量领域做了17年（药品QC → 卫品质量经理 → 医疗器械质量负责人），然后自学AI，从0写出了一个认知引擎。
+心虫的作者在制造业质量领域做了17年，然后自学AI，从0写出了一个认知引擎。
 
 核心洞察很简单：**真正的智能不是更大的模型，是一个能理解自己、通过经验持续进化的系统。**
 
-心虫不是论文实现，是一个110+模块的生产级引擎，每天都在运行、分析、进化。
+心虫不是论文实现，是一个53+模块的生产级引擎，每天都在运行、分析、进化。
 
 ---
 
@@ -350,9 +349,8 @@ node -e "const {createHeartFlow}=require('./src/core/heartflow.js'); const hf=cr
 
 ## 作者
 
-17年制造业质量管理经验（药品→卫品→医疗器械），自学编程和AI。从0写出心虫——不是为了发论文，是为了探索"AI认知到底是什么"。
+自学编程和AI。从0写出心虫——不是为了发论文，是为了探索"AI认知到底是什么"。
 
-**简历**: [RESUME.md](./RESUME.md)  
 **GitHub**: [github.com/yun520-1](https://github.com/yun520-1)
 
 ---

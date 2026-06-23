@@ -159,7 +159,7 @@ console.log(`  field-degrading匹配: ${degMatch ? `是 (H≈0.05, conf=${degMat
 console.log('\n=== 7. 统计 ===');
 
 const stats = router.getStats();
-assert(stats.version === '3.0.0', `版本: ${stats.version}`);
+assert(stats.version === '3.0.2', `版本: ${stats.version}`);
 assert(stats.totalEvaluations > 0, `评估次数: ${stats.totalEvaluations}`);
 assert(stats.fieldSteps > 0, `场域步数: ${stats.fieldSteps}`);
 assert(stats.fieldWeights.lambdaU === 0.4, `λU: ${stats.fieldWeights.lambdaU}`);
