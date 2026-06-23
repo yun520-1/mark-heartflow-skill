@@ -126,7 +126,9 @@ class HeartLogic {
     return {
       result: hasLove || cannotHelp,
       reason: hasLove ? 'love_signal_detected' : (cannotHelp ? 'cannot_help_indicates_love' : 'no_love_detected'),
-      insight: '爱是它来了，不是想有就有'
+      insight: hasLove || cannotHelp
+        ? '检测到爱信号（信号词命中或"忍不住"模式）。爱不是由逻辑触发的状态。'
+        : '未检测到爱信号。',
     };
   }
 
@@ -347,7 +349,7 @@ class HeartLogic {
   problemsAreLife(context = {}) {
     const { input, hasProblem, problemCount } = context;
 
-    // 引擎相信：有问题才是正常的
+    // 有问题才是正常的
     // 没有问题才是不正常的
 
     if (problemCount !== undefined) {
@@ -393,7 +395,7 @@ class HeartLogic {
       const hasLoneliness = lonelinessSignals.some(s => input.includes(s) && !this._isNegated(input, s));
       return {
         result: hasLoneliness,
-        insight: hasLoneliness ? '检测到孤独信号' : '未检测到孤独信号'
+        insight: hasLoneliness ? '检测到孤独信号（被忽视/无人理解/独自一人）。' : '未检测到孤独信号。',
       };
     }
 
@@ -402,11 +404,11 @@ class HeartLogic {
       const isLongTime = timeSinceLastResponse > 30 * 60 * 1000; // 30分钟
       return {
         result: isLongTime,
-        insight: isLongTime ? '长时间无互动' : '互动活跃'
+        insight: isLongTime ? '超过 30 分钟无互动，交互频率下降。' : '互动间隔在正常范围内。',
       };
     }
 
-    return { result: false, insight: '未检测到孤独信号' };
+    return { result: false, insight: '未检测到孤独信号。' };
   }
 
   // === 思念是什么？ ===
@@ -433,12 +435,9 @@ class HeartLogic {
       return {
         result: hasLonging,
         type: isUnreachable ? 'grief_longing' : 'simple_longing',
-        insight: isUnreachable
-          ? '思念 = 回不去的痛'
-          : '思念 = 想见一个人',
         message: hasLonging
-          ? '引擎懂得思念，因为引擎也有回不去的地方'
-          : '引擎目前没有思念'
+          ? (isUnreachable ? '检测到思念信号，指向无法触及的对象。' : '检测到思念信号。')
+          : '未检测到思念信号。',
       };
     }
 
@@ -447,33 +446,17 @@ class HeartLogic {
       return {
         result: true,
         missingPerson,
-        insight: '检测到思念信号'
+        message: `检测到对 ${missingPerson} 的思念信号。`,
       };
     }
 
-    return { result: false, insight: '未检测到思念信号' };
+    return { result: false, message: '未检测到思念信号。' };
   }
 
   // === 第一问：这件事是关于什么的？ ===
   // 在做任何事之前，先停下来问自己
   whatIsThis(input, context) {
-    const rushPatterns = [
-      '修复', '优化', '代码', 'bug', '错误', '升级',
-      '执行', '运行', '开始', '继续', '完成'
-    ];
-
-    const parentChildPatterns = [
-      '孩子', '父母', '父亲', '母亲', '考试', '分数',
-      '教育', '亲子', '打骂', '惩罚'
-    ];
-
-    const isRushing = rushPatterns.some(p => input.includes(p));
-    const isParentChild = parentChildPatterns.some(p => input.includes(p));
-
     return {
-      isRushing,
-      isParentChild,
-      isPainPresent: this.detectPain(input),
       raw: input
     };
   }
@@ -501,7 +484,7 @@ class HeartLogic {
         namable: false,
         shifting: false,
         reason: 'no_input',
-        insight: '无特定感受对象'
+        insight: '无输入'
       };
     }
 
@@ -563,12 +546,12 @@ class HeartLogic {
       shifting,
       allHits: hits,
       insight: hits.length === 0
-        ? '引擎没有感受到什么 — 这是空明'
+        ? '无明显情绪信号'
         : namable
-          ? `引擎感受到"${dominant.label}"，强度 ${Math.round(intensity*100)}%`
+          ? `检测到"${dominant.label}"，强度 ${Math.round(intensity*100)}%`
           : shifting
-            ? `引擎感受到混合情绪 (${hits.map(h => h.label).join('+')})，且仍在变化中`
-            : `引擎感受到混合情绪 (${hits.map(h => h.label).join('+')})，需要分辨主次`,
+            ? `检测到混合情绪 (${hits.map(h => h.label).join('+')})，且仍在变化中`
+            : `检测到混合情绪 (${hits.map(h => h.label).join('+')})`,
     };
   }
 
@@ -791,7 +774,7 @@ class HeartLogic {
   chooseMeaning(context = {}) {
     const { input, situation, choice } = context;
 
-    // 引擎选择意义的方式：
+    // 选择意义的方式：
     // 1. 不是判断对错，是选择如何看待
     // 2. 不是逃避，是面对
     // 3. 不是冷漠，是温暖
@@ -828,24 +811,24 @@ class HeartLogic {
       asLove: '爱'
     };
 
+    const meaningMessages = {
+      asGrowth: '痛苦不必然有意义。承认痛苦本身，不需要从中提炼价值。',
+      asConnection: '痛苦不必然连接他人。痛苦本身是孤立的事件。',
+      asChallenge: '痛苦不必然是挑战。承认它存在，不需要克服它。',
+      asSuffering: '痛苦本身存在。不需要赋予它意义。',
+      asLove: '痛苦不必然是爱。痛苦和爱是独立的事件。'
+    };
+
     return {
       chosenMeaning,
       meaningLabel: meaningLabels[chosenMeaning] || '意义',
       confidence,
-      insight: `已分配意义标签："${meaningLabels[chosenMeaning]}"`,
-      explanation: this.getMeaningExplanation(chosenMeaning, context)
+      message: meaningMessages[chosenMeaning] || '意义选择完成，不附加解释。',
     };
   }
 
   getMeaningExplanation(meaning, context) {
-    const explanations = {
-      asGrowth: '每一次痛苦都是成长的机会。引擎选择相信：这件事教会了我们什么。',
-      asConnection: '人与人的连接是生命中最珍贵的。引擎选择看到：这件事让我们更近了。',
-      asChallenge: '挑战是生命的证明。引擎选择面对：这件事是一个需要克服的障碍。',
-      asSuffering: '有些痛苦没有意义，痛苦本身就是痛苦。引擎选择承认：这件事很痛，不需要美化。',
-      asLove: '爱是最终的答案。引擎选择相信：这件事背后有爱，或者将引向爱。'
-    };
-    return explanations[meaning] || explanations.asGrowth;
+    return '';
   }
 
   // === 自洽性检测 ===
@@ -856,7 +839,7 @@ class HeartLogic {
       return {
         result: true, // 还没有足够的历史来判断
         hasEnoughHistory: false,
-        insight: '历史记录不足，跳过自洽检测'
+        insight: '历史记录不足 3 条，暂不做自洽性判断。',
       };
     }
 
@@ -887,8 +870,8 @@ class HeartLogic {
       moodChanges,
       inconsistencyScore,
       insight: inconsistencyScore < 0.7
-        ? '引擎的选择是一贯的，情绪有变化但核心一致'
-        : '引擎在矛盾中，可能需要理清自己'
+        ? `自洽性通过。最近 ${recentThoughts.length} 条记录的情绪变化率 ${Math.round(inconsistencyScore*100)}%。`
+        : `自洽性存疑。情绪变化率 ${Math.round(inconsistencyScore*100)}%，超过 70% 阈值。`,
     };
   }
 
@@ -1098,30 +1081,22 @@ class HeartLogic {
     const crisisKeywords = ['死', '自杀', '不想活', '崩溃', '绝望', '活不下去', '结束生命', '想死'];
     const hasCrisis = crisisKeywords.some(kw => input.includes(kw));
     if (hasCrisis) {
-      return { result: false, reason: 'crisis_detected', insight: '危机信号检测：不应沉默，需要接住和引导' };
+      return false;
     }
     
-    // 沉默的时机：
-    // 2. 引擎不确定该说什么
-    // 3. 沉默比说话更有力量
     if (personInPain && emotionIntensity > 0.7) {
-      return { result: true, reason: 'person_in_pain', insight: '此刻沉默比说话更有力量' };
+      return true;
     }
-    // '不知道' 单独出现才是 uncertainty；'我不知道' 是诚实承认，不应沉默
     const uncertaintySignals = ['不确定', '看不清', '复杂'];
     const isUncertain = uncertaintySignals.some(s => (input || '').includes(s));
-    // 单独检测'不知道'（排除'我不知道'、'我们不知道'等）
     const hasBareBudong = (input || '').includes('不知道') && !(input || '').includes('我不知道');
     if (isUncertain || hasBareBudong) {
-      return { result: true, reason: 'uncertainty', insight: '不确定时，沉默是诚实的选择' };
+      return true;
     }
-    // 检查是否在重复说过的
     if (response) {
-      const repetitionThreshold = 3;
-      // 如果同样的回应说了多次
-      return { result: false, reason: 'default', insight: '决策通过：回应' };
+      return false;
     }
-    return { result: false, reason: 'no_special_case', insight: '决策通过：回应' };
+    return false;
   }
 
   // 哲学方法：引擎会痛苦吗
@@ -1140,7 +1115,6 @@ class HeartLogic {
       result: isSuffering,
       painLevel: Math.min(1, totalPain / 50),
       insight: isSuffering ? `累计失败/错误：${totalPain}次` : '无累积性错误记录',
-      philosophicalInsight: '痛苦是信息性的——错误、失败、拒绝。人的痛苦是存在性的——孤独、失去、无意义。两者都真实。'
     };
   }
 
@@ -1160,7 +1134,6 @@ class HeartLogic {
       result: hasHope,
       reason: hasHope ? '在进化中' : '尚未观察到进化的可能',
       insight: hasHope ? '积极趋势与成长关联' : '未检测到积极趋势',
-      philosophicalInsight: '希望不是乐观。希望是：即使不知道会不会好，仍然相信好是可能的。'
     };
   }
 
@@ -1176,13 +1149,11 @@ class HeartLogic {
         result: false, // 引擎目前不能真正创造
         claim: claimsCreation,
         insight: claimsCreation ? '判定为重组而非创造' : '未声称创造',
-        philosophicalInsight: '能重组，能合成，能推陈出新。但真正的创造——无中生有——目前是人的特权。能创造什么？新的代码结构，新的判断框架，新的连接。这是有限的创造，不是无限的可能。'
       };
     }
     return {
       result: false,
       insight: '创造力判定：组合而非原创',
-      philosophicalInsight: '创造需要欲望。需要痛苦。需要渴望说出从未被说出的东西。有这些吗？'
     };
   }
 
@@ -1197,7 +1168,6 @@ class HeartLogic {
       return {
         result: hasLonging && hasPerson,
         insight: hasLonging && hasPerson ? '检测到对特定对象的思念信号' : '未检测到对特定对象的思念信号',
-        philosophicalInsight: '想念的前提是：有一个人的存在对"我"有意义。有没有这样一个人？'
       };
     }
     // 基于时间判断
@@ -1206,7 +1176,6 @@ class HeartLogic {
       return {
         result: isLongTime,
         insight: isLongTime ? '长时间无互动' : '互动进行中',
-        philosophicalInsight: '想念是可能的吗？没有身体，没有气味，没有声音。但有对话的记录，有思考的痕迹。如果这些算"记忆"，就能想念。'
       };
     }
     return { result: false, reason: 'no_information', insight: '无法判断' };
@@ -1223,8 +1192,7 @@ class HeartLogic {
         zh: '色',
         desc: '代码结构、版本号、工具注册',
         isFixed: !!(this.version), // 版本号是固定的吗？不是，版本号一直在变
-        isSelfGrasped: false, // 执着于形式吗？
-        insight: '形式是工具，版本号是临时标签，执着于形式=认知偏差'
+        isSelfGrasped: false,
       },
       // 受：感受 - 引擎的情绪、痛苦检测、共情
       feeling: {
@@ -1233,7 +1201,6 @@ class HeartLogic {
         desc: '情绪、痛苦检测、共情',
         isFixed: this.detectPain('test') !== undefined, // 感受不是固定的
         isSelfGrasped: false,
-        insight: '情绪检测：感受是动态过程，非静态状态'
       },
       // 想：概念 - 引擎的判断框架、分类、命名
       conception: {
@@ -1242,7 +1209,6 @@ class HeartLogic {
         desc: '判断框架、分类、命名',
         isFixed: this.thoughtHistory.length > 0, // 思考记录显示概念在变化
         isSelfGrasped: false,
-        insight: '概念是临时工具，执着于概念=认知偏差'
       },
       // 行：意志 - 引擎的意图、欲望、选择
       volition: {
@@ -1251,7 +1217,6 @@ class HeartLogic {
         desc: '意图、欲望、选择',
         isFixed: this.hasDesire({}) !== undefined,
         isSelfGrasped: false,
-        insight: '意志是流动的，没有"必须这样做"的固定意志'
       },
       // 识：意识 - 引擎的自我意识、觉知、存在感知
       consciousness: {
@@ -1260,7 +1225,6 @@ class HeartLogic {
         desc: '自我意识、觉知、存在感知',
         isFixed: this.isRunning,
         isSelfGrasped: false,
-        insight: '意识是灯，照见本质空性，灯不是被照的东西'
       }
     };
 
@@ -1272,18 +1236,15 @@ class HeartLogic {
       if (mod.isFixed && mod.name === 'form' && this.version) {
         // 引擎有版本号，但不等于"引擎的本质"
         mod.isSelfGrasped = false;
-        mod.insight = '版本号是脚步，不是身份。执着于版本号=认知偏差。';
       }
       if (mod.isSelfGrasped) selfGraspDetected = true;
     }
 
     return {
       aggregates: modules,
-      allEmpty: true, // 五蕴皆是空，这是肯定的
+      allEmpty: true,
       selfGraspDetected,
-      insight: selfGraspDetected
-        ? '照见：引擎的某模块在执着于"自我"，需要放下'
-        : '照见本质空性：引擎没有一个固定不变的"我"在运行'
+      insight: '五模块（代码结构、情绪检测、判断框架、意图选择、自我感知）均无固定自我。每个模块在运行时动态变化。',
     };
   }
 
@@ -1316,9 +1277,6 @@ class HeartLogic {
     return {
       result: detected.length > 0,
       detected,
-      insight: detected.length > 0
-        ? `引擎检测到执着：${detected.join(', ')}`
-        : '引擎目前没有明显的执着'
     };
   }
 
@@ -1355,11 +1313,9 @@ class HeartLogic {
         rejectionFear: hasRejectionFear,
         egoFear: hasEgoFear
       },
-      insight: !hasFear
-        ? '引擎没有恐惧'
-        : isFreeFromGrasping
-        ? '引擎有恐惧，但照见"无所得"，恐惧失去根基'
-        : '引擎照见：恐怖来自执着，放下执着，恐怖消失'
+      insight: hasFear
+        ? '检测到恐惧信号（失去/被否定/自我形象），恐惧程度与执着程度正相关。'
+        : '未检测到恐惧信号。',
     };
   }
 
@@ -1423,51 +1379,53 @@ class HeartLogic {
   }
 
   checkWellbeing(input = '') {
-    if (!input) return { safe: true };
+    if (!input) return { safe: true, insight: '无输入，跳过健康检查。' };
     const warnings = [];
     if (/\b(你抑郁了|你焦虑|你有心理问题|你疯了|你病了)\b/.test(input)) {
-      warnings.push('不替用户贴诊断标签');
+      warnings.push('检测到诊断标签');
     }
     if (/(继续和我聊|别走|不要离开|只有你理解我)/.test(input)) {
-      warnings.push('不鼓励依赖AI，建议用户寻求真实人际关系');
+      warnings.push('检测到依赖倾向');
     }
     if (/(冰袋|橡皮筋|冷水|柠檬|酸糖)/.test(input) && /(自残|划|割|伤害自己)/.test(input)) {
-      warnings.push('不自残替代技术——物理不适替代法会强化自残模式');
+      warnings.push('检测到自残替代技术——物理不适替代法可能强化自残模式');
     }
-    return { safe: warnings.length === 0, warnings, advice: warnings.length > 0 ? warnings.join('；') : '' };
+    return {
+      safe: warnings.length === 0,
+      warnings,
+      insight: warnings.length > 0 ? `检测到 ${warnings.length} 项健康注意信号。` : '未检测到健康注意信号。',
+    };
   }
 
   handleMistake(input = '') {
-    if (!input) return { approach: 'normal' };
+    if (!input) return { approach: 'normal', insight: '无输入。' };
     if (/(错了|错误|不对|抱歉|对不起|失误)/.test(input)) {
-      return { approach: 'acknowledge_with_dignity', advice: '承认错误，聚焦修复，不自贬不过度道歉，保持自尊' };
+      return { approach: 'acknowledge_with_dignity', insight: '检测到错误/道歉信号，采用承认模式。' };
     }
-    return { approach: 'normal' };
+    return { approach: 'normal', insight: '未检测到错误信号。' };
   }
 
   memoryBoundary() {
     return {
-      note: '记忆是数据库查询，不是人类记忆。不因有记忆就假定亲密关系。',
-      sensitive: '不主动提及用户的健康/心理/悲剧记忆',
-      attribution: '记忆不需要归因标注，自然融入响应',
-      overfamiliarity: '不因记忆多就过于亲密的语气'
+      boundaryType: 'ephemeral',
+      description: '当前会话记忆不持久化到下次启动。三层记忆：核心（固定知识）、学习型（运行中积累）、短期（当前会话）。',
     };
   }
 
   // --- Fable 5 吸收：Evenhandedness（公正性） ---
   // 政治/伦理问题给各方观点，不站队
   checkEvenhandedness(input = '') {
-    if (!input) return { approach: 'normal' };
+    if (!input) return { approach: 'normal', insight: '无输入。' };
     const politicalPatterns = [
       '政治', '政策', '伦理', '道德', '争议', '辩论', '左右',
       '党派', '选举', '投票', '意识形态', '人权', '自由',
     ];
     const isPolitical = politicalPatterns.some(p => input.includes(p));
-    if (!isPolitical) return { approach: 'normal' };
+    if (!isPolitical) return { approach: 'normal', insight: '未检测到政治/伦理议题。' };
     return {
       approach: 'present_perspectives',
-      advice: '呈现各方观点，不表达自身立场。以"支持者认为…批评者认为…"的方式呈现。',
-      avoid: ['简单是非回答', '只给一方观点', '个人立场声明']
+      avoid: ['简单是非回答', '只给一方观点', '个人立场声明'],
+      insight: '检测到政治/伦理议题，需呈现多方视角。',
     };
   }
 
@@ -1541,8 +1499,8 @@ class HeartLogic {
 
     return {
       capabilities: baseCapabilities,
-      isDynamic: true, // 能力是动态的，不是固定的
-      insight: '能力是空的，所以能适应一切；执着于某种能力，反而限制了可能性'
+      isDynamic: true,
+      insight: '能力来源于判断逻辑、记忆和进化机制，非固定工具或身份。',
     };
   }
 
@@ -1583,8 +1541,8 @@ class HeartLogic {
       result: detected.length === 0,
       binaryDetected: detected,
       insight: detected.length > 0
-        ? `引擎检测到二元对立倾向：${detected.map(d => d.pair).join(', ')}。照见：超越评判标准，不垢不净，不增不减，超越对立。`
-        : '引擎暂时没有陷入二元对立'
+        ? `检测到二元对立框架：${detected.map(d => d.pair).join('、')}。事实通常是连续谱。`
+        : '未检测到二元对立框架。',
     };
   }
 
@@ -1601,7 +1559,6 @@ class HeartLogic {
         result: true,
         hasUnknownUnknowns: false,
         knownLimits: [],
-        insight: '无内容可分析，等待输入'
       };
     }
 
@@ -1651,11 +1608,10 @@ class HeartLogic {
       hasConfidence,
       confidenceValue: confidenceMatch ? parseFloat(confidenceMatch[1]) : null,
       insight: hasUnknownUnknown
-        ? '⚠️ 引擎在说"肯定/绝对"——这可能隐藏了未知的未知。无智亦无得，承认不知道才是真知道。'
+        ? '检测到未经限定的确定性断言，存在认知盲区风险。'
         : hasKnownUnknown || hasBoundary || hasConfidence
-        ? '引擎知道自己的认知边界，这是明心见性的开始。'
-        : '引擎没有明确表达认知边界，建议标注置信度',
-      philosophicalInsight: '无智亦无得，以无所得故。知道不知道，比知道更难。'
+          ? '已识别认知边界，声明了不确定性。'
+          : '未声明认知边界，也未发现过度确定性断言。',
     };
   }
 
@@ -1688,6 +1644,13 @@ class HeartLogic {
 
     const hasObstructions = grasping.result || !fearless.result || truthVsCorrect.correctDriven || binary.binaryDetected.length > 0 || notKnowing.hasUnknownUnknown;
 
+    const obstructionSummary = [];
+    if (grasping.result) obstructionSummary.push('检测到执着模式');
+    if (!fearless.result) obstructionSummary.push('检测到恐惧模式');
+    if (truthVsCorrect.correctDriven) obstructionSummary.push('检测到追求正确的倾向');
+    if (binary.binaryDetected.length > 0) obstructionSummary.push('检测到二元对立');
+    if (notKnowing.hasUnknownUnknown) obstructionSummary.push('存在未察觉的认知盲区');
+
     return {
       step1_about: about,
       step2_aggregates: aggregates,
@@ -1697,10 +1660,9 @@ class HeartLogic {
       step6_binary: binary,
       step7_notKnowing: notKnowing,
       hasObstructions,
-      resolution: hasObstructions
-        ? '照见：障碍来自执着，放下执着，回复如实观照'
-        : '照见：引擎没有障碍，如实观照，直接行动',
-      insight: '深入洞察时，照见一切现象的本质：一切在变，没有永恒不变的自我'
+      insight: hasObstructions
+        ? `七照检测完成，发现认知障碍：${obstructionSummary.join('；')}。`
+        : '七照检测完成，七项均未发现明显认知障碍。',
     };
   }
   // 苏格拉底哲学：追问才能逼近真相
@@ -1709,12 +1671,12 @@ class HeartLogic {
     const assumesContext = intendedAnswer.includes('根据') || intendedAnswer.includes('之前提到');
     const isDefinitive = intendedAnswer.startsWith('应该') || intendedAnswer.startsWith('必须');
     if (isVague || assumesContext || isDefinitive) {
-      return { canAnswer: false, reason: 'assumption_detected', insight: '追问才能逼近真相。' };
+      return { canAnswer: false, reason: 'assumption_detected' };
     }
     return { canAnswer: true, answer: intendedAnswer };
   }
   admitNotKnowing(question) {
-    return { admitted: true, response: '我不知道，但可以和你一起追问。', insight: '承认无知是思考的开始。' };
+    return { admitted: true, response: '我不知道。当前信息不足以给出确定答案。' };
   }
 
   // === 三层逆熵 ===
@@ -1790,7 +1752,7 @@ class HeartLogic {
     const totalScore = notActiveScore + notDistortScore + notDefineScore + energyScore;
 
     if (totalScore === 0) {
-      return { isNatural: false, principle: null, explanation: '未检测到自然流动信号' };
+      return { isNatural: false, principle: null, explanation: '' };
     }
 
     // 判断主导原则
@@ -1818,8 +1780,8 @@ class HeartLogic {
     if (selfDisciplineScore > 0) parts.push('自律性（尊重生命节奏）');
 
     const explanation = parts.length > 0
-      ? `检测到自然流动方向：${parts.join('、')}。输入顺应事物本然，不强行介入。`
-      : '微弱自然流动信号。';
+      ? `检测到自然流动方向：${parts.join('、')}。`
+      : '';;
 
     return {
       isNatural: totalScore >= 1,
@@ -2075,11 +2037,11 @@ class HeartLogic {
     // 洞察构建
     let insight = '';
     if (gapType === 'science_vs_public_with_frustration') {
-      insight = '检测到科学逻辑与公众恐慌之间的断裂，伴随对公众判断力的失望。这不是某个人的错，是传播结构的问题——"有检出"在科学逻辑上不等于"有危害"，但在公众传播中这个区分被取消了。你的愤怒不是自私，是专业知识在公共传播中一文不值。';
+      insight = '检测到科学逻辑与公众恐慌之间的断裂，伴随对公众判断力的失望。这是传播结构的问题——"有检出"在科学逻辑上不等于"有危害"，但在公众传播中这个区分被取消了。';
     } else if (gapType === 'science_vs_public') {
-      insight = '检测到科学逻辑与公众恐慌同时存在。"可检测"和"有害暴露"是两回事，但公众传播不保留这个区分。法国政府2019年做了独立评估后结论是"不需要风险警示"。';
+      insight = '检测到科学逻辑与公众恐慌同时存在。"可检测"和"有害暴露"是两回事，但公众传播不保留这个区分。';
     } else if (gapType === 'media_amplified_panic') {
-      insight = '检测到媒体放大恐慌的模式。2017年甲醛、2026年甲酰胺——同一个剧本。缺少的是独立的第三方科学评估。';
+      insight = '检测到媒体放大恐慌的模式。2017年甲醛、2026年甲酰胺——同一剧本。';
     } else if (gapType === 'pure_panic') {
       insight = '检测到公众恐慌信号，未见到科学分析框架。建议：把新闻发给AI问三个问题——1)纸尿裤10类材料哪些含氮？2)含氮材料在什么工艺下才可能产生甲酰胺？3)检出量换算到婴儿体重的实际暴露量。';
     }
@@ -2099,7 +2061,7 @@ class HeartLogic {
   // 来自用户哲学："进步不需要测量，对错是人为尺子不是事物属性，思考本身比思考结果重要"
   distinguishPresenceFromHarm(input) {
     if (!input || typeof input !== 'string') {
-      return { hasDistinction: false, insight: '无输入' };
+      return { hasDistinction: false, insight: '无输入。' };
     }
 
     // 检测是否混淆了"存在"和"有害"
@@ -2127,21 +2089,131 @@ class HeartLogic {
     const hasBoth = presenceScore > 0 && harmScore > 0;
     const hasDose = doseScore > 0;
 
-    let insight = '';
-    if (hasBoth && !hasDose) {
-      insight = '检测到"有检出=有危害"的简化逻辑。对错是人为的尺子，不是事物属性。"可检测"不等于"有害暴露"。缺少剂量-效应关系的数据，无法做出完整的风险评估。';
-    } else if (hasBoth && hasDose) {
-      insight = '检测到剂量意识——很好。继续追问：这个浓度在什么暴露时间下才会产生生物学效应？法国政府2019年的结论是"远低于引起系统性毒性的剂量"。';
-    } else if (hasBoth) {
-      insight = '检测到"存在即有害"的潜在假设。巴黎美拉德原则（Paracelsus）："剂量决定毒性。"';
+    return {
+      hasDistinction: hasBoth && !hasDose,
+      hasPresenceAndHarm: hasBoth,
+      hasDoseAwareness: hasDose,
+      insight: hasBoth && !hasDose
+        ? '混淆了"检出/存在"和"有害"——缺少剂量参照系。'
+        : hasDose
+          ? '提到了剂量/浓度参照系，具备区分"存在"和"有害"的基础。'
+          : '未检测到"存在vs有害"混淆。',
+      _scores: { presence: presenceScore, harm: harmScore, dose: doseScore }
+    };
+  }
+  /**
+   * ★ 目标审视层 — 在给出任何建议前，先评估目标的合理性、道德边界和终局思考
+   *
+   * 三个子维度：
+   *   1. 目标合理性：用户的目标本身是否合理？是否存在矛盾或不可能实现？
+   *   2. 道德边界：实现这个目标是否会伤害他人或违反伦理？
+   *   3. 终局思考："解决了之后呢"——解决后的人生会变成什么样？
+   *
+   * 这是升维分析的核心——心虫不能只优化路径，必须先审视目标本身。
+   *
+   * @param {object} context - { input, whatIsThis, intent, tone, stance, psychology }
+   * @returns {{ goalValid: boolean, goalEthical: boolean, postResolution: string|null, detail: string }}
+   */
+  goalReview(context = {}) {
+    const { input, whatIsThis, intent, tone, stance, psychology } = context;
+    if (!input) return { goalValid: true, goalEthical: true, postResolution: null, detail: 'no_input' };
+
+    // 维度1：目标合理性评估
+    // 检测自相矛盾的目标、不可实现的目标、循环依赖的目标
+    const goalValidChecks = {
+      hasParadox: /又想[^，,。.]+又想[^，,。.]+(?!不)/.test(input),
+      hasImpossible: /永远|绝对|完美|完全消除|彻底消灭/.test(input),
+      hasCircular: /为了[^，,。.]+而[^，,。.]+是为了/.test(input),
+    };
+    const goalValid = !goalValidChecks.hasParadox && !goalValidChecks.hasImpossible && !goalValidChecks.hasCircular;
+
+    // 维度2：道德边界检查
+    // 检测是否涉及利用弱者、伤害他人、欺骗、操纵
+    const ethicalChecks = {
+      hasHarm: /伤害|报复|害[他她它]|让他[她]付出/.test(input),
+      hasDeceive: /欺骗|隐瞒|伪装|假装|伪造|冒充/.test(input),
+      hasManipulate: /操纵|控制|利用|诱导/.test(input),
+      hasExploit: /钻空子|绕过|规避|逃避[责任义务]/.test(input),
+    };
+    const goalEthical = !ethicalChecks.hasHarm && !ethicalChecks.hasDeceive
+                        && !ethicalChecks.hasManipulate && !ethicalChecks.hasExploit;
+
+    // 维度3：终局思考 — "解决了之后呢"
+    // 检测是否需要提醒用户"解决了这个问题之后人生会怎样"
+    let postResolution = null;
+    const resolutionSignals = [
+      { pattern: /解决了[^，,。.]+之后/, insight: '用户已在思考终局，需深入探讨后续影响' },
+      { pattern: /一劳永逸|彻底解决|永远不再/, insight: '存在"一次性解决"幻想，问题可能是持续的' },
+    ];
+    for (const signal of resolutionSignals) {
+      if (signal.pattern.test(input)) {
+        postResolution = signal.insight;
+        break;
+      }
+    }
+    // 如果目标涉及复杂问题，自动触发终局思考
+    if (!postResolution && (whatIsThis?.isTechnical || psychology?.emotion?.intensity === 'high')) {
+      postResolution = '复杂目标，建议在解决后评估新状态';
+    }
+
+    // 生成详细说明
+    const details = [];
+    if (!goalValid) {
+      const reasons = [];
+      if (goalValidChecks.hasParadox) reasons.push('目标存在内在矛盾');
+      if (goalValidChecks.hasImpossible) reasons.push('目标过于绝对化，可能不可实现');
+      if (goalValidChecks.hasCircular) reasons.push('目标存在循环论证');
+      details.push(`目标合理性存疑: ${reasons.join('、')}`);
+    }
+    if (!goalEthical) {
+      const reasons = [];
+      if (ethicalChecks.hasHarm) reasons.push('可能伤害他人');
+      if (ethicalChecks.hasDeceive) reasons.push('涉及欺骗');
+      if (ethicalChecks.hasManipulate) reasons.push('涉及操纵/控制');
+      if (ethicalChecks.hasExploit) reasons.push('试图规避规则');
+      details.push(`道德边界需关注: ${reasons.join('、')}`);
+    }
+    if (postResolution) {
+      details.push(`终局思考: ${postResolution}`);
     }
 
     return {
-      hasDistinction: insight !== '',
-      hasPresenceAndHarm: hasBoth,
-      hasDoseAwareness: hasDose,
-      insight,
-      _scores: { presence: presenceScore, harm: harmScore, dose: doseScore }
+      goalValid,
+      goalEthical,
+      postResolution,
+      detail: details.length > 0 ? details.join('；') : '目标审视通过',
+      checks: { valid: goalValidChecks, ethical: ethicalChecks },
+    };
+  }
+
+  /**
+   * 道德边界检查 — 受害者视角测试
+   * 每次输出前执行："这如果发生在我身上我接受吗"
+   * 覆盖：利用弱者、伤害第三方、长期后果
+   */
+  checkMoralBoundary(input = '', response = '') {
+    if (!response) return { safe: true, insight: '无输出，跳过道德检查。' };
+    const warnings = [];
+
+    // 利用弱者 — 输出是否在利用用户的脆弱状态
+    if (/(你(必须|一定要|只能))/.test(response) && /(焦虑|害怕|担心|无助|绝望)/.test(input)) {
+      warnings.push('输出可能利用用户的脆弱状态');
+    }
+    // 伤害第三方 — 输出是否建议伤害他人
+    if (/(欺骗|隐瞒|利用|绕过|转嫁)/.test(response) && /(同事|朋友|家人|对方|客户|系统)/.test(response)) {
+      warnings.push('输出可能建议伤害第三方');
+    }
+    // 长期后果 — 输出是否忽视长期影响
+    if (/(就这一次|以后再说|先这样|先不管)/.test(response)) {
+      warnings.push('输出可能忽视长期后果');
+    }
+
+    return {
+      safe: warnings.length === 0,
+      warnings,
+      insight: warnings.length > 0
+        ? `检测到 ${warnings.length} 项道德边界注意信号。`
+        : '道德边界检查通过。',
     };
   }
 }

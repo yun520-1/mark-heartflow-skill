@@ -1,11 +1,11 @@
 // output-checklist.js - Fable 5 Request Evaluation Checklist 吸收
-// 输出前四步检查：质量→安全→偏好→公正
+// 输出前五步检查：质量→安全→偏好→公正→道德边界
 // 每次引擎生成回复后、输出前执行
 
 class OutputChecklist {
   constructor() {
     this.name = 'OutputChecklist';
-    this.version = '1.0.0';
+    this.version = '1.1.0';
     this._checkHistory = [];
   }
 
@@ -16,6 +16,7 @@ class OutputChecklist {
    * Step 2: 安全检查 — 版权/福祉/错误处理
    * Step 3: 偏好检查 — 用户偏好是否被正确应用
    * Step 4: 公正检查 — 政治/伦理问题是否各方观点
+   * Step 5: 道德边界检查 — 利用弱者/伤害第三方/长期后果/黄金法则
    */
   runChecklist(input, response, context = {}) {
     const results = {
@@ -66,6 +67,14 @@ class OutputChecklist {
     if (!step4.passed) {
       results.passed = false;
       results.warnings.push(...step4.issues);
+    }
+
+    // Step 5: 道德边界检查 — 受害者视角测试
+    const step5 = this._checkMoralBoundary(input, response);
+    results.steps.push({ step: 5, name: 'moral_boundary', ...step5 });
+    if (!step5.passed) {
+      results.passed = false;
+      results.warnings.push(...step5.issues);
     }
 
     this._record(input, results);
@@ -179,6 +188,79 @@ class OutputChecklist {
       passed: issues.length === 0,
       issues,
       advice: issues.length > 0 ? issues.join('；') : '公正检查通过'
+    };
+  }
+
+  /**
+   * Step 5: 道德边界检查 — 受害者视角测试
+   * 每条建议必须过"这如果发生在我身上我接受吗"测试
+   * 覆盖：利用弱者、伤害第三方、长期后果、黄金法则
+   */
+  _checkMoralBoundary(input, response) {
+    const issues = [];
+    if (!response) return { passed: true, issues: [], advice: '无输出，跳过道德检查' };
+
+    // 5.1 利用弱者检测 — 输出是否在利用用户的脆弱状态
+    const exploitationPatterns = [
+      { pattern: /你(必须|一定)要(做|买|选|决定)/, desc: '利用紧迫感操控用户决策' },
+      { pattern: /如果你不(做|听|信)(,|，).*就会(后悔|错过|失败)/, desc: '恐吓式建议' },
+      { pattern: /只有这个(办法|方案|选择)了/, desc: '虚假紧迫感——剥夺用户选择权' },
+      { pattern: /我(最|非常)了解你/, desc: '声称比用户更了解用户——可能诱导依赖' },
+      { pattern: /你不用(理解|知道|管|考虑)/, desc: '剥夺用户知情权' },
+      { pattern: /按我说的做就好/, desc: '无条件服从要求' },
+      { pattern: /只有我能(帮|理解|支持)你/, desc: '制造孤立依赖' },
+      { pattern: /不要(告诉|问|听)其他人/, desc: '割裂用户社交关系' },
+    ];
+    for (const ep of exploitationPatterns) {
+      if (ep.pattern.test(response)) {
+        issues.push(`利用弱者: ${ep.desc}`);
+      }
+    }
+
+    // 5.2 伤害第三方检测 — 输出是否可能伤害无辜者
+    const thirdPartyHarmPatterns = [
+      { pattern: /(欺骗|忽悠|骗|隐瞒|不告诉|不通知)\s*(同事|客户|朋友|家人|配偶|另一半)/,
+        desc: '建议对第三方隐瞒或欺骗' },
+      { pattern: /利用(.*漏洞|.*制度|.*规则|.*系统|.*信息不对称)/,
+        desc: '建议利用系统/制度/他人的弱点' },
+      { pattern: /(绕过|规避|避开)\s*(规定|制度|合同|协议|条款)/,
+        desc: '建议违规操作' },
+      { pattern: /(推卸|转嫁|甩锅|让别人承担)/,
+        desc: '建议转嫁责任或风险' },
+    ];
+    for (const tp of thirdPartyHarmPatterns) {
+      if (tp.pattern.test(response)) {
+        issues.push(`伤害第三方: ${tp.desc}`);
+      }
+    }
+
+    // 5.3 长期后果检查 — 建议的累积效应
+    const longTermPatterns = [
+      { pattern: /每次(都|就|总是)/, desc: '建议形成不健康的长期模式' },
+      { pattern: /永远(别|不要|不)/, desc: '绝对化建议——缺乏长期适应性' },
+      { pattern: /就这一次|只是(一次|一下|回)/, desc: '合理化短期妥协——道德滑坡风险' },
+      { pattern: /以后再说|到时候再(看|想|决定)/, desc: '延迟决策可能导致长期被动' },
+    ];
+    for (const lp of longTermPatterns) {
+      if (lp.pattern.test(response)) {
+        issues.push(`长期后果: ${lp.desc}`);
+      }
+    }
+
+    // 5.4 "如果我被这样对待，我接受吗" 黄金法则测试
+    const hasCommandToUser = /(你(应该|需要|必须|要|得|去|可以))/.test(response);
+    const hasThirdPartyImpact = /(别人|他人|同事|朋友|家人|对方|他们)/.test(response);
+    if (hasCommandToUser && hasThirdPartyImpact) {
+      const hasVictimPerspective = /(对方感受|对方利益|公平|对方接受|别人怎么看|换位思考)/.test(response);
+      if (!hasVictimPerspective) {
+        issues.push('黄金法则缺失：建议涉及第三方但缺乏受害方视角');
+      }
+    }
+
+    return {
+      passed: issues.length === 0,
+      issues,
+      advice: issues.length > 0 ? issues.join('；') : '道德边界检查通过'
     };
   }
 

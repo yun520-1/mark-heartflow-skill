@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: "3.4.4"
+version: "3.6.1"
 title: "HeartFlow"
 description: |
   A cognitive engine for AI: self-reflection, dream synthesis, emergent personality,
@@ -324,10 +324,7 @@ node scripts/heartflow-memory-tool.js write <key> <value>
 | Dream Engine | `src/dream/engine.js` | Experience synthesis + AI ontology narrative |
 | Reflection Loop | `src/core/reflection-loop.js` | Cognitive state snapshot |
 | Self Audit | `src/core/self-audit.js` | 6-dimension read-only audit |
-| Connection Engine | `src/core/associative-engine/` | Semantic network |
 | Philosophy Engine | `src/core/philosophy-engine.js` | Reasoning patterns |
-| Clarity Engine | `src/core/clarity-engine.js` | Pattern extraction |
-| Metaphor Library | `src/core/metaphor-library.js` | Metaphor generation |
 | Commonsense Engine | `src/core/commonsense-engine.js` | Reasoning modes |
 | Knowledge Graph | `src/core/knowledge-graph.js` | Node/edge management |
 | Forgetting Engine | `src/core/forgetting.js` | Memory decay |
@@ -335,8 +332,34 @@ node scripts/heartflow-memory-tool.js write <key> <value>
 | Self Model | `src/core/self-model.js` | Identity drift detection |
 | Verification Engine | `src/core/verification-engine.js` | Multi-signal verification |
 | Fact Checker | `src/core/fact-checker.js` | Academic claim verification |
+| Confidence Calibrator | `src/core/confidence-calibrator.js` | Calibrate truth/lesson/verify confidence |
+| Decision Router | `src/core/decision-router.js` | 23 rules, field-aware routing (U/D/A/H) |
+| Philosophy to Decision | `src/core/philosophy-to-decision.js` | Philosophy evaluation → executable decisions |
 | Code Executor | `src/core/code/code-executor.js` | JavaScript/Shell/Python code execution (30s timeout, output truncation, sandbox) |
-| Code Engine | `src/core/code/code-engine.js` | Code analysis, review, and security audit |
+| ThinkCheck Logger | `src/core/thinkcheck-logger.js` | Structured think-check logging |
+| Lesson Bank | `src/core/lesson-bank.js` | Pattern cards, verified lessons |
+| Output Checklist | `src/core/output-checklist.js` | Fable 5 output quality checklist |
+| Preference Guard | `src/core/preference-guard.js` | Fable 5 preference application rules |
+| Spontaneous Restraint | `src/core/spontaneous-restraint.js` | Self-censorship for unnecessary output |
+| Identity Core | `src/identity/identity-core.js` | Identity engine (CORE memory) |
+| Identity Core Storage | `src/identity/identity-core-storage.js` | Identity persistence |
+| Meaningful Memory | `src/memory/meaningful-memory.js` | Working/episodic/semantic memory |
+| Triality Memory | `src/memory/triality-memory.js` | CORE/LEARNED/EPHEMERAL layers |
+| Dream Memory | `src/memory/dream-memory.js` | Dream persistence |
+| Emotional Memory Bridge | `src/memory/emotional-memory-bridge.js` | Emotion-memory integration |
+| Agent Bridge | `src/core/agent-bridge.js` | Hermes integration |
+| Response Interceptor | `src/core/response-interceptor.js` | LLM output interception |
+| Translation Pipeline | `src/core/translation-pipeline.js` | Multi-language support |
+| Code Writer | `src/core/code-writer.js` | Intent analysis → code generation → review |
+| Self Initiator | `src/core/self-initiator.js` | Mini-agent: code exec + sandbox + retry |
+| Philosophy Execution | `src/core/philosophy-execution.js` | Philosophy state execution |
+| Emotion Analysis | `src/core/emotion-analysis.js` | PAD emotion + multi-layer analysis |
+| Decision Verifier | `src/core/decision-verifier.js` | Counterfactual testing |
+| Decision Log Export | `src/api/decision-log-export.js` | TAT-calibrated log export |
+| Export for TAT | `src/api/export-for-tat.js` | TAT format data export |
+| Thought Chain | `src/core/thought-chain.js` | Cognitive chain of thought |
+| Psychology Engine | `src/psychology/engine.js` | Psychology subsystem dispatcher |
+| Sage Guardian | `src/psychology/sage-guardian.js` | Ethical guardian |
 
 ---
 

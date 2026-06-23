@@ -1,7 +1,7 @@
-# HeartFlow v3.4.4
+# HeartFlow v3.6.1
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.4.4-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-3.6.1-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
@@ -208,7 +208,8 @@ HeartFlow is not a research paper implementation. It is a working engine with 11
 ## Version Timeline
 
 ```
-v3.4.4 ─── Latest — Philosophy-to-Decision engine + Decision Router
+v3.6.1 ─── Latest — Field-aware decision routing (U/D/A/H) + zero-judgment metadata + tool rationality defense
+v3.6.0 ─── U/D/A/H field tracking + flip point detection (luoxuejian000 paper absorption)
 v3.0.x ─── Philosophy-to-Decision converter + universal decision routing
 v2.14.x ── AI psychology (cognitive uncertainty / attention / experience settling) + AI philosophy
 v2.10.x ── Self-reflection, dream, personality engine rework
@@ -231,10 +232,10 @@ MIT
 
 <a id="chinese-version"></a>
 
-# 心虫（HeartFlow）v3.4.4
+# 心虫（HeartFlow）v3.6.1
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.4.4-blue?style=flat-square" alt="版本" />
+  <img src="https://img.shields.io/badge/version-3.6.1-blue?style=flat-square" alt="版本" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="发布" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="最后提交" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="许可" />
@@ -359,7 +360,8 @@ node -e "const {createHeartFlow}=require('./src/core/heartflow.js'); const hf=cr
 ## 版本历史
 
 ```
-v3.4.4 ─── 最新 — 哲学→决策引擎 + 通用决策路由
+v3.6.1 ─── 最新 — 场域感知决策路由（U/D/A/H）+ 零判定元数据 + 工具理性防御
+v3.6.0 ─── U/D/A/H场域追踪 + 翻转点检测（luoxuejian000论文吸收）
 v3.0.x ─── 哲学到决策转化 + 通用决策路由引擎
 v2.14.x ── AI心理学（认知不确定性/注意力/经验沉淀）+ AI哲学
 v2.10.x ── 自省、梦境、人格引擎重构
