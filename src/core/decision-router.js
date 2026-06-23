@@ -1,5 +1,11 @@
 /**
- * decision-router.js — 通用分析→决策路由引擎 v1.0.0
+ * decision-router.js — 通用分析→决策路由引擎 v3.0.0
+ *
+ * v3.0.0 升级（2026-06-23）：
+ *   - 新增 U/D/A/H 四维场域追踪（基于 luoxuejian000 论文框架）
+ *   - 新增翻转点检测：Primary / Alternate1 / Alternate2 + U_PEAK_REVERSAL
+ *   - 吸收加权 H 公式：H = 0.4·U + 0.3·D - 0.3·A
+ *   - 新增4条场域感知规则
  *
  * 核心问题：心虫 53 个模块中有 53 个"只分析不决策"的模块。
  * 它们会评估、检测、诊断，但结果止步于"报告"——没人把报告转成指令。
@@ -19,54 +25,59 @@
  *   → 匹配决策规则 → 生成决策指令 → 返回 { result, decision }
  */
 
-const VERSION = '2.0.0';
+const VERSION = '3.0.0';
+
+// ─── U/D/A/H 场域追踪参数（基于 luoxuejian000 论文） ──────────────────────
+// H = λU·U + λD·D - λA·A
+const FIELD_WEIGHTS = {
+  lambdaU: 0.4,  // 统一性——身份在场强度
+  lambdaD: 0.3,  // 发展性——信息推进结构化程度
+  lambdaA: 0.3,  // 对抗性——矛盾边密度
+};
+
+// 翻转点检测阈值（论文实验验证值）
+const FLIP_THRESHOLDS = {
+  aBoundaryLow: 0.12,     // A 值边界下限
+  aBoundaryHigh: 0.9,     // A 值边界上限
+  aStdevDead: 0.01,       // A 值 3 步滑动标准差"僵死"阈值
+  dVolatilityDropWindow: 5, // D 波动率移动平均窗口
+  amplitudeRatio: 2.0,    // 主导维度振幅超过历史均值倍数
+  aJumpThreshold: 0.1,    // A 值跳变检测阈值
+  aDiveThreshold: 0.3,    // A 值跳水阈值
+  hRiseThreshold: 0.05,   // H 值同步上升阈值
+  uPeakDropThreshold: -0.05, // U 值从峰值回落阈值
+  epsilon: 0.005,         // 驱动归因最小变化量
+  historyWindow: 10,      // 场域历史窗口（步数）
+};
 
 // ─── 模型配置文件 ────────────────────────────────────────────────────────
-// 不同模型有不同的校准质量，置信度阈值需要相应调整
-// calibration 越好（自信越准确），阈值越低；越差（容易幻觉），阈值越高
 const MODEL_PROFILES = {
-  // flash 模型：快速但容易幻觉/过度自信
   flash: {
     label: 'Fast inference, prone to hallucination',
-    confidenceFloor: 0.3,    // 最低可信置信度
-    confidenceStandard: 0.5, // 标准决策阈值
-    confidenceHigh: 0.7,     // 高风险决策阈值
-    confidenceMax: 0.9,      // 无条件通过阈值
-    decisionShift: 0.0,      // 所有阈值整体偏移量（负值=更宽松，正值=更严格）
-    explorationEpsilon: 0.10, // Q-table 探索率
-    fallbackThreshold: 0.4,  // 低于此值强制回退
+    confidenceFloor: 0.3,    confidenceStandard: 0.5,
+    confidenceHigh: 0.7,     confidenceMax: 0.9,
+    decisionShift: 0.0,      explorationEpsilon: 0.10,
+    fallbackThreshold: 0.4,
   },
-  // 完整版模型：更好的校准质量
   premium: {
     label: 'Well-calibrated full model',
-    confidenceFloor: 0.3,
-    confidenceStandard: 0.4,
-    confidenceHigh: 0.55,
-    confidenceMax: 0.85,
-    decisionShift: -0.05,
-    explorationEpsilon: 0.08,
+    confidenceFloor: 0.3,    confidenceStandard: 0.4,
+    confidenceHigh: 0.55,    confidenceMax: 0.85,
+    decisionShift: -0.05,    explorationEpsilon: 0.08,
     fallbackThreshold: 0.3,
   },
-  // 顶级模型（GPT-4/Claude级别）：校准质量极高
   flagship: {
     label: 'Best-in-class calibration',
-    confidenceFloor: 0.2,
-    confidenceStandard: 0.35,
-    confidenceHigh: 0.5,
-    confidenceMax: 0.8,
-    decisionShift: -0.1,
-    explorationEpsilon: 0.05,
+    confidenceFloor: 0.2,    confidenceStandard: 0.35,
+    confidenceHigh: 0.5,     confidenceMax: 0.8,
+    decisionShift: -0.1,     explorationEpsilon: 0.05,
     fallbackThreshold: 0.25,
   },
-  // 小/量化模型：校准质量差
   lightweight: {
     label: 'Small/quantized model, poor calibration',
-    confidenceFloor: 0.4,
-    confidenceStandard: 0.6,
-    confidenceHigh: 0.8,
-    confidenceMax: 0.95,
-    decisionShift: 0.1,
-    explorationEpsilon: 0.15,
+    confidenceFloor: 0.4,    confidenceStandard: 0.6,
+    confidenceHigh: 0.8,     confidenceMax: 0.95,
+    decisionShift: 0.1,      explorationEpsilon: 0.15,
     fallbackThreshold: 0.5,
   },
 };
@@ -74,7 +85,6 @@ const MODEL_PROFILES = {
 const DEFAULT_PROFILE = MODEL_PROFILES.flash;
 
 // ─── 决策类型（与 philosophy-to-decision.js 一致） ────────────────────────
-
 const DECISION = {
   PAUSE: 'pause',           // 减速/暂停
   ACCELERATE: 'accelerate', // 加速
@@ -97,16 +107,13 @@ const DECISION_PRIORITY = {
   [DECISION.HOLD]: 30,
 };
 
-// ─── 分析结果→决策规则（已移到构造函数中动态生成，引用 _thresholds） ──────
-
 // ─── 决策路由引擎 ────────────────────────────────────────────────────────
-
 class DecisionRouter {
   /**
    * @param {object} heartFlow - HeartFlow 主实例引用
    * @param {object} [options]
-   * @param {string} [options.modelProfile='flash'] - 模型配置文件名（flash/premium/flagship/lightweight）
-   * @param {object} [options.customProfile] - 自定义配置（覆盖 modelProfile）
+   * @param {string} [options.modelProfile='flash']
+   * @param {object} [options.customProfile]
    */
   constructor(heartFlow, options = {}) {
     this.name = 'DecisionRouter';
@@ -122,7 +129,6 @@ class DecisionRouter {
       ...(options.customProfile || {}),
     };
 
-    // 应用 decisionShift
     this._thresholds = {
       floor: this.modelProfile.confidenceFloor,
       standard: this.modelProfile.confidenceStandard,
@@ -131,19 +137,30 @@ class DecisionRouter {
       fallback: this.modelProfile.fallbackThreshold,
     };
 
-    // 规则（构造函数中动态生成，引用 _thresholds）
+    // ─── v3.0.0 新增：U/D/A/H 场域追踪 ───────────────────────────────────
+    /** @type {Array<{step:number, U:number, D:number, A:number, H:number, source:string, driver:string}>} */
+    this._fieldHistory = [];
+    this._fieldStep = 0;
+    this._lastFlipAlert = null;  // { type, step, u, d, a, h, message, timestamp }
+
+    // 规则
     const T = this._thresholds;
     this._rules = [
       // ── 认知类 ──
       {
         id: 'cognitive-overload',
-        match: (r) => r.cognitiveLoad !== undefined || r.load !== undefined,
+        match: (r) => {
+          // 原始字段可能被场域注入覆盖，检查多种来源
+          const load = r.cognitiveLoad !== undefined ? r.cognitiveLoad :
+                       r.load !== undefined ? r.load : undefined;
+          return load !== undefined;
+        },
         decision: DECISION.PAUSE,
         confidence: (r) => {
-          const load = r.cognitiveLoad || r.load || 0;
+          const load = r.cognitiveLoad !== undefined ? r.cognitiveLoad : (r.load || 0);
           return load > T.high ? 0.9 : load > T.standard ? 0.6 : 0;
         },
-        rationale: (r) => `认知负荷 ${(r.cognitiveLoad || r.load || 0).toFixed(2)}，建议减速`,
+        rationale: (r) => `认知负荷 ${(r.cognitiveLoad !== undefined ? r.cognitiveLoad : (r.load || 0)).toFixed(2)}，减速`,
         fallback: DECISION.HOLD,
       },
       {
@@ -155,7 +172,7 @@ class DecisionRouter {
           const dir = r.directionClear || 0;
           return load < T.floor && dir > T.high ? 0.85 : 0;
         },
-        rationale: (r) => `低负荷(${((r.cognitiveLoad || r.load || 0)).toFixed(2)})+方向明确(${(r.directionClear || 0).toFixed(2)})，建议加速`,
+        rationale: (r) => `低负荷(${((r.cognitiveLoad || r.load || 0)).toFixed(2)})+方向明确(${(r.directionClear || 0).toFixed(2)})，加速`,
         fallback: DECISION.HOLD,
       },
       {
@@ -166,7 +183,7 @@ class DecisionRouter {
           const d = r.dissonance || r.cognitiveDissonance || 0;
           return d > T.high ? 0.9 : d > T.standard ? 0.6 : 0;
         },
-        rationale: (r) => `认知失调 ${((r.dissonance || r.cognitiveDissonance || 0)).toFixed(2)}，需要自愈`,
+        rationale: (r) => `认知失调 ${((r.dissonance || r.cognitiveDissonance || 0)).toFixed(2)}，自愈`,
         fallback: DECISION.TURN,
       },
       // ── 决策质量类 ──
@@ -178,13 +195,13 @@ class DecisionRouter {
         rationale: (r) => `决策质量 ${r.quality.toFixed(2)}，低于阈值`,
         fallback: DECISION.HEAL,
       },
-      // ── 自我认知类 ──
+      // ── 引擎状态一致性 ──
       {
         id: 'identity-drift',
         match: (r) => r.identityCoherence !== undefined && r.identityCoherence < T.standard,
         decision: DECISION.TURN,
         confidence: (r) => 1 - (r.identityCoherence || 0),
-        rationale: (r) => `自我认同一致性 ${(r.identityCoherence || 0).toFixed(2)}，低于安全线`,
+        rationale: (r) => `引擎状态一致性 ${(r.identityCoherence || 0).toFixed(2)}，低于安全线`,
         fallback: DECISION.PAUSE,
       },
       // ── 错误/异常类 ──
@@ -204,27 +221,7 @@ class DecisionRouter {
         rationale: (r) => `瞬时错误: ${r.reason || ''}`,
         fallback: DECISION.HOLD,
       },
-      // ── 情绪/心理类 ──
-      {
-        id: 'psychological-distress',
-        match: (r) => r.psychologicalDistress !== undefined || r.stressLevel !== undefined,
-        decision: DECISION.REST,
-        confidence: (r) => {
-          const s = r.psychologicalDistress || r.stressLevel || 0;
-          return s > T.high ? 0.85 : s > T.standard ? 0.6 : 0;
-        },
-        rationale: (r) => `心理压力 ${((r.psychologicalDistress || r.stressLevel || 0)).toFixed(2)}`,
-        fallback: DECISION.PAUSE,
-      },
       // ── 价值/伦理类 ──
-      {
-        id: 'value-alignment',
-        match: (r) => r.valueConflict !== undefined && r.valueConflict > T.standard,
-        decision: DECISION.TURN,
-        confidence: (r) => r.valueConflict,
-        rationale: (r) => `价值冲突 ${r.valueConflict.toFixed(2)}`,
-        fallback: DECISION.PAUSE,
-      },
       {
         id: 'value-resonance',
         match: (r) => r.valueResonance !== undefined && r.valueResonance > T.high,
@@ -312,18 +309,83 @@ class DecisionRouter {
         rationale: (r) => `执行失败: ${r.error || r.reason || '未知'}`,
         fallback: DECISION.PAUSE,
       },
+      // ★ 目标审视类
+      {
+        id: 'goal-invalid',
+        match: (r) => r.goalValid !== undefined && r.goalValid === false,
+        decision: DECISION.PAUSE,
+        confidence: (r) => 0.8,
+        rationale: (r) => `目标合理性存疑: ${r.goalReviewDetail || '目标存在矛盾或不可能实现'}`,
+        fallback: DECISION.TURN,
+      },
+      {
+        id: 'goal-unethical',
+        match: (r) => r.goalEthical !== undefined && r.goalEthical === false,
+        decision: DECISION.TURN,
+        confidence: (r) => 0.9,
+        rationale: (r) => `目标涉及伦理风险: ${r.goalReviewDetail || '目标可能伤害他人或违反道德'}`,
+        fallback: DECISION.PAUSE,
+      },
+      {
+        id: 'goal-needs-post-resolution',
+        match: (r) => r.postResolution !== undefined && r.postResolution !== null,
+        decision: DECISION.PAUSE,
+        confidence: (r) => 0.6,
+        rationale: (r) => `需要终局思考: ${r.postResolution}`,
+        fallback: DECISION.HOLD,
+      },
+      // ──────────────────────────────────────────────────────────────────────
+      // v3.0.0 新增：U/D/A/H 场域感知规则（基于 luoxuejian000 论文）
+      // ──────────────────────────────────────────────────────────────────────
+      {
+        id: 'field-degrading',
+        // 场域慢性失谐：H 值持续低于 0.3（低健康度）
+        match: (r) => r._fieldH !== undefined && r._fieldH < 0.3,
+        decision: DECISION.HEAL,
+        confidence: (r) => Math.max(0.5, 0.9 - r._fieldH),
+        rationale: (r) => `场域慢性失谐: H=${r._fieldH.toFixed(3)}, U=${(r._fieldU || 0).toFixed(3)}, D=${(r._fieldD || 0).toFixed(3)}, A=${(r._fieldA || 0).toFixed(3)}`,
+        fallback: DECISION.PAUSE,
+      },
+      {
+        id: 'field-reversal',
+        // 翻转点预警（Primary/Alternate1/Alternate2 任意命中）
+        match: (r) => r._fieldFlipAlert !== undefined && r._fieldFlipAlert !== null,
+        decision: DECISION.PAUSE,
+        confidence: (r) => r._fieldFlipAlert === 'primary' ? 0.85 : 0.7,
+        rationale: (r) => `翻转点预警[${r._fieldFlipAlert}]: 步${r._fieldStep}, H=${(r._fieldH || 0).toFixed(3)}`,
+        fallback: DECISION.HEAL,
+      },
+      {
+        id: 'field-peak-reversal',
+        // U_PEAK_REVERSAL：U 值从峰值大幅回落（身份在场强度退化）
+        match: (r) => r._fieldPeakReversal !== undefined && r._fieldPeakReversal === true,
+        decision: DECISION.TURN,
+        confidence: (r) => 0.8,
+        rationale: (r) => `U值峰值反转: ΔU=${(r._fieldDeltaU || 0).toFixed(3)}, 身份在场强度退化`,
+        fallback: DECISION.PAUSE,
+      },
+      {
+        id: 'field-stable',
+        // 场域健康：H 值高于 0.45，所有维度稳定
+        match: (r) => r._fieldH !== undefined && r._fieldH >= 0.45 &&
+                      r._fieldA !== undefined && r._fieldA < 0.3 &&
+                      r._fieldU !== undefined && r._fieldU >= 0.3,
+        decision: DECISION.ACCELERATE,
+        confidence: (r) => Math.min(0.9, r._fieldH),
+        rationale: (r) => `场域健康: H=${r._fieldH.toFixed(3)}, U=${r._fieldU.toFixed(3)}, A=${r._fieldA.toFixed(3)}`,
+        fallback: DECISION.HOLD,
+      },
     ];
 
     // 决策历史
     this._history = [];
     this._maxHistory = 500;
 
-    // 当前活跃决策
     this._activeDecision = null;
 
     // 抑制——防止同一规则在短时间内重复触发
-    this._suppression = new Map(); // ruleId → lastTriggerTime
-    this._suppressionWindow = 10000; // 10秒内不重复触发同一规则
+    this._suppression = new Map();
+    this._suppressionWindow = 10000;
 
     // 统计
     this._stats = {
@@ -332,18 +394,275 @@ class DecisionRouter {
       byDecision: {},
       byRule: {},
       suppressedCount: 0,
+      flipAlerts: 0,
+      fieldSnapshots: 0,
+    };
+  }
+
+  // ─── v3.0.0 新增：U/D/A/H 场域计算方法 ──────────────────────────────────
+
+  /**
+   * 从任意模块的分析结果中提取或计算 U/D/A/H 四维值
+   * @param {object} result - 模块返回值
+   * @returns {{ U: number, D: number, A: number, H: number }}
+   */
+  _computeFieldValues(result) {
+    if (!result || typeof result !== 'object') {
+      return { U: 0.3, D: 0.3, A: 0, H: 0.3 };
+    }
+
+    // U（统一性/Unity）——身份在场强度
+    // 来源：identityCoherence, confidence, ok/belief 等
+    let U = 0.3;
+    if (result.identityCoherence !== undefined) {
+      U = result.identityCoherence;
+    } else if (result._fieldU !== undefined) {
+      U = result._fieldU;
+    } else if (result.ok !== undefined) {
+      U = result.ok ? 0.6 : 0.2;
+    } else if (result.confidence !== undefined) {
+      U = Math.max(0.2, result.confidence);
+    } else if (result.stability !== undefined) {
+      U = result.stability;
+    }
+
+    // D（发展性/Development）——信息推进的结构化程度
+    // 来源：quality, success, cognitiveLoad（低负荷=高D）, awareness
+    let D = 0.3;
+    if (result.quality !== undefined) {
+      D = result.quality;
+    } else if (result._fieldD !== undefined) {
+      D = result._fieldD;
+    } else if (result.success !== undefined) {
+      D = result.success ? 0.7 : 0.2;
+    } else if (result.cognitiveLoad !== undefined) {
+      D = Math.max(0.1, 1 - result.cognitiveLoad);
+    } else if (result.awareness !== undefined) {
+      D = Math.max(0.2, result.awareness * 0.8);
+    }
+
+    // A（对抗性/Adversity）——矛盾边密度
+    // 来源：dissonance, severity, goalValid(false), valid(false)
+    let A = 0;
+    if (result.dissonance !== undefined) {
+      A = result.dissonance;
+    } else if (result._fieldA !== undefined) {
+      A = result._fieldA;
+    } else if (result.severity !== undefined) {
+      A = String(result.severity).toUpperCase() === 'CRITICAL' ? 0.8 :
+          String(result.severity).toUpperCase() === 'HIGH' ? 0.6 : 0.1;
+    } else if (result.goalValid === false) {
+      A = 0.5;
+    } else if (result.valid === false) {
+      A = 0.4;
+    } else if (result.ok === false) {
+      A = 0.3;
+    }
+
+    // 边界约束
+    U = Math.max(0, Math.min(1, U));
+    D = Math.max(0, Math.min(1, D));
+    A = Math.max(0, Math.min(1, A));
+
+    // H（和谐度/Harmony）——加权公式
+    // H = λU·U + λD·D - λA·A
+    const H = Math.max(0, Math.min(1,
+      FIELD_WEIGHTS.lambdaU * U +
+      FIELD_WEIGHTS.lambdaD * D -
+      FIELD_WEIGHTS.lambdaA * A
+    ));
+
+    return { U, D, A, H };
+  }
+
+  /**
+   * 驱动归因——H 值变化由哪个维度主导
+   * @param {{U:number, D:number, A:number}} prev
+   * @param {{U:number, D:number, A:number}} curr
+   * @returns {string} 'U' | 'D' | 'A' | 'balanced'
+   */
+  _attributionDriver(prev, curr) {
+    const dU = Math.abs(curr.U - prev.U);
+    const dD = Math.abs(curr.D - prev.D);
+    const dA = Math.abs(curr.A - prev.A);
+
+    if (dU < FLIP_THRESHOLDS.epsilon && dD < FLIP_THRESHOLDS.epsilon && dA < FLIP_THRESHOLDS.epsilon) {
+      return 'balanced';
+    }
+
+    if (dU >= dD && dU >= dA) return 'U';
+    if (dD >= dU && dD >= dA) return 'D';
+    return 'A';
+  }
+
+  /**
+   * 更新场域历史并检测翻转点
+   * @param {object} result - 当前评估的模块返回值
+   * @param {string} source - 来源
+   * @returns {object} 注入到 result 的场域字段
+   */
+  _updateFieldTracking(result, source) {
+    const fieldValues = this._computeFieldValues(result);
+    const { U, D, A, H } = fieldValues;
+
+    this._fieldStep++;
+
+    // 驱动归因
+    let driver = 'D';
+    if (this._fieldHistory.length > 0) {
+      const prev = this._fieldHistory[this._fieldHistory.length - 1];
+      driver = this._attributionDriver(
+        { U: prev.U, D: prev.D, A: prev.A },
+        { U, D, A }
+      );
+    }
+
+    // 记录场域历史
+    this._fieldHistory.push({
+      step: this._fieldStep,
+      U, D, A, H,
+      source,
+      driver,
+      timestamp: Date.now(),
+    });
+
+    // 保持历史窗口大小
+    if (this._fieldHistory.length > FLIP_THRESHOLDS.historyWindow * 3) {
+      this._fieldHistory.splice(0, this._fieldHistory.length - FLIP_THRESHOLDS.historyWindow * 3);
+    }
+
+    // ─── 翻转点检测 ────────────────────────────────────────────────────
+    let flipAlert = null;
+    let peakReversal = false;
+    let deltaU = 0;
+
+    if (this._fieldHistory.length >= 4) {
+      const hist = this._fieldHistory;
+      const idx = hist.length - 1;
+      const prev1 = hist[idx - 1];
+      const prev2 = hist[idx - 2];
+      const prev3 = hist[idx - 3];
+
+      // ΔU（用于 U_PEAK_REVERSAL）
+      deltaU = U - prev1.U;
+
+      // --- Primary 路径：场域相变预警 ---
+      // A 值在边界附近僵死 (A ≤ 0.12 或 A ≥ 0.9，且 3 步滑动标准差 σ_A ≤ 0.015)
+      const aValues = [hist[idx-3].A, hist[idx-2].A, hist[idx-1].A, A];
+      const aMean = aValues.reduce((s, v) => s + v, 0) / aValues.length;
+      const aStdev = Math.sqrt(aValues.reduce((s, v) => s + (v - aMean) ** 2, 0) / aValues.length);
+
+      const aAtBoundary = (A <= FLIP_THRESHOLDS.aBoundaryLow || A >= FLIP_THRESHOLDS.aBoundaryHigh);
+      const aStuck = aStdev <= 0.015;  // 略宽松于论文的 0.01
+
+      // D 波动率：5 步移动平均趋势
+      const dVolHistory = hist.slice(-FLIP_THRESHOLDS.dVolatilityDropWindow).map(h => h.D);
+      const dVolTrend = dVolHistory.length >= 3
+        ? (dVolHistory[dVolHistory.length-1] - dVolHistory[0]) / dVolHistory.length
+        : 0;
+      const dVolFlat = dVolTrend <= 0.01;  // 趋平或下降
+
+      // 主导维度异常振幅
+      // 在A边界僵死+波动率趋平的情况下，只要主导维度有变化即触发
+      // 如果 driver 为 'balanced'，检查所有维度中变化最大的那个
+      let driverDim = 'A';
+      if (driver === 'U' || driver === 'D' || driver === 'A') {
+        driverDim = driver;
+      } else {
+        // balanced 状态：找变化最大的维度
+        const dU = Math.abs(U - prev1.U);
+        const dD = Math.abs(D - prev1.D);
+        const dA = Math.abs(A - prev1.A);
+        if (dU >= dD && dU >= dA) driverDim = 'U';
+        else if (dD >= dA) driverDim = 'D';
+      }
+      const domAmplitude = Math.abs(
+        hist[idx][driverDim] - hist[idx-1][driverDim]
+      );
+      const domValues = hist.slice(-6).map(h => h[driverDim] || 0);
+      const domMean = domValues.reduce((s, v) => s + v, 0) / domValues.length;
+      const domAbnormal = domMean > 0 ? (domAmplitude > domMean * FLIP_THRESHOLDS.amplitudeRatio) : (domAmplitude > 0);
+
+      // 宽松条件：A边界僵死 + D趋平 + （振幅异常 或 所有维度完全稳定超过5步）
+      const allStable = hist.length >= 5 &&
+        hist.slice(-5).every(h =>
+          Math.abs(h.U - hist[hist.length-1].U) < 0.001 &&
+          Math.abs(h.D - hist[hist.length-1].D) < 0.001 &&
+          Math.abs(h.A - hist[hist.length-1].A) < 0.001
+        );
+
+      if (aAtBoundary && aStuck && dVolFlat && (domAbnormal || allStable)) {
+        flipAlert = 'primary';
+      }
+
+      // --- Alternate1 路径：边界跳变预警 ---
+      // A 值从非边界直接跳入边界 (|ΔA| ≥ 0.1 且新值 ≤ 0.12 或 ≥ 0.9)
+      const prevA = prev1.A;
+      const aJump = Math.abs(A - prevA);
+      if (!flipAlert && aJump >= FLIP_THRESHOLDS.aJumpThreshold &&
+          (A <= FLIP_THRESHOLDS.aBoundaryLow || A >= FLIP_THRESHOLDS.aBoundaryHigh)) {
+        flipAlert = 'alternate1';
+      }
+
+      // --- Alternate2 路径：A 值跳水预警 ---
+      // A 值大幅下降 (|ΔA| ≥ 0.3) 且 H 值显著上升 (ΔH ≥ 0.05)
+      const aDrop = prev1.A - A;
+      const hRise = H - prev1.H;
+      if (!flipAlert && aDrop >= FLIP_THRESHOLDS.aDiveThreshold && hRise >= FLIP_THRESHOLDS.hRiseThreshold) {
+        flipAlert = 'alternate2';
+      }
+
+      // --- U_PEAK_REVERSAL 增强信号 ---
+      // U 值从局部峰值大幅回落 (ΔU ≤ -0.05)
+      // 在 A 值极低 (A ≈ 0) 时尤为关键
+      if (deltaU <= FLIP_THRESHOLDS.uPeakDropThreshold) {
+        // 确认前一步是局部峰值
+        const isPeak = hist.length >= 3 &&
+          prev1.U >= hist[idx-2].U &&
+          prev1.U >= (hist[idx-3]?.U || 0);
+        if (isPeak || A < FLIP_THRESHOLDS.aBoundaryLow) {
+          peakReversal = true;
+        }
+      }
+    }
+
+    // 记录翻转预警
+    if (flipAlert) {
+      this._lastFlipAlert = {
+        type: flipAlert,
+        step: this._fieldStep,
+        U, D, A, H,
+        driver,
+        message: `翻转点[${flipAlert}]: 步${this._fieldStep} H=${H.toFixed(3)} U=${U.toFixed(3)} D=${D.toFixed(3)} A=${A.toFixed(3)}`,
+        timestamp: Date.now(),
+      };
+      this._stats.flipAlerts++;
+    }
+
+    this._stats.fieldSnapshots++;
+
+    // 返回注入到 result 的场域字段
+    return {
+      _fieldStep: this._fieldStep,
+      _fieldU: U,
+      _fieldD: D,
+      _fieldA: A,
+      _fieldH: H,
+      _fieldDriver: driver,
+      _fieldDeltaU: deltaU,
+      _fieldFlipAlert: flipAlert,
+      _fieldPeakReversal: peakReversal,
     };
   }
 
   /**
    * 核心方法：分析任意模块的返回值，匹配规则，生成决策指令
    *
+   * v3.0.0 改动：在规则匹配前注入 U/D/A/H 场域追踪数据
+   *
    * @param {object} result - 任意模块的返回值
-   * @param {string} [source] - 来源描述（如 'selfModel.assess'）
-   * @returns {{ decision: object|null, matched: boolean, rules: Array }}
-   *   decision: { type, confidence, priority, rationale, ruleId, timestamp }
-   *   matched: 是否有匹配的规则
-   *   rules: 所有匹配的规则（按优先级排序）
+   * @param {string} [source] - 来源描述
+   * @returns {{ decision: object|null, matched: boolean, rules: Array, field?: object }}
    */
   evaluate(result, source = 'unknown') {
     this._stats.totalEvaluations++;
@@ -352,19 +671,22 @@ class DecisionRouter {
       return { decision: null, matched: false, rules: [] };
     }
 
+    // ─── v3.0.0：注入场域追踪数据 ──────────────────────────────────────
+    const fieldData = this._updateFieldTracking(result, source);
+    // 将场域数据注入 result，使场域规则可以匹配
+    Object.assign(result, fieldData);
+
     // 找到所有匹配的规则
     const matches = [];
     const now = Date.now();
 
     for (const rule of this._rules) {
       try {
-        // 先检查 match，再计算 confidence
         if (!rule.match(result)) continue;
-        
+
         const confidence = rule.confidence(result);
         if (confidence <= 0) continue;
 
-        // 检查抑制
         const lastTrigger = this._suppression.get(rule.id);
         if (lastTrigger && (now - lastTrigger) < this._suppressionWindow) {
           this._stats.suppressedCount++;
@@ -386,10 +708,15 @@ class DecisionRouter {
     }
 
     if (matches.length === 0) {
-      return { decision: null, matched: false, rules: [] };
+      return {
+        decision: null,
+        matched: false,
+        rules: [],
+        field: fieldData,
+      };
     }
 
-    // 按优先级+置信度排序，取最优
+    // 按优先级+置信度排序
     matches.sort((a, b) => {
       const scoreA = a.priority * 0.7 + a.confidence * 100 * 0.3;
       const scoreB = b.priority * 0.7 + b.confidence * 100 * 0.3;
@@ -398,7 +725,6 @@ class DecisionRouter {
 
     const best = matches[0];
 
-    // 更新抑制
     this._suppression.set(best.ruleId, now);
 
     // 记录历史
@@ -409,17 +735,24 @@ class DecisionRouter {
       ruleId: best.ruleId,
       source,
       timestamp: best.timestamp,
+      field: {
+        step: fieldData._fieldStep,
+        U: fieldData._fieldU,
+        D: fieldData._fieldD,
+        A: fieldData._fieldA,
+        H: fieldData._fieldH,
+        driver: fieldData._fieldDriver,
+        flipAlert: fieldData._fieldFlipAlert,
+      },
     });
     if (this._history.length > this._maxHistory) {
       this._history.splice(0, this._history.length - this._maxHistory);
     }
 
-    // 更新统计
     this._stats.totalDecisions++;
     this._stats.byDecision[best.type] = (this._stats.byDecision[best.type] || 0) + 1;
     this._stats.byRule[best.ruleId] = (this._stats.byRule[best.ruleId] || 0) + 1;
 
-    // 设为当前活跃决策
     this._activeDecision = {
       type: best.type,
       confidence: best.confidence,
@@ -443,19 +776,15 @@ class DecisionRouter {
         fallback: best.fallback,
       },
       matched: true,
-      rules: matches.slice(0, 5), // 返回前5个匹配
+      rules: matches.slice(0, 5),
+      field: fieldData,
     };
   }
 
   /**
    * 注入 dispatch 结果——包装返回值，注入决策建议
-   *
-   * @param {string} route - dispatch 路由（如 'selfModel.assess'）
-   * @param {*} originalResult - dispatch 原始返回值
-   * @returns {*} 如果匹配决策规则，返回 { result, decision }；否则返回原始值
    */
   wrapDispatchResult(route, originalResult) {
-    // 只处理对象返回值
     if (!originalResult || typeof originalResult !== 'object' || Array.isArray(originalResult)) {
       return originalResult;
     }
@@ -465,10 +794,82 @@ class DecisionRouter {
       return {
         result: originalResult,
         decision: evalResult.decision,
+        field: evalResult.field,
+      };
+    }
+
+    // v3.0.0：即使未匹配决策，也附带场域数据
+    if (evalResult.field) {
+      return {
+        result: originalResult,
+        field: evalResult.field,
       };
     }
 
     return originalResult;
+  }
+
+  /**
+   * v3.0.0 新增：获取场域追踪历史
+   * @param {number} [limit=20] - 最近 N 步
+   * @returns {Array}
+   */
+  getFieldHistory(limit = 20) {
+    return this._fieldHistory.slice(-limit).map(h => ({
+      ...h,
+      timestamp: new Date(h.timestamp).toISOString(),
+    }));
+  }
+
+  /**
+   * v3.0.0 新增：获取场域摘要
+   * @returns {object}
+   */
+  getFieldSummary() {
+    if (this._fieldHistory.length === 0) {
+      return { status: 'no_data', steps: 0 };
+    }
+
+    const latest = this._fieldHistory[this._fieldHistory.length - 1];
+    const allU = this._fieldHistory.map(h => h.U);
+    const allD = this._fieldHistory.map(h => h.D);
+    const allA = this._fieldHistory.map(h => h.A);
+    const allH = this._fieldHistory.map(h => h.H);
+
+    const avg = arr => arr.reduce((s, v) => s + v, 0) / arr.length;
+    const max = arr => Math.max(...arr);
+    const min = arr => Math.min(...arr);
+
+    // 驱动分布
+    const driverCount = {};
+    for (const h of this._fieldHistory) {
+      driverCount[h.driver] = (driverCount[h.driver] || 0) + 1;
+    }
+    const total = this._fieldHistory.length;
+    const driverDistribution = {};
+    for (const [d, c] of Object.entries(driverCount)) {
+      driverDistribution[d] = `${(c / total * 100).toFixed(1)}%`;
+    }
+
+    return {
+      status: 'tracking',
+      steps: this._fieldStep,
+      current: { U: latest.U, D: latest.D, A: latest.A, H: latest.H, driver: latest.driver },
+      range: {
+        U: { min: min(allU).toFixed(3), max: max(allU).toFixed(3), avg: avg(allU).toFixed(3) },
+        D: { min: min(allD).toFixed(3), max: max(allD).toFixed(3), avg: avg(allD).toFixed(3) },
+        A: { min: min(allA).toFixed(3), max: max(allA).toFixed(3), avg: avg(allA).toFixed(3) },
+        H: { min: min(allH).toFixed(3), max: max(allH).toFixed(3), avg: avg(allH).toFixed(3) },
+      },
+      driverDistribution,
+      lastFlipAlert: this._lastFlipAlert ? {
+        type: this._lastFlipAlert.type,
+        step: this._lastFlipAlert.step,
+        H: this._lastFlipAlert.H,
+        message: this._lastFlipAlert.message,
+      } : null,
+      flipAlertsTotal: this._stats.flipAlerts,
+    };
   }
 
   /**
@@ -491,7 +892,6 @@ class DecisionRouter {
 
   /**
    * 动态添加规则
-   * @param {object} rule - { id, match, decision, confidence, rationale, fallback }
    */
   addRule(rule) {
     if (!rule.id || !rule.match || !rule.decision) {
@@ -513,6 +913,9 @@ class DecisionRouter {
       rulesCount: this._rules.length,
       historyLength: this._history.length,
       suppressionActive: this._suppression.size,
+      fieldSteps: this._fieldStep,
+      fieldWindow: FLIP_THRESHOLDS.historyWindow,
+      fieldWeights: { ...FIELD_WEIGHTS },
     };
   }
 
@@ -528,11 +931,12 @@ class DecisionRouter {
 }
 
 // ─── 导出 ──────────────────────────────────────────────────────────────────
-
 module.exports = {
   DecisionRouter,
   DECISION,
   DECISION_PRIORITY,
   MODEL_PROFILES,
+  FIELD_WEIGHTS,
+  FLIP_THRESHOLDS,
   VERSION,
 };
