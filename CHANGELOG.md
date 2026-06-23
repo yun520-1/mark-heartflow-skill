@@ -1,3 +1,30 @@
+## [v3.6.1] - 2026-06-24
+### Added
+- **零判定声明原则** — think() 返回结果加 `meta` 层标注场域健康度、置信度来源类型（structural/linguistic），不替代原始判定
+- **工具理性悖论防御** — decision-router.js 后备连续性（API不可用时回退本地外推） + 审计透明（每次评估记录前因后果）
+- **A值边界僵死动态检测** — _updateFieldTracking 中 confidence 连续3步不变触发状态切换
+- **词法vs语义置信度来源标注** — confidence-calibrator.js assess() 区分结构字段置信度和语言特征置信度
+### Changed
+- decision-router.js v3.0.0 → v3.0.1: 后备连续性 + 审计追踪
+- confidence-calibrator.js: 置信度评估结果新增 `source` 字段（structural/linguistic）
+- heartflow.js think(): 返回结果新增 `meta` 元数据层
+- SKILL.md/README.md 版本号统一到 3.6.1
+- package.json description 精简，移除过时模块列表
+- SKILL.md Internal Modules 表更新：移除死模块引用（clarity-engine/metaphor-library/code-engine），新增 30+ 真实模块
+
+## [v3.6.0] - 2026-06-23
+### Added
+- **U/D/A/H四维场域追踪** — decision-router.js 新增 _computeFieldValues/_trackFieldHistory/_detectFlipPoint/_detectUPeakReversal/_attributeDriver 五个方法
+- **H加权公式** — H = 0.4·U + 0.3·D - 0.3·A（来自 luoxuejian000 论文 §3.1-3.5）
+- **三条翻转点检测路径** — Primary（A≤0.12/A≥0.9 + σ_A≤0.01 + D波动率趋平 + 主导维度振幅异常）、Alternate1（|ΔA|≥0.1跳入边界）、Alternate2（|ΔA|≥0.3且ΔH≥0.05）
+- **U_PEAK_REVERSAL增强信号** — ΔU≤-0.05时触发TURN动作（priority=70），独立于A值变化
+- **驱动归因** — 每次评估记录主导驱动维度（U-driven/D-driven/A-driven/balanced）
+- **4条场域感知规则** — field-degrading(HEAL, 100) > field-reversal(PAUSE, 90) > field-peak-reversal(TURN, 70) > field-stable(ACCELERATE, 60)
+### Changed
+- decision-router.js v2.0.0 → v3.0.0（+450行场域追踪模块）
+- 33/33 测试通过（v2兼容性8 + U/D/A/H计算5 + 翻转点11 + U_PEAK_REVERSAL3 + 场域历史3 + 场域摘要3）
+- package.json version 3.5.1 → 3.6.0
+
 ## [v3.0.0] - 2026-06-16
 ### Added
 - **交流层架构** — 3模块23文件完整集成

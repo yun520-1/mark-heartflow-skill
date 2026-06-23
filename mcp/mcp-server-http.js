@@ -78,12 +78,12 @@ try { version = fs.readFileSync(path.join(HF_DIR, 'VERSION'), 'utf8').trim(); } 
 const TOOLS = [
   {
     name: 'heartflow_think',
-    description: '完整思维链：感知输入→本体自检→情感分析→认知判断→决策输出。返回结构化分析结果，包含心理学分析、判定结果、置信度和行为建议。',
+    description: '完整思维链：分类输入→路由→推理→输出。返回结构化分析结果，包含类型、置信度和思维链。',
     inputSchema: { type: 'object', properties: { input: { type: 'string', description: '需要分析的输入文本' } }, required: ['input'] }
   },
   {
     name: 'heartflow_think_fast',
-    description: '快速推理：快速判断模式，适合高频率、低延迟场景。返回轻量级判定结果。',
+    description: '快速推理：快速分类判断模式，适合高频率、低延迟场景。返回类型和置信度。',
     inputSchema: { type: 'object', properties: { input: { type: 'string', description: '需要快速判断的输入文本' } }, required: ['input'] }
   },
   {
@@ -98,7 +98,7 @@ const TOOLS = [
   },
   {
     name: 'heartflow_emotion',
-    description: 'PAD 情绪分析：对输入文本进行 Pleasure-Arousal-Dominance 三维情绪分析，返回情绪类型、强度和心理需求评估。',
+    description: 'PAD 情绪分析：对输入文本进行 Pleasure-Arousal-Dominance 三维分析，返回情绪类型和强度。',
     inputSchema: { type: 'object', properties: { input: { type: 'string', description: '需要分析的文本' } }, required: ['input'] }
   },
   {

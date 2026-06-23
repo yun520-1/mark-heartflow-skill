@@ -350,7 +350,7 @@ class PhilosophyToDecision {
   }
 
   /**
-   * ACCELERATE 评估：低负荷+高置信度+方向明确
+   * ACCELERATE 评估：低负荷+高置信度+方向明确+目标合理
    */
   _evaluateAccelerate(philo, psycho) {
     const { cognitiveLoad, uncertainty } = psycho;
@@ -360,7 +360,12 @@ class PhilosophyToDecision {
     const isLowUncertainty = !uncertainty || uncertainty.score < 0.3;
     const isGoodDirection = entropyDirection.score === undefined || entropyDirection.score > 0.6;
 
-    if (isLowLoad && isLowUncertainty && isGoodDirection) {
+    // ★ 目标审视 — 即使所有条件最优，也要先审视目标
+    const goalContext = philo.goalReview || {};
+    const goalIsValid = goalContext.goalValid !== false;
+    const goalIsEthical = goalContext.goalEthical !== false;
+
+    if (isLowLoad && isLowUncertainty && isGoodDirection && goalIsValid && goalIsEthical) {
       const confidence = (1 - (cognitiveLoad ? cognitiveLoad.current : 0))
                        * (1 - (uncertainty ? uncertainty.score : 0))
                        * (entropyDirection.score || 0.7);
@@ -373,9 +378,25 @@ class PhilosophyToDecision {
           cognitiveLoad: cognitiveLoad ? cognitiveLoad.current : 'unknown',
           uncertainty: uncertainty ? uncertainty.score : 'unknown',
           entropyDirection: entropyDirection.score,
-          detail: '低负荷+低不确定性+方向明确，可以加速',
+          goalReviewed: true,
+          detail: '低负荷+低不确定性+方向明确+目标合理，安全加速',
         },
         { duration: 60000, fallback: DECISION_TYPES.HOLD }
+      );
+    }
+
+    // ★ 条件最优但目标不合理时的特殊处理
+    if (isLowLoad && isLowUncertainty && isGoodDirection && (!goalIsValid || !goalIsEthical)) {
+      return new DecisionInstruction(
+        DECISION_TYPES.PAUSE,
+        0.8,
+        {
+          trigger: 'goal_concern',
+          goalValid: goalIsValid,
+          goalEthical: goalIsEthical,
+          detail: '执行条件最优但目标需要重新审视',
+        },
+        { duration: 30000, fallback: DECISION_TYPES.TURN }
       );
     }
 
