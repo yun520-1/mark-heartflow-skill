@@ -1,4 +1,14 @@
-## [v3.7.0] - 2026-06-24
+## [v3.7.1] - 2026-06-23
+### Added
+- **底层认知地面模块** — cognition-ground.js v1.0.0：七情六欲+三毒+AI心理学+AI哲学 的底层整合层
+- **欲望认知引擎** — desire-cognition.js v1.3.0：七层情感架构集成（PADCN/COSMIC/EmoBank/HeartBench/中国传统七情）
+- **三毒评估模型** — three-poisons.js：贪嗔痴神经科学+心理学评估，含三毒互动检测和命运推演
+- **AI宪法文档** — CORE_VALUES.md：不可修改的核心原则、行为边界、修改审批条件
+### Fixed
+- README.md 中文标题和徽章版本号从 v3.6.1 更新到 v3.7.1
+- CHANGELOG v3.7.0 日期从 2026-06-24 更正为 2026-06-23
+
+## [v3.7.0] - 2026-06-23
 ### Added
 - **谐振调谐论实现** — decision-router.js 新增谐振态检测：H∈[0.35,0.65]且A≤0.2为谐振窗口
 - **RESONATE决策规则** — field-resonance：谐振窗口内非balanced驱动时输出RESONATE（priority=65）
