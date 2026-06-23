@@ -801,6 +801,16 @@ class HeartFlow {
         _agentCommentary: ac, _valueAligner: va, _personalityTone: pt, _metaPosition: mp,
       };
     } catch (e) { this._initErrors.push({ module: 'personaCore', error: e.message }); }
+    // ─── Desire Cognition — 欲望认知引擎（v0.1.0 新增） ─────────────────────
+    try {
+      const { DesireCognition } = require('./desire-cognition.js');
+      this.desireCognition = new DesireCognition();
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'desireCognition', error: e.message }); }
+    // ─── Love Cognition — 爱情认知引擎（v0.1.0 新增） ──────────────────────
+    try {
+      const { LoveCognition } = require('./love-cognition.js');
+      this.loveCognition = new LoveCognition();
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'loveCognition', error: e.message }); }
     this._registerModules();
     this.started = true;
   }
@@ -893,6 +903,10 @@ class HeartFlow {
       'decisionRouter',
       // v1.0.0 — 时间延伸分析层
       'timeExtension',
+      // v0.1.0 — 欲望认知引擎
+      'desireCognition',
+      // v0.1.0 — 爱情认知引擎
+      'loveCognition',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -1162,6 +1176,21 @@ class HeartFlow {
     'intentionTrack.setPrimaryGoal', 'intentionTrack.checkDeviation', 'intentionTrack.generateNudge',
     'intentionTrack.updateSubGoal', 'intentionTrack.getProgress', 'intentionTrack.reset',
     'auditLogger.log', 'auditLogger.readRecent', 'auditLogger.getStats',
+    // v0.3.0 — 爱情认知引擎（论文驱动升级）
+    'loveCognition.evaluateTriangle', 'loveCognition.assessMarriageFit',
+    'loveCognition.evaluateMarriageIntent', 'loveCognition.generateLoveNarrative',
+    'loveCognition.evaluateAllPairs', 'loveCognition.getStatus',
+    'loveCognition.evaluateLongTermMarriage', 'loveCognition.evaluateDailyInteraction',
+    'loveCognition.assessChineseMarriageFit', 'loveCognition.evaluateLoveFailure',
+    // v0.1.0 — 欲望认知引擎
+    'desireCognition.analyzeSevenEmotions', 'desireCognition.analyzeDesires',
+    'desireCognition.detectDesireConflicts', 'desireCognition.analyzeDesireDrivenFate',
+    'desireCognition.generateDesireNarrative', 'desireCognition.analyzeDesireInteraction',
+    'desireCognition.getStatus',
+    // v1.2.0 — 欲望神经科学升级
+    'desireCognition.analyzeWantingLikingDelta', 'desireCognition.computeRPE',
+    'desireCognition.assessAddictionRisk', 'desireCognition.predictDesireEvolution',
+    'desireCognition.analyzeValenceArousal', 'desireCognition.detectCueTriggeredUrge',
   ]);
 
   /**

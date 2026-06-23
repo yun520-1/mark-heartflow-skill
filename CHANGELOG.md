@@ -1,3 +1,21 @@
+## [v3.7.0] - 2026-06-24
+### Added
+- **谐振调谐论实现** — decision-router.js 新增谐振态检测：H∈[0.35,0.65]且A≤0.2为谐振窗口
+- **RESONATE决策规则** — field-resonance：谐振窗口内非balanced驱动时输出RESONATE（priority=65）
+- **TRANSMIT决策规则** — field-resonance-decay：谐振窗口内balanced驱动时输出TRANSMIT（priority=60）
+- **谐振态追踪** — _updateFieldTracking 记录进入/退出/峰值/连续谐振步数
+- **谐振摘要** — getFieldSummary() 返回 resonanceWindow/resonanceSteps/consecutiveResonance
+### Changed
+- decision-router.js v3.0.1 → v3.0.2: +谐振态检测+2条场域规则
+- 隐私修复：README.md 删除个人经历（17年制造业/药品QC/卫品/医疗器械）
+- 版本号统一：MCP server 硬编码 3.0.0 → 3.7.0
+### Fixed
+- MCP server 401 认证bug：HEARTFLOW_MCP_TOKEN 未设置时 safeCompare(null, null) 返回 false 导致所有请求被拒
+### Tested
+- 33/33 测试通过
+- MCP 连接正常（19 tools）
+- GitHub push + ClawHub publish 同步成功
+
 ## [v3.6.1] - 2026-06-24
 ### Added
 - **零判定声明原则** — think() 返回结果加 `meta` 层标注场域健康度、置信度来源类型（structural/linguistic），不替代原始判定
