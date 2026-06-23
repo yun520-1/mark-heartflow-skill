@@ -15,7 +15,7 @@
  *   - 提供 this.core / this.learned / this.ephemeral 兼容属性（getter）
  */
 
-const { MeaningfulMemory } = require('../core/meaningful-memory.js');
+const { MeaningfulMemory } = require('./meaningful-memory.js');
 
 class MemoryAdapter {
   /**

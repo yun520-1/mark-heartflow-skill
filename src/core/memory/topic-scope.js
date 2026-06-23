@@ -1,1 +1,0 @@
-/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/identity/topic-scope.js

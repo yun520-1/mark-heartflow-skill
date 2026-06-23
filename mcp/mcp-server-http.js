@@ -528,7 +528,7 @@ function handleDecisionRouterStats(args) {
 // ─── v3.1.0 — 新增工具 ─────────────────────────────────────────
 function handleModuleHealth(args) {
   try {
-    const { ModuleHealthChecker } = require(path.join(HF_DIR, 'src/core/module-health-checker.js'));
+    const { ModuleHealthChecker } = require(path.join(HF_DIR, 'src/shield/module-health-checker.js'));
     const checker = new ModuleHealthChecker(heartflow);
     const report = checker.check();
     const summary = checker.getSummary();
@@ -544,7 +544,7 @@ function handleModuleHealth(args) {
 
 function handleUpgradeStats(args) {
   try {
-    const { SmartUpgradeEngine } = require(path.join(HF_DIR, 'src/core/smart-upgrade-engine.js'));
+    const { SmartUpgradeEngine } = require(path.join(HF_DIR, 'src/cortex/smart-upgrade-engine.js'));
     const engine = new SmartUpgradeEngine(HF_DIR);
     const stats = engine.getStats();
     return {

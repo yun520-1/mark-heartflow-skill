@@ -21,7 +21,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { MemoryIndex } = require('./memory-index.js');
+const { MemoryIndex } = require('../memory/memory-index.js');
 
 class IdentityCore {
   constructor(rootPath) {

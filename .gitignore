@@ -32,3 +32,23 @@ mcp/*.plist
 
 # 升级产物
 src/core/upgrades/
+
+# 旧结构残留（迁移后不应被追踪）
+src/agent-layer/
+src/evolution/
+src/learning/
+src/persona-core/
+src/proactive/
+src/psychology/
+src/translator/
+src/verifier/
+src/dream/engine.js
+src/emotion/autonomous-emotion.js
+src/emotion/desire-system.js
+src/emotion/emotional-growth.js
+src/emotion/mood-evolution.js
+src/identity/topic-scope.js
+src/reasoning/causal-inference.js
+src/reasoning/commonsense-engine.js
+src/reasoning/inference-chain.js
+src/reasoning/knowledge-base.js

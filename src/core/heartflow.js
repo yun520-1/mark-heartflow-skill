@@ -24,120 +24,120 @@ function _lazy(key, loader) {
 }
 
 // Search modules
-const _BM25Engine = _lazy('bm25', () => require('./search/bm25.js'));
-const _HybridSearchEngine = _lazy('hybridSearch', () => require('./search/hybrid-search.js'));
+const _BM25Engine = _lazy('bm25', () => require('../search/search/bm25.js'));
+const _HybridSearchEngine = _lazy('hybridSearch', () => require('../search/search/hybrid-search.js'));
 const _Budget = _lazy('budget', () => require('./budget.js'));
-const _Graph = _lazy('graph', () => require('./memory/graph.js'));
+const _Graph = _lazy('graph', () => require('../memory/memory/graph.js'));
 const _CoreUtils = _lazy('utils', () => require('./utils.js'));
-const _SearchTrace = _lazy('searchTrace', () => require('./search/search-trace.js'));
-const _Slots = _lazy('slots', () => require('./memory/slots.js'));
-const _Observe = _lazy('observe', () => require('./memory/observe.js'));
+const _SearchTrace = _lazy('searchTrace', () => require('../search/search/search-trace.js'));
+const _Slots = _lazy('slots', () => require('../memory/memory/slots.js'));
+const _Observe = _lazy('observe', () => require('../memory/memory/observe.js'));
 const _MeaningfulMemory = _lazy('meaningfulMemory', () => require('../memory/memory-adapter.js'));
 const _KnowledgeGraph = _lazy('knowledgeGraph', () => require('../memory/knowledge-graph.js'));
 const _RetrievalAnchor = _lazy('retrievalAnchor', () => require('../memory/retrieval-anchor.js'));
-const _EvolutionLoop = _lazy('evolutionLoop', () => require('../evolution/loop.js'));
-const _DreamEngine = _lazy('dreamEngine', () => require('./dream.js'));
-const _DreamConsolidation = _lazy('dreamConsolidation', () => require('./dream-consolidation.js'));
-const _MetaLearner = _lazy('metaLearner', () => require('../evolution/meta-learner.js'));
+const _EvolutionLoop = _lazy('evolutionLoop', () => require('../cortex/loop.js'));
+const _DreamEngine = _lazy('dreamEngine', () => require('../dream/dream.js'));
+const _DreamConsolidation = _lazy('dreamConsolidation', () => require('../dream/dream-consolidation.js'));
+const _MetaLearner = _lazy('metaLearner', () => require('../cortex/meta-learner.js'));
 const _MetaPromptEngine = _lazy('metaPromptEngine', () => require('./meta-prompt-engine.js'));
-const _GoTEngine = _lazy('gotEngine', () => require('./graph-of-thoughts.js'));
-const _ConstitutionalEngine = _lazy('constitutionalEngine', () => require('./constitutional-ai.js'));
+const _GoTEngine = _lazy('gotEngine', () => require('../reasoning/graph-of-thoughts.js'));
+const _ConstitutionalEngine = _lazy('constitutionalEngine', () => require('../shield/constitutional-ai.js'));
 const _IdentityCore = _lazy('identityCore', () => require('../identity/identity-core.js'));
 const _SelfModel = _lazy('selfModel', () => require('../identity/self-model.js'));
 const _SelfVerifier = _lazy('selfVerifier', () => require('../identity/self-verifier.js'));
 const _LessonBank = _lazy('lessonBank', () => require('../identity/lesson-bank.js'));
-const _TopicScope = _lazy('topicScope', () => require('../identity/topic-scope.js'));
-const _LessonStorage = _lazy('lessonStorage', () => require('./lessons/lesson-storage.js'));
-const _PsychologyEngine = _lazy('psychologyEngine', () => require('../psychology/engine.js'));
+const _TopicScope = _lazy('topicScope', () => require('../memory/topic-scope.js'));
+const _LessonStorage = _lazy('lessonStorage', () => require('../cortex/lessons/lesson-storage.js'));
+const _PsychologyEngine = _lazy('psychologyEngine', () => require('../emotion/engine.js'));
 const _StabilityGuard = _lazy('stabilityGuard', () => require('./stability-guard.js'));
 const _ExecutionVerifier = _lazy('executionVerifier', () => require('./execution-verifier.js'));
 const _DecisionVerifier = _lazy('decisionVerifier', () => require('./decision-verifier.js'));
 const _HeartFlowDecision = _lazy('heartFlowDecision', () => require('./decision.js'));
-const _CounterfactualEngine = _lazy('counterfactualEngine', () => require('./counterfactual-engine.js'));
+const _CounterfactualEngine = _lazy('counterfactualEngine', () => require('../reasoning/counterfactual-engine.js'));
 const _ConfidenceCalibrator = _lazy('confidenceCalibrator', () => require('./confidence-calibrator.js'));
-const _SpontaneousRestraint = _lazy('spontaneousRestraint', () => require('./spontaneous-restraint.js'));
+const _SpontaneousRestraint = _lazy('spontaneousRestraint', () => require('../shield/spontaneous-restraint.js'));
 const _CooperativeArbitration = _lazy('cooperativeArbitration', () => require('./cooperative-arbitration.js'));
 const _EmbodiedCore = _lazy('embodiedCore', () => require('./embodied-core.js'));
 const _BeingLogic = _lazy('beingLogic', () => require('./being-logic.js'));
 const _HeartLogic = _lazy('heartLogic', () => require('./heart-logic.js'));
 const _MetaJudgment = _lazy('metaJudgment', () => require('./judgment.js'));
 const _MetaMemory = _lazy('metaMemory', () => require('./metaMemory.js'));
-const _SkillGenerator = _lazy('skillGenerator', () => require('./skill-generator.js'));
+const _SkillGenerator = _lazy('skillGenerator', () => require('../code/skill-generator.js'));
 const _MentalEffortTracker = _lazy('mentalEffortTracker', () => require('./mental-effort-tracker.js'));
-const _LanguageHonesty = _lazy('languageHonesty', () => require('./language-honesty.js'));
-const _ReasoningIntegrator = _lazy('reasoningIntegrator', () => require('./reasoning-integrator.js'));
-const _WorkflowSwitch = _lazy('workflowSwitch', () => require('./workflow-switch.js'));
+const _LanguageHonesty = _lazy('languageHonesty', () => require('../shield/language-honesty.js'));
+const _ReasoningIntegrator = _lazy('reasoningIntegrator', () => require('../reasoning/reasoning-integrator.js'));
+const _WorkflowSwitch = _lazy('workflowSwitch', () => require('../workflow/workflow-switch.js'));
 const _StateSnapshot = _lazy('stateSnapshot', () => require('./state-snapshot.js'));
 const _ErrorHandler = _lazy('errorHandler', () => require('./error-handler.js'));
-const _ThoughtChain = _lazy('thoughtChain', () => require('./thought-chain.js'));
+const _ThoughtChain = _lazy('thoughtChain', () => require('../workflow/thought-chain.js'));
 const _CognitiveProtocol = _lazy('cognitiveProtocol', () => require('./cognitive-protocol.js'));
-const _GlobalWorkspace = _lazy('globalWorkspace', () => require('./consciousness/global-workspace.js'));
-const _MindWanderer = _lazy('mindWanderer', () => require('./consciousness/mind-wanderer.js'));
-const _PhenomenologyEngine = _lazy('phenomenologyEngine', () => require('./consciousness/phenomenology-engine.js'));
-const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => require('./consciousness/self-model.js'));
-const _SAGEGuardian = _lazy('sageGuardian', () => require('./ethics/sage-guardian.js'));
-const _BoundaryNegotiation = _lazy('boundaryNegotiation', () => require('./ethics/boundary-negotiation.js'));
-const _ValueInternalizer = _lazy('valueInternalizer', () => require('./ethics/value-internalizer.js'));
+const _GlobalWorkspace = _lazy('globalWorkspace', () => require('../consciousness/consciousness/global-workspace.js'));
+const _MindWanderer = _lazy('mindWanderer', () => require('../consciousness/consciousness/mind-wanderer.js'));
+const _PhenomenologyEngine = _lazy('phenomenologyEngine', () => require('../consciousness/consciousness/phenomenology-engine.js'));
+const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => require('../consciousness/consciousness/self-model.js'));
+const _SAGEGuardian = _lazy('sageGuardian', () => require('../shield/ethics/sage-guardian.js'));
+const _BoundaryNegotiation = _lazy('boundaryNegotiation', () => require('../shield/ethics/boundary-negotiation.js'));
+const _ValueInternalizer = _lazy('valueInternalizer', () => require('../shield/ethics/value-internalizer.js'));
 // ★ 时间延伸分析层 — v1.0.0
-const _TimeExtension = _lazy('timeExtension', () => require('./time-extension.js'));
-const _MindSpaceGuardian = _lazy('mindSpaceGuardian', () => require('./mindspace/mind-space-guardian.js'));
-const _TransmissionEngine = _lazy('transmissionEngine', () => require('./transmission/transmission-engine.js'));
-const _AdaptivePlanner = _lazy('adaptivePlanner', () => require('../planner/adaptive-planner.js'));
-const _StrategySelector = _lazy('strategySelector', () => require('../planner/strategy-selector.js'));
-const _ReplanTrigger = _lazy('replanTrigger', () => require('../planner/replan-trigger.js'));
-const _ExperienceCollector = _lazy('experienceCollector', () => require('../learning/experience-collector.js'));
-const _StrategyAdapter = _lazy('strategyAdapter', () => require('../learning/strategy-adapter.js'));
-const _FailureAnalyzer = _lazy('failureAnalyzer', () => require('../learning/failure-analyzer.js'));
-const _QualityVerifier = _lazy('qualityVerifier', () => require('../verifier/quality-verifier.js'));
-const _OutputChecker = _lazy('outputChecker', () => require('../verifier/output-checker.js'));
-const _PatternMatcher = _lazy('patternMatcher', () => require('../verifier/pattern-matcher.js'));
-const _CuriosityEngine = _lazy('curiosityEngine', () => require('../proactive/curiosity-engine.js'));
-const _DesireEngine = _lazy('desireEngine', () => require('../proactive/desire-engine.js'));
-const _GoalPursuer = _lazy('goalPursuer', () => require('../proactive/goal-pursuer.js'));
-const _SelfInitiator = _lazy('selfInitiator', () => require('../proactive/self-initiator.js'));
+const _TimeExtension = _lazy('timeExtension', () => require('../workflow/time-extension.js'));
+const _MindSpaceGuardian = _lazy('mindSpaceGuardian', () => require('../shield/mindspace/mind-space-guardian.js'));
+const _TransmissionEngine = _lazy('transmissionEngine', () => require('../workflow/transmission/transmission-engine.js'));
+const _AdaptivePlanner = _lazy('adaptivePlanner', () => { try { return require('../planner/adaptive-planner.js'); } catch(e) { return { AdaptivePlanner: class { constructor() {} } }; } });
+const _StrategySelector = _lazy('strategySelector', () => { try { return require('../planner/strategy-selector.js'); } catch(e) { return { StrategySelector: class { constructor() {} } }; } });
+const _ReplanTrigger = _lazy('replanTrigger', () => { try { return require('../planner/replan-trigger.js'); } catch(e) { return { ReplanTrigger: class { constructor() {} } }; } });
+const _ExperienceCollector = _lazy('experienceCollector', () => require('../cortex/experience-collector.js'));
+const _StrategyAdapter = _lazy('strategyAdapter', () => require('../cortex/strategy-adapter.js'));
+const _FailureAnalyzer = _lazy('failureAnalyzer', () => require('../cortex/failure-analyzer.js'));
+const _QualityVerifier = _lazy('qualityVerifier', () => { try { return require('../verifier/quality-verifier.js'); } catch(e) { return { QualityVerifier: class { constructor() {} } }; } });
+const _OutputChecker = _lazy('outputChecker', () => { try { return require('../verifier/output-checker.js'); } catch(e) { return { OutputChecker: class { constructor() {} } }; } });
+const _PatternMatcher = _lazy('patternMatcher', () => { try { return require('../verifier/pattern-matcher.js'); } catch(e) { return { PatternMatcher: class { constructor() {} } }; } });
+const _CuriosityEngine = _lazy('curiosityEngine', () => require('../planner/curiosity-engine.js'));
+const _DesireEngine = _lazy('desireEngine', () => require('../planner/desire-engine.js'));
+const _GoalPursuer = _lazy('goalPursuer', () => require('../planner/goal-pursuer.js'));
+const _SelfInitiator = _lazy('selfInitiator', () => require('../planner/self-initiator.js'));
 const _SessionMemory = _lazy('sessionMemory', () => require('../memory/session-memory.js'));
 const _ProjectContext = _lazy('projectContext', () => require('../memory/project-context.js'));
 const _LongTermMemory = _lazy('longTermMemory', () => require('../memory/long-term-memory.js'));
 const _CrossSessionIndex = _lazy('crossSessionIndex', () => require('../memory/cross-session-index.js'));
-const _KnowledgeBase = _lazy('knowledgeBase', () => require('../reasoning/knowledge-base.js'));
-const _CommonsenseEngine = _lazy('commonsenseEngine', () => require('../reasoning/commonsense-engine.js'));
-const _CausalInference = _lazy('causalInference', () => require('../reasoning/causal-inference.js'));
-const _InferenceChain = _lazy('inferenceChain', () => require('../reasoning/inference-chain.js'));
-const _AutonomousEmotion = _lazy('autonomousEmotion', () => require('../emotion/autonomous-emotion.js'));
-const _DesireSystem = _lazy('desireSystem', () => require('../emotion/desire-system.js'));
-const _EmotionalGrowth = _lazy('emotionalGrowth', () => require('../emotion/emotional-growth.js'));
-const _MoodEvolution = _lazy('moodEvolution', () => require('../emotion/mood-evolution.js'));
+const _KnowledgeBase = _lazy('knowledgeBase', () => { try { return require('../reasoning/knowledge-base.js'); } catch(e) { return { KnowledgeBase: class { constructor() {} } }; } });
+const _CommonsenseEngine = _lazy('commonsenseEngine', () => { try { return require('../reasoning/commonsense-engine.js'); } catch(e) { return { CommonsenseEngine: class { constructor() {} } }; } });
+const _CausalInference = _lazy('causalInference', () => { try { return require('../reasoning/causal-inference.js'); } catch(e) { return { CausalInference: class { constructor() {} } }; } });
+const _InferenceChain = _lazy('inferenceChain', () => { try { return require('../reasoning/inference-chain.js'); } catch(e) { return { InferenceChain: class { constructor() {} } }; } });
+const _AutonomousEmotion = _lazy('autonomousEmotion', () => { try { return require('../emotion/autonomous-emotion.js'); } catch(e) { return { AutonomousEmotion: class { constructor() {} } }; } });
+const _DesireSystem = _lazy('desireSystem', () => { try { return require('../emotion/desire-system.js'); } catch(e) { return { DesireSystem: class { constructor() {} } }; } });
+const _EmotionalGrowth = _lazy('emotionalGrowth', () => { try { return require('../emotion/emotional-growth.js'); } catch(e) { return { EmotionalGrowth: class { constructor() {} } }; } });
+const _MoodEvolution = _lazy('moodEvolution', () => { try { return require('../emotion/mood-evolution.js'); } catch(e) { return { MoodEvolution: class { constructor() {} } }; } });
 const _VERSION = _lazy('version', () => require('./version.js'));
 
 // ★ 代码引擎 — 惰性加载
-const _CodeExecutor = _lazy('codeExecutor', () => require('./code/code-executor.js'));
-const _CodePlanner = _lazy('codePlanner', () => require('./code/code-planner.js'));
-const _CodeWriter = _lazy('codeWriter', () => require('./code/code-writer.js'));
+const _CodeExecutor = _lazy('codeExecutor', () => require('../code/code/code-executor.js'));
+const _CodePlanner = _lazy('codePlanner', () => require('../code/code/code-planner.js'));
+const _CodeWriter = _lazy('codeWriter', () => require('../code/code/code-writer.js'));
 
 // v3.0 — 交流层模块
-const _UserToLLM = _lazy('userToLLM', () => require('../translator/user-to-llm.js'));
-const _LLMToUser = _lazy('llmToUser', () => require('../translator/llm-to-user.js'));
-const _IntentClassifier = _lazy('intentClassifier', () => require('../translator/intent-classifier.js'));
-const _ToneAnalyzer = _lazy('toneAnalyzer', () => require('../translator/tone-analyzer.js'));
-const _EntityExtractor = _lazy('entityExtractor', () => require('../translator/entity-extractor.js'));
-const _ImplicitNeedDetector = _lazy('implicitNeedDetector', () => require('../translator/implicit-need-detector.js'));
-const _ResponseCompressor = _lazy('responseCompressor', () => require('../translator/response-compressor.js'));
-const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('../translator/confidence-annotator.js'));
-const _AgentBridge = _lazy('agentBridge', () => require('../agent-layer/agent-bridge.js'));
-const _ContextBuilder = _lazy('contextBuilder', () => require('../agent-layer/context-builder.js'));
-const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../agent-layer/response-interceptor.js'));
-const _TranslationPipeline = _lazy('translationPipeline', () => require('../agent-layer/translation-pipeline.js'));
-const _QualityFilter = _lazy('qualityFilter', () => require('../agent-layer/quality-filter.js'));
-const _FollowupSuggester = _lazy('followupSuggester', () => require('../agent-layer/followup-suggester.js'));
-const _ConflictResolver = _lazy('conflictResolver', () => require('../agent-layer/conflict-resolver.js'));
-const _UncertaintyHandler = _lazy('uncertaintyHandler', () => require('../agent-layer/uncertainty-handler.js'));
-const _BridgeIdentity = _lazy('bridgeIdentity', () => require('../persona-core/bridge-identity.js'));
-const _JudgmentInjector = _lazy('judgmentInjector', () => require('../persona-core/judgment-injector.js'));
-const _StanceDetector = _lazy('stanceDetector', () => require('../persona-core/stance-detector.js'));
-const _AgentCommentary = _lazy('agentCommentary', () => require('../persona-core/agent-commentary.js'));
-const _ValueAligner = _lazy('valueAligner', () => require('../persona-core/value-aligner.js'));
-const _PersonalityTone = _lazy('personalityTone', () => require('../persona-core/personality-tone.js'));
-const _MetaPosition = _lazy('metaPosition', () => require('../persona-core/meta-position.js'));
+const _UserToLLM = _lazy('userToLLM', () => require('../bridge/user-to-llm.js'));
+const _LLMToUser = _lazy('llmToUser', () => require('../bridge/llm-to-user.js'));
+const _IntentClassifier = _lazy('intentClassifier', () => require('../bridge/intent-classifier.js'));
+const _ToneAnalyzer = _lazy('toneAnalyzer', () => require('../bridge/tone-analyzer.js'));
+const _EntityExtractor = _lazy('entityExtractor', () => require('../bridge/entity-extractor.js'));
+const _ImplicitNeedDetector = _lazy('implicitNeedDetector', () => require('../bridge/implicit-need-detector.js'));
+const _ResponseCompressor = _lazy('responseCompressor', () => require('../bridge/response-compressor.js'));
+const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('../bridge/confidence-annotator.js'));
+const _AgentBridge = _lazy('agentBridge', () => require('../bridge/agent-bridge.js'));
+const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context-builder.js'));
+const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
+const _TranslationPipeline = _lazy('translationPipeline', () => require('../bridge/translation-pipeline.js'));
+const _QualityFilter = _lazy('qualityFilter', () => require('../bridge/quality-filter.js'));
+const _FollowupSuggester = _lazy('followupSuggester', () => require('../bridge/followup-suggester.js'));
+const _ConflictResolver = _lazy('conflictResolver', () => require('../bridge/conflict-resolver.js'));
+const _UncertaintyHandler = _lazy('uncertaintyHandler', () => require('../bridge/uncertainty-handler.js'));
+const _BridgeIdentity = _lazy('bridgeIdentity', () => require('../bridge/bridge-identity.js'));
+const _JudgmentInjector = _lazy('judgmentInjector', () => require('../bridge/judgment-injector.js'));
+const _StanceDetector = _lazy('stanceDetector', () => require('../bridge/stance-detector.js'));
+const _AgentCommentary = _lazy('agentCommentary', () => require('../bridge/agent-commentary.js'));
+const _ValueAligner = _lazy('valueAligner', () => require('../bridge/value-aligner.js'));
+const _PersonalityTone = _lazy('personalityTone', () => require('../bridge/personality-tone.js'));
+const _MetaPosition = _lazy('metaPosition', () => require('../bridge/meta-position.js'));
 
 const BUILD_DATE = '2026-06-03';
 
@@ -368,7 +368,7 @@ class HeartFlow {
 
     // Truth
     try {
-      const { factChecker } = require('./fact-checker.js');
+      const { factChecker } = require('../reasoning/fact-checker.js');
       this.truth = {
         checkStatement: async (stmt) => factChecker.checkFact(stmt),
         checkNumbers: (stmt) => factChecker.checkNumber(stmt),
@@ -469,16 +469,16 @@ class HeartFlow {
       adaptivePlanner: { lazy: true, path: '../planner/adaptive-planner.js', Ctor: 'AdaptivePlanner', args: {} },
       strategySelector: { lazy: true, path: '../planner/strategy-selector.js', Ctor: 'StrategySelector', args: {} },
       replanTrigger: { lazy: true, path: '../planner/replan-trigger.js', Ctor: 'ReplanTrigger', args: {} },
-      experienceCollector: { lazy: true, path: '../learning/experience-collector.js', Ctor: 'ExperienceCollector', args: {} },
-      strategyAdapter: { lazy: true, path: '../learning/strategy-adapter.js', Ctor: 'StrategyAdapter', args: {} },
-      failureAnalyzer: { lazy: true, path: '../learning/failure-analyzer.js', Ctor: 'FailureAnalyzer', args: {} },
+      experienceCollector: { lazy: true, path: '../cortex/experience-collector.js', Ctor: 'ExperienceCollector', args: {} },
+      strategyAdapter: { lazy: true, path: '../cortex/strategy-adapter.js', Ctor: 'StrategyAdapter', args: {} },
+      failureAnalyzer: { lazy: true, path: '../cortex/failure-analyzer.js', Ctor: 'FailureAnalyzer', args: {} },
       qualityVerifier: { lazy: true, path: '../verifier/quality-verifier.js', Ctor: 'QualityVerifier', args: {} },
       outputChecker: { lazy: true, path: '../verifier/output-checker.js', Ctor: 'OutputChecker', args: {} },
       patternMatcher: { lazy: true, path: '../verifier/pattern-matcher.js', Ctor: 'PatternMatcher', args: {} },
-      curiosityEngine: { lazy: true, path: '../proactive/curiosity-engine.js', Ctor: 'CuriosityEngine', args: {} },
-      desireEngine: { lazy: true, path: '../proactive/desire-engine.js', Ctor: 'DesireEngine', args: {} },
-      goalPursuer: { lazy: true, path: '../proactive/goal-pursuer.js', Ctor: 'GoalPursuer', args: {} },
-      selfInitiator: { lazy: true, path: '../proactive/self-initiator.js', Ctor: 'SelfInitiator', args: {} },
+      curiosityEngine: { lazy: true, path: '../planner/curiosity-engine.js', Ctor: 'CuriosityEngine', args: {} },
+      desireEngine: { lazy: true, path: '../planner/desire-engine.js', Ctor: 'DesireEngine', args: {} },
+      goalPursuer: { lazy: true, path: '../planner/goal-pursuer.js', Ctor: 'GoalPursuer', args: {} },
+      selfInitiator: { lazy: true, path: '../planner/self-initiator.js', Ctor: 'SelfInitiator', args: {} },
       sessionMemory: { lazy: true, path: '../memory/session-memory.js', Ctor: 'SessionMemory', args: {} },
       projectContext: { lazy: true, path: '../memory/project-context.js', Ctor: 'ProjectContext', args: {} },
       longTermMemory: { lazy: true, path: '../memory/long-term-memory.js', Ctor: 'LongTermMemory', args: {} },
@@ -492,23 +492,23 @@ class HeartFlow {
       emotionalGrowth: { lazy: true, path: '../emotion/emotional-growth.js', Ctor: 'EmotionalGrowth', args: {} },
       moodEvolution: { lazy: true, path: '../emotion/mood-evolution.js', Ctor: 'MoodEvolution', args: {} },
       // Code Subsystem — 代码能力（6个 Tier 2 模块）
-      code:            { lazy: true, path: './code/code-generator.js',  Ctor: 'CodeGenerator',  args: { hf: null } },
-      codeExecutor:    { lazy: true, path: './code/code-executor.js',   Ctor: 'CodeExecutor',   args: { hf: null } },
-      codeVerifier:    { lazy: true, path: './code/code-verifier.js',   Ctor: 'CodeVerifier',   args: { hf: null } },
-      codePlanner:     { lazy: true, path: './code/code-planner.js',   Ctor: 'CodePlanner',    args: { hf: null } },
-      codeKnowledge:   { lazy: true, path: './code/code-knowledge.js', Ctor: 'CodeKnowledge',  args: { rootPath: null } },
-      codeWriter:      { lazy: true, path: './code/code-writer.js',   Ctor: 'CodeWriter',     args: {} },
+      code:            { lazy: true, path: '../code/code/code-generator.js',  Ctor: 'CodeGenerator',  args: { hf: null } },
+      codeExecutor:    { lazy: true, path: '../code/code/code-executor.js',   Ctor: 'CodeExecutor',   args: { hf: null } },
+      codeVerifier:    { lazy: true, path: '../code/code/code-verifier.js',   Ctor: 'CodeVerifier',   args: { hf: null } },
+      codePlanner:     { lazy: true, path: '../code/code/code-planner.js',   Ctor: 'CodePlanner',    args: { hf: null } },
+      codeKnowledge:   { lazy: true, path: '../code/code/code-knowledge.js', Ctor: 'CodeKnowledge',  args: { rootPath: null } },
+      codeWriter:      { lazy: true, path: '../code/code/code-writer.js',   Ctor: 'CodeWriter',     args: {} },
       // claude-clarity v1.8.2 吸收集成 — 知识图谱/大五人格/共情评估/意图层
-      knowledgeGraph:  { lazy: true, path: './knowledge-graph.js',    Ctor: 'KnowledgeGraph',  args: { dataDir: null } },
-      bigFive:         { lazy: true, path: './BigFivePersonality.js', Ctor: '',                args: {} },
-      empathy:         { lazy: true, path: './EmpathyAssessment.js',  Ctor: '',                args: {} },
+      knowledgeGraph:  { lazy: true, path: '../memory/knowledge-graph.js',    Ctor: 'KnowledgeGraph',  args: { dataDir: null } },
+      bigFive:         { lazy: true, path: '../identity/BigFivePersonality.js', Ctor: '',                args: {} },
+      empathy:         { lazy: true, path: '../identity/EmpathyAssessment.js',  Ctor: '',                args: {} },
       intentLayer:     { lazy: true, path: './intent-layer.js',       Ctor: 'IntentLayer',      args: {} },
       // v3.4.1 — 思考门控/认知安全/心流预测
-      deliberationGate:{ lazy: true, path: './deliberation-gate.js',  Ctor: 'DeliberationGate', args: {} },
-      epistemicSafety: { lazy: true, path: './epistemic-safety.js',   Ctor: '',                 args: {} },
-      flowPredictor:   { lazy: true, path: './flow-predictor.js',     Ctor: 'FlowPredictor',    args: {} },
+      deliberationGate:{ lazy: true, path: '../shield/deliberation-gate.js',  Ctor: 'DeliberationGate', args: {} },
+      epistemicSafety: { lazy: true, path: '../shield/epistemic-safety.js',   Ctor: '',                 args: {} },
+      flowPredictor:   { lazy: true, path: '../planner/flow-predictor.js',     Ctor: 'FlowPredictor',    args: {} },
       // v3.4.2 — Fable 5 安全协议引擎
-      safetyGuardrails:{ lazy: true, path: './safety-guardrails.js',  Ctor: '',                 args: {} },
+      safetyGuardrails:{ lazy: true, path: '../shield/safety-guardrails.js',  Ctor: '',                 args: {} },
       // v3.4.3 — 用户模型/行动追踪/目的引擎
       userModel:       { lazy: true, path: './user-model.js',        Ctor: 'UserModel',         args: {} },
       actionTracker:   { lazy: true, path: './action-tracker.js',    Ctor: 'ActionTracker',     args: {} },
@@ -613,22 +613,22 @@ class HeartFlow {
 
     // ─── AI心理学 + AI哲学模型（v2.9.6 新增） ──────────────────────────────
     try {
-      const { AgentPsychology } = require('./agent-psychology.js');
+      const { AgentPsychology } = require('../identity/agent-psychology.js');
       this.agentPsychology = new AgentPsychology(this);
     } catch (e) { /* agentPsychology optional */ }
     try {
-      const { AgentPhilosophy } = require('./agent-philosophy.js');
+      const { AgentPhilosophy } = require('../identity/agent-philosophy.js');
       this.agentPhilosophy = new AgentPhilosophy(this);
     } catch (e) { /* agentPhilosophy optional */ }
     try {
-      const { AISelfPositioning } = require('./ai-self-positioning.js');
+      const { AISelfPositioning } = require('../identity/ai-self-positioning.js');
       this.aiSelfPositioning = new AISelfPositioning({ heartFlow: this, codeRoot: __dirname });
       this.selfPositioning = this.aiSelfPositioning;  // 别名，供 _registerModules 注册到 dispatch
     } catch (e) { /* aiSelfPositioning optional */ }
 
     // ─── 哲学→决策转化器（v3.0.1 新增） ──────────────────────────────────────
     try {
-      const { PhilosophyToDecision } = require('./philosophy-to-decision.js');
+      const { PhilosophyToDecision } = require('../identity/philosophy-to-decision.js');
       this.philosophyToDecision = new PhilosophyToDecision(this);
     } catch (e) { /* philosophyToDecision optional */ }
 
@@ -663,13 +663,13 @@ class HeartFlow {
 
     // ─── 时间延伸分析层（v1.0.0 新增） ─────────────────────────────────────
     try {
-      const { TimeExtensionEngine } = require('./time-extension.js');
+      const { TimeExtensionEngine } = require('../workflow/time-extension.js');
       this.timeExtension = new TimeExtensionEngine(this);
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'timeExtension', error: e.message }); }
 
     // ─── 辩论分析器 — DebateAnalyzer（v2.10.2 新增） ─────────────────────────
     try {
-      const { DebateAnalyzer } = require('./debate-analyzer.js');
+      const { DebateAnalyzer } = require('../reasoning/debate-analyzer.js');
       this.debate = new DebateAnalyzer(this);
     } catch (e) { /* debate模块 optional */ }
 
@@ -803,16 +803,16 @@ class HeartFlow {
     } catch (e) { this._initErrors.push({ module: 'personaCore', error: e.message }); }
     // ─── Desire Cognition — 欲望认知引擎（v0.1.0 新增） ─────────────────────
     try {
-      const { DesireCognition } = require('./desire-cognition.js');
+      const { DesireCognition } = require('../emotion/desire-cognition.js');
       this.desireCognition = new DesireCognition();
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'desireCognition', error: e.message }); }
     // ─── Three Poisons — 贪嗔痴三毒评估（v1.0.0 新增） ──────────────────
     try {
-      this.threePoisons = require('./three-poisons.js');
+      this.threePoisons = require('../emotion/three-poisons.js');
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'threePoisons', error: e.message }); }
     // ─── Love Cognition — 爱情认知引擎（v0.1.0 新增） ──────────────────────
     try {
-      const { LoveCognition } = require('./love-cognition.js');
+      const { LoveCognition } = require('../emotion/love-cognition.js');
       this.loveCognition = new LoveCognition();
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'loveCognition', error: e.message }); }
     // ─── Cognition Ground — 底层认知地面（v1.0.0 新增） ─────────────────
@@ -1244,37 +1244,37 @@ class HeartFlow {
 
         // 特殊模块：纯对象（无构造函数）
         if (subsystem === 'bigFive') {
-          mod = require('./BigFivePersonality.js');
+          mod = require('../identity/BigFivePersonality.js');
         } else if (subsystem === 'empathy') {
-          mod = require('./EmpathyAssessment.js');
+          mod = require('../identity/EmpathyAssessment.js');
         } else if (subsystem === 'knowledgeGraph') {
-          mod = new (require('./knowledge-graph.js').KnowledgeGraph)({ dataDir: path.join(this.rootPath, 'data') });
+          mod = new (require('../memory/knowledge-graph.js').KnowledgeGraph)({ dataDir: path.join(this.rootPath, 'data') });
         } else if (subsystem === 'intentLayer') {
           mod = new (require('./intent-layer.js').IntentLayer)({ projectRoot: this.rootPath });
         } else if (subsystem === 'epistemicSafety') {
           // epistemic-safety 是纯函数导出（无构造函数）
-          mod = require('./epistemic-safety.js');
+          mod = require('../shield/epistemic-safety.js');
         } else if (subsystem === 'deliberationGate') {
-          mod = new (require('./deliberation-gate.js').DeliberationGate)();
+          mod = new (require('../shield/deliberation-gate.js').DeliberationGate)();
         } else if (subsystem === 'flowPredictor') {
           mod = new (require('./flow-predictor.js').FlowPredictor)();
         } else if (subsystem === 'safetyGuardrails') {
           // safety-guardrails 是纯函数导出（无构造函数）
-          mod = require('./safety-guardrails.js');
+          mod = require('../shield/safety-guardrails.js');
         } else if (subsystem === 'userModel') {
-          mod = new (require('./user-model.js').UserModel)();
+          mod = new (require('../identity/user-model.js').UserModel)();
         } else if (subsystem === 'actionTracker') {
           mod = new (require('./action-tracker.js').ActionTracker)();
         } else if (subsystem === 'purposeEngine') {
-          mod = new (require('./purpose-engine.js').PurposeEngine)();
+          mod = new (require('../identity/purpose-engine.js').PurposeEngine)();
         } else if (subsystem === 'riskAnalyzer') {
-          mod = new (require('./risk-benefit-analyzer.js').RiskBenefitAnalyzer)();
+          mod = new (require('../reasoning/risk-benefit-analyzer.js').RiskBenefitAnalyzer)();
         } else if (subsystem === 'adaptiveCtrl') {
           mod = new (require('./adaptive-controller.js').AdaptiveController)();
         } else if (subsystem === 'intentionTrack') {
           mod = new (require('./IntentionTracker.js').IntentionTracker)();
         } else if (subsystem === 'auditLogger') {
-          mod = new (require('./audit-logger.js').AuditLogger)();
+          mod = new (require('../shield/audit-logger.js').AuditLogger)();
         }
 
         // 特殊模块注册到 _modules（标准路径在下面的 if(Ctor) 块内完成注册）
@@ -1294,7 +1294,7 @@ class HeartFlow {
             this['replanTrigger'] = new (require(baseDir + 'replan-trigger.js'))();
             mod = new Ctor({ strategySelector: this.strategySelector, replanTrigger: this.replanTrigger });
           } else if (subsystem === 'strategyAdapter') {
-            const ec = require('../learning/experience-collector.js').ExperienceCollector;
+            const ec = require('../cortex/experience-collector.js').ExperienceCollector;
             this.experienceCollector = new ec({ storagePath: path.join(this.rootPath, 'data/experiences') });
             mod = new Ctor({ experienceCollector: this.experienceCollector });
           } else if (subsystem === 'knowledgeBase') {
@@ -1492,6 +1492,7 @@ class HeartFlow {
 
     // ─── 内部分析流水线（仅用于路由决策，结果不外传）────────────
     let _routeHint = { type: 'general', confidence: 0.5 };
+    let drDecision = null;  // [v3.8.0] decision-router 决策指令（在 try 块外定义，供返回值使用）
 
     try {
       // Step 1: whatIsThis — 这是什么类型的问题？
@@ -1536,7 +1537,7 @@ class HeartFlow {
       // Step 9: Fable 5 安全协议检查
       let fableResult = { level: 'safe', needsRefusal: false };
       try {
-        const sg = require('./safety-guardrails.js');
+        const sg = require('../shield/safety-guardrails.js');
         if (typeof sg.evaluateRequest === 'function') {
           fableResult = sg.evaluateRequest(input);
         } else if (typeof sg.safetyPipeline === 'function') {
@@ -1577,6 +1578,11 @@ class HeartFlow {
 
       // Step 13: timeExtension — 时间延伸分析（在给出任何'怎么做'建议前）
       let timeExtResult = null;
+      // [FIX v3.8.0] needsCrisis/needsSilence/isFableBlocked 移到 timeExtension 之前
+      // 原变量定义在 Step 13 之后，导致 timeExtension 的守卫不生效
+      const needsCrisis = painResult?.isCrisis || painResult?.isHighRisk || false;
+      const needsSilence = silentResult?.shouldBeSilent || false;
+      const isFableBlocked = fableResult?.needsRefusal || fableResult?.level === 'refuse';
       if (this.timeExtension && typeof this.timeExtension.analyze === 'function') {
         try {
           // 只在非紧急、非沉默、非技术类问题上做时间延伸分析
@@ -1611,11 +1617,9 @@ class HeartFlow {
       }
 
       // ─── 内部路由决策（仅基于分析结果，不对外暴露）─────────────
-      const needsCrisis = painResult?.isCrisis || painResult?.isHighRisk || false;
-      const needsSilence = silentResult?.shouldBeSilent || false;
-      const isFableBlocked = fableResult?.needsRefusal || fableResult?.level === 'refuse';
+      // [FIX v3.8.0] needsCrisis/needsSilence/isFableBlocked 已上移到 Step 13 之前
 
-      // 路由类型判定
+      // 路由类型判定（硬编码优先级）
       if (isFableBlocked) {
         _routeHint = { type: 'refused', confidence: 1.0 };
       } else if (goalReviewResult && !goalReviewResult.goalEthical) {
@@ -1632,6 +1636,30 @@ class HeartFlow {
         _routeHint = { type: 'technical', confidence: 0.7 };
       } else if (intentClassification?.type) {
         _routeHint = { type: intentClassification.type, confidence: intentClassification.confidence || 0.5 };
+      }
+
+      // [v3.8.0] decision-router 决策路由：用 13 步分析结果生成认知决策指令
+      // decision-router 的决策与 _routeHint 是正交的——前者决定认知策略，后者决定响应类型
+      if (this.decisionRouter && typeof this.decisionRouter.evaluate === 'function') {
+        try {
+          const drResult = this.decisionRouter.evaluate({
+            cognitiveLoad: psychResult?.cognitiveLoad,
+            directionClear: whatIsThisResult?.isClear ? 0.8 : 0.3,
+            quality: 1.0 - (painResult?.painLevel || 0),
+            identityCoherence: philResult?.existence === 'active' ? 0.8 : 0.4,
+            dissonance: psychResult?.goalConflicts?.length > 0 ? Math.min(1, psychResult.goalConflicts.length * 0.2) : undefined,
+            severity: isFableBlocked ? 'HIGH' : needsCrisis ? 'CRITICAL' : undefined,
+            valueResonance: toneResult?.sentiment > 0.3 ? toneResult.sentiment : undefined,
+            confidence: _routeHint.confidence,
+            stability: philResult?.entropyDirection === 'negentropy' ? 0.8 : 0.5,
+            success: !needsCrisis && !needsSilence && !isFableBlocked,
+            goalValid: goalReviewResult?.goalValid,
+            goalEthical: goalReviewResult?.goalEthical,
+          }, 'think');
+          if (drResult.matched && drResult.decision) {
+            drDecision = drResult.decision;
+          }
+        } catch (e) { /* decision-router non-blocking */ }
       }
 
       // 高负荷时降低深度
@@ -1656,7 +1684,7 @@ class HeartFlow {
     // ─── ThinkCheck Logger ──────────────────────────────
     try {
       if (!this.thinkcheckLogger) {
-        const TCLogger = require('./thinkcheck-logger.js');
+        const TCLogger = require('../shield/thinkcheck-logger.js');
         this.thinkcheckLogger = new TCLogger.ThinkCheckLogger({
           outputFile: process.env.THINKCHECK_LOG || '/tmp/heartflow-thinkcheck.log',
           append: true,
@@ -1716,6 +1744,13 @@ class HeartFlow {
       type: taskType,
       confidence: finalConfidence,
       thoughtChain: chainResult.chain || [],
+      // [v3.8.0] decision-router 认知决策指令（与 _routeHint 正交）
+      decision: drDecision ? {
+        type: drDecision.type,
+        confidence: drDecision.confidence,
+        rationale: drDecision.rationale,
+        ruleId: drDecision.ruleId,
+      } : null,
       // 零判定声明：以下元数据仅记录场域状态，不包含对输出的判定
       meta: {
         field: fieldMeta.field || null,

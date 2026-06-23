@@ -15,7 +15,7 @@
  * - process supervision / runtime verification trends (2025-2026)
  */
 
-const { lessonRetrieval } = require('./lesson-retrieval');
+let retrieveLesson; try { retrieveLesson = require('./lesson-retrieval'); } catch(e) { retrieveLesson = { retrieveLesson: () => null }; }
 
 class DecisionVerifier {
   constructor(options = {}) {
