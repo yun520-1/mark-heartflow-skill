@@ -25,7 +25,7 @@
  *   → 匹配决策规则 → 生成决策指令 → 返回 { result, decision }
  */
 
-const VERSION = '3.0.0';
+const VERSION = '3.0.2';
 
 // ─── U/D/A/H 场域追踪参数（基于 luoxuejian000 论文） ──────────────────────
 // H = λU·U + λD·D - λA·A
@@ -48,6 +48,12 @@ const FLIP_THRESHOLDS = {
   uPeakDropThreshold: -0.05, // U 值从峰值回落阈值
   epsilon: 0.005,         // 驱动归因最小变化量
   historyWindow: 10,      // 场域历史窗口（步数）
+  // v3.7.0：谐振窗口参数（基于 luoxuejian000 论文 §3.1 谐振调谐论）
+  resonanceWindowLow: 0.35,   // 谐振窗口下限 H
+  resonanceWindowHigh: 0.65,  // 谐振窗口上限 H
+  resonanceMaxA: 0.2,         // 谐振态最大允许 A 值
+  resonanceMinSteps: 5,       // 进入谐振态所需的最小稳定步数
+  resonanceDecayWindow: 8,    // 谐振衰减窗口（步数）
 };
 
 // ─── 模型配置文件 ────────────────────────────────────────────────────────
@@ -375,6 +381,32 @@ class DecisionRouter {
         rationale: (r) => `场域健康: H=${r._fieldH.toFixed(3)}, U=${r._fieldU.toFixed(3)}, A=${r._fieldA.toFixed(3)}`,
         fallback: DECISION.HOLD,
       },
+      // ──────────────────────────────────────────────────────────────────────
+      // v3.7.0：谐振态规则（基于 luoxuejian000 论文 §3.1 谐振调谐论）
+      // ──────────────────────────────────────────────────────────────────────
+      {
+        id: 'field-resonance',
+        // 场域处于谐振窗口：H ∈ [0.35, 0.65] 且 A ≤ 0.2，系统自发涌现结构的能力增强
+        match: (r) => r._fieldResonance === true && r._fieldResonanceSteps >= 3,
+        decision: DECISION.RESONATE,
+        confidence: (r) => {
+          const base = Math.min(0.85, (r._fieldH || 0.5) * 1.2);
+          const boost = Math.min(0.15, (r._fieldResonanceSteps || 0) * 0.02);
+          return Math.min(0.95, base + boost);
+        },
+        rationale: (r) => `谐振态激活: H=${(r._fieldH || 0).toFixed(3)} 连续${r._fieldResonanceSteps}步, A=${(r._fieldA || 0).toFixed(3)}`,
+        fallback: DECISION.ACCELERATE,
+      },
+      {
+        id: 'field-resonance-decay',
+        // 谐振态即将退出：连续多步未更新（谐振衰减），或 A 值开始上升
+        match: (r) => r._fieldResonance === false &&
+                      this._resonanceState.lastExitReason === 'A_exceeded',
+        decision: DECISION.TURN,
+        confidence: (r) => 0.7,
+        rationale: (r) => `谐振态退出: A超阈值(${(r._fieldA || 0).toFixed(3)}), 需转向避免场域失谐`,
+        fallback: DECISION.PAUSE,
+      },
     ];
 
     // 决策历史
@@ -399,6 +431,10 @@ class DecisionRouter {
       // v3.6.1：后备连续性统计
       fallbackCount: 0,      // API不可用时的本地外推次数
       auditTrailSize: 0,     // 审计追踪条数
+      // v3.7.0：谐振态统计
+      resonanceEnterCount: 0, // 进入谐振态的总次数
+      resonanceTotalSteps: 0, // 累计在谐振态中的步数
+      currentResonanceSteps: 0, // 当前连续谐振步数
     };
 
     // v3.6.1：审计追踪 — 每次调谐动作附带前因后果
@@ -407,6 +443,16 @@ class DecisionRouter {
 
     // v3.6.1：后备连续性 — 上次已知场域快照（API不可用时回退）
     this._lastKnownField = null;
+
+    // v3.7.0：谐振态检测
+    this._resonanceState = {
+      active: false,         // 当前是否处于谐振态
+      enteredAt: 0,          // 进入谐振态的步数
+      stableSteps: 0,        // 在谐振窗口内连续稳定的步数
+      lastExitReason: null,  // 上次退出谐振态的原因
+      resonancePeak: 0,      // 本轮谐振态的最大 H 值
+      resonanceStartH: 0,    // 进入谐振态时的 H 值
+    };
   }
 
   // ─── v3.0.0 新增：U/D/A/H 场域计算方法 ──────────────────────────────────
@@ -691,6 +737,42 @@ class DecisionRouter {
 
     this._stats.fieldSnapshots++;
 
+    // ─── v3.7.0：谐振态检测（基于论文 §3.1 谐振调谐论） ────────────────
+    // 当 H 在 [0.35, 0.65] 且 A ≤ 0.2 时，场域处于谐振窗口
+    // 谐振态意味着系统自发涌现结构的能力增强，应优先使用涌现型决策
+    const inResonanceWindow = H >= FLIP_THRESHOLDS.resonanceWindowLow &&
+                              H <= FLIP_THRESHOLDS.resonanceWindowHigh &&
+                              A <= FLIP_THRESHOLDS.resonanceMaxA;
+
+    if (inResonanceWindow && !this._resonanceState.active) {
+      // 进入谐振态
+      this._resonanceState.active = true;
+      this._resonanceState.enteredAt = this._fieldStep;
+      this._resonanceState.stableSteps = 1;
+      this._resonanceState.resonancePeak = H;
+      this._resonanceState.resonanceStartH = H;
+      this._resonanceState.lastExitReason = null;
+      this._stats.resonanceEnterCount++;
+      this._stats.currentResonanceSteps = 1;
+    } else if (inResonanceWindow && this._resonanceState.active) {
+      // 持续在谐振窗口内
+      this._resonanceState.stableSteps++;
+      this._stats.currentResonanceSteps++;
+      this._stats.resonanceTotalSteps++;
+      if (H > this._resonanceState.resonancePeak) {
+        this._resonanceState.resonancePeak = H;
+      }
+    } else if (!inResonanceWindow && this._resonanceState.active) {
+      // 退出谐振态
+      this._resonanceState.active = false;
+      this._resonanceState.lastExitReason =
+        H < FLIP_THRESHOLDS.resonanceWindowLow ? 'H_below_window' :
+        H > FLIP_THRESHOLDS.resonanceWindowHigh ? 'H_above_window' :
+        A > FLIP_THRESHOLDS.resonanceMaxA ? 'A_exceeded' : 'unknown';
+      this._resonanceState.stableSteps = 0;
+      this._stats.currentResonanceSteps = 0;
+    }
+
     // 返回注入到 result 的场域字段
     return {
       _fieldStep: this._fieldStep,
@@ -702,6 +784,10 @@ class DecisionRouter {
       _fieldDeltaU: deltaU,
       _fieldFlipAlert: flipAlert,
       _fieldPeakReversal: peakReversal,
+      // v3.7.0：谐振态数据
+      _fieldResonance: this._resonanceState.active,
+      _fieldResonanceSteps: this._resonanceState.stableSteps,
+      _fieldResonancePeak: this._resonanceState.resonancePeak,
     };
   }
 
@@ -949,6 +1035,18 @@ class DecisionRouter {
         message: this._lastFlipAlert.message,
       } : null,
       flipAlertsTotal: this._stats.flipAlerts,
+      // v3.7.0：谐振态摘要
+      resonance: {
+        active: this._resonanceState.active,
+        stableSteps: this._resonanceState.stableSteps,
+        enteredAt: this._resonanceState.enteredAt,
+        resonancePeak: this._resonanceState.resonancePeak,
+        resonanceStartH: this._resonanceState.resonanceStartH,
+        lastExitReason: this._resonanceState.lastExitReason,
+        enterCount: this._stats.resonanceEnterCount,
+        totalSteps: this._stats.resonanceTotalSteps,
+        currentSteps: this._stats.currentResonanceSteps,
+      },
     };
   }
 
