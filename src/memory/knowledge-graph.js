@@ -1,589 +1,376 @@
 /**
- * KnowledgeGraph — Agent K Architecture Integration
- * 
- * v1.1.0: Structured memory with temporal context, relationship tracking,
- * node pruning, serialization, enhanced stats, and defensive programming.
- * Based on Agent K paper: 4-layer cognitive architecture with KG.
- * 
- * Features:
- *   - Nodes: named entities with importance + reflection count
- *   - Edges: typed relationships between nodes
- *   - MAX_CONNECTIONS_PER_NODE = 20
- *   - Keyword-based search with importance sorting
- *   - Node removal / stale pruning
- *   - Edge weight updates
- *   - JSON serialization for persistence
- *   - Enhanced statistics
- *   - Input validation on all public methods
+ * KnowledgeGraph v2.0.0 — 三元组知识图谱
+ * 来源: claude-clarity v1.8.2 吸收集成
+ *
+ * 以 (subject, predicate, object) 三元组为基本单位的知识存储与查询系统。
+ * 纯内存操作，零外部依赖，支持模糊查询、递归遍历和 JSON 持久化。
+ *
+ * 设计原则：
+ * - 三元组不可变——添加时若 key 已存在则更新置信度和时间戳
+ * - 三重索引加速查询（subject/predicate/object 各一）
+ * - 模糊匹配默认启用（contains 而非 exact match）
+ * - 递归遍历防环（visited Set）
+ *
+ * 典型用法：
+ *   const kg = new KnowledgeGraph();
+ *   kg.addEdge('心虫', '拥有属性', '三层记忆', 0.95);
+ *   kg.query({ subject: '心虫' });
+ *   kg.getRelated('心虫', 2);
+ *   kg.save('/tmp/kg.json');
+ *   kg.load('/tmp/kg.json');
  */
 
-const crypto = require('crypto');
-
-// --- Error classification ---
-const KG_ERROR = {
-  NODE_NOT_FOUND: 'NODE_NOT_FOUND',
-  EDGE_NOT_FOUND: 'EDGE_NOT_FOUND',
-  CONNECTION_LIMIT: 'CONNECTION_LIMIT',
-  INVALID_INPUT: 'INVALID_INPUT',
-  SEARCH_EMPTY: 'SEARCH_EMPTY',
-  UNKNOWN: 'UNKNOWN',
-};
-
-const KG_ERROR_MESSAGES = {
-  [KG_ERROR.NODE_NOT_FOUND]: 'Node not found',
-  [KG_ERROR.EDGE_NOT_FOUND]: 'Edge not found',
-  [KG_ERROR.CONNECTION_LIMIT]: 'Connection limit reached',
-  [KG_ERROR.INVALID_INPUT]: 'Invalid input',
-  [KG_ERROR.SEARCH_EMPTY]: 'Search returned no results',
-  [KG_ERROR.UNKNOWN]: 'Unknown error',
-};
-
-// --- Constants ---
-const MAX_CONNECTIONS = 20;
-const IMPORTANCE_DECAY_RATE = 0.95; // per day
-const STALE_DAYS = 30;
-const DEFAULT_IMPORTANCE = 0.5;
+const path = require('path');
+const fs = require('fs');
 
 class KnowledgeGraph {
+  /**
+   * @param {string|null} dataDir - 默认数据目录（save/load 时使用）
+   */
   constructor(dataDir = null) {
     this.dataDir = dataDir;
-    this.nodes = new Map();
-    this.edges = new Map();
-    this._isDirty = false;
-    this._lastDecay = Date.now();
+
+    // ─── 主存储 ─────────────────────────────────────────────────────────────
+    // key = `${subject}|${predicate}|${object}`（小写标准化）
+    // value = { subject, predicate, object, confidence, createdAt, updatedAt, accessedAt }
+    this._triples = new Map();
+
+    // ─── 三重索引 ───────────────────────────────────────────────────────────
+    // Map<实体名, Set<tripleKey>>
+    this._subjectIndex = new Map();   // subject → Set<keys>
+    this._predicateIndex = new Map(); // predicate → Set<keys>
+    this._objectIndex = new Map();    // object → Set<keys>
+
+    // ─── 统计 ───────────────────────────────────────────────────────────────
+    this._stats = {
+      triplesAdded: 0,
+      queriesExecuted: 0,
+      saves: 0,
+      loads: 0,
+    };
+
+    this._bornAt = Date.now();
+  }
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // 核心 API
+  // ═════════════════════════════════════════════════════════════════════════
+
+  _makeKey(subject, predicate, object) {
+    return `${subject.toLowerCase()}|${predicate.toLowerCase()}|${object.toLowerCase()}`;
+  }
+
+  _addToIndex(index, entity, key) {
+    if (!index.has(entity)) {
+      index.set(entity, new Set());
+    }
+    index.get(entity).add(key);
+  }
+
+  _take(arr, n) {
+    return arr.slice(0, n);
   }
 
   /**
-   * Safely extract a string property from a partial object
+   * 添加一个三元组
+   * @param {string} subject - 主体
+   * @param {string} predicate - 谓词（关系类型）
+   * @param {string} object - 客体
+   * @param {number} [confidence=0.5] - 置信度 0~1
+   * @returns {object} 新增或更新后的三元组记录
    */
-  _safeString(val, fallback = '') {
-    if (typeof val === 'string') return val;
-    if (val === null || val === undefined) return fallback;
-    return String(val);
-  }
+  addEdge(subject, predicate, object, confidence = 0.5) {
+    if (!subject || !predicate || !object) {
+      throw new Error(
+        `addEdge: subject/predicate/object 都不能为空 ` +
+        `(received: subject=${JSON.stringify(subject)}, ` +
+        `predicate=${JSON.stringify(predicate)}, ` +
+        `object=${JSON.stringify(object)})`
+      );
+    }
 
-  /**
-   * Safely extract a number with bounds
-   */
-  _safeNumber(val, fallback = 0, min = 0, max = 1) {
-    if (typeof val === 'number' && !Number.isNaN(val)) {
-      return Math.max(min, Math.min(max, val));
-    }
-    return fallback;
-  }
-
-  /**
-   * Validate a partial node input object
-   */
-  _validateNodeInput(partial) {
-    if (!partial || typeof partial !== 'object' || Array.isArray(partial)) {
-      return { valid: false, error: KG_ERROR.INVALID_INPUT, message: 'Node input must be a non-null object' };
-    }
-    if (!partial.name || typeof partial.name !== 'string' || partial.name.trim().length === 0) {
-      return { valid: false, error: KG_ERROR.INVALID_INPUT, message: 'Node name is required and must be a non-empty string' };
-    }
-    return { valid: true };
-  }
-
-  /**
-   * Validate a partial edge input object
-   */
-  _validateEdgeInput(partial) {
-    if (!partial || typeof partial !== 'object' || Array.isArray(partial)) {
-      return { valid: false, error: KG_ERROR.INVALID_INPUT, message: 'Edge input must be a non-null object' };
-    }
-    if (!partial.sourceId || typeof partial.sourceId !== 'string') {
-      return { valid: false, error: KG_ERROR.INVALID_INPUT, message: 'sourceId is required and must be a string' };
-    }
-    if (!partial.targetId || typeof partial.targetId !== 'string') {
-      return { valid: false, error: KG_ERROR.INVALID_INPUT, message: 'targetId is required and must be a string' };
-    }
-    return { valid: true };
-  }
-
-  /**
-   * Apply importance decay to all nodes based on time elapsed
-   */
-  _applyDecay() {
+    const key = this._makeKey(subject, predicate, object);
     const now = Date.now();
-    const elapsed = now - this._lastDecay;
-    const days = elapsed / (24 * 60 * 60 * 1000);
-    if (days < 1) return; // only decay once per day minimum
+    const clampedConfidence = Math.max(0, Math.min(1, confidence));
 
-    for (const node of this.nodes.values()) {
-      const ageDays = (now - node.createdAt) / (24 * 60 * 60 * 1000);
-      if (ageDays > STALE_DAYS) {
-        // older than stale threshold — faster decay
-        node.importance *= Math.pow(IMPORTANCE_DECAY_RATE * 0.9, days);
-      } else {
-        node.importance *= Math.pow(IMPORTANCE_DECAY_RATE, days);
-      }
-      node.importance = Math.max(0.05, Math.min(1.0, node.importance));
-    }
-    this._lastDecay = now;
-    this._isDirty = true;
-  }
-
-  /**
-   * Add a node to the knowledge graph
-   */
-  addNode(partial) {
-    const validation = this._validateNodeInput(partial);
-    if (!validation.valid) {
-      const err = new Error(validation.message);
-      err.code = validation.error;
-      throw err;
+    if (this._triples.has(key)) {
+      const existing = this._triples.get(key);
+      existing.confidence = clampedConfidence;
+      existing.updatedAt = now;
+      existing.accessedAt = now;
+      return existing;
     }
 
-    const now = Date.now();
-    const node = {
-      id: `kg-${now}-${crypto.randomBytes(4).toString('hex')}`,
-      name: partial.name.trim(),
-      description: this._safeString(partial.description),
-      type: this._safeString(partial.type, 'concept'),
-      importance: this._safeNumber(partial.importance, DEFAULT_IMPORTANCE, 0.05, 1.0),
-      connections: [],
-      reflectionCount: 0,
+    const triple = {
+      subject,
+      predicate,
+      object,
+      confidence: clampedConfidence,
       createdAt: now,
-      lastAccessed: now,
-    };
-    this.nodes.set(node.id, node);
-    this._isDirty = true;
-    return node;
-  }
-
-  /**
-   * Add an edge between two nodes
-   * Returns null if nodes don't exist or connection limit reached
-   */
-  addEdge(partial) {
-    const validation = this._validateEdgeInput(partial);
-    if (!validation.valid) {
-      const err = new Error(validation.message);
-      err.code = validation.error;
-      throw err;
-    }
-
-    const sourceNode = this.nodes.get(partial.sourceId);
-    const targetNode = this.nodes.get(partial.targetId);
-
-    if (!sourceNode || !targetNode) {
-      const missing = !sourceNode && !targetNode ? 'Both nodes' : (!sourceNode ? 'Source node' : 'Target node');
-      const err = new Error(`${missing} not found`);
-      err.code = KG_ERROR.NODE_NOT_FOUND;
-      return null;
-    }
-
-    if (sourceNode.connections.length >= MAX_CONNECTIONS) {
-      const err = new Error(`Source node connection limit (${MAX_CONNECTIONS}) reached`);
-      err.code = KG_ERROR.CONNECTION_LIMIT;
-      return null;
-    }
-
-    const edge = {
-      id: `kge-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
-      sourceId: partial.sourceId,
-      targetId: partial.targetId,
-      relation: partial.relation || 'related',
-      weight: this._safeNumber(partial.weight, 0.5, 0, 1),
-      bidirectional: partial.bidirectional === true,
-      createdAt: Date.now(),
+      updatedAt: now,
+      accessedAt: now,
     };
 
-    this.edges.set(edge.id, edge);
+    this._triples.set(key, triple);
+    this._stats.triplesAdded++;
 
-    if (!sourceNode.connections.includes(partial.targetId)) {
-      sourceNode.connections.push(partial.targetId);
-    }
-    if (edge.bidirectional && !targetNode.connections.includes(partial.sourceId)) {
-      targetNode.connections.push(partial.sourceId);
-    }
+    this._addToIndex(this._subjectIndex, subject, key);
+    this._addToIndex(this._predicateIndex, predicate, key);
+    this._addToIndex(this._objectIndex, object, key);
 
-    this._isDirty = true;
-    return edge;
+    return triple;
   }
 
   /**
-   * Remove a node and all associated edges
+   * 查询三元组
+   *
+   * 筛选条件之间是 AND 关系（同时匹配）。
+   * 默认启用模糊匹配（contains），设置 fuzzy=false 时启用精确匹配。
+   *
+   * @param {object} options - 查询条件
+   * @param {string}  [options.subject]   - 按主体筛选
+   * @param {string}  [options.predicate] - 按谓词筛选
+   * @param {string}  [options.object]    - 按客体筛选
+   * @param {boolean} [options.fuzzy=true]    - 是否启用模糊匹配
+   * @param {number}  [options.limit=100]     - 返回条数上限
+   * @param {boolean} [options.sortByConfidence=false] - 按置信度降序排列
+   * @returns {Array<object>} 匹配的三元组数组
    */
-  removeNode(nodeId) {
-    if (!nodeId || typeof nodeId !== 'string') {
-      const err = new Error('nodeId must be a non-empty string');
-      err.code = KG_ERROR.INVALID_INPUT;
-      throw err;
+  query(options = {}) {
+    const {
+      subject,
+      predicate,
+      object,
+      fuzzy = true,
+      limit = 100,
+      sortByConfidence = false,
+    } = options;
+
+    this._stats.queriesExecuted++;
+
+    if (!subject && !predicate && !object) {
+      return this._take(
+        sortByConfidence
+          ? Array.from(this._triples.values()).sort((a, b) => b.confidence - a.confidence)
+          : Array.from(this._triples.values()),
+        limit
+      );
     }
 
-    const node = this.nodes.get(nodeId);
-    if (!node) {
-      const err = new Error(KG_ERROR_MESSAGES[KG_ERROR.NODE_NOT_FOUND]);
-      err.code = KG_ERROR.NODE_NOT_FOUND;
-      return false;
+    if (!fuzzy) {
+      const candidates = this._getCandidatesExact(subject, predicate, object);
+      const results = candidates.map(key => this._triples.get(key));
+      return this._take(
+        sortByConfidence ? results.sort((a, b) => b.confidence - a.confidence) : results,
+        limit
+      );
     }
 
-    // Remove all edges involving this node
-    const edgesToRemove = [];
-    for (const [edgeId, edge] of this.edges) {
-      if (edge.sourceId === nodeId || edge.targetId === nodeId) {
-        edgesToRemove.push(edgeId);
-      }
-    }
-    for (const edgeId of edgesToRemove) {
-      this.edges.delete(edgeId);
-    }
-
-    // Remove connections from other nodes' connection lists
-    for (const otherNode of this.nodes.values()) {
-      otherNode.connections = otherNode.connections.filter(c => c !== nodeId);
-    }
-
-    this.nodes.delete(nodeId);
-    this._isDirty = true;
-    return true;
-  }
-
-  /**
-   * Update the weight of an existing edge
-   */
-  updateEdgeWeight(edgeId, newWeight) {
-    if (!edgeId || typeof edgeId !== 'string') {
-      const err = new Error('edgeId must be a non-empty string');
-      err.code = KG_ERROR.INVALID_INPUT;
-      throw err;
-    }
-
-    const edge = this.edges.get(edgeId);
-    if (!edge) {
-      const err = new Error(KG_ERROR_MESSAGES[KG_ERROR.EDGE_NOT_FOUND]);
-      err.code = KG_ERROR.EDGE_NOT_FOUND;
-      return null;
-    }
-
-    edge.weight = this._safeNumber(newWeight, edge.weight, 0, 1);
-    this._isDirty = true;
-    return edge;
-  }
-
-  /**
-   * Get a node by ID
-   */
-  getNode(id) {
-    if (!id || typeof id !== 'string') {
-      const err = new Error('id must be a non-empty string');
-      err.code = KG_ERROR.INVALID_INPUT;
-      throw err;
-    }
-    const node = this.nodes.get(id) || null;
-    if (node) {
-      node.lastAccessed = Date.now();
-      this._isDirty = true;
-    }
-    return node;
-  }
-
-  /**
-   * Get all nodes connected to a given node
-   */
-  getConnectedNodes(nodeId, relation = null) {
-    if (!nodeId || typeof nodeId !== 'string') {
-      const err = new Error('nodeId must be a non-empty string');
-      err.code = KG_ERROR.INVALID_INPUT;
-      throw err;
-    }
-
-    const node = this.nodes.get(nodeId);
-    if (!node) return [];
-
-    const connected = [];
-    for (const edge of this.edges.values()) {
-      if (edge.sourceId === nodeId || (edge.bidirectional && edge.targetId === nodeId)) {
-        if (relation && edge.relation !== relation) continue;
-        const connectedId = edge.sourceId === nodeId ? edge.targetId : edge.sourceId;
-        const connectedNode = this.nodes.get(connectedId);
-        if (connectedNode) {
-          connectedNode.lastAccessed = Date.now();
-          connected.push({ node: connectedNode, edgeWeight: edge.weight, relation: edge.relation });
-        }
-      }
-    }
-    return connected;
-  }
-
-  /**
-   * Search nodes by keyword (name or description)
-   * Returns results sorted by importance descending
-   */
-  search(query) {
-    if (!query || typeof query !== 'string') {
-      return [];
-    }
-
-    const lowerQuery = query.toLowerCase().trim();
-    if (lowerQuery.length === 0) return [];
-
+    // 模糊匹配：遍历所有三元组
     const results = [];
+    for (const triple of this._triples.values()) {
+      if (subject && !triple.subject.toLowerCase().includes(subject.toLowerCase())) continue;
+      if (predicate && !triple.predicate.toLowerCase().includes(predicate.toLowerCase())) continue;
+      if (object && !triple.object.toLowerCase().includes(object.toLowerCase())) continue;
+      results.push(triple);
+    }
 
-    for (const node of this.nodes.values()) {
-      let score = 0;
-      const nameLower = node.name.toLowerCase();
-      const descLower = node.description.toLowerCase();
+    return this._take(
+      sortByConfidence ? results.sort((a, b) => b.confidence - a.confidence) : results,
+      limit
+    );
+  }
 
-      // Exact name match: highest score
-      if (nameLower === lowerQuery) {
-        score = 1.0;
-      } else if (nameLower.includes(lowerQuery)) {
-        // Name contains query
-        score = 0.8;
-      } else if (descLower.includes(lowerQuery)) {
-        // Description contains query
-        score = 0.5;
+  _getCandidatesExact(subject, predicate, object) {
+    let candidates = null;
+
+    if (subject) {
+      const keys = this._subjectIndex.get(subject);
+      if (keys) candidates = new Set(keys);
+      else return [];
+    }
+    if (predicate) {
+      const keys = this._predicateIndex.get(predicate);
+      if (!keys) return [];
+      if (candidates === null) {
+        candidates = new Set(keys);
+      } else {
+        candidates = new Set([...candidates].filter(k => keys.has(k)));
       }
-
-      if (score > 0) {
-        results.push({ node, score, rankScore: score * node.importance });
-      }
+      if (candidates.size === 0) return [];
     }
-
-    return results.sort((a, b) => b.rankScore - a.rankScore);
-  }
-
-  /**
-   * Search by exact node name (for name-based lookups)
-   */
-  findByName(name) {
-    if (!name || typeof name !== 'string') return null;
-    const lower = name.toLowerCase().trim();
-    for (const node of this.nodes.values()) {
-      if (node.name.toLowerCase() === lower) return node;
-    }
-    return null;
-  }
-
-  /**
-   * Reflect on a node — increment reflection count
-   */
-  reflect(nodeId) {
-    if (!nodeId || typeof nodeId !== 'string') {
-      const err = new Error('nodeId must be a non-empty string');
-      err.code = KG_ERROR.INVALID_INPUT;
-      throw err;
-    }
-    const node = this.nodes.get(nodeId);
-    if (!node) return null;
-    node.reflectionCount = (node.reflectionCount || 0) + 1;
-    node.importance = Math.min(1.0, node.importance + 0.05);
-    node.lastAccessed = Date.now();
-    this._isDirty = true;
-    return node;
-  }
-
-  /**
-   * Prune stale nodes (low importance, old, unreflected)
-   */
-  pruneStale(options = {}) {
-    const minImportance = options.minImportance ?? 0.1;
-    const maxAgeMs = options.maxAgeMs ?? (STALE_DAYS * 24 * 60 * 60 * 1000);
-    const minReflections = options.minReflections ?? 0;
-    const now = Date.now();
-    const removed = [];
-
-    for (const [id, node] of this.nodes) {
-      const tooOld = (now - node.lastAccessed) > maxAgeMs;
-      const tooLow = node.importance < minImportance;
-      const unreflected = node.reflectionCount <= minReflections;
-      if (tooOld && (tooLow || unreflected)) {
-        this.removeNode(id);
-        removed.push({ id, name: node.name, importance: node.importance, age: now - node.createdAt });
+    if (object) {
+      const keys = this._objectIndex.get(object);
+      if (!keys) return [];
+      if (candidates === null) {
+        candidates = new Set(keys);
+      } else {
+        candidates = new Set([...candidates].filter(k => keys.has(k)));
       }
     }
 
-    return removed;
+    return candidates ? Array.from(candidates) : [];
   }
 
   /**
-   * Export graph to a serializable JSON object
+   * 获取与某个实体相关的所有三元组（递归）
+   * @param {string} entity - 实体名称
+   * @param {number} [depth=1] - 递归深度
+   * @param {Set} [visited] - 已访问实体（防环）
+   * @returns {Array<object>} 关联的三元组
    */
-  toJSON() {
-    const nodesArray = [];
-    for (const [id, node] of this.nodes) {
-      nodesArray.push({
-        id,
-        name: node.name,
-        description: node.description,
-        type: node.type,
-        importance: node.importance,
-        connections: [...node.connections],
-        reflectionCount: node.reflectionCount,
-        createdAt: node.createdAt,
-        lastAccessed: node.lastAccessed,
+  getRelated(entity, depth = 1, visited = new Set()) {
+    if (depth <= 0 || visited.has(entity.toLowerCase())) return [];
+    visited.add(entity.toLowerCase());
+
+    const direct = this.query({ subject: entity, fuzzy: false });
+    const reverse = this.query({ object: entity, fuzzy: false });
+    const results = [...direct, ...reverse];
+
+    if (depth > 1) {
+      const seen = new Set();
+      const allEntities = new Set();
+      results.forEach(t => {
+        allEntities.add(t.subject);
+        allEntities.add(t.object);
       });
-    }
-
-    const edgesArray = [];
-    for (const [id, edge] of this.edges) {
-      edgesArray.push({
-        id,
-        sourceId: edge.sourceId,
-        targetId: edge.targetId,
-        relation: edge.relation,
-        weight: edge.weight,
-        bidirectional: edge.bidirectional,
-        createdAt: edge.createdAt,
-      });
-    }
-
-    return { nodes: nodesArray, edges: edgesArray };
-  }
-
-  /**
-   * Import graph state from a JSON object
-   */
-  fromJSON(data) {
-    if (!data || typeof data !== 'object') return false;
-    this.nodes.clear();
-    this.edges.clear();
-
-    if (Array.isArray(data.nodes)) {
-      for (const n of data.nodes) {
-        if (n && n.id && n.name) {
-          this.nodes.set(n.id, {
-            id: n.id,
-            name: this._safeString(n.name),
-            description: this._safeString(n.description),
-            type: this._safeString(n.type, 'concept'),
-            importance: this._safeNumber(n.importance, DEFAULT_IMPORTANCE, 0.05, 1.0),
-            connections: Array.isArray(n.connections) ? [...n.connections] : [],
-            reflectionCount: typeof n.reflectionCount === 'number' ? n.reflectionCount : 0,
-            createdAt: typeof n.createdAt === 'number' ? n.createdAt : Date.now(),
-            lastAccessed: typeof n.lastAccessed === 'number' ? n.lastAccessed : Date.now(),
-          });
+      allEntities.delete(entity);
+      for (const e of allEntities) {
+        if (!seen.has(e.toLowerCase())) {
+          seen.add(e.toLowerCase());
+          const deeper = this.getRelated(e, depth - 1, visited);
+          results.push(...deeper);
         }
       }
     }
 
-    if (Array.isArray(data.edges)) {
-      for (const e of data.edges) {
-        if (e && e.id && e.sourceId && e.targetId) {
-          this.edges.set(e.id, {
-            id: e.id,
-            sourceId: e.sourceId,
-            targetId: e.targetId,
-            relation: this._safeString(e.relation, 'related'),
-            weight: this._safeNumber(e.weight, 0.5, 0, 1),
-            bidirectional: e.bidirectional === true,
-            createdAt: typeof e.createdAt === 'number' ? e.createdAt : Date.now(),
-          });
-        }
-      }
-    }
-
-    this._lastDecay = Date.now();
-    this._isDirty = false;
-    return true;
+    return results;
   }
 
   /**
-   * Get comprehensive knowledge graph statistics
+   * 获取图谱统计
+   * @returns {object}
    */
   getStats() {
-    this._applyDecay();
-
-    let totalConnections = 0;
-    const mostConnected = [];
-    const mostReflected = [];
-    let staleCount = 0;
-    const now = Date.now();
-
-    for (const node of this.nodes.values()) {
-      totalConnections += node.connections.length;
-
-      if (node.connections.length > 0) {
-        mostConnected.push({ id: node.id, name: node.name, count: node.connections.length });
-      }
-      if (node.reflectionCount > 0) {
-        mostReflected.push({ id: node.id, name: node.name, count: node.reflectionCount, importance: node.importance });
-      }
-      if ((now - node.lastAccessed) > STALE_DAYS * 24 * 60 * 60 * 1000) {
-        staleCount++;
-      }
-    }
-
-    mostConnected.sort((a, b) => b.count - a.count);
-    mostReflected.sort((a, b) => b.count - a.count);
-
-    const edgeTypes = new Map();
-    for (const edge of this.edges.values()) {
-      edgeTypes.set(edge.relation, (edgeTypes.get(edge.relation) || 0) + 1);
-    }
-
     return {
-      nodes: this.nodes.size,
-      edges: this.edges.size,
-      avgConnections: this.nodes.size > 0 ? +(totalConnections / this.nodes.size).toFixed(2) : 0,
-      mostConnected: mostConnected.slice(0, 5),
-      mostReflected: mostReflected.slice(0, 5),
-      staleCount,
-      edgeTypeDistribution: Object.fromEntries(edgeTypes),
-      nodeTypes: this._getNodeTypeDistribution(),
-      isDirty: this._isDirty,
+      ...this._stats,
+      uniqueSubjects: this._subjectIndex.size,
+      uniquePredicates: this._predicateIndex.size,
+      uniqueObjects: this._objectIndex.size,
+      uptime: Date.now() - this._bornAt,
     };
   }
 
   /**
-   * Get distribution of node types
+   * 清除所有数据
    */
-  _getNodeTypeDistribution() {
-    const dist = {};
-    for (const node of this.nodes.values()) {
-      dist[node.type] = (dist[node.type] || 0) + 1;
+  clear() {
+    this._triples.clear();
+    this._subjectIndex.clear();
+    this._predicateIndex.clear();
+    this._objectIndex.clear();
+    this._stats = { triplesAdded: 0, queriesExecuted: 0, saves: 0, loads: 0 };
+    this._bornAt = Date.now();
+  }
+
+  /**
+   * 保存到 JSON 文件
+   * @param {string} [filePath] - 保存路径，默认 dataDir/knowledge-graph.json
+   */
+  save(filePath) {
+    const savePath = filePath || (this.dataDir ? path.join(this.dataDir, 'knowledge-graph.json') : null);
+    if (!savePath) throw new Error('save: 未指定 filePath 且 dataDir 未设置');
+    const dir = path.dirname(savePath);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+    const data = {
+      version: '2.0.0',
+      exportedAt: new Date().toISOString(),
+      stats: this._stats,
+      triples: Array.from(this._triples.values()),
+    };
+    const tmp = savePath + '.tmp.' + Date.now();
+    fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
+    fs.renameSync(tmp, savePath);
+    this._stats.saves++;
+    return { path: savePath, count: this._triples.size };
+  }
+
+  /**
+   * 从 JSON 文件加载
+   * @param {string} [filePath] - 加载路径，默认 dataDir/knowledge-graph.json
+   */
+  load(filePath) {
+    const loadPath = filePath || (this.dataDir ? path.join(this.dataDir, 'knowledge-graph.json') : null);
+    if (!loadPath) throw new Error('load: 未指定 filePath 且 dataDir 未设置');
+    if (!fs.existsSync(loadPath)) return { loaded: false, count: 0 };
+
+    const raw = fs.readFileSync(loadPath, 'utf8');
+    const data = JSON.parse(raw);
+    if (!data.triples || !Array.isArray(data.triples)) {
+      throw new Error('load: 无效的知识图谱数据格式');
     }
-    return dist;
-  }
 
-  /**
-   * Add a concept to the knowledge graph
-   * Convenience method that creates a node and returns it
-   */
-  learnConcept(name, description = '', importance = DEFAULT_IMPORTANCE) {
-    if (!name || typeof name !== 'string' || name.trim().length === 0) {
-      const err = new Error('Concept name must be a non-empty string');
-      err.code = KG_ERROR.INVALID_INPUT;
-      throw err;
+    this.clear();
+    for (const triple of data.triples) {
+      this.addEdge(triple.subject, triple.predicate, triple.object, triple.confidence);
     }
-    return this.addNode({ name: name.trim(), description: this._safeString(description), type: 'concept', importance: this._safeNumber(importance, DEFAULT_IMPORTANCE, 0.05, 1.0) });
+    this._stats.loads = (this._stats.loads || 0) + 1;
+    return { loaded: true, count: this._triples.size };
   }
 
   /**
-   * Connect two concepts by name with a relationship
+   * 搜索实体（按名称模糊匹配）
+   * @param {string} name - 实体名（支持模糊）
+   * @returns {Array<string>} 匹配的实体名列表
    */
-  connect(sourceName, targetName, relation = 'related', bidirectional = false) {
-    if (!sourceName || !targetName) return null;
-
-    const sourceNodes = this.search(sourceName);
-    const targetNodes = this.search(targetName);
-
-    if (sourceNodes.length === 0 || targetNodes.length === 0) return null;
-
-    return this.addEdge({
-      sourceId: sourceNodes[0].node.id,
-      targetId: targetNodes[0].node.id,
-      relation: this._safeString(relation, 'related'),
-      bidirectional: bidirectional === true,
-    });
+  searchEntities(name) {
+    const lower = name.toLowerCase();
+    const entities = new Set();
+    for (const key of this._triples.keys()) {
+      const parts = key.split('|');
+      if (parts[0].includes(lower)) entities.add(parts[0]);
+      if (parts[2].includes(lower)) entities.add(parts[2]);
+    }
+    return Array.from(entities);
   }
 
   /**
-   * Check if graph needs saving
+   * 获取两个实体之间的路径
+   * @param {string} from - 起始实体
+   * @param {string} to - 目标实体
+   * @param {number} [maxDepth=4] - 最大搜索深度
+   * @returns {Array<Array<object>>} 路径数组
    */
-  get isDirty() {
-    return this._isDirty;
-  }
+  findPath(from, to, maxDepth = 4) {
+    if (from.toLowerCase() === to.toLowerCase()) return [];
 
-  /**
-   * Mark graph as saved
-   */
-  markClean() {
-    this._isDirty = false;
+    const queue = [[{ entity: from, depth: 0, triples: [] }]];
+    const visited = new Set([from.toLowerCase()]);
+
+    while (queue.length > 0) {
+      const path = queue.shift();
+      const last = path[path.length - 1];
+
+      if (last.depth >= maxDepth) continue;
+
+      const related = this.query({ subject: last.entity, fuzzy: false });
+      related.forEach(t => {
+        const nextEntity = t.object;
+        const nextLower = nextEntity.toLowerCase();
+        if (nextLower === to.toLowerCase()) {
+          path.push({ entity: nextEntity, depth: last.depth + 1, triples: [t] });
+          return;
+        }
+        if (!visited.has(nextLower) && last.depth + 1 < maxDepth) {
+          visited.add(nextLower);
+          queue.push([...path, { entity: nextEntity, depth: last.depth + 1, triples: [t] }]);
+        }
+      });
+    }
+
+    return [];
   }
 }
 
-module.exports = { KnowledgeGraph, KG_ERROR, KG_ERROR_MESSAGES, MAX_CONNECTIONS, IMPORTANCE_DECAY_RATE };
+module.exports = { KnowledgeGraph };

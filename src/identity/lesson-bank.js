@@ -15,7 +15,7 @@ let _lessonStorage = null;
 function _getLessonStorage() {
   if (_lessonStorage) return _lessonStorage;
   try {
-    const mod = require('../core/lessons/lesson-storage.js');
+    const mod = require('../cortex/lessons/lesson-storage.js');
     _lessonStorage = mod.lessonStorage;
   } catch { /* 可选模块不存在时降级为 null */ _lessonStorage = null; }
   return _lessonStorage;

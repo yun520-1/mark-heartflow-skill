@@ -366,7 +366,7 @@ class SelfInitiator {
    */
   generatePlan(goal, options = {}) {
     try {
-      const { CodePlanner } = require('../core/code/code-planner.js');
+      const { CodePlanner } = require('../code/code/code-planner.js');
       const planner = new CodePlanner();
       const plan = planner.plan(goal, options);
       return {

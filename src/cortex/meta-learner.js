@@ -4,7 +4,7 @@
  * 底层委托 MetaLearning 核心引擎执行具体学习策略。
  */
 
-const { MetaLearning } = require('../core/self-evolution/meta-learning.js');
+const { MetaLearning } = require('./self-evolution/meta-learning.js');
 
 // ============================================================================
 // 教训类别枚举

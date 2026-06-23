@@ -20,7 +20,7 @@
  * - HealthDiagnostic — 结构化健康诊断报告
  *
  * 使用方式：
- *   const { SemanticSearch } = require('./search/semantic-search.js');
+ *   const { SemanticSearch } = require('../search/search/semantic-search.js');
  *   const ss = new SemanticSearch();
  *   await ss.addDocument('id1', '引擎的核心判断引擎');
  *   const results = await ss.search('判断引擎');

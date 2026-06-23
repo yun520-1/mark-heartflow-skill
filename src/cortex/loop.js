@@ -12,7 +12,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { SelfEvolutionCore } = require('../core/self-evolution/self-evolution-core.js');
+const { SelfEvolutionCore } = require('./self-evolution/self-evolution-core.js');
 
 class EvolutionLoop {
     constructor(hf = {}) {

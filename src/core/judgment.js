@@ -20,7 +20,7 @@ const crypto = require('crypto');
 let MeaningfulMemory = null;
 
 try {
-  const MM = require('./meaningful-memory.js');
+  const MM = require('../memory/memory-adapter.js');
   MeaningfulMemory = MM.MeaningfulMemory;
 } catch (e) {
   // MeaningfulMemory not available

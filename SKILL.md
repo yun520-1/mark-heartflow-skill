@@ -1,6 +1,6 @@
 ---
 name: heartflow
-version: "3.7.1"
+version: "3.8.0"
 title: "HeartFlow"
 description: |
   A cognitive engine for AI: self-reflection, dream synthesis, emergent personality,

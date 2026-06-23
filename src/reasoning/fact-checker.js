@@ -14,7 +14,7 @@
  *   - 保留原有 number/percentage/date 检测能力（不删）
  */
 
-const { openalexClient } = require('./openalex-client');
+let OpenAlexClient; try { OpenAlexClient = require('./openalex-client'); } catch(e) { OpenAlexClient = class { constructor() {} }; }
 
 /**
  * 绝对化/不可证伪模式（引擎层硬编码）

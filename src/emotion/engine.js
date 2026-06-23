@@ -16,7 +16,7 @@
  * - 并发安全：浅拷贝返回，不泄漏内部引用
  */
 
-const psychology = require('../core/psychology.js');
+const psychology = require('./psychology.js');
 const empathy = require('./empathy-detector.js');
 // AI认知状态调节器 — 6个人类心理学模块的AI化版本
 const { breathingExercise } = require('./breathing-exercise.js');
