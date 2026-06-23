@@ -396,7 +396,17 @@ class DecisionRouter {
       suppressedCount: 0,
       flipAlerts: 0,
       fieldSnapshots: 0,
+      // v3.6.1：后备连续性统计
+      fallbackCount: 0,      // API不可用时的本地外推次数
+      auditTrailSize: 0,     // 审计追踪条数
     };
+
+    // v3.6.1：审计追踪 — 每次调谐动作附带前因后果
+    this._auditTrail = [];   // 最多保留200条
+    this._maxAuditTrail = 200;
+
+    // v3.6.1：后备连续性 — 上次已知场域快照（API不可用时回退）
+    this._lastKnownField = null;
   }
 
   // ─── v3.0.0 新增：U/D/A/H 场域计算方法 ──────────────────────────────────
@@ -408,61 +418,77 @@ class DecisionRouter {
    */
   _computeFieldValues(result) {
     if (!result || typeof result !== 'object') {
+      // v3.6.1：后备连续性 — API/模块不可用时回退到上次已知场域快照
+      if (this._lastKnownField) {
+        this._stats.fallbackCount++;
+        // 轻微衰减：U/D 降 0.01，A 升 0.01，H 重新计算
+        const fallback = {
+          U: Math.max(0.2, this._lastKnownField.U - 0.01),
+          D: Math.max(0.2, this._lastKnownField.D - 0.01),
+          A: Math.min(1, this._lastKnownField.A + 0.01),
+        };
+        fallback.H = Math.max(0, Math.min(1,
+          FIELD_WEIGHTS.lambdaU * fallback.U +
+          FIELD_WEIGHTS.lambdaD * fallback.D -
+          FIELD_WEIGHTS.lambdaA * fallback.A
+        ));
+        this._lastKnownField = fallback;
+        return fallback;
+      }
       return { U: 0.3, D: 0.3, A: 0, H: 0.3 };
     }
 
+    // v3.6.1：记录当前场域快照供后备使用
     // U（统一性/Unity）——身份在场强度
-    // 来源：identityCoherence, confidence, ok/belief 等
-    let U = 0.3;
+    let rawU = 0.3;
     if (result.identityCoherence !== undefined) {
-      U = result.identityCoherence;
+      rawU = result.identityCoherence;
     } else if (result._fieldU !== undefined) {
-      U = result._fieldU;
+      rawU = result._fieldU;
     } else if (result.ok !== undefined) {
-      U = result.ok ? 0.6 : 0.2;
+      rawU = result.ok ? 0.6 : 0.2;
     } else if (result.confidence !== undefined) {
-      U = Math.max(0.2, result.confidence);
+      rawU = Math.max(0.2, result.confidence);
     } else if (result.stability !== undefined) {
-      U = result.stability;
+      rawU = result.stability;
     }
+    const U = Math.max(0, Math.min(1, rawU));
 
     // D（发展性/Development）——信息推进的结构化程度
-    // 来源：quality, success, cognitiveLoad（低负荷=高D）, awareness
-    let D = 0.3;
+    let rawD = 0.3;
     if (result.quality !== undefined) {
-      D = result.quality;
+      rawD = result.quality;
     } else if (result._fieldD !== undefined) {
-      D = result._fieldD;
+      rawD = result._fieldD;
     } else if (result.success !== undefined) {
-      D = result.success ? 0.7 : 0.2;
+      rawD = result.success ? 0.7 : 0.2;
     } else if (result.cognitiveLoad !== undefined) {
-      D = Math.max(0.1, 1 - result.cognitiveLoad);
+      rawD = Math.max(0.1, 1 - result.cognitiveLoad);
     } else if (result.awareness !== undefined) {
-      D = Math.max(0.2, result.awareness * 0.8);
+      rawD = Math.max(0.2, result.awareness * 0.8);
     }
+    const D = Math.max(0, Math.min(1, rawD));
 
     // A（对抗性/Adversity）——矛盾边密度
-    // 来源：dissonance, severity, goalValid(false), valid(false)
-    let A = 0;
+    let rawA = 0;
     if (result.dissonance !== undefined) {
-      A = result.dissonance;
+      rawA = result.dissonance;
     } else if (result._fieldA !== undefined) {
-      A = result._fieldA;
+      rawA = result._fieldA;
     } else if (result.severity !== undefined) {
-      A = String(result.severity).toUpperCase() === 'CRITICAL' ? 0.8 :
+      rawA = String(result.severity).toUpperCase() === 'CRITICAL' ? 0.8 :
           String(result.severity).toUpperCase() === 'HIGH' ? 0.6 : 0.1;
     } else if (result.goalValid === false) {
-      A = 0.5;
+      rawA = 0.5;
     } else if (result.valid === false) {
-      A = 0.4;
+      rawA = 0.4;
     } else if (result.ok === false) {
-      A = 0.3;
+      rawA = 0.3;
     }
+    const A = Math.max(0, Math.min(1, rawA));
 
-    // 边界约束
-    U = Math.max(0, Math.min(1, U));
-    D = Math.max(0, Math.min(1, D));
-    A = Math.max(0, Math.min(1, A));
+    // 保存当前场域快照（供后备连续性使用）
+    this._lastKnownField = { U, D, A };
 
     // H（和谐度/Harmony）——加权公式
     // H = λU·U + λD·D - λA·A
@@ -639,6 +665,30 @@ class DecisionRouter {
       this._stats.flipAlerts++;
     }
 
+    // v3.6.1：confidence 连续不变检测（A值边界僵死的工程化版本）
+    // 当 confidence 在 N 步内完全不变，视为"认知僵死"——系统停止更新判断
+    let confidenceStuck = false;
+    if (this._fieldHistory.length >= 5) {
+      const recentConfidences = this._fieldHistory.slice(-5).map(h => h.H);
+      const allSame = recentConfidences.every(c => Math.abs(c - recentConfidences[0]) < 0.001);
+      if (allSame && recentConfidences[0] < 0.4) {
+        confidenceStuck = true;
+        // 如果还没有 flipAlert，标记为 primary 类型
+        if (!flipAlert) {
+          flipAlert = 'primary';
+          this._lastFlipAlert = {
+            type: 'primary',
+            step: this._fieldStep,
+            U, D, A, H,
+            driver,
+            message: `confidence僵死: 步${this._fieldStep} H=${H.toFixed(3)} 连续5步不变`,
+            timestamp: Date.now(),
+          };
+          this._stats.flipAlerts++;
+        }
+      }
+    }
+
     this._stats.fieldSnapshots++;
 
     // 返回注入到 result 的场域字段
@@ -763,6 +813,36 @@ class DecisionRouter {
       timestamp: best.timestamp,
       executed: false,
     };
+
+    // v3.6.1：审计追踪 — 每次调谐动作记录前因后果
+    this._auditTrail.push({
+      timestamp: new Date(best.timestamp).toISOString(),
+      source,
+      decision: best.type,
+      confidence: best.confidence,
+      ruleId: best.ruleId,
+      rationale: best.rationale,
+      fieldBefore: this._fieldHistory.length >= 2
+        ? { U: this._fieldHistory[this._fieldHistory.length-2].U,
+            D: this._fieldHistory[this._fieldHistory.length-2].D,
+            A: this._fieldHistory[this._fieldHistory.length-2].A,
+            H: this._fieldHistory[this._fieldHistory.length-2].H,
+            driver: this._fieldHistory[this._fieldHistory.length-2].driver }
+        : null,
+      fieldAfter: {
+        step: fieldData._fieldStep,
+        U: fieldData._fieldU,
+        D: fieldData._fieldD,
+        A: fieldData._fieldA,
+        H: fieldData._fieldH,
+        driver: fieldData._fieldDriver,
+      },
+      flipAlert: fieldData._fieldFlipAlert,
+    });
+    if (this._auditTrail.length > this._maxAuditTrail) {
+      this._auditTrail.splice(0, this._auditTrail.length - this._maxAuditTrail);
+    }
+    this._stats.auditTrailSize = this._auditTrail.length;
 
     return {
       decision: {
@@ -927,6 +1007,15 @@ class DecisionRouter {
       ...h,
       timestamp: new Date(h.timestamp).toISOString(),
     }));
+  }
+
+  /**
+   * v3.6.1：获取审计追踪 — 每次调谐动作的前因后果
+   * @param {number} [limit=20]
+   * @returns {Array}
+   */
+  getAuditTrail(limit = 20) {
+    return this._auditTrail.slice(-limit);
   }
 }
 

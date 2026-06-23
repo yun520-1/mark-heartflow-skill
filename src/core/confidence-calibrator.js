@@ -102,6 +102,29 @@ class ConfidenceCalibrator {
       suggestion: this.getSuggestion(level, scores),
       distribution: this.generateDistribution(confidence),
       calibrationPhrases: this.getCalibrationPhrases(level),
+      // v3.6.1：置信度来源标注（基于 luoxuejian000 论文 6.2 节）
+      // 区分结构字段置信度（evidenceCoverage, consistency 等）vs 语言特征不确定性
+      provenance: {
+        structural: {
+          // 结构字段来源：证据覆盖、一致性、源可靠性——基于事实/逻辑的置信度
+          sources: ['evidenceCoverage', 'consistency', 'sourceReliability'],
+          score: (scores.evidenceCoverage * 0.25 + scores.consistency * 0.20 + scores.sourceReliability * 0.20) /
+                 (0.25 + 0.20 + 0.20),
+          description: '基于结构字段（证据/一致性/源可靠性）的结构化置信度',
+        },
+        linguistic: {
+          // 语言特征来源：specificity, complexityFit——基于文本表达方式的置信度
+          sources: ['specificity', 'complexityFit'],
+          score: (scores.specificity * 0.15 + scores.complexityFit * 0.20) / (0.15 + 0.20),
+          description: '基于语言特征（具体性/复杂度匹配）的语言置信度',
+        },
+        // 结构字段和语言特征可能不一致——高结构置信度+低语言置信度 = "知道但不擅表达"
+        gap: Math.abs(
+          (scores.evidenceCoverage * 0.25 + scores.consistency * 0.20 + scores.sourceReliability * 0.20) /
+           (0.25 + 0.20 + 0.20) -
+          (scores.specificity * 0.15 + scores.complexityFit * 0.20) / (0.15 + 0.20)
+        ),
+      },
     };
 
     return result;

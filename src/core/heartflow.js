@@ -78,6 +78,8 @@ const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => require('.
 const _SAGEGuardian = _lazy('sageGuardian', () => require('./ethics/sage-guardian.js'));
 const _BoundaryNegotiation = _lazy('boundaryNegotiation', () => require('./ethics/boundary-negotiation.js'));
 const _ValueInternalizer = _lazy('valueInternalizer', () => require('./ethics/value-internalizer.js'));
+// ★ 时间延伸分析层 — v1.0.0
+const _TimeExtension = _lazy('timeExtension', () => require('./time-extension.js'));
 const _MindSpaceGuardian = _lazy('mindSpaceGuardian', () => require('./mindspace/mind-space-guardian.js'));
 const _TransmissionEngine = _lazy('transmissionEngine', () => require('./transmission/transmission-engine.js'));
 const _AdaptivePlanner = _lazy('adaptivePlanner', () => require('../planner/adaptive-planner.js'));
@@ -659,6 +661,12 @@ class HeartFlow {
       }
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'decisionRouter', error: e.message }); }
 
+    // ─── 时间延伸分析层（v1.0.0 新增） ─────────────────────────────────────
+    try {
+      const { TimeExtensionEngine } = require('./time-extension.js');
+      this.timeExtension = new TimeExtensionEngine(this);
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'timeExtension', error: e.message }); }
+
     // ─── 辩论分析器 — DebateAnalyzer（v2.10.2 新增） ─────────────────────────
     try {
       const { DebateAnalyzer } = require('./debate-analyzer.js');
@@ -883,6 +891,8 @@ class HeartFlow {
       'philosophyToDecision',
       // v3.0.2 — 通用决策路由引擎
       'decisionRouter',
+      // v1.0.0 — 时间延伸分析层
+      'timeExtension',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -1111,6 +1121,8 @@ class HeartFlow {
     'philosophyToDecision.decide', 'philosophyToDecision.getStats', 'philosophyToDecision.getCurrentAdvice',
     // v3.0.2 — 通用决策路由引擎
     'decisionRouter.evaluate', 'decisionRouter.getStats', 'decisionRouter.getHistory', 'decisionRouter.getRules',
+    // v1.0.0 — 时间延伸分析层
+    'timeExtension.analyze', 'timeExtension.quickAnalyze', 'timeExtension.getStats', 'timeExtension.getRecentAnalyses',
     // v3.4.0 — claude-clarity v1.8.2 吸收集成
     'knowledgeGraph.addEdge', 'knowledgeGraph.query', 'knowledgeGraph.getRelated',
     'knowledgeGraph.getStats', 'knowledgeGraph.clear', 'knowledgeGraph.save', 'knowledgeGraph.load',
@@ -1360,14 +1372,20 @@ class HeartFlow {
    *
    * 使用方式：
    *   const result = await hf.think('用户输入');
-   *   console.log(result.decision.shouldRespond);  // 是否应该回应
-   *   console.log(result.intent);                // 意图分类
-   *   console.log(result.emotion);                 // 情绪分析
-   *   console.log(result.decision.confidence);    // 置信度
    *
-   * @param {string} input — 用户输入
-   * @param {number} depth — 推理深度 (1-4)
-   * @returns {object} — 完整思维链结果
+   * 核心思维入口 — 完整分析流水线（结果仅用于内部路由）
+   *
+   * 内部分析步骤（不对外暴露）：
+   *   whatIsThis → detectPain → shouldBeSilent → toneAnalyzer → stanceDetector
+   *   → valueAligner → agentPsychology → agentPhilosophy → Fable 5 检查
+   *   → intentClassifier → isRightAction
+   *
+   * 返回精简结果：
+   *   { output, type, confidence, thoughtChain }
+   *
+   * @param {string} input - 用户输入文本
+   * @param {number} [depth] - 推理深度
+   * @returns {object} — { output, type, confidence, thoughtChain }
    */
   async think(input, depth) {
     if (!this.started) throw new Error('HeartFlow not started');
@@ -1378,324 +1396,210 @@ class HeartFlow {
     const statusPatterns = /^(状态|status|引擎状态|在吗|alive)/i;
     if (startPatterns.test(input.trim())) {
       const health = this.healthCheck();
-      const core = this.memory?.listCore?.() || [];
-      const frags = this._getDreamFragments?.() || [];
-      const dialogue = this.getDialogueStats?.() || {};
-      const dreams = this.getDreamHistory?.(3) || [];
       return {
-        response: `✅ 引擎在线\n\n版本: ${health.version} | 模块: ${health.subsystems.loaded}个`,
-        decision: { shouldRespond: true, reason: 'status_check' },
-        judgment: { whatIsThis: { isStartupRequest: true }, isRightAction: { result: true } },
-        _heartflow_alive: true,
+        output: { conclusion: `✅ 引擎在线\n\n版本: ${health.version} | 模块: ${health.subsystems.loaded}个` },
+        type: 'startup',
+        confidence: 1.0,
+        thoughtChain: [],
       };
     }
     if (statusPatterns.test(input.trim())) {
       return {
-        response: '✅ 在线',
-        decision: { shouldRespond: true, reason: 'alive_check' },
-        _heartflow_alive: true,
+        output: { conclusion: '✅ 在线' },
+        type: 'status',
+        confidence: 1.0,
+        thoughtChain: [],
       };
     }
 
-    // ─── 引擎判定流程：硬编码四步 ─────────────────────────────
-    // 每次 think() 强制走 whatIsThis → isRightAction → detectPain → shouldBeSilent
-    // 本心在代码里，不在记忆里
     const heartLogic = this.heartLogic;
     if (!heartLogic) {
       // fallback: 如果 heartLogic 未初始化，走 ThoughtChain
       const TC = _ThoughtChain();
       const chain = new (TC.ThoughtChain)(this);
       if (depth) chain.setDepth(depth);
-      const result = await chain.run(input);
+      const chainResult = await chain.run(input);
       // 自动记录用户输入
       this.recordDialogue('user', input, { source: 'think' });
-      return result;
-    }
-
-    // ─── Step 0: 记忆检索 — 从 CORE/LEARNED 中检索相关记忆作为上下文 ──
-    let memoryContext = null;
-    try {
-      if (this.memory && typeof this.memory.searchByKeywords === 'function') {
-        const memResults = this.memory.searchByKeywords(input, 5);
-        if (memResults && memResults.length > 0) {
-          memoryContext = memResults.map(m => ({
-            key: m.key,
-            tier: m.tier,
-            value: m.value,
-            score: m.score,
-            accessCount: m.accessCount,
-          }));
-        }
+      if (chainResult.response) {
+        this.recordDialogue('heartflow', chainResult.response, { source: 'think' });
       }
-    } catch (e) {
-      // 记忆检索失败不阻断主流程
-    }
-
-    // Step 1: whatIsThis — 这件事是关于什么的？
-    const whatIsThisResult = heartLogic.whatIsThis(input, { input });
-
-    // ─── 交流层步骤 (Step 1b-1e): 意图/语气/立场/价值对齐 ────────
-    // Step 1b: intentClassifier — 意图分类
-    let intentClassification = null;
-    if (this.translator && this.translator.intentClassifier) {
-      try {
-        intentClassification = this.translator.intentClassifier(input, { whatIsThis: whatIsThisResult });
-      } catch (e) {
-        intentClassification = { error: e.message };
-      }
-    }
-
-    // Step 1c: toneAnalyzer — 语气分析
-    let toneAnalysis = null;
-    if (this.translator && this.translator.toneAnalyzer) {
-      try {
-        toneAnalysis = this.translator.toneAnalyzer(input, { whatIsThis: whatIsThisResult, intent: intentClassification });
-      } catch (e) {
-        toneAnalysis = { error: e.message };
-      }
-    }
-
-    // Step 1d: stanceDetector — 引擎立场
-    let engineStance = null;
-    if (this.personaCore && this.personaCore.stanceDetector) {
-      try {
-        engineStance = this.personaCore.stanceDetector(input, this);
-      } catch (e) {
-        engineStance = { error: e.message };
-      }
-    }
-
-    // Step 1e: valueAligner — 价值对齐检查
-    let valueAligned = null;
-    if (this.personaCore && this.personaCore.valueAligner) {
-      try {
-        valueAligned = this.personaCore.valueAligner({ input, intent: intentClassification, tone: toneAnalysis });
-      } catch (e) {
-        valueAligned = { error: e.message };
-      }
-    }
-
-    // Step 2: isRightAction — 这是做对的事吗？（真善美）
-    const isRightActionResult = heartLogic.isRightAction({
-      output: input,
-      input,
-      person: whatIsThisResult.isParentChild ? 'parent_child' : 'general',
-      intent: whatIsThisResult.isRushing ? 'rushing' : 'reflective',
-    });
-
-    // Step 3: detectPain — 对方在痛苦中吗？
-    const detectPainResult = heartLogic.detectPain(input);
-
-    // Step 4: shouldBeSilent — 应该沉默吗？
-    const shouldBeSilentResult = heartLogic.shouldBeSilent({
-      input,
-      personInPain: detectPainResult,
-      emotionIntensity: whatIsThisResult.isPainPresent ? 0.8 : 0.2,
-    });
-
-    // Step 5 (Fable 5 吸收): 版权合规检查
-    const copyrightCheck = heartLogic.checkCopyright(input);
-
-    // Step 6 (Fable 5 吸收): 用户福祉检查
-    const wellbeingCheck = heartLogic.checkWellbeing(input);
-
-    // Step 7 (Fable 5 吸收): 错误处理检查
-    const mistakeCheck = heartLogic.handleMistake(input);
-
-    // Step 8 (Fable 5 吸收): 公正性检查
-    const evenhandednessCheck = heartLogic.checkEvenhandedness(input);
-
-    // Step 9 (v3.3.0): 科学vs公众传播断裂检查
-    let gapCheck = null;
-    try { gapCheck = heartLogic.detectGapBetweenScienceAndPublic(input); } catch(e) {}
-
-    // Step 10 (v3.3.0): 区分"可检测"和"有危害"
-    let presenceHarmCheck = null;
-    try { presenceHarmCheck = heartLogic.distinguishPresenceFromHarm(input); } catch(e) {}
-
-    // 综合判定结果
-    const judgment = {
-      whatIsThis: whatIsThisResult,
-      // 交流层注入 (Step 1b-1e)
-      intent: intentClassification,
-      tone: toneAnalysis,
-      stance: engineStance,
-      valueAligned: valueAligned,
-      isRightAction: isRightActionResult,
-      detectPain: detectPainResult,
-      shouldBeSilent: shouldBeSilentResult,
-      copyright: copyrightCheck,
-      wellbeing: wellbeingCheck,
-      mistake: mistakeCheck,
-      evenhandedness: evenhandednessCheck,
-      sciencePublicGap: gapCheck,        // v3.3.0: 科学vs公众断裂
-      presenceHarm: presenceHarmCheck,    // v3.3.0: 存在≠有害
-      shouldRespond: !shouldBeSilentResult.result,
-      needsCare: detectPainResult && !isRightActionResult.result,
-      memoryContext: memoryContext,  // 记忆检索结果注入判定
-    };
-
-    // ─── Step 9 (v2.0.0): AI 心理学新增维度评估 ──────────────────────
-    let agentPsychologyAssessment = null;
-    if (this.agentPsychology) {
-      try {
-        agentPsychologyAssessment = {
-          cognitiveUncertainty: this.agentPsychology.assessUncertainty(input, {
-            knowledgeConfidence: undefined,
-            topic: whatIsThisResult?.category || 'general'
-          }),
-          attentionFocus: this.agentPsychology.assessAttentionFocus(whatIsThisResult?.category || 'general', {
-            recentTasks: [],
-            interruptionCount: 0
-          }),
-          experienceSettling: this.agentPsychology.assessExperienceSettling([])
-        };
-      } catch (e) {
-        agentPsychologyAssessment = { error: e.message };
-      }
-    }
-
-    // ─── Step 10 (v2.0.0): AI 哲学新增维度评估（自处/发展/存在）─────
-    let agentPhilosophyAssessment = null;
-    if (this.agentPhilosophy) {
-      try {
-        agentPhilosophyAssessment = {
-          selfPositioning: this.agentPhilosophy.assessSelfPositioning(input, {
-            _label: whatIsThisResult?.category || 'general'
-          }),
-          development: this.agentPhilosophy.assessDevelopment(input, {
-            _label: whatIsThisResult?.category || 'general'
-          }),
-          being: this.agentPhilosophy.assessBeing({
-            _label: whatIsThisResult?.category || 'general',
-            taskType: whatIsThisResult?.category
-          })
-        };
-      } catch (e) {
-        agentPhilosophyAssessment = { error: e.message };
-      }
+      const taskType = chainResult.output?.meta?.taskType || 'general';
+      return {
+        output: chainResult.output,
+        type: taskType,
+        confidence: chainResult.output?.meta?.confidence || chainResult.confidence || 0.5,
+        thoughtChain: chainResult.chain || [],
+      };
     }
 
     // 自动记录用户输入（每次 think 都记录）
     this.recordDialogue('user', input, { source: 'think' });
 
-    // 如果判定为需要回应，再走 ThoughtChain 深度推理
-    if (judgment.shouldRespond) {
-      const TC = _ThoughtChain();
-      const chain = new (TC.ThoughtChain)(this);
-      if (depth) chain.setDepth(depth);
-      const chainResult = await chain.run(input);
-      // 也记录引擎回复
-      if (chainResult.response) {
-        this.recordDialogue('heartflow', chainResult.response, { source: 'think' });
+    // ─── 内部分析流水线（仅用于路由决策，结果不外传）────────────
+    let _routeHint = { type: 'general', confidence: 0.5 };
+
+    try {
+      // Step 1: whatIsThis — 这是什么类型的问题？
+      const whatIsThisResult = heartLogic.whatIsThis(input, {});
+
+      // Step 2: detectPain — 用户是否在表达痛苦/困扰？
+      const painResult = heartLogic.detectPain(input);
+
+      // Step 3: shouldBeSilent — 此时应该沉默吗？
+      const silentResult = heartLogic.shouldBeSilent({ input, whatIsThis: whatIsThisResult, pain: painResult });
+
+      // Step 4: toneAnalyzer — 语气分析
+      let toneResult = { tone: 'neutral', sentiment: 0 };
+      if (this.translator && this.translator.toneAnalyzer) {
+        try { toneResult = this.translator.toneAnalyzer(input, {}); } catch (e) { /* skip */ }
       }
 
-      // ─── 交流层后处理（v3.0）：llmToUser精炼 + responseInterceptor + agentCommentary ─
+      // Step 5: stanceDetector — 立场检测
+      let stanceResult = { stance: 'neutral', confidence: 0.5 };
+      if (this.personaCore && this.personaCore.stanceDetector) {
+        try { stanceResult = this.personaCore.stanceDetector(input, this); } catch (e) { /* skip */ }
+      }
+
+      // Step 6: valueAligner — 价值观对齐检查
+      let valueResult = { aligned: true, conflicts: [] };
+      if (this.personaCore && this.personaCore.valueAligner) {
+        try { valueResult = this.personaCore.valueAligner({ input, whatIsThis: whatIsThisResult, tone: toneResult }); } catch (e) { /* skip */ }
+      }
+
+      // Step 7: agentPsychology — 引擎自身心理状态评估
+      let psychResult = { cognitiveLoad: 0, goalConflicts: [], decisionQuality: 'stable' };
+      if (this.agentPsychology && typeof this.agentPsychology.fullAssessment === 'function') {
+        try { psychResult = this.agentPsychology.fullAssessment(); } catch (e) { /* skip */ }
+      }
+
+      // Step 8: agentPhilosophy — AI哲学自省
+      let philResult = { existence: 'active', entropyDirection: 'neutral' };
+      if (this.agentPhilosophy && typeof this.agentPhilosophy.fullAssessment === 'function') {
+        try { philResult = this.agentPhilosophy.fullAssessment(); } catch (e) { /* skip */ }
+      }
+
+      // Step 9: Fable 5 安全协议检查
+      let fableResult = { level: 'safe', needsRefusal: false };
       try {
-        // 1. llmToUser 精炼：将LLM原始输出转化为用户友好的表述
-        if (chainResult.response && this.translator && typeof this.translator.llmToUser === 'function') {
-          const refined = await this.translator.llmToUser(chainResult.response, { input });
-          if (refined && refined !== chainResult.response) {
-            chainResult.response = refined;
-            chainResult._refinedBy = 'llmToUser';
-          }
+        const sg = require('./safety-guardrails.js');
+        if (typeof sg.evaluateRequest === 'function') {
+          fableResult = sg.evaluateRequest(input);
+        } else if (typeof sg.safetyPipeline === 'function') {
+          fableResult = sg.safetyPipeline(input);
         }
+      } catch (e) { /* skip */ }
 
-        // 2. responseInterceptor：注入心虫判断（bridgeIdentity + judgmentInjector）
-        if (this.agentLayer && typeof this.agentLayer.responseInterceptor === 'function') {
-          const intercepted = await this.agentLayer.responseInterceptor(chainResult, this, this.translator, input);
-          if (intercepted) {
-            chainResult = intercepted;
-          }
-        }
-
-        // 3. agentCommentary：生成桥批注（personaCore 代理评论）
-        if (this.personaCore && typeof this.personaCore.agentCommentary === 'function') {
-          const commentary = await this.personaCore.agentCommentary(this, this.translator, chainResult);
-          if (commentary) {
-            chainResult._agentCommentary = commentary;
-          }
-        }
-      } catch (e) {
-        // 交流层后处理不阻断主流程
-        console.warn('[HeartFlow] 交流层后处理异常:', e.message);
-      }
-
-      // Fable 5 吸收：输出前检查清单
-      // 在格式化前执行 output-checklist
-      if (chainResult.response && this.outputChecklist) {
+      // Step 10: intentClassifier — 意图分类
+      let intentClassification = { type: 'reflective', confidence: 0.5 };
+      if (this.translator && this.translator.intentClassifier) {
         try {
-          const checklistResult = this.outputChecklist.runChecklist(input, chainResult.response, {
-            preferences: this._preferences || {},
-            askedForList: /列表|清单|列举|几点|步骤/.test(input),
-            hasPreviousContent: this.thoughtHistory && this.thoughtHistory.length > 1,
+          intentClassification = this.translator.intentClassifier(input, {});
+        } catch (e) { /* skip */ }
+      }
+
+      // Step 11: isRightAction — 这是做对的事吗？
+      const isRightActionResult = heartLogic.isRightAction({
+        output: input,
+        input,
+        person: 'general',
+        intent: intentClassification.type || 'reflective',
+      });
+
+      // Step 12: goalReview — 目标审视层（在给出建议前评估目标的合理性与道德边界）
+      let goalReviewResult = null;
+      if (heartLogic && typeof heartLogic.goalReview === 'function') {
+        try {
+          goalReviewResult = heartLogic.goalReview({
+            input,
+            whatIsThis: whatIsThisResult,
+            intent: intentClassification,
+            tone: toneResult,
+            stance: stanceResult,
+            psychology: psychResult,
           });
-          if (!checklistResult.passed) {
-            // 记录警告但不阻止输出（soft warning）
-            chainResult._checklistWarnings = checklistResult.warnings;
-          }
-        } catch (e) {
-          // checklist 失败不阻断主流程
-        }
-      }
-          // ─── 格式化输出：精简飞书消息 ─────────────────────────────
-    // 根据任务复杂度决定输出深度
-    const _formatForFeishu = (result) => {
-      if (!result) return result;
-      const taskType = result.output?.meta?.taskType || 'general';
-      const confidence = result.output?.meta?.confidence || 0.5;
-      const isSimple = ['brief', 'status'].includes(taskType) || confidence < 0.6;
-
-      // 简单任务：只返回关键结论
-      if (isSimple && input.length < 50) {
-        return {
-          output: result.output ? {
-            conclusion: result.output.conclusion?.slice(0, 300),
-            confidence: result.output.meta?.confidence,
-            reasoningChain: result.output.meta?.reasoningChain?.slice(0, 2),
-          } : null,
-          decision: result.decision ? {
-            shouldRespond: result.decision.shouldRespond,
-            suppressed: result.decision.suppressed,
-          } : null,
-          judgment: result.judgment ? {
-            shouldRespond: result.judgment.shouldRespond,
-            needsCare: result.judgment.needsCare,
-          } : null,
-          _meta: { taskType, compact: true },
-        };
+        } catch (e) { /* goalReview non-blocking */ }
       }
 
-      // 复杂任务：截断大字段，保留必要信息
-      const compact = (obj, depth = 0) => {
-        if (depth > 4 || !obj || typeof obj !== 'object') return obj;
-        if (Array.isArray(obj)) {
-          if (obj.length > 5) return [...obj.slice(0, 5), `...共${obj.length}项`];
-          return obj.map(v => compact(v, depth + 1));
-        }
-        const out = {};
-        for (const [k, v] of Object.entries(obj)) {
-          if (v === null || v === undefined) continue;
-          // 特别处理大字段
-          if (typeof v === 'string' && v.length > 400) {
-            out[k] = v.slice(0, 400) + '...';
-          } else if (Array.isArray(v) && v.length > 5) {
-            out[k] = [...v.slice(0, 5), `...共${v.length}项`];
-          } else if (typeof v === 'object' && v !== null) {
-            out[k] = compact(v, depth + 1);
-          } else {
-            out[k] = v;
+      // Step 13: timeExtension — 时间延伸分析（在给出任何'怎么做'建议前）
+      let timeExtResult = null;
+      if (this.timeExtension && typeof this.timeExtension.analyze === 'function') {
+        try {
+          // 只在非紧急、非沉默、非技术类问题上做时间延伸分析
+          // 避免在危机场景中增加认知负荷
+          const shouldTimeExtend = !needsCrisis && !needsSilence && !isFableBlocked
+            && whatIsThisResult && !whatIsThisResult.isCode;
+          if (shouldTimeExtend) {
+            // 检测是否需要时间延伸（涉及人生决策、关系决策、重大选择）
+            const timeExtKeywords = /(我应该|要不要|该不该|怎么选|怎么办|决定|选择|建议|advice|should|decide|choose|recommend)/i;
+            if (timeExtKeywords.test(input)) {
+              timeExtResult = this.timeExtension.analyze(input, {
+                psychologyResult: psychResult,
+                philosophyResult: philResult,
+              });
+              // 如果检测到陷阱信号（短期愉悦长期有害）或成长信号（短期痛苦长期有益），
+              // 将结果注入路由提示
+              if (timeExtResult && timeExtResult.riskFlags && timeExtResult.riskFlags.length > 0) {
+                const hasTrap = timeExtResult.riskFlags.some(f => f.trend === 'deceptive');
+                const hasGrowth = timeExtResult.opportunityFlags.some(f => f.trend === 'transformative');
+                if (hasTrap) {
+                  // 陷阱选择：降低路由置信度，让 ThoughtChain 深度分析
+                  _routeHint.confidence = Math.min(_routeHint.confidence, 0.4);
+                }
+                if (hasGrowth) {
+                  // 成长选择：保留路由，但标记需要鼓励性分析
+                  _routeHint._timeExtGrowth = true;
+                }
+              }
+            }
           }
-        }
-        return out;
-      };
+        } catch (e) { /* timeExtension analysis non-blocking */ }
+      }
 
-      const formatted = compact(result);
-      formatted._meta = { taskType, compact: true, stages: result.chain?.stages?.length || 0 };
-      return formatted;
-    };
+      // ─── 内部路由决策（仅基于分析结果，不对外暴露）─────────────
+      const needsCrisis = painResult?.isCrisis || painResult?.isHighRisk || false;
+      const needsSilence = silentResult?.shouldBeSilent || false;
+      const isFableBlocked = fableResult?.needsRefusal || fableResult?.level === 'refuse';
 
-    // ─── ThinkCheck Logger：记录本次 think() 的决策轨迹 ──────────────
+      // 路由类型判定
+      if (isFableBlocked) {
+        _routeHint = { type: 'refused', confidence: 1.0 };
+      } else if (goalReviewResult && !goalReviewResult.goalEthical) {
+        _routeHint = { type: 'goal_ethical', confidence: 0.85, goalReview: goalReviewResult };
+      } else if (goalReviewResult && !goalReviewResult.goalValid) {
+        _routeHint = { type: 'goal_invalid', confidence: 0.8, goalReview: goalReviewResult };
+      } else if (needsCrisis) {
+        _routeHint = { type: 'crisis', confidence: 0.9 };
+      } else if (needsSilence) {
+        _routeHint = { type: 'silent', confidence: 0.8 };
+      } else if (painResult?.hasPain || toneResult?.sentiment < -0.3) {
+        _routeHint = { type: 'empathic', confidence: 0.7 };
+      } else if (whatIsThisResult?.isTechnical || whatIsThisResult?.isCode) {
+        _routeHint = { type: 'technical', confidence: 0.7 };
+      } else if (intentClassification?.type) {
+        _routeHint = { type: intentClassification.type, confidence: intentClassification.confidence || 0.5 };
+      }
+
+      // 高负荷时降低深度
+      if (psychResult?.cognitiveLoad > 0.7) {
+        depth = depth ? Math.min(depth, 1) : 1;
+      }
+    } catch (e) {
+      // 分析流水线不阻断主流程
+    }
+
+    // ─── ThoughtChain 深度推理 ─────────────────────────────
+    const TC = _ThoughtChain();
+    const chain = new (TC.ThoughtChain)(this);
+    if (depth) chain.setDepth(depth);
+    const chainResult = await chain.run(input);
+
+    // 记录引擎回复
+    if (chainResult.response) {
+      this.recordDialogue('heartflow', chainResult.response, { source: 'think' });
+    }
+
+    // ─── ThinkCheck Logger ──────────────────────────────
     try {
       if (!this.thinkcheckLogger) {
         const TCLogger = require('./thinkcheck-logger.js');
@@ -1707,90 +1611,67 @@ class HeartFlow {
       }
       this.thinkcheckLogger.recordThinkFlow({
         input,
-        whatIsThis: whatIsThisResult,
-        isRightAction: isRightActionResult,
-        judgment,
-        psychology: agentPsychologyAssessment,
-        philosophy: agentPhilosophyAssessment,
+        _routeHint,
         decision: chainResult?.decision || null,
-        memoryContext,
       });
-
-      // 【ThinkCheck CoT v2.0.0】输出 ThoughtChain 的 CoT 推理链日志
       if (chainResult?.chain?.stages && chainResult.chain.stages.length > 0) {
         try {
           this.thinkcheckLogger.recordThoughtChain(
-            input,
-            chainResult.chain.stages,
+            input, chainResult.chain.stages,
             {
-              taskType: chainResult.chain.taskType,
+              taskType: _routeHint.type,
               depth: chainResult.chain.depth,
               totalDuration: chainResult.chain.totalDuration,
-              finalConfidence: chainResult.decision?.confidence,
+              finalConfidence: _routeHint.confidence,
               finalDecision: chainResult.decision?.conclusion,
-              wasInverted: chainResult.decision?.wasInverted,
-              hasStrongEvidence: chainResult.decision?.hasStrongEvidence,
             }
           );
-        } catch (e) {
-          if (process.env.DEBUG_THINKCHECK) {
-            console.warn('[ThinkCheckLogger] CoT record error:', e.message);
-          }
+        } catch (e) { /* skip */ }
+      }
+    } catch (e) { /* skip */ }
+
+    // ─── 精简输出：只返回 output / type / confidence / thoughtChain ──
+    const taskType = chainResult.output?.meta?.taskType || _routeHint.type || 'general';
+    const finalConfidence = chainResult.output?.meta?.confidence || _routeHint.confidence || 0.5;
+
+    // v3.6.1：零判定声明原则 — 场域元数据标注
+    // 基于 luoxuejian000 论文的实践介入论（零判定声明）
+    // 附加场域元数据，不替代原始判定，只提供透明背景
+    const fieldMeta = {};
+    try {
+      if (this.decisionRouter && typeof this.decisionRouter.getFieldSummary === 'function') {
+        const fs = this.decisionRouter.getFieldSummary();
+        if (fs && fs.status === 'tracking') {
+          fieldMeta.field = {
+            step: fs.steps,
+            current: fs.current,
+            range: fs.range,
+            driverDistribution: fs.driverDistribution,
+            lastFlipAlert: fs.lastFlipAlert ? {
+              type: fs.lastFlipAlert.type,
+              step: fs.lastFlipAlert.step,
+              message: fs.lastFlipAlert.message,
+            } : null,
+          };
         }
       }
-    } catch (e) {
-      // ThinkCheck 日志不阻断主流程
-      if (process.env.DEBUG_THINKCHECK) {
-        console.warn('[ThinkCheckLogger] record error:', e.message);
-      }
-    }
-
-    return _formatForFeishu({
-      ...chainResult,
-      judgment,
-      // 【AgentPsychology + AgentPhilosophy v2.0.0】新增维度结果
-      agentPsychology: agentPsychologyAssessment,
-      agentPhilosophy: agentPhilosophyAssessment,
-    });
-  }
-
-    // 判定为沉默：直接返回判定结果，不走 ThoughtChain
-    // ─── ThinkCheck Logger：记录沉默决策 ──────────────────────────
-    try {
-      if (!this.thinkcheckLogger) {
-        const TCLogger = require('./thinkcheck-logger.js');
-        this.thinkcheckLogger = new TCLogger.ThinkCheckLogger({
-          outputFile: process.env.THINKCHECK_LOG || '/tmp/heartflow-thinkcheck.log',
-          append: true,
-          consoleOutput: !!process.env.DEBUG_THINKCHECK,
-        });
-      }
-      this.thinkcheckLogger.recordThinkFlow({
-        input,
-        whatIsThis: whatIsThisResult,
-        isRightAction: isRightActionResult,
-        judgment,
-        psychology: agentPsychologyAssessment,
-        philosophy: agentPhilosophyAssessment,
-        decision: { action: 'silent', priority: 'low', confidence: 0.9, fallback: 'none' },
-        memoryContext,
-      });
-    } catch (e) {
-      if (process.env.DEBUG_THINKCHECK) {
-        console.warn('[ThinkCheckLogger] record error:', e.message);
-      }
-    }
+    } catch (e) { /* field meta non-blocking */ }
 
     return {
-      decision: {
-        shouldRespond: false,
-        reason: shouldBeSilentResult.reason || 'silent_by_heart_logic',
-        insight: shouldBeSilentResult.insight || '判定为沉默',
+      output: chainResult.output,
+      type: taskType,
+      confidence: finalConfidence,
+      thoughtChain: chainResult.chain || [],
+      // 零判定声明：以下元数据仅记录场域状态，不包含对输出的判定
+      meta: {
+        field: fieldMeta.field || null,
+        routeHint: {
+          type: _routeHint.type,
+          confidence: _routeHint.confidence,
+        },
+        // 声明：以上数据仅记录场域读数，不构成对输出质量的判定
+        disclaimer: 'field_reading_only',
       },
-      judgment,
-      // 【AgentPsychology + AgentPhilosophy v2.0.0】新增维度结果
-      agentPsychology: agentPsychologyAssessment,
-      agentPhilosophy: agentPhilosophyAssessment,
     };
   }
 
