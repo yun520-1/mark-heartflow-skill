@@ -806,11 +806,20 @@ class HeartFlow {
       const { DesireCognition } = require('./desire-cognition.js');
       this.desireCognition = new DesireCognition();
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'desireCognition', error: e.message }); }
+    // ─── Three Poisons — 贪嗔痴三毒评估（v1.0.0 新增） ──────────────────
+    try {
+      this.threePoisons = require('./three-poisons.js');
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'threePoisons', error: e.message }); }
     // ─── Love Cognition — 爱情认知引擎（v0.1.0 新增） ──────────────────────
     try {
       const { LoveCognition } = require('./love-cognition.js');
       this.loveCognition = new LoveCognition();
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'loveCognition', error: e.message }); }
+    // ─── Cognition Ground — 底层认知地面（v1.0.0 新增） ─────────────────
+    try {
+      const { CognitionGround } = require('./cognition-ground.js');
+      this.cognitionGround = new CognitionGround({ heartFlow: this });
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'cognitionGround', error: e.message }); }
     this._registerModules();
     this.started = true;
   }
@@ -907,6 +916,10 @@ class HeartFlow {
       'desireCognition',
       // v0.1.0 — 爱情认知引擎
       'loveCognition',
+      // v1.0.0 — 贪嗔痴三毒评估
+      'threePoisons',
+      // v1.0.0 — 底层认知地面
+      'cognitionGround',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -1191,6 +1204,18 @@ class HeartFlow {
     'desireCognition.analyzeWantingLikingDelta', 'desireCognition.computeRPE',
     'desireCognition.assessAddictionRisk', 'desireCognition.predictDesireEvolution',
     'desireCognition.analyzeValenceArousal', 'desireCognition.detectCueTriggeredUrge',
+    // v1.3.0 — 七情认知计算升级（emotion-system / EmoBank / COSMIC / HeartBench）
+    'desireCognition.analyzeCognitiveAppraisal', 'desireCognition.analyzePADCN',
+    'desireCognition.analyzeDriveSatisfaction', 'desireCognition.mapEmotionToPolicyBias',
+    'desireCognition.analyzeSocialObjectEmotion', 'desireCognition.analyzeConversationEmotion',
+    'desireCognition.evaluateEmotionalIntelligence', 'desireCognition.integrateChineseSevenEmotions',
+    // v1.0.0 — 贪嗔痴三毒评估
+    'threePoisons.analyzeGreed', 'threePoisons.analyzeHatred', 'threePoisons.analyzeDelusion',
+    'threePoisons.analyzeThreePoisons', 'threePoisons.analyzePoisonsDrivenFate',
+    'threePoisons.detectPoisonInteraction',
+    // v1.0.0 — 底层认知地面
+    'cognitionGround.mapFuel', 'cognitionGround.mapDesire', 'cognitionGround.computePoisons',
+    'cognitionGround.map', 'cognitionGround.snapshot', 'cognitionGround.reset',
   ]);
 
   /**

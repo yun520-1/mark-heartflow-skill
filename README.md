@@ -1,7 +1,7 @@
-# HeartFlow v3.7.0
+# HeartFlow v3.7.1
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.7.0-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-3.7.1-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
@@ -231,10 +231,10 @@ MIT
 
 <a id="chinese-version"></a>
 
-# 心虫（HeartFlow）v3.6.1
+# 心虫（HeartFlow）v3.7.1
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.6.1-blue?style=flat-square" alt="版本" />
+  <img src="https://img.shields.io/badge/version-3.7.1-blue?style=flat-square" alt="版本" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="发布" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="最后提交" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="许可" />
