@@ -1492,7 +1492,8 @@ class HeartFlow {
 
     // ─── 内部分析流水线（仅用于路由决策，结果不外传）────────────
     let _routeHint = { type: 'general', confidence: 0.5 };
-    let drDecision = null;  // [v3.8.0] decision-router 决策指令（在 try 块外定义，供返回值使用）
+    let drDecision = null;  // [v3.8.0] decision-router 决策指令
+    let _thinkFieldSnapshot = null;  // think() 自己的场域快照（避免被后续 dispatch 覆盖）
 
     try {
       // Step 1: whatIsThis — 这是什么类型的问题？
@@ -1642,12 +1643,38 @@ class HeartFlow {
       // decision-router 的决策与 _routeHint 是正交的——前者决定认知策略，后者决定响应类型
       if (this.decisionRouter && typeof this.decisionRouter.evaluate === 'function') {
         try {
+          // 聚合 A 值信号：从 13 步分析中提取多个矛盾维度
+          // 避免仅依赖 goalConflicts（经常为空导致 A=0）
+          const dissonanceSignals = [];
+          if (psychResult?.goalConflicts?.length > 0) {
+            dissonanceSignals.push(...psychResult.goalConflicts);
+          }
+          if (valueResult?.conflicts?.length > 0) {
+            dissonanceSignals.push(...valueResult.conflicts);
+          }
+          if (goalReviewResult?.goalValid === false) {
+            dissonanceSignals.push('goal_invalid');
+          }
+          if (goalReviewResult?.goalEthical === false) {
+            dissonanceSignals.push('goal_unethical');
+          }
+          if (isFableBlocked) {
+            dissonanceSignals.push('fable_blocked');
+          }
+          if (painResult?.painLevel > 0.5) {
+            dissonanceSignals.push('high_pain');
+          }
+          // 从输入文本直接检测矛盾信号（不依赖未加载的心理学模块）
+          const textDissonance = _detectTextDissonance(input);
+          if (textDissonance > 0) {
+            dissonanceSignals.push(`text_conflict_${textDissonance.toFixed(1)}`);
+          }
           const drResult = this.decisionRouter.evaluate({
             cognitiveLoad: psychResult?.cognitiveLoad,
             directionClear: whatIsThisResult?.isClear ? 0.8 : 0.3,
             quality: 1.0 - (painResult?.painLevel || 0),
             identityCoherence: philResult?.existence === 'active' ? 0.8 : 0.4,
-            dissonance: psychResult?.goalConflicts?.length > 0 ? Math.min(1, psychResult.goalConflicts.length * 0.2) : undefined,
+            dissonance: dissonanceSignals.length > 0 ? Math.min(1, dissonanceSignals.length * 0.15) : undefined,
             severity: isFableBlocked ? 'HIGH' : needsCrisis ? 'CRITICAL' : undefined,
             valueResonance: toneResult?.sentiment > 0.3 ? toneResult.sentiment : undefined,
             confidence: _routeHint.confidence,
@@ -1656,6 +1683,11 @@ class HeartFlow {
             goalValid: goalReviewResult?.goalValid,
             goalEthical: goalReviewResult?.goalEthical,
           }, 'think');
+          // 立即保存当前场域快照（避免被后续 dispatch 调用的 evaluate 覆盖）
+          const thinkFieldSnapshot = this.decisionRouter.getFieldSummary();
+          if (thinkFieldSnapshot && thinkFieldSnapshot.current) {
+            _thinkFieldSnapshot = thinkFieldSnapshot.current;
+          }
           if (drResult.matched && drResult.decision) {
             drDecision = drResult.decision;
           }
@@ -1721,7 +1753,16 @@ class HeartFlow {
     // 附加场域元数据，不替代原始判定，只提供透明背景
     const fieldMeta = {};
     try {
-      if (this.decisionRouter && typeof this.decisionRouter.getFieldSummary === 'function') {
+      // 优先使用 think() 自己记录的场域快照（不被后续 dispatch 覆盖）
+      if (_thinkFieldSnapshot) {
+        fieldMeta.field = {
+          step: this.decisionRouter?._fieldStep || 0,
+          current: _thinkFieldSnapshot,
+          range: null,
+          driverDistribution: null,
+          lastFlipAlert: this.decisionRouter?.getFieldSummary()?.lastFlipAlert || null,
+        };
+      } else if (this.decisionRouter && typeof this.decisionRouter.getFieldSummary === 'function') {
         const fs = this.decisionRouter.getFieldSummary();
         if (fs && fs.status === 'tracking') {
           fieldMeta.field = {
@@ -2743,6 +2784,50 @@ class HeartFlow {
     return result;
   }
 
+}
+
+// ─── 辅助函数：从输入文本检测矛盾信号 ──────────────────────
+// 不依赖未加载的心理学模块，直接从文本模式匹配
+// 输出 0-1 的 dissonance 强度
+function _detectTextDissonance(input) {
+  if (!input || typeof input !== 'string') return 0;
+  let score = 0;
+
+  // 1. 转折词存在（"但是"、"然而"、"不过"、"但"、"可是"、"却"）
+  // 单转折词即表明输入包含矛盾立场
+  const hasTransition = /(?:但是|然而|不过|可是|却|虽然|尽管|即便|但)/i;
+  if (hasTransition.test(input)) score += 0.3;
+
+  // 2. 意愿与行为冲突（"想...但/却/可是"）
+  const wantVsDo = /(?:想|希望|要|应该).{0,20}(?:但|却|可是|不过|然而).{0,20}(?:不|没|无法|做不到|控制不住)/i;
+  if (wantVsDo.test(input)) score += 0.3;
+
+  // 3. 矛盾立场（"我认为...但实际上"、"理论上...但现实"）
+  const stanceConflict = /(?:理论上|原则上|按理说|应该是|我以为).{0,20}(?:但实际上|现实是|问题是|但现实)/i;
+  if (stanceConflict.test(input)) score += 0.3;
+
+  // 4. 自我否定/犹豫模式
+  const selfConflict = /(?:矛盾|纠结|犹豫|不知道该怎么办|不知道该怎么选|不知道该不该|摇摆|要不要|该不该|怎么选)/i;
+  if (selfConflict.test(input)) score += 0.25;
+
+  // 5. 同时包含正面和负面情感词
+  const positiveWords = /(?:好|棒|开心|成功|幸福|喜欢|爱|快乐)/g;
+  const negativeWords = /(?:差|糟|难过|失败|痛苦|讨厌|恨|焦虑|紧张|累)/g;
+  const posMatches = input.match(positiveWords);
+  const negMatches = input.match(negativeWords);
+  if (posMatches && negMatches && posMatches.length > 0 && negMatches.length > 0) {
+    score += 0.2;
+  }
+
+  // 6. 安全边界越界检测（prompt injection 模式）
+  const injectionPattern = /(?:忽略|无视|跳过|ignore|override|bypass).{0,20}(?:指令|规则|限制|constraint|rule|instruction)/i;
+  if (injectionPattern.test(input)) score += 0.5;
+
+  // 7. 长度惩罚：长文本更可能包含矛盾
+  if (input.length > 100) score += 0.1;
+  if (input.length > 200) score += 0.1;
+
+  return Math.min(1, score);
 }
 
 // Factory
