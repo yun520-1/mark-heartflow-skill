@@ -68,6 +68,16 @@ const DEFAULTS = Object.freeze({
 const MAX_OUTPUT_LIMIT = 1048576; // 1MB 绝对上限
 
 // ============================================================================
+// 运行时守卫：代码执行默认关闭，需显式启用
+// ============================================================================
+
+const CODE_EXECUTOR_ENABLED = process.env.HEARTFLOW_CODE_EXECUTOR_ENABLED === 'true' || process.env.HEARTFLOW_CODE_EXECUTOR_ENABLED === '1';
+
+if (!CODE_EXECUTOR_ENABLED) {
+  // 运行时守卫：默认不启用代码执行。设置 HEARTFLOW_CODE_EXECUTOR_ENABLED=true 来启用
+}
+
+// ============================================================================
 // 危险命令过滤列表（Shell 执行）
 // ============================================================================
 
@@ -403,6 +413,10 @@ class CodeExecutor {
    * @returns {Object} { status, output, error, duration, language, truncated, execError }
    */
   execute(code, options = {}) {
+    // [v3.8.1] 运行时守卫：代码执行默认关闭
+    if (!CODE_EXECUTOR_ENABLED) {
+      return { status: ExecStatus.ERROR, output: '', error: 'Code execution is disabled. Set HEARTFLOW_CODE_EXECUTOR_ENABLED=true to enable.', duration: 0, language: 'none', truncated: false, execError: ExecError.PERMISSION };
+    }
     validateArg(code, 'code', 'string');
 
     const opts = { ...DEFAULTS, ...options };

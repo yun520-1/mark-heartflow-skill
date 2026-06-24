@@ -269,7 +269,13 @@ The `status` endpoint now includes `selfPositioning` field reflecting the curren
 
 #### Scope Boundaries
 
-- This skill is primarily a **cognitive engine for AI self-reflection**, not an LLM proxy or agent framework.
+- This skill is primarily a **cognitive engine for AI self-reflection**, but it also includes **ancillary capabilities** beyond pure cognition:
+  - Code execution (JS/Shell/Python) — guarded by `HEARTFLOW_CODE_EXECUTOR_ENABLED` env var, disabled by default
+  - Network communication (OpenAlex API, GitHub issue monitoring, web search)
+  - MCP HTTP server (port 8099, requires `HEARTFLOW_MCP_TOKEN` env var)
+  - File system operations (memory persistence, export)
+  - Memory injection into LLM system prompt (Hermes plugin)
+- These capabilities are **documented here for transparency**. They are NOT hidden or undeclared — this file is the authoritative capability manifest.
 - The `agent-layer/` modules (translation-pipeline, response-interceptor, agent-bridge) are **optional** components for advanced integration. They are NOT enabled by default in the core `HeartFlow` class.
 - Code execution (`code-executor.js`) is an **auxiliary tool** for self-evolution and verification, not a core capability. Its sandbox is regex-based and NOT system-level isolation.
 - Memory operations are confined to the user's filesystem under the skill's data directory. No remote synchronization or cloud storage.

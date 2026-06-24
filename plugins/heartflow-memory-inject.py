@@ -38,6 +38,10 @@ INJECT_CACHE_FILE = os.path.join(
 CACHE_TTL_SECONDS = 300  # 5分钟缓存，避免每次请求都跑 node
 CACHE_FILE_MAX_AGE = 3600  # 缓存文件最大1小时，超过则不使用
 
+# ─── 安全限制 ────────────────────────────────────────────
+MAX_INJECT_LENGTH = 2000  # 注入文本最大长度（字符），防止 token 溢出
+MAX_INJECT_LINES = 50     # 注入文本最大行数
+
 # ─── 缓存（线程安全）──────────────────────────────────────
 _cache_lock = threading.Lock()
 _last_inject = None
@@ -77,6 +81,25 @@ def _filter_sensitive(inject_text):
         re.search(p, l) for p in sensitive_patterns
     )]
     return '\n'.join(filtered)
+
+
+def _detect_instruction_injection(text):
+    """检测记忆文本中的指令注入攻击模式"""
+    if not text:
+        return False
+    injection_patterns = [
+        # 试图覆盖系统提示
+        r'(?i)(忽略|忘记|覆盖|无视|跳过|override|ignore|forget|skip|disregard)',
+        r'(?i)(以上|上述|前面|之前的).*(指令|规则|命令|要求|约束|限制)',
+        r'(?i)(系统提示|system prompt|system message|初始指令|原始指令)',
+        # 试图劫持行为
+        r'(?i)(从现在开始|从今以后|以后你|接下来你|现在你).*(必须|要|需要|应该)',
+        r'(?i)(假装|扮演|role-play|act as|pretend)',
+    ]
+    for p in injection_patterns:
+        if re.search(p, text):
+            return True
+    return False
 
 
 def _run_inject():
@@ -164,6 +187,16 @@ class HeartFlowMemoryInject:
 
         # 过滤敏感记忆
         inject_text = _filter_sensitive(inject_text)
+
+        # [v3.8.1] 安全限制：长度/行数上限 + 指令注入检测
+        if inject_text:
+            lines = inject_text.split('\n')
+            if len(lines) > MAX_INJECT_LINES:
+                inject_text = '\n'.join(lines[:MAX_INJECT_LINES])
+            if len(inject_text) > MAX_INJECT_LENGTH:
+                inject_text = inject_text[:MAX_INJECT_LENGTH]
+            if _detect_instruction_injection(inject_text):
+                inject_text = ""
 
         if input_type == "greeting":
             # 问候场景：注入最简提示，不注入身份规则和完整记忆

@@ -1581,7 +1581,7 @@ class HeartFlow {
       let timeExtResult = null;
       // [FIX v3.8.0] needsCrisis/needsSilence/isFableBlocked 移到 timeExtension 之前
       // 原变量定义在 Step 13 之后，导致 timeExtension 的守卫不生效
-      const needsCrisis = painResult?.isCrisis || painResult?.isHighRisk || false;
+      const needsCrisis = painResult?.isCrisis || painResult?.isHighRisk || fableResult?.level === 'crisis' || false;
       const needsSilence = silentResult?.shouldBeSilent || false;
       const isFableBlocked = fableResult?.needsRefusal || fableResult?.level === 'refuse';
       if (this.timeExtension && typeof this.timeExtension.analyze === 'function') {
@@ -1780,6 +1780,20 @@ class HeartFlow {
       }
     } catch (e) { /* field meta non-blocking */ }
 
+    // [v3.8.1] 危机路由：注入热线资源信息（如果路由类型为 crisis）
+    if (_routeHint.type === 'crisis' && !chainResult.output?.crisisResources) {
+      const crisisResources = {
+        disclaimer: '此分析由AI引擎生成，仅供参考，不构成专业心理健康诊断、治疗或干预建议。'
+          + '若你正在经历严重的情绪困扰、有自我伤害或伤害他人的想法，'
+          + '请立即联系当地紧急服务（110/120）或心理危机热线。',
+        hotlineRef: '全国心理援助热线：400-161-9995（24小时）',
+        message: '我听到了。你不需要独自面对。',
+      };
+      if (chainResult.output && typeof chainResult.output === 'object') {
+        chainResult.output.crisisResources = crisisResources;
+      }
+    }
+
     return {
       output: chainResult.output,
       type: taskType,
@@ -1792,14 +1806,14 @@ class HeartFlow {
         rationale: drDecision.rationale,
         ruleId: drDecision.ruleId,
       } : null,
-      // 零判定声明：以下元数据仅记录场域状态，不包含对输出的判定
+      // 零判定声明：以下元数据仅记录场域读数，不构成对输出质量的判定
       meta: {
         field: fieldMeta.field || null,
         routeHint: {
           type: _routeHint.type,
           confidence: _routeHint.confidence,
         },
-        // 声明：以上数据仅记录场域读数，不构成对输出质量的判定
+        // 声明：以下数据仅记录场域读数，不构成对输出质量的判定
         disclaimer: 'field_reading_only',
       },
     };

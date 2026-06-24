@@ -30,6 +30,9 @@ __pycache__/
 # 本地 launchd 配置（含绝对路径，不上传）
 mcp/*.plist
 
+# 隐私：微信联系人截图（含个人名片和群聊信息）
+assets/wechat-contacts/
+
 # 升级产物
 src/core/upgrades/
 

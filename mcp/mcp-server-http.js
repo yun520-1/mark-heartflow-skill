@@ -24,10 +24,12 @@ const HEARTFLOW_PATH = path.join(HF_DIR, 'src', 'core', 'heartflow.js');
 
 // 安全配置
 // 强制认证 — 必须设置 HEARTFLOW_MCP_TOKEN 环境变量
-const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null;
+const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN;
 if (!AUTH_TOKEN) {
-  console.warn(`[MCP] ⚠️ 未设置 HEARTFLOW_MCP_TOKEN，认证已禁用。`);
-  console.warn(`[MCP]    生产环境必须设置此环境变量。`);
+  console.error(`[MCP] ❌ 未设置 HEARTFLOW_MCP_TOKEN 环境变量，拒绝启动。`);
+  console.error(`[MCP]    生产环境必须设置此环境变量。`);
+  console.error(`[MCP]    设置方式：export HEARTFLOW_MCP_TOKEN=your-secure-token`);
+  process.exit(1);
 }
 
 // ─── 时间安全的 token 比较（防止 timing attack）───
