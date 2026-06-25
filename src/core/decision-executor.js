@@ -171,11 +171,25 @@ class DecisionExecutor {
    * PAUSE: 减速/暂停
    * - 降低深度到 1（浅层推理）
    * - 设置 routeHint.confidence 为 0.3（低信心，谨慎输出）
+   * - 如果输入含质疑信号，设置 routeHint.type 为 'self-review'（自我审查模式）
    */
   _handlePause(ctx) {
     ctx.depth = 1;
     if (ctx._routeHint) {
       ctx._routeHint.confidence = 0.3;
+      // 检测质疑信号：如果是收到质疑/批评，切换到自我审查模式
+      if (ctx.input && typeof ctx.input === 'string') {
+        const challengePatterns = [
+          /质疑|为什么.*没|为什么.*不|为什么.*错|你的问题|你.*(错|不对|有问题)/i,
+          /不是.*(态度|这个|这样)/i,
+          /严重.*问题|底层.*问题/i,
+          /彻底.*检查|彻底.*重构/i,
+          /你.*说.*不对|你.*做.*不对|你.*回答.*不对/i,
+        ];
+        if (challengePatterns.some(p => p.test(ctx.input))) {
+          ctx._routeHint.type = 'self-review';
+        }
+      }
     }
     ctx.flags = ctx.flags || {};
     ctx.flags.paused = true;

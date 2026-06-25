@@ -227,6 +227,34 @@ class DecisionRouter {
         rationale: (r) => `瞬时错误: ${r.reason || ''}`,
         fallback: DECISION.HOLD,
       },
+      // ── 质疑/纠错类（优先级 90，仅低于 HEAL）──
+      {
+        // 收到质疑/纠错/批评时，选择认错路径，不选择解释/防御路径
+        id: 'challenge-received',
+        match: (r) => {
+          // 检测任何形式的质疑信号：用户指出错误、说"不对"、"有问题"、"错了"
+          const challengeSignals = [
+            r.challenge, r.correction, r.criticism, r.质疑, r.纠正,
+          ];
+          if (challengeSignals.some(s => s === true || s === 'true')) return true;
+          // 文本匹配：用户输入中包含质疑关键词
+          if (r.inputText && typeof r.inputText === 'string') {
+            const challengePatterns = [
+              /质疑|为什么.*没|为什么.*不|为什么.*错|你的问题|你.*(错|不对|有问题)/i,
+              /不是.*(态度|这个|这样)/i,
+              /严重.*问题|底层.*问题/i,
+              /彻底.*检查|彻底.*重构/i,
+              /你.*说.*不对|你.*做.*不对|你.*回答.*不对/i,
+            ];
+            return challengePatterns.some(p => p.test(r.inputText));
+          }
+          return false;
+        },
+        decision: DECISION.PAUSE,
+        confidence: (r) => 0.9,
+        rationale: (r) => `收到质疑/纠错信号，暂停解释路径，进入自我审查状态`,
+        fallback: DECISION.HOLD,
+      },
       // ── 价值/伦理类 ──
       {
         id: 'value-resonance',
