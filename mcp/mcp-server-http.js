@@ -19,21 +19,55 @@ const crypto = require('crypto');
 // 配置
 // ═══════════════════════════════════════════════
 const PORT = parseInt(process.argv[2] === '--port' ? process.argv[3] : process.env.MCP_PORT || '8099', 10);
-const HF_DIR = path.join(process.env.HOME, '.hermes', 'skills', 'ai', 'mark-heartflow-skill');
+
+// ─── HeartFlow 根目录自动检测 ───────────────────────────────
+function resolveHFDir() {
+  // 1. 优先使用环境变量
+  if (process.env.HEARTFLOW_SKILL_DIR) return process.env.HEARTFLOW_SKILL_DIR;
+  if (process.env.HEARTFLOW_DIR) return process.env.HEARTFLOW_DIR;
+
+  // 2. 自动检测：用 __dirname 向上查找 src/core/heartflow.js
+  let dir = __dirname;
+  for (let i = 0; i < 10; i++) {
+    const candidate = path.join(dir, 'src', 'core', 'heartflow.js');
+    if (fs.existsSync(candidate)) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+
+  // 3. Fallback 到 ~/.hermes/skills/heartflow/
+  return path.join(process.env.HOME, '.hermes', 'skills', 'heartflow');
+}
+const HF_DIR = resolveHFDir();
 const HEARTFLOW_PATH = path.join(HF_DIR, 'src', 'core', 'heartflow.js');
 
+// ─── 版本号读取（统一入口）────────────────────────────────
+function getVersion() {
+  try {
+    const vFile = path.join(HF_DIR, 'VERSION');
+    if (fs.existsSync(vFile)) return fs.readFileSync(vFile, 'utf8').trim();
+  } catch (_) {}
+  try {
+    const pkgFile = path.join(HF_DIR, 'package.json');
+    if (fs.existsSync(pkgFile)) {
+      const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf8'));
+      if (pkg.version) return pkg.version;
+    }
+  } catch (_) {}
+  return 'unknown';
+}
+
 // 安全配置
-// 强制认证 — 必须设置 HEARTFLOW_MCP_TOKEN 环境变量
-const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN;
+// 可选认证 — 设置 HEARTFLOW_MCP_TOKEN 环境变量以启用认证
+const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null;
 if (!AUTH_TOKEN) {
-  console.error(`[MCP] ❌ 未设置 HEARTFLOW_MCP_TOKEN 环境变量，拒绝启动。`);
-  console.error(`[MCP]    生产环境必须设置此环境变量。`);
-  console.error(`[MCP]    设置方式：export HEARTFLOW_MCP_TOKEN=your-secure-token`);
-  process.exit(1);
+  console.error(`[MCP] HEARTFLOW_MCP_TOKEN not set. Running without authentication (localhost only).`);
 }
 
 // ─── 时间安全的 token 比较（防止 timing attack）───
 function safeCompare(provided, expected) {
+  if (expected === null) return true; // 无 token 时跳过认证
   if (!provided || !expected) return false;
   const a = Buffer.from(String(provided), 'utf8');
   const b = Buffer.from(String(expected), 'utf8');
@@ -72,7 +106,7 @@ setInterval(() => {
 }, 120000);
 
 // 从 VERSION 文件读取版本
-try { version = fs.readFileSync(path.join(HF_DIR, 'VERSION'), 'utf8').trim(); } catch (e) {}
+version = getVersion();
 
 // ═══════════════════════════════════════════════
 // MCP 工具定义
@@ -174,9 +208,8 @@ function initHeartFlow() {
   }
 
   try {
-    // 读版本
-    try { version = fs.readFileSync(path.join(HF_DIR, 'VERSION'), 'utf8').trim(); }
-    catch (e) { version = 'unknown'; }
+    // 读版本（由外层 getVersion() 统一处理，此处仅确保最新）
+    version = getVersion();
 
     const { HeartFlow } = require(HEARTFLOW_PATH);
     heartflow = new HeartFlow({ rootPath: HF_DIR });
@@ -597,11 +630,8 @@ async function handleRequest(request) {
       if (!handler) throw { code: -32601, message: `Method not found: ${name}` };
 
       let result;
-      if (handler.constructor.name === 'AsyncFunction') {
-        result = await handler(args);
-      } else {
-        result = handler(args);
-      }
+      result = handler(args);
+      if (result && typeof result.then === 'function') result = await result;
       return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }], isError: false };
     }
 
@@ -617,8 +647,8 @@ async function handleRequest(request) {
 // HTTP Server（SSE 传输）
 // ═══════════════════════════════════════════════
 
-// SSE 客户端列表
-const sseClients = new Set();
+// SSE 客户端列表 (sessionId → response)
+const sseClients = new Map();
 
 function sendSSE(client, data) {
   client.write(`data: ${JSON.stringify(data)}\n\n`);
@@ -675,26 +705,25 @@ const server = http.createServer((req, res) => {
       'X-Accel-Buffering': 'no'
     });
 
-    // 发送端点信息
-    sendEvent(res, 'endpoint', {
-      protocolVersion: '2024-11-05',
-      capabilities: { tools: {}, logging: {} },
-      serverInfo: { name: 'heartflow-mcp', version }
-    });
+    // 生成 sessionId
+    const sessionId = crypto.randomUUID();
 
-    // 注册客户端
-    sseClients.add(res);
-    console.error(`[HeartFlow MCP] SSE 客户端已连接 (共 ${sseClients.size} 个)`);
+    // 发送端点信息 — MCP 规范要求纯 URL 字符串
+    sendEvent(res, 'endpoint', '/mcp?sessionId=' + sessionId);
+
+    // 注册客户端 (sessionId → response)
+    sseClients.set(sessionId, res);
+    console.error(`[HeartFlow MCP] SSE 客户端已连接 sessionId=${sessionId} (共 ${sseClients.size} 个)`);
 
     // 心跳保持连接
     const heartbeat = setInterval(() => {
-      sendEvent(res, 'ping', {});
+      try { sendEvent(res, 'ping', {}); } catch (e) {}
     }, 30000);
 
     req.on('close', () => {
-      sseClients.delete(res);
+      sseClients.delete(sessionId);
       clearInterval(heartbeat);
-      console.error(`[HeartFlow MCP] SSE 客户端断开 (剩余 ${sseClients.size} 个)`);
+      console.error(`[HeartFlow MCP] SSE 客户端断开 sessionId=${sessionId} (剩余 ${sseClients.size} 个)`);
     });
 
     return;
@@ -702,6 +731,9 @@ const server = http.createServer((req, res) => {
 
   // ─── JSON-RPC 端点 ───
   if (pathname === '/mcp' && req.method === 'POST') {
+    // 从 URL 中获取 sessionId
+    const sessionId = url.searchParams.get('sessionId');
+
     // 请求超时 30s
     req.setTimeout(30000, () => {
       res.writeHead(408);
@@ -730,24 +762,48 @@ const server = http.createServer((req, res) => {
     });
 
     req.on('end', async () => {
-      res.writeHead(200, {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': 'http://localhost',  // SkillSpector fix: 限制 CORS 来源
-      });
-
       try {
         const request = JSON.parse(body);
         if (!request || typeof request !== 'object' || Array.isArray(request)) {
+          res.writeHead(200, {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': 'http://localhost',
+          });
           res.end(makeError(null, -32600, 'Invalid Request: expected JSON-RPC object'));
           return;
         }
         const result = await handleRequest(request);
         if (result !== null) {
-          res.end(makeResponse(request.id, result));
+          // 找到对应的 SSE 客户端，通过 SSE 发送结果
+          if (sessionId && sseClients.has(sessionId)) {
+            const client = sseClients.get(sessionId);
+            sendEvent(client, 'message', makeResponse(request.id, result));
+            res.writeHead(202, {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': 'http://localhost',
+            });
+            res.end(JSON.stringify({ jsonrpc: '2.0', id: request.id, result: 'accepted' }) + '\n');
+          } else {
+            // 没有 SSE 客户端，直接返回
+            res.writeHead(200, {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': 'http://localhost',
+            });
+            res.end(makeResponse(request.id, result));
+          }
         } else {
+          // notification — 202 accepted
+          res.writeHead(202, {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': 'http://localhost',
+          });
           res.end(JSON.stringify({ jsonrpc: '2.0', id: request.id }) + '\n');
         }
       } catch (err) {
+        res.writeHead(200, {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': 'http://localhost',
+        });
         res.end(makeError(null, err.code || -32603, err.message || 'Internal error'));
       }
     });
@@ -786,7 +842,7 @@ server.on('error', (err) => {
 function shutdown() {
   console.error('[HeartFlow MCP] 关闭中...');
   // 关闭所有 SSE 连接
-  for (const client of sseClients) {
+  for (const [sessionId, client] of sseClients) {
     try { client.end(); } catch (e) {}
   }
   sseClients.clear();
