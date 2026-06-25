@@ -1896,7 +1896,9 @@ class HeartFlow {
           }
 
           // [v4.0] 用 field-injector 增强输入信号质量
+          // 传 inputText 给 decision-router 用于质疑/纠错信号检测
           const fieldData = this.fieldInjector ? this.fieldInjector.inject({
+            inputText: input,  // 用户原始输入，供 challenge-received 规则匹配
             cognitiveLoad: psychResult?.cognitiveLoad,
             directionClear: whatIsThisResult?.isClear ? 0.8 : 0.3,
             quality: 1.0 - (painResult?.painLevel || 0),
@@ -1909,7 +1911,7 @@ class HeartFlow {
             success: !needsCrisis && !needsSilence && !isFableBlocked,
             goalValid: goalReviewResult?.goalValid,
             goalEthical: goalReviewResult?.goalEthical,
-          }, 'think') : {};
+          }, 'think') : { inputText: input };
 
           const drResult = this.decisionRouter.evaluate(fieldData, 'think');
           // 立即保存当前场域快照（避免被后续 dispatch 调用的 evaluate 覆盖）
@@ -2039,6 +2041,23 @@ class HeartFlow {
         : null;
       const hasPain = painResult?.hasPain || false;
       const painLevel = painResult?.painLevel || 0;
+
+      // [v4.1.2] self-review 模式：收到质疑/纠错时，输出自我审查而非分析
+      if (_routeHint.type === 'self-review') {
+        return {
+          conclusion: `收到质疑/纠错信号。暂停解释路径，进入自我审查状态。`,
+          analysis: {
+            perceivedType: 'self-review',
+            emotionSignal,
+            modulesRun: 0,
+            confidence: finalConfidence,
+            meta: {
+              routeHint: { type: 'self-review', confidence: 0.3 },
+              decision: drDecision ? { type: drDecision, ruleId: 'challenge-received' } : null,
+            },
+          },
+        };
+      }
 
       // 统计运行模块数
       let modulesRun = 0;
