@@ -1,7 +1,7 @@
 # HeartFlow v4.0
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-4.0.0-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-4.1.2-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
@@ -142,6 +142,7 @@ After install, HeartFlow's cognitive engine is ready. No model downloads, no API
 
 - `node bin/cli.js status` — engine health check
 - `node bin/cli.js chat` — interactive mode with slash commands
+- `node bin/cli.js --chat "<message>"` — single-shot cognitive analysis
 - `node bin/cli.js --help` — available commands
 - `npm test` — run integration tests
 - `npm run verify` — full installation verification
@@ -228,24 +229,45 @@ npm test
 
 ---
 
+---
+
 ## MCP Server
 
-HeartFlow includes an **MCP (Model Context Protocol) server** for AI agent integration. This allows AI agents (like Claude, Cursor, or custom LLM hosts) to communicate with HeartFlow using the standard MCP protocol.
+HeartFlow includes an **MCP (Model Context Protocol) server** for AI agent integration.
 
-### How to start
+### Quick start
 
 ```bash
+# Start the MCP server (auto-detects port, starts at 8099)
 node mcp/mcp-server-http.js
+
+# Connect from Hermes
+hermes mcp add heartflow --url http://localhost:8099/mcp
 ```
 
-The server listens on **port 8099** by default.
+The server auto-detects an available port (8099-8105). Set `MCP_PORT` env var for a specific port:
+```bash
+MCP_PORT=9090 node mcp/mcp-server-http.js
+```
 
 ### What it provides
 
-- **MCP protocol endpoint** — compatible with any MCP client
-- **Cognitive analysis tools** — expose HeartFlow's `think()`, memory, and decision systems as callable tools
-- **Real-time cognitive state** — query HeartFlow's current emotional, desire, and judgment state
-- **Seamless integration** — plug into any AI agent that supports the MCP standard
+- **16 MCP tools** — think, emotion, memory, decision router, dream, psychology, self-heal, etc.
+- **SSE transport** — compatible with any MCP client
+- **No auth by default** — set `HEARTFLOW_MCP_TOKEN` for token-based auth
+
+### Troubleshooting
+
+```bash
+# Check if server is running
+curl http://localhost:8099/health
+
+# Port conflict? Use a different port
+node mcp/mcp-server-http.js --port 9090
+
+# Auth issue? Make sure HEARTFLOW_MCP_TOKEN matches
+echo $HEARTFLOW_MCP_TOKEN
+```
 
 ### Example usage
 
@@ -309,7 +331,7 @@ Type any message to have it processed through HeartFlow's full cognitive pipelin
 
 ## Project Status
 
-- **Version**: 4.1.0
+- **Version**: 4.1.2
 - **Modules**: 59 (56 core + 3 v4.0)
 - **Tests**: 11/11 passing (integration tests)
 - **License**: MIT

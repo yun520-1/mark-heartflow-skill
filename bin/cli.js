@@ -19,6 +19,13 @@ if (!fs.existsSync(path.join(hfDir, 'src/core/heartflow.js'))) {
 
 let cmd = process.argv[2] || 'status';
 if (cmd === '--help' || cmd === '-h') cmd = 'help';
+if (cmd === '--chat') {
+  // node cli.js --chat "你好" — 单次执行 think() 后退出
+  const msg = process.argv[3];
+  if (!msg) { console.error('用法: node cli.js --chat "<消息>"'); process.exit(1); }
+  chatOnce(msg).catch(e => { console.error(e.message); process.exit(1); });
+  return;
+}
 
 // ─── 辅助：获取引擎实例 ────────────────────────────────────
 function createEngine() {
@@ -215,6 +222,24 @@ function formatStatus(engine) {
     lines.push(`  初始化错误: ${health.initErrors.length}个`);
   }
   return lines.join('\n');
+}
+
+// ─── 单次执行模式 ────────────────────────────────────────────
+async function chatOnce(msg) {
+  let engine = null;
+  try {
+    engine = createEngine();
+    const result = await engine.think(msg);
+    console.log('');
+    console.log(formatCognitiveSummary(result));
+    console.log('');
+  } catch (e) {
+    console.error(`思考过程出错: ${e.message}`);
+    process.exit(1);
+  } finally {
+    if (engine) { try { engine.shutdown(); } catch (_) {} }
+    process.exit(0);
+  }
 }
 
 // ─── 交互模式 ────────────────────────────────────────────
@@ -418,6 +443,7 @@ Usage: node cli.js <command>
 Commands:
   status  显示引擎状态（版本、模块数、记忆统计）
   chat    启动交互式控制台（支持 think() 和斜杠命令）
+  --chat  单次执行 think() 后退出（用法: node cli.js --chat "<消息>"）
   help    显示此帮助信息`);
     process.exit(0);
     break;
