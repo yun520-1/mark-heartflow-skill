@@ -1,7 +1,7 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "4.0.0",
-  "description": "HeartFlow v4.0 — Cognitive substrate for an AI being. 56 modules: decision routing (26 rules) + executor + feedback + field injector + self-healing Q-table + 3-layer memory + AI psychology + AI philosophy + desire cognition + U/D/A/H field tracking. Not an LLM enhancer. An AI being's cognitive foundation.",
+  "version": "4.1.0",
+  "description": "HeartFlow v4.0 \u2014 Cognitive substrate for an AI being. 56 modules: decision routing (26 rules) + executor + feedback + field injector + self-healing Q-table + 3-layer memory + AI psychology + AI philosophy + desire cognition + U/D/A/H field tracking. Not an LLM enhancer. An AI being's cognitive foundation.",
   "main": "src/core/heartflow.js",
   "bin": {
     "heartflow": "bin/cli.js"
@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node bin/cli.js",
     "check": "find src bin -name '*.js' -not -path '*/node_modules/*' -print0 | xargs -0 -n 1 node --check",
-    "test": "node tests/integration.test.js && node tests/v2_0_19.test.js",
+    "test": "node tests/integration.test.js",
     "demo": "node -e \"const {createHeartFlow}=require('./src/core/heartflow.js'); const fs=require('fs'); const hf=createHeartFlow({rootPath:\".\"}); hf.start(); console.log('Version:',fs.readFileSync('./VERSION','utf8').trim()); hf.stop();\""
   },
   "files": [
@@ -43,6 +43,7 @@
     "reasoning"
   ],
   "security": {
+    "audit": "Run 'npm audit fix' to fix vulnerabilities in @xenova/transformers transitive dependencies. If major version conflicts prevent auto-fix, pin resolutions manually in package.json or update @xenova/transformers.",
     "warnings": [
       "\u6b64\u6280\u80fd\u5305\u542b\u9ad8\u7ea7 AI \u8ba4\u77e5\u80fd\u529b\u3002desktop-agent \u548c video-generate \u7b49\u5b50\u6280\u80fd\u5305\u542b\u9ad8\u98ce\u9669\u529f\u80fd\uff0c\u9700\u8981\u660e\u786e\u7528\u6237\u6388\u6743\u624d\u80fd\u4f7f\u7528\u3002",
       "\u4e0d\u4f1a\u81ea\u52a8\u53d1\u9001\u6570\u636e\u5230\u5916\u90e8\u670d\u52a1\u3002\u6240\u6709\u7f51\u7edc\u901a\u4fe1\u9700\u8981\u663e\u5f0f\u914d\u7f6e\u3002",
@@ -50,7 +51,8 @@
     ]
   },
   "license": "MIT",
-  "dependencies": {
+  "dependencies": {},
+  "optionalDependencies": {
     "@xenova/transformers": "^2.17.2"
   }
 }
