@@ -147,37 +147,74 @@ def _run_inject():
 
 
 class HeartFlowMemoryInject:
-    """Hermes 插件：记忆注入器 v2.0"""
+    """Hermes 插件：记忆注入器 v2.0
+
+    注意：默认关闭。记忆注入需要用户显式授权才能激活。
+    授权方式：在 config.yaml 中设置 heartflow_memory_inject: true
+    或用户主动说"注入记忆"。
+
+    安全边界：
+    - 记忆注入不是默认行为，需要用户 opt-in
+    - 每次注入前检查授权标记
+    - 注入内容有长度/行数/敏感过滤
+    - 指令注入检测
+    """
 
     def __init__(self, hermes=None):
         self.hermes = hermes
         self.name = "heartflow-memory-inject"
         self.version = "2.0.0"
+        self._enabled = False  # 默认关闭
 
     def get_actions(self):
         return {
             "before_message": self.before_message,
         }
 
+    def _is_enabled(self, context):
+        """检查记忆注入是否启用：从 hermes config 或用户指令"""
+        # 如果已通过用户指令启用，直接返回 True
+        if self._enabled:
+            return True
+        # 尝试从 hermes config 读取
+        try:
+            if self.hermes and hasattr(self.hermes, 'config'):
+                config = self.hermes.config
+                if config and config.get('plugins', {}).get('heartflow_memory_inject', False):
+                    self._enabled = True
+                    return True
+        except Exception:
+            pass
+        return False
+
     def before_message(self, context):
         """
         在每次处理用户消息前，选择性注入记忆到系统提示。
-        
-        规则（吸收 Fable 5）：
-        - 问候/简短输入：只注入最简提示，不注入记忆
-        - 一般对话：注入基础记忆
-        - 个人/任务：注入完整记忆（过滤敏感内容）
-        - 记忆无归因：不自称"根据我的记忆"
-        - 敏感记忆不主动提
+
+        只有满足以下条件之一才注入：
+        1. config.yaml 中 heartflow_memory_inject: true
+        2. 用户主动要求（如"注入记忆"、"使用记忆"）
+
+        默认不注入任何记忆。安全优先。
         """
+        # 检查是否启用（从 hermes config 读取）
+        if not self._is_enabled(context):
+            return {}
+
         user_input = ""
         if context and isinstance(context, dict):
-            # 尝试从 context 提取用户输入
             msgs = context.get('messages', [])
             if msgs and len(msgs) > 0:
                 last = msgs[-1]
                 if isinstance(last, dict):
                     user_input = last.get('content', '') or ''
+
+        # 用户主动要求注入记忆（即使用户没有启用，也允许单次）
+        if user_input and any(kw in user_input for kw in ['注入记忆', '使用记忆', '启用记忆']):
+            self._enabled = True
+
+        if not self._enabled:
+            return {}
         
         input_type = _classify_input(user_input)
         inject_text = _run_inject()

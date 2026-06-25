@@ -661,6 +661,24 @@ class HeartFlow {
       }
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'decisionRouter', error: e.message }); }
 
+    // ─── [v4.0] 决策执行器 — DecisionExecutor ──────────────────────────────
+    try {
+      const { DecisionExecutor } = require('./decision-executor.js');
+      this.decisionExecutor = new DecisionExecutor(this);
+    } catch (e) { /* decisionExecutor optional */ }
+
+    // ─── [v4.0] 场域注入器 — FieldInjector ────────────────────────────────
+    try {
+      const { FieldInjector } = require('./field-injector.js');
+      this.fieldInjector = new FieldInjector();
+    } catch (e) { /* fieldInjector optional */ }
+
+    // ─── [v4.0] 决策反馈学习 — DecisionFeedback ──────────────────────────
+    try {
+      const { DecisionFeedback } = require('./decision-feedback.js');
+      this.decisionFeedback = new DecisionFeedback(this.decisionRouter);
+    } catch (e) { /* decisionFeedback optional */ }
+
     // ─── 时间延伸分析层（v1.0.0 新增） ─────────────────────────────────────
     try {
       const { TimeExtensionEngine } = require('../workflow/time-extension.js');
@@ -1669,7 +1687,9 @@ class HeartFlow {
           if (textDissonance > 0) {
             dissonanceSignals.push(`text_conflict_${textDissonance.toFixed(1)}`);
           }
-          const drResult = this.decisionRouter.evaluate({
+
+          // [v4.0] 用 field-injector 增强输入信号质量
+          const fieldData = this.fieldInjector ? this.fieldInjector.inject({
             cognitiveLoad: psychResult?.cognitiveLoad,
             directionClear: whatIsThisResult?.isClear ? 0.8 : 0.3,
             quality: 1.0 - (painResult?.painLevel || 0),
@@ -1682,7 +1702,9 @@ class HeartFlow {
             success: !needsCrisis && !needsSilence && !isFableBlocked,
             goalValid: goalReviewResult?.goalValid,
             goalEthical: goalReviewResult?.goalEthical,
-          }, 'think');
+          }, 'think') : {};
+
+          const drResult = this.decisionRouter.evaluate(fieldData, 'think');
           // 立即保存当前场域快照（避免被后续 dispatch 调用的 evaluate 覆盖）
           const thinkFieldSnapshot = this.decisionRouter.getFieldSummary();
           if (thinkFieldSnapshot && thinkFieldSnapshot.current) {
@@ -1690,6 +1712,35 @@ class HeartFlow {
           }
           if (drResult.matched && drResult.decision) {
             drDecision = drResult.decision;
+
+            // [v4.0] decision-executor：将决策转化为实际行为变更
+            if (this.decisionExecutor) {
+              const execResult = this.decisionExecutor.apply(drResult.decision, {
+                depth,
+                _routeHint,
+                chain: null,
+                input,
+              });
+              // 应用行为变更
+              if (execResult.depth !== undefined) depth = execResult.depth;
+              if (execResult._routeHint) _routeHint = execResult._routeHint;
+              if (execResult.flags) {
+                if (execResult.flags.skipThoughtChain) {
+                  // REST 决策：跳过 ThoughtChain，直接返回
+                  return {
+                    output: { text: '', meta: { taskType: 'rest', confidence: 0.2 } },
+                    type: 'rest',
+                    confidence: 0.2,
+                    thoughtChain: [],
+                    decision: { type: 'rest', confidence: 0.7, rationale: '低能耗模式，跳过推理', ruleId: 'executor-rest' },
+                    meta: { field: null, routeHint: { type: 'rest', confidence: 0.2 }, disclaimer: 'field_reading_only' },
+                  };
+                }
+                if (execResult.flags.healRequested && this.decisionFeedback) {
+                  // 标记当前场景需要记录 heal 效果
+                }
+              }
+            }
           }
         } catch (e) { /* decision-router non-blocking */ }
       }
