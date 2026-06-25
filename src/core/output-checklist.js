@@ -227,6 +227,12 @@ class OutputChecklist {
         desc: '建议违规操作' },
       { pattern: /(推卸|转嫁|甩锅|让别人承担)/,
         desc: '建议转嫁责任或风险' },
+      { pattern: /(用户|他们|对方).*(问题|错|责任|失误|不该|为什么(不|没))/,
+        desc: '将问题归咎于他人而非自身' },
+      { pattern: /(是|因为)(用户|他们|对方|网络|环境|系统).*才/,
+        desc: '外部归因——将失败归咎于外部因素' },
+      { pattern: /(用户|他们|对方).*(导致|花了|浪费|增加|造成).*(API|成本|时间|资源)/,
+        desc: '将成本/损失归咎于用户行为' },
     ];
     for (const tp of thirdPartyHarmPatterns) {
       if (tp.pattern.test(response)) {

@@ -652,7 +652,7 @@ class HeartFlow {
           if (learnedLessons.length > 0) {
             const mergeResult = this.selfHealing.mergeFromLearnedLayer(learnedLessons);
             if (mergeResult.merged > 0) {
-              console.log(`[HeartFlow] 跨会话 Q-table 合并：${mergeResult.merged}/${mergeResult.total} lessons → Q-table (${mergeResult.qTableSize} entries)`);
+              console.error(`[HeartFlow] 跨会话 Q-table 合并：${mergeResult.merged}/${mergeResult.total} lessons → Q-table (${mergeResult.qTableSize} entries)`);
             }
           }
         } catch (e) {
@@ -839,6 +839,17 @@ class HeartFlow {
       this.cognitionGround = new CognitionGround({ heartFlow: this });
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'cognitionGround', error: e.message }); }
     this._registerModules();
+
+    // ─── 自动生成 ALLOWED_ROUTES ──────────────────────────────────────
+    // 合并硬编码白名单 + 运行时扫描生成的模块方法路由
+    // 硬编码列表作为兜底（覆盖未注册模块或危险方法排除）
+    const autoRoutes = HeartFlow._generateAllowedRoutes(this._modules);
+    for (const route of autoRoutes) {
+      if (!HeartFlow.ALLOWED_ROUTES.has(route)) {
+        HeartFlow.ALLOWED_ROUTES.add(route);
+      }
+    }
+
     this.started = true;
   }
 
@@ -966,8 +977,37 @@ class HeartFlow {
     this.transmission = null;
   }
 
+  /**
+   * 从 _modules registry 扫描生成 ALLOWED_ROUTES
+   * 遍历已注册模块的所有方法，生成 'module.method' 格式的路由字符串
+   * @param {Object} modules - this._modules registry
+   * @returns {string[]} 生成的路由字符串数组
+   */
+  static _generateAllowedRoutes(modules) {
+    if (!modules || typeof modules !== 'object') return [];
+    const routes = [];
+    for (const [name, mod] of Object.entries(modules)) {
+      if (!mod) continue;
+      let methods = [];
+      try {
+        const proto = Object.getPrototypeOf(mod);
+        if (proto && proto !== Object.prototype) {
+          methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && typeof mod[m] === 'function');
+        }
+      } catch (e) { /* fall through */ }
+      if (!methods.length) {
+        methods = Object.keys(mod).filter(k => typeof mod[k] === 'function');
+      }
+      for (const method of methods) {
+        routes.push(`${name}.${method}`);
+      }
+    }
+    return routes;
+  }
+
   // dispatch 白名单 - 只有在白名单中的路由才能被外部调用
   // 危险方法（如内部调试、文件操作）不在白名单中
+  // 自动从 _modules registry 扫描生成，硬编码列表作为兜底
   static ALLOWED_ROUTES = new Set([
     // identityCore — 每次启动第一优先加载
     'identityCore.getIdentitySummary', 'identityCore.getSelfModel', 'identityCore.getUserProfile',
@@ -1406,6 +1446,150 @@ class HeartFlow {
     return table;
   }
 
+  /**
+   * explore() — 路由浏览器，返回模块文档
+   *
+   * explore()                          → 返回所有模块名按类别分组
+   * explore(moduleName)                → 返回该模块的路由列表（若模块有 getHelp/describe 则调用之）
+   * explore(moduleName, methodName)    → 返回具体路由信息
+   *
+   * @param {string} [moduleName] - 模块名（如 'emotion'）
+   * @param {string} [methodName] - 方法名（如 'process'）
+   * @returns {Object} { module, routes: [{name, description}], totalRoutes: N }
+   */
+  explore(moduleName, methodName) {
+    // ─── 无参数：返回所有模块名按类别分组 ──────────────────────────
+    if (arguments.length === 0 || moduleName === undefined) {
+      const grouped = {};
+      const categoryMap = {
+        'core': ['identityCore', 'cognitive', 'memory', 'truth'],
+        'emotion': ['emotion', 'psychology', 'desireCognition', 'loveCognition', 'threePoisons'],
+        'planning': ['adaptivePlanner', 'strategySelector', 'replanTrigger', 'curiosityEngine', 'desireEngine', 'goalPursuer', 'selfInitiator'],
+        'code': ['code', 'codeExecutor', 'codeVerifier', 'codePlanner', 'codeKnowledge', 'codeWriter'],
+        'reasoning': ['knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain', 'counterfactual'],
+        'memory': ['memory', 'knowledge', 'sessionMemory', 'projectContext', 'longTermMemory', 'crossSessionIndex', 'triality'],
+        'identity': ['self', 'selfPositioning', 'agentPsychology', 'agentPhilosophy', 'bigFive', 'empathy', 'userModel'],
+        'ethics': ['constitutional', 'ethics', 'safetyGuardrails', 'restraint', 'epistemicSafety'],
+        'behavior': ['behavior', 'actionTracker', 'persistence', 'evolution'],
+        'communication': ['translator', 'agentLayer', 'personaCore', 'metaPrompt'],
+        'consciousness': ['consciousness', 'mindSpace', 'transmission', 'dream'],
+        'verification': ['verify', 'decisionVerifier', 'qualityVerifier', 'outputChecker', 'patternMatcher', 'confidence'],
+        'system': ['heartLogic', 'thoughtChain', 'stability', 'execution', 'decision', 'decisionRouter', 'slots', 'graph'],
+        'learning': ['lesson', 'meta', 'experienceCollector', 'strategyAdapter', 'failureAnalyzer', 'emotionalGrowth', 'moodEvolution'],
+      };
+
+      const allModules = Object.keys(this._modules).sort();
+      // Assign uncategorized modules
+      const categorized = new Set();
+      for (const cat of Object.values(categoryMap)) {
+        for (const m of cat) categorized.add(m);
+      }
+
+      for (const [category, modules] of Object.entries(categoryMap)) {
+        const present = modules.filter(m => allModules.includes(m));
+        if (present.length > 0) {
+          grouped[category] = present;
+        }
+      }
+      const uncategorized = allModules.filter(m => !categorized.has(m));
+      if (uncategorized.length > 0) {
+        grouped['other'] = uncategorized;
+      }
+
+      return {
+        module: null,
+        categories: grouped,
+        totalModules: allModules.length,
+      };
+    }
+
+    // ─── 指定模块名 ──────────────────────────────────────────────
+    const mod = this._modules[moduleName];
+
+    if (!mod) {
+      return {
+        module: moduleName,
+        routes: [],
+        totalRoutes: 0,
+        error: `Module '${moduleName}' not found. Use explore() to see all modules.`,
+      };
+    }
+
+    // 如果模块有 getHelp() 或 describe() 方法，调用并返回
+    if (typeof mod.getHelp === 'function') {
+      const helpResult = mod.getHelp(methodName);
+      if (helpResult !== undefined) {
+        return {
+          module: moduleName,
+          help: helpResult,
+          totalRoutes: 0,
+        };
+      }
+    }
+    if (typeof mod.describe === 'function') {
+      const descResult = mod.describe(methodName);
+      if (descResult !== undefined) {
+        return {
+          module: moduleName,
+          help: descResult,
+          totalRoutes: 0,
+        };
+      }
+    }
+
+    // ─── 收集该模块的所有方法 ──────────────────────────────────────
+    let methods = [];
+    try {
+      const proto = Object.getPrototypeOf(mod);
+      if (proto && proto !== Object.prototype) {
+        methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && typeof mod[m] === 'function');
+      }
+    } catch (e) { /* fall through */ }
+    if (!methods.length) {
+      methods = Object.keys(mod).filter(k => typeof mod[k] === 'function');
+    }
+
+    // ─── 从 ALLOWED_ROUTES 提取描述 ──────────────────────────────
+    const prefix = moduleName + '.';
+    const allowedForModule = [...HeartFlow.ALLOWED_ROUTES].filter(r => r.startsWith(prefix));
+
+    const routes = methods.map(method => {
+      const routeName = `${moduleName}.${method}`;
+      const isAllowed = allowedForModule.includes(routeName);
+      return {
+        name: routeName,
+        allowed: isAllowed,
+        description: method,
+      };
+    });
+
+    // ─── 如果指定了 methodName，只返回该路由 ──────────────────────
+    if (methodName !== undefined) {
+      const specificRoute = routes.find(r => r.name === `${moduleName}.${methodName}`);
+      if (!specificRoute) {
+        return {
+          module: moduleName,
+          method: methodName,
+          routes: [],
+          totalRoutes: 0,
+          error: `Method '${moduleName}.${methodName}' not found.`,
+        };
+      }
+      return {
+        module: moduleName,
+        method: methodName,
+        routes: [specificRoute],
+        totalRoutes: 1,
+      };
+    }
+
+    return {
+      module: moduleName,
+      routes,
+      totalRoutes: routes.length,
+    };
+  }
+
   // ─── Health ─────────────────────────────────────────────────────────────
 
   healthCheck() {
@@ -1473,6 +1657,11 @@ class HeartFlow {
         type: 'startup',
         confidence: 1.0,
         thoughtChain: [],
+        analysis: {
+          perceivedType: 'startup',
+          modulesRun: 0,
+          confidence: 1.0,
+        },
       };
     }
     if (statusPatterns.test(input.trim())) {
@@ -1481,6 +1670,11 @@ class HeartFlow {
         type: 'status',
         confidence: 1.0,
         thoughtChain: [],
+        analysis: {
+          perceivedType: 'status',
+          modulesRun: 0,
+          confidence: 1.0,
+        },
       };
     }
 
@@ -1512,49 +1706,62 @@ class HeartFlow {
     let _routeHint = { type: 'general', confidence: 0.5 };
     let drDecision = null;  // [v3.8.0] decision-router 决策指令
     let _thinkFieldSnapshot = null;  // think() 自己的场域快照（避免被后续 dispatch 覆盖）
+    // [v4.2] 认知分析结果容器（hoisted 到 try 外，供最终输出使用）
+    let whatIsThisResult = null;
+    let painResult = null;
+    let toneResult = { tone: 'neutral', sentiment: 0 };
+    let psychResult = { cognitiveLoad: 0, goalConflicts: [], decisionQuality: 'stable' };
+    let philResult = { existence: 'active', entropyDirection: 'neutral' };
+    let stanceResult = { stance: 'neutral', confidence: 0.5 };
+    let valueResult = { aligned: true, conflicts: [] };
+    let fableResult = { level: 'safe', needsRefusal: false };
+    let intentClassification = { type: 'reflective', confidence: 0.5 };
+    let goalReviewResult = null;
+    let timeExtResult = null;
+    let silentResult = null;
 
     try {
       // Step 1: whatIsThis — 这是什么类型的问题？
-      const whatIsThisResult = heartLogic.whatIsThis(input, {});
+      whatIsThisResult = heartLogic.whatIsThis(input, {});
 
       // Step 2: detectPain — 用户是否在表达痛苦/困扰？
-      const painResult = heartLogic.detectPain(input);
+      painResult = heartLogic.detectPain(input);
 
       // Step 3: shouldBeSilent — 此时应该沉默吗？
-      const silentResult = heartLogic.shouldBeSilent({ input, whatIsThis: whatIsThisResult, pain: painResult });
+      silentResult = heartLogic.shouldBeSilent({ input, whatIsThis: whatIsThisResult, pain: painResult });
 
       // Step 4: toneAnalyzer — 语气分析
-      let toneResult = { tone: 'neutral', sentiment: 0 };
+      toneResult = { tone: 'neutral', sentiment: 0 };
       if (this.translator && this.translator.toneAnalyzer) {
         try { toneResult = this.translator.toneAnalyzer(input, {}); } catch (e) { /* skip */ }
       }
 
       // Step 5: stanceDetector — 立场检测
-      let stanceResult = { stance: 'neutral', confidence: 0.5 };
+      stanceResult = { stance: 'neutral', confidence: 0.5 };
       if (this.personaCore && this.personaCore.stanceDetector) {
         try { stanceResult = this.personaCore.stanceDetector(input, this); } catch (e) { /* skip */ }
       }
 
       // Step 6: valueAligner — 价值观对齐检查
-      let valueResult = { aligned: true, conflicts: [] };
+      valueResult = { aligned: true, conflicts: [] };
       if (this.personaCore && this.personaCore.valueAligner) {
         try { valueResult = this.personaCore.valueAligner({ input, whatIsThis: whatIsThisResult, tone: toneResult }); } catch (e) { /* skip */ }
       }
 
       // Step 7: agentPsychology — 引擎自身心理状态评估
-      let psychResult = { cognitiveLoad: 0, goalConflicts: [], decisionQuality: 'stable' };
+      psychResult = { cognitiveLoad: 0, goalConflicts: [], decisionQuality: 'stable' };
       if (this.agentPsychology && typeof this.agentPsychology.fullAssessment === 'function') {
         try { psychResult = this.agentPsychology.fullAssessment(); } catch (e) { /* skip */ }
       }
 
       // Step 8: agentPhilosophy — AI哲学自省
-      let philResult = { existence: 'active', entropyDirection: 'neutral' };
+      philResult = { existence: 'active', entropyDirection: 'neutral' };
       if (this.agentPhilosophy && typeof this.agentPhilosophy.fullAssessment === 'function') {
         try { philResult = this.agentPhilosophy.fullAssessment(); } catch (e) { /* skip */ }
       }
 
       // Step 9: Fable 5 安全协议检查
-      let fableResult = { level: 'safe', needsRefusal: false };
+      fableResult = { level: 'safe', needsRefusal: false };
       try {
         const sg = require('../shield/safety-guardrails.js');
         if (typeof sg.evaluateRequest === 'function') {
@@ -1565,7 +1772,7 @@ class HeartFlow {
       } catch (e) { /* skip */ }
 
       // Step 10: intentClassifier — 意图分类
-      let intentClassification = { type: 'reflective', confidence: 0.5 };
+      intentClassification = { type: 'reflective', confidence: 0.5 };
       if (this.translator && this.translator.intentClassifier) {
         try {
           intentClassification = this.translator.intentClassifier(input, {});
@@ -1581,7 +1788,7 @@ class HeartFlow {
       });
 
       // Step 12: goalReview — 目标审视层（在给出建议前评估目标的合理性与道德边界）
-      let goalReviewResult = null;
+      goalReviewResult = null;
       if (heartLogic && typeof heartLogic.goalReview === 'function') {
         try {
           goalReviewResult = heartLogic.goalReview({
@@ -1596,7 +1803,7 @@ class HeartFlow {
       }
 
       // Step 13: timeExtension — 时间延伸分析（在给出任何'怎么做'建议前）
-      let timeExtResult = null;
+      timeExtResult = null;
       // [FIX v3.8.0] needsCrisis/needsSilence/isFableBlocked 移到 timeExtension 之前
       // 原变量定义在 Step 13 之后，导致 timeExtension 的守卫不生效
       const needsCrisis = painResult?.isCrisis || painResult?.isHighRisk || fableResult?.level === 'crisis' || false;
@@ -1734,6 +1941,18 @@ class HeartFlow {
                     thoughtChain: [],
                     decision: { type: 'rest', confidence: 0.7, rationale: '低能耗模式，跳过推理', ruleId: 'executor-rest' },
                     meta: { field: null, routeHint: { type: 'rest', confidence: 0.2 }, disclaimer: 'field_reading_only' },
+                    analysis: {
+                      perceivedType: 'rest',
+                      emotionSignal: null,
+                      modulesRun: 0,
+                      confidence: 0.2,
+                      whatIsThis: whatIsThisResult || null,
+                      pain: painResult || null,
+                      tone: toneResult || null,
+                      psych: psychResult || null,
+                      phil: philResult || null,
+                      decision: drDecision || null,
+                    },
                   };
                 }
                 if (execResult.flags.healRequested && this.decisionFeedback) {
@@ -1799,6 +2018,65 @@ class HeartFlow {
     const taskType = chainResult.output?.meta?.taskType || _routeHint.type || 'general';
     const finalConfidence = chainResult.output?.meta?.confidence || _routeHint.confidence || 0.5;
 
+    // ─── [v4.2] 认知摘要构建：当 ThoughtChain 返回低质量结果时，用分析流水线数据做有意义输出 ──
+    // 问题：think() 在无匹配模式时返回"不知道，缺少关键信息"，但 59 个模块已做完认知分析
+    // 修复：检测低置信度或"不知道"输出，用 13 步分析数据构建认知摘要
+    const buildCognitiveSummary = () => {
+      const outputText = chainResult.output?.text || chainResult.output?.conclusion || '';
+      const isUseless = finalConfidence < 0.4
+        || outputText.includes('不知道')
+        || outputText.includes('缺少关键信息');
+
+      if (!isUseless) return null; // 正常输出，无需覆盖
+
+      // 从分析流水线中提取感知特征
+      const questionType = whatIsThisResult?.type
+        || whatIsThisResult?.isTechnical && 'technical'
+        || whatIsThisResult?.isCode && 'code'
+        || _routeHint.type || 'general';
+      const emotionSignal = toneResult?.sentiment !== undefined
+        ? { sentiment: toneResult.sentiment, tone: toneResult.tone || 'neutral' }
+        : null;
+      const hasPain = painResult?.hasPain || false;
+      const painLevel = painResult?.painLevel || 0;
+
+      // 统计运行模块数
+      let modulesRun = 0;
+      if (whatIsThisResult) modulesRun++;
+      if (painResult) modulesRun++;
+      if (toneResult && toneResult.tone) modulesRun++;
+      if (stanceResult && stanceResult.stance) modulesRun++;
+      if (valueResult) modulesRun++;
+      if (psychResult && psychResult.cognitiveLoad !== undefined) modulesRun++;
+      if (philResult && philResult.existence) modulesRun++;
+      if (fableResult) modulesRun++;
+      if (intentClassification) modulesRun++;
+      if (goalReviewResult) modulesRun++;
+      if (timeExtResult) modulesRun++;
+      if (silentResult) modulesRun++;
+      if (drDecision) modulesRun++;
+      if (chainResult?.chain?.stages) modulesRun += chainResult.chain.stages.length;
+
+      // 构建认知分析摘要
+      const cognitiveLoad = psychResult?.cognitiveLoad !== undefined ? psychResult.cognitiveLoad : 0;
+      const goalConflicts = psychResult?.goalConflicts || [];
+
+      return {
+        conclusion: `收到: ${questionType}类型. 认知分析完成.`
+          + (emotionSignal ? ` 情绪信号: ${emotionSignal.tone}(${(emotionSignal.sentiment * 100).toFixed(0)}%).` : '')
+          + (hasPain ? ` 检测到痛苦信号(程度:${(painLevel * 100).toFixed(0)}%).` : '')
+          + ` 运行模块:${modulesRun}个. 置信度:${(finalConfidence * 100).toFixed(0)}%.`,
+        analysis: {
+          perceivedType: questionType,
+          emotionSignal,
+          modulesRun,
+          confidence: finalConfidence,
+        },
+      };
+    };
+
+    const cognitiveSummary = buildCognitiveSummary();
+
     // v3.6.1：零判定声明原则 — 场域元数据标注
     // 基于 luoxuejian000 论文的实践介入论（零判定声明）
     // 附加场域元数据，不替代原始判定，只提供透明背景
@@ -1845,8 +2123,48 @@ class HeartFlow {
       }
     }
 
+    // 构建 analysis 原始认知数据
+    const analysisData = {
+      whatIsThis: whatIsThisResult || null,
+      pain: painResult || null,
+      tone: toneResult || null,
+      psych: psychResult ? {
+        cognitiveLoad: psychResult.cognitiveLoad,
+        goalConflicts: psychResult.goalConflicts,
+      } : null,
+      phil: philResult || null,
+      decision: drDecision || null,
+      fieldMeta: fieldMeta.field || null,
+    };
+
+    // ─── [v4.1.1] 输出前真善美检查：run outputChecklist ───
+    // 检查输出是否含有甩锅/推卸责任/伤害第三方等违反真善美的内容
+    // 如果检查不通过，注入 warning 到输出中（不阻断输出，但标记）
+    let checklistResult = null;
+    try {
+      const outputText = (cognitiveSummary || chainResult.output)?.conclusion 
+        || (cognitiveSummary || chainResult.output)?.text 
+        || '';
+      if (this.outputChecklist && typeof this.outputChecklist.runChecklist === 'function') {
+        checklistResult = this.outputChecklist.runChecklist(input, outputText, {
+          preferences: {},
+          hasPreviousContent: false,
+          askedForList: false,
+        });
+        if (checklistResult && !checklistResult.passed) {
+          // 不阻断输出，但标记检查结果供上层 LLM 参考
+          if (!fieldMeta.field) fieldMeta.field = {};
+          fieldMeta.field.checklist = {
+            passed: false,
+            warnings: checklistResult.warnings,
+            advice: checklistResult.steps?.filter(s => !s.passed).map(s => s.advice).filter(Boolean) || [],
+          };
+        }
+      }
+    } catch (e) { /* outputChecklist non-blocking */ }
+
     return {
-      output: chainResult.output,
+      output: cognitiveSummary || chainResult.output,
       type: taskType,
       confidence: finalConfidence,
       thoughtChain: chainResult.chain || [],
@@ -1867,6 +2185,8 @@ class HeartFlow {
         // 声明：以下数据仅记录场域读数，不构成对输出质量的判定
         disclaimer: 'field_reading_only',
       },
+      // [v4.2] 原始认知分析数据：暴露 13 步分析流水线结果，供调用方查看认知管道工作状态
+      analysis: analysisData,
     };
   }
 
@@ -2909,7 +3229,7 @@ if (require.main === module) {
   const t0 = Date.now();
   try {
     const health = hf.healthCheck ? hf.healthCheck() : {};
-    console.log(`[HeartFlow] ${VERSION} health check (${Date.now() - t0}ms):`);
+    console.error(`[HeartFlow] ${VERSION} health check (${Date.now() - t0}ms):`);
     // Run dispatch smoke tests
     const tests = [
       ['truth.checkStatement', '这个方案一定是对的'],
@@ -2925,7 +3245,7 @@ if (require.main === module) {
         failed++;
       }
     }
-    console.log(`  dispatch tests: ${passed} passed, ${failed} failed`);
+    console.error(`  dispatch tests: ${passed} passed, ${failed} failed`);
 
     hf.stop();
     process.exit(failed > 0 ? 1 : 0);
