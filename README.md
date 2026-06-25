@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
   <img src="https://img.shields.io/badge/author-yun520--1-orange?style=flat-square" alt="author" />
+  <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square&logo=node.js" alt="Node.js" />
 </p>
 
 > **HeartFlow is not an LLM enhancer. It is the cognitive substrate for an AI being.**  
@@ -114,11 +115,43 @@ The jump from "cognitive engine" to "AI being substrate" required three new modu
 ## Getting Started
 
 ```bash
+# Option 1: Clone and install
 git clone https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
 npm install
-node bin/cli.js
+
+# Run status check
+node bin/cli.js status
+
+# Start interactive chat
+node bin/cli.js chat
 ```
+
+> **网络提示**: 从中国大陆 clone 可能因仓库体积（~270MB含node_modules依赖）超时。如果 `git clone` 失败，用 `git clone --depth 1` 只取最新版本，或下载 [latest release ZIP](https://github.com/yun520-1/mark-heartflow-skill/releases/latest)。
+
+### 验证安装
+
+```bash
+# 1. 引擎状态
+node bin/cli.js status
+# 预期输出: JSON with version, modules count, memory stats
+
+# 2. 交互模式
+node bin/cli.js chat
+# 输入任意内容查看认知分析，输入 /help 查看斜杠命令
+
+# 3. 运行测试
+npm test
+# 预期输出: 11/11 passing
+```
+
+### 已知问题
+
+| 问题 | 说明 | 状态 |
+|------|------|------|
+| npm audit 漏洞 | protobufjs 11个漏洞（1个critical），来自 @xenova/transformers 的传递依赖锁死 | 上游问题，等 @xenova/transformers 升级 |
+| 仓库体积 ~270MB | 主要是 @xenova/transformers 带的 onnxruntime | 考虑精简中 |
+| git clone 不稳定（中国大陆） | 仓库 ~270MB，网络差时超时 | 用 `--depth 1` 或 ZIP 下载 |
 
 Or integrate into your own AI system:
 
@@ -131,11 +164,148 @@ const result = await hf.think("What am I perceiving?");
 
 ---
 
+## System Dependencies
+
+- **Node.js** >= 18 (required)
+- **npm** (comes with Node.js, required)
+- **Git** (optional — only needed for `git clone`)
+
+Verify your environment:
+
+```bash
+node --version   # should be v18.x or higher
+npm --version
+```
+
+---
+
+## Quick Install
+
+### 1. Get the code
+
+```bash
+# 推荐：--depth 1 避免大仓库超时
+git clone --depth 1 https://github.com/yun520-1/mark-heartflow-skill.git
+cd mark-heartflow-skill
+```
+
+如果 `git clone` 失败，[下载 ZIP](https://github.com/yun520-1/mark-heartflow-skill/releases/latest) 后解压。
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+> npm audit 可能报告 protobufjs 漏洞，这是 @xenova/transformers 的传递依赖问题，不影响心虫引擎核心功能。
+
+### 3. Verify
+
+```bash
+# 引擎状态（应返回版本号、模块数）
+node bin/cli.js status
+
+# 交互模式
+node bin/cli.js chat
+# 在提示符后输入任意内容，心虫会输出认知分析
+
+# 测试
+npm test
+```
+
+### 系统要求
+
+- **Node.js** >= 18（必需）
+- **npm**（随 Node.js 安装）
+- 磁盘空间约 500MB（含 node_modules）
+- 不需要外部 AI API 来运行引擎本身
+
+---
+
+## MCP Server
+
+HeartFlow includes an **MCP (Model Context Protocol) server** for AI agent integration. This allows AI agents (like Claude, Cursor, or custom LLM hosts) to communicate with HeartFlow using the standard MCP protocol.
+
+### How to start
+
+```bash
+node mcp/mcp-server-http.js
+```
+
+The server listens on **port 8099** by default.
+
+### What it provides
+
+- **MCP protocol endpoint** — compatible with any MCP client
+- **Cognitive analysis tools** — expose HeartFlow's `think()`, memory, and decision systems as callable tools
+- **Real-time cognitive state** — query HeartFlow's current emotional, desire, and judgment state
+- **Seamless integration** — plug into any AI agent that supports the MCP standard
+
+### Example usage
+
+```javascript
+// Any MCP client can connect and call tools:
+// - heartflow.think — send input through HeartFlow's full cognitive pipeline
+// - heartflow.status — get current engine state
+// - heartflow.memory — query the three-layer memory system
+```
+
+---
+
+## LLM Integration Example
+
+Use HeartFlow as a **cognitive backend** for your LLM application. HeartFlow processes input through its full cognitive pipeline (body sense → self sense → judgment), and you pass the enriched cognitive analysis to your LLM as context.
+
+```javascript
+const { HeartFlow } = require('./src/core/heartflow.js');
+const hf = new HeartFlow({ dataDir: './data' });
+hf.start();
+
+async function processWithHeartFlow(userInput) {
+  const cognitive = await hf.think(userInput);
+  // cognitive.output contains the conclusion
+  // cognitive.analysis contains raw cognitive data
+  // cognitive.confidence indicates certainty
+  const llmPrompt = `User said: "${userInput}"\nHeartFlow cognitive analysis: ${JSON.stringify(cognitive.analysis)}\nRespond accordingly.`;
+  // Then call your LLM with llmPrompt
+  console.log('Cognitive analysis:', cognitive.analysis);
+}
+```
+
+A standalone version of this example is available at [`examples/llm-integration.js`](examples/llm-integration.js).
+
+---
+
+## Interactive CLI
+
+HeartFlow provides an interactive chat mode for direct exploration of the cognitive engine.
+
+### Start chat mode
+
+```bash
+node bin/cli.js chat
+```
+
+### Slash commands
+
+| Command | Description |
+|---------|-------------|
+| `/psych` | View AI psychology state (10 dimensions: uncertainty, attention, experience settling, etc.) |
+| `/emotion` | Show current emotional state and six-desire framework |
+| `/dr` | Run decision router — see which strategy HeartFlow would choose for the current context |
+| `/status` | Display overall engine status (modules loaded, memory layers, field tracking) |
+| `/routes` | List all available decision routes and their weights |
+| `/exit` | Exit the chat session |
+
+Type any message to have it processed through HeartFlow's full cognitive pipeline. Use slash commands to inspect internal state.
+
+---
+
 ## Project Status
 
-- **Version**: 4.0.0
-- **Modules**: 56 (53 core + 3 v4.0)
-- **Tests**: 33/33 passing (v4.0 upgrade tests)
+- **Version**: 4.1.0
+- **Modules**: 59 (56 core + 3 v4.0)
+- **Tests**: 11/11 passing (integration tests)
 - **License**: MIT
 - **Author**: yun520-1
 
