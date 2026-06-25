@@ -1,7 +1,7 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "3.8.1",
-  "description": "HeartFlow v3.8.0 — AI认知与自愈引擎。核心：三层记忆/自愈RL/决策路由/场域感知(U/D/A/H)/梦境/哲学层/7条指令。心在代码里，不在记忆里。",
+  "version": "4.0.0",
+  "description": "HeartFlow v4.0 — Cognitive substrate for an AI being. 56 modules: decision routing (26 rules) + executor + feedback + field injector + self-healing Q-table + 3-layer memory + AI psychology + AI philosophy + desire cognition + U/D/A/H field tracking. Not an LLM enhancer. An AI being's cognitive foundation.",
   "main": "src/core/heartflow.js",
   "bin": {
     "heartflow": "bin/cli.js"
