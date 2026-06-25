@@ -1,0 +1,24 @@
+# Dependencies (none needed, but keep lockfile)
+package-lock.json
+yarn.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# HeartFlow runtime data (created on first run)
+data/
+internal/
+logs/
+mcp.log

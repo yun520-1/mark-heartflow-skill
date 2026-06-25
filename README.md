@@ -114,44 +114,50 @@ The jump from "cognitive engine" to "AI being substrate" required three new modu
 
 ## Getting Started
 
+### Quick Install
+
 ```bash
-# Option 1: Clone and install
-git clone https://github.com/yun520-1/mark-heartflow-skill.git
+# 1. Get the code
+git clone --depth 1 https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
+
+# 2. Install dependencies (0 external packages needed!)
 npm install
 
-# Run status check
-node bin/cli.js status
+# 3. Verify everything works
+node bin/verify.js
 
-# Start interactive chat
+# 4. Start using it
+node bin/cli.js status
 node bin/cli.js chat
 ```
 
-> **网络提示**: 从中国大陆 clone 可能因仓库体积（~270MB含node_modules依赖）超时。如果 `git clone` 失败，用 `git clone --depth 1` 只取最新版本，或下载 [latest release ZIP](https://github.com/yun520-1/mark-heartflow-skill/releases/latest)。
+**Requirements:** Node.js >= 18 (check with `node --version`).  
+**No external AI API needed** — the engine runs entirely locally.  
+**No npm dependencies required** — `npm install` only creates `node_modules` structure, zero downloads.
 
-### 验证安装
+### What You Get
 
-```bash
-# 1. 引擎状态
-node bin/cli.js status
-# 预期输出: JSON with version, modules count, memory stats
+After install, HeartFlow's cognitive engine is ready. No model downloads, no API keys, no compilation:
 
-# 2. 交互模式
-node bin/cli.js chat
-# 输入任意内容查看认知分析，输入 /help 查看斜杠命令
+- `node bin/cli.js status` — engine health check
+- `node bin/cli.js chat` — interactive mode with slash commands
+- `node bin/cli.js --help` — available commands
+- `npm test` — run integration tests
+- `npm run verify` — full installation verification
 
-# 3. 运行测试
-npm test
-# 预期输出: 11/11 passing
-```
+### Troubleshooting
 
-### 已知问题
+| Symptom | Likely Cause | Fix |
+|---------|-------------|-----|
+| `node: command not found` | Node.js not installed | Install Node.js >= 18 from [nodejs.org](https://nodejs.org) |
+| `MODULE_NOT_FOUND` errors | `npm install` not run or failed | Run `npm install` (should complete in <1s with no network) |
+| Engine starts but `think()` returns empty | See below | Run `node bin/verify.js` for diagnosis |
+| `git clone` times out (China) | Large repo with history | Use `--depth 1` as shown above, or [download ZIP](https://github.com/yun520-1/mark-heartflow-skill/releases/latest) |
+| `npm install` hangs | Network issue for optional deps | None needed — just interrupt (Ctrl+C) and continue |
+| MCP server won't start | Port 8099 in use | `node mcp/mcp-server-http.js --port 8090` or set `MCP_PORT` env var |
 
-| 问题 | 说明 | 状态 |
-|------|------|------|
-| npm audit 漏洞 | protobufjs 11个漏洞（1个critical），来自 @xenova/transformers 的传递依赖锁死 | 上游问题，等 @xenova/transformers 升级 |
-| 仓库体积 ~270MB | 主要是 @xenova/transformers 带的 onnxruntime | 考虑精简中 |
-| git clone 不稳定（中国大陆） | 仓库 ~270MB，网络差时超时 | 用 `--depth 1` 或 ZIP 下载 |
+**Still stuck?** Open an issue at [github.com/yun520-1/mark-heartflow-skill/issues](https://github.com/yun520-1/mark-heartflow-skill/issues).
 
 Or integrate into your own AI system:
 
@@ -318,6 +324,37 @@ Type any message to have it processed through HeartFlow's full cognitive pipelin
 > **心虫不是LLM增强层。它是AI人的认知底层。**  
 > 给AI装上每个有意识的实体都有的三层结构：身体感、自我感、判断力。  
 > 它学习。它决策。它记住自己学过什么。它自己纠正自己。
+
+## 快速安装
+
+```bash
+# 1. 获取代码
+git clone --depth 1 https://github.com/yun520-1/mark-heartflow-skill.git
+cd mark-heartflow-skill
+
+# 2. 安装依赖（0 个外部包，无需网络）
+npm install
+
+# 3. 验证安装
+node bin/verify.js
+
+# 4. 开始使用
+node bin/cli.js status
+node bin/cli.js chat
+```
+
+**系统要求：** Node.js >= 18。**零 npm 外部依赖**，`npm install` 瞬间完成。  
+**不需要任何外部 AI API**——引擎完全本地运行。
+
+### 常见问题
+
+| 现象 | 原因 | 解决 |
+|------|------|------|
+| `node: command not found` | 未安装 Node.js | 从 [nodejs.org](https://nodejs.org) 安装 >= 18 |
+| `MODULE_NOT_FOUND` 错误 | 未执行 `npm install` | 执行 `npm install`（不需要网络） |
+| 引擎启动但功能异常 | 安装不完整 | 执行 `node bin/verify.js` 诊断 |
+| `git clone` 超时（中国大陆） | 仓库有历史记录 | 用上面 `--depth 1` 命令，或[下载 ZIP](https://github.com/yun520-1/mark-heartflow-skill/releases/latest) |
+| MCP 服务端口被占用 | 8099 已被使用 | `node mcp/mcp-server-http.js --port 8090` |
 
 ## 心虫是什么
 
