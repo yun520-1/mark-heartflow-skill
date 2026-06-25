@@ -18,7 +18,23 @@ const crypto = require('crypto');
 // ═══════════════════════════════════════════════
 // 配置
 // ═══════════════════════════════════════════════
-const PORT = parseInt(process.argv[2] === '--port' ? process.argv[3] : process.env.MCP_PORT || '8099', 10);
+const PORT = (() => {
+  // 1. 命令行参数优先
+  if (process.argv[2] === '--port' && process.argv[3]) return parseInt(process.argv[3], 10);
+  // 2. 环境变量
+  if (process.env.MCP_PORT) return parseInt(process.env.MCP_PORT, 10);
+  // 3. 自动检测：从 8099 开始找可用端口
+  const net = require('net');
+  for (let port = 8099; port <= 8105; port++) {
+    try {
+      const sock = net.createServer();
+      sock.listen(port);
+      sock.close();
+      return port;
+    } catch (_) { /* port in use, try next */ }
+  }
+  return 8099; // fallback
+})();
 
 // ─── HeartFlow 根目录自动检测 ───────────────────────────────
 function resolveHFDir() {
