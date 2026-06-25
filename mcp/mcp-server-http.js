@@ -128,22 +128,6 @@ const TOOLS = [
     description: '引擎认知状态签到：综合检查认知偏差、决策模式、是否需要自我修复。返回完整诊断+修复建议。',
     inputSchema: { type: 'object', properties: { stats: { type: 'object', description: '引擎状态数据（可选）' }, errors: { type: 'array', description: '最近错误列表（可选）' } } }
   },
-  // v3.0 — 交流层工具
-  {
-    name: 'heartflow_translate',
-    description: '翻译：将用户自然语言翻译为结构化LLM指令，并拦截/修改LLM输出后返回。此工具会拦截和修改LLM输出。返回意图、实体、约束、语气和隐性需求分析。',
-    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '用户输入文本' } }, required: ['input'] }
-  },
-  {
-    name: 'heartflow_agent_think',
-    description: '代理思考：通过心虫的交流层处理用户输入→翻译→LLM调用→翻译→返回。作为用户和LLM之间的智能桥梁。此工具会拦截和修改LLM输出，包括立场检测、价值对齐、身份注入等。',
-    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '用户输入文本' }, llmResponse: { type: 'string', description: '可选的LLM原始响应，不传则只做翻译分析' } } }
-  },
-  {
-    name: 'heartflow_bridge_status',
-    description: '桥状态：返回心虫作为交流层的状态——翻译器、代理层、人格核心的加载情况和配置。',
-    inputSchema: { type: 'object', properties: {} }
-  },
   // v3.0.1 — 哲学→决策转化器
   {
     name: 'heartflow_philosophy_decision',
@@ -176,13 +160,6 @@ const TOOLS = [
     description: '升级统计：返回智能升级引擎的统计信息，包括升级次数、关键词分布、平均质量等。',
     inputSchema: { type: 'object', properties: {} }
   },
-  {
-    name: 'heartflow_code_quality',
-    description: '代码质量分析：分析指定代码的质量评分，返回详细的质量报告。',
-    inputSchema: { type: 'object', properties: {
-      code: { type: 'string', description: '要分析的代码' }
-    }, required: ['code'] }
-  }
 ];
 
 // ═══════════════════════════════════════════════
@@ -558,45 +535,6 @@ function handleUpgradeStats(args) {
   }
 }
 
-function handleCodeQuality(args) {
-  const { code } = args || {};
-  if (!code) throw new Error('code 是必填参数');
-  
-  // 简单的代码质量分析
-  const patterns = {
-    hasClass: /class\s+\w+/,
-    hasExport: /module\.exports|export\s+/,
-    hasConstructor: /constructor\s*\(/,
-    hasMethods: /(?:method|function)\s*\w+\s*\(/,
-    hasDocumentation: /\/\*\*[\s\S]*?\*\//,
-    hasErrorHandling: /try\s*\{|\.catch\(|throw\s+/,
-    hasTypes: /@param|@returns|:\s*(string|number|boolean)/,
-    hasTests: /describe\s*\(|it\s*\(|test\s*\(/
-  };
-  
-  let score = 0;
-  const details = {};
-  
-  for (const [name, pattern] of Object.entries(patterns)) {
-    const found = pattern.test(code);
-    details[name] = found;
-    if (found) score += 12;
-  }
-  
-  const lines = code.split('\n').length;
-  if (lines >= 100 && lines <= 5000) {
-    score += 10;
-    details.goodLength = true;
-  }
-  
-  return {
-    score: Math.min(score, 100),
-    details,
-    lines,
-    timestamp: Date.now()
-  };
-}
-
 const HANDLERS = {
   heartflow_think: handleThink,
   heartflow_think_fast: handleThinkFast,
@@ -620,7 +558,6 @@ const HANDLERS = {
   // v3.1.0 — 新增工具
   heartflow_module_health: handleModuleHealth,
   heartflow_upgrade_stats: handleUpgradeStats,
-  heartflow_code_quality: handleCodeQuality,
 };
 
 // ═══════════════════════════════════════════════
