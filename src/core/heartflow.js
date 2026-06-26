@@ -1743,7 +1743,22 @@ class HeartFlow {
 
         return {
           // 给用户的结论文本
-          output: { conclusion: output?.conclusion || '分析完成', meta: { taskType: output?.direction || 'general', confidence: output?.judgmentConfidence || 0.5 } },
+          output: { 
+            conclusion: output?.conclusion || '分析完成', 
+            meta: { 
+              taskType: output?.direction || 'general', 
+              confidence: output?.judgmentConfidence || 0.5,
+              // v5.0.2: 认知摘要暴露给用户
+              cognitiveSummary: {
+                type: output?.direction || 'general',
+                emotion: psychologyData.psych?.tone || heartLogicData?.pain?.hasPain ? 'distress' : 'neutral',
+                decision: decisionData.drDecision?.type || 'analyze',
+                confidence: output?.judgmentConfidence || 0.5,
+                modulesRun: stages.length,
+                stages: stages.filter(s => s.success).length,
+              },
+            } 
+          },
           type: output?.direction || 'general',
           confidence: output?.judgmentConfidence || 0.5,
           // 给 LLM 的结构化推理数据
