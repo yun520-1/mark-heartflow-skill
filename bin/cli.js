@@ -39,6 +39,52 @@ function getVersion() {
   try { return require(path.join(hfDir, 'package.json')).version || 'unknown'; } catch(e) { return 'unknown'; }
 }
 
+// ─── 辅助：通过报告生成器输出可读结论 ─────────────────────
+function formatReport(result) {
+  try {
+    const { ReportGenerator } = require(path.join(hfDir, 'src/report/report-generator.js'));
+    const gen = new ReportGenerator();
+    const { report } = gen.generate(result);
+    if (!report) return '（无法生成报告）';
+
+    const parts = [];
+    
+    // 第一段：情绪判断
+    const j = report.judgment;
+    parts.push('━━━ 情绪判断 ━━━');
+    parts.push(j.text);
+    if (j.explanation) parts.push(j.explanation);
+
+    // 第二段：问题定位
+    const l = report.localization;
+    parts.push('');
+    parts.push('━━━ 问题定位 ━━━');
+    parts.push(`核心问题：${l.coreIssue}`);
+    if (l.domain) parts.push(`问题领域：${l.domain}`);
+    if (l.severity) parts.push(`严重程度：${l.severity}`);
+    if (l.details && l.details.length > 0) {
+      for (const d of l.details) parts.push(`· ${d}`);
+    }
+
+    // 第三段：行动建议
+    const s = report.suggestion;
+    parts.push('');
+    parts.push('━━━ 行动建议 ━━━');
+    if (s.steps && s.steps.length > 0) {
+      for (let i = 0; i < s.steps.length; i++) {
+        parts.push(`${i + 1}. ${s.steps[i]}`);
+      }
+    }
+
+    return parts.join('\n');
+  } catch (e) {
+    // 报告生成器不可用时，回退到旧格式
+    const output = result.output || {};
+    const conclusion = output.conclusion || output.text || '(无输出)';
+    return `  💬 ${conclusion.slice(0, 300)}`;
+  }
+}
+
 // ─── 辅助：格式化认知分析摘要 ──────────────────────────────
 function formatCognitiveSummary(result) {
   const analysis = result.analysis || {};
@@ -231,7 +277,7 @@ async function chatOnce(msg) {
     engine = createEngine();
     const result = await engine.think(msg);
     console.log('');
-    console.log(formatCognitiveSummary(result));
+    console.log(formatReport(result));
     console.log('');
   } catch (e) {
     console.error(`思考过程出错: ${e.message}`);
@@ -391,8 +437,7 @@ async function chatMode() {
     try {
       const result = await engine.think(input);
       console.log('');
-      console.log('━━━ 🧠 认知分析摘要 ━━━');
-      console.log(formatCognitiveSummary(result));
+      console.log(formatReport(result));
       console.log('');
     } catch (e) {
       console.log(`\n思考过程出错: ${e.message}\n`);

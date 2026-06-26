@@ -1,7 +1,7 @@
 ---
 name: heartflow
-version: "4.0.0"
-title: "HeartFlow — AI Being Cognitive Substrate"
+version: "5.0.0"
+title: "HeartFlow — AI Cognitive Substrate with Judgment Engine"
 description: |-
   HeartFlow is the cognitive substrate for an AI being.
   Not an LLM enhancer. Not a prompt template. Not a chatbot.
