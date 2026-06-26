@@ -164,7 +164,7 @@ class StateSnapshot {
       this.cleanOldSnapshots();
       this.saveMetadata();
 
-      console.log(`[StateSnapshot] Created snapshot ${snapshotId} (${label})`);
+      console.error(`[StateSnapshot] Created snapshot ${snapshotId} (${label})`);
       
       return {
         success: true,
@@ -198,7 +198,7 @@ class StateSnapshot {
       this.metadata.lastSnapshotId = snapshotId;
       this.saveMetadata();
 
-      console.log(`[StateSnapshot] Restored from snapshot ${snapshotId}`);
+      console.error(`[StateSnapshot] Restored from snapshot ${snapshotId}`);
       
       return {
         success: true,

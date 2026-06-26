@@ -352,7 +352,7 @@ class EvolutionLoop {
                 }
             }
         } catch (e) {
-            console.log('[EvolutionLoop] 加载状态失败，使用默认');
+            console.error('[EvolutionLoop] 加载状态失败，使用默认');
         }
     }
 

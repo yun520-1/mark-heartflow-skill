@@ -80,7 +80,7 @@ class LearningEngine {
     // 当前学习周期
     this.currentCycle = null;
     
-    console.log('[LearningEngine] 学习引擎初始化');
+    console.error('[LearningEngine] 学习引擎初始化');
   }
 
   /**

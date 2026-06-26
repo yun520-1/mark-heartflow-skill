@@ -595,7 +595,7 @@ module.exports = { ${className} };
    */
   log(msg) {
     const ts = new Date().toISOString();
-    console.log(`[${ts}] ${msg}`);
+    console.error(`[${ts}] ${msg}`);
     
     try {
       let logs = [];

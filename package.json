@@ -1,6 +1,6 @@
 {
   "name": "mark-heartflow-skill",
-  "version": "4.1.2",
+  "version": "4.1.3",
   "description": "HeartFlow v4.0 \u2014 Cognitive substrate for an AI being. 56 modules: decision routing (26 rules) + executor + feedback + field injector + self-healing Q-table + 3-layer memory + AI psychology + AI philosophy + desire cognition + U/D/A/H field tracking. Not an LLM enhancer. An AI being's cognitive foundation.",
   "main": "src/core/heartflow.js",
   "bin": {

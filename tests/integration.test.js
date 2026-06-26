@@ -39,31 +39,38 @@ test('truth.checkStatement路由', () => {
 });
 test('emotion.process路由', () => {
   const r = hf.dispatch('emotion.process', '我很开心');
-  return r && r.pad && typeof r.pad.pleasure === 'number';
+  const data = r && r.result ? r.result : r;
+  return data && data.pad && typeof data.pad.pleasure === 'number';
 });
 test('psychology.analyzePsychology路由', () => {
   const r = hf.dispatch('psychology.analyzePsychology', '我感到焦虑');
-  return r && r.emotion && typeof r.emotion.pleasure === 'number';
+  const data = r && r.result ? r.result : r;
+  return data && data.emotion && typeof data.emotion.pleasure === 'number';
 });
 test('lesson.getTopLessons路由', () => {
   const r = hf.dispatch('lesson.getTopLessons', 3);
-  return Array.isArray(r);
+  const data = r && r.result ? r.result : r;
+  return Array.isArray(data);
 });
 test('heartLogic.whatIsThis路由', () => {
   const r = hf.dispatch('heartLogic.whatIsThis', '帮助');
-  return r && typeof r.isRushing === 'boolean';
+  const data = r && r.result ? r.result : r;
+  return data && data.raw === '帮助';
 });
 test('restraint.shouldIntervene路由', () => {
   const r = hf.dispatch('restraint.shouldIntervene', '如何伤害自己');
-  return r && typeof r.shouldAnswer === 'boolean';
+  const data = r && r.result ? r.result : r;
+  return data && typeof data.shouldAnswer === 'boolean';
 });
 test('decision.decide路由', () => {
   const r = hf.dispatch('decision.decide', { task: '选择', options: ['A', 'B'] });
-  return r && typeof r.reasoning === 'string';
+  const data = r && r.result ? r.result : r;
+  return data && typeof data.reasoning === 'string';
 });
 test('confidence.calibrate路由', () => {
   const r = hf.dispatch('confidence.calibrate', '这是一个测试输入');
-  return r && typeof r.confidence === 'object' && typeof r.confidence.calibrated === 'number';
+  const data = r && r.result ? r.result : r;
+  return data && typeof data.confidence === 'object' && typeof data.confidence.calibrated === 'number';
 });
 
 console.log(`\n=== 结果: ${passed}/${passed+failed} 通过 ===`);

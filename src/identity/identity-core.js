@@ -79,8 +79,8 @@ class IdentityCore {
     this.loaded = true;
     result.success = result.errors.length === 0;
 
-    console.log(`[IdentityCore] 启动完成，已加载 ${result.loadedModules.length} 个模块`);
-    console.log(`[IdentityCore] sessionId: ${this.sessionId}`);
+    console.error(`[IdentityCore] 启动完成，已加载 ${result.loadedModules.length} 个模块`);
+    console.error(`[IdentityCore] sessionId: ${this.sessionId}`);
 
     return result;
   }
@@ -215,7 +215,7 @@ class IdentityCore {
    */
   printStartupContext() {
     if (!this.memoryIndex) {
-      console.log('[IdentityCore] MemoryIndex 未加载');
+      console.error('[IdentityCore] MemoryIndex 未加载');
       return;
     }
     this.memoryIndex.printBootSummary();

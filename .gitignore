@@ -33,6 +33,9 @@ mcp/*.plist
 # 隐私：微信联系人截图（含个人名片和群聊信息）
 assets/wechat-contacts/
 
+# 测试产物：HMAC key 文件
+*.hmac-key
+
 # 升级产物
 src/core/upgrades/
 

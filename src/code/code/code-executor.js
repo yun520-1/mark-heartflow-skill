@@ -294,7 +294,7 @@ class CodeExecutor {
       python:     this._checkPythonAvailable()
     };
 
-    console.log(`[CodeExecutor] 初始化完成. 可用执行器: ${JSON.stringify(this._availableExecutors)}`);
+    console.error(`[CodeExecutor] 初始化完成. 可用执行器: ${JSON.stringify(this._availableExecutors)}`);
   }
 
   /**

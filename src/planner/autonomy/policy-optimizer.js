@@ -114,7 +114,7 @@ class PolicyOptimizer {
    * 优化行为策略（主入口）
    */
   async optimizeBehaviorPolicies() {
-    console.log('[PolicyOptimizer] 开始策略优化...');
+    console.error('[PolicyOptimizer] 开始策略优化...');
 
     const trace = this.loadTrace();
     if (!trace.cycles || trace.cycles.length === 0) {
@@ -144,7 +144,7 @@ class PolicyOptimizer {
     this.policies.last_optimization = new Date().toISOString();
     this.savePolicies();
 
-    console.log(`[PolicyOptimizer] 优化完成: ${validPolicies.length} 个新策略 (去重后 ${mergedPolicies.length} 个)`);
+    console.error(`[PolicyOptimizer] 优化完成: ${validPolicies.length} 个新策略 (去重后 ${mergedPolicies.length} 个)`);
 
     return {
       success: true,
@@ -211,7 +211,7 @@ class PolicyOptimizer {
 
     const removed = before - active.length;
     if (removed > 0) {
-      console.log(`[PolicyOptimizer] 修剪完成: 移除 ${removed} 个策略 (合并:${staleCount.merged}, 替代:${staleCount.superseded}, 过期:${staleCount.expired})`);
+      console.error(`[PolicyOptimizer] 修剪完成: 移除 ${removed} 个策略 (合并:${staleCount.merged}, 替代:${staleCount.superseded}, 过期:${staleCount.expired})`);
     }
   }
 
@@ -547,7 +547,7 @@ class PolicyOptimizer {
       } else {
         policy.state = POLICY_STATES.REJECTED;
         policy.rejection_reason = alignment.reason;
-        console.log(`[PolicyOptimizer] 策略 ${policy.policy_id} 被拒绝: ${alignment.reason}`);
+        console.error(`[PolicyOptimizer] 策略 ${policy.policy_id} 被拒绝: ${alignment.reason}`);
       }
     }
 

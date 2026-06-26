@@ -123,7 +123,7 @@ class LoveCognition {
     };
 
     this.ready = true;
-    if (this.debug) console.log('[LoveCognition] v0.3.0 ready — 10 theories, 10 rules');
+    if (this.debug) console.error('[LoveCognition] v0.3.0 ready — 10 theories, 10 rules');
   }
 
   /**

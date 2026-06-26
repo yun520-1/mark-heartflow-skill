@@ -25,7 +25,7 @@
  *   → 匹配决策规则 → 生成决策指令 → 返回 { result, decision }
  */
 
-const VERSION = '3.0.2';
+const VERSION = '3.8.0';
 
 // ─── U/D/A/H 场域追踪参数（基于 luoxuejian000 论文） ──────────────────────
 // H = λU·U + λD·D - λA·A
@@ -33,6 +33,23 @@ const FIELD_WEIGHTS = {
   lambdaU: 0.4,  // 统一性——身份在场强度
   lambdaD: 0.3,  // 发展性——信息推进结构化程度
   lambdaA: 0.3,  // 对抗性——矛盾边密度
+};
+
+// v3.8.0：场景感知权重配置
+// 不同场景类型使用不同的 U/D/A 权重，解决固定权重在特定场景失效的问题
+const SCENE_WEIGHTS = {
+  // 默认/通用对话
+  general: { lambdaU: 0.4, lambdaD: 0.3, lambdaA: 0.3 },
+  // 纯技术讨论：U 偏高但 A 偏低 → 降低 U 权重暴露停滞
+  technical: { lambdaU: 0.25, lambdaD: 0.45, lambdaA: 0.3 },
+  // 情感冲突：A 波动大 → 降低 A 惩罚避免过度反应
+  emotional: { lambdaU: 0.35, lambdaD: 0.25, lambdaA: 0.2 },
+  // 分析/推理任务：D 最重要
+  analytical: { lambdaU: 0.2, lambdaD: 0.5, lambdaA: 0.3 },
+  // 创意/发散任务：U 最重要
+  creative: { lambdaU: 0.5, lambdaD: 0.2, lambdaA: 0.3 },
+  // 自我修复/反思：A 是最重要的信号
+  reflective: { lambdaU: 0.25, lambdaD: 0.25, lambdaA: 0.5 },
 };
 
 // 翻转点检测阈值（论文实验验证值）
@@ -148,6 +165,13 @@ class DecisionRouter {
     this._fieldHistory = [];
     this._fieldStep = 0;
     this._lastFlipAlert = null;  // { type, step, u, d, a, h, message, timestamp }
+
+    // v3.8.0：场景感知权重
+    this._currentScene = 'general';     // 当前检测到的场景
+    this._sceneHistory = [];            // 场景切换历史
+    this._activeWeights = { ...FIELD_WEIGHTS };  // 当前活跃权重
+    this._sceneStabilityWindow = 5;     // 场景判定需要的稳定步数
+    this._charLevelSamples = [];        // 字符级采样缓冲
 
     // 规则
     const T = this._thresholds;
@@ -564,15 +588,95 @@ class DecisionRouter {
     // 保存当前场域快照（供后备连续性使用）
     this._lastKnownField = { U, D, A };
 
-    // H（和谐度/Harmony）——加权公式
+    // H（和谐度/Harmony）——加权公式（v3.8.0：场景感知权重）
     // H = λU·U + λD·D - λA·A
+    const weights = this._activeWeights;
     const H = Math.max(0, Math.min(1,
-      FIELD_WEIGHTS.lambdaU * U +
-      FIELD_WEIGHTS.lambdaD * D -
-      FIELD_WEIGHTS.lambdaA * A
+      weights.lambdaU * U +
+      weights.lambdaD * D -
+      weights.lambdaA * A
     ));
 
     return { U, D, A, H };
+  }
+
+  /**
+   * v3.8.0：检测当前场景类型
+   * 基于场域历史特征自动分类场景，切换权重配置
+   * @param {{U:number, D:number, A:number, H:number}} fieldValues
+   * @param {object} [result] - 原始模块返回值（含额外特征）
+   * @returns {string} 场景类型标识
+   */
+  _detectScene(fieldValues, result) {
+    const { U, D, A, H } = fieldValues;
+    const hist = this._fieldHistory;
+
+    // 条件1：技术讨论 — D 持续主导 + A 偏低 + U 稳定偏高
+    if (D > 0.5 && A < 0.2 && U > 0.4 && hist.length >= 3) {
+      const recentDrivers = hist.slice(-3).map(h => h.driver);
+      const dDominant = recentDrivers.filter(d => d === 'D').length >= 2;
+      if (dDominant) return 'technical';
+    }
+
+    // 条件2：情感冲突 — A 波动大 + 有快速升降
+    if (A > 0.3 && hist.length >= 3) {
+      const aValues = hist.slice(-3).map(h => h.A);
+      const aRange = Math.max(...aValues) - Math.min(...aValues);
+      if (aRange > 0.15) return 'emotional';
+    }
+
+    // 条件3：分析/推理 — 模块返回了 quality/directionClear 等推理信号
+    if (result && (result.quality !== undefined || result.directionClear !== undefined)) {
+      return 'analytical';
+    }
+
+    // 条件4：创意/发散 — U 高 + D 低 + A 低
+    if (U > 0.6 && D < 0.3 && A < 0.15) return 'creative';
+
+    // 条件5：自我修复 — A 高 + U 低 + H 低
+    if (A > 0.5 && U < 0.3 && H < 0.4) return 'reflective';
+
+    // 默认
+    return 'general';
+  }
+
+  /**
+   * v3.8.0：更新场景感知权重
+   * 检测场景类型，如有变化则切换活跃权重
+   * @param {{U:number, D:number, A:number, H:number}} fieldValues
+   * @param {object} [result]
+   */
+  _updateSceneWeights(fieldValues, result) {
+    const scene = this._detectScene(fieldValues, result);
+
+    // 记录场景历史
+    this._sceneHistory.push({
+      step: this._fieldStep,
+      scene,
+      timestamp: Date.now(),
+    });
+
+    // 保持场景历史大小
+    if (this._sceneHistory.length > 30) {
+      this._sceneHistory.splice(0, this._sceneHistory.length - 30);
+    }
+
+    // 需要稳定步数才切换
+    const recentScenes = this._sceneHistory.slice(-this._sceneStabilityWindow);
+    const sceneCounts = {};
+    for (const s of recentScenes) {
+      sceneCounts[s.scene] = (sceneCounts[s.scene] || 0) + 1;
+    }
+    const dominantScene = Object.entries(sceneCounts)
+      .sort((a, b) => b[1] - a[1])[0];
+
+    if (dominantScene && dominantScene[1] >= Math.ceil(this._sceneStabilityWindow / 2)) {
+      const newScene = dominantScene[0];
+      if (newScene !== this._currentScene) {
+        this._currentScene = newScene;
+        this._activeWeights = SCENE_WEIGHTS[newScene] || { ...FIELD_WEIGHTS };
+      }
+    }
   }
 
   /**
@@ -606,6 +710,9 @@ class DecisionRouter {
     const { U, D, A, H } = fieldValues;
 
     this._fieldStep++;
+
+    // v3.8.0：场景感知权重更新（在驱动归因前，确保最新权重用于本轮计算）
+    this._updateSceneWeights(fieldValues, result);
 
     // 驱动归因
     let driver = 'D';
@@ -1075,6 +1182,12 @@ class DecisionRouter {
         totalSteps: this._stats.resonanceTotalSteps,
         currentSteps: this._stats.currentResonanceSteps,
       },
+      // v3.8.0：场景感知信息
+      scene: {
+        current: this._currentScene,
+        activeWeights: { ...this._activeWeights },
+        historyCount: this._sceneHistory.length,
+      },
     };
   }
 
@@ -1152,6 +1265,7 @@ module.exports = {
   DECISION_PRIORITY,
   MODEL_PROFILES,
   FIELD_WEIGHTS,
+  SCENE_WEIGHTS,
   FLIP_THRESHOLDS,
   VERSION,
 };

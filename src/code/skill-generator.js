@@ -446,7 +446,7 @@ ${confidenceNote}
     
     // 不允许修改其他已存在的 skill（只能创建新的）
     if (fs.existsSync(skillDir)) {
-      console.log(`Skill ${pattern.skillName} already exists`);
+      console.error(`Skill ${pattern.skillName} already exists`);
       return { success: false, reason: 'exists' };
     }
 

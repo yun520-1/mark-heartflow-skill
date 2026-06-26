@@ -74,7 +74,7 @@ class MetaLearning {
         this.learningPatterns = data.patterns || [];
       }
     } catch (e) {
-      console.log('[MetaLearning] 加载模式失败');
+      console.error('[MetaLearning] 加载模式失败');
     }
   }
 

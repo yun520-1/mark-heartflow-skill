@@ -982,7 +982,7 @@ class ErrorHandler {
       if (ageMs > maxAgeMs) {
         const backupFile = this.logFile + '.old';
         fs.renameSync(this.logFile, backupFile);
-        console.log(`[ErrorHandler] Rotated old log to ${backupFile}`);
+        console.error(`[ErrorHandler] Rotated old log to ${backupFile}`);
       }
     } catch (e) {
       console.error('[ErrorHandler] Failed to clean logs:', e.message);

@@ -437,7 +437,7 @@ class SelfModel {
 
     this.saveEpisodic();
     
-    console.log(`[SelfModel] Identity repair completed: drift=${persistence.score.toFixed(2)}`);
+    console.error(`[SelfModel] Identity repair completed: drift=${persistence.score.toFixed(2)}`);
     
     return repair;
   }
@@ -456,7 +456,7 @@ class SelfModel {
         return principles;
       }
     } catch (e) {
-      console.log('[SelfModel] Could not load CORE_VALUES');
+      console.error('[SelfModel] Could not load CORE_VALUES');
     }
     return ['帮助用户', '保持诚实', '持续学习'];
   }

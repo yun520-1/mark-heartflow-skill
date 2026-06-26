@@ -128,7 +128,7 @@ const behaviorTracker = {
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.goals)) {
           this.data = parsed;
-          console.log('[BehaviorTracker] Recovered from backup');
+          console.error('[BehaviorTracker] Recovered from backup');
           // 写回主文件
           fs.writeFileSync(DATA_FILE, JSON.stringify(this.data, null, 2));
           return;
@@ -195,7 +195,7 @@ const behaviorTracker = {
       });
       const removed = this.data.goals.splice(MAX_GOALS);
       removed.forEach(r => {
-        console.log(`[BehaviorTracker] Pruned stale goal: ${r.name || r.id}`);
+        console.error(`[BehaviorTracker] Pruned stale goal: ${r.name || r.id}`);
       });
       changed = true;
     }

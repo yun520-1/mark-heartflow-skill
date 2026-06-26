@@ -137,7 +137,7 @@ class EmbodiedCore {
       oscillationWindowMs: 60000 // 1分钟内检测震荡
     };
     
-    console.log('[EmbodiedCore] 具身认知核心初始化 v2.7.0');
+    console.error('[EmbodiedCore] 具身认知核心初始化 v2.7.0');
   }
 
   loadExecutors() {
@@ -151,7 +151,7 @@ class EmbodiedCore {
 
   registerSensorAdapter(name, adapter) {
     this.sensorAdapters[name] = adapter;
-    console.log(`[EmbodiedCore] 注册传感器: ${name}`);
+    console.error(`[EmbodiedCore] 注册传感器: ${name}`);
   }
 
   // ========================================================================
@@ -178,7 +178,7 @@ class EmbodiedCore {
     
     this.cognitiveState.activePlan = plan;
     this.cognitiveState.system = 'ready';
-    console.log(`[EmbodiedCore] 认知规划: ${steps.length} 步思维链`);
+    console.error(`[EmbodiedCore] 认知规划: ${steps.length} 步思维链`);
     return plan;
   }
 
@@ -355,7 +355,7 @@ class EmbodiedCore {
     this.cognitiveState.executionHistory.push(execution);
     this.cognitiveState.system = 'idle';
     
-    console.log(`[EmbodiedCore] 执行映射: ${execution.steps.length} 步执行，状态: ${execution.overallStatus}`);
+    console.error(`[EmbodiedCore] 执行映射: ${execution.steps.length} 步执行，状态: ${execution.overallStatus}`);
     return execution;
   }
 
@@ -380,7 +380,7 @@ class EmbodiedCore {
       const retryInfo = selectRetryStrategy(errorInfo.category);
       
       if (retryInfo.strategy !== RetryStrategy.NONE && attempt < retryInfo.maxRetries) {
-        console.log(`[EmbodiedCore] 步骤 ${step.index} 重试 ${attempt + 1}/${retryInfo.maxRetries}`);
+        console.error(`[EmbodiedCore] 步骤 ${step.index} 重试 ${attempt + 1}/${retryInfo.maxRetries}`);
         
         // 指数退避等待
         if (retryInfo.strategy === RetryStrategy.BACKOFF) {
@@ -817,7 +817,7 @@ class EmbodiedCore {
       adaptation.modifications = newSteps;
     }
     
-    console.log(`[EmbodiedCore] 计划调整: 步骤 ${failedStep.stepIndex} 需要适应 (${failedStep.errorCategory || 'unknown'})`);
+    console.error(`[EmbodiedCore] 计划调整: 步骤 ${failedStep.stepIndex} 需要适应 (${failedStep.errorCategory || 'unknown'})`);
     return adaptation;
   }
 
@@ -863,7 +863,7 @@ class EmbodiedCore {
       workingMemory: [],
       oscillationLog: []
     };
-    console.log('[EmbodiedCore] 状态已重置');
+    console.error('[EmbodiedCore] 状态已重置');
     return { success: true };
   }
 }

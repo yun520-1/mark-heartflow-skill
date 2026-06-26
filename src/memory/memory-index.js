@@ -309,13 +309,13 @@ class MemoryIndex {
   addFeedback(type, content, meta = {}) {
     // 探索失败不自动存储为教训
     if (meta.source === 'exploration') {
-      console.log('[MemoryIndex] 探索失败不存储为教训');
+      console.error('[MemoryIndex] 探索失败不存储为教训');
       return;
     }
 
     // 必须有明确的来源或用户确认
     if (!meta.source && !meta.userConfirmed) {
-      console.log('[MemoryIndex] 反馈需要明确来源（source=user/exploration）或用户确认（userConfirmed=true）');
+      console.error('[MemoryIndex] 反馈需要明确来源（source=user/exploration）或用户确认（userConfirmed=true）');
       return;
     }
 
