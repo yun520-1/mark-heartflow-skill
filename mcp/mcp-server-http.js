@@ -276,13 +276,19 @@ async function handleThink(args) {
     safeAsyncCall(() => heartflow.think(input))
   ]);
 
+  // 生成可读报告
+  let report = null;
+  try {
+    const { ReportGenerator } = require(path.join(HF_DIR, 'src/report/report-generator.js'));
+    const gen = new ReportGenerator();
+    const generated = gen.generate(thoughtChain);
+    report = generated.report;
+  } catch (e) {
+    report = { error: '报告生成失败' };
+  }
+
   return {
-    input,
-    thought: thoughtChain && typeof thoughtChain === 'object'
-      ? (Array.isArray(thoughtChain.stages) ? { depth: thoughtChain.depth || 3, stages: thoughtChain.stages, summary: thoughtChain.summary || '', conclusion: thoughtChain.conclusion || '' } : thoughtChain)
-      : {},
-    psychology: psychology ? { emotion: psychology.emotion || psychology.summary || '', needs: Array.isArray(psychology.needs) ? psychology.needs.slice(0, 3) : [], summary: psychology.summary || '' } : {},
-    judgment: judgment || {},
+    report,
     timestamp: Date.now()
   };
 }
