@@ -61,7 +61,7 @@ class SAGEGuardian {
     const timestamp = new Date().toISOString();
     const entry = `[${timestamp}] [${level}] ${message}\n`;
     fs.appendFileSync(this.logFile, entry);
-    console.log(`[SAGE] ${message}`);
+    console.error(`[SAGE] ${message}`);
   }
 
   /**
@@ -342,7 +342,7 @@ class SAGEGuardian {
     
     try {
       fs.appendFileSync(this.logFile, logLine);
-      console.log(`[SAGE] Security decision logged: ${decision.level}`);
+      console.error(`[SAGE] Security decision logged: ${decision.level}`);
       return { success: true };
     } catch (e) {
       console.error('[SAGE] Failed to log security decision:', e.message);
@@ -374,7 +374,7 @@ class SAGEGuardian {
         return logs.slice(-limit);
       }
     } catch (e) {
-      console.log('[SAGE] Error reading security log:', e.message);
+      console.error('[SAGE] Error reading security log:', e.message);
     }
     return [];
   }

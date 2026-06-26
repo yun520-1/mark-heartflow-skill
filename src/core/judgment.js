@@ -463,7 +463,7 @@ class MetaJudgment {
         }
         this.history = Array.isArray(data.history) ? data.history : [];
         this.confidenceClaims = Array.isArray(data.confidenceClaims) ? data.confidenceClaims : [];
-        console.log(`[MetaJudgment] 恢复 ${this.history.length} 条判断记录`);
+        console.error(`[MetaJudgment] 恢复 ${this.history.length} 条判断记录`);
       }
     } catch (e) {
       // 安全修复：使用错误级别日志

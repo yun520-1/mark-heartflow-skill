@@ -267,7 +267,7 @@ class PDCAEngine {
   }
 
   log(message) {
-    console.log(`[PDCA] ${message}`);
+    console.error(`[PDCA] ${message}`);
   }
 
   // ========================================================================

@@ -347,7 +347,7 @@ class DesireCognition {
     this._conversationEmotionMemory = [];
 
     this.ready = true;
-    if (this.debug) console.log('[DesireCognition] v1.3.0 ready — 七层情感架构集成版');
+    if (this.debug) console.error('[DesireCognition] v1.3.0 ready — 七层情感架构集成版');
   }
 
   /**

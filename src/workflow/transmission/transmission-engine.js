@@ -498,7 +498,7 @@ class TransmissionEngine {
     // 去重检测
     const dedup = this._detectDuplicate(lesson.lesson);
     if (dedup.isDuplicate) {
-      console.log(`[TransmissionEngine] Skipping duplicate lesson (sim=${dedup.similarity.toFixed(2)})`);
+      console.error(`[TransmissionEngine] Skipping duplicate lesson (sim=${dedup.similarity.toFixed(2)})`);
       return null;
     }
 

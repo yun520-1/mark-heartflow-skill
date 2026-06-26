@@ -566,8 +566,8 @@ class ThinkCheckLogger {
 
   flush() {
     if (this._consoleOutput) {
-      console.log(`[ThinkCheckLogger] CoT → ${this._cotOutputFile}`);
-      console.log(`[ThinkCheckLogger] Decisions → ${this._outputFile}`);
+      console.error(`[ThinkCheckLogger] CoT → ${this._cotOutputFile}`);
+      console.error(`[ThinkCheckLogger] Decisions → ${this._outputFile}`);
     }
   }
 

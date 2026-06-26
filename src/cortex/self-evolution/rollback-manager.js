@@ -193,7 +193,7 @@ class RollbackManager {
     } catch (e) {
       // 日志写入失败时静默处理
     }
-    console.log(`[Rollback] ${message}`);
+    console.error(`[Rollback] ${message}`);
   }
 
   // ========================================================================

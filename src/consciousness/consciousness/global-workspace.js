@@ -102,7 +102,7 @@ class GlobalWorkspace extends EventEmitter {
       /** 连续失败计数，用于故障检测 */
       consecutiveFailures: 0,
     });
-    console.log(`[GWT] Registered agent: ${agent.name}`);
+    console.error(`[GWT] Registered agent: ${agent.name}`);
     return true;
   }
 
@@ -185,7 +185,7 @@ class GlobalWorkspace extends EventEmitter {
         });
         agentData.consecutiveFailures = 0;
 
-        console.log(`[GWT] ${name} broadcasts: attention=${broadcast.attention.toFixed(3)}, confidence=${broadcast.confidence.toFixed(3)}`);
+        console.error(`[GWT] ${name} broadcasts: attention=${broadcast.attention.toFixed(3)}, confidence=${broadcast.confidence.toFixed(3)}`);
       } catch (e) {
         console.error(`[GWT] Agent ${name} error:`, e.message);
         agentData.consecutiveFailures++;
@@ -264,7 +264,7 @@ class GlobalWorkspace extends EventEmitter {
     });
 
     const winner = scored[0];
-    console.log(`[GWT] Winner: ${winner.agent} (score: ${winner.score.toFixed(3)})`);
+    console.error(`[GWT] Winner: ${winner.agent} (score: ${winner.score.toFixed(3)})`);
 
     return winner;
   }

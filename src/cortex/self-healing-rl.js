@@ -160,7 +160,7 @@ class HealingMemoryRL {
           if (data.qTable) {
             this.qTable = new Map(Object.entries(data.qTable));
             this.history = Array.isArray(data.history) ? data.history.slice(-this.maxMemory) : [];
-            console.log('[HealingMemoryRL] Q-table restored (HMAC check bypassed)');
+            console.error('[HealingMemoryRL] Q-table restored (HMAC check bypassed)');
           }
           return;
         }

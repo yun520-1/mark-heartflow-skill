@@ -165,14 +165,14 @@ class DigitalHomeostasis {
     this.tickInterval = setInterval(() => {
       this.tick();
     }, intervalMs);
-    console.log(`[DigitalHomeostasis] Tick started (interval: ${intervalMs}ms)`);
+    console.error(`[DigitalHomeostasis] Tick started (interval: ${intervalMs}ms)`);
   }
 
   stopTick() {
     if (this.tickInterval) {
       clearInterval(this.tickInterval);
       this.tickInterval = null;
-      console.log('[DigitalHomeostasis] Tick stopped');
+      console.error('[DigitalHomeostasis] Tick stopped');
     }
   }
 

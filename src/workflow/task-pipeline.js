@@ -217,9 +217,9 @@ class TaskPipeline {
    */
   async initialize() {
     this.identityCore.boot();
-    console.log('[TaskPipeline] 初始化完成');
-    console.log('[TaskPipeline] 身份:', this.identityCore.getIdentitySummary());
-    console.log('[TaskPipeline] 配置:', JSON.stringify(this.config));
+    console.error('[TaskPipeline] 初始化完成');
+    console.error('[TaskPipeline] 身份:', this.identityCore.getIdentitySummary());
+    console.error('[TaskPipeline] 配置:', JSON.stringify(this.config));
   }
 
   // ========================================================================
@@ -429,7 +429,7 @@ class TaskPipeline {
       return false;
     }
     this._cancellationToken = true;
-    console.log('[TaskPipeline] 任务取消已请求');
+    console.error('[TaskPipeline] 任务取消已请求');
     return true;
   }
 
@@ -442,7 +442,7 @@ class TaskPipeline {
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       if (attempt > 0) {
-        console.log(`[TaskPipeline] 重试第 ${attempt}/${maxRetries} 次`);
+        console.error(`[TaskPipeline] 重试第 ${attempt}/${maxRetries} 次`);
         await this._delay(this.config.retryDelayMs * attempt);
       }
 
@@ -471,7 +471,7 @@ class TaskPipeline {
         if (!verification.verified && attempt < maxRetries) {
           lastError = new Error('验证未通过');
           lastError.type = PipelineError.VALIDATION;
-          console.log('[TaskPipeline] 验证未通过，将重试');
+          console.error('[TaskPipeline] 验证未通过，将重试');
           continue;
         }
 
@@ -480,7 +480,7 @@ class TaskPipeline {
       } catch (err) {
         lastError = err;
         if (attempt >= maxRetries) throw err;
-        console.log(`[TaskPipeline] 阶段失败: ${err.message}`);
+        console.error(`[TaskPipeline] 阶段失败: ${err.message}`);
       }
     }
 
@@ -539,7 +539,7 @@ class TaskPipeline {
       domain: this.currentTask ? this.currentTask.domain : undefined
     });
 
-    console.log(`[TaskPipeline] 任务 ${taskId} ${status} (${duration}ms)`);
+    console.error(`[TaskPipeline] 任务 ${taskId} ${status} (${duration}ms)`);
   }
 
   // ========================================================================
@@ -551,7 +551,7 @@ class TaskPipeline {
    * @private
    */
   async _analyzeTask(taskInput, text) {
-    console.log('[TaskPipeline] 阶段 1: 分析任务');
+    console.error('[TaskPipeline] 阶段 1: 分析任务');
 
     return {
       text: text.substring(0, 1000),
@@ -828,7 +828,7 @@ class TaskPipeline {
    * @private
    */
   async _planTask(taskInput, analysis) {
-    console.log('[TaskPipeline] 阶段 2: 规划任务');
+    console.error('[TaskPipeline] 阶段 2: 规划任务');
 
     const complexity = analysis.complexity || TaskComplexity.TRIVIAL;
     const domain = analysis.domain || TaskDomain.UNKNOWN;
@@ -1084,7 +1084,7 @@ class TaskPipeline {
    * @private
    */
   async _verifyResult({ analysis, plan }) {
-    console.log('[TaskPipeline] 阶段 3: 认知验证');
+    console.error('[TaskPipeline] 阶段 3: 认知验证');
 
     // 基本存在性检查
     const analysisValid = !!(analysis && analysis.text);

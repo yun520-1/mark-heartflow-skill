@@ -144,7 +144,7 @@ class MeaningfulMemory {
         this.stats = { ...this.stats, ...data.stats };
       }
       
-      console.log(`[MeaningfulMemory] 恢复 ${this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length} 条记忆`);
+      console.error(`[MeaningfulMemory] 恢复 ${this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length} 条记忆`);
     } catch (e) {
       console.warn('[MeaningfulMemory] 恢复失败:', e.message);
     }
@@ -175,7 +175,7 @@ class MeaningfulMemory {
       
       fs.writeFileSync(exportPath, JSON.stringify(exportData, null, 2));
       this.stats.lastSave = new Date().toISOString();
-      console.log(`[MeaningfulMemory] 已保存 ${this.stats.totalMemories} 条记忆`);
+      console.error(`[MeaningfulMemory] 已保存 ${this.stats.totalMemories} 条记忆`);
     } catch (e) {
       console.warn('[MeaningfulMemory] 保存失败:', e.message);
     }
@@ -335,7 +335,7 @@ class MeaningfulMemory {
     }
     
     this.stats.totalMemories = this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length;
-    console.log(`[MeaningfulMemory] 注入 ${coreMemories.length} 条 CORE 记忆`);
+    console.error(`[MeaningfulMemory] 注入 ${coreMemories.length} 条 CORE 记忆`);
     this._doSave(); // immediate save after injection
   }
   
@@ -384,7 +384,7 @@ class MeaningfulMemory {
     }
     
     this.stats.totalMemories = this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length;
-    console.log(`[MeaningfulMemory] 存储: ${id} (${layer}, total ${this.stats.totalMemories})`);
+    console.error(`[MeaningfulMemory] 存储: ${id} (${layer}, total ${this.stats.totalMemories})`);
     this._autoSave();
     return id;
   }
@@ -695,7 +695,7 @@ class MeaningfulMemory {
     }
     
     this.stats.lastCleanup = new Date().toISOString();
-    console.log(`[MeaningfulMemory] 遗忘曲线清理: 删除 ${toDelete.length} 条, 压缩 ${toCompress.length} 条`);
+    console.error(`[MeaningfulMemory] 遗忘曲线清理: 删除 ${toDelete.length} 条, 压缩 ${toCompress.length} 条`);
     this._autoSave();
     return { deleted: toDelete.length, compressed: toCompress.length };
   }
@@ -862,7 +862,7 @@ class MeaningfulMemory {
       exportedAt: new Date().toISOString()
     };
     fs.writeFileSync(resolvedPath, JSON.stringify(data, null, 2));
-    console.log(`[MeaningfulMemory] 导出到: ${resolvedPath}`);
+    console.error(`[MeaningfulMemory] 导出到: ${resolvedPath}`);
     return { success: true, count: this.stats.totalMemories };
   }
 
@@ -892,7 +892,7 @@ class MeaningfulMemory {
     if (data.ephemeral) {
       for (const mem of data.ephemeral) this.store({ ...mem, layer: 'ephemeral' });
     }
-    console.log(`[MeaningfulMemory] 从 ${filePath} 导入`);
+    console.error(`[MeaningfulMemory] 从 ${filePath} 导入`);
     return { success: true, count: (data.core?.length || 0) + (data.learned?.length || 0) + (data.ephemeral?.length || 0) };
   }
 

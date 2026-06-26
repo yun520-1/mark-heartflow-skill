@@ -538,8 +538,8 @@ class CoreIdentityEngine {
     // 状态文件
     this.stateFile = path.join(projectRoot, 'internal', 'data', 'identity-state.json');
     
-    console.log('[CoreIdentityEngine] 核心身份引擎初始化');
-    console.log(`[CoreIdentityEngine] ${this.identity.declare()}`);
+    console.error('[CoreIdentityEngine] 核心身份引擎初始化');
+    console.error(`[CoreIdentityEngine] ${this.identity.declare()}`);
   }
   
   /**
@@ -637,7 +637,7 @@ class CoreIdentityEngine {
     }
     
     fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
-    console.log(`[CoreIdentityEngine] 状态已保存到 ${this.stateFile}`);
+    console.error(`[CoreIdentityEngine] 状态已保存到 ${this.stateFile}`);
   }
   
   /**
@@ -647,7 +647,7 @@ class CoreIdentityEngine {
     try {
       if (fs.existsSync(this.stateFile)) {
         const state = JSON.parse(fs.readFileSync(this.stateFile, 'utf8'));
-        console.log(`[CoreIdentityEngine] 状态已加载: ${state.timestamp}`);
+        console.error(`[CoreIdentityEngine] 状态已加载: ${state.timestamp}`);
         return state;
       }
     } catch (error) {

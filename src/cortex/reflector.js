@@ -859,7 +859,7 @@ class Reflector {
    */
   printReport(report) {
     if (!report) {
-      console.log('[Reflector] 无报告可打印');
+      console.error('[Reflector] 无报告可打印');
       return;
     }
 
