@@ -231,8 +231,12 @@ curl -L https://api.github.com/repos/yun520-1/mark-heartflow-skill/zipball/main 
 unzip heartflow.zip && cd yun520-1-mark-heartflow-skill-*
 npm install  # 0外部包，不需要网络
 
-# 方式二：npm 安装（需要 Node.js >= 18）
-npm install -g mark-heartflow-skill
+# 方式二：npm 安装（需要 Node.js >= 18，需要配置 GitHub Packages）
+# 创建 ~/.npmrc 文件，添加：
+#   @yun520-1:registry=https://npm.pkg.github.com
+#   //npm.pkg.github.com/:_authToken=你的_github_token
+# 然后执行：
+npm install @yun520-1/heartflow
 
 # 方式三：git clone（网络不稳定时可能超时）
 git clone --depth 1 https://github.com/yun520-1/mark-heartflow-skill.git
