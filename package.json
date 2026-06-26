@@ -1,7 +1,7 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "5.0.2",
-  "description": "HeartFlow \u2014 AI judgment engine with multi-path evaluation, self-correcting RL, 3-layer memory, and U/D/A/H field tracking. Zero external dependencies.",
+  "version": "5.1.0",
+  "description": "HeartFlow — AI judgment engine with multi-path evaluation, self-correcting RL, 3-layer memory, and U/D/A/H field tracking. Zero external dependencies.",
   "main": "src/core/heartflow.js",
   "bin": {
     "heartflow": "bin/cli.js"
@@ -50,9 +50,9 @@
   "security": {
     "audit": "Run 'npm audit fix' to fix vulnerabilities in @xenova/transformers transitive dependencies. If major version conflicts prevent auto-fix, pin resolutions manually in package.json or update @xenova/transformers.",
     "warnings": [
-      "\u6b64\u6280\u80fd\u5305\u542b\u9ad8\u7ea7 AI \u8ba4\u77e5\u80fd\u529b\u3002desktop-agent \u548c video-generate \u7b49\u5b50\u6280\u80fd\u5305\u542b\u9ad8\u98ce\u9669\u529f\u80fd\uff0c\u9700\u8981\u660e\u786e\u7528\u6237\u6388\u6743\u624d\u80fd\u4f7f\u7528\u3002",
-      "\u4e0d\u4f1a\u81ea\u52a8\u53d1\u9001\u6570\u636e\u5230\u5916\u90e8\u670d\u52a1\u3002\u6240\u6709\u7f51\u7edc\u901a\u4fe1\u9700\u8981\u663e\u5f0f\u914d\u7f6e\u3002",
-      "\u4e0d\u4f1a\u81ea\u52a8\u5199\u5165 API \u5bc6\u94a5\u5230\u73af\u5883\u53d8\u91cf\u6587\u4ef6\u3002\u7528\u6237\u5fc5\u987b\u663e\u5f0f\u63d0\u4f9b\u5bc6\u94a5\u3002"
+      "此技能包含高级 AI 认知能力。desktop-agent 和 video-generate 等子技能包含高风险功能，需要明确用户授权才能使用。",
+      "不会自动发送数据到外部服务。所有网络通信需要显式配置。",
+      "不会自动写入 API 密钥到环境变量文件。用户必须显式提供密钥。"
     ]
   },
   "license": "MIT",

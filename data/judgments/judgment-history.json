@@ -4226,6 +4226,2516 @@
       },
       "timestamp": 1782450260022,
       "id": "judg-1782450260022-bdxj"
+    },
+    {
+      "input": "我想辞职去创业，但我担心失败",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 14,
+        "keywords": [
+          "我想辞职去创业",
+          "但我担心失败"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 6,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.7,
+          "confidence": 0.465
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.7,
+          "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451342287-g2hk",
+        "judgment": "当前需要先分析，再做判断。问题需要更全面的理解才能做出可靠判断。收集更多信息，从多角度分析后再给出判断",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.7,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 6,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.7,
+            "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.7分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451342287
+      },
+      "timestamp": 1782451342287,
+      "id": "judg-1782451342287-g2hk"
+    },
+    {
+      "input": "我想辞职去创业，但我担心失败",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 14,
+        "keywords": [
+          "我想辞职去创业",
+          "但我担心失败"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 6,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.7,
+          "confidence": 0.465
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.7,
+          "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451360262-uh1l",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.7,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 6,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.7,
+            "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.7分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451360262
+      },
+      "timestamp": 1782451360262,
+      "id": "judg-1782451360262-uh1l"
+    },
+    {
+      "input": "我觉得我适合做AI产品经理，但转行太难了",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 20,
+        "keywords": [
+          "我觉得我适合做AI产品经理",
+          "但转行太难了"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 6,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.7,
+          "confidence": 0.465
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.7,
+          "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451360266-cb3x",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.7,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 6,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.7,
+            "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.7分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451360266
+      },
+      "timestamp": 1782451360266,
+      "id": "judg-1782451360266-cb3x"
+    },
+    {
+      "input": "我最近工作很累，想休息一段时间",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 15,
+        "keywords": [
+          "我最近工作很累",
+          "想休息一段时间"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 6,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.7,
+          "confidence": 0.465
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.7,
+          "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451360267-gx2o",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.7,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 6,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.7,
+            "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.7分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451360267
+      },
+      "timestamp": 1782451360267,
+      "id": "judg-1782451360267-gx2o"
+    },
+    {
+      "input": "我想辞职去创业，但我担心失败",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 14,
+        "keywords": [
+          "我想辞职去创业",
+          "但我担心失败"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 6,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.7,
+          "confidence": 0.465
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.7,
+          "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451398428-m32k",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.7,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 6,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.7,
+            "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.7分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451398428
+      },
+      "timestamp": 1782451398428,
+      "id": "judg-1782451398428-m32k"
+    },
+    {
+      "input": "我最近工作很累，想休息一段时间",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 15,
+        "keywords": [
+          "我最近工作很累",
+          "想休息一段时间"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 6,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.7,
+          "confidence": 0.465
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.7,
+          "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451398433-2m94",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.7,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 6,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.7,
+            "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.7分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451398433
+      },
+      "timestamp": 1782451398433,
+      "id": "judg-1782451398433-2m94"
+    },
+    {
+      "input": "我有个产品想法，要不要现在就辞职去做",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": true,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 18,
+        "keywords": [
+          "我有个产品想法",
+          "要不要现在就辞职去做"
+        ],
+        "signature": "general:false:true:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 6,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.7,
+          "confidence": 0.465
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.7,
+          "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451398435-g8vn",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.7,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 6,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.7,
+            "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.7分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451398435
+      },
+      "timestamp": 1782451398435,
+      "id": "judg-1782451398435-g8vn"
+    },
+    {
+      "input": "我想辞职去创业，但我担心失败",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 14,
+        "keywords": [
+          "我想辞职去创业",
+          "但我担心失败"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 6,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.7,
+          "confidence": 0.465
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.7,
+          "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451405086-5twn",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.7,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 6,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.7,
+            "whyNotChosen": "总分 4.7 vs 6，差距较大（+1.3分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.7分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451405086
+      },
+      "timestamp": 1782451405086,
+      "id": "judg-1782451405086-5twn"
+    },
+    {
+      "input": "我想辞职去创业，但我担心失败",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 14,
+        "keywords": [
+          "我想辞职去创业",
+          "但我担心失败"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 4,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.2,
+          "confidence": 0.41500000000000004
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.2,
+          "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451426086-xn32",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.2,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 4,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.2,
+            "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451426087
+      },
+      "timestamp": 1782451426087,
+      "id": "judg-1782451426086-xn32"
+    },
+    {
+      "input": "我最近工作很累，想休息一段时间",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 15,
+        "keywords": [
+          "我最近工作很累",
+          "想休息一段时间"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 4,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.2,
+          "confidence": 0.41500000000000004
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.2,
+          "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451426092-b7uz",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.2,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 4,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.2,
+            "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451426092
+      },
+      "timestamp": 1782451426092,
+      "id": "judg-1782451426092-b7uz"
+    },
+    {
+      "input": "我有个产品想法，要不要现在就辞职去做",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": true,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 18,
+        "keywords": [
+          "我有个产品想法",
+          "要不要现在就辞职去做"
+        ],
+        "signature": "general:false:true:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 0.9,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.7,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 4,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.2,
+          "confidence": 0.41500000000000004
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 0.9,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.2,
+          "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451426094-0c3p",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.2,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 4,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.2,
+            "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451426094
+      },
+      "timestamp": 1782451426094,
+      "id": "judg-1782451426094-0c3p"
+    },
+    {
+      "input": "我想辞职去创业，但我担心失败",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 14,
+        "keywords": [
+          "我想辞职去创业",
+          "但我担心失败"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 1.08,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.42,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 4,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.2,
+          "confidence": 0.41500000000000004
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 1.08,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.2,
+          "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451445515-dkdd",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.2,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 4,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.2,
+            "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451445515
+      },
+      "timestamp": 1782451445515,
+      "id": "judg-1782451445515-dkdd"
+    },
+    {
+      "input": "我最近工作很累，想休息一段时间",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 15,
+        "keywords": [
+          "我最近工作很累",
+          "想休息一段时间"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 1.08,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.42,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 4,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.2,
+          "confidence": 0.41500000000000004
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 1.08,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.2,
+          "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451445519-fpaw",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.2,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 4,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.2,
+            "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451445519
+      },
+      "timestamp": 1782451445519,
+      "id": "judg-1782451445519-fpaw"
+    },
+    {
+      "input": "我有个产品想法，要不要现在就辞职去做",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": true,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 18,
+        "keywords": [
+          "我有个产品想法",
+          "要不要现在就辞职去做"
+        ],
+        "signature": "general:false:true:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 1.08,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.42,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 4,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.2,
+          "confidence": 0.41500000000000004
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 1.08,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.2,
+          "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451445521-amni",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.2,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 4,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.2,
+            "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451445521
+      },
+      "timestamp": 1782451445521,
+      "id": "judg-1782451445521-amni"
+    },
+    {
+      "input": "今天天气不错",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": false,
+        "length": 6,
+        "keywords": [
+          "今天天气不错"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 1.08,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.42,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 4,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.2,
+          "confidence": 0.41500000000000004
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 1.08,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.2,
+          "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451445522-9g2h",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.2,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 4,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.2,
+            "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451445522
+      },
+      "timestamp": 1782451445522,
+      "id": "judg-1782451445522-9g2h"
+    },
+    {
+      "input": "帮我分析一下这个市场的竞争格局",
+      "context": {
+        "intent": "general",
+        "hasEmotion": false,
+        "sentiment": 0,
+        "isQuestion": false,
+        "isAdvice": false,
+        "isDecision": false,
+        "isAnalysis": true,
+        "length": 15,
+        "keywords": [
+          "帮我分析一下这个市场的竞争格局"
+        ],
+        "signature": "general:false:false:false"
+      },
+      "paths": [
+        {
+          "id": "path_analyze",
+          "label": "分析先行",
+          "direction": "analyze",
+          "description": "先分析理解问题全貌，再给判断",
+          "applicable": true,
+          "priority": 1.08,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "totalScore": 6,
+          "confidence": 0.6000000000000001
+        },
+        {
+          "id": "path_act",
+          "label": "直接行动",
+          "direction": "act",
+          "description": "问题明确，直接给判断和行动建议",
+          "applicable": true,
+          "priority": 0.42,
+          "scores": {
+            "feasibility": 6,
+            "consequence": 4,
+            "risk": 3,
+            "alignment": 5,
+            "cost": 3,
+            "reversibility": 3
+          },
+          "consequences": {
+            "短期（1-7天）": "立即产生可见的变化或反馈",
+            "中期（1-3月）": "行动结果已显现，可能需要调整方向",
+            "长期（1-3年）": "行动路径已形成稳定模式"
+          },
+          "totalScore": 4.2,
+          "confidence": 0.41500000000000004
+        }
+      ],
+      "chosen": {
+        "id": "path_analyze",
+        "label": "分析先行",
+        "direction": "analyze",
+        "description": "先分析理解问题全貌，再给判断",
+        "applicable": true,
+        "priority": 1.08,
+        "scores": {
+          "feasibility": 7,
+          "consequence": 5,
+          "risk": 6,
+          "alignment": 5,
+          "cost": 6,
+          "reversibility": 8
+        },
+        "consequences": {
+          "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+          "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+          "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+        },
+        "totalScore": 6,
+        "confidence": 0.6000000000000001,
+        "alternative": {
+          "label": "直接行动",
+          "score": 4.2,
+          "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+        },
+        "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+      },
+      "judgment": {
+        "id": "judg-1782451445523-8yyu",
+        "judgment": "当前需要先分析，再做判断。其他路径评分低于分析路径，行动条件不成熟。先收集信息、从多角度分析，等条件成熟后再行动。预期: 对问题有更清晰的理解，但尚未采取实际行动",
+        "paths": [
+          {
+            "label": "分析先行",
+            "direction": "analyze",
+            "score": 6,
+            "scores": {
+              "feasibility": 7,
+              "consequence": 5,
+              "risk": 6,
+              "alignment": 5,
+              "cost": 6,
+              "reversibility": 8
+            }
+          },
+          {
+            "label": "直接行动",
+            "direction": "act",
+            "score": 4.2,
+            "scores": {
+              "feasibility": 6,
+              "consequence": 4,
+              "risk": 3,
+              "alignment": 5,
+              "cost": 3,
+              "reversibility": 3
+            }
+          }
+        ],
+        "chosenPath": {
+          "label": "分析先行",
+          "direction": "analyze",
+          "score": 6,
+          "scores": {
+            "feasibility": 7,
+            "consequence": 5,
+            "risk": 6,
+            "alignment": 5,
+            "cost": 6,
+            "reversibility": 8
+          },
+          "consequences": {
+            "短期（1-7天）": "对问题有更清晰的理解，但尚未采取实际行动",
+            "中期（1-3月）": "分析结论已沉淀为可执行的计划",
+            "长期（1-3年）": "早期分析为后续行动提供了正确的方向指引"
+          },
+          "alternative": {
+            "label": "直接行动",
+            "score": 4.2,
+            "whyNotChosen": "总分 4.2 vs 6，差距较大（+1.8分）"
+          },
+          "whyChosen": "优势维度: feasibility(7/10), reversibility(8/10)；总分: 6/10"
+        },
+        "confidence": 0.6,
+        "reasoning": "选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+        "direction": "analyze",
+        "timestamp": 1782451445523
+      },
+      "timestamp": 1782451445523,
+      "id": "judg-1782451445523-8yyu"
     }
   ],
   "consequences": [],
@@ -4265,6 +6775,6 @@
       "updatedAt": 1782443345676
     }
   },
-  "savedAt": 1782450262030,
+  "savedAt": 1782451447524,
   "version": "1.0.0"
 }

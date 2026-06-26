@@ -290,6 +290,29 @@ class JudgmentEngine {
     const hasEmotion = context.emotion?.sentiment !== undefined;
     const sentiment = context.emotion?.sentiment || 0;
 
+    // v5.1.0: 使用上游认知数据做更灵敏的路径生成
+    const agentPsych = context.agentPsychology || {};
+    const agentPhil = context.agentPhilosophy || {};
+    const desire = context.desire || {};
+    const threePoisons = context.threePoisons || {};
+    const selfPos = context.selfPositioning || {};
+
+    // 从认知数据提取信号（兼容 agentPsychology 嵌套格式）
+    const psychDims = agentPsych.dimensions || {};
+    const cognitiveLoad = psychDims.cognitiveLoad?.load || 0;
+    const goalConflicts = psychDims.goalConflicts?.count || 0;
+    const identityDrift = psychDims.identityDrift?.drift || 0;
+
+    // 从 desire 提取（兼容嵌套格式）
+    const desireScores = desire.desires || {};
+    const hasHighDesire = Object.values(desireScores).filter(d => d && d.score > 0.6).length > 0;
+
+    // 从 threePoisons 提取（兼容嵌套格式）
+    const poisonScores = threePoisons.scores || {};
+    const hasDelusion = (poisonScores.delusion || 0) > 5;
+    const hasGreed = (poisonScores.greed || 0) > 5;
+    const hasResonance = selfPos && selfPos.resonance && selfPos.resonance.score > 0.5;
+
     // 路径 A: 分析先行（默认路径——先理解再行动）
     paths.push({
       id: 'path_analyze',
@@ -329,6 +352,30 @@ class JudgmentEngine {
       applicable: isDecision && sentiment < 0,
       priority: 0.6,
     });
+
+    // v5.1.0: 根据认知数据调整路径优先级
+    // 认知负荷高 + 欲望强烈 → 降级直接行动的可行性
+    if (hasHighDesire) {
+      const actPath = paths.find(p => p.id === 'path_act');
+      if (actPath) actPath.priority *= 0.8;
+    }
+    if (hasDelusion) {
+      // 痴高 → 分析路径优先级提升
+      const actPath = paths.find(p => p.id === 'path_act');
+      if (actPath) actPath.priority *= 0.6;
+      const analyzePath = paths.find(p => p.id === 'path_analyze');
+      if (analyzePath) analyzePath.priority *= 1.2;
+    }
+    if (hasGreed && !hasHighDesire) {
+      // 贪高但欲望不强烈 → 可能是空想，反问引导更合适
+      const reflectPath = paths.find(p => p.id === 'path_reflect');
+      if (reflectPath) reflectPath.priority *= 1.3;
+    }
+    // 认知负荷高 → 行动决策需要更谨慎
+    if (cognitiveLoad > 0.5) {
+      const actPath = paths.find(p => p.id === 'path_act');
+      if (actPath) actPath.priority *= 0.7;
+    }
 
     return paths.filter(p => p.applicable);
   }
@@ -396,10 +443,30 @@ class JudgmentEngine {
     // 基于路径特征做粗评分，后续可升级为更精细的评分模型
     const base = 5;
 
+    // v5.1.0: 使用上游认知数据做精确评分
+    const agentPsych = context.agentPsychology || {};
+    const desire = context.desire || {};
+    const threePoisons = context.threePoisons || {};
+
+    // 兼容嵌套格式
+    const psychDims = agentPsych.dimensions || {};
+    const cognitiveLoad = psychDims.cognitiveLoad?.load || 0;
+    const goalConflicts = psychDims.goalConflicts?.count || 0;
+    const identityDrift = psychDims.identityDrift?.drift || 0;
+    const desireScores = desire.desires || {};
+    const hasHighDesire = Object.values(desireScores).filter(d => d && d.score > 0.6).length > 0;
+    const poisonScores = threePoisons.scores || {};
+    const hasDelusion = (poisonScores.delusion || 0) > 5;
+    const hasGreed = (poisonScores.greed || 0) > 5;
+
     switch (dim) {
       case 'feasibility':
         // 行动类路径可行性较低（需要用户行动），分析类较高
-        if (path.direction === 'act') return Math.min(10, base + 1);
+        if (path.direction === 'act') {
+          // 如果认知负荷高或欲望强烈，行动可行性进一步降低
+          const penalty = (cognitiveLoad > 0.5 ? 1 : 0) + (hasHighDesire ? 1 : 0);
+          return Math.max(1, base + 1 - penalty);
+        }
         if (path.direction === 'analyze') return Math.min(10, base + 2);
         if (path.direction === 'reflect') return Math.min(10, base + 3); // 反问最可行
         return base;
@@ -407,12 +474,20 @@ class JudgmentEngine {
       case 'consequence':
         // 后果影响：共情类长期影响好，行动类短期影响大
         if (path.direction === 'empathize') return Math.min(10, base + 3);
-        if (path.direction === 'act') return Math.min(10, base + 1);
+        if (path.direction === 'act') {
+          // 如果有贪或痴，行动的长期后果变差
+          const penalty = (hasGreed ? 1 : 0) + (hasDelusion ? 2 : 0);
+          return Math.max(1, base + 1 - penalty);
+        }
         return base;
 
       case 'risk':
         // 风险：行动类风险最高，分析类最低
-        if (path.direction === 'act') return Math.max(1, base - 2);
+        if (path.direction === 'act') {
+          // 认知负荷高 + 目标冲突多 → 行动风险更大
+          const extra = (cognitiveLoad > 0.5 ? 1 : 0) + (goalConflicts > 0 ? 1 : 0) + (identityDrift > 0.3 ? 1 : 0);
+          return Math.max(1, base - 2 - extra);
+        }
         if (path.direction === 'analyze') return Math.min(10, base + 1);
         if (path.direction === 'reflect') return Math.min(10, base + 2);
         return base;
@@ -573,31 +648,53 @@ class JudgmentEngine {
   }
 
   _buildAction(chosen, input, context) {
-    const templates = {
-      analyze: {
-        judge: '当前需要先分析，再做判断',
-        reason: '问题需要更全面的理解才能做出可靠判断',
-        action: '收集更多信息，从多角度分析后再给出判断',
-      },
-      act: {
-        judge: '判断明确，可以直接行动',
-        reason: '问题清晰，信息充分，不需要额外分析',
-        action: '按判断执行，关注执行过程中的反馈信号',
-      },
-      empathize: {
-        judge: '情绪优先，判断可以等',
-        reason: '情绪信号强烈，理性判断的前提是情绪得到响应',
-        action: '先回应情绪，等情绪稳定后再做判断',
-      },
-      reflect: {
-        judge: '这个问题用户自己判断更合适',
-        reason: '用户具备判断能力，卡住的原因是没想清楚而不是不知道',
-        action: '用反问帮助用户梳理思路，让用户自己找到答案',
-      },
-    };
+    // ─── 心虫用路径数据自己做决策，不再用模板 ─────
+    const direction = chosen.direction;
+    const score = chosen.totalScore;
+    const consequences = chosen.consequences || {};
 
-    const template = templates[chosen.direction] || templates.analyze;
-    return `${template.judge}。${template.reason}。${template.action}`;
+    // 基于路径评分生成决策文本
+    let judge = '';
+    let reason = '';
+    let action = '';
+
+    if (direction === 'analyze') {
+      judge = '当前需要先分析，再做判断';
+      if (score >= 7) {
+        reason = '分析路径评分高，说明分析条件充分';
+      } else {
+        reason = '其他路径评分低于分析路径，行动条件不成熟';
+      }
+      action = '先收集信息、从多角度分析，等条件成熟后再行动';
+    } else if (direction === 'act') {
+      judge = '判断明确，可以直接行动';
+      if (score >= 7) {
+        reason = '行动路径评分高，风险可控，收益明确';
+      } else {
+        reason = `行动路径评分 ${score}/10，但仍有不确定性`;
+      }
+      action = '按判断方向行动，关注过程中的反馈信号，准备随时调整';
+    } else if (direction === 'empathize') {
+      judge = '情绪优先，判断可以等';
+      reason = '情绪信号强烈，理性判断的前提是情绪得到响应';
+      action = '先回应情绪，等情绪稳定后再做判断';
+    } else if (direction === 'reflect') {
+      judge = '这个问题用户自己判断更合适';
+      reason = '用户具备判断能力，卡住的原因是没想清楚而不是不知道';
+      action = '用反问帮助用户梳理思路，让用户自己找到答案';
+    } else {
+      judge = '判断中';
+      reason = '正在评估';
+      action = '先收集更多信息';
+    }
+
+    // 附加后果预测（如果有）
+    const shortTerm = consequences['短期（1-7天）'];
+    if (shortTerm && !reason.includes(shortTerm)) {
+      action = `${action}。预期: ${shortTerm}`;
+    }
+
+    return `${judge}。${reason}。${action}`;
   }
 
   _recordJudgment(record) {
