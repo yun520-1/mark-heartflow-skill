@@ -438,6 +438,11 @@ async function chatMode() {
       const result = await engine.think(input);
       console.log('');
       console.log(formatReport(result));
+      // v5.0.2: 认知摘要
+      const cs = result?.output?.meta?.cognitiveSummary;
+      if (cs) {
+        console.log(`  🔍 类型: ${cs.type}  |  情绪: ${cs.emotion}  |  决策: ${cs.decision}  |  置信度: ${(cs.confidence * 100).toFixed(0)}%  |  模块: ${cs.modulesRun}个/${cs.stages}成功`);
+      }
       console.log('');
     } catch (e) {
       console.log(`\n思考过程出错: ${e.message}\n`);
