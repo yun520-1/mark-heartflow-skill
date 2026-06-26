@@ -1,0 +1,55 @@
+{
+  "recentIssues": [
+    {
+      "reasoning": "all humans are mortal",
+      "conclusion": "Socrates is human",
+      "issues": [
+        "未考虑替代推理路径"
+      ],
+      "timestamp": 1780278866065
+    },
+    {
+      "reasoning": "2+2=4",
+      "conclusion": "数学真理",
+      "issues": [
+        "未考虑替代推理路径"
+      ],
+      "timestamp": 1780278970509
+    },
+    {
+      "reasoning": "2+2=4",
+      "conclusion": "数学真理",
+      "issues": [
+        "未考虑替代推理路径"
+      ],
+      "timestamp": 1780401616129
+    },
+    {
+      "reasoning": "all humans are mortal",
+      "conclusion": "Socrates is human",
+      "issues": [
+        "未考虑替代推理路径"
+      ],
+      "timestamp": 1780401616131
+    },
+    {
+      "reasoning": "今天是周一而且明天是周二",
+      "conclusion": "明天是周二",
+      "issues": [
+        "未考虑替代推理路径"
+      ],
+      "timestamp": 1780401616131
+    },
+    {
+      "reasoning": "如果A则B, 否则C",
+      "conclusion": "要么B要么C",
+      "issues": [
+        "结论与推理逻辑不匹配"
+      ],
+      "timestamp": 1780401659160
+    }
+  ],
+  "totalVerified": 29,
+  "passes": 23,
+  "fails": 6
+}

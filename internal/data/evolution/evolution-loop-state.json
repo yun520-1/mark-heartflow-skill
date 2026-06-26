@@ -1,0 +1,25 @@
+{
+  "version": "1.1.0",
+  "cycleCount": 1,
+  "metrics": {
+    "totalCycles": 0,
+    "totalTime": 0,
+    "fastestCycle": null,
+    "slowestCycle": 0,
+    "avgCycleTime": 0,
+    "improvements": 0,
+    "convergedCycles": 0,
+    "failedCycles": 0,
+    "convergenceRate": 0,
+    "healthScore": 100,
+    "cycleTimestamps": [],
+    "improvementHistory": [],
+    "errors": []
+  },
+  "rateLimit": {
+    "enabled": true,
+    "maxCyclesPerMinute": 30,
+    "consecutiveFastCycles": 0
+  },
+  "lastSaved": "2026-06-25T11:36:21.317Z"
+}
