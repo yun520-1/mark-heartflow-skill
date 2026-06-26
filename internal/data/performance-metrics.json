@@ -1,0 +1,35 @@
+{
+  "history": [
+    {
+      "type": "test",
+      "score": 8.5,
+      "timestamp": "2026-06-05T04:54:36.709Z"
+    },
+    {
+      "type": "test",
+      "score": 7,
+      "timestamp": "2026-06-05T04:54:36.709Z"
+    },
+    {
+      "type": "test",
+      "score": 6.5,
+      "timestamp": "2026-06-05T04:54:36.710Z"
+    },
+    {
+      "type": "test",
+      "score": 5,
+      "timestamp": "2026-06-05T04:54:36.710Z"
+    },
+    {
+      "type": "test",
+      "score": 4,
+      "timestamp": "2026-06-05T04:54:36.710Z"
+    },
+    {
+      "type": "test",
+      "score": 3.5,
+      "timestamp": "2026-06-05T04:54:36.710Z"
+    }
+  ],
+  "currentScore": 3.5
+}
