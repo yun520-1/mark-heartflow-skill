@@ -1704,10 +1704,50 @@ class HeartFlow {
           this.recordDialogue('heartflow', output.conclusion, { source: 'think' });
         }
 
+        // 从 pipeline 上下文提取各阶段的原始认知数据
+        const ctx = pipelineResult.ctx || {};
+        const heartLogicData = ctx.heartLogic || {};
+        const psychologyData = ctx.psychology || {};
+        const judgmentData = ctx.judgment || {};
+        const decisionData = ctx.decision || {};
+        const memoryData = ctx.memory || {};
+
+        // 构建完整认知快照——给 LLM 做推理用
+        const cognitionSnapshot = {
+          // 心虫基础感知
+          whatIsThis: heartLogicData.whatIsThis,
+          pain: heartLogicData.pain,
+          // 心理学分析
+          psychology: psychologyData.psych,
+          agentPsychology: psychologyData.agentPsych,
+          agentPhilosophy: psychologyData.agentPhil,
+          // 多路径判断
+          judgment: {
+            direction: judgmentData.direction,
+            confidence: judgmentData.confidence,
+            judgment: judgmentData.judgment,
+            reasoning: judgmentData.reasoning,
+            judgmentId: judgmentData.judgmentId,
+            paths: judgmentData.paths,
+            chosenPath: judgmentData.chosenPath,
+          },
+          // 决策路由
+          decision: {
+            type: decisionData.drDecision?.type,
+            confidence: decisionData.drDecision?.confidence,
+            action: decisionData.executorAction?.action,
+          },
+          // 记忆
+          memoryHits: memoryData.memories?.length || 0,
+        };
+
         return {
+          // 给用户的结论文本
           output: { conclusion: output?.conclusion || '分析完成', meta: { taskType: output?.direction || 'general', confidence: output?.judgmentConfidence || 0.5 } },
           type: output?.direction || 'general',
           confidence: output?.judgmentConfidence || 0.5,
+          // 给 LLM 的结构化推理数据
+          cognition: cognitionSnapshot,
           thoughtChain: stages.map(s => ({ stage: s.id, success: s.success, timing: s.timing })),
           decision: {
             type: output?.direction || 'analyze',

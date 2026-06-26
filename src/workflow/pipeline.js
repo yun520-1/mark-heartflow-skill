@@ -244,6 +244,7 @@ class Pipeline {
         try {
           const result = await stage.run(ctx, this.heartflow);
           results[stage.id] = result;
+          ctx[stage.id] = result;  // 写回 ctx，供后续阶段和调用者使用
           executed.add(stage.id);
           stageTimings[stage.id] = Date.now() - start;
           this._recordStage(stage.id, true, Date.now() - start);
@@ -278,6 +279,7 @@ class Pipeline {
         error: result.error || null,
       })),
       output,
+      ctx,  // 返回上下文，包含各阶段原始数据
       stats: {
         totalTime: Date.now() - ctx._startTime,
         stagesRun: executed.size,
