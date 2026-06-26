@@ -135,6 +135,12 @@ const DEFAULT_PIPELINE = [
         intent: ctx.intent?.intent?.type || 'general',
         emotion: emotionContext,
         pain: pain?.painLevel || 0,
+        // v5.1.0: 使用 pipeline 上游的完整认知数据
+        agentPsychology: ctx.psychology?.agentPsych || null,
+        agentPhilosophy: ctx.psychology?.agentPhil || null,
+        desire: ctx.deepCognition?.desire || null,
+        threePoisons: ctx.deepCognition?.threePoisons || null,
+        selfPositioning: ctx.deepCognition?.selfPositioning || null,
       });
       return {
         direction: result.direction || 'analyze',
@@ -193,29 +199,68 @@ const DEFAULT_PIPELINE = [
     description: '最终输出生成 + 完整认知快照',
     run: async (ctx, hf) => {
       const dir = ctx.judgment?.direction || 'analyze';
-      const judgmentText = ctx.judgment?.judgment || '分析中';
-      const reasoning = ctx.judgment?.reasoning || '';
-      const drType = ctx.decision?.drDecision?.type || null;
+      const jd = ctx.judgment || {};
+      const dd = ctx.decision || {};
       const memories = ctx.memory?.memories || [];
+      const drType = dd.drDecision?.type || null;
 
-      // 三段式输出：判断/理由/行动
-      const parts = [judgmentText];
-      if (reasoning) parts.push(reasoning);
+      // ─── 心虫自己的决策输出 ─────────────────────────
+      // 不再用模板填空，直接用 judgment-engine 的结论
+      // judgment-engine 的 judgment 字段已包含 judge/reason/action 三段式
+      const judgmentEngineOutput = jd.judgment;
+      const judgmentReasoning = jd.reasoning;
 
-      // 根据方向附加行动建议
-      const actionMap = {
-        analyze: '建议先收集更多信息再做判断',
-        act: '判断明确，按此方向执行',
-        empathize: '情绪优先，等情绪稳定后再做判断',
-        reflect: '这个问题需要你自己想清楚',
-      };
-      parts.push(actionMap[dir] || '按判断方向行动');
+      // 构建结论：心虫自己的判断
+      let conclusion = judgmentEngineOutput || '分析完成';
+      if (judgmentReasoning && judgmentEngineOutput) {
+        // judgment-engine 的 _buildReasoning 已包含路径对比
+        // 只在推理和结论不同时附加
+        if (!judgmentEngineOutput.includes(judgmentReasoning)) {
+          conclusion = `${judgmentEngineOutput}\n\n判断理由：${judgmentReasoning}`;
+        }
+      }
+
+      // 附加决策路由类型（如果有）
+      if (drType) {
+        const drTypeMap = {
+          accelerate: '加速执行',
+          pause: '暂停评估',
+          turn: '调整方向',
+          hold: '保持现状',
+          heal: '修复问题',
+          resonate: '深度共情',
+          transmit: '传递知识',
+          rest: '等待时机',
+        };
+        conclusion = `${conclusion}\n\n决策策略：${drTypeMap[drType] || drType}`;
+      }
+
+      // 路径对比摘要（如果有路径数据）
+      const paths = jd.paths || [];
+      const chosenPath = jd.chosenPath;
+      let pathComparison = null;
+      if (paths.length > 1 && chosenPath) {
+        pathComparison = {
+          chosen: {
+            label: chosenPath.label,
+            direction: chosenPath.direction,
+            score: chosenPath.score,
+            why: chosenPath.whyChosen || null,
+          },
+          alternatives: paths
+            .filter(p => p.direction !== chosenPath.direction)
+            .map(p => ({
+              label: p.label,
+              direction: p.direction,
+              score: p.score,
+            })),
+          alternativeNote: chosenPath.alternative?.whyNotChosen || null,
+        };
+      }
 
       // 构建完整认知快照——供 LLM 消费
       const dc = ctx.deepCognition || {};
       const ps = ctx.psychology || {};
-      const jd = ctx.judgment || {};
-      const dd = ctx.decision || {};
 
       const cognition = {
         // 心虫基础感知
@@ -242,6 +287,7 @@ const DEFAULT_PIPELINE = [
           reasoning: jd.reasoning || null,
           paths: jd.paths || [],
           chosenPath: jd.chosenPath || null,
+          pathComparison,  // 路径对比
         },
         // 决策路由
         decision: {
@@ -255,12 +301,13 @@ const DEFAULT_PIPELINE = [
       };
 
       return {
-        conclusion: parts.join('。'),
+        conclusion,
         direction: dir,
-        judgmentConfidence: ctx.judgment?.confidence || 0.5,
+        judgmentConfidence: jd.confidence || 0.5,
         decisionType: drType,
         memoryHits: memories.length,
-        judgmentId: ctx.judgment?.judgmentId,
+        judgmentId: jd.judgmentId,
+        pathComparison,  // 路径对比暴露给上层
         cognition,  // 完整认知快照
       };
     },

@@ -2,8 +2,8 @@
   "meta": {
     "version": "1.0.0",
     "createdAt": "2026-06-01T01:39:46.016Z",
-    "updatedAt": "2026-06-26T05:04:19.952Z",
-    "lastBoot": "2026-06-26T05:04:19.952Z"
+    "updatedAt": "2026-06-26T05:24:05.447Z",
+    "lastBoot": "2026-06-26T05:24:05.447Z"
   },
   "identity": {
     "name": "心虫",
@@ -54,12 +54,12 @@
     "docs": {}
   },
   "context": {
-    "currentSession": "session-1782450259951",
-    "lastSession": "session-1782450239100",
-    "sessionGap": 20850,
+    "currentSession": "session-1782451445447",
+    "lastSession": "session-1782451426006",
+    "sessionGap": 19440,
     "pausedTasks": [],
     "unresolvedProblems": [],
     "recentLessons": [],
-    "lastSessionTime": 1782450259952
+    "lastSessionTime": 1782451445447
   }
 }
