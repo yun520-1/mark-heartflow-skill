@@ -1704,42 +1704,44 @@ class HeartFlow {
           this.recordDialogue('heartflow', output.conclusion, { source: 'think' });
         }
 
-        // 从 pipeline 上下文提取各阶段的原始认知数据
-        const ctx = pipelineResult.ctx || {};
-        const heartLogicData = ctx.heartLogic || {};
-        const psychologyData = ctx.psychology || {};
-        const judgmentData = ctx.judgment || {};
-        const decisionData = ctx.decision || {};
-        const memoryData = ctx.memory || {};
-
-        // 构建完整认知快照——给 LLM 做推理用
-        const cognitionSnapshot = {
-          // 心虫基础感知
-          whatIsThis: heartLogicData.whatIsThis,
-          pain: heartLogicData.pain,
-          // 心理学分析
-          psychology: psychologyData.psych,
-          agentPsychology: psychologyData.agentPsych,
-          agentPhilosophy: psychologyData.agentPhil,
-          // 多路径判断
-          judgment: {
-            direction: judgmentData.direction,
-            confidence: judgmentData.confidence,
-            judgment: judgmentData.judgment,
-            reasoning: judgmentData.reasoning,
-            judgmentId: judgmentData.judgmentId,
-            paths: judgmentData.paths,
-            chosenPath: judgmentData.chosenPath,
-          },
-          // 决策路由
-          decision: {
-            type: decisionData.drDecision?.type,
-            confidence: decisionData.drDecision?.confidence,
-            action: decisionData.executorAction?.action,
-          },
-          // 记忆
-          memoryHits: memoryData.memories?.length || 0,
-        };
+        // 从 pipeline 输出获取完整认知快照（包含 emotion/desire/threePoisons/selfPositioning/loveCognition 等）
+        const cognitionSnapshot = output?.cognition || {};
+        // 兼容旧版本：pipeline 没有 cognition 字段时从 ctx 构建
+        if (Object.keys(cognitionSnapshot).length === 0 && pipelineResult.ctx) {
+          const ctx = pipelineResult.ctx;
+          const heartLogicData = ctx.heartLogic || {};
+          const psychologyData = ctx.psychology || {};
+          const judgmentData = ctx.judgment || {};
+          const decisionData = ctx.decision || {};
+          const memoryData = ctx.memory || {};
+          const dc = ctx.deepCognition || {};
+          Object.assign(cognitionSnapshot, {
+            whatIsThis: heartLogicData.whatIsThis,
+            pain: heartLogicData.pain,
+            psychology: psychologyData.psych,
+            agentPsychology: psychologyData.agentPsych,
+            agentPhilosophy: psychologyData.agentPhil,
+            desire: dc.desire,
+            threePoisons: dc.threePoisons,
+            selfPositioning: dc.selfPositioning,
+            loveCognition: dc.loveCognition,
+            cognitionGround: dc.cognitionGround,
+            judgment: {
+              direction: judgmentData.direction,
+              confidence: judgmentData.confidence,
+              judgment: judgmentData.judgment,
+              reasoning: judgmentData.reasoning,
+              paths: judgmentData.paths,
+              chosenPath: judgmentData.chosenPath,
+            },
+            decision: {
+              type: decisionData.drDecision?.type,
+              confidence: decisionData.drDecision?.confidence,
+              action: decisionData.execResult?.action,
+            },
+            memoryHits: memoryData.memories?.length || 0,
+          });
+        }
 
         return {
           // 给用户的结论文本
@@ -1751,8 +1753,8 @@ class HeartFlow {
               // v5.0.2: 认知摘要暴露给用户
               cognitiveSummary: {
                 type: output?.direction || 'general',
-                emotion: psychologyData.psych?.tone || heartLogicData?.pain?.hasPain ? 'distress' : 'neutral',
-                decision: decisionData.drDecision?.type || 'analyze',
+                emotion: cognitionSnapshot.emotion?.emotionZh || cognitionSnapshot.pain?.hasPain ? 'distress' : 'neutral',
+                decision: cognitionSnapshot.decision?.type || 'analyze',
                 confidence: output?.judgmentConfidence || 0.5,
                 modulesRun: stages.length,
                 stages: stages.filter(s => s.success).length,

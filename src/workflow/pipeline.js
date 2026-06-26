@@ -84,10 +84,45 @@ const DEFAULT_PIPELINE = [
     },
   },
 
-  // ── Stage 3: 判断引擎（依赖 psychology + intent） ────
+  // ── Stage 3: 深层认知分析（依赖 psychology） ────────────
+  {
+    id: 'deepCognition',
+    depends: ['psychology'],
+    description: '欲望认知 + 三毒评估 + AI自处哲学 + 爱情认知',
+    run: async (ctx, hf) => {
+      // 欲望认知
+      let desire = null;
+      if (hf.desireCognition && typeof hf.desireCognition.analyzeDesires === 'function') {
+        try { desire = hf.desireCognition.analyzeDesires(ctx.input); } catch(e) {}
+      }
+      // 三毒评估
+      let threePoisons = null;
+      if (hf.threePoisons && typeof hf.threePoisons.analyzeThreePoisons === 'function') {
+        try { threePoisons = hf.threePoisons.analyzeThreePoisons(ctx.input); } catch(e) {}
+      }
+      // AI 自处哲学
+      let selfPositioning = null;
+      if (hf.selfPositioning && typeof hf.selfPositioning.analyze === 'function') {
+        try { selfPositioning = hf.selfPositioning.analyze(ctx.input); } catch(e) {}
+      }
+      // 爱情认知
+      let loveCognition = null;
+      if (hf.loveCognition && typeof hf.loveCognition.evaluateTriangle === 'function') {
+        try { loveCognition = hf.loveCognition.evaluateTriangle(ctx.input); } catch(e) {}
+      }
+      // 认知地面（整合层）
+      let cognitionGround = null;
+      if (hf.cognitionGround && typeof hf.cognitionGround.map === 'function') {
+        try { cognitionGround = hf.cognitionGround.map(ctx.input); } catch(e) {}
+      }
+      return { desire, threePoisons, selfPositioning, loveCognition, cognitionGround };
+    },
+  },
+
+  // ── Stage 4: 判断引擎（依赖 psychology + deepCognition） ────
   {
     id: 'judgment',
-    depends: ['psychology', 'intent', 'memory'],
+    depends: ['psychology', 'deepCognition', 'intent', 'memory'],
     description: '多路径判断引擎',
     run: async (ctx, hf) => {
       if (!hf.judgmentEngine) return { direction: 'analyze', confidence: 0.5, judgment: null };
@@ -154,8 +189,8 @@ const DEFAULT_PIPELINE = [
   // ── Stage 5: 输出生成（依赖所有上游） ──────────────
   {
     id: 'output',
-    depends: ['judgment', 'decision', 'memory'],
-    description: '最终输出生成',
+    depends: ['judgment', 'decision', 'deepCognition', 'memory'],
+    description: '最终输出生成 + 完整认知快照',
     run: async (ctx, hf) => {
       const dir = ctx.judgment?.direction || 'analyze';
       const judgmentText = ctx.judgment?.judgment || '分析中';
@@ -176,6 +211,49 @@ const DEFAULT_PIPELINE = [
       };
       parts.push(actionMap[dir] || '按判断方向行动');
 
+      // 构建完整认知快照——供 LLM 消费
+      const dc = ctx.deepCognition || {};
+      const ps = ctx.psychology || {};
+      const jd = ctx.judgment || {};
+      const dd = ctx.decision || {};
+
+      const cognition = {
+        // 心虫基础感知
+        whatIsThis: ctx.heartLogic?.whatIsThis || null,
+        pain: ctx.heartLogic?.pain || null,
+        // 意图与语气
+        intent: ctx.intent?.intent || null,
+        tone: ctx.intent?.tone || null,
+        // 情绪与心理
+        emotion: ps.psych?.emotion || null,
+        agentPsychology: ps.agentPsych || null,
+        agentPhilosophy: ps.agentPhil || null,
+        // 深层认知
+        desire: dc.desire || null,
+        threePoisons: dc.threePoisons || null,
+        selfPositioning: dc.selfPositioning || null,
+        loveCognition: dc.loveCognition || null,
+        cognitionGround: dc.cognitionGround || null,
+        // 多路径判断
+        judgment: {
+          direction: jd.direction || 'analyze',
+          confidence: jd.confidence || 0.5,
+          judgment: jd.judgment || null,
+          reasoning: jd.reasoning || null,
+          paths: jd.paths || [],
+          chosenPath: jd.chosenPath || null,
+        },
+        // 决策路由
+        decision: {
+          type: dd.drDecision?.type || null,
+          confidence: dd.drDecision?.confidence || null,
+          action: dd.execResult?.action || null,
+          direction: dd.direction || 'analyze',
+        },
+        // 记忆
+        memoryHits: memories.length,
+      };
+
       return {
         conclusion: parts.join('。'),
         direction: dir,
@@ -183,6 +261,7 @@ const DEFAULT_PIPELINE = [
         decisionType: drType,
         memoryHits: memories.length,
         judgmentId: ctx.judgment?.judgmentId,
+        cognition,  // 完整认知快照
       };
     },
   },
