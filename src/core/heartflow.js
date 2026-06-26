@@ -856,6 +856,9 @@ class HeartFlow {
       const { CognitionGround } = require('./cognition-ground.js');
       this.cognitionGround = new CognitionGround({ heartFlow: this });
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'cognitionGround', error: e.message }); }
+    // ─── [v5.1.0] 自省注册 ──────────────────────────────────
+    this.heartflow = this;  // 让 dispatch('heartflow.introspect') 能找到实例
+
     this._registerModules();
 
     // ─── 自动生成 ALLOWED_ROUTES ──────────────────────────────────────
@@ -971,6 +974,8 @@ class HeartFlow {
       'judgmentEngine',
       // v5.0.0 — 管道引擎
       'pipeline',
+      // v5.1.0 — 自省
+      'heartflow',
     ];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
@@ -1301,6 +1306,8 @@ class HeartFlow {
     'judgmentEngine.getStats',
     // v5.0.0 — 管道引擎
     'pipeline.run', 'pipeline.getStats',
+    // v5.1.0 — 自省
+    'heartflow.introspect',
   ]);
 
   /**
@@ -1706,6 +1713,8 @@ class HeartFlow {
 
         // 从 pipeline 输出获取完整认知快照（包含 emotion/desire/threePoisons/selfPositioning/loveCognition 等）
         const cognitionSnapshot = output?.cognition || {};
+        // 保存最后一次认知快照（供 introspect 使用）
+        this._lastCognition = cognitionSnapshot;
         // 兼容旧版本：pipeline 没有 cognition 字段时从 ctx 构建
         if (Object.keys(cognitionSnapshot).length === 0 && pipelineResult.ctx) {
           const ctx = pipelineResult.ctx;
@@ -1951,6 +1960,179 @@ class HeartFlow {
       return { success: true, id: entry.id, ts: entry.ts };
     } catch (e) {
       return { success: false, error: e.message };
+    }
+  }
+
+  /**
+   * 心虫自省 — 回头看自己的决策过程
+   * 检查：pipeline 质量、判断一致性、模块覆盖率、认知数据完整性、RL 学习
+   */
+  introspect(options = {}) {
+    if (!this.started) return { error: 'HeartFlow not started' };
+
+    const findings = [];
+    const detail = options.detail || false;
+
+    // ─── 1. pipeline 质量 ────────────────────────────────
+    if (this.pipeline) {
+      const stats = this.pipeline.getStats();
+      const stageStats = stats.stages || [];
+      const failedStages = stageStats.filter(s => s.stats.failures > 0);
+      const slowStages = stageStats.filter(s => s.stats.avgTime > 100);
+      if (failedStages.length > 0) {
+        findings.push({
+          type: 'pipeline_failure',
+          severity: 'high',
+          message: `${failedStages.length} 个阶段有失败记录`,
+          detail: failedStages.map(s => `${s.id}: ${s.stats.failures}次失败`),
+        });
+      }
+      if (slowStages.length > 0) {
+        findings.push({
+          type: 'pipeline_slow',
+          severity: 'medium',
+          message: `${slowStages.length} 个阶段平均耗时 >100ms`,
+          detail: slowStages.map(s => `${s.id}: ${s.stats.avgTime}ms`),
+        });
+      }
+      findings.push({
+        type: 'pipeline_runs',
+        severity: 'info',
+        message: `共执行 ${stats.totalRuns} 轮`,
+      });
+    }
+
+    // ─── 2. 判断引擎自省 ──────────────────────────────────
+    if (this.judgmentEngine) {
+      const review = this.judgmentEngine.selfReview(20);
+      if (review.conflicts.length > 0) {
+        findings.push({
+          type: 'judgment_conflict',
+          severity: 'high',
+          message: `${review.conflicts.length} 个判断矛盾`,
+          detail: review.conflicts.map(c => `${c.topic}: ${c.directionA} vs ${c.directionB}`),
+        });
+      }
+      if (review.corrections.length > 0) {
+        findings.push({
+          type: 'judgment_misprediction',
+          severity: 'medium',
+          message: `${review.corrections.length} 个预测偏差`,
+          detail: review.corrections.map(c => `${c.input.slice(0,30)}: 匹配度 ${c.matchScore}`),
+        });
+      }
+      const stats = this.judgmentEngine.getStats();
+      findings.push({
+        type: 'judgment_stats',
+        severity: 'info',
+        message: `${stats.totalJudgments} 条判断, ${stats.rlEntries} 条RL经验`,
+      });
+    }
+
+    // ─── 3. 模块覆盖率 ────────────────────────────────────
+    const allModules = Object.keys(this._modules || {});
+    const pipelineStages = this.pipeline
+      ? this.pipeline.getStats().stages.map(s => s.id)
+      : [];
+    const unusedModules = allModules.filter(m =>
+      !pipelineStages.includes(m) &&
+      !['memory', 'knowledge', 'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
+        'heartLogic', 'intent', 'psychology', 'judgment', 'decision', 'output', 'deepCognition'].includes(m)
+    );
+    if (unusedModules.length > 0) {
+      findings.push({
+        type: 'module_coverage',
+        severity: 'low',
+        message: `${unusedModules.length}/${allModules.length} 模块注册但未被pipeline调用`,
+        detail: detail ? unusedModules : unusedModules.slice(0, 10),
+      });
+    }
+
+    // ─── 4. 认知数据完整性 ────────────────────────────────
+    // 检查最后一次 pipeline 输出的 cognition 字段完整性
+    if (this._lastCognition) {
+      const c = this._lastCognition;
+      const emptyFields = Object.entries(c)
+        .filter(([k, v]) => v === null || v === undefined || (typeof v === 'object' && Object.keys(v).length === 0))
+        .map(([k]) => k);
+      if (emptyFields.length > 0) {
+        findings.push({
+          type: 'cognition_gaps',
+          severity: 'medium',
+          message: `${emptyFields.length} 个认知字段为空`,
+          detail: emptyFields,
+        });
+      }
+    }
+
+    // ─── 5. 记忆层统计 ────────────────────────────────────
+    if (this.memory) {
+      try {
+        const memStats = this.memory.getStats();
+        findings.push({
+          type: 'memory_stats',
+          severity: 'info',
+          message: `CORE:${memStats.core || 0} LEARNED:${memStats.learned || 0} EPHEMERAL:${memStats.ephemeral || 0}`,
+        });
+      } catch (e) { /* skip */ }
+    }
+
+    // ─── 6. 自愈 RL ──────────────────────────────────────
+    if (this.selfHealing) {
+      const shStats = typeof this.selfHealing.getStats === 'function'
+        ? this.selfHealing.getStats() : {};
+      findings.push({
+        type: 'self_healing',
+        severity: 'info',
+        message: `Q-table: ${shStats.qTableSize || 'N/A'} 条目, 自愈: ${shStats.healCount || 0}次`,
+      });
+    }
+
+    // ─── 7. 对话历史统计 ──────────────────────────────────
+    const dialogueStats = this._getDialogueStats();
+    if (dialogueStats) {
+      findings.push({
+        type: 'dialogue',
+        severity: 'info',
+        message: `${dialogueStats.totalMessages} 条对话, ${dialogueStats.sessionAge} 分钟`,
+      });
+    }
+
+    // ─── 汇总 ────────────────────────────────────────────
+    const high = findings.filter(f => f.severity === 'high');
+    const medium = findings.filter(f => f.severity === 'medium');
+    const low = findings.filter(f => f.severity === 'low');
+    const info = findings.filter(f => f.severity === 'info');
+
+    const summary = [];
+    if (high.length > 0) summary.push(`⚠ ${high.length} 个高优先级问题`);
+    if (medium.length > 0) summary.push(`→ ${medium.length} 个中优先级`);
+    if (low.length > 0) summary.push(`↓ ${low.length} 个低优先级`);
+    if (info.length > 0) summary.push(`ℹ ${info.length} 条状态信息`);
+
+    return {
+      summary: summary.join(' | '),
+      findings,
+      counts: { high: high.length, medium: medium.length, low: low.length, info: info.length },
+      timestamp: Date.now(),
+      version: this.version,
+      _introspectVersion: '1.0.0',
+    };
+  }
+
+  _getDialogueStats() {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const historyPath = path.join(this.rootPath, 'memory', 'dialogue-history.jsonl');
+      if (!fs.existsSync(historyPath)) return null;
+      const stat = fs.statSync(historyPath);
+      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').filter(l => l.trim());
+      const firstTs = lines.length > 0 ? JSON.parse(lines[0]).ts : null;
+      const sessionAge = firstTs ? Math.round((Date.now() - new Date(firstTs).getTime()) / 60000) : 0;
+      return { totalMessages: lines.length, fileSize: stat.size, sessionAge };
+    } catch (e) {
+      return null;
     }
   }
 
