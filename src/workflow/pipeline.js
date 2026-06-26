@@ -36,7 +36,10 @@ const DEFAULT_PIPELINE = [
       if (!hf.heartLogic) return { whatIsThis: { type: 'general' }, pain: { hasPain: false, painLevel: 0 } };
       const whatIsThis = hf.heartLogic.whatIsThis(ctx.input, {});
       const pain = hf.heartLogic.detectPain(ctx.input);
-      return { whatIsThis, pain };
+      const painObj = typeof pain === 'boolean'
+        ? { hasPain: pain, painLevel: pain ? 0.6 : 0 }
+        : { hasPain: !!pain, painLevel: (pain && pain.painLevel) || 0 };
+      return { whatIsThis, pain: painObj };
     },
   },
   {
@@ -299,6 +302,23 @@ const DEFAULT_PIPELINE = [
         // 记忆
         memoryHits: memories.length,
       };
+
+      // ─── 将判断结果写入 LEARNED 记忆层 ─────────────────
+      if (hf.memory && typeof hf.memory.store === 'function' && jd.direction) {
+        try {
+          const memEntry = {
+            type: 'judgment',
+            input: (ctx.input || '').slice(0, 200),
+            direction: jd.direction,
+            judgment: (judgmentEngineOutput || '').slice(0, 300),
+            decisionType: drType,
+            confidence: jd.confidence || 0.5,
+            paths: (jd.paths || []).map(p => p.name).filter(Boolean),
+            ts: Date.now(),
+          };
+          hf.memory.store('learned', `judgment:${Date.now()}`, JSON.stringify(memEntry), ['judgment', jd.direction, drType || 'analyze'].filter(Boolean));
+        } catch (e) { /* non-fatal */ }
+      }
 
       return {
         conclusion,

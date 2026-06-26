@@ -2,3 +2,12 @@ node_modules/
 .opencode/
 logs/
 mark-heartflow-skill/
+
+# 运行时数据
+memory/.hmac-key
+memory/.last-dream
+memory/*.jsonl
+*.log
+tests/
+data/
+internal/

@@ -4,7 +4,7 @@
  */
 'use strict';
 
-const BASE = '/Users/apple/.hermes/skills/ai/mark-heartflow-skill/src/core';
+const BASE = __dirname + '/../src/core';
 const { DecisionExecutor, DECISION_ACTION_MAP } = require(`${BASE}/decision-executor.js`);
 const { FieldInjector, FIELD_DEFAULTS } = require(`${BASE}/field-injector.js`);
 const { DecisionFeedback } = require(`${BASE}/decision-feedback.js`);

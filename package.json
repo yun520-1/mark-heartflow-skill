@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "HeartFlow — AI judgment engine with multi-path evaluation, self-correcting RL, 3-layer memory, and U/D/A/H field tracking. Zero external dependencies.",
   "main": "src/core/heartflow.js",
   "bin": {
@@ -57,7 +57,9 @@
   },
   "license": "MIT",
   "dependencies": {},
-  "optionalDependencies": {},
+  "optionalDependencies": {
+    "@xenova/transformers": "^2.6.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yun520-1/mark-heartflow-skill.git"
