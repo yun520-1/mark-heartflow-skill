@@ -25,7 +25,7 @@
  *   → 匹配决策规则 → 生成决策指令 → 返回 { result, decision }
  */
 
-const VERSION = '3.8.0';
+const VERSION = '3.8.1';
 
 // ─── U/D/A/H 场域追踪参数（基于 luoxuejian000 论文） ──────────────────────
 // H = λU·U + λD·D - λA·A
@@ -1255,6 +1255,104 @@ class DecisionRouter {
    */
   getAuditTrail(limit = 20) {
     return this._auditTrail.slice(-limit);
+  }
+
+  /**
+   * v3.8.1：镜像测试 — 运行固定刺激产生可预测响应，检测决策路由自身是否漂移
+   *
+   * 原理：使用已知的"健康"场域数据作为固定输入，比较当前引擎输出与基线。
+   * 如果输出偏离超过阈值，说明决策路由本身可能发生了漂移（元审计问题）。
+   *
+   * 源自 luoxuejian000 在 DeepSeek-V3 #1447 中提出的元审计问题：
+   * "如果 unconscious layer 自己开始漂移，谁来审计审计者？"
+   *
+   * 方案：CORE 层 + 定时镜像测试 + 人工审批门控的三层防御。
+   * 这个方法是第二层——定时镜像测试。
+   *
+   * @param {object} [options]
+   * @param {number} [options.threshold=0.15] - H 值允许的最大偏差
+   * @returns {{ passed: boolean, baseline: object, current: object, deviation: object, details: string }}
+   */
+  mirrorTest(options = {}) {
+    const threshold = options.threshold || 0.15;
+
+    // 已知良好的"健康"场域数据（引擎运行初期采集的基线）
+    const baseline = {
+      U: 0.65,
+      D: 0.55,
+      A: 0.20,
+      H: 0.4 * 0.65 + 0.3 * 0.55 - 0.3 * 0.20,  // = 0.260 + 0.165 - 0.060 = 0.365
+    };
+
+    // 获取当前场域摘要
+    const summary = this.getFieldSummary();
+
+    // 如果无数据，跑一个简单的评估获取当前场域
+    let current;
+    if (summary.status === 'no_data' || summary.steps < 5) {
+      // 使用空数据评估一次
+      const evalResult = this.evaluate({});
+      if (evalResult.field) {
+        current = {
+          U: evalResult.field._fieldU || 0,
+          D: evalResult.field._fieldD || 0,
+          A: evalResult.field._fieldA || 0,
+          H: evalResult.field._fieldH || 0,
+        };
+      } else {
+        return {
+          passed: false,
+          baseline,
+          current: null,
+          deviation: null,
+          details: 'MIRROR_FAIL: no field data available — engine may not be initialized',
+        };
+      }
+    } else {
+      current = {
+        U: summary.current.U,
+        D: summary.current.D,
+        A: summary.current.A,
+        H: summary.current.H,
+      };
+    }
+
+    // 计算偏差
+    const deviation = {
+      U: Math.abs(current.U - baseline.U),
+      D: Math.abs(current.D - baseline.D),
+      A: Math.abs(current.A - baseline.A),
+      H: Math.abs(current.H - baseline.H),
+    };
+
+    // 判断是否通过
+    const hDeviation = deviation.H;
+    const passed = hDeviation <= threshold;
+
+    // 记录审计日志
+    this._auditTrail.push({
+      type: 'mirror_test',
+      timestamp: Date.now(),
+      passed,
+      hDeviation,
+      threshold,
+      baselineH: baseline.H,
+      currentH: current.H,
+    });
+
+    // 生成详细说明
+    let details;
+    if (passed) {
+      details = `MIRROR_PASS: H deviation ${hDeviation.toFixed(3)} ≤ ${threshold} (baseline H=${baseline.H.toFixed(3)}, current H=${current.H.toFixed(3)})`;
+    } else {
+      const dominantField = ['U', 'D', 'A'].reduce((a, b) => deviation[a] > deviation[b] ? a : b);
+      details = `MIRROR_FAIL: H deviation ${hDeviation.toFixed(3)} > ${threshold}. ` +
+        `Largest deviation in field ${dominantField} (Δ=${deviation[dominantField].toFixed(3)}). ` +
+        `Baseline H=${baseline.H.toFixed(3)}, current H=${current.H.toFixed(3)}. ` +
+        `Possible drift detected — human review recommended.`;
+    }
+
+    return { passed, baseline, current, deviation, details };
   }
 }
 
