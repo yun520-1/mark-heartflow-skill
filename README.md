@@ -226,11 +226,43 @@ decision:    策略=加速(高U+高D+中A), 优先级=先分析再行动
 ### 快速安装
 
 ```bash
+# 方式一：curl 下载（推荐，避免 git clone 超时）
+curl -L https://api.github.com/repos/yun520-1/mark-heartflow-skill/zipball/main -o heartflow.zip
+unzip heartflow.zip && cd yun520-1-mark-heartflow-skill-*
+npm install  # 0外部包，不需要网络
+
+# 方式二：npm 安装（需要 Node.js >= 18）
+npm install -g mark-heartflow-skill
+
+# 方式三：git clone（网络不稳定时可能超时）
 git clone --depth 1 https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
-npm install  # 0外部包，不需要网络
+
+# 验证
 node bin/verify.js
-node bin/cli.js --chat "我想辞职去创业"
+
+# 交互模式
+node bin/cli.js chat
+
+# 单次分析
+heartflow --chat "我想辞职去创业"
+```
+
+**MCP 集成（用于 Claude Desktop 等 AI 客户端）：**
+
+```bash
+# 启动 MCP HTTP 服务器（后台运行）
+node mcp/mcp-server-http.js --port 8099 &
+
+# 注册到 Hermes Agent
+hermes mcp add heartflow --url http://localhost:8099/mcp
+
+# 验证 MCP 工具列表
+hermes mcp test heartflow
+
+# 注意：启动时需保证 HEARTFLOW_MCP_TOKEN 环境变量未设置
+# 如果之前设置过，用以下方式启动干净环境：
+# exec env -i PATH="$PATH" HOME="$HOME" node mcp/mcp-server-http.js --port 8099
 ```
 
 **系统要求：** Node.js >= 18。**零外部依赖，零API key，零模型文件下载。**

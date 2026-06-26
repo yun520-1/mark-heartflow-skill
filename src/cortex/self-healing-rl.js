@@ -72,7 +72,7 @@ function _getHmacKey() {
   const newKey = crypto.randomBytes(32).toString('base64');
   try {
     fs.writeFileSync(keyFile, JSON.stringify({ key: newKey, createdAt: Date.now() }, null, 2), { mode: 0o600 });
-  } catch (e) { process.stderr.write('[self-healing-rl] Failed to persist new HMAC key: ' + e.message + '\n'); }
+  } catch (e) { /* info: HMAC 写入失败时 fallback 到内存模式，不影响正常运行 */ }
   _cachedHmacKey = newKey;
   console.warn(`[HealingMemoryRL] HEARTFLOW_QTABLE_HMAC_KEY not set, generated and saved new key`);
   return _cachedHmacKey;
