@@ -1307,7 +1307,7 @@ class HeartFlow {
     // v5.0.0 — 管道引擎
     'pipeline.run', 'pipeline.getStats',
     // v5.1.0 — 自省
-    'heartflow.introspect',
+    'heartflow.introspect', 'heartflow.introspectAndDream',
   ]);
 
   /**
@@ -2118,6 +2118,51 @@ class HeartFlow {
       version: this.version,
       _introspectVersion: '1.0.0',
     };
+  }
+
+  /**
+   * 自省后自动做梦 — 把自省发现的问题作为梦境种子
+   * 问题越多→梦境越深
+   */
+  async introspectAndDream(options = {}) {
+    const report = this.introspect(options);
+    
+    // 没问题不做梦
+    if (report.counts.high === 0 && report.counts.medium === 0) {
+      report.dream = 'no_issues';
+      return report;
+    }
+
+    // 把问题编织成梦境种子
+    const seedParts = [];
+    for (const f of report.findings) {
+      if (f.severity === 'high' || f.severity === 'medium') {
+        seedParts.push(f.message);
+        if (f.detail && Array.isArray(f.detail)) {
+          seedParts.push(...f.detail.slice(0, 3));
+        }
+      }
+    }
+    const dreamSeed = seedParts.join('；');
+
+    // 执行梦境
+    try {
+      const dreamResult = await this.dreamNow({ force: true, function: 'self_inspection' });
+      // 把自省问题作为种子注入 dream 引擎
+      if (dreamResult && !dreamResult.skipped && this.dream && typeof this.dream._applySeed === 'function') {
+        // 从自省问题中提取可识别的种子关键词
+        const knownSeeds = ['无门', '桥', '消散', '原点', '裂缝', '隔阂', '因果', '延续'];
+        const matchedSeed = knownSeeds.find(s => dreamSeed.includes(s)) || '裂缝';
+        this.dream._applySeed({ scene: '', space: '', texture: '' }, [], matchedSeed);
+        dreamResult._seedInjected = matchedSeed;
+      }
+      report.dream = dreamResult.skipped ? 'skipped' : 'done';
+      report.dreamNarrative = dreamResult.narrative || null;
+    } catch (e) {
+      report.dream = `error: ${e.message}`;
+    }
+
+    return report;
   }
 
   _getDialogueStats() {
