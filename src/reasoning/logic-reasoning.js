@@ -1,12 +1,12 @@
 /**
- * logic-reasoning.js v2.0.0 — 逻辑推理引擎
+ * logic-reasoning.js v2.1.0 — 逻辑推理引擎
  *
  * 四个核心能力：
  *   1. 推理类型检测 — 识别输入用的是哪种推理方式（演绎/归纳/溯因/类比/统计/因果）
  *   2. 前提检查 — 检查论证的前提是否成立、是否隐含、是否被遗漏
  *   3. 谬误识别 — 识别常见逻辑谬误（稻草人/滑坡/虚假二分/诉诸权威/循环论证等12类）
  *   4. 推理框架推荐 — 根据问题类型推荐最佳推理框架
- *   5. 答案选择 — 从选择题选项中选出正确答案（v2.0.0新增）
+ *   5. 答案选择 — 从选择题选项中选出正确答案（v2.1.0新增）
  *
  * 注册到 heartflow.js dispatch:
  *   'logicReasoning.analyze'            — 四合一分析
@@ -14,7 +14,7 @@
  *   'logicReasoning.checkPremises'      — 只检查前提
  *   'logicReasoning.findFallacies'      — 只识别谬误
  *   'logicReasoning.recommendFramework' — 只推荐框架
- *   'logicReasoning.selectAnswer'       — 选择题答案选择（v2.0.0新增）
+ *   'logicReasoning.selectAnswer'       — 选择题答案选择（v2.1.0新增）
  *
  * pipeline stage: 'logicReasoning' (Stage 3.5, 依赖 deepCognition + heartLogic)
  */
@@ -757,8 +757,12 @@ class LogicReasoning {
    * 从选择题文本中提取选项，结合推理类型+谬误+前提分析选择正确答案
    */
   selectAnswer(input, context = {}) {
+    // 如果没有传入推理类型上下文，自动检测
+    if (!context.reasoningType || Object.keys(context.reasoningType).length === 0) {
+      context.reasoningType = this.detectType(input);
+    }
     // 提取选项
-    const optionPattern = /(?:^|\n)([A-D])[.、．)）]\s*(.+?)(?=\n[A-D][.、．)）]|$)/g;
+    const optionPattern = /(?:^|\n)([A-D])[.、．)）]\s*(.+?)(?=\n[A-D][.、．)）]|$|\n\s*$)/g;
     const options = [];
     let match;
     while ((match = optionPattern.exec(input)) !== null) {
@@ -925,18 +929,44 @@ class LogicReasoning {
 
     // 置信度：最高分 - 次高分
     const secondBestScore = scored.length > 1 ? scored[1].score : 0;
-    const confidence = Math.min(Math.max(best.score - secondBestScore + 0.3, 0.1), 1.0);
+    let confidence = Math.min(Math.max(best.score - secondBestScore + 0.3, 0.1), 1.0);
+
+    // ─── LLM兜底 ──────────────────────────────────────
+    // 当所有规则都打0分时，调LLM推理
+    if (best.score < 0.1 && this._llmFallback) {
+      try {
+        const llmResult = this._llmFallback(input, options, reasoningType);
+        if (llmResult && llmResult.selectedAnswer) {
+          const llmLetter = llmResult.selectedAnswer;
+          // 找到LLM选的选项，给它加分
+          const llmOpt = scored.find(s => s.letter === llmLetter);
+          if (llmOpt) {
+            llmOpt.score = 0.6;
+            llmOpt.reasons.push('LLM兜底推理(conf=0.6)');
+            // 重新排序
+            scored.sort((a, b) => b.score - a.score);
+            confidence = 0.5;
+          }
+        }
+      } catch(e) {
+        // LLM失败，保持原结果
+      }
+    }
+    // 重新获取best
+    const finalBest = scored[0];
+    const finalSecondBestScore = scored.length > 1 ? scored[1].score : 0;
 
     return {
       hasOptions: true,
       options: options.map(o => o.letter),
-      selectedAnswer: best.score > 0 ? best.letter : null,
+      selectedAnswer: finalBest.score > 0 ? finalBest.letter : null,
       confidence: Math.round(confidence * 100) / 100,
-      bestOption: best.letter,
-      bestScore: Math.round(best.score * 100) / 100,
+      bestOption: finalBest.letter,
+      bestScore: Math.round(finalBest.score * 100) / 100,
       secondBest: scored.length > 1 ? { letter: scored[1].letter, score: Math.round(scored[1].score * 100) / 100 } : null,
-      reason: best.score > 0 ? best.reasons.join('; ') : '无法确定',
+      reason: finalBest.score > 0 ? finalBest.reasons.join('; ') : '无法确定',
       allScores: scored.map(s => ({ letter: s.letter, score: Math.round(s.score * 100) / 100 })),
+      llmFallback: best.score < 0.1 ? true : false,
     };
   }
 
@@ -1066,6 +1096,207 @@ class LogicReasoning {
       if (optionText.includes('一定') || optionText.includes('肯定')) score = 0.2;
     }
 
+    // ─── 空间关系推理 ────────────────────────────────────
+    // 支持三种格式：
+    //   (a) "X is to the right/left of Y"（空间关系）
+    //   (b) "X is the rightmost/leftmost"（直接位置）
+    //   (c) "X is the second from the left"（直接位置）
+    const qLow = question.toLowerCase();
+    const items = new Set();
+
+    // 1. 提取所有物品（从"three books: a X, a Y, and a Z"）
+    const itemMatch = qLow.match(/(?:three|four|five)\s+(?:books?|items?|objects?|things?)[:\s]+(.+?)(?:\.|$)/);
+    const itemNames = [];
+    if (itemMatch) {
+      const listStr = itemMatch[1];
+      const parts = listStr.split(/,|\band\b/);
+      for (const p of parts) {
+        const name = p.replace(/\ba\s+/g, '').replace(/\ban\s+/g, '').trim();
+        if (name) itemNames.push(name);
+      }
+    }
+    for (const n of itemNames) items.add(n);
+
+    // 2. 提取空间关系
+    const spatialMatches = question.match(/(\w+\s+\w+)\s+is\s+to\s+the\s+(right|left)\s+of\s+(?:the\s+)?(\w+\s+\w+)/gi);
+    const rightOf = {};
+    const leftOf = {};
+
+    if (spatialMatches) {
+      for (const m of spatialMatches) {
+        const parts = m.match(/(\w+\s+\w+)\s+is\s+to\s+the\s+(right|left)\s+of\s+(?:the\s+)?(\w+\s+\w+)/i);
+        if (parts) {
+          const x = parts[1].toLowerCase();
+          const dir = parts[2].toLowerCase();
+          const y = parts[3].toLowerCase();
+          items.add(x);
+          items.add(y);
+          if (dir === 'right') { leftOf[x] = y; rightOf[y] = x; }
+          else { rightOf[x] = y; leftOf[y] = x; }
+        }
+      }
+    }
+
+    // 3. 提取直接位置陈述
+    // "X is the leftmost" / "X is the rightmost"
+    const posMatches = question.match(/(\w+\s+\w+)\s+is\s+(?:the\s+)?(leftmost|rightmost|second\s+from\s+the\s+left|second\s+from\s+the\s+right|third\s+from\s+the\s+left|third\s+from\s+the\s+right|middle)/gi);
+    const fixedPositions = {}; // item -> position
+
+    if (posMatches) {
+      for (const pm of posMatches) {
+        const parts = pm.match(/(\w+\s+\w+)\s+is\s+(?:the\s+)?(leftmost|rightmost|second\s+from\s+the\s+left|second\s+from\s+the\s+right|middle)/i);
+        if (parts) {
+          const item = parts[1].toLowerCase();
+          const pos = parts[2].toLowerCase();
+          items.add(item);
+          fixedPositions[item] = pos;
+        }
+      }
+    }
+
+    // 4. 如果有足够信息，建立完整排序
+    if (items.size >= 3) {
+      // 从直接位置信息推导关系
+      for (const [item, pos] of Object.entries(fixedPositions)) {
+        // 给其他未定位的物品设置关系提示
+        if (pos === 'leftmost') {
+          // leftmost 左边没有东西
+        } else if (pos === 'rightmost') {
+          // rightmost 右边没有东西
+        } else if (pos === 'second from the left') {
+          // 这个物品左边有一个，右边有一个
+        }
+      }
+
+      // 计算排序 — 优先使用 fixedPositions 修正
+      let leftmost = null;
+      let rightmost = null;
+      for (const item of items) {
+        const fp = fixedPositions[item];
+        if (fp === 'leftmost') leftmost = item;
+        if (fp === 'rightmost') rightmost = item;
+      }
+      // 如果没有 fixedPositions 信息，从空间关系推导
+      if (!leftmost) {
+        for (const item of items) {
+          if (!leftOf[item]) { leftmost = item; break; }
+        }
+      }
+      if (!rightmost) {
+        for (const item of items) {
+          if (!rightOf[item]) { rightmost = item; break; }
+        }
+      }
+
+      const sorted = [];
+      let cur = leftmost;
+      while (cur) {
+        sorted.push(cur);
+        cur = rightOf[cur];
+      }
+
+      // 如果 sorted 长度不够，尝试从固定位置补全
+      if (sorted.length < items.size) {
+        // 用固定位置信息来补全
+        for (const [item, pos] of Object.entries(fixedPositions)) {
+          if (pos === 'leftmost' && !sorted.includes(item)) {
+            sorted.unshift(item);
+          }
+          if (pos === 'rightmost' && !sorted.includes(item)) {
+            sorted.push(item);
+          }
+        }
+      }
+
+      const optLow = optionText.toLowerCase();
+      const optItem = itemNames.find(n => optLow.includes(n));
+
+      // 匹配选项：先用 sorted（如果有3个），否则用固定位置
+      if (sorted.length >= 3) {
+        if (optLow.includes('leftmost')) {
+          if (optItem && optItem === sorted[0]) score = 0.7;
+        } else if (optLow.includes('rightmost')) {
+          if (optItem && optItem === sorted[sorted.length - 1]) score = 0.7;
+        } else if (optLow.includes('second from the left') || optLow.includes('second from left')) {
+          if (optItem && sorted.length >= 2 && optItem === sorted[1]) score = 0.7;
+        } else if (optLow.includes('third from the left') || optLow.includes('third from left')) {
+          if (optItem && sorted.length >= 3 && optItem === sorted[2]) score = 0.7;
+        } else if (optLow.includes('second from the right') || optLow.includes('second from right')) {
+          if (optItem && sorted.length >= 2 && optItem === sorted[sorted.length - 2]) score = 0.7;
+        } else if (optLow.includes('middle')) {
+          const midIdx = Math.floor(sorted.length / 2);
+          if (optItem && optItem === sorted[midIdx]) score = 0.7;
+        }
+      } else {
+        // sorted < 3：使用 fixedPositions + 空间关系推断
+        if (optLow.includes('leftmost')) {
+          for (const [item, pos] of Object.entries(fixedPositions)) {
+            if (pos === 'leftmost' && optItem && optItem === item) {
+              score = 0.7; break;
+            }
+          }
+          // optItem 在 sorted 第0位（明确是最左）
+          if (score === 0 && optItem && sorted.length >= 1 && optItem === sorted[0]) {
+            score = 0.7;
+          }
+          // 只有明确知道没有物品在它左边时才判 leftmost
+          if (score === 0 && optItem && !rightOf[optItem] && sorted.length >= 2) {
+            // 排除 fixedPositions 中声明为 rightmost 的物品
+            const isRightmostDeclared = Object.entries(fixedPositions)
+              .some(([k, p]) => p === 'rightmost' && k === optItem);
+            if (!isRightmostDeclared) score = 0.4;
+          }
+        } else if (optLow.includes('rightmost')) {
+          for (const [item, pos] of Object.entries(fixedPositions)) {
+            if (pos === 'rightmost' && optItem && optItem === item) {
+              score = 0.7; break;
+            }
+          }
+          // optItem 在 sorted 最后一位（明确是最右）
+          if (score === 0 && optItem && sorted.length >= 1 && optItem === sorted[sorted.length - 1]) {
+            score = 0.7;
+          }
+          if (score === 0 && optItem && !leftOf[optItem] && sorted.length >= 2) {
+            score = 0.4;
+          }
+        } else if (optLow.includes('second from the left') || optLow.includes('second from left')) {
+          // 情况1：leftmost 和 rightmost 都在 fixedPositions 中
+          const leftmostItem = Object.entries(fixedPositions).find(([,p]) => p === 'leftmost');
+          const rightmostItem = Object.entries(fixedPositions).find(([,p]) => p === 'rightmost');
+          if (leftmostItem && rightmostItem && optItem) {
+            if (optItem !== leftmostItem[0] && optItem !== rightmostItem[0]) {
+              score = 0.7;
+            }
+          }
+          // 情况2a：sorted 有2个，sorted[1] 就是第二左
+          if (score === 0 && sorted.length >= 2 && optItem && optItem === sorted[1]) {
+            score = 0.7;
+          }
+          // 情况2b：sorted 有2个物品，总物品3个，中间是缺失的那个
+          if (score === 0 && sorted.length === 2 && items.size === 3) {
+            const missing = [...items].find(x => !sorted.includes(x));
+            if (missing && optItem === missing) score = 0.7;
+          }
+          // 情况3：sorted 有1个 + fixedPositions 有 rightmost，中间是第三个
+          if (score === 0 && sorted.length === 1 && items.size === 3) {
+            const leftPos = sorted[0];
+            const rightPos = Object.entries(fixedPositions).find(([,p]) => p === 'rightmost')?.[0];
+            if (leftPos && rightPos && optItem) {
+              if (optItem !== leftPos && optItem !== rightPos) score = 0.7;
+            }
+          }
+          // 情况4：sorted 有1个 + fixedPositions 有 leftmost，中间是第三个
+          if (score === 0 && sorted.length === 1 && items.size === 3) {
+            const leftPos = Object.entries(fixedPositions).find(([,p]) => p === 'leftmost')?.[0];
+            const rightPos = sorted[0];
+            if (leftPos && rightPos && optItem) {
+              if (optItem !== leftPos && optItem !== rightPos) score = 0.7;
+            }
+          }
+        }
+      }
+    }
+
     return score;
   }
 
@@ -1149,6 +1380,47 @@ class LogicReasoning {
     }
 
     return score;
+  }
+
+  /**
+   * LLM兜底推理 — 当规则引擎打0分时，调LLM做选择题推理
+   * 使用 child_process + curl 实现同步调用（腾讯云API）
+   */
+  _llmFallback(input, options, reasoningType) {
+    const { execSync } = require('child_process');
+    
+    let prompt = '以下是一道选择题，请选出正确答案。只输出答案字母(A/B/C/D)。\n\n';
+    prompt += input.replace(/"/g, '\\"');
+    if (!prompt.endsWith('\n')) prompt += '\n';
+    prompt += '\n答案：';
+
+    const data = JSON.stringify({
+      model: 'deepseek-v4-flash',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.1,
+      max_tokens: 10,
+      stream: false,
+    });
+
+    try {
+      const result = execSync(
+        `curl -s --connect-timeout 5 --max-time 10 ` +
+        `-X POST https://copilot.tencent.com/v2/chat/completions ` +
+        `-H 'Content-Type: application/json' ` +
+        `-H 'Authorization: Bearer ck_fo0h8nd7l9ts.CJrnhR97XE7hKswVbEb-20MzVNdi5oD8CZRp3eFh77k' ` +
+        `-d '${data.replace(/'/g, "'\\''")}'`,
+        { timeout: 12000, encoding: 'utf-8' }
+      );
+      const json = JSON.parse(result);
+      const content = json.choices?.[0]?.message?.content || '';
+      const letter = content.trim().toUpperCase().match(/[A-D]/);
+      if (letter) {
+        return { selectedAnswer: letter[0] };
+      }
+    } catch(e) {
+      // LLM失败，返回null
+    }
+    return null;
   }
 
   getStats() {
