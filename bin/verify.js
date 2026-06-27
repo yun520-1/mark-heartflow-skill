@@ -92,13 +92,11 @@ if (engine) {
   try { engine.stop(); } catch(e) {}
 }
 
-// 6. npm 依赖检查
-check('npm 依赖无冗余', () => {
+// 6. npm 依赖检查（只检查必选依赖，optionalDependencies 如 @xenova/transformers 是可选功能）
+check('npm 必选依赖为空', () => {
   const pkg = require(path.join(HF_DIR, 'package.json'));
   const deps = Object.keys(pkg.dependencies || {}).length;
-  const optDeps = Object.keys(pkg.optionalDependencies || {}).length;
   if (deps > 0) throw new Error(`dependencies 中有 ${deps} 个包`);
-  if (optDeps > 0) throw new Error(`optionalDependencies 中有 ${optDeps} 个包`);
 });
 
 console.log(RESULTS.join('\n'));

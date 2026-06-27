@@ -82,6 +82,7 @@ const _ValueInternalizer = _lazy('valueInternalizer', () => require('../shield/e
 const _TimeExtension = _lazy('timeExtension', () => require('../workflow/time-extension.js'));
 const _MindSpaceGuardian = _lazy('mindSpaceGuardian', () => require('../shield/mindspace/mind-space-guardian.js'));
 const _TransmissionEngine = _lazy('transmissionEngine', () => require('../workflow/transmission/transmission-engine.js'));
+const _VerifierGrant = _lazy('verifierGrant', () => require('./verifier-grant.js'));
 const _AdaptivePlanner = _lazy('adaptivePlanner', () => { try { return require('../planner/adaptive-planner.js'); } catch(e) { return { AdaptivePlanner: class { constructor() {} } }; } });
 const _StrategySelector = _lazy('strategySelector', () => { try { return require('../planner/strategy-selector.js'); } catch(e) { return { StrategySelector: class { constructor() {} } }; } });
 const _ReplanTrigger = _lazy('replanTrigger', () => { try { return require('../planner/replan-trigger.js'); } catch(e) { return { ReplanTrigger: class { constructor() {} } }; } });
@@ -460,6 +461,8 @@ class HeartFlow {
     try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
     try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
     try { this.workflow = new (_WorkflowSwitch())(); } catch (e) { this._initErrors.push({module: 'workflow', error: e.message}); }
+    try { this.verifierGrant = new (_VerifierGrant().VerifierGrant)(); } catch (e) { this._initErrors.push({module: 'verifierGrant', error: e.message}); }
+    if (this.verifierGrant) this._modules['verifierGrant'] = this.verifierGrant;
     this.snapshot = _StateSnapshot();
     this.error = _ErrorHandler();
 
@@ -1308,6 +1311,11 @@ class HeartFlow {
     'pipeline.run', 'pipeline.getStats',
     // v5.1.0 — 自省
     'heartflow.introspect', 'heartflow.introspectAndDream',
+    // v1.0.0 — 签名授权验证层
+    'verifierGrant.createSessionKey', 'verifierGrant.createGrant', 'verifierGrant.consumeGrant',
+    'verifierGrant.revokeGrant', 'verifierGrant.computeArgsDigest',
+    'verifierGrant.verifySessionKey', 'verifierGrant.getStats', 'verifierGrant.getAuditLog',
+    'verifierGrant.reset',
   ]);
 
   /**

@@ -139,7 +139,7 @@ async function atomicWrite(filePath, content, options = {}) {
     mode = 0o644,
     encoding = 'utf8',
     retry = true,
-    verify = false,
+    verifyWrite = false,
     createBackup: doBackup = false,
     maxRetries = 3,
   } = options;
@@ -186,7 +186,7 @@ async function atomicWrite(filePath, content, options = {}) {
       await fs.rename(tmpPath, filePath);
 
       // 3. 可选验证
-      if (verify) {
+      if (verifyWrite) {
         const vResult = await verifyWrite(filePath, stringContent);
         if (!vResult.ok) {
           const errType = ErrorType.VERIFY_ERROR;

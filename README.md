@@ -1,7 +1,7 @@
 # HeartFlow v5.0 — 逻辑验证层 · 决策路由 · 自愈RL
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-5.0.1-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-5.2.1-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
@@ -173,7 +173,7 @@ console.log('Decision:', cognition.decision);       // strategy + confidence
 
 ## Project Status
 
-- **Version**: 5.0.1
+- **Version**: 5.2.1
 - **Modules**: 60 (all JavaScript, zero external dependencies)
 - **Pipeline**: 7 stages, ~7ms per run
 - **Tests**: 11/11 passing
@@ -184,7 +184,7 @@ console.log('Decision:', cognition.decision);       // strategy + confidence
 
 ## Chinese Version
 
-# HeartFlow v5.0 — 逻辑验证层 · 决策路由 · 自愈RL
+# HeartFlow v5.2.1 — 逻辑验证层 · 决策路由 · 自愈RL
 
 > **心虫不是LLM增强层。它是认知状态编码器。**  
 > 把原始文本编码成结构化认知数据（情绪/心理学/哲学/欲望/判断/决策），让LLM拿到它自己算不出来的数据。  
@@ -226,21 +226,12 @@ decision:    策略=加速(高U+高D+中A), 优先级=先分析再行动
 ### 快速安装
 
 ```bash
-# 方式一：curl 下载（推荐，避免 git clone 超时）
-curl -L https://api.github.com/repos/yun520-1/mark-heartflow-skill/zipball/main -o heartflow.zip
-unzip heartflow.zip && cd yun520-1-mark-heartflow-skill-*
-npm install  # 0外部包，不需要网络
-
-# 方式二：npm 安装（需要 Node.js >= 18，需要配置 GitHub Packages）
-# 创建 ~/.npmrc 文件，添加：
-#   @yun520-1:registry=https://npm.pkg.github.com
-#   //npm.pkg.github.com/:_authToken=你的_github_token
-# 然后执行：
-npm install @yun520-1/heartflow
-
-# 方式三：git clone（网络不稳定时可能超时）
+# 推荐方式：git clone
 git clone --depth 1 https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
+
+# 安装（0外部包，不需要网络）
+npm install
 
 # 验证
 node bin/verify.js
@@ -249,13 +240,21 @@ node bin/verify.js
 node bin/cli.js chat
 
 # 单次分析
-heartflow --chat "我想辞职去创业"
+node bin/cli.js --chat "我想辞职去创业"
+```
+
+**替代方式（curl 下载，适合网络不稳定时）：**
+```bash
+curl -L https://api.github.com/repos/yun520-1/mark-heartflow-skill/zipball/main -o heartflow.zip
+unzip heartflow.zip && cd yun520-1-mark-heartflow-skill-*
+npm install
+node bin/cli.js chat
 ```
 
 **MCP 集成（用于 Claude Desktop 等 AI 客户端）：**
 
 ```bash
-# 启动 MCP HTTP 服务器（后台运行）
+# 启动 MCP HTTP 服务器
 node mcp/mcp-server-http.js --port 8099 &
 
 # 注册到 Hermes Agent
@@ -263,17 +262,13 @@ hermes mcp add heartflow --url http://localhost:8099/mcp
 
 # 验证 MCP 工具列表
 hermes mcp test heartflow
-
-# 注意：启动时需保证 HEARTFLOW_MCP_TOKEN 环境变量未设置
-# 如果之前设置过，用以下方式启动干净环境：
-# exec env -i PATH="$PATH" HOME="$HOME" node mcp/mcp-server-http.js --port 8099
 ```
 
 **系统要求：** Node.js >= 18。**零外部依赖，零API key，零模型文件下载。**
 
 ### 项目状态
 
-- **版本**: 5.0.1
+- **版本**: 5.2.1
 - **模块数**: 60（纯JavaScript，零外部依赖）
 - **管道**: 7阶段，每次运行约7ms
 - **测试**: 11/11通过

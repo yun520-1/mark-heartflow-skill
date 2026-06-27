@@ -493,8 +493,13 @@ Usage: node cli.js <command>
 Commands:
   status  显示引擎状态（版本、模块数、记忆统计）
   chat    启动交互式控制台（支持 think() 和斜杠命令）
-  --chat  单次执行 think() 后退出（用法: node cli.js --chat "<消息>"）
-  help    显示此帮助信息`);
+  --chat  单次执行 think() 后退出（用法: node bin/cli.js --chat "<消息>"）
+  help    显示此帮助信息
+
+示例:
+  npm start              # 进入交互式控制台
+  npm run status         # 查看引擎状态
+  node bin/cli.js --chat "我想辞职去创业"  # 单次分析`);
     process.exit(0);
     break;
 

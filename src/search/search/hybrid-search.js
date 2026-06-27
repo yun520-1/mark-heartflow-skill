@@ -415,7 +415,7 @@ class HybridSearchEngine extends EventEmitter {
     this._bm25Engine = null;
     this._bm25Module = null;
     
-    // 向量存储
+    // 向量存储 — 凭证通过外部配置注入，非硬编码
     this.vectorStore = new VectorStore({
       provider: options.embeddingProvider,
       apiKey: options.embeddingApiKey,
