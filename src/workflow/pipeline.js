@@ -122,7 +122,25 @@ const DEFAULT_PIPELINE = [
     },
   },
 
-  // ── Stage 4: 判断引擎（依赖 psychology + deepCognition） ────
+  // ── Stage 3.5: 逻辑推理分析（依赖 deepCognition + heartLogic） ──
+  {
+    id: 'logicReasoning',
+    depends: ['deepCognition', 'heartLogic'],
+    description: '逻辑推理引擎：推理类型检测 + 前提检查 + 谬误识别 + 框架推荐',
+    run: async (ctx, hf) => {
+      if (!hf.logicReasoning || typeof hf.logicReasoning.analyze !== 'function') {
+        return { reasoning: null };
+      }
+      try {
+        const result = hf.logicReasoning.analyze(ctx.input);
+        return result;
+      } catch (e) {
+        return { reasoning: null, error: e.message };
+      }
+    },
+  },
+
+  // ── Stage 4: 判断引擎（依赖 psychology + deepCognition + logicReasoning） ────
   {
     id: 'judgment',
     depends: ['psychology', 'deepCognition', 'intent', 'memory'],
@@ -282,6 +300,8 @@ const DEFAULT_PIPELINE = [
         selfPositioning: dc.selfPositioning || null,
         loveCognition: dc.loveCognition || null,
         cognitionGround: dc.cognitionGround || null,
+        // 逻辑推理分析
+        logicReasoning: ctx.logicReasoning || null,
         // 多路径判断
         judgment: {
           direction: jd.direction || 'analyze',
