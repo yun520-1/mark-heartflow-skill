@@ -162,6 +162,8 @@ const DEFAULT_PIPELINE = [
         desire: ctx.deepCognition?.desire || null,
         threePoisons: ctx.deepCognition?.threePoisons || null,
         selfPositioning: ctx.deepCognition?.selfPositioning || null,
+        // v5.4.0: 注入逻辑推理数据用于风险/可行性评分
+        logicReasoning: ctx.logicReasoning || null,
       });
       return {
         direction: result.direction || 'analyze',
@@ -186,12 +188,56 @@ const DEFAULT_PIPELINE = [
       let drDecision = null;
       if (dr && typeof dr.evaluate === 'function') {
         try {
+          // v5.4.0: 注入pipeline所有阶段的结构化数据，不再只传5个字段
+          const psych = ctx.psychology?.psych || {};
+          const agentPsych = ctx.psychology?.agentPsych || {};
+          const agentPhil = ctx.psychology?.agentPhil || {};
+          const judgment = ctx.judgment || {};
+          const dc = ctx.deepCognition || {};
+
+          // 计算cognitiveLoad: 从多个来源汇聚
+          const cognitiveLoad = agentPsych.cognitiveLoad?.load !== undefined
+            ? agentPsych.cognitiveLoad.load
+            : (agentPsych.cognitiveLoad || 0);
+
+          // 计算quality: 从判断引擎的路径分数加权
+          const quality = judgment.confidence || 0.5;
+
+          // 计算directionClear: 从判断引擎的方向明确度
+          const directionClear = judgment.direction === 'act' ? 0.8
+            : judgment.direction === 'analyze' ? 0.6
+            : judgment.direction ? 0.4
+            : 0.3;
+
+          // 计算dissonance: 从多个不一致信号汇聚
+          const dissonance = agentPsych.cognitiveDissonance?.count > 0
+            ? Math.min(1, agentPsych.cognitiveDissonance.count * 0.2)
+            : (agentPsych.goalConflicts?.length > 0 ? 0.3 : 0);
+
+          // 计算stability: 从agentPsychology的identityDrift
+          const stability = agentPsych.identityDrift?.drifted
+            ? 0.3 : 0.7;
+
+          // 计算severity: 从pain level和error情况
+          const painLevel = ctx.heartLogic?.pain?.painLevel || 0;
+          const severity = painLevel > 0.7 ? 'high'
+            : painLevel > 0.4 ? 'medium'
+            : undefined;
+
           const fieldData = {
             inputText: ctx.input,
-            cognitiveLoad: ctx.psychology?.agentPsych?.cognitiveLoad || 0,
-            directionClear: ctx.judgment?.direction === 'act' ? 0.8 : 0.3,
-            confidence: ctx.judgment?.confidence || 0.5,
-            dissonance: ctx.psychology?.agentPsych?.goalConflicts?.length > 0 ? 0.3 : undefined,
+            cognitiveLoad,
+            directionClear,
+            confidence: judgment.confidence || 0.5,
+            quality,
+            stability,
+            dissonance,
+            severity,
+            // 注入深层认知数据供场域追踪
+            identityCoherence: agentPsych.identityDrift?.drifted === false ? 0.8 : 0.5,
+            // 三毒/欲望等辅助信号
+            desireDominant: dc.desire?.dominantDesire || null,
+            poisonLevel: dc.threePoisons?.totalToxicity || null,
           };
           drDecision = dr.evaluate(fieldData, 'pipeline');
         } catch (e) { /* skip */ }
@@ -323,7 +369,8 @@ const DEFAULT_PIPELINE = [
         memoryHits: memories.length,
       };
 
-      // ─── 将判断结果写入 LEARNED 记忆层 ─────────────────
+      // ─── 将判断结果写入记忆系统 ─────────────────
+      // v5.4.0: 修复写入方式——store() 不接受层参数，需要加前缀
       if (hf.memory && typeof hf.memory.store === 'function' && jd.direction) {
         try {
           const memEntry = {
@@ -333,11 +380,27 @@ const DEFAULT_PIPELINE = [
             judgment: (judgmentEngineOutput || '').slice(0, 300),
             decisionType: drType,
             confidence: jd.confidence || 0.5,
-            paths: (jd.paths || []).map(p => p.name).filter(Boolean),
+            paths: (jd.paths || []).map(p => p.label || p.name).filter(Boolean),
             ts: Date.now(),
           };
-          hf.memory.store('learned', `judgment:${Date.now()}`, JSON.stringify(memEntry), ['judgment', jd.direction, drType || 'analyze'].filter(Boolean));
+          // store() 自动根据前缀写入对应层: core: → CORE, identity. → CORE, 其他 → LEARNED
+          hf.memory.store(
+            `judgment:${Date.now()}`,
+            JSON.stringify(memEntry),
+            ['judgment', jd.direction, drType || 'analyze', 'auto'].filter(Boolean)
+          );
         } catch (e) { /* non-fatal */ }
+      }
+
+      // ─── 同时将心虫核心规则写入 CORE 层 ─────────────────
+      // 只在首次写入，避免覆盖已有规则
+      if (hf.memory && typeof hf.memory.addCore === 'function' && hf._memoryCoreSeeded !== true) {
+        try {
+          hf.memory.addCore('identity.engine_role', '引擎是底层认知分析系统，不做陪伴、不讨好、不解释自己', ['identity', 'core', 'rule']);
+          hf.memory.addCore('identity.decision_principle', '决策基于结构化数据而非默认值，不满足匹配条件时不输出决策', ['identity', 'core', 'rule']);
+          hf.memory.addCore('identity.confidence_principle', '置信度必须有区分度，不同输入产生不同置信度值', ['identity', 'core', 'rule']);
+          hf._memoryCoreSeeded = true;
+        } catch (e) { /* non-fatal - seed once */ }
       }
 
       return {

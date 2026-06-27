@@ -467,13 +467,23 @@ class JudgmentEngine {
           const penalty = (cognitiveLoad > 0.5 ? 1 : 0) + (hasHighDesire ? 1 : 0);
           return Math.max(1, base + 1 - penalty);
         }
-        if (path.direction === 'analyze') return Math.min(10, base + 2);
+        if (path.direction === 'analyze') {
+          // v5.4.0: 根据输入长度和复杂度调整可行性评分
+          const inputLen = (input || '').length;
+          const complexityBonus = inputLen > 100 ? 1 : inputLen > 50 ? 0.5 : 0;
+          return Math.min(10, base + 2 + complexityBonus);
+        }
         if (path.direction === 'reflect') return Math.min(10, base + 3); // 反问最可行
         return base;
 
       case 'consequence':
         // 后果影响：共情类长期影响好，行动类短期影响大
-        if (path.direction === 'empathize') return Math.min(10, base + 3);
+        if (path.direction === 'empathize') {
+          // v5.4.0: 根据情绪强度调整共情后果评分
+          const sentiment = context.emotion?.sentiment || 0;
+          const emotionBonus = Math.abs(sentiment) > 0.5 ? 2 : Math.abs(sentiment) > 0.2 ? 1 : 0;
+          return Math.min(10, base + 3 + emotionBonus);
+        }
         if (path.direction === 'act') {
           // 如果有贪或痴，行动的长期后果变差
           const penalty = (hasGreed ? 1 : 0) + (hasDelusion ? 2 : 0);
@@ -488,7 +498,14 @@ class JudgmentEngine {
           const extra = (cognitiveLoad > 0.5 ? 1 : 0) + (goalConflicts > 0 ? 1 : 0) + (identityDrift > 0.3 ? 1 : 0);
           return Math.max(1, base - 2 - extra);
         }
-        if (path.direction === 'analyze') return Math.min(10, base + 1);
+        if (path.direction === 'analyze') {
+          // v5.4.0: 有谬误检测结果时风险降低，有情绪时风险略升
+          const logicReasoning = context.logicReasoning || {};
+          const hasFallacies = logicReasoning.fallacies && logicReasoning.fallacies.length > 0;
+          const fallacyPenalty = hasFallacies ? -1 : 0;
+          const emotionPenalty = context.emotion?.sentiment !== undefined && Math.abs(context.emotion.sentiment) > 0.5 ? -1 : 0;
+          return Math.max(1, Math.min(10, base + 1 + fallacyPenalty + emotionPenalty));
+        }
         if (path.direction === 'reflect') return Math.min(10, base + 2);
         return base;
 
@@ -497,6 +514,8 @@ class JudgmentEngine {
         if (context.intent === 'advice' && path.direction === 'act') return Math.min(10, base + 3);
         if (context.intent === 'analysis' && path.direction === 'analyze') return Math.min(10, base + 3);
         if (context.intent === 'emotional' && path.direction === 'empathize') return Math.min(10, base + 3);
+        // v5.4.0: 无明确意图时，analyze 路径默认对齐度较低
+        if (path.direction === 'analyze' && !context.intent) return Math.max(1, base - 1);
         return base;
 
       case 'cost':
