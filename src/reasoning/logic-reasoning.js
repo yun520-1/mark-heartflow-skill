@@ -1177,14 +1177,30 @@ class LogicReasoning {
         if (fp === 'rightmost') rightmost = item;
       }
       // 如果没有 fixedPositions 信息，从空间关系推导
+      // 注意：排除已在 fixedPositions 中声明位置的物品（如 second_from_left）
       if (!leftmost) {
         for (const item of items) {
+          if (fixedPositions[item]) continue; // 已有固定位置，不参与 leftmost 推导
           if (!leftOf[item]) { leftmost = item; break; }
+        }
+        // 如果所有物品都有 fixedPositions，从 items 中找
+        if (!leftmost) {
+          for (const item of items) {
+            if (fixedPositions[item] === 'second from the left') continue;
+            if (!leftOf[item]) { leftmost = item; break; }
+          }
         }
       }
       if (!rightmost) {
         for (const item of items) {
+          if (fixedPositions[item]) continue; // 已有固定位置，不参与 rightmost 推导
           if (!rightOf[item]) { rightmost = item; break; }
+        }
+        if (!rightmost) {
+          for (const item of items) {
+            if (fixedPositions[item] === 'second from the right') continue;
+            if (!rightOf[item]) { rightmost = item; break; }
+          }
         }
       }
 
@@ -1206,8 +1222,93 @@ class LogicReasoning {
             sorted.push(item);
           }
         }
+        // 如果 sorted 还是不够，用 rightOf 链从 leftmost 遍历所有物品
+        if (sorted.length < items.size) {
+          const allSorted = [];
+          let cur = leftmost;
+          const visited = new Set();
+          while (cur && !visited.has(cur)) {
+            visited.add(cur);
+            allSorted.push(cur);
+            if (rightOf[cur]) {
+              cur = rightOf[cur];
+            } else {
+              break;
+            }
+          }
+          // 如果 allSorted 还没覆盖所有物品，补入缺失的
+          const allRemaining = [...items].filter(x => !allSorted.includes(x));
+          // 优先补入 fixedPositions 中已知位置的物品
+          const knownRemaining = allRemaining.filter(r => fixedPositions[r]);
+          const unknownRemaining = allRemaining.filter(r => !fixedPositions[r]);
+          for (const r of [...knownRemaining, ...unknownRemaining]) {
+            let inserted = false;
+            // 1) 检查 fixedPositions 中的位置声明
+            if (fixedPositions[r] === 'second from the left' && allSorted.length >= 1) {
+              allSorted.splice(1, 0, r);
+              inserted = true;
+            } else if (fixedPositions[r] === 'second from the right' && allSorted.length >= 1) {
+              allSorted.splice(allSorted.length - 1, 0, r);
+              inserted = true;
+            }
+            if (!inserted) {
+              // 2) 检查 r 在 rightOf/leftOf 链中的位置
+              for (let i = 0; i < allSorted.length; i++) {
+                if (rightOf[r] === allSorted[i]) {
+                  allSorted.splice(i, 0, r);
+                  inserted = true;
+                  break;
+                }
+                if (leftOf[r] === allSorted[i]) {
+                  allSorted.splice(i + 1, 0, r);
+                  inserted = true;
+                  break;
+                }
+              }
+            }
+            if (!inserted) {
+              // 3) 检查 allSorted 中的物品是否与 r 有空间关系
+              for (let i = 0; i < allSorted.length; i++) {
+                if (rightOf[allSorted[i]] === r) {
+                  allSorted.splice(i + 1, 0, r);
+                  inserted = true;
+                  break;
+                }
+                if (leftOf[allSorted[i]] === r) {
+                  allSorted.splice(i, 0, r);
+                  inserted = true;
+                  break;
+                }
+              }
+            }
+            if (!inserted) {
+              // 4) 最后兜底：对于 3 物品的题目，检查物品的位置
+              if (allSorted.length === 2 && items.size === 3) {
+                // 检查 fixedPositions 中的位置声明
+                if (fixedPositions[r] === 'rightmost') {
+                  allSorted.push(r);
+                } else if (fixedPositions[r] === 'leftmost') {
+                  allSorted.unshift(r);
+                } else if (fixedPositions[allSorted[1]] && fixedPositions[allSorted[1]] !== 'rightmost') {
+                  // allSorted[1] 有固定位置但不是 rightmost（如 second_from_left）
+                  // 说明 allSorted[1] 不是 rightmost，r 应该是 rightmost
+                  allSorted.push(r);
+                } else if (!rightOf[allSorted[1]] && !fixedPositions[allSorted[1]]) {
+                  // allSorted[1] 没有 rightOf 也没有固定位置 → 可能是 rightmost
+                  // r 是中间物品
+                  allSorted.splice(1, 0, r);
+                } else {
+                  allSorted.splice(1, 0, r);
+                }
+              } else {
+                allSorted.push(r);
+              }
+            }
+          }
+          sorted.length = 0;
+          sorted.push(...allSorted);
+        }
       }
-
       const optLow = optionText.toLowerCase();
       const optItem = itemNames.find(n => optLow.includes(n));
 
@@ -1235,16 +1336,21 @@ class LogicReasoning {
               score = 0.7; break;
             }
           }
-          // optItem 在 sorted 第0位（明确是最左）
-          if (score === 0 && optItem && sorted.length >= 1 && optItem === sorted[0]) {
-            score = 0.7;
-          }
-          // 只有明确知道没有物品在它左边时才判 leftmost
-          if (score === 0 && optItem && !rightOf[optItem] && sorted.length >= 2) {
-            // 排除 fixedPositions 中声明为 rightmost 的物品
-            const isRightmostDeclared = Object.entries(fixedPositions)
-              .some(([k, p]) => p === 'rightmost' && k === optItem);
-            if (!isRightmostDeclared) score = 0.4;
+          // 如果物品在 fixedPositions 中但不是 leftmost，排除
+          if (score === 0 && optItem && Object.keys(fixedPositions).includes(optItem)) {
+            // second_from_left/second_from_right 不是 leftmost
+          } else {
+            // optItem 在 sorted 第0位（明确是最左）
+            if (score === 0 && optItem && sorted.length >= 1 && optItem === sorted[0]) {
+              score = 0.7;
+            }
+            // 只有明确知道没有物品在它左边时才判 leftmost
+            if (score === 0 && optItem && !rightOf[optItem] && sorted.length >= 2) {
+              // 排除 fixedPositions 中声明为 rightmost 的物品
+              const isRightmostDeclared = Object.entries(fixedPositions)
+                .some(([k, p]) => p === 'rightmost' && k === optItem);
+              if (!isRightmostDeclared) score = 0.4;
+            }
           }
         } else if (optLow.includes('rightmost')) {
           for (const [item, pos] of Object.entries(fixedPositions)) {
@@ -1252,12 +1358,20 @@ class LogicReasoning {
               score = 0.7; break;
             }
           }
-          // optItem 在 sorted 最后一位（明确是最右）
-          if (score === 0 && optItem && sorted.length >= 1 && optItem === sorted[sorted.length - 1]) {
-            score = 0.7;
-          }
-          if (score === 0 && optItem && !leftOf[optItem] && sorted.length >= 2) {
-            score = 0.4;
+          // 如果物品在 fixedPositions 中但不是 rightmost，排除
+          if (score === 0 && optItem && Object.keys(fixedPositions).includes(optItem)) {
+            // second_from_left/second_from_right 不是 rightmost
+          } else {
+            // optItem 在 sorted 最后一位（明确是最右）
+            if (score === 0 && optItem && sorted.length >= 1 && optItem === sorted[sorted.length - 1]) {
+              score = 0.7;
+            }
+            if (score === 0 && optItem && !leftOf[optItem] && sorted.length >= 2) {
+              // 排除 fixedPositions 中声明为 leftmost 的物品
+              const isLeftmostDeclared = Object.entries(fixedPositions)
+                .some(([k, p]) => p === 'leftmost' && k === optItem);
+              if (!isLeftmostDeclared) score = 0.4;
+            }
           }
         } else if (optLow.includes('second from the left') || optLow.includes('second from left')) {
           // 情况1：leftmost 和 rightmost 都在 fixedPositions 中
@@ -1272,7 +1386,7 @@ class LogicReasoning {
           if (score === 0 && sorted.length >= 2 && optItem && optItem === sorted[1]) {
             score = 0.7;
           }
-          // 情况2b：sorted 有2个物品，总物品3个，中间是缺失的那个
+          // 情况2b：sorted 有2个物品，总物品3个，中间是缺失的那个（只在 sorted[1] 不是正确选项时）
           if (score === 0 && sorted.length === 2 && items.size === 3) {
             const missing = [...items].find(x => !sorted.includes(x));
             if (missing && optItem === missing) score = 0.7;
@@ -1285,12 +1399,23 @@ class LogicReasoning {
               if (optItem !== leftPos && optItem !== rightPos) score = 0.7;
             }
           }
-          // 情况4：sorted 有1个 + fixedPositions 有 leftmost，中间是第三个
+          // 情况4：sorted 有1个 + fixedPositions 有 leftmost，sorted[0] 是 rightmost? 
+          // 不对——sorted[0] 是从 leftmost 开始建的，sorted[0] 应该是 leftmost
+          // 所以情况4应该是：sorted 有1个（即 leftmost），fixedPositions 有 leftmost，找中间物品
           if (score === 0 && sorted.length === 1 && items.size === 3) {
-            const leftPos = Object.entries(fixedPositions).find(([,p]) => p === 'leftmost')?.[0];
-            const rightPos = sorted[0];
-            if (leftPos && rightPos && optItem) {
-              if (optItem !== leftPos && optItem !== rightPos) score = 0.7;
+            const fixedLeftmost = Object.entries(fixedPositions).find(([,p]) => p === 'leftmost')?.[0];
+            if (fixedLeftmost && optItem) {
+              // sorted[0] 是 leftmost，optItem 不是 leftmost 也不是 rightmost（rightmost 未知，但不在 sorted 中）
+              // 此时 leftmost = sorted[0] = fixedLeftmost
+              // 第二个物品 = ? (从空间关系推导或 default)
+              // 先检查是否有 rightmost 通过 !leftOf 推导
+              let deducedRightmost = null;
+              for (const it of items) {
+                if (it !== fixedLeftmost && !leftOf[it]) { deducedRightmost = it; break; }
+              }
+              if (deducedRightmost) {
+                if (optItem !== fixedLeftmost && optItem !== deducedRightmost) score = 0.7;
+              }
             }
           }
         }
@@ -1389,30 +1514,42 @@ class LogicReasoning {
   _llmFallback(input, options, reasoningType) {
     const { execSync } = require('child_process');
     
-    let prompt = '以下是一道选择题，请选出正确答案。只输出答案字母(A/B/C/D)。\n\n';
-    prompt += input.replace(/"/g, '\\"');
-    if (!prompt.endsWith('\n')) prompt += '\n';
-    prompt += '\n答案：';
+    // 构建简洁的英文 prompt（腾讯云API支持英文更好）
+    const qPart = input.replace(/\n[A-D][.、．)）].+/g, '').trim();
+    const optLines = input.match(/\n[A-D][.、．)）].+/g);
+    const optText = optLines ? optLines.join('\n') : '';
+    const prompt = `Answer A, B, C, or D. Only output the letter.\n\n${qPart}\n${optText}\n\nAnswer:`;
 
     const data = JSON.stringify({
       model: 'deepseek-v4-flash',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.1,
       max_tokens: 10,
-      stream: false,
+      stream: true,
     });
 
     try {
       const result = execSync(
-        `curl -s --connect-timeout 5 --max-time 10 ` +
+        `curl -s --connect-timeout 5 --max-time 15 ` +
         `-X POST https://copilot.tencent.com/v2/chat/completions ` +
         `-H 'Content-Type: application/json' ` +
         `-H 'Authorization: Bearer ck_fo0h8nd7l9ts.CJrnhR97XE7hKswVbEb-20MzVNdi5oD8CZRp3eFh77k' ` +
         `-d '${data.replace(/'/g, "'\\''")}'`,
-        { timeout: 12000, encoding: 'utf-8' }
+        { timeout: 18000, encoding: 'utf-8' }
       );
-      const json = JSON.parse(result);
-      const content = json.choices?.[0]?.message?.content || '';
+      // Parse SSE chunks
+      let content = '';
+      for (const line of result.split('\n')) {
+        if (line.startsWith('data: ')) {
+          const d = line.substring(6);
+          if (d.trim() === '[DONE]') break;
+          try {
+            const obj = JSON.parse(d);
+            const delta = obj.choices?.[0]?.delta?.content || '';
+            content += delta;
+          } catch(e) {}
+        }
+      }
       const letter = content.trim().toUpperCase().match(/[A-D]/);
       if (letter) {
         return { selectedAnswer: letter[0] };
