@@ -979,8 +979,21 @@ class DecisionRouter {
     }
 
     if (matches.length === 0) {
+      // v5.4.1: 兜底规则 — 没有规则匹配时输出 hold（等待更多数据）
+      // 不输出 null，确保上层始终收到一个可用的决策
+      this._stats.totalDecisions++;
+      this._stats.byDecision[DECISION.HOLD] = (this._stats.byDecision[DECISION.HOLD] || 0) + 1;
       return {
-        decision: null,
+        decision: {
+          type: DECISION.HOLD,
+          confidence: 0.3,
+          priority: DECISION_PRIORITY[DECISION.HOLD],
+          rationale: '无匹配规则，等待更多数据',
+          ruleId: 'default-hold',
+          timestamp: Date.now(),
+          source,
+          fallback: null,
+        },
         matched: false,
         rules: [],
         field: fieldData,
