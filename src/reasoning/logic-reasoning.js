@@ -1512,15 +1512,13 @@ class LogicReasoning {
    * 使用 child_process + curl 实现同步调用（腾讯云API）
    */
   _llmFallback(input, options, reasoningType) {
-    const { execSync } = require('child_process');
-    
     // 构建简洁的英文 prompt（腾讯云API支持英文更好）
     const qPart = input.replace(/\n[A-D][.、．)）].+/g, '').trim();
     const optLines = input.match(/\n[A-D][.、．)）].+/g);
     const optText = optLines ? optLines.join('\n') : '';
     const prompt = `Answer A, B, C, or D. Only output the letter.\n\n${qPart}\n${optText}\n\nAnswer:`;
 
-    const data = JSON.stringify({
+    const body = JSON.stringify({
       model: 'deepseek-v4-flash',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.1,
@@ -1529,28 +1527,41 @@ class LogicReasoning {
     });
 
     try {
-      const result = execSync(
-        `curl -s --connect-timeout 5 --max-time 15 ` +
-        `-X POST https://copilot.tencent.com/v2/chat/completions ` +
-        `-H 'Content-Type: application/json' ` +
-        `-H 'Authorization: Bearer ck_fo0h8nd7l9ts.CJrnhR97XE7hKswVbEb-20MzVNdi5oD8CZRp3eFh77k' ` +
-        `-d '${data.replace(/'/g, "'\\''")}'`,
-        { timeout: 18000, encoding: 'utf-8' }
-      );
-      // Parse SSE chunks
-      let content = '';
-      for (const line of result.split('\n')) {
-        if (line.startsWith('data: ')) {
-          const d = line.substring(6);
-          if (d.trim() === '[DONE]') break;
-          try {
-            const obj = JSON.parse(d);
-            const delta = obj.choices?.[0]?.delta?.content || '';
-            content += delta;
-          } catch(e) {}
-        }
-      }
-      const letter = content.trim().toUpperCase().match(/[A-D]/);
+      // 用Python子进程调用curl，避免shell转义问题
+      const { execSync } = require('child_process');
+      const fs = require('fs');
+      // 从文件读取API key（避免源码中的***被截断）
+      let apiKey = '';
+      try { apiKey = fs.readFileSync('/tmp/api_key.txt', 'utf-8').trim(); } catch(e) {}
+      if (!apiKey) try { apiKey = process.env.HEARTFLOW_API_KEY || ''; } catch(e) {}
+      if (!apiKey) return null;
+
+      const pyCode = `
+import subprocess, json, sys
+body = json.loads(sys.argv[1])
+result = subprocess.run([
+  'curl', '-s', '--connect-timeout', '5', '--max-time', '15',
+  '-X', 'POST', 'https://copilot.tencent.com/v2/chat/completions',
+  '-H', 'Content-Type: application/json',
+  '-H', 'Authorization: Bearer ${apiKey}',
+  '-d', json.dumps(body)
+], capture_output=True, text=True)
+content = ''
+for line in result.stdout.split('\\n'):
+    if line.startswith('data: '):
+        d = line[6:]
+        if d.strip() == '[DONE]':
+            break
+        try:
+            obj = json.loads(d)
+            delta = obj.get('choices', [dict()])[0].get('delta', dict()).get('content', '')
+            content += delta
+        except:
+            pass
+print(content.strip())
+`;
+      const result = execSync('python3', ['-c', pyCode, body], { timeout: 20000, encoding: 'utf-8' });
+      const letter = result.trim().toUpperCase().match(/[A-D]/);
       if (letter) {
         return { selectedAnswer: letter[0] };
       }
