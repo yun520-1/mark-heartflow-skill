@@ -104,6 +104,7 @@ const _KnowledgeBase = _lazy('knowledgeBase', () => { try { return require('../r
 const _CommonsenseEngine = _lazy('commonsenseEngine', () => { try { return require('../reasoning/commonsense-engine.js'); } catch(e) { return { CommonsenseEngine: class { constructor() {} } }; } });
 const _CausalInference = _lazy('causalInference', () => { try { return require('../reasoning/causal-inference.js'); } catch(e) { return { CausalInference: class { constructor() {} } }; } });
 const _InferenceChain = _lazy('inferenceChain', () => { try { return require('../reasoning/inference-chain.js'); } catch(e) { return { InferenceChain: class { constructor() {} } }; } });
+const _LogicReasoning = _lazy('logicReasoning', () => require('../reasoning/logic-reasoning.js'));
 const _AutonomousEmotion = _lazy('autonomousEmotion', () => { try { return require('../emotion/autonomous-emotion.js'); } catch(e) { return { AutonomousEmotion: class { constructor() {} } }; } });
 const _DesireSystem = _lazy('desireSystem', () => { try { return require('../emotion/desire-system.js'); } catch(e) { return { DesireSystem: class { constructor() {} } }; } });
 const _EmotionalGrowth = _lazy('emotionalGrowth', () => { try { return require('../emotion/emotional-growth.js'); } catch(e) { return { EmotionalGrowth: class { constructor() {} } }; } });
@@ -699,6 +700,12 @@ class HeartFlow {
       this.timeExtension = new TimeExtensionEngine(this);
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'timeExtension', error: e.message }); }
 
+    // ─── 逻辑推理引擎 — LogicReasoning（v1.0.0 新增） ────────────────────────
+    try {
+      const { LogicReasoning } = require('../reasoning/logic-reasoning.js');
+      this.logicReasoning = new LogicReasoning();
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'logicReasoning', error: e.message }); }
+
     // ─── 辩论分析器 — DebateAnalyzer（v2.10.2 新增） ─────────────────────────
     try {
       const { DebateAnalyzer } = require('../reasoning/debate-analyzer.js');
@@ -975,6 +982,8 @@ class HeartFlow {
       'cognitionGround',
       // v5.0.0 — 判断引擎
       'judgmentEngine',
+      // v1.0.0 — 逻辑推理引擎
+      'logicReasoning',
       // v5.0.0 — 管道引擎
       'pipeline',
       // v5.1.0 — 自省
@@ -1307,6 +1316,10 @@ class HeartFlow {
     // v5.0.0 — 判断引擎
     'judgmentEngine.judge', 'judgmentEngine.recordOutcome', 'judgmentEngine.selfReview',
     'judgmentEngine.getStats',
+    // v1.0.0 — 逻辑推理引擎
+    'logicReasoning.analyze', 'logicReasoning.detectType', 'logicReasoning.checkPremises',
+    'logicReasoning.findFallacies', 'logicReasoning.recommendFramework',
+    'logicReasoning.getStats', 'logicReasoning.getHistory',
     // v5.0.0 — 管道引擎
     'pipeline.run', 'pipeline.getStats',
     // v5.1.0 — 自省
