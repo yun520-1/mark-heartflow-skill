@@ -79,6 +79,19 @@ Result:        LLM makes the final call with 27% more data than raw input alone.
 
 ---
 
+## 📊 Benchmark Report
+
+See the [Comprehensive Benchmark Report](docs/benchmark-report.md) for detailed evaluation of HeartFlow v5.2.1 against 15 standardized test cases across 5 capability dimensions (logic verification, cognitive analysis, psychology, decision routing, comprehensive ability).
+
+**Key findings:**
+- **Engine stability:** 8-stage pipeline, all 15/15 tests passed
+- **Emotion detection:** Correctly identifies neutral vs depressed (P=-4) states
+- **Pain detection:** "I feel sad" → pain=True (level=0.6) ✅
+- **Decision routing:** 6-dimension scoring (feasibility/consequence/risk/alignment/cost/reversibility)
+- **Memory system:** 21 recovered memories, CORE/LEARNED/EPHEMERAL layers active
+- **Known issue:** think() conclusion template needs improvement
+
+
 ## Architecture
 
 ```
