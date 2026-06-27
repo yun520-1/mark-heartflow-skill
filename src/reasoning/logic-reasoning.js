@@ -23,8 +23,9 @@
 function _matchKeywords(input, keywords) {
   let hits = 0;
   const matched = [];
+  const lowerInput = input.toLowerCase();
   for (const kw of keywords) {
-    if (input.includes(kw)) {
+    if (lowerInput.includes(kw.toLowerCase())) {
       hits++;
       matched.push(kw);
     }
@@ -45,10 +46,10 @@ const REASONING_PATTERNS = [
     id: 'deductive',
     name: '演绎推理',
     desc: '从一般前提推出具体结论（如果A则B，A成立→B成立）',
-    keywords: [['如果', '那么', '则', '所有', '都', '凡是', '必然', '一定成立', '必定', '毫无疑问', '所以', '因此', '可得', '可推出', '三段论', '大前提', '小前提', 'therefore', 'conclusion', 'if', 'then', 'must', 'always', 'every', 'all', 'because', 'since', 'thus', 'hence', 'deduce', 'imply', 'to the right', 'to the left', 'is the', 'there are', 'there is', 'than', 'more than', 'less than', 'equal', 'same as', 'order', 'position', 'between', 'first', 'second', 'third', 'last', 'leftmost', 'rightmost']],
-    // 至少命中3个关键词或1个正则
-    minKeywords: 3,
-    regexBonus: [/如果.+那么|若.+则|只要.+就|所有.+都|凡是.+都/i, /必然|一定成立|必定|毫无疑问|因此/i],
+    keywords: [['如果', '那么', '则', '所有', '都', '凡是', '必然', '一定成立', '必定', '毫无疑问', '所以', '因此', '可得', '可推出', '三段论', '大前提', '小前提', 'therefore', 'conclusion', 'if', 'then', 'must', 'always', 'every', 'all', 'because', 'since', 'thus', 'hence', 'deduce', 'imply', 'to the right', 'to the left', 'is the', 'there are', 'there is', 'than', 'more than', 'less than', 'equal', 'same as', 'order', 'position', 'between', 'first', 'second', 'third', 'last', 'leftmost', 'rightmost', 'calculate', 'total', 'sum', 'difference', 'product', 'quotient', 'find', 'solve', 'how many', 'how much', 'what is', 'equation', 'number', 'digit', 'value', 'result', 'answer', 'step', 'divide', 'multiply', 'subtract', 'add', 'per', 'rate', 'cost', 'price', 'distance', 'time', 'speed', 'length', 'weight', 'age', 'amount', 'spend', 'buy', 'sell', 'pound', 'dollar', 'cent']],
+    // 数学推理题只需命中2个关键词（含运算词）即可
+    minKeywords: 2,
+    regexBonus: [/如果.+那么|若.+则|只要.+就|所有.+都|凡是.+都/i, /必然|一定成立|必定|毫无疑问|因此/i, /\b(calculate|total|sum|difference|find|solve|how many|how much)\b/i, /\b(equation|value|result|answer|step)\b/i, /\b(divide|multiply|subtract|add|per|rate)\b/i],
     weight: 0.25,
   },
   {
