@@ -112,7 +112,7 @@ const FALLACY_PATTERNS = [
     ],
     minKeywordGroups: 1,
     minKeywords: 1,
-    regexBonus: [/你(的)?(意思|说)是(说)?.*(只要|只有|总是|永远|完全)/i, /按你(的)?(说法|逻辑|意思).*(荒谬|可笑|不对|站不住脚)/i],
+    regexBonus: [/你(的)?(意思|说)是(说)?.*(只要|只有|总是|永远|完全)/i, /按你(的)?(说法|逻辑|意思).*(荒谬|可笑|不对|站不住脚)/i, /按你(的)?(意思|逻辑|说法).*(就要|就会|只能|就回到)/i],
     weight: 0.4,
   },
   {
@@ -122,7 +122,7 @@ const FALLACY_PATTERNS = [
     keywords: [
       ['如果允许', '一旦', '开了口子', '开先例', '打开缺口', 'if we allow', 'slippery slope', 'then soon', 'next thing', 'before long'],
       ['就会', '将会', '最终', '一步一步', '渐进的', '滑向', '走向', 'will lead to', 'will cause', 'will result in', 'eventually', 'step by step'],
-      ['灾难', '崩溃', '毁灭', '完蛋', '无法控制', '不可收拾', '无法挽回', '无法挽救', '不可挽回', 'disaster', 'catastrophe', 'collapse', 'destruction', 'out of control', 'irreversible'],
+      ['灾难', '崩溃', '毁灭', '完蛋', '无法控制', '不可收拾', '无法挽回', '无法挽救', '不可挽回', '最后', '最终', 'disaster', 'catastrophe', 'collapse', 'destruction', 'out of control', 'irreversible'],
     ],
     // 需要至少命中3个关键词（分布在至少2组中）
     minKeywordGroups: 2,
@@ -170,7 +170,7 @@ const FALLACY_PATTERNS = [
     specialCheck: (input) => {
       // 检查"X因为Y"和"Y因为X"模式是否同时出现
       const causeEffectPairs = [];
-      const causeRe = /(.{2,20})因为(.{2,20})/g;
+      const causeRe = /([^。！？\n]{2,20})因为([^。！？\n]{2,20})/g;
       let m;
       while ((m = causeRe.exec(input)) !== null) {
         causeEffectPairs.push({ cause: m[1].trim(), effect: m[2].trim() });
@@ -178,19 +178,53 @@ const FALLACY_PATTERNS = [
       for (let i = 0; i < causeEffectPairs.length; i++) {
         for (let j = i + 1; j < causeEffectPairs.length; j++) {
           // 检查A因为B和B因为A（双向互指）
-          if ((causeEffectPairs[i].cause.includes(causeEffectPairs[j].effect) || causeEffectPairs[j].effect.includes(causeEffectPairs[i].cause)) &&
-              (causeEffectPairs[j].cause.includes(causeEffectPairs[i].effect) || causeEffectPairs[i].effect.includes(causeEffectPairs[j].cause))) {
+          const aCause = causeEffectPairs[i].cause;
+          const aEffect = causeEffectPairs[i].effect;
+          const bCause = causeEffectPairs[j].cause;
+          const bEffect = causeEffectPairs[j].effect;
+          // 标准双向: A因为B 且 B因为A
+          if ((aCause.includes(bEffect) || bEffect.includes(aCause)) &&
+              (bCause.includes(aEffect) || aEffect.includes(bCause))) {
             return 0.5;
+          }
+          // 链式循环: A因为B, B因为C, C包含A（如"好→精彩→好"）
+          // 检查任意两个对的 cause 和 effect 在对方中出现（跨链）
+          const pair1 = aCause + aEffect;
+          const pair2 = bCause + bEffect;
+          if (pair1.length > 2 && pair2.length > 2) {
+            // A的cause在B的effect中出现 且 B的cause在A的effect中出现
+            if ((aCause.includes(bEffect) || bEffect.includes(aCause)) ||
+                (bCause.includes(aEffect) || aEffect.includes(bCause))) {
+              // 加上跨链去重检测
+              const allParts = [aCause, aEffect, bCause, bEffect].filter(p => p.length > 1);
+              const unique = new Set(allParts);
+              if (unique.size < allParts.length) {
+                return 0.5;
+              }
+            }
           }
         }
       }
-      // 检查"这本书好因为它写得好，它写得好所以它是一本好书"模式
-      if (/因为.+所以|之所以.+是因为/i.test(input)) {
-        const words = input.replace(/[，。！？、；：""''（）()\s]/g, ' ').split(/\s+/).filter(w => w.length > 1);
-        const uniqueWords = new Set(words);
-        // 如果去重后词少（不到总词的60%），可能是循环论证
-        if (uniqueWords.size > 0 && uniqueWords.size / words.length < 0.6 && words.length > 5) {
-          return 0.35;
+      // 链式循环检测: A的reason在B的reason中出现且A的effect在B的effect中出现
+      // 如"好→精彩→好"中"好"在第一个和第二个中交替出现
+      if (causeEffectPairs.length >= 2) {
+        const allReasons = causeEffectPairs.map(p => p.cause);
+        const allEffects = causeEffectPairs.map(p => p.effect);
+        // 检查是否有任意一个词在原因和结果中交叉出现
+        for (let i = 0; i < allReasons.length; i++) {
+          for (let j = 0; j < allEffects.length; j++) {
+            if (i !== j || i === j) {
+              // 原因i 包含 结果j 或 结果j 包含 原因i
+              if (allReasons[i].includes(allEffects[j]) || allEffects[j].includes(allReasons[i])) {
+                // 加上语义去重: 如果句子去重后词汇量少于60%，说明词汇高度重复
+                const chars = input.replace(/[，。！？、；：""''（）()\s]/g, '').split('');
+                const unique = new Set(chars);
+                if (unique.size < chars.length * 0.6 && chars.length > 6) {
+                  return 0.4;
+                }
+              }
+            }
+          }
         }
       }
       return 0;
