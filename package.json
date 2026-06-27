@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node bin/cli.js chat",
-  "status": "node bin/cli.js status",
+    "status": "node bin/cli.js status",
     "test": "node tests/integration.test.js",
     "verify": "node bin/verify.js",
     "check": "node -e \"require('fs').readdirSync('src',{recursive:true}).filter(f=>f.endsWith('.js')).forEach(f=>require('child_process').execSync('node --check '+f,{stdio:'inherit'}))\""
