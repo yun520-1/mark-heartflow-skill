@@ -466,13 +466,15 @@ class HeartLogic {
     let type = 'general';
     if (/\d+[+\-*/=]|\d+\s*(=|大于|小于|等于|总和|平均|概率)/.test(q)) {
       type = 'calculation';
+    } else if (/帮我写|帮我做|帮我实现|帮我生成|写一个|做一个|实现一个|写一段|写个/.test(q)) {
+      type = 'code';
     } else if (/为什么|原因|原理|怎么来的|解释/.test(q)) {
       type = 'explanation';
     } else if (/对不对|是否|应该|正确吗|合理吗|好不好/.test(q)) {
       type = 'judgment';
     } else if (/创造|设计|想象|提出|新的/.test(q)) {
       type = 'creative';
-    } else if (/是什么|定义|概念|什么是|指什么|查|找/.test(q)) {
+    } else if (/是什么|定义|概念|什么是|指什么|查一下|查一查/.test(q)) {
       type = 'retrieval';
     } else if (q.length > 150 && (/(?:因为|所以|导致|因此|然而|但是|可是){3,}/.test(q) || /(?:我觉得|我认为|说白了|关键|问题在于|本质|归根)/.test(q))) {
       type = 'debate';
@@ -480,7 +482,7 @@ class HeartLogic {
 
     // ── 类别识别 ─────────────────────────────────────────────
     let category = 'general';
-    if (/代码|函数|bug|error|debug|编程|js|py|java|脚本/.test(q)) {
+    if (/代码|函数|bug|error|debug|编程|js|py|java|脚本|排序|算法|查找|二分|递归|遍历|搜索|加密|编译/.test(q)) {
       category = 'code';
     } else if (/数学|计算|数字|概率|统计|公式/.test(q)) {
       category = 'math';
@@ -495,7 +497,7 @@ class HeartLogic {
     // ── 情绪检测 ─────────────────────────────────────────────
     // v5.2.2: 增强愤怒/痛苦检测
     const emotionSignals = {
-      anger:   ['怒', '恨', '烦', '受不了', '气死了', '恼火', '火大', 'tmd', '操'],
+      anger:   ['怒', '恨', '烦', '受不了', '受够了', '气死了', '恼火', '火大', 'tmd', '操', '生气'],
       sadness: ['难过', '伤心', '委屈', '哭', '绝望', '悲痛', '心碎'],
       fear:    ['怕', '恐惧', '害怕', '担心', '不敢', '焦虑'],
       joy:     ['开心', '快乐', '高兴', '喜悦', '棒', '太好了'],
