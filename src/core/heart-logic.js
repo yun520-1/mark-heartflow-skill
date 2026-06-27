@@ -455,9 +455,91 @@ class HeartLogic {
 
   // === 第一问：这件事是关于什么的？ ===
   // 在做任何事之前，先停下来问自己
-  whatIsThis(input, context) {
+  // v5.2.2: 重写 — 集成 _classifyTask 逻辑，输出 type/category/topic/emotion
+  whatIsThis(input, context = {}) {
+    if (!input || typeof input !== 'string') {
+      return { raw: '', type: 'unknown', category: 'unknown', topic: '', emotion: 'unknown', confidence: 0 };
+    }
+    const q = input.toLowerCase();
+
+    // ── 类型分类（与 thought-chain._classifyTask 同步） ──────────
+    let type = 'general';
+    if (/\d+[+\-*/=]|\d+\s*(=|大于|小于|等于|总和|平均|概率)/.test(q)) {
+      type = 'calculation';
+    } else if (/为什么|原因|原理|怎么来的|解释/.test(q)) {
+      type = 'explanation';
+    } else if (/对不对|是否|应该|正确吗|合理吗|好不好/.test(q)) {
+      type = 'judgment';
+    } else if (/创造|设计|想象|提出|新的/.test(q)) {
+      type = 'creative';
+    } else if (/是什么|定义|概念|什么是|指什么|查|找/.test(q)) {
+      type = 'retrieval';
+    } else if (q.length > 150 && (/(?:因为|所以|导致|因此|然而|但是|可是){3,}/.test(q) || /(?:我觉得|我认为|说白了|关键|问题在于|本质|归根)/.test(q))) {
+      type = 'debate';
+    }
+
+    // ── 类别识别 ─────────────────────────────────────────────
+    let category = 'general';
+    if (/代码|函数|bug|error|debug|编程|js|py|java|脚本/.test(q)) {
+      category = 'code';
+    } else if (/数学|计算|数字|概率|统计|公式/.test(q)) {
+      category = 'math';
+    } else if (/情绪|心情|难过|开心|生气|焦虑|委屈|哭/.test(q)) {
+      category = 'emotion';
+    } else if (/记忆|上次|之前|以前|你记得|我们说/.test(q)) {
+      category = 'memory';
+    } else if (/系统|配置|安装|部署|服务器|docker|npm/.test(q)) {
+      category = 'technical';
+    }
+
+    // ── 情绪检测 ─────────────────────────────────────────────
+    // v5.2.2: 增强愤怒/痛苦检测
+    const emotionSignals = {
+      anger:   ['怒', '恨', '烦', '受不了', '气死了', '恼火', '火大', 'tmd', '操'],
+      sadness: ['难过', '伤心', '委屈', '哭', '绝望', '悲痛', '心碎'],
+      fear:    ['怕', '恐惧', '害怕', '担心', '不敢', '焦虑'],
+      joy:     ['开心', '快乐', '高兴', '喜悦', '棒', '太好了'],
+      neutral: ['还行', '没事', '一般', '嗯', '哦'],
+      pain:    ['痛', '疼', '痛苦', '痛不欲生', '煎熬', '挣扎'],
+      tired:   ['累', '疲惫', '倦', '撑不住', '不想动', '无力'],
+    };
+    let dominantEmotion = 'neutral';
+    let maxScore = 0;
+    for (const [emotion, signals] of Object.entries(emotionSignals)) {
+      const score = signals.filter(s => q.includes(s)).length;
+      if (score > maxScore) { maxScore = score; dominantEmotion = emotion; }
+    }
+
+    // ── 话题提取（简单抽取式） ────────────────────────────────
+    let topic = '';
+    const topicPatterns = [
+      /关于(.{1,30})(?:的|问题|话题|事情|方面)/,
+      /讨论(.{1,30})(?:的|问题|话题|事情)/,
+      /(.{2,20})是什么/,
+      /(.{2,20})怎么做/,
+      /(.{2,20})为什么/,
+      /什么是(.{2,20})/,
+    ];
+    for (const pat of topicPatterns) {
+      const m = input.match(pat);
+      if (m) { topic = m[1].trim(); break; }
+    }
+    if (!topic) topic = input.slice(0, 30).trim();
+
+    // ── 置信度 ──────────────────────────────────────────────
+    const confidence = maxScore > 0 ? Math.min(0.95, 0.5 + maxScore * 0.15) : 0.5;
+
     return {
-      raw: input
+      raw: input,
+      type,
+      category,
+      topic,
+      emotion: dominantEmotion,
+      emotionScore: maxScore,
+      confidence,
+      isTechnical: category === 'code' || category === 'technical' || category === 'math',
+      isEmotional: category === 'emotion' || maxScore > 1,
+      hasPain: dominantEmotion === 'pain' || dominantEmotion === 'sadness',
     };
   }
 

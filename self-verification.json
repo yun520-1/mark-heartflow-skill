@@ -47,9 +47,33 @@
         "结论与推理逻辑不匹配"
       ],
       "timestamp": 1780401659160
+    },
+    {
+      "reasoning": "地球是平的。",
+      "conclusion": "地球是一个近似球体的行星",
+      "issues": [
+        "未考虑替代推理路径"
+      ],
+      "timestamp": 1782544031362
+    },
+    {
+      "reasoning": "地球是平的。",
+      "conclusion": "地球是一个近似球体的行星",
+      "issues": [
+        "未考虑替代推理路径"
+      ],
+      "timestamp": 1782544060721
+    },
+    {
+      "reasoning": "水在标准大气压下100度沸腾",
+      "conclusion": "标准大气压下水的沸点是100度",
+      "issues": [
+        "未考虑替代推理路径"
+      ],
+      "timestamp": 1782544060722
     }
   ],
-  "totalVerified": 29,
+  "totalVerified": 32,
   "passes": 23,
-  "fails": 6
+  "fails": 9
 }

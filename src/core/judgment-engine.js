@@ -653,19 +653,45 @@ class JudgmentEngine {
     const score = chosen.totalScore;
     const consequences = chosen.consequences || {};
 
-    // 基于路径评分生成决策文本
+    // v5.2.2: 不再用固定模板，而是基于输入内容 + 路径数据生成有信息的结论
+    // 从输入中提取关键信息
+    const inputSnippet = input.length > 100 ? input.slice(0, 100) + '...' : input;
+    const hasQuestion = /[？?]/.test(input);
+    const isShort = input.length < 20;
+    const hasCode = /代码|函数|function|const|let|var|def |class |import|require|export|排序|算法|程序|脚本/.test(input);
+    const hasEmotionWord = /难过|开心|生气|焦虑|怕|爱|恨|委屈|哭|怒|气死了|恼火|火大/.test(input);
+    const isMemoryRequest = /上次|之前|以前|你记得|我们说/.test(input);
+
     let judge = '';
     let reason = '';
     let action = '';
 
     if (direction === 'analyze') {
-      judge = '当前需要先分析，再做判断';
-      if (score >= 7) {
-        reason = '分析路径评分高，说明分析条件充分';
+      if (isMemoryRequest) {
+        judge = '这是一个记忆查询请求';
+        reason = '用户正在询问之前的对话或存储的信息';
+        action = '检索相关记忆，给出准确答复';
+      } else if (hasEmotionWord) {
+        judge = '检测到情绪表达';
+        reason = '输入包含情绪关键词';
+        action = '识别情绪类型，回应情绪后再做分析';
+      } else if (hasCode) {
+        judge = '需要分析代码';
+        reason = '输入包含代码片段';
+        action = '理解代码逻辑，找出问题或优化点';
+      } else if (hasQuestion) {
+        judge = '这是一个待回答的问题';
+        reason = `输入包含疑问句`;
+        action = '分析问题后给出准确答案';
+      } else if (isShort) {
+        judge = '简短输入，需要推断意图';
+        reason = `输入较短（${input.length}字），需要结合上下文理解`;
+        action = '基于输入特征和已知信息做出回应';
       } else {
-        reason = '其他路径评分低于分析路径，行动条件不成熟';
+        judge = `需要分析输入内容`;
+        reason = `输入类型: ${context.intent || 'general'}，长度: ${input.length}字`;
+        action = '提取关键信息，分析后给出判断';
       }
-      action = '先收集信息、从多角度分析，等条件成熟后再行动';
     } else if (direction === 'act') {
       judge = '判断明确，可以直接行动';
       if (score >= 7) {
@@ -690,7 +716,7 @@ class JudgmentEngine {
 
     // 附加后果预测（如果有）
     const shortTerm = consequences['短期（1-7天）'];
-    if (shortTerm && !reason.includes(shortTerm)) {
+    if (shortTerm && !action.includes(shortTerm)) {
       action = `${action}。预期: ${shortTerm}`;
     }
 
