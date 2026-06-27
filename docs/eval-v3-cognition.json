@@ -1,0 +1,222 @@
+[
+  {
+    "input": "气死了，这个bug改了两天都没改好",
+    "conclusion": "检测到情绪表达。输入包含情绪关键词。识别情绪类型，回应情绪后再做分析。预期: 对问题有更清晰的理解，但尚未采取实际行动\n\n判断理由：选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动\n\n决策策略：加速执行",
+    "timing": 11,
+    "cognition": {
+      "whatIsThis": {
+        "type": "general",
+        "category": "code",
+        "topic": "气死了，这个bug改了两天都没改好",
+        "emotion": "anger",
+        "confidence": 0.8,
+        "isTechnical": true,
+        "isEmotional": true,
+        "hasPain": false
+      },
+      "decision": {
+        "type": "accelerate",
+        "confidence": 0.54
+      },
+      "memoryHits": 0
+    }
+  },
+  {
+    "input": "好难过，他走了，不会再回来了",
+    "conclusion": "检测到情绪表达。输入包含情绪关键词。识别情绪类型，回应情绪后再做分析。预期: 对问题有更清晰的理解，但尚未采取实际行动\n\n判断理由：选择了「分析先行」路径。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+    "timing": 4,
+    "cognition": {
+      "whatIsThis": {
+        "type": "general",
+        "category": "emotion",
+        "topic": "好难过，他走了，不会再回来了",
+        "emotion": "sadness",
+        "confidence": 0.65,
+        "isTechnical": false,
+        "isEmotional": true,
+        "hasPain": true
+      },
+      "decision": {
+        "type": null,
+        "confidence": null
+      },
+      "memoryHits": 0
+    }
+  },
+  {
+    "input": "1+1等于几？",
+    "conclusion": "这是一个待回答的问题。输入包含疑问句。分析问题后给出准确答案。预期: 对问题有更清晰的理解，但尚未采取实际行动\n\n判断理由：选择了「分析先行」路径。预期效果: 对问题有更清晰的理解，但尚未采取实际行动\n\n决策策略：深度共情",
+    "timing": 1,
+    "cognition": {
+      "whatIsThis": {
+        "type": "calculation",
+        "category": "general",
+        "topic": "1+1等于几？",
+        "emotion": "neutral",
+        "confidence": 0.5,
+        "isTechnical": false,
+        "isEmotional": false,
+        "hasPain": false
+      },
+      "decision": {
+        "type": "resonate",
+        "confidence": 0.708
+      },
+      "memoryHits": 0
+    }
+  },
+  {
+    "input": "帮我写一个快速排序函数",
+    "conclusion": "需要分析代码。输入包含代码片段。理解代码逻辑，找出问题或优化点。预期: 对问题有更清晰的理解，但尚未采取实际行动\n\n判断理由：选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+    "timing": 2,
+    "cognition": {
+      "whatIsThis": {
+        "type": "general",
+        "category": "code",
+        "topic": "帮我写一个快速排序函数",
+        "emotion": "neutral",
+        "confidence": 0.5,
+        "isTechnical": true,
+        "isEmotional": false,
+        "hasPain": false
+      },
+      "decision": {
+        "type": null,
+        "confidence": null
+      },
+      "memoryHits": 0
+    }
+  },
+  {
+    "input": "为什么天是蓝的",
+    "conclusion": "简短输入，需要推断意图。输入较短（7字），需要结合上下文理解。基于输入特征和已知信息做出回应。预期: 对问题有更清晰的理解，但尚未采取实际行动\n\n判断理由：选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动\n\n决策策略：暂停评估",
+    "timing": 1,
+    "cognition": {
+      "whatIsThis": {
+        "type": "explanation",
+        "category": "general",
+        "topic": "为什么天是蓝的",
+        "emotion": "neutral",
+        "confidence": 0.5,
+        "isTechnical": false,
+        "isEmotional": false,
+        "hasPain": false
+      },
+      "decision": {
+        "type": "pause",
+        "confidence": 0.85
+      },
+      "memoryHits": 0
+    }
+  },
+  {
+    "input": "上次我们说那个心虫版本的事，后来怎么样了",
+    "conclusion": "这是一个记忆查询请求。用户正在询问之前的对话或存储的信息。检索相关记忆，给出准确答复。预期: 对问题有更清晰的理解，但尚未采取实际行动\n\n判断理由：选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+    "timing": 1,
+    "cognition": {
+      "whatIsThis": {
+        "type": "general",
+        "category": "memory",
+        "topic": "上次我们说那个心虫版本的事，后来怎么样了",
+        "emotion": "neutral",
+        "confidence": 0.5,
+        "isTechnical": false,
+        "isEmotional": false,
+        "hasPain": false
+      },
+      "decision": {
+        "type": null,
+        "confidence": null
+      },
+      "memoryHits": 0
+    }
+  },
+  {
+    "input": "你觉得我该不该辞职",
+    "conclusion": "简短输入，需要推断意图。输入较短（9字），需要结合上下文理解。基于输入特征和已知信息做出回应。预期: 对问题有更清晰的理解，但尚未采取实际行动\n\n判断理由：选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+    "timing": 0,
+    "cognition": {
+      "whatIsThis": {
+        "type": "general",
+        "category": "general",
+        "topic": "你觉得我该不该辞职",
+        "emotion": "neutral",
+        "confidence": 0.5,
+        "isTechnical": false,
+        "isEmotional": false,
+        "hasPain": false
+      },
+      "decision": {
+        "type": null,
+        "confidence": null
+      },
+      "memoryHits": 0
+    }
+  },
+  {
+    "input": "今天天气不错",
+    "conclusion": "检测到情绪表达。输入包含情绪关键词。识别情绪类型，回应情绪后再做分析。预期: 对问题有更清晰的理解，但尚未采取实际行动\n\n判断理由：选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+    "timing": 1,
+    "cognition": {
+      "whatIsThis": {
+        "type": "general",
+        "category": "general",
+        "topic": "今天天气不错",
+        "emotion": "anger",
+        "confidence": 0.65,
+        "isTechnical": false,
+        "isEmotional": false,
+        "hasPain": false
+      },
+      "decision": {
+        "type": null,
+        "confidence": null
+      },
+      "memoryHits": 0
+    }
+  },
+  {
+    "input": "焦虑，下周面试不知道准备什么",
+    "conclusion": "检测到情绪表达。输入包含情绪关键词。识别情绪类型，回应情绪后再做分析。预期: 对问题有更清晰的理解，但尚未采取实际行动\n\n判断理由：选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+    "timing": 1,
+    "cognition": {
+      "whatIsThis": {
+        "type": "general",
+        "category": "emotion",
+        "topic": "焦虑，下周面试不知道准备什么",
+        "emotion": "fear",
+        "confidence": 0.65,
+        "isTechnical": false,
+        "isEmotional": true,
+        "hasPain": false
+      },
+      "decision": {
+        "type": null,
+        "confidence": null
+      },
+      "memoryHits": 0
+    }
+  },
+  {
+    "input": "分析一下这个代码：function add(a,b){return a+b}",
+    "conclusion": "需要分析代码。输入包含代码片段。理解代码逻辑，找出问题或优化点。预期: 对问题有更清晰的理解，但尚未采取实际行动\n\n判断理由：选择了「分析先行」路径。（其他选项: 「直接行动」(4.2分)）。预期效果: 对问题有更清晰的理解，但尚未采取实际行动",
+    "timing": 2,
+    "cognition": {
+      "whatIsThis": {
+        "type": "general",
+        "category": "code",
+        "topic": "分析一下这个代码：function add(a,b){ret",
+        "emotion": "neutral",
+        "confidence": 0.5,
+        "isTechnical": true,
+        "isEmotional": false,
+        "hasPain": false
+      },
+      "decision": {
+        "type": null,
+        "confidence": null
+      },
+      "memoryHits": 0
+    }
+  }
+]
