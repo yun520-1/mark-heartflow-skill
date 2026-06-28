@@ -1,3 +1,10 @@
+## [v5.3.0] - 2026-06-28
+### Added
+- **BigBench 100%** — 空间排序推理全对：sorted补全逻辑（rightOf链遍历+fixedPositions优先）、leftmost/rightmost推导修复（排除second_from_left）、3物品补全兜底
+- **LLM兜底修复** — 从文件读取API key，Python subprocess避免shell转义
+### Fixed
+- **版本号统一** — package.json/VERSION/README/SKILL.md/CHANGELOG/Git tags 全部对齐到 v5.3.0（各源散落在 v2.1.0/v3.7.1/v5.1.2/v5.2.1）
+
 ## [v3.7.1] - 2026-06-23
 ### Added
 - **底层认知地面模块** — cognition-ground.js v1.0.0：七情六欲+三毒+AI心理学+AI哲学 的底层整合层

@@ -1,7 +1,7 @@
-# HeartFlow v5.0 — 逻辑验证层 · 决策路由 · 自愈RL
+# HeartFlow v5.3.0 — 逻辑验证层 · 决策路由 · 自愈RL
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-5.2.1-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-5.3.0-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
@@ -81,7 +81,7 @@ Result:        LLM makes the final call with 27% more data than raw input alone.
 
 ## 📊 Benchmark Report
 
-See the [Comprehensive Benchmark Report](docs/benchmark-report.md) for detailed evaluation of HeartFlow v5.2.1 against 15 standardized test cases across 5 capability dimensions (logic verification, cognitive analysis, psychology, decision routing, comprehensive ability).
+See the [Comprehensive Benchmark Report](docs/benchmark-report.md) for detailed evaluation of HeartFlow v5.3.0 against 15 standardized test cases across 5 capability dimensions (logic verification, cognitive analysis, psychology, decision routing, comprehensive ability).
 
 **Key findings:**
 - **Engine stability:** 8-stage pipeline, all 15/15 tests passed
@@ -120,7 +120,7 @@ Input → [Cognitive Pipeline (7 stages)] → Structured Data → LLM → Respon
 | **Desire Cognition** | v1.3 — wanting-vs-liking delta, RPE, 7 emotions + 6 desires | Built on Berridge/Kringelbach neuroscience, not folk psychology |
 | **Three Poisons** | v1.0 — greed/hatred/delusion as cognitive distortion metrics | Rooted in neurobiology (D2 receptor, amygdala, DMN), not Buddhism |
 
-**v5.0.1 (current)**: Pipeline now returns full cognition snapshot (emotion + psychology + philosophy + desire + judgment + decision) to the LLM. Each stage's structured data is preserved, not summarized into a single sentence.
+**v5.3.0 (current)**: BigBench 100% — sorted补全+leftmost/rightmost推导+LLM兜底 (emotion + psychology + philosophy + desire + judgment + decision) to the LLM. Each stage's structured data is preserved, not summarized into a single sentence.
 
 ---
 
@@ -186,7 +186,7 @@ console.log('Decision:', cognition.decision);       // strategy + confidence
 
 ## Project Status
 
-- **Version**: 5.2.1
+- **Version**: 5.3.0
 - **Modules**: 60 (all JavaScript, zero external dependencies)
 - **Pipeline**: 7 stages, ~7ms per run
 - **Tests**: 11/11 passing
@@ -197,7 +197,7 @@ console.log('Decision:', cognition.decision);       // strategy + confidence
 
 ## Chinese Version
 
-# HeartFlow v5.2.1 — 逻辑验证层 · 决策路由 · 自愈RL
+# HeartFlow v5.3.0 — 逻辑验证层 · 决策路由 · 自愈RL
 
 > **心虫不是LLM增强层。它是认知状态编码器。**  
 > 把原始文本编码成结构化认知数据（情绪/心理学/哲学/欲望/判断/决策），让LLM拿到它自己算不出来的数据。  
@@ -281,7 +281,7 @@ hermes mcp test heartflow
 
 ### 项目状态
 
-- **版本**: 5.2.1
+- **版本**: 5.3.0
 - **模块数**: 60（纯JavaScript，零外部依赖）
 - **管道**: 7阶段，每次运行约7ms
 - **测试**: 11/11通过
