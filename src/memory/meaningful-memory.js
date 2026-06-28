@@ -26,7 +26,7 @@ let _semanticSearch = null;
 function getSemanticSearch() {
   if (!_semanticSearch) {
     try {
-      const { SemanticSearch } = require('../search/search/semantic-search.js');
+      const { SemanticSearch } = require('../search/semantic-search.js');
       const { env } = require('@xenova/transformers');
       env.allowRemoteModels = false; // 只用本地模型
       _semanticSearch = new SemanticSearch({ model: 'Xenova/all-MiniLM-L6-v2' });

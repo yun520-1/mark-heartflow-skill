@@ -24,14 +24,14 @@ function _lazy(key, loader) {
 }
 
 // Search modules
-const _BM25Engine = _lazy('bm25', () => require('../search/search/bm25.js'));
-const _HybridSearchEngine = _lazy('hybridSearch', () => require('../search/search/hybrid-search.js'));
+const _BM25Engine = _lazy('bm25', () => require('../search/bm25.js'));
+const _HybridSearchEngine = _lazy('hybridSearch', () => require('../search/hybrid-search.js'));
 const _Budget = _lazy('budget', () => require('./budget.js'));
-const _Graph = _lazy('graph', () => require('../memory/memory/graph.js'));
+const _Graph = _lazy('graph', () => require('../memory/graph.js'));
 const _CoreUtils = _lazy('utils', () => require('./utils.js'));
-const _SearchTrace = _lazy('searchTrace', () => require('../search/search/search-trace.js'));
-const _Slots = _lazy('slots', () => require('../memory/memory/slots.js'));
-const _Observe = _lazy('observe', () => require('../memory/memory/observe.js'));
+const _SearchTrace = _lazy('searchTrace', () => require('../search/search-trace.js'));
+const _Slots = _lazy('slots', () => require('../memory/slots.js'));
+const _Observe = _lazy('observe', () => require('../memory/observe.js'));
 const _MeaningfulMemory = _lazy('meaningfulMemory', () => require('../memory/memory-adapter.js'));
 const _KnowledgeGraph = _lazy('knowledgeGraph', () => require('../memory/knowledge-graph.js'));
 const _RetrievalAnchor = _lazy('retrievalAnchor', () => require('../memory/retrieval-anchor.js'));
@@ -71,10 +71,10 @@ const _StateSnapshot = _lazy('stateSnapshot', () => require('./state-snapshot.js
 const _ErrorHandler = _lazy('errorHandler', () => require('./error-handler.js'));
 const _ThoughtChain = _lazy('thoughtChain', () => require('../workflow/thought-chain.js'));
 const _CognitiveProtocol = _lazy('cognitiveProtocol', () => require('./cognitive-protocol.js'));
-const _GlobalWorkspace = _lazy('globalWorkspace', () => require('../consciousness/consciousness/global-workspace.js'));
-const _MindWanderer = _lazy('mindWanderer', () => require('../consciousness/consciousness/mind-wanderer.js'));
-const _PhenomenologyEngine = _lazy('phenomenologyEngine', () => require('../consciousness/consciousness/phenomenology-engine.js'));
-const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => require('../consciousness/consciousness/self-model.js'));
+const _GlobalWorkspace = _lazy('globalWorkspace', () => require('../consciousness/global-workspace.js'));
+const _MindWanderer = _lazy('mindWanderer', () => require('../consciousness/mind-wanderer.js'));
+const _PhenomenologyEngine = _lazy('phenomenologyEngine', () => require('../consciousness/phenomenology-engine.js'));
+const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => require('../consciousness/self-model.js'));
 const _SAGEGuardian = _lazy('sageGuardian', () => require('../shield/ethics/sage-guardian.js'));
 const _BoundaryNegotiation = _lazy('boundaryNegotiation', () => require('../shield/ethics/boundary-negotiation.js'));
 const _ValueInternalizer = _lazy('valueInternalizer', () => require('../shield/ethics/value-internalizer.js'));
