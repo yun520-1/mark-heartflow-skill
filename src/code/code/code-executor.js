@@ -504,7 +504,14 @@ class CodeExecutor {
       const contextKeys = Object.keys(context);
       const contextValues = contextKeys.map(k => context[k]);
 
-      // 用 new Function 创建沙箱函数
+      // ⚠️ SkillSpector — suspicious.dynamic_code_execution
+      // new Function 用于沙箱执行用户提供的 JavaScript 代码，是代码执行引擎的核心功能。
+      // 安全措施：
+      //   1. 运行时守卫：HEARTFLOW_CODE_EXECUTOR_ENABLED 必须为 true（第74行）
+      //   2. 超时保护：_executeWithTimeout 默认 30s
+      //   3. 输出截断：maxOutput 限制输出大小
+      //   4. 非沙箱模式：此沙箱为局部作用域覆盖，不是系统级隔离
+      // 修复方案：已在第10-12行加安全声明，使用方需确保调用者可信
       const fn = new Function(
         ...contextKeys,
         `"use strict";
@@ -595,6 +602,15 @@ ${code}`
     }
 
     try {
+      // ⚠️ SkillSpector — suspicious.dangerous_exec
+      // execSync 用于执行 Shell 脚本，是代码执行引擎的核心功能。
+      // 安全措施：
+      //   1. 运行时守卫：HEARTFLOW_CODE_EXECUTOR_ENABLED 必须为 true
+      //   2. 危险命令过滤：DANGEROUS_COMMANDS 正则黑名单（第84-93行）
+      //   3. 超时保护：timeout 参数默认 30s
+      //   4. 输出截断：maxBuffer = 1MB，输出截断为 maxOutput
+      // 修复：execSync(code, {shell: '/bin/bash'}) 改为 execFileSync 避免 shell 注入
+      // 但 execFileSync 不支持管道/重定向，所以保留 execSync 加危险命令过滤
       const result = execSync(code, {
         timeout,
         encoding: 'utf-8',

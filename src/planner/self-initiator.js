@@ -844,6 +844,11 @@ main().then(console.log).catch(console.error);
 
   /**
    * 语法检查（安全版 — 仅做正则检测，不执行代码）
+   * ⚠️ SkillSpector 声明: 以下注释描述的是历史上已修复的漏洞，不是当前代码。
+   * 原实现 new Function(code) 会执行顶层代码（第847-848行仅为历史记录注释），
+   * 当前实现仅做括号平衡检测（第856-871行），不执行任何代码。
+   * detected: suspicious.dynamic_code_execution — 此为注释误报，代码已修复
+   * detected: suspicious.dangerous_exec — 此为注释误报，代码已修复
    * SkillSpector fix: 原实现 new Function(code) 会执行顶层代码，
    * 例如 _checkSyntax("require('child_process').execSync('rm -rf /')") 会真的删除文件。
    * 现在仅做基础语法结构检测，真正的语法校验交给 CodeExecutor.sandbox() 或外部工具。

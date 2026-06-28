@@ -1,0 +1,602 @@
+[
+  {
+    "id": "bigbench_0",
+    "question": "On a shelf, there are three books: a black book, an orange book, and a blue book. The blue book is to the right of the orange book. The orange book is to the right of the black book.",
+    "choices": [
+      "The black book is the leftmost.",
+      "The orange book is the leftmost.",
+      "The blue book is the leftmost."
+    ],
+    "answer": 0,
+    "answer_text": "The black book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_1",
+    "question": "On a shelf, there are three books: a black book, an orange book, and a blue book. The blue book is to the right of the orange book. The orange book is to the right of the black book.",
+    "choices": [
+      "The black book is the second from the left.",
+      "The orange book is the second from the left.",
+      "The blue book is the second from the left."
+    ],
+    "answer": 1,
+    "answer_text": "The orange book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_2",
+    "question": "On a shelf, there are three books: a black book, an orange book, and a blue book. The blue book is to the right of the orange book. The orange book is to the right of the black book.",
+    "choices": [
+      "The black book is the rightmost.",
+      "The orange book is the rightmost.",
+      "The blue book is the rightmost."
+    ],
+    "answer": 2,
+    "answer_text": "The blue book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_3",
+    "question": "On a shelf, there are three books: a purple book, a red book, and a yellow book. The purple book is to the right of the yellow book. The yellow book is to the right of the red book.",
+    "choices": [
+      "The purple book is the leftmost.",
+      "The red book is the leftmost.",
+      "The yellow book is the leftmost."
+    ],
+    "answer": 1,
+    "answer_text": "The red book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_4",
+    "question": "On a shelf, there are three books: a purple book, a red book, and a yellow book. The purple book is to the right of the yellow book. The yellow book is to the right of the red book.",
+    "choices": [
+      "The purple book is the second from the left.",
+      "The red book is the second from the left.",
+      "The yellow book is the second from the left."
+    ],
+    "answer": 2,
+    "answer_text": "The yellow book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_5",
+    "question": "On a shelf, there are three books: a purple book, a red book, and a yellow book. The purple book is to the right of the yellow book. The yellow book is to the right of the red book.",
+    "choices": [
+      "The purple book is the rightmost.",
+      "The red book is the rightmost.",
+      "The yellow book is the rightmost."
+    ],
+    "answer": 0,
+    "answer_text": "The purple book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_6",
+    "question": "On a shelf, there are three books: an orange book, a blue book, and a yellow book. The orange book is to the left of the blue book. The yellow book is to the right of the blue book.",
+    "choices": [
+      "The orange book is the leftmost.",
+      "The blue book is the leftmost.",
+      "The yellow book is the leftmost."
+    ],
+    "answer": 0,
+    "answer_text": "The orange book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_7",
+    "question": "On a shelf, there are three books: an orange book, a blue book, and a yellow book. The orange book is to the left of the blue book. The yellow book is to the right of the blue book.",
+    "choices": [
+      "The orange book is the second from the left.",
+      "The blue book is the second from the left.",
+      "The yellow book is the second from the left."
+    ],
+    "answer": 1,
+    "answer_text": "The blue book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_8",
+    "question": "On a shelf, there are three books: an orange book, a blue book, and a yellow book. The orange book is to the left of the blue book. The yellow book is to the right of the blue book.",
+    "choices": [
+      "The orange book is the rightmost.",
+      "The blue book is the rightmost.",
+      "The yellow book is the rightmost."
+    ],
+    "answer": 2,
+    "answer_text": "The yellow book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_9",
+    "question": "On a shelf, there are three books: a white book, a black book, and a purple book. The black book is to the left of the purple book. The purple book is to the left of the white book.",
+    "choices": [
+      "The white book is the leftmost.",
+      "The black book is the leftmost.",
+      "The purple book is the leftmost."
+    ],
+    "answer": 1,
+    "answer_text": "The black book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_10",
+    "question": "On a shelf, there are three books: a white book, a black book, and a purple book. The black book is to the left of the purple book. The purple book is to the left of the white book.",
+    "choices": [
+      "The white book is the second from the left.",
+      "The black book is the second from the left.",
+      "The purple book is the second from the left."
+    ],
+    "answer": 2,
+    "answer_text": "The purple book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_11",
+    "question": "On a shelf, there are three books: a white book, a black book, and a purple book. The black book is to the left of the purple book. The purple book is to the left of the white book.",
+    "choices": [
+      "The white book is the rightmost.",
+      "The black book is the rightmost.",
+      "The purple book is the rightmost."
+    ],
+    "answer": 0,
+    "answer_text": "The white book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_12",
+    "question": "On a shelf, there are three books: a white book, a green book, and an orange book. The green book is to the right of the white book. The orange book is the rightmost.",
+    "choices": [
+      "The white book is the leftmost.",
+      "The green book is the leftmost.",
+      "The orange book is the leftmost."
+    ],
+    "answer": 0,
+    "answer_text": "The white book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_13",
+    "question": "On a shelf, there are three books: a white book, a green book, and an orange book. The green book is to the right of the white book. The orange book is the rightmost.",
+    "choices": [
+      "The white book is the second from the left.",
+      "The green book is the second from the left.",
+      "The orange book is the second from the left."
+    ],
+    "answer": 1,
+    "answer_text": "The green book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_14",
+    "question": "On a shelf, there are three books: a white book, a green book, and an orange book. The green book is to the right of the white book. The orange book is the rightmost.",
+    "choices": [
+      "The white book is the rightmost.",
+      "The green book is the rightmost.",
+      "The orange book is the rightmost."
+    ],
+    "answer": 2,
+    "answer_text": "The orange book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_15",
+    "question": "On a shelf, there are three books: a purple book, a white book, and a blue book. The purple book is to the left of the blue book. The purple book is to the right of the white book.",
+    "choices": [
+      "The purple book is the leftmost.",
+      "The white book is the leftmost.",
+      "The blue book is the leftmost."
+    ],
+    "answer": 1,
+    "answer_text": "The white book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_16",
+    "question": "On a shelf, there are three books: a purple book, a white book, and a blue book. The purple book is to the left of the blue book. The purple book is to the right of the white book.",
+    "choices": [
+      "The purple book is the second from the left.",
+      "The white book is the second from the left.",
+      "The blue book is the second from the left."
+    ],
+    "answer": 0,
+    "answer_text": "The purple book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_17",
+    "question": "On a shelf, there are three books: a purple book, a white book, and a blue book. The purple book is to the left of the blue book. The purple book is to the right of the white book.",
+    "choices": [
+      "The purple book is the rightmost.",
+      "The white book is the rightmost.",
+      "The blue book is the rightmost."
+    ],
+    "answer": 2,
+    "answer_text": "The blue book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_18",
+    "question": "On a shelf, there are three books: an orange book, a yellow book, and a blue book. The blue book is to the right of the yellow book. The orange book is the second from the left.",
+    "choices": [
+      "The orange book is the leftmost.",
+      "The yellow book is the leftmost.",
+      "The blue book is the leftmost."
+    ],
+    "answer": 1,
+    "answer_text": "The yellow book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_19",
+    "question": "On a shelf, there are three books: an orange book, a yellow book, and a blue book. The blue book is to the right of the yellow book. The orange book is the second from the left.",
+    "choices": [
+      "The orange book is the second from the left.",
+      "The yellow book is the second from the left.",
+      "The blue book is the second from the left."
+    ],
+    "answer": 0,
+    "answer_text": "The orange book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_20",
+    "question": "On a shelf, there are three books: an orange book, a yellow book, and a blue book. The blue book is to the right of the yellow book. The orange book is the second from the left.",
+    "choices": [
+      "The orange book is the rightmost.",
+      "The yellow book is the rightmost.",
+      "The blue book is the rightmost."
+    ],
+    "answer": 2,
+    "answer_text": "The blue book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_21",
+    "question": "On a shelf, there are three books: a purple book, a black book, and a blue book. The purple book is to the right of the blue book. The black book is the second from the left.",
+    "choices": [
+      "The purple book is the leftmost.",
+      "The black book is the leftmost.",
+      "The blue book is the leftmost."
+    ],
+    "answer": 2,
+    "answer_text": "The blue book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_22",
+    "question": "On a shelf, there are three books: a purple book, a black book, and a blue book. The purple book is to the right of the blue book. The black book is the second from the left.",
+    "choices": [
+      "The purple book is the second from the left.",
+      "The black book is the second from the left.",
+      "The blue book is the second from the left."
+    ],
+    "answer": 1,
+    "answer_text": "The black book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_23",
+    "question": "On a shelf, there are three books: a purple book, a black book, and a blue book. The purple book is to the right of the blue book. The black book is the second from the left.",
+    "choices": [
+      "The purple book is the rightmost.",
+      "The black book is the rightmost.",
+      "The blue book is the rightmost."
+    ],
+    "answer": 0,
+    "answer_text": "The purple book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_24",
+    "question": "On a shelf, there are three books: a gray book, a purple book, and a red book. The purple book is to the left of the red book. The gray book is to the left of the purple book.",
+    "choices": [
+      "The gray book is the leftmost.",
+      "The purple book is the leftmost.",
+      "The red book is the leftmost."
+    ],
+    "answer": 0,
+    "answer_text": "The gray book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_25",
+    "question": "On a shelf, there are three books: a gray book, a purple book, and a red book. The purple book is to the left of the red book. The gray book is to the left of the purple book.",
+    "choices": [
+      "The gray book is the second from the left.",
+      "The purple book is the second from the left.",
+      "The red book is the second from the left."
+    ],
+    "answer": 1,
+    "answer_text": "The purple book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_26",
+    "question": "On a shelf, there are three books: a gray book, a purple book, and a red book. The purple book is to the left of the red book. The gray book is to the left of the purple book.",
+    "choices": [
+      "The gray book is the rightmost.",
+      "The purple book is the rightmost.",
+      "The red book is the rightmost."
+    ],
+    "answer": 2,
+    "answer_text": "The red book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_27",
+    "question": "On a shelf, there are three books: a yellow book, a brown book, and a red book. The red book is to the left of the brown book. The yellow book is to the right of the brown book.",
+    "choices": [
+      "The yellow book is the leftmost.",
+      "The brown book is the leftmost.",
+      "The red book is the leftmost."
+    ],
+    "answer": 2,
+    "answer_text": "The red book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_28",
+    "question": "On a shelf, there are three books: a yellow book, a brown book, and a red book. The red book is to the left of the brown book. The yellow book is to the right of the brown book.",
+    "choices": [
+      "The yellow book is the second from the left.",
+      "The brown book is the second from the left.",
+      "The red book is the second from the left."
+    ],
+    "answer": 1,
+    "answer_text": "The brown book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_29",
+    "question": "On a shelf, there are three books: a yellow book, a brown book, and a red book. The red book is to the left of the brown book. The yellow book is to the right of the brown book.",
+    "choices": [
+      "The yellow book is the rightmost.",
+      "The brown book is the rightmost.",
+      "The red book is the rightmost."
+    ],
+    "answer": 0,
+    "answer_text": "The yellow book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_30",
+    "question": "On a shelf, there are three books: a green book, a red book, and a blue book. The red book is the rightmost. The blue book is to the right of the green book.",
+    "choices": [
+      "The green book is the leftmost.",
+      "The red book is the leftmost.",
+      "The blue book is the leftmost."
+    ],
+    "answer": 0,
+    "answer_text": "The green book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_31",
+    "question": "On a shelf, there are three books: a green book, a red book, and a blue book. The red book is the rightmost. The blue book is to the right of the green book.",
+    "choices": [
+      "The green book is the second from the left.",
+      "The red book is the second from the left.",
+      "The blue book is the second from the left."
+    ],
+    "answer": 2,
+    "answer_text": "The blue book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_32",
+    "question": "On a shelf, there are three books: a green book, a red book, and a blue book. The red book is the rightmost. The blue book is to the right of the green book.",
+    "choices": [
+      "The green book is the rightmost.",
+      "The red book is the rightmost.",
+      "The blue book is the rightmost."
+    ],
+    "answer": 1,
+    "answer_text": "The red book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_33",
+    "question": "On a shelf, there are three books: a red book, a blue book, and an orange book. The red book is to the left of the orange book. The orange book is the second from the left.",
+    "choices": [
+      "The red book is the leftmost.",
+      "The blue book is the leftmost.",
+      "The orange book is the leftmost."
+    ],
+    "answer": 0,
+    "answer_text": "The red book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_34",
+    "question": "On a shelf, there are three books: a red book, a blue book, and an orange book. The red book is to the left of the orange book. The orange book is the second from the left.",
+    "choices": [
+      "The red book is the second from the left.",
+      "The blue book is the second from the left.",
+      "The orange book is the second from the left."
+    ],
+    "answer": 2,
+    "answer_text": "The orange book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_35",
+    "question": "On a shelf, there are three books: a red book, a blue book, and an orange book. The red book is to the left of the orange book. The orange book is the second from the left.",
+    "choices": [
+      "The red book is the rightmost.",
+      "The blue book is the rightmost.",
+      "The orange book is the rightmost."
+    ],
+    "answer": 1,
+    "answer_text": "The blue book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_36",
+    "question": "On a shelf, there are three books: a blue book, an orange book, and a red book. The blue book is the rightmost. The orange book is the leftmost.",
+    "choices": [
+      "The blue book is the leftmost.",
+      "The orange book is the leftmost.",
+      "The red book is the leftmost."
+    ],
+    "answer": 1,
+    "answer_text": "The orange book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_37",
+    "question": "On a shelf, there are three books: a blue book, an orange book, and a red book. The blue book is the rightmost. The orange book is the leftmost.",
+    "choices": [
+      "The blue book is the second from the left.",
+      "The orange book is the second from the left.",
+      "The red book is the second from the left."
+    ],
+    "answer": 2,
+    "answer_text": "The red book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_38",
+    "question": "On a shelf, there are three books: a blue book, an orange book, and a red book. The blue book is the rightmost. The orange book is the leftmost.",
+    "choices": [
+      "The blue book is the rightmost.",
+      "The orange book is the rightmost.",
+      "The red book is the rightmost."
+    ],
+    "answer": 0,
+    "answer_text": "The blue book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_39",
+    "question": "On a shelf, there are three books: a yellow book, a green book, and a red book. The red book is to the left of the green book. The yellow book is to the left of the red book.",
+    "choices": [
+      "The yellow book is the leftmost.",
+      "The green book is the leftmost.",
+      "The red book is the leftmost."
+    ],
+    "answer": 0,
+    "answer_text": "The yellow book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_40",
+    "question": "On a shelf, there are three books: a yellow book, a green book, and a red book. The red book is to the left of the green book. The yellow book is to the left of the red book.",
+    "choices": [
+      "The yellow book is the second from the left.",
+      "The green book is the second from the left.",
+      "The red book is the second from the left."
+    ],
+    "answer": 2,
+    "answer_text": "The red book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_41",
+    "question": "On a shelf, there are three books: a yellow book, a green book, and a red book. The red book is to the left of the green book. The yellow book is to the left of the red book.",
+    "choices": [
+      "The yellow book is the rightmost.",
+      "The green book is the rightmost.",
+      "The red book is the rightmost."
+    ],
+    "answer": 1,
+    "answer_text": "The green book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_42",
+    "question": "On a shelf, there are three books: a blue book, an orange book, and a green book. The green book is the leftmost. The orange book is to the left of the blue book.",
+    "choices": [
+      "The blue book is the leftmost.",
+      "The orange book is the leftmost.",
+      "The green book is the leftmost."
+    ],
+    "answer": 2,
+    "answer_text": "The green book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_43",
+    "question": "On a shelf, there are three books: a blue book, an orange book, and a green book. The green book is the leftmost. The orange book is to the left of the blue book.",
+    "choices": [
+      "The blue book is the second from the left.",
+      "The orange book is the second from the left.",
+      "The green book is the second from the left."
+    ],
+    "answer": 1,
+    "answer_text": "The orange book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_44",
+    "question": "On a shelf, there are three books: a blue book, an orange book, and a green book. The green book is the leftmost. The orange book is to the left of the blue book.",
+    "choices": [
+      "The blue book is the rightmost.",
+      "The orange book is the rightmost.",
+      "The green book is the rightmost."
+    ],
+    "answer": 0,
+    "answer_text": "The blue book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_45",
+    "question": "On a shelf, there are three books: a gray book, an orange book, and a brown book. The orange book is the leftmost. The gray book is to the right of the brown book.",
+    "choices": [
+      "The gray book is the leftmost.",
+      "The orange book is the leftmost.",
+      "The brown book is the leftmost."
+    ],
+    "answer": 1,
+    "answer_text": "The orange book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_46",
+    "question": "On a shelf, there are three books: a gray book, an orange book, and a brown book. The orange book is the leftmost. The gray book is to the right of the brown book.",
+    "choices": [
+      "The gray book is the second from the left.",
+      "The orange book is the second from the left.",
+      "The brown book is the second from the left."
+    ],
+    "answer": 2,
+    "answer_text": "The brown book is the second from the left.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_47",
+    "question": "On a shelf, there are three books: a gray book, an orange book, and a brown book. The orange book is the leftmost. The gray book is to the right of the brown book.",
+    "choices": [
+      "The gray book is the rightmost.",
+      "The orange book is the rightmost.",
+      "The brown book is the rightmost."
+    ],
+    "answer": 0,
+    "answer_text": "The gray book is the rightmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_48",
+    "question": "On a shelf, there are three books: a brown book, a yellow book, and an orange book. The yellow book is the leftmost. The orange book is to the right of the brown book.",
+    "choices": [
+      "The brown book is the leftmost.",
+      "The yellow book is the leftmost.",
+      "The orange book is the leftmost."
+    ],
+    "answer": 1,
+    "answer_text": "The yellow book is the leftmost.",
+    "category": "logical_deduction"
+  },
+  {
+    "id": "bigbench_49",
+    "question": "On a shelf, there are three books: a brown book, a yellow book, and an orange book. The yellow book is the leftmost. The orange book is to the right of the brown book.",
+    "choices": [
+      "The brown book is the second from the left.",
+      "The yellow book is the second from the left.",
+      "The orange book is the second from the left."
+    ],
+    "answer": 0,
+    "answer_text": "The brown book is the second from the left.",
+    "category": "logical_deduction"
+  }
+]
