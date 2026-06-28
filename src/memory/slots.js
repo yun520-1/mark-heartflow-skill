@@ -15,7 +15,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { atomicWrite } = require('../../utils/atomic-write');
+const { atomicWrite } = require('../utils/atomic-write');
 const crypto = require('crypto');
 
 // ============================================================
