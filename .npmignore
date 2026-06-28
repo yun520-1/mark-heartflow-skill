@@ -1,7 +1,3 @@
-# Dependencies (none needed, but keep lockfile)
-package-lock.json
-yarn.lock
-
 # OS files
 .DS_Store
 Thumbs.db
@@ -22,3 +18,51 @@ data/
 internal/
 logs/
 mcp.log
+memory/wal/
+memory/*.json
+memory/*.jsonl
+memory/*.txt
+memory/*.md
+memory/.q-meta*
+memory/.gitkeep
+memory/.hmac-key
+memory/.last-dream
+
+# OpenCode runtime state
+.opencode/
+
+# Test data — not part of the published skill
+bigbench_*.json
+hellaswag_*.json
+run_bb_test.js
+run_test.js
+benchmark/
+
+# Assets — images not needed for engine
+assets/
+
+# Backups & personal docs
+README.md.bak
+UPGRADE_REPORT.txt
+UPGRADE_REPORT_v2.0.37.md
+UPGRADE_PLAN.md
+RESUME.md
+self-verification.json
+meaningful-*.json
+bin/*.bak
+
+# Examples — user-facing examples, not engine
+examples/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Model files — large, downloaded on demand
+src/core/search/models/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+.gitkeep
