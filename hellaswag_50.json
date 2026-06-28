@@ -1,0 +1,652 @@
+[
+  {
+    "id": "hellaswag_0",
+    "question": "A man is sitting on a roof. he",
+    "choices": [
+      "is using wrap to wrap a pair of skis.",
+      "is ripping level tiles off.",
+      "is holding a rubik's cube.",
+      "starts pulling up roofing on a roof."
+    ],
+    "answer": 3,
+    "answer_text": "starts pulling up roofing on a roof.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_1",
+    "question": "A lady walks to a barbell. She bends down and grabs the pole. the lady",
+    "choices": [
+      "swings and lands in her arms.",
+      "pulls the barbell forward.",
+      "pulls a rope attached to the barbell.",
+      "stands and lifts the weight over her head."
+    ],
+    "answer": 3,
+    "answer_text": "stands and lifts the weight over her head.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_2",
+    "question": "Two women in a child are shown in a canoe while a man pulls the canoe while standing in the water, with other individuals visible in the background. the child and a different man",
+    "choices": [
+      "are then shown paddling down a river in a boat while a woman talks.",
+      "are driving the canoe, they go down the river flowing side to side.",
+      "sit in a canoe while the man paddles.",
+      "walking go down the rapids, while the man in his helicopter almost falls and goes out of canoehood."
+    ],
+    "answer": 2,
+    "answer_text": "sit in a canoe while the man paddles.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_3",
+    "question": "A boy is running down a track. the boy",
+    "choices": [
+      "runs into a car.",
+      "gets in a mat.",
+      "lifts his body above the height of a pole.",
+      "stands on his hands and springs."
+    ],
+    "answer": 2,
+    "answer_text": "lifts his body above the height of a pole.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_4",
+    "question": "The boy lifts his body above the height of a pole. The boy lands on his back on to a red mat. the boy",
+    "choices": [
+      "turns his body around on the mat.",
+      "gets up from the mat.",
+      "continues to lift his body over the pole.",
+      "wiggles out of the mat."
+    ],
+    "answer": 1,
+    "answer_text": "gets up from the mat.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_5",
+    "question": "The boy lands on his back on to a red mat. The boy gets up from the mat. the boy",
+    "choices": [
+      "starts doing spins.",
+      "celebrates by clapping and flexing both arms.",
+      "is dancing on the mat.",
+      "does jump jacks on his stick."
+    ],
+    "answer": 1,
+    "answer_text": "celebrates by clapping and flexing both arms.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_6",
+    "question": "A man is standing in front of a camera. He starts playing a harmonica for the camera. he",
+    "choices": [
+      "begins to play the harmonica with his body while looking at the camera.",
+      "seems to be singing while playing the harmonica.",
+      "rocks back and forth to the music as he goes.",
+      "painted a fence in front of the camera."
+    ],
+    "answer": 2,
+    "answer_text": "rocks back and forth to the music as he goes.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_7",
+    "question": "A cartoon animation video is shown with people wandering around and rockets being shot. two men",
+    "choices": [
+      "fight robots of evil and ends with a to be continued.",
+      "are then shown in closeups shooting a shot put.",
+      "push a child in a speedboat in the water.",
+      "look in the cameraman's eye and smile."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_8",
+    "question": "A man is holding a pocket knife while sitting on some rocks in the wilderness. then he",
+    "choices": [
+      "opens a can of oil put oil on the knife, and puts oil on a knife and press it through a can filled with oil then cuts several pieces from the sandwiches.",
+      "takes a small stone from the flowing river and smashes it on another stone.",
+      "uses the knife to shave his leg.",
+      "sand the rocks and tops them by using strong pressure."
+    ],
+    "answer": 1,
+    "answer_text": "takes a small stone from the flowing river and smashes it on another stone.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_9",
+    "question": "Then he takes a small stone from the flowing river and smashes it on another stone. He starts to crush the small stone to smaller pieces. he",
+    "choices": [
+      "cuts the center stone in half and blow it on to make it bigger.",
+      "grind it hard to make the pieces smaller.",
+      "eventually brings it back into view and adds it to the smaller ones to make a small triangular shaped piece.",
+      "starts to party with them and throw the pieces by hand while they celebrate."
+    ],
+    "answer": 1,
+    "answer_text": "grind it hard to make the pieces smaller.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_10",
+    "question": "Then he takes a piece of bark and rubs the powered stone pieces onto it. The stone particles stick to the wet piece of wood. he",
+    "choices": [
+      "uses a small brush to polish one of the stone pieces.",
+      "then uses a strip of sealing tape to seal the board and then smooths the bottom of the board.",
+      "walks towards the camera.",
+      "then takes the knife and sharpens it against the wood piece."
+    ],
+    "answer": 3,
+    "answer_text": "then takes the knife and sharpens it against the wood piece.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_11",
+    "question": "The stone particles stick to the wet piece of wood. He then takes the knife and sharpens it against the wood piece. he",
+    "choices": [
+      "then cuts off the excess hair of the wood.",
+      "scrapes the wood with a broom in the cutting tool used in sharpening the instrument.",
+      "writes on the board again.",
+      "then notices a little black and green poisonous frog sitting next to him."
+    ],
+    "answer": 3,
+    "answer_text": "then notices a little black and green poisonous frog sitting next to him.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_12",
+    "question": "He then takes the knife and sharpens it against the wood piece. He then notices a little black and green poisonous frog sitting next to him. the frog",
+    "choices": [
+      "eventually gets to get up and marches out of the room waving its body about.",
+      "then starts to get up from the chair and begins walking towards the camera.",
+      "then escapes and jumps away.",
+      "is acting crazy and attacking him while he is cooking."
+    ],
+    "answer": 2,
+    "answer_text": "then escapes and jumps away.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_13",
+    "question": "He then notices a little black and green poisonous frog sitting next to him. The frog then escapes and jumps away. he",
+    "choices": [
+      "sits and hugs another man and also adjusts his camera.",
+      "then sits there staring at his text machine as if he has actually been given a gift from god.",
+      "explains how the frog secretes a poisonous fluid that can be extremely harmful.",
+      "takes the frog on his hand and tickles the back of it."
+    ],
+    "answer": 2,
+    "answer_text": "explains how the frog secretes a poisonous fluid that can be extremely harmful.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_14",
+    "question": "A person is playing bagpipes out in a park. A man and two boys watching from a far. the camera",
+    "choices": [
+      "shoots areas all around the park while the bagpipes play.",
+      "is covered to the boy that is playing there.",
+      "then goes black and we see a black opening scene.",
+      "watching the boy and boy as they play a game of drums."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_15",
+    "question": "Two people are seen passing a ball back and fourth in a pool and leads into one speaking to the camera. the man",
+    "choices": [
+      "dips the ball and walks back with the boy and pours detergent into a cup again.",
+      "then throws the ball into the pool and begins running around with a sail in his hand while a group of men watch.",
+      "then takes a drink having a conversation with another man and another man leads into him throwing balls in the water and laughing to the camera.",
+      "demonstrates how to properly throw the ball with his hands while still speaking to the camera."
+    ],
+    "answer": 3,
+    "answer_text": "demonstrates how to properly throw the ball with his hands while still speaking to the camera.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_16",
+    "question": "A woman is sitting at a table in a fast food restaurant while eating. She continually speaks to nobody as she eats. she",
+    "choices": [
+      "is then seen sitting alone as she eats a cold brown ice cream.",
+      "pauses in the process of eating to enjoy her food.",
+      "stands up and grabs her purse, continuing to talk and laugh as she leaves.",
+      "picks up another chocolate bar and chews it as she talks."
+    ],
+    "answer": 2,
+    "answer_text": "stands up and grabs her purse, continuing to talk and laugh as she leaves.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_17",
+    "question": "A group of cheerleaders run onto a stage before a cheering audience. they",
+    "choices": [
+      "get into formation, then begin dancing and flipping as male cheerleaders join them.",
+      "perform a cheer routine before the girls, along with makeup artists, spread out and pose.",
+      "take turns jumping on each other like they are performing karate.",
+      "are then shown performing the type of cheerleading dance, using batons and pole vaults."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_18",
+    "question": "A group of cheerleaders run onto a stage before a cheering audience. They get into formation, then begin dancing and flipping as male cheerleaders join them. they all",
+    "choices": [
+      "dance and flip on stage while hanging their hats on the sides.",
+      "continue dancing and flipping, doing hand springs.",
+      "dance together with flip up their sleeves.",
+      "perform their routines as the studio rashes to a halt with cheerleaders in the audience."
+    ],
+    "answer": 1,
+    "answer_text": "continue dancing and flipping, doing hand springs.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_19",
+    "question": "They get into formation, then begin dancing and flipping as male cheerleaders join them. They all continue dancing and flipping, doing hand springs. when they",
+    "choices": [
+      "are done, they shake hands and walk away, but cheers are heard all around as they're finished.",
+      "are finished, they jump up and down happily and walk off the stage, exhausted.",
+      "are done, a male cheerleader is crowned and an instant replay is shown.",
+      "come down from their workout, they all stop to bow and applaud, then they continue dancing."
+    ],
+    "answer": 1,
+    "answer_text": "are finished, they jump up and down happily and walk off the stage, exhausted.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_20",
+    "question": "A woman is reading a newspaper nearby while he speaks to her and shows her something in his hand. The man sharpens his knives using an electric tool. he",
+    "choices": [
+      "sharpens and cuts something on a knife board using an electric tool.",
+      "then continues cutting his onion.",
+      "travels with his knife under the table and uses it also in his shoe.",
+      "then shows her a spare knife that he has also used on a knife sharpener and drills into a side of the table."
+    ],
+    "answer": 1,
+    "answer_text": "then continues cutting his onion.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_21",
+    "question": "A man is outside of a building. He is using commercial lawn mowing equipment. he",
+    "choices": [
+      "walks back and forth as he mows the grass.",
+      "is animated as he does the task.",
+      "relaxes, making sure his lawn is pristine.",
+      "runs from one side of the building to the other."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_22",
+    "question": "Children bring desert out for their family member. the family",
+    "choices": [
+      "floats in a river.",
+      "member stands looking into a hut and then handing people photographs.",
+      "member cuts a piece of sunscreen.",
+      "enjoys eating the desert together."
+    ],
+    "answer": 3,
+    "answer_text": "enjoys eating the desert together.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_23",
+    "question": "The family enjoys eating the desert together. The people in the restaurant laugh at the man and he wonders what they are doing. the man",
+    "choices": [
+      "goes to the bathroom and isn't able to get very far.",
+      "puts the glass aside and a fourth person walks in and walks away.",
+      "plays the bagpipe and smiles and laughs as he enjoys the hospitality.",
+      "gets up and walks away to the other room."
+    ],
+    "answer": 3,
+    "answer_text": "gets up and walks away to the other room.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_24",
+    "question": "A black female is shown in a room with a black scarf around her head. black spots on her faced",
+    "choices": [
+      "are then zoomed in on and she begins to apply something on it.",
+      "are shown and she misses a little bit of her swing.",
+      "are shown and one finger is seen poking through.",
+      "are shown as she continues to dance around on the hardwood and every move makes a lash on her face."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_25",
+    "question": "A black female is shown in a room with a black scarf around her head. Black spots on her faced are then zoomed in on and she begins to apply something on it. next",
+    "choices": [
+      ", she begins to brush her lips and make painted lips look just like a lipstick to the camera and ends with her closing gift and instruction showing her off at the end.",
+      "she is shown in various different locations and gets extremely close to a wall.",
+      ", she is shown making multiple moans and sprays some kind of liquid down her face before hanging up.",
+      ", she takes some spray and it makes her skin extremely oily and she continues to talk until the video is over."
+    ],
+    "answer": 3,
+    "answer_text": ", she takes some spray and it makes her skin extremely oily and she continues to talk until the video is over.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_26",
+    "question": "A helicopter flies in some people who then start playing paintball. they",
+    "choices": [
+      "run around obstacles and have a great time.",
+      "lose their shirt during the fight and run back the others.",
+      "shoot at each other while the helicopter drone who am looking on.",
+      "chase a bird in the sky while others walk around."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_27",
+    "question": "A young boy and girl are standing over a sink with their mother talking. the mother",
+    "choices": [
+      "is now putting lipstick on the boy's mouth and he tries to stop her but only gets a little bit stuck.",
+      "washes the boy while the child grabs shampoo.",
+      "shows some shaving cream on the boy who is scrubbing her brushes.",
+      "instructs them on how to brush their teeth while laughing."
+    ],
+    "answer": 3,
+    "answer_text": "instructs them on how to brush their teeth while laughing.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_28",
+    "question": "A young boy and girl are standing over a sink with their mother talking. The mother instructs them on how to brush their teeth while laughing. the boy",
+    "choices": [
+      "puts a shirt on and rubs his mouth.",
+      "helps his younger sister brush his teeth.",
+      "walks with an empty mouthwash cup on a sink floor.",
+      "and girl then begin working out."
+    ],
+    "answer": 1,
+    "answer_text": "helps his younger sister brush his teeth.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_29",
+    "question": "The mother instructs them on how to brush their teeth while laughing. The boy helps his younger sister brush his teeth. she",
+    "choices": [
+      "shows how to hit the mom and then kiss his dad as well.",
+      "brushes past the camera, looking better soon after.",
+      "glows from the center of the camera as a reaction.",
+      "gets them some water to gargle in their mouths."
+    ],
+    "answer": 3,
+    "answer_text": "gets them some water to gargle in their mouths.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_30",
+    "question": "She gets them some water to gargle in their mouths. The boy and girl begin playing in the sink. the woman",
+    "choices": [
+      "shakes her head in disbelief and waves at her.",
+      "laughs at the children dribbling water.",
+      "comes back and talks to the boys.",
+      "gets some food out of the fridge and they continue playing together."
+    ],
+    "answer": 1,
+    "answer_text": "laughs at the children dribbling water.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_31",
+    "question": "A cat is sitting in a cat bed. It is licking its paw. it",
+    "choices": [
+      "then wipes its paw on its ear.",
+      "crawls to the door.",
+      "'s laying down about six inches away from the camera.",
+      "crawls on one foot to get closer to the camera."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_32",
+    "question": "A man in brown jacket is pulling out an arrow from the target board, then he was talking to the camera, then he pull out his bow and started to use it with his bow to hit the target board, he fired his bows several times. the man",
+    "choices": [
+      "played paper if and shoot the arrows to hit the target, then he hang from the board with his bow and arrow.",
+      "went to the target board and talked to the camera.",
+      "eventually throw the arrow, but it flew into the gravel is near the targets.",
+      "have his bow as he talk to the camera, he pulled it out to show how to put with its flex, tighten, and notch that was attached to his bow."
+    ],
+    "answer": 1,
+    "answer_text": "went to the target board and talked to the camera.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_33",
+    "question": "A man walks outside plugs his lawn mower in and gets ready to mow. he",
+    "choices": [
+      "drives through the grass while drinking from a large cup of water and carrying his lawn mower.",
+      "walks off the porch and goes back inside.",
+      "starts mowing his lawn casually going over all the grass.",
+      "does this multiple times until a pale orange moon appears overhead."
+    ],
+    "answer": 2,
+    "answer_text": "starts mowing his lawn casually going over all the grass.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_34",
+    "question": "A man walks outside plugs his lawn mower in and gets ready to mow. He starts mowing his lawn casually going over all the grass. his dog",
+    "choices": [
+      "comes outside and starts to follow him a little while he's closer to the house.",
+      "comes outside and takes a closer look at the man mowing, after he picks up the mower.",
+      "runs loose and feeds on his movements.",
+      "is having a seizure and starts to hop all over the lawn as he walks around."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_35",
+    "question": "He starts mowing his lawn casually going over all the grass. His dog comes outside and starts to follow him a little while he's closer to the house. the yard",
+    "choices": [
+      "is slowly starting to look really really nice, once he is completely finished the yard looks great, nice and smooth.",
+      "is very neat and clean and very active under the circumstances.",
+      "gets mowed quicker by the dog.",
+      "eventually looks happy on the outside and appears to be going pretty happily."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_36",
+    "question": "A sea is shown with a green forest on seashore. Blond man is standing in seashore and talking to the camera and surfing big waves on the sea. man",
+    "choices": [
+      "is on ocean and swimming in white water snapping his head.",
+      "is snowboarding up in the sea.",
+      "is doing flips in the waters and on the rocks and he be water surfing.",
+      "is walking on seashore through a lot of people and talking to the camera and holding an award and talking about surfing the seashore."
+    ],
+    "answer": 3,
+    "answer_text": "is walking on seashore through a lot of people and talking to the camera and holding an award and talking about surfing the seashore.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_37",
+    "question": "We see a bottle of face wash. we",
+    "choices": [
+      "see a newspaper story.",
+      "see four cookies in a pan.",
+      "see a person holding face wash then putting it on their face.",
+      "see a tool on a table."
+    ],
+    "answer": 2,
+    "answer_text": "see a person holding face wash then putting it on their face.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_38",
+    "question": "We see a person holding face wash then putting it on their face. They rinse the face and add the face wash with a brush. we",
+    "choices": [
+      "see a closing title screen.",
+      "see a black screen with the credits.",
+      "see an illustration on how to add the wash using a brush.",
+      "then see a replay then the person putting the face wash on."
+    ],
+    "answer": 2,
+    "answer_text": "see an illustration on how to add the wash using a brush.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_39",
+    "question": "A person is seen throwing plaster onto a wall while the camera follows the person close behind. the person",
+    "choices": [
+      "continues throwing ingredients down and leads into a person kicking a dirty toilet.",
+      "gradually throws more and more onto the wall and the camera pans over the finished product.",
+      "then uses paper to spread it all over the wall followed by others putting paper through with the plaster.",
+      "is now seen putting wax all along the wall while still looking back to the camera."
+    ],
+    "answer": 1,
+    "answer_text": "gradually throws more and more onto the wall and the camera pans over the finished product.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_40",
+    "question": "More and more people begin talking and each of them has a bottle of sun screen and starts to squirt it on their arms in effort to protect their skin. a small blue bottle of the sun screen",
+    "choices": [
+      "appears and then different people carry it to a table where they mix the liquid with a straw with a straw and take turns squirting the liquid into their skin.",
+      "appears near each of their hair as they continue to talk but no bottle at all appear.",
+      "is then shown and several more people begin talking about the product.",
+      "zooms in on sheers that they have on the floor."
+    ],
+    "answer": 2,
+    "answer_text": "is then shown and several more people begin talking about the product.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_41",
+    "question": "A group of boys are standing in a room with many clear cups of beer on a table they are all standing around. the boys",
+    "choices": [
+      "take a flute together and then begin to play the harmonica using it to play the tune.",
+      "begin to wrap red bow around the plastic cups, put bows on the bottoms _start_various objects on the foam covers and belongings to the floor.",
+      "talk, laugh and tease each other before beginning a game of beer pong across a long table using a triangle shaped array of clear cups.",
+      "all grab one and chug their contents of the cans."
+    ],
+    "answer": 2,
+    "answer_text": "talk, laugh and tease each other before beginning a game of beer pong across a long table using a triangle shaped array of clear cups.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_42",
+    "question": "The boys talk, laugh and tease each other before beginning a game of beer pong across a long table using a triangle shaped array of clear cups. one of the ping pongs",
+    "choices": [
+      "is knocked upside down, which causes the other teens to give each other high fives.",
+      "tries to rise but dikes instead.",
+      "rush walks up in front of the boys, removes a small piece of paper from the bottom of the table, puts a hand on the machine and wrestles with buttons, turns the machine off and pushes a button inside to turn the game back on.",
+      "lands in the cup and one of the boys begins to drink the beer."
+    ],
+    "answer": 3,
+    "answer_text": "lands in the cup and one of the boys begins to drink the beer.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_43",
+    "question": "One of the ping pongs lands in the cup and one of the boys begins to drink the beer. the group",
+    "choices": [
+      "of teens is sailing down the river with others sailing in the background.",
+      "gets up together and poses with their vests to celebrate.",
+      "continue to play beer pong when one final player is able to throw and land a ping pong ball while standing with his back to the cups at which point the boys celebrate, and laugh.",
+      "does a trick and the liquid is poured on a second table."
+    ],
+    "answer": 2,
+    "answer_text": "continue to play beer pong when one final player is able to throw and land a ping pong ball while standing with his back to the cups at which point the boys celebrate, and laugh.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_44",
+    "question": "There's a nbc news reporter wearing a red sweater and white shirt talking about dog grooming by scissor wizard a grooming company. the representative from the company",
+    "choices": [
+      "is talking about the services they offer and how those dogs participate in dog shows.",
+      "speaks to a woman sitting on a colorful conference room chair next to a brown dog kennel in front of them.",
+      "tells viewers about a dog grooming company, itv with a website.",
+      "in grey sweater and black pants talks about the procedures on grooming dogs in life and techniques."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_45",
+    "question": "The representative from the company is talking about the services they offer and how those dogs participate in dog shows. a groomer",
+    "choices": [
+      "is seen using shears to creatively trim the dog's hair and even dye it in colorful shades of red, green, yellow and blue.",
+      "is presenting cookies to the room with a loaf of bread.",
+      "shows crowd opinion for use as their garden service representative.",
+      "speaks to an older man about snow cleaning dogs and showing how it is flectious."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_46",
+    "question": "A woman tries to eat ice cream to a child, but the child refuses to eat the ice cream, then the woman eats the ice cream in the spoon. after",
+    "choices": [
+      ", the woman gives ice cream to the child, and then the woman cleans the child's mouth.",
+      ", the child takes out the fork the other child takes out the spoon and eats the ice cream.",
+      ", the child and the woman tries to eat food without ice cream, then they sit and talk with adults in the room.",
+      ", two people wearing red shirts pass through the store's door and inside the market and besides a man and a chimpanzee wearing silver uniforms are watching the woman and child."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_47",
+    "question": "After, the woman gives ice cream to the child, and then the woman cleans the child's mouth. an old woman",
+    "choices": [
+      "feeds a boy ice cream.",
+      "hold the child and eats the ice cream, after the woman is giving baby ice cream to the child.",
+      "tries to stop the mother pray while giving a baby something else.",
+      "is standing using a white blower to blow snow."
+    ],
+    "answer": 0,
+    "answer_text": "",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_48",
+    "question": "Men are lifting heavy weights over their head several times. A man in a blue shirt is watching one of the men. a man in a gray shirt",
+    "choices": [
+      "is watching the men on the ground.",
+      "hits a big weight in slow motion.",
+      "is talking to one of the men in the middle of the gym.",
+      "is mimicking the person lifting the weight."
+    ],
+    "answer": 3,
+    "answer_text": "is mimicking the person lifting the weight.",
+    "category": "commonsense"
+  },
+  {
+    "id": "hellaswag_49",
+    "question": "In home pet groomers demonstrate how to groom a pet. the person",
+    "choices": [
+      "puts a setting engage on the pets tongue and leash.",
+      "starts at their butt rise, combing out the hair with a brush from a red.",
+      "is demonstrating how the dog's hair is trimmed with electric shears at their grooming salon.",
+      "installs and interacts with a sleeping pet before moving away."
+    ],
+    "answer": 2,
+    "answer_text": "is demonstrating how the dog's hair is trimmed with electric shears at their grooming salon.",
+    "category": "commonsense"
+  }
+]
