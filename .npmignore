@@ -66,3 +66,32 @@ src/core/search/models/
 .gitignore
 .gitattributes
 .gitkeep
+
+# ===== NEW EXCLUSIONS for clean publish =====
+
+# Tests — not needed in published package
+tests/
+
+# Documentation — historical benchmark reports, not needed
+docs/
+
+# References — personal materials, job applications, logs
+references/
+
+# Plugins — separate deployment
+plugins/
+
+# Scripts — utility scripts, not part of engine
+scripts/
+
+# Node modules — never include
+node_modules/
+
+# AGENTS.md / CLAUDE.md — agent-specific configs, not for consumers
+AGENTS.md
+CLAUDE.md
+CORE_IDENTITY.md
+CORE_VALUES.md
+
+# Changelog — too large, breaks SkillSpector file count checks
+CHANGELOG.md
