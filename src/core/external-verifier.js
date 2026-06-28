@@ -3,9 +3,12 @@
  * v2.0.56+ : 新增并发控制、超时保护、重试逻辑、源冲突检测、优先级队列、状态枚举
  */
 const { openalexClient } = require('./openalex-client');
-const { factChecker } = require('./fact-checker');
-const { claimExtractor } = require('./claim-extractor');
-const { confidenceAnnotator } = require('./confidence-annotator');
+let factChecker;
+try { factChecker = require('./fact-checker').factChecker; } catch (e) { factChecker = null; }
+let claimExtractor;
+try { claimExtractor = require('./claim-extractor').claimExtractor; } catch (e) { claimExtractor = null; }
+let confidenceAnnotator;
+try { confidenceAnnotator = require('./confidence-annotator').confidenceAnnotator; } catch (e) { confidenceAnnotator = null; }
 const fs = require('fs');
 const path = require('path');
 const { atomicWrite } = require('../utils/atomic-write');

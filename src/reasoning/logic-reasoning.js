@@ -402,7 +402,7 @@ const PROBLEM_FRAMEWORK_MAP = {
 
 class LogicReasoning {
   constructor(options = {}) {
-    this.version = '2.2.1';
+    this.version = '5.3.0';
     this._history = [];
     this._maxHistory = options.maxHistory || 50;
   }

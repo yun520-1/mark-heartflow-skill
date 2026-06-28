@@ -13,7 +13,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { DecisionVerifier } = require('./decision-verifier.js');
+let DecisionVerifier;
+try { DecisionVerifier = require('./decision-verifier.js').DecisionVerifier; } catch (e) { DecisionVerifier = null; }
 
 const DREAM_HISTORY_DIR = path.join(__dirname, '..', 'data');
 const DREAM_HISTORY_FILE = path.join(DREAM_HISTORY_DIR, 'dream-history.json');
