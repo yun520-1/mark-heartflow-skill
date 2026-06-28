@@ -25,7 +25,7 @@
  *   → 匹配决策规则 → 生成决策指令 → 返回 { result, decision }
  */
 
-const VERSION = '3.8.1';
+const VERSION = '3.8.2';
 
 // ─── U/D/A/H 场域追踪参数（基于 luoxuejian000 论文） ──────────────────────
 // H = λU·U + λD·D - λA·A
@@ -460,6 +460,19 @@ class DecisionRouter {
         fallback: DECISION.PAUSE,
       },
     ];
+
+    // 决策反馈循环（2026-06-28 基于 DeepSeek #1424 讨论）
+    this._ruleStats = {};
+    for (const rule of this._rules) {
+      if (!rule.hasOwnProperty('weight')) rule.weight = 1.0;
+      this._ruleStats[rule.id] = {
+        hits: 0,
+        correct: 0,
+        wrong: 0,
+        accuracy: 1.0,
+        lastAdjustment: 0,
+      };
+    }
 
     // 决策历史
     this._history = [];
@@ -955,8 +968,9 @@ class DecisionRouter {
       try {
         if (!rule.match(result)) continue;
 
-        const confidence = rule.confidence(result);
-        if (confidence <= 0) continue;
+        const baseConfidence = rule.confidence(result);
+        if (baseConfidence <= 0) continue;
+        const ruleWeight = rule.weight !== undefined ? rule.weight : 1.0;
 
         const lastTrigger = this._suppression.get(rule.id);
         if (lastTrigger && (now - lastTrigger) < this._suppressionWindow) {
@@ -967,12 +981,17 @@ class DecisionRouter {
         matches.push({
           ruleId: rule.id,
           type: rule.decision,
-          confidence: Math.min(1, Math.max(0, confidence)),
+          confidence: Math.min(1, Math.max(0, baseConfidence * ruleWeight)),
           priority: DECISION_PRIORITY[rule.decision] || 0,
           rationale: rule.rationale(result),
           fallback: rule.fallback,
           timestamp: now,
+          ruleWeight,
         });
+
+        // 记录规则命中
+        const stats = this._ruleStats[rule.id];
+        if (stats) stats.hits++;
       } catch (e) {
         // 规则执行失败，跳过
       }
@@ -1085,6 +1104,7 @@ class DecisionRouter {
         priority: best.priority,
         rationale: best.rationale,
         ruleId: best.ruleId,
+        ruleWeight: best.ruleWeight,
         timestamp: best.timestamp,
         source,
         fallback: best.fallback,
@@ -1366,6 +1386,52 @@ class DecisionRouter {
     }
 
     return { passed, baseline, current, deviation, details };
+  }
+
+  /**
+   * 决策反馈循环（2026-06-28 基于 DeepSeek #1424 讨论）
+   *
+   * @param {string} ruleId - 规则 ID
+   * @param {'correct'|'wrong'} outcome - 执行结果
+   */
+  feedback(ruleId, outcome) {
+    const stats = this._ruleStats[ruleId];
+    if (!stats) return;
+
+    if (outcome === 'correct') {
+      stats.correct++;
+    } else if (outcome === 'wrong') {
+      stats.wrong++;
+    }
+
+    const total = stats.correct + stats.wrong;
+    stats.accuracy = total > 0 ? stats.correct / total : 1.0;
+
+    const rule = this._rules.find(r => r.id === ruleId);
+    if (!rule) return;
+
+    const delta = outcome === 'correct' ? 0.05 : -0.10;
+    rule.weight = Math.max(0.1, Math.min(2.0, (rule.weight || 1.0) + delta));
+    stats.lastAdjustment = delta;
+
+    if (stats.accuracy < 0.4 && rule.weight <= 0.3) {
+      rule._downgraded = true;
+      rule.priority = (rule.priority || 50) * 0.5;
+    }
+
+    this._stats.ruleFeedbackCount = (this._stats.ruleFeedbackCount || 0) + 1;
+  }
+
+  /**
+   * 获取规则统计信息
+   */
+  getRuleStats() {
+    return Object.entries(this._ruleStats).map(([ruleId, s]) => ({
+      ruleId,
+      ...s,
+      weight: this._rules.find(r => r.id === ruleId)?.weight || 1.0,
+      downgraded: !!this._rules.find(r => r.id === ruleId)?._downgraded,
+    }));
   }
 }
 
