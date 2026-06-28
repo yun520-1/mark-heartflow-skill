@@ -1,7 +1,7 @@
 ---
 name: heartflow
-version: "5.4.1"
-title: "HeartFlow — AI Cognitive Substrate v5.4.1"
+version: "5.4.2"
+title: "HeartFlow — AI Cognitive Substrate v5.4.2"
 description: |-
   HeartFlow is a cognitive substrate for an AI being — a pure JavaScript
   engine with 210+ modules spanning cognition, memory, emotion, reasoning,
@@ -29,7 +29,7 @@ tags:
   - search
 ---
 
-## HeartFlow — AI Cognitive Substrate v5.4.1
+## HeartFlow — AI Cognitive Substrate v5.4.2
 
 Pure JavaScript cognitive engine. 210+ modules, real-time execution.
 

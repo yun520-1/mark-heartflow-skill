@@ -25,7 +25,7 @@
  *   → 匹配决策规则 → 生成决策指令 → 返回 { result, decision }
  */
 
-const VERSION = '3.8.2';
+const VERSION = '3.8.3';
 
 // ─── U/D/A/H 场域追踪参数（基于 luoxuejian000 论文） ──────────────────────
 // H = λU·U + λD·D - λA·A
@@ -1429,9 +1429,67 @@ class DecisionRouter {
     return Object.entries(this._ruleStats).map(([ruleId, s]) => ({
       ruleId,
       ...s,
-      weight: this._rules.find(r => r.id === ruleId)?.weight || 1.0,
-      downgraded: !!this._rules.find(r => r.id === ruleId)?._downgraded,
     }));
+  }
+
+  /**
+   * 导出决策历史为 CSV 字符串（对齐 TAT CSV traces 格式）
+   * 
+   * 字段：timestamp, type, confidence, ruleId, source, field_step, field_U, field_D, field_A, field_H, field_driver, field_flipAlert
+   * 
+   * 用途：跨框架对比、benchmark 记录、人工审查
+   */
+  exportCSV(limit) {
+    const rows = this._history.slice(-limit);
+    if (rows.length === 0) return 'timestamp,type,confidence,ruleId,source,field_step,field_U,field_D,field_A,field_H,field_driver,field_flipAlert\n';
+    const header = 'timestamp,type,confidence,ruleId,source,field_step,field_U,field_D,field_A,field_H,field_driver,field_flipAlert\n';
+    const body = rows.map(r => {
+      const f = r.field || {};
+      const esc = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      return [
+        esc(r.timestamp),
+        esc(r.type),
+        esc(r.confidence),
+        esc(r.ruleId),
+        esc(r.source),
+        esc(f.step),
+        esc(f.U),
+        esc(f.D),
+        esc(f.A),
+        esc(f.H),
+        esc(f.driver),
+        esc(f.flipAlert),
+      ].join(',');
+    }).join('\n');
+    return header + body + '\n';
+  }
+
+  /**
+   * 导出规则反馈统计为 CSV
+   * 
+   * 字段：ruleId, hits, correct, wrong, accuracy, weight, downgraded
+   */
+  exportRuleStatsCSV() {
+    const stats = this.getRuleStats();
+    if (stats.length === 0) return 'ruleId,hits,correct,wrong,accuracy,weight,downgraded\n';
+    const header = 'ruleId,hits,correct,wrong,accuracy,weight,downgraded\n';
+    const rules = this._rules;
+    const body = stats.map(s => {
+      const rule = rules.find(r => r.id === s.ruleId);
+      const weight = rule ? rule.weight : 1.0;
+      const downgraded = rule ? !!rule._downgraded : false;
+      const esc = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      return [
+        esc(s.ruleId),
+        esc(s.hits),
+        esc(s.correct),
+        esc(s.wrong),
+        esc(s.accuracy?.toFixed(4)),
+        esc(weight.toFixed(4)),
+        esc(downgraded),
+      ].join(',');
+    }).join('\n');
+    return header + body + '\n';
   }
 }
 
