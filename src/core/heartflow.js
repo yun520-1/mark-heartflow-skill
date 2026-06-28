@@ -111,10 +111,10 @@ const _EmotionalGrowth = _lazy('emotionalGrowth', () => { try { return require('
 const _MoodEvolution = _lazy('moodEvolution', () => { try { return require('../emotion/mood-evolution.js'); } catch(e) { return { MoodEvolution: class { constructor() {} } }; } });
 const _VERSION = _lazy('version', () => require('./version.js'));
 
-// ★ 代码引擎 — 惰性加载
-const _CodeExecutor = _lazy('codeExecutor', () => require('../code/code/code-executor.js'));
-const _CodePlanner = _lazy('codePlanner', () => require('../code/code/code-planner.js'));
-const _CodeWriter = _lazy('codeWriter', () => require('../code/code/code-writer.js'));
+// ★ 代码引擎 — 惰性加载（拉平目录后路径）
+const _CodeExecutor = _lazy('codeExecutor', () => require('../code/code-executor.js'));
+const _CodePlanner = _lazy('codePlanner', () => require('../code/code-planner.js'));
+const _CodeWriter = _lazy('codeWriter', () => require('../code/code-writer.js'));
 
 // v3.0 — 交流层模块
 const _UserToLLM = _lazy('userToLLM', () => require('../bridge/user-to-llm.js'));
@@ -497,13 +497,10 @@ class HeartFlow {
       desireSystem: { lazy: true, path: '../emotion/desire-system.js', Ctor: 'DesireSystem', args: {} },
       emotionalGrowth: { lazy: true, path: '../emotion/emotional-growth.js', Ctor: 'EmotionalGrowth', args: {} },
       moodEvolution: { lazy: true, path: '../emotion/mood-evolution.js', Ctor: 'MoodEvolution', args: {} },
-      // Code Subsystem — 代码能力（6个 Tier 2 模块）
-      code:            { lazy: true, path: '../code/code/code-generator.js',  Ctor: 'CodeGenerator',  args: { hf: null } },
-      codeExecutor:    { lazy: true, path: '../code/code/code-executor.js',   Ctor: 'CodeExecutor',   args: { hf: null } },
-      codeVerifier:    { lazy: true, path: '../code/code/code-verifier.js',   Ctor: 'CodeVerifier',   args: { hf: null } },
-      codePlanner:     { lazy: true, path: '../code/code/code-planner.js',   Ctor: 'CodePlanner',    args: { hf: null } },
-      codeKnowledge:   { lazy: true, path: '../code/code/code-knowledge.js', Ctor: 'CodeKnowledge',  args: { rootPath: null } },
-      codeWriter:      { lazy: true, path: '../code/code/code-writer.js',   Ctor: 'CodeWriter',     args: {} },
+      // Code Subsystem — 代码能力（3个 Tier 2 模块）
+      codeExecutor:    { lazy: true, path: '../code/code-executor.js',   Ctor: 'CodeExecutor',   args: { hf: null } },
+      codePlanner:     { lazy: true, path: '../code/code-planner.js',   Ctor: 'CodePlanner',    args: { hf: null } },
+      codeWriter:      { lazy: true, path: '../code/code-writer.js',   Ctor: 'CodeWriter',     args: {} },
       // claude-clarity v1.8.2 吸收集成 — 知识图谱/大五人格/共情评估/意图层
       knowledgeGraph:  { lazy: true, path: '../memory/knowledge-graph.js',    Ctor: 'KnowledgeGraph',  args: { dataDir: null } },
       bigFive:         { lazy: true, path: '../identity/BigFivePersonality.js', Ctor: '',                args: {} },
@@ -1420,23 +1417,7 @@ class HeartFlow {
             mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/longterm') });
           } else if (subsystem === 'crossSessionIndex') {
             mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/cross-session') });
-          } else if (subsystem === 'codeKnowledge') {
-            mod = new Ctor({ rootPath: this.rootPath });
-          } else if (subsystem === 'code') {
-            // code 子系统主入口 → 复用 codeGenerator 实例（首次访问时加载）
-            if (this._modules['codeGenerator']) {
-              mod = this._modules['codeGenerator'];
-            } else {
-              // 兜底：直接加载 codeGenerator
-              const cgPath = './code/code-generator.js';
-              const CG = require(cgPath).CodeGenerator;
-              mod = new CG({ hf: this });
-              this['codeGenerator'] = mod;
-              this._modules['codeGenerator'] = mod;
-            }
           } else if (subsystem === 'codeExecutor') {
-            mod = new Ctor({ hf: this });
-          } else if (subsystem === 'codeVerifier') {
             mod = new Ctor({ hf: this });
           } else if (subsystem === 'codePlanner') {
             mod = new Ctor({ hf: this });

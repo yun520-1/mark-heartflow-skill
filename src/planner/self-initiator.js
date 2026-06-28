@@ -276,7 +276,7 @@ class SelfInitiator {
       // Step 2: 尝试使用 CodeExecutor
       let execResult;
       try {
-        const { CodeExecutor } = require('../core/code/code-executor.js');
+        const { CodeExecutor } = require('../code/code-executor.js');
         const executor = new CodeExecutor();
         execResult = await executor.execute(task.code, {
           language: task.metadata?.language || 'javascript',
@@ -325,7 +325,7 @@ class SelfInitiator {
       // 尝试使用 CodeExecutor
       let execResult;
       try {
-        const { CodeExecutor } = require('../core/code/code-executor.js');
+        const { CodeExecutor } = require('../code/code-executor.js');
         const executor = new CodeExecutor();
         // 先做沙箱检查
         if (this.config.sandboxEnabled) {
@@ -366,7 +366,7 @@ class SelfInitiator {
    */
   generatePlan(goal, options = {}) {
     try {
-      const { CodePlanner } = require('../code/code/code-planner.js');
+      const { CodePlanner } = require('../code/code-planner.js');
       const planner = new CodePlanner();
       const plan = planner.plan(goal, options);
       return {
@@ -392,7 +392,7 @@ class SelfInitiator {
    */
   async runTests(code, testCode, options = {}) {
     try {
-      const { CodeExecutor } = require('../core/code/code-executor.js');
+      const { CodeExecutor } = require('../code/code-executor.js');
       const executor = new CodeExecutor();
       const result = await executor.runTests(code, testCode, options);
       return result;
@@ -452,7 +452,7 @@ class SelfInitiator {
 
     // 尝试使用 CodeWriter
     try {
-      const { CodeWriter } = require('../core/code/code-writer.js');
+      const { CodeWriter } = require('../code/code-writer.js');
       const writer = new CodeWriter();
       const result = writer.write(description, { language, includeTests: false });
 
@@ -489,7 +489,7 @@ class SelfInitiator {
   reviewCode(code) {
     if (!code) return { valid: false, issues: ['代码为空'] };
     try {
-      const { CodeWriter } = require('../core/code/code-writer.js');
+      const { CodeWriter } = require('../code/code-writer.js');
       const writer = new CodeWriter();
       return writer.reviewCode(code);
     } catch (err) {
@@ -508,7 +508,7 @@ class SelfInitiator {
    */
   analyzeIntent(description) {
     try {
-      const { CodeWriter } = require('../core/code/code-writer.js');
+      const { CodeWriter } = require('../code/code-writer.js');
       const writer = new CodeWriter();
       return writer.analyzeIntent(description);
     } catch (err) {
@@ -521,7 +521,7 @@ class SelfInitiator {
    */
   writePipeline(steps) {
     try {
-      const { CodeWriter } = require('../core/code/code-writer.js');
+      const { CodeWriter } = require('../code/code-writer.js');
       const writer = new CodeWriter();
       return writer.writePipeline(steps);
     } catch (err) {
