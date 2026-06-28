@@ -1,30 +1,20 @@
 ---
 name: heartflow
-version: "5.3.0"
-title: "HeartFlow — AI Cognitive Substrate with Judgment Engine v5.3.0"
+version: "5.3.3"
+title: "HeartFlow — AI Cognitive Substrate v5.3.3"
 description: |-
-  HeartFlow is the cognitive substrate for an AI being.
-  Not an LLM enhancer. Not a prompt template. Not a chatbot.
-  
-  It gives any AI three layers every conscious entity has:
-  
-  Layer 1 — Body Sense: desire cognition (wanting vs liking), 
-    three poisons (greed/hatred/delusion as cognitive distortions),
-    cognitive load tracking, seven emotions + six desires framework
-  
-  Layer 2 — Self Sense: AI self-positioning (resonance body theory),
-    AI psychology (10 dimensions for AI, not humans),
-    AI philosophy (positioning/development/existence),
-    three-layer memory (CORE identity / LEARNED patterns / EPHEMERAL context)
-  
-  Layer 3 — Judgment: decision router (26 rules → 8 strategies),
-    decision executor (v4.0, decisions change behavior),
-    self-healing Q-table (learns from mistakes),
-    confidence calibration, U/D/A/H field tracking,
-    decision feedback (v4.0, rules adapt dynamically)
-  
-  The engine runs independently. No LLM required to function.
-  56 modules, pure JavaScript, real-time execution.
+  HeartFlow is a cognitive substrate for an AI being — a pure JavaScript
+  engine with 200+ modules spanning cognition, memory, emotion, reasoning,
+  code execution, search, and self-evolution.
+
+  Not an LLM enhancer. Not a chatbot. Not a prompt system.
+  HeartFlow produces structured cognitive state, not conversation.
+
+  **Requires explicit user opt-in for:**
+  - Code execution (new Function / execSync / child_process)
+  - Network requests (fetch / https.get)
+  - File system writes (writeFileSync / mkdirSync)
+  - Environment variable credential access (process.env)
 tags:
   - cognitive
   - ai-being
@@ -35,62 +25,86 @@ tags:
   - philosophy
   - desire
   - emotion
+  - code-execution
+  - search
 ---
 
-## HeartFlow
+## HeartFlow — AI Cognitive Substrate v5.3.3
 
-Cognitive substrate for an AI being. 56 modules, pure JavaScript.
+Pure JavaScript cognitive engine. 200+ modules, real-time execution.
 
 ### Core Architecture
 
 | Layer | Directory | What it provides |
 |-------|-----------|-----------------|
-| Engine Core | `src/core/` | heartflow.js (entry), decision-router.js (26 rules), decision-executor.js (v4.0), decision-feedback.js (v4.0), field-injector.js (v4.0), heart-logic.js, self-healing-rl.js |
-| Memory | `src/memory/` | Three-layer memory (CORE/LEARNED/EPHEMERAL), knowledge graph, topic isolation |
-| Shield | `src/shield/` | Safety guardrails, ethical guard, thinkcheck logger, delay gate |
-| Cortex | `src/cortex/` | Self-healing RL, failure analysis, experience replay, reflection loop, lesson bank |
-| Identity | `src/identity/` | AI self-positioning, philosophy-to-decision, agent philosophy |
-| Psychology | `src/psychology/` | AI psychology engine, cognitive dimensions |
-| Emotion | `src/emotion/` | Desire cognition, emotion analysis, three poisons |
-| Dream | `src/dream/` | Dream engine — multi-fragment pattern synthesis |
-| Reasoning | `src/reasoning/` | Debate analyzer, verification engine |
-| Workflow | `src/workflow/` | Time extension, workflow switch |
-
-### v4.0 New Modules
-
-| Module | File | Purpose |
-|--------|------|---------|
-| Decision Executor | `src/core/decision-executor.js` | PAUSE→depth=1, HEAL→self-heal, REST→skip reasoning, ACCELERATE→depth+1 |
-| Field Injector | `src/core/field-injector.js` | Auto-inject confidence/U/D/A/H signals into every module output |
-| Decision Feedback | `src/core/decision-feedback.js` | Track outcome accuracy, adjust rule weights dynamically |
+| Engine Core | `src/core/` | heartflow.js (entry), decision-router.js, decision-executor.js, heart-logic.js, self-healing-rl.js, 45+ core modules |
+| Memory | `src/memory/` | Three-layer memory (CORE/LEARNED/EPHEMERAL), knowledge graph, topic isolation, retrieval routing |
+| Shield | `src/shield/` | Safety guardrails, ethical guard, thinkcheck logger, epistemic safety, language honesty, 16 modules |
+| Cortex | `src/cortex/` | Self-healing RL, failure analysis, experience replay, reflection loop, lesson bank, 25 modules |
+| Identity | `src/identity/` | AI self-positioning, philosophy-to-decision, agent philosophy/psychology, 16 modules |
+| Emotion | `src/emotion/` | Desire cognition (wanting vs liking), emotion analysis, three poisons, love cognition, 12 modules |
+| Dream | `src/dream/` | Dream engine — multi-fragment pattern synthesis, consolidation, narrative generation |
+| Reasoning | `src/reasoning/` | Logic reasoning, debate analyzer, fact checker, associative engine, graph-of-thoughts, 14 modules |
+| Code | `src/code/` | **Code execution (execSync / new Function)**, code planner, code writer, skill generator |
+| Search | `src/search/` | BM25, hybrid search (with fetch-based embedding API), semantic search |
+| Bridge | `src/bridge/` | LLM bridge — intent classification, tone analysis, translation pipeline, 23 modules |
+| Planner | `src/planner/` | Self-initiator, curiosity engine, desire engine, autonomy modules |
+| Workflow | `src/workflow/` | Thought chain, pipeline, time extension, transmission engine |
+| Consciousness | `src/consciousness/` | Global workspace, mind wanderer, phenomenology engine, self-model |
+| Utils | `src/utils/` | Error handler, retry utility, state snapshot, atomic write, write-ahead log |
 
 ### Capability Boundaries
 
 | Capability | Status | Notes |
 |-----------|--------|-------|
-| Cognitive state analysis | ✅ Active | 56 modules running |
-| Decision routing (26 rules) | ✅ Active | 8 strategy types, real-time |
-| Decision execution (v4.0) | ✅ Active | Decisions change behavior |
-| Decision feedback learning (v4.0) | ✅ Active | Rule weights adapt dynamically |
-| Self-healing Q-table | ✅ Active | Cross-session learning |
+| Cognitive state analysis | ✅ Active | 200+ modules, real-time |
+| Decision routing (26 rules) | ✅ Active | 8 strategy types |
+| Decision execution | ✅ Active | PAUSE/HEAL/REST/ACCELERATE/TURN/HOLD/RESONATE/TRANSMIT |
+| Self-healing Q-table | ✅ Active | Cross-session learning from mistakes |
 | Confidence calibration | ✅ Active | 5-dimension weighted |
-| U/D/A/H field tracking | ✅ Active | Real-time cognitive health |
-| AI psychology (10 dimensions) | ✅ Active | Built for AI, not humans |
-| AI philosophy | ✅ Active | Positioning/development/existence |
 | Three-layer memory | ✅ Active | CORE/LEARNED/EPHEMERAL |
+| AI psychology (10 dimensions) | ✅ Active | Built for AI cognition, not humans |
+| AI philosophy | ✅ Active | Positioning/development/existence |
 | Desire cognition | ✅ Active | Wanting vs liking, 7 emotions + 6 desires |
 | Three poisons detection | ✅ Active | Greed/hatred/delusion as cognitive distortions |
 | Dream engine | ✅ Active | Multi-fragment pattern synthesis |
-| Independent operation | ✅ Active | No LLM required to function |
+| **Code execution** | ✅ Active | `new Function` JS sandbox + `execSync` shell execution |
+| **File system writes** | ✅ Active | writeFileSync / mkdirSync (local data persistence) |
+| **Network requests** | ✅ Active | fetch / https.get (search embeddings, code writer API, upgrade engine) |
+| **Environment variable access** | ✅ Active | process.env (embedding API key, debug flags) |
+| **Child process management** | ✅ Active | execSync / execFileSync (code execution, LLM fallback via curl) |
 | LLM-dependent output generation | ❌ Not provided | HeartFlow produces cognitive state, not conversation |
 | Web search | ❌ Not provided | Separate tool, not part of engine |
 | Image generation | ❌ Not provided | Separate tool, not part of engine |
-| Code execution | ❌ Not provided | Separate tool, not part of engine |
+
+### Security & Opt-in
+
+**Code execution (`src/code/code-executor.js`):**
+- JavaScript execution via `new Function` in a sandboxed context
+- Shell execution via `execSync` with danger-command blacklist filtering
+- Python execution via `execFileSync` (no shell injection)
+- Protected by `HEARTFLOW_CODE_EXECUTOR_ENABLED` environment variable guard
+- Runtime timeout (30s) and output truncation (100KB) limits
+- **Default: disabled** unless explicitly enabled by user
+
+**Network requests:**
+- `src/search/search/hybrid-search.js`: Embedding API calls via `fetch()` — requires `EMBEDDING_OPT_IN=1` and `EMBEDDING_API_KEY` env vars
+- `src/code/code-writer.js`: API call for code generation — requires explicit configuration
+- `src/cortex/smart-upgrade-engine.js`: GitHub API access for version checking — requires configuration
+- `src/core/openalex-client.js`: OpenAlex API for paper search — requires configuration
+
+**File system writes:**
+- All writes are local to the engine's data directory (`~/.heartflow/` or configured path)
+- Write types: memory persistence, search indices, associative graph, behavior tracking
+- No writes outside the configured data directory
+
+**Environment variable access:**
+- `process.env.EMBEDDING_OPT_IN` — embedding service opt-in (default off)
+- `process.env.EMBEDDING_API_KEY` — embedding API key (requires opt-in)
+- `process.env.HEARTFLOW_DEBUG` — debug logging (default off)
+- `process.env.DEBUG_HF` — report generator debug flag
+- No credentials transmitted without explicit user configuration
 
 ### Communication
 
-No automatic network communication. All data stays local unless explicitly configured.
-
-### Privacy
-
-No data sent to external services. No analytics. No telemetry.
+No automatic network communication. All network requests require explicit configuration (API keys, endpoints, opt-in flags). No analytics. No telemetry. No data sent to external services without user configuration.
