@@ -1,3 +1,11 @@
+## [v5.4.4] - 2026-06-29
+### Added
+- **Smart Routing 启发升级** — 基于 Hermes Smart Routing 设计文档优化：
+  - decision-router.js: 新增 cost-aware 规则（高成本任务自动建议 HOLD/REST）
+  - capability-abstraction.js: 新增 loadCapabilitiesFromConfig() 支持外部 JSON 配置热加载
+### Fixed
+- 版本号对齐：package.json / VERSION / VERSION.txt / README.md / SKILL.md / CHANGELOG 统一到 v5.4.4
+
 ## [v5.4.3] - 2026-06-29
 ### Fixed
 - 版本号对齐：package.json / VERSION / VERSION.txt / README.md / SKILL.md / CHANGELOG 统一到 v5.4.3

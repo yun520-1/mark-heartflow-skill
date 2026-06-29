@@ -1,7 +1,7 @@
 # HeartFlow v5.3.0 — 逻辑验证层 · 决策路由 · 自愈RL
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-5.4.3-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-5.4.4-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />

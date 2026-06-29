@@ -81,6 +81,36 @@ class CapabilityAbstraction {
     this.capabilities.set(id, capability);
   }
 
+  // 从外部 JSON 配置加载能力定义（Smart Routing 启发：模型能力清单外置）
+  loadCapabilitiesFromConfig(configPath) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const resolved = path.resolve(configPath);
+      const raw = fs.readFileSync(resolved, 'utf-8');
+      const config = JSON.parse(raw);
+
+      if (config.capabilities && Array.isArray(config.capabilities)) {
+        let loaded = 0;
+        for (const cap of config.capabilities) {
+          if (cap.id && cap.name && cap.execute) {
+            this.registerCapability(cap.id, {
+              name: cap.name,
+              description: cap.description || '',
+              platformDependent: cap.platformDependent || false,
+              execute: cap.execute,
+            });
+            loaded++;
+          }
+        }
+        return { success: true, loaded, source: resolved };
+      }
+      return { success: false, error: 'config.capabilities must be an array' };
+    } catch (e) {
+      return { success: false, error: e.message };
+    }
+  }
+
   // 执行能力（平台无关的调用接口）
   async executeCapability(id, input = {}) {
     const capability = this.capabilities.get(id);

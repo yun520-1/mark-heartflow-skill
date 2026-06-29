@@ -279,6 +279,18 @@ class DecisionRouter {
         rationale: (r) => `收到质疑/纠错信号，暂停解释路径，进入自我审查状态`,
         fallback: DECISION.HOLD,
       },
+      // ── 成本敏感类（Smart Routing 启发）──
+      {
+        id: 'cost-aware',
+        match: (r) => r.estimatedCost !== undefined || r.cost !== undefined,
+        decision: DECISION.HOLD,
+        confidence: (r) => {
+          const cost = r.estimatedCost || r.cost || 0;
+          return cost > 0.05 ? 0.7 : 0;
+        },
+        rationale: (r) => `高成本任务(${((r.estimatedCost || r.cost || 0)).toFixed(4)})，建议降级或精简`,
+        fallback: DECISION.REST,
+      },
       // ── 价值/伦理类 ──
       {
         id: 'value-resonance',
