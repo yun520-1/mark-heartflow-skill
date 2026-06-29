@@ -42,9 +42,6 @@
     "src/report/**/*.js",
     "mcp/"
   ],
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "keywords": [
     "cognitive",
     "memory",
