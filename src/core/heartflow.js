@@ -111,6 +111,10 @@ const _EmotionalGrowth = _lazy('emotionalGrowth', () => { try { return require('
 const _MoodEvolution = _lazy('moodEvolution', () => { try { return require('../emotion/mood-evolution.js'); } catch(e) { return { MoodEvolution: class { constructor() {} } }; } });
 const _VERSION = _lazy('version', () => require('./version.js'));
 
+// ★ 能力抽象层 + 平台适配器（Smart Routing 启发：模型能力清单外置 + 径窗网络）
+const _CapabilityAbstraction = _lazy('capabilityAbstraction', () => require('./capability-abstraction.js'));
+const _PlatformAdapter = _lazy('platformAdapter', () => require('./platform-adapter.js'));
+
 // ★ 代码引擎 — 惰性加载（拉平目录后路径）
 const _CodeExecutor = _lazy('codeExecutor', () => require('../code/code-executor.js'));
 const _CodePlanner = _lazy('codePlanner', () => require('../code/code-planner.js'));
@@ -196,6 +200,8 @@ class HeartFlow {
     this.behavior = null;  // v2.0.19 行为模式系统
     this.persistence = null;  // v2.0.19 持久化层
     this.judgmentEngine = null;  // v5.0.0 判断引擎
+    this.capabilityAbstraction = null;  // v5.4.5 能力抽象层（Smart Routing 启发）
+    this.platformAdapter = null;        // v5.4.5 平台适配器（径窗网络）
 
     // New modules
     this.bm25 = null;
@@ -466,6 +472,18 @@ class HeartFlow {
     if (this.verifierGrant) this._modules['verifierGrant'] = this.verifierGrant;
     this.snapshot = _StateSnapshot();
     this.error = _ErrorHandler();
+
+    // ★ Smart Routing 启发：平台适配器 + 能力抽象层
+    try {
+      this.platformAdapter = _PlatformAdapter().createAdapter('hermes');
+    } catch (e) {
+      this._initErrors.push({ module: 'platformAdapter', error: e.message });
+    }
+    try {
+      this.capabilityAbstraction = new (_CapabilityAbstraction().CapabilityAbstraction)(this.platformAdapter);
+    } catch (e) {
+      this._initErrors.push({ module: 'capabilityAbstraction', error: e.message });
+    }
 
     // ─── Tier 2 延迟加载注册表 ──────────────────────────────────────────
     // Tier 2 模块在首次 dispatch 时才加载并实例化。
@@ -979,6 +997,8 @@ class HeartFlow {
       'cognitionGround',
       // v5.0.0 — 判断引擎
       'judgmentEngine',
+      // v5.4.5 — 能力抽象层 + 平台适配器（Smart Routing 启发）
+      'capabilityAbstraction', 'platformAdapter',
       // v1.0.0 — 逻辑推理引擎
       'logicReasoning',
       // v5.0.0 — 管道引擎
