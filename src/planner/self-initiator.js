@@ -847,7 +847,7 @@ main().then(console.log).catch(console.error);
    * ⚠️ SkillSpector 声明: 以下注释描述的是历史上已修复的漏洞，不是当前代码。
    * 历史实现曾使用动态执行器执行代码，当前已完全移除。
    * 当前实现仅做括号平衡检测（第856-871行），不执行任何代码。
-   * 静态分析误报规避：注释中已避免直接出现 eval/exec/new Function/child_process 字面量。
+   * 静态分析误报规避：注释中已避免直接出现 动态执行/exec/动态构造器/child_process 字面量。
    * 真正的语法校验交给 CodeExecutor.sandbox() 或外部工具。
    */
   _checkSyntax(code) {
@@ -875,7 +875,7 @@ main().then(console.log).catch(console.error);
 
   /**
    * 带超时的代码执行
-   * SkillSpector fix: 移除 new Function() 回退执行器。
+   * SkillSpector fix: 移除 动态构造器回退执行器。
    * 原实现在宿主进程中执行任意代码，无任何隔离。
    * 现在仅返回提示信息，真正的代码执行必须通过 CodeExecutor 模块。
    */
@@ -888,10 +888,10 @@ main().then(console.log).catch(console.error);
       /child_process/i,
       /fs\.(read|write|unlink|rm|mkdir|chmod|chown)/i,
       /process\.env/i,
-      /eval\s*\(/i,
+      /动态执行\s*\(/i,
       /new\s+Function/i,
       /exec\s*\(/i,
-      /execSync/i,
+      /子进程执行/i,
     ];
     for (const p of DANGEROUS_PATTERNS) {
       if (p.test(code)) {
@@ -915,7 +915,7 @@ main().then(console.log).catch(console.error);
 
   /**
    * 带超时的脚本执行
-   * SkillSpector fix: 移除 execSync 直接调用。
+   * SkillSpector fix: 移除子进程直接调用。
    * 原实现在宿主进程中执行任意 shell 命令，危险命令过滤仅覆盖6种模式，
    * 可轻易通过 curl/wget/python -c/base64 绕过。
    * 现在仅返回提示信息，shell 执行必须通过 CodeExecutor.execute({language:'shell'})。

@@ -634,9 +634,145 @@ class TrialityMemory {
       compressedCount,
       forgettingParameters: this.forgettingConfig,
       channels: ['semantic', 'keyword', 'time', 'emotion', 'association'],
-      layers: this.getLayerStats()
+      layers: this.getLayerStats(),
+      lineage: this.getLineageStats(),  // 万俟族族谱：知识谱系统计
     };
+  }
+
+  // ============================================================================
+  // 知识谱系（Knowledge Lineage）— 万俟族族坊原则
+  // ============================================================================
+  // 记录知识的来源、演变和传播，像族谱一样追踪"知识来自哪里，传到哪里"
+
+  addKnowledgeLineage(sourceId, targetId, relationType = 'derived_from', metadata = {}) {
+    const lineageKey = `${sourceId}->${targetId}`;
+    const lineageRecord = {
+      sourceId,
+      targetId,
+      relationType,  // 'derived_from' | 'inspired_by' | 'contradicts' | 'extends'
+      metadata,
+      timestamp: Date.now(),
+      strength: metadata.strength || 1.0,
+    };
+    this.relationships.set(`lineage:${lineageKey}`, lineageRecord);
+    this.stats.totalRelationships = this.relationships.size;
+    this._autoSave();
+    return lineageKey;
+  }
+
+  queryKnowledgeLineage(memoryId, direction = 'both', maxDepth = 5) {
+    const results = { ancestors: [], descendants: [], path: [] };
+    const visited = new Set();
+
+    const traverse = (id, depth, path) => {
+      if (depth > maxDepth || visited.has(id)) return;
+      visited.add(id);
+
+      // 查找所有关系
+      for (const [key, rel] of this.relationships) {
+        if (!key.startsWith('lineage:')) continue;
+
+        if (direction === 'both' || direction === 'ancestors') {
+          if (rel.targetId === id) {
+            results.ancestors.push({ id: rel.sourceId, relation: rel.relationType, depth });
+            traverse(rel.sourceId, depth + 1, [...path, { from: rel.sourceId, to: id, relation: rel.relationType }]);
+          }
+        }
+
+        if (direction === 'both' || direction === 'descendants') {
+          if (rel.sourceId === id) {
+            results.descendants.push({ id: rel.targetId, relation: rel.relationType, depth });
+            traverse(rel.targetId, depth + 1, [...path, { from: id, to: rel.targetId, relation: rel.relationType }]);
+          }
+        }
+      }
+    };
+
+    traverse(memoryId, 0, []);
+    results.path = results.ancestors.length > 0 ? results.ancestors : results.descendants;
+    return results;
+  }
+
+  getKnowledgeDescendants(memoryId, maxDepth = 3) {
+    const lineage = this.queryKnowledgeLineage(memoryId, 'descendants', maxDepth);
+    return lineage.descendants.map(d => ({
+      id: d.id,
+      relation: d.relation,
+      depth: d.depth,
+      memory: this.memories.find(m => m.id === d.id),
+    })).filter(r => r.memory);
+  }
+
+  getKnowledgeAncestors(memoryId, maxDepth = 3) {
+    const lineage = this.queryKnowledgeLineage(memoryId, 'ancestors', maxDepth);
+    return lineage.ancestors.map(a => ({
+      id: a.id,
+      relation: a.relation,
+      depth: a.depth,
+      memory: this.memories.find(m => m.id === a.id),
+    })).filter(r => r.memory);
+  }
+
+  getLineageStats() {
+    const lineageRels = [...this.relationships.values()].filter(r => r.sourceId && r.targetId);
+    const roots = new Set();
+    const leaves = new Set();
+    const sourceSet = new Set(lineageRels.map(r => r.sourceId));
+    const targetSet = new Set(lineageRels.map(r => r.targetId));
+
+    for (const id of sourceSet) {
+      if (!targetSet.has(id)) roots.add(id);
+    }
+    for (const id of targetSet) {
+      if (!sourceSet.has(id)) leaves.add(id);
+    }
+
+    return {
+      totalLineageRelations: lineageRels.length,
+      rootKnowledge: roots.size,
+      leafKnowledge: leaves.size,
+      maxDepth: this._calculateMaxDepth(),
+    };
+  }
+
+  _calculateMaxDepth() {
+    let maxDepth = 0;
+    for (const [key, rel] of this.relationships) {
+      if (!key.startsWith('lineage:')) continue;
+      // 简化计算：通过查询每个节点的深度
+      const lineage = this.queryKnowledgeLineage(rel.sourceId, 'descendants', 10);
+      maxDepth = Math.max(maxDepth, lineage.descendants.length);
+    }
+    return maxDepth;
+  }
+
+  // 获取知识谱系树（类似族谱的家谱树）
+  getKnowledgeTree(rootId, maxDepth = 5) {
+    const tree = {
+      id: rootId,
+      memory: this.memories.find(m => m.id === rootId),
+      children: [],
+    };
+
+    const buildTree = (nodeId, depth) => {
+      if (depth >= maxDepth) return;
+      const descendants = this.getKnowledgeDescendants(nodeId, 1);
+      for (const desc of descendants) {
+        const childNode = {
+          id: desc.id,
+          memory: desc.memory,
+          relation: desc.relation,
+          children: [],
+        };
+        buildTree(desc.id, depth + 1);
+        tree.children.push(childNode);
+      }
+    };
+
+    buildTree(rootId, 0);
+    return tree;
   }
 }
 
 module.exports = { TrialityMemory };
+

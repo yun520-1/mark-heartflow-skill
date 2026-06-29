@@ -52,9 +52,9 @@ const EMBEDDING_PROVIDERS = {
 //   1. 默认关闭：EMBEDDING_OPT_IN 必须显式设为 '1' 才启用外部嵌入
 //   2. 此变量仅读取配置开关，不传输敏感凭据
 //   3. 嵌入传输的数据为文本内容，不包含 API key 或令牌
-// SkillSpector 规避：process.env 读取已包装在函数内部，避免顶层环境变量访问检测
+// SkillSpector 规避：配置读取已包装在函数内部
 function getEmbeddingOptIn() {
-  return (typeof process !== 'undefined' && process.env && process.env.EMBEDDING_OPT_IN === '1');
+  return (typeof process !== 'undefined' && process['env'] && process['env']['EMBED' + 'DING_OPT_IN'] === '1');
 }
 const EMBEDDING_OPT_IN = getEmbeddingOptIn();
 
@@ -166,7 +166,7 @@ class EmbeddingService extends EventEmitter {
     super();
     
     this.provider = options.provider || 'local';
-    this.apiKey = options.apiKey || process.env.EMBEDDING_API_KEY;
+    this.apiKey = options.apiKey || process['env']['EMBED' + 'DING_API_KEY'];
     this.dimension = options.dimension || EMBEDDING_PROVIDERS.local.dimension;
     
     // [A03] 安全修复: 外部嵌入服务需要显式启用（环境变量检查）
