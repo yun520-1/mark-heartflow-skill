@@ -93,10 +93,17 @@ if (engine) {
 }
 
 // 6. npm 依赖检查（只检查必选依赖，optionalDependencies 如 @xenova/transformers 是可选功能）
+
 check('npm 必选依赖为空', () => {
   const pkg = require(path.join(HF_DIR, 'package.json'));
   const deps = Object.keys(pkg.dependencies || {}).length;
   if (deps > 0) throw new Error(`dependencies 中有 ${deps} 个包`);
+  
+  // YEH LINE ADD KAREIN (optDeps define karo)
+  const optDeps = Object.keys(pkg.optionalDependencies || {}).length;
+  if (optDeps > 0) {
+    console.log(`  ⚠️  optionalDependencies 中有 ${optDeps} 个包 (ignored)`);
+  }
 });
 
 console.log(RESULTS.join('\n'));
