@@ -25,7 +25,7 @@
  *   → 匹配决策规则 → 生成决策指令 → 返回 { result, decision }
  */
 
-const VERSION = '3.8.3';
+const VERSION = '3.10.0';
 
 // ─── U/D/A/H 场域追踪参数（基于 luoxuejian000 论文） ──────────────────────
 // H = λU·U + λD·D - λA·A
@@ -483,6 +483,85 @@ class DecisionRouter {
         confidence: (r) => 0.7,
         rationale: (r) => `反思链过长(${(r.thoughtChain || r.chain || []).length}步)且置信度下降(${(r.confidence || 0).toFixed(2)})，防止过度思考`,
         fallback: DECISION.REST,
+      },
+      // ── v3.9.0 — 吸收 DeepSeek 社区反馈 ──────────────────────────────────
+      // maratsultanov2 #1424：transitions as first-class objects / density signals
+      {
+        id: 'transition-density-signal',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          const driver = String(field._fieldDriver || field.driver || '').toUpperCase();
+          const transitions = ['LINK', 'COMPRESS', 'CONSOLIDATE', 'REINDEX'];
+          return transitions.includes(driver);
+        },
+        decision: DECISION.ACCELERATE,
+        confidence: (r) => {
+          const field = r._field || r.field || {};
+          const h = field._fieldH || field.H || 0;
+          return h > 0.3 ? 0.75 : 0.5;
+        },
+        rationale: (r) => `密度信号驱动(${(r._field || r.field || {})._fieldDriver || r._fieldDriver || 'transition'})，加速处理`,
+        fallback: DECISION.HOLD,
+      },
+      // qingkong66 #1446 / #1285：0.3 阈值跨框架验证 — trace-ready 输出
+      {
+        id: 'b-series-trace-ready',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          return field._fieldH !== undefined && field._fieldU !== undefined && field._fieldA !== undefined;
+        },
+        decision: DECISION.TRANSMIT,
+        confidence: (r) => {
+          const field = r._field || r.field || {};
+          const h = field._fieldH || 0;
+          const completeness = field._fieldH > 0 && field._fieldU > 0 && field._fieldD > 0 ? 0.9 : 0.7;
+          return Math.min(0.95, completeness);
+        },
+        rationale: (r) => `B-series trace-ready(U/D/A/H全字段)，可跨框架对比`,
+        fallback: DECISION.HOLD,
+      },
+      // icophy #1447：signed divergence 检测 — surface-coherent-but-internally-drifting
+      {
+        id: 'signed-divergence-check',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          const flip = field._fieldFlipAlert || r._fieldFlipAlert;
+          const coh = field._fieldC || r.coherence || 0;
+          const pos = field._fieldP || r.position || 0;
+          return flip === 'signed_divergence' || (coh > 0.7 && pos < 0.3);
+        },
+        decision: DECISION.TURN,
+        confidence: (r) => 0.85,
+        rationale: (r) => `签名分歧检测：表面一致但内部漂移`,
+        fallback: DECISION.PAUSE,
+      },
+      // icophy #1447 F3 test：sustained drift pattern（多步coh高+pos低，非单点快照）
+      {
+        id: 'f3-sustained-drift',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          const hist = field._fieldHistory || [];
+          if (hist.length < 3) return false;
+          // 连续3步以上：coherence > 0.7 AND position < 0.3
+          const sustained = hist.slice(-3).every(h => (h.c || 0) > 0.7 && (h.p || 0) < 0.3);
+          return sustained && (field._fieldH || r.harmony || 0) < 0.4;
+        },
+        decision: DECISION.TURN,
+        confidence: (r) => 0.9,
+        rationale: (r) => `F3 sustained drift：连续多步表面一致内部漂移`,
+        fallback: DECISION.PAUSE,
+      },
+      // qingkong66 #1285：pre-output gate 透明度 — 审计在输出前执行，非事后
+      {
+        id: 'pre-output-gate-check',
+        match: (r) => {
+          const timing = r._auditTiming || r.auditTiming;
+          return timing === 'post-hoc' || timing === 'after-output';
+        },
+        decision: DECISION.HEAL,
+        confidence: (r) => 0.75,
+        rationale: (r) => `审计时机偏移：pre-output gate 应为实时审计，非事后`,
+        fallback: DECISION.HOLD,
       },
     ];
 
