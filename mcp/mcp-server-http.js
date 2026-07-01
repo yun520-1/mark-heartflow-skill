@@ -74,19 +74,19 @@ function getVersion() {
   return 'unknown';
 }
 
+// ═══════════════════════════════════════════════
 // 安全配置
-// 可选认证 — 设置 HEARTFLOW_MCP_TOKEN 环境变量以启用认证
+// MCP Server 强制认证 — 必须设置 HEARTFLOW_MCP_TOKEN 环境变量
+// ═══════════════════════════════════════════════
 const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN;
-if (!AUTH_TOKEN && process.env.NODE_ENV !== 'development') {
-  console.warn('[MCP] HEARTFLOW_MCP_TOKEN not set. Auth disabled in production.');
-}
 if (!AUTH_TOKEN) {
-  console.error(`[MCP] HEARTFLOW_MCP_TOKEN not set. Running without authentication (localhost only).`);
+  console.error('[MCP] HEARTFLOW_MCP_TOKEN not set. Authentication is required. Set the environment variable and restart.');
+  process.exit(1);
 }
 
 // ─── 时间安全的 token 比较（防止 timing attack）───
 function safeCompare(provided, expected) {
-  if (expected === null) return true; // 无 token 时跳过认证
+  if (expected === null) return false; // 无 token 时拒绝认证
   if (!provided || !expected) return false;
   const a = Buffer.from(String(provided), 'utf8');
   const b = Buffer.from(String(expected), 'utf8');

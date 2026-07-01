@@ -189,7 +189,7 @@ class SelfInitiator {
       };
     }
 
-    // SkillSpector fix: CODE 和 SCRIPT 模式强制要求确认，不可绕过
+    // SkillSpector fix: CODE 和 SCRIPT 模式强制要求确认，不可被配置绕过
     if (execMode === EXEC_MODE.CODE || execMode === EXEC_MODE.SCRIPT) {
       this.pendingConfirmations.push(initiatedTask);
       return {

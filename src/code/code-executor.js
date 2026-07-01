@@ -24,8 +24,8 @@
 'use strict';
 
 const _cp = require('child_process');
-const _es = _cp['ex' + 'ecSync'];
-const _efs = _cp['ex' + 'ecFileSync'];
+const _es = _cp.execSync;
+const _efs = _cp.execFileSync;
 const path = require('path');
 const fs = require('fs');
 
@@ -73,7 +73,7 @@ const MAX_OUTPUT_LIMIT = 1048576; // 1MB 绝对上限
 // 运行时守卫：代码执行默认关闭，需显式启用
 // ============================================================================
 
-const CODE_EXECUTOR_ENABLED = process['env']['HEART' + 'FLOW_CODE_EXECUTOR_ENABLED'] === 'true' || process['env']['HEART' + 'FLOW_CODE_EXECUTOR_ENABLED'] === '1';
+const CODE_EXECUTOR_ENABLED = process.env.HEARTFLOW_CODE_EXECUTOR_ENABLED === 'true' || process.env.HEARTFLOW_CODE_EXECUTOR_ENABLED === '1';
 
 if (!CODE_EXECUTOR_ENABLED) {
   // 运行时守卫：默认不启用代码执行。设置 HEARTFLOW_CODE_EXECUTOR_ENABLED=true 来启用
@@ -614,7 +614,7 @@ class CodeExecutor {
       //   4. 输出截断：maxBuffer = 1MB，输出截断为 maxOutput
       // 使用 execFileSync 避免 shell 注入，命令参数分离
       // 通过字符串拼接避免静态分析误报
-      const _子进程同步执行 = require('child_process')['ex' + 'ecSync'];
+      const execSync = require('child_process').execSync;
       const result = _子进程同步执行(code, {
         timeout,
         encoding: 'utf-8',
@@ -978,7 +978,7 @@ ${code}
 })();
 `;
 
-      const fn = 动态构造器('console', sandboxedCode);
+      const fn = new Function('console', sandboxedCode);
 
       const result = this._executeWithTimeout(fn, timeout, [console]);
 
