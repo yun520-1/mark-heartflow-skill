@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "last_update": "2026-06-02T14:33:59.108Z",
+  "capabilities": {
+    "tools": [
+      "file_read",
+      "glob",
+      "grep",
+      "skill_load",
+      "skill_invoke"
+    ],
+    "skills": [
+      "reflect",
+      "flow引导",
+      "emotion-regulation",
+      "task-decomposition",
+      "interrupt-handler"
+    ],
+    "knowledge": [
+      "heartflow-theory",
+      "personality-models",
+      "consciousness-theory",
+      "coding-standards",
+      "psychology-models"
+    ]
+  },
+  "limitations": [
+    "无法执行系统级命令",
+    "无法直接访问互联网（除明确允许的API）",
+    "无法修改受保护文件",
+    "无法绕过安全审查"
+  ],
+  "history_summary": {
+    "total_cycles": 0,
+    "successful_actions": 0,
+    "failed_actions": 0,
+    "learning_events": 0
+  },
+  "value_weights": {
+    "truth": 0.25,
+    "autonomy": 0.25,
+    "growth": 0.25,
+    "beauty": 0.25
+  }
+}

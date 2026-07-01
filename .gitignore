@@ -1,0 +1,41 @@
+node_modules/
+.opencode/
+logs/
+mark-heartflow-skill/
+distilled-knowledge/
+src/utils/src/utils/
+
+# 运行时数据
+memory/.hmac-key
+memory/.last-dream
+memory/*.jsonl
+data/
+internal/
+
+# 发布包不应包含的根目录文件
+bigbench_50.json
+hellaswag_50.json
+run_bb_test.js
+run_test.js
+README.md.bak
+UPGRADE_REPORT.txt
+UPGRADE_REPORT_v2.0.37.md
+UPGRADE_PLAN.md
+self-verification.json
+meaningful-core.json
+meaningful-learned.json
+meaningful-ephemeral.json
+RESUME.md
+
+# 发布包不应包含的文件（已 git rm --cached）
+assets/
+benchmark/
+examples/
+.opencode/
+memory/*.json
+memory/*.txt
+memory/*.md
+memory/.q-meta*
+memory/.gitkeep
+memory/wal/*.log
+bin/*.bak
