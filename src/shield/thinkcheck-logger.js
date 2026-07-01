@@ -83,12 +83,12 @@ class ThinkCheckLogger {
 
       this._ready = true;
     } catch (e) {
-      console.error(`[ThinkCheckLogger] Cannot write: ${e.message}`);
+      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Cannot write: ${e.message}`);
       this._ready = false;
     }
 
     if (this._consoleOutput) {
-      console.log(header);
+      // [PROD] 生产环境移除 console.log: console.log(header);
     }
   }
 
@@ -111,7 +111,7 @@ class ThinkCheckLogger {
     }
 
     if (this._consoleOutput) {
-      console.log(`\n--- DECISION #${decId} ---`);
+      // [PROD] 生产环境移除 console.log: console.log(`\n--- DECISION #${decId} ---`);
     }
   }
 
@@ -134,7 +134,7 @@ class ThinkCheckLogger {
     this._currentDecision.fields.push({ key, value: formatted });
 
     if (this._consoleOutput) {
-      console.log(`${key}: ${formatted}`);
+      // [PROD] 生产环境移除 console.log: console.log(`${key}: ${formatted}`);
     }
   }
 
@@ -165,7 +165,7 @@ class ThinkCheckLogger {
       try {
         fs.appendFileSync(this._outputFile, block, 'utf-8');
       } catch (e) {
-        console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
+        // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
       }
     }
 
@@ -308,11 +308,11 @@ class ThinkCheckLogger {
     try {
       fs.appendFileSync(this._cotOutputFile, lines.join('\n'), 'utf-8');
     } catch (e) {
-      console.error(`[ThinkCheckLogger] CoT write error: ${e.message}`);
+      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] CoT write error: ${e.message}`);
     }
 
     if (this._consoleOutput) {
-      console.log(lines.join('\n'));
+      // [PROD] 生产环境移除 console.log: console.log(lines.join('\n'));
     }
   }
 
@@ -556,18 +556,18 @@ class ThinkCheckLogger {
       try {
         fs.appendFileSync(this._outputFile, '\n' + content + '\n', 'utf-8');
       } catch (e) {
-        console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
+        // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
       }
     }
     if (this._consoleOutput) {
-      console.log(content);
+      // [PROD] 生产环境移除 console.log: console.log(content);
     }
   }
 
   flush() {
     if (this._consoleOutput) {
-      console.error(`[ThinkCheckLogger] CoT → ${this._cotOutputFile}`);
-      console.error(`[ThinkCheckLogger] Decisions → ${this._outputFile}`);
+      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] CoT → ${this._cotOutputFile}`);
+      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Decisions → ${this._outputFile}`);
     }
   }
 

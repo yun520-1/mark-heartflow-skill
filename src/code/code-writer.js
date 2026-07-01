@@ -94,7 +94,7 @@ const CODE_TEMPLATES = {
  */
 function sortData(data${field ? `, key = '${field}'` : ''}, ascending = ${order}) {
   if (!Array.isArray(data)) {
-    console.warn('[sortData] 输入不是数组，返回空数组');
+    // [PROD] 生产环境移除 console.warn: console.warn('[sortData] 输入不是数组，返回空数组');
     return [];
   }
   if (data.length === 0) return [];
@@ -116,7 +116,7 @@ function sortData(data${field ? `, key = '${field}'` : ''}, ascending = ${order}
 
 // 使用示例
 // const result = sortData([3, 1, 4, 1, 5, 9]);
-// console.log(result); // [1, 1, 3, 4, 5, 9]
+// [PROD] 生产环境移除 console.log: // console.log(result); // [1, 1, 3, 4, 5, 9]
 `;
   },
 
@@ -130,7 +130,7 @@ function sortData(data${field ? `, key = '${field}'` : ''}, ascending = ${order}
  */
 function filterData(data, predicate = (item) => ${condition}) {
   if (!Array.isArray(data)) {
-    console.warn('[filterData] 输入不是数组');
+    // [PROD] 生产环境移除 console.warn: console.warn('[filterData] 输入不是数组');
     return [];
   }
   if (typeof predicate !== 'function') return data;
@@ -141,7 +141,7 @@ function filterData(data, predicate = (item) => ${condition}) {
 
 // 使用示例
 // const result = filterData([1, 2, 3, 4, 5], n => n > 2);
-// console.log(result); // [3, 4, 5]
+// [PROD] 生产环境移除 console.log: // console.log(result); // [3, 4, 5]
 `;
   },
 
@@ -203,7 +203,7 @@ function analyzeData(data${field ? `, field = '${field}'` : ''}) {
 
 // 使用示例
 // const stats = analyzeData([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-// console.log(stats);
+// [PROD] 生产环境移除 console.log: // console.log(stats);
 `;
   },
 
@@ -255,7 +255,7 @@ async function fetchData(url = '${url}', options = {}) {
 
 // 使用示例
 // const result = await fetchData('https://jsonplaceholder.typicode.com/todos/1');
-// if (result.success) console.log(result.data);
+// [PROD] 生产环境移除 console.log: // if (result.success) console.log(result.data);
 `;
   },
 
@@ -323,8 +323,8 @@ class DataCache {
 // 使用示例
 // const cache = new DataCache({ maxSize: 50, ttl: 30000 });
 // cache.set('user:1', { name: 'Alice' });
-// console.log(cache.get('user:1'));
-// console.log(cache.stats);
+// [PROD] 生产环境移除 console.log: // console.log(cache.get('user:1'));
+// [PROD] 生产环境移除 console.log: // console.log(cache.stats);
 `;
   },
 
@@ -408,7 +408,7 @@ function validate(input, rules) {
 //     email: { required: true, pattern: /^[^@]+@[^@]+\\.[^@]+$/ }
 //   }
 // );
-// console.log(result.valid ? '通过' : '失败', result.errors);
+// [PROD] 生产环境移除 console.log: // console.log(result.valid ? '通过' : '失败', result.errors);
 `;
   },
 
@@ -427,8 +427,9 @@ class FileManager {
 
   _safePath(target) {
     const resolved = path.resolve(this.baseDir, target);
-    if (!resolved.startsWith(this.baseDir)) {
-      throw new Error(\`路径越界: "\${target}" 超出基目录 "\${this.baseDir}"\`);
+    const baseWithSep = this.baseDir.endsWith(path.sep) ? this.baseDir : this.baseDir + path.sep;
+    if (!resolved.startsWith(baseWithSep) && resolved !== this.baseDir) {
+      throw new Error('Path traversal detected: "' + target + '" exceeds base directory');
     }
     return resolved;
   }
@@ -487,8 +488,8 @@ class FileManager {
 // 使用示例
 // const fm = new FileManager('./data');
 // fm.write('test.txt', 'Hello World');
-// console.log(fm.read('test.txt'));
-// console.log(fm.list('.'));
+// [PROD] 生产环境移除 console.log: // console.log(fm.read('test.txt'));
+// [PROD] 生产环境移除 console.log: // console.log(fm.list('.'));
 `;
   },
 
@@ -559,7 +560,7 @@ class DataPipeline {
 //   .map(n => n * 2)
 //   .sort((a, b) => b - a);
 // const result = pipeline.run();
-// console.log(result.data); // [12, 10, 8, 6]
+// [PROD] 生产环境移除 console.log: // console.log(result.data); // [12, 10, 8, 6]
 `;
   },
 
@@ -577,7 +578,7 @@ function plotBar(data, options = {}) {
   } = options;
 
   if (!Array.isArray(data) || data.length === 0) {
-    console.warn('[plotBar] 输入数据为空');
+    // [PROD] 生产环境移除 console.warn: console.warn('[plotBar] 输入数据为空');
     return;
   }
 
@@ -585,13 +586,13 @@ function plotBar(data, options = {}) {
   const labels = data.map(d => typeof d === 'object' ? d.label : String(d));
   const values = data.map(d => typeof d === 'number' ? d : d.value);
 
-  console.log(\`--- 柱状图: \${label} ---\`);
+  // [PROD] 生产环境移除 console.log: console.log(\`--- 柱状图: \${label} ---\`);
   for (let i = 0; i < data.length; i++) {
     const barLen = Math.max(1, Math.round((values[i] / max) * width));
     const bar = symbol.repeat(barLen);
-    console.log(\`\${String(labels[i]).padEnd(10)} | \${bar} \${values[i]}\`);
+    // [PROD] 生产环境移除 console.log: console.log(\`\${String(labels[i]).padEnd(10)} | \${bar} \${values[i]}\`);
   }
-  console.log(\`--- 总计: \${values.length} 项 ---\`);
+  // [PROD] 生产环境移除 console.log: console.log(\`--- 总计: \${values.length} 项 ---\`);
 }
 
 function plotLine(values, options = {}) {
@@ -602,7 +603,7 @@ function plotLine(values, options = {}) {
   const min = Math.min(...values);
   const range = max - min || 1;
 
-  console.log(\`--- 折线图: \${label} ---\`);
+  // [PROD] 生产环境移除 console.log: console.log(\`--- 折线图: \${label} ---\`);
   for (let row = 0; row <= height; row++) {
     const threshold = max - (row / height) * range;
     let line = '';
@@ -611,9 +612,9 @@ function plotLine(values, options = {}) {
       line += values[idx] >= threshold ? '*' : ' ';
     }
     const valLabel = (min + (height - row) / height * range).toFixed(1);
-    console.log(\`\${String(valLabel).padStart(8)} |\${line}\`);
+    // [PROD] 生产环境移除 console.log: console.log(\`\${String(valLabel).padStart(8)} |\${line}\`);
   }
-  console.log('          ' + '-'.repeat(Math.min(values.length, width)));
+  // [PROD] 生产环境移除 console.log: console.log('          ' + '-'.repeat(Math.min(values.length, width)));
 }
 
 // 使用示例
@@ -636,7 +637,7 @@ function plotLine(values, options = {}) {
  */
 function base64Encode(str) {
   if (typeof str !== 'string') {
-    console.warn('[base64Encode] 输入必须是字符串');
+    // [PROD] 生产环境移除 console.warn: console.warn('[base64Encode] 输入必须是字符串');
     return '';
   }
   try {
@@ -695,10 +696,10 @@ function hexDecode(hex) {
 }
 
 // 使用示例
-// console.log(base64Encode('Hello 世界'));  // 编码
-// console.log(base64Decode('SGVsbG8g5LiW55WM')); // 解码
-// console.log(hexEncode('ABC')); // '414243'
-// console.log(hexDecode('414243')); // 'ABC'
+// [PROD] 生产环境移除 console.log: // console.log(base64Encode('Hello 世界'));  // 编码
+// [PROD] 生产环境移除 console.log: // console.log(base64Decode('SGVsbG8g5LiW55WM')); // 解码
+// [PROD] 生产环境移除 console.log: // console.log(hexEncode('ABC')); // '414243'
+// [PROD] 生产环境移除 console.log: // console.log(hexDecode('414243')); // 'ABC'
 `;
   },
 
@@ -812,7 +813,7 @@ function chunkProcess(items, processor, chunkSize = 10) {
 // 使用示例
 // const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 // const result = await batchProcess(data, async (n) => n * 2, { batchSize: 3 });
-// console.log(result.results); // [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
+// [PROD] 生产环境移除 console.log: // console.log(result.results); // [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
 `;
   },
 
@@ -863,9 +864,9 @@ function pick(obj, keys) {
 }
 
 // 使用示例
-// console.log(deepClone({ a: 1, b: { c: 2 } }));
-// console.log(chunk([1,2,3,4,5], 2)); // [[1,2],[3,4],[5]]
-// console.log(unique([1,2,2,3,3,4])); // [1,2,3,4]
+// [PROD] 生产环境移除 console.log: // console.log(deepClone({ a: 1, b: { c: 2 } }));
+// [PROD] 生产环境移除 console.log: // console.log(chunk([1,2,3,4,5], 2)); // [[1,2],[3,4],[5]]
+// [PROD] 生产环境移除 console.log: // console.log(unique([1,2,2,3,3,4])); // [1,2,3,4]
 `;
   }
 };
@@ -1584,7 +1585,7 @@ class CodeWriter {
 
     let testCode = `// === 测试: ${params.description?.substring(0, 50) || funcName} ===
 function test${funcName}() {
-  console.log('测试 ${funcName}...');
+  // [PROD] 生产环境移除 console.log: console.log('测试 ${funcName}...');
   let passed = 0;
   let failed = 0;
 `;
@@ -1596,17 +1597,17 @@ function test${funcName}() {
     ${tc.setup || ''}
     const result = ${tc.call};
     ${tc.assert}
-    console.log('  ✅ ${tc.name}');
+    // [PROD] 生产环境移除 console.log: console.log('  ✅ ${tc.name}');
     passed++;
   } catch (err) {
-    console.error('  ❌ ${tc.name}:', err.message);
+    // [PROD] 生产环境移除 console.error: console.error('  ❌ ${tc.name}:', err.message);
     failed++;
   }
 `;
     }
 
     testCode += `
-  console.log(\`测试完成: \${passed} 通过, \${failed} 失败\`);
+  // [PROD] 生产环境移除 console.log: console.log(\`测试完成: \${passed} 通过, \${failed} 失败\`);
   return { passed, failed };
 }
 
@@ -1824,7 +1825,7 @@ ${tc.setup ? '        ' + tc.setup.replace(/\n/g, '\n        ') : ''}
         name: '基本功能测试',
         setup: '',
         call: `${funcName}()`,
-        assert: 'console.log(\`测试 ${funcName} 基本功能\`);'
+        // [PROD] 生产环境移除 console.log: assert: 'console.log(\`测试 ${funcName} 基本功能\`);'
       }
     ];
   }

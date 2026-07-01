@@ -114,34 +114,59 @@ class ThoughtChain {
   }
 
   /**
-   * 解析问题类型，选择对应策略
+   * 解析问题类型，选择对应策略 — v5.4.6 增加置信度 + LLM 兜底
+   * @returns {{ type: string, confidence: number, matchedPatterns: string[] }}
    */
-  _classifyTask(input) {
+  async _classifyTask(input) {
     const q = input.toLowerCase();
+    let bestType = 'general';
+    let bestConfidence = 0.3; // 默认低置信度
+    const matchedPatterns = [];
 
-    if (/\d+[+\-*/=]|\d+\s*(=|大于|小于|等于|总和|平均|概率)/.test(q)) {
-      return 'calculation';
+    // 计算：每个匹配的模式增加置信度
+    const patterns = [
+      { regex: /\d+[+\-*/=]|\d+\s*(=|大于|小于|等于|总和|平均|概率)/, type: 'calculation', weight: 0.9 },
+      { regex: /为什么|原因|原理|怎么来的|解释/, type: 'explanation', weight: 0.85 },
+      { regex: /对不对|是否|应该|正确吗|合理吗|好不好/, type: 'judgment', weight: 0.85 },
+      { regex: /创造|设计|想象|提出|新的/, type: 'creative', weight: 0.8 },
+      { regex: /是什么|定义|概念|什么是|指什么|查|找/, type: 'retrieval', weight: 0.8 },
+    ];
+
+    for (const p of patterns) {
+      if (p.regex.test(q)) {
+        matchedPatterns.push(p.type);
+        if (p.weight > bestConfidence) {
+          bestConfidence = p.weight;
+          bestType = p.type;
+        }
+      }
     }
-    if (/为什么|原因|原理|怎么来的|解释/.test(q)) {
-      return 'explanation';
-    }
-    if (/对不对|是否|应该|正确吗|合理吗|好不好/.test(q)) {
-      return 'judgment';
-    }
-    if (/创造|设计|想象|提出|新的/.test(q)) {
-      return 'creative';
-    }
-    if (/是什么|定义|概念|什么是|指什么|查|找/.test(q)) {
-      return 'retrieval';
-    }
+
     // 辩论分析：长文本（>150字）+ 因果断言 + 情绪推论 / 立场声明
     if (q.length > 150 && (
       /(?:因为|所以|导致|因此|然而|但是|可是){3,}/.test(q) ||
       /(?:我觉得|我认为|说白了|关键|问题在于|本质|归根)/.test(q)
     )) {
-      return 'debate';
+      bestType = 'debate';
+      bestConfidence = 0.75;
+      matchedPatterns.push('debate');
     }
-    return 'general';
+
+    // LLM 兜底：置信度 < 0.7 且已注册 LLM fallback
+    if (bestConfidence < 0.7 && this.hf._llmFallback) {
+      try {
+        const llmResult = await this.hf._llmFallback(input, matchedPatterns);
+        if (llmResult && llmResult.type) {
+          bestType = llmResult.type;
+          bestConfidence = llmResult.confidence || 0.7;
+          matchedPatterns.push('llm-fallback');
+        }
+      } catch (e) {
+        // LLM 失败，保持规则分类结果
+      }
+    }
+
+    return { type: bestType, confidence: bestConfidence, matchedPatterns };
   }
 
   /**
@@ -167,8 +192,8 @@ class ThoughtChain {
         // 1.3 确定问题目标
         const goal = this._extractGoal(input);
 
-        // 1.4 识别问题类型
-        const type = this._classifyTask(input);
+        // 1.4 识别问题类型（含置信度 + LLM 兜底）
+        const { type: type, confidence: typeConfidence } = await this._classifyTask(input);
 
         // 1.5 选择对应策略
         const strategy = TASK_STRATEGIES[type] || TASK_STRATEGIES.general;
@@ -871,8 +896,9 @@ class ThoughtChain {
       _fastExit: false
     };
 
-    // 解析任务类型
-    this.taskStrategy = { type: this._classifyTask(input) };
+    // 解析任务类型（含置信度 + LLM 兜底）
+    const classification = await this._classifyTask(input);
+    this.taskStrategy = { type: classification.type, confidence: classification.confidence };
 
     // 根据策略调整深度
     const strategyDepth = TASK_STRATEGIES[this.taskStrategy.type]?.depth;

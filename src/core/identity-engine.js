@@ -121,7 +121,19 @@ class IdentityAnchor {
       ? `符合身份: ${alignments.join(', ')}`
       : '中性行为';
   }
-  
+
+  // maratsultanov2 feedback (#1462): Position - Coherence + harmony status
+  computeHarmonyStatus(position, coherence) {
+    const p = Number(position) || 0;
+    const c = Number(coherence) || 0;
+    const raw = p - c; // divergence trace
+    const clamped = Math.max(-1, Math.min(1, raw / 100));
+    let status = "stable";
+    if (Math.abs(clamped) > 0.6) status = "divergent";
+    else if (Math.abs(clamped) > 0.3) status = "drifting";
+    return { divergence: raw, normalized: clamped, status, timestamp: Date.now() };
+  }
+
   /**
    * 生成身份声明 - 用于自我介绍
    */
@@ -538,8 +550,8 @@ class CoreIdentityEngine {
     // 状态文件
     this.stateFile = path.join(projectRoot, 'internal', 'data', 'identity-state.json');
     
-    console.error('[CoreIdentityEngine] 核心身份引擎初始化');
-    console.error(`[CoreIdentityEngine] ${this.identity.declare()}`);
+    // [PROD] 生产环境移除 console.error: console.error('[CoreIdentityEngine] 核心身份引擎初始化');
+    // [PROD] 生产环境移除 console.error: console.error(`[CoreIdentityEngine] ${this.identity.declare()}`);
   }
   
   /**
@@ -637,7 +649,7 @@ class CoreIdentityEngine {
     }
     
     fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
-    console.error(`[CoreIdentityEngine] 状态已保存到 ${this.stateFile}`);
+    // [PROD] 生产环境移除 console.error: console.error(`[CoreIdentityEngine] 状态已保存到 ${this.stateFile}`);
   }
   
   /**
@@ -647,11 +659,11 @@ class CoreIdentityEngine {
     try {
       if (fs.existsSync(this.stateFile)) {
         const state = JSON.parse(fs.readFileSync(this.stateFile, 'utf8'));
-        console.error(`[CoreIdentityEngine] 状态已加载: ${state.timestamp}`);
+        // [PROD] 生产环境移除 console.error: console.error(`[CoreIdentityEngine] 状态已加载: ${state.timestamp}`);
         return state;
       }
     } catch (error) {
-      console.error('[CoreIdentityEngine] 加载状态失败:', error.message);
+      // [PROD] 生产环境移除 console.error: console.error('[CoreIdentityEngine] 加载状态失败:', error.message);
     }
     return null;
   }

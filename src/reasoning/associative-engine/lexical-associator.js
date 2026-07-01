@@ -92,7 +92,7 @@ class LexicalAssociator {
         return data;
       }
     } catch (e) {
-      console.error('[LexicalAssociator] Load graph failed:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[LexicalAssociator] Load graph failed:', e.message);
     }
     return this.initializeDefaultGraph();
   }
@@ -946,7 +946,7 @@ class LexicalAssociator {
     try {
       fs.writeFileSync(this.graphFile, JSON.stringify(this.graph, null, 2));
     } catch (e) {
-      console.error('[LexicalAssociator] Save failed:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[LexicalAssociator] Save failed:', e.message);
     }
   }
 

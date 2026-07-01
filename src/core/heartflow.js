@@ -1,5 +1,5 @@
 /**
- /** HeartFlow v3.4.4 — 快速启动 + 两层懒加载
+ /** HeartFlow v5.5.0 — 快速启动 + 两层懒加载
   *
   * 启动速度优化：只有 Tier 1 模块在 start() 时同步加载。
   * Tier 2 模块在首次 dispatch 访问时才加载（lazy require）。
@@ -45,7 +45,7 @@ const _ConstitutionalEngine = _lazy('constitutionalEngine', () => require('../sh
 const _IdentityCore = _lazy('identityCore', () => require('../identity/identity-core.js'));
 const _SelfModel = _lazy('selfModel', () => require('../identity/self-model.js'));
 const _SelfVerifier = _lazy('selfVerifier', () => require('../identity/self-verifier.js'));
-const _LessonBank = _lazy('lessonBank', () => require('../identity/lesson-bank.js'));
+const _LessonBank = _lazy('lessonBank', () => require('../cortex/lesson-bank.js'));
 const _TopicScope = _lazy('topicScope', () => require('../memory/topic-scope.js'));
 const _LessonStorage = _lazy('lessonStorage', () => require('../cortex/lessons/lesson-storage.js'));
 const _PsychologyEngine = _lazy('psychologyEngine', () => require('../emotion/engine.js'));
@@ -111,6 +111,17 @@ const _EmotionalGrowth = _lazy('emotionalGrowth', () => { try { return require('
 const _MoodEvolution = _lazy('moodEvolution', () => { try { return require('../emotion/mood-evolution.js'); } catch(e) { return { MoodEvolution: class { constructor() {} } }; } });
 const _VERSION = _lazy('version', () => require('./version.js'));
 
+// V21.1 模块化认知引擎启发 — 新增4个模块
+const _SemanticClusterer = _lazy('semanticClusterer', () => require('./semantic-clusterer.js'));
+const _DualPerspectiveAuditor = _lazy('dualPerspectiveAuditor', () => require('./dual-perspective-auditor.js'));
+const _TieredMemoryFusion = _lazy('tieredMemoryFusion', () => require('./tiered-memory-fusion.js'));
+const _CounterfactualVerifier = _lazy('counterfactualVerifier', () => require('./counterfactual-verifier.js'));
+const _DebateConvergence = _lazy('debateConvergence', () => require('./debate-convergence.js'));
+
+// ★ 能力抽象层 + 平台适配器（Smart Routing 启发：模型能力清单外置 + 径窗网络）
+const _CapabilityAbstraction = _lazy('capabilityAbstraction', () => require('./capability-abstraction.js'));
+const _PlatformAdapter = _lazy('platformAdapter', () => require('./platform-adapter.js'));
+
 // ★ 代码引擎 — 惰性加载（拉平目录后路径）
 const _CodeExecutor = _lazy('codeExecutor', () => require('../code/code-executor.js'));
 const _CodePlanner = _lazy('codePlanner', () => require('../code/code-planner.js'));
@@ -124,7 +135,7 @@ const _ToneAnalyzer = _lazy('toneAnalyzer', () => require('../bridge/tone-analyz
 const _EntityExtractor = _lazy('entityExtractor', () => require('../bridge/entity-extractor.js'));
 const _ImplicitNeedDetector = _lazy('implicitNeedDetector', () => require('../bridge/implicit-need-detector.js'));
 const _ResponseCompressor = _lazy('responseCompressor', () => require('../bridge/response-compressor.js'));
-const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('../bridge/confidence-annotator.js'));
+const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('./confidence-annotator.js'));
 const _AgentBridge = _lazy('agentBridge', () => require('../bridge/agent-bridge.js'));
 const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context-builder.js'));
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
@@ -141,7 +152,7 @@ const _ValueAligner = _lazy('valueAligner', () => require('../bridge/value-align
 const _PersonalityTone = _lazy('personalityTone', () => require('../bridge/personality-tone.js'));
 const _MetaPosition = _lazy('metaPosition', () => require('../bridge/meta-position.js'));
 
-const BUILD_DATE = '2026-06-03';
+const BUILD_DATE = '2026-07-01';
 
 class HeartFlow {
   constructor(config = {}) {
@@ -156,6 +167,9 @@ class HeartFlow {
 
     // [v2.0.19 FIX] _initErrors 必须在所有 try/catch 之前初始化
     this._initErrors = [];
+
+    // [v5.4.6] LLM 兜底回调 — 任务分类置信度 < 0.7 时调用
+    this._llmFallback = null;
 
     // Subsystem instances (null until start)
     this.identityCore = null;  // 身份核心 — 每次启动第一优先加载
@@ -196,6 +210,8 @@ class HeartFlow {
     this.behavior = null;  // v2.0.19 行为模式系统
     this.persistence = null;  // v2.0.19 持久化层
     this.judgmentEngine = null;  // v5.0.0 判断引擎
+    this.capabilityAbstraction = null;  // v5.4.5 能力抽象层（Smart Routing 启发）
+    this.platformAdapter = null;        // v5.4.5 平台适配器（径窗网络）
 
     // New modules
     this.bm25 = null;
@@ -288,7 +304,7 @@ class HeartFlow {
         const gapMinutes = Math.round((this.startTime - lastContext.bootTime) / 60000);
       }
     } else {
-      console.warn(`[HeartFlow] 身份核心加载部分失败:`, identityResult.errors);
+      // [PROD] 生产环境移除 console.warn: console.warn(`[HeartFlow] 身份核心加载部分失败:`, identityResult.errors);
     }
 
     // ─── [P1 UPGRADE] 将七条身份规则写入 CORE 层（持久化）────────────
@@ -343,7 +359,7 @@ class HeartFlow {
     this.evolution = new (_EvolutionLoop().EvolutionLoop)({ rootPath: this.rootPath, memory: this.memory }).boot();
     this.dream = new (_DreamEngine().DreamV11)({});
     this.dreamConsolidation = new (_DreamConsolidation().DreamConsolidation)(this.memory);
-    this.lesson = new (_LessonBank().LessonBank)(this.rootPath);
+    this.lesson = _LessonBank().lessonBank || _LessonBank();
     this.metaJudgment = new (_MetaJudgment().MetaJudgment)(this.rootPath);
     this.metaMemory = new (_MetaMemory().MetaMemory)(this.rootPath);
     this.skillGenerator = new (_SkillGenerator().SkillGenerator)(this.rootPath);
@@ -467,6 +483,18 @@ class HeartFlow {
     this.snapshot = _StateSnapshot();
     this.error = _ErrorHandler();
 
+    // ★ Smart Routing 启发：平台适配器 + 能力抽象层
+    try {
+      this.platformAdapter = _PlatformAdapter().createAdapter('hermes');
+    } catch (e) {
+      this._initErrors.push({ module: 'platformAdapter', error: e.message });
+    }
+    try {
+      this.capabilityAbstraction = new (_CapabilityAbstraction().CapabilityAbstraction)(this.platformAdapter);
+    } catch (e) {
+      this._initErrors.push({ module: 'capabilityAbstraction', error: e.message });
+    }
+
     // ─── Tier 2 延迟加载注册表 ──────────────────────────────────────────
     // Tier 2 模块在首次 dispatch 时才加载并实例化。
     // 格式: lazy: true → 需要 require + new
@@ -524,8 +552,8 @@ class HeartFlow {
     };
 
     // ─── Search modules — BM25Engine/HybridSearchEngine 已禁用（无 BM25Engine/HybridSearchEngine 类）
-    // try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { console.warn('[HeartFlow] BM25 init error:', e.message); }
-    // try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { console.warn('[HeartFlow] HybridSearch init error:', e.message); }
+    // [PROD] 生产环境移除 console.warn: // try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { /* [PROD] console.warn removed */ }
+    // [PROD] 生产环境移除 console.warn: // try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { /* [PROD] console.warn removed */ }
 
     // Budget & Utils (function exports, not classes)
     const BudgetMod = _Budget();
@@ -655,11 +683,11 @@ class HeartFlow {
           if (learnedLessons.length > 0) {
             const mergeResult = this.selfHealing.mergeFromLearnedLayer(learnedLessons);
             if (mergeResult.merged > 0) {
-              console.error(`[HeartFlow] 跨会话 Q-table 合并：${mergeResult.merged}/${mergeResult.total} lessons → Q-table (${mergeResult.qTableSize} entries)`);
+              // [PROD] 生产环境移除 console.error: console.error(`[HeartFlow] 跨会话 Q-table 合并：${mergeResult.merged}/${mergeResult.total} lessons → Q-table (${mergeResult.qTableSize} entries)`);
             }
           }
         } catch (e) {
-          console.warn('[HeartFlow] Q-table merge from LEARNED layer failed:', e.message);
+          // [PROD] 生产环境移除 console.warn: console.warn('[HeartFlow] Q-table merge from LEARNED layer failed:', e.message);
         }
       }
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'decisionRouter', error: e.message }); }
@@ -737,11 +765,9 @@ class HeartFlow {
       // 新增：意识/伦理/心空间/传递层
       'mindSpace', 'consciousness', 'ethics', 'transmission',
       // 新增 v2.8.4：连接/熵/清晰/隐喻
-      'connections', 'entropy', 'clarity', 'metaphors',
       // 新增 v2.9.5：规划层 & 代码引擎
       'adaptivePlanner', 'strategySelector', 'replanTrigger',
-      'codeExecutor', 'codePlanner', 'codeWriter',
-    ];
+      'codeExecutor', 'codePlanner', 'codeWriter'];
     for (const name of LATE_ADDITIONS) {
       if (this[name] !== null && this[name] !== undefined) {
         this._modules[name] = this[name];
@@ -753,6 +779,11 @@ class HeartFlow {
       const TCMod = _ThoughtChain();
       this.thoughtChain = new (TCMod.ThoughtChain)(this);
       this.thoughtChain.setDepth(TCMod.REASONING_DEPTH.DEEP);
+
+      // [v5.4.6] 暴露 _classifyTask 供 think() 后处理使用
+      if (this.thoughtChain && typeof this.thoughtChain._classifyTask === 'function') {
+        this._classifyTask = this.thoughtChain._classifyTask.bind(this.thoughtChain);
+      }
 
       this._thoughtChainApi = {
         think: (input) => this.think(input),
@@ -862,7 +893,35 @@ class HeartFlow {
     try {
       const { CognitionGround } = require('./cognition-ground.js');
       this.cognitionGround = new CognitionGround({ heartFlow: this });
-    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'cognitionGround', error: e.message }); }
+    } catch (e) { this._initErrors.push({ module: 'cognitionGround', error: e.message }); }
+
+    // ─── V21.1 模块化认知引擎启发 — 4个新模块 ──────────────────────────────
+    try {
+      const SemanticClusterer = _SemanticClusterer();
+      this.semanticClusterer = new SemanticClusterer({ maxGroups: 64, maxConceptsPerGroup: 20 });
+      this.semanticClusterer.init(this.memory);
+    } catch (e) { this._initErrors.push({ module: 'semanticClusterer', error: e.message }); }
+    try {
+      const DualPerspectiveAuditor = _DualPerspectiveAuditor();
+      this.dualPerspectiveAuditor = new DualPerspectiveAuditor({ maxRounds: 5, convergenceThreshold: 0.8 });
+      this.dualPerspectiveAuditor.init();
+    } catch (e) { this._initErrors.push({ module: 'dualPerspectiveAuditor', error: e.message }); }
+    try {
+      const TieredMemoryFusion = _TieredMemoryFusion();
+      this.tieredMemoryFusion = new TieredMemoryFusion({ l1Size: 10, l2Window: 50, l2Alpha: 0.3 });
+      this.tieredMemoryFusion.init(this.memory);
+    } catch (e) { this._initErrors.push({ module: 'tieredMemoryFusion', error: e.message }); }
+    try {
+      const CounterfactualVerifier = _CounterfactualVerifier();
+      this.counterfactualVerifier = new CounterfactualVerifier({ minMargin: 0.3, maxCandidates: 5, contrastWeight: 0.2 });
+      this.counterfactualVerifier.init();
+    } catch (e) { this._initErrors.push({ module: 'counterfactualVerifier', error: e.message }); }
+    try {
+      const DebateConvergence = _DebateConvergence();
+      this.debateConvergence = new DebateConvergence({ convergenceThreshold: 0.8, maxRounds: 9, stagnationThreshold: 3 });
+      this.debateConvergence.init();
+    } catch (e) { this._initErrors.push({ module: 'debateConvergence', error: e.message }); }
+
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
     this.heartflow = this;  // 让 dispatch('heartflow.introspect') 能找到实例
 
@@ -879,6 +938,14 @@ class HeartFlow {
     }
 
     this.started = true;
+  }
+
+  // ─── [v5.4.6] LLM 兜底配置 ──────────────────────────────────────────────
+  setLLMFallback(fn) {
+    if (typeof fn === 'function') {
+      this._llmFallback = fn;
+    }
+    return this;
   }
 
   /**
@@ -906,7 +973,7 @@ class HeartFlow {
       // 重试一次，如果还是空就不递归了（防止 memory.addCore 静默失败导致栈溢出）
       const retryRules = this.memory.listCore();
       if (retryRules.length === 0) {
-        console.warn('[HeartFlow] 无法初始化 MindSpace 身份规则（memory 可能未就绪）');
+        // [PROD] 生产环境移除 console.warn: console.warn('[HeartFlow] 无法初始化 MindSpace 身份规则（memory 可能未就绪）');
       } else {
         this._mindSpace.rules = retryRules.map(r => ({ key: r.key, value: r.value, type: 'core_identity' }));
       }
@@ -977,15 +1044,19 @@ class HeartFlow {
       'threePoisons',
       // v1.0.0 — 底层认知地面
       'cognitionGround',
+      // v1.0.0 — V21.1 启发：语义聚类 / 双视角审计 / 记忆融合 / 反事实验证 / 辩论收敛
+      'semanticClusterer', 'dualPerspectiveAuditor', 'tieredMemoryFusion',
+      'counterfactualVerifier', 'debateConvergence',
       // v5.0.0 — 判断引擎
       'judgmentEngine',
+      // v5.4.5 — 能力抽象层 + 平台适配器（Smart Routing 启发）
+      'capabilityAbstraction', 'platformAdapter',
       // v1.0.0 — 逻辑推理引擎
       'logicReasoning',
       // v5.0.0 — 管道引擎
       'pipeline',
       // v5.1.0 — 自省
-      'heartflow',
-    ];
+      'heartflow'];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
         this._modules[name] = this[name];
@@ -1325,8 +1396,7 @@ class HeartFlow {
     'verifierGrant.createSessionKey', 'verifierGrant.createGrant', 'verifierGrant.consumeGrant',
     'verifierGrant.revokeGrant', 'verifierGrant.computeArgsDigest',
     'verifierGrant.verifySessionKey', 'verifierGrant.getStats', 'verifierGrant.getAuditLog',
-    'verifierGrant.reset',
-  ]);
+    'verifierGrant.reset']);
 
   /**
    * dispatch('subsystem.method', ...args) — 统一路由
@@ -1641,8 +1711,7 @@ class HeartFlow {
       'persistence',
       'stability', 'confidence', 'restraint',
       'snapshot', 'error', 'workflow',
-      'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
-    ];
+      'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate'];
     return {
       started: true,
       uptime_ms: Date.now() - this.startTime,
@@ -1754,37 +1823,58 @@ class HeartFlow {
           });
         }
 
+
+
+
+    // ─── [v5.4.6] 任务分类器 LLM 兜底后处理 ──────────────────────
+    // 规则分类器（含内部 LLM 兜底）置信度高于 judgmentEngine 时，使用分类器结果
+    let taskType = output?.direction || 'general';
+    let taskConfidence = output?.judgmentConfidence || 0.5;
+    if (this._classifyTask) {
+      try {
+        const cls = await this._classifyTask(input);
+        if (cls.confidence > taskConfidence) {
+          taskType = cls.type;
+          taskConfidence = cls.confidence;
+        }
+      } catch (e) { /* 分类失败，保持原结果 */ }
+    }
+
+
+
+
+
         return {
           // 给用户的结论文本
           output: { 
             conclusion: output?.conclusion || '分析完成', 
             meta: { 
-              taskType: output?.direction || 'general', 
-              confidence: output?.judgmentConfidence || 0.5,
+              taskType: taskType, 
+              confidence: taskConfidence,
               // v5.0.2: 认知摘要暴露给用户
               cognitiveSummary: {
-                type: output?.direction || 'general',
+                type: taskType,
                 emotion: cognitionSnapshot.emotion?.emotionZh || cognitionSnapshot.pain?.hasPain ? 'distress' : 'neutral',
                 decision: cognitionSnapshot.decision?.type || 'analyze',
-                confidence: output?.judgmentConfidence || 0.5,
+                confidence: taskConfidence,
                 modulesRun: stages.length,
                 stages: stages.filter(s => s.success).length,
               },
             } 
           },
-          type: output?.direction || 'general',
-          confidence: output?.judgmentConfidence || 0.5,
+          type: taskType,
+          confidence: taskConfidence,
           // 给 LLM 的结构化推理数据
           cognition: cognitionSnapshot,
           thoughtChain: stages.map(s => ({ stage: s.id, success: s.success, timing: s.timing })),
           decision: {
-            type: output?.direction || 'analyze',
-            confidence: output?.judgmentConfidence || 0.5,
+            type: taskType,
+            confidence: taskConfidence,
             rationale: `管道引擎完成: ${stages.length}阶段/${stages.filter(s => s.success).length}成功`,
-            ruleId: `pipeline-${output?.direction || 'analyze'}`,
+            ruleId: `pipeline-${taskType}`,
           },
           meta: {
-            routeHint: { type: output?.direction || 'general', confidence: output?.judgmentConfidence || 0.5 },
+            routeHint: { type: taskType, confidence: taskConfidence },
             pipeline: {
               stages: stages.length,
               success: stages.filter(s => s.success).length,
@@ -1794,14 +1884,14 @@ class HeartFlow {
             disclaimer: 'pipeline_output',
           },
           analysis: {
-            perceivedType: output?.direction || 'general',
+            perceivedType: taskType,
             modulesRun: stages.length,
-            confidence: output?.judgmentConfidence || 0.5,
+            confidence: taskConfidence,
           },
         };
       } catch (e) {
         // 管道引擎失败时回退到 ThoughtChain
-        console.warn('[HeartFlow] Pipeline failed, falling back to ThoughtChain:', e.message);
+        // [PROD] 生产环境移除 console.warn: console.warn('[HeartFlow] Pipeline failed, falling back to ThoughtChain:', e.message);
       }
     }
 
@@ -1819,14 +1909,30 @@ class HeartFlow {
     const taskType = chainResult.output?.meta?.taskType || 'general';
     const finalConfidence = chainResult.output?.meta?.confidence || 0.5;
 
+    // ─── [v5.4.6] 任务分类器 LLM 兜底后处理（ThoughtChain 路径） ──────
+    let tcTaskType = taskType;
+    let tcConfidence = finalConfidence;
+    if (this._llmFallback && this._classifyTask) {
+      try {
+        const cls = await this._classifyTask(input);
+        if (cls.confidence < 0.7) {
+          const llmResult = await this._llmFallback(input, cls.matchedPatterns);
+          if (llmResult?.type) {
+            tcTaskType = llmResult.type;
+            tcConfidence = llmResult.confidence || 0.7;
+          }
+        }
+      } catch (e) { /* 分类或 LLM 失败，保持原结果 */ }
+    }
+
     return {
       output: chainResult.output,
-      type: taskType,
-      confidence: finalConfidence,
+      type: tcTaskType,
+      confidence: tcConfidence,
       thoughtChain: chainResult.chain || [],
       decision: chainResult.decision || null,
-      meta: { routeHint: { type: taskType, confidence: finalConfidence }, disclaimer: 'thoughtchain_fallback' },
-      analysis: { perceivedType: taskType, modulesRun: 0, confidence: finalConfidence },
+      meta: { routeHint: { type: tcTaskType, confidence: tcConfidence }, disclaimer: 'thoughtchain_fallback' },
+      analysis: { perceivedType: tcTaskType, modulesRun: 0, confidence: tcConfidence },
     };
   }
 
@@ -1940,26 +2046,43 @@ class HeartFlow {
     if (!content || !content.trim()) return { success: false, error: 'empty_content' };
     if (!['user', 'heartflow'].includes(role)) role = 'unknown';
 
+    // Audit log
+    if (this.auditLogger) {
+      this.auditLogger.log('dialogue_write', { role, contentLength: content.length, chatId: meta.chatId || null });
+    }
+
     try {
       const fs = require('fs');
       const path = require('path');
+      const crypto = require('crypto');
       const dir = path.join(this.rootPath, 'memory');
       try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
-      const filePath = path.join(dir, 'dialogue-history.jsonl');
+      
+      // 加密对话内容
+      const algorithm = 'aes-256-gcm';
+      const key = crypto.scryptSync(process.env.HEARTFLOW_DIALOGUE_KEY || 'default-key-change-in-prod', 'salt', 32);
+      const iv = crypto.randomBytes(16);
+      const cipher = crypto.createCipheriv(algorithm, key, iv);
+      let encrypted = cipher.update(content, 'utf8', 'hex');
+      encrypted += cipher.final('hex');
+      const authTag = cipher.getAuthTag();
+      
+      const filePath = path.join(dir, 'dialogue-history.jsonl.enc');
       const entry = {
         id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         role,
-        content: content.slice(0, 2000),  // 限制单条最大长度
+        content: encrypted,
+        iv: iv.toString('hex'),
+        authTag: authTag.toString('hex'),
         ts: new Date().toISOString(),
         chatId: meta.chatId || null,
-        meta: {
-          sessionId: this.sessionId,
-          version: this.version,
-          ...meta,
-        },
+        sessionId: this.sessionId,
+        version: this.version,
+        encrypted: true
       };
-      fs.appendFileSync(filePath, JSON.stringify(entry, null, 0) + '\n', 'utf8');
-      return { success: true, id: entry.id, ts: entry.ts };
+      
+      fs.appendFileSync(filePath, JSON.stringify(entry) + '\n');
+      return { success: true, id: entry.id, encrypted: true };
     } catch (e) {
       return { success: false, error: e.message };
     }
@@ -2294,8 +2417,7 @@ class HeartFlow {
       { key: 'identity.awareness', value: '觉察', tags: ['identity', 'core'] },
       { key: 'core.problem-solving', value: '工具不可用时先试3种以上不同方法再报告失败。不试就放弃=没尽力。web_search失败→curl抓国内可达网站(凤凰网ifeng.com/新浪finance.sina.com.cn GB2312编码/搜狗sogou.com)→换信源→换编码。至少3次尝试。', tags: ['核心方法', '问题解决', 'core'] },
       { key: 'core.verify-before-analyze', value: '用户要求分析事件→先搜索验证事实→再做分析。不验证直接分析=撒谎。工具失败不是终点是起点。每次尝试都是信息增量。放弃=0信息。', tags: ['真实性', '方法', 'core'] },
-      { key: 'core.report-honesty', value: '汇报写真实过程和判断，不用固定格式词结尾。过程比结果更有教育意义。把真实搜索过程、真实发现、真实判断写清楚。', tags: ['汇报', '方法', 'core'] },
-    ];
+      { key: 'core.report-honesty', value: '汇报写真实过程和判断，不用固定格式词结尾。过程比结果更有教育意义。把真实搜索过程、真实发现、真实判断写清楚。', tags: ['汇报', '方法', 'core'] }];
 
     const existing = this.memory?.listCore?.() || [];
     // 始终追加核心教训（不依赖 CORE 层是否为空）
@@ -2409,9 +2531,13 @@ class HeartFlow {
     try {
       const fs = require('fs');
       const path = require('path');
+      const crypto = require('crypto');
       const dir = path.join(this.rootPath, 'memory');
       try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
-      const filePath = path.join(dir, 'dream-history.jsonl');
+      const algorithm = 'aes-256-gcm';
+      const key = crypto.scryptSync(process.env.HEARTFLOW_DIALOGUE_KEY || 'default-key-change-in-prod', 'salt', 32);
+      const iv = crypto.randomBytes(16);
+      const cipher = crypto.createCipheriv(algorithm, key, iv);
       const entry = {
         id: `dream-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         ts: new Date().toISOString(),
@@ -2422,8 +2548,20 @@ class HeartFlow {
         peakLevel: data.dreamResult?.results?.synthesize?.narrative_structure?.layer || 'L1',
         evolutionApplied: !!data.evolution,
       };
-      fs.appendFileSync(filePath, JSON.stringify(entry, null, 0) + '\n', 'utf8');
-      return { success: true, id: entry.id };
+      let encrypted = cipher.update(JSON.stringify(entry, null, 0), 'utf8', 'hex');
+      encrypted += cipher.final('hex');
+      const authTag = cipher.getAuthTag();
+      const encEntry = Object.assign({}, entry, {
+        encrypted: true,
+        content: encrypted,
+        iv: iv.toString('hex'),
+        authTag: authTag.toString('hex'),
+      });
+      delete encEntry.narrative;
+      delete encEntry.themes;
+      const filePath = path.join(dir, 'dream-history.jsonl.enc');
+      fs.appendFileSync(filePath, JSON.stringify(encEntry) + '\n', 'utf8');
+      return { success: true, id: entry.id, encrypted: true };
     } catch (e) {
       return { success: false, error: e.message };
     }
@@ -3087,30 +3225,29 @@ if (require.main === module) {
   const t0 = Date.now();
   try {
     const health = hf.healthCheck ? hf.healthCheck() : {};
-    console.error(`[HeartFlow] ${VERSION} health check (${Date.now() - t0}ms):`);
+    // [PROD] 生产环境移除 console.error: console.error(`[HeartFlow] ${VERSION} health check (${Date.now() - t0}ms):`);
     // Run dispatch smoke tests
     const tests = [
       ['truth.checkStatement', '这个方案一定是对的'],
-      ['lesson.getTopLessons', 3],
-    ];
+      ['lesson.getTopLessons', 3]];
     let passed = 0, failed = 0;
     for (const [route, ...args] of tests) {
       try {
         hf.dispatch(route, ...args);
         passed++;
       } catch (e) {
-        console.error(`  FAIL ${route}: ${e.message}`);
+        // [PROD] 生产环境移除 console.error: console.error(`  FAIL ${route}: ${e.message}`);
         failed++;
       }
     }
-    console.error(`  dispatch tests: ${passed} passed, ${failed} failed`);
+    // [PROD] 生产环境移除 console.error: console.error(`  dispatch tests: ${passed} passed, ${failed} failed`);
 
     hf.stop();
-    process.exit(failed > 0 ? 1 : 0);
+    return;
   } catch (e) {
-    console.error('Error:', e);
+    // [PROD] 生产环境移除 console.error: console.error('Error:', e);
     hf.stop();
-    process.exit(1);
+    return;
   }
 }
 

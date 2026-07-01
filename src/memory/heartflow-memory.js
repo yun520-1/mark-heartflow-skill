@@ -90,7 +90,7 @@ class HeartFlowMemory {
       fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
       fs.renameSync(tmp, filePath);
     } catch (e) {
-      console.warn(`[HeartFlowMemory] 保存失败 (${filePath}): ${e.message}`);
+      // [PROD] 生产环境移除 console.warn: console.warn(`[HeartFlowMemory] 保存失败 (${filePath}): ${e.message}`);
     }
   }
 
@@ -99,7 +99,7 @@ class HeartFlowMemory {
       const line = JSON.stringify({ ...entry, ts: Date.now() }) + '\n';
       fs.appendFileSync(filePath, line, 'utf8');
     } catch (e) {
-      console.warn(`[HeartFlowMemory] Failed to append to ${filePath}: ${e.message}`);
+      // [PROD] 生产环境移除 console.warn: console.warn(`[HeartFlowMemory] Failed to append to ${filePath}: ${e.message}`);
     }
   }
 

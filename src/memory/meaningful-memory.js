@@ -144,9 +144,9 @@ class MeaningfulMemory {
         this.stats = { ...this.stats, ...data.stats };
       }
       
-      console.error(`[MeaningfulMemory] 恢复 ${this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length} 条记忆`);
+      // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 恢复 ${this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length} 条记忆`);
     } catch (e) {
-      console.warn('[MeaningfulMemory] 恢复失败:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[MeaningfulMemory] 恢复失败:', e.message);
     }
   }
   
@@ -175,9 +175,9 @@ class MeaningfulMemory {
       
       fs.writeFileSync(exportPath, JSON.stringify(exportData, null, 2));
       this.stats.lastSave = new Date().toISOString();
-      console.error(`[MeaningfulMemory] 已保存 ${this.stats.totalMemories} 条记忆`);
+      // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 已保存 ${this.stats.totalMemories} 条记忆`);
     } catch (e) {
-      console.warn('[MeaningfulMemory] 保存失败:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[MeaningfulMemory] 保存失败:', e.message);
     }
   }
   
@@ -213,7 +213,7 @@ class MeaningfulMemory {
     try {
       return fs.existsSync(consentFile);
     } catch (e) {
-      console.warn('[MeaningfulMemory] 检查用户同意文件失败:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[MeaningfulMemory] 检查用户同意文件失败:', e.message);
       return false;
     }
   }
@@ -235,7 +235,7 @@ class MeaningfulMemory {
       }));
       return true;
     } catch (e) {
-      console.warn('[MeaningfulMemory] 无法记录用户同意:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[MeaningfulMemory] 无法记录用户同意:', e.message);
       return false;
     }
   }
@@ -335,7 +335,7 @@ class MeaningfulMemory {
     }
     
     this.stats.totalMemories = this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length;
-    console.error(`[MeaningfulMemory] 注入 ${coreMemories.length} 条 CORE 记忆`);
+    // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 注入 ${coreMemories.length} 条 CORE 记忆`);
     this._doSave(); // immediate save after injection
   }
   
@@ -384,7 +384,7 @@ class MeaningfulMemory {
     }
     
     this.stats.totalMemories = this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length;
-    console.error(`[MeaningfulMemory] 存储: ${id} (${layer}, total ${this.stats.totalMemories})`);
+    // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 存储: ${id} (${layer}, total ${this.stats.totalMemories})`);
     this._autoSave();
     return id;
   }
@@ -695,7 +695,7 @@ class MeaningfulMemory {
     }
     
     this.stats.lastCleanup = new Date().toISOString();
-    console.error(`[MeaningfulMemory] 遗忘曲线清理: 删除 ${toDelete.length} 条, 压缩 ${toCompress.length} 条`);
+    // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 遗忘曲线清理: 删除 ${toDelete.length} 条, 压缩 ${toCompress.length} 条`);
     this._autoSave();
     return { deleted: toDelete.length, compressed: toCompress.length };
   }
@@ -849,7 +849,7 @@ class MeaningfulMemory {
     const allowedDir = path.join(this.rootPath, 'memory');
     const resolvedPath = path.resolve(filePath);
     if (!resolvedPath.startsWith(allowedDir)) {
-      console.error(`[MeaningfulMemory] 安全拦截: 不允许导出到 ${resolvedPath}（必须在 ${allowedDir} 内）`);
+      // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 安全拦截: 不允许导出到 ${resolvedPath}（必须在 ${allowedDir} 内）`);
       return { success: false, error: 'path_not_allowed' };
     }
     const data = {
@@ -862,7 +862,7 @@ class MeaningfulMemory {
       exportedAt: new Date().toISOString()
     };
     fs.writeFileSync(resolvedPath, JSON.stringify(data, null, 2));
-    console.error(`[MeaningfulMemory] 导出到: ${resolvedPath}`);
+    // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 导出到: ${resolvedPath}`);
     return { success: true, count: this.stats.totalMemories };
   }
 
@@ -875,11 +875,11 @@ class MeaningfulMemory {
     const allowedDir = path.join(this.rootPath, 'memory');
     const resolvedPath = path.resolve(filePath);
     if (!resolvedPath.startsWith(allowedDir)) {
-      console.error(`[MeaningfulMemory] 安全拦截: 不允许从 ${resolvedPath} 导入（必须在 ${allowedDir} 内）`);
+      // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 安全拦截: 不允许从 ${resolvedPath} 导入（必须在 ${allowedDir} 内）`);
       return { success: false, error: 'path_not_allowed' };
     }
     if (!fs.existsSync(resolvedPath)) {
-      console.error(`[MeaningfulMemory] 文件不存在: ${resolvedPath}`);
+      // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 文件不存在: ${resolvedPath}`);
       return { success: false, error: 'file_not_found' };
     }
     const data = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
@@ -892,7 +892,7 @@ class MeaningfulMemory {
     if (data.ephemeral) {
       for (const mem of data.ephemeral) this.store({ ...mem, layer: 'ephemeral' });
     }
-    console.error(`[MeaningfulMemory] 从 ${filePath} 导入`);
+    // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 从 ${filePath} 导入`);
     return { success: true, count: (data.core?.length || 0) + (data.learned?.length || 0) + (data.ephemeral?.length || 0) };
   }
 

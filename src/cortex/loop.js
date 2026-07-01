@@ -75,7 +75,7 @@ class EvolutionLoop {
         } catch (err) {
             this._recordError('boot_failed', err.message);
             this._updateHealth('core_init', false);
-            console.error('[EvolutionLoop] Boot failed:', err.message);
+            // [PROD] 生产环境移除 console.error: console.error('[EvolutionLoop] Boot failed:', err.message);
         }
         return this;
     }
@@ -352,7 +352,7 @@ class EvolutionLoop {
                 }
             }
         } catch (e) {
-            console.error('[EvolutionLoop] 加载状态失败，使用默认');
+            // [PROD] 生产环境移除 console.error: console.error('[EvolutionLoop] 加载状态失败，使用默认');
         }
     }
 
@@ -388,7 +388,7 @@ class EvolutionLoop {
             };
             fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
         } catch (e) {
-            console.error('[EvolutionLoop] 保存状态失败:', e.message);
+            // [PROD] 生产环境移除 console.error: console.error('[EvolutionLoop] 保存状态失败:', e.message);
         }
     }
 

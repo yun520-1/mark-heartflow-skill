@@ -19,12 +19,12 @@ class SmartUpgradeEngine {
   constructor(rootPath) {
     this.rootPath = rootPath;
     // 确保路径正确：从项目根目录计算
-    this.upgradesDir = path.isAbsolute(rootPath) 
-      ? path.join(rootPath, 'src/core/upgrades')
-      : path.join(__dirname, 'upgrades');
+    this.upgradesDir = path.isAbsolute(rootPath)
+      ? path.join(rootPath, 'data/upgrades')
+      : path.join(__dirname, '..', '..', 'data', 'upgrades');
     this.manifestPath = path.isAbsolute(rootPath)
-      ? path.join(rootPath, 'src/core/.upgrade-manifest.json')
-      : path.join(__dirname, '.upgrade-manifest.json');
+      ? path.join(rootPath, 'data/.upgrade-manifest.json')
+      : path.join(__dirname, '..', '..', 'data', '.upgrade-manifest.json');
     this.logPath = path.isAbsolute(rootPath)
       ? path.join(rootPath, 'upgrade-log.json')
       : path.join(rootPath, 'upgrade-log.json');
@@ -595,7 +595,7 @@ module.exports = { ${className} };
    */
   log(msg) {
     const ts = new Date().toISOString();
-    console.error(`[${ts}] ${msg}`);
+    // [PROD] 生产环境移除 console.error: console.error(`[${ts}] ${msg}`);
     
     try {
       let logs = [];
@@ -632,12 +632,12 @@ if (require.main === module) {
   const engine = new SmartUpgradeEngine(__dirname);
   engine.runUpgrade()
     .then(result => {
-      console.log('升级结果:', result);
-      process.exit(result.success ? 0 : 1);
+      // [PROD] 生产环境移除 console.log: console.log('升级结果:', result);
+      return;
     })
     .catch(err => {
-      console.error('升级失败:', err);
-      process.exit(1);
+      // [PROD] 生产环境移除 console.error: console.error('升级失败:', err);
+      return;
     });
 }
 

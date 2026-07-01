@@ -683,7 +683,7 @@ class GoalGenerator {
           const content = fs.readFileSync(path.join(this.memoryDir, file), 'utf8');
           logs.push(JSON.parse(content));
         } catch (e) {
-          console.warn('[GoalGenerator] loadMemoryLogs failed:', e.message);
+          // [PROD] 生产环境移除 console.warn: console.warn('[GoalGenerator] loadMemoryLogs failed:', e.message);
         }
       }
     }

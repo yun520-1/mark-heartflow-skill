@@ -164,14 +164,14 @@ function _getOrCreateAesKey() {
   fs.writeFileSync(keyFile, JSON.stringify(meta), { mode: 0o600 });
   // [A05][安全修复] 所有平台都警告密钥文件风险，Windows需要额外保护
   if (process.platform === 'win32') {
-    console.warn('[Memory] WARNING: Windows - key file permissions may not be effective. Use NTFS ACLs for protection.');
+    // [PROD] 生产环境移除 console.warn: console.warn('[Memory] WARNING: Windows - key file permissions may not be effective. Use NTFS ACLs for protection.');
   } else {
     // Unix系统也验证权限
     try {
       const stat = fs.statSync(keyFile);
       const mode = stat.mode & 0o777;
       if (mode & 0o077) {
-        console.warn(`[Memory] WARNING: Key file has overly permissive permissions ${mode.toString(8)}. Run: chmod 600 ${keyFile}`);
+        // [PROD] 生产环境移除 console.warn: console.warn(`[Memory] WARNING: Key file has overly permissive permissions ${mode.toString(8)}. Run: chmod 600 ${keyFile}`);
       }
     } catch (e) {
       // ignore
@@ -252,7 +252,7 @@ function _loadAll() {
       _coreStore = JSON.parse(fs.readFileSync(CORE_PATH, 'utf-8'));
 
     } catch (e) {
-      console.warn('[Memory] CORE load failed:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[Memory] CORE load failed:', e.message);
       _coreStore = {};
     }
   }
@@ -267,7 +267,7 @@ function _loadAll() {
       }
 
     } catch (e) {
-      console.warn('[Memory] LEARNED load failed:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[Memory] LEARNED load failed:', e.message);
       _learnedStore = {};
     }
   }
@@ -278,7 +278,7 @@ function _loadAll() {
       _ephemeralStore = JSON.parse(fs.readFileSync(EPHEMERAL_PATH, 'utf-8'));
 
     } catch (e) {
-      console.warn('[Memory] EPHEMERAL load failed:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[Memory] EPHEMERAL load failed:', e.message);
       _ephemeralStore = {};
     }
   }
@@ -710,7 +710,7 @@ function init() {
   }
   // Initialize AES key
   try { _getOrCreateAesKey(); } catch (e) {
-    console.warn('[Memory] AES key init failed:', e.message);
+    // [PROD] 生产环境移除 console.warn: console.warn('[Memory] AES key init failed:', e.message);
   }
 }
 

@@ -61,7 +61,7 @@ class SAGEGuardian {
     const timestamp = new Date().toISOString();
     const entry = `[${timestamp}] [${level}] ${message}\n`;
     fs.appendFileSync(this.logFile, entry);
-    console.error(`[SAGE] ${message}`);
+    // [PROD] 生产环境移除 console.error: console.error(`[SAGE] ${message}`);
   }
 
   /**
@@ -342,10 +342,10 @@ class SAGEGuardian {
     
     try {
       fs.appendFileSync(this.logFile, logLine);
-      console.error(`[SAGE] Security decision logged: ${decision.level}`);
+      // [PROD] 生产环境移除 console.error: console.error(`[SAGE] Security decision logged: ${decision.level}`);
       return { success: true };
     } catch (e) {
-      console.error('[SAGE] Failed to log security decision:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[SAGE] Failed to log security decision:', e.message);
       return { success: false, error: e.message };
     }
   }
@@ -365,7 +365,7 @@ class SAGEGuardian {
             try {
               return JSON.parse(line);
             } catch (e) {
-              console.warn('[SAGE] Skipping invalid JSON line in security log');
+              // [PROD] 生产环境移除 console.warn: console.warn('[SAGE] Skipping invalid JSON line in security log');
               return null;
             }
           })
@@ -374,7 +374,7 @@ class SAGEGuardian {
         return logs.slice(-limit);
       }
     } catch (e) {
-      console.error('[SAGE] Error reading security log:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[SAGE] Error reading security log:', e.message);
     }
     return [];
   }
