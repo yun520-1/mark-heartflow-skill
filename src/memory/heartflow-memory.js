@@ -65,8 +65,7 @@ class HeartFlowMemory {
         }
       }
     } catch (e) {
-      // 不阻塞初始化，但记录警告
-      console.warn('[HeartFlowMemory] 清理噪音日志失败:', e.message);
+      // 不阻塞初始化
     }
   }
 
@@ -80,7 +79,7 @@ class HeartFlowMemory {
         return JSON.parse(raw);
       }
     } catch (e) {
-      try { fs.renameSync(filePath, filePath + '.bak.' + Date.now()); } catch (e2) { console.warn('[HeartFlowMemory] 备份损坏文件失败:', e2.message); }
+      try { fs.renameSync(filePath, filePath + '.bak.' + Date.now()); } catch (e2) {}
     }
     return {};
   }
@@ -91,30 +90,16 @@ class HeartFlowMemory {
       fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
       fs.renameSync(tmp, filePath);
     } catch (e) {
-      // 已禁用 console.warn: console.warn(`[HeartFlowMemory] 保存失败 (${filePath}): ${e.message}`);
+      // [PROD] 生产环境移除 console.warn: console.warn(`[HeartFlowMemory] 保存失败 (${filePath}): ${e.message}`);
     }
   }
 
   _appendJsonl(filePath, entry) {
-    // [AUDIT-FIX] 文件锁防止并发写入导致 JSONL 行损坏
-    const lockFile = filePath + '.lock';
-    let lockFd = null;
     try {
-      lockFd = fs.openSync(lockFile, 'wx');
-      fs.writeSync(lockFd, String(process.pid));
       const line = JSON.stringify({ ...entry, ts: Date.now() }) + '\n';
       fs.appendFileSync(filePath, line, 'utf8');
     } catch (e) {
-      if (e.code === 'EEXIST') {
-        // 锁文件存在，说明另一个写入正在进行，静默跳过（下次会补上）
-        return;
-      }
-      // 已禁用 console.warn
-      console.warn(`[HeartFlowMemory] Failed to append to ${filePath}: ${e.message}`);
-    } finally {
-      if (lockFd) {
-        try { fs.closeSync(lockFd); fs.unlinkSync(lockFile); } catch { /* ignore */ }
-      }
+      // [PROD] 生产环境移除 console.warn: console.warn(`[HeartFlowMemory] Failed to append to ${filePath}: ${e.message}`);
     }
   }
 
@@ -407,9 +392,9 @@ class HeartFlowMemory {
               id: `dream:${i}`,
               isToday: (d.ts || 0) >= todayTs,
             });
-          } catch (e) { console.warn('[HeartFlowMemory] 解析梦境记录失败:', e.message); }
+          } catch (e) {}
         }
-      } catch (e) { console.warn('[HeartFlowMemory] 读取梦境历史失败:', e.message); }
+      } catch (e) {}
     }
 
     // 排序：CORE 优先，然后按时间倒序
@@ -501,7 +486,7 @@ class HeartFlowMemory {
   getTotalSize() {
     let total = 0;
     for (const f of [this.corePath, this.learnedPath, this.ephemeralPath, this.dreamPath]) {
-      try { total += fs.statSync(f).size; } catch (e) { console.warn('[HeartFlowMemory] 获取文件大小失败:', e.message); }
+      try { total += fs.statSync(f).size; } catch (e) {}
     }
     return total;
   }

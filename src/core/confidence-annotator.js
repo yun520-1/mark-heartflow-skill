@@ -19,16 +19,7 @@
  *   - 统计系统扩展：errorCount / safeReplaceCount / truncationCount / oscillationWarnings
  *   - 防御性编程：防止无限循环和正则回溯
  */
-let claimExtractor;
-try {
-  ({ claimExtractor } = require('./claim-extractor'));
-} catch (e) {
-  // claim-extractor 不在 src/core/ 目录，提供空实现兜底
-  claimExtractor = {
-    extractAll: () => [],
-    categorize: () => ({})
-  };
-}
+const { claimExtractor } = require('./claim-extractor');
 
 /** 单次处理的最大文本长度（超过自动截断头部） */
 const MAX_TEXT_LENGTH = 50000;
@@ -71,7 +62,7 @@ const confidenceAnnotator = {
   _safeText(text) {
     if (text == null) return '';
     if (typeof text !== 'string') {
-      try { return String(text); } catch (e) { console.warn('[ConfidenceAnnotator] 文本转换失败:', e.message); return ''; }
+      try { return String(text); } catch (_) { return ''; }
     }
     return text;
   },
@@ -96,7 +87,7 @@ const confidenceAnnotator = {
     if (claim == null) return '';
     if (typeof claim === 'string') return claim;
     if (typeof claim === 'object' && claim.value) return claim.value;
-    try { return String(claim); } catch (e) { console.warn('[ConfidenceAnnotator] 声明值转换失败:', e.message); return ''; }
+    try { return String(claim); } catch (_) { return ''; }
   },
 
   /**

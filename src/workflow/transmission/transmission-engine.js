@@ -129,7 +129,7 @@ class TransmissionEngine {
       if (!fs.existsSync(this.dataDir)) {
         fs.mkdirSync(this.dataDir, { recursive: true });
       }
-    } catch (e) { /* 已移除 console.warn */ }
+    } catch (e) { /* [PROD] console.warn removed */ }
   }
 
   _loadLog() {
@@ -137,7 +137,7 @@ class TransmissionEngine {
       if (fs.existsSync(this.logFile)) {
         return JSON.parse(fs.readFileSync(this.logFile, 'utf-8'));
       }
-    } catch (e) { /* 已移除 console.warn */ }
+    } catch (e) { /* [PROD] console.warn removed */ }
     return [];
   }
 
@@ -146,20 +146,20 @@ class TransmissionEngine {
       if (fs.existsSync(this.lessonFile)) {
         return JSON.parse(fs.readFileSync(this.lessonFile, 'utf-8'));
       }
-    } catch (e) { /* 已移除 console.warn */ }
+    } catch (e) { /* [PROD] console.warn removed */ }
     return [];
   }
 
   _saveLog() {
     try {
       fs.writeFileSync(this.logFile, JSON.stringify(this.transmissionLog, null, 2));
-    } catch (e) { /* 已移除 console.warn */ }
+    } catch (e) { /* [PROD] console.warn removed */ }
   }
 
   _saveLessons() {
     try {
       fs.writeFileSync(this.lessonFile, JSON.stringify(this.distilledLessons, null, 2));
-    } catch (e) { /* 已移除 console.warn */ }
+    } catch (e) { /* [PROD] console.warn removed */ }
   }
 
   // ==========================================================================
@@ -498,7 +498,7 @@ class TransmissionEngine {
     // 去重检测
     const dedup = this._detectDuplicate(lesson.lesson);
     if (dedup.isDuplicate) {
-      // 已禁用 console.console.error(`[TransmissionEngine] Skipping duplicate lesson (sim=${dedup.similarity.toFixed(2)})`);
+      // [PROD] 生产环境移除 console.console.error(`[TransmissionEngine] Skipping duplicate lesson (sim=${dedup.similarity.toFixed(2)})`);
       return null;
     }
 

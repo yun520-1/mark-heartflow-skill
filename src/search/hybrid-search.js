@@ -13,7 +13,6 @@
 
 const { EventEmitter } = require('events');
 const path = require('path');
-const { validateFetchUrl } = require('../security/url-validator.js');
 
 // ─── 混合搜索配置常量 ─────────────────────────────────────────────────────────
 
@@ -255,13 +254,7 @@ class EmbeddingService extends EventEmitter {
    */
   async _embedOpenAI(text) {
     const config = EMBEDDING_PROVIDERS.openai;
-
-    // SSRF 防护：校验嵌入服务端点安全性
-    const urlCheck = validateFetchUrl(config.endpoint);
-    if (!urlCheck.safe) {
-      throw new Error('SSRF防护: ' + urlCheck.reason);
-    }
-
+    
     const response = await fetch(config.endpoint, {
       method: 'POST',
       headers: {
@@ -289,13 +282,7 @@ class EmbeddingService extends EventEmitter {
    */
   async _embedCohere(text) {
     const config = EMBEDDING_PROVIDERS.cohere;
-
-    // SSRF 防护：校验嵌入服务端点安全性
-    const urlCheck = validateFetchUrl(config.endpoint);
-    if (!urlCheck.safe) {
-      throw new Error('SSRF防护: ' + urlCheck.reason);
-    }
-
+    
     const response = await fetch(config.endpoint, {
       method: 'POST',
       headers: {

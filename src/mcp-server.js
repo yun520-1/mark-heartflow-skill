@@ -1,1 +1,0 @@
-/root/.hermes/heartflow/mcp/mcp-server-http.js

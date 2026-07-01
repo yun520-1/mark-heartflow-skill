@@ -381,7 +381,7 @@ class CodePlanner {
       throw new Error('CodePlanner.plan: goal must be a non-empty string');
     }
 
-    // 已禁用 console.warn: console.warn('⚠️ 安全警告: 生成的计划可能触发代码执行，请确认目标安全可信');
+    // [PROD] 生产环境移除 console.warn: console.warn('⚠️ 安全警告: 生成的计划可能触发代码执行，请确认目标安全可信');
 
     this._stats.totalPlans++;
 

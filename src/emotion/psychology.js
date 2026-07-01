@@ -618,8 +618,8 @@ function detectDINKFears(text) {
  */
 function analyzePsychology(input, context = {}) {
   const text = String(input || '');
-  // [P1] 输入长度限制 - 1M 上下文适配
-  const MAX_INPUT_LENGTH = 200000; // 20% of 1M context
+  // [P1] 输入长度限制 - 防止内存耗尽和ReDoS
+  const MAX_INPUT_LENGTH = 50000; // 50KB
   if (text.length > MAX_INPUT_LENGTH) {
     return { error: 'Input too large', maxLength: MAX_INPUT_LENGTH };
   }

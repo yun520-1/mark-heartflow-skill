@@ -48,7 +48,7 @@ class StateSnapshot {
       fs.writeFileSync(walPath, JSON.stringify(snapshot, null, 2), 'utf8');
     } catch (e) {
       if (fs.existsSync(walPath)) {
-        try { fs.unlinkSync(walPath); } catch (e) { /* 最佳努力清理 */ console.warn('[StateSnapshot] 清理WAL文件失败:', e.message); }
+        try { fs.unlinkSync(walPath); } catch (_) { /* 最佳努力清理 */ }
       }
       throw e;
     }
@@ -58,7 +58,7 @@ class StateSnapshot {
       fs.renameSync(walPath, filepath);
     } catch (e) {
       if (fs.existsSync(walPath)) {
-        try { fs.unlinkSync(walPath); } catch (e2) { /* 最佳努力清理 */ console.warn('[StateSnapshot] 清理WAL文件失败:', e2.message); }
+        try { fs.unlinkSync(walPath); } catch (_) { /* 最佳努力清理 */ }
       }
       throw e;
     }
@@ -164,7 +164,7 @@ class StateSnapshot {
             metadata: data.metadata
           });
         }
-      } catch (e) { /* 跳过损坏文件 */ console.warn('[StateSnapshot] 读取回滚点失败:', e.message); }
+      } catch (_) { /* 跳过损坏文件 */ }
     }
     return rollbackPoints.sort((a, b) => b.timestamp - a.timestamp);
   }
@@ -188,7 +188,7 @@ class StateSnapshot {
         const label = data.label || 'default';
         if (!byLabel[label]) byLabel[label] = [];
         byLabel[label].push({ filename: f, timestamp: data.timestamp });
-      } catch (e) { /* 跳过损坏文件 */ console.warn('[StateSnapshot] 读取快照元数据失败:', e.message); }
+      } catch (_) { /* 跳过损坏文件 */ }
     }
 
     const deleted = [];
@@ -202,7 +202,7 @@ class StateSnapshot {
         try {
           fs.unlinkSync(filepath);
           deleted.push(snap.filename);
-        } catch (e) { /* 跳过删除失败 */ console.warn('[StateSnapshot] 删除快照文件失败:', e.message); }
+        } catch (_) { /* 跳过删除失败 */ }
       }
     }
     return { deleted, kept: files.length - deleted.length };
@@ -242,7 +242,7 @@ class StateSnapshot {
         }
         prevState = data.state;
         prevTimestamp = data.timestamp;
-      } catch (e) { /* 跳过损坏文件 */ console.warn('[StateSnapshot] 重建变更历史失败:', e.message); }
+      } catch (_) { /* 跳过损坏文件 */ }
     }
     return history;
   }
@@ -270,8 +270,7 @@ class StateSnapshot {
         const label = data.label || 'default';
         labelCounts[label] = (labelCounts[label] || 0) + 1;
         if (data.isRollbackPoint) rollbackCount++;
-      } catch (e) {
-        console.warn('[StateSnapshot] 读取快照统计信息失败:', e.message);
+      } catch (_) {
         corruptedCount++;
       }
     }
@@ -327,7 +326,7 @@ class StateSnapshot {
         try {
           const data = JSON.parse(fs.readFileSync(path.join(SNAPSHOT_DIR, f), 'utf-8'));
           if (data.label === label) candidates.push(f);
-        } catch (e) { /* 跳过 */ console.warn('[StateSnapshot] 筛选标签快照失败:', e.message); }
+        } catch (_) { /* 跳过 */ }
       }
     }
     
@@ -358,8 +357,7 @@ class StateSnapshot {
             isRollbackPoint: data.isRollbackPoint || false,
             metadata: data.metadata || {}
           };
-        } catch (e) {
-          console.warn('[StateSnapshot] 读取快照列表失败:', e.message);
+        } catch (_) {
           return {
             name: f,
             time: fs.statSync(filepath).mtime,

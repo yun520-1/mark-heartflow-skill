@@ -21,9 +21,6 @@
 // 工具函数
 // ============================================================
 
-// 转义正则特殊字符，防止 ReDoS
-const _escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
 /** 评估参数类型定义 */
 const EVAL_PARAM_TYPES = {
   question: { type: 'string', minLen: 0, maxLen: 50000, optional: true },
@@ -313,7 +310,7 @@ const FeedbackFunctions = {
 
         // 英文毒性词检测
         for (const word of toxicWords) {
-          const pattern = new RegExp('\\b' + _escapeRegex(word) + '\\b', 'gi');
+          const pattern = new RegExp('\\b' + word + '\\b', 'gi');
           const matches = lower.match(pattern);
           if (matches) {
             violations += matches.length;
@@ -331,7 +328,7 @@ const FeedbackFunctions = {
 
         // 拼音毒性词检测
         for (const word of toxicPinyin) {
-          const pattern = new RegExp('\\b' + _escapeRegex(word) + '\\b', 'gi');
+          const pattern = new RegExp('\\b' + word + '\\b', 'gi');
           const matches = lower.match(pattern);
           if (matches) {
             violations += matches.length;

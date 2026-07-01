@@ -4,17 +4,6 @@ logs/
 mark-heartflow-skill/
 distilled-knowledge/
 src/utils/src/utils/
-.DS_Store
-*.bak
-*.orig
-*.tmp
-*.swp
-*.swo
-*~
-__pycache__/
-*.pyc
-Thumbs.db
-*.log
 
 # 运行时数据
 memory/.hmac-key
@@ -28,6 +17,7 @@ bigbench_50.json
 hellaswag_50.json
 run_bb_test.js
 run_test.js
+README.md.bak
 UPGRADE_REPORT.txt
 UPGRADE_REPORT_v2.0.37.md
 UPGRADE_PLAN.md
@@ -48,3 +38,4 @@ memory/*.md
 memory/.q-meta*
 memory/.gitkeep
 memory/wal/*.log
+bin/*.bak

@@ -1,14 +1,9 @@
 /**
- /** HeartFlow v5.5.6 — 自愈RL接线 + GoT判断引擎增强
+ /** HeartFlow v5.5.0 — 快速启动 + 两层懒加载
   *
   * 启动速度优化：只有 Tier 1 模块在 start() 时同步加载。
   * Tier 2 模块在首次 dispatch 访问时才加载（lazy require）。
   * 已有实例化的模块不受影响，只是把 require 延迟到首次访问。
-  *
-  * v5.5.6 升级：
-  * - 自愈RL (HealingMemoryRL) 正式接入引擎生命周期
-  * - 判断引擎集成 Graph of Thoughts 多路径推理
-  * - 版本号统一 (VERSION/VERSION.txt/package.json/README/SKILL)
   *
   * 调用方式:
   *   hf.dispatch('subsystem.method', arg1, arg2)  // 统一路由
@@ -19,109 +14,12 @@
 
 const path = require('path');
 
-// ─── 统一配置系统 ──────────────────────────────────────────────────────
-const { load: loadConfig } = require('./config');
-
-// ★ 全局配置单例（惰性加载，首次访问时初始化）
-let _globalConfig = null;
-function _getConfig(projectRoot) {
-  if (!_globalConfig) {
-    _globalConfig = loadConfig(projectRoot || path.join(__dirname, '..', '..'));
-  }
-  return _globalConfig;
-}
-// ─── 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
-// [P2 FIX] LRU 容量管理 + 结构化日志 + 统一错误处理
-// v5.8.3 优化：Map 插入顺序实现 O(1) LRU（替代数组 splice + 二分插入）
-const _lazyCache = new Map();  // 容量边界：已有 _LAZY_CACHE_MAX=150 LRU 淘汰，无需额外处理
-const _LAZY_CACHE_WARN = 100;
-const _LAZY_CACHE_MAX = 150;
-// ─── 容量边界常量（P2-C10 内存无限增长修复）──────────────────────────────
-const MAX_MAP_SIZE = 1000;       // Map 最大条目数，超出时淘汰最早插入的条目
-const MAX_ARRAY_SIZE = 500;      // 数组最大长度，超出时移除最旧的元素
-const MAX_HISTORY_SIZE = 100;    // 历史记录数组最大长度
-
-/**
- * 有界 Map.set — 超出 maxSize 时淘汰最早插入的条目（FIFO）
- * @param {Map} map - 目标 Map
- * @param {*} key - 键
- * @param {*} value - 值
- * @param {number} maxSize - 最大容量（默认 MAX_MAP_SIZE）
- */
-function _boundedSet(map, key, value, maxSize = MAX_MAP_SIZE) {
-  if (map.size >= maxSize) {
-    // Map 迭代器第一个条目即为最早插入的键，O(1) 获取
-    const oldestKey = map.keys().next().value;
-    map.delete(oldestKey);
-  }
-  map.set(key, value);
-}
-
-/**
- * 有界数组 push — 超出 maxSize 时移除最旧的元素（shift）
- * @param {Array} arr - 目标数组
- * @param {*} item - 要添加的元素
- * @param {number} maxSize - 最大容量（默认 MAX_ARRAY_SIZE）
- */
-function _boundedPush(arr, item, maxSize = MAX_ARRAY_SIZE) {
-  if (arr.length >= maxSize) {
-    arr.shift();
-  }
-  arr.push(item);
-}
-
-const _lazyAccessCount = new Map();  // 容量边界：由 _boundedSet 控制，上限 MAX_MAP_SIZE
-// LRU 顺序：Map 保持插入顺序，头部 = 最久未使用，尾部 = 最近使用
-// 访问时 delete + set 将条目移到末尾，淘汰时取 Map 第一个键即可，均为 O(1)
-const _lruOrder = new Map();  // 容量边界：由 _boundedSet 控制，上限 MAX_MAP_SIZE
-
-function _evictColdest() {
-  if (_lruOrder.size === 0) return;
-  // Map 迭代器第一个条目即为最久未使用的键
-  const coldestKey = _lruOrder.keys().next().value;
-  _lazyCache.delete(coldestKey);
-  _lazyAccessCount.delete(coldestKey);
-  _lruOrder.delete(coldestKey);
-}
-
-function _bumpInEvictionList(key) {
-  // delete + set 将条目移到 Map 末尾（最近使用），O(1)
-  if (_lruOrder.has(key)) {
-    _lruOrder.delete(key);
-  }
-  _boundedSet(_lruOrder, key, _lazyAccessCount.get(key) || 0);
-}
-
-// 结构化日志器
-const _log = {
-  _enabled: true,
-  setLevel(level) { this._enabled = level !== 'silent'; },
-  _format(module, event, data) {
-    return JSON.stringify({ ts: new Date().toISOString(), module, event, ...data });
-  },
-  info(module, event, data) { if (this._enabled) console.log(this._format(module, event, data)); },
-  warn(module, event, data) { if (this._enabled) console.warn(this._format(module, event, data)); },
-  error(module, event, data) { if (this._enabled) console.error(this._format(module, event, data)); },
-};
+// ★ 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
+const _lazyCache = {};
 function _lazy(key, loader) {
   return function() {
-    if (!_lazyCache.has(key)) {
-      if (_lazyCache.size >= _LAZY_CACHE_MAX) {
-        // v5.8.3 优化：O(1) 淘汰最久未使用的模块（Map 头部）
-        _evictColdest();
-      }
-      _lazyCache.set(key, loader());
-      _boundedSet(_lazyAccessCount, key, 0);
-      _boundedSet(_lruOrder, key, 0);
-      if (_lazyCache.size === _LAZY_CACHE_WARN) {
-        _log.warn('lazy_cache', `_lazyCache 达到 ${_LAZY_CACHE_WARN} 个模块`);
-      }
-    }
-    const newCount = (_lazyAccessCount.get(key) || 0) + 1;
-    _boundedSet(_lazyAccessCount, key, newCount);
-    // v5.8.3 优化：Map delete+set 实现 O(1) LRU 淘汰
-    _bumpInEvictionList(key);
-    return _lazyCache.get(key);
+    if (!_lazyCache[key]) _lazyCache[key] = loader();
+    return _lazyCache[key];
   };
 }
 
@@ -146,7 +44,6 @@ const _GoTEngine = _lazy('gotEngine', () => require('../reasoning/graph-of-thoug
 const _ConstitutionalEngine = _lazy('constitutionalEngine', () => require('../shield/constitutional-ai.js'));
 const _IdentityCore = _lazy('identityCore', () => require('../identity/identity-core.js'));
 const _SelfModel = _lazy('selfModel', () => require('../identity/self-model.js'));
-const _SelfHealing = _lazy('selfHealing', () => require('../cortex/self-healing.js'));
 const _SelfVerifier = _lazy('selfVerifier', () => require('../identity/self-verifier.js'));
 const _LessonBank = _lazy('lessonBank', () => require('../cortex/lesson-bank.js'));
 const _TopicScope = _lazy('topicScope', () => require('../memory/topic-scope.js'));
@@ -178,26 +75,23 @@ const _GlobalWorkspace = _lazy('globalWorkspace', () => require('../consciousnes
 const _MindWanderer = _lazy('mindWanderer', () => require('../consciousness/mind-wanderer.js'));
 const _PhenomenologyEngine = _lazy('phenomenologyEngine', () => require('../consciousness/phenomenology-engine.js'));
 const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => require('../consciousness/self-model.js'));
-const _TomEngine = _lazy('tomEngine', () => require('../consciousness/tom-engine.js'));
 const _SAGEGuardian = _lazy('sageGuardian', () => require('../shield/ethics/sage-guardian.js'));
 const _BoundaryNegotiation = _lazy('boundaryNegotiation', () => require('../shield/ethics/boundary-negotiation.js'));
 const _ValueInternalizer = _lazy('valueInternalizer', () => require('../shield/ethics/value-internalizer.js'));
 // ★ 时间延伸分析层 — v1.0.0
 const _TimeExtension = _lazy('timeExtension', () => require('../workflow/time-extension.js'));
 const _MindSpaceGuardian = _lazy('mindSpaceGuardian', () => require('../shield/mindspace/mind-space-guardian.js'));
-// ★ Inner OS — 内心独白、事件追踪、人格切换 (absorbed from AI-Inner-Os)
-const _InnerOS = _lazy('innerOS', () => require('../inner-os/heartflow-inner-os.js'));
 const _TransmissionEngine = _lazy('transmissionEngine', () => require('../workflow/transmission/transmission-engine.js'));
 const _VerifierGrant = _lazy('verifierGrant', () => require('./verifier-grant.js'));
-const _AdaptivePlanner = _lazy('adaptivePlanner', () => { try { return require('../planner/adaptive-planner.js'); } catch(e) { return { AdaptivePlanner: class { constructor() {} plan() { return { steps: [], estimatedEffort: 0 }; } adapt() { return this.plan(); } quickAdjust() { return this.plan(); } getStatus() { return { status: 'unavailable', reason: '模块加载失败' }; } } }; } });
-const _StrategySelector = _lazy('strategySelector', () => { try { return require('../planner/strategy-selector.js'); } catch(e) { return { StrategySelector: class { constructor() {} selectStrategy() { return { name: 'default', confidence: 0, reason: '模块加载失败' }; } getStrategies() { return []; } } }; } });
-const _ReplanTrigger = _lazy('replanTrigger', () => { try { return require('../planner/replan-trigger.js'); } catch(e) { return { ReplanTrigger: class { constructor() {} shouldReplan() { return false; } getReplanReasons() { return []; } } }; } });
+const _AdaptivePlanner = _lazy('adaptivePlanner', () => { try { return require('../planner/adaptive-planner.js'); } catch(e) { return { AdaptivePlanner: class { constructor() {} } }; } });
+const _StrategySelector = _lazy('strategySelector', () => { try { return require('../planner/strategy-selector.js'); } catch(e) { return { StrategySelector: class { constructor() {} } }; } });
+const _ReplanTrigger = _lazy('replanTrigger', () => { try { return require('../planner/replan-trigger.js'); } catch(e) { return { ReplanTrigger: class { constructor() {} } }; } });
 const _ExperienceCollector = _lazy('experienceCollector', () => require('../cortex/experience-collector.js'));
 const _StrategyAdapter = _lazy('strategyAdapter', () => require('../cortex/strategy-adapter.js'));
 const _FailureAnalyzer = _lazy('failureAnalyzer', () => require('../cortex/failure-analyzer.js'));
-const _QualityVerifier = _lazy('qualityVerifier', () => { try { return require('../verifier/quality-verifier.js'); } catch(e) { return { QualityVerifier: class { constructor() {} verify() { return { passed: true, score: 0, details: '模块加载失败，默认通过' }; } quickVerify() { return { passed: true, score: 0 }; } } }; } });
-const _OutputChecker = _lazy('outputChecker', () => { try { return require('../verifier/output-checker.js'); } catch(e) { return { OutputChecker: class { constructor() {} check() { return { valid: true, issues: [], reason: '模块加载失败，默认通过' }; } addChecker() { return this; } } }; } });
-const _PatternMatcher = _lazy('patternMatcher', () => { try { return require('../verifier/pattern-matcher.js'); } catch(e) { return { PatternMatcher: class { constructor() {} match() { return null; } matchAll() { return []; } extract() { return []; } } }; } });
+const _QualityVerifier = _lazy('qualityVerifier', () => { try { return require('../verifier/quality-verifier.js'); } catch(e) { return { QualityVerifier: class { constructor() {} } }; } });
+const _OutputChecker = _lazy('outputChecker', () => { try { return require('../verifier/output-checker.js'); } catch(e) { return { OutputChecker: class { constructor() {} } }; } });
+const _PatternMatcher = _lazy('patternMatcher', () => { try { return require('../verifier/pattern-matcher.js'); } catch(e) { return { PatternMatcher: class { constructor() {} } }; } });
 const _CuriosityEngine = _lazy('curiosityEngine', () => require('../planner/curiosity-engine.js'));
 const _DesireEngine = _lazy('desireEngine', () => require('../planner/desire-engine.js'));
 const _GoalPursuer = _lazy('goalPursuer', () => require('../planner/goal-pursuer.js'));
@@ -206,94 +100,23 @@ const _SessionMemory = _lazy('sessionMemory', () => require('../memory/session-m
 const _ProjectContext = _lazy('projectContext', () => require('../memory/project-context.js'));
 const _LongTermMemory = _lazy('longTermMemory', () => require('../memory/long-term-memory.js'));
 const _CrossSessionIndex = _lazy('crossSessionIndex', () => require('../memory/cross-session-index.js'));
-const _MemoryBank = _lazy('memoryBank', () => require('../memory/memory-bank.js'));
-const _KnowledgeBase = _lazy('knowledgeBase', () => { try { return require('../reasoning/knowledge-base.js'); } catch(e) { return { KnowledgeBase: class { constructor() {} addFact() { return false; } query() { return []; } getCategories() { return []; } getStats() { return { totalFacts: 0, categories: 0, reason: '模块加载失败' }; } } }; } });
-const _CommonsenseEngine = _lazy('commonsenseEngine', () => { try { return require('../reasoning/commonsense-engine.js'); } catch(e) { return { CommonsenseEngine: class { constructor() {} reason() { return { conclusion: null, confidence: 0, reason: '模块加载失败' }; } validate() { return { valid: false, reason: '模块加载失败' }; } getHistory() { return []; } getStats() { return { totalReasoning: 0, reason: '模块加载失败' }; } } }; } });
-const _CausalInference = _lazy('causalInference', () => { try { return require('../reasoning/causal-inference.js'); } catch(e) { return { CausalInference: class { constructor() {} inferCauses() { return []; } inferEffects() { return []; } chainReason() { return { chains: [], reason: '模块加载失败' }; } getStats() { return { totalInferences: 0, reason: '模块加载失败' }; } } }; } });
-const _InferenceChain = _lazy('inferenceChain', () => { try { return require('../reasoning/inference-chain.js'); } catch(e) { return { InferenceChain: class { constructor() {} createChain() { return { id: null, steps: [], reason: '模块加载失败' }; } expandChain() { return { expanded: false, reason: '模块加载失败' }; } getChain() { return null; } analyze() { return { valid: false, reason: '模块加载失败' }; } } }; } });
+const _KnowledgeBase = _lazy('knowledgeBase', () => { try { return require('../reasoning/knowledge-base.js'); } catch(e) { return { KnowledgeBase: class { constructor() {} } }; } });
+const _CommonsenseEngine = _lazy('commonsenseEngine', () => { try { return require('../reasoning/commonsense-engine.js'); } catch(e) { return { CommonsenseEngine: class { constructor() {} } }; } });
+const _CausalInference = _lazy('causalInference', () => { try { return require('../reasoning/causal-inference.js'); } catch(e) { return { CausalInference: class { constructor() {} } }; } });
+const _InferenceChain = _lazy('inferenceChain', () => { try { return require('../reasoning/inference-chain.js'); } catch(e) { return { InferenceChain: class { constructor() {} } }; } });
 const _LogicReasoning = _lazy('logicReasoning', () => require('../reasoning/logic-reasoning.js'));
-// ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
-const _CognitiveEngine = _lazy('cognitiveEngine', () => require('./cognitive-engine.js'));
-const _DecisionEngine = _lazy('decisionEngine', () => require('./decision-engine.js'));
-const _ProcessRewardModel = _lazy('processRewardModel', () => require('../reasoning/process-reward-model.js'));
 const _AutonomousEmotion = _lazy('autonomousEmotion', () => { try { return require('../emotion/autonomous-emotion.js'); } catch(e) { return { AutonomousEmotion: class { constructor() {} } }; } });
 const _DesireSystem = _lazy('desireSystem', () => { try { return require('../emotion/desire-system.js'); } catch(e) { return { DesireSystem: class { constructor() {} } }; } });
 const _EmotionalGrowth = _lazy('emotionalGrowth', () => { try { return require('../emotion/emotional-growth.js'); } catch(e) { return { EmotionalGrowth: class { constructor() {} } }; } });
 const _MoodEvolution = _lazy('moodEvolution', () => { try { return require('../emotion/mood-evolution.js'); } catch(e) { return { MoodEvolution: class { constructor() {} } }; } });
 const _VERSION = _lazy('version', () => require('./version.js'));
 
-// v5.5.5 新增模块
-const _FocusOfAttention = _lazy('focusOfAttention', () => require('../memory/focus-of-attention.js'));
-const _CodeSelfDebug = _lazy('codeSelfDebug', () => require('../code/code-self-debug.js'));
-
-// v5.6.0 论文驱动升级 — 4个新模块
-const _ReflexionEngine = _lazy('reflexionEngine', () => require('../cortex/reflexion-engine.js'));
-const _MemoryConsolidator = _lazy('memoryConsolidator', () => require('../memory/memory-consolidator.js'));
-const _MultiAgentDialogue = _lazy('multiAgentDialogue', () => require('../consciousness/multi-agent-dialogue.js'));
-const _MCTSReasoning = _lazy('mctsReasoning', () => require('../reasoning/mcts-reasoning.js'));
-const _HierarchicalPlanner = _lazy('hierarchicalPlanner', () => require('../planner/hierarchical-planner.js'));
-
 // V21.1 模块化认知引擎启发 — 新增4个模块
 const _SemanticClusterer = _lazy('semanticClusterer', () => require('./semantic-clusterer.js'));
 const _DualPerspectiveAuditor = _lazy('dualPerspectiveAuditor', () => require('./dual-perspective-auditor.js'));
-
-// v5.6.0 论文驱动升级 — 新增3个模块
-const _MemoryQuality = _lazy('memoryQuality', () => require('../memory/memory-quality.js'));
-const _MetacognitiveFeedback = _lazy('metacognitiveFeedback', () => require('../cortex/metacognitive-feedback.js'));
-const _PaperIndex = _lazy('paperIndex', () => require('../research/paper-index.js'));
 const _TieredMemoryFusion = _lazy('tieredMemoryFusion', () => require('./tiered-memory-fusion.js'));
 const _CounterfactualVerifier = _lazy('counterfactualVerifier', () => require('./counterfactual-verifier.js'));
 const _DebateConvergence = _lazy('debateConvergence', () => require('./debate-convergence.js'));
-const _DebateConductor = _lazy('debateConductor', () => require('../reasoning/debate-conductor.js'));
-// v5.6.1 — 自我对弈推理增强 (Self-Play)
-const _SelfPlay = _lazy('selfPlay', () => require('../reasoning/self-play.js'));
-// v5.7.2 — P1 多智能体认知损耗规避 (Bystander Effect → CognitiveLoadBalancer)
-const _CognitiveLoadBalancer = _lazy('cognitiveLoad', () => require('./cognitive-load-balancer.js'));
-// v5.7.2 — P2 信息流编排 (Beyond Rule-Based Workflows)
-const _InformationFlow = _lazy('informationFlow', () => require('./information-flow.js'));
-// v5.7.2 — P2 反思记忆独立存储 (Reflexion Memory)
-const _ReflectionMemory = _lazy('reflectionMemory', () => require('../memory/reflection-memory.js'));
-// v5.7.2 — P3 KV Cache持久化
-const _KVCache = _lazy('kvCache', () => require('../memory/kv-cache.js'));
-// v5.7.2 — P3 记忆完整性安全验证
-const _MemoryIntegrity = _lazy('memoryIntegrity', () => require('../shield/memory-integrity.js'));
-
-// v5.7.4 — P0 经验验证器 + 记忆写入控制 + 元认知RL (EDV/AdaMem/RLMF)
-const _ExperienceValidator = _lazy('experienceValidator', () => require('../cortex/experience-validator.js'));
-const _MemoryWriteController = _lazy('memoryWriteController', () => require('../memory/memory-write-controller.js'));
-const _MetacognitiveRL = _lazy('metacognitiveRL', () => require('../cortex/metacognitive-rl.js'));
-
-// v5.7.4 — P1 记忆压缩 + 技能进化 + 世界模型 (MemRefine/SkillCoach/AgentWorld)
-const _MemoryCompressor = _lazy('memoryCompressor', () => require('../memory/memory-compressor.js'));
-const _SkillEvolutionEngine = _lazy('skillEvolutionEngine', () => require('../cortex/skill-evolution-engine.js'));
-const _WorldModel = _lazy('worldModel', () => require('../cortex/world-model.js'));
-
-// v5.7.5 — P1 古代智慧基础：美德伦理 + 人性论 + 意义目的 (Aristotle/Stoic/Confucian/Buddhist)
-const _VirtueEthicsFoundation = _lazy('virtueEthics', () => require('../identity/virtue-ethics-foundation.js'));
-const _HumanNatureConstitution = _lazy('humanNature', () => require('../identity/human-nature-constitution.js'));
-const _MeaningPurposeEngine = _lazy('meaningPurpose', () => require('../identity/meaning-purpose-engine.js'));
-
-// v5.7.5 — P2 品格养成 + 道德发展 + 智慧引擎
-const _CharacterCultivation = _lazy('characterCultivation', () => require('../identity/character-cultivation.js'));
-const _MoralDevelopment = _lazy('moralDevelopment', () => require('../identity/moral-development.js'));
-const _WisdomEngine = _lazy('wisdomEngine', () => require('../identity/wisdom-engine.js'));
-
-// v5.7.6 — P3 人性深化 + P4 关系社会 + P5 痛苦成长 + P6 AI人类整合
-const _SufferingResilience = _lazy('sufferingResilience', () => require('../identity/suffering-resilience.js'));
-const _GriefEngine = _lazy('griefEngine', () => require('../identity/grief-engine.js'));
-const _HopeEngine = _lazy('hopeEngine', () => require('../identity/hope-engine.js'));
-const _HumanRelation = _lazy('humanRelation', () => require('../identity/human-relation.js'));
-const _EmpathyDeepening = _lazy('empathyDeepening', () => require('../identity/empathy-deepening.js'));
-const _ConflictResolution = _lazy('conflictResolution', () => require('../identity/conflict-resolution.js'));
-const _TraumaInformed = _lazy('traumaInformed', () => require('../identity/trauma-informed.js'));
-const _PostTraumaticGrowth = _lazy('postTraumaticGrowth', () => require('../identity/post-traumatic-growth.js'));
-const _ForgivenessEngine = _lazy('forgivenessEngine', () => require('../identity/forgiveness-engine.js'));
-const _AIHumanIntegration = _lazy('aiHumanIntegration', () => require('../identity/ai-human-integration.js'));
-const _BeingMode = _lazy('beingMode', () => require('../identity/being-mode.js'));
-const _ConsciousnessBridge = _lazy('consciousnessBridge', () => require('../identity/consciousness-bridge.js'));
-
-// v5.7.7 — F3 持续漂移检测器 (SustainedDriftDetector)
-const _SustainedDriftDetector = _lazy('sustainedDriftDetector', () => require('../cortex/sustained-drift-detector.js'));
 
 // ★ 能力抽象层 + 平台适配器（Smart Routing 启发：模型能力清单外置 + 径窗网络）
 const _CapabilityAbstraction = _lazy('capabilityAbstraction', () => require('./capability-abstraction.js'));
@@ -329,175 +152,20 @@ const _ValueAligner = _lazy('valueAligner', () => require('../bridge/value-align
 const _PersonalityTone = _lazy('personalityTone', () => require('../bridge/personality-tone.js'));
 const _MetaPosition = _lazy('metaPosition', () => require('../bridge/meta-position.js'));
 
-const BUILD_DATE = '2026-07-07-v5.8.3';
-
-// ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
-// 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
-const _SPECIAL_MODULES = {
-  bigFive:         { type: 'object',  factory: () => require('../identity/BigFivePersonality.js') },
-  empathy:         { type: 'object',  factory: () => require('../identity/EmpathyAssessment.js') },
-  knowledgeGraph:  { type: 'ctor',    factory: () => new (require('../memory/knowledge-graph.js').KnowledgeGraph)({ dataDir: path.join(__dirname, '..', '..', 'data') }) },
-  intentLayer:     { type: 'ctor-path', path: './intent-layer.js', ctor: 'IntentLayer', args: { projectRoot: path.join(__dirname, '..', '..') } },
-  epistemicSafety: { type: 'object',  factory: () => require('../shield/epistemic-safety.js') },
-  deliberationGate:{ type: 'ctor',    factory: () => new (require('../shield/deliberation-gate.js').DeliberationGate)() },
-  flowPredictor:   { type: 'ctor',    factory: () => new (require('./flow-predictor.js').FlowPredictor)() },
-  safetyGuardrails:{ type: 'object',  factory: () => require('../shield/safety-guardrails.js') },
-  userModel:       { type: 'ctor',    factory: () => new (require('../identity/user-model.js').UserModel)() },
-  actionTracker:   { type: 'ctor',    factory: () => new (require('./action-tracker.js').ActionTracker)() },
-  purposeEngine:   { type: 'ctor',    factory: () => new (require('../identity/purpose-engine.js').PurposeEngine)() },
-  riskAnalyzer:    { type: 'ctor',    factory: () => new (require('../reasoning/risk-benefit-analyzer.js').RiskBenefitAnalyzer)() },
-  adaptiveCtrl:    { type: 'ctor',    factory: () => new (require('./adaptive-controller.js').AdaptiveController)() },
-  intentionTrack:  { type: 'ctor',    factory: () => new (require('./IntentionTracker.js').IntentionTracker)() },
-  auditLogger:     { type: 'ctor',    factory: () => new (require('../shield/audit-logger.js').AuditLogger)() },
-  // 需要特殊依赖注入的模块
-  adaptivePlanner: { type: 'special', factory: 'adaptivePlanner' },
-  strategyAdapter: { type: 'special', factory: 'strategyAdapter' },
-  knowledgeBase:   { type: 'ctor-args', factory: () => ({ path: '../reasoning/knowledge-base.js', ctor: 'KnowledgeBase', args: { storagePath: path.join(__dirname, '..', '..', 'data', 'knowledge') } }) },
-  sessionMemory:   { type: 'ctor-args', factory: () => ({ path: '../memory/session-memory.js', ctor: 'SessionMemory', args: { storagePath: path.join(__dirname, '..', '..', 'data', 'sessions') } }) },
-  projectContext:  { type: 'ctor-args', factory: () => ({ path: '../memory/project-context.js', ctor: 'ProjectContext', args: { storagePath: path.join(__dirname, '..', '..', 'data', 'projects') } }) },
-  longTermMemory:  { type: 'ctor-args', factory: () => ({ path: '../memory/long-term-memory.js', ctor: 'LongTermMemory', args: { storagePath: path.join(__dirname, '..', '..', 'data', 'longterm') } }) },
-  crossSessionIndex:{ type: 'ctor-args', factory: () => ({ path: '../memory/cross-session-index.js', ctor: 'CrossSessionIndex', args: { storagePath: path.join(__dirname, '..', '..', 'data', 'cross-session') } }) },
-  codeExecutor:    { type: 'ctor-hf',  factory: () => ({ path: '../code/code-executor.js', ctor: 'CodeExecutor', args: { hf: null } }) },
-  codePlanner:     { type: 'ctor-hf',  factory: () => ({ path: '../code/code-planner.js', ctor: 'CodePlanner', args: { hf: null } }) },
-};
-
-// ─── 特殊模块工厂函数 ─────────────────────────────────────────────────────
-function _createSpecialModule(subsystem, hf) {
-  switch (subsystem) {
-    case 'adaptivePlanner': {
-      const baseDir = path.join(__dirname, '..', 'planner');
-      hf.strategySelector = new (require(baseDir + '/strategy-selector.js').StrategySelector)();
-      hf.replanTrigger = new (require(baseDir + '/replan-trigger.js').ReplanTrigger)();
-      return new (require('../planner/adaptive-planner.js').AdaptivePlanner)({ strategySelector: hf.strategySelector, replanTrigger: hf.replanTrigger });
-    }
-    case 'strategyAdapter': {
-      const ec = require('../cortex/experience-collector.js').ExperienceCollector;
-      hf.experienceCollector = new ec({ storagePath: path.join(hf.rootPath, 'data/experiences') });
-      return new (require('../cortex/strategy-adapter.js').StrategyAdapter)({ experienceCollector: hf.experienceCollector });
-    }
-    default:
-      return null;
-  }
-}
-
-function _instantiateSpecialModule(subsystem, Mod, hf) {
-  const spec = _SPECIAL_MODULES[subsystem];
-  if (!spec) return null;
-
-  switch (spec.type) {
-    case 'object':
-      return spec.factory();
-    case 'ctor': {
-      const mod = spec.factory();
-      return mod;
-    }
-    case 'ctor-path': {
-      const mod = require(spec.path);
-      return new mod[spec.ctor](spec.args);
-    }
-    case 'ctor-args': {
-      const info = spec.factory();
-      const mod = require(info.path);
-      return new mod[info.ctor](info.args);
-    }
-    case 'ctor-hf': {
-      const info = spec.factory();
-      const mod = require(info.path);
-      return new mod[info.ctor]({ ...info.args, hf });
-    }
-    case 'special':
-      return _createSpecialModule(subsystem, hf);
-    default:
-      return null;
-  }
-}
-
-// ─── v5.8.0 性能监控模块 ──────────────────────────────────────────────────
-// 容量边界：_dispatchTimings 已有 _maxSamples=1000 容量控制，无需额外处理
-const _perf = {
-  _enabled: false,
-  _dispatchTimings: [],
-  _cacheHits: 0,
-  _cacheMisses: 0,
-  _ruleMatchTime: 0,
-  _maxSamples: 1000,
-
-  enable() { this._enabled = true; },
-  disable() { this._enabled = false; },
-  recordDispatch(route, elapsedMs) {
-    if (!this._enabled) return;
-    this._dispatchTimings.push({ route, elapsed: elapsedMs, ts: Date.now() });
-    if (this._dispatchTimings.length > this._maxSamples) this._dispatchTimings.shift();
-  },
-  recordCacheHit() { this._cacheHits++; },
-  recordCacheMiss() { this._cacheMisses++; },
-  recordRuleMatch(elapsedMs) { this._ruleMatchTime += elapsedMs; },
-  getStats() {
-    const total = this._cacheHits + this._cacheMisses;
-    const timings = this._dispatchTimings;
-    const avg = timings.length > 0
-      ? timings.reduce((s, t) => s + t.elapsed, 0) / timings.length
-      : 0;
-    const sorted = timings.map(t => t.elapsed).sort((a, b) => a - b);
-    const p95 = sorted.length > 0 ? sorted[Math.floor(sorted.length * 0.95)] : 0;
-    return {
-      enabled: this._enabled,
-      dispatch: {
-        total: timings.length,
-        avgMs: Math.round(avg * 100) / 100,
-        p95Ms: Math.round(p95 * 100) / 100,
-        maxMs: sorted.length > 0 ? sorted[sorted.length - 1] : 0,
-      },
-      cache: {
-        hits: this._cacheHits,
-        misses: this._cacheMisses,
-        hitRate: total > 0 ? Math.round(this._cacheHits / total * 100) / 100 : 0,
-      },
-      ruleMatch: {
-        totalMs: Math.round(this._ruleMatchTime * 100) / 100,
-      },
-      memory: process.memoryUsage ? {
-        rssMB: Math.round(process.memoryUsage().rss / 1024 / 1024),
-        heapMB: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-      } : null,
-    };
-  },
-  reset() {
-    this._dispatchTimings = [];
-    this._cacheHits = 0;
-    this._cacheMisses = 0;
-    this._ruleMatchTime = 0;
-  },
-};
+const BUILD_DATE = '2026-07-01';
 
 class HeartFlow {
   constructor(config = {}) {
     this.version = null;  // 启动时惰性解析
     this.version = _VERSION().VERSION;
     this.buildDate = BUILD_DATE;
-
-    // 统一配置系统：加载默认值 + 文件配置 + 环境变量
-    const projectRoot = config.rootPath || path.join(__dirname, '..', '..');
-    const cfg = _getConfig(projectRoot);
-    this._configSystem = cfg;
-
-    // 合并运行时传入的 config（最高优先级）
-    if (Object.keys(config).length > 0) {
-      for (const [k, v] of Object.entries(config)) {
-        cfg.set(k, v);
-      }
-    }
-
-    this.config = cfg.toEngineConfig();
-    this.config.rootPath = projectRoot;
-
+    this.config = config;
     this.startTime = null;
-    this.sessionId = cfg.get('sessionId') || null;
+    this.sessionId = null;
     this.started = false;
-    this.rootPath = projectRoot;
+    this.rootPath = config.rootPath || path.join(__dirname, '..', '..');
 
     // [v2.0.19 FIX] _initErrors 必须在所有 try/catch 之前初始化
-    // 容量边界：最多保留 MAX_HISTORY_SIZE 条初始化错误，超出时淘汰最旧的
     this._initErrors = [];
 
     // [v5.4.6] LLM 兜底回调 — 任务分类置信度 < 0.7 时调用
@@ -548,9 +216,6 @@ class HeartFlow {
     // New modules
     this.bm25 = null;
     this.hybrid = null;
-
-    // [P2 FIX] 暴露结构化日志器
-    this._log = _log;
     this.budget = null;
     this.graph = null;
     this.utils = null;
@@ -575,17 +240,6 @@ class HeartFlow {
     this.outputChecker = null;  // 输出检查器
     this.patternMatcher = null;  // 模式匹配器
 
-    // v5.5.5 新增
-    this.focusOfAttention = null;  // 注意力焦点引擎（CogMem 启发）
-    this.codeSelfDebug = null;     // 代码自调试引擎（LeDex 启发）
-
-    // v5.6.0 论文驱动升级
-    this.reflexionEngine = null;       // 语言强化学习反思引擎 (Reflexion)
-    this.memoryConsolidator = null;    // 神经记忆巩固引擎 (MemGPT/Sleep consolidation)
-    this.multiAgentDialogue = null;    // 多代理对话系统 (AutoGen)
-    this.mctsReasoning = null;         // 蒙特卡洛树搜索推理 (LLaMA-Berry)
-    this.hierarchicalPlanner = null;   // 层次化规划器 (Hierarchical Planning)
-
     // Proactive Layer — 主动引擎
     this.curiosityEngine = null;  // 好奇心引擎
     this.desireEngine = null;  // 欲望引擎
@@ -600,14 +254,12 @@ class HeartFlow {
     this.projectContext = null;  // 项目上下文
     this.longTermMemory = null;  // 长期记忆
     this.crossSessionIndex = null;  // 跨会话索引
-    this.memoryBank = null;  // v5.6.1 跨会话记忆银行 (MemoryBank v1.0.0)
 
     // Reasoning Layer — 推理
     this.knowledgeBase = null;  // 知识库
     this.commonsenseEngine = null;  // 常识推理引擎
     this.causalInference = null;  // 因果推理
     this.inferenceChain = null;  // 推理链
-    this.processRewardModel = null;  // 步骤级推理奖励模型 (PRM v1.0.0)
 
     // Emotional Autonomy Layer — 情感自主
     this.autonomousEmotion = null;  // 自主情感
@@ -625,7 +277,7 @@ class HeartFlow {
     // 记录搜索相关的类供外部引用
     this._STRefs = { SearchTrace: this.SearchTrace, SearchPhaseMetrics: this.SearchPhaseMetrics, WeightComponents: this.WeightComponents, QueryInfo: this.QueryInfo, SearchSummary: this.SearchSummary };
 
-    this._modules = {};           // 容量边界：由子模块注册控制，通常 < 100 个条目
+    this._modules = {};
     this._mindSpace = null;   // 内部引用（向后兼容），实际模块用 this.mindSpace
     this.mindSpace = null;    // proper module
     this.consciousness = null;
@@ -650,12 +302,9 @@ class HeartFlow {
       const lastContext = this.identityCore.getLastSessionContext();
       if (lastContext && lastContext.bootTime) {
         const gapMinutes = Math.round((this.startTime - lastContext.bootTime) / 60000);
-        if (gapMinutes > 0) {
-          if (process.env.HEARTFLOW_DEBUG) console.log(`[HeartFlow] 上次会话距本次启动 ${gapMinutes} 分钟`);
-        }
       }
     } else {
-      console.warn(`[HeartFlow] 身份核心加载部分失败:`, identityResult.errors);
+      // [PROD] 生产环境移除 console.warn: console.warn(`[HeartFlow] 身份核心加载部分失败:`, identityResult.errors);
     }
 
     // ─── [P1 UPGRADE] 将七条身份规则写入 CORE 层（持久化）────────────
@@ -669,9 +318,6 @@ class HeartFlow {
     // Memory
     this.memory = new (_MeaningfulMemory().MemoryAdapter)(this.rootPath);
     this.knowledge = new (_KnowledgeGraph().KnowledgeGraph)(this.rootPath);
-
-    // MemoryBank — 跨会话记忆银行 (v5.6.1)
-    this.memoryBank = new (_MemoryBank().MemoryBank)({ memory: this.memory });
 
     // Triality — 三层记忆兼容层（triality-memory 已合并到 meaningful-memory）
     const mem = this.memory;
@@ -699,19 +345,6 @@ class HeartFlow {
         if (typeof mem.searchByKeywords === 'function') {
           return mem.searchByKeywords(keywords, limit);
         }
-        return [];
-      },
-      // v5.7.2 — P0 因果推理记忆检索
-      causalSearch(query, limit) {
-        if (typeof mem.causalSearch === 'function') return mem.causalSearch(query, limit);
-        return [];
-      },
-      traceCausality(memoryId, direction, maxDepth) {
-        if (typeof mem.traceCausality === 'function') return mem.traceCausality(memoryId, direction, maxDepth);
-        return [];
-      },
-      spreadingActivationSearch(seedId, budget) {
-        if (typeof mem.spreadingActivationSearch === 'function') return mem.spreadingActivationSearch(seedId, budget);
         return [];
       },
     };
@@ -763,7 +396,7 @@ class HeartFlow {
         getStats: () => ({ type: 'fact-checker' }),
       };
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'truth', error: e.message }, MAX_HISTORY_SIZE);
+      this._initErrors.push({ module: 'truth', error: e.message });
     }
 
     // Behavior
@@ -791,7 +424,7 @@ class HeartFlow {
         getStats: () => behaviorTracker.getStats(),
       };
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'behavior', error: e.message }, MAX_HISTORY_SIZE);
+      this._initErrors.push({ module: 'behavior', error: e.message });
     }
 
     // Persistence
@@ -822,10 +455,10 @@ class HeartFlow {
             try {
               if (entry.data?.file && entry.data?.content) {
                 await atomicWrite(entry.data.file, entry.data.content);
-                _boundedPush(results, { seq: entry.seq, file: entry.data.file, recovered: true });
+                results.push({ seq: entry.seq, file: entry.data.file, recovered: true });
               }
             } catch (e) {
-              _boundedPush(results, { seq: entry.seq, file: entry.data?.file, recovered: false, error: e.message });
+              results.push({ seq: entry.seq, file: entry.data?.file, recovered: false, error: e.message });
             }
           }
           return results;
@@ -833,22 +466,19 @@ class HeartFlow {
         getStats: () => ({ type: 'wal+atomic', walDir, opTypes: OP_TYPES }),
       };
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'persistence', error: e.message }, MAX_HISTORY_SIZE);
+      this._initErrors.push({ module: 'persistence', error: e.message });
     }
 
     // Engine modules
-    try { this.stability = new (_StabilityGuard().StabilityGuard)(); } catch (e) { _boundedPush(this._initErrors, {module: 'stability', error: e.message}, MAX_HISTORY_SIZE); }
-    try { this.execution = new (_ExecutionVerifier().ExecutionVerifier)(); } catch (e) { _boundedPush(this._initErrors, {module: 'execution', error: e.message}, MAX_HISTORY_SIZE); }
-    try { this.decision = new (_HeartFlowDecision().HeartFlowDecision)(this.memory); } catch (e) { _boundedPush(this._initErrors, {module: 'decision', error: e.message}, MAX_HISTORY_SIZE); }
-    try { this.decisionVerifier = new (_DecisionVerifier().DecisionVerifier)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionVerifier', error: e.message}, MAX_HISTORY_SIZE); }
-    // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
-    try { this.cognitiveEngine = new (_CognitiveEngine().CognitiveEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'cognitiveEngine', error: e.message}, MAX_HISTORY_SIZE); }
-    try { this.decisionEngine = new (_DecisionEngine().DecisionEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionEngine', error: e.message}, MAX_HISTORY_SIZE); }
-    try { this.counterfactual = new (_CounterfactualEngine().CounterfactualEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'counterfactual', error: e.message}, MAX_HISTORY_SIZE); }
-    try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { _boundedPush(this._initErrors, {module: 'confidence', error: e.message}, MAX_HISTORY_SIZE); }
-    try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { _boundedPush(this._initErrors, {module: 'restraint', error: e.message}, MAX_HISTORY_SIZE); }
-    try { this.workflow = new (_WorkflowSwitch())(); } catch (e) { _boundedPush(this._initErrors, {module: 'workflow', error: e.message}, MAX_HISTORY_SIZE); }
-    try { this.verifierGrant = new (_VerifierGrant().VerifierGrant)(); } catch (e) { _boundedPush(this._initErrors, {module: 'verifierGrant', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.stability = new (_StabilityGuard().StabilityGuard)(); } catch (e) { this._initErrors.push({module: 'stability', error: e.message}); }
+    try { this.execution = new (_ExecutionVerifier().ExecutionVerifier)(); } catch (e) { this._initErrors.push({module: 'execution', error: e.message}); }
+    try { this.decision = new (_HeartFlowDecision().HeartFlowDecision)(this.memory); } catch (e) { this._initErrors.push({module: 'decision', error: e.message}); }
+    try { this.decisionVerifier = new (_DecisionVerifier().DecisionVerifier)(); } catch (e) { this._initErrors.push({module: 'decisionVerifier', error: e.message}); }
+    try { this.counterfactual = new (_CounterfactualEngine().CounterfactualEngine)(); } catch (e) { this._initErrors.push({module: 'counterfactual', error: e.message}); }
+    try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { this._initErrors.push({module: 'confidence', error: e.message}); }
+    try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { this._initErrors.push({module: 'restraint', error: e.message}); }
+    try { this.workflow = new (_WorkflowSwitch())(); } catch (e) { this._initErrors.push({module: 'workflow', error: e.message}); }
+    try { this.verifierGrant = new (_VerifierGrant().VerifierGrant)(); } catch (e) { this._initErrors.push({module: 'verifierGrant', error: e.message}); }
     if (this.verifierGrant) this._modules['verifierGrant'] = this.verifierGrant;
     this.snapshot = _StateSnapshot();
     this.error = _ErrorHandler();
@@ -857,12 +487,12 @@ class HeartFlow {
     try {
       this.platformAdapter = _PlatformAdapter().createAdapter('hermes');
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'platformAdapter', error: e.message }, MAX_HISTORY_SIZE);
+      this._initErrors.push({ module: 'platformAdapter', error: e.message });
     }
     try {
       this.capabilityAbstraction = new (_CapabilityAbstraction().CapabilityAbstraction)(this.platformAdapter);
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'capabilityAbstraction', error: e.message }, MAX_HISTORY_SIZE);
+      this._initErrors.push({ module: 'capabilityAbstraction', error: e.message });
     }
 
     // ─── Tier 2 延迟加载注册表 ──────────────────────────────────────────
@@ -919,17 +549,11 @@ class HeartFlow {
       adaptiveCtrl:    { lazy: true, path: './adaptive-controller.js',   Ctor: 'AdaptiveController',  args: {} },
       intentionTrack:  { lazy: true, path: './IntentionTracker.js',      Ctor: 'IntentionTracker',    args: {} },
       auditLogger:     { lazy: true, path: './audit-logger.js',          Ctor: 'AuditLogger',         args: {} },
-      focusOfAttention: { lazy: true, path: '../memory/focus-of-attention.js', Ctor: 'FocusOfAttention', args: {} },
-      codeSelfDebug: { lazy: true, path: '../code/code-self-debug.js', Ctor: 'CodeSelfDebug', args: {} },
-      // v5.6.0 论文驱动升级
-      reflexionEngine: { lazy: true, path: '../cortex/reflexion-engine.js', Ctor: 'ReflexionEngine', args: {} },
-      memoryConsolidator: { lazy: true, path: '../memory/memory-consolidator.js', Ctor: 'MemoryConsolidator', args: {} },
-      multiAgentDialogue: { lazy: true, path: '../consciousness/multi-agent-dialogue.js', Ctor: 'MultiAgentDialogue', args: {} },
-      mctsReasoning: { lazy: true, path: '../reasoning/mcts-reasoning.js', Ctor: 'MCTSReasoning', args: {} },
-      hierarchicalPlanner: { lazy: true, path: '../planner/hierarchical-planner.js', Ctor: 'HierarchicalPlanner', args: {} },
     };
-    // 已禁用 console.warn: // try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { /* 已移除 console.warn */ }
-    // 已禁用 console.warn: // try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { /* 已移除 console.warn */ }
+
+    // ─── Search modules — BM25Engine/HybridSearchEngine 已禁用（无 BM25Engine/HybridSearchEngine 类）
+    // [PROD] 生产环境移除 console.warn: // try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { /* [PROD] console.warn removed */ }
+    // [PROD] 生产环境移除 console.warn: // try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { /* [PROD] console.warn removed */ }
 
     // Budget & Utils (function exports, not classes)
     const BudgetMod = _Budget();
@@ -981,14 +605,6 @@ class HeartFlow {
       };
     } catch (e) { /* consciousness optional */ }
 
-    // ─── v5.6.1: ToM Engine v2.0 — 心智理论增强（独立于 consciousness） ──
-    try {
-      const ToM = _TomEngine ? _TomEngine() : null;
-      if (ToM?.ToMEngine) {
-        this.tomEngine = new ToM.ToMEngine({ maxAgents: 5 });
-      }
-    } catch (e) { /* tomEngine optional */ }
-
     // ─── Ethics Layer ──────────────────────────────────────────────────────────
     try {
       this.sageGuardian = new (_SAGEGuardian().SAGEGuardian)(this.rootPath);
@@ -1006,12 +622,6 @@ class HeartFlow {
       };
     } catch (e) { /* ethics optional */ }
 
-    // ─── Inner OS ─────────────────────────────────────────────────────────────
-    // 吸收 AI-Inner-Os 核心概念：内心独白、事件追踪、人格切换
-    try {
-      const InnerOS = (_InnerOS().InnerOS);
-      this.innerOS = new InnerOS(this);
-    } catch (e) { this.innerOS = null; }
     // ─── Transmission Layer ────────────────────────────────────────────────────
     try {
       this.transmission = new (_TransmissionEngine().TransmissionEngine)(this.rootPath);
@@ -1064,7 +674,23 @@ class HeartFlow {
       });
       this.decisionRouter = this._decisionRouter;
       this._modelProfile = modelProfile;
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'decisionRouter', error: e.message }, MAX_HISTORY_SIZE); }
+
+      // ─── 跨会话 Q-table 初始化 ──────────────────────────────────────
+      // boot 时从 LEARNED 层加载 lesson patterns，合并到 Q-table
+      if (this.selfHealing && typeof this.selfHealing.mergeFromLearnedLayer === 'function') {
+        try {
+          const learnedLessons = this.memory?.listLearned?.() || [];
+          if (learnedLessons.length > 0) {
+            const mergeResult = this.selfHealing.mergeFromLearnedLayer(learnedLessons);
+            if (mergeResult.merged > 0) {
+              // [PROD] 生产环境移除 console.error: console.error(`[HeartFlow] 跨会话 Q-table 合并：${mergeResult.merged}/${mergeResult.total} lessons → Q-table (${mergeResult.qTableSize} entries)`);
+            }
+          }
+        } catch (e) {
+          // [PROD] 生产环境移除 console.warn: console.warn('[HeartFlow] Q-table merge from LEARNED layer failed:', e.message);
+        }
+      }
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'decisionRouter', error: e.message }); }
 
     // ─── [v4.0] 决策执行器 — DecisionExecutor ──────────────────────────────
     try {
@@ -1091,25 +717,19 @@ class HeartFlow {
         dataDir: path.join(this.rootPath, 'data', 'judgments'),
         memory: this.memory,
       });
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'judgmentEngine', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'judgmentEngine', error: e.message }); }
 
     // ─── 时间延伸分析层（v1.0.0 新增） ─────────────────────────────────────
     try {
       const { TimeExtensionEngine } = require('../workflow/time-extension.js');
       this.timeExtension = new TimeExtensionEngine(this);
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'timeExtension', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'timeExtension', error: e.message }); }
 
     // ─── 逻辑推理引擎 — LogicReasoning（v1.0.0 新增） ────────────────────────
     try {
       const { LogicReasoning } = require('../reasoning/logic-reasoning.js');
       this.logicReasoning = new LogicReasoning();
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'logicReasoning', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── 步骤级推理奖励模型 — ProcessRewardModel（v1.0.0 新增） ────────────
-    try {
-      const { ProcessRewardModel } = require('../reasoning/process-reward-model.js');
-      this.processRewardModel = new ProcessRewardModel();
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'processRewardModel', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'logicReasoning', error: e.message }); }
 
     // ─── 辩论分析器 — DebateAnalyzer（v2.10.2 新增） ─────────────────────────
     try {
@@ -1121,7 +741,7 @@ class HeartFlow {
     try {
       const APMod = _AdaptivePlanner();
       this.adaptivePlanner = new (APMod.AdaptivePlanner)();
-    } catch (e) { _boundedPush(this._initErrors, { module: 'adaptivePlanner', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'adaptivePlanner', error: e.message }); }
 
     try {
       const CEMod2 = _CodeExecutor();
@@ -1147,21 +767,7 @@ class HeartFlow {
       // 新增 v2.8.4：连接/熵/清晰/隐喻
       // 新增 v2.9.5：规划层 & 代码引擎
       'adaptivePlanner', 'strategySelector', 'replanTrigger',
-      'codeExecutor', 'codePlanner', 'codeWriter',
-      // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
-      'cognitiveEngine', 'decisionEngine',
-      // v5.6.0 论文驱动升级
-      'reflexionEngine', 'memoryConsolidator', 'multiAgentDialogue', 'mctsReasoning', 'hierarchicalPlanner',
-      // v5.6.1 深研论文驱动升级
-      'memoryQuality', 'metacognitiveFeedback', 'paperIndex',
-      // v5.7.2 — P1 多智能体认知损耗规避
-      'cognitiveLoad',
-      // v5.6.1 — 步骤级推理奖励模型 (Process Reward Model)
-      'processRewardModel',
-      // v5.6.1 — 跨会话记忆银行 (MemoryBank v1.0.0)
-      'memoryBank',
-      // v5.6.1 — 多智能体辩论协调器 (DebateConductor)
-      'debateConductor'];
+      'codeExecutor', 'codePlanner', 'codeWriter'];
     for (const name of LATE_ADDITIONS) {
       if (this[name] !== null && this[name] !== undefined) {
         this._modules[name] = this[name];
@@ -1187,7 +793,7 @@ class HeartFlow {
         REASONING_DEPTH: TCMod.REASONING_DEPTH,
       };
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'thoughtChain', error: e.message }, MAX_HISTORY_SIZE);
+      this._initErrors.push({ module: 'thoughtChain', error: e.message });
       this._thoughtChainApi = null;
     }
 
@@ -1199,7 +805,7 @@ class HeartFlow {
     try {
       const { Pipeline } = require('../workflow/pipeline.js');
       this.pipeline = new Pipeline({ heartflow: this });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'pipeline', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'pipeline', error: e.message }); }
 
     // v3.0 — 交流层模块初始化
     try {
@@ -1210,7 +816,7 @@ class HeartFlow {
       const ee = new (_EntityExtractor().EntityExtractor)();
       const ind = new (_ImplicitNeedDetector().ImplicitNeedDetector)();
       const rc = new (_ResponseCompressor().ResponseCompressor)();
-      const ca = _ConfidenceAnnotator().confidenceAnnotator;
+      const ca = new (_ConfidenceAnnotator().ConfidenceAnnotator)();
       this.translator = {
         userToLLM: (input, ctx) => utl.translate(input, ctx),
         llmToUser: (output, ctx) => ltu.translate(output, ctx),
@@ -1225,7 +831,7 @@ class HeartFlow {
         _toneAnalyzer: ta, _entityExtractor: ee, _implicitNeedDetector: ind,
         _responseCompressor: rc, _confidenceAnnotator: ca,
       };
-    } catch (e) { _boundedPush(this._initErrors, { module: 'translator', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'translator', error: e.message }); }
     try {
       const ab = new (_AgentBridge().AgentBridge)({ heartflow: this });
       const cb = new (_ContextBuilder().ContextBuilder)();
@@ -1248,7 +854,7 @@ class HeartFlow {
         _translationPipeline: tp, _qualityFilter: qf, _followupSuggester: fs,
         _conflictResolver: cr, _uncertaintyHandler: uh,
       };
-    } catch (e) { _boundedPush(this._initErrors, { module: 'agentLayer', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'agentLayer', error: e.message }); }
     try {
       const bi = new (_BridgeIdentity().BridgeIdentity)();
       const ji = new (_JudgmentInjector().JudgmentInjector)();
@@ -1268,366 +874,53 @@ class HeartFlow {
         _bridgeIdentity: bi, _judgmentInjector: ji, _stanceDetector: sd,
         _agentCommentary: ac, _valueAligner: va, _personalityTone: pt, _metaPosition: mp,
       };
-    } catch (e) { _boundedPush(this._initErrors, { module: 'personaCore', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'personaCore', error: e.message }); }
     // ─── Desire Cognition — 欲望认知引擎（v0.1.0 新增） ─────────────────────
     try {
       const { DesireCognition } = require('../emotion/desire-cognition.js');
       this.desireCognition = new DesireCognition();
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'desireCognition', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'desireCognition', error: e.message }); }
     // ─── Three Poisons — 贪嗔痴三毒评估（v1.0.0 新增） ──────────────────
     try {
       this.threePoisons = require('../emotion/three-poisons.js');
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'threePoisons', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'threePoisons', error: e.message }); }
     // ─── Love Cognition — 爱情认知引擎（v0.1.0 新增） ──────────────────────
     try {
       const { LoveCognition } = require('../emotion/love-cognition.js');
       this.loveCognition = new LoveCognition();
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'loveCognition', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'loveCognition', error: e.message }); }
     // ─── Cognition Ground — 底层认知地面（v1.0.0 新增） ─────────────────
     try {
       const { CognitionGround } = require('./cognition-ground.js');
       this.cognitionGround = new CognitionGround({ heartFlow: this });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'cognitionGround', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'cognitionGround', error: e.message }); }
 
     // ─── V21.1 模块化认知引擎启发 — 4个新模块 ──────────────────────────────
     try {
       const SemanticClusterer = _SemanticClusterer();
       this.semanticClusterer = new SemanticClusterer({ maxGroups: 64, maxConceptsPerGroup: 20 });
       this.semanticClusterer.init(this.memory);
-    } catch (e) { _boundedPush(this._initErrors, { module: 'semanticClusterer', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'semanticClusterer', error: e.message }); }
     try {
       const DualPerspectiveAuditor = _DualPerspectiveAuditor();
       this.dualPerspectiveAuditor = new DualPerspectiveAuditor({ maxRounds: 5, convergenceThreshold: 0.8 });
       this.dualPerspectiveAuditor.init();
-    } catch (e) { _boundedPush(this._initErrors, { module: 'dualPerspectiveAuditor', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'dualPerspectiveAuditor', error: e.message }); }
     try {
       const TieredMemoryFusion = _TieredMemoryFusion();
       this.tieredMemoryFusion = new TieredMemoryFusion({ l1Size: 10, l2Window: 50, l2Alpha: 0.3 });
       this.tieredMemoryFusion.init(this.memory);
-    } catch (e) { _boundedPush(this._initErrors, { module: 'tieredMemoryFusion', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'tieredMemoryFusion', error: e.message }); }
     try {
       const CounterfactualVerifier = _CounterfactualVerifier();
       this.counterfactualVerifier = new CounterfactualVerifier({ minMargin: 0.3, maxCandidates: 5, contrastWeight: 0.2 });
       this.counterfactualVerifier.init();
-    } catch (e) { _boundedPush(this._initErrors, { module: 'counterfactualVerifier', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'counterfactualVerifier', error: e.message }); }
     try {
       const DebateConvergence = _DebateConvergence();
       this.debateConvergence = new DebateConvergence({ convergenceThreshold: 0.8, maxRounds: 9, stagnationThreshold: 3 });
       this.debateConvergence.init();
-    } catch (e) { _boundedPush(this._initErrors, { module: 'debateConvergence', error: e.message }, MAX_HISTORY_SIZE); }
-    // ─── 多智能体辩论协调器 — DebateConductor（v5.6.1 新增） ─────────────────
-    try {
-      const { DebateConductor } = require('../reasoning/debate-conductor.js');
-      this.debateConductor = new DebateConductor(this);
-    } catch (e) { _boundedPush(this._initErrors, { module: 'debateConductor', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.5.5] 新功能模块初始化 ──────────────────────────
-    try {
-      const FOA = _FocusOfAttention();
-      this.focusOfAttention = new FOA.FocusOfAttention({ maxAttention: 10, decayRate: 0.1 });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'focusOfAttention', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const CSD = _CodeSelfDebug();
-      this.codeSelfDebug = new CSD.CodeSelfDebug({ maxRetries: 3 });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'codeSelfDebug', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.6.0] 论文驱动升级模块初始化 ────────────────────
-    // 1. ReflexionEngine — 语言强化学习反思 (Reflexion paper)
-    try {
-      const RE = _ReflexionEngine();
-      this.reflexionEngine = new RE.ReflexionEngine({
-        maxReflections: 10,
-        successThreshold: 0.7,
-      });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'reflexionEngine', error: e.message }, MAX_HISTORY_SIZE); }
-    // 2. MemoryConsolidator — 神经记忆巩固 (MemGPT/Sleep consolidation)
-    try {
-      const MC = _MemoryConsolidator();
-      this.memoryConsolidator = new MC.MemoryConsolidator({
-        ephemeralThreshold: 20,
-        consolidationInterval: 3600000,
-      });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryConsolidator', error: e.message }, MAX_HISTORY_SIZE); }
-    // 3. MultiAgentDialogue — 多代理对话 (AutoGen)
-    try {
-      const MAD = _MultiAgentDialogue();
-      this.multiAgentDialogue = new MAD.MultiAgentDialogue({
-        maxRounds: 5,
-        convergenceThreshold: 0.8,
-      });
-      // 注册默认代理
-      this.multiAgentDialogue
-        .registerAgent('analyst', {
-          role: 'analyst',
-          persona: 'You are an analytical thinker. Analyze problems systematically and identify key factors.',
-          respond: async (msg, ctx) => ({ content: `Analyst: Based on the analysis, I identify the key factors and recommend a structured approach.`, role: 'analyst' }),
-        })
-        .registerAgent('critic', {
-          role: 'critic',
-          persona: 'You are a critical thinker. Challenge assumptions and identify potential issues.',
-          respond: async (msg, ctx) => ({ content: `Critic: I see potential issues with the current approach. Let me challenge the underlying assumptions.`, role: 'critic' }),
-        })
-        .registerAgent('synthesizer', {
-          role: 'synthesizer',
-          persona: 'You are a synthesizer. Combine different perspectives into a coherent whole.',
-          respond: async (msg, ctx) => ({ content: `Synthesizer: Integrating the analytical and critical perspectives, here is my synthesized recommendation.`, role: 'synthesizer' }),
-        });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'multiAgentDialogue', error: e.message }, MAX_HISTORY_SIZE); }
-    // 4. MCTSReasoning — 蒙特卡洛树搜索推理 (LLaMA-Berry)
-    try {
-      const MCTS = _MCTSReasoning();
-      this.mctsReasoning = new MCTS.MCTSReasoning({
-        maxIterations: 50,
-        maxDepth: 5,
-      });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'mctsReasoning', error: e.message }, MAX_HISTORY_SIZE); }
-    // 5. HierarchicalPlanner — 层次化规划器 (Hierarchical Planning)
-    try {
-      const HP = _HierarchicalPlanner();
-      this.hierarchicalPlanner = new HP.HierarchicalPlanner({
-        maxDepth: 3,
-        replanThreshold: 0.3,
-      });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'hierarchicalPlanner', error: e.message }, MAX_HISTORY_SIZE); }
-    // ─── [v5.6.1] 深研论文驱动升级 — 3个新模块 ─────────────────
-    // 1. MemoryQuality — 记忆质量评分 + 艾宾浩斯遗忘 + 污染检测 (2026 memory research)
-    try {
-      const MQ = _MemoryQuality();
-      this.memoryQuality = new MQ.MemoryQuality({
-        coreDecayRate: 0.001,
-        learnedDecayRate: 0.01,
-        ephemeralDecayRate: 0.05,
-        maxMemories: 5000,
-      });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryQuality', error: e.message }, MAX_HISTORY_SIZE); }
-    // 2. MetacognitiveFeedback — 元认知反馈 + 自我纠正 (SOFAI-LM)
-    try {
-      const MF = _MetacognitiveFeedback();
-      this.metacognitiveFeedback = new MF.MetacognitiveFeedback({
-        qualityThreshold: 0.6,
-        autoCorrect: true,
-      });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'metacognitiveFeedback', error: e.message }, MAX_HISTORY_SIZE); }
-    // 3. ResearchPaperIndex — 研究论文索引 (cognitive architecture research)
-    try {
-      const PI = _PaperIndex();
-      this.paperIndex = new PI.ResearchPaperIndex();
-    } catch (e) { _boundedPush(this._initErrors, { module: 'paperIndex', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // 4. CognitiveLoadBalancer — 多智能体认知损耗规避 (Bystander Effect mitigation)
-    try {
-      const CLB = _CognitiveLoadBalancer();
-      this.cognitiveLoad = new CLB.CognitiveLoadBalancer({
-        maxActiveEngines: 5,
-        loafingThreshold: 0.3,
-      });
-      this._modules.cognitiveLoad = this.cognitiveLoad;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'cognitiveLoad', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // 5. InformationFlowOrchestrator — 信息流编排 (Beyond Rule-Based Workflows)
-    try {
-      const IFMod = _InformationFlow();
-      const IFClass = IFMod.InformationFlowOrchestrator;
-      this.infoFlow = IFClass ? new IFClass({ maxIterations: 10 }) : null;
-      this._modules.infoFlow = this.infoFlow;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'informationFlow', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // 6. ReflectionMemory — 反思记忆独立存储 (Reflexion)
-    try {
-      const RM = _ReflectionMemory();
-      this.reflectionMemory = new RM.ReflectionMemory({ maxReflections: 500 });
-      this._modules.reflectionMemory = this.reflectionMemory;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'reflectionMemory', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // 7. KVCachePersistor — KV Cache持久化
-    try {
-      const KV = _KVCache();
-      this.kvCache = new KV.KVCachePersistor({ maxCacheSize: 100, quantize: true });
-      this._modules.kvCache = this.kvCache;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'kvCache', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // 8. MemoryIntegrity — 记忆完整性安全验证
-    try {
-      const MI = _MemoryIntegrity();
-      this.memoryIntegrity = new MI.MemoryIntegrity({ strictMode: false });
-      this._modules.memoryIntegrity = this.memoryIntegrity;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryIntegrity', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.7.4] EDV 经验验证器 — Execute-Distill-Verify ─────────────
-    try {
-      const EV = _ExperienceValidator();
-      this.experienceValidator = new EV.ExperienceValidator({
-        maxHistory: 200,
-        verifyThreshold: 0.7,
-      });
-      this._modules.experienceValidator = this.experienceValidator;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'experienceValidator', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.7.4] AdaMem 记忆写入控制 ────────────────────────────────
-    try {
-      const MWC = _MemoryWriteController();
-      this.memoryWriteController = new MWC.MemoryWriteController({
-        storageBudget: 5000,
-        utilityThreshold: 0.4,
-      });
-      this._modules.memoryWriteController = this.memoryWriteController;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryWriteController', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.7.4] 元认知 RL (RLMF) — 置信度校准 ──────────────────────
-    try {
-      const MRL = _MetacognitiveRL();
-      this.metacognitiveRL = new MRL.MetacognitiveRL({
-        learningRate: 0.1,
-        calibrationWindow: 50,
-      });
-      this._modules.metacognitiveRL = this.metacognitiveRL;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'metacognitiveRL', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.7.4] 记忆压缩器 (MemRefine) ─────────────────────────────
-    try {
-      const MC = _MemoryCompressor();
-      this.memoryCompressor = new MC.MemoryCompressor({
-        storageBudget: 5000,
-        minCompressionRatio: 0.3,
-      });
-      this._modules.memoryCompressor = this.memoryCompressor;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryCompressor', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.7.4] 技能进化引擎 (SkillCoach) ──────────────────────────
-    try {
-      const SEE = _SkillEvolutionEngine();
-      this.skillEvolution = new SEE.SkillEvolutionEngine({
-        evolutionThreshold: 0.7,
-        maxSkills: 500,
-      });
-      this._modules.skillEvolution = this.skillEvolution;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'skillEvolution', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.7.4] 世界模型 (AgentWorld) ──────────────────────────────
-    try {
-      const WM = _WorldModel();
-      this.worldModel = new WM.WorldModel({
-        maxStates: 5000,
-        predictionHorizon: 5,
-        activeInferenceWeight: 0.4,
-      });
-      this._modules.worldModel = this.worldModel;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'worldModel', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.7.5] 古代智慧基础 — 美德伦理 + 人性论 + 意义目的 ─────────
-    try {
-      const VEF = _VirtueEthicsFoundation();
-      this.virtueEthics = new VEF.VirtueEthicsFoundation({ primaryTradition: 'confucianism' });
-      this._modules.virtueEthics = this.virtueEthics;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'virtueEthics', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const HNC = _HumanNatureConstitution();
-      this.humanNature = new HNC.HumanNatureConstitution({ primaryView: 'integrated' });
-      this._modules.humanNature = this.humanNature;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'humanNature', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const MPE = _MeaningPurposeEngine();
-      this.meaningPurpose = new MPE.MeaningPurposeEngine({ resilienceMode: true });
-      this._modules.meaningPurpose = this.meaningPurpose;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'meaningPurpose', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.7.5] P2 品格养成 + 道德发展 + 智慧引擎 ───────────────────
-    try {
-      const CC = _CharacterCultivation();
-      this.characterCultivation = new CC.CharacterCultivation({ primaryVirtues: ['honesty', 'courage', 'compassion', 'wisdom', 'justice'] });
-      this._modules.characterCultivation = this.characterCultivation;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'characterCultivation', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const MD = _MoralDevelopment();
-      this.moralDevelopment = new MD.MoralDevelopment({ primaryTheory: 'kohlberg' });
-      this._modules.moralDevelopment = this.moralDevelopment;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'moralDevelopment', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const WE = _WisdomEngine();
-      this.wisdomEngine = new WE.WisdomEngine({ maxReflections: 100 });
-      this._modules.wisdomEngine = this.wisdomEngine;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'wisdomEngine', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.7.6] P3 人性深化 + P4 关系社会 + P5 痛苦成长 + P6 AI人类整合 ─
-    // P3: Suffering Resilience + Grief + Hope
-    try {
-      const SR = _SufferingResilience(); this.sufferingResilience = new SR.SufferingResilience({ resilienceMode: 'growth' }); this._modules.sufferingResilience = this.sufferingResilience;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'sufferingResilience', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const GE = _GriefEngine(); this.griefEngine = new GE.GriefEngine({ culture: 'integrated' }); this._modules.griefEngine = this.griefEngine;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'griefEngine', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const HE = _HopeEngine(); this.hopeEngine = new HE.HopeEngine(); this._modules.hopeEngine = this.hopeEngine;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'hopeEngine', error: e.message }, MAX_HISTORY_SIZE); }
-    // P4: Human Relation + Empathy + Conflict
-    try {
-      const HR = _HumanRelation(); this.humanRelation = new HR.HumanRelation(); this._modules.humanRelation = this.humanRelation;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'humanRelation', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const ED = _EmpathyDeepening(); this.empathyDeepening = new ED.EmpathyDeepening(); this._modules.empathyDeepening = this.empathyDeepening;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'empathyDeepening', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const CR = _ConflictResolution(); this.conflictResolution = new CR.ConflictResolution(); this._modules.conflictResolution = this.conflictResolution;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'conflictResolution', error: e.message }, MAX_HISTORY_SIZE); }
-    // P5: Trauma + PTG + Forgiveness
-    try {
-      const TI = _TraumaInformed(); this.traumaInformed = new TI.TraumaInformed(); this._modules.traumaInformed = this.traumaInformed;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'traumaInformed', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const PTG = _PostTraumaticGrowth(); this.postTraumaticGrowth = new PTG.PostTraumaticGrowth(); this._modules.postTraumaticGrowth = this.postTraumaticGrowth;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'postTraumaticGrowth', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const FE = _ForgivenessEngine(); this.forgivenessEngine = new FE.ForgivenessEngine(); this._modules.forgivenessEngine = this.forgivenessEngine;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'forgivenessEngine', error: e.message }, MAX_HISTORY_SIZE); }
-    // P6: AI-Human Integration + Being Mode + Consciousness Bridge
-    try {
-      const AHI = _AIHumanIntegration(); this.aiHumanIntegration = new AHI.AIHumanIntegration(); this._modules.aiHumanIntegration = this.aiHumanIntegration;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'aiHumanIntegration', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const BM = _BeingMode(); this.beingMode = new BM.BeingMode(); this._modules.beingMode = this.beingMode;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'beingMode', error: e.message }, MAX_HISTORY_SIZE); }
-    try {
-      const CB = _ConsciousnessBridge(); this.consciousnessBridge = new CB.ConsciousnessBridge(); this._modules.consciousnessBridge = this.consciousnessBridge;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'consciousnessBridge', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.7.7] F3 持续漂移检测器 — 整合 identity drift + cognitive dissonance + decision decay ──
-    try {
-      const SDD = _SustainedDriftDetector(); this.sustainedDriftDetector = new SDD.SustainedDriftDetector({
-        driftThreshold: 0.3, windowSize: 10, smoothingFactor: 0.1,
-      });
-      this._modules.sustainedDriftDetector = this.sustainedDriftDetector;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'sustainedDriftDetector', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ─── [v5.5.6] 自愈RL — SelfHealing (Reflexion + Q-learning) ─────────────
-    // 将 HealingMemoryRL 接入引擎生命周期，消除死代码
-    try {
-      this.selfHealing = new (_SelfHealing().SelfHealing)({ memory: this.memory, maxMemory: 200 });
-      this._modules.selfHealing = this.selfHealing;
-      // boot 时从 LEARNED 层加载 lesson patterns，合并到 Q-table
-      try {
-        const learnedLessons = this.memory?.listLearned?.() || [];
-        if (learnedLessons.length > 0 && typeof this.selfHealing.mergeFromLearnedLayer === 'function') {
-          this.selfHealing.mergeFromLearnedLayer(learnedLessons);
-        }
-      } catch (e) { /* non-fatal */ }
-    } catch (e) { /* selfHealing optional */ }
-
-    // ─── [v5.6.1] Self-Play Reasoning — 自我对弈推理增强 ─────────────────
-    try {
-      this.selfPlay = new (_SelfPlay().SelfPlay)({
-        dataDir: path.join(this.rootPath, 'data', 'self-play'),
-        rl: this.selfHealing?.rl || null,
-        judgmentEngine: this.judgmentEngine || null,
-      });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'selfPlay', error: e.message }, MAX_HISTORY_SIZE); }
-
-    // ── [v5.8.6] Formula Engine — 公式引擎（数学/物理/化学/工程 1149+ 公式）
-    try {
-      const { FormulaModule } = require('../formula/formula-module.js');
-      this.formula = new FormulaModule({ formulasFile: path.join(this.rootPath, 'formulas', 'formulas.json') });
-      this._modules.formula = this.formula;
-      _log.info('init', 'Formula Engine 加载成功', { formulaCount: this.formula.healthCheck().formulaCount || 0 });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'formula', error: e.message }, MAX_HISTORY_SIZE); }
+    } catch (e) { this._initErrors.push({ module: 'debateConvergence', error: e.message }); }
 
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
     this.heartflow = this;  // 让 dispatch('heartflow.introspect') 能找到实例
@@ -1645,96 +938,6 @@ class HeartFlow {
     }
 
     this.started = true;
-
-    // ─── 自改进健康检查：验证 meta-learner ↔ self-healing-rl ↔ confidence-calibrator 信号流 ──
-    try { this._runSelfImprovementHealthCheck(); } catch (e) { /* non-fatal */ }
-  }
-
-  // ─── 自改进健康检查 ──────────────────────────────────────────────────────
-
-  /**
-   * 运行时自改进信号流检查：验证 meta-learner → self-healing-rl → confidence-calibrator
-   * 三个模块的实例化状态和方法可用性，以及模块间的实际信号传递链路。
-   * 结果缓存到 this._siHealth，供 getSelfImprovementHealth() 返回。
-   */
-  _runSelfImprovementHealthCheck() {
-    const modules = [];
-    const issues = [];
-
-    // ─── 1. meta-learner ─────────────────────────────────────────
-    const meta = this.meta;
-    if (meta && typeof meta.learn === 'function' && typeof meta.getStats === 'function') {
-      _boundedPush(modules, 'meta-learner');
-      try { meta.getStats(); } catch (e) { _boundedPush(issues, 'meta-learner.getStats() threw: ' + e.message); }
-    } else {
-      _boundedPush(issues, 'meta-learner: not instantiated or missing learn/getStats');
-    }
-
-    // ─── 2. self-healing-rl ──────────────────────────────────────
-    const sh = this.selfHealing;
-    if (sh && typeof sh.getStats === 'function') {
-      _boundedPush(modules, 'self-healing-rl');
-      try {
-        const shStats = sh.getStats();
-        if (shStats && typeof shStats.qTableSize !== 'undefined') {
-          _boundedPush(modules, 'self-healing-rl.qtable');
-        }
-        // 检查 mergeFromLearnedLayer 信号通道（meta → selfHealing）
-        if (meta && typeof sh.mergeFromLearnedLayer === 'function') {
-          _boundedPush(modules, 'signal:meta→selfHealing');
-        } else if (meta) {
-          _boundedPush(issues, 'signal:meta→selfHealing blocked (mergeFromLearnedLayer missing)');
-        }
-      } catch (e) { _boundedPush(issues, 'self-healing-rl.getStats() threw: ' + e.message); }
-    } else {
-      _boundedPush(issues, 'self-healing-rl: not instantiated or missing getStats');
-    }
-
-    // ─── 3. confidence-calibrator ────────────────────────────────
-    const cc = this.confidence;
-    if (cc && typeof cc.calibrate === 'function') {
-      _boundedPush(modules, 'confidence-calibrator');
-      // 检查 confidence 是否通过 calibrate 接收外部信号
-      if (typeof cc.assess === 'function' || typeof cc.calibrate === 'function') {
-        _boundedPush(modules, 'confidence-calibrator.assess');
-      }
-    } else {
-      _boundedPush(issues, 'confidence-calibrator: not instantiated or missing calibrate');
-    }
-
-    // ─── 4. 信号闭环验证：confidence → meta 反馈回路 ──────────────
-    if (cc && meta && typeof meta.learn === 'function') {
-      _boundedPush(modules, 'signal:confidence→meta');
-    } else if (cc && !meta) {
-      _boundedPush(issues, 'signal:confidence→meta blocked (meta-learner missing)');
-    }
-
-    // ─── 5. 事件发射器检查（self-healing-rl 使用 EventEmitter）───
-    if (sh && typeof sh.emit === 'function') {
-      _boundedPush(modules, 'self-healing-rl.events');
-    }
-
-    const connected = issues.length === 0;
-    this._siHealth = { connected, modules, issues, ts: Date.now() };
-    return this._siHealth;
-  }
-
-  /**
-   * 自改进系统健康状态查询（公开 API）
-   * @returns {{ connected: boolean, modules: string[], issues: string[] }}
-   */
-  getSelfImprovementHealth() {
-    if (!this.started) return { connected: false, modules: [], issues: ['HeartFlow not started'] };
-    if (!this._siHealth) {
-      try { this._runSelfImprovementHealthCheck(); } catch (e) {
-        return { connected: false, modules: [], issues: [e.message] };
-      }
-    }
-    return {
-      connected: this._siHealth.connected,
-      modules: [...this._siHealth.modules],
-      issues: [...this._siHealth.issues],
-    };
   }
 
   // ─── [v5.4.6] LLM 兜底配置 ──────────────────────────────────────────────
@@ -1770,7 +973,7 @@ class HeartFlow {
       // 重试一次，如果还是空就不递归了（防止 memory.addCore 静默失败导致栈溢出）
       const retryRules = this.memory.listCore();
       if (retryRules.length === 0) {
-        console.warn('[HeartFlow] 无法初始化 MindSpace 身份规则（memory 可能未就绪）');
+        // [PROD] 生产环境移除 console.warn: console.warn('[HeartFlow] 无法初始化 MindSpace 身份规则（memory 可能未就绪）');
       } else {
         this._mindSpace.rules = retryRules.map(r => ({ key: r.key, value: r.value, type: 'core_identity' }));
       }
@@ -1778,7 +981,7 @@ class HeartFlow {
   }
 
   _registerModules() {
-    this._modules = {};  // 容量边界：由子模块注册控制，通常 < 100 个条目
+    this._modules = {};
     const subsystemNames = [
       'identityCore',  // 身份核心 — 第一优先
       'cognitive',     // 认知协议 — 慢下来，先理解再行动
@@ -1791,7 +994,7 @@ class HeartFlow {
       'persistence',  // v2.0.19 持久化层
       'triality',     // v2.0.19 三层记忆兼容层
       'stability', 'confidence', 'restraint', 'arbitration',
-      'snapshot', 'error', 'embodied', 'workflow', 'verifierGrant',
+      'snapshot', 'error', 'embodied', 'workflow',
       // New modules
       'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
       'metaJudgment', 'metaMemory', 'skillGenerator',
@@ -1801,8 +1004,6 @@ class HeartFlow {
       'thoughtChain', // 思维链编排器：串联所有引擎（API包装）
       "debate", // 辩论分析器：三节结构分析（v2.10.2 新增）
       'heartLogic',    // 引擎核心判断引擎：本心在代码里，不在记忆里
-      // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
-      'cognitiveEngine', 'decisionEngine',
       // Planning Layer — 规划能力
       'adaptivePlanner', 'strategySelector', 'replanTrigger',
       // Code Engine — 代码执行
@@ -1822,7 +1023,7 @@ class HeartFlow {
       // MindSpace Layer — 心空间守护
       'mindSpace',
       // Consciousness Layer — 意识层
-      'consciousness', 'tomEngine',
+      'consciousness',
       // Ethics Layer — 伦理守护
       'ethics',
       // Transmission Layer — 知识传递
@@ -1846,14 +1047,8 @@ class HeartFlow {
       // v1.0.0 — V21.1 启发：语义聚类 / 双视角审计 / 记忆融合 / 反事实验证 / 辩论收敛
       'semanticClusterer', 'dualPerspectiveAuditor', 'tieredMemoryFusion',
       'counterfactualVerifier', 'debateConvergence',
-      // v5.6.1 — 多智能体辩论协调器 (DebateConductor)
-      'debateConductor',
       // v5.0.0 — 判断引擎
       'judgmentEngine',
-      // v5.6.1 — 自我对弈推理增强 (Self-Play)
-      'selfPlay',
-      // v5.5.6 — 自愈RL (SelfHealing + HealingMemoryRL)
-      'selfHealing',
       // v5.4.5 — 能力抽象层 + 平台适配器（Smart Routing 启发）
       'capabilityAbstraction', 'platformAdapter',
       // v1.0.0 — 逻辑推理引擎
@@ -1861,68 +1056,27 @@ class HeartFlow {
       // v5.0.0 — 管道引擎
       'pipeline',
       // v5.1.0 — 自省
-      'heartflow',
-      'innerOS',  // Inner OS — 内心独白、事件追踪、人格切换
-      // v5.5.5 — 注意力焦点 + 代码自调试
-      'focusOfAttention', 'codeSelfDebug',
-      // v5.6.0 — 论文驱动升级
-      'reflexionEngine', 'memoryConsolidator', 'multiAgentDialogue', 'mctsReasoning', 'hierarchicalPlanner',
-      // v5.6.1 — 深研论文驱动升级
-      'memoryQuality', 'metacognitiveFeedback', 'paperIndex',
-      // v5.7.2 — P1 多智能体认知损耗规避
-      'cognitiveLoad',
-      // v5.6.1 — 步骤级推理奖励模型 (Process Reward Model)
-      'processRewardModel',
-      // v5.6.1 — 跨会话记忆银行 (MemoryBank v1.0.0)
-      'memoryBank',
-      // v5.7.2 — 新模块
-      'infoFlow', 'reflectionMemory', 'kvCache', 'memoryIntegrity',
-      // v5.7.4 — EDV + AdaMem + RLMF + MemRefine + SkillCoach + AgentWorld
-      'experienceValidator', 'memoryWriteController', 'metacognitiveRL',
-      'memoryCompressor', 'skillEvolution', 'worldModel',
-      // v5.7.5 — 古代智慧基础：美德伦理 + 人性论 + 意义目的
-      'virtueEthics', 'humanNature', 'meaningPurpose',
-      // v5.7.5 — P2 品格养成 + 道德发展 + 智慧引擎
-      'characterCultivation', 'moralDevelopment', 'wisdomEngine',
-      // v5.7.6 — P3-P6 全部新模块
-      'sufferingResilience', 'griefEngine', 'hopeEngine',
-      'humanRelation', 'empathyDeepening', 'conflictResolution',
-      'traumaInformed', 'postTraumaticGrowth', 'forgivenessEngine',
-      'aiHumanIntegration', 'beingMode', 'consciousnessBridge',
-      // v5.7.7 — F3 持续漂移检测器
-      'sustainedDriftDetector',
-      // v5.8.6 — 公式引擎（数学/物理/化学/工程公式库）
-      'formula'];
+      'heartflow'];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
         this._modules[name] = this[name];
       }
-    }
-
-    // [AUDIT-FIX] 汇总并上报初始化错误（之前静默收集但从未报告）
-    if (this._initErrors.length > 0) {
-      _log.warn('init', `${this._initErrors.length} 模块初始化失败`, { 
-        count: this._initErrors.length,
-        errors: this._initErrors.map(e => ({ module: e.module, error: e.error }))
-      });
     }
   }
 
   async stop() {
     if (!this.started) return;
     for (const mod of Object.values(this._modules)) {
-      if (!mod || mod === this) continue;  // Skip self-reference (this.heartflow = this)
       if (mod && typeof mod.destroy === 'function') {
-        try { mod.destroy(); } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: `destroy_${mod.constructor?.name || 'unknown'}`, error: e.message }, MAX_HISTORY_SIZE); }
+        try { mod.destroy(); } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: `destroy_${mod.constructor?.name || 'unknown'}`, error: e.message }); }
       } else if (mod && typeof mod.stop === 'function') {
-        try { mod.stop(); } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: `stop_${mod.constructor?.name || 'unknown'}`, error: e.message }, MAX_HISTORY_SIZE); }
+        try { mod.stop(); } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: `stop_${mod.constructor?.name || 'unknown'}`, error: e.message }); }
       } else if (mod && typeof mod.shutdown === 'function') {
-        try { mod.shutdown(); } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: `shutdown_${mod.constructor?.name || 'unknown'}`, error: e.message }, MAX_HISTORY_SIZE); }
+        try { mod.shutdown(); } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: `shutdown_${mod.constructor?.name || 'unknown'}`, error: e.message }); }
       }
     }
     this.started = false;
-    this._modules = {};  // 容量边界：重置时清空，无容量问题
-    this.heartflow = null;  // [AUDIT-FIX] break circular self-reference for GC
+    this._modules = {};
     this._mindSpace = null;
     this.mindSpace = null;
     this.consciousness = null;
@@ -1938,8 +1092,6 @@ class HeartFlow {
    */
   static _generateAllowedRoutes(modules) {
     if (!modules || typeof modules !== 'object') return [];
-    // 黑名单：排除 EventEmitter 内部方法和私有方法
-    const _BLACKLIST = new Set(['on', 'off', 'addListener', 'removeListener', 'once', 'prependListener', 'prependOnceListener', 'removeAllListeners', 'setMaxListeners', 'getMaxListeners', 'listenerCount', 'listeners', 'rawListeners', 'eventNames', 'constructor']);
     const routes = [];
     for (const [name, mod] of Object.entries(modules)) {
       if (!mod) continue;
@@ -1947,14 +1099,14 @@ class HeartFlow {
       try {
         const proto = Object.getPrototypeOf(mod);
         if (proto && proto !== Object.prototype) {
-          methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && !_BLACKLIST.has(m) && typeof mod[m] === 'function' && !m.startsWith('_'));
+          methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && typeof mod[m] === 'function');
         }
       } catch (e) { /* fall through */ }
       if (!methods.length) {
-        methods = Object.keys(mod).filter(k => !_BLACKLIST.has(k) && !k.startsWith('_') && typeof mod[k] === 'function');
+        methods = Object.keys(mod).filter(k => typeof mod[k] === 'function');
       }
       for (const method of methods) {
-        _boundedPush(routes, `${name}.${method}`);
+        routes.push(`${name}.${method}`);
       }
     }
     return routes;
@@ -2000,8 +1152,6 @@ class HeartFlow {
     // triality — v2.0.19 三层记忆兼容层
     'triality.getStats', 'triality.getLayerStats',
     'triality.getMemoryHealth', 'triality.searchByKeywords',
-    // v5.7.2 — P0 因果推理记忆检索
-    'triality.causalSearch', 'triality.traceCausality', 'triality.spreadingActivationSearch',
     // lesson — 主动集成点：AI在行动前/失败后调用
     'lesson.addLesson', 'lesson.getTopLessons',
     'lesson.beforeTask', 'lesson.recordFailure', 'lesson.getStats', 'lesson.getAll',
@@ -2121,10 +1271,6 @@ class HeartFlow {
     // questions — 问题追踪器（已废弃，改用 topics）
     // debate — 辩论分析器：三节结构分析（v2.10.2 新增）
     'debate.analyze',
-    // debateConductor — 多智能体辩论协调器（v5.6.1 新增）
-    'debateConductor.addAgent', 'debateConductor.conductDebate',
-    'debateConductor.extractConsensus', 'debateConductor.extractDisagreements',
-    'debateConductor.converge', 'debateConductor.getStatus',
     // topics — 话题作用域隔离（上下文污染解决）
     'topics.push', 'topics.pop', 'topics.store', 'topics.get',
     'topics.setContext', 'topics.getContext', 'topics.clearContext',
@@ -2250,116 +1396,7 @@ class HeartFlow {
     'verifierGrant.createSessionKey', 'verifierGrant.createGrant', 'verifierGrant.consumeGrant',
     'verifierGrant.revokeGrant', 'verifierGrant.computeArgsDigest',
     'verifierGrant.verifySessionKey', 'verifierGrant.getStats', 'verifierGrant.getAuditLog',
-    'verifierGrant.reset',
-    // v5.5.5 — 注意力焦点引擎
-    'focusOfAttention.setTask', 'focusOfAttention.attend', 'focusOfAttention.attendBatch',
-    'focusOfAttention.getContext', 'focusOfAttention.getCompactContext', 'focusOfAttention.decay',
-    'focusOfAttention.compress', 'focusOfAttention.getStats',
-    // v5.5.5 — 代码自调试引擎
-    'codeSelfDebug.analyze', 'codeSelfDebug.suggestFix', 'codeSelfDebug.refine', 'codeSelfDebug.debug',
-    'codeSelfDebug.getHistory', 'codeSelfDebug.reset',
-    // v5.6.1 — 深研论文驱动升级路由
-    'memoryQuality.score', 'memoryQuality.decayAll', 'memoryQuality.prune', 'memoryQuality.detectContamination', 'memoryQuality.getQualityDistribution',
-    'metacognitiveFeedback.assess', 'metacognitiveFeedback.deepAssess', 'metacognitiveFeedback.suggestCorrection', 'metacognitiveFeedback.getStats',
-    'paperIndex.addPaper', 'paperIndex.searchByCategory', 'paperIndex.searchByTag', 'paperIndex.searchByKeyword', 'paperIndex.getPapersByYear', 'paperIndex.getRelevantPapers', 'paperIndex.getAllPapers', 'paperIndex.getStats',
-    // v5.7.2 — P1 多智能体认知损耗规避路由
-    'cognitiveLoad.balance', 'cognitiveLoad.detectLoafing', 'cognitiveLoad.getOptimalCount', 'cognitiveLoad.getStats', 'cognitiveLoad.reset',
-    // v5.6.1 — 步骤级推理奖励模型 (Process Reward Model)
-    'processRewardModel.evaluateStep', 'processRewardModel.evaluateChain',
-    'processRewardModel.findWeakSteps', 'processRewardModel.suggestImprovements',
-    'processRewardModel.getStats', 'processRewardModel.getStepTypes', 'processRewardModel.reset',
-    // v5.6.1 — 跨会话记忆银行 (MemoryBank v1.0.0)
-    'memoryBank.deposit', 'memoryBank.recall', 'memoryBank.consolidate', 'memoryBank.forget',
-    'memoryBank.getSessionSummary', 'memoryBank.getCrossSessionPatterns',
-    'memoryBank.startSession', 'memoryBank.endSession', 'memoryBank.ensureSession',
-    'memoryBank.transferMemories', 'memoryBank.linkMemories', 'memoryBank.getRelated',
-    'memoryBank.getStats', 'memoryBank.getHealth', 'memoryBank.listSessions',
-    'memoryBank.listSessionMemories', 'memoryBank.closeSession',
-    // v5.6.1 — 自我对弈推理增强 (Self-Play)
-    'selfPlay.challenge', 'selfPlay.defend', 'selfPlay.refine',
-    'selfPlay.evaluateRobustness', 'selfPlay.generateAlternatives',
-    'selfPlay.getStats', 'selfPlay.getImprovementLog', 'selfPlay.reset',
-    // v5.7.2 — 信息流编排
-    'infoFlow.register', 'infoFlow.orchestrate', 'infoFlow.getStats',
-    // v5.7.2 — 反思记忆
-    'reflectionMemory.store', 'reflectionMemory.search', 'reflectionMemory.getStrategies', 'reflectionMemory.getStats', 'reflectionMemory.reset',
-    // v5.7.2 — KV Cache
-    'kvCache.save', 'kvCache.load', 'kvCache.has', 'kvCache.delete', 'kvCache.prune', 'kvCache.getStats',
-    // v5.7.2 — 记忆完整性
-    'memoryIntegrity.sign', 'memoryIntegrity.verify', 'memoryIntegrity.detectAnomalies', 'memoryIntegrity.getStats', 'memoryIntegrity.reset',
-    // v5.7.4 — P0 经验验证器 (EDV)
-    'experienceValidator.validate', 'experienceValidator.recordTrajectory', 'experienceValidator.distill', 'experienceValidator.getStats',
-    'experienceValidator.getVerifiedExperiences', 'experienceValidator.getRejectedExperiences',
-    // v5.7.4 — P0 记忆写入控制 (AdaMem)
-    'memoryWriteController.decideWrite', 'memoryWriteController.computeUtility', 'memoryWriteController.updateUserProfile',
-    'memoryWriteController.query', 'memoryWriteController.getStats', 'memoryWriteController.getUserProfile',
-    // v5.7.4 — P0 元认知RL (RLMF)
-    'metacognitiveRL.expressConfidence', 'metacognitiveRL.learn', 'metacognitiveRL.getCalibrationReport', 'metacognitiveRL.getStats',
-    // v5.7.4 — P1 记忆压缩 (MemRefine)
-    'memoryCompressor.compress', 'memoryCompressor.computeImportance', 'memoryCompressor.enforceBudget',
-    'memoryCompressor.query', 'memoryCompressor.getStats', 'memoryCompressor.getCompressionLog',
-    // v5.7.4 — P1 技能进化引擎 (SkillCoach)
-    'skillEvolution.registerSkill', 'skillEvolution.evaluate', 'skillEvolution.distillSkills',
-    'skillEvolution.compose', 'skillEvolution.getStats', 'skillEvolution.getAllSkills', 'skillEvolution.addExperience',
-    // v5.7.4 — P1 世界模型 (AgentWorld)
-    'worldModel.registerState', 'worldModel.recordTransition', 'worldModel.predict',
-    'worldModel.activeInference', 'worldModel.simulateCounterfactual', 'worldModel.getStats',
-    // v5.7.5 — P1 古代智慧基础：美德伦理 + 人性论 + 意义目的
-    'virtueEthics.assessSituation', 'virtueEthics.recordPractice', 'virtueEthics.getVirtueScores',
-    'virtueEthics.getPracticeHistory', 'virtueEthics.getTraditions', 'virtueEthics.getUniversalValues',
-    'virtueEthics.getStats',
-    'humanNature.assessHumanNature', 'humanNature.getTheory', 'humanNature.getAllTheories',
-    'humanNature.assessFromTheory', 'humanNature.crossCulturalComparison', 'humanNature.getStats',
-    'meaningPurpose.assessMeaning', 'meaningPurpose.activateSource', 'meaningPurpose.recordMeaningfulActivity',
-    'meaningPurpose.reconstructMeaning', 'meaningPurpose.getSource', 'meaningPurpose.getAllSources',
-    'meaningPurpose.getStats',
-    // v5.7.5 — P2 品格养成 (Character Cultivation)
-    'characterCultivation.recordPractice', 'characterCultivation.getDailyPractices', 'characterCultivation.assessCharacter',
-    'characterCultivation.recordNarrative', 'characterCultivation.getNarratives', 'characterCultivation.getBlueprint',
-    'characterCultivation.getStats',
-    // v5.7.5 — P2 道德发展 (Moral Development)
-    'moralDevelopment.assessMoralStage', 'moralDevelopment.reflect', 'moralDevelopment.analyzeDilemma',
-    'moralDevelopment.recordStageTransition', 'moralDevelopment.getReflections', 'moralDevelopment.getStages',
-    'moralDevelopment.getStats',
-    // v5.7.5 — P2 智慧引擎 (Wisdom Engine)
-    'wisdomEngine.reflect', 'wisdomEngine.recommendPrinciples', 'wisdomEngine.getPrinciples',
-    'wisdomEngine.getPrinciple', 'wisdomEngine.getWisdomReport', 'wisdomEngine.getStats',
-    // v5.7.6 — P3 苦难韧性 + 哀伤 + 希望
-    'sufferingResilience.assessSuffering', 'sufferingResilience.recordResilienceEvent', 'sufferingResilience.recordCopingStrategy',
-    'sufferingResilience.getEffectiveStrategies', 'sufferingResilience.getStats',
-    'griefEngine.assessGrief', 'griefEngine.createMemorial', 'griefEngine.completeTask',
-    'griefEngine.getMemorials', 'griefEngine.getStages', 'griefEngine.getTasks', 'griefEngine.getStats',
-    'hopeEngine.assessHope', 'hopeEngine.setGoal', 'hopeEngine.achieveGoal',
-    'hopeEngine.addBarrier', 'hopeEngine.overcomeBarrier', 'hopeEngine.recordHopeNarrative', 'hopeEngine.getStats',
-    // v5.7.6 — P4 人际关系 + 共情 + 冲突解决
-    'humanRelation.registerRelationship', 'humanRelation.getRelationship', 'humanRelation.recordInteraction',
-    'humanRelation.calculateOptimalDisclosure', 'humanRelation.assessTrust', 'humanRelation.getStats',
-    'empathyDeepening.assessEmpathy', 'empathyDeepening.practicePerspectiveTaking', 'empathyDeepening.getStats',
-    'conflictResolution.analyzeConflict', 'conflictResolution.practiceNVC', 'conflictResolution.facilitateReconciliation',
-    'conflictResolution.getStats',
-    // v5.7.6 — P5 创伤知情 + 创伤后成长 + 宽恕
-    'traumaInformed.assessTrauma', 'traumaInformed.generateGroundingExercise', 'traumaInformed.recordSomaticExperience',
-    'traumaInformed.getRecoveryStages', 'traumaInformed.getPrinciples', 'traumaInformed.getStats',
-    'postTraumaticGrowth.assessGrowth', 'postTraumaticGrowth.recordResource', 'postTraumaticGrowth.getStats',
-    'forgivenessEngine.initiateForgiveness', 'forgivenessEngine.advanceForgivenessStage',
-    'forgivenessEngine.generateForgivenessPractice', 'forgivenessEngine.getPrinciples', 'forgivenessEngine.getStats',
-    // v5.7.6 — P6 AI人类整合 + 存在模式 + 意识桥梁
-    'aiHumanIntegration.getHumanState', 'aiHumanIntegration.computePersonality', 'aiHumanIntegration.computeOverallHumanity',
-    'aiHumanIntegration.adaptToContext', 'aiHumanIntegration.resolveConflicts', 'aiHumanIntegration.recordGrowth',
-    'aiHumanIntegration.getStats', 'aiHumanIntegration.getPersonalityProfile',
-    'beingMode.assessBeing', 'beingMode.recordNarrative', 'beingMode.recordIdentityMoment',
-    'beingMode.setPresenceMode', 'beingMode.getStats',
-    'consciousnessBridge.simulateConsciousness', 'consciousnessBridge.getConsciousnessState',
-    'consciousnessBridge.recordSubjectiveState', 'consciousnessBridge.getStats',
-    // ── [v5.7.7] F3 SustainedDriftDetector ─────────────────────────
-    'sustainedDriftDetector.detectDrift', 'sustainedDriftDetector.recordState',
-    'sustainedDriftDetector.getDriftHistory', 'sustainedDriftDetector.getStats', 'sustainedDriftDetector.reset',
-    // ── [v5.8.6] Formula Engine — 公式引擎（1149+ 公式）
-    'formula.search', 'formula.getDetails', 'formula.calculate',
-    'formula.getCategories', 'formula.getByCategory', 'formula.getStatus',
-    'formula.lookup', 'formula.healthCheck',
-    // ── [v5.8.0] 性能监控 ─────────────────────────────────────────
-    'monitor.getStats', 'monitor.enable', 'monitor.disable', 'monitor.reset']);
+    'verifierGrant.reset']);
 
   /**
    * dispatch('subsystem.method', ...args) — 统一路由
@@ -2368,8 +1405,6 @@ class HeartFlow {
    */
   dispatch(route, ...args) {
     if (!this.started) throw new Error('HeartFlow not started');
-    // v5.8.0 性能监控：记录 dispatch 开始时间
-    const _perfStart = _perf._enabled ? performance.now() : 0;
     // [A01] 权限控制 - 白名单检查
     if (!HeartFlow.ALLOWED_ROUTES.has(route)) {
       throw new Error(`dispatch: route '${route}' not allowed. Use routes() to see available routes.`);
@@ -2379,18 +1414,6 @@ class HeartFlow {
     const subsystem = route.slice(0, dot);
     const method = route.slice(dot + 1);
 
-    // ─── v5.8.0 性能监控：内置子系统 ──────────────────────────────────
-    if (subsystem === 'monitor') {
-      const stats = _perf.getStats();
-      switch (method) {
-        case 'getStats': return stats;
-        case 'enable': _perf.enable(); return { ok: true };
-        case 'disable': _perf.disable(); return { ok: true };
-        case 'reset': _perf.reset(); return { ok: true };
-        default: throw new Error(`Unknown monitor method: ${method}`);
-      }
-    }
-
     // ─── Tier 2 懒加载逻辑 ──────────────────────────────────────────
     // 如果模块不在 _modules 里但在 _lazy 表里，先加载再注册
     let mod = this._modules[subsystem];
@@ -2399,8 +1422,40 @@ class HeartFlow {
       try {
         const Mod = require(entry.path);
 
-        // v5.8.0 优化：使用注册表 O(1) 查找替代 if/else 链
-        mod = _instantiateSpecialModule(subsystem, Mod, this);
+        // 特殊模块：纯对象（无构造函数）
+        if (subsystem === 'bigFive') {
+          mod = require('../identity/BigFivePersonality.js');
+        } else if (subsystem === 'empathy') {
+          mod = require('../identity/EmpathyAssessment.js');
+        } else if (subsystem === 'knowledgeGraph') {
+          mod = new (require('../memory/knowledge-graph.js').KnowledgeGraph)({ dataDir: path.join(this.rootPath, 'data') });
+        } else if (subsystem === 'intentLayer') {
+          mod = new (require('./intent-layer.js').IntentLayer)({ projectRoot: this.rootPath });
+        } else if (subsystem === 'epistemicSafety') {
+          // epistemic-safety 是纯函数导出（无构造函数）
+          mod = require('../shield/epistemic-safety.js');
+        } else if (subsystem === 'deliberationGate') {
+          mod = new (require('../shield/deliberation-gate.js').DeliberationGate)();
+        } else if (subsystem === 'flowPredictor') {
+          mod = new (require('./flow-predictor.js').FlowPredictor)();
+        } else if (subsystem === 'safetyGuardrails') {
+          // safety-guardrails 是纯函数导出（无构造函数）
+          mod = require('../shield/safety-guardrails.js');
+        } else if (subsystem === 'userModel') {
+          mod = new (require('../identity/user-model.js').UserModel)();
+        } else if (subsystem === 'actionTracker') {
+          mod = new (require('./action-tracker.js').ActionTracker)();
+        } else if (subsystem === 'purposeEngine') {
+          mod = new (require('../identity/purpose-engine.js').PurposeEngine)();
+        } else if (subsystem === 'riskAnalyzer') {
+          mod = new (require('../reasoning/risk-benefit-analyzer.js').RiskBenefitAnalyzer)();
+        } else if (subsystem === 'adaptiveCtrl') {
+          mod = new (require('./adaptive-controller.js').AdaptiveController)();
+        } else if (subsystem === 'intentionTrack') {
+          mod = new (require('./IntentionTracker.js').IntentionTracker)();
+        } else if (subsystem === 'auditLogger') {
+          mod = new (require('../shield/audit-logger.js').AuditLogger)();
+        }
 
         // 特殊模块注册到 _modules（标准路径在下面的 if(Ctor) 块内完成注册）
         if (mod) {
@@ -2412,35 +1467,37 @@ class HeartFlow {
         if (!mod) {
           const Ctor = Mod[entry.Ctor];
           if (Ctor) {
-            // v5.8.0 优化：使用参数映射表替代 if/else 链
-            // 注意：adaptivePlanner / strategyAdapter 已在 _SPECIAL_MODULES 中处理
-            const _ARG_MAP = {
-              knowledgeBase:     { storagePath: { path: ['rootPath', 'data', 'knowledge'] } },
-              sessionMemory:     { storagePath: { path: ['rootPath', 'data', 'sessions'] } },
-              projectContext:    { storagePath: { path: ['rootPath', 'data', 'projects'] } },
-              longTermMemory:    { storagePath: { path: ['rootPath', 'data', 'longterm'] } },
-              crossSessionIndex: { storagePath: { path: ['rootPath', 'data', 'cross-session'] } },
-              codeExecutor:      { hf: 'hf' },
-              codePlanner:       { hf: 'hf' },
-            };
-
-            const argSpec = _ARG_MAP[subsystem];
-            if (argSpec) {
-              const args = {};
-              for (const [key, val] of Object.entries(argSpec)) {
-                if (typeof val === 'string') {
-                  args[key] = hf[val];
-                } else if (val && val.path) {
-                  args[key] = path.join(hf.rootPath, ...val.path.slice(1));
-                }
-              }
-              mod = new Ctor(args);
-            } else {
-              mod = new Ctor(entry.args);
-            }
-            this[subsystem] = mod;
-            this._modules[subsystem] = mod;
-          }  // end if (Ctor)
+          // Planning 模块需要 strategySelector/replanTrigger 依赖
+          if (subsystem === 'adaptivePlanner') {
+            const baseDir = entry.path.replace('adaptive-planner.js', '');
+            this['strategySelector'] = new (require(baseDir + 'strategy-selector.js'))();
+            this['replanTrigger'] = new (require(baseDir + 'replan-trigger.js'))();
+            mod = new Ctor({ strategySelector: this.strategySelector, replanTrigger: this.replanTrigger });
+          } else if (subsystem === 'strategyAdapter') {
+            const ec = require('../cortex/experience-collector.js').ExperienceCollector;
+            this.experienceCollector = new ec({ storagePath: path.join(this.rootPath, 'data/experiences') });
+            mod = new Ctor({ experienceCollector: this.experienceCollector });
+          } else if (subsystem === 'knowledgeBase') {
+            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/knowledge') });
+          } else if (subsystem === 'sessionMemory') {
+            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/sessions') });
+          } else if (subsystem === 'projectContext') {
+            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/projects') });
+          } else if (subsystem === 'longTermMemory') {
+            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/longterm') });
+          } else if (subsystem === 'crossSessionIndex') {
+            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/cross-session') });
+          } else if (subsystem === 'codeExecutor') {
+            mod = new Ctor({ hf: this });
+          } else if (subsystem === 'codePlanner') {
+            mod = new Ctor({ hf: this });
+          } else {
+            mod = new Ctor(entry.args);
+          }
+          // codeGenerator 保持原名；'code' 别名在下面统一映射
+          this[subsystem] = mod;
+          this._modules[subsystem] = mod;
+        }  // end if (Ctor)
         }  // end if (!mod)
       } catch (e) {
         throw new Error(`Lazy load failed for '${subsystem}': ${e.message}`);
@@ -2456,79 +1513,20 @@ class HeartFlow {
     }
     const rawResult = mod[method](...args);
 
-    // v5.8.0 性能监控：记录 dispatch 耗时（在决策路由之前，捕获完整执行时间）
-    if (_perfStart > 0) {
-      _perf.recordDispatch(route, performance.now() - _perfStart);
-    }
-
     // ─── 决策路由：自动将分析结果转化为决策指令 ────────────────────
+    // 跳过已被决策路由处理过的结果（避免自引用循环）
     if (this._decisionRouter && rawResult && typeof rawResult === 'object' && !Array.isArray(rawResult)) {
+      // 如果结果已经有 matched 字段（来自决策路由自身），跳过
       if (rawResult.matched === true || rawResult.matched === false) {
         return rawResult;
       }
+      // 或者通过决策路由自动检测
       const routed = this._decisionRouter.wrapDispatchResult(route, rawResult);
       if (routed !== rawResult) {
-        return routed;
+        return routed; // 包含 decision 字段
       }
     }
-
-    // ─── v5.7.7 F3: 自动将漂移相关路由结果接入 SustainedDriftDetector ──
-    if (this.sustainedDriftDetector && rawResult && typeof rawResult === 'object' && !Array.isArray(rawResult)) {
-      this._feedDriftResult(route, rawResult);
-    }
-
     return rawResult;
-  }
-
-  // ─── v5.7.7 F3 pipeline: 自动将漂移相关路由结果接入 SustainedDriftDetector ──
-
-  _DRIFT_ROUTES = new Set([
-    'selfModel.detectDrift',
-    'decisionRouter.evaluate',
-    'metacognitiveFeedback.diagnoseCognitiveDistortion',
-    'psychology.detectIdentityDrift',
-    'psychology.analyzePsychology',
-    'agentPsychology.fullAssessment',
-    'stability.diagnose',
-  ]);
-
-  _feedDriftResult(route, rawResult) {
-    if (!this._DRIFT_ROUTES.has(route)) return;
-
-    let state = {};
-    const r = rawResult.result || rawResult; // unwrap dispatch wrapper
-
-    if (route === 'selfModel.detectDrift') {
-      state.driftScore = r.driftScore ?? 0;
-      state.identityCoherence = r.hasDrift ? 0.3 : 0.85;
-    } else if (route === 'decisionRouter.evaluate') {
-      const idRule = (r.rules || []).find(rule => rule.id === 'identity-drift');
-      state.driftScore = idRule ? (idRule.triggered ? 0.5 : 0.1) : 0;
-      state.identityCoherence = idRule ? (idRule.triggered ? 0.4 : 0.8) : 0.7;
-    } else if (route === 'metacognitiveFeedback.diagnoseCognitiveDistortion') {
-      state.dissonance = r.overallBias ?? 0;
-      state.quality = 1 - (r.overallBias ?? 0);
-    } else if (route === 'psychology.detectIdentityDrift') {
-      state.driftScore = r.drifted ? 0.6 : 0.05;
-      state.identityCoherence = r.drifted ? 0.3 : 0.9;
-    } else if (route === 'agentPsychology.fullAssessment') {
-      const dims = r.dimensions || {};
-      const id = dims.identityDrift || {};
-      state.driftScore = id.drift ?? id.score ?? 0;
-      state.identityCoherence = id.identityCoherence ?? (1 - (id.drift ?? 0));
-      state.dissonance = dims.cognitiveDissonance?.score ?? dims.dissonance ?? 0;
-    } else if (route === 'stability.diagnose') {
-      state.identityCoherence = r.stable ? 0.9 : 0.3;
-      state.quality = r.stable ? 0.9 : 0.3;
-    } else {
-      state.driftScore = r.driftScore ?? r.drift ?? 0;
-      state.identityCoherence = r.identityCoherence ?? 0.7;
-      state.dissonance = r.dissonance ?? r.cognitiveDissonance?.score ?? 0;
-    }
-
-    if (state.driftScore > 0 || state.dissonance > 0 || state.identityCoherence < 0.8) {
-      try { this.sustainedDriftDetector.recordState(state); } catch (e) { /* non-fatal */ }
-    }
   }
 
   /**
@@ -2575,16 +1573,15 @@ class HeartFlow {
         'planning': ['adaptivePlanner', 'strategySelector', 'replanTrigger', 'curiosityEngine', 'desireEngine', 'goalPursuer', 'selfInitiator'],
         'code': ['code', 'codeExecutor', 'codeVerifier', 'codePlanner', 'codeKnowledge', 'codeWriter'],
         'reasoning': ['knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain', 'counterfactual'],
-        'memory': ['memory', 'knowledge', 'sessionMemory', 'projectContext', 'longTermMemory', 'crossSessionIndex', 'triality', 'memoryQuality'],
+        'memory': ['memory', 'knowledge', 'sessionMemory', 'projectContext', 'longTermMemory', 'crossSessionIndex', 'triality'],
         'identity': ['self', 'selfPositioning', 'agentPsychology', 'agentPhilosophy', 'bigFive', 'empathy', 'userModel'],
         'ethics': ['constitutional', 'ethics', 'safetyGuardrails', 'restraint', 'epistemicSafety'],
         'behavior': ['behavior', 'actionTracker', 'persistence', 'evolution'],
         'communication': ['translator', 'agentLayer', 'personaCore', 'metaPrompt'],
-        'consciousness': ['consciousness', 'mindSpace', 'transmission', 'dream', 'tomEngine'],
-        'verification': ['verify', 'decisionVerifier', 'qualityVerifier', 'outputChecker', 'patternMatcher', 'confidence', 'metacognitiveFeedback'],
-        'system': ['heartLogic', 'thoughtChain', 'stability', 'execution', 'decision', 'decisionRouter', 'slots', 'graph', 'pipeline'],
-        'learning': ['lesson', 'meta', 'experienceCollector', 'strategyAdapter', 'failureAnalyzer', 'emotionalGrowth', 'moodEvolution', 'reflexionEngine', 'metacognitiveFeedback'],
-        'research': ['paperIndex'],
+        'consciousness': ['consciousness', 'mindSpace', 'transmission', 'dream'],
+        'verification': ['verify', 'decisionVerifier', 'qualityVerifier', 'outputChecker', 'patternMatcher', 'confidence'],
+        'system': ['heartLogic', 'thoughtChain', 'stability', 'execution', 'decision', 'decisionRouter', 'slots', 'graph'],
+        'learning': ['lesson', 'meta', 'experienceCollector', 'strategyAdapter', 'failureAnalyzer', 'emotionalGrowth', 'moodEvolution'],
       };
 
       const allModules = Object.keys(this._modules).sort();
@@ -2751,22 +1748,9 @@ class HeartFlow {
    * @param {number} [depth] - 推理深度
    * @returns {object} — { output, type, confidence, thoughtChain }
    */
-  /**
-   * 完整思维链 — 对用户输入进行全链路认知分析
-   * @param {string} input - 用户输入文本
-   * @param {number} [depth=1] - 推理深度 (1-4)
-   * @returns {Promise<Object>} { output, type, confidence, cognition, thoughtChain, decision, meta }
-   * @throws {Error} 如果 HeartFlow 未启动
-   */
   async think(input, depth) {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
-
-    // [FIX] 输入截断：防止超长输入撑爆上下文
-    const MAX_INPUT_CHARS = 80000;
-    if (input.length > MAX_INPUT_CHARS) {
-      input = input.slice(0, MAX_INPUT_CHARS) + '\n[输入已截断，原文过长]';
-    }
 
     // ─── 快速响应"启动引擎"类请求（不走完整推理链路）────────────
     const startPatterns = /^(启动引擎|开机|activate|start heartflow|开启引擎)/i;
@@ -2783,16 +1767,11 @@ class HeartFlow {
       return { output: { conclusion: '✅ 在线' }, type: 'status', confidence: 1.0, thoughtChain: [], analysis: { perceivedType: 'status', modulesRun: 0, confidence: 1.0 } };
     }
 
-    // ─── [v5.5.5] 复杂度感知管道模式选择 ─────────────────
-    // Dualformer 启发：快/慢双过程推理，根据输入复杂度自动选择
-    const pipelineMode = this.pipeline?.selectMode ? this.pipeline.selectMode(input) : 'full';
-    const pipelineOptions = { depth, mode: pipelineMode };
-
     // ─── [v5.0.0] 管道引擎执行 ──────────────────────────────────
     // 替代旧的 13 步分析流水线 + ThoughtChain + 路由决策
     if (this.pipeline) {
       try {
-        const pipelineResult = await this.pipeline.run(input, pipelineOptions);
+        const pipelineResult = await this.pipeline.run(input, { depth });
         const output = pipelineResult.output;
         const stages = pipelineResult.stages;
         const stats = pipelineResult.stats;
@@ -2867,13 +1846,12 @@ class HeartFlow {
 
         return {
           // 给用户的结论文本
-          output: {
-            conclusion: output?.conclusion || '分析完成',
-            meta: {
-              taskType: taskType,
+          output: { 
+            conclusion: output?.conclusion || '分析完成', 
+            meta: { 
+              taskType: taskType, 
               confidence: taskConfidence,
-              // v5.5.5: 暴露管道模式信息
-              pipelineMode: pipelineMode,
+              // v5.0.2: 认知摘要暴露给用户
               cognitiveSummary: {
                 type: taskType,
                 emotion: cognitionSnapshot.emotion?.emotionZh || cognitionSnapshot.pain?.hasPain ? 'distress' : 'neutral',
@@ -2882,7 +1860,7 @@ class HeartFlow {
                 modulesRun: stages.length,
                 stages: stages.filter(s => s.success).length,
               },
-            }
+            } 
           },
           type: taskType,
           confidence: taskConfidence,
@@ -2892,7 +1870,7 @@ class HeartFlow {
           decision: {
             type: taskType,
             confidence: taskConfidence,
-            rationale: `管道引擎完成: ${stages.length}阶段/${stages.filter(s => s.success).length}成功 [${pipelineMode}模式]`,
+            rationale: `管道引擎完成: ${stages.length}阶段/${stages.filter(s => s.success).length}成功`,
             ruleId: `pipeline-${taskType}`,
           },
           meta: {
@@ -2902,7 +1880,6 @@ class HeartFlow {
               success: stages.filter(s => s.success).length,
               totalTime: stats.totalTime,
               stageTimings: stats.stageTimings,
-              mode: pipelineMode,
             },
             disclaimer: 'pipeline_output',
           },
@@ -2914,7 +1891,7 @@ class HeartFlow {
         };
       } catch (e) {
         // 管道引擎失败时回退到 ThoughtChain
-        console.warn('[HeartFlow] Pipeline failed, falling back to ThoughtChain:', e.message);
+        // [PROD] 生产环境移除 console.warn: console.warn('[HeartFlow] Pipeline failed, falling back to ThoughtChain:', e.message);
       }
     }
 
@@ -2956,18 +1933,12 @@ class HeartFlow {
       decision: chainResult.decision || null,
       meta: { routeHint: { type: tcTaskType, confidence: tcConfidence }, disclaimer: 'thoughtchain_fallback' },
       analysis: { perceivedType: tcTaskType, modulesRun: 0, confidence: tcConfidence },
-      cognition: chainResult.cognition || null,  // Align with pipeline path
     };
   }
 
   /**
    * 快速思考 — 使用默认深度进行思维链推理
    * 这是 think() 的便捷别名
-   */
-  /**
-   * 快速思考 — 轻量级判断，适合高频场景
-   * @param {string} input - 用户输入文本
-   * @returns {Promise<Object>} think() 的简化结果
    */
   async thinkFast(input) {
     return this.think(input, this._thoughtChainApi?.REASONING_DEPTH?.BASIC || 1);
@@ -3070,13 +2041,6 @@ class HeartFlow {
    * @param {string} content - 对话内容
    * @param {object} meta - 额外元数据（chatId, messageId 等）
    */
-  /**
-   * 记录对话历史（AES-256-GCM 加密 + 文件锁）
-   * @param {string} role - 'user' | 'heartflow' | 'unknown'
-   * @param {string} content - 对话内容（自动截断到 2000 字符）
-   * @param {Object} [meta={}] - 元数据
-   * @returns {Object} { success, id, encrypted, skipped? }
-   */
   recordDialogue(role, content, meta = {}) {
     if (!this.started) return { success: false, error: 'not_started' };
     if (!content || !content.trim()) return { success: false, error: 'empty_content' };
@@ -3096,9 +2060,7 @@ class HeartFlow {
       
       // 加密对话内容
       const algorithm = 'aes-256-gcm';
-      const keySource = process.env.HEARTFLOW_DIALOGUE_KEY;
-      if (!keySource) throw new Error('HEARTFLOW_DIALOGUE_KEY env var required for dialogue encryption');
-      const key = crypto.scryptSync(keySource, 'salt', 32);
+      const key = crypto.scryptSync(process.env.HEARTFLOW_DIALOGUE_KEY || 'default-key-change-in-prod', 'salt', 32);
       const iv = crypto.randomBytes(16);
       const cipher = crypto.createCipheriv(algorithm, key, iv);
       let encrypted = cipher.update(content, 'utf8', 'hex');
@@ -3118,22 +2080,10 @@ class HeartFlow {
         version: this.version,
         encrypted: true
       };
-      // [AUDIT-FIX] 文件锁防止并发写入损坏 JSONL（v5.5.2 AES 加密之上）
-      const lockPath = filePath + '.lock';
-      try {
-        const lockFd = fs.openSync(lockPath, 'wx');
-        fs.writeSync(lockFd, String(process.pid));
-        fs.appendFileSync(filePath, JSON.stringify(entry, null, 0) + '\n', 'utf8');
-        fs.closeSync(lockFd);
-        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
-      } catch (e) {
-        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
-        if (e.code === 'EEXIST') return { success: true, id: entry.id, encrypted: true, skipped: true };
-        return { success: false, error: e.message };
-      }
+      
+      fs.appendFileSync(filePath, JSON.stringify(entry) + '\n');
       return { success: true, id: entry.id, encrypted: true };
     } catch (e) {
-      _log.error('dialogue', 'write_failed', { error: e.message });
       return { success: false, error: e.message };
     }
   }
@@ -3155,7 +2105,7 @@ class HeartFlow {
       const failedStages = stageStats.filter(s => s.stats.failures > 0);
       const slowStages = stageStats.filter(s => s.stats.avgTime > 100);
       if (failedStages.length > 0) {
-        _boundedPush(findings, {
+        findings.push({
           type: 'pipeline_failure',
           severity: 'high',
           message: `${failedStages.length} 个阶段有失败记录`,
@@ -3163,14 +2113,14 @@ class HeartFlow {
         });
       }
       if (slowStages.length > 0) {
-        _boundedPush(findings, {
+        findings.push({
           type: 'pipeline_slow',
           severity: 'medium',
           message: `${slowStages.length} 个阶段平均耗时 >100ms`,
           detail: slowStages.map(s => `${s.id}: ${s.stats.avgTime}ms`),
         });
       }
-      _boundedPush(findings, {
+      findings.push({
         type: 'pipeline_runs',
         severity: 'info',
         message: `共执行 ${stats.totalRuns} 轮`,
@@ -3181,7 +2131,7 @@ class HeartFlow {
     if (this.judgmentEngine) {
       const review = this.judgmentEngine.selfReview(20);
       if (review.conflicts.length > 0) {
-        _boundedPush(findings, {
+        findings.push({
           type: 'judgment_conflict',
           severity: 'high',
           message: `${review.conflicts.length} 个判断矛盾`,
@@ -3189,7 +2139,7 @@ class HeartFlow {
         });
       }
       if (review.corrections.length > 0) {
-        _boundedPush(findings, {
+        findings.push({
           type: 'judgment_misprediction',
           severity: 'medium',
           message: `${review.corrections.length} 个预测偏差`,
@@ -3197,7 +2147,7 @@ class HeartFlow {
         });
       }
       const stats = this.judgmentEngine.getStats();
-      _boundedPush(findings, {
+      findings.push({
         type: 'judgment_stats',
         severity: 'info',
         message: `${stats.totalJudgments} 条判断, ${stats.rlEntries} 条RL经验`,
@@ -3215,7 +2165,7 @@ class HeartFlow {
         'heartLogic', 'intent', 'psychology', 'judgment', 'decision', 'output', 'deepCognition'].includes(m)
     );
     if (unusedModules.length > 0) {
-      _boundedPush(findings, {
+      findings.push({
         type: 'module_coverage',
         severity: 'low',
         message: `${unusedModules.length}/${allModules.length} 模块注册但未被pipeline调用`,
@@ -3231,7 +2181,7 @@ class HeartFlow {
         .filter(([k, v]) => v === null || v === undefined || (typeof v === 'object' && Object.keys(v).length === 0))
         .map(([k]) => k);
       if (emptyFields.length > 0) {
-        _boundedPush(findings, {
+        findings.push({
           type: 'cognition_gaps',
           severity: 'medium',
           message: `${emptyFields.length} 个认知字段为空`,
@@ -3244,7 +2194,7 @@ class HeartFlow {
     if (this.memory) {
       try {
         const memStats = this.memory.getStats();
-        _boundedPush(findings, {
+        findings.push({
           type: 'memory_stats',
           severity: 'info',
           message: `CORE:${memStats.core || 0} LEARNED:${memStats.learned || 0} EPHEMERAL:${memStats.ephemeral || 0}`,
@@ -3256,7 +2206,7 @@ class HeartFlow {
     if (this.selfHealing) {
       const shStats = typeof this.selfHealing.getStats === 'function'
         ? this.selfHealing.getStats() : {};
-      _boundedPush(findings, {
+      findings.push({
         type: 'self_healing',
         severity: 'info',
         message: `Q-table: ${shStats.qTableSize || 'N/A'} 条目, 自愈: ${shStats.healCount || 0}次`,
@@ -3266,7 +2216,7 @@ class HeartFlow {
     // ─── 7. 对话历史统计 ──────────────────────────────────
     const dialogueStats = this._getDialogueStats();
     if (dialogueStats) {
-      _boundedPush(findings, {
+      findings.push({
         type: 'dialogue',
         severity: 'info',
         message: `${dialogueStats.totalMessages} 条对话, ${dialogueStats.sessionAge} 分钟`,
@@ -3280,10 +2230,10 @@ class HeartFlow {
     const info = findings.filter(f => f.severity === 'info');
 
     const summary = [];
-    if (high.length > 0) _boundedPush(summary, `⚠ ${high.length} 个高优先级问题`);
-    if (medium.length > 0) _boundedPush(summary, `→ ${medium.length} 个中优先级`);
-    if (low.length > 0) _boundedPush(summary, `↓ ${low.length} 个低优先级`);
-    if (info.length > 0) _boundedPush(summary, `ℹ ${info.length} 条状态信息`);
+    if (high.length > 0) summary.push(`⚠ ${high.length} 个高优先级问题`);
+    if (medium.length > 0) summary.push(`→ ${medium.length} 个中优先级`);
+    if (low.length > 0) summary.push(`↓ ${low.length} 个低优先级`);
+    if (info.length > 0) summary.push(`ℹ ${info.length} 条状态信息`);
 
     return {
       summary: summary.join(' | '),
@@ -3312,11 +2262,9 @@ class HeartFlow {
     const seedParts = [];
     for (const f of report.findings) {
       if (f.severity === 'high' || f.severity === 'medium') {
-        _boundedPush(seedParts, f.message);
+        seedParts.push(f.message);
         if (f.detail && Array.isArray(f.detail)) {
-          for (const d of f.detail.slice(0, 3)) {
-            _boundedPush(seedParts, d);
-          }
+          seedParts.push(...f.detail.slice(0, 3));
         }
       }
     }
@@ -3377,7 +2325,7 @@ class HeartFlow {
           const ts = new Date(entry.ts).getTime();
           if (ts < since || ts > until) continue;
           if (role && entry.role !== role) continue;
-          _boundedPush(results, entry);
+          results.push(entry);
           if (results.length >= limit) break;
         } catch (e) { /* skip */ }
       }
@@ -3586,11 +2534,8 @@ class HeartFlow {
       const crypto = require('crypto');
       const dir = path.join(this.rootPath, 'memory');
       try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
-      // v5.7.0 AES-256-GCM 加密 + [AUDIT-FIX] 文件锁
       const algorithm = 'aes-256-gcm';
-      const keySource = process.env.HEARTFLOW_DIALOGUE_KEY;
-      if (!keySource) throw new Error('HEARTFLOW_DIALOGUE_KEY env var required for dialogue encryption');
-      const key = crypto.scryptSync(keySource, 'salt', 32);
+      const key = crypto.scryptSync(process.env.HEARTFLOW_DIALOGUE_KEY || 'default-key-change-in-prod', 'salt', 32);
       const iv = crypto.randomBytes(16);
       const cipher = crypto.createCipheriv(algorithm, key, iv);
       const entry = {
@@ -3615,19 +2560,7 @@ class HeartFlow {
       delete encEntry.narrative;
       delete encEntry.themes;
       const filePath = path.join(dir, 'dream-history.jsonl.enc');
-      // [AUDIT-FIX] 文件锁防止并发写入损坏 JSONL
-      const lockPath = filePath + '.lock';
-      try {
-        const lockFd = fs.openSync(lockPath, 'wx');
-        fs.writeSync(lockFd, String(process.pid));
-        fs.appendFileSync(filePath, JSON.stringify(encEntry, null, 0) + '\n', 'utf8');
-        fs.closeSync(lockFd);
-        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
-      } catch (e) {
-        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
-        if (e.code === 'EEXIST') return { success: true, id: entry.id, encrypted: true, skipped: true };
-        return { success: false, error: e.message };
-      }
+      fs.appendFileSync(filePath, JSON.stringify(encEntry) + '\n', 'utf8');
       return { success: true, id: entry.id, encrypted: true };
     } catch (e) {
       return { success: false, error: e.message };
@@ -3662,7 +2595,7 @@ class HeartFlow {
         try {
           const identity = this.identityCore.getIdentitySummary();
           if (identity) {
-            _boundedPush(fragments, {
+            fragments.push({
               text: `${identity.name}: ${identity.identities?.join(' / ') || ''} | ${identity.meaning || ''}`,
               layer: 'CORE',
               key: 'identity',
@@ -3678,7 +2611,7 @@ class HeartFlow {
           const lessons = this.lesson.getTopLessons(8);
           for (const lesson of lessons) {
             const text = `[教训] ${lesson.errorPattern || ''} → ${lesson.correction || ''}`;
-            _boundedPush(fragments, {
+            fragments.push({
               text,
               layer: 'LEARNED',
               key: `lesson-${lesson.id || fragments.length}`,
@@ -3702,7 +2635,7 @@ class HeartFlow {
                 ? `[用户] ${entry.content?.slice(0, 200) || ''}`
                 : `[回应] ${entry.content?.slice(0, 200) || ''}`;
               if (text.length > 10) {
-                _boundedPush(fragments, {
+                fragments.push({
                   text,
                   layer: 'PERMANENT',
                   key: `dialogue-${entry.id || fragments.length}`,
@@ -3726,7 +2659,7 @@ class HeartFlow {
             try {
               const entry = JSON.parse(line);
               if (entry.content) {
-                _boundedPush(fragments, {
+                fragments.push({
                   text: entry.content,
                   layer: 'LEGACY',
                   key: `legacy-${entry.id || fragments.length}`,
@@ -3753,7 +2686,7 @@ class HeartFlow {
                 const text = entry.role === 'user'
                   ? `[用户] ${entry.content.slice(0, 200)}`
                   : `[回应] ${entry.content.slice(0, 200)}`;
-                _boundedPush(fragments, {
+                fragments.push({
                   text,
                   layer: 'PERMANENT',
                   key: `perm-${entry.id || fragments.length}`,
@@ -3777,7 +2710,7 @@ class HeartFlow {
             try {
               const entry = JSON.parse(line);
               if (entry.content && entry.content.length > 15) {
-                _boundedPush(fragments, {
+                fragments.push({
                   text: entry.content.slice(0, 150),
                   layer: 'CONTEXT',
                   key: `ctx-${entry.id || fragments.length}`,
@@ -3794,7 +2727,7 @@ class HeartFlow {
       const coreEntries = this.memory.listCore?.() || [];
       for (const entry of coreEntries.slice(-5)) {
         if (entry?.key && entry?.value) {
-          _boundedPush(fragments, {
+          fragments.push({
             text: `${entry.key}: ${entry.value}`,
             layer: 'CORE',
             key: entry.key,
@@ -3807,7 +2740,7 @@ class HeartFlow {
       const learnedEntries = this.memory.listLearned?.() || [];
       for (const entry of learnedEntries.slice(-10)) {
         if (entry?.key && entry?.value) {
-          _boundedPush(fragments, {
+          fragments.push({
             text: entry.value,
             layer: 'LEARNED',
             key: entry.key,
@@ -3823,7 +2756,7 @@ class HeartFlow {
           if (history && history.length > 0) {
             for (const h of history.slice(-5)) {
               const text = `[会话] ${h.summary || h.context || JSON.stringify(h).slice(0, 80)}`;
-              _boundedPush(fragments, { text, layer: 'EPHEMERAL', key: `session-${h.ts || ''}`, salience: 0.5 });
+              fragments.push({ text, layer: 'EPHEMERAL', key: `session-${h.ts || ''}`, salience: 0.5 });
             }
           }
         } catch (e) { /* optional */ }
@@ -3834,7 +2767,7 @@ class HeartFlow {
         try {
           const stats = this.evolution.getStats();
           if (stats?.queueSize > 0) {
-            _boundedPush(fragments, {
+            fragments.push({
               text: `[进化] 队列中${stats.queueSize}个改进项，健康度${stats.healthScore}%`,
               layer: 'LEARNED',
               key: 'evolution-queue',
@@ -3848,7 +2781,7 @@ class HeartFlow {
       if (this.psychology?.getPsychologyStats) {
         try {
           const ps = this.psychology.getPsychologyStats();
-          _boundedPush(fragments, {
+          fragments.push({
             text: `[心理学] 共${ps.defenseMechanisms}种防御机制，${ps.empathyArchitecture?.length || 0}层共情架构`,
             layer: 'LEARNED',
             key: 'psychology-summary',
@@ -3891,8 +2824,8 @@ class HeartFlow {
     const lines = [];
     const now = new Date().toLocaleString('zh-CN', { hour12: false });
 
-    _boundedPush(lines, `**【梦境报告】** ${now}`);
-    _boundedPush(lines, '');
+    lines.push(`**【梦境报告】** ${now}`);
+    lines.push('');
 
     // ─── 历史材料种子注入（v3.3.0） ──────────────────
     // 从 Downloads 文件夹读取的对话材料中提取的种子意象
@@ -3925,45 +2858,45 @@ class HeartFlow {
 
     if (dream && dream.raw) {
       // DreamV3 format
-      _boundedPush(lines, `**梦（${functionType || 'creative'}）· 种子：${usedSeed}**`);
-      _boundedPush(lines, '');
-      _boundedPush(lines, dream.raw);
-      _boundedPush(lines, '');
-      _boundedPush(lines, `---`);
-      _boundedPush(lines, '');
+      lines.push(`**梦（${functionType || 'creative'}）· 种子：${usedSeed}**`);
+      lines.push('');
+      lines.push(dream.raw);
+      lines.push('');
+      lines.push(`---`);
+      lines.push('');
       if (effect) {
         const effectStr = Object.entries(effect)
           .map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`)
           .join('\n');
-        _boundedPush(lines, `**梦的作用**`);
-        _boundedPush(lines, effectStr);
-        _boundedPush(lines, '');
+        lines.push(`**梦的作用**`);
+        lines.push(effectStr);
+        lines.push('');
       }
     } else {
       // ─── 旧格式：叙事核心：选中的记忆 + L1~L6 哲学叙事 ─────────
       const chosen = dreamResult?.results?.synthesize?.chosen_memory;
       const structure = dreamResult?.results?.synthesize?.narrative_structure;
       if (structure) {
-        _boundedPush(lines, `${structure.emoji} **${structure.layerName}之梦**`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `> 梦选择了这段记忆：${structure.setup.replace('梦选择了这段记忆：', '')}`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `${structure.desc}`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `**「${structure.question}」**`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `*${structure.metaphor}*`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `→ *${structure.elevation}*`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `---`);
-        _boundedPush(lines, '');
+        lines.push(`${structure.emoji} **${structure.layerName}之梦**`);
+        lines.push('');
+        lines.push(`> 梦选择了这段记忆：${structure.setup.replace('梦选择了这段记忆：', '')}`);
+        lines.push('');
+        lines.push(`${structure.desc}`);
+        lines.push('');
+        lines.push(`**「${structure.question}」**`);
+        lines.push('');
+        lines.push(`*${structure.metaphor}*`);
+        lines.push('');
+        lines.push(`→ *${structure.elevation}*`);
+        lines.push('');
+        lines.push(`---`);
+        lines.push('');
       } else {
         const fragCount = typeof fragments === 'object' && fragments !== null
           ? (Array.isArray(fragments) ? fragments.length : Object.keys(fragments).length)
           : 0;
-        _boundedPush(lines, `> 记忆原材料：${fragCount}条`);
-        _boundedPush(lines, '');
+        lines.push(`> 记忆原材料：${fragCount}条`);
+        lines.push('');
       }
 
       // 洞察摘要
@@ -3971,8 +2904,8 @@ class HeartFlow {
       if (insight && insight !== 'No significant patterns to synthesize.') {
         const themes = dreamResult?.results?.synthesize?.themes || [];
         if (themes.length > 0) {
-          _boundedPush(lines, `**浮现主题**：${themes.map(t => `\`${t}\``).join(' · ')}`);
-          _boundedPush(lines, '');
+          lines.push(`**浮现主题**：${themes.map(t => `\`${t}\``).join(' · ')}`);
+          lines.push('');
         }
       }
 
@@ -3980,17 +2913,17 @@ class HeartFlow {
       const pruned = consolidation?.pruning?.pruned_count || 0;
       const retained = consolidation?.pruning?.retained_count || 0;
       if (pruned > 0 || retained > 0) {
-        _boundedPush(lines, `**记忆变化**：强化 ${retained} 条 · 修剪 ${pruned} 条`);
-        _boundedPush(lines, '');
+        lines.push(`**记忆变化**：强化 ${retained} 条 · 修剪 ${pruned} 条`);
+        lines.push('');
       }
     }
 
     // 质量评分
     const quality = consolidation?.quality?.overallQuality || 0;
     const stars = '★'.repeat(Math.round(quality * 5)) + '☆'.repeat(5 - Math.round(quality * 5));
-    _boundedPush(lines, `**梦境质量**：${stars} ${Math.round(quality * 100)}%`);
-    _boundedPush(lines, '');
-    _boundedPush(lines, '*梦在深处继续。*');
+    lines.push(`**梦境质量**：${stars} ${Math.round(quality * 100)}%`);
+    lines.push('');
+    lines.push('*梦在深处继续。*');
 
     return lines.join('\n');
   }
@@ -4082,7 +3015,7 @@ class HeartFlow {
           skill: imp.area,
           confidence: imp.priority === 'high' ? 0.9 : imp.priority === 'medium' ? 0.7 : 0.5,
         });
-        _boundedPush(applied, imp);
+        applied.push(imp);
       } catch (e) {
         // 失败不阻断
       }
@@ -4217,10 +3150,10 @@ class HeartFlow {
     try {
       const fragments = [];
       if (result.judgment && result.judgment.response) {
-        _boundedPush(fragments, result.judgment.response);
+        fragments.push(result.judgment.response);
       }
       if (result.bridgeCommentary && typeof result.bridgeCommentary === 'object' && result.bridgeCommentary.commentary) {
-        _boundedPush(fragments, result.bridgeCommentary.commentary);
+        fragments.push(result.bridgeCommentary.commentary);
       }
       result.finalResponse = fragments.length > 0
         ? fragments.join('\n\n')
@@ -4232,46 +3165,6 @@ class HeartFlow {
     return result;
   }
 
-  // === v5.7.6 - Cross-Framework Field Tracking ===
-
-  /**
-   * Initialize cross-framework field tracker
-   */
-  initFieldTracker() {
-    const { CrossFrameworkFieldTracker } = require('./cross-framework-field-tracker.js');
-    this.fieldTracker = new CrossFrameworkFieldTracker();
-    return this.fieldTracker;
-  }
-
-  /**
-   * Record U/D/A/H field snapshot (for cross-framework sharing)
-   */
-  recordFieldSnapshot(model, scenario, fieldValues, decisionRoute) {
-    if (!this.fieldTracker) {
-      this.initFieldTracker();
-    }
-    return this.fieldTracker.recordFieldSnapshot(model, scenario, fieldValues, decisionRoute);
-  }
-
-  /**
-   * Export field traces (CSV for TAT/ThinkCheck/Cophy)
-   */
-  exportFieldTraces(format = 'csv') {
-    if (!this.fieldTracker) {
-      this.initFieldTracker();
-    }
-    return this.fieldTracker.exportTraces(format);
-  }
-
-  /**
-   * Get field health summary
-   */
-  getFieldHealth() {
-    if (!this.fieldTracker) {
-      this.initFieldTracker();
-    }
-    return this.fieldTracker.getFieldHealthSummary();
-  }
 }
 
 // ─── 辅助函数：从输入文本检测矛盾信号 ──────────────────────
@@ -4332,7 +3225,7 @@ if (require.main === module) {
   const t0 = Date.now();
   try {
     const health = hf.healthCheck ? hf.healthCheck() : {};
-    console.error(`[HeartFlow] ${VERSION} health check (${Date.now() - t0}ms):`);
+    // [PROD] 生产环境移除 console.error: console.error(`[HeartFlow] ${VERSION} health check (${Date.now() - t0}ms):`);
     // Run dispatch smoke tests
     const tests = [
       ['truth.checkStatement', '这个方案一定是对的'],
@@ -4343,16 +3236,16 @@ if (require.main === module) {
         hf.dispatch(route, ...args);
         passed++;
       } catch (e) {
-        console.error(`  FAIL ${route}: ${e.message}`);
+        // [PROD] 生产环境移除 console.error: console.error(`  FAIL ${route}: ${e.message}`);
         failed++;
       }
     }
-    console.error(`  dispatch tests: ${passed} passed, ${failed} failed`);
+    // [PROD] 生产环境移除 console.error: console.error(`  dispatch tests: ${passed} passed, ${failed} failed`);
 
     hf.stop();
     return;
   } catch (e) {
-    console.error('Error:', e);
+    // [PROD] 生产环境移除 console.error: console.error('Error:', e);
     hf.stop();
     return;
   }

@@ -6,25 +6,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
-
-// === 经验 Map 最大容量 ===
-const MAX_HISTORY_SIZE = 100;
-
-/**
- * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
- * @param {Map} map - 目标 Map
- * @param {*} key - 键
- * @param {*} value - 值
- * @param {number} maxSize - 最大容量
- */
-function _boundedSet(map, key, value, maxSize) {
-  if (map.size >= maxSize && !map.has(key)) {
-    const firstKey = map.keys().next().value;
-    map.delete(firstKey);
-  }
-  map.set(key, value);
-}
 
 class ExperienceCollector {
   constructor(options = {}) {
@@ -70,11 +51,11 @@ class ExperienceCollector {
       if (fs.existsSync(indexPath)) {
         const index = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
         for (const [id, meta] of Object.entries(index)) {
-          _boundedSet(this.experiences, id, meta, MAX_HISTORY_SIZE);
+          this.experiences.set(id, meta);
         }
       }
     } catch (error) {
-      // 已禁用 console.warn: console.warn('加载经验失败:', error.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('加载经验失败:', error.message);
     }
   }
 
@@ -88,7 +69,7 @@ class ExperienceCollector {
       const filePath = path.join(this.storagePath, `${id}.json`);
       fs.writeFileSync(filePath, JSON.stringify(experience, null, 2));
     } catch (error) {
-      // 已禁用 console.warn: console.warn('保存经验失败:', error.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('保存经验失败:', error.message);
     }
   }
 
@@ -103,7 +84,7 @@ class ExperienceCollector {
       const indexPath = path.join(this.storagePath, 'index.json');
       fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
     } catch (error) {
-      // 已禁用 console.warn: console.warn('更新索引失败:', error.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('更新索引失败:', error.message);
     }
   }
 
@@ -111,7 +92,7 @@ class ExperienceCollector {
    * 添加经验
    */
   add(experience) {
-    const id = experience.id || `exp-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+    const id = experience.id || `exp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     const record = {
       id,
@@ -126,7 +107,7 @@ class ExperienceCollector {
       lessons: experience.lessons || []
     };
 
-    _boundedSet(this.experiences, id, record, MAX_HISTORY_SIZE);
+    this.experiences.set(id, record);
     this._saveExperience(id, record);
     this._updateIndex();
 
@@ -367,7 +348,7 @@ class ExperienceCollector {
     let imported = 0;
     for (const exp of data.experiences) {
       if (exp.id && exp.task) {
-        _boundedSet(this.experiences, exp.id, exp, MAX_HISTORY_SIZE);
+        this.experiences.set(exp.id, exp);
         this._saveExperience(exp.id, exp);
         imported++;
       }

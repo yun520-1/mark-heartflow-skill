@@ -349,7 +349,7 @@ class KeyedLock {
       return await fn();
     } catch (error) {
       if (this._debug) {
-        // 已禁用 console.error: console.error(`[KeyedLock] Error in lock ${key}:`, error.message);
+        // [PROD] 生产环境移除 console.error: console.error(`[KeyedLock] Error in lock ${key}:`, error.message);
       }
       throw error;
     }

@@ -7,7 +7,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const crypto = require('crypto');
 
 // 风险评分表 — 动作类型 × 数据敏感度 → 基础风险分
 const RISK_MATRIX = {
@@ -297,7 +296,7 @@ class BoundaryNegotiation {
                       risk.level === 'medium' ? '⚡ 中等风险' : '✓ 低风险';
 
     const request = {
-      request_id: `bn-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
+      request_id: `bn-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       goal,
       permission,
       impact,

@@ -260,11 +260,15 @@ class AutoCompactionEngine {
     this.tokenizer = new SimpleTokenizer();
     
     this.config = {
-      // 默认 1M context：85% 预警，90% 开始压缩
-      warningThreshold: options.warningThreshold || 0.85,
+      // 默认 128k context 的 80% 预警
+      warningThreshold: options.warningThreshold || 0.80,
+      // 90% 开始压缩
       compactionThreshold: options.compactionThreshold || 0.90,
-      maxContextTokens: options.maxContextTokens || 1000000,
+      // 默认上下文限制 (token)
+      maxContextTokens: options.maxContextTokens || 100000,
+      // 压缩策略: 'trim' | 'summarize'
       strategy: options.strategy || 'trim',
+      // 是否自动压缩
       autoCompact: options.autoCompact !== false,
       // 回调
       onCompactionStart: options.onCompactionStart || null,

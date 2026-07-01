@@ -390,10 +390,10 @@ function getFixSuggestions(silent = false) {
   const suggestions = _generateFixSuggestions(fileResults, moduleResults, versionCheck);
 
   if (!silent && suggestions.length > 0) {
-    // 已禁用 console.log: console.log(`\n[HeartFlow] Boot Check — ${suggestions.length} fix suggestions:`);
+    // [PROD] 生产环境移除 console.log: console.log(`\n[HeartFlow] Boot Check — ${suggestions.length} fix suggestions:`);
     for (const s of suggestions) {
-      // 已禁用 console.log: console.log(`  [${s.severity}] ${s.message}`);
-      // 已禁用 console.log: console.log(`    → ${s.action}`);
+      // [PROD] 生产环境移除 console.log: console.log(`  [${s.severity}] ${s.message}`);
+      // [PROD] 生产环境移除 console.log: console.log(`    → ${s.action}`);
     }
   }
 
@@ -490,36 +490,36 @@ function bootCheck(silent = false) {
 
   if (!silent) {
     const icon = allPass ? '✓' : '⚠';
-    // 已禁用 console.log: console.log(`\n[HeartFlow] ${icon} Boot Check v1.1.0 — ${report.version} — ${report.summary.status}`);
-    // 已禁用 console.log: console.log(`  Health: ${health.score}/100 (${health.grade}) — ${suggestions.length} fixable issue(s)`);
-    // 已禁用 console.log: console.log(`  Files: ${filePassed}/${CORE_CHECKS.length} passed${fileFailed > 0 ? ` (${fileFailed} required failed)` : ''}`);
+    // [PROD] 生产环境移除 console.log: console.log(`\n[HeartFlow] ${icon} Boot Check v1.1.0 — ${report.version} — ${report.summary.status}`);
+    // [PROD] 生产环境移除 console.log: console.log(`  Health: ${health.score}/100 (${health.grade}) — ${suggestions.length} fixable issue(s)`);
+    // [PROD] 生产环境移除 console.log: console.log(`  Files: ${filePassed}/${CORE_CHECKS.length} passed${fileFailed > 0 ? ` (${fileFailed} required failed)` : ''}`);
     fileResults.forEach(r => {
       const icon = r.status === 'PASS' ? '✓' : r.status === 'MISSING' ? '?' : r.status === 'FAIL' ? '✗' : '!';
       const req = r.required ? ' [REQUIRED]' : '';
-      // 已禁用 console.log: console.log(`    ${icon} ${r.id}: ${r.status}${req} — ${r.detail}`);
+      // [PROD] 生产环境移除 console.log: console.log(`    ${icon} ${r.id}: ${r.status}${req} — ${r.detail}`);
     });
-    // 已禁用 console.log: console.log(`  Modules: ${modulePassed}/${MODULE_CHECKS.length} passed (${totalLoadMs.toFixed(1)}ms total, ${cachedCount} cached, ${freshCount} fresh)`);
+    // [PROD] 生产环境移除 console.log: console.log(`  Modules: ${modulePassed}/${MODULE_CHECKS.length} passed (${totalLoadMs.toFixed(1)}ms total, ${cachedCount} cached, ${freshCount} fresh)`);
     moduleResults.forEach(r => {
       const icon = r.status === 'PASS' ? '✓' : '✗';
       const timeStr = r.loadMs ? `${r.loadMs.toFixed(1)}ms` : '?';
       const versionStr = r.modVersion ? ` v${r.modVersion}` : '';
       const cacheStr = r.fromCache ? ' [cached]' : ' [fresh]';
-      // 已禁用 console.log: console.log(`    ${icon} ${r.id}: ${r.status}${versionStr} — ${timeStr}${r.status === 'PASS' ? cacheStr : ''}`);
+      // [PROD] 生产环境移除 console.log: console.log(`    ${icon} ${r.id}: ${r.status}${versionStr} — ${timeStr}${r.status === 'PASS' ? cacheStr : ''}`);
     });
     if (versionCheck.consistent) {
-      // 已禁用 console.log: console.log(`  ✓ Version consistent: ${versionCheck.expectedVersion}`);
+      // [PROD] 生产环境移除 console.log: console.log(`  ✓ Version consistent: ${versionCheck.expectedVersion}`);
     } else {
-      // 已禁用 console.log: console.log(`  ⚠ Version conflict detected!`);
-      // 已禁用 console.log: versionCheck.conflicts.forEach(c => console.log(`    ✗ ${c}`));
+      // [PROD] 生产环境移除 console.log: console.log(`  ⚠ Version conflict detected!`);
+      // [PROD] 生产环境移除 console.log: versionCheck.conflicts.forEach(c => console.log(`    ✗ ${c}`));
     }
-    // 已禁用 console.log: console.log(`  Health breakdown:`);
+    // [PROD] 生产环境移除 console.log: console.log(`  Health breakdown:`);
     for (const [dim, info] of Object.entries(health.breakdown)) {
-      // 已禁用 console.log: console.log(`    ${dim}: ${info.earned}/${info.max} — ${info.detail}`);
+      // [PROD] 生产环境移除 console.log: console.log(`    ${dim}: ${info.earned}/${info.max} — ${info.detail}`);
     }
     if (suggestions.length > 0) {
-      // 已禁用 console.log: console.log(`  Fix suggestions (${suggestions.length}):`);
+      // [PROD] 生产环境移除 console.log: console.log(`  Fix suggestions (${suggestions.length}):`);
       suggestions.slice(0, 5).forEach(s => {
-        // 已禁用 console.log: console.log(`    [${s.severity}] ${s.message}`);
+        // [PROD] 生产环境移除 console.log: console.log(`    [${s.severity}] ${s.message}`);
       });
     }
   }

@@ -458,7 +458,7 @@ function generateDream(memoryItems, options = {}) {
             const delay = RETRY_POLICY.backoffMs * dagAttempts;
             // 使用同步延迟模拟（在事件循环中）
             const start = Date.now();
-            // 已移除忙等待：请使用异步延迟
+            // [PROD] busy-wait removed: use async delay instead
           }
 
           const fragments = items.map((item, idx) => ({
@@ -738,15 +738,15 @@ if (require.main === module) {
   ];
 
   for (const tc of testCases) {
-    // 已禁用 console.log: console.log(`\n=== Test: ${tc.name} ===`);
+    // [PROD] 生产环境移除 console.log: console.log(`\n=== Test: ${tc.name} ===`);
     const result = generateDream(tc.input, { useDag: false });
-    // 已禁用 console.log: console.log(`  state: ${result.state}`);
-    // 已禁用 console.log: console.log(`  errors: ${JSON.stringify(result.errors)}`);
-    // 已禁用 console.log: console.log(`  warnings: ${JSON.stringify(result.warnings)}`);
-    // 已禁用 console.log: console.log(`  motifs: ${(result.motifs || []).length} items`);
-    // 已禁用 console.log: console.log(`  meta: ${JSON.stringify(result._meta)}`);
+    // [PROD] 生产环境移除 console.log: console.log(`  state: ${result.state}`);
+    // [PROD] 生产环境移除 console.log: console.log(`  errors: ${JSON.stringify(result.errors)}`);
+    // [PROD] 生产环境移除 console.log: console.log(`  warnings: ${JSON.stringify(result.warnings)}`);
+    // [PROD] 生产环境移除 console.log: console.log(`  motifs: ${(result.motifs || []).length} items`);
+    // [PROD] 生产环境移除 console.log: console.log(`  meta: ${JSON.stringify(result._meta)}`);
   }
 
-  // 已禁用 console.log: console.log('\n=== Diagnostics ===');
-  // 已禁用 console.log: console.log(JSON.stringify(getDiagnostics(), null, 2));
+  // [PROD] 生产环境移除 console.log: console.log('\n=== Diagnostics ===');
+  // [PROD] 生产环境移除 console.log: console.log(JSON.stringify(getDiagnostics(), null, 2));
 }

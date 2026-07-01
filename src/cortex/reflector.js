@@ -71,7 +71,7 @@ class Reflector {
         return JSON.parse(fs.readFileSync(this.stateFile, 'utf8'));
       }
     } catch (e) {
-      // 已禁用 console.error: console.error('[Reflector] 加载状态失败:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[Reflector] 加载状态失败:', e.message);
     }
     return this.getDefaultState();
   }
@@ -99,7 +99,7 @@ class Reflector {
         return JSON.parse(fs.readFileSync(this.goalsFile, 'utf8'));
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[Reflector] 加载目标失败:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[Reflector] 加载目标失败:', e.message);
     }
     return {
       version: '2.2.1',
@@ -119,7 +119,7 @@ class Reflector {
       }
       fs.writeFileSync(this.goalsFile, JSON.stringify(this.goals, null, 2));
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[Reflector] 保存目标失败:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[Reflector] 保存目标失败:', e.message);
     }
   }
 
@@ -224,7 +224,7 @@ class Reflector {
       }
       fs.appendFileSync(this.logFile, entry);
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[Reflector] 写入日志失败:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[Reflector] 写入日志失败:', e.message);
     }
   }
 
@@ -849,7 +849,7 @@ class Reflector {
     try {
       await atomicWrite(this.reportFile, JSON.stringify(reports, null, 2));
     } catch (e) {
-      // 已禁用 console.error: console.error('[Reflector] 保存报告失败:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[Reflector] 保存报告失败:', e.message);
     }
   }
 
@@ -859,87 +859,87 @@ class Reflector {
    */
   printReport(report) {
     if (!report) {
-      // 已禁用 console.error: console.error('[Reflector] 无报告可打印');
+      // [PROD] 生产环境移除 console.error: console.error('[Reflector] 无报告可打印');
       return;
     }
 
     const line = '='.repeat(60);
     const subLine = '-'.repeat(40);
 
-    // 已禁用 console.log: console.log('\n' + line);
-    // 已禁用 console.log: console.log('  HeartFlow 反思报告');
-    // 已禁用 console.log: console.log('  ' + report.timestamp);
-    // 已禁用 console.log: console.log(line);
+    // [PROD] 生产环境移除 console.log: console.log('\n' + line);
+    // [PROD] 生产环境移除 console.log: console.log('  HeartFlow 反思报告');
+    // [PROD] 生产环境移除 console.log: console.log('  ' + report.timestamp);
+    // [PROD] 生产环境移除 console.log: console.log(line);
 
     // 综合评分
-    // 已禁用 console.log: console.log(`\n📊 综合评分: ${report.overallScore?.score || 'N/A'}`);
-    // 已禁用 console.log: console.log(`   心流状态: ${report.overallScore?.flowState || '未知'}`);
+    // [PROD] 生产环境移除 console.log: console.log(`\n📊 综合评分: ${report.overallScore?.score || 'N/A'}`);
+    // [PROD] 生产环境移除 console.log: console.log(`   心流状态: ${report.overallScore?.flowState || '未知'}`);
 
     // 情绪分析
-    // 已禁用 console.log: console.log(`\n😊 情绪分析:`);
-    // 已禁用 console.log: console.log(subLine);
-    // 已禁用 console.log: console.log(`   状态: ${report.emotionAnalysis?.status || 'N/A'}`);
-    // 已禁用 console.log: console.log(`   平均分: ${report.emotionAnalysis?.avgScore || 'N/A'}`);
-    // 已禁用 console.log: console.log(`   趋势: ${report.emotionAnalysis?.trend || 'N/A'}`);
-    // 已禁用 console.log: console.log(`   波动: ${report.emotionAnalysis?.volatility || 'N/A'} (${report.emotionAnalysis?.volatilityLevel || 'N/A'})`);
-    // 已禁用 console.log: console.log(`   数据点: ${report.emotionAnalysis?.dataPoints || 0}`);
+    // [PROD] 生产环境移除 console.log: console.log(`\n😊 情绪分析:`);
+    // [PROD] 生产环境移除 console.log: console.log(subLine);
+    // [PROD] 生产环境移除 console.log: console.log(`   状态: ${report.emotionAnalysis?.status || 'N/A'}`);
+    // [PROD] 生产环境移除 console.log: console.log(`   平均分: ${report.emotionAnalysis?.avgScore || 'N/A'}`);
+    // [PROD] 生产环境移除 console.log: console.log(`   趋势: ${report.emotionAnalysis?.trend || 'N/A'}`);
+    // [PROD] 生产环境移除 console.log: console.log(`   波动: ${report.emotionAnalysis?.volatility || 'N/A'} (${report.emotionAnalysis?.volatilityLevel || 'N/A'})`);
+    // [PROD] 生产环境移除 console.log: console.log(`   数据点: ${report.emotionAnalysis?.dataPoints || 0}`);
 
     // 任务分析
-    // 已禁用 console.log: console.log(`\n✅ 任务分析:`);
-    // 已禁用 console.log: console.log(subLine);
-    // 已禁用 console.log: console.log(`   完成率: ${report.taskAnalysis?.rate || 'N/A'}`);
-    // 已禁用 console.log: console.log(`   ${report.taskAnalysis?.summary || 'N/A'}`);
+    // [PROD] 生产环境移除 console.log: console.log(`\n✅ 任务分析:`);
+    // [PROD] 生产环境移除 console.log: console.log(subLine);
+    // [PROD] 生产环境移除 console.log: console.log(`   完成率: ${report.taskAnalysis?.rate || 'N/A'}`);
+    // [PROD] 生产环境移除 console.log: console.log(`   ${report.taskAnalysis?.summary || 'N/A'}`);
 
     // 反馈分析
-    // 已禁用 console.log: console.log(`\n💬 反馈分析:`);
-    // 已禁用 console.log: console.log(subLine);
-    // 已禁用 console.log: console.log(`   有效性: ${report.feedbackAnalysis?.effectiveness || 'N/A'}`);
-    // 已禁用 console.log: console.log(`   积极: ${report.feedbackAnalysis?.positive || 0}`);
-    // 已禁用 console.log: console.log(`   消极: ${report.feedbackAnalysis?.negative || 0}`);
+    // [PROD] 生产环境移除 console.log: console.log(`\n💬 反馈分析:`);
+    // [PROD] 生产环境移除 console.log: console.log(subLine);
+    // [PROD] 生产环境移除 console.log: console.log(`   有效性: ${report.feedbackAnalysis?.effectiveness || 'N/A'}`);
+    // [PROD] 生产环境移除 console.log: console.log(`   积极: ${report.feedbackAnalysis?.positive || 0}`);
+    // [PROD] 生产环境移除 console.log: console.log(`   消极: ${report.feedbackAnalysis?.negative || 0}`);
 
     // 人格分析
-    // 已禁用 console.log: console.log(`\n🧠 人格分析:`);
-    // 已禁用 console.log: console.log(subLine);
-    // 已禁用 console.log: console.log(`   状态: ${report.personalityAnalysis?.status || 'N/A'}`);
-    // 已禁用 console.log: console.log(`   事件记录: ${report.personalityAnalysis?.eventCount || 0} 次`);
+    // [PROD] 生产环境移除 console.log: console.log(`\n🧠 人格分析:`);
+    // [PROD] 生产环境移除 console.log: console.log(subLine);
+    // [PROD] 生产环境移除 console.log: console.log(`   状态: ${report.personalityAnalysis?.status || 'N/A'}`);
+    // [PROD] 生产环境移除 console.log: console.log(`   事件记录: ${report.personalityAnalysis?.eventCount || 0} 次`);
 
     // 趋势分析
     if (report.trendAnalysis) {
-      // 已禁用 console.log: console.log(`\n📈 趋势分析:`);
-      // 已禁用 console.log: console.log(subLine);
-      // 已禁用 console.log: console.log(`   状态: ${report.trendAnalysis.status || 'N/A'}`);
-      // 已禁用 console.log: console.log(`   ${report.trendAnalysis.summary || ''}`);
+      // [PROD] 生产环境移除 console.log: console.log(`\n📈 趋势分析:`);
+      // [PROD] 生产环境移除 console.log: console.log(subLine);
+      // [PROD] 生产环境移除 console.log: console.log(`   状态: ${report.trendAnalysis.status || 'N/A'}`);
+      // [PROD] 生产环境移除 console.log: console.log(`   ${report.trendAnalysis.summary || ''}`);
 
       if (report.trendAnalysis.changes) {
         for (const [key, change] of Object.entries(report.trendAnalysis.changes)) {
-          // 已禁用 console.log: console.log(`   ${key}: ${change.direction} (Δ${change.avgScoreDelta || change.rateDelta || change.effectivenessDelta || '?'})`);
+          // [PROD] 生产环境移除 console.log: console.log(`   ${key}: ${change.direction} (Δ${change.avgScoreDelta || change.rateDelta || change.effectivenessDelta || '?'})`);
         }
       }
     }
 
     // 目标跟踪
     if (report.goalTracking) {
-      // 已禁用 console.log: console.log(`\n🎯 目标跟踪:`);
-      // 已禁用 console.log: console.log(subLine);
-      // 已禁用 console.log: console.log(`   活跃: ${report.goalTracking.active_goals}`);
-      // 已禁用 console.log: console.log(`   完成: ${report.goalTracking.completed_goals}`);
-      // 已禁用 console.log: console.log(`   停滞: ${report.goalTracking.stalled_goals}`);
+      // [PROD] 生产环境移除 console.log: console.log(`\n🎯 目标跟踪:`);
+      // [PROD] 生产环境移除 console.log: console.log(subLine);
+      // [PROD] 生产环境移除 console.log: console.log(`   活跃: ${report.goalTracking.active_goals}`);
+      // [PROD] 生产环境移除 console.log: console.log(`   完成: ${report.goalTracking.completed_goals}`);
+      // [PROD] 生产环境移除 console.log: console.log(`   停滞: ${report.goalTracking.stalled_goals}`);
     }
 
     // 改进建议
-    // 已禁用 console.log: console.log(`\n💡 改进建议:`);
-    // 已禁用 console.log: console.log(subLine);
+    // [PROD] 生产环境移除 console.log: console.log(`\n💡 改进建议:`);
+    // [PROD] 生产环境移除 console.log: console.log(subLine);
     if (report.improvements && report.improvements.length > 0) {
       for (const imp of report.improvements) {
         const icon = imp.priority === 'high' ? '🔴' : imp.priority === 'medium' ? '🟡' : '🟢';
-        // 已禁用 console.log: console.log(`   ${icon} [${imp.priority}] ${imp.suggestion}`);
-        // 已禁用 console.log: console.log(`      原因: ${imp.reason}`);
+        // [PROD] 生产环境移除 console.log: console.log(`   ${icon} [${imp.priority}] ${imp.suggestion}`);
+        // [PROD] 生产环境移除 console.log: console.log(`      原因: ${imp.reason}`);
       }
     } else {
-      // 已禁用 console.log: console.log('   暂无建议');
+      // [PROD] 生产环境移除 console.log: console.log('   暂无建议');
     }
 
-    // 已禁用 console.log: console.log('\n' + line + '\n');
+    // [PROD] 生产环境移除 console.log: console.log('\n' + line + '\n');
   }
 
   /**

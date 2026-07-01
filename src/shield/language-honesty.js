@@ -21,9 +21,6 @@
  *   - 反问: 10次 → 目标 < 3
  */
 
-// 转义正则特殊字符，防止 ReDoS
-const _escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
 const ABSOLUTE_WORDS = ['就是', '肯定', '本质', '最底层', '绝对', '肯定是', '本质上', '绝对是'];
 const QUESTION_WORDS = ['你觉得', '你认为', '我这样说对吗', '哪个对', '怎么想'];
 
@@ -82,7 +79,7 @@ function checkCertainty(text) {
   let absoluteCount = 0;
   for (let i = 0; i < ABSOLUTE_WORDS.length; i++) {
     const word = ABSOLUTE_WORDS[i];
-    const match = text.match(new RegExp(_escapeRegex(word), 'g'));
+    const match = text.match(new RegExp(word, 'g'));
     if (match) absoluteCount += match.length;
   }
 
@@ -103,7 +100,7 @@ function checkQuestions(text) {
   let count = 0;
   for (let i = 0; i < QUESTION_WORDS.length; i++) {
     const word = QUESTION_WORDS[i];
-    const match = text.match(new RegExp(_escapeRegex(word), 'g'));
+    const match = text.match(new RegExp(word, 'g'));
     if (match) count += match.length;
   }
 

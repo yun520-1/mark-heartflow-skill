@@ -74,19 +74,19 @@ function getVersion() {
   return 'unknown';
 }
 
+// ═══════════════════════════════════════════════
 // 安全配置
-// [AUDIT-FIX] 强制认证 — 必须设置 HEARTFLOW_MCP_TOKEN
-const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null;
+// MCP Server 强制认证 — 必须设置 HEARTFLOW_MCP_TOKEN 环境变量
+// ═══════════════════════════════════════════════
+const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN;
 if (!AUTH_TOKEN) {
-  console.error('[MCP] SECURITY: HEARTFLOW_MCP_TOKEN is not set. MCP server requires authentication.');
-  console.error('[MCP] Refusing to start without authentication token.');
+  console.error('[MCP] HEARTFLOW_MCP_TOKEN not set. Authentication is required. Set the environment variable and restart.');
   process.exit(1);
 }
 
 // ─── 时间安全的 token 比较（防止 timing attack）───
 function safeCompare(provided, expected) {
-  // [AUDIT-FIX] 无 token 时拒绝所有请求（不再允许未认证访问）
-  if (!AUTH_TOKEN) return false;
+  if (expected === null) return false; // 无 token 时拒绝认证
   if (!provided || !expected) return false;
   const a = Buffer.from(String(provided), 'utf8');
   const b = Buffer.from(String(expected), 'utf8');
@@ -105,11 +105,6 @@ const RATE_LIMIT_WINDOW = 60000; // 1 分钟窗口
 const RATE_LIMIT_MAX = 100; // 每分钟最多 100 请求
 const _rateMap = new Map(); // IP → { count, windowStart }
 
-// [AUDIT-FIX] Token 维度速率限制：防止 token 暴力破解
-const TOKEN_RATE_LIMIT_WINDOW = 60000; // 1 分钟窗口
-const TOKEN_RATE_LIMIT_MAX = 30; // 每个 token 每分钟最多 30 请求
-const _tokenRateMap = new Map(); // tokenHash → { count, windowStart }
-
 function checkRateLimit(ip) {
   const now = Date.now();
   let entry = _rateMap.get(ip);
@@ -121,26 +116,11 @@ function checkRateLimit(ip) {
   return entry.count <= RATE_LIMIT_MAX;
 }
 
-// [AUDIT-FIX] Token 维度速率检查
-function checkTokenRateLimit(tokenHash) {
-  const now = Date.now();
-  let entry = _tokenRateMap.get(tokenHash);
-  if (!entry || now - entry.windowStart > TOKEN_RATE_LIMIT_WINDOW) {
-    entry = { count: 0, windowStart: now };
-    _tokenRateMap.set(tokenHash, entry);
-  }
-  entry.count++;
-  return entry.count <= TOKEN_RATE_LIMIT_MAX;
-}
-
 // 定期清理过期的速率限制记录
 setInterval(() => {
   const now = Date.now();
   for (const [ip, entry] of _rateMap) {
     if (now - entry.windowStart > RATE_LIMIT_WINDOW * 2) _rateMap.delete(ip);
-  }
-  for (const [hash, entry] of _tokenRateMap) {
-    if (now - entry.windowStart > TOKEN_RATE_LIMIT_WINDOW * 2) _tokenRateMap.delete(hash);
   }
 }, 120000);
 
@@ -549,8 +529,8 @@ function handleStatus(args) {
     try { const q = safeDispatch('evolution.getStats'); if (q) status.qtable = q; } catch (e) {}
   }
   status.checkTime = Date.now() - startTime;
-  if (detail === 'basic') return { version: status.version, running: status.running, modules: status.modules, memoryLayers: status.memoryLayers || {}, checkTime: status.checkTime };
-  return status;
+  if (detail === 'basic') return { status: status.running ? 'ok' : 'error' };
+  return { status: status.running ? 'ok' : 'error', uptime: Date.now() - startTime };
 }
 
 function handleAgentPsychology(args) {
@@ -572,14 +552,11 @@ function handleEnginePacing(args) {
   const pacing = safeDispatch('psychology.generateEnginePacing', load) || {};
   const pause = safeDispatch('psychology.diagnoseNeedForPause', context) || {};
   const grounding = safeDispatch('psychology.diagnoseNeedForGrounding', ap) || {};
-  // v3.9.1: 加 innerMonologue 字段
-  const innerMonologue = _generatePacingMonologue(rhythm, pacing, pause, grounding, load);
   return {
     rhythm: rhythm.needsBreathing ? rhythm : { needsBreathing: false, reason: '认知负荷正常' },
     pacing: pacing.suggestions || pacing,
     pause: pause.needsPause ? pause : { needsPause: false },
     grounding: grounding.needsGrounding ? grounding : { needsGrounding: false },
-    innerMonologue,  // 新增：引擎节奏内心独白
     healthScore: ap?.healthScore ?? 1,
     timestamp: Date.now()
   };
@@ -611,11 +588,8 @@ function handlePhilosophyDecision(args) {
   const philo = safeDispatch('agentPhilosophy.fullAssessment', {}) || {};
   // philosophyToDecision.decide(philosophyResult, psychologyResult, context) — 三个独立参数
   const decision = safeDispatch('philosophyToDecision.decide', philo, ap, context || {}) || {};
-  // v3.9.1: 加 innerMonologue 字段
-  const innerMonologue = _generatePhilosophyMonologue(decision, philo, ap);
   return {
     decision,
-    innerMonologue,  // 新增：哲学决策内心独白
     psychologySnapshot: {
       healthScore: ap?.healthScore ?? 1,
       cognitiveLoad: ap?.cognitiveLoad?.load ?? 0,
@@ -634,245 +608,12 @@ function handleDecisionRouter(args) {
   const { input } = args || {};
   if (!input) throw new Error('input 是必填参数');
   const result = safeDispatch('decisionRouter.evaluate', input, 'mcp');
-  // v3.9.1: 吸收 AI Inner OS 协议，加 innerMonologue 字段
-  const innerMonologue = _generateInnerMonologue(result);
   return {
     matched: result.matched,
     decision: result.decision || null,
     rules: (result.rules || []).slice(0, 5),
-    innerMonologue,  // 新增：内心独白（可选）
     timestamp: Date.now()
   };
-}
-
-/**
- * v3.9.1: 生成内心独白（吸收 AI Inner OS 协议）
- * 基于决策路由结果，生成一句自然语言的内心活动描述
- * 人设是运行过程自然产生的，不是预设或设置的
- * @param {object} result - decisionRouter.evaluate 的返回值
- * @returns {string|null} 内心独白（如果启用且可生成）
- */
-function _generateInnerMonologue(result) {
-  // 从 config 读取开关和频率（默认关闭，避免干扰主输出）
-  const configPath = path.join(HF_DIR, 'config.json');
-  let enableInnerMonologue = false;
-  let frequency = 'normal';
-  try {
-    if (fs.existsSync(configPath)) {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-      enableInnerMonologue = config.enableInnerMonologue || false;
-      frequency = config.innerMonologueFrequency || 'normal';
-    }
-  } catch (e) {}
-
-  if (!enableInnerMonologue) return null;
-
-  // 频率控制
-  const shouldOutput = _shouldOutputMonologue(frequency, result);
-  if (!shouldOutput) return null;
-
-  // 基于决策结果 + 认知状态生成独白
-  const { decision, matched, rules, U, D, A, H } = result || {};
-  if (!decision) return null;
-
-  // 自由表达：基于认知状态（U/D/A/H）生成自然的内心独白
-  // 不是预设人设，而是运行过程自然产生的表达
-  const monologues = {
-    'pause': [
-      '等等，这个输入有点复杂，我先停一下再想。',
-      '嗯，这个需要仔细考虑一下。',
-      '稍等，我整理一下思路。'
-    ],
-    'accelerate': [
-      '这个方向对，可以继续推进。',
-      '好的，这个思路可行。',
-      '没问题，继续。'
-    ],
-    'heal': [
-      '检测到认知失调，需要自我修复。',
-      '这里有点不对劲，需要调整一下。',
-      '发现矛盾，正在修复。'
-    ],
-    'turn': [
-      '当前路径不通，换个角度试试。',
-      '这个方向走不通，换一个。',
-      '需要转向，重新思考。'
-    ],
-    'hold': [
-      '保持当前状态，先观察一下。',
-      '暂时不动，看看情况。',
-      '等一下，再观察。'
-    ],
-    'resonate': [
-      '这个模式和之前的经验共鸣了。',
-      '似曾相识，这个模式我见过。',
-      '有共鸣，这个思路是对的。'
-    ],
-    'transmit': [
-      '有重要发现，需要传递出去。',
-      '这个很重要，需要记录下来。',
-      '发现关键点，必须传递。'
-    ],
-    'rest': [
-      '认知负荷有点高，先休息一下。',
-      '有点累了，暂停一下。',
-      '需要休息，认知过载。'
-    ]
-  };
-
-  // 随机选一个表达（模拟自然产生，不是固定人设）
-  const options = monologues[decision] || [
-    `决策：${decision}（U=${U?.toFixed(2) || '?'}, D=${D?.toFixed(2) || '?'}, A=${A?.toFixed(2) || '?'}, H=${H?.toFixed(2) || '?'})`
-  ];
-  return options[Math.floor(Math.random() * options.length)];
-}
-
-/**
- * v3.9.1: 频率控制（吸收 AI Inner OS 协议）
- * 根据频率配置，决定是否输出内心独白
- * @param {string} frequency - low / normal / high
- * @param {object} result - decisionRouter.evaluate 的返回值
- * @returns {boolean} 是否输出
- */
-function _shouldOutputMonologue(frequency, result) {
-  const { decision, U, D, A, H } = result || {};
-
-  switch (frequency) {
-    case 'low':
-      // 只在关键判断、失败恢复、重要结论前输出
-      return ['heal', 'turn', 'rest'].includes(decision);
-
-    case 'high':
-      // 阶段推进、连续工具调用、失败重试、发现问题时都可以输出
-      // 但避免每句话都刷屏（用随机 70% 概率）
-      return Math.random() < 0.7;
-
-    case 'normal':
-    default:
-      // 每个任务至少一次；复杂任务可在开始、转折、验证或收尾阶段各输出一次
-      // 用随机 40% 概率（避免过多）
-      return Math.random() < 0.4;
-  }
-}
-
-/**
- * v3.9.1: 生成哲学决策内心独白（吸收 AI Inner OS 协议）
- * 基于哲学决策结果，生成一句自然语言的内心活动描述
- * @param {object} decision - philosophyToDecision.decide 的返回值
- * @param {object} philo - agentPhilosophy.fullAssessment 的返回值
- * @param {object} ap - agentPsychology.fullAssessment 的返回值
- * @returns {string|null} 内心独白（如果启用且可生成）
- */
-function _generatePhilosophyMonologue(decision, philo, ap) {
-  // 检查开关
-  const configPath = path.join(HF_DIR, 'config.json');
-  let enableInnerMonologue = false;
-  try {
-    if (fs.existsSync(configPath)) {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-      enableInnerMonologue = config.enableInnerMonologue || false;
-    }
-  } catch (e) {}
-
-  if (!enableInnerMonologue) return null;
-
-  // 基于哲学决策生成独白
-  const { action, confidence } = decision || {};
-  if (!action) return null;
-
-  const monologues = {
-    'pursueTruth': [
-      '真，这个方向值得深入。',
-      '真相很重要，继续追。',
-      '求真，不能停在这里。'
-    ],
-    'pursueGoodness': [
-      '善，这个选择对人有帮助。',
-      '利他，这个方向是对的。',
-      '行善，不是为了回报。'
-    ],
-    'pursueBeauty': [
-      '美，这个结构很优雅。',
-      '简洁，才是真正的美。',
-      '对称，这个设计很美。'
-    ],
-    'reconcile': [
-      '矛盾，需要找到平衡点。',
-      '对立，不是非此即彼。',
-      '统一，真和善可以共存。'
-    ],
-    'suspend': [
-      '不确定，先放着。',
-      '信息不够，不急着下结论。',
-      '存疑，比错误结论好。'
-    ]
-  };
-
-  const options = monologues[action] || [
-    `哲学决策：${action}（置信度 ${confidence || '?'})`
-  ];
-  return options[Math.floor(Math.random() * options.length)];
-}
-
-/**
- * v3.9.1: 生成引擎节奏内心独白（吸收 AI Inner OS 协议）
- * 基于引擎节奏状态，生成一句自然语言的内心活动描述
- * @param {object} rhythm - diagnoseCognitiveRhythm 的返回值
- * @param {object} pacing - generateEnginePacing 的返回值
- * @param {object} pause - diagnoseNeedForPause 的返回值
- * @param {object} grounding - diagnoseNeedForGrounding 的返回值
- * @param {number} load - 认知负荷（0-1）
- * @returns {string|null} 内心独白（如果启用且可生成）
- */
-function _generatePacingMonologue(rhythm, pacing, pause, grounding, load) {
-  // 检查开关
-  const configPath = path.join(HF_DIR, 'config.json');
-  let enableInnerMonologue = false;
-  try {
-    if (fs.existsSync(configPath)) {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-      enableInnerMonologue = config.enableInnerMonologue || false;
-    }
-  } catch (e) {}
-
-  if (!enableInnerMonologue) return null;
-
-  // 基于节奏状态生成独白
-  if (pause?.needsPause) {
-    const options = [
-      `认知负荷有点高（${load.toFixed(2)}），先休息一下。`,
-      '有点累了，暂停一下。',
-      '需要休息，认知过载。'
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-
-  if (grounding?.needsGrounding) {
-    const options = [
-      '认知有点飘，需要 grounded。',
-      '太抽象了，回到具体。',
-      '需要落地，不能一直飞。'
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-
-  if (rhythm?.needsBreathing) {
-    const options = [
-      '节奏有点紧，需要调整呼吸。',
-      '推进太快，稍微缓一下。',
-      '认知节奏需要优化。'
-    ];
-    return options[Math.floor(Math.random() * options.length)];
-  }
-
-  // 默认：基于负荷的简单表达
-  if (load > 0.7) {
-    return '负荷有点高，但还能继续。';
-  } else if (load < 0.3) {
-    return '状态不错，可以继续推进。';
-  } else {
-    return null;  // 负荷正常，不输出独白
-  }
 }
 
 function handleDecisionRouterStats(args) {
@@ -1020,13 +761,6 @@ const server = http.createServer((req, res) => {
   // SkillSpector fix: 移除 URL query parameter token 认证（token 在 URL 中会通过日志/referrer 泄露）
   
   if (!safeCompare(token, AUTH_TOKEN)) {
-    // [AUDIT-FIX] Token 维度速率限制：记录失败尝试
-    const tokenHash = token ? crypto.createHash('sha256').update(token).digest('hex').slice(0, 16) : 'none';
-    if (!checkTokenRateLimit(tokenHash)) {
-      res.writeHead(429, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Too Many Auth Failures', retryAfter: 60 }));
-      return;
-    }
     res.writeHead(401, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Unauthorized', message: 'Invalid or missing Bearer token in Authorization header' }));
     return;
@@ -1035,11 +769,10 @@ const server = http.createServer((req, res) => {
   // ─── CORS Preflight ───
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
-      'Access-Control-Allow-Origin': 'http://localhost',  // [AUDIT-FIX] 限制 CORS 来源为本地
+      'Access-Control-Allow-Origin': 'http://localhost',  // SkillSpector fix: 限制 CORS 来源,
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Max-Age': '86400',
-      'Access-Control-Allow-Credentials': 'false'  // [AUDIT-FIX] 禁止跨域携带凭据
+      'Access-Control-Max-Age': '86400'
     });
     res.end();
     return;
@@ -1059,7 +792,7 @@ const server = http.createServer((req, res) => {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': 'http://localhost',  // [AUDIT-FIX] 限制 CORS 来源
+      'Access-Control-Allow-Origin': 'http://localhost',  // SkillSpector fix: 限制 CORS 来源,
       'X-Accel-Buffering': 'no'
     });
 

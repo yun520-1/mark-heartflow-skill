@@ -241,33 +241,10 @@ class DreamV11 extends EventEmitter {
     this.agentPhilosophy = null;
     this.psychology = null;
     this.emotion = null;
-    this._dreamCache = null;      // 基于 engineState 哈希的缓存
-    this._cachedStateHash = null;  // 上次缓存时的状态哈希
   }
 
   updateState(newState) {
     this.engineState = newState;
-    this._dreamCache = null;
-    this._cachedStateHash = null;
-  }
-
-  _computeStateHash(state) {
-    // 基于关键字段的稳定哈希，避免完整 JSON.stringify 性能开销
-    try {
-      const key = JSON.stringify({
-        m: state.modules,
-        ml: state.memoryLayers,
-        q: state.qtable?.enabled,
-      });
-      let hash = 0;
-      for (let i = 0; i < key.length; i++) {
-        hash = ((hash << 5) - hash) + key.charCodeAt(i);
-        hash |= 0; // 转为 32 位整数
-      }
-      return hash;
-    } catch (_) {
-      return null;
-    }
   }
 
   bindModules(modules) {
@@ -278,25 +255,11 @@ class DreamV11 extends EventEmitter {
   }
 
   async dream(options = {}) {
-    // 输入验证
-    if (options && typeof options.intensity === 'number') {
-      if (options.intensity < 0 || options.intensity > 1) {
-        throw new RangeError('dream intensity 必须在 0-1 之间');
-      }
-    }
-
     const intensity = options.intensity || 0.7;
     const functionType = options.function || 'synthesis';
     const seed = options.seed || '';
     const state = this.engineState;
     this.dreamCount++;
-
-    // 缓存检查：相同状态 + 相同种子 + 相同函数类型时复用结果
-    const stateHash = this._computeStateHash(state);
-    const cacheKey = `${stateHash}:${seed}:${functionType}:${intensity}`;
-    if (this._dreamCache && this._cachedStateHash === cacheKey) {
-      return this._dreamCache;
-    }
 
     // Phase 1: 收集引擎的真实认知/哲学状态
     const cog = this._getFullCognitive();
@@ -326,7 +289,7 @@ class DreamV11 extends EventEmitter {
     // Phase 4: 编织
     const dream = this._weaveDream(skeleton, items, functionType, intensity, seed);
 
-    const result = {
+    return {
       dream,
       functionType,
       itemCount: items.length,
@@ -334,14 +297,6 @@ class DreamV11 extends EventEmitter {
       philosophyUsed: !!phi,
       psychologyUsed: !!psych,
     };
-
-    // 缓存结果（无种子的纯状态查询才缓存）
-    if (!seed) {
-      this._dreamCache = result;
-      this._cachedStateHash = cacheKey;
-    }
-
-    return result;
   }
 
   _collectMemoryItems(state) {
@@ -393,7 +348,7 @@ class DreamV11 extends EventEmitter {
       ];
       for (const m of singleMethods) {
         if (typeof this.agentPsychology[m] === 'function') {
-          try { result[m] = this.agentPsychology[m](); } catch (e) { /* 已抑制空 catch */ }
+          try { result[m] = this.agentPsychology[m](); } catch (e) { /* [PROD] empty catch suppressed */ }
         }
       }
       return result;
@@ -410,7 +365,7 @@ class DreamV11 extends EventEmitter {
       ];
       for (const m of methods) {
         if (typeof this.agentPhilosophy[m] === 'function') {
-          try { result[m] = this.agentPhilosophy[m](); } catch (e) { /* 已抑制空 catch */ }
+          try { result[m] = this.agentPhilosophy[m](); } catch (e) { /* [PROD] empty catch suppressed */ }
         }
       }
       // self-positioning 完整报告
@@ -418,7 +373,7 @@ class DreamV11 extends EventEmitter {
           typeof this.agentPhilosophy.selfPositioning.getFullReport === 'function') {
         try {
           result.selfPositioning = this.agentPhilosophy.selfPositioning.getFullReport();
-        } catch (e) { /* 已抑制空 catch */ }
+        } catch (e) { /* [PROD] empty catch suppressed */ }
       }
       return result;
     } catch(e) { return null; }
@@ -439,12 +394,7 @@ class DreamV11 extends EventEmitter {
   }
 
   _pickRandom(arr, n) {
-    // Fisher-Yates 洗牌：避免 .sort(() => Math.random() - 0.5) 的有偏分布
-    const shuffled = [...arr];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
+    const shuffled = [...arr].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, n);
   }
 
@@ -671,7 +621,7 @@ class DreamV11 extends EventEmitter {
 
   getCacheStats() {
     return {
-      cached: !!this._dreamCache,
+      cached: false,
       dreamCount: this.dreamCount,
     };
   }
@@ -754,8 +704,8 @@ if (require.main === module) {
   async function demo() {
     for (const fn of ['cognitive', 'philosophic', 'synthesis', 'memory', 'fragment']) {
       const result = await engine.dream({ intensity: 0.85, function: fn });
-      // 已禁用 console.log: console.log(`\n=== ${fn} ===`);
-      // 已禁用 console.log: console.log(result.dream.raw);
+      // [PROD] 生产环境移除 console.log: console.log(`\n=== ${fn} ===`);
+      // [PROD] 生产环境移除 console.log: console.log(result.dream.raw);
     }
   }
 

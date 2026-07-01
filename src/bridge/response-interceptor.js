@@ -82,8 +82,7 @@ class ResponseInterceptor {
           || response.response
           || JSON.stringify(response);
       }
-    } catch (e) {
-      console.warn('[ResponseInterceptor] 提取原始响应失败:', e.message);
+    } catch (_) {
       originalResponse = String(response);
     }
 

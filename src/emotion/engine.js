@@ -119,8 +119,8 @@ class PsychologyEngine {
         if (trimmed.length === 0) {
             return { valid: false, sanitized: '', error: '输入为空字符串' };
         }
-        // 限制最大输入长度 - 1M 上下文适配
-        const MAX_INPUT_LENGTH = 50000; // 5% of 1M context
+        // 限制最大输入长度，防止资源耗尽
+        const MAX_INPUT_LENGTH = 10000;
         if (trimmed.length > MAX_INPUT_LENGTH) {
             return {
                 valid: true,

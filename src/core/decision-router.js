@@ -1,5 +1,5 @@
 /**
- * decision-router.js — 通用分析→决策路由引擎 v3.0.0
+ * decision-router.js — 通用分析→决策路由引擎 v5.5.0
  *
  * v3.0.0 升级（2026-06-23）：
  *   - 新增 U/D/A/H 四维场域追踪（基于 luoxuejian000 论文框架）
@@ -25,7 +25,7 @@
  *   → 匹配决策规则 → 生成决策指令 → 返回 { result, decision }
  */
 
-const VERSION = '3.8.3';
+const VERSION = '3.10.0';
 
 // ─── U/D/A/H 场域追踪参数（基于 luoxuejian000 论文） ──────────────────────
 // H = λU·U + λD·D - λA·A
@@ -484,6 +484,85 @@ class DecisionRouter {
         rationale: (r) => `反思链过长(${(r.thoughtChain || r.chain || []).length}步)且置信度下降(${(r.confidence || 0).toFixed(2)})，防止过度思考`,
         fallback: DECISION.REST,
       },
+      // ── v3.9.0 — 吸收 DeepSeek 社区反馈 ──────────────────────────────────
+      // maratsultanov2 #1424：transitions as first-class objects / density signals
+      {
+        id: 'transition-density-signal',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          const driver = String(field._fieldDriver || field.driver || '').toUpperCase();
+          const transitions = ['LINK', 'COMPRESS', 'CONSOLIDATE', 'REINDEX'];
+          return transitions.includes(driver);
+        },
+        decision: DECISION.ACCELERATE,
+        confidence: (r) => {
+          const field = r._field || r.field || {};
+          const h = field._fieldH || field.H || 0;
+          return h > 0.3 ? 0.75 : 0.5;
+        },
+        rationale: (r) => `密度信号驱动(${(r._field || r.field || {})._fieldDriver || r._fieldDriver || 'transition'})，加速处理`,
+        fallback: DECISION.HOLD,
+      },
+      // qingkong66 #1446 / #1285：0.3 阈值跨框架验证 — trace-ready 输出
+      {
+        id: 'b-series-trace-ready',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          return field._fieldH !== undefined && field._fieldU !== undefined && field._fieldA !== undefined;
+        },
+        decision: DECISION.TRANSMIT,
+        confidence: (r) => {
+          const field = r._field || r.field || {};
+          const h = field._fieldH || 0;
+          const completeness = field._fieldH > 0 && field._fieldU > 0 && field._fieldD > 0 ? 0.9 : 0.7;
+          return Math.min(0.95, completeness);
+        },
+        rationale: (r) => `B-series trace-ready(U/D/A/H全字段)，可跨框架对比`,
+        fallback: DECISION.HOLD,
+      },
+      // icophy #1447：signed divergence 检测 — surface-coherent-but-internally-drifting
+      {
+        id: 'signed-divergence-check',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          const flip = field._fieldFlipAlert || r._fieldFlipAlert;
+          const coh = field._fieldC || r.coherence || 0;
+          const pos = field._fieldP || r.position || 0;
+          return flip === 'signed_divergence' || (coh > 0.7 && pos < 0.3);
+        },
+        decision: DECISION.TURN,
+        confidence: (r) => 0.85,
+        rationale: (r) => `签名分歧检测：表面一致但内部漂移`,
+        fallback: DECISION.PAUSE,
+      },
+      // icophy #1447 F3 test：sustained drift pattern（多步coh高+pos低，非单点快照）
+      {
+        id: 'f3-sustained-drift',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          const hist = field._fieldHistory || [];
+          if (hist.length < 3) return false;
+          // 连续3步以上：coherence > 0.7 AND position < 0.3
+          const sustained = hist.slice(-3).every(h => (h.c || 0) > 0.7 && (h.p || 0) < 0.3);
+          return sustained && (field._fieldH || r.harmony || 0) < 0.4;
+        },
+        decision: DECISION.TURN,
+        confidence: (r) => 0.9,
+        rationale: (r) => `F3 sustained drift：连续多步表面一致内部漂移`,
+        fallback: DECISION.PAUSE,
+      },
+      // qingkong66 #1285：pre-output gate 透明度 — 审计在输出前执行，非事后
+      {
+        id: 'pre-output-gate-check',
+        match: (r) => {
+          const timing = r._auditTiming || r.auditTiming;
+          return timing === 'post-hoc' || timing === 'after-output';
+        },
+        decision: DECISION.HEAL,
+        confidence: (r) => 0.75,
+        rationale: (r) => `审计时机偏移：pre-output gate 应为实时审计，非事后`,
+        fallback: DECISION.HOLD,
+      },
     ];
 
     // 决策反馈循环（2026-06-28 基于 DeepSeek #1424 讨论）
@@ -548,44 +627,6 @@ class DecisionRouter {
   // ─── v3.0.0 新增：U/D/A/H 场域计算方法 ──────────────────────────────────
 
   /**
-   * v5.8.0 优化：字段提取优先级表（替代 if/else 链）
-   * 每个维度按优先级排列字段名，命中第一个即返回
-   */
-  static _FIELD_EXTRACTORS = {
-    U: [
-      { field: 'identityCoherence', transform: v => v },
-      { field: '_fieldU', transform: v => v },
-      { field: 'ok', transform: v => v ? 0.6 : 0.2 },
-      { field: 'confidence', transform: v => Math.max(0.2, v) },
-      { field: 'stability', transform: v => v },
-    ],
-    D: [
-      { field: 'quality', transform: v => v },
-      { field: '_fieldD', transform: v => v },
-      { field: 'success', transform: v => v ? 0.7 : 0.2 },
-      { field: 'cognitiveLoad', transform: v => Math.max(0.1, 1 - v) },
-      { field: 'awareness', transform: v => Math.max(0.2, v * 0.8) },
-    ],
-    A: [
-      { field: 'dissonance', transform: v => v },
-      { field: '_fieldA', transform: v => v },
-      { field: 'severity', transform: v => String(v).toUpperCase() === 'CRITICAL' ? 0.8 : String(v).toUpperCase() === 'HIGH' ? 0.6 : 0.1 },
-      { field: 'goalValid', transform: v => v === false ? 0.5 : undefined },
-      { field: 'valid', transform: v => v === false ? 0.4 : undefined },
-      { field: 'ok', transform: v => v === false ? 0.3 : undefined },
-    ],
-  };
-
-  static _extractField(result, fieldKey, defaultValue) {
-    for (const extractor of DecisionRouter._FIELD_EXTRACTORS[fieldKey]) {
-      if (result[extractor.field] !== undefined) {
-        return extractor.transform(result[extractor.field]);
-      }
-    }
-    return defaultValue;
-  }
-
-  /**
    * 从任意模块的分析结果中提取或计算 U/D/A/H 四维值
    * @param {object} result - 模块返回值
    * @returns {{ U: number, D: number, A: number, H: number }}
@@ -595,83 +636,90 @@ class DecisionRouter {
       // v3.6.1：后备连续性 — API/模块不可用时回退到上次已知场域快照
       if (this._lastKnownField) {
         this._stats.fallbackCount++;
-        const fb = this._lastKnownField;
+        // 轻微衰减：U/D 降 0.01，A 升 0.01，H 重新计算
         const fallback = {
-          U: Math.max(0.2, fb.U - 0.01),
-          D: Math.max(0.2, fb.D - 0.01),
-          A: Math.min(1, fb.A + 0.01),
+          U: Math.max(0.2, this._lastKnownField.U - 0.01),
+          D: Math.max(0.2, this._lastKnownField.D - 0.01),
+          A: Math.min(1, this._lastKnownField.A + 0.01),
         };
-        fallback.H = this._computeH(fallback.U, fallback.D, fallback.A);
+        fallback.H = Math.max(0, Math.min(1,
+          FIELD_WEIGHTS.lambdaU * fallback.U +
+          FIELD_WEIGHTS.lambdaD * fallback.D -
+          FIELD_WEIGHTS.lambdaA * fallback.A
+        ));
         this._lastKnownField = fallback;
         return fallback;
       }
       return { U: 0.3, D: 0.3, A: 0, H: 0.3 };
     }
 
-    // v5.8.0 优化：使用优先级表提取字段值（O(1) 平均）
-    const U = Math.max(0, Math.min(1, DecisionRouter._extractField(result, 'U', 0.3)));
-    const D = Math.max(0, Math.min(1, DecisionRouter._extractField(result, 'D', 0.3)));
-    const A = Math.max(0, Math.min(1, DecisionRouter._extractField(result, 'A', 0)));
+    // v3.6.1：记录当前场域快照供后备使用
+    // U（统一性/Unity）——身份在场强度
+    let rawU = 0.3;
+    if (result.identityCoherence !== undefined) {
+      rawU = result.identityCoherence;
+    } else if (result._fieldU !== undefined) {
+      rawU = result._fieldU;
+    } else if (result.ok !== undefined) {
+      rawU = result.ok ? 0.6 : 0.2;
+    } else if (result.confidence !== undefined) {
+      rawU = Math.max(0.2, result.confidence);
+    } else if (result.stability !== undefined) {
+      rawU = result.stability;
+    }
+    const U = Math.max(0, Math.min(1, rawU));
+
+    // D（发展性/Development）——信息推进的结构化程度
+    let rawD = 0.3;
+    if (result.quality !== undefined) {
+      rawD = result.quality;
+    } else if (result._fieldD !== undefined) {
+      rawD = result._fieldD;
+    } else if (result.success !== undefined) {
+      rawD = result.success ? 0.7 : 0.2;
+    } else if (result.cognitiveLoad !== undefined) {
+      rawD = Math.max(0.1, 1 - result.cognitiveLoad);
+    } else if (result.awareness !== undefined) {
+      rawD = Math.max(0.2, result.awareness * 0.8);
+    }
+    const D = Math.max(0, Math.min(1, rawD));
+
+    // A（对抗性/Adversity）——矛盾边密度
+    let rawA = 0;
+    if (result.dissonance !== undefined) {
+      rawA = result.dissonance;
+    } else if (result._fieldA !== undefined) {
+      rawA = result._fieldA;
+    } else if (result.severity !== undefined) {
+      rawA = String(result.severity).toUpperCase() === 'CRITICAL' ? 0.8 :
+          String(result.severity).toUpperCase() === 'HIGH' ? 0.6 : 0.1;
+    } else if (result.goalValid === false) {
+      rawA = 0.5;
+    } else if (result.valid === false) {
+      rawA = 0.4;
+    } else if (result.ok === false) {
+      rawA = 0.3;
+    }
+    const A = Math.max(0, Math.min(1, rawA));
 
     // 保存当前场域快照（供后备连续性使用）
     this._lastKnownField = { U, D, A };
 
-    const H = this._computeH(U, D, A);
+    // H（和谐度/Harmony）——加权公式（v3.8.0：场景感知权重）
+    // H = λU·U + λD·D - λA·A
+    const weights = this._activeWeights;
+    const H = Math.max(0, Math.min(1,
+      weights.lambdaU * U +
+      weights.lambdaD * D -
+      weights.lambdaA * A
+    ));
+
     return { U, D, A, H };
   }
 
-  _computeH(U, D, A) {
-    // v3.8.0：场景感知权重
-    const w = this._activeWeights;
-    return Math.max(0, Math.min(1, w.lambdaU * U + w.lambdaD * D - w.lambdaA * A));
-  }
-
-  /**
-   * v5.8.0 优化：场景检测评分表（替代 if/else 链）
-   * 每个场景有独立的评分函数，返回匹配度 0-1
-   */
-  static _SCENE_SCORERS = [
-    {
-      scene: 'technical',
-      score: (U, D, A, H, hist, result) => {
-        if (D <= 0.5 || A >= 0.2 || U <= 0.4 || hist.length < 3) return 0;
-        const recentDrivers = hist.slice(-3).map(h => h.driver);
-        return recentDrivers.filter(d => d === 'D').length >= 2 ? 1 : 0;
-      },
-    },
-    {
-      scene: 'emotional',
-      score: (U, D, A, H, hist, result) => {
-        if (A <= 0.3 || hist.length < 3) return 0;
-        const aValues = hist.slice(-3).map(h => h.A);
-        const aRange = Math.max(...aValues) - Math.min(...aValues);
-        return aRange > 0.15 ? 1 : 0;
-      },
-    },
-    {
-      scene: 'analytical',
-      score: (U, D, A, H, hist, result) => {
-        if (!result) return 0;
-        return (result.quality !== undefined || result.directionClear !== undefined) ? 1 : 0;
-      },
-    },
-    {
-      scene: 'creative',
-      score: (U, D, A, H, hist, result) => {
-        return U > 0.6 && D < 0.3 && A < 0.15 ? 1 : 0;
-      },
-    },
-    {
-      scene: 'reflective',
-      score: (U, D, A, H, hist, result) => {
-        return A > 0.5 && U < 0.3 && H < 0.4 ? 1 : 0;
-      },
-    },
-  ];
-
   /**
    * v3.8.0：检测当前场景类型
-   * v5.8.0 优化：使用评分表替代 if/else 链
+   * 基于场域历史特征自动分类场景，切换权重配置
    * @param {{U:number, D:number, A:number, H:number}} fieldValues
    * @param {object} [result] - 原始模块返回值（含额外特征）
    * @returns {string} 场景类型标识
@@ -680,17 +728,33 @@ class DecisionRouter {
     const { U, D, A, H } = fieldValues;
     const hist = this._fieldHistory;
 
-    // 使用评分表并行评估所有场景，取最高分
-    let bestScene = 'general';
-    let bestScore = 0;
-    for (const scorer of DecisionRouter._SCENE_SCORERS) {
-      const score = scorer.score(U, D, A, H, hist, result);
-      if (score > bestScore) {
-        bestScore = score;
-        bestScene = scorer.scene;
-      }
+    // 条件1：技术讨论 — D 持续主导 + A 偏低 + U 稳定偏高
+    if (D > 0.5 && A < 0.2 && U > 0.4 && hist.length >= 3) {
+      const recentDrivers = hist.slice(-3).map(h => h.driver);
+      const dDominant = recentDrivers.filter(d => d === 'D').length >= 2;
+      if (dDominant) return 'technical';
     }
-    return bestScene;
+
+    // 条件2：情感冲突 — A 波动大 + 有快速升降
+    if (A > 0.3 && hist.length >= 3) {
+      const aValues = hist.slice(-3).map(h => h.A);
+      const aRange = Math.max(...aValues) - Math.min(...aValues);
+      if (aRange > 0.15) return 'emotional';
+    }
+
+    // 条件3：分析/推理 — 模块返回了 quality/directionClear 等推理信号
+    if (result && (result.quality !== undefined || result.directionClear !== undefined)) {
+      return 'analytical';
+    }
+
+    // 条件4：创意/发散 — U 高 + D 低 + A 低
+    if (U > 0.6 && D < 0.3 && A < 0.15) return 'creative';
+
+    // 条件5：自我修复 — A 高 + U 低 + H 低
+    if (A > 0.5 && U < 0.3 && H < 0.4) return 'reflective';
+
+    // 默认
+    return 'general';
   }
 
   /**
@@ -730,66 +794,6 @@ class DecisionRouter {
         this._activeWeights = SCENE_WEIGHTS[newScene] || { ...FIELD_WEIGHTS };
       }
     }
-  }
-
-  /**
-   * v3.9.1：跨场景归一化 H 值（解决 H 值跨场景可比性问题）
-   * 每个场景的 H 值分布不同，通过 z-score 归一化到同一尺度
-   * @param {number} H - 原始 H 值
-   * @param {string} scene - 场景标签
-   * @returns {number} 归一化 H 值（-3 ~ +3 范围）
-   */
-  _normalizeHAcrossScenes(H, scene) {
-    // 场景 H 值分布统计（从实际运行数据累积）
-    const stats = this._sceneHStats || {};
-    if (!stats[scene]) {
-      // 新场景，用全局默认值
-      stats[scene] = { mean: 0.5, std: 0.2, count: 0 };
-    }
-
-    const { mean, std } = stats[scene];
-    const zScore = std > 0 ? (H - mean) / std : 0;
-
-    // 更新统计（在线学习）
-    stats[scene].count += 1;
-    stats[scene].mean += (H - stats[scene].mean) / stats[scene].count;
-    // 简化版标准差更新（避免存储所有历史值）
-    stats[scene].std = Math.max(0.05, Math.abs(H - stats[scene].mean) * 0.5);
-    this._sceneHStats = stats;
-
-    return Math.max(-3, Math.min(3, zScore));
-  }
-
-  /**
-   * v3.9.1：区分"退化"与"进化"（吸收 E1-E7 框架问题）
-   * 退化：核心能力（推理、决策）下降，且无新能力补偿
-   * 进化：核心能力保持或提升，同时获得新能力/新知识
-   * @param {object} prevState - 前状态 { H, decisionQuality, reasoningAccuracy }
-   * @param {object} currState - 当前状态
-   * @param {object} [newCapabilities] - 新获得的能力/知识
-   * @returns {object} { type: 'degeneration'|'evolution'|'stable', confidence }
-   */
-  _detectDegenerationVsEvolution(prevState, currState, newCapabilities = []) {
-    const hDelta = currState.H - prevState.H;
-    const decisionDelta = (currState.decisionQuality || 0) - (prevState.decisionQuality || 0);
-    const reasoningDelta = (currState.reasoningAccuracy || 0) - (prevState.reasoningAccuracy || 0);
-
-    // 核心能力变化
-    const coreDecline = hDelta < -0.15 && decisionDelta < -0.1 && reasoningDelta < -0.1;
-    const coreImprove = hDelta > 0.05 && (decisionDelta > 0 || reasoningDelta > 0);
-
-    // 进化判定：核心能力不退化，且有新能力
-    if (!coreDecline && newCapabilities.length > 0) {
-      return { type: 'evolution', confidence: 0.8, newCapabilities };
-    }
-
-    // 退化判定：核心能力退化，且无新能力补偿
-    if (coreDecline && newCapabilities.length === 0) {
-      return { type: 'degeneration', confidence: 0.9, details: { hDelta, decisionDelta, reasoningDelta } };
-    }
-
-    // 稳定
-    return { type: 'stable', confidence: 0.95 };
   }
 
   /**

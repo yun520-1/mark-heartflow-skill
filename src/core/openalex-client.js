@@ -105,7 +105,7 @@ const openalexClient = {
           
           if (retryCount < this.MAX_RETRIES) {
             const delay = this.BASE_DELAY * Math.pow(2, retryCount);
-            // 已禁用 console.warn: console.warn(`[OpenAlex] 状态码 ${res.statusCode}, ${retryCount + 1}/${this.MAX_RETRIES} 次重试 (延迟 ${delay}ms)`);
+            // [PROD] 生产环境移除 console.warn: console.warn(`[OpenAlex] 状态码 ${res.statusCode}, ${retryCount + 1}/${this.MAX_RETRIES} 次重试 (延迟 ${delay}ms)`);
             
             setTimeout(() => {
               this._get(url, retryCount + 1)
@@ -148,7 +148,7 @@ const openalexClient = {
         if (retryCount < this.MAX_RETRIES && 
             (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.code === 'ENOTFOUND')) {
           const delay = this.BASE_DELAY * Math.pow(2, retryCount);
-          // 已禁用 console.warn: console.warn(`[OpenAlex] 网络错误 ${err.code}, ${retryCount + 1}/${this.MAX_RETRIES} 次重试 (延迟 ${delay}ms)`);
+          // [PROD] 生产环境移除 console.warn: console.warn(`[OpenAlex] 网络错误 ${err.code}, ${retryCount + 1}/${this.MAX_RETRIES} 次重试 (延迟 ${delay}ms)`);
           
           setTimeout(() => {
             this._get(url, retryCount + 1)

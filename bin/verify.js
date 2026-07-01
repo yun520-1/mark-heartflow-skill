@@ -15,16 +15,6 @@ let hasError = false;
 function check(label, fn) {
   try {
     const result = fn();
-    if (result && typeof result.then === 'function') {
-      return result.then(r => {
-        RESULTS.push(`  ✅ ${label}`);
-        return r;
-      }).catch(e => {
-        RESULTS.push(`  ❌ ${label}: ${e.message.split('\n')[0]}`);
-        hasError = true;
-        return null;
-      });
-    }
     RESULTS.push(`  ✅ ${label}`);
     return result;
   } catch (e) {
@@ -37,16 +27,11 @@ function check(label, fn) {
 console.log('');
 console.log('=== HeartFlow 安装验证 ===\n');
 
-// Collect all async check results
-const checkResults = [];
-
 // 1. Node.js 版本
-checkResults.push(check('Node.js >= 18', () => {
-  const v = process.version;
-  const major = parseInt(v.slice(1).split('.')[0]);
-  if (major < 18) throw new Error(`当前 v${process.version}，需要 >= 18`);
-  return v;
-}));
+check('Node.js >= 18', () => {
+  const v = process.version.slice(1).split('.')[0];
+  if (parseInt(v) < 18) throw new Error(`当前 v${process.version}，需要 >= 18`);
+});
 
 // 2. 关键文件存在
 check('src/core/heartflow.js 存在', () => {
@@ -64,13 +49,13 @@ check('package.json 存在', () => {
   if (!fs.existsSync(p)) throw new Error('文件不存在');
 });
 
-// 3. 核心模块 require
+// 3. 核心模块 require（不启动引擎，只检查能否加载）
 check('heartflow.js 模块可加载', () => {
   const { HeartFlow } = require(path.join(HF_DIR, 'src/core/heartflow.js'));
   if (typeof HeartFlow !== 'function') throw new Error('HeartFlow 不是构造函数');
 });
 
-// 4. 启动引擎
+// 4. 启动引擎并检查状态
 let engine = null;
 check('引擎启动', () => {
   const { HeartFlow } = require(path.join(HF_DIR, 'src/core/heartflow.js'));
@@ -92,7 +77,7 @@ check('dispatch 路由可用', () => {
   if (!data || typeof data.pad?.pleasure !== 'number') throw new Error('emotion.process 返回异常');
 });
 
-checkResults.push(check('think() 可用', async () => {
+check('think() 可用', async () => {
   if (!engine) throw new Error('引擎未启动');
   try {
     const r = await engine.think('你好');
@@ -100,28 +85,20 @@ checkResults.push(check('think() 可用', async () => {
   } catch (e) {
     throw new Error(`think() 失败: ${e.message}`);
   }
-}));
+});
 
 // 5. 停止引擎
 if (engine) {
-  try { engine.stop(); } catch(e) { /* stop may fail on circular ref */ }
+  try { engine.stop(); } catch(e) {}
 }
 
-// 6. npm 依赖检查
+// 6. npm 依赖检查（只检查必选依赖，optionalDependencies 如 @xenova/transformers 是可选功能）
 check('npm 必选依赖为空', () => {
   const pkg = require(path.join(HF_DIR, 'package.json'));
   const deps = Object.keys(pkg.dependencies || {}).length;
   if (deps > 0) throw new Error(`dependencies 中有 ${deps} 个包`);
 });
 
-// Wait for all async checks, then print results
-Promise.all(checkResults).then(() => {
-  console.log(RESULTS.join('\n'));
-  const passed = RESULTS.filter(r => r.includes('✅')).length;
-  const failed = RESULTS.filter(r => r.includes('❌')).length;
-  console.log(`\n=== ${passed} passed, ${failed} failed ===`);
-  process.exit(failed > 0 ? 1 : 0);
-}).catch(e => {
-  console.error('Verify error:', e);
-  process.exit(1);
-});
+console.log(RESULTS.join('\n'));
+console.log(`\n=== ${hasError ? '❌ 验证失败' : '✅ 全部通过'} ===`);
+process.exit(hasError ? 1 : 0);

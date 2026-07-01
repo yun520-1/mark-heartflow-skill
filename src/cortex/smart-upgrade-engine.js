@@ -15,24 +15,6 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-// === 缓存 Map 最大容量 ===
-const MAX_CACHE_SIZE = 200;
-
-/**
- * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
- * @param {Map} map - 目标 Map
- * @param {*} key - 键
- * @param {*} value - 值
- * @param {number} maxSize - 最大容量
- */
-function _boundedSet(map, key, value, maxSize) {
-  if (map.size >= maxSize && !map.has(key)) {
-    const firstKey = map.keys().next().value;
-    map.delete(firstKey);
-  }
-  map.set(key, value);
-}
-
 class SmartUpgradeEngine {
   constructor(rootPath) {
     this.rootPath = rootPath;
@@ -416,7 +398,7 @@ module.exports = { ${className} };
       createdAt: Date.now()
     };
     
-    _boundedSet(this._cache, id, node, MAX_CACHE_SIZE);
+    this._cache.set(id, node);
     return node;
   }
 
@@ -613,7 +595,7 @@ module.exports = { ${className} };
    */
   log(msg) {
     const ts = new Date().toISOString();
-    // 已禁用 console.error: console.error(`[${ts}] ${msg}`);
+    // [PROD] 生产环境移除 console.error: console.error(`[${ts}] ${msg}`);
     
     try {
       let logs = [];
@@ -650,11 +632,11 @@ if (require.main === module) {
   const engine = new SmartUpgradeEngine(__dirname);
   engine.runUpgrade()
     .then(result => {
-      // 已禁用 console.log: console.log('升级结果:', result);
+      // [PROD] 生产环境移除 console.log: console.log('升级结果:', result);
       return;
     })
     .catch(err => {
-      // 已禁用 console.error: console.error('升级失败:', err);
+      // [PROD] 生产环境移除 console.error: console.error('升级失败:', err);
       return;
     });
 }

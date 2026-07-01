@@ -12,24 +12,6 @@
  */
 const crypto = require('crypto');
 
-// === 合并 Map 最大容量 ===
-const MAX_MAP_SIZE = 200;
-
-/**
- * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
- * @param {Map} map - 目标 Map
- * @param {*} key - 键
- * @param {*} value - 值
- * @param {number} maxSize - 最大容量
- */
-function _boundedSet(map, key, value, maxSize) {
-  if (map.size >= maxSize && !map.has(key)) {
-    const firstKey = map.keys().next().value;
-    map.delete(firstKey);
-  }
-  map.set(key, value);
-}
-
 // 错误严重级别枚举
 const SEVERITY = { LOW: 'low', MEDIUM: 'medium', HIGH: 'high', CRITICAL: 'critical' };
 
@@ -124,13 +106,13 @@ const selfCorrectionLoop = {
       duplicate.timestamp = new Date().toISOString();
       // 更新修正内容（保留最新版本）
       if (corrected) duplicate.corrected = String(corrected).slice(0, 200);
-      // 已禁用 console.error: this._persist().catch(e => console.error('[SelfCorrection] Persist failed:', e.message));
+      // [PROD] 生产环境移除 console.error: this._persist().catch(e => console.error('[SelfCorrection] Persist failed:', e.message));
       return { ...duplicate, deduplicated: true, id: duplicate.id };
     }
 
     this.corrections.push(entry);
     this._applyDecay(); // 每次新增时触发衰减
-    // 已禁用 console.error: this._persist().catch(e => console.error('[SelfCorrection] Persist failed:', e.message));
+    // [PROD] 生产环境移除 console.error: this._persist().catch(e => console.error('[SelfCorrection] Persist failed:', e.message));
     return entry;
   },
 
@@ -418,13 +400,13 @@ const selfCorrectionLoop = {
           existing.corrected = existing.corrected + ' | ' + c.corrected;
         }
       } else {
-        _boundedSet(seen, key, { ...c }, MAX_MAP_SIZE);
+        seen.set(key, { ...c });
         consolidated.push(seen.get(key));
       }
     }
 
     this.corrections = consolidated;
-    // 已禁用 console.error: this._persist().catch(e => console.error('[SelfCorrection] Consolidation persist failed:', e.message));
+    // [PROD] 生产环境移除 console.error: this._persist().catch(e => console.error('[SelfCorrection] Consolidation persist failed:', e.message));
     return { consolidated: consolidated.length, removed: seen.size - consolidated.length };
   },
 
@@ -478,7 +460,7 @@ const selfCorrectionLoop = {
       fs.writeFileSync(filePath, JSON.stringify(this.corrections, null, 2));
     } catch (e) {
       // 安全修复：记录错误而非静默失败
-      // 已禁用 console.error: console.error('[SelfCorrection] Persist failed:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[SelfCorrection] Persist failed:', e.message);
     }
   },
 
@@ -506,7 +488,7 @@ const selfCorrectionLoop = {
       }
     } catch (e) {
       // 安全修复：记录错误并重置
-      // 已禁用 console.warn: console.warn('[SelfCorrection] Load failed, starting fresh:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[SelfCorrection] Load failed, starting fresh:', e.message);
       this.corrections = [];
     }
   }

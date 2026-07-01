@@ -359,7 +359,7 @@ const hypothesisTester = {
       .replace(/[^a-z0-9\u4e00-\u9fff]/g, '')
       .slice(0, 50);
     const { createHash } = require('crypto');
-    return createHash('sha256').update(normalized).digest('hex').slice(0, 8);
+    return createHash('md5').update(normalized).digest('hex').slice(0, 8);
   },
 
   // 为声明生成未核实标记

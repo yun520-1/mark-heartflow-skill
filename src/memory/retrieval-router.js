@@ -359,7 +359,7 @@ class RetrievalRouter {
 
       return results.slice(0, 5);
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[RetrievalRouter] memory channel error:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[RetrievalRouter] memory channel error:', e.message);
       return [];
     }
   }
@@ -380,7 +380,7 @@ class RetrievalRouter {
       }
       return [];
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[RetrievalRouter] semantic channel error:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[RetrievalRouter] semantic channel error:', e.message);
       return [];
     }
   }
@@ -415,7 +415,7 @@ class RetrievalRouter {
 
       return results.slice(0, 5);
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[RetrievalRouter] graph channel error:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[RetrievalRouter] graph channel error:', e.message);
       return [];
     }
   }
@@ -429,143 +429,4 @@ module.exports = {
   rerank,
   assessQuality,
   ROUTER_CONFIG,
-};
-
-// ─── P1: Goal-Oriented RAG 目标导向检索 ──────────────────────────────────────
-// 基于 "Goal-Oriented Reasoning for RAG-based Memory" (arXiv:2605.12213)
-
-/**
- * 从查询中提取子目标
- * @private
- */
-function decomposeGoal(query) {
-  if (!query || typeof query !== 'string') return [{ text: query, priority: 1 }];
-
-  const goals = [];
-  const lower = query.toLowerCase();
-
-  // 检测复合查询（用分隔符连接的多个目标）
-  const separators = /[，,；;。.！!？?\n]+/;
-  const parts = query.split(separators).filter(s => s.trim().length > 2);
-
-  if (parts.length > 1) {
-    for (let i = 0; i < parts.length; i++) {
-      goals.push({ text: parts[i].trim(), priority: 1 - i * 0.1 });
-    }
-  } else {
-    // 单目标查询：检测意图类型分配优先级
-    let priority = 0.5;
-    if (/什么是|是什么|定义|概念|解释/.test(lower)) priority = 0.8;
-    else if (/为什么|原因|原因/.test(lower)) priority = 0.7;
-    else if (/如何|怎么|怎样|方法/.test(lower)) priority = 0.6;
-    else if (/比较|区别|对比|差异/.test(lower)) priority = 0.65;
-
-    goals.push({ text: query.trim(), priority });
-  }
-
-  return goals;
-}
-
-/**
- * 评估记忆条目对目标的实用性（而非简单相似度）
- * @private
- */
-function assessUtility(memoryItem, goalText) {
-  let utility = 0;
-
-  // 1. 基础内容相关性（词重叠）
-  const memText = (memoryItem.content || memoryItem.value || '').toLowerCase();
-  const goalWords = goalText.toLowerCase().split(/\s+/).filter(w => w.length > 1);
-  const memWords = new Set(memText.split(/\s+/).filter(w => w.length > 1));
-  const overlap = goalWords.filter(w => memWords.has(w)).length;
-  utility += Math.min(0.3, overlap / Math.max(1, goalWords.length) * 0.3);
-
-  // 2. 新近度（越新越有用）
-  const age = Date.now() - (memoryItem.createdAt || memoryItem.timestamp || Date.now());
-  const ageHours = age / (3600 * 1000);
-  utility += Math.max(0, 0.2 - ageHours * 0.001);
-
-  // 3. 访问频率（越常被访问越可能有用）
-  const accessCount = memoryItem.accessCount || 0;
-  utility += Math.min(0.2, accessCount * 0.02);
-
-  // 4. 层级奖励（CORE > LEARNED > EPHEMERAL）
-  const tier = (memoryItem.tier || memoryItem.layer || '').toUpperCase();
-  if (tier === 'CORE') utility += 0.3;
-  else if (tier === 'LEARNED') utility += 0.2;
-  else utility += 0.1;
-
-  // 5. 元数据奖励
-  if (memoryItem.metadata?.userPreference) utility += 0.1;
-  if (memoryItem.metadata?.taskOutcome === 'success') utility += 0.1;
-
-  return Math.min(1, utility);
-}
-
-/**
- * 目标导向检索：将子目标分配到最优检索通道
- * @param {Object} router - RetrievalRouter实例
- * @param {string} query - 原始查询
- * @param {object} options - 检索选项
- * @returns {Array} 按实用性排序的结果
- */
-function goalOrientedRetrieve(router, query, options = {}) {
-  const goals = decomposeGoal(query);
-  const allResults = new Map(); // itemId → {item, maxUtility, goals}
-
-  for (const goal of goals) {
-    // 为目标选择最优通道
-    const classification = classifyQuery(goal.text);
-    const channels = options.channels || classification.channels;
-
-    for (const channel of channels) {
-      let channelResults = [];
-      switch (channel) {
-        case 'memory':
-          channelResults = router._retrieveMemory(goal.text);
-          break;
-        case 'semantic':
-          channelResults = router._retrieveSemantic(goal.text);
-          break;
-        case 'graph':
-          channelResults = router._retrieveGraph(goal.text);
-          break;
-      }
-
-      // 评估每条记忆对该目标的实用性
-      for (const item of channelResults) {
-        const utility = assessUtility(item, goal.text) * goal.priority;
-        const id = item.id || item.key || JSON.stringify(item).slice(0, 50);
-
-        if (allResults.has(id)) {
-          const existing = allResults.get(id);
-          if (utility > existing.maxUtility) {
-            existing.maxUtility = utility;
-            existing.goals.push(goal.text);
-          }
-        } else {
-          allResults.set(id, { item, maxUtility: utility, goals: [goal.text] });
-        }
-      }
-    }
-  }
-
-  // 按实用性排序，返回topK
-  const topK = options.topK || 5;
-  return [...allResults.values()]
-    .sort((a, b) => b.maxUtility - a.maxUtility)
-    .slice(0, topK)
-    .map(entry => ({
-      ...entry.item,
-      utilityScore: entry.maxUtility,
-      matchedGoals: entry.goals,
-    }));
-}
-
-// Export goal-oriented functions
-module.exports = {
-  ...module.exports,
-  decomposeGoal,
-  assessUtility,
-  goalOrientedRetrieve,
 };

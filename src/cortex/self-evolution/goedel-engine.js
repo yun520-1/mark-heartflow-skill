@@ -77,8 +77,7 @@ class GoedelEngine {
         return JSON.parse(fs.readFileSync(this.codeMapFile, 'utf8'));
       }
     } catch (e) {
-  console.warn("[Cortex]", "操作失败:", e.message);
-}
+    }
     return this.buildCodeMap();
   }
 
@@ -88,8 +87,7 @@ class GoedelEngine {
         return fs.readFileSync(this.coreValuesFile, 'utf8');
       }
     } catch (e) {
-  console.warn("[Cortex]", "操作失败:", e.message);
-}
+    }
     return null;
   }
 
@@ -276,7 +274,7 @@ class GoedelEngine {
     pad.dominance -= emotionSensitivity * 0.5;
   }`,
       'default': `  // Gödel 优化建议: ${proposal.description}
-  // 优化建议如上`
+  // TODO(v1.3.6): Implement optimization`
     };
 
     const funcMatch = proposal.target.match(/(\w+)\.js$/);
@@ -352,7 +350,7 @@ class GoedelEngine {
       fs.rmSync(sandboxPath, { recursive: true, force: true, maxRetries: 2 });
       this.log(`Sandbox cleaned up: ${sandboxId}`);
     } catch (e) {
-      // 已禁用 console.error: console.error(`[Gödel] Cleanup failed: ${e.message}`);
+      // [PROD] 生产环境移除 console.error: console.error(`[Gödel] Cleanup failed: ${e.message}`);
     }
   }
 
@@ -370,7 +368,7 @@ class GoedelEngine {
 
     // 安全检查：需要确认环境变量 HEARTFLOW_ENABLE_SELF_MODIFICATION=1 才能自动修改
     if (process.env.HEARTFLOW_ENABLE_SELF_MODIFICATION !== '1') {
-      // 已禁用 console.warn: console.warn('[Gödel] Self modification disabled by policy');
+      // [PROD] 生产环境移除 console.warn: console.warn('[Gödel] Self modification disabled by policy');
       return { success: false, reason: 'self_modification_disabled' };
     }
 
@@ -730,8 +728,7 @@ class GoedelEngine {
         return JSON.parse(fs.readFileSync(archiveFile, 'utf8'));
       }
     } catch (e) {
-  console.warn("[Cortex]", "操作失败:", e.message);
-}
+    }
     return { agents: [], version: 1 };
   }
 
@@ -980,7 +977,8 @@ class GoedelEngine {
 diff --git a/src/core/self-evolution/goedel-engine.js b/src/core/self-evolution/goedel-engine.js
 --- a/src/core/self-evolution/goedel-engine.js
 +++ b/src/core/self-evolution/goedel-engine.js
-// 当前采样策略需要优化
+// TODO(v1.3.6): 应用改进
+- // 当前采样策略需要优化
 + // 优化采样策略：增加多样性权重
 `;
 
