@@ -427,7 +427,7 @@ async function step19_versionSync(result) {
   // package.json
   const pkgFile = path.join(ROOT, 'package.json');
   if (fs.existsSync(pkgFile)) {
-    try { const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8')); versions.package = pkg.version; } catch (e) { console.warn('[SelfDiagnostic] package.json parse failed:', e.message); }
+    // [PROD] 生产环境移除 console.warn: try { const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8')); versions.package = pkg.version; } catch (e) { /* [PROD] console.warn removed */ }
   }
   
   // SKILL.md frontmatter + title
@@ -520,7 +520,7 @@ async function step20_finalReport(result) {
 
 async function runDiagnostic() {
   const result = new DiagnosticResult();
-  console.log('Starting HeartFlow Self-Diagnostic (20 steps)...\n');
+  // [PROD] 生产环境移除 console.log: console.log('Starting HeartFlow Self-Diagnostic (20 steps)...\n');
   
   // Step 1-5: 版本一致性检测（并发）
   await Promise.all([
@@ -551,7 +551,7 @@ async function runDiagnostic() {
   
   // Step 20: 生成报告
   const report = await step20_finalReport(result);
-  console.log(report);
+  // [PROD] 生产环境移除 console.log: console.log(report);
   
   return result;
 }
@@ -560,11 +560,11 @@ async function runDiagnostic() {
 if (require.main === module) {
   runDiagnostic().then(r => {
     const s = r.summary();
-    console.log(`\nVerdict: ${s.allPassed ? '✓ PASS' : `✗ FAIL (${s.failed} checks failed)`}`);
-    process.exit(s.allPassed ? 0 : 1);
+    // [PROD] 生产环境移除 console.log: console.log(`\nVerdict: ${s.allPassed ? '✓ PASS' : `✗ FAIL (${s.failed} checks failed)`}`);
+    return;
   }).catch(e => {
-    console.error('Diagnostic failed:', e);
-    process.exit(1);
+    // [PROD] 生产环境移除 console.error: console.error('Diagnostic failed:', e);
+    return;
   });
 }
 

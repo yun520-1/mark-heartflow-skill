@@ -636,7 +636,7 @@ class ErrorHandler {
     try {
       fs.appendFileSync(ERROR_LOG, entry);
     } catch (e) {
-      console.error('[ErrorHandler] 无法写入日志:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[ErrorHandler] 无法写入日志:', e.message);
     }
   }
 

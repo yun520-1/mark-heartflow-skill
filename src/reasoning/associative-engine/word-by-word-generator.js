@@ -533,9 +533,9 @@ class WordByWordGenerator {
       };
       
       fs.writeFileSync(this.stateFile, JSON.stringify(traceData, null, 2));
-      console.warn('[WordByWordGenerator] Trace saved to disk');
+      // [PROD] 生产环境移除 console.warn: console.warn('[WordByWordGenerator] Trace saved to disk');
     } catch (e) {
-      console.error('[WordByWordGenerator] Save failed:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[WordByWordGenerator] Save failed:', e.message);
     }
   }
 

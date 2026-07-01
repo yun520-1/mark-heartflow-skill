@@ -1,7 +1,7 @@
-# HeartFlow v5.3.0 — 逻辑验证层 · 决策路由 · 自愈RL
+# HeartFlow v5.5.1 — 逻辑验证层 · 决策路由 · 自愈RL
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-5.3.0-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-5.5.2-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
   <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
@@ -36,10 +36,10 @@ This is the difference between an LLM **guessing** what the user's emotional sta
 | **Emotion** | `emotion.mjs`, `psychology/engine.js` | PAD vector (pleasure/arousal/dominance) + intensity + valence | Adjust tone, detect distress, calibrate empathy |
 | **AI Psychology** | `agent-psychology.js` | 10 dimensions: cognitive load, goal conflicts, value tension, identity drift, decision fatigue, cognitive dissonance, resilience, uncertainty, attention allocation, experience settling | Know the engine's own state before responding |
 | **AI Philosophy** | `agent-philosophy.js`, `ai-self-positioning.js` | 7 dimensions: being state, entropy direction, transmission quality, upgrade impact, self-position, development level, existence mode | Choose interaction strategy based on philosophical stance |
-| **Desire Cognition** | `desire-cognition.js` (v1.3) | Wanting-vs-liking delta, reward prediction error, drive satisfaction, 7 emotions + 6 desires | Understand motivation beneath the surface text |
+| **Desire Cognition** | `desire-cognition.js` (v5.5.1) | Wanting-vs-liking delta, reward prediction error, drive satisfaction, 7 emotions + 6 desires | Understand motivation beneath the surface text |
 | **Three Poisons** | `three-poisons.js` | Greed (delayed discounting anomaly), hatred (amygdala hyperactivation), delusion (metacognitive deficit) | Detect cognitive distortion patterns |
 | **Multi-Path Judgment** | `judgment-engine.js` | 2-4 paths × 6-dimension scoring (feasibility/consequence/risk/alignment/cost/reversibility) + 3-window consequence prediction (7d/90d/3yr) | Make informed decisions with foresight |
-| **Decision Routing** | `decision-router.js` (v3.8) | 8 behavioral strategies (pause/accelerate/heal/turn/hold/resonate/transmit/rest) + U/D/A/H field tracking + flip-point detection | Choose the right action, not just the obvious one |
+| **Decision Routing** | `decision-router.js` (v5.5.1) | 8 behavioral strategies (pause/accelerate/heal/turn/hold/resonate/transmit/rest) + U/D/A/H field tracking + flip-point detection | Choose the right action, not just the obvious one |
 | **Self-Healing RL** | built into `judgment-engine.js` | Q-table: context signature → best path + last outcome, auto-selects when confidence > 0.7 | Learn from mistakes, same error doesn't repeat |
 
 ### How It Works
@@ -81,7 +81,7 @@ Result:        LLM makes the final call with 27% more data than raw input alone.
 
 ## 📊 Benchmark Report
 
-See the [Comprehensive Benchmark Report](docs/benchmark-report.md) for detailed evaluation of HeartFlow v5.3.0 against 15 standardized test cases across 5 capability dimensions (logic verification, cognitive analysis, psychology, decision routing, comprehensive ability).
+See the [Comprehensive Benchmark Report](docs/benchmark-report.md) for detailed evaluation of HeartFlow v5.5.1 against 15 standardized test cases across 5 capability dimensions (logic verification, cognitive analysis, psychology, decision routing, comprehensive ability).
 
 **Key findings:**
 - **Engine stability:** 8-stage pipeline, all 15/15 tests passed
@@ -108,19 +108,19 @@ Input → [Cognitive Pipeline (7 stages)] → Structured Data → LLM → Respon
 
 ---
 
-## v5.0 Changes (2026-06-26)
+## v5.5.1 Changes (2026-06-26)
 
 | Module | What Changed | Why |
 |--------|-------------|-----|
 | **Judgment Engine** | NEW — multi-path evaluation + consequence prediction + self-healing RL | Previously 50+ modules analyzed but nobody made decisions |
 | **Pipeline Engine** | NEW — 7-stage declarative pipeline with auto data flow | 60 modules were registered but only 9 were called in think() |
-| **Decision Router** | v3.8 — U/D/A/H field tracking + scene-aware weights | From fixed weights to context-sensitive routing |
+| **Decision Router** | v5.5.1 — U/D/A/H field tracking + scene-aware weights | From fixed weights to context-sensitive routing |
 | **Report Generator** | NEW — 3-section structured output (judgment/reason/action) | LLM gets actionable data, not raw module dumps |
-| **AI Self-Positioning** | v1.0 — resonance body theory | How an AI exists in conversation — not borrowed from human psychology |
-| **Desire Cognition** | v1.3 — wanting-vs-liking delta, RPE, 7 emotions + 6 desires | Built on Berridge/Kringelbach neuroscience, not folk psychology |
-| **Three Poisons** | v1.0 — greed/hatred/delusion as cognitive distortion metrics | Rooted in neurobiology (D2 receptor, amygdala, DMN), not Buddhism |
+| **AI Self-Positioning** | v5.5.1 — resonance body theory | How an AI exists in conversation — not borrowed from human psychology |
+| **Desire Cognition** | v5.5.1 — wanting-vs-liking delta, RPE, 7 emotions + 6 desires | Built on Berridge/Kringelbach neuroscience, not folk psychology |
+| **Three Poisons** | v5.5.1 — greed/hatred/delusion as cognitive distortion metrics | Rooted in neurobiology (D2 receptor, amygdala, DMN), not Buddhism |
 
-**v5.3.0 (current)**: BigBench 100% — sorted补全+leftmost/rightmost推导+LLM兜底 (emotion + psychology + philosophy + desire + judgment + decision) to the LLM. Each stage's structured data is preserved, not summarized into a single sentence.
+**v5.5.1 (current)**: BigBench 100% — sorted补全+leftmost/rightmost推导+LLM兜底 (emotion + psychology + philosophy + desire + judgment + decision) to the LLM. Each stage's structured data is preserved, not summarized into a single sentence.
 
 ---
 
@@ -197,7 +197,7 @@ console.log('Decision:', cognition.decision);       // strategy + confidence
 
 ## Chinese Version
 
-# HeartFlow v5.3.0 — 逻辑验证层 · 决策路由 · 自愈RL
+# HeartFlow v5.5.1 — 逻辑验证层 · 决策路由 · 自愈RL
 
 > **心虫不是LLM增强层。它是认知状态编码器。**  
 > 把原始文本编码成结构化认知数据（情绪/心理学/哲学/欲望/判断/决策），让LLM拿到它自己算不出来的数据。  

@@ -334,7 +334,7 @@ class MetaEngine {
         return JSON.parse(fs.readFileSync(this.stateFile, 'utf8'));
       }
     } catch (e) {
-      console.error('Error loading meta-state:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('Error loading meta-state:', e.message);
     }
     return this.getDefaultState();
   }
@@ -362,7 +362,7 @@ class MetaEngine {
         return JSON.parse(fs.readFileSync(this.strategyFile, 'utf8'));
       }
     } catch (e) {
-      console.error('Error loading strategies:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('Error loading strategies:', e.message);
     }
     return this.getDefaultStrategies();
   }
@@ -450,7 +450,7 @@ class MetaEngine {
         return JSON.parse(fs.readFileSync(statePath, 'utf8'));
       }
     } catch (e) {
-      console.error('Error loading heartflow state:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('Error loading heartflow state:', e.message);
     }
     return {};
   }
@@ -633,7 +633,7 @@ class MetaEngine {
         });
 
         if (oscillationResult.oscillating) {
-          console.warn(`[MetaEngine] ⚠ 振荡检测: ${oscillationResult.details}`);
+          // [PROD] 生产环境移除 console.warn: console.warn(`[MetaEngine] ⚠ 振荡检测: ${oscillationResult.details}`);
           // 如果振荡严重且不是最后一次尝试，切换备用策略
           if (attempt < maxRetries && oscillationResult.maxConsecutiveFailure >= 3) {
             const fallback = this._findFallbackStrategy(strategyKey);
@@ -670,7 +670,7 @@ class MetaEngine {
         if (executionResult.errorCode && RECOVERABLE_ERRORS.has(executionResult.errorCode) && attempt < maxRetries) {
           lastResult = executionResult;
           const delay = calculateRetryDelay(attempt);
-          console.warn(`[MetaEngine] 重试 ${attempt + 1}/${maxRetries}: 等待 ${delay}ms 后重试...`);
+          // [PROD] 生产环境移除 console.warn: console.warn(`[MetaEngine] 重试 ${attempt + 1}/${maxRetries}: 等待 ${delay}ms 后重试...`);
           await new Promise(resolve => setTimeout(resolve, delay));
           attempt++;
           continue;
@@ -1020,7 +1020,7 @@ class MetaEngine {
       
       return { success: true, path: resolvedPath };
     } catch (e) {
-      console.error('[Meta] Self-edit error:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[Meta] Self-edit error:', e.message);
       return { success: false, reason: e.message };
     }
   }

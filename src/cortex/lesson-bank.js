@@ -76,13 +76,13 @@ const lessonBank = {
       }
     } catch (e) {
       // JSON损坏尝试WAL恢复
-      console.warn('[lesson-bank] 数据文件损坏，尝试WAL恢复');
+      // [PROD] 生产环境移除 console.warn: console.warn('[lesson-bank] 数据文件损坏，尝试WAL恢复');
       const recovered = this._recoverFromWAL();
       if (recovered) {
-        console.warn('[lesson-bank] WAL恢复成功');
+        // [PROD] 生产环境移除 console.warn: console.warn('[lesson-bank] WAL恢复成功');
         this.save();
       } else {
-        console.warn('[lesson-bank] WAL恢复失败，从空库开始');
+        // [PROD] 生产环境移除 console.warn: console.warn('[lesson-bank] WAL恢复失败，从空库开始');
         this.lessons = [];
       }
     }

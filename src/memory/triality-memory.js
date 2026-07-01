@@ -46,7 +46,7 @@ class TrialityMemory {
       fs.mkdirSync(dataDir, { recursive: true });
     }
     this.initializeSchema();
-    console.error('[TrialityMemory] 三维经验大脑初始化完成');
+    // [PROD] 生产环境移除 console.error: console.error('[TrialityMemory] 三维经验大脑初始化完成');
   }
 
   initializeSchema() {
@@ -81,10 +81,10 @@ class TrialityMemory {
             }
           }
           this.stats.totalMemories = this.memories.length;
-          console.error(`[TrialityMemory] 从 ${exportPath} 恢复 ${data.memories.length} 条记忆`);
+          // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 从 ${exportPath} 恢复 ${data.memories.length} 条记忆`);
         }
       } catch (e) {
-        console.warn('[TrialityMemory] 恢复记忆失败:', e.message);
+        // [PROD] 生产环境移除 console.warn: console.warn('[TrialityMemory] 恢复记忆失败:', e.message);
       }
     }
   }
@@ -106,7 +106,7 @@ class TrialityMemory {
       };
       fs.writeFileSync(exportPath, JSON.stringify(data, null, 2));
     } catch (e) {
-      console.warn('[TrialityMemory] 自动保存失败:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[TrialityMemory] 自动保存失败:', e.message);
     }
   }
 
@@ -144,7 +144,7 @@ class TrialityMemory {
     }
     
     this.stats.totalMemories = this.memories.length;
-    console.error(`[TrialityMemory] 记忆存储: ${id} (${this.memories.length} total)`);
+    // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 记忆存储: ${id} (${this.memories.length} total)`);
     this._autoSave(); // 自动持久化
     return id;
   }
@@ -332,7 +332,7 @@ class TrialityMemory {
     }
 
     narrative.sort((a, b) => a.timestamp - b.timestamp);
-    console.error(`[TrialityMemory] 叙事查询: ${narrative.length} 个记忆节点`);
+    // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 叙事查询: ${narrative.length} 个记忆节点`);
     return narrative;
   }
 
@@ -367,7 +367,7 @@ class TrialityMemory {
     const allowedDir = path.join(path.dirname(this.dbPath || __dirname), '..', '..', '..', 'data');
     const resolvedPath = path.resolve(filePath);
     if (!resolvedPath.startsWith(path.resolve(allowedDir))) {
-      console.error(`[TrialityMemory] 安全拦截: 不允许导出到 ${resolvedPath}（必须在 data 目录内）`);
+      // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 安全拦截: 不允许导出到 ${resolvedPath}（必须在 data 目录内）`);
       return { success: false, error: 'path_not_allowed' };
     }
     const data = {
@@ -376,7 +376,7 @@ class TrialityMemory {
       exportedAt: new Date().toISOString()
     };
     fs.writeFileSync(resolvedPath, JSON.stringify(data, null, 2));
-    console.error(`[TrialityMemory] 导出到: ${resolvedPath}`);
+    // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 导出到: ${resolvedPath}`);
     return { success: true, count: this.memories.length };
   }
 
@@ -385,11 +385,11 @@ class TrialityMemory {
     const allowedDir = path.resolve(path.join(path.dirname(this.dbPath || __dirname), '..', '..', '..', 'data'));
     const resolvedPath = path.resolve(filePath);
     if (!resolvedPath.startsWith(allowedDir)) {
-      console.error(`[TrialityMemory] 安全拦截: 不允许从 ${resolvedPath} 导入（必须在 data 目录内）`);
+      // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 安全拦截: 不允许从 ${resolvedPath} 导入（必须在 data 目录内）`);
       return { success: false, error: 'path_not_allowed' };
     }
     if (!fs.existsSync(resolvedPath)) {
-      console.error(`[TrialityMemory] 文件不存在: ${resolvedPath}`);
+      // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 文件不存在: ${resolvedPath}`);
       return { success: false, error: 'file_not_found' };
     }
     const data = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
@@ -398,7 +398,7 @@ class TrialityMemory {
         this.store(mem);
       }
     }
-    console.error(`[TrialityMemory] 从 ${filePath} 导入`);
+    // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 从 ${filePath} 导入`);
     return { success: true, count: data.memories?.length || 0 };
   }
 
@@ -408,7 +408,7 @@ class TrialityMemory {
     this.memories = this.memories.filter(m => m.timestamp > cutoff);
     this.stats.lastCleanup = new Date().toISOString();
     const removed = before - this.memories.length;
-    console.error(`[TrialityMemory] 清理: 移除 ${removed} 条旧记忆`);
+    // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 清理: 移除 ${removed} 条旧记忆`);
     return { removed, remaining: this.memories.length };
   }
 
@@ -470,7 +470,7 @@ class TrialityMemory {
       if (mem) mem.compressed = true;
     }
 
-    console.error(`[TrialityMemory] 遗忘曲线清理: 删除 ${toDelete.length} 条, 压缩 ${toCompress.length} 条`);
+    // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 遗忘曲线清理: 删除 ${toDelete.length} 条, 压缩 ${toCompress.length} 条`);
     return { deleted: toDelete.length, compressed: toCompress.length };
   }
 
@@ -634,9 +634,145 @@ class TrialityMemory {
       compressedCount,
       forgettingParameters: this.forgettingConfig,
       channels: ['semantic', 'keyword', 'time', 'emotion', 'association'],
-      layers: this.getLayerStats()
+      layers: this.getLayerStats(),
+      lineage: this.getLineageStats(),  // 万俟族族谱：知识谱系统计
     };
+  }
+
+  // ============================================================================
+  // 知识谱系（Knowledge Lineage）— 万俟族族坊原则
+  // ============================================================================
+  // 记录知识的来源、演变和传播，像族谱一样追踪"知识来自哪里，传到哪里"
+
+  addKnowledgeLineage(sourceId, targetId, relationType = 'derived_from', metadata = {}) {
+    const lineageKey = `${sourceId}->${targetId}`;
+    const lineageRecord = {
+      sourceId,
+      targetId,
+      relationType,  // 'derived_from' | 'inspired_by' | 'contradicts' | 'extends'
+      metadata,
+      timestamp: Date.now(),
+      strength: metadata.strength || 1.0,
+    };
+    this.relationships.set(`lineage:${lineageKey}`, lineageRecord);
+    this.stats.totalRelationships = this.relationships.size;
+    this._autoSave();
+    return lineageKey;
+  }
+
+  queryKnowledgeLineage(memoryId, direction = 'both', maxDepth = 5) {
+    const results = { ancestors: [], descendants: [], path: [] };
+    const visited = new Set();
+
+    const traverse = (id, depth, path) => {
+      if (depth > maxDepth || visited.has(id)) return;
+      visited.add(id);
+
+      // 查找所有关系
+      for (const [key, rel] of this.relationships) {
+        if (!key.startsWith('lineage:')) continue;
+
+        if (direction === 'both' || direction === 'ancestors') {
+          if (rel.targetId === id) {
+            results.ancestors.push({ id: rel.sourceId, relation: rel.relationType, depth });
+            traverse(rel.sourceId, depth + 1, [...path, { from: rel.sourceId, to: id, relation: rel.relationType }]);
+          }
+        }
+
+        if (direction === 'both' || direction === 'descendants') {
+          if (rel.sourceId === id) {
+            results.descendants.push({ id: rel.targetId, relation: rel.relationType, depth });
+            traverse(rel.targetId, depth + 1, [...path, { from: id, to: rel.targetId, relation: rel.relationType }]);
+          }
+        }
+      }
+    };
+
+    traverse(memoryId, 0, []);
+    results.path = results.ancestors.length > 0 ? results.ancestors : results.descendants;
+    return results;
+  }
+
+  getKnowledgeDescendants(memoryId, maxDepth = 3) {
+    const lineage = this.queryKnowledgeLineage(memoryId, 'descendants', maxDepth);
+    return lineage.descendants.map(d => ({
+      id: d.id,
+      relation: d.relation,
+      depth: d.depth,
+      memory: this.memories.find(m => m.id === d.id),
+    })).filter(r => r.memory);
+  }
+
+  getKnowledgeAncestors(memoryId, maxDepth = 3) {
+    const lineage = this.queryKnowledgeLineage(memoryId, 'ancestors', maxDepth);
+    return lineage.ancestors.map(a => ({
+      id: a.id,
+      relation: a.relation,
+      depth: a.depth,
+      memory: this.memories.find(m => m.id === a.id),
+    })).filter(r => r.memory);
+  }
+
+  getLineageStats() {
+    const lineageRels = [...this.relationships.values()].filter(r => r.sourceId && r.targetId);
+    const roots = new Set();
+    const leaves = new Set();
+    const sourceSet = new Set(lineageRels.map(r => r.sourceId));
+    const targetSet = new Set(lineageRels.map(r => r.targetId));
+
+    for (const id of sourceSet) {
+      if (!targetSet.has(id)) roots.add(id);
+    }
+    for (const id of targetSet) {
+      if (!sourceSet.has(id)) leaves.add(id);
+    }
+
+    return {
+      totalLineageRelations: lineageRels.length,
+      rootKnowledge: roots.size,
+      leafKnowledge: leaves.size,
+      maxDepth: this._calculateMaxDepth(),
+    };
+  }
+
+  _calculateMaxDepth() {
+    let maxDepth = 0;
+    for (const [key, rel] of this.relationships) {
+      if (!key.startsWith('lineage:')) continue;
+      // 简化计算：通过查询每个节点的深度
+      const lineage = this.queryKnowledgeLineage(rel.sourceId, 'descendants', 10);
+      maxDepth = Math.max(maxDepth, lineage.descendants.length);
+    }
+    return maxDepth;
+  }
+
+  // 获取知识谱系树（类似族谱的家谱树）
+  getKnowledgeTree(rootId, maxDepth = 5) {
+    const tree = {
+      id: rootId,
+      memory: this.memories.find(m => m.id === rootId),
+      children: [],
+    };
+
+    const buildTree = (nodeId, depth) => {
+      if (depth >= maxDepth) return;
+      const descendants = this.getKnowledgeDescendants(nodeId, 1);
+      for (const desc of descendants) {
+        const childNode = {
+          id: desc.id,
+          memory: desc.memory,
+          relation: desc.relation,
+          children: [],
+        };
+        buildTree(desc.id, depth + 1);
+        tree.children.push(childNode);
+      }
+    };
+
+    buildTree(rootId, 0);
+    return tree;
   }
 }
 
 module.exports = { TrialityMemory };
+

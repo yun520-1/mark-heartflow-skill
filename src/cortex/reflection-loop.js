@@ -100,7 +100,7 @@ class ReflectionLoop {
       state._anomalyState = this._anomalyState;
       fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
     } catch (e) {
-      console.error('[ReflectionLoop] Save state failed:', e.message);
+      // [PROD] 生产环境移除 console.error: console.error('[ReflectionLoop] Save state failed:', e.message);
     }
   }
 

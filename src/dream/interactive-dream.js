@@ -307,8 +307,8 @@ ${levels ? `L1~L6层级分布：L1=${levels.L1?.toFixed(1) || 0}, L2=${levels.L2
       { text: 'prajna wisdom sees reality directly', layer: 'EPHEMERAL' },
       { text: 'the sage acts only to benefit all beings', layer: 'EPHEMERAL' },
     ]);
-    console.log('=== InteractiveDream with DAG ===');
-    console.log('levels:', JSON.stringify(dream.levels, null, 2));
-    console.log('contradictions:', JSON.stringify(dream.contradictions, null, 2));
-    console.log('insight_record:', JSON.stringify(dream.insight_record.entries.slice(-3), null, 2));
+    // [PROD] 生产环境移除 console.log: console.log('=== InteractiveDream with DAG ===');
+    // [PROD] 生产环境移除 console.log: console.log('levels:', JSON.stringify(dream.levels, null, 2));
+    // [PROD] 生产环境移除 console.log: console.log('contradictions:', JSON.stringify(dream.contradictions, null, 2));
+    // [PROD] 生产环境移除 console.log: console.log('insight_record:', JSON.stringify(dream.insight_record.entries.slice(-3), null, 2));
   }

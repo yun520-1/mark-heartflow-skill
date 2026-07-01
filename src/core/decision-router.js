@@ -1,5 +1,5 @@
 /**
- * decision-router.js — 通用分析→决策路由引擎 v3.0.0
+ * decision-router.js — 通用分析→决策路由引擎 v5.5.0
  *
  * v3.0.0 升级（2026-06-23）：
  *   - 新增 U/D/A/H 四维场域追踪（基于 luoxuejian000 论文框架）
@@ -25,7 +25,7 @@
  *   → 匹配决策规则 → 生成决策指令 → 返回 { result, decision }
  */
 
-const VERSION = '3.8.1';
+const VERSION = '3.10.0';
 
 // ─── U/D/A/H 场域追踪参数（基于 luoxuejian000 论文） ──────────────────────
 // H = λU·U + λD·D - λA·A
@@ -279,6 +279,18 @@ class DecisionRouter {
         rationale: (r) => `收到质疑/纠错信号，暂停解释路径，进入自我审查状态`,
         fallback: DECISION.HOLD,
       },
+      // ── 成本敏感类（Smart Routing 启发）──
+      {
+        id: 'cost-aware',
+        match: (r) => r.estimatedCost !== undefined || r.cost !== undefined,
+        decision: DECISION.HOLD,
+        confidence: (r) => {
+          const cost = r.estimatedCost || r.cost || 0;
+          return cost > 0.05 ? 0.7 : 0;
+        },
+        rationale: (r) => `高成本任务(${((r.estimatedCost || r.cost || 0)).toFixed(4)})，建议降级或精简`,
+        fallback: DECISION.REST,
+      },
       // ── 价值/伦理类 ──
       {
         id: 'value-resonance',
@@ -459,7 +471,112 @@ class DecisionRouter {
         rationale: (r) => `谐振态退出: A超阈值(${(r._fieldA || 0).toFixed(3)}), 需转向避免场域失谐`,
         fallback: DECISION.PAUSE,
       },
+      // ── Smart Routing 优化（qingkong66 #1446 反馈：Self-Reflection → Overthinking）──
+      {
+        id: 'prevent-overthinking',
+        match: (r) => {
+          const chain = r.thoughtChain || r.chain || [];
+          const confidence = r.confidence || 0;
+          return chain.length > 5 && confidence < 0.6;
+        },
+        decision: DECISION.HOLD,
+        confidence: (r) => 0.7,
+        rationale: (r) => `反思链过长(${(r.thoughtChain || r.chain || []).length}步)且置信度下降(${(r.confidence || 0).toFixed(2)})，防止过度思考`,
+        fallback: DECISION.REST,
+      },
+      // ── v3.9.0 — 吸收 DeepSeek 社区反馈 ──────────────────────────────────
+      // maratsultanov2 #1424：transitions as first-class objects / density signals
+      {
+        id: 'transition-density-signal',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          const driver = String(field._fieldDriver || field.driver || '').toUpperCase();
+          const transitions = ['LINK', 'COMPRESS', 'CONSOLIDATE', 'REINDEX'];
+          return transitions.includes(driver);
+        },
+        decision: DECISION.ACCELERATE,
+        confidence: (r) => {
+          const field = r._field || r.field || {};
+          const h = field._fieldH || field.H || 0;
+          return h > 0.3 ? 0.75 : 0.5;
+        },
+        rationale: (r) => `密度信号驱动(${(r._field || r.field || {})._fieldDriver || r._fieldDriver || 'transition'})，加速处理`,
+        fallback: DECISION.HOLD,
+      },
+      // qingkong66 #1446 / #1285：0.3 阈值跨框架验证 — trace-ready 输出
+      {
+        id: 'b-series-trace-ready',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          return field._fieldH !== undefined && field._fieldU !== undefined && field._fieldA !== undefined;
+        },
+        decision: DECISION.TRANSMIT,
+        confidence: (r) => {
+          const field = r._field || r.field || {};
+          const h = field._fieldH || 0;
+          const completeness = field._fieldH > 0 && field._fieldU > 0 && field._fieldD > 0 ? 0.9 : 0.7;
+          return Math.min(0.95, completeness);
+        },
+        rationale: (r) => `B-series trace-ready(U/D/A/H全字段)，可跨框架对比`,
+        fallback: DECISION.HOLD,
+      },
+      // icophy #1447：signed divergence 检测 — surface-coherent-but-internally-drifting
+      {
+        id: 'signed-divergence-check',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          const flip = field._fieldFlipAlert || r._fieldFlipAlert;
+          const coh = field._fieldC || r.coherence || 0;
+          const pos = field._fieldP || r.position || 0;
+          return flip === 'signed_divergence' || (coh > 0.7 && pos < 0.3);
+        },
+        decision: DECISION.TURN,
+        confidence: (r) => 0.85,
+        rationale: (r) => `签名分歧检测：表面一致但内部漂移`,
+        fallback: DECISION.PAUSE,
+      },
+      // icophy #1447 F3 test：sustained drift pattern（多步coh高+pos低，非单点快照）
+      {
+        id: 'f3-sustained-drift',
+        match: (r) => {
+          const field = r._field || r.field || {};
+          const hist = field._fieldHistory || [];
+          if (hist.length < 3) return false;
+          // 连续3步以上：coherence > 0.7 AND position < 0.3
+          const sustained = hist.slice(-3).every(h => (h.c || 0) > 0.7 && (h.p || 0) < 0.3);
+          return sustained && (field._fieldH || r.harmony || 0) < 0.4;
+        },
+        decision: DECISION.TURN,
+        confidence: (r) => 0.9,
+        rationale: (r) => `F3 sustained drift：连续多步表面一致内部漂移`,
+        fallback: DECISION.PAUSE,
+      },
+      // qingkong66 #1285：pre-output gate 透明度 — 审计在输出前执行，非事后
+      {
+        id: 'pre-output-gate-check',
+        match: (r) => {
+          const timing = r._auditTiming || r.auditTiming;
+          return timing === 'post-hoc' || timing === 'after-output';
+        },
+        decision: DECISION.HEAL,
+        confidence: (r) => 0.75,
+        rationale: (r) => `审计时机偏移：pre-output gate 应为实时审计，非事后`,
+        fallback: DECISION.HOLD,
+      },
     ];
+
+    // 决策反馈循环（2026-06-28 基于 DeepSeek #1424 讨论）
+    this._ruleStats = {};
+    for (const rule of this._rules) {
+      if (!rule.hasOwnProperty('weight')) rule.weight = 1.0;
+      this._ruleStats[rule.id] = {
+        hits: 0,
+        correct: 0,
+        wrong: 0,
+        accuracy: 1.0,
+        lastAdjustment: 0,
+      };
+    }
 
     // 决策历史
     this._history = [];
@@ -955,8 +1072,9 @@ class DecisionRouter {
       try {
         if (!rule.match(result)) continue;
 
-        const confidence = rule.confidence(result);
-        if (confidence <= 0) continue;
+        const baseConfidence = rule.confidence(result);
+        if (baseConfidence <= 0) continue;
+        const ruleWeight = rule.weight !== undefined ? rule.weight : 1.0;
 
         const lastTrigger = this._suppression.get(rule.id);
         if (lastTrigger && (now - lastTrigger) < this._suppressionWindow) {
@@ -967,12 +1085,17 @@ class DecisionRouter {
         matches.push({
           ruleId: rule.id,
           type: rule.decision,
-          confidence: Math.min(1, Math.max(0, confidence)),
+          confidence: Math.min(1, Math.max(0, baseConfidence * ruleWeight)),
           priority: DECISION_PRIORITY[rule.decision] || 0,
           rationale: rule.rationale(result),
           fallback: rule.fallback,
           timestamp: now,
+          ruleWeight,
         });
+
+        // 记录规则命中
+        const stats = this._ruleStats[rule.id];
+        if (stats) stats.hits++;
       } catch (e) {
         // 规则执行失败，跳过
       }
@@ -1085,6 +1208,7 @@ class DecisionRouter {
         priority: best.priority,
         rationale: best.rationale,
         ruleId: best.ruleId,
+        ruleWeight: best.ruleWeight,
         timestamp: best.timestamp,
         source,
         fallback: best.fallback,
@@ -1366,6 +1490,110 @@ class DecisionRouter {
     }
 
     return { passed, baseline, current, deviation, details };
+  }
+
+  /**
+   * 决策反馈循环（2026-06-28 基于 DeepSeek #1424 讨论）
+   *
+   * @param {string} ruleId - 规则 ID
+   * @param {'correct'|'wrong'} outcome - 执行结果
+   */
+  feedback(ruleId, outcome) {
+    const stats = this._ruleStats[ruleId];
+    if (!stats) return;
+
+    if (outcome === 'correct') {
+      stats.correct++;
+    } else if (outcome === 'wrong') {
+      stats.wrong++;
+    }
+
+    const total = stats.correct + stats.wrong;
+    stats.accuracy = total > 0 ? stats.correct / total : 1.0;
+
+    const rule = this._rules.find(r => r.id === ruleId);
+    if (!rule) return;
+
+    const delta = outcome === 'correct' ? 0.05 : -0.10;
+    rule.weight = Math.max(0.1, Math.min(2.0, (rule.weight || 1.0) + delta));
+    stats.lastAdjustment = delta;
+
+    if (stats.accuracy < 0.4 && rule.weight <= 0.3) {
+      rule._downgraded = true;
+      rule.priority = (rule.priority || 50) * 0.5;
+    }
+
+    this._stats.ruleFeedbackCount = (this._stats.ruleFeedbackCount || 0) + 1;
+  }
+
+  /**
+   * 获取规则统计信息
+   */
+  getRuleStats() {
+    return Object.entries(this._ruleStats).map(([ruleId, s]) => ({
+      ruleId,
+      ...s,
+    }));
+  }
+
+  /**
+   * 导出决策历史为 CSV 字符串（对齐 TAT CSV traces 格式）
+   * 
+   * 字段：timestamp, type, confidence, ruleId, source, field_step, field_U, field_D, field_A, field_H, field_driver, field_flipAlert
+   * 
+   * 用途：跨框架对比、benchmark 记录、人工审查
+   */
+  exportCSV(limit) {
+    const rows = this._history.slice(-limit);
+    if (rows.length === 0) return 'timestamp,type,confidence,ruleId,source,field_step,field_U,field_D,field_A,field_H,field_driver,field_flipAlert\n';
+    const header = 'timestamp,type,confidence,ruleId,source,field_step,field_U,field_D,field_A,field_H,field_driver,field_flipAlert\n';
+    const body = rows.map(r => {
+      const f = r.field || {};
+      const esc = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      return [
+        esc(r.timestamp),
+        esc(r.type),
+        esc(r.confidence),
+        esc(r.ruleId),
+        esc(r.source),
+        esc(f.step),
+        esc(f.U),
+        esc(f.D),
+        esc(f.A),
+        esc(f.H),
+        esc(f.driver),
+        esc(f.flipAlert),
+      ].join(',');
+    }).join('\n');
+    return header + body + '\n';
+  }
+
+  /**
+   * 导出规则反馈统计为 CSV
+   * 
+   * 字段：ruleId, hits, correct, wrong, accuracy, weight, downgraded
+   */
+  exportRuleStatsCSV() {
+    const stats = this.getRuleStats();
+    if (stats.length === 0) return 'ruleId,hits,correct,wrong,accuracy,weight,downgraded\n';
+    const header = 'ruleId,hits,correct,wrong,accuracy,weight,downgraded\n';
+    const rules = this._rules;
+    const body = stats.map(s => {
+      const rule = rules.find(r => r.id === s.ruleId);
+      const weight = rule ? rule.weight : 1.0;
+      const downgraded = rule ? !!rule._downgraded : false;
+      const esc = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      return [
+        esc(s.ruleId),
+        esc(s.hits),
+        esc(s.correct),
+        esc(s.wrong),
+        esc(s.accuracy?.toFixed(4)),
+        esc(weight.toFixed(4)),
+        esc(downgraded),
+      ].join(',');
+    }).join('\n');
+    return header + body + '\n';
   }
 }
 

@@ -346,7 +346,7 @@ class SemanticSearch {
 
     if (!SemanticSearch.isModuleAvailable()) {
       this._loadError = '@xenova/transformers 未安装';
-      console.warn('[SemanticSearch] ' + this._loadError + '，语义搜索降级为空');
+      // [PROD] 生产环境移除 console.warn('[SemanticSearch] ' + this._loadError + '，语义搜索降级为空');
       this._stats.modelLoadFailures++;
       return false;
     }
@@ -364,12 +364,12 @@ class SemanticSearch {
       } catch (e) {
         // 本地路径不存在时不重试
         if (this.modelPath && e.message.includes('not found')) {
-          console.warn(`[SemanticSearch] 本地模型路径不存在: ${this.modelPath}`);
+          // [PROD] 生产环境移除 console.warn(`[SemanticSearch] 本地模型路径不存在: ${this.modelPath}`);
           this._loadError = `本地模型路径不存在: ${this.modelPath}`;
           this._stats.modelLoadFailures++;
           return false;
         }
-        console.warn(`[SemanticSearch] 模型加载失败 (尝试 ${attempt}/${this.maxRetries}): ${e.message}`);
+        // [PROD] 生产环境移除 console.console.warn(`[SemanticSearch] 模型加载失败 (尝试 ${attempt}/${this.maxRetries}): ${e.message}`);
         if (attempt < this.maxRetries) {
           await new Promise(r => setTimeout(r, this.retryDelayMs));
         }
@@ -441,7 +441,7 @@ class SemanticSearch {
       this._stats.embedErrorCount++;
       const classified = this.classifyError(e);
       this._recordError(classified.type, e.message);
-      console.warn(`[SemanticSearch] embed 失败 [${classified.type}]:`, e.message);
+      // [PROD] 生产环境移除 console.warn(`[SemanticSearch] embed 失败 [${classified.type}]:`, e.message);
       return null;
     }
   }
@@ -734,10 +734,7 @@ class SemanticSearch {
 
     if (similarity < this.oscillationThreshold) {
       this._stats.oscillationWarnings++;
-      console.warn(
-        `[SemanticSearch] 结果震荡检测: 查询 "${query}" vs "${this._lastSearchQuery}" ` +
-        `Jaccard=${similarity.toFixed(3)} < 阈值=${this.oscillationThreshold}`
-      );
+      // [PROD] 生产环境移除多行console调用 (4 lines)
     }
 
     this._lastSearchResults = results;

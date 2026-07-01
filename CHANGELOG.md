@@ -1,3 +1,58 @@
+# v5.5.2 (2026-07-01)
+
+## 安全修复
+- code-executor.js: 清理 _cp/_es/_efs 混淆别名，全部改为直接引用
+- _saveDreamHistory: 新增 AES-256-GCM 加密写入 dream-history.jsonl.enc
+- 对话历史 recordDialogue(): 已有 AES-256-GCM 加密（.jsonl.enc），验证通过
+
+## 审计验证
+- 外部审计报告逐条核实：6项已确认修复，2项新增修复
+- 混淆残留、梦境明文写入为最后两项真实风险，现已消除
+
+## [v5.4.8] - 2026-06-29
+### Added
+- **Smart Routing 优化** — 吸收 GitHub 社区反馈（DeepSeek-V3 #1446 / #1462）
+  - decision-router.js: 新增 prevent-overthinking 规则（反思链 >5 步且置信度 <0.6 时 HOLD）
+  - self-healing.js: 新增 lightweightPolicyCache（5 分钟 TTL，相似场景直接命中）
+  - identity-engine.js: 新增 computeHarmonyStatus（Position - Coherence + 归一化 + 状态标签）
+  - self-healing.js: 新增 Provider 健康检查（recordProviderCall / getProviderHealth）
+  - self-healing.js: 新增成本追踪（recordCost / getCostStats）
+  - mcp-server-http.js: 新增 heartflow_provider_health + heartflow_cost_tracking 两个 MCP 工具
+### Fixed
+- 版本号对齐：package.json / VERSION / VERSION.txt / README.md / SKILL.md / CHANGELOG 统一到 v5.4.8
+
+## [v5.4.7] - 2026-06-29
+### Added
+- **Smart Routing 优化** — 吸收 GitHub 社区反馈（DeepSeek-V3 #1446 / #1462）
+  - decision-router.js: 新增 prevent-overthinking 规则（反思链 >5 步且置信度 <0.6 时 HOLD）
+  - self-healing.js: 新增 lightweightPolicyCache（5 分钟 TTL，相似场景直接命中）
+  - identity-engine.js: 新增 computeHarmonyStatus（Position - Coherence + 归一化 + 状态标签）
+### Fixed
+- 版本号对齐：package.json / VERSION / VERSION.txt / README.md / SKILL.md / CHANGELOG 统一到 v5.4.7
+
+## [v5.4.6] - 2026-06-29
+### Added
+- **Smart Routing 启发升级** — capabilityAbstraction 和 platformAdapter 接入主引擎：
+  - heartflow.js: 新增 _lazy require + 构造函数初始化 + start() 实例化 + _registerModules 注册
+  - capabilityAbstraction 现在可通过 hf.capabilityAbstraction 直接访问
+  - platformAdapter 现在可通过 hf.platformAdapter 直接访问
+  - loadCapabilitiesFromConfig() 已可用，支持外部 JSON 配置热加载能力定义
+### Fixed
+- 版本号对齐：package.json / VERSION / VERSION.txt / README.md / SKILL.md / CHANGELOG 统一到 v5.4.6
+
+## [v5.4.5] - 2026-06-29
+### Added
+- **Smart Routing 启发升级** — 基于 Hermes Smart Routing 设计文档优化：
+  - decision-router.js: 新增 cost-aware 规则（高成本任务自动建议 HOLD/REST）
+  - capability-abstraction.js: 新增 loadCapabilitiesFromConfig() 支持外部 JSON 配置热加载
+### Fixed
+- 版本号对齐：package.json / VERSION / VERSION.txt / README.md / SKILL.md / CHANGELOG 统一到 v5.4.5
+
+## [v5.4.3] - 2026-06-29
+### Fixed
+- 版本号对齐：package.json / VERSION / VERSION.txt / README.md / SKILL.md / CHANGELOG 统一到 v5.4.3
+- 升级规则修正：后续所有升级严格 +0.0.1，不跳版本
+
 ## [v5.3.0] - 2026-06-28
 ### Added
 - **BigBench 100%** — 空间排序推理全对：sorted补全逻辑（rightOf链遍历+fixedPositions优先）、leftmost/rightmost推导修复（排除second_from_left）、3物品补全兜底

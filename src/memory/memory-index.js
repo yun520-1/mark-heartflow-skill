@@ -148,7 +148,7 @@ class MemoryIndex {
         this._saveIndex();
       }
     } catch (e) {
-      console.warn('[MemoryIndex] 加载失败:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[MemoryIndex] 加载失败:', e.message);
       this.index = this._getDefaultIndex();
     }
   }
@@ -158,7 +158,7 @@ class MemoryIndex {
       this.index.meta.updatedAt = new Date().toISOString();
       fs.writeFileSync(this.indexFile, JSON.stringify(this.index, null, 2));
     } catch (e) {
-      console.warn('[MemoryIndex] 保存失败:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[MemoryIndex] 保存失败:', e.message);
     }
   }
 
@@ -260,7 +260,7 @@ class MemoryIndex {
    * 打印启动摘要
    */
   printBootSummary() {
-    console.log(this.getBootSummary());
+    // [PROD] 生产环境移除 console.log: console.log(this.getBootSummary());
   }
 
   // ─────────────────────────────────────────
@@ -309,13 +309,13 @@ class MemoryIndex {
   addFeedback(type, content, meta = {}) {
     // 探索失败不自动存储为教训
     if (meta.source === 'exploration') {
-      console.error('[MemoryIndex] 探索失败不存储为教训');
+      // [PROD] 生产环境移除 console.error: console.error('[MemoryIndex] 探索失败不存储为教训');
       return;
     }
 
     // 必须有明确的来源或用户确认
     if (!meta.source && !meta.userConfirmed) {
-      console.error('[MemoryIndex] 反馈需要明确来源（source=user/exploration）或用户确认（userConfirmed=true）');
+      // [PROD] 生产环境移除 console.error: console.error('[MemoryIndex] 反馈需要明确来源（source=user/exploration）或用户确认（userConfirmed=true）');
       return;
     }
 

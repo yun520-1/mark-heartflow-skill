@@ -74,16 +74,19 @@ function getVersion() {
   return 'unknown';
 }
 
+// ═══════════════════════════════════════════════
 // 安全配置
-// 可选认证 — 设置 HEARTFLOW_MCP_TOKEN 环境变量以启用认证
-const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null;
+// MCP Server 强制认证 — 必须设置 HEARTFLOW_MCP_TOKEN 环境变量
+// ═══════════════════════════════════════════════
+const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN;
 if (!AUTH_TOKEN) {
-  console.error(`[MCP] HEARTFLOW_MCP_TOKEN not set. Running without authentication (localhost only).`);
+  console.error('[MCP] HEARTFLOW_MCP_TOKEN not set. Authentication is required. Set the environment variable and restart.');
+  process.exit(1);
 }
 
 // ─── 时间安全的 token 比较（防止 timing attack）───
 function safeCompare(provided, expected) {
-  if (expected === null) return true; // 无 token 时跳过认证
+  if (expected === null) return false; // 无 token 时拒绝认证
   if (!provided || !expected) return false;
   const a = Buffer.from(String(provided), 'utf8');
   const b = Buffer.from(String(expected), 'utf8');
@@ -157,6 +160,38 @@ const TOOLS = [
     name: 'heartflow_self_heal',
     description: '自愈策略推荐：基于历史经验为当前场景推荐最优策略。返回策略排名、置信度和执行建议。',
     inputSchema: { type: 'object', properties: { context: { type: 'string', description: '当前上下文或失败场景描述' } }, required: ['context'] }
+  },
+  {
+    name: 'heartflow_provider_health',
+    description: 'Provider 健康检查：记录/查询 LLM provider 调用健康状态（延迟、错误率、建议）。',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        provider: { type: 'string', description: 'Provider 名称（默认 default）' },
+        action: { type: 'string', enum: ['get', 'record'], description: 'get=查询健康状态, record=记录一次调用结果' },
+        success: { type: 'boolean', description: 'record 时必填：调用是否成功' },
+        latency: { type: 'number', description: 'record 时可选：延迟(ms)' },
+        error: { type: 'string', description: 'record 时可选：错误信息' }
+      },
+      required: ['action']
+    }
+  },
+  {
+    name: 'heartflow_cost_tracking',
+    description: '成本追踪：记录/查询 LLM 调用成本统计（token 消耗、费用、按 provider 分布）。',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        action: { type: 'string', enum: ['record', 'stats'], description: 'record=记录一次成本, stats=查询统计' },
+        provider: { type: 'string', description: 'Provider 名称' },
+        tokensIn: { type: 'number', description: '输入 token 数' },
+        tokensOut: { type: 'number', description: '输出 token 数' },
+        cost: { type: 'number', description: '本次调用费用' },
+        taskType: { type: 'string', description: '任务类型（默认 unknown）' },
+        window: { type: 'string', enum: ['hour', 'day', 'all'], description: 'stats 时的时间窗口（默认 all）' }
+      },
+      required: ['action']
+    }
   },
   {
     name: 'heartflow_status',
@@ -453,6 +488,38 @@ function handleSelfHeal(args) {
   };
 }
 
+function handleProviderHealth(args) {
+  const { provider = 'default', action, success, latency, error } = args || {};
+  if (!action) throw new Error('action 是必填参数');
+  const sh = heartflow?.selfHealing;
+  if (!sh) return { error: 'selfHealing 模块不可用', timestamp: Date.now() };
+
+  if (action === 'record') {
+    sh.recordProviderCall(provider, { success: !!success, latency: latency || 0, error: error || null });
+    return { recorded: true, provider, timestamp: Date.now() };
+  }
+
+  // action === 'get'
+  const health = sh.getProviderHealth(provider);
+  return { provider, health, timestamp: Date.now() };
+}
+
+function handleCostTracking(args) {
+  const { action, provider, tokensIn, tokensOut, cost, taskType = 'unknown', window = 'all' } = args || {};
+  if (!action) throw new Error('action 是必填参数');
+  const sh = heartflow?.selfHealing;
+  if (!sh) return { error: 'selfHealing 模块不可用', timestamp: Date.now() };
+
+  if (action === 'record') {
+    sh.recordCost({ provider: provider || 'unknown', tokensIn: tokensIn || 0, tokensOut: tokensOut || 0, cost: cost || 0, taskType });
+    return { recorded: true, timestamp: Date.now() };
+  }
+
+  // action === 'stats'
+  const stats = sh.getCostStats(window);
+  return { window, stats, timestamp: Date.now() };
+}
+
 function handleStatus(args) {
   const { detail = 'basic' } = args || {};
   const startTime = Date.now();
@@ -462,8 +529,8 @@ function handleStatus(args) {
     try { const q = safeDispatch('evolution.getStats'); if (q) status.qtable = q; } catch (e) {}
   }
   status.checkTime = Date.now() - startTime;
-  if (detail === 'basic') return { version: status.version, running: status.running, modules: status.modules, memoryLayers: status.memoryLayers || {}, checkTime: status.checkTime };
-  return status;
+  if (detail === 'basic') return { status: status.running ? 'ok' : 'error' };
+  return { status: status.running ? 'ok' : 'error', uptime: Date.now() - startTime };
 }
 
 function handleAgentPsychology(args) {
@@ -597,6 +664,8 @@ const HANDLERS = {
   heartflow_memory_search: handleMemorySearch,
   heartflow_emotion: handleEmotion,
   heartflow_self_heal: handleSelfHeal,
+  heartflow_provider_health: handleProviderHealth,
+  heartflow_cost_tracking: handleCostTracking,
   heartflow_status: handleStatus,
   heartflow_agent_psychology: handleAgentPsychology,
   heartflow_engine_pacing: handleEnginePacing,

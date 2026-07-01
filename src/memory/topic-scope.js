@@ -188,7 +188,7 @@ class TopicScope {
 
       // 存储容量告警：超过80%阈值时触发警告
       if (topicData.storeBytes > this._maxStoreBytes * 0.8) {
-        console.warn(`[TopicScope] 话题[${this._current}]存储已达 ${topicData.storeBytes}/${this._maxStoreBytes} 字节`);
+        // [PROD] 生产环境移除 console.warn: console.warn(`[TopicScope] 话题[${this._current}]存储已达 ${topicData.storeBytes}/${this._maxStoreBytes} 字节`);
       }
     }
     return this;
@@ -428,7 +428,7 @@ class TopicScope {
       if (!oldest) break; // 所有话题都在栈中，无法淘汰
       this._topics.delete(oldest);
       this._totalExpired++;
-      console.warn(`[TopicScope] 内存保护：淘汰话题[${oldest}]（超过最大${this._maxTopics}个话题上限）`);
+      // [PROD] 生产环境移除 console.warn: console.warn(`[TopicScope] 内存保护：淘汰话题[${oldest}]（超过最大${this._maxTopics}个话题上限）`);
     }
   }
 
@@ -494,7 +494,7 @@ class TopicScope {
       try {
         this._hooks[name](topic, this);
       } catch (e) {
-        console.warn(`[TopicScope] 钩子[${name}]执行失败:`, e.message);
+        // [PROD] 生产环境移除 console.warn: console.warn(`[TopicScope] 钩子[${name}]执行失败:`, e.message);
       }
     }
   }
@@ -563,15 +563,15 @@ class TopicScope {
    * 诊断：打印当前状态
    */
   diagnose(label = '') {
-    console.log(`\n=== TopicScope 诊断${label ? ' — ' + label : ''} ===`);
-    console.log(`当前话题: ${this._current}`);
-    console.log(`话题栈: [${this._stack.join(' → ')}]`);
-    console.log(`话题总数: ${this._topics.size}/${this._maxTopics}`);
-    console.log(`累计过期: ${this._totalExpired}`);
-    console.log(`当前上下文:`, JSON.stringify(this._context));
+    // [PROD] 生产环境移除 console.log: console.log(`\n=== TopicScope 诊断${label ? ' — ' + label : ''} ===`);
+    // [PROD] 生产环境移除 console.log: console.log(`当前话题: ${this._current}`);
+    // [PROD] 生产环境移除 console.log: console.log(`话题栈: [${this._stack.join(' → ')}]`);
+    // [PROD] 生产环境移除 console.log: console.log(`话题总数: ${this._topics.size}/${this._maxTopics}`);
+    // [PROD] 生产环境移除 console.log: console.log(`累计过期: ${this._totalExpired}`);
+    // [PROD] 生产环境移除 console.log: console.log(`当前上下文:`, JSON.stringify(this._context));
     for (const [name, data] of this._topics) {
       const storeInfo = `(${data.storeBytes}字节, ${Object.keys(data.store).length}键)`;
-      console.log(`  话题[${name}] store:`, Object.keys(data.store), storeInfo);
+      // [PROD] 生产环境移除 console.log: console.log(`  话题[${name}] store:`, Object.keys(data.store), storeInfo);
     }
     return this;
   }

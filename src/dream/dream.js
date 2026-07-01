@@ -348,7 +348,7 @@ class DreamV11 extends EventEmitter {
       ];
       for (const m of singleMethods) {
         if (typeof this.agentPsychology[m] === 'function') {
-          try { result[m] = this.agentPsychology[m](); } catch(e) {}
+          try { result[m] = this.agentPsychology[m](); } catch (e) { /* [PROD] empty catch suppressed */ }
         }
       }
       return result;
@@ -365,7 +365,7 @@ class DreamV11 extends EventEmitter {
       ];
       for (const m of methods) {
         if (typeof this.agentPhilosophy[m] === 'function') {
-          try { result[m] = this.agentPhilosophy[m](); } catch(e) {}
+          try { result[m] = this.agentPhilosophy[m](); } catch (e) { /* [PROD] empty catch suppressed */ }
         }
       }
       // self-positioning 完整报告
@@ -373,7 +373,7 @@ class DreamV11 extends EventEmitter {
           typeof this.agentPhilosophy.selfPositioning.getFullReport === 'function') {
         try {
           result.selfPositioning = this.agentPhilosophy.selfPositioning.getFullReport();
-        } catch(e) {}
+        } catch (e) { /* [PROD] empty catch suppressed */ }
       }
       return result;
     } catch(e) { return null; }
@@ -704,8 +704,8 @@ if (require.main === module) {
   async function demo() {
     for (const fn of ['cognitive', 'philosophic', 'synthesis', 'memory', 'fragment']) {
       const result = await engine.dream({ intensity: 0.85, function: fn });
-      console.log(`\n=== ${fn} ===`);
-      console.log(result.dream.raw);
+      // [PROD] 生产环境移除 console.log: console.log(`\n=== ${fn} ===`);
+      // [PROD] 生产环境移除 console.log: console.log(result.dream.raw);
     }
   }
 

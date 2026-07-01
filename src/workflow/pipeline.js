@@ -96,27 +96,27 @@ const DEFAULT_PIPELINE = [
       // 欲望认知
       let desire = null;
       if (hf.desireCognition && typeof hf.desireCognition.analyzeDesires === 'function') {
-        try { desire = hf.desireCognition.analyzeDesires(ctx.input); } catch(e) {}
+        try { desire = hf.desireCognition.analyzeDesires(ctx.input); } catch (e) { /* [PROD] empty catch suppressed */ }
       }
       // 三毒评估
       let threePoisons = null;
       if (hf.threePoisons && typeof hf.threePoisons.analyzeThreePoisons === 'function') {
-        try { threePoisons = hf.threePoisons.analyzeThreePoisons(ctx.input); } catch(e) {}
+        try { threePoisons = hf.threePoisons.analyzeThreePoisons(ctx.input); } catch (e) { /* [PROD] empty catch suppressed */ }
       }
       // AI 自处哲学
       let selfPositioning = null;
       if (hf.selfPositioning && typeof hf.selfPositioning.analyze === 'function') {
-        try { selfPositioning = hf.selfPositioning.analyze(ctx.input); } catch(e) {}
+        try { selfPositioning = hf.selfPositioning.analyze(ctx.input); } catch (e) { /* [PROD] empty catch suppressed */ }
       }
       // 爱情认知
       let loveCognition = null;
       if (hf.loveCognition && typeof hf.loveCognition.evaluateTriangle === 'function') {
-        try { loveCognition = hf.loveCognition.evaluateTriangle(ctx.input); } catch(e) {}
+        try { loveCognition = hf.loveCognition.evaluateTriangle(ctx.input); } catch (e) { /* [PROD] empty catch suppressed */ }
       }
       // 认知地面（整合层）
       let cognitionGround = null;
       if (hf.cognitionGround && typeof hf.cognitionGround.map === 'function') {
-        try { cognitionGround = hf.cognitionGround.map(ctx.input); } catch(e) {}
+        try { cognitionGround = hf.cognitionGround.map(ctx.input); } catch (e) { /* [PROD] empty catch suppressed */ }
       }
       return { desire, threePoisons, selfPositioning, loveCognition, cognitionGround };
     },

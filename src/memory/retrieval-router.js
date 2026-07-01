@@ -359,7 +359,7 @@ class RetrievalRouter {
 
       return results.slice(0, 5);
     } catch (e) {
-      console.warn('[RetrievalRouter] memory channel error:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[RetrievalRouter] memory channel error:', e.message);
       return [];
     }
   }
@@ -380,7 +380,7 @@ class RetrievalRouter {
       }
       return [];
     } catch (e) {
-      console.warn('[RetrievalRouter] semantic channel error:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[RetrievalRouter] semantic channel error:', e.message);
       return [];
     }
   }
@@ -415,7 +415,7 @@ class RetrievalRouter {
 
       return results.slice(0, 5);
     } catch (e) {
-      console.warn('[RetrievalRouter] graph channel error:', e.message);
+      // [PROD] 生产环境移除 console.warn: console.warn('[RetrievalRouter] graph channel error:', e.message);
       return [];
     }
   }
