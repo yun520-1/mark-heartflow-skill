@@ -32,7 +32,7 @@ class MetaPromptEngine {
   /**
    * 一站式增强：接收原始prompt，输出增强版
    * 核心方法，用户主要调用这个
-   * 
+   *
    * @param {Object} input
    * @param {string} input.prompt - 原始用户prompt
    * @param {string} input.task - 任务类型 (analysis|creation|reasoning|summary)
@@ -40,14 +40,18 @@ class MetaPromptEngine {
    * @param {Object} input.options
    * @param {number} input.options.paths - 推理路径数，默认3
    * @param {boolean} input.options.verbose - 是否返回中间过程
+   * @param {Object} input.cognitiveCapabilityProfile - 认知能力画像，用于自我能力评估
    */
-  async optimize({ prompt, task = 'general', context = {}, options = {} }) {
+  async optimize({ prompt, task = 'general', context = {}, options = {}, cognitiveCapabilityProfile = null }) {
     const { paths = 3, verbose = false } = options;
     this.stats.calls++;
 
     try {
+      // Step 0: 认知能力自我评估
+      const cognitiveAssessment = this._assessCognitiveCapability(cognitiveCapabilityProfile);
+
       // Step 1: 元分析 - 理解问题结构
-      const analysis = await this._metaAnalyze({ prompt, task, context });
+      const analysis = await this._metaAnalyze({ prompt, task, context, cognitiveCapabilityProfile });
       
       // Step 2: 多路径推理 (Tree of Thoughts)
       const thoughts = await this._treeOfThoughts({
@@ -78,13 +82,15 @@ class MetaPromptEngine {
           analysis,
           thoughts,
           feedback,
-          selectedPath: best.reason
+          selectedPath: best.reason,
+          cognitiveAssessment
         } : {}),
         meta: {
           engine: 'MetaPromptEngine v1.0',
           pathsExplored: thoughts.length,
           refinementRounds: 1,
-          capabilityBoost: this._estimateBoost(thoughts.length, feedback.length)
+          capabilityBoost: this._estimateBoost(thoughts.length, feedback.length),
+          cognitiveConfidence: cognitiveAssessment.confidence
         }
       };
     } catch (err) {
@@ -371,16 +377,27 @@ class MetaPromptEngine {
   /**
    * 元分析：理解问题结构
    * 这是用户端加强的第一步：让模型先"想清楚要做什么"
+   *
+   * @param {Object} input
+   * @param {string} input.prompt - 原始prompt
+   * @param {string} input.task - 任务类型
+   * @param {Object} input.context - 上下文
+   * @param {Object|null} input.cognitiveCapabilityProfile - 认知能力画像（可选）
    */
-  async _metaAnalyze({ prompt, task, context }) {
+  async _metaAnalyze({ prompt, task, context, cognitiveCapabilityProfile = null }) {
     // 内置分析框架（不依赖外部LLM调用，用结构化推理）
     const decomposed = this._decomposeProblem(prompt, task);
-    
+
+    // 认知能力自我评估
+    const cognitiveAssessment = this._assessCognitiveCapability(cognitiveCapabilityProfile);
+
     return {
       intent: decomposed.intent,
       constraints: decomposed.constraints,
       type: decomposed.type,
       steps: decomposed.steps,
+      // 认知自我评估维度
+      cognitiveAssessment,
       // 元提示词片段（用于拼入增强prompt）
       metaFragments: {
         role: this._getRolePrompt(task),
@@ -421,6 +438,81 @@ class MetaPromptEngine {
     const steps = this._extractSteps(prompt, type);
 
     return { intent, constraints, type, steps };
+  }
+
+  /**
+   * 认知能力自我评估
+   * 分析给定的认知能力画像，输出结构化的优势、劣势和置信度
+   *
+   * @param {Object|null} profile - 认知能力画像
+   * @param {string[]} [profile.knownDomains] - 已知能力覆盖的领域列表
+   * @param {string[]} [profile.unknownDomains] - 未知/不确定的领域列表
+   * @param {number} [profile.selfReportedConfidence] - 自报置信度 (0-1)
+   * @param {string[]} [profile.recentErrors] - 近期错误模式描述
+   * @returns {{ strengths: string[], weaknesses: string[], confidence: number }}
+   */
+  _assessCognitiveCapability(profile = null) {
+    const strengths = [];
+    const weaknesses = [];
+    let confidence = 0.5; // 默认中性置信度
+
+    if (!profile || typeof profile !== 'object') {
+      // 无画像时返回保守默认值
+      return { strengths, weaknesses, confidence };
+    }
+
+    // 解析已知领域 → 映射为优势
+    if (Array.isArray(profile.knownDomains)) {
+      profile.knownDomains.forEach(domain => {
+        if (domain && String(domain).trim()) {
+          strengths.push(`在 ${domain.trim()} 领域具有已知能力`);
+        }
+      });
+    }
+
+    // 解析未知领域 → 映射为劣势
+    if (Array.isArray(profile.unknownDomains)) {
+      profile.unknownDomains.forEach(domain => {
+        if (domain && String(domain).trim()) {
+          weaknesses.push(`在 ${domain.trim()} 领域能力不足或未知`);
+        }
+      });
+    }
+
+    // 解析自报置信度
+    if (typeof profile.selfReportedConfidence === 'number') {
+      confidence = Math.min(1, Math.max(0, profile.selfReportedConfidence));
+    }
+
+    // 解析近期错误 → 补强劣势列表
+    if (Array.isArray(profile.recentErrors)) {
+      profile.recentErrors.forEach(err => {
+        if (err && String(err).trim()) {
+          weaknesses.push(`近期错误模式: ${String(err).trim()}`);
+        }
+      });
+    }
+
+    // 从已知/未知比例自动校准置信度
+    const knownCount = Array.isArray(profile.knownDomains) ? profile.knownDomains.length : 0;
+    const unknownCount = Array.isArray(profile.unknownDomains) ? profile.unknownDomains.length : 0;
+    const totalDomains = knownCount + unknownCount;
+    if (totalDomains > 0 && !profile.selfReportedConfidence) {
+      // 已知占比越高，置信度越高
+      confidence = Math.min(0.95, Math.max(0.1, knownCount / totalDomains));
+    }
+
+    // 如果有优势但无劣势 → 提升置信度（但也标记"可能过度自信"）
+    if (strengths.length > 0 && weaknesses.length === 0) {
+      weaknesses.push('可能过度自信，缺乏能力盲区识别');
+      confidence = Math.max(confidence - 0.05, 0.3);
+    }
+
+    return {
+      strengths,
+      weaknesses,
+      confidence: parseFloat(confidence.toFixed(2))
+    };
   }
 
   _extractSteps(prompt, type) {

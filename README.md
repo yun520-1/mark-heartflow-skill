@@ -1,16 +1,16 @@
-# HeartFlow v5.5.1 — 逻辑验证层 · 决策路由 · 自愈RL
+# HeartFlow v5.6.1 — 逻辑验证层 · 决策路由 · 自愈RL · GoT增强 · 论文驱动升级
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-5.5.2-blue?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/badge/version-5.6.1-blue?style=flat-square" alt="version" />
   <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
-  <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
+  <img src="https://img.shields.io/github/last-commit=yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square&logo=node.js" alt="Node.js" />
-  <img src="https://img.shields.io/badge/modules-60-important?style=flat-square" alt="60 modules" />
+  <img src="https://img.shields.io/badge/modules-90+-important?style=flat-square" alt="90+ modules" />
 </p>
 
-> **HeartFlow is not an LLM enhancer. It is a cognitive state encoder.**  
-> It takes raw text → encodes it into structured cognition (emotion, psychology, philosophy, desire, judgment, decision) → feeds the LLM with data it couldn't produce alone.  
+> **HeartFlow is not an LLM enhancer. It is a cognitive state encoder.**
+> It takes raw text → encodes it into structured cognition (emotion, psychology, philosophy, desire, judgment, decision) → feeds the LLM with data it couldn't produce alone.
 > The LLM makes the final decision. HeartFlow makes that decision 27% more accurate.
 
 **English** · [中文版](#chinese-version)
@@ -19,7 +19,7 @@
 
 ## What HeartFlow Is
 
-HeartFlow is a **local cognitive engine** (60 modules, zero external dependencies) that sits **before the LLM** in an AI agent pipeline. It transforms unstructured user input into structured cognitive data — emotion vectors, psychology dimensions, philosophy positions, desire states, multi-path judgments, and decision strategies.
+HeartFlow is a **local cognitive engine** (90+ modules, zero external dependencies) that sits **before the LLM** in an AI agent pipeline. It transforms unstructured user input into structured cognitive data — emotion vectors, psychology dimensions, philosophy positions, desire states, multi-path judgments, and decision strategies.
 
 An LLM alone is "asked → answers." HeartFlow adds a **structured preprocessing layer**:
 
@@ -38,9 +38,9 @@ This is the difference between an LLM **guessing** what the user's emotional sta
 | **AI Philosophy** | `agent-philosophy.js`, `ai-self-positioning.js` | 7 dimensions: being state, entropy direction, transmission quality, upgrade impact, self-position, development level, existence mode | Choose interaction strategy based on philosophical stance |
 | **Desire Cognition** | `desire-cognition.js` (v5.5.1) | Wanting-vs-liking delta, reward prediction error, drive satisfaction, 7 emotions + 6 desires | Understand motivation beneath the surface text |
 | **Three Poisons** | `three-poisons.js` | Greed (delayed discounting anomaly), hatred (amygdala hyperactivation), delusion (metacognitive deficit) | Detect cognitive distortion patterns |
-| **Multi-Path Judgment** | `judgment-engine.js` | 2-4 paths × 6-dimension scoring (feasibility/consequence/risk/alignment/cost/reversibility) + 3-window consequence prediction (7d/90d/3yr) | Make informed decisions with foresight |
+| **Multi-Path Judgment** | `judgment-engine.js` + GoT | 2-4 paths × 6-dimension scoring (feasibility/consequence/risk/alignment/cost/reversibility) + 3-window consequence prediction + Graph of Thoughts branching for complex inputs | Make informed decisions with foresight |
 | **Decision Routing** | `decision-router.js` (v5.5.1) | 8 behavioral strategies (pause/accelerate/heal/turn/hold/resonate/transmit/rest) + U/D/A/H field tracking + flip-point detection | Choose the right action, not just the obvious one |
-| **Self-Healing RL** | built into `judgment-engine.js` | Q-table: context signature → best path + last outcome, auto-selects when confidence > 0.7 | Learn from mistakes, same error doesn't repeat |
+| **Self-Healing RL** | `selfHealing` (SelfHealing + HealingMemoryRL) | Q-table with context-aware keys, ε-greedy exploration, Reflexion-inspired reflection, Titans memory importance | Learn from mistakes, same error doesn't repeat |
 
 ### How It Works
 
