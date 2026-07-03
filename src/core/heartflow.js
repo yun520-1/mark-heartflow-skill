@@ -20,24 +20,45 @@
 const path = require('path');
 
 // ★ 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
-// [AUDIT-FIX] 容量监控：_lazyCache 无上限会持续增长，添加监控和警告
-const _lazyCache = {};
-let _lazyCacheSize = 0;
+// [P2 FIX] LRU 容量管理 + 结构化日志 + 统一错误处理
+const _lazyCache = new Map();
 const _LAZY_CACHE_WARN = 100;
-const _LAZY_CACHE_MAX = 200;
+const _LAZY_CACHE_MAX = 150;
+const _lazyAccessCount = new Map();
+
+// 结构化日志器
+const _log = {
+  _enabled: true,
+  setLevel(level) { this._enabled = level !== 'silent'; },
+  _format(module, event, data) {
+    return JSON.stringify({ ts: new Date().toISOString(), module, event, ...data });
+  },
+  info(module, event, data) { if (this._enabled) console.log(this._format(module, event, data)); },
+  warn(module, event, data) { if (this._enabled) console.warn(this._format(module, event, data)); },
+  error(module, event, data) { if (this._enabled) console.error(this._format(module, event, data)); },
+};
 function _lazy(key, loader) {
   return function() {
-    if (!_lazyCache[key]) {
-      if (_lazyCacheSize >= _LAZY_CACHE_MAX) {
-        console.warn(`[HeartFlow] _lazyCache 达到上限 (${_LAZY_CACHE_MAX})，模块 ${key} 将覆盖已有缓存`);
+    if (!_lazyCache.has(key)) {
+      if (_lazyCache.size >= _LAZY_CACHE_MAX) {
+        // 淘汰访问次数最少的模块
+        let minKey = null, minCount = Infinity;
+        for (const [k, c] of _lazyAccessCount) {
+          if (c < minCount) { minCount = c; minKey = k; }
+        }
+        if (minKey) {
+          _lazyCache.delete(minKey);
+          _lazyAccessCount.delete(minKey);
+        }
       }
-      _lazyCache[key] = loader();
-      _lazyCacheSize++;
-      if (_lazyCacheSize === _LAZY_CACHE_WARN) {
-        console.warn(`[HeartFlow] _lazyCache 达到 ${_LAZY_CACHE_WARN} 个模块，内存使用持续增长`);
+      _lazyCache.set(key, loader());
+      _lazyAccessCount.set(key, 0);
+      if (_lazyCache.size === _LAZY_CACHE_WARN) {
+        _log.warn('lazy_cache', `_lazyCache 达到 ${_LAZY_CACHE_WARN} 个模块`);
       }
     }
-    return _lazyCache[key];
+    _lazyAccessCount.set(key, (_lazyAccessCount.get(key) || 0) + 1);
+    return _lazyCache.get(key);
   };
 }
 
@@ -259,6 +280,9 @@ class HeartFlow {
     // New modules
     this.bm25 = null;
     this.hybrid = null;
+
+    // [P2 FIX] 暴露结构化日志器
+    this._log = _log;
     this.budget = null;
     this.graph = null;
     this.utils = null;
@@ -1387,10 +1411,10 @@ class HeartFlow {
 
     // [AUDIT-FIX] 汇总并上报初始化错误（之前静默收集但从未报告）
     if (this._initErrors.length > 0) {
-      console.warn(`[HeartFlow] 启动完成，${this._initErrors.length} 个模块初始化失败:`);
-      for (const err of this._initErrors) {
-        console.warn(`  [HeartFlow]   - ${err.module}: ${err.error}`);
-      }
+      _log.warn('init', `${this._initErrors.length} 模块初始化失败`, { 
+        count: this._initErrors.length,
+        errors: this._initErrors.map(e => ({ module: e.module, error: e.error }))
+      });
     }
   }
 
@@ -2110,6 +2134,13 @@ class HeartFlow {
    * @param {number} [depth] - 推理深度
    * @returns {object} — { output, type, confidence, thoughtChain }
    */
+  /**
+   * 完整思维链 — 对用户输入进行全链路认知分析
+   * @param {string} input - 用户输入文本
+   * @param {number} [depth=1] - 推理深度 (1-4)
+   * @returns {Promise<Object>} { output, type, confidence, cognition, thoughtChain, decision, meta }
+   * @throws {Error} 如果 HeartFlow 未启动
+   */
   async think(input, depth) {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
@@ -2310,6 +2341,11 @@ class HeartFlow {
    * 快速思考 — 使用默认深度进行思维链推理
    * 这是 think() 的便捷别名
    */
+  /**
+   * 快速思考 — 轻量级判断，适合高频场景
+   * @param {string} input - 用户输入文本
+   * @returns {Promise<Object>} think() 的简化结果
+   */
   async thinkFast(input) {
     return this.think(input, this._thoughtChainApi?.REASONING_DEPTH?.BASIC || 1);
   }
@@ -2411,6 +2447,13 @@ class HeartFlow {
    * @param {string} content - 对话内容
    * @param {object} meta - 额外元数据（chatId, messageId 等）
    */
+  /**
+   * 记录对话历史（AES-256-GCM 加密 + 文件锁）
+   * @param {string} role - 'user' | 'heartflow' | 'unknown'
+   * @param {string} content - 对话内容（自动截断到 2000 字符）
+   * @param {Object} [meta={}] - 元数据
+   * @returns {Object} { success, id, encrypted, skipped? }
+   */
   recordDialogue(role, content, meta = {}) {
     if (!this.started) return { success: false, error: 'not_started' };
     if (!content || !content.trim()) return { success: false, error: 'empty_content' };
@@ -2467,6 +2510,7 @@ class HeartFlow {
       }
       return { success: true, id: entry.id, encrypted: true };
     } catch (e) {
+      _log.error('dialogue', 'write_failed', { error: e.message });
       return { success: false, error: e.message };
     }
   }
