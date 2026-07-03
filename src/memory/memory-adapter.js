@@ -554,6 +554,87 @@ class MemoryAdapter {
     return null;
   }
 
+  // ─── v5.5.5 新增：话题感知记忆检索 ─────────────────────────────
+  // Membox 启发：基于话题连续性的记忆检索
+
+  /**
+   * 话题相似度计算（Bigram 重叠）
+   * @param {string} topicA
+   * @param {string} topicB
+   * @returns {number} 0-1 相似度
+   */
+  _topicSimilarity(topicA, topicB) {
+    if (!topicA || !topicB) return 0;
+    const a = topicA.toLowerCase();
+    const b = topicB.toLowerCase();
+    if (a === b) return 1.0;
+    if (a.includes(b) || b.includes(a)) return 0.7;
+    const bigram = (s) => { const grams = []; for (let i = 0; i < s.length - 1; i++) grams.push(s.slice(i, i + 2)); return grams; };
+    const gramsA = bigram(a); const gramsB = bigram(b);
+    if (gramsA.length === 0 || gramsB.length === 0) return 0;
+    const setB = new Set(gramsB);
+    let overlap = 0;
+    for (const g of gramsA) { if (setB.has(g)) overlap++; }
+    return overlap / Math.max(gramsA.length, gramsB.length);
+  }
+
+  /**
+   * 话题感知搜索：查找与当前话题相关的记忆
+   * @param {string} query - 搜索关键词
+   * @param {string} currentTopic - 当前话题名
+   * @param {number} [limit=10] - 返回数量
+   * @returns {Array} 按话题相关性排序的记忆
+   */
+  searchByTopic(query, currentTopic, limit = 10) {
+    const results = this.searchBySemantic(query, limit * 3);
+    if (!currentTopic || results.length === 0) return results.slice(0, limit);
+    const scored = results.map(r => {
+      const memTopic = r.tags?.find(t => t !== 'consolidated' && t !== 'emotion_signal') || '';
+      const topicScore = this._topicSimilarity(currentTopic, memTopic);
+      const finalScore = (r.score || 0) * 0.7 + topicScore * 0.3;
+      return { ...r, topicScore, finalScore };
+    });
+    scored.sort((a, b) => b.finalScore - a.finalScore);
+    return scored.slice(0, limit).map(r => { const { topicScore, finalScore, ...rest } = r; return rest; });
+  }
+
+  // ─── v5.5.5 新增：记忆自动整合 ──────────────────────────────
+  // CogMem 启发：ephemeral → learned 自动整合
+
+  /**
+   * 自动整合：检查 ephemeral 层大小，触发整合
+   * @param {number} [threshold=20] - 触发阈值
+   * @returns {object} 整合结果
+   */
+  autoConsolidate(threshold = 20) {
+    const ephemeralCount = this._mm.layers.ephemeral.length;
+    if (ephemeralCount < threshold) {
+      return { triggered: false, reason: 'below_threshold', ephemeralCount };
+    }
+    return this.consolidate();
+  }
+
+  // ─── v5.5.5 新增：记忆访问频率统计 ──────────────────────────
+  /**
+   * 获取最常访问的记忆
+   * @param {string} [layer='learned'] - 'core'|'learned'|'ephemeral'
+   * @param {number} [limit=5] - 返回数量
+   * @returns {Array} 按访问次数排序的记忆
+   */
+  getTopAccessed(layer = 'learned', limit = 5) {
+    const arr = this._mm.layers[layer] || [];
+    return arr
+      .filter(m => (m.accessCount || 0) > 0)
+      .sort((a, b) => (b.accessCount || 0) - (a.accessCount || 0))
+      .slice(0, limit)
+      .map(m => ({
+        key: m.metadata?.key || m.id,
+        value: m.content?.slice(0, 100),
+        accessCount: m.accessCount || 0,
+        tags: m.metadata?.tags || [],
+      }));
+  }
+
   // ─── destroy ──────────────────────────────────────────────────────────
 
   destroy() {

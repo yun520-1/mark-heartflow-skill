@@ -394,6 +394,47 @@ class ConfidenceCalibrator {
     }
   }
 
+  /**
+   * 计算校准误差：已记录的预测中，声明置信度与实际准确率的绝对差值的平均值
+   * @returns {number|null} 校准误差（0-1），无数据时返回 null
+   * @private
+   */
+  _computeCalibrationError() {
+    const withFeedback = this.records.filter(r => r.feedback !== null);
+    if (withFeedback.length === 0) return null;
+
+    const totalError = withFeedback.reduce((sum, r) => {
+      // 使用校准后的置信度（即向用户展示的置信度）作为 stated confidence
+      const stated = r.calibrated.calibrated;
+      // 实际准确率：1 = 正确, 0 = 错误
+      const actual = r.feedback ? 1 : 0;
+      return sum + Math.abs(stated - actual);
+    }, 0);
+
+    return Math.round((totalError / withFeedback.length) * 1000) / 1000;
+  }
+
+  /**
+   * 公开API：获取校准误差
+   * @returns {object} 包含误差值和样本量的结果
+   */
+  getCalibrationError() {
+    const error = this._computeCalibrationError();
+    return {
+      error,
+      samples: this.records.filter(r => r.feedback !== null).length,
+      interpretation: error === null
+        ? '尚无反馈数据，无法计算校准误差'
+        : error < 0.1
+          ? '校准优秀：置信度与实际准确率高度吻合'
+          : error < 0.25
+            ? '校准良好：存在轻微过度自信或保守倾向'
+            : error < 0.40
+              ? '校准一般：置信度表达与实际结果存在明显偏差'
+              : '校准较差：建议检查评分维度和阈值设置',
+    };
+  }
+
   // ===== 持久化 =====
 
   _save() {
