@@ -104,6 +104,18 @@ const DANGEROUS_COMMANDS = [
   /init\s+0/i,                 // init 0
   /halt/i,                     // halt
   /poweroff/i,                 // poweroff
+  /wget\s+.*\|\s*(bash|sh)/i, // wget ... | bash
+  /curl\s+.*\|\s*(bash|sh)/i, // curl ... | bash
+  />\s*\/dev\/sda/i,           // > /dev/sda
+  /pv\.*\/etc/i,               // pv /etc (may leak sensitive)
+  /cat\s+\/etc\/(shadow|passwd|sudoers)/i, // read sensitive files
+  /iptables\s+/i,              // iptables
+  /ufw\s+/i,                   // ufw
+  /systemctl\s+/i,             // systemctl
+  /docker\s+(rm|kill|stop|run\s+--privileged)/i, // dangerous docker
+  /`[^`]+`/i,             // [AUDIT-FIX] 反引号命令替换
+  /\$\([^)]*\)/i,         // [AUDIT-FIX] $() 命令替换
+  /base64\s+-d.*\|.*(?:bash|sh)/i, // [AUDIT-FIX] base64 解码后管道执行
 ];
 
 // ============================================================================
@@ -131,7 +143,9 @@ const SANDBOX_BLOCKED_PATTERNS = [
   /process\.dlopen/,
   /Reflect\.construct/,
   /Proxy\s*\(/,
-  /constructor\.constructor/,
+  /\(0,\s*constructor\.constructor\)/i,  // [AUDIT-FIX] 阻止 (0,constructor.constructor) 绕过
+  /\(1,\s*constructor\.constructor\)/i,  // [AUDIT-FIX] 阻止 (1,constructor.constructor) 绕过
+  /\[\s*\)\s*\]\s*constructor\.constructor/i, // [AUDIT-FIX] 阻止 Array 绕过
   /Buffer\.(alloc|from)/i,     // SkillSpector fix: 禁止 Buffer 操作（防止内存读取）
   /net\.(connect|createServer)/i, // SkillSpector fix: 禁止网络操作
   /http\.(request|get|createServer)/i,
@@ -483,6 +497,13 @@ class CodeExecutor {
     const originalError = console.error;
     const originalWarn = console.warn;
 
+    // [AUDIT-FIX] 嵌套 try 确保 console 在同步/异步异常时都恢复
+    const _restoreConsole = () => {
+      console.log = originalLog;
+      console.error = originalError;
+      console.warn = originalWarn;
+    };
+
     // 重定向 console
     console.log = (...args) => {
       capturedOutput += args.map(a => (typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a))).join(' ') + '\n';
@@ -546,9 +567,7 @@ class CodeExecutor {
 
     } finally {
       if (timerId) clearTimeout(timerId);
-      console.log = originalLog;
-      console.error = originalError;
-      console.warn = originalWarn;
+      _restoreConsole();
     }
   }
 
@@ -685,7 +704,8 @@ class CodeExecutor {
 
       const pythonCmd = this._getPythonCommand();
 
-      const result = _cp.execSync(`${pythonCmd} "${tmpFile}"`, {
+      // [AUDIT-FIX] 使用 execFileSync 数组参数避免 shell 注入
+      const result = _cp.execFileSync(pythonCmd, [tmpFile], {
         timeout,
         encoding: 'utf-8',
         maxBuffer: MAX_OUTPUT_LIMIT

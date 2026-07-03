@@ -95,11 +95,25 @@ class HeartFlowMemory {
   }
 
   _appendJsonl(filePath, entry) {
+    // [AUDIT-FIX] 文件锁防止并发写入导致 JSONL 行损坏
+    const lockFile = filePath + '.lock';
+    let lockFd = null;
     try {
+      lockFd = fs.openSync(lockFile, 'wx');
+      fs.writeSync(lockFd, String(process.pid));
       const line = JSON.stringify({ ...entry, ts: Date.now() }) + '\n';
       fs.appendFileSync(filePath, line, 'utf8');
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn(`[HeartFlowMemory] Failed to append to ${filePath}: ${e.message}`);
+      if (e.code === 'EEXIST') {
+        // 锁文件存在，说明另一个写入正在进行，静默跳过（下次会补上）
+        return;
+      }
+      // [PROD] 生产环境可移除 console.warn
+      console.warn(`[HeartFlowMemory] Failed to append to ${filePath}: ${e.message}`);
+    } finally {
+      if (lockFd) {
+        try { fs.closeSync(lockFd); fs.unlinkSync(lockFile); } catch { /* ignore */ }
+      }
     }
   }
 
