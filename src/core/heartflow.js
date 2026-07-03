@@ -15,10 +15,23 @@
 const path = require('path');
 
 // ★ 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
+// [AUDIT-FIX] 容量监控：_lazyCache 无上限会持续增长，添加监控和警告
 const _lazyCache = {};
+let _lazyCacheSize = 0;
+const _LAZY_CACHE_WARN = 100;
+const _LAZY_CACHE_MAX = 200;
 function _lazy(key, loader) {
   return function() {
-    if (!_lazyCache[key]) _lazyCache[key] = loader();
+    if (!_lazyCache[key]) {
+      if (_lazyCacheSize >= _LAZY_CACHE_MAX) {
+        console.warn(`[HeartFlow] _lazyCache 达到上限 (${_LAZY_CACHE_MAX})，模块 ${key} 将覆盖已有缓存`);
+      }
+      _lazyCache[key] = loader();
+      _lazyCacheSize++;
+      if (_lazyCacheSize === _LAZY_CACHE_WARN) {
+        console.warn(`[HeartFlow] _lazyCache 达到 ${_LAZY_CACHE_WARN} 个模块，内存使用持续增长`);
+      }
+    }
     return _lazyCache[key];
   };
 }
@@ -1062,6 +1075,14 @@ class HeartFlow {
         this._modules[name] = this[name];
       }
     }
+
+    // [AUDIT-FIX] 汇总并上报初始化错误（之前静默收集但从未报告）
+    if (this._initErrors.length > 0) {
+      console.warn(`[HeartFlow] 启动完成，${this._initErrors.length} 个模块初始化失败:`);
+      for (const err of this._initErrors) {
+        console.warn(`  [HeartFlow]   - ${err.module}: ${err.error}`);
+      }
+    }
   }
 
   async stop() {
@@ -2080,8 +2101,19 @@ class HeartFlow {
         version: this.version,
         encrypted: true
       };
-      
-      fs.appendFileSync(filePath, JSON.stringify(entry) + '\n');
+      // [AUDIT-FIX] 文件锁防止并发写入损坏 JSONL（v5.5.2 AES 加密之上）
+      const lockPath = filePath + '.lock';
+      try {
+        const lockFd = fs.openSync(lockPath, 'wx');
+        fs.writeSync(lockFd, String(process.pid));
+        fs.appendFileSync(filePath, JSON.stringify(entry, null, 0) + '\n', 'utf8');
+        fs.closeSync(lockFd);
+        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
+      } catch (e) {
+        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
+        if (e.code === 'EEXIST') return { success: true, id: entry.id, encrypted: true, skipped: true };
+        return { success: false, error: e.message };
+      }
       return { success: true, id: entry.id, encrypted: true };
     } catch (e) {
       return { success: false, error: e.message };
@@ -2548,6 +2580,11 @@ class HeartFlow {
         peakLevel: data.dreamResult?.results?.synthesize?.narrative_structure?.layer || 'L1',
         evolutionApplied: !!data.evolution,
       };
+      // v5.5.2 AES-256-GCM 加密 + [AUDIT-FIX] 文件锁合并
+      const algorithm = 'aes-256-gcm';
+      const key = crypto.scryptSync(this.sessionId, 'heartflow-dream-salt', 32);
+      const iv = crypto.randomBytes(16);
+      const cipher = crypto.createCipheriv(algorithm, key, iv);
       let encrypted = cipher.update(JSON.stringify(entry, null, 0), 'utf8', 'hex');
       encrypted += cipher.final('hex');
       const authTag = cipher.getAuthTag();
@@ -2560,7 +2597,19 @@ class HeartFlow {
       delete encEntry.narrative;
       delete encEntry.themes;
       const filePath = path.join(dir, 'dream-history.jsonl.enc');
-      fs.appendFileSync(filePath, JSON.stringify(encEntry) + '\n', 'utf8');
+      // [AUDIT-FIX] 文件锁防止并发写入
+      const lockPath = filePath + '.lock';
+      try {
+        const lockFd = fs.openSync(lockPath, 'wx');
+        fs.writeSync(lockFd, String(process.pid));
+        fs.appendFileSync(filePath, JSON.stringify(encEntry, null, 0) + '\n', 'utf8');
+        fs.closeSync(lockFd);
+        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
+      } catch (e) {
+        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
+        if (e.code === 'EEXIST') return { success: true, id: entry.id, encrypted: true, skipped: true };
+        return { success: false, error: e.message };
+      }
       return { success: true, id: entry.id, encrypted: true };
     } catch (e) {
       return { success: false, error: e.message };
