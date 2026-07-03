@@ -75,15 +75,16 @@ function getVersion() {
 }
 
 // 安全配置
-// 可选认证 — 设置 HEARTFLOW_MCP_TOKEN 环境变量以启用认证
+// [AUDIT-FIX] 强制认证 — 必须设置 HEARTFLOW_MCP_TOKEN
 const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null;
 if (!AUTH_TOKEN) {
-  console.error(`[MCP] HEARTFLOW_MCP_TOKEN not set. Running without authentication (localhost only).`);
+  console.error('[MCP] SECURITY: HEARTFLOW_MCP_TOKEN is not set. MCP server requires authentication.');
 }
 
 // ─── 时间安全的 token 比较（防止 timing attack）───
 function safeCompare(provided, expected) {
-  if (expected === null) return true; // 无 token 时跳过认证
+  // [AUDIT-FIX] 无 token 时拒绝所有请求（不再允许未认证访问）
+  if (!AUTH_TOKEN) return false;
   if (!provided || !expected) return false;
   const a = Buffer.from(String(provided), 'utf8');
   const b = Buffer.from(String(expected), 'utf8');
