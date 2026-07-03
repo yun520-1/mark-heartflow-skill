@@ -2566,10 +2566,6 @@ class HeartFlow {
       const crypto = require('crypto');
       const dir = path.join(this.rootPath, 'memory');
       try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
-      const algorithm = 'aes-256-gcm';
-      const key = crypto.scryptSync(process.env.HEARTFLOW_DIALOGUE_KEY || 'default-key-change-in-prod', 'salt', 32);
-      const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv(algorithm, key, iv);
       const entry = {
         id: `dream-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         ts: new Date().toISOString(),
