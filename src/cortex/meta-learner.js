@@ -85,6 +85,7 @@ class MetaLearner {
     this.projectRoot = hf.rootPath || hf.projectRoot || process.cwd();
     this.core = null;
     this._history = [];       // 独立教训历史（持久化可选）
+    this._proceduralLessons = []; // 蒸馏出的条件-动作规则
     this._stats = {
       totalLessons: 0,
       highQualityLessons: 0,
@@ -468,6 +469,110 @@ class MetaLearner {
       }
     }
     return Array.from(unique).slice(0, 10);
+  }
+
+  /**
+   * 从教训文本中解析条件-动作对
+   * @private
+   * @returns {{ condition: string, action: string }}
+   */
+  _parseConditionAction(content) {
+    const lower = content.toLowerCase();
+
+    // 模式1: "当X时，应该/必须Y" / "when X, should/must Y"
+    let match = lower.match(/(?:当|when)\s*([^，。,，时]*?)(?:时|,)\s*(?:应该|必须|需要|should|must|need)\s*(.+)/i);
+    if (match) {
+      return { condition: match[1].trim(), action: match[2].trim() };
+    }
+
+    // 模式2: "如果X失败/出错，Y" / "if X fails, Y"
+    match = lower.match(/(?:如果|if)\s+(.+?)(?:失败|出错|fails|errors?)\s*[，,]\s*(.+)/i);
+    if (match) {
+      return { condition: `${match[1].trim()} fails`, action: match[2].trim() };
+    }
+
+    // 模式3: "避免X" / "avoid X" → condition: "encountering X", action: "avoid X"
+    match = lower.match(/(?:避免|不要|avoid|never)\s+(.+)/i);
+    if (match) {
+      return { condition: `encountering ${match[1].trim()}`, action: `${match[0].trim()}` };
+    }
+
+    // 模式4: "在X情况下，应该Y" / "in X case, should Y"
+    match = lower.match(/(?:在|in)\s+(.+?)(?:情况下|case|情况)\s*[，,]?\s*(?:应该|should)\s*(.+)/i);
+    if (match) {
+      return { condition: match[1].trim(), action: match[2].trim() };
+    }
+
+    // 模式5: "先X再Y" / "first X then Y"
+    match = lower.match(/(?:先|first)\s+(.+?)(?:再|then)\s+(.+)/i);
+    if (match) {
+      return { condition: `before ${match[2].trim()}`, action: `first ${match[1].trim()}` };
+    }
+
+    // 模式6: "X优于Y" → condition: "choosing between X and Y", action: "prefer X"
+    match = lower.match(/(.+?)(?:优于|better\s+than|instead\s+of)\s*(.+)/i);
+    if (match) {
+      return { condition: `choosing between ${match[1].trim()} and ${match[2].trim()}`, action: `prefer ${match[1].trim()}` };
+    }
+
+    // 兜底：尝试按标点分割，前半段为条件后半段为动作
+    const parts = content.split(/[，,。.；;！!？?]/);
+    if (parts.length >= 2) {
+      return { condition: parts[0].trim(), action: parts.slice(1).join('').trim() };
+    }
+
+    return { condition: 'any situation', action: content };
+  }
+
+  /**
+   * 将一条文本教训蒸馏为条件-动作规则并存入 proceduralLessons
+   * @param {string|Object} lesson - 教训内容或 { content, context, source }
+   * @returns {Object|null} 蒸馏出的规则对象，无法解析时返回 null
+   */
+  _distillToProcedure(lesson) {
+    const parsed = this._parseLesson(lesson);
+    const content = parsed.content.trim();
+    if (!content || content.length < 5) return null;
+
+    const { condition, action } = this._parseConditionAction(content);
+
+    const rule = {
+      id: `proc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      condition: condition || 'always',
+      action: action || content,
+      category: this._categorize(content),
+      sourceLesson: content,
+      context: parsed.context,
+      source: parsed.source,
+      confidence: parseFloat(
+        (this._computeConfidence(
+          this._assessQuality(content).score,
+          this._extractPatterns(content).length,
+          this._categorize(content)
+        ) * 0.8 + 0.2).toFixed(3)
+      ),
+      patterns: this._extractPatterns(content),
+      keywords: this._extractKeywords(content),
+      timestamp: new Date().toISOString()
+    };
+
+    // 去重：检查是否已存在相同的 sourceLesson
+    const exists = this._proceduralLessons.some(
+      r => r.sourceLesson === rule.sourceLesson && r.source === rule.source
+    );
+    if (!exists) {
+      this._proceduralLessons.push(rule);
+    }
+
+    return rule;
+  }
+
+  /**
+   * 获取所有蒸馏出的条件-动作规则
+   * @returns {Object[]}
+   */
+  getProceduralLessons() {
+    return [...this._proceduralLessons];
   }
 
   /**

@@ -605,6 +605,59 @@ class GoTEngine {
   }
 
   /**
+   * 同步探索 — 快速生成推理路径（无需等待异步探索完成）
+   * 适用于需要即时结果的场景（如判断引擎集成）
+   * @param {string} problem - 问题描述
+   * @returns {Object} { bestPath: string[], bestScore: number }
+   */
+  exploreSync(problem) {
+    if (!this.rootId || !this.nodes.has(this.rootId)) {
+      this.initialize(problem || this.problem);
+    }
+
+    // 快速生成 2 个分支并评分
+    const root = this.nodes.get(this.rootId);
+    const angles = [
+      { label: '正向推理', content: `正向推理: ${this.problem} → 直接解决方案` },
+      { label: '反向检验', content: `反向检验: 如果错了，最可能的原因是什么？` },
+    ];
+
+    const scoredNodes = angles.map((angle, i) => {
+      const node = new ThoughtNode({
+        id: `sync_${i}`,
+        content: angle.content,
+        depth: 1,
+        type: 'branch',
+        parentId: this.rootId,
+      });
+      // 同步调用 scorer
+      try { node.score = this.scorer(node) || 5; } catch (e) { node.score = 5; }
+      node.complete(node.score);
+      if (node.score > this.bestScore) {
+        this.bestScore = node.score;
+        this.bestPath = [root.content || '', node.content || ''];
+      }
+      return node;
+    });
+
+    // 合并高分路径
+    if (scoredNodes.length >= 2) {
+      try {
+        const merged = this.merger(scoredNodes);
+        if (merged && merged.score > this.bestScore) {
+          this.bestScore = merged.score;
+          this.bestPath = [root.content || '', merged.content || ''];
+        }
+      } catch (e) { /* merger optional */ }
+    }
+
+    return {
+      bestPath: this.bestPath,
+      bestScore: this.bestScore,
+    };
+  }
+
+  /**
    * 导出推理图结构
    * @returns {Object} 图数据
    */

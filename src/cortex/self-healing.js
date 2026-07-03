@@ -665,6 +665,26 @@ class SelfHealing extends EventEmitter {
       totalRecorded: this._recoveryQualityWindow.length
     };
   }
+
+  /**
+   * 获取自愈引擎统计信息
+   * v5.5.6 新增：供 introspect 使用
+   */
+  getStats() {
+    return {
+      version: '11.5.7',
+      qTableSize: this.rl?.qTable?.size || 0,
+      healCount: this.failureWindow.length,
+      failureWindow: this.failureWindow.length,
+      rlStats: this.rl?.getStats?.() || this.rl?.stats?.() || {},
+      recoveryQuality: this.calculateRecoveryQuality(),
+      oscillationCount: this._oscillationTracker.size,
+      cachedPolicies: this._lightweightPolicyCache.size,
+      providerHealth: Object.fromEntries(
+        Array.from(this._providerHealth.entries()).map(([k, v]) => [k, { healthy: v.healthy, errorRate: v.errors / Math.max(1, v.total) }])
+      ),
+    };
+  }
 }
 
 module.exports = { SelfHealing, FailureSeverity, RepairEffectiveness };

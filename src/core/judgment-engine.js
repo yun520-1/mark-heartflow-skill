@@ -1,8 +1,8 @@
 /**
  * judgment-engine.js v1.0.0 — 心虫真正的判断与决策引擎
  *
- * 核心问题：心虫 50+ 模块都在"分析"和"报告"，没有人真正做判断。
- * 判断 = 在不确定中做选择，且对选择负责。
+ * v5.5.6 升级：集成 Graph of Thoughts 多路径推理
+ * 当输入复杂度高时，使用 GoT 的 branching + backtracking + merging 生成探索路径
  *
  * 设计原则：
  * - 判断不是路由。路由是走哪条路。判断是为什么走这条路，不走其他路。
@@ -75,7 +75,7 @@ class JudgmentEngine {
    * @param {object} context - { intent, emotion, goal, constraints }
    * @returns {object} { judgment, paths, chosenPath, confidence, reasoning }
    */
-  judge(input, context = {}) {
+  async judge(input, context = {}) {
     // 1. 提取判断上下文（用于 RL 匹配）
     const ctx = this._extractContext(input, context);
 
@@ -375,6 +375,53 @@ class JudgmentEngine {
     if (cognitiveLoad > 0.5) {
       const actPath = paths.find(p => p.id === 'path_act');
       if (actPath) actPath.priority *= 0.7;
+    }
+
+    // v5.5.6: Graph of Thoughts 增强 — 复杂输入时探索额外推理路径
+    // 触发条件：输入长度>50 或 包含问题/决策/建议关键词 或 认知负荷高
+    const hasComplexSignal = input.length > 50
+      || isQuestion || isDecision || isAdvice
+      || (psychDims.cognitiveLoad?.load > 0.5)
+      || (goalConflicts > 0);
+    if (hasComplexSignal) {
+      let gotEngine = null;
+      try {
+        const GoTMod = require('../reasoning/graph-of-thoughts.js');
+        gotEngine = new GoTMod.GoTEngine({
+          problem: input.slice(0, 300),
+          maxDepth: 3,
+          branchFactor: 2,
+          mergeThreshold: 0.6,
+          scorer: (node) => {
+            const text = (node.content || '').toLowerCase();
+            const certainty = /确定|肯定|必然|必须|一定|certain|definitely|must|should/i.test(text) ? 0.3 : 0;
+            const completeness = text.length > 20 ? 0.4 : 0.1;
+            return Math.min(1, certainty + completeness);
+          }
+        });
+      } catch (e) { /* GoT 增强可选 */ }
+
+      // 同步获取 GoT 最佳路径（如果引擎已就绪）
+      if (gotEngine && typeof gotEngine.exploreSync === 'function') {
+        try {
+          const gotResult = gotEngine.exploreSync(input.slice(0, 200));
+          if (gotResult && gotResult.bestPath && gotResult.bestPath.length >= 2) {
+            const gotBest = gotResult.bestPath;
+            const finalThought = gotBest[gotBest.length - 1];
+            const directionHint = /因此|所以|结论|应该|必须|建议/i.test(finalThought) ? 'act'
+              : /问题|矛盾|需要进一步|不确定/i.test(finalThought) ? 'analyze' : 'reflect';
+            paths.push({
+              id: 'path_got_explore',
+              label: '多步推理探索',
+              direction: directionHint,
+              description: `GoT 推理链 (${gotBest.length}步): ${gotBest[0].slice(0, 50)}...`,
+              applicable: true,
+              priority: 0.55,
+              gotPaths: gotBest,
+            });
+          }
+        } catch (e) { /* GoT 路径生成失败，不影响基础路径 */ }
+      }
     }
 
     return paths.filter(p => p.applicable);

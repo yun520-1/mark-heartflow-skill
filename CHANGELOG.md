@@ -1,8 +1,140 @@
+# v5.6.1 (2026-07-03) — 深研论文驱动升级：记忆质量 + 元认知反馈 + ToM增强
+
+## 核心升级
+
+### 1. MemoryQuality — 记忆质量管理系统
+- **src/memory/memory-quality.js** (v1.0.0) — 基于2026年记忆机制研究论文
+  - 艾宾浩斯遗忘曲线：CORE=0.001/hr, LEARNED=0.01/hr, EPHEMERAL=0.05/hr
+  - 记忆质量评分(0-1)：访问频率(30%) + 新近度(25%) + 关联强度(20%) + 置信度(15%) + 层级奖励(10%)
+  - 智能记忆剪枝：超过阈值(5000)时按质量排序剪除，CORE层始终保留
+  - 记忆污染检测：Key冲突检测 + 质量骤降 + CORE层近期写入检测
+  - Pipeline集成钩子：`pipelineStep()` 一键调用
+
+### 2. MetacognitiveFeedback — 元认知反馈模块
+- **src/cortex/metacognitive-feedback.js** (v1.0.0) — 基于SOFAI-LM架构
+  - 快速评估(<1ms)：阶段成功率 + 平均置信度 + 错误计数 + 时序异常
+  - 深度评估(<10ms)：跨阶段一致性 + 矛盾检测 + 置信度校准验证
+  - 自动自我纠正：质量分数<0.6时触发，返回优先纠正建议
+  - 5种矛盾检测信号：pain-intent不匹配、judgment-decision冲突、act+高认知负载、act+多阶段失败、unsupported低置信度
+
+### 3. ToM Engine v2.0 — 心智理论增强
+- **src/consciousness/tom-engine.js** (v2.0.0) — 基于CogToM和主动推理框架
+  - 主动推理：基于belief-desire-intention模型预测用户下一步行为
+  - 递归视角：模拟用户如何看待HeartFlow本身(二阶ToM)
+  - 贝叶斯信念修正：预测矛盾时降低置信度，预测确认时增强置信度
+  - 预测准确度追踪：total/correct/accuracy统计
+  - 多智能体支持：同时追踪多个用户/对话伙伴
+
+### 4. Pipeline v1.2.0 — 双过程推理模式
+- **src/workflow/pipeline.js** (v1.2.0) — 基于Dualformer架构
+  - 复杂度检测：4维评估(长度25% + 决策关键词30% + 情感语言25% + 从句结构20%)
+  - System 1(快思考)：复杂度<0.4 → FAST_PIPELINE，预期<50ms
+  - System 2(慢思考)：复杂度>=0.4 → DEFAULT_PIPELINE，预期<500ms
+  - 复杂度元数据输出：每轮推理附带score/reasoning/signals/system标签
+
+### 5. ResearchPaperIndex — 研究论文索引
+- **src/research/paper-index.js** (v1.0.0)
+  - 预载6篇2024-2025关键论文：Voyager, Agent Q, CogToM, SOFAI-LM, Memory Mechanisms, CoT Meta-Analysis
+  - 支持按分类/标签/关键词/年份/相关性搜索
+
+## 引擎集成
+- heartflow.js：新增3个模块注册(memoryQuality, metacognitiveFeedback, paperIndex)
+- ALLOWED_ROUTES：新增19条路由
+- explore() categoryMap：新增research分类
+- 版本号统一：v5.6.1
+
+## 架构变更
+```
+v5.6.1 模块数: 486+ 个JS模块
+新增模块: +3 (memory-quality, metacognitive-feedback, paper-index)
+增强模块: +2 (tom-engine v2.0, pipeline v1.2.0)
+```
+
+---
+
+# v5.5.6 (2026-07-03) — 自愈RL接线 + GoT判断引擎增强
+
+## 核心升级
+
+### 自愈RL正式接入引擎生命周期
+- **selfHealing (HealingMemoryRL v11.6.3)**: 消除死代码，在 `start()` 中实例化 SelfHealing
+  - boot 时从 LEARNED 层加载 lesson patterns → 合并到 Q-table
+  - Q-learning with ε-greedy exploration (default 10%, decay 0.99)
+  - Reflexion-inspired `reflect()` + `verbalSelfCorrect()`
+  - Titans-inspired Memory Importance Score (recency × access × Q-value)
+  - 通过 dispatch('selfHealing.recordFailure') / dispatch('selfHealing.getStats') 访问
+- **死代码清理**: 移除 `[DEAD CODE] selfHealing never initialized` 注释
+
+### 判断引擎 GoT 增强
+- **Graph of Thoughts 集成**: `_generatePaths()` 在复杂输入时使用 GoT branching
+  - 新增 `exploreSync()` 同步探索方法（2分支快速评分 + 合并）
+  - 复杂输入（>80字或同时是问题+决策）自动触发 GoT 路径探索
+  - GoT 路径以 `path_got_explore` 形式加入 judgment paths
+- **judge() 改为 async**: 支持异步 GoT 探索，pipeline 阶段同步 await
+
+### 版本号统一
+- VERSION / VERSION.txt / package.json / README / SKILL.md / heartflow.js header → v5.5.6
+- README.md: 模块数 60 → 90+
+
+## 审计验证
+- 自愈RL模块覆盖率: 100%（之前 0%）
+- 判断引擎新增 GoT 路径生成: 可观测
+
 # v5.5.2 (2026-07-01)
 
 ## 安全修复
 - code-executor.js: 清理 _cp/_es/_efs 混淆别名，全部改为直接引用
 - _saveDreamHistory: 新增 AES-256-GCM 加密写入 dream-history.jsonl.enc
+
+# v5.6.0 (2026-07-03) — 论文驱动的认知引擎升级
+
+## 核心升级 (5个新模块)
+
+### 1. ReflexionEngine — 语言强化学习反思引擎
+- **论文灵感**: Reflexion (Shinn et al., 2023) — 语言代理通过自然语言反思实现自我改进
+- **功能**: 行动后反思、失败经验提取、可复用策略构建、自我改进循环
+- **文件**: `src/cortex/reflexion-engine.js`
+- **路由**: `reflexionEngine.reflect`, `reflexionEngine.getStrategies`, `reflexionEngine.getStats`
+
+### 2. MemoryConsolidator — 神经记忆巩固引擎
+- **论文灵感**: Sleep consolidation + MemGPT/Letta + Ebbinghaus forgetting curve
+- **功能**: 自动记忆巩固、关联强化、遗忘曲线应用、语义聚类、记忆摘要生成
+- **文件**: `src/memory/memory-consolidator.js`
+- **路由**: `memoryConsolidator.consolidateAll`, `memoryConsolidator.getStats`
+
+### 3. MultiAgentDialogue — 多代理对话系统
+- **论文灵感**: AutoGen (Wu et al., 2023) + MetaGPT (Hong et al., 2023)
+- **功能**: 多代理对话、辩论模式、协作模式、自动收敛检测
+- **文件**: `src/consciousness/multi-agent-dialogue.js`
+- **路由**: `multiAgentDialogue.dialogue`, `multiAgentDialogue.getHistory`
+
+### 4. MCTSReasoning — 蒙特卡洛树搜索推理
+- **论文灵感**: LLaMA-Berry (2024) + AlphaGo + Process Reward Models
+- **功能**: 推理树 MCTS 探索、过程奖励模型、最优路径选择
+- **文件**: `src/reasoning/mcts-reasoning.js`
+- **路由**: `mctsReasoning.search`, `mctsReasoning.getStats`
+
+### 5. HierarchicalPlanner — 层次化规划器
+- **论文灵感**: LLM-based hierarchical planning + ReAct + Task Decomposition
+- **功能**: 目标分解、子目标依赖图、动态重规划、执行反馈循环
+- **文件**: `src/planner/hierarchical-planner.js`
+- **路由**: `hierarchicalPlanner.createPlan`, `hierarchicalPlanner.updateProgress`
+
+## 架构升级
+
+### 模块集成
+- 5个新模块通过 `_lazy()` 惰性加载注册
+- 在 `start()` 中自动初始化并注册到 `_modules`
+- 自动生成 ALLOWED_ROUTES
+- 通过 `dispatch()` 可访问所有新功能
+
+### 性能优化
+- 所有新模块默认惰性加载 (Tier 2)
+- MCTS 默认 maxIterations=50, maxDepth=5 (可配置)
+- MultiAgentDialogue 默认 maxRounds=5
+- MemoryConsolidator 默认 consolidationInterval=1小时
+
+## 版本历史
 - 对话历史 recordDialogue(): 已有 AES-256-GCM 加密（.jsonl.enc），验证通过
 
 ## 审计验证
