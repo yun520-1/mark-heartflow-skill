@@ -1,3 +1,48 @@
+# v5.7.2 (2026-07-04) — P0因果图记忆 + P1认知损耗规避 + 论文索引扩展
+
+## 核心升级
+
+### 1. CausalInference v2.0.0 — 因果推理引擎（P0: ActMem论文落地）
+- **src/reasoning/causal-inference.js** (v2.0.0) — 取代空stub，完整实现
+  - 因果图构建：从记忆条目自动检测因果信号词（中英文）和时序因果
+  - 因果链追踪：forward（影响）和 backward（原因）方向，支持maxDepth
+  - 反事实验证：移除某记忆后评估因果链断裂数量和影响分数
+  - 传播激活搜索：从种子记忆扩散，衰减率可配置
+  - 因果搜索：超越语义相似度，基于因果信号词匹配检索
+- **triality-memory.js 集成**：
+  - 构造函数注入 CausalInference 实例
+  - store() 每新增5条记忆自动重建因果图
+  - 新增 causalSearch() / traceCausality() / spreadingActivationSearch() 方法
+
+### 2. CognitiveLoadBalancer v1.0.0 — 多智能体认知损耗规避（P1: Bystander Effect）
+- **src/core/cognitive-load-balancer.js** (v1.0.0) — 基于 arXiv:2605.10698
+  - 交互深度限制 D_L：默认maxActiveEngines=5，超限自动抑制低价值引擎
+  - 动态平衡：根据任务复杂度调整激活引擎数量（高/中/低三档）
+  - 认知偷懒检测：连续3次低质量输出触发 loafing 标记
+  - 引擎复杂度权重表：causal-inference(0.9), self-play(0.85), decision-router(0.9)等
+- **heartflow.js 集成**：注册为 cognitiveLoad 模块，5条dispatch路由
+
+### 3. ResearchPaperIndex — 论文索引扩展 (6→19篇)
+- 新增9篇论文覆盖 P0/P1/P2 升级方向：
+  - ActMem (2603.00026), Goal-Oriented RAG (2605.12213), Functional Metacognition (2605.08942)
+  - Mephisto (2510.08354), Bystander Effect (2605.10698), MIRROR (2604.19809)
+  - Reflexion (2303.11366), Persistent KV Cache (2603.04428), Distributed Attacks (2607.02514)
+  - HAT Memory (2406.06124), Recursive LMs (2603.15653), ClawArena-Team (2606.31174)
+  - Beyond Rule-Based Workflows (2601.09883)
+- 版本号统一：VERSION/package.json → v5.7.2
+
+## 引擎集成
+- heartflow.js：新增 cognitiveLoad 模块注册 + 5条路由
+- ALLOWED_ROUTES：新增 cognitiveLoad.* 5条路由
+- _modules 注册表：新增 cognitiveLoad 到 subsystemNames
+- 总模块数：85 → 86
+
+## 测试验证
+- 集成测试：10/11 通过（1个预存在问题）
+- causal-inference 引擎：图构建/因果追踪/反事实/传播激活 全部通过
+- cognitiveLoad 平衡器：D_L限制/认知偷懒检测 全部通过
+- 模块注册：cognitiveLoad + paperIndex 均正确加载
+
 # v5.6.1 (2026-07-03) — 深研论文驱动升级：记忆质量 + 元认知反馈 + ToM增强
 
 ## 核心升级
