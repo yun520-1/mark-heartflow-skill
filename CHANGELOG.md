@@ -1,3 +1,44 @@
+# v5.7.3 (2026-07-04) — P1目标导向检索 + P2反思记忆/信息流编排 + P3 KV Cache/记忆完整性
+
+## 核心升级
+
+### 1. 目标导向检索策略 (P1: Goal-Oriented RAG)
+- **src/memory/retrieval-router.js** 增强：
+  - `decomposeGoal()` — 复合查询自动分解为子目标
+  - `assessUtility()` — 基于实用性评分（新近度/访问频率/层级/元数据）而非纯相似度
+  - `goalOrientedRetrieve()` — 目标驱动多通道检索，支持独立导出
+
+### 2. 反思记忆独立存储 (P2: Reflexion Memory)
+- **src/memory/reflection-memory.js** v1.0.0 — 新模块
+  - 结构化反思记录：任务→结果→反思→经验教训→策略
+  - CJK/英文双语搜索（字符n-gram + 词级）
+  - 策略库自动提取（"应该/不应该/总是/绝不"模式）
+  - 跨会话持久化到磁盘
+
+### 3. 信息流编排 (P2: Beyond Rule-Based Workflows)
+- **src/core/information-flow.js** v1.0.0 — 新模块
+  - 引擎注册：声明输入/输出类型
+  - 自动编排：基于目标输出类型匹配最优执行序列
+  - 替代硬编码路由表
+
+### 4. KV Cache持久化 (P3: Persistent KV Cache)
+- **src/memory/kv-cache.js** v1.0.0 — 新模块
+  - 4-bit量化存储（体积减少75%）
+  - LRU eviction + TTL过期清理
+  - 会话级隔离，支持多会话并行
+
+### 5. 记忆完整性安全验证 (P3: Distributed Attacks)
+- **src/shield/memory-integrity.js** v1.0.0 — 新模块
+  - SHA-256签名 + 来源可信度校验
+  - 恶意模式检测（注入攻击/ prompt injection）
+  - CORE层写入保护
+  - 突发写入频率检测
+
+## 引擎集成
+- heartflow.js：新增5个模块 + 17条dispatch路由
+- 总模块数：90
+- 版本号统一：v5.7.3
+
 # v5.7.2 (2026-07-04) — P0因果图记忆 + P1认知损耗规避 + 论文索引扩展
 
 ## 核心升级
