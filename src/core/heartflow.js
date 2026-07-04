@@ -183,6 +183,14 @@ const _DebateConductor = _lazy('debateConductor', () => require('../reasoning/de
 const _SelfPlay = _lazy('selfPlay', () => require('../reasoning/self-play.js'));
 // v5.7.2 — P1 多智能体认知损耗规避 (Bystander Effect → CognitiveLoadBalancer)
 const _CognitiveLoadBalancer = _lazy('cognitiveLoad', () => require('./cognitive-load-balancer.js'));
+// v5.7.2 — P2 信息流编排 (Beyond Rule-Based Workflows)
+const _InformationFlow = _lazy('informationFlow', () => require('./information-flow.js'));
+// v5.7.2 — P2 反思记忆独立存储 (Reflexion Memory)
+const _ReflectionMemory = _lazy('reflectionMemory', () => require('../memory/reflection-memory.js'));
+// v5.7.2 — P3 KV Cache持久化
+const _KVCache = _lazy('kvCache', () => require('../memory/kv-cache.js'));
+// v5.7.2 — P3 记忆完整性安全验证
+const _MemoryIntegrity = _lazy('memoryIntegrity', () => require('../shield/memory-integrity.js'));
 
 // ★ 能力抽象层 + 平台适配器（Smart Routing 启发：模型能力清单外置 + 径窗网络）
 const _CapabilityAbstraction = _lazy('capabilityAbstraction', () => require('./capability-abstraction.js'));
@@ -1165,6 +1173,35 @@ class HeartFlow {
       this._modules.cognitiveLoad = this.cognitiveLoad;
     } catch (e) { this._initErrors.push({ module: 'cognitiveLoad', error: e.message }); }
 
+    // 5. InformationFlowOrchestrator — 信息流编排 (Beyond Rule-Based Workflows)
+    try {
+      const IFMod = _InformationFlow();
+      const IFClass = IFMod.InformationFlowOrchestrator;
+      this.infoFlow = IFClass ? new IFClass({ maxIterations: 10 }) : null;
+      this._modules.infoFlow = this.infoFlow;
+    } catch (e) { this._initErrors.push({ module: 'informationFlow', error: e.message }); }
+
+    // 6. ReflectionMemory — 反思记忆独立存储 (Reflexion)
+    try {
+      const RM = _ReflectionMemory();
+      this.reflectionMemory = new RM.ReflectionMemory({ maxReflections: 500 });
+      this._modules.reflectionMemory = this.reflectionMemory;
+    } catch (e) { this._initErrors.push({ module: 'reflectionMemory', error: e.message }); }
+
+    // 7. KVCachePersistor — KV Cache持久化
+    try {
+      const KV = _KVCache();
+      this.kvCache = new KV.KVCachePersistor({ maxCacheSize: 100, quantize: true });
+      this._modules.kvCache = this.kvCache;
+    } catch (e) { this._initErrors.push({ module: 'kvCache', error: e.message }); }
+
+    // 8. MemoryIntegrity — 记忆完整性安全验证
+    try {
+      const MI = _MemoryIntegrity();
+      this.memoryIntegrity = new MI.MemoryIntegrity({ strictMode: false });
+      this._modules.memoryIntegrity = this.memoryIntegrity;
+    } catch (e) { this._initErrors.push({ module: 'memoryIntegrity', error: e.message }); }
+
     // ─── [v5.5.6] 自愈RL — SelfHealing (Reflexion + Q-learning) ─────────────
     // 将 HealingMemoryRL 接入引擎生命周期，消除死代码
     try {
@@ -1431,7 +1468,9 @@ class HeartFlow {
       // v5.6.1 — 步骤级推理奖励模型 (Process Reward Model)
       'processRewardModel',
       // v5.6.1 — 跨会话记忆银行 (MemoryBank v1.0.0)
-      'memoryBank'];
+      'memoryBank',
+      // v5.7.2 — 新模块
+      'infoFlow', 'reflectionMemory', 'kvCache', 'memoryIntegrity'];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
         this._modules[name] = this[name];
@@ -1814,7 +1853,15 @@ class HeartFlow {
     // v5.6.1 — 自我对弈推理增强 (Self-Play)
     'selfPlay.challenge', 'selfPlay.defend', 'selfPlay.refine',
     'selfPlay.evaluateRobustness', 'selfPlay.generateAlternatives',
-    'selfPlay.getStats', 'selfPlay.getImprovementLog', 'selfPlay.reset']);
+    'selfPlay.getStats', 'selfPlay.getImprovementLog', 'selfPlay.reset',
+    // v5.7.2 — 信息流编排
+    'infoFlow.register', 'infoFlow.orchestrate', 'infoFlow.getStats',
+    // v5.7.2 — 反思记忆
+    'reflectionMemory.store', 'reflectionMemory.search', 'reflectionMemory.getStrategies', 'reflectionMemory.getStats', 'reflectionMemory.reset',
+    // v5.7.2 — KV Cache
+    'kvCache.save', 'kvCache.load', 'kvCache.has', 'kvCache.delete', 'kvCache.prune', 'kvCache.getStats',
+    // v5.7.2 — 记忆完整性
+    'memoryIntegrity.sign', 'memoryIntegrity.verify', 'memoryIntegrity.detectAnomalies', 'memoryIntegrity.getStats', 'memoryIntegrity.reset']);
 
   /**
    * dispatch('subsystem.method', ...args) — 统一路由
