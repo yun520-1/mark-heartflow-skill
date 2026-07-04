@@ -181,6 +181,8 @@ const _DebateConvergence = _lazy('debateConvergence', () => require('./debate-co
 const _DebateConductor = _lazy('debateConductor', () => require('../reasoning/debate-conductor.js'));
 // v5.6.1 — 自我对弈推理增强 (Self-Play)
 const _SelfPlay = _lazy('selfPlay', () => require('../reasoning/self-play.js'));
+// v5.7.2 — P1 多智能体认知损耗规避 (Bystander Effect → CognitiveLoadBalancer)
+const _CognitiveLoadBalancer = _lazy('cognitiveLoad', () => require('./cognitive-load-balancer.js'));
 
 // ★ 能力抽象层 + 平台适配器（Smart Routing 启发：模型能力清单外置 + 径窗网络）
 const _CapabilityAbstraction = _lazy('capabilityAbstraction', () => require('./capability-abstraction.js'));
@@ -428,6 +430,19 @@ class HeartFlow {
         if (typeof mem.searchByKeywords === 'function') {
           return mem.searchByKeywords(keywords, limit);
         }
+        return [];
+      },
+      // v5.7.2 — P0 因果推理记忆检索
+      causalSearch(query, limit) {
+        if (typeof mem.causalSearch === 'function') return mem.causalSearch(query, limit);
+        return [];
+      },
+      traceCausality(memoryId, direction, maxDepth) {
+        if (typeof mem.traceCausality === 'function') return mem.traceCausality(memoryId, direction, maxDepth);
+        return [];
+      },
+      spreadingActivationSearch(seedId, budget) {
+        if (typeof mem.spreadingActivationSearch === 'function') return mem.spreadingActivationSearch(seedId, budget);
         return [];
       },
     };
@@ -880,6 +895,8 @@ class HeartFlow {
       'reflexionEngine', 'memoryConsolidator', 'multiAgentDialogue', 'mctsReasoning', 'hierarchicalPlanner',
       // v5.6.1 深研论文驱动升级
       'memoryQuality', 'metacognitiveFeedback', 'paperIndex',
+      // v5.7.2 — P1 多智能体认知损耗规避
+      'cognitiveLoad',
       // v5.6.1 — 步骤级推理奖励模型 (Process Reward Model)
       'processRewardModel',
       // v5.6.1 — 跨会话记忆银行 (MemoryBank v1.0.0)
@@ -1137,6 +1154,16 @@ class HeartFlow {
       const PI = _PaperIndex();
       this.paperIndex = new PI.ResearchPaperIndex();
     } catch (e) { this._initErrors.push({ module: 'paperIndex', error: e.message }); }
+
+    // 4. CognitiveLoadBalancer — 多智能体认知损耗规避 (Bystander Effect mitigation)
+    try {
+      const CLB = _CognitiveLoadBalancer();
+      this.cognitiveLoad = new CLB.CognitiveLoadBalancer({
+        maxActiveEngines: 5,
+        loafingThreshold: 0.3,
+      });
+      this._modules.cognitiveLoad = this.cognitiveLoad;
+    } catch (e) { this._initErrors.push({ module: 'cognitiveLoad', error: e.message }); }
 
     // ─── [v5.5.6] 自愈RL — SelfHealing (Reflexion + Q-learning) ─────────────
     // 将 HealingMemoryRL 接入引擎生命周期，消除死代码
@@ -1399,6 +1426,8 @@ class HeartFlow {
       'reflexionEngine', 'memoryConsolidator', 'multiAgentDialogue', 'mctsReasoning', 'hierarchicalPlanner',
       // v5.6.1 — 深研论文驱动升级
       'memoryQuality', 'metacognitiveFeedback', 'paperIndex',
+      // v5.7.2 — P1 多智能体认知损耗规避
+      'cognitiveLoad',
       // v5.6.1 — 步骤级推理奖励模型 (Process Reward Model)
       'processRewardModel',
       // v5.6.1 — 跨会话记忆银行 (MemoryBank v1.0.0)
@@ -1507,6 +1536,8 @@ class HeartFlow {
     // triality — v2.0.19 三层记忆兼容层
     'triality.getStats', 'triality.getLayerStats',
     'triality.getMemoryHealth', 'triality.searchByKeywords',
+    // v5.7.2 — P0 因果推理记忆检索
+    'triality.causalSearch', 'triality.traceCausality', 'triality.spreadingActivationSearch',
     // lesson — 主动集成点：AI在行动前/失败后调用
     'lesson.addLesson', 'lesson.getTopLessons',
     'lesson.beforeTask', 'lesson.recordFailure', 'lesson.getStats', 'lesson.getAll',
@@ -1767,6 +1798,8 @@ class HeartFlow {
     'memoryQuality.score', 'memoryQuality.decayAll', 'memoryQuality.prune', 'memoryQuality.detectContamination', 'memoryQuality.getQualityDistribution',
     'metacognitiveFeedback.assess', 'metacognitiveFeedback.deepAssess', 'metacognitiveFeedback.suggestCorrection', 'metacognitiveFeedback.getStats',
     'paperIndex.addPaper', 'paperIndex.searchByCategory', 'paperIndex.searchByTag', 'paperIndex.searchByKeyword', 'paperIndex.getPapersByYear', 'paperIndex.getRelevantPapers', 'paperIndex.getAllPapers', 'paperIndex.getStats',
+    // v5.7.2 — P1 多智能体认知损耗规避路由
+    'cognitiveLoad.balance', 'cognitiveLoad.detectLoafing', 'cognitiveLoad.getOptimalCount', 'cognitiveLoad.getStats', 'cognitiveLoad.reset',
     // v5.6.1 — 步骤级推理奖励模型 (Process Reward Model)
     'processRewardModel.evaluateStep', 'processRewardModel.evaluateChain',
     'processRewardModel.findWeakSteps', 'processRewardModel.suggestImprovements',
