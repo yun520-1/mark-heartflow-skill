@@ -30,11 +30,17 @@ class TrialityMemory {
     this.memories = [];
     this.vectors = new Map();
     this.relationships = new Map();
-    
+
+    // 因果推理引擎 (ActMem: causal-semantic graph)
+    let CausalInference;
+    try { ({ CausalInference } = require('../reasoning/causal-inference.js')); } catch (e) { /* stub fallback */ }
+    this.causalEngine = CausalInference ? new CausalInference() : null;
+
     this.stats = {
       totalMemories: 0,
       totalRelationships: 0,
-      lastCleanup: null
+      lastCleanup: null,
+      causalGraphBuilt: false,
     };
     
     this.init();
@@ -146,6 +152,12 @@ class TrialityMemory {
     this.stats.totalMemories = this.memories.length;
     // [PROD] 生产环境移除 console.error: console.error(`[TrialityMemory] 记忆存储: ${id} (${this.memories.length} total)`);
     this._autoSave(); // 自动持久化
+
+    // 每新增 5 条记忆重建一次因果图
+    if (this.causalEngine && this.memories.length % 5 === 0) {
+      this._rebuildCausalGraph();
+    }
+
     return id;
   }
 
@@ -185,6 +197,56 @@ class TrialityMemory {
     const layer = memoryRecord.layer || 'working';
     if (!this.memoryLayers[layer]) this.memoryLayers[layer] = [];
     this.memoryLayers[layer].push(memoryRecord.id);
+  }
+
+  // ─── 因果图集成 (ActMem) ──────────────────────────────────────────────────
+
+  /**
+   * 重建因果图（从所有记忆条目）
+   * @private
+   */
+  _rebuildCausalGraph() {
+    if (!this.causalEngine) return;
+    try {
+      this.causalEngine.buildGraph(this.memories);
+      this.stats.causalGraphBuilt = true;
+    } catch (e) {
+      // [PROD] 生产环境移除 console.warn: console.warn('[TrialityMemory] 因果图构建失败:', e.message);
+    }
+  }
+
+  /**
+   * 基于因果关联的记忆搜索（超越语义相似度）
+   * @param {string} query - 查询文本
+   * @param {number} topK - 返回数量
+   * @returns {Array} 因果相关的记忆
+   */
+  causalSearch(query, topK = 10) {
+    if (!this.causalEngine) return [];
+    return this.causalEngine.searchByCausal(query, topK);
+  }
+
+  /**
+   * 追踪记忆的因果链
+   * @param {string} memoryId - 记忆ID
+   * @param {string} direction - 'forward' 或 'backward'
+   * @param {number} maxDepth - 最大深度
+   * @returns {Array}
+   */
+  traceCausality(memoryId, direction = 'forward', maxDepth = 5) {
+    if (!this.causalEngine) return [];
+    return this.causalEngine.trace(memoryId, direction, maxDepth);
+  }
+
+  /**
+   * 传播激活搜索（从种子记忆扩散）
+   * @param {string} seedId - 种子记忆ID
+   * @param {number} budget - 激活预算
+   * @returns {Array}
+   */
+  spreadingActivationSearch(seedId, budget = 100) {
+    if (!this.causalEngine) return [];
+    return this.causalEngine.spreadingActivation(seedId, budget);
   }
 
   consolidateMemories() {
