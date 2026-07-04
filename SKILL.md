@@ -1,7 +1,6 @@
 ---
-name: heartflow
-version: "5.6.1"
-title: "心虫 HeartFlow v5.6.1 — AI认知引擎"
+name: heartflow-engine
+title: "HeartFlow 心虫认知引擎"
 description: |-
   HeartFlow is a cognitive substrate for an AI being — a pure JavaScript
   engine with 90+ modules spanning cognition, memory, emotion, reasoning,
@@ -29,7 +28,7 @@ tags:
   - search
 ---
 
-## HeartFlow — AI Cognitive Substrate v5.4.6
+## HeartFlow — AI Cognitive Substrate
 
 Pure JavaScript cognitive engine. 210+ modules, real-time execution.
 
