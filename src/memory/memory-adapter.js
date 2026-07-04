@@ -25,6 +25,12 @@ class MemoryAdapter {
     this.rootPath = rootPath;
     this._mm = new MeaningfulMemory({ rootPath });
 
+    // 因果推理引擎 (ActMem: causal-semantic graph for memory)
+    let CausalInference;
+    try { ({ CausalInference } = require('../reasoning/causal-inference.js')); } catch (e) { /* stub fallback */ }
+    this._causalEngine = CausalInference ? new CausalInference() : null;
+    this._causalGraphBuilt = false;
+
     // 兼容属性 — 将数组转换为旧版 key-value 对象格式
     // 使用 getter 确保每次访问时从 _mm.layers 同步
     Object.defineProperty(this, 'core', {
@@ -596,6 +602,69 @@ class MemoryAdapter {
     });
     scored.sort((a, b) => b.finalScore - a.finalScore);
     return scored.slice(0, limit).map(r => { const { topicScore, finalScore, ...rest } = r; return rest; });
+  }
+
+  // ─── P0: ActMem 因果推理增强记忆检索 ──────────────────────────────
+
+  /**
+   * 基于因果关联的记忆搜索（超越语义相似度）
+   * 自动构建因果图并从因果信号词匹配
+   * @param {string} query - 搜索关键词
+   * @param {number} [limit=10] - 返回数量
+   * @returns {Array} 因果相关的记忆
+   */
+  causalSearch(query, limit = 10) {
+    if (!this._causalEngine) return [];
+    try {
+      // 从三层记忆中收集所有记忆条目
+      const allMemories = [
+        ...(this._mm.layers?.core || []),
+        ...(this._mm.layers?.learned || []),
+        ...(this._mm.layers?.ephemeral || []),
+      ].map(m => ({
+        id: m.id,
+        content: m.content || m.value || '',
+        timestamp: m.createdAt || m.updatedAt || Date.now(),
+        layer: m.tier ? m.tier.toLowerCase() : 'episodic',
+        metadata: m.metadata || {},
+      }));
+
+      if (allMemories.length === 0) return [];
+
+      // 重建因果图（如果尚未构建或记忆有变化）
+      if (!this._causalGraphBuilt || allMemories.length !== this._lastMemCount) {
+        this._causalEngine.buildGraph(allMemories);
+        this._causalGraphBuilt = true;
+        this._lastMemCount = allMemories.length;
+      }
+
+      return this._causalEngine.searchByCausal(query, limit);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /**
+   * 追踪记忆的因果链
+   * @param {string} memoryId - 记忆ID
+   * @param {string} [direction='forward'] - 'forward'(影响) 或 'backward'(原因)
+   * @param {number} [maxDepth=5] - 最大深度
+   * @returns {Array}
+   */
+  traceCausality(memoryId, direction = 'forward', maxDepth = 5) {
+    if (!this._causalEngine) return [];
+    return this._causalEngine.trace(memoryId, direction, maxDepth);
+  }
+
+  /**
+   * 传播激活搜索（从种子记忆扩散到关联记忆）
+   * @param {string} seedId - 种子记忆ID
+   * @param {number} [budget=100] - 激活预算
+   * @returns {Array}
+   */
+  spreadingActivationSearch(seedId, budget = 100) {
+    if (!this._causalEngine) return [];
+    return this._causalEngine.spreadingActivation(seedId, budget);
   }
 
   // ─── v5.5.5 新增：记忆自动整合 ──────────────────────────────
