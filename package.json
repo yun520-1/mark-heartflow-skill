@@ -7,6 +7,7 @@
     "heartflow": "bin/cli.js"
   },
   "scripts": {
+    "prepublishOnly": "node scripts/sync-version.js",
     "start": "node bin/cli.js chat",
     "status": "node bin/cli.js status",
     "test": "node tests/integration.test.js",

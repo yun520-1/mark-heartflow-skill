@@ -1,9 +1,8 @@
-# HeartFlow v5.6.1 — 逻辑验证层 · 决策路由 · 自愈RL · GoT增强 · 论文驱动升级
+# HeartFlow 心虫 — 逻辑验证层 · 决策路由 · 自愈RL · GoT增强 · 论文驱动升级
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-5.6.1-blue?style=flat-square" alt="version" />
-  <img src="https://img.shields.io/github/release/yun520-1/mark-heartflow-skill?style=flat-square" alt="GitHub release" />
-  <img src="https://img.shields.io/github/last-commit=yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
+  <img src="https://img.shields.io/github/v/yun520-1/mark-heartflow-skill?style=flat-square" alt="version" />
+  <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
   <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square&logo=node.js" alt="Node.js" />
   <img src="https://img.shields.io/badge/modules-90+-important?style=flat-square" alt="90+ modules" />
@@ -120,7 +119,7 @@ Input → [Cognitive Pipeline (7 stages)] → Structured Data → LLM → Respon
 | **Desire Cognition** | v5.5.1 — wanting-vs-liking delta, RPE, 7 emotions + 6 desires | Built on Berridge/Kringelbach neuroscience, not folk psychology |
 | **Three Poisons** | v5.5.1 — greed/hatred/delusion as cognitive distortion metrics | Rooted in neurobiology (D2 receptor, amygdala, DMN), not Buddhism |
 
-**v5.5.1 (current)**: BigBench 100% — sorted补全+leftmost/rightmost推导+LLM兜底 (emotion + psychology + philosophy + desire + judgment + decision) to the LLM. Each stage's structured data is preserved, not summarized into a single sentence.
+**Current version**: See `src/core/version.js` for the single source of truth.
 
 ---
 
