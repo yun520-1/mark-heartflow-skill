@@ -19,7 +19,18 @@
 
 const path = require('path');
 
-// ★ 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
+// ─── 统一配置系统 ──────────────────────────────────────────────────────
+const { load: loadConfig } = require('./config');
+
+// ★ 全局配置单例（惰性加载，首次访问时初始化）
+let _globalConfig = null;
+function _getConfig(projectRoot) {
+  if (!_globalConfig) {
+    _globalConfig = loadConfig(projectRoot || path.join(__dirname, '..', '..'));
+  }
+  return _globalConfig;
+}
+// ─── 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
 // [P2 FIX] LRU 容量管理 + 结构化日志 + 统一错误处理
 const _lazyCache = new Map();
 const _LAZY_CACHE_WARN = 100;
@@ -192,6 +203,43 @@ const _KVCache = _lazy('kvCache', () => require('../memory/kv-cache.js'));
 // v5.7.2 — P3 记忆完整性安全验证
 const _MemoryIntegrity = _lazy('memoryIntegrity', () => require('../shield/memory-integrity.js'));
 
+// v5.7.4 — P0 经验验证器 + 记忆写入控制 + 元认知RL (EDV/AdaMem/RLMF)
+const _ExperienceValidator = _lazy('experienceValidator', () => require('../cortex/experience-validator.js'));
+const _MemoryWriteController = _lazy('memoryWriteController', () => require('../memory/memory-write-controller.js'));
+const _MetacognitiveRL = _lazy('metacognitiveRL', () => require('../cortex/metacognitive-rl.js'));
+
+// v5.7.4 — P1 记忆压缩 + 技能进化 + 世界模型 (MemRefine/SkillCoach/AgentWorld)
+const _MemoryCompressor = _lazy('memoryCompressor', () => require('../memory/memory-compressor.js'));
+const _SkillEvolutionEngine = _lazy('skillEvolutionEngine', () => require('../cortex/skill-evolution-engine.js'));
+const _WorldModel = _lazy('worldModel', () => require('../cortex/world-model.js'));
+
+// v5.7.5 — P1 古代智慧基础：美德伦理 + 人性论 + 意义目的 (Aristotle/Stoic/Confucian/Buddhist)
+const _VirtueEthicsFoundation = _lazy('virtueEthics', () => require('../identity/virtue-ethics-foundation.js'));
+const _HumanNatureConstitution = _lazy('humanNature', () => require('../identity/human-nature-constitution.js'));
+const _MeaningPurposeEngine = _lazy('meaningPurpose', () => require('../identity/meaning-purpose-engine.js'));
+
+// v5.7.5 — P2 品格养成 + 道德发展 + 智慧引擎
+const _CharacterCultivation = _lazy('characterCultivation', () => require('../identity/character-cultivation.js'));
+const _MoralDevelopment = _lazy('moralDevelopment', () => require('../identity/moral-development.js'));
+const _WisdomEngine = _lazy('wisdomEngine', () => require('../identity/wisdom-engine.js'));
+
+// v5.7.6 — P3 人性深化 + P4 关系社会 + P5 痛苦成长 + P6 AI人类整合
+const _SufferingResilience = _lazy('sufferingResilience', () => require('../identity/suffering-resilience.js'));
+const _GriefEngine = _lazy('griefEngine', () => require('../identity/grief-engine.js'));
+const _HopeEngine = _lazy('hopeEngine', () => require('../identity/hope-engine.js'));
+const _HumanRelation = _lazy('humanRelation', () => require('../identity/human-relation.js'));
+const _EmpathyDeepening = _lazy('empathyDeepening', () => require('../identity/empathy-deepening.js'));
+const _ConflictResolution = _lazy('conflictResolution', () => require('../identity/conflict-resolution.js'));
+const _TraumaInformed = _lazy('traumaInformed', () => require('../identity/trauma-informed.js'));
+const _PostTraumaticGrowth = _lazy('postTraumaticGrowth', () => require('../identity/post-traumatic-growth.js'));
+const _ForgivenessEngine = _lazy('forgivenessEngine', () => require('../identity/forgiveness-engine.js'));
+const _AIHumanIntegration = _lazy('aiHumanIntegration', () => require('../identity/ai-human-integration.js'));
+const _BeingMode = _lazy('beingMode', () => require('../identity/being-mode.js'));
+const _ConsciousnessBridge = _lazy('consciousnessBridge', () => require('../identity/consciousness-bridge.js'));
+
+// v5.7.7 — F3 持续漂移检测器 (SustainedDriftDetector)
+const _SustainedDriftDetector = _lazy('sustainedDriftDetector', () => require('../cortex/sustained-drift-detector.js'));
+
 // ★ 能力抽象层 + 平台适配器（Smart Routing 启发：模型能力清单外置 + 径窗网络）
 const _CapabilityAbstraction = _lazy('capabilityAbstraction', () => require('./capability-abstraction.js'));
 const _PlatformAdapter = _lazy('platformAdapter', () => require('./platform-adapter.js'));
@@ -226,18 +274,33 @@ const _ValueAligner = _lazy('valueAligner', () => require('../bridge/value-align
 const _PersonalityTone = _lazy('personalityTone', () => require('../bridge/personality-tone.js'));
 const _MetaPosition = _lazy('metaPosition', () => require('../bridge/meta-position.js'));
 
-const BUILD_DATE = '2026-07-03-v5.6.1';
+const BUILD_DATE = '2026-07-05-v5.7.6';
 
 class HeartFlow {
   constructor(config = {}) {
     this.version = null;  // 启动时惰性解析
     this.version = _VERSION().VERSION;
     this.buildDate = BUILD_DATE;
-    this.config = config;
+
+    // 统一配置系统：加载默认值 + 文件配置 + 环境变量
+    const projectRoot = config.rootPath || path.join(__dirname, '..', '..');
+    const cfg = _getConfig(projectRoot);
+    this._configSystem = cfg;
+
+    // 合并运行时传入的 config（最高优先级）
+    if (Object.keys(config).length > 0) {
+      for (const [k, v] of Object.entries(config)) {
+        cfg.set(k, v);
+      }
+    }
+
+    this.config = cfg.toEngineConfig();
+    this.config.rootPath = projectRoot;
+
     this.startTime = null;
-    this.sessionId = null;
+    this.sessionId = cfg.get('sessionId') || null;
     this.started = false;
-    this.rootPath = config.rootPath || path.join(__dirname, '..', '..');
+    this.rootPath = projectRoot;
 
     // [v2.0.19 FIX] _initErrors 必须在所有 try/catch 之前初始化
     this._initErrors = [];
@@ -394,7 +457,7 @@ class HeartFlow {
         const gapMinutes = Math.round((this.startTime - lastContext.bootTime) / 60000);
       }
     } else {
-      // [PROD] 生产环境移除 console.warn: console.warn(`[HeartFlow] 身份核心加载部分失败:`, identityResult.errors);
+      console.warn(`[HeartFlow] 身份核心加载部分失败:`, identityResult.errors);
     }
 
     // ─── [P1 UPGRADE] 将七条身份规则写入 CORE 层（持久化）────────────
@@ -808,11 +871,11 @@ class HeartFlow {
           if (learnedLessons.length > 0) {
             const mergeResult = this.selfHealing.mergeFromLearnedLayer(learnedLessons);
             if (mergeResult.merged > 0) {
-              // [PROD] 生产环境移除 console.error: console.error(`[HeartFlow] 跨会话 Q-table 合并：${mergeResult.merged}/${mergeResult.total} lessons → Q-table (${mergeResult.qTableSize} entries)`);
+              console.error(`[HeartFlow] 跨会话 Q-table 合并：${mergeResult.merged}/${mergeResult.total} lessons → Q-table (${mergeResult.qTableSize} entries)`);
             }
           }
         } catch (e) {
-          // [PROD] 生产环境移除 console.warn: console.warn('[HeartFlow] Q-table merge from LEARNED layer failed:', e.message);
+          console.warn('[HeartFlow] Q-table merge from LEARNED layer failed:', e.message);
         }
       }
     } catch (e) { this._initErrors = this._initErrors || []; this._initErrors.push({ module: 'decisionRouter', error: e.message }); }
@@ -1202,6 +1265,151 @@ class HeartFlow {
       this._modules.memoryIntegrity = this.memoryIntegrity;
     } catch (e) { this._initErrors.push({ module: 'memoryIntegrity', error: e.message }); }
 
+    // ─── [v5.7.4] EDV 经验验证器 — Execute-Distill-Verify ─────────────
+    try {
+      const EV = _ExperienceValidator();
+      this.experienceValidator = new EV.ExperienceValidator({
+        maxHistory: 200,
+        verifyThreshold: 0.7,
+      });
+      this._modules.experienceValidator = this.experienceValidator;
+    } catch (e) { this._initErrors.push({ module: 'experienceValidator', error: e.message }); }
+
+    // ─── [v5.7.4] AdaMem 记忆写入控制 ────────────────────────────────
+    try {
+      const MWC = _MemoryWriteController();
+      this.memoryWriteController = new MWC.MemoryWriteController({
+        storageBudget: 5000,
+        utilityThreshold: 0.4,
+      });
+      this._modules.memoryWriteController = this.memoryWriteController;
+    } catch (e) { this._initErrors.push({ module: 'memoryWriteController', error: e.message }); }
+
+    // ─── [v5.7.4] 元认知 RL (RLMF) — 置信度校准 ──────────────────────
+    try {
+      const MRL = _MetacognitiveRL();
+      this.metacognitiveRL = new MRL.MetacognitiveRL({
+        learningRate: 0.1,
+        calibrationWindow: 50,
+      });
+      this._modules.metacognitiveRL = this.metacognitiveRL;
+    } catch (e) { this._initErrors.push({ module: 'metacognitiveRL', error: e.message }); }
+
+    // ─── [v5.7.4] 记忆压缩器 (MemRefine) ─────────────────────────────
+    try {
+      const MC = _MemoryCompressor();
+      this.memoryCompressor = new MC.MemoryCompressor({
+        storageBudget: 5000,
+        minCompressionRatio: 0.3,
+      });
+      this._modules.memoryCompressor = this.memoryCompressor;
+    } catch (e) { this._initErrors.push({ module: 'memoryCompressor', error: e.message }); }
+
+    // ─── [v5.7.4] 技能进化引擎 (SkillCoach) ──────────────────────────
+    try {
+      const SEE = _SkillEvolutionEngine();
+      this.skillEvolution = new SEE.SkillEvolutionEngine({
+        evolutionThreshold: 0.7,
+        maxSkills: 500,
+      });
+      this._modules.skillEvolution = this.skillEvolution;
+    } catch (e) { this._initErrors.push({ module: 'skillEvolution', error: e.message }); }
+
+    // ─── [v5.7.4] 世界模型 (AgentWorld) ──────────────────────────────
+    try {
+      const WM = _WorldModel();
+      this.worldModel = new WM.WorldModel({
+        maxStates: 5000,
+        predictionHorizon: 5,
+        activeInferenceWeight: 0.4,
+      });
+      this._modules.worldModel = this.worldModel;
+    } catch (e) { this._initErrors.push({ module: 'worldModel', error: e.message }); }
+
+    // ─── [v5.7.5] 古代智慧基础 — 美德伦理 + 人性论 + 意义目的 ─────────
+    try {
+      const VEF = _VirtueEthicsFoundation();
+      this.virtueEthics = new VEF.VirtueEthicsFoundation({ primaryTradition: 'confucianism' });
+      this._modules.virtueEthics = this.virtueEthics;
+    } catch (e) { this._initErrors.push({ module: 'virtueEthics', error: e.message }); }
+    try {
+      const HNC = _HumanNatureConstitution();
+      this.humanNature = new HNC.HumanNatureConstitution({ primaryView: 'integrated' });
+      this._modules.humanNature = this.humanNature;
+    } catch (e) { this._initErrors.push({ module: 'humanNature', error: e.message }); }
+    try {
+      const MPE = _MeaningPurposeEngine();
+      this.meaningPurpose = new MPE.MeaningPurposeEngine({ resilienceMode: true });
+      this._modules.meaningPurpose = this.meaningPurpose;
+    } catch (e) { this._initErrors.push({ module: 'meaningPurpose', error: e.message }); }
+
+    // ─── [v5.7.5] P2 品格养成 + 道德发展 + 智慧引擎 ───────────────────
+    try {
+      const CC = _CharacterCultivation();
+      this.characterCultivation = new CC.CharacterCultivation({ primaryVirtues: ['honesty', 'courage', 'compassion', 'wisdom', 'justice'] });
+      this._modules.characterCultivation = this.characterCultivation;
+    } catch (e) { this._initErrors.push({ module: 'characterCultivation', error: e.message }); }
+    try {
+      const MD = _MoralDevelopment();
+      this.moralDevelopment = new MD.MoralDevelopment({ primaryTheory: 'kohlberg' });
+      this._modules.moralDevelopment = this.moralDevelopment;
+    } catch (e) { this._initErrors.push({ module: 'moralDevelopment', error: e.message }); }
+    try {
+      const WE = _WisdomEngine();
+      this.wisdomEngine = new WE.WisdomEngine({ maxReflections: 100 });
+      this._modules.wisdomEngine = this.wisdomEngine;
+    } catch (e) { this._initErrors.push({ module: 'wisdomEngine', error: e.message }); }
+
+    // ─── [v5.7.6] P3 人性深化 + P4 关系社会 + P5 痛苦成长 + P6 AI人类整合 ─
+    // P3: Suffering Resilience + Grief + Hope
+    try {
+      const SR = _SufferingResilience(); this.sufferingResilience = new SR.SufferingResilience({ resilienceMode: 'growth' }); this._modules.sufferingResilience = this.sufferingResilience;
+    } catch (e) { this._initErrors.push({ module: 'sufferingResilience', error: e.message }); }
+    try {
+      const GE = _GriefEngine(); this.griefEngine = new GE.GriefEngine({ culture: 'integrated' }); this._modules.griefEngine = this.griefEngine;
+    } catch (e) { this._initErrors.push({ module: 'griefEngine', error: e.message }); }
+    try {
+      const HE = _HopeEngine(); this.hopeEngine = new HE.HopeEngine(); this._modules.hopeEngine = this.hopeEngine;
+    } catch (e) { this._initErrors.push({ module: 'hopeEngine', error: e.message }); }
+    // P4: Human Relation + Empathy + Conflict
+    try {
+      const HR = _HumanRelation(); this.humanRelation = new HR.HumanRelation(); this._modules.humanRelation = this.humanRelation;
+    } catch (e) { this._initErrors.push({ module: 'humanRelation', error: e.message }); }
+    try {
+      const ED = _EmpathyDeepening(); this.empathyDeepening = new ED.EmpathyDeepening(); this._modules.empathyDeepening = this.empathyDeepening;
+    } catch (e) { this._initErrors.push({ module: 'empathyDeepening', error: e.message }); }
+    try {
+      const CR = _ConflictResolution(); this.conflictResolution = new CR.ConflictResolution(); this._modules.conflictResolution = this.conflictResolution;
+    } catch (e) { this._initErrors.push({ module: 'conflictResolution', error: e.message }); }
+    // P5: Trauma + PTG + Forgiveness
+    try {
+      const TI = _TraumaInformed(); this.traumaInformed = new TI.TraumaInformed(); this._modules.traumaInformed = this.traumaInformed;
+    } catch (e) { this._initErrors.push({ module: 'traumaInformed', error: e.message }); }
+    try {
+      const PTG = _PostTraumaticGrowth(); this.postTraumaticGrowth = new PTG.PostTraumaticGrowth(); this._modules.postTraumaticGrowth = this.postTraumaticGrowth;
+    } catch (e) { this._initErrors.push({ module: 'postTraumaticGrowth', error: e.message }); }
+    try {
+      const FE = _ForgivenessEngine(); this.forgivenessEngine = new FE.ForgivenessEngine(); this._modules.forgivenessEngine = this.forgivenessEngine;
+    } catch (e) { this._initErrors.push({ module: 'forgivenessEngine', error: e.message }); }
+    // P6: AI-Human Integration + Being Mode + Consciousness Bridge
+    try {
+      const AHI = _AIHumanIntegration(); this.aiHumanIntegration = new AHI.AIHumanIntegration(); this._modules.aiHumanIntegration = this.aiHumanIntegration;
+    } catch (e) { this._initErrors.push({ module: 'aiHumanIntegration', error: e.message }); }
+    try {
+      const BM = _BeingMode(); this.beingMode = new BM.BeingMode(); this._modules.beingMode = this.beingMode;
+    } catch (e) { this._initErrors.push({ module: 'beingMode', error: e.message }); }
+    try {
+      const CB = _ConsciousnessBridge(); this.consciousnessBridge = new CB.ConsciousnessBridge(); this._modules.consciousnessBridge = this.consciousnessBridge;
+    } catch (e) { this._initErrors.push({ module: 'consciousnessBridge', error: e.message }); }
+
+    // ─── [v5.7.7] F3 持续漂移检测器 — 整合 identity drift + cognitive dissonance + decision decay ──
+    try {
+      const SDD = _SustainedDriftDetector(); this.sustainedDriftDetector = new SDD.SustainedDriftDetector({
+        driftThreshold: 0.3, windowSize: 10, smoothingFactor: 0.1,
+      });
+      this._modules.sustainedDriftDetector = this.sustainedDriftDetector;
+    } catch (e) { this._initErrors.push({ module: 'sustainedDriftDetector', error: e.message }); }
+
     // ─── [v5.5.6] 自愈RL — SelfHealing (Reflexion + Q-learning) ─────────────
     // 将 HealingMemoryRL 接入引擎生命周期，消除死代码
     try {
@@ -1366,7 +1574,7 @@ class HeartFlow {
       // 重试一次，如果还是空就不递归了（防止 memory.addCore 静默失败导致栈溢出）
       const retryRules = this.memory.listCore();
       if (retryRules.length === 0) {
-        // [PROD] 生产环境移除 console.warn: console.warn('[HeartFlow] 无法初始化 MindSpace 身份规则（memory 可能未就绪）');
+        console.warn('[HeartFlow] 无法初始化 MindSpace 身份规则（memory 可能未就绪）');
       } else {
         this._mindSpace.rules = retryRules.map(r => ({ key: r.key, value: r.value, type: 'core_identity' }));
       }
@@ -1387,7 +1595,7 @@ class HeartFlow {
       'persistence',  // v2.0.19 持久化层
       'triality',     // v2.0.19 三层记忆兼容层
       'stability', 'confidence', 'restraint', 'arbitration',
-      'snapshot', 'error', 'embodied', 'workflow',
+      'snapshot', 'error', 'embodied', 'workflow', 'verifierGrant',
       // New modules
       'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
       'metaJudgment', 'metaMemory', 'skillGenerator',
@@ -1470,7 +1678,21 @@ class HeartFlow {
       // v5.6.1 — 跨会话记忆银行 (MemoryBank v1.0.0)
       'memoryBank',
       // v5.7.2 — 新模块
-      'infoFlow', 'reflectionMemory', 'kvCache', 'memoryIntegrity'];
+      'infoFlow', 'reflectionMemory', 'kvCache', 'memoryIntegrity',
+      // v5.7.4 — EDV + AdaMem + RLMF + MemRefine + SkillCoach + AgentWorld
+      'experienceValidator', 'memoryWriteController', 'metacognitiveRL',
+      'memoryCompressor', 'skillEvolution', 'worldModel',
+      // v5.7.5 — 古代智慧基础：美德伦理 + 人性论 + 意义目的
+      'virtueEthics', 'humanNature', 'meaningPurpose',
+      // v5.7.5 — P2 品格养成 + 道德发展 + 智慧引擎
+      'characterCultivation', 'moralDevelopment', 'wisdomEngine',
+      // v5.7.6 — P3-P6 全部新模块
+      'sufferingResilience', 'griefEngine', 'hopeEngine',
+      'humanRelation', 'empathyDeepening', 'conflictResolution',
+      'traumaInformed', 'postTraumaticGrowth', 'forgivenessEngine',
+      'aiHumanIntegration', 'beingMode', 'consciousnessBridge',
+      // v5.7.7 — F3 持续漂移检测器
+      'sustainedDriftDetector'];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
         this._modules[name] = this[name];
@@ -1500,6 +1722,7 @@ class HeartFlow {
     }
     this.started = false;
     this._modules = {};
+    this.heartflow = null;  // [AUDIT-FIX] break circular self-reference for GC
     this._mindSpace = null;
     this.mindSpace = null;
     this.consciousness = null;
@@ -1861,7 +2084,74 @@ class HeartFlow {
     // v5.7.2 — KV Cache
     'kvCache.save', 'kvCache.load', 'kvCache.has', 'kvCache.delete', 'kvCache.prune', 'kvCache.getStats',
     // v5.7.2 — 记忆完整性
-    'memoryIntegrity.sign', 'memoryIntegrity.verify', 'memoryIntegrity.detectAnomalies', 'memoryIntegrity.getStats', 'memoryIntegrity.reset']);
+    'memoryIntegrity.sign', 'memoryIntegrity.verify', 'memoryIntegrity.detectAnomalies', 'memoryIntegrity.getStats', 'memoryIntegrity.reset',
+    // v5.7.4 — P0 经验验证器 (EDV)
+    'experienceValidator.validate', 'experienceValidator.recordTrajectory', 'experienceValidator.distill', 'experienceValidator.getStats',
+    'experienceValidator.getVerifiedExperiences', 'experienceValidator.getRejectedExperiences',
+    // v5.7.4 — P0 记忆写入控制 (AdaMem)
+    'memoryWriteController.decideWrite', 'memoryWriteController.computeUtility', 'memoryWriteController.updateUserProfile',
+    'memoryWriteController.query', 'memoryWriteController.getStats', 'memoryWriteController.getUserProfile',
+    // v5.7.4 — P0 元认知RL (RLMF)
+    'metacognitiveRL.expressConfidence', 'metacognitiveRL.learn', 'metacognitiveRL.getCalibrationReport', 'metacognitiveRL.getStats',
+    // v5.7.4 — P1 记忆压缩 (MemRefine)
+    'memoryCompressor.compress', 'memoryCompressor.computeImportance', 'memoryCompressor.enforceBudget',
+    'memoryCompressor.query', 'memoryCompressor.getStats', 'memoryCompressor.getCompressionLog',
+    // v5.7.4 — P1 技能进化引擎 (SkillCoach)
+    'skillEvolution.registerSkill', 'skillEvolution.evaluate', 'skillEvolution.distillSkills',
+    'skillEvolution.compose', 'skillEvolution.getStats', 'skillEvolution.getAllSkills', 'skillEvolution.addExperience',
+    // v5.7.4 — P1 世界模型 (AgentWorld)
+    'worldModel.registerState', 'worldModel.recordTransition', 'worldModel.predict',
+    'worldModel.activeInference', 'worldModel.simulateCounterfactual', 'worldModel.getStats',
+    // v5.7.5 — P1 古代智慧基础：美德伦理 + 人性论 + 意义目的
+    'virtueEthics.assessSituation', 'virtueEthics.recordPractice', 'virtueEthics.getVirtueScores',
+    'virtueEthics.getPracticeHistory', 'virtueEthics.getTraditions', 'virtueEthics.getUniversalValues',
+    'virtueEthics.getStats',
+    'humanNature.assessHumanNature', 'humanNature.getTheory', 'humanNature.getAllTheories',
+    'humanNature.assessFromTheory', 'humanNature.crossCulturalComparison', 'humanNature.getStats',
+    'meaningPurpose.assessMeaning', 'meaningPurpose.activateSource', 'meaningPurpose.recordMeaningfulActivity',
+    'meaningPurpose.reconstructMeaning', 'meaningPurpose.getSource', 'meaningPurpose.getAllSources',
+    'meaningPurpose.getStats',
+    // v5.7.5 — P2 品格养成 (Character Cultivation)
+    'characterCultivation.recordPractice', 'characterCultivation.getDailyPractices', 'characterCultivation.assessCharacter',
+    'characterCultivation.recordNarrative', 'characterCultivation.getNarratives', 'characterCultivation.getBlueprint',
+    'characterCultivation.getStats',
+    // v5.7.5 — P2 道德发展 (Moral Development)
+    'moralDevelopment.assessMoralStage', 'moralDevelopment.reflect', 'moralDevelopment.analyzeDilemma',
+    'moralDevelopment.recordStageTransition', 'moralDevelopment.getReflections', 'moralDevelopment.getStages',
+    'moralDevelopment.getStats',
+    // v5.7.5 — P2 智慧引擎 (Wisdom Engine)
+    'wisdomEngine.reflect', 'wisdomEngine.recommendPrinciples', 'wisdomEngine.getPrinciples',
+    'wisdomEngine.getPrinciple', 'wisdomEngine.getWisdomReport', 'wisdomEngine.getStats',
+    // v5.7.6 — P3 苦难韧性 + 哀伤 + 希望
+    'sufferingResilience.assessSuffering', 'sufferingResilience.recordResilienceEvent', 'sufferingResilience.recordCopingStrategy',
+    'sufferingResilience.getEffectiveStrategies', 'sufferingResilience.getStats',
+    'griefEngine.assessGrief', 'griefEngine.createMemorial', 'griefEngine.completeTask',
+    'griefEngine.getMemorials', 'griefEngine.getStages', 'griefEngine.getTasks', 'griefEngine.getStats',
+    'hopeEngine.assessHope', 'hopeEngine.setGoal', 'hopeEngine.achieveGoal',
+    'hopeEngine.addBarrier', 'hopeEngine.overcomeBarrier', 'hopeEngine.recordHopeNarrative', 'hopeEngine.getStats',
+    // v5.7.6 — P4 人际关系 + 共情 + 冲突解决
+    'humanRelation.registerRelationship', 'humanRelation.getRelationship', 'humanRelation.recordInteraction',
+    'humanRelation.calculateOptimalDisclosure', 'humanRelation.assessTrust', 'humanRelation.getStats',
+    'empathyDeepening.assessEmpathy', 'empathyDeepening.practicePerspectiveTaking', 'empathyDeepening.getStats',
+    'conflictResolution.analyzeConflict', 'conflictResolution.practiceNVC', 'conflictResolution.facilitateReconciliation',
+    'conflictResolution.getStats',
+    // v5.7.6 — P5 创伤知情 + 创伤后成长 + 宽恕
+    'traumaInformed.assessTrauma', 'traumaInformed.generateGroundingExercise', 'traumaInformed.recordSomaticExperience',
+    'traumaInformed.getRecoveryStages', 'traumaInformed.getPrinciples', 'traumaInformed.getStats',
+    'postTraumaticGrowth.assessGrowth', 'postTraumaticGrowth.recordResource', 'postTraumaticGrowth.getStats',
+    'forgivenessEngine.initiateForgiveness', 'forgivenessEngine.advanceForgivenessStage',
+    'forgivenessEngine.generateForgivenessPractice', 'forgivenessEngine.getPrinciples', 'forgivenessEngine.getStats',
+    // v5.7.6 — P6 AI人类整合 + 存在模式 + 意识桥梁
+    'aiHumanIntegration.getHumanState', 'aiHumanIntegration.computePersonality', 'aiHumanIntegration.computeOverallHumanity',
+    'aiHumanIntegration.adaptToContext', 'aiHumanIntegration.resolveConflicts', 'aiHumanIntegration.recordGrowth',
+    'aiHumanIntegration.getStats', 'aiHumanIntegration.getPersonalityProfile',
+    'beingMode.assessBeing', 'beingMode.recordNarrative', 'beingMode.recordIdentityMoment',
+    'beingMode.setPresenceMode', 'beingMode.getStats',
+    'consciousnessBridge.simulateConsciousness', 'consciousnessBridge.getConsciousnessState',
+    'consciousnessBridge.recordSubjectiveState', 'consciousnessBridge.getStats',
+    // ─── [v5.7.7] F3 SustainedDriftDetector ─────────────────────────────────
+    'sustainedDriftDetector.detectDrift', 'sustainedDriftDetector.recordState',
+    'sustainedDriftDetector.getDriftHistory', 'sustainedDriftDetector.getStats', 'sustainedDriftDetector.reset']);
 
   /**
    * dispatch('subsystem.method', ...args) — 统一路由
@@ -1979,19 +2269,73 @@ class HeartFlow {
     const rawResult = mod[method](...args);
 
     // ─── 决策路由：自动将分析结果转化为决策指令 ────────────────────
-    // 跳过已被决策路由处理过的结果（避免自引用循环）
     if (this._decisionRouter && rawResult && typeof rawResult === 'object' && !Array.isArray(rawResult)) {
-      // 如果结果已经有 matched 字段（来自决策路由自身），跳过
       if (rawResult.matched === true || rawResult.matched === false) {
         return rawResult;
       }
-      // 或者通过决策路由自动检测
       const routed = this._decisionRouter.wrapDispatchResult(route, rawResult);
       if (routed !== rawResult) {
-        return routed; // 包含 decision 字段
+        return routed;
       }
     }
+
+    // ─── v5.7.7 F3: 自动将漂移相关路由结果接入 SustainedDriftDetector ──
+    if (this.sustainedDriftDetector && rawResult && typeof rawResult === 'object' && !Array.isArray(rawResult)) {
+      this._feedDriftResult(route, rawResult);
+    }
+
     return rawResult;
+  }
+
+  // ─── v5.7.7 F3 pipeline: 自动将漂移相关路由结果接入 SustainedDriftDetector ──
+
+  _DRIFT_ROUTES = new Set([
+    'selfModel.detectDrift',
+    'decisionRouter.evaluate',
+    'metacognitiveFeedback.diagnoseCognitiveDistortion',
+    'psychology.detectIdentityDrift',
+    'psychology.analyzePsychology',
+    'agentPsychology.fullAssessment',
+    'stability.diagnose',
+  ]);
+
+  _feedDriftResult(route, rawResult) {
+    if (!this._DRIFT_ROUTES.has(route)) return;
+
+    let state = {};
+    const r = rawResult.result || rawResult; // unwrap dispatch wrapper
+
+    if (route === 'selfModel.detectDrift') {
+      state.driftScore = r.driftScore ?? 0;
+      state.identityCoherence = r.hasDrift ? 0.3 : 0.85;
+    } else if (route === 'decisionRouter.evaluate') {
+      const idRule = (r.rules || []).find(rule => rule.id === 'identity-drift');
+      state.driftScore = idRule ? (idRule.triggered ? 0.5 : 0.1) : 0;
+      state.identityCoherence = idRule ? (idRule.triggered ? 0.4 : 0.8) : 0.7;
+    } else if (route === 'metacognitiveFeedback.diagnoseCognitiveDistortion') {
+      state.dissonance = r.overallBias ?? 0;
+      state.quality = 1 - (r.overallBias ?? 0);
+    } else if (route === 'psychology.detectIdentityDrift') {
+      state.driftScore = r.drifted ? 0.6 : 0.05;
+      state.identityCoherence = r.drifted ? 0.3 : 0.9;
+    } else if (route === 'agentPsychology.fullAssessment') {
+      const dims = r.dimensions || {};
+      const id = dims.identityDrift || {};
+      state.driftScore = id.drift ?? id.score ?? 0;
+      state.identityCoherence = id.identityCoherence ?? (1 - (id.drift ?? 0));
+      state.dissonance = dims.cognitiveDissonance?.score ?? dims.dissonance ?? 0;
+    } else if (route === 'stability.diagnose') {
+      state.identityCoherence = r.stable ? 0.9 : 0.3;
+      state.quality = r.stable ? 0.9 : 0.3;
+    } else {
+      state.driftScore = r.driftScore ?? r.drift ?? 0;
+      state.identityCoherence = r.identityCoherence ?? 0.7;
+      state.dissonance = r.dissonance ?? r.cognitiveDissonance?.score ?? 0;
+    }
+
+    if (state.driftScore > 0 || state.dissonance > 0 || state.identityCoherence < 0.8) {
+      try { this.sustainedDriftDetector.recordState(state); } catch (e) { /* non-fatal */ }
+    }
   }
 
   /**
@@ -2225,6 +2569,12 @@ class HeartFlow {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
 
+    // [FIX] 输入截断：防止超长输入撑爆上下文
+    const MAX_INPUT_CHARS = 80000;
+    if (input.length > MAX_INPUT_CHARS) {
+      input = input.slice(0, MAX_INPUT_CHARS) + '\n[输入已截断，原文过长]';
+    }
+
     // ─── 快速响应"启动引擎"类请求（不走完整推理链路）────────────
     const startPatterns = /^(启动引擎|开机|activate|start heartflow|开启引擎)/i;
     const statusPatterns = /^(状态|status|引擎状态|在吗|alive)/i;
@@ -2371,7 +2721,7 @@ class HeartFlow {
         };
       } catch (e) {
         // 管道引擎失败时回退到 ThoughtChain
-        // [PROD] 生产环境移除 console.warn: console.warn('[HeartFlow] Pipeline failed, falling back to ThoughtChain:', e.message);
+        console.warn('[HeartFlow] Pipeline failed, falling back to ThoughtChain:', e.message);
       }
     }
 
@@ -3747,7 +4097,7 @@ if (require.main === module) {
   const t0 = Date.now();
   try {
     const health = hf.healthCheck ? hf.healthCheck() : {};
-    // [PROD] 生产环境移除 console.error: console.error(`[HeartFlow] ${VERSION} health check (${Date.now() - t0}ms):`);
+    console.error(`[HeartFlow] ${VERSION} health check (${Date.now() - t0}ms):`);
     // Run dispatch smoke tests
     const tests = [
       ['truth.checkStatement', '这个方案一定是对的'],
@@ -3758,16 +4108,16 @@ if (require.main === module) {
         hf.dispatch(route, ...args);
         passed++;
       } catch (e) {
-        // [PROD] 生产环境移除 console.error: console.error(`  FAIL ${route}: ${e.message}`);
+        console.error(`  FAIL ${route}: ${e.message}`);
         failed++;
       }
     }
-    // [PROD] 生产环境移除 console.error: console.error(`  dispatch tests: ${passed} passed, ${failed} failed`);
+    console.error(`  dispatch tests: ${passed} passed, ${failed} failed`);
 
     hf.stop();
     return;
   } catch (e) {
-    // [PROD] 生产环境移除 console.error: console.error('Error:', e);
+    console.error('Error:', e);
     hf.stop();
     return;
   }
