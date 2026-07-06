@@ -3268,4 +3268,45 @@ if (require.main === module) {
   }
 }
 
+  
+  // === v5.7.6 - Enterprise & Export Features ===
+  
+  /**
+   * Export memory traces for cross-framework interoperability
+   */
+  exportTraces(format = 'csv', options = {}) {
+    const { MemoryExport } = require('./memory-export.js');
+    const exporter = new MemoryExport(this._modules.memory);
+    const traces = exporter.exportMemoryTrace(format, options);
+    
+    if (options.includeFieldTraces) {
+      traces.fieldTraces = exporter.exportUDAHTraces(format);
+    }
+    
+    return traces;
+  }
+  
+  /**
+   * Generate cryptographic action receipt for enterprise
+   */
+  generateReceipt(action, result) {
+    const { EnterpriseSecurity } = require('../shield/enterprise-security.js');
+    if (!this._enterpriseSecurity) {
+      this._enterpriseSecurity = new EnterpriseSecurity();
+    }
+    const model = this.currentModel || 'unknown';
+    const messages = this._currentMessages || [];
+    return this._enterpriseSecurity.generateReceipt(action, result, model, messages);
+  }
+  
+  /**
+   * Save traces to file (CSV/JSON)
+   */
+  saveTracesToFile(filePath, format = 'csv') {
+    const { MemoryExport } = require('./memory-export.js');
+    const exporter = new MemoryExport(this._modules.memory);
+    const traces = exporter.exportMemoryTrace(format);
+    return exporter.saveToFile(traces, filePath, format);
+  }
+
 module.exports = { HeartFlow, createHeartFlow, VERSION: _VERSION().VERSION, MentalEffortTracker: _MentalEffortTracker().MentalEffortTracker };
