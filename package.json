@@ -65,7 +65,6 @@
     ]
   },
   "license": "MIT",
-  "dependencies": {},
   "optionalDependencies": {
     "@xenova/transformers": "^2.6.0"
   },
@@ -102,7 +101,6 @@
       "two-pass-response"
     ]
   },
-
   "features": {
     "v5.8.0": {
       "entityExtractor": "src/memory/entity-extractor.js",
@@ -111,5 +109,8 @@
       "signalTracker": "src/memory/signal-tracker.js",
       "programmableGuardrails": "src/shield/programmable-guardrails.js"
     }
+  },
+  "devDependencies": {
+    "mocha": "^11.7.6"
   }
 }
