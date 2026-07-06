@@ -4124,3 +4124,44 @@ if (require.main === module) {
 }
 
 module.exports = { HeartFlow, createHeartFlow, VERSION: _VERSION().VERSION, MentalEffortTracker: _MentalEffortTracker().MentalEffortTracker };
+
+  // === v5.7.6 - Cross-Framework Field Tracking ===
+
+  /**
+   * Initialize cross-framework field tracker
+   */
+  initFieldTracker() {
+    const { CrossFrameworkFieldTracker } = require('./cross-framework-field-tracker.js');
+    this.fieldTracker = new CrossFrameworkFieldTracker();
+    return this.fieldTracker;
+  }
+
+  /**
+   * Record U/D/A/H field snapshot (for cross-framework sharing)
+   */
+  recordFieldSnapshot(model, scenario, fieldValues, decisionRoute) {
+    if (!this.fieldTracker) {
+      this.initFieldTracker();
+    }
+    return this.fieldTracker.recordFieldSnapshot(model, scenario, fieldValues, decisionRoute);
+  }
+
+  /**
+   * Export field traces (CSV for TAT/ThinkCheck/Cophy)
+   */
+  exportFieldTraces(format = 'csv') {
+    if (!this.fieldTracker) {
+      this.initFieldTracker();
+    }
+    return this.fieldTracker.exportTraces(format);
+  }
+
+  /**
+   * Get field health summary
+   */
+  getFieldHealth() {
+    if (!this.fieldTracker) {
+      this.initFieldTracker();
+    }
+    return this.fieldTracker.getFieldHealthSummary();
+  }
