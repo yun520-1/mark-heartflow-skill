@@ -83,12 +83,12 @@ class ThinkCheckLogger {
 
       this._ready = true;
     } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Cannot write: ${e.message}`);
+      // 已禁用 console.error: console.error(`[ThinkCheckLogger] Cannot write: ${e.message}`);
       this._ready = false;
     }
 
     if (this._consoleOutput) {
-      // [PROD] 生产环境移除 console.log: console.log(header);
+      // 已禁用 console.log: console.log(header);
     }
   }
 
@@ -111,7 +111,7 @@ class ThinkCheckLogger {
     }
 
     if (this._consoleOutput) {
-      // [PROD] 生产环境移除 console.log: console.log(`\n--- DECISION #${decId} ---`);
+      // 已禁用 console.log: console.log(`\n--- DECISION #${decId} ---`);
     }
   }
 
@@ -134,7 +134,7 @@ class ThinkCheckLogger {
     this._currentDecision.fields.push({ key, value: formatted });
 
     if (this._consoleOutput) {
-      // [PROD] 生产环境移除 console.log: console.log(`${key}: ${formatted}`);
+      // 已禁用 console.log: console.log(`${key}: ${formatted}`);
     }
   }
 
@@ -165,7 +165,7 @@ class ThinkCheckLogger {
       try {
         fs.appendFileSync(this._outputFile, block, 'utf-8');
       } catch (e) {
-        // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
+        // 已禁用 console.error: console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
       }
     }
 
@@ -308,11 +308,11 @@ class ThinkCheckLogger {
     try {
       fs.appendFileSync(this._cotOutputFile, lines.join('\n'), 'utf-8');
     } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] CoT write error: ${e.message}`);
+      // 已禁用 console.error: console.error(`[ThinkCheckLogger] CoT write error: ${e.message}`);
     }
 
     if (this._consoleOutput) {
-      // [PROD] 生产环境移除 console.log: console.log(lines.join('\n'));
+      // 已禁用 console.log: console.log(lines.join('\n'));
     }
   }
 
@@ -556,18 +556,18 @@ class ThinkCheckLogger {
       try {
         fs.appendFileSync(this._outputFile, '\n' + content + '\n', 'utf-8');
       } catch (e) {
-        // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
+        // 已禁用 console.error: console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
       }
     }
     if (this._consoleOutput) {
-      // [PROD] 生产环境移除 console.log: console.log(content);
+      // 已禁用 console.log: console.log(content);
     }
   }
 
   flush() {
     if (this._consoleOutput) {
-      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] CoT → ${this._cotOutputFile}`);
-      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Decisions → ${this._outputFile}`);
+      // 已禁用 console.error: console.error(`[ThinkCheckLogger] CoT → ${this._cotOutputFile}`);
+      // 已禁用 console.error: console.error(`[ThinkCheckLogger] Decisions → ${this._outputFile}`);
     }
   }
 

@@ -74,7 +74,7 @@ function _getHmacKey() {
     fs.writeFileSync(keyFile, JSON.stringify({ key: newKey, createdAt: Date.now() }, null, 2), { mode: 0o600 });
   } catch (e) { /* info: HMAC 写入失败时 fallback 到内存模式，不影响正常运行 */ }
   _cachedHmacKey = newKey;
-  // [PROD] 生产环境移除 console.warn: console.warn(`[HealingMemoryRL] HEARTFLOW_QTABLE_HMAC_KEY not set, generated and saved new key`);
+  // 已禁用 console.warn: console.warn(`[HealingMemoryRL] HEARTFLOW_QTABLE_HMAC_KEY not set, generated and saved new key`);
   return _cachedHmacKey;
 }
 
@@ -105,7 +105,7 @@ function _touchEntry(ck) {
   }
   _qMeta[ck].lastAccessedAt = Date.now();
   _qMeta[ck].accessCount = (_qMeta[ck].accessCount || 0) + 1;
-  // [PROD] 生产环境移除 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
+  // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
 }
 
 class HealingMemoryRL {
@@ -156,11 +156,11 @@ class HealingMemoryRL {
           .update(JSON.stringify({ qTable, history, savedAt, ...rest }))
           .digest('hex');
         if (computed !== _hmac) {
-          // [PROD] 生产环境移除 console.warn: console.warn('[HealingMemoryRL] Q-table HMAC mismatch, restoring from backup');
+          // 已禁用 console.warn: console.warn('[HealingMemoryRL] Q-table HMAC mismatch, restoring from backup');
           if (data.qTable) {
             this.qTable = new Map(Object.entries(data.qTable));
             this.history = Array.isArray(data.history) ? data.history.slice(-this.maxMemory) : [];
-            // [PROD] 生产环境移除 console.error: console.error('[HealingMemoryRL] Q-table restored (HMAC check bypassed)');
+            // 已禁用 console.error: console.error('[HealingMemoryRL] Q-table restored (HMAC check bypassed)');
           }
           return;
         }
@@ -172,7 +172,7 @@ class HealingMemoryRL {
         this.history = data.history.slice(-this.maxMemory);
       }
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[HealingMemoryRL] Q-table load error, starting fresh:', e.message);
+      // 已禁用 console.warn: console.warn('[HealingMemoryRL] Q-table load error, starting fresh:', e.message);
     }
   }
 
@@ -332,7 +332,7 @@ class HealingMemoryRL {
     this.qTable.delete(ck);
     delete _qMeta[ck];
     _debouncedSave(this);
-    // [PROD] 生产环境移除 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
+    // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
     if (!this._letGoLog) this._letGoLog = [];
     this._letGoLog.push({
       pattern: errorPattern.slice(0, 50),
@@ -381,7 +381,7 @@ class HealingMemoryRL {
     }
 
     if (cleaned > 0) {
-      // [PROD] 生产环境移除 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
+      // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
       _debouncedSave(this);
     }
 
@@ -525,7 +525,7 @@ class HealingMemoryRL {
     // 对该策略在当前context降低Q值（强化反思效果）
     entry[failedStrategy] = Math.max(0, currentQ - 0.15);
     this.qTable.set(ck, entry);
-    // [PROD] 生产环境移除 console.error: this._saveQTable().catch(e => console.error('[HealingMemoryRL] reflect save failed:', e.message));
+    // 已禁用 console.error: this._saveQTable().catch(e => console.error('[HealingMemoryRL] reflect save failed:', e.message));
 
     return {
       strategy: failedStrategy,
@@ -591,7 +591,7 @@ class HealingMemoryRL {
     entry[suggestedStrategy] = 0.5;
 
     this.qTable.set(ck, entry);
-    // [PROD] 生产环境移除 console.error: this._saveQTable().catch(e => console.error('[HealingMemoryRL] verbalSelfCorrect save failed:', e.message));
+    // 已禁用 console.error: this._saveQTable().catch(e => console.error('[HealingMemoryRL] verbalSelfCorrect save failed:', e.message));
 
     return {
       failedStrategy,
@@ -769,7 +769,7 @@ class HealingMemoryRL {
       merged++;
     }
 
-    // [PROD] 生产环境移除 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
+    // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
     _debouncedSave(this);
 
     return {

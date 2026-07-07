@@ -38,7 +38,7 @@ try {
     fs.mkdirSync(resolvedDataDir, { recursive: true });
   }
 } catch (e) {
-  // [PROD] 生产环境移除 console.error: console.error('[BehaviorTracker] Failed to create data directory:', e.message);
+  // 已禁用 console.error: console.error('[BehaviorTracker] Failed to create data directory:', e.message);
 }
 
 // ── 数据消毒 ──────────────────────────────────────────
@@ -105,12 +105,12 @@ const behaviorTracker = {
             if (!g.createdAt) g.createdAt = new Date().toISOString();
           });
         } else {
-          // [PROD] 生产环境移除 console.warn: console.warn('[BehaviorTracker] Corrupted data structure, resetting');
+          // 已禁用 console.warn: console.warn('[BehaviorTracker] Corrupted data structure, resetting');
           this.data = { version: DATA_VERSION, goals: [] };
         }
       }
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[BehaviorTracker] Load failed (corrupted file?):', e.message);
+      // 已禁用 console.warn: console.warn('[BehaviorTracker] Load failed (corrupted file?):', e.message);
       // 尝试备份恢复
       this._tryRecovery();
     }
@@ -128,18 +128,18 @@ const behaviorTracker = {
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.goals)) {
           this.data = parsed;
-          // [PROD] 生产环境移除 console.error: console.error('[BehaviorTracker] Recovered from backup');
+          // 已禁用 console.error: console.error('[BehaviorTracker] Recovered from backup');
           // 写回主文件
           fs.writeFileSync(DATA_FILE, JSON.stringify(this.data, null, 2));
           return;
         }
       }
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[BehaviorTracker] Backup recovery failed:', e.message);
+      // 已禁用 console.warn: console.warn('[BehaviorTracker] Backup recovery failed:', e.message);
     }
     // 彻底失败，重置
     this.data = { version: DATA_VERSION, goals: [] };
-    // [PROD] 生产环境移除 console.warn: console.warn('[BehaviorTracker] Data reset due to unrecoverable corruption');
+    // 已禁用 console.warn: console.warn('[BehaviorTracker] Data reset due to unrecoverable corruption');
   },
 
   // ── 保存 (含自动备份) ──
@@ -152,7 +152,7 @@ const behaviorTracker = {
       fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
       fs.writeFileSync(DATA_FILE, JSON.stringify(this.data, null, 2));
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[BehaviorTracker] save failed:', e.message);
+      // 已禁用 console.warn: console.warn('[BehaviorTracker] save failed:', e.message);
     }
     return this;
   },
@@ -195,7 +195,7 @@ const behaviorTracker = {
       });
       const removed = this.data.goals.splice(MAX_GOALS);
       removed.forEach(r => {
-        // [PROD] 生产环境移除 console.error: console.error(`[BehaviorTracker] Pruned stale goal: ${r.name || r.id}`);
+        // 已禁用 console.error: console.error(`[BehaviorTracker] Pruned stale goal: ${r.name || r.id}`);
       });
       changed = true;
     }

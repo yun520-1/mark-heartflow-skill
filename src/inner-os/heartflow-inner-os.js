@@ -29,7 +29,7 @@ class InnerOS {
 
   // ─── 状态管理 ──────────────────────────────────────────
   _ensureStateDir() {
-    try { fs.mkdirSync(this.stateDir, { recursive: true }); } catch {}
+    try { fs.mkdirSync(this.stateDir, { recursive: true }); } catch (e) { console.warn('[InnerOS] 创建状态目录失败:', e.message); }
   }
 
   _getStateFile(sessionId) {
@@ -41,16 +41,16 @@ class InnerOS {
     try {
       const data = fs.readFileSync(this._getStateFile(sessionId), 'utf8');
       return JSON.parse(data);
-    } catch { return { events: [], persona: 'default', frequency: 'normal' }; }
+    } catch (e) { console.warn('[InnerOS] 读取状态失败:', e.message); return { events: [], persona: 'default', frequency: 'normal' }; }
   }
 
   writeState(sessionId, state) {
     this._ensureStateDir();
-    try { fs.writeFileSync(this._getStateFile(sessionId), JSON.stringify(state, null, 2)); } catch {}
+    try { fs.writeFileSync(this._getStateFile(sessionId), JSON.stringify(state, null, 2)); } catch (e) { console.warn('[InnerOS] 写入状态失败:', e.message); }
   }
 
   removeState(sessionId) {
-    try { fs.unlinkSync(this._getStateFile(sessionId)); } catch {}
+    try { fs.unlinkSync(this._getStateFile(sessionId)); } catch (e) { console.warn('[InnerOS] 删除状态失败:', e.message); }
   }
 
   // ─── 事件追踪 ──────────────────────────────────────────
@@ -197,7 +197,7 @@ class InnerOS {
       for (const f of files) {
         if (f.endsWith('.json')) fs.unlinkSync(path.join(this.stateDir, f));
       }
-    } catch {}
+    } catch (e) { console.warn('[InnerOS] 清理会话状态失败:', e.message); }
   }
 }
 

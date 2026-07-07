@@ -137,7 +137,7 @@ class EmbodiedCore {
       oscillationWindowMs: 60000 // 1分钟内检测震荡
     };
     
-    // [PROD] 生产环境移除 console.error: console.error('[EmbodiedCore] 具身认知核心初始化 v2.7.0');
+    // 已禁用 console.error: console.error('[EmbodiedCore] 具身认知核心初始化 v2.7.0');
   }
 
   loadExecutors() {
@@ -151,7 +151,7 @@ class EmbodiedCore {
 
   registerSensorAdapter(name, adapter) {
     this.sensorAdapters[name] = adapter;
-    // [PROD] 生产环境移除 console.error: console.error(`[EmbodiedCore] 注册传感器: ${name}`);
+    // 已禁用 console.error: console.error(`[EmbodiedCore] 注册传感器: ${name}`);
   }
 
   // ========================================================================
@@ -178,7 +178,7 @@ class EmbodiedCore {
     
     this.cognitiveState.activePlan = plan;
     this.cognitiveState.system = 'ready';
-    // [PROD] 生产环境移除 console.error: console.error(`[EmbodiedCore] 认知规划: ${steps.length} 步思维链`);
+    // 已禁用 console.error: console.error(`[EmbodiedCore] 认知规划: ${steps.length} 步思维链`);
     return plan;
   }
 
@@ -355,7 +355,7 @@ class EmbodiedCore {
     this.cognitiveState.executionHistory.push(execution);
     this.cognitiveState.system = 'idle';
     
-    // [PROD] 生产环境移除 console.error: console.error(`[EmbodiedCore] 执行映射: ${execution.steps.length} 步执行，状态: ${execution.overallStatus}`);
+    // 已禁用 console.error: console.error(`[EmbodiedCore] 执行映射: ${execution.steps.length} 步执行，状态: ${execution.overallStatus}`);
     return execution;
   }
 
@@ -380,14 +380,14 @@ class EmbodiedCore {
       const retryInfo = selectRetryStrategy(errorInfo.category);
       
       if (retryInfo.strategy !== RetryStrategy.NONE && attempt < retryInfo.maxRetries) {
-        // [PROD] 生产环境移除 console.error: console.error(`[EmbodiedCore] 步骤 ${step.index} 重试 ${attempt + 1}/${retryInfo.maxRetries}`);
+        // 已禁用 console.error: console.error(`[EmbodiedCore] 步骤 ${step.index} 重试 ${attempt + 1}/${retryInfo.maxRetries}`);
         
         // 指数退避等待
         if (retryInfo.strategy === RetryStrategy.BACKOFF) {
           const waitMs = retryInfo.backoffMs * Math.pow(2, attempt);
           // 同步等待（在Node.js事件循环中让出）
           const waitUntil = Date.now() + waitMs;
-          // [PROD] busy-wait removed: use async delay instead
+          // 已移除忙等待：请使用异步延迟
         }
         
         // 替换执行器（ALTERNATE策略）
@@ -732,7 +732,7 @@ class EmbodiedCore {
     // 超过最大震荡次数时标记
     if (this.cognitiveState.oscillationLog.length >= this.config.maxOscillationCount) {
       execution.oscillationCritical = true;
-      // [PROD] 生产环境移除 console.warn: console.warn(`[EmbodiedCore] 震荡警告: 1分钟内检测到 ${this.cognitiveState.oscillationLog.length} 次震荡`);
+      // 已禁用 console.warn: console.warn(`[EmbodiedCore] 震荡警告: 1分钟内检测到 ${this.cognitiveState.oscillationLog.length} 次震荡`);
     }
   }
 
@@ -817,7 +817,7 @@ class EmbodiedCore {
       adaptation.modifications = newSteps;
     }
     
-    // [PROD] 生产环境移除 console.error: console.error(`[EmbodiedCore] 计划调整: 步骤 ${failedStep.stepIndex} 需要适应 (${failedStep.errorCategory || 'unknown'})`);
+    // 已禁用 console.error: console.error(`[EmbodiedCore] 计划调整: 步骤 ${failedStep.stepIndex} 需要适应 (${failedStep.errorCategory || 'unknown'})`);
     return adaptation;
   }
 
@@ -863,7 +863,7 @@ class EmbodiedCore {
       workingMemory: [],
       oscillationLog: []
     };
-    // [PROD] 生产环境移除 console.error: console.error('[EmbodiedCore] 状态已重置');
+    // 已禁用 console.error: console.error('[EmbodiedCore] 状态已重置');
     return { success: true };
   }
 }
