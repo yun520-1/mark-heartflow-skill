@@ -89,7 +89,7 @@ function _bumpInEvictionList(key) {
   if (_lruOrder.has(key)) {
     _lruOrder.delete(key);
   }
-  _lruOrder.set(key, _lazyAccessCount.get(key) || 0);
+  _boundedSet(_lruOrder, key, _lazyAccessCount.get(key) || 0);
 }
 
 // 结构化日志器
@@ -112,7 +112,7 @@ function _lazy(key, loader) {
       }
       _lazyCache.set(key, loader());
       _boundedSet(_lazyAccessCount, key, 0);
-      _lruOrder.set(key, 0);
+      _boundedSet(_lruOrder, key, 0);
       if (_lazyCache.size === _LAZY_CACHE_WARN) {
         _log.warn('lazy_cache', `_lazyCache 达到 ${_LAZY_CACHE_WARN} 个模块`);
       }
@@ -413,6 +413,7 @@ function _instantiateSpecialModule(subsystem, Mod, hf) {
 }
 
 // ─── v5.8.0 性能监控模块 ──────────────────────────────────────────────────
+// 容量边界：_dispatchTimings 已有 _maxSamples=1000 容量控制，无需额外处理
 const _perf = {
   _enabled: false,
   _dispatchTimings: [],
@@ -624,7 +625,7 @@ class HeartFlow {
     // 记录搜索相关的类供外部引用
     this._STRefs = { SearchTrace: this.SearchTrace, SearchPhaseMetrics: this.SearchPhaseMetrics, WeightComponents: this.WeightComponents, QueryInfo: this.QueryInfo, SearchSummary: this.SearchSummary };
 
-    this._modules = {};
+    this._modules = {};           // 容量边界：由子模块注册控制，通常 < 100 个条目
     this._mindSpace = null;   // 内部引用（向后兼容），实际模块用 this.mindSpace
     this.mindSpace = null;    // proper module
     this.consciousness = null;
@@ -1769,7 +1770,7 @@ class HeartFlow {
   }
 
   _registerModules() {
-    this._modules = {};
+    this._modules = {};  // 容量边界：由子模块注册控制，通常 < 100 个条目
     const subsystemNames = [
       'identityCore',  // 身份核心 — 第一优先
       'cognitive',     // 认知协议 — 慢下来，先理解再行动
