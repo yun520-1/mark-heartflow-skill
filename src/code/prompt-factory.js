@@ -13,6 +13,8 @@
 // 内置代码模板库
 // ============================================================
 
+const { validateFetchUrl } = require('../security/url-validator.js');
+
 const TEMPLATES = {
   javascript: {
     algorithm: {
@@ -50,8 +52,8 @@ function partition(arr, low, high) {
 
 // 示例
 const arr = [64, 34, 25, 12, 22, 11, 90];
-console.log('原数组:', arr);
-console.log('排序后:', quickSort([...arr]));`,
+if (process.env.HEARTFLOW_DEBUG) console.log('原数组:', arr);
+if (process.env.HEARTFLOW_DEBUG) console.log('排序后:', quickSort([...arr]));`,
         confidence: 0.95
       },
       'binary-search': {
@@ -85,8 +87,8 @@ function binarySearch(arr, target) {
 const sortedArr = [11, 12, 22, 25, 34, 64, 90];
 const target = 25;
 const result = binarySearch(sortedArr, target);
-console.log(\`数组: [\${sortedArr.join(', ')}]\`);
-console.log(\`目标 \${target} 的索引: \${result}\`);`,
+if (process.env.HEARTFLOW_DEBUG) console.log(\`数组: [\${sortedArr.join(', ')}]\`);
+if (process.env.HEARTFLOW_DEBUG) if (process.env.HEARTFLOW_DEBUG) console.log(\`目标 \${target} 的索引: \${result}\`);`,
         confidence: 0.95
       },
       'linked-list': {
@@ -169,7 +171,7 @@ class LinkedList {
       values.push(current.val);
       current = current.next;
     }
-    console.log(values.join(' -> '));
+    if (process.env.HEARTFLOW_DEBUG) console.log(values.join(' -> '));
   }
 }
 
@@ -315,7 +317,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(\`服务器运行在 http://localhost:\${PORT}\`);
+  if (process.env.HEARTFLOW_DEBUG) console.log(\`服务器运行在 http://localhost:\${PORT}\`);
 });
 
 module.exports = { server };`,
@@ -344,6 +346,13 @@ class ApiClient {
 
   async request(endpoint, options = {}) {
     const url = \`\${this.baseUrl}\${endpoint}\`;
+
+    // SSRF 防护：校验 URL 安全性
+    const urlCheck = validateFetchUrl(url);
+    if (!urlCheck.safe) {
+      throw new Error('SSRF防护: ' + urlCheck.reason);
+    }
+
     const config = {
       ...this.defaultOptions,
       ...options,
@@ -394,7 +403,7 @@ const api = new ApiClient('https://api.example.com');
 async function main() {
   try {
     const data = await api.get('/users/1');
-    console.log('用户数据:', data);
+    if (process.env.HEARTFLOW_DEBUG) console.log('用户数据:', data);
   } catch (err) {
     console.error('请求失败:', err.message);
   }
@@ -503,8 +512,8 @@ program
   .description('初始化项目')
   .option('-f, --force', '强制覆盖已有文件')
   .action((options) => {
-    console.log('初始化项目...');
-    if (options.force) console.log('强制模式已启用');
+    if (process.env.HEARTFLOW_DEBUG) console.log('初始化项目...');
+    if (options.force && process.env.HEARTFLOW_DEBUG) console.log('强制模式已启用');
   });
 
 program
@@ -512,8 +521,8 @@ program
   .description('构建项目')
   .option('-o, --output <dir>', '输出目录')
   .action((target, options) => {
-    console.log(\`构建目标: \${target || 'default'}\`);
-    console.log(\`输出目录: \${options.output || './dist'}\`);
+    if (process.env.HEARTFLOW_DEBUG) console.log(\`构建目标: \${target || 'default'}\`);
+    if (process.env.HEARTFLOW_DEBUG) console.log(\`输出目录: \${options.output || './dist'}\`);
   });
 
 program
@@ -521,9 +530,9 @@ program
   .description('部署到指定环境')
   .option('--dry-run', '仅模拟不实际执行')
   .action((env, options) => {
-    console.log(\`部署到: \${env}\`);
+    if (process.env.HEARTFLOW_DEBUG) console.log(\`部署到: \${env}\`);
     if (options.dryRun) {
-      console.log('[DRY-RUN] 仅模拟执行');
+      if (process.env.HEARTFLOW_DEBUG) console.log('[DRY-RUN] 仅模拟执行');
       return;
     }
   });
@@ -540,7 +549,7 @@ program.parse(process.argv);`,
  */
 const commands = {
   help() {
-    console.log(\`用法: node \${require('path').basename(process.argv[1])} <命令> [选项]
+    if (process.env.HEARTFLOW_DEBUG) console.log(\`用法: node \${require('path').basename(process.argv[1])} <命令> [选项]
 
 命令:
   init        初始化项目
@@ -548,9 +557,9 @@ const commands = {
   deploy      部署项目
   help        显示帮助信息\`);
   },
-  init() { console.log('初始化项目...'); },
-  build() { console.log('构建项目...'); },
-  deploy(env) { console.log(\`部署到: \${env || 'production'}...\`); },
+  init() { if (process.env.HEARTFLOW_DEBUG) console.log('初始化项目...'); },
+  build() { if (process.env.HEARTFLOW_DEBUG) console.log('构建项目...'); },
+  deploy(env) { if (process.env.HEARTFLOW_DEBUG) console.log(\`部署到: \${env || 'production'}...\`); },
 };
 
 const cmd = process.argv[2];
@@ -618,7 +627,7 @@ class Database {
 const db = new Database('./app.db');
 db.migrate();
 const userId = db.createUser('Alice', 'alice@example.com');
-console.log('用户信息:', db.getUserWithPosts(userId));
+if (process.env.HEARTFLOW_DEBUG) console.log('用户信息:', db.getUserWithPosts(userId));
 db.close();`,
         confidence: 0.85
       },
@@ -633,7 +642,7 @@ const mongoose = require('mongoose');
 async function connectDB(uri) {
   try {
     await mongoose.connect(uri || process.env.MONGODB_URI || 'mongodb://localhost:27017/myapp');
-    console.log('数据库连接成功');
+    if (process.env.HEARTFLOW_DEBUG) console.log('数据库连接成功');
   } catch (err) {
     console.error('数据库连接失败:', err.message);
     process.exit(1);
@@ -692,8 +701,8 @@ function partition<T>(arr: T[], low: number, high: number): number {
 
 // 示例
 const arr: number[] = [64, 34, 25, 12, 22, 11, 90];
-console.log('原数组:', arr);
-console.log('排序后:', quickSort([...arr]));`,
+if (process.env.HEARTFLOW_DEBUG) console.log('原数组:', arr);
+if (process.env.HEARTFLOW_DEBUG) console.log('排序后:', quickSort([...arr]));`,
         confidence: 0.95
       },
       'binary-search': {
@@ -725,7 +734,7 @@ function binarySearch<T>(arr: T[], target: T): number {
 const sortedArr: number[] = [11, 12, 22, 25, 34, 64, 90];
 const target = 25;
 const result = binarySearch(sortedArr, target);
-console.log(\`目标 \${target} 的索引: \${result}\`);`,
+if (process.env.HEARTFLOW_DEBUG) console.log(\`目标 \${target} 的索引: \${result}\`);`,
         confidence: 0.95
       }
     },
@@ -804,7 +813,7 @@ app.use((err: Error, req: Request, res: Response, next: any) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`服务器运行在 http://localhost:\${PORT}\`);
+  if (process.env.HEARTFLOW_DEBUG) console.log(\`服务器运行在 http://localhost:\${PORT}\`);
 });
 
 export { app };`,
@@ -890,20 +899,20 @@ yargs(hideBin(process.argv))
   .command('init', '初始化项目', (yargs) => {
     yargs.option('force', { type: 'boolean', describe: '强制覆盖已有文件' });
   }, (argv: InitOptions) => {
-    console.log('初始化项目...');
-    if (argv.force) console.log('强制模式已启用');
+    if (process.env.HEARTFLOW_DEBUG) console.log('初始化项目...');
+    if (argv.force && process.env.HEARTFLOW_DEBUG) console.log('强制模式已启用');
   })
   .command('build [target]', '构建项目', (yargs) => {
     yargs.positional('target', { type: 'string', describe: '构建目标' });
     yargs.option('output', { type: 'string', describe: '输出目录' });
   }, (argv: BuildOptions & { target?: string }) => {
-    console.log(\`构建目标: \${argv.target || 'default'}\`);
+    if (process.env.HEARTFLOW_DEBUG) console.log(\`构建目标: \${argv.target || 'default'}\`);
   })
   .command('deploy <env>', '部署到指定环境', (yargs) => {
     yargs.positional('env', { type: 'string', describe: '环境名称' });
     yargs.option('dry-run', { type: 'boolean', describe: '仅模拟' });
   }, (argv: DeployOptions & { env: string }) => {
-    console.log(\`部署到: \${argv.env}\`);
+    if (process.env.HEARTFLOW_DEBUG) console.log(\`部署到: \${argv.env}\`);
   })
   .demandCommand(1, '请指定命令')
   .strict()

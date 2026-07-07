@@ -21,6 +21,7 @@
  */
 
 const { GoalPursuer } = require('./goal-pursuer.js');
+const { validateFetchUrl } = require('../security/url-validator.js');
 
 // ============================================================================
 // 状态枚举
@@ -683,6 +684,13 @@ function validateData(data, rules) {
  * HTTP请求封装 — 根据${name}需求生成
  */
 async function fetchData(url, options = {}) {
+  // SSRF 防护：校验 URL 安全性
+  const urlCheck = _validateFetchUrl(url);
+  if (!urlCheck.safe) {
+    console.warn('[SSRF防护] 阻止不安全请求:', urlCheck.reason);
+    return { success: false, error: urlCheck.reason };
+  }
+
   const {
     method = 'GET',
     headers = { 'Content-Type': 'application/json' },
@@ -838,7 +846,7 @@ async function main() {
 }
 
 // 执行入口
-main().then(console.log).catch(console.error);
+main().then(r => { if (process.env.HEARTFLOW_DEBUG) console.log(r); }).catch(console.error);
 `;
   }
 

@@ -5,6 +5,7 @@
  */
 
 const { MetaLearning } = require('./self-evolution/meta-learning.js');
+const crypto = require('crypto');
 
 // ============================================================================
 // 教训类别枚举
@@ -120,7 +121,7 @@ class MetaLearner {
     const keywords = this._extractKeywords(parsed.content);
 
     const entry = {
-      id: `lesson-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      id: `lesson-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
       content: parsed.content,
       context: parsed.context || '',
       source: parsed.source || 'unknown',
@@ -537,7 +538,7 @@ class MetaLearner {
     const { condition, action } = this._parseConditionAction(content);
 
     const rule = {
-      id: `proc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      id: `proc-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
       condition: condition || 'always',
       action: action || content,
       category: this._categorize(content),

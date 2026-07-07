@@ -19,6 +19,24 @@ const path = require('path');
 const { atomicWrite } = require('../utils/atomic-write');
 const crypto = require('crypto');
 
+// === Q-table 最大容量 ===
+const MAX_QTABLE_SIZE = 500;
+
+/**
+ * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
+ * @param {Map} map - 目标 Map
+ * @param {*} key - 键
+ * @param {*} value - 值
+ * @param {number} maxSize - 最大容量
+ */
+function _boundedSet(map, key, value, maxSize) {
+  if (map.size >= maxSize && !map.has(key)) {
+    const firstKey = map.keys().next().value;
+    map.delete(firstKey);
+  }
+  map.set(key, value);
+}
+
 // === 全局 Q-table 写入防抖锁 ===
 const _writeLock = { locked: false, queue: [], pendingTimer: null, dirty: false };
 function _debouncedSave(instance) {
@@ -203,7 +221,7 @@ class HealingMemoryRL {
   updateFromRepair(errorPattern, strategy, success) {
     const ck = this._contextKey(errorPattern);
     if (!this.qTable.has(ck)) {
-      this.qTable.set(ck, {});
+      _boundedSet(this.qTable, ck, {}, MAX_QTABLE_SIZE);
     }
     const entry = this.qTable.get(ck);
     const currentQ = entry[strategy] ?? 0.5;
@@ -524,7 +542,7 @@ class HealingMemoryRL {
 
     // 对该策略在当前context降低Q值（强化反思效果）
     entry[failedStrategy] = Math.max(0, currentQ - 0.15);
-    this.qTable.set(ck, entry);
+    _boundedSet(this.qTable, ck, entry, MAX_QTABLE_SIZE);
     // 已禁用 console.error: this._saveQTable().catch(e => console.error('[HealingMemoryRL] reflect save failed:', e.message));
 
     return {
@@ -567,7 +585,7 @@ class HealingMemoryRL {
   verbalSelfCorrect(errorPattern, failedStrategy, diagnosis, suggestedStrategy) {
     const ck = this._contextKey(errorPattern);
     if (!this.qTable.has(ck)) {
-      this.qTable.set(ck, {});
+      _boundedSet(this.qTable, ck, {}, MAX_QTABLE_SIZE);
     }
     const entry = this.qTable.get(ck);
 
@@ -590,7 +608,7 @@ class HealingMemoryRL {
     // 新策略初始 Q 值设为中等（0.5），给予机会但不偏袒
     entry[suggestedStrategy] = 0.5;
 
-    this.qTable.set(ck, entry);
+    _boundedSet(this.qTable, ck, entry, MAX_QTABLE_SIZE);
     // 已禁用 console.error: this._saveQTable().catch(e => console.error('[HealingMemoryRL] verbalSelfCorrect save failed:', e.message));
 
     return {
@@ -748,7 +766,7 @@ class HealingMemoryRL {
       const ck = `${pattern}@${this._ctx.machineId}:${this._ctx.environment}:${this._ctx.region}`;
 
       if (!this.qTable.has(ck)) {
-        this.qTable.set(ck, {});
+        _boundedSet(this.qTable, ck, {}, MAX_QTABLE_SIZE);
       }
       const entry = this.qTable.get(ck);
 

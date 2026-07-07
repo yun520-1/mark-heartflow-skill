@@ -14,6 +14,7 @@
 'use strict';
 
 const { INTENT } = require('../writer-core');
+const { validateFetchUrl } = require('../../security/url-validator.js');
 
 // ============================================================================
 // JavaScript 代码模板
@@ -154,6 +155,13 @@ function analyzeData(data${field ? `, field = '${field}'` : ''}) {
  * @returns {Promise<Object>} 响应数据
  */
 async function fetchData(url = '${url}', options = {}) {
+  // SSRF 防护：校验 URL 安全性
+  const urlCheck = _validateFetchUrl(url);
+  if (!urlCheck.safe) {
+    console.warn('[SSRF防护] 阻止不安全请求:', urlCheck.reason);
+    return { success: false, error: urlCheck.reason };
+  }
+
   const {
     method = 'GET',
     headers = { 'Content-Type': 'application/json' },
@@ -524,13 +532,13 @@ function plotBar(data, options = {}) {
   const labels = data.map(d => typeof d === 'object' ? d.label : String(d));
   const values = data.map(d => typeof d === 'number' ? d : d.value);
 
-  console.log(\`--- 柱状图: \${label} ---\`);
+  if (process.env.HEARTFLOW_DEBUG) console.log(\`--- 柱状图: \${label} ---\`);
   for (let i = 0; i < data.length; i++) {
     const barLen = Math.max(1, Math.round((values[i] / max) * width));
     const bar = symbol.repeat(barLen);
-    console.log(\`\${String(labels[i]).padEnd(10)} | \${bar} \${values[i]}\`);
+    if (process.env.HEARTFLOW_DEBUG) console.log(\`\${String(labels[i]).padEnd(10)} | \${bar} \${values[i]}\`);
   }
-  console.log(\`--- 总计: \${values.length} 项 ---\`);
+  if (process.env.HEARTFLOW_DEBUG) console.log(\`--- 总计: \${values.length} 项 ---\`);
 }
 
 function plotLine(values, options = {}) {
@@ -541,7 +549,7 @@ function plotLine(values, options = {}) {
   const min = Math.min(...values);
   const range = max - min || 1;
 
-  console.log(\`--- 折线图: \${label} ---\`);
+  if (process.env.HEARTFLOW_DEBUG) console.log(\`--- 折线图: \${label} ---\`);
   for (let row = 0; row <= height; row++) {
     const threshold = max - (row / height) * range;
     let line = '';
@@ -550,9 +558,9 @@ function plotLine(values, options = {}) {
       line += values[idx] >= threshold ? '*' : ' ';
     }
     const valLabel = (min + (height - row) / height * range).toFixed(1);
-    console.log(\`\${String(valLabel).padStart(8)} |\${line}\`);
+    if (process.env.HEARTFLOW_DEBUG) console.log(\`\${String(valLabel).padStart(8)} |\${line}\`);
   }
-  console.log('          ' + '-'.repeat(Math.min(values.length, width)));
+  if (process.env.HEARTFLOW_DEBUG) console.log('          ' + '-'.repeat(Math.min(values.length, width)));
 }
 
 // 使用示例
@@ -825,7 +833,7 @@ function generateJSTest(intent, params, funcName) {
 
   let testCode = `// === 测试: ${params.description?.substring(0, 50) || funcName} ===
 function test${funcName}() {
-  console.log('测试 ${funcName}...');
+  if (process.env.HEARTFLOW_DEBUG) console.log('测试 ${funcName}...');
   let passed = 0;
   let failed = 0;
 `;
@@ -837,7 +845,7 @@ function test${funcName}() {
     ${tc.setup || ''}
     const result = ${tc.call};
     ${tc.assert}
-    console.log('  ✅ ${tc.name}');
+    if (process.env.HEARTFLOW_DEBUG) console.log('  ✅ ${tc.name}');
     passed++;
   } catch (err) {
     console.error('  ❌ ${tc.name}:', err.message);
@@ -847,7 +855,7 @@ function test${funcName}() {
   }
 
   testCode += `
-  console.log(\`测试完成: \${passed} 通过, \${failed} 失败\`);
+  if (process.env.HEARTFLOW_DEBUG) console.log(\`测试完成: \${passed} 通过, \${failed} 失败\`);
   return { passed, failed };
 }
 

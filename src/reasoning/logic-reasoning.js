@@ -1530,9 +1530,13 @@ class LogicReasoning {
       // 用Python子进程调用curl，避免shell转义问题
       const _cp = require('child_process');
       const fs = require('fs');
+      const os = require('os');
+      const path = require('path');
       // 从文件读取API key（避免源码中的***被截断）
       let apiKey = '';
-      try { apiKey = fs.readFileSync('/Users/apple/.hermes/skills/ai/mark-heartflow-skill/data/api-key.txt', 'utf-8').trim(); } catch(e) {}
+      // 动态拼接用户主目录路径，避免硬编码绝对路径（安全漏洞 B-04 修复）
+      const apiKeyPath = path.join(os.homedir(), '.hermes', 'skills', 'ai', 'mark-heartflow-skill', 'data', 'api-key.txt');
+      try { apiKey = fs.readFileSync(apiKeyPath, 'utf-8').trim(); } catch(e) { /* API密钥文件不存在，尝试环境变量 */ }
       if (!apiKey) try { apiKey = process['env']['HEART' + 'LOW_API_KEY'] || ''; } catch(e) {}
       if (!apiKey) return null;
 

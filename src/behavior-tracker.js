@@ -14,6 +14,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 // ── 常量 ──────────────────────────────────────────────
 const MAX_GOALS = 100;
@@ -203,7 +204,7 @@ const behaviorTracker = {
     if (changed) this.save();
   },
 
-  _uuid() { return `goal-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`; },
+  _uuid() { return `goal-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`; },
 
   // ── 创建目标 ──
   createGoal({ name, description, targetDays = 30, category = '' }) {
@@ -256,7 +257,7 @@ const behaviorTracker = {
     }
 
     const record = {
-      id: `rec-${Date.now()}-${Math.random().toString(36).slice(2, 4)}`,
+      id: `rec-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
       type,
       note: _sanitize(note, 500),
       context: _sanitize(context, 200),
