@@ -347,7 +347,7 @@ class DesireCognition {
     this._conversationEmotionMemory = [];
 
     this.ready = true;
-    // [PROD] 生产环境移除 console.error: if (this.debug) console.error('[DesireCognition] v1.3.0 ready — 七层情感架构集成版');
+    // 已禁用 console.error: if (this.debug) console.error('[DesireCognition] v1.3.0 ready — 七层情感架构集成版');
   }
 
   /**

@@ -79,8 +79,8 @@ class IdentityCore {
     this.loaded = true;
     result.success = result.errors.length === 0;
 
-    // [PROD] 生产环境移除 console.error: console.error(`[IdentityCore] 启动完成，已加载 ${result.loadedModules.length} 个模块`);
-    // [PROD] 生产环境移除 console.error: console.error(`[IdentityCore] sessionId: ${this.sessionId}`);
+    // 已禁用 console.error: console.error(`[IdentityCore] 启动完成，已加载 ${result.loadedModules.length} 个模块`);
+    // 已禁用 console.error: console.error(`[IdentityCore] sessionId: ${this.sessionId}`);
 
     return result;
   }
@@ -215,7 +215,7 @@ class IdentityCore {
    */
   printStartupContext() {
     if (!this.memoryIndex) {
-      // [PROD] 生产环境移除 console.error: console.error('[IdentityCore] MemoryIndex 未加载');
+      // 已禁用 console.error: console.error('[IdentityCore] MemoryIndex 未加载');
       return;
     }
     this.memoryIndex.printBootSummary();

@@ -178,7 +178,7 @@ class TemporalPlanner {
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(this.strategicFile, JSON.stringify(this.strategic, null, 2));
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[TemporalPlanner] saveStrategic failed:', e.message);
+      // 已禁用 console.warn: console.warn('[TemporalPlanner] saveStrategic failed:', e.message);
     }
   }
 
@@ -189,7 +189,7 @@ class TemporalPlanner {
       this.tactical.lastUpdate = new Date().toISOString();
       fs.writeFileSync(this.tacticalFile, JSON.stringify(this.tactical, null, 2));
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[TemporalPlanner] saveTactical failed:', e.message);
+      // 已禁用 console.warn: console.warn('[TemporalPlanner] saveTactical failed:', e.message);
     }
   }
 
@@ -199,7 +199,7 @@ class TemporalPlanner {
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(this.stateFile, JSON.stringify(this.state, null, 2));
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[TemporalPlanner] saveState failed:', e.message);
+      // 已禁用 console.warn: console.warn('[TemporalPlanner] saveState failed:', e.message);
     }
   }
 

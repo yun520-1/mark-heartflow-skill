@@ -80,7 +80,7 @@ class LearningEngine {
     // 当前学习周期
     this.currentCycle = null;
     
-    // [PROD] 生产环境移除 console.error: console.error('[LearningEngine] 学习引擎初始化');
+    // 已禁用 console.error: console.error('[LearningEngine] 学习引擎初始化');
   }
 
   /**

@@ -74,7 +74,7 @@ class MetaLearning {
         this.learningPatterns = data.patterns || [];
       }
     } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[MetaLearning] 加载模式失败');
+      // 已禁用 console.error: console.error('[MetaLearning] 加载模式失败');
     }
   }
 
