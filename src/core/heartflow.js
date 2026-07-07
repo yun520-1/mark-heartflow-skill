@@ -1911,7 +1911,7 @@ class HeartFlow {
       }
     }
     this.started = false;
-    this._modules = {};
+    this._modules = {};  // 容量边界：重置时清空，无容量问题
     this.heartflow = null;  // [AUDIT-FIX] break circular self-reference for GC
     this._mindSpace = null;
     this.mindSpace = null;
