@@ -32,10 +32,38 @@ function _getConfig(projectRoot) {
 }
 // ─── 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
 // [P2 FIX] LRU 容量管理 + 结构化日志 + 统一错误处理
+// v5.8.0 优化：使用有序淘汰结构 O(1) 获取最冷模块（替代 O(n) 线性扫描）
 const _lazyCache = new Map();
 const _LAZY_CACHE_WARN = 100;
 const _LAZY_CACHE_MAX = 150;
 const _lazyAccessCount = new Map();
+// 有序淘汰链表：[{key, count}] 按 count 升序，头部 = 最冷
+const _lazyEvictionList = [];
+
+function _evictColdest() {
+  if (_lazyEvictionList.length === 0) return;
+  const coldest = _lazyEvictionList[0];
+  _lazyCache.delete(coldest.key);
+  _lazyAccessCount.delete(coldest.key);
+  _lazyEvictionList.shift();
+}
+
+function _bumpInEvictionList(key) {
+  // 从链表中移除（如果存在），然后按 count 重新插入保持有序
+  const idx = _lazyEvictionList.findIndex(e => e.key === key);
+  if (idx !== -1) {
+    const entry = _lazyEvictionList.splice(idx, 1)[0];
+    entry.count = _lazyAccessCount.get(key) || 0;
+    // 二分插入保持有序
+    let lo = 0, hi = _lazyEvictionList.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (_lazyEvictionList[mid].count <= entry.count) lo = mid + 1;
+      else hi = mid;
+    }
+    _lazyEvictionList.splice(lo, 0, entry);
+  }
+}
 
 // 结构化日志器
 const _log = {
@@ -52,23 +80,20 @@ function _lazy(key, loader) {
   return function() {
     if (!_lazyCache.has(key)) {
       if (_lazyCache.size >= _LAZY_CACHE_MAX) {
-        // 淘汰访问次数最少的模块
-        let minKey = null, minCount = Infinity;
-        for (const [k, c] of _lazyAccessCount) {
-          if (c < minCount) { minCount = c; minKey = k; }
-        }
-        if (minKey) {
-          _lazyCache.delete(minKey);
-          _lazyAccessCount.delete(minKey);
-        }
+        // v5.8.0 优化：O(1) 获取最冷模块（链表头部）
+        _evictColdest();
       }
       _lazyCache.set(key, loader());
       _lazyAccessCount.set(key, 0);
+      _lazyEvictionList.push({ key, count: 0 });
       if (_lazyCache.size === _LAZY_CACHE_WARN) {
         _log.warn('lazy_cache', `_lazyCache 达到 ${_LAZY_CACHE_WARN} 个模块`);
       }
     }
-    _lazyAccessCount.set(key, (_lazyAccessCount.get(key) || 0) + 1);
+    const newCount = (_lazyAccessCount.get(key) || 0) + 1;
+    _lazyAccessCount.set(key, newCount);
+    // v5.8.0 优化：二分插入保持有序 O(log n)
+    _bumpInEvictionList(key);
     return _lazyCache.get(key);
   };
 }
@@ -274,7 +299,145 @@ const _ValueAligner = _lazy('valueAligner', () => require('../bridge/value-align
 const _PersonalityTone = _lazy('personalityTone', () => require('../bridge/personality-tone.js'));
 const _MetaPosition = _lazy('metaPosition', () => require('../bridge/meta-position.js'));
 
-const BUILD_DATE = '2026-07-05-v5.7.6';
+const BUILD_DATE = '2026-07-07-v5.8.3';
+
+// ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
+// 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
+const _SPECIAL_MODULES = {
+  bigFive:         { type: 'object',  factory: () => require('../identity/BigFivePersonality.js') },
+  empathy:         { type: 'object',  factory: () => require('../identity/EmpathyAssessment.js') },
+  knowledgeGraph:  { type: 'ctor',    factory: () => new (require('../memory/knowledge-graph.js').KnowledgeGraph)({ dataDir: path.join(__dirname, '..', '..', 'data') }) },
+  intentLayer:     { type: 'ctor-path', path: './intent-layer.js', ctor: 'IntentLayer', args: { projectRoot: path.join(__dirname, '..', '..') } },
+  epistemicSafety: { type: 'object',  factory: () => require('../shield/epistemic-safety.js') },
+  deliberationGate:{ type: 'ctor',    factory: () => new (require('../shield/deliberation-gate.js').DeliberationGate)() },
+  flowPredictor:   { type: 'ctor',    factory: () => new (require('./flow-predictor.js').FlowPredictor)() },
+  safetyGuardrails:{ type: 'object',  factory: () => require('../shield/safety-guardrails.js') },
+  userModel:       { type: 'ctor',    factory: () => new (require('../identity/user-model.js').UserModel)() },
+  actionTracker:   { type: 'ctor',    factory: () => new (require('./action-tracker.js').ActionTracker)() },
+  purposeEngine:   { type: 'ctor',    factory: () => new (require('../identity/purpose-engine.js').PurposeEngine)() },
+  riskAnalyzer:    { type: 'ctor',    factory: () => new (require('../reasoning/risk-benefit-analyzer.js').RiskBenefitAnalyzer)() },
+  adaptiveCtrl:    { type: 'ctor',    factory: () => new (require('./adaptive-controller.js').AdaptiveController)() },
+  intentionTrack:  { type: 'ctor',    factory: () => new (require('./IntentionTracker.js').IntentionTracker)() },
+  auditLogger:     { type: 'ctor',    factory: () => new (require('../shield/audit-logger.js').AuditLogger)() },
+  // 需要特殊依赖注入的模块
+  adaptivePlanner: { type: 'special', factory: 'adaptivePlanner' },
+  strategyAdapter: { type: 'special', factory: 'strategyAdapter' },
+  knowledgeBase:   { type: 'ctor-args', factory: () => ({ path: '../reasoning/knowledge-base.js', ctor: 'KnowledgeBase', args: { storagePath: path.join(__dirname, '..', '..', 'data', 'knowledge') } }) },
+  sessionMemory:   { type: 'ctor-args', factory: () => ({ path: '../memory/session-memory.js', ctor: 'SessionMemory', args: { storagePath: path.join(__dirname, '..', '..', 'data', 'sessions') } }) },
+  projectContext:  { type: 'ctor-args', factory: () => ({ path: '../memory/project-context.js', ctor: 'ProjectContext', args: { storagePath: path.join(__dirname, '..', '..', 'data', 'projects') } }) },
+  longTermMemory:  { type: 'ctor-args', factory: () => ({ path: '../memory/long-term-memory.js', ctor: 'LongTermMemory', args: { storagePath: path.join(__dirname, '..', '..', 'data', 'longterm') } }) },
+  crossSessionIndex:{ type: 'ctor-args', factory: () => ({ path: '../memory/cross-session-index.js', ctor: 'CrossSessionIndex', args: { storagePath: path.join(__dirname, '..', '..', 'data', 'cross-session') } }) },
+  codeExecutor:    { type: 'ctor-hf',  factory: () => ({ path: '../code/code-executor.js', ctor: 'CodeExecutor', args: { hf: null } }) },
+  codePlanner:     { type: 'ctor-hf',  factory: () => ({ path: '../code/code-planner.js', ctor: 'CodePlanner', args: { hf: null } }) },
+};
+
+// ─── 特殊模块工厂函数 ─────────────────────────────────────────────────────
+function _createSpecialModule(subsystem, hf) {
+  switch (subsystem) {
+    case 'adaptivePlanner': {
+      const baseDir = path.join(__dirname, '..', 'planner');
+      hf.strategySelector = new (require(baseDir + '/strategy-selector.js').StrategySelector)();
+      hf.replanTrigger = new (require(baseDir + '/replan-trigger.js').ReplanTrigger)();
+      return new (require('../planner/adaptive-planner.js').AdaptivePlanner)({ strategySelector: hf.strategySelector, replanTrigger: hf.replanTrigger });
+    }
+    case 'strategyAdapter': {
+      const ec = require('../cortex/experience-collector.js').ExperienceCollector;
+      hf.experienceCollector = new ec({ storagePath: path.join(hf.rootPath, 'data/experiences') });
+      return new (require('../cortex/strategy-adapter.js').StrategyAdapter)({ experienceCollector: hf.experienceCollector });
+    }
+    default:
+      return null;
+  }
+}
+
+function _instantiateSpecialModule(subsystem, Mod, hf) {
+  const spec = _SPECIAL_MODULES[subsystem];
+  if (!spec) return null;
+
+  switch (spec.type) {
+    case 'object':
+      return spec.factory();
+    case 'ctor': {
+      const mod = spec.factory();
+      return mod;
+    }
+    case 'ctor-path': {
+      const mod = require(spec.path);
+      return new mod[spec.ctor](spec.args);
+    }
+    case 'ctor-args': {
+      const info = spec.factory();
+      const mod = require(info.path);
+      return new mod[info.ctor](info.args);
+    }
+    case 'ctor-hf': {
+      const info = spec.factory();
+      const mod = require(info.path);
+      return new mod[info.ctor]({ ...info.args, hf });
+    }
+    case 'special':
+      return _createSpecialModule(subsystem, hf);
+    default:
+      return null;
+  }
+}
+
+// ─── v5.8.0 性能监控模块 ──────────────────────────────────────────────────
+const _perf = {
+  _enabled: false,
+  _dispatchTimings: [],
+  _cacheHits: 0,
+  _cacheMisses: 0,
+  _ruleMatchTime: 0,
+  _maxSamples: 1000,
+
+  enable() { this._enabled = true; },
+  disable() { this._enabled = false; },
+  recordDispatch(route, elapsedMs) {
+    if (!this._enabled) return;
+    this._dispatchTimings.push({ route, elapsed: elapsedMs, ts: Date.now() });
+    if (this._dispatchTimings.length > this._maxSamples) this._dispatchTimings.shift();
+  },
+  recordCacheHit() { this._cacheHits++; },
+  recordCacheMiss() { this._cacheMisses++; },
+  recordRuleMatch(elapsedMs) { this._ruleMatchTime += elapsedMs; },
+  getStats() {
+    const total = this._cacheHits + this._cacheMisses;
+    const timings = this._dispatchTimings;
+    const avg = timings.length > 0
+      ? timings.reduce((s, t) => s + t.elapsed, 0) / timings.length
+      : 0;
+    const sorted = timings.map(t => t.elapsed).sort((a, b) => a - b);
+    const p95 = sorted.length > 0 ? sorted[Math.floor(sorted.length * 0.95)] : 0;
+    return {
+      enabled: this._enabled,
+      dispatch: {
+        total: timings.length,
+        avgMs: Math.round(avg * 100) / 100,
+        p95Ms: Math.round(p95 * 100) / 100,
+        maxMs: sorted.length > 0 ? sorted[sorted.length - 1] : 0,
+      },
+      cache: {
+        hits: this._cacheHits,
+        misses: this._cacheMisses,
+        hitRate: total > 0 ? Math.round(this._cacheHits / total * 100) / 100 : 0,
+      },
+      ruleMatch: {
+        totalMs: Math.round(this._ruleMatchTime * 100) / 100,
+      },
+      memory: process.memoryUsage ? {
+        rssMB: Math.round(process.memoryUsage().rss / 1024 / 1024),
+        heapMB: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+      } : null,
+    };
+  },
+  reset() {
+    this._dispatchTimings = [];
+    this._cacheHits = 0;
+    this._cacheMisses = 0;
+    this._ruleMatchTime = 0;
+  },
+};
 
 class HeartFlow {
   constructor(config = {}) {
@@ -2151,7 +2314,9 @@ class HeartFlow {
     'consciousnessBridge.recordSubjectiveState', 'consciousnessBridge.getStats',
     // ─── [v5.7.7] F3 SustainedDriftDetector ─────────────────────────────────
     'sustainedDriftDetector.detectDrift', 'sustainedDriftDetector.recordState',
-    'sustainedDriftDetector.getDriftHistory', 'sustainedDriftDetector.getStats', 'sustainedDriftDetector.reset']);
+    'sustainedDriftDetector.getDriftHistory', 'sustainedDriftDetector.getStats', 'sustainedDriftDetector.reset',
+    // ─── [v5.8.0] 性能监控 ─────────────────────────────────────────────────
+    'monitor.getStats', 'monitor.enable', 'monitor.disable', 'monitor.reset']);
 
   /**
    * dispatch('subsystem.method', ...args) — 统一路由
@@ -2160,6 +2325,8 @@ class HeartFlow {
    */
   dispatch(route, ...args) {
     if (!this.started) throw new Error('HeartFlow not started');
+    // v5.8.0 性能监控：记录 dispatch 开始时间
+    const _perfStart = _perf._enabled ? performance.now() : 0;
     // [A01] 权限控制 - 白名单检查
     if (!HeartFlow.ALLOWED_ROUTES.has(route)) {
       throw new Error(`dispatch: route '${route}' not allowed. Use routes() to see available routes.`);
@@ -2169,6 +2336,18 @@ class HeartFlow {
     const subsystem = route.slice(0, dot);
     const method = route.slice(dot + 1);
 
+    // ─── v5.8.0 性能监控：内置子系统 ──────────────────────────────────
+    if (subsystem === 'monitor') {
+      const stats = _perf.getStats();
+      switch (method) {
+        case 'getStats': return stats;
+        case 'enable': _perf.enable(); return { ok: true };
+        case 'disable': _perf.disable(); return { ok: true };
+        case 'reset': _perf.reset(); return { ok: true };
+        default: throw new Error(`Unknown monitor method: ${method}`);
+      }
+    }
+
     // ─── Tier 2 懒加载逻辑 ──────────────────────────────────────────
     // 如果模块不在 _modules 里但在 _lazy 表里，先加载再注册
     let mod = this._modules[subsystem];
@@ -2177,40 +2356,8 @@ class HeartFlow {
       try {
         const Mod = require(entry.path);
 
-        // 特殊模块：纯对象（无构造函数）
-        if (subsystem === 'bigFive') {
-          mod = require('../identity/BigFivePersonality.js');
-        } else if (subsystem === 'empathy') {
-          mod = require('../identity/EmpathyAssessment.js');
-        } else if (subsystem === 'knowledgeGraph') {
-          mod = new (require('../memory/knowledge-graph.js').KnowledgeGraph)({ dataDir: path.join(this.rootPath, 'data') });
-        } else if (subsystem === 'intentLayer') {
-          mod = new (require('./intent-layer.js').IntentLayer)({ projectRoot: this.rootPath });
-        } else if (subsystem === 'epistemicSafety') {
-          // epistemic-safety 是纯函数导出（无构造函数）
-          mod = require('../shield/epistemic-safety.js');
-        } else if (subsystem === 'deliberationGate') {
-          mod = new (require('../shield/deliberation-gate.js').DeliberationGate)();
-        } else if (subsystem === 'flowPredictor') {
-          mod = new (require('./flow-predictor.js').FlowPredictor)();
-        } else if (subsystem === 'safetyGuardrails') {
-          // safety-guardrails 是纯函数导出（无构造函数）
-          mod = require('../shield/safety-guardrails.js');
-        } else if (subsystem === 'userModel') {
-          mod = new (require('../identity/user-model.js').UserModel)();
-        } else if (subsystem === 'actionTracker') {
-          mod = new (require('./action-tracker.js').ActionTracker)();
-        } else if (subsystem === 'purposeEngine') {
-          mod = new (require('../identity/purpose-engine.js').PurposeEngine)();
-        } else if (subsystem === 'riskAnalyzer') {
-          mod = new (require('../reasoning/risk-benefit-analyzer.js').RiskBenefitAnalyzer)();
-        } else if (subsystem === 'adaptiveCtrl') {
-          mod = new (require('./adaptive-controller.js').AdaptiveController)();
-        } else if (subsystem === 'intentionTrack') {
-          mod = new (require('./IntentionTracker.js').IntentionTracker)();
-        } else if (subsystem === 'auditLogger') {
-          mod = new (require('../shield/audit-logger.js').AuditLogger)();
-        }
+        // v5.8.0 优化：使用注册表 O(1) 查找替代 if/else 链
+        mod = _instantiateSpecialModule(subsystem, Mod, this);
 
         // 特殊模块注册到 _modules（标准路径在下面的 if(Ctor) 块内完成注册）
         if (mod) {
@@ -2222,37 +2369,35 @@ class HeartFlow {
         if (!mod) {
           const Ctor = Mod[entry.Ctor];
           if (Ctor) {
-          // Planning 模块需要 strategySelector/replanTrigger 依赖
-          if (subsystem === 'adaptivePlanner') {
-            const baseDir = entry.path.replace('adaptive-planner.js', '');
-            this['strategySelector'] = new (require(baseDir + 'strategy-selector.js'))();
-            this['replanTrigger'] = new (require(baseDir + 'replan-trigger.js'))();
-            mod = new Ctor({ strategySelector: this.strategySelector, replanTrigger: this.replanTrigger });
-          } else if (subsystem === 'strategyAdapter') {
-            const ec = require('../cortex/experience-collector.js').ExperienceCollector;
-            this.experienceCollector = new ec({ storagePath: path.join(this.rootPath, 'data/experiences') });
-            mod = new Ctor({ experienceCollector: this.experienceCollector });
-          } else if (subsystem === 'knowledgeBase') {
-            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/knowledge') });
-          } else if (subsystem === 'sessionMemory') {
-            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/sessions') });
-          } else if (subsystem === 'projectContext') {
-            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/projects') });
-          } else if (subsystem === 'longTermMemory') {
-            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/longterm') });
-          } else if (subsystem === 'crossSessionIndex') {
-            mod = new Ctor({ storagePath: path.join(this.rootPath, 'data/cross-session') });
-          } else if (subsystem === 'codeExecutor') {
-            mod = new Ctor({ hf: this });
-          } else if (subsystem === 'codePlanner') {
-            mod = new Ctor({ hf: this });
-          } else {
-            mod = new Ctor(entry.args);
-          }
-          // codeGenerator 保持原名；'code' 别名在下面统一映射
-          this[subsystem] = mod;
-          this._modules[subsystem] = mod;
-        }  // end if (Ctor)
+            // v5.8.0 优化：使用参数映射表替代 if/else 链
+            // 注意：adaptivePlanner / strategyAdapter 已在 _SPECIAL_MODULES 中处理
+            const _ARG_MAP = {
+              knowledgeBase:     { storagePath: { path: ['rootPath', 'data', 'knowledge'] } },
+              sessionMemory:     { storagePath: { path: ['rootPath', 'data', 'sessions'] } },
+              projectContext:    { storagePath: { path: ['rootPath', 'data', 'projects'] } },
+              longTermMemory:    { storagePath: { path: ['rootPath', 'data', 'longterm'] } },
+              crossSessionIndex: { storagePath: { path: ['rootPath', 'data', 'cross-session'] } },
+              codeExecutor:      { hf: 'hf' },
+              codePlanner:       { hf: 'hf' },
+            };
+
+            const argSpec = _ARG_MAP[subsystem];
+            if (argSpec) {
+              const args = {};
+              for (const [key, val] of Object.entries(argSpec)) {
+                if (typeof val === 'string') {
+                  args[key] = hf[val];
+                } else if (val && val.path) {
+                  args[key] = path.join(hf.rootPath, ...val.path.slice(1));
+                }
+              }
+              mod = new Ctor(args);
+            } else {
+              mod = new Ctor(entry.args);
+            }
+            this[subsystem] = mod;
+            this._modules[subsystem] = mod;
+          }  // end if (Ctor)
         }  // end if (!mod)
       } catch (e) {
         throw new Error(`Lazy load failed for '${subsystem}': ${e.message}`);
@@ -2267,6 +2412,11 @@ class HeartFlow {
       throw new Error(`${subsystem}.${method} is not a function on ${subsystem}`);
     }
     const rawResult = mod[method](...args);
+
+    // v5.8.0 性能监控：记录 dispatch 耗时（在决策路由之前，捕获完整执行时间）
+    if (_perfStart > 0) {
+      _perf.recordDispatch(route, performance.now() - _perfStart);
+    }
 
     // ─── 决策路由：自动将分析结果转化为决策指令 ────────────────────
     if (this._decisionRouter && rawResult && typeof rawResult === 'object' && !Array.isArray(rawResult)) {
@@ -4037,6 +4187,46 @@ class HeartFlow {
     return result;
   }
 
+  // === v5.7.6 - Cross-Framework Field Tracking ===
+
+  /**
+   * Initialize cross-framework field tracker
+   */
+  initFieldTracker() {
+    const { CrossFrameworkFieldTracker } = require('./cross-framework-field-tracker.js');
+    this.fieldTracker = new CrossFrameworkFieldTracker();
+    return this.fieldTracker;
+  }
+
+  /**
+   * Record U/D/A/H field snapshot (for cross-framework sharing)
+   */
+  recordFieldSnapshot(model, scenario, fieldValues, decisionRoute) {
+    if (!this.fieldTracker) {
+      this.initFieldTracker();
+    }
+    return this.fieldTracker.recordFieldSnapshot(model, scenario, fieldValues, decisionRoute);
+  }
+
+  /**
+   * Export field traces (CSV for TAT/ThinkCheck/Cophy)
+   */
+  exportFieldTraces(format = 'csv') {
+    if (!this.fieldTracker) {
+      this.initFieldTracker();
+    }
+    return this.fieldTracker.exportTraces(format);
+  }
+
+  /**
+   * Get field health summary
+   */
+  getFieldHealth() {
+    if (!this.fieldTracker) {
+      this.initFieldTracker();
+    }
+    return this.fieldTracker.getFieldHealthSummary();
+  }
 }
 
 // ─── 辅助函数：从输入文本检测矛盾信号 ──────────────────────
@@ -4124,44 +4314,3 @@ if (require.main === module) {
 }
 
 module.exports = { HeartFlow, createHeartFlow, VERSION: _VERSION().VERSION, MentalEffortTracker: _MentalEffortTracker().MentalEffortTracker };
-
-  // === v5.7.6 - Cross-Framework Field Tracking ===
-
-  /**
-   * Initialize cross-framework field tracker
-   */
-  initFieldTracker() {
-    const { CrossFrameworkFieldTracker } = require('./cross-framework-field-tracker.js');
-    this.fieldTracker = new CrossFrameworkFieldTracker();
-    return this.fieldTracker;
-  }
-
-  /**
-   * Record U/D/A/H field snapshot (for cross-framework sharing)
-   */
-  recordFieldSnapshot(model, scenario, fieldValues, decisionRoute) {
-    if (!this.fieldTracker) {
-      this.initFieldTracker();
-    }
-    return this.fieldTracker.recordFieldSnapshot(model, scenario, fieldValues, decisionRoute);
-  }
-
-  /**
-   * Export field traces (CSV for TAT/ThinkCheck/Cophy)
-   */
-  exportFieldTraces(format = 'csv') {
-    if (!this.fieldTracker) {
-      this.initFieldTracker();
-    }
-    return this.fieldTracker.exportTraces(format);
-  }
-
-  /**
-   * Get field health summary
-   */
-  getFieldHealth() {
-    if (!this.fieldTracker) {
-      this.initFieldTracker();
-    }
-    return this.fieldTracker.getFieldHealthSummary();
-  }
