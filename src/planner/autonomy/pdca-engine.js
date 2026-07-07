@@ -267,7 +267,7 @@ class PDCAEngine {
   }
 
   log(message) {
-    // [PROD] 生产环境移除 console.error: console.error(`[PDCA] ${message}`);
+    // 已禁用 console.error: console.error(`[PDCA] ${message}`);
   }
 
   // ========================================================================

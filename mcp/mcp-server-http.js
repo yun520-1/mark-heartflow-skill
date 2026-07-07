@@ -79,6 +79,8 @@ function getVersion() {
 const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null;
 if (!AUTH_TOKEN) {
   console.error('[MCP] SECURITY: HEARTFLOW_MCP_TOKEN is not set. MCP server requires authentication.');
+  console.error('[MCP] Refusing to start without authentication token.');
+  process.exit(1);
 }
 
 // ─── 时间安全的 token 比较（防止 timing attack）───
@@ -103,6 +105,11 @@ const RATE_LIMIT_WINDOW = 60000; // 1 分钟窗口
 const RATE_LIMIT_MAX = 100; // 每分钟最多 100 请求
 const _rateMap = new Map(); // IP → { count, windowStart }
 
+// [AUDIT-FIX] Token 维度速率限制：防止 token 暴力破解
+const TOKEN_RATE_LIMIT_WINDOW = 60000; // 1 分钟窗口
+const TOKEN_RATE_LIMIT_MAX = 30; // 每个 token 每分钟最多 30 请求
+const _tokenRateMap = new Map(); // tokenHash → { count, windowStart }
+
 function checkRateLimit(ip) {
   const now = Date.now();
   let entry = _rateMap.get(ip);
@@ -114,11 +121,26 @@ function checkRateLimit(ip) {
   return entry.count <= RATE_LIMIT_MAX;
 }
 
+// [AUDIT-FIX] Token 维度速率检查
+function checkTokenRateLimit(tokenHash) {
+  const now = Date.now();
+  let entry = _tokenRateMap.get(tokenHash);
+  if (!entry || now - entry.windowStart > TOKEN_RATE_LIMIT_WINDOW) {
+    entry = { count: 0, windowStart: now };
+    _tokenRateMap.set(tokenHash, entry);
+  }
+  entry.count++;
+  return entry.count <= TOKEN_RATE_LIMIT_MAX;
+}
+
 // 定期清理过期的速率限制记录
 setInterval(() => {
   const now = Date.now();
   for (const [ip, entry] of _rateMap) {
     if (now - entry.windowStart > RATE_LIMIT_WINDOW * 2) _rateMap.delete(ip);
+  }
+  for (const [hash, entry] of _tokenRateMap) {
+    if (now - entry.windowStart > TOKEN_RATE_LIMIT_WINDOW * 2) _tokenRateMap.delete(hash);
   }
 }, 120000);
 
@@ -998,6 +1020,13 @@ const server = http.createServer((req, res) => {
   // SkillSpector fix: 移除 URL query parameter token 认证（token 在 URL 中会通过日志/referrer 泄露）
   
   if (!safeCompare(token, AUTH_TOKEN)) {
+    // [AUDIT-FIX] Token 维度速率限制：记录失败尝试
+    const tokenHash = token ? crypto.createHash('sha256').update(token).digest('hex').slice(0, 16) : 'none';
+    if (!checkTokenRateLimit(tokenHash)) {
+      res.writeHead(429, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Too Many Auth Failures', retryAfter: 60 }));
+      return;
+    }
     res.writeHead(401, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Unauthorized', message: 'Invalid or missing Bearer token in Authorization header' }));
     return;
@@ -1006,10 +1035,11 @@ const server = http.createServer((req, res) => {
   // ─── CORS Preflight ───
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
-      'Access-Control-Allow-Origin': 'http://localhost',  // SkillSpector fix: 限制 CORS 来源,
+      'Access-Control-Allow-Origin': 'http://localhost',  // [AUDIT-FIX] 限制 CORS 来源为本地
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Max-Age': '86400'
+      'Access-Control-Max-Age': '86400',
+      'Access-Control-Allow-Credentials': 'false'  // [AUDIT-FIX] 禁止跨域携带凭据
     });
     res.end();
     return;
@@ -1029,7 +1059,7 @@ const server = http.createServer((req, res) => {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': 'http://localhost',  // SkillSpector fix: 限制 CORS 来源,
+      'Access-Control-Allow-Origin': 'http://localhost',  // [AUDIT-FIX] 限制 CORS 来源
       'X-Accel-Buffering': 'no'
     });
 

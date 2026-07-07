@@ -55,7 +55,7 @@ class ExperienceCollector {
         }
       }
     } catch (error) {
-      // [PROD] 生产环境移除 console.warn: console.warn('加载经验失败:', error.message);
+      // 已禁用 console.warn: console.warn('加载经验失败:', error.message);
     }
   }
 
@@ -69,7 +69,7 @@ class ExperienceCollector {
       const filePath = path.join(this.storagePath, `${id}.json`);
       fs.writeFileSync(filePath, JSON.stringify(experience, null, 2));
     } catch (error) {
-      // [PROD] 生产环境移除 console.warn: console.warn('保存经验失败:', error.message);
+      // 已禁用 console.warn: console.warn('保存经验失败:', error.message);
     }
   }
 
@@ -84,7 +84,7 @@ class ExperienceCollector {
       const indexPath = path.join(this.storagePath, 'index.json');
       fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
     } catch (error) {
-      // [PROD] 生产环境移除 console.warn: console.warn('更新索引失败:', error.message);
+      // 已禁用 console.warn: console.warn('更新索引失败:', error.message);
     }
   }
 

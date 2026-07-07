@@ -198,7 +198,9 @@ class HeartFlowConfig {
 
     const userConfigPath = path.join(userDir, 'config.json');
     let existing = {};
-    try { existing = JSON.parse(fs.readFileSync(userConfigPath, 'utf-8')); } catch (_) {}
+    try { existing = JSON.parse(fs.readFileSync(userConfigPath, 'utf-8')); } catch (e) {
+      console.warn("[Core]", "操作失败:", e.message);
+    }
 
     // 展开点号路径的键（如 'features.dreamEngine' → { features: { dreamEngine: false } }）
     const expanded = {};
@@ -246,7 +248,7 @@ class HeartFlowConfig {
       const parsed = JSON.parse(raw);
       this._deepMerge(this._values, parsed);
       this._sources.push({ file: filePath, source });
-    } catch (_) { /* skip invalid config files */ }
+    } catch (e) { /* 跳过无效配置文件，但记录警告 */ console.warn('[Config] 合并配置文件失败:', e.message); }
   }
 
   _mergeEnv() {

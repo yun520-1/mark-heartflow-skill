@@ -595,7 +595,7 @@ module.exports = { ${className} };
    */
   log(msg) {
     const ts = new Date().toISOString();
-    // [PROD] 生产环境移除 console.error: console.error(`[${ts}] ${msg}`);
+    // 已禁用 console.error: console.error(`[${ts}] ${msg}`);
     
     try {
       let logs = [];
@@ -632,11 +632,11 @@ if (require.main === module) {
   const engine = new SmartUpgradeEngine(__dirname);
   engine.runUpgrade()
     .then(result => {
-      // [PROD] 生产环境移除 console.log: console.log('升级结果:', result);
+      // 已禁用 console.log: console.log('升级结果:', result);
       return;
     })
     .catch(err => {
-      // [PROD] 生产环境移除 console.error: console.error('升级失败:', err);
+      // 已禁用 console.error: console.error('升级失败:', err);
       return;
     });
 }

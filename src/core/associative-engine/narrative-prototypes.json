@@ -1,0 +1,130 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "count": 0,
+    "lastUpdate": "2026-04-09T00:00:00.000Z",
+    "description": "叙事原型库 - 故事框架与情感基调"
+  },
+  "prototypes": {
+    "hero_journey": {
+      "name": "英雄之旅",
+      "keywords": ["挑战", "成长", "胜利", "困难", "克服", "蜕变", "勇气"],
+      "framework": "英雄之旅：召唤→考验→蜕变→归来",
+      "emotionalTone": "激动人心",
+      "stages": [
+        {"stage": "召唤", "description": "用户感受到某种召唤或挑战"},
+        {"stage": "考验", "description": "面对困难和挑战"},
+        {"stage": "蜕变", "description": "经历成长和改变"},
+        {"stage": "归来", "description": "带着新的收获回归"}
+      ]
+    },
+    "breakthrough": {
+      "name": "突破困境",
+      "keywords": ["困难", "突破", "解决", "希望", "方法", "答案"],
+      "framework": "困境→探索→突破→新生",
+      "emotionalTone": "振奋",
+      "stages": [
+        {"stage": "困境", "description": "陷入困难或瓶颈"},
+        {"stage": "探索", "description": "寻找解决方法"},
+        {"stage": "突破", "description": "找到突破口"},
+        {"stage": "新生", "description": "获得新生机"}
+      ]
+    },
+    "flow_state": {
+      "name": "渐入佳境",
+      "keywords": ["心流", "专注", "沉浸", "愉悦", "创造", "最佳状态"],
+      "framework": "进入→沉浸→深化→极致",
+      "emotionalTone": "愉悦",
+      "stages": [
+        {"stage": "进入", "description": "开始进入状态"},
+        {"stage": "沉浸", "description": "完全沉浸其中"},
+        {"stage": "深化", "description": "状态持续深化"},
+        {"stage": "极致", "description": "达到最佳状态"}
+      ]
+    },
+    "insight_moment": {
+      "name": "顿悟时刻",
+      "keywords": ["理解", "明白", "领悟", "启发", "灵感", "茅塞顿开"],
+      "framework": "困惑→探索→顿悟→应用",
+      "emotionalTone": "启迪",
+      "stages": [
+        {"stage": "困惑", "description": "感到困惑或迷茫"},
+        {"stage": "探索", "description": "积极探索答案"},
+        {"stage": "顿悟", "description": "突然明白真相"},
+        {"stage": "应用", "description": "将领悟付诸实践"}
+      ]
+    },
+    "creative_spark": {
+      "name": "灵感迸发",
+      "keywords": ["灵感", "创造", "创意", "火花", "想法", "创新"],
+      "framework": "酝酿→火花→展开→创造",
+      "emotionalTone": "兴奋",
+      "stages": [
+        {"stage": "酝酿", "description": "潜意识中酝酿"},
+        {"stage": "火花", "description": "灵感突然闪现"},
+        {"stage": "展开", "description": "将灵感展开"},
+        {"stage": "创造", "description": "完成创造性工作"}
+      ]
+    },
+    "lost_and_found": {
+      "name": "失而复得",
+      "keywords": ["失去", "寻找", "发现", "珍贵", "珍惜", "回归"],
+      "framework": "失去→寻找→发现→珍惜",
+      "emotionalTone": "感动",
+      "stages": [
+        {"stage": "失去", "description": "失去某种东西"},
+        {"stage": "寻找", "description": "努力寻找"},
+        {"stage": "发现", "description": "意外发现或找回"},
+        {"stage": "珍惜", "description": "更加珍惜"}
+      ]
+    },
+    "growth_story": {
+      "name": "成长故事",
+      "keywords": ["成长", "学习", "进步", "努力", "坚持", "成功"],
+      "framework": "起点→学习→努力→成长",
+      "emotionalTone": "温暖",
+      "stages": [
+        {"stage": "起点", "description": "从初始状态开始"},
+        {"stage": "学习", "description": "学习新知识或技能"},
+        {"stage": "努力", "description": "持续努力练习"},
+        {"stage": "成长", "description": "取得成长和进步"}
+      ]
+    },
+    "challenge_overcome": {
+      "name": "挑战克服",
+      "keywords": ["挑战", "困难", "克服", "成功", "自信", "勇气"],
+      "framework": "挑战→应对→克服→自信",
+      "emotionalTone": "激励",
+      "stages": [
+        {"stage": "挑战", "description": "面临挑战"},
+        {"stage": "应对", "description": "积极应对"},
+        {"stage": "克服", "description": "成功克服"},
+        {"stage": "自信", "description": "建立自信"}
+      ]
+    },
+    "self_discovery": {
+      "name": "自我发现",
+      "keywords": ["自我", "认识", "理解", "接纳", "成长", "觉醒"],
+      "framework": "迷茫→探索→发现→接纳",
+      "emotionalTone": "深刻",
+      "stages": [
+        {"stage": "迷茫", "description": "对自我感到迷茫"},
+        {"stage": "探索", "description": "开始探索自我"},
+        {"stage": "发现", "description": "发现自我真实面目"},
+        {"stage": "接纳", "description": "接纳真实的自己"}
+      ]
+    },
+    "collaboration": {
+      "name": "协作共赢",
+      "keywords": ["合作", "协作", "共赢", "团队", "支持", "共享"],
+      "framework": "独立→连接→协作→共赢",
+      "emotionalTone": "和谐",
+      "stages": [
+        {"stage": "独立", "description": "各自独立工作"},
+        {"stage": "连接", "description": "建立连接"},
+        {"stage": "协作", "description": "相互协作"},
+        {"stage": "共赢", "description": "实现共赢"}
+      ]
+    }
+  }
+}
