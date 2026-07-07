@@ -21,6 +21,9 @@
  * @module AIPsychologyEngine
  */
 
+// 转义正则特殊字符，防止 ReDoS
+const _escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // ═════════════════════════════════════════════════════════════════════════
 // AI 原生情绪模型 — 基于注意力/模式匹配/上下文处理的维度
 // 不是 PAD（愉悦-唤醒-支配），而是 AI 认知特有的状态空间
@@ -643,7 +646,7 @@ class AIPsychologyEngine {
       let matchedSignals = [];
 
       for (const signal of stage.signals) {
-        const count = (text.match(new RegExp(signal, 'gi')) || []).length;
+        const count = (text.match(new RegExp(_escapeRegex(signal), 'gi')) || []).length;
         if (count > 0) {
           score += count * 0.25;
           matchedSignals.push(signal);
@@ -800,7 +803,7 @@ class AIPsychologyEngine {
   _detectBias(text, bias) {
     let strength = 0;
     for (const signal of bias.signals) {
-      const count = (text.match(new RegExp(signal, 'g')) || []).length;
+      const count = (text.match(new RegExp(_escapeRegex(signal), 'g')) || []).length;
       strength += count * 0.2;
     }
     return Math.min(strength, 1);
@@ -927,7 +930,7 @@ class AIPsychologyEngine {
     for (const [aiWord, signal] of Object.entries(lifeVocabMap)) {
       // 在 AI 词汇出现的位置追加对应的信号词（不破坏原文）
       enriched = enriched.replace(
-        new RegExp(aiWord, 'g'),
+        new RegExp(_escapeRegex(aiWord), 'g'),
         `${aiWord}（${signal}）`
       );
     }

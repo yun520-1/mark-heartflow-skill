@@ -6,6 +6,25 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+
+// === 经验 Map 最大容量 ===
+const MAX_HISTORY_SIZE = 100;
+
+/**
+ * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
+ * @param {Map} map - 目标 Map
+ * @param {*} key - 键
+ * @param {*} value - 值
+ * @param {number} maxSize - 最大容量
+ */
+function _boundedSet(map, key, value, maxSize) {
+  if (map.size >= maxSize && !map.has(key)) {
+    const firstKey = map.keys().next().value;
+    map.delete(firstKey);
+  }
+  map.set(key, value);
+}
 
 class ExperienceCollector {
   constructor(options = {}) {
@@ -51,7 +70,7 @@ class ExperienceCollector {
       if (fs.existsSync(indexPath)) {
         const index = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
         for (const [id, meta] of Object.entries(index)) {
-          this.experiences.set(id, meta);
+          _boundedSet(this.experiences, id, meta, MAX_HISTORY_SIZE);
         }
       }
     } catch (error) {
@@ -92,7 +111,7 @@ class ExperienceCollector {
    * 添加经验
    */
   add(experience) {
-    const id = experience.id || `exp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const id = experience.id || `exp-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
 
     const record = {
       id,
@@ -107,7 +126,7 @@ class ExperienceCollector {
       lessons: experience.lessons || []
     };
 
-    this.experiences.set(id, record);
+    _boundedSet(this.experiences, id, record, MAX_HISTORY_SIZE);
     this._saveExperience(id, record);
     this._updateIndex();
 
@@ -348,7 +367,7 @@ class ExperienceCollector {
     let imported = 0;
     for (const exp of data.experiences) {
       if (exp.id && exp.task) {
-        this.experiences.set(exp.id, exp);
+        _boundedSet(this.experiences, exp.id, exp, MAX_HISTORY_SIZE);
         this._saveExperience(exp.id, exp);
         imported++;
       }

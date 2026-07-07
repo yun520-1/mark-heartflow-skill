@@ -21,6 +21,24 @@
 const crypto = require('crypto');
 const VERSION = '1.0.0';
 
+// === 签名/频率 Map 最大容量 ===
+const MAX_MAP_SIZE = 200;
+
+/**
+ * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
+ * @param {Map} map - 目标 Map
+ * @param {*} key - 键
+ * @param {*} value - 值
+ * @param {number} maxSize - 最大容量
+ */
+function _boundedSet(map, key, value, maxSize) {
+  if (map.size >= maxSize && !map.has(key)) {
+    const firstKey = map.keys().next().value;
+    map.delete(firstKey);
+  }
+  map.set(key, value);
+}
+
 // 安全规则
 const TRUSTED_SOURCES = ['user', 'system', 'reflection', 'consolidation'];
 const SUSPICIOUS_PATTERNS = [
@@ -66,7 +84,7 @@ class MemoryIntegrity {
       trusted: TRUSTED_SOURCES.includes(source),
     };
 
-    this.signatures.set(memory.id, signature);
+    _boundedSet(this.signatures, memory.id, signature, MAX_MAP_SIZE);
     this.stats.signed++;
 
     return { ...memory, _signature: signature };
@@ -155,7 +173,7 @@ class MemoryIntegrity {
       const sig = mem._signature;
       if (sig) {
         const key = `${sig.source}:${new Date(sig.timestamp).toDateString()}`;
-        freqMap.set(key, (freqMap.get(key) || 0) + 1);
+        _boundedSet(freqMap, key, (freqMap.get(key) || 0) + 1, MAX_MAP_SIZE);
       }
     }
 

@@ -12,6 +12,24 @@
  */
 const crypto = require('crypto');
 
+// === 合并 Map 最大容量 ===
+const MAX_MAP_SIZE = 200;
+
+/**
+ * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
+ * @param {Map} map - 目标 Map
+ * @param {*} key - 键
+ * @param {*} value - 值
+ * @param {number} maxSize - 最大容量
+ */
+function _boundedSet(map, key, value, maxSize) {
+  if (map.size >= maxSize && !map.has(key)) {
+    const firstKey = map.keys().next().value;
+    map.delete(firstKey);
+  }
+  map.set(key, value);
+}
+
 // 错误严重级别枚举
 const SEVERITY = { LOW: 'low', MEDIUM: 'medium', HIGH: 'high', CRITICAL: 'critical' };
 
@@ -400,7 +418,7 @@ const selfCorrectionLoop = {
           existing.corrected = existing.corrected + ' | ' + c.corrected;
         }
       } else {
-        seen.set(key, { ...c });
+        _boundedSet(seen, key, { ...c }, MAX_MAP_SIZE);
         consolidated.push(seen.get(key));
       }
     }

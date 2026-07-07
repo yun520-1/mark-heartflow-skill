@@ -39,7 +39,7 @@ const DEDUP_HASH_LENGTH = 8;
 function _contentFingerprint(content) {
   const cleaned = content.toLowerCase().replace(/\s+/g, ' ').trim();
   const head = cleaned.slice(0, 32);
-  return crypto.createHash('md5').update(head + '|' + cleaned.length).digest('hex').slice(0, DEDUP_HASH_LENGTH);
+  return crypto.createHash('sha256').update(head + '|' + cleaned.length).digest('hex').slice(0, DEDUP_HASH_LENGTH);
 }
 
 /**

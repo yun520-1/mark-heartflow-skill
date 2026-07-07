@@ -94,12 +94,12 @@ class MCTSReasoning {
       for (let i = 0; i < this.config.maxIterations; i++) {
         // Selection: 选择最有前途的路径
         let node = this._select(root);
-        if (!node) { console.log('MCTS: _select returned null/undefined at iteration', i); break; }
+        if (!node) { if (process.env.HEARTFLOW_DEBUG) console.log('MCTS: _select returned null/undefined at iteration', i); break; }
 
         // Expansion: 如果不是终节点，扩展子节点
         if (!node.isTerminal && node.state.depth < this.config.maxDepth) {
           node = await this._expand(node, generateThoughts);
-          if (!node) { console.log('MCTS: _expand returned null/undefined at iteration', i); break; }
+          if (!node) { if (process.env.HEARTFLOW_DEBUG) console.log('MCTS: _expand returned null/undefined at iteration', i); break; }
         }
 
         // Simulation: 模拟评估

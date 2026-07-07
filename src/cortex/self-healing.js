@@ -16,6 +16,27 @@ const { HealingMemoryRL } = require('./self-healing-rl.js');
 const EventEmitter = require('events');
 
 // ============================================================================
+// 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
+// ============================================================================
+const MAX_TRACKER_SIZE = 300;
+
+/**
+ * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
+ * @param {Map} map - 目标 Map
+ * @param {*} key - 键
+ * @param {*} value - 值
+ * @param {number} maxSize - 最大容量
+ */
+function _boundedSet(map, key, value, maxSize) {
+  if (map.size >= maxSize && !map.has(key)) {
+    // 淘汰最早插入的条目（Map 保持插入顺序）
+    const firstKey = map.keys().next().value;
+    map.delete(firstKey);
+  }
+  map.set(key, value);
+}
+
+// ============================================================================
 // 故障严重性分类枚举
 // ============================================================================
 const FailureSeverity = {
@@ -89,7 +110,7 @@ class SelfHealing extends EventEmitter {
   /** 写入策略缓存 */
   setCachedPolicy(ctx = {}, policy = {}) {
     const key = this._getPolicyCacheKey(ctx);
-    this._lightweightPolicyCache.set(key, { policy, ts: Date.now() });
+    _boundedSet(this._lightweightPolicyCache, key, { policy, ts: Date.now() }, MAX_TRACKER_SIZE);
   }
 
   /** 简化签名：errorType + module + severity band */
@@ -124,7 +145,7 @@ class SelfHealing extends EventEmitter {
       entry.errors = 0;
       entry.healthy = true;
     }
-    this._providerHealth.set(providerName, entry);
+    _boundedSet(this._providerHealth, providerName, entry, MAX_TRACKER_SIZE);
   }
 
   /**
@@ -251,7 +272,7 @@ class SelfHealing extends EventEmitter {
     let stats = this._oscillationTracker.get(pattern);
     if (!stats) {
       stats = { timestamps: [], count: 0, lastRecovery: null };
-      this._oscillationTracker.set(pattern, stats);
+      _boundedSet(this._oscillationTracker, pattern, stats, MAX_TRACKER_SIZE);
     }
 
     // 清除窗口外的时间戳
@@ -352,7 +373,7 @@ class SelfHealing extends EventEmitter {
     for (const record of this._recoveryQualityWindow) {
       const strategy = record.strategy || 'default';
       if (!strategyStats.has(strategy)) {
-        strategyStats.set(strategy, { attempts: 0, successes: 0, recentOutcomes: [] });
+        _boundedSet(strategyStats, strategy, { attempts: 0, successes: 0, recentOutcomes: [] }, MAX_TRACKER_SIZE);
       }
       const stats = strategyStats.get(strategy);
       stats.attempts++;
@@ -610,7 +631,7 @@ class SelfHealing extends EventEmitter {
     // RL: 记录待验证的修复策略（key = message，精确匹配）
     if (available.length > 0) {
       const chosen = available[0];
-      this._pendingCtx.set(message, { context: pattern, strategy: chosen, ts: Date.now() });
+      _boundedSet(this._pendingCtx, message, { context: pattern, strategy: chosen, ts: Date.now() }, MAX_TRACKER_SIZE);
     }
 
     // 自适应epsilon建议

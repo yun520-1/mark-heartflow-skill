@@ -13,6 +13,24 @@ const fs = require('fs');
 const path = require('path');
 const { HealingMemoryRL } = require('../self-healing-rl.js');
 
+// === 待验证修复 Map 最大容量 ===
+const MAX_MAP_SIZE = 200;
+
+/**
+ * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
+ * @param {Map} map - 目标 Map
+ * @param {*} key - 键
+ * @param {*} value - 值
+ * @param {number} maxSize - 最大容量
+ */
+function _boundedSet(map, key, value, maxSize) {
+  if (map.size >= maxSize && !map.has(key)) {
+    const firstKey = map.keys().next().value;
+    map.delete(firstKey);
+  }
+  map.set(key, value);
+}
+
 class SelfEvolutionCore {
   constructor(projectRoot) {
     // 路径验证 - 防止路径遍历攻击
@@ -654,7 +672,7 @@ class SelfEvolutionCore {
     const backoffMs = this._BACKOFF[strategy] || 0;
 
     // 记录待验证的修复策略
-    this._pendingHeal.set(errorMsg, { errorType, strategy, ts: Date.now() });
+    _boundedSet(this._pendingHeal, errorMsg, { errorType, strategy, ts: Date.now() }, MAX_MAP_SIZE);
 
     // 生成修复提示
     const hints = this._generateRepairHints(errorType, errorMsg);
