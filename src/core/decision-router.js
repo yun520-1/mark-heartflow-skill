@@ -548,6 +548,44 @@ class DecisionRouter {
   // ─── v3.0.0 新增：U/D/A/H 场域计算方法 ──────────────────────────────────
 
   /**
+   * v5.8.0 优化：字段提取优先级表（替代 if/else 链）
+   * 每个维度按优先级排列字段名，命中第一个即返回
+   */
+  static _FIELD_EXTRACTORS = {
+    U: [
+      { field: 'identityCoherence', transform: v => v },
+      { field: '_fieldU', transform: v => v },
+      { field: 'ok', transform: v => v ? 0.6 : 0.2 },
+      { field: 'confidence', transform: v => Math.max(0.2, v) },
+      { field: 'stability', transform: v => v },
+    ],
+    D: [
+      { field: 'quality', transform: v => v },
+      { field: '_fieldD', transform: v => v },
+      { field: 'success', transform: v => v ? 0.7 : 0.2 },
+      { field: 'cognitiveLoad', transform: v => Math.max(0.1, 1 - v) },
+      { field: 'awareness', transform: v => Math.max(0.2, v * 0.8) },
+    ],
+    A: [
+      { field: 'dissonance', transform: v => v },
+      { field: '_fieldA', transform: v => v },
+      { field: 'severity', transform: v => String(v).toUpperCase() === 'CRITICAL' ? 0.8 : String(v).toUpperCase() === 'HIGH' ? 0.6 : 0.1 },
+      { field: 'goalValid', transform: v => v === false ? 0.5 : undefined },
+      { field: 'valid', transform: v => v === false ? 0.4 : undefined },
+      { field: 'ok', transform: v => v === false ? 0.3 : undefined },
+    ],
+  };
+
+  static _extractField(result, fieldKey, defaultValue) {
+    for (const extractor of DecisionRouter._FIELD_EXTRACTORS[fieldKey]) {
+      if (result[extractor.field] !== undefined) {
+        return extractor.transform(result[extractor.field]);
+      }
+    }
+    return defaultValue;
+  }
+
+  /**
    * 从任意模块的分析结果中提取或计算 U/D/A/H 四维值
    * @param {object} result - 模块返回值
    * @returns {{ U: number, D: number, A: number, H: number }}
@@ -557,91 +595,83 @@ class DecisionRouter {
       // v3.6.1：后备连续性 — API/模块不可用时回退到上次已知场域快照
       if (this._lastKnownField) {
         this._stats.fallbackCount++;
-        // 轻微衰减：U/D 降 0.01，A 升 0.01，H 重新计算
+        const fb = this._lastKnownField;
         const fallback = {
-          U: Math.max(0.2, this._lastKnownField.U - 0.01),
-          D: Math.max(0.2, this._lastKnownField.D - 0.01),
-          A: Math.min(1, this._lastKnownField.A + 0.01),
+          U: Math.max(0.2, fb.U - 0.01),
+          D: Math.max(0.2, fb.D - 0.01),
+          A: Math.min(1, fb.A + 0.01),
         };
-        fallback.H = Math.max(0, Math.min(1,
-          FIELD_WEIGHTS.lambdaU * fallback.U +
-          FIELD_WEIGHTS.lambdaD * fallback.D -
-          FIELD_WEIGHTS.lambdaA * fallback.A
-        ));
+        fallback.H = this._computeH(fallback.U, fallback.D, fallback.A);
         this._lastKnownField = fallback;
         return fallback;
       }
       return { U: 0.3, D: 0.3, A: 0, H: 0.3 };
     }
 
-    // v3.6.1：记录当前场域快照供后备使用
-    // U（统一性/Unity）——身份在场强度
-    let rawU = 0.3;
-    if (result.identityCoherence !== undefined) {
-      rawU = result.identityCoherence;
-    } else if (result._fieldU !== undefined) {
-      rawU = result._fieldU;
-    } else if (result.ok !== undefined) {
-      rawU = result.ok ? 0.6 : 0.2;
-    } else if (result.confidence !== undefined) {
-      rawU = Math.max(0.2, result.confidence);
-    } else if (result.stability !== undefined) {
-      rawU = result.stability;
-    }
-    const U = Math.max(0, Math.min(1, rawU));
-
-    // D（发展性/Development）——信息推进的结构化程度
-    let rawD = 0.3;
-    if (result.quality !== undefined) {
-      rawD = result.quality;
-    } else if (result._fieldD !== undefined) {
-      rawD = result._fieldD;
-    } else if (result.success !== undefined) {
-      rawD = result.success ? 0.7 : 0.2;
-    } else if (result.cognitiveLoad !== undefined) {
-      rawD = Math.max(0.1, 1 - result.cognitiveLoad);
-    } else if (result.awareness !== undefined) {
-      rawD = Math.max(0.2, result.awareness * 0.8);
-    }
-    const D = Math.max(0, Math.min(1, rawD));
-
-    // A（对抗性/Adversity）——矛盾边密度
-    let rawA = 0;
-    if (result.dissonance !== undefined) {
-      rawA = result.dissonance;
-    } else if (result._fieldA !== undefined) {
-      rawA = result._fieldA;
-    } else if (result.severity !== undefined) {
-      rawA = String(result.severity).toUpperCase() === 'CRITICAL' ? 0.8 :
-          String(result.severity).toUpperCase() === 'HIGH' ? 0.6 : 0.1;
-    } else if (result.goalValid === false) {
-      rawA = 0.5;
-    } else if (result.valid === false) {
-      rawA = 0.4;
-    } else if (result.ok === false) {
-      rawA = 0.3;
-    }
-    const A = Math.max(0, Math.min(1, rawA));
+    // v5.8.0 优化：使用优先级表提取字段值（O(1) 平均）
+    const U = Math.max(0, Math.min(1, DecisionRouter._extractField(result, 'U', 0.3)));
+    const D = Math.max(0, Math.min(1, DecisionRouter._extractField(result, 'D', 0.3)));
+    const A = Math.max(0, Math.min(1, DecisionRouter._extractField(result, 'A', 0)));
 
     // 保存当前场域快照（供后备连续性使用）
     this._lastKnownField = { U, D, A };
 
-    // H（和谐度/Harmony）——加权公式（v3.8.0：场景感知权重）
-    // H = λU·U + λD·D - λA·A
-    const weights = this._activeWeights;
-    const rawH = weights.lambdaU * U + weights.lambdaD * D - weights.lambdaA * A;
-    const H = Math.max(0, Math.min(1, rawH));
+    const H = this._computeH(U, D, A);
+    return { U, D, A, H };
+  }
 
-    // v3.9.1：记录场景上下文（解决跨场景 H 值可比性问题）
-    const scene = this._activeScene || 'default';
-    const normalizedH = this._normalizeHAcrossScenes(H, scene);
-
-    return { U, D, A, H, scene, normalizedH };
+  _computeH(U, D, A) {
+    // v3.8.0：场景感知权重
+    const w = this._activeWeights;
+    return Math.max(0, Math.min(1, w.lambdaU * U + w.lambdaD * D - w.lambdaA * A));
   }
 
   /**
+   * v5.8.0 优化：场景检测评分表（替代 if/else 链）
+   * 每个场景有独立的评分函数，返回匹配度 0-1
+   */
+  static _SCENE_SCORERS = [
+    {
+      scene: 'technical',
+      score: (U, D, A, H, hist, result) => {
+        if (D <= 0.5 || A >= 0.2 || U <= 0.4 || hist.length < 3) return 0;
+        const recentDrivers = hist.slice(-3).map(h => h.driver);
+        return recentDrivers.filter(d => d === 'D').length >= 2 ? 1 : 0;
+      },
+    },
+    {
+      scene: 'emotional',
+      score: (U, D, A, H, hist, result) => {
+        if (A <= 0.3 || hist.length < 3) return 0;
+        const aValues = hist.slice(-3).map(h => h.A);
+        const aRange = Math.max(...aValues) - Math.min(...aValues);
+        return aRange > 0.15 ? 1 : 0;
+      },
+    },
+    {
+      scene: 'analytical',
+      score: (U, D, A, H, hist, result) => {
+        if (!result) return 0;
+        return (result.quality !== undefined || result.directionClear !== undefined) ? 1 : 0;
+      },
+    },
+    {
+      scene: 'creative',
+      score: (U, D, A, H, hist, result) => {
+        return U > 0.6 && D < 0.3 && A < 0.15 ? 1 : 0;
+      },
+    },
+    {
+      scene: 'reflective',
+      score: (U, D, A, H, hist, result) => {
+        return A > 0.5 && U < 0.3 && H < 0.4 ? 1 : 0;
+      },
+    },
+  ];
+
+  /**
    * v3.8.0：检测当前场景类型
-   * 基于场域历史特征自动分类场景，切换权重配置
+   * v5.8.0 优化：使用评分表替代 if/else 链
    * @param {{U:number, D:number, A:number, H:number}} fieldValues
    * @param {object} [result] - 原始模块返回值（含额外特征）
    * @returns {string} 场景类型标识
@@ -650,33 +680,17 @@ class DecisionRouter {
     const { U, D, A, H } = fieldValues;
     const hist = this._fieldHistory;
 
-    // 条件1：技术讨论 — D 持续主导 + A 偏低 + U 稳定偏高
-    if (D > 0.5 && A < 0.2 && U > 0.4 && hist.length >= 3) {
-      const recentDrivers = hist.slice(-3).map(h => h.driver);
-      const dDominant = recentDrivers.filter(d => d === 'D').length >= 2;
-      if (dDominant) return 'technical';
+    // 使用评分表并行评估所有场景，取最高分
+    let bestScene = 'general';
+    let bestScore = 0;
+    for (const scorer of DecisionRouter._SCENE_SCORERS) {
+      const score = scorer.score(U, D, A, H, hist, result);
+      if (score > bestScore) {
+        bestScore = score;
+        bestScene = scorer.scene;
+      }
     }
-
-    // 条件2：情感冲突 — A 波动大 + 有快速升降
-    if (A > 0.3 && hist.length >= 3) {
-      const aValues = hist.slice(-3).map(h => h.A);
-      const aRange = Math.max(...aValues) - Math.min(...aValues);
-      if (aRange > 0.15) return 'emotional';
-    }
-
-    // 条件3：分析/推理 — 模块返回了 quality/directionClear 等推理信号
-    if (result && (result.quality !== undefined || result.directionClear !== undefined)) {
-      return 'analytical';
-    }
-
-    // 条件4：创意/发散 — U 高 + D 低 + A 低
-    if (U > 0.6 && D < 0.3 && A < 0.15) return 'creative';
-
-    // 条件5：自我修复 — A 高 + U 低 + H 低
-    if (A > 0.5 && U < 0.3 && H < 0.4) return 'reflective';
-
-    // 默认
-    return 'general';
+    return bestScene;
   }
 
   /**
