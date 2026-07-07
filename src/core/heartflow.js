@@ -763,7 +763,7 @@ class HeartFlow {
         getStats: () => ({ type: 'fact-checker' }),
       };
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'truth', error: e.message });
+      _boundedPush(this._initErrors, { module: 'truth', error: e.message }, MAX_HISTORY_SIZE);
     }
 
     // Behavior
@@ -791,7 +791,7 @@ class HeartFlow {
         getStats: () => behaviorTracker.getStats(),
       };
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'behavior', error: e.message });
+      _boundedPush(this._initErrors, { module: 'behavior', error: e.message }, MAX_HISTORY_SIZE);
     }
 
     // Persistence
@@ -833,22 +833,22 @@ class HeartFlow {
         getStats: () => ({ type: 'wal+atomic', walDir, opTypes: OP_TYPES }),
       };
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'persistence', error: e.message });
+      _boundedPush(this._initErrors, { module: 'persistence', error: e.message }, MAX_HISTORY_SIZE);
     }
 
     // Engine modules
-    try { this.stability = new (_StabilityGuard().StabilityGuard)(); } catch (e) { _boundedPush(this._initErrors, {module: 'stability', error: e.message}); }
-    try { this.execution = new (_ExecutionVerifier().ExecutionVerifier)(); } catch (e) { _boundedPush(this._initErrors, {module: 'execution', error: e.message}); }
-    try { this.decision = new (_HeartFlowDecision().HeartFlowDecision)(this.memory); } catch (e) { _boundedPush(this._initErrors, {module: 'decision', error: e.message}); }
-    try { this.decisionVerifier = new (_DecisionVerifier().DecisionVerifier)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionVerifier', error: e.message}); }
+    try { this.stability = new (_StabilityGuard().StabilityGuard)(); } catch (e) { _boundedPush(this._initErrors, {module: 'stability', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.execution = new (_ExecutionVerifier().ExecutionVerifier)(); } catch (e) { _boundedPush(this._initErrors, {module: 'execution', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.decision = new (_HeartFlowDecision().HeartFlowDecision)(this.memory); } catch (e) { _boundedPush(this._initErrors, {module: 'decision', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.decisionVerifier = new (_DecisionVerifier().DecisionVerifier)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionVerifier', error: e.message}, MAX_HISTORY_SIZE); }
     // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
-    try { this.cognitiveEngine = new (_CognitiveEngine().CognitiveEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'cognitiveEngine', error: e.message}); }
-    try { this.decisionEngine = new (_DecisionEngine().DecisionEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionEngine', error: e.message}); }
-    try { this.counterfactual = new (_CounterfactualEngine().CounterfactualEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'counterfactual', error: e.message}); }
-    try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { _boundedPush(this._initErrors, {module: 'confidence', error: e.message}); }
-    try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { _boundedPush(this._initErrors, {module: 'restraint', error: e.message}); }
-    try { this.workflow = new (_WorkflowSwitch())(); } catch (e) { _boundedPush(this._initErrors, {module: 'workflow', error: e.message}); }
-    try { this.verifierGrant = new (_VerifierGrant().VerifierGrant)(); } catch (e) { _boundedPush(this._initErrors, {module: 'verifierGrant', error: e.message}); }
+    try { this.cognitiveEngine = new (_CognitiveEngine().CognitiveEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'cognitiveEngine', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.decisionEngine = new (_DecisionEngine().DecisionEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionEngine', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.counterfactual = new (_CounterfactualEngine().CounterfactualEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'counterfactual', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { _boundedPush(this._initErrors, {module: 'confidence', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { _boundedPush(this._initErrors, {module: 'restraint', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.workflow = new (_WorkflowSwitch())(); } catch (e) { _boundedPush(this._initErrors, {module: 'workflow', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.verifierGrant = new (_VerifierGrant().VerifierGrant)(); } catch (e) { _boundedPush(this._initErrors, {module: 'verifierGrant', error: e.message}, MAX_HISTORY_SIZE); }
     if (this.verifierGrant) this._modules['verifierGrant'] = this.verifierGrant;
     this.snapshot = _StateSnapshot();
     this.error = _ErrorHandler();
@@ -857,12 +857,12 @@ class HeartFlow {
     try {
       this.platformAdapter = _PlatformAdapter().createAdapter('hermes');
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'platformAdapter', error: e.message });
+      _boundedPush(this._initErrors, { module: 'platformAdapter', error: e.message }, MAX_HISTORY_SIZE);
     }
     try {
       this.capabilityAbstraction = new (_CapabilityAbstraction().CapabilityAbstraction)(this.platformAdapter);
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'capabilityAbstraction', error: e.message });
+      _boundedPush(this._initErrors, { module: 'capabilityAbstraction', error: e.message }, MAX_HISTORY_SIZE);
     }
 
     // ─── Tier 2 延迟加载注册表 ──────────────────────────────────────────
@@ -1064,7 +1064,7 @@ class HeartFlow {
       });
       this.decisionRouter = this._decisionRouter;
       this._modelProfile = modelProfile;
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'decisionRouter', error: e.message }); }
+    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'decisionRouter', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v4.0] 决策执行器 — DecisionExecutor ──────────────────────────────
     try {
@@ -1091,25 +1091,25 @@ class HeartFlow {
         dataDir: path.join(this.rootPath, 'data', 'judgments'),
         memory: this.memory,
       });
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'judgmentEngine', error: e.message }); }
+    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'judgmentEngine', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── 时间延伸分析层（v1.0.0 新增） ─────────────────────────────────────
     try {
       const { TimeExtensionEngine } = require('../workflow/time-extension.js');
       this.timeExtension = new TimeExtensionEngine(this);
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'timeExtension', error: e.message }); }
+    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'timeExtension', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── 逻辑推理引擎 — LogicReasoning（v1.0.0 新增） ────────────────────────
     try {
       const { LogicReasoning } = require('../reasoning/logic-reasoning.js');
       this.logicReasoning = new LogicReasoning();
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'logicReasoning', error: e.message }); }
+    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'logicReasoning', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── 步骤级推理奖励模型 — ProcessRewardModel（v1.0.0 新增） ────────────
     try {
       const { ProcessRewardModel } = require('../reasoning/process-reward-model.js');
       this.processRewardModel = new ProcessRewardModel();
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'processRewardModel', error: e.message }); }
+    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'processRewardModel', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── 辩论分析器 — DebateAnalyzer（v2.10.2 新增） ─────────────────────────
     try {
@@ -1121,7 +1121,7 @@ class HeartFlow {
     try {
       const APMod = _AdaptivePlanner();
       this.adaptivePlanner = new (APMod.AdaptivePlanner)();
-    } catch (e) { _boundedPush(this._initErrors, { module: 'adaptivePlanner', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'adaptivePlanner', error: e.message }, MAX_HISTORY_SIZE); }
 
     try {
       const CEMod2 = _CodeExecutor();
@@ -1187,7 +1187,7 @@ class HeartFlow {
         REASONING_DEPTH: TCMod.REASONING_DEPTH,
       };
     } catch (e) {
-      _boundedPush(this._initErrors, { module: 'thoughtChain', error: e.message });
+      _boundedPush(this._initErrors, { module: 'thoughtChain', error: e.message }, MAX_HISTORY_SIZE);
       this._thoughtChainApi = null;
     }
 
@@ -1199,7 +1199,7 @@ class HeartFlow {
     try {
       const { Pipeline } = require('../workflow/pipeline.js');
       this.pipeline = new Pipeline({ heartflow: this });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'pipeline', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'pipeline', error: e.message }, MAX_HISTORY_SIZE); }
 
     // v3.0 — 交流层模块初始化
     try {
@@ -1225,7 +1225,7 @@ class HeartFlow {
         _toneAnalyzer: ta, _entityExtractor: ee, _implicitNeedDetector: ind,
         _responseCompressor: rc, _confidenceAnnotator: ca,
       };
-    } catch (e) { _boundedPush(this._initErrors, { module: 'translator', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'translator', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const ab = new (_AgentBridge().AgentBridge)({ heartflow: this });
       const cb = new (_ContextBuilder().ContextBuilder)();
@@ -1248,7 +1248,7 @@ class HeartFlow {
         _translationPipeline: tp, _qualityFilter: qf, _followupSuggester: fs,
         _conflictResolver: cr, _uncertaintyHandler: uh,
       };
-    } catch (e) { _boundedPush(this._initErrors, { module: 'agentLayer', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'agentLayer', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const bi = new (_BridgeIdentity().BridgeIdentity)();
       const ji = new (_JudgmentInjector().JudgmentInjector)();
@@ -1268,68 +1268,68 @@ class HeartFlow {
         _bridgeIdentity: bi, _judgmentInjector: ji, _stanceDetector: sd,
         _agentCommentary: ac, _valueAligner: va, _personalityTone: pt, _metaPosition: mp,
       };
-    } catch (e) { _boundedPush(this._initErrors, { module: 'personaCore', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'personaCore', error: e.message }, MAX_HISTORY_SIZE); }
     // ─── Desire Cognition — 欲望认知引擎（v0.1.0 新增） ─────────────────────
     try {
       const { DesireCognition } = require('../emotion/desire-cognition.js');
       this.desireCognition = new DesireCognition();
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'desireCognition', error: e.message }); }
+    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'desireCognition', error: e.message }, MAX_HISTORY_SIZE); }
     // ─── Three Poisons — 贪嗔痴三毒评估（v1.0.0 新增） ──────────────────
     try {
       this.threePoisons = require('../emotion/three-poisons.js');
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'threePoisons', error: e.message }); }
+    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'threePoisons', error: e.message }, MAX_HISTORY_SIZE); }
     // ─── Love Cognition — 爱情认知引擎（v0.1.0 新增） ──────────────────────
     try {
       const { LoveCognition } = require('../emotion/love-cognition.js');
       this.loveCognition = new LoveCognition();
-    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'loveCognition', error: e.message }); }
+    } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'loveCognition', error: e.message }, MAX_HISTORY_SIZE); }
     // ─── Cognition Ground — 底层认知地面（v1.0.0 新增） ─────────────────
     try {
       const { CognitionGround } = require('./cognition-ground.js');
       this.cognitionGround = new CognitionGround({ heartFlow: this });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'cognitionGround', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'cognitionGround', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── V21.1 模块化认知引擎启发 — 4个新模块 ──────────────────────────────
     try {
       const SemanticClusterer = _SemanticClusterer();
       this.semanticClusterer = new SemanticClusterer({ maxGroups: 64, maxConceptsPerGroup: 20 });
       this.semanticClusterer.init(this.memory);
-    } catch (e) { _boundedPush(this._initErrors, { module: 'semanticClusterer', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'semanticClusterer', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const DualPerspectiveAuditor = _DualPerspectiveAuditor();
       this.dualPerspectiveAuditor = new DualPerspectiveAuditor({ maxRounds: 5, convergenceThreshold: 0.8 });
       this.dualPerspectiveAuditor.init();
-    } catch (e) { _boundedPush(this._initErrors, { module: 'dualPerspectiveAuditor', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'dualPerspectiveAuditor', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const TieredMemoryFusion = _TieredMemoryFusion();
       this.tieredMemoryFusion = new TieredMemoryFusion({ l1Size: 10, l2Window: 50, l2Alpha: 0.3 });
       this.tieredMemoryFusion.init(this.memory);
-    } catch (e) { _boundedPush(this._initErrors, { module: 'tieredMemoryFusion', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'tieredMemoryFusion', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const CounterfactualVerifier = _CounterfactualVerifier();
       this.counterfactualVerifier = new CounterfactualVerifier({ minMargin: 0.3, maxCandidates: 5, contrastWeight: 0.2 });
       this.counterfactualVerifier.init();
-    } catch (e) { _boundedPush(this._initErrors, { module: 'counterfactualVerifier', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'counterfactualVerifier', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const DebateConvergence = _DebateConvergence();
       this.debateConvergence = new DebateConvergence({ convergenceThreshold: 0.8, maxRounds: 9, stagnationThreshold: 3 });
       this.debateConvergence.init();
-    } catch (e) { _boundedPush(this._initErrors, { module: 'debateConvergence', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'debateConvergence', error: e.message }, MAX_HISTORY_SIZE); }
     // ─── 多智能体辩论协调器 — DebateConductor（v5.6.1 新增） ─────────────────
     try {
       const { DebateConductor } = require('../reasoning/debate-conductor.js');
       this.debateConductor = new DebateConductor(this);
-    } catch (e) { _boundedPush(this._initErrors, { module: 'debateConductor', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'debateConductor', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.5.5] 新功能模块初始化 ──────────────────────────
     try {
       const FOA = _FocusOfAttention();
       this.focusOfAttention = new FOA.FocusOfAttention({ maxAttention: 10, decayRate: 0.1 });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'focusOfAttention', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'focusOfAttention', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const CSD = _CodeSelfDebug();
       this.codeSelfDebug = new CSD.CodeSelfDebug({ maxRetries: 3 });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'codeSelfDebug', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'codeSelfDebug', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.6.0] 论文驱动升级模块初始化 ────────────────────
     // 1. ReflexionEngine — 语言强化学习反思 (Reflexion paper)
@@ -1339,7 +1339,7 @@ class HeartFlow {
         maxReflections: 10,
         successThreshold: 0.7,
       });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'reflexionEngine', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'reflexionEngine', error: e.message }, MAX_HISTORY_SIZE); }
     // 2. MemoryConsolidator — 神经记忆巩固 (MemGPT/Sleep consolidation)
     try {
       const MC = _MemoryConsolidator();
@@ -1347,7 +1347,7 @@ class HeartFlow {
         ephemeralThreshold: 20,
         consolidationInterval: 3600000,
       });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryConsolidator', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryConsolidator', error: e.message }, MAX_HISTORY_SIZE); }
     // 3. MultiAgentDialogue — 多代理对话 (AutoGen)
     try {
       const MAD = _MultiAgentDialogue();
@@ -1372,7 +1372,7 @@ class HeartFlow {
           persona: 'You are a synthesizer. Combine different perspectives into a coherent whole.',
           respond: async (msg, ctx) => ({ content: `Synthesizer: Integrating the analytical and critical perspectives, here is my synthesized recommendation.`, role: 'synthesizer' }),
         });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'multiAgentDialogue', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'multiAgentDialogue', error: e.message }, MAX_HISTORY_SIZE); }
     // 4. MCTSReasoning — 蒙特卡洛树搜索推理 (LLaMA-Berry)
     try {
       const MCTS = _MCTSReasoning();
@@ -1380,7 +1380,7 @@ class HeartFlow {
         maxIterations: 50,
         maxDepth: 5,
       });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'mctsReasoning', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'mctsReasoning', error: e.message }, MAX_HISTORY_SIZE); }
     // 5. HierarchicalPlanner — 层次化规划器 (Hierarchical Planning)
     try {
       const HP = _HierarchicalPlanner();
@@ -1388,7 +1388,7 @@ class HeartFlow {
         maxDepth: 3,
         replanThreshold: 0.3,
       });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'hierarchicalPlanner', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'hierarchicalPlanner', error: e.message }, MAX_HISTORY_SIZE); }
     // ─── [v5.6.1] 深研论文驱动升级 — 3个新模块 ─────────────────
     // 1. MemoryQuality — 记忆质量评分 + 艾宾浩斯遗忘 + 污染检测 (2026 memory research)
     try {
@@ -1399,7 +1399,7 @@ class HeartFlow {
         ephemeralDecayRate: 0.05,
         maxMemories: 5000,
       });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryQuality', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryQuality', error: e.message }, MAX_HISTORY_SIZE); }
     // 2. MetacognitiveFeedback — 元认知反馈 + 自我纠正 (SOFAI-LM)
     try {
       const MF = _MetacognitiveFeedback();
@@ -1407,12 +1407,12 @@ class HeartFlow {
         qualityThreshold: 0.6,
         autoCorrect: true,
       });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'metacognitiveFeedback', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'metacognitiveFeedback', error: e.message }, MAX_HISTORY_SIZE); }
     // 3. ResearchPaperIndex — 研究论文索引 (cognitive architecture research)
     try {
       const PI = _PaperIndex();
       this.paperIndex = new PI.ResearchPaperIndex();
-    } catch (e) { _boundedPush(this._initErrors, { module: 'paperIndex', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'paperIndex', error: e.message }, MAX_HISTORY_SIZE); }
 
     // 4. CognitiveLoadBalancer — 多智能体认知损耗规避 (Bystander Effect mitigation)
     try {
@@ -1422,7 +1422,7 @@ class HeartFlow {
         loafingThreshold: 0.3,
       });
       this._modules.cognitiveLoad = this.cognitiveLoad;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'cognitiveLoad', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'cognitiveLoad', error: e.message }, MAX_HISTORY_SIZE); }
 
     // 5. InformationFlowOrchestrator — 信息流编排 (Beyond Rule-Based Workflows)
     try {
@@ -1430,28 +1430,28 @@ class HeartFlow {
       const IFClass = IFMod.InformationFlowOrchestrator;
       this.infoFlow = IFClass ? new IFClass({ maxIterations: 10 }) : null;
       this._modules.infoFlow = this.infoFlow;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'informationFlow', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'informationFlow', error: e.message }, MAX_HISTORY_SIZE); }
 
     // 6. ReflectionMemory — 反思记忆独立存储 (Reflexion)
     try {
       const RM = _ReflectionMemory();
       this.reflectionMemory = new RM.ReflectionMemory({ maxReflections: 500 });
       this._modules.reflectionMemory = this.reflectionMemory;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'reflectionMemory', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'reflectionMemory', error: e.message }, MAX_HISTORY_SIZE); }
 
     // 7. KVCachePersistor — KV Cache持久化
     try {
       const KV = _KVCache();
       this.kvCache = new KV.KVCachePersistor({ maxCacheSize: 100, quantize: true });
       this._modules.kvCache = this.kvCache;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'kvCache', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'kvCache', error: e.message }, MAX_HISTORY_SIZE); }
 
     // 8. MemoryIntegrity — 记忆完整性安全验证
     try {
       const MI = _MemoryIntegrity();
       this.memoryIntegrity = new MI.MemoryIntegrity({ strictMode: false });
       this._modules.memoryIntegrity = this.memoryIntegrity;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryIntegrity', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryIntegrity', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.7.4] EDV 经验验证器 — Execute-Distill-Verify ─────────────
     try {
@@ -1461,7 +1461,7 @@ class HeartFlow {
         verifyThreshold: 0.7,
       });
       this._modules.experienceValidator = this.experienceValidator;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'experienceValidator', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'experienceValidator', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.7.4] AdaMem 记忆写入控制 ────────────────────────────────
     try {
@@ -1471,7 +1471,7 @@ class HeartFlow {
         utilityThreshold: 0.4,
       });
       this._modules.memoryWriteController = this.memoryWriteController;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryWriteController', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryWriteController', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.7.4] 元认知 RL (RLMF) — 置信度校准 ──────────────────────
     try {
@@ -1481,7 +1481,7 @@ class HeartFlow {
         calibrationWindow: 50,
       });
       this._modules.metacognitiveRL = this.metacognitiveRL;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'metacognitiveRL', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'metacognitiveRL', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.7.4] 记忆压缩器 (MemRefine) ─────────────────────────────
     try {
@@ -1491,7 +1491,7 @@ class HeartFlow {
         minCompressionRatio: 0.3,
       });
       this._modules.memoryCompressor = this.memoryCompressor;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryCompressor', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'memoryCompressor', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.7.4] 技能进化引擎 (SkillCoach) ──────────────────────────
     try {
@@ -1501,7 +1501,7 @@ class HeartFlow {
         maxSkills: 500,
       });
       this._modules.skillEvolution = this.skillEvolution;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'skillEvolution', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'skillEvolution', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.7.4] 世界模型 (AgentWorld) ──────────────────────────────
     try {
@@ -1512,83 +1512,83 @@ class HeartFlow {
         activeInferenceWeight: 0.4,
       });
       this._modules.worldModel = this.worldModel;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'worldModel', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'worldModel', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.7.5] 古代智慧基础 — 美德伦理 + 人性论 + 意义目的 ─────────
     try {
       const VEF = _VirtueEthicsFoundation();
       this.virtueEthics = new VEF.VirtueEthicsFoundation({ primaryTradition: 'confucianism' });
       this._modules.virtueEthics = this.virtueEthics;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'virtueEthics', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'virtueEthics', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const HNC = _HumanNatureConstitution();
       this.humanNature = new HNC.HumanNatureConstitution({ primaryView: 'integrated' });
       this._modules.humanNature = this.humanNature;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'humanNature', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'humanNature', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const MPE = _MeaningPurposeEngine();
       this.meaningPurpose = new MPE.MeaningPurposeEngine({ resilienceMode: true });
       this._modules.meaningPurpose = this.meaningPurpose;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'meaningPurpose', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'meaningPurpose', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.7.5] P2 品格养成 + 道德发展 + 智慧引擎 ───────────────────
     try {
       const CC = _CharacterCultivation();
       this.characterCultivation = new CC.CharacterCultivation({ primaryVirtues: ['honesty', 'courage', 'compassion', 'wisdom', 'justice'] });
       this._modules.characterCultivation = this.characterCultivation;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'characterCultivation', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'characterCultivation', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const MD = _MoralDevelopment();
       this.moralDevelopment = new MD.MoralDevelopment({ primaryTheory: 'kohlberg' });
       this._modules.moralDevelopment = this.moralDevelopment;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'moralDevelopment', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'moralDevelopment', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const WE = _WisdomEngine();
       this.wisdomEngine = new WE.WisdomEngine({ maxReflections: 100 });
       this._modules.wisdomEngine = this.wisdomEngine;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'wisdomEngine', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'wisdomEngine', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.7.6] P3 人性深化 + P4 关系社会 + P5 痛苦成长 + P6 AI人类整合 ─
     // P3: Suffering Resilience + Grief + Hope
     try {
       const SR = _SufferingResilience(); this.sufferingResilience = new SR.SufferingResilience({ resilienceMode: 'growth' }); this._modules.sufferingResilience = this.sufferingResilience;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'sufferingResilience', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'sufferingResilience', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const GE = _GriefEngine(); this.griefEngine = new GE.GriefEngine({ culture: 'integrated' }); this._modules.griefEngine = this.griefEngine;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'griefEngine', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'griefEngine', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const HE = _HopeEngine(); this.hopeEngine = new HE.HopeEngine(); this._modules.hopeEngine = this.hopeEngine;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'hopeEngine', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'hopeEngine', error: e.message }, MAX_HISTORY_SIZE); }
     // P4: Human Relation + Empathy + Conflict
     try {
       const HR = _HumanRelation(); this.humanRelation = new HR.HumanRelation(); this._modules.humanRelation = this.humanRelation;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'humanRelation', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'humanRelation', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const ED = _EmpathyDeepening(); this.empathyDeepening = new ED.EmpathyDeepening(); this._modules.empathyDeepening = this.empathyDeepening;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'empathyDeepening', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'empathyDeepening', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const CR = _ConflictResolution(); this.conflictResolution = new CR.ConflictResolution(); this._modules.conflictResolution = this.conflictResolution;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'conflictResolution', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'conflictResolution', error: e.message }, MAX_HISTORY_SIZE); }
     // P5: Trauma + PTG + Forgiveness
     try {
       const TI = _TraumaInformed(); this.traumaInformed = new TI.TraumaInformed(); this._modules.traumaInformed = this.traumaInformed;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'traumaInformed', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'traumaInformed', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const PTG = _PostTraumaticGrowth(); this.postTraumaticGrowth = new PTG.PostTraumaticGrowth(); this._modules.postTraumaticGrowth = this.postTraumaticGrowth;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'postTraumaticGrowth', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'postTraumaticGrowth', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const FE = _ForgivenessEngine(); this.forgivenessEngine = new FE.ForgivenessEngine(); this._modules.forgivenessEngine = this.forgivenessEngine;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'forgivenessEngine', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'forgivenessEngine', error: e.message }, MAX_HISTORY_SIZE); }
     // P6: AI-Human Integration + Being Mode + Consciousness Bridge
     try {
       const AHI = _AIHumanIntegration(); this.aiHumanIntegration = new AHI.AIHumanIntegration(); this._modules.aiHumanIntegration = this.aiHumanIntegration;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'aiHumanIntegration', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'aiHumanIntegration', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const BM = _BeingMode(); this.beingMode = new BM.BeingMode(); this._modules.beingMode = this.beingMode;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'beingMode', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'beingMode', error: e.message }, MAX_HISTORY_SIZE); }
     try {
       const CB = _ConsciousnessBridge(); this.consciousnessBridge = new CB.ConsciousnessBridge(); this._modules.consciousnessBridge = this.consciousnessBridge;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'consciousnessBridge', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'consciousnessBridge', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.7.7] F3 持续漂移检测器 — 整合 identity drift + cognitive dissonance + decision decay ──
     try {
@@ -1596,7 +1596,7 @@ class HeartFlow {
         driftThreshold: 0.3, windowSize: 10, smoothingFactor: 0.1,
       });
       this._modules.sustainedDriftDetector = this.sustainedDriftDetector;
-    } catch (e) { _boundedPush(this._initErrors, { module: 'sustainedDriftDetector', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'sustainedDriftDetector', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.5.6] 自愈RL — SelfHealing (Reflexion + Q-learning) ─────────────
     // 将 HealingMemoryRL 接入引擎生命周期，消除死代码
@@ -1619,7 +1619,7 @@ class HeartFlow {
         rl: this.selfHealing?.rl || null,
         judgmentEngine: this.judgmentEngine || null,
       });
-    } catch (e) { _boundedPush(this._initErrors, { module: 'selfPlay', error: e.message }); }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'selfPlay', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
     this.heartflow = this;  // 让 dispatch('heartflow.introspect') 能找到实例
@@ -1903,11 +1903,11 @@ class HeartFlow {
     for (const mod of Object.values(this._modules)) {
       if (!mod || mod === this) continue;  // Skip self-reference (this.heartflow = this)
       if (mod && typeof mod.destroy === 'function') {
-        try { mod.destroy(); } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: `destroy_${mod.constructor?.name || 'unknown'}`, error: e.message }); }
+        try { mod.destroy(); } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: `destroy_${mod.constructor?.name || 'unknown'}`, error: e.message }, MAX_HISTORY_SIZE); }
       } else if (mod && typeof mod.stop === 'function') {
-        try { mod.stop(); } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: `stop_${mod.constructor?.name || 'unknown'}`, error: e.message }); }
+        try { mod.stop(); } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: `stop_${mod.constructor?.name || 'unknown'}`, error: e.message }, MAX_HISTORY_SIZE); }
       } else if (mod && typeof mod.shutdown === 'function') {
-        try { mod.shutdown(); } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: `shutdown_${mod.constructor?.name || 'unknown'}`, error: e.message }); }
+        try { mod.shutdown(); } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: `shutdown_${mod.constructor?.name || 'unknown'}`, error: e.message }, MAX_HISTORY_SIZE); }
       }
     }
     this.started = false;
