@@ -133,23 +133,23 @@ const DEFAULT_PIPELINE = [
     run: async (ctx, hf) => {
       let desire = null;
       if (hf.desireCognition && typeof hf.desireCognition.analyzeDesires === 'function') {
-        try { desire = hf.desireCognition.analyzeDesires(ctx.input); } catch (e) { /* [PROD] */ }
+        try { desire = hf.desireCognition.analyzeDesires(ctx.input); } catch (e) { /* 已禁用 */ }
       }
       let threePoisons = null;
       if (hf.threePoisons && typeof hf.threePoisons.analyzeThreePoisons === 'function') {
-        try { threePoisons = hf.threePoisons.analyzeThreePoisons(ctx.input); } catch (e) { /* [PROD] */ }
+        try { threePoisons = hf.threePoisons.analyzeThreePoisons(ctx.input); } catch (e) { /* 已禁用 */ }
       }
       let selfPositioning = null;
       if (hf.selfPositioning && typeof hf.selfPositioning.analyze === 'function') {
-        try { selfPositioning = hf.selfPositioning.analyze(ctx.input); } catch (e) { /* [PROD] */ }
+        try { selfPositioning = hf.selfPositioning.analyze(ctx.input); } catch (e) { /* 已禁用 */ }
       }
       let loveCognition = null;
       if (hf.loveCognition && typeof hf.loveCognition.evaluateTriangle === 'function') {
-        try { loveCognition = hf.loveCognition.evaluateTriangle(ctx.input); } catch (e) { /* [PROD] */ }
+        try { loveCognition = hf.loveCognition.evaluateTriangle(ctx.input); } catch (e) { /* 已禁用 */ }
       }
       let cognitionGround = null;
       if (hf.cognitionGround && typeof hf.cognitionGround.map === 'function') {
-        try { cognitionGround = hf.cognitionGround.map(ctx.input); } catch (e) { /* [PROD] */ }
+        try { cognitionGround = hf.cognitionGround.map(ctx.input); } catch (e) { /* 已禁用 */ }
       }
       return { desire, threePoisons, selfPositioning, loveCognition, cognitionGround };
     },

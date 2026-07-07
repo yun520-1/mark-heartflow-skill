@@ -78,7 +78,7 @@ class SelfEvolutionCore {
         this.state = { ...this.state, ...data };
       }
     } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[SelfEvolution] 加载状态失败，使用默认');
+      // 已禁用 console.error: console.error('[SelfEvolution] 加载状态失败，使用默认');
     }
   }
 
@@ -113,7 +113,7 @@ class SelfEvolutionCore {
       iterationCount++;
       const iterationStart = Date.now();
       
-      // [PROD] 生产环境移除 console.error: console.error(`[SelfEvolution] 迭代 ${iterationCount}/${maxIterations}`);
+      // 已禁用 console.error: console.error(`[SelfEvolution] 迭代 ${iterationCount}/${maxIterations}`);
       
       // 1. 目标生成或更新
       const goals = this.generateGoals(input, context);
@@ -142,7 +142,7 @@ class SelfEvolutionCore {
       if (iterationCount > 1) {
         const improvementDelta = Math.abs(previousImprovement - currentImprovement);
         if (improvementDelta < convergenceThreshold) {
-          // [PROD] 生产环境移除 console.error: console.error(`[SelfEvolution] 收敛检测: 改进 ${improvementDelta.toFixed(4)} < 阈值 ${convergenceThreshold}, 停止迭代`);
+          // 已禁用 console.error: console.error(`[SelfEvolution] 收敛检测: 改进 ${improvementDelta.toFixed(4)} < 阈值 ${convergenceThreshold}, 停止迭代`);
           converged = true;
         }
       }

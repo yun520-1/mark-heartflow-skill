@@ -579,7 +579,7 @@ class MetaMemory {
         this.reflectionHistory = data.reflectionHistory || [];
       }
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[MetaMemory] 加载失败:', e.message);
+      // 已禁用 console.warn: console.warn('[MetaMemory] 加载失败:', e.message);
     }
   }
 
@@ -596,7 +596,7 @@ class MetaMemory {
       };
       fs.writeFileSync(META_MEMORY_PATH, JSON.stringify(data, null, 2));
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[MetaMemory] 保存失败:', e.message);
+      // 已禁用 console.warn: console.warn('[MetaMemory] 保存失败:', e.message);
     }
   }
 }

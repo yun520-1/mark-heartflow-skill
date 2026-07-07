@@ -165,14 +165,14 @@ class DigitalHomeostasis {
     this.tickInterval = setInterval(() => {
       this.tick();
     }, intervalMs);
-    // [PROD] 生产环境移除 console.error: console.error(`[DigitalHomeostasis] Tick started (interval: ${intervalMs}ms)`);
+    // 已禁用 console.error: console.error(`[DigitalHomeostasis] Tick started (interval: ${intervalMs}ms)`);
   }
 
   stopTick() {
     if (this.tickInterval) {
       clearInterval(this.tickInterval);
       this.tickInterval = null;
-      // [PROD] 生产环境移除 console.error: console.error('[DigitalHomeostasis] Tick stopped');
+      // 已禁用 console.error: console.error('[DigitalHomeostasis] Tick stopped');
     }
   }
 

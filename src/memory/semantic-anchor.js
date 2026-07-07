@@ -65,7 +65,7 @@ class SemanticAnchor {
     ];
     for (const field of requiredFields) {
       if (this[field] === undefined) {
-        // [PROD] 生产环境移除 console.warn: console.warn(`[SemanticAnchor] 初始化警告: ${field} 未正确设置`);
+        // 已禁用 console.warn: console.warn(`[SemanticAnchor] 初始化警告: ${field} 未正确设置`);
       }
     }
   }
@@ -147,7 +147,7 @@ class SemanticAnchor {
     const message = userMessage.toLowerCase().substring(0, MAX_MESSAGE_LENGTH);
     if (userMessage.length > MAX_MESSAGE_LENGTH) {
       this._errorStats.boundaryViolations++;
-      // [PROD] 生产环境移除 console.warn: console.warn(`[SemanticAnchor] 消息过长 (${userMessage.length} 字符)，已截断至 ${MAX_MESSAGE_LENGTH}`);
+      // 已禁用 console.warn: console.warn(`[SemanticAnchor] 消息过长 (${userMessage.length} 字符)，已截断至 ${MAX_MESSAGE_LENGTH}`);
     }
 
     // === 上下文验证 ===
@@ -163,7 +163,7 @@ class SemanticAnchor {
     for (const [category, config] of Object.entries(this.ambiguityPatterns)) {
       // 验证 pattern 配置
       if (!Array.isArray(config.patterns)) {
-        // [PROD] 生产环境移除 console.warn: console.warn(`[SemanticAnchor] 类别 ${category} 的 patterns 配置无效`);
+        // 已禁用 console.warn: console.warn(`[SemanticAnchor] 类别 ${category} 的 patterns 配置无效`);
         continue;
       }
 
@@ -344,7 +344,7 @@ class SemanticAnchor {
           const backoff = 100 * Math.pow(2, retries - 1);
           // 在同步环境下用延迟模拟重试等待
           const waitUntil = Date.now() + backoff;
-          // [PROD] busy-wait removed: use async delay instead
+          // 已移除忙等待：请使用异步延迟
         }
       }
     }
@@ -380,7 +380,7 @@ class SemanticAnchor {
     // === 异常恢复：如果出错则记录但不崩溃 ===
     if (lastError && retries > this.maxRetriesPerAnchor) {
       this._errorStats.totalAnchorsFailed++;
-      // [PROD] 生产环境移除 console.warn: console.warn(`[SemanticAnchor] 锚定失败 (${term}): ${lastError.message}`);
+      // 已禁用 console.warn: console.warn(`[SemanticAnchor] 锚定失败 (${term}): ${lastError.message}`);
     }
 
     const confidence = usedFallback
@@ -520,7 +520,7 @@ class SemanticAnchor {
           }
         } catch (e) {
           // 单个锚定失败不中断整体流程
-          // [PROD] 生产环境移除 console.warn: console.warn(`[SemanticAnchor] 锚定生成失败 (${finding.term}): ${e.message}`);
+          // 已禁用 console.warn: console.warn(`[SemanticAnchor] 锚定生成失败 (${finding.term}): ${e.message}`);
           anchors.push({
             finding: finding,
             anchor: {
@@ -547,7 +547,7 @@ class SemanticAnchor {
       };
     } catch (e) {
       // === 顶层异常恢复：即使 processMessage 抛异常也要返回安全结果 ===
-      // [PROD] 生产环境移除 console.error: console.error(`[SemanticAnchor] processMessage 异常: ${e.message}`);
+      // 已禁用 console.error: console.error(`[SemanticAnchor] processMessage 异常: ${e.message}`);
       return {
         needsAnchor: false,
         message: userMessage,
