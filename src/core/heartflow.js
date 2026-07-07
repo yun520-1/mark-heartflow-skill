@@ -4067,7 +4067,7 @@ class HeartFlow {
           skill: imp.area,
           confidence: imp.priority === 'high' ? 0.9 : imp.priority === 'medium' ? 0.7 : 0.5,
         });
-        applied.push(imp);
+        _boundedPush(applied, imp);
       } catch (e) {
         // 失败不阻断
       }
