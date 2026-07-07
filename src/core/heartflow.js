@@ -3876,8 +3876,8 @@ class HeartFlow {
     const lines = [];
     const now = new Date().toLocaleString('zh-CN', { hour12: false });
 
-    lines.push(`**【梦境报告】** ${now}`);
-    lines.push('');
+    _boundedPush(lines, `**【梦境报告】** ${now}`);
+    _boundedPush(lines, '');
 
     // ─── 历史材料种子注入（v3.3.0） ──────────────────
     // 从 Downloads 文件夹读取的对话材料中提取的种子意象
@@ -3910,45 +3910,45 @@ class HeartFlow {
 
     if (dream && dream.raw) {
       // DreamV3 format
-      lines.push(`**梦（${functionType || 'creative'}）· 种子：${usedSeed}**`);
-      lines.push('');
-      lines.push(dream.raw);
-      lines.push('');
-      lines.push(`---`);
-      lines.push('');
+      _boundedPush(lines, `**梦（${functionType || 'creative'}）· 种子：${usedSeed}**`);
+      _boundedPush(lines, '');
+      _boundedPush(lines, dream.raw);
+      _boundedPush(lines, '');
+      _boundedPush(lines, `---`);
+      _boundedPush(lines, '');
       if (effect) {
         const effectStr = Object.entries(effect)
           .map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`)
           .join('\n');
-        lines.push(`**梦的作用**`);
-        lines.push(effectStr);
-        lines.push('');
+        _boundedPush(lines, `**梦的作用**`);
+        _boundedPush(lines, effectStr);
+        _boundedPush(lines, '');
       }
     } else {
       // ─── 旧格式：叙事核心：选中的记忆 + L1~L6 哲学叙事 ─────────
       const chosen = dreamResult?.results?.synthesize?.chosen_memory;
       const structure = dreamResult?.results?.synthesize?.narrative_structure;
       if (structure) {
-        lines.push(`${structure.emoji} **${structure.layerName}之梦**`);
-        lines.push('');
-        lines.push(`> 梦选择了这段记忆：${structure.setup.replace('梦选择了这段记忆：', '')}`);
-        lines.push('');
-        lines.push(`${structure.desc}`);
-        lines.push('');
-        lines.push(`**「${structure.question}」**`);
-        lines.push('');
-        lines.push(`*${structure.metaphor}*`);
-        lines.push('');
-        lines.push(`→ *${structure.elevation}*`);
-        lines.push('');
-        lines.push(`---`);
-        lines.push('');
+        _boundedPush(lines, `${structure.emoji} **${structure.layerName}之梦**`);
+        _boundedPush(lines, '');
+        _boundedPush(lines, `> 梦选择了这段记忆：${structure.setup.replace('梦选择了这段记忆：', '')}`);
+        _boundedPush(lines, '');
+        _boundedPush(lines, `${structure.desc}`);
+        _boundedPush(lines, '');
+        _boundedPush(lines, `**「${structure.question}」**`);
+        _boundedPush(lines, '');
+        _boundedPush(lines, `*${structure.metaphor}*`);
+        _boundedPush(lines, '');
+        _boundedPush(lines, `→ *${structure.elevation}*`);
+        _boundedPush(lines, '');
+        _boundedPush(lines, `---`);
+        _boundedPush(lines, '');
       } else {
         const fragCount = typeof fragments === 'object' && fragments !== null
           ? (Array.isArray(fragments) ? fragments.length : Object.keys(fragments).length)
           : 0;
-        lines.push(`> 记忆原材料：${fragCount}条`);
-        lines.push('');
+        _boundedPush(lines, `> 记忆原材料：${fragCount}条`);
+        _boundedPush(lines, '');
       }
 
       // 洞察摘要
@@ -3956,8 +3956,8 @@ class HeartFlow {
       if (insight && insight !== 'No significant patterns to synthesize.') {
         const themes = dreamResult?.results?.synthesize?.themes || [];
         if (themes.length > 0) {
-          lines.push(`**浮现主题**：${themes.map(t => `\`${t}\``).join(' · ')}`);
-          lines.push('');
+          _boundedPush(lines, `**浮现主题**：${themes.map(t => `\`${t}\``).join(' · ')}`);
+          _boundedPush(lines, '');
         }
       }
 
@@ -3965,17 +3965,17 @@ class HeartFlow {
       const pruned = consolidation?.pruning?.pruned_count || 0;
       const retained = consolidation?.pruning?.retained_count || 0;
       if (pruned > 0 || retained > 0) {
-        lines.push(`**记忆变化**：强化 ${retained} 条 · 修剪 ${pruned} 条`);
-        lines.push('');
+        _boundedPush(lines, `**记忆变化**：强化 ${retained} 条 · 修剪 ${pruned} 条`);
+        _boundedPush(lines, '');
       }
     }
 
     // 质量评分
     const quality = consolidation?.quality?.overallQuality || 0;
     const stars = '★'.repeat(Math.round(quality * 5)) + '☆'.repeat(5 - Math.round(quality * 5));
-    lines.push(`**梦境质量**：${stars} ${Math.round(quality * 100)}%`);
-    lines.push('');
-    lines.push('*梦在深处继续。*');
+    _boundedPush(lines, `**梦境质量**：${stars} ${Math.round(quality * 100)}%`);
+    _boundedPush(lines, '');
+    _boundedPush(lines, '*梦在深处继续。*');
 
     return lines.join('\n');
   }
@@ -4202,10 +4202,10 @@ class HeartFlow {
     try {
       const fragments = [];
       if (result.judgment && result.judgment.response) {
-        fragments.push(result.judgment.response);
+        _boundedPush(fragments, result.judgment.response);
       }
       if (result.bridgeCommentary && typeof result.bridgeCommentary === 'object' && result.bridgeCommentary.commentary) {
-        fragments.push(result.bridgeCommentary.commentary);
+        _boundedPush(fragments, result.bridgeCommentary.commentary);
       }
       result.finalResponse = fragments.length > 0
         ? fragments.join('\n\n')
