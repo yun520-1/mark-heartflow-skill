@@ -103,7 +103,7 @@ cronjob action=list
 1. **阻塞事件循环（busy-wait）** — 搜索 `while (Date.now()` 和 `busy-wait` 注释。在 Node.js 同步函数中不能使用 `await`，正确的修复是**直接移除 busy-wait**（加注释说明），而不是替换为 `await new Promise(...)`（后者会触发 SyntaxError: await is only valid in async functions）。
 2. **process.exit 杀进程** — 搜索所有 `process.exit`。生产代码中不应直接调用 `process.exit`，CLI 入口块（`if (require.main === module)`）中的除外。修复：替换为 `return` 或抛错让上层处理。
 3. **_lazy 模块 try/catch 覆盖不均** — 检查 `src/core/heartflow.js` 顶部的 `_lazy` 声明：部分模块已有 try/catch fallback（如 adaptive-planner），部分没有（如 experience-collector）。没有 try/catch 的模块在首次 `dispatch()` 加载失败时会直接 throw，绕过 `_initErrors` 记录机制。修复：全部统一包装 try/catch。
-4. **console.* 残留** — 搜索所有 `console.log/error/warn/info/debug`。生产代码中应全部注释掉（加 `[PROD]` 标记），保留原代码用于调试。
+4. **console.* 残留** — 搜索所有 `console.log/error/warn/info/debug`。生产代码中应全部注释掉（加 `已禁用` 标记），保留原代码用于调试。
 5. **导出不匹配** — 模块实际导出（`module.exports = { xxx }`）与 heartflow.js 实例化方式（`new (_Lazy().ClassName)`）不匹配。修复实例化代码而非模块代码。
 
 每个子代理输出格式：
@@ -287,12 +287,12 @@ for dir_name in ['src/core', 'src/cortex', 'src/memory']:
 
 **批量 console.* 移除技巧（2026-06-29 验证）**：
 ```python
-# 注释掉 console.* 并加 [PROD] 标记，保留原代码用于调试
+# 注释掉 console.* 并加已禁用标记，保留原代码用于调试
 for line in lines:
     if re.search(r'\bconsole\.(log|error|warn|info|debug)\s*\(', line):
         indent = line[:len(line) - len(line.lstrip())]
         method = line.split('console.')[1].split('(')[0]
-        new_lines.append(f"{indent}// [PROD] 生产环境移除 console.{method}: {line.lstrip()}")
+        new_lines.append(f"{indent}// 已禁用 console.{method}: {line.lstrip()}")
 ```
 
 **busy-wait 移除技巧（2026-06-29 验证）**：

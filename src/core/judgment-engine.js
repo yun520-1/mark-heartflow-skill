@@ -62,7 +62,7 @@ class JudgmentEngine {
     // 加载历史
     this._load();
 
-    // [PROD] 生产环境移除 console.error: console.error(`[JudgmentEngine v${VERSION}] 已加载 ${this.history.length} 条历史判断, ${this.consequences.length} 条后果记录`);
+    // 已禁用 console.error: console.error(`[JudgmentEngine v${VERSION}] 已加载 ${this.history.length} 条历史判断, ${this.consequences.length} 条后果记录`);
   }
 
   // ════════════════════════════════════════════════════════
@@ -875,7 +875,7 @@ class JudgmentEngine {
         this.rlTable = data.rlTable || {};
       }
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[JudgmentEngine] 加载历史失败:', e.message);
+      // 已禁用 console.warn: console.warn('[JudgmentEngine] 加载历史失败:', e.message);
     }
   }
 
@@ -899,7 +899,7 @@ class JudgmentEngine {
       }, null, 2);
       fs.writeFileSync(filePath, data, 'utf-8');
     } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[JudgmentEngine] 保存失败:', e.message);
+      // 已禁用 console.warn: console.warn('[JudgmentEngine] 保存失败:', e.message);
     }
   }
 

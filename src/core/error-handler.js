@@ -14,7 +14,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const ERROR_LOG = path.join(__dirname, 'error-handler.log');
+// [AUDIT-FIX] 日志路径改为 data/ 目录，不再写入源码目录
+const ERROR_LOG = path.join(__dirname, '..', '..', 'data', 'error-handler.log');
 
 // 敏感信息过滤规则
 const SENSITIVE_PATTERNS = [
@@ -636,7 +637,7 @@ class ErrorHandler {
     try {
       fs.appendFileSync(ERROR_LOG, entry);
     } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[ErrorHandler] 无法写入日志:', e.message);
+      // 已禁用 console.error: console.error('[ErrorHandler] 无法写入日志:', e.message);
     }
   }
 

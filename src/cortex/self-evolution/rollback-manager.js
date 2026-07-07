@@ -193,7 +193,7 @@ class RollbackManager {
     } catch (e) {
       // 日志写入失败时静默处理
     }
-    // [PROD] 生产环境移除 console.error: console.error(`[Rollback] ${message}`);
+    // 已禁用 console.error: console.error(`[Rollback] ${message}`);
   }
 
   // ========================================================================

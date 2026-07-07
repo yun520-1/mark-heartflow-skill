@@ -463,11 +463,11 @@ class MetaJudgment {
         }
         this.history = Array.isArray(data.history) ? data.history : [];
         this.confidenceClaims = Array.isArray(data.confidenceClaims) ? data.confidenceClaims : [];
-        // [PROD] 生产环境移除 console.error: console.error(`[MetaJudgment] 恢复 ${this.history.length} 条判断记录`);
+        // 已禁用 console.error: console.error(`[MetaJudgment] 恢复 ${this.history.length} 条判断记录`);
       }
     } catch (e) {
       // 安全修复：使用错误级别日志
-      // [PROD] 生产环境移除 console.error: console.error('[MetaJudgment] 历史恢复失败:', e.message);
+      // 已禁用 console.error: console.error('[MetaJudgment] 历史恢复失败:', e.message);
     }
   }
 
@@ -489,7 +489,7 @@ class MetaJudgment {
       }, null, 2));
     } catch (e) {
       // 安全修复：使用错误级别日志
-      // [PROD] 生产环境移除 console.error: console.error('[MetaJudgment] 保存失败:', e.message);
+      // 已禁用 console.error: console.error('[MetaJudgment] 保存失败:', e.message);
     }
   }
 

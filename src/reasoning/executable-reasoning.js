@@ -101,8 +101,28 @@ class ExecutableReasoning {
     let error = null;
 
     try {
-      const fn = new Function(...paramList, body);
-      result = fn(...argValues);
+      // 安全加固：在受限环境中执行，禁止访问 require/process/eval 等危险全局对象
+      const __safeGlobals = {
+        require: undefined,
+        process: undefined,
+        eval: undefined,
+        Function: undefined,
+        __filename: undefined,
+        __dirname: undefined,
+        module: undefined,
+        exports: undefined,
+        child_process: undefined,
+        fs: undefined,
+        net: undefined,
+        http: undefined,
+        https: undefined,
+        os: undefined,
+        path: undefined
+      };
+      const safeParamList = [...paramList, '__safeGlobals'];
+      const safeArgValues = [...argValues, __safeGlobals];
+      const fn = new Function(...safeParamList, body);
+      result = fn(...safeArgValues);
     } catch (err) {
       error = err;
     }

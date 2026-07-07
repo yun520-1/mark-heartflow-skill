@@ -281,7 +281,7 @@ class AssociativeEngine {
       this.metrics.recordLayer(layerName, start, LayerStatus.SUCCESS);
       return { result, status: LayerStatus.SUCCESS, error: null };
     } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error(`[AssociativeEngine] ${layerName} 失败:`, e.message);
+      // 已禁用 console.error: console.error(`[AssociativeEngine] ${layerName} 失败:`, e.message);
       this.metrics.recordLayer(layerName, start, LayerStatus.FAILED);
       return {
         result: fallbackResult,
@@ -494,7 +494,7 @@ class AssociativeEngine {
       };
       
     } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[AssociativeEngine] 严重错误:', e.message);
+      // 已禁用 console.error: console.error('[AssociativeEngine] 严重错误:', e.message);
       this.totalProcessed++;
       return {
         response: '我正在思考如何回应你...',
