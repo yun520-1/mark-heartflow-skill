@@ -13,6 +13,26 @@
  * @version 1.0.0
  */
 
+const crypto = require('crypto');
+
+// === 技能/评分 Map 最大容量 ===
+const MAX_CACHE_SIZE = 200;
+
+/**
+ * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
+ * @param {Map} map - 目标 Map
+ * @param {*} key - 键
+ * @param {*} value - 值
+ * @param {number} maxSize - 最大容量
+ */
+function _boundedSet(map, key, value, maxSize) {
+  if (map.size >= maxSize && !map.has(key)) {
+    const firstKey = map.keys().next().value;
+    map.delete(firstKey);
+  }
+  map.set(key, value);
+}
+
 class SkillEvolutionEngine {
   constructor(options = {}) {
     this._config = {
@@ -42,7 +62,7 @@ class SkillEvolutionEngine {
    * 注册新技能
    */
   registerSkill(skill) {
-    const id = skill.id || `skill_${Date.now()}_${this._skills.size}`;
+    const id = skill.id || `skill_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
     const entry = {
       id,
       name: skill.name || id,
@@ -61,8 +81,8 @@ class SkillEvolutionEngine {
       version: '1.0.0',
     };
 
-    this._skills.set(id, entry);
-    this._rubrics.set(id, entry.rubric);
+    _boundedSet(this._skills, id, entry, MAX_CACHE_SIZE);
+    _boundedSet(this._rubrics, id, entry.rubric, MAX_CACHE_SIZE);
     this._stats.totalSkills++;
     return entry;
   }
@@ -288,7 +308,7 @@ class SkillEvolutionEngine {
     if (skills.length < 2) return null;
 
     const combined = {
-      id: `composed_${Date.now()}`,
+      id: `composed_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
       name: skills.map(s => s.name).join(' + '),
       description: `Composed from: ${skills.map(s => s.name).join(', ')}`,
       category: 'composed',

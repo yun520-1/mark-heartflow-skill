@@ -23,6 +23,9 @@
 const fs = require('fs');
 const path = require('path');
 
+// 转义正则特殊字符，防止 ReDoS
+const _escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 class ConfidenceCalibrator {
   constructor(options = {}) {
     this.memoryPath = options.memoryPath || null;
@@ -314,7 +317,7 @@ class ConfidenceCalibrator {
 
     // 替换刚强词汇
     for (const word of this.forbiddenHighConfidence) {
-      const regex = new RegExp(word, 'gi');
+      const regex = new RegExp(_escapeRegex(word), 'gi');
       calibrated = calibrated.replace(regex, this.getReplacement(level));
     }
 

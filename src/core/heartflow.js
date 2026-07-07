@@ -651,7 +651,7 @@ class HeartFlow {
       if (lastContext && lastContext.bootTime) {
         const gapMinutes = Math.round((this.startTime - lastContext.bootTime) / 60000);
         if (gapMinutes > 0) {
-          console.log(`[HeartFlow] 上次会话距本次启动 ${gapMinutes} 分钟`);
+          if (process.env.HEARTFLOW_DEBUG) console.log(`[HeartFlow] 上次会话距本次启动 ${gapMinutes} 分钟`);
         }
       }
     } else {

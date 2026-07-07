@@ -31,7 +31,7 @@ class CognitiveLoop {
     // 依赖模块 (延迟加载)
     this.modules = {};
     
-    console.log('[CognitiveLoop] 结构化认知循环引擎初始化');
+    if (process.env.HEARTFLOW_DEBUG) console.log('[CognitiveLoop] 结构化认知循环引擎初始化');
   }
 
   /**
@@ -406,7 +406,7 @@ class CognitiveLoop {
       history: [],
       currentContext: null
     };
-    console.log('[CognitiveLoop] 循环状态已重置');
+    if (process.env.HEARTFLOW_DEBUG) console.log('[CognitiveLoop] 循环状态已重置');
     return { success: true };
   }
 }

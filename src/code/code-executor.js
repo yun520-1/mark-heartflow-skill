@@ -126,6 +126,97 @@ const DANGEROUS_COMMANDS = [
 ];
 
 // ============================================================================
+// Shell 命令白名单（B-01 安全修复：白名单门控，防止 shell 注入）
+// 只有在此列表中的命令才允许通过 execSync 执行。
+// 黑名单 DANGEROUS_COMMANDS 作为第二层防御保留。
+// ============================================================================
+
+const ALLOWED_SHELL_COMMANDS = [
+  'node',       // Node.js 运行时
+  'python3',    // Python3 运行时
+  'python',     // Python 运行时
+  'echo',       // 输出文本
+  'date',       // 日期查询
+  'wc',         // 字数/行数统计
+  'cat',        // 文件内容查看（危险路径由黑名单第二层拦截）
+  'head',       // 文件头部查看
+  'tail',       // 文件尾部查看
+  'ls',         // 目录列表
+  'pwd',        // 当前目录
+  'whoami',     // 当前用户
+  'which',      // 命令路径查找
+  'grep',       // 文本搜索
+  'sort',       // 排序
+  'uniq',       // 去重
+  'cut',        // 文本切割
+  'tr',         // 字符替换
+  'awk',        // 文本处理
+  'sed',        // 流编辑器
+  'printf',     // 格式化输出
+  'seq',        // 数字序列
+  'expr',       // 表达式计算
+  'bc',         // 计算器
+  'true',       // 返回成功
+  'false',      // 返回失败
+  'test',       // 条件测试
+  'dirname',    // 目录名提取
+  'basename',   // 文件名提取
+  'xargs',      // 参数构建
+  'tee',        // 输出分流
+  'diff',       // 文件比较
+  'find',       // 文件查找
+  'curl',       // HTTP 请求（管道执行由黑名单拦截）
+  'wget',       // 下载（管道执行由黑名单拦截）
+];
+
+/**
+ * 白名单命令验证（B-01 安全修复）
+ * 从 code 中提取第一个命令词，检查是否在 ALLOWED_SHELL_COMMANDS 中。
+ * 支持管道（|）和链式（&&、||、;）命令：每个子命令都必须通过白名单。
+ *
+ * @param {string} code - 待执行的 shell 命令字符串
+ * @returns {{allowed: boolean, blockedCommand: string|null}}
+ */
+function validateShellCommand(code) {
+  if (!code || typeof code !== 'string') {
+    return { allowed: false, blockedCommand: null };
+  }
+
+  // 将管道和链式操作符分割为子命令，逐一检查
+  // 匹配 |、&&、||、; 作为分隔符（忽略前后空格）
+  const subCommands = code.split(/\s*(?:\|\||&&|\||;)\s*/);
+
+  for (const subCmd of subCommands) {
+    const trimmed = subCmd.trim();
+    if (!trimmed) continue;
+
+    // 提取第一个词作为命令名（跳过前导环境变量赋值 KEY=VALUE）
+    const tokens = trimmed.split(/\s+/);
+    let cmdToken = tokens[0];
+
+    // 跳过环境变量赋值（如 VAR=value command ...）
+    while (cmdToken && /=/.test(cmdToken) && !cmdToken.includes('$')) {
+      tokens.shift();
+      cmdToken = tokens[0];
+    }
+
+    if (!cmdToken) {
+      return { allowed: false, blockedCommand: '(空命令)' };
+    }
+
+    // 去除路径前缀，只取命令名本身（如 /usr/bin/node → node）
+    const cmdName = path.basename(cmdToken);
+
+    // 检查是否在白名单中
+    if (!ALLOWED_SHELL_COMMANDS.includes(cmdName)) {
+      return { allowed: false, blockedCommand: cmdName };
+    }
+  }
+
+  return { allowed: true, blockedCommand: null };
+}
+
+// ============================================================================
 // Sandbox 安全限制正则（用于检测被禁止的操作）
 // ============================================================================
 
@@ -153,11 +244,17 @@ const SANDBOX_BLOCKED_PATTERNS = [
   /\(0,\s*constructor\.constructor\)/i,  // [AUDIT-FIX] 阻止 (0,constructor.constructor) 绕过
   /\(1,\s*constructor\.constructor\)/i,  // [AUDIT-FIX] 阻止 (1,constructor.constructor) 绕过
   /\[\s*\)\s*\]\s*constructor\.constructor/i, // [AUDIT-FIX] 阻止 Array 绕过
+  /constructor\s*\.\s*constructor/i,       // [AUDIT-FIX B-03] 阻止所有 constructor.constructor 逃逸（通用模式，覆盖上述特定模式）
+  /\[\s*['"]constructor['"]\s*\]/i,         // [AUDIT-FIX B-03] 阻止 ['constructor'] 属性访问逃逸
   /Buffer\.(alloc|from)/i,     // SkillSpector fix: 禁止 Buffer 操作（防止内存读取）
   /net\.(connect|createServer)/i, // SkillSpector fix: 禁止网络操作
   /http\.(request|get|createServer)/i,
   /https\.(request|get|createServer)/i,
   /dns\.(resolve|lookup)/i,
+  /Object\.defineProperty/i,                // [AUDIT-FIX B-03] 阻止修改对象属性定义
+  /Object\.setPrototypeOf/i,                // [AUDIT-FIX B-03] 阻止修改原型链
+  /Reflect\.(apply|construct|get|set|getPrototypeOf|setPrototypeOf)/i, // [AUDIT-FIX B-03] 阻止反射逃逸
+  /WebAssembly/i,                           // [AUDIT-FIX B-03] 阻止 WebAssembly 逃逸
 ];
 
 // ============================================================================
@@ -623,7 +720,19 @@ class CodeExecutor {
     const timeout = opts.timeout || DEFAULTS.timeout;
     const maxOutput = opts.maxOutput || DEFAULTS.maxOutput;
 
-    // 危险命令检查
+    // [B-01 安全修复] 白名单门控：只允许预定义的安全命令执行
+    const whitelistCheck = validateShellCommand(code);
+    if (!whitelistCheck.allowed) {
+      return {
+        status:    ExecStatus.SANDBOX_BLOCKED,
+        output:    '',
+        error:     `命令不在允许列表中: "${whitelistCheck.blockedCommand}"。允许的命令: ${ALLOWED_SHELL_COMMANDS.join(', ')}`,
+        truncated: false,
+        execError: ExecError.SANDBOX
+      };
+    }
+
+    // 危险命令检查（第二层防御：黑名单拦截已知危险模式）
     const dangerCheck = checkDangerousCommand(code);
     if (dangerCheck.dangerous) {
       return {
@@ -640,10 +749,10 @@ class CodeExecutor {
       // 子进程执行用于运行外部命令，是代码执行引擎的核心功能。
       // 安全措施：
       //   1. 运行时守卫：HEARTFLOW_CODE_EXECUTOR_ENABLED 必须为 true
-      //   2. 危险命令过滤：DANGEROUS_COMMANDS 正则黑名单（第84-93行）
-      //   3. 超时保护：timeout 参数默认 30s
-      //   4. 输出截断：maxBuffer = 1MB，输出截断为 maxOutput
-      // 使用 execFileSync 避免 shell 注入，命令参数分离
+      //   2. [B-01] 白名单门控：ALLOWED_SHELL_COMMANDS 只允许安全命令
+      //   3. 危险命令过滤：DANGEROUS_COMMANDS 正则黑名单（第二层防御）
+      //   4. 超时保护：timeout 参数默认 30s
+      //   5. 输出截断：maxBuffer = 1MB，输出截断为 maxOutput
       // 通过字符串拼接避免静态分析误报
       const execSync = require('child_process').execSync;
       const result = execSync(code, {
@@ -920,7 +1029,11 @@ const __blockedNames = new Set([
   'fs', 'path', 'os', 'http', 'https', 'net', 'tls', 'dns', 'crypto',
   'Worker', 'SharedWorker', 'ServiceWorker',
   'navigator', 'location', 'history', 'localStorage', 'sessionStorage',
-  'indexedDB', 'caches', 'cookieStore'
+  'indexedDB', 'caches', 'cookieStore',
+  // [AUDIT-FIX B-03] 新增危险内置对象名称
+  'Object', 'Symbol', 'Proxy', 'Reflect', 'WebAssembly',
+  'SharedArrayBuffer', 'Atomics', 'ArrayBuffer',
+  'Int8Array', 'Uint8Array', 'Float32Array', 'Float64Array'
 ]);
 
 // 创建被禁止的标识符，调用时抛出错误
@@ -972,6 +1085,118 @@ var tls = __blockedFn('tls');
 var dns = __blockedFn('dns');
 var crypto = __blockedFn('crypto');
 
+// [AUDIT-FIX B-03] 冻结原型链，阻止 constructor.constructor 逃逸
+// 注意：var 声明会提升到函数顶部，导致 const xxx = Object 时 Object 已被 var 遮蔽为 undefined
+// 因此必须通过 __globals 参数（传入 globalThis）获取原始内置对象引用
+const __originalObject = __globals.Object;
+const __originalFunction = __globals.Function;
+const __originalArray = __globals.Array;
+const __originalBoolean = __globals.Boolean;
+const __originalNumber = __globals.Number;
+const __originalString = __globals.String;
+const __originalRegExp = __globals.RegExp;
+const __originalDate = __globals.Date;
+const __originalError = __globals.Error;
+const __originalMap = __globals.Map;
+const __originalSet = __globals.Set;
+const __originalReflect = __globals.Reflect;
+const __originalProxy = __globals.Proxy;
+
+// [AUDIT-FIX B-03] 关键修复：替换 Function.prototype.constructor 为安全函数
+// 这是阻止 constructor.constructor 逃逸的根本方案：
+// 即使攻击者通过字符串拼接绕过正则检测，运行时调用 constructor.constructor
+// 也会得到一个抛出错误的函数，而非真正的 Function 构造器
+// 必须在冻结原型之前执行，因为冻结后无法修改属性
+// 注意：由于沙箱可能被多次调用，需要检查是否已经替换过
+const __currentConstructorDesc = __originalObject.getOwnPropertyDescriptor(__originalFunction.prototype, 'constructor');
+if (__currentConstructorDesc && __currentConstructorDesc.configurable) {
+  __originalObject.defineProperty(__originalFunction.prototype, 'constructor', {
+    value: function() { throw new Error('沙箱禁止使用 Function constructor'); },
+    writable: false,
+    configurable: false,
+    enumerable: false
+  });
+}
+
+// [AUDIT-FIX B-03] 同样替换 GeneratorFunction 和 AsyncFunction 的 constructor
+// 它们有独立的 prototype，不继承自 Function.prototype 的 constructor
+// 攻击者可通过 (function*(){}).constructor('return require') 逃逸
+// 注意：GeneratorFunction/AsyncFunction 不是全局对象，需要从实例获取
+const __gfProto = (function*(){}).constructor.prototype;
+const __afProto = (async function(){}).constructor.prototype;
+const __gfDesc = __originalObject.getOwnPropertyDescriptor(__gfProto, 'constructor');
+if (__gfDesc && __gfDesc.configurable) {
+  __originalObject.defineProperty(__gfProto, 'constructor', {
+    value: function() { throw new Error('沙箱禁止使用 GeneratorFunction constructor'); },
+    writable: false,
+    configurable: false,
+    enumerable: false
+  });
+}
+const __afDesc = __originalObject.getOwnPropertyDescriptor(__afProto, 'constructor');
+if (__afDesc && __afDesc.configurable) {
+  __originalObject.defineProperty(__afProto, 'constructor', {
+    value: function() { throw new Error('沙箱禁止使用 AsyncFunction constructor'); },
+    writable: false,
+    configurable: false,
+    enumerable: false
+  });
+}
+
+// 冻结所有原型链，阻止通过修改原型链恢复 constructor
+__originalObject.freeze(__originalObject.prototype);
+__originalObject.freeze(__originalFunction.prototype);
+__originalObject.freeze(__originalArray.prototype);
+__originalObject.freeze(__originalBoolean.prototype);
+__originalObject.freeze(__originalNumber.prototype);
+__originalObject.freeze(__originalString.prototype);
+__originalObject.freeze(__originalRegExp.prototype);
+__originalObject.freeze(__originalDate.prototype);
+__originalObject.freeze(__originalError.prototype);
+__originalObject.freeze(__originalMap.prototype);
+__originalObject.freeze(__originalSet.prototype);
+
+// [AUDIT-FIX B-03] 遮蔽更多危险内置对象，防止通过原型链逃逸
+// 注意：Object 被遮蔽后 Object.keys/values/entries/assign 等安全方法也不可用
+// 因此提供 __safeObject 保留安全方法，同时遮蔽危险方法
+var Object = (function() {
+  var __origObj = __originalObject;
+  var __safe = function() { throw new Error('沙箱禁止使用 Object 构造器'); };
+  // 保留安全的静态方法
+  __safe.keys = __origObj.keys;
+  __safe.values = __origObj.values;
+  __safe.entries = __origObj.entries;
+  __safe.assign = __origObj.assign;
+  __safe.freeze = __origObj.freeze;
+  __safe.isFrozen = __origObj.isFrozen;
+  __safe.seal = __origObj.seal;
+  __safe.isSealed = __origObj.isSealed;
+  __safe.preventExtensions = __origObj.preventExtensions;
+  __safe.isExtensible = __origObj.isExtensible;
+  __safe.getOwnPropertyNames = __origObj.getOwnPropertyNames;
+  __safe.getOwnPropertySymbols = __origObj.getOwnPropertySymbols;
+  __safe.getPrototypeOf = __origObj.getPrototypeOf;
+  __safe.is = __origObj.is;
+  // 遮蔽危险方法
+  __safe.defineProperty = function() { throw new Error('沙箱禁止使用 Object.defineProperty'); };
+  __safe.defineProperties = function() { throw new Error('沙箱禁止使用 Object.defineProperties'); };
+  __safe.setPrototypeOf = function() { throw new Error('沙箱禁止使用 Object.setPrototypeOf'); };
+  __safe.create = function() { throw new Error('沙箱禁止使用 Object.create'); };
+  __safe.getOwnPropertyDescriptor = function() { throw new Error('沙箱禁止使用 Object.getOwnPropertyDescriptor'); };
+  return __safe;
+})();
+var Symbol = __blockedFn('Symbol');
+var Proxy = __blockedFn('Proxy');
+var Reflect = __blockedFn('Reflect');
+var WebAssembly = __blockedFn('WebAssembly');
+var SharedArrayBuffer = __blockedFn('SharedArrayBuffer');
+var Atomics = __blockedFn('Atomics');
+var ArrayBuffer = __blockedFn('ArrayBuffer');
+var Int8Array = __blockedFn('Int8Array');
+var Uint8Array = __blockedFn('Uint8Array');
+var Float32Array = __blockedFn('Float32Array');
+var Float64Array = __blockedFn('Float64Array');
+
 // 使用 Proxy 拦截 globalThis 访问（如果可用）
 let __globalThisProxy;
 try {
@@ -980,22 +1205,22 @@ try {
       if (__blockedNames.has(prop)) {
         throw new Error('沙箱禁止访问 globalThis.' + prop);
       }
-      return Reflect.get(target, prop, receiver);
+      return __originalReflect.get(target, prop, receiver);
     },
     has: function(target, prop) {
       if (__blockedNames.has(prop)) {
         return false;
       }
-      return Reflect.has(target, prop);
+      return __originalReflect.has(target, prop);
     },
     set: function(target, prop, value) {
       if (__blockedNames.has(prop)) {
         throw new Error('沙箱禁止设置 globalThis.' + prop);
       }
-      return Reflect.set(target, prop, value);
+      return __originalReflect.set(target, prop, value);
     }
   };
-  __globalThisProxy = new Proxy(globalThis, __handler);
+  __globalThisProxy = new __originalProxy(globalThis, __handler);
 } catch (e) {
   // 如果 Proxy 不可用，忽略
   __globalThisProxy = globalThis;
@@ -1010,9 +1235,9 @@ ${code}
 })();
 `;
 
-      const fn = new Function('console', sandboxedCode);
+      const fn = new Function('console', '__globals', sandboxedCode);
 
-      const result = await this._executeWithTimeout(fn, timeout, [console]);
+      const result = await this._executeWithTimeout(fn, timeout, [console, globalThis]);
 
       const truncated = capturedOutput.length > maxOutput;
       const output = truncateOutput(capturedOutput, maxOutput);
