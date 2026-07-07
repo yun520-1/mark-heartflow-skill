@@ -33,7 +33,7 @@ function _getConfig(projectRoot) {
 // ─── 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
 // [P2 FIX] LRU 容量管理 + 结构化日志 + 统一错误处理
 // v5.8.3 优化：Map 插入顺序实现 O(1) LRU（替代数组 splice + 二分插入）
-const _lazyCache = new Map();
+const _lazyCache = new Map();  // 容量边界：已有 _LAZY_CACHE_MAX=150 LRU 淘汰，无需额外处理
 const _LAZY_CACHE_WARN = 100;
 const _LAZY_CACHE_MAX = 150;
 // ─── 容量边界常量（P2-C10 内存无限增长修复）──────────────────────────────
@@ -70,10 +70,10 @@ function _boundedPush(arr, item, maxSize = MAX_ARRAY_SIZE) {
   arr.push(item);
 }
 
-const _lazyAccessCount = new Map();
+const _lazyAccessCount = new Map();  // 容量边界：由 _boundedSet 控制，上限 MAX_MAP_SIZE
 // LRU 顺序：Map 保持插入顺序，头部 = 最久未使用，尾部 = 最近使用
 // 访问时 delete + set 将条目移到末尾，淘汰时取 Map 第一个键即可，均为 O(1)
-const _lruOrder = new Map();
+const _lruOrder = new Map();  // 容量边界：由 _boundedSet 控制，上限 MAX_MAP_SIZE
 
 function _evictColdest() {
   if (_lruOrder.size === 0) return;
