@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "version": "8.9.0",
+    "version": "8.11.0",
     "last_updated": "2026-07-08",
-    "total_formulas": 1684,
+    "total_formulas": 1706,
     "categories": [
       "mathematics",
       "physics",
@@ -13661,6 +13661,182 @@
       "category": "computer_science",
       "subcategory": "information_theory",
       "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cog_cog_act_r",
+      "name": "ACT-R declarative memory",
+      "formula": "S = B - Σ w_i * ln(P_i)",
+      "category": "cognitive_science",
+      "subcategory": "cognitive_architecture",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_soar",
+      "name": "Soar architecture",
+      "formula": "State → Operator → Result",
+      "category": "cognitive_science",
+      "subcategory": "cognitive_architecture",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_clarion",
+      "name": "Clarion architecture",
+      "formula": "Implicit + Explicit",
+      "category": "cognitive_science",
+      "subcategory": "cognitive_architecture",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_ebbinghaus",
+      "name": "艾宾浩斯遗忘曲线",
+      "formula": "R(t) = exp(-t/S)",
+      "category": "cognitive_science",
+      "subcategory": "memory",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_forgetting",
+      "name": "遗忘概率",
+      "formula": "P(forget) = 1 - exp(-λ*t)",
+      "category": "cognitive_science",
+      "subcategory": "memory",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_working_memory",
+      "name": "工作记忆容量",
+      "formula": "C = 7 ± 2 chunks",
+      "category": "cognitive_science",
+      "subcategory": "memory",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_long_term_memory",
+      "name": "长期记忆巩固",
+      "formula": "LTP = f(θ, γ)",
+      "category": "cognitive_science",
+      "subcategory": "memory",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_attention",
+      "name": "注意力权重",
+      "formula": "w_i = softmax(s_i)",
+      "category": "cognitive_science",
+      "subcategory": "attention",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_spatial_attention",
+      "name": "空间注意力",
+      "formula": "A(x,y) = exp(-(x²+y²)/(2σ²))",
+      "category": "cognitive_science",
+      "subcategory": "attention",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_feature_integration",
+      "name": "特征整合理论",
+      "formula": "P(bind) = exp(-n/τ)",
+      "category": "cognitive_science",
+      "subcategory": "attention",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_drp",
+      "name": "Diffusion Decision Model",
+      "formula": "p(correct) = 1/(1 + exp(-Δμ/σ))",
+      "category": "cognitive_science",
+      "subcategory": "decision_making",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_ prospect_theory",
+      "name": "前景理论",
+      "formula": "v(x) = x^α if x≥0, -λ*(-x)^β if x<0",
+      "category": "cognitive_science",
+      "subcategory": "decision_making",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_cumulative_prospect",
+      "name": "累积前景理论",
+      "formula": "V = Σ v(x_i) * w(P_i)",
+      "category": "cognitive_science",
+      "subcategory": "decision_making",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_reinforcement",
+      "name": "强化学习",
+      "formula": "Q(s,a) = Q(s,a) + α*(r + γ*max_a' Q(s',a') - Q(s,a))",
+      "category": "cognitive_science",
+      "subcategory": "learning",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_rescorla_wagner",
+      "name": "Rescorla-Wagner 模型",
+      "formula": "ΔV = α*β*(λ - ΣV)",
+      "category": "cognitive_science",
+      "subcategory": "learning",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_hebbian",
+      "name": "赫布学习",
+      "formula": "Δw_ij = η * x_i * x_j",
+      "category": "cognitive_science",
+      "subcategory": "learning",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_neural",
+      "name": "神经元模型",
+      "formula": "τ*dV/dt = -V + Σ w_i*I_i",
+      "category": "cognitive_science",
+      "subcategory": "neural_computation",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_hopfield",
+      "name": "Hopfield 网络",
+      "formula": "E = -0.5*Σ_i Σ_j w_ij*V_i*V_j",
+      "category": "cognitive_science",
+      "subcategory": "neural_computation",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_boltzmann",
+      "name": "玻尔兹曼机",
+      "formula": "P(V) = exp(-E(V)/T) / Z",
+      "category": "cognitive_science",
+      "subcategory": "neural_computation",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_reliability",
+      "name": "信度（Cronbach α）",
+      "formula": "α = (k/(k-1)) * (1 - Σ σ_i²/σ_total²)",
+      "category": "cognitive_science",
+      "subcategory": "psychometrics",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_validity",
+      "name": "效度",
+      "formula": "r_xy = Cov(X,Y)/(σ_x*σ_y)",
+      "category": "cognitive_science",
+      "subcategory": "psychometrics",
+      "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "cog_cog_item_response",
+      "name": "项目反应理论",
+      "formula": "P(θ) = 1/(1 + exp(-a*(θ - b)))",
+      "category": "cognitive_science",
+      "subcategory": "psychometrics",
+      "source": "wikipedia_cognitive_science"
     }
   ]
 }
