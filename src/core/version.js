@@ -17,7 +17,7 @@ const fs = require('fs');
 const path = require('path');
 
 // 从 VERSION 文件读取版本号（唯一真相源）
-let VERSION = '5.8.5';  // 兜底版本
+let VERSION = '5.8.6';  // 兜底版本
 
 try {
   const versionPath = path.join(__dirname, '..', '..', 'VERSION');
