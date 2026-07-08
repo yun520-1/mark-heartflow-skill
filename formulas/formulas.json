@@ -15351,6 +15351,120 @@
       "name": "BAO 尺度",
       "formula": "r_s = integral_{z_drag}^{∞} c_s(z)/H(z) dz",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_z2_spin_liquid",
+      "name": "Z₂ 自旋液体",
+      "formula": "S = ln(2)/2 ≈ 0.346",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_kitaev_chain",
+      "name": "Kitaev 链",
+      "formula": "H = -μ Σ_j c†_j c_j - t Σ_j (c†_j c_{j+1} + h.c.) + Δ Σ_j c_j c_{j+1} + h.c.",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_topological_superconductor",
+      "name": "拓扑超导体",
+      "formula": "Δ_k = Δ_0 (k_x + i k_y)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_quantum_anomalous_hall",
+      "name": "量子反常霍尔效应",
+      "formula": "σ_{xy} = (e²/h) (C_↑ - C_↓)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_floquet_topological_insulator",
+      "name": "Floquet 拓扑绝缘体",
+      "formula": "H(t) = H_0 + V cos(ωt)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_fracton",
+      "name": "分形子",
+      "formula": "H = Σ_{⟨ij⟩} Z_i Z_j + Σ_{⟨⟨ij⟩⟩} X_i X_j",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_causal_set",
+      "name": "因果集",
+      "formula": "causet = (C, ≺), C finite partial order",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_asymptotic_safety",
+      "name": "渐近安全",
+      "formula": "β(g) = β_0 g² + β_1 g³ + ..., β(g_*) = 0",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_induced_gravity",
+      "name": "诱导引力",
+      "formula": "S = integral d⁴x √g (M_Pl² R/2 + Λ + L_matter)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_renormalization_group",
+      "name": "重整化群流",
+      "formula": "μ dS/dμ = β(S)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_quantum_graphity",
+      "name": "量子图引力",
+      "formula": "S = Σ_{⟨ij⟩} (1 - δ_{ij}) t_{ij} + h.c.",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_group_field_theory",
+      "name": "群场论",
+      "formula": "S = integral d⁴g φ(g₁) φ(g₂) φ(g₃) φ(g₄) O(g₁,g₂,g₃,g₄)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_causal_dynamical_triangulations",
+      "name": "因果动力三角剖分",
+      "formula": "Z = Σ_T e^{-S[T]}, T = triangulation",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_quantum_riemannian_geometry",
+      "name": "量子黎曼几何",
+      "formula": "ds² = g_{μν} dx^μ dx^ν, [g_{μν}(x), π^{ρσ}(y)] = i δ^{ρσ}_{μν} δ(x-y)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_multiverse",
+      "name": "多重宇宙",
+      "formula": "S = Σ_i S_i, S_i = action of universe i",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_dark_energy_equation_of_state",
+      "name": "暗能量状态方程",
+      "formula": "w = P/ρ, w ≈ -1",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_modified_gravity",
+      "name": "修改引力",
+      "formula": "f(R) = R + α R² + β R_{μν} R^{μν}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_primordial_black_hole",
+      "name": "原初黑洞",
+      "formula": "β(M) = (M_Pl/M)¹/² exp(-M/M_Pl)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_cosmic_microwave_background",
+      "name": "宇宙微波背景",
+      "formula": "ΔT/T = Σ_lm a_{lm} Y_{lm}(θ,φ)",
+      "category": "quantum_computing"
     }
   ]
 }
