@@ -1,0 +1,242 @@
+[
+  [
+    "math_0",
+    "数学 algebra",
+    "math_algebra = f(math_algebra_params)",
+    "mathematics"
+  ],
+  [
+    "math_1",
+    "数学 geometry",
+    "math_geometry = f(math_geometry_params)",
+    "mathematics"
+  ],
+  [
+    "math_2",
+    "数学 calculus",
+    "math_calculus = f(math_calculus_params)",
+    "mathematics"
+  ],
+  [
+    "math_3",
+    "数学 topology",
+    "math_topology = f(math_topology_params)",
+    "mathematics"
+  ],
+  [
+    "math_4",
+    "数学 number_theory",
+    "math_number_theory = f(math_number_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_5",
+    "数学 combinatorics",
+    "math_combinatorics = f(math_combinatorics_params)",
+    "mathematics"
+  ],
+  [
+    "math_6",
+    "数学 probability",
+    "math_probability = f(math_probability_params)",
+    "mathematics"
+  ],
+  [
+    "math_7",
+    "数学 statistics",
+    "math_statistics = f(math_statistics_params)",
+    "mathematics"
+  ],
+  [
+    "math_8",
+    "数学 logic",
+    "math_logic = f(math_logic_params)",
+    "mathematics"
+  ],
+  [
+    "math_9",
+    "数学 set_theory",
+    "math_set_theory = f(math_set_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_10",
+    "数学 category_theory",
+    "math_category_theory = f(math_category_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_11",
+    "数学 algebraic_geometry",
+    "math_algebraic_geometry = f(math_algebraic_geometry_params)",
+    "mathematics"
+  ],
+  [
+    "math_12",
+    "数学 differential_geometry",
+    "math_differential_geometry = f(math_differential_geometry_params)",
+    "mathematics"
+  ],
+  [
+    "math_13",
+    "数学 functional_analysis",
+    "math_functional_analysis = f(math_functional_analysis_params)",
+    "mathematics"
+  ],
+  [
+    "math_14",
+    "数学 complex_analysis",
+    "math_complex_analysis = f(math_complex_analysis_params)",
+    "mathematics"
+  ],
+  [
+    "math_15",
+    "数学 real_analysis",
+    "math_real_analysis = f(math_real_analysis_params)",
+    "mathematics"
+  ],
+  [
+    "math_16",
+    "数学 ode",
+    "math_ode = f(math_ode_params)",
+    "mathematics"
+  ],
+  [
+    "math_17",
+    "数学 pde",
+    "math_pde = f(math_pde_params)",
+    "mathematics"
+  ],
+  [
+    "math_18",
+    "数学 optimization",
+    "math_optimization = f(math_optimization_params)",
+    "mathematics"
+  ],
+  [
+    "math_19",
+    "数学 numerical_analysis",
+    "math_numerical_analysis = f(math_numerical_analysis_params)",
+    "mathematics"
+  ],
+  [
+    "math_20",
+    "数学 discrete_math",
+    "math_discrete_math = f(math_discrete_math_params)",
+    "mathematics"
+  ],
+  [
+    "math_21",
+    "数学 graph_theory",
+    "math_graph_theory = f(math_graph_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_22",
+    "数学 game_theory",
+    "math_game_theory = f(math_game_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_23",
+    "数学 operation_research",
+    "math_operation_research = f(math_operation_research_params)",
+    "mathematics"
+  ],
+  [
+    "math_24",
+    "数学 control_theory",
+    "math_control_theory = f(math_control_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_25",
+    "数学 signal_processing",
+    "math_signal_processing = f(math_signal_processing_params)",
+    "mathematics"
+  ],
+  [
+    "math_26",
+    "数学 information_theory",
+    "math_information_theory = f(math_information_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_27",
+    "数学 coding_theory",
+    "math_coding_theory = f(math_coding_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_28",
+    "数学 cryptography_math",
+    "math_cryptography_math = f(math_cryptography_math_params)",
+    "mathematics"
+  ],
+  [
+    "math_29",
+    "数学 number_theory_applied",
+    "math_number_theory_applied = f(math_number_theory_applied_params)",
+    "mathematics"
+  ],
+  [
+    "math_30",
+    "数学 mathematical_physics",
+    "math_mathematical_physics = f(math_mathematical_physics_params)",
+    "mathematics"
+  ],
+  [
+    "math_31",
+    "数学 differential_equations",
+    "math_differential_equations = f(math_differential_equations_params)",
+    "mathematics"
+  ],
+  [
+    "math_32",
+    "数学 integral_equations",
+    "math_integral_equations = f(math_integral_equations_params)",
+    "mathematics"
+  ],
+  [
+    "math_33",
+    "数学 functional_equations",
+    "math_functional_equations = f(math_functional_equations_params)",
+    "mathematics"
+  ],
+  [
+    "math_34",
+    "数学 special_functions",
+    "math_special_functions = f(math_special_functions_params)",
+    "mathematics"
+  ],
+  [
+    "math_35",
+    "数学 orthogonal_polynomials",
+    "math_orthogonal_polynomials = f(math_orthogonal_polynomials_params)",
+    "mathematics"
+  ],
+  [
+    "math_36",
+    "数学 fourier_analysis",
+    "math_fourier_analysis = f(math_fourier_analysis_params)",
+    "mathematics"
+  ],
+  [
+    "math_37",
+    "数学 wavelet_analysis",
+    "math_wavelet_analysis = f(math_wavelet_analysis_params)",
+    "mathematics"
+  ],
+  [
+    "math_38",
+    "数学 harmonic_analysis",
+    "math_harmonic_analysis = f(math_harmonic_analysis_params)",
+    "mathematics"
+  ],
+  [
+    "math_39",
+    "数学 measure_theory",
+    "math_measure_theory = f(math_measure_theory_params)",
+    "mathematics"
+  ]
+]
