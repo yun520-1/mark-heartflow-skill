@@ -192,6 +192,16 @@ class CrossPlatformMemoryRelay {
     const unsynced = [...this.localMemory.values()].filter(v => !v.synced).length;
     return { local, remote, unsynced, syncEnabled: this.syncEnabled };
   }
+  // [LOW FIX] 销毁适配器（清理 timer 和资源）
+  destroy() {
+    if (this._syncTimer) {
+      clearTimeout(this._syncTimer);
+      this._syncTimer = null;
+    }
+    this.localMemory.clear();
+    this.remoteMemory.clear();
+    this.syncEnabled = false;
+  }
 }
 
 // ============================================================================
