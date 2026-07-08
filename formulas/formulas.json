@@ -15981,6 +15981,96 @@
       "name": "资源理论",
       "formula": "ρ ≺ σ ⇔ ∃ CPTP map Λ: σ = Λ(ρ)",
       "category": "quantum_computing"
+    },
+    {
+      "id": "q_info_geo_fubini_study",
+      "name": "Fubini-Study 度量",
+      "formula": "ds² = 1 - |⟨ψ|φ⟩|²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_info_geo_berry_phase",
+      "name": "Berry 相位",
+      "formula": "γ_n = i ∮ ⟨n|∇_R|n⟩·dR",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_info_geo_quantum_distance",
+      "name": "量子距离",
+      "formula": "D(ρ,σ) = arccos(√F(ρ,σ))",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_info_geo_wigner_function",
+      "name": "Wigner 函数",
+      "formula": "W(q,p) = (1/πℏ) ∫ ψ*(q-y) ψ(q+y) e^{2ipy/ℏ} dy",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_info_geo_husimi_function",
+      "name": "Husimi 函数",
+      "formula": "Q(α) = ⟨α|ρ|α⟩/π",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_info_geo_p_function",
+      "name": "P 函数",
+      "formula": "ρ = ∫ P(α) |α⟩⟨α| d²α",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_info_geo_quantum_fisher_metric",
+      "name": "量子 Fisher 度量",
+      "formula": "g_{ij} = Re(⟨∂_i ψ|∂_j ψ⟩ - ⟨∂_i ψ|ψ⟩⟨ψ|∂_j ψ⟩)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_info_geo_quantum_connection",
+      "name": "量子联络",
+      "formula": "A_{ij} = Im(⟨∂_i ψ|∂_j ψ⟩)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_topo_class_chern_number",
+      "name": "Chern 数",
+      "formula": "C = (1/2π) ∫_{BZ} F_{xy} d²k",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_topo_class_z2_invariant",
+      "name": "Z2 不变量",
+      "formula": "ν = ∫_{BZ} d³k/(24π²) ε^{μνρ} Tr[(h⁻¹∂_μ h)(h⁻¹∂_ν h)(h⁻¹∂_ρ h)]",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_topo_class_winding_number",
+      "name": "卷绕数",
+      "formula": "w = ∫ dk/(2πi) ∂_k log det h(k)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_topo_class_bulk_boundary",
+      "name": "体-边界对应",
+      "formula": "n_edge = n_bulk mod 2",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_topo_class_topological_invariant",
+      "name": "拓扑不变量",
+      "formula": "I = Tr(U† [X,U])",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_topo_class_symmetry_protection",
+      "name": "对称性保护",
+      "formula": "H(k) = H(-k), T² = -1",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_topo_class_quantum_spin_hall",
+      "name": "量子自旋霍尔",
+      "formula": "σ_{sH} = (e/2π) (C_↑ - C_↓)",
+      "category": "quantum_computing"
     }
   ]
 }
