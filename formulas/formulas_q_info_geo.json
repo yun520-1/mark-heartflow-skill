@@ -1,0 +1,50 @@
+[
+  [
+    "q_info_geo_fubini_study",
+    "Fubini-Study 度量",
+    "ds² = 1 - |⟨ψ|φ⟩|²",
+    "quantum_computing"
+  ],
+  [
+    "q_info_geo_berry_phase",
+    "Berry 相位",
+    "γ_n = i ∮ ⟨n|∇_R|n⟩·dR",
+    "quantum_computing"
+  ],
+  [
+    "q_info_geo_quantum_distance",
+    "量子距离",
+    "D(ρ,σ) = arccos(√F(ρ,σ))",
+    "quantum_computing"
+  ],
+  [
+    "q_info_geo_wigner_function",
+    "Wigner 函数",
+    "W(q,p) = (1/πℏ) ∫ ψ*(q-y) ψ(q+y) e^{2ipy/ℏ} dy",
+    "quantum_computing"
+  ],
+  [
+    "q_info_geo_husimi_function",
+    "Husimi 函数",
+    "Q(α) = ⟨α|ρ|α⟩/π",
+    "quantum_computing"
+  ],
+  [
+    "q_info_geo_p_function",
+    "P 函数",
+    "ρ = ∫ P(α) |α⟩⟨α| d²α",
+    "quantum_computing"
+  ],
+  [
+    "q_info_geo_quantum_fisher_metric",
+    "量子 Fisher 度量",
+    "g_{ij} = Re(⟨∂_i ψ|∂_j ψ⟩ - ⟨∂_i ψ|ψ⟩⟨ψ|∂_j ψ⟩)",
+    "quantum_computing"
+  ],
+  [
+    "q_info_geo_quantum_connection",
+    "量子联络",
+    "A_{ij} = Im(⟨∂_i ψ|∂_j ψ⟩)",
+    "quantum_computing"
+  ]
+]
