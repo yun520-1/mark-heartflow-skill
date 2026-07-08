@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "version": "7.3.0",
+    "version": "7.6.0",
     "last_updated": "2026-07-08",
-    "total_formulas": 1461,
+    "total_formulas": 1494,
     "categories": [
       "mathematics",
       "physics",
@@ -11877,6 +11877,270 @@
       "category": "mathematics",
       "subcategory": "information_theory",
       "source": "sympy_verified"
+    },
+    {
+      "id": "wiki_qm_schrodinger_time",
+      "name": "含时薛定谔方程",
+      "formula": "i*ħ*∂ψ/∂t = Ĥ*ψ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_qm_schrodinger_time_indep",
+      "name": "不含时薛定谔方程",
+      "formula": "Ĥ*ψ = E*ψ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_qm_heisenberg_comm",
+      "name": "海森堡对易关系",
+      "formula": "[x, p] = i*ħ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_qm_born_rule",
+      "name": "波恩规则",
+      "formula": "P(x) = |ψ(x)|²",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_qm_uncertainty_pos",
+      "name": "位置-动量不确定性",
+      "formula": "Δx*Δp ≥ ħ/2",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_qm_de_broglie",
+      "name": "德布罗意关系",
+      "formula": "p = ħ*k",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_em_maxwell_1",
+      "name": "麦克斯韦方程1（高斯）",
+      "formula": "∇·E = ρ/ε₀",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_em_maxwell_2",
+      "name": "麦克斯韦方程2（高斯磁）",
+      "formula": "∇·B = 0",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_em_maxwell_3",
+      "name": "麦克斯韦方程3（法拉第）",
+      "formula": "∇×E = -∂B/∂t",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_em_maxwell_4",
+      "name": "麦克斯韦方程4（安培）",
+      "formula": "∇×B = μ₀*J + μ₀*ε₀*∂E/∂t",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_em_poynting",
+      "name": "坡印廷矢量",
+      "formula": "S = E × H",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_em_lorentz_force",
+      "name": "洛伦兹力",
+      "formula": "F = q*(E + v × B)",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_fluid_navier_stokes",
+      "name": "纳维-斯托克斯方程",
+      "formula": "ρ*(∂v/∂t + v·∇v) = -∇p + μ*∇²v + f",
+      "category": "physics",
+      "subcategory": "fluid_dynamics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_fluid_continuity",
+      "name": "连续性方程",
+      "formula": "∂ρ/∂t + ∇·(ρ*v) = 0",
+      "category": "physics",
+      "subcategory": "fluid_dynamics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_fluid_bernoulli",
+      "name": "伯努利方程",
+      "formula": "p + ½*ρ*v² + ρ*g*h = constant",
+      "category": "physics",
+      "subcategory": "fluid_dynamics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_fluid_reynolds",
+      "name": "雷诺数",
+      "formula": "Re = ρ*v*L/μ",
+      "category": "physics",
+      "subcategory": "fluid_dynamics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_rel_lorentz_x",
+      "name": "洛伦兹变换（x）",
+      "formula": "x' = γ*(x - v*t)",
+      "category": "physics",
+      "subcategory": "special_relativity",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_rel_energy_momentum",
+      "name": "能量-动量关系",
+      "formula": "E² = (p*c)² + (m₀*c²)²",
+      "category": "physics",
+      "subcategory": "special_relativity",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_rel_spacetime_interval",
+      "name": "时空间隔",
+      "formula": "ds² = -c²*dt² + dx² + dy² + dz²",
+      "category": "physics",
+      "subcategory": "special_relativity",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_rel_einstein_field",
+      "name": "爱因斯坦场方程",
+      "formula": "G_{μν} = (8*π*G/c⁴)*T_{μν}",
+      "category": "physics",
+      "subcategory": "general_relativity",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_thermo_first_law",
+      "name": "热力学第一定律",
+      "formula": "ΔU = Q - W",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_thermo_ideal_gas",
+      "name": "理想气体状态方程",
+      "formula": "p*V = n*R*T",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_thermo_boltzmann",
+      "name": "玻尔兹曼分布",
+      "formula": "P(E) ∝ exp(-E/(k_B*T))",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_thermo_partition_func",
+      "name": "配分函数",
+      "formula": "Z = Σ exp(-E_i/(k_B*T))",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_opt_snell_law",
+      "name": "斯涅尔定律",
+      "formula": "n₁*sin(θ₁) = n₂*sin(θ₂)",
+      "category": "physics",
+      "subcategory": "optics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_opt_lensmaker",
+      "name": "透镜制造公式",
+      "formula": "1/f = (n-1)*(1/R₁ - 1/R₂)",
+      "category": "physics",
+      "subcategory": "optics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_nuc_radioactive_decay",
+      "name": "放射性衰变",
+      "formula": "N(t) = N₀*exp(-λ*t)",
+      "category": "physics",
+      "subcategory": "nuclear_physics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_nuc_half_life",
+      "name": "半衰期",
+      "formula": "t_{1/2} = ln(2)/λ",
+      "category": "physics",
+      "subcategory": "nuclear_physics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_nuc_mass_energy",
+      "name": "质能等价",
+      "formula": "E = m*c²",
+      "category": "physics",
+      "subcategory": "nuclear_physics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_astro_newton_grav",
+      "name": "牛顿万有引力",
+      "formula": "F = G*m₁*m₂/r²",
+      "category": "physics",
+      "subcategory": "astrophysics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_astro_kepler_3",
+      "name": "开普勒第三定律",
+      "formula": "T² ∝ a³",
+      "category": "physics",
+      "subcategory": "astrophysics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_astro_hubble",
+      "name": "哈勃定律",
+      "formula": "v = H₀*D",
+      "category": "physics",
+      "subcategory": "astrophysics",
+      "source": "wikipedia_manual"
+    },
+    {
+      "id": "wiki_astro_stefan_boltzmann",
+      "name": "斯特藩-玻尔兹曼定律",
+      "formula": "j* = σ*T⁴",
+      "category": "physics",
+      "subcategory": "astrophysics",
+      "source": "wikipedia_manual"
     }
   ]
 }
