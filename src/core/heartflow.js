@@ -216,7 +216,7 @@ const _LogicReasoning = _lazy('logicReasoning', () => require('../reasoning/logi
 const _CognitiveEngine = _lazy('cognitiveEngine', () => require('./cognitive-engine.js'));
 const _DecisionEngine = _lazy('decisionEngine', () => require('./decision-engine.js'));
 const _ProcessRewardModel = _lazy('processRewardModel', () => require('../reasoning/process-reward-model.js'));
-const _AutonomousEmotion = _lazy('autonomousEmotion', () => { try { return require('../emotion/autonomous-emotion.js'); } catch(e) { return { AutonomousEmotion: class { constructor() {} } }; } });\n
+const _AutonomousEmotion = _lazy('autonomousEmotion', () => { try { return require('../emotion/autonomous-emotion.js'); } catch(e) { return { AutonomousEmotion: class { constructor() {} } }; } });
 const _EmpathyResponder = _lazy('empathyResponder', () => require('../emotion/empathy-responder.js'));
 const _CreativityEngine = _lazy('creativityEngine', () => require('../creativity/creativity-engine.js'));
 const _HumorGenerator = _lazy('humorGenerator', () => require('../humor/humor-generator.js'));

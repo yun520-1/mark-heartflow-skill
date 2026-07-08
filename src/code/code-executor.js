@@ -409,6 +409,10 @@ class CodeExecutor {
       python:     this._checkPythonAvailable()
     };
 
+    // [P0 FIX] 初始化并发限制器（之前未初始化，导致 undefined >= 3 恒为 false）
+    this._executionCount = 0;
+    this._lastExecutionTime = 0;
+
     // 已禁用 console.error: console.error(`[CodeExecutor] 初始化完成. 可用执行器: ${JSON.stringify(this._availableExecutors)}`);
   }
 
