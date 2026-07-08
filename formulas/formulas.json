@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "version": "8.4.0",
+    "version": "8.5.0",
     "last_updated": "2026-07-08",
-    "total_formulas": 1604,
+    "total_formulas": 1622,
     "categories": [
       "mathematics",
       "physics",
@@ -13021,6 +13021,150 @@
       "category": "mathematics",
       "subcategory": "differential_geometry",
       "source": "wikipedia_advanced"
+    },
+    {
+      "id": "quantum_quantum_gate_X",
+      "name": "Pauli-X gate",
+      "formula": "X = [[0, 1], [1, 0]]",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_gate_Y",
+      "name": "Pauli-Y gate",
+      "formula": "Y = [[0, -i], [i, 0]]",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_gate_Z",
+      "name": "Pauli-Z gate",
+      "formula": "Z = [[1, 0], [0, -1]]",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_gate_H",
+      "name": "Hadamard gate",
+      "formula": "H = (1/√2) [[1, 1], [1, -1]]",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_gate_S",
+      "name": "Phase gate",
+      "formula": "S = [[1, 0], [0, i]]",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_gate_T",
+      "name": "T gate",
+      "formula": "T = [[1, 0], [0, e^{iπ/4}]]",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_gate_CNOT",
+      "name": "CNOT gate",
+      "formula": "CNOT = |0⟩⟨0| ⊗ I + |1⟩⟨1| ⊗ X",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_gate_CZ",
+      "name": "CZ gate",
+      "formula": "CZ = |0⟩⟨0| ⊗ I + |1⟩⟨1| ⊗ Z",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_gate_SWAP",
+      "name": "SWAP gate",
+      "formula": "SWAP = [[1,0,0,0], [0,0,1,0], [0,1,0,0], [0,0,0,1]]",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_state_qubit",
+      "name": "Qubit state",
+      "formula": "|ψ⟩ = α|0⟩ + β|1⟩, |α|² + |β|² = 1",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_state_bell",
+      "name": "Bell state",
+      "formula": "|Φ⁺⟩ = (|00⟩ + |11⟩)/√2",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_state_ghz",
+      "name": "GHZ state",
+      "formula": "|GHZ_n⟩ = (|0⟩^{⊗n} + |1⟩^{⊗n})/√2",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_algo_deutsch",
+      "name": "Deutsch algorithm",
+      "formula": "f(0) ⊕ f(1) = ?",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_algo_grover",
+      "name": "Grover's algorithm",
+      "formula": "O(√N) search",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_algo_shor",
+      "name": "Shor's algorithm",
+      "formula": "O((log N)³) factoring",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_algo_vqe",
+      "name": "Variational Quantum Eigensolver",
+      "formula": "min_θ ⟨ψ(θ)|H|ψ(θ)⟩",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_entanglement_entropy",
+      "name": "Entanglement entropy",
+      "formula": "S(ρ_A) = -Tr(ρ_A log ρ_A)",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "quantum_quantum_entanglement_concurrence",
+      "name": "Concurrence",
+      "formula": "C(ψ) = |⟨ψ|σ_y ⊗ σ_y|ψ*⟩|",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
     }
   ]
 }
