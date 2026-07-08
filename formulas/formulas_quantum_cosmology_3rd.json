@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_cosmo_eternal_inflation",
+    "永恒暴胀",
+    "P(Φ) ∝ exp(3H²/2ΛV(Φ))",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_multiverse",
+    "多重宇宙",
+    "S = Σ_i S_i, S_i = action of universe i",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_anthropic_principle",
+    "人择原理",
+    "P(observables) ∝ N_observers",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_dark_energy_equation_of_state",
+    "暗能量状态方程",
+    "w = P/ρ, w ≈ -1",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_modified_gravity",
+    "修改引力",
+    "f(R) = R + α R² + β R_{μν} R^{μν}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_primordial_black_hole",
+    "原初黑洞",
+    "β(M) = (M_Pl/M)¹/² exp(-M/M_Pl)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_neutrino_mass",
+    "中微子质量",
+    "Σ m_ν < 0.12 eV",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_cosmic_microwave_background",
+    "宇宙微波背景",
+    "ΔT/T = Σ_lm a_{lm} Y_{lm}(θ,φ)",
+    "quantum_computing"
+  ]
+]
