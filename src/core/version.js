@@ -13,6 +13,18 @@
 
 'use strict';
 
-const VERSION = '5.7.3';
+const fs = require('fs');
+const path = require('path');
+
+// 从 VERSION 文件读取版本号（唯一真相源）
+let VERSION = '5.8.5';  // 兜底版本
+
+try {
+  const versionPath = path.join(__dirname, '..', '..', 'VERSION');
+  const versionContent = fs.readFileSync(versionPath, 'utf-8');
+  VERSION = versionContent.trim();
+} catch (e) {
+  console.warn('[version.js] 无法读取 VERSION 文件，使用兜底版本:', VERSION);
+}
 
 module.exports = { VERSION };
