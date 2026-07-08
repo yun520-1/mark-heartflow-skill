@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_info_applied_quantum_teleportation",
+    "量子隐形传态",
+    "|Ψ>_AB = (|00> + |11>)/√2, F = |⟨Ψ|ρ|Ψ⟩|²",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_applied_superdense_coding",
+    "超密编码",
+    "Capacity = 2 log₂ d",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_applied_quantum_repeater",
+    "量子中继",
+    "F = (F₀)^(1/N)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_applied_qkd_bb84",
+    "BB84 协议",
+    "Security = 1 - 2QBER",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_applied_qkd_e91",
+    "E91 协议",
+    "Security = 1 - S(ρ_AB)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_applied_quantum_signature",
+    "量子签名",
+    "Security = 1 - Pr(forgery)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_applied_quantum_fisher_info",
+    "量子 Fisher 信息",
+    "F_Q(θ) = 4 Re(⟨∂θΨ|∂θΨ⟩ - |⟨Ψ|∂θΨ⟩|²)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_applied_heisenberg_limit",
+    "Heisenberg 极限",
+    "Δθ ≥ 1/(ν √F_Q)",
+    "quantum_computing"
+  ]
+]
