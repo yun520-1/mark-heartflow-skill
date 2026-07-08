@@ -15549,6 +15549,48 @@
       "name": "量子自旋液体",
       "formula": "S = ln(2)/2 ≈ 0.346",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_applied_quantum_teleportation",
+      "name": "量子隐形传态",
+      "formula": "|Ψ>_AB = (|00> + |11>)/√2, F = |⟨Ψ|ρ|Ψ⟩|²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_applied_superdense_coding",
+      "name": "超密编码",
+      "formula": "Capacity = 2 log₂ d",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_applied_quantum_repeater",
+      "name": "量子中继",
+      "formula": "F = (F₀)^(1/N)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_applied_qkd_bb84",
+      "name": "BB84 协议",
+      "formula": "Security = 1 - 2QBER",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_applied_qkd_e91",
+      "name": "E91 协议",
+      "formula": "Security = 1 - S(ρ_AB)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_applied_quantum_signature",
+      "name": "量子签名",
+      "formula": "Security = 1 - Pr(forgery)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_applied_quantum_fisher_info",
+      "name": "量子 Fisher 信息",
+      "formula": "F_Q(θ) = 4 Re(⟨∂θΨ|∂θΨ⟩ - |⟨Ψ|∂θΨ⟩|²)",
+      "category": "quantum_computing"
     }
   ]
 }
