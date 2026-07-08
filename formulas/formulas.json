@@ -15729,6 +15729,54 @@
       "name": "拓扑绝缘体边缘态",
       "formula": "H_edge = v_F ∫ dx ψ† (-i ∂_x) ψ",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_extra3_surface_code",
+      "name": "表面码",
+      "formula": "d = √n, T = d/2",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_extra3_color_code",
+      "name": "色码",
+      "formula": "r = 3, T = 2",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_extra3_topological_code",
+      "name": "拓扑码",
+      "formula": "ν = 2, 3, 5",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_extra3_quantum_repeater",
+      "name": "量子中继",
+      "formula": "F = (F₀)^(1/N)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_extra3_entanglement_swapping",
+      "name": "纠缠交换",
+      "formula": "|Ψ⟩_{AB} = (|00⟩ + |11⟩)/√2",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_extra3_quantum_memory",
+      "name": "量子存储器",
+      "formula": "T_coh = T₁ T₂ / (T₁ + T₂)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_extra3_quantum_internet",
+      "name": "量子互联网",
+      "formula": "Rate = O(1/√N)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_extra3_quantum_routing",
+      "name": "量子路由",
+      "formula": "Path = argmin_{p} L(p)",
+      "category": "quantum_computing"
     }
   ]
 }
