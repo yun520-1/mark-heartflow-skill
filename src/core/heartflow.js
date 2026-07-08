@@ -1629,6 +1629,14 @@ class HeartFlow {
       _log.info('init', 'Formula Engine 加载成功', { formulaCount: this.formula.healthCheck().formulaCount || 0 });
     } catch (e) { _boundedPush(this._initErrors, { module: 'formula', error: e.message }, MAX_HISTORY_SIZE); }
 
+    // ── [v5.8.6] Cognitive Load Index — 认知负载指数（Sweller 理论）
+    try {
+      const { CognitiveLoadCalculator } = require('../cognitive/cognitive-load.js');
+      this.cognitiveIndex = new CognitiveLoadCalculator();
+      this._modules.cognitiveIndex = this.cognitiveIndex;
+      _log.info('init', 'Cognitive Index 模块加载成功');
+    } catch (e) { _boundedPush(this._initErrors, { module: 'cognitiveIndex', error: e.message }, MAX_HISTORY_SIZE); }
+
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
     this.heartflow = this;  // 让 dispatch('heartflow.introspect') 能找到实例
 
@@ -1892,7 +1900,9 @@ class HeartFlow {
       // v5.7.7 — F3 持续漂移检测器
       'sustainedDriftDetector',
       // v5.8.6 — 公式引擎（数学/物理/化学/工程公式库）
-      'formula'];
+      'formula',
+      // v5.8.6 — 认知负载指数（Sweller 认知负载理论）
+      'cognitiveIndex'];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
         this._modules[name] = this[name];
@@ -2354,11 +2364,13 @@ class HeartFlow {
     // ── [v5.7.7] F3 SustainedDriftDetector ─────────────────────────
     'sustainedDriftDetector.detectDrift', 'sustainedDriftDetector.recordState',
     'sustainedDriftDetector.getDriftHistory', 'sustainedDriftDetector.getStats', 'sustainedDriftDetector.reset',
-    // ── [v5.8.6] Formula Engine — 公式引擎（1149+ 公式）
+    // ── [v5.8.6] Formula Engine — 公式引擎（1122+ 公式）
     'formula.search', 'formula.getDetails', 'formula.calculate',
     'formula.getCategories', 'formula.getByCategory', 'formula.getStatus',
     'formula.lookup', 'formula.healthCheck',
-    // ── [v5.8.0] 性能监控 ─────────────────────────────────────────
+    // ── [v5.8.6] Cognitive Index — 认知负载指数
+    'cognitiveIndex.estimate', 'cognitiveIndex.calibrate', 'cognitiveIndex.healthCheck',
+    // ── [v5.8.0] 性能监控 ───────────────────────────────
     'monitor.getStats', 'monitor.enable', 'monitor.disable', 'monitor.reset']);
 
   /**
@@ -2461,8 +2473,10 @@ class HeartFlow {
       _perf.recordDispatch(route, performance.now() - _perfStart);
     }
 
-    // ─── 决策路由：自动将分析结果转化为决策指令 ────────────────────
-    if (this._decisionRouter && rawResult && typeof rawResult === 'object' && !Array.isArray(rawResult)) {
+    // ── 决策路由：自动将分析结果转化为决策指令
+    // 白名单：这些路由跳过 decisionRouter（非决策类结果）
+    const NO_ROUTE = new Set(['cognitiveIndex.estimate', 'cognitiveIndex.healthCheck', 'formula.search', 'formula.getStatus']);
+    if (!NO_ROUTE.has(route) && this._decisionRouter && rawResult && typeof rawResult === 'object' && !Array.isArray(rawResult)) {
       if (rawResult.matched === true || rawResult.matched === false) {
         return rawResult;
       }
