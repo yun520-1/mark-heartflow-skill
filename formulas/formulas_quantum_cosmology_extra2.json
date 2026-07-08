@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_cosmo_inflaton_potential",
+    "暴胀势",
+    "V(φ) = ½ m² φ² + λ φ⁴/4!",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_slow_roll_parameter",
+    "慢滚参数",
+    "ε = (M_Pl²/2) (V'/V)²",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_spectral_index",
+    "谱指数",
+    "n_s = 1 - 6ε + 2η",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_tensor_to_scalar",
+    "张量-标量比",
+    "r = 16ε",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_primordial_power",
+    "原初功率谱",
+    "P_R(k) = A_s (k/k_pivot)^{n_s-1}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_reheating_temperature",
+    "再加热温度",
+    "T_RH = (30 V(φ_end)/(π² g_*))^{1/4}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_dark_matter_density",
+    "暗物质密度",
+    "Ω_DM h² = 0.12",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_baryon_acoustic_oscillation",
+    "BAO 尺度",
+    "r_s = ∫_{z_drag}^{∞} c_s(z)/H(z) dz",
+    "quantum_computing"
+  ]
+]

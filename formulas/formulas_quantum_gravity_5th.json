@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_grav_planck_length",
+    "Planck 长度",
+    "l_P = √(ℏG/c³)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_planck_time",
+    "Planck 时间",
+    "t_P = l_P/c",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_planck_mass",
+    "Planck 质量",
+    "m_P = √(ℏc/G)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_planck_energy",
+    "Planck 能量",
+    "E_P = m_P c²",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_black_hole_entropy",
+    "黑洞熵",
+    "S_BH = k_B A/(4 l_P²)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_hawking_temperature",
+    "霍金温度",
+    "T_H = ℏ c³/(8π G M k_B)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_ads_cft_correspondence",
+    "AdS/CFT 对应",
+    "Z_CFT[g] = Z_string on AdS[g]",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_wheeler_dewitt_equation",
+    "Wheeler-deWitt 方程",
+    "H|Ψ> = 0",
+    "quantum_computing"
+  ]
+]
