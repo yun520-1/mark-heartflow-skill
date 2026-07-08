@@ -65,7 +65,9 @@
     ]
   },
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "mathjs": "^15.2.0"
+  },
   "optionalDependencies": {
     "@xenova/transformers": "^2.6.0"
   },

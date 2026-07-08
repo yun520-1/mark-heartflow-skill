@@ -1210,7 +1210,7 @@ class HeartFlow {
       const ee = new (_EntityExtractor().EntityExtractor)();
       const ind = new (_ImplicitNeedDetector().ImplicitNeedDetector)();
       const rc = new (_ResponseCompressor().ResponseCompressor)();
-      const ca = new (_ConfidenceAnnotator().ConfidenceAnnotator)();
+      const ca = _ConfidenceAnnotator().confidenceAnnotator;
       this.translator = {
         userToLLM: (input, ctx) => utl.translate(input, ctx),
         llmToUser: (output, ctx) => ltu.translate(output, ctx),
@@ -1621,6 +1621,14 @@ class HeartFlow {
       });
     } catch (e) { _boundedPush(this._initErrors, { module: 'selfPlay', error: e.message }, MAX_HISTORY_SIZE); }
 
+    // ── [v5.8.6] Formula Engine — 公式引擎（数学/物理/化学/工程 1149+ 公式）
+    try {
+      const { FormulaModule } = require('../formula/formula-module.js');
+      this.formula = new FormulaModule({ formulasFile: path.join(this.rootPath, 'formulas', 'formulas.json') });
+      this._modules.formula = this.formula;
+      _log.info('init', 'Formula Engine 加载成功', { formulaCount: this.formula.healthCheck().formulaCount || 0 });
+    } catch (e) { _boundedPush(this._initErrors, { module: 'formula', error: e.message }, MAX_HISTORY_SIZE); }
+
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
     this.heartflow = this;  // 让 dispatch('heartflow.introspect') 能找到实例
 
@@ -1882,7 +1890,9 @@ class HeartFlow {
       'traumaInformed', 'postTraumaticGrowth', 'forgivenessEngine',
       'aiHumanIntegration', 'beingMode', 'consciousnessBridge',
       // v5.7.7 — F3 持续漂移检测器
-      'sustainedDriftDetector'];
+      'sustainedDriftDetector',
+      // v5.8.6 — 公式引擎（数学/物理/化学/工程公式库）
+      'formula'];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
         this._modules[name] = this[name];
@@ -2341,10 +2351,14 @@ class HeartFlow {
     'beingMode.setPresenceMode', 'beingMode.getStats',
     'consciousnessBridge.simulateConsciousness', 'consciousnessBridge.getConsciousnessState',
     'consciousnessBridge.recordSubjectiveState', 'consciousnessBridge.getStats',
-    // ─── [v5.7.7] F3 SustainedDriftDetector ─────────────────────────────────
+    // ── [v5.7.7] F3 SustainedDriftDetector ─────────────────────────
     'sustainedDriftDetector.detectDrift', 'sustainedDriftDetector.recordState',
     'sustainedDriftDetector.getDriftHistory', 'sustainedDriftDetector.getStats', 'sustainedDriftDetector.reset',
-    // ─── [v5.8.0] 性能监控 ─────────────────────────────────────────────────
+    // ── [v5.8.6] Formula Engine — 公式引擎（1149+ 公式）
+    'formula.search', 'formula.getDetails', 'formula.calculate',
+    'formula.getCategories', 'formula.getByCategory', 'formula.getStatus',
+    'formula.lookup', 'formula.healthCheck',
+    // ── [v5.8.0] 性能监控 ─────────────────────────────────────────
     'monitor.getStats', 'monitor.enable', 'monitor.disable', 'monitor.reset']);
 
   /**
