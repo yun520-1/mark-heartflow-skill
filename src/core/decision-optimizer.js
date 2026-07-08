@@ -306,4 +306,4 @@ class DecisionOptimizer {
   }
 }
 
-module.exports = { DecisionOptimizer };
+module.exports = { DecisionEngine: DecisionOptimizer };

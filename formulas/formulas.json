@@ -16071,6 +16071,96 @@
       "name": "量子自旋霍尔",
       "formula": "σ_{sH} = (e/2π) (C_↑ - C_↓)",
       "category": "quantum_computing"
+    },
+    {
+      "id": "q_cond_fermi_liquid",
+      "name": "费米液体",
+      "formula": "E(k) = E_F + ℏ² k_F (k - k_F)/m*",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_cond_luttinger_liquid",
+      "name": "Luttinger 液体",
+      "formula": "ρ(k) = k_d/(2π) + (k - k_F)/(2π v_F)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_cond_quantum_critical",
+      "name": "量子临界",
+      "formula": "S = (π/3) ln L + const",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_cond_majorana_zero",
+      "name": "Majorana 零模",
+      "formula": "γ = γ†, {γ_i, γ_j} = 2δ_{ij}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_cond_topological_superconductor",
+      "name": "拓扑超导体",
+      "formula": "H = Σ_k (ξ_k τ_z + Δ_k τ_x)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_cond_floquet_topological",
+      "name": "Floquet 拓扑",
+      "formula": "H(t) = H_0 + V cos(ωt)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_cond_disorder_topological",
+      "name": "无序拓扑",
+      "formula": "σ_{xy} = (e²/h) (n + 1/2)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_cond_fractional_quantum_hall",
+      "name": "分数量子霍尔",
+      "formula": "ν = p/q, σ_{xy} = ν e²/h",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_opt_dressed_state",
+      "name": "缀饰态",
+      "formula": "Δ_dressed = Δ ± √(Ω² + Δ²)/2",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_opt_lamb_shift",
+      "name": "Lamb 移位",
+      "formula": "Δω = (α/3π) ω³ ln(ω/ω_c)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_opt_purcell_effect",
+      "name": "Purcell 效应",
+      "formula": "γ_P = γ_0 (3λ³/(4πr³)) (Q/2π)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_opt_cavity_qed",
+      "name": "腔 QED",
+      "formula": "g = μ √(ω_c/(2ℏε_0 V))",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_opt_circuit_qed",
+      "name": "电路 QED",
+      "formula": "g = (e/2C) √(ℏω/(2e²))",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_opt_optical_tweezers",
+      "name": "光镊",
+      "formula": "U(r) = -α/(4ε_0 c) I(r)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_opt_quantum_imaging",
+      "name": "量子成像",
+      "formula": "I(r) = Tr(ρ E^{(-)}(r) E^{(+)}(r))",
+      "category": "quantum_computing"
     }
   ]
 }
