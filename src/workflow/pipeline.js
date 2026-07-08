@@ -574,6 +574,7 @@ const FAST_PIPELINE = [
       const memories = ctx.memory?.memories || [];
       const drType = dd.drDecision?.type || null;
       // [FIX] conclusion 只包含给用户的回答，不包含内部理由和决策策略（快速模式）
+      const judgmentEngineOutput = jd.judgment;
       const conclusion = judgmentEngineOutput || '分析完成';
 
       // 内部理由存入 cognition，不拼进 conclusion
