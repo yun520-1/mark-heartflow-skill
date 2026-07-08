@@ -1,519 +1,150 @@
 {
   "metadata": {
-    "version": "4.0.0",
-    "last_updated": "2026-07-08",
-    "total_formulas": 72,
+    "version": "8.3.0",
+    "last_updated": "2026-07-09",
+    "total_formulas": 17,
     "categories": [
       "mathematics",
-      "cognitive_science",
       "physics"
     ],
-    "source": "builtin_advanced"
+    "source": "wikipedia_manual_advanced"
   },
   "formulas": [
     {
-      "id": "limit_def_derivative",
-      "name": "导数定义（极限）",
-      "formula": "f'(x) = lim_{h→0} (f(x+h)-f(x))/h",
+      "id": "adv_airy",
+      "name": "Airy function",
+      "formula": "y'''' - x*y = 0",
       "category": "mathematics",
-      "subcategory": "calculus"
+      "subcategory": "special_functions",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "fundamental_theorem_calculus",
-      "name": "微积分基本定理",
-      "formula": "∫_a^b f(x)dx = F(b) - F(a)",
+      "id": "adv_bessel_j",
+      "name": "Bessel J",
+      "formula": "x^2 y'''' + x y''' + (x^2-alpha^2) y = 0",
       "category": "mathematics",
-      "subcategory": "calculus"
+      "subcategory": "special_functions",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "taylor_series",
-      "name": "泰勒级数",
-      "formula": "f(x) = Σ_{n=0}^∞ f^{(n)}(a)/n! (x-a)^n",
+      "id": "adv_legendre_P",
+      "name": "Legendre P",
+      "formula": "(1-x^2) y'''' - 2x y''' + n(n+1) y = 0",
       "category": "mathematics",
-      "subcategory": "calculus"
+      "subcategory": "special_functions",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "maclaurin_series",
-      "name": "麦克劳林级数",
-      "formula": "f(x) = Σ_{n=0}^∞ f^{(n)}(0)/n! x^n",
+      "id": "adv_laguerre",
+      "name": "Laguerre L",
+      "formula": "x y'''' + (1-x) y''' + n y = 0",
       "category": "mathematics",
-      "subcategory": "calculus"
+      "subcategory": "special_functions",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "fourier_series",
-      "name": "傅里叶级数",
-      "formula": "f(x) = a0/2 + Σ_{n=1}^∞ (a_n cos(nωx) + b_n sin(nωx))",
+      "id": "adv_hermite",
+      "name": "Hermite H",
+      "formula": "y'''' - 2x y''' + 2n y = 0",
       "category": "mathematics",
-      "subcategory": "fourier_analysis"
+      "subcategory": "special_functions",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "fourier_transform",
-      "name": "傅里叶变换",
-      "formula": "F(ω) = ∫_{-∞}^∞ f(t) e^{-iωt} dt",
+      "id": "adv_int_fresnel_s",
+      "name": "Fresnel S",
+      "formula": "int sin(x^2) dx = sqrt(pi/2) S(sqrt(2/pi) x)",
       "category": "mathematics",
-      "subcategory": "fourier_analysis"
+      "subcategory": "integrals",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "inverse_fourier_transform",
-      "name": "傅里叶逆变换",
-      "formula": "f(t) = 1/(2π) ∫_{-∞}^∞ F(ω) e^{iωt} dω",
+      "id": "adv_int_fresnel_c",
+      "name": "Fresnel C",
+      "formula": "int cos(x^2) dx = sqrt(pi/2) C(sqrt(2/pi) x)",
       "category": "mathematics",
-      "subcategory": "fourier_analysis"
+      "subcategory": "integrals",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "laplace_transform",
-      "name": "拉普拉斯变换",
-      "formula": "F(s) = ∫_0^∞ f(t) e^{-st} dt",
+      "id": "adv_int_elliptic_K",
+      "name": "Elliptic K",
+      "formula": "int dx/sqrt((1-x^2)(1-k^2 x^2)) = K(k)",
       "category": "mathematics",
-      "subcategory": "laplace_transform"
+      "subcategory": "integrals",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "inverse_laplace_transform",
-      "name": "拉普拉斯逆变换",
-      "formula": "f(t) = 1/(2πi) ∫_{γ-i∞}^{γ+i∞} F(s) e^{st} ds",
+      "id": "adv_series_bessel",
+      "name": "Bessel series",
+      "formula": "J_alpha(x) = sum (-1)^k (x/2)^{alpha+2k}/(k! Gamma(alpha+k+1))",
       "category": "mathematics",
-      "subcategory": "laplace_transform"
+      "subcategory": "series",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "cauchy_riemann",
-      "name": "柯西-黎曼方程",
-      "formula": "∂u/∂x = ∂v/∂y, ∂u/∂y = -∂v/∂x",
+      "id": "adv_series_legendre",
+      "name": "Legendre series",
+      "formula": "P_n(x) = sum (-1)^k (2n-2k)!/(2^n k! (n-k)! (n-2k)!) x^{n-2k}",
       "category": "mathematics",
-      "subcategory": "complex_analysis"
+      "subcategory": "series",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "cauchy_integral_formula",
-      "name": "柯西积分公式",
-      "formula": "f(a) = 1/(2πi) ∮_C f(z)/(z-a) dz",
+      "id": "adv_pde_dirac",
+      "name": "Dirac equation",
+      "formula": "i gamma^mu partial_mu psi - m psi = 0",
+      "category": "physics",
+      "subcategory": "quantum_field_theory",
+      "source": "wikipedia_advanced"
+    },
+    {
+      "id": "adv_pde_klein_gordon",
+      "name": "Klein-Gordon",
+      "formula": "(Box + m^2) phi = 0",
+      "category": "physics",
+      "subcategory": "quantum_field_theory",
+      "source": "wikipedia_advanced"
+    },
+    {
+      "id": "adv_var_euler_lagrange",
+      "name": "Euler-Lagrange",
+      "formula": "dF/dy - d/dx (dF/dy') = 0",
       "category": "mathematics",
-      "subcategory": "complex_analysis"
+      "subcategory": "calculus_variations",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "residue_theorem",
-      "name": "留数定理",
-      "formula": "∮_C f(z) dz = 2πi Σ Res(f, z_k)",
+      "id": "adv_var_hamilton",
+      "name": "Hamilton principle",
+      "formula": "delta int L(q, q', t) dt = 0",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "source": "wikipedia_advanced"
+    },
+    {
+      "id": "adv_geo_riemann",
+      "name": "Riemann tensor",
+      "formula": "R^rho_{sigma mu nu} = partial_mu Gamma^rho_{nu sigma} - partial_nu Gamma^rho_{mu sigma} + ...",
       "category": "mathematics",
-      "subcategory": "complex_analysis"
+      "subcategory": "riemannian_geometry",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "wave_equation",
-      "name": "波动方程",
-      "formula": "∂²u/∂t² = c² ∇²u",
+      "id": "adv_geo_geodesic",
+      "name": "Geodesic",
+      "formula": "d^2 x^mu/ds^2 + Gamma^mu_{nu rho} (dx^nu/ds) (dx^rho/ds) = 0",
       "category": "mathematics",
-      "subcategory": "partial_differential_equations"
+      "subcategory": "riemannian_geometry",
+      "source": "wikipedia_advanced"
     },
     {
-      "id": "heat_equation",
-      "name": "热传导方程",
-      "formula": "∂u/∂t = α ∇²u",
+      "id": "adv_geo_stokes",
+      "name": "Stokes theorem",
+      "formula": "int_{partial Omega} omega = int_Omega d omega",
       "category": "mathematics",
-      "subcategory": "partial_differential_equations"
-    },
-    {
-      "id": "laplace_equation_pde",
-      "name": "拉普拉斯方程",
-      "formula": "∇²φ = 0",
-      "category": "mathematics",
-      "subcategory": "partial_differential_equations"
-    },
-    {
-      "id": "poisson_equation",
-      "name": "泊松方程",
-      "formula": "∇²φ = ρ",
-      "category": "mathematics",
-      "subcategory": "partial_differential_equations"
-    },
-    {
-      "id": "characteristic_polynomial",
-      "name": "特征多项式",
-      "formula": "det(A - λI) = 0",
-      "category": "mathematics",
-      "subcategory": "linear_algebra"
-    },
-    {
-      "id": "cayley_hamilton",
-      "name": "凯莱-哈密顿定理",
-      "formula": "p(A) = 0, where p(λ) = det(A - λI)",
-      "category": "mathematics",
-      "subcategory": "linear_algebra"
-    },
-    {
-      "id": "spectral_decomposition",
-      "name": "谱分解",
-      "formula": "A = V Λ V^{-1}",
-      "category": "mathematics",
-      "subcategory": "linear_algebra"
-    },
-    {
-      "id": "svd_decomposition",
-      "name": "奇异值分解",
-      "formula": "A = U Σ V^T",
-      "category": "mathematics",
-      "subcategory": "linear_algebra"
-    },
-    {
-      "id": "bayes_theorem_continuous",
-      "name": "贝叶斯定理（连续）",
-      "formula": "P(H|D) = P(D|H) P(H) / P(D)",
-      "category": "mathematics",
-      "subcategory": "probability"
-    },
-    {
-      "id": "central_limit_theorem",
-      "name": "中心极限定理",
-      "formula": "√n (x̄_n - μ) / σ → N(0,1)",
-      "category": "mathematics",
-      "subcategory": "probability"
-    },
-    {
-      "id": "law_large_numbers",
-      "name": "大数定律",
-      "formula": "x̄_n → μ (a.s.)",
-      "category": "mathematics",
-      "subcategory": "probability"
-    },
-    {
-      "id": "moment_generating_function",
-      "name": "矩生成函数",
-      "formula": "M_X(t) = E[e^{tX}]",
-      "category": "mathematics",
-      "subcategory": "probability"
-    },
-    {
-      "id": "characteristic_function",
-      "name": "特征函数",
-      "formula": "φ_X(t) = E[e^{itX}]",
-      "category": "mathematics",
-      "subcategory": "probability"
-    },
-    {
-      "id": "shannon_information_entropy",
-      "name": "香农信息熵",
-      "formula": "H(X) = -Σ p(x) log₂ p(x)",
-      "category": "cognitive_science",
-      "subcategory": "information_theory"
-    },
-    {
-      "id": "cross_entropy",
-      "name": "交叉熵",
-      "formula": "H(P,Q) = -Σ p(x) log q(x)",
-      "category": "cognitive_science",
-      "subcategory": "information_theory"
-    },
-    {
-      "id": "kl_divergence",
-      "name": "KL 散度",
-      "formula": "D_KL(P||Q) = Σ p(x) log(p(x)/q(x))",
-      "category": "cognitive_science",
-      "subcategory": "information_theory"
-    },
-    {
-      "id": "lagrangian_equation",
-      "name": "拉格朗日方程",
-      "formula": "d/dt (∂L/∂q̇_i) - ∂L/∂q_i = 0",
-      "category": "physics",
-      "subcategory": "lagrangian_mechanics"
-    },
-    {
-      "id": "hamilton_equations",
-      "name": "哈密顿正则方程",
-      "formula": "q̇_i = ∂H/∂p_i, ṗ_i = -∂H/∂q_i",
-      "category": "physics",
-      "subcategory": "hamiltonian_mechanics"
-    },
-    {
-      "id": "noether_theorem",
-      "name": "诺特定理",
-      "formula": "δS = 0 => ∂_μ j^μ = 0",
-      "category": "physics",
-      "subcategory": "symmetry"
-    },
-    {
-      "id": "maxwell_gauss_electric",
-      "name": "麦克斯韦方程（高斯电场）",
-      "formula": "∇·E = ρ/ε_0",
-      "category": "physics",
-      "subcategory": "electromagnetism"
-    },
-    {
-      "id": "maxwell_gauss_magnetic",
-      "name": "麦克斯韦方程（高斯磁场）",
-      "formula": "∇·B = 0",
-      "category": "physics",
-      "subcategory": "electromagnetism"
-    },
-    {
-      "id": "maxwell_faraday",
-      "name": "麦克斯韦方程（法拉第）",
-      "formula": "∇×E = -∂B/∂t",
-      "category": "physics",
-      "subcategory": "electromagnetism"
-    },
-    {
-      "id": "maxwell_ampere",
-      "name": "麦克斯韦方程（安培-麦克斯韦）",
-      "formula": "∇×B = μ_0 J + μ_0ε_0 ∂E/∂t",
-      "category": "physics",
-      "subcategory": "electromagnetism"
-    },
-    {
-      "id": "poynting_vector",
-      "name": "坡印廷矢量",
-      "formula": "S = E × H",
-      "category": "physics",
-      "subcategory": "electromagnetism"
-    },
-    {
-      "id": "lorentz_force",
-      "name": "洛伦兹力",
-      "formula": "F = q(E + v × B)",
-      "category": "physics",
-      "subcategory": "electromagnetism"
-    },
-    {
-      "id": "schrodinger_time_dependent",
-      "name": "含时薛定谔方程",
-      "formula": "iℏ ∂ψ/∂t = H ψ",
-      "category": "physics",
-      "subcategory": "quantum_mechanics"
-    },
-    {
-      "id": "schrodinger_time_independent",
-      "name": "定态薛定谔方程",
-      "formula": "H ψ = E ψ",
-      "category": "physics",
-      "subcategory": "quantum_mechanics"
-    },
-    {
-      "id": "dirac_equation",
-      "name": "狄拉克方程",
-      "formula": "(iγ^μ ∂_μ - m) ψ = 0",
-      "category": "physics",
-      "subcategory": "quantum_field_theory"
-    },
-    {
-      "id": "klein_gordon_equation",
-      "name": "克莱因-戈尔登方程",
-      "formula": "(□ + m²) φ = 0",
-      "category": "physics",
-      "subcategory": "quantum_field_theory"
-    },
-    {
-      "id": "heisenberg_uncertainty",
-      "name": "海森堡不确定性原理",
-      "formula": "Δx Δp ≥ ℏ/2",
-      "category": "physics",
-      "subcategory": "quantum_mechanics"
-    },
-    {
-      "id": "commutation_relation",
-      "name": "正则对易关系",
-      "formula": "[x, p] = iℏ",
-      "category": "physics",
-      "subcategory": "quantum_mechanics"
-    },
-    {
-      "id": "born_rule",
-      "name": "波恩定则（概率诠释）",
-      "formula": "P(x) = |ψ(x)|²",
-      "category": "physics",
-      "subcategory": "quantum_mechanics"
-    },
-    {
-      "id": "einstein_field_equation",
-      "name": "爱因斯坦场方程",
-      "formula": "G_μν = 8πG/c⁴ T_μν",
-      "category": "physics",
-      "subcategory": "general_relativity"
-    },
-    {
-      "id": "schwarzschild_metric",
-      "name": "施瓦西度规",
-      "formula": "ds² = -(1-2GM/r) dt² + (1-2GM/r)^{-1} dr² + r² dΩ²",
-      "category": "physics",
-      "subcategory": "general_relativity"
-    },
-    {
-      "id": "geodesic_equation_gr",
-      "name": "测地线方程",
-      "formula": "d²x^μ/dτ² + Γ^μ_{νρ} dx^ν/dτ dx^ρ/dτ = 0",
-      "category": "physics",
-      "subcategory": "general_relativity"
-    },
-    {
-      "id": "friedmann_equation_1",
-      "name": "弗里德曼方程（第一式）",
-      "formula": "(ȧ/a)² = 8πGρ/3 - kc²/a² + Λc²/3",
-      "category": "physics",
-      "subcategory": "cosmology"
-    },
-    {
-      "id": "friedmann_equation_2",
-      "name": "弗里德曼方程（第二式）",
-      "formula": "ä/a = -4πG(ρ+3p/c²)/3 + Λc²/3",
-      "category": "physics",
-      "subcategory": "cosmology"
-    },
-    {
-      "id": "boltzmann_entropy",
-      "name": "玻尔兹曼熵公式",
-      "formula": "S = k_B ln Ω",
-      "category": "physics",
-      "subcategory": "statistical_mechanics"
-    },
-    {
-      "id": "partition_function",
-      "name": "配分函数",
-      "formula": "Z = Σ_i e^{-βE_i}",
-      "category": "physics",
-      "subcategory": "statistical_mechanics"
-    },
-    {
-      "id": "boltzmann_distribution",
-      "name": "玻尔兹曼分布",
-      "formula": "P_i = e^{-βE_i} / Z",
-      "category": "physics",
-      "subcategory": "statistical_mechanics"
-    },
-    {
-      "id": "fokker_planck",
-      "name": "福克-普朗克方程",
-      "formula": "∂P/∂t = -∂/∂x [A(x)P] + ∂²/∂x² [B(x)P]",
-      "category": "physics",
-      "subcategory": "statistical_mechanics"
-    },
-    {
-      "id": "navier_stokes",
-      "name": "纳维-斯托克斯方程",
-      "formula": "ρ(∂v/∂t + v·∇v) = -∇p + μ∇²v + f",
-      "category": "physics",
-      "subcategory": "fluid_dynamics"
-    },
-    {
-      "id": "continuity_equation_fluid",
-      "name": "连续性方程",
-      "formula": "∂ρ/∂t + ∇·(ρv) = 0",
-      "category": "physics",
-      "subcategory": "fluid_dynamics"
-    },
-    {
-      "id": "bernoulli_principle",
-      "name": "伯努利原理",
-      "formula": "p + ½ρv² + ρgh = constant",
-      "category": "physics",
-      "subcategory": "fluid_dynamics"
-    },
-    {
-      "id": "reynolds_number",
-      "name": "雷诺数",
-      "formula": "Re = ρvL/μ",
-      "category": "physics",
-      "subcategory": "fluid_dynamics"
-    },
-    {
-      "id": "first_law_thermodynamics",
-      "name": "热力学第一定律",
-      "formula": "dU = δQ - δW",
-      "category": "physics",
-      "subcategory": "thermodynamics"
-    },
-    {
-      "id": "second_law_thermodynamics",
-      "name": "热力学第二定律（熵增）",
-      "formula": "dS ≥ 0",
-      "category": "physics",
-      "subcategory": "thermodynamics"
-    },
-    {
-      "id": "gibbs_free_energy",
-      "name": "吉布斯自由能",
-      "formula": "G = H - TS",
-      "category": "physics",
-      "subcategory": "thermodynamics"
-    },
-    {
-      "id": "helmholtz_free_energy",
-      "name": "亥姆霍兹自由能",
-      "formula": "F = U - TS",
-      "category": "physics",
-      "subcategory": "thermodynamics"
-    },
-    {
-      "id": "snell_law",
-      "name": "斯涅尔定律（折射）",
-      "formula": "n₁ sin θ₁ = n₂ sin θ₂",
-      "category": "physics",
-      "subcategory": "optics"
-    },
-    {
-      "id": "fresnel_equations",
-      "name": "菲涅耳方程",
-      "formula": "R_s = |(n₁cosθ₁-n₂cosθ₂)/(n₁cosθ₁+n₂cosθ₂)|²",
-      "category": "physics",
-      "subcategory": "optics"
-    },
-    {
-      "id": "brewsers_angle",
-      "name": "布儒斯特角",
-      "formula": "tan θ_B = n₂/n₁",
-      "category": "physics",
-      "subcategory": "optics"
-    },
-    {
-      "id": "ebbinghaus_forgetting_curve",
-      "name": "艾宾浩斯遗忘曲线",
-      "formula": "R(t) = e^{-t/S}",
-      "category": "cognitive_science",
-      "subcategory": "memory"
-    },
-    {
-      "id": "pad_emotion_model",
-      "name": "PAD 情绪空间模型",
-      "formula": "(P,A,D) = f(stimulus, context)",
-      "category": "cognitive_science",
-      "subcategory": "emotion"
-    },
-    {
-      "id": "flow_channel_model",
-      "name": "心流通道模型",
-      "formula": "Flow = f(challenge, skill)",
-      "category": "cognitive_science",
-      "subcategory": "flow"
-    },
-    {
-      "id": "cognitive_load_index",
-      "name": "认知负载指数",
-      "formula": "CL = (intrinsic + extraneous + germane) / working_memory_capacity",
-      "category": "cognitive_science",
-      "subcategory": "cognition"
-    },
-    {
-      "id": "bayesian_updating",
-      "name": "贝叶斯更新（信念修正）",
-      "formula": "P(H|D) = P(D|H) P(H) / P(D)",
-      "category": "cognitive_science",
-      "subcategory": "belief_updating"
-    },
-    {
-      "id": "information_value",
-      "name": "信息价值（决策理论）",
-      "formula": "EVSI = E[U(D)] - E[U(∅)]",
-      "category": "cognitive_science",
-      "subcategory": "decision_theory"
-    },
-    {
-      "id": "expected_utility",
-      "name": "期望效用",
-      "formula": "EU = Σ p_i u(x_i)",
-      "category": "cognitive_science",
-      "subcategory": "decision_theory"
-    },
-    {
-      "id": "metacognitive_confidence",
-      "name": "元认知置信度",
-      "formula": "C = 1 - Var(p)",
-      "category": "cognitive_science",
-      "subcategory": "metacognition"
+      "subcategory": "differential_geometry",
+      "source": "wikipedia_advanced"
     }
   ]
 }
