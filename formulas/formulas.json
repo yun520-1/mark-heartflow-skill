@@ -15723,6 +15723,12 @@
       "name": "VQC 梯度",
       "formula": "∂L/∂θ_i = -2 Σ_j (y_j - f(x_j;θ)) ∂f(x_j;θ)/∂θ_i",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_topological_insulator_edge",
+      "name": "拓扑绝缘体边缘态",
+      "formula": "H_edge = v_F ∫ dx ψ† (-i ∂_x) ψ",
+      "category": "quantum_computing"
     }
   ]
 }
