@@ -48,3 +48,7 @@ memory/*.md
 memory/.q-meta*
 memory/.gitkeep
 memory/wal/*.log
+formulas/f1db/
+formulas/github/
+formulas/sympy/
+formulas/mathjs_formulas.json
