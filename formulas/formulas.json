@@ -61,7 +61,7 @@
       "name": "对数乘积法则",
       "category": "mathematics",
       "subcategory": "algebra",
-      "formula": "log_a(x*y) = log_a(x) + log_a(y)",
+      "formula": "log_a = log_a(x) + log_a(y)",
       "difficulty": "intermediate"
     },
     {
@@ -69,7 +69,7 @@
       "name": "对数商法则",
       "category": "mathematics",
       "subcategory": "algebra",
-      "formula": "log_a(x/y) = log_a(x) - log_a(y)",
+      "formula": "log_a = log_a(x) - log_a(y)",
       "difficulty": "intermediate"
     },
     {
@@ -77,7 +77,7 @@
       "name": "对数幂法则",
       "category": "mathematics",
       "subcategory": "algebra",
-      "formula": "log_a(x^p) = p * log_a(x)",
+      "formula": "log_a = p * log_a(x)",
       "difficulty": "intermediate"
     },
     {
@@ -85,7 +85,7 @@
       "name": "换底公式",
       "category": "mathematics",
       "subcategory": "algebra",
-      "formula": "log_a(x) = ln(x) / ln(a)",
+      "formula": "log_a = ln(x) / ln(a)",
       "difficulty": "intermediate"
     },
     {
@@ -173,7 +173,7 @@
       "name": "三角和角公式",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A+B) = sin(A)*cos(B) + cos(A)*sin(B)",
+      "formula": "sin = sin(A)*cos(B) + cos(A)*sin(B)",
       "difficulty": "intermediate"
     },
     {
@@ -181,7 +181,7 @@
       "name": "三角差角公式",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A-B) = sin(A)*cos(B) - cos(A)*sin(B)",
+      "formula": "sin = sin(A)*cos(B) - cos(A)*sin(B)",
       "difficulty": "intermediate"
     },
     {
@@ -597,7 +597,7 @@
       "name": "正态分布",
       "category": "mathematics",
       "subcategory": "statistics",
-      "formula": "f(x) = (1/(σ*sqrt(2π))) * exp(-(x-μ)^2/(2σ^2))",
+      "formula": "f = (1/(σ*sqrt(2π))) * exp(-(x-μ)^2/(2σ^2))",
       "difficulty": "intermediate"
     },
     {
@@ -605,7 +605,7 @@
       "name": "贝叶斯定理",
       "category": "mathematics",
       "subcategory": "statistics",
-      "formula": "P(A|B) = P(B|A) * P(A) / P(B)",
+      "formula": "P = P(B|A) * P(A) / P(B)",
       "difficulty": "intermediate"
     },
     {
@@ -613,7 +613,7 @@
       "name": "多项式除法",
       "category": "mathematics",
       "subcategory": "algebra",
-      "formula": "P(x) = Q(x)*D(x) + R(x)",
+      "formula": "P = Q(x)*D(x) + R(x)",
       "difficulty": "intermediate"
     },
     {
@@ -629,7 +629,7 @@
       "name": "因式定理",
       "category": "mathematics",
       "subcategory": "algebra",
-      "formula": "P(a) = 0 <=> (x-a) 是 P(x) 的因式",
+      "formula": "P = 0 <",
       "difficulty": "intermediate"
     },
     {
@@ -637,7 +637,7 @@
       "name": "余式定理",
       "category": "mathematics",
       "subcategory": "algebra",
-      "formula": "P(a) = 余数",
+      "formula": "P = 余数",
       "difficulty": "intermediate"
     },
     {
@@ -1005,7 +1005,7 @@
       "name": "简谐振动",
       "category": "physics",
       "subcategory": "vibrations",
-      "formula": "x(t) = A * cos(ωt + φ)",
+      "formula": "x = A * cos(ωt + φ)",
       "difficulty": "advanced"
     },
     {
@@ -1021,7 +1021,7 @@
       "name": "阻尼振动",
       "category": "physics",
       "subcategory": "vibrations",
-      "formula": "x(t) = A * e^(-γt) * cos(ωt + φ)",
+      "formula": "x = A * e^(-γt) * cos(ωt + φ)",
       "difficulty": "advanced"
     },
     {
@@ -1037,7 +1037,7 @@
       "name": "放射性衰变",
       "category": "physics",
       "subcategory": "nuclear_physics",
-      "formula": "N(t) = N0 * e^(-λt)",
+      "formula": "N = N0 * e^(-λt)",
       "difficulty": "advanced"
     },
     {
@@ -1093,7 +1093,7 @@
       "name": "傅里叶变换",
       "category": "engineering",
       "subcategory": "signal_processing",
-      "formula": "F(ω) = ∫[-∞,∞] f(t) * e^(-iωt) dt",
+      "formula": "F = ∫[-∞,∞] f(t) * e^(-iωt) dt",
       "difficulty": "advanced"
     },
     {
@@ -1101,7 +1101,7 @@
       "name": "逆傅里叶变换",
       "category": "engineering",
       "subcategory": "signal_processing",
-      "formula": "f(t) = (1/2π) * ∫[-∞,∞] F(ω) * e^(iωt) dω",
+      "formula": "f = (1/2π) * ∫[-∞,∞] F(ω) * e^(iωt) dω",
       "difficulty": "advanced"
     },
     {
@@ -1109,7 +1109,7 @@
       "name": "Z 变换",
       "category": "engineering",
       "subcategory": "signal_processing",
-      "formula": "X(z) = Σ[x[n] * z^(-n)]",
+      "formula": "X = Σ[x[n] * z^(-n)]",
       "difficulty": "advanced"
     },
     {
@@ -1125,7 +1125,7 @@
       "name": "传递函数",
       "category": "engineering",
       "subcategory": "control_theory",
-      "formula": "G(s) = Y(s) / U(s)",
+      "formula": "G = Y(s) / U(s)",
       "difficulty": "advanced"
     },
     {
@@ -1133,7 +1133,7 @@
       "name": "PID 控制器",
       "category": "engineering",
       "subcategory": "control_theory",
-      "formula": "u(t) = K_p*e(t) + K_i*∫e(t)dt + K_d*(de/dt)",
+      "formula": "u = K_p*e(t) + K_i*∫e(t)dt + K_d*(de/dt)",
       "difficulty": "advanced"
     },
     {
@@ -1149,7 +1149,7 @@
       "name": "波特图",
       "category": "engineering",
       "subcategory": "control_theory",
-      "formula": "Magnitude(dB) = 20*log10(|G(jω)|), Phase(deg) = arg(G(jω))",
+      "formula": "Magnitude = 20*log10(|G(jω)|), Phase(deg)",
       "difficulty": "advanced"
     },
     {
@@ -1157,7 +1157,7 @@
       "name": "供需平衡",
       "category": "economics",
       "subcategory": "microeconomics",
-      "formula": "Q_s(P) = Q_d(P)",
+      "formula": "Q_s = Q_d(P)",
       "difficulty": "advanced"
     },
     {
@@ -1189,7 +1189,7 @@
       "name": "大 O 表示法",
       "category": "computer_science",
       "subcategory": "algorithms",
-      "formula": "f(n) = O(g(n)) if ∃c,n0 s.t. f(n) ≤ c*g(n) ∀n ≥ n0",
+      "formula": "f = O(g(n)) if ∃c,n0 s.t. f(n) ≤ c*g(n) ∀n ≥ n0",
       "difficulty": "advanced"
     },
     {
@@ -1197,7 +1197,7 @@
       "name": "香农熵",
       "category": "computer_science",
       "subcategory": "information_theory",
-      "formula": "H(X) = -Σp(x) * log2(p(x))",
+      "formula": "H = -Σp(x) * log2(p(x))",
       "difficulty": "advanced"
     },
     {
@@ -1245,7 +1245,7 @@
       "name": "迪杰斯特拉算法",
       "category": "mathematics",
       "subcategory": "graph_theory",
-      "formula": "d(v) = min(d(v), d(u) + w(u,v))",
+      "formula": "d = min(d(v), d(u) + w(u,v))",
       "difficulty": "advanced"
     },
     {
@@ -1405,7 +1405,7 @@
       "name": "傅里叶级数",
       "category": "mathematics",
       "subcategory": "fourier_analysis",
-      "formula": "f(x) = a0/2 + Σ[an*cos(nωx) + bn*sin(nωx)]",
+      "formula": "f = a0/2 + Σ[an*cos(nωx) + bn*sin(nωx)]",
       "difficulty": "advanced"
     },
     {
@@ -1413,7 +1413,7 @@
       "name": "泰勒级数",
       "category": "mathematics",
       "subcategory": "series",
-      "formula": "f(x) = f(a) + f'(a)*(x-a) + f''(a)*(x-a)²/2! + ...",
+      "formula": "f = f(a) + f'(a)*(x-a) + f''(a)*(x-a)²/2! + ...",
       "difficulty": "advanced"
     },
     {
@@ -1485,7 +1485,7 @@
       "name": "费米-狄拉克分布",
       "category": "physics",
       "subcategory": "statistical_mechanics",
-      "formula": "f(E) = 1/(e^((E-EF)/kT) + 1)",
+      "formula": "f = 1/(e^((E-EF)/kT) + 1)",
       "difficulty": "advanced"
     },
     {
@@ -1493,7 +1493,7 @@
       "name": "玻色-爱因斯坦分布",
       "category": "physics",
       "subcategory": "statistical_mechanics",
-      "formula": "f(E) = 1/(e^((E-μ)/kT) - 1)",
+      "formula": "f = 1/(e^((E-μ)/kT) - 1)",
       "difficulty": "advanced"
     },
     {
@@ -2357,7 +2357,7 @@
       "name": "贝塔函数",
       "category": "mathematics",
       "subcategory": "special_functions",
-      "formula": "B(x,y) = ∫[0,1] t^(x-1)(1-t)^(y-1) dt",
+      "formula": "B = ∫[0,1] t^(x-1)(1-t)^(y-1) dt",
       "difficulty": "advanced"
     },
     {
@@ -2365,7 +2365,7 @@
       "name": "误差函数",
       "category": "mathematics",
       "subcategory": "special_functions",
-      "formula": "erf(x) = (2/√π)∫[0,x] e^(-t²) dt",
+      "formula": "erf = (2/√π)∫[0,x] e^(-t²) dt",
       "difficulty": "advanced"
     },
     {
@@ -2373,7 +2373,7 @@
       "name": "指数积分",
       "category": "mathematics",
       "subcategory": "special_functions",
-      "formula": "Ei(x) = ∫[-∞,x] e^t/t dt",
+      "formula": "Ei = ∫[-∞,x] e^t/t dt",
       "difficulty": "advanced"
     },
     {
@@ -2381,7 +2381,7 @@
       "name": "正弦积分",
       "category": "mathematics",
       "subcategory": "special_functions",
-      "formula": "Si(x) = ∫[0,x] sin(t)/t dt",
+      "formula": "Si = ∫[0,x] sin(t)/t dt",
       "difficulty": "advanced"
     },
     {
@@ -2389,7 +2389,7 @@
       "name": "余弦积分",
       "category": "mathematics",
       "subcategory": "special_functions",
-      "formula": "Ci(x) = -∫[x,∞] cos(t)/t dt",
+      "formula": "Ci = -∫[x,∞] cos(t)/t dt",
       "difficulty": "advanced"
     },
     {
@@ -2421,7 +2421,7 @@
       "name": "埃尔米特多项式",
       "category": "mathematics",
       "subcategory": "special_functions",
-      "formula": "H_n(x) = (-1)^n e^(x²) d^n/dx^n(e^(-x²))",
+      "formula": "H_n = (-1)^n e^(x²) d^n/dx^n(e^(-x²))",
       "difficulty": "advanced"
     },
     {
@@ -2429,7 +2429,7 @@
       "name": "拉盖尔多项式",
       "category": "mathematics",
       "subcategory": "special_functions",
-      "formula": "L_n(x) = e^x d^n/dx^n(e^(-x)x^n)/n!",
+      "formula": "L_n = e^x d^n/dx^n(e^(-x)x^n)/n!",
       "difficulty": "advanced"
     },
     {
@@ -2437,7 +2437,7 @@
       "name": "切比雪夫多项式",
       "category": "mathematics",
       "subcategory": "special_functions",
-      "formula": "T_n(x) = cos(n*arccos(x))",
+      "formula": "T_n = cos(n*arccos(x))",
       "difficulty": "advanced"
     },
     {
@@ -2461,7 +2461,7 @@
       "name": "能带理论",
       "category": "physics",
       "subcategory": "condensed_matter",
-      "formula": "E_n(k) = 电子能量色散关系",
+      "formula": "E_n = 电子能量色散关系",
       "difficulty": "advanced"
     },
     {
@@ -2469,7 +2469,7 @@
       "name": "费米面",
       "category": "physics",
       "subcategory": "condensed_matter",
-      "formula": "E(k) = E_F 的 k-space 曲面",
+      "formula": "E = E_F 的 k-space 曲面",
       "difficulty": "advanced"
     },
     {
@@ -2485,7 +2485,7 @@
       "name": "态密度",
       "category": "physics",
       "subcategory": "condensed_matter",
-      "formula": "g(E) = (1/V) Σ_k δ(E-E(k))",
+      "formula": "g = (1/V) Σ_k δ(E-E(k))",
       "difficulty": "advanced"
     },
     {
@@ -2701,7 +2701,7 @@
       "name": "三角恒等式 1",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -2709,7 +2709,7 @@
       "name": "三角恒等式 2",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -2717,7 +2717,7 @@
       "name": "三角恒等式 3",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -2725,7 +2725,7 @@
       "name": "三角恒等式 4",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -2733,7 +2733,7 @@
       "name": "三角恒等式 5",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -2741,7 +2741,7 @@
       "name": "三角恒等式 6",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -2749,7 +2749,7 @@
       "name": "三角恒等式 7",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -2757,7 +2757,7 @@
       "name": "三角恒等式 8",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -2765,7 +2765,7 @@
       "name": "三角恒等式 9",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -2773,7 +2773,7 @@
       "name": "三角恒等式 10",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -2781,7 +2781,7 @@
       "name": "三角恒等式 11",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -2789,7 +2789,7 @@
       "name": "三角恒等式 12",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -2797,7 +2797,7 @@
       "name": "三角恒等式 13",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -2805,7 +2805,7 @@
       "name": "三角恒等式 14",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -2813,7 +2813,7 @@
       "name": "三角恒等式 15",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -2821,7 +2821,7 @@
       "name": "三角恒等式 16",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -2829,7 +2829,7 @@
       "name": "三角恒等式 17",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -2837,7 +2837,7 @@
       "name": "三角恒等式 18",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -2845,7 +2845,7 @@
       "name": "三角恒等式 19",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -2853,7 +2853,7 @@
       "name": "三角恒等式 20",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -2861,7 +2861,7 @@
       "name": "三角恒等式 21",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -2869,7 +2869,7 @@
       "name": "三角恒等式 22",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -2877,7 +2877,7 @@
       "name": "三角恒等式 23",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -2885,7 +2885,7 @@
       "name": "三角恒等式 24",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -2893,7 +2893,7 @@
       "name": "三角恒等式 25",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -2901,7 +2901,7 @@
       "name": "三角恒等式 26",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -2909,7 +2909,7 @@
       "name": "三角恒等式 27",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -2917,7 +2917,7 @@
       "name": "三角恒等式 28",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -2925,7 +2925,7 @@
       "name": "三角恒等式 29",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -2933,7 +2933,7 @@
       "name": "三角恒等式 30",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -2941,7 +2941,7 @@
       "name": "三角恒等式 31",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -2949,7 +2949,7 @@
       "name": "三角恒等式 32",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -2957,7 +2957,7 @@
       "name": "三角恒等式 33",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -2965,7 +2965,7 @@
       "name": "三角恒等式 34",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -2973,7 +2973,7 @@
       "name": "三角恒等式 35",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -2981,7 +2981,7 @@
       "name": "三角恒等式 36",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -2989,7 +2989,7 @@
       "name": "三角恒等式 37",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -2997,7 +2997,7 @@
       "name": "三角恒等式 38",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -3005,7 +3005,7 @@
       "name": "三角恒等式 39",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -3013,7 +3013,7 @@
       "name": "三角恒等式 40",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -3021,7 +3021,7 @@
       "name": "三角恒等式 41",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -3029,7 +3029,7 @@
       "name": "三角恒等式 42",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -3037,7 +3037,7 @@
       "name": "三角恒等式 43",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -3045,7 +3045,7 @@
       "name": "三角恒等式 44",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -3053,7 +3053,7 @@
       "name": "三角恒等式 45",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -3061,7 +3061,7 @@
       "name": "三角恒等式 46",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -3069,7 +3069,7 @@
       "name": "三角恒等式 47",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -3077,7 +3077,7 @@
       "name": "三角恒等式 48",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -3085,7 +3085,7 @@
       "name": "三角恒等式 49",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -3093,7 +3093,7 @@
       "name": "三角恒等式 50",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -3101,7 +3101,7 @@
       "name": "三角恒等式 51",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -3109,7 +3109,7 @@
       "name": "三角恒等式 52",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -3117,7 +3117,7 @@
       "name": "三角恒等式 53",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -3125,7 +3125,7 @@
       "name": "三角恒等式 54",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -3133,7 +3133,7 @@
       "name": "三角恒等式 55",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -3141,7 +3141,7 @@
       "name": "三角恒等式 56",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -3149,7 +3149,7 @@
       "name": "三角恒等式 57",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -3157,7 +3157,7 @@
       "name": "三角恒等式 58",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -3165,7 +3165,7 @@
       "name": "三角恒等式 59",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -3173,7 +3173,7 @@
       "name": "三角恒等式 60",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -3181,7 +3181,7 @@
       "name": "三角恒等式 61",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -3189,7 +3189,7 @@
       "name": "三角恒等式 62",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -3197,7 +3197,7 @@
       "name": "三角恒等式 63",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -3205,7 +3205,7 @@
       "name": "三角恒等式 64",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -3213,7 +3213,7 @@
       "name": "三角恒等式 65",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -3221,7 +3221,7 @@
       "name": "三角恒等式 66",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -3229,7 +3229,7 @@
       "name": "三角恒等式 67",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -3237,7 +3237,7 @@
       "name": "三角恒等式 68",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -3245,7 +3245,7 @@
       "name": "三角恒等式 69",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -3253,7 +3253,7 @@
       "name": "三角恒等式 70",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -3261,7 +3261,7 @@
       "name": "三角恒等式 71",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -3269,7 +3269,7 @@
       "name": "三角恒等式 72",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -3277,7 +3277,7 @@
       "name": "三角恒等式 73",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -3285,7 +3285,7 @@
       "name": "三角恒等式 74",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -3293,7 +3293,7 @@
       "name": "三角恒等式 75",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -3301,7 +3301,7 @@
       "name": "三角恒等式 76",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -3309,7 +3309,7 @@
       "name": "三角恒等式 77",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -3317,7 +3317,7 @@
       "name": "三角恒等式 78",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -3325,7 +3325,7 @@
       "name": "三角恒等式 79",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -3333,7 +3333,7 @@
       "name": "三角恒等式 80",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -3341,7 +3341,7 @@
       "name": "三角恒等式 81",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -3349,7 +3349,7 @@
       "name": "三角恒等式 82",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -3357,7 +3357,7 @@
       "name": "三角恒等式 83",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -3365,7 +3365,7 @@
       "name": "三角恒等式 84",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -3373,7 +3373,7 @@
       "name": "三角恒等式 85",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -3381,7 +3381,7 @@
       "name": "三角恒等式 86",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -3389,7 +3389,7 @@
       "name": "三角恒等式 87",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -3397,7 +3397,7 @@
       "name": "三角恒等式 88",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -3405,7 +3405,7 @@
       "name": "三角恒等式 89",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -3413,7 +3413,7 @@
       "name": "三角恒等式 90",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -3421,7 +3421,7 @@
       "name": "三角恒等式 91",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -3429,7 +3429,7 @@
       "name": "三角恒等式 92",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -3437,7 +3437,7 @@
       "name": "三角恒等式 93",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(θ) = cos(π/2 - θ)",
+      "formula": "sin = cos(π/2 - θ)",
       "difficulty": "intermediate"
     },
     {
@@ -3445,7 +3445,7 @@
       "name": "三角恒等式 94",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(α) = cos(π/2 - α)",
+      "formula": "sin = cos(π/2 - α)",
       "difficulty": "intermediate"
     },
     {
@@ -3453,7 +3453,7 @@
       "name": "三角恒等式 95",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(β) = cos(π/2 - β)",
+      "formula": "sin = cos(π/2 - β)",
       "difficulty": "intermediate"
     },
     {
@@ -3461,7 +3461,7 @@
       "name": "三角恒等式 96",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(A) = cos(π/2 - A)",
+      "formula": "sin = cos(π/2 - A)",
       "difficulty": "intermediate"
     },
     {
@@ -3469,7 +3469,7 @@
       "name": "三角恒等式 97",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(B) = cos(π/2 - B)",
+      "formula": "sin = cos(π/2 - B)",
       "difficulty": "intermediate"
     },
     {
@@ -3477,7 +3477,7 @@
       "name": "三角恒等式 98",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(C) = cos(π/2 - C)",
+      "formula": "sin = cos(π/2 - C)",
       "difficulty": "intermediate"
     },
     {
@@ -3485,7 +3485,7 @@
       "name": "三角恒等式 99",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(x) = cos(π/2 - x)",
+      "formula": "sin = cos(π/2 - x)",
       "difficulty": "intermediate"
     },
     {
@@ -3493,7 +3493,7 @@
       "name": "三角恒等式 100",
       "category": "mathematics",
       "subcategory": "trigonometry",
-      "formula": "sin(y) = cos(π/2 - y)",
+      "formula": "sin = cos(π/2 - y)",
       "difficulty": "intermediate"
     },
     {
@@ -7913,49 +7913,49 @@
     {
       "id": "taylor_series_advanced",
       "name": "泰勒级数",
-      "formula": "f(x) = Σ_{n=0}^∞ f^{(n)}(a)/n! (x-a)^n",
+      "formula": "f = Σ_{n",
       "category": "mathematics",
       "subcategory": "calculus"
     },
     {
       "id": "maclaurin_series",
       "name": "麦克劳林级数",
-      "formula": "f(x) = Σ_{n=0}^∞ f^{(n)}(0)/n! x^n",
+      "formula": "f = Σ_{n",
       "category": "mathematics",
       "subcategory": "calculus"
     },
     {
       "id": "fourier_series_advanced",
       "name": "傅里叶级数",
-      "formula": "f(x) = a0/2 + Σ_{n=1}^∞ (a_n cos(nωx) + b_n sin(nωx))",
+      "formula": "f = a0/2 + Σ_{n",
       "category": "mathematics",
       "subcategory": "fourier_analysis"
     },
     {
       "id": "fourier_transform_advanced",
       "name": "傅里叶变换",
-      "formula": "F(ω) = ∫_{-∞}^∞ f(t) e^{-iωt} dt",
+      "formula": "F = ∫_{-∞}^∞ f(t) e^{-iωt} dt",
       "category": "mathematics",
       "subcategory": "fourier_analysis"
     },
     {
       "id": "inverse_fourier_transform_advanced",
       "name": "傅里叶逆变换",
-      "formula": "f(t) = 1/(2π) ∫_{-∞}^∞ F(ω) e^{iωt} dω",
+      "formula": "f = 1/(2π) ∫_{-∞}^∞ F(ω) e^{iωt} dω",
       "category": "mathematics",
       "subcategory": "fourier_analysis"
     },
     {
       "id": "laplace_transform_advanced",
       "name": "拉普拉斯变换",
-      "formula": "F(s) = ∫_0^∞ f(t) e^{-st} dt",
+      "formula": "F = ∫_0^∞ f(t) e^{-st} dt",
       "category": "mathematics",
       "subcategory": "laplace_transform"
     },
     {
       "id": "inverse_laplace_transform",
       "name": "拉普拉斯逆变换",
-      "formula": "f(t) = 1/(2πi) ∫_{γ-i∞}^{γ+i∞} F(s) e^{st} ds",
+      "formula": "f = 1/(2πi) ∫_{γ-i∞}^{γ+i∞} F(s) e^{st} ds",
       "category": "mathematics",
       "subcategory": "laplace_transform"
     },
@@ -7969,7 +7969,7 @@
     {
       "id": "cauchy_integral_formula",
       "name": "柯西积分公式",
-      "formula": "f(a) = 1/(2πi) ∮_C f(z)/(z-a) dz",
+      "formula": "f = 1/(2πi) ∮_C f(z)/(z-a) dz",
       "category": "mathematics",
       "subcategory": "complex_analysis"
     },
@@ -8011,14 +8011,14 @@
     {
       "id": "characteristic_polynomial",
       "name": "特征多项式",
-      "formula": "det(A - λI) = 0",
+      "formula": "det = 0",
       "category": "mathematics",
       "subcategory": "linear_algebra"
     },
     {
       "id": "cayley_hamilton",
       "name": "凯莱-哈密顿定理",
-      "formula": "p(A) = 0, where p(λ) = det(A - λI)",
+      "formula": "p = 0, where p(λ)",
       "category": "mathematics",
       "subcategory": "linear_algebra"
     },
@@ -8039,7 +8039,7 @@
     {
       "id": "bayes_theorem_continuous",
       "name": "贝叶斯定理（连续）",
-      "formula": "P(H|D) = P(D|H) P(H) / P(D)",
+      "formula": "P = P(D|H) P(H) / P(D)",
       "category": "mathematics",
       "subcategory": "probability"
     },
@@ -8060,7 +8060,7 @@
     {
       "id": "moment_generating_function",
       "name": "矩生成函数",
-      "formula": "M_X(t) = E[e^{tX}]",
+      "formula": "M_X = E[e^{tX}]",
       "category": "mathematics",
       "subcategory": "probability"
     },
@@ -8074,21 +8074,21 @@
     {
       "id": "shannon_information_entropy",
       "name": "香农信息熵",
-      "formula": "H(X) = -Σ p(x) log₂ p(x)",
+      "formula": "H = -Σ p(x) log₂ p(x)",
       "category": "cognitive_science",
       "subcategory": "information_theory"
     },
     {
       "id": "cross_entropy",
       "name": "交叉熵",
-      "formula": "H(P,Q) = -Σ p(x) log q(x)",
+      "formula": "H = -Σ p(x) log q(x)",
       "category": "cognitive_science",
       "subcategory": "information_theory"
     },
     {
       "id": "kl_divergence",
       "name": "KL 散度",
-      "formula": "D_KL(P||Q) = Σ p(x) log(p(x)/q(x))",
+      "formula": "D_KL = Σ p(x) log(p(x)/q(x))",
       "category": "cognitive_science",
       "subcategory": "information_theory"
     },
@@ -8200,7 +8200,7 @@
     {
       "id": "born_rule",
       "name": "波恩定则（概率诠释）",
-      "formula": "P(x) = |ψ(x)|²",
+      "formula": "P = |ψ(x)|²",
       "category": "physics",
       "subcategory": "quantum_mechanics"
     },
@@ -8347,7 +8347,7 @@
     {
       "id": "ebbinghaus_forgetting_curve",
       "name": "艾宾浩斯遗忘曲线",
-      "formula": "R(t) = e^{-t/S}",
+      "formula": "R = exp(-t/S)",
       "category": "cognitive_science",
       "subcategory": "memory"
     },
@@ -8375,7 +8375,7 @@
     {
       "id": "bayesian_updating",
       "name": "贝叶斯更新（信念修正）",
-      "formula": "P(H|D) = P(D|H) P(H) / P(D)",
+      "formula": "P = P(D|H) P(H) / P(D)",
       "category": "cognitive_science",
       "subcategory": "belief_updating"
     },
@@ -8403,7 +8403,7 @@
     {
       "id": "derivative_0",
       "name": "d/dx(x^n)",
-      "formula": "d(x^n)/dx = n*x^(n-1)",
+      "formula": "d = n*x^(n-1)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8411,7 +8411,7 @@
     {
       "id": "derivative_1",
       "name": "d/dx(x)",
-      "formula": "d(x)/dx = 1",
+      "formula": "d = 1",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8419,7 +8419,7 @@
     {
       "id": "derivative_2",
       "name": "d/dx(1/x)",
-      "formula": "d(1/x)/dx = -1/x^2",
+      "formula": "d = -1/x^2",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8427,7 +8427,7 @@
     {
       "id": "derivative_3",
       "name": "d/dx(sqrt(x))",
-      "formula": "d(sqrt(x))/dx = 1/(2*sqrt(x))",
+      "formula": "d = 1/(2*sqrt(x))",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8435,7 +8435,7 @@
     {
       "id": "derivative_4",
       "name": "d/dx(sin(x))",
-      "formula": "d(sin(x))/dx = cos(x)",
+      "formula": "d = cos(x)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8443,7 +8443,7 @@
     {
       "id": "derivative_5",
       "name": "d/dx(cos(x))",
-      "formula": "d(cos(x))/dx = -sin(x)",
+      "formula": "d = -sin(x)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8451,7 +8451,7 @@
     {
       "id": "derivative_6",
       "name": "d/dx(tan(x))",
-      "formula": "d(tan(x))/dx = sec(x)^2",
+      "formula": "d = sec(x)^2",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8459,7 +8459,7 @@
     {
       "id": "derivative_7",
       "name": "d/dx(cot(x))",
-      "formula": "d(cot(x))/dx = -csc(x)^2",
+      "formula": "d = -csc(x)^2",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8467,7 +8467,7 @@
     {
       "id": "derivative_8",
       "name": "d/dx(sec(x))",
-      "formula": "d(sec(x))/dx = sec(x)*tan(x)",
+      "formula": "d = sec(x)*tan(x)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8475,7 +8475,7 @@
     {
       "id": "derivative_9",
       "name": "d/dx(csc(x))",
-      "formula": "d(csc(x))/dx = -csc(x)*cot(x)",
+      "formula": "d = -csc(x)*cot(x)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8483,7 +8483,7 @@
     {
       "id": "derivative_10",
       "name": "d/dx(e^x)",
-      "formula": "d(e^x)/dx = e^x",
+      "formula": "d = e^x",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8491,7 +8491,7 @@
     {
       "id": "derivative_11",
       "name": "d/dx(a^x)",
-      "formula": "d(a^x)/dx = a^x * ln(a)",
+      "formula": "d = a^x * ln(a)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8499,7 +8499,7 @@
     {
       "id": "derivative_12",
       "name": "d/dx(ln(x))",
-      "formula": "d(ln(x))/dx = 1/x",
+      "formula": "d = 1/x",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8507,7 +8507,7 @@
     {
       "id": "derivative_13",
       "name": "d/dx(log_a(x))",
-      "formula": "d(log_a(x))/dx = 1/(x*ln(a))",
+      "formula": "d = 1/(x*ln(a))",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8515,7 +8515,7 @@
     {
       "id": "derivative_14",
       "name": "d/dx(arcsin(x))",
-      "formula": "d(arcsin(x))/dx = 1/sqrt(1-x^2)",
+      "formula": "d = 1/sqrt(1-x^2)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8523,7 +8523,7 @@
     {
       "id": "derivative_15",
       "name": "d/dx(arccos(x))",
-      "formula": "d(arccos(x))/dx = -1/sqrt(1-x^2)",
+      "formula": "d = -1/sqrt(1-x^2)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8531,7 +8531,7 @@
     {
       "id": "derivative_16",
       "name": "d/dx(arctan(x))",
-      "formula": "d(arctan(x))/dx = 1/(1+x^2)",
+      "formula": "d = 1/(1+x^2)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8539,7 +8539,7 @@
     {
       "id": "derivative_17",
       "name": "d/dx(sinh(x))",
-      "formula": "d(sinh(x))/dx = cosh(x)",
+      "formula": "d = cosh(x)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8547,7 +8547,7 @@
     {
       "id": "derivative_18",
       "name": "d/dx(cosh(x))",
-      "formula": "d(cosh(x))/dx = sinh(x)",
+      "formula": "d = sinh(x)",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8555,7 +8555,7 @@
     {
       "id": "derivative_19",
       "name": "d/dx(tanh(x))",
-      "formula": "d(tanh(x))/dx = sech(x)^2",
+      "formula": "d = sech(x)^2",
       "category": "mathematics",
       "subcategory": "calculus_derivatives",
       "difficulty": "intermediate"
@@ -8675,7 +8675,7 @@
     {
       "id": "taylor_1",
       "name": "sin(x) 级数展开",
-      "formula": "sin(x) = Σ_{n=0}^∞ (-1)^n x^(2n+1)/(2n+1)!",
+      "formula": "sin = Σ_{n",
       "category": "mathematics",
       "subcategory": "series_expansion",
       "difficulty": "advanced"
@@ -8683,7 +8683,7 @@
     {
       "id": "taylor_2",
       "name": "cos(x) 级数展开",
-      "formula": "cos(x) = Σ_{n=0}^∞ (-1)^n x^(2n)/(2n)!",
+      "formula": "cos = Σ_{n",
       "category": "mathematics",
       "subcategory": "series_expansion",
       "difficulty": "advanced"
@@ -8691,7 +8691,7 @@
     {
       "id": "taylor_3",
       "name": "ln(1+x) 级数展开",
-      "formula": "ln(1+x) = Σ_{n=1}^∞ (-1)^(n-1) x^n/n",
+      "formula": "ln = Σ_{n",
       "category": "mathematics",
       "subcategory": "series_expansion",
       "difficulty": "advanced"
@@ -8707,7 +8707,7 @@
     {
       "id": "taylor_5",
       "name": "arctan(x) 级数展开",
-      "formula": "arctan(x) = Σ_{n=0}^∞ (-1)^n x^(2n+1)/(2n+1)",
+      "formula": "arctan = Σ_{n",
       "category": "mathematics",
       "subcategory": "series_expansion",
       "difficulty": "advanced"
@@ -8715,7 +8715,7 @@
     {
       "id": "taylor_6",
       "name": "arcsin(x) 级数展开",
-      "formula": "arcsin(x) = Σ_{n=0}^∞ (2n)!/(4^n (n!)^2) * x^(2n+1)/(2n+1)",
+      "formula": "arcsin = Σ_{n",
       "category": "mathematics",
       "subcategory": "series_expansion",
       "difficulty": "advanced"
@@ -8723,7 +8723,7 @@
     {
       "id": "distribution_0",
       "name": "Bernoulli(p) 分布",
-      "formula": "P(X=1)=p, P(X=0)=1-p",
+      "formula": "P = 1)",
       "category": "mathematics",
       "subcategory": "probability_distributions",
       "difficulty": "advanced"
@@ -8731,7 +8731,7 @@
     {
       "id": "distribution_1",
       "name": "Binomial(n,p) 分布",
-      "formula": "P(X=k)=C(n,k)p^k(1-p)^(n-k)",
+      "formula": "P = k)",
       "category": "mathematics",
       "subcategory": "probability_distributions",
       "difficulty": "advanced"
@@ -8739,7 +8739,7 @@
     {
       "id": "distribution_2",
       "name": "Poisson(λ) 分布",
-      "formula": "P(X=k)=e^{-λ} λ^k/k!",
+      "formula": "P = k)",
       "category": "mathematics",
       "subcategory": "probability_distributions",
       "difficulty": "advanced"
@@ -8747,7 +8747,7 @@
     {
       "id": "distribution_3",
       "name": "Normal(μ,σ²) 分布",
-      "formula": "f(x)=1/(σ√(2π)) e^{-(x-μ)²/(2σ²)}",
+      "formula": "f = 1/(σ√(2π)) e^{-(x-μ)²/(2σ²)}",
       "category": "mathematics",
       "subcategory": "probability_distributions",
       "difficulty": "advanced"
@@ -8755,7 +8755,7 @@
     {
       "id": "distribution_4",
       "name": "Exponential(λ) 分布",
-      "formula": "f(x)=λe^{-λx} (x≥0)",
+      "formula": "f = λe^{-λx} (x≥0)",
       "category": "mathematics",
       "subcategory": "probability_distributions",
       "difficulty": "advanced"
@@ -8763,7 +8763,7 @@
     {
       "id": "distribution_5",
       "name": "Uniform(a,b) 分布",
-      "formula": "f(x)=1/(b-a) (a≤x≤b)",
+      "formula": "f = 1/(b-a) (a≤x≤b)",
       "category": "mathematics",
       "subcategory": "probability_distributions",
       "difficulty": "advanced"
@@ -8771,7 +8771,7 @@
     {
       "id": "distribution_6",
       "name": "ChiSquared(k) 分布",
-      "formula": "f(x)=x^(k/2-1)e^{-x/2}/(2^(k/2)Γ(k/2))",
+      "formula": "f = x^(k/2-1)e^{-x/2}/(2^(k/2)Γ(k/2))",
       "category": "mathematics",
       "subcategory": "probability_distributions",
       "difficulty": "advanced"
@@ -8779,7 +8779,7 @@
     {
       "id": "distribution_7",
       "name": "t-distribution(ν) 分布",
-      "formula": "f(t)=Γ((ν+1)/2)/(√(νπ)Γ(ν/2)) (1+t²/ν)^{-(ν+1)/2}",
+      "formula": "f = Γ((ν+1)/2)/(√(νπ)Γ(ν/2)) (1+t²/ν)^{-(ν+1)/2}",
       "category": "mathematics",
       "subcategory": "probability_distributions",
       "difficulty": "advanced"
@@ -8787,7 +8787,7 @@
     {
       "id": "linalg_0",
       "name": "determinant_2x2",
-      "formula": "det([a,b; c,d]) = ad - bc",
+      "formula": "det = ad - bc",
       "category": "mathematics",
       "subcategory": "linear_algebra",
       "difficulty": "intermediate"
@@ -8811,7 +8811,7 @@
     {
       "id": "linalg_3",
       "name": "trace",
-      "formula": "tr(A) = Σ a_ii",
+      "formula": "tr = Σ a_ii",
       "category": "mathematics",
       "subcategory": "linear_algebra",
       "difficulty": "intermediate"
@@ -8819,7 +8819,7 @@
     {
       "id": "linalg_4",
       "name": "eigenvalue_def",
-      "formula": "det(A - λI) = 0",
+      "formula": "det = 0",
       "category": "mathematics",
       "subcategory": "linear_algebra",
       "difficulty": "intermediate"
@@ -9031,7 +9031,7 @@
     {
       "id": "trace_cyclic",
       "name": "迹的循环性质",
-      "formula": "tr(AB) = tr(BA)",
+      "formula": "tr = tr(BA)",
       "category": "mathematics",
       "subcategory": "linear_algebra",
       "difficulty": "intermediate",
@@ -9040,7 +9040,7 @@
     {
       "id": "determinant_block",
       "name": "分块矩阵行列式",
-      "formula": "det([A,B;C,D]) = det(A)det(D-CA^{-1}B)",
+      "formula": "det = det(A)det(D-CA^{-1}B)",
       "category": "mathematics",
       "subcategory": "linear_algebra",
       "difficulty": "advanced",
@@ -9076,7 +9076,7 @@
     {
       "id": "conditional_probability",
       "name": "条件概率",
-      "formula": "P(A|B) = P(A∩B)/P(B)",
+      "formula": "P = P(A∩B)/P(B)",
       "category": "mathematics",
       "subcategory": "probability",
       "difficulty": "beginner",
@@ -9085,7 +9085,7 @@
     {
       "id": "total_probability",
       "name": "全概率公式",
-      "formula": "P(A) = Σ P(A|B_i) P(B_i)",
+      "formula": "P = Σ P(A|B_i) P(B_i)",
       "category": "mathematics",
       "subcategory": "probability",
       "difficulty": "intermediate",
@@ -9094,7 +9094,7 @@
     {
       "id": "covariance",
       "name": "协方差",
-      "formula": "Cov(X,Y) = E[(X-μ_X)(Y-μ_Y)]",
+      "formula": "Cov = E[(X-μ_X)(Y-μ_Y)]",
       "category": "mathematics",
       "subcategory": "probability",
       "difficulty": "intermediate",
@@ -9121,7 +9121,7 @@
     {
       "id": "chebyshev_inequality",
       "name": "切比雪夫不等式",
-      "formula": "P(|X-μ| ≥ kσ) ≤ 1/k²",
+      "formula": "P = undefined",
       "category": "mathematics",
       "subcategory": "probability",
       "difficulty": "intermediate",
@@ -9130,7 +9130,7 @@
     {
       "id": "jensen_inequality",
       "name": "詹森不等式",
-      "formula": "f(E[X]) ≤ E[f(X)] （f 凸）",
+      "formula": "f = undefined",
       "category": "mathematics",
       "subcategory": "probability",
       "difficulty": "advanced",
@@ -9139,7 +9139,7 @@
     {
       "id": "markov_inequality",
       "name": "马尔可夫不等式",
-      "formula": "P(X ≥ a) ≤ E[X]/a",
+      "formula": "P = undefined",
       "category": "mathematics",
       "subcategory": "probability",
       "difficulty": "intermediate",
@@ -9148,7 +9148,7 @@
     {
       "id": "hoeffding_inequality",
       "name": "霍夫丁不等式",
-      "formula": "P(S_n - E[S_n] ≥ t) ≤ exp(-2t²/(Σ (b_i-a_i)²))",
+      "formula": "P = undefined",
       "category": "mathematics",
       "subcategory": "probability",
       "difficulty": "advanced",
@@ -9157,7 +9157,7 @@
     {
       "id": "joint_entropy",
       "name": "联合熵",
-      "formula": "H(X,Y) = -Σ p(x,y) log p(x,y)",
+      "formula": "H = -Σ p(x,y) log p(x,y)",
       "category": "cognitive_science",
       "subcategory": "information_theory",
       "difficulty": "intermediate",
@@ -9166,7 +9166,7 @@
     {
       "id": "conditional_entropy",
       "name": "条件熵",
-      "formula": "H(X|Y) = H(X,Y) - H(Y)",
+      "formula": "H = H(X,Y) - H(Y)",
       "category": "cognitive_science",
       "subcategory": "information_theory",
       "difficulty": "intermediate",
@@ -9175,7 +9175,7 @@
     {
       "id": "mutual_information",
       "name": "互信息",
-      "formula": "I(X;Y) = H(X) - H(X|Y) = D_KL(p(x,y)||p(x)p(y))",
+      "formula": "I = H(X) - H(X|Y)",
       "category": "cognitive_science",
       "subcategory": "information_theory",
       "difficulty": "advanced",
@@ -9193,7 +9193,7 @@
     {
       "id": "rate_distortion",
       "name": "率失真函数",
-      "formula": "R(D) = min_{p(ŷ|x): E[d(X,Ŷ)]≤D} I(X;Ŷ)",
+      "formula": "R = min_{p(ŷ|x): E[d(X,Ŷ)]≤D} I(X;Ŷ)",
       "category": "cognitive_science",
       "subcategory": "information_theory",
       "difficulty": "advanced",
@@ -9562,7 +9562,7 @@
     {
       "id": "q_learning_update",
       "name": "Q-Learning 更新规则",
-      "formula": "Q(s,a) ← Q(s,a) + α[r + γ max_a' Q(s',a') - Q(s,a)]",
+      "formula": "Q = undefined",
       "category": "cognitive_science",
       "subcategory": "reinforcement_learning",
       "difficulty": "advanced",
@@ -9580,7 +9580,7 @@
     {
       "id": "bellman_equation",
       "name": "贝尔曼方程",
-      "formula": "V(s) = max_a [R(s,a) + γ V(s')]",
+      "formula": "V = max_a [R(s,a) + γ V(s')]",
       "category": "cognitive_science",
       "subcategory": "reinforcement_learning",
       "difficulty": "advanced",
@@ -9607,7 +9607,7 @@
     {
       "id": "irt_1pl",
       "name": "IRT 单参数模型（Rasch）",
-      "formula": "P(θ) = 1 / (1 + e^{-(θ - b)})",
+      "formula": "P = 1 / (1 + e^{-(θ - b)})",
       "category": "psychology",
       "subcategory": "measurement",
       "difficulty": "advanced",
@@ -9617,7 +9617,7 @@
     {
       "id": "irt_2pl",
       "name": "IRT 双参数模型",
-      "formula": "P(θ) = 1 / (1 + e^{-a(θ - b)})",
+      "formula": "P = 1 / (1 + e^{-a(θ - b)})",
       "category": "psychology",
       "subcategory": "measurement",
       "difficulty": "advanced",
@@ -9627,7 +9627,7 @@
     {
       "id": "irt_3pl",
       "name": "IRT 三参数模型",
-      "formula": "P(θ) = c + (1-c) / (1 + e^{-a(θ - b)})",
+      "formula": "P = c + (1-c) / (1 + e^{-a(θ - b)})",
       "category": "psychology",
       "subcategory": "measurement",
       "difficulty": "advanced",
@@ -9637,7 +9637,7 @@
     {
       "id": "irt_4pl",
       "name": "IRT 四参数模型",
-      "formula": "P(θ) = d + (c-d) / (1 + e^{-a(θ - b)})",
+      "formula": "P = d + (c-d) / (1 + e^{-a(θ - b)})",
       "category": "psychology",
       "subcategory": "measurement",
       "difficulty": "advanced",
@@ -9647,7 +9647,7 @@
     {
       "id": "irt_information",
       "name": "IRT 信息函数",
-      "formula": "I(θ) = a² P(θ)(1-P(θ))",
+      "formula": "I = a² P(θ)(1-P(θ))",
       "category": "psychology",
       "subcategory": "measurement",
       "difficulty": "advanced",
@@ -9657,7 +9657,7 @@
     {
       "id": "irt_test_information",
       "name": "测验信息函数",
-      "formula": "I_test(θ) = Σ_i I_i(θ)",
+      "formula": "I_test = Σ_i I_i(θ)",
       "category": "psychology",
       "subcategory": "measurement",
       "difficulty": "advanced",
@@ -9667,7 +9667,7 @@
     {
       "id": "irt_sem",
       "name": "IRT 标准误",
-      "formula": "SE(θ) = 1/sqrt(I(θ))",
+      "formula": "SE = 1/sqrt(I(θ))",
       "category": "psychology",
       "subcategory": "measurement",
       "difficulty": "advanced",
@@ -9807,7 +9807,7 @@
     {
       "id": "actr_noise",
       "name": "ACT-R 噪声（玻尔兹曼）",
-      "formula": "P(selection) = e^{A_i/τ} / Σ_j e^{A_j/τ}",
+      "formula": "P = e^{A_i/τ} / Σ_j e^{A_j/τ}",
       "category": "cognitive_science",
       "subcategory": "actr",
       "difficulty": "advanced",
@@ -9827,7 +9827,7 @@
     {
       "id": "soar_qlearning",
       "name": "Soar Q-Learning 更新",
-      "formula": "Q(s,a) += α[r + γ max_a' Q(s',a') - Q(s,a)]",
+      "formula": "Q = α[r + γ max_a' Q(s',a') - Q(s,a)]",
       "category": "cognitive_science",
       "subcategory": "soar",
       "difficulty": "advanced",
@@ -9837,7 +9837,7 @@
     {
       "id": "clarion_acs",
       "name": "CLARION ACS 选择规则",
-      "formula": "P(a_i) = e^{Cl(a_i)/τ} / Σ_j e^{Cl(a_j)/τ}",
+      "formula": "P = e^{Cl(a_i)/τ} / Σ_j e^{Cl(a_j)/τ}",
       "category": "cognitive_science",
       "subcategory": "clarion",
       "difficulty": "advanced",
@@ -9857,7 +9857,7 @@
     {
       "id": "subjective_utility",
       "name": "主观期望效用（SEU）",
-      "formula": "SEU(a) = Σ_i p_i(s) · u(o_i)",
+      "formula": "SEU = Σ_i p_i(s) · u(o_i)",
       "category": "cognitive_science",
       "subcategory": "decision_theory",
       "difficulty": "advanced",
@@ -9867,7 +9867,7 @@
     {
       "id": "prospect_value",
       "name": "前景理论价值函数",
-      "formula": "v(x) = x^α if x≥0, v(x) = -λ|x|^β if x<0",
+      "formula": "v = x^α if x≥0, v(x)",
       "category": "cognitive_science",
       "subcategory": "prospect_theory",
       "difficulty": "advanced",
@@ -9877,7 +9877,7 @@
     {
       "id": "prospect_weight",
       "name": "前景理论权重函数",
-      "formula": "w(p) = p^γ / (p^γ + (1-p)^γ)^{1/γ}",
+      "formula": "w = p^γ / (p^γ + (1-p)^γ)^{1/γ}",
       "category": "cognitive_science",
       "subcategory": "prospect_theory",
       "difficulty": "advanced",
@@ -9887,7 +9887,7 @@
     {
       "id": "regret_theory",
       "name": "后悔理论",
-      "formula": "U(a) = Σ_i p_i · (u(o_i) - R(o_i, o_best))",
+      "formula": "U = Σ_i p_i · (u(o_i) - R(o_i, o_best))",
       "category": "cognitive_science",
       "subcategory": "decision_theory",
       "difficulty": "advanced",
@@ -9897,7 +9897,7 @@
     {
       "id": "nash_equilibrium",
       "name": "纳什均衡",
-      "formula": "u_i(a_i*, a_{-i}*) ≥ u_i(a_i, a_{-i}*) ∀ a_i",
+      "formula": "u_i = undefined",
       "category": "cognitive_science",
       "subcategory": "game_theory",
       "difficulty": "advanced",
@@ -10017,7 +10017,7 @@
     {
       "id": "carnap_confirmation",
       "name": "卡尔纳普确认函数",
-      "formula": "c(H,E) = P(H|E) - P(H)",
+      "formula": "c = P(H|E) - P(H)",
       "category": "philosophy",
       "subcategory": "inductive_logic",
       "difficulty": "advanced",
@@ -10037,7 +10037,7 @@
     {
       "id": "odds_ratio",
       "name": "后验赔率",
-      "formula": "O(H|E) = BF · O(H)",
+      "formula": "O = BF · O(H)",
       "category": "philosophy",
       "subcategory": "confirmation_theory",
       "difficulty": "advanced",
@@ -10047,7 +10047,7 @@
     {
       "id": "popper_corroboration",
       "name": "波普尔确认度",
-      "formula": "C(H,E) = P(E|H) - P(E|¬H)",
+      "formula": "C = P(E|H) - P(E|¬H)",
       "category": "philosophy",
       "subcategory": "falsificationism",
       "difficulty": "advanced",
@@ -10057,7 +10057,7 @@
     {
       "id": "deontic_obligation",
       "name": "义务逻辑：应当",
-      "formula": "O(P) ≡ □_d P",
+      "formula": "O = undefined",
       "category": "philosophy",
       "subcategory": "deontic_logic",
       "difficulty": "advanced",
@@ -10067,7 +10067,7 @@
     {
       "id": "deontic_permission",
       "name": "义务逻辑：允许",
-      "formula": "P(P) ≡ ¬O(¬P)",
+      "formula": "P = undefined",
       "category": "philosophy",
       "subcategory": "deontic_logic",
       "difficulty": "advanced",
@@ -10077,7 +10077,7 @@
     {
       "id": "deontic_prohibition",
       "name": "义务逻辑：禁止",
-      "formula": "F(P) ≡ O(¬P)",
+      "formula": "F = undefined",
       "category": "philosophy",
       "subcategory": "deontic_logic",
       "difficulty": "advanced",
@@ -10117,7 +10117,7 @@
     {
       "id": "gwt_accessibility",
       "name": "全球工作空间可及性",
-      "formula": "A_i(t) = Σ_j w_{ij} · GW(t) + noise",
+      "formula": "A_i = Σ_j w_{ij} · GW(t) + noise",
       "category": "cognitive_science",
       "subcategory": "consciousness",
       "difficulty": "advanced",
@@ -10157,7 +10157,7 @@
     {
       "id": "active_inference_efe",
       "name": "主动推断期望自由能",
-      "formula": "G(π) = -E[Q(s,π)] + H[Q(s,π)]",
+      "formula": "G = -E[Q(s,π)] + H[Q(s,π)]",
       "category": "cognitive_science",
       "subcategory": "active_inference",
       "difficulty": "advanced",
@@ -10257,7 +10257,7 @@
     {
       "id": "bystander_effect",
       "name": "旁观者效应",
-      "formula": "P(help) = 1 - (1 - p)^n, n=旁观者数",
+      "formula": "P = 1 - (1 - p)^n, n",
       "category": "psychology",
       "subcategory": "social",
       "difficulty": "advanced",
@@ -10267,7 +10267,7 @@
     {
       "id": "social_influence_model",
       "name": "社会影响模型（French-Harary）",
-      "formula": "x_i(t+1) = x_i(t) + λ Σ_j w_{ij} (x_j(t) - x_i(t))",
+      "formula": "x_i = x_i(t) + λ Σ_j w_{ij} (x_j(t) - x_i(t))",
       "category": "psychology",
       "subcategory": "social",
       "difficulty": "advanced",
@@ -10473,7 +10473,7 @@
     {
       "id": "integral_13",
       "name": "∫ exp(x) dx",
-      "formula": "exp(x)",
+      "formula": "exp = undefined",
       "category": "mathematics",
       "subcategory": "integrals",
       "source": "sympy_integral"
@@ -10489,7 +10489,7 @@
     {
       "id": "integral_15",
       "name": "∫ cos(x) dx",
-      "formula": "sin(x)",
+      "formula": "sin = undefined",
       "category": "mathematics",
       "subcategory": "integrals",
       "source": "sympy_integral"
@@ -10497,7 +10497,7 @@
     {
       "id": "integral_16",
       "name": "∫ x**n dx",
-      "formula": "Piecewise((x**(n + 1)/(n + 1), Ne(n, -1)), (log(x), True))",
+      "formula": "Piecewise = undefined",
       "category": "mathematics",
       "subcategory": "integrals",
       "source": "sympy_integral"
@@ -10513,7 +10513,7 @@
     {
       "id": "integral_18",
       "name": "∫ exp(-x**2) dx",
-      "formula": "sqrt(pi)*erf(x)/2",
+      "formula": "sqrt = undefined",
       "category": "mathematics",
       "subcategory": "integrals",
       "source": "sympy_integral"
@@ -10537,7 +10537,7 @@
     {
       "id": "integral_21",
       "name": "∫ 1/sqrt(1 - x**2) dx",
-      "formula": "asin(x)",
+      "formula": "asin = undefined",
       "category": "mathematics",
       "subcategory": "integrals",
       "source": "sympy_integral"
@@ -10545,7 +10545,7 @@
     {
       "id": "integral_22",
       "name": "∫ 1/sqrt(a**2 + x**2) dx",
-      "formula": "asinh(x/a)",
+      "formula": "asinh = undefined",
       "category": "mathematics",
       "subcategory": "integrals",
       "source": "sympy_integral"
@@ -10553,7 +10553,7 @@
     {
       "id": "integral_23",
       "name": "∫ sec(x)**2 dx",
-      "formula": "sin(x)/cos(x)",
+      "formula": "sin = undefined",
       "category": "mathematics",
       "subcategory": "integrals",
       "source": "sympy_integral"
@@ -10585,7 +10585,7 @@
     {
       "id": "matrix_27",
       "name": "det(AB) = det(A) det(B)",
-      "formula": "det(AB) = det(A)·det(B)",
+      "formula": "det = det(A)·det(B)",
       "category": "mathematics",
       "subcategory": "linear_algebra",
       "source": "matrix_identity"
@@ -10593,7 +10593,7 @@
     {
       "id": "matrix_28",
       "name": "det(A^T) = det(A)",
-      "formula": "det(A^T) = det(A)",
+      "formula": "det = det(A)",
       "category": "mathematics",
       "subcategory": "linear_algebra",
       "source": "matrix_identity"
@@ -10601,7 +10601,7 @@
     {
       "id": "matrix_29",
       "name": "det(A^{-1}) = 1/det(A)",
-      "formula": "det(A^{-1}) = 1/det(A)",
+      "formula": "det = 1/det(A)",
       "category": "mathematics",
       "subcategory": "linear_algebra",
       "source": "matrix_identity"
@@ -10609,7 +10609,7 @@
     {
       "id": "matrix_30",
       "name": "tr(A+B) = tr(A) + tr(B)",
-      "formula": "tr(A+B) = tr(A) + tr(B)",
+      "formula": "tr = tr(A) + tr(B)",
       "category": "mathematics",
       "subcategory": "linear_algebra",
       "source": "matrix_identity"
@@ -10617,7 +10617,7 @@
     {
       "id": "matrix_31",
       "name": "tr(AB) = tr(BA)",
-      "formula": "tr(AB) = tr(BA)",
+      "formula": "tr = tr(BA)",
       "category": "mathematics",
       "subcategory": "linear_algebra",
       "source": "matrix_identity"
@@ -10657,7 +10657,7 @@
     {
       "id": "dist_normal_pdf",
       "name": "正态分布 PDF",
-      "formula": "f(x) = (1/(σ√(2π))) exp(-(x-μ)²/(2σ²))",
+      "formula": "f = (1/(σ√(2π))) exp(-(x-μ)²/(2σ²))",
       "category": "mathematics",
       "subcategory": "probability",
       "source": "known_distribution"
@@ -10673,7 +10673,7 @@
     {
       "id": "dist_normal_var",
       "name": "正态分布方差",
-      "formula": "Var(X) = σ²",
+      "formula": "Var = σ²",
       "category": "mathematics",
       "subcategory": "probability",
       "source": "known"
@@ -10681,7 +10681,7 @@
     {
       "id": "dist_poisson_pmf",
       "name": "泊松分布 PMF",
-      "formula": "P(X=k) = (λ^k e^{-λ})/k!",
+      "formula": "P = k)",
       "category": "mathematics",
       "subcategory": "probability",
       "source": "known"
@@ -10697,7 +10697,7 @@
     {
       "id": "dist_exp_pdf",
       "name": "指数分布 PDF",
-      "formula": "f(x) = λ e^{-λx} (x≥0)",
+      "formula": "f = λ e^{-λx} (x≥0)",
       "category": "mathematics",
       "subcategory": "probability",
       "source": "known"
@@ -10705,7 +10705,7 @@
     {
       "id": "dist_exp_cdf",
       "name": "指数分布 CDF",
-      "formula": "F(x) = 1 - e^{-λx}",
+      "formula": "F = 1 - e^{-λx}",
       "category": "mathematics",
       "subcategory": "probability",
       "source": "known"
@@ -10713,7 +10713,7 @@
     {
       "id": "dist_beta_pdf",
       "name": "贝塔分布 PDF",
-      "formula": "f(x) = x^{α-1}(1-x)^{β-1} / B(α,β)",
+      "formula": "f = x^{α-1}(1-x)^{β-1} / B(α,β)",
       "category": "mathematics",
       "subcategory": "probability",
       "source": "known"
@@ -10721,7 +10721,7 @@
     {
       "id": "dist_chi2_pdf",
       "name": "卡方分布 PDF",
-      "formula": "f(x) = x^{k/2-1} e^{-x/2} / (2^{k/2} Γ(k/2))",
+      "formula": "f = x^{k/2-1} e^{-x/2} / (2^{k/2} Γ(k/2))",
       "category": "mathematics",
       "subcategory": "probability",
       "source": "known"
@@ -10737,7 +10737,7 @@
     {
       "id": "ebbinghaus_forgetting",
       "name": "遗忘曲线",
-      "formula": "R(t) = e^{-t/S}",
+      "formula": "R = e^{-t/S}",
       "category": "cognitive_science",
       "subcategory": "memory",
       "source": "cognitive_science_literature"
@@ -10745,7 +10745,7 @@
     {
       "id": "ebbinghaus_retention_rate",
       "name": "留存率（天）",
-      "formula": "R(d) = 2^{-d/τ}, τ≈1天",
+      "formula": "R = 2^{-d/τ}, τ≈1天",
       "category": "cognitive_science",
       "subcategory": "memory",
       "source": "cognitive_science_literature"
@@ -10793,7 +10793,7 @@
     {
       "id": "prospect_value_function",
       "name": "前景理论价值函数",
-      "formula": "v(x) = x^α if x≥0, v(x) = -λ|x|^β if x<0",
+      "formula": "v = x^α if x≥0, v(x)",
       "category": "cognitive_science",
       "subcategory": "prospect_theory",
       "source": "cognitive_science_literature"
@@ -10801,7 +10801,7 @@
     {
       "id": "prospect_weight_function",
       "name": "前景理论权重函数",
-      "formula": "w(p) = p^γ / (p^γ + (1-p)^γ)^{1/γ}",
+      "formula": "w = p^γ / (p^γ + (1-p)^γ)^{1/γ}",
       "category": "cognitive_science",
       "subcategory": "prospect_theory",
       "source": "cognitive_science_literature"
@@ -10809,7 +10809,7 @@
     {
       "id": "bayes_continuous",
       "name": "连续贝叶斯更新",
-      "formula": "p(θ|D) ∝ L(D|θ) p(θ)",
+      "formula": "p = undefined",
       "category": "cognitive_science",
       "subcategory": "belief_updating",
       "source": "cognitive_science_literature"
@@ -10817,7 +10817,7 @@
     {
       "id": "sarsa_update",
       "name": "SARSA 更新",
-      "formula": "Q(s,a) ← Q(s,a) + α[r + γ Q(s',a') - Q(s,a)]",
+      "formula": "Q = undefined",
       "category": "cognitive_science",
       "subcategory": "reinforcement_learning",
       "source": "cognitive_science_literature"
@@ -10841,7 +10841,7 @@
     {
       "id": "global_workspace",
       "name": "全局工作空间激活",
-      "formula": "GW(t+1) = f(∑ w_i · A_i(t))",
+      "formula": "GW = f(∑ w_i · A_i(t))",
       "category": "cognitive_science",
       "subcategory": "consciousness",
       "source": "cognitive_science_literature"
@@ -10849,7 +10849,7 @@
     {
       "id": "social_influence_french",
       "name": "French 社会影响",
-      "formula": "x_i(t+1) = x_i(t) + λ ∑_j w_{ij} (x_j(t) - x_i(t))",
+      "formula": "x_i = x_i(t) + λ ∑_j w_{ij} (x_j(t) - x_i(t))",
       "category": "cognitive_science",
       "subcategory": "social",
       "source": "cognitive_science_literature"
@@ -10857,7 +10857,7 @@
     {
       "id": "irt_information_test",
       "name": "测验信息函数",
-      "formula": "I(θ) = ∑_i a_i² P_i(θ) (1-P_i(θ))",
+      "formula": "I = ∑_i a_i² P_i(θ) (1-P_i(θ))",
       "category": "cognitive_science",
       "subcategory": "measurement",
       "source": "cognitive_science_literature"
@@ -10881,7 +10881,7 @@
     {
       "id": "bayes_confirmation",
       "name": "贝叶斯确认度",
-      "formula": "c(H,E) = P(H|E) - P(H)",
+      "formula": "c = P(H|E) - P(H)",
       "category": "philosophy",
       "subcategory": "confirmation_theory",
       "source": "cognitive_science_literature"
@@ -10921,7 +10921,7 @@
     {
       "id": "math_integral_1_ln_x",
       "name": "∫ 1/ln(x) dx",
-      "formula": "li(x) = ∫_0^x dt/ln(t) (对数积分)",
+      "formula": "li = ∫_0^x dt/ln(t) (对数积分)",
       "category": "mathematics",
       "subcategory": "integrals",
       "source": "handbook_math"
@@ -10993,7 +10993,7 @@
     {
       "id": "math_beta_gamma",
       "name": "Beta-Gamma 关系",
-      "formula": "B(x,y) = Γ(x)Γ(y)/Γ(x+y)",
+      "formula": "B = Γ(x)Γ(y)/Γ(x+y)",
       "category": "mathematics",
       "subcategory": "special_functions",
       "source": "handbook_math"
@@ -11017,7 +11017,7 @@
     {
       "id": "math_cauchy_integral",
       "name": "柯西积分公式",
-      "formula": "f(a) = (1/2πi) ∮_C f(z)/(z-a) dz",
+      "formula": "f = (1/2πi) ∮_C f(z)/(z-a) dz",
       "category": "mathematics",
       "subcategory": "complex_analysis",
       "source": "handbook_math"
@@ -11033,7 +11033,7 @@
     {
       "id": "math_laurent_series",
       "name": "洛朗级数",
-      "formula": "f(z) = Σ_{n=-∞}^∞ a_n (z-a)^n",
+      "formula": "f = Σ_{n",
       "category": "mathematics",
       "subcategory": "complex_analysis",
       "source": "handbook_math"
@@ -11057,7 +11057,7 @@
     {
       "id": "math_fourier_series",
       "name": "傅里叶级数",
-      "formula": "f(x) = a_0/2 + Σ_{n=1}^∞ [a_n cos(nx) + b_n sin(nx)]",
+      "formula": "f = a_0/2 + Σ_{n",
       "category": "mathematics",
       "subcategory": "fourier",
       "source": "handbook_math"
@@ -11065,7 +11065,7 @@
     {
       "id": "math_fourier_transform",
       "name": "傅里叶变换",
-      "formula": "F(ω) = ∫_{-∞}^∞ f(t) e^{-iωt} dt",
+      "formula": "F = ∫_{-∞}^∞ f(t) e^{-iωt} dt",
       "category": "mathematics",
       "subcategory": "fourier",
       "source": "handbook_math"
@@ -11089,7 +11089,7 @@
     {
       "id": "math_convolution_theorem",
       "name": "卷积定理",
-      "formula": "F(f * g) = F(f) · F(g)",
+      "formula": "F = F(f) · F(g)",
       "category": "mathematics",
       "subcategory": "fourier",
       "source": "handbook_math"
@@ -11097,7 +11097,7 @@
     {
       "id": "math_laplace_transform",
       "name": "拉普拉斯变换",
-      "formula": "F(s) = ∫_0^∞ f(t) e^{-st} dt",
+      "formula": "F = ∫_0^∞ f(t) e^{-st} dt",
       "category": "mathematics",
       "subcategory": "laplace",
       "source": "handbook_math"
@@ -11265,7 +11265,7 @@
     {
       "id": "physics_born_rule",
       "name": "波恩规则",
-      "formula": "P(x) = |ψ(x)|²",
+      "formula": "P = |ψ(x)|²",
       "category": "physics",
       "subcategory": "quantum_mechanics",
       "source": "handbook_physics"
@@ -11289,7 +11289,7 @@
     {
       "id": "physics_boltzmann_distribution",
       "name": "玻尔兹曼分布",
-      "formula": "P(E) ∝ e^{-E/(k_B T)}",
+      "formula": "P = undefined",
       "category": "physics",
       "subcategory": "statistical_mechanics",
       "source": "handbook_physics"
@@ -11457,7 +11457,7 @@
     {
       "id": "psych_soar_preference",
       "name": "Soar 偏好决策",
-      "formula": "P(o) = Σ w_i · s_i(o)",
+      "formula": "P = Σ w_i · s_i(o)",
       "category": "cognitive_science",
       "subcategory": "soar",
       "source": "handbook_psych"
@@ -11481,7 +11481,7 @@
     {
       "id": "psych_actr_memory_threshold",
       "name": "ACT-R 记忆阈值",
-      "formula": "P(retrieval) = 1 / (1 + e^{-(A - τ)/s})",
+      "formula": "P = 1 / (1 + e^{-(A - τ)/s})",
       "category": "cognitive_science",
       "subcategory": "actr",
       "source": "handbook_psych"
@@ -11497,7 +11497,7 @@
     {
       "id": "psych_global_workspace_broadcast",
       "name": "全局工作空间广播",
-      "formula": "GW(t+1) = Σ_i w_i · A_i(t) + noise",
+      "formula": "GW = Σ_i w_i · A_i(t) + noise",
       "category": "cognitive_science",
       "subcategory": "consciousness",
       "source": "handbook_psych"
@@ -11521,7 +11521,7 @@
     {
       "id": "psych_bystander_effect_formula",
       "name": "旁观者效应",
-      "formula": "P(help) = 1 - ∏_{i=1}^n (1 - p_i)",
+      "formula": "P = 1 - ∏_{i",
       "category": "psychology",
       "subcategory": "social",
       "source": "handbook_psych"
@@ -11585,7 +11585,7 @@
     {
       "id": "philosophy_confirmation_degree",
       "name": "确认度（卡尔纳普）",
-      "formula": "c(H,E) = P(H|E) - P(H)",
+      "formula": "c = P(H|E) - P(H)",
       "category": "philosophy",
       "subcategory": "confirmation_theory",
       "source": "handbook_philosophy"
@@ -11601,7 +11601,7 @@
     {
       "id": "philosophy_odds_updating",
       "name": "赔率更新",
-      "formula": "O(H|E) = BF · O(H)",
+      "formula": "O = BF · O(H)",
       "category": "philosophy",
       "subcategory": "confirmation_theory",
       "source": "handbook_philosophy"
@@ -11609,7 +11609,7 @@
     {
       "id": "philosophy_popper_corroboration_degree",
       "name": "波普尔确认度",
-      "formula": "C(H,E) = P(E|H) - P(E|¬H)",
+      "formula": "C = P(E|H) - P(E|¬H)",
       "category": "philosophy",
       "subcategory": "falsificationism",
       "source": "handbook_philosophy"
@@ -11641,7 +11641,7 @@
     {
       "id": "philosophy_deontic_distribution",
       "name": "义务分配",
-      "formula": "O(p → q) → (Op → Oq)",
+      "formula": "O = undefined",
       "category": "philosophy",
       "subcategory": "deontic_logic",
       "source": "handbook_philosophy"
@@ -11649,7 +11649,7 @@
     {
       "id": "philosophy_deontic_conflict",
       "name": "义务冲突",
-      "formula": "O(p) ∧ O(¬p) → parallel_satisfiable",
+      "formula": "O = undefined",
       "category": "philosophy",
       "subcategory": "deontic_logic",
       "source": "handbook_philosophy"
@@ -11705,7 +11705,7 @@
     {
       "id": "bayesian_update",
       "name": "贝叶斯更新",
-      "formula": "P(H|D) ∝ P(D|H) P(H)",
+      "formula": "P = undefined",
       "category": "cognitive_science",
       "subcategory": "from_arxiv",
       "source": "arXiv_keyword:Bayesian"
