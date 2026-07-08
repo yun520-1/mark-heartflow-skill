@@ -21,12 +21,12 @@ const crypto = require('crypto');
 
 // === Q-table 最大容量 ===
 const MAX_QTABLE_SIZE = 500;
-
 /**
- * 带容量保护的 Map.set — 超出容量时淘汰最早插入的条目（LRU）
+ * 有界集合（FIFO 淘汰策略）
+ * 当 map 达到 maxSize 且 key 不在 map 中时，删除最早加入的 key
  * @param {Map} map - 目标 Map
- * @param {*} key - 键
- * @param {*} value - 值
+ * @param {string} key - 键
+ * @param {any} value - 值
  * @param {number} maxSize - 最大容量
  */
 function _boundedSet(map, key, value, maxSize) {
@@ -543,7 +543,8 @@ class HealingMemoryRL {
     // 对该策略在当前context降低Q值（强化反思效果）
     entry[failedStrategy] = Math.max(0, currentQ - 0.15);
     _boundedSet(this.qTable, ck, entry, MAX_QTABLE_SIZE);
-    // 已禁用 console.error: this._saveQTable().catch(e => console.error('[HealingMemoryRL] reflect save failed:', e.message));
+    // [HIGH FIX] 取消注释 _saveQTable()（之前注释掉导致 Q-table 修改只存内存，进程退出即丢失）
+    this._saveQTable().catch(e => console.error('[HealingMemoryRL] reflect save failed:', e.message));
 
     return {
       strategy: failedStrategy,

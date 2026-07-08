@@ -493,7 +493,7 @@ class CodeExecutor {
   _recordExecution(status, duration) {
     this._stats.totalExecutions++;
     this._stats.totalDuration += duration;
-    this._stats.avgDuration = Math.round(this._stats.totalDuration / this._stats.totalExecutions);
+    // [HIGH FIX] 删除 avgDuration 双重写入（改为由 getter 统一计算，避免不一致）
 
     switch (status) {
       case ExecStatus.SUCCESS:
@@ -546,6 +546,14 @@ class CodeExecutor {
     }
     this._executionCount++;
     this._lastExecutionTime = now;
+
+    // [HIGH FIX] 内存限制检查（之前 maxMemoryMB 声明但未执行）
+    const memUsage = process.memoryUsage();
+    const memUsageMB = memUsage.heapUsed / 1024 / 1024;
+    if (memUsageMB > RESOURCE_LIMITS.maxMemoryMB) {
+      return { status: ExecStatus.ERROR, output: '', error: `内存使用超限：${memUsageMB.toFixed(1)}MB > ${RESOURCE_LIMITS.maxMemoryMB}MB`, duration: 0, language: 'none', truncated: false, execError: ExecError.RESOURCE_LIMIT };
+    }
+
     validateArg(code, 'code', 'string');
 
     const opts = { ...DEFAULTS, ...options };
