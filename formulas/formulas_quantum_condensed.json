@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_cond_bcs",
+    "BCS 波函数",
+    "|Ψ> = Π_k (u_k + v_k c†_{k↑}c†_{-k↓})|0>",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_gap_equation",
+    "能隙方程",
+    "Δ_k = -Σ_{k\"} V_{kk\"} Δ_{k\"}/(2E_{k\"})",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_bloch_theorem",
+    "Bloch 定理",
+    "ψ_{nk}(r+R) = exp(ik·R) ψ_{nk}(r)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_reciprocal_lattice",
+    "倒格子",
+    "b_i = 2π ε_{ijk} a_j × a_k / (a_1·(a_2×a_3))",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_fermi_surface",
+    "费米面",
+    "E(k) = E_F for k on Fermi surface",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_superfluid_density",
+    "超流密度",
+    "ρ_s = (m*/m) n_s",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_josephson",
+    "约瑟夫森效应",
+    "I = I_c sin(Δφ), V = (ℏ/2e) dΔφ/dt",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_quantum_hall",
+    "量子霍尔电导",
+    "σ_xy = ν e²/h, ν ∈ Z",
+    "quantum_computing"
+  ]
+]

@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_optics_schrödinger_cat",
+    "薛定谔猫态",
+    "|cat> = N(|α> + |-α>)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_optics_coherent_state",
+    "相干态",
+    "|α> = exp(-|α|²/2) Σ_n (αⁿ/√n!)|n>",
+    "quantum_computing"
+  ],
+  [
+    "quantum_optics_squeezed_state",
+    "压缩态",
+    "|ξ> = S(ξ)|0>, S(ξ)=exp(ξ*a²/2 - ξ a†²/2)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_optics_beam_splitter",
+    "分束器变换",
+    "b_out = t b_in + r a_in",
+    "quantum_computing"
+  ],
+  [
+    "quantum_optics_hong_ou_mandel",
+    "HOM 干涉",
+    "P(2,0) = P(0,2) = 0, P(1,1) = 1",
+    "quantum_computing"
+  ],
+  [
+    "quantum_optics_phase_modulator",
+    "相位调制器",
+    "E_out = E_in exp(iφ)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_optics_photo_detection",
+    "光电探测",
+    "P(n) = |⟨n|α>|² = exp(-|α|²) |α|²ⁿ/n!",
+    "quantum_computing"
+  ],
+  [
+    "quantum_optics_raman_transition",
+    "拉曼跃迁",
+    "Ω_R = (g₁g₂)/Δ",
+    "quantum_computing"
+  ]
+]

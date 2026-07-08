@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_ml_vqc",
+    "变分量子电路",
+    "f(x; θ) = ⟨0|U†(x,θ) H U(x,θ)|0⟩",
+    "quantum_computing"
+  ],
+  [
+    "quantum_ml_qnn",
+    "量子神经网络",
+    "U = Π_k exp(-iθ_k H_k)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_ml_quantum_kernel",
+    "量子核方法",
+    "K(x,x\") = |⟨0|U†(x\")U(x)|0⟩|²",
+    "quantum_computing"
+  ],
+  [
+    "quantum_ml_qsvm",
+    "量子支持向量机",
+    "min ||w||² + C Σ ξ_i, s.t. y_i(w·φ(x_i)+b) ≥ 1-ξ_i",
+    "quantum_computing"
+  ],
+  [
+    "quantum_ml_vqaa",
+    "变分量子近似优化",
+    "θ_{t+1} = θ_t - α ∇L(θ_t)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_ml_quantum_natural_gradient",
+    "量子自然梯度",
+    "θ_{t+1} = θ_t - α F⁻¹ ∇L(θ_t)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_ml_quantum_transfer_learning",
+    "量子迁移学习",
+    "L_target = L_source + λ R(θ)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_ml_quantum_meta_learning",
+    "量子元学习",
+    "θ* = argmin_θ E_T[L_T(U_θ, D_T)]",
+    "quantum_computing"
+  ]
+]
