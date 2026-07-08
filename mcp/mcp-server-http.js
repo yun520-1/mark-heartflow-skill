@@ -52,8 +52,18 @@ function resolveHFDir() {
     dir = parent;
   }
 
-  // 3. Fallback 到 ~/.hermes/skills/heartflow/
-  return path.join(process.env.HOME, '.hermes', 'skills', 'heartflow');
+  // 3. Fallback：尝试多个可能的安装位置
+  const fallbacks = [
+    path.join(process.env.HOME, '.hermes', 'skills', 'mark-heartflow-skill'),
+    path.join(process.env.HOME, '.hermes', 'skills', 'heartflow'),
+    path.join(process.env.HOME, 'Documents', 'ClaudeCode'),
+  ];
+  for (const fb of fallbacks) {
+    const candidate = path.join(fb, 'src', 'core', 'heartflow.js');
+    if (fs.existsSync(candidate)) return fb;
+  }
+  // 最后兜底：返回 mark-heartflow-skill 路径（即使不存在，调用方会报错）
+  return path.join(process.env.HOME, '.hermes', 'skills', 'mark-heartflow-skill');
 }
 const HF_DIR = resolveHFDir();
 const HEARTFLOW_PATH = path.join(HF_DIR, 'src', 'core', 'heartflow.js');
