@@ -14673,6 +14673,48 @@
       "name": "相位阻尼信道",
       "formula": "ε(ρ) = E₀ρE₀† + E₁ρE₁†",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_simulation_schrodinger_time",
+      "name": "含时薛定谔方程",
+      "formula": "iℏ ∂|ψ(t)⟩/∂t = H(t)|ψ(t)⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_simulation_schrodinger_time_solution",
+      "name": "薛定谔方程解",
+      "formula": "|ψ(t)⟩ = U(t,t₀)|ψ(t₀)⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_simulation_unitary",
+      "name": "酉演化算子",
+      "formula": "U(t) = exp(-iHt/ℏ)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_simulation_suzuki_trotter",
+      "name": "Suzuki-Trotter 分解",
+      "formula": "error = O((||[Hᵢ,Hⱼ]||t)²/r)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_simulation_vqe_energy",
+      "name": "VQE 能量期望",
+      "formula": "E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_simulation_qaoa_angle",
+      "name": "QAOA 角度优化",
+      "formula": "γ*, β* = argmin F(γ, β)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_simulation_lindblad",
+      "name": "Lindblad 方程",
+      "formula": "dρ/dt = -i[H,ρ] + Σₖ (LₖρLₖ† - ½{Lₖ†Lₖ,ρ})",
+      "category": "quantum_computing"
     }
   ]
 }
