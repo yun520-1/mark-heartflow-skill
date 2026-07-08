@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "version": "8.11.0",
+    "version": "8.13.0",
     "last_updated": "2026-07-08",
-    "total_formulas": 1706,
+    "total_formulas": 1767,
     "categories": [
       "mathematics",
       "physics",
@@ -13837,6 +13837,494 @@
       "category": "cognitive_science",
       "subcategory": "psychometrics",
       "source": "wikipedia_cognitive_science"
+    },
+    {
+      "id": "sympy_spec_laguerre_generalized",
+      "name": "广义拉盖尔多项式",
+      "formula": "L_n^α(x) = Σ (-1)^k C(n+α, n-k) x^k/k!",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_spec_hermite_probabilist",
+      "name": "概率学家厄米多项式",
+      "formula": "He_n(x) = (-1)^n e^{x²/2} d^n/dx^n e^{-x²/2}",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_spec_gegenbauer",
+      "name": "盖根鲍尔多项式",
+      "formula": "C_n^{(λ)}(x) = Σ (-1)^k Γ(n-2k+λ) (2x)^{n-2k} / (k! Γ(λ+k))",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_spec_jacobi",
+      "name": "雅可比多项式",
+      "formula": "P_n^{(α,β)}(x) = (α+1)_n / n! * ₂F₁(-n, n+α+β+1; α+1; (1-x)/2)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_spec_legendre_assoc",
+      "name": "连带勒让德多项式",
+      "formula": "P_n^m(x) = (-1)^m (1-x²)^{m/2} d^m/dx^m P_n(x)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_spec_spherical_harmonic",
+      "name": "球谐函数",
+      "formula": "Y_l^m(θ,φ) = (-1)^m sqrt((2l+1)/(4π) * (l-m)!/(l+m)!) P_l^m(cosθ) e^{i m φ}",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_spec_bessel_i",
+      "name": "修正贝塞尔函数 I_α(x)",
+      "formula": "I_α(x) = i^{-α} J_α(i x)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_spec_bessel_k",
+      "name": "修正贝塞尔函数 K_α(x)",
+      "formula": "K_α(x) = π/2 * I_{-α}(x) - I_α(x) / sin(απ)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_spec_hankel1",
+      "name": "汉克尔函数第一类",
+      "formula": "H_α^{(1)}(x) = J_α(x) + i Y_α(x)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_spec_hankel2",
+      "name": "汉克尔函数第二类",
+      "formula": "H_α^{(2)}(x) = J_α(x) - i Y_α(x)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_int_gamma_upper",
+      "name": "上不完全伽马函数",
+      "formula": "Γ(a, x) = ∫_x^∞ t^{a-1} e^{-t} dt",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_int_gamma_lower",
+      "name": "下不完全伽马函数",
+      "formula": "γ(a, x) = ∫_0^x t^{a-1} e^{-t} dt",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_int_beta_incomplete",
+      "name": "不完全贝塔函数",
+      "formula": "B(x; a, b) = ∫_0^x t^{a-1} (1-t)^{b-1} dt",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_int_elliptic_f",
+      "name": "不完全椭圆积分第一类",
+      "formula": "F(φ, k) = ∫_0^φ dθ / √(1 - k² sin²θ)",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_int_elliptic_e",
+      "name": "不完全椭圆积分第二类",
+      "formula": "E(φ, k) = ∫_0^φ √(1 - k² sin²θ) dθ",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_int_elliptic_pi",
+      "name": "不完全椭圆积分第三类",
+      "formula": "Π(n; φ, k) = ∫_0^φ dθ / ((1 - n sin²θ) √(1 - k² sin²θ))",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_int_fresnel_s",
+      "name": "菲涅尔 S 积分",
+      "formula": "S(x) = ∫_0^x sin(π t²/2) dt",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_int_fresnel_c",
+      "name": "菲涅尔 C 积分",
+      "formula": "C(x) = ∫_0^x cos(π t²/2) dt",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_int_si",
+      "name": "正弦积分",
+      "formula": "Si(x) = ∫_0^x sin(t)/t dt",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_int_ci",
+      "name": "余弦积分",
+      "formula": "Ci(x) = -∫_x^∞ cos(t)/t dt",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_series_exp",
+      "name": "指数函数级数",
+      "formula": "e^x = Σ_{n=0}^∞ x^n/n!",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_series_log",
+      "name": "对数函数级数",
+      "formula": "log(1+x) = Σ_{n=1}^∞ (-1)^{n-1} x^n/n",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_series_sin",
+      "name": "正弦函数级数",
+      "formula": "sin(x) = Σ_{n=0}^∞ (-1)^n x^{2n+1}/(2n+1)!",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_series_cos",
+      "name": "余弦函数级数",
+      "formula": "cos(x) = Σ_{n=0}^∞ (-1)^n x^{2n}/(2n)!",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_series_tan",
+      "name": "正切函数级数",
+      "formula": "tan(x) = Σ_{n=1}^∞ B_{2n} (-4)^n (1-4^n) x^{2n-1}/(2n)!",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_series_binomal",
+      "name": "二项式级数",
+      "formula": "(1+x)^α = Σ_{n=0}^∞ C(α, n) x^n",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_series_geometric",
+      "name": "几何级数",
+      "formula": "Σ_{n=0}^∞ x^n = 1/(1-x) for |x|<1",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_series_harmonic",
+      "name": "调和级数",
+      "formula": "Σ_{n=1}^∞ 1/n = ∞ (发散)",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_series_alternating_harmonic",
+      "name": "交错调和级数",
+      "formula": "Σ_{n=1}^∞ (-1)^{n-1}/n = log(2)",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_series_riemann_zeta",
+      "name": "黎曼 zeta 函数级数",
+      "formula": "ζ(s) = Σ_{n=1}^∞ 1/n^s for Re(s)>1",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_ode_separable",
+      "name": "可分离变量方程",
+      "formula": "dy/dx = f(x) g(y)",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_ode_linear_first",
+      "name": "一阶线性 ODE",
+      "formula": "y' + P(x) y = Q(x)",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_ode_exact",
+      "name": "恰当微分方程",
+      "formula": "M(x,y) dx + N(x,y) dy = 0",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_ode_homogeneous",
+      "name": "齐次 ODE",
+      "formula": "dy/dx = F(y/x)",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_ode_bernoulli",
+      "name": "伯努利方程",
+      "formula": "y' + P(x) y = Q(x) y^n",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_ode_riccati",
+      "name": "里卡蒂方程",
+      "formula": "y' = P(x) + Q(x) y + R(x) y²",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_ode_euler_cauchy",
+      "name": "欧拉-柯西方程",
+      "formula": "x² y'' + a x y' + b y = 0",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_ode_hypergeometric",
+      "name": "超几何方程",
+      "formula": "x(1-x) y'' + [c - (a+b+1)x] y' + a b y = 0",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_pde_wave_1d",
+      "name": "一维波动方程",
+      "formula": "∂²u/∂t² = c² ∂²u/∂x²",
+      "category": "physics",
+      "subcategory": "wave_equation",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_pde_heat_1d",
+      "name": "一维热方程",
+      "formula": "∂u/∂t = α ∂²u/∂x²",
+      "category": "physics",
+      "subcategory": "heat_equation",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_pde_laplace_2d",
+      "name": "二维拉普拉斯方程",
+      "formula": "∂²u/∂x² + ∂²u/∂y² = 0",
+      "category": "mathematics",
+      "subcategory": "laplace_equation",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_pde_poisson_2d",
+      "name": "二维泊松方程",
+      "formula": "∂²u/∂x² + ∂²u/∂y² = f(x,y)",
+      "category": "mathematics",
+      "subcategory": "poisson_equation",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_pde_helmholtz_2d",
+      "name": "二维亥姆霍兹方程",
+      "formula": "∂²u/∂x² + ∂²u/∂y² + k² u = 0",
+      "category": "physics",
+      "subcategory": "helmholtz_equation",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_pde_schrodinger_1d",
+      "name": "一维薛定谔方程",
+      "formula": "i ℏ ∂ψ/∂t = -ℏ²/(2m) ∂²ψ/∂x² + V(x) ψ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_pde_dirac_1d",
+      "name": "一维狄拉克方程",
+      "formula": "i ℏ ∂ψ/∂t = -i ℏ c α ∂ψ/∂x + β m c² ψ",
+      "category": "physics",
+      "subcategory": "quantum_field_theory",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_pde_klein_gordon",
+      "name": "克莱因-戈尔登方程",
+      "formula": "∂²φ/∂t² - c² ∇²φ + (m c²/ℏ)² φ = 0",
+      "category": "physics",
+      "subcategory": "quantum_field_theory",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_pde_navier_stokes_2d",
+      "name": "二维纳维-斯托克斯",
+      "formula": "∂v/∂t + (v·∇) v = -∇p/ρ + ν ∇² v",
+      "category": "physics",
+      "subcategory": "fluid_dynamics",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_pde_maxwell",
+      "name": "麦克斯韦方程（势形式）",
+      "formula": "□A^μ = μ₀ J^μ",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_var_functional_derivative",
+      "name": "泛函导数",
+      "formula": "δF/δf(x) = ∂L/∂f - d/dx (∂L/∂f')",
+      "category": "mathematics",
+      "subcategory": "calculus_variations",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_var_hamilton_principle",
+      "name": "哈密顿原理",
+      "formula": "δ ∫ L(q, q', t) dt = 0",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_var_noethers_theorem",
+      "name": "诺特定理",
+      "formula": "δS/δφ = 0 ⇒ ∂_μ J^μ = 0",
+      "category": "physics",
+      "subcategory": "symmetries",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_var_beltrami_identity",
+      "name": "贝尔特拉米恒等式",
+      "formula": "∂L/∂f - d/dx (∂L/∂f') = 0",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_var_geodesic_equation",
+      "name": "测地线方程",
+      "formula": "d²x^μ/ds² + Γ^μ_{νρ} (dx^ν/ds) (dx^ρ/ds) = 0",
+      "category": "mathematics",
+      "subcategory": "riemannian_geometry",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_geo_riemann_tensor_components",
+      "name": "黎曼张量分量",
+      "formula": "R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}",
+      "category": "mathematics",
+      "subcategory": "riemannian_geometry",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_geo_ricci_tensor_components",
+      "name": "里奇张量分量",
+      "formula": "R_{μν} = R^λ_{μλν}",
+      "category": "mathematics",
+      "subcategory": "riemannian_geometry",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_geo_scalar_curvature_formula",
+      "name": "标量曲率公式",
+      "formula": "R = g^{μν} R_{μν}",
+      "category": "mathematics",
+      "subcategory": "riemannian_geometry",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_geo_einstein_tensor",
+      "name": "爱因斯坦张量",
+      "formula": "G_{μν} = R_{μν} - (1/2) g_{μν} R",
+      "category": "physics",
+      "subcategory": "general_relativity",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_geo_christoffel_symbols",
+      "name": "克里斯托费尔符号",
+      "formula": "Γ^μ_{νρ} = (1/2) g^{μσ} (∂_ν g_{ρσ} + ∂_ρ g_{νσ} - ∂_σ g_{νρ})",
+      "category": "mathematics",
+      "subcategory": "riemannian_geometry",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_geo_geodesic_equation_tensor",
+      "name": "测地线方程（张量形式）",
+      "formula": "d²x^μ/ds² + Γ^μ_{νρ} (dx^ν/ds) (dx^ρ/ds) = 0",
+      "category": "mathematics",
+      "subcategory": "riemannian_geometry",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_geo_stokes_theorem_general",
+      "name": "斯托克斯定理（一般形式）",
+      "formula": "∫_{∂M} ω = ∫_M dω",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "source": "sympy_advanced"
+    },
+    {
+      "id": "sympy_geo_divergence_theorem_general",
+      "name": "散度定理（一般形式）",
+      "formula": "∫_M div X dV = ∫_{∂M} ⟨X, n⟩ dS",
+      "category": "mathematics",
+      "subcategory": "vector_calculus",
+      "source": "sympy_advanced"
     }
   ]
 }
