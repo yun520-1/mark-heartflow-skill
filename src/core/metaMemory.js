@@ -8,7 +8,7 @@
  * Reads from MeaningfulMemory storage to analyze memory distribution,
  * access patterns, age distribution, and fragmentation.
  * 
- * Storage: ~/.hermes/skills/ai/mark-heartflow-skill/data/meta-memory.json
+ * Storage: ${HEARTFLOW_ROOT}/data/meta-memory.json
  */
 
 const fs = require('fs');

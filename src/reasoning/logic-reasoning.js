@@ -759,7 +759,8 @@ class LogicReasoning {
    * 5. 答案选择（选择题）
    * 从选择题文本中提取选项，结合推理类型+谬误+前提分析选择正确答案
    */
-  selectAnswer(input, context = {}) {
+  async selectAnswer(input, context) {
+    if (context === undefined) context = {};
     // 如果没有传入推理类型上下文，自动检测
     if (!context.reasoningType || Object.keys(context.reasoningType).length === 0) {
       context.reasoningType = this.detectType(input);
@@ -938,7 +939,7 @@ class LogicReasoning {
     // 当所有规则都打0分时，调LLM推理
     if (best.score < 0.1 && this._llmFallback) {
       try {
-        const llmResult = this._llmFallback(input, options, reasoningType);
+        const llmResult = await this._llmFallback(input, options, reasoningType);
         if (llmResult && llmResult.selectedAnswer) {
           const llmLetter = llmResult.selectedAnswer;
           // 找到LLM选的选项，给它加分
@@ -1512,10 +1513,10 @@ class LogicReasoning {
 
   /**
    * LLM兜底推理 — 当规则引擎打0分时，调LLM做选择题推理
-   * 使用 Node.js 原生 https 模块，避免 Python/curl 字符串拼接
+   * 使用 Node.js 原生 https 模块
    */
   _llmFallback(input, options, reasoningType) {
-    // 构建简洁的英文 prompt（腾讯云API支持英文更好）
+    // 构建简洁的英文 prompt
     const qPart = input.replace(/\n[A-D][.、．)）].+/g, '').trim();
     const optLines = input.match(/\n[A-D][.、．)）].+/g);
     const optText = optLines ? optLines.join('\n') : '';
@@ -1536,7 +1537,7 @@ class LogicReasoning {
         const path = require('path');
         const https = require('https');
 
-        // 从文件读取API key（动态路径，兼容不同安装位置）
+        // 从文件读取 API key
         let apiKey = '';
         const candidatePaths = [
           path.join(os.homedir(), '.hermes', 'skills', 'ai', 'mark-heartflow-skill', 'data', 'api-key.txt'),
@@ -1545,9 +1546,6 @@ class LogicReasoning {
         ];
         for (const p of candidatePaths) {
           try { apiKey = fs.readFileSync(p, 'utf-8').trim(); if (apiKey) break; } catch(e) {}
-        }
-        if (!apiKey) {
-          try { apiKey = process.env.HEARTFLOW_API_KEY || ''; } catch(e) {}
         }
         if (!apiKey) { resolve(null); return; }
 
@@ -1572,7 +1570,6 @@ class LogicReasoning {
           res.on('end', () => {
             try {
               const raw = Buffer.concat(chunks).toString('utf-8');
-              // 处理 SSE 流格式
               let content = '';
               for (const line of raw.split('\n')) {
                 if (line.startsWith('data: ')) {
@@ -1600,6 +1597,7 @@ class LogicReasoning {
       }
     });
   }
+
 
   getStats() {
     return {
