@@ -14,7 +14,7 @@
  * - emotional: PAD state similarity
  * 
  * Persistence: JSON file auto-saved on store(), loaded on init().
- * File: ~/.hermes/skills/ai/mark-heartflow-skill/data/meaningful-memory.json
+ * File: ${HEARTFLOW_ROOT}/data/meaningful-memory.json
  */
 
 const fs = require('fs');
