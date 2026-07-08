@@ -7,7 +7,7 @@
  *   3. 认知决策模型（前景理论 + 累积前景理论）
  */
 
-const DecisionEngine = require('./decision-engine.js');
+const { DecisionEngine } = require('./decision-engine.js');
 
 class DecisionOptimizer {
   constructor(options = {}) {

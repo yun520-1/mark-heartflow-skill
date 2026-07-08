@@ -9,11 +9,11 @@
  *   5. 记忆巩固阈值
  */
 
-const ForgettingEngine = require('./forgetting.js');
+const { ForgettingEngine } = require('./forgetting.js');
 
 class MemoryOptimizer {
   constructor(options = {}) {
-    this.forgettingEngine = new ForgettingEngine(options.forgetting);
+    this.forgettingEngine = ForgettingEngine; // 静态对象，不是构造函数
     this.workingMemoryCapacity = options.workingMemoryCapacity || 7; // 7±2 chunks
     this.consolidationThreshold = options.consolidationThreshold || 0.7; // 巩固阈值
     this.retrievalThreshold = options.retrievalThreshold || 0.5; // 检索阈值
