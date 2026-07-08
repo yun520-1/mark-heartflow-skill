@@ -26,3 +26,4 @@ const { TEMPLATES } = require('./prompt-factory');
 // ============================================================
 
 module.exports = { CodeGenerator, TEMPLATES };
+// TODO: P2: generateFile() 接受任意路径，无路径校验

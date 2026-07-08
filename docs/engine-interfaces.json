@@ -1,0 +1,307 @@
+{
+  "note": "心虫引擎接口标准化文档（草案）",
+  "date": "2026-07-08",
+  "engines": [
+    {
+      "file": "pattern-detector.js",
+      "class": "PatternDetector",
+      "methods": [
+        "return",
+        "return",
+        "if",
+        "_initConfig",
+        "configure",
+        "if",
+        "_validateRecords",
+        "if",
+        "if",
+        "if"
+      ]
+    },
+    {
+      "file": "report/report-generator.js",
+      "class": "ReportGenerator",
+      "methods": [
+        "generate",
+        "if",
+        "if",
+        "_emotionalJudgment",
+        "if",
+        "if",
+        "if",
+        "if",
+        "if",
+        "if"
+      ]
+    },
+    {
+      "file": "consciousness/debate-engine.js",
+      "class": "DebateEngine",
+      "methods": [
+        "propose",
+        "if",
+        "if",
+        "rebut",
+        "if",
+        "if",
+        "defend",
+        "if",
+        "if",
+        "converge"
+      ]
+    },
+    {
+      "file": "consciousness/tom-engine.js",
+      "class": "ToMEngine",
+      "methods": [
+        "modelAgent",
+        "if",
+        "while",
+        "simulateReaction",
+        "if",
+        "inferIntentions",
+        "for",
+        "for",
+        "predictBehavior",
+        "if"
+      ]
+    },
+    {
+      "file": "consciousness/multi-agent-dialogue.js",
+      "class": "MultiAgentDialogue",
+      "methods": [
+        "registerAgent",
+        "if",
+        "while",
+        "for",
+        "if",
+        "if",
+        "_selectParticipants",
+        "switch",
+        "_checkConvergence",
+        "if"
+      ]
+    },
+    {
+      "file": "consciousness/global-workspace.js",
+      "class": "GlobalWorkspace",
+      "methods": [
+        "super",
+        "_validateAgentMethods",
+        "if",
+        "if",
+        "registerAgent",
+        "if",
+        "if",
+        "if",
+        "for",
+        "_timeoutPromise"
+      ]
+    },
+    {
+      "file": "consciousness/mind-wanderer.js",
+      "class": "MindWanderer",
+      "methods": [
+        "_computeTimeModulation",
+        "if",
+        "if",
+        "if",
+        "loadWildIdeas",
+        "if",
+        "if",
+        "if",
+        "saveWildIdeas",
+        "if"
+      ]
+    },
+    {
+      "file": "consciousness/phenomenology-engine.js",
+      "class": "PhenomenologyEngine",
+      "methods": [
+        "analyzeIntentionality",
+        "_classifyNoema",
+        "if",
+        "if",
+        "if",
+        "if",
+        "if",
+        "if",
+        "_classifyNoesis",
+        "if"
+      ]
+    },
+    {
+      "file": "code/generator-validator.js",
+      "class": "CodeValidator",
+      "methods": [
+        "extractCode",
+        "if",
+        "if"
+      ]
+    },
+    {
+      "file": "code/codevbench-loader.js",
+      "class": "CodevBenchLoader",
+      "methods": [
+        "if",
+        "parse",
+        "if",
+        "if",
+        "if",
+        "if",
+        "_keywordScore",
+        "if",
+        "if"
+      ]
+    },
+    {
+      "file": "code/code-refactor.js",
+      "class": "CodeRefactor",
+      "methods": [
+        "if",
+        "_loadHistory",
+        "if",
+        "_saveHistory",
+        "if",
+        "_record",
+        "detect",
+        "if",
+        "if",
+        "for"
+      ]
+    },
+    {
+      "file": "code/generator-core.js",
+      "class": "CodeGenerator",
+      "methods": [
+        "if",
+        "if",
+        "if",
+        "if",
+        "detectIntent",
+        "for",
+        "for",
+        "if",
+        "for",
+        "if"
+      ]
+    },
+    {
+      "file": "code/code-executor.js",
+      "class": "CodeExecutor",
+      "methods": [
+        "if",
+        "if",
+        "for",
+        "if",
+        "while",
+        "if",
+        "if",
+        "if",
+        "if",
+        "if"
+      ]
+    },
+    {
+      "file": "code/writer-core.js",
+      "class": "CodeWriter",
+      "methods": [
+        "if",
+        "if",
+        "if",
+        "if",
+        "if",
+        "if",
+        "if",
+        "if",
+        "if",
+        "if"
+      ]
+    },
+    {
+      "file": "code/skill-generator.js",
+      "class": "SkillGenerator",
+      "methods": [
+        "loadReflectHistory",
+        "if",
+        "_scorePattern",
+        "_deduplicatePatterns",
+        "if",
+        "for",
+        "if",
+        "for",
+        "if",
+        "if"
+      ]
+    },
+    {
+      "file": "code/code-planner.js",
+      "class": "CodePlanner",
+      "methods": [
+        "if",
+        "if",
+        "for",
+        "if",
+        "if",
+        "switch",
+        "plan",
+        "if",
+        "if",
+        "decompose"
+      ]
+    },
+    {
+      "file": "code/prompt-factory.js",
+      "class": "ListNode",
+      "methods": [
+        "if",
+        "quickSort",
+        "quickSort",
+        "for",
+        "if",
+        "while",
+        "if",
+        "append",
+        "if",
+        "while"
+      ]
+    },
+    {
+      "file": "code/code-self-debug.js",
+      "class": "CodeSelfDebug",
+      "methods": [
+        "for",
+        "if",
+        "if",
+        "analyze",
+        "suggestFix",
+        "refine",
+        "debug",
+        "_extractSnippet",
+        "if",
+        "if"
+      ]
+    },
+    {
+      "file": "code/code-writer.js",
+      "class": "CodeWriterWithDefaults",
+      "methods": [
+        "for",
+        "super"
+      ]
+    },
+    {
+      "file": "code/language-adapters/python-adapter.js",
+      "class": "DataCache",
+      "methods": [
+        "print",
+        "print",
+        "print",
+        "for",
+        "print",
+        "print",
+        "print"
+      ]
+    }
+  ]
+}

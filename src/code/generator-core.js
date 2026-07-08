@@ -128,6 +128,20 @@ class CodeGenerator {
    * @returns {Promise<Object>} 生成结果（同 generate()，附加 filePath 字段）
    */
   async generateFile(task, filePath, options = {}) {
+    // [SECURITY FIX] 路径校验：只允许写入 generated/ 目录
+    const path = require('path');
+    const normalizedPath = path.resolve(filePath);
+    const allowedDir = path.resolve(process.cwd(), 'generated');
+    if (!normalizedPath.startswith(allowedDir)) {
+      return {
+        success: false,
+        error: `路径不允许：只能写入 generated/ 目录`,
+        code: null,
+        language: null,
+        filePath: null,
+      };
+    }
+
     // 检测语言
     const ext = require('path').extname(filePath).toLowerCase();
     const language = this._detectLanguageFromExtension(ext);
