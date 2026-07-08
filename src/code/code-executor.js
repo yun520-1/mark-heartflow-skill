@@ -211,6 +211,13 @@ function validateShellCommand(code) {
     if (!ALLOWED_SHELL_COMMANDS.includes(cmdName)) {
       return { allowed: false, blockedCommand: cmdName };
     }
+
+    // [SECURITY-FIX] H-1: 参数级危险字符检测
+    // 白名单检查通过后，仍须检查整个子命令是否含命令替换字符
+    // $(...) 和反引号在 bash 中任意位置都会被执行
+    if (/\$\(/.test(subCmd) || /`/.test(subCmd)) {
+      return { allowed: false, blockedCommand: cmdName + ' (含命令替换)' };
+    }
   }
 
   return { allowed: true, blockedCommand: null };
@@ -648,23 +655,23 @@ class CodeExecutor {
       const contextKeys = Object.keys(context);
       const contextValues = contextKeys.map(k => context[k]);
 
-      // ⚠️ SkillSpector — suspicious.dynamic_code_execution
-      // 动态函数构造用于沙箱执行用户提供的 JavaScript 代码，是代码执行引擎的核心功能。
-      // 安全措施：
-      //   1. 运行时守卫：HEARTFLOW_CODE_EXECUTOR_ENABLED 必须为 true（第74行）
-      //   2. 超时保护：_executeWithTimeout 默认 30s
-      //   3. 输出截断：maxOutput 限制输出大小
-      //   4. 非沙箱模式：此沙箱为局部作用域覆盖，不是系统级隔离
-      // 修复方案：已在第10-12行加安全声明，使用方需确保调用者可信
-      // 使用 Reflect.construct 避免静态分析误报
-      const _F = Function.prototype.bind.bind(Function);
-      const fn = Reflect.construct(
-        _F('...keys', '"use strict";\n' + 'return ' + code),
-        contextKeys
-      );
+      // [SECURITY-FIX] C-1: 使用 vm.runInNewContext 替代 Reflect.construct
+      // 原实现使用 Function.prototype.bind.bind(Function) + Reflect.construct，
+      // 被静态分析工具标记为危险模式（ obfuscated dynamic code execution）。
+      // 修复：使用 Node.js 内置 vm 模块提供适当的上下文隔离。
+      // 注意：vm 上下文隔离并非绝对安全，但远优于 Reflect.construct 方案。
+      const vm = require('vm');
+      const sandboxContext = { console, setTimeout, clearTimeout };
+      // 注入用户提供的上下文
+      for (const k of contextKeys) {
+        sandboxContext[k] = context[k];
+      }
+      const script = new vm.Script('(async () => { ' + code + ' })()', { filename: 'heartflow-exec' });
+      const vmResult = script.runInNewContext(sandboxContext, { timeout });
+      // vmResult 可能是 Promise（如果 code 含顶层 await 或 async）
+      const result = vmResult instanceof Promise ? await vmResult : vmResult;
 
       // 超时执行
-      const result = this._executeWithTimeout(fn, timeout, contextValues);
 
       const truncated = capturedOutput.length > maxOutput;
       const output = truncateOutput(capturedOutput, maxOutput);
@@ -1333,7 +1340,7 @@ ${code}
     // 2. JavaScript 沙箱自检
     let sandboxOk = false;
     try {
-      // 已禁用 console.log: const sbResult = this.sandbox('console.log("sandbox_ok");', { timeout: 5000, maxOutput: 1024 });
+      const sbResult = await this.sandbox('console.log("sandbox_ok");', { timeout: 5000, maxOutput: 1024 });
       sandboxOk = sbResult.status === ExecStatus.SUCCESS;
       diagnostics.push({
         executor: 'sandbox',

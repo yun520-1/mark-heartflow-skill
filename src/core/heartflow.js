@@ -3117,8 +3117,11 @@ class HeartFlow {
       const algorithm = 'aes-256-gcm';
       const keySource = process.env.HEARTFLOW_DIALOGUE_KEY;
       if (!keySource) throw new Error('HEARTFLOW_DIALOGUE_KEY env var required for dialogue encryption');
-      const key = crypto.scryptSync(keySource, 'salt', 32);
+      // [SECURITY-FIX] H-4: 随机 salt 替代硬编码 'salt'
+      const salt = crypto.randomBytes(16).toString('hex');
+      const key = crypto.scryptSync(keySource, salt, 32);
       const iv = crypto.randomBytes(16);
+      iv = crypto.randomBytes(16);
       const cipher = crypto.createCipheriv(algorithm, key, iv);
       let encrypted = cipher.update(content, 'utf8', 'hex');
       encrypted += cipher.final('hex');
@@ -3129,6 +3132,7 @@ class HeartFlow {
         id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         role,
         content: encrypted,
+        salt: salt,
         iv: iv.toString('hex'),
         authTag: authTag.toString('hex'),
         ts: new Date().toISOString(),
@@ -3609,8 +3613,11 @@ class HeartFlow {
       const algorithm = 'aes-256-gcm';
       const keySource = process.env.HEARTFLOW_DIALOGUE_KEY;
       if (!keySource) throw new Error('HEARTFLOW_DIALOGUE_KEY env var required for dialogue encryption');
-      const key = crypto.scryptSync(keySource, 'salt', 32);
+      // [SECURITY-FIX] H-4: 随机 salt 替代硬编码 'salt'
+      const salt = crypto.randomBytes(16).toString('hex');
+      const key = crypto.scryptSync(keySource, salt, 32);
       const iv = crypto.randomBytes(16);
+      iv = crypto.randomBytes(16);
       const cipher = crypto.createCipheriv(algorithm, key, iv);
       const entry = {
         id: `dream-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
