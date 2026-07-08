@@ -1592,4 +1592,4 @@ print(content.strip())
   }
 }
 
-module.exports = { LogicReasoning };
+module.exports = { LogicReasoning };// TODO: P0 安全漏洞 — API Key 注入 + LLM fallback 失效，以后用 axios 重写

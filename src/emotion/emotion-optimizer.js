@@ -347,6 +347,18 @@ class EmotionOptimizer {
 
     return advice;
   }
+
+  /**
+   * 生成共情回应（调用 EmpathyResponder）
+   */
+  generateEmpatheticResponse(userMessage) {
+    if (!this._empathyResponder) {
+      const { EmpathyResponder } = require('./empathy-responder.js');
+      this._empathyResponder = new EmpathyResponder();
+    }
+    return this._empathyResponder.generate(userMessage);
+  }
+
 }
 
 module.exports = { EmotionOptimizer };

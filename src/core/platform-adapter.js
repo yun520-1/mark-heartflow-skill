@@ -202,10 +202,10 @@ function createAdapter(platform = 'hermes', config = {}) {
     case 'hermes':
       return new HermesAdapter(config);
     case 'openclaw':
-      // TODO: OpenClaw 适配器
+      console.warn('[PlatformAdapter] OpenClaw 适配器尚未实现，使用通用适配器');
       return new PlatformAdapter({ ...config, platform: 'openclaw' });
     case 'claude-code':
-      // TODO: Claude Code 适配器
+      console.warn('[PlatformAdapter] Claude Code 适配器尚未实现，使用通用适配器');
       return new PlatformAdapter({ ...config, platform: 'claude-code' });
     default:
       throw new Error(`Unknown platform: ${platform}. Supported: hermes, openclaw, claude-code`);
@@ -237,3 +237,4 @@ module.exports = {
   createAdapter,
   getNetworkStatus,
 };
+// TODO: P2: localMemory/remoteMemory 无上限，内存泄漏
