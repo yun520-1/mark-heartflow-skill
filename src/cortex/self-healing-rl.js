@@ -561,9 +561,10 @@ class HealingMemoryRL {
    */
   getReflections(errorPattern) {
     if (!this._reflections) return [];
-    const ck = this._contextKey(errorPattern);
+    // [MEDIUM FIX] 避免误匹配：前 40 字符相同的不同错误会被误匹配
+    // 改用 includes() 模糊匹配（允许子串匹配，但不止比前 40 字符）
     return this._reflections.filter(r =>
-      r.errorPattern.startsWith(errorPattern.slice(0, 40))
+      r.errorPattern.includes(errorPattern) || errorPattern.includes(r.errorPattern)
     );
   }
 
