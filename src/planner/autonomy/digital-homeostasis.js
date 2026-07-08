@@ -165,14 +165,12 @@ class DigitalHomeostasis {
     this.tickInterval = setInterval(() => {
       this.tick();
     }, intervalMs);
-    // 已禁用 console.error: console.error(`[DigitalHomeostasis] Tick started (interval: ${intervalMs}ms)`);
   }
 
   stopTick() {
     if (this.tickInterval) {
       clearInterval(this.tickInterval);
       this.tickInterval = null;
-      // 已禁用 console.error: console.error('[DigitalHomeostasis] Tick stopped');
     }
   }
 

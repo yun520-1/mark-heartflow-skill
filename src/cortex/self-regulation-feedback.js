@@ -264,7 +264,6 @@ class SelfRegulationFeedback {
         this.feedbackHistory = data.history || [];
       }
     } catch (e) {
-      // 已禁用 console.error: console.error('Failed to load self-regulation feedback:', e);
     }
   }
 
@@ -276,7 +275,6 @@ class SelfRegulationFeedback {
         savedAt: new Date().toISOString()
       }, null, 2));
     } catch (e) {
-      // 已禁用 console.error: console.error('Failed to save self-regulation feedback:', e);
     }
   }
 }

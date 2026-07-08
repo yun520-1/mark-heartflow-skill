@@ -100,7 +100,6 @@ class ReflectionLoop {
       state._anomalyState = this._anomalyState;
       fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
     } catch (e) {
-      // 已禁用 console.error: console.error('[ReflectionLoop] Save state failed:', e.message);
     }
   }
 

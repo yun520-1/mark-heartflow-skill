@@ -352,7 +352,6 @@ class GoedelEngine {
       fs.rmSync(sandboxPath, { recursive: true, force: true, maxRetries: 2 });
       this.log(`Sandbox cleaned up: ${sandboxId}`);
     } catch (e) {
-      // 已禁用 console.error: console.error(`[Gödel] Cleanup failed: ${e.message}`);
     }
   }
 
@@ -370,7 +369,6 @@ class GoedelEngine {
 
     // 安全检查：需要确认环境变量 HEARTFLOW_ENABLE_SELF_MODIFICATION=1 才能自动修改
     if (process.env.HEARTFLOW_ENABLE_SELF_MODIFICATION !== '1') {
-      // 已禁用 console.warn: console.warn('[Gödel] Self modification disabled by policy');
       return { success: false, reason: 'self_modification_disabled' };
     }
 

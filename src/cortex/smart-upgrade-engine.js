@@ -621,7 +621,6 @@ module.exports = { ${className} };
    */
   log(msg) {
     const ts = new Date().toISOString();
-    // 已禁用 console.error: console.error(`[${ts}] ${msg}`);
     
     try {
       let logs = [];
@@ -658,11 +657,9 @@ if (require.main === module) {
   const engine = new SmartUpgradeEngine(__dirname);
   engine.runUpgrade()
     .then(result => {
-      // 已禁用 console.log: console.log('升级结果:', result);
       return;
     })
     .catch(err => {
-      // 已禁用 console.error: console.error('升级失败:', err);
       return;
     });
 }

@@ -533,9 +533,7 @@ class WordByWordGenerator {
       };
       
       fs.writeFileSync(this.stateFile, JSON.stringify(traceData, null, 2));
-      // 已禁用 console.warn: console.warn('[WordByWordGenerator] Trace saved to disk');
     } catch (e) {
-      // 已禁用 console.error: console.error('[WordByWordGenerator] Save failed:', e.message);
     }
   }
 

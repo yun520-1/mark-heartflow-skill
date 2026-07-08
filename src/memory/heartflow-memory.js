@@ -91,7 +91,6 @@ class HeartFlowMemory {
       fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
       fs.renameSync(tmp, filePath);
     } catch (e) {
-      // 已禁用 console.warn: console.warn(`[HeartFlowMemory] 保存失败 (${filePath}): ${e.message}`);
     }
   }
 
