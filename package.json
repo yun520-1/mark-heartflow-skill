@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "5.8.5",
+  "version": "5.8.6",
   "description": "HeartFlow — AI judgment engine with multi-path evaluation, self-correcting RL, 3-layer memory, and U/D/A/H field tracking. Zero external dependencies.",
   "main": "src/core/heartflow.js",
   "bin": {
