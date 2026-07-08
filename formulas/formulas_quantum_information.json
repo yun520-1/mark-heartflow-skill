@@ -1,0 +1,62 @@
+[
+  {
+    "id": "quantum_info_von_neumann_entropy",
+    "name": "Von Neumann 熵",
+    "formula": "S(ρ) = -Tr(ρ log₂ ρ)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_info_relative_entropy",
+    "name": "量子相对熵",
+    "formula": "D(ρ||σ) = Tr(ρ log₂ ρ) - Tr(ρ log₂ σ)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_info_mutual_information",
+    "name": "量子互信息",
+    "formula": "I(A:B) = S(ρ_A) + S(ρ_B) - S(ρ_AB)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_info_conditional_entropy",
+    "name": "量子条件熵",
+    "formula": "S(A|B) = S(ρ_AB) - S(ρ_B)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_info_discord",
+    "name": "量子判别",
+    "formula": "D(A|B) = I(A:B) - J(A|B)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_info_discord_classical",
+    "name": "经典判别",
+    "formula": "J(A|B) = S(ρ_B) - min_{Π_B} S(ρ|{Π_B})",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_info_qkd_error_rate",
+    "name": "QKD 错误率",
+    "formula": "E = 1 - P(success)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_info_qkd_key_rate",
+    "name": "QKD 密钥率",
+    "formula": "R = 1 - 2h(E)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_info_dense_coding_capacity",
+    "name": "密集编码容量",
+    "formula": "C = 2S(ρ_A)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_info_teleportation_fidelity",
+    "name": "隐形传态保真度",
+    "formula": "F = |⟨ψ|ρ_out|ψ⟩|²",
+    "category": "quantum_computing"
+  }
+]
