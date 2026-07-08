@@ -15807,6 +15807,54 @@
       "name": "拓扑绝缘体",
       "formula": "H = v_F (σ_x k_x + σ_y k_y)",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_opt_extra_schrodinger_cat",
+      "name": "薛定谔猫态",
+      "formula": "|cat> = N(|α> + |-α>)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_opt_extra_coherent_state",
+      "name": "相干态",
+      "formula": "|α> = e^{-|α|²/2} Σ_n (αⁿ/√n!) |n>",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_opt_extra_squeezed_state",
+      "name": "压缩态",
+      "formula": "|ξ> = exp(ξ* a²/2 - ξ a†²/2) |0>",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_opt_extra_photon_number",
+      "name": "光子数算符",
+      "formula": "n = a† a",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_opt_extra_mandel_q",
+      "name": "曼德尔 Q 参数",
+      "formula": "Q = (⟨n²⟩ - ⟨n⟩²)/⟨n⟩ - ⟨n⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_opt_extra_hanbury_brown_twiss",
+      "name": "HBT 干涉",
+      "formula": "g⁽²(τ) = ⟨:n(t)n(t+τ):⟩/⟨n⟩²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_opt_extra_jaynes_cummings",
+      "name": "Jaynes-Cummings 模型",
+      "formula": "H_JC = ℏω a†a + ℏω₀ σ_z/2 + g(aσ₊ + a†σ₋)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_opt_extra_quantum_zeno",
+      "name": "量子芝诺效应",
+      "formula": "P_no_decay = (cos(g t/N))^{2N} → exp(-g² t²/N)",
+      "category": "quantum_computing"
     }
   ]
 }
