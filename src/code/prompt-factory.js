@@ -1390,7 +1390,7 @@ if __name__ == "__main__":
       'file-watcher': {
         name: '文件监控脚本',
         description: '监控文件变化并执行命令',
-        code: '#!/bin/bash\nFILE="$1"; CMD="$2"; LAST=""\nwhile true; do CUR=$(md5sum "$FILE" 2>/dev/null | awk "{print $1}"); [ "$CUR" != "$LAST" ] && { echo "[WATCH] $FILE changed"; eval "$CMD"; LAST="$CUR"; }; sleep 2; done',
+        code: '#!/bin/bash\nFILE="$1"; CMD="$2"; LAST=""\nwhile true; do CUR=$(md5sum "$FILE" 2>/dev/null | awk "{print $1}"); [ "$CUR" != "$LAST" ] && { echo "[WATCH] $FILE changed"; bash -c "$CMD"; LAST="$CUR"; }; sleep 2; done',
         confidence: 0.8
       }
     },

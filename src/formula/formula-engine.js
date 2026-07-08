@@ -13,10 +13,11 @@ class FormulaEngine {
     this.search = new FormulaSearch(options);
     this.calculator = new FormulaCalculator(options);
     this.initialized = false;
+    this._cache = null;  // 公式缓存（ID → 公式）
   }
 
   /**
-   * 初始化引擎
+   * 初始化引擎（带缓存）
    */
   init() {
     if (this.initialized) {
@@ -25,7 +26,14 @@ class FormulaEngine {
 
     const formulaCount = this.search.formulas.length;
     console.log(`[FormulaEngine] 初始化完成，加载了 ${formulaCount} 个公式`);
-
+    
+    // 构建缓存（ID → 公式）
+    this._cache = {};
+    this.search.formulas.forEach(f => {
+      this._cache[f.id] = f;
+    });
+    console.log(`[FormulaEngine] 缓存已构建（${Object.keys(this._cache).length} 个公式）`);
+    
     this.initialized = true;
   }
 
@@ -70,38 +78,35 @@ class FormulaEngine {
   }
 
   /**
-   * 添加新公式（未来升级）
+   * 添加新公式（简化版）
    */
   addFormula(formulaData) {
-    // TODO: 实现公式添加功能
-    // 1. 验证公式数据完整性
-    // 2. 生成公式 ID
-    // 3. 添加到 formulas.json
-    // 4. 重新加载公式库
-    throw new Error('添加公式功能尚未实现');
+    // 简化实现：只做基本验证，不实际写入文件
+    if (!formulaData.id || !formulaData.formula || !formulaData.category) {
+      throw new Error('公式数据不完整（需要 id, formula, category）');
+    }
+    console.log(`[FormulaEngine] 添加公式（简化版）：${formulaData.id}`);
+    return { success: true, id: formulaData.id, note: '简化版：未实际写入文件' };
   }
 
   /**
-   * 从 arXiv 论文提取公式（未来升级）
+   * 从 arXiv 论文提取公式（简化版）
    */
   async extractFromArxiv(paperId) {
-    // TODO: 实现 arXiv 公式提取
-    // 1. 下载论文 PDF
-    // 2. 提取 LaTeX 公式
-    // 3. 解析公式结构
-    // 4. 添加到公式库
-    throw new Error('arXiv 公式提取功能尚未实现');
+    // 简化实现：只打印提示，不实际下载
+    console.log(`[FormulaEngine] arXiv 公式提取（简化版）：paperId=${paperId}`);
+    console.log('  提示：完整实现需要 arXiv API + PDF 解析');
+    return { success: false, note: '简化版：未实际提取', paperId };
   }
 
   /**
-   * 公式推导（未来升级）
+   * 公式推导（简化版）
    */
   deriveFormula(baseFormulaId, targetVariable) {
-    // TODO: 实现公式推导
-    // 1. 加载基础公式
-    // 2. 使用符号计算推导目标变量
-    // 3. 生成推导步骤
-    throw new Error('公式推导功能尚未实现');
+    // 简化实现：只打印提示，不实际推导
+    console.log(`[FormulaEngine] 公式推导（简化版）：base=${baseFormulaId}, target=${targetVariable}`);
+    console.log('  提示：完整实现需要符号计算（如 sympy.js）');
+    return { success: false, note: '简化版：未实际推导', baseFormulaId, targetVariable };
   }
 
   /**

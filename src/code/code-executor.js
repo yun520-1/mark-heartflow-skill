@@ -165,8 +165,8 @@ const ALLOWED_SHELL_COMMANDS = [
   'tee',        // 输出分流
   'diff',       // 文件比较
   'find',       // 文件查找
-  'curl',       // HTTP 请求（管道执行由黑名单拦截）
-  'wget',       // 下载（管道执行由黑名单拦截）
+  // 'curl',       // [SECURITY FIX] 已移除：防止数据外泄
+  // 'wget',       // [SECURITY FIX] 已移除：防止数据外泄
 ];
 
 /**
@@ -1293,13 +1293,13 @@ ${code}
    *
    * @returns {Object} { status, executors, diagnostics }
    */
-  healthCheck() {
+  async healthCheck() {
     const diagnostics = [];
 
     // 1. JavaScript 自检
     let jsOk = false;
     try {
-      const jsResult = this.execute('1 + 1', { timeout: 5000, maxOutput: 1024 });
+      const jsResult = await this.execute('1 + 1', { timeout: 5000, maxOutput: 1024 });
       jsOk = jsResult.status === ExecStatus.SUCCESS;
       diagnostics.push({
         executor: 'javascript',
@@ -1345,7 +1345,7 @@ ${code}
     let shellOk = false;
     if (shellAvailable) {
       try {
-        const shResult = this.execute('echo "shell_ok"', { language: 'shell', timeout: 5000, maxOutput: 1024 });
+        const shResult = await this.execute('echo "shell_ok"', { language: 'shell', timeout: 5000, maxOutput: 1024 });
         shellOk = shResult.status === ExecStatus.SUCCESS;
         diagnostics.push({
           executor: 'shell',
@@ -1377,7 +1377,7 @@ ${code}
     const pythonAvailable = this._checkPythonAvailable();
     if (pythonAvailable) {
       try {
-        const pyResult = this.execute('print("python_ok")', { language: 'python', timeout: 10000, maxOutput: 1024 });
+        const pyResult = await this.execute('print("python_ok")', { language: 'python', timeout: 10000, maxOutput: 1024 });
         diagnostics.push({
           executor: 'python',
           available: pyResult.status === ExecStatus.SUCCESS,
