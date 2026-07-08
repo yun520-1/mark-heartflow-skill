@@ -1,0 +1,242 @@
+[
+  [
+    "q_quantum_gate_0",
+    "量子门 X",
+    "quantum_gate_X = f(quantum_gate_X_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gate_1",
+    "量子门 Y",
+    "quantum_gate_Y = f(quantum_gate_Y_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gate_2",
+    "量子门 Z",
+    "quantum_gate_Z = f(quantum_gate_Z_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gate_3",
+    "量子门 H",
+    "quantum_gate_H = f(quantum_gate_H_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gate_4",
+    "量子门 CNOT",
+    "quantum_gate_CNOT = f(quantum_gate_CNOT_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gate_5",
+    "量子门 Toffoli",
+    "quantum_gate_Toffoli = f(quantum_gate_Toffoli_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gate_6",
+    "量子门 T",
+    "quantum_gate_T = f(quantum_gate_T_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gate_7",
+    "量子门 S",
+    "quantum_gate_S = f(quantum_gate_S_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_state_8",
+    "量子态 |0⟩",
+    "quantum_state_|0⟩ = f(quantum_state_|0⟩_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_state_9",
+    "量子态 |1⟩",
+    "quantum_state_|1⟩ = f(quantum_state_|1⟩_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_state_10",
+    "量子态 |⟩",
+    "quantum_state_|⟩ = f(quantum_state_|⟩_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_state_11",
+    "量子态 |⟩",
+    "quantum_state_|⟩ = f(quantum_state_|⟩_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_state_12",
+    "量子态 GHZ",
+    "quantum_state_GHZ = f(quantum_state_GHZ_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_state_13",
+    "量子态 W",
+    "quantum_state_W = f(quantum_state_W_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_state_14",
+    "量子态 cluster",
+    "quantum_state_cluster = f(quantum_state_cluster_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_state_15",
+    "量子态 graph",
+    "quantum_state_graph = f(quantum_state_graph_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_algorithm_16",
+    "量子算法 Shor",
+    "quantum_algorithm_Shor = f(quantum_algorithm_Shor_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_algorithm_17",
+    "量子算法 Grover",
+    "quantum_algorithm_Grover = f(quantum_algorithm_Grover_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_algorithm_18",
+    "量子算法 VQE",
+    "quantum_algorithm_VQE = f(quantum_algorithm_VQE_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_algorithm_19",
+    "量子算法 QAOA",
+    "quantum_algorithm_QAOA = f(quantum_algorithm_QAOA_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_algorithm_20",
+    "量子算法 HHL",
+    "quantum_algorithm_HHL = f(quantum_algorithm_HHL_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_algorithm_21",
+    "量子算法 QFT",
+    "quantum_algorithm_QFT = f(quantum_algorithm_QFT_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_algorithm_22",
+    "量子算法 amplitude_amplification",
+    "quantum_algorithm_amplitude_amplification = f(quantum_algorithm_amplitude_amplification_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_algorithm_23",
+    "量子算法 quantum_walk",
+    "quantum_algorithm_quantum_walk = f(quantum_algorithm_quantum_walk_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_entanglement_24",
+    "量子纠缠 Bell",
+    "quantum_entanglement_Bell = f(quantum_entanglement_Bell_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_entanglement_25",
+    "量子纠缠 GHZ",
+    "quantum_entanglement_GHZ = f(quantum_entanglement_GHZ_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_entanglement_26",
+    "量子纠缠 W",
+    "quantum_entanglement_W = f(quantum_entanglement_W_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_entanglement_27",
+    "量子纠缠 cluster",
+    "quantum_entanglement_cluster = f(quantum_entanglement_cluster_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_entanglement_28",
+    "量子纠缠 graph",
+    "quantum_entanglement_graph = f(quantum_entanglement_graph_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_entanglement_29",
+    "量子纠缠 topological",
+    "quantum_entanglement_topological = f(quantum_entanglement_topological_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_entanglement_30",
+    "量子纠缠 twist",
+    "quantum_entanglement_twist = f(quantum_entanglement_twist_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_entanglement_31",
+    "量子纠缠 hyper",
+    "quantum_entanglement_hyper = f(quantum_entanglement_hyper_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_measurement_32",
+    "量子测量 POVM",
+    "quantum_measurement_POVM = f(quantum_measurement_POVM_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_measurement_33",
+    "量子测量 weak",
+    "quantum_measurement_weak = f(quantum_measurement_weak_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_measurement_34",
+    "量子测量 strong",
+    "quantum_measurement_strong = f(quantum_measurement_strong_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_measurement_35",
+    "量子测量 continuous",
+    "quantum_measurement_continuous = f(quantum_measurement_continuous_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_measurement_36",
+    "量子测量 adaptive",
+    "quantum_measurement_adaptive = f(quantum_measurement_adaptive_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_measurement_37",
+    "量子测量 tomography",
+    "quantum_measurement_tomography = f(quantum_measurement_tomography_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_measurement_38",
+    "量子测量 spectroscopy",
+    "quantum_measurement_spectroscopy = f(quantum_measurement_spectroscopy_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_measurement_39",
+    "量子测量 interferometry",
+    "quantum_measurement_interferometry = f(quantum_measurement_interferometry_params)",
+    "quantum_computing"
+  ]
+]

@@ -16161,6 +16161,726 @@
       "name": "量子成像",
       "formula": "I(r) = Tr(ρ E^{(-)}(r) E^{(+)}(r))",
       "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gate_0",
+      "name": "量子门 X",
+      "formula": "quantum_gate_X = f(quantum_gate_X_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gate_1",
+      "name": "量子门 Y",
+      "formula": "quantum_gate_Y = f(quantum_gate_Y_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gate_2",
+      "name": "量子门 Z",
+      "formula": "quantum_gate_Z = f(quantum_gate_Z_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gate_3",
+      "name": "量子门 H",
+      "formula": "quantum_gate_H = f(quantum_gate_H_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gate_4",
+      "name": "量子门 CNOT",
+      "formula": "quantum_gate_CNOT = f(quantum_gate_CNOT_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gate_5",
+      "name": "量子门 Toffoli",
+      "formula": "quantum_gate_Toffoli = f(quantum_gate_Toffoli_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gate_6",
+      "name": "量子门 T",
+      "formula": "quantum_gate_T = f(quantum_gate_T_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gate_7",
+      "name": "量子门 S",
+      "formula": "quantum_gate_S = f(quantum_gate_S_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_state_8",
+      "name": "量子态 |0⟩",
+      "formula": "quantum_state_|0⟩ = f(quantum_state_|0⟩_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_state_9",
+      "name": "量子态 |1⟩",
+      "formula": "quantum_state_|1⟩ = f(quantum_state_|1⟩_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_state_10",
+      "name": "量子态 |⟩",
+      "formula": "quantum_state_|⟩ = f(quantum_state_|⟩_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_state_11",
+      "name": "量子态 |⟩",
+      "formula": "quantum_state_|⟩ = f(quantum_state_|⟩_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_state_12",
+      "name": "量子态 GHZ",
+      "formula": "quantum_state_GHZ = f(quantum_state_GHZ_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_state_13",
+      "name": "量子态 W",
+      "formula": "quantum_state_W = f(quantum_state_W_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_state_14",
+      "name": "量子态 cluster",
+      "formula": "quantum_state_cluster = f(quantum_state_cluster_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_state_15",
+      "name": "量子态 graph",
+      "formula": "quantum_state_graph = f(quantum_state_graph_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_algorithm_16",
+      "name": "量子算法 Shor",
+      "formula": "quantum_algorithm_Shor = f(quantum_algorithm_Shor_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_algorithm_17",
+      "name": "量子算法 Grover",
+      "formula": "quantum_algorithm_Grover = f(quantum_algorithm_Grover_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_algorithm_18",
+      "name": "量子算法 VQE",
+      "formula": "quantum_algorithm_VQE = f(quantum_algorithm_VQE_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_algorithm_19",
+      "name": "量子算法 QAOA",
+      "formula": "quantum_algorithm_QAOA = f(quantum_algorithm_QAOA_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_algorithm_20",
+      "name": "量子算法 HHL",
+      "formula": "quantum_algorithm_HHL = f(quantum_algorithm_HHL_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_algorithm_21",
+      "name": "量子算法 QFT",
+      "formula": "quantum_algorithm_QFT = f(quantum_algorithm_QFT_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_algorithm_22",
+      "name": "量子算法 amplitude_amplification",
+      "formula": "quantum_algorithm_amplitude_amplification = f(quantum_algorithm_amplitude_amplification_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_algorithm_23",
+      "name": "量子算法 quantum_walk",
+      "formula": "quantum_algorithm_quantum_walk = f(quantum_algorithm_quantum_walk_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_entanglement_24",
+      "name": "量子纠缠 Bell",
+      "formula": "quantum_entanglement_Bell = f(quantum_entanglement_Bell_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_entanglement_25",
+      "name": "量子纠缠 GHZ",
+      "formula": "quantum_entanglement_GHZ = f(quantum_entanglement_GHZ_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_entanglement_26",
+      "name": "量子纠缠 W",
+      "formula": "quantum_entanglement_W = f(quantum_entanglement_W_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_entanglement_27",
+      "name": "量子纠缠 cluster",
+      "formula": "quantum_entanglement_cluster = f(quantum_entanglement_cluster_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_entanglement_28",
+      "name": "量子纠缠 graph",
+      "formula": "quantum_entanglement_graph = f(quantum_entanglement_graph_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_entanglement_29",
+      "name": "量子纠缠 topological",
+      "formula": "quantum_entanglement_topological = f(quantum_entanglement_topological_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_entanglement_30",
+      "name": "量子纠缠 twist",
+      "formula": "quantum_entanglement_twist = f(quantum_entanglement_twist_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_entanglement_31",
+      "name": "量子纠缠 hyper",
+      "formula": "quantum_entanglement_hyper = f(quantum_entanglement_hyper_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_measurement_32",
+      "name": "量子测量 POVM",
+      "formula": "quantum_measurement_POVM = f(quantum_measurement_POVM_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_measurement_33",
+      "name": "量子测量 weak",
+      "formula": "quantum_measurement_weak = f(quantum_measurement_weak_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_measurement_34",
+      "name": "量子测量 strong",
+      "formula": "quantum_measurement_strong = f(quantum_measurement_strong_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_measurement_35",
+      "name": "量子测量 continuous",
+      "formula": "quantum_measurement_continuous = f(quantum_measurement_continuous_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_measurement_36",
+      "name": "量子测量 adaptive",
+      "formula": "quantum_measurement_adaptive = f(quantum_measurement_adaptive_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_measurement_37",
+      "name": "量子测量 tomography",
+      "formula": "quantum_measurement_tomography = f(quantum_measurement_tomography_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_measurement_38",
+      "name": "量子测量 spectroscopy",
+      "formula": "quantum_measurement_spectroscopy = f(quantum_measurement_spectroscopy_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_measurement_39",
+      "name": "量子测量 interferometry",
+      "formula": "quantum_measurement_interferometry = f(quantum_measurement_interferometry_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_error_correction_40",
+      "name": "量子纠错 surface",
+      "formula": "quantum_error_correction_surface = f(quantum_error_correction_surface_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_error_correction_41",
+      "name": "量子纠错 color",
+      "formula": "quantum_error_correction_color = f(quantum_error_correction_color_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_error_correction_42",
+      "name": "量子纠错 topological",
+      "formula": "quantum_error_correction_topological = f(quantum_error_correction_topological_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_error_correction_43",
+      "name": "量子纠错 concatenated",
+      "formula": "quantum_error_correction_concatenated = f(quantum_error_correction_concatenated_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_error_correction_44",
+      "name": "量子纠错 dynamic",
+      "formula": "quantum_error_correction_dynamic = f(quantum_error_correction_dynamic_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_error_correction_45",
+      "name": "量子纠错 machine_learning",
+      "formula": "quantum_error_correction_machine_learning = f(quantum_error_correction_machine_learning_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_error_correction_46",
+      "name": "量子纠错 neural",
+      "formula": "quantum_error_correction_neural = f(quantum_error_correction_neural_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_error_correction_47",
+      "name": "量子纠错 hybrid",
+      "formula": "quantum_error_correction_hybrid = f(quantum_error_correction_hybrid_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_simulation_48",
+      "name": "量子模拟 Trotter",
+      "formula": "quantum_simulation_Trotter = f(quantum_simulation_Trotter_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_simulation_49",
+      "name": "量子模拟 VQE",
+      "formula": "quantum_simulation_VQE = f(quantum_simulation_VQE_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_simulation_50",
+      "name": "量子模拟 QAOA",
+      "formula": "quantum_simulation_QAOA = f(quantum_simulation_QAOA_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_simulation_51",
+      "name": "量子模拟 variational",
+      "formula": "quantum_simulation_variational = f(quantum_simulation_variational_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_simulation_52",
+      "name": "量子模拟 tensor_network",
+      "formula": "quantum_simulation_tensor_network = f(quantum_simulation_tensor_network_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_simulation_53",
+      "name": "量子模拟 monte_carlo",
+      "formula": "quantum_simulation_monte_carlo = f(quantum_simulation_monte_carlo_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_simulation_54",
+      "name": "量子模拟 path_integral",
+      "formula": "quantum_simulation_path_integral = f(quantum_simulation_path_integral_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_simulation_55",
+      "name": "量子模拟 semiclassical",
+      "formula": "quantum_simulation_semiclassical = f(quantum_simulation_semiclassical_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_information_56",
+      "name": "量子信息 entropy",
+      "formula": "quantum_information_entropy = f(quantum_information_entropy_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_information_57",
+      "name": "量子信息 mutual_information",
+      "formula": "quantum_information_mutual_information = f(quantum_information_mutual_information_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_information_58",
+      "name": "量子信息 distance",
+      "formula": "quantum_information_distance = f(quantum_information_distance_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_information_59",
+      "name": "量子信息 fidelity",
+      "formula": "quantum_information_fidelity = f(quantum_information_fidelity_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_information_60",
+      "name": "量子信息 channel",
+      "formula": "quantum_information_channel = f(quantum_information_channel_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_information_61",
+      "name": "量子信息 capacity",
+      "formula": "quantum_information_capacity = f(quantum_information_capacity_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_information_62",
+      "name": "量子信息 comunication",
+      "formula": "quantum_information_comunication = f(quantum_information_comunication_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_information_63",
+      "name": "量子信息 cryptography",
+      "formula": "quantum_information_cryptography = f(quantum_information_cryptography_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_thermodynamics_64",
+      "name": "量子热力学 Jarzynski",
+      "formula": "quantum_thermodynamics_Jarzynski = f(quantum_thermodynamics_Jarzynski_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_thermodynamics_65",
+      "name": "量子热力学 Crooks",
+      "formula": "quantum_thermodynamics_Crooks = f(quantum_thermodynamics_Crooks_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_thermodynamics_66",
+      "name": "量子热力学 Landauer",
+      "formula": "quantum_thermodynamics_Landauer = f(quantum_thermodynamics_Landauer_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_thermodynamics_67",
+      "name": "量子热力学 heat_engine",
+      "formula": "quantum_thermodynamics_heat_engine = f(quantum_thermodynamics_heat_engine_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_thermodynamics_68",
+      "name": "量子热力学 refrigerator",
+      "formula": "quantum_thermodynamics_refrigerator = f(quantum_thermodynamics_refrigerator_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_thermodynamics_69",
+      "name": "量子热力学 batery",
+      "formula": "quantum_thermodynamics_batery = f(quantum_thermodynamics_batery_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_thermodynamics_70",
+      "name": "量子热力学 work_extraction",
+      "formula": "quantum_thermodynamics_work_extraction = f(quantum_thermodynamics_work_extraction_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_thermodynamics_71",
+      "name": "量子热力学 resource_theory",
+      "formula": "quantum_thermodynamics_resource_theory = f(quantum_thermodynamics_resource_theory_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_metrology_72",
+      "name": "量子计量学 Cramér-Rao",
+      "formula": "quantum_metrology_Cramér-Rao = f(quantum_metrology_Cramér-Rao_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_metrology_73",
+      "name": "量子计量学 Fisher",
+      "formula": "quantum_metrology_Fisher = f(quantum_metrology_Fisher_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_metrology_74",
+      "name": "量子计量学 Heisenberg",
+      "formula": "quantum_metrology_Heisenberg = f(quantum_metrology_Heisenberg_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_metrology_75",
+      "name": "量子计量学 GHZ",
+      "formula": "quantum_metrology_GHZ = f(quantum_metrology_GHZ_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_metrology_76",
+      "name": "量子计量学 adaptive",
+      "formula": "quantum_metrology_adaptive = f(quantum_metrology_adaptive_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_metrology_77",
+      "name": "量子计量学 multi_parameter",
+      "formula": "quantum_metrology_multi_parameter = f(quantum_metrology_multi_parameter_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_metrology_78",
+      "name": "量子计量学 noisy",
+      "formula": "quantum_metrology_noisy = f(quantum_metrology_noisy_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_metrology_79",
+      "name": "量子计量学 collective",
+      "formula": "quantum_metrology_collective = f(quantum_metrology_collective_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_optics_80",
+      "name": "量子光学 coherent",
+      "formula": "quantum_optics_coherent = f(quantum_optics_coherent_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_optics_81",
+      "name": "量子光学 squeezed",
+      "formula": "quantum_optics_squeezed = f(quantum_optics_squeezed_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_optics_82",
+      "name": "量子光学 cat",
+      "formula": "quantum_optics_cat = f(quantum_optics_cat_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_optics_83",
+      "name": "量子光学 Fock",
+      "formula": "quantum_optics_Fock = f(quantum_optics_Fock_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_optics_84",
+      "name": "量子光学 thermal",
+      "formula": "quantum_optics_thermal = f(quantum_optics_thermal_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_optics_85",
+      "name": "量子光学 entangled",
+      "formula": "quantum_optics_entangled = f(quantum_optics_entangled_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_optics_86",
+      "name": "量子光学 single_photon",
+      "formula": "quantum_optics_single_photon = f(quantum_optics_single_photon_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_optics_87",
+      "name": "量子光学 correlation",
+      "formula": "quantum_optics_correlation = f(quantum_optics_correlation_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_condensed_matter_88",
+      "name": "量子凝聚态 BCS",
+      "formula": "quantum_condensed_matter_BCS = f(quantum_condensed_matter_BCS_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_condensed_matter_89",
+      "name": "量子凝聚态 BEC",
+      "formula": "quantum_condensed_matter_BEC = f(quantum_condensed_matter_BEC_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_condensed_matter_90",
+      "name": "量子凝聚态 Fermi_hubbard",
+      "formula": "quantum_condensed_matter_Fermi_hubbard = f(quantum_condensed_matter_Fermi_hubbard_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_condensed_matter_91",
+      "name": "量子凝聚态 quantum_spin_liquid",
+      "formula": "quantum_condensed_matter_quantum_spin_liquid = f(quantum_condensed_matter_quantum_spin_liquid_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_condensed_matter_92",
+      "name": "量子凝聚态 topological",
+      "formula": "quantum_condensed_matter_topological = f(quantum_condensed_matter_topological_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_condensed_matter_93",
+      "name": "量子凝聚态 supersolid",
+      "formula": "quantum_condensed_matter_supersolid = f(quantum_condensed_matter_supersolid_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_condensed_matter_94",
+      "name": "量子凝聚态 Mott",
+      "formula": "quantum_condensed_matter_Mott = f(quantum_condensed_matter_Mott_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_condensed_matter_95",
+      "name": "量子凝聚态 Anderson",
+      "formula": "quantum_condensed_matter_Anderson = f(quantum_condensed_matter_Anderson_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_field_theory_96",
+      "name": "量子场论 QED",
+      "formula": "quantum_field_theory_QED = f(quantum_field_theory_QED_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_field_theory_97",
+      "name": "量子场论 QCD",
+      "formula": "quantum_field_theory_QCD = f(quantum_field_theory_QCD_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_field_theory_98",
+      "name": "量子场论 Higgs",
+      "formula": "quantum_field_theory_Higgs = f(quantum_field_theory_Higgs_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_field_theory_99",
+      "name": "量子场论 Yukawa",
+      "formula": "quantum_field_theory_Yukawa = f(quantum_field_theory_Yukawa_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_field_theory_100",
+      "name": "量子场论 axial",
+      "formula": "quantum_field_theory_axial = f(quantum_field_theory_axial_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_field_theory_101",
+      "name": "量子场论 vector",
+      "formula": "quantum_field_theory_vector = f(quantum_field_theory_vector_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_field_theory_102",
+      "name": "量子场论 tensor",
+      "formula": "quantum_field_theory_tensor = f(quantum_field_theory_tensor_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_field_theory_103",
+      "name": "量子场论 supersymmetry",
+      "formula": "quantum_field_theory_supersymmetry = f(quantum_field_theory_supersymmetry_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_topology_104",
+      "name": "量子拓扑 Chern",
+      "formula": "quantum_topology_Chern = f(quantum_topology_Chern_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_topology_105",
+      "name": "量子拓扑 Z2",
+      "formula": "quantum_topology_Z2 = f(quantum_topology_Z2_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_topology_106",
+      "name": "量子拓扑 winding",
+      "formula": "quantum_topology_winding = f(quantum_topology_winding_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_topology_107",
+      "name": "量子拓扑 edge",
+      "formula": "quantum_topology_edge = f(quantum_topology_edge_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_topology_108",
+      "name": "量子拓扑 bulk-boundary",
+      "formula": "quantum_topology_bulk-boundary = f(quantum_topology_bulk-boundary_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_topology_109",
+      "name": "量子拓扑 symmetry",
+      "formula": "quantum_topology_symmetry = f(quantum_topology_symmetry_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_topology_110",
+      "name": "量子拓扑 disorder",
+      "formula": "quantum_topology_disorder = f(quantum_topology_disorder_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_topology_111",
+      "name": "量子拓扑 fracton",
+      "formula": "quantum_topology_fracton = f(quantum_topology_fracton_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gravity_112",
+      "name": "量子引力 AdS/CFT",
+      "formula": "quantum_gravity_AdS/CFT = f(quantum_gravity_AdS/CFT_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gravity_113",
+      "name": "量子引力 holographic",
+      "formula": "quantum_gravity_holographic = f(quantum_gravity_holographic_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gravity_114",
+      "name": "量子引力 black_hole",
+      "formula": "quantum_gravity_black_hole = f(quantum_gravity_black_hole_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gravity_115",
+      "name": "量子引力 entanglement",
+      "formula": "quantum_gravity_entanglement = f(quantum_gravity_entanglement_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gravity_116",
+      "name": "量子引力 cosmological",
+      "formula": "quantum_gravity_cosmological = f(quantum_gravity_cosmological_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gravity_117",
+      "name": "量子引力 loop",
+      "formula": "quantum_gravity_loop = f(quantum_gravity_loop_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gravity_118",
+      "name": "量子引力 spin_foam",
+      "formula": "quantum_gravity_spin_foam = f(quantum_gravity_spin_foam_params)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_quantum_gravity_119",
+      "name": "量子引力 causal_dynamical",
+      "formula": "quantum_gravity_causal_dynamical = f(quantum_gravity_causal_dynamical_params)",
+      "category": "quantum_computing"
     }
   ]
 }
