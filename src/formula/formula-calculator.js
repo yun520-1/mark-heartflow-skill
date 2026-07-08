@@ -1,6 +1,6 @@
 /**
- * Formula Calculator — 公式计算器（v3.0.0 完整版）
- * 支持：ODE/PDE 求解、联立方程、符号计算
+ * Formula Calculator — 公式计算器（v3.2.0 稳定版）
+ * 移除不稳定的牛顿法，改用代数求解器
  */
 
 const { FormulaSearch } = require('./formula-search.js');
@@ -111,65 +111,33 @@ class FormulaCalculator {
   }
 
   /**
-   * 求解联立方程（牛顿法）
+   * 求解联立方程（代数法，简单方程）
+   * 只支持 2x2 线性方程组
    */
-  solveSystem(equations, variables, initialGuess = {}, options = {}) {
-    const { maxIter = 100, tolerance = 1e-6 } = options;
-    
-    // 初始猜测
-    let x = variables.map(v => initialGuess[v] || 0);
-    let iter = 0;
-    let error = Infinity;
-
-    while (iter < maxIter && error > tolerance) {
-      // 计算残差
-      const F = variables.map(v => {
-        const eq = equations[v];
-        const scope = {};
-        variables.forEach((v2, i) => { scope[v2] = x[i]; });
-        return this._math.evaluate(eq, scope);
-      });
-
-      // 计算雅可比矩阵（数值近似）
-      const J = variables.map((v1, i1) => 
-        variables.map((v2, i2) => {
-          const h = 1e-6;
-          const xPlus = [...x];
-          xPlus[i2] += h;
-          const scopePlus = {};
-          variables.forEach((v3, i3) => { scopePlus[v3] = xPlus[i3]; });
-          const fPlus = this._math.evaluate(equations[v1], scopePlus);
-          
-          const scopeOrig = {};
-          variables.forEach((v3, i3) => { scopeOrig[v3] = x[i3]; });
-          const fOrig = this._math.evaluate(equations[v1], scopeOrig);
-          
-          return (fPlus - fOrig) / h;
-        })
-      );
-
-      // 解线性方程组 J * dx = -F
-      try {
-        const dx = this._solveLinearSystem(J, F.map(f => -f));
-        variables.forEach((v, i) => {
-          x[i] += dx[i];
-        });
-        
-        error = Math.sqrt(F.reduce((sum, f) => sum + f * f, 0));
-        iter++;
-      } catch (e) {
-        return { error: `牛顿法失败: ${e.message}` };
+  solveLinearSystem(A, b) {
+    if (A.length === 2 && A[0].length === 2) {
+      // 2x2 方程组
+      const det = A[0][0] * A[1][1] - A[0][1] * A[1][0];
+      if (Math.abs(det) < 1e-12) {
+        return { error: '行列式为 0，无唯一解' };
       }
+      
+      const x = [
+        (b[0] * A[1][1] - A[0][1] * b[1]) / det,
+        (A[0][0] * b[1] - b[0] * A[1][0]) / det,
+      ];
+      
+      return {
+        solution: x,
+        method: 'cramer_rule',
+        timestamp: new Date().toISOString(),
+      };
     }
-
-    const solution = {};
-    variables.forEach((v, i) => { solution[v] = x[i]; });
     
+    // 通用高斯消元
     return {
-      solution,
-      iterations: iter,
-      finalError: error,
-      converged: error <= tolerance,
+      solution: this._solveLinearSystem(A, b),
+      method: 'gaussian_elimination',
       timestamp: new Date().toISOString(),
     };
   }
@@ -179,11 +147,10 @@ class FormulaCalculator {
    */
   simplify(expression) {
     try {
-      const node = this._math.parse(expression);
-      const simplified = node.simplify();
+      const result = this._math.simplify(expression);
       return {
         original: expression,
-        simplified: simplified.toString(),
+        simplified: result.toString(),
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -191,24 +158,9 @@ class FormulaCalculator {
     }
   }
 
-  /**
-   * 符号计算：展开
-   */
-  expand(expression) {
-    try {
-      const node = this._math.parse(expression);
-      const expanded = node.expand();
-      return {
-        original: expression,
-        expanded: expanded.toString(),
-        timestamp: new Date().toISOString(),
-      };
-    } catch (error) {
-      return { error: `展开失败: ${error.message}` };
-    }
-  }
+  // 注意：mathjs 不支持 expand（展开），需要 sympy 支持
 
-  // ── 私有方法 ─────────────────────────────────────────────────────
+  // ── 私有方法 ─────────────────────────────────────────────────
 
   _parseFormula(formulaStr) {
     // 移除 LaTeX 格式，转成 mathjs 可解析的格式
@@ -223,8 +175,8 @@ class FormulaCalculator {
       .replace(/\\sin\{([^}]+)\}/g, 'sin($1)')
       .replace(/\\cos\{([^}]+)\}/g, 'cos($1)')
       .replace(/\\tan\{([^}]+)\}/g, 'tan($1)')
-      .replace(/\\left\{/g, '(')
-      .replace(/\\right\}/g, ')')
+      .replace(/\\left\(/g, '(')
+      .replace(/\\right\)/g, ')')
       .replace(/\\,/g, ' ')
       .replace(/\\;/g, ';')
       .replace(/\\boxed\{/g, '')
