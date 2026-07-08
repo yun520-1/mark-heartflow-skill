@@ -15663,6 +15663,66 @@
       "name": "随机基准",
       "formula": "F = A p^k + B",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_var_vqe_ansatz",
+      "name": "VQE Ansatz",
+      "formula": "|ψ(θ)⟩ = U(θ) |0⟩^⊗ⁿ",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_var_vqe_energy",
+      "name": "VQE 能量",
+      "formula": "E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_var_vqe_gradient",
+      "name": "VQE 梯度",
+      "formula": "∂E/∂θ_i = 2 Re(⟨∂ψ/∂θ_i|H|ψ⟩)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_var_vqe_optimal",
+      "name": "VQE 最优参数",
+      "formula": "θ* = argmin_θ E(θ)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_var_qaoa_layer",
+      "name": "QAOA 层",
+      "formula": "U(β,γ) = e^{-iβ B} e^{-iγ C}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_var_qaoa_cost",
+      "name": "QAOA 代价",
+      "formula": "F(β,γ) = ⟨ψ(β,γ)|C|ψ(β,γ)⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_var_qaoa_optimal",
+      "name": "QAOA 最优参数",
+      "formula": "(β*,γ*) = argmax_{β,γ} F(β,γ)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_var_vqc_forward",
+      "name": "VQC 前向",
+      "formula": "f(x;θ) = ⟨x|U†(θ) H U(θ)|x⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_var_vqc_loss",
+      "name": "VQC 损失",
+      "formula": "L(θ) = Σ_i (y_i - f(x_i;θ))²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_var_vqc_gradient",
+      "name": "VQC 梯度",
+      "formula": "∂L/∂θ_i = -2 Σ_j (y_j - f(x_j;θ)) ∂f(x_j;θ)/∂θ_i",
+      "category": "quantum_computing"
     }
   ]
 }

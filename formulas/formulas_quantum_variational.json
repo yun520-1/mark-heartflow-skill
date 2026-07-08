@@ -1,0 +1,68 @@
+[
+  [
+    "quantum_var_vqe_ansatz",
+    "VQE Ansatz",
+    "|ψ(θ)⟩ = U(θ) |0⟩^⊗ⁿ",
+    "quantum_computing"
+  ],
+  [
+    "quantum_var_vqe_energy",
+    "VQE 能量",
+    "E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩",
+    "quantum_computing"
+  ],
+  [
+    "quantum_var_vqe_gradient",
+    "VQE 梯度",
+    "∂E/∂θ_i = 2 Re(⟨∂ψ/∂θ_i|H|ψ⟩)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_var_vqe_optimal",
+    "VQE 最优参数",
+    "θ* = argmin_θ E(θ)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_var_qaoa_layer",
+    "QAOA 层",
+    "U(β,γ) = e^{-iβ B} e^{-iγ C}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_var_qaoa_cost",
+    "QAOA 代价",
+    "F(β,γ) = ⟨ψ(β,γ)|C|ψ(β,γ)⟩",
+    "quantum_computing"
+  ],
+  [
+    "quantum_var_qaoa_optimal",
+    "QAOA 最优参数",
+    "(β*,γ*) = argmax_{β,γ} F(β,γ)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_var_qaoa_approximation",
+    "QAOA 近似比",
+    "F(β*,γ*) / F_max ≥ 0.692",
+    "quantum_computing"
+  ],
+  [
+    "quantum_var_vqc_forward",
+    "VQC 前向",
+    "f(x;θ) = ⟨x|U†(θ) H U(θ)|x⟩",
+    "quantum_computing"
+  ],
+  [
+    "quantum_var_vqc_loss",
+    "VQC 损失",
+    "L(θ) = Σ_i (y_i - f(x_i;θ))²",
+    "quantum_computing"
+  ],
+  [
+    "quantum_var_vqc_gradient",
+    "VQC 梯度",
+    "∂L/∂θ_i = -2 Σ_j (y_j - f(x_j;θ)) ∂f(x_j;θ)/∂θ_i",
+    "quantum_computing"
+  ]
+]
