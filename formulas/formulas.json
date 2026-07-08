@@ -14511,6 +14511,54 @@
       "name": "QAOA 代价函数",
       "formula": "F(γ, β) = ⟨γ, β|H_C|γ, β⟩",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_entanglement_entropy",
+      "name": "纠缠熵",
+      "formula": "S(ρ_A) = -Tr(ρ_A log₂ ρ_A)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_entanglement_entropy_bipartite",
+      "name": "二分纠缠熵",
+      "formula": "S(|ψ⟩) = -Σᵢ λᵢ log₂ λᵢ",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_entanglement_concurrence",
+      "name": "Concurrence",
+      "formula": "C(|ψ⟩) = max(0, λ₁ - λ₂ - λ₃ - λ₄)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_entanglement_concurrence_two_qubit",
+      "name": "两量子比特 Concurrence",
+      "formula": "C(ρ) = max(0, √λ₁ - √λ₂ - √λ₃ - √λ₄)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_entanglement_purity",
+      "name": "纠缠纯度",
+      "formula": "P(ρ_A) = Tr(ρ_A²)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_entanglement_distillation",
+      "name": "纠缠蒸馏率",
+      "formula": "R = max amount of Bell pairs extractable",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_teleportation_fidelity",
+      "name": "隐形传态保真度",
+      "formula": "F = |⟨ψ|ρ_out|ψ⟩|²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_teleportation_success",
+      "name": "隐形传态成功率",
+      "formula": "P(成功) = 1 if Bell measurement",
+      "category": "quantum_computing"
     }
   ]
 }
