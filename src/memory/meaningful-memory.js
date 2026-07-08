@@ -43,6 +43,7 @@ const EXPORT_PATH = path.join(DATA_DIR, 'meaningful-memory.json');
 
 class MeaningfulMemory {
   constructor(options = {}) {
+    this.rootPath = options.rootPath || path.join(__dirname, '../../');
     this.vectorDim = options.vectorDim || 384;
     this.layers = {
       core: [],      // identity, directives - never auto-delete

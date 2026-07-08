@@ -12,6 +12,11 @@ class FormulaCalculator {
     this._math = math;
   }
 
+  // [AUDIT-FIX] 转义正则元字符，防止用户控制的 key/variable 触发 ReDoS 或正则语法错误
+  _escapeRegExp(str) {
+    return String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
   /**
    * 计算公式（支持含等号公式的数值求解）
    */
@@ -161,7 +166,7 @@ class FormulaCalculator {
   _substituteParams(expression, params) {
     let result = expression;
     Object.entries(params).forEach(([key, value]) => {
-      result = result.replace(new RegExp(`\\b${key}\\b`, 'g'), value);
+      result = result.replace(new RegExp(`\\b${this._escapeRegExp(key)}\\b`, 'g'), value);
     });
     return result;
   }
@@ -215,7 +220,7 @@ class FormulaCalculator {
     // 简化：假设 equotion 是线性表达式（如 "2x + 3y = 5"）
     // 实际实现需要解析表达式，这里用正则表达式
     const lhs = equotion.split('=')[0];
-    const regex = new RegExp(`([+-]?\\s*\\d*\\.?\\d*)\\s*\\*?\\s*${variable}\\b`);
+    const regex = new RegExp(`([+-]?\\s*\\d*\\.?\\d*)\\s*\\*?\\s*${this._escapeRegExp(variable)}\\b`);
     const match = lhs.match(regex);
     if (match) {
       let coeffStr = match[1].replace(/\\s+/g, '');

@@ -174,12 +174,8 @@ class HealingMemoryRL {
           .update(JSON.stringify({ qTable, history, savedAt, ...rest }))
           .digest('hex');
         if (computed !== _hmac) {
-          // 已禁用 console.warn: console.warn('[HealingMemoryRL] Q-table HMAC mismatch, restoring from backup');
-          if (data.qTable) {
-            this.qTable = new Map(Object.entries(data.qTable));
-            this.history = Array.isArray(data.history) ? data.history.slice(-this.maxMemory) : [];
-            // 已禁用 console.error: console.error('[HealingMemoryRL] Q-table restored (HMAC check bypassed)');
-          }
+          // [A04-FIX] HMAC 校验失败：拒绝加载被篡改的 Q-table，保留内存中现有状态
+          process.stderr.write('[HealingMemoryRL] Q-table HMAC mismatch — refusing to load tampered data, keeping in-memory state\n');
           return;
         }
       }

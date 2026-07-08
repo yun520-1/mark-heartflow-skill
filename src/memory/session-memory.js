@@ -69,7 +69,9 @@ class SessionMemory {
    * 获取会话文件路径
    */
   _getSessionFile(sessionId) {
-    return path.join(this.storagePath, `${sessionId}.json`);
+    // [AUDIT-FIX] 消毒 sessionId，防止路径遍历（../ 等）
+    const safeId = String(sessionId).replace(/[^a-zA-Z0-9_-]/g, '_');
+    return path.join(this.storagePath, `${safeId}.json`);
   }
 
   /**

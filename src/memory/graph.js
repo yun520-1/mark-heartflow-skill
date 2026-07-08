@@ -41,6 +41,10 @@ let _nodes = new Map();      // { id: { id, type, label, metadata, activation } 
 let _relations = new Map();  // { sourceId: [ { targetId, type, weight } ] }
 let _reverseRelations = new Map(); // { targetId: [ { sourceId, type, weight } ] }
 
+// [AUDIT-FIX] 防止无上限内存泄漏
+const MAX_NODES = 50000;
+const MAX_RELATIONS = 200000;
+
 // ─── 辅助函数 ─────────────────────────────────────────────────────────────────
 
 /**
@@ -107,6 +111,15 @@ function addNode(opts = {}) {
   };
   
   _nodes.set(id, node);
+  // [AUDIT-FIX] 节点数超限时淘汰最旧节点（FIFO）
+  if (_nodes.size > MAX_NODES) {
+    const oldestId = _nodes.keys().next().value;
+    if (oldestId !== undefined) {
+      _nodes.delete(oldestId);
+      _relations.delete(oldestId);
+      _reverseRelations.delete(oldestId);
+    }
+  }
   return id;
 }
 
