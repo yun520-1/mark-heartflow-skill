@@ -15591,6 +15591,78 @@
       "name": "量子 Fisher 信息",
       "formula": "F_Q(θ) = 4 Re(⟨∂θΨ|∂θΨ⟩ - |⟨Ψ|∂θΨ⟩|²)",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_hardware_qubit",
+      "name": "量子比特",
+      "formula": "T_1 = 1/Γ_1, T_2 = 1/Γ_2",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_hardware_gate_time",
+      "name": "门时间",
+      "formula": "t_g = ℏ/ΔE",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_hardware_coherence",
+      "name": "相干时间",
+      "formula": "L(t) = exp(-t/T_2)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_hardware_fidelity",
+      "name": "门保真度",
+      "formula": "F = |⟨ψ_target|ψ_actual⟩|²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_noise_depolarizing",
+      "name": "去极化噪声",
+      "formula": "ρ' = (1-p)ρ + pI/d",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_noise_amplitude_damping",
+      "name": "幅度阻尼",
+      "formula": "ρ' = K_0 ρ K_0† + K_1 ρ K_1†",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_noise_phase_damping",
+      "name": "相位阻尼",
+      "formula": "ρ' = K_0 ρ K_0† + K_1 ρ K_1†",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_noise_thermal",
+      "name": "热噪声",
+      "formula": "ρ' = Σ_n K_n ρ K_n†",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_calibration_rabi",
+      "name": "Rabi 振荡",
+      "formula": "P_e(t) = P_0 sin²(Ω t/2)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_calibration_ramsey",
+      "name": "Ramsey 干涉",
+      "formula": "P_e(τ) = P_0 + (1-P_0) cos²(Δω τ/2)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_calibration_tomography",
+      "name": "量子层析",
+      "formula": "ρ = Σ_{i,j} χ_{ij} E_i† E_j",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_exp_calibration_benchmarking",
+      "name": "随机基准",
+      "formula": "F = A p^k + B",
+      "category": "quantum_computing"
     }
   ]
 }

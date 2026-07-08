@@ -1,0 +1,74 @@
+[
+  [
+    "quantum_exp_hardware_qubit",
+    "量子比特",
+    "T_1 = 1/Γ_1, T_2 = 1/Γ_2",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_hardware_gate_time",
+    "门时间",
+    "t_g = ℏ/ΔE",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_hardware_coherence",
+    "相干时间",
+    "L(t) = exp(-t/T_2)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_hardware_fidelity",
+    "门保真度",
+    "F = |⟨ψ_target|ψ_actual⟩|²",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_noise_depolarizing",
+    "去极化噪声",
+    "ρ' = (1-p)ρ + pI/d",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_noise_amplitude_damping",
+    "幅度阻尼",
+    "ρ' = K_0 ρ K_0† + K_1 ρ K_1†",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_noise_phase_damping",
+    "相位阻尼",
+    "ρ' = K_0 ρ K_0† + K_1 ρ K_1†",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_noise_thermal",
+    "热噪声",
+    "ρ' = Σ_n K_n ρ K_n†",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_calibration_rabi",
+    "Rabi 振荡",
+    "P_e(t) = P_0 sin²(Ω t/2)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_calibration_ramsey",
+    "Ramsey 干涉",
+    "P_e(τ) = P_0 + (1-P_0) cos²(Δω τ/2)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_calibration_tomography",
+    "量子层析",
+    "ρ = Σ_{i,j} χ_{ij} E_i† E_j",
+    "quantum_computing"
+  ],
+  [
+    "quantum_exp_calibration_benchmarking",
+    "随机基准",
+    "F = A p^k + B",
+    "quantum_computing"
+  ]
+]
