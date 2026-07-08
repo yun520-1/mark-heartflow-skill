@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_info_advanced_quantum_capacity",
+    "量子信道容量",
+    "Q(Λ) = lim_{n→∞} (1/n) Q^{(1)}(Λ^{⊗n})",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_advanced_entanglement_distillation",
+    "纠缠蒸馏率",
+    "D(ρ) = max {r: ρ^{⊗n} → (|Φ⁺⟩⟨Φ⁺|)^{⊗⌊rn⌋}}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_advanced_quantum_error_correction",
+    "量子误差纠正阈值",
+    "p_th = max {p: Λ_p is correctable}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_advanced_quantum_cryptography",
+    "量子密钥分发安全性",
+    "P(bit error) ≤ 4p + O(p²)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_advanced_quantum_communication",
+    "量子通信复杂度",
+    "QCC(f) = min {qubits: Alice and Bob compute f}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_advanced_quantum_metrology",
+    "量子计量精度极限",
+    "Δθ ≥ 1/(ν √N)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_advanced_quantum_thermodynamics",
+    "量子热力学第二定律",
+    "ΔS_total ≥ 0",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_advanced_quantum_foundations",
+    "量子力学基本假设",
+    "Postulates of quantum mechanics",
+    "quantum_computing"
+  ]
+]

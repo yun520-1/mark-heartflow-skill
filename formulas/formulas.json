@@ -15057,6 +15057,168 @@
       "name": "量子霍尔电导",
       "formula": "σ_xy = ν e²/h, ν ∈ Z",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_berry_phase",
+      "name": "Berry 相位",
+      "formula": "γ_n = i ∮ ⟨ψ_n|∇_R|ψ_n⟩ · dR",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_chern_number",
+      "name": "Chern 数",
+      "formula": "C = (1/2π) ∫ d²k F_{xy}(k)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_thouless_charge_pump",
+      "name": "Thouless 电荷泵",
+      "formula": "ΔQ = C e",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_quantum_anomaly",
+      "name": "量子反常",
+      "formula": "∂_μ J^μ = (g²/16π²) F_{μν} F^{μν}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_topological_insulator",
+      "name": "拓扑绝缘体",
+      "formula": "σ_xy = (e²/h) Z₂",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_majorana_zero_mode",
+      "name": "Majorana 零模",
+      "formula": "γ = γ†, {γ_i, γ_j} = 2δ_{ij}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_skyrmion",
+      "name": "Skyrmion 拓扑数",
+      "formula": "Q = (1/4π) ∫ d²x ε_{ij} n·(∂_i n × ∂_j n)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_quantum_hall_filling",
+      "name": "量子霍尔填充因子",
+      "formula": "ν = n/(2j+1)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_planck_length",
+      "name": "Planck 长度",
+      "formula": "l_P = √(ℏG/c³)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_planck_time",
+      "name": "Planck 时间",
+      "formula": "t_P = l_P/c = √(ℏG/c⁵)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_planck_mass",
+      "name": "Planck 质量",
+      "formula": "m_P = √(ℏc/G)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_planck_energy",
+      "name": "Planck 能量",
+      "formula": "E_P = m_P c² = √(ℏc⁵/G)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_black_hole_entropy",
+      "name": "黑洞熵（Bekenstein-Hawking）",
+      "formula": "S_BH = (k_B A)/(4l_P²)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_hawking_temperature",
+      "name": "霍金温度",
+      "formula": "T_H = ℏc³/(8πG k_B M)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_ads_cft",
+      "name": "AdS/CFT 对应",
+      "formula": "Z_CFT = Z_string on AdS",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_wheeler_dewitt",
+      "name": "Wheeler-deWitt 方程",
+      "formula": "H|Ψ> = 0",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_friedmann",
+      "name": "Friedmann 方程",
+      "formula": "H² = (8πG/3) ρ - k/a² + Λ/3",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_hubble",
+      "name": "Hubble 定律",
+      "formula": "v = H₀ d",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_critical_density",
+      "name": "临界密度",
+      "formula": "ρ_c = 3H₀²/(8πG)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_dark_energy",
+      "name": "暗能量密度",
+      "formula": "Ω_Λ = Λ/(3H₀²)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_inflaton_potential",
+      "name": "暴胀势",
+      "formula": "V(φ) = ½ m² φ² + λ φ⁴/4!",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_schwarschild_radius",
+      "name": "Schwarschild 半径",
+      "formula": "R_s = 2GM/c²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_cecchini",
+      "name": "CECCHINI 公式",
+      "formula": "S = (A/4G) + O(1)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_advanced_quantum_capacity",
+      "name": "量子信道容量",
+      "formula": "Q(Λ) = lim_{n→∞} (1/n) Q^{(1)}(Λ^{⊗n})",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_advanced_entanglement_distillation",
+      "name": "纠缠蒸馏率",
+      "formula": "D(ρ) = max {r: ρ^{⊗n} → (|Φ⁺⟩⟨Φ⁺|)^{⊗⌊rn⌋}}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_advanced_quantum_error_correction",
+      "name": "量子误差纠正阈值",
+      "formula": "p_th = max {p: Λ_p is correctable}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_advanced_quantum_communication",
+      "name": "量子通信复杂度",
+      "formula": "QCC(f) = min {qubits: Alice and Bob compute f}",
+      "category": "quantum_computing"
     }
   ]
 }
