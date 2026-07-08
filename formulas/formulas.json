@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "version": "6.8.0",
+    "version": "7.3.0",
     "last_updated": "2026-07-08",
-    "total_formulas": 1441,
+    "total_formulas": 1461,
     "categories": [
       "mathematics",
       "physics",
@@ -11717,6 +11717,166 @@
       "category": "cognitive_science",
       "subcategory": "from_arxiv",
       "source": "arXiv_keyword:Schrödinger"
+    },
+    {
+      "id": "sympy_gamma_z",
+      "name": "Γ(z)",
+      "formula": "gamma(z)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_gamma_half",
+      "name": "Γ(1/2)",
+      "formula": "sqrt(pi)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_beta_xy",
+      "name": "B(x,y)",
+      "formula": "beta(x, y)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_erf_x",
+      "name": "erf(x)",
+      "formula": "erf(x)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_zeta_s",
+      "name": "ζ(s)",
+      "formula": "zeta(s)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_int_exp",
+      "name": "∫ e^{ax} dx",
+      "formula": "exp(a*x)/a",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_int_sin",
+      "name": "∫ sin(ax) dx",
+      "formula": "-cos(a*x)/a",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_int_cos",
+      "name": "∫ cos(ax) dx",
+      "formula": "sin(a*x)/a",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_int_exp_x2",
+      "name": "∫ e^{-x²} dx",
+      "formula": "sqrt(pi)/2 * erf(x)",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_taylor_exp",
+      "name": "e^x = Σ x^n/n!",
+      "formula": "Sum(x**n/factorial(n), (n, 0, oo))",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_taylor_sin",
+      "name": "sin(x) = Σ (-1)^n x^{2n+1}/(2n+1)!",
+      "formula": "Sum((-1)**n * x**(2*n+1)/factorial(2*n+1), (n, 0, oo))",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_zeta_series",
+      "name": "ζ(s) = Σ 1/n^s",
+      "formula": "Sum(1/n**s, (n, 1, oo))",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_ode_bessel",
+      "name": "x²y″ + xy′ + (x²-n²)y = 0",
+      "formula": "y = C1*besselj(n,x) + C2*bessely(n,x)",
+      "category": "mathematics",
+      "subcategory": "differential_equations",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_ode_legendre",
+      "name": "(1-x²)y″ - 2xy′ + n(n+1)y = 0",
+      "formula": "y = C1*legendre(n,x) + C2*legendre_q(n,x)",
+      "category": "mathematics",
+      "subcategory": "differential_equations",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_bayes",
+      "name": "贝叶斯定理",
+      "formula": "P(A|B) = P(B|A)*P(A)/P(B)",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_central_limit",
+      "name": "中心极限定理",
+      "formula": "(X_bar - mu)/(sigma/sqrt(n)) -> N(0,1)",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_chebyshev",
+      "name": "切比雪夫不等式",
+      "formula": "P(|X-mu| >= k*sigma) <= 1/k**2",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_shannon_entropy",
+      "name": "香农熵",
+      "formula": "H(X) = -Sum(p(x)*log(p(x), 2)",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_mutual_info",
+      "name": "互信息",
+      "formula": "I(X;Y) = H(X) - H(X|Y)",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "source": "sympy_verified"
+    },
+    {
+      "id": "sympy_kl_divergence",
+      "name": "KL 散度",
+      "formula": "D_KL(P||Q) = Sum(p(x)*log(p(x)/q(x)))",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "source": "sympy_verified"
     }
   ]
 }
