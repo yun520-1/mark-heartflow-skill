@@ -1,8 +1,6 @@
 /**
- * Formula Search — 公式搜索引擎
- * 
- * 功能: 根据关键词/领域/难度搜索公式
- * 支持: 中文/英文搜索、分类浏览、难度过滤
+ * Formula Search — 公式搜索引擎（修复搜索功能）
+ * 修复：搜索现在也匹配 formula.id 和 formula.formula（LaTeX 字符串）
  */
 
 const fs = require('fs');
@@ -14,9 +12,6 @@ class FormulaSearch {
     this.formulas = this.loadFormulas();
   }
 
-  /**
-   * 加载公式库
-   */
   loadFormulas() {
     try {
       const content = fs.readFileSync(this.formulasFile, 'utf-8');
@@ -29,11 +24,11 @@ class FormulaSearch {
   }
 
   /**
-   * 搜索公式（关键词）
+   * 搜索公式（关键词）—— 修复版
    */
   search(keyword, options = {}) {
     const {
-      language = 'both',  // 'zh', 'en', 'both'
+      language = 'both',
       category = null,
       difficulty = null,
       limit = 10
@@ -41,44 +36,54 @@ class FormulaSearch {
 
     let results = this.formulas;
 
-    // 1. 关键词过滤
+    // 1. 关键词过滤（修复：也搜索 id 和 formula 字段）
     if (keyword) {
       const lowerKeyword = keyword.toLowerCase();
       results = results.filter(formula => {
         const nameMatch = 
-          (formula.name && formula.name.toLowerCase().includes(lowerKeyword)) ||
-          (formula.name_en && formula.name_en.toLowerCase().includes(lowerKeyword));
+            (formula.name && formula.name.toLowerCase().includes(lowerKeyword)) ||
+            (formula.name_en && formula.name_en.toLowerCase().includes(lowerKeyword));
+        
+        const formulaMatch = 
+            (formula.formula && formula.formula.toLowerCase().includes(lowerKeyword));
+        
+        const idMatch = 
+            (formula.id && formula.id.toLowerCase().includes(lowerKeyword));
         
         const descMatch =
-          (formula.description && formula.description.toLowerCase().includes(lowerKeyword)) ||
-          (formula.description_en && formula.description_en.toLowerCase().includes(lowerKeyword));
+            (formula.description && formula.description.toLowerCase().includes(lowerKeyword)) ||
+            (formula.description_en && formula.description_en.toLowerCase().includes(lowerKeyword));
         
         const varMatch = 
-          (formula.variables && Object.values(formula.variables).some(v => 
-            (v.name && v.name.toLowerCase().includes(lowerKeyword)) ||
-            (v.name_en && v.name_en.toLowerCase().includes(lowerKeyword))
-          )) ||
-          (formula.constants && Object.values(formula.constants).some(c =>
-            (c.name && c.name.toLowerCase().includes(lowerKeyword)) ||
-            (c.name_en && c.name_en.toLowerCase().includes(lowerKeyword))
-          ));
+            (formula.variables && Object.values(formula.variables).some(v => 
+              (v.name && v.name.toLowerCase().includes(lowerKeyword)) ||
+              (v.name_en && v.name_en.toLowerCase().includes(lowerKeyword))
+            )) ||
+            (formula.constants && Object.values(formula.constants).some(c => 
+              (c.name && c.name.toLowerCase().includes(lowerKeyword)) ||
+              (c.name_en && c.name_en.toLowerCase().includes(lowerKeyword))
+            ));
         
         const appMatch = 
-          (formula.applications && formula.applications.some(app => 
-            app.toLowerCase().includes(lowerKeyword)
-          )) ||
-          (formula.examples && formula.examples.some(ex => 
-            (ex.problem && ex.problem.toLowerCase().includes(lowerKeyword)) ||
-            (ex.solution && ex.solution.toLowerCase().includes(lowerKeyword))
-          ));
+            (formula.applications && formula.applications.some(app => 
+              app.toLowerCase().includes(lowerKeyword)
+            )) ||
+            (formula.examples && formula.examples.some(ex => 
+              (ex.problem && ex.problem.toLowerCase().includes(lowerKeyword)) ||
+              (ex.solution && ex.solution.toLowerCase().includes(lowerKeyword))
+            ));
         
-        return nameMatch || descMatch || varMatch || appMatch;
+        return nameMatch || formulaMatch || idMatch || descMatch || varMatch || appMatch;
       });
     }
 
     // 2. 分类过滤
     if (category) {
-      results = results.filter(f => f.category === category);
+      results = results.filter(f => 
+        f.category === category || 
+        f.subcategory === category ||
+        (f.tags && f.tags.includes(category))
+      );
     }
 
     // 3. 难度过滤
@@ -87,25 +92,36 @@ class FormulaSearch {
     }
 
     // 4. 限制结果数
-    if (limit > 0) {
+    if (limit && limit > 0) {
       results = results.slice(0, limit);
     }
 
-    return results;
+    return {
+      success: true,
+      matched: true,
+      count: results.length,
+      results: results.map(f => ({
+        id: f.id,
+        name: f.name,
+        name_en: f.name_en || '',
+        formula: f.formula,
+        category: f.category,
+        subcategory: f.subcategory,
+        difficulty: f.difficulty || 'intermediate'
+      }))
+    };
   }
 
   /**
    * 获取所有分类
    */
   getCategories() {
-    const categories = new Set();
+    const cats = new Set();
     this.formulas.forEach(f => {
-      categories.add(f.category);
-      if (f.subcategory) {
-        categories.add(`${f.category}/${f.subcategory}`);
-      }
+      if (f.category) cats.add(f.category);
+      if (f.subcategory) cats.add(`${f.category}/${f.subcategory}`);
     });
-    return Array.from(categories);
+    return [...cats].sort();
   }
 
   /**
@@ -118,51 +134,33 @@ class FormulaSearch {
   /**
    * 根据分类获取公式
    */
-  getByCategory(category, subcategory = null) {
-    let results = this.formulas.filter(f => f.category === category);
-    if (subcategory) {
-      results = results.filter(f => f.subcategory === subcategory);
+  getByCategory(category, limit = 0) {
+    let results = this.formulas.filter(f => 
+      f.category === category || 
+      f.subcategory === category
+    );
+    if (limit > 0) {
+      results = results.slice(0, limit);
     }
-    return results;
+    return {
+      success: true,
+      count: results.length,
+      results: results
+    };
   }
 
   /**
-   * 获取公式详情（格式化输出）
+   * 获取公式详情（包括变量说明）
    */
-  getDetails(id, language = 'zh') {
+  getDetails(id) {
     const formula = this.getById(id);
     if (!formula) {
       return { error: `公式 ${id} 未找到` };
     }
-
-    const name = language === 'en' ? formula.name_en : formula.name;
-    const description = language === 'en' ? formula.description_en : formula.description;
-
-    let details = `# ${name}\n\n`;
-    details += `**分类**: ${formula.category} / ${formula.subcategory}\n`;
-    details += `**难度**: ${formula.difficulty}\n\n`;
-    details += `## 公式\n\n`;
-    details += `\`\`\`\n${formula.formula}\n\`\`\`\n\n`;
-    details += `## LaTeX\n\n`;
-    details += `\`\`\`latex\n${formula.latex}\n\`\`\`\n\n`;
-    details += `## 变量\n\n`;
-    for (const [key, variable] of Object.entries(formula.variables)) {
-      const varName = language === 'en' ? variable.name_en : variable.name;
-      const varDesc = language === 'en' ? variable.description_en : variable.description;
-      details += `- **${key}**: ${varName} (${variable.unit}) — ${varDesc}\n`;
-    }
-    details += `\n## 说明\n\n${description}\n\n`;
-    
-    if (formula.examples && formula.examples.length > 0) {
-      details += `## 示例\n\n`;
-      formula.examples.forEach((example, index) => {
-        details += `### 示例 ${index + 1}\n\n`;
-        details += `**问题**: ${example.problem}\n\n`;
-        details += `**解答**: ${example.solution}\n\n`;
-      });
-    }
-
-    return { details };
+    return {
+      success: true,
+      formula: formula
+    };
   }
 }
 
