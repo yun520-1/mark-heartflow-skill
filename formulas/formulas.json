@@ -14559,6 +14559,60 @@
       "name": "隐形传态成功率",
       "formula": "P(成功) = 1 if Bell measurement",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_measurement_born",
+      "name": "Born 规则（测量概率）",
+      "formula": "P(i) = |⟨i|ψ⟩|²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_measurement_expectation",
+      "name": "期望值",
+      "formula": "⟨O⟩ = ⟨ψ|O|ψ⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_measurement_projective",
+      "name": "投影测量",
+      "formula": "P_i = |i⟩⟨i|",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_measurement_projective_prob",
+      "name": "投影测量概率",
+      "formula": "P(i) = ⟨ψ|P_i|ψ⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_measurement_povm",
+      "name": "POVM 元素",
+      "formula": "E_i = M_i^† M_i, Σ_i E_i = I",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_measurement_povm_prob",
+      "name": "POVM 测量概率",
+      "formula": "P(i) = ⟨ψ|E_i|ψ⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_measurement_weak",
+      "name": "弱测量偏移",
+      "formula": "⟨x⟩_w = Re(⟨ψ_f|⟨x|∂⟨x|ψ_i⟩ / ⟨ψ_f|ψ_i⟩)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_tomography_linear",
+      "name": "线性层析",
+      "formula": "ρ = Σ_{i,j} a_{i,j} |i⟩⟨j|",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_tomography_mle",
+      "name": "最大似然层析",
+      "formula": "ρ_MLE = argmax Pr(data|ρ)",
+      "category": "quantum_computing"
     }
   ]
 }
