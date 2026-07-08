@@ -1,0 +1,333 @@
+{
+  "metadata": {
+    "version": "7.7.0",
+    "last_updated": "2026-07-08",
+    "total_formulas": 40,
+    "categories": [
+      "mathematics"
+    ],
+    "source": "wikipedia_manual_math"
+  },
+  "formulas": [
+    {
+      "id": "wiki_math_calc_derivative_def",
+      "name": "导数定义",
+      "formula": "f'(x) = lim_{h→0} (f(x+h)-f(x))/h",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_calc_power_rule",
+      "name": "幂函数求导",
+      "formula": "d/dx x^n = n*x^{n-1}",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_calc_product_rule",
+      "name": "乘积法则",
+      "formula": "d/dx [u*v] = u'*v + u*v'",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_calc_chain_rule",
+      "name": "链式法则",
+      "formula": "d/dx f(g(x)) = f'(g(x)) * g'(x)",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_calc_fundamental_theorem",
+      "name": "微积分基本定理",
+      "formula": "∫_a^b f(x) dx = F(b) - F(a)",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_calc_lhopital",
+      "name": "洛必达法则",
+      "formula": "lim_{x→c} f(x)/g(x) = lim_{x→c} f'(x)/g'(x)",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_calc_taylor",
+      "name": "泰勒公式",
+      "formula": "f(x) = f(a) + f'(a)(x-a) + f''(a)(x-a)²/2! + ...",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_calc_maclaurin",
+      "name": "麦克劳林公式",
+      "formula": "f(x) = f(0) + f'(0)x + f''(0)x²/2! + ...",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_la_determinant_2x2",
+      "name": "2x2 行列式",
+      "formula": "det([[a,b],[c,d]]) = a*d - b*c",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_la_eigenvalue",
+      "name": "特征值方程",
+      "formula": "det(A - λI) = 0",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_la_eigenvector",
+      "name": "特征向量",
+      "formula": "A*v = λ*v",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_la_svd",
+      "name": "奇异值分解",
+      "formula": "A = U*Σ*V^T",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_la_lu",
+      "name": "LU 分解",
+      "formula": "A = L*U",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_la_qr",
+      "name": "QR 分解",
+      "formula": "A = Q*R",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_la_inverse",
+      "name": "矩阵逆",
+      "formula": "A^{-1}*A = I",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_la_trace",
+      "name": "矩阵的迹",
+      "formula": "tr(A) = Σ A_{ii}",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_la_rank",
+      "name": "矩阵的秩",
+      "formula": "rank(A) = dim(col(A))",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_prob_bayes",
+      "name": "贝叶斯定理",
+      "formula": "P(A|B) = P(B|A)*P(A)/P(B)",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_prob_total",
+      "name": "全概率公式",
+      "formula": "P(B) = Σ_i P(B|A_i)*P(A_i)",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_prob_expectation",
+      "name": "期望",
+      "formula": "E[X] = Σ x*P(X=x)",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_prob_variance",
+      "name": "方差",
+      "formula": "Var(X) = E[(X-μ)²]",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_prob_covariance",
+      "name": "协方差",
+      "formula": "Cov(X,Y) = E[(X-μ_X)(Y-μ_Y)]",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_prob_correlation",
+      "name": "相关系数",
+      "formula": "ρ(X,Y) = Cov(X,Y)/(σ_X*σ_Y)",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_prob_normal",
+      "name": "正态分布",
+      "formula": "f(x) = (1/√(2πσ²)) exp(-(x-μ)²/(2σ²))",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_prob_bernoulli",
+      "name": "伯努利分布",
+      "formula": "P(X=k) = p^k*(1-p)^{1-k}",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_prob_binomial",
+      "name": "二项分布",
+      "formula": "P(X=k) = C(n,k) p^k (1-p)^{n-k}",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_prob_poisson",
+      "name": "泊松分布",
+      "formula": "P(X=k) = (λ^k/k!) e^{-λ}",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_stat_sample_mean",
+      "name": "样本均值",
+      "formula": "x̄ = (1/n) Σ x_i",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_stat_sample_variance",
+      "name": "样本方差",
+      "formula": "s² = (1/(n-1)) Σ (x_i - x̄)²",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_stat_t_test",
+      "name": "t 检验",
+      "formula": "t = (x̄ - μ)/(s/√n)",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_stat_anova",
+      "name": "方差分析",
+      "formula": "F = MS_between/MS_within",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_stat_regression",
+      "name": "线性回归",
+      "formula": "y = β_0 + β_1*x + ε",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_stat_r_squared",
+      "name": "决定系数",
+      "formula": "R² = 1 - SS_res/SS_tot",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_stat_p_value",
+      "name": "p 值",
+      "formula": "P(T ≥ t | H_0)",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_stat_confidence_interval",
+      "name": "置信区间",
+      "formula": "x̄ ± z*σ/√n",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_num_trapezoidal",
+      "name": "梯形法则",
+      "formula": "∫_a^b f(x) dx ≈ (h/2)[f(a) + 2Σ f(x_i) + f(b)]",
+      "category": "mathematics",
+      "subcategory": "numerical_analysis",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_num_simpsons",
+      "name": "辛普森法则",
+      "formula": "∫_a^b f(x) dx ≈ (h/3)[f(a) + 4Σ f(x_{2i+1}) + 2Σ f(x_{2i}) + f(b)]",
+      "category": "mathematics",
+      "subcategory": "numerical_analysis",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_num_euler_method",
+      "name": "欧拉方法",
+      "formula": "y_{n+1} = y_n + h*f(t_n, y_n)",
+      "category": "mathematics",
+      "subcategory": "numerical_analysis",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_num_newton",
+      "name": "牛顿法",
+      "formula": "x_{n+1} = x_n - f(x_n)/f'(x_n)",
+      "category": "mathematics",
+      "subcategory": "numerical_analysis",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "wiki_math_num_gauss_seidel",
+      "name": "高斯-赛德尔",
+      "formula": "x_i^{(k+1)} = (b_i - Σ_{j<i} a_{ij}x_j^{(k+1)} - Σ_{j>i} a_{ij}x_j^{(k)})/a_{ii}",
+      "category": "mathematics",
+      "subcategory": "numerical_analysis",
+      "source": "wikipedia_manual_math"
+    }
+  ]
+}
