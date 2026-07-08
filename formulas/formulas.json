@@ -16881,6 +16881,1422 @@
       "name": "量子引力 causal_dynamical",
       "formula": "quantum_gravity_causal_dynamical = f(quantum_gravity_causal_dynamical_params)",
       "category": "quantum_computing"
+    },
+    {
+      "id": "math_0",
+      "name": "数学 algebra",
+      "formula": "math_algebra = f(math_algebra_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_1",
+      "name": "数学 geometry",
+      "formula": "math_geometry = f(math_geometry_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_2",
+      "name": "数学 calculus",
+      "formula": "math_calculus = f(math_calculus_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_3",
+      "name": "数学 topology",
+      "formula": "math_topology = f(math_topology_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_4",
+      "name": "数学 number_theory",
+      "formula": "math_number_theory = f(math_number_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_5",
+      "name": "数学 combinatorics",
+      "formula": "math_combinatorics = f(math_combinatorics_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_6",
+      "name": "数学 probability",
+      "formula": "math_probability = f(math_probability_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_7",
+      "name": "数学 statistics",
+      "formula": "math_statistics = f(math_statistics_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_8",
+      "name": "数学 logic",
+      "formula": "math_logic = f(math_logic_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_9",
+      "name": "数学 set_theory",
+      "formula": "math_set_theory = f(math_set_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_10",
+      "name": "数学 category_theory",
+      "formula": "math_category_theory = f(math_category_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_11",
+      "name": "数学 algebraic_geometry",
+      "formula": "math_algebraic_geometry = f(math_algebraic_geometry_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_12",
+      "name": "数学 differential_geometry",
+      "formula": "math_differential_geometry = f(math_differential_geometry_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_13",
+      "name": "数学 functional_analysis",
+      "formula": "math_functional_analysis = f(math_functional_analysis_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_14",
+      "name": "数学 complex_analysis",
+      "formula": "math_complex_analysis = f(math_complex_analysis_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_15",
+      "name": "数学 real_analysis",
+      "formula": "math_real_analysis = f(math_real_analysis_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_16",
+      "name": "数学 ode",
+      "formula": "math_ode = f(math_ode_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_17",
+      "name": "数学 pde",
+      "formula": "math_pde = f(math_pde_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_18",
+      "name": "数学 optimization",
+      "formula": "math_optimization = f(math_optimization_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_19",
+      "name": "数学 numerical_analysis",
+      "formula": "math_numerical_analysis = f(math_numerical_analysis_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_20",
+      "name": "数学 discrete_math",
+      "formula": "math_discrete_math = f(math_discrete_math_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_21",
+      "name": "数学 graph_theory",
+      "formula": "math_graph_theory = f(math_graph_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_22",
+      "name": "数学 game_theory",
+      "formula": "math_game_theory = f(math_game_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_23",
+      "name": "数学 operation_research",
+      "formula": "math_operation_research = f(math_operation_research_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_24",
+      "name": "数学 control_theory",
+      "formula": "math_control_theory = f(math_control_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_25",
+      "name": "数学 signal_processing",
+      "formula": "math_signal_processing = f(math_signal_processing_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_26",
+      "name": "数学 information_theory",
+      "formula": "math_information_theory = f(math_information_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_27",
+      "name": "数学 coding_theory",
+      "formula": "math_coding_theory = f(math_coding_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_28",
+      "name": "数学 cryptography_math",
+      "formula": "math_cryptography_math = f(math_cryptography_math_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_29",
+      "name": "数学 number_theory_applied",
+      "formula": "math_number_theory_applied = f(math_number_theory_applied_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_30",
+      "name": "数学 mathematical_physics",
+      "formula": "math_mathematical_physics = f(math_mathematical_physics_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_31",
+      "name": "数学 differential_equations",
+      "formula": "math_differential_equations = f(math_differential_equations_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_32",
+      "name": "数学 integral_equations",
+      "formula": "math_integral_equations = f(math_integral_equations_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_33",
+      "name": "数学 functional_equations",
+      "formula": "math_functional_equations = f(math_functional_equations_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_34",
+      "name": "数学 special_functions",
+      "formula": "math_special_functions = f(math_special_functions_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_35",
+      "name": "数学 orthogonal_polynomials",
+      "formula": "math_orthogonal_polynomials = f(math_orthogonal_polynomials_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_36",
+      "name": "数学 fourier_analysis",
+      "formula": "math_fourier_analysis = f(math_fourier_analysis_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_37",
+      "name": "数学 wavelet_analysis",
+      "formula": "math_wavelet_analysis = f(math_wavelet_analysis_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_38",
+      "name": "数学 harmonic_analysis",
+      "formula": "math_harmonic_analysis = f(math_harmonic_analysis_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_39",
+      "name": "数学 measure_theory",
+      "formula": "math_measure_theory = f(math_measure_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_40",
+      "name": "数学 ergodic_theory",
+      "formula": "math_ergodic_theory = f(math_ergodic_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_41",
+      "name": "数学 dynamical_systems",
+      "formula": "math_dynamical_systems = f(math_dynamical_systems_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_42",
+      "name": "数学 chaos_theory",
+      "formula": "math_chaos_theory = f(math_chaos_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_43",
+      "name": "数学 fractal_theory",
+      "formula": "math_fractal_theory = f(math_fractal_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_44",
+      "name": "数学 complexity_theory",
+      "formula": "math_complexity_theory = f(math_complexity_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_45",
+      "name": "数学 computability_theory",
+      "formula": "math_computability_theory = f(math_computability_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "math_46",
+      "name": "数学 model_theory",
+      "formula": "math_model_theory = f(math_model_theory_params)",
+      "category": "mathematics"
+    },
+    {
+      "id": "physics_47",
+      "name": "物理 classical_mech",
+      "formula": "physics_classical_mech = f(physics_classical_mech_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_48",
+      "name": "物理 electromagnetism",
+      "formula": "physics_electromagnetism = f(physics_electromagnetism_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_49",
+      "name": "物理 thermodynamics",
+      "formula": "physics_thermodynamics = f(physics_thermodynamics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_50",
+      "name": "物理 statistical_mech",
+      "formula": "physics_statistical_mech = f(physics_statistical_mech_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_51",
+      "name": "物理 quantum_mech",
+      "formula": "physics_quantum_mech = f(physics_quantum_mech_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_52",
+      "name": "物理 relativity",
+      "formula": "physics_relativity = f(physics_relativity_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_53",
+      "name": "物理 fluid_dynamics",
+      "formula": "physics_fluid_dynamics = f(physics_fluid_dynamics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_54",
+      "name": "物理 plasma_physics",
+      "formula": "physics_plasma_physics = f(physics_plasma_physics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_55",
+      "name": "物理 optics",
+      "formula": "physics_optics = f(physics_optics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_56",
+      "name": "物理 acoustics",
+      "formula": "physics_acoustics = f(physics_acoustics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_57",
+      "name": "物理 solid_state",
+      "formula": "physics_solid_state = f(physics_solid_state_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_58",
+      "name": "物理 nuclear_physics",
+      "formula": "physics_nuclear_physics = f(physics_nuclear_physics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_59",
+      "name": "物理 particle_physics",
+      "formula": "physics_particle_physics = f(physics_particle_physics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_60",
+      "name": "物理 astrophysics",
+      "formula": "physics_astrophysics = f(physics_astrophysics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_61",
+      "name": "物理 cosmology",
+      "formula": "physics_cosmology = f(physics_cosmology_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_62",
+      "name": "物理 biophysics",
+      "formula": "physics_biophysics = f(physics_biophysics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_63",
+      "name": "物理 geophysics",
+      "formula": "physics_geophysics = f(physics_geophysics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_64",
+      "name": "物理 atmospheric_physics",
+      "formula": "physics_atmospheric_physics = f(physics_atmospheric_physics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_65",
+      "name": "物理 oceanography",
+      "formula": "physics_oceanography = f(physics_oceanography_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_66",
+      "name": "物理 climate_physics",
+      "formula": "physics_climate_physics = f(physics_climate_physics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_67",
+      "name": "物理 materials_science",
+      "formula": "physics_materials_science = f(physics_materials_science_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_68",
+      "name": "物理 nanotechnology",
+      "formula": "physics_nanotechnology = f(physics_nanotechnology_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_69",
+      "name": "物理 condensed_matter",
+      "formula": "physics_condensed_matter = f(physics_condensed_matter_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_70",
+      "name": "物理 surface_science",
+      "formula": "physics_surface_science = f(physics_surface_science_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_71",
+      "name": "物理 low_dimensional",
+      "formula": "physics_low_dimensional = f(physics_low_dimensional_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_72",
+      "name": "物理 quantum_materials",
+      "formula": "physics_quantum_materials = f(physics_quantum_materials_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_73",
+      "name": "物理 topological_materials",
+      "formula": "physics_topological_materials = f(physics_topological_materials_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_74",
+      "name": "物理 strongly_correlated",
+      "formula": "physics_strongly_correlated = f(physics_strongly_correlated_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_75",
+      "name": "物理 high_energy_physics",
+      "formula": "physics_high_energy_physics = f(physics_high_energy_physics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_76",
+      "name": "物理 nuclear_theory",
+      "formula": "physics_nuclear_theory = f(physics_nuclear_theory_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_77",
+      "name": "物理 particle_astrophysics",
+      "formula": "physics_particle_astrophysics = f(physics_particle_astrophysics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_78",
+      "name": "物理 gravitational_physics",
+      "formula": "physics_gravitational_physics = f(physics_gravitational_physics_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_79",
+      "name": "物理 cosmology_theory",
+      "formula": "physics_cosmology_theory = f(physics_cosmology_theory_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_80",
+      "name": "物理 early_universe",
+      "formula": "physics_early_universe = f(physics_early_universe_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_81",
+      "name": "物理 dark_matter",
+      "formula": "physics_dark_matter = f(physics_dark_matter_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_82",
+      "name": "物理 dark_energy",
+      "formula": "physics_dark_energy = f(physics_dark_energy_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_83",
+      "name": "物理 modified_gravity",
+      "formula": "physics_modified_gravity = f(physics_modified_gravity_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_84",
+      "name": "物理 quantum_gravity",
+      "formula": "physics_quantum_gravity = f(physics_quantum_gravity_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_85",
+      "name": "物理 string_theory",
+      "formula": "physics_string_theory = f(physics_string_theory_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_86",
+      "name": "物理 brane_world",
+      "formula": "physics_brane_world = f(physics_brane_world_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_87",
+      "name": "物理 extra_dimensions",
+      "formula": "physics_extra_dimensions = f(physics_extra_dimensions_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_88",
+      "name": "物理 supersymmetry",
+      "formula": "physics_supersymmetry = f(physics_supersymmetry_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_89",
+      "name": "物理 supergravity",
+      "formula": "physics_supergravity = f(physics_supergravity_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_90",
+      "name": "物理 superstrings",
+      "formula": "physics_superstrings = f(physics_superstrings_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_91",
+      "name": "物理 M_theory",
+      "formula": "physics_M_theory = f(physics_M_theory_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_92",
+      "name": "物理 F_theory",
+      "formula": "physics_F_theory = f(physics_F_theory_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_93",
+      "name": "物理 AdS_CFT",
+      "formula": "physics_AdS_CFT = f(physics_AdS_CFT_params)",
+      "category": "physics"
+    },
+    {
+      "id": "physics_94",
+      "name": "物理 holographic_duality",
+      "formula": "physics_holographic_duality = f(physics_holographic_duality_params)",
+      "category": "physics"
+    },
+    {
+      "id": "chemistry_95",
+      "name": "化学 organic",
+      "formula": "chemistry_organic = f(chemistry_organic_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_96",
+      "name": "化学 inorganic",
+      "formula": "chemistry_inorganic = f(chemistry_inorganic_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_97",
+      "name": "化学 physical_chem",
+      "formula": "chemistry_physical_chem = f(chemistry_physical_chem_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_98",
+      "name": "化学 analytical",
+      "formula": "chemistry_analytical = f(chemistry_analytical_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_99",
+      "name": "化学 biochemistry",
+      "formula": "chemistry_biochemistry = f(chemistry_biochemistry_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_100",
+      "name": "化学 polymer",
+      "formula": "chemistry_polymer = f(chemistry_polymer_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_101",
+      "name": "化学 materials",
+      "formula": "chemistry_materials = f(chemistry_materials_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_102",
+      "name": "化学 nanochemistry",
+      "formula": "chemistry_nanochemistry = f(chemistry_nanochemistry_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_103",
+      "name": "化学 theoretical_chem",
+      "formula": "chemistry_theoretical_chem = f(chemistry_theoretical_chem_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_104",
+      "name": "化学 computational_chem",
+      "formula": "chemistry_computational_chem = f(chemistry_computational_chem_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_105",
+      "name": "化学 spectroscopy",
+      "formula": "chemistry_spectroscopy = f(chemistry_spectroscopy_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_106",
+      "name": "化学 electrochemistry",
+      "formula": "chemistry_electrochemistry = f(chemistry_electrochemistry_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_107",
+      "name": "化学 photochemistry",
+      "formula": "chemistry_photochemistry = f(chemistry_photochemistry_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_108",
+      "name": "化学 surface_chem",
+      "formula": "chemistry_surface_chem = f(chemistry_surface_chem_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_109",
+      "name": "化学 catalysis",
+      "formula": "chemistry_catalysis = f(chemistry_catalysis_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_110",
+      "name": "化学 green_chem",
+      "formula": "chemistry_green_chem = f(chemistry_green_chem_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_111",
+      "name": "化学 medicinal_chem",
+      "formula": "chemistry_medicinal_chem = f(chemistry_medicinal_chem_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_112",
+      "name": "化学 pharmaceutical",
+      "formula": "chemistry_pharmaceutical = f(chemistry_pharmaceutical_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_113",
+      "name": "化学 neurochemistry",
+      "formula": "chemistry_neurochemistry = f(chemistry_neurochemistry_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_114",
+      "name": "化学 immunochemistry",
+      "formula": "chemistry_immunochemistry = f(chemistry_immunochemistry_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_115",
+      "name": "化学 genomics",
+      "formula": "chemistry_genomics = f(chemistry_genomics_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_116",
+      "name": "化学 proteomics",
+      "formula": "chemistry_proteomics = f(chemistry_proteomics_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_117",
+      "name": "化学 metabolomics",
+      "formula": "chemistry_metabolomics = f(chemistry_metabolomics_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_118",
+      "name": "化学 bioinformatics",
+      "formula": "chemistry_bioinformatics = f(chemistry_bioinformatics_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_119",
+      "name": "化学 systems_biology",
+      "formula": "chemistry_systems_biology = f(chemistry_systems_biology_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_120",
+      "name": "化学 synthetic_biology",
+      "formula": "chemistry_synthetic_biology = f(chemistry_synthetic_biology_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_121",
+      "name": "化学 structural_biology",
+      "formula": "chemistry_structural_biology = f(chemistry_structural_biology_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_122",
+      "name": "化学 molecular_dynamics",
+      "formula": "chemistry_molecular_dynamics = f(chemistry_molecular_dynamics_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_123",
+      "name": "化学 quantum_chemistry",
+      "formula": "chemistry_quantum_chemistry = f(chemistry_quantum_chemistry_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_124",
+      "name": "化学 molecular_orbitals",
+      "formula": "chemistry_molecular_orbitals = f(chemistry_molecular_orbitals_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_125",
+      "name": "化学 density_functional",
+      "formula": "chemistry_density_functional = f(chemistry_density_functional_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_126",
+      "name": "化学 post_HF",
+      "formula": "chemistry_post_HF = f(chemistry_post_HF_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_127",
+      "name": "化学 coupled_cluster",
+      "formula": "chemistry_coupled_cluster = f(chemistry_coupled_cluster_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_128",
+      "name": "化学 many_body",
+      "formula": "chemistry_many_body = f(chemistry_many_body_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_129",
+      "name": "化学 electronic_structure",
+      "formula": "chemistry_electronic_structure = f(chemistry_electronic_structure_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_130",
+      "name": "化学 vibrational_spectroscopy",
+      "formula": "chemistry_vibrational_spectroscopy = f(chemistry_vibrational_spectroscopy_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_131",
+      "name": "化学 rotational_spectroscopy",
+      "formula": "chemistry_rotational_spectroscopy = f(chemistry_rotational_spectroscopy_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_132",
+      "name": "化学 NMR",
+      "formula": "chemistry_NMR = f(chemistry_NMR_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_133",
+      "name": "化学 ESR",
+      "formula": "chemistry_ESR = f(chemistry_ESR_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_134",
+      "name": "化学 X_ray",
+      "formula": "chemistry_X_ray = f(chemistry_X_ray_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_135",
+      "name": "化学 neutron_diffraction",
+      "formula": "chemistry_neutron_diffraction = f(chemistry_neutron_diffraction_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_136",
+      "name": "化学 electron_microscopy",
+      "formula": "chemistry_electron_microscopy = f(chemistry_electron_microscopy_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_137",
+      "name": "化学 scanning_probe",
+      "formula": "chemistry_scanning_probe = f(chemistry_scanning_probe_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_138",
+      "name": "化学 surface_analysis",
+      "formula": "chemistry_surface_analysis = f(chemistry_surface_analysis_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_139",
+      "name": "化学 mass_spectrometry",
+      "formula": "chemistry_mass_spectrometry = f(chemistry_mass_spectrometry_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_140",
+      "name": "化学 chromatography",
+      "formula": "chemistry_chromatography = f(chemistry_chromatography_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "chemistry_141",
+      "name": "化学 separation_techniques",
+      "formula": "chemistry_separation_techniques = f(chemistry_separation_techniques_params)",
+      "category": "chemistry"
+    },
+    {
+      "id": "cs_142",
+      "name": "计算机科学 algorithms",
+      "formula": "cs_algorithms = f(cs_algorithms_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_143",
+      "name": "计算机科学 data_structures",
+      "formula": "cs_data_structures = f(cs_data_structures_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_144",
+      "name": "计算机科学 complexity_theory",
+      "formula": "cs_complexity_theory = f(cs_complexity_theory_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_145",
+      "name": "计算机科学 cryptography",
+      "formula": "cs_cryptography = f(cs_cryptography_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_146",
+      "name": "计算机科学 machine_learning",
+      "formula": "cs_machine_learning = f(cs_machine_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_147",
+      "name": "计算机科学 artificial_intelligence",
+      "formula": "cs_artificial_intelligence = f(cs_artificial_intelligence_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_148",
+      "name": "计算机科学 computer_vision",
+      "formula": "cs_computer_vision = f(cs_computer_vision_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_149",
+      "name": "计算机科学 natural_language",
+      "formula": "cs_natural_language = f(cs_natural_language_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_150",
+      "name": "计算机科学 robotics",
+      "formula": "cs_robotics = f(cs_robotics_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_151",
+      "name": "计算机科学 database",
+      "formula": "cs_database = f(cs_database_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_152",
+      "name": "计算机科学 networking",
+      "formula": "cs_networking = f(cs_networking_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_153",
+      "name": "计算机科学 operating_systems",
+      "formula": "cs_operating_systems = f(cs_operating_systems_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_154",
+      "name": "计算机科学 compiler",
+      "formula": "cs_compiler = f(cs_compiler_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_155",
+      "name": "计算机科学 security",
+      "formula": "cs_security = f(cs_security_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_156",
+      "name": "计算机科学 distributed_systems",
+      "formula": "cs_distributed_systems = f(cs_distributed_systems_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_157",
+      "name": "计算机科学 quantum_computing",
+      "formula": "cs_quantum_computing = f(cs_quantum_computing_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_158",
+      "name": "计算机科学 blockchain",
+      "formula": "cs_blockchain = f(cs_blockchain_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_159",
+      "name": "计算机科学 internet_of_things",
+      "formula": "cs_internet_of_things = f(cs_internet_of_things_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_160",
+      "name": "计算机科学 edge_computing",
+      "formula": "cs_edge_computing = f(cs_edge_computing_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_161",
+      "name": "计算机科学 cloud_computing",
+      "formula": "cs_cloud_computing = f(cs_cloud_computing_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_162",
+      "name": "计算机科学 big_data",
+      "formula": "cs_big_data = f(cs_big_data_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_163",
+      "name": "计算机科学 data_mining",
+      "formula": "cs_data_mining = f(cs_data_mining_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_164",
+      "name": "计算机科学 pattern_recognition",
+      "formula": "cs_pattern_recognition = f(cs_pattern_recognition_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_165",
+      "name": "计算机科学 neural_networks",
+      "formula": "cs_neural_networks = f(cs_neural_networks_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_166",
+      "name": "计算机科学 deep_learning",
+      "formula": "cs_deep_learning = f(cs_deep_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_167",
+      "name": "计算机科学 reinforcement_learning",
+      "formula": "cs_reinforcement_learning = f(cs_reinforcement_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_168",
+      "name": "计算机科学 supervised_learning",
+      "formula": "cs_supervised_learning = f(cs_supervised_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_169",
+      "name": "计算机科学 unsupervised_learning",
+      "formula": "cs_unsupervised_learning = f(cs_unsupervised_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_170",
+      "name": "计算机科学 semi_supervised",
+      "formula": "cs_semi_supervised = f(cs_semi_supervised_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_171",
+      "name": "计算机科学 transfer_learning",
+      "formula": "cs_transfer_learning = f(cs_transfer_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_172",
+      "name": "计算机科学 meta_learning",
+      "formula": "cs_meta_learning = f(cs_meta_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_173",
+      "name": "计算机科学 few_shot",
+      "formula": "cs_few_shot = f(cs_few_shot_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_174",
+      "name": "计算机科学 zero_shot",
+      "formula": "cs_zero_shot = f(cs_zero_shot_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_175",
+      "name": "计算机科学 multi_task",
+      "formula": "cs_multi_task = f(cs_multi_task_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_176",
+      "name": "计算机科学 continual_learning",
+      "formula": "cs_continual_learning = f(cs_continual_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_177",
+      "name": "计算机科学 online_learning",
+      "formula": "cs_online_learning = f(cs_online_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_178",
+      "name": "计算机科学 active_learning",
+      "formula": "cs_active_learning = f(cs_active_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_179",
+      "name": "计算机科学 adversarial_learning",
+      "formula": "cs_adversarial_learning = f(cs_adversarial_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_180",
+      "name": "计算机科学 federated_learning",
+      "formula": "cs_federated_learning = f(cs_federated_learning_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_181",
+      "name": "计算机科学 privacy_preserving",
+      "formula": "cs_privacy_preserving = f(cs_privacy_preserving_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_182",
+      "name": "计算机科学 secure_multiparty",
+      "formula": "cs_secure_multiparty = f(cs_secure_multiparty_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_183",
+      "name": "计算机科学 homomorphic_encryption",
+      "formula": "cs_homomorphic_encryption = f(cs_homomorphic_encryption_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_184",
+      "name": "计算机科学 differential_privacy",
+      "formula": "cs_differential_privacy = f(cs_differential_privacy_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_185",
+      "name": "计算机科学 zero_knowledge",
+      "formula": "cs_zero_knowledge = f(cs_zero_knowledge_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_186",
+      "name": "计算机科学 multi_party_computation",
+      "formula": "cs_multi_party_computation = f(cs_multi_party_computation_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_187",
+      "name": "计算机科学 post_quantum_crypto",
+      "formula": "cs_post_quantum_crypto = f(cs_post_quantum_crypto_params)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cog_sci_188",
+      "name": "认知科学 perception",
+      "formula": "cog_sci_perception = f(cog_sci_perception_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_189",
+      "name": "认知科学 attention",
+      "formula": "cog_sci_attention = f(cog_sci_attention_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_190",
+      "name": "认知科学 memory",
+      "formula": "cog_sci_memory = f(cog_sci_memory_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_191",
+      "name": "认知科学 learning",
+      "formula": "cog_sci_learning = f(cog_sci_learning_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_192",
+      "name": "认知科学 decision_making",
+      "formula": "cog_sci_decision_making = f(cog_sci_decision_making_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_193",
+      "name": "认知科学 problem_solving",
+      "formula": "cog_sci_problem_solving = f(cog_sci_problem_solving_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_194",
+      "name": "认知科学 creativity",
+      "formula": "cog_sci_creativity = f(cog_sci_creativity_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_195",
+      "name": "认知科学 intelligence",
+      "formula": "cog_sci_intelligence = f(cog_sci_intelligence_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_196",
+      "name": "认知科学 consciousness",
+      "formula": "cog_sci_consciousness = f(cog_sci_consciousness_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_197",
+      "name": "认知科学 emotion",
+      "formula": "cog_sci_emotion = f(cog_sci_emotion_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_198",
+      "name": "认知科学 social_cognition",
+      "formula": "cog_sci_social_cognition = f(cog_sci_social_cognition_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_199",
+      "name": "认知科学 development",
+      "formula": "cog_sci_development = f(cog_sci_development_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_200",
+      "name": "认知科学 aging",
+      "formula": "cog_sci_aging = f(cog_sci_aging_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_201",
+      "name": "认知科学 disorders",
+      "formula": "cog_sci_disorders = f(cog_sci_disorders_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_202",
+      "name": "认知科学 neuroscience",
+      "formula": "cog_sci_neuroscience = f(cog_sci_neuroscience_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_203",
+      "name": "认知科学 artificial_cognition",
+      "formula": "cog_sci_artificial_cognition = f(cog_sci_artificial_cognition_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_204",
+      "name": "认知科学 cognitive_neuroscience",
+      "formula": "cog_sci_cognitive_neuroscience = f(cog_sci_cognitive_neuroscience_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_205",
+      "name": "认知科学 behavioral_neuroscience",
+      "formula": "cog_sci_behavioral_neuroscience = f(cog_sci_behavioral_neuroscience_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_206",
+      "name": "认知科学 systems_neuroscience",
+      "formula": "cog_sci_systems_neuroscience = f(cog_sci_systems_neuroscience_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_207",
+      "name": "认知科学 clinical_neuroscience",
+      "formula": "cog_sci_clinical_neuroscience = f(cog_sci_clinical_neuroscience_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_208",
+      "name": "认知科学 computational_neuroscience",
+      "formula": "cog_sci_computational_neuroscience = f(cog_sci_computational_neuroscience_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_209",
+      "name": "认知科学 theoretical_neuroscience",
+      "formula": "cog_sci_theoretical_neuroscience = f(cog_sci_theoretical_neuroscience_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_210",
+      "name": "认知科学 cognitive_psychology",
+      "formula": "cog_sci_cognitive_psychology = f(cog_sci_cognitive_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_211",
+      "name": "认知科学 developmental_psychology",
+      "formula": "cog_sci_developmental_psychology = f(cog_sci_developmental_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_212",
+      "name": "认知科学 social_psychology",
+      "formula": "cog_sci_social_psychology = f(cog_sci_social_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_213",
+      "name": "认知科学 clinical_psychology",
+      "formula": "cog_sci_clinical_psychology = f(cog_sci_clinical_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_214",
+      "name": "认知科学 neuropsychology",
+      "formula": "cog_sci_neuropsychology = f(cog_sci_neuropsychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_215",
+      "name": "认知科学 health_psychology",
+      "formula": "cog_sci_health_psychology = f(cog_sci_health_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_216",
+      "name": "认知科学 environmental_psychology",
+      "formula": "cog_sci_environmental_psychology = f(cog_sci_environmental_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_217",
+      "name": "认知科学 organizational_psychology",
+      "formula": "cog_sci_organizational_psychology = f(cog_sci_organizational_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_218",
+      "name": "认知科学 educational_psychology",
+      "formula": "cog_sci_educational_psychology = f(cog_sci_educational_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_219",
+      "name": "认知科学 forensic_psychology",
+      "formula": "cog_sci_forensic_psychology = f(cog_sci_forensic_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_220",
+      "name": "认知科学 sports_psychology",
+      "formula": "cog_sci_sports_psychology = f(cog_sci_sports_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_221",
+      "name": "认知科学 counseling_psychology",
+      "formula": "cog_sci_counseling_psychology = f(cog_sci_counseling_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_222",
+      "name": "认知科学 community_psychology",
+      "formula": "cog_sci_community_psychology = f(cog_sci_community_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_223",
+      "name": "认知科学 positive_psychology",
+      "formula": "cog_sci_positive_psychology = f(cog_sci_positive_psychology_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_224",
+      "name": "认知科学 human_factors",
+      "formula": "cog_sci_human_factors = f(cog_sci_human_factors_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_225",
+      "name": "认知科学 ergonomics",
+      "formula": "cog_sci_ergonomics = f(cog_sci_ergonomics_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_226",
+      "name": "认知科学 human_computer_interaction",
+      "formula": "cog_sci_human_computer_interaction = f(cog_sci_human_computer_interaction_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_227",
+      "name": "认知科学 user_experience",
+      "formula": "cog_sci_user_experience = f(cog_sci_user_experience_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_228",
+      "name": "认知科学 cognitive_ergonomics",
+      "formula": "cog_sci_cognitive_ergonomics = f(cog_sci_cognitive_ergonomics_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_229",
+      "name": "认知科学 mental_health",
+      "formula": "cog_sci_mental_health = f(cog_sci_mental_health_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_230",
+      "name": "认知科学 well_being",
+      "formula": "cog_sci_well_being = f(cog_sci_well_being_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_231",
+      "name": "认知科学 resilience",
+      "formula": "cog_sci_resilience = f(cog_sci_resilience_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_232",
+      "name": "认知科学 coping",
+      "formula": "cog_sci_coping = f(cog_sci_coping_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_233",
+      "name": "认知科学 stress",
+      "formula": "cog_sci_stress = f(cog_sci_stress_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_234",
+      "name": "认知科学 emotion_regulation",
+      "formula": "cog_sci_emotion_regulation = f(cog_sci_emotion_regulation_params)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_sci_235",
+      "name": "认知科学 self_regulation",
+      "formula": "cog_sci_self_regulation = f(cog_sci_self_regulation_params)",
+      "category": "cognitive_science"
     }
   ]
 }
