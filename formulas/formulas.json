@@ -15219,6 +15219,138 @@
       "name": "量子通信复杂度",
       "formula": "QCC(f) = min {qubits: Alice and Bob compute f}",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_berry_connection",
+      "name": "Berry 联络",
+      "formula": "A_n(R) = i ⟨ψ_n(R)|∇_R|ψ_n(R)⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_chern_insulator",
+      "name": "Chern 绝缘体",
+      "formula": "σ_{xy} = (e²/h) C",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_quantum_spin_hall",
+      "name": "量子自旋霍尔效应",
+      "formula": "σ_{sH} = (e/2π) (C_↑ - C_↓)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_majorana_bound_state",
+      "name": "Majorana 束缚态",
+      "formula": "γ = γ†, {γ_i, γ_j} = 2δ_{ij}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_skyrmion_number",
+      "name": "Skyrmion 拓扑数",
+      "formula": "Q = (1/4π) ∫ d²x ε_{ij} n·(∂_i n × ∂_j n)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_topological_order",
+      "name": "拓扑序",
+      "formula": "S = ln(D), D = Σ_a d_a²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_entanglement_spectrum",
+      "name": "纠缠谱",
+      "formula": "λ_i = exp(-ξ_i/2)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_loop_quantum_gravity",
+      "name": "圈量子引力",
+      "formula": "⟨h|Φ(g,π)|h\"> = ∫ Dg Dπ e^{iS[g,π]} Φ(g,π)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_string_theory",
+      "name": "弦理论",
+      "formula": "S = (1/4πα_prime) integral d²σ √h h^{ab} ∂_a X^μ ∂_b X_μ",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_m_theory",
+      "name": "M 理论",
+      "formula": "S_M = (1/(2κ_11²)) integral d¹¹x √g (R - ½ |F₄|²) + ...",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_ads_cft_correspondence",
+      "name": "AdS/CFT 对应",
+      "formula": "Z_CFT[g] = Z_string on AdS[g]",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_black_hole_information",
+      "name": "黑洞信息悖论",
+      "formula": "S_total = S_BH + S_rad ≥ 0",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_hawking_radiation",
+      "name": "霍金辐射谱",
+      "formula": "dN/dω = (ω²/πc³) (1/(exp(ℏω/k_B T_H) - 1))",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_wheeler_dewitt_equation",
+      "name": "Wheeler-deWitt 方程",
+      "formula": "H|Ψ> = 0",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_grav_quantum_cosmology",
+      "name": "量子宇宙学",
+      "formula": "H|Ψ> = 0, |Ψ> = Σ_n c_n |n>",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_slow_roll_parameter",
+      "name": "慢滚参数",
+      "formula": "ε = (M_Pl²/2) (V_prime/V)²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_spectral_index",
+      "name": "谱指数",
+      "formula": "n_s = 1 - 6ε + 2η",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_tensor_to_scalar",
+      "name": "张量-标量比",
+      "formula": "r = 16ε",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_primordial_power",
+      "name": "原初功率谱",
+      "formula": "P_R(k) = A_s (k/k_pivot)^{n_s-1}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_reheating_temperature",
+      "name": "再加热温度",
+      "formula": "T_RH = (30 V(φ_end)/(π² g_*))^{1/4}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_dark_matter_density",
+      "name": "暗物质密度",
+      "formula": "Ω_DM h² = 0.12",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cosmo_baryon_acoustic_oscillation",
+      "name": "BAO 尺度",
+      "formula": "r_s = integral_{z_drag}^{∞} c_s(z)/H(z) dz",
+      "category": "quantum_computing"
     }
   ]
 }
