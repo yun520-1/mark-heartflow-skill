@@ -15543,6 +15543,12 @@
       "name": "量子基础",
       "formula": "Born rule: P(i) = |⟨i|ψ⟩|²",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_topo_quantum_spin_liquid",
+      "name": "量子自旋液体",
+      "formula": "S = ln(2)/2 ≈ 0.346",
+      "category": "quantum_computing"
     }
   ]
 }
