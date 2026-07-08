@@ -3122,7 +3122,7 @@ class HeartFlow {
         // 静默禁用对话持久化（未配置加密 key）
         return { success: false, error: 'disabled', reason: 'HEARTFLOW_DIALOGUE_KEY not set' };
       }
-      const key = crypto.scryptSync(keySource, 'salt', 32);
+      const key = crypto.scryptSync(keySource, salt, 32);
       const iv = crypto.randomBytes(16);
       const cipher = crypto.createCipheriv(algorithm, key, iv);
       let encrypted = cipher.update(content, 'utf8', 'hex');
@@ -3135,6 +3135,7 @@ class HeartFlow {
         role,
         content: encrypted,
         iv: iv.toString('hex'),
+        salt: salt.toString('hex'),
         authTag: authTag.toString('hex'),
         ts: new Date().toISOString(),
         chatId: meta.chatId || null,
@@ -3617,7 +3618,9 @@ class HeartFlow {
         // 静默禁用对话持久化（未配置加密 key）
         return { success: false, error: 'disabled', reason: 'HEARTFLOW_DIALOGUE_KEY not set' };
       }
-      const key = crypto.scryptSync(keySource, 'salt', 32);
+      // [AUDIT-FIX] 随机盐：每次加密生成独立 salt，与密文同存
+      const salt = crypto.randomBytes(16);
+      const key = crypto.scryptSync(keySource, salt, 32);
       const iv = crypto.randomBytes(16);
       const cipher = crypto.createCipheriv(algorithm, key, iv);
       const entry = {
@@ -3629,6 +3632,8 @@ class HeartFlow {
         themes: data.dreamResult?.results?.synthesize?.themes || [],
         peakLevel: data.dreamResult?.results?.synthesize?.narrative_structure?.layer || 'L1',
         evolutionApplied: !!data.evolution,
+        iv: iv.toString('hex'),
+        salt: salt.toString('hex'),
       };
       let encrypted = cipher.update(JSON.stringify(entry, null, 0), 'utf8', 'hex');
       encrypted += cipher.final('hex');
