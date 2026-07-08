@@ -1,0 +1,833 @@
+{
+  "metadata": {
+    "version": "6.7.0",
+    "last_updated": "2026-07-08",
+    "total_formulas": 102,
+    "categories": [
+      "physics",
+      "cognitive_science",
+      "psychology",
+      "mathematics",
+      "philosophy"
+    ],
+    "source": "handbook_formulas (verified)"
+  },
+  "formulas": [
+    {
+      "id": "math_integral_x_n_exp",
+      "name": "∫ x^n e^{ax} dx",
+      "formula": "∫ x^n e^{ax} dx = (x^n e^{ax}/a) - (n/a)∫ x^{n-1} e^{ax} dx",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_integral_exp_x2",
+      "name": "∫ e^{-x^2} dx",
+      "formula": "∫_{-∞}^{∞} e^{-x^2} dx = √π",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_integral_sin_x_x",
+      "name": "∫ sin(x)/x dx",
+      "formula": "∫_0^∞ sin(x)/x dx = π/2",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_integral_cos_x_x",
+      "name": "∫ cos(x)/x dx",
+      "formula": "∫_0^∞ cos(x)/x dx = ∞ (发散)",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_integral_1_ln_x",
+      "name": "∫ 1/ln(x) dx",
+      "formula": "li(x) = ∫_0^x dt/ln(t) (对数积分)",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_integral_bessel",
+      "name": "∫ x J_0(ax) dx",
+      "formula": "∫ x J_0(ax) dx = x J_1(ax)/a",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_series_zeta",
+      "name": "ζ(2n)",
+      "formula": "ζ(2n) = (-1)^{n+1} B_{2n} (2π)^{2n} / (2(2n)!)",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_series_bernoulli",
+      "name": "伯努利数生成函数",
+      "formula": "t/(e^t-1) = Σ_{n=0}^∞ B_n t^n/n!",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_series_euler",
+      "name": "欧拉常数 γ",
+      "formula": "γ = lim_{n→∞} (Σ_{k=1}^n 1/k - ln n)",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_series_stirling",
+      "name": "斯特林公式",
+      "formula": "n! ∼ √(2πn) (n/e)^n",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_series_wallis",
+      "name": "沃利斯乘积",
+      "formula": "π/2 = Π_{n=1}^∞ (4n^2)/(4n^2-1)",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_gamma_reflection",
+      "name": "Γ 函数反射公式",
+      "formula": "Γ(z) Γ(1-z) = π / sin(πz)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_gamma_duplication",
+      "name": "Γ 函数倍乘公式",
+      "formula": "Γ(z) Γ(z+1/2) = 2^{1-2z} √π Γ(2z)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_beta_gamma",
+      "name": "Beta-Gamma 关系",
+      "formula": "B(x,y) = Γ(x)Γ(y)/Γ(x+y)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_psi_digamma",
+      "name": "双伽玛函数",
+      "formula": "ψ(z+1) = ψ(z) + 1/z",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_riemann_functional",
+      "name": "黎曼 ζ 函数函数方程",
+      "formula": "ζ(s) = 2^s π^{s-1} sin(πs/2) Γ(1-s) ζ(1-s)",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_cauchy_integral",
+      "name": "柯西积分公式",
+      "formula": "f(a) = (1/2πi) ∮_C f(z)/(z-a) dz",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_residue_theorem",
+      "name": "留数定理",
+      "formula": "∮_C f(z) dz = 2πi Σ Res(f, z_k)",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_laurent_series",
+      "name": "洛朗级数",
+      "formula": "f(z) = Σ_{n=-∞}^∞ a_n (z-a)^n",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_argument_principle",
+      "name": "辐角原理",
+      "formula": "(1/2πi) ∮_C f'(z)/f(z) dz = N - P",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_rouche_theorem",
+      "name": "Rouché 定理",
+      "formula": "|f(z)-g(z)| < |f(z)| + |g(z)| → N_f = N_g",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_fourier_series",
+      "name": "傅里叶级数",
+      "formula": "f(x) = a_0/2 + Σ_{n=1}^∞ [a_n cos(nx) + b_n sin(nx)]",
+      "category": "mathematics",
+      "subcategory": "fourier",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_fourier_transform",
+      "name": "傅里叶变换",
+      "formula": "F(ω) = ∫_{-∞}^∞ f(t) e^{-iωt} dt",
+      "category": "mathematics",
+      "subcategory": "fourier",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_plancherel",
+      "name": "Plancherel 定理",
+      "formula": "∫ |f(x)|^2 dx = (1/2π) ∫ |F(ω)|^2 dω",
+      "category": "mathematics",
+      "subcategory": "fourier",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_poisson_summation",
+      "name": "泊松求和公式",
+      "formula": "Σ_{n∈ℤ} f(n) = Σ_{k∈ℤ} F(k)",
+      "category": "mathematics",
+      "subcategory": "fourier",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_convolution_theorem",
+      "name": "卷积定理",
+      "formula": "F(f * g) = F(f) · F(g)",
+      "category": "mathematics",
+      "subcategory": "fourier",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_laplace_transform",
+      "name": "拉普拉斯变换",
+      "formula": "F(s) = ∫_0^∞ f(t) e^{-st} dt",
+      "category": "mathematics",
+      "subcategory": "laplace",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_laplace_derivative",
+      "name": "L{f'} = s L{f} - f(0)",
+      "formula": "L{f'(t)} = s F(s) - f(0)",
+      "category": "mathematics",
+      "subcategory": "laplace",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_laplace_integral",
+      "name": "L{∫_0^t f(τ)dτ} = F(s)/s",
+      "formula": "L{∫_0^t f(τ)dτ} = F(s)/s",
+      "category": "mathematics",
+      "subcategory": "laplace",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_laplace_final_value",
+      "name": "终值定理",
+      "formula": "lim_{t→∞} f(t) = lim_{s→0} s F(s)",
+      "category": "mathematics",
+      "subcategory": "laplace",
+      "source": "handbook_math"
+    },
+    {
+      "id": "math_laplace_initial_value",
+      "name": "初值定理",
+      "formula": "lim_{t→0+} f(t) = lim_{s→∞} s F(s)",
+      "category": "mathematics",
+      "subcategory": "laplace",
+      "source": "handbook_math"
+    },
+    {
+      "id": "physics_lagrange_equation",
+      "name": "拉格朗日方程",
+      "formula": "d/dt (∂L/∂q̇_i) - ∂L/∂q_i = Q_i",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_hamilton_equation",
+      "name": "哈密顿方程",
+      "formula": "q̇_i = ∂H/∂p_i, ṗ_i = -∂H/∂q_i",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_hamilton_principle",
+      "name": "哈密顿原理",
+      "formula": "δ ∫_{t_1}^{t_2} L(q,q̇,t) dt = 0",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_noether_theorem",
+      "name": "诺特定理",
+      "formula": "每个连续对称性对应一个守恒量",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_virial_theorem",
+      "name": "位力定理",
+      "formula": "2⟨T⟩ = ⟨r·∇V⟩",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_maxwell_1",
+      "name": "麦克斯韦方程 1（高斯）",
+      "formula": "∇·E = ρ/ε₀",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_maxwell_2",
+      "name": "麦克斯韦方程 2（高斯磁）",
+      "formula": "∇·B = 0",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_maxwell_3",
+      "name": "麦克斯韦方程 3（法拉第）",
+      "formula": "∇×E = -∂B/∂t",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_maxwell_4",
+      "name": "麦克斯韦方程 4（安培）",
+      "formula": "∇×B = μ₀ J + μ₀ε₀ ∂E/∂t",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_poynting_vector",
+      "name": "坡印廷矢量",
+      "formula": "S = E × H",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_wave_equation_em",
+      "name": "电磁波方程",
+      "formula": "∇²E - (1/c²) ∂²E/∂t² = 0",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_schrodinger_time",
+      "name": "含时薛定谔方程",
+      "formula": "iℏ ∂ψ/∂t = Ĥψ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_schrodinger_time_independent",
+      "name": "不含时薛定谔方程",
+      "formula": "Ĥψ = Eψ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_heisenberg_equation",
+      "name": "海森堡运动方程",
+      "formula": "dA/dt = (i/ℏ)[Ĥ,A] + ∂A/∂t",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_commutation_xp",
+      "name": "位置-动量对易关系",
+      "formula": "[x,p] = iℏ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_commutation_heisenberg",
+      "name": "海森堡对易关系",
+      "formula": "[x_i, p_j] = iℏ δ_{ij}",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_born_rule",
+      "name": "波恩规则",
+      "formula": "P(x) = |ψ(x)|²",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_uncertainty_position",
+      "name": "位置-动量不确定性",
+      "formula": "Δx Δp ≥ ℏ/2",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_uncertainty_energy",
+      "name": "能量-时间不确定性",
+      "formula": "ΔE Δt ≥ ℏ/2",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_boltzmann_distribution",
+      "name": "玻尔兹曼分布",
+      "formula": "P(E) ∝ e^{-E/(k_B T)}",
+      "category": "physics",
+      "subcategory": "statistical_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_partition_function",
+      "name": "配分函数",
+      "formula": "Z = Σ_i e^{-E_i/(k_B T)}",
+      "category": "physics",
+      "subcategory": "statistical_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_helmholtz_free_energy",
+      "name": "亥姆霍兹自由能",
+      "formula": "F = -k_B T ln Z",
+      "category": "physics",
+      "subcategory": "statistical_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_gibbs_entropy",
+      "name": "吉布斯熵",
+      "formula": "S = -k_B Σ p_i ln p_i",
+      "category": "physics",
+      "subcategory": "statistical_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_equipartition",
+      "name": "能量均分定理",
+      "formula": "⟨E⟩ = (f/2) k_B T",
+      "category": "physics",
+      "subcategory": "statistical_mechanics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_lorentz_transformation_x",
+      "name": "洛伦兹变换（x）",
+      "formula": "x' = γ(x - vt), t' = γ(t - vx/c²)",
+      "category": "physics",
+      "subcategory": "special_relativity",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_energy_momentum_relation",
+      "name": "能量-动量关系",
+      "formula": "E² = (pc)² + (m₀c²)²",
+      "category": "physics",
+      "subcategory": "special_relativity",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_spacetime_interval",
+      "name": "时空间隔",
+      "formula": "ds² = -c²dt² + dx² + dy² + dz²",
+      "category": "physics",
+      "subcategory": "special_relativity",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_einstein_field",
+      "name": "爱因斯坦场方程",
+      "formula": "G_{μν} = (8πG/c⁴) T_{μν}",
+      "category": "physics",
+      "subcategory": "general_relativity",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_schwarzschild_radius",
+      "name": "施瓦西半径",
+      "formula": "r_s = 2GM/c²",
+      "category": "physics",
+      "subcategory": "general_relativity",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_navier_stokes_momentum",
+      "name": "纳维-斯托克斯（动量）",
+      "formula": "ρ(∂v/∂t + v·∇v) = -∇p + μ∇²v + f",
+      "category": "physics",
+      "subcategory": "fluid_dynamics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_continuity_equation",
+      "name": "连续性方程",
+      "formula": "∂ρ/∂t + ∇·(ρv) = 0",
+      "category": "physics",
+      "subcategory": "fluid_dynamics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_bernoulli_equation",
+      "name": "伯努利方程",
+      "formula": "p + ½ρv² + ρgh = constant",
+      "category": "physics",
+      "subcategory": "fluid_dynamics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_reynolds_number",
+      "name": "雷诺数",
+      "formula": "Re = ρvL/μ",
+      "category": "physics",
+      "subcategory": "fluid_dynamics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "physics_mach_number",
+      "name": "马赫数",
+      "formula": "Ma = v/c_s",
+      "category": "physics",
+      "subcategory": "fluid_dynamics",
+      "source": "handbook_physics"
+    },
+    {
+      "id": "psych_reliability_cronbach",
+      "name": "克隆巴赫 α",
+      "formula": "α = (k/(k-1)) (1 - Σσ²_i/σ²_total)",
+      "category": "psychology",
+      "subcategory": "measurement",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_reliability_test_retest",
+      "name": "重测信度",
+      "formula": "r_{xx'} = corr(X, X')",
+      "category": "psychology",
+      "subcategory": "measurement",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_validity_concurrent",
+      "name": "同时效度",
+      "formula": "r_{xy} = corr(X, Y)",
+      "category": "psychology",
+      "subcategory": "measurement",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_standard_error_measurement",
+      "name": "测量标准误",
+      "formula": "SEM = σ_x √(1-r_{xx})",
+      "category": "psychology",
+      "subcategory": "measurement",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_effect_size_cohens_d",
+      "name": "科恩 d",
+      "formula": "d = (μ₁ - μ₂)/σ_pooled",
+      "category": "psychology",
+      "subcategory": "statistics",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_effect_size_hedges_g",
+      "name": "赫奇斯 g",
+      "formula": "g = d (1 - 3/(4n-9))",
+      "category": "psychology",
+      "subcategory": "statistics",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_soar_preference",
+      "name": "Soar 偏好决策",
+      "formula": "P(o) = Σ w_i · s_i(o)",
+      "category": "cognitive_science",
+      "subcategory": "soar",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_clarion_bottom_up",
+      "name": "CLARION 自下而上",
+      "formula": "A_i = Σ_j w_{ij} · I_j + noise",
+      "category": "cognitive_science",
+      "subcategory": "clarion",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_actr_decision_time",
+      "name": "ACT-R 决策时间",
+      "formula": "T = F * e^{activation/τ}",
+      "category": "cognitive_science",
+      "subcategory": "actr",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_actr_memory_threshold",
+      "name": "ACT-R 记忆阈值",
+      "formula": "P(retrieval) = 1 / (1 + e^{-(A - τ)/s})",
+      "category": "cognitive_science",
+      "subcategory": "actr",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_biased_competition",
+      "name": "偏置竞争模型",
+      "formula": "A_i = w_i · S_i + ∑_{j≠i} w_{ij} · A_j",
+      "category": "cognitive_science",
+      "subcategory": "attention",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_global_workspace_broadcast",
+      "name": "全局工作空间广播",
+      "formula": "GW(t+1) = Σ_i w_i · A_i(t) + noise",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_information_integration",
+      "name": "信息整合（IIT）",
+      "formula": "Φ = min_{partition} MI(partition)",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_social_comparison_upward",
+      "name": "上行社会比较",
+      "formula": "S_subjective = f(own, better_other)",
+      "category": "psychology",
+      "subcategory": "social",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_bystander_effect_formula",
+      "name": "旁观者效应",
+      "formula": "P(help) = 1 - ∏_{i=1}^n (1 - p_i)",
+      "category": "psychology",
+      "subcategory": "social",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_social_influence_threshold",
+      "name": "社会影响阈值",
+      "formula": "Adopt if ∑ w_i · Adopt(i) > θ",
+      "category": "psychology",
+      "subcategory": "social",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_piaget_assimilation",
+      "name": "皮亚杰同化",
+      "formula": "Assimilation: new_info → existing_schema",
+      "category": "psychology",
+      "subcategory": "development",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_vygotsky_scaffolding",
+      "name": "维果茨基脚手架",
+      "formula": "ZPD = [actual, potential_with_help]",
+      "category": "psychology",
+      "subcategory": "development",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_erikson_crisis",
+      "name": "埃里克森危机",
+      "formula": "Crisis_resolution = f(age, social_support)",
+      "category": "psychology",
+      "subcategory": "development",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_phq9_score",
+      "name": "PHQ-9 抑郁量表",
+      "formula": "Score = Σ_9 items (0-3 each)",
+      "category": "psychology",
+      "subcategory": "clinical",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_gad7_score",
+      "name": "GAD-7 焦虑量表",
+      "formula": "Score = Σ_7 items (0-3 each)",
+      "category": "psychology",
+      "subcategory": "clinical",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "psych_hamilton_depression",
+      "name": "汉密尔顿抑郁量表",
+      "formula": "HAM-D = Σ_17 items",
+      "category": "psychology",
+      "subcategory": "clinical",
+      "source": "handbook_psych"
+    },
+    {
+      "id": "philosophy_confirmation_degree",
+      "name": "确认度（卡尔纳普）",
+      "formula": "c(H,E) = P(H|E) - P(H)",
+      "category": "philosophy",
+      "subcategory": "confirmation_theory",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_bayes_factor_formula",
+      "name": "贝叶斯因子",
+      "formula": "BF = P(E|H₁)/P(E|H₀)",
+      "category": "philosophy",
+      "subcategory": "confirmation_theory",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_odds_updating",
+      "name": "赔率更新",
+      "formula": "O(H|E) = BF · O(H)",
+      "category": "philosophy",
+      "subcategory": "confirmation_theory",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_popper_corroboration_degree",
+      "name": "波普尔确认度",
+      "formula": "C(H,E) = P(E|H) - P(E|¬H)",
+      "category": "philosophy",
+      "subcategory": "falsificationism",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_modal_B",
+      "name": "模态公理 B（对称）",
+      "formula": "□P → ◊P",
+      "category": "philosophy",
+      "subcategory": "modal_logic",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_modal_5",
+      "name": "模态公理 5（欧几里得）",
+      "formula": "◊P → □◊P",
+      "category": "philosophy",
+      "subcategory": "modal_logic",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_modal_possibility_distribution",
+      "name": "可能性分布",
+      "formula": "Π(ω) = 1 - P(ω)",
+      "category": "philosophy",
+      "subcategory": "modal_logic",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_deontic_distribution",
+      "name": "义务分配",
+      "formula": "O(p → q) → (Op → Oq)",
+      "category": "philosophy",
+      "subcategory": "deontic_logic",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_deontic_conflict",
+      "name": "义务冲突",
+      "formula": "O(p) ∧ O(¬p) → parallel_satisfiable",
+      "category": "philosophy",
+      "subcategory": "deontic_logic",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_dominance_weak",
+      "name": "弱优势",
+      "formula": "∀s: u(a,s) ≥ u(b,s) and ∃s: u(a,s) > u(b,s)",
+      "category": "philosophy",
+      "subcategory": "decision_theory",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_dominance_strong",
+      "name": "强优势",
+      "formula": "∀s: u(a,s) > u(b,s)",
+      "category": "philosophy",
+      "subcategory": "decision_theory",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_minimax_regret",
+      "name": "最小最大后悔",
+      "formula": "a* = argmin_a max_s (u(a*,s) - u(a,s))",
+      "category": "philosophy",
+      "subcategory": "decision_theory",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_utilitarian_sum",
+      "name": "功利主义总和",
+      "formula": "V = Σ_i u(i)",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_rawls_maximin",
+      "name": "罗尔斯最大最小",
+      "formula": "Maximize min_i u(i)",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "source": "handbook_philosophy"
+    },
+    {
+      "id": "philosophy_prioritarianism",
+      "name": "优先主义",
+      "formula": "V = Σ_i w(u(i)) · u(i), w decreasing",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "source": "handbook_philosophy"
+    }
+  ]
+}
