@@ -14613,6 +14613,66 @@
       "name": "最大似然层析",
       "formula": "ρ_MLE = argmax Pr(data|ρ)",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_error_pauli_x",
+      "name": "Pauli X 误差（比特翻转）",
+      "formula": "P(X) = p_x",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_error_pauli_z",
+      "name": "Pauli Z 误差（相位翻转）",
+      "formula": "P(Z) = p_z",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_error_pauli_y",
+      "name": "Pauli Y 误差（比特+相位翻转）",
+      "formula": "P(Y) = p_y",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_error_surface_distance",
+      "name": "表面码距离",
+      "formula": "d = min weight of logical operator",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_error_surface_threshold",
+      "name": "表面码阈值",
+      "formula": "p_th ≈ 0.75% (for d=3)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_error_stabilizer",
+      "name": "稳定子测量",
+      "formula": "S|ψ⟩ = s|ψ⟩, s ∈ {+1, -1}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_error_syndrome",
+      "name": "症候测量",
+      "formula": "syndrome = (s₁, s₂, ..., sₙ)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_channel_depolarizing",
+      "name": "去极化信道",
+      "formula": "ε(ρ) = (1-p)ρ + (p/3)(XρX + YρY + ZρZ)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_channel_amplitude_damping",
+      "name": "幅度阻尼信道",
+      "formula": "ε(ρ) = E₀ρE₀† + E₁ρE₁†",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_channel_phase_damping",
+      "name": "相位阻尼信道",
+      "formula": "ε(ρ) = E₀ρE₀† + E₁ρE₁†",
+      "category": "quantum_computing"
     }
   ]
 }
