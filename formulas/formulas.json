@@ -1,13 +1,23 @@
 {
   "metadata": {
-    "version": "3.0.0",
+    "version": "5.0.0",
     "last_updated": "2026-07-08",
-    "total_formulas": 1149,
+    "total_formulas": 1122,
     "categories": [
       "mathematics",
       "physics",
       "chemistry",
-      "engineering"
+      "engineering",
+      "economics",
+      "computer_science",
+      "biology",
+      "earth_science",
+      "cognitive_science"
+    ],
+    "sources": [
+      "base",
+      "advanced",
+      "generated"
     ]
   },
   "formulas": [
@@ -820,14 +830,6 @@
       "difficulty": "intermediate"
     },
     {
-      "id": "clausius_statement",
-      "name": "克劳修斯表述",
-      "category": "physics",
-      "subcategory": "thermodynamics",
-      "formula": "热不能自发从低温传到高温",
-      "difficulty": "intermediate"
-    },
-    {
       "id": "ideal_gas_law_combined",
       "name": "理想气体状态方程（综合）",
       "category": "chemistry",
@@ -937,14 +939,6 @@
       "category": "mathematics",
       "subcategory": "statistics",
       "formula": "CI = x̄ ± t*(s/√n)",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "p_value",
-      "name": "p 值",
-      "category": "mathematics",
-      "subcategory": "statistics",
-      "formula": "P(T ≥ t | H0)",
       "difficulty": "intermediate"
     },
     {
@@ -1065,14 +1059,6 @@
       "category": "physics",
       "subcategory": "nuclear_physics",
       "formula": "E_b = Δm * c²",
-      "difficulty": "advanced"
-    },
-    {
-      "id": "fission_reaction",
-      "name": "核裂变反应",
-      "category": "physics",
-      "subcategory": "nuclear_physics",
-      "formula": "n + ²³⁵U → X + Y + 2-3n + energy",
       "difficulty": "advanced"
     },
     {
@@ -1236,22 +1222,6 @@
       "difficulty": "advanced"
     },
     {
-      "id": "trapezoidal_rule",
-      "name": "梯形法则（数值积分）",
-      "category": "mathematics",
-      "subcategory": "numerical_analysis",
-      "formula": "∫[a,b] f(x)dx ≈ (b-a)/2 * (f(a) + f(b))",
-      "difficulty": "advanced"
-    },
-    {
-      "id": "simpsons_rule",
-      "name": "辛普森法则",
-      "category": "mathematics",
-      "subcategory": "numerical_analysis",
-      "formula": "∫[a,b] f(x)dx ≈ (b-a)/6 * (f(a) + 4f((a+b)/2) + f(b))",
-      "difficulty": "advanced"
-    },
-    {
       "id": "eulers_formula",
       "name": "欧拉公式（图论）",
       "category": "mathematics",
@@ -1276,30 +1246,6 @@
       "difficulty": "advanced"
     },
     {
-      "id": "kepler_first_law",
-      "name": "开普勒第一定律",
-      "category": "physics",
-      "subcategory": "astrophysics",
-      "formula": "行星轨道是椭圆，太阳在焦点",
-      "difficulty": "advanced"
-    },
-    {
-      "id": "kepler_second_law",
-      "name": "开普勒第二定律",
-      "category": "physics",
-      "subcategory": "astrophysics",
-      "formula": "行星与太阳连线扫过的面积速率恒定",
-      "difficulty": "advanced"
-    },
-    {
-      "id": "kepler_third_law",
-      "name": "开普勒第三定律",
-      "category": "physics",
-      "subcategory": "astrophysics",
-      "formula": "T² ∝ a³",
-      "difficulty": "advanced"
-    },
-    {
       "id": "hubble_law",
       "name": "哈勃定律",
       "category": "physics",
@@ -1321,14 +1267,6 @@
       "category": "physics",
       "subcategory": "particle_physics",
       "formula": "iħ∂ψ/∂t = (cα·p + βmc²)ψ",
-      "difficulty": "advanced"
-    },
-    {
-      "id": "feynman_diagram",
-      "name": "费曼图规则",
-      "category": "physics",
-      "subcategory": "particle_physics",
-      "formula": "每个顶点: -ig, 内线: propagator, 外线: spinor",
       "difficulty": "advanced"
     },
     {
@@ -1537,14 +1475,6 @@
       "category": "mathematics",
       "subcategory": "special_functions",
       "formula": "ζ(s) = Σ[1/n^s], Re(s) > 1",
-      "difficulty": "advanced"
-    },
-    {
-      "id": "boltzmann_distribution",
-      "name": "玻尔兹曼分布",
-      "category": "physics",
-      "subcategory": "statistical_mechanics",
-      "formula": "P(E) ∝ e^(-E/kT)",
       "difficulty": "advanced"
     },
     {
@@ -2412,7 +2342,7 @@
       "difficulty": "intermediate"
     },
     {
-      "id": "gamma_function",
+      "id": "gamma_function_base",
       "name": "伽玛函数",
       "category": "mathematics",
       "subcategory": "special_functions",
@@ -2521,14 +2451,6 @@
       "category": "physics",
       "subcategory": "condensed_matter",
       "formula": "ψ_k(r) = e^(ik·r) u_k(r), u_k(r+R)=u_k(r)",
-      "difficulty": "advanced"
-    },
-    {
-      "id": "brillouin_zone",
-      "name": "布里渊区",
-      "category": "physics",
-      "subcategory": "condensed_matter",
-      "formula": "k-space 的 Wigner-Seitz 原胞",
       "difficulty": "advanced"
     },
     {
@@ -2644,14 +2566,6 @@
       "difficulty": "advanced"
     },
     {
-      "id": "born_oppenheimer",
-      "name": "玻恩-奥本海默近似",
-      "category": "physics",
-      "subcategory": "condensed_matter",
-      "formula": "核运动与电子运动分离",
-      "difficulty": "advanced"
-    },
-    {
       "id": "hartree_fock",
       "name": "哈特里-福克方程",
       "category": "physics",
@@ -2665,30 +2579,6 @@
       "category": "physics",
       "subcategory": "condensed_matter",
       "formula": "[-ħ²/2m ∇² + V_eff(r)]φ_i(r) = ε_i φ_i(r)",
-      "difficulty": "advanced"
-    },
-    {
-      "id": "pauli_exclusion",
-      "name": "泡利不相容原理",
-      "category": "physics",
-      "subcategory": "condensed_matter",
-      "formula": "两个电子不能具有相同量子数",
-      "difficulty": "advanced"
-    },
-    {
-      "id": "hund_rule",
-      "name": "洪特规则",
-      "category": "physics",
-      "subcategory": "condensed_matter",
-      "formula": "最大自旋多重度能量最低",
-      "difficulty": "advanced"
-    },
-    {
-      "id": "octet_rule",
-      "name": "八隅体规则",
-      "category": "physics",
-      "subcategory": "condensed_matter",
-      "formula": "原子趋向8电子外层",
       "difficulty": "advanced"
     },
     {
@@ -5201,1206 +5091,6 @@
       "category": "physics",
       "subcategory": "classical_mechanics",
       "formula": "F_200 = m * a_200",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_1",
-      "name": "化学反应方程 1",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_1 + bB_1 -> cC_1 + dD_1",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_2",
-      "name": "化学反应方程 2",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_2 + bB_2 -> cC_2 + dD_2",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_3",
-      "name": "化学反应方程 3",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_3 + bB_3 -> cC_3 + dD_3",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_4",
-      "name": "化学反应方程 4",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_4 + bB_4 -> cC_4 + dD_4",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_5",
-      "name": "化学反应方程 5",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_5 + bB_5 -> cC_5 + dD_5",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_6",
-      "name": "化学反应方程 6",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_6 + bB_6 -> cC_6 + dD_6",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_7",
-      "name": "化学反应方程 7",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_7 + bB_7 -> cC_7 + dD_7",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_8",
-      "name": "化学反应方程 8",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_8 + bB_8 -> cC_8 + dD_8",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_9",
-      "name": "化学反应方程 9",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_9 + bB_9 -> cC_9 + dD_9",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_10",
-      "name": "化学反应方程 10",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_10 + bB_10 -> cC_10 + dD_10",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_11",
-      "name": "化学反应方程 11",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_11 + bB_11 -> cC_11 + dD_11",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_12",
-      "name": "化学反应方程 12",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_12 + bB_12 -> cC_12 + dD_12",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_13",
-      "name": "化学反应方程 13",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_13 + bB_13 -> cC_13 + dD_13",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_14",
-      "name": "化学反应方程 14",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_14 + bB_14 -> cC_14 + dD_14",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_15",
-      "name": "化学反应方程 15",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_15 + bB_15 -> cC_15 + dD_15",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_16",
-      "name": "化学反应方程 16",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_16 + bB_16 -> cC_16 + dD_16",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_17",
-      "name": "化学反应方程 17",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_17 + bB_17 -> cC_17 + dD_17",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_18",
-      "name": "化学反应方程 18",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_18 + bB_18 -> cC_18 + dD_18",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_19",
-      "name": "化学反应方程 19",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_19 + bB_19 -> cC_19 + dD_19",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_20",
-      "name": "化学反应方程 20",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_20 + bB_20 -> cC_20 + dD_20",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_21",
-      "name": "化学反应方程 21",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_21 + bB_21 -> cC_21 + dD_21",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_22",
-      "name": "化学反应方程 22",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_22 + bB_22 -> cC_22 + dD_22",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_23",
-      "name": "化学反应方程 23",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_23 + bB_23 -> cC_23 + dD_23",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_24",
-      "name": "化学反应方程 24",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_24 + bB_24 -> cC_24 + dD_24",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_25",
-      "name": "化学反应方程 25",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_25 + bB_25 -> cC_25 + dD_25",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_26",
-      "name": "化学反应方程 26",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_26 + bB_26 -> cC_26 + dD_26",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_27",
-      "name": "化学反应方程 27",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_27 + bB_27 -> cC_27 + dD_27",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_28",
-      "name": "化学反应方程 28",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_28 + bB_28 -> cC_28 + dD_28",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_29",
-      "name": "化学反应方程 29",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_29 + bB_29 -> cC_29 + dD_29",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_30",
-      "name": "化学反应方程 30",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_30 + bB_30 -> cC_30 + dD_30",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_31",
-      "name": "化学反应方程 31",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_31 + bB_31 -> cC_31 + dD_31",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_32",
-      "name": "化学反应方程 32",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_32 + bB_32 -> cC_32 + dD_32",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_33",
-      "name": "化学反应方程 33",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_33 + bB_33 -> cC_33 + dD_33",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_34",
-      "name": "化学反应方程 34",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_34 + bB_34 -> cC_34 + dD_34",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_35",
-      "name": "化学反应方程 35",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_35 + bB_35 -> cC_35 + dD_35",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_36",
-      "name": "化学反应方程 36",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_36 + bB_36 -> cC_36 + dD_36",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_37",
-      "name": "化学反应方程 37",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_37 + bB_37 -> cC_37 + dD_37",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_38",
-      "name": "化学反应方程 38",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_38 + bB_38 -> cC_38 + dD_38",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_39",
-      "name": "化学反应方程 39",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_39 + bB_39 -> cC_39 + dD_39",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_40",
-      "name": "化学反应方程 40",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_40 + bB_40 -> cC_40 + dD_40",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_41",
-      "name": "化学反应方程 41",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_41 + bB_41 -> cC_41 + dD_41",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_42",
-      "name": "化学反应方程 42",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_42 + bB_42 -> cC_42 + dD_42",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_43",
-      "name": "化学反应方程 43",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_43 + bB_43 -> cC_43 + dD_43",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_44",
-      "name": "化学反应方程 44",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_44 + bB_44 -> cC_44 + dD_44",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_45",
-      "name": "化学反应方程 45",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_45 + bB_45 -> cC_45 + dD_45",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_46",
-      "name": "化学反应方程 46",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_46 + bB_46 -> cC_46 + dD_46",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_47",
-      "name": "化学反应方程 47",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_47 + bB_47 -> cC_47 + dD_47",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_48",
-      "name": "化学反应方程 48",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_48 + bB_48 -> cC_48 + dD_48",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_49",
-      "name": "化学反应方程 49",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_49 + bB_49 -> cC_49 + dD_49",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_50",
-      "name": "化学反应方程 50",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_50 + bB_50 -> cC_50 + dD_50",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_51",
-      "name": "化学反应方程 51",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_51 + bB_51 -> cC_51 + dD_51",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_52",
-      "name": "化学反应方程 52",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_52 + bB_52 -> cC_52 + dD_52",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_53",
-      "name": "化学反应方程 53",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_53 + bB_53 -> cC_53 + dD_53",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_54",
-      "name": "化学反应方程 54",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_54 + bB_54 -> cC_54 + dD_54",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_55",
-      "name": "化学反应方程 55",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_55 + bB_55 -> cC_55 + dD_55",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_56",
-      "name": "化学反应方程 56",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_56 + bB_56 -> cC_56 + dD_56",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_57",
-      "name": "化学反应方程 57",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_57 + bB_57 -> cC_57 + dD_57",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_58",
-      "name": "化学反应方程 58",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_58 + bB_58 -> cC_58 + dD_58",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_59",
-      "name": "化学反应方程 59",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_59 + bB_59 -> cC_59 + dD_59",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_60",
-      "name": "化学反应方程 60",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_60 + bB_60 -> cC_60 + dD_60",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_61",
-      "name": "化学反应方程 61",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_61 + bB_61 -> cC_61 + dD_61",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_62",
-      "name": "化学反应方程 62",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_62 + bB_62 -> cC_62 + dD_62",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_63",
-      "name": "化学反应方程 63",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_63 + bB_63 -> cC_63 + dD_63",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_64",
-      "name": "化学反应方程 64",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_64 + bB_64 -> cC_64 + dD_64",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_65",
-      "name": "化学反应方程 65",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_65 + bB_65 -> cC_65 + dD_65",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_66",
-      "name": "化学反应方程 66",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_66 + bB_66 -> cC_66 + dD_66",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_67",
-      "name": "化学反应方程 67",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_67 + bB_67 -> cC_67 + dD_67",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_68",
-      "name": "化学反应方程 68",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_68 + bB_68 -> cC_68 + dD_68",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_69",
-      "name": "化学反应方程 69",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_69 + bB_69 -> cC_69 + dD_69",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_70",
-      "name": "化学反应方程 70",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_70 + bB_70 -> cC_70 + dD_70",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_71",
-      "name": "化学反应方程 71",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_71 + bB_71 -> cC_71 + dD_71",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_72",
-      "name": "化学反应方程 72",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_72 + bB_72 -> cC_72 + dD_72",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_73",
-      "name": "化学反应方程 73",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_73 + bB_73 -> cC_73 + dD_73",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_74",
-      "name": "化学反应方程 74",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_74 + bB_74 -> cC_74 + dD_74",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_75",
-      "name": "化学反应方程 75",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_75 + bB_75 -> cC_75 + dD_75",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_76",
-      "name": "化学反应方程 76",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_76 + bB_76 -> cC_76 + dD_76",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_77",
-      "name": "化学反应方程 77",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_77 + bB_77 -> cC_77 + dD_77",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_78",
-      "name": "化学反应方程 78",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_78 + bB_78 -> cC_78 + dD_78",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_79",
-      "name": "化学反应方程 79",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_79 + bB_79 -> cC_79 + dD_79",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_80",
-      "name": "化学反应方程 80",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_80 + bB_80 -> cC_80 + dD_80",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_81",
-      "name": "化学反应方程 81",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_81 + bB_81 -> cC_81 + dD_81",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_82",
-      "name": "化学反应方程 82",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_82 + bB_82 -> cC_82 + dD_82",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_83",
-      "name": "化学反应方程 83",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_83 + bB_83 -> cC_83 + dD_83",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_84",
-      "name": "化学反应方程 84",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_84 + bB_84 -> cC_84 + dD_84",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_85",
-      "name": "化学反应方程 85",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_85 + bB_85 -> cC_85 + dD_85",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_86",
-      "name": "化学反应方程 86",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_86 + bB_86 -> cC_86 + dD_86",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_87",
-      "name": "化学反应方程 87",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_87 + bB_87 -> cC_87 + dD_87",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_88",
-      "name": "化学反应方程 88",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_88 + bB_88 -> cC_88 + dD_88",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_89",
-      "name": "化学反应方程 89",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_89 + bB_89 -> cC_89 + dD_89",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_90",
-      "name": "化学反应方程 90",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_90 + bB_90 -> cC_90 + dD_90",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_91",
-      "name": "化学反应方程 91",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_91 + bB_91 -> cC_91 + dD_91",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_92",
-      "name": "化学反应方程 92",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_92 + bB_92 -> cC_92 + dD_92",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_93",
-      "name": "化学反应方程 93",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_93 + bB_93 -> cC_93 + dD_93",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_94",
-      "name": "化学反应方程 94",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_94 + bB_94 -> cC_94 + dD_94",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_95",
-      "name": "化学反应方程 95",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_95 + bB_95 -> cC_95 + dD_95",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_96",
-      "name": "化学反应方程 96",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_96 + bB_96 -> cC_96 + dD_96",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_97",
-      "name": "化学反应方程 97",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_97 + bB_97 -> cC_97 + dD_97",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_98",
-      "name": "化学反应方程 98",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_98 + bB_98 -> cC_98 + dD_98",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_99",
-      "name": "化学反应方程 99",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_99 + bB_99 -> cC_99 + dD_99",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_100",
-      "name": "化学反应方程 100",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_100 + bB_100 -> cC_100 + dD_100",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_101",
-      "name": "化学反应方程 101",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_101 + bB_101 -> cC_101 + dD_101",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_102",
-      "name": "化学反应方程 102",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_102 + bB_102 -> cC_102 + dD_102",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_103",
-      "name": "化学反应方程 103",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_103 + bB_103 -> cC_103 + dD_103",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_104",
-      "name": "化学反应方程 104",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_104 + bB_104 -> cC_104 + dD_104",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_105",
-      "name": "化学反应方程 105",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_105 + bB_105 -> cC_105 + dD_105",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_106",
-      "name": "化学反应方程 106",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_106 + bB_106 -> cC_106 + dD_106",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_107",
-      "name": "化学反应方程 107",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_107 + bB_107 -> cC_107 + dD_107",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_108",
-      "name": "化学反应方程 108",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_108 + bB_108 -> cC_108 + dD_108",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_109",
-      "name": "化学反应方程 109",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_109 + bB_109 -> cC_109 + dD_109",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_110",
-      "name": "化学反应方程 110",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_110 + bB_110 -> cC_110 + dD_110",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_111",
-      "name": "化学反应方程 111",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_111 + bB_111 -> cC_111 + dD_111",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_112",
-      "name": "化学反应方程 112",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_112 + bB_112 -> cC_112 + dD_112",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_113",
-      "name": "化学反应方程 113",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_113 + bB_113 -> cC_113 + dD_113",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_114",
-      "name": "化学反应方程 114",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_114 + bB_114 -> cC_114 + dD_114",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_115",
-      "name": "化学反应方程 115",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_115 + bB_115 -> cC_115 + dD_115",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_116",
-      "name": "化学反应方程 116",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_116 + bB_116 -> cC_116 + dD_116",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_117",
-      "name": "化学反应方程 117",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_117 + bB_117 -> cC_117 + dD_117",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_118",
-      "name": "化学反应方程 118",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_118 + bB_118 -> cC_118 + dD_118",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_119",
-      "name": "化学反应方程 119",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_119 + bB_119 -> cC_119 + dD_119",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_120",
-      "name": "化学反应方程 120",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_120 + bB_120 -> cC_120 + dD_120",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_121",
-      "name": "化学反应方程 121",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_121 + bB_121 -> cC_121 + dD_121",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_122",
-      "name": "化学反应方程 122",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_122 + bB_122 -> cC_122 + dD_122",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_123",
-      "name": "化学反应方程 123",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_123 + bB_123 -> cC_123 + dD_123",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_124",
-      "name": "化学反应方程 124",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_124 + bB_124 -> cC_124 + dD_124",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_125",
-      "name": "化学反应方程 125",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_125 + bB_125 -> cC_125 + dD_125",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_126",
-      "name": "化学反应方程 126",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_126 + bB_126 -> cC_126 + dD_126",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_127",
-      "name": "化学反应方程 127",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_127 + bB_127 -> cC_127 + dD_127",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_128",
-      "name": "化学反应方程 128",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_128 + bB_128 -> cC_128 + dD_128",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_129",
-      "name": "化学反应方程 129",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_129 + bB_129 -> cC_129 + dD_129",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_130",
-      "name": "化学反应方程 130",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_130 + bB_130 -> cC_130 + dD_130",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_131",
-      "name": "化学反应方程 131",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_131 + bB_131 -> cC_131 + dD_131",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_132",
-      "name": "化学反应方程 132",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_132 + bB_132 -> cC_132 + dD_132",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_133",
-      "name": "化学反应方程 133",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_133 + bB_133 -> cC_133 + dD_133",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_134",
-      "name": "化学反应方程 134",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_134 + bB_134 -> cC_134 + dD_134",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_135",
-      "name": "化学反应方程 135",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_135 + bB_135 -> cC_135 + dD_135",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_136",
-      "name": "化学反应方程 136",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_136 + bB_136 -> cC_136 + dD_136",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_137",
-      "name": "化学反应方程 137",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_137 + bB_137 -> cC_137 + dD_137",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_138",
-      "name": "化学反应方程 138",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_138 + bB_138 -> cC_138 + dD_138",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_139",
-      "name": "化学反应方程 139",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_139 + bB_139 -> cC_139 + dD_139",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_140",
-      "name": "化学反应方程 140",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_140 + bB_140 -> cC_140 + dD_140",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_141",
-      "name": "化学反应方程 141",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_141 + bB_141 -> cC_141 + dD_141",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_142",
-      "name": "化学反应方程 142",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_142 + bB_142 -> cC_142 + dD_142",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_143",
-      "name": "化学反应方程 143",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_143 + bB_143 -> cC_143 + dD_143",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_144",
-      "name": "化学反应方程 144",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_144 + bB_144 -> cC_144 + dD_144",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_145",
-      "name": "化学反应方程 145",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_145 + bB_145 -> cC_145 + dD_145",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_146",
-      "name": "化学反应方程 146",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_146 + bB_146 -> cC_146 + dD_146",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_147",
-      "name": "化学反应方程 147",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_147 + bB_147 -> cC_147 + dD_147",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_148",
-      "name": "化学反应方程 148",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_148 + bB_148 -> cC_148 + dD_148",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_149",
-      "name": "化学反应方程 149",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_149 + bB_149 -> cC_149 + dD_149",
-      "difficulty": "intermediate"
-    },
-    {
-      "id": "chemistry_reaction_150",
-      "name": "化学反应方程 150",
-      "category": "chemistry",
-      "subcategory": "reactions",
-      "formula": "aA_150 + bB_150 -> cC_150 + dD_150",
       "difficulty": "intermediate"
     },
     {
@@ -9202,6 +7892,1048 @@
       "subcategory": "statistics",
       "formula": "x̄_150 = (1/n) * Σx_j",
       "difficulty": "intermediate"
+    },
+    {
+      "id": "limit_def_derivative",
+      "name": "导数定义（极限）",
+      "formula": "f'(x) = lim_{h→0} (f(x+h)-f(x))/h",
+      "category": "mathematics",
+      "subcategory": "calculus"
+    },
+    {
+      "id": "fundamental_theorem_calculus",
+      "name": "微积分基本定理",
+      "formula": "∫_a^b f(x)dx = F(b) - F(a)",
+      "category": "mathematics",
+      "subcategory": "calculus"
+    },
+    {
+      "id": "taylor_series_advanced",
+      "name": "泰勒级数",
+      "formula": "f(x) = Σ_{n=0}^∞ f^{(n)}(a)/n! (x-a)^n",
+      "category": "mathematics",
+      "subcategory": "calculus"
+    },
+    {
+      "id": "maclaurin_series",
+      "name": "麦克劳林级数",
+      "formula": "f(x) = Σ_{n=0}^∞ f^{(n)}(0)/n! x^n",
+      "category": "mathematics",
+      "subcategory": "calculus"
+    },
+    {
+      "id": "fourier_series_advanced",
+      "name": "傅里叶级数",
+      "formula": "f(x) = a0/2 + Σ_{n=1}^∞ (a_n cos(nωx) + b_n sin(nωx))",
+      "category": "mathematics",
+      "subcategory": "fourier_analysis"
+    },
+    {
+      "id": "fourier_transform_advanced",
+      "name": "傅里叶变换",
+      "formula": "F(ω) = ∫_{-∞}^∞ f(t) e^{-iωt} dt",
+      "category": "mathematics",
+      "subcategory": "fourier_analysis"
+    },
+    {
+      "id": "inverse_fourier_transform_advanced",
+      "name": "傅里叶逆变换",
+      "formula": "f(t) = 1/(2π) ∫_{-∞}^∞ F(ω) e^{iωt} dω",
+      "category": "mathematics",
+      "subcategory": "fourier_analysis"
+    },
+    {
+      "id": "laplace_transform_advanced",
+      "name": "拉普拉斯变换",
+      "formula": "F(s) = ∫_0^∞ f(t) e^{-st} dt",
+      "category": "mathematics",
+      "subcategory": "laplace_transform"
+    },
+    {
+      "id": "inverse_laplace_transform",
+      "name": "拉普拉斯逆变换",
+      "formula": "f(t) = 1/(2πi) ∫_{γ-i∞}^{γ+i∞} F(s) e^{st} ds",
+      "category": "mathematics",
+      "subcategory": "laplace_transform"
+    },
+    {
+      "id": "cauchy_riemann",
+      "name": "柯西-黎曼方程",
+      "formula": "∂u/∂x = ∂v/∂y, ∂u/∂y = -∂v/∂x",
+      "category": "mathematics",
+      "subcategory": "complex_analysis"
+    },
+    {
+      "id": "cauchy_integral_formula",
+      "name": "柯西积分公式",
+      "formula": "f(a) = 1/(2πi) ∮_C f(z)/(z-a) dz",
+      "category": "mathematics",
+      "subcategory": "complex_analysis"
+    },
+    {
+      "id": "residue_theorem",
+      "name": "留数定理",
+      "formula": "∮_C f(z) dz = 2πi Σ Res(f, z_k)",
+      "category": "mathematics",
+      "subcategory": "complex_analysis"
+    },
+    {
+      "id": "wave_equation_advanced",
+      "name": "波动方程",
+      "formula": "∂²u/∂t² = c² ∇²u",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations"
+    },
+    {
+      "id": "heat_equation",
+      "name": "热传导方程",
+      "formula": "∂u/∂t = α ∇²u",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations"
+    },
+    {
+      "id": "laplace_equation_pde",
+      "name": "拉普拉斯方程",
+      "formula": "∇²φ = 0",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations"
+    },
+    {
+      "id": "poisson_equation_advanced",
+      "name": "泊松方程",
+      "formula": "∇²φ = ρ",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations"
+    },
+    {
+      "id": "characteristic_polynomial",
+      "name": "特征多项式",
+      "formula": "det(A - λI) = 0",
+      "category": "mathematics",
+      "subcategory": "linear_algebra"
+    },
+    {
+      "id": "cayley_hamilton",
+      "name": "凯莱-哈密顿定理",
+      "formula": "p(A) = 0, where p(λ) = det(A - λI)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra"
+    },
+    {
+      "id": "spectral_decomposition",
+      "name": "谱分解",
+      "formula": "A = V Λ V^{-1}",
+      "category": "mathematics",
+      "subcategory": "linear_algebra"
+    },
+    {
+      "id": "svd_decomposition",
+      "name": "奇异值分解",
+      "formula": "A = U Σ V^T",
+      "category": "mathematics",
+      "subcategory": "linear_algebra"
+    },
+    {
+      "id": "bayes_theorem_continuous",
+      "name": "贝叶斯定理（连续）",
+      "formula": "P(H|D) = P(D|H) P(H) / P(D)",
+      "category": "mathematics",
+      "subcategory": "probability"
+    },
+    {
+      "id": "central_limit_theorem",
+      "name": "中心极限定理",
+      "formula": "√n (x̄_n - μ) / σ → N(0,1)",
+      "category": "mathematics",
+      "subcategory": "probability"
+    },
+    {
+      "id": "law_large_numbers",
+      "name": "大数定律",
+      "formula": "x̄_n → μ (a.s.)",
+      "category": "mathematics",
+      "subcategory": "probability"
+    },
+    {
+      "id": "moment_generating_function",
+      "name": "矩生成函数",
+      "formula": "M_X(t) = E[e^{tX}]",
+      "category": "mathematics",
+      "subcategory": "probability"
+    },
+    {
+      "id": "characteristic_function",
+      "name": "特征函数",
+      "formula": "φ_X(t) = E[e^{itX}]",
+      "category": "mathematics",
+      "subcategory": "probability"
+    },
+    {
+      "id": "shannon_information_entropy",
+      "name": "香农信息熵",
+      "formula": "H(X) = -Σ p(x) log₂ p(x)",
+      "category": "cognitive_science",
+      "subcategory": "information_theory"
+    },
+    {
+      "id": "cross_entropy",
+      "name": "交叉熵",
+      "formula": "H(P,Q) = -Σ p(x) log q(x)",
+      "category": "cognitive_science",
+      "subcategory": "information_theory"
+    },
+    {
+      "id": "kl_divergence",
+      "name": "KL 散度",
+      "formula": "D_KL(P||Q) = Σ p(x) log(p(x)/q(x))",
+      "category": "cognitive_science",
+      "subcategory": "information_theory"
+    },
+    {
+      "id": "lagrangian_equation",
+      "name": "拉格朗日方程",
+      "formula": "d/dt (∂L/∂q̇_i) - ∂L/∂q_i = 0",
+      "category": "physics",
+      "subcategory": "lagrangian_mechanics"
+    },
+    {
+      "id": "hamilton_equations",
+      "name": "哈密顿正则方程",
+      "formula": "q̇_i = ∂H/∂p_i, ṗ_i = -∂H/∂q_i",
+      "category": "physics",
+      "subcategory": "hamiltonian_mechanics"
+    },
+    {
+      "id": "noether_theorem",
+      "name": "诺特定理",
+      "formula": "δS = 0 => ∂_μ j^μ = 0",
+      "category": "physics",
+      "subcategory": "symmetry"
+    },
+    {
+      "id": "maxwell_gauss_electric",
+      "name": "麦克斯韦方程（高斯电场）",
+      "formula": "∇·E = ρ/ε_0",
+      "category": "physics",
+      "subcategory": "electromagnetism"
+    },
+    {
+      "id": "maxwell_gauss_magnetic",
+      "name": "麦克斯韦方程（高斯磁场）",
+      "formula": "∇·B = 0",
+      "category": "physics",
+      "subcategory": "electromagnetism"
+    },
+    {
+      "id": "maxwell_faraday",
+      "name": "麦克斯韦方程（法拉第）",
+      "formula": "∇×E = -∂B/∂t",
+      "category": "physics",
+      "subcategory": "electromagnetism"
+    },
+    {
+      "id": "maxwell_ampere",
+      "name": "麦克斯韦方程（安培-麦克斯韦）",
+      "formula": "∇×B = μ_0 J + μ_0ε_0 ∂E/∂t",
+      "category": "physics",
+      "subcategory": "electromagnetism"
+    },
+    {
+      "id": "poynting_vector_advanced",
+      "name": "坡印廷矢量",
+      "formula": "S = E × H",
+      "category": "physics",
+      "subcategory": "electromagnetism"
+    },
+    {
+      "id": "lorentz_force_advanced",
+      "name": "洛伦兹力",
+      "formula": "F = q(E + v × B)",
+      "category": "physics",
+      "subcategory": "electromagnetism"
+    },
+    {
+      "id": "schrodinger_time_dependent",
+      "name": "含时薛定谔方程",
+      "formula": "iℏ ∂ψ/∂t = H ψ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics"
+    },
+    {
+      "id": "schrodinger_time_independent",
+      "name": "定态薛定谔方程",
+      "formula": "H ψ = E ψ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics"
+    },
+    {
+      "id": "dirac_equation_advanced",
+      "name": "狄拉克方程",
+      "formula": "(iγ^μ ∂_μ - m) ψ = 0",
+      "category": "physics",
+      "subcategory": "quantum_field_theory"
+    },
+    {
+      "id": "klein_gordon_equation",
+      "name": "克莱因-戈尔登方程",
+      "formula": "(□ + m²) φ = 0",
+      "category": "physics",
+      "subcategory": "quantum_field_theory"
+    },
+    {
+      "id": "heisenberg_uncertainty_advanced",
+      "name": "海森堡不确定性原理",
+      "formula": "Δx Δp ≥ ℏ/2",
+      "category": "physics",
+      "subcategory": "quantum_mechanics"
+    },
+    {
+      "id": "commutation_relation",
+      "name": "正则对易关系",
+      "formula": "[x, p] = iℏ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics"
+    },
+    {
+      "id": "born_rule",
+      "name": "波恩定则（概率诠释）",
+      "formula": "P(x) = |ψ(x)|²",
+      "category": "physics",
+      "subcategory": "quantum_mechanics"
+    },
+    {
+      "id": "einstein_field_equation",
+      "name": "爱因斯坦场方程",
+      "formula": "G_μν = 8πG/c⁴ T_μν",
+      "category": "physics",
+      "subcategory": "general_relativity"
+    },
+    {
+      "id": "schwarzschild_metric_advanced",
+      "name": "施瓦西度规",
+      "formula": "ds² = -(1-2GM/r) dt² + (1-2GM/r)^{-1} dr² + r² dΩ²",
+      "category": "physics",
+      "subcategory": "general_relativity"
+    },
+    {
+      "id": "geodesic_equation_gr",
+      "name": "测地线方程",
+      "formula": "d²x^μ/dτ² + Γ^μ_{νρ} dx^ν/dτ dx^ρ/dτ = 0",
+      "category": "physics",
+      "subcategory": "general_relativity"
+    },
+    {
+      "id": "friedmann_equation_1",
+      "name": "弗里德曼方程（第一式）",
+      "formula": "(ȧ/a)² = 8πGρ/3 - kc²/a² + Λc²/3",
+      "category": "physics",
+      "subcategory": "cosmology"
+    },
+    {
+      "id": "friedmann_equation_2",
+      "name": "弗里德曼方程（第二式）",
+      "formula": "ä/a = -4πG(ρ+3p/c²)/3 + Λc²/3",
+      "category": "physics",
+      "subcategory": "cosmology"
+    },
+    {
+      "id": "boltzmann_entropy",
+      "name": "玻尔兹曼熵公式",
+      "formula": "S = k_B ln Ω",
+      "category": "physics",
+      "subcategory": "statistical_mechanics"
+    },
+    {
+      "id": "partition_function",
+      "name": "配分函数",
+      "formula": "Z = Σ_i e^{-βE_i}",
+      "category": "physics",
+      "subcategory": "statistical_mechanics"
+    },
+    {
+      "id": "boltzmann_distribution",
+      "name": "玻尔兹曼分布",
+      "formula": "P_i = e^{-βE_i} / Z",
+      "category": "physics",
+      "subcategory": "statistical_mechanics"
+    },
+    {
+      "id": "fokker_planck",
+      "name": "福克-普朗克方程",
+      "formula": "∂P/∂t = -∂/∂x [A(x)P] + ∂²/∂x² [B(x)P]",
+      "category": "physics",
+      "subcategory": "statistical_mechanics"
+    },
+    {
+      "id": "navier_stokes",
+      "name": "纳维-斯托克斯方程",
+      "formula": "ρ(∂v/∂t + v·∇v) = -∇p + μ∇²v + f",
+      "category": "physics",
+      "subcategory": "fluid_dynamics"
+    },
+    {
+      "id": "continuity_equation_fluid",
+      "name": "连续性方程",
+      "formula": "∂ρ/∂t + ∇·(ρv) = 0",
+      "category": "physics",
+      "subcategory": "fluid_dynamics"
+    },
+    {
+      "id": "bernoulli_principle",
+      "name": "伯努利原理",
+      "formula": "p + ½ρv² + ρgh = constant",
+      "category": "physics",
+      "subcategory": "fluid_dynamics"
+    },
+    {
+      "id": "reynolds_number_advanced",
+      "name": "雷诺数",
+      "formula": "Re = ρvL/μ",
+      "category": "physics",
+      "subcategory": "fluid_dynamics"
+    },
+    {
+      "id": "first_law_thermodynamics_advanced",
+      "name": "热力学第一定律",
+      "formula": "dU = δQ - δW",
+      "category": "physics",
+      "subcategory": "thermodynamics"
+    },
+    {
+      "id": "second_law_thermodynamics_advanced",
+      "name": "热力学第二定律（熵增）",
+      "formula": "dS ≥ 0",
+      "category": "physics",
+      "subcategory": "thermodynamics"
+    },
+    {
+      "id": "gibbs_free_energy",
+      "name": "吉布斯自由能",
+      "formula": "G = H - TS",
+      "category": "physics",
+      "subcategory": "thermodynamics"
+    },
+    {
+      "id": "helmholtz_free_energy",
+      "name": "亥姆霍兹自由能",
+      "formula": "F = U - TS",
+      "category": "physics",
+      "subcategory": "thermodynamics"
+    },
+    {
+      "id": "snell_law",
+      "name": "斯涅尔定律（折射）",
+      "formula": "n₁ sin θ₁ = n₂ sin θ₂",
+      "category": "physics",
+      "subcategory": "optics"
+    },
+    {
+      "id": "fresnel_equations",
+      "name": "菲涅耳方程",
+      "formula": "R_s = |(n₁cosθ₁-n₂cosθ₂)/(n₁cosθ₁+n₂cosθ₂)|²",
+      "category": "physics",
+      "subcategory": "optics"
+    },
+    {
+      "id": "brewsers_angle",
+      "name": "布儒斯特角",
+      "formula": "tan θ_B = n₂/n₁",
+      "category": "physics",
+      "subcategory": "optics"
+    },
+    {
+      "id": "ebbinghaus_forgetting_curve",
+      "name": "艾宾浩斯遗忘曲线",
+      "formula": "R(t) = e^{-t/S}",
+      "category": "cognitive_science",
+      "subcategory": "memory"
+    },
+    {
+      "id": "pad_emotion_model",
+      "name": "PAD 情绪空间模型",
+      "formula": "(P,A,D) = f(stimulus, context)",
+      "category": "cognitive_science",
+      "subcategory": "emotion"
+    },
+    {
+      "id": "flow_channel_model",
+      "name": "心流通道模型",
+      "formula": "Flow = f(challenge, skill)",
+      "category": "cognitive_science",
+      "subcategory": "flow"
+    },
+    {
+      "id": "cognitive_load_index",
+      "name": "认知负载指数",
+      "formula": "CL = (intrinsic + extraneous + germane) / working_memory_capacity",
+      "category": "cognitive_science",
+      "subcategory": "cognition"
+    },
+    {
+      "id": "bayesian_updating",
+      "name": "贝叶斯更新（信念修正）",
+      "formula": "P(H|D) = P(D|H) P(H) / P(D)",
+      "category": "cognitive_science",
+      "subcategory": "belief_updating"
+    },
+    {
+      "id": "information_value",
+      "name": "信息价值（决策理论）",
+      "formula": "EVSI = E[U(D)] - E[U(∅)]",
+      "category": "cognitive_science",
+      "subcategory": "decision_theory"
+    },
+    {
+      "id": "expected_utility",
+      "name": "期望效用",
+      "formula": "EU = Σ p_i u(x_i)",
+      "category": "cognitive_science",
+      "subcategory": "decision_theory"
+    },
+    {
+      "id": "metacognitive_confidence",
+      "name": "元认知置信度",
+      "formula": "C = 1 - Var(p)",
+      "category": "cognitive_science",
+      "subcategory": "metacognition"
+    },
+    {
+      "id": "derivative_0",
+      "name": "d/dx(x^n)",
+      "formula": "d(x^n)/dx = n*x^(n-1)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_1",
+      "name": "d/dx(x)",
+      "formula": "d(x)/dx = 1",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_2",
+      "name": "d/dx(1/x)",
+      "formula": "d(1/x)/dx = -1/x^2",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_3",
+      "name": "d/dx(sqrt(x))",
+      "formula": "d(sqrt(x))/dx = 1/(2*sqrt(x))",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_4",
+      "name": "d/dx(sin(x))",
+      "formula": "d(sin(x))/dx = cos(x)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_5",
+      "name": "d/dx(cos(x))",
+      "formula": "d(cos(x))/dx = -sin(x)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_6",
+      "name": "d/dx(tan(x))",
+      "formula": "d(tan(x))/dx = sec(x)^2",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_7",
+      "name": "d/dx(cot(x))",
+      "formula": "d(cot(x))/dx = -csc(x)^2",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_8",
+      "name": "d/dx(sec(x))",
+      "formula": "d(sec(x))/dx = sec(x)*tan(x)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_9",
+      "name": "d/dx(csc(x))",
+      "formula": "d(csc(x))/dx = -csc(x)*cot(x)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_10",
+      "name": "d/dx(e^x)",
+      "formula": "d(e^x)/dx = e^x",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_11",
+      "name": "d/dx(a^x)",
+      "formula": "d(a^x)/dx = a^x * ln(a)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_12",
+      "name": "d/dx(ln(x))",
+      "formula": "d(ln(x))/dx = 1/x",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_13",
+      "name": "d/dx(log_a(x))",
+      "formula": "d(log_a(x))/dx = 1/(x*ln(a))",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_14",
+      "name": "d/dx(arcsin(x))",
+      "formula": "d(arcsin(x))/dx = 1/sqrt(1-x^2)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_15",
+      "name": "d/dx(arccos(x))",
+      "formula": "d(arccos(x))/dx = -1/sqrt(1-x^2)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_16",
+      "name": "d/dx(arctan(x))",
+      "formula": "d(arctan(x))/dx = 1/(1+x^2)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_17",
+      "name": "d/dx(sinh(x))",
+      "formula": "d(sinh(x))/dx = cosh(x)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_18",
+      "name": "d/dx(cosh(x))",
+      "formula": "d(cosh(x))/dx = sinh(x)",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "derivative_19",
+      "name": "d/dx(tanh(x))",
+      "formula": "d(tanh(x))/dx = sech(x)^2",
+      "category": "mathematics",
+      "subcategory": "calculus_derivatives",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_0",
+      "name": "∫ x^n dx",
+      "formula": "∫ x^n dx = x^(n+1)/(n+1) + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_1",
+      "name": "∫ 1/x dx",
+      "formula": "∫ 1/x dx = ln|x| + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_2",
+      "name": "∫ e^x dx",
+      "formula": "∫ e^x dx = e^x + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_3",
+      "name": "∫ a^x dx",
+      "formula": "∫ a^x dx = a^x/ln(a) + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_4",
+      "name": "∫ sin(x) dx",
+      "formula": "∫ sin(x) dx = -cos(x) + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_5",
+      "name": "∫ cos(x) dx",
+      "formula": "∫ cos(x) dx = sin(x) + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_6",
+      "name": "∫ tan(x) dx",
+      "formula": "∫ tan(x) dx = -ln|cos(x)| + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_7",
+      "name": "∫ sec(x)^2 dx",
+      "formula": "∫ sec(x)^2 dx = tan(x) + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_8",
+      "name": "∫ 1/(x^2+a^2) dx",
+      "formula": "∫ 1/(x^2+a^2) dx = (1/a)*arctan(x/a) + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_9",
+      "name": "∫ 1/sqrt(x^2±a^2) dx",
+      "formula": "∫ 1/sqrt(x^2±a^2) dx = ln|x+sqrt(x^2±a^2)| + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_10",
+      "name": "∫ ln(x) dx",
+      "formula": "∫ ln(x) dx = x*ln(x) - x + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_11",
+      "name": "∫ sinh(x) dx",
+      "formula": "∫ sinh(x) dx = cosh(x) + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "integral_12",
+      "name": "∫ cosh(x) dx",
+      "formula": "∫ cosh(x) dx = sinh(x) + C",
+      "category": "mathematics",
+      "subcategory": "calculus_integrals",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "taylor_0",
+      "name": "e^x 级数展开",
+      "formula": "e^x = Σ_{n=0}^∞ x^n/n!",
+      "category": "mathematics",
+      "subcategory": "series_expansion",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "taylor_1",
+      "name": "sin(x) 级数展开",
+      "formula": "sin(x) = Σ_{n=0}^∞ (-1)^n x^(2n+1)/(2n+1)!",
+      "category": "mathematics",
+      "subcategory": "series_expansion",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "taylor_2",
+      "name": "cos(x) 级数展开",
+      "formula": "cos(x) = Σ_{n=0}^∞ (-1)^n x^(2n)/(2n)!",
+      "category": "mathematics",
+      "subcategory": "series_expansion",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "taylor_3",
+      "name": "ln(1+x) 级数展开",
+      "formula": "ln(1+x) = Σ_{n=1}^∞ (-1)^(n-1) x^n/n",
+      "category": "mathematics",
+      "subcategory": "series_expansion",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "taylor_4",
+      "name": "(1+x)^α 级数展开",
+      "formula": "(1+x)^α = Σ_{n=0}^∞ C(α,n) x^n",
+      "category": "mathematics",
+      "subcategory": "series_expansion",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "taylor_5",
+      "name": "arctan(x) 级数展开",
+      "formula": "arctan(x) = Σ_{n=0}^∞ (-1)^n x^(2n+1)/(2n+1)",
+      "category": "mathematics",
+      "subcategory": "series_expansion",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "taylor_6",
+      "name": "arcsin(x) 级数展开",
+      "formula": "arcsin(x) = Σ_{n=0}^∞ (2n)!/(4^n (n!)^2) * x^(2n+1)/(2n+1)",
+      "category": "mathematics",
+      "subcategory": "series_expansion",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "distribution_0",
+      "name": "Bernoulli(p) 分布",
+      "formula": "P(X=1)=p, P(X=0)=1-p",
+      "category": "mathematics",
+      "subcategory": "probability_distributions",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "distribution_1",
+      "name": "Binomial(n,p) 分布",
+      "formula": "P(X=k)=C(n,k)p^k(1-p)^(n-k)",
+      "category": "mathematics",
+      "subcategory": "probability_distributions",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "distribution_2",
+      "name": "Poisson(λ) 分布",
+      "formula": "P(X=k)=e^{-λ} λ^k/k!",
+      "category": "mathematics",
+      "subcategory": "probability_distributions",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "distribution_3",
+      "name": "Normal(μ,σ²) 分布",
+      "formula": "f(x)=1/(σ√(2π)) e^{-(x-μ)²/(2σ²)}",
+      "category": "mathematics",
+      "subcategory": "probability_distributions",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "distribution_4",
+      "name": "Exponential(λ) 分布",
+      "formula": "f(x)=λe^{-λx} (x≥0)",
+      "category": "mathematics",
+      "subcategory": "probability_distributions",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "distribution_5",
+      "name": "Uniform(a,b) 分布",
+      "formula": "f(x)=1/(b-a) (a≤x≤b)",
+      "category": "mathematics",
+      "subcategory": "probability_distributions",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "distribution_6",
+      "name": "ChiSquared(k) 分布",
+      "formula": "f(x)=x^(k/2-1)e^{-x/2}/(2^(k/2)Γ(k/2))",
+      "category": "mathematics",
+      "subcategory": "probability_distributions",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "distribution_7",
+      "name": "t-distribution(ν) 分布",
+      "formula": "f(t)=Γ((ν+1)/2)/(√(νπ)Γ(ν/2)) (1+t²/ν)^{-(ν+1)/2}",
+      "category": "mathematics",
+      "subcategory": "probability_distributions",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "linalg_0",
+      "name": "determinant_2x2",
+      "formula": "det([a,b; c,d]) = ad - bc",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_1",
+      "name": "determinant_3x3",
+      "formula": "det = a(ei-fh) - b(di-fg) + c(dh-eg)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_2",
+      "name": "inverse_2x2",
+      "formula": "A^{-1} = 1/(ad-bc) [d,-b; -c,a]",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_3",
+      "name": "trace",
+      "formula": "tr(A) = Σ a_ii",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_4",
+      "name": "eigenvalue_def",
+      "formula": "det(A - λI) = 0",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_5",
+      "name": "spectral_radius",
+      "formula": "ρ(A) = max |λ_i|",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_6",
+      "name": "matrix_norm_frobenius",
+      "formula": "||A||_F = sqrt(Σ|a_ij|²)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_7",
+      "name": "cauchy_schwarz_matrix",
+      "formula": "|tr(A*B)| ≤ ||A||_F ||B||_F",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "constant_0",
+      "name": "speed_of_light",
+      "formula": "c = 299792458 m/s",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "constant_1",
+      "name": "planck_constant",
+      "formula": "h = 6.62607015e-34 J·s",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "constant_2",
+      "name": "reduced_planck",
+      "formula": "ℏ = h/(2π)",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "constant_3",
+      "name": "gravitational_constant",
+      "formula": "G = 6.67430e-11 N·m²/kg²",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "constant_4",
+      "name": "boltzmann_constant",
+      "formula": "k_B = 1.380649e-23 J/K",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "constant_5",
+      "name": "avogadro_number",
+      "formula": "N_A = 6.02214076e23 mol⁻¹",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "constant_6",
+      "name": "elementary_charge",
+      "formula": "e = 1.602176634e-19 C",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "constant_7",
+      "name": "vacuum_permittivity",
+      "formula": "ε_0 = 8.854187817e-12 F/m",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "constant_8",
+      "name": "vacuum_permeability",
+      "formula": "μ_0 = 4π×10⁻⁷ N/A²",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "constant_9",
+      "name": "stefan_boltzmann",
+      "formula": "σ = 5.670374419e-8 W/m²K⁴",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
     }
   ]
 }
