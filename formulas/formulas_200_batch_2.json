@@ -1,0 +1,242 @@
+[
+  [
+    "math_40",
+    "数学 ergodic_theory",
+    "math_ergodic_theory = f(math_ergodic_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_41",
+    "数学 dynamical_systems",
+    "math_dynamical_systems = f(math_dynamical_systems_params)",
+    "mathematics"
+  ],
+  [
+    "math_42",
+    "数学 chaos_theory",
+    "math_chaos_theory = f(math_chaos_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_43",
+    "数学 fractal_theory",
+    "math_fractal_theory = f(math_fractal_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_44",
+    "数学 complexity_theory",
+    "math_complexity_theory = f(math_complexity_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_45",
+    "数学 computability_theory",
+    "math_computability_theory = f(math_computability_theory_params)",
+    "mathematics"
+  ],
+  [
+    "math_46",
+    "数学 model_theory",
+    "math_model_theory = f(math_model_theory_params)",
+    "mathematics"
+  ],
+  [
+    "physics_47",
+    "物理 classical_mech",
+    "physics_classical_mech = f(physics_classical_mech_params)",
+    "physics"
+  ],
+  [
+    "physics_48",
+    "物理 electromagnetism",
+    "physics_electromagnetism = f(physics_electromagnetism_params)",
+    "physics"
+  ],
+  [
+    "physics_49",
+    "物理 thermodynamics",
+    "physics_thermodynamics = f(physics_thermodynamics_params)",
+    "physics"
+  ],
+  [
+    "physics_50",
+    "物理 statistical_mech",
+    "physics_statistical_mech = f(physics_statistical_mech_params)",
+    "physics"
+  ],
+  [
+    "physics_51",
+    "物理 quantum_mech",
+    "physics_quantum_mech = f(physics_quantum_mech_params)",
+    "physics"
+  ],
+  [
+    "physics_52",
+    "物理 relativity",
+    "physics_relativity = f(physics_relativity_params)",
+    "physics"
+  ],
+  [
+    "physics_53",
+    "物理 fluid_dynamics",
+    "physics_fluid_dynamics = f(physics_fluid_dynamics_params)",
+    "physics"
+  ],
+  [
+    "physics_54",
+    "物理 plasma_physics",
+    "physics_plasma_physics = f(physics_plasma_physics_params)",
+    "physics"
+  ],
+  [
+    "physics_55",
+    "物理 optics",
+    "physics_optics = f(physics_optics_params)",
+    "physics"
+  ],
+  [
+    "physics_56",
+    "物理 acoustics",
+    "physics_acoustics = f(physics_acoustics_params)",
+    "physics"
+  ],
+  [
+    "physics_57",
+    "物理 solid_state",
+    "physics_solid_state = f(physics_solid_state_params)",
+    "physics"
+  ],
+  [
+    "physics_58",
+    "物理 nuclear_physics",
+    "physics_nuclear_physics = f(physics_nuclear_physics_params)",
+    "physics"
+  ],
+  [
+    "physics_59",
+    "物理 particle_physics",
+    "physics_particle_physics = f(physics_particle_physics_params)",
+    "physics"
+  ],
+  [
+    "physics_60",
+    "物理 astrophysics",
+    "physics_astrophysics = f(physics_astrophysics_params)",
+    "physics"
+  ],
+  [
+    "physics_61",
+    "物理 cosmology",
+    "physics_cosmology = f(physics_cosmology_params)",
+    "physics"
+  ],
+  [
+    "physics_62",
+    "物理 biophysics",
+    "physics_biophysics = f(physics_biophysics_params)",
+    "physics"
+  ],
+  [
+    "physics_63",
+    "物理 geophysics",
+    "physics_geophysics = f(physics_geophysics_params)",
+    "physics"
+  ],
+  [
+    "physics_64",
+    "物理 atmospheric_physics",
+    "physics_atmospheric_physics = f(physics_atmospheric_physics_params)",
+    "physics"
+  ],
+  [
+    "physics_65",
+    "物理 oceanography",
+    "physics_oceanography = f(physics_oceanography_params)",
+    "physics"
+  ],
+  [
+    "physics_66",
+    "物理 climate_physics",
+    "physics_climate_physics = f(physics_climate_physics_params)",
+    "physics"
+  ],
+  [
+    "physics_67",
+    "物理 materials_science",
+    "physics_materials_science = f(physics_materials_science_params)",
+    "physics"
+  ],
+  [
+    "physics_68",
+    "物理 nanotechnology",
+    "physics_nanotechnology = f(physics_nanotechnology_params)",
+    "physics"
+  ],
+  [
+    "physics_69",
+    "物理 condensed_matter",
+    "physics_condensed_matter = f(physics_condensed_matter_params)",
+    "physics"
+  ],
+  [
+    "physics_70",
+    "物理 surface_science",
+    "physics_surface_science = f(physics_surface_science_params)",
+    "physics"
+  ],
+  [
+    "physics_71",
+    "物理 low_dimensional",
+    "physics_low_dimensional = f(physics_low_dimensional_params)",
+    "physics"
+  ],
+  [
+    "physics_72",
+    "物理 quantum_materials",
+    "physics_quantum_materials = f(physics_quantum_materials_params)",
+    "physics"
+  ],
+  [
+    "physics_73",
+    "物理 topological_materials",
+    "physics_topological_materials = f(physics_topological_materials_params)",
+    "physics"
+  ],
+  [
+    "physics_74",
+    "物理 strongly_correlated",
+    "physics_strongly_correlated = f(physics_strongly_correlated_params)",
+    "physics"
+  ],
+  [
+    "physics_75",
+    "物理 high_energy_physics",
+    "physics_high_energy_physics = f(physics_high_energy_physics_params)",
+    "physics"
+  ],
+  [
+    "physics_76",
+    "物理 nuclear_theory",
+    "physics_nuclear_theory = f(physics_nuclear_theory_params)",
+    "physics"
+  ],
+  [
+    "physics_77",
+    "物理 particle_astrophysics",
+    "physics_particle_astrophysics = f(physics_particle_astrophysics_params)",
+    "physics"
+  ],
+  [
+    "physics_78",
+    "物理 gravitational_physics",
+    "physics_gravitational_physics = f(physics_gravitational_physics_params)",
+    "physics"
+  ],
+  [
+    "physics_79",
+    "物理 cosmology_theory",
+    "physics_cosmology_theory = f(physics_cosmology_theory_params)",
+    "physics"
+  ]
+]
