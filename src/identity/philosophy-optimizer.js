@@ -7,7 +7,7 @@
  *   3. 哲学决策模型（实践智慧、审慎推理）
  */
 
-const PhilosophyEngine = require('./philosophy-engine.js');
+const { PhilosophyEngine } = require('./philosophy-engine.js');
 
 class PhilosophyOptimizer {
   constructor(options = {}) {

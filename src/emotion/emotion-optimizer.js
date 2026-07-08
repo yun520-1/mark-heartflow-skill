@@ -8,7 +8,7 @@
  *   4. 情绪恢复（情绪弹性模型）
  */
 
-const EmotionalGrowth = require('./emotional-growth.js');
+const { EmotionalGrowth } = require('./emotional-growth.js');
 
 class EmotionOptimizer {
   constructor(options = {}) {
