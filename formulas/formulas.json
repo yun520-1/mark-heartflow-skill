@@ -15903,6 +15903,84 @@
       "name": "Higgs 势能",
       "formula": "V(φ) = μ² φ†φ + λ(φ†φ)²",
       "category": "quantum_computing"
+    },
+    {
+      "id": "q_metro_quantum_fisher",
+      "name": "量子 Fisher 信息",
+      "formula": "F_Q[θ] = 4 Re(⟨∂_θ ψ|∂_θ ψ⟩ - |⟨ψ|∂_θ ψ⟩|²)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_metro_heisenberg_limit",
+      "name": "Heisenberg 极限",
+      "formula": "Δθ = 1/(N ΔH)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_metro_standard_quantum_limit",
+      "name": "标准量子极限",
+      "formula": "Δθ = 1/√N",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_metro_ghz_metroogy",
+      "name": "GHZ 计量学",
+      "formula": "Δθ_GHZ = 1/N",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_metro_noisy_metroogy",
+      "name": "噪声计量学",
+      "formula": "Δθ_noisy = √(γ/N)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_metro_adaptive_metroogy",
+      "name": "自适应计量学",
+      "formula": "θ̂_{k+1} = argmin_θ var(θ̂|data_k)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_thermo_jarzynski",
+      "name": "Jarzynski 等式",
+      "formula": "⟨exp(-β W)⟩ = exp(-β ΔF)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_thermo_clausius",
+      "name": "Clausius 等式",
+      "formula": "∮ δQ/T = 0",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_thermo_quantum_relative_entropy",
+      "name": "量子相对熵",
+      "formula": "D(ρ||σ) = Tr(ρ log ρ) - Tr(ρ log σ)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_thermo_quantum_heat_engine",
+      "name": "量子热机",
+      "formula": "η = 1 - T_c/T_h",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_thermo_thermodynamic_length",
+      "name": "热力学长度",
+      "formula": "L = ∫ √(g_{ij} dθ^i dθ^j)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_thermo_quantum_ot",
+      "name": "量子最优输运",
+      "formula": "W_2²(ρ,σ) = inf_π ∫ d²(x,y) dπ(x,y)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "q_thermo_resource_theory",
+      "name": "资源理论",
+      "formula": "ρ ≺ σ ⇔ ∃ CPTP map Λ: σ = Λ(ρ)",
+      "category": "quantum_computing"
     }
   ]
 }
