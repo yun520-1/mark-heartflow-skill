@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "version": "5.0.0",
+    "version": "6.0.0",
     "last_updated": "2026-07-08",
-    "total_formulas": 1122,
+    "total_formulas": 1196,
     "categories": [
       "mathematics",
       "physics",
@@ -8934,6 +8934,672 @@
       "subcategory": "constants",
       "difficulty": "beginner",
       "type": "constant"
+    },
+    {
+      "id": "l_hospital_rule",
+      "name": "洛必达法则",
+      "formula": "lim_{x→c} f(x)/g(x) = lim_{x→c} f'(x)/g'(x)",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "fundamental_theorem_algebra",
+      "name": "代数基本定理",
+      "formula": "Every non-constant polynomial has at least one complex root",
+      "category": "mathematics",
+      "subcategory": "algebra",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "multinomial_theorem",
+      "name": "多项式定理",
+      "formula": "(x_1+...+x_m)^n = Σ_{k_1+...+k_m=n} n!/(k_1!...k_m!) x_1^{k_1}...x_m^{k_m}",
+      "category": "mathematics",
+      "subcategory": "algebra",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "stokes_theorem",
+      "name": "斯托克斯定理",
+      "formula": "∫_∂S F·dr = ∫_S (∇×F)·dS",
+      "category": "mathematics",
+      "subcategory": "vector_calculus",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "divergence_theorem",
+      "name": "散度定理（高斯）",
+      "formula": "∫_V (∇·F) dV = ∮_∂V F·dS",
+      "category": "mathematics",
+      "subcategory": "vector_calculus",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "green_theorem",
+      "name": "格林定理",
+      "formula": "∮_C (P dx + Q dy) = ∫_D (∂Q/∂x - ∂P/∂y) dA",
+      "category": "mathematics",
+      "subcategory": "vector_calculus",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "qr_decomposition",
+      "name": "QR 分解",
+      "formula": "A = QR",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "lu_decomposition",
+      "name": "LU 分解",
+      "formula": "A = LU",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "cholesky_decomposition",
+      "name": "乔列斯基分解",
+      "formula": "A = LL^T",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "eigen_decomposition",
+      "name": "特征分解",
+      "formula": "A = V Λ V^{-1}",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "trace_cyclic",
+      "name": "迹的循环性质",
+      "formula": "tr(AB) = tr(BA)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "determinant_block",
+      "name": "分块矩阵行列式",
+      "formula": "det([A,B;C,D]) = det(A)det(D-CA^{-1}B)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "matrix_norm_spectral",
+      "name": "谱范数",
+      "formula": "||A||_2 = sqrt(ρ(A^T A))",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "hadamard_product",
+      "name": "哈达玛积",
+      "formula": "(A ∘ B)_{ij} = A_{ij} B_{ij}",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "kronecker_product",
+      "name": "克罗内克积",
+      "formula": "(A ⊗ B)_{ij} = a_{ij} B",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "conditional_probability",
+      "name": "条件概率",
+      "formula": "P(A|B) = P(A∩B)/P(B)",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "total_probability",
+      "name": "全概率公式",
+      "formula": "P(A) = Σ P(A|B_i) P(B_i)",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "covariance",
+      "name": "协方差",
+      "formula": "Cov(X,Y) = E[(X-μ_X)(Y-μ_Y)]",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "central_moment",
+      "name": "中心矩",
+      "formula": "μ_k = E[(X-μ)^k]",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "law_iterated_logarithm",
+      "name": "重对数律",
+      "formula": "limsup (S_n - nμ)/sqrt(2n log log n) = σ",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "chebyshev_inequality",
+      "name": "切比雪夫不等式",
+      "formula": "P(|X-μ| ≥ kσ) ≤ 1/k²",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "jensen_inequality",
+      "name": "詹森不等式",
+      "formula": "f(E[X]) ≤ E[f(X)] （f 凸）",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "markov_inequality",
+      "name": "马尔可夫不等式",
+      "formula": "P(X ≥ a) ≤ E[X]/a",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "hoeffding_inequality",
+      "name": "霍夫丁不等式",
+      "formula": "P(S_n - E[S_n] ≥ t) ≤ exp(-2t²/(Σ (b_i-a_i)²))",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "joint_entropy",
+      "name": "联合熵",
+      "formula": "H(X,Y) = -Σ p(x,y) log p(x,y)",
+      "category": "cognitive_science",
+      "subcategory": "information_theory",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "conditional_entropy",
+      "name": "条件熵",
+      "formula": "H(X|Y) = H(X,Y) - H(Y)",
+      "category": "cognitive_science",
+      "subcategory": "information_theory",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "mutual_information",
+      "name": "互信息",
+      "formula": "I(X;Y) = H(X) - H(X|Y) = D_KL(p(x,y)||p(x)p(y))",
+      "category": "cognitive_science",
+      "subcategory": "information_theory",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "channel_capacity",
+      "name": "信道容量（香农）",
+      "formula": "C = max_{p(x)} I(X;Y)",
+      "category": "cognitive_science",
+      "subcategory": "information_theory",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "rate_distortion",
+      "name": "率失真函数",
+      "formula": "R(D) = min_{p(ŷ|x): E[d(X,Ŷ)]≤D} I(X;Ŷ)",
+      "category": "cognitive_science",
+      "subcategory": "information_theory",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "newton_gravitation",
+      "name": "牛顿万有引力",
+      "formula": "F = G m_1 m_2 / r²",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "kepler_first",
+      "name": "开普勒第一定律",
+      "formula": "行星轨道是椭圆，太阳在焦点",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "kepler_second",
+      "name": "开普勒第二定律",
+      "formula": "面积速度恒定：dA/dt = constant",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "kepler_third",
+      "name": "开普勒第三定律",
+      "formula": "T² ∝ a³",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "conservation_momentum",
+      "name": "动量守恒",
+      "formula": "Σ p_i = constant",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "conservation_energy",
+      "name": "能量守恒",
+      "formula": "E_total = kinetic + potential + internal = constant",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "parallel_axis",
+      "name": "平行轴定理",
+      "formula": "I = I_cm + Md²",
+      "category": "physics",
+      "subcategory": "classical_mechanics",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "electric_field_point",
+      "name": "点电荷电场",
+      "formula": "E = k q / r²",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "electric_potential",
+      "name": "电势",
+      "formula": "V = k q / r",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "capacitance",
+      "name": "电容",
+      "formula": "C = Q/V",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "inductance",
+      "name": "电感",
+      "formula": "L = Φ/I",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "lenz_law",
+      "name": "楞次定律",
+      "formula": "感应电流方向阻碍磁通变化",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "ampere_law",
+      "name": "安培环路定理",
+      "formula": "∮ B·dl = μ_0 I_enc",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "biot_savart",
+      "name": "毕奥-萨伐尔定律",
+      "formula": "dB = (μ_0/4π) I dl × r / r³",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "boyle_law",
+      "name": "玻意耳定律",
+      "formula": "PV = constant (T 恒定)",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "charles_law",
+      "name": "查理定律",
+      "formula": "V/T = constant (P 恒定)",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "clausius_statement",
+      "name": "克劳修斯表述",
+      "formula": "热量不能自发从低温传到高温",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "kelvin_statement",
+      "name": "开尔文表述",
+      "formula": "不可能从单一热源吸热做功而不产生其他影响",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "stefan_boltzmann",
+      "name": "斯特藩-玻尔兹曼定律",
+      "formula": "P = σ A T⁴",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "wein_displacement",
+      "name": "维恩位移定律",
+      "formula": "λ_max T = b",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "joule_thomson",
+      "name": "焦耳-汤姆孙效应",
+      "formula": "μ_JT = (∂T/∂P)_H",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "planck_postulate",
+      "name": "普朗克量子假设",
+      "formula": "E = nhν",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "compton_scattering",
+      "name": "康普顿散射",
+      "formula": "λ' - λ = h/(m_e c) (1-cosθ)",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "bohr_model",
+      "name": "玻尔模型",
+      "formula": "r_n = n² a_0, E_n = -13.6/n² eV",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "tunneling_probability",
+      "name": "量子隧穿概率",
+      "formula": "T ≈ e^{-2κa}, κ = sqrt(2m(V_0-E))/ℏ",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "virial_theorem",
+      "name": "位力定理",
+      "formula": "2⟨T⟩ = ⟨r·∇V⟩",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "lorentz_factor",
+      "name": "洛伦兹因子",
+      "formula": "γ = 1/sqrt(1-v²/c²)",
+      "category": "physics",
+      "subcategory": "special_relativity",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "relativistic_momentum",
+      "name": "相对论动量",
+      "formula": "p = γ m_0 v",
+      "category": "physics",
+      "subcategory": "special_relativity",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "relativistic_energy",
+      "name": "相对论能量",
+      "formula": "E = γ m_0 c²",
+      "category": "physics",
+      "subcategory": "special_relativity",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "rest_energy",
+      "name": "静止能量",
+      "formula": "E_0 = m_0 c²",
+      "category": "physics",
+      "subcategory": "special_relativity",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "henderson_hasselbalch",
+      "name": "亨德森-哈塞尔巴尔赫",
+      "formula": "pH = pK_a + log([A⁻]/[HA])",
+      "category": "chemistry",
+      "subcategory": "acid_base",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "beer_lambert",
+      "name": "比尔-朗伯特定律",
+      "formula": "A = ε c l",
+      "category": "chemistry",
+      "subcategory": "spectroscopy",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "raoult_law",
+      "name": "拉乌尔定律",
+      "formula": "P_A = X_A P_A°",
+      "category": "chemistry",
+      "subcategory": "solutions",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "henry_law",
+      "name": "亨利定律",
+      "formula": "C = k_H P",
+      "category": "chemistry",
+      "subcategory": "solutions",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "ficks_first",
+      "name": "菲克第一定律",
+      "formula": "J = -D ∇C",
+      "category": "chemistry",
+      "subcategory": "diffusion",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "ficks_second",
+      "name": "菲克第二定律",
+      "formula": "∂C/∂t = D ∇²C",
+      "category": "chemistry",
+      "subcategory": "diffusion",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "power_electrical",
+      "name": "电功率",
+      "formula": "P = VI = I²R = V²/R",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "young_modulus",
+      "name": "杨氏模量",
+      "formula": "E = σ/ε = (F/A)/(ΔL/L)",
+      "category": "engineering",
+      "subcategory": "materials",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "hooke_law",
+      "name": "胡克定律",
+      "formula": "F = -kx",
+      "category": "engineering",
+      "subcategory": "mechanics",
+      "difficulty": "beginner",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "yarkes_dodson",
+      "name": "耶克斯-多德森定律",
+      "formula": "Performance = f(arousal) = -a·A² + b·A + c",
+      "category": "cognitive_science",
+      "subcategory": "arousal",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "q_learning_update",
+      "name": "Q-Learning 更新规则",
+      "formula": "Q(s,a) ← Q(s,a) + α[r + γ max_a' Q(s',a') - Q(s,a)]",
+      "category": "cognitive_science",
+      "subcategory": "reinforcement_learning",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "policy_gradient",
+      "name": "策略梯度定理",
+      "formula": "∇J(θ) = E[∇ log π(a|s) Q(s,a)]",
+      "category": "cognitive_science",
+      "subcategory": "reinforcement_learning",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "bellman_equation",
+      "name": "贝尔曼方程",
+      "formula": "V(s) = max_a [R(s,a) + γ V(s')]",
+      "category": "cognitive_science",
+      "subcategory": "reinforcement_learning",
+      "difficulty": "advanced",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "softmax_policy",
+      "name": "Softmax 策略",
+      "formula": "π(a|s) = exp(Q(s,a)/τ) / Σ exp(Q(s,a')/τ)",
+      "category": "cognitive_science",
+      "subcategory": "reinforcement_learning",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
+    },
+    {
+      "id": "experience_replay",
+      "name": "经验回放",
+      "formula": "sample batch from D = {(s,a,r,s')}",
+      "category": "cognitive_science",
+      "subcategory": "reinforcement_learning",
+      "difficulty": "intermediate",
+      "source": "builtin_v6"
     }
   ]
 }
