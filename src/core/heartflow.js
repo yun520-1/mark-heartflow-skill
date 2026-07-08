@@ -935,8 +935,6 @@ class HeartFlow {
       mctsReasoning: { lazy: true, path: '../reasoning/mcts-reasoning.js', Ctor: 'MCTSReasoning', args: {} },
       hierarchicalPlanner: { lazy: true, path: '../planner/hierarchical-planner.js', Ctor: 'HierarchicalPlanner', args: {} },
     };
-    // 已禁用 console.warn: // try { this.bm25 = new BM25Engine({ dataDir: path.join(this.rootPath, 'data/search'), autoSave: true }); } catch (e) { /* 已移除 console.warn */ }
-    // 已禁用 console.warn: // try { this.hybrid = new HybridSearchEngine({ dataDir: path.join(this.rootPath, 'data/search') }); } catch (e) { /* 已移除 console.warn */ }
 
     // Budget & Utils (function exports, not classes)
     const BudgetMod = _Budget();

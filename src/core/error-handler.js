@@ -637,7 +637,6 @@ class ErrorHandler {
     try {
       fs.appendFileSync(ERROR_LOG, entry);
     } catch (e) {
-      // 已禁用 console.error: console.error('[ErrorHandler] 无法写入日志:', e.message);
     }
   }
 

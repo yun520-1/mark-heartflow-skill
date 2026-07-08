@@ -89,7 +89,6 @@ class PolicyOptimizer {
         };
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[PolicyOptimizer] 加载策略文件失败:', e.message);
       this.policies = { version: '1.1.0', policies: [], last_optimization: null, last_pruning: null };
     }
   }
@@ -102,7 +101,6 @@ class PolicyOptimizer {
       }
       fs.writeFileSync(this.policiesFile, JSON.stringify(this.policies, null, 2));
     } catch (e) {
-      // 已禁用 console.error: console.error('[PolicyOptimizer] 保存策略失败:', e.message);
     }
   }
 
@@ -114,7 +112,6 @@ class PolicyOptimizer {
    * 优化行为策略（主入口）
    */
   async optimizeBehaviorPolicies() {
-    // 已禁用 console.error: console.error('[PolicyOptimizer] 开始策略优化...');
 
     const trace = this.loadTrace();
     if (!trace.cycles || trace.cycles.length === 0) {
@@ -144,7 +141,6 @@ class PolicyOptimizer {
     this.policies.last_optimization = new Date().toISOString();
     this.savePolicies();
 
-    // 已禁用 console.error: console.error(`[PolicyOptimizer] 优化完成: ${validPolicies.length} 个新策略 (去重后 ${mergedPolicies.length} 个)`);
 
     return {
       success: true,
@@ -211,7 +207,6 @@ class PolicyOptimizer {
 
     const removed = before - active.length;
     if (removed > 0) {
-      // 已禁用 console.error: console.error(`[PolicyOptimizer] 修剪完成: 移除 ${removed} 个策略 (合并:${staleCount.merged}, 替代:${staleCount.superseded}, 过期:${staleCount.expired})`);
     }
   }
 
@@ -225,7 +220,6 @@ class PolicyOptimizer {
         return JSON.parse(fs.readFileSync(this.traceFile, 'utf8'));
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[PolicyOptimizer] 加载追踪文件失败:', e.message);
     }
     return { cycles: [] };
   }
@@ -547,7 +541,6 @@ class PolicyOptimizer {
       } else {
         policy.state = POLICY_STATES.REJECTED;
         policy.rejection_reason = alignment.reason;
-        // 已禁用 console.error: console.error(`[PolicyOptimizer] 策略 ${policy.policy_id} 被拒绝: ${alignment.reason}`);
       }
     }
 
@@ -664,7 +657,6 @@ class PolicyOptimizer {
         return fs.readFileSync(this.coreValuesFile, 'utf8');
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[PolicyOptimizer] loadCoreValues failed:', e.message);
     }
     return null;
   }

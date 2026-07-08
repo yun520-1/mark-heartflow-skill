@@ -78,18 +78,15 @@ class GlobalWorkspace extends EventEmitter {
    */
   registerAgent(agent) {
     if (!agent || !agent.name) {
-      // 已禁用 console.error: console.error('[GWT] Rejecting agent: missing name or agent object');
       return false;
     }
 
     const validation = this._validateAgentMethods(agent);
     if (!validation.valid) {
-      // 已禁用 console.error: console.error(`[GWT] Rejecting agent "${agent.name}": missing methods [${validation.missing.join(', ')}]`);
       return false;
     }
 
     if (this.agents.has(agent.name)) {
-      // 已禁用 console.warn: console.warn(`[GWT] Overwriting existing agent: ${agent.name}`);
     }
 
     this.agents.set(agent.name, {
@@ -102,7 +99,6 @@ class GlobalWorkspace extends EventEmitter {
       /** 连续失败计数，用于故障检测 */
       consecutiveFailures: 0,
     });
-    // 已禁用 console.error: console.error(`[GWT] Registered agent: ${agent.name}`);
     return true;
   }
 
@@ -185,9 +181,7 @@ class GlobalWorkspace extends EventEmitter {
         });
         agentData.consecutiveFailures = 0;
 
-        // 已禁用 console.error: console.error(`[GWT] ${name} broadcasts: attention=${broadcast.attention.toFixed(3)}, confidence=${broadcast.confidence.toFixed(3)}`);
       } catch (e) {
-        // 已禁用 console.error: console.error(`[GWT] Agent ${name} error:`, e.message);
         agentData.consecutiveFailures++;
         // 即使失败也记录一个低优先级广播，保证 integrate 能看到所有参与者
         broadcasts.push({
@@ -264,7 +258,6 @@ class GlobalWorkspace extends EventEmitter {
     });
 
     const winner = scored[0];
-    // 已禁用 console.error: console.error(`[GWT] Winner: ${winner.agent} (score: ${winner.score.toFixed(3)})`);
 
     return winner;
   }
