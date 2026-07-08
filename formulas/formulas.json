@@ -15465,6 +15465,54 @@
       "name": "宇宙微波背景",
       "formula": "ΔT/T = Σ_lm a_{lm} Y_{lm}(θ,φ)",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_algo_shor_period_finding",
+      "name": "Shor 周期查找",
+      "formula": "f(x) = aˣ mod N, period r: aʳ ≡ 1 mod N",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_algo_shor_quantum_fourier_transform",
+      "name": "Shor QFT",
+      "formula": "QFT|y⟩ = (1/√N) Σₖ exp(2πi yk/N) |k⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_algo_grover_oracle",
+      "name": "Grover Oracle",
+      "formula": "O|x⟩ = (-1)^{f(x)} |x⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_algo_grover_diffusion",
+      "name": "Grover 扩散算子",
+      "formula": "D = 2|s⟩⟨s| - I",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_algo_vqe_ansatz",
+      "name": "VQE Ansatz",
+      "formula": "|ψ(θ)⟩ = U(θ) |0⟩^⊗ⁿ",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_algo_vqe_measurement",
+      "name": "VQE 测量",
+      "formula": "E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_algo_qaoa_cost_hamiltonian",
+      "name": "QAOA 代价哈密顿量",
+      "formula": "H_C = Σ_i h_i Z_i + Σ_{ij} J_{ij} Z_i Z_j",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_algo_qaoa_mixer_hamiltonian",
+      "name": "QAOA 混合器哈密顿量",
+      "formula": "H_B = Σ_i X_i",
+      "category": "quantum_computing"
     }
   ]
 }
