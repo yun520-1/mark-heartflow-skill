@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "version": "6.2.0",
+    "version": "6.5.0",
     "last_updated": "2026-07-08",
-    "total_formulas": 1273,
+    "total_formulas": 1337,
     "categories": [
       "mathematics",
       "physics",
@@ -10373,6 +10373,518 @@
       "difficulty": "advanced",
       "description": "",
       "source": "psych_philosophy_v6"
+    },
+    {
+      "id": "taylor_exp_x",
+      "name": "exp(x) 泰勒展开",
+      "formula": "x**7/5040 + x**6/720 + x**5/120 + x**4/24 + x**3/6 + x**2/2 + x + 1",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor_sin_x",
+      "name": "sin(x) 泰勒展开",
+      "formula": "-x**7/5040 + x**5/120 - x**3/6 + x",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor_cos_x",
+      "name": "cos(x) 泰勒展开",
+      "formula": "-x**6/720 + x**4/24 - x**2/2 + 1",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor_ln_1+x",
+      "name": "ln(1+x) 泰勒展开",
+      "formula": "x**7/7 - x**6/6 + x**5/5 - x**4/4 + x**3/3 - x**2/2 + x",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor__1+x_a",
+      "name": "(1+x)^a 泰勒展开",
+      "formula": "a*x**5*(a - 4)*(a - 3)*(a - 2)*(a - 1)/120 + a*x**4*(a - 3)*(a - 2)*(a - 1)/24 + a*x**3*(a - 2)*(a - 1)/6 + a*x**2*(a - 1)/2 + a*x + 1",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor_arctan_x",
+      "name": "arctan(x) 泰勒展开",
+      "formula": "-x**7/7 + x**5/5 - x**3/3 + x",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor_arcsin_x",
+      "name": "arcsin(x) 泰勒展开",
+      "formula": "5*x**7/112 + 3*x**5/40 + x**3/6 + x",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor_sinh_x",
+      "name": "sinh(x) 泰勒展开",
+      "formula": "x**7/5040 + x**5/120 + x**3/6 + x",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor_cosh_x",
+      "name": "cosh(x) 泰勒展开",
+      "formula": "x**6/720 + x**4/24 + x**2/2 + 1",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor_1__1-x",
+      "name": "1/(1-x) 泰勒展开",
+      "formula": "x**7 + x**6 + x**5 + x**4 + x**3 + x**2 + x + 1",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor_Bessel J_0_x",
+      "name": "Bessel J_0(x) 泰勒展开",
+      "formula": "-x**6/2304 + x**4/64 - x**2/4 + 1",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "taylor_Gamma_x+1",
+      "name": "Gamma(x+1) 泰勒展开",
+      "formula": "x**5*(-EulerGamma*pi**4/160 - pi**2*zeta(3)/36 - zeta(5)/5 - EulerGamma**2*zeta(3)/6 - EulerGamma**3*pi**2/72 - EulerGamma**5/120) + x**4*(EulerGamma**4/24 + EulerGamma**2*pi**2/24 + EulerGamma*zeta(3)/3 + pi**4/160) + x**3*(-EulerGamma*pi**2/12 - zeta(3)/3 - EulerGamma**3/6) + x**2*(EulerGamma**2/2 + pi**2/12) - EulerGamma*x + 1",
+      "category": "mathematics",
+      "subcategory": "series",
+      "source": "sympy_series"
+    },
+    {
+      "id": "integral_13",
+      "name": "∫ exp(x) dx",
+      "formula": "exp(x)",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "integral_14",
+      "name": "∫ sin(x) dx",
+      "formula": "-cos(x)",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "integral_15",
+      "name": "∫ cos(x) dx",
+      "formula": "sin(x)",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "integral_16",
+      "name": "∫ x**n dx",
+      "formula": "Piecewise((x**(n + 1)/(n + 1), Ne(n, -1)), (log(x), True))",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "integral_17",
+      "name": "∫ 1/(a**2 + x**2) dx",
+      "formula": "(-I*log(-I*a + x)/2 + I*log(I*a + x)/2)/a",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "integral_18",
+      "name": "∫ exp(-x**2) dx",
+      "formula": "sqrt(pi)*erf(x)/2",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "integral_19",
+      "name": "∫ sin(x)**2 dx",
+      "formula": "x/2 - sin(x)*cos(x)/2",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "integral_20",
+      "name": "∫ cos(x)**2 dx",
+      "formula": "x/2 + sin(x)*cos(x)/2",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "integral_21",
+      "name": "∫ 1/sqrt(1 - x**2) dx",
+      "formula": "asin(x)",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "integral_22",
+      "name": "∫ 1/sqrt(a**2 + x**2) dx",
+      "formula": "asinh(x/a)",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "integral_23",
+      "name": "∫ sec(x)**2 dx",
+      "formula": "sin(x)/cos(x)",
+      "category": "mathematics",
+      "subcategory": "integrals",
+      "source": "sympy_integral"
+    },
+    {
+      "id": "ode_24",
+      "name": "dy/dx = ky",
+      "formula": "C1*exp(k*x)",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_ode"
+    },
+    {
+      "id": "ode_25",
+      "name": "d²y/dx² + k²y = 0",
+      "formula": "C1*exp(-I*k*x) + C2*exp(I*k*x)",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_ode"
+    },
+    {
+      "id": "ode_26",
+      "name": "d²y/dx² - k²y = 0",
+      "formula": "C1*exp(-k*x) + C2*exp(k*x)",
+      "category": "mathematics",
+      "subcategory": "ode",
+      "source": "sympy_ode"
+    },
+    {
+      "id": "matrix_27",
+      "name": "det(AB) = det(A) det(B)",
+      "formula": "det(AB) = det(A)·det(B)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "matrix_identity"
+    },
+    {
+      "id": "matrix_28",
+      "name": "det(A^T) = det(A)",
+      "formula": "det(A^T) = det(A)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "matrix_identity"
+    },
+    {
+      "id": "matrix_29",
+      "name": "det(A^{-1}) = 1/det(A)",
+      "formula": "det(A^{-1}) = 1/det(A)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "matrix_identity"
+    },
+    {
+      "id": "matrix_30",
+      "name": "tr(A+B) = tr(A) + tr(B)",
+      "formula": "tr(A+B) = tr(A) + tr(B)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "matrix_identity"
+    },
+    {
+      "id": "matrix_31",
+      "name": "tr(AB) = tr(BA)",
+      "formula": "tr(AB) = tr(BA)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "matrix_identity"
+    },
+    {
+      "id": "matrix_32",
+      "name": "e^{iπ} + 1 = 0",
+      "formula": "e^{iπ} + 1 = 0",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "matrix_identity"
+    },
+    {
+      "id": "matrix_33",
+      "name": "(A^{-1})^{-1} = A",
+      "formula": "(A^{-1})^{-1} = A",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "matrix_identity"
+    },
+    {
+      "id": "matrix_34",
+      "name": "(AB)^{-1} = B^{-1} A^{-1}",
+      "formula": "(AB)^{-1} = B^{-1} A^{-1}",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "matrix_identity"
+    },
+    {
+      "id": "matrix_35",
+      "name": "(A^T)^{-1} = (A^{-1})^T",
+      "formula": "(A^T)^{-1} = (A^{-1})^T",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "matrix_identity"
+    },
+    {
+      "id": "dist_normal_pdf",
+      "name": "正态分布 PDF",
+      "formula": "f(x) = (1/(σ√(2π))) exp(-(x-μ)²/(2σ²))",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "known_distribution"
+    },
+    {
+      "id": "dist_normal_mean",
+      "name": "正态分布期望",
+      "formula": "E[X] = μ",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "known"
+    },
+    {
+      "id": "dist_normal_var",
+      "name": "正态分布方差",
+      "formula": "Var(X) = σ²",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "known"
+    },
+    {
+      "id": "dist_poisson_pmf",
+      "name": "泊松分布 PMF",
+      "formula": "P(X=k) = (λ^k e^{-λ})/k!",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "known"
+    },
+    {
+      "id": "dist_poisson_mean",
+      "name": "泊松分布期望",
+      "formula": "E[X] = λ",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "known"
+    },
+    {
+      "id": "dist_exp_pdf",
+      "name": "指数分布 PDF",
+      "formula": "f(x) = λ e^{-λx} (x≥0)",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "known"
+    },
+    {
+      "id": "dist_exp_cdf",
+      "name": "指数分布 CDF",
+      "formula": "F(x) = 1 - e^{-λx}",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "known"
+    },
+    {
+      "id": "dist_beta_pdf",
+      "name": "贝塔分布 PDF",
+      "formula": "f(x) = x^{α-1}(1-x)^{β-1} / B(α,β)",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "known"
+    },
+    {
+      "id": "dist_chi2_pdf",
+      "name": "卡方分布 PDF",
+      "formula": "f(x) = x^{k/2-1} e^{-x/2} / (2^{k/2} Γ(k/2))",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "source": "known"
+    },
+    {
+      "id": "hydrogen_energy",
+      "name": "氢原子能级",
+      "formula": "E_n = -13.6 · Z²/n² eV",
+      "category": "physics",
+      "subcategory": "quantum_mechanics",
+      "source": "sympy_physics"
+    },
+    {
+      "id": "ebbinghaus_forgetting",
+      "name": "遗忘曲线",
+      "formula": "R(t) = e^{-t/S}",
+      "category": "cognitive_science",
+      "subcategory": "memory",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "ebbinghaus_retention_rate",
+      "name": "留存率（天）",
+      "formula": "R(d) = 2^{-d/τ}, τ≈1天",
+      "category": "cognitive_science",
+      "subcategory": "memory",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "spacing_effect",
+      "name": "间隔效应",
+      "formula": "R = f(interval, repetitions)",
+      "category": "cognitive_science",
+      "subcategory": "memory",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "flow_channel",
+      "name": "心流通道",
+      "formula": "Flow = 1 - |log₂(challenge/skill)| / max_bits",
+      "category": "cognitive_science",
+      "subcategory": "flow",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "flow_optimal",
+      "name": "最优心流",
+      "formula": "challenge = skill × 1.1",
+      "category": "cognitive_science",
+      "subcategory": "flow",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "yerkes_dodson_optimal",
+      "name": "耶克斯-多德森最优唤醒",
+      "formula": "A_opt = (b ± sqrt(b² - 4ac)) / (2a)",
+      "category": "cognitive_science",
+      "subcategory": "arousal",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "expected_utility_general",
+      "name": "期望效用（一般形式）",
+      "formula": "EU = ∫ u(x) p(x) dx",
+      "category": "cognitive_science",
+      "subcategory": "decision_theory",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "prospect_value_function",
+      "name": "前景理论价值函数",
+      "formula": "v(x) = x^α if x≥0, v(x) = -λ|x|^β if x<0",
+      "category": "cognitive_science",
+      "subcategory": "prospect_theory",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "prospect_weight_function",
+      "name": "前景理论权重函数",
+      "formula": "w(p) = p^γ / (p^γ + (1-p)^γ)^{1/γ}",
+      "category": "cognitive_science",
+      "subcategory": "prospect_theory",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "bayes_continuous",
+      "name": "连续贝叶斯更新",
+      "formula": "p(θ|D) ∝ L(D|θ) p(θ)",
+      "category": "cognitive_science",
+      "subcategory": "belief_updating",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "sarsa_update",
+      "name": "SARSA 更新",
+      "formula": "Q(s,a) ← Q(s,a) + α[r + γ Q(s',a') - Q(s,a)]",
+      "category": "cognitive_science",
+      "subcategory": "reinforcement_learning",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "actor_critic",
+      "name": "Actor-Critic",
+      "formula": "δ = r + γ V(s') - V(s)",
+      "category": "cognitive_science",
+      "subcategory": "reinforcement_learning",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "integrated_information",
+      "name": "整合信息 Φ（近似）",
+      "formula": "Φ = min_{partition} MI(PARTITION)",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "global_workspace",
+      "name": "全局工作空间激活",
+      "formula": "GW(t+1) = f(∑ w_i · A_i(t))",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "social_influence_french",
+      "name": "French 社会影响",
+      "formula": "x_i(t+1) = x_i(t) + λ ∑_j w_{ij} (x_j(t) - x_i(t))",
+      "category": "cognitive_science",
+      "subcategory": "social",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "irt_information_test",
+      "name": "测验信息函数",
+      "formula": "I(θ) = ∑_i a_i² P_i(θ) (1-P_i(θ))",
+      "category": "cognitive_science",
+      "subcategory": "measurement",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "modal_possibility",
+      "name": "模态可能性",
+      "formula": "◇P ≡ ¬□¬P",
+      "category": "philosophy",
+      "subcategory": "modal_logic",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "kripke_accessibility",
+      "name": "克里普克可及关系",
+      "formula": "M, w ⊨ □P iff ∀w' (wRw' → M, w' ⊨ P)",
+      "category": "philosophy",
+      "subcategory": "modal_logic",
+      "source": "cognitive_science_literature"
+    },
+    {
+      "id": "bayes_confirmation",
+      "name": "贝叶斯确认度",
+      "formula": "c(H,E) = P(H|E) - P(H)",
+      "category": "philosophy",
+      "subcategory": "confirmation_theory",
+      "source": "cognitive_science_literature"
     }
   ]
 }
