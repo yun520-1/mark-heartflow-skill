@@ -52,7 +52,6 @@ class WakeUpVerifier {
         }
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[WakeUpVerifier] History load failed, starting fresh:', e.message);
     }
     return { entries: [], lastEntryIndex: 0 };
   }
@@ -62,7 +61,6 @@ class WakeUpVerifier {
       this._ensureDataDir();
       fs.writeFileSync(DREAM_HISTORY_FILE, JSON.stringify(this.history, null, 2));
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[WakeUpVerifier] History save failed:', e.message);
     }
   }
 
@@ -488,7 +486,4 @@ if (require.main === module) {
     next_actions: ['promote useful fragments to durable memory', 'queue contradiction checks']
   };
   const verifier = new WakeUpVerifier();
-  // 已禁用 console.log: console.log(JSON.stringify(verifier.evaluateDream(demo), null, 2));
-  // 已禁用 console.log: console.log('--- History ---');
-  // 已禁用 console.log: console.log(JSON.stringify(verifier.getHistory({ limit: 3 }), null, 2));
 }

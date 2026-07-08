@@ -96,7 +96,6 @@ const externalVerifier = {
         this.cache.entries = this.cache.entries.filter(e => now - e.verifiedAt < DAY);
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[ExternalVerifier] Cache load failed, starting fresh:', e.message);
       this.cache = { entries: [] };
     }
     return this;
@@ -379,7 +378,6 @@ const externalVerifier = {
 
     // 更新缓存
     this.cache.entries.push(result);
-    // 已禁用 console.error: this.saveCacheAsync().catch(e => console.error("[ExternalVerifier] Cache save failed:", e.message));
     return result;
   },
 
@@ -469,7 +467,6 @@ const externalVerifier = {
   // 清理缓存
   clearCache() {
     this.cache = { entries: [] };
-    // 已禁用 console.error: this.saveCacheAsync().catch(e => console.error("[ExternalVerifier] Cache save failed:", e.message));
     return { cleared: true };
   }
 };

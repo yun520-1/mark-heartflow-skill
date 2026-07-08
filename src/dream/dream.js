@@ -754,8 +754,6 @@ if (require.main === module) {
   async function demo() {
     for (const fn of ['cognitive', 'philosophic', 'synthesis', 'memory', 'fragment']) {
       const result = await engine.dream({ intensity: 0.85, function: fn });
-      // 已禁用 console.log: console.log(`\n=== ${fn} ===`);
-      // 已禁用 console.log: console.log(result.dream.raw);
     }
   }
 

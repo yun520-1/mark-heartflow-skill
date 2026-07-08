@@ -550,8 +550,6 @@ class CoreIdentityEngine {
     // 状态文件
     this.stateFile = path.join(projectRoot, 'internal', 'data', 'identity-state.json');
     
-    // 已禁用 console.error: console.error('[CoreIdentityEngine] 核心身份引擎初始化');
-    // 已禁用 console.error: console.error(`[CoreIdentityEngine] ${this.identity.declare()}`);
   }
   
   /**
@@ -649,7 +647,6 @@ class CoreIdentityEngine {
     }
     
     fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
-    // 已禁用 console.error: console.error(`[CoreIdentityEngine] 状态已保存到 ${this.stateFile}`);
   }
   
   /**
@@ -659,11 +656,9 @@ class CoreIdentityEngine {
     try {
       if (fs.existsSync(this.stateFile)) {
         const state = JSON.parse(fs.readFileSync(this.stateFile, 'utf8'));
-        // 已禁用 console.error: console.error(`[CoreIdentityEngine] 状态已加载: ${state.timestamp}`);
         return state;
       }
     } catch (error) {
-      // 已禁用 console.error: console.error('[CoreIdentityEngine] 加载状态失败:', error.message);
     }
     return null;
   }

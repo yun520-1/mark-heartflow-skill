@@ -116,7 +116,6 @@ class MindWanderer {
     this.lastActivity = Date.now();
     if (this.isActive) {
       this.isActive = false;
-      // 已禁用 console.error: console.error('[MindWanderer] 用户回归，游移模式结束');
     }
   }
 
@@ -127,7 +126,6 @@ class MindWanderer {
     if (this.isActive) return null;
     
     this.isActive = true;
-    // 已禁用 console.error: console.error('[MindWanderer] 进入心智游移模式...');
 
     // 刷新时间调制
     this.timeModulation = this._computeTimeModulation();

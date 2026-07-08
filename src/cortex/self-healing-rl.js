@@ -92,7 +92,6 @@ function _getHmacKey() {
     fs.writeFileSync(keyFile, JSON.stringify({ key: newKey, createdAt: Date.now() }, null, 2), { mode: 0o600 });
   } catch (e) { /* info: HMAC 写入失败时 fallback 到内存模式，不影响正常运行 */ }
   _cachedHmacKey = newKey;
-  // 已禁用 console.warn: console.warn(`[HealingMemoryRL] HEARTFLOW_QTABLE_HMAC_KEY not set, generated and saved new key`);
   return _cachedHmacKey;
 }
 
@@ -123,7 +122,6 @@ function _touchEntry(ck) {
   }
   _qMeta[ck].lastAccessedAt = Date.now();
   _qMeta[ck].accessCount = (_qMeta[ck].accessCount || 0) + 1;
-  // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
 }
 
 class HealingMemoryRL {
@@ -186,7 +184,6 @@ class HealingMemoryRL {
         this.history = data.history.slice(-this.maxMemory);
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[HealingMemoryRL] Q-table load error, starting fresh:', e.message);
     }
   }
 
@@ -346,7 +343,6 @@ class HealingMemoryRL {
     this.qTable.delete(ck);
     delete _qMeta[ck];
     _debouncedSave(this);
-    // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
     if (!this._letGoLog) this._letGoLog = [];
     this._letGoLog.push({
       pattern: errorPattern.slice(0, 50),
@@ -395,7 +391,6 @@ class HealingMemoryRL {
     }
 
     if (cleaned > 0) {
-      // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
       _debouncedSave(this);
     }
 
@@ -607,7 +602,6 @@ class HealingMemoryRL {
     entry[suggestedStrategy] = 0.5;
 
     _boundedSet(this.qTable, ck, entry, MAX_QTABLE_SIZE);
-    // 已禁用 console.error: this._saveQTable().catch(e => console.error('[HealingMemoryRL] verbalSelfCorrect save failed:', e.message));
 
     return {
       failedStrategy,
@@ -785,7 +779,6 @@ class HealingMemoryRL {
       merged++;
     }
 
-    // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
     _debouncedSave(this);
 
     return {

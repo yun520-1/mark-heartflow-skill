@@ -124,13 +124,11 @@ const selfCorrectionLoop = {
       duplicate.timestamp = new Date().toISOString();
       // 更新修正内容（保留最新版本）
       if (corrected) duplicate.corrected = String(corrected).slice(0, 200);
-      // 已禁用 console.error: this._persist().catch(e => console.error('[SelfCorrection] Persist failed:', e.message));
       return { ...duplicate, deduplicated: true, id: duplicate.id };
     }
 
     this.corrections.push(entry);
     this._applyDecay(); // 每次新增时触发衰减
-    // 已禁用 console.error: this._persist().catch(e => console.error('[SelfCorrection] Persist failed:', e.message));
     return entry;
   },
 
@@ -424,7 +422,6 @@ const selfCorrectionLoop = {
     }
 
     this.corrections = consolidated;
-    // 已禁用 console.error: this._persist().catch(e => console.error('[SelfCorrection] Consolidation persist failed:', e.message));
     return { consolidated: consolidated.length, removed: seen.size - consolidated.length };
   },
 
@@ -478,7 +475,6 @@ const selfCorrectionLoop = {
       fs.writeFileSync(filePath, JSON.stringify(this.corrections, null, 2));
     } catch (e) {
       // 安全修复：记录错误而非静默失败
-      // 已禁用 console.error: console.error('[SelfCorrection] Persist failed:', e.message);
     }
   },
 
@@ -506,7 +502,6 @@ const selfCorrectionLoop = {
       }
     } catch (e) {
       // 安全修复：记录错误并重置
-      // 已禁用 console.warn: console.warn('[SelfCorrection] Load failed, starting fresh:', e.message);
       this.corrections = [];
     }
   }
