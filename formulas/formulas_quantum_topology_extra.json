@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_topo_berry_connection",
+    "Berry 联络",
+    "A_n(R) = i ⟨ψ_n(R)|∇_R|ψ_n(R)⟩",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_chern_insulator",
+    "Chern 绝缘体",
+    "σ_{xy} = (e²/h) C",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_quantum_spin_hall",
+    "量子自旋霍尔效应",
+    "σ_{sH} = (e/2π) (C_↑ - C_↓)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_majorana_bound_state",
+    "Majorana 束缚态",
+    "γ = γ†, {γ_i, γ_j} = 2δ_{ij}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_skyrmion_number",
+    "Skyrmion 拓扑数",
+    "Q = (1/4π) ∫ d²x ε_{ij} n·(∂_i n × ∂_j n)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_quantum_anomaly",
+    "量子反常",
+    "∂_μ J^μ = (g²/16π²) F_{μν} F^{μν}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_topological_order",
+    "拓扑序",
+    "S = ln(D), D = Σ_a d_a²",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_entanglement_spectrum",
+    "纠缠谱",
+    "λ_i = exp(-ξ_i/2)",
+    "quantum_computing"
+  ]
+]
