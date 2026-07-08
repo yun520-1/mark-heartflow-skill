@@ -166,15 +166,13 @@ class ExecutableReasoning {
     let error = null;
 
     try {
-      // 方案一（优先）：使用 vm.runInNewContext 创建隔离沙箱
-      // 新上下文中没有 require/process/module 等 Node.js 全局变量
-      // constructor.constructor 创建的函数也只能在新上下文中执行，无法逃逸
-      if (vm && typeof vm.runInNewContext === 'function') {
-        result = this._executeInVmSandbox(body, paramList, mergedValues);
-      } else {
-        // 方案二（回退）：new Function + 原型链冻结 + 变量遮蔽
-        result = this._executeInFunctionSandbox(body, paramList, mergedValues);
+      // [SECURITY-FIX] C-2: 移除 new Function fallback
+      // vm 是 Node.js 内置模块，在标准 Node.js 环境中始终可用。
+      // 如果 vm 不可用，说明运行环境异常，应直接抛错而非降级到不安全路径。
+      if (!vm || typeof vm.runInNewContext !== 'function') {
+        throw new Error('ExecutableReasoning: vm module is not available. Cannot safely execute code.');
       }
+      result = this._executeInVmSandbox(body, paramList, mergedValues);
     } catch (err) {
       error = err;
     }

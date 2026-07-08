@@ -173,10 +173,27 @@ async function nohupStart() {
   }
   if (!detectedPort) detectedPort = 8099; // last resort
 
+  // [SECURITY-FIX] H-3: 子进程环境变量白名单
+  // 只允许必要的环境变量传播到子进程，避免泄露 API Key 等敏感信息
+  const ALLOWED_ENV_KEYS = [
+    'PATH', 'HOME', 'USER', 'SHELL', 'LANG', 'LC_ALL',
+    'NODE_ENV', 'HEARTFLOW_MCP_TOKEN', 'HEARTFLOW_DIALOGUE_KEY',
+    'HEARTFLOW_CODE_EXECUTOR_ENABLED', 'HEARTFLOW_MODEL_PROFILE',
+    'ANTHROPIC_API_KEY', 'OPENAI_API_KEY', 'GOOGLE_API_KEY',
+    'HF_HOME', 'XDG_CONFIG_HOME', 'XDG_DATA_HOME'
+  ];
+  const childEnv = {};
+  for (const key of ALLOWED_ENV_KEYS) {
+    if (key in process.env) {
+      childEnv[key] = process.env[key];
+    }
+  }
+  childEnv.NODE_ENV = 'production';
+
   const child = spawn(process.execPath, [serverPath, '--port', String(detectedPort)], {
     detached: true,
     stdio: ['ignore', outLog, errLog],
-    env: { ...process.env, NODE_ENV: 'production' },
+    env: childEnv,
   });
 
   child.unref();
