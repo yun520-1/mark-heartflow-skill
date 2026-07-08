@@ -157,6 +157,30 @@ simplify(expression) {
 
 **Status**: Linear system solver is DISABLED in v3.3.1 (implementation too complex).
 
+### 4. Search returns `undefined`
+
+**Problem**: `FormulaSearch.search()` returns `undefined` (method is async or implementation wrong).
+
+**Fix**: Check if method is async. If yes, use `await`. If no, check implementation.
+
+**Status**: `FormulaSearch.search()` fixed in v3.2.0 (returns `{ total, results }` object).
+
+### 5. Memory retrieval returns 0 results
+
+**Problem**: `MemoryOptimizer.retrieveMemory()` returns 0 results (similarity algorithm too simple).
+
+**Fix**: Improve similarity algorithm (use embedding-based similarity instead of keyword matching).
+
+**Status**: Known issue, not fixed yet (needs embedding integration).
+
+### 6. Decision system methods return `undefined`
+
+**Problem**: `DecisionOptimizer.quantumDecision()` returns `undefined` (implementation wrong).
+
+**Fix**: Check method implementation. Ensure it returns `{ model, options, ... }` object.
+
+**Status**: Known issue, not fixed yet (needs implementation review).
+
 ## Formula Library Statistics
 
 **Current status** (2026-07-08):
