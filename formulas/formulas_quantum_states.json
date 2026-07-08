@@ -1,0 +1,74 @@
+[
+  {
+    "id": "quantum_state_qubit",
+    "name": "量子比特（态向量）",
+    "formula": "|ψ> = α|0> + β|1>",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_bloch",
+    "name": "量子比特（布洛赫球坐标）",
+    "formula": "|ψ> = cos(θ/2)|0> + exp(i*φ)*sin(θ/2)|1>",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_zero",
+    "name": "零态（|0>）",
+    "formula": "|0> = [1, 0]^T",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_one",
+    "name": "壹态（|1>）",
+    "formula": "|1> = [0, 1]^T",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_bell_phi_plus",
+    "name": "Bell Φ⁺ 态",
+    "formula": "|Φ⁺> = (1/√2)*(|00> + |11>)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_bell_phi_minus",
+    "name": "Bell Φ⁻ 态",
+    "formula": "|Φ⁻> = (1/√2)*(|00> - |11>)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_bell_psi_plus",
+    "name": "Bell Ψ⁺ 态",
+    "formula": "|Ψ⁺> = (1/√2)*(|01> + |10>)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_bell_psi_minus",
+    "name": "Bell Ψ⁻ 态",
+    "formula": "|Ψ⁻> = (1/√2)*(|01> - |10>)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_ghz_3",
+    "name": "3 量子 GHZ 态",
+    "formula": "|GHZ₃> = (1/√2)*(|000> + |111>)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_ghz_n",
+    "name": "n 量子 GHZ 态",
+    "formula": "|GHZₙ> = (1/√2)*(|0...0> + |1...1>)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_w_3",
+    "name": "3 量子 W 态",
+    "formula": "|W₃> = (1/√3)*(|100> + |010> + |001>)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_state_coherent",
+    "name": "相干态（量子光学）",
+    "formula": "|α> = exp(-|α|²/2) * Σₙ(αⁿ/√n!)|n>",
+    "category": "quantum_computing"
+  }
+]
