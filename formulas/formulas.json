@@ -15777,6 +15777,36 @@
       "name": "量子路由",
       "formula": "Path = argmin_{p} L(p)",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_cooper_pair",
+      "name": "库珀对",
+      "formula": "Δ_k = -Σ_{k'} V_{kk'} ⟨c_{-k'↓} c_{k'↑}⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_london_equation",
+      "name": "伦敦方程",
+      "formula": "j = -n_s e²/m A",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_ginzburg_landau",
+      "name": "金兹堡-朗道方程",
+      "formula": "α ψ + β|ψ|² ψ + (1/2m)(-iℏ∇ - eA/c)² ψ = 0",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_josephson_effect",
+      "name": "约瑟夫森效应",
+      "formula": "I = I_c sin(δ), V = (ℏ/2e) dδ/dt",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_topological_insulator",
+      "name": "拓扑绝缘体",
+      "formula": "H = v_F (σ_x k_x + σ_y k_y)",
+      "category": "quantum_computing"
     }
   ]
 }
