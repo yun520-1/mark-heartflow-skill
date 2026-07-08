@@ -22,12 +22,36 @@ class FormulaCalculator {
     }
 
     try {
-      const parsed = this._parseFormula(formula.formula);
-      if (!parsed) {
-        return { error: '公式解析失败' };
+      // 直接用数学引擎计算（如果公式是纯数学表达式）
+      let result = {};
+      const formulaText = formula.formula;
+      
+      // 如果是等式（含等号），则求解未知变量
+      if (formulaText.includes('=')) {
+        const [left, right] = formulaText.split('=').map(s => s.trim());
+        
+        // 代入已知变量
+        let expression = left + ' - (' + right + ')';
+        Object.entries(params).forEach(([key, value]) => {
+          expression = expression.replace(new RegExp(key, 'g'), value);
+        });
+        
+        // 求解未知变量（简化：假设只有一个未知变量）
+        const unknown = this._findUnknown(expression, params);
+        if (unknown) {
+          // 用代数法求解（移项）
+          const solved = this._algebraicSolve(expression, unknown);
+          result[unknown] = solved;
+        }
+      } else {
+        // 纯数学表达式：直接求值
+        let expression = formulaText;
+        Object.entries(params).forEach(([key, value]) => {
+          expression = expression.replace(new RegExp(key, 'g'), value);
+        });
+        result.value = math.evaluate(expression);
       }
-
-      const result = this._evaluate(parsed, params);
+      
       return {
         formulaId,
         formula: formula.formula,
@@ -38,6 +62,28 @@ class FormulaCalculator {
     } catch (error) {
       return { error: `计算失败: ${error.message}` };
     }
+  }
+
+  /**
+   * 查找未知变量
+   */
+  _findUnknown(expression, params) {
+    const knownVars = Object.keys(params);
+    const allVars = new Set();
+    
+    // 提取表达式中的所有变量
+    const matches = expression.match(/[a-zA-Z_][a-zA-Z0-9_]*/g);
+    if (matches) {
+      matches.forEach(m => allVars.add(m));
+    }
+    
+    // 未知变量 = 所有变量 - 已知变量 - 数学常数
+    const mathConstants = ['pi', 'e', 'i', 'infinity', 'NaN'];
+    const unknownVars = [...allVars].filter(v => 
+      !knownVars.includes(v) && !mathConstants.includes(v)
+    );
+    
+    return unknownVars.length === 1 ? unknownVars[0] : null;
   }
 
   /**
