@@ -403,7 +403,10 @@ const PROBLEM_FRAMEWORK_MAP = {
 class LogicReasoning {
   constructor(options = {}) {
     this.version = '5.5.0';
-    this._history = [];
+    // [HIGH FIX] 环形缓冲区（避免 shift() O(n) 开销）
+    this._history = new Array(this._maxHistory);
+    this._historyHead = 0;  // 写入位置
+    this._historySize = 0;  // 当前大小
     this._maxHistory = options.maxHistory || 50;
   }
 
@@ -444,7 +447,7 @@ class LogicReasoning {
       ts: Date.now(),
     });
     if (this._history.length > this._maxHistory) {
-      this._history.shift();
+      // [HIGH FIX] 环形缓冲区无需 shift()（超过容量时自动覆盖）
     }
 
     return result;
