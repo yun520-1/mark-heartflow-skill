@@ -15513,6 +15513,36 @@
       "name": "QAOA 混合器哈密顿量",
       "formula": "H_B = Σ_i X_i",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_advanced_quantum_channel_capacity",
+      "name": "量子信道容量",
+      "formula": "Q(Λ) = lim_{n→∞} (1/n) Q^{(1)}(Λ^{⊗n})",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_advanced_quantum_key_distribution",
+      "name": "量子密钥分发",
+      "formula": "R = QBER < 11%",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_advanced_quantum_communication_complexity",
+      "name": "量子通信复杂度",
+      "formula": "Q(f) = O(√N)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_advanced_quantum_cryptography",
+      "name": "量子密码学",
+      "formula": "Security = 1 - Pr(eavesdrop)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_info_advanced_quantum_foundations",
+      "name": "量子基础",
+      "formula": "Born rule: P(i) = |⟨i|ψ⟩|²",
+      "category": "quantum_computing"
     }
   ]
 }
