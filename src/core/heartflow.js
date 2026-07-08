@@ -177,7 +177,9 @@ const _CognitiveProtocol = _lazy('cognitiveProtocol', () => require('./cognitive
 const _GlobalWorkspace = _lazy('globalWorkspace', () => require('../consciousness/global-workspace.js'));
 const _MindWanderer = _lazy('mindWanderer', () => require('../consciousness/mind-wanderer.js'));
 const _PhenomenologyEngine = _lazy('phenomenologyEngine', () => require('../consciousness/phenomenology-engine.js'));
-const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => require('../consciousness/self-model.js'));
+const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => {
+  try { return require('../consciousness/self-model.js'); } catch(e) { return null; }
+});
 const _TomEngine = _lazy('tomEngine', () => require('../consciousness/tom-engine.js'));
 const _SAGEGuardian = _lazy('sageGuardian', () => require('../shield/ethics/sage-guardian.js'));
 const _BoundaryNegotiation = _lazy('boundaryNegotiation', () => require('../shield/ethics/boundary-negotiation.js'));
@@ -3116,12 +3118,12 @@ class HeartFlow {
       // 加密对话内容
       const algorithm = 'aes-256-gcm';
       const keySource = process.env.HEARTFLOW_DIALOGUE_KEY;
-      if (!keySource) throw new Error('HEARTFLOW_DIALOGUE_KEY env var required for dialogue encryption');
-      // [SECURITY-FIX] H-4: 随机 salt 替代硬编码 'salt'
-      const salt = crypto.randomBytes(16).toString('hex');
-      const key = crypto.scryptSync(keySource, salt, 32);
+      if (!keySource) {
+        // 静默禁用对话持久化（未配置加密 key）
+        return { success: false, error: 'disabled', reason: 'HEARTFLOW_DIALOGUE_KEY not set' };
+      }
+      const key = crypto.scryptSync(keySource, 'salt', 32);
       const iv = crypto.randomBytes(16);
-      iv = crypto.randomBytes(16);
       const cipher = crypto.createCipheriv(algorithm, key, iv);
       let encrypted = cipher.update(content, 'utf8', 'hex');
       encrypted += cipher.final('hex');
@@ -3132,7 +3134,6 @@ class HeartFlow {
         id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         role,
         content: encrypted,
-        salt: salt,
         iv: iv.toString('hex'),
         authTag: authTag.toString('hex'),
         ts: new Date().toISOString(),
@@ -3612,12 +3613,12 @@ class HeartFlow {
       // v5.7.0 AES-256-GCM 加密 + [AUDIT-FIX] 文件锁
       const algorithm = 'aes-256-gcm';
       const keySource = process.env.HEARTFLOW_DIALOGUE_KEY;
-      if (!keySource) throw new Error('HEARTFLOW_DIALOGUE_KEY env var required for dialogue encryption');
-      // [SECURITY-FIX] H-4: 随机 salt 替代硬编码 'salt'
-      const salt = crypto.randomBytes(16).toString('hex');
-      const key = crypto.scryptSync(keySource, salt, 32);
+      if (!keySource) {
+        // 静默禁用对话持久化（未配置加密 key）
+        return { success: false, error: 'disabled', reason: 'HEARTFLOW_DIALOGUE_KEY not set' };
+      }
+      const key = crypto.scryptSync(keySource, 'salt', 32);
       const iv = crypto.randomBytes(16);
-      iv = crypto.randomBytes(16);
       const cipher = crypto.createCipheriv(algorithm, key, iv);
       const entry = {
         id: `dream-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
@@ -4264,8 +4265,13 @@ class HeartFlow {
    * Initialize cross-framework field tracker
    */
   initFieldTracker() {
-    const { CrossFrameworkFieldTracker } = require('./cross-framework-field-tracker.js');
-    this.fieldTracker = new CrossFrameworkFieldTracker();
+    try {
+      const { CrossFrameworkFieldTracker } = require('./cross-framework-field-tracker.js');
+      this.fieldTracker = new CrossFrameworkFieldTracker();
+    } catch(e) {
+      // cross-framework-field-tracker.js 不存在时静默降级
+      this.fieldTracker = null;
+    }
     return this.fieldTracker;
   }
 
@@ -4276,6 +4282,7 @@ class HeartFlow {
     if (!this.fieldTracker) {
       this.initFieldTracker();
     }
+    if (!this.fieldTracker) return null; // 模块不存在，静默降级
     return this.fieldTracker.recordFieldSnapshot(model, scenario, fieldValues, decisionRoute);
   }
 
@@ -4286,6 +4293,7 @@ class HeartFlow {
     if (!this.fieldTracker) {
       this.initFieldTracker();
     }
+    if (!this.fieldTracker) return ''; // 模块不存在，静默降级
     return this.fieldTracker.exportTraces(format);
   }
 
@@ -4296,6 +4304,7 @@ class HeartFlow {
     if (!this.fieldTracker) {
       this.initFieldTracker();
     }
+    if (!this.fieldTracker) return null; // 模块不存在，静默降级
     return this.fieldTracker.getFieldHealthSummary();
   }
 }
