@@ -1,0 +1,50 @@
+[
+  [
+    "q_thermo_jarzynski",
+    "Jarzynski 等式",
+    "⟨exp(-β W)⟩ = exp(-β ΔF)",
+    "quantum_computing"
+  ],
+  [
+    "q_thermo_clausius",
+    "Clausius 等式",
+    "∮ δQ/T = 0",
+    "quantum_computing"
+  ],
+  [
+    "q_thermo_quantum_relative_entropy",
+    "量子相对熵",
+    "D(ρ||σ) = Tr(ρ log ρ) - Tr(ρ log σ)",
+    "quantum_computing"
+  ],
+  [
+    "q_thermo_landauer",
+    "Landauer 原理",
+    "ΔQ ≥ k_B T ln 2",
+    "quantum_computing"
+  ],
+  [
+    "q_thermo_quantum_heat_engine",
+    "量子热机",
+    "η = 1 - T_c/T_h",
+    "quantum_computing"
+  ],
+  [
+    "q_thermo_thermodynamic_length",
+    "热力学长度",
+    "L = ∫ √(g_{ij} dθ^i dθ^j)",
+    "quantum_computing"
+  ],
+  [
+    "q_thermo_quantum_ot",
+    "量子最优输运",
+    "W_2²(ρ,σ) = inf_π ∫ d²(x,y) dπ(x,y)",
+    "quantum_computing"
+  ],
+  [
+    "q_thermo_resource_theory",
+    "资源理论",
+    "ρ ≺ σ ⇔ ∃ CPTP map Λ: σ = Λ(ρ)",
+    "quantum_computing"
+  ]
+]
