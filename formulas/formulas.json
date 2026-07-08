@@ -14775,6 +14775,54 @@
       "name": "隐形传态保真度",
       "formula": "F = |⟨ψ|ρ_out|ψ⟩|²",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_thermo_heat_engine_efficiency",
+      "name": "量子热机效率",
+      "formula": "η = 1 - T_c/T_h",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_thermo_heat_engine_power",
+      "name": "量子热机功率",
+      "formula": "P = W/t_cycle",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_thermo_orn_rozen_rate",
+      "name": "欧阳极限速率",
+      "formula": "k = (1/ℏ) * (E_max - E_min)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_thermo_orn_rozen_time",
+      "name": "欧阳极限时间",
+      "formula": "t_min = ℏπ/(2ΔE)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_thermo_entropy_production",
+      "name": "量子熵产",
+      "formula": "ΔS_total = ΔS_system + ΔS_bath ≥ 0",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_thermo_entropy_flux",
+      "name": "量子熵流",
+      "formula": "J_S = (1/T) * dQ/dt",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_thermo_temperature",
+      "name": "量子温度",
+      "formula": "1/T = ∂S/∂E",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_thermo_heat_capacity",
+      "name": "量子热容量",
+      "formula": "C_V = ∂E/∂T",
+      "category": "quantum_computing"
     }
   ]
 }
