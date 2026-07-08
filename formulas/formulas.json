@@ -14823,6 +14823,240 @@
       "name": "量子热容量",
       "formula": "C_V = ∂E/∂T",
       "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_ml_vqc",
+      "name": "变分量子电路",
+      "formula": "f(x; θ) = ⟨0|U†(x,θ) H U(x,θ)|0⟩",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_ml_qnn",
+      "name": "量子神经网络",
+      "formula": "U = Π_k exp(-iθ_k H_k)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_ml_quantum_kernel",
+      "name": "量子核方法",
+      "formula": "K(x,x\") = |⟨0|U†(x\")U(x)|0⟩|²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_ml_vqaa",
+      "name": "变分量子近似优化",
+      "formula": "θ_{t+1} = θ_t - α ∇L(θ_t)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_ml_quantum_natural_gradient",
+      "name": "量子自然梯度",
+      "formula": "θ_{t+1} = θ_t - α F⁻¹ ∇L(θ_t)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_ml_quantum_transfer_learning",
+      "name": "量子迁移学习",
+      "formula": "L_target = L_source + λ R(θ)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_ml_quantum_meta_learning",
+      "name": "量子元学习",
+      "formula": "θ* = argmin_θ E_T[L_T(U_θ, D_T)]",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_chem_hartree_fock",
+      "name": "Hartree-Fock 方程",
+      "formula": "Fφ_i = ε_i S φ_i",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_chem_dft",
+      "name": "密度泛函理论",
+      "formula": "E[ρ] = T[ρ] + V_ext[ρ] + J[ρ] + E_xc[ρ]",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_chem_hamiltonian",
+      "name": "电子哈密顿量",
+      "formula": "H = -Σ_i ∇²_i/2 - Σ_i V(r_i) + Σ_{i<j} 1/|r_i-r_j|",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_chem_fci",
+      "name": "全组态相互作用",
+      "formula": "|Ψ> = Σ_I C_I |I>",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_chem_cc",
+      "name": "耦合簇方法",
+      "formula": "|Ψ> = exp(T)|Φ_0>",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_chem_mp2",
+      "name": "二阶Møller-Pleset",
+      "formula": "E_MP2 = -Σ_{ia,jb} |⟨ij||ab⟩|² / (ε_a+ε_b-ε_i-ε_j)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_chem_basis_set",
+      "name": "基组展开",
+      "formula": "φ_i = Σ_μ C_{μi} χ_μ",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_chem_pes",
+      "name": "势能面",
+      "formula": "V(R) = E(R) - E(∞)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_optics_schrödinger_cat",
+      "name": "薛定谔猫态",
+      "formula": "|cat> = N(|α> + |-α>)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_optics_coherent_state",
+      "name": "相干态",
+      "formula": "|α> = exp(-|α|²/2) Σ_n (αⁿ/√n!)|n>",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_optics_squeezed_state",
+      "name": "压缩态",
+      "formula": "|ξ> = S(ξ)|0>, S(ξ)=exp(ξ*a²/2 - ξ a†²/2)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_optics_beam_splitter",
+      "name": "分束器变换",
+      "formula": "b_out = t b_in + r a_in",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_optics_hong_ou_mandel",
+      "name": "HOM 干涉",
+      "formula": "P(2,0) = P(0,2) = 0, P(1,1) = 1",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_optics_phase_modulator",
+      "name": "相位调制器",
+      "formula": "E_out = E_in exp(iφ)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_optics_photo_detection",
+      "name": "光电探测",
+      "formula": "P(n) = |⟨n|α>|² = exp(-|α|²) |α|²ⁿ/n!",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_optics_raman_transition",
+      "name": "拉曼跃迁",
+      "formula": "Ω_R = (g₁g₂)/Δ",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_field_lagrangian",
+      "name": "量子场拉格朗日量",
+      "formula": "L = -¼ F_{μν}F^{μν} + ψ¯(iγ^μD_μ - m)ψ",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_field_feynman_propagator",
+      "name": "费曼传播子",
+      "formula": "D_F(x-y) = ∫ d⁴p/(2π)⁴ exp(-ip·(x-y))/(p²-m²+iε)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_field_s_matrix",
+      "name": "S 矩阵",
+      "formula": "S = T exp(-i∫ d⁴x H_int(x))",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_field_cross_section",
+      "name": "散射截面",
+      "formula": "dσ = (1/(4E₁E₂v_rel)) |M|² dΠ_f",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_field_beta_function",
+      "name": "β 函数（跑动耦合）",
+      "formula": "β(g) = μ d(g)/dμ",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_field_anomaly",
+      "name": "量子反常",
+      "formula": "∂_μ J^μ = (g²/16π²) F_{μν} F^{μν}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_field_path_integral",
+      "name": "路径积分",
+      "formula": "Z = ∫ Dφ exp(iS[φ]/ℏ)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_field_ward_identity",
+      "name": "Ward 恒等式",
+      "formula": "q_μ Γ^μ(p,q) = S⁻¹(p+q) - S⁻¹(p)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_bcs",
+      "name": "BCS 波函数",
+      "formula": "|Ψ> = Π_k (u_k + v_k c†_{k↑}c†_{-k↓})|0>",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_gap_equation",
+      "name": "能隙方程",
+      "formula": "Δ_k = -Σ_{k\"} V_{kk\"} Δ_{k\"}/(2E_{k\"})",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_bloch_theorem",
+      "name": "Bloch 定理",
+      "formula": "ψ_{nk}(r+R) = exp(ik·R) ψ_{nk}(r)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_reciprocal_lattice",
+      "name": "倒格子",
+      "formula": "b_i = 2π ε_{ijk} a_j × a_k / (a_1·(a_2×a_3))",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_fermi_surface",
+      "name": "费米面",
+      "formula": "E(k) = E_F for k on Fermi surface",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_superfluid_density",
+      "name": "超流密度",
+      "formula": "ρ_s = (m*/m) n_s",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_josephson",
+      "name": "约瑟夫森效应",
+      "formula": "I = I_c sin(Δφ), V = (ℏ/2e) dΔφ/dt",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "quantum_cond_quantum_hall",
+      "name": "量子霍尔电导",
+      "formula": "σ_xy = ν e²/h, ν ∈ Z",
+      "category": "quantum_computing"
     }
   ]
 }
