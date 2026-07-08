@@ -15855,6 +15855,54 @@
       "name": "量子芝诺效应",
       "formula": "P_no_decay = (cos(g t/N))^{2N} → exp(-g² t²/N)",
       "category": "quantum_computing"
+    },
+    {
+      "id": "qft_qed_lagrangian",
+      "name": "QED 拉氏量",
+      "formula": "L_QED = ψ̄(iγ^μ D_μ - m)ψ - ¼ F_{μν}F^{μν}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "qft_qed_vertex",
+      "name": "QED 顶点",
+      "formula": "Γ^μ = -i e γ^μ",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "qft_qed_prop",
+      "name": "光子传播子",
+      "formula": "D_{μν}(k) = -i g_{μν}/k²",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "qft_qcd_lagrangian",
+      "name": "QCD 拉氏量",
+      "formula": "L_QCD = Σ_f ψ̄_f(iγ^μ D_μ - m_f)ψ_f - ¼ F^a_{μν}F^{a μν}",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "qft_qcd_beta",
+      "name": "QCD β函数",
+      "formula": "β(g) = - (11 - 2N_f/3) g³/(16π²)",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "qft_qcd_as",
+      "name": "QCD 渐近自由",
+      "formula": "α_s(Q²) = 4π/((11 - 2N_f/3) ln(Q²/Λ²))",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "qft_sm_lagrangian",
+      "name": "标准模型拉氏量",
+      "formula": "L_SM = L_gauge + L_fermion + L_Higgs + L_Yukawa",
+      "category": "quantum_computing"
+    },
+    {
+      "id": "qft_sm_higgs",
+      "name": "Higgs 势能",
+      "formula": "V(φ) = μ² φ†φ + λ(φ†φ)²",
+      "category": "quantum_computing"
     }
   ]
 }
