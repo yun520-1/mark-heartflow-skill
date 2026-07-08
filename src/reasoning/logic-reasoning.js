@@ -1512,7 +1512,7 @@ class LogicReasoning {
 
   /**
    * LLM兜底推理 — 当规则引擎打0分时，调LLM做选择题推理
-   * 使用 child_process + curl 实现同步调用（腾讯云API）
+   * 使用 Node.js 原生 https 模块，避免 Python/curl 字符串拼接
    */
   _llmFallback(input, options, reasoningType) {
     // 构建简洁的英文 prompt（腾讯云API支持英文更好）
@@ -1529,55 +1529,76 @@ class LogicReasoning {
       stream: true,
     });
 
-    try {
-      // 用Python子进程调用curl，避免shell转义问题
-      const _cp = require('child_process');
-      const fs = require('fs');
-      const os = require('os');
-      const path = require('path');
-      // 从文件读取API key（避免源码中的***被截断）
-      let apiKey = '';
-      // 动态拼接用户主目录路径，避免硬编码绝对路径（安全漏洞 B-04 修复）
-      const apiKeyPath = path.join(os.homedir(), '.hermes', 'skills', 'ai', 'mark-heartflow-skill', 'data', 'api-key.txt');
-      try { apiKey = fs.readFileSync(apiKeyPath, 'utf-8').trim(); } catch(e) { /* API密钥文件不存在，尝试环境变量 */ }
-      if (!apiKey) try { apiKey = process['env']['HEART' + 'LOW_API_KEY'] || ''; } catch(e) {}
-      if (!apiKey) return null;
+    return new Promise((resolve) => {
+      try {
+        const fs = require('fs');
+        const os = require('os');
+        const path = require('path');
+        const https = require('https');
 
-      const pyCode = `
-import subprocess, json, sys
-body = json.loads(sys.argv[1])
-result = subprocess.run([
-  'curl', '-s', '--connect-timeout', '5', '--max-time', '15',
-  '-X', 'POST', '(process.env.TENCENT_API_BASE || 'https://copilot.tencent.com/v2') + '/chat/completions'',
-  '-H', 'Content-Type: application/json',
-  '-H', 'Authorization: Bearer ${apiKey}',
-  '-d', json.dumps(body)
-], capture_output=True, text=True)
-content = ''
-for line in result.stdout.split('\\n'):
-    if line.startswith('data: '):
-        d = line[6:]
-        if d.strip() == '[DONE]':
-            break
-        try:
-            obj = json.loads(d)
-            delta = obj.get('choices', [dict()])[0].get('delta', dict()).get('content', '')
-            content += delta
-        except:
-            pass
-print(content.strip())
-`;
-      // 使用字符串拼接避免静态分析误报
-      const _es = _cp['ex' + 'ecSync'];
-      const result = _es('python3', ['-c', pyCode, body], { timeout: 20000, encoding: 'utf-8' });
-      const letter = result.trim().toUpperCase().match(/[A-D]/);
-      if (letter) {
-        return { selectedAnswer: letter[0] };
+        // 从文件读取API key（动态路径，兼容不同安装位置）
+        let apiKey = '';
+        const candidatePaths = [
+          path.join(os.homedir(), '.hermes', 'skills', 'ai', 'mark-heartflow-skill', 'data', 'api-key.txt'),
+          path.join(os.homedir(), '.hermes', 'skills', 'mark-heartflow-skill', 'data', 'api-key.txt'),
+          path.join(process.env.HEARTFLOW_ROOT || '', 'data', 'api-key.txt'),
+        ];
+        for (const p of candidatePaths) {
+          try { apiKey = fs.readFileSync(p, 'utf-8').trim(); if (apiKey) break; } catch(e) {}
+        }
+        if (!apiKey) {
+          try { apiKey = process.env.HEARTFLOW_API_KEY || ''; } catch(e) {}
+        }
+        if (!apiKey) { resolve(null); return; }
+
+        const apiBase = process.env.TENCENT_API_BASE || 'https://copilot.tencent.com/v2';
+        const url = new URL(apiBase + '/chat/completions');
+        const postData = body;
+
+        const req = https.request({
+          hostname: url.hostname,
+          port: url.port || 443,
+          path: url.pathname + url.search,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + apiKey,
+            'Content-Length': Buffer.byteLength(postData),
+          },
+          timeout: 15000,
+        }, (res) => {
+          const chunks = [];
+          res.on('data', (chunk) => chunks.push(chunk));
+          res.on('end', () => {
+            try {
+              const raw = Buffer.concat(chunks).toString('utf-8');
+              // 处理 SSE 流格式
+              let content = '';
+              for (const line of raw.split('\n')) {
+                if (line.startsWith('data: ')) {
+                  const d = line.slice(6);
+                  if (d.trim() === '[DONE]') break;
+                  try {
+                    const obj = JSON.parse(d);
+                    const delta = obj?.choices?.[0]?.delta?.content || '';
+                    content += delta;
+                  } catch(e) {}
+                }
+              }
+              const letter = content.trim().toUpperCase().match(/[A-D]/);
+              resolve(letter ? { selectedAnswer: letter[0] } : null);
+            } catch(e) { resolve(null); }
+          });
+        });
+
+        req.on('timeout', () => { req.destroy(); resolve(null); });
+        req.on('error', () => { resolve(null); });
+        req.write(postData);
+        req.end();
+      } catch(e) {
+        resolve(null);
       }
-    } catch(e) {
-      // LLM失败，返回null
-    }
-    return null;
+    });
   }
 
   getStats() {

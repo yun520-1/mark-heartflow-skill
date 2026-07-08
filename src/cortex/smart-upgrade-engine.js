@@ -36,6 +36,8 @@ function _boundedSet(map, key, value, maxSize) {
 class SmartUpgradeEngine {
   constructor(rootPath) {
     this.rootPath = rootPath;
+    // [SECURITY] 默认禁用联网升级，需显式 opt-in
+    this.enabled = process.env.HEARTFLOW_SMART_UPGRADE_ENABLED === 'true';
     // 确保路径正确：从项目根目录计算
     this.upgradesDir = path.isAbsolute(rootPath)
       ? path.join(rootPath, 'data/upgrades')
@@ -183,6 +185,9 @@ class SmartUpgradeEngine {
    * 搜索GitHub
    */
   searchGitHub(query) {
+    if (!this.enabled) {
+      return Promise.reject(new Error('SmartUpgradeEngine is disabled. Set HEARTFLOW_SMART_UPGRADE_ENABLED=true to enable.'));
+    }
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error('请求超时')), 30000);
       
@@ -226,6 +231,9 @@ class SmartUpgradeEngine {
    * 获取仓库代码
    */
   async fetchRepoCode(repo) {
+    if (!this.enabled) {
+      return Promise.reject(new Error('SmartUpgradeEngine is disabled. Set HEARTFLOW_SMART_UPGRADE_ENABLED=true to enable.'));
+    }
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => reject(new Error('请求超时')), 60000);
       
