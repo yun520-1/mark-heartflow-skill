@@ -1,7 +1,7 @@
 ---
 name: heartflow-engine
 title: "HeartFlow / 心虫 — AI 认知与自愈引擎"
-version: "5.9.4"
+version: "5.9.5"
 description: |-
   统一整合版：claude-heartflow-skill (v2.8.0) + mark-heartflow-skill (v5.7.3)
   290+ 模块，25 个 MCP 工具，零外部依赖，覆盖认知/记忆/情绪/哲学/自愈/决策/代码/意识。
@@ -212,3 +212,32 @@ npm install @yun520-1/heartflow
   <strong>HeartFlow 心虫</strong> — 让代码拥有认知，让认知拥有自我<br>
   <sub>整合版 MIT License · Copyright © 2026</sub>
 </p>
+
+## 公式认知架构（v5.9.5 重构）
+
+心虫公式系统采用**三层架构**，让公式从"被动查询"变为"按认知环节主动注入"：
+
+### 1. 公式库（formulas/formulas.json，2397 条）
+轻量运行时加载。分类：physics(804) / mathematics(762) / quantum_computing(313) / engineering(269) / cognitive_science(93) / psychology(33) / philosophy+neuroscience+economics(38) 等。
+独立语料库见 `formulas-corpus/`（ARQMath 1076万公式、FormulaReasoning、theoria、NMF、HME-Leibniz 等，单独存不膨胀主库）。
+
+### 2. 认知公式桥接层（src/formula/formula-bridge.js）
+实现与认知目标直接匹配的核心原语（不加载完整引擎）：
+Ebbinghaus 遗忘曲线、Shannon 熵、期望效用、贝叶斯、交叉熵/KL散度、
+**ACT-R 全套**（基础级学习/激活方程/噪声玻尔兹曼）、**耶克斯-多德森定律**、**Softmax 策略**、**元认知置信度 C=1-Var(p)**、**IRT 1-4PL**、加权平均。
+
+### 3. 公式注册表（src/formula/formula-registry.js）
+按"认知环节标签"把原语索引，业务模块订阅自己环节的公式：
+- `memory_activation`：Ebbinghaus 保留 + ACT-R 激活（记忆检索）
+- `emotion_arousal`：耶克斯-多德森（唤醒-绩效）
+- `decision_utility`：期望效用 + Softmax 策略（决策选择）
+- `confidence_aggr`：元认知置信度 + 加权平均（置信度聚合）
+- `personality_measure`：IRT 1-4PL（人格特质测量，预留）
+- `belief_update`：贝叶斯（信念更新）
+- `calibration`：交叉熵/KL散度（置信度校准）
+
+### 已注入的模块（v5.9.5）
+- **情绪引擎**：`_aggregateConfidence` 用 `weighted_confidence` + `metacognitive_confidence`（多来源一致性→整体置信度）
+- **自我疗愈 RL**：`getBestStrategy` 利用阶段改 Softmax 概率化选择（温度 τ 与 ε 反相关），保留 ε-greedy 探索
+- **记忆引擎**：`computeSalience` 频率信号融合 ACT-R 基础级学习（幂律记忆模型增强复述效应）
+- 预留：欲望/心理学引擎 `personality_measure` 环节（IRT 待接入，当前为预设权重体系）

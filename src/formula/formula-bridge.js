@@ -87,8 +87,153 @@ class FormulaBridge {
     return (pBgivenA * pA) / pB;
   }
 
-  /**
-   * 二值交叉熵（对数损失 / Log Loss）：CE = -(y·log(p) + (1-y)·log(1-p))
+  // ============================================================
+  // 认知公式原语集（供 FormulaRegistry 按认知环节注入业务模块）
+  // 所有公式引自心虫公式库（formula-engine 的 cognitive_science/psychology 分类）
+  // ============================================================
+
+   /**
+    * ACT-R 基础级学习：B_i = ln(Σ_j t_j^{-d})
+    * 记忆强度 = 访问时间间隔的倒数幂和的对数。访问越频繁/越近，B_i 越高。
+    * @param {number[]} accessIntervals - 各次访问距今的时间间隔（ms 或任意单位）
+    * @param {number} [d=0.5] - 衰减参数（ACT-R 默认 0.5）
+    * @returns {number} 基础级激活 B_i
+    */
+   actrBaseLevel(accessIntervals, d = 0.5) {
+     if (!Array.isArray(accessIntervals) || accessIntervals.length === 0) return 0;
+     let sum = 0;
+     for (const t of accessIntervals) {
+       const tt = Math.max(t, 1e-6);
+       sum += Math.pow(tt, -d);
+     }
+     return Math.log(sum);
+   }
+
+   /**
+    * ACT-R 激活方程：A_i = B_i + S_i + P_i - O_i
+    * @param {number} baseLevel - B_i 基础级
+    * @param {number} [spreading=0] - S_i 扩散激活
+    * @param {number} [partial=0] - P_i 部分匹配
+    * @param {number} [oscillator=0] - O_i 振荡器/噪声偏移
+    * @returns {number} 激活度 A_i
+    */
+   actrActivation(baseLevel, spreading = 0, partial = 0, oscillator = 0) {
+     return baseLevel + spreading + partial - oscillator;
+   }
+
+   /**
+    * ACT-R 噪声（玻尔兹曼）：P = e^{A_i/τ} / Σ_j e^{A_j/τ}
+    * 给定多个记忆项的激活度，返回各项被检索到的概率（softmax 形式）。
+    * @param {number[]} activations - 各记忆项激活度 A_i
+    * @param {number} [tau=0.5] - 温度参数
+    * @returns {number[]} 各项检索概率（与输入等长，和为1）
+    */
+   actrNoise(activations, tau = 0.5) {
+     if (!Array.isArray(activations) || activations.length === 0) return [];
+     const t = Math.max(tau, 1e-6);
+     const exps = activations.map(a => Math.exp(a / t));
+     const sum = exps.reduce((s, x) => s + x, 0) || 1e-12;
+     return exps.map(x => x / sum);
+   }
+
+   /**
+    * 耶克斯-多德森定律：Performance = -a·A² + b·A + c
+    * 唤醒度与绩效呈倒 U 型，中等唤醒最优。A 为唤醒度（0~1 或任意）。
+    * @param {number} arousal - 唤醒度 A
+    * @param {number} [a=1] - 二次项系数（负）
+    * @param {number} [b=1] - 一次项系数
+    * @param {number} [c=0] - 常数
+    * @returns {number} 预期绩效
+    */
+   yerkesDodson(arousal, a = 1, b = 1, c = 0) {
+     return -a * arousal * arousal + b * arousal + c;
+   }
+
+   /**
+    * Softmax 策略：π(a|s) = exp(Q(s,a)/τ) / Σ exp(Q(s,a')/τ)
+    * 把 Q 值转为动作选择概率分布。
+    * @param {number[]} qValues - 各选项 Q 值
+    * @param {number} [tau=1] - 温度
+    * @returns {number[]} 各选项概率（和为1）
+    */
+   softmaxPolicy(qValues, tau = 1) {
+     if (!Array.isArray(qValues) || qValues.length === 0) return [];
+     const t = Math.max(tau, 1e-6);
+     const exps = qValues.map(q => Math.exp(q / t));
+     const sum = exps.reduce((s, x) => s + x, 0) || 1e-12;
+     return exps.map(x => x / sum);
+   }
+
+   /**
+    * 元认知置信度：C = 1 - Var(p)
+    * 多个预测概率的一致性越高（方差越小），元认知置信度越高。
+    * @param {number[]} probs - 多个来源的预测概率 p_i ∈ [0,1]
+    * @returns {number} 置信度 C ∈ [0,1]
+    */
+   metacognitiveConfidence(probs) {
+     if (!Array.isArray(probs) || probs.length === 0) return 0;
+     const mean = probs.reduce((s, x) => s + x, 0) / probs.length;
+     const varc = probs.reduce((s, x) => s + (x - mean) ** 2, 0) / probs.length;
+     return Math.max(0, Math.min(1, 1 - varc));
+   }
+
+   /**
+    * 加权平均：Σ(w_i·v_i) / Σw_i
+    * @param {number[]} values - 值
+    * @param {number[]} [weights] - 权重（默认等权）
+    * @returns {number} 加权均值
+    */
+   weightedAverage(values, weights) {
+     if (!Array.isArray(values) || values.length === 0) return 0;
+     const w = weights && weights.length === values.length ? weights : values.map(() => 1);
+     const sw = w.reduce((s, x) => s + x, 0) || 1e-12;
+     const sv = values.reduce((s, v, i) => s + v * w[i], 0);
+     return sv / sw;
+   }
+
+   /**
+    * IRT 单参数模型（Rasch）：P = 1 / (1 + e^{-(θ-b)})
+    * @param {number} theta - 被试特质水平
+    * @param {number} b - 题目难度
+    */
+   irtRasch(theta, b) {
+     return 1 / (1 + Math.exp(-(theta - b)));
+   }
+
+   /**
+    * IRT 双参数模型：P = 1 / (1 + e^{-a(θ-b)})
+    * @param {number} theta - 特质水平
+    * @param {number} a - 区分度
+    * @param {number} b - 难度
+    */
+   irt2PL(theta, a, b) {
+     return 1 / (1 + Math.exp(-a * (theta - b)));
+   }
+
+   /**
+    * IRT 三参数模型：P = c + (1-c) / (1 + e^{-a(θ-b)})
+    * @param {number} theta - 特质水平
+    * @param {number} a - 区分度
+    * @param {number} b - 难度
+    * @param {number} [c=0] - 猜测参数
+    */
+   irt3PL(theta, a, b, c = 0) {
+     return c + (1 - c) / (1 + Math.exp(-a * (theta - b)));
+   }
+
+   /**
+    * IRT 四参数模型：P = d + (c-d) / (1 + e^{-a(θ-b)})
+    * @param {number} theta - 特质水平
+    * @param {number} a - 区分度
+    * @param {number} b - 难度
+    * @param {number} c - 下渐近线（猜测）
+    * @param {number} d - 上渐近线
+    */
+   irt4PL(theta, a, b, c, d) {
+     return d + (c - d) / (1 + Math.exp(-a * (theta - b)));
+   }
+   /**
+    * 二值交叉熵（对数损失 / Log Loss）：CE = -(y·log(p) + (1-y)·log(1-p))
    * 用于置信度校准——量化"预测概率 p"与"真实标签 y∈{0,1}"的信息论差距。
    * 公式引自心虫公式库 cross_entropy: H = -Σ p(x)·log q(x)
    * 对过度自信（高 p 但 y=0）惩罚极重，比绝对差更敏感。

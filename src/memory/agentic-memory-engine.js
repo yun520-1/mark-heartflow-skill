@@ -124,7 +124,22 @@ class AgenticMemoryEngine {
     const tagSim = similarityFn(memoryItem.tags ?? [], context.tags ?? []);
 
     const freq = memoryItem.accessCount ?? 0;
-    const frequency = freq === 0 ? 0 : Math.min(1, Math.log(freq + 1) / Math.log(11));
+    // [FORMULA] 频率信号双轨建模：
+    //  (1) 原有 log 缩放（简单基线）
+    //  (2) ACT-R 基础级学习 B_i = ln(Σ t_j^{-d})：访问越频繁/越近，记忆激活越强（幂律）
+    //  当 accessCount>=2 且有 lastAccessed 时，用等间隔近似构造访问间隔，取 ACT-R 激活作为增强信号
+    const frequencyLog = freq === 0 ? 0 : Math.min(1, Math.log(freq + 1) / Math.log(11));
+    let frequency = frequencyLog;
+    if (freq >= 2 && bridge && typeof bridge.actrBaseLevel === 'function') {
+      const now = context.now ?? Date.now();
+      const last = memoryItem.lastAccessed ?? now;
+      const interval = Math.max(1, (now - last) / freq);   // 等间隔近似
+      const intervals = Array.from({ length: freq }, (_, i) => interval * (i + 1));
+      const actrB = bridge.actrBaseLevel(intervals, 0.5);
+      // ACT-R 基础级激活归一化到 [0,1]（经验缩放：除以 10 再 clamp）
+      const actrNorm = Math.max(0, Math.min(1, actrB / 10 + 0.1));
+      frequency = frequencyLog * 0.5 + actrNorm * 0.5;  // 融合，避免单模型偏差
+    }
 
     const relevance = memoryItem.relevance ?? 0.5;
 
