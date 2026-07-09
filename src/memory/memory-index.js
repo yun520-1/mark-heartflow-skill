@@ -179,7 +179,7 @@ class MemoryIndex {
     // 1. 身份
     lines.push('\n## Identity (身份)');
     lines.push(`- 名字: ${this.index.identity.name} / ${this.index.identity.englishName}`);
-    lines.push(`- 版本: ${this.index.identity.version}`);
+    // 版本已移除，避免与项目版本混淆
     lines.push(`- 四重身份: ${this.index.identity.identities.join(' · ')}`);
     lines.push(`- 核心意义: ${this.index.identity.meaning}`);
 
@@ -215,7 +215,7 @@ class MemoryIndex {
     lines.push('\n## Project (项目)');
     lines.push(`- 名字: ${this.index.project.name}`);
     lines.push(`- 描述: ${this.index.project.description}`);
-    lines.push(`- 版本: ${this.index.project.version}`);
+    // 版本已移除，避免与项目版本混淆
     lines.push(`- 状态: ${this.index.project.status}`);
     if (this.index.project.currentWork) {
       lines.push(`- 当前工作: ${this.index.project.currentWork}`);
