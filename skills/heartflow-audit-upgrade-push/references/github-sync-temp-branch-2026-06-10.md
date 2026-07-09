@@ -6,7 +6,7 @@
 
 ## 环境
 
-- 本地仓库: `~/.hermes/skills/ai/mark-heartflow-skill/`
+- 本地仓库: `~/.hermes/skills/heartflow/`
 - 本地 commit: `328bc49` (v2.9.0)
 - 远程: `yun520-1/mark-heartflow-skill`
 - 远程 main: 旧版 commit `9518598`，受保护
@@ -17,7 +17,7 @@
 ### Step 1: 确认状态
 
 ```bash
-cd ~/.hermes/skills/ai/mark-heartflow-skill
+cd ~/.hermes/skills/heartflow
 git log --oneline -3
 # 328bc49 (HEAD -> main) v2.9.0
 git remote -v

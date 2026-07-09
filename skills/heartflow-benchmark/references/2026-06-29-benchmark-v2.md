@@ -3,7 +3,7 @@
 ## 测试环境
 - 模型：deepseek-v4-flash（腾讯云 Copilot）
 - 心虫版本：v5.2.1（GitHub commit b0832b3）
-- 心虫目录：~/.hermes/skills/ai/mark-heartflow-skill/
+- 心虫目录：~/.hermes/skills/heartflow/
 - 裸模型测试：API直调（流式）`POST /v2/chat/completions`
 - 心虫测试：Node.js 直接调 engine.think()（async/await）
 

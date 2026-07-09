@@ -132,7 +132,7 @@ trigger: "作为 cron job 运行，自动升级 HeartFlow"
 
 13. **git commit**：所有修改文件必须 commit
     ```bash
-    cd ~/.hermes/skills/ai/mark-heartflow-skill
+    cd ~/.hermes/skills/heartflow
     git status  # ⚠️ 先检查是否有来自之前不完整升级的"残留改动"
     # 上一步很关键！git add -A 会包含之前 session 中未 commit 的改动
     # 这些残留改动可能来自更早的升级尝试或编辑，不属于本次升级
@@ -423,7 +423,7 @@ const kb = new KnowledgeBase({ storagePath: '/tmp/test-kb' });
 // → Error: [KnowledgeBase] Storage path outside allowed directory
 
 // ✅ 正确：使用 data/ 下的子目录
-const kbPath = '/Users/apple/.hermes/skills/ai/mark-heartflow-skill/data/knowledge_test';
+const kbPath = '/Users/apple/.hermes/skills/heartflow/data/knowledge_test';
 fs.mkdirSync(kbPath, { recursive: true });
 const kb = new KnowledgeBase({ storagePath: kbPath, autoSave: false });
 ```

@@ -2,7 +2,7 @@
 
 ## 适用场景
 
-当两个心虫（HeartFlow）版本在不同路径下各自演化时（如 `~/.hermes/skills/ai/mark-heartflow-skill/` 的Hermes心虫 vs `~/.claude/skills/mark-heartflow-skill/` 的Claude心虫），将旧版中有价值但新版缺失的模块/方法吸收到新版中。
+当两个心虫（HeartFlow）版本在不同路径下各自演化时（如 `~/.hermes/skills/heartflow/` 的Hermes心虫 vs `~/.claude/skills/mark-heartflow-skill/` 的Claude心虫），将旧版中有价值但新版缺失的模块/方法吸收到新版中。
 
 ## 执行步骤
 
@@ -10,7 +10,7 @@
 
 ```bash
 # 对比文件列表
-diff <(cd ~/.hermes/skills/ai/mark-heartflow-skill/src/core && find . -name '*.js' | sort) \
+diff <(cd ~/.hermes/skills/heartflow/src/core && find . -name '*.js' | sort) \
      <(cd ~/.claude/skills/mark-heartflow-skill/src/core && find . -name '*.js' | sort)
 ```
 

@@ -15,7 +15,7 @@
 
 ## 使用
 ```bash
-cd ~/.hermes/skills/ai/mark-heartflow-skill
+cd ~/.hermes/skills/heartflow
 node tests/smoke-test.js
 ```
 
