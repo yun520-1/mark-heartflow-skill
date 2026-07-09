@@ -204,7 +204,7 @@ module.exports = {
 
 升级后执行：
 ```bash
-cd ~/.hermes/skills/ai/mark-heartflow-skill
+cd ~/.hermes/skills/heartflow
 node -e "require('./src/core/version.js').bumpVersion('patch')"
 ```
 

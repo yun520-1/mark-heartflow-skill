@@ -2,7 +2,7 @@
 
 ## 审计工具
 - **工具**：NVIDIA SkillSpector（未公开版本）
-- **输入**：心虫完整源码目录 `~/.hermes/skills/ai/mark-heartflow-skill/`
+- **输入**：心虫完整源码目录 `~/.hermes/skills/heartflow/`
 - **输出**：238 个发现，涵盖 Excessive Agency / Behavioral AST / MCP Least Privilege / MCP Tool Poisoning / Prompt Injection / Intent-Code Divergence / Description-Behavior Mismatch / Context-Inappropriate Capability
 
 ## 修复项

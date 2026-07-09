@@ -28,7 +28,7 @@ this.corePath = path.join(rootPath, 'meaningful-core.json');  // 没有 memory/ 
 find ~/.hermes -name 'meaningful-core.json' -not -path '*/node_modules/*' 2>/dev/null
 
 # 2. 检查哪个是 MeaningfulMemory 实际读取的
-grep 'corePath' ~/.hermes/skills/ai/mark-heartflow-skill/src/memory/meaningful-memory.js
+grep 'corePath' ~/.hermes/skills/heartflow/src/memory/meaningful-memory.js
 # 输出: this.corePath = path.join(rootPath, 'meaningful-core.json');
 # 说明是 {rootPath}/meaningful-core.json，不含 memory/
 
@@ -71,12 +71,12 @@ fs.writeFileSync(root + '/meaningful-core.json', JSON.stringify(core, null, 2));
 ### 2. 删除错误路径文件
 
 ```bash
-rm ~/.hermes/skills/ai/mark-heartflow-skill/memory/meaningful-core.json
+rm ~/.hermes/skills/heartflow/memory/meaningful-core.json
 ```
 
 ### 3. 同步 `_initCoreRules()` 到 CLI 端
 
-MCP 端的 `heartflow.js`（`~/.hermes/mcp-servers/heartflow/src/heartflow.js`）的 `_initCoreRules()` 包含 `core.*` 规则（1538-1540行），但 **MCP 实际加载的是 CLI 端的 `heartflow.js`**（`mcp-server-http.js` 第21行指向 `~/.hermes/skills/ai/mark-heartflow-skill/src/core/heartflow.js`），CLI 端的 `_initCoreRules()` 没有这3条规则。
+MCP 端的 `heartflow.js`（`~/.hermes/mcp-servers/heartflow/src/heartflow.js`）的 `_initCoreRules()` 包含 `core.*` 规则（1538-1540行），但 **MCP 实际加载的是 CLI 端的 `heartflow.js`**（`mcp-server-http.js` 第21行指向 `~/.hermes/skills/heartflow/src/core/heartflow.js`），CLI 端的 `_initCoreRules()` 没有这3条规则。
 
 所以 `core.*` 规则只有通过 `meaningful-core.json` 文件才能加载——`_initCoreRules()` 不会写入它们。
 

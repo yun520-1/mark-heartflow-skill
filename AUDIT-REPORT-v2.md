@@ -132,7 +132,7 @@ __safeGlobals.constructor.constructor('return process')()
 
 **问题**:
 ```javascript
-try { apiKey = fs.readFileSync('/Users/apple/.hermes/skills/ai/mark-heartflow-skill/data/api-key.txt', 'utf-8').trim(); } catch(e) {}
+try { apiKey = fs.readFileSync('~/.hermes/skills/heartflow/data/api-key.txt', 'utf-8').trim(); } catch(e) {}
 ```
 
 1. **硬编码绝对路径** `/Users/apple/` — 在其他用户机器上必然失败

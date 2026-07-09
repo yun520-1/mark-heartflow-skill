@@ -18,14 +18,14 @@ HeartFlow 有**两层版本默认值**，运行时只读数据层：
 
 ```bash
 # 1. 确认 canonical version（VERSION 文件 = 唯一真源）
-cat ~/.hermes/skills/ai/mark-heartflow-skill/VERSION
+cat ~/.hermes/skills/heartflow/VERSION
 # → 1.6.0
 
 # 2. grep 所有版本引用（找散落点）
 grep -rn "1\.3\.15\|1\.3\.16\|1\.5\.1\|1\.5\.4\|1\.6\.0" \
-  ~/.hermes/skills/ai/mark-heartflow-skill/src/ \
-  ~/.hermes/skills/ai/mark-heartflow-skill/data/ \
-  ~/.hermes/skills/ai/mark-heartflow-skill/*.md 2>/dev/null
+  ~/.hermes/skills/heartflow/src/ \
+  ~/.hermes/skills/heartflow/data/ \
+  ~/.hermes/skills/heartflow/*.md 2>/dev/null
 
 # 3. 并发 patch 所有散落点
 # - src/core/heartflow.js: VERSION const + 顶部注释
@@ -37,7 +37,7 @@ grep -rn "1\.3\.15\|1\.3\.16\|1\.5\.1\|1\.5\.4\|1\.6\.0" \
 # - docs/README.md: version line
 
 # 4. 重建 package-lock.json（不改会继续报告旧版本）
-cd ~/.hermes/skills/ai/mark-heartflow-skill
+cd ~/.hermes/skills/heartflow
 rm package-lock.json && npm install --package-lock-only
 
 # 5. 验证 boot 输出版本
@@ -48,7 +48,7 @@ node src/core/heartflow.js 2>&1 | grep "version:"
 ## 版本散落检查清单
 
 ```
-~/.hermes/skills/ai/mark-heartflow-skill/
+~/.hermes/skills/heartflow/
 ├── VERSION                          # 唯一真源
 ├── package.json                     # "version": "x.y.z"
 ├── package-lock.json                # 改 package.json 后重建

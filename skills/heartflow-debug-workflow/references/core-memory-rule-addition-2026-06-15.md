@@ -4,7 +4,7 @@
 
 用户纠正我多次后，我将3条核心教训写入心虫的 CORE 层记忆。这涉及两个独立的存储系统：
 
-### 系统 A：CLI 引擎（`~/.hermes/skills/ai/mark-heartflow-skill/`）
+### 系统 A：CLI 引擎（`~/.hermes/skills/heartflow/`）
 
 `meaningful-core.json` 是文件持久化的 CORE 层。直接写入 JSON 文件即可。
 

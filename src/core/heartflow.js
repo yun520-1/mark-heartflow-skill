@@ -336,7 +336,7 @@ const _ValueAligner = _lazy('valueAligner', () => require('../bridge/value-align
 const _PersonalityTone = _lazy('personalityTone', () => require('../bridge/personality-tone.js'));
 const _MetaPosition = _lazy('metaPosition', () => require('../bridge/meta-position.js'));
 
-const BUILD_DATE = '2026-07-07-v5.8.3';
+const BUILD_DATE = '2026-07-09-v5.9.11';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }

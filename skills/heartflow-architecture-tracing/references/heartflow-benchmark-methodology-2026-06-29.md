@@ -180,7 +180,7 @@ result (think_fast) 或 report (think)
 
 | 路径 | 用途 | 修改后需 |
 |------|------|---------|
-| `~/.hermes/skills/ai/mark-heartflow-skill/mcp/mcp-server-http.js` | 技能目录源码 | 同步到运行目录 |
+| `~/.hermes/skills/heartflow/mcp/mcp-server-http.js` | 技能目录源码 | 同步到运行目录 |
 | `~/.hermes/mcp-servers/heartflow/src/mcp-server-http.js` | **实际运行** | kill -9 重启 |
 
 **核心教训**：修改技能目录的 mcp-server-http.js 不影响运行进程。必须修改 `~/.hermes/mcp-servers/heartflow/src/mcp-server-http.js` 并重启 MCP。

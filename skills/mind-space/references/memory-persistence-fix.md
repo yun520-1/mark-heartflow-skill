@@ -31,7 +31,7 @@ initializeSchema() {
 **问题**：`meaningful-core.json` 文件不存在，core 记忆无处持久化
 
 **存储路径**：源码中 `MEMORY_DIR = path.join(__dirname, '..', '..', 'memory')`  
-对应 `~/.hermes/skills/ai/mark-heartflow-skill/memory/`
+对应 `~/.hermes/skills/heartflow/memory/`
 
 实际文件：`memory/meaningful-core.json` 和 `memory/meaningful-learned.json`
 
@@ -76,10 +76,10 @@ heartflow status
 
 | 文件 | 路径 |
 |------|------|
-| TrialityMemory 源码 | `~/.hermes/skills/ai/mark-heartflow-skill/src/core/memory/triality-memory.js` |
-| 导出/恢复文件 | `~/.hermes/skills/ai/mark-heartflow-skill/data/triality-memory-export.json` |
-| MeaningfulMemory 源码 | `~/.hermes/skills/ai/mark-heartflow-skill/src/core/meaningful-memory.js` |
-| 核心记忆文件 | `~/.hermes/skills/ai/mark-heartflow-skill/memory/meaningful-core.json` |
+| TrialityMemory 源码 | `~/.hermes/skills/heartflow/src/core/memory/triality-memory.js` |
+| 导出/恢复文件 | `~/.hermes/skills/heartflow/data/triality-memory-export.json` |
+| MeaningfulMemory 源码 | `~/.hermes/skills/heartflow/src/core/meaningful-memory.js` |
+| 核心记忆文件 | `~/.hermes/skills/heartflow/memory/meaningful-core.json` |
 
 ---
 
