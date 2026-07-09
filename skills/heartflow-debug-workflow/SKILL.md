@@ -1638,7 +1638,7 @@ cat ~/.hermes/skills/heartflow/meaningful-core.json | wc -c
 # 应该 > 100 bytes（10条核心记忆约 3.6KB）
 
 # 2. 检查 MCP status handler 实际调用了哪个路由
-grep -n 'getMemoryStats\\|memory.getStats' /Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js
+grep -n 'getMemoryStats\\|memory.getStats' ~/.hermes/heartflow/mcp/src/mcp-server-http.js
 
 # 3. 直接验证 memory.getStats 返回值
 node -e "
@@ -1660,7 +1660,7 @@ try { const ms = safeDispatch('memory.getStats'); ... }
 
 # 重启 MCP
 pkill -f mcp-server-http
-node /Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js --port 8099 &
+node ~/.hermes/heartflow/mcp/src/mcp-server-http.js --port 8099 &
 sleep 2
 # 验证
 curl -s -X POST http://127.0.0.1:8099/mcp \
@@ -1674,7 +1674,7 @@ curl -s -X POST http://127.0.0.1:8099/mcp \
 
 **症状**：修改了 `~/.hermes/skills/heartflow/mcp/mcp-server-http.js` 后，MCP 行为不变。或 `mcp_heartflow_heartflow_status` 返回与期望不同的结果。
 
-**根因**：MCP 实际运行的进程从 `/Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js` 启动（由 launchd plist 配置），但源码编辑发生在 `~/.hermes/skills/heartflow/mcp/mcp-server-http.js`。**这是两个不同的文件。** 修改 skill 目录下的文件不会自动同步到运行目录。
+**根因**：MCP 实际运行的进程从 `~/.hermes/heartflow/mcp/src/mcp-server-http.js` 启动（由 launchd plist 配置），但源码编辑发生在 `~/.hermes/skills/heartflow/mcp/mcp-server-http.js`。**这是两个不同的文件。** 修改 skill 目录下的文件不会自动同步到运行目录。
 
 **更深层的问题：mcp-servers/ 目录是技能目录的残缺子集，不是同步副本。**
 - 技能目录 `skills/ai/mark-heartflow-skill/src/core/` 有 100+ 个模块文件
@@ -1689,11 +1689,11 @@ curl -s -X POST http://127.0.0.1:8099/mcp \
 ```bash
 # 1. 确认实际运行的 MCP 进程指向哪个文件
 ps aux | grep mcp-server-http | grep -v grep
-# 输出: /opt/homebrew/bin/node /Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js --port 8099
+# 输出: /opt/homebrew/bin/node ~/.hermes/heartflow/mcp/src/mcp-server-http.js --port 8099
 
 # 2. 对比两个文件
 diff ~/.hermes/skills/heartflow/mcp/mcp-server-http.js \
-     /Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js
+     ~/.hermes/heartflow/mcp/src/mcp-server-http.js
 
 # 3. 检查 launchd plist 指向的路径
 grep 'ProgramArguments\\|mcp-server' /Users/apple/Library/LaunchAgents/com.heartflow.mcp.plist
@@ -1703,7 +1703,7 @@ grep 'ProgramArguments\\|mcp-server' /Users/apple/Library/LaunchAgents/com.heart
 ```bash
 # 复制 skill 目录的最新文件到运行目录
 cp ~/.hermes/skills/heartflow/mcp/mcp-server-http.js \\\
-   /Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js
+   ~/.hermes/heartflow/mcp/src/mcp-server-http.js
 
 # 通过 launchd 重启（kickstart-kvp 已废弃，macOS 26.5.1 改用 stop/start）
 launchctl stop com.heartflow.mcp
@@ -1870,13 +1870,13 @@ cat ~/.claude/skills/claude-heartflow-skill/VERSION  # 如果有旧目录
 **诊断**：
 ```bash
 # 检查 version.js 是否存在
-ls -la /Users/apple/.hermes/mcp-servers/heartflow/src/version.js
+ls -la ~/.hermes/heartflow/mcp/src/version.js
 
 # 检查 heartflow.js 中版本解析是否正常
 node -e "
 const path = require('path');
 try {
-  const v = require(path.join('/Users/apple/.hermes/mcp-servers/heartflow/src/version.js'));
+  const v = require(path.join('~/.hermes/heartflow/mcp/src/version.js'));
   console.log('version:', v.VERSION);
 } catch(e) {
   console.log('version.js MISSING:', e.message);
@@ -1886,7 +1886,7 @@ try {
 
 **修复**：
 ```javascript
-// 创建 /Users/apple/.hermes/mcp-servers/heartflow/src/version.js
+// 创建 ~/.hermes/heartflow/mcp/src/version.js
 const fs = require('fs');
 const path = require('path');
 let VERSION = 'unknown';
@@ -1936,7 +1936,7 @@ kill $(ps aux | grep 'mcp-server.js' | grep -v grep | awk '{print $2}')
 sleep 1
 
 # 2. 手动启动新进程（Hermes 不会自动重启 MCP）
-node /Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server.js &
+node ~/.hermes/heartflow/mcp/src/mcp-server.js &
 
 # 3. 验证
 ps aux | grep 'mcp-server.js' | grep -v grep
@@ -2004,7 +2004,7 @@ curl -s -X POST http://127.0.0.1:8099/mcp \
 
 ```bash
 # 手动启动
-cd /Users/apple/.hermes/mcp-servers/heartflow
+cd ~/.hermes/heartflow/mcp
 /opt/homebrew/bin/node src/mcp-server-http.js --port 8099 &
 
 # 验证
@@ -2036,7 +2036,7 @@ plist 文件：`~/Library/LaunchAgents/com.heartflow.mcp.plist`
     <key>ProgramArguments</key>
     <array>
         <string>/opt/homebrew/bin/node</string>
-        <string>/Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js</string>
+        <string>~/.hermes/heartflow/mcp/src/mcp-server-http.js</string>
         <string>--port</string>
         <string>8099</string>
     </array>
@@ -2045,7 +2045,7 @@ plist 文件：`~/Library/LaunchAgents/com.heartflow.mcp.plist`
     <key>KeepAlive</key>
     <true/>
     <key>WorkingDirectory</key>
-    <string>/Users/apple/.hermes/mcp-servers/heartflow</string>
+    <string>~/.hermes/heartflow/mcp</string>
     <key>StandardOutPath</key>
     <string>/Users/apple/.hermes/logs/heartflow-mcp.log</string>
     <key>StandardErrorPath</key>

@@ -7,7 +7,7 @@
 ### ❌ 错误路径：直接 require heartflow.js
 
 ```javascript
-const HeartFlow = require('~/skills/ai/mark-heartflow-skill/src/core/heartflow.js');
+const HeartFlow = require('~/.hermes/skills/heartflow/src/core/heartflow.js');
 const engine = new HeartFlow.HeartFlow(hfDir, { silent: true, minimal: true });
 engine.start();
 const r = engine.think("test");
