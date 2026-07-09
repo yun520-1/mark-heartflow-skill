@@ -1,7 +1,7 @@
 ---
 name: heartflow-engine
 title: "HeartFlow / 心虫 — AI 认知与自愈引擎"
-version: "5.9.7"
+version: "5.9.8"
 description: |-
   统一整合版：claude-heartflow-skill (v2.8.0) + mark-heartflow-skill (v5.7.3)
   290+ 模块，25 个 MCP 工具，零外部依赖，覆盖认知/记忆/情绪/哲学/自愈/决策/代码/意识。
@@ -263,3 +263,24 @@ v5.9.6 新增：让公式从"精确 id 查询"升级为"自然语言 → 公式"
 - **参数 schema 闭环**：触发词 formula/stage-primitive ref 补 `params`；`matcher.resolve()` + `hf.matchFormulas(resolve:true)` 返回公式所需参数，实现"匹配→调用"闭环
 - **think 公式感知**：pipeline（快速+完整）cognition 自动附 `formulaMatches`（前 3 匹配）
 - **corpus 数学工具**：`corpus-math-tool.js` 按需检索 DLMF/formulareasoning（仅检索不求解，独立于认知主链路）
+
+## 公式全面审计优化（v5.9.8）
+
+对主库 2397 条 + corpus 做系统审计，从 150 条认知相关公式中挖掘出 121 条未接入的「金矿」，按"认知目标匹配、可计算、有对应场景"原则接入 21 个新认知原语：
+
+### 新增 21 个认知原语（registry 17→38）
+- 记忆增强: experience_replay, actr_noise
+- 决策情绪: prospect_value, prospect_weight, subjective_utility（前景理论/SEU）
+- 决策/意识: clarion_acs, cognitive_dissonance, gwt_accessibility, gwt_winner（CLARION/GWT）
+- 置信/主动推断: active_inference_efe, predictive_coding_free_energy, precision_weight
+- 测量: irt_information, irt_sem
+- 信念更新: bayes_factor, posterior_odds
+- 校准/意识/社会: sem_fit_rmsea, sem_fit_srms, iit_phi, social_influence, vygotsky_zpd
+
+### 触发词索引扩展
+- 接入 ref 35→55，信号类 16→21（新增 decision/prospect/consciousness/active_inference/belief/social/development）
+- 修复 matcher 信号字段兼容（keywords + synonyms）
+
+### 审计排除（不为了运用而运用）
+- 未定义公式（nash_equilibrium "undefined"、deontic_* "undefined"）不入
+- 纯神经级（BCM/STDP/FHN）留待后续，仅触发词标注不实现
