@@ -448,6 +448,54 @@ class FormulaRegistry {
       impl: (w, x, b) => _b.neuralFiringRate(w, x, b),
       doc: '神经元放电率',
     });
+    // ─── v5.9.10 第三批审计扩展 ───
+
+    this.register('personality_measure', {
+      id: 'irt_4pl', formulaId: 'irt_4pl',
+      impl: (th, a, b, c, d) => _b.irt4pl(th, a, b, c, d),
+      doc: 'IRT 四参数模型',
+    });
+    this.register('personality_measure', {
+      id: 'irt_test_information', formulaId: 'irt_test_information',
+      impl: (th, items) => _b.irtTestInformation(th, items),
+      doc: 'IRT 测验信息函数',
+    });
+
+    // 记忆（因子分析/降维）
+    this.register('memory_activation', {
+      id: 'pca_variance', formulaId: 'pca_svd',
+      impl: (vars, k) => _b.pcaVarianceContribution(vars, k),
+      doc: 'PCA 方差贡献',
+    });
+    this.register('memory_activation', {
+      id: 'kmo_test', formulaId: 'kmo_test',
+      impl: (cr, pc) => _b.kmoTest(cr, pc),
+      doc: 'KMO 检验',
+    });
+    this.register('memory_activation', {
+      id: 'bartlett_test', formulaId: 'bartlett_test',
+      impl: (n, p, dR) => _b.bartlettTest(n, p, dR),
+      doc: 'Bartlett 球形检验',
+    });
+    this.register('memory_activation', {
+      id: 'brain_network_modularity', formulaId: 'brain_network_modularity',
+      impl: (ie, tw, cc) => _b.brainNetworkModularity(ie, tw, cc),
+      doc: '脑网络模块度',
+    });
+
+    // 信念（确认度互补）
+    this.register('belief_update', {
+      id: 'carnap_confirmation', formulaId: 'carnap_confirmation',
+      impl: (pHE, pH) => _b.carnapConfirmation(pHE, pH),
+      doc: '卡尔纳普确认函数',
+    });
+
+    // 决策（博弈均衡）
+    this.register('decision_utility', {
+      id: 'matching_pennies', formulaId: 'matching_pennies',
+      impl: () => _b.matchingPenniesEquilibrium(),
+      doc: '匹配 pennies 均衡',
+    });
   }
 }
 

@@ -252,7 +252,10 @@
         "检索",
         "练习",
         "重复",
-        "复述"
+        "复述",
+        "脑网络",
+        "模块度",
+        "神经连接"
       ],
       "refs": [
         {
@@ -312,7 +315,43 @@
           "kind": "stage-primitive",
           "ref": "neural_firing_rate",
           "weight": 0.5
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "pca_variance",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "kmo_test",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "bartlett_test",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "brain_network_modularity",
+          "weight": 0.5
         }
+      ],
+      "synonyms": [
+        "记住",
+        "回忆",
+        "遗忘",
+        "想起",
+        "熟悉",
+        "熟练",
+        "忘掉",
+        "检索",
+        "练习",
+        "重复",
+        "复述",
+        "脑网络",
+        "模块度",
+        "神经连接"
       ]
     },
     "decision": {
@@ -321,7 +360,10 @@
         "决策",
         "取舍",
         "博弈",
-        "冲突"
+        "冲突",
+        "纳什均衡",
+        "零和",
+        "pennies"
       ],
       "refs": [
         {
@@ -377,6 +419,11 @@
         {
           "kind": "stage-primitive",
           "ref": "actr_expected_gain",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "matching_pennies",
           "weight": 1
         }
       ]
@@ -641,6 +688,16 @@
           "kind": "stage-primitive",
           "ref": "actr_declarative_memory",
           "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "irt_4pl",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "irt_test_information",
+          "weight": 1
         }
       ]
     },
@@ -899,6 +956,11 @@
           "kind": "stage-primitive",
           "ref": "odds_ratio",
           "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "carnap_confirmation",
+          "weight": 1
         }
       ]
     },
@@ -1128,6 +1190,26 @@
           "kind": "stage-primitive",
           "ref": "popper_corroboration",
           "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "carnap_confirmation",
+          "weight": 1
+        }
+      ]
+    },
+    "neuroscience": {
+      "synonyms": [
+        "脑网络",
+        "模块度",
+        "神经可塑性",
+        "突触"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "brain_network_modularity",
+          "weight": 0.5
         }
       ]
     }
