@@ -86,6 +86,57 @@ class FormulaBridge {
     if (!(pB > 0)) return 0;
     return (pBgivenA * pA) / pB;
   }
+
+  /**
+   * 二值交叉熵（对数损失 / Log Loss）：CE = -(y·log(p) + (1-y)·log(1-p))
+   * 用于置信度校准——量化"预测概率 p"与"真实标签 y∈{0,1}"的信息论差距。
+   * 公式引自心虫公式库 cross_entropy: H = -Σ p(x)·log q(x)
+   * 对过度自信（高 p 但 y=0）惩罚极重，比绝对差更敏感。
+   * @param {number} predicted - 预测概率 p ∈ [0,1]
+   * @param {number} actual - 真实标签 y ∈ {0,1}
+   * @param {number} [eps=1e-15] - 数值保护，避免 log(0)
+   * @returns {number} 交叉熵（信息论校准误差），单位 nat
+   */
+  logLoss(predicted, actual, eps = 1e-15) {
+    const p = Math.min(1 - eps, Math.max(eps, predicted));
+    const y = actual ? 1 : 0;
+    return -(y * Math.log(p) + (1 - y) * Math.log(1 - p));
+  }
+
+  /**
+   * 通用交叉熵：H = -Σ p(x)·log q(x)
+   * @param {number[]} p - 真实分布（target，如 one-hot）
+   * @param {number[]} q - 预测分布（如 softmax 输出）
+   * @returns {number} 交叉熵
+   */
+  crossEntropy(p, q) {
+    if (!Array.isArray(p) || !Array.isArray(q) || p.length !== q.length || p.length === 0) return 0;
+    let H = 0;
+    for (let i = 0; i < p.length; i++) {
+      const pi = p[i];
+      const qi = Math.min(1 - 1e-15, Math.max(1e-15, q[i]));
+      if (pi > 0) H -= pi * Math.log(qi);
+    }
+    return H;
+  }
+
+  /**
+   * KL 散度：D_KL(P||Q) = Σ p(x)·log(p(x)/q(x))
+   * 量化预测分布 Q 偏离真实分布 P 的程度（校准差距的信息论度量）。
+   * @param {number[]} p - 真实分布
+   * @param {number[]} q - 预测分布
+   * @returns {number} KL 散度（≥0，0 表示完全匹配）
+   */
+  klDivergence(p, q) {
+    if (!Array.isArray(p) || !Array.isArray(q) || p.length !== q.length || p.length === 0) return 0;
+    let kl = 0;
+    for (let i = 0; i < p.length; i++) {
+      const pi = p[i];
+      const qi = Math.min(1 - 1e-15, Math.max(1e-15, q[i]));
+      if (pi > 0) kl += pi * Math.log(pi / qi);
+    }
+    return kl;
+  }
 }
 
 // 单例（避免重复实例化）
