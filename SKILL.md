@@ -1,7 +1,7 @@
 ---
 name: heartflow-engine
 title: "HeartFlow / 心虫 — AI 认知与自愈引擎"
-version: "5.9.6"
+version: "5.9.7"
 description: |-
   统一整合版：claude-heartflow-skill (v2.8.0) + mark-heartflow-skill (v5.7.3)
   290+ 模块，25 个 MCP 工具，零外部依赖，覆盖认知/记忆/情绪/哲学/自愈/决策/代码/意识。
@@ -250,3 +250,16 @@ v5.9.6 新增：让公式从"精确 id 查询"升级为"自然语言 → 公式"
 - **HeartFlow.matchFormulas(text)**：主引擎公开接口，上层可直接调用做"公式感知"
 - 已覆盖信号：uncertainty / arousal / load / memory / decision / probability / confidence / learning / personality / information / expectation / emotion / flow / sdt / belief / sem（共 16 类，覆盖主库 164 条认知公式中的核心集合）
 - 设计原则：匹配带阈值（默认 0.3），低于阈值不触发，避免误匹配；只为认知目标真正相关的公式建索引
+
+## 公式解析匹配与全面优化（v5.9.6 / v5.9.7）
+
+### v5.9.6 — 公式语义匹配
+- `FormulaMatcher`：自然语言→公式（16 类认知信号 + 同义词扩展 + 阈值过滤）
+- `formula-triggers.json`：认知信号→公式触发词索引（含主库 159 条未被使用的认知公式）
+- `HeartFlow.matchFormulas(text)`：公开接口，心虫自动"公式感知"
+
+### v5.9.7 — 全面优化
+- **B4 IRT 接入欲望引擎**：`estimateTraitsWithIRT(traitFlags)` 用 IRT 把可观测特征标志推断为潜在特质 θ（测量视角，独立于手设权重）；`analyzeDesires`/`analyzeSevenEmotions` 出口附 `irtTraits`
+- **参数 schema 闭环**：触发词 formula/stage-primitive ref 补 `params`；`matcher.resolve()` + `hf.matchFormulas(resolve:true)` 返回公式所需参数，实现"匹配→调用"闭环
+- **think 公式感知**：pipeline（快速+完整）cognition 自动附 `formulaMatches`（前 3 匹配）
+- **corpus 数学工具**：`corpus-math-tool.js` 按需检索 DLMF/formulareasoning（仅检索不求解，独立于认知主链路）
