@@ -970,6 +970,27 @@ class DebateConductor {
       agent.metadata.participationCount = 0;
     }
   }
+
+  /**
+   * 辩论贡献归因（v5.9.10 新增，使用 FormulaBridge.shapleyValue）
+   * 把每个 agent 对辩论收敛的贡献度用沙普利值量化。
+   * @param {Array<string>} agentRoles - 参与角色
+   * @param {Function} contributionFn - (subsetRoles) => number 子联盟贡献
+   * @returns {Object} { role: shapleyValue } 归一化到 [0,1]
+   */
+  attributeContributions(agentRoles, contributionFn) {
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (!Array.isArray(agentRoles) || agentRoles.length === 0) return {};
+      const raw = b.shapleyValue(agentRoles, contributionFn);
+      const total = raw.reduce((a, c) => a + Math.max(0, c), 0) || 1;
+      const out = {};
+      agentRoles.forEach((r, i) => { out[r] = +(Math.max(0, raw[i]) / total).toFixed(4); });
+      return out;
+    } catch (e) { return {}; }
+  }
+
 }
 
 module.exports = { DebateConductor };

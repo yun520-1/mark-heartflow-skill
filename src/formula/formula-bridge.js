@@ -699,7 +699,88 @@ class FormulaBridge {
     for (let i = 0; i < weights.length; i++) z += weights[i] * (inputs[i] || 0);
     return 1 / (1 + Math.exp(-z));  // sigmoid 近似 Φ
   }
+
+  // ─── v5.9.10 第三批审计扩展 ───
+
+  /**
+   * IRT 四参数模型 P = d + (c-d)/(1+e^{-a(θ-b)})
+   */
+  irt4pl(theta, a, b, c = 0, d = 1) {
+    return d + (c - d) / (1 + Math.exp(-a * (theta - b)));
+  }
+
+  /**
+   * IRT 测验信息函数 I_test = Σ_i I_i(θ)
+   * 单题信息 I_i = a² · P_i(θ)(1-P_i(θ))，对多题求和
+   */
+  irtTestInformation(theta, items) {
+    // items: [{a,b,c?,d?}]
+    if (!Array.isArray(items)) return 0;
+    let s = 0;
+    for (const it of items) {
+      const p = this.irt2pl ? this.irt2pl(theta, it.a, it.b, it.c, it.d) : this.irt4pl(theta, it.a, it.b, it.c, it.d);
+      s += (it.a || 1) ** 2 * p * (1 - p);
+    }
+    return +s.toFixed(4);
+  }
+
+  /**
+   * PCA / SVD 主成分方差贡献（简化：返回协方差矩阵前 k 特征值占比）
+   * 这里用对角方差近似主成分（单变量方差贡献）
+   */
+  pcaVarianceContribution(variances, k) {
+    if (!Array.isArray(variances) || variances.length === 0) return 0;
+    const total = variances.reduce((a, b) => a + b, 0);
+    if (total === 0) return 0;
+    const sorted = [...variances].sort((x, y) => y - x);
+    const top = sorted.slice(0, k || 1).reduce((a, b) => a + b, 0);
+    return +(top / total).toFixed(4);
+  }
+
+  /**
+   * KMO 检验 KMO = Σr² / (Σr² + Σp²)  (r=相关, p=偏相关)
+   */
+  kmoTest(corrSqSum, partialCorrSqSum) {
+    const denom = corrSqSum + partialCorrSqSum;
+    if (denom === 0) return 0;
+    return +(corrSqSum / denom).toFixed(4);
+  }
+
+  /**
+   * Bartlett 球形检验 χ² = -(n-1-(2p+5)/6)·log(det(R))
+   */
+  bartlettTest(n, p, detR) {
+    if (!(detR > 0)) return 0;
+    const chi2 = -(n - 1 - (2 * p + 5) / 6) * Math.log(detR);
+    return +chi2.toFixed(4);
+  }
+
+  /**
+   * 卡尔纳普确认函数 c = P(H|E) - P(H)
+   */
+  carnapConfirmation(pHgivenE, pH) {
+    return (pHgivenE || 0) - (pH || 0);
+  }
+
+  /**
+   * 匹配 pennies 均衡 p* = 0.5（混合策略纳什均衡）
+   */
+  matchingPenniesEquilibrium() {
+    return 0.5;
+  }
+
+  /**
+   * 脑网络模块度 Q = (1/2m) Σ_{ij}(A_{ij}-k_i k_j/2m)δ(c_i,c_j)
+   * 简化：给定边贡献总和与总边权 m，返回模块度
+   */
+  brainNetworkModularity(internalEdges, totalWeight, communityCount) {
+    if (totalWeight === 0) return 0;
+    // 近似：Q = (内部边 - 期望内部边) / totalWeight
+    const expected = totalWeight / Math.max(1, communityCount);
+    return +((internalEdges - expected) / totalWeight).toFixed(4);
+  }
 }
+
 
 // 单例（避免重复实例化）
 let _instance = null;

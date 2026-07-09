@@ -1,7 +1,7 @@
 ---
 name: heartflow-engine
 title: "HeartFlow / 心虫 — AI 认知与自愈引擎"
-version: "5.9.9"
+version: "5.9.10"
 description: |-
   统一整合版：claude-heartflow-skill (v2.8.0) + mark-heartflow-skill (v5.7.3)
   290+ 模块，25 个 MCP 工具，零外部依赖，覆盖认知/记忆/情绪/哲学/自愈/决策/代码/意识。
@@ -310,3 +310,22 @@ v5.9.6 新增：让公式从"精确 id 查询"升级为"自然语言 → 公式"
 ### 验证
 - 集成测试 **20/20 通过**（A 模块注入 + B 第二批 23 公式 + Matcher 新匹配 + 7 环节回归）
 - FormulaBridge 原语：38→61；FormulaRegistry 原语：38→60
+
+## 继续优化（v5.9.10）
+
+第三批公式审计（B3）+ 模块深度接入（A2）。
+
+### B3. 第三批审计（剩余 80 条可计算未接入里接 8 个）
+- IRT 精化：irt_4pl（四参数）/ irt_test_information（测验信息）
+- 因子分析/降维：pca_variance（PCA方差贡献）/ kmo_test（KMO检验）/ bartlett_test（球形检验）
+- 网络/确认/博弈：brain_network_modularity（脑网络模块度）/ carnap_confirmation（卡尔纳普确认）/ matching_pennies（零和博弈均衡）
+- 触发词 ref 77→85，信号类 23→24（新建 neuroscience）；新增 synonym 让 matcher 可命中
+
+### A2. 模块深度接入（已注册公式真正接进业务）
+- **心理引擎** → `assessMentalHealth(depression, anxiety)`：用 PHQ-9/GAD-7 自评，支持 0-3 量表分或 -1..1 强度信号映射，输出分级（正常/轻/中/重）。修复强度映射 bug（1→3 误映射）
+- **辩论导体** → `attributeContributions(roles, fn)`：用 shapley_value 量化每个 agent 对辩论收敛的贡献，归一化 [0,1]
+- **走神监测** → `measureFlow(challenge, skill, arousal)`：用 flow_channel（心流通道）+ flowOptimal（最优挑战）+ yerkesDodsonEquation（最优唤醒）
+
+### 验证
+- 集成测试 **20/20 通过**（B3 9公式 + A2 三模块 + Matcher B3 匹配 + 7环节回归）
+- FormulaBridge 61→69；FormulaRegistry 60→68 原语

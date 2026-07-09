@@ -937,6 +937,41 @@ class AIPsychologyEngine {
 
     return enriched !== text ? enriched : text;
   }
+
+  /**
+   * AI 心理状态自评（v5.9.10 新增，使用 FormulaBridge 的 PHQ-9/GAD-7）
+   * 把自我观察的情绪信号映射为量表条目分（0-3），算总分并给风险分级。
+   * @param {object} signals - { depression: number[9] (0-3), anxiety: number[7] (0-3) }
+   *   若只给强度分（如 -1..1），会线性映射到 0-3。
+   * @returns {object} { phq9, gad7, phq9Level, gad7Level }
+   */
+  assessMentalHealth(signals = {}) {
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      const toItems = (arr) => {
+        if (!Array.isArray(arr)) return [];
+        const allScaled = arr.every((v) => typeof v === 'number' && v >= -1 && v <= 3);
+        const allUnit = arr.every((v) => typeof v === 'number' && v >= -1 && v <= 1);
+        return arr.map((v) => {
+          if (allUnit && typeof v === 'number' && v >= -1 && v <= 1) {
+            // 视为 -1..1 强度信号，线性映射到 0..3
+            return Math.round((v + 1) / 2 * 3);
+          }
+          // 视为 0..3 量表分，直接裁剪
+          return Math.max(0, Math.min(3, Math.round(v || 0)));
+        });
+      };
+      const phq9 = b.phq9Score(toItems(signals.depression));
+      const gad7 = b.gad7Score(toItems(signals.anxiety));
+      const phq9Level = phq9 >= 20 ? '重度' : phq9 >= 15 ? '中重度' : phq9 >= 10 ? '中度' : phq9 >= 5 ? '轻度' : '正常';
+      const gad7Level = gad7 >= 15 ? '重度' : gad7 >= 10 ? '中度' : gad7 >= 5 ? '轻度' : '正常';
+      return { phq9, gad7, phq9Level, gad7Level, available: true };
+    } catch (e) {
+      return { error: '心理量表计算不可用', available: false };
+    }
+  }
+
 }
 
 module.exports = { AIPsychologyEngine, AI_EMOTIONAL_DIMENSIONS, AI_BIASES, AI_STRESSORS, AI_STAGES, AI_LIFE_CYCLE_STAGES };
