@@ -1,0 +1,23 @@
+{
+  "name": "heartflow-lite",
+  "version": "5.9.11",
+  "description": "HeartFlow Lite - Core AI engine with optional engines",
+  "main": "src/core/heartflow.js",
+  "scripts": {
+    "start": "node bin/cli.js",
+    "upgrade": "node upgrade.js",
+    "upgrade:engines": "node upgrade.js --engines",
+    "upgrade:data": "node upgrade.js --data",
+    "upgrade:full": "node upgrade.js --full",
+    "check": "node upgrade.js --check"
+  },
+  "dependencies": {
+    "mathjs": "^15.2.0"
+  },
+  "optionalDependencies": {
+    "@xenova/transformers": "^2.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
