@@ -292,69 +292,47 @@
             "S"
           ],
           "paramDesc": "经过时间 t、记忆强度 S"
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "experience_replay",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "actr_noise",
+          "weight": 1
         }
       ]
     },
     "decision": {
-      "keywords": [
+      "synonyms": [
         "选择",
         "决策",
-        "权衡",
         "取舍",
-        "该不该",
-        "要不要",
-        "犹豫",
-        "选哪个",
-        "价值",
-        "值得",
-        "信息价值"
+        "博弈",
+        "冲突"
       ],
       "refs": [
         {
-          "ref": "expected_utility",
           "kind": "stage-primitive",
-          "stage": "decision_utility",
-          "name": "期望效用",
-          "weight": 1,
-          "params": [
-            "probs",
-            "utils"
-          ],
-          "paramDesc": "概率、效用值"
+          "ref": "clarion_acs",
+          "weight": 1
         },
         {
-          "ref": "softmax_policy",
           "kind": "stage-primitive",
-          "stage": "decision_utility",
-          "name": "Softmax 策略",
-          "weight": 0.9,
-          "params": [
-            "qValues",
-            "temperature"
-          ],
-          "paramDesc": "Q值数组、温度参数"
+          "ref": "cognitive_dissonance",
+          "weight": 1
         },
         {
-          "ref": "information_value",
-          "kind": "formula",
-          "name": "信息价值(EVSI)",
-          "weight": 0.7,
-          "params": [
-            "prior",
-            "posterior"
-          ],
-          "paramDesc": "先验/后验不确定性"
+          "kind": "stage-primitive",
+          "ref": "gwt_accessibility",
+          "weight": 1
         },
         {
-          "ref": "expected_utility",
-          "kind": "formula",
-          "name": "期望效用 EU=Σp·u",
-          "weight": 0.8,
-          "params": [
-            "probs",
-            "utils"
-          ],
-          "paramDesc": "概率、效用值"
+          "kind": "stage-primitive",
+          "ref": "gwt_winner",
+          "weight": 1
         }
       ]
     },
@@ -443,6 +421,11 @@
           "stage": "calibration",
           "name": "对数损失校准",
           "weight": 0.7
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "precision_weight",
+          "weight": 1
         }
       ]
     },
@@ -588,6 +571,16 @@
           "kind": "formula",
           "name": "因子分析模型",
           "weight": 0.6
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "irt_information",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "irt_sem",
+          "weight": 1
         }
       ]
     },
@@ -799,39 +792,23 @@
       ]
     },
     "belief": {
-      "keywords": [
+      "synonyms": [
         "信念",
-        "修正",
-        "更新",
-        "先验",
-        "后验",
-        "证据"
+        "假设",
+        "证据",
+        "比较",
+        "假设检验"
       ],
       "refs": [
         {
-          "ref": "bayes_update",
           "kind": "stage-primitive",
-          "stage": "belief_update",
-          "name": "贝叶斯更新",
-          "weight": 1,
-          "params": [
-            "pBgivenA",
-            "pA",
-            "pB"
-          ],
-          "paramDesc": "似然、先验、证据边际"
+          "ref": "bayes_factor",
+          "weight": 1
         },
         {
-          "ref": "bayesian_updating",
-          "kind": "formula",
-          "name": "贝叶斯更新",
-          "weight": 0.9,
-          "params": [
-            "pBgivenA",
-            "pA",
-            "pB"
-          ],
-          "paramDesc": "似然、先验、证据边际"
+          "kind": "stage-primitive",
+          "ref": "posterior_odds",
+          "weight": 1
         }
       ]
     },
@@ -880,6 +857,134 @@
             "df_base"
           ],
           "paramDesc": "模型/基线卡方与自由度"
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sem_fit_rmsea",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sem_fit_srms",
+          "weight": 1
+        }
+      ]
+    },
+    "prospect": {
+      "synonyms": [
+        "损失",
+        "风险",
+        "得失",
+        "赌",
+        "前景"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "prospect_value",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "prospect_weight",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "subjective_utility",
+          "weight": 1
+        }
+      ]
+    },
+    "consciousness": {
+      "synonyms": [
+        "意识",
+        "觉知",
+        "全局",
+        "整合",
+        "注意"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "iit_phi",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "gwt_winner",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "gwt_accessibility",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "precision_weight",
+          "weight": 1
+        }
+      ]
+    },
+    "active_inference": {
+      "synonyms": [
+        "自由能",
+        "预测误差",
+        "主动推断",
+        "最小化惊奇"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "predictive_coding_free_energy",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "active_inference_efe",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "precision_weight",
+          "weight": 1
+        }
+      ]
+    },
+    "social": {
+      "synonyms": [
+        "社会",
+        "群体",
+        "他人影响",
+        "从众",
+        "舆论"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "social_influence",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "vygotsky_zpd",
+          "weight": 1
+        }
+      ]
+    },
+    "development": {
+      "synonyms": [
+        "发展",
+        "学习区",
+        "最近发展区",
+        "成长"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "vygotsky_zpd",
+          "weight": 1
         }
       ]
     }
