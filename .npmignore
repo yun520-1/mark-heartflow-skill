@@ -1,97 +1,23 @@
-# OS files
-.DS_Store
-Thumbs.db
-
-# Editor
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# Logs
-*.log
-npm-debug.log*
-
-# HeartFlow runtime data (created on first run)
-data/
-internal/
-logs/
-mcp.log
-memory/wal/
-memory/*.json
-memory/*.jsonl
-memory/*.txt
-memory/*.md
-memory/.q-meta*
-memory/.gitkeep
-memory/.hmac-key
-memory/.last-dream
-
-# OpenCode runtime state
-.opencode/
-
-# Test data — not part of the published skill
-bigbench_*.json
-hellaswag_*.json
-run_bb_test.js
-run_test.js
-benchmark/
-
-# Assets — images not needed for engine
-assets/
-
-# Backups & personal docs
-README.md.bak
-UPGRADE_REPORT.txt
-UPGRADE_REPORT_v2.0.37.md
-UPGRADE_PLAN.md
-RESUME.md
-self-verification.json
-meaningful-*.json
-bin/*.bak
-
-# Examples — user-facing examples, not engine
-examples/
-
-# Python cache
-__pycache__/
-*.pyc
-
-# Model files — large, downloaded on demand
-src/core/search/models/
-
-# Git
-.git/
-.gitignore
-.gitattributes
-.gitkeep
-
-# ===== NEW EXCLUSIONS for clean publish =====
-
-# Tests — not needed in published package
+# Heavy data - download on demand via upgrade.js
+formulas/
+formulas-corpus/
+train_data/
+test_data/
 tests/
+skills/
+data/memory/
+data/sessions/
+data/self-play/
+archive/
 
-# Documentation — historical benchmark reports, not needed
-docs/
-
-# References — personal materials, job applications, logs
-references/
-
-# Plugins — separate deployment
-plugins/
-
-# Scripts — utility scripts, not part of engine
-scripts/
-
-# Node modules — never include
+# Dev files
+.git/
+.github/
+*.log
+*.md
+!README.md
+!SKILL.md
+!INSTALL.md
+!CHANGELOG.md
 node_modules/
-
-# AGENTS.md / CLAUDE.md — agent-specific configs, not for consumers
-AGENTS.md
-CLAUDE.md
-CORE_IDENTITY.md
-CORE_VALUES.md
-
-# Changelog — too large, breaks SkillSpector file count checks
-CHANGELOG.md
+.DS_Store
