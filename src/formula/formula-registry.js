@@ -449,6 +449,44 @@ class FormulaRegistry {
       doc: '神经元放电率',
     });
     // ─── v5.9.10 第三批审计扩展 ───
+    // ─── v5.9.11 论文升级（GitHub 真实论文代码移植）───
+    this.register('decision_dynamics', {
+      id: 'ddm_decision_time',
+      formulaId: 'ddm_decision_time',
+      impl: (x0, t0, a, z, s) => _b.ddmDecisionTime(x0, t0, a, z, s),
+      doc: '扩散决策模型期望首达时/决策时间 (Bogacz 2006, 移植 wfpt_py)'
+    });
+    this.register('decision_dynamics', {
+      id: 'ddm_error_rate',
+      formulaId: 'ddm_error_rate',
+      impl: (x0, t0, a, z, s) => _b.ddmErrorRate(x0, t0, a, z, s),
+      doc: 'DDM 错误率/反向穿越概率 (Bogacz 2006)'
+    });
+    this.register('decision_utility', {
+      id: 'sdt_d_prime',
+      formulaId: 'sdt_d_prime',
+      impl: (hr, far) => _b.sdtDPrime(hr, far),
+      doc: "信号检测论辨别力 d' (Green & Swets 1966)"
+    });
+    this.register('decision_utility', {
+      id: 'sdt_beta',
+      formulaId: 'sdt_beta',
+      impl: (hr, far) => _b.sdtBeta(hr, far),
+      doc: 'SDT 决策准则 β (似然比)'
+    });
+    this.register('decision_utility', {
+      id: 'sdt_a_prime',
+      formulaId: 'sdt_a_prime',
+      impl: (hr, far) => _b.sdtAPrime(hr, far),
+      doc: "SDT 非参数辨别力 A' (Pollack & Norman 1964)"
+    });
+    this.register('active_inference', {
+      id: 'aif_info_gain',
+      formulaId: 'aif_info_gain',
+      impl: (qx, A) => _b.activeInferenceInfoGain(qx, A),
+      doc: '主动推断预期信息增益 G (Friston 2013, 移植 pymdp spm_MDP_G)'
+    });
+
 
     this.register('personality_measure', {
       id: 'irt_4pl', formulaId: 'irt_4pl',
