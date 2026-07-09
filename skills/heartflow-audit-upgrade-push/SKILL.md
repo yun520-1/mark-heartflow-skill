@@ -250,7 +250,7 @@ const {VERSION, getVersion} = require('./src/core/version.js');
 ```python
 import os, subprocess, re
 
-ROOT = '/Users/apple/.hermes/skills/heartflow'
+ROOT = '~/.hermes/skills/heartflow'
 
 # 1. 遍历目标目录
 for dir_name in ['src/core', 'src/cortex', 'src/memory']:
@@ -622,7 +622,7 @@ npm view @yun520-1/heartflow version --registry=https://npm.pkg.github.com
 **创建 cron 时的模型选择**：
 - 心虫 cron 必须用 `deepseek-v4-flash`（用户纠正过），不能用 MiniMax-M2.7
 - base_url 必须用 `https://copilot.tencent.com/v2`（当前生产 API）
-- 心虫工作目录：`workdir=/Users/apple/.hermes/skills/heartflow`
+- 心虫工作目录：`workdir=~/.hermes/skills/heartflow`
 - 启用 toolsets：`["terminal","file","skills"]`
 - 交付到微信
 

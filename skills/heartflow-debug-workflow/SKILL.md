@@ -1677,7 +1677,7 @@ curl -s -X POST http://127.0.0.1:8099/mcp \
 **根因**：MCP 实际运行的进程从 `~/.hermes/heartflow/mcp/src/mcp-server-http.js` 启动（由 launchd plist 配置），但源码编辑发生在 `~/.hermes/skills/heartflow/mcp/mcp-server-http.js`。**这是两个不同的文件。** 修改 skill 目录下的文件不会自动同步到运行目录。
 
 **更深层的问题：mcp-servers/ 目录是技能目录的残缺子集，不是同步副本。**
-- 技能目录 `skills/ai/mark-heartflow-skill/src/core/` 有 100+ 个模块文件
+- 技能目录 `skills/heartflow/src/core/` 有 100+ 个模块文件
 - 运行目录 `mcp-servers/heartflow/src/core/` 只有 4 个文件（heartflow.js, decision-router.js, philosophy-to-decision.js, version.js）
 - MCP server 的 `HF_DIR` 指向技能目录，引擎代码从技能目录加载
 - 但 MCP server **自身**（mcp-server-http.js）从 `mcp-servers/` 目录启动
