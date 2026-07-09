@@ -1696,7 +1696,7 @@ diff ~/.hermes/skills/heartflow/mcp/mcp-server-http.js \
      ~/.hermes/heartflow/mcp/src/mcp-server-http.js
 
 # 3. 检查 launchd plist 指向的路径
-grep 'ProgramArguments\\|mcp-server' /Users/apple/Library/LaunchAgents/com.heartflow.mcp.plist
+grep 'ProgramArguments\\|mcp-server' ~/.config/systemd/user/heartflow-mcp@.service
 ```
 
 **修复**：
@@ -1836,7 +1836,7 @@ MCP server 的 `mcp-server.js` 中 `HF_DIR` 指向了错误的旧引擎目录：
 
 ```javascript
 // ~/.hermes/mcp-servers/heartflow/src/mcp-server.js
-const HF_DIR = '/Users/apple/.claude/skills/claude-heartflow-skill';  // ❌ 旧引擎
+const HF_DIR = '~/.claude/skills/heartflow';  // ❌ 旧引擎
 // 而不是：
 // const HF_DIR = '~/.hermes/skills/heartflow';  // ✅ 当前引擎
 ```
