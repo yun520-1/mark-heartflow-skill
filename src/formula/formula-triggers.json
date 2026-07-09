@@ -1,0 +1,1274 @@
+{
+  "aliases": {
+    "不确定": "uncertainty",
+    "模糊": "uncertainty",
+    "没把握": "uncertainty",
+    "矛盾": "uncertainty",
+    "冲突": "uncertainty",
+    "不一致": "uncertainty",
+    "分歧": "uncertainty",
+    "怀疑": "uncertainty",
+    "焦虑": "arousal",
+    "紧张": "arousal",
+    "兴奋": "arousal",
+    "平静": "arousal",
+    "唤醒": "arousal",
+    "压力": "arousal",
+    "慌": "arousal",
+    "疲惫": "arousal",
+    "累": "arousal",
+    "负荷": "load",
+    "超负荷": "load",
+    "认知负荷": "load",
+    "太难": "load",
+    "复杂": "load",
+    "忙不过来": "load",
+    "记住": "memory",
+    "回忆": "memory",
+    "遗忘": "memory",
+    "想起": "memory",
+    "熟悉": "memory",
+    "熟练": "memory",
+    "忘掉": "memory",
+    "检索": "memory",
+    "练习": "memory",
+    "重复": "memory",
+    "选择": "decision",
+    "决策": "decision",
+    "权衡": "decision",
+    "取舍": "decision",
+    "该不该": "decision",
+    "要不要": "decision",
+    "犹豫": "decision",
+    "选哪个": "decision",
+    "价值": "decision",
+    "值得": "decision",
+    "概率": "probability",
+    "可能性": "probability",
+    "几率": "probability",
+    "多少成": "probability",
+    "置信": "confidence",
+    "相信": "confidence",
+    "把握": "confidence",
+    "信任": "confidence",
+    "确定程度": "confidence",
+    "学习": "learning",
+    "训练": "learning",
+    "强化": "learning",
+    "奖励": "learning",
+    "惩罚": "learning",
+    "探索": "learning",
+    "尝试新": "learning",
+    "适应": "learning",
+    "Q值": "learning",
+    "策略梯度": "learning",
+    "性格": "personality",
+    "特质": "personality",
+    "内向": "personality",
+    "外向": "personality",
+    "好奇": "personality",
+    "动机": "personality",
+    "欲望": "personality",
+    "想要": "personality",
+    "需求": "personality",
+    "偏好": "personality",
+    "测量": "personality",
+    "因子": "personality",
+    "信息": "information",
+    "熵": "information",
+    "混乱": "information",
+    "有序": "information",
+    "惊喜": "information",
+    "意外": "information",
+    "互信息": "information",
+    "信道": "information",
+    "期望": "expectation",
+    "预测": "expectation",
+    "预期": "expectation",
+    "应该": "expectation",
+    "情绪": "emotion",
+    "情感": "emotion",
+    "高兴": "emotion",
+    "悲伤": "emotion",
+    "愤怒": "emotion",
+    "快乐": "emotion",
+    "愉悦": "emotion",
+    "PAD": "emotion",
+    "愉悦度": "emotion",
+    "唤醒度": "emotion",
+    "流量": "flow",
+    "心流": "flow",
+    "专注": "flow",
+    "沉浸": "flow",
+    "忘我": "flow",
+    "自我决定": "sdt",
+    "自主": "sdt",
+    "胜任": "sdt",
+    "关系": "sdt",
+    "动机类型": "sdt",
+    "信念": "belief",
+    "修正": "belief",
+    "更新": "belief",
+    "先验": "belief",
+    "后验": "belief",
+    "结构方程": "sem",
+    "拟合": "sem",
+    "模型拟合": "sem",
+    "路径": "sem"
+  },
+  "signals": {
+    "uncertainty": {
+      "keywords": [
+        "不确定",
+        "矛盾",
+        "冲突",
+        "不一致",
+        "分歧",
+        "怀疑",
+        "模糊",
+        "没把握",
+        "多个来源",
+        "冲突信息"
+      ],
+      "refs": [
+        {
+          "ref": "metacognitive_confidence",
+          "kind": "stage-primitive",
+          "stage": "confidence_aggr",
+          "name": "元认知置信度",
+          "weight": 1,
+          "params": [
+            "probs"
+          ],
+          "paramDesc": "概率分布数组"
+        },
+        {
+          "ref": "metacognitive_confidence",
+          "kind": "formula",
+          "name": "元认知置信度 C=1-Var(p)",
+          "weight": 0.8,
+          "params": [
+            "probs"
+          ],
+          "paramDesc": "概率分布数组 probs，计算 1-Var(p)"
+        },
+        {
+          "ref": "kl_divergence",
+          "kind": "formula",
+          "name": "KL 散度(分布差异)",
+          "weight": 0.6,
+          "params": [
+            "p",
+            "q"
+          ],
+          "paramDesc": "分布 p、q"
+        }
+      ]
+    },
+    "load": {
+      "keywords": [
+        "负荷",
+        "超负荷",
+        "认知负荷",
+        "太难",
+        "复杂",
+        "忙不过来",
+        "信息过载",
+        "处理不过来"
+      ],
+      "refs": [
+        {
+          "ref": "cognitive_load_index",
+          "kind": "formula",
+          "name": "认知负载指数 CL",
+          "weight": 1,
+          "params": [
+            "intrinsic",
+            "extraneous",
+            "germane"
+          ],
+          "paramDesc": "三类认知负荷"
+        },
+        {
+          "ref": "yerkes_dodson",
+          "kind": "stage-primitive",
+          "stage": "emotion_arousal",
+          "name": "唤醒-绩效",
+          "weight": 0.5
+        }
+      ]
+    },
+    "arousal": {
+      "keywords": [
+        "焦虑",
+        "紧张",
+        "兴奋",
+        "平静",
+        "唤醒",
+        "压力",
+        "慌",
+        "疲惫",
+        "太激动",
+        "太冷静",
+        "唤醒度"
+      ],
+      "refs": [
+        {
+          "ref": "yerkes_dodson",
+          "kind": "stage-primitive",
+          "stage": "emotion_arousal",
+          "name": "耶克斯-多德森定律",
+          "weight": 1
+        },
+        {
+          "ref": "yarkes_dodson",
+          "kind": "formula",
+          "name": "耶克斯-多德森定律",
+          "weight": 0.9,
+          "params": [
+            "arousal",
+            "a",
+            "b",
+            "c"
+          ],
+          "paramDesc": "唤醒度及拟合参数"
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "yerkes_dodson_equation",
+          "weight": 1
+        }
+      ]
+    },
+    "memory": {
+      "keywords": [
+        "记住",
+        "回忆",
+        "遗忘",
+        "想起",
+        "熟悉",
+        "熟练",
+        "忘掉",
+        "检索",
+        "练习",
+        "重复",
+        "复述",
+        "脑网络",
+        "模块度",
+        "神经连接"
+      ],
+      "refs": [
+        {
+          "ref": "ebbinghaus_retention",
+          "kind": "stage-primitive",
+          "stage": "memory_activation",
+          "name": "艾宾浩斯遗忘曲线",
+          "weight": 1
+        },
+        {
+          "ref": "actr_base_level",
+          "kind": "stage-primitive",
+          "stage": "memory_activation",
+          "name": "ACT-R 基础级学习",
+          "weight": 0.9,
+          "params": [
+            "accessIntervals"
+          ],
+          "paramDesc": "各次访问的时间间隔数组"
+        },
+        {
+          "ref": "actr_activation",
+          "kind": "stage-primitive",
+          "stage": "memory_activation",
+          "name": "ACT-R 激活方程",
+          "weight": 0.7
+        },
+        {
+          "ref": "actr_spreading",
+          "kind": "stage-primitive",
+          "stage": "memory_activation",
+          "name": "ACT-R 扩散激活",
+          "weight": 0.6
+        },
+        {
+          "ref": "ebbinghaus_forgetting_curve",
+          "kind": "formula",
+          "name": "艾宾浩斯遗忘曲线",
+          "weight": 0.8,
+          "params": [
+            "t",
+            "S"
+          ],
+          "paramDesc": "经过时间 t、记忆强度 S"
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "experience_replay",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "actr_noise",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "neural_firing_rate",
+          "weight": 0.5
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "pca_variance",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "kmo_test",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "bartlett_test",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "brain_network_modularity",
+          "weight": 0.5
+        }
+      ],
+      "synonyms": [
+        "记住",
+        "回忆",
+        "遗忘",
+        "想起",
+        "熟悉",
+        "熟练",
+        "忘掉",
+        "检索",
+        "练习",
+        "重复",
+        "复述",
+        "脑网络",
+        "模块度",
+        "神经连接"
+      ]
+    },
+    "decision": {
+      "synonyms": [
+        "选择",
+        "决策",
+        "取舍",
+        "博弈",
+        "冲突",
+        "纳什均衡",
+        "零和",
+        "pennies",
+        "决策时间",
+        "反应时",
+        "漂移率",
+        "决策动力学",
+        "扩散模型",
+        "信号检测",
+        "辨别力",
+        "虚报率",
+        "命中率"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "clarion_acs",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "cognitive_dissonance",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "gwt_accessibility",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "gwt_winner",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "regret_theory",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "minimax",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "shapley_value",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "information_value",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "actor_critic",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "soar_qlearning",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "actr_expected_gain",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "matching_pennies",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "ddm_decision_time",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "ddm_error_rate",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_d_prime",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_beta",
+          "weight": 0.5
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_a_prime",
+          "weight": 0.5
+        }
+      ]
+    },
+    "probability": {
+      "keywords": [
+        "概率",
+        "可能性",
+        "几率",
+        "多少成",
+        "多大把握"
+      ],
+      "refs": [
+        {
+          "ref": "bayes_update",
+          "kind": "stage-primitive",
+          "stage": "belief_update",
+          "name": "贝叶斯更新",
+          "weight": 1,
+          "params": [
+            "pBgivenA",
+            "pA",
+            "pB"
+          ],
+          "paramDesc": "似然、先验、证据边际"
+        },
+        {
+          "ref": "bayesian_updating",
+          "kind": "formula",
+          "name": "贝叶斯更新",
+          "weight": 0.9,
+          "params": [
+            "pBgivenA",
+            "pA",
+            "pB"
+          ],
+          "paramDesc": "似然、先验、证据边际"
+        },
+        {
+          "ref": "bayes_theorem",
+          "kind": "formula",
+          "name": "贝叶斯定理",
+          "weight": 0.9,
+          "params": [
+            "pBA",
+            "pA",
+            "pB"
+          ],
+          "paramDesc": "P(B|A), P(A), P(B)"
+        },
+        {
+          "ref": "metacognitive_confidence",
+          "kind": "stage-primitive",
+          "stage": "confidence_aggr",
+          "name": "元认知置信度",
+          "weight": 0.5,
+          "params": [
+            "probs"
+          ],
+          "paramDesc": "概率分布数组"
+        }
+      ]
+    },
+    "confidence": {
+      "keywords": [
+        "置信",
+        "相信",
+        "把握",
+        "信任",
+        "确定程度"
+      ],
+      "refs": [
+        {
+          "ref": "metacognitive_confidence",
+          "kind": "stage-primitive",
+          "stage": "confidence_aggr",
+          "name": "元认知置信度",
+          "weight": 1,
+          "params": [
+            "probs"
+          ],
+          "paramDesc": "概率分布数组"
+        },
+        {
+          "ref": "log_loss",
+          "kind": "stage-primitive",
+          "stage": "calibration",
+          "name": "对数损失校准",
+          "weight": 0.7
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "precision_weight",
+          "weight": 1
+        }
+      ]
+    },
+    "learning": {
+      "keywords": [
+        "学习",
+        "训练",
+        "强化",
+        "奖励",
+        "惩罚",
+        "探索",
+        "尝试新",
+        "适应",
+        "Q值",
+        "策略梯度",
+        "经验回放"
+      ],
+      "refs": [
+        {
+          "ref": "softmax_policy",
+          "kind": "stage-primitive",
+          "stage": "decision_utility",
+          "name": "Softmax 策略(探索)",
+          "weight": 0.8,
+          "params": [
+            "qValues",
+            "temperature"
+          ],
+          "paramDesc": "Q值数组、温度参数"
+        },
+        {
+          "ref": "q_learning_update",
+          "kind": "formula",
+          "name": "Q-Learning 更新",
+          "weight": 1,
+          "params": [
+            "q",
+            "lr",
+            "reward",
+            "gamma",
+            "nextMax"
+          ],
+          "paramDesc": "Q值/学习率/奖励/折扣/下一最大Q"
+        },
+        {
+          "ref": "bellman_equation",
+          "kind": "formula",
+          "name": "贝尔曼方程",
+          "weight": 0.9,
+          "params": [
+            "reward",
+            "gamma",
+            "Vnext"
+          ],
+          "paramDesc": "奖励/折扣/下一状态值"
+        },
+        {
+          "ref": "policy_gradient",
+          "kind": "formula",
+          "name": "策略梯度定理",
+          "weight": 0.8,
+          "params": [
+            "logProb",
+            "advantage"
+          ],
+          "paramDesc": "动作对数概率/优势函数"
+        },
+        {
+          "ref": "actr_base_level",
+          "kind": "stage-primitive",
+          "stage": "memory_activation",
+          "name": "ACT-R 学习",
+          "weight": 0.6,
+          "params": [
+            "accessIntervals"
+          ],
+          "paramDesc": "各次访问的时间间隔数组"
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "cronbach_alpha",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "cohens_d",
+          "weight": 1
+        }
+      ]
+    },
+    "personality": {
+      "keywords": [
+        "性格",
+        "特质",
+        "内向",
+        "外向",
+        "好奇",
+        "动机",
+        "欲望",
+        "想要",
+        "需求",
+        "偏好",
+        "测量",
+        "因子",
+        "IRT"
+      ],
+      "refs": [
+        {
+          "ref": "irt_rasch",
+          "kind": "stage-primitive",
+          "stage": "personality_measure",
+          "name": "IRT 测量",
+          "weight": 0.9
+        },
+        {
+          "ref": "irt_1pl",
+          "kind": "formula",
+          "name": "IRT 单参数",
+          "weight": 0.9,
+          "params": [
+            "theta",
+            "b"
+          ],
+          "paramDesc": "特质水平/难度"
+        },
+        {
+          "ref": "irt_2pl",
+          "kind": "formula",
+          "name": "IRT 双参数",
+          "weight": 0.8,
+          "params": [
+            "theta",
+            "a",
+            "b"
+          ],
+          "paramDesc": "特质/区分度/难度"
+        },
+        {
+          "ref": "irt_3pl",
+          "kind": "formula",
+          "name": "IRT 三参数",
+          "weight": 0.7,
+          "params": [
+            "theta",
+            "a",
+            "b",
+            "c"
+          ],
+          "paramDesc": "特质/区分度/难度/猜测"
+        },
+        {
+          "ref": "factor_model",
+          "kind": "formula",
+          "name": "因子分析模型",
+          "weight": 0.6
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "irt_information",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "irt_sem",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "actr_declarative_memory",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "irt_4pl",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "irt_test_information",
+          "weight": 1
+        }
+      ]
+    },
+    "information": {
+      "keywords": [
+        "信息",
+        "熵",
+        "混乱",
+        "有序",
+        "复杂度",
+        "意外",
+        "惊喜",
+        "互信息",
+        "信道",
+        "联合熵",
+        "条件熵"
+      ],
+      "refs": [
+        {
+          "ref": "shannon_information_entropy",
+          "kind": "formula",
+          "name": "香农信息熵",
+          "weight": 1,
+          "params": [
+            "probs"
+          ],
+          "paramDesc": "概率分布 p(x)"
+        },
+        {
+          "ref": "cross_entropy",
+          "kind": "formula",
+          "name": "交叉熵",
+          "weight": 0.8,
+          "params": [
+            "p",
+            "q"
+          ],
+          "paramDesc": "真实分布 p、预测分布 q"
+        },
+        {
+          "ref": "joint_entropy",
+          "kind": "formula",
+          "name": "联合熵",
+          "weight": 0.7,
+          "params": [
+            "pxy"
+          ],
+          "paramDesc": "联合分布 p(x,y)"
+        },
+        {
+          "ref": "conditional_entropy",
+          "kind": "formula",
+          "name": "条件熵",
+          "weight": 0.7,
+          "params": [
+            "pxy"
+          ],
+          "paramDesc": "联合分布 p(x,y)"
+        },
+        {
+          "ref": "mutual_information",
+          "kind": "formula",
+          "name": "互信息",
+          "weight": 0.8,
+          "params": [
+            "pxy"
+          ],
+          "paramDesc": "联合分布 p(x,y)"
+        },
+        {
+          "ref": "channel_capacity",
+          "kind": "formula",
+          "name": "信道容量",
+          "weight": 0.6,
+          "params": [
+            "snr"
+          ],
+          "paramDesc": "信噪比 SNR"
+        }
+      ]
+    },
+    "expectation": {
+      "keywords": [
+        "期望",
+        "预测",
+        "预期",
+        "应该",
+        "以为",
+        "后验"
+      ],
+      "refs": [
+        {
+          "ref": "expected_utility",
+          "kind": "stage-primitive",
+          "stage": "decision_utility",
+          "name": "期望效用",
+          "weight": 0.8,
+          "params": [
+            "probs",
+            "utils"
+          ],
+          "paramDesc": "概率、效用值"
+        },
+        {
+          "ref": "bayes_update",
+          "kind": "stage-primitive",
+          "stage": "belief_update",
+          "name": "贝叶斯(先验更新)",
+          "weight": 0.6,
+          "params": [
+            "pBgivenA",
+            "pA",
+            "pB"
+          ],
+          "paramDesc": "似然、先验、证据边际"
+        }
+      ]
+    },
+    "emotion": {
+      "keywords": [
+        "情绪",
+        "情感",
+        "高兴",
+        "悲伤",
+        "愤怒",
+        "快乐",
+        "愉悦",
+        "PAD",
+        "愉悦度",
+        "唤醒度",
+        "情绪空间"
+      ],
+      "refs": [
+        {
+          "ref": "pad_emotion_model",
+          "kind": "formula",
+          "name": "PAD 情绪空间模型",
+          "weight": 1,
+          "params": [
+            "P",
+            "A",
+            "D"
+          ],
+          "paramDesc": "愉悦度/激活度/支配度"
+        },
+        {
+          "ref": "yerkes_dodson",
+          "kind": "stage-primitive",
+          "stage": "emotion_arousal",
+          "name": "唤醒-绩效",
+          "weight": 0.5
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "emotion_blend",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "pad_pleasure",
+          "weight": 1
+        }
+      ]
+    },
+    "flow": {
+      "keywords": [
+        "流量",
+        "心流",
+        "专注",
+        "沉浸",
+        "忘我",
+        "投入",
+        "流畅"
+      ],
+      "refs": [
+        {
+          "ref": "cognitive_load_index",
+          "kind": "formula",
+          "name": "认知负荷(心流前提)",
+          "weight": 0.7,
+          "params": [
+            "intrinsic",
+            "extraneous",
+            "germane"
+          ],
+          "paramDesc": "三类认知负荷"
+        },
+        {
+          "ref": "yerkes_dodson",
+          "kind": "stage-primitive",
+          "stage": "emotion_arousal",
+          "name": "唤醒-绩效(中等最优)",
+          "weight": 0.6
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "flow_channel",
+          "weight": 1
+        }
+      ]
+    },
+    "sdt": {
+      "keywords": [
+        "自我决定",
+        "自主",
+        "胜任",
+        "关系",
+        "动机类型",
+        "内在动机"
+      ],
+      "refs": [
+        {
+          "ref": "expected_utility",
+          "kind": "stage-primitive",
+          "stage": "decision_utility",
+          "name": "期望效用(动机权衡)",
+          "weight": 0.5,
+          "params": [
+            "probs",
+            "utils"
+          ],
+          "paramDesc": "概率、效用值"
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_d_prime",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_beta",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_a_prime",
+          "weight": 1
+        }
+      ]
+    },
+    "belief": {
+      "synonyms": [
+        "信念",
+        "假设",
+        "证据",
+        "比较",
+        "假设检验"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "bayes_factor",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "posterior_odds",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "bayes_confirmation",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "popper_corroboration",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "odds_ratio",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "carnap_confirmation",
+          "weight": 1
+        }
+      ]
+    },
+    "sem": {
+      "keywords": [
+        "结构方程",
+        "拟合",
+        "模型拟合",
+        "路径",
+        "CFI",
+        "RMSEA"
+      ],
+      "refs": [
+        {
+          "ref": "sem_measurement",
+          "kind": "formula",
+          "name": "SEM 测量方程",
+          "weight": 0.8,
+          "params": [
+            "lambda",
+            "theta",
+            "delta"
+          ],
+          "paramDesc": "因子载荷/潜变量/截距"
+        },
+        {
+          "ref": "sem_structural",
+          "kind": "formula",
+          "name": "SEM 结构方程",
+          "weight": 0.8,
+          "params": [
+            "beta",
+            "xi"
+          ],
+          "paramDesc": "路径系数/外生变量"
+        },
+        {
+          "ref": "sem_fit_cfi",
+          "kind": "formula",
+          "name": "CFI 拟合指数",
+          "weight": 0.6,
+          "params": [
+            "chi_model",
+            "df_model",
+            "chi_base",
+            "df_base"
+          ],
+          "paramDesc": "模型/基线卡方与自由度"
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sem_fit_rmsea",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sem_fit_srms",
+          "weight": 1
+        }
+      ]
+    },
+    "prospect": {
+      "synonyms": [
+        "损失",
+        "风险",
+        "得失",
+        "赌",
+        "前景"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "prospect_value",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "prospect_weight",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "subjective_utility",
+          "weight": 1
+        }
+      ]
+    },
+    "consciousness": {
+      "synonyms": [
+        "意识",
+        "觉知",
+        "全局",
+        "整合",
+        "注意"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "iit_phi",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "gwt_winner",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "gwt_accessibility",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "precision_weight",
+          "weight": 1
+        }
+      ]
+    },
+    "active_inference": {
+      "synonyms": [
+        "自由能",
+        "预测误差",
+        "主动推断",
+        "最小化惊奇",
+        "预期自由能",
+        "信息增益",
+        "认识性价值"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "predictive_coding_free_energy",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "active_inference_efe",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "precision_weight",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "aif_info_gain",
+          "weight": 1
+        }
+      ]
+    },
+    "social": {
+      "synonyms": [
+        "社会",
+        "群体",
+        "他人影响",
+        "从众",
+        "舆论"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "social_influence",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "vygotsky_zpd",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "homophily",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "bystander_effect",
+          "weight": 1
+        }
+      ]
+    },
+    "development": {
+      "synonyms": [
+        "发展",
+        "学习区",
+        "最近发展区",
+        "成长"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "vygotsky_zpd",
+          "weight": 1
+        }
+      ]
+    },
+    "mental_health": {
+      "synonyms": [
+        "抑郁",
+        "焦虑",
+        "量表",
+        "PHQ",
+        "GAD",
+        "心理测量"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "phq9_score",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "gad7_score",
+          "weight": 1
+        }
+      ]
+    },
+    "confirmation": {
+      "synonyms": [
+        "确认",
+        "证实",
+        "证据强度",
+        "波普尔",
+        "卡尔纳普"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "bayes_confirmation",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "popper_corroboration",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "carnap_confirmation",
+          "weight": 1
+        }
+      ]
+    },
+    "neuroscience": {
+      "synonyms": [
+        "脑网络",
+        "模块度",
+        "神经可塑性",
+        "突触"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "brain_network_modularity",
+          "weight": 0.5
+        }
+      ]
+    }
+  }
+}

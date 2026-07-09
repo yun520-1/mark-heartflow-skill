@@ -78,18 +78,15 @@ class GlobalWorkspace extends EventEmitter {
    */
   registerAgent(agent) {
     if (!agent || !agent.name) {
-      // 已禁用 console.error: console.error('[GWT] Rejecting agent: missing name or agent object');
       return false;
     }
 
     const validation = this._validateAgentMethods(agent);
     if (!validation.valid) {
-      // 已禁用 console.error: console.error(`[GWT] Rejecting agent "${agent.name}": missing methods [${validation.missing.join(', ')}]`);
       return false;
     }
 
     if (this.agents.has(agent.name)) {
-      // 已禁用 console.warn: console.warn(`[GWT] Overwriting existing agent: ${agent.name}`);
     }
 
     this.agents.set(agent.name, {
@@ -102,7 +99,6 @@ class GlobalWorkspace extends EventEmitter {
       /** 连续失败计数，用于故障检测 */
       consecutiveFailures: 0,
     });
-    // 已禁用 console.error: console.error(`[GWT] Registered agent: ${agent.name}`);
     return true;
   }
 
@@ -185,9 +181,7 @@ class GlobalWorkspace extends EventEmitter {
         });
         agentData.consecutiveFailures = 0;
 
-        // 已禁用 console.error: console.error(`[GWT] ${name} broadcasts: attention=${broadcast.attention.toFixed(3)}, confidence=${broadcast.confidence.toFixed(3)}`);
       } catch (e) {
-        // 已禁用 console.error: console.error(`[GWT] Agent ${name} error:`, e.message);
         agentData.consecutiveFailures++;
         // 即使失败也记录一个低优先级广播，保证 integrate 能看到所有参与者
         broadcasts.push({
@@ -264,9 +258,24 @@ class GlobalWorkspace extends EventEmitter {
     });
 
     const winner = scored[0];
-    // 已禁用 console.error: console.error(`[GWT] Winner: ${winner.agent} (score: ${winner.score.toFixed(3)})`);
 
-    return winner;
+    // v5.9.9: GWT 公式增强 —— 用全局工作空间竞争公式算辅助激活信号
+    // 不替代主逻辑（确定性排序），仅附带 GWT 计算结果供上层感知
+    let gwt = null;
+    try {
+      const { getFormulaRegistry } = require('../formula/formula-registry.js');
+      const reg = getFormulaRegistry();
+      const acts = scored.map(s => (s.attention || 0) * (s.confidence || 0) * 10 + (s.score || 0));
+      const gwtActs = reg.call('decision_utility', 'gwt_accessibility', acts, 1, 0.5);
+      const gwtIdx = reg.call('decision_utility', 'gwt_winner', gwtActs);
+      if (Array.isArray(gwtActs) && typeof gwtIdx === 'number' && gwtActs.length) {
+        gwt = { activations: gwtActs.map(v => +v.toFixed(3)), winnerIndex: gwtIdx, winnerAgent: scored[gwtIdx]?.agent || null };
+      }
+    } catch (e) { gwt = null; }
+
+    const result = winner;
+    result.gwt = gwt;
+    return result;
   }
 
   /**

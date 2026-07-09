@@ -54,8 +54,30 @@ class PhenomenologyEngine {
         isEmpty: clarity < 0.2,
         isObscured: clarity < 0.5
       },
+      // v5.9.9: IIT 整合信息论 —— 当 context 提供信息分割时量化意识整合度
+      integratedInformation: (context && Array.isArray(context.partitions))
+        ? this.measurePhi(aboutnessStrength, context.partitions.map(p => p.mi || 0))
+        : null,
       timestamp: new Date().toISOString()
     };
+  }
+
+  /**
+   * 整合信息论 Φ 测量（Tononi）——量化意识整合度
+   * Φ = MI(整体) - Σ MI(最小分割的各部分)
+   * @param {number} miWhole - 系统整体的互信息
+   * @param {number[]} miParts - 各分割部分的互信息
+   * @returns {number} Φ ≥ 0，越大表示意识整合度越高
+   */
+  measurePhi(miWhole, miParts) {
+    try {
+      const { getFormulaRegistry } = require('../formula/formula-registry.js');
+      const reg = getFormulaRegistry();
+      const phi = reg.call('calibration', 'iit_phi', miWhole, miParts);
+      return (typeof phi === 'number') ? +phi.toFixed(4) : Math.max(0, miWhole - (miParts || []).reduce((a, b) => a + b, 0));
+    } catch (e) {
+      return Math.max(0, miWhole - (miParts || []).reduce((a, b) => a + b, 0));
+    }
   }
 
   _classifyNoema(lower) {

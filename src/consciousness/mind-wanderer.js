@@ -116,7 +116,6 @@ class MindWanderer {
     this.lastActivity = Date.now();
     if (this.isActive) {
       this.isActive = false;
-      // 已禁用 console.error: console.error('[MindWanderer] 用户回归，游移模式结束');
     }
   }
 
@@ -127,7 +126,6 @@ class MindWanderer {
     if (this.isActive) return null;
     
     this.isActive = true;
-    // 已禁用 console.error: console.error('[MindWanderer] 进入心智游移模式...');
 
     // 刷新时间调制
     this.timeModulation = this._computeTimeModulation();
@@ -654,6 +652,28 @@ class MindWanderer {
       timeContext: this.timeModulation,
       totalCreated: this.wildIdeas.stats.totalCreated
     };
+  }
+
+  /**
+   * 心流/唤醒监测（v5.9.10 新增，使用 FormulaBridge.flowChannel / yerkesDodsonEquation）
+   * 给定当前挑战与技能水平，量化心流通道匹配度与最优唤醒水平。
+   * @param {number} challenge - 当前任务挑战度
+   * @param {number} skill - 当前技能水平
+   * @param {number} [arousal] - 当前唤醒水平
+   * @param {number} [aOpt] - 最优唤醒（耶克斯-多德森）
+   * @returns {object} { flow, optimalChallenge, optimalArousal }
+   */
+  measureFlow(challenge, skill, arousal, aOpt = 0.6) {
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      const flow = b.flowChannel(challenge, skill);
+      const optimalChallenge = b.flowOptimal(skill);
+      const optimalArousal = (typeof arousal === 'number')
+        ? b.yerkesDodsonEquation(arousal, aOpt)
+        : null;
+      return { flow: +flow.toFixed(3), optimalChallenge: +optimalChallenge.toFixed(3), optimalArousal };
+    } catch (e) { return { flow: null, optimalChallenge: null, optimalArousal: null }; }
   }
 }
 

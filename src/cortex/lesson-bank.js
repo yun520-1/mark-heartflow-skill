@@ -76,13 +76,10 @@ const lessonBank = {
       }
     } catch (e) {
       // JSON损坏尝试WAL恢复
-      // 已禁用 console.warn: console.warn('[lesson-bank] 数据文件损坏，尝试WAL恢复');
       const recovered = this._recoverFromWAL();
       if (recovered) {
-        // 已禁用 console.warn: console.warn('[lesson-bank] WAL恢复成功');
         this.save();
       } else {
-        // 已禁用 console.warn: console.warn('[lesson-bank] WAL恢复失败，从空库开始');
         this.lessons = [];
       }
     }

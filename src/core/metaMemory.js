@@ -8,7 +8,7 @@
  * Reads from MeaningfulMemory storage to analyze memory distribution,
  * access patterns, age distribution, and fragmentation.
  * 
- * Storage: ~/.hermes/skills/ai/mark-heartflow-skill/data/meta-memory.json
+ * Storage: ${HEARTFLOW_ROOT}/data/meta-memory.json
  */
 
 const fs = require('fs');
@@ -579,7 +579,6 @@ class MetaMemory {
         this.reflectionHistory = data.reflectionHistory || [];
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[MetaMemory] 加载失败:', e.message);
     }
   }
 
@@ -596,7 +595,6 @@ class MetaMemory {
       };
       fs.writeFileSync(META_MEMORY_PATH, JSON.stringify(data, null, 2));
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[MetaMemory] 保存失败:', e.message);
     }
   }
 }
