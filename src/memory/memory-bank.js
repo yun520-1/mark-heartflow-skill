@@ -38,8 +38,6 @@ const LAYER_ORDER = ['core', 'learned', 'ephemeral'];
 
 class MemoryBank {
   constructor(options = {}) {
-    this.version = '1.0.0';
-
     // 可选：注入已有的 MemoryAdapter/MeaningfulMemory 实例，共享底层存储
     this._underlyingMemory = options.memory || null;
 
@@ -149,7 +147,6 @@ class MemoryBank {
       }
 
       const exportData = {
-        version: this.version,
         sessions: Array.from(this.sessions.values()),
         memories: Array.from(this.memories.values()),
         relationships: Object.fromEntries(this.relationships),
@@ -947,7 +944,6 @@ class MemoryBank {
     }
 
     return {
-      version: this.version,
       totalMemories: this.memories.size,
       totalSessions: this.sessions.size,
       totalRelationships: this.relationships.size,

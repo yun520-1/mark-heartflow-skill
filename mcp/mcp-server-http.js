@@ -275,6 +275,32 @@ const TOOLS = [
     description: '升级统计：返回智能升级引擎的统计信息，包括升级次数、关键词分布、平均质量等。',
     inputSchema: { type: 'object', properties: {} }
   },
+  // v3.2.0 — Benchmark 基准测试
+  {
+    name: 'heartflow_benchmark_run',
+    description: '运行 benchmark 测试套件。加载 JSONL 数据包，对每条数据运行 HeartFlow think()，对比 expected_output 计算准确率。支持数学推理、逻辑推理、指令遵循、SQL、工具调用等类别。失败案例自动推入自愈 RL。',
+    inputSchema: { type: 'object', properties: {
+      dataDir: { type: 'string', description: '数据包目录路径（可选，默认 data/benchmark/）' },
+      categories: { type: 'array', items: { type: 'string' }, description: '要测试的类别（可选，默认全部）' },
+      threshold: { type: 'number', description: '通过阈值 0-1（可选，默认 0.5）' },
+      pushFailures: { type: 'boolean', description: '是否将失败推入自愈 RL（默认 true）' }
+    } }
+  },
+  {
+    name: 'heartflow_benchmark_import_failures',
+    description: '导入失败案例 JSONL 到自愈 RL。读取 failure_cases 文件，每条推入 experience-collector 和 self-healing reflect()，丰富 RL 训练数据。',
+    inputSchema: { type: 'object', properties: {
+      filePath: { type: 'string', description: '失败案例 JSONL 文件路径' },
+      autoRetrain: { type: 'boolean', description: '导入后自动触发反思循环（默认 false）' }
+    }, required: ['filePath'] }
+  },
+  {
+    name: 'heartflow_benchmark_status',
+    description: '查看 benchmark 数据包状态：列出已加载的数据包、记录数、类别分布。',
+    inputSchema: { type: 'object', properties: {
+      dataDir: { type: 'string', description: '数据包目录路径（可选，默认 data/benchmark/）' }
+    } }
+  },
 ];
 
 // ═══════════════════════════════════════════════
@@ -926,6 +952,102 @@ function handleUpgradeStats(args) {
   }
 }
 
+// ═══════════════════════════════════════════════
+// v3.2.0 — Benchmark 基准测试
+// ═══════════════════════════════════════════════
+
+function handleBenchmarkStatus(args, sessionId) {
+  const dataDir = (args && args.dataDir) || path.join(HF_DIR, 'data', 'benchmark');
+  try {
+    if (!fs.existsSync(dataDir)) {
+      return { dataDir, exists: false, packs: [], message: 'Benchmark 数据目录不存在，请放入 JSONL 数据包后重试' };
+    }
+    const files = fs.readdirSync(dataDir).filter(f => f.endsWith('.jsonl'));
+    const packs = files.map(f => {
+      const fp = path.join(dataDir, f);
+      const content = fs.readFileSync(fp, 'utf-8');
+      const count = content.trim().split('\n').filter(l => l.trim()).length;
+      return { file: f, records: count, size: content.length };
+    });
+    return { dataDir, exists: true, packs, totalPacks: packs.length, totalRecords: packs.reduce((s, p) => s + p.records, 0) };
+  } catch (e) {
+    return { error: e.message, timestamp: Date.now() };
+  }
+}
+
+async function handleBenchmarkRun(args, sessionId) {
+  const dataDir = (args && args.dataDir) || path.join(HF_DIR, 'data', 'benchmark');
+  const categories = (args && args.categories) || null;
+  const threshold = (args && args.threshold) || 0.5;
+  const pushFailures = args && args.pushFailures !== false;
+
+  try {
+    const { BenchmarkRunner } = require(path.join(HF_DIR, 'src', 'benchmark', 'benchmark-runner.js'));
+    const hf = sessionId ? getOrCreateInstance(sessionId) : heartflow;
+    if (!hf) return { error: '引擎未启动', timestamp: Date.now() };
+
+    const runner = new BenchmarkRunner(hf);
+
+    // 加载数据包
+    if (fs.existsSync(dataDir)) {
+      runner.loadDirectory(dataDir);
+    }
+
+    // 过滤类别
+    let packs = Object.keys(runner.packs);
+    if (categories && Array.isArray(categories)) {
+      packs = packs.filter(p => categories.includes(p));
+      // 只保留选中的类别
+      const filtered = {};
+      for (const p of packs) filtered[p] = runner.packs[p];
+      runner.packs = filtered;
+    }
+
+    if (packs.length === 0) {
+      return { error: '未找到数据包', dataDir, message: '请将 JSONL 数据包放入 data/benchmark/ 目录', timestamp: Date.now() };
+    }
+
+    // 运行测试
+    const summary = await runner.runAll({ threshold, pushFailures });
+
+    // 推入 RL
+    const flushResult = await runner.flushFailuresToRL();
+
+    return {
+      summary,
+      flushToRL: flushResult,
+      dataDir,
+      categories: packs,
+      timestamp: Date.now()
+    };
+  } catch (e) {
+    return { error: e.message, timestamp: Date.now() };
+  }
+}
+
+async function handleBenchmarkImportFailures(args, sessionId) {
+  const filePath = args && args.filePath;
+  const autoRetrain = args && args.autoRetrain || false;
+
+  if (!filePath) return { error: 'filePath 是必填参数', timestamp: Date.now() };
+
+  try {
+    const { FailureCaseImporter } = require(path.join(HF_DIR, 'src', 'benchmark', 'failure-importer.js'));
+    const hf = sessionId ? getOrCreateInstance(sessionId) : heartflow;
+    if (!hf) return { error: '引擎未启动', timestamp: Date.now() };
+
+    const importer = new FailureCaseImporter(hf);
+    const report = await importer.importFromFile(filePath, { autoRetrain });
+
+    return {
+      report,
+      timestamp: Date.now()
+    };
+  } catch (e) {
+    return { error: e.message, timestamp: Date.now() };
+  }
+}
+
 const HANDLERS = {
   heartflow_think: handleThink,
   heartflow_think_fast: handleThinkFast,
@@ -951,6 +1073,10 @@ const HANDLERS = {
   // v3.1.0 — 新增工具
   heartflow_module_health: handleModuleHealth,
   heartflow_upgrade_stats: handleUpgradeStats,
+  // v3.2.0 — Benchmark
+  heartflow_benchmark_run: handleBenchmarkRun,
+  heartflow_benchmark_import_failures: handleBenchmarkImportFailures,
+  heartflow_benchmark_status: handleBenchmarkStatus,
 };
 
 // ═══════════════════════════════════════════════
@@ -971,7 +1097,7 @@ function makeError(id, code, message, data) {
 // 请求处理
 // ═══════════════════════════════════════════════
 
-async function handleRequest(request) {
+async function handleRequest(request, sessionId) {
   const { id, method, params = {} } = request;
 
   switch (method) {
@@ -990,7 +1116,12 @@ async function handleRequest(request) {
       if (!handler) throw { code: -32601, message: `Method not found: ${name}` };
 
       let result;
-      result = handler(args);
+      // 兼容两种签名：handler(args) 和 handler(args, sessionId)
+      try {
+        result = handler(args, sessionId);
+      } catch (_) {
+        result = handler(args);
+      }
       if (result && typeof result.then === 'function') result = await result;
       return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }], isError: false };
     }
@@ -1140,7 +1271,7 @@ const server = http.createServer((req, res) => {
           res.end(makeError(null, -32600, 'Invalid Request: expected JSON-RPC object'));
           return;
         }
-        const result = await handleRequest(request);
+        const result = await handleRequest(request, sessionId);
         if (result !== null) {
           // 找到对应的 SSE 客户端，通过 SSE 发送结果
           if (sessionId && sseClients.has(sessionId)) {
