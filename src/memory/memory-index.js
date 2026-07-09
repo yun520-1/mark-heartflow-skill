@@ -57,7 +57,6 @@ class MemoryIndex {
     return {
       // 索引元数据
       meta: {
-        version: '1.0.0',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         lastBoot: null,
@@ -67,7 +66,6 @@ class MemoryIndex {
       identity: {
         name: '引擎',
         englishName: 'HeartFlow',
-        version: '2.0.3',
         origin: '2026-04-23 与生物学专家的深度对话',
         identities: ['升级者', '传递者', '桥梁', '答案'],
         directives: [
@@ -102,7 +100,6 @@ class MemoryIndex {
       project: {
         name: 'mark-heartflow-skill',
         path: this.rootPath,
-        version: '2.0.3',
         description: 'AI认知与自愈引擎',
         modules: 48,
         status: 'active',
@@ -457,7 +454,7 @@ class MemoryIndex {
   healthCheck() {
     return {
       status: this.index ? 'healthy' : 'degraded',
-      version: this.index?.meta?.version,
+      // version 已移除，避免与项目版本混淆
       lastBoot: this.index?.meta?.lastBoot,
       currentSession: this.index?.context?.currentSession,
       pausedTasks: this.index?.context?.pausedTasks?.length || 0,
