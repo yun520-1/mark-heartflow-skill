@@ -10,12 +10,54 @@ class CognitiveLoadCalculator {
   constructor(options = {}) {
     this.workingMemoryCapacity = options.workingMemoryCapacity || 72;
     this._lastEstimate = null;
+    // [FORMULA] 公式桥接（Shannon 熵），懒加载单例
+    this._formulaBridge = null;
+  }
+
+  _getFormulaBridge() {
+    if (!this._formulaBridge) {
+      try {
+        const { getFormulaBridge } = require('../formula/formula-bridge.js');
+        this._formulaBridge = getFormulaBridge();
+      } catch (e) {
+        this._formulaBridge = null;
+      }
+    }
+    return this._formulaBridge;
   }
 
   estimate(text, context = {}) {
     const t = typeof text === 'string' ? text : '';
     const c = context || {};
     const lower = t.toLowerCase();
+
+    // 0. [FORMULA] 概念分布熵（Shannon 熵）：量化文本概念的不确定性/信息量
+    // 心虫公式库 shannon_entropy: H = -Σ p(x) * log2(p(x))
+    // 匹配认知负荷本质：输入越"杂散不可预测"，处理负荷越高
+    let entropyLoad = 0;
+    const bridge = this._getFormulaBridge();
+    if (bridge && t.length > 0) {
+      // [FORMULA] 概念分布熵：用字符 bigram（相邻字对）作为 token
+      // 对中文（无空格分词）更合理，能反映"概念分布的不确定性"
+      const cleaned = t.replace(/\s+/g, '');
+      const tokens = [];
+      if (cleaned.length >= 2) {
+        for (let i = 0; i < cleaned.length - 1; i++) tokens.push(cleaned.slice(i, i + 2));
+      } else if (cleaned.length === 1) {
+        tokens.push(cleaned);
+      }
+      if (tokens.length > 1) {
+        const freq = {};
+        tokens.forEach(w => { freq[w] = (freq[w] || 0) + 1; });
+        const counts = Object.values(freq);
+        const H = bridge.shannonEntropy(counts); // bits
+        const maxH = Math.log2(tokens.length);
+        const normH = maxH > 0 ? H / maxH : 0;
+        // 短文本（<10 bigram）熵天然偏高且不可靠，做长度衰减
+        const lenFactor = Math.min(1, tokens.length / 10);
+        entropyLoad = Math.min(4, normH * 4 * lenFactor);
+      }
+    }
 
     // 1. 内在负载
     let intrinsic = 0;
@@ -61,8 +103,8 @@ class CognitiveLoadCalculator {
     if ((c.historyLength || 0) > 5) germane += 3;
     germane = Math.min(15, germane);
 
-    // 4. 总 CL
-    const rawCL = intrinsic + extraneous + germane;
+    // 4. 总 CL（含概念分布熵分量）
+    const rawCL = intrinsic + extraneous + germane + entropyLoad;
     const CL = Math.min(1.0, rawCL / this.workingMemoryCapacity);
 
     const result = {
@@ -72,6 +114,7 @@ class CognitiveLoadCalculator {
         intrinsic: Math.round(intrinsic * 1000) / 1000,
         extraneous: Math.round(extraneous * 1000) / 1000,
         germane: Math.round(germane * 1000) / 1000,
+        entropy: Math.round(entropyLoad * 1000) / 1000,
         capacity: this.workingMemoryCapacity,
       },
       recommendation: CL < 0.3 ? '负载较低，可增加任务复杂度'
