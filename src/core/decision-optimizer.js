@@ -304,10 +304,7 @@ class DecisionOptimizer {
       confidence: maxVotes / Object.keys(results).length,
     };
   }
-}
 
-
-  
   /**
    * 初始化引擎
    */
@@ -348,4 +345,6 @@ class DecisionOptimizer {
   destroy() {
     console.log('[DecisionEngine] 已销毁');
   }
+}
+
 module.exports = { DecisionEngine: DecisionOptimizer };

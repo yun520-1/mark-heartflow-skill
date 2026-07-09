@@ -168,7 +168,6 @@ class ChunkDetector {
         return parsed;
       }
     } catch (e) {
-      // 已禁用 console.error: console.error('[ChunkDetector] Load idiom DB failed:', e.message);
       this._stats.errors[ErrorCode.DB_LOAD_FAILED] = (this._stats.errors[ErrorCode.DB_LOAD_FAILED] || 0) + 1;
     }
     return this.initializeDefaultIdiomDB();
@@ -191,7 +190,6 @@ class ChunkDetector {
       fs.writeFileSync(this.idiomFile, JSON.stringify(this.idiomDB, null, 2));
       return true;
     } catch (e) {
-      // 已禁用 console.error: console.error('[ChunkDetector] Save failed:', e.message);
       this._stats.errors[ErrorCode.DB_SAVE_FAILED] = (this._stats.errors[ErrorCode.DB_SAVE_FAILED] || 0) + 1;
       return false;
     }

@@ -83,12 +83,10 @@ class ThinkCheckLogger {
 
       this._ready = true;
     } catch (e) {
-      // 已禁用 console.error: console.error(`[ThinkCheckLogger] Cannot write: ${e.message}`);
       this._ready = false;
     }
 
     if (this._consoleOutput) {
-      // 已禁用 console.log: console.log(header);
     }
   }
 
@@ -111,7 +109,6 @@ class ThinkCheckLogger {
     }
 
     if (this._consoleOutput) {
-      // 已禁用 console.log: console.log(`\n--- DECISION #${decId} ---`);
     }
   }
 
@@ -134,7 +131,6 @@ class ThinkCheckLogger {
     this._currentDecision.fields.push({ key, value: formatted });
 
     if (this._consoleOutput) {
-      // 已禁用 console.log: console.log(`${key}: ${formatted}`);
     }
   }
 
@@ -165,7 +161,6 @@ class ThinkCheckLogger {
       try {
         fs.appendFileSync(this._outputFile, block, 'utf-8');
       } catch (e) {
-        // 已禁用 console.error: console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
       }
     }
 
@@ -308,11 +303,9 @@ class ThinkCheckLogger {
     try {
       fs.appendFileSync(this._cotOutputFile, lines.join('\n'), 'utf-8');
     } catch (e) {
-      // 已禁用 console.error: console.error(`[ThinkCheckLogger] CoT write error: ${e.message}`);
     }
 
     if (this._consoleOutput) {
-      // 已禁用 console.log: console.log(lines.join('\n'));
     }
   }
 
@@ -556,18 +549,14 @@ class ThinkCheckLogger {
       try {
         fs.appendFileSync(this._outputFile, '\n' + content + '\n', 'utf-8');
       } catch (e) {
-        // 已禁用 console.error: console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
       }
     }
     if (this._consoleOutput) {
-      // 已禁用 console.log: console.log(content);
     }
   }
 
   flush() {
     if (this._consoleOutput) {
-      // 已禁用 console.error: console.error(`[ThinkCheckLogger] CoT → ${this._cotOutputFile}`);
-      // 已禁用 console.error: console.error(`[ThinkCheckLogger] Decisions → ${this._outputFile}`);
     }
   }
 

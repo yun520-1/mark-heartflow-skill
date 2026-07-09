@@ -647,7 +647,6 @@ class CognitiveProtocol {
         return JSON.parse(fs.readFileSync(this.files.problemBank, 'utf-8'));
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[CognitiveProtocol] 加载问题银行失败:', e.message);
     }
     return [];
   }
@@ -660,7 +659,6 @@ class CognitiveProtocol {
       if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.problemBank, JSON.stringify(this.problemBank, null, 2));
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[CognitiveProtocol] 保存问题银行失败:', e.message);
     }
   }
 
@@ -670,7 +668,6 @@ class CognitiveProtocol {
         return JSON.parse(fs.readFileSync(this.files.pausedTasks, 'utf-8'));
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[CognitiveProtocol] 加载暂停任务失败:', e.message);
     }
     return [];
   }
@@ -683,7 +680,6 @@ class CognitiveProtocol {
       if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.pausedTasks, JSON.stringify(this.pausedTasks, null, 2));
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[CognitiveProtocol] 保存暂停任务失败:', e.message);
     }
   }
 
@@ -695,7 +691,6 @@ class CognitiveProtocol {
       if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.checkpoints, JSON.stringify(this.checkpoints, null, 2));
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[CognitiveProtocol] 保存检查点失败:', e.message);
     }
   }
 
@@ -712,7 +707,6 @@ class CognitiveProtocol {
         timestamp: new Date().toISOString()
       }, null, 2));
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[CognitiveProtocol] 保存当前会话失败:', e.message);
     }
   }
 

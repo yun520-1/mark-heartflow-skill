@@ -289,21 +289,10 @@ const DEFAULT_PIPELINE = [
       const judgmentEngineOutput = jd.judgment;
       const judgmentReasoning = jd.reasoning;
 
-      let conclusion = judgmentEngineOutput || '分析完成';
-      if (judgmentReasoning && judgmentEngineOutput) {
-        if (!judgmentEngineOutput.includes(judgmentReasoning)) {
-          conclusion = `${judgmentEngineOutput}\n\n判断理由：${judgmentReasoning}`;
-        }
-      }
+      // [FIX] conclusion 只包含给用户的回答，不包含内部理由和决策策略
+      const conclusion = judgmentEngineOutput || '分析完成';
 
-      if (drType) {
-        const drTypeMap = {
-          accelerate: '加速执行', pause: '暂停评估', turn: '调整方向',
-          hold: '保持现状', heal: '修复问题', resonate: '深度共情',
-          transmit: '传递知识', rest: '等待时机',
-        };
-        conclusion = `${conclusion}\n\n决策策略：${drTypeMap[drType] || drType}`;
-      }
+      // 内部理由存入 cognition，不拼进 conclusion
 
       const paths = jd.paths || [];
       const chosenPath = jd.chosenPath;
@@ -344,6 +333,8 @@ const DEFAULT_PIPELINE = [
         loveCognition: dc.loveCognition || null,
         cognitionGround: dc.cognitionGround || null,
         logicReasoning: ctx.logicReasoning || null,
+        // v5.9.7 新增：公式感知——每次 think 自动附带匹配到的认知公式
+        formulaMatches: (typeof hf.matchFormulas === 'function') ? hf.matchFormulas(ctx.input, { limit: 3 }) : [],
         judgment: {
           direction: jd.direction || 'analyze',
           confidence: jd.confidence || 0.5,
@@ -584,20 +575,11 @@ const FAST_PIPELINE = [
       const dd = ctx.decision || {};
       const memories = ctx.memory?.memories || [];
       const drType = dd.drDecision?.type || null;
+      // [FIX] conclusion 只包含给用户的回答，不包含内部理由和决策策略（快速模式）
       const judgmentEngineOutput = jd.judgment;
-      const judgmentReasoning = jd.reasoning;
-      let conclusion = judgmentEngineOutput || '分析完成';
-      if (judgmentReasoning && judgmentEngineOutput && !judgmentEngineOutput.includes(judgmentReasoning)) {
-        conclusion = `${judgmentEngineOutput}\n\n判断理由：${judgmentReasoning}`;
-      }
-      if (drType) {
-        const drTypeMap = {
-          accelerate: '加速执行', pause: '暂停评估', turn: '调整方向',
-          hold: '保持现状', heal: '修复问题', resonate: '深度共情',
-          transmit: '传递知识', rest: '等待时机',
-        };
-        conclusion = `${conclusion}\n\n决策策略：${drTypeMap[drType] || drType}`;
-      }
+      const conclusion = judgmentEngineOutput || '分析完成';
+
+      // 内部理由存入 cognition，不拼进 conclusion
       const paths = jd.paths || [];
       const chosenPath = jd.chosenPath;
       let pathComparison = null;
@@ -616,6 +598,8 @@ const FAST_PIPELINE = [
         emotion: ctx.psychology?.psych?.emotion || null,
         agentPsychology: ctx.psychology?.agentPsych || null,
         agentPhilosophy: ctx.psychology?.agentPhil || null,
+        // v5.9.7 新增：公式感知（快速管道同样附带）
+        formulaMatches: (typeof hf.matchFormulas === 'function') ? hf.matchFormulas(ctx.input, { limit: 3 }) : [],
         judgment: {
           direction: jd.direction || 'analyze',
           confidence: jd.confidence || 0.5,

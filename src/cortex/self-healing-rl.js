@@ -18,6 +18,9 @@ const fs = require('fs');
 const path = require('path');
 const { atomicWrite } = require('../utils/atomic-write');
 const crypto = require('crypto');
+// 公式注册表：把 RL 认知公式（Softmax 策略/Q-Learning）注入自我疗愈（v5.9.5 重构）
+const { getFormulaRegistry } = require('../formula/formula-registry.js');
+const _registry = getFormulaRegistry();
 
 // === Q-table 最大容量 ===
 const MAX_QTABLE_SIZE = 500;
@@ -92,7 +95,6 @@ function _getHmacKey() {
     fs.writeFileSync(keyFile, JSON.stringify({ key: newKey, createdAt: Date.now() }, null, 2), { mode: 0o600 });
   } catch (e) { /* info: HMAC 写入失败时 fallback 到内存模式，不影响正常运行 */ }
   _cachedHmacKey = newKey;
-  // 已禁用 console.warn: console.warn(`[HealingMemoryRL] HEARTFLOW_QTABLE_HMAC_KEY not set, generated and saved new key`);
   return _cachedHmacKey;
 }
 
@@ -123,7 +125,6 @@ function _touchEntry(ck) {
   }
   _qMeta[ck].lastAccessedAt = Date.now();
   _qMeta[ck].accessCount = (_qMeta[ck].accessCount || 0) + 1;
-  // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
 }
 
 class HealingMemoryRL {
@@ -174,12 +175,8 @@ class HealingMemoryRL {
           .update(JSON.stringify({ qTable, history, savedAt, ...rest }))
           .digest('hex');
         if (computed !== _hmac) {
-          // 已禁用 console.warn: console.warn('[HealingMemoryRL] Q-table HMAC mismatch, restoring from backup');
-          if (data.qTable) {
-            this.qTable = new Map(Object.entries(data.qTable));
-            this.history = Array.isArray(data.history) ? data.history.slice(-this.maxMemory) : [];
-            // 已禁用 console.error: console.error('[HealingMemoryRL] Q-table restored (HMAC check bypassed)');
-          }
+          // [A04-FIX] HMAC 校验失败：拒绝加载被篡改的 Q-table，保留内存中现有状态
+          process.stderr.write('[HealingMemoryRL] Q-table HMAC mismatch — refusing to load tampered data, keeping in-memory state\n');
           return;
         }
       }
@@ -190,7 +187,6 @@ class HealingMemoryRL {
         this.history = data.history.slice(-this.maxMemory);
       }
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[HealingMemoryRL] Q-table load error, starting fresh:', e.message);
     }
   }
 
@@ -264,15 +260,31 @@ class HealingMemoryRL {
       };
     }
 
-    // 利用：选最高 Q 值
+    // 利用：以 1-ε 概率按 Q 值做 Softmax 概率化选择（而非纯 argmax）
+    // 公式：π(a|s) = exp(Q(s,a)/τ) / Σ exp(Q(s,a')/τ)，温度 τ 与 ε 反相关
+    // （ε 高→探索多→τ 高→选择更均匀；ε 低→利用多→τ 低→偏向高 Q）
     let best = null;
     let bestQ = -Infinity;
-    for (const [strategy, qValue] of Object.entries(entry)) {
-      if (qValue > bestQ) {
-        bestQ = qValue;
-        best = strategy;
+    const strategyList = strategies;
+    const qValues = strategyList.map(s => entry[s]);
+    const tau = Math.max(0.05, epsilon * 2);   // ε=1→τ=2(均匀), ε=0.1→τ=0.2(锐利)
+    const probs = _registry.call('decision_utility', 'softmax_policy', qValues, tau) || [];
+    if (probs.length === strategyList.length) {
+      // 按 softmax 概率抽样选择
+      const rnd = Math.random();
+      let cum = 0;
+      for (let i = 0; i < strategyList.length; i++) {
+        cum += probs[i];
+        if (rnd <= cum) { best = strategyList[i]; break; }
+      }
+      if (!best) best = strategyList[strategyList.length - 1];
+    } else {
+      // softmax 失败回退到 argmax
+      for (const [strategy, qValue] of Object.entries(entry)) {
+        if (qValue > bestQ) { bestQ = qValue; best = strategy; }
       }
     }
+    bestQ = entry[best];
 
     // ε 衰减（只在利用成功时衰减，鼓励探索）
     this._exploitCount++;
@@ -350,7 +362,6 @@ class HealingMemoryRL {
     this.qTable.delete(ck);
     delete _qMeta[ck];
     _debouncedSave(this);
-    // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
     if (!this._letGoLog) this._letGoLog = [];
     this._letGoLog.push({
       pattern: errorPattern.slice(0, 50),
@@ -399,7 +410,6 @@ class HealingMemoryRL {
     }
 
     if (cleaned > 0) {
-      // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
       _debouncedSave(this);
     }
 
@@ -611,7 +621,6 @@ class HealingMemoryRL {
     entry[suggestedStrategy] = 0.5;
 
     _boundedSet(this.qTable, ck, entry, MAX_QTABLE_SIZE);
-    // 已禁用 console.error: this._saveQTable().catch(e => console.error('[HealingMemoryRL] verbalSelfCorrect save failed:', e.message));
 
     return {
       failedStrategy,
@@ -789,7 +798,6 @@ class HealingMemoryRL {
       merged++;
     }
 
-    // 已禁用 console.warn: _saveQMeta().catch(e => console.warn('[HealingMemoryRL] _saveQMeta failed:', e.message));
     _debouncedSave(this);
 
     return {

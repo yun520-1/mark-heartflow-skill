@@ -267,7 +267,6 @@ class PDCAEngine {
   }
 
   log(message) {
-    // 已禁用 console.error: console.error(`[PDCA] ${message}`);
   }
 
   // ========================================================================

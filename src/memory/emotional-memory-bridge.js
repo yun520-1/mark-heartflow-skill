@@ -793,7 +793,6 @@ async function appraisalToMemory(text, appraisalResult, padState = {}, options =
     } catch (e) {
       // 去重失败时继续存储，但记录警告
       const dedupError = classifyError(e, ErrorType.DEDUP_CHECK_FAILED);
-      // 已禁用 console.warn: if (options.debug) console.warn('[EMB] Dedup check failed, proceeding without it:', dedupError.message);
     }
   }
   
@@ -1062,10 +1061,6 @@ async function demo() {
   const dup2 = checkDuplicate('测试去重功能'); // 应该标记为重复
   const sim = computeTextSimilarity('我今天心情不好', '我今心情不太好');
   
-  // 已禁用 console.log: console.log('[EMB Demo] Salience assessment:', JSON.stringify(results, null, 2));
-  // 已禁用 console.log: console.log('[EMB Demo] First dedup check:', JSON.stringify(dup1));
-  // 已禁用 console.log: console.log('[EMB Demo] Second dedup check:', JSON.stringify(dup2));
-  // 已禁用 console.log: console.log('[EMB Demo] Text similarity:', sim);
 }
 
 // ========================================

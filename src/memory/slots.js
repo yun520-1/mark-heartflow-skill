@@ -90,7 +90,6 @@ class Slots {
         fs.mkdirSync(this.dataDir, { recursive: true });
       }
     } catch (err) {
-      // 已禁用 console.warn: console.warn(`[Slots] Failed to create data directory: ${err.message}`);
     }
   }
 
@@ -446,7 +445,6 @@ class Slots {
       this._dirty = false;
       return true;
     } catch (err) {
-      // 已禁用 console.error: console.error(`[Slots] Failed to save: ${err.message}`);
       return false;
     }
   }
@@ -480,7 +478,6 @@ class Slots {
 
       return true;
     } catch (err) {
-      // 已禁用 console.error: console.error(`[Slots] Failed to load: ${err.message}`);
       return false;
     }
   }

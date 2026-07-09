@@ -359,7 +359,6 @@ class RetrievalRouter {
 
       return results.slice(0, 5);
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[RetrievalRouter] memory channel error:', e.message);
       return [];
     }
   }
@@ -380,7 +379,6 @@ class RetrievalRouter {
       }
       return [];
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[RetrievalRouter] semantic channel error:', e.message);
       return [];
     }
   }
@@ -415,7 +413,6 @@ class RetrievalRouter {
 
       return results.slice(0, 5);
     } catch (e) {
-      // 已禁用 console.warn: console.warn('[RetrievalRouter] graph channel error:', e.message);
       return [];
     }
   }

@@ -223,7 +223,6 @@ class NarrativeRetriever {
       this._prototypeHealth.lastError = e.message;
       this._prototypeHealth.corruptionCount++;
       this._prototypeHealth.fallbackUsed = true;
-      // 已禁用 console.error: console.error('[NarrativeRetriever] Load prototypes failed:', e.message);
       return this._createDefaultPrototypeStore();
     }
   }
@@ -779,11 +778,9 @@ class NarrativeRetriever {
 
   addPrototype(id, name, keywords, framework, emotionalTone, stages) {
     if (!id || typeof id !== 'string') {
-      // 已禁用 console.error: console.error('[NarrativeRetriever] addPrototype: id 必须是非空字符串');
       return false;
     }
     if (!Array.isArray(keywords) || keywords.length === 0) {
-      // 已禁用 console.error: console.error('[NarrativeRetriever] addPrototype: keywords 必须是非空数组');
       return false;
     }
 
@@ -807,11 +804,9 @@ class NarrativeRetriever {
    */
   removePrototype(id) {
     if (!id || typeof id !== 'string') {
-      // 已禁用 console.error: console.error('[NarrativeRetriever] removePrototype: id 必须是非空字符串');
       return false;
     }
     if (!this.prototypes.prototypes[id]) {
-      // 已禁用 console.error: console.error(`[NarrativeRetriever] removePrototype: 原型 "${id}" 不存在`);
       return false;
     }
     delete this.prototypes.prototypes[id];
@@ -846,7 +841,6 @@ class NarrativeRetriever {
     try {
       fs.writeFileSync(this.prototypeFile, JSON.stringify(this.prototypes, null, 2));
     } catch (e) {
-      // 已禁用 console.error: console.error('[NarrativeRetriever] Save failed:', e.message);
     }
   }
 

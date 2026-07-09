@@ -624,6 +624,20 @@ const confidenceAnnotator = {
   },
 
   /** 风险分历史记录（用于震荡检测） */
+  /**
+   * annotate - 兼容 heartflow.js translator 调用约定
+   */
+  annotate(textOrConfig, source) {
+    try {
+      const text = typeof textOrConfig === 'string'
+        ? textOrConfig
+        : (textOrConfig?.text || textOrConfig?.input || String(textOrConfig));
+      return this.annotateText(text, 'medium');
+    } catch (e) {
+      return { confidence: 0.5, level: 'medium', error: e.message, source };
+    }
+  },
+
   _riskScoreHistory: []
 };
 
