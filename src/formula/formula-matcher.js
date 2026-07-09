@@ -69,9 +69,9 @@ class FormulaMatcher {
     const signals = new Map();
     const sigDef = this._triggers.signals || {};
 
-    // 1. 精确词匹配
+    // 1. 精确词匹配（支持 keywords 或 synonyms 字段）
     for (const [signal, def] of Object.entries(sigDef)) {
-      const keys = def.keywords || [];
+      const keys = def.keywords || def.synonyms || [];
       let hit = 0;
       for (const kw of keys) {
         const k = kw.toLowerCase();

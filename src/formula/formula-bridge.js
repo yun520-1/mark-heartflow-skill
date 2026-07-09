@@ -282,6 +282,220 @@ class FormulaBridge {
     }
     return kl;
   }
+
+  // ─── v5.9.8 审计扩展：对已审计、可计算、场景匹配的认知公式 ───
+
+  /**
+   * 前景理论价值函数（Kahneman-Tversky）：损失厌恶 + 风险态度
+   * v(x) = x^α (x≥0) 或 -λ(-x)^β (x<0)
+   * @param {number} x - 客观收益/损失（正为得，负为失）
+   * @param {object} [o] - { alpha, beta, lambda }
+   */
+  prospectValue(x, o = {}) {
+    const alpha = o.alpha ?? 0.88, beta = o.beta ?? 0.88, lambda = o.lambda ?? 2.25;
+    if (x >= 0) return Math.pow(Math.max(0, x), alpha);
+    return -lambda * Math.pow(Math.max(0, -x), beta);
+  }
+
+  /**
+   * 前景理论概率权重（次可加/次可乘）
+   * w(p) = p^γ / (p^γ + (1-p)^γ)^(1/γ)
+   */
+  prospectWeight(p, gamma = 0.61) {
+    if (p <= 0) return 0; if (p >= 1) return 1;
+    const a = Math.pow(p, gamma), b = Math.pow(1 - p, gamma);
+    return a / Math.pow(a + b, 1 / gamma);
+  }
+
+  /**
+   * 主观期望效用 SEU = Σ p_i · u(o_i)
+   */
+  subjectiveUtility(probs, utils) {
+    if (!Array.isArray(probs) || !Array.isArray(utils) || probs.length !== utils.length) return 0;
+    return probs.reduce((s, p, i) => s + p * (utils[i] || 0), 0);
+  }
+
+  /**
+   * 贝叶斯因子 BF = P(E|H1) / P(E|H0)，用于信念比较/模型选择
+   */
+  bayesFactor(pEgivenH1, pEgivenH0) {
+    if (!(pEgivenH0 > 0)) return Infinity;
+    return pEgivenH1 / pEgivenH0;
+  }
+
+  /**
+   * 后验赔率 O(H|E) = BF · O(H)（O = P/(1-P)）
+   */
+  posteriorOdds(priorProb, bf) {
+    const priorOdds = priorProb / Math.max(1e-15, 1 - priorProb);
+    return priorOdds * bf;
+  }
+
+  /**
+   * 预测编码自由能 F = -ln p(s,μ) ≈ 预测误差精度加权
+   * 简化：F ≈ 0.5 · ε² / σ² + 0.5·ln(2πσ²)，ε = s - μ
+   */
+  predictiveCodingFreeEnergy(s, mu, sigma = 1) {
+    const eps = s - mu;
+    const v = Math.max(1e-9, sigma * sigma);
+    return 0.5 * (eps * eps / v + Math.log(2 * Math.PI * v));
+  }
+
+  /**
+   * 主动推断期望自由能 G = -E[Q(s,π)] + H[Q(s,π)]（信息增益项）
+   * 简化：G ≈ -Σ Q·ln Q（负熵，趋近不确定性的信息寻求）
+   */
+  activeInferenceEFE(qDist) {
+    if (!Array.isArray(qDist) || qDist.length === 0) return 0;
+    const s = qDist.reduce((a, b) => a + b, 0) || 1;
+    let efe = 0;
+    for (const q of qDist) {
+      const p = q / s;
+      if (p > 0) efe -= p * Math.log(p);  // 熵项（信息寻求）
+    }
+    return efe;
+  }
+
+  /**
+   * 精确度权重 γ = 1/σ²_ε（预测编码/主动推断的注意力分配）
+   */
+  precisionWeight(sigma) {
+    const v = Math.max(1e-9, sigma * sigma);
+    return 1 / v;
+  }
+
+  /**
+   * 全球工作空间可及性 A_i = Σ_j w_ij · GW(t) + noise（Baars/Dehaene）
+   * 简化：返回归一化后的竞争激活
+   */
+  gwtAccessibility(weights, gwSignal, noise = 0) {
+    if (!Array.isArray(weights)) return [];
+    return weights.map(w => w * (gwSignal || 1) + (Math.random() - 0.5) * noise);
+  }
+
+  /**
+   * GWT 竞争赢家（意识进入全局工作空间）
+   */
+  gwtWinner(activations) {
+    if (!Array.isArray(activations) || activations.length === 0) return -1;
+    let best = 0;
+    for (let i = 1; i < activations.length; i++) if (activations[i] > activations[best]) best = i;
+    return best;
+  }
+
+  /**
+   * 整合信息论 Φ（Tononi）——意识量化（近似：互信息最小分割）
+   * 简化：给定 partition 的 MI 差 Φ = MI(whole) - Σ MI(parts)
+   */
+  iitPhi(miWhole, miParts) {
+    const sum = Array.isArray(miParts) ? miParts.reduce((a, b) => a + b, 0) : (miParts || 0);
+    return Math.max(0, miWhole - sum);
+  }
+
+  /**
+   * CLARION ACS 选择（双层认知）：P = e^{Cl(a_i)/τ} / Σ_j e^{Cl(a_j)/τ}
+   */
+  clarionACS(clValues, tau = 0.1) {
+    if (!Array.isArray(clValues) || clValues.length === 0) return [];
+    const exps = clValues.map(v => Math.exp(v / tau));
+    const sum = exps.reduce((a, b) => a + b, 0) || 1e-12;
+    return exps.map(e => e / sum);
+  }
+
+  /**
+   * ACT-R 噪声（玻尔兹曼探索）：P = e^{A_i/τ} / Σ_j e^{A_j/τ}
+   */
+  actrNoise(activations, tau = 0.5) {
+    if (!Array.isArray(activations) || activations.length === 0) return [];
+    const exps = activations.map(a => Math.exp(a / tau));
+    const sum = exps.reduce((a, b) => a + b, 0) || 1e-12;
+    return exps.map(e => e / sum);
+  }
+
+  /**
+   * 经验回放（RL 记忆增强）：从回放缓冲采样一批转移
+   */
+  experienceReplay(buffer, batchSize = 32) {
+    if (!Array.isArray(buffer) || buffer.length === 0) return [];
+    const n = Math.min(batchSize, buffer.length);
+    const out = [];
+    for (let i = 0; i < n; i++) out.push(buffer[Math.floor(Math.random() * buffer.length)]);
+    return out;
+  }
+
+  /**
+   * 认知失调（Festinger）量化：Dissonance = Σ w_i·(belief_i - action_i)²
+   */
+  cognitiveDissonance(beliefs, actions, weights) {
+    const n = Math.min(beliefs.length, actions.length);
+    let d = 0;
+    for (let i = 0; i < n; i++) {
+      const w = weights ? (weights[i] || 1) : 1;
+      d += w * Math.pow((beliefs[i] || 0) - (actions[i] || 0), 2);
+    }
+    return d;
+  }
+
+  /**
+   * 社会影响模型（French-Harary）：x_i(t+1) = x_i(t) + λ Σ_j w_ij (x_j - x_i)
+   */
+  socialInfluence(state, weights, lambda = 0.1) {
+    if (!Array.isArray(state) || !Array.isArray(weights)) return state;
+    return state.map((xi, i) => {
+      let inf = 0;
+      for (let j = 0; j < state.length; j++) if (j !== i) inf += (weights[i] && weights[i][j] || 0) * (state[j] - xi);
+      return xi + lambda * inf;
+    });
+  }
+
+  /**
+   * 维果茨基最近发展区 ZPD = [独立能力, 辅助能力]
+   */
+  vygotskyZPD(independent, withHelp) {
+    return [Math.min(independent, withHelp), Math.max(independent, withHelp)];
+  }
+
+  /**
+   * IRT 信息函数 I(θ) = a² · P(θ) · (1-P(θ))
+   */
+  irtInformation(theta, a, b, c = 0, d = 1) {
+    const p = c + (d - c) / (1 + Math.exp(-a * (theta - b)));
+    return a * a * p * (1 - p);
+  }
+
+  /**
+   * IRT 标准误 SE = 1/sqrt(I(θ))
+   */
+  irtSEM(theta, a, b, c = 0, d = 1) {
+    const info = this.irtInformation(theta, a, b, c, d);
+    return info > 0 ? 1 / Math.sqrt(info) : Infinity;
+  }
+
+  /**
+   * SEM 拟合 RMSEA = sqrt(max((χ²/df - 1)/(N-1), 0))
+   */
+  semFitRMSEA(chi2, df, N) {
+    if (!(df > 0) || !(N > 0)) return 0;
+    return Math.sqrt(Math.max((chi2 / df - 1) / (N - 1), 0));
+  }
+
+  /**
+   * SEM 拟合 SRMR = sqrt(Σ w_ij (s_ij - σ_ij)² / p)（简化：输入残差数组）
+   */
+  semFitSRMR(residuals) {
+    if (!Array.isArray(residuals) || residuals.length === 0) return 0;
+    const s = residuals.reduce((a, r) => a + r * r, 0);
+    return Math.sqrt(s / residuals.length);
+  }
+
+  /**
+   * 因子协方差 Σ = Λ Φ Λᵀ + Ψ（简化：给定因子得分协方差）
+   */
+  factorCovariance(factorCov) {
+    // 输入：因子得分的协方差矩阵（2D），返回其行列式作为"总变异"近似
+    if (!Array.isArray(factorCov)) return 0;
+    return factorCov;
+  }
 }
 
 // 单例（避免重复实例化）

@@ -206,6 +206,127 @@ class FormulaRegistry {
       impl: (p, q) => _b.klDivergence(p, q),
       doc: 'KL 散度',
     });
+
+    // ─── v5.9.8 审计扩展：新增已审计可计算的认知原语 ───
+
+    // 记忆增强
+    this.register('memory_activation', {
+      id: 'experience_replay', formulaId: 'experience_replay',
+      impl: (buffer, batchSize) => _b.experienceReplay(buffer, batchSize),
+      doc: '经验回放（RL 记忆增强）：从回放缓冲采样',
+    });
+    this.register('memory_activation', {
+      id: 'actr_noise', formulaId: 'actr_noise',
+      impl: (acts, tau) => _b.actrNoise(acts, tau),
+      doc: 'ACT-R 噪声（玻尔兹曼探索）',
+    });
+
+    // 决策情绪 / 主观效用
+    this.register('emotion_arousal', {
+      id: 'prospect_value', formulaId: 'prospect_value',
+      impl: (x, o) => _b.prospectValue(x, o),
+      doc: '前景理论价值函数（损失厌恶）',
+    });
+    this.register('emotion_arousal', {
+      id: 'prospect_weight', formulaId: 'prospect_weight',
+      impl: (p, g) => _b.prospectWeight(p, g),
+      doc: '前景理论概率权重',
+    });
+    this.register('emotion_arousal', {
+      id: 'subjective_utility', formulaId: 'subjective_utility',
+      impl: (probs, utils) => _b.subjectiveUtility(probs, utils),
+      doc: '主观期望效用 SEU',
+    });
+
+    // 决策/意识竞争
+    this.register('decision_utility', {
+      id: 'clarion_acs', formulaId: 'clarion_acs',
+      impl: (cl, tau) => _b.clarionACS(cl, tau),
+      doc: 'CLARION 双层认知选择',
+    });
+    this.register('decision_utility', {
+      id: 'cognitive_dissonance', formulaId: 'cognitive_dissonance',
+      impl: (beliefs, actions, weights) => _b.cognitiveDissonance(beliefs, actions, weights),
+      doc: '认知失调量化',
+    });
+    this.register('decision_utility', {
+      id: 'gwt_accessibility', formulaId: 'gwt_accessibility',
+      impl: (w, gw, noise) => _b.gwtAccessibility(w, gw, noise),
+      doc: '全球工作空间可及性',
+    });
+    this.register('decision_utility', {
+      id: 'gwt_winner', formulaId: 'gwt_competition',
+      impl: (acts) => _b.gwtWinner(acts),
+      doc: 'GWT 竞争赢家（意识进入）',
+    });
+
+    // 置信聚合 / 主动推断
+    this.register('confidence_aggr', {
+      id: 'active_inference_efe', formulaId: 'active_inference_efe',
+      impl: (q) => _b.activeInferenceEFE(q),
+      doc: '主动推断期望自由能（信息寻求）',
+    });
+    this.register('confidence_aggr', {
+      id: 'predictive_coding_free_energy', formulaId: 'predictive_coding_free_energy',
+      impl: (s, mu, sigma) => _b.predictiveCodingFreeEnergy(s, mu, sigma),
+      doc: '预测编码自由能',
+    });
+    this.register('confidence_aggr', {
+      id: 'precision_weight', formulaId: 'active_inference_precision',
+      impl: (sigma) => _b.precisionWeight(sigma),
+      doc: '精确度权重 γ=1/σ²',
+    });
+
+    // 人格/测量
+    this.register('personality_measure', {
+      id: 'irt_information', formulaId: 'irt_information',
+      impl: (theta, a, b, c, d) => _b.irtInformation(theta, a, b, c, d),
+      doc: 'IRT 信息函数',
+    });
+    this.register('personality_measure', {
+      id: 'irt_sem', formulaId: 'irt_sem',
+      impl: (theta, a, b, c, d) => _b.irtSEM(theta, a, b, c, d),
+      doc: 'IRT 标准误',
+    });
+
+    // 信念更新增强
+    this.register('belief_update', {
+      id: 'bayes_factor', formulaId: 'bayes_factor',
+      impl: (pE1, pE0) => _b.bayesFactor(pE1, pE0),
+      doc: '贝叶斯因子 BF = P(E|H1)/P(E|H0)',
+    });
+    this.register('belief_update', {
+      id: 'posterior_odds', formulaId: 'odds_ratio',
+      impl: (prior, bf) => _b.posteriorOdds(prior, bf),
+      doc: '后验赔率 O = BF·O(H)',
+    });
+
+    // 校准 / 意识 / 社会
+    this.register('calibration', {
+      id: 'sem_fit_rmsea', formulaId: 'sem_fit_rmsea',
+      impl: (chi2, df, N) => _b.semFitRMSEA(chi2, df, N),
+      doc: 'SEM 拟合 RMSEA',
+    });
+    this.register('calibration', {
+      id: 'sem_fit_srms', formulaId: 'sem_fit_srms',
+      impl: (res) => _b.semFitSRMR(res),
+      doc: 'SEM 拟合 SRMR',
+    });
+    this.register('calibration', {
+      id: 'iit_phi', formulaId: 'iit_phi',
+      impl: (miWhole, miParts) => _b.iitPhi(miWhole, miParts),
+      doc: '整合信息论 Φ（意识量化）',
+    });
+    this.register('calibration', {
+      id: 'social_influence', formulaId: 'social_influence_model',
+      impl: (state, w, lambda) => _b.socialInfluence(state, w, lambda),
+      doc: '社会影响模型（French-Harary）',
+    });
+    this.register('calibration', {
+      id: 'vygotsky_zpd', formulaId: 'vygotsky_zpd',
+      impl: (ind, help) => _b.vygotskyZPD(ind, help),
+      doc: '维果茨基最近发展区',
+    });
   }
 }
 
