@@ -1,7 +1,7 @@
 ---
 name: heartflow-engine
 title: "HeartFlow / 心虫 — AI 认知与自愈引擎"
-version: "5.9.10"
+version: "5.9.11"
 description: |-
   统一整合版：claude-heartflow-skill (v2.8.0) + mark-heartflow-skill (v5.7.3)
   290+ 模块，25 个 MCP 工具，零外部依赖，覆盖认知/记忆/情绪/哲学/自愈/决策/代码/意识。
@@ -329,3 +329,30 @@ v5.9.6 新增：让公式从"精确 id 查询"升级为"自然语言 → 公式"
 ### 验证
 - 集成测试 **20/20 通过**（B3 9公式 + A2 三模块 + Matcher B3 匹配 + 7环节回归）
 - FormulaBridge 61→69；FormulaRegistry 60→68 原语
+
+
+## 论文升级（v5.9.11）
+
+从 GitHub 拉取真实论文开源代码并移植核心公式（非纯手写）。
+
+### 来源（真实 repo，已验证可拉取）
+- mshvartsman/wfpt_py（DDM Wiener 首达时精确实现）— 移植 wfpt_rt / wfpt_er（Bogacz 2006, Navarro 2009）
+- infer-actively/pymdp（Active Inference / FEP 权威实现，720 星）— 移植 spm_MDP_G（Friston 2013 预期信息增益）
+- Green and Swets 1966 / Pollack and Norman 1964（SDT 经典公式）
+
+### 移植公式
+- ddmDecisionTime 扩散决策时间 (wfpt_py Bogacz 2006) -> decision_dynamics
+- ddmErrorRate 错误率 (wfpt_py Bogacz 2006) -> decision_dynamics
+- sdtDPrime 辨别力 d撇 (Green Swets 1966) -> decision_utility
+- sdtBeta 决策准则 beta (Green Swets 1966) -> decision_utility
+- sdtAPrime 非参数 A撇 (Pollack Norman 1964) -> decision_utility
+- activeInferenceInfoGain 预期信息增益 G (pymdp spm_MDP_G) -> active_inference
+
+### 数学验证（对照论文标准值）
+- DDM: a=1,z=1 准确率约88%；a=3 错误率0.25%（高漂移极准）符合 Bogacz 2006
+- SDT: HR=.9,FAR=.2 -> d撇=2.123（标准值）
+- AIF: G = E[H[P(o|x)]] - H[Q(o)]（pymdp 定义，认识性价值 = -G）
+
+### 验证
+- 集成测试 21/21 通过
+- FormulaBridge 69->75；FormulaRegistry 68->74 原语；触发词 85->91 ref

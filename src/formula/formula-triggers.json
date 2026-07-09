@@ -363,7 +363,16 @@
         "冲突",
         "纳什均衡",
         "零和",
-        "pennies"
+        "pennies",
+        "决策时间",
+        "反应时",
+        "漂移率",
+        "决策动力学",
+        "扩散模型",
+        "信号检测",
+        "辨别力",
+        "虚报率",
+        "命中率"
       ],
       "refs": [
         {
@@ -425,6 +434,31 @@
           "kind": "stage-primitive",
           "ref": "matching_pennies",
           "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "ddm_decision_time",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "ddm_error_rate",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_d_prime",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_beta",
+          "weight": 0.5
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_a_prime",
+          "weight": 0.5
         }
       ]
     },
@@ -920,6 +954,21 @@
             "utils"
           ],
           "paramDesc": "概率、效用值"
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_d_prime",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_beta",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "sdt_a_prime",
+          "weight": 1
         }
       ]
     },
@@ -1084,7 +1133,10 @@
         "自由能",
         "预测误差",
         "主动推断",
-        "最小化惊奇"
+        "最小化惊奇",
+        "预期自由能",
+        "信息增益",
+        "认识性价值"
       ],
       "refs": [
         {
@@ -1100,6 +1152,11 @@
         {
           "kind": "stage-primitive",
           "ref": "precision_weight",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "aif_info_gain",
           "weight": 1
         }
       ]

@@ -779,6 +779,117 @@ class FormulaBridge {
     const expected = totalWeight / Math.max(1, communityCount);
     return +((internalEdges - expected) / totalWeight).toFixed(4);
   }
+
+  // ─── v5.9.11 论文升级（真实论文代码移植）───
+
+  /**
+   * [DDM] 期望首达时 / 决策时间 (Bogacz et al. 2006)
+   * 移植自 wfpt_py.wfpt_rt：t0 + z²/a²·tanh·... + 起始点修正
+   * 参数：x0 起始点, t0 非决策时间, a 漂移率, z 阈值(边界), s 噪声(默认1)
+   */
+  ddmDecisionTime(x0, t0, a, z, s = 1) {
+    if (Math.abs(a) < 1e-8) {
+      // a→0 极限 (Srivastava et al. 2016)
+      return t0 + (z * z - x0 * x0) / (s * s);
+    }
+    const zt = z / a, at = (a / s) * (a / s), x0t = x0 / a;
+    const e1 = zt * Math.tanh(zt * at);
+    const num = 2 * zt * (1 - Math.exp(-2 * x0t * at));
+    const den = Math.exp(2 * zt * at) - Math.exp(-2 * zt * at);
+    const e2 = (num / den) - x0t;
+    return zt * (e1 + e2) + t0;
+  }
+
+  /**
+   * [DDM] 错误率 / 反向穿越概率 (Bogacz et al. 2006)
+   * 移植自 wfpt_py.wfpt_er：1/(1+e^{2 z̃ â}) - 起始点修正
+   * 返回错误率(0-1)，准确率 = 1 - errorRate
+   */
+  ddmErrorRate(x0, t0, a, z, s = 1) {
+    if (Math.abs(a) < 1e-8) {
+      return (z - x0) / (2 * z);
+    }
+    const zt = z / a, at = (a / s) * (a / s), x0t = x0 / a;
+    const term1 = 1 / (1 + Math.exp(2 * zt * at));
+    const num = 1 - Math.exp(-2 * x0 * at);
+    const den = Math.exp(2 * zt * at) - Math.exp(-2 * zt * at);
+    return term1 - num / den;
+  }
+
+  /**
+   * [SDT] 信号检测论 d'（辨别力）Green & Swets 1966
+   * d' = z(HR) - z(FAR)，其中 z 为标准正态逆 CDF
+   */
+  sdtDPrime(hitRate, falseAlarmRate) {
+    const z = (p) => { // 标准正态逆 CDF (Acklam 近似)
+      if (p <= 0) p = 1e-10; if (p >= 1) p = 1 - 1e-10;
+      const a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02, 1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00];
+      const b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02, 6.680131188771972e+01, -1.328068155288572e+01];
+      const c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400524446245106e+00, -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00];
+      const d = [-7.784695709041462e-03, 8.933146131619509e-01, 3.957506918542107e+00, 1.955837635732678e+00, 4.944515011942083e+00, 1.0];
+      let q, r;
+      if (p < 0.02425) { q = Math.sqrt(-2 * Math.log(p)); return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+      else if (p <= 0.97575) { q = p - 0.5; r = q*q; return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1); }
+      else { q = Math.sqrt(-2 * Math.log(1-p)); return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+    };
+    return z(hitRate) - z(falseAlarmRate);
+  }
+
+  /**
+   * [SDT] β（似然比决策准则）Green & Swets 1966
+   * β = exp(-(d'/2)·(z(HR)+z(FAR)))；等价于命中与虚报似然比
+   */
+  sdtBeta(hitRate, falseAlarmRate) {
+    const d = this.sdtDPrime(hitRate, falseAlarmRate);
+    const z = (p) => { if (p<=0) p=1e-10; if (p>=1) p=1-1e-10; const a=[-3.969683028665376e+01,2.209460984245205e+02,-2.759285104469687e+02,1.383577518672690e+02,-3.066479806614716e+01,2.506628277459239e+00]; const b=[-5.447609879822406e+01,1.615858368580409e+02,-1.556989798598866e+02,6.680131188771972e+01,-1.328068155288572e+01]; const c=[-7.784894002430293e-03,-3.223964580411365e-01,-2.400524446245106e+00,-2.549732539343734e+00,4.374664141464968e+00,2.938163982698783e+00]; const d2=[-7.784695709041462e-03,8.933146131619509e-01,3.957506918542107e+00,1.955837635732678e+00,4.944515011942083e+00,1.0]; let q,r; if(p<0.02425){q=Math.sqrt(-2*Math.log(p));return(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d2[0]*q+d2[1])*q+d2[2])*q+d2[3])*q+1);}else if(p<=0.97575){q=p-0.5;r=q*q;return(((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);}else{q=Math.sqrt(-2*Math.log(1-p));return-(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d2[0]*q+d2[1])*q+d2[2])*q+d2[3])*q+1);} };
+    const zH = z(hitRate), zF = z(falseAlarmRate);
+    return Math.exp(-(d / 2) * (zH + zF));
+  }
+
+  /**
+   * [SDT] A'（非参数辨别力，Pollack & Norman 1964）
+   * A' = 0.5 + sign(HR-FAR)·((HR-FAR)² + |HR-FAR|)/(4·max(HR,FAR)-4·HR·FAR)
+   */
+  sdtAPrime(hitRate, falseAlarmRate) {
+    const H = hitRate, F = falseAlarmRate;
+    if (H === 1 && F === 0) return 1;
+    const denom = 4 * Math.max(H, F) - 4 * H * F;
+    if (denom === 0) return 0.5;
+    const num = (H - F) * (H - F) + Math.abs(H - F);
+    return 0.5 + (H >= F ? 1 : -1) * (num / denom);
+  }
+
+  /**
+   * [Active Inference] 预期信息增益 G（认识性价值）
+   * 移植自 pymdp spm_MDP_G：G = E_{Q(x)}[H[P(o|x)]] - H[Q(o)]
+   * 简化（单模态）：给定后验 Q(x) 和似然 A（观测×状态矩阵），算预期惊奇降低。
+   * @param {number[]} qx - 后验信念 Q(x)（状态分布，和=1）
+   * @param {number[][]} A - 似然矩阵 A[o][x] = P(o|x)
+   * @returns {number} 信息增益（epistemic value，越高越值得探索以获取信息）
+   */
+  activeInferenceInfoGain(qx, A) {
+    if (!Array.isArray(qx) || !Array.isArray(A)) return 0;
+    const EPS = 1e-16;
+    const nObs = A.length, nStates = A[0] ? A[0].length : 0;
+    if (nStates === 0) return 0;
+    // E_Q[ H[P(o|x)] ]：对每个状态，算其似然分布的熵，按后验加权
+    let expLikEntropy = 0;
+    const qo = new Array(nObs).fill(0);
+    for (let x = 0; x < nStates; x++) {
+      // 该状态下观测分布
+      let h = 0;
+      for (let o = 0; o < nObs; o++) {
+        const po = Math.max(A[o][x], EPS);
+        h += -po * Math.log(po);
+        qo[o] += qx[x] * po;
+      }
+      expLikEntropy += qx[x] * h;
+    }
+    // H[Q(o)]
+    let hqo = 0;
+    for (let o = 0; o < nObs; o++) hqo += -qo[o] * Math.log(Math.max(qo[o], EPS));
+    return +(expLikEntropy - hqo).toFixed(4);
+  }
 }
 
 
