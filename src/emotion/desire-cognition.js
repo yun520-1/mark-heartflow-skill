@@ -347,7 +347,6 @@ class DesireCognition {
     this._conversationEmotionMemory = [];
 
     this.ready = true;
-    // 已禁用 console.error: if (this.debug) console.error('[DesireCognition] v1.3.0 ready — 七层情感架构集成版');
   }
 
   /**
@@ -388,6 +387,8 @@ class DesireCognition {
       brainNetworkActivation: this._computeBrainNetworkActivation(emotions, traits),
       // v1.3.0 新增输出
       padcn: padcn,
+      // v5.9.7 新增：IRT 特质校准（测量视角）
+      irtTraits: this.estimateTraitsWithIRT(traits),
     };
   }
 
@@ -437,6 +438,8 @@ class DesireCognition {
       wantingLiking: wlAnalysis,
       // v1.3.0 新增输出
       driveSatisfaction: driveAnalysis,
+      // v5.9.7 新增：IRT 特质校准（测量视角，独立于手设权重）
+      irtTraits: this.estimateTraitsWithIRT(traits),
     };
   }
 
@@ -1778,6 +1781,67 @@ class DesireCognition {
     };
   }
 
+  /**
+   * IRT 特质校准（v5.9.7 新增，B4 接入）
+   * 把从人物(person)抽取的可观测特征标志，用 IRT 模型推断潜在特质 θ。
+   * 这是"测量"视角：多个观测响应 → 潜在特质水平，而非手设权重直接当特质。
+   *
+   * 设计：不破坏现有预设权重体系（_scoreEmotion/_scoreDesire 仍用手设映射），
+   * IRT 作为独立的"校准分"附加到分析结果，供上层参考。
+   *
+   * @param {object} traitFlags - _extractDesireTraits 的输出（布尔特征标志）
+   * @param {object} [opts] - { a, b, model: 'rasch'|'2pl'|'3pl' }
+   * @returns {object} 各认知维度的 IRT θ 估计 { dimension: { theta, probability, responses } }
+   */
+  estimateTraitsWithIRT(traitFlags = {}, opts = {}) {
+    let registry = null;
+    try { registry = require('../formula/formula-registry.js').getFormulaRegistry(); } catch (e) { registry = null; }
+    if (!registry) return {};
+
+    const a = opts.a ?? 1.0;
+    const b = opts.b ?? 0.0;
+    const model = opts.model || 'rasch';
+
+    // 认知维度 → 组成该维度的可观测特征（每个特征是一个 IRT 题项响应 0/1）
+    const DIMENSIONS = {
+      curiosity:    [traitFlags.curious, traitFlags.drivenByAchievement, traitFlags.addictive],
+      social:       [traitFlags.drivenBySocial, traitFlags.compassionate, traitFlags.silent],
+      power:        [traitFlags.drivenByPower, traitFlags.direct, traitFlags.cautious],
+      freedom:      [traitFlags.drivenByFreedom, traitFlags.direct, traitFlags.cautious],
+      emotionality: [traitFlags.emotional, traitFlags.drivenBySexual, traitFlags.silent],
+      resilience:   [traitFlags.resilient, traitFlags.cautious, traitFlags.impulsive],
+    };
+
+    const result = {};
+    for (const [dim, flags] of Object.entries(DIMENSIONS)) {
+      const responses = flags.map(f => (f ? 1 : 0));
+      if (responses.every(r => r === 0) && responses.length > 0) {
+        result[dim] = { theta: -2.0, probability: 0.12, responses, calibrated: false };
+        continue;
+      }
+      // 用 rasch 模型推断 θ：θ 使观测响应的似然最大（这里用简单反推：Σresponses 越多 θ 越高）
+      // 实际 IRT：P(X=1|θ) = 1/(1+exp(-a(θ-b)))，反解 θ = b + ln(P/(1-P))/a
+      const correct = responses.reduce((s, r) => s + r, 0);
+      const p = correct / responses.length;  // 观测正确率（比例）
+      // 反推 θ（避免 p=0/1 发散，clamp）
+      const pc = Math.max(0.05, Math.min(0.95, p));
+      let theta;
+      if (model === 'rasch') {
+        theta = b + Math.log(pc / (1 - pc)) / a;  // 单参数 IRT 反解
+      } else {
+        theta = b + Math.log(pc / (1 - pc)) / a;  // 2pl/3pl 近似用同样反解（a 已含区分度）
+      }
+      const prob = 1 / (1 + Math.exp(-a * (theta - b)));
+      result[dim] = {
+        theta: Math.round(theta * 100) / 100,
+        probability: Math.round(prob * 100) / 100,
+        responses,
+        calibrated: true,
+      };
+    }
+    return result;
+  }
+
   _scoreEmotion(emotionKey, traits) {
     // 基于人格特质推断情绪倾向
     switch (emotionKey) {
@@ -1825,6 +1889,31 @@ class DesireCognition {
       case 'meaning':     return traits.drivenByAchievement || traits.drivenBySurvival ? 0.6 : 0.5;
       default: return 0.5;
     }
+  }
+
+  /**
+   * 前景理论欲望效用（v5.9.9 新增）
+   * 把欲望满足的"得/失"用前景理论价值函数算主观效用（损失厌恶 + 风险态度），
+   * 比简单线性加总更贴近真实决策。
+   * @param {number[]} gains - 各欲望的获得值（正）
+   * @param {number[]} losses - 各欲望的丧失值（负，绝对值）
+   * @param {number[]} [probs] - 各结果概率（默认等权）
+   * @returns {number} 前景理论主观总效用
+   */
+  computeProspectUtility(gains, losses, probs) {
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      const n = Math.max(gains.length, losses.length);
+      let u = 0;
+      for (let i = 0; i < n; i++) {
+        const p = probs ? (probs[i] || 1 / n) : 1 / n;
+        const g = gains[i] || 0;
+        const l = losses[i] || 0;
+        u += p * (b.prospectValue(g) - b.prospectValue(-l));
+      }
+      return +u.toFixed(4);
+    } catch (e) { return 0; }
   }
 
   _describeDesireExpression(desireKey, traits) {

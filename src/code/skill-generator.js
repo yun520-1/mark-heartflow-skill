@@ -194,7 +194,6 @@ class SkillGenerator {
         return JSON.parse(fs.readFileSync(this.reflectHistoryPath, 'utf8'));
       }
     } catch (e) {
-      // 已禁用 console.error: console.error('Error loading reflect history:', e.message);
     }
     return { reports: [] };
   }
@@ -446,7 +445,6 @@ ${confidenceNote}
     
     // 不允许修改其他已存在的 skill（只能创建新的）
     if (fs.existsSync(skillDir)) {
-      // 已禁用 console.error: console.error(`Skill ${pattern.skillName} already exists`);
       return { success: false, reason: 'exists' };
     }
 
@@ -469,10 +467,8 @@ ${confidenceNote}
     // v2.2.5: 生成后质量验证
     const validation = this.validateGeneratedSkill(pattern, skillContent);
     if (!validation.valid) {
-      // 已禁用 console.warn: console.warn(`[SkillGenerator] 技能生成质量不足: ${validation.quality} (${validation.passed}/${validation.total})`);
     }
 
-    // 已禁用 console.log: console.log(`Generated skill: ${pattern.skillName} (quality: ${validation.quality})`);
     return {
       success: true,
       path: skillPath,

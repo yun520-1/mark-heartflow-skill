@@ -18,6 +18,9 @@
 
 const psychology = require('./psychology.js');
 const empathy = require('./empathy-detector.js');
+// 公式注册表：把认知公式主动注入情绪引擎（v5.9.5 重构）
+const { getFormulaRegistry } = require('../formula/formula-registry.js');
+const _registry = getFormulaRegistry();
 // AI认知状态调节器 — 6个人类心理学模块的AI化版本
 const { breathingExercise } = require('./breathing-exercise.js');
 const { pauseAndReflect } = require('./pause-and-reflect.js');
@@ -188,28 +191,30 @@ class PsychologyEngine {
      */
     _aggregateConfidence(layers) {
         if (!layers || layers.length === 0) {
-            return { average: 0, min: 0, max: 0, weighted: 0 };
+            return { average: 0, min: 0, max: 0, weighted: 0, metacognitive: 0 };
         }
 
         const confidences = layers.filter(l => typeof l.confidence === 'number' && l.confidence >= 0 && l.confidence <= 1);
         if (confidences.length === 0) {
-            return { average: 0, min: 0, max: 0, weighted: 0 };
+            return { average: 0, min: 0, max: 0, weighted: 0, metacognitive: 0 };
         }
 
         const values = confidences.map(l => l.confidence);
         const sum = values.reduce((a, b) => a + b, 0);
         const average = sum / values.length;
 
-        // 加权：较低置信度层给予更少权重
-        const weights = values.map(v => Math.max(0.1, v));
-        const weightSum = weights.reduce((a, b) => a + b, 0);
-        const weighted = weights.reduce((acc, w, i) => acc + w * values[i], 0) / weightSum;
+        // 加权：较低置信度层给予更少权重（公式注册表 weighted_confidence 原语）
+        const weighted = _registry.call('confidence_aggr', 'weighted_confidence', values, values.map(v => Math.max(0.1, v)));
+
+        // 元认知置信度：多来源预测一致性越高，整体置信度越高（C = 1 - Var(p)）
+        const metacognitive = _registry.call('confidence_aggr', 'metacognitive_confidence', values);
 
         return {
             average: Math.round(average * 100) / 100,
             min: Math.round(Math.min(...values) * 100) / 100,
             max: Math.round(Math.max(...values) * 100) / 100,
-            weighted: Math.round(weighted * 100) / 100
+            weighted: Math.round((weighted || average) * 100) / 100,
+            metacognitive: Math.round((metacognitive || 0) * 100) / 100
         };
     }
 

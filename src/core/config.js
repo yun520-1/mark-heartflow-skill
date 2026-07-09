@@ -287,6 +287,8 @@ class HeartFlowConfig {
 
   _deepMerge(target, source) {
     for (const key of Object.keys(source)) {
+      // [AUDIT-FIX] 阻止原型污染（__proto__ / prototype / constructor）
+      if (key === '__proto__' || key === 'prototype' || key === 'constructor') continue;
       if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
         if (!(key in target) || typeof target[key] !== 'object') target[key] = {};
         this._deepMerge(target[key], source[key]);

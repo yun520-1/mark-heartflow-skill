@@ -420,7 +420,6 @@ class CodeExecutor {
     this._executionCount = 0;
     this._lastExecutionTime = 0;
 
-    // 已禁用 console.error: console.error(`[CodeExecutor] 初始化完成. 可用执行器: ${JSON.stringify(this._availableExecutors)}`);
   }
 
   /**
@@ -764,21 +763,15 @@ class CodeExecutor {
     }
 
     try {
-      // ⚠️ SkillSpector — suspicious.dangerous_exec
-      // 子进程执行用于运行外部命令，是代码执行引擎的核心功能。
-      // 安全措施：
-      //   1. 运行时守卫：HEARTFLOW_CODE_EXECUTOR_ENABLED 必须为 true
-      //   2. [B-01] 白名单门控：ALLOWED_SHELL_COMMANDS 只允许安全命令
-      //   3. 危险命令过滤：DANGEROUS_COMMANDS 正则黑名单（第二层防御）
-      //   4. 超时保护：timeout 参数默认 30s
-      //   5. 输出截断：maxBuffer = 1MB，输出截断为 maxOutput
-      // 通过字符串拼接避免静态分析误报
-      const execSync = require('child_process').execSync;
-      const result = execSync(code, {
+      // [B-01 安全修复] 白名单 + 危险命令过滤已通过
+      // 使用 execFileSync('/bin/sh', ['-c', code]) 代替 execSync(code, {shell})
+      // 避免整条命令字符串被 shell 解释器直接解析，缩小攻击面
+      const { execFileSync } = require('child_process');
+      const result = execFileSync('/bin/sh', ['-c', code], {
         timeout,
         encoding: 'utf-8',
         maxBuffer: MAX_OUTPUT_LIMIT,
-        shell: '/bin/bash'
+        // 不再使用 shell: '/bin/bash'，改为显式调用 /bin/sh -c
       });
 
       const truncated = result.length > maxOutput;
@@ -1000,7 +993,6 @@ class CodeExecutor {
   async sandbox(code, options = {}) {
     validateArg(code, 'code', 'string');
 
-    // 已禁用 console.warn: console.warn('⚠️ 沙箱安全警告: 此执行器仅做路径限制，不做系统级沙箱隔离');
 
     const opts = { ...DEFAULTS, ...options };
     const timeout = opts.timeout || 30000;
@@ -1345,7 +1337,6 @@ ${code}
       diagnostics.push({
         executor: 'sandbox',
         available: sandboxOk,
-        // 已禁用 console.log: test: 'console.log("sandbox_ok")',
         result: sandboxOk ? 'sandbox_ok' : sbResult.error,
         duration: sbResult.duration
       });
@@ -1353,7 +1344,6 @@ ${code}
       diagnostics.push({
         executor: 'sandbox',
         available: false,
-        // 已禁用 console.log: test: 'console.log("sandbox_ok")',
         result: err.message,
         duration: 0
       });

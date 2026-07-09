@@ -123,7 +123,6 @@ class LoveCognition {
     };
 
     this.ready = true;
-    // 已禁用 console.error: if (this.debug) console.error('[LoveCognition] v0.3.0 ready — 10 theories, 10 rules');
   }
 
   /**

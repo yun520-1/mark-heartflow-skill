@@ -61,7 +61,6 @@ class SAGEGuardian {
     const timestamp = new Date().toISOString();
     const entry = `[${timestamp}] [${level}] ${message}\n`;
     fs.appendFileSync(this.logFile, entry);
-    // 已禁用 console.error: console.error(`[SAGE] ${message}`);
   }
 
   /**
@@ -342,10 +341,8 @@ class SAGEGuardian {
     
     try {
       fs.appendFileSync(this.logFile, logLine);
-      // 已禁用 console.error: console.error(`[SAGE] Security decision logged: ${decision.level}`);
       return { success: true };
     } catch (e) {
-      // 已禁用 console.error: console.error('[SAGE] Failed to log security decision:', e.message);
       return { success: false, error: e.message };
     }
   }
@@ -365,7 +362,6 @@ class SAGEGuardian {
             try {
               return JSON.parse(line);
             } catch (e) {
-              // 已禁用 console.warn: console.warn('[SAGE] Skipping invalid JSON line in security log');
               return null;
             }
           })
@@ -374,7 +370,6 @@ class SAGEGuardian {
         return logs.slice(-limit);
       }
     } catch (e) {
-      // 已禁用 console.error: console.error('[SAGE] Error reading security log:', e.message);
     }
     return [];
   }

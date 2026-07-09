@@ -65,7 +65,6 @@ class SemanticAnchor {
     ];
     for (const field of requiredFields) {
       if (this[field] === undefined) {
-        // 已禁用 console.warn: console.warn(`[SemanticAnchor] 初始化警告: ${field} 未正确设置`);
       }
     }
   }
@@ -147,7 +146,6 @@ class SemanticAnchor {
     const message = userMessage.toLowerCase().substring(0, MAX_MESSAGE_LENGTH);
     if (userMessage.length > MAX_MESSAGE_LENGTH) {
       this._errorStats.boundaryViolations++;
-      // 已禁用 console.warn: console.warn(`[SemanticAnchor] 消息过长 (${userMessage.length} 字符)，已截断至 ${MAX_MESSAGE_LENGTH}`);
     }
 
     // === 上下文验证 ===
@@ -163,7 +161,6 @@ class SemanticAnchor {
     for (const [category, config] of Object.entries(this.ambiguityPatterns)) {
       // 验证 pattern 配置
       if (!Array.isArray(config.patterns)) {
-        // 已禁用 console.warn: console.warn(`[SemanticAnchor] 类别 ${category} 的 patterns 配置无效`);
         continue;
       }
 
@@ -380,7 +377,6 @@ class SemanticAnchor {
     // === 异常恢复：如果出错则记录但不崩溃 ===
     if (lastError && retries > this.maxRetriesPerAnchor) {
       this._errorStats.totalAnchorsFailed++;
-      // 已禁用 console.warn: console.warn(`[SemanticAnchor] 锚定失败 (${term}): ${lastError.message}`);
     }
 
     const confidence = usedFallback
@@ -520,7 +516,6 @@ class SemanticAnchor {
           }
         } catch (e) {
           // 单个锚定失败不中断整体流程
-          // 已禁用 console.warn: console.warn(`[SemanticAnchor] 锚定生成失败 (${finding.term}): ${e.message}`);
           anchors.push({
             finding: finding,
             anchor: {
@@ -547,7 +542,6 @@ class SemanticAnchor {
       };
     } catch (e) {
       // === 顶层异常恢复：即使 processMessage 抛异常也要返回安全结果 ===
-      // 已禁用 console.error: console.error(`[SemanticAnchor] processMessage 异常: ${e.message}`);
       return {
         needsAnchor: false,
         message: userMessage,

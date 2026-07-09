@@ -55,7 +55,6 @@ function sortData(data${field ? `, key = '${field}'` : ''}, ascending = ${order}
 
 // 使用示例
 // const result = sortData([3, 1, 4, 1, 5, 9]);
-// 已禁用 console.log: // console.log(result); // [1, 1, 3, 4, 5, 9]
 `;
   },
 
@@ -80,7 +79,6 @@ function filterData(data, predicate = (item) => ${condition}) {
 
 // 使用示例
 // const result = filterData([1, 2, 3, 4, 5], n => n > 2);
-// 已禁用 console.log: // console.log(result); // [3, 4, 5]
 `;
   },
 
@@ -142,7 +140,6 @@ function analyzeData(data${field ? `, field = '${field}'` : ''}) {
 
 // 使用示例
 // const stats = analyzeData([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-// 已禁用 console.log: // console.log(stats);
 `;
   },
 
@@ -201,7 +198,6 @@ async function fetchData(url = '${url}', options = {}) {
 
 // 使用示例
 // const result = await fetchData('https://jsonplaceholder.typicode.com/todos/1');
-// 已禁用 console.log: // if (result.success) console.log(result.data);
 `;
   },
 
@@ -269,8 +265,6 @@ class DataCache {
 // 使用示例
 // const cache = new DataCache({ maxSize: 50, ttl: 30000 });
 // cache.set('user:1', { name: 'Alice' });
-// 已禁用 console.log: // console.log(cache.get('user:1'));
-// 已禁用 console.log: // console.log(cache.stats);
 `;
   },
 
@@ -354,7 +348,6 @@ function validate(input, rules) {
 //     email: { required: true, pattern: /^[^@]+@[^@]+\\.[^@]+$/ }
 //   }
 // );
-// 已禁用 console.log: // console.log(result.valid ? '通过' : '失败', result.errors);
 `;
   },
 
@@ -434,8 +427,6 @@ class FileManager {
 // 使用示例
 // const fm = new FileManager('./data');
 // fm.write('test.txt', 'Hello World');
-// 已禁用 console.log: // console.log(fm.read('test.txt'));
-// 已禁用 console.log: // console.log(fm.list('.'));
 `;
   },
 
@@ -506,7 +497,6 @@ class DataPipeline {
 //   .map(n => n * 2)
 //   .sort((a, b) => b - a);
 // const result = pipeline.run();
-// 已禁用 console.log: // console.log(result.data); // [12, 10, 8, 6]
 `;
   },
 
@@ -642,10 +632,6 @@ function hexDecode(hex) {
 }
 
 // 使用示例
-// 已禁用 console.log: // console.log(base64Encode('Hello 世界'));  // 编码
-// 已禁用 console.log: // console.log(base64Decode('SGVsbG8g5LiW55WM')); // 解码
-// 已禁用 console.log: // console.log(hexEncode('ABC')); // '414243'
-// 已禁用 console.log: // console.log(hexDecode('414243')); // 'ABC'
 `;
   },
 
@@ -759,7 +745,6 @@ function chunkProcess(items, processor, chunkSize = 10) {
 // 使用示例
 // const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 // const result = await batchProcess(data, async (n) => n * 2, { batchSize: 3 });
-// 已禁用 console.log: // console.log(result.results); // [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]
 `;
   },
 
@@ -810,9 +795,6 @@ function pick(obj, keys) {
 }
 
 // 使用示例
-// 已禁用 console.log: // console.log(deepClone({ a: 1, b: { c: 2 } }));
-// 已禁用 console.log: // console.log(chunk([1,2,3,4,5], 2)); // [[1,2],[3,4],[5]]
-// 已禁用 console.log: // console.log(unique([1,2,2,3,3,4])); // [1,2,3,4]
 `;
   }
 };
@@ -1033,7 +1015,6 @@ function getTestCases(intent, funcName) {
       name: '基本功能测试',
       setup: '',
       call: `${funcName}()`,
-      // 已禁用 console.log: assert: 'console.log(`测试 ${funcName} 基本功能`);'
     }
   ];
 }

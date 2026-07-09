@@ -738,15 +738,7 @@ if (require.main === module) {
   ];
 
   for (const tc of testCases) {
-    // 已禁用 console.log: console.log(`\n=== Test: ${tc.name} ===`);
     const result = generateDream(tc.input, { useDag: false });
-    // 已禁用 console.log: console.log(`  state: ${result.state}`);
-    // 已禁用 console.log: console.log(`  errors: ${JSON.stringify(result.errors)}`);
-    // 已禁用 console.log: console.log(`  warnings: ${JSON.stringify(result.warnings)}`);
-    // 已禁用 console.log: console.log(`  motifs: ${(result.motifs || []).length} items`);
-    // 已禁用 console.log: console.log(`  meta: ${JSON.stringify(result._meta)}`);
   }
 
-  // 已禁用 console.log: console.log('\n=== Diagnostics ===');
-  // 已禁用 console.log: console.log(JSON.stringify(getDiagnostics(), null, 2));
 }

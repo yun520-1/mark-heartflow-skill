@@ -683,7 +683,6 @@ class GoalGenerator {
           const content = fs.readFileSync(path.join(this.memoryDir, file), 'utf8');
           logs.push(JSON.parse(content));
         } catch (e) {
-          // 已禁用 console.warn: console.warn('[GoalGenerator] loadMemoryLogs failed:', e.message);
         }
       }
     }
