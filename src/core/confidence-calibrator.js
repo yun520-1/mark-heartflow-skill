@@ -65,6 +65,20 @@ class ConfidenceCalibrator {
     ];
 
     this._load();
+    // [FORMULA] 公式桥接（交叉熵/KL散度校准），懒加载单例
+    this._formulaBridge = null;
+  }
+
+  _getFormulaBridge() {
+    if (!this._formulaBridge) {
+      try {
+        const { getFormulaBridge } = require('../formula/formula-bridge.js');
+        this._formulaBridge = getFormulaBridge();
+      } catch (e) {
+        this._formulaBridge = null;
+      }
+    }
+    return this._formulaBridge;
   }
 
   /**
@@ -406,15 +420,23 @@ class ConfidenceCalibrator {
     const withFeedback = this.records.filter(r => r.feedback !== null);
     if (withFeedback.length === 0) return null;
 
-    const totalError = withFeedback.reduce((sum, r) => {
+    const bridge = this._getFormulaBridge();
+    let totalAbsError = 0;
+    let totalLogLoss = 0;
+    for (const r of withFeedback) {
       // 使用校准后的置信度（即向用户展示的置信度）作为 stated confidence
       const stated = r.calibrated.calibrated;
       // 实际准确率：1 = 正确, 0 = 错误
       const actual = r.feedback ? 1 : 0;
-      return sum + Math.abs(stated - actual);
-    }, 0);
+      totalAbsError += Math.abs(stated - actual);
+      // [FORMULA] 二值交叉熵（对数损失）：比绝对差更敏感地惩罚过度自信
+      // 公式引自心虫公式库 cross_entropy: H = -Σ p(x)·log q(x)
+      if (bridge) totalLogLoss += bridge.logLoss(stated, actual);
+    }
 
-    return Math.round((totalError / withFeedback.length) * 1000) / 1000;
+    const absError = Math.round((totalAbsError / withFeedback.length) * 1000) / 1000;
+    const logLoss = bridge ? Math.round((totalLogLoss / withFeedback.length) * 1000) / 1000 : null;
+    return { absError, logLoss };
   }
 
   /**
@@ -423,16 +445,19 @@ class ConfidenceCalibrator {
    */
   getCalibrationError() {
     const error = this._computeCalibrationError();
+    const absError = error ? error.absError : null;
+    const logLoss = error ? error.logLoss : null;
     return {
-      error,
+      error: absError,
+      logLoss,
       samples: this.records.filter(r => r.feedback !== null).length,
-      interpretation: error === null
+      interpretation: absError === null
         ? '尚无反馈数据，无法计算校准误差'
-        : error < 0.1
+        : absError < 0.1
           ? '校准优秀：置信度与实际准确率高度吻合'
-          : error < 0.25
+          : absError < 0.25
             ? '校准良好：存在轻微过度自信或保守倾向'
-            : error < 0.40
+            : absError < 0.40
               ? '校准一般：置信度表达与实际结果存在明显偏差'
               : '校准较差：建议检查评分维度和阈值设置',
     };
