@@ -2771,6 +2771,36 @@ class HeartFlow {
    * @returns {object} — { output, type, confidence, thoughtChain }
    */
   /**
+   * 公式语义匹配（v5.9.6 新增公开接口）
+   * 从自然语言抽取认知信号，匹配心虫公式库中相关的认知公式/原语。
+   * 让上层（对话层/管道/模块）能"读懂"输入并找到合适公式，而非仅靠 id 查询。
+   *
+   * @param {string} text - 用户输入/认知情境描述
+   * @param {object} [opts] - { limit, minConfidence, stage, resolve }
+   * @returns {Array} 匹配结果 [{ ref, kind, stage, name, confidence, signalHit, doc? }]
+   *
+   * @example
+   *   hf.matchFormulas('我感到不确定，多个来源矛盾')
+   *   => [{ ref:'metacognitive_confidence', kind:'stage-primitive', stage:'confidence_aggr', confidence:1.0, ... }]
+   */
+  matchFormulas(text, opts = {}) {
+    try {
+      const { getFormulaMatcher } = require('../formula/formula-matcher.js');
+      const matcher = getFormulaMatcher();
+      const matches = matcher.matchFromText(text, opts);
+      if (opts.resolve) {
+        return matches.map(m => {
+          const resolved = matcher.resolve(m);
+          return Object.assign({}, m, resolved ? { doc: resolved.doc } : {});
+        });
+      }
+      return matches;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /**
    * 完整思维链 — 对用户输入进行全链路认知分析
    * @param {string} input - 用户输入文本
    * @param {number} [depth=1] - 推理深度 (1-4)
