@@ -496,6 +496,209 @@ class FormulaBridge {
     if (!Array.isArray(factorCov)) return 0;
     return factorCov;
   }
+
+  // ─── v5.9.9 第二批审计扩展 ───
+
+  /**
+   * 信息价值（决策理论 EVSI）：EVSI = E[U(D)] - E[U(∅)]
+   * 简化：infoValue = E[U|data] - E[U]（数据带来的期望效用增益）
+   */
+  informationValue(priorEU, posteriorEU) {
+    return Math.max(0, (posteriorEU || 0) - (priorEU || 0));
+  }
+
+  /**
+   * 贝叶斯确认度 c = P(H|E) - P(H)
+   */
+  bayesConfirmation(pHgivenE, pH) {
+    return (pHgivenE || 0) - (pH || 0);
+  }
+
+  /**
+   * 波普尔确认度 C = P(E|H) - P(E|¬H)
+   */
+  popperCorroboration(pEgivenH, pEgivenNotH) {
+    return (pEgivenH || 0) - (pEgivenNotH || 0);
+  }
+
+  /**
+   * 后验赔率（公式版）O = BF · O(H)，O(H)=P/(1-P)
+   */
+  oddsRatio(priorProb, bf) {
+    const oH = (priorProb || 0) / Math.max(1e-15, 1 - (priorProb || 0));
+    return oH * (bf || 1);
+  }
+
+  /**
+   * 后悔理论 U = Σ p_i · (u(o_i) - R(o_i, o_best))
+   */
+  regretTheory(probs, utils, bestUtil) {
+    if (!Array.isArray(probs) || !Array.isArray(utils)) return 0;
+    const best = bestUtil !== undefined ? bestUtil : Math.max(...utils);
+    return probs.reduce((s, p, i) => s + p * ((utils[i] || 0) - best), 0);
+  }
+
+  /**
+   * 极小极大（零和）：返回 max_min 值（给定收益矩阵行）
+   */
+  minimax(payoffRows) {
+    if (!Array.isArray(payoffRows)) return 0;
+    const rowMins = payoffRows.map(row => Math.min(...row));
+    return Math.max(...rowMins);
+  }
+
+  /**
+   * 沙普利值（合作博弈，近似：等权所有排列）
+   */
+  shapleyValue(players, characteristicFn) {
+    const n = players.length;
+    if (n === 0) return [];
+    const fact = (k) => { let r = 1; for (let i = 2; i <= k; i++) r *= i; return r; };
+    const idxSubsets = (exclude) => {
+      const rest = players.filter((_, i) => i !== exclude);
+      const out = [];
+      const m = rest.length;
+      for (let mask = 0; mask < (1 << m); mask++) {
+        const S = [];
+        for (let j = 0; j < m; j++) if (mask & (1 << j)) S.push(rest[j]);
+        const w = fact(S.length) * fact(n - S.length - 1) / fact(n);
+        const vS = characteristicFn(S);
+        const vSplus = characteristicFn([...S, players[exclude]]);
+        out.push(w * (vSplus - vS));
+      }
+      return out.reduce((a, b) => a + b, 0);
+    };
+    return players.map((_, i) => +idxSubsets(i).toFixed(4));
+  }
+
+  /**
+   * 情绪混合模型 E_mixed = Σ w_i · E_i（权重归一）
+   */
+  emotionBlend(emotions, weights) {
+    const n = Math.min(emotions.length, weights.length);
+    let s = weights.slice(0, n).reduce((a, b) => a + b, 0) || 1;
+    let e = 0;
+    for (let i = 0; i < n; i++) e += (weights[i] / s) * (emotions[i] || 0);
+    return e;
+  }
+
+  /**
+   * 耶克斯-多德森（量化）Performance = -a(A-A_opt)² + b
+   */
+  yerkesDodsonEquation(arousal, aOpt, a = 0.5, b = 1) {
+    return -a * Math.pow(arousal - aOpt, 2) + b;
+  }
+
+  /**
+   * 最优唤醒 A_opt = (-b ± sqrt(b²-4ac)) / (2a)（取实解）
+   */
+  yerkesDodsonOptimal(a, b, c) {
+    const disc = b * b - 4 * a * c;
+    if (disc < 0) return null;
+    const r = (-b + Math.sqrt(disc)) / (2 * a);
+    return isFinite(r) ? r : null;
+  }
+
+  /**
+   * 心流通道 Flow = 1 - |log2(challenge/skill)| / max_bits
+   */
+  flowChannel(challenge, skill, maxBits = 4) {
+    if (!(skill > 0)) return 0;
+    return 1 - Math.abs(Math.log2(challenge / skill)) / maxBits;
+  }
+
+  /**
+   * 最优心流：challenge = skill × 1.1
+   */
+  flowOptimal(skill, ratio = 1.1) {
+    return skill * ratio;
+  }
+
+  /**
+   * PAD 愉悦度（量化）P = w1·pos - w2·neg + baseline
+   */
+  padPleasure(posWords, negWords, w1 = 1, w2 = 1, baseline = 0) {
+    return w1 * posWords - w2 * negWords + baseline;
+  }
+
+  /**
+   * ACT-R 期望增益 EG = Σ P(outcome)·Utility(outcome)
+   */
+  actrExpectedGain(probs, utils) {
+    if (!Array.isArray(probs) || !Array.isArray(utils)) return 0;
+    return probs.reduce((s, p, i) => s + p * (utils[i] || 0), 0);
+  }
+
+  /**
+   * Soar Q-Learning 更新 Q = α[r + γ max_a' Q(s',a') - Q(s,a)]
+   */
+  soarQLearning(q, alpha, reward, gamma, nextMaxQ) {
+    return q + alpha * (reward + gamma * nextMaxQ - q);
+  }
+
+  /**
+   * Actor-Critic 优势 δ = r + γV(s') - V(s)
+   */
+  actorCritic(reward, gamma, vNext, vCurrent) {
+    return reward + gamma * vNext - vCurrent;
+  }
+
+  /**
+   * 同质性指数 H = (E_within - E_random) / (E_total - E_random)
+   */
+  homophily(eWithin, eRandom, eTotal) {
+    const denom = eTotal - eRandom;
+    if (denom === 0) return 0;
+    return (eWithin - eRandom) / denom;
+  }
+
+  /**
+   * 旁观者效应 P = 1 - (1-p)^n
+   */
+  bystanderEffect(p, n) {
+    return 1 - Math.pow(1 - p, n);
+  }
+
+  /**
+   * 克隆巴赫 α α = (k/(k-1))(1 - Σσ²_i/σ²_total)
+   */
+  cronbachAlpha(k, sumVarItem, varTotal) {
+    if (!(k > 1) || !(varTotal > 0)) return 0;
+    return (k / (k - 1)) * (1 - sumVarItem / varTotal);
+  }
+
+  /**
+   * 科恩 d d = (μ₁-μ₂)/σ_pooled
+   */
+  cohensD(m1, m2, pooledSd) {
+    if (!(pooledSd > 0)) return 0;
+    return (m1 - m2) / pooledSd;
+  }
+
+  /**
+   * PHQ-9 / GAD-7 量表总分 Σ items（0-3）
+   */
+  phq9Score(items) { return Array.isArray(items) ? items.reduce((a, b) => a + (b || 0), 0) : 0; }
+  gad7Score(items) { return Array.isArray(items) ? items.reduce((a, b) => a + (b || 0), 0) : 0; }
+
+  /**
+   * ACT-R 陈述性记忆 S = B - Σ w_i·ln(P_i)
+   */
+  actrDeclarativeMemory(baseLevel, noiseWeights, probabilities) {
+    let s = baseLevel;
+    for (let i = 0; i < noiseWeights.length; i++) s -= noiseWeights[i] * Math.log(Math.max(1e-15, probabilities[i] || 1e-15));
+    return s;
+  }
+
+  /**
+   * 神经放电率 r = Φ(Σ w_i x_i + b)
+   */
+  neuralFiringRate(weights, inputs, bias = 0) {
+    if (!Array.isArray(weights) || !Array.isArray(inputs)) return 0;
+    let z = bias;
+    for (let i = 0; i < weights.length; i++) z += weights[i] * (inputs[i] || 0);
+    return 1 / (1 + Math.exp(-z));  // sigmoid 近似 Φ
+  }
 }
 
 // 单例（避免重复实例化）

@@ -1891,6 +1891,31 @@ class DesireCognition {
     }
   }
 
+  /**
+   * 前景理论欲望效用（v5.9.9 新增）
+   * 把欲望满足的"得/失"用前景理论价值函数算主观效用（损失厌恶 + 风险态度），
+   * 比简单线性加总更贴近真实决策。
+   * @param {number[]} gains - 各欲望的获得值（正）
+   * @param {number[]} losses - 各欲望的丧失值（负，绝对值）
+   * @param {number[]} [probs] - 各结果概率（默认等权）
+   * @returns {number} 前景理论主观总效用
+   */
+  computeProspectUtility(gains, losses, probs) {
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      const n = Math.max(gains.length, losses.length);
+      let u = 0;
+      for (let i = 0; i < n; i++) {
+        const p = probs ? (probs[i] || 1 / n) : 1 / n;
+        const g = gains[i] || 0;
+        const l = losses[i] || 0;
+        u += p * (b.prospectValue(g) - b.prospectValue(-l));
+      }
+      return +u.toFixed(4);
+    } catch (e) { return 0; }
+  }
+
   _describeDesireExpression(desireKey, traits) {
     const desc = {
       survival:     '一切行为以安全为优先',

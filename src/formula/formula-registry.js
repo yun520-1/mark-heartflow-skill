@@ -327,6 +327,127 @@ class FormulaRegistry {
       impl: (ind, help) => _b.vygotskyZPD(ind, help),
       doc: '维果茨基最近发展区',
     });
+    // ─── v5.9.9 第二批审计扩展 ───
+
+    // 决策效用（博弈/后悔/信息价值）
+    this.register('decision_utility', {
+      id: 'information_value', formulaId: 'information_value',
+      impl: (priorEU, postEU) => _b.informationValue(priorEU, postEU),
+      doc: '信息价值 EVSI',
+    });
+    this.register('decision_utility', {
+      id: 'regret_theory', formulaId: 'regret_theory',
+      impl: (probs, utils, best) => _b.regretTheory(probs, utils, best),
+      doc: '后悔理论',
+    });
+    this.register('decision_utility', {
+      id: 'minimax', formulaId: 'minimax',
+      impl: (rows) => _b.minimax(rows),
+      doc: '极小极大（零和博弈）',
+    });
+    this.register('decision_utility', {
+      id: 'shapley_value', formulaId: 'shapley_value',
+      impl: (players, fn) => _b.shapleyValue(players, fn),
+      doc: '沙普利值（合作博弈）',
+    });
+    this.register('decision_utility', {
+      id: 'actor_critic', formulaId: 'actor_critic',
+      impl: (r, g, vn, vc) => _b.actorCritic(r, g, vn, vc),
+      doc: 'Actor-Critic 优势',
+    });
+    this.register('decision_utility', {
+      id: 'soar_qlearning', formulaId: 'soar_qlearning',
+      impl: (q, a, r, g, nm) => _b.soarQLearning(q, a, r, g, nm),
+      doc: 'Soar Q-Learning',
+    });
+    this.register('decision_utility', {
+      id: 'actr_expected_gain', formulaId: 'actr_expected_gain',
+      impl: (probs, utils) => _b.actrExpectedGain(probs, utils),
+      doc: 'ACT-R 期望增益',
+    });
+
+    // 情绪/唤醒/心流
+    this.register('emotion_arousal', {
+      id: 'emotion_blend', formulaId: 'emotion_blend',
+      impl: (emos, weights) => _b.emotionBlend(emos, weights),
+      doc: '情绪混合模型',
+    });
+    this.register('emotion_arousal', {
+      id: 'yerkes_dodson_equation', formulaId: 'yarkes_dodson_equation',
+      impl: (a, aOpt, pa, b) => _b.yerkesDodsonEquation(a, aOpt, pa, b),
+      doc: '耶克斯-多德森（量化）',
+    });
+    this.register('emotion_arousal', {
+      id: 'flow_channel', formulaId: 'flow_channel_equation',
+      impl: (c, s, mb) => _b.flowChannel(c, s, mb),
+      doc: '心流通道',
+    });
+    this.register('emotion_arousal', {
+      id: 'pad_pleasure', formulaId: 'pad_pleasure',
+      impl: (pos, neg, w1, w2, base) => _b.padPleasure(pos, neg, w1, w2, base),
+      doc: 'PAD 愉悦度量化',
+    });
+
+    // 信念更新（确认度/赔率/贝叶斯）
+    this.register('belief_update', {
+      id: 'bayes_confirmation', formulaId: 'bayes_confirmation',
+      impl: (pHE, pH) => _b.bayesConfirmation(pHE, pH),
+      doc: '贝叶斯确认度',
+    });
+    this.register('belief_update', {
+      id: 'popper_corroboration', formulaId: 'popper_corroboration',
+      impl: (pEH, pEnH) => _b.popperCorroboration(pEH, pEnH),
+      doc: '波普尔确认度',
+    });
+    this.register('belief_update', {
+      id: 'odds_ratio', formulaId: 'odds_ratio',
+      impl: (prior, bf) => _b.oddsRatio(prior, bf),
+      doc: '后验赔率（公式版）',
+    });
+
+    // 校准（心理测量/社会/神经）
+    this.register('calibration', {
+      id: 'homophily', formulaId: 'homophily',
+      impl: (ew, er, et) => _b.homophily(ew, er, et),
+      doc: '同质性指数',
+    });
+    this.register('calibration', {
+      id: 'bystander_effect', formulaId: 'bystander_effect',
+      impl: (p, n) => _b.bystanderEffect(p, n),
+      doc: '旁观者效应',
+    });
+    this.register('calibration', {
+      id: 'cronbach_alpha', formulaId: 'psych_reliability_cronbach',
+      impl: (k, sv, vt) => _b.cronbachAlpha(k, sv, vt),
+      doc: '克隆巴赫 α',
+    });
+    this.register('calibration', {
+      id: 'cohens_d', formulaId: 'psych_effect_size_cohens_d',
+      impl: (m1, m2, psd) => _b.cohensD(m1, m2, psd),
+      doc: '科恩 d 效应量',
+    });
+    this.register('calibration', {
+      id: 'phq9_score', formulaId: 'psych_phq9_score',
+      impl: (items) => _b.phq9Score(items),
+      doc: 'PHQ-9 抑郁量表',
+    });
+    this.register('calibration', {
+      id: 'gad7_score', formulaId: 'psych_gad7_score',
+      impl: (items) => _b.gad7Score(items),
+      doc: 'GAD-7 焦虑量表',
+    });
+
+    // 记忆（ACT-R 精确版/神经）
+    this.register('memory_activation', {
+      id: 'actr_declarative_memory', formulaId: 'cog_cog_act_r',
+      impl: (bl, nw, probs) => _b.actrDeclarativeMemory(bl, nw, probs),
+      doc: 'ACT-R 陈述性记忆',
+    });
+    this.register('memory_activation', {
+      id: 'neural_firing_rate', formulaId: 'neural_firing_rate',
+      impl: (w, x, b) => _b.neuralFiringRate(w, x, b),
+      doc: '神经元放电率',
+    });
   }
 }
 
