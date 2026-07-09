@@ -1,7 +1,7 @@
 ---
 name: heartflow-engine
 title: "HeartFlow / 心虫 — AI 认知与自愈引擎"
-version: "5.9.8"
+version: "5.9.9"
 description: |-
   统一整合版：claude-heartflow-skill (v2.8.0) + mark-heartflow-skill (v5.7.3)
   290+ 模块，25 个 MCP 工具，零外部依赖，覆盖认知/记忆/情绪/哲学/自愈/决策/代码/意识。
@@ -284,3 +284,29 @@ v5.9.6 新增：让公式从"精确 id 查询"升级为"自然语言 → 公式"
 ### 审计排除（不为了运用而运用）
 - 未定义公式（nash_equilibrium "undefined"、deontic_* "undefined"）不入
 - 纯神经级（BCM/STDP/FHN）留待后续，仅触发词标注不实现
+
+## 全面优化（v5.9.9）
+
+对心虫公式系统做**并发式全面优化**：模块注入（A）+ 第二批公式审计（B）+ Slide4 重做（C）。
+
+### A. 新原语注入对应认知模块（真正接进 think 主干）
+- **GWT → global-workspace.js**：`determineWinner` 用 `gwtWinner`/`gwtAccessibility` 算意识竞争元数据（不替代主逻辑，附带 `winner.gwt`）
+- **IIT → phenomenology-engine.js**：加 `measurePhi()` 公开方法 + `analyzeIntentionality` 返回 `integratedInformation`（当 context.partitions 提供时）
+- **前景理论 → desire-cognition.js**：加 `computeProspectUtility(gains, losses, probs)` 用 `prospectValue`（损失厌恶 + 风险态度）
+- **经验回放 → memory-consolidator.js**：`consolidateAll` 步骤5 调 `sampleReplay`（FormulaBridge.experienceReplay），`replayed` 计入统计；加 `setRecentMemoryIds` 注入接口
+
+### B. 第二批公式审计（121→105 条未接入里再挖 23 条）
+筛选标准：可计算 + 有对应场景 + 不重复已有。
+- 决策/博弈：information_value(EVSI) / regret_theory / minimax / shapley_value / actor_critic / soar_qlearning / actr_expected_gain
+- 情绪/心流：emotion_blend / yerkes_dodson_equation / flow_channel / pad_pleasure
+- 信念/确认：bayes_confirmation / popper_corroboration / odds_ratio
+- 校准/社会/心理测量：homophily / bystander_effect / cronbach_alpha / cohens_d / phq9_score / gad7_score
+- 记忆/神经：actr_declarative_memory / neural_firing_rate
+- 触发词 ref 55→77，信号类 21→23（新增 mental_health / confirmation）
+
+### C. Slide4 重做
+`scripts/generate-formula-matching-slide.py` 已是**原生 PPTX 表格**（python-pptx add_table，无图片/Vector 层），动态读 formula-triggers.json 生成 23 信号类映射表，修复旧版 Vector zero-size 渲染错误。
+
+### 验证
+- 集成测试 **20/20 通过**（A 模块注入 + B 第二批 23 公式 + Matcher 新匹配 + 7 环节回归）
+- FormulaBridge 原语：38→61；FormulaRegistry 原语：38→60

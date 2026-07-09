@@ -232,6 +232,11 @@
             "c"
           ],
           "paramDesc": "唤醒度及拟合参数"
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "yerkes_dodson_equation",
+          "weight": 1
         }
       ]
     },
@@ -302,6 +307,11 @@
           "kind": "stage-primitive",
           "ref": "actr_noise",
           "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "neural_firing_rate",
+          "weight": 0.5
         }
       ]
     },
@@ -332,6 +342,41 @@
         {
           "kind": "stage-primitive",
           "ref": "gwt_winner",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "regret_theory",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "minimax",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "shapley_value",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "information_value",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "actor_critic",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "soar_qlearning",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "actr_expected_gain",
           "weight": 1
         }
       ]
@@ -503,6 +548,16 @@
             "accessIntervals"
           ],
           "paramDesc": "各次访问的时间间隔数组"
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "cronbach_alpha",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "cohens_d",
+          "weight": 1
         }
       ]
     },
@@ -580,6 +635,11 @@
         {
           "kind": "stage-primitive",
           "ref": "irt_sem",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "actr_declarative_memory",
           "weight": 1
         }
       ]
@@ -732,6 +792,16 @@
           "stage": "emotion_arousal",
           "name": "唤醒-绩效",
           "weight": 0.5
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "emotion_blend",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "pad_pleasure",
+          "weight": 1
         }
       ]
     },
@@ -764,6 +834,11 @@
           "stage": "emotion_arousal",
           "name": "唤醒-绩效(中等最优)",
           "weight": 0.6
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "flow_channel",
+          "weight": 1
         }
       ]
     },
@@ -808,6 +883,21 @@
         {
           "kind": "stage-primitive",
           "ref": "posterior_odds",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "bayes_confirmation",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "popper_corroboration",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "odds_ratio",
           "weight": 1
         }
       ]
@@ -970,6 +1060,16 @@
           "kind": "stage-primitive",
           "ref": "vygotsky_zpd",
           "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "homophily",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "bystander_effect",
+          "weight": 1
         }
       ]
     },
@@ -984,6 +1084,49 @@
         {
           "kind": "stage-primitive",
           "ref": "vygotsky_zpd",
+          "weight": 1
+        }
+      ]
+    },
+    "mental_health": {
+      "synonyms": [
+        "抑郁",
+        "焦虑",
+        "量表",
+        "PHQ",
+        "GAD",
+        "心理测量"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "phq9_score",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "gad7_score",
+          "weight": 1
+        }
+      ]
+    },
+    "confirmation": {
+      "synonyms": [
+        "确认",
+        "证实",
+        "证据强度",
+        "波普尔",
+        "卡尔纳普"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "bayes_confirmation",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "popper_corroboration",
           "weight": 1
         }
       ]
