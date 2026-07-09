@@ -779,7 +779,7 @@ if (hasTransition.test(input)) score += 0.3;
 # 1. 版本一致性（最快，无 OOM 风险）
 node -e "
 const fs = require('fs');
-const ROOT = '/Users/apple/.hermes/skills/heartflow';
+const ROOT = '~/.hermes/skills/heartflow';
 const s = {};
 ['VERSION','package.json','SKILL.md'].forEach(f => {
   try {
@@ -1360,7 +1360,7 @@ clawhub publish . --slug mark-heartflow-skill --version vnewver --changelog "...
 
 ```bash
 # 找出 1500-5000B 的核心模块（含 utils/ 子目录）
-find /Users/apple/.hermes/skills/heartflow/src/core -name '*.js' \
+find ~/.hermes/skills/heartflow/src/core -name '*.js' \
   -not -name 'heartflow.js' | sort | while read f; do
   size=$(wc -c < "$f")
   if [ "$size" -ge 1500 ] && [ "$size" -le 5000 ]; then
@@ -1434,15 +1434,15 @@ git commit -m "upgrade: v<新版本号> — <模块名> 升级：<功能摘要>"
 
 ```bash
 # 1. 语法检查
-node --check /Users/apple/.hermes/skills/heartflow/src/core/<模块名>.js
+node --check ~/.hermes/skills/heartflow/src/core/<模块名>.js
 # 如果模块在 utils/ 子目录：
-node --check /Users/apple/.hermes/skills/heartflow/src/core/utils/<模块名>.js
+node --check ~/.hermes/skills/heartflow/src/core/utils/<模块名>.js
 
 # 2. 版本一致性
-head -1 /Users/apple/.hermes/skills/heartflow/VERSION
+head -1 ~/.hermes/skills/heartflow/VERSION
 
 # 3. 文件大小
-wc -c /Users/apple/.hermes/skills/heartflow/src/core/<模块名>.js
+wc -c ~/.hermes/skills/heartflow/src/core/<模块名>.js
 ```
 
 ### 已知 Pitfalls
@@ -1513,7 +1513,7 @@ heartflow status
 # 3. 哲学语句不再触发危机
 node -e "
 const path = require('path');
-const root = '/Users/apple/.hermes/skills/heartflow';
+const root = '~/.hermes/skills/heartflow';
 const psych = require(path.join(root, 'src', 'core', 'psychology.js'));
 ['死是桥梁传递生', '心虫梦见自己是河', '对错不存在'].forEach(t => {
   const r = psych.analyzePsychology(t);
@@ -1524,7 +1524,7 @@ const psych = require(path.join(root, 'src', 'core', 'psychology.js'));
 # 4. 导出中不再有危机函数
 node -e "
 const path = require('path');
-const root = '/Users/apple/.hermes/skills/heartflow';
+const root = '~/.hermes/skills/heartflow';
 const psych = require(path.join(root, 'src', 'core', 'psychology.js'));
 console.log('assessCrisisLevel:', typeof psych.assessCrisisLevel);
 console.log('checkCrisis:', typeof psych.checkCrisis);
@@ -1643,7 +1643,7 @@ grep -n 'getMemoryStats\\|memory.getStats' /Users/apple/.hermes/mcp-servers/hear
 # 3. 直接验证 memory.getStats 返回值
 node -e "
 const path = require('path');
-const hfDir = '/Users/apple/.hermes/skills/heartflow';
+const hfDir = '~/.hermes/skills/heartflow';
 const Mem = require(path.join(hfDir, 'src', 'memory', 'meaningful-memory.js'));
 const mem = new Mem.MeaningfulMemory(hfDir);
 console.log(JSON.stringify(mem.getStats()));
@@ -1692,7 +1692,7 @@ ps aux | grep mcp-server-http | grep -v grep
 # 输出: /opt/homebrew/bin/node /Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js --port 8099
 
 # 2. 对比两个文件
-diff /Users/apple/.hermes/skills/heartflow/mcp/mcp-server-http.js \
+diff ~/.hermes/skills/heartflow/mcp/mcp-server-http.js \
      /Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js
 
 # 3. 检查 launchd plist 指向的路径
@@ -1702,7 +1702,7 @@ grep 'ProgramArguments\\|mcp-server' /Users/apple/Library/LaunchAgents/com.heart
 **修复**：
 ```bash
 # 复制 skill 目录的最新文件到运行目录
-cp /Users/apple/.hermes/skills/heartflow/mcp/mcp-server-http.js \\\
+cp ~/.hermes/skills/heartflow/mcp/mcp-server-http.js \\\
    /Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js
 
 # 通过 launchd 重启（kickstart-kvp 已废弃，macOS 26.5.1 改用 stop/start）
@@ -1838,7 +1838,7 @@ MCP server 的 `mcp-server.js` 中 `HF_DIR` 指向了错误的旧引擎目录：
 // ~/.hermes/mcp-servers/heartflow/src/mcp-server.js
 const HF_DIR = '/Users/apple/.claude/skills/claude-heartflow-skill';  // ❌ 旧引擎
 // 而不是：
-// const HF_DIR = '/Users/apple/.hermes/skills/heartflow';  // ✅ 当前引擎
+// const HF_DIR = '~/.hermes/skills/heartflow';  // ✅ 当前引擎
 ```
 
 导致 **CLI 和 MCP 指向不同的引擎副本**。两个版本号都是真的——只是分别对应不同目录。
