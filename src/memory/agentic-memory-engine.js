@@ -30,20 +30,42 @@ class AgenticMemoryEngine {
     this.contextWeight = options.contextWeight ?? 0.15;
     this.maxPrefetch = options.maxPrefetch ?? 10;
     this.tagSimilarity = options.tagSimilarity ?? null;
+    // [FORMULA] 公式桥接（Ebbinghaus 记忆衰减），懒加载单例
+    this._formulaBridge = null;
+  }
+
+  _getFormulaBridge() {
+    if (!this._formulaBridge) {
+      try {
+        const { getFormulaBridge } = require('./formula-bridge.js');
+        this._formulaBridge = getFormulaBridge({ defaultMemoryStrength: this.decayHalfLife / Math.LN2 });
+      } catch (e) {
+        this._formulaBridge = null;
+      }
+    }
+    return this._formulaBridge;
   }
 
   // ------------------------------------------------------------------ helpers
 
   /**
    * Exponential-decay factor based on age in milliseconds.
+   * 使用 Ebbinghaus 遗忘曲线 R = exp(-t / S)，记忆强度 S 由访问频率决定
+   * （复述增强记忆：访问越频繁，遗忘越慢）。公式引自心虫公式库 ebbinghaus_forgetting_curve。
    * @private
    * @param {number} ageMs
+   * @param {number} [strengthMs] - 记忆强度 S（ms）。缺省用固定 halfLife 推导。
    * @returns {number} in (0, 1]
    */
-  _decay(ageMs) {
-    const halfLife = this.decayHalfLife;
-    if (halfLife <= 0) return 1;
-    return Math.exp(-(ageMs * Math.LN2) / halfLife);
+  _decay(ageMs, strengthMs) {
+    let S = strengthMs;
+    if (!S || S <= 0) {
+      const halfLife = this.decayHalfLife;
+      if (halfLife <= 0) return 1;
+      S = halfLife / Math.LN2; // halfLife = S * ln2
+    }
+    if (!(ageMs >= 0)) return 1;
+    return Math.exp(-ageMs / S);
   }
 
   /**
@@ -89,7 +111,14 @@ class AgenticMemoryEngine {
   computeSalience(memoryItem, context) {
     const now = context.now ?? Date.now();
     const ageMs = now - (memoryItem.lastAccessed ?? now);
-    const recency = this._decay(ageMs);
+    // [FORMULA] Ebbinghaus 动态记忆强度：访问频率越高，遗忘越慢（复述效应）
+    const bridge = this._getFormulaBridge();
+    let strengthMs = null;
+    if (bridge) {
+      const freq = memoryItem.accessCount ?? 0;
+      strengthMs = bridge.memoryStrengthFromFrequency(freq, this.decayHalfLife / Math.LN2);
+    }
+    const recency = this._decay(ageMs, strengthMs);
 
     const similarityFn = this.tagSimilarity ?? this._defaultTagSimilarity;
     const tagSim = similarityFn(memoryItem.tags ?? [], context.tags ?? []);
