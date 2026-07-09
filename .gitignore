@@ -53,3 +53,10 @@ formulas/github/
 formulas/sympy/
 formulas/mathjs_formulas.json
 data/large/
+
+# ===== 公式语料库大文件（单独存放，不进 git）=====
+formulas-corpus/arqmath/*.zip
+formulas-corpus/arqmath/latex_representation_v3/
+formulas-corpus/arqmath/unique_formulas.txt
+formulas-corpus/im2latex/
+formulas-corpus/hme_leibniz/annotations.txt
