@@ -2791,7 +2791,7 @@ class HeartFlow {
       if (opts.resolve) {
         return matches.map(m => {
           const resolved = matcher.resolve(m);
-          return Object.assign({}, m, resolved ? { doc: resolved.doc } : {});
+          return resolved ? Object.assign({}, m, resolved) : m;
         });
       }
       return matches;

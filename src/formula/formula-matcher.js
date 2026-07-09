@@ -164,19 +164,28 @@ class FormulaMatcher {
 
   /**
    * 把匹配结果解析为可调用描述（供业务模块直接 call）
+   * 附带 params（公式所需参数提示，来自触发词索引），实现"匹配→调用"闭环
    */
   resolve(match) {
+    // 从触发词索引取该 ref 的 params 信息
+    let paramsInfo = null;
+    const sigDef = this._triggers.signals || {};
+    for (const sig of Object.values(sigDef)) {
+      const hit = (sig.refs || []).find(r => r.ref === match.ref && r.kind === match.kind);
+      if (hit) { paramsInfo = { params: hit.params || null, paramDesc: hit.paramDesc || null }; break; }
+    }
+
     const reg = this._getRegistry();
-    if (!reg) return null;
+    if (!reg) return Object.assign({ id: match.ref, kind: match.kind, stage: match.stage, params: paramsInfo?.params, paramDesc: paramsInfo?.paramDesc }, match);
     if (match.kind === 'stage-primitive') {
       const def = reg.get(match.stage, match.ref);
-      return def ? { id: match.ref, stage: match.stage, doc: def.doc, impl: def.impl } : null;
+      return def ? Object.assign({ id: match.ref, stage: match.stage, doc: def.doc, impl: def.impl, params: paramsInfo?.params, paramDesc: paramsInfo?.paramDesc }, match) : null;
     }
     if (match.kind === 'formula' && this._engine) {
       const f = this._engine.getFormulaDetails(match.ref);
-      return f || null;
+      return f ? Object.assign({}, f, { params: paramsInfo?.params, paramDesc: paramsInfo?.paramDesc }) : null;
     }
-    return null;
+    return Object.assign({ id: match.ref, kind: match.kind, stage: match.stage, params: paramsInfo?.params, paramDesc: paramsInfo?.paramDesc }, match);
   }
 }
 

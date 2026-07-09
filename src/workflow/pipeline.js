@@ -333,6 +333,8 @@ const DEFAULT_PIPELINE = [
         loveCognition: dc.loveCognition || null,
         cognitionGround: dc.cognitionGround || null,
         logicReasoning: ctx.logicReasoning || null,
+        // v5.9.7 新增：公式感知——每次 think 自动附带匹配到的认知公式
+        formulaMatches: (typeof hf.matchFormulas === 'function') ? hf.matchFormulas(ctx.input, { limit: 3 }) : [],
         judgment: {
           direction: jd.direction || 'analyze',
           confidence: jd.confidence || 0.5,
@@ -596,6 +598,8 @@ const FAST_PIPELINE = [
         emotion: ctx.psychology?.psych?.emotion || null,
         agentPsychology: ctx.psychology?.agentPsych || null,
         agentPhilosophy: ctx.psychology?.agentPhil || null,
+        // v5.9.7 新增：公式感知（快速管道同样附带）
+        formulaMatches: (typeof hf.matchFormulas === 'function') ? hf.matchFormulas(ctx.input, { limit: 3 }) : [],
         judgment: {
           direction: jd.direction || 'analyze',
           confidence: jd.confidence || 0.5,
