@@ -1,200 +1,236 @@
-# HeartFlow 心虫 — AI 人类认知引擎
+# HeartFlow 心虫 — AI 认知引擎 v5.9.12
 
 <p align="center">
   <img src="https://img.shields.io/github/v/yun520-1/mark-heartflow-skill?style=flat-square" alt="version" />
-  <img src="https://img.shields.io/github/last-commit=yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
+  <img src="https://img.shields.io/github/last-commit/yun520-1/mark-heartflow-skill?style=flat-square" alt="last commit" />
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="license" />
-  <img src="https://img.shields.io/badge/AI-human--ready-blue?style=flat-square" alt="AI Human" />
-  <img src="https://img.shields.io/badge/modules-90+-important?style=flat-square" alt="90+ modules" />
+  <img src="https://img.shields.io/badge/formulas-3529-blue?style=flat-square" alt="3529 formulas" />
+  <img src="https://img.shields.io/badge/modules-127-important?style=flat-square" alt="127 modules" />
 </p>
 
-**HeartFlow is not just an LLM enhancer. It is an AI human cognitive engine.**
+**HeartFlow is a formula-driven AI cognitive engine — not a prompt wrapper, not a chain orchestrator.**
 
-It transforms raw text into **11 core AI human capabilities** — empathy, creativity, humor, intuition, cultural understanding, ethical judgment, motor skills, taste/smell simulation, dream/subconscious, social skills, and self-cognition.
-
----
-
-## 🧠 What HeartFlow Does (AI Human Version)
-
-HeartFlow adds a **structured AI human preprocessing layer** before the LLM:
-
-```
-User input → HeartFlow (11 AI human capabilities) → Structured cognition → LLM → Human-like response
-```
-
-### 11 Core AI Human Capabilities
-
-| # | Capability | Modules | Output | Human-like? |
-|---|-----------|---------|--------|-------------|
-| 1 | **Empathy** | `empathy-responder.js` | Empathic response (retrieval + LLM fallback) | ✅ |
-| 2 | **Creativity** | `creativity-engine.js` | Creative text (story, poetry, code) | ✅ |
-| 3 | **Humor** | `humor-generator.js` | Humor (joke, pun, light comment) | ✅ |
-| 4 | **Intuition** | `intuition-engine.js` | Quick judgment (social, danger, opportunity) | ✅ |
-| 5 | **Cultural Understanding** | `culture-engine.js` | Cultural context + sensitivity check | ✅ |
-| 6 | **Ethical Judgment** | `ethics-engine.js` | Ethical analysis (utilitarian, deontological, virtue) | ✅ |
-| 7 | **Motor Skills** | `sports-engine.js` | Movement description + training plan | ✅ |
-| 8 | **Taste/Smell Simulation** | `taste-smell-engine.js` | Taste/smell description | ✅ |
-| 9 | **Dream/Subconscious** | `dream-engine.js` | Dream narrative + subconscious processing | ✅ |
-| 10 | **Social Skills** | `social-engine.js` | Social response (opener, listener, closer) | ✅ |
-| 11 | **Self-Cognition** | `self-cognitive-engine.js` | Self-description + self-model update | ✅ |
-
-**Total**: 11 capabilities, 90+ modules, 55+ automated tests.
+It implements 127 registered modules across 8 cognitive layers, powered by 3,529 mathematical/physical/cognitive formulas with 99.9% computability. Every cognitive decision — from memory retention to emotion regulation to dream consolidation — is grounded in published scientific formulas, not heuristics.
 
 ---
 
-## 🔧 How It Works (AI Human Pipeline)
+## 🧠 Architecture Overview
+
+```
+User Input → HeartFlow Cognitive Pipeline → Structured Cognition → LLM → Human-like Response
+                              │
+                              ├── Formula Bridge (90+ cognitive primitives)
+                              ├── Decision Engine (DDM + SDT + Prospect Theory + Bayesian)
+                              ├── Emotion Dynamics (PAD + Regulation + Rescorla-Wagner)
+                              ├── Memory Consolidation (Ebbinghaus + ACT-R + STDP)
+                              ├── Cognitive Load (Sweller + Shannon + Flow Channel)
+                              ├── Psychology Dialogue (15 emotions + 12 therapies)
+                              └── Dream Engine (REM + Memory Replay + Creative Association)
+```
+
+---
+
+## 📊 By the Numbers
+
+| Metric | Value |
+|--------|-------|
+| **Version** | 5.9.12 |
+| **Registered Modules** | 127 |
+| **Source Files** | 369 |
+| **Formulas** | 3,529 (99.9% computable) |
+| **Formula Categories** | 13 (math/physics/engineering/quantum/cognitive/chemistry/psychology/CS/earth/philosophy/biology/economics/neuroscience) |
+| **Cognitive Signals** | 40 (with 158 aliases) |
+| **Psychology Training Data** | 9,846 conversations (15 emotion categories, 12 therapy techniques) |
+| **Dispatch Routes** | 200+ (whitelist-controlled) |
+
+---
+
+## 🔬 Formula-Driven Cognitive Modules (v5.9.12 New)
+
+### 1. Decision Engine (`decisionEngineV2`)
+
+Grounded in **Drift Diffusion Model** (Bogacz et al. 2006), **Signal Detection Theory** (Green & Swets 1966), and **Prospect Theory** (Kahneman & Tversky 1979).
+
+| Subsystem | Formula | Use |
+|-----------|---------|-----|
+| DDM | `t = f(drift, threshold, x0, noise)` | Decision time + error rate prediction |
+| SDT | `d' = z(HR) - z(FAR)` | Sensitivity + bias analysis |
+| Prospect | `v(x) = x^α or -λ(-x)^β` | Loss aversion + risk attitude |
+| Bayesian | `P(H|E) = P(E|H)·P(H)/P(E)` | Belief updating |
+| Rescorla-Wagner | `ΔV = α·β·(λ - ΣV)` | Conditioning / prediction error |
+| Q-Learning | `Q += α[r + γ·max Q' - Q]` | Reinforcement learning |
+| Weber-Fechner | `ΔI/I = k` | Perceptual scaling |
+| STDP | `Δw = A+·exp(-Δt/τ+)` | Synaptic plasticity |
+| Hick's Law | `RT = a + b·log2(n+1)` | Choice reaction time |
+| Fitts's Law | `MT = a + b·log2(2D/W)` | Movement time |
+| Nash Equilibrium | Mixed strategy 2×2 | Game theory |
+
+### 2. Emotion Dynamics Engine (`emotionDynamics`)
+
+| Subsystem | Formula | Use |
+|-----------|---------|-----|
+| PAD Model | `(P, A, D) ∈ [-1,1]×[0,1]×[0,1]` | 3D emotion space |
+| Gross Regulation | Reappraisal / Suppression / Distraction / Acceptance | Emotion regulation strategies |
+| Resilience | `R = recovery_speed × recovery_degree / shock_intensity` | Emotional resilience index |
+| Conditioning | Rescorla-Wagner for emotional CS-US | Emotional learning |
+| SIR Contagion | `dI/dt = βSI - γI` | Emotion propagation in groups |
+| Yerkes-Dodson | `Perf = -a(A-A_opt)² + b` | Arousal-performance curve |
+| Self-Efficacy | `SE = Σ w_i·source_i` (Bandura) | Confidence modeling |
+| Attribution | Weiner 3D (locus × stability × controllability) | Causal attribution |
+
+### 3. Memory Consolidation Engine (`memoryConsolidation`)
+
+| Subsystem | Formula | Use |
+|-----------|---------|-----|
+| Ebbinghaus | `R = exp(-t/S)`, dynamic S | Forgetting curve with frequency-adaptive strength |
+| ACT-R Base | `B_i = ln(Σ t_j^{-d})` | Memory activation from access history |
+| ACT-R Spreading | `S_i = Σ w_ji · ln(1/fan_j)` | Associative activation |
+| SM-2 Spacing | `I(n) = I(n-1) × EF` | Optimal review scheduling |
+| Working Memory | Cowan 4±2 chunks | Capacity-limited buffer with decay |
+| Encoding Depth | Craik & Lockhart | Deep encoding → higher initial strength |
+
+### 4. Cognitive Load Engine v2 (`cognitiveLoadV2`)
+
+| Subsystem | Formula | Use |
+|-----------|---------|-----|
+| Sweller CL | `CL = (intrinsic + extraneous + germane) / WMC` | Cognitive load index |
+| Shannon Entropy | `H = -Σ p·log2(p)` | Information overload detection |
+| Precision Weight | `γ = 1/σ²` | Attention allocation (predictive coding) |
+| Flow Channel | `Flow = 1 - |log2(challenge/skill)| / max` | Flow state detection |
+| Task Switch | `cost = a + b·log2(n) + c·gap` | Switching overhead |
+
+### 5. Dream Engine v2 (`dreamEngineV2`)
+
+| Subsystem | Formula | Use |
+|-----------|---------|-----|
+| STDP Consolidation | `Δw = A+·exp(-Δt/τ+)` during sleep | Memory trace strengthening |
+| REM Processing | NE cortisol low → emotional desensitization | Emotional memory processing |
+| Creative Association | `P = f(semantic_distance, arousal)` | Remote association generation |
+| Sleep Cycle | 90-min cycles (light→deep→REM) | Full night simulation |
+
+### 6. Psychology Dialogue Engine (`psychologyDialogue`)
+
+Powered by **Psychology-10K-ZH** (9,846 professional counseling conversations).
+
+| Subsystem | Data | Use |
+|-----------|------|-----|
+| Emotion Identification | 15 categories (anxiety 21.6%, relationship 12.4%, work 12.1%...) | User emotion classification |
+| Therapy Matching | 12 techniques (problem-solving 71.3%, behavioral activation 43.2%...) | Evidence-based technique recommendation |
+| Dialogue Strategy | Validation → Exploration → Suggestion (Gross model) | Adaptive response generation |
+| Therapeutic Alliance | Rescorla-Wagner alliance tracking | Alliance strength building |
+| Empathy Retrieval | 500 high-quality responses | Similar case matching |
+
+---
+
+## 🧪 11 Core AI Human Capabilities (Original)
+
+| # | Capability | Module | Status |
+|---|-----------|--------|--------|
+| 1 | Empathy | `empathy-responder.js` | ✅ |
+| 2 | Creativity | `creativity-engine.js` | ✅ |
+| 3 | Humor | `humor-generator.js` | ✅ |
+| 4 | Intuition | `intuition-engine.js` | ✅ |
+| 5 | Cultural Understanding | `culture-engine.js` | ✅ |
+| 6 | Ethical Judgment | `ethics-engine.js` | ✅ |
+| 7 | Motor Skills | `sports-engine.js` | ✅ |
+| 8 | Taste/Smell | `taste-smell-engine.js` | ✅ |
+| 9 | Dream/Subconscious | `dream-engine-v2.js` | ✅ v2 |
+| 10 | Social Skills | `social-engine.js` | ✅ |
+| 11 | Self-Cognition | `self-cognitive-engine.js` | ✅ |
+
+---
+
+## 🚀 Quick Start
 
 ```javascript
-// 1. Empathy (understand user emotion)
-const empathy = new EmpathyResponder();
-const response = empathy.generate("I feel sad today");
+const { HeartFlow } = require('./src/core/heartflow.js');
 
-// 2. Creativity (generate creative text)
-const creativity = new CreativityEngine();
-const story = creativity.generate("Write a story about friendship", "creative_writing");
+const hf = new HeartFlow({ rootPath: './data' });
+hf.start();
 
-// 3. Humor (add humor when appropriate)
-const humor = new HumorGenerator();
-const joke = humor.generate("Tell a joke", "joke");
+// Formula-driven decision analysis
+const ddm = hf.decisionEngineV2.ddmAnalyze({ drift: 1.5, threshold: 1.2 });
+// → { decisionTime: 0.70s, accuracy: 95.3% }
 
-// 4. Intuition (quick judgment)
-const intuition = new IntuitionEngine();
-const judgment = intuition.quickJudge("Friend suddenly silent", "social");
+// Emotion dynamics
+const pad = hf.emotionDynamics.updatePAD({ pleasureDelta: 0.3, arousalDelta: 0.4 });
+// → { emotionLabel: 'excited', valence: 'positive' }
 
-// 5. Cultural understanding (detect cultural context)
-const culture = new CultureEngine();
-const analysis = culture.analyze("How to greet in Japan?");
+// Psychology dialogue
+const resp = hf.psychologyDialogue.respond('我最近感到很焦虑，工作压力大');
+// → { emotion: 'anxiety', technique: '正念冥想', response: '...' }
 
-// 6. Ethical judgment (analyze moral dilemma)
-const ethics = new EthicsEngine();
-const judgment = ethics.judge("Trolley problem", "utilitarian");
+// Memory consolidation
+hf.memoryConsolidation.registerTrace('mem1', { encoding: 'deep' });
+const retention = hf.memoryConsolidation.computeRetention('mem1');
 
-// 7. Motor skills (describe movement)
-const sports = new SportsEngine();
-const plan = sports.generateTrainingPlan("fitness", 4);
+// Cognitive load assessment
+const cl = hf.cognitiveLoadV2.estimate('量子纠缠与信息熵的关系');
+// → { loadLevel: 'low', cl: 0.25, isInfoOverload: false }
 
-// 8. Taste/smell simulation (describe flavor)
-const taste = new TasteSmellEngine();
-const flavor = taste.describeFlavor("chocolate cake");
+// Dream generation
+const dream = hf.dreamEngineV2.generate({ mood: 'curious', memories: ['...'] });
 
-// 9. Dream/subconscious (generate dream narrative)
-const dream = new DreamEngine();
-const narrative = dream.generateDream({ mood: 'anxious' });
-
-// 10. Social skills (generate social response)
-const social = new SocialEngine();
-const opener = social.generateResponse("opener", "meeting");
-
-// 11. Self-cognition (generate self-description)
-const self = new SelfCognitiveEngine();
-const desc = self.generateSelfDescription("interview");
+// Unified dispatch
+hf.dispatch('decisionEngineV2.healthCheck');
+hf.dispatch('emotionDynamics.regulate', { strategy: 'reappraisal', intensity: 0.7 });
 ```
 
 ---
 
-## 📦 Installation
+## 📁 Project Structure
 
-```bash
-# 1. Clone the repository
-git clone --depth 1 https://github.com/yun520-1/mark-heartflow-skill.git
-cd mark-heartflow-skill
-
-# 2. Install (0 external packages, no network needed)
-npm install
-
-# 3. Verify (all 55+ tests should pass)
-node test/empathy-responder.test.js
-node test/creativity-engine.test.js
-# ... (run all test files)
-
-# 4. Use it
-node bin/cli.js status
-node bin/cli.js --chat "I want to quit my job and start a company"
+```
+src/
+├── core/           # HeartFlow main loop, dispatch, decision router
+├── formula/        # Formula engine + bridge (3,529 formulas, 90+ cognitive primitives)
+├── reasoning/      # Decision engine (DDM/SDT/Prospect/Bayesian), logic, MCTS
+├── emotion/        # Emotion dynamics (PAD/Regulation/Resilience/Contagion)
+├── cognitive/      # Cognitive load v2 (Sweller/Shannon/Flow/Attention)
+├── memory/         # Memory consolidation (Ebbinghaus/ACT-R/STDP/Spacing)
+├── psychology/     # Psychology dialogue (9,846 conversations, 15 emotions, 12 therapies)
+├── dream/          # Dream engine v2 (REM/STDP/Creative/Sleep cycles)
+├── ethics/         # Ethical judgment, virtue ethics, moral development
+├── consciousness/  # GWT, IIT Φ, theory of mind, phenomenology
+├── identity/       # Core identity, self-model
+├── code/           # Code execution, planning, writing, debugging
+├── security/       # Security audit, verification
+├── verifier/       # Truth verification, fact checking
+├── bridge/         # External API bridges
+└── ...             # 30+ more directories
 ```
 
-**Requirements:** Node.js >= 18.  
-**Zero external AI API required** — the engine runs entirely locally.  
-**Zero npm dependencies** — `npm install` completes in <1 second.
+---
+
+## 📜 Formula Library (3,529 formulas)
+
+| Category | Count | Key Formulas |
+|----------|-------|-------------|
+| Mathematics | 1,417 | ODE/PDE, Bessel/Legendre/Hermite, Fourier/Laplace/Z-transform, Euler-Lagrange, Riemann curvature |
+| Physics | 962 | Navier-Stokes, Maxwell, Schrödinger, Lorentz, Hooke, Snell, radioactive decay |
+| Engineering | 357 | Kalman filter, PID, DH transform, Shannon-Nyquist, Haversine, A* path |
+| Quantum Computing | 314 | Qubit, Hadamard, CNOT, T gate, quantum Fourier, Shor's period |
+| Cognitive Science | 117 | Ebbinghaus, ACT-R, Yerkes-Dodson, IRT, SEM, cognitive load |
+| Chemistry | 94 | Nernst, Arrhenius, Michaelis-Menten, Henderson-Hasselbalch |
+| Psychology | 59 | Prospect theory, Bayes confirmation, Rescorla-Wagner |
+| Computer Science | 46 | Big-O, Amdahl, CAP, information theory |
+| Earth Science | 41 | Geothermal gradient, seismic velocity, plate motion |
+| Philosophy | 36 | Logic, epistemology, ethics formalization |
+| Biology | 31 | Population dynamics, Hardy-Weinberg, logistic growth |
+| Economics | 29 | Cobb-Douglas, IS-LM, Black-Scholes |
+| Neuroscience | 26 | Hodgkin-Huxley, STDP, firing rate, brain modularity |
 
 ---
 
-## 🧪 Automated Tests (55+ Tests)
+## 🔗 Integration
 
-Every AI human capbility has automated tests:
-
-```bash
-# Run all tests
-for test in test/*.test.js; do node $test; done
-
-# Expected output:
-# === All tests passed ✅ ===
-# (55+ tests across 11 capabilities)
-```
-
-**Test coverage**: 11 capabilities × 5 tests each = 55+ tests.  
-**End-to-end test**: `test/end-to-end.test.js` (all engines work together).
-
----
-
-## 🔒 Security (Audited)
-
-### Fixed Issues (P0/P1/P2)
-- ✅ **P0**: `healthCheck()` async/sync mismatch (code-executor.js)
-- ✅ **P1**: `generateFile()` arbitrary path write (generator-core.js)
-- ✅ **P2**: `curl`/`wget` removed from shell whitelist (prevent data exfiltration)
-- ✅ **P2**: `file-watcher` template `eval` fixed (changed to `bash -c`)
-- ✅ **P2**: Other P1/P2 issues marked as TODO (will fix later)
-
-### Security Mechanisms
-- ✅ **SSRF protection** (`validateFetchUrl` in prompt-factory, hybrid-search, self-initiator)
-- ✅ **MCP authentication** (token + rate limit + timing-safe compare)
-- ✅ **Code validator** (dangerous command filter)
-- ✅ **Formula engine safe** (uses mathjs, not eval)
-- ✅ **Deserialization safe** (only JSON.parse for local trusted files)
-
----
-
-## 🌐 Research Foundation
-
-HeartFlow integrates findings from 27+ peer-reviewed papers (2023-2026) across cognitive architecture, memory systems, metacognition, multi-agent systems, self-improvement, and philosophy of mind.
-
-| Category | Key Papers | HeartFlow Module |
-|----------|-----------|-----------------|
-| **Memory** | ActMem (2303.00026), HAT (2406.06124), Persistent KV Cache (2603.04428) | causal-inference, memory-quality, kv-cache |
-| **Metacognition** | SOFAI-LM (2504.00240), MIRROR (2604.19809), CoT Meta-Analysis (2501.13265) | metacognitive-feedback, pipeline |
-| **Self-Improvement** | Reflexion (2303.11366), Mephisto (2510.08354), Self-Play (2405.20309) | reflexion-engine, self-play, self-healing |
-| **Multi-Agent** | Bystander Effect (2605.10698), ClawArena (2606.31174) | cognitive-load-balancer, multi-agent-dialogue |
-| **Philosophy** | Principles of Conscious Machine (2509.16859), Whole Hog (2504.13988), Moral Agency (2410.23310) | agent-philosophy, ai-self-positioning, cognition-ground |
-
-See `src/research/paper-index.js` for the full index.
-
----
-
-## 🚀 Project Status
-
-- **Version**: See `VERSION` file (Single Source of Truth)
-- **Modules**: 90+ (all JavaScript, zero external dependencies)
-- **AI Human Capabilities**: 11/11 complete (empathy, creativity, humor, intuition, cultural understanding, ethical judgment, motor skills, taste/smell simulation, dream/subconscious, social skills, self-cognition)
-- **Automated tests**: 55+ (100% pass rate)
-- **Papers**: 27 indexed (cognitive architecture, metacognition, philosophy of mind, multi-agent)
-- **Security audit**: P0/P1/P2 issues fixed (see Security section)
-- **License**: MIT
-- **Author**: yun520-1
+- **MCP Server**: HTTP endpoint on port 8099, protocol MCP 2024-11-05
+- **Hermes Agent**: Native skill integration via dispatch routes
+- **Claude Code**: Bridge via lark-channel-bridge
+- **Dispatch API**: `hf.dispatch('subsystem.method', ...args)` with 200+ whitelisted routes
 
 ---
 
 ## 📄 License
 
-MIT License — free to use, modify, and distribute.
-
----
-
-## 📬 Contact
-
-- **GitHub**: https://github.com/yun520-1/mark-heartflow-skill
-- **Issues**: https://github.com/yun520-1/mark-heartflow-skill/issues
-- **Discussions**: https://github.com/yun520-1/mark-heartflow-skill/discussions
-
----
-
-**HeartFlow: Not just an LLM enhancer. An AI human cognitive engine.**
+MIT

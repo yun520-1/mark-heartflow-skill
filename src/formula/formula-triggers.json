@@ -114,7 +114,50 @@
     "结构方程": "sem",
     "拟合": "sem",
     "模型拟合": "sem",
-    "路径": "sem"
+    "路径": "sem",
+    "DDM": "decision_dynamics",
+    "漂移扩散": "decision_dynamics",
+    "决策时间": "decision_dynamics",
+    "信号检测": "signal_detection",
+    "辨别力": "signal_detection",
+    "d'": "signal_detection",
+    "条件化": "conditioning",
+    "预测误差": "conditioning",
+    "Rescorla": "conditioning",
+    "韦伯": "weber_fechner",
+    "感觉": "weber_fechner",
+    "JND": "weber_fechner",
+    "Fitts": "motor_control",
+    "运动": "motor_control",
+    "纳什": "game_theory",
+    "博弈": "game_theory",
+    "囚徒": "game_theory",
+    "巩固": "memory_consolidation",
+    "间隔重复": "memory_consolidation",
+    "LTP": "memory_consolidation",
+    "情绪调节": "emotion_regulation",
+    "重评": "emotion_regulation",
+    "正念": "emotion_regulation",
+    "弹性": "resilience",
+    "抗压": "resilience",
+    "韧性": "resilience",
+    "自我效能": "self_efficacy",
+    "自信": "self_efficacy",
+    "Bandura": "self_efficacy",
+    "归因": "attribution",
+    "Weiner": "attribution",
+    "梦": "dream",
+    "REM": "dream",
+    "睡眠": "dream",
+    "注意力": "attention",
+    "分心": "attention",
+    "任务切换": "task_switching",
+    "多任务": "task_switching",
+    "情绪感染": "emotion_contagion",
+    "群体情绪": "emotion_contagion",
+    "创造": "creative_association",
+    "联想": "creative_association",
+    "灵感": "creative_association"
   },
   "signals": {
     "uncertainty": {
@@ -1266,6 +1309,448 @@
         {
           "kind": "stage-primitive",
           "ref": "brain_network_modularity",
+          "weight": 0.5
+        }
+      ]
+    },
+    "decision_dynamics": {
+      "keywords": [
+        "决策时间",
+        "反应时",
+        "漂移率",
+        "扩散模型",
+        "DDM",
+        "决策动力学",
+        "选择时间",
+        "犹豫"
+      ],
+      "refs": [
+        {
+          "ref": "ddm_decision_time",
+          "kind": "stage-primitive",
+          "name": "DDM决策时间",
+          "weight": 1
+        },
+        {
+          "ref": "ddm_error_rate",
+          "kind": "stage-primitive",
+          "name": "DDM错误率",
+          "weight": 0.9
+        },
+        {
+          "ref": "hick_law",
+          "kind": "stage-primitive",
+          "name": "Hick定律",
+          "weight": 0.7
+        }
+      ]
+    },
+    "signal_detection": {
+      "keywords": [
+        "信号检测",
+        "辨别力",
+        "虚报",
+        "命中",
+        "d'",
+        "敏感度",
+        "检测",
+        "辨别",
+        "SDT"
+      ],
+      "refs": [
+        {
+          "ref": "sdt_d_prime",
+          "kind": "stage-primitive",
+          "name": "SDT辨别力d'",
+          "weight": 1
+        },
+        {
+          "ref": "sdt_beta",
+          "kind": "stage-primitive",
+          "name": "SDT决策准则β",
+          "weight": 0.8
+        },
+        {
+          "ref": "sdt_a_prime",
+          "kind": "stage-primitive",
+          "name": "SDT非参数A'",
+          "weight": 0.7
+        }
+      ]
+    },
+    "conditioning": {
+      "keywords": [
+        "条件化",
+        "条件反射",
+        "学习率",
+        "预测误差",
+        "Rescorla",
+        "强化",
+        "联结",
+        "巴甫洛夫"
+      ],
+      "refs": [
+        {
+          "ref": "rescorla_wagner",
+          "kind": "stage-primitive",
+          "name": "Rescorla-Wagner学习",
+          "weight": 1
+        },
+        {
+          "ref": "stdp_update",
+          "kind": "stage-primitive",
+          "name": "STDP突触可塑性",
+          "weight": 0.8
+        }
+      ]
+    },
+    "weber_fechner": {
+      "keywords": [
+        "感觉",
+        "知觉",
+        "最小可觉差",
+        "韦伯",
+        "费希纳",
+        "刺激强度",
+        "感觉阈值",
+        "JND"
+      ],
+      "refs": [
+        {
+          "ref": "weber_fechner",
+          "kind": "stage-primitive",
+          "name": "韦伯-费希纳定律",
+          "weight": 1
+        }
+      ]
+    },
+    "motor_control": {
+      "keywords": [
+        "运动",
+        "动作",
+        "Fitts",
+        "运动时间",
+        "目标",
+        "点击",
+        "移动",
+        "速度-精度"
+      ],
+      "refs": [
+        {
+          "ref": "fitts_law",
+          "kind": "stage-primitive",
+          "name": "Fitts定律",
+          "weight": 1
+        },
+        {
+          "ref": "hick_law",
+          "kind": "stage-primitive",
+          "name": "Hick定律",
+          "weight": 0.6
+        }
+      ]
+    },
+    "game_theory": {
+      "keywords": [
+        "博弈",
+        "纳什均衡",
+        "混合策略",
+        "零和",
+        "合作",
+        "竞争",
+        "收益矩阵",
+        "囚徒困境"
+      ],
+      "refs": [
+        {
+          "ref": "nash_equilibrium",
+          "kind": "stage-primitive",
+          "name": "纳什均衡",
+          "weight": 1
+        },
+        {
+          "ref": "minimax",
+          "kind": "stage-primitive",
+          "name": "极小极大",
+          "weight": 0.8
+        },
+        {
+          "ref": "shapley_value",
+          "kind": "stage-primitive",
+          "name": "沙普利值",
+          "weight": 0.7
+        }
+      ]
+    },
+    "memory_consolidation": {
+      "keywords": [
+        "巩固",
+        "间隔重复",
+        "复习",
+        "遗忘曲线",
+        "记忆强度",
+        "LTP",
+        "突触",
+        "海马",
+        "重放"
+      ],
+      "refs": [
+        {
+          "ref": "ebbinghaus_retention",
+          "kind": "stage-primitive",
+          "name": "艾宾浩斯遗忘",
+          "weight": 1
+        },
+        {
+          "ref": "actr_base_level",
+          "kind": "stage-primitive",
+          "name": "ACT-R基础级",
+          "weight": 0.9
+        },
+        {
+          "ref": "stdp_update",
+          "kind": "stage-primitive",
+          "name": "STDP巩固",
+          "weight": 0.8
+        }
+      ]
+    },
+    "emotion_regulation": {
+      "keywords": [
+        "情绪调节",
+        "认知重评",
+        "表达抑制",
+        "正念",
+        "接纳",
+        "情绪控制",
+        "减压",
+        "情绪管理"
+      ],
+      "refs": [
+        {
+          "ref": "yerkes_dodson",
+          "kind": "stage-primitive",
+          "name": "耶克斯-多德森",
+          "weight": 0.8
+        },
+        {
+          "ref": "rescorla_wagner",
+          "kind": "stage-primitive",
+          "name": "情绪条件化",
+          "weight": 0.7
+        },
+        {
+          "ref": "pad_pleasure",
+          "kind": "stage-primitive",
+          "name": "PAD情绪",
+          "weight": 0.6
+        }
+      ]
+    },
+    "resilience": {
+      "keywords": [
+        "弹性",
+        "恢复",
+        "抗压",
+        "韧性",
+        "逆境",
+        "心理弹性",
+        "复原力",
+        "适应"
+      ],
+      "refs": [
+        {
+          "ref": "ebbinghaus_retention",
+          "kind": "stage-primitive",
+          "name": "恢复曲线",
+          "weight": 0.7
+        },
+        {
+          "ref": "yerkes_dodson",
+          "kind": "stage-primitive",
+          "name": "唤醒-绩效",
+          "weight": 0.5
+        }
+      ]
+    },
+    "self_efficacy": {
+      "keywords": [
+        "自我效能",
+        "自信",
+        "胜任感",
+        "掌控",
+        "能力信念",
+        "Bandura",
+        "效能预期"
+      ],
+      "refs": [
+        {
+          "ref": "expected_utility",
+          "kind": "stage-primitive",
+          "name": "期望效用",
+          "weight": 0.6
+        },
+        {
+          "ref": "irt_rasch",
+          "kind": "stage-primitive",
+          "name": "IRT能力估计",
+          "weight": 0.5
+        }
+      ]
+    },
+    "attribution": {
+      "keywords": [
+        "归因",
+        "原因",
+        "责任",
+        "内因",
+        "外因",
+        "稳定",
+        "可控",
+        "Weiner"
+      ],
+      "refs": [
+        {
+          "ref": "bayes_update",
+          "kind": "stage-primitive",
+          "name": "贝叶斯归因更新",
+          "weight": 0.7
+        }
+      ]
+    },
+    "dream": {
+      "keywords": [
+        "梦",
+        "睡眠",
+        "REM",
+        "潜意识",
+        "夜间",
+        "噩梦",
+        "清醒梦",
+        "记忆重放"
+      ],
+      "refs": [
+        {
+          "ref": "ebbinghaus_retention",
+          "kind": "stage-primitive",
+          "name": "记忆衰减",
+          "weight": 0.7
+        },
+        {
+          "ref": "stdp_update",
+          "kind": "stage-primitive",
+          "name": "STDP巩固",
+          "weight": 0.8
+        },
+        {
+          "ref": "active_inference_efe",
+          "kind": "stage-primitive",
+          "name": "预期自由能",
+          "weight": 0.5
+        }
+      ]
+    },
+    "attention": {
+      "keywords": [
+        "注意力",
+        "专注",
+        "分心",
+        "集中",
+        "注意分配",
+        "选择性注意",
+        "持续注意",
+        "精确度"
+      ],
+      "refs": [
+        {
+          "ref": "precision_weight",
+          "kind": "stage-primitive",
+          "name": "精确度权重",
+          "weight": 1
+        },
+        {
+          "ref": "shannon_entropy",
+          "kind": "stage-primitive",
+          "name": "信息熵",
+          "weight": 0.7
+        },
+        {
+          "ref": "cognitive_load_index",
+          "kind": "stage-primitive",
+          "name": "认知负荷",
+          "weight": 0.6
+        }
+      ]
+    },
+    "task_switching": {
+      "keywords": [
+        "任务切换",
+        "多任务",
+        "并行",
+        "切换代价",
+        "中断",
+        "上下文切换"
+      ],
+      "refs": [
+        {
+          "ref": "hick_law",
+          "kind": "stage-primitive",
+          "name": "Hick选择时间",
+          "weight": 0.7
+        },
+        {
+          "ref": "cognitive_load_index",
+          "kind": "stage-primitive",
+          "name": "认知负荷",
+          "weight": 0.8
+        }
+      ]
+    },
+    "emotion_contagion": {
+      "keywords": [
+        "情绪感染",
+        "传播",
+        "群体情绪",
+        "共情传播",
+        "情绪扩散",
+        "集体情绪"
+      ],
+      "refs": [
+        {
+          "ref": "social_influence",
+          "kind": "stage-primitive",
+          "name": "社会影响",
+          "weight": 0.8
+        },
+        {
+          "ref": "bystander_effect",
+          "kind": "stage-primitive",
+          "name": "旁观者效应",
+          "weight": 0.5
+        }
+      ]
+    },
+    "creative_association": {
+      "keywords": [
+        "创造",
+        "联想",
+        "远距联想",
+        "灵感",
+        "创新",
+        "隐喻",
+        "类比"
+      ],
+      "refs": [
+        {
+          "ref": "active_inference_efe",
+          "kind": "stage-primitive",
+          "name": "信息寻求",
+          "weight": 0.6
+        },
+        {
+          "ref": "shannon_entropy",
+          "kind": "stage-primitive",
+          "name": "信息熵",
           "weight": 0.5
         }
       ]
