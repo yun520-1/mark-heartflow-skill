@@ -4,7 +4,17 @@
  */
 
 const { FormulaSearch } = require('./formula-search.js');
-const math = require('mathjs');
+// [AUDIT-FIX C-02] 限制 mathjs 危险函数，防止公式注入
+const _rawMath = require('mathjs');
+const math = _rawMath.create(_rawMath.all, {
+  matrix: 'Array',
+  number: 'number',
+});
+// 覆盖危险函数为安全抛出版
+math.import({
+  'import': function() { throw new Error('mathjs import disabled in HeartFlow'); },
+  'createUnit': function() { throw new Error('mathjs createUnit disabled in HeartFlow'); },
+}, { override: true });
 
 class FormulaCalculator {
   constructor(options = {}) {

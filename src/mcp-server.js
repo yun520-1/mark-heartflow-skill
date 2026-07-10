@@ -362,8 +362,8 @@ async function handleThink(args) {
   if (!input) throw new Error('input 是必填参数');
 
   const [psychology, judgment, thoughtChain] = await Promise.all([
-    Promise.resolve().then(() => safeDispatch('psychology.analyzePsychology', input)),
-    Promise.resolve().then(() => safeDispatch('truth.checkStatement', input)),
+    Promise.resolve().then(() => safeDispatch('psychology.analyzePsychology', input)).catch(e => ({ error: e.message })),
+    Promise.resolve().then(() => safeDispatch('truth.checkStatement', input)).catch(e => ({ error: e.message })),
     safeAsyncCall(() => heartflow.think(input))
   ]);
 
