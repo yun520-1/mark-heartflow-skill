@@ -157,7 +157,8 @@ class FormulaCalculator {
     // 保护法名（含后跟字母的情况，如 'sqrt(' 不动，但 'sqrt' 单独出现需保护）
     funcNames.forEach((fn, i) => {
       const ph = `\u0000${i}\u0000`;
-      const re = new RegExp(`(^|[^a-zA-Z0-9_])${fn}(?=$|[^a-zA-Z0-9_])`, 'g');
+      const escaped = fn.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp(`(^|[^a-zA-Z0-9_])${escaped}(?=$|[^a-zA-Z0-9_])`, 'g');
       s = s.replace(re, (m, p1) => p1 + ph);
       placeholders.push([ph, fn]);
     });
