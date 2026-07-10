@@ -188,7 +188,7 @@ const _ValueInternalizer = _lazy('valueInternalizer', () => require('../shield/e
 const _TimeExtension = _lazy('timeExtension', () => require('../workflow/time-extension.js'));
 const _MindSpaceGuardian = _lazy('mindSpaceGuardian', () => require('../shield/mindspace/mind-space-guardian.js'));
 // ★ Inner OS — 内心独白、事件追踪、人格切换 (absorbed from AI-Inner-Os)
-const _InnerOS = _lazy('innerOS', () => require('../inner-os/heartflow-inner-os.js'));
+const _InnerOS = _lazy('innerOS', () => { try { return require('../inner-os/heartflow-inner-os.js'); } catch(e) { return { HeartflowInnerOS: class { constructor() {} process() { return {}; } } }; } });
 const _TransmissionEngine = _lazy('transmissionEngine', () => require('../workflow/transmission/transmission-engine.js'));
 const _VerifierGrant = _lazy('verifierGrant', () => require('./verifier-grant.js'));
 const _AdaptivePlanner = _lazy('adaptivePlanner', () => { try { return require('../planner/adaptive-planner.js'); } catch(e) { return { AdaptivePlanner: class { constructor() {} plan() { return { steps: [], estimatedEffort: 0 }; } adapt() { return this.plan(); } quickAdjust() { return this.plan(); } getStatus() { return { status: 'unavailable', reason: '模块加载失败' }; } } }; } });
@@ -237,7 +237,7 @@ const _VERSION = _lazy('version', () => require('./version.js'));
 
 // v5.5.5 新增模块
 const _FocusOfAttention = _lazy('focusOfAttention', () => require('../memory/focus-of-attention.js'));
-const _CodeSelfDebug = _lazy('codeSelfDebug', () => require('../code/code-self-debug.js'));
+const _CodeSelfDebug = _lazy('codeSelfDebug', () => { try { return require('../code/code-self-debug.js'); } catch(e) { return { CodeSelfDebug: class { constructor() {} } }; } });
 
 // v5.6.0 论文驱动升级 — 4个新模块
 const _ReflexionEngine = _lazy('reflexionEngine', () => require('../cortex/reflexion-engine.js'));
@@ -321,26 +321,26 @@ const _CodeWriter = _lazy('codeWriter', () => require('../code/code-writer.js'))
 const _UserToLLM = _lazy('userToLLM', () => require('../bridge/user-to-llm.js'));
 const _LLMToUser = _lazy('llmToUser', () => require('../bridge/llm-to-user.js'));
 const _IntentClassifier = _lazy('intentClassifier', () => require('../bridge/intent-classifier.js'));
-const _ToneAnalyzer = _lazy('toneAnalyzer', () => require('../bridge/tone-analyzer.js'));
-const _EntityExtractor = _lazy('entityExtractor', () => require('../bridge/entity-extractor.js'));
-const _ImplicitNeedDetector = _lazy('implicitNeedDetector', () => require('../bridge/implicit-need-detector.js'));
-const _ResponseCompressor = _lazy('responseCompressor', () => require('../bridge/response-compressor.js'));
+const _ToneAnalyzer = _lazy('toneAnalyzer', () => { try { return require('../bridge/tone-analyzer.js'); } catch(e) { return { ToneAnalyzer: class { constructor() {} analyze() { return { tone: 'neutral', confidence: 0 }; } } }; } });
+const _EntityExtractor = _lazy('entityExtractor', () => { try { return require('../bridge/entity-extractor.js'); } catch(e) { return { EntityExtractor: class { constructor() {} extract() { return []; } } }; } });
+const _ImplicitNeedDetector = _lazy('implicitNeedDetector', () => { try { return require('../bridge/implicit-need-detector.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
+const _ResponseCompressor = _lazy('responseCompressor', () => { try { return require('../bridge/response-compressor.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
 const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('./confidence-annotator.js'));
-const _AgentBridge = _lazy('agentBridge', () => require('../bridge/agent-bridge.js'));
+const _AgentBridge = _lazy('agentBridge', () => { try { return require('../bridge/agent-bridge.js'); } catch(e) { return { AgentBridge: class { constructor() {} bridge() { return null; } } }; } });
 const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context-builder.js'));
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
-const _TranslationPipeline = _lazy('translationPipeline', () => require('../bridge/translation-pipeline.js'));
-const _QualityFilter = _lazy('qualityFilter', () => require('../bridge/quality-filter.js'));
-const _FollowupSuggester = _lazy('followupSuggester', () => require('../bridge/followup-suggester.js'));
-const _ConflictResolver = _lazy('conflictResolver', () => require('../bridge/conflict-resolver.js'));
-const _UncertaintyHandler = _lazy('uncertaintyHandler', () => require('../bridge/uncertainty-handler.js'));
-const _BridgeIdentity = _lazy('bridgeIdentity', () => require('../bridge/bridge-identity.js'));
-const _JudgmentInjector = _lazy('judgmentInjector', () => require('../bridge/judgment-injector.js'));
-const _StanceDetector = _lazy('stanceDetector', () => require('../bridge/stance-detector.js'));
+const _TranslationPipeline = _lazy('translationPipeline', () => { try { return require('../bridge/translation-pipeline.js'); } catch(e) { return { TranslationPipeline: class { constructor() {} translate() { return ''; } } }; } });
+const _QualityFilter = _lazy('qualityFilter', () => { try { return require('../bridge/quality-filter.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
+const _FollowupSuggester = _lazy('followupSuggester', () => { try { return require('../bridge/followup-suggester.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
+const _ConflictResolver = _lazy('conflictResolver', () => { try { return require('../bridge/conflict-resolver.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
+const _UncertaintyHandler = _lazy('uncertaintyHandler', () => { try { return require('../bridge/uncertainty-handler.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
+const _BridgeIdentity = _lazy('bridgeIdentity', () => { try { return require('../bridge/bridge-identity.js'); } catch(e) { return { BridgeIdentity: class { constructor() {} getIdentity() { return {}; } } }; } });
+const _JudgmentInjector = _lazy('judgmentInjector', () => { try { return require('../bridge/judgment-injector.js'); } catch(e) { return { JudgmentInjector: class { constructor() {} inject() { return {}; } } }; } });
+const _StanceDetector = _lazy('stanceDetector', () => { try { return require('../bridge/stance-detector.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
 const _AgentCommentary = _lazy('agentCommentary', () => require('../bridge/agent-commentary.js'));
-const _ValueAligner = _lazy('valueAligner', () => require('../bridge/value-aligner.js'));
-const _PersonalityTone = _lazy('personalityTone', () => require('../bridge/personality-tone.js'));
-const _MetaPosition = _lazy('metaPosition', () => require('../bridge/meta-position.js'));
+const _ValueAligner = _lazy('valueAligner', () => { try { return require('../bridge/value-aligner.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
+const _PersonalityTone = _lazy('personalityTone', () => { try { return require('../bridge/personality-tone.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
+const _MetaPosition = _lazy('metaPosition', () => { try { return require('../bridge/meta-position.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
 
 const BUILD_DATE = '2026-07-09-v5.9.11';
 
