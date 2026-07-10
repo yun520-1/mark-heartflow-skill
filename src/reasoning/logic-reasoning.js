@@ -1016,8 +1016,8 @@ class LogicReasoning {
     const fracMatch = optionText.match(/(\d+)\/(\d+)/);
     if (!fracMatch) return 0;
 
-    const num = parseInt(fracMatch[1]);
-    const den = parseInt(fracMatch[2]);
+    const num = parseInt(fracMatch[1], 10);
+    const den = parseInt(fracMatch[2], 10);
     if (den === 0) return 0;
 
     const value = num / den;

@@ -106,7 +106,7 @@ class DiagnosticResult {
       for (const w of this.warnings) report += `  ⚠ ${w}\n`;
     }
     report += `\n[Step Details]\n`;
-    for (const [id, step] of Object.entries(this.steps).sort((a, b) => parseInt(a[0]) - parseInt(b[0]))) {
+    for (const [id, step] of Object.entries(this.steps).sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10))) {
       const icon = step.status === 'pass' ? '✓' : step.status === 'fail' ? '✗' : '⊘';
       const fixedNote = step.fixed ? ' [AUTO-FIXED]' : '';
       report += `  ${icon} Step ${id}: ${step.status}${fixedNote}`;
