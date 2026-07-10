@@ -217,6 +217,12 @@ const _LogicReasoning = _lazy('logicReasoning', () => require('../reasoning/logi
 // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
 const _CognitiveEngine = _lazy('cognitiveEngine', () => require('./cognitive-engine.js'));
 const _DecisionEngine = _lazy('decisionEngine', () => require('./decision-engine.js'));
+const _DecisionEngineV2 = _lazy('decisionEngineV2', () => require('../reasoning/decision-engine.js'));
+const _MemoryConsolidation = _lazy('memoryConsolidation', () => require('../memory/memory-consolidation-engine.js'));
+const _EmotionDynamics = _lazy('emotionDynamics', () => require('../emotion/emotion-dynamics-engine.js'));
+const _CognitiveLoadV2 = _lazy('cognitiveLoadV2', () => require('../cognitive/cognitive-load-v2.js'));
+const _DreamEngineV2 = _lazy('dreamEngineV2', () => require('../dream/dream-engine-v2.js'));
+const _PsychologyDialogue = _lazy('psychologyDialogue', () => require('../psychology/psychology-dialogue-engine.js'));
 const _ProcessRewardModel = _lazy('processRewardModel', () => require('../reasoning/process-reward-model.js'));
 const _AutonomousEmotion = _lazy('autonomousEmotion', () => { try { return require('../emotion/autonomous-emotion.js'); } catch(e) { return { AutonomousEmotion: class { constructor() {} } }; } });
 const _EmpathyResponder = _lazy('empathyResponder', () => require('../emotion/empathy-responder.js'));
@@ -851,6 +857,12 @@ class HeartFlow {
     // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
     try { this.cognitiveEngine = new (_CognitiveEngine().CognitiveEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'cognitiveEngine', error: e.message}, MAX_HISTORY_SIZE); }
     try { this.decisionEngine = new (_DecisionEngine().DecisionEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionEngine', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.decisionEngineV2 = new (_DecisionEngineV2().DecisionEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionEngineV2', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.memoryConsolidation = new (_MemoryConsolidation().MemoryConsolidationEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'memoryConsolidation', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.emotionDynamics = new (_EmotionDynamics().EmotionDynamicsEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'emotionDynamics', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.cognitiveLoadV2 = new (_CognitiveLoadV2().CognitiveLoadEngineV2)(); } catch (e) { _boundedPush(this._initErrors, {module: 'cognitiveLoadV2', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.dreamEngineV2 = new (_DreamEngineV2().DreamEngineV2)(); } catch (e) { _boundedPush(this._initErrors, {module: 'dreamEngineV2', error: e.message}, MAX_HISTORY_SIZE); }
+    try { this.psychologyDialogue = new (_PsychologyDialogue().PsychologyDialogueEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'psychologyDialogue', error: e.message}, MAX_HISTORY_SIZE); }
     try { this.counterfactual = new (_CounterfactualEngine().CounterfactualEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'counterfactual', error: e.message}, MAX_HISTORY_SIZE); }
     try { this.confidence = new (_ConfidenceCalibrator().ConfidenceCalibrator)(); } catch (e) { _boundedPush(this._initErrors, {module: 'confidence', error: e.message}, MAX_HISTORY_SIZE); }
     try { this.restraint = new (_SpontaneousRestraint().SpontaneousRestraint)(); } catch (e) { _boundedPush(this._initErrors, {module: 'restraint', error: e.message}, MAX_HISTORY_SIZE); }
@@ -1154,7 +1166,7 @@ class HeartFlow {
       'adaptivePlanner', 'strategySelector', 'replanTrigger',
       'codeExecutor', 'codePlanner', 'codeWriter',
       // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
-      'cognitiveEngine', 'decisionEngine',
+      'cognitiveEngine', 'decisionEngine', 'decisionEngineV2', 'memoryConsolidation', 'emotionDynamics', 'cognitiveLoadV2', 'dreamEngineV2', 'psychologyDialogue', 'decisionEngineV2', 'memoryConsolidation', 'emotionDynamics', 'cognitiveLoadV2', 'dreamEngineV2', 'psychologyDialogue',
       // v5.6.0 论文驱动升级
       'reflexionEngine', 'memoryConsolidator', 'multiAgentDialogue', 'mctsReasoning', 'hierarchicalPlanner',
       // v5.6.1 深研论文驱动升级
@@ -1907,7 +1919,10 @@ class HeartFlow {
       // v5.8.6 — 公式引擎（数学/物理/化学/工程公式库）
       'formula',
       // v5.8.6 — 认知负载指数（Sweller 认知负载理论）
-      'cognitiveIndex'];
+      'cognitiveIndex',
+      // v5.9.12 — 公式驱动新模块
+      'decisionEngineV2', 'memoryConsolidation', 'emotionDynamics', 'cognitiveLoadV2', 'dreamEngineV2',
+      'psychologyDialogue'];
     for (const name of subsystemNames) {
       if (this[name] !== null && this[name] !== undefined) {
         this._modules[name] = this[name];
@@ -2279,6 +2294,13 @@ class HeartFlow {
     'paperIndex.addPaper', 'paperIndex.searchByCategory', 'paperIndex.searchByTag', 'paperIndex.searchByKeyword', 'paperIndex.getPapersByYear', 'paperIndex.getRelevantPapers', 'paperIndex.getAllPapers', 'paperIndex.getStats',
     // v5.7.2 — P1 多智能体认知损耗规避路由
     'cognitiveLoad.balance', 'cognitiveLoad.detectLoafing', 'cognitiveLoad.getOptimalCount', 'cognitiveLoad.getStats', 'cognitiveLoad.reset',
+    // v5.9.12 公式驱动新模块
+    'decisionEngineV2.analyze', 'decisionEngineV2.ddmAnalyze', 'decisionEngineV2.sdtAnalyze', 'decisionEngineV2.prospectAnalyze', 'decisionEngineV2.healthCheck',
+    'memoryConsolidation.computeRetention', 'memoryConsolidation.actrActivation', 'memoryConsolidation.scheduleReview', 'memoryConsolidation.consolidate', 'memoryConsolidation.healthCheck',
+    'emotionDynamics.analyze', 'emotionDynamics.updatePAD', 'emotionDynamics.regulate', 'emotionDynamics.computeResilience', 'emotionDynamics.healthCheck',
+    'cognitiveLoadV2.estimate', 'cognitiveLoadV2.attentionAllocation', 'cognitiveLoadV2.flowState', 'cognitiveLoadV2.taskSwitchCost', 'cognitiveLoadV2.healthCheck',
+    'dreamEngineV2.generate', 'dreamEngineV2.simulateSleepCycle', 'dreamEngineV2.healthCheck',
+    'psychologyDialogue.analyze', 'psychologyDialogue.identifyEmotion', 'psychologyDialogue.respond', 'psychologyDialogue.suggestTechnique', 'psychologyDialogue.healthCheck',
     // v5.6.1 — 步骤级推理奖励模型 (Process Reward Model)
     'processRewardModel.evaluateStep', 'processRewardModel.evaluateChain',
     'processRewardModel.findWeakSteps', 'processRewardModel.suggestImprovements',

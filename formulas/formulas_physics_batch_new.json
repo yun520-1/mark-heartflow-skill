@@ -1,0 +1,1442 @@
+[
+ {
+  "id": "fluid_navier_stokes",
+  "name": "纳维-斯托克斯方程",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "rho*(dv/dt + v*grad(v)) = -grad(p) + mu*laplacian(v) + f",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "fluid_bernoulli",
+  "name": "伯努利方程",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "p + (1/2)*rho*v^2 + rho*g*h = C",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_reynolds",
+  "name": "雷诺数",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "Re = rho*v*L/mu",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_continuity",
+  "name": "连续性方程",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "div(rho*v) + d(rho)/dt = 0",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_euler",
+  "name": "欧拉方程",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "rho*dv/dt = -grad(p) + rho*g",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_stokes_law",
+  "name": "斯托克斯阻力",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "F = 6*pi*mu*r*v",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_poiseuille",
+  "name": "泊肃叶定律",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "Q = pi*dP*R^4/(8*mu*L)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_torricelli",
+  "name": "托里拆利定理",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "v = sqrt(2*g*h)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_drag",
+  "name": "阻力公式",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "F = (1/2)*C_d*rho*A*v^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_lift",
+  "name": "升力公式",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "L = (1/2)*C_L*rho*A*v^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_mach",
+  "name": "马赫数",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "Ma = v/c",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_froude",
+  "name": "弗劳德数",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "Fr = v/sqrt(g*L)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_weber",
+  "name": "韦伯数",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "We = rho*v^2*L/sigma",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_strouhal",
+  "name": "斯特劳哈尔数",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "St = f*L/v",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_boundary_thick",
+  "name": "边界层厚度",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "delta = 5*L/sqrt(Re)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_darcy",
+  "name": "达西定律",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "Q = -k*A*dP/(mu*L)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_archimedes",
+  "name": "阿基米德原理",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "F_b = rho*g*V",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_laplace_pressure",
+  "name": "拉普拉斯压力",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "dP = sigma*(1/R1 + 1/R2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_capillary",
+  "name": "毛细管上升",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "h = 2*sigma*cos(theta)/(rho*g*r)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_venturi",
+  "name": "文丘里效应",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "v2 = sqrt(2*(P1-P2)/(rho*(1-(A2/A1)^2)))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_kutta_joukowski",
+  "name": "库塔-茹科夫斯基升力",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "L = rho*v*Gamma",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "fluid_prandtl_meyer",
+  "name": "普朗特-迈耶函数",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "nu = sqrt((g+1)/(g-1))*arctan(sqrt((g-1)/(g+1)*(Ma^2-1))) - arctan(sqrt(Ma^2-1))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "fluid_hagen",
+  "name": "哈根-泊肃叶方程",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "dP = 8*mu*L*Q/(pi*R^4)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "fluid_moody",
+  "name": "穆迪摩擦因子",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "1/sqrt(f) = -2*log(eps/(3.7*D) + 2.51/(Re*sqrt(f)))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "fluid_cavitation",
+  "name": "空化数",
+  "category": "physics",
+  "subcategory": "fluid_mechanics",
+  "formula": "sigma_c = (p - p_v)/(0.5*rho*v^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_gauss_e",
+  "name": "高斯定律(电)",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "div(E) = rho/epsilon_0",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_gauss_b",
+  "name": "高斯定律(磁)",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "div(B) = 0",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_faraday",
+  "name": "法拉第定律",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "curl(E) = -dB/dt",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_ampere",
+  "name": "安培定律",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "curl(B) = mu_0*J + mu_0*epsilon_0*dE/dt",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_lorentz",
+  "name": "洛伦兹力",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "F = q*(E + v*B)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_coulomb",
+  "name": "库仑定律",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "F = k*q1*q2/r^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_biot_savart",
+  "name": "毕奥-萨伐尔定律",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "dB = (mu_0/(4*pi))*I*dl*r/r^3",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "em_poynting",
+  "name": "坡印廷矢量",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "S = E*B/mu_0",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_maxwell_energy",
+  "name": "电磁场能量密度",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "u = (1/2)*(epsilon_0*E^2 + B^2/mu_0)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_wave_speed",
+  "name": "电磁波速",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "c = 1/sqrt(mu_0*epsilon_0)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_impedance",
+  "name": "波阻抗",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "Z = E/H = sqrt(mu/epsilon)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_ohm_micro",
+  "name": "微观欧姆定律",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "J = sigma*E",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_capacitance",
+  "name": "平行板电容",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "C = epsilon*A/d",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_inductance",
+  "name": "螺线管电感",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "L = mu_0*N^2*A/l",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_resistance",
+  "name": "电阻公式",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "R = rho*L/A",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_rc_charge",
+  "name": "RC充电",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "Q = C*V*(1-exp(-t/(R*C)))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_rl_current",
+  "name": "RL电流增长",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "I = (V/R)*(1-exp(-R*t/L))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_rlc_freq",
+  "name": "RLC谐振频率",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "f = 1/(2*pi*sqrt(L*C))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_skin_depth",
+  "name": "趋肤深度",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "delta = sqrt(2/(omega*mu*sigma))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "em_radiation_power",
+  "name": "辐射功率(拉莫尔)",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "P = q^2*a^2/(6*pi*epsilon_0*c^3)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "em_dipole_field",
+  "name": "偶极子场",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "E = (1/(4*pi*epsilon_0))*(2*p*cos(theta)/r^3)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_snell_em",
+  "name": "电磁波折射率",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "n = c/v = sqrt(epsilon_r*mu_r)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "em_fresnel_s",
+  "name": "菲涅尔s偏振反射",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "r_s = (n1*cos_i - n2*cos_t)/(n1*cos_i + n2*cos_t)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "em_fresnel_p",
+  "name": "菲涅尔p偏振反射",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "r_p = (n2*cos_i - n1*cos_t)/(n2*cos_i + n1*cos_t)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "em_brewster",
+  "name": "布儒斯特角",
+  "category": "physics",
+  "subcategory": "electromagnetism",
+  "formula": "theta_B = arctan(n2/n1)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_first",
+  "name": "热力学第一定律",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "dU = Q - W",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_second_clausius",
+  "name": "克劳修斯不等式",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "dS >= dQ/T",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_entropy",
+  "name": "熵变",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "dS = dQ_rev/T",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_carnot_eff",
+  "name": "卡诺效率",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "eta = 1 - T_c/T_h",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_gibbs",
+  "name": "吉布斯自由能",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "G = H - T*S",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_helmholtz",
+  "name": "亥姆霍兹自由能",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "A = U - T*S",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_enthalpy",
+  "name": "焓",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "H = U + P*V",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_gibbs_dg",
+  "name": "吉布斯判据",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "dG = V*dP - S*dT",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_clapeyron",
+  "name": "克拉珀龙方程",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "dP/dT = L/(T*dV)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "thermo_vant_hoff",
+  "name": "范特霍夫方程",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "d(ln(K))/dT = dH/(R*T^2)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "thermo_arrhenius",
+  "name": "阿伦尼乌斯方程",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "k = A*exp(-E_a/(R*T))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_ideal_gas",
+  "name": "理想气体状态方程",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "P*V = n*R*T",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_van_der_waals",
+  "name": "范德瓦尔斯方程",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "(P+a/V^2)*(V-b) = R*T",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_maxwell_rel1",
+  "name": "麦克斯韦关系1",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "dS/dV = dP/dT at N constant",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "thermo_maxwell_rel2",
+  "name": "麦克斯韦关系2",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "dS/dP = -dV/dT at N constant",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "thermo_fourier",
+  "name": "傅里叶导热定律",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "q = -k*grad(T)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_heat_eq",
+  "name": "热传导方程",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "dT/dt = alpha*laplacian(T)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_stefan_boltzmann",
+  "name": "斯特藩-玻尔兹曼定律",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "P = sigma*A*T^4",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_wien",
+  "name": "维恩位移定律",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "lambda_max*T = 2.898e-3",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_planck",
+  "name": "普朗克辐射定律",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "B = (2*h*c^2/lambda^5)/(exp(h*c/(lambda*k*T))-1)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "thermo_partition",
+  "name": "配分函数",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "Z = sum(exp(-E_i/(k*T)))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "thermo_fermi_dirac",
+  "name": "费米-狄拉克分布",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "f = 1/(exp((E-mu)/(k*T))+1)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "thermo_bose_einstein",
+  "name": "玻色-爱因斯坦分布",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "f = 1/(exp((E-mu)/(k*T))-1)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "thermo_boltzmann",
+  "name": "玻尔兹曼分布",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "P(E) = exp(-E/(k*T))/Z",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "thermo_latent_heat",
+  "name": "潜热公式",
+  "category": "physics",
+  "subcategory": "thermodynamics",
+  "formula": "Q = m*L",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_schrodinger",
+  "name": "薛定谔方程",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "i*h*d(psi)/dt = H*psi",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "qm_schrodinger_timeless",
+  "name": "定态薛定谔方程",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "H*psi = E*psi",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "qm_heisenberg",
+  "name": "不确定性原理",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "delta_x*delta_p >= h/(4*pi)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_dirac",
+  "name": "狄拉克方程",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "(i*gamma*partial - m)*psi = 0",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "qm_harmonic",
+  "name": "谐振子能级",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "E_n = (n+1/2)*h*omega",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_hydrogen",
+  "name": "氢原子能级",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "E_n = -13.6/n^2 eV",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_angular_momentum",
+  "name": "角动量量子化",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "L^2 = l*(l+1)*h^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_spin",
+  "name": "自旋量子数",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "S^2 = s*(s+1)*h^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_compton",
+  "name": "康普顿散射",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "lambda = lambda_0 + h*(1-cos(theta))/(m*c)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_de_broglie",
+  "name": "德布罗意波长",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "lambda = h/p",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_tunneling",
+  "name": "隧穿概率",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "T = exp(-2*kappa*L) where kappa = sqrt(2*m*(V-E))/h",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "qm_perturbation_e",
+  "name": "微扰论能量修正",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "E_n1 = <n|H1|n>",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "qm_fermi_golden",
+  "name": "费米黄金规则",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "W = (2*pi/h)*abs(<f|H1|i>)^2*rho(E_f)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "qm_expectation",
+  "name": "期望值",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "<A> = integral(psi*A*psi)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_ehrenfest",
+  "name": "埃伦费斯特定理",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "d<A>/dt = <i/h*[A,H]> + <dA/dt>",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "qm_pauli",
+  "name": "泡利矩阵",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "sigma_x^2 = sigma_y^2 = sigma_z^2 = I",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_klein_gordon",
+  "name": "克莱因-戈尔登方程",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "(partial^2 + m^2)*psi = 0",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "qm_rabi",
+  "name": "拉比频率",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "Omega_R = d*E/h",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "qm_zeeman",
+  "name": "塞曼效应能移",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "dE = mu_B*m_J*B*g_J",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_stark",
+  "name": "斯塔克效应",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "dE = -p*E*cos(theta)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_spectral_line",
+  "name": "光谱线频率",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "h*nu = E_2 - E_1",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_larmor",
+  "name": "拉莫尔进动",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "omega_L = g*e*B/(2*m)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_born_rule",
+  "name": "玻恩法则",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "P = abs(psi)^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "qm_density_matrix",
+  "name": "密度矩阵",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "rho = sum(p_i*|i><i|)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "qm_von_neumann_ent",
+  "name": "冯诺依曼熵",
+  "category": "physics",
+  "subcategory": "quantum_mechanics",
+  "formula": "S = -tr(rho*log(rho))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_lorentz_t",
+  "name": "时间膨胀",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "t = t_0/sqrt(1-v^2/c^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "rel_lorentz_l",
+  "name": "长度收缩",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "L = L_0*sqrt(1-v^2/c^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "rel_lorentz_gamma",
+  "name": "洛伦兹因子",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "gamma = 1/sqrt(1-v^2/c^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "rel_mass_energy",
+  "name": "质能等价",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "E = m*c^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "rel_energy_momentum",
+  "name": "能量-动量关系",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "E^2 = (p*c)^2 + (m*c^2)^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "rel_relativistic_ke",
+  "name": "相对论动能",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "K = (gamma-1)*m*c^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "rel_doppler",
+  "name": "相对论多普勒",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "f = f_0*sqrt((1-beta)/(1+beta))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "rel_velocity_add",
+  "name": "相对论速度叠加",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "u = (v+u)/(1+v*u/c^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "rel_schwarzschild_r",
+  "name": "史瓦西半径",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "r_s = 2*G*M/c^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "rel_schwarzschild_metric",
+  "name": "史瓦西度规",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "ds^2 = -(1-r_s/r)*c^2*dt^2 + dr^2/(1-r_s/r) + r^2*dOmega^2",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_einstein_field",
+  "name": "爱因斯坦场方程",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "G = 8*pi*G*T/c^4",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_friedmann",
+  "name": "弗里德曼方程",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "(a/a)^2 = (8*pi*G*rho/3) - k*c^2/a^2 + Lambda/3",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_grav_redshift",
+  "name": "引力红移",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "z = (1-r_s/r)^(-1/2) - 1",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_grav_time",
+  "name": "引力时间膨胀",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "dt = dtau/sqrt(1-r_s/r)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_geodesic_dev",
+  "name": "测地线偏离",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "d^2*n/dtau^2 = -R*n",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_kerr_metric",
+  "name": "克尔度规",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "ds^2 = Kerr metric with spin a",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_ergosphere",
+  "name": "能层半径",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "r_e = M + sqrt(M^2 - a^2*cos^2(theta))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_hawking_temp",
+  "name": "霍金温度",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "T_H = h*c^3/(8*pi*G*M*k)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_hawking_entropy",
+  "name": "贝肯斯坦-霍金熵",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "S = k*A/(4*l_P^2)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "rel_lens_thirring",
+  "name": "冷斯-提尔苓效应",
+  "category": "physics",
+  "subcategory": "relativity",
+  "formula": "Omega_LT = 2*G*J/(c^2*r^3)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "solid_hooke",
+  "name": "胡克定律",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "sigma = E*epsilon",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_stress",
+  "name": "正应力",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "sigma = F/A",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_shear",
+  "name": "剪应力",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "tau = F/A",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_strain",
+  "name": "线应变",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "epsilon = dL/L",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_poisson",
+  "name": "泊松比",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "nu = -epsilon_trans/epsilon_axial",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_bulk",
+  "name": "体积模量",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "K = -V*dP/dV",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_shear_mod",
+  "name": "剪切模量",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "G = E/(2*(1+nu))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_beam_bend",
+  "name": "梁弯曲方程",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "M = E*I*d^2*y/dx^2",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "solid_euler_buckling",
+  "name": "欧拉临界力",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "P_cr = pi^2*E*I/(K*L)^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_von_mises",
+  "name": "冯米塞斯应力",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "sigma_v = sqrt(sigma_x^2 - sigma_x*sigma_y + sigma_y^2 + 3*tau^2)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "solid_mohr_circle",
+  "name": "莫尔圆主应力",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "sigma_1 = (sigma_x+sigma_y)/2 + sqrt(((sigma_x-sigma_y)/2)^2 + tau^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_tresca",
+  "name": "特雷斯卡准则",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "sigma_1 - sigma_3 = sigma_y",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_torsion",
+  "name": "扭转剪应力",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "tau = T*r/J",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_thick_wall",
+  "name": "厚壁圆筒应力",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "sigma_r = (p_i*r_i^2 - p_o*r_o^2)/(r_o^2-r_i^2) - (p_i-p_o)*r_i^2*r_o^2/((r_o^2-r_i^2)*r^2)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "solid_fracture_k",
+  "name": "应力强度因子",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "K = sigma*sqrt(pi*a)*Y",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "solid_paris_law",
+  "name": "帕里斯定律(疲劳)",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "da/dN = C*(delta_K)^m",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "solid_creep",
+  "name": "蠕变方程",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "epsilon = A*sigma^n*t^m*exp(-Q/(R*T))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "solid_mohr_coulomb",
+  "name": "莫尔-库仑准则",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "tau = c + sigma_n*tan(phi)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "solid_plate_bend",
+  "name": "薄板弯曲",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "D*laplacian^4(w) = q",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "solid_strain_energy",
+  "name": "应变能密度",
+  "category": "engineering",
+  "subcategory": "solid_mechanics",
+  "formula": "U = sigma^2/(2*E)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_snell",
+  "name": "斯涅尔定律",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "n1*sin(theta1) = n2*sin(theta2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_bragg",
+  "name": "布拉格定律",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "2*d*sin(theta) = m*lambda",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_single_slit",
+  "name": "单缝衍射",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "I = I_0*(sin(alpha)/alpha)^2 where alpha = pi*a*sin(theta)/lambda",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "opt_double_slit",
+  "name": "双缝干涉",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "I = 4*I_0*cos^2(pi*d*sin(theta)/lambda)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_diffraction_grating",
+  "name": "光栅方程",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "d*sin(theta) = m*lambda",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_rayleigh",
+  "name": "瑞利判据",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "theta_min = 1.22*lambda/D",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_malus",
+  "name": "马吕斯定律",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "I = I_0*cos^2(theta)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_brewster",
+  "name": "布儒斯特角(光)",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "theta_B = arctan(n2/n1)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_fresnel_reflect",
+  "name": "菲涅尔反射率",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "R = ((n1-n2)/(n1+n2))^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_thin_lens",
+  "name": "薄透镜公式",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "1/f = 1/d_o + 1/d_i",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_mirror",
+  "name": "球面镜公式",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "1/f = 1/d_o + 1/d_i = 2/R",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_magnification",
+  "name": "放大率",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "M = -d_i/d_o",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_abbe_resolution",
+  "name": "阿贝分辨率",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "d = lambda/(2*NA)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_fresnel_zone",
+  "name": "菲涅尔半波带",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "r_n = sqrt(n*lambda*d)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_interference_order",
+  "name": "干涉级数",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "2*n*d*cos(theta) = m*lambda",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "opt_coherence_length",
+  "name": "相干长度",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "L_c = c/delta_nu = lambda^2/delta_lambda",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "opt_gaussian_beam",
+  "name": "高斯光束腰",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "w_0 = lambda/(pi*theta)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "opt_rayleigh_range",
+  "name": "瑞利长度",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "z_R = pi*w_0^2/lambda",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "opt_fabry_perot",
+  "name": "法布里-珀罗透射",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "T = 1/(1+F*sin^2(delta/2))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "opt_airy_disk",
+  "name": "艾里斑半径",
+  "category": "physics",
+  "subcategory": "optics",
+  "formula": "r_airy = 1.22*lambda*f/D",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_decay",
+  "name": "放射性衰变定律",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "N = N_0*exp(-lambda*t)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_half_life",
+  "name": "半衰期",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "t_1/2 = ln(2)/lambda",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_binding",
+  "name": "结合能",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "E_b = (Z*m_p + N*m_n - M)*c^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_bethe_weizsacker",
+  "name": "半经验质量公式",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "E_b = a_V*A - a_S*A^(2/3) - a_C*Z^2/A^(1/3) - a_A*(A-2*Z)^2/A + delta",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nuclear_cross_section",
+  "name": "反应截面",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "sigma = R/(n*Phi)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_q_value",
+  "name": "Q值",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "Q = (m_initial - m_final)*c^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_activity",
+  "name": "放射性活度",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "A = lambda*N",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_coulomb_barrier",
+  "name": "库仑势垒",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "V_C = k*Z1*Z2*e^2/(R1+R2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_gamow",
+  "name": "伽莫夫因子",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "P = exp(-2*pi*Z1*Z2*e^2/(h*v))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nuclear_dose",
+  "name": "吸收剂量",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "D = E_absorbed/m",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_equiv_dose",
+  "name": "当量剂量",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "H = D*w_R",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_effective_dose",
+  "name": "有效剂量",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "E = sum(w_T*H_T)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_fission_energy",
+  "name": "裂变能量释放",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "E_fission = 200 MeV per fission",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_fusion_pp",
+  "name": "pp链能量",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "4*p = He + 2*e+ + 2*nu + 26.7 MeV",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_alpha_decay",
+  "name": "α衰变能量",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "Q_alpha = (M_parent - M_daughter - M_alpha)*c^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_beta_decay",
+  "name": "β衰变",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "Q_beta = (M_parent - M_daughter)*c^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_neutron_moderation",
+  "name": "中子慢化",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "E_n = E_0*((A-1)/(A+1))^2 per collision",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_breit_wigner",
+  "name": "布雷特-维格纳共振",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "sigma = sigma_0*(Gamma^2/4)/((E-E_r)^2 + Gamma^2/4)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nuclear_segre",
+  "name": "塞格雷图",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "N/Z = 1 for A<40, N/Z increases for heavy nuclei",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nuclear_saha",
+  "name": "萨哈方程",
+  "category": "physics",
+  "subcategory": "nuclear_physics",
+  "formula": "n_ion*n_e/n_neutral = (2*pi*m*k*T/h^2)^(3/2)*exp(-chi/(k*T))/g",
+  "difficulty": "advanced"
+ }
+]
