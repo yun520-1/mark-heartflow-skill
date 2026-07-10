@@ -29,7 +29,9 @@ class FormulaModule {
    */
   search(keyword, options = {}) {
     this.init();
-    const results = this.engine.searchFormulas(keyword, options);
+    const raw = this.engine.searchFormulas(keyword, options);
+    // searchFormulas 可能返回 {success, results} 或直接数组
+    const results = Array.isArray(raw) ? raw : (raw.results || []);
     return {
       success: true,
       matched: true,  // 跳过 decisionRouter 包装
