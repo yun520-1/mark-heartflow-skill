@@ -117,7 +117,7 @@ const _rateMap = new Map(); // IP → { count, windowStart }
 
 // [AUDIT-FIX] Token 维度速率限制：防止 token 暴力破解
 const TOKEN_RATE_LIMIT_WINDOW = 60000; // 1 分钟窗口
-const TOKEN_RATE_LIMIT_MAX = 30; // 每个 token 每分钟最多 30 请求
+const TOKEN_RATE_LIMIT_MAX = 5; // [AUDIT-FIX H-03] 每个 token 每分钟最多 5 请求（防暴力破解）
 const _tokenRateMap = new Map(); // tokenHash → { count, windowStart }
 
 function checkRateLimit(ip) {
