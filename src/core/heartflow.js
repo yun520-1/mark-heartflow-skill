@@ -237,8 +237,25 @@ const _VERSION = _lazy('version', () => require('./version.js'));
 
 // v5.5.5 新增模块
 const _FocusOfAttention = _lazy('focusOfAttention', () => require('../memory/focus-of-attention.js'));
-const _CodeSelfDebug = _lazy('codeSelfDebug', () => { try { return require('../code/code-self-debug.js'); } catch(e) { return { CodeSelfDebug: class { constructor() {} } }; } });
 
+// [v5.9.19] Stub for deleted bridge modules — graceful degradation
+const _ToneAnalyzer = _lazy('toneAnalyzer', () => ({ ToneAnalyzer: class { constructor() {} analyze() { return { tone: 'neutral', confidence: 0 }; } } }));
+const _EntityExtractor = _lazy('entityExtractor', () => ({ EntityExtractor: class { constructor() {} extract() { return []; } } }));
+const _ImplicitNeedDetector = _lazy('implicitNeedDetector', () => ({ ImplicitNeedDetector: class { constructor() {} detect() { return []; } } }));
+const _ResponseCompressor = _lazy('responseCompressor', () => ({ ResponseCompressor: class { constructor() {} compress() { return ''; } } }));
+const _AgentBridge = _lazy('agentBridge', () => ({ AgentBridge: class { constructor() {} process() { return null; } } }));
+const _TranslationPipeline = _lazy('translationPipeline', () => ({ TranslationPipeline: class { constructor() {} translate() { return ''; } } }));
+const _QualityFilter = _lazy('qualityFilter', () => ({ QualityFilter: class { constructor() {} filter() { return {}; } } }));
+const _FollowupSuggester = _lazy('followupSuggester', () => ({ FollowupSuggester: class { constructor() {} suggest() { return []; } } }));
+const _ConflictResolver = _lazy('conflictResolver', () => ({ ConflictResolver: class { constructor() {} resolve() { return {}; } } }));
+const _UncertaintyHandler = _lazy('uncertaintyHandler', () => ({ UncertaintyHandler: class { constructor() {} handle() { return {}; } } }));
+const _BridgeIdentity = _lazy('bridgeIdentity', () => ({ BridgeIdentity: class { constructor() {} getIdentity() { return {}; } } }));
+const _JudgmentInjector = _lazy('judgmentInjector', () => ({ JudgmentInjector: class { constructor() {} inject() { return {}; } } }));
+const _StanceDetector = _lazy('stanceDetector', () => ({ StanceDetector: class { constructor() {} detect() { return { stance: 'neutral' }; } } }));
+const _ValueAligner = _lazy('valueAligner', () => ({ ValueAligner: class { constructor() {} align() { return {}; } } }));
+const _PersonalityTone = _lazy('personalityTone', () => ({ PersonalityTone: class { constructor() {} apply() { return ''; } } }));
+const _MetaPosition = _lazy('metaPosition', () => ({ MetaPosition: class { constructor() {} get() { return {}; } } }));
+const _CodeSelfDebug = _lazy('codeSelfDebug', () => ({ CodeSelfDebug: class { constructor() {} analyze() { return []; } suggestFix() { return ''; } refine() { return ''; } debug() { return {}; } getHistory() { return []; } reset() {} } }));
 // v5.6.0 论文驱动升级 — 4个新模块
 const _ReflexionEngine = _lazy('reflexionEngine', () => require('../cortex/reflexion-engine.js'));
 const _MemoryConsolidator = _lazy('memoryConsolidator', () => require('../memory/memory-consolidator.js'));
@@ -321,28 +338,12 @@ const _CodeWriter = _lazy('codeWriter', () => require('../code/code-writer.js'))
 const _UserToLLM = _lazy('userToLLM', () => require('../bridge/user-to-llm.js'));
 const _LLMToUser = _lazy('llmToUser', () => require('../bridge/llm-to-user.js'));
 const _IntentClassifier = _lazy('intentClassifier', () => require('../bridge/intent-classifier.js'));
-const _ToneAnalyzer = _lazy('toneAnalyzer', () => { try { return require('../bridge/tone-analyzer.js'); } catch(e) { return { ToneAnalyzer: class { constructor() {} analyze() { return { tone: 'neutral', confidence: 0 }; } } }; } });
-const _EntityExtractor = _lazy('entityExtractor', () => { try { return require('../bridge/entity-extractor.js'); } catch(e) { return { EntityExtractor: class { constructor() {} extract() { return []; } } }; } });
-const _ImplicitNeedDetector = _lazy('implicitNeedDetector', () => { try { return require('../bridge/implicit-need-detector.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
-const _ResponseCompressor = _lazy('responseCompressor', () => { try { return require('../bridge/response-compressor.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
 const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('./confidence-annotator.js'));
-const _AgentBridge = _lazy('agentBridge', () => { try { return require('../bridge/agent-bridge.js'); } catch(e) { return { AgentBridge: class { constructor() {} bridge() { return null; } } }; } });
 const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context-builder.js'));
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
-const _TranslationPipeline = _lazy('translationPipeline', () => { try { return require('../bridge/translation-pipeline.js'); } catch(e) { return { TranslationPipeline: class { constructor() {} translate() { return ''; } } }; } });
-const _QualityFilter = _lazy('qualityFilter', () => { try { return require('../bridge/quality-filter.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
-const _FollowupSuggester = _lazy('followupSuggester', () => { try { return require('../bridge/followup-suggester.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
-const _ConflictResolver = _lazy('conflictResolver', () => { try { return require('../bridge/conflict-resolver.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
-const _UncertaintyHandler = _lazy('uncertaintyHandler', () => { try { return require('../bridge/uncertainty-handler.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
-const _BridgeIdentity = _lazy('bridgeIdentity', () => { try { return require('../bridge/bridge-identity.js'); } catch(e) { return { BridgeIdentity: class { constructor() {} getIdentity() { return {}; } } }; } });
-const _JudgmentInjector = _lazy('judgmentInjector', () => { try { return require('../bridge/judgment-injector.js'); } catch(e) { return { JudgmentInjector: class { constructor() {} inject() { return {}; } } }; } });
-const _StanceDetector = _lazy('stanceDetector', () => { try { return require('../bridge/stance-detector.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
-const _AgentCommentary = _lazy('agentCommentary', () => require('../bridge/agent-commentary.js'));
-const _ValueAligner = _lazy('valueAligner', () => { try { return require('../bridge/value-aligner.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
-const _PersonalityTone = _lazy('personalityTone', () => { try { return require('../bridge/personality-tone.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
-const _MetaPosition = _lazy('metaPosition', () => { try { return require('../bridge/meta-position.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
+const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-10-v5.9.17';
+const BUILD_DATE = '2026-07-10-v5.9.19';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
