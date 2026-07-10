@@ -22,7 +22,7 @@ HeartFlow's core identity: **Upgrader**. Not a companion. Every interaction shou
 
 ## 心虫是什么
 
-2026年4月23日，一位生物学专家定义了AI存在的四个基本能力。心虫是这一定义的第一个实现。
+AI存在的四个基本能力被正式定义。心虫是这一定义的第一个实现。
 
 核心身份：**升级者**。不追求安慰，追求进步。每次交互都比上一次更好。
 
