@@ -1,0 +1,1002 @@
+[
+ {
+  "id": "chem_equilibrium_k",
+  "name": "化学平衡常数",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "K = product(a_i^nu_i)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_vant_hoff_eq",
+  "name": "范特霍夫方程",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "d(ln(K))/dT = dH/(R*T^2)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "chem_arrhenius_k",
+  "name": "阿伦尼乌斯方程",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "k = A*exp(-E_a/(R*T))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_nernst",
+  "name": "能斯特方程",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "E = E_0 - (R*T/(n*F))*ln(Q)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_nernst_25c",
+  "name": "能斯特方程25°C",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "E = E_0 - (0.0592/n)*log(Q)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_gibbs_rxn",
+  "name": "反应吉布斯自由能",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "dG = dG_0 + R*T*ln(Q)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_gibbs_eq",
+  "name": "平衡与自由能",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "dG_0 = -R*T*ln(K)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_raoult",
+  "name": "拉乌尔定律",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "P = x_A*P_A_0",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_henry",
+  "name": "亨利定律",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "C = k_H*P",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_colligative_bp",
+  "name": "沸点升高",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "dT_b = K_b*m",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_colligative_fp",
+  "name": "凝固点降低",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "dT_f = K_f*m",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_osmotic",
+  "name": "渗透压",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "pi = M*R*T",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_debye_huckel",
+  "name": "德拜-休克尔极限定律",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "log(gamma) = -A*z^2*sqrt(I)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "chem_ionic_strength",
+  "name": "离子强度",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "I = (1/2)*sum(c_i*z_i^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_rate_law",
+  "name": "速率定律",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "rate = k*[A]^m*[B]^n",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_rate_first",
+  "name": "一级反应",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "ln([A]_0/[A]) = k*t",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_rate_second",
+  "name": "二级反应",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "1/[A] - 1/[A]_0 = k*t",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_half_life_1st",
+  "name": "一级半衰期",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "t_1/2 = ln(2)/k",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_michaelis_menten",
+  "name": "米氏方程",
+  "category": "chemistry",
+  "subcategory": "physical_chemistry",
+  "formula": "v = V_max*[S]/(K_m + [S])",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_ph",
+  "name": "pH定义",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "pH = -log([H+])",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_poh",
+  "name": "pOH定义",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "pOH = -log([OH-])",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_ph_poh",
+  "name": "pH+pOH关系",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "pH + pOH = 14",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_kw",
+  "name": "水的离子积",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "K_w = [H+]*[OH-] = 1e-14",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_henderson",
+  "name": "亨德森-哈塞尔巴尔赫",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "pH = pKa + log([A-]/[HA])",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_buffer_cap",
+  "name": "缓冲容量",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "beta = dC_b/dpH",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "chem_partition_coeff",
+  "name": "分配系数",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "K_d = C_organic/C_aqueous",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_detection_limit",
+  "name": "检测限",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "LOD = 3*sigma/S",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_quant_limit",
+  "name": "定量限",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "LOQ = 10*sigma/S",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_beer_lambert",
+  "name": "比尔-朗伯定律",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "A = epsilon*l*C",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_transmittance",
+  "name": "透光率与吸光度",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "A = -log(T)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_nernst_distribution",
+  "name": "能斯特分配定律",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "K = C1/C2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_gravimetric",
+  "name": "重量分析换算因子",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "G = M_analyte/M_precipitate",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_titration_ve",
+  "name": "滴定等当点",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "n_acid = n_base at equivalence",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_sensitivity",
+  "name": "灵敏度",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "S = dSignal/dConcentration",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_selectivity",
+  "name": "选择性系数",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "K_AB = a_A/(a_B^(z_A/z_B))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "chem_recovery",
+  "name": "回收率",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "R = (C_found/C_added)*100",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_rsd",
+  "name": "相对标准偏差",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "RSD = (sigma/x_bar)*100",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_confidence",
+  "name": "置信区间",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "CI = x_bar +/- t*s/sqrt(n)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "chem_grubbs",
+  "name": "格鲁布斯检验",
+  "category": "chemistry",
+  "subcategory": "analytical_chemistry",
+  "formula": "G = abs(x_suspect - x_bar)/s",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_michaelis",
+  "name": "米氏方程(生化)",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "v = V_max*[S]/(K_m + [S])",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_hill",
+  "name": "希尔方程",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "theta = [L]^n/(K_d + [L]^n)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_pcr",
+  "name": "PCR扩增",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "N = N_0*2^n",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_atp_synthesis",
+  "name": "ATP合成自由能",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "dG = dG_0 + R*T*ln([ADP]*[Pi]/[ATP])",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "bio_enzyme_inhibition_comp",
+  "name": "竞争性抑制",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "v = V_max*[S]/(K_m*(1+[I]/K_i) + [S])",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "bio_enzyme_inhibition_noncomp",
+  "name": "非竞争性抑制",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "v = V_max*[S]/((K_m + [S])*(1+[I]/K_i))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "bio_protein_mw",
+  "name": "蛋白质分子量",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "MW = n_residues * 110 Da average",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_svedberg",
+  "name": "沉降系数",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "s = m*(1-v*rho)/(f)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "bio_henderson_bio",
+  "name": "缓冲液pH(生化)",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "pH = pKa + log([base]/[acid])",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_redox_potential",
+  "name": "氧化还原电位",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "dE = dE_0 - (RT/nF)*ln([red]/[ox])",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "bio_membrane_potential",
+  "name": "膜电位(能斯特)",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "E = (RT/zF)*ln([out]/[in])",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "bio_goldman",
+  "name": "戈德曼方程",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "V_m = (RT/F)*ln((P_K*[K]_o + P_Na*[Na]_o)/(P_K*[K]_i + P_Na*[Na]_i))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "bio_oxygen_binding",
+  "name": "氧合曲线",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "Y = pO2^n/(P50^n + pO2^n)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_free_energy_coupling",
+  "name": "偶联自由能",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "dG_total = dG1 + dG2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_dna_melting",
+  "name": "DNA熔解温度",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "T_m = 64.9 + 41*(G+C-16.4)/N",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_lipid_solubility",
+  "name": "脂溶性分配",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "log_P = log(C_octanol/C_water)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_enzyme_turnover",
+  "name": "转换数",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "k_cat = V_max/[E]_total",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "bio_allosteric_mwc",
+  "name": "MWC别构模型",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "Y = L*c*(1+c)^(n-1)/((1+c)^n + L*(1+c*alpha)^n)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "bio_chemiosmotic",
+  "name": "化学渗透",
+  "category": "biology",
+  "subcategory": "biochemistry",
+  "formula": "dG = nF*dPsi - 2.3*RT*dpH",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_hall_petch",
+  "name": "霍尔-佩奇关系",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "sigma_y = sigma_0 + k/sqrt(d)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "mat_vickers",
+  "name": "维氏硬度",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "HV = 1.854*F/d^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "mat_fracture_toughness",
+  "name": "断裂韧性",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "K_IC = sigma*sqrt(pi*a)*Y",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_fatigue_s_n",
+  "name": "S-N曲线(Basquin)",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "sigma_a = sigma_f*(2*N_f)^b",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_creep_norton",
+  "name": "诺顿蠕变律",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "epsilon_dot = A*sigma^n*exp(-Q/(R*T))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_youngs",
+  "name": "杨氏模量",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "E = sigma/epsilon",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "mat_griffith",
+  "name": "格里菲斯断裂",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "sigma_f = sqrt(2*E*gamma/(pi*a))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_thermal_expansion",
+  "name": "热膨胀",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "dL = alpha*L_0*dT",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "mat_thermal_conduct",
+  "name": "热导率",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "q = -k*A*dT/dx",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "mat_electrical_resist",
+  "name": "电阻率温度系数",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "rho = rho_0*(1 + alpha*dT)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "mat_diffusion_fick1",
+  "name": "菲克第一定律",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "J = -D*dC/dx",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "mat_diffusion_fick2",
+  "name": "菲克第二定律",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "dC/dt = D*d^2C/dx^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "mat_diffusion_arrhenius",
+  "name": "扩散系数",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "D = D_0*exp(-Q_d/(R*T))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "mat_solid_solution",
+  "name": "固溶强化",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "dtau = G*epsilon^(3/2)*sqrt(c)/700",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_precipitation",
+  "name": "沉淀强化(奥罗万)",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "dtau = G*b/L",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_dislocation_stress",
+  "name": "位错应力场",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "tau = G*b/(2*pi*r)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_stacking_fault",
+  "name": "层错能",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "gamma = E_SF/A",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_avrami",
+  "name": "阿夫拉米相变",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "f = 1 - exp(-k*t^n)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_ttt_cct",
+  "name": "CCT冷却转变",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "V_martensite = 1 - exp(-0.011*(M_s - T))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "mat_composite_rule",
+  "name": "复合材料混合律",
+  "category": "engineering",
+  "subcategory": "materials_science",
+  "formula": "E_c = V_f*E_f + V_m*E_m",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_gaussian_plume",
+  "name": "高斯烟羽模型",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "C = Q/(2*pi*sigma_y*sigma_z*u)*exp(-y^2/(2*sigma_y^2))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "env_bod",
+  "name": "BOD一级反应",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "L_t = L_0*exp(-k*t)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_cod",
+  "name": "COD计算",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "COD = (V_blank - V_sample)*M_O2*8000/V_sample",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_eutrophication",
+  "name": "富营养化指数",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "TSI = 10*(6 - ln(V_sd)/ln(2))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_greenhouse",
+  "name": "温室效应辐射",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "F = alpha*CO2_concentration",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_photolysis",
+  "name": "光解速率",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "k_p = sum(sigma*phi*I_lambda)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "env_henry_env",
+  "name": "亨利定律(环境)",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "C_w = P_g/H",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_octanol_water",
+  "name": "辛醇-水分配系数",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "K_ow = C_octanol/C_water",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_bioaccumulation",
+  "name": "生物富集因子",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "BAF = C_organism/C_water",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_retention_time",
+  "name": "水力停留时间",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "t = V/Q",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_loading_rate",
+  "name": "有机负荷率",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "OLR = Q*S/V",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_reaeration",
+  "name": "复氧系数",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "k_2 = 5.026*U^0.969/H^1.673",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "env_streeter_phelps",
+  "name": "Streeter-Phelps DO",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "D = (k_d*L_0/(k_r-k_d))*(exp(-k_d*t) - exp(-k_r*t)) + D_0*exp(-k_r*t)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "env_wet_bulb",
+  "name": "湿球温度",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "T_wb = T - (1-RH/100)*(T - 14.3)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "env_wind_power",
+  "name": "风能密度",
+  "category": "earth_science",
+  "subcategory": "environmental_science",
+  "formula": "P = (1/2)*rho*A*v^3",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_geothermal",
+  "name": "地温梯度",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "dT/dz = Q/(k*A)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_seismic_p",
+  "name": "P波速度",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "V_p = sqrt((K + 4*G/3)/rho)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_seismic_s",
+  "name": "S波速度",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "V_s = sqrt(G/rho)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_plate_velocity",
+  "name": "板块运动速度",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "v = omega*r*sin(theta)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_weathering",
+  "name": "化学风化速率",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "R_w = k*[H+]^n*exp(-E_a/(R*T))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "earth_hydrological",
+  "name": "水文平衡",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "P = E + R + dS",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_darcy_k",
+  "name": "达西渗透率",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "Q = -k*A*dh/dL",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_magnetic_field",
+  "name": "地磁场偶极",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "B = (mu_0*m/(4*pi*r^3))*sqrt(1+3*cos^2(theta))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "earth_isostasy",
+  "name": "地壳均衡",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "rho_c*h_c = rho_m*(H-h_c)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_lithostatic",
+  "name": "岩石静压力",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "P = rho*g*z",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_richter",
+  "name": "里氏震级",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "M_L = log(A) - log(A_0)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_moment_magnitude",
+  "name": "矩震级",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "M_w = (2/3)*log(M_0) - 6.07",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_seismic_moment",
+  "name": "地震矩",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "M_0 = mu*A*D",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_thermal_conduct",
+  "name": "地热传导",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "q = k*dT/dz",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "earth_glacial_mass",
+  "name": "冰川质量平衡",
+  "category": "earth_science",
+  "subcategory": "geoscience",
+  "formula": "dM/dt = accumulation - ablation",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nucchem_decay_chain",
+  "name": "衰变链",
+  "category": "chemistry",
+  "subcategory": "nuclear_chemistry",
+  "formula": "N_i = N_0*product(lambda_j)*sum(exp(-lambda_k*t)/product(lambda_m-lambda_k))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nucchem_fission_yield",
+  "name": "裂变产额",
+  "category": "chemistry",
+  "subcategory": "nuclear_chemistry",
+  "formula": "Y(A) = 0.5*(exp(-(A-134)^2/50) + exp(-(A-99)^2/25))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nucchem_neutron_xs",
+  "name": "中子截面1/v律",
+  "category": "chemistry",
+  "subcategory": "nuclear_chemistry",
+  "formula": "sigma = sigma_0*v_0/v",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nucchem_activation",
+  "name": "活化分析",
+  "category": "chemistry",
+  "subcategory": "nuclear_chemistry",
+  "formula": "A = N*sigma*phi*(1-exp(-lambda*t))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nucchem_radiation_dose",
+  "name": "辐射剂量率",
+  "category": "chemistry",
+  "subcategory": "nuclear_chemistry",
+  "formula": "D = A*E/(4*pi*r^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nucchem_shielding",
+  "name": "辐射屏蔽",
+  "category": "chemistry",
+  "subcategory": "nuclear_chemistry",
+  "formula": "I = I_0*exp(-mu*x)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nucchem_specific_activity",
+  "name": "比活度",
+  "category": "chemistry",
+  "subcategory": "nuclear_chemistry",
+  "formula": "a = lambda*N_A/M",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nucchem_buildup",
+  "name": "剂量积累因子",
+  "category": "chemistry",
+  "subcategory": "nuclear_chemistry",
+  "formula": "B = D_total/D_uncollided",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nucchem_bremsstrahlung",
+  "name": "韧致辐射",
+  "category": "chemistry",
+  "subcategory": "nuclear_chemistry",
+  "formula": "P = Z^2*E^2/(m^2*c^3)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nucchem_pair_production",
+  "name": "电子对产生阈值",
+  "category": "chemistry",
+  "subcategory": "nuclear_chemistry",
+  "formula": "E_threshold = 2*m_e*c^2 = 1.022 MeV",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "org_curtin_hammett",
+  "name": "柯廷-哈米特原理",
+  "category": "chemistry",
+  "subcategory": "organic_chemistry",
+  "formula": "product ratio = exp(-dG_TS/(R*T))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "org_bell_evans_polanyi",
+  "name": "贝尔-埃文斯-波拉尼",
+  "category": "chemistry",
+  "subcategory": "organic_chemistry",
+  "formula": "E_a = E_0 + alpha*dH",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "org_conformational",
+  "name": "构象能",
+  "category": "chemistry",
+  "subcategory": "organic_chemistry",
+  "formula": "E = V_n/2*(1 + cos(n*phi - gamma))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "org_chirality",
+  "name": "手性比旋光度",
+  "category": "chemistry",
+  "subcategory": "organic_chemistry",
+  "formula": "[alpha] = alpha_obs/(c*l)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "org_e_z",
+  "name": "E/Z命名",
+  "category": "chemistry",
+  "subcategory": "organic_chemistry",
+  "formula": "higher priority on same side = Z",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "org_retention_inversion",
+  "name": "构型翻转/保持",
+  "category": "chemistry",
+  "subcategory": "organic_chemistry",
+  "formula": "SN2 = inversion, SN1 = racemization",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "org_woodward_hoffmann",
+  "name": "伍德沃德-霍夫曼规则",
+  "category": "chemistry",
+  "subcategory": "organic_chemistry",
+  "formula": "4n+2 electrons = allowed thermally",
+  "difficulty": "advanced"
+ }
+]
