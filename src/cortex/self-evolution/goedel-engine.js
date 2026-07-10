@@ -351,8 +351,7 @@ class GoedelEngine {
       }
       fs.rmSync(sandboxPath, { recursive: true, force: true, maxRetries: 2 });
       this.log(`Sandbox cleaned up: ${sandboxId}`);
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**

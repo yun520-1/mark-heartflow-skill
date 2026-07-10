@@ -369,8 +369,7 @@ class SAGEGuardian {
         
         return logs.slice(-limit);
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     return [];
   }
 

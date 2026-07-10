@@ -95,8 +95,7 @@ class SelfEvolutionCore {
         const data = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
         this.state = { ...this.state, ...data };
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   saveState() {

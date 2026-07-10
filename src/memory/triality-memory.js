@@ -87,8 +87,7 @@ class TrialityMemory {
           }
           this.stats.totalMemories = this.memories.length;
         }
-      } catch (e) {
-      }
+      } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     }
   }
 
@@ -108,8 +107,7 @@ class TrialityMemory {
         exportedAt: new Date().toISOString()
       };
       fs.writeFileSync(exportPath, JSON.stringify(data, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   store(memory) {
@@ -205,8 +203,7 @@ class TrialityMemory {
     try {
       this.causalEngine.buildGraph(this.memories);
       this.stats.causalGraphBuilt = true;
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**

@@ -533,8 +533,7 @@ class WordByWordGenerator {
       };
       
       fs.writeFileSync(this.stateFile, JSON.stringify(traceData, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   getLastTrace() {

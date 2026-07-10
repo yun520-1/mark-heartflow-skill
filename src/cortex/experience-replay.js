@@ -215,8 +215,7 @@ class ExperienceReplay {
         const corruptedPath = this.patternFile + '.corrupted';
         fs.renameSync(this.patternFile, corruptedPath);
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
 
     return { patterns: [], lastUpdate: null };
   }

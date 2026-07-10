@@ -658,8 +658,7 @@ class CoreIdentityEngine {
         const state = JSON.parse(fs.readFileSync(this.stateFile, 'utf8'));
         return state;
       }
-    } catch (error) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     return null;
   }
 }

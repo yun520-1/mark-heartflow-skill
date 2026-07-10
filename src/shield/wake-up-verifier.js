@@ -51,8 +51,7 @@ class WakeUpVerifier {
           return parsed;
         }
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     return { entries: [], lastEntryIndex: 0 };
   }
 
@@ -60,8 +59,7 @@ class WakeUpVerifier {
     try {
       this._ensureDataDir();
       fs.writeFileSync(DREAM_HISTORY_FILE, JSON.stringify(this.history, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   _trimHistory() {

@@ -38,8 +38,7 @@ try {
   if (!fs.existsSync(resolvedDataDir)) {
     fs.mkdirSync(resolvedDataDir, { recursive: true });
   }
-} catch (e) {
-}
+} catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
 
 // ── 数据消毒 ──────────────────────────────────────────
 function _sanitize(str, maxLen = 200) {
@@ -131,8 +130,7 @@ const behaviorTracker = {
           return;
         }
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     // 彻底失败，重置
     this.data = { version: DATA_VERSION, goals: [] };
   },
@@ -146,8 +144,7 @@ const behaviorTracker = {
       }
       fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
       fs.writeFileSync(DATA_FILE, JSON.stringify(this.data, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     return this;
   },
 

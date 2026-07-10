@@ -73,8 +73,7 @@ class MetaLearning {
         this.strategies = data.strategies || this.strategies;
         this.learningPatterns = data.patterns || [];
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   savePatterns() {

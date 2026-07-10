@@ -70,8 +70,7 @@ class Reflector {
       if (fs.existsSync(this.stateFile)) {
         return JSON.parse(fs.readFileSync(this.stateFile, 'utf8'));
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     return this.getDefaultState();
   }
 
@@ -97,8 +96,7 @@ class Reflector {
       if (fs.existsSync(this.goalsFile)) {
         return JSON.parse(fs.readFileSync(this.goalsFile, 'utf8'));
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     return {
       version: '2.2.1',
       goals: [],
@@ -116,8 +114,7 @@ class Reflector {
         fs.mkdirSync(dir, { recursive: true });
       }
       fs.writeFileSync(this.goalsFile, JSON.stringify(this.goals, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**
@@ -220,8 +217,7 @@ class Reflector {
         fs.mkdirSync(dir, { recursive: true });
       }
       fs.appendFileSync(this.logFile, entry);
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**
@@ -844,8 +840,7 @@ class Reflector {
 
     try {
       await atomicWrite(this.reportFile, JSON.stringify(reports, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**

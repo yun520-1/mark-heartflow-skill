@@ -491,8 +491,7 @@ class TopicScope {
     if (typeof this._hooks[name] === 'function') {
       try {
         this._hooks[name](topic, this);
-      } catch (e) {
-      }
+      } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     }
   }
 

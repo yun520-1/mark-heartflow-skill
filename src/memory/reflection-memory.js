@@ -285,7 +285,7 @@ class ReflectionMemory {
     try {
       const data = JSON.stringify({r: this.reflections, s: Array.from(this.strategies), p: Array.from(this.patternIndex)});
       fs.writeFileSync(path.join(this.config.dataDir, "reflection-memory.json"), data);
-    } catch (e) {}
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
 }

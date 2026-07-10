@@ -1545,7 +1545,7 @@ class LogicReasoning {
           path.join(process.env.HEARTFLOW_ROOT || '', 'data', 'api-key.txt'),
         ];
         for (const p of candidatePaths) {
-          try { apiKey = fs.readFileSync(p, 'utf-8').trim(); if (apiKey) break; } catch(e) {}
+          try { apiKey = fs.readFileSync(p, 'utf-8').trim(); if (apiKey) break; } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
         }
         if (!apiKey) { resolve(null); return; }
 
@@ -1579,7 +1579,7 @@ class LogicReasoning {
                     const obj = JSON.parse(d);
                     const delta = obj?.choices?.[0]?.delta?.content || '';
                     content += delta;
-                  } catch(e) {}
+                  } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
                 }
               }
               const letter = content.trim().toUpperCase().match(/[A-D]/);

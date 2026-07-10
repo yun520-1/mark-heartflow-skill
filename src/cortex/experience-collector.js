@@ -73,8 +73,7 @@ class ExperienceCollector {
           _boundedSet(this.experiences, id, meta, MAX_HISTORY_SIZE);
         }
       }
-    } catch (error) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**
@@ -86,8 +85,7 @@ class ExperienceCollector {
     try {
       const filePath = path.join(this.storagePath, `${id}.json`);
       fs.writeFileSync(filePath, JSON.stringify(experience, null, 2));
-    } catch (error) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**
@@ -100,8 +98,7 @@ class ExperienceCollector {
       const index = Object.fromEntries(this.experiences);
       const indexPath = path.join(this.storagePath, 'index.json');
       fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
-    } catch (error) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**

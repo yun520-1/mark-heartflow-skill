@@ -578,8 +578,7 @@ class MetaMemory {
         this.accessPatterns = data.accessPatterns || this.accessPatterns;
         this.reflectionHistory = data.reflectionHistory || [];
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   _saveReflection(reflection) {
@@ -594,8 +593,7 @@ class MetaMemory {
         savedAt: new Date().toISOString()
       };
       fs.writeFileSync(META_MEMORY_PATH, JSON.stringify(data, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 }
 

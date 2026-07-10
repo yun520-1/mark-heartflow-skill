@@ -153,8 +153,7 @@ class MemoryIndex {
     try {
       this.index.meta.updatedAt = new Date().toISOString();
       fs.writeFileSync(this.indexFile, JSON.stringify(this.index, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   // ─────────────────────────────────────────
