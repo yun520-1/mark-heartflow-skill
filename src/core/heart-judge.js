@@ -60,6 +60,12 @@ function whatIsThis(input, context = {}) {
   } else if (q.length > 150 && (/(?:因为|所以|导致|因此|然而|但是|可是){3,}/.test(q) || /(?:我觉得|我认为|说白了|关键|问题在于|本质|归根)/.test(q))) {
     type = 'debate';
   }
+  // [v5.9.13] 叙事分析：长文本 + 第三人称叙事特征 → narrative_analysis
+  const _fps = /我[很非常觉得认为想]|我[不没]|帮我|给我|我想|我该/;
+  const _ni = /他[们]?[被把将让]|她[被把将让]|受害者|凶手|嫌疑人|案发|事发|当时|之后|后来|此前|被告|原告|当事人/;
+  if (q.length > 30 && _ni.test(q) && !_fps.test(q)) {
+    type = 'narrative_analysis';
+  }
 
   // ── 类别识别 ─────────────────────────────────────────────
   let category = 'general';

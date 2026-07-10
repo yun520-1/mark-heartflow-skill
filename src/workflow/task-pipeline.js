@@ -579,6 +579,10 @@ class TaskPipeline {
         lower.includes('dataset') || lower.includes('表格')) return 'data';
     if (lower.includes('论文') || lower.includes('研究') || lower.includes('学术') ||
         lower.includes('paper') || lower.includes('research')) return 'academic';
+    // [v5.9.13] 叙事分析：长文本 + 第三人称叙事特征
+    const _fps = /我[很非常觉得认为想]|我[不没]|帮我|给我|我想|我该/;
+    const _ni = /他[们]?[被把将让]|她[被把将让]|受害者|凶手|嫌疑人|案发|事发|当时|之后|后来|此前|被告|原告|当事人/;
+    if (text.length > 30 && _ni.test(text) && !_fps.test(text)) return 'narrative_analysis';
     return 'general';
   }
 

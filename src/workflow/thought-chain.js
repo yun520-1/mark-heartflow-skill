@@ -132,6 +132,13 @@ class ThoughtChain {
       { regex: /是什么|定义|概念|什么是|指什么|查|找/, type: 'retrieval', weight: 0.8 },
     ];
 
+    // [v5.9.13] 叙事分析检测：长文本 + 第三人称叙事特征 → narrative_analysis
+    const firstPersonSignals = /我[很非常觉得认为想]|我[不没]|帮我|给我|我想|我该/;
+    const narrativeIndicators = /他[们]?[被把将让]|她[被把将让]|受害者|凶手|嫌疑人|案发|事发|当时|之后|后来|此前|被告|原告|当事人/;
+    if (q.length > 30 && narrativeIndicators.test(q) && !firstPersonSignals.test(q)) {
+      return { type: 'narrative_analysis', confidence: 0.8, matchedPatterns: ['narrative_detection'] };
+    }
+
     for (const p of patterns) {
       if (p.regex.test(q)) {
         matchedPatterns.push(p.type);
