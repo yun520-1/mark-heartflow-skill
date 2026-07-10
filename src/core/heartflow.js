@@ -2518,6 +2518,13 @@ class HeartFlow {
       this._feedDriftResult(route, rawResult);
     }
 
+    // ── [v5.9.14 AUDIT-FIX] 结果验证：防止 dispatch 返回 undefined
+    if (rawResult === undefined) {
+      const hint = `${subsystem}.${method}() returned undefined — possible missing return or async not awaited`;
+      console.warn(`[HeartFlow dispatch] ${hint}`);
+      return { _dispatchWarning: true, route, hint };
+    }
+
     return rawResult;
   }
 
