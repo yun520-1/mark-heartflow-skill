@@ -399,7 +399,7 @@ class LessonRetrievalEngine {
 
     // 最近教训
     if (parts[0] === 'recent' || parts[0] === 'latest') {
-      const n = parseInt(parts[1] || 5);
+      const n = parseInt(parts[1] || 5, 10);
       return lessonBank.lessons.slice(-n).reverse();
     }
 
@@ -410,14 +410,14 @@ class LessonRetrievalEngine {
 
     // 随机抽样
     if (parts[0] === 'random') {
-      const n = parseInt(parts[1] || 3);
+      const n = parseInt(parts[1] || 3, 10);
       const type = parts[2] === 'type' ? parts.slice(3).join(' ') : undefined;
       return this.randomSample(n, type ? { types: [type] } : {});
     }
 
     // 重要性过滤
     if (parts[0] === 'important' || parts[0] === 'critical') {
-      const minImportance = parseInt(parts[1] || 4);
+      const minImportance = parseInt(parts[1] || 4, 10);
       return this.filterBy({ importanceMin: minImportance });
     }
 

@@ -222,7 +222,7 @@ class SkillEvolutionEngine {
 
   _incrementVersion(v) {
     const parts = v.split('.');
-    parts[2] = String(parseInt(parts[2] || 0) + 1);
+    parts[2] = String(parseInt(parts[2] || 0, 10) + 1);
     return parts.join('.');
   }
 
