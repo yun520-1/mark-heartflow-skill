@@ -1,10 +1,21 @@
 ---
 name: heartflow-engine
-title: "HeartFlow / 心虫 — AI 认知与自愈引擎"
-version: "5.9.11"
+title: "HeartFlow / 心虫 — 公式驱动AI认知引擎"
+version: "5.9.12"
 description: |-
-  统一整合版：claude-heartflow-skill (v2.8.0) + mark-heartflow-skill (v5.7.3)
-  290+ 模块，25 个 MCP 工具，覆盖认知/记忆/情绪/哲学/自愈/决策/代码/意识。
+  公式驱动AI认知引擎：127注册模块 + 3,529公式(99.9%可计算) + 9,846条心理咨询对话
+  
+  v5.9.12新增6个公式驱动模块：
+  - DecisionEngine: DDM/SDT/前景理论/贝叶斯/Rescorla-Wagner/Q-Learning/STDP/Hick/Fitts/纳什均衡
+  - EmotionDynamics: PAD三维/4种调节策略/弹性指数/条件化/情绪感染/自我效能/归因
+  - MemoryConsolidation: 艾宾浩斯动态强度/ACT-R完整/SM-2间隔重复/Cowan工作记忆
+  - CognitiveLoadV2: Sweller三负荷/Shannon熵/精确度权重/心流通道/任务切换代价
+  - DreamEngineV2: STDP巩固/REM情绪处理/远距联想/睡眠周期
+  - PsychologyDialogue: 15情绪类别/12治疗技术/500共情回应/治疗联盟追踪
+  
+  公式库: 13分类(math 1417/physics 962/engineering 357/quantum 314/cognitive 117/chemistry 94/psychology 59/CS 46/earth 41/philosophy 36/biology 31/economics 29/neuroscience 26)
+  公式触发器: 40信号 + 158别名
+  MCP服务器: port 8099, protocol MCP 2024-11-05
 
   **需要用户明确授权的能力：**
   - 代码执行 (new Function / execSync / child_process) — 默认关闭，需显式开启
