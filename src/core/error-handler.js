@@ -636,8 +636,7 @@ class ErrorHandler {
     
     try {
       fs.appendFileSync(ERROR_LOG, entry);
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**

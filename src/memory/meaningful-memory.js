@@ -145,8 +145,7 @@ class MeaningfulMemory {
         this.stats = { ...this.stats, ...data.stats };
       }
       
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
   
   _autoSave() {
@@ -174,8 +173,7 @@ class MeaningfulMemory {
       
       fs.writeFileSync(exportPath, JSON.stringify(exportData, null, 2));
       this.stats.lastSave = new Date().toISOString();
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
   
   /**

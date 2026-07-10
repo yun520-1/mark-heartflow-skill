@@ -342,7 +342,7 @@ const _ValueAligner = _lazy('valueAligner', () => { try { return require('../bri
 const _PersonalityTone = _lazy('personalityTone', () => { try { return require('../bridge/personality-tone.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
 const _MetaPosition = _lazy('metaPosition', () => { try { return require('../bridge/meta-position.js'); } catch(e) { return { Stub: class { constructor() {} } }; } });
 
-const BUILD_DATE = '2026-07-09-v5.9.11';
+const BUILD_DATE = '2026-07-10-v5.9.17';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -3432,7 +3432,8 @@ class HeartFlow {
       if (!fs.existsSync(historyPath)) return null;
       const stat = fs.statSync(historyPath);
       const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').filter(l => l.trim());
-      const firstTs = lines.length > 0 ? JSON.parse(lines[0]).ts : null;
+      let firstTs = null;
+      try { if (lines.length > 0) firstTs = JSON.parse(lines[0]).ts; } catch(e) { /* malformed JSON */ }
       const sessionAge = firstTs ? Math.round((Date.now() - new Date(firstTs).getTime()) / 60000) : 0;
       return { totalMessages: lines.length, fileSize: stat.size, sessionAge };
     } catch (e) {

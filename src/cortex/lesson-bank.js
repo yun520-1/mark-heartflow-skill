@@ -704,7 +704,15 @@ const lessonBank = {
       score: Math.max(0, score),
       recommendation: issues.length === 0 ? '输出通过检查' : `发现${issues.length}个问题，建议审查`,
     };
-  }
+  },
+
+  // [v5.9.18 FIX B-1] 补充 getTopLessons 实现 — 委托给 getConfidenceWeighted
+  getTopLessons(limit = 5) {
+    if (typeof this.getConfidenceWeighted === 'function') {
+      return this.getConfidenceWeighted(limit);
+    }
+    return this._lessons ? this._lessons.slice(-limit).reverse() : [];
+  },
 };
 
 lessonBank.load();

@@ -186,8 +186,7 @@ class HealingMemoryRL {
       if (data.history) {
         this.history = data.history.slice(-this.maxMemory);
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   async _saveQTable() {

@@ -73,14 +73,14 @@ function getVersion() {
   try {
     const vFile = path.join(HF_DIR, 'VERSION');
     if (fs.existsSync(vFile)) return fs.readFileSync(vFile, 'utf8').trim();
-  } catch (_) {}
+  } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   try {
     const pkgFile = path.join(HF_DIR, 'package.json');
     if (fs.existsSync(pkgFile)) {
       const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf8'));
       if (pkg.version) return pkg.version;
     }
-  } catch (_) {}
+  } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   return 'unknown';
 }
 
@@ -581,8 +581,8 @@ function handleStatus(args) {
   const startTime = Date.now();
   const status = { version, running: heartflow !== null, modules: heartflow ? Object.keys(heartflow._modules || {}).length : 0 };
   if (heartflow) {
-    try { const ms = safeDispatch('memory.getStats'); if (ms) status.memoryLayers = { core: ms.core || 0, learned: ms.learned || 0, ephemeral: ms.ephemeral || 0 }; } catch (e) {}
-    try { const q = safeDispatch('evolution.getStats'); if (q) status.qtable = q; } catch (e) {}
+    try { const ms = safeDispatch('memory.getStats'); if (ms) status.memoryLayers = { core: ms.core || 0, learned: ms.learned || 0, ephemeral: ms.ephemeral || 0 }; } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
+    try { const q = safeDispatch('evolution.getStats'); if (q) status.qtable = q; } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
   status.checkTime = Date.now() - startTime;
   if (detail === 'basic') return { version: status.version, running: status.running, modules: status.modules, memoryLayers: status.memoryLayers || {}, checkTime: status.checkTime };
@@ -699,7 +699,7 @@ function _generateInnerMonologue(result) {
       enableInnerMonologue = config.enableInnerMonologue || false;
       frequency = config.innerMonologueFrequency || 'normal';
     }
-  } catch (e) {}
+  } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
 
   if (!enableInnerMonologue) return null;
 
@@ -808,7 +808,7 @@ function _generatePhilosophyMonologue(decision, philo, ap) {
       const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
       enableInnerMonologue = config.enableInnerMonologue || false;
     }
-  } catch (e) {}
+  } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
 
   if (!enableInnerMonologue) return null;
 
@@ -869,7 +869,7 @@ function _generatePacingMonologue(rhythm, pacing, pause, grounding, load) {
       const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
       enableInnerMonologue = config.enableInnerMonologue || false;
     }
-  } catch (e) {}
+  } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
 
   if (!enableInnerMonologue) return null;
 
@@ -1216,7 +1216,7 @@ const server = http.createServer((req, res) => {
 
     // 心跳保持连接
     const heartbeat = setInterval(() => {
-      try { sendEvent(res, 'ping', {}); } catch (e) {}
+      try { sendEvent(res, 'ping', {}); } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     }, 30000);
 
     req.on('close', () => {
@@ -1342,11 +1342,11 @@ function shutdown() {
   console.error('[HeartFlow MCP] 关闭中...');
   // 关闭所有 SSE 连接
   for (const [sessionId, client] of sseClients) {
-    try { client.end(); } catch (e) {}
+    try { client.end(); } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
   sseClients.clear();
   // 停止引擎
-  if (heartflow) { try { heartflow.stop(); } catch (e) {} }
+  if (heartflow) { try { heartflow.stop(); } catch (_) { /* [v5.9.18] intentional: graceful degradation */ } }
   server.close(() => process.exit(0));
 }
 

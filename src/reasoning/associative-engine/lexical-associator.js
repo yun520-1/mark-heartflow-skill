@@ -91,8 +91,7 @@ class LexicalAssociator {
         const data = JSON.parse(fs.readFileSync(this.graphFile, 'utf8'));
         return data;
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     return this.initializeDefaultGraph();
   }
 
@@ -944,8 +943,7 @@ class LexicalAssociator {
   saveGraph() {
     try {
       fs.writeFileSync(this.graphFile, JSON.stringify(this.graph, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   getRecentAssociations() {

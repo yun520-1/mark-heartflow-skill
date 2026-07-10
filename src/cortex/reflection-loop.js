@@ -99,8 +99,7 @@ class ReflectionLoop {
       state._oscillationState = this._oscillationState;
       state._anomalyState = this._anomalyState;
       fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   // ================================================================

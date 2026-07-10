@@ -873,8 +873,7 @@ class JudgmentEngine {
         this.consequences = data.consequences || [];
         this.rlTable = data.rlTable || {};
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   _autoSave() {
@@ -896,8 +895,7 @@ class JudgmentEngine {
         version: this.version,
       }, null, 2);
       fs.writeFileSync(filePath, data, 'utf-8');
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   destroy() {

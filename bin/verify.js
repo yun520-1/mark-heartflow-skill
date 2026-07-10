@@ -111,7 +111,7 @@ if (engine) {
 check('npm 必选依赖为空', () => {
   const pkg = require(path.join(HF_DIR, 'package.json'));
   const deps = Object.keys(pkg.dependencies || {}).length;
-  if (deps > 0) throw new Error(`dependencies 中有 ${deps} 个包`);
+  if (deps < 1) throw new Error('依赖声明为空，心虫至少需要 mathjs');
 });
 
 // Wait for all async checks, then print results

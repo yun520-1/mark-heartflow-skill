@@ -263,8 +263,7 @@ class SelfRegulationFeedback {
         const data = JSON.parse(fs.readFileSync(file, 'utf-8'));
         this.feedbackHistory = data.history || [];
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   _save() {
@@ -274,8 +273,7 @@ class SelfRegulationFeedback {
         history: this.feedbackHistory,
         savedAt: new Date().toISOString()
       }, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 }
 

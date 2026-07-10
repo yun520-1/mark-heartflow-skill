@@ -350,8 +350,7 @@ class EvolutionLoop {
                     this.cycleCount = data.cycleCount;
                 }
             }
-        } catch (e) {
-        }
+        } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     }
 
     _saveState() {
@@ -385,8 +384,7 @@ class EvolutionLoop {
                 lastSaved: new Date().toISOString()
             };
             fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
-        } catch (e) {
-        }
+        } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     }
 
     // ════════════════════════════════════════════════════════

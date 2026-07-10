@@ -193,8 +193,7 @@ class SkillGenerator {
       if (fs.existsSync(this.reflectHistoryPath)) {
         return JSON.parse(fs.readFileSync(this.reflectHistoryPath, 'utf8'));
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     return { reports: [] };
   }
 

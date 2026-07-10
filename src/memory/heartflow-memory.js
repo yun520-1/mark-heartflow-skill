@@ -90,8 +90,7 @@ class HeartFlowMemory {
       const tmp = filePath + '.tmp.' + Date.now();
       fs.writeFileSync(tmp, JSON.stringify(data, null, 2), 'utf8');
       fs.renameSync(tmp, filePath);
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   _appendJsonl(filePath, entry) {

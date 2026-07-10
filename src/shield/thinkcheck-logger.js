@@ -160,8 +160,7 @@ class ThinkCheckLogger {
       const block = `\n--- DECISION #${this._currentDecision.id} ---\n${lines}\n`;
       try {
         fs.appendFileSync(this._outputFile, block, 'utf-8');
-      } catch (e) {
-      }
+      } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     }
 
     this._currentDecision = null;
@@ -302,8 +301,7 @@ class ThinkCheckLogger {
     // 写入文件
     try {
       fs.appendFileSync(this._cotOutputFile, lines.join('\n'), 'utf-8');
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
 
     if (this._consoleOutput) {
     }
@@ -548,8 +546,7 @@ class ThinkCheckLogger {
     if (this._ready) {
       try {
         fs.appendFileSync(this._outputFile, '\n' + content + '\n', 'utf-8');
-      } catch (e) {
-      }
+      } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     }
     if (this._consoleOutput) {
     }

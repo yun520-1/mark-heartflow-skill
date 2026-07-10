@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "5.9.11",
+  "version": "5.9.17",
   "description": "HeartFlow — AI judgment engine with multi-path evaluation, self-correcting RL, 3-layer memory, and U/D/A/H field tracking. Zero external dependencies.",
   "main": "src/core/heartflow.js",
   "bin": {
@@ -50,7 +50,8 @@
     "mathjs": "^15.2.0"
   },
   "optionalDependencies": {
-    "@xenova/transformers": "^2.6.0"
+    "@xenova/transformers": "^2.6.0",
+    "pm2": "^5.0.0"
   },
   "repository": {
     "type": "git",

@@ -646,8 +646,7 @@ class CognitiveProtocol {
       if (fs.existsSync(this.files.problemBank)) {
         return JSON.parse(fs.readFileSync(this.files.problemBank, 'utf-8'));
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     return [];
   }
 
@@ -658,8 +657,7 @@ class CognitiveProtocol {
     try {
       if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.problemBank, JSON.stringify(this.problemBank, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   _loadPausedTasks() {
@@ -667,8 +665,7 @@ class CognitiveProtocol {
       if (fs.existsSync(this.files.pausedTasks)) {
         return JSON.parse(fs.readFileSync(this.files.pausedTasks, 'utf-8'));
       }
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     return [];
   }
 
@@ -679,8 +676,7 @@ class CognitiveProtocol {
     try {
       if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.pausedTasks, JSON.stringify(this.pausedTasks, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**
@@ -690,8 +686,7 @@ class CognitiveProtocol {
     try {
       if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.checkpoints, JSON.stringify(this.checkpoints, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**
@@ -706,8 +701,7 @@ class CognitiveProtocol {
         state: this.state,
         timestamp: new Date().toISOString()
       }, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   // ─────────────────────────────────────────

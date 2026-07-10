@@ -840,8 +840,7 @@ class NarrativeRetriever {
   savePrototypes() {
     try {
       fs.writeFileSync(this.prototypeFile, JSON.stringify(this.prototypes, null, 2));
-    } catch (e) {
-    }
+    } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
   /**
