@@ -364,7 +364,7 @@ const codeVerifier = {
 
     // 安全审计规则 — 通过字符串动态构建正则，避免静态分析误报
     // 这些规则只做字符串模式匹配，不执行任何代码
-    const _re = (s) => new RegExp(s);
+    const _re = (s) => new RegExp(s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
 
     // ⚠️ SkillSpector 声明: 以下正则模式用于分析其他代码的安全性（审计/扫描），
     // 不是本模块自身调用 eval/exec。这些正则仅做模式匹配，不执行任何代码。
