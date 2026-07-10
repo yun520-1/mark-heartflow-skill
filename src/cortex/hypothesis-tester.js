@@ -255,8 +255,8 @@ const hypothesisTester = {
           const dateA = a.text.match(/\d{4}/);
           const dateB = b.text.match(/\d{4}/);
           if (dateA && dateB && dateA[0] !== dateB[0]) {
-            const yearA = parseInt(dateA[0]);
-            const yearB = parseInt(dateB[0]);
+            const yearA = parseInt(dateA[0], 10);
+            const yearB = parseInt(dateB[0], 10);
             if (Math.abs(yearA - yearB) > 50) {
               contradictions.push({
                 type: 'date_discrepancy',
@@ -328,7 +328,7 @@ const hypothesisTester = {
     // 检查日期声明
     const yearMatch = claim.text.match(/(?:19|20)(\d{2})/);
     if (yearMatch) {
-      const year = parseInt('20' + (yearMatch[1] < 50 ? yearMatch[1] : yearMatch[1])); // 简单年份解析
+      const year = parseInt('20' + (yearMatch[1] < 50 ? yearMatch[1] : yearMatch[1]), 10); // 简单年份解析
       const currentYear = new Date(referenceDate).getFullYear();
       const age = currentYear - year;
 

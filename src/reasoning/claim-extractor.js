@@ -117,7 +117,7 @@ const claimExtractor = {
 
     // 大数字 → 降低置信度（易伪造）
     const numMatch = value.match(/\d+/);
-    if (numMatch && parseInt(numMatch[0]) > 10000) {
+    if (numMatch && parseInt(numMatch[0], 10) > 10000) {
       score -= 0.1;
       signals.push('large_number');
     }
@@ -257,7 +257,7 @@ const claimExtractor = {
     for (const m of matches) {
       if (!seen.has(m)) {
         const yearMatch = m.match(/(19|20)\d{2}/);
-        const year = yearMatch ? parseInt(yearMatch[0]) : 0;
+        const year = yearMatch ? parseInt(yearMatch[0], 10) : 0;
         const currentYear = new Date().getFullYear();
 
         const confidence = this._assessClaimConfidence(m, 'temporal', opts.sourceContext);

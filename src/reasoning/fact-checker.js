@@ -354,7 +354,7 @@ const factChecker = {
     if (dates.length === 0) return { checked: false };
     const now = new Date();
     for (const d of dates) {
-      const year = parseInt(d);
+      const year = parseInt(d, 10);
       if (year > now.getFullYear() + 1) {
         return { checked: true, type: 'date', issue: `日期${d}在未来，可能错误`, confidence: 'low' };
       }
