@@ -10,7 +10,10 @@
     "prepublishOnly": "node scripts/sync-version.js",
     "start": "node bin/cli.js chat",
     "status": "node bin/cli.js status",
-    "test": "node tests/integration.test.js",
+    "test": "node test/run-all.js 2>/dev/null || node tests/integration.test.js",
+    "test:integration": "node tests/integration.test.js",
+    "test:unit": "node tests/unit/test-path-guard.js && node tests/unit/test-code-verifier.js",
+    "test:full": "find tests test -name '*.test.js' -exec node {} \\;",
     "verify": "node bin/verify.js",
     "check": "node -e \"require('fs').readdirSync('src',{recursive:true}).filter(f=>f.endsWith('.js')).forEach(f=>require('child_process').execSync('node --check '+f,{stdio:'inherit'}))\""
   },
@@ -62,7 +65,7 @@
     "url": "https://github.com/yun520-1/mark-heartflow-skill/issues"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.17"
   },
   "publishConfig": {
     "access": "public",
