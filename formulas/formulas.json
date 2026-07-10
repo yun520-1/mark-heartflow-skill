@@ -2,6 +2,7 @@
  "metadata": {
   "version": "8.14.0",
   "last_updated": "2026-07-09",
+<<<<<<< HEAD
   "total_formulas": 3529,
   "categories": [
    "biology",
@@ -25,6 +26,28 @@
    "generated"
   ],
   "computable_rate": "99.9%"
+=======
+  "total_formulas": 2397,
+  "categories": [
+   "mathematics",
+   "physics",
+   "chemistry",
+   "engineering",
+   "economics",
+   "computer_science",
+   "biology",
+   "earth_science",
+   "cognitive_science",
+   "psychology",
+   "philosophy",
+   "neuroscience"
+  ],
+  "sources": [
+   "base",
+   "advanced",
+   "generated"
+  ]
+>>>>>>> 6a61d524ba9c64b5cf87ab60b8918c01fd4d3ae9
  },
  "formulas": [
   {
@@ -19704,6 +19727,7 @@
    "formula": "Δm=m_initial-m_final",
    "difficulty": "intermediate",
    "source": "FormulaReasoning (nju-websoft)"
+<<<<<<< HEAD
   },
   {
    "id": "cog_cog_long_term_memory",
@@ -28966,6 +28990,8 @@
    "subcategory": "signal_processing",
    "formula": "x_hat = x_pred + K*(z - x_pred)",
    "difficulty": "intermediate"
+=======
+>>>>>>> 6a61d524ba9c64b5cf87ab60b8918c01fd4d3ae9
   }
  ]
 }
