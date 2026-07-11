@@ -2132,7 +2132,8 @@ class HeartFlow {
         context_entries: ctx?.total || 0,
         hint: '以上是心虫上次关闭前的最后状态和上下文记忆。',
       });
-      if (process.env.HEARTFLOW_DEBUG) console.log(`[MemoryVault] ${msg}`);
+      // 启动时总是输出记忆恢复摘要（不再依赖 HEARTFLOW_DEBUG）
+      console.log(`[MemoryVault] ${msg}`);
 
       this._lastSessionSnapshot = {
         userMemory: lastUserMemory,
