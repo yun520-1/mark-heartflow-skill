@@ -14,6 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 const { EventEmitter } = require('events');
+const { LRUCache } = require('../utils/lru-cache.js');
 
 // ─── BM25 配置常量 ───────────────────────────────────────────────────────────
 
@@ -99,7 +100,7 @@ class BM25Engine extends EventEmitter {
     this.b = options.b || BM25_CONFIG.b;
     
     // 文档存储：{ id: { text, tokens, metadata } }
-    this.documents = new Map();
+    this.documents = new LRUCache(1000);
     
     // 倒排索引：{ token: { docId: { tf, positions } } }
     this.invertedIndex = new Map();

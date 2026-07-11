@@ -1532,22 +1532,13 @@ class LogicReasoning {
 
     return new Promise((resolve) => {
       try {
-        const fs = require('fs');
-        const os = require('os');
-        const path = require('path');
         const https = require('https');
 
-        // 从文件读取 API key
-        let apiKey = '';
-        const candidatePaths = [
-          path.join(os.homedir(), '.hermes', 'skills', 'ai', 'mark-heartflow-skill', 'data', 'api-key.txt'),
-          path.join(os.homedir(), '.hermes', 'skills', 'mark-heartflow-skill', 'data', 'api-key.txt'),
-          path.join(process.env.HEARTFLOW_ROOT || '', 'data', 'api-key.txt'),
-        ];
-        for (const p of candidatePaths) {
-          try { apiKey = fs.readFileSync(p, 'utf-8').trim(); if (apiKey) break; } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
+        // [SECURITY FIX H-2] API key from env only — no file fallback
+        const apiKey = process.env.HEARTFLOW_API_KEY;
+        if (!apiKey) {
+          throw new Error('[logic-reasoning] HEARTFLOW_API_KEY environment variable is required');
         }
-        if (!apiKey) { resolve(null); return; }
 
         const apiBase = process.env.TENCENT_API_BASE || 'https://copilot.tencent.com/v2';
         const url = new URL(apiBase + '/chat/completions');

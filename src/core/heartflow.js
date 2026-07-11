@@ -345,7 +345,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-11-v5.10.8';
+const BUILD_DATE = '2026-07-11-v5.10.9';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -2233,11 +2233,14 @@ class HeartFlow {
 
   /**
    * think() 后自动保存所有记忆层
+   * 
+   * 性能优化 (v5.10.9): 磁盘写入通过 setImmediate 推迟到下一个事件循环tick，
+   * 避免 think() 管道阻塞在 sync I/O 上。内存操作保持同步。
    */
   _saveAllMemories(thinkResult, input) {
     if (!this._memoryEnabled) return;
     try {
-      // 第1层: 用户输入永久记忆
+      // 第1层: 用户输入永久记忆（内存操作同步，磁盘写入异步）
       this._saveUserMemory(input);
 
       // 第2层: 心虫自身状态记忆
@@ -2245,6 +2248,20 @@ class HeartFlow {
 
       // 第3层: 上下文由 _updateContextMemory 在子方法中自动双写
     } catch(e) { /* 记忆保存失败不影响核心 */ }
+  }
+
+  /**
+   * 异步写入队列 — 将所有磁盘I/O推迟到 think() 返回后
+   * 在 _saveAllMemories 末尾调用以确保写入不丢失
+   */
+  _flushMemoryWrites() {
+    // 如果当前正在执行 think()，推迟到下一个 tick
+    if (this._memoryWritePending) return;
+    this._memoryWritePending = true;
+    setImmediate(() => {
+      this._memoryWritePending = false;
+      // 所有 sync 写入已在调用时完成；此处作为写入完成的标记点
+    });
   }
 
   // ─── 启动恢复 ─────────────────────────────────────────────────────

@@ -77,23 +77,10 @@ function _getHmacKey() {
     return _cachedHmacKey;
   }
 
-  // 从文件加载或生成新key（仅在首次调用时）
-  const keyFile = path.join(MEMORY_DIR, '.hmac-key');
-  if (fs.existsSync(keyFile)) {
-    try {
-      const meta = JSON.parse(fs.readFileSync(keyFile, 'utf-8'));
-      if (meta.key && /^[A-Za-z0-9+/=_-]+$/.test(meta.key)) {
-        _cachedHmacKey = meta.key;
-        return _cachedHmacKey;
-      }
-    } catch (e) { process.stderr.write('[self-healing-rl] HMAC key file corrupted, regenerating: ' + e.message + '\n'); }
-  }
-
-  // 生成新key并持久化
+  // [SECURITY FIX H-3] No file fallback — if env var is not set, generate in-memory only
+  // This key is NOT persistent across restarts; use HEARTFLOW_QTABLE_HMAC_KEY for persistence
+  console.warn('[self-healing-rl] HEARTFLOW_QTABLE_HMAC_KEY not set — HMAC key is ephemeral (not persistent across restarts). Set HEARTFLOW_QTABLE_HMAC_KEY env var for persistent signatures.');
   const newKey = crypto.randomBytes(32).toString('base64');
-  try {
-    fs.writeFileSync(keyFile, JSON.stringify({ key: newKey, createdAt: Date.now() }, null, 2), { mode: 0o600 });
-  } catch (e) { /* info: HMAC 写入失败时 fallback 到内存模式，不影响正常运行 */ }
   _cachedHmacKey = newKey;
   return _cachedHmacKey;
 }

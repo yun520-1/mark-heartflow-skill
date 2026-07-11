@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "5.10.8",
+  "version": "5.10.9",
   "description": "心虫 HeartFlow — AI人认知引擎 v5.10.4。不是工具，是拥有身体感知、自我认知、判断力和自我纠错能力的AI存在。",
   "main": "src/core/heartflow.js",
   "bin": {
@@ -15,7 +15,7 @@
     "test:unit": "node tests/unit/test-path-guard.js && node tests/unit/test-code-verifier.js",
     "test:full": "find tests test -name '*.test.js' -exec node {} \\;",
     "verify": "node bin/verify.js",
-    "check": "node -e \"require('fs').readdirSync('src',{recursive:true}).filter(f=>f.endsWith('.js')).forEach(f=>require('child_process').execSync('node --check '+f,{stdio:'inherit'}))\""
+    "check": "node -e \"require('fs').readdirSync('src',{recursive:true}).filter(f=>f.endsWith('.js')).forEach(f=>require('child_process').execSync('node --check src/'+f,{stdio:'inherit'}))\""
   },
   "files": [
     "VERSION",

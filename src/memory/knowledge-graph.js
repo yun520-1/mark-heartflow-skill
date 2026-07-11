@@ -22,6 +22,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const { LRUCache } = require('../utils/lru-cache.js');
 
 class KnowledgeGraph {
   /**
@@ -33,13 +34,13 @@ class KnowledgeGraph {
     // ─── 主存储 ─────────────────────────────────────────────────────────────
     // key = `${subject}|${predicate}|${object}`（小写标准化）
     // value = { subject, predicate, object, confidence, createdAt, updatedAt, accessedAt }
-    this._triples = new Map();
+    this._triples = new LRUCache(5000);
 
     // ─── 三重索引 ───────────────────────────────────────────────────────────
     // Map<实体名, Set<tripleKey>>
-    this._subjectIndex = new Map();   // subject → Set<keys>
-    this._predicateIndex = new Map(); // predicate → Set<keys>
-    this._objectIndex = new Map();    // object → Set<keys>
+    this._subjectIndex = new LRUCache(2000);   // subject → Set<keys>
+    this._predicateIndex = new LRUCache(2000); // predicate → Set<keys>
+    this._objectIndex = new LRUCache(2000);    // object → Set<keys>
 
     // ─── 统计 ───────────────────────────────────────────────────────────────
     this._stats = {
