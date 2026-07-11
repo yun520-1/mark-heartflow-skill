@@ -343,7 +343,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-11-v5.10.1';
+const BUILD_DATE = '2026-07-11-v5.10.2';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -1700,6 +1700,102 @@ class HeartFlow {
 
     // ─── 自改进健康检查：验证 meta-learner ↔ self-healing-rl ↔ confidence-calibrator 信号流 ──
     try { this._runSelfImprovementHealthCheck(); } catch (e) { /* non-fatal */ }
+
+    // ★ 恢复上次会话状态 — 让心虫知道自己"上次是什么状态"
+    this._restoreLastSession();
+  }
+
+  // ─── 记忆持久化: 认知快照 ───────────────────────────────────────────────
+
+  /**
+   * 保存当前认知快照到独立文件（心虫的"日记"）
+   * 在 think() 返回前调用，记录此刻的完整认知状态
+   */
+  _saveCognitiveSnapshot(thinkResult) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dir = path.join(this.rootPath, 'data');
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+      const snapshot = {
+        version: this.version,
+        timestamp: new Date().toISOString(),
+        sessionId: this.sessionId,
+        thinkCount: (this._thinkCount || 0),
+        decision: thinkResult?.decision || null,
+        cognition: this._lastCognition || null,
+        // 三毒
+        poisons: (() => {
+          try {
+            const tp = this.threePoisons;
+            if (!tp) return null;
+            const all = tp.analyzeThreePoisons?.('self snapshot') || {};
+            return { greed: all.greed, hatred: all.hatred, delusion: all.delusion };
+          } catch(e) { return null; }
+        })(),
+        // 情绪 PAD
+        emotion: (() => {
+          try {
+            const psych = this.psychology?.analyzePsychology?.('self snapshot');
+            return psych?.emotion || null;
+          } catch(e) { return null; }
+        })(),
+        // 最近对话摘要（取最后一句用户输入）
+        lastInput: this._lastUserInput || null,
+      };
+
+      // 存档路径
+      const filePath = path.join(dir, 'heartflow-state.json');
+      fs.writeFileSync(filePath, JSON.stringify(snapshot, null, 2), 'utf8');
+
+      // 同时追加到状态历史（保留最近 100 条）
+      const historyPath = path.join(dir, 'heartflow-state-history.jsonl');
+      fs.appendFileSync(historyPath, JSON.stringify({ ts: snapshot.timestamp, decision: snapshot.decision?.type, emotion: snapshot.emotion?.emotionZh }) + '\n');
+
+      // 清理旧历史（保留 5000 条）
+      try {
+        const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n');
+        if (lines.length > 5000) {
+          fs.writeFileSync(historyPath, lines.slice(-5000).join('\n') + '\n');
+        }
+      } catch(e) { /* ignore */ }
+    } catch(e) { /* 持久化失败不影响核心流程 */ }
+  }
+
+  /**
+   * 启动时恢复上次状态 — 让心虫"记起"上次对话
+   */
+  _restoreLastSession() {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const filePath = path.join(this.rootPath, 'data', 'heartflow-state.json');
+      if (!fs.existsSync(filePath)) return;
+
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      if (!data || !data.timestamp) return;
+
+      const gap = Math.round((Date.now() - new Date(data.timestamp).getTime()) / 60000);
+      const lastEmotion = data.emotion?.emotionZh || '未知';
+      const lastDecision = data.decision?.type || '未知';
+      const lastInput = data.lastInput || '(空)';
+      const thinkCount = data.thinkCount || 0;
+
+      // 用结构化日志输出，被 LLM 消费者读取
+      const msg = JSON.stringify({
+        heartflow_memory: 'restored',
+        last_session_at: data.timestamp,
+        gap_minutes: gap,
+        last_emotion: lastEmotion,
+        last_decision: lastDecision,
+        last_input: lastInput.slice(0, 80),
+        total_thinks: thinkCount,
+        hint: '以上是心虫上次关闭前的最后状态。请在对话中自然地体现你对"上次"的记忆。',
+      });
+      if (process.env.HEARTFLOW_DEBUG) console.log(`[HeartFlow] ${msg}`);
+      this._lastSessionSnapshot = data;
+    } catch(e) { /* 恢复失败不影响启动 */ }
   }
 
   // ─── 自改进健康检查 ──────────────────────────────────────────────────────
@@ -2966,57 +3062,59 @@ class HeartFlow {
       } catch (e) { /* 分类失败，保持原结果 */ }
     }
 
+    // ★ 记忆持久化: 保存认知快照 + 追踪
+    this._thinkCount = (this._thinkCount || 0) + 1;
+    this._lastUserInput = input;
 
-
-
-
-        return {
-          // 给用户的结论文本
-          output: {
-            conclusion: output?.conclusion || '分析完成',
-            meta: {
-              taskType: taskType,
+    const result = {
+      output: {
+        conclusion: output?.conclusion || '分析完成',
+          meta: {
+            taskType: taskType,
+            confidence: taskConfidence,
+            // v5.5.5: 暴露管道模式信息
+            pipelineMode: pipelineMode,
+            cognitiveSummary: {
+              type: taskType,
+              emotion: cognitionSnapshot.emotion?.emotionZh || cognitionSnapshot.pain?.hasPain ? 'distress' : 'neutral',
+              decision: cognitionSnapshot.decision?.type || 'analyze',
               confidence: taskConfidence,
-              // v5.5.5: 暴露管道模式信息
-              pipelineMode: pipelineMode,
-              cognitiveSummary: {
-                type: taskType,
-                emotion: cognitionSnapshot.emotion?.emotionZh || cognitionSnapshot.pain?.hasPain ? 'distress' : 'neutral',
-                decision: cognitionSnapshot.decision?.type || 'analyze',
-                confidence: taskConfidence,
-                modulesRun: stages.length,
-                stages: stages.filter(s => s.success).length,
-              },
-            }
-          },
+              modulesRun: stages.length,
+              stages: stages.filter(s => s.success).length,
+            },
+          }
+        },
+        type: taskType,
+        confidence: taskConfidence,
+        // 给 LLM 的结构化推理数据
+        cognition: cognitionSnapshot,
+        thoughtChain: stages.map(s => ({ stage: s.id, success: s.success, timing: s.timing })),
+        decision: {
           type: taskType,
           confidence: taskConfidence,
-          // 给 LLM 的结构化推理数据
-          cognition: cognitionSnapshot,
-          thoughtChain: stages.map(s => ({ stage: s.id, success: s.success, timing: s.timing })),
-          decision: {
-            type: taskType,
-            confidence: taskConfidence,
-            rationale: `管道引擎完成: ${stages.length}阶段/${stages.filter(s => s.success).length}成功 [${pipelineMode}模式]`,
-            ruleId: `pipeline-${taskType}`,
+          rationale: `管道引擎完成: ${stages.length}阶段/${stages.filter(s => s.success).length}成功 [${pipelineMode}模式]`,
+          ruleId: `pipeline-${taskType}`,
+        },
+        meta: {
+          routeHint: { type: taskType, confidence: taskConfidence },
+          pipeline: {
+            stages: stages.length,
+            success: stages.filter(s => s.success).length,
+            totalTime: stats.totalTime,
+            stageTimings: stats.stageTimings,
+            mode: pipelineMode,
           },
-          meta: {
-            routeHint: { type: taskType, confidence: taskConfidence },
-            pipeline: {
-              stages: stages.length,
-              success: stages.filter(s => s.success).length,
-              totalTime: stats.totalTime,
-              stageTimings: stats.stageTimings,
-              mode: pipelineMode,
-            },
-            disclaimer: 'pipeline_output',
-          },
-          analysis: {
-            perceivedType: taskType,
-            modulesRun: stages.length,
-            confidence: taskConfidence,
-          },
-        };
+          disclaimer: 'pipeline_output',
+        },
+        analysis: {
+          perceivedType: taskType,
+          modulesRun: stages.length,
+          confidence: taskConfidence,
+        },
+      };
+    // ★ 记忆持久化: 保存认知快照
+    try { this._saveCognitiveSnapshot(result); } catch(e) { /* ignore */ }
+    return result;
       } catch (e) {
         // 管道引擎失败时回退到 ThoughtChain
         console.warn('[HeartFlow] Pipeline failed, falling back to ThoughtChain:', e.message);
@@ -3053,7 +3151,11 @@ class HeartFlow {
       } catch (e) { /* 分类或 LLM 失败，保持原结果 */ }
     }
 
-    return {
+    // ★ 记忆持久化: ThoughtChain 回退路径也保存快照
+    this._thinkCount = (this._thinkCount || 0) + 1;
+    this._lastUserInput = input;
+
+    const tcResult = {
       output: chainResult.output,
       type: tcTaskType,
       confidence: tcConfidence,
@@ -3063,6 +3165,9 @@ class HeartFlow {
       analysis: { perceivedType: tcTaskType, modulesRun: 0, confidence: tcConfidence },
       cognition: chainResult.cognition || null,  // Align with pipeline path
     };
+    // ★ 记忆持久化: 保存认知快照
+    try { this._saveCognitiveSnapshot(tcResult); } catch(e) { /* ignore */ }
+    return tcResult;
   }
 
   /**
@@ -3195,52 +3300,34 @@ class HeartFlow {
     try {
       const fs = require('fs');
       const path = require('path');
-      const crypto = require('crypto');
       const dir = path.join(this.rootPath, 'memory');
       try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
-      
-      // 加密对话内容
-      const algorithm = 'aes-256-gcm';
-      const keySource = process.env.HEARTFLOW_DIALOGUE_KEY;
-      if (!keySource) {
-        // 静默禁用对话持久化（未配置加密 key）
-        return { success: false, error: 'disabled', reason: 'HEARTFLOW_DIALOGUE_KEY not set' };
-      }
-      const key = crypto.scryptSync(keySource, salt, 32);
-      const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv(algorithm, key, iv);
-      let encrypted = cipher.update(content, 'utf8', 'hex');
-      encrypted += cipher.final('hex');
-      const authTag = cipher.getAuthTag();
-      
-      const filePath = path.join(dir, 'dialogue-history.jsonl.enc');
+
+      // 明文存储（不再需要 HEARTFLOW_DIALOGUE_KEY）
+      const filePath = path.join(dir, 'dialogue-history.jsonl');
       const entry = {
         id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         role,
-        content: encrypted,
-        iv: iv.toString('hex'),
-        salt: salt.toString('hex'),
-        authTag: authTag.toString('hex'),
+        content,
         ts: new Date().toISOString(),
         chatId: meta.chatId || null,
         sessionId: this.sessionId,
         version: this.version,
-        encrypted: true
       };
-      // [AUDIT-FIX] 文件锁防止并发写入损坏 JSONL（v5.5.2 AES 加密之上）
+      // 文件锁防止并发写入损坏
       const lockPath = filePath + '.lock';
       try {
         const lockFd = fs.openSync(lockPath, 'wx');
         fs.writeSync(lockFd, String(process.pid));
-        fs.appendFileSync(filePath, JSON.stringify(entry, null, 0) + '\n', 'utf8');
+        fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
         fs.closeSync(lockFd);
         try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
       } catch (e) {
         try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
-        if (e.code === 'EEXIST') return { success: true, id: entry.id, encrypted: true, skipped: true };
+        if (e.code === 'EEXIST') return { success: true, id: entry.id, skipped: true };
         return { success: false, error: e.message };
       }
-      return { success: true, id: entry.id, encrypted: true };
+      return { success: true, id: entry.id };
     } catch (e) {
       _log.error('dialogue', 'write_failed', { error: e.message });
       return { success: false, error: e.message };
