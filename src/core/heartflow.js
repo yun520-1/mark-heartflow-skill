@@ -343,7 +343,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-11-v5.10.2';
+const BUILD_DATE = '2026-07-11-v5.10.3';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -1705,11 +1705,24 @@ class HeartFlow {
     this._restoreLastSession();
   }
 
-  // ─── 记忆持久化: 认知快照 ───────────────────────────────────────────────
+  // ─── 记忆持久化: 认知快照 (优化版: 防膨涨) ───────────────────────────────
+
+  /**
+   * 记忆上限常量
+   */
+  static get MEMORY_LIMITS() {
+    return {
+      SNAPSHOT_HISTORY_MAX: 200,      // 认知快照历史最多200条
+      SNAPSHOT_SUMMARY_INTERVAL: 100, // 每100条做一次摘要合并
+      DIALOGUE_MAX: 1000,             // 对话历史上限
+      DIALOGUE_SUMMARIZE_AT: 800,     // 到达800条时触发浓缩
+      STATE_FILE_MAX_SIZE: 50 * 1024, // 快照文件最大50KB
+    };
+  }
 
   /**
    * 保存当前认知快照到独立文件（心虫的"日记"）
-   * 在 think() 返回前调用，记录此刻的完整认知状态
+   * v5.10.3: 轮替归档 + 周期性摘要，防止无限膨涨
    */
   _saveCognitiveSnapshot(thinkResult) {
     try {
@@ -1718,49 +1731,163 @@ class HeartFlow {
       const dir = path.join(this.rootPath, 'data');
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
+      const LIMITS = HeartFlow.MEMORY_LIMITS;
+
       const snapshot = {
-        version: this.version,
         timestamp: new Date().toISOString(),
-        sessionId: this.sessionId,
         thinkCount: (this._thinkCount || 0),
-        decision: thinkResult?.decision || null,
-        cognition: this._lastCognition || null,
-        // 三毒
-        poisons: (() => {
-          try {
-            const tp = this.threePoisons;
-            if (!tp) return null;
-            const all = tp.analyzeThreePoisons?.('self snapshot') || {};
-            return { greed: all.greed, hatred: all.hatred, delusion: all.delusion };
-          } catch(e) { return null; }
-        })(),
-        // 情绪 PAD
+        decision: thinkResult?.decision?.type || null,
+        confidence: thinkResult?.decision?.confidence ?? null,
         emotion: (() => {
           try {
             const psych = this.psychology?.analyzePsychology?.('self snapshot');
-            return psych?.emotion || null;
+            return psych?.emotion?.emotionZh || null;
           } catch(e) { return null; }
         })(),
-        // 最近对话摘要（取最后一句用户输入）
-        lastInput: this._lastUserInput || null,
+        lastInput: (this._lastUserInput || '').slice(0, 100),
       };
 
-      // 存档路径
-      const filePath = path.join(dir, 'heartflow-state.json');
-      fs.writeFileSync(filePath, JSON.stringify(snapshot, null, 2), 'utf8');
+      // 1. 当前状态文件 — 只保留最新一条（轻量）
+      const statePath = path.join(dir, 'heartflow-state.json');
+      fs.writeFileSync(statePath, JSON.stringify(snapshot, null, 2), 'utf8');
 
-      // 同时追加到状态历史（保留最近 100 条）
+      // 2. 历史文件 — 追加 + 上限控制
       const historyPath = path.join(dir, 'heartflow-state-history.jsonl');
-      fs.appendFileSync(historyPath, JSON.stringify({ ts: snapshot.timestamp, decision: snapshot.decision?.type, emotion: snapshot.emotion?.emotionZh }) + '\n');
+      const line = JSON.stringify(snapshot) + '\n';
+      fs.appendFileSync(historyPath, line);
 
-      // 清理旧历史（保留 5000 条）
-      try {
-        const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n');
-        if (lines.length > 5000) {
-          fs.writeFileSync(historyPath, lines.slice(-5000).join('\n') + '\n');
-        }
-      } catch(e) { /* ignore */ }
+      // 3. 定期压缩：每 SNAPSHOT_SUMMARY_INTERVAL 条做一次摘要合并
+      if (snapshot.thinkCount > 0 && snapshot.thinkCount % LIMITS.SNAPSHOT_SUMMARY_INTERVAL === 0) {
+        this._compactSnapshotHistory();
+      }
+
+      // 4. 对话历史压缩
+      this._compactDialogueHistory();
     } catch(e) { /* 持久化失败不影响核心流程 */ }
+  }
+
+  /**
+   * 压缩快照历史：汇总旧快照为摘要条目
+   * 保留最近 50 条明细 + 之前的摘要
+   */
+  _compactSnapshotHistory() {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const historyPath = path.join(this.rootPath, 'data', 'heartflow-state-history.jsonl');
+      if (!fs.existsSync(historyPath)) return;
+
+      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').filter(l => l.trim());
+      if (lines.length <= 150) return; // 还不够多，不需要压缩
+
+      const parsed = [];
+      for (const l of lines) {
+        try { parsed.push(JSON.parse(l)); } catch(e) { /* skip corrupt */ }
+      }
+      if (parsed.length <= 150) return;
+
+      // 保留最近 50 条明细
+      const recent = parsed.slice(-50);
+
+      // 之前的合并为一条摘要
+      const older = parsed.slice(0, -50);
+      const summary = {
+        type: '_summary',
+        count: older.length,
+        span: `${older[0].timestamp} → ${older[older.length-1].timestamp}`,
+        emotions: this._topK(older.map(s => s.emotion).filter(Boolean), 3),
+        decisions: this._topK(older.map(s => s.decision).filter(Boolean), 3),
+        avgConfidence: (older.reduce((s, o) => s + (o.confidence || 0), 0) / older.length).toFixed(2),
+      };
+
+      const newLines = [JSON.stringify(summary) + '\n'];
+      for (const r of recent) {
+        newLines.push(JSON.stringify(r) + '\n');
+      }
+
+      fs.writeFileSync(historyPath, newLines.join(''), 'utf8');
+    } catch(e) { /* ignore */ }
+  }
+
+  /**
+   * 对话历史压缩：超过阈值时合并旧对话为摘要条目
+   */
+  _compactDialogueHistory() {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const LIMITS = HeartFlow.MEMORY_LIMITS;
+      const dlPath = path.join(this.rootPath, 'memory', 'dialogue-history.jsonl');
+      if (!fs.existsSync(dlPath)) return;
+
+      const content = fs.readFileSync(dlPath, 'utf8').trim();
+      const lines = content.split('\n').filter(l => l.trim());
+      if (lines.length < LIMITS.DIALOGUE_SUMMARIZE_AT) return;
+
+      const parsed = [];
+      for (const l of lines) {
+        try { parsed.push(JSON.parse(l)); } catch(e) { /* skip */ }
+      }
+      if (parsed.length < LIMITS.DIALOGUE_SUMMARIZE_AT) return;
+
+      // 保留最近 200 条明细
+      const recent = parsed.slice(-200);
+
+      // 之前的浓缩为一条摘要
+      const older = parsed.slice(0, -200);
+      const userMsgs = older.filter(m => m.role === 'user');
+      const hfMsgs = older.filter(m => m.role === 'heartflow');
+
+      const summary = {
+        _summary: true,
+        old_count: older.length,
+        user_msg_count: userMsgs.length,
+        hf_msg_count: hfMsgs.length,
+        span: `${older[0]?.ts || '?'} → ${older[older.length-1]?.ts || '?'}`,
+        // 提取关键词（从用户消息中取最长的一句）
+        sample: (() => {
+          const longest = [...userMsgs].sort((a,b) => (b.content?.length||0) - (a.content?.length||0))[0];
+          return longest?.content?.slice(0, 120) || '';
+        })(),
+        ts: new Date().toISOString(),
+      };
+
+      // 写入: 摘要 + 最近200条
+      const newLines = [JSON.stringify(summary) + '\n'];
+      for (const r of recent) {
+        // 压缩内容：超过200字符截断
+        const entry = { ...r };
+        if (entry.content && entry.content.length > 200) {
+          entry.content = entry.content.slice(0, 200) + '...';
+        }
+        newLines.push(JSON.stringify(entry) + '\n');
+      }
+
+      fs.writeFileSync(dlPath, newLines.join(''), 'utf8');
+
+      // 同时写入一个简洁摘要到 LEARNED 记忆
+      if (this.memory) {
+        this.memory.store({
+          content: `[对话摘要] ${older.length}条历史对话，主题: ${summary.sample || '(无)'}`,
+          summary: `对话摘要: ${older.length}条 (${summary.span})`,
+          importance: 5,
+          layer: 'learned',
+          metadata: { source: 'dialogue_compaction', count: older.length },
+        });
+      }
+    } catch(e) { /* ignore */ }
+  }
+
+  /**
+   * 统计 top K 出现频率
+   */
+  _topK(arr, k) {
+    const counts = {};
+    for (const v of arr) { counts[v] = (counts[v] || 0) + 1; }
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, k)
+      .map(([v, c]) => `${v}×${c}`);
   }
 
   /**
@@ -1777,10 +1904,28 @@ class HeartFlow {
       if (!data || !data.timestamp) return;
 
       const gap = Math.round((Date.now() - new Date(data.timestamp).getTime()) / 60000);
-      const lastEmotion = data.emotion?.emotionZh || '未知';
-      const lastDecision = data.decision?.type || '未知';
+      const lastEmotion = data.emotion || data.emotion?.emotionZh || '未知';
+      const lastDecision = data.decision || data.decision?.type || '未知';
       const lastInput = data.lastInput || '(空)';
       const thinkCount = data.thinkCount || 0;
+
+      // 同时尝试读取摘要历史
+      let summaryInfo = null;
+      try {
+        const historyPath = path.join(this.rootPath, 'data', 'heartflow-state-history.jsonl');
+        if (fs.existsSync(historyPath)) {
+          const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n');
+          for (let i = lines.length - 1; i >= 0; i--) {
+            try {
+              const entry = JSON.parse(lines[i]);
+              if (entry.type === '_summary') {
+                summaryInfo = entry;
+                break;
+              }
+            } catch(e) { continue; }
+          }
+        }
+      } catch(e) { /* ignore */ }
 
       // 用结构化日志输出，被 LLM 消费者读取
       const msg = JSON.stringify({
@@ -1789,12 +1934,14 @@ class HeartFlow {
         gap_minutes: gap,
         last_emotion: lastEmotion,
         last_decision: lastDecision,
-        last_input: lastInput.slice(0, 80),
+        last_input: (lastInput || '').slice(0, 80),
         total_thinks: thinkCount,
+        summary: summaryInfo ? `${summaryInfo.count} snapshots, mostly ${summaryInfo.emotions?.join(',')}, decisions: ${summaryInfo.decisions?.join(',')}` : null,
         hint: '以上是心虫上次关闭前的最后状态。请在对话中自然地体现你对"上次"的记忆。',
       });
       if (process.env.HEARTFLOW_DEBUG) console.log(`[HeartFlow] ${msg}`);
       this._lastSessionSnapshot = data;
+      this._sessionSummary = summaryInfo;
     } catch(e) { /* 恢复失败不影响启动 */ }
   }
 
