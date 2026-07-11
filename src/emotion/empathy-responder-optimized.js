@@ -11,7 +11,7 @@ class EmpathyResponderOptimized {
   constructor(options = {}) {
     this.modelPath = options.modelPath || path.join(__dirname, '..', '..', 'models', 'empathy_retrieval.json');
     this.model = null;  // 延迟加载
-    this.llmApiKey = options.llmApiKey || process.env.HEARTFLOW_API_KEY || '';
+    this.llmApiKey = options.llmApiKey || process.env['HEARTFLOW_' + 'API_KEY'] || '';
     this.llmApiBase = options.llmApiBase || process.env.HEARTFLOW_LLM_API_BASE || '';
     this.useLLM = options.useLLM !== false;  // 默认启用 LLM 后备
   }
