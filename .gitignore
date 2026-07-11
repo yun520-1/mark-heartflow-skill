@@ -62,3 +62,14 @@ formulas-corpus/arqmath/unique_formulas.txt
 formulas-corpus/im2latex/
 formulas-corpus/hme_leibniz/annotations.txt
 data/memories/**
+
+# 阻止 data/ 下旧文件被 git add -A 重新追踪
+data/.gitkeep
+data/code-graph.json
+data/heartflow-state.json
+data/heartflow-state-history.jsonl
+data/intervention-protocols.json
+data/judgments/
+data/meaningful-memory.json
+data/memory-bank.json
+data/memory-index.json
