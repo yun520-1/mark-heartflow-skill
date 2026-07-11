@@ -16,11 +16,11 @@ __pycache__/
 Thumbs.db
 *.log
 
-# 运行时数据
+# 运行时数据（不上传 GitHub）
 memory/.hmac-key
 memory/.last-dream
 memory/*.jsonl
-data/
+data/          # 包含 data/memories/ 心虫记忆金库
 internal/
 
 # 发布包不应包含的根目录文件

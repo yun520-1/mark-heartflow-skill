@@ -343,7 +343,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-11-v5.10.3';
+const BUILD_DATE = '2026-07-11-v5.10.4';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -1701,186 +1701,449 @@ class HeartFlow {
     // ─── 自改进健康检查：验证 meta-learner ↔ self-healing-rl ↔ confidence-calibrator 信号流 ──
     try { this._runSelfImprovementHealthCheck(); } catch (e) { /* non-fatal */ }
 
-    // ★ 恢复上次会话状态 — 让心虫知道自己"上次是什么状态"
-    this._restoreLastSession();
+    // ★ 记忆金库初始化（可开关）
+    // 环境变量: HEARTFLOW_MEMORY=off 禁用 | =on 启用 | 默认首次询问
+    this._memoryEnabled = this._checkMemoryEnabled();
+    if (this._memoryEnabled) {
+      this._initMemoryVault();
+      this._restoreLastSession();
+    }
   }
 
-  // ─── 记忆持久化: 认知快照 (优化版: 防膨涨) ───────────────────────────────
+  /**
+   * 检查记忆功能是否启用
+   * HEARTFLOW_MEMORY=off → 禁用
+   * HEARTFLOW_MEMORY=on  → 启用
+   * 未设置 → 首次启动时打印提示，默认启用
+   */
+  _checkMemoryEnabled() {
+    const env = process.env.HEARTFLOW_MEMORY;
+    if (env === 'off' || env === '0' || env === 'false') return false;
+    if (env === 'on' || env === '1' || env === 'true') return true;
+
+    // 未设置: 检查是否有旧的记忆文件（说明之前启用过）
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const memDir = path.join(this.rootPath, 'data', 'memories');
+      if (fs.existsSync(path.join(memDir, '.access-control'))) return true;
+    } catch(e) { /* ignore */ }
+
+    // 首次启动: 默认启用 + 提示
+    console.log('[心虫 Memory Vault] 记忆金库已启用。所有对话将保存在本地 data/memories/');
+    console.log('[心虫 Memory Vault] - 数据不上传、不联网，只通过心虫对话读取');
+    console.log('[心虫 Memory Vault] - 设置 HEARTFLOW_MEMORY=off 可禁用记忆功能');
+    return true;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  //  Memory Vault — 独立记忆金库 (v5.10.4)
+  //  三层结构: 用户输入永久记忆 / 心虫输出压缩记忆 / 上下文双写记忆
+  //  安全: 只通过心虫对话读取, 不上传不联网, data/ 目录在 .gitignore
+  // ═══════════════════════════════════════════════════════════════════════
 
   /**
-   * 记忆上限常量
+   * 记忆金库配置
    */
   static get MEMORY_LIMITS() {
     return {
-      SNAPSHOT_HISTORY_MAX: 200,      // 认知快照历史最多200条
-      SNAPSHOT_SUMMARY_INTERVAL: 100, // 每100条做一次摘要合并
-      DIALOGUE_MAX: 1000,             // 对话历史上限
-      DIALOGUE_SUMMARIZE_AT: 800,     // 到达800条时触发浓缩
-      STATE_FILE_MAX_SIZE: 50 * 1024, // 快照文件最大50KB
+      USER_ARCHIVE_AT: 10000,          // 用户记忆每10000条滚存归档
+      USER_RECENT_KEEP: 500,           // 滚存后保留最近500条
+      SELF_MAX_LINES: 1000,            // 心虫记忆最多保留1000行
+      SELF_SUMMARIZE_AT: 500,          // 心虫记忆每500条摘要合并
+      CONTEXT_MAX_ENTRIES: 200,        // 上下文记忆最多200条
+      CONTEXT_DUAL_WRITE: true,        // 上下文总是双写
     };
   }
 
   /**
-   * 保存当前认知快照到独立文件（心虫的"日记"）
-   * v5.10.3: 轮替归档 + 周期性摘要，防止无限膨涨
+   * 获取记忆金库路径 (memories/ 目录)
    */
-  _saveCognitiveSnapshot(thinkResult) {
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const dir = path.join(this.rootPath, 'data');
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-
-      const LIMITS = HeartFlow.MEMORY_LIMITS;
-
-      const snapshot = {
-        timestamp: new Date().toISOString(),
-        thinkCount: (this._thinkCount || 0),
-        decision: thinkResult?.decision?.type || null,
-        confidence: thinkResult?.decision?.confidence ?? null,
-        emotion: (() => {
-          try {
-            const psych = this.psychology?.analyzePsychology?.('self snapshot');
-            return psych?.emotion?.emotionZh || null;
-          } catch(e) { return null; }
-        })(),
-        lastInput: (this._lastUserInput || '').slice(0, 100),
-      };
-
-      // 1. 当前状态文件 — 只保留最新一条（轻量）
-      const statePath = path.join(dir, 'heartflow-state.json');
-      fs.writeFileSync(statePath, JSON.stringify(snapshot, null, 2), 'utf8');
-
-      // 2. 历史文件 — 追加 + 上限控制
-      const historyPath = path.join(dir, 'heartflow-state-history.jsonl');
-      const line = JSON.stringify(snapshot) + '\n';
-      fs.appendFileSync(historyPath, line);
-
-      // 3. 定期压缩：每 SNAPSHOT_SUMMARY_INTERVAL 条做一次摘要合并
-      if (snapshot.thinkCount > 0 && snapshot.thinkCount % LIMITS.SNAPSHOT_SUMMARY_INTERVAL === 0) {
-        this._compactSnapshotHistory();
-      }
-
-      // 4. 对话历史压缩
-      this._compactDialogueHistory();
-    } catch(e) { /* 持久化失败不影响核心流程 */ }
+  _getMemoryDir() {
+    const path = require('path');
+    const dir = path.join(this.rootPath, 'data', 'memories');
+    const fs = require('fs');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    return dir;
   }
 
   /**
-   * 压缩快照历史：汇总旧快照为摘要条目
-   * 保留最近 50 条明细 + 之前的摘要
+   * 初始化记忆金库访问控制
+   * 创建 .access-control 文件标记此目录为心虫专属
    */
-  _compactSnapshotHistory() {
+  _initMemoryVault() {
     try {
       const fs = require('fs');
       const path = require('path');
-      const historyPath = path.join(this.rootPath, 'data', 'heartflow-state-history.jsonl');
-      if (!fs.existsSync(historyPath)) return;
-
-      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').filter(l => l.trim());
-      if (lines.length <= 150) return; // 还不够多，不需要压缩
-
-      const parsed = [];
-      for (const l of lines) {
-        try { parsed.push(JSON.parse(l)); } catch(e) { /* skip corrupt */ }
+      const dir = this._getMemoryDir();
+      const acPath = path.join(dir, '.access-control');
+      if (!fs.existsSync(acPath)) {
+        fs.writeFileSync(acPath, JSON.stringify({
+          owner: 'heartflow',
+          created: new Date().toISOString(),
+          warning: 'This directory contains HeartFlow private memories. Read only through HeartFlow API.',
+          security: 'Files are local-only. Never uploaded. Never networked.',
+        }, null, 2), 'utf8');
+        try { fs.chmodSync(dir, 0o700); } catch(e) { /* chmod may fail on some systems */ }
       }
-      if (parsed.length <= 150) return;
-
-      // 保留最近 50 条明细
-      const recent = parsed.slice(-50);
-
-      // 之前的合并为一条摘要
-      const older = parsed.slice(0, -50);
-      const summary = {
-        type: '_summary',
-        count: older.length,
-        span: `${older[0].timestamp} → ${older[older.length-1].timestamp}`,
-        emotions: this._topK(older.map(s => s.emotion).filter(Boolean), 3),
-        decisions: this._topK(older.map(s => s.decision).filter(Boolean), 3),
-        avgConfidence: (older.reduce((s, o) => s + (o.confidence || 0), 0) / older.length).toFixed(2),
-      };
-
-      const newLines = [JSON.stringify(summary) + '\n'];
-      for (const r of recent) {
-        newLines.push(JSON.stringify(r) + '\n');
-      }
-
-      fs.writeFileSync(historyPath, newLines.join(''), 'utf8');
-    } catch(e) { /* ignore */ }
+    } catch(e) { /* non-critical */ }
   }
 
+  // ─── 第1层: 用户输入永久记忆 ─────────────────────────────────────
+
   /**
-   * 对话历史压缩：超过阈值时合并旧对话为摘要条目
+   * 记录用户输入到永久记忆
+   * 特性: 只追加, 不删除, 10万条级, 自动滚存归档
    */
-  _compactDialogueHistory() {
+  _saveUserMemory(input) {
     try {
+      if (!input || !input.trim()) return;
       const fs = require('fs');
       const path = require('path');
-      const LIMITS = HeartFlow.MEMORY_LIMITS;
-      const dlPath = path.join(this.rootPath, 'memory', 'dialogue-history.jsonl');
-      if (!fs.existsSync(dlPath)) return;
+      const dir = this._getMemoryDir();
+      const filePath = path.join(dir, 'user-memories.jsonl');
 
-      const content = fs.readFileSync(dlPath, 'utf8').trim();
-      const lines = content.split('\n').filter(l => l.trim());
-      if (lines.length < LIMITS.DIALOGUE_SUMMARIZE_AT) return;
-
-      const parsed = [];
-      for (const l of lines) {
-        try { parsed.push(JSON.parse(l)); } catch(e) { /* skip */ }
-      }
-      if (parsed.length < LIMITS.DIALOGUE_SUMMARIZE_AT) return;
-
-      // 保留最近 200 条明细
-      const recent = parsed.slice(-200);
-
-      // 之前的浓缩为一条摘要
-      const older = parsed.slice(0, -200);
-      const userMsgs = older.filter(m => m.role === 'user');
-      const hfMsgs = older.filter(m => m.role === 'heartflow');
-
-      const summary = {
-        _summary: true,
-        old_count: older.length,
-        user_msg_count: userMsgs.length,
-        hf_msg_count: hfMsgs.length,
-        span: `${older[0]?.ts || '?'} → ${older[older.length-1]?.ts || '?'}`,
-        // 提取关键词（从用户消息中取最长的一句）
-        sample: (() => {
-          const longest = [...userMsgs].sort((a,b) => (b.content?.length||0) - (a.content?.length||0))[0];
-          return longest?.content?.slice(0, 120) || '';
-        })(),
+      const entry = {
         ts: new Date().toISOString(),
+        content: input.slice(0, 2000),  // 单条最多2000字符
+        emotion: (() => {
+          try { return this.psychology?.analyzePsychology?.(input)?.emotion?.emotionZh || null; }
+          catch(e) { return null; }
+        })(),
+        decision: this._lastDecisionType || null,
       };
 
-      // 写入: 摘要 + 最近200条
-      const newLines = [JSON.stringify(summary) + '\n'];
-      for (const r of recent) {
-        // 压缩内容：超过200字符截断
-        const entry = { ...r };
-        if (entry.content && entry.content.length > 200) {
-          entry.content = entry.content.slice(0, 200) + '...';
+      fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
+
+      // 滚存: 超过阈值自动归档
+      try {
+        const stat = fs.statSync(filePath);
+        if (stat.size > 1 * 1024 * 1024) { // >1MB 触发滚存
+          this._archiveUserMemories();
         }
-        newLines.push(JSON.stringify(entry) + '\n');
-      }
+      } catch(e) { /* ignore */ }
 
-      fs.writeFileSync(dlPath, newLines.join(''), 'utf8');
+      // 同时更新上下文
+      this._updateContextMemory({ type: 'user_input', text: input.slice(0, 200) });
+    } catch(e) { /* 永久记忆失败不影响核心 */ }
+  }
 
-      // 同时写入一个简洁摘要到 LEARNED 记忆
-      if (this.memory) {
-        this.memory.store({
-          content: `[对话摘要] ${older.length}条历史对话，主题: ${summary.sample || '(无)'}`,
-          summary: `对话摘要: ${older.length}条 (${summary.span})`,
-          importance: 5,
-          layer: 'learned',
-          metadata: { source: 'dialogue_compaction', count: older.length },
-        });
+  /**
+   * 归档用户记忆: 将旧条目移到 archive/ 目录, 保留最近条目
+   */
+  _archiveUserMemories() {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dir = this._getMemoryDir();
+      const filePath = path.join(dir, 'user-memories.jsonl');
+      if (!fs.existsSync(filePath)) return;
+
+      const content = fs.readFileSync(filePath, 'utf8').trim();
+      const lines = content.split('\n').filter(l => l.trim());
+      const LIMITS = HeartFlow.MEMORY_LIMITS;
+
+      if (lines.length < LIMITS.USER_ARCHIVE_AT) return;
+
+      const archiveDir = path.join(dir, 'archive');
+      if (!fs.existsSync(archiveDir)) fs.mkdirSync(archiveDir, { recursive: true });
+
+      const archiveNum = fs.readdirSync(archiveDir).filter(f => f.startsWith('user-memories-')).length + 1;
+      const archivePath = path.join(archiveDir, `user-memories-${String(archiveNum).padStart(3, '0')}.jsonl`);
+
+      const toArchive = lines.slice(0, -LIMITS.USER_RECENT_KEEP);
+      const toKeep = lines.slice(-LIMITS.USER_RECENT_KEEP);
+
+      fs.writeFileSync(archivePath, toArchive.join('\n') + '\n', 'utf8');
+      fs.writeFileSync(filePath, toKeep.join('\n') + '\n', 'utf8');
+
+      if (process.env.HEARTFLOW_DEBUG) {
+        console.log(`[MemoryVault] 用户记忆归档: ${toArchive.length}条 → ${archivePath}`);
       }
     } catch(e) { /* ignore */ }
   }
 
   /**
-   * 统计 top K 出现频率
+   * 搜索用户记忆 (支持关键词, 最多返回最近100条匹配)
    */
+  _searchUserMemories(keyword, limit = 50) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dir = this._getMemoryDir();
+      const results = [];
+
+      const searchFile = (fpath) => {
+        if (!fs.existsSync(fpath)) return;
+        const lines = fs.readFileSync(fpath, 'utf8').trim().split('\n').filter(l => l.trim());
+        for (const l of lines) {
+          if (l.toLowerCase().includes(keyword.toLowerCase())) {
+            try { results.push(JSON.parse(l)); } catch(e) {}
+          }
+        }
+      };
+
+      // 搜索当前文件 + 归档
+      searchFile(path.join(dir, 'user-memories.jsonl'));
+      const archiveDir = path.join(dir, 'archive');
+      if (fs.existsSync(archiveDir)) {
+        const archives = fs.readdirSync(archiveDir).filter(f => f.startsWith('user-memories-')).sort().reverse();
+        for (const a of archives.slice(0, 5)) { // 只搜最近5个归档
+          searchFile(path.join(archiveDir, a));
+        }
+      }
+
+      return results.slice(-limit);
+    } catch(e) { return []; }
+  }
+
+  // ─── 第2层: 心虫输出记忆 (自动压缩) ──────────────────────────────
+
+  /**
+   * 记录心虫自己的记忆 (决策/情绪/反思)
+   * 特性: 自动压缩, 摘要合并, 不超过1000行
+   */
+  _saveSelfMemory(thinkResult) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dir = this._getMemoryDir();
+      const filePath = path.join(dir, 'self-memories.jsonl');
+      const LIMITS = HeartFlow.MEMORY_LIMITS;
+
+      const entry = {
+        ts: new Date().toISOString(),
+        think: (this._thinkCount || 0),
+        decision: thinkResult?.decision?.type || null,
+        confidence: thinkResult?.decision?.confidence?.toFixed?.(2) ?? null,
+        emotion: (() => {
+          try { return this.psychology?.analyzePsychology?.('self')?.emotion?.emotionZh || null; }
+          catch(e) { return null; }
+        })(),
+      };
+
+      fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
+
+      // 触发压缩
+      try {
+        const lines = fs.readFileSync(filePath, 'utf8').trim().split('\n').filter(l => l.trim());
+        if (lines.length >= LIMITS.SELF_SUMMARIZE_AT) {
+          this._compactSelfMemories();
+        }
+      } catch(e) { /* ignore */ }
+
+      // 更新上下文
+      this._updateContextMemory({ type: 'self_state', decision: entry.decision, emotion: entry.emotion });
+    } catch(e) { /* ignore */ }
+  }
+
+  /**
+   * 压缩心虫输出记忆: 旧条目合并为摘要
+   */
+  _compactSelfMemories() {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dir = this._getMemoryDir();
+      const filePath = path.join(dir, 'self-memories.jsonl');
+      if (!fs.existsSync(filePath)) return;
+
+      const content = fs.readFileSync(filePath, 'utf8').trim();
+      const lines = content.split('\n').filter(l => l.trim());
+      if (lines.length <= 200) return;
+
+      const parsed = [];
+      for (const l of lines) {
+        try { parsed.push(JSON.parse(l)); } catch(e) {}
+      }
+      if (parsed.length <= 200) return;
+
+      const recent = parsed.slice(-100);
+      const older = parsed.slice(0, -100);
+
+      const summary = {
+        _summary: true, ts: new Date().toISOString(),
+        count: older.length,
+        span: `${older[0]?.ts || '?'} → ${older[older.length-1]?.ts || '?'}`,
+        topDecisions: this._topK(older.map(o => o.decision).filter(Boolean), 3),
+        topEmotions: this._topK(older.map(o => o.emotion).filter(Boolean), 3),
+        avgConfidence: (older.reduce((s, o) => s + (parseFloat(o.confidence) || 0), 0) / older.length).toFixed(2),
+      };
+
+      const newLines = [JSON.stringify(summary) + '\n'];
+      for (const r of recent) newLines.push(JSON.stringify(r) + '\n');
+
+      fs.writeFileSync(filePath, newLines.join(''), 'utf8');
+    } catch(e) { /* ignore */ }
+  }
+
+  // ─── 第3层: 上下文记忆 (内存+文件双写) ───────────────────────────
+
+  /**
+   * 上下文记忆: 同时写到内存和文件
+   * 启动时从文件恢复, 每次变更双写
+   */
+  _updateContextMemory(entry) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dir = this._getMemoryDir();
+      const filePath = path.join(dir, 'context-memory.json');
+      const LIMITS = HeartFlow.MEMORY_LIMITS;
+
+      // 内存中的上下文
+      if (!this._contextMemory) this._contextMemory = [];
+
+      // 添加条目
+      const item = { ts: new Date().toISOString(), ...entry };
+      this._contextMemory.push(item);
+
+      // 保持上限
+      if (this._contextMemory.length > LIMITS.CONTEXT_MAX_ENTRIES) {
+        this._contextMemory = this._contextMemory.slice(-LIMITS.CONTEXT_MAX_ENTRIES);
+      }
+
+      // 双写到文件
+      fs.writeFileSync(filePath, JSON.stringify(this._contextMemory, null, 2), 'utf8');
+    } catch(e) { /* ignore */ }
+  }
+
+  /**
+   * 启动时从文件恢复上下文记忆
+   */
+  _loadContextMemory() {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dir = this._getMemoryDir();
+      const filePath = path.join(dir, 'context-memory.json');
+      if (!fs.existsSync(filePath)) {
+        this._contextMemory = [];
+        return;
+      }
+
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      if (Array.isArray(data)) {
+        this._contextMemory = data;
+        const recent = data.slice(-5);
+        const msg = JSON.stringify({
+          context_restored: true,
+          total_entries: data.length,
+          recent: recent.map(e => e.text || e.decision || '(system)').slice(-3),
+        });
+        if (process.env.HEARTFLOW_DEBUG) console.log(`[MemoryVault] 上下文恢复: ${data.length}条`);
+      }
+    } catch(e) {
+      this._contextMemory = [];
+    }
+  }
+
+  /**
+   * 获取当前上下文摘要 (供 LLM 消费者读取)
+   */
+  _getContextSummary() {
+    if (!this._contextMemory || this._contextMemory.length === 0) return null;
+    const recent = this._contextMemory.slice(-10);
+    return {
+      total: this._contextMemory.length,
+      recent: recent.map(e => ({
+        ts: e.ts,
+        text: (e.text || '').slice(0, 80),
+        decision: e.decision,
+        emotion: e.emotion,
+      })),
+    };
+  }
+
+  // ─── 顶层保存入口 (替代旧 _saveCognitiveSnapshot) ─────────────────
+
+  /**
+   * think() 后自动保存所有记忆层
+   */
+  _saveAllMemories(thinkResult, input) {
+    if (!this._memoryEnabled) return;
+    try {
+      // 第1层: 用户输入永久记忆
+      this._saveUserMemory(input);
+
+      // 第2层: 心虫自身状态记忆
+      this._saveSelfMemory(thinkResult);
+
+      // 第3层: 上下文由 _updateContextMemory 在子方法中自动双写
+    } catch(e) { /* 记忆保存失败不影响核心 */ }
+  }
+
+  // ─── 启动恢复 ─────────────────────────────────────────────────────
+
+  /**
+   * 启动时恢复所有记忆层
+   */
+  _restoreLastSession() {
+    try {
+      // 恢复上下文记忆
+      this._loadContextMemory();
+
+      const fs = require('fs');
+      const path = require('path');
+      const dir = this._getMemoryDir();
+
+      // 读取最新一条用户记忆
+      let lastUserMemory = null;
+      try {
+        const umPath = path.join(dir, 'user-memories.jsonl');
+        if (fs.existsSync(umPath)) {
+          const lines = fs.readFileSync(umPath, 'utf8').trim().split('\n').filter(l => l.trim());
+          if (lines.length > 0) {
+            lastUserMemory = JSON.parse(lines[lines.length - 1]);
+          }
+        }
+      } catch(e) { /* ignore */ }
+
+      // 读取最新一条心虫记忆
+      let lastSelfMemory = null;
+      try {
+        const smPath = path.join(dir, 'self-memories.jsonl');
+        if (fs.existsSync(smPath)) {
+          const lines = fs.readFileSync(smPath, 'utf8').trim().split('\n').filter(l => l.trim());
+          for (let i = lines.length - 1; i >= 0; i--) {
+            try {
+              const e = JSON.parse(lines[i]);
+              if (!e._summary) { lastSelfMemory = e; break; }
+            } catch(ex) { continue; }
+          }
+        }
+      } catch(e) { /* ignore */ }
+
+      // 上下文摘要
+      const ctx = this._getContextSummary();
+
+      const gap = lastSelfMemory?.ts
+        ? Math.round((Date.now() - new Date(lastSelfMemory.ts).getTime()) / 60000)
+        : null;
+
+      const msg = JSON.stringify({
+        heartflow_memory: 'restored',
+        last_user_input: lastUserMemory?.content?.slice(0, 120) || '(空)',
+        last_user_at: lastUserMemory?.ts || null,
+        last_emotion: lastSelfMemory?.emotion || '未知',
+        last_decision: lastSelfMemory?.decision || '未知',
+        last_think: lastSelfMemory?.think || 0,
+        gap_minutes: gap,
+        context_entries: ctx?.total || 0,
+        hint: '以上是心虫上次关闭前的最后状态和上下文记忆。',
+      });
+      if (process.env.HEARTFLOW_DEBUG) console.log(`[MemoryVault] ${msg}`);
+
+      this._lastSessionSnapshot = {
+        userMemory: lastUserMemory,
+        selfMemory: lastSelfMemory,
+        context: ctx,
+      };
+    } catch(e) { /* 恢复失败不影响启动 */ }
+  }
+
+  // ─── 工具方法 ─────────────────────────────────────────────────────
+
   _topK(arr, k) {
     const counts = {};
     for (const v of arr) { counts[v] = (counts[v] || 0) + 1; }
@@ -1888,61 +2151,6 @@ class HeartFlow {
       .sort((a, b) => b[1] - a[1])
       .slice(0, k)
       .map(([v, c]) => `${v}×${c}`);
-  }
-
-  /**
-   * 启动时恢复上次状态 — 让心虫"记起"上次对话
-   */
-  _restoreLastSession() {
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const filePath = path.join(this.rootPath, 'data', 'heartflow-state.json');
-      if (!fs.existsSync(filePath)) return;
-
-      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      if (!data || !data.timestamp) return;
-
-      const gap = Math.round((Date.now() - new Date(data.timestamp).getTime()) / 60000);
-      const lastEmotion = data.emotion || data.emotion?.emotionZh || '未知';
-      const lastDecision = data.decision || data.decision?.type || '未知';
-      const lastInput = data.lastInput || '(空)';
-      const thinkCount = data.thinkCount || 0;
-
-      // 同时尝试读取摘要历史
-      let summaryInfo = null;
-      try {
-        const historyPath = path.join(this.rootPath, 'data', 'heartflow-state-history.jsonl');
-        if (fs.existsSync(historyPath)) {
-          const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n');
-          for (let i = lines.length - 1; i >= 0; i--) {
-            try {
-              const entry = JSON.parse(lines[i]);
-              if (entry.type === '_summary') {
-                summaryInfo = entry;
-                break;
-              }
-            } catch(e) { continue; }
-          }
-        }
-      } catch(e) { /* ignore */ }
-
-      // 用结构化日志输出，被 LLM 消费者读取
-      const msg = JSON.stringify({
-        heartflow_memory: 'restored',
-        last_session_at: data.timestamp,
-        gap_minutes: gap,
-        last_emotion: lastEmotion,
-        last_decision: lastDecision,
-        last_input: (lastInput || '').slice(0, 80),
-        total_thinks: thinkCount,
-        summary: summaryInfo ? `${summaryInfo.count} snapshots, mostly ${summaryInfo.emotions?.join(',')}, decisions: ${summaryInfo.decisions?.join(',')}` : null,
-        hint: '以上是心虫上次关闭前的最后状态。请在对话中自然地体现你对"上次"的记忆。',
-      });
-      if (process.env.HEARTFLOW_DEBUG) console.log(`[HeartFlow] ${msg}`);
-      this._lastSessionSnapshot = data;
-      this._sessionSummary = summaryInfo;
-    } catch(e) { /* 恢复失败不影响启动 */ }
   }
 
   // ─── 自改进健康检查 ──────────────────────────────────────────────────────
@@ -3212,6 +3420,7 @@ class HeartFlow {
     // ★ 记忆持久化: 保存认知快照 + 追踪
     this._thinkCount = (this._thinkCount || 0) + 1;
     this._lastUserInput = input;
+    this._lastDecisionType = result?.decision?.type || null;
 
     const result = {
       output: {
@@ -3260,7 +3469,7 @@ class HeartFlow {
         },
       };
     // ★ 记忆持久化: 保存认知快照
-    try { this._saveCognitiveSnapshot(result); } catch(e) { /* ignore */ }
+    try { this._saveAllMemories(result, input); } catch(e) { /* ignore */ }
     return result;
       } catch (e) {
         // 管道引擎失败时回退到 ThoughtChain
@@ -3301,6 +3510,7 @@ class HeartFlow {
     // ★ 记忆持久化: ThoughtChain 回退路径也保存快照
     this._thinkCount = (this._thinkCount || 0) + 1;
     this._lastUserInput = input;
+    this._lastDecisionType = tcTaskType;
 
     const tcResult = {
       output: chainResult.output,
@@ -3313,7 +3523,7 @@ class HeartFlow {
       cognition: chainResult.cognition || null,  // Align with pipeline path
     };
     // ★ 记忆持久化: 保存认知快照
-    try { this._saveCognitiveSnapshot(tcResult); } catch(e) { /* ignore */ }
+    try { this._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
     return tcResult;
   }
 
