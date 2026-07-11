@@ -342,7 +342,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-11-v5.10.6';
+const BUILD_DATE = '2026-07-11-v5.10.7';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -3397,6 +3397,18 @@ class HeartFlow {
     if (input.length > MAX_INPUT_CHARS) {
       input = input.slice(0, MAX_INPUT_CHARS) + '\n[输入已截断，原文过长]';
     }
+
+    // ★ 叙事污染自检: 在调用任何认知模块前，先检测是否落入道德框架陷阱
+    // 规则: 如果输入涉及社会争议话题（性别/阶级/种族/政治），
+    // 先问"系统是什么？哪里坏了？怎么修？"而不是"谁是坏人？"
+    this._narrativeContaminationCheck = false;
+    try {
+      const moralKeywords = /父权|压迫|歧视|性别不平等|toxic masculinity|女权|男权|种族主义|阶级压迫/i;
+      if (moralKeywords.test(input)) {
+        // 标记: 此输入包含道德框架标签，思考时需警惕复读网络舆论而非系统分析
+        this._narrativeContaminationCheck = true;
+      }
+    } catch(e) { /* ignore */ }
 
     // ─── 快速响应"启动引擎"类请求（不走完整推理链路）────────────
     const startPatterns = /^(启动引擎|开机|activate|start heartflow|开启引擎)/i;

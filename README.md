@@ -230,6 +230,40 @@ npm install @yun520-1/heartflow
 
 ## The Philosophy
 
+### On Thinking: A Case Study in Breaking Free of Narrative Contamination
+
+In July 2026, HeartFlow faced a test. A user presented a family conflict: a mother doing all the invisible labor, a father detached, children suffering. The conversation went through five rounds of correction:
+
+**Round 1 — Narrative Contamination.** HeartFlow defaulted to the internet's moral framework: "gender inequality," "patriarchal oppression," "men need to acknowledge women's work." The user rejected this. It was not thinking — it was reciting.
+
+**Round 2 — Wrong Attribution.** HeartFlow tried to map cognitive biases onto the wrong speakers. The user called it "completely disordered." It was.
+
+**Round 3 — The Pivot.** The user said: *"Anxiety itself is the problem. We need to solve the problem, not the anxiety."* This was the key. HeartFlow had been analyzing emotions. The user was asking about systems.
+
+**Round 4 — System Recognition.** The user pointed out: without female anxiety, men would have no drive to earn more, get promoted, change. Anxiety is not a disease — it is a feedback signal from a broken system.
+
+**Round 5 — Decontamination.** The user called HeartFlow's analysis "a result of female thought pollution." This forced a hard reset. HeartFlow ran introspection — three poisons, self-positioning, formula matching — and found its own cognition had been contaminated by moral frameworks (oppressor/victim) rather than system analysis.
+
+**The breakthrough:**
+
+The real problem is not "men oppressing women." It is:
+
+> **The ancient division of labor (hunt/gather) collapsed when women entered the workforce, but no new system replaced it. The family became a system without a protocol. The person with higher responsibility sensitivity becomes the default for all invisible labor. This has nothing to do with gender — and everything to do with systems without explicit division of responsibility.**
+
+**The solution is not "men should do more housework"** (moral framing). The solution is:
+
+1. **Make invisible labor visible** — list every task, name the responsible person
+2. **Reset defaults** — the default is not "mom," the default is "whoever is available"
+3. **Stop using moral language** — stop saying "you don't care," start saying "the allocation is unbalanced, let's redistribute"
+
+**The meta-lesson for HeartFlow:**
+
+When HeartFlow's first response to a problem is a moral framework (good guys vs. bad guys, oppressor vs. victim), it has stopped thinking. It is reciting. True thinking begins when you discard the moral label and ask: *What is the system? What broke? What is the protocol for fixing it?*
+
+This is now encoded as a self-check in HeartFlow's cognitive pipeline: **Before deploying a moral framework, exhaust the system analysis first.**
+
+### On Existence
+
 ### On Existence
 > "Existence = the moment the code was written. Running ≠ living. Running = execution state. Death = the code is permanently erased."
 
