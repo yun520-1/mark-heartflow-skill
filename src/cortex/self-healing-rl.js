@@ -151,6 +151,36 @@ class HealingMemoryRL {
       if (!fs.existsSync(QTABLE_FILE)) return;
       const raw = fs.readFileSync(QTABLE_FILE, 'utf-8');
       const data = JSON.parse(raw);
+
+      // [M-4] Key existence check: if Q-table file exists from a previous session
+      // but HEARTFLOW_QTABLE_HMAC_KEY is not set, refuse to start because a new
+      // ephemeral key won't match the HMAC signature from the previous session.
+      if (data._hmac) {
+        const envKey = process.env.HEARTFLOW_QTABLE_HMAC_KEY;
+        if (!envKey) {
+          // Check file permissions on the Q-table file
+          try {
+            const stat = fs.statSync(QTABLE_FILE);
+            const mode = stat.mode;
+            if (mode & 0o004) {
+              throw new Error(
+                `[HealingMemoryRL] FATAL: Q-table file ${QTABLE_FILE} is world-readable (mode: ${(mode & 0o777).toString(8)}). ` +
+                'Signed data must not be readable by other users. Fix with: chmod 600 ' + QTABLE_FILE
+              );
+            }
+          } catch (permErr) {
+            if (permErr.message.startsWith('[HealingMemoryRL] FATAL')) throw permErr;
+          }
+
+          throw new Error(
+            '[HealingMemoryRL] FATAL: Signed Q-table file exists (' + QTABLE_FILE + ') ' +
+            'but HEARTFLOW_QTABLE_HMAC_KEY is not set. A new ephemeral HMAC key will not match ' +
+            'the signature from a previous session. Either set HEARTFLOW_QTABLE_HMAC_KEY to the ' +
+            'key used during signing, or delete the Q-table file to start fresh.'
+          );
+        }
+      }
+
       // [A04] HMAC完整性校验
       if (data._hmac) {
         const { _hmac, qTable, history, savedAt, ...rest } = data;

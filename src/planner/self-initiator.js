@@ -21,7 +21,7 @@
  */
 
 const { GoalPursuer } = require('./goal-pursuer.js');
-const { validateFetchUrl } = require('../security/url-validator.js');
+let validateFetchUrl; try { ({validateFetchUrl}=require('../security/url-validator.js')) } catch { validateFetchUrl = ()=>({safe:false,reason:'validator missing'}) }
 
 // ============================================================================
 // 状态枚举

@@ -85,13 +85,14 @@ function getVersion() {
 }
 
 // 安全配置
-// 允许无 token 启动（守护进程场景）。安全性由 bind 127.0.0.1 保证。
-// 设置 HEARTFLOW_MCP_TOKEN 可启用额外认证层。
-const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null;
-const AUTH_ENABLED = !!AUTH_TOKEN;
-if (!AUTH_ENABLED) {
-  console.error('[MCP] HEARTFLOW_MCP_TOKEN is not set. Running without authentication (bound to 127.0.0.1 only).');
-}
+// Token 认证：未设置 HEARTFLOW_MCP_TOKEN 时自动生成随机 Token 并强制认证
+const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || (() => {
+  const token = require('crypto').randomBytes(32).toString('hex');
+  console.log('[MCP] HEARTFLOW_MCP_TOKEN not set. Generated random token: ' + token);
+  console.log('[MCP] Set HEARTFLOW_MCP_TOKEN env var for persistent auth across restarts.');
+  return token;
+})();
+const AUTH_ENABLED = true;
 
 // ─── 时间安全的 token 比较（防止 timing attack）───
 function safeCompare(provided, expected) {

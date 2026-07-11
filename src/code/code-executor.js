@@ -1113,6 +1113,14 @@ const __originalSet = __globals.Set;
 const __originalReflect = __globals.Reflect;
 const __originalProxy = __globals.Proxy;
 
+// [AUDIT-FIX H-1] 删除 __globals 上的危险构造器引用，防止用户代码通过
+// __globals.Function('return process')() 逃逸沙箱
+// 注意：必须在提取完 __original* 引用之后删除，因为 preamble 自身需要它们
+delete __globals.Function;
+delete __globals.Object;
+delete __globals.Proxy;
+delete __globals.Reflect;
+
 // [AUDIT-FIX B-03] 关键修复：替换 Function.prototype.constructor 为安全函数
 // 这是阻止 constructor.constructor 逃逸的根本方案：
 // 即使攻击者通过字符串拼接绕过正则检测，运行时调用 constructor.constructor
@@ -1248,7 +1256,19 @@ ${code}
 
       const fn = new Function('console', '__globals', sandboxedCode);  // safety: sandboxed via _executeStrictSandbox
 
-      const result = await this._executeWithTimeout(fn, timeout, [console, globalThis]);
+      // [AUDIT-FIX H-1] 替换 globalThis 为受限全局对象，防止沙箱逃逸
+      // 不包含 Function/Object/Reflect/Proxy 构造器，但包含 preamble 需要的 safe globals
+      // preamble 会在提取 __original* 引用后通过 delete 清理这些构造器
+      const restrictedGlobals = {
+        Math, JSON, Date, parseInt, parseFloat, isNaN, isFinite,
+        encodeURIComponent, decodeURIComponent,
+        Array, String, Number, Boolean, RegExp, Error,
+        Map, Set, WeakMap, Promise, Symbol, console,
+        // 以下构造器提供给 preamble 提取 __original* 引用，之后会被 delete 清理
+        Object, Function, Proxy, Reflect
+      };
+
+      const result = await this._executeWithTimeout(fn, timeout, [console, restrictedGlobals]);
 
       const truncated = capturedOutput.length > maxOutput;
       const output = truncateOutput(capturedOutput, maxOutput);

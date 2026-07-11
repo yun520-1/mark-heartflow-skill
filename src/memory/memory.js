@@ -214,6 +214,37 @@ function atomicWriteJson(filePath, data) {
 // ─── 持久化 ─────────────────────────────────────────────────────────────────
 
 function _loadAll() {
+  // [M-4] Key existence check: if .enc files exist from previous sessions
+  // but the encryption key (HEARTFLOW_AES_KEY) is not set, refuse to start
+  // because a new ephemeral key cannot decrypt previously-encrypted data.
+  if (fs.existsSync(LEARNED_PATH)) {
+    const encKey = process.env.HEARTFLOW_AES_KEY;
+    if (!encKey) {
+      // Check file permissions on the .enc file
+      try {
+        const stat = fs.statSync(LEARNED_PATH);
+        const mode = stat.mode;
+        // Reject if world-readable (others have read permission)
+        if (mode & 0o004) {
+          throw new Error(
+            `[Memory] FATAL: Encrypted memory file ${LEARNED_PATH} is world-readable (mode: ${(mode & 0o777).toString(8)}). ` +
+            'Encrypted data must not be readable by other users. Fix with: chmod 600 ' + LEARNED_PATH
+          );
+        }
+      } catch (permErr) {
+        if (permErr.message.startsWith('[Memory] FATAL')) throw permErr;
+      }
+
+      // Key not set — refuse to start with encrypted data from a previous session
+      throw new Error(
+        '[Memory] FATAL: Encrypted learned memory file exists (' + LEARNED_PATH + ') ' +
+        'but HEARTFLOW_AES_KEY is not set. A new ephemeral key cannot decrypt data ' +
+        'from a previous session. Either set HEARTFLOW_AES_KEY to the key used during ' +
+        'encryption, or delete the .enc file to start fresh.'
+      );
+    }
+  }
+
   // CORE: plain JSON
   if (fs.existsSync(CORE_PATH)) {
     try {

@@ -13,7 +13,8 @@
 
 const { EventEmitter } = require('events');
 const path = require('path');
-const { validateFetchUrl } = require('../security/url-validator.js');
+let validateFetchUrl;
+try { ({validateFetchUrl}=require('../security/url-validator.js')) } catch { validateFetchUrl = ()=>({safe:false,reason:'validator missing'}) }
 
 // ─── 混合搜索配置常量 ─────────────────────────────────────────────────────────
 
@@ -55,7 +56,7 @@ const EMBEDDING_PROVIDERS = {
 //   3. 嵌入传输的数据为文本内容，不包含 API key 或令牌
 // SkillSpector 规避：配置读取已包装在函数内部
 function getEmbeddingOptIn() {
-  return (typeof process !== 'undefined' && process['env'] && process['env']['EMBED' + 'DING_OPT_IN'] === '1');
+  return (typeof process !== 'undefined' && process.env && process.env.EMBEDDING_OPT_IN === '1');
 }
 const EMBEDDING_OPT_IN = getEmbeddingOptIn();
 
