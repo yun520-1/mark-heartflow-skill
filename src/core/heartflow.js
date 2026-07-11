@@ -343,7 +343,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-10-v5.10.0';
+const BUILD_DATE = '2026-07-11-v5.10.1';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -736,12 +736,38 @@ class HeartFlow {
     // TopicScope — 话题隔离，主动实例化并桥接到 MeaningfulMemory
     this.topicScope = new (_TopicScope().TopicScope)().setMemoryBridge(this.memory);
 
-    // Evolution
-    this.evolution = new (_EvolutionLoop().EvolutionLoop)({ rootPath: this.rootPath, memory: this.memory }).boot();
+    // Evolution — 延迟加载（SelfEvolutionCore + HealingMemoryRL 初始化 ~870ms）
+    // 懒加载：首次访问 hf.evolution 时才执行
+    this._evolutionRaw = null;
+    Object.defineProperty(this, 'evolution', {
+      get() {
+        if (!this._evolutionRaw) {
+          try {
+            this._evolutionRaw = new (_EvolutionLoop().EvolutionLoop)({ rootPath: this.rootPath, memory: this.memory }).boot();
+          } catch (e) { this._evolutionRaw = { boot: () => this, evolve: () => ({}), getStats: () => ({}), getDiagnostics: () => ({}) }; }
+        }
+        return this._evolutionRaw;
+      },
+      enumerable: true,
+      configurable: true,
+    });
     this.dream = new (_DreamEngine().DreamV11)({});
     this.dreamConsolidation = new (_DreamConsolidation().DreamConsolidation)(this.memory);
     this.lesson = _LessonBank().lessonBank || _LessonBank();
-    this.metaJudgment = new (_MetaJudgment().MetaJudgment)(this.rootPath);
+    // MetaJudgment — 延迟加载 (~50ms, 非热路径)
+    this._metaJudgmentRaw = null;
+    Object.defineProperty(this, 'metaJudgment', {
+      get() {
+        if (!this._metaJudgmentRaw) {
+          try {
+            this._metaJudgmentRaw = new (_MetaJudgment().MetaJudgment)(this.rootPath);
+          } catch (e) { this._metaJudgmentRaw = { assessJudgment: () => ({}), getConfidence: () => ({}), getJudgmentHistory: () => [] }; }
+        }
+        return this._metaJudgmentRaw;
+      },
+      enumerable: true,
+      configurable: true,
+    });
     this.metaMemory = new (_MetaMemory().MetaMemory)(this.rootPath);
     this.skillGenerator = new (_SkillGenerator().SkillGenerator)(this.rootPath);
     this.meta = new (_MetaLearner().MetaLearner)({ rootPath: this.rootPath, memory: this.memory }).boot();
