@@ -21,6 +21,7 @@ memory/.hmac-key
 memory/.last-dream
 memory/*.jsonl
 data/          # 包含 data/memories/ 心虫记忆金库
+data/memories/ # 显式排除记忆金库
 internal/
 
 # 发布包不应包含的根目录文件
@@ -60,3 +61,4 @@ formulas-corpus/arqmath/latex_representation_v3/
 formulas-corpus/arqmath/unique_formulas.txt
 formulas-corpus/im2latex/
 formulas-corpus/hme_leibniz/annotations.txt
+data/memories/**
