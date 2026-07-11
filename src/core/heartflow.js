@@ -3420,7 +3420,6 @@ class HeartFlow {
     // ★ 记忆持久化: 保存认知快照 + 追踪
     this._thinkCount = (this._thinkCount || 0) + 1;
     this._lastUserInput = input;
-    this._lastDecisionType = result?.decision?.type || null;
 
     const result = {
       output: {
@@ -3469,6 +3468,7 @@ class HeartFlow {
         },
       };
     // ★ 记忆持久化: 保存认知快照
+    this._lastDecisionType = result.decision?.type || null;
     try { this._saveAllMemories(result, input); } catch(e) { /* ignore */ }
     return result;
       } catch (e) {
