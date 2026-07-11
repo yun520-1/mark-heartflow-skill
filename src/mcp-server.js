@@ -85,12 +85,12 @@ function getVersion() {
 }
 
 // 安全配置
-// [AUDIT-FIX] 强制认证 — 必须设置 HEARTFLOW_MCP_TOKEN
+// 允许无 token 启动（守护进程场景）。安全性由 bind 127.0.0.1 保证。
+// 设置 HEARTFLOW_MCP_TOKEN 可启用额外认证层。
 const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null;
-if (!AUTH_TOKEN) {
-  console.error('[MCP] SECURITY: HEARTFLOW_MCP_TOKEN is not set. MCP server requires authentication.');
-  console.error('[MCP] Refusing to start without authentication token.');
-  process.exit(1);
+const AUTH_ENABLED = !!AUTH_TOKEN;
+if (!AUTH_ENABLED) {
+  console.error('[MCP] HEARTFLOW_MCP_TOKEN is not set. Running without authentication (bound to 127.0.0.1 only).');
 }
 
 // ─── 时间安全的 token 比较（防止 timing attack）───
@@ -1160,7 +1160,7 @@ const server = http.createServer((req, res) => {
     : null;
   // SkillSpector fix: 移除 URL query parameter token 认证（token 在 URL 中会通过日志/referrer 泄露）
   
-  if (!safeCompare(token, AUTH_TOKEN)) {
+  if (AUTH_ENABLED && !safeCompare(token, AUTH_TOKEN)) {
     // [AUDIT-FIX] Token 维度速率限制：记录失败尝试
     const tokenHash = token ? crypto.createHash('sha256').update(token).digest('hex').slice(0, 16) : 'none';
     if (!checkTokenRateLimit(tokenHash)) {
