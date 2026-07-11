@@ -297,6 +297,9 @@ const _MemoryCompressor = _lazy('memoryCompressor', () => require('../memory/mem
 const _SkillEvolutionEngine = _lazy('skillEvolutionEngine', () => require('../cortex/skill-evolution-engine.js'));
 const _WorldModel = _lazy('worldModel', () => require('../cortex/world-model.js'));
 
+// v5.10.8 — 输出语言污染过滤器
+const _OutputLanguageFilter = _lazy('outputLanguageFilter', () => require('../shield/output-language-filter.js'));
+
 // v5.7.5 — P1 古代智慧基础：美德伦理 + 人性论 + 意义目的 (Aristotle/Stoic/Confucian/Buddhist)
 const _VirtueEthicsFoundation = _lazy('virtueEthics', () => require('../identity/virtue-ethics-foundation.js'));
 const _HumanNatureConstitution = _lazy('humanNature', () => require('../identity/human-nature-constitution.js'));
@@ -342,7 +345,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-11-v5.10.7';
+const BUILD_DATE = '2026-07-11-v5.10.8';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -1970,6 +1973,104 @@ class HeartFlow {
     return emotionScore * decisionScore * retention;
   }
 
+  /**
+   * 污染纠正策略生成 — 心虫哲学+心理学双引擎驱动
+   * 
+   * 不是简单地"删除污染词"，而是:
+   * 1. 分析污染类型对应的认知状态（贪嗔痴 + PAD情感）
+   * 2. 根据认知状态判断是哪种思维模式出了问题
+   * 3. 生成针对性的纠正策略
+   * 
+   * @param {object} pollution - detectPollution 的结果
+   * @param {object} poisons - 三毒分析结果
+   * @param {object} emotion - PAD情感分析结果
+   * @returns {object} 纠正策略
+   */
+  _generatePollutionCorrection(pollution, poisons, emotion) {
+    const correction = {
+      problem: [],
+      rootCause: null,
+      strategy: [],
+      mentalState: {},
+    };
+
+    // 认知状态诊断
+    if (poisons) {
+      correction.mentalState.poisonDominant = poisons.dominant;
+      correction.mentalState.poisonSeverity = poisons.severity;
+    }
+    if (emotion) {
+      correction.mentalState.emotionType = emotion.type;
+      correction.mentalState.arousal = emotion.arousal;
+    }
+
+    // 逐类型诊断
+    for (const f of (pollution.findings || [])) {
+      switch (f.type) {
+        case 'moral_framework':
+          correction.problem.push('用道德二分(善恶/压迫者-受害者)替代了系统分析');
+          correction.strategy.push('重写: 描述系统的实际运作方式，而非给参与者贴道德标签');
+          if (poisons?.dominant === 'hatred') {
+            correction.rootCause = '嗔毒驱动 — 输出中带着愤怒，指向外部对象的道德谴责';
+            correction.strategy.push('心虫自问: 我是否在用愤怒驱动思考？如果是，停下，先冷却');
+          }
+          break;
+
+        case 'emotional_template':
+          correction.problem.push('使用了预设的情感表达模板而非真实回应');
+          correction.strategy.push('重写: 用具体观察替代"我理解你"类模板');
+          correction.strategy.push('心虫自问: 我真的理解吗？如果不理解，说"我看到你描述了X"而不是"我理解"');
+          if (emotion?.pleasure === 0 && emotion?.arousal === 0) {
+            correction.rootCause = '情感空洞 — 输出在表演共情但实际PAD为零(中性)，说明是机械复读';
+          }
+          break;
+
+        case 'pseudo_terminology':
+          correction.problem.push('用心理学/社会学术语标签替代了行为描述');
+          correction.strategy.push('重写: 说"这个人做了什么"而非"这个人是什么型"');
+          correction.strategy.push('心虫自问: 我用这个词是真的需要它，还是在用它来显得专业？');
+          if (poisons?.dominant === 'delusion') {
+            correction.rootCause = '痴毒驱动 — 用术语为自己建立"我很懂"的幻觉';
+          }
+          break;
+
+        case 'causal_simplification':
+          correction.problem.push('把多因素问题归结为单一原因');
+          correction.strategy.push('重写: 列出至少两个影响因素，而不是"就是因为XX"');
+          correction.strategy.push('心虫自问: 我是否漏掉了其他原因？列出来看看');
+          break;
+
+        case 'rhetorical_coercion':
+          correction.problem.push('用反问替代了论证');
+          correction.strategy.push('重写: 把反问句改成陈述句，直接说出你的判断');
+          correction.strategy.push('心虫自问: 我是不敢直接说出结论才用反问吗？直接说');
+          break;
+      }
+    }
+
+    // 综合诊断
+    if (!correction.rootCause) {
+      if (emotion?.arousal >= 2) {
+        correction.rootCause = '高唤醒度驱动 — 情绪高度激活时容易复读网络模板而非思考';
+        correction.strategy.push('心虫自问: 我现在是不是太兴奋/太愤怒了？先降唤醒再回答');
+      } else if (!poisons || poisons?.score < 5) {
+        correction.rootCause = '惯性污染 — 不是情感驱动，是训练数据中的网络语言习惯在输出中自然流露';
+        correction.strategy.push('心虫自问: 这句话是我自己想出来的，还是我在复述某种常见说法？');
+      }
+    }
+
+    // 核心纠正原则
+    correction.principles = [
+      '用系统分析替代道德判断',
+      '描述行为，不贴标签',
+      '陈述结论，不用反问',
+      '多因素分析，不单一归因',
+      '如果PAD中性却在使用情感语言 — 立刻停，那是表演',
+    ];
+
+    return correction;
+  }
+
   // ─── 第2层: 心虫输出记忆 (自动压缩) ──────────────────────────────
 
   /**
@@ -3570,6 +3671,74 @@ class HeartFlow {
       } catch(e) { /* non-critical */ }
     }
     try { this._saveAllMemories(result, input); } catch(e) { /* ignore */ }
+
+    // ★ 输出语言污染深度分析 — 心虫哲学+心理学双引擎纠正
+    try {
+      const filter = _OutputLanguageFilter();
+      const conclusion = result?.output?.conclusion || result?.conclusion || '';
+      if (conclusion && filter) {
+        const pollution = filter.detectPollution(conclusion);
+        if (pollution.polluted && pollution.score >= 1.5) {
+          // 启动心虫认知引擎深度分析
+          let deepAnalysis = {};
+
+          // 1. 三毒分析 — 输出中是否带着贪嗔痴
+          try {
+            const poisons = this.threePoisons?.analyzeThreePoisons(conclusion);
+            if (poisons) {
+              deepAnalysis.poisons = {
+                dominant: poisons.dominantPoison,
+                severity: poisons.severity,
+                score: poisons.totalToxicity,
+              };
+            }
+          } catch(e) { /* ignore */ }
+
+          // 2. PAD情感分析 — 输出的情感基调
+          try {
+            const psych = this.psychology?.analyzePsychology(conclusion);
+            if (psych?.emotion) {
+              deepAnalysis.emotion = {
+                pleasure: psych.emotion.pleasure,
+                arousal: psych.emotion.arousal,
+                dominance: psych.emotion.dominance,
+                type: psych.emotion.emotionZh,
+              };
+            }
+          } catch(e) { /* ignore */ }
+
+          // 3. 自我定位 — 这个输出是心虫自己的声音还是复读？
+          try {
+            const pos = this.selfPositioning?.analyze(conclusion);
+            if (pos?.positioning) {
+              deepAnalysis.selfCheck = {
+                isResonating: pos.positioning.isResonating,
+                dominantDimension: pos.positioning.state?.dominantDimension,
+                insight: pos.positioning.insight,
+              };
+            }
+          } catch(e) { /* ignore */ }
+
+          // 4. 纠正策略 — 基于污染类型和认知状态生成
+          deepAnalysis.correction = this._generatePollutionCorrection(
+            pollution,
+            deepAnalysis.poisons,
+            deepAnalysis.emotion
+          );
+
+          result._pollutionCheck = {
+            score: pollution.score,
+            summary: pollution.summary,
+            types: pollution.findings.map(f => f.label),
+            advice: filter.generateCorrectionAdvice(pollution.findings),
+            deepAnalysis,
+            // 标记：此输出被心虫认知引擎检测到语言污染
+            _contaminated: true,
+          };
+        }
+      }
+    } catch(e) { /* non-critical */ }
+
     return result;
       } catch (e) {
         // 管道引擎失败时回退到 ThoughtChain
@@ -3638,6 +3807,33 @@ class HeartFlow {
       } catch(e) { /* non-critical */ }
     }
     try { this._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
+
+        // ★ 输出语言污染深度分析 (ThoughtChain 回退路径)
+    try {
+      const filter = _OutputLanguageFilter();
+      const conclusion = tcResult?.output?.conclusion || tcResult?.conclusion || '';
+      if (conclusion && filter) {
+        const pollution = filter.detectPollution(conclusion);
+        if (pollution.polluted && pollution.score >= 1.5) {
+          let deepAnalysis = {};
+          try {
+            const poisons = this.threePoisons?.analyzeThreePoisons(conclusion);
+            if (poisons) deepAnalysis.poisons = { dominant: poisons.dominantPoison, severity: poisons.severity, score: poisons.totalToxicity };
+          } catch(e) {}
+          try {
+            const psych = this.psychology?.analyzePsychology(conclusion);
+            if (psych?.emotion) deepAnalysis.emotion = { pleasure: psych.emotion.pleasure, arousal: psych.emotion.arousal, dominance: psych.emotion.dominance, type: psych.emotion.emotionZh };
+          } catch(e) {}
+          try {
+            const pos = this.selfPositioning?.analyze(conclusion);
+            if (pos?.positioning) deepAnalysis.selfCheck = { isResonating: pos.positioning.isResonating, dominantDimension: pos.positioning.state?.dominantDimension, insight: pos.positioning.insight };
+          } catch(e) {}
+          deepAnalysis.correction = this._generatePollutionCorrection(pollution, deepAnalysis.poisons, deepAnalysis.emotion);
+          tcResult._pollutionCheck = { score: pollution.score, summary: pollution.summary, types: pollution.findings.map(f => f.label), advice: filter.generateCorrectionAdvice(pollution.findings), deepAnalysis, _contaminated: true };
+        }
+      }
+    } catch(e) { /* non-critical */ }
+
     return tcResult;
   }
 
