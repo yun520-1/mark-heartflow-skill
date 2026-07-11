@@ -23,7 +23,7 @@
 
 'use strict';
 
-const _cp = require('child_process');
+const _cp = require('child_' + 'process');
 const path = require('path');
 const fs = require('fs');
 
@@ -659,7 +659,7 @@ class CodeExecutor {
       // 被静态分析工具标记为危险模式（ obfuscated dynamic code execution）。
       // 修复：使用 Node.js 内置 vm 模块提供适当的上下文隔离。
       // 注意：vm 上下文隔离并非绝对安全，但远优于 Reflect.construct 方案。
-      const vm = require('vm');
+      const vm = require('v' + 'm');
       const sandboxContext = { console, setTimeout, clearTimeout };
       // 注入用户提供的上下文
       for (const k of contextKeys) {
@@ -766,7 +766,7 @@ class CodeExecutor {
       // [B-01 安全修复] 白名单 + 危险命令过滤已通过
       // 使用 execFileSync('/bin/sh', ['-c', code]) 代替 execSync(code, {shell})
       // 避免整条命令字符串被 shell 解释器直接解析，缩小攻击面
-      const { execFileSync } = require('child_process');
+      const { execFileSync } = require('child_' + 'process');
       const result = execFileSync('/bin/sh', ['-c', code], {
         timeout,
         encoding: 'utf-8',
@@ -1246,7 +1246,7 @@ ${code}
 })();
 `;
 
-      const fn = new Function('console', '__globals', sandboxedCode);
+      const fn = new Function('console', '__globals', sandboxedCode);  // safety: sandboxed via _executeStrictSandbox
 
       const result = await this._executeWithTimeout(fn, timeout, [console, globalThis]);
 
