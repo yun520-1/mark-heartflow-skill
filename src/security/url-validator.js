@@ -12,6 +12,12 @@
 
 const { URL } = require('url');
 const net = require('net');
+const dns = require('dns');
+
+// [V-003] DNS resolution cache (60s TTL) to prevent DNS rebinding
+const DNS_CACHE = new Map();
+const DNS_CACHE_TTL = 60000; // 60 seconds
+const DNS_RESOLVE_TIMEOUT = 5000; // 5s timeout per lookup
 
 // ─── Private / reserved IPv4 ranges ──────────────────────────────────────────
 
@@ -96,14 +102,18 @@ function isBlockedV6(ip) {
 // ─── Main export ─────────────────────────────────────────────────────────────
 
 /**
- * Validate a fetch URL for SSRF safety.
+ * [V-003] Validate a fetch URL for SSRF safety — async with DNS resolution.
+ *
+ * For hostnames (not IPs), performs a dns.lookup to resolve the real IP,
+ * then checks it against the blocked ranges. DNS results are cached for 60s.
+ * Fail-closed: any DNS error or timeout → block the request.
  *
  * @param {string} urlStr — The URL to validate.
- * @returns {{ safe: boolean, reason: string }}
+ * @returns {Promise<{ safe: boolean, reason: string }>}
  *   - safe: true if the URL is allowed (http/https, not internal IP)
  *   - reason: human-readable explanation when safe=false
  */
-function validateFetchUrl(urlStr) {
+async function validateFetchUrl(urlStr) {
   if (!urlStr || typeof urlStr !== 'string') {
     return { safe: false, reason: 'URL is empty or not a string' };
   }
@@ -153,9 +163,9 @@ function validateFetchUrl(urlStr) {
   // [v5.15.3 H-3] Block known DNS rebinding / SSRF bypass services
   const hostnameLower = hostname.toLowerCase();
   const REBINDING_DOMAINS = [
-    'nip.io', 'xip.io', 'sslip.io', 'nip.io',           // wildcard DNS → any IP
-    'lvh.me', 'localtest.me',                             // resolves to 127.0.0.1
-    '1u.ms', '2u.ms',                                     // short rebinding domains
+    'nip.io', 'xip.io', 'sslip.io',             // wildcard DNS → any IP
+    'lvh.me', 'localtest.me',                     // resolves to 127.0.0.1
+    '1u.ms', '2u.ms',                             // short rebinding domains
   ];
   for (const rd of REBINDING_DOMAINS) {
     if (hostnameLower === rd || hostnameLower.endsWith('.' + rd)) {
@@ -163,6 +173,55 @@ function validateFetchUrl(urlStr) {
     }
   }
 
+  // [V-003] DNS resolution — resolve hostname to IP and check blocked ranges
+  // Fail-closed: any error or timeout → block
+  const cached = DNS_CACHE.get(hostnameLower);
+  if (cached && (Date.now() - cached.ts) < DNS_CACHE_TTL) {
+    if (cached.blocked) {
+      return { safe: false, reason: cached.reason };
+    }
+    return { safe: true, reason: '' };
+  }
+
+  let resolvedIp = null;
+  try {
+    resolvedIp = await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('DNS lookup timeout')), DNS_RESOLVE_TIMEOUT);
+      dns.lookup(hostname, { all: true }, (err, addresses) => {
+        clearTimeout(timer);
+        if (err) return reject(err);
+        // addresses is an array of { address, family }
+        resolve(addresses.map(a => a.address));
+      });
+    });
+  } catch (e) {
+    // [V-003] Fail-closed: any DNS error → block
+    const reason = `DNS resolution failed for "${hostname}": ${e.message}`;
+    DNS_CACHE.set(hostnameLower, { ts: Date.now(), blocked: true, reason });
+    return { safe: false, reason };
+  }
+
+  // Check each resolved IP against blocked ranges
+  for (const ip of resolvedIp) {
+    const v4 = net.isIPv4(ip);
+    const v6 = net.isIPv6(ip);
+    if (v4) {
+      const result = isBlockedV4(ip);
+      if (result.blocked) {
+        DNS_CACHE.set(hostnameLower, { ts: Date.now(), blocked: true, reason: result.reason });
+        return { safe: false, reason: result.reason };
+      }
+    }
+    if (v6) {
+      const result = isBlockedV6(ip);
+      if (result.blocked) {
+        DNS_CACHE.set(hostnameLower, { ts: Date.now(), blocked: true, reason: result.reason });
+        return { safe: false, reason: result.reason };
+      }
+    }
+  }
+
+  DNS_CACHE.set(hostnameLower, { ts: Date.now(), blocked: false, reason: '' });
   return { safe: true, reason: '' };
 }
 

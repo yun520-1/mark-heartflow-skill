@@ -26,6 +26,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { safeWriteFileSync } = require('../utils/safe-fs.js');
 const { encryptJSON, decryptJSON, isEncryptionEnabled } = require('./memory-encrypt.js');
+const { stripPrivateObject } = require('../core/utils.js');
 
 const DATA_DIR = path.join(__dirname, '../../data');
 const BANK_PATH = path.join(DATA_DIR, 'memory-bank.json');
@@ -166,9 +167,11 @@ class MemoryBank {
         savedAt: new Date().toISOString(),
       };
 
+      // [D-004] Strip sensitive keys before encryption to prevent prototype-pollution payloads
+      const safeExport = stripPrivateObject(exportData);
       // Atomic write with encryption: write to temp, then rename
       const tempPath = bankPath + '.tmp.' + Date.now() + '.' + crypto.randomBytes(4).toString('hex');
-      const content = encryptJSON(exportData);
+      const content = encryptJSON(safeExport);
       safeWriteFileSync(tempPath, content, 'utf8');
       fs.renameSync(tempPath, bankPath);
     } catch (e) {

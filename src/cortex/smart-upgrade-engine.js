@@ -14,6 +14,7 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { safeFetch } = require('../core/fetch-safe.js');
 
 // === 缓存 Map 最大容量 ===
 const MAX_CACHE_SIZE = 200;
@@ -38,6 +39,13 @@ class SmartUpgradeEngine {
     this.rootPath = rootPath;
     // [SECURITY] 默认禁用联网升级，需显式 opt-in
     this.enabled = process.env.HEARTFLOW_SMART_UPGRADE_ENABLED === 'true';
+    // [D-003] Repo whitelist — empty = deny all. Only repos in this list may be sourced.
+    this.repoWhitelist = new Set(
+      (process.env.HEARTFLOW_UPGRADE_WHITELIST || '')
+        .split(',').map(s => s.trim()).filter(Boolean)
+    );
+    // [D-003] SHA-256 integrity check — stored hashes for verified repos
+    this.integrityHashes = new Map(); // repo name → expected SHA-256
     // 确保路径正确：从项目根目录计算
     this.upgradesDir = path.isAbsolute(rootPath)
       ? path.join(rootPath, 'data/upgrades')
@@ -182,83 +190,76 @@ class SmartUpgradeEngine {
   }
 
   /**
-   * 搜索GitHub
+   * 搜索GitHub - [P-005] routed through safeFetch
    */
-  searchGitHub(query) {
+  async searchGitHub(query) {
     if (!this.enabled) {
       return Promise.reject(new Error('SmartUpgradeEngine is disabled. Set HEARTFLOW_SMART_UPGRADE_ENABLED=true to enable.'));
     }
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('请求超时')), 30000);
-      
-      const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=10`;
-      
-      https.get(url, { headers: { 'User-Agent': 'heartflow-upgrader' } }, (res) => {
-        let data = '';
-        res.on('data', (chunk) => data += chunk);
-        res.on('end', () => {
-          clearTimeout(timeout);
-          try {
-            const result = JSON.parse(data);
-            resolve(result.items || []);
-          } catch(e) {
-            reject(e);
-          }
-        });
-      }).on('error', (e) => {
-        clearTimeout(timeout);
-        reject(e);
+    const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=10`;
+    try {
+      const res = await safeFetch(url, {
+        headers: { 'User-Agent': 'heartflow-upgrader' },
+        timeout: 30000,
       });
-    });
+      const result = await res.json();
+      return result.items || [];
+    } catch (e) {
+      throw e;
+    }
   }
 
   /**
-   * 选择最佳仓库（去重）
+   * 选择最佳仓库（去重 + [D-003] whitelist enforcement）
    */
   selectBestRepo(repos, manifest) {
     const processedRepos = new Set(manifest.processed.map(p => p.repo));
-    
+
+    // [D-003] Whitelist gate — empty whitelist = deny all
+    const whitelisted = repos.filter(r => this.repoWhitelist.size === 0 ? false : this.repoWhitelist.has(r.full_name));
+
     // 过滤已处理的仓库
-    const available = repos.filter(r => !processedRepos.has(r.full_name));
-    
+    const available = whitelisted.filter(r => !processedRepos.has(r.full_name));
+
     if (available.length === 0) return null;
-    
+
     // 按星标数排序，选择最热门的
     return available.sort((a, b) => b.stargazers_count - a.stargazers_count)[0];
   }
 
   /**
-   * 获取仓库代码
+   * 获取仓库代码 - [P-005] routed through safeFetch, [D-003] SHA-256 integrity
    */
   async fetchRepoCode(repo) {
     if (!this.enabled) {
       return Promise.reject(new Error('SmartUpgradeEngine is disabled. Set HEARTFLOW_SMART_UPGRADE_ENABLED=true to enable.'));
     }
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('请求超时')), 60000);
-      
-      // 获取默认分支的README
-      const url = `https://api.github.com/repos/${repo.full_name}/readme`;
-      
-      https.get(url, { headers: { 'User-Agent': 'heartflow-upgrader' } }, (res) => {
-        let data = '';
-        res.on('data', (chunk) => data += chunk);
-        res.on('end', () => {
-          clearTimeout(timeout);
-          try {
-            const result = JSON.parse(data);
-            // 解码base64内容
-            const content = Buffer.from(result.content, 'base64').toString('utf-8');
-            resolve(content);
-          } catch(e) {
-            resolve(null);
-          }
-        });
-      }).on('error', (e) => {
-        clearTimeout(timeout);
-        resolve(null);
+    // 获取默认分支的README
+    const url = `https://api.github.com/repos/${repo.full_name}/readme`;
+    try {
+      const res = await safeFetch(url, {
+        headers: { 'User-Agent': 'heartflow-upgrader' },
+        timeout: 60000,
       });
-    });
+      const result = await res.json();
+      if (!result || !result.content) return null;
+      // 解码base64内容
+      const content = Buffer.from(result.content, 'base64').toString('utf-8');
+
+      // [D-003] SHA-256 integrity check — verify against stored hash if available
+      const expectedHash = this.integrityHashes.get(repo.full_name);
+      if (expectedHash) {
+        const sha256 = crypto.createHash('sha256').update(content).digest('hex');
+        if (sha256 !== expectedHash) {
+          this.log(`Integrity check FAILED for ${repo.full_name}: expected ${expectedHash}, got ${sha256}`);
+          return null;
+        }
+      }
+
+      return content;
+    } catch (e) {
+      return null;
+    }
   }
 
   /**
