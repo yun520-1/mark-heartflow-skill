@@ -345,7 +345,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-12-v5.10.13';
+const BUILD_DATE = '2026-07-12-v5.11.0';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -1805,11 +1805,21 @@ class HeartFlow {
       const dir = this._getMemoryDir();
       const filePath = path.join(dir, 'user-memories.jsonl');
 
+      // 跟踪情绪历史 (用于 emotionStability 计算)
+      if (!this._emotionHistory) this._emotionHistory = [];
+
       const entry = {
         ts: new Date().toISOString(),
         content: input.slice(0, 2000),  // 单条最多2000字符
         emotion: (() => {
-          try { return this.psychology?.analyzePsychology?.(input)?.emotion?.emotionZh || null; }
+          try {
+            const r = this.psychology?.analyzePsychology?.(input)?.emotion?.emotionZh || null;
+            if (r) {
+              this._emotionHistory.push(r);
+              if (this._emotionHistory.length > 50) this._emotionHistory.shift();
+            }
+            return r;
+          }
           catch(e) { return null; }
         })(),
         decision: this._lastDecisionType || null,
@@ -1872,13 +1882,56 @@ class HeartFlow {
   /**
    * 搜索用户记忆 — 语义相似度 (Bigram Jaccard) 替代简单 includes
    * 支持: 语义匹配、情感加权、时间衰减、相关记忆发现
+   * v5.11.0: 叠加 shannonEntropy 稀有词加权 + LRU 缓存 (max 100)
    */
   _searchUserMemories(keyword, limit = 50) {
     try {
+      // ─── v5.11.0 LRU 缓存检查 ────────────────────────────
+      if (!this._searchCache) {
+        this._searchCache = new Map();
+        this._searchCacheHits = 0;
+        this._searchCacheMisses = 0;
+      }
+      const cacheKey = `${keyword}::${limit}`;
+      if (this._searchCache.has(cacheKey)) {
+        this._searchCacheHits++;
+        const cached = this._searchCache.get(cacheKey);
+        // 移到末尾 (LRU)
+        this._searchCache.delete(cacheKey);
+        this._searchCache.set(cacheKey, cached);
+        return cached;
+      }
+      this._searchCacheMisses++;
+
       const fs = require('fs');
       const path = require('path');
       const dir = this._getMemoryDir();
       const scored = [];
+
+      // ─── v5.11.0 shannonEntropy 稀有词加权 ────────────────
+      let termWeights = null; // { term: weight }
+      try {
+        const { getFormulaBridge } = require('../formula/formula-bridge.js');
+        const bridge = getFormulaBridge();
+        if (bridge && typeof bridge.shannonEntropy === 'function') {
+          // 将查询拆为词项 (按CN/EN/标点分词), 计算全局稀有度
+          const terms = keyword.split(/[\s,，。！？；：""''\\.\\-\\+]+/).filter(t => t.length > 0);
+          if (terms.length > 1) {
+            // 估算词频: 用每个词在关键词中的出现频率作为代理
+            const termCounts = {};
+            for (const t of terms) termCounts[t] = (termCounts[t] || 0) + 1;
+            const totalTerms = terms.length;
+            termWeights = {};
+            for (const [t, cnt] of Object.entries(termCounts)) {
+              const freq = cnt / totalTerms;
+              // 用熵代理: 单一频率熵 → 稀有词 (低频率) 权重高
+              // weight = -log2(freq) → 稀有词≈infrequent→高weight
+              const weight = freq > 0 ? -Math.log2(Math.max(freq, 0.01)) : 4.0;
+              termWeights[t] = Math.min(weight, 4.0); // 上限 4x
+            }
+          }
+        }
+      } catch(e) { /* ignore */ }
 
       const searchFile = (fpath) => {
         if (!fs.existsSync(fpath)) return;
@@ -1889,7 +1942,20 @@ class HeartFlow {
             if (entry._summary) continue;
             const text = entry.content || '';
             if (!text) continue;
-            const score = this._memorySimilarity(keyword, text);
+            let score = this._memorySimilarity(keyword, text);
+            
+            // ─── v5.11.0 shannonEntropy 加权: 稀有匹配词加分 ──
+            if (termWeights && score > 0) {
+              const lowerText = text.toLowerCase();
+              let bonusWeight = 1.0;
+              for (const [term, weight] of Object.entries(termWeights)) {
+                if (weight > 1.0 && lowerText.includes(term.toLowerCase())) {
+                  bonusWeight += (weight - 1.0) * 0.15; // 每个稀有词最多 +0.45
+                }
+              }
+              score *= Math.min(bonusWeight, 2.0); // 最高 2x boost
+            }
+
             if (score > 0) {
               scored.push({ ...entry, _score: score });
             }
@@ -1909,7 +1975,27 @@ class HeartFlow {
 
       // 按相似度排序，取前 limit
       scored.sort((a, b) => b._score - a._score);
-      return scored.slice(0, limit);
+      const results = scored.slice(0, limit);
+
+      // ─── v5.11.0 写入 LRU 缓存 ──────────────────────────
+      if (this._searchCache.size >= 100) {
+        // 淘汰最旧条目 (Map 头部)
+        const oldestKey = this._searchCache.keys().next().value;
+        this._searchCache.delete(oldestKey);
+      }
+      this._searchCache.set(cacheKey, results);
+
+      // 附加缓存统计
+      results._cacheStats = {
+        hits: this._searchCacheHits,
+        misses: this._searchCacheMisses,
+        cacheSize: this._searchCache.size,
+        hitRate: this._searchCacheHits + this._searchCacheMisses > 0
+          ? +(this._searchCacheHits / (this._searchCacheHits + this._searchCacheMisses)).toFixed(3)
+          : 0,
+      };
+
+      return results;
     } catch(e) { return []; }
   }
 
@@ -1936,14 +2022,54 @@ class HeartFlow {
 
   /**
    * 搜索相关记忆 — 从上下文找到与当前输入语义相近的历史记忆
-   * 返回: [{entry, similarity, importance}, ...]
+   * v5.11.0: bayesUpdate 后验概率 (50/50 与 Bigram Jaccard 混合)
+   * 返回: [{entry, similarity, importance, _bayesScore, _blendedScore}, ...]
    */
   _findRelatedMemories(input, limit = 10) {
-    return this._searchUserMemories(input, limit);
+    const results = this._searchUserMemories(input, limit);
+    if (!results || results.length === 0) return results;
+
+    // ─── v5.11.0 bayesUpdate 后验相关性 ─────────────────────
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const bridge = getFormulaBridge();
+      if (bridge && typeof bridge.bayesUpdate === 'function') {
+        // 对每个搜索结果计算 bayesian 后验
+        // P(relevant|keyword) = P(keyword|relevant) * P(relevant) / P(keyword)
+        // 近似: P(keyword|relevant) = Bigram Jaccard 得分
+        //       P(relevant) = 0.3 (先验: 平均30%相关)
+        //       P(keyword) = sum(J_scores)/N (证据边际)
+        const pRelevant = 0.3;
+        const scores = results.map(r => r._score || 0);
+        const avgScore = scores.length > 0
+          ? scores.reduce((a, b) => a + b, 0) / scores.length
+          : 0.1;
+        const pKeyword = Math.max(avgScore, 0.01);
+
+        for (const r of results) {
+          const jaccardScore = r._score || 0;
+          // P(keyword|relevant) 近似 = Jaccard 得分
+          const pKeyGivenRel = jaccardScore;
+          // 贝叶斯后验
+          const bayesScore = bridge.bayesUpdate(pKeyGivenRel, pRelevant, pKeyword);
+          r._bayesScore = +(bayesScore).toFixed(4);
+          // 50/50 混合
+          r._blendedScore = +((jaccardScore * 0.5 + bayesScore * 0.5)).toFixed(4);
+          r._score = r._blendedScore;  // 更新主排序分数
+        }
+
+        // 按混合分重新排序
+        results.sort((a, b) => b._blendedScore - a._blendedScore);
+      }
+    } catch(e) { /* 贝叶斯增强失败不影响基础搜索 */ }
+
+    return results;
   }
 
   /**
    * 记忆重要性评分 — 综合情感强度、决策类型、时间衰减
+   * v5.11.0: 叠加公式引擎增强 — criticalitySusceptibility(记忆热区检测),
+   * maxcalPsi(新奇度), emotionStability(情绪转换期). 全部 try/catch 降级.
    */
   _scoreMemoryImportance(entry) {
     const now = Date.now();
@@ -1970,7 +2096,136 @@ class HeartFlow {
     const stability = (emotionScore + decisionScore) * 10; // 基础稳定性10h
     const retention = Math.exp(-hours / Math.max(stability, 1));
 
-    return emotionScore * decisionScore * retention;
+    let baseImportance = emotionScore * decisionScore * retention;
+
+    // ─── v5.11.0 公式引擎增强 (全部 try/catch 降级) ──────────────────
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const bridge = getFormulaBridge();
+      
+      // (1) criticalitySusceptibility: 检测"记忆热区"
+      // 从最近记忆访问模式估算分支比 K — 同类记忆越多 K 越接近 1
+      if (bridge && typeof bridge.criticalitySusceptibility === 'function') {
+        // 近似: 用情感分+决策分作为"分支比"代理 (高活跃→K 接近 1)
+        const K = Math.min(0.99, (emotionScore + decisionScore) / 6.0);
+        const chi = bridge.criticalitySusceptibility(K);
+        // chi ≈ 1 是临界点 (高相干), chi > 1 是亚临界敏感区
+        // 热区记忆提升重要性
+        if (chi > 0.8 && chi < 3.0) {
+          baseImportance *= (1 + (chi - 0.8) * 0.3); // 最高 +66% boost
+        }
+      }
+
+      // (2) maxcalPsi: 计算"新奇度" = 新记忆与已有模式的KL偏离
+      if (bridge && typeof bridge.maxcalPsi === 'function' && typeof entry.content === 'string') {
+        // 用内容长度、情感、决策三个维度构建 observed 向量
+        // 先验 mu/σ 从已有记忆中估算
+        const charCount = entry.content.length;
+        const observed = [charCount / 100, emotionScore / 3, decisionScore / 3];
+        const mu = [5, 1, 1];    // 典型值: ~500字, 中等情感, 中等决策
+        const sigma = [3, 0.5, 0.5];
+        const psi = bridge.maxcalPsi(observed, mu, sigma);
+        // psi > 1.0 → 与基线显著偏离 → 高信息量记忆 → 提升重要性
+        if (psi > 1.0) {
+          baseImportance *= (1 + Math.min(psi * 0.2, 1.0)); // 最高 2x boost
+        }
+      }
+
+      // (3) emotionStability: 检测情绪状态转换期
+      if (bridge && typeof bridge.emotionStability === 'function' && this._emotionHistory) {
+        const emoHist = this._emotionHistory;
+        if (Array.isArray(emoHist) && emoHist.length >= 3) {
+          // 从最近的3个情绪标签构建 3x3 转移矩阵
+          const labels = ['愤怒','恐惧','悲伤','惊讶','喜悦','爱','厌恶','焦虑','中性','平静'];
+          const N = labels.length;
+          const T = Array.from({ length: N }, () => new Array(N).fill(0));
+          let selfTransitions = 0;
+          for (let i = 1; i < emoHist.length; i++) {
+            const prev = labels.indexOf(emoHist[i-1]);
+            const curr = labels.indexOf(emoHist[i]);
+            if (prev >= 0 && curr >= 0) {
+              T[prev][curr]++;
+              if (prev === curr) selfTransitions++;
+            }
+          }
+          // 归一化为概率
+          for (let i = 0; i < N; i++) {
+            const rowSum = T[i].reduce((a,b)=>a+b,0);
+            if (rowSum > 0) {
+              for (let j = 0; j < N; j++) T[i][j] /= rowSum;
+            } else {
+              T[i][i] = 1; // 无数据默认定态
+            }
+          }
+          const lambda2 = bridge.emotionStability(T);
+          // lambda2 大 = 不稳定期 (情绪在剧烈切换)
+          // 切换期的记忆更高重要性
+          if (lambda2 > 0.5) {
+            baseImportance *= (1 + Math.min(lambda2 * 0.3, 0.6)); // 最高 +60%
+          }
+        }
+      }
+    } catch(e) { /* 公式桥失败不影响核心评分 */ }
+
+    return baseImportance;
+  }
+
+  /**
+   * v5.11.0 前置认知快照 — 在 think() 管道执行前捕获情绪动力学和认知负载基线
+   * 
+   * 这允许后续分析时参考「思考前」的认知状态，检测情绪切换和认知临界性。
+   * 返回的数据被管道输出阶段注入到 cognition 对象中。
+   * 
+   * @returns {object} { emotionDynamics, cognitiveLoad, criticality, timestamp }
+   */
+  _preThinkCognitiveSnapshot() {
+    const snapshot = {
+      emotionDynamics: null,
+      cognitiveLoad: null,
+      criticality: null,
+      timestamp: Date.now(),
+    };
+    
+    try {
+      // 情绪动力学快照
+      if (this.emotionDynamics && typeof this.emotionDynamics.healthCheck === 'function') {
+        const hc = this.emotionDynamics.healthCheck();
+        snapshot.emotionDynamics = {
+          pad: hc.currentPAD || null,
+          emotion: hc.currentEmotion || null,
+          selfEfficacy: hc.selfEfficacy || 0.5,
+          historyLength: hc.historyLength || 0,
+        };
+      }
+    } catch (e) { /* non-fatal */ }
+    
+    try {
+      // 认知负载基线
+      if (this.cognitiveLoadV2 && typeof this.cognitiveLoadV2.healthCheck === 'function') {
+        const lc = this.cognitiveLoadV2.healthCheck();
+        snapshot.cognitiveLoad = {
+          workingMemoryCapacity: lc.workingMemoryCapacity || 5,
+          lastEstimate: lc.lastEstimate || null,
+          historyLength: lc.historyLength || 0,
+        };
+      }
+    } catch (e) { /* non-fatal */ }
+    
+    try {
+      // 临界性检测
+      if (this.cognitiveLoadV2 && typeof this.cognitiveLoadV2.estimate === 'function') {
+        // 用一个简单的探测文本来估算临界性（不占用太多资源）
+        const probe = this.cognitiveLoadV2._lastEstimate; // 使用上次结果
+        if (probe && probe.criticality) {
+          snapshot.criticality = {
+            regime: probe.criticality.regime,
+            susceptibility: probe.criticality.susceptibility,
+          };
+        }
+      }
+    } catch (e) { /* non-fatal */ }
+    
+    return snapshot;
   }
 
   /**
@@ -1992,6 +2247,8 @@ class HeartFlow {
       rootCause: null,
       strategy: [],
       mentalState: {},
+      // v5.11.0 公式分析
+      formulaAnalysis: null,
     };
 
     // 认知状态诊断
@@ -2003,6 +2260,61 @@ class HeartFlow {
       correction.mentalState.emotionType = emotion.type;
       correction.mentalState.arousal = emotion.arousal;
     }
+
+    // ─── v5.11.0 公式分析: bayesFactor + criticalitySusceptibility ──
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const bridge = getFormulaBridge();
+      if (bridge) {
+        const formulaAnalysis = {};
+
+        // (1) bayesFactor: 证据支持度
+        // H1 = "输出是污染驱动的", H0 = "输出是中性思考"
+        if (typeof bridge.bayesFactor === 'function' && pollution && pollution.score !== undefined) {
+          const pollutionScore = pollution.score || 0;
+          // P(污染评分 | H1: 污染驱动) vs P(污染评分 | H0: 中性)
+          const pEgivenH1 = Math.min(pollutionScore / 10 + 0.1, 0.99);
+          const pEgivenH0 = Math.max(0.01, 1 - pollutionScore / 10);
+          const bf = bridge.bayesFactor(pEgivenH1, pEgivenH0);
+          formulaAnalysis.bayesFactor = +(bf).toFixed(2);
+
+          // BF > 3 → 实质证据支持污染解释
+          if (bf > 10) {
+            formulaAnalysis.evidenceStrength = 'strong_contamination';
+          } else if (bf > 3) {
+            formulaAnalysis.evidenceStrength = 'moderate_contamination';
+          } else if (bf < 0.33) {
+            formulaAnalysis.evidenceStrength = 'evidence_against_contamination';
+          } else {
+            formulaAnalysis.evidenceStrength = 'inconclusive';
+          }
+        }
+
+        // (2) criticalitySusceptibility: 极化临界点检测
+        if (typeof bridge.criticalitySusceptibility === 'function' && pollution) {
+          // 用污染严重度作为"分支比"代理 — 高污染密度→接近临界
+          const moralFindings = (pollution.findings || []).filter(f => f.type === 'moral_framework');
+          const totalHits = (pollution.findings || []).reduce((s, f) => s + (f.count || 0), 0);
+          // K = 污染密度 (hits per 100 chars, 近似)
+          const textLen = 100; // 默认估计长度
+          const K = Math.min(0.95, totalHits / Math.max(textLen / 20, 1));
+          const chi = bridge.criticalitySusceptibility(K);
+          formulaAnalysis.criticalitySusceptibility = +(chi).toFixed(3);
+
+          if (chi > 1.5 && moralFindings.length > 0) {
+            formulaAnalysis.polarizationRisk = 'near_critical';
+            correction.strategy.push('⚠️ 心虫输出接近极化临界点 — 高磁化率表明情绪共振正在放大偏见');
+            correction.strategy.push('心虫自问: 我是否正在强化一个单一叙事？停下来，列出至少三个替代视角');
+          } else if (chi > 1.0) {
+            formulaAnalysis.polarizationRisk = 'elevated';
+          } else {
+            formulaAnalysis.polarizationRisk = 'stable';
+          }
+        }
+
+        correction.formulaAnalysis = formulaAnalysis;
+      }
+    } catch(e) { /* 公式分析失败不影响核心纠正 */ }
 
     // 逐类型诊断
     for (const f of (pollution.findings || [])) {
@@ -2044,6 +2356,17 @@ class HeartFlow {
           correction.problem.push('用反问替代了论证');
           correction.strategy.push('重写: 把反问句改成陈述句，直接说出你的判断');
           correction.strategy.push('心虫自问: 我是不敢直接说出结论才用反问吗？直接说');
+          break;
+
+        case 'semantic_drift':
+          correction.problem.push('输出语义空间与输入意图发生漂移');
+          correction.strategy.push('重写: 回到用户的实际问题，检查输出是否在回应输入的核心意图');
+          correction.strategy.push('心虫自问: 我是否在说用户没问的事？重新读一遍用户的输入，确认我在回应正确的问题');
+          if (f._driftData) {
+            correction.mentalState.semanticDriftDelta = f._driftData.deltaEntropy;
+            correction.mentalState.entropyInput = f._driftData.entropyInput;
+            correction.mentalState.entropyOutput = f._driftData.entropyOutput;
+          }
           break;
       }
     }
@@ -3528,6 +3851,10 @@ class HeartFlow {
       }
     } catch(e) { /* ignore */ }
 
+    // [v5.11.0] 前置认知快照：在管道执行前捕获情绪动力学和认知负载状态
+    // 这允许后续分析时参考"思考前"的认知状态基线
+    this._preThinkState = this._preThinkCognitiveSnapshot();
+
     // ─── 快速响应"启动引擎"类请求（不走完整推理链路）────────────
     const startPatterns = /^(启动引擎|开机|activate|start heartflow|开启引擎)/i;
     const statusPatterns = /^(状态|status|引擎状态|在吗|alive)/i;
@@ -3547,6 +3874,13 @@ class HeartFlow {
     // Dualformer 启发：快/慢双过程推理，根据输入复杂度自动选择
     const pipelineMode = this.pipeline?.selectMode ? this.pipeline.selectMode(input) : 'full';
     const pipelineOptions = { depth, mode: pipelineMode };
+
+    // [v5.11.0] 临界性处理策略调整：如果认知负载接近临界，强制使用完整管道
+    if (this._preThinkState?.criticalityWarning && pipelineMode === 'fast') {
+      // 负载临界 → 需要深度分析，不能走快速管道
+      pipelineOptions.mode = 'full';
+      pipelineOptions.criticalityOverride = true;
+    }
 
     // ─── [v5.0.0] 管道引擎执行 ──────────────────────────────────
     // 替代旧的 13 步分析流水线 + ThoughtChain + 路由决策

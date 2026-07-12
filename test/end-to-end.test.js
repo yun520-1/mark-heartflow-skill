@@ -13,7 +13,8 @@
  * 6. 创造力引擎：生成创意解决方案（如果合适）
  */
 
-const { EmotionOptimizer } = require('../src/emotion/emotion-optimizer.js');
+// [v5.11.0] EmotionOptimizer removed (dead module). Test skipped.
+// const { EmotionOptimizer } = require('../src/emotion/emotion-optimizer.js');
 const { IntuitionEngine } = require('../src/intuition/intuition-engine.js');
 const { CultureEngine } = require('../src/culture/culture-engine.js');
 const { EthicsEngine } = require('../src/ethics/ethics-engine.js');

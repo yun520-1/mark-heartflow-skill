@@ -1,8 +1,8 @@
 {
   "metadata": {
-    "version": "8.14.0",
+    "version": "5.11.0",
     "last_updated": "2026-07-12",
-    "total_formulas": 373,
+    "total_formulas": 376,
     "categories": [
       "biology",
       "chemistry",
@@ -3332,6 +3332,33 @@
       "formula": "ACC_w = sum(w_i * correct_i) / sum(w_i), w_i = exp(-lambda * (N-1-i))",
       "difficulty": "intermediate",
       "source": "HeartFlow v8.16.0 — derived from 2605.08716"
+    },
+    {
+      "id": "s_measure",
+      "name": "S-Measure (Set Similarity)",
+      "category": "cognitive_science",
+      "subcategory": "similarity",
+      "formula": "S(A,B) = |A ∩ B| / (|A ∪ B| + ε)",
+      "difficulty": "basic",
+      "source": "arXiv — set-theoretic similarity measure"
+    },
+    {
+      "id": "free_energy_heuristics",
+      "name": "Free Energy Heuristics (Decision)",
+      "category": "cognitive_science",
+      "subcategory": "decision",
+      "formula": "F = accuracy - T × (H_post - H_prior)",
+      "difficulty": "advanced",
+      "source": "arXiv — free energy principle in heuristic decision-making"
+    },
+    {
+      "id": "ginzburg_landau_cognitive",
+      "name": "Ginzburg-Landau Cognitive Criticality",
+      "category": "cognitive_science",
+      "subcategory": "criticality",
+      "formula": "ψ(T) = ψ₀ × √(max(0, 1 - T/Tc))",
+      "difficulty": "advanced",
+      "source": "arXiv:2602.19023 — Ginzburg-Landau theory of cognitive criticality"
     }
   ]
 }
