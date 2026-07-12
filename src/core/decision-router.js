@@ -1133,6 +1133,53 @@ class DecisionRouter {
 
     const best = matches[0];
 
+    // [FORMULA v5.14.0] 主动推断期望自由能 — 评估多策略选择的信息寻求价值
+    // EFE 衡量选择某个策略后预期获得的信息增益（熵减少）
+    // 高 EFE → 策略探索性强，即使优先级略低也可能值得尝试
+    let _efeSignal = null;
+    try {
+      if (matches.length >= 2) {
+        const bridge = this._getBridge();
+        if (bridge && typeof bridge.activeInferenceEFE === 'function') {
+          const qDist = matches.map(m => m.confidence);
+          const efe = bridge.activeInferenceEFE(qDist);
+          _efeSignal = +efe.toFixed(4);
+          // 如果 EFE 高（>0.3）且 best 不是最高优先级，考虑将第二选择提升
+          if (efe > 0.3 && matches.length >= 2) {
+            const second = matches[1];
+            if (second.priority > best.priority) {
+              best._efePromoted = true;
+              best._efeValue = efe;
+              best._efeNote = 'EFE 高信息寻求 → 策略探索性调整';
+            }
+          }
+        }
+      }
+    } catch (e) { _efeSignal = null; }
+
+    // [FORMULA v5.14.0] 沙普利值 — 公平贡献分配：量化每个规则在多因素决策中的边际贡献
+    // 用于权重动态调整：沙普利值高的规则即使准确率中等，也应保留权重
+    let _shapleyWeights = null;
+    try {
+      if (matches.length >= 2) {
+        const bridge = this._getBridge();
+        if (bridge && typeof bridge.shapleyValue === 'function') {
+          const players = matches.map(m => m.ruleId);
+          // 特征函数：给定规则子集的联合置信度总和
+          const charFn = (subset) => {
+            const ids = new Set(subset);
+            return matches.filter(m => ids.has(m.ruleId)).reduce((s, m) => s + m.confidence, 0);
+          };
+          const shapleyVals = bridge.shapleyValue(players, charFn);
+          if (Array.isArray(shapleyVals) && shapleyVals.length === players.length) {
+            _shapleyWeights = {};
+            players.forEach((id, i) => { _shapleyWeights[id] = +shapleyVals[i].toFixed(4); });
+            best._shapleyWeights = _shapleyWeights;
+          }
+        }
+      }
+    } catch (e) { _shapleyWeights = null; }
+
     this._suppression.set(best.ruleId, now);
 
     // 记录历史

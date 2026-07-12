@@ -70,6 +70,17 @@ class PhenomenologyEngine {
    * @returns {number} Φ ≥ 0，越大表示意识整合度越高
    */
   measurePhi(miWhole, miParts) {
+    // [FORMULA v5.14.0] 公式桥接直接计算 IIT Φ
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const bridge = getFormulaBridge();
+      if (bridge && typeof bridge.iitPhi === 'function') {
+        const phi = bridge.iitPhi(miWhole, Array.isArray(miParts) ? miParts : [miParts]);
+        if (typeof phi === 'number') return +phi.toFixed(4);
+      }
+    } catch (e) { /* fallback to registry */ }
+
+    // [FORMULA v5.14.0] 回退到注册表调用（兼容现有集成）
     try {
       const { getFormulaRegistry } = require('../formula/formula-registry.js');
       const reg = getFormulaRegistry();

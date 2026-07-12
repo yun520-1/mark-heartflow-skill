@@ -111,6 +111,27 @@ class EmotionDynamicsEngine {
       }
     } catch (e) { /* fallback */ }
     
+    // [FORMULA v5.14.0] 情绪混合：用公式桥接的加权情绪混合模型增强分类精度
+    // 计算基本情绪的混合信号，用连续谱代替离散阈值
+    let blendedEmotion = null;
+    try {
+      const bridge = this._getBridge();
+      if (bridge && typeof bridge.emotionBlend === 'function') {
+        // 将 PAD 映射为基本情绪权重
+        // excited = high P + high A, calm = high P + low A, angry = low P + high A, sad = low P + low A
+        const emotions = [pleasure, arousal, dominance]; // 三个基本情绪维度
+        const weights = [
+          Math.max(0, pleasure),                     // pleasure 权重
+          Math.max(0, arousal - 0.5),                // arousal 超出中性的权重
+          Math.max(0, dominance - 0.5)               // dominance 超出中性的权重
+        ];
+        const totalWeight = weights.reduce((a, b) => a + b, 0);
+        if (totalWeight > 0.01) {
+          blendedEmotion = bridge.emotionBlend(emotions, weights);
+        }
+      }
+    } catch (e) { blendedEmotion = null; }
+    
     // 动态阈值：flowMatch 高时收紧，低时放宽
     const lo = 0.2 + flowMatch * 0.1;  // 0.2~0.3
     const hi = 0.5 + flowMatch * 0.15; // 0.5~0.65

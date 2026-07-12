@@ -259,19 +259,39 @@ class GlobalWorkspace extends EventEmitter {
 
     const winner = scored[0];
 
-    // v5.9.9: GWT 公式增强 —— 用全局工作空间竞争公式算辅助激活信号
+    // [FORMULA v5.14.0] GWT 公式增强 —— 用公式桥接直接计算全局工作空间竞争信号
     // 不替代主逻辑（确定性排序），仅附带 GWT 计算结果供上层感知
     let gwt = null;
     try {
-      const { getFormulaRegistry } = require('../formula/formula-registry.js');
-      const reg = getFormulaRegistry();
-      const acts = scored.map(s => (s.attention || 0) * (s.confidence || 0) * 10 + (s.score || 0));
-      const gwtActs = reg.call('decision_utility', 'gwt_accessibility', acts, 1, 0.5);
-      const gwtIdx = reg.call('decision_utility', 'gwt_winner', gwtActs);
-      if (Array.isArray(gwtActs) && typeof gwtIdx === 'number' && gwtActs.length) {
-        gwt = { activations: gwtActs.map(v => +v.toFixed(3)), winnerIndex: gwtIdx, winnerAgent: scored[gwtIdx]?.agent || null };
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const bridge = getFormulaBridge();
+      if (bridge) {
+        const weights = scored.map(s => (s.attention || 0) * (s.confidence || 0) + (s.score || 0) * 0.5);
+        const gwtActs = bridge.gwtAccessibility(weights, 1, 0.3);
+        const gwtIdx = bridge.gwtWinner(gwtActs);
+        if (Array.isArray(gwtActs) && typeof gwtIdx === 'number' && gwtActs.length > 0 && gwtIdx >= 0) {
+          gwt = {
+            activations: gwtActs.map(v => +v.toFixed(3)),
+            winnerIndex: gwtIdx,
+            winnerAgent: scored[gwtIdx]?.agent || null,
+            bridgeWinner: scored[gwtIdx]?.agent || null
+          };
+        }
       }
     } catch (e) { gwt = null; }
+    // [FORMULA v5.14.0] 回退到注册表调用（兼容现有 registry 集成）
+    if (!gwt) {
+      try {
+        const { getFormulaRegistry } = require('../formula/formula-registry.js');
+        const reg = getFormulaRegistry();
+        const acts = scored.map(s => (s.attention || 0) * (s.confidence || 0) * 10 + (s.score || 0));
+        const gwtActs = reg.call('decision_utility', 'gwt_accessibility', acts, 1, 0.5);
+        const gwtIdx = reg.call('decision_utility', 'gwt_winner', gwtActs);
+        if (Array.isArray(gwtActs) && typeof gwtIdx === 'number' && gwtActs.length) {
+          gwt = { activations: gwtActs.map(v => +v.toFixed(3)), winnerIndex: gwtIdx, winnerAgent: scored[gwtIdx]?.agent || null };
+        }
+      } catch (e) { gwt = null; }
+    }
 
     const result = winner;
     result.gwt = gwt;
