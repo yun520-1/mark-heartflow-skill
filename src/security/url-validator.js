@@ -132,6 +132,15 @@ async function validateFetchUrl(urlStr) {
     return { safe: false, reason: `Protocol "${parsed.protocol}" is not allowed (only http/https)` };
   }
 
+  // [v5.17.2 D-006] 禁止http外部端点 — 仅localhost允许明文http
+  if (scheme === 'http') {
+    const h = parsed.hostname;
+    const isLocalhost = h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.endsWith('.local');
+    if (!isLocalhost) {
+      return { safe: false, reason: 'HTTP is not allowed for external endpoints. Use HTTPS.' };
+    }
+  }
+
   // Get the hostname (without port), strip IPv6 brackets for IP checks
   let hostname = parsed.hostname;
 
