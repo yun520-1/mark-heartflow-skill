@@ -345,7 +345,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-12-v5.11.0';
+const BUILD_DATE = '2026-07-12-v5.12.0';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -3936,6 +3936,22 @@ class HeartFlow {
             },
             memoryHits: memoryData.memories?.length || 0,
           });
+        }
+
+        // [v5.12.0] 从ctx直接注入enrichment（兼容FAST模式无cognitiveEnrichment stage的情况）
+        if (!cognitionSnapshot.enrichment && pipelineResult.ctx?.cognitiveEnrichment) {
+          cognitionSnapshot.enrichment = pipelineResult.ctx.cognitiveEnrichment;
+        }
+        // [v5.12.0] FAST模式降级：使用preThinkState作为enrichment基线
+        if (!cognitionSnapshot.enrichment && this._preThinkState) {
+          cognitionSnapshot.enrichment = {
+            preThinkBaseline: {
+              emotionDynamics: this._preThinkState.emotionDynamics,
+              cognitiveLoad: this._preThinkState.cognitiveLoad,
+              criticality: this._preThinkState.criticality,
+            },
+            note: 'FAST模式：仅前置快照基线，未运行完整认知充实管线'
+          };
         }
 
 

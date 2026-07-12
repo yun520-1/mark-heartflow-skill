@@ -32,6 +32,39 @@
 const fs = require('fs');
 const path = require('path');
 
+// [FORMULA v5.12.0] 公式桥接懒加载单例
+let _fbInstance = null;
+function _getFB() {
+  if (!_fbInstance) {
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      _fbInstance = getFormulaBridge();
+    } catch (e) { _fbInstance = null; }
+  }
+  return _fbInstance;
+}
+
+/**
+ * [FORMULA v5.12.0] 获取动态EF基线 — 基于 adaptiveLearningRate + dirichletConfidence
+ * @param {object} stats - { updateCount }
+ * @returns {{ baseline: number, hiThreshold: number, loThreshold: number }}
+ */
+function _dynamicEFThresholds(stats = {}) {
+  const defaults = { baseline: 0.7, hiThreshold: 0.8, loThreshold: 0.5 };
+  try {
+    const fb = _getFB();
+    if (!fb) return defaults;
+    const lr = fb.adaptiveLearningRate(0.5, stats.updateCount || 0, 0.1);
+    // 学习率越高 → 基线越低（更保守），阈值也相应调整
+    const lrFactor = Math.max(0.7, Math.min(1.3, 1 + (0.5 - lr) * 0.5));
+    return {
+      baseline: +(defaults.baseline * lrFactor).toFixed(2),
+      hiThreshold: +(defaults.hiThreshold * lrFactor).toFixed(2),
+      loThreshold: +(defaults.loThreshold * lrFactor).toFixed(2),
+    };
+  } catch (e) { return defaults; }
+}
+
 /**
  * 执行功能检测器
  * 检测三个核心EF能力: 抑制、工作记忆、认知灵活性
