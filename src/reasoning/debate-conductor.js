@@ -980,8 +980,8 @@ class DebateConductor {
    */
   attributeContributions(agentRoles, contributionFn) {
     try {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
-      const b = getFormulaBridge();
+      const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+      const b = getCognitiveBridge();
       if (!Array.isArray(agentRoles) || agentRoles.length === 0) return {};
       const raw = b.shapleyValue(agentRoles, contributionFn);
       const total = raw.reduce((a, c) => a + Math.max(0, c), 0) || 1;

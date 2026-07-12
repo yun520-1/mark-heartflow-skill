@@ -947,8 +947,8 @@ class AIPsychologyEngine {
    */
   assessMentalHealth(signals = {}) {
     try {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
-      const b = getFormulaBridge();
+      const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+      const b = getCognitiveBridge();
       const toItems = (arr) => {
         if (!Array.isArray(arr)) return [];
         const allScaled = arr.every((v) => typeof v === 'number' && v >= -1 && v <= 3);

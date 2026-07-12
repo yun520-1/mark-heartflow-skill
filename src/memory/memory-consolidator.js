@@ -140,8 +140,8 @@ class MemoryConsolidator {
    */
   sampleReplay(buffer, batchSize = 8) {
     try {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
-      const b = getFormulaBridge();
+      const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+      const b = getCognitiveBridge();
       return b.experienceReplay(buffer, batchSize);
     } catch (e) { return []; }
   }

@@ -665,8 +665,8 @@ class MindWanderer {
    */
   measureFlow(challenge, skill, arousal, aOpt = 0.6) {
     try {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
-      const b = getFormulaBridge();
+      const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+      const b = getCognitiveBridge();
       const flow = b.flowChannel(challenge, skill);
       const optimalChallenge = b.flowOptimal(skill);
       const optimalArousal = (typeof arousal === 'number')

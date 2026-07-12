@@ -10,24 +10,13 @@ class CognitiveLoadCalculator {
   constructor(options = {}) {
     this.workingMemoryCapacity = options.workingMemoryCapacity || 72;
     this._lastEstimate = null;
-    // [FORMULA] 公式桥接（Shannon 熵 + E/I 工作记忆），懒加载单例
-    this._formulaBridge = null;
+    // [v5.14.1] 共享认知桥接
+    const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+    this._bridge = getCognitiveBridge();
     // E/I 平衡参数 (arXiv:2606.27529)
     this.eRatio = options.eRatio !== undefined ? options.eRatio : 1.0;
     this.iRatio = options.iRatio !== undefined ? options.iRatio : 1.0;
     this.stressLevel = options.stressLevel || 0;
-  }
-
-  _getFormulaBridge() {
-    if (!this._formulaBridge) {
-      try {
-        const { getFormulaBridge } = require('../formula/formula-bridge.js');
-        this._formulaBridge = getFormulaBridge();
-      } catch (e) {
-        this._formulaBridge = null;
-      }
-    }
-    return this._formulaBridge;
   }
 
   estimate(text, context = {}) {
@@ -39,7 +28,7 @@ class CognitiveLoadCalculator {
     // 心虫公式库 shannon_entropy: H = -Σ p(x) * log2(p(x))
     // 匹配认知负荷本质：输入越"杂散不可预测"，处理负荷越高
     let entropyLoad = 0;
-    const bridge = this._getFormulaBridge();
+    const bridge = this._bridge;
     if (bridge && t.length > 0) {
       // [FORMULA] 概念分布熵：用字符 bigram（相邻字对）作为 token
       // 对中文（无空格分词）更合理，能反映"概念分布的不确定性"
@@ -112,7 +101,7 @@ class CognitiveLoadCalculator {
     // WM_capacity = base_capacity / (1 + E/I_ratio)，压力进一步降低容量
     let effectiveCapacity = this.workingMemoryCapacity;
     try {
-      const bridge = this._getFormulaBridge();
+      const bridge = this._bridge;
       if (bridge) {
         const eiResult = bridge.eiWorkingMemory(
           this.workingMemoryCapacity,

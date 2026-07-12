@@ -14,21 +14,16 @@
  * dispatch: 'memoryConsolidation.consolidate' / 'memoryConsolidation.schedule' / 'memoryConsolidation.recall'
  */
 
-const { getFormulaBridge } = require('../formula/formula-bridge.js');
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
 
 class MemoryConsolidationEngine {
   constructor(options = {}) {
-    this._bridge = null;
+    this._bridge = getCognitiveBridge();
     this._memoryTraces = new Map();  // traceId → { content, strength, lastAccess, accessCount, accessIntervals, encoding }
     this._workingMemory = [];        // 工作记忆槽位（4±2）
     this._workingMemoryCapacity = options.workingMemoryCapacity || 5;
     this._consolidationThreshold = options.consolidationThreshold || 0.3;  // 低于此值触发巩固
     this._spacingBase = options.spacingBase || 1.5;  // 间隔重复基础倍率
-  }
-
-  _getBridge() {
-    if (!this._bridge) this._bridge = getFormulaBridge();
-    return this._bridge;
   }
 
   // ═══════════════════════════════════════════
@@ -42,7 +37,7 @@ class MemoryConsolidationEngine {
    * @returns {object} { retention, strength, age, accessCount, needsConsolidation }
    */
   computeRetention(traceId, now = Date.now()) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const trace = this._memoryTraces.get(traceId);
     if (!trace) return { retention: 0, strength: 0, age: Infinity, needsConsolidation: true };
 
@@ -72,7 +67,7 @@ class MemoryConsolidationEngine {
    * @returns {object} { activation, baseLevel, spreading, retrievalProbability }
    */
   actrActivation(traceId, context = {}) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const trace = this._memoryTraces.get(traceId);
     if (!trace) return { activation: -Infinity, baseLevel: 0, spreading: 0, retrievalProbability: 0 };
 
@@ -149,7 +144,7 @@ class MemoryConsolidationEngine {
     }
 
     // 结合艾宾浩斯：确保保留率不低于阈值
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const strengthMs = bridge.memoryStrengthFromFrequency(trace.accessCount + 1);
     const ebbinghausInterval = -strengthMs * Math.log(this._consolidationThreshold);
     interval = Math.max(interval, ebbinghausInterval);

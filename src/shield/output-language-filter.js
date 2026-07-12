@@ -20,16 +20,8 @@
 
 'use strict';
 
-// ─── 公式桥 (惰性, try/catch 降级) ────────────────────────────────────
-let _bridge = undefined;
-function _getBridge() {
-  if (_bridge !== undefined) return _bridge;
-  try {
-    const { getFormulaBridge } = require('../formula/formula-bridge.js');
-    _bridge = getFormulaBridge();
-  } catch(e) { _bridge = null; }
-  return _bridge;
-}
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+const _bridge = getCognitiveBridge();
 
 // ─── 污染类型定义 ──────────────────────────────────────────────────
 
@@ -216,7 +208,7 @@ function _cognitiveDiagnosis(outputText, regexFindings, inputText = null) {
   };
 
   try {
-    const bridge = _getBridge();
+    const bridge = _bridge;
     if (!bridge) return diagnosis;
 
     // (1) shannonEntropy on output text — 检测模板污染

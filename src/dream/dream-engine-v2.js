@@ -13,11 +13,11 @@
  * dispatch: 'dream.generate' / 'dream.consolidate' / 'dream.creativeAssociation'
  */
 
-const { getFormulaBridge } = require('../formula/formula-bridge.js');
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
 
 class DreamEngineV2 {
   constructor(options = {}) {
-    this._bridge = null;
+    this._bridge = getCognitiveBridge();
     // 睡眠阶段
     this.sleepStages = {
       light: { name: '浅睡眠', duration: 20, consolidationRate: 0.3, emotionalProcessing: 0.1 },
@@ -37,11 +37,6 @@ class DreamEngineV2 {
     this._consolidationLog = [];
   }
 
-  _getBridge() {
-    if (!this._bridge) this._bridge = getFormulaBridge();
-    return this._bridge;
-  }
-
   // ═══════════════════════════════════════════
   // 梦境生成（核心）
   // ═══════════════════════════════════════════
@@ -54,7 +49,7 @@ class DreamEngineV2 {
   generate(params = {}) {
     const { mood = 'neutral', memories = [], emotionalState = {}, sleepStage = 'rem' } = params;
     const stage = this.sleepStages[sleepStage] || this.sleepStages.rem;
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
 
     // 1. 选择梦境模板
     const templates = this.dreamTemplates[mood] || this.dreamTemplates.neutral;
@@ -120,7 +115,7 @@ class DreamEngineV2 {
    * @returns {object} { consolidated, strengthened, totalDeltaW }
    */
   _consolidateMemories(fragments, stage) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     let totalDeltaW = 0;
     const strengthened = [];
 
