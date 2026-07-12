@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "8.14.0",
-    "last_updated": "2026-07-09",
-    "total_formulas": 3529,
+    "last_updated": "2026-07-12",
+    "total_formulas": 373,
     "categories": [
       "biology",
       "chemistry",
@@ -3269,6 +3269,42 @@
       "formula": "λ_2 (second eigenvalue of graph Laplacian of transition matrix)",
       "difficulty": "advanced",
       "source": "arXiv:2606.01906"
+    },
+    {
+      "id": "emotion_transition_matrix",
+      "name": "Emotion Transition Matrix (Dirichlet Posterior)",
+      "category": "psychology",
+      "subcategory": "emotion_dynamics",
+      "formula": "T[i][j] = (count[i->j] + a) / (count[i->*] + Ka), spectral gap from graph Laplacian",
+      "difficulty": "advanced",
+      "source": "arXiv:2606.01906"
+    },
+    {
+      "id": "dirichlet_confidence",
+      "name": "Dirichlet Evidence-Accumulation Confidence",
+      "category": "cognitive_science",
+      "subcategory": "decision_making",
+      "formula": "a_new = a_old + evidence, confidence = 1 - H(Dir(a)) / H_max, stop if H < tau",
+      "difficulty": "advanced",
+      "source": "arXiv:2605.26147"
+    },
+    {
+      "id": "ei_working_memory",
+      "name": "E/I Balance Working Memory Capacity",
+      "category": "neuroscience",
+      "subcategory": "cognitive_capacity",
+      "formula": "WM_capacity = base_capacity / (1 + E/I_ratio), E/I = mean(W_exc) / mean(W_inh)",
+      "difficulty": "advanced",
+      "source": "arXiv:2606.27529"
+    },
+    {
+      "id": "motivational_bias",
+      "name": "Motivational Bias (Grether alpha-beta)",
+      "category": "psychology",
+      "subcategory": "motivation",
+      "formula": "log(P(want)/P(not)) = alpha * log(LR) + beta, alpha = evidence sensitivity, beta = motivational bias",
+      "difficulty": "advanced",
+      "source": "arXiv:2606.17657"
     }
   ]
 }

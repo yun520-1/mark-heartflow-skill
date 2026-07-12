@@ -114,7 +114,13 @@
     "结构方程": "sem",
     "拟合": "sem",
     "模型拟合": "sem",
-    "路径": "sem"
+    "路径": "sem",
+    "证据累积": "evidence_accumulation",
+    "dirichlet": "evidence_accumulation",
+    "E/I": "ei_balance",
+    "兴奋抑制": "ei_balance",
+    "动机偏差": "motivation",
+    "wanting": "motivation"
   },
   "signals": {
     "uncertainty": {
@@ -898,6 +904,11 @@
           "kind": "stage-primitive",
           "ref": "emotion_transition_entropy",
           "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "emotion_transition_matrix",
+          "weight": 1
         }
       ]
     },
@@ -1306,6 +1317,52 @@
         {
           "kind": "stage-primitive",
           "ref": "criticality_susceptibility",
+          "weight": 1
+        }
+      ]
+    },
+    "evidence_accumulation": {
+      "synonyms": [
+        "证据累积",
+        "停止思考",
+        "置信证据",
+        "dirichlet"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "dirichlet_confidence",
+          "weight": 1
+        }
+      ]
+    },
+    "ei_balance": {
+      "synonyms": [
+        "E/I",
+        "兴奋抑制",
+        "工作记忆容量",
+        "认知容量"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "ei_working_memory",
+          "weight": 1
+        }
+      ]
+    },
+    "motivation": {
+      "synonyms": [
+        "动机偏差",
+        "想要",
+        "wanting",
+        "动机",
+        "驱动"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "motivational_bias",
           "weight": 1
         }
       ]

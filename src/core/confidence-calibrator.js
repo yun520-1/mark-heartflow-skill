@@ -103,7 +103,7 @@ class ConfidenceCalibrator {
 
     const confidence = Math.round(rawScore * 100) / 100;
     const level = this.scoreToLevel(confidence);
-    const calibrated = this.applyCalibration(confidence);
+    const calibrated = this.applyCalibration(confidence, scores);
 
     // 修正语言：去除刚强词汇
     const calibratedText = this.calibrateLanguage(text, level);
@@ -314,7 +314,29 @@ class ConfidenceCalibrator {
     return 'veryLow';
   }
 
-  applyCalibration(rawScore) {
+  applyCalibration(rawScore, scores = {}) {
+    // [FORMULA v8.15.0] Dirichlet 证据累积停止规则 (arXiv:2605.26147)
+    // 用评分维度作为伪计数，构建 Dirichlet 分布置信度
+    // 高证据一致性 → 低熵 → 高置信度；分散证据 → 高熵 → 应降低置信
+    try {
+      const bridge = this._getFormulaBridge();
+      if (bridge && scores) {
+        const evidenceCounts = [
+          scores.evidenceCoverage || 0.5,
+          scores.consistency || 0.5,
+          scores.specificity || 0.5,
+          scores.sourceReliability || 0.5,
+          scores.complexityFit || 0.5
+        ].map(s => Math.max(0.1, s * 5)); // scale to pseudo-counts
+        const dc = bridge.dirichletConfidence(evidenceCounts, 1, 0.5);
+        if (dc && dc.confidence !== undefined) {
+          // Blend: dirichlet confidence provides theoretical upper bound,
+          // raw score provides empirical signal
+          return Math.round((rawScore * 0.7 + dc.confidence * 0.3) * 100) / 100;
+        }
+      }
+    } catch (e) { /* fallback to legacy calibration */ }
+
     // 轻微向下校准（防止过度自信）
     // 原始分数高 → 向下调整一点
     // 原始分数低 → 保持或轻微向上
