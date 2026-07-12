@@ -169,6 +169,34 @@ const ALLOWED_SHELL_COMMANDS = [
   // 'wget',       // [SECURITY FIX] 已移除：防止数据外泄
 ];
 
+// ============================================================================
+// [P0-3/P0-4] 危险参数模式 — 参数级 RCE 拦截
+// 即使命令首词在白名单中，匹配以下模式的参数也会被阻止。
+// 这堵住了 `node -e`、`python3 -c`、`find -exec` 等绕过。
+// ============================================================================
+
+const DANGEROUS_PARAM_PATTERNS = [
+  { pattern: /\bnode\b.*\s+-e\b/i,      block: '禁止使用 node -e 参数执行任意代码' },
+  { pattern: /\bpython3?\b.*\s+-c\b/i,   block: '禁止使用 python/python3 -c 参数执行任意代码' },
+  { pattern: /find\b.*-exec/i,           block: 'find -exec 可执行任意命令，已被禁止' },
+  { pattern: /find\b.*-execdir/i,        block: 'find -execdir 可执行任意命令，已被禁止' },
+  { pattern: /\bawk\b.*(system\s*\(|BEGIN\s*\{)/i, block: 'awk system()/BEGIN 可执行任意命令，已被禁止' },
+  { pattern: /\bsed\b.*-i/i,             block: 'sed -i 可修改任意文件，已被禁止' },
+  { pattern: /tee\b.*(\/etc|\/Users|~|\/root|\/home)/i, block: 'tee 写入系统路径已被禁止' },
+  { pattern: /\bcat\b.*(\.ssh|passwd|shadow)/i, block: '禁止读取敏感系统文件' },
+];
+
+// 禁止访问的敏感路径（无论什么命令）
+const BLOCKED_PATHS = [
+  '/etc/shadow',
+  '/etc/passwd',
+  '/etc/sudoers',
+  '~/.ssh',
+  '/root/.ssh',
+  '/home/*/.ssh',
+  '/Users/*/.ssh',
+];
+
 /**
  * 白名单命令验证（B-01 安全修复）
  * 从 code 中提取第一个命令词，检查是否在 ALLOWED_SHELL_COMMANDS 中。
@@ -217,6 +245,22 @@ function validateShellCommand(code) {
     // $(...) 和反引号在 bash 中任意位置都会被执行
     if (/\$\(/.test(subCmd) || /`/.test(subCmd)) {
       return { allowed: false, blockedCommand: cmdName + ' (含命令替换)' };
+    }
+
+    // [P0-3/P0-4] 参数级危险模式检测
+    // 即使命令首词通过白名单，特定参数组合仍可能造成 RCE / 文件篡改
+    // 例如: node -e, python3 -c, find -exec, awk system(), sed -i
+    for (const { pattern, block } of DANGEROUS_PARAM_PATTERNS) {
+      if (pattern.test(subCmd)) {
+        return { allowed: false, blockedCommand: cmdName, blockReason: block };
+      }
+    }
+
+    // [P0-3/P0-4] 敏感路径检测：检查命令参数是否包含敏感路径
+    for (const blockedPath of BLOCKED_PATHS) {
+      if (subCmd.includes(blockedPath)) {
+        return { allowed: false, blockedCommand: cmdName, blockReason: `禁止访问敏感路径: ${blockedPath}` };
+      }
     }
   }
 
@@ -743,12 +787,17 @@ class CodeExecutor {
     // [B-01 安全修复] 白名单门控：只允许预定义的安全命令执行
     const whitelistCheck = validateShellCommand(code);
     if (!whitelistCheck.allowed) {
+      const errorMsg = whitelistCheck.blockReason
+        ? `命令被阻止: ${whitelistCheck.blockReason} (命令: ${whitelistCheck.blockedCommand})`
+        : `命令不在允许列表中: "${whitelistCheck.blockedCommand}"。允许的命令: ${ALLOWED_SHELL_COMMANDS.join(', ')}`;
       return {
         status:    ExecStatus.SANDBOX_BLOCKED,
         output:    '',
-        error:     `命令不在允许列表中: "${whitelistCheck.blockedCommand}"。允许的命令: ${ALLOWED_SHELL_COMMANDS.join(', ')}`,
+        error:     errorMsg,
         truncated: false,
-        execError: ExecError.SANDBOX
+        execError: ExecError.SANDBOX,
+        blocked:   true,
+        blockReason: whitelistCheck.blockReason || null
       };
     }
 

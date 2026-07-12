@@ -76,8 +76,9 @@ const DEFAULTS = {
     innerMonologue: false,  // 内心独白
     dreamEngine: true,      // 梦境引擎
     theoryOfMind: true,     // 心智理论
-    codeExecution: true,    // 代码执行
-    networkAccess: true,    // 网络访问
+    // [v5.17.0 P-003] 危险能力默认关闭 — 与运行时的 HEARTFLOW_CODE_EXECUTOR_ENABLED 默认关对齐
+    codeExecution: false,   // 代码执行 (需显式启用 HEARTFLOW_CODE_EXECUTOR_ENABLED=true)
+    networkAccess: false,   // 网络访问 (需显式启用出网)
     searchEnabled: true,    // 搜索模块
   },
 };

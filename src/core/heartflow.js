@@ -344,7 +344,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-12-v5.16.0';
+const BUILD_DATE = '2026-07-12-v5.17.0';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -1669,7 +1669,83 @@ class HeartFlow {
       this._modules.wisdomEngine = this.wisdomEngine;
     } catch (e) { _boundedPush(this._initErrors, { module: 'wisdomEngine', error: e.message }, MAX_HISTORY_SIZE); }
 
-    // ─── [v5.7.6] P3 人性深化 + P4 关系社会 + P5 痛苦成长 + P6 AI人类整合 ─\n    // ★ ALL LAZY: P3–P5 specialized psychological modules — 延迟到首次访问时初始化\n    // P3: Suffering Resilience + Grief + Hope\n    this._sufferingResilienceRaw = null;\n    Object.defineProperty(this, 'sufferingResilience', {\n      get() {\n        if (!this._sufferingResilienceRaw) {\n          try { const SR = _SufferingResilience(); const inst = new SR.SufferingResilience({ resilienceMode: 'growth' }); this._modules.sufferingResilience = inst; this._sufferingResilienceRaw = inst; } catch (e) { this._sufferingResilienceRaw = { assess: () => ({}), healthCheck: () => ({}) }; }\n        }\n        return this._sufferingResilienceRaw;\n      }, enumerable: true, configurable: true,\n    });\n    this._griefEngineRaw = null;\n    Object.defineProperty(this, 'griefEngine', {\n      get() {\n        if (!this._griefEngineRaw) {\n          try { const GE = _GriefEngine(); const inst = new GE.GriefEngine({ culture: 'integrated' }); this._modules.griefEngine = inst; this._griefEngineRaw = inst; } catch (e) { this._griefEngineRaw = { process: () => ({}), healthCheck: () => ({}) }; }\n        }\n        return this._griefEngineRaw;\n      }, enumerable: true, configurable: true,\n    });\n    this._hopeEngineRaw = null;\n    Object.defineProperty(this, 'hopeEngine', {\n      get() {\n        if (!this._hopeEngineRaw) {\n          try { const HE = _HopeEngine(); const inst = new HE.HopeEngine(); this._modules.hopeEngine = inst; this._hopeEngineRaw = inst; } catch (e) { this._hopeEngineRaw = { analyze: () => ({}), healthCheck: () => ({}) }; }\n        }\n        return this._hopeEngineRaw;\n      }, enumerable: true, configurable: true,\n    });\n    // P4: Empathy + Conflict (humanRelation stays eager — used in cognition ground)\n    this._empathyDeepeningRaw = null;\n    Object.defineProperty(this, 'empathyDeepening', {\n      get() {\n        if (!this._empathyDeepeningRaw) {\n          try { const ED = _EmpathyDeepening(); const inst = new ED.EmpathyDeepening(); this._modules.empathyDeepening = inst; this._empathyDeepeningRaw = inst; } catch (e) { this._empathyDeepeningRaw = { deepen: () => ({}), healthCheck: () => ({}) }; }\n        }\n        return this._empathyDeepeningRaw;\n      }, enumerable: true, configurable: true,\n    });\n    this._conflictResolutionRaw = null;\n    Object.defineProperty(this, 'conflictResolution', {\n      get() {\n        if (!this._conflictResolutionRaw) {\n          try { const CR = _ConflictResolution(); const inst = new CR.ConflictResolution(); this._modules.conflictResolution = inst; this._conflictResolutionRaw = inst; } catch (e) { this._conflictResolutionRaw = { resolve: () => ({}), healthCheck: () => ({}) }; }\n        }\n        return this._conflictResolutionRaw;\n      }, enumerable: true, configurable: true,\n    });\n    // P5: Trauma + PTG + Forgiveness\n    this._traumaInformedRaw = null;\n    Object.defineProperty(this, 'traumaInformed', {\n      get() {\n        if (!this._traumaInformedRaw) {\n          try { const TI = _TraumaInformed(); const inst = new TI.TraumaInformed(); this._modules.traumaInformed = inst; this._traumaInformedRaw = inst; } catch (e) { this._traumaInformedRaw = { assess: () => ({}), healthCheck: () => ({}) }; }\n        }\n        return this._traumaInformedRaw;\n      }, enumerable: true, configurable: true,\n    });\n    this._postTraumaticGrowthRaw = null;\n    Object.defineProperty(this, 'postTraumaticGrowth', {\n      get() {\n        if (!this._postTraumaticGrowthRaw) {\n          try { const PTG = _PostTraumaticGrowth(); const inst = new PTG.PostTraumaticGrowth(); this._modules.postTraumaticGrowth = inst; this._postTraumaticGrowthRaw = inst; } catch (e) { this._postTraumaticGrowthRaw = { measure: () => ({}), healthCheck: () => ({}) }; }\n        }\n        return this._postTraumaticGrowthRaw;\n      }, enumerable: true, configurable: true,\n    });\n    this._forgivenessEngineRaw = null;\n    Object.defineProperty(this, 'forgivenessEngine', {\n      get() {\n        if (!this._forgivenessEngineRaw) {\n          try { const FE = _ForgivenessEngine(); const inst = new FE.ForgivenessEngine(); this._modules.forgivenessEngine = inst; this._forgivenessEngineRaw = inst; } catch (e) { this._forgivenessEngineRaw = { process: () => ({}), healthCheck: () => ({}) }; }\n        }\n        return this._forgivenessEngineRaw;\n      }, enumerable: true, configurable: true,\n    });
+    // ─── [v5.7.6] P3 人性深化 + P4 关系社会 + P5 痛苦成长 + P6 AI人类整合 ──
+    // ★ ALL LAZY: P3–P5 specialized psychological modules — 延迟到首次访问时初始化
+    // P3: Suffering Resilience + Grief + Hope
+    this._sufferingResilienceRaw = null;
+    Object.defineProperty(this, 'sufferingResilience', {
+      get() {
+        if (!this._sufferingResilienceRaw) {
+          try { const SR = _SufferingResilience(); const inst = new SR.SufferingResilience({ resilienceMode: 'growth' }); this._modules.sufferingResilience = inst; this._sufferingResilienceRaw = inst; } catch (e) { this._sufferingResilienceRaw = { assess: () => ({}), healthCheck: () => ({}) }; }
+        }
+        return this._sufferingResilienceRaw;
+      }, enumerable: true, configurable: true,
+    });
+    this._griefEngineRaw = null;
+    Object.defineProperty(this, 'griefEngine', {
+      get() {
+        if (!this._griefEngineRaw) {
+          try { const GE = _GriefEngine(); const inst = new GE.GriefEngine({ culture: 'integrated' }); this._modules.griefEngine = inst; this._griefEngineRaw = inst; } catch (e) { this._griefEngineRaw = { process: () => ({}), healthCheck: () => ({}) }; }
+        }
+        return this._griefEngineRaw;
+      }, enumerable: true, configurable: true,
+    });
+    this._hopeEngineRaw = null;
+    Object.defineProperty(this, 'hopeEngine', {
+      get() {
+        if (!this._hopeEngineRaw) {
+          try { const HE = _HopeEngine(); const inst = new HE.HopeEngine(); this._modules.hopeEngine = inst; this._hopeEngineRaw = inst; } catch (e) { this._hopeEngineRaw = { analyze: () => ({}), healthCheck: () => ({}) }; }
+        }
+        return this._hopeEngineRaw;
+      }, enumerable: true, configurable: true,
+    });
+    // P4: Empathy + Conflict (humanRelation stays eager — used in cognition ground)
+    this._empathyDeepeningRaw = null;
+    Object.defineProperty(this, 'empathyDeepening', {
+      get() {
+        if (!this._empathyDeepeningRaw) {
+          try { const ED = _EmpathyDeepening(); const inst = new ED.EmpathyDeepening(); this._modules.empathyDeepening = inst; this._empathyDeepeningRaw = inst; } catch (e) { this._empathyDeepeningRaw = { deepen: () => ({}), healthCheck: () => ({}) }; }
+        }
+        return this._empathyDeepeningRaw;
+      }, enumerable: true, configurable: true,
+    });
+    this._conflictResolutionRaw = null;
+    Object.defineProperty(this, 'conflictResolution', {
+      get() {
+        if (!this._conflictResolutionRaw) {
+          try { const CR = _ConflictResolution(); const inst = new CR.ConflictResolution(); this._modules.conflictResolution = inst; this._conflictResolutionRaw = inst; } catch (e) { this._conflictResolutionRaw = { resolve: () => ({}), healthCheck: () => ({}) }; }
+        }
+        return this._conflictResolutionRaw;
+      }, enumerable: true, configurable: true,
+    });
+    // P5: Trauma + PTG + Forgiveness
+    this._traumaInformedRaw = null;
+    Object.defineProperty(this, 'traumaInformed', {
+      get() {
+        if (!this._traumaInformedRaw) {
+          try { const TI = _TraumaInformed(); const inst = new TI.TraumaInformed(); this._modules.traumaInformed = inst; this._traumaInformedRaw = inst; } catch (e) { this._traumaInformedRaw = { assess: () => ({}), healthCheck: () => ({}) }; }
+        }
+        return this._traumaInformedRaw;
+      }, enumerable: true, configurable: true,
+    });
+    this._postTraumaticGrowthRaw = null;
+    Object.defineProperty(this, 'postTraumaticGrowth', {
+      get() {
+        if (!this._postTraumaticGrowthRaw) {
+          try { const PTG = _PostTraumaticGrowth(); const inst = new PTG.PostTraumaticGrowth(); this._modules.postTraumaticGrowth = inst; this._postTraumaticGrowthRaw = inst; } catch (e) { this._postTraumaticGrowthRaw = { measure: () => ({}), healthCheck: () => ({}) }; }
+        }
+        return this._postTraumaticGrowthRaw;
+      }, enumerable: true, configurable: true,
+    });
+    this._forgivenessEngineRaw = null;
+    Object.defineProperty(this, 'forgivenessEngine', {
+      get() {
+        if (!this._forgivenessEngineRaw) {
+          try { const FE = _ForgivenessEngine(); const inst = new FE.ForgivenessEngine(); this._modules.forgivenessEngine = inst; this._forgivenessEngineRaw = inst; } catch (e) { this._forgivenessEngineRaw = { process: () => ({}), healthCheck: () => ({}) }; }
+        }
+        return this._forgivenessEngineRaw;
+      }, enumerable: true, configurable: true,
+    });
     // P6: AI-Human Integration + Being Mode + Consciousness Bridge
     try {
       const AHI = _AIHumanIntegration(); this.aiHumanIntegration = new AHI.AIHumanIntegration(); this._modules.aiHumanIntegration = this.aiHumanIntegration;
@@ -1744,6 +1820,12 @@ class HeartFlow {
     }
 
     this.started = true;
+
+    // [v5.17.0 L-001] 启动自检：人性深度模块
+    const humanityModules = ['sufferingResilience','griefEngine','hopeEngine','empathyDeepening','conflictResolution','traumaInformed','postTraumaticGrowth','forgivenessEngine'];
+    for (const m of humanityModules) {
+      if (this[m] === undefined) _boundedPush(this._initErrors, {module: m, error: '人性深度模块未初始化 (L-001)'}, MAX_HISTORY_SIZE);
+    }
 
     // ─── 自改进健康检查：验证 meta-learner ↔ self-healing-rl ↔ confidence-calibrator 信号流 ──
     try { this._runSelfImprovementHealthCheck(); } catch (e) { /* non-fatal */ }

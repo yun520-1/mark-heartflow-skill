@@ -8,6 +8,16 @@
  * 
  * 本地优先设计：SQLite + 向量扩展 (sqlite-vec)
  * 支持 narrativeQuery 图遍历查询
+ * 
+ * ⚠️ KNOWN LIMITATION (P0-2): TrialityMemory stores data in-memory with JSON
+ * export to triality-memory-export.json. Encryption is NOT applied here because:
+ * 1. sqlite-vec vector operations require in-memory data access patterns
+ * 2. Encrypting individual vectors would break cosine similarity computation
+ * 3. Full-db encryption (SQLCipher) would require native addon dependencies
+ * 
+ * For encrypted persistent storage, use MemoryBank (memory-bank.js) or
+ * LongTermMemory (long-term-memory.js) which now support AES-256-GCM encryption.
+ * See P0-2 audit fix in memory-encrypt.js for details.
  */
 
 const fs = require('fs');

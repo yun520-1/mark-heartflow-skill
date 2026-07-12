@@ -20,6 +20,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { safeWriteFileSync } = require('../utils/safe-fs.js');
 
 const VERSION = '1.0.0';
 const DATA_DIR = path.join(require('os').tmpdir(), 'heartflow-reflection');
@@ -284,7 +285,7 @@ class ReflectionMemory {
   _save() {
     try {
       const data = JSON.stringify({r: this.reflections, s: Array.from(this.strategies), p: Array.from(this.patternIndex)});
-      fs.writeFileSync(path.join(this.config.dataDir, "reflection-memory.json"), data);
+      safeWriteFileSync(path.join(this.config.dataDir, "reflection-memory.json"), data);
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
   }
 
