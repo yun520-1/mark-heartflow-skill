@@ -131,6 +131,8 @@ const DECISION_PRIORITY = {
 };
 
 // ─── 决策路由引擎 ────────────────────────────────────────────────────────
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+
 class DecisionRouter {
   /**
    * @param {object} heartFlow - HeartFlow 主实例引用
