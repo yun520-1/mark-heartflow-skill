@@ -15,6 +15,7 @@
  */
 
 const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+const { escapeRegExp } = require('../utils/safe-regex.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -158,7 +159,7 @@ class PsychologyDialogueEngine {
     for (const [emotion, keywords] of Object.entries(this.emotionKeywords)) {
       let score = 0;
       for (const kw of keywords) {
-        const regex = new RegExp(kw, 'gi');
+        const regex = new RegExp(escapeRegExp(kw), 'gi');
         const matches = text.match(regex);
         if (matches) score += matches.length;
       }

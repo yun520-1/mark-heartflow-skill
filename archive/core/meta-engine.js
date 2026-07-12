@@ -17,6 +17,7 @@ const fs = require('fs');
 const fsPromises = require('fs').promises;
 const path = require('path');
 const { atomicWrite } = require('../utils/atomic-write');
+const { escapeRegExp } = require('../../src/utils/safe-regex.js');
 
 const STATE_FILE = 'internal/data/meta-state.json';
 const STRATEGY_FILE = 'internal/data/strategies.json';
@@ -1008,7 +1009,7 @@ class MetaEngine {
       let content = await fsPromises.readFile(resolvedPath, 'utf8');
       
       for (const [key, value] of Object.entries(updates)) {
-        const regex = new RegExp(`## ${key}[\\s\\S]*?(?=## |$)`, 'i');
+        const regex = new RegExp(`## ${escapeRegExp(key)}[\\s\\S]*?(?=## |$)`, 'i');
         if (regex.test(content)) {
           content = content.replace(regex, `## ${key}\n${value}\n`);
         } else {

@@ -306,7 +306,7 @@ class FormulaCalculator {
     if (degreeMode) {
       const trig = ['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh'];
       trig.forEach(fn => {
-        const re = new RegExp(`\\b${fn}\\(([^)]+)\\)`, 'g');
+        const re = new RegExp(`\\b${this._escapeRegExp(fn)}\\(([^)]+)\\)`, 'g');
         result = result.replace(re, (m, arg) => `${fn}((${arg})*pi/180)`);
       });
     }
