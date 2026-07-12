@@ -95,6 +95,26 @@ async function runAllTests() {
   // 汇总
   console.log('\\n' + '='.repeat(50));
 
+  // 6. 核心模块测试 (v5.15.2)
+  console.log('\\n🧠 核心模块 (core-modules.js)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'core-modules.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\\n').filter(l => l.includes('通过') || l.includes('失败')).join('\\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️  核心模块测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
+
+  // 汇总
+  console.log('\\n' + '='.repeat(50));
+
   // 5. 核心管线测试 (v5.14.0)
   console.log('\\n🔗 核心管线 (core-pipeline.js)');
   try {
