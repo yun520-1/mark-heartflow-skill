@@ -668,7 +668,9 @@ class CodeExecutor {
       const script = new vm.Script('(async () => { ' + code + ' })()', { filename: 'heartflow-exec' });
       const vmResult = script.runInNewContext(sandboxContext, { timeout });
       // vmResult 可能是 Promise（如果 code 含顶层 await 或 async）
-      const result = vmResult instanceof Promise ? await vmResult : vmResult;
+      // 使用 duck-typing 而非 instanceof 检测，因为 vm 上下文有自己独立的 Promise 构造函数
+      const isThenable = vmResult && typeof vmResult.then === 'function';
+      const result = isThenable ? await vmResult : vmResult;
 
       // 超时执行
 

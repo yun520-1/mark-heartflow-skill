@@ -23,8 +23,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// 转义正则特殊字符，防止 ReDoS
-const _escapeRegex = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const { escapeRegExp } = require('../utils/safe-regex.js');
 
 class ConfidenceCalibrator {
   constructor(options = {}) {
@@ -463,7 +462,7 @@ class ConfidenceCalibrator {
 
     // 替换刚强词汇
     for (const word of this.forbiddenHighConfidence) {
-      const regex = new RegExp(_escapeRegex(word), 'gi');
+      const regex = new RegExp(escapeRegExp(word), 'gi');
       calibrated = calibrated.replace(regex, this.getReplacement(level));
     }
 
