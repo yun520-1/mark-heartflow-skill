@@ -17,6 +17,7 @@ const net = require('net');
 
 const BLOCKED_V4_RANGES = [
   { network: '127.0.0.0',    prefix: 8,  label: 'loopback (127.0.0.0/8)' },
+  { network: '0.0.0.0',      prefix: 8,  label: 'current network (0.0.0.0/8)' },       // [v5.15.3 H-3]
   { network: '10.0.0.0',     prefix: 8,  label: 'private (10.0.0.0/8)' },
   { network: '172.16.0.0',   prefix: 12, label: 'private (172.16.0.0/12)' },
   { network: '192.168.0.0',  prefix: 16, label: 'private (192.168.0.0/16)' },
@@ -84,6 +85,11 @@ function isBlockedV6(ip) {
     return { blocked: true, reason: `IP ${ip} is IPv6 link-local (fe80::/10)` };
   }
 
+  // [v5.15.3 H-3] Check for unique local IPv6 (fc00::/7)
+  if (/^fc[0-9a-f][0-9a-f]/i.test(normalized) || /^fd[0-9a-f][0-9a-f]/i.test(normalized)) {
+    return { blocked: true, reason: `IP ${ip} is IPv6 unique local (fc00::/7)` };
+  }
+
   return { blocked: false, reason: '' };
 }
 
@@ -143,9 +149,19 @@ function validateFetchUrl(urlStr) {
     if (result.blocked) return { safe: false, reason: result.reason };
   }
 
-  // Not an IP — it's a hostname. For now, allow all hostnames.
-  // (DNS rebinding protection would require resolving + re-checking,
-  //  which is a more advanced concern beyond the scope of this validator.)
+  // Not an IP — it's a hostname. Check for DNS rebinding domains first.
+  // [v5.15.3 H-3] Block known DNS rebinding / SSRF bypass services
+  const hostnameLower = hostname.toLowerCase();
+  const REBINDING_DOMAINS = [
+    'nip.io', 'xip.io', 'sslip.io', 'nip.io',           // wildcard DNS → any IP
+    'lvh.me', 'localtest.me',                             // resolves to 127.0.0.1
+    '1u.ms', '2u.ms',                                     // short rebinding domains
+  ];
+  for (const rd of REBINDING_DOMAINS) {
+    if (hostnameLower === rd || hostnameLower.endsWith('.' + rd)) {
+      return { safe: false, reason: `Hostname "${hostname}" matches DNS rebinding domain "${rd}"` };
+    }
+  }
 
   return { safe: true, reason: '' };
 }

@@ -993,6 +993,10 @@ class CodeExecutor {
   async sandbox(code, options = {}) {
     validateArg(code, 'code', 'string');
 
+    // [v5.15.3 H-2] 总开关检查 — sandbox() 必须和 execute() 一样遵守总开关
+    if (!CODE_EXECUTOR_ENABLED) {
+      return { status: ExecStatus.ERROR, output: '', error: 'Code execution is disabled. Set HEARTFLOW_CODE_EXECUTOR_ENABLED=true to enable.', duration: 0, language: 'none', truncated: false, execError: ExecError.PERMISSION };
+    }
 
     const opts = { ...DEFAULTS, ...options };
     const timeout = opts.timeout || 30000;
@@ -1113,9 +1117,9 @@ const __originalSet = __globals.Set;
 const __originalReflect = __globals.Reflect;
 const __originalProxy = __globals.Proxy;
 
-// [AUDIT-FIX H-1] 删除 __globals 上的危险构造器引用，防止用户代码通过
-// __globals.Function('return process')() 逃逸沙箱
-// 注意：必须在提取完 __original* 引用之后删除，因为 preamble 自身需要它们
+// [v5.15.3 L-3] 删除 __globals 上的构造器引用 — delete 仅删局部对象属性，
+// 不触及真实全局。实际逃逸防护依赖下方 var Function=... 遮蔽，而非此 delete。
+// 保留 delete 用于清理沙箱内部引用（非安全关键路径）。
 delete __globals.Function;
 delete __globals.Object;
 delete __globals.Proxy;
@@ -1256,16 +1260,36 @@ ${code}
 
       const fn = new Function('console', '__globals', sandboxedCode);  // safety: sandboxed via _executeStrictSandbox
 
-      // [AUDIT-FIX H-1] 替换 globalThis 为受限全局对象，防止沙箱逃逸
-      // 不包含 Function/Object/Reflect/Proxy 构造器，但包含 preamble 需要的 safe globals
-      // preamble 会在提取 __original* 引用后通过 delete 清理这些构造器
+      // [v5.15.3 H-1] 关键修复：不传入真实 Object/Function/Proxy/Reflect 到沙箱
+      // 传入 Shadow 包装器，阻止 preamble 的 freeze/defineProperty 污染真实全局原型链
+      // Shadow 提供与真实构造器相同的接口，但所有变异操作只影响 Shadow 副本
+      const _shadowProto = (Ctor) => {
+        // 为每个构造器创建独立原型副本，隔离 freeze 副作用
+        const shadow = function(...args) { return new Ctor(...args); };
+        shadow.prototype = Object.create(Ctor.prototype);
+        shadow.prototype.constructor = shadow;
+        // 复制静态方法
+        for (const key of Object.getOwnPropertyNames(Ctor)) {
+          if (typeof Ctor[key] === 'function') {
+            try { shadow[key] = Ctor[key].bind(Ctor); } catch(e) {}
+          } else {
+            try { Object.defineProperty(shadow, key, Object.getOwnPropertyDescriptor(Ctor, key)); } catch(e) {}
+          }
+        }
+        // 保留 freeze/defineProperty/getOwnPropertyDescriptor 用于沙箱内部隔离
+        return shadow;
+      };
+
       const restrictedGlobals = {
         Math, JSON, Date, parseInt, parseFloat, isNaN, isFinite,
         encodeURIComponent, decodeURIComponent,
         Array, String, Number, Boolean, RegExp, Error,
         Map, Set, WeakMap, Promise, Symbol, console,
-        // 以下构造器提供给 preamble 提取 __original* 引用，之后会被 delete 清理
-        Object, Function, Proxy, Reflect
+        // [v5.15.3 H-1] Shadow 构造器 — freeze 只影响 Shadow 副本，不污染真实全局
+        Object: _shadowProto(Object),
+        Function: _shadowProto(Function),
+        Proxy,
+        Reflect: _shadowProto(Reflect)
       };
 
       const result = await this._executeWithTimeout(fn, timeout, [console, restrictedGlobals]);
