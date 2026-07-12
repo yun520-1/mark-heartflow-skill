@@ -239,6 +239,17 @@ const DEFAULT_PIPELINE = [
       try { if (hf.phenomenology) enrichment.phenomenology = hf.phenomenology.analyze ? hf.phenomenology.analyze(ctx.input, {}) : null; } catch (e) { enrichment.phenomenology = { error: 'unavailable' }; }
       try { if (hf.globalWorkspace) enrichment.globalWorkspace = { agentCount: hf.globalWorkspace._agents ? hf.globalWorkspace._agents.size : 0, cycleCount: hf.globalWorkspace._cycleCount || 0 }; } catch (e) { enrichment.globalWorkspace = { error: 'unavailable' }; }
       try { if (hf.mindWanderer) enrichment.mindWanderer = { isActive: hf.mindWanderer.isActive ? hf.mindWanderer.isActive() : false, shouldWander: hf.mindWanderer.shouldEnterWandering ? hf.mindWanderer.shouldEnterWandering(ctx.input) : false }; } catch (e) { enrichment.mindWanderer = { error: 'unavailable' }; }
+      // v5.14.2: 新增 10 个模块认知充实（健康检查/统计/指标）
+      try { if (hf.confidenceCalibrator) enrichment.confidenceCalibrator = hf.confidenceCalibrator.getStats ? hf.confidenceCalibrator.getStats() : (hf.confidenceCalibrator.assess ? hf.confidenceCalibrator.assess(ctx.input) : null); } catch (e) { enrichment.confidenceCalibrator = { error: 'unavailable' }; }
+      try { if (hf.desireCognition) enrichment.desireCognitionHealth = hf.desireCognition.getStatus ? hf.desireCognition.getStatus() : (hf.desireCognition.healthCheck ? hf.desireCognition.healthCheck() : null); } catch (e) { enrichment.desireCognitionHealth = { error: 'unavailable' }; }
+      try { if (hf.threePoisons) enrichment.threePoisonsHealth = hf.threePoisons.getStatus ? hf.threePoisons.getStatus() : (hf.threePoisons.healthCheck ? hf.threePoisons.healthCheck() : null); } catch (e) { enrichment.threePoisonsHealth = { error: 'unavailable' }; }
+      try { if (hf.logicReasoning) enrichment.logicReasoningMetrics = hf.logicReasoning.getStats ? hf.logicReasoning.getStats() : (hf.logicReasoning.healthCheck ? hf.logicReasoning.healthCheck() : null); } catch (e) { enrichment.logicReasoningMetrics = { error: 'unavailable' }; }
+      try { if (hf.decisionFeedback) enrichment.decisionFeedback = hf.decisionFeedback.getStats ? hf.decisionFeedback.getStats() : null; } catch (e) { enrichment.decisionFeedback = { error: 'unavailable' }; }
+      try { if (hf.decisionVerifier) enrichment.decisionVerifier = hf.decisionVerifier.getStats ? hf.decisionVerifier.getStats() : null; } catch (e) { enrichment.decisionVerifier = { error: 'unavailable' }; }
+      try { if (hf.loveCognition) enrichment.loveCognition = hf.loveCognition.getStatus ? hf.loveCognition.getStatus() : null; } catch (e) { enrichment.loveCognition = { error: 'unavailable' }; }
+      try { if (hf.cognitionGround) enrichment.cognitionGround = hf.cognitionGround.getStats ? hf.cognitionGround.getStats() : null; } catch (e) { enrichment.cognitionGround = { error: 'unavailable' }; }
+      try { if (hf.debateConductor) enrichment.debateConductor = hf.debateConductor.getStatus ? hf.debateConductor.getStatus() : null; } catch (e) { enrichment.debateConductor = { error: 'unavailable' }; }
+      try { if (hf.dreamEngineV2) enrichment.dreamEngineV2 = hf.dreamEngineV2.healthCheck ? hf.dreamEngineV2.healthCheck() : null; } catch (e) { enrichment.dreamEngineV2 = { error: 'unavailable' }; }
 
       return enrichment;
     },
@@ -427,6 +438,17 @@ const DEFAULT_PIPELINE = [
         memoryHits: memories.length,
         // v5.12.0: 认知充实信号
         enrichment: ctx.cognitiveEnrichment || null,
+        // v5.14.2: 认知充实 — 新增10个模块
+        confidenceCalibrator: ctx.cognitiveEnrichment?.confidenceCalibrator || null,
+        desireCognitionHealth: ctx.cognitiveEnrichment?.desireCognitionHealth || null,
+        threePoisonsHealth: ctx.cognitiveEnrichment?.threePoisonsHealth || null,
+        logicReasoningMetrics: ctx.cognitiveEnrichment?.logicReasoningMetrics || null,
+        decisionFeedback: ctx.cognitiveEnrichment?.decisionFeedback || null,
+        decisionVerifier: ctx.cognitiveEnrichment?.decisionVerifier || null,
+        loveCognition: ctx.cognitiveEnrichment?.loveCognition || null,
+        cognitionGround: ctx.cognitiveEnrichment?.cognitionGround || null,
+        debateConductor: ctx.cognitiveEnrichment?.debateConductor || null,
+        dreamEngineV2: ctx.cognitiveEnrichment?.dreamEngineV2 || null,
       };
 
       if (hf.memory && typeof hf.memory.store === 'function' && jd.direction) {
@@ -696,6 +718,17 @@ const FAST_PIPELINE = [
         },
         memoryHits: memories.length,
         mode: 'fast',
+        // v5.14.2: 认知充实 — 新增10个模块（快速模式 ctx.cognitiveEnrichment 未定义时为 null）
+        confidenceCalibrator: ctx.cognitiveEnrichment?.confidenceCalibrator || null,
+        desireCognitionHealth: ctx.cognitiveEnrichment?.desireCognitionHealth || null,
+        threePoisonsHealth: ctx.cognitiveEnrichment?.threePoisonsHealth || null,
+        logicReasoningMetrics: ctx.cognitiveEnrichment?.logicReasoningMetrics || null,
+        decisionFeedback: ctx.cognitiveEnrichment?.decisionFeedback || null,
+        decisionVerifier: ctx.cognitiveEnrichment?.decisionVerifier || null,
+        loveCognition: ctx.cognitiveEnrichment?.loveCognition || null,
+        cognitionGround: ctx.cognitiveEnrichment?.cognitionGround || null,
+        debateConductor: ctx.cognitiveEnrichment?.debateConductor || null,
+        dreamEngineV2: ctx.cognitiveEnrichment?.dreamEngineV2 || null,
       };
       if (hf.memory && typeof hf.memory.store === 'function' && jd.direction) {
         try {
