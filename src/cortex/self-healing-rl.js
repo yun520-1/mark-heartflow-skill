@@ -21,6 +21,7 @@ const crypto = require('crypto');
 // 公式注册表：把 RL 认知公式（Softmax 策略/Q-Learning）注入自我疗愈（v5.9.5 重构）
 const { getFormulaRegistry } = require('../formula/formula-registry.js');
 const _registry = getFormulaRegistry();
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
 
 // === Q-table 最大容量 ===
 const MAX_QTABLE_SIZE = 500;
@@ -114,19 +115,8 @@ function _touchEntry(ck) {
   _qMeta[ck].accessCount = (_qMeta[ck].accessCount || 0) + 1;
 }
 
-// 惰性桥接访问：不加载完整公式引擎，仅按需加载 formula-bridge
-let _bridgeCache = undefined;
-function _getBridge() {
-  if (_bridgeCache !== undefined) return _bridgeCache;
-  try {
-    const { getFormulaBridge } = require('../formula/formula-bridge.js');
-    _bridgeCache = getFormulaBridge();
-    return _bridgeCache;
-  } catch (e) {
-    _bridgeCache = null;
-    return null;
-  }
-}
+// [v5.14.1] 共享认知桥接 — 替代重复的模块级 _getBridge
+let _bridgeCache = getCognitiveBridge();
 
 class HealingMemoryRL {
   constructor(maxMemory = 100) {
@@ -257,7 +247,7 @@ class HealingMemoryRL {
     const entryUpdateCount = (_qMeta[ck].updateCount = (_qMeta[ck].updateCount || 0) + 1);
     // 自适应学习率：更多更新→更低学习率→更稳定Q值
     let learningRate = 0.2; // fallback
-    const bridge = _getBridge();
+    const bridge = _bridgeCache;
     if (bridge && typeof bridge.adaptiveLearningRate === 'function') {
       learningRate = bridge.adaptiveLearningRate(0.5, entryUpdateCount, 0.1);
     }

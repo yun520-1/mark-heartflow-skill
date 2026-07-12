@@ -488,6 +488,8 @@ class DecisionRouter {
 
     // 决策反馈循环（2026-06-28 基于 DeepSeek #1424 讨论）
     this._ruleStats = {};
+    // [v5.14.1] 共享认知桥接
+    this._bridgeCache = getCognitiveBridge();
     for (const rule of this._rules) {
       if (!rule.hasOwnProperty('weight')) rule.weight = 1.0;
       this._ruleStats[rule.id] = {
@@ -1139,7 +1141,7 @@ class DecisionRouter {
     let _efeSignal = null;
     try {
       if (matches.length >= 2) {
-        const bridge = this._getBridge();
+        const bridge = this._bridgeCache;
         if (bridge && typeof bridge.activeInferenceEFE === 'function') {
           const qDist = matches.map(m => m.confidence);
           const efe = bridge.activeInferenceEFE(qDist);
@@ -1162,7 +1164,7 @@ class DecisionRouter {
     let _shapleyWeights = null;
     try {
       if (matches.length >= 2) {
-        const bridge = this._getBridge();
+        const bridge = this._bridgeCache;
         if (bridge && typeof bridge.shapleyValue === 'function') {
           const players = matches.map(m => m.ruleId);
           // 特征函数：给定规则子集的联合置信度总和
@@ -1569,7 +1571,7 @@ class DecisionRouter {
 
     // v8.16.0: 使用加权准确率（最近决策权重更大，λ=0.3）
     let weightedAccuracyResult = null;
-    const bridge = this._getBridge();
+    const bridge = this._bridgeCache;
     if (bridge && typeof bridge.weightedAccuracy === 'function') {
       try {
         weightedAccuracyResult = bridge.weightedAccuracy(stats.decisions, 0.3);
@@ -1614,20 +1616,12 @@ class DecisionRouter {
   }
 
   /**
-   * 惰性桥接访问：获取 formula-bridge 实例（用于加权准确率等计算）
-   * @returns {object|null}
-   */
-  _getBridge() {
-    if (this._bridgeCache !== undefined) return this._bridgeCache;
-    try {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
-      this._bridgeCache = getFormulaBridge();
+     * [v5.14.1] 桥接访问 — 使用共享 cognitive-bridge（构造时已初始化）
+     * @returns {object|null}
+     */
+    _getBridge() {
       return this._bridgeCache;
-    } catch (e) {
-      this._bridgeCache = null;
-      return null;
     }
-  }
 
   /**
    * 获取规则统计信息

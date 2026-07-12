@@ -17,21 +17,16 @@
  * dispatch: 'decision.analyze' / 'decision.ddm' / 'decision.sdt' / 'decision.prospect'
  */
 
-const { getFormulaBridge } = require('../formula/formula-bridge.js');
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
 
 class DecisionEngine {
   constructor(options = {}) {
-    this._bridge = null;
+    this._bridge = getCognitiveBridge();
     this._beliefState = new Map();  // 信念状态: hypothesis → probability
     this._qTable = new Map();       // Q值表: state_action → value
     this._learningRate = options.learningRate || 0.1;
     this._discountFactor = options.discountFactor || 0.95;
     this._explorationRate = options.explorationRate || 0.1;
-  }
-
-  _getBridge() {
-    if (!this._bridge) this._bridge = getFormulaBridge();
-    return this._bridge;
   }
 
   // ═══════════════════════════════════════════
@@ -45,7 +40,7 @@ class DecisionEngine {
    */
   ddmAnalyze(params = {}) {
     const { drift = 1, threshold = 1, startingPoint = 0, nonDecisionTime = 0.3, noise = 1 } = params;
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const dt = bridge.ddmDecisionTime(startingPoint, nonDecisionTime, drift, threshold, noise);
     const er = bridge.ddmErrorRate(startingPoint, nonDecisionTime, drift, threshold, noise);
     return {
@@ -84,7 +79,7 @@ class DecisionEngine {
    * @returns {object} { dPrime, beta, aPrime, cCriterion, isUnbiased }
    */
   sdtAnalyze(hitRate, falseAlarmRate) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const dPrime = bridge.sdtDPrime(hitRate, falseAlarmRate);
     const beta = bridge.sdtBeta(hitRate, falseAlarmRate);
     const aPrime = bridge.sdtAPrime(hitRate, falseAlarmRate);
@@ -112,7 +107,7 @@ class DecisionEngine {
    * @returns {object} { prospectValues, weightedProbs, subjectiveValues, bestChoice }
    */
   prospectAnalyze(gambles, params = {}) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const { alpha = 0.88, beta = 0.88, lambda = 2.25, gamma = 0.61 } = params;
     
     const results = gambles.map((g, idx) => {
@@ -138,7 +133,7 @@ class DecisionEngine {
    * @returns {number} 后验概率
    */
   updateBelief(hypothesis, likelihood, evidenceMarginal) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const prior = this._beliefState.get(hypothesis) || 0.5;
     const posterior = bridge.bayesUpdate(likelihood, prior, evidenceMarginal);
     this._beliefState.set(hypothesis, Math.max(0, Math.min(1, posterior)));
@@ -157,7 +152,7 @@ class DecisionEngine {
    * @returns {object} { bf, interpretation, favoredHypothesis }
    */
   compareHypotheses(h1Likelihood, h0Likelihood) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const bf = bridge.bayesFactor(h1Likelihood, h0Likelihood);
     let interpretation = 'inconclusive';
     if (bf > 100) interpretation = 'decisive for H1';

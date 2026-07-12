@@ -16,11 +16,12 @@
  * dispatch: 'cognitiveLoad.estimate' / 'cognitiveLoad.attentionAllocation' / 'cognitiveLoad.flowState'
  */
 
-const { getFormulaBridge } = require('../formula/formula-bridge.js');
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
 
 class CognitiveLoadEngineV2 {
   constructor(options = {}) {
-    this._bridge = null;
+    // [v5.14.1] 共享认知桥接 — 替代重复的 _getBridge() 访问器
+    this._bridge = getCognitiveBridge();
     // [FORMULA v5.11.0] WM容量由 EI 比值动态计算，非固定 5
     // 默认使用标准 Cowan 4±2，但在 load 计算时会动态调整
     this._baseWMCapacity = options.workingMemoryCapacity || 5;  // Cowan 4±2
@@ -30,11 +31,6 @@ class CognitiveLoadEngineV2 {
     this._attentionWeights = new Map();  // 通道 → 权重
     this._loadHistory = [];  // 负载历史
     this._stressLevel = 0;   // 累积压力水平
-  }
-
-  _getBridge() {
-    if (!this._bridge) this._bridge = getFormulaBridge();
-    return this._bridge;
   }
 
   // ═══════════════════════════════════════════
@@ -48,7 +44,7 @@ class CognitiveLoadEngineV2 {
    * @returns {object} { cl, intrinsic, extraneous, germane, entropy, loadLevel, recommendations }
    */
   estimate(text, context = {}) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const t = typeof text === 'string' ? text : '';
     const tokens = t.split(/\s+/).filter(Boolean);
     const uniqueTokens = new Set(tokens);
@@ -164,7 +160,7 @@ class CognitiveLoadEngineV2 {
    * @returns {object} { allocation, dominant, totalPrecision }
    */
   attentionAllocation(channels) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     if (!Array.isArray(channels) || channels.length === 0) return { allocation: [], dominant: null, totalPrecision: 0 };
 
     // 精确度权重
@@ -196,7 +192,7 @@ class CognitiveLoadEngineV2 {
    * @returns {object} { flowScore, state, optimalChallenge, gapToFlow }
    */
   flowState(challenge, skill) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const flowScore = bridge.flowChannel(challenge, Math.max(0.01, skill));
     const optimalChallenge = bridge.flowOptimal(skill);
 

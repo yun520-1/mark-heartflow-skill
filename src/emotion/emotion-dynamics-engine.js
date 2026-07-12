@@ -16,11 +16,11 @@
  * dispatch: 'emotionDynamics.analyze' / 'emotionDynamics.regulate' / 'emotionDynamics.resilience'
  */
 
-const { getFormulaBridge } = require('../formula/formula-bridge.js');
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
 
 class EmotionDynamicsEngine {
   constructor(options = {}) {
-    this._bridge = null;
+    this._bridge = getCognitiveBridge();
     // PAD状态
     this._padState = { pleasure: 0, arousal: 0.5, dominance: 0.5 };
     // 情绪历史（用于弹性计算）
@@ -30,11 +30,6 @@ class EmotionDynamicsEngine {
     this._conditioningStrength = new Map();  // stimulus → strength
     // 自我效能
     this._selfEfficacy = options.initialSelfEfficacy || 0.5;
-  }
-
-  _getBridge() {
-    if (!this._bridge) this._bridge = getFormulaBridge();
-    return this._bridge;
   }
 
   // ═══════════════════════════════════════════
@@ -52,7 +47,7 @@ class EmotionDynamicsEngine {
     // 更稳定的情绪模式 → 更小的谱隙 → 更慢的衰减
     let decay = 0.05; // fallback default
     try {
-      const bridge = this._getBridge();
+      const bridge = this._bridge;
       if (bridge && this._emotionHistory.length >= 3) {
         const emotionLabels = this._emotionHistory.map(h => h.label || 'neutral');
         const result = bridge.emotionTransitionMatrix(emotionLabels, null, 1);
@@ -99,7 +94,7 @@ class EmotionDynamicsEngine {
     // 高匹配 → 阈值收紧（情绪更精细）；低匹配 → 阈值放宽（避免错误分类）
     let flowMatch = 0.5; // 默认中性匹配
     try {
-      const bridge = this._getBridge();
+      const bridge = this._bridge;
       if (bridge) {
         // 用当前 arousal 作为 challenge，pleasure 作为 skill 的代理
         const challenge = Math.max(0.1, arousal);
@@ -115,7 +110,7 @@ class EmotionDynamicsEngine {
     // 计算基本情绪的混合信号，用连续谱代替离散阈值
     let blendedEmotion = null;
     try {
-      const bridge = this._getBridge();
+      const bridge = this._bridge;
       if (bridge && typeof bridge.emotionBlend === 'function') {
         // 将 PAD 映射为基本情绪权重
         // excited = high P + high A, calm = high P + low A, angry = low P + high A, sad = low P + low A
@@ -277,7 +272,7 @@ class EmotionDynamicsEngine {
    * @returns {object} { stimulus, oldStrength, newStrength, predictionError }
    */
   conditionize(stimulus, usStrength, salience = 1, learningRate = 0.1) {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const oldStrength = this._conditioningStrength.get(stimulus) || 0;
     const result = bridge.rescorlaWagner ? 
       { deltaV: learningRate * salience * (usStrength - oldStrength), predictionError: usStrength - oldStrength } :
@@ -327,7 +322,7 @@ class EmotionDynamicsEngine {
    * @returns {object} { currentPerformance, optimalArousal, performanceGap, recommendation }
    */
   yerkesDodsonAnalysis(taskComplexity = 'moderate') {
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const arousal = this._padState.arousal;
     
     // [FORMULA v5.11.0] 用 yerkesDodsonOptimal 动态计算最优唤醒，替换硬编码 {simple:0.7,moderate:0.5,complex:0.3}

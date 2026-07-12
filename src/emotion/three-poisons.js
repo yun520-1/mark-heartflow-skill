@@ -62,19 +62,14 @@ const ThreePoisons = {
   },
 
   // ============================================================
-  // 0. [FORMULA] 公式桥接（贝叶斯/遗忘/熵），懒加载单例
+  // 0. [v5.14.1] 共享认知桥接
   // ============================================================
-  _formulaBridge: null,
-  _getFormulaBridge() {
-    if (!this._formulaBridge) {
-      try {
-        const { getFormulaBridge } = require('../formula/formula-bridge.js');
-        this._formulaBridge = getFormulaBridge();
-      } catch (e) {
-        this._formulaBridge = null;
-      }
+  get _bridge() {
+    if (!this.__bridge) {
+      const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+      this.__bridge = getCognitiveBridge();
     }
-    return this._formulaBridge;
+    return this.__bridge;
   },
 
   // ============================================================
@@ -248,7 +243,7 @@ const ThreePoisons = {
     let bayesResistance = false;
     const ev = d.evidence;
     if (ev && typeof ev.priorA === 'number' && typeof ev.pBA === 'number' && typeof ev.pB === 'number') {
-      const bridge = this._getFormulaBridge();
+      const bridge = this._bridge;
       if (bridge) {
         const posterior = bridge.bayesUpdate(ev.pBA, ev.priorA, ev.pB);
         bayesUpdate = Math.abs(posterior - ev.priorA); // 信念更新幅度

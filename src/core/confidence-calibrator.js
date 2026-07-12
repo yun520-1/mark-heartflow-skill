@@ -76,20 +76,9 @@ class ConfidenceCalibrator {
     ];
 
     this._load();
-    // [FORMULA] 公式桥接（交叉熵/KL散度校准），懒加载单例
-    this._formulaBridge = null;
-  }
-
-  _getFormulaBridge() {
-    if (!this._formulaBridge) {
-      try {
-        const { getFormulaBridge } = require('../formula/formula-bridge.js');
-        this._formulaBridge = getFormulaBridge();
-      } catch (e) {
-        this._formulaBridge = null;
-      }
-    }
-    return this._formulaBridge;
+    // [v5.14.1] 共享认知桥接
+    const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+    this._bridge = getCognitiveBridge();
   }
 
   /**
@@ -344,7 +333,7 @@ class ConfidenceCalibrator {
    */
   _computeDynamicThresholds(stats = {}) {
     try {
-      const bridge = this._getFormulaBridge();
+      const bridge = this._bridge;
       if (!bridge) return { ...this._hardcodedThresholds };
 
       // 1. Dirichlet 置信度：用伪计数构建证据分布
@@ -405,7 +394,7 @@ class ConfidenceCalibrator {
     // F = 0.5 * (s - μ)² / σ² + 0.5 * ln(2πσ²)
     // 高 F → 高预测误差 → 应降低置信；低 F → 预测准确 → 可维持置信
     try {
-      const bridge = this._getFormulaBridge();
+      const bridge = this._bridge;
       if (bridge && typeof bridge.predictiveCodingFreeEnergy === 'function') {
         // s = rawScore (observed), μ = 0.5 (expected baseline), σ = 0.3
         const fEnergy = bridge.predictiveCodingFreeEnergy(rawScore, 0.5, 0.3);
@@ -423,7 +412,7 @@ class ConfidenceCalibrator {
     // 用评分维度作为伪计数，构建 Dirichlet 分布置信度
     // 高证据一致性 → 低熵 → 高置信度；分散证据 → 高熵 → 应降低置信
     try {
-      const bridge = this._getFormulaBridge();
+      const bridge = this._bridge;
       if (bridge && scores) {
         const evidenceCounts = [
           scores.evidenceCoverage || 0.5,
@@ -445,7 +434,7 @@ class ConfidenceCalibrator {
     // 原始分数高 → 用贝叶斯证据因子或对数损失来精确计算调整幅度
     if (rawScore > 0.8) {
       try {
-        const bridge = this._getFormulaBridge();
+        const bridge = this._bridge;
         if (bridge) {
           // 使用 logLoss 计算过度自信惩罚
           // p_predicted = rawScore, p_actual = feedback 历史准确率
@@ -545,7 +534,7 @@ class ConfidenceCalibrator {
 
     // [v5.11.0] 用 weightedAccuracy 驱动阈值调整
     try {
-      const bridge = this._getFormulaBridge();
+      const bridge = this._bridge;
       if (bridge && recent.length > 0) {
         const decisions = recent.map(r => ({ correct: r.feedback === true }));
         const wa = bridge.weightedAccuracy(decisions, 0.3);
@@ -651,7 +640,7 @@ class ConfidenceCalibrator {
     const withFeedback = this.records.filter(r => r.feedback !== null);
     if (withFeedback.length === 0) return null;
 
-    const bridge = this._getFormulaBridge();
+    const bridge = this._bridge;
     let totalAbsError = 0;
     let totalLogLoss = 0;
 

@@ -14,13 +14,13 @@
  * dispatch: 'psychologyDialogue.analyze' / 'psychologyDialogue.respond' / 'psychologyDialogue.suggestTechnique'
  */
 
-const { getFormulaBridge } = require('../formula/formula-bridge.js');
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
 const fs = require('fs');
 const path = require('path');
 
 class PsychologyDialogueEngine {
   constructor(options = {}) {
-    this._bridge = null;
+    this._bridge = getCognitiveBridge();
     this._trainingData = null;
     this._therapeuticAlliance = 0.5;  // 治疗联盟强度(0-1)
     this._sessionHistory = [];
@@ -127,11 +127,6 @@ class PsychologyDialogueEngine {
     this._loadTrainingData(options.dataPath);
   }
 
-  _getBridge() {
-    if (!this._bridge) this._bridge = getFormulaBridge();
-    return this._bridge;
-  }
-
   _loadTrainingData(dataPath) {
     const defaultPath = path.join(__dirname, 'psychology-training-data.json');
     const filePath = dataPath || defaultPath;
@@ -216,7 +211,7 @@ class PsychologyDialogueEngine {
     }));
 
     // 基于治疗联盟强度调整推荐
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const allianceWeight = this._therapeuticAlliance;
     const rationale = `基于${emotion}情绪特征，推荐${this.techniqueNames[primaryTechnique]}作为首选技术。治疗联盟强度: ${allianceWeight.toFixed(2)}`;
 
@@ -283,7 +278,7 @@ class PsychologyDialogueEngine {
     }
 
     // 6. 更新治疗联盟（Rescorla-Wagner）
-    const bridge = this._getBridge();
+    const bridge = this._bridge;
     const oldAlliance = this._therapeuticAlliance;
     // 每次积极互动增强联盟
     const deltaAlliance = 0.05 * (1 - this._therapeuticAlliance);
