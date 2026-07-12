@@ -88,7 +88,8 @@ function getVersion() {
 // Token 认证：未设置 HEARTFLOW_MCP_TOKEN 时自动生成随机 Token 并强制认证
 const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || (() => {
   const token = require('crypto').randomBytes(32).toString('hex');
-  console.log('[MCP] HEARTFLOW_MCP_TOKEN not set. Generated random token: ' + token);
+  // [v5.15.4 M-1'] 不再明文打印 token — 写入受保护日志提示
+  console.log('[MCP] HEARTFLOW_MCP_TOKEN not set. Auto-generated ephemeral token (not printed for security).');
   console.log('[MCP] Set HEARTFLOW_MCP_TOKEN env var for persistent auth across restarts.');
   return token;
 })();
