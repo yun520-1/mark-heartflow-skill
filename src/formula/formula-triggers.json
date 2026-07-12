@@ -893,6 +893,11 @@
           "kind": "stage-primitive",
           "ref": "pad_pleasure",
           "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "emotion_transition_entropy",
+          "weight": 1
         }
       ]
     },
@@ -1125,6 +1130,11 @@
           "kind": "stage-primitive",
           "ref": "precision_weight",
           "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "maxcal_psi",
+          "weight": 1
         }
       ]
     },
@@ -1260,13 +1270,43 @@
         "脑网络",
         "模块度",
         "神经可塑性",
-        "突触"
+        "突触",
+        "临界",
+        "临界点",
+        "branching",
+        "susceptibility",
+        "分支比",
+        "雪崩",
+        "神经临界"
       ],
       "refs": [
         {
           "kind": "stage-primitive",
           "ref": "brain_network_modularity",
           "weight": 0.5
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "criticality_susceptibility",
+          "weight": 1
+        }
+      ]
+    },
+    "criticality": {
+      "synonyms": [
+        "临界",
+        "临界点",
+        "branching",
+        "susceptibility",
+        "分支比",
+        "雪崩",
+        "神经临界"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "criticality_susceptibility",
+          "weight": 1
         }
       ]
     }

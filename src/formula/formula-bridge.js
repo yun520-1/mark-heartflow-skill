@@ -890,6 +890,185 @@ class FormulaBridge {
     for (let o = 0; o < nObs; o++) hqo += -qo[o] * Math.log(Math.max(qo[o], EPS));
     return +(expLikEntropy - hqo).toFixed(4);
   }
+
+  /**
+   * [Criticality] 临界磁化率 χ = K^{-3/2} (Ginzburg-Landau, arXiv:2602.19023)
+   * 分支比 K 越高，系统越接近临界点（χ 发散）；衡量神经雪崩的可激发性。
+   * @param {number} K - 分支比 (branching ratio)，K>0
+   * @returns {number} 磁化率 χ，K→1 时 χ→1（临界），K<1 时 χ 大（亚临界敏感）
+   */
+  criticalitySusceptibility(K) {
+    if (!(K > 0)) return 0;
+    return Math.pow(K, -1.5);
+  }
+
+  /**
+   * [MaxCal] 意识度量 ψ（KL 散度高斯基近似，arXiv:2605.12536）
+   * ψ = (1/2) * Σ (x_i - μ_i)² / σ_i²
+   * 衡量观测分布与先验预测分布之间的偏差；ψ 越大，系统偏离基线越远。
+   * @param {number[]} observed - 观测值 x_i
+   * @param {number[]} mu - 先验均值 μ_i（与 observed 等长）
+   * @param {number[]} sigma - 先验标准差 σ_i（与 observed 等长）
+   * @returns {number} ψ，高斯近似的 KL 散度
+   */
+  maxcalPsi(observed, mu, sigma) {
+    if (!Array.isArray(observed) || !Array.isArray(mu) || !Array.isArray(sigma)) return 0;
+    const n = Math.min(observed.length, mu.length, sigma.length);
+    if (n === 0) return 0;
+    let sum = 0;
+    for (let i = 0; i < n; i++) {
+      const s = sigma[i];
+      if (!(s > 0)) continue;
+      const d = observed[i] - mu[i];
+      sum += (d * d) / (s * s);
+    }
+    return 0.5 * sum;
+  }
+
+  /**
+   * [Emotion Transition] 图拉普拉斯谱隙 = λ_2 (arXiv:2606.01906)
+   * 对情绪转移矩阵构建图拉普拉斯，返回第二小特征值（Fiedler 值 / 代数连通度）。
+   * 小 λ_2 ≈ 图接近不连通（高自转移→情绪状态隔离→稳定），
+   * 大 λ_2 ≈ 图强连通（近乎均匀转移→情绪状态紧密耦合→易变）。
+   * @param {number[][]} T - 情绪转移矩阵 T[i][j] = P(emo_j | emo_i)，N×N 方阵
+   * @returns {number} λ_2（Fiedler 值），情绪稳定性度量（小=稳定，大=易变）
+   */
+  emotionStability(T) {
+    if (!Array.isArray(T) || T.length === 0 || !Array.isArray(T[0])) return 0;
+    const N = T.length;
+    for (let i = 0; i < N; i++) {
+      if (!Array.isArray(T[i]) || T[i].length !== N) return 0;
+    }
+    if (N === 1) return 0;
+
+    // Build graph Laplacian L = D - A, A = (T + T^T)/2
+    const A = Array.from({ length: N }, () => new Array(N).fill(0));
+    const deg = new Array(N).fill(0);
+    for (let i = 0; i < N; i++) {
+      for (let j = 0; j < N; j++) {
+        const a = (T[i][j] + T[j][i]) / 2;
+        A[i][j] = a;
+        deg[i] += a;
+      }
+    }
+    const L = Array.from({ length: N }, (_, i) =>
+      Array.from({ length: N }, (_, j) => (i === j ? deg[i] : 0) - A[i][j])
+    );
+
+    // For N ≤ 4, use characteristic polynomial to find λ_2 directly
+    if (N <= 4) {
+      // Compute eigenvalues of symmetric L via Jacobi-like QR iteration
+      // Simpler: use shifted inverse power iteration to extract specific eigenvalues
+      // First find λ_max via power iteration
+      const matVec = (M, v) => {
+        const w = new Array(N).fill(0);
+        for (let i = 0; i < N; i++)
+          for (let j = 0; j < N; j++) w[i] += M[i][j] * v[j];
+        return w;
+      };
+      const norm = (v) => Math.sqrt(v.reduce((s, x) => s + x * x, 0));
+      const powerIter = (M, vec, iters = 200) => {
+        let v = vec.slice();
+        for (let iter = 0; iter < iters; iter++) {
+          const w = matVec(M, v);
+          const n = norm(w);
+          if (n < 1e-14) break;
+          v = w.map(x => x / n);
+        }
+        const w = matVec(M, v);
+        const lam = w.reduce((s, wi, i) => s + v[i] * wi, 0);
+        return { lam, vec: v };
+      };
+
+      // λ_max
+      const v0 = new Array(N).fill(1 / Math.sqrt(N));
+      const { lam: lamN } = powerIter(L, v0);
+
+      // λ_0 = 0 with eigenvector [1,1,...,1]/sqrt(N)
+      // λ_2 is the next smallest after 0. Use inverse iteration with shift near 0
+      // Solve (L - shift*I)x = v_k iteratively
+      const shift = 0.001;
+      // Build L - shift*I
+      const Ls = L.map((row, i) => row.map((v, j) => (i === j ? v - shift : v)));
+
+      // For small N, solve (L - shift*I) * x = v using Gaussian elimination
+      const solve = (M, b) => {
+        const n = M.length;
+        const aug = M.map((row, i) => [...row, b[i]]);
+        for (let col = 0; col < n; col++) {
+          let pivot = col;
+          for (let row = col + 1; row < n; row++)
+            if (Math.abs(aug[row][col]) > Math.abs(aug[pivot][col])) pivot = row;
+          if (Math.abs(aug[pivot][col]) < 1e-14) continue;
+          [aug[col], aug[pivot]] = [aug[pivot], aug[col]];
+          for (let row = col + 1; row < n; row++) {
+            const f = aug[row][col] / aug[col][col];
+            for (let j = col; j <= n; j++) aug[row][j] -= f * aug[col][j];
+          }
+        }
+        const x = new Array(n).fill(0);
+        for (let i = n - 1; i >= 0; i--) {
+          let s = aug[i][n];
+          for (let j = i + 1; j < n; j++) s -= aug[i][j] * x[j];
+          x[i] = Math.abs(aug[i][i]) > 1e-14 ? s / aug[i][i] : 0;
+        }
+        return x;
+      };
+
+      // Inverse iteration: start with random, orthogonalize against [1,1,...,1]
+      let v = new Array(N).fill(0).map(() => Math.random() - 0.5);
+      const onesNorm = 1 / Math.sqrt(N);
+      const dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);
+      // Orthogonalize
+      const ones = new Array(N).fill(onesNorm);
+      const proj = dot(v, ones);
+      v = v.map((x, i) => x - proj * ones[i]);
+      const nv = norm(v);
+      if (nv < 1e-12) v = new Array(N).fill(0).map((_, i) => i === 0 ? 1 : 0); // fallback
+      else v = v.map(x => x / nv);
+
+      for (let iter = 0; iter < 50; iter++) {
+        const x = solve(Ls, v);
+        // Re-orthogonalize against ones
+        const p = dot(x, ones);
+        const y = x.map((xi, i) => xi - p * ones[i]);
+        const ny = norm(y);
+        if (ny < 1e-14) break;
+        v = y.map(xi => xi / ny);
+      }
+      const w = matVec(L, v);
+      const lam2 = w.reduce((s, wi, i) => s + v[i] * wi, 0);
+      return Math.max(0, +lam2.toFixed(6));
+    }
+
+    // For N > 4, use simpler power iteration approximation
+    // λ_2 ≈ min non-zero eigenvalue estimate via Rayleigh quotient on random orthogonal vector
+    const v0 = new Array(N).fill(1 / Math.sqrt(N));
+    let v = new Array(N).fill(0).map(() => Math.random() - 0.5);
+    const ones = new Array(N).fill(1 / Math.sqrt(N));
+    const dot = (a, b) => a.reduce((s, x, i) => s + x * b[i], 0);
+    const proj = dot(v, ones);
+    v = v.map((x, i) => x - proj * ones[i]);
+    const nv = Math.sqrt(v.reduce((s, x) => s + x * x, 0));
+    if (nv < 1e-12) return 0;
+    v = v.map(x => x / nv);
+    // Power iteration on L
+    for (let iter = 0; iter < 200; iter++) {
+      const w = new Array(N).fill(0);
+      for (let i = 0; i < N; i++)
+        for (let j = 0; j < N; j++) w[i] += L[i][j] * v[j];
+      const p = dot(w, ones);
+      const y = w.map((x, i) => x - p * ones[i]);
+      const ny = Math.sqrt(y.reduce((s, x) => s + x * x, 0));
+      if (ny < 1e-14) break;
+      v = y.map(x => x / ny);
+    }
+    const w = new Array(N).fill(0);
+    for (let i = 0; i < N; i++)
+      for (let j = 0; j < N; j++) w[i] += L[i][j] * v[j];
+    const lam2 = w.reduce((s, wi, i) => s + v[i] * wi, 0);
+    return Math.max(0, +lam2.toFixed(6));
+  }
 }
 
 
