@@ -7,7 +7,8 @@ const DEFAULT_TIMEOUT = 10000; // 10秒默认超时
 const DEFAULT_MAX_RETRIES = 2;
 
 /**
- * 带超时的安全 fetch
+ * 带超时 + SSRF防护的安全 fetch
+ * [v5.15.5 S2] 强制调用 validateFetchUrl 做出网校验
  * @param {string} url - 请求URL
  * @param {Object} [options] - fetch 选项
  * @param {number} [options.timeout=10000] - 超时毫秒
@@ -15,6 +16,19 @@ const DEFAULT_MAX_RETRIES = 2;
  * @returns {Promise<Response>}
  */
 async function safeFetch(url, options = {}) {
+  // [v5.15.5 S2] SSRF防护：所有出网请求强制经 url-validator 校验
+  try {
+    const { validateFetchUrl } = require('../security/url-validator.js');
+    const check = validateFetchUrl(url);
+    if (!check.safe) {
+      throw new Error(`SSRF blocked: ${check.reason} (URL: ${url})`);
+    }
+  } catch (e) {
+    if (e.message.startsWith('SSRF blocked')) throw e;
+    // validator本身加载失败 → 降级拒绝（fail-closed）
+    throw new Error(`SSRF validation unavailable for: ${url}`);
+  }
+
   const { timeout = DEFAULT_TIMEOUT, maxRetries = DEFAULT_MAX_RETRIES, ...fetchOpts } = options;
   
   let lastError;
