@@ -1069,6 +1069,159 @@ class FormulaBridge {
     const lam2 = w.reduce((s, wi, i) => s + v[i] * wi, 0);
     return Math.max(0, +lam2.toFixed(6));
   }
+
+  // ─── v8.15.0 四大新公式 (arXiv 2025-2026) ───
+
+  /**
+   * [GAP 1] 情绪转移矩阵 (Dirichlet-Multinomial posterior, arXiv:2606.01906)
+   * T[i][j] = (count[i→j] + α) / (count[i→*] + Kα)
+   * 从情绪标签序列计算 Dirichlet 后验转移矩阵，返回谱隙（稳定性）和惯性。
+   * @param {string[]} emotionSequence - 情绪标签序列，如 ['neutral','happy','happy','sad',...]
+   * @param {number} [K=1] - 类别数（如果未提供则自动推断）
+   * @param {number} [alpha=1] - Dirichlet 先验超参数 α
+   * @returns {{T: number[][], spectralGap: number, inertia: number, volatility: number, labels: string[]}}
+   */
+  emotionTransitionMatrix(emotionSequence, K = null, alpha = 1) {
+    if (!Array.isArray(emotionSequence) || emotionSequence.length < 2) {
+      return { T: [], spectralGap: 0, inertia: 0, volatility: 0, labels: [] };
+    }
+    // Infer labels and K
+    const labelSet = [...new Set(emotionSequence)];
+    const labels = labelSet.sort();
+    const k = K || labels.length;
+    if (k === 0) return { T: [], spectralGap: 0, inertia: 0, volatility: 0, labels: [] };
+
+    // Build label→index map
+    const idx = {};
+    labels.forEach((l, i) => { idx[l] = i; });
+
+    // Count transitions
+    const count = Array.from({ length: k }, () => new Array(k).fill(0));
+    const rowCount = new Array(k).fill(0);
+    for (let t = 0; t < emotionSequence.length - 1; t++) {
+      const from = idx[emotionSequence[t]];
+      const to = idx[emotionSequence[t + 1]];
+      if (from !== undefined && to !== undefined) {
+        count[from][to]++;
+        rowCount[from]++;
+      }
+    }
+
+    // Dirichlet-Multinomial posterior: T[i][j] = (count[i→j] + α) / (count[i→*] + Kα)
+    const T = Array.from({ length: k }, (_, i) => {
+      const denom = rowCount[i] + k * alpha;
+      return Array.from({ length: k }, (_, j) => (count[i][j] + alpha) / denom);
+    });
+
+    // Spectral gap from Laplacian
+    const spectralGap = this.emotionStability(T);
+
+    // Inertia: average diagonal (self-transition probability)
+    let inertia = 0;
+    for (let i = 0; i < k; i++) inertia += T[i][i];
+    inertia /= k;
+
+    // Volatility = 1 - inertia
+    const volatility = 1 - inertia;
+
+    return { T, spectralGap, inertia: +inertia.toFixed(4), volatility: +volatility.toFixed(4), labels };
+  }
+
+  /**
+   * [GAP 2] Dirichlet 证据累积置信度 (arXiv:2605.26147)
+   * α_new = α_old + evidence. 停止思考当 H(Dir(α)) < τ.
+   * 置信度 = 1 - H(Dir(α)) / H_max
+   * @param {number[]} evidenceCounts - 各选项的证据伪计数，如 [3, 1, 0.5]
+   * @param {number} [priorStrength=1] - 先验强度 α_0
+   * @param {number} [tau=0.5] - 熵阈值，低于此停止思考
+   * @returns {{alpha: number[], precision: number, entropy: number, confidence: number, shouldStop: boolean}}
+   */
+  dirichletConfidence(evidenceCounts, priorStrength = 1, tau = 0.5) {
+    if (!Array.isArray(evidenceCounts) || evidenceCounts.length === 0) {
+      return { alpha: [], precision: 0, entropy: Infinity, confidence: 0, shouldStop: false };
+    }
+    const K = evidenceCounts.length;
+    const alpha = evidenceCounts.map(c => Math.max(0, c) + priorStrength);
+    const alpha0 = alpha.reduce((s, a) => s + a, 0);
+    const precision = alpha0;
+
+    // Entropy of Dirichlet: H = log B(α) + (α0 - K)·ψ(α0) - Σ (α_i - 1)·ψ(α_i)
+    // Use approximation: H ≈ -Σ (α_i/α0) * log(α_i/α0) + (K-1)/(2*α0)
+    const probs = alpha.map(a => a / alpha0);
+    let H = 0;
+    for (const p of probs) {
+      if (p > 1e-16) H -= p * Math.log(p);
+    }
+    H += (K - 1) / (2 * alpha0); // correction term
+
+    // H_max = log(K) (uniform distribution)
+    const Hmax = Math.log(K);
+    const confidence = Hmax > 0 ? Math.max(0, Math.min(1, 1 - H / Hmax)) : 0;
+    const shouldStop = H < tau;
+
+    return {
+      alpha,
+      precision: +precision.toFixed(4),
+      entropy: +H.toFixed(4),
+      confidence: +confidence.toFixed(4),
+      shouldStop
+    };
+  }
+
+  /**
+   * [GAP 3] E/I 平衡工作记忆容量 (arXiv:2606.27529)
+   * WM_capacity = base_capacity / (1 + E/I_ratio)
+   * E/I_ratio = mean(W_exc) / mean(W_inh)
+   * @param {number} baseCapacity - 基础 WM 容量（如 72）
+   * @param {number} eRatio - 兴奋性权重均值 W_exc
+   * @param {number} iRatio - 抑制性权重均值 W_inh
+   * @param {number} [stressLevel=0] - 压力水平（0-1），进一步降低容量
+   * @returns {{capacity: number, eiRatio: number, reduction: number, stressPenalty: number}}
+   */
+  eiWorkingMemory(baseCapacity, eRatio, iRatio, stressLevel = 0) {
+    if (!(iRatio > 0)) iRatio = 1;
+    const ei = eRatio / iRatio;
+    const stressPenalty = Math.max(0, Math.min(0.5, stressLevel || 0));
+    const rawCapacity = baseCapacity / (1 + ei);
+    const capacity = rawCapacity * (1 - stressPenalty);
+    return {
+      capacity: +capacity.toFixed(2),
+      eiRatio: +ei.toFixed(4),
+      reduction: +((1 - capacity / baseCapacity) * 100).toFixed(1),
+      stressPenalty: +stressPenalty.toFixed(2)
+    };
+  }
+
+  /**
+   * [GAP 4] 动机偏差模型 (Grether's α-β, arXiv:2606.17657)
+   * log(P(want)/P(not)) = α × log(LR) + β
+   * α = evidence sensitivity (理性程度), β = motivational bias (动机偏差)
+   * @param {number} priorOdds - 先验赔率 P(want)/P(not)
+   * @param {number} evidenceLR - 证据似然比 P(evidence|want)/P(evidence|not)
+   * @param {number} alpha - 证据敏感度 (α>1: 理性, α<1: 证据不足, α≈0: 完全忽略证据)
+   * @param {number} beta - 动机偏差 (β>0: 偏向want, β<0: 偏向not)
+   * @returns {{posteriorOdds: number, posteriorProb: number, biasDirection: string, biasMagnitude: number}}
+   */
+  motivationalBias(priorOdds, evidenceLR, alpha = 1, beta = 0) {
+    const logPrior = Math.log(Math.max(1e-15, priorOdds));
+    const logLR = Math.log(Math.max(1e-15, evidenceLR));
+    const logPosterior = alpha * logLR + beta + logPrior;
+    const posteriorOdds = Math.exp(logPosterior);
+    const posteriorProb = posteriorOdds / (1 + posteriorOdds);
+
+    let biasDirection = 'neutral';
+    if (beta > 0.1) biasDirection = 'want_bias';
+    else if (beta < -0.1) biasDirection = 'avoid_bias';
+    else if (alpha < 0.5) biasDirection = 'evidence_insensitive';
+    else if (alpha > 1.5) biasDirection = 'evidence_sensitive';
+
+    return {
+      posteriorOdds: +posteriorOdds.toFixed(4),
+      posteriorProb: +posteriorProb.toFixed(4),
+      biasDirection,
+      biasMagnitude: +Math.abs(beta).toFixed(4)
+    };
+  }
 }
 
 

@@ -47,8 +47,23 @@ class EmotionDynamicsEngine {
    * @returns {object} { pad, emotionLabel, intensity, valence }
    */
   updatePAD(input = {}) {
+    // [FORMULA v8.15.0] 情绪转移矩阵驱动的自适应衰减
+    // 从实际情绪历史计算 Dirichlet-Multinomial 转移矩阵的谱隙
+    // 更稳定的情绪模式 → 更小的谱隙 → 更慢的衰减
+    let decay = 0.05; // fallback default
+    try {
+      const bridge = this._getBridge();
+      if (bridge && this._emotionHistory.length >= 3) {
+        const emotionLabels = this._emotionHistory.map(h => h.label || 'neutral');
+        const result = bridge.emotionTransitionMatrix(emotionLabels, null, 1);
+        if (result && result.spectralGap !== undefined) {
+          // 小谱隙=稳定情绪 → 慢衰减；大谱隙=易变情绪 → 快衰减
+          decay = Math.max(0.01, Math.min(0.2, 1 - result.spectralGap));
+        }
+      }
+    } catch (e) { /* fallback to fixed decay */ }
+
     // 衰减：情绪自然回归基线
-    const decay = 0.05;
     this._padState.pleasure *= (1 - decay);
     this._padState.arousal *= (1 - decay);
     this._padState.dominance *= (1 - decay);

@@ -553,6 +553,31 @@ class FormulaRegistry {
       impl: (T) => _b.emotionStability(T),
       doc: '情绪稳定性 λ_2（图拉普拉斯谱隙，2606.01906），小=稳定，大=易变',
     });
+    // ─── v8.15.0 四大新公式注册 ───
+    // GAP 1: 情绪转移矩阵
+    this.register('emotion_arousal', {
+      id: 'emotion_transition_matrix', formulaId: 'emotion_transition_matrix',
+      impl: (seq, K, alpha) => _b.emotionTransitionMatrix(seq, K, alpha),
+      doc: 'Dirichlet 后验转移矩阵 T[i][j] = (count+α)/(row+ Kα), 谱隙+惯性+波动性 (2606.01906)',
+    });
+    // GAP 2: Dirichlet 置信度
+    this.register('confidence_aggr', {
+      id: 'dirichlet_confidence', formulaId: 'dirichlet_confidence',
+      impl: (counts, prior, tau) => _b.dirichletConfidence(counts, prior, tau),
+      doc: 'Dirichlet 证据累积置信度 α_new=α_old+evidence, 熵<τ则停止思考 (2605.26147)',
+    });
+    // GAP 3: E/I 工作记忆
+    this.register('calibration', {
+      id: 'ei_working_memory', formulaId: 'ei_working_memory',
+      impl: (base, e, i, stress) => _b.eiWorkingMemory(base, e, i, stress),
+      doc: 'E/I 平衡调制 WM 容量 = base/(1+E/I_ratio), 压力惩罚 (2606.27529)',
+    });
+    // GAP 4: 动机偏差
+    this.register('decision_utility', {
+      id: 'motivational_bias', formulaId: 'motivational_bias',
+      impl: (odds, lr, alpha, beta) => _b.motivationalBias(odds, lr, alpha, beta),
+      doc: '动机偏差模型 log(P/not)=α·log(LR)+β, α=证据敏感度, β=动机偏差 (2606.17657)',
+    });
   }
 }
 

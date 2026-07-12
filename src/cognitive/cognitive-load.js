@@ -10,8 +10,12 @@ class CognitiveLoadCalculator {
   constructor(options = {}) {
     this.workingMemoryCapacity = options.workingMemoryCapacity || 72;
     this._lastEstimate = null;
-    // [FORMULA] 公式桥接（Shannon 熵），懒加载单例
+    // [FORMULA] 公式桥接（Shannon 熵 + E/I 工作记忆），懒加载单例
     this._formulaBridge = null;
+    // E/I 平衡参数 (arXiv:2606.27529)
+    this.eRatio = options.eRatio !== undefined ? options.eRatio : 1.0;
+    this.iRatio = options.iRatio !== undefined ? options.iRatio : 1.0;
+    this.stressLevel = options.stressLevel || 0;
   }
 
   _getFormulaBridge() {
@@ -104,8 +108,25 @@ class CognitiveLoadCalculator {
     germane = Math.min(15, germane);
 
     // 4. 总 CL（含概念分布熵分量）
+    // [FORMULA v8.15.0] E/I 平衡调制工作记忆容量 (arXiv:2606.27529)
+    // WM_capacity = base_capacity / (1 + E/I_ratio)，压力进一步降低容量
+    let effectiveCapacity = this.workingMemoryCapacity;
+    try {
+      const bridge = this._getFormulaBridge();
+      if (bridge) {
+        const eiResult = bridge.eiWorkingMemory(
+          this.workingMemoryCapacity,
+          this.eRatio,
+          this.iRatio,
+          this.stressLevel
+        );
+        if (eiResult && eiResult.capacity > 0) {
+          effectiveCapacity = eiResult.capacity;
+        }
+      }
+    } catch (e) { /* fallback to base capacity */ }
     const rawCL = intrinsic + extraneous + germane + entropyLoad;
-    const CL = Math.min(1.0, rawCL / this.workingMemoryCapacity);
+    const CL = Math.min(1.0, rawCL / effectiveCapacity);
 
     const result = {
       CL: Math.round(CL * 1000) / 1000,
@@ -115,7 +136,7 @@ class CognitiveLoadCalculator {
         extraneous: Math.round(extraneous * 1000) / 1000,
         germane: Math.round(germane * 1000) / 1000,
         entropy: Math.round(entropyLoad * 1000) / 1000,
-        capacity: this.workingMemoryCapacity,
+        capacity: effectiveCapacity,
       },
       recommendation: CL < 0.3 ? '负载较低，可增加任务复杂度'
         : CL < 0.6 ? '负载适中，可正常推进'

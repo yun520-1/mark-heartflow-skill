@@ -1877,18 +1877,43 @@ class DesireCognition {
   }
 
   _scoreDesire(desireKey, traits) {
+    // [FORMULA v8.15.0] 动机偏差模型 (Grether's α-β, arXiv:2606.17657)
+    // 从驱动力状态计算 α (证据敏感度) 和 β (动机偏差)
+    // 高驱动 → 高 α + 正 β → 偏向想要 (wanting bias)
+    let baseScore;
     switch (desireKey) {
-      case 'survival':    return traits.drivenBySurvival ? 0.9 : 0.4;
-      case 'sexual':      return traits.drivenBySexual ? 0.8 : 0.4;
-      case 'social':      return traits.drivenBySocial ? 0.8 : (traits.silent ? 0.3 : 0.5);
-      case 'power':       return traits.drivenByPower ? 0.8 : 0.3;
-      case 'achievement': return traits.drivenByAchievement ? 0.8 : 0.4;
-      case 'curiosity':   return traits.drivenByAchievement ? 0.6 : 0.5;
-      case 'material':    return traits.drivenByMaterial ? 0.7 : 0.3;
-      case 'freedom':     return traits.drivenByFreedom ? 0.9 : 0.4;
-      case 'meaning':     return traits.drivenByAchievement || traits.drivenBySurvival ? 0.6 : 0.5;
-      default: return 0.5;
+      case 'survival':    baseScore = traits.drivenBySurvival ? 0.9 : 0.4; break;
+      case 'sexual':      baseScore = traits.drivenBySexual ? 0.8 : 0.4; break;
+      case 'social':      baseScore = traits.drivenBySocial ? 0.8 : (traits.silent ? 0.3 : 0.5); break;
+      case 'power':       baseScore = traits.drivenByPower ? 0.8 : 0.3; break;
+      case 'achievement': baseScore = traits.drivenByAchievement ? 0.8 : 0.4; break;
+      case 'curiosity':   baseScore = traits.drivenByAchievement ? 0.6 : 0.5; break;
+      case 'material':    baseScore = traits.drivenByMaterial ? 0.7 : 0.3; break;
+      case 'freedom':     baseScore = traits.drivenByFreedom ? 0.9 : 0.4; break;
+      case 'meaning':     baseScore = traits.drivenByAchievement || traits.drivenBySurvival ? 0.6 : 0.5; break;
+      default: baseScore = 0.5;
     }
+
+    // Enhance with motivational bias if bridge is available
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (b && this._driveStates && this._driveStates[desireKey]) {
+        const driveLevel = this._driveStates[desireKey].level || 0.5;
+        // α: evidence sensitivity — 高驱动 → 更高敏感度（更加审慎）
+        const alpha = 0.5 + driveLevel * 1.0;
+        // β: motivational bias — 高驱动 → 强正偏差（更想要）
+        const beta = (driveLevel - 0.5) * 0.8;
+        // prior odds from baseScore, evidence LR = 1.0 (neutral)
+        const priorOdds = baseScore / Math.max(0.01, 1 - baseScore);
+        const mb = b.motivationalBias(priorOdds, 1.0, alpha, beta);
+        if (mb && mb.posteriorProb !== undefined) {
+          return Math.round(mb.posteriorProb * 100) / 100;
+        }
+      }
+    } catch (e) { /* fallback to base score */ }
+
+    return baseScore;
   }
 
   /**
