@@ -401,6 +401,24 @@ class ConfidenceCalibrator {
   }
 
   applyCalibration(rawScore, scores = {}) {
+    // [FORMULA v5.14.0] 预测编码自由能 — 用预测误差能量调整置信度
+    // F = 0.5 * (s - μ)² / σ² + 0.5 * ln(2πσ²)
+    // 高 F → 高预测误差 → 应降低置信；低 F → 预测准确 → 可维持置信
+    try {
+      const bridge = this._getFormulaBridge();
+      if (bridge && typeof bridge.predictiveCodingFreeEnergy === 'function') {
+        // s = rawScore (observed), μ = 0.5 (expected baseline), σ = 0.3
+        const fEnergy = bridge.predictiveCodingFreeEnergy(rawScore, 0.5, 0.3);
+        if (typeof fEnergy === 'number') {
+          // 高自由能（>1.5）→ 预测误差大 → 惩罚置信度
+          if (fEnergy > 1.5) {
+            const penalty = Math.min(0.15, (fEnergy - 1.5) * 0.03);
+            return Math.round((rawScore - penalty) * 100) / 100;
+          }
+        }
+      }
+    } catch (e) { /* fallback */ }
+
     // [FORMULA v8.15.0] Dirichlet 证据累积停止规则 (arXiv:2605.26147)
     // 用评分维度作为伪计数，构建 Dirichlet 分布置信度
     // 高证据一致性 → 低熵 → 高置信度；分散证据 → 高熵 → 应降低置信
@@ -636,6 +654,11 @@ class ConfidenceCalibrator {
     const bridge = this._getFormulaBridge();
     let totalAbsError = 0;
     let totalLogLoss = 0;
+
+    // [FORMULA v5.14.0] KL散度：量化校准分布与实际分布的信息论偏离
+    let totalKlDiv = 0;
+    let totalCrossEntropy = 0;
+
     for (const r of withFeedback) {
       // 使用校准后的置信度（即向用户展示的置信度）作为 stated confidence
       const stated = r.calibrated.calibrated;
@@ -643,13 +666,25 @@ class ConfidenceCalibrator {
       const actual = r.feedback ? 1 : 0;
       totalAbsError += Math.abs(stated - actual);
       // [FORMULA] 二值交叉熵（对数损失）：比绝对差更敏感地惩罚过度自信
-      // 公式引自心虫公式库 cross_entropy: H = -Σ p(x)·log q(x)
       if (bridge) totalLogLoss += bridge.logLoss(stated, actual);
+
+      // [FORMULA v5.14.0] KL散度 & 交叉熵：信息论校准质量度量
+      // p = [actual, 1-actual]（真实分布），q = [stated, 1-stated]（预测分布）
+      if (bridge && typeof bridge.klDivergence === 'function') {
+        const p = [actual, 1 - actual];
+        const q = [stated, 1 - stated];
+        totalKlDiv += bridge.klDivergence(p, q);
+        if (typeof bridge.crossEntropy === 'function') {
+          totalCrossEntropy += bridge.crossEntropy(p, q);
+        }
+      }
     }
 
     const absError = Math.round((totalAbsError / withFeedback.length) * 1000) / 1000;
     const logLoss = bridge ? Math.round((totalLogLoss / withFeedback.length) * 1000) / 1000 : null;
-    return { absError, logLoss };
+    const klDiv = bridge && typeof bridge.klDivergence === 'function' ? Math.round((totalKlDiv / withFeedback.length) * 1000) / 1000 : null;
+    const crossEnt = bridge && typeof bridge.crossEntropy === 'function' ? Math.round((totalCrossEntropy / withFeedback.length) * 1000) / 1000 : null;
+    return { absError, logLoss, klDivergence: klDiv, crossEntropy: crossEnt };
   }
 
   /**
@@ -660,9 +695,13 @@ class ConfidenceCalibrator {
     const error = this._computeCalibrationError();
     const absError = error ? error.absError : null;
     const logLoss = error ? error.logLoss : null;
+    const klDivergence = error ? error.klDivergence : null;
+    const crossEntropy = error ? error.crossEntropy : null;
     return {
       error: absError,
       logLoss,
+      klDivergence,
+      crossEntropy,
       samples: this.records.filter(r => r.feedback !== null).length,
       interpretation: absError === null
         ? '尚无反馈数据，无法计算校准误差'
