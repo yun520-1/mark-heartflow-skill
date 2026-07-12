@@ -1513,9 +1513,9 @@ class LogicReasoning {
 
   /**
    * LLM兜底推理 — 当规则引擎打0分时，调LLM做选择题推理
-   * 使用 Node.js 原生 https 模块
+   * [P-005] routed through safeFetch — SSRF protection + timeout
    */
-  _llmFallback(input, options, reasoningType) {
+  async _llmFallback(input, options, reasoningType) {
     // 构建简洁的英文 prompt
     const qPart = input.replace(/\n[A-D][.、．)）].+/g, '').trim();
     const optLines = input.match(/\n[A-D][.、．)）].+/g);
@@ -1530,63 +1530,46 @@ class LogicReasoning {
       stream: true,
     });
 
-    return new Promise((resolve) => {
-      try {
-        const https = require('https');
+    try {
+      const { safeFetch } = require('../core/fetch-safe.js');
 
-        // [SECURITY FIX H-2] API key from env only — no file fallback
-        const apiKey = process.env.HEARTFLOW_API_KEY;
-        if (!apiKey) {
-          throw new Error('[logic-reasoning] HEARTFLOW_API_KEY environment variable is required');
-        }
-
-        const apiBase = process.env.TENCENT_API_BASE || 'https://copilot.tencent.com/v2';
-        const url = new URL(apiBase + '/chat/completions');
-        const postData = body;
-
-        const req = https.request({
-          hostname: url.hostname,
-          port: url.port || 443,
-          path: url.pathname + url.search,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + apiKey,
-            'Content-Length': Buffer.byteLength(postData),
-          },
-          timeout: 15000,
-        }, (res) => {
-          const chunks = [];
-          res.on('data', (chunk) => chunks.push(chunk));
-          res.on('end', () => {
-            try {
-              const raw = Buffer.concat(chunks).toString('utf-8');
-              let content = '';
-              for (const line of raw.split('\n')) {
-                if (line.startsWith('data: ')) {
-                  const d = line.slice(6);
-                  if (d.trim() === '[DONE]') break;
-                  try {
-                    const obj = JSON.parse(d);
-                    const delta = obj?.choices?.[0]?.delta?.content || '';
-                    content += delta;
-                  } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
-                }
-              }
-              const letter = content.trim().toUpperCase().match(/[A-D]/);
-              resolve(letter ? { selectedAnswer: letter[0] } : null);
-            } catch(e) { resolve(null); }
-          });
-        });
-
-        req.on('timeout', () => { req.destroy(); resolve(null); });
-        req.on('error', () => { resolve(null); });
-        req.write(postData);
-        req.end();
-      } catch(e) {
-        resolve(null);
+      // [SECURITY FIX H-2] API key from env only — no file fallback
+      const apiKey = process.env.HEARTFLOW_API_KEY;
+      if (!apiKey) {
+        throw new Error('[logic-reasoning] HEARTFLOW_API_KEY environment variable is required');
       }
-    });
+
+      const apiBase = process.env.TENCENT_API_BASE || 'https://copilot.tencent.com/v2';
+      const url = apiBase + '/chat/completions';
+
+      const res = await safeFetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + apiKey,
+        },
+        body,
+        timeout: 15000,
+      });
+
+      const raw = await res.text();
+      let content = '';
+      for (const line of raw.split('\n')) {
+        if (line.startsWith('data: ')) {
+          const d = line.slice(6);
+          if (d.trim() === '[DONE]') break;
+          try {
+            const obj = JSON.parse(d);
+            const delta = obj?.choices?.[0]?.delta?.content || '';
+            content += delta;
+          } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
+        }
+      }
+      const letter = content.trim().toUpperCase().match(/[A-D]/);
+      return letter ? { selectedAnswer: letter[0] } : null;
+    } catch (e) {
+      return null;
+    }
   }
 
 

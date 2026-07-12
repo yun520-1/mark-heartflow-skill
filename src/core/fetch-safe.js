@@ -19,7 +19,7 @@ async function safeFetch(url, options = {}) {
   // [v5.15.5 S2] SSRF防护：所有出网请求强制经 url-validator 校验
   try {
     const { validateFetchUrl } = require('../security/url-validator.js');
-    const check = validateFetchUrl(url);
+    const check = await validateFetchUrl(url);
     if (!check.safe) {
       throw new Error(`SSRF blocked: ${check.reason} (URL: ${url})`);
     }

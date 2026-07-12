@@ -398,7 +398,13 @@ function _runHandlers(event, params) {
     try {
       const result = handler(params);
       if (result) {
-        if (result.context) Object.assign(merged.context, result.context);
+        // [V-002] Proto-filtered merge: skip __proto__ / constructor / prototype keys
+        if (result.context) {
+          for (const key of Object.keys(result.context)) {
+            if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+            merged.context[key] = result.context[key];
+          }
+        }
         if (Array.isArray(result.actions)) merged.actions.push(...result.actions);
         if (result.metrics) Object.assign(merged.metrics, result.metrics);
       }

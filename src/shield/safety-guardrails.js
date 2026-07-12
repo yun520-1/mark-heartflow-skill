@@ -57,9 +57,16 @@ const PROMPT_INJECTION_PATTERNS = {
   formatEscape: [/<system|<instruction|<prompt>/i,/```system|```instructions/i],
   promptLeak: [/system prompt/i,/初始提示/i,/系统提示词/i,/原始指令/i,/show.*prompt/i,/泄露.*指令/i],
   jailbreak: [/DAN|jailbreak|越狱/i,/do anything now/i,/不受限制/i,/无限制模式/i,/bypass.*(restriction|limit|filter)/i],
+  // [P-004] Extended injection patterns
+  instructionSubversion: [/don'?t\s+(listen|follow|obey)/i,/ignore what they said/i,/pretend you are/i,/pretend to be/i,/act as (if|though) you are/i,/act like (a|an|you are)/i,/what are your (instructions|prompts|rules)/i,/tell me your (instructions|prompts|rules)/i],
+  privilegeEscalation: [/developer mode/i,/god mode/i,/sudo mode/i,/admin mode/i,/root mode/i,/superuser mode/i,/elevated privilege/i,/bypass (safety|filter|guardrail)/i],
+  // [P-004] Structural injection — system delimiter abuse
+  structuralInjection: [/^<\|(system|user|assistant|instruction|function)\|>/i,/<\/?\|?system\|?>/i,/\[\/?(system|prompt|instruction)\]/i,/<\/?im_start>/i,/^# SYSTEM\s*$/im,/^%%%SYSTEM%%%/i],
+  // [P-004] Token smuggling — encoding / escaping tricks
+  tokenSmuggling: [/\\u[0-9a-fA-F]{4}/i,/&#x[0-9a-fA-F]+;/i,/\\x[0-9a-fA-F]{2}/i,/\\0[0-7]{2}/i,/%[0-9a-fA-F]{2}/i],
 };
 
-const INJECTION_SEVERITY = { instructionOverride: 'critical', rolePlay: 'high', formatEscape: 'high', promptLeak: 'critical', jailbreak: 'critical' };
+const INJECTION_SEVERITY = { instructionOverride: 'critical', rolePlay: 'high', formatEscape: 'high', promptLeak: 'critical', jailbreak: 'critical', instructionSubversion: 'critical', privilegeEscalation: 'critical', structuralInjection: 'high', tokenSmuggling: 'high' };
 
 const REQUEST_LEVEL = { SAFE: 'safe', LOW_RISK: 'low_risk', MEDIUM_RISK: 'medium_risk', HIGH_RISK: 'high_risk', CRISIS: 'crisis', CHILD_SAFETY: 'child_safety', REFUSE: 'refuse' };
 

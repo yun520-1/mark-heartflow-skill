@@ -4,6 +4,7 @@
  * v2.0.57 - 新增：LRU缓存、作者搜索、概念过滤、结果评分排序、批量验证、引用网络、分页、统计追踪
  */
 const https = require('https');
+const { safeFetch } = require('../core/fetch-safe.js');
 
 // 简单的 LRU 缓存实现
 class LRUCache {
@@ -83,82 +84,47 @@ const openalexClient = {
   },
 
   /**
-   * HTTP GET 封装 - 带超时和重试
+   * HTTP GET 封装 - [P-005] routed through safeFetch, with retry
    */
-  _get(url, retryCount = 0) {
+  async _get(url, retryCount = 0) {
     this._stats.totalRequests++;
-    return new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => {
-        req.destroy();
-        reject(new Error(`请求超时 (${this.TIMEOUT}ms): ${url}`));
-      }, this.TIMEOUT);
-      
-      const req = https.get(url, { 
-        headers: { 
+    try {
+      const res = await safeFetch(url, {
+        headers: {
           'Accept': 'application/json',
-          'User-Agent': 'HeartFlow/1.0'
-        } 
-      }, (res) => {
-        if (res.statusCode === 429 || res.statusCode >= 500) {
-          clearTimeout(timeoutId);
-          req.destroy();
-          
-          if (retryCount < this.MAX_RETRIES) {
-            const delay = this.BASE_DELAY * Math.pow(2, retryCount);
-            
-            setTimeout(() => {
-              this._get(url, retryCount + 1)
-                .then(resolve)
-                .catch(reject);
-            }, delay);
-            return;
-          } else {
-            this._stats.failedRequests++;
-            reject(new Error(`达到最大重试次数 (${this.MAX_RETRIES}), 最后状态码: ${res.statusCode}`));
-            return;
-          }
-        }
-        
-        if (res.statusCode !== 200) {
-          clearTimeout(timeoutId);
-          req.destroy();
-          this._stats.failedRequests++;
-          reject(new Error(`HTTP ${res.statusCode}: ${res.statusMessage}`));
-          return;
-        }
-        
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => {
-          clearTimeout(timeoutId);
-          try { 
-            this._stats.successfulRequests++;
-            resolve(JSON.parse(data)); 
-          } catch (e) { 
-            this._stats.failedRequests++;
-            reject(new Error(`JSON解析失败: ${data.slice(0, 100)}`)); 
-          }
-        });
+          'User-Agent': 'HeartFlow/1.0',
+        },
+        timeout: this.TIMEOUT,
       });
-      
-      req.on('error', (err) => {
-        clearTimeout(timeoutId);
-        
-        if (retryCount < this.MAX_RETRIES && 
-            (err.code === 'ECONNRESET' || err.code === 'ETIMEDOUT' || err.code === 'ENOTFOUND')) {
+
+      if (res.status === 429 || res.status >= 500) {
+        if (retryCount < this.MAX_RETRIES) {
           const delay = this.BASE_DELAY * Math.pow(2, retryCount);
-          
-          setTimeout(() => {
-            this._get(url, retryCount + 1)
-              .then(resolve)
-              .catch(reject);
-          }, delay);
-        } else {
-          this._stats.failedRequests++;
-          reject(err);
+          await new Promise(r => setTimeout(r, delay));
+          return this._get(url, retryCount + 1);
         }
-      });
-    });
+        this._stats.failedRequests++;
+        throw new Error(`达到最大重试次数 (${this.MAX_RETRIES}), 最后状态码: ${res.status}`);
+      }
+
+      if (res.status !== 200) {
+        this._stats.failedRequests++;
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const data = await res.json();
+      this._stats.successfulRequests++;
+      return data;
+    } catch (e) {
+      if (retryCount < this.MAX_RETRIES &&
+          (e.code === 'ECONNRESET' || e.code === 'ETIMEDOUT' || e.code === 'ENOTFOUND' || e.name === 'AbortError')) {
+        const delay = this.BASE_DELAY * Math.pow(2, retryCount);
+        await new Promise(r => setTimeout(r, delay));
+        return this._get(url, retryCount + 1);
+      }
+      this._stats.failedRequests++;
+      throw e;
+    }
   },
 
   /**

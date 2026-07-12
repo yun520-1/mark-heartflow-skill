@@ -155,6 +155,8 @@ class ThinkCheckLogger {
 
     this.addField('timestamp', new Date().toISOString());
 
+    // [D-005] Restrict log file permissions to owner-only (0o600) before each append
+    try { fs.chmodSync(this._outputFile, 0o600); } catch {}
     if (this._ready) {
       const lines = this._currentDecision.fields.map(f => `${f.key}: ${f.value}`).join('\n');
       const block = `\n--- DECISION #${this._currentDecision.id} ---\n${lines}\n`;
