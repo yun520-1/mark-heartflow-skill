@@ -21,11 +21,15 @@ const { getFormulaBridge } = require('../formula/formula-bridge.js');
 class CognitiveLoadEngineV2 {
   constructor(options = {}) {
     this._bridge = null;
-    this.workingMemoryCapacity = options.workingMemoryCapacity || 5;  // Cowan 4±2
+    // [FORMULA v5.11.0] WM容量由 EI 比值动态计算，非固定 5
+    // 默认使用标准 Cowan 4±2，但在 load 计算时会动态调整
+    this._baseWMCapacity = options.workingMemoryCapacity || 5;  // Cowan 4±2
+    this.workingMemoryCapacity = this._baseWMCapacity;
     this.maxEntropyBits = options.maxEntropyBits || 3.5;  // 信息过载阈值
     this._lastEstimate = null;
     this._attentionWeights = new Map();  // 通道 → 权重
     this._loadHistory = [];  // 负载历史
+    this._stressLevel = 0;   // 累积压力水平
   }
 
   _getBridge() {
@@ -49,6 +53,32 @@ class CognitiveLoadEngineV2 {
     const tokens = t.split(/\s+/).filter(Boolean);
     const uniqueTokens = new Set(tokens);
     const tokenCount = tokens.length;
+    
+    // [FORMULA v5.11.0] 动态工作记忆容量：基于最近负载历史的 EI 调制
+    // 高负载历史 → E/I 失衡 → 降低有效 WM 容量
+    try {
+      if (bridge && this._loadHistory.length >= 3) {
+        const recentCLs = this._loadHistory.slice(-5).map(h => h.cl || 0);
+        const avgCL = recentCLs.reduce((a, b) => a + b, 0) / recentCLs.length;
+        this._stressLevel = 0.7 * this._stressLevel + 0.3 * Math.min(1, avgCL);
+        const eiResult = bridge.eiWorkingMemory(this._baseWMCapacity, 1.0, 1.0, this._stressLevel);
+        if (eiResult && eiResult.effectiveCapacity !== undefined) {
+          this.workingMemoryCapacity = eiResult.effectiveCapacity;
+        }
+      }
+    } catch (e) { /* keep base capacity */ }
+    
+    // [FORMULA v5.11.0] 临界性检测：认知系统是否处于临界点附近
+    let criticality = null;
+    try {
+      if (bridge && this._loadHistory.length >= 5) {
+        // 用最近5次负载的变化率作为 K (耦合强度)
+        const clValues = this._loadHistory.slice(-5).map(h => h.cl || 0);
+        const variance = clValues.reduce((a, v) => a + Math.pow(v - clValues.reduce((x,y)=>x+y,0)/clValues.length, 2), 0) / clValues.length;
+        const K = Math.min(2, Math.max(0.1, variance * 10)); // 方差映射到耦合强度
+        criticality = bridge.criticalitySusceptibility(K);
+      }
+    } catch (e) { /* non-critical */ }
     
     // ─── 内在负荷（intrinsic）───
     // 基于概念密度和技术术语比例
@@ -99,7 +129,7 @@ class CognitiveLoadEngineV2 {
     if (intrinsic > 0.5 && priorKnowledge < 0.3) recommendations.push('provide_prerequisites');
     if (cl < 0.3) recommendations.push('increase_challenge_for_flow');
 
-    this._lastEstimate = { cl, intrinsic, extraneous, germane, entropy, loadLevel, isInfoOverload };
+    this._lastEstimate = { cl, intrinsic, extraneous, germane, entropy, loadLevel, isInfoOverload, criticality };
     this._loadHistory.push({ ...this._lastEstimate, ts: Date.now() });
     if (this._loadHistory.length > 100) this._loadHistory.shift();
 
@@ -113,7 +143,13 @@ class CognitiveLoadEngineV2 {
       loadLevel,
       isInfoOverload,
       recommendations,
-      workingMemoryCapacity: this.workingMemoryCapacity
+      workingMemoryCapacity: +this.workingMemoryCapacity.toFixed(2),
+      stressLevel: +this._stressLevel.toFixed(3),
+      criticality: criticality !== null ? {
+        susceptibility: +criticality.toFixed(4),
+        regime: criticality < 0.8 ? 'subcritical' : criticality > 3.0 ? 'supercritical' : 'critical',
+        description: criticality < 0.8 ? '系统稳定，远离临界点' : criticality > 3.0 ? '系统过度敏感，接近混沌' : '临界区：最大信息处理能力'
+      } : null
     };
   }
 

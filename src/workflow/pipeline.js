@@ -125,6 +125,53 @@ const DEFAULT_PIPELINE = [
     },
   },
 
+  // ── Stage 2.5: 情绪动力学（依赖 psychology + heartLogic） ────
+  {
+    id: 'emotionDynamics',
+    depends: ['psychology', 'heartLogic'],
+    description: '情绪动力学引擎：PAD状态 + 耶克斯-多德森唤醒-绩效分析',
+    run: async (ctx, hf) => {
+      try {
+        let healthCheck = null;
+        let yerkesDodson = null;
+        if (hf.emotionDynamics) {
+          healthCheck = hf.emotionDynamics.healthCheck();
+          const psych = ctx.psychology?.psych || {};
+          const arousal = psych.emotion?.arousal ?? healthCheck?.currentPAD?.arousal ?? 0.5;
+          // 根据输入复杂度确定任务复杂度级别
+          const taskComplexity = ctx.input && ctx.input.length > 200 ? 'complex' :
+                                 ctx.input && ctx.input.length > 50 ? 'moderate' : 'simple';
+          try {
+            yerkesDodson = hf.emotionDynamics.yerkesDodsonAnalysis(taskComplexity);
+          } catch (e) { /* non-fatal */ }
+        }
+        return { healthCheck, yerkesDodson };
+      } catch (e) {
+        return { healthCheck: null, yerkesDodson: null, error: e.message };
+      }
+    },
+  },
+
+  // ── Stage 2.6: 认知负载 V2（依赖 memory） ────
+  {
+    id: 'cognitiveLoad',
+    depends: ['memory'],
+    description: '认知负载引擎V2：负载评估 + 临界性检测 + 心流状态',
+    run: async (ctx, hf) => {
+      try {
+        let loadEstimate = null;
+        let trend = null;
+        if (hf.cognitiveLoadV2) {
+          loadEstimate = hf.cognitiveLoadV2.estimate(ctx.input);
+          trend = hf.cognitiveLoadV2.analyzeTrend();
+        }
+        return { loadEstimate, trend };
+      } catch (e) {
+        return { loadEstimate: null, trend: null, error: e.message };
+      }
+    },
+  },
+
   // ── Stage 3: 深层认知分析（依赖 psychology） ────────────
   {
     id: 'deepCognition',
@@ -335,6 +382,9 @@ const DEFAULT_PIPELINE = [
         logicReasoning: ctx.logicReasoning || null,
         // v5.9.7 新增：公式感知——每次 think 自动附带匹配到的认知公式
         formulaMatches: (typeof hf.matchFormulas === 'function') ? hf.matchFormulas(ctx.input, { limit: 3 }) : [],
+        // v5.11.0 新增：情绪动力学 + 认知负载 V2
+        emotionDynamics: ctx.emotionDynamics || null,
+        cognitiveLoad: ctx.cognitiveLoad || null,
         judgment: {
           direction: jd.direction || 'analyze',
           confidence: jd.confidence || 0.5,
@@ -600,6 +650,9 @@ const FAST_PIPELINE = [
         agentPhilosophy: ctx.psychology?.agentPhil || null,
         // v5.9.7 新增：公式感知（快速管道同样附带）
         formulaMatches: (typeof hf.matchFormulas === 'function') ? hf.matchFormulas(ctx.input, { limit: 3 }) : [],
+        // v5.11.0 新增：情绪动力学 + 认知负载 V2（快速管道通过主引擎 pre-think 快照获取）
+        emotionDynamics: ctx.emotionDynamics || null,
+        cognitiveLoad: ctx.cognitiveLoad || null,
         judgment: {
           direction: jd.direction || 'analyze',
           confidence: jd.confidence || 0.5,

@@ -1294,6 +1294,113 @@ class FormulaBridge {
       recentBias: +recentBias.toFixed(4)
     };
   }
+
+  // ─── v5.11.0 新公式 (arXiv 研究) ───
+
+  /**
+   * [v5.11.0] S-Measure 认知相似度 (arXiv:2606.26406)
+   * S(A,B) = |A ∩ B| / (|A ∪ B| + ε)
+   * Jaccard 相似度 + 认知加权：根据集合元素的认知权重调整交集/并集。
+   * 用于比较信念集合、记忆片段、概念集合的认知重叠度。
+   * @param {Array|Set} a - 集合 A
+   * @param {Array|Set} b - 集合 B
+   * @param {Object} [options] - { epsilon, weights } 权重为可选的元素→权重映射
+   * @returns {number} 认知相似度 S ∈ [0, 1]
+   */
+  sMeasure(a, b, options = {}) {
+    const epsilon = options.epsilon || 1e-9;
+    const weights = options.weights || null;
+    const setA = new Set(a || []);
+    const setB = new Set(b || []);
+    if (setA.size === 0 && setB.size === 0) return 0;
+
+    if (weights) {
+      // 认知加权版本：交集和并集都用权重加权
+      let wIntersection = 0;
+      let wUnion = 0;
+      const allElements = new Set([...setA, ...setB]);
+      for (const el of allElements) {
+        const w = weights[el] || 1;
+        const inA = setA.has(el);
+        const inB = setB.has(el);
+        if (inA && inB) wIntersection += w;
+        if (inA || inB) wUnion += w;
+      }
+      return wUnion > epsilon ? wIntersection / (wUnion + epsilon) : 0;
+    }
+
+    // 标准 Jaccard
+    const intersection = [...setA].filter(x => setB.has(x)).length;
+    const union = setA.size + setB.size - intersection;
+    return union > epsilon ? intersection / (union + epsilon) : 0;
+  }
+
+  /**
+   * [v5.11.0] 自由能启发式 (arXiv:2606.15877)
+   * F = accuracy - T * (posteriorEntropy - priorEntropy)
+   * 信息压缩原理：准确率减去温度×熵变化。高准确率+熵减少→强自由能。
+   * 用于量化认知更新质量：好的更新既提高准确率又降低不确定性。
+   * @param {number} priorEntropy - 先验熵 H_prior
+   * @param {number} posteriorEntropy - 后验熵 H_posterior
+   * @param {number} accuracy - 准确率 (0-1)
+   * @param {number} [temperature=1] - 温度参数 T
+   * @returns {{freeEnergy: number, optimalTemperature: number, entropyReduction: number, interpretation: string}}
+   */
+  freeEnergyHeuristics(priorEntropy, posteriorEntropy, accuracy, temperature = 1) {
+    const dH = posteriorEntropy - priorEntropy;
+    const F = accuracy - temperature * dH;
+    // 最优温度使得 F 最大：T_opt = accuracy / dH（当 dH > 0 时）
+    let optimalTemperature = temperature;
+    if (Math.abs(dH) > 1e-9) {
+      optimalTemperature = accuracy / dH;
+    }
+    // 钳制到合理范围
+    optimalTemperature = Math.max(0.1, Math.min(10, optimalTemperature));
+    const entropyReduction = -dH;
+    let interpretation;
+    if (F > 0.8) interpretation = 'excellent_update';
+    else if (F > 0.5) interpretation = 'good_update';
+    else if (F > 0.2) interpretation = 'moderate_update';
+    else if (F > 0) interpretation = 'weak_update';
+    else interpretation = 'negative_free_energy';
+
+    return {
+      freeEnergy: +F.toFixed(6),
+      optimalTemperature: +optimalTemperature.toFixed(4),
+      entropyReduction: +entropyReduction.toFixed(6),
+      interpretation
+    };
+  }
+
+  /**
+   * [v5.11.0] Ginzburg-Landau 序参量 (arXiv:2602.19023)
+   * ψ(T) = ψ_0 * sqrt(max(0, 1 - T/Tc))
+   * 描述二阶相变附近的序参量行为：T < Tc → 有序相(ψ>0), T >= Tc → 无序相(ψ=0)。
+   * 用于认知系统临界性分析：温度 T 代表认知噪声/混乱度，Tc 为临界温度。
+   * @param {number} orderParam - 基态序参量 ψ_0 (T=0 时的值)
+   * @param {number} temperature - 当前温度 T
+   * @param {number} criticalTemp - 临界温度 Tc
+   * @returns {{orderParameter: number, phase: string, reducedTemp: number, isCritical: boolean}}
+   */
+  ginzburgLandau(orderParam = 1, temperature = 0, criticalTemp = 1) {
+    if (!(criticalTemp > 0)) criticalTemp = 1;
+    const t = temperature / criticalTemp;
+    const reducedTemp = t;
+    const psi = orderParam * Math.sqrt(Math.max(0, 1 - t));
+    let phase;
+    if (t < 0.9) phase = 'ordered';
+    else if (t < 0.99) phase = 'near_critical';
+    else if (t < 1.0) phase = 'critical';
+    else phase = 'disordered';
+    const isCritical = t >= 0.9 && t < 1.1;
+
+    return {
+      orderParameter: +psi.toFixed(6),
+      phase,
+      reducedTemp: +reducedTemp.toFixed(6),
+      isCritical
+    };
+  }
 }
 
 

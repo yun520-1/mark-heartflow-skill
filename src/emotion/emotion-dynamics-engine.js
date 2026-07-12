@@ -93,15 +93,38 @@ class EmotionDynamicsEngine {
 
   _mapPADToEmotion(pad) {
     const { pleasure, arousal, dominance } = pad;
-    if (pleasure > 0.3 && arousal > 0.6) return 'excited';
-    if (pleasure > 0.3 && arousal < 0.4) return 'calm';
-    if (pleasure > 0.3 && arousal >= 0.4 && arousal <= 0.6) return 'content';
-    if (pleasure < -0.3 && arousal > 0.6) return 'angry';
-    if (pleasure < -0.3 && arousal < 0.4) return 'sad';
-    if (pleasure < -0.3 && arousal >= 0.4 && arousal <= 0.6) return 'distressed';
-    if (pleasure < -0.3 && dominance < 0.3) return 'fearful';
-    if (Math.abs(pleasure) <= 0.2 && arousal > 0.7) return 'surprised';
-    if (Math.abs(pleasure) <= 0.2 && arousal < 0.3) return 'bored';
+    
+    // [FORMULA v5.11.0] 动态阈值：用 flowChannel 替换硬编码的 0.3/0.4/0.6/0.7 阈值
+    // flowChannel 计算当前 skill/challenge 匹配度，用匹配度调整情绪分类阈值
+    // 高匹配 → 阈值收紧（情绪更精细）；低匹配 → 阈值放宽（避免错误分类）
+    let flowMatch = 0.5; // 默认中性匹配
+    try {
+      const bridge = this._getBridge();
+      if (bridge) {
+        // 用当前 arousal 作为 challenge，pleasure 作为 skill 的代理
+        const challenge = Math.max(0.1, arousal);
+        const skill = Math.max(0.1, 0.5 + pleasure * 0.5); // pleasure -> 0~1 skill proxy
+        const flowResult = bridge.flowChannel(challenge, skill);
+        if (flowResult && flowResult.match !== undefined) {
+          flowMatch = flowResult.match; // 0~1，越高越匹配
+        }
+      }
+    } catch (e) { /* fallback */ }
+    
+    // 动态阈值：flowMatch 高时收紧，低时放宽
+    const lo = 0.2 + flowMatch * 0.1;  // 0.2~0.3
+    const hi = 0.5 + flowMatch * 0.15; // 0.5~0.65
+    const mid = (lo + hi) / 2;
+    
+    if (pleasure > hi && arousal > hi) return 'excited';
+    if (pleasure > hi && arousal < lo) return 'calm';
+    if (pleasure > hi && arousal >= lo && arousal <= hi) return 'content';
+    if (pleasure < -hi && arousal > hi) return 'angry';
+    if (pleasure < -hi && arousal < lo) return 'sad';
+    if (pleasure < -hi && arousal >= lo && arousal <= hi) return 'distressed';
+    if (pleasure < -hi && dominance < lo) return 'fearful';
+    if (Math.abs(pleasure) <= mid * 0.7 && arousal > hi + 0.1) return 'surprised';
+    if (Math.abs(pleasure) <= mid * 0.7 && arousal < lo) return 'bored';
     return 'neutral';
   }
 
@@ -286,8 +309,21 @@ class EmotionDynamicsEngine {
     const bridge = this._getBridge();
     const arousal = this._padState.arousal;
     
-    // 不同复杂度的最优唤醒点
-    const optimalArousal = { simple: 0.7, moderate: 0.5, complex: 0.3 }[taskComplexity] || 0.5;
+    // [FORMULA v5.11.0] 用 yerkesDodsonOptimal 动态计算最优唤醒，替换硬编码 {simple:0.7,moderate:0.5,complex:0.3}
+    let optimalArousal = 0.5; // fallback
+    try {
+      if (bridge && bridge.yerkesDodsonOptimal) {
+        // a = 难度系数 (simple=0.3, moderate=0.5, complex=0.7)
+        // b = 基线绩效 (1.0)
+        // c = 形状参数
+        const taskParams = { simple: 0.3, moderate: 0.5, complex: 0.7 };
+        const a = taskParams[taskComplexity] || 0.5;
+        const optimal = bridge.yerkesDodsonOptimal(a, 1, 0.2);
+        if (optimal && optimal.optimalArousal !== undefined) {
+          optimalArousal = optimal.optimalArousal;
+        }
+      }
+    } catch (e) { /* fallback */ }
     
     // 绩效 = -a(A - A_opt)² + b
     const performance = bridge.yerkesDodsonEquation(arousal, optimalArousal, 4, 1);
@@ -300,7 +336,7 @@ class EmotionDynamicsEngine {
 
     return {
       currentArousal: +arousal.toFixed(3),
-      optimalArousal,
+      optimalArousal: +optimalArousal.toFixed(3),
       currentPerformance: +performance.toFixed(3),
       performanceGap: +gap.toFixed(3),
       taskComplexity,
