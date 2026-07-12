@@ -345,7 +345,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-12-v5.12.0';
+const BUILD_DATE = '2026-07-12-v5.13.0';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -2229,6 +2229,74 @@ class HeartFlow {
   }
 
   /**
+   * v5.13.0 认知闭环 — enrichment信号反馈到策略调整
+   * 
+   * 心虫的认知不是单向流水线。每次think产生的enrichment信号
+   * 应当闭环反馈到下一次think的策略中。这是"存在参与运行"的闭环。
+   * 
+   * 反馈维度：
+   * 1. 临界性 → 调整处理深度（critical→提升复杂度阈值）
+   * 2. 漂移检测 → 触发自我校准（drift→降低决策置信度）
+   * 3. 场追踪异常 → 调整决策权重（field imbalance→保守策略）
+   * 
+   * @param {object} cognition - 当前think的认知快照
+   */
+  _applyCognitiveFeedback(cognition) {
+    try {
+      const enrichment = cognition?.enrichment;
+      if (!enrichment) return;
+
+      if (!this._feedbackState) {
+        this._feedbackState = {
+          complexityBias: 0,
+          confidenceModifier: 0,
+          decisionBias: 'neutral'
+        };
+      }
+
+      const fb = this._feedbackState;
+
+      // 临界性反馈：接近临界点→降低复杂度阈值（更深处理）
+      const criticality = enrichment.sustainedDriftDetector?.state ||
+                          enrichment.preThinkBaseline?.criticality;
+      if (criticality?.regime === 'critical') {
+        fb.complexityBias = Math.min(0.2, fb.complexityBias + 0.05);
+      } else if (criticality?.regime === 'supercritical') {
+        fb.complexityBias = Math.min(0.2, fb.complexityBias + 0.1);
+        fb.confidenceModifier = Math.max(-0.3, fb.confidenceModifier - 0.05);
+      } else {
+        fb.complexityBias = Math.max(0, fb.complexityBias - 0.02);
+      }
+
+      // 漂移反馈：检测到漂移→降低置信度+保守策略
+      if (enrichment.sustainedDriftDetector?.status === 'drifting') {
+        fb.confidenceModifier = Math.max(-0.3, fb.confidenceModifier - 0.1);
+        fb.decisionBias = 'conservative';
+      }
+
+      // 场追踪反馈：UDAH失衡→保守策略
+      const field = enrichment.fieldTracker;
+      if (field?.summary) {
+        const imbalance = (field.summary.dominance || 0.5) < 0.3 ||
+                          (field.summary.harmony || 0.5) < 0.3;
+        if (imbalance) {
+          fb.decisionBias = 'conservative';
+          fb.confidenceModifier = Math.max(-0.3, fb.confidenceModifier - 0.05);
+        }
+      }
+
+      // 衰减：无持续信号时回归中性
+      if (!criticality?.regime?.match(/critical/) &&
+          enrichment.sustainedDriftDetector?.status !== 'drifting' &&
+          !(field?.summary && ((field.summary.dominance||0.5) < 0.3))) {
+        fb.decisionBias = 'neutral';
+      }
+
+      this._feedbackState = fb;
+    } catch (e) { /* 反馈失败不影响核心 */ }
+  }
+
+  /**
    * 污染纠正策略生成 — 心虫哲学+心理学双引擎驱动
    * 
    * 不是简单地"删除污染词"，而是:
@@ -3954,6 +4022,9 @@ class HeartFlow {
           };
         }
 
+        // ─── [v5.13.0] 认知闭环：enrichment信号反馈到策略调整 ──────
+        this._applyCognitiveFeedback(cognitionSnapshot);
+
 
 
 
@@ -3997,6 +4068,8 @@ class HeartFlow {
         confidence: taskConfidence,
         // 给 LLM 的结构化推理数据
         cognition: cognitionSnapshot,
+        // [v5.13.0] 认知闭环反馈状态
+        feedbackState: this._feedbackState || null,
         thoughtChain: stages.map(s => ({ stage: s.id, success: s.success, timing: s.timing })),
         decision: {
           type: taskType,

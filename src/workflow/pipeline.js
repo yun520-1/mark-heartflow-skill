@@ -877,7 +877,16 @@ class Pipeline {
     const complexityDetails = this._analyzeComplexityDetails(input);
 
     // 模式选择
-    const mode = options.mode || selectMode(input);
+    // [v5.13.0] 认知闭环：反馈状态调整复杂度阈值
+    let effectiveThreshold = this.complexityThreshold;
+    if (this.heartflow?._feedbackState?.complexityBias) {
+      effectiveThreshold = Math.max(0.2, this.complexityThreshold - this.heartflow._feedbackState.complexityBias);
+    }
+    let mode = options.mode || selectMode(input);
+    // 反馈驱动的模式覆写：临界/超临界状态下，即使selectMode判定fast也走deep
+    if (mode === 'fast' && this.heartflow?._feedbackState?.decisionBias === 'conservative') {
+      mode = 'full';
+    }
     const stages = mode === 'fast' ? FAST_PIPELINE : DEFAULT_PIPELINE;
     const result = await this._runStages(input, stages, options);
 
