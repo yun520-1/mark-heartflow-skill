@@ -108,10 +108,24 @@ async function _saveQMeta() {
 
 function _touchEntry(ck) {
   if (!_qMeta[ck]) {
-    _qMeta[ck] = { createdAt: Date.now(), lastAccessedAt: Date.now(), accessCount: 0 };
+    _qMeta[ck] = { createdAt: Date.now(), lastAccessedAt: Date.now(), accessCount: 0, updateCount: 0 };
   }
   _qMeta[ck].lastAccessedAt = Date.now();
   _qMeta[ck].accessCount = (_qMeta[ck].accessCount || 0) + 1;
+}
+
+// 惰性桥接访问：不加载完整公式引擎，仅按需加载 formula-bridge
+let _bridgeCache = undefined;
+function _getBridge() {
+  if (_bridgeCache !== undefined) return _bridgeCache;
+  try {
+    const { getFormulaBridge } = require('../formula/formula-bridge.js');
+    _bridgeCache = getFormulaBridge();
+    return _bridgeCache;
+  } catch (e) {
+    _bridgeCache = null;
+    return null;
+  }
 }
 
 class HealingMemoryRL {
@@ -238,7 +252,15 @@ class HealingMemoryRL {
     const entry = this.qTable.get(ck);
     const currentQ = entry[strategy] ?? 0.5;
     const reward = success ? 1.0 : -0.5;
-    const learningRate = 0.2;
+    // 跟踪每个 Q-entry 的更新次数（用于自适应学习率）
+    if (!_qMeta[ck]) _touchEntry(ck);
+    const entryUpdateCount = (_qMeta[ck].updateCount = (_qMeta[ck].updateCount || 0) + 1);
+    // 自适应学习率：更多更新→更低学习率→更稳定Q值
+    let learningRate = 0.2; // fallback
+    const bridge = _getBridge();
+    if (bridge && typeof bridge.adaptiveLearningRate === 'function') {
+      learningRate = bridge.adaptiveLearningRate(0.5, entryUpdateCount, 0.1);
+    }
     entry[strategy] = currentQ + learningRate * (reward - currentQ);
     _touchEntry(ck);
     _debouncedSave(this);

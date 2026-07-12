@@ -496,6 +496,8 @@ class DecisionRouter {
         wrong: 0,
         accuracy: 1.0,
         lastAdjustment: 0,
+        // v8.16.0: 时序决策历史（用于加权准确率计算）
+        decisions: [],  // [{correct: boolean, ts: number}, ...]
       };
     }
 
@@ -504,6 +506,9 @@ class DecisionRouter {
     this._maxHistory = 500;
 
     this._activeDecision = null;
+
+    // 桥接缓存
+    this._bridgeCache = undefined;
 
     // 抑制——防止同一规则在短时间内重复触发
     this._suppression = new Map();
@@ -1504,22 +1509,77 @@ class DecisionRouter {
       stats.wrong++;
     }
 
+    // v8.16.0: 记录时序决策（用于加权准确率）
+    stats.decisions = stats.decisions || [];
+    stats.decisions.push({ correct: outcome === 'correct', ts: Date.now() });
+    // 限制历史长度，只保留最近 50 次决策
+    if (stats.decisions.length > 50) {
+      stats.decisions = stats.decisions.slice(-50);
+    }
+
     const total = stats.correct + stats.wrong;
-    stats.accuracy = total > 0 ? stats.correct / total : 1.0;
+    const simpleAccuracy = total > 0 ? stats.correct / total : 1.0;
+
+    // v8.16.0: 使用加权准确率（最近决策权重更大，λ=0.3）
+    let weightedAccuracyResult = null;
+    const bridge = this._getBridge();
+    if (bridge && typeof bridge.weightedAccuracy === 'function') {
+      try {
+        weightedAccuracyResult = bridge.weightedAccuracy(stats.decisions, 0.3);
+      } catch (e) { /* fall through to simple accuracy */ }
+    }
+    // 使用加权准确率（如果可用），否则回退到简单准确率
+    const effectiveAccuracy = weightedAccuracyResult
+      ? weightedAccuracyResult.weightedAccuracy
+      : simpleAccuracy;
+    stats.accuracy = +effectiveAccuracy.toFixed(4);
 
     const rule = this._rules.find(r => r.id === ruleId);
     if (!rule) return;
 
-    const delta = outcome === 'correct' ? 0.05 : -0.10;
+    // 基于加权准确率的权重调整：准确率高→增重，低→减重
+    // 准确率 >= 0.8: 小幅增重 (+0.03); >= 0.6: 微调 (+0.01); < 0.4: 惩罚 (-0.08); < 0.6: 缓罚 (-0.04)
+    let delta = 0;
+    if (effectiveAccuracy >= 0.8) {
+      delta = 0.03;
+    } else if (effectiveAccuracy >= 0.6) {
+      delta = 0.01;
+    } else if (effectiveAccuracy >= 0.4) {
+      delta = -0.04;
+    } else {
+      delta = -0.08;
+    }
+    // 加权准确率的"最近偏差"也影响调整幅度
+    if (weightedAccuracyResult && Math.abs(weightedAccuracyResult.recentBias) > 0.15) {
+      // 最近表现与总体偏差较大，增大调整幅度
+      delta *= 1.3;
+    }
+
     rule.weight = Math.max(0.1, Math.min(2.0, (rule.weight || 1.0) + delta));
     stats.lastAdjustment = delta;
 
-    if (stats.accuracy < 0.4 && rule.weight <= 0.3) {
+    if (effectiveAccuracy < 0.4 && rule.weight <= 0.3) {
       rule._downgraded = true;
       rule.priority = (rule.priority || 50) * 0.5;
     }
 
     this._stats.ruleFeedbackCount = (this._stats.ruleFeedbackCount || 0) + 1;
+  }
+
+  /**
+   * 惰性桥接访问：获取 formula-bridge 实例（用于加权准确率等计算）
+   * @returns {object|null}
+   */
+  _getBridge() {
+    if (this._bridgeCache !== undefined) return this._bridgeCache;
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      this._bridgeCache = getFormulaBridge();
+      return this._bridgeCache;
+    } catch (e) {
+      this._bridgeCache = null;
+      return null;
+    }
   }
 
   /**

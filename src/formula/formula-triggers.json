@@ -1366,6 +1366,49 @@
           "weight": 1
         }
       ]
+    },
+    "adaptive_learning": {
+      "synonyms": [
+        "自适应学习率",
+        "学习率衰减",
+        "学习速度",
+        "Q学习",
+        "强化学习",
+        "自适应",
+        "adaptive",
+        "learning rate"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "adaptive_learning_rate",
+          "weight": 1
+        }
+      ]
+    },
+    "attention_sequence": {
+      "synonyms": [
+        "序列注意力",
+        "时序权重",
+        "最近优先",
+        "时间衰减",
+        "recency",
+        "新近性",
+        "时间折扣",
+        "attention weight"
+      ],
+      "refs": [
+        {
+          "kind": "stage-primitive",
+          "ref": "sequential_attention_weight",
+          "weight": 1
+        },
+        {
+          "kind": "stage-primitive",
+          "ref": "weighted_accuracy",
+          "weight": 1
+        }
+      ]
     }
   }
 }

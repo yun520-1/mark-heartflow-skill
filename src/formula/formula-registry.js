@@ -578,6 +578,25 @@ class FormulaRegistry {
       impl: (odds, lr, alpha, beta) => _b.motivationalBias(odds, lr, alpha, beta),
       doc: '动机偏差模型 log(P/not)=α·log(LR)+β, α=证据敏感度, β=动机偏差 (2606.17657)',
     });
+    // ─── v8.16.0 新公式：自适应学习率 + 序列注意力 ───
+    // GAP 1: 自适应学习率（资源理性调度）
+    this.register('decision_dynamics', {
+      id: 'adaptive_learning_rate', formulaId: 'adaptive_learning_rate',
+      impl: (alpha0, t, beta) => _b.adaptiveLearningRate(alpha0, t, beta),
+      doc: '自适应学习率 α(t)=α₀/(1+β√t), 更多更新→更低LR→更稳定Q值',
+    });
+    // GAP 2: 序列注意力权重
+    this.register('decision_dynamics', {
+      id: 'sequential_attention_weight', formulaId: 'sequential_attention_weight',
+      impl: (pos, lam) => _b.sequentialAttentionWeight(pos, lam),
+      doc: '序列注意力 w(i)=exp(-λi), 最近决策权重更大 (2605.08716)',
+    });
+    // GAP 2: 加权准确率
+    this.register('decision_dynamics', {
+      id: 'weighted_accuracy', formulaId: 'weighted_accuracy',
+      impl: (decisions, lam) => _b.weightedAccuracy(decisions, lam),
+      doc: '加权准确率 = Σ w_i·correct_i / Σ w_i, 时序折扣准确率 (2605.08716)',
+    });
   }
 }
 

@@ -1222,6 +1222,78 @@ class FormulaBridge {
       biasMagnitude: +Math.abs(beta).toFixed(4)
     };
   }
+
+  /**
+   * 自适应学习率 (Resource-Rational Learning Rate Schedule)
+   * learningRate(t) = alpha0 / (1 + beta * sqrt(t))
+   * 更多更新 → 更低学习率 → 更稳定的 Q 值。早期学习快，后期学习精准。
+   * @param {number} initialRate - 初始学习率 α₀（默认 0.5）
+   * @param {number} updateCount - 该 Q 条目的更新次数 t
+   * @param {number} decayBeta - 衰减速度 β（默认 0.1）
+   * @returns {number} 自适应学习率 ∈ (0, α₀]
+   */
+  adaptiveLearningRate(initialRate = 0.5, updateCount = 0, decayBeta = 0.1) {
+    const t = Math.max(0, updateCount || 0);
+    const alpha0 = Math.max(0.01, Math.min(1.0, initialRate));
+    const beta = Math.max(0.01, Math.min(1.0, decayBeta));
+    const lr = alpha0 / (1 + beta * Math.sqrt(t));
+    return +lr.toFixed(6);
+  }
+
+  /**
+   * 序列注意力权重 (Sequential Attention Discount)
+   * attention_weight(i) = exp(-lambda * i)
+   * 最近决策在准确率计算中更重要（λ 控制衰减速度）。
+   * 基于 arXiv:2605.08716 的序列折扣模型。
+   * @param {number} position - 序列位置 i（0=最近，越大越旧）
+   * @param {number} lambda - 衰减系数 λ（默认 0.3）
+   * @returns {number} 注意力权重 ∈ (0, 1]
+   */
+  sequentialAttentionWeight(position = 0, lambda = 0.3) {
+    const i = Math.max(0, position || 0);
+    const lam = Math.max(0.01, Math.min(2.0, lambda));
+    return +Math.exp(-lam * i).toFixed(6);
+  }
+
+  /**
+   * 加权准确率 (Recency-Weighted Accuracy)
+   * 使用序列注意力权重计算带时序折扣的准确率。
+   * decisions: [{correct: true/false}, ...] 按时间排列（index 0 = 最早, last = 最近）
+   * @param {Array<{correct: boolean}>} decisions - 决策结果序列
+   * @param {number} lambda - 衰减系数（默认 0.3）
+   * @returns {{accuracy: number, weightedAccuracy: number, totalWeight: number, recentBias: number}}
+   */
+  weightedAccuracy(decisions = [], lambda = 0.3) {
+    if (!decisions || decisions.length === 0) {
+      return { accuracy: 1.0, weightedAccuracy: 1.0, totalWeight: 0, recentBias: 0 };
+    }
+    const n = decisions.length;
+    let totalWeight = 0;
+    let weightedCorrect = 0;
+    let rawCorrect = 0;
+
+    for (let i = 0; i < n; i++) {
+      // position: 0 = 最旧 (oldest), n-1 = 最近 (newest)
+      const position = n - 1 - i;  // reverse so 0 = most recent
+      const w = this.sequentialAttentionWeight(position, lambda);
+      totalWeight += w;
+      if (decisions[i].correct) {
+        weightedCorrect += w;
+        rawCorrect++;
+      }
+    }
+
+    const accuracy = n > 0 ? rawCorrect / n : 1.0;
+    const weightedAcc = totalWeight > 0 ? weightedCorrect / totalWeight : accuracy;
+    const recentBias = weightedAcc - accuracy;
+
+    return {
+      accuracy: +accuracy.toFixed(4),
+      weightedAccuracy: +weightedAcc.toFixed(4),
+      totalWeight: +totalWeight.toFixed(4),
+      recentBias: +recentBias.toFixed(4)
+    };
+  }
 }
 
 
