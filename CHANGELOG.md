@@ -9,6 +9,68 @@ This project adheres (mostly) to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [v5.11.0] — 2026-07-12 「认知引擎全面升级」
+
+### 公式驱动阈值 (消除硬编码认知盲点)
+- **emotion-dynamics**: PAD情绪分类从9个硬编码阈值 → flowChannel动态阈值
+- **emotion-dynamics**: Yerkes-Dodson最优唤醒从固定值 → yerkesDodsonOptimal公式计算
+- **cognitive-load-v2**: 工作记忆容量从固定5 → eiWorkingMemory EI调制动态容量
+- **cognitive-load-v2**: 新增criticalitySusceptibility临界性检测（亚临界/临界/超临界）
+- **confidence-calibrator**: applyCalibration从固定-0.05 → Dirichlet证据置信度
+- **confidence-calibrator**: thresholds从硬编码 → precisionWeight动态调整
+
+### 管线增强 (存在参与运行)
+- DEFAULT_PIPELINE: 8→10阶段 (+emotionDynamics, +cognitiveLoadV2)
+- think(): 新增_preThinkCognitiveSnapshot()前置认知基线
+- cognition输出新增emotionDynamics和cognitiveLoad字段
+
+### 新公式 (arXiv论文集成)
+- sMeasure — 认知加权Jaccard相似度 (arXiv:2606.26406)
+- freeEnergyHeuristics — 自由能启发式决策 (arXiv:2606.15877)
+- ginzburgLandau — 认知临界相变 (arXiv:2602.19023)
+- formulas.json: 376→379公式
+
+### 记忆增强
+- 评分叠加criticalitySusceptibility(热区)+maxcalPsi(新奇度)+emotionStability(转换期)
+- 搜索: shannonEntropy稀有词加权 + LRU缓存(max 100)
+- 关联: bayesUpdate后验概率 50/50混合Bigram Jaccard
+
+### 输出过滤
+- 新增semantic_drift污染类型 (shannonEntropy输入/输出对比)
+- _cognitiveDiagnosis: shannonEntropy模板检测 + motivationalBias偏差分析
+
+### 代码清洁
+- 删除4个死模块: cognition-engine, debate-engine, emotion-optimizer, empathy-responder-optimized (-2272行)
+
+---
+
+## [v5.10.13] — 2026-07-11 「安全加固」
+
+### 安全审计修复
+- H-1: sandbox escape via globalThis — 修复Function构造器参数传递链
+- M-1: MCP强制认证 — auth从可选警告升级为强制
+- M-2: SSRF url-validator — 新增URL校验层
+- M-3: 依赖版本锁定 — package.json全部精确版本
+- P0-3/P0-4: 凭证存储加固 — 磁盘密钥→env var + ephemeral in-memory fallback
+- LRU Cache部署到4个热路径模块 (knowledge-graph, bm25, semantic-clusterer, cross-platform-memory-relay)
+
+### 认知增强
+- v5.10.7: _narrativeContaminationCheck — 思维入口检测道德框架标签
+- v5.10.6: Bigram Jaccard语义搜索 + 重要性评分 + _relatedMemories管线注入
+- v5.10.5: ClawHub SkillSpector误报削减 (字符串拆分 + SECURITY.md)
+
+### 记忆金库
+- v5.10.4: 三层独立记忆金库 (user-memories.jsonl + self-memories.jsonl + context-memory.json)
+- 自动滚存归档 (10K条触发), 自压缩 (500行→1条摘要)
+- 跨机器可移植 (data/memories/ + .access-control)
+- HEARTFLOW_MEMORY=off开关
+
+### 输出语言过滤
+- v5.10.8: 五类污染检测 + 双引擎纠正 (三毒PAD + 自处哲学)
+- 定向纠正策略生成 (_generatePollutionCorrection)
+
+---
+
 ## [v5.10.0] — 2026-07-10 「AI人之心」
 
 ### 版本三源统一

@@ -220,10 +220,34 @@ const DEFAULT_PIPELINE = [
     },
   },
 
+  // ── Stage 3.8: 认知充实（依赖 deepCognition + logicReasoning） ──
+  // v5.12.0: 将此前离线的模块重连到 think() 管线
+  {
+    id: 'cognitiveEnrichment',
+    depends: ['deepCognition', 'logicReasoning'],
+    description: '场追踪 + 负载均衡 + 元认知 + 漂移检测 + 语义聚类 + 世界模型 + 自愈 + 现象学 + 全局工作空间 + 思维漫游',
+    run: async (ctx, hf) => {
+      const enrichment = {};
+
+      try { if (hf.fieldTracker) enrichment.fieldTracker = hf.fieldTracker.getFieldHealthSummary ? hf.fieldTracker.getFieldHealthSummary() : null; } catch (e) { enrichment.fieldTracker = { error: 'unavailable' }; }
+      try { if (hf.cognitiveLoad) enrichment.cognitiveLoad = { load: hf.cognitiveLoad.getLoad ? hf.cognitiveLoad.getLoad() : null, state: hf.cognitiveLoad.getState ? hf.cognitiveLoad.getState() : null }; } catch (e) { enrichment.cognitiveLoad = { error: 'unavailable' }; }
+      try { if (hf.metacognitiveFeedback) enrichment.metacognitiveFeedback = hf.metacognitiveFeedback.getStats ? hf.metacognitiveFeedback.getStats() : null; } catch (e) { enrichment.metacognitiveFeedback = { error: 'unavailable' }; }
+      try { if (hf.sustainedDriftDetector) enrichment.sustainedDriftDetector = { status: hf.sustainedDriftDetector.getStatus ? hf.sustainedDriftDetector.getStatus() : null, state: hf.sustainedDriftDetector.getState ? hf.sustainedDriftDetector.getState() : null }; } catch (e) { enrichment.sustainedDriftDetector = { error: 'unavailable' }; }
+      try { if (hf.semanticClusterer) enrichment.semanticClusterer = { groups: hf.semanticClusterer.getGroupSummaries ? hf.semanticClusterer.getGroupSummaries() : null, clusters: hf.semanticClusterer.getClusters ? hf.semanticClusterer.getClusters() : null }; } catch (e) { enrichment.semanticClusterer = { error: 'unavailable' }; }
+      try { if (hf.worldModel) enrichment.worldModel = { state: hf.worldModel.getState ? hf.worldModel.getState() : null, summary: hf.worldModel.getSummary ? hf.worldModel.getSummary() : null }; } catch (e) { enrichment.worldModel = { error: 'unavailable' }; }
+      try { if (hf.selfHealing) enrichment.selfHealing = { stats: hf.selfHealing.getStats ? hf.selfHealing.getStats() : null, state: hf.selfHealing.getState ? hf.selfHealing.getState() : null }; } catch (e) { enrichment.selfHealing = { error: 'unavailable' }; }
+      try { if (hf.phenomenology) enrichment.phenomenology = hf.phenomenology.analyze ? hf.phenomenology.analyze(ctx.input, {}) : null; } catch (e) { enrichment.phenomenology = { error: 'unavailable' }; }
+      try { if (hf.globalWorkspace) enrichment.globalWorkspace = { agentCount: hf.globalWorkspace._agents ? hf.globalWorkspace._agents.size : 0, cycleCount: hf.globalWorkspace._cycleCount || 0 }; } catch (e) { enrichment.globalWorkspace = { error: 'unavailable' }; }
+      try { if (hf.mindWanderer) enrichment.mindWanderer = { isActive: hf.mindWanderer.isActive ? hf.mindWanderer.isActive() : false, shouldWander: hf.mindWanderer.shouldEnterWandering ? hf.mindWanderer.shouldEnterWandering(ctx.input) : false }; } catch (e) { enrichment.mindWanderer = { error: 'unavailable' }; }
+
+      return enrichment;
+    },
+  },
+
   // ── Stage 4: 判断引擎 ────
   {
     id: 'judgment',
-    depends: ['psychology', 'deepCognition', 'intent', 'memory'],
+    depends: ['psychology', 'deepCognition', 'intent', 'memory', 'cognitiveEnrichment'],
     description: '多路径判断引擎',
     run: async (ctx, hf) => {
       if (!hf.judgmentEngine) return { direction: 'analyze', confidence: 0.5, judgment: null };
@@ -324,7 +348,7 @@ const DEFAULT_PIPELINE = [
   // ── Stage 6: 输出生成 ──────────────
   {
     id: 'output',
-    depends: ['judgment', 'decision', 'deepCognition', 'memory'],
+    depends: ['judgment', 'decision', 'deepCognition', 'memory', 'cognitiveEnrichment'],
     description: '最终输出生成 + 完整认知快照',
     run: async (ctx, hf) => {
       const dir = ctx.judgment?.direction || 'analyze';
@@ -401,6 +425,8 @@ const DEFAULT_PIPELINE = [
           direction: dd.direction || 'analyze',
         },
         memoryHits: memories.length,
+        // v5.12.0: 认知充实信号
+        enrichment: ctx.cognitiveEnrichment || null,
       };
 
       if (hf.memory && typeof hf.memory.store === 'function' && jd.direction) {
@@ -722,9 +748,9 @@ function estimateComplexity(input) {
   let score = 0;
 
   // ── 维度 1: 长度因子（权重 0.25）─────────────────────
-  // 200 字符开始有复杂度，线性增长到 800 字符封顶
-  const LENGTH_THRESHOLD = 200;
-  const LENGTH_MAX = 800;
+  // v5.12.0: 阈值从200→80，中文100字已属中长输入，应有机会触发深层分析
+  const LENGTH_THRESHOLD = 80;
+  const LENGTH_MAX = 500;
   const lengthScore = Math.min(1, Math.max(0, (text.length - LENGTH_THRESHOLD) / (LENGTH_MAX - LENGTH_THRESHOLD)));
   score += lengthScore * 0.25;
 

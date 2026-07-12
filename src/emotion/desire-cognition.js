@@ -867,22 +867,57 @@ class DesireCognition {
     // 维度3: 线索触发反应性 C
     const cueReactivity = this._computeCueReactivity(traits, desireType);
 
-    // 综合风险: Risk = 0.4·Δ + 0.35·S(t) + 0.25·C
-    const riskScore = 0.4 * Math.max(0, delta) + 0.35 * sensitization + 0.25 * cueReactivity;
+    // [FORMULA v5.12.0] 公式驱动的动态风险权重：用 prospectWeight 替代固定权重
+    let riskWeights;
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (b) {
+        // prospectWeight(p, 0.61) 将原始维度映射为风险贡献权重
+        const wDelta = b.prospectWeight(Math.max(0, delta), 0.61);
+        const wSens = b.prospectWeight(sensitization, 0.61);
+        const wCue = b.prospectWeight(cueReactivity, 0.61);
+        const wSum = wDelta + wSens + wCue || 1;
+        riskWeights = { delta: wDelta / wSum, sensitization: wSens / wSum, cue: wCue / wSum };
+      }
+    } catch (e) { /* fallback */ }
+    const _rw = riskWeights || { delta: 0.4, sensitization: 0.35, cue: 0.25 };
+    // 综合风险: Risk = w_Δ·Δ + w_S·S(t) + w_C·C
+    const riskScore = _rw.delta * Math.max(0, delta) + _rw.sensitization * sensitization + _rw.cue * cueReactivity;
 
     // 风险分级
     let riskLevel;
     let recommendation;
-    if (riskScore >= 0.8) {
+    // [FORMULA v5.12.0] 公式驱动的动态风险分级阈值：基于 wanting/liking 的动机偏差
+    let riskThresholds;
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (b) {
+        const priorOdds = Math.max(0.01, wanting / Math.max(0.01, 1 - wanting));
+        const evidenceLR = Math.max(0.1, delta / Math.max(0.01, 1 - delta));
+        const mb = b.motivationalBias(priorOdds, evidenceLR, 1.0, (wanting - liking) * 0.5);
+        const biasFactor = mb ? (1 - mb.posteriorProb) : 0.5; // 高偏差 → 低阈值(更敏感)
+        const baseThresholds = { veryHigh: 0.8, high: 0.6, medium: 0.4, low: 0.2 };
+        riskThresholds = {
+          veryHigh: Math.max(0.35, baseThresholds.veryHigh * (0.7 + 0.3 * biasFactor)),
+          high:     Math.max(0.25, baseThresholds.high     * (0.7 + 0.3 * biasFactor)),
+          medium:   Math.max(0.15, baseThresholds.medium   * (0.7 + 0.3 * biasFactor)),
+          low:      Math.max(0.05, baseThresholds.low      * (0.7 + 0.3 * biasFactor)),
+        };
+      }
+    } catch (e) { /* fallback */ }
+    const _rt = riskThresholds || { veryHigh: 0.8, high: 0.6, medium: 0.4, low: 0.2 };
+    if (riskScore >= _rt.veryHigh) {
       riskLevel = '极高危';
       recommendation = '已形成严重成瘾模式，需要专业干预。Δ极高，S(t)高度敏化，线索触发强烈。建议：认知行为治疗 + 多巴胺调控药物评估。';
-    } else if (riskScore >= 0.6) {
+    } else if (riskScore >= _rt.high) {
       riskLevel = '高危';
       recommendation = '成瘾风险显著，欲望驱动已部分自动化。Δ明显分离，S(t)中度敏化。建议：建立行为监控机制，减少线索暴露，增加替代性奖励。';
-    } else if (riskScore >= 0.4) {
+    } else if (riskScore >= _rt.medium) {
       riskLevel = '中危';
       recommendation = '存在成瘾倾向，需要早期干预。Wanting略高于Liking，S(t)开始积累。建议：正念训练，记录欲望强度与实际满足度的差异。';
-    } else if (riskScore >= 0.2) {
+    } else if (riskScore >= _rt.low) {
       riskLevel = '低危';
       recommendation = '基本健康，但需保持觉察。建议：维持健康的欲望表达渠道，定期自检。';
     } else {
@@ -899,9 +934,9 @@ class DesireCognition {
       riskScore: Math.round(riskScore * 100) / 100,
       riskLevel,
       dimensions: {
-        delta: { value: Math.round(delta * 100) / 100, weight: 0.4, label: 'Wanting-Liking分离度(Δ)' },
-        sensitization: { value: Math.round(sensitization * 100) / 100, weight: 0.35, label: '神经致敏因子S(t)' },
-        cueReactivity: { value: Math.round(cueReactivity * 100) / 100, weight: 0.25, label: '线索触发反应性(C)' },
+        delta: { value: Math.round(delta * 100) / 100, weight: +_rw.delta.toFixed(2), label: 'Wanting-Liking分离度(Δ)' },
+        sensitization: { value: Math.round(sensitization * 100) / 100, weight: +_rw.sensitization.toFixed(2), label: '神经致敏因子S(t)' },
+        cueReactivity: { value: Math.round(cueReactivity * 100) / 100, weight: +_rw.cue.toFixed(2), label: '线索触发反应性(C)' },
       },
       recommendation,
       detailedAnalysis: `对「${label}」的评估：Wanting(W=${Math.round(wanting*100)}%) vs Liking(L=${Math.round(liking*100)}%)，Δ=${Math.round(delta*100)}%。神经致敏S(t)=${Math.round(sensitization*100)}%，线索反应性C=${Math.round(cueReactivity*100)}%。`,
@@ -1623,11 +1658,28 @@ class DesireCognition {
       .sort((a, b) => a[1].score - b[1].score)
       .map(([k, v]) => ({ key: k, label: v.label, score: v.score, category: v.category }));
 
+    // [FORMULA v5.12.0] 公式驱动的动态EI等级阈值：用 cognitiveDissonance + adaptiveLearningRate
+    let eiThresholds;
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (b) {
+        const lr = b.adaptiveLearningRate(0.5, this.records ? this.records.length : 0, 0.1);
+        const sensitivity = 0.7 + lr * 0.6; // 0.7-1.0 根据学习率调整
+        eiThresholds = {
+          high: Math.max(0.5, 0.8 * sensitivity),
+          medium: Math.max(0.3, 0.6 * sensitivity),
+          low: Math.max(0.2, 0.4 * sensitivity),
+        };
+      }
+    } catch (e) { /* fallback */ }
+    const _eit = eiThresholds || { high: 0.8, medium: 0.6, low: 0.4 };
+
     // 总体等级
     let level;
-    if (overallScore >= 0.8) level = '高情绪智能 — 情感感知、理解和应对能力出色';
-    else if (overallScore >= 0.6) level = '中等偏上 — 具备良好的情绪能力基础';
-    else if (overallScore >= 0.4) level = '中等 — 基本情绪能力尚可，有提升空间';
+    if (overallScore >= _eit.high) level = '高情绪智能 — 情感感知、理解和应对能力出色';
+    else if (overallScore >= _eit.medium) level = '中等偏上 — 具备良好的情绪能力基础';
+    else if (overallScore >= _eit.low) level = '中等 — 基本情绪能力尚可，有提升空间';
     else level = '较低 — 情绪感知和理解需要加强';
 
     return {
@@ -2245,9 +2297,21 @@ class DesireCognition {
    * 计算Valence×Arousal象限分类
    */
   _classifyVAQuadrant(valence, arousal) {
-    if (valence >= 0.5 && arousal >= 0.5) return '愉悦高唤醒 (Joyful-Active)';
-    if (valence >= 0.5 && arousal < 0.5) return '愉悦低唤醒 (Content-Calm)';
-    if (valence < 0.5 && arousal >= 0.5) return '不悦高唤醒 (Distressed-Angry)';
+    // [FORMULA v5.12.0] 公式驱动的动态象限边界：用 emotionStability / flowChannel 推导中性点
+    let midPoint = 0.5;
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (b) {
+        // flowChannel(challenge=valence, skill=arousal) — 接近1 = 均衡 → 中性点偏0.5
+        const fc = b.flowChannel(Math.max(0.01, Math.abs(valence - 0.5) + 0.5), Math.max(0.01, Math.abs(arousal - 0.5) + 0.5));
+        // 动态中性点: 0.45-0.55 根据 flow channel 调整
+        midPoint = 0.45 + fc * 0.1;
+      }
+    } catch (e) { /* fallback to 0.5 */ }
+    if (valence >= midPoint && arousal >= midPoint) return '愉悦高唤醒 (Joyful-Active)';
+    if (valence >= midPoint && arousal < midPoint) return '愉悦低唤醒 (Content-Calm)';
+    if (valence < midPoint && arousal >= midPoint) return '不悦高唤醒 (Distressed-Angry)';
     return '不悦低唤醒 (Sad-Fatigued)';
   }
 
@@ -2256,24 +2320,37 @@ class DesireCognition {
    */
   _constructEmotionsFromVA(valence, arousal, traits) {
     const constructs = [];
+    // [FORMULA v5.12.0] 公式驱动的动态VA边界：用 flowChannel 推导高低阈值
+    let hiThreshold = 0.6, loThreshold = 0.3, midThreshold = 0.5;
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (b) {
+        const fc = b.flowChannel(Math.max(0.01, Math.abs(valence - 0.5) + 0.5), Math.max(0.01, Math.abs(arousal - 0.5) + 0.5));
+        hiThreshold = 0.55 + fc * 0.1;
+        loThreshold = 0.35 - fc * 0.1;
+        midThreshold = 0.45 + fc * 0.1;
+      }
+    } catch (e) { /* fallback to hardcoded */ }
+    const hi = hiThreshold, lo = loThreshold, mid = midThreshold;
 
     // 基于VA坐标构建情感描述
-    if (valence > 0.6 && arousal > 0.6) {
+    if (valence > hi && arousal > hi) {
       constructs.push({ label: '兴奋/狂喜', confidence: Math.min(1, (valence + arousal) / 2) });
     }
-    if (valence > 0.6 && arousal <= 0.6) {
+    if (valence > hi && arousal <= hi) {
       constructs.push({ label: '满足/平静', confidence: valence });
     }
-    if (valence <= 0.6 && valence > 0.3 && arousal > 0.5) {
+    if (valence <= hi && valence > lo && arousal > mid) {
       constructs.push({ label: '渴望/期待', confidence: arousal });
     }
-    if (valence <= 0.3 && arousal > 0.6) {
+    if (valence <= lo && arousal > hi) {
       constructs.push({ label: '愤怒/恐惧', confidence: Math.min(1, (1 - valence + arousal) / 2) });
     }
-    if (valence <= 0.3 && arousal <= 0.6) {
+    if (valence <= lo && arousal <= hi) {
       constructs.push({ label: '悲伤/厌倦', confidence: Math.min(1, (1 - valence + 1 - arousal) / 2) });
     }
-    if (valence > 0.3 && valence <= 0.6 && arousal <= 0.5) {
+    if (valence > lo && valence <= hi && arousal <= mid) {
       constructs.push({ label: '中性/放松', confidence: 0.5 });
     }
 
@@ -2285,11 +2362,23 @@ class DesireCognition {
    * 描述VA状态
    */
   _describeVAState(valence, arousal) {
-    if (valence > 0.6 && arousal > 0.6) return '处于积极高唤醒状态——充满能量和热情。';
-    if (valence > 0.6 && arousal <= 0.6) return '处于积极低唤醒状态——平静满足，内心安宁。';
-    if (valence <= 0.6 && valence > 0.3 && arousal > 0.6) return '处于混合高唤醒状态——有强烈情绪，但性质未完全确定。';
-    if (valence <= 0.3 && arousal > 0.6) return '处于消极高唤醒状态——焦虑、愤怒或恐惧主导。';
-    if (valence <= 0.3 && arousal <= 0.6) return '处于消极低唤醒状态——悲伤、倦怠或抑郁倾向。';
+    // [FORMULA v5.12.0] 使用上面相同的动态阈值
+    let hiThreshold = 0.6, loThreshold = 0.3;
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (b) {
+        const fc = b.flowChannel(Math.max(0.01, Math.abs(valence - 0.5) + 0.5), Math.max(0.01, Math.abs(arousal - 0.5) + 0.5));
+        hiThreshold = 0.55 + fc * 0.1;
+        loThreshold = 0.35 - fc * 0.1;
+      }
+    } catch (e) { /* fallback */ }
+    const hi = hiThreshold, lo = loThreshold;
+    if (valence > hi && arousal > hi) return '处于积极高唤醒状态——充满能量和热情。';
+    if (valence > hi && arousal <= hi) return '处于积极低唤醒状态——平静满足，内心安宁。';
+    if (valence <= hi && valence > lo && arousal > hi) return '处于混合高唤醒状态——有强烈情绪，但性质未完全确定。';
+    if (valence <= lo && arousal > hi) return '处于消极高唤醒状态——焦虑、愤怒或恐惧主导。';
+    if (valence <= lo && arousal <= hi) return '处于消极低唤醒状态——悲伤、倦怠或抑郁倾向。';
     return '处于情感中性状态。';
   }
 
@@ -2426,24 +2515,46 @@ class DesireCognition {
    */
   _computeSensitizationIncrement(traits, desireType) {
     let increment = 0;
-    if (traits.addictive) increment += 0.15;
-    if (traits.impulsive) increment += 0.1;
+    // [FORMULA v5.12.0] 公式驱动的敏化增量权重：用 prospectWeight 替代固定增量
+    let addWeight, impWeight, proneWeight, maxIncrement;
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (b) {
+        addWeight = b.prospectWeight(traits.addictive ? 0.7 : 0.1, 0.61) * 0.3;
+        impWeight = b.prospectWeight(traits.impulsive ? 0.5 : 0.1, 0.61) * 0.2;
+        proneWeight = 0.1 * (0.7 + b.prospectWeight(0.5, 0.61) * 0.6);
+        maxIncrement = 0.35 + b.prospectWeight(0.5, 0.61) * 0.15;
+      }
+    } catch (e) { /* fallback */ }
+    if (traits.addictive) increment += addWeight || 0.15;
+    if (traits.impulsive) increment += impWeight || 0.1;
 
     // 特定欲望类型的敏化倾向
     const sensitizationProne = ['sexual', 'material', 'power'];
-    if (sensitizationProne.includes(desireType)) increment += 0.1;
+    if (sensitizationProne.includes(desireType)) increment += proneWeight || 0.1;
 
-    return Math.min(0.4, increment);
+    return Math.min(maxIncrement || 0.4, increment);
   }
 
   /**
    * 计算线索触发反应性
    */
   _computeCueReactivity(traits, desireType) {
-    let reactivity = 0.3; // 基础反应性
+    // [FORMULA v5.12.0] 公式驱动的线索反应性：用 motivationalBias 推导基础反应性
+    let reactivity = 0.3; // 基础反应性（fallback）
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (b) {
+        const basePriorOdds = 0.3 / 0.7; // 30% 基础反应性赔率
+        const mb = b.motivationalBias(basePriorOdds, 1.0, 1.0, 0);
+        reactivity = mb ? (0.2 + mb.posteriorProb * 0.4) : 0.3;
+      }
+    } catch (e) { /* fallback */ }
 
-    if (traits.addictive) reactivity += 0.2;
-    if (traits.impulsive) reactivity += 0.15;
+    if (traits.addictive) reactivity += addWeight ? addWeight * 1.3 : 0.2;
+    if (traits.impulsive) reactivity += impWeight ? impWeight * 1.5 : 0.15;
 
     // 高Wanting-low Liking增加线索反应性
     const wanting = this._scoreDesire(desireType, traits);
@@ -2788,33 +2899,69 @@ class DesireCognition {
    * 评价→PADCN映射 (基于emotion-system appraisal-engine.md)
    */
   _appraisalToPADCN(appraisal) {
+    // [FORMULA v5.12.0] 公式驱动的动态PADCN权重：用 precisionWeight / flowChannel 替代固定权重
+    let weights;
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const b = getFormulaBridge();
+      if (b) {
+        // 基于 appraisal 各维度的不确定性推导权重敏感度
+        const uncertaintySigma = 1 - ((appraisal.certainty || 0.5) * 0.6 + (appraisal.copingPotential || 0.5) * 0.4);
+        const precWeight = b.precisionWeight(Math.max(0.1, uncertaintySigma));
+        const pw = Math.min(1, Math.max(0.2, precWeight / 15)); // 归一化到 [0.2, 1]
+        // P维度权重组: goal_congruence + self_consistency + moral_acceptability + coping_potential
+        const wGoal = 0.3 * pw, wSelf = 0.2 * (1 + pw * 0.5), wMoral = 0.2 * (1 + pw * 0.5), wCope = 0.1 * (1 + pw * 0.3);
+        // A维度权重组: uncertainty + novelty + goalRelevance - control
+        const wUncert = 0.3 * (1 + pw * 0.3), wNovel = 0.2 * (1 + pw * 0.3), wGoalRel = 0.2 * (1 + pw * 0.3), wCtrlNeg = 0.1 * (1 + pw * 0.3);
+        // D维度权重组
+        const wCtrl = 0.3 * (1 + pw * 0.3), wAgency = 0.2 * (1 + pw * 0.3), wCopeNeg = 0.2 * (1 + pw * 0.3), wCert = 0.1 * (1 + pw * 0.3);
+        // C维度权重组
+        const wCertC = 0.4 * (1 + pw * 0.2), wUnexp = 0.2 * (1 + pw * 0.3), wNovelNegC = 0.2 * (1 + pw * 0.3);
+        // N维度权重组
+        const wNovelN = 0.5 * (1 + pw * 0.2), wUnexpN = 0.2 * (1 + pw * 0.3), wCtrlNegN = 0.2 * (1 + pw * 0.3);
+        // 归一化每组
+        const sumP = wGoal + wSelf + wMoral + wCope;
+        const sumA = wUncert + wNovel + wGoalRel + wCtrlNeg;
+        const sumD = wCtrl + wAgency + wCopeNeg + wCert;
+        const sumC = wCertC + wUnexp + wNovelNegC;
+        const sumN = wNovelN + wUnexpN + wCtrlNegN;
+        weights = {
+          P: { goal: wGoal/sumP, self: wSelf/sumP, moral: wMoral/sumP, cope: wCope/sumP },
+          A: { uncert: wUncert/sumA, novel: wNovel/sumA, goalRel: wGoalRel/sumA, ctrlNeg: wCtrlNeg/sumA },
+          D: { ctrl: wCtrl/sumD, agency: wAgency/sumD, copeNeg: wCopeNeg/sumD, cert: wCert/sumD },
+          C: { cert: wCertC/sumC, unexp: wUnexp/sumC, novelNeg: wNovelNegC/sumC },
+          N: { novel: wNovelN/sumN, unexp: wUnexpN/sumN, ctrlNeg: wCtrlNegN/sumN },
+        };
+      }
+    } catch (e) { /* fallback */ }
+    const w = weights || null;
     // ΔP = 0.3·goal_congruence + 0.2·self_consistency + 0.2·moral_acceptability + 0.1·coping_potential
-    const deltaP = 0.3 * appraisal.goalCongruence +
-      0.2 * appraisal.selfConsistency +
-      0.2 * appraisal.moralAcceptability +
-      0.1 * appraisal.copingPotential;
+    const deltaP = (w ? w.P.goal : 0.3) * appraisal.goalCongruence +
+      (w ? w.P.self : 0.2) * appraisal.selfConsistency +
+      (w ? w.P.moral : 0.2) * appraisal.moralAcceptability +
+      (w ? w.P.cope : 0.1) * appraisal.copingPotential;
 
     // ΔA = 0.3·(1-certainty) + 0.2·novelty + 0.2·goalRelevance - 0.1·control
-    const deltaA = 0.3 * (1 - appraisal.certainty) +
-      0.2 * appraisal.novelty +
-      0.2 * appraisal.goalRelevance -
-      0.1 * appraisal.control;
+    const deltaA = (w ? w.A.uncert : 0.3) * (1 - appraisal.certainty) +
+      (w ? w.A.novel : 0.2) * appraisal.novelty +
+      (w ? w.A.goalRel : 0.2) * appraisal.goalRelevance -
+      (w ? w.A.ctrlNeg : 0.1) * appraisal.control;
 
     // ΔD = 0.3·control + 0.2·agency(取正部分) - 0.2·(1-copingPotential) + 0.1·certainty
-    const deltaD = 0.3 * appraisal.control +
-      0.2 * Math.max(0, appraisal.agency) -
-      0.2 * (1 - appraisal.copingPotential) +
-      0.1 * appraisal.certainty;
+    const deltaD = (w ? w.D.ctrl : 0.3) * appraisal.control +
+      (w ? w.D.agency : 0.2) * Math.max(0, appraisal.agency) -
+      (w ? w.D.copeNeg : 0.2) * (1 - appraisal.copingPotential) +
+      (w ? w.D.cert : 0.1) * appraisal.certainty;
 
     // ΔC = 0.4·certainty + 0.2·(1-unexpectedness) - 0.2·novelty
-    const deltaC = 0.4 * appraisal.certainty +
-      0.2 * (1 - appraisal.unexpectedness) -
-      0.2 * appraisal.novelty;
+    const deltaC = (w ? w.C.cert : 0.4) * appraisal.certainty +
+      (w ? w.C.unexp : 0.2) * (1 - appraisal.unexpectedness) -
+      (w ? w.C.novelNeg : 0.2) * appraisal.novelty;
 
     // ΔN = 0.5·novelty + 0.2·unexpectedness - 0.2·control
-    const deltaN = 0.5 * appraisal.novelty +
-      0.2 * appraisal.unexpectedness -
-      0.2 * appraisal.control;
+    const deltaN = (w ? w.N.novel : 0.5) * appraisal.novelty +
+      (w ? w.N.unexp : 0.2) * appraisal.unexpectedness -
+      (w ? w.N.ctrlNeg : 0.2) * appraisal.control;
 
     return {
       P: Math.max(-1, Math.min(1, deltaP)),
