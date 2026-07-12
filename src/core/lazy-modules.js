@@ -23,15 +23,15 @@ const ReplanTrigger = _lazy('replanTrigger', () => {
   catch(e) { return { ReplanTrigger: class { constructor() {} shouldReplan() { return false; } getReplanReasons() { return []; } } }; }
 });
 
-// ── 验证器模块 ──────────────────────────────────────
+// ── 验证器模块 [v5.17.0 L-002] fail-closed: 加载失败时拒绝通过 ──
 const QualityVerifier = _lazy('qualityVerifier', () => {
   try { return require('../verifier/quality-verifier.js'); }
-  catch(e) { return { QualityVerifier: class { constructor() {} verify() { return { passed: true, score: 0, details: '模块加载失败，默认通过' }; } quickVerify() { return { passed: true, score: 0 }; } } }; }
+  catch(e) { return { QualityVerifier: class { constructor() {} verify() { return { passed: false, score: 0, details: '模块加载失败，验证不可用 (fail-closed)' }; } quickVerify() { return { passed: false, score: 0 }; } } }; }
 });
 
 const OutputChecker = _lazy('outputChecker', () => {
   try { return require('../verifier/output-checker.js'); }
-  catch(e) { return { OutputChecker: class { constructor() {} check() { return { valid: true, issues: [], reason: '模块加载失败，默认通过' }; } addChecker() { return this; } } }; }
+  catch(e) { return { OutputChecker: class { constructor() {} check() { return { valid: false, issues: [], reason: '模块加载失败，验证不可用 (fail-closed)' }; } addChecker() { return this; } } }; }
 });
 
 const PatternMatcher = _lazy('patternMatcher', () => {

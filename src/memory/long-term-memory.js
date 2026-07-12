@@ -6,6 +6,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const { safeWriteFileSync } = require('../utils/safe-fs.js');
+const { encryptJSON, decryptJSON, isEncryptionEnabled } = require('./memory-encrypt.js');
 
 class LongTermMemory {
   constructor(options = {}) {
@@ -20,6 +22,7 @@ class LongTermMemory {
     this.indexFile = path.join(this.storagePath, 'index.json');
     this.maxMemories = options.maxMemories || 10000;
     this.autoSave = options.autoSave !== false;
+    this._encryptionEnabled = isEncryptionEnabled();
     this._ensureStoragePath();
     this._loadIndex();
   }
@@ -39,11 +42,13 @@ class LongTermMemory {
   _loadIndex() {
     try {
       if (fs.existsSync(this.indexFile)) {
-        this.index = JSON.parse(fs.readFileSync(this.indexFile, 'utf-8'));
+        const raw = fs.readFileSync(this.indexFile, 'utf-8');
+        this.index = decryptJSON(raw) || { memories: [], tags: {} };
       } else {
         this.index = { memories: [], tags: {} };
       }
     } catch (error) {
+      console.warn('[LongTermMemory] Failed to load index, starting fresh:', error.message);
       this.index = { memories: [], tags: {} };
     }
   }
@@ -55,9 +60,10 @@ class LongTermMemory {
     if (!this.autoSave) return;
 
     try {
-      fs.writeFileSync(this.indexFile, JSON.stringify(this.index, null, 2));
+      const content = encryptJSON(this.index);
+      safeWriteFileSync(this.indexFile, content);
     } catch (error) {
-      // 忽略保存错误
+      console.warn('[LongTermMemory] Failed to save index:', error.message);
     }
   }
 
@@ -113,9 +119,10 @@ class LongTermMemory {
   _saveMemoryRecord(record) {
     const filePath = path.join(this.storagePath, `${record.id}.json`);
     try {
-      fs.writeFileSync(filePath, JSON.stringify(record, null, 2));
+      const content = encryptJSON(record);
+      safeWriteFileSync(filePath, content);
     } catch (error) {
-      // 忽略保存错误
+      console.warn('[LongTermMemory] Failed to save memory record:', error.message);
     }
   }
 
@@ -129,12 +136,19 @@ class LongTermMemory {
     }
 
     try {
-      const record = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      const record = decryptJSON(raw);
+      if (!record) return null;
+
       record.accessCount++;
       record.accessedAt = Date.now();
-      fs.writeFileSync(filePath, JSON.stringify(record, null, 2));
+
+      // Re-save with updated access
+      const content = encryptJSON(record);
+      safeWriteFileSync(filePath, content);
       return record;
     } catch (error) {
+      console.warn('[LongTermMemory] Failed to read memory record:', error.message);
       return null;
     }
   }

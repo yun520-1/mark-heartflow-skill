@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { safeWriteFileSync, safeAppendFileSync } = require('../../utils/safe-fs.js');
 
 const CONSTITUTION = `
 # HeartFlow AI 宪法
@@ -50,7 +51,7 @@ class SAGEGuardian {
         this.coreValues = fs.readFileSync(this.constitutionFile, 'utf8');
       } else {
         this.coreValues = CONSTITUTION;
-        fs.writeFileSync(this.constitutionFile, CONSTITUTION);
+        safeWriteFileSync(this.constitutionFile, CONSTITUTION);
       }
     } catch (e) {
       this.coreValues = CONSTITUTION;
@@ -60,7 +61,7 @@ class SAGEGuardian {
   log(message, level = 'INFO') {
     const timestamp = new Date().toISOString();
     const entry = `[${timestamp}] [${level}] ${message}\n`;
-    fs.appendFileSync(this.logFile, entry);
+    safeAppendFileSync(this.logFile, entry);
   }
 
   /**
@@ -340,7 +341,7 @@ class SAGEGuardian {
     const logLine = JSON.stringify(logEntry) + '\n';
     
     try {
-      fs.appendFileSync(this.logFile, logLine);
+      safeAppendFileSync(this.logFile, logLine);
       return { success: true };
     } catch (e) {
       return { success: false, error: e.message };

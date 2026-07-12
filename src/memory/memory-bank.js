@@ -24,6 +24,8 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { safeWriteFileSync } = require('../utils/safe-fs.js');
+const { encryptJSON, decryptJSON, isEncryptionEnabled } = require('./memory-encrypt.js');
 
 const DATA_DIR = path.join(__dirname, '../../data');
 const BANK_PATH = path.join(DATA_DIR, 'memory-bank.json');
@@ -100,7 +102,12 @@ class MemoryBank {
 
     try {
       const raw = fs.readFileSync(bankPath, 'utf-8');
-      const data = JSON.parse(raw);
+      const data = decryptJSON(raw);
+
+      if (!data) {
+        console.warn('[MemoryBank] Failed to load memory bank — starting fresh');
+        return;
+      }
 
       if (data.sessions && Array.isArray(data.sessions)) {
         for (const s of data.sessions) {
@@ -128,8 +135,11 @@ class MemoryBank {
         this._patterns = data._patterns;
         this._patternsTimestamp = data._patternsTimestamp || 0;
       }
+
+      const encStatus = isEncryptionEnabled() ? 'encrypted' : 'plaintext';
+      console.log(`[MemoryBank] Loaded memory bank (${encStatus}): ${this.memories.size} memories, ${this.sessions.size} sessions`);
     } catch (e) {
-      // 恢复失败，从空状态继续
+      console.warn('[MemoryBank] Failed to load memory bank, starting fresh:', e.message);
     }
   }
 
@@ -156,9 +166,13 @@ class MemoryBank {
         savedAt: new Date().toISOString(),
       };
 
-      fs.writeFileSync(bankPath, JSON.stringify(exportData, null, 2));
+      // Atomic write with encryption: write to temp, then rename
+      const tempPath = bankPath + '.tmp.' + Date.now() + '.' + crypto.randomBytes(4).toString('hex');
+      const content = encryptJSON(exportData);
+      safeWriteFileSync(tempPath, content, 'utf8');
+      fs.renameSync(tempPath, bankPath);
     } catch (e) {
-      // 保存失败不影响运行
+      console.warn('[MemoryBank] Failed to save memory bank:', e.message);
     }
   }
 
