@@ -31,6 +31,11 @@ const { stripPrivateObject } = require('../core/utils.js');
 const DATA_DIR = path.join(__dirname, '../../data');
 const BANK_PATH = path.join(DATA_DIR, 'memory-bank.json');
 
+// [v5.17.2 D-007] 记忆配额 + TTL清理
+const DEFAULT_MAX_MEMORIES = 5000;        // 最大记忆数量 [v5.17.2 D-007]
+const DEFAULT_MEMORY_TTL_MS = 90 * 24 * 3600_000; // 90天TTL [v5.17.2 D-007]
+const MAX_MEMORY_BANK_SIZE_MB = 50;       // 最大落盘大小 [v5.17.2 D-007]
+
 const DECAY_RATES = {
   core:      0.001,  // per hour
   learned:   0.01,

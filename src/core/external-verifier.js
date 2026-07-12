@@ -457,7 +457,8 @@ const externalVerifier = {
   },
 
   // ===== 配置超时 (v2.0.56+) =====
-  setTimeout(ms) {
+  // [v5.17.2 L-003] 重命名避免与全局setTimeout冲突
+  setClaimTimeout(ms) {
     if (typeof ms === 'number' && ms >= 1000 && ms <= 60000) {
       this._claimTimeout = ms;
     }
