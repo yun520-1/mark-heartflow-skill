@@ -3242,6 +3242,33 @@
       "subcategory": "statistics",
       "formula": "F1 = 2*precision*recall/(precision+recall)",
       "difficulty": "intermediate"
+    },
+    {
+      "id": "criticality_susceptibility",
+      "name": "临界磁化率 (Ginzburg-Landau)",
+      "category": "neuroscience",
+      "subcategory": "criticality",
+      "formula": "χ = K^{-3/2} where K is branching ratio",
+      "difficulty": "advanced",
+      "source": "arXiv:2602.19023"
+    },
+    {
+      "id": "maxcal_psi",
+      "name": "MaxCal 意识度量 ψ (KL 散度高斯基)",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "formula": "ψ = (1/2) * Σ(x_i - μ_i)²/σ_i²",
+      "difficulty": "advanced",
+      "source": "arXiv:2605.12536"
+    },
+    {
+      "id": "emotion_transition_entropy",
+      "name": "情绪转移熵 (图拉普拉斯谱隙)",
+      "category": "psychology",
+      "subcategory": "emotion_dynamics",
+      "formula": "λ_2 (second eigenvalue of graph Laplacian of transition matrix)",
+      "difficulty": "advanced",
+      "source": "arXiv:2606.01906"
     }
   ]
 }

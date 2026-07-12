@@ -534,6 +534,25 @@ class FormulaRegistry {
       impl: () => _b.matchingPenniesEquilibrium(),
       doc: '匹配 pennies 均衡',
     });
+    // ─── v8.15.0 新论文公式 (2025-2026 arXiv) ───
+    // 临界磁化率（Ginzburg-Landau，神经临界性）
+    this.register('calibration', {
+      id: 'criticality_susceptibility', formulaId: 'criticality_susceptibility',
+      impl: (K) => _b.criticalitySusceptibility(K),
+      doc: '临界磁化率 χ = K^{-3/2} (Ginzburg-Landau, 2602.19023)，分支比→神经雪崩可激发性',
+    });
+    // MaxCal 意识度量 ψ（KL 散度高斯基）
+    this.register('calibration', {
+      id: 'maxcal_psi', formulaId: 'maxcal_psi',
+      impl: (observed, mu, sigma) => _b.maxcalPsi(observed, mu, sigma),
+      doc: 'MaxCal ψ = (1/2) Σ(x_i-μ_i)²/σ_i² (2605.12536)，观测-先验偏差',
+    });
+    // 情绪转移熵（图拉普拉斯谱隙）
+    this.register('emotion_arousal', {
+      id: 'emotion_transition_entropy', formulaId: 'emotion_transition_entropy',
+      impl: (T) => _b.emotionStability(T),
+      doc: '情绪稳定性 λ_2（图拉普拉斯谱隙，2606.01906），小=稳定，大=易变',
+    });
   }
 }
 
