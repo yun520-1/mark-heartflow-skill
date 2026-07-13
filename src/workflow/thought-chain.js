@@ -43,20 +43,28 @@ const REASONING_DEPTH = {
   COMPREHENSIVE: 4 // 综合：多路径探索，任务特化
 };
 
+// [v5.17.16 M2] 双过程理论(Kahneman 2011): System1(快速直觉) vs System2(慢速反思)
+const DUAL_PROCESS = {
+  SYSTEM1: 'system1',  // 直觉/自动/快速 — 计算/分类/翻译
+  SYSTEM2: 'system2',  // 反思/受控/慢速 — 解释/判断/批判
+};
+
 // 任务类型对应的策略
 const TASK_STRATEGIES = {
   // 计算类：直接执行，不需要假设
   calculation: {
     skipHypotheses: true,
-    skipInvert: false,    // 但要检查计算错误
-    depth: 2
+    skipInvert: false,
+    depth: 2,
+    process: 'system1',  // [v5.17.16 M2]
   },
   // 解释类：需要假设+验证
   explanation: {
     skipHypotheses: false,
     skipInvert: false,
     minHypotheses: 2,
-    depth: 3
+    depth: 3,
+    process: 'system2',  // [v5.17.16 M2]
   },
   // 判断类：必须反向思考
   judgment: {

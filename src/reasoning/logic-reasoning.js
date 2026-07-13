@@ -971,6 +971,13 @@ class LogicReasoning {
       reason: finalBest.score > 0 ? finalBest.reasons.join('; ') : '无法确定',
       allScores: scored.map(s => ({ letter: s.letter, score: Math.round(s.score * 100) / 100 })),
       llmFallback: best.score < 0.1 ? true : false,
+      // [v5.17.16 M2] 主动推理EFE原型 — 探索(epistemic) vs 利用(pragmatic)
+      // EFE = 实用价值(偏好满足) + 认知价值(信息增益)
+      activeInference: {
+        exploitation: +(confidence / 100).toFixed(3),
+        exploration: +(1 - confidence / 100 - (scored.length > 1 ? scored[1].score / 100 : 0)).toFixed(3),
+        needsMoreEvidence: confidence < 50 || (scored.length > 1 && scored[1].score > finalBest.score * 0.7),
+      },
     };
   }
 
