@@ -1090,7 +1090,20 @@ class DecisionRouter {
         matches.push({
           ruleId: rule.id,
           type: rule.decision,
-          confidence: Math.min(1, Math.max(0, baseConfidence * ruleWeight)),
+          // [v5.17.8] 认知闭环: feedbackState调整决策置信度
+          confidence: (() => {
+            let conf = Math.min(1, Math.max(0, baseConfidence * ruleWeight));
+            const fb = this._feedbackState || (this.hf && this.hf._feedbackState);
+            if (fb) {
+              conf += fb.confidenceModifier || 0;
+              if (fb.decisionBias === 'conservative') {
+                // 保守策略: 降低高风险决策权重，提升heal/pause
+                if (rule.decision === 'heal' || rule.decision === 'pause') conf = Math.min(1, conf + 0.1);
+                if (rule.decision === 'accelerate' || rule.decision === 'turn') conf = Math.max(0, conf - 0.1);
+              }
+            }
+            return Math.min(1, Math.max(0, conf));
+          })(),
           priority: DECISION_PRIORITY[rule.decision] || 0,
           rationale: rule.rationale(result),
           fallback: rule.fallback,
