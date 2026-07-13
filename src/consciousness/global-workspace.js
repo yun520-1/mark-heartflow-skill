@@ -173,6 +173,13 @@ class GlobalWorkspace extends EventEmitter {
 
         broadcasts.push(broadcast);
 
+        // [v5.17.15 M1] 动态显著性阈值 — 根据情绪状态和任务类型调整
+        // 高唤醒(情绪激烈) → 降低阈值(更敏感); 低噪声任务 → 提高阈值(过滤噪音)
+        const emotionalArousal = context?.emotion?.arousal || 0.5;
+        const taskComplexity = context?.task?.complexity || 0.5;
+        const salienceThreshold = 0.5 + 0.2 * (1 - emotionalArousal) + 0.1 * taskComplexity;
+        broadcast.salienceThreshold = +salienceThreshold.toFixed(3);
+
         agentData.lastOutput = output;
         agentData.attentionRequests.push({
           attention: broadcast.attention,

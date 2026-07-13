@@ -50,6 +50,11 @@ class ContextBuilder {
     });
 
     // === 6. 构建格式化LLM字符串 ===
+    // [v5.17.15 M1] 预测误差信号 — 对输入做轻量预期生成，计算与实际的偏差
+    // 预测加工理论(Rao&Ballard 1999): 感知=自上而下预测 + 自下而上误差
+    const predictionError = this._computePredictionError(input);
+    const salienceAdjustment = predictionError > 0.5 ? 'high_surprise' : predictionError > 0.2 ? 'moderate_surprise' : 'expected';
+
     const formattedForLLM = this._formatForLLM({
       systemPrompt,
       userIntent,
@@ -398,6 +403,22 @@ class ContextBuilder {
 
   destroy() {}
   stop() {}
+
+  /**
+   * [v5.17.15 M1] 预测误差计算 — 预测加工理论(Rao&Ballard 1999)
+   * @returns {number} 0-1 surprise level
+   */
+  _computePredictionError(input) {
+    if (!input || typeof input !== 'string') return 0;
+    const text = input.toLowerCase();
+    let surprise = 0;
+    if (text.length > 200) surprise += 0.2;
+    if (text.split(/\s+/).length > 30) surprise += 0.15;
+    if (/\b(no|not|don|不|没|无)\b/i.test(text)) surprise += 0.2;
+    if (/\b(happy|sad|angry|fear|love|hate|开心|难过|愤怒|害怕|爱|恨)\b/i.test(text)) surprise += 0.25;
+    if (/(because|therefore|however|因为|所以|但是|然而)/i.test(text)) surprise += 0.2;
+    return Math.min(1, Math.max(0, surprise));
+  }
 }
 
 module.exports = { ContextBuilder };

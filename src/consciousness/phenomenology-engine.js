@@ -366,7 +366,10 @@ class PhenomenologyEngine {
       primaryAction,
       bodyEnvironment,
       emotionalEmbodiment,
-      hasEmbodiedAwareness: primaryAction !== 'none' || bodyEnvironment.isEngaged
+      hasEmbodiedAwareness: primaryAction !== 'none' || bodyEnvironment.isEngaged,
+      // [v5.17.15 M1] 身体图式评分 — Merleau-Ponty 现象学
+      // 身体图式 = 身体动作识别 + 环境嵌入 + 情感具身
+      bodySchemaScore: +((primaryAction !== 'none' ? 0.4 : 0) + (bodyEnvironment.isEngaged ? 0.3 : 0) + (emotionalEmbodiment?.score || 0) * 0.3).toFixed(3),
     };
   }
 
