@@ -2416,6 +2416,15 @@ class HeartFlow {
         }
       }
 
+      // [v5.17.8] Q表反馈: self-healing RL 学到的模式 → 调整策略
+      const rlMetrics = enrichment.selfHealing?.rlMetrics;
+      if (rlMetrics?.topStrategy) {
+        fb.decisionBias = rlMetrics.topStrategy || fb.decisionBias;
+      }
+      if (rlMetrics?.learnedConfidence !== undefined) {
+        fb.confidenceModifier = Math.max(-0.3, Math.min(0.3, fb.confidenceModifier + (rlMetrics.learnedConfidence - 0.5)));
+      }
+
       // 衰减：无持续信号时回归中性
       if (!criticality?.regime?.match(/critical/) &&
           enrichment.sustainedDriftDetector?.status !== 'drifting' &&
