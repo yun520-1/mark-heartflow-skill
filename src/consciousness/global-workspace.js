@@ -127,7 +127,8 @@ class GlobalWorkspace extends EventEmitter {
 
     this.cyclePhase = 'integrating';
     const winningAgent = this.determineWinner(broadcasts);
-    const consensus = this.integrate(winningAgent, broadcasts);
+    const stabilizedWinner = this._stabilizeWinner(winningAgent, broadcasts, 3);
+    const consensus = this.integrate(stabilizedWinner, broadcasts);
     this.lastConsensus = consensus;
 
     // 记录周期历史
@@ -346,6 +347,30 @@ class GlobalWorkspace extends EventEmitter {
     };
 
     return consensus;
+  }
+
+  /**
+   * [v5.17.16 M2] 马尔可夫毯稳定化 — Thoughtseed多轮竞争
+   * arXiv:2408.15982 — 嵌套马尔可夫毯层级间消息传递
+   * 对初始winner多轮迭代, 增强胜者注意力直到概念稳定
+   */
+  _stabilizeWinner(winner, broadcasts, maxRounds) {
+    maxRounds = maxRounds || 3;
+    if (!winner || broadcasts.length <= 1) return winner;
+    let current = { ...winner, score: winner.score || 0 };
+    for (let round = 1; round <= maxRounds; round++) {
+      const totalScore = broadcasts.reduce((s, b) => s + (b.score || 0) * (b.attention || 0), 0) || 1;
+      const dominance = current.score / totalScore;
+      if (dominance > 0.5 || round === maxRounds) {
+        current.stabilizationRounds = round;
+        current.finalDominance = +dominance.toFixed(3);
+        current.converged = dominance > 0.5;
+        return current;
+      }
+      const boost = Math.min(0.2, (1 - dominance) * 0.3);
+      current.score += boost;
+    }
+    return current;
   }
 
   /**
