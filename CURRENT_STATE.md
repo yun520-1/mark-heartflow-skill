@@ -1,64 +1,48 @@
-# 心虫 v5.17.11 当前状态
+# 心虫 v5.17.21 当前状态
 
-> 多轮审计全部封板 | 测试69/69 | 冷启动1073ms
-> 仓库瘦身-9172行 | 36个死文件已删除
+> 审计22/22 ✅ | CI 0 vulns | 测试69/69 | 冷启动1073ms
+> 四层认知增强主路径生效 | Phase2基础设施就位
 
-## 已完成升级 (v5.10.13 → v5.17.11)
+## 升级历程 (v5.10.13 → v5.17.21)
 
-| 版本 | 动作 | 类型 |
+| 阶段 | 版本范围 | 内容 |
 |---|---|---|
-| v5.11.0 | 公式驱动阈值 + arXiv论文 | 认知 |
-| v5.12.0 | 离线模块重连 + ROADMAP | 架构 |
-| v5.13.0 | 认知闭环(feedbackState) | 认知 |
-| v5.14.0 | 桥接孤岛消除 + 核心测试 | 架构 |
-| v5.14.1 | 代码重复消除(cognitive-bridge) | 质量 |
-| v5.15.0 | 管线二次重连 | 架构 |
-| v5.15.1 | 性能优化(3001→1073ms) | 性能 |
-| v5.15.2 | 死模块 + 核心测试(44→69) | 质量 |
-| v5.15.3 | H-2/H-3安全修复 | 安全 |
-| v5.15.4 | H-1沙箱重写(vm隔离) | 安全 |
-| v5.15.5 | S2出网网关 | 安全 |
-| v5.15.6 | ReDoS+execute+依赖锁定 | 安全 |
-| v5.16.0 | cognitiveEnrichment独立模块 | 架构 |
-| v5.17.0 | 审计P0(6项) | 安全 |
-| v5.17.1 | 审计P1(9项) | 安全 |
-| v5.17.2 | 审计P2(5项) ✅ 22/22 | 安全 |
-| v5.17.3 | 管线重连(enrichment 20→27) | 架构 |
-| v5.17.4 | freeEnergyHeuristics接入 | 认知 |
-| v5.17.5 | ginzburgLandau接入漂移 | 认知 |
-| v5.17.6 | 认知闭环信号通路修复 | 认知 |
-| v5.17.7 | npm install EOVERRIDE修复 | 质量 |
-| v5.17.8 | 认知闭环三断裂一次闭合 | 认知 |
-| v5.17.9 | 代码审计H1/M1/M4修复 | 安全 |
-| v5.17.10 | 仓库瘦身(-9172行,36文件) | 质量 |
-| v5.17.11 | SSRF DNS pinning | 安全 |
+| 审计封板 | v5.17.0-v5.17.2 | 审计22项全部修复 |
+| 认知升级 | v5.17.3-v5.17.11 | 管线重连/认知闭环/DNS pinning |
+| AI人类基础 | v5.17.12-v5.17.13 | 心理学8理论+论文13篇 公式集成 |
+| AI人类四层 | v5.17.14-v5.17.19 | M1感知→M2认知→M3决策→M4反思 |
+| Phase 0-2 | v5.17.20-v5.17.21 | 去重/四层主路径/LayerBus/Logger/Config/AdaptiveLearning |
 
 ## 安全基线
 
-- 审计22/22 ✅
-- 代码审计P0 ✅ (H1白名单 + M1参数校验 + M4 HMAC)
-- 沙箱: vm隔离 ✅ (默认关闭)
-- SSRF: url-validator + DNS pinning ✅
-- 出网: 统一safeFetch ✅
-- 依赖: npm audit=0 ✅
+- 审计22/22 ✅ | CI audit=0 | npm audit=0
+- 存储: AES-256-GCM持久化密钥(自动生成,0o600)
+- 沙箱: vm隔离(默认关闭) | SSRF: url-validator+DNS pinning
+- 出网: 统一safeFetch | 密钥: 集中config-v2.secret()
+- gitignore: .env/.key/.pem均已保护
 
-## 认知闭环
+## 认知架构
 
-enrichment(27模块) → _applyCognitiveFeedback → feedbackState
-  → pipeline.run(mode/threshold调整)
-  → decision-router(规则置信度调整)
-  → self-healing Q表(学习反馈)
+```
+感知层: cognitiveLoadV2(精度权重) + 预测误差(context-builder)
+认知层: Thoughtseed竞争动力学 + 双过程System1/2
+决策层: ActiveInference EFE(探索/利用) + 伦理硬约束
+反思层: blind-spot-breaker + biasAudit + 跨轮recurrenceCheck
+编排: LayerBus四层总线 + pipeline主路径融合
+```
 
-## 剩余瓶颈 (可选,非bug)
+## 基础设施
 
-1. God file 5805行
-2. 无界内存 ~3000处push (从未触发OOM)
-3. 桥接孤岛 1个 (factorCovariance透传)
-4. 同步I/O ~600处 (从未阻塞)
-5. 代码执行沙箱非进程级 (默认关闭,不可触发)
+| 模块 | 位置 | 功能 |
+|---|---|---|
+| Logger | src/infra/logger.js | 结构化JSON日志四级 |
+| Config | src/core/config-v2.js | 集中配置+安全默认 |
+| LayerBus | src/workflow/layer-bus.js | 四层统一编排总线 |
+| AdaptiveLearning | src/cortex/adaptive-learning.js | 用户认知成长建模 |
 
-## 升级规则
+## 剩余瓶颈 (架构债,非bug)
 
-- 步进: +0.0.1
-- 每版消除≥1个具体错误源
-- 等用户说"继续"
+1. God file heartflow.js 5838行
+2. 同步I/O ~600处
+3. 代码执行沙箱非进程级(默认关闭)
+4. 测试覆盖率需提升
