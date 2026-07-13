@@ -214,7 +214,7 @@ const _InferenceChain = _lazy('inferenceChain', () => { try { return require('..
 const _LogicReasoning = _lazy('logicReasoning', () => require('../reasoning/logic-reasoning.js'));
 // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
 const _CognitiveEngine = _lazy('cognitiveEngine', () => require('./cognitive-engine.js'));
-const _DecisionEngine = _lazy('decisionEngine', () => require('./decision-engine.js'));
+// [v5.17.20 P2-1] decisionEngine已移除 — 实际决策走decisionEngineV2(reasoning版)
 const _DecisionEngineV2 = _lazy('decisionEngineV2', () => require('../reasoning/decision-engine.js'));
 const _MemoryConsolidation = _lazy('memoryConsolidation', () => require('../memory/memory-consolidation-engine.js'));
 const _EmotionDynamics = _lazy('emotionDynamics', () => require('../emotion/emotion-dynamics-engine.js'));
@@ -884,7 +884,6 @@ class HeartFlow {
     try { this.decisionVerifier = new (_DecisionVerifier().DecisionVerifier)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionVerifier', error: e.message}, MAX_HISTORY_SIZE); }
     // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
     try { this.cognitiveEngine = new (_CognitiveEngine().CognitiveEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'cognitiveEngine', error: e.message}, MAX_HISTORY_SIZE); }
-    try { this.decisionEngine = new (_DecisionEngine().DecisionEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionEngine', error: e.message}, MAX_HISTORY_SIZE); }
     try { this.decisionEngineV2 = new (_DecisionEngineV2().DecisionEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'decisionEngineV2', error: e.message}, MAX_HISTORY_SIZE); }
     try { this.memoryConsolidation = new (_MemoryConsolidation().MemoryConsolidationEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'memoryConsolidation', error: e.message}, MAX_HISTORY_SIZE); }
     try { this.emotionDynamics = new (_EmotionDynamics().EmotionDynamicsEngine)(); } catch (e) { _boundedPush(this._initErrors, {module: 'emotionDynamics', error: e.message}, MAX_HISTORY_SIZE); }
@@ -1223,7 +1222,7 @@ class HeartFlow {
       'adaptivePlanner', 'strategySelector', 'replanTrigger',
       'codeExecutor', 'codePlanner', 'codeWriter',
       // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
-      'cognitiveEngine', 'decisionEngine', 'decisionEngineV2', 'memoryConsolidation', 'emotionDynamics', 'cognitiveLoadV2', 'dreamEngineV2', 'psychologyDialogue', 'decisionEngineV2', 'memoryConsolidation', 'emotionDynamics', 'cognitiveLoadV2', 'dreamEngineV2', 'psychologyDialogue',
+      'cognitiveEngine', 'decisionEngineV2', 'memoryConsolidation', 'emotionDynamics', 'cognitiveLoadV2', 'dreamEngineV2', 'psychologyDialogue',
       // v5.6.0 论文驱动升级
       'reflexionEngine', 'memoryConsolidator', 'multiAgentDialogue', 'mctsReasoning', 'hierarchicalPlanner',
       // v5.6.1 深研论文驱动升级
@@ -3028,7 +3027,7 @@ class HeartFlow {
       "debate", // 辩论分析器：三节结构分析（v2.10.2 新增）
       'heartLogic',    // 引擎核心判断引擎：本心在代码里，不在记忆里
       // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
-      'cognitiveEngine', 'decisionEngine',
+      'cognitiveEngine',
       // Planning Layer — 规划能力
       'adaptivePlanner', 'strategySelector', 'replanTrigger',
       // Code Engine — 代码执行
@@ -4166,6 +4165,23 @@ class HeartFlow {
 
         // ─── [v5.13.0] 认知闭环：enrichment信号反馈到策略调整 ──────
         this._applyCognitiveFeedback(cognitionSnapshot);
+
+        // [v5.17.20 P0-1] 四层认知增强融合到主路径（原仅ThoughtChain fallback可用）
+        try {
+          if (this.thoughtChain) {
+            const layerEnrichment = this.thoughtChain.runLayerEnrichment(
+              input,
+              (output?.hypotheses || []),
+              output?.conclusion || output?.output || '',
+              this
+            );
+            if (cognitionSnapshot?.enrichment) {
+              Object.assign(cognitionSnapshot.enrichment, layerEnrichment);
+            }
+          }
+        } catch(e) {
+          console.warn('[HeartFlow] Layer enrichment merge failed:', e.message);
+        }
 
 
 
