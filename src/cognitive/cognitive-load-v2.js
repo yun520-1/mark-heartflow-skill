@@ -126,6 +126,14 @@ class CognitiveLoadEngineV2 {
     if (cl < 0.3) recommendations.push('increase_challenge_for_flow');
 
     this._lastEstimate = { cl, intrinsic, extraneous, germane, entropy, loadLevel, isInfoOverload, criticality };
+    // [v5.17.4] 自由能启发式 — 替代硬编码负载阈值判断
+    try {
+      const priorEntropy = bridge.shannonEntropy ? bridge.shannonEntropy([0.25,0.25,0.25,0.25]) : 2.0;
+      const posteriorEntropy = entropy;
+      const fe = bridge.freeEnergyHeuristics(priorEntropy, posteriorEntropy, 1 - cl, 1.0);
+      this._lastEstimate.freeEnergy = fe;
+      this._lastEstimate.optimalTemperature = fe.optimalTemperature;
+    } catch(e) { /* formula unavailable — fallback to hardcoded thresholds */ }
     this._loadHistory.push({ ...this._lastEstimate, ts: Date.now() });
     if (this._loadHistory.length > 100) this._loadHistory.shift();
 
