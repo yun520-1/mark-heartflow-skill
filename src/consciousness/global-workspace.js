@@ -295,6 +295,21 @@ class GlobalWorkspace extends EventEmitter {
 
     const result = winner;
     result.gwt = gwt;
+
+    // [v5.17.13] Thoughtseed竞争动力学 (Lotka-Volterra) — 意识内容的自我组织
+    // 赢家获得注意力增强(ignition), 输家被侧向抑制(lateral inhibition)
+    // d(TS_i)/dt = f(TS_i, W) - Σ α_{ij} * TS_j  — 来自 arXiv:2408.15982
+    if (scored.length > 1) {
+      const winnerScore = result.score || 0;
+      const avgLoserScore = scored.slice(1).reduce((s,b) => s + (b.score||0), 0) / (scored.length - 1);
+      const inhibition = Math.min(0.5, avgLoserScore / Math.max(1, winnerScore) * 0.3);
+      result.thoughtseed = {
+        ignition: Math.min(1, winnerScore / (winnerScore + avgLoserScore + 1e-9)),
+        lateralInhibition: +inhibition.toFixed(3),
+        competitiveAdvantage: +(winnerScore - avgLoserScore).toFixed(2),
+        loserCount: scored.length - 1,
+      };
+    }
     return result;
   }
 
