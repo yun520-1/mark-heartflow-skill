@@ -119,11 +119,14 @@ class SelfVerifier {
 
     const confidence = Object.values(checks).filter(Boolean).length / 4;
 
+    // [v5.17.12] Authenticity Index (Existentialism): 选择与自我价值观的一致性
+    const authenticity = +((checks.reverseConsistency ? 0.4 : 0) + (checks.logicalChain ? 0.3 : 0) + (checks.coverageCheck ? 0.3 : 0)).toFixed(3);
+
     this._state.totalVerified++;
     if (passed) this._state.passes++;
     else this._state.fails++;
 
-    const result = { passed, checks, issues, confidence };
+    const result = { passed, checks, issues, confidence, authenticity };
 
     // Record issues
     if (issues.length > 0) {

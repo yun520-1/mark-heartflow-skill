@@ -356,6 +356,8 @@ const ThreePoisons = {
     return {
       scores,
       totalToxicity,
+      // [v5.17.12] Dukkha方程: 苦 = 贪(Craving) × 嗔(Resistance)
+      dukkha: round((scores.greed * scores.hatred) / 10, 2),
       dominantPoison: dominant[0],
       dominantLabel,
       dominantScore: round(dominant[1], 2),
