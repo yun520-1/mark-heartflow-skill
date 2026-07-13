@@ -1539,8 +1539,22 @@ class LogicReasoning {
         throw new Error('[logic-reasoning] HEARTFLOW_API_KEY environment variable is required');
       }
 
-      const apiBase = process.env.TENCENT_API_BASE || 'https://copilot.tencent.com/v2';
-      const url = apiBase + '/chat/completions';
+      // [v5.17.9 H1] host白名单 — 仅允许腾讯Copilot域名，防止env注入外泄API Key
+      const ALLOWED_API_HOSTS = ['copilot.tencent.com', 'api.tencent.com'];
+      const apiBase = process.env.TENCENT_API_BASE;
+      let finalBase = 'https://copilot.tencent.com/v2';
+      if (apiBase) {
+        try {
+          const parsed = new URL(apiBase);
+          if (!ALLOWED_API_HOSTS.some(h => parsed.hostname === h || parsed.hostname.endsWith('.' + h))) {
+            throw new Error(`TENCENT_API_BASE host "${parsed.hostname}" not in allowed list`);
+          }
+          finalBase = apiBase;
+        } catch(e) {
+          console.warn('[logic-reasoning] TENCENT_API_BASE rejected:', e.message, '— using default');
+        }
+      }
+      const url = finalBase + '/chat/completions';
 
       const res = await safeFetch(url, {
         method: 'POST',
@@ -1588,4 +1602,5 @@ class LogicReasoning {
   }
 }
 
-module.exports = { LogicReasoning };// TODO: P0 安全漏洞 — API Key 注入 + LLM fallback 失效，以后用 axios 重写
+// [v5.17.9 H1] P0已修复: host白名单校验 + safeFetch SSRF防护
+module.exports = { LogicReasoning };

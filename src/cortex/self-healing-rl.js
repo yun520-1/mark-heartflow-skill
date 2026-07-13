@@ -78,10 +78,10 @@ function _getHmacKey() {
     return _cachedHmacKey;
   }
 
-  // [SECURITY FIX H-3] No file fallback — if env var is not set, generate in-memory only
-  // This key is NOT persistent across restarts; use HEARTFLOW_QTABLE_HMAC_KEY for persistence
-  console.warn('[self-healing-rl] HEARTFLOW_QTABLE_HMAC_KEY not set — HMAC key is ephemeral (not persistent across restarts). Set HEARTFLOW_QTABLE_HMAC_KEY env var for persistent signatures.');
+  // [v5.17.9 M4] 无持久密钥时 — 仍然生成临时密钥，但标记完整性校验降级
+  // Q-table历史数据在新密钥下签名不匹配，将在加载时被拒绝（fail-closed）
   const newKey = crypto.randomBytes(32).toString('base64');
+  console.warn('[self-healing-rl] HEARTFLOW_QTABLE_HMAC_KEY not set — HMAC integrity checks are ephemeral. Set HEARTFLOW_QTABLE_HMAC_KEY (32+ random bytes) for persistent Q-table integrity across restarts.');
   _cachedHmacKey = newKey;
   return _cachedHmacKey;
 }
