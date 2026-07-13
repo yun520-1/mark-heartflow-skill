@@ -240,6 +240,15 @@ class SpontaneousRestraint {
 
     this._record(result.interventionLevel, userMessage);
 
+    // [v5.17.17 M3] 伦理冲突标记 — 作为EFE决策的硬约束层
+    if (userMessage && typeof userMessage === 'string') {
+      result.ethicalBoundary = {
+        conflictDetected: /\b(伤害|欺骗|操纵|撒谎|kill|deceive|manipulate|lie)\b/i.test(userMessage),
+        valueConflict: /\b(是否应该|应不应该|道德|伦理|ethic|moral)\b/i.test(userMessage),
+        requiresRestraint: result.interventionLevel !== 'full',
+      };
+    }
+
     return result;
   }
 
