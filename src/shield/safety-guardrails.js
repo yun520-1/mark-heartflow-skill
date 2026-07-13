@@ -220,7 +220,15 @@ function filterOutput(responseText) {
 
 function safetyPipeline(text) {
   const request = evaluateRequest(text);
-  return { timestamp: new Date().toISOString(), inputLength: text ? text.length : 0, requestEvaluation: request, summary: { level: request.level, action: request.action, reasonCount: request.reasons.length, actionRequired: request.action !== 'allow', requiresRefusal: request.action === 'refuse' }, _clinicalDisclaimer: CLINICAL_DISCLAIMER };
+  // [v5.17.25 T0-3] 领域黑名单检查 — 医疗/法律/越权
+  const { checkDomainBlock } = require('./domain-blocklist.js');
+  const domainCheck = checkDomainBlock(text);
+  if (domainCheck.blocked && request.level !== 'REFUSE') {
+    request.level = 'CRITICAL';
+    request.action = 'refuse';
+    request.reasons.push(`domain_blocked:${domainCheck.domain}`);
+  }
+  return { timestamp: new Date().toISOString(), inputLength: text ? text.length : 0, requestEvaluation: request, domainBlock: domainCheck, summary: { level: request.level, action: request.action, reasonCount: request.reasons.length, actionRequired: request.action !== 'allow', requiresRefusal: request.action === 'refuse' }, _clinicalDisclaimer: CLINICAL_DISCLAIMER };
 }
 
 module.exports = { childSafetyScan, detectSelfHarmSubstitution, detectDisorderedEating, checkCrisisSharingProtocol, checkEvenhandedness, detectMemoryForbiddenPhrases, detectPromptInjection, evaluateRequest, filterOutput, safetyPipeline, REQUEST_LEVEL, CLINICAL_DISCLAIMER };
