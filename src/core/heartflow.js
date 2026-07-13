@@ -4183,6 +4183,27 @@ class HeartFlow {
           console.warn('[HeartFlow] Layer enrichment merge failed:', e.message);
         }
 
+        // [v5.17.21 Phase2] LayerBus增强 — 统一编排总线替代分散的四层调用
+        try {
+          const LayerBus = require('../workflow/layer-bus.js');
+          const bus = new LayerBus(this);
+          const busResult = await bus.run(input, {
+            context: { taskType: output?.taskType || 'general' },
+            candidates: (output?.hypotheses || []).map(h => ({ label: h?.description || h, pragmaticScore: h?.score || 0.5 })),
+          });
+          if (busResult && cognitionSnapshot?.enrichment) {
+            cognitionSnapshot.enrichment.layerBus = {
+              perception: busResult.PERCEIVE?.perception || null,
+              cognition: busResult.COGNIZE?.cognition || null,
+              decision: busResult.DECIDE?.decision || null,
+              reflection: busResult.REFLECT?.reflection || null,
+              needsMoreEvidence: busResult.needsMoreEvidence,
+            };
+          }
+        } catch(e) {
+          console.warn('[HeartFlow] LayerBus failed:', e.message);
+        }
+
 
 
 
