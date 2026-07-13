@@ -15,7 +15,7 @@
  *  activeInference.decide(candidates,context) -> {selected, scores, autoSelect}
  *  blindSpotBreaker.process(userProblem,context) / selfCorrectionLoop.record(...)
  */
-const { makeLogger } = require('./logger');
+const { makeLogger } = require('../infra/logger');
 const log = makeLogger(() => (process.env.LOG_LEVEL || 'info'));
 
 class LayerBus {

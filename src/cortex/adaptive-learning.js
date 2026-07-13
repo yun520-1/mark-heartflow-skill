@@ -10,7 +10,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { makeLogger } = require('./logger');
+const { makeLogger } = require('../infra/logger');
 const log = makeLogger(() => (process.env.LOG_LEVEL || 'info'));
 
 class AdaptiveLearningEngine {

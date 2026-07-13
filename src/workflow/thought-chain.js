@@ -1136,6 +1136,42 @@ function createThoughtChain(hf, depth = REASONING_DEPTH.BASIC) {
   return chain;
 }
 
+// [v5.17.23] 修复: 四层认知增强提取方法 — 供主路径和fallback共用
+ThoughtChain.prototype.runLayerEnrichment = function(input, hypotheses, conclusion, hf) {
+  const enrichment = {};
+  try {
+    const cl = (hf && hf.cognitiveLoad) || (hf && hf.cognitiveLoadV2);
+    if (cl && cl.estimate) {
+      const est = cl.estimate(input);
+      enrichment.perception = {
+        load: est.cl ?? null,
+        precisionWeight: est.loadLevel ? (est.loadLevel === 'high' ? 0.3 : est.loadLevel === 'moderate' ? 0.6 : 0.9) : 0.7,
+        salienceThreshold: est.loadLevel === 'high' ? 0.65 : est.loadLevel === 'moderate' ? 0.55 : 0.5,
+      };
+    }
+  } catch(e) {}
+  try {
+    const AI = require('../decision/active-inference.js');
+    const aiEngine = new AI.ActiveInference();
+    const candidates = (hypotheses || []).map(h => ({
+      label: (h.description || h || '').substring(0, 40),
+      pragmaticScore: h.score || 0.5,
+      uncertainty: 1 - (h.confidence || 0.5),
+      novelty: h.isNovel ? 0.8 : 0.3,
+    }));
+    if (candidates.length > 0) enrichment.activeInference = aiEngine.decide(candidates, { timePressure: 0.3 });
+  } catch(e) {}
+  try {
+    const draft = conclusion || '';
+    if (draft.length > 10) {
+      const { checkCertainty } = require('../shield/language-honesty.js');
+      const check = checkCertainty(draft);
+      enrichment.biasCheck = { overconfidence: check.level === 'over', certaintyLevel: check.level || 'normal' };
+    }
+  } catch(e) {}
+  return enrichment;
+};
+
 module.exports = {
   ThoughtChain,
   createThoughtChain,
