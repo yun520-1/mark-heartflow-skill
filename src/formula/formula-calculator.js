@@ -294,6 +294,10 @@ class FormulaCalculator {
     const degreeMode = options.degreeMode;
     Object.entries(params).forEach(([key, value]) => {
       let valStr;
+      // [v5.17.9 M1] 公式参数类型强制 — 非数值拒绝注入
+      if (typeof value !== 'number') {
+        throw new Error(`Formula param "${key}" must be a number, got ${typeof value}`);
+      }
       if (typeof value === 'number' && value < 0) {
         valStr = `(${value})`;
       } else {
