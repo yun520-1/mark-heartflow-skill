@@ -838,7 +838,8 @@ class MeaningfulMemory {
     // [A01] 安全修复: 路径验证 — 仅允许导出到项目 memory 目录
     const allowedDir = path.join(this.rootPath, 'memory');
     const resolvedPath = path.resolve(filePath);
-    if (!resolvedPath.startsWith(allowedDir)) {
+    // [v5.17.24 L-2] 严格边界
+    if (!(resolvedPath === allowedDir || resolvedPath.startsWith(allowedDir + path.sep))) {
       return { success: false, error: 'path_not_allowed' };
     }
     const data = {
@@ -862,7 +863,8 @@ class MeaningfulMemory {
     // [A01] 安全修复: 路径验证 — 仅允许从项目 memory 目录导入
     const allowedDir = path.join(this.rootPath, 'memory');
     const resolvedPath = path.resolve(filePath);
-    if (!resolvedPath.startsWith(allowedDir)) {
+    // [v5.17.24 L-2] 严格边界
+    if (!(resolvedPath === allowedDir || resolvedPath.startsWith(allowedDir + path.sep))) {
       return { success: false, error: 'path_not_allowed' };
     }
     if (!fs.existsSync(resolvedPath)) {

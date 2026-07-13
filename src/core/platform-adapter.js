@@ -97,7 +97,10 @@ class HermesAdapter extends PlatformAdapter {
   }
 
   async readFile(filePath) {
-    // Hermes 使用 read_file 工具
+    // [v5.17.24 M-4] 目录白名单 — 防止任意文件读取
+    if (!this._isPathAllowed(filePath)) {
+      return { success: false, error: 'path_not_allowed', path: filePath };
+    }
     try {
       const content = fs.readFileSync(filePath, 'utf-8');
       return { success: true, content, path: filePath };
@@ -107,7 +110,10 @@ class HermesAdapter extends PlatformAdapter {
   }
 
   async writeFile(filePath, content) {
-    // Hermes 使用 write_file 工具
+    // [v5.17.24 M-4] 目录白名单
+    if (!this._isPathAllowed(filePath)) {
+      return { success: false, error: 'path_not_allowed', path: filePath };
+    }
     try {
       fs.writeFileSync(filePath, content, 'utf-8');
       return { success: true, path: filePath };
@@ -213,6 +219,14 @@ class CrossPlatformMemoryRelay {
     this.localMemory.clear();
     this.remoteMemory.clear();
     this.syncEnabled = false;
+  }
+
+  // [v5.17.24 M-4] 路径白名单 — 防止任意文件读写
+  _isPathAllowed(filePath) {
+    if (!this.rootPath) return false;
+    const resolved = require('path').resolve(filePath);
+    const sep = require('path').sep;
+    return resolved === this.rootPath || resolved.startsWith(this.rootPath + sep);
   }
 }
 
