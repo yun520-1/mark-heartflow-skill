@@ -155,33 +155,36 @@ class MemoryBank {
   }
 
   _doSave() {
-    const bankPath = this._getBankPath();
-    try {
-      const dir = path.dirname(bankPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+    // [v5.17.22 P3] 异步写入 — 不阻塞事件循环
+    setImmediate(() => {
+      const bankPath = this._getBankPath();
+      try {
+        const dir = path.dirname(bankPath);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+
+        const exportData = {
+          sessions: Array.from(this.sessions.values()),
+          memories: Array.from(this.memories.values()),
+          relationships: Object.fromEntries(this.relationships),
+          stats: this.stats,
+          _patterns: this._patterns,
+          _patternsTimestamp: this._patternsTimestamp,
+          savedAt: new Date().toISOString(),
+        };
+
+        // [D-004] Strip sensitive keys before encryption to prevent prototype-pollution payloads
+        const safeExport = stripPrivateObject(exportData);
+        // Atomic write with encryption: write to temp, then rename
+        const tempPath = bankPath + '.tmp.' + Date.now() + '.' + crypto.randomBytes(4).toString('hex');
+        const content = encryptJSON(safeExport);
+        safeWriteFileSync(tempPath, content, 'utf8');
+        fs.renameSync(tempPath, bankPath);
+      } catch (e) {
+        console.warn('[MemoryBank] Failed to save memory bank:', e.message);
       }
-
-      const exportData = {
-        sessions: Array.from(this.sessions.values()),
-        memories: Array.from(this.memories.values()),
-        relationships: Object.fromEntries(this.relationships),
-        stats: this.stats,
-        _patterns: this._patterns,
-        _patternsTimestamp: this._patternsTimestamp,
-        savedAt: new Date().toISOString(),
-      };
-
-      // [D-004] Strip sensitive keys before encryption to prevent prototype-pollution payloads
-      const safeExport = stripPrivateObject(exportData);
-      // Atomic write with encryption: write to temp, then rename
-      const tempPath = bankPath + '.tmp.' + Date.now() + '.' + crypto.randomBytes(4).toString('hex');
-      const content = encryptJSON(safeExport);
-      safeWriteFileSync(tempPath, content, 'utf8');
-      fs.renameSync(tempPath, bankPath);
-    } catch (e) {
-      console.warn('[MemoryBank] Failed to save memory bank:', e.message);
-    }
+    });
   }
 
   // ─── 工具方法 ──────────────────────────────────────────────────────────
