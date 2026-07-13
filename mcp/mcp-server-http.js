@@ -957,7 +957,7 @@ function handleUpgradeStats(args) {
 // ═══════════════════════════════════════════════
 
 function handleBenchmarkStatus(args, sessionId) {
-  const dataDir = (args && args.dataDir) || path.join(HF_DIR, 'data', 'benchmark');
+  const dataDir = confinePath((args && args.dataDir) || path.join(HF_DIR, 'data', 'benchmark'), HF_DIR);
   try {
     if (!fs.existsSync(dataDir)) {
       return { dataDir, exists: false, packs: [], message: 'Benchmark 数据目录不存在，请放入 JSONL 数据包后重试' };
@@ -976,7 +976,7 @@ function handleBenchmarkStatus(args, sessionId) {
 }
 
 async function handleBenchmarkRun(args, sessionId) {
-  const dataDir = (args && args.dataDir) || path.join(HF_DIR, 'data', 'benchmark');
+  const dataDir = confinePath((args && args.dataDir) || path.join(HF_DIR, 'data', 'benchmark'), HF_DIR);
   const categories = (args && args.categories) || null;
   const threshold = (args && args.threshold) || 0.5;
   const pushFailures = args && args.pushFailures !== false;
@@ -1026,7 +1026,7 @@ async function handleBenchmarkRun(args, sessionId) {
 }
 
 async function handleBenchmarkImportFailures(args, sessionId) {
-  const filePath = args && args.filePath;
+  const filePath = args && args.filePath ? confinePath(args.filePath, path.join(HF_DIR, 'data')) : null;
   const autoRetrain = args && args.autoRetrain || false;
 
   if (!filePath) return { error: 'filePath 是必填参数', timestamp: Date.now() };
