@@ -13,7 +13,7 @@
  */
 
 const psychology = require('../core/psychology.js');
-const empathy = require('./empathy-detector.js');
+const empathy = require('../emotion/empathy-detector.js');  // [v5.17.20 P1-1] 共用emotion版,消除重复
 const BigFivePersonality = require('../core/BigFivePersonality.js');
 const EmpathyAssessment = require('../core/EmpathyAssessment.js');
 const { intentionTracker } = require('../core/IntentionTracker.js');
@@ -28,7 +28,7 @@ function cloneModule(obj) {
   for (const key of Object.keys(obj)) {
     const val = obj[key];
     if (key === 'dimensions' && val && typeof val === 'object') {
-      clone[key] = JSON.parse(JSON.stringify(val));
+      clone[key] = structuredClone(val);
     } else if (typeof val === 'function') {
       clone[key] = val.bind ? val.bind(clone) : val;
     } else {

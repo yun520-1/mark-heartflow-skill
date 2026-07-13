@@ -532,7 +532,10 @@ class ThoughtChain {
               timePressure: parse?.type === 'calculation' ? 0.8 : 0.3,
             });
           }
-        } catch(e) { activeInferenceResult = null; }
+        } catch(e) {
+          console.warn('[thought-chain] ActiveInference EFE skipped:', e.message);
+          activeInferenceResult = null;
+        }
 
         // 5.1 确定最终判断
         let conclusion;
