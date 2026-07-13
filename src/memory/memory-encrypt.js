@@ -39,11 +39,29 @@ function _getAesKey() {
 
   const envKey = process.env.HEARTFLOW_AES_KEY;
   if (!envKey) {
-    // Check if explicitly requested
-    if (process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT === '1') {
-      console.warn('[memory-encrypt] HEARTFLOW_MEMORY_BANK_ENCRYPT=1 but HEARTFLOW_AES_KEY is not set. Writing plaintext.');
+    // [v5.17.14 H2] fail-secure: 自动生成并持久化密钥到 memory/.aes-key
+    // 不再静默回退明文 — 密钥缺失时自动生成，首次启动后即启用加密
+    const fs = require('fs');
+    const path = require('path');
+    const crypto = require('crypto');
+    const keyFile = path.join(__dirname, '../../memory/.aes-key');
+    try {
+      if (fs.existsSync(keyFile)) {
+        _aesKey = Buffer.from(fs.readFileSync(keyFile, 'utf8').trim(), 'base64');
+        console.log('[memory-encrypt] Loaded persisted AES key from memory/.aes-key');
+        _aesKeyResolved = true;
+        return _aesKey;
+      }
+      const newKey = crypto.randomBytes(32);
+      fs.writeFileSync(keyFile, newKey.toString('base64'), { mode: 0o600 });
+      console.log('[memory-encrypt] Generated and persisted AES key to memory/.aes-key (0o600)');
+      _aesKey = newKey;
+      _aesKeyResolved = true;
+      return _aesKey;
+    } catch(e) {
+      console.error('[memory-encrypt] Failed to persist AES key:', e.message, '— encryption disabled');
+      return null;
     }
-    return null;
   }
 
   try {

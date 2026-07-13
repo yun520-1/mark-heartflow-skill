@@ -78,12 +78,27 @@ function _getHmacKey() {
     return _cachedHmacKey;
   }
 
-  // [v5.17.9 M4] 无持久密钥时 — 仍然生成临时密钥，但标记完整性校验降级
-  // Q-table历史数据在新密钥下签名不匹配，将在加载时被拒绝（fail-closed）
-  const newKey = crypto.randomBytes(32).toString('base64');
-  console.warn('[self-healing-rl] HEARTFLOW_QTABLE_HMAC_KEY not set — HMAC integrity checks are ephemeral. Set HEARTFLOW_QTABLE_HMAC_KEY (32+ random bytes) for persistent Q-table integrity across restarts.');
-  _cachedHmacKey = newKey;
-  return _cachedHmacKey;
+  // [v5.17.14 M1] 自动生成并持久化HMAC密钥到 memory/.qtable-hmac-key
+  // 与AES密钥相同模式 — 首次启动生成，后续启动复用
+  const fs = require('fs');
+  const keyFile = path.join(MEMORY_DIR || path.join(__dirname, '../../memory'), '.qtable-hmac-key');
+  try {
+    if (fs.existsSync(keyFile)) {
+      _cachedHmacKey = fs.readFileSync(keyFile, 'utf8').trim();
+      return _cachedHmacKey;
+    }
+    const newKey = crypto.randomBytes(32).toString('base64');
+    fs.writeFileSync(keyFile, newKey, { mode: 0o600 });
+    console.warn('[self-healing-rl] Generated and persisted HMAC key to memory/.qtable-hmac-key (0o600)');
+    _cachedHmacKey = newKey;
+    return _cachedHmacKey;
+  } catch(e) {
+    // 落盘失败则退回内存密钥
+    console.warn('[self-healing-rl] Failed to persist HMAC key:', e.message);
+    const newKey = crypto.randomBytes(32).toString('base64');
+    _cachedHmacKey = newKey;
+    return _cachedHmacKey;
+  }
 }
 
 const QTABLE_HMAC_KEY = _getHmacKey();

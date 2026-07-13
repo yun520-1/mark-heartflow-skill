@@ -1,4 +1,9 @@
 node_modules/
+# [v5.17.14 M4] 密钥与敏感配置文件
+.env
+.env.*
+*.key
+*.pem
 .opencode/
 logs/
 mark-heartflow-skill/
