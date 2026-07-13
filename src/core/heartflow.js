@@ -2381,9 +2381,15 @@ class HeartFlow {
 
       const fb = this._feedbackState;
 
-      // 临界性反馈：接近临界点→降低复杂度阈值（更深处理）
-      const criticality = enrichment.sustainedDriftDetector?.state ||
-                          enrichment.preThinkBaseline?.criticality;
+      // [v5.17.6] 修复: 从preThinkBaseline和pipeline stages中提取信号
+      // FAST模式下enrichment仅含preThinkBaseline, 但深层信号在ctx中仍有
+      const baseline = enrichment.preThinkBaseline || {};
+      const stagesOutput = cognition?.stagesOutput || {};
+
+      // 临界性: →降低复杂度阈值
+      const criticality = baseline.criticality ||
+                          stagesOutput.deepCognition?.criticality ||
+                          enrichment.sustainedDriftDetector?.state;
       if (criticality?.regime === 'critical') {
         fb.complexityBias = Math.min(0.2, fb.complexityBias + 0.05);
       } else if (criticality?.regime === 'supercritical') {
@@ -4142,6 +4148,8 @@ class HeartFlow {
               emotionDynamics: this._preThinkState.emotionDynamics,
               cognitiveLoad: this._preThinkState.cognitiveLoad,
               criticality: this._preThinkState.criticality,
+              fieldTracker: this._preThinkState.fieldTracker || this._preThinkState.field,  // [v5.17.6] 场追踪信号
+              drift: this._preThinkState.drift || this._preThinkState.sustainedDrift,       // [v5.17.6] 漂移信号
             },
             note: 'FAST模式：仅前置快照基线，未运行完整认知充实管线'
           };
