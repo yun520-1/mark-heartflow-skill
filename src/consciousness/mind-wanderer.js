@@ -650,7 +650,14 @@ class MindWanderer {
       unsharedIdeas: this.wildIdeas.ideas.filter(i => !i.shared).length,
       diversity: diversity,
       timeContext: this.timeModulation,
-      totalCreated: this.wildIdeas.stats.totalCreated
+      totalCreated: this.wildIdeas.stats.totalCreated,
+      // [v5.17.18 M4] 结构化元认知输出
+      metaCognition: {
+        knowWhatIKnow: this.wildIdeas.ideas.length > 0,
+        ideaConfidence: +(this.wildIdeas.ideas.filter(i => i.shared).length / Math.max(1, this.wildIdeas.ideas.length)).toFixed(3),
+        uncertaintySources: this.wildIdeas.ideas.filter(i => !i.shared).map(i => i.concept?.substring(0, 30)).slice(0, 3),
+        mindWanderingState: this.isActive ? 'active' : 'idle',
+      },
     };
   }
 

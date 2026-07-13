@@ -343,6 +343,14 @@ function validateOutput(text) {
     passed: certainty.level !== 'over' && questions.level !== 'over'
       && turing.level !== 'over' && pzombie.level !== 'over',
     suggestion: fixRecommendations.length > 0 ? fixRecommendations[0].message : null,
+    // [v5.17.18 M4] 偏差自审计 — 检测输出中的认知偏差
+    biasAudit: {
+      overconfidenceDetected: certainty.level === 'over',
+      falseDichotomy: /\b(要么|或者|非此即彼|either.*or|all.*or.*nothing)\b/i.test(text),
+      anchoringEffect: /\b(通常|一般|always|never|绝对|永远)\b/i.test(text) && certainty.level !== 'low',
+      confirmationBias: questions.level === 'over' && oscillation.hasOscillation,
+      triggeredRestraint: certainty.level === 'over' || questions.level === 'over',
+    },
   };
 }
 

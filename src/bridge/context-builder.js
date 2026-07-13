@@ -71,6 +71,13 @@ class ContextBuilder {
       contextFromHeartflow,
       bridgeInstruction,
       formattedForLLM,
+      // [v5.17.18 M4] 延展心智接口 — Clark&Chalmers(1998)均等原则
+      extendedMind: {
+        predictionError,
+        salienceAdjustment,
+        toolsAvailable: ['memory_bank', 'knowledge_graph', 'formula_engine', 'cognitive_workspace'],
+        externalResources: contextFromHeartflow?.memoryContext ? ['memory_retrieval'] : [],
+      },
     };
   }
 
