@@ -281,6 +281,22 @@ class ThoughtChain {
           } : null,
           // 【AgentPsychology v2.0.0】AI 心理学新增维度
           agentPsychology: agentPsychologyResult,
+          // [v5.17.19 S1] 预测误差驱动感知 — cognitiveLoadV2精度权重
+          perception: (() => {
+            try {
+              const cl = hf.cognitiveLoad || hf.cognitiveLoadV2;
+              if (cl && cl.estimate) {
+                const est = cl.estimate(input);
+                return {
+                  load: est?.cl ?? null,
+                  entropy: est?.entropy ?? null,
+                  precisionWeight: est?.loadLevel ? (est.loadLevel === 'high' ? 0.3 : est.loadLevel === 'moderate' ? 0.6 : 0.9) : 0.7,
+                  salienceThreshold: est?.loadLevel === 'high' ? 0.65 : est?.loadLevel === 'moderate' ? 0.55 : 0.5,
+                };
+              }
+            } catch(e) {}
+            return { precisionWeight: 0.7, salienceThreshold: 0.5 };
+          })(),
           timestamp: Date.now()
         };
       }
@@ -500,6 +516,24 @@ class ThoughtChain {
           }
         }
 
+        // [v5.17.19 S3] 主动推理EFE — 用ActiveInference评估探索/利用平衡
+        let activeInferenceResult = null;
+        try {
+          const AI = require('../decision/active-inference.js');
+          const aiEngine = new AI.ActiveInference();
+          const candidates = (hypotheses || []).map(h => ({
+            label: (h.description || h || '').substring(0, 40),
+            pragmaticScore: h.score || 0.5,
+            uncertainty: 1 - (h.confidence || 0.5),
+            novelty: h.isNovel ? 0.8 : 0.3,
+          }));
+          if (candidates.length > 0) {
+            activeInferenceResult = aiEngine.decide(candidates, {
+              timePressure: parse?.type === 'calculation' ? 0.8 : 0.3,
+            });
+          }
+        } catch(e) { activeInferenceResult = null; }
+
         // 5.1 确定最终判断
         let conclusion;
         let confidence;
@@ -544,6 +578,8 @@ class ThoughtChain {
           decisionSubsystem: decisionResult ? { conclusion: decisionResult.conclusion, confidence: decisionResult.confidence } : null,
           // 【AgentPhilosophy v2.0.0】AI 哲学新增维度结果
           agentPhilosophy: agentPhilosophyResult,
+          // [v5.17.19 S3] 主动推理EFE决策结果
+          activeInference: activeInferenceResult,
           timestamp: Date.now()
         };
       }
@@ -679,7 +715,23 @@ class ThoughtChain {
           // 【AgentPsychology v2.0.0】AI 心理学新增维度
           agentPsychology: parse?.agentPsychology || null,
           // 【AgentPhilosophy v2.0.0】AI 哲学新增维度
-          agentPhilosophy: synthesis?.agentPhilosophy || null
+          agentPhilosophy: synthesis?.agentPhilosophy || null,
+          // [v5.17.19 S4] 偏差自审计 — language-honesty扫描回应草稿
+          biasCheck: (() => {
+            try {
+              const { checkCertainty } = require('../shield/language-honesty.js');
+              const draftText = conclusion || synthesis?.conclusion || '';
+              if (draftText && checkCertainty) {
+                const check = checkCertainty(draftText);
+                return {
+                  overconfidence: check?.level === 'over',
+                  certaintyLevel: check?.level || 'normal',
+                  triggeredRestraint: check?.level === 'over',
+                };
+              }
+            } catch(e) {}
+            return null;
+          })(),
         };
 
         // 如果没有结论且置信度低，明确说不知道
@@ -862,8 +914,24 @@ class ThoughtChain {
    * 找证据
    */
   _findEvidence(hypothesis, input) {
-    // 简化实现
-    return [];
+    // [v5.17.19 S2] 替换桩 — 接入knowledge-graph真实检索
+    const evidence = [];
+    try {
+      const hf = this.hf;
+      if (hf && hf.knowledgeGraph && hf.knowledgeGraph.query) {
+        const kgResults = hf.knowledgeGraph.query(hypothesis.description || hypothesis, 3);
+        for (const r of (kgResults || [])) {
+          evidence.push({ source: 'knowledge_graph', content: r.concept || r, relevance: r.score || 0.5 });
+        }
+      }
+      if (hf && hf.memoryIndex && hf.memoryIndex.search) {
+        const memResults = hf.memoryIndex.search(hypothesis.description || hypothesis, 2);
+        for (const r of (memResults || [])) {
+          evidence.push({ source: 'memory_index', content: r.text || r, relevance: r.score || 0.4 });
+        }
+      }
+    } catch(e) { /* 检索降级 */ }
+    return evidence;
   }
 
   /**
