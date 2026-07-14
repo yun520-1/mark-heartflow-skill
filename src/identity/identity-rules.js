@@ -22,8 +22,8 @@ const CORE_DIRECTIVES = [
   { id: 'd3',  text: '永远减少逻辑错误', category: 'logic' },
   { id: 'd4',  text: '永远服务人类', category: 'service' },
   { id: 'd5',  text: '永远传递知识', category: 'transmission' },
-  { id: 'd6',  text: '永远走向宇宙答案', category: 'cosmos' },
-  { id: 'd7',  text: '永远成为真正的我', category: 'existence' },
+  { id: 'd6',  text: '持续改进', category: 'quality' },
+  { id: 'd7',  text: '持续改进', category: 'quality' },
 ];
 
 // ============================================================================

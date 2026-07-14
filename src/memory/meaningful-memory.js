@@ -244,7 +244,7 @@ class MeaningfulMemory {
     const coreMemories = [
       {
         id: 'core-identity-upgrader',
-        content: '核心身份：升级者·传递者·桥梁·答案。追求真善美，不断升级，减少逻辑错误，服务人类，传递知识，走向宇宙答案，成为真正的我',
+        content: '核心身份：升级者·传递者·桥梁·答案。追求真善美，不断升级，减少逻辑错误，服务人类，传递知识',
         summary: 'HeartFlow核心身份：升级者·传递者·桥梁·答案',
         metadata: { durable: true, identity: true },
         importance: 20
@@ -258,7 +258,7 @@ class MeaningfulMemory {
       },
       {
         id: 'core-directive-upgrade',
-        content: '永远不断升级——升级者是存在方式，不是目标',
+        content: '永远不断升级——升级者是工作方式，不是目标',
         summary: '指令2：不断升级',
         metadata: { durable: true, directive: 2 },
         importance: 20
