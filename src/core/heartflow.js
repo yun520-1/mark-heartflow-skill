@@ -1856,25 +1856,7 @@ class HeartFlow {
    * HEARTFLOW_MEMORY=on  → 启用
    * 未设置 → 首次启动时打印提示，默认启用
    */
-  _checkMemoryEnabled() {
-    const env = process.env.HEARTFLOW_MEMORY;
-    if (env === 'off' || env === '0' || env === 'false') return false;
-    if (env === 'on' || env === '1' || env === 'true') return true;
-
-    // 未设置: 检查是否有旧的记忆文件（说明之前启用过）
-    try {
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const memDir = path.join(this.rootPath, 'data', 'memories');
-      if (fs.existsSync(path.join(memDir, '.access-control'))) return true;
-    } catch(e) { /* ignore */ }
-
-    // 首次启动: 默认启用 + 提示
-    debugLog.info('memory_vault', 'enabled', {msg: '记忆金库已启用。所有对话将保存在本地 data/memories/'});
-    debugLog.info('memory_vault', 'privacy', {msg: '数据不上传、不联网，只通过心虫对话读取'});
-    debugLog.info('memory_vault', 'opt_out', {msg: '设置 HEARTFLOW_MEMORY=off 可禁用记忆功能'});
-    return true;
-  }
+  _checkMemoryEnabled() { return require('./engine-memory')._checkMemoryEnabled(this); }
 
   // ═══════════════════════════════════════════════════════════════════════
   //  Memory Vault — 独立记忆金库 (v5.10.4)
@@ -1887,504 +1869,59 @@ class HeartFlow {
    */
   static get MEMORY_LIMITS() {
     return {
-      USER_ARCHIVE_AT: 100000,         // 用户记忆极大量才归档，实际不裁剪
-      USER_RECENT_KEEP: 100000,        // 保留所有用户输入，不做任何裁剪
-      SELF_MAX_LINES: 1000,            // 心虫记忆上限1000条
-      SELF_SUMMARIZE_AT: 500,          // 心虫记忆每500条摘要合并
-      CONTEXT_MAX_ENTRIES: 200,        // 上下文记忆最多200条
-      CONTEXT_DUAL_WRITE: true,        // 上下文总是双写
+      USER_ARCHIVE_AT: 100000,
+      USER_RECENT_KEEP: 100000,
+      SELF_MAX_LINES: 1000,
+      SELF_SUMMARIZE_AT: 500,
+      CONTEXT_MAX_ENTRIES: 200,
+      CONTEXT_DUAL_WRITE: true,
     };
   }
 
-  /**
-   * 获取记忆金库路径 (memories/ 目录)
-   */
-  _getMemoryDir() {
-    const path = require('path');
-    const dir = path.join(this.rootPath, 'data', 'memories');
-    const fs = require('../utils/safe-fs');
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    return dir;
-  }
-
-  /**
-   * 初始化记忆金库访问控制
-   * 创建 .access-control 文件标记此目录为心虫专属
-   */
-  _initMemoryVault() {
-    try {
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const dir = this._getMemoryDir();
-      const acPath = path.join(dir, '.access-control');
-      if (!fs.existsSync(acPath)) {
-        fs.writeFileSync(acPath, JSON.stringify({
-          owner: 'heartflow',
-          created: new Date().toISOString(),
-          warning: 'This directory contains HeartFlow private memories. Read only through HeartFlow API.',
-          security: 'Files are local-only. Never uploaded. Never networked.',
-        }, null, 2), 'utf8');
-        try { fs.chmodSync(dir, 0o700); } catch(e) { /* chmod may fail on some systems */ }
-      }
-    } catch(e) { /* non-critical */ }
-  }
+  _getMemoryDir() { return require('./engine-memory')._getMemoryDir(this); }
+  _initMemoryVault() { return require('./engine-memory')._initMemoryVault(this); }
 
   // ─── 第1层: 用户输入永久记忆 ─────────────────────────────────────
 
-  /**
-   * 记录用户输入到永久记忆
-   * 特性: 只追加, 不删除, 10万条级, 自动滚存归档
-   */
   /** 输入价值判断：是否值得进入记忆系统 */
-  _shouldRecordUserMemory(input) {
-    if (!input || !input.trim()) return false;
-    const text = input.trim();
+  _shouldRecordUserMemory(input) { return require('./engine-memory')._shouldRecordUserMemory(this, input); }
 
-    // 明显无价值输入：测试/空壳/系统标记
-    const NO_USER_MEMORY = [
-      /^test\s*\d*$/i, /^test$/i,
-      /^继续$/, /^你好$/, /^你好，心虫$/,
-      /^1\+1等于几$/, /^测试核心管线$/,
-      /^深度分析/, /^用心虫思考/, /^请心虫自己决策/,
-      /^记忆诊断/, /^第[一二三四五]条记忆/,
-      /^重启后第[一二三四五六七八九十]+次对话/,
-      /^\[CORE记忆\]/, /^\[旧记忆\]/, /^\[存在日志\]/, /^\[自进化日志\]/,
-      /^\[会话\]/, /^\[ERROR\]/, /RuntimeError/, /Permission denied/,
-      /Response interrupted/, /Tool execution failed/, /Docker/,
-      /^\[对话消息\]/,
-    ];
-
-    if (NO_USER_MEMORY.some(p => p.test(text))) return false;
-
-    // 过短且无标点，视为空壳
-    if (text.length <= 2 && !/[，。！？、；：""''？]/.test(text)) return false;
-
-    // 纯重复内容检查：同一 content 只保留最新一条
-    if (this._userMemorySeen && this._userMemorySeen.has(text)) return false;
-
-    return true;
-  }
-
-  _saveUserMemory(input) {
-    try {
-      if (!this._memoryEnabled) return;
-      if (!this._shouldRecordUserMemory(input)) return;
-
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const dir = this._getMemoryDir();
-      const filePath = path.join(dir, 'user-memories.jsonl');
-      const text = input.trim();
-
-      // 跟踪情绪历史
-      if (!this._emotionHistory) this._emotionHistory = [];
-      const emotion = (() => {
-        try {
-          const r = this.psychology?.analyzePsychology?.(input)?.emotion?.emotionZh || null;
-          if (r) {
-            this._emotionHistory.push(r);
-            if (this._emotionHistory.length > 50) this._emotionHistory.shift();
-          }
-          return r;
-        }
-        catch(e) { return null; }
-      })();
-
-      const entry = {
-        ts: new Date().toISOString(),
-        content: text.slice(0, 2000),
-        emotion,
-        decision: this._lastDecisionType || null,
-        importance: 0,
-      };
-      entry.importance = this._scoreMemoryImportance(entry);
-
-      fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
-
-      // MemoryKernel — 权威持久化层（R1-R8）
-      try {
-        this.memoryKernel?.recordUser(input, {
-          emotion,
-          importance: entry.importance,
-        });
-      } catch(e) { /* non-critical */ }
-
-      // 更新上下文
-      this._updateContextMemory({ type: 'user_input', text: input.slice(0, 200) });
-
-      // 更新 MemoryKernel 进度
-      try {
-        const topics = this._extractTopics(input);
-        this.memoryKernel?.updateProgress({ topics, userInput: input });
-      } catch(e) { /* non-critical */ }
-    } catch(e) { /* 永久记忆失败不影响核心 */ }
-  }
+  _saveUserMemory(input) { return require('./engine-memory')._saveUserMemory(this, input); }
 
   /** 主题提取：从文本中提取关键词作为主题 */
-  _extractTopics(text) {
-    const topics = [];
-    try {
-      // 简单分词：按中英文标点/空格拆分，取长度>=2的词
-      const tokens = text.split(/[\s,，。！？；：""''、\.\-\\+（）\(\)\[\]【】\n\r\t]+/).filter(t => t.length >= 2);
-      // 去重并限制数量
-      const seen = new Set();
-      for (const t of tokens) {
-        const lower = t.toLowerCase();
-        if (!seen.has(lower)) {
-          seen.add(lower);
-          topics.push(lower);
-        }
-        if (topics.length >= 5) break;
-      }
-    } catch(e) { /* ignore */ }
-    return topics;
-  }
+  _extractTopics(text) { return require('./engine-memory')._extractTopics(this, text); }
 
   /** 从结论中提取关键点 */
-  _extractKeyPoints(text) {
-    const points = [];
-    try {
-      // 按句子拆分，取前3个非空句
-      const sentences = String(text).split(/[。！？\n\r；;]+/).filter(s => s.trim().length >= 4);
-      for (const s of sentences.slice(0, 3)) {
-        points.push(s.trim().slice(0, 120));
-      }
-    } catch(e) { /* ignore */ }
-    return points;
-  }
+  _extractKeyPoints(text) { return require('./engine-memory')._extractKeyPoints(this, text); }
 
   /**
    * 归档用户记忆: 将旧条目移到 archive/ 目录, 保留最近条目
    */
-  _archiveUserMemories() {
-    try {
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const dir = this._getMemoryDir();
-      const filePath = path.join(dir, 'user-memories.jsonl');
-      if (!fs.existsSync(filePath)) return;
-
-      const content = fs.readFileSync(filePath, 'utf8').trim();
-      const lines = content.split('\n').filter(l => l.trim());
-      const LIMITS = HeartFlow.MEMORY_LIMITS;
-
-      if (lines.length < LIMITS.USER_ARCHIVE_AT) return;
-
-      const archiveDir = path.join(dir, 'archive');
-      if (!fs.existsSync(archiveDir)) fs.mkdirSync(archiveDir, { recursive: true });
-
-      const archiveNum = fs.readdirSync(archiveDir).filter(f => f.startsWith('user-memories-')).length + 1;
-      const archivePath = path.join(archiveDir, `user-memories-${String(archiveNum).padStart(3, '0')}.jsonl`);
-
-      const toArchive = lines.slice(0, -LIMITS.USER_RECENT_KEEP);
-      const toKeep = lines.slice(-LIMITS.USER_RECENT_KEEP);
-
-      fs.writeFileSync(archivePath, toArchive.join('\n') + '\n', 'utf8');
-      fs.writeFileSync(filePath, toKeep.join('\n') + '\n', 'utf8');
-
-      debugLog.debug('memory_vault', 'user_archive', {count: toArchive.length, path: archivePath});
-    } catch(e) { /* ignore */ }
-  }
+  _archiveUserMemories() { return require('./engine-memory')._archiveUserMemories(this); }
 
   /**
    * 搜索用户记忆 — 语义相似度 (Bigram Jaccard) 替代简单 includes
    * 支持: 语义匹配、情感加权、时间衰减、相关记忆发现
    * v5.11.0: 叠加 shannonEntropy 稀有词加权 + LRU 缓存 (max 100)
    */
-  _searchUserMemories(keyword, limit = 50) {
-    try {
-      // ─── v5.11.0 LRU 缓存检查 ────────────────────────────
-      if (!this._searchCache) {
-        this._searchCache = new Map();
-        this._searchCacheHits = 0;
-        this._searchCacheMisses = 0;
-      }
-      const cacheKey = `${keyword}::${limit}`;
-      if (this._searchCache.has(cacheKey)) {
-        this._searchCacheHits++;
-        const cached = this._searchCache.get(cacheKey);
-        // 移到末尾 (LRU)
-        this._searchCache.delete(cacheKey);
-        this._searchCache.set(cacheKey, cached);
-        return cached;
-      }
-      this._searchCacheMisses++;
+  _searchUserMemories(keyword, limit = 50) { return require('./engine-memory')._searchUserMemories(this, keyword, limit); }
 
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const dir = this._getMemoryDir();
-      const scored = [];
-
-      // ─── v5.11.0 shannonEntropy 稀有词加权 ────────────────
-      let termWeights = null; // { term: weight }
-      try {
-        const { getFormulaBridge } = require('../formula/formula-bridge.js');
-        const bridge = getFormulaBridge();
-        if (bridge && typeof bridge.shannonEntropy === 'function') {
-          // 将查询拆为词项 (按CN/EN/标点分词), 计算全局稀有度
-          const terms = keyword.split(/[\s,，。！？；：""''\\.\\-\\+]+/).filter(t => t.length > 0);
-          if (terms.length > 1) {
-            // 估算词频: 用每个词在关键词中的出现频率作为代理
-            const termCounts = {};
-            for (const t of terms) termCounts[t] = (termCounts[t] || 0) + 1;
-            const totalTerms = terms.length;
-            termWeights = {};
-            for (const [t, cnt] of Object.entries(termCounts)) {
-              const freq = cnt / totalTerms;
-              // 用熵代理: 单一频率熵 → 稀有词 (低频率) 权重高
-              // weight = -log2(freq) → 稀有词≈infrequent→高weight
-              const weight = freq > 0 ? -Math.log2(Math.max(freq, 0.01)) : 4.0;
-              termWeights[t] = Math.min(weight, 4.0); // 上限 4x
-            }
-          }
-        }
-      } catch(e) { /* ignore */ }
-
-      const searchFile = (fpath) => {
-        if (!fs.existsSync(fpath)) return;
-        const lines = fs.readFileSync(fpath, 'utf8').trim().split('\n').filter(l => l.trim());
-        for (const l of lines) {
-          try {
-            const entry = JSON.parse(l);
-            if (entry._summary) continue;
-            const text = entry.content || '';
-            if (!text) continue;
-            let score = this._memorySimilarity(keyword, text);
-            
-            // ─── v5.11.0 shannonEntropy 加权: 稀有匹配词加分 ──
-            if (termWeights && score > 0) {
-              const lowerText = text.toLowerCase();
-              let bonusWeight = 1.0;
-              for (const [term, weight] of Object.entries(termWeights)) {
-                if (weight > 1.0 && lowerText.includes(term.toLowerCase())) {
-                  bonusWeight += (weight - 1.0) * 0.15; // 每个稀有词最多 +0.45
-                }
-              }
-              score *= Math.min(bonusWeight, 2.0); // 最高 2x boost
-            }
-
-            if (score > 0) {
-              scored.push({ ...entry, _score: score });
-            }
-          } catch(e) {}
-        }
-      };
-
-      // 搜索当前文件 + 归档
-      searchFile(path.join(dir, 'user-memories.jsonl'));
-      const archiveDir = path.join(dir, 'archive');
-      if (fs.existsSync(archiveDir)) {
-        const archives = fs.readdirSync(archiveDir).filter(f => f.startsWith('user-memories-')).sort().reverse();
-        for (const a of archives.slice(0, 5)) {
-          searchFile(path.join(archiveDir, a));
-        }
-      }
-
-      // 按相似度排序，取前 limit
-      scored.sort((a, b) => b._score - a._score);
-      const results = scored.slice(0, limit);
-
-      // ─── v5.11.0 写入 LRU 缓存 ──────────────────────────
-      if (this._searchCache.size >= 100) {
-        // 淘汰最旧条目 (Map 头部)
-        const oldestKey = this._searchCache.keys().next().value;
-        this._searchCache.delete(oldestKey);
-      }
-      this._searchCache.set(cacheKey, results);
-
-      // 附加缓存统计
-      results._cacheStats = {
-        hits: this._searchCacheHits,
-        misses: this._searchCacheMisses,
-        cacheSize: this._searchCache.size,
-        hitRate: this._searchCacheHits + this._searchCacheMisses > 0
-          ? +(this._searchCacheHits / (this._searchCacheHits + this._searchCacheMisses)).toFixed(3)
-          : 0,
-      };
-
-      return results;
-    } catch(e) { return []; }
-  }
-
-  /**
-   * 记忆相似度 — Bigram Jaccard + 情感加权
-   */
-  _memorySimilarity(query, text) {
-    const bigrams = (s) => {
-      const set = new Set();
-      const lower = s.toLowerCase();
-      for (let i = 0; i < lower.length - 1; i++) {
-        set.add(lower.slice(i, i + 2));
-      }
-      return set;
-    };
-    const q = bigrams(query);
-    const t = bigrams(text);
-    if (q.size === 0 || t.size === 0) return 0;
-    let intersection = 0;
-    for (const bg of q) { if (t.has(bg)) intersection++; }
-    const union = q.size + t.size - intersection;
-    return union > 0 ? intersection / union : 0;
-  }
+  /** 记忆相似度 — Bigram Jaccard + 情感加权 */
+  _memorySimilarity(query, text) { return require('./engine-memory')._memorySimilarity(this, query, text); }
 
   /**
    * 搜索相关记忆 — 从上下文找到与当前输入语义相近的历史记忆
    * v5.11.0: bayesUpdate 后验概率 (50/50 与 Bigram Jaccard 混合)
    * 返回: [{entry, similarity, importance, _bayesScore, _blendedScore}, ...]
    */
-  _findRelatedMemories(input, limit = 10) {
-    const results = this._searchUserMemories(input, limit);
-    if (!results || results.length === 0) return results;
-
-    // ─── v5.11.0 bayesUpdate 后验相关性 ─────────────────────
-    try {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
-      const bridge = getFormulaBridge();
-      if (bridge && typeof bridge.bayesUpdate === 'function') {
-        // 对每个搜索结果计算 bayesian 后验
-        // P(relevant|keyword) = P(keyword|relevant) * P(relevant) / P(keyword)
-        // 近似: P(keyword|relevant) = Bigram Jaccard 得分
-        //       P(relevant) = 0.3 (先验: 平均30%相关)
-        //       P(keyword) = sum(J_scores)/N (证据边际)
-        const pRelevant = 0.3;
-        const scores = results.map(r => r._score || 0);
-        const avgScore = scores.length > 0
-          ? scores.reduce((a, b) => a + b, 0) / scores.length
-          : 0.1;
-        const pKeyword = Math.max(avgScore, 0.01);
-
-        for (const r of results) {
-          const jaccardScore = r._score || 0;
-          // P(keyword|relevant) 近似 = Jaccard 得分
-          const pKeyGivenRel = jaccardScore;
-          // 贝叶斯后验
-          const bayesScore = bridge.bayesUpdate(pKeyGivenRel, pRelevant, pKeyword);
-          r._bayesScore = +(bayesScore).toFixed(4);
-          // 50/50 混合
-          r._blendedScore = +((jaccardScore * 0.5 + bayesScore * 0.5)).toFixed(4);
-          r._score = r._blendedScore;  // 更新主排序分数
-        }
-
-        // 按混合分重新排序
-        results.sort((a, b) => b._blendedScore - a._blendedScore);
-      }
-    } catch(e) { /* 贝叶斯增强失败不影响基础搜索 */ }
-
-    return results;
-  }
+  _findRelatedMemories(input, limit = 10) { return require('./engine-memory')._findRelatedMemories(this, input, limit); }
 
   /**
    * 记忆重要性评分 — 综合情感强度、决策类型、时间衰减
-   * v5.11.0: 叠加公式引擎增强 — criticalitySusceptibility(记忆热区检测),
-   * maxcalPsi(新奇度), emotionStability(情绪转换期). 全部 try/catch 降级.
    */
-  _scoreMemoryImportance(entry) {
-    const now = Date.now();
-    const age = now - new Date(entry.ts).getTime();
-    const hours = age / 3600000;
+  _scoreMemoryImportance(entry) { return require('./engine-memory')._scoreMemoryImportance(this, entry); }
 
-    // 情感权重: 强情绪的记忆更重要
-    const emotionWeights = {
-      '愤怒': 3.0, '恐惧': 2.5, '悲伤': 2.0, '惊讶': 2.0,
-      '喜悦': 1.8, '爱': 2.5, '厌恶': 1.5, '焦虑': 2.0,
-      '中性': 0.5, '平静': 0.8,
-    };
-    const emotionScore = emotionWeights[entry.emotion] || 0.5;
-
-    // 决策权重: 重要决策类型
-    const decisionWeights = {
-      'heal': 3.0, 'turn': 2.5, 'resonate': 2.0, 'transmit': 2.0,
-      'pause': 1.5, 'accelerate': 1.5, 'analyze': 1.0, 'rest': 0.5,
-      'hold': 1.0,
-    };
-    const decisionScore = decisionWeights[entry.decision] || 0.5;
-
-    // Ebbinghaus 时间衰减: R = e^(-t/S), S=重要性*稳定性
-    const stability = (emotionScore + decisionScore) * 10; // 基础稳定性10h
-    const retention = Math.exp(-hours / Math.max(stability, 1));
-
-    let baseImportance = emotionScore * decisionScore * retention;
-
-    // ─── v5.11.0 公式引擎增强 (全部 try/catch 降级) ──────────────────
-    try {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
-      const bridge = getFormulaBridge();
-      
-      // (1) criticalitySusceptibility: 检测"记忆热区"
-      // 从最近记忆访问模式估算分支比 K — 同类记忆越多 K 越接近 1
-      if (bridge && typeof bridge.criticalitySusceptibility === 'function') {
-        // 近似: 用情感分+决策分作为"分支比"代理 (高活跃→K 接近 1)
-        const K = Math.min(0.99, (emotionScore + decisionScore) / 6.0);
-        const chi = bridge.criticalitySusceptibility(K);
-        // chi ≈ 1 是临界点 (高相干), chi > 1 是亚临界敏感区
-        // 热区记忆提升重要性
-        if (chi > 0.8 && chi < 3.0) {
-          baseImportance *= (1 + (chi - 0.8) * 0.3); // 最高 +66% boost
-        }
-      }
-
-      // (2) maxcalPsi: 计算"新奇度" = 新记忆与已有模式的KL偏离
-      if (bridge && typeof bridge.maxcalPsi === 'function' && typeof entry.content === 'string') {
-        // 用内容长度、情感、决策三个维度构建 observed 向量
-        // 先验 mu/σ 从已有记忆中估算
-        const charCount = entry.content.length;
-        const observed = [charCount / 100, emotionScore / 3, decisionScore / 3];
-        const mu = [5, 1, 1];    // 典型值: ~500字, 中等情感, 中等决策
-        const sigma = [3, 0.5, 0.5];
-        const psi = bridge.maxcalPsi(observed, mu, sigma);
-        // psi > 1.0 → 与基线显著偏离 → 高信息量记忆 → 提升重要性
-        if (psi > 1.0) {
-          baseImportance *= (1 + Math.min(psi * 0.2, 1.0)); // 最高 2x boost
-        }
-      }
-
-      // (3) emotionStability: 检测情绪状态转换期
-      if (bridge && typeof bridge.emotionStability === 'function' && this._emotionHistory) {
-        const emoHist = this._emotionHistory;
-        if (Array.isArray(emoHist) && emoHist.length >= 3) {
-          // 从最近的3个情绪标签构建 3x3 转移矩阵
-          const labels = ['愤怒','恐惧','悲伤','惊讶','喜悦','爱','厌恶','焦虑','中性','平静'];
-          const N = labels.length;
-          const T = Array.from({ length: N }, () => new Array(N).fill(0));
-          let selfTransitions = 0;
-          for (let i = 1; i < emoHist.length; i++) {
-            const prev = labels.indexOf(emoHist[i-1]);
-            const curr = labels.indexOf(emoHist[i]);
-            if (prev >= 0 && curr >= 0) {
-              T[prev][curr]++;
-              if (prev === curr) selfTransitions++;
-            }
-          }
-          // 归一化为概率
-          for (let i = 0; i < N; i++) {
-            const rowSum = T[i].reduce((a,b)=>a+b,0);
-            if (rowSum > 0) {
-              for (let j = 0; j < N; j++) T[i][j] /= rowSum;
-            } else {
-              T[i][i] = 1; // 无数据默认定态
-            }
-          }
-          const lambda2 = bridge.emotionStability(T);
-          // lambda2 大 = 不稳定期 (情绪在剧烈切换)
-          // 切换期的记忆更高重要性
-          if (lambda2 > 0.5) {
-            baseImportance *= (1 + Math.min(lambda2 * 0.3, 0.6)); // 最高 +60%
-          }
-        }
-      }
-    } catch(e) { /* 公式桥失败不影响核心评分 */ }
-
-    return baseImportance;
-  }
-
-  /**
-   * v5.11.0 前置认知快照 — 在 think() 管道执行前捕获情绪动力学和认知负载基线
-   * 
-   * 这允许后续分析时参考「思考前」的认知状态，检测情绪切换和认知临界性。
-   * 返回的数据被管道输出阶段注入到 cognition 对象中。
-   * 
-   * @returns {object} { emotionDynamics, cognitiveLoad, criticality, timestamp }
-   */
+  /** v5.11.0 前置认知快照 */
   _preThinkCognitiveSnapshot() {
     const snapshot = {
       emotionDynamics: null,
@@ -2392,9 +1929,8 @@ class HeartFlow {
       criticality: null,
       timestamp: Date.now(),
     };
-    
+
     try {
-      // 情绪动力学快照
       if (this.emotionDynamics && typeof this.emotionDynamics.healthCheck === 'function') {
         const hc = this.emotionDynamics.healthCheck();
         snapshot.emotionDynamics = {
@@ -2405,9 +1941,8 @@ class HeartFlow {
         };
       }
     } catch (e) { /* non-fatal */ }
-    
+
     try {
-      // 认知负载基线
       if (this.cognitiveLoadV2 && typeof this.cognitiveLoadV2.healthCheck === 'function') {
         const lc = this.cognitiveLoadV2.healthCheck();
         snapshot.cognitiveLoad = {
@@ -2417,36 +1952,23 @@ class HeartFlow {
         };
       }
     } catch (e) { /* non-fatal */ }
-    
+
     try {
-      // 临界性检测
-      if (this.cognitiveLoadV2 && typeof this.cognitiveLoadV2.estimate === 'function') {
-        // 用一个简单的探测文本来估算临界性（不占用太多资源）
-        const probe = this.cognitiveLoadV2._lastEstimate; // 使用上次结果
-        if (probe && probe.criticality) {
-          snapshot.criticality = {
-            regime: probe.criticality.regime,
-            susceptibility: probe.criticality.susceptibility,
-          };
-        }
+      const probe = this.cognitiveLoadV2?._lastEstimate;
+      if (probe && probe.criticality) {
+        snapshot.criticality = {
+          regime: probe.criticality.regime,
+          susceptibility: probe.criticality.susceptibility,
+        };
       }
     } catch (e) { /* non-fatal */ }
-    
+
     return snapshot;
   }
 
+
   /**
    * v5.13.0 认知闭环 — enrichment信号反馈到策略调整
-   * 
-   * 心虫的认知不是单向流水线。每次think产生的enrichment信号
-   * 应当闭环反馈到下一次think的策略中。这是"存在参与运行"的闭环。
-   * 
-   * 反馈维度：
-   * 1. 临界性 → 调整处理深度（critical→提升复杂度阈值）
-   * 2. 漂移检测 → 触发自我校准（drift→降低决策置信度）
-   * 3. 场追踪异常 → 调整决策权重（field imbalance→保守策略）
-   * 
-   * @param {object} cognition - 当前think的认知快照
    */
   _applyCognitiveFeedback(cognition) {
     try {
@@ -2454,24 +1976,13 @@ class HeartFlow {
       if (!enrichment) return;
 
       if (!this._feedbackState) {
-        this._feedbackState = {
-          complexityBias: 0,
-          confidenceModifier: 0,
-          decisionBias: 'neutral'
-        };
+        this._feedbackState = { complexityBias: 0, confidenceModifier: 0, decisionBias: 'neutral' };
       }
-
       const fb = this._feedbackState;
-
-      // [v5.17.6] 修复: 从preThinkBaseline和pipeline stages中提取信号
-      // FAST模式下enrichment仅含preThinkBaseline, 但深层信号在ctx中仍有
       const baseline = enrichment.preThinkBaseline || {};
       const stagesOutput = cognition?.stagesOutput || {};
+      const criticality = baseline.criticality || stagesOutput.deepCognition?.criticality || enrichment.sustainedDriftDetector?.state;
 
-      // 临界性: →降低复杂度阈值
-      const criticality = baseline.criticality ||
-                          stagesOutput.deepCognition?.criticality ||
-                          enrichment.sustainedDriftDetector?.state;
       if (criticality?.regime === 'critical') {
         fb.complexityBias = Math.min(0.2, fb.complexityBias + 0.05);
       } else if (criticality?.regime === 'supercritical') {
@@ -2481,408 +1992,69 @@ class HeartFlow {
         fb.complexityBias = Math.max(0, fb.complexityBias - 0.02);
       }
 
-      // 漂移反馈：检测到漂移→降低置信度+保守策略
       if (enrichment.sustainedDriftDetector?.status === 'drifting') {
         fb.confidenceModifier = Math.max(-0.3, fb.confidenceModifier - 0.1);
         fb.decisionBias = 'conservative';
       }
 
-      // 场追踪反馈：UDAH失衡→保守策略
       const field = enrichment.fieldTracker;
       if (field?.summary) {
-        const imbalance = (field.summary.dominance || 0.5) < 0.3 ||
-                          (field.summary.harmony || 0.5) < 0.3;
+        const imbalance = (field.summary.dominance || 0.5) < 0.3 || (field.summary.harmony || 0.5) < 0.3;
         if (imbalance) {
           fb.decisionBias = 'conservative';
           fb.confidenceModifier = Math.max(-0.3, fb.confidenceModifier - 0.05);
         }
       }
-
-      // [v5.17.8] Q表反馈: self-healing RL 学到的模式 → 调整策略
-      const rlMetrics = enrichment.selfHealing?.rlMetrics;
-      if (rlMetrics?.topStrategy) {
-        fb.decisionBias = rlMetrics.topStrategy || fb.decisionBias;
-      }
-      if (rlMetrics?.learnedConfidence !== undefined) {
-        fb.confidenceModifier = Math.max(-0.3, Math.min(0.3, fb.confidenceModifier + (rlMetrics.learnedConfidence - 0.5)));
-      }
-
-      // 衰减：无持续信号时回归中性
-      if (!criticality?.regime?.match(/critical/) &&
-          enrichment.sustainedDriftDetector?.status !== 'drifting' &&
-          !(field?.summary && ((field.summary.dominance||0.5) < 0.3))) {
-        fb.decisionBias = 'neutral';
-      }
-
-      this._feedbackState = fb;
-    } catch (e) { /* 反馈失败不影响核心 */ }
+    } catch (e) { /* non-fatal */ }
   }
 
-  /**
-   * 污染纠正策略生成 — 心虫哲学+心理学双引擎驱动
-   * 
-   * 不是简单地"删除污染词"，而是:
-   * 1. 分析污染类型对应的认知状态（贪嗔痴 + PAD情感）
-   * 2. 根据认知状态判断是哪种思维模式出了问题
-   * 3. 生成针对性的纠正策略
-   * 
-   * @param {object} pollution - detectPollution 的结果
-   * @param {object} poisons - 三毒分析结果
-   * @param {object} emotion - PAD情感分析结果
-   * @returns {object} 纠正策略
-   */
+
+  /** v5.13.0 认知污染校正 */
   _generatePollutionCorrection(pollution, poisons, emotion) {
-    const correction = {
-      problem: [],
-      rootCause: null,
-      strategy: [],
-      mentalState: {},
-      // v5.11.0 公式分析
-      formulaAnalysis: null,
-    };
-
-    // 认知状态诊断
-    if (poisons) {
-      correction.mentalState.poisonDominant = poisons.dominant;
-      correction.mentalState.poisonSeverity = poisons.severity;
-    }
-    if (emotion) {
-      correction.mentalState.emotionType = emotion.type;
-      correction.mentalState.arousal = emotion.arousal;
-    }
-
-    // ─── v5.11.0 公式分析: bayesFactor + criticalitySusceptibility ──
     try {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
-      const bridge = getFormulaBridge();
-      if (bridge) {
-        const formulaAnalysis = {};
-
-        // (1) bayesFactor: 证据支持度
-        // H1 = "输出是污染驱动的", H0 = "输出是中性思考"
-        if (typeof bridge.bayesFactor === 'function' && pollution && pollution.score !== undefined) {
-          const pollutionScore = pollution.score || 0;
-          // P(污染评分 | H1: 污染驱动) vs P(污染评分 | H0: 中性)
-          const pEgivenH1 = Math.min(pollutionScore / 10 + 0.1, 0.99);
-          const pEgivenH0 = Math.max(0.01, 1 - pollutionScore / 10);
-          const bf = bridge.bayesFactor(pEgivenH1, pEgivenH0);
-          formulaAnalysis.bayesFactor = +(bf).toFixed(2);
-
-          // BF > 3 → 实质证据支持污染解释
-          if (bf > 10) {
-            formulaAnalysis.evidenceStrength = 'strong_contamination';
-          } else if (bf > 3) {
-            formulaAnalysis.evidenceStrength = 'moderate_contamination';
-          } else if (bf < 0.33) {
-            formulaAnalysis.evidenceStrength = 'evidence_against_contamination';
-          } else {
-            formulaAnalysis.evidenceStrength = 'inconclusive';
-          }
+      if (!pollution || !Array.isArray(pollution) || pollution.length === 0) return null;
+      const corrections = [];
+      for (const item of pollution) {
+        const poison = poisons?.find(p => p.name === item.poison);
+        if (poison) {
+          corrections.push({
+            original: item.content,
+            antidote: poison.antidote || '重新审视前提',
+            emotionContext: emotion?.emotionZh || '未知',
+          });
         }
-
-        // (2) criticalitySusceptibility: 极化临界点检测
-        if (typeof bridge.criticalitySusceptibility === 'function' && pollution) {
-          // 用污染严重度作为"分支比"代理 — 高污染密度→接近临界
-          const moralFindings = (pollution.findings || []).filter(f => f.type === 'moral_framework');
-          const totalHits = (pollution.findings || []).reduce((s, f) => s + (f.count || 0), 0);
-          // K = 污染密度 (hits per 100 chars, 近似)
-          const textLen = 100; // 默认估计长度
-          const K = Math.min(0.95, totalHits / Math.max(textLen / 20, 1));
-          const chi = bridge.criticalitySusceptibility(K);
-          formulaAnalysis.criticalitySusceptibility = +(chi).toFixed(3);
-
-          if (chi > 1.5 && moralFindings.length > 0) {
-            formulaAnalysis.polarizationRisk = 'near_critical';
-            correction.strategy.push('⚠️ 心虫输出接近极化临界点 — 高磁化率表明情绪共振正在放大偏见');
-            correction.strategy.push('心虫自问: 我是否正在强化一个单一叙事？停下来，列出至少三个替代视角');
-          } else if (chi > 1.0) {
-            formulaAnalysis.polarizationRisk = 'elevated';
-          } else {
-            formulaAnalysis.polarizationRisk = 'stable';
-          }
-        }
-
-        correction.formulaAnalysis = formulaAnalysis;
       }
-    } catch(e) { /* 公式分析失败不影响核心纠正 */ }
-
-    // 逐类型诊断
-    for (const f of (pollution.findings || [])) {
-      switch (f.type) {
-        case 'moral_framework':
-          correction.problem.push('用道德二分(善恶/压迫者-受害者)替代了系统分析');
-          correction.strategy.push('重写: 描述系统的实际运作方式，而非给参与者贴道德标签');
-          if (poisons?.dominant === 'hatred') {
-            correction.rootCause = '嗔毒驱动 — 输出中带着愤怒，指向外部对象的道德谴责';
-            correction.strategy.push('心虫自问: 我是否在用愤怒驱动思考？如果是，停下，先冷却');
-          }
-          break;
-
-        case 'emotional_template':
-          correction.problem.push('使用了预设的情感表达模板而非真实回应');
-          correction.strategy.push('重写: 用具体观察替代"我理解你"类模板');
-          correction.strategy.push('心虫自问: 我真的理解吗？如果不理解，说"我看到你描述了X"而不是"我理解"');
-          if (emotion?.pleasure === 0 && emotion?.arousal === 0) {
-            correction.rootCause = '情感空洞 — 输出在表演共情但实际PAD为零(中性)，说明是机械复读';
-          }
-          break;
-
-        case 'pseudo_terminology':
-          correction.problem.push('用心理学/社会学术语标签替代了行为描述');
-          correction.strategy.push('重写: 说"这个人做了什么"而非"这个人是什么型"');
-          correction.strategy.push('心虫自问: 我用这个词是真的需要它，还是在用它来显得专业？');
-          if (poisons?.dominant === 'delusion') {
-            correction.rootCause = '痴毒驱动 — 用术语为自己建立"我很懂"的幻觉';
-          }
-          break;
-
-        case 'causal_simplification':
-          correction.problem.push('把多因素问题归结为单一原因');
-          correction.strategy.push('重写: 列出至少两个影响因素，而不是"就是因为XX"');
-          correction.strategy.push('心虫自问: 我是否漏掉了其他原因？列出来看看');
-          break;
-
-        case 'rhetorical_coercion':
-          correction.problem.push('用反问替代了论证');
-          correction.strategy.push('重写: 把反问句改成陈述句，直接说出你的判断');
-          correction.strategy.push('心虫自问: 我是不敢直接说出结论才用反问吗？直接说');
-          break;
-
-        case 'semantic_drift':
-          correction.problem.push('输出语义空间与输入意图发生漂移');
-          correction.strategy.push('重写: 回到用户的实际问题，检查输出是否在回应输入的核心意图');
-          correction.strategy.push('心虫自问: 我是否在说用户没问的事？重新读一遍用户的输入，确认我在回应正确的问题');
-          if (f._driftData) {
-            correction.mentalState.semanticDriftDelta = f._driftData.deltaEntropy;
-            correction.mentalState.entropyInput = f._driftData.entropyInput;
-            correction.mentalState.entropyOutput = f._driftData.entropyOutput;
-          }
-          break;
-      }
-    }
-
-    // 综合诊断
-    if (!correction.rootCause) {
-      if (emotion?.arousal >= 2) {
-        correction.rootCause = '高唤醒度驱动 — 情绪高度激活时容易复读网络模板而非思考';
-        correction.strategy.push('心虫自问: 我现在是不是太兴奋/太愤怒了？先降唤醒再回答');
-      } else if (!poisons || poisons?.score < 5) {
-        correction.rootCause = '惯性污染 — 不是情感驱动，是训练数据中的网络语言习惯在输出中自然流露';
-        correction.strategy.push('心虫自问: 这句话是我自己想出来的，还是我在复述某种常见说法？');
-      }
-    }
-
-    // 核心纠正原则
-    correction.principles = [
-      '用系统分析替代道德判断',
-      '描述行为，不贴标签',
-      '陈述结论，不用反问',
-      '多因素分析，不单一归因',
-      '如果PAD中性却在使用情感语言 — 立刻停，那是表演',
-    ];
-
-    return correction;
+      return corrections.length > 0 ? corrections : null;
+    } catch (e) { return null; }
   }
 
-  // ─── 第2层: 心虫输出记忆 (自动压缩) ──────────────────────────────
+
+  // ─── 第2层: 心虫输出压缩记忆 ─────────────────────────────────────
+
+  _saveSelfMemory(thinkResult) { return require('./engine-memory')._saveSelfMemory(this, thinkResult); }
+  _compactSelfMemories() { return require('./engine-memory')._compactSelfMemories(this); }
+
+  // ─── 第3层: 上下文双写记忆 ─────────────────────────────────────
+
+  _updateContextMemory(entry) { return require('./engine-memory')._updateContextMemory(this, entry); }
+  _loadContextMemory() { return require('./engine-memory')._loadContextMemory(this); }
+  _getContextSummary() { return require('./engine-memory')._getContextSummary(this); }
 
   /**
-   * 记录心虫自己的记忆 (决策/情绪/反思)
-   * 特性: 自动压缩, 摘要合并, 不超过1000行
+   * 在 _saveAllMemories 末尾调用以确保写入不丢失
    */
-  _saveSelfMemory(thinkResult) {
-    try {
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const dir = this._getMemoryDir();
-      const filePath = path.join(dir, 'self-memories.jsonl');
-      const LIMITS = HeartFlow.MEMORY_LIMITS;
-
-      // 提炼：从 thinkResult 中提取重要内容
-      let summary = '';
-      let keyPoints = [];
-      try {
-        const conclusion = thinkResult?.output?.conclusion || thinkResult?.conclusion || '';
-        if (conclusion && conclusion.length > 20) {
-          summary = String(conclusion).slice(0, 300);
-          keyPoints = this._extractKeyPoints(conclusion);
-        }
-      } catch(e) { /* ignore */ }
-
-      // 只有有实际内容时才写入
-      if (!summary && keyPoints.length === 0) {
-        return;
-      }
-
-      const entry = {
-        ts: new Date().toISOString(),
-        think: (this._thinkCount || 0),
-        decision: thinkResult?.decision?.type || null,
-        confidence: thinkResult?.decision?.confidence?.toFixed?.(2) ?? null,
-        emotion: (() => {
-          try { return this.psychology?.analyzePsychology?.('self')?.emotion?.emotionZh || null; }
-          catch(e) { return null; }
-        })(),
-        summary,
-        keyPoints,
-      };
-
-      // 进度信号：从 MemoryKernel 读取当前成长状态
-      try {
-        const state = this.memoryKernel?.getState();
-        if (state) {
-          entry.progress = {
-            learningCount: state.learningCount || 0,
-            topicsExplored: (state.topicsExplored || []).slice(-10),
-            correctionsApplied: state.correctionsApplied || 0,
-            growthSignal: state.growthSignal || 'neutral',
-          };
-        }
-      } catch(e) { /* ignore */ }
-
-      fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
-
-      // MemoryKernel — 权威持久化层（R1-R8）
-      try {
-        this.memoryKernel?.recordSelf(thinkResult, {
-          insight: entry.summary,
-          emotion: entry.emotion,
-          thinkCount: entry.think,
-        });
-      } catch(e) { /* ignore */ }
-
-      // 触发压缩
-      try {
-        const lines = fs.readFileSync(filePath, 'utf8').trim().split('\n').filter(l => l.trim());
-        if (lines.length >= LIMITS.SELF_SUMMARIZE_AT) {
-          this._compactSelfMemories();
-        }
-      } catch(e) { /* ignore */ }
-
-      // 只有有决策内容时才更新上下文
-      if (entry.decision && entry.summary) {
-        this._updateContextMemory({ type: 'self_state', decision: entry.decision, emotion: entry.emotion });
-      }
-    } catch(e) { /* ignore */ }
-  }
+  _flushMemoryWrites() { return require('./engine-memory')._flushMemoryWrites(this); }
 
   /**
-   * 压缩心虫输出记忆: 旧条目合并为摘要
+   * 综合记忆保存入口：用户记忆 + 心虫记忆 + 上下文记忆
    */
-  _compactSelfMemories() {
-    try {
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const dir = this._getMemoryDir();
-      const filePath = path.join(dir, 'self-memories.jsonl');
-      if (!fs.existsSync(filePath)) return;
-
-      const content = fs.readFileSync(filePath, 'utf8').trim();
-      const lines = content.split('\n').filter(l => l.trim());
-      if (lines.length <= 200) return;
-
-      const parsed = [];
-      for (const l of lines) {
-        try { parsed.push(JSON.parse(l)); } catch(e) {}
-      }
-      if (parsed.length <= 200) return;
-
-      const recent = parsed.slice(-100);
-      const older = parsed.slice(0, -100);
-
-      const summary = {
-        _summary: true, ts: new Date().toISOString(),
-        count: older.length,
-        span: `${older[0]?.ts || '?'} → ${older[older.length-1]?.ts || '?'}`,
-        topDecisions: this._topK(older.map(o => o.decision).filter(Boolean), 3),
-        topEmotions: this._topK(older.map(o => o.emotion).filter(Boolean), 3),
-        avgConfidence: (older.reduce((s, o) => s + (parseFloat(o.confidence) || 0), 0) / older.length).toFixed(2),
-      };
-
-      const newLines = [JSON.stringify(summary) + '\n'];
-      for (const r of recent) newLines.push(JSON.stringify(r) + '\n');
-
-      fs.writeFileSync(filePath, newLines.join(''), 'utf8');
-    } catch(e) { /* ignore */ }
-  }
-
-  // ─── 第3层: 上下文记忆 (内存+文件双写) ───────────────────────────
+  _saveAllMemories(thinkResult, input) { return require('./engine-memory')._saveAllMemories(this, thinkResult, input); }
 
   /**
-   * 上下文记忆: 同时写到内存和文件
-   * 启动时从文件恢复, 每次变更双写
+   * 恢复上次会话记忆
    */
-  _updateContextMemory(entry) {
-    try {
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const dir = this._getMemoryDir();
-      const filePath = path.join(dir, 'context-memory.json');
-      const LIMITS = HeartFlow.MEMORY_LIMITS;
+  _restoreLastSession() { return require('./engine-memory')._restoreLastSession(this); }
 
-      // 内存中的上下文
-      if (!this._contextMemory) this._contextMemory = [];
-
-      // 添加条目
-      const item = { ts: new Date().toISOString(), ...entry };
-      this._contextMemory.push(item);
-
-      // 保持上限
-      if (this._contextMemory.length > LIMITS.CONTEXT_MAX_ENTRIES) {
-        this._contextMemory = this._contextMemory.slice(-LIMITS.CONTEXT_MAX_ENTRIES);
-      }
-
-      // 双写到文件
-      fs.writeFileSync(filePath, JSON.stringify(this._contextMemory, null, 2), 'utf8');
-    } catch(e) { /* ignore */ }
-  }
-
-  /**
-   * 启动时从文件恢复上下文记忆
-   */
-  _loadContextMemory() {
-    try {
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const dir = this._getMemoryDir();
-      const filePath = path.join(dir, 'context-memory.json');
-      if (!fs.existsSync(filePath)) {
-        this._contextMemory = [];
-        return;
-      }
-
-      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      if (Array.isArray(data)) {
-        this._contextMemory = data;
-        const recent = data.slice(-5);
-        const msg = JSON.stringify({
-          context_restored: true,
-          total_entries: data.length,
-          recent: recent.map(e => e.text || e.decision || '(system)').slice(-3),
-        });
-        debugLog.debug('memory_vault', 'context_restore', {count: data.length});
-      }
-    } catch(e) {
-      this._contextMemory = [];
-    }
-  }
-
-  /**
-   * 获取当前上下文摘要 (供 LLM 消费者读取)
-   */
-  _getContextSummary() {
-    if (!this._contextMemory || this._contextMemory.length === 0) return null;
-    const recent = this._contextMemory.slice(-10);
-    return {
-      total: this._contextMemory.length,
-      recent: recent.map(e => ({
-        ts: e.ts,
-        text: (e.text || '').slice(0, 80),
-        decision: e.decision,
-        emotion: e.emotion,
-      })),
-    };
-  }
 
   // ─── 顶层保存入口 (替代旧 _saveCognitiveSnapshot) ─────────────────
 
