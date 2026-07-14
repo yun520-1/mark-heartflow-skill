@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * engine-state — HeartFlow 状态/配置/快照/状态方法
+ * engine-state — HeartFlow 状态/配置/快照/自改进健康检查模块
  * 从 heartflow.js 提取的独立模块 (v6.0.1)
  */
 
@@ -60,82 +60,6 @@ function _preThinkCognitiveSnapshot(hf) {
     return snapshot;
   }
 
-function _runSelfImprovementHealthCheck(hf) {
-    const modules = [];
-    const issues = [];
-
-    // ─── 1. meta-learner ─────────────────────────────────────────
-    const meta = hf.meta;
-    if (meta && typeof meta.learn === 'function' && typeof meta.getStats === 'function') {
-      hf._boundedPush(modules, 'meta-learner');
-      try { meta.getStats(); } catch (e) { hf._boundedPush(issues, 'meta-learner.getStats() threw: ' + e.message); }
-    } else {
-      hf._boundedPush(issues, 'meta-learner: not instantiated or missing learn/getStats');
-    }
-
-    // ─── 2. self-healing-rl ──────────────────────────────────────
-    const sh = hf.selfHealing;
-    if (sh && typeof sh.getStats === 'function') {
-      hf._boundedPush(modules, 'self-healing-rl');
-      try {
-        const shStats = sh.getStats();
-        if (shStats && typeof shStats.qTableSize !== 'undefined') {
-          hf._boundedPush(modules, 'self-healing-rl.qtable');
-        }
-        // 检查 mergeFromLearnedLayer 信号通道（meta → selfHealing）
-        if (meta && typeof sh.mergeFromLearnedLayer === 'function') {
-          hf._boundedPush(modules, 'signal:meta→selfHealing');
-        } else if (meta) {
-          hf._boundedPush(issues, 'signal:meta→selfHealing blocked (mergeFromLearnedLayer missing)');
-        }
-      } catch (e) { hf._boundedPush(issues, 'self-healing-rl.getStats() threw: ' + e.message); }
-    } else {
-      hf._boundedPush(issues, 'self-healing-rl: not instantiated or missing getStats');
-    }
-
-    // ─── 3. confidence-calibrator ────────────────────────────────
-    const cc = hf.confidence;
-    if (cc && typeof cc.calibrate === 'function') {
-      hf._boundedPush(modules, 'confidence-calibrator');
-      // 检查 confidence 是否通过 calibrate 接收外部信号
-      if (typeof cc.assess === 'function' || typeof cc.calibrate === 'function') {
-        hf._boundedPush(modules, 'confidence-calibrator.assess');
-      }
-    } else {
-      hf._boundedPush(issues, 'confidence-calibrator: not instantiated or missing calibrate');
-    }
-
-    // ─── 4. 信号闭环验证：confidence → meta 反馈回路 ──────────────
-    if (cc && meta && typeof meta.learn === 'function') {
-      hf._boundedPush(modules, 'signal:confidence→meta');
-    } else if (cc && !meta) {
-      hf._boundedPush(issues, 'signal:confidence→meta blocked (meta-learner missing)');
-    }
-
-    // ─── 5. 事件发射器检查（self-healing-rl 使用 EventEmitter）───
-    if (sh && typeof sh.emit === 'function') {
-      hf._boundedPush(modules, 'self-healing-rl.events');
-    }
-
-    const connected = issues.length === 0;
-    hf._siHealth = { connected, modules, issues, ts: Date.now() };
-    return hf._siHealth;
-  }
-
-function getSelfImprovementHealth(hf) {
-    if (!hf.started) return { connected: false, modules: [], issues: ['HeartFlow not started'] };
-    if (!hf._siHealth) {
-      try { hf._runSelfImprovementHealthCheck(); } catch (e) {
-        return { connected: false, modules: [], issues: [e.message] };
-      }
-    }
-    return {
-      connected: hf._siHealth.connected,
-      modules: [...hf._siHealth.modules],
-      issues: [...hf._siHealth.issues],
-    };
-  }
-
 function _applyCognitiveFeedback(hf, cognition) {
     try {
       const enrichment = cognition?.enrichment;
@@ -192,11 +116,85 @@ function _generatePollutionCorrection(hf, pollution, poisons, emotion) {
     } catch (e) { return null; }
   }
 
+function _runSelfImprovementHealthCheck(hf) {
+    const modules = [];
+    const issues = [];
+
+    // 1. meta-learner
+    const meta = hf.meta;
+    if (meta && typeof meta.learn === 'function' && typeof meta.getStats === 'function') {
+      _boundedPush(modules, 'meta-learner');
+      try { meta.getStats(); } catch (e) { _boundedPush(issues, 'meta-learner.getStats() threw: ' + e.message); }
+    } else {
+      _boundedPush(issues, 'meta-learner: not instantiated or missing learn/getStats');
+    }
+
+    // 2. self-healing-rl
+    const sh = hf.selfHealing;
+    if (sh && typeof sh.getStats === 'function') {
+      _boundedPush(modules, 'self-healing-rl');
+      try {
+        const shStats = sh.getStats();
+        if (shStats && typeof shStats.qTableSize !== 'undefined') {
+          _boundedPush(modules, 'self-healing-rl.qtable');
+        }
+        if (meta && typeof sh.mergeFromLearnedLayer === 'function') {
+          _boundedPush(modules, 'signal:meta->selfHealing');
+        } else if (meta) {
+          _boundedPush(issues, 'signal:meta->selfHealing blocked (mergeFromLearnedLayer missing)');
+        }
+      } catch (e) { _boundedPush(issues, 'self-healing-rl.getStats() threw: ' + e.message); }
+    } else {
+      _boundedPush(issues, 'self-healing-rl: not instantiated or missing getStats');
+    }
+
+    // 3. confidence-calibrator
+    const cc = hf.confidence;
+    if (cc && typeof cc.calibrate === 'function') {
+      _boundedPush(modules, 'confidence-calibrator');
+      if (typeof cc.assess === 'function' || typeof cc.calibrate === 'function') {
+        _boundedPush(modules, 'confidence-calibrator.assess');
+      }
+    } else {
+      _boundedPush(issues, 'confidence-calibrator: not instantiated or missing calibrate');
+    }
+
+    // 4. confidence -> meta feedback loop
+    if (cc && meta && typeof meta.learn === 'function') {
+      _boundedPush(modules, 'signal:confidence->meta');
+    } else if (cc && !meta) {
+      _boundedPush(issues, 'signal:confidence->meta blocked (meta-learner missing)');
+    }
+
+    // 5. EventEmitter check
+    if (sh && typeof sh.emit === 'function') {
+      _boundedPush(modules, 'self-healing-rl.events');
+    }
+
+    const connected = issues.length === 0;
+    hf._siHealth = { connected, modules, issues, ts: Date.now() };
+    return hf._siHealth;
+  }
+
+function getSelfImprovementHealth(hf) {
+    if (!hf.started) return { connected: false, modules: [], issues: ['HeartFlow not started'] };
+    if (!hf._siHealth) {
+      try { _runSelfImprovementHealthCheck(hf); } catch (e) {
+        return { connected: false, modules: [], issues: [e.message] };
+      }
+    }
+    return {
+      connected: hf._siHealth.connected,
+      modules: [...hf._siHealth.modules],
+      issues: [...hf._siHealth.issues],
+    };
+  }
+
 module.exports = {
   _getConfig,
   _preThinkCognitiveSnapshot,
-  _runSelfImprovementHealthCheck,
-  getSelfImprovementHealth,
   _applyCognitiveFeedback,
   _generatePollutionCorrection,
+  _runSelfImprovementHealthCheck,
+  getSelfImprovementHealth,
 };
