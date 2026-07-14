@@ -39,7 +39,7 @@
  * - 答案 → 存在维度的目标指向
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 // ─── 常量定义 ─────────────────────────────────────────────────────────────

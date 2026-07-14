@@ -12,7 +12,7 @@
  *  - 保留同步降级路径：异步失败时回退同步，保证功能可用。
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 

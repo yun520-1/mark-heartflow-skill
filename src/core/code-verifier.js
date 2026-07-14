@@ -11,7 +11,7 @@
  * - 导入解析验证 (相对路径/本地模块存在性检查)
  * - 综合质量评分 (0-100, 多维度加权)
  */
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const codeVerifier = {

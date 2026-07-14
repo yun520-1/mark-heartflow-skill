@@ -14,7 +14,7 @@
  * 可选运行 `node bin/cli.js setup` 进行个性化配置。
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const os = require('os');
 

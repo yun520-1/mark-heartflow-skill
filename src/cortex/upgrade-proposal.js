@@ -14,7 +14,7 @@
  * 吸收时间: 2026-06-04
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const os = require('os');
 

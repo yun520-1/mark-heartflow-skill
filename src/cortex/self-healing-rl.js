@@ -14,7 +14,7 @@
  * - qScore: Q值评分
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const { atomicWrite } = require('../utils/atomic-write');
 const crypto = require('crypto');
@@ -80,7 +80,7 @@ function _getHmacKey() {
 
   // [v5.17.14 M1] 自动生成并持久化HMAC密钥到 memory/.qtable-hmac-key
   // 与AES密钥相同模式 — 首次启动生成，后续启动复用
-  const fs = require('fs');
+  const fs = require('../utils/safe-fs');
   const keyFile = path.join(MEMORY_DIR || path.join(__dirname, '../../memory'), '.qtable-hmac-key');
   try {
     if (fs.existsSync(keyFile)) {

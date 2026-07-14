@@ -12,7 +12,7 @@
  *   - 新增可观测性：_stats 计数器 + getStats() + resetStats()
  */
 
-const fs = require('fs');
+const fs = require('../../utils/safe-fs');
 const path = require('path');
 
 // ============================================================================

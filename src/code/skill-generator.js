@@ -12,7 +12,7 @@
  *   - 集成 confidence 衰减机制：重复命中同一模式降低置信度
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const SKILL_TEMPLATE = `{{SKILL_CONTENT}}`;

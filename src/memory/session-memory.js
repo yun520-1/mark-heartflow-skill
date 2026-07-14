@@ -4,7 +4,7 @@
  * 跨会话持久化状态
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 class SessionMemory {

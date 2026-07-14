@@ -368,7 +368,7 @@ function _decryptPayload(parsed, key) {
  * @returns {Promise<{success: boolean, rotatedFiles: number, error?: string}>}
  */
 async function rotateKey() {
-  const fs = require('fs');
+  const fs = require('../utils/safe-fs');
   const path = require('path');
   const crypto = require('crypto');
 
@@ -478,7 +478,7 @@ async function rotateKey() {
  * @returns {Promise<{success: boolean, reencryptedFiles: number, error?: string}>}
  */
 async function reencryptAll() {
-  const fs = require('fs');
+  const fs = require('../utils/safe-fs');
   const path = require('path');
 
   try {
@@ -513,7 +513,7 @@ async function reencryptAll() {
  * @returns {string[]}
  */
 function _scanEncFiles(rootDir) {
-  const fs = require('fs');
+  const fs = require('../utils/safe-fs');
   const path = require('path');
 
   const encFiles = [];

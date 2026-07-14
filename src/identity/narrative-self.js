@@ -13,7 +13,7 @@
  * 不新增硬依赖。
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 const { encryptJSON, decryptJSON } = require('../memory/memory-encrypt.js');

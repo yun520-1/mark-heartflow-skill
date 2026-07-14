@@ -10,7 +10,7 @@
  * - 按类型/触发器搜索：支持 type 和 trigger 过滤
  * - 关键词搜索：全文搜索教训内容
  */
-const fs = require('fs');
+const fs = require('../../utils/safe-fs');
 const path = require('path');
 const { randomBytes } = require('crypto');
 

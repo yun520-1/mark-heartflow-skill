@@ -4,7 +4,7 @@
  * 收集和管理执行经验
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 

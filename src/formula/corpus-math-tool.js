@@ -11,7 +11,7 @@
  *  - 数据从 formulas-corpus 懒加载（第一次调用才读文件）
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const CORPUS_DIR = path.join(__dirname, '..', '..', 'formulas-corpus');

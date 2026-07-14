@@ -8,7 +8,7 @@
  * - coverageCheck: Have all relevant factors been considered?
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const MAX_RECENT_ISSUES = 20;

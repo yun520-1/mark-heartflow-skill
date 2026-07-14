@@ -13,7 +13,7 @@
  * 9. 规则自检：validate()/audit() 供启动健康检查调用
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 class MemoryKernel {

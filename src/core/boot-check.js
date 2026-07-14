@@ -18,7 +18,7 @@
  *   const suggestions = getFixSuggestions(); // 获取修复建议列表
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 // 引擎根目录: src/core/boot-check.js → 引擎根目录

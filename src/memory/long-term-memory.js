@@ -4,7 +4,7 @@
  * 持久化存储重要记忆
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const { safeWriteFileSync } = require('../utils/safe-fs.js');
 const { encryptJSON, decryptJSON, isEncryptionEnabled } = require('./memory-encrypt.js');

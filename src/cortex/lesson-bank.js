@@ -13,7 +13,7 @@
  * 该文件不含敏感凭据，但包含用户交互模式和学习历史。
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const LESSON_FILE = path.join(__dirname, '../../data/lesson-bank.json');

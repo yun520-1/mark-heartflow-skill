@@ -432,7 +432,7 @@ class DecisionFeedback {
     }
 
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const data = {
         version: '1.0.0',
         savedAt: new Date().toISOString(),
@@ -469,7 +469,7 @@ class DecisionFeedback {
     }
 
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       if (!fs.existsSync(filePath)) {
         return { success: false, error: '文件不存在', path: filePath, entriesLoaded: 0 };
       }

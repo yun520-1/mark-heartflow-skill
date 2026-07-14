@@ -10,7 +10,7 @@
  */
 
 const path = require('path');
-const fs = require('fs');
+const fs = require('../../utils/safe-fs');
 
 // ============================================================================
 // 错误分类枚举 (v1.1.0 新增)

@@ -3,7 +3,7 @@
  * Safety-Aligned Guardian Ethics
  */
 
-const fs = require('fs');
+const fs = require('../../utils/safe-fs');
 const path = require('path');
 const { safeWriteFileSync, safeAppendFileSync } = require('../../utils/safe-fs.js');
 

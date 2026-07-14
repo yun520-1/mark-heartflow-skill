@@ -851,7 +851,7 @@ class HeartFlow {
     try {
       const { WriteAheadLog, OP_TYPES } = require('../utils/write-ahead-log.js');
       const { atomicWrite } = require('../utils/atomic-write.js');
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const walDir = require('path').join(this.rootPath, 'memory', 'wal');
       try { fs.mkdirSync(walDir, { recursive: true }); } catch (e) { /* wal dir already exists or fails */ }
       const wal = new WriteAheadLog(walDir);
@@ -1863,7 +1863,7 @@ class HeartFlow {
 
     // 未设置: 检查是否有旧的记忆文件（说明之前启用过）
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const memDir = path.join(this.rootPath, 'data', 'memories');
       if (fs.existsSync(path.join(memDir, '.access-control'))) return true;
@@ -1902,7 +1902,7 @@ class HeartFlow {
   _getMemoryDir() {
     const path = require('path');
     const dir = path.join(this.rootPath, 'data', 'memories');
-    const fs = require('fs');
+    const fs = require('../utils/safe-fs');
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     return dir;
   }
@@ -1913,7 +1913,7 @@ class HeartFlow {
    */
   _initMemoryVault() {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dir = this._getMemoryDir();
       const acPath = path.join(dir, '.access-control');
@@ -1970,7 +1970,7 @@ class HeartFlow {
       if (!this._memoryEnabled) return;
       if (!this._shouldRecordUserMemory(input)) return;
 
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dir = this._getMemoryDir();
       const filePath = path.join(dir, 'user-memories.jsonl');
@@ -2058,7 +2058,7 @@ class HeartFlow {
    */
   _archiveUserMemories() {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dir = this._getMemoryDir();
       const filePath = path.join(dir, 'user-memories.jsonl');
@@ -2110,7 +2110,7 @@ class HeartFlow {
       }
       this._searchCacheMisses++;
 
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dir = this._getMemoryDir();
       const scored = [];
@@ -2692,7 +2692,7 @@ class HeartFlow {
    */
   _saveSelfMemory(thinkResult) {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dir = this._getMemoryDir();
       const filePath = path.join(dir, 'self-memories.jsonl');
@@ -2771,7 +2771,7 @@ class HeartFlow {
    */
   _compactSelfMemories() {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dir = this._getMemoryDir();
       const filePath = path.join(dir, 'self-memories.jsonl');
@@ -2814,7 +2814,7 @@ class HeartFlow {
    */
   _updateContextMemory(entry) {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dir = this._getMemoryDir();
       const filePath = path.join(dir, 'context-memory.json');
@@ -2842,7 +2842,7 @@ class HeartFlow {
    */
   _loadContextMemory() {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dir = this._getMemoryDir();
       const filePath = path.join(dir, 'context-memory.json');
@@ -2929,7 +2929,7 @@ class HeartFlow {
       // 恢复上下文记忆
       this._loadContextMemory();
 
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dir = this._getMemoryDir();
 
@@ -4716,7 +4716,7 @@ class HeartFlow {
     }
 
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dir = path.join(this.rootPath, 'memory');
       try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
@@ -4958,7 +4958,7 @@ class HeartFlow {
 
   _getDialogueStats() {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const historyPath = path.join(this.rootPath, 'memory', 'dialogue-history.jsonl');
       if (!fs.existsSync(historyPath)) return null;
@@ -4981,7 +4981,7 @@ class HeartFlow {
     const { since = 0, until = Date.now(), role, limit = 100 } = opts;
     const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       if (!fs.existsSync(historyPath)) return [];
       const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-500);
       const results = [];
@@ -5008,7 +5008,7 @@ class HeartFlow {
   getDialogueStats() {
     const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       if (!fs.existsSync(historyPath)) return { total: 0, user: 0, heartflow: 0, fileSize: 0 };
       const stat = fs.statSync(historyPath);
       const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n');
@@ -5051,7 +5051,7 @@ class HeartFlow {
     const lastDreamPath = require('path').join(this.rootPath, 'memory', '.last-dream');
     let lastDreamTs = 0;
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       if (fs.existsSync(lastDreamPath)) {
         lastDreamTs = parseInt(fs.readFileSync(lastDreamPath, 'utf8').trim(), 10) || 0;
       }
@@ -5101,7 +5101,7 @@ class HeartFlow {
    */
   _recordDreamTime() {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const dir = require('path').join(this.rootPath, 'memory');
       try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
       const path = require('path').join(dir, '.last-dream');
@@ -5196,7 +5196,7 @@ class HeartFlow {
    */
   _saveDreamHistory(data) {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const crypto = require('crypto');
       const dir = path.join(this.rootPath, 'memory');
@@ -5262,7 +5262,7 @@ class HeartFlow {
   getDreamHistory(limit = 10) {
     const historyPath = require('path').join(this.rootPath, 'memory', 'dream-history.jsonl');
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       if (!fs.existsSync(historyPath)) return [];
       const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-limit);
       return lines.map(line => {
@@ -5313,7 +5313,7 @@ class HeartFlow {
       // 2b. 对话历史（永久记忆 — 本次会话的交互记录）
       const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
       try {
-        const fs = require('fs');
+        const fs = require('../utils/safe-fs');
         if (fs.existsSync(historyPath)) {
           const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-30);
           for (const line of lines) {
@@ -5340,7 +5340,7 @@ class HeartFlow {
       // 2c. 历史迁移记忆（principles / insights / 代码确认事件等）
       const legacyPath = require('path').join(this.rootPath, 'memory', 'legacy-migration.jsonl');
       try {
-        const fs2 = require('fs');
+        const fs2 = require('../utils/safe-fs');
         if (fs2.existsSync(legacyPath)) {
           const legacyLines = fs2.readFileSync(legacyPath, 'utf8').trim().split('\n').slice(-20);
           for (const line of legacyLines) {
@@ -5364,7 +5364,7 @@ class HeartFlow {
       // 2d. 永久记忆（已分类整理的高价值记忆）
       const permPath = require('path').join(this.rootPath, 'memory', 'permanent-memory.jsonl');
       try {
-        const fs3 = require('fs');
+        const fs3 = require('../utils/safe-fs');
         if (fs3.existsSync(permPath)) {
           const permLines = fs3.readFileSync(permPath, 'utf8').trim().split('\n').slice(-80);
           for (const line of permLines) {
@@ -5391,7 +5391,7 @@ class HeartFlow {
       // 2e. 上下文记忆（会话级短期记忆，供梦境参考）
       const ctxPath = require('path').join(this.rootPath, 'memory', 'context-memory.jsonl');
       try {
-        const fs4 = require('fs');
+        const fs4 = require('../utils/safe-fs');
         if (fs4.existsSync(ctxPath)) {
           const ctxLines = fs4.readFileSync(ctxPath, 'utf8').trim().split('\n').slice(-30);
           for (const line of ctxLines) {

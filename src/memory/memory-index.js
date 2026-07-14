@@ -17,7 +17,7 @@
  * - context: 当前上下文（会话、任务、问题）
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 class MemoryIndex {

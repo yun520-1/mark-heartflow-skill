@@ -9,7 +9,7 @@
  * - Step 6-9 并发扫描所有模块
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 // 根目录（self-diagnostic.js 在 src/core/，向上两级到项目根）

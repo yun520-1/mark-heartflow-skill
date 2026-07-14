@@ -11,7 +11,7 @@
  * 5. 前缀匹配（Prefix Matching）
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const { EventEmitter } = require('events');
 const { LRUCache } = require('../utils/lru-cache.js');

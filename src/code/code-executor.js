@@ -28,7 +28,7 @@
 
 const _cp = require('child_process');  // [v5.17.2 V-004] 已去混淆
 const path = require('path');
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 
 // ============================================================================
 // 状态枚举

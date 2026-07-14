@@ -8,7 +8,7 @@
  *  - 闭环推送：某盲点反复触发 → 主动给反问/微课，而非每次重复解释。
  *  - 驱动个性化挑战（参考 cognitiveLoadV2.flowState 的 challenge/skill 匹配）。
  */
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const { makeLogger } = require('../infra/logger');
 const log = makeLogger(() => (process.env.LOG_LEVEL || 'info'));

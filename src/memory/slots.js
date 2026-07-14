@@ -13,7 +13,7 @@
  * 7. 槽持久化到 data/slots.json
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const { atomicWrite } = require('../utils/atomic-write');
 const crypto = require('crypto');

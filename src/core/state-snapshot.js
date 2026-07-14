@@ -3,7 +3,7 @@
  * 定期保存和恢复系统状态，支持快照差异比较、变更追踪、回滚点标记和保留策略
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const SNAPSHOT_DIR = path.join(__dirname, 'snapshots');

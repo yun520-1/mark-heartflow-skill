@@ -21,7 +21,7 @@
  */
 
 const path = require('path');
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const { LRUCache } = require('../utils/lru-cache.js');
 
 class KnowledgeGraph {

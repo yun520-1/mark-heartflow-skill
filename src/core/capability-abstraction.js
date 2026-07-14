@@ -84,7 +84,7 @@ class CapabilityAbstraction {
   // 从外部 JSON 配置加载能力定义（Smart Routing 启发：模型能力清单外置）
   loadCapabilitiesFromConfig(configPath) {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const resolved = path.resolve(configPath);
       const raw = fs.readFileSync(resolved, 'utf-8');

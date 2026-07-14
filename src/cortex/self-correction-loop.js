@@ -467,7 +467,7 @@ const selfCorrectionLoop = {
   // 持久化到磁盘
   _persist() {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const dataDir = path.join(__dirname, '../../data');
       const filePath = path.join(dataDir, 'corrections.json');
@@ -481,7 +481,7 @@ const selfCorrectionLoop = {
   // 启动时加载
   load() {
     try {
-      const fs = require('fs');
+      const fs = require('../utils/safe-fs');
       const path = require('path');
       const filePath = path.join(__dirname, '../../data/corrections.json');
       if (fs.existsSync(filePath)) {

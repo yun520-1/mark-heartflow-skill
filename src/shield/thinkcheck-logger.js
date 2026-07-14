@@ -30,7 +30,7 @@
  *   两者同时输出，luoxuejian000 可以选择任意一种分析
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const VERSION = '2.0.0';

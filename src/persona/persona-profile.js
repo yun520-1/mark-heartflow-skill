@@ -7,7 +7,7 @@
  * - 不新增硬依赖，避免污染现有安全护栏
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const DEFAULT_PROFILE = Object.freeze({

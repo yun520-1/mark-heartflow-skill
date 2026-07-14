@@ -18,7 +18,7 @@
  * - 闭环: 评估 → 执行 → 结果 → 学习 → 改进评估
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 class SelfRegulationFeedback {

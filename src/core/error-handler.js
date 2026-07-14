@@ -11,7 +11,7 @@
  *   - CorrelationEngine: 关联分析，将相似历史错误链接到新记录
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 // [AUDIT-FIX] 日志路径改为 data/ 目录，不再写入源码目录

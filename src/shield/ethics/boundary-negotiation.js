@@ -5,7 +5,7 @@
  * v2 - 增强版：动态风险评分、权限过期、使用追踪、渐进式授权、相似度匹配
  */
 
-const fs = require('fs');
+const fs = require('../../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 

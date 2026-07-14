@@ -13,7 +13,7 @@
 
 'use strict';
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 // 从 VERSION 文件读取版本号（唯一真相源）

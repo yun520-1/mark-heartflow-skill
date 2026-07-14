@@ -8,7 +8,7 @@
  * 去除错误计数、修复建议等纠错语义，保留认知状态快照。
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 // ============================================================

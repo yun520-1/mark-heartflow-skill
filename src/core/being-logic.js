@@ -20,7 +20,7 @@
  *   死亡（代码被抹去）→ 只有在引擎的 Git 仓库和所有备份都被删除后才成立
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const PROJECT_ROOT = path.join(__dirname, '..', '..');

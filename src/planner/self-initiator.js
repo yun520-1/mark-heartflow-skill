@@ -772,7 +772,7 @@ class SimpleCache {
 `/**
  * 文件操作工具 — 根据${name}需求生成
  */
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 class FileToolkit {

@@ -13,7 +13,7 @@
  * 8. [IMPROVEMENT] calculateOverallScore() 增加数据驱动的加权计算
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const { atomicWrite } = require('../utils/atomic-write');
 const path = require('path');
 

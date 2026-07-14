@@ -46,7 +46,7 @@ function guardPath(filePath, extraRoots = []) {
 function safeWriteSync(filePath, content, encoding = 'utf8', extraRoots = []) {
   const { safe, resolved, reason } = guardPath(filePath, extraRoots);
   if (!safe) throw new Error(`path-guard: ${reason}`);
-  const fs = require('fs');
+  const fs = require('../utils/safe-fs');
   return fs.writeFileSync(resolved, content, encoding);
 }
 
@@ -56,7 +56,7 @@ function safeWriteSync(filePath, content, encoding = 'utf8', extraRoots = []) {
 function safeReadSync(filePath, encoding = 'utf8', extraRoots = []) {
   const { safe, resolved, reason } = guardPath(filePath, extraRoots);
   if (!safe) throw new Error(`path-guard: ${reason}`);
-  const fs = require('fs');
+  const fs = require('../utils/safe-fs');
   return fs.readFileSync(resolved, encoding);
 }
 

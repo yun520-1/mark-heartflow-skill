@@ -27,7 +27,7 @@ class EmpathyResponder {
       return;
     }
 
-    const fs = require('fs');
+    const fs = require('../utils/safe-fs');
     if (fs.existsSync(this.modelPath)) {
       this.cache = JSON.parse(fs.readFileSync(this.modelPath, 'utf-8'));
       console.log(`[EmpathyResponder] 模型已加载（${this.cache.train_data.length} 个样本）`);

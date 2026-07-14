@@ -17,7 +17,7 @@
  * 触发词数据独立于主库 formulas.json（主库是知识库，这里是匹配层索引）
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 // 触发词索引：signal -> [{ ref, stage?, weight }]

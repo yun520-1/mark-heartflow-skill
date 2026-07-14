@@ -11,7 +11,7 @@
  */
 
 const https = require('https');
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 const { safeFetch } = require('../core/fetch-safe.js');

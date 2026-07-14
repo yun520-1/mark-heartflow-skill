@@ -18,7 +18,7 @@
  * 4. 配置热加载，不需要重启
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 // ============================================================================

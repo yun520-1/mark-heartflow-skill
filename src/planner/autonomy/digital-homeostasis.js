@@ -11,7 +11,7 @@
  *   - 自我修正逻辑 (self-correction) — 当系统检测到异常趋势时自动建议修正行为
  */
 
-const fs = require('fs');
+const fs = require('../../utils/safe-fs');
 const path = require('path');
 
 // ============================================================================

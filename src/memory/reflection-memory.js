@@ -17,7 +17,7 @@
  *   hf.reflectionMemory.getStats()
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 const { safeWriteFileSync } = require('../utils/safe-fs.js');

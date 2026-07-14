@@ -12,7 +12,7 @@
  * - 新增 selfDiagnostic() 自诊断模式
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const { atomicWrite } = require('../utils/atomic-write');
 const path = require('path');
 

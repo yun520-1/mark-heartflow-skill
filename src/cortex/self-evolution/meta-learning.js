@@ -12,7 +12,7 @@
  *   - executeStrategy 返回 quality 基于实际覆盖率/相关性计算
  */
 
-const fs = require('fs');
+const fs = require('../../utils/safe-fs');
 const path = require('path');
 
 class MetaLearning {

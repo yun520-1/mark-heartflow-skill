@@ -12,7 +12,7 @@
  * - 时间衰减 (旧目标自动降级)
  */
 
-const fs = require('fs');
+const fs = require('./utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 

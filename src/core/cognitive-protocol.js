@@ -15,7 +15,7 @@
  * - 主动停下来总结，而不是读到忘记
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 /**

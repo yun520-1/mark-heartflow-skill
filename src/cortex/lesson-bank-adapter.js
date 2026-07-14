@@ -9,7 +9,7 @@
 
 const crypto = require('crypto');
 const { encryptJSON, decryptJSON } = require('../memory/memory-encrypt.js');
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const ADAPTER_FILE = path.join(__dirname, '../../data/lesson-bank-adapter.json');

@@ -14,7 +14,7 @@
 
 const crypto = require('crypto');
 const path = require('path');
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // 1. generateId - 内容寻址ID生成器

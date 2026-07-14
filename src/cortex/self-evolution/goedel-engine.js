@@ -4,7 +4,7 @@
  * 实现：提议 → 生成 → 测试 → 提交 循环
  */
 
-const fs = require('fs');
+const fs = require('../../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 let SAGEGuardian;

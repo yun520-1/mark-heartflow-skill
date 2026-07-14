@@ -7,7 +7,7 @@
  * v5.17.25: 接入 NarrativeSelf，增强自我描述一致性与跨会话叙事连贯性。
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const MAX_BELIEFS = 100;

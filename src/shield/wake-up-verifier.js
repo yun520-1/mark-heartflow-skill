@@ -11,7 +11,7 @@
  * - Multi-dimensional quality scoring with self-correction feedback
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 let DecisionVerifier;
 try { DecisionVerifier = require('./decision-verifier.js').DecisionVerifier; } catch (e) { DecisionVerifier = null; }

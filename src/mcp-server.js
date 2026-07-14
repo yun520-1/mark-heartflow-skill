@@ -11,7 +11,7 @@
  */
 
 const path = require('path');
-const fs = require('fs');
+const fs = require('./utils/safe-fs');
 const http = require('http');
 const crypto = require('crypto');
 

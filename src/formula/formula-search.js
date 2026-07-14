@@ -3,7 +3,7 @@
  * 修复：搜索现在也匹配 formula.id 和 formula.formula（LaTeX 字符串）
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 class FormulaSearch {

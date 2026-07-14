@@ -21,7 +21,7 @@
  * 判断结果以三段式输出（判断/理由/行动），不暴露过程数据
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const VERSION = '1.0.0';

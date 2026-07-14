@@ -10,7 +10,7 @@
  * - 周期持久化（独立于 core 的循环历史存储）
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const { SelfEvolutionCore } = require('./self-evolution/self-evolution-core.js');
 

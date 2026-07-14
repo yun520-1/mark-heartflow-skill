@@ -20,7 +20,7 @@
  * 4. 校准学习：记录历史准确性，持续修正置信度
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const { escapeRegExp } = require('../utils/safe-regex.js');

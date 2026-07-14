@@ -5,7 +5,7 @@
  * v2.0.61 — 增强版：频率追踪/衰减/双向链接/语义回退/歧义消解/复合查询/图健康校验
  */
 
-const fs = require('fs');
+const fs = require('../../utils/safe-fs');
 const path = require('path');
 
 // 拼音声母到韵母的简单映射（用于音近回退）

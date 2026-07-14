@@ -19,7 +19,7 @@
  * - context: 当前上下文
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const { MemoryIndex } = require('../memory/memory-index.js');
 

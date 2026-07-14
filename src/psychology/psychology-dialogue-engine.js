@@ -16,7 +16,7 @@
 
 const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
 const { escapeRegExp } = require('../utils/safe-regex.js');
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 class PsychologyDialogueEngine {

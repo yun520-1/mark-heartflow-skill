@@ -7,7 +7,7 @@
  *  - 提供枚举、查找、统计与跨域建议能力
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const { KnowledgeGraphAdapter } = require('./knowledge-graph-adapter.js');
 

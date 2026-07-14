@@ -4,7 +4,7 @@
  * 跟踪项目的整体状态、任务和决策
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 
 class ProjectContext {

@@ -5,7 +5,7 @@
  * 支持持久化时经 memory-encrypt.js 的 encryptJSON/decryptJSON。
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const { encryptJSON, decryptJSON } = require('../memory/memory-encrypt.js');
 

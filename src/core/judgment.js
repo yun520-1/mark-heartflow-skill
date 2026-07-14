@@ -11,7 +11,7 @@
  * Integrates with: MeaningfulMemory
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const { atomicWrite } = require('../utils/atomic-write');
 const path = require('path');
 const crypto = require('crypto');

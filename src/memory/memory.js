@@ -21,7 +21,7 @@
  * 5. 原子写入：temp + rename 防数据损坏
  */
 
-const fs = require('fs');
+const fs = require('../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 

@@ -9,7 +9,7 @@
  * - Reflexion 自我反思模式
  */
 
-const fs = require('fs');
+const fs = require('../../utils/safe-fs');
 const path = require('path');
 const { HealingMemoryRL } = require('../self-healing-rl.js');
 
