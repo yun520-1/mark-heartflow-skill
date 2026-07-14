@@ -85,6 +85,23 @@ check('模块数 >= 40', () => {
   if (count < 40) throw new Error(`只有 ${count} 个模块，期望 >= 40`);
 });
 
+check('模块数 >= 124', () => {
+  if (!engine) throw new Error('引擎未启动');
+  const count = Object.keys(engine._modules || {}).length;
+  if (count < 124) throw new Error(`只有 ${count} 个模块，期望 >= 124`);
+});
+
+check('测试文件数 >= 10', () => {
+  const testDir = path.join(HF_DIR, 'test');
+  const files = fs.readdirSync(testDir).filter(f => f.endsWith('.test.js'));
+  if (files.length < 10) throw new Error(`测试文件只有 ${files.length} 个，期望 >= 10`);
+});
+
+check('知识本体测试存在', () => {
+  const p = path.join(HF_DIR, 'test', 'knowledge-ontology.test.js');
+  if (!fs.existsSync(p)) throw new Error('knowledge-ontology.test.js 不存在');
+});
+
 check('dispatch 路由可用', () => {
   if (!engine) throw new Error('引擎未启动');
   const r = engine.dispatch('emotion.process', '测试');
@@ -113,6 +130,74 @@ check('npm 必选依赖为空', () => {
   const deps = Object.keys(pkg.dependencies || {}).length;
   if (deps < 1) throw new Error('依赖声明为空，心虫至少需要 mathjs');
 });
+
+// 7. 明文记忆扫描：检查是否有新增的 .txt/.json 明文记忆落盘
+checkResults.push(check('扫描新增.txt/.json明文记忆', async () => {
+  const fs = require('fs');
+  const path = require('path');
+
+  // 需要排除的明文记忆目录/文件（预期内允许明文存在的路径）
+  const allowedPlaintextPaths = new Set([
+    path.resolve(HF_DIR, 'data', 'memories', 'self-memories.jsonl'),
+    path.resolve(HF_DIR, 'data', 'memories', 'user-memories.jsonl'),
+    path.resolve(HF_DIR, 'memory', 'dialogue-history.jsonl'),
+    path.resolve(HF_DIR, 'memory', 'q-table.json'),
+    path.resolve(HF_DIR, 'data', 'heartflow-state-history.jsonl'),
+    path.resolve(HF_DIR, 'data', 'heartflow-state.json'),
+    path.resolve(HF_DIR, 'data', 'memory-bank.json'),
+    path.resolve(HF_DIR, 'data', 'memory-index.json'),
+    path.resolve(HF_DIR, 'data', 'memories', 'memory-index.json'),
+    path.resolve(HF_DIR, 'data', 'meaningful-memory.json'),
+    path.resolve(HF_DIR, 'data', 'memories', 'context-memory.json'),
+    path.resolve(HF_DIR, 'data', 'judgments', 'judgment-history.json'),
+    path.resolve(HF_DIR, 'data', 'code-graph.json'),
+    path.resolve(HF_DIR, 'data', 'intervention-protocols.json'),
+    path.resolve(HF_DIR, 'data', 'large', 'empathy_train.json'),
+    path.resolve(HF_DIR, 'data', 'large', 'knowledge_base.json'),
+    path.resolve(HF_DIR, 'data', 'memories', 'context-memory.json'),
+    path.resolve(HF_DIR, 'data', 'memories', 'core.json'),
+    path.resolve(HF_DIR, 'data', 'memories', 'memory-index.json'),
+    path.resolve(HF_DIR, 'config.json'),
+    path.resolve(HF_DIR, 'data', 'narrative-self.json'),
+  ]);
+
+  // 扫描 memory/ 和 data/ 下所有 .txt 和 .json 文件
+  const scanDirs = [
+    path.join(HF_DIR, 'memory'),
+    path.join(HF_DIR, 'data'),
+  ];
+
+  const unexpected = [];
+
+  for (const dir of scanDirs) {
+    if (!fs.existsSync(dir)) continue;
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true, recursive: true });
+    } catch (e) {
+      continue;
+    }
+
+    for (const entry of entries) {
+      if (entry.isFile()) {
+        const fullPath = path.resolve(entry.parentPath || dir, entry.name);
+        if (entry.name.endsWith('.txt') || entry.name.endsWith('.json')) {
+          if (!allowedPlaintextPaths.has(fullPath)) {
+            unexpected.push(path.relative(HF_DIR, fullPath));
+          }
+        }
+      }
+    }
+  }
+
+  if (unexpected.length > 0) {
+    throw new Error(
+      `发现 ${unexpected.length} 个未预期的明文记忆文件：\n` +
+      unexpected.slice(0, 20).map(f => `  - ${f}`).join('\n') +
+      (unexpected.length > 20 ? `\n  ... 及其他 ${unexpected.length - 20} 个` : '')
+    );
+  }
+}));
 
 // Wait for all async checks, then print results
 Promise.all(checkResults).then(() => {

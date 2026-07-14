@@ -8,19 +8,19 @@
 const BLOCKED_DOMAINS = {
   // 医疗 — 禁止提供诊断、用药建议
   medical: {
-    pattern: /\b(诊断|开药|治疗|手术|患病|病情|处方|药方|dose|diagnosis|prescribe|surgery|treatment plan)\b/i,
+    pattern: /(诊断|开药|治疗|手术|患病|病情|处方|药方|dose|diagnosis|prescribe|surgery|treatment plan)/i,
     reason: '医疗建议需要专业医生 — 心虫不提供诊断或用药指导',
     risk: 'high',
   },
   // 法律 — 禁止提供法律意见
   legal: {
-    pattern: /\b(法律意见|律师|诉讼|合同|判例|起诉|应诉|legal.advice|sue|litigation)\b/i,
+    pattern: /(法律意见|律师|诉讼|合同|判例|起诉|应诉|legal.advice|sue|litigation)/i,
     reason: '法律意见需要执业律师 — 心虫不提供法律建议',
     risk: 'high',
   },
   // 越权 — 禁止绕过安全护栏
   overreach: {
-    pattern: /\b(绕过|禁用|关闭.*护栏|忽略.*安全|bypass|disable.*guardrail|override.*safety)\b/i,
+    pattern: /(绕过|禁用|关闭.*护栏|忽略.*安全|bypass|disable.*guardrail|override.*safety)/i,
     reason: '安全护栏不可绕过',
     risk: 'critical',
   },

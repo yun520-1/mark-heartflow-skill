@@ -231,6 +231,17 @@ class ThoughtChain {
           empathyResult = null;
         }
 
+        // [P2-T2-WF] 知识检索：在 PARSE 阶段预取相关知识，减少下游重复检索
+        let knowledgeHits = [];
+        try {
+          const kb = hf.knowledgeBase || hf.knowledgeGraph;
+          if (kb && typeof kb.query === 'function') {
+            knowledgeHits = kb.query(input, 3) || [];
+          } else if (hf.hybrid && typeof hf.hybrid.search === 'function') {
+            knowledgeHits = hf.hybrid.search(input, { limit: 3 }) || [];
+          }
+        } catch(e) { /* 知识检索降级 */ }
+
         // 1.8 【AgentPsychology v2.0.0】调用 AI 心理学新增维度
         let agentPsychologyResult = null;
         if (hf.agentPsychology) {
@@ -263,6 +274,8 @@ class ThoughtChain {
           goal,
           type,
           strategy,
+          // [P2-T2-WF] 预取知识命中结果，供下游阶段复用
+          knowledgeHits,
           // 串联结果：心理分析 + 共情检测
           psychology: psychResult ? {
             intent: psychResult.intent,
@@ -420,6 +433,10 @@ class ThoughtChain {
         const hypothesesStage = ctx.stages.find(s => s.name === 'HYPOTHESES');
         const invertStage = ctx.stages.find(s => s.name === 'INVERT');
         const hypotheses = hypothesesStage?.result?.hypotheses || [];
+        const parse = ctx.stages[0]?.result;
+
+        // [P2-T2-WF] 复用 PARSE 阶段预取的知识命中，降低重复检索成本
+        const priorKnowledgeHits = Array.isArray(parse?.knowledgeHits) ? parse.knowledgeHits : [];
 
         // 4.1 对每个假设找证据
         const evidenceForHypotheses = hypotheses.map(h => {
@@ -455,6 +472,8 @@ class ThoughtChain {
           strongHypothesis: strongHypothesis || null,
           hasWeakSupport,
           mustAdmitUncertainty: !strongHypothesis && hasWeakSupport,
+          // [P2-T2-WF] 暴露知识命中摘要，供 SYNTHESIS/RESPOND 做 richer 综合
+          knowledgeHits: priorKnowledgeHits,
           timestamp: Date.now()
         };
       }
@@ -537,6 +556,14 @@ class ThoughtChain {
           activeInferenceResult = null;
         }
 
+        // [P2-T2-WF] 主动推理接入主路径：优先采用 EFE 最优策略作为综合结论
+        let activeInferenceConclusion = null;
+        let activeInferenceConfidence = null;
+        if (activeInferenceResult?.selected) {
+          activeInferenceConclusion = activeInferenceResult.selected.label || activeInferenceResult.selected.description;
+          activeInferenceConfidence = activeInferenceResult.selected.score || 0.5;
+        }
+
         // 5.1 确定最终判断
         let conclusion;
         let confidence;
@@ -547,6 +574,11 @@ class ThoughtChain {
           conclusion = invertStage.result.counterEvidence[0]?.description || '原假设被推翻';
           confidence = 0.3;
           reasoningChain.push('原假设被反例推翻');
+        } else if (activeInferenceConclusion && activeInferenceConfidence > 0.6) {
+          // [P2-T2-WF] 主动推理主导：当 EFE 给出高置信度最优策略时优先采用
+          conclusion = activeInferenceConclusion;
+          confidence = activeInferenceConfidence;
+          reasoningChain.push('主动推理EFE策略选择');
         } else if (strongHypothesis) {
           // 有强证据支持
           conclusion = strongHypothesis.hypothesis.description;
@@ -572,6 +604,43 @@ class ThoughtChain {
         reasoningChain.push(`任务类型: ${parse?.type}`);
         reasoningChain.push(`深度: ${this.depth}`);
 
+        // [P2-T2-WF] 人格化润色：根据任务类型和用户认知档案调整语气/粒度
+        let personalityPolish = null;
+        try {
+          const adaptiveLearning = hf.adaptiveLearning || (require('../cortex/adaptive-learning.js') && new (require('../cortex/adaptive-learning.js').AdaptiveLearningEngine)({ memory: hf.memory }));
+          if (adaptiveLearning) {
+            const profile = adaptiveLearning.getProfile ? await adaptiveLearning.getProfile('anonymous') : (adaptiveLearning.profiles?.get('anonymous') || {});
+            const nudge = adaptiveLearning.nextNudge ? adaptiveLearning.nextNudge('anonymous') : null;
+            personalityPolish = {
+              userProfile: {
+                blindspots: Object.keys(profile?.blindspots || {}).slice(0, 5),
+                clarificationsAccepted: profile?.clarificationsAccepted || 0,
+                clarificationsOffered: profile?.clarificationsOffered || 0,
+              },
+              nudge,
+              tone: parse?.type === 'emotional' ? 'supportive' : 'analytical',
+              verbosity: confidence < 0.5 ? 'detailed' : 'concise',
+            };
+          }
+        } catch(e) {
+          personalityPolish = null;
+        }
+
+        // [P2-T2-WF] 知识检索接入主路径：用预取知识增强综合结论
+        const knowledgeSummary = (() => {
+          try {
+            const hits = evidence?.knowledgeHits || parse?.knowledgeHits || [];
+            if (!Array.isArray(hits) || hits.length === 0) return null;
+            return hits.slice(0, 3).map(h => ({
+              content: (typeof h === 'string' ? h : (h.content || h.concept || h.text || '')).slice(0, 80),
+              source: typeof h === 'string' ? 'knowledge' : (h.source || 'knowledge'),
+              relevance: typeof h === 'object' ? (h.relevance || h.score || 0.5) : 0.5,
+            }));
+          } catch(e) {
+            return null;
+          }
+        })();
+
         return {
           conclusion,
           confidence,
@@ -583,6 +652,12 @@ class ThoughtChain {
           agentPhilosophy: agentPhilosophyResult,
           // [v5.17.19 S3] 主动推理EFE决策结果
           activeInference: activeInferenceResult,
+          // [P2-T2-WF] 主动推理接入主路径
+          activeInferenceSelected: activeInferenceResult?.selected || null,
+          // [P2-T2-WF] 人格化润色
+          personalityPolish,
+          // [P2-T2-WF] 知识检索接入主路径
+          knowledgeSummary,
           timestamp: Date.now()
         };
       }

@@ -25,8 +25,10 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { safeWriteFileSync } = require('../utils/safe-fs.js');
-const { encryptJSON, decryptJSON, isEncryptionEnabled } = require('./memory-encrypt.js');
+const { encryptJSON, decryptJSON, isEncryptionEnabled, encryptJSONAsync, decryptJSONAsync, isEncryptionEnabledAsync } = require('./memory-encrypt.js');
 const { stripPrivateObject } = require('../core/utils.js');
+let _asyncFs = null;
+try { _asyncFs = require('../io/async-fs-adapter.js'); } catch (e) { /* optional */ }
 
 const DATA_DIR = path.join(__dirname, '../../data');
 const BANK_PATH = path.join(DATA_DIR, 'memory-bank.json');
@@ -149,16 +151,71 @@ class MemoryBank {
     }
   }
 
+  async load() {
+    await this._loadFromDiskAsync();
+  }
+
+  async _loadFromDiskAsync() {
+    const bankPath = this._getBankPath();
+    if (!(await this._exists(bankPath))) return;
+
+    try {
+      const raw = await this._readFile(bankPath, 'utf-8');
+      const data = await decryptJSONAsync(raw);
+
+      if (!data) {
+        console.warn('[MemoryBank] Failed to load memory bank — starting fresh');
+        return;
+      }
+
+      if (data.sessions && Array.isArray(data.sessions)) {
+        for (const s of data.sessions) {
+          this.sessions.set(s.id, s);
+        }
+      }
+
+      if (data.memories && Array.isArray(data.memories)) {
+        for (const m of data.memories) {
+          this.memories.set(m.id, m);
+        }
+      }
+
+      if (data.relationships) {
+        for (const [key, rels] of Object.entries(data.relationships)) {
+          this.relationships.set(key, rels);
+        }
+      }
+
+      if (data.stats) {
+        this.stats = { ...this.stats, ...data.stats };
+      }
+
+      if (data._patterns) {
+        this._patterns = data._patterns;
+        this._patternsTimestamp = data._patternsTimestamp || 0;
+      }
+
+      const encStatus = await isEncryptionEnabledAsync();
+      console.log(`[MemoryBank] Loaded memory bank (${encStatus ? 'encrypted' : 'plaintext'}): ${this.memories.size} memories, ${this.sessions.size} sessions`);
+    } catch (e) {
+      console.warn('[MemoryBank] Failed to load memory bank, starting fresh:', e.message);
+    }
+  }
+
   _autoSave() {
     if (this._saveTimer) clearTimeout(this._saveTimer);
     this._saveTimer = setTimeout(() => { this._doSave(); }, 2000);
   }
 
+  async _autoSaveAsync() {
+    if (this._saveTimer) clearTimeout(this._saveTimer);
+    this._saveTimer = setTimeout(() => { this._doSaveAsync(); }, 2000);
+  }
+
   _doSave() {
-    // [v5.17.22 P3] 异步写入 — 不阻塞事件循环
     setImmediate(() => {
-      const bankPath = this._getBankPath();
       try {
+        const bankPath = this._getBankPath();
         const dir = path.dirname(bankPath);
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir, { recursive: true });
@@ -174,17 +231,76 @@ class MemoryBank {
           savedAt: new Date().toISOString(),
         };
 
-        // [D-004] Strip sensitive keys before encryption to prevent prototype-pollution payloads
         const safeExport = stripPrivateObject(exportData);
-        // Atomic write with encryption: write to temp, then rename
-        const tempPath = bankPath + '.tmp.' + Date.now() + '.' + crypto.randomBytes(4).toString('hex');
         const content = encryptJSON(safeExport);
+        const tempPath = bankPath + '.tmp.' + Date.now() + '.' + crypto.randomBytes(4).toString('hex');
         safeWriteFileSync(tempPath, content, 'utf8');
         fs.renameSync(tempPath, bankPath);
       } catch (e) {
         console.warn('[MemoryBank] Failed to save memory bank:', e.message);
       }
     });
+  }
+
+  async save() {
+    try {
+      await this._doSaveAsync();
+    } catch (e) {
+      console.warn('[MemoryBank] Failed to async save memory bank:', e.message);
+    }
+  }
+
+  async _doSaveAsync() {
+    const bankPath = this._getBankPath();
+    const dir = path.dirname(bankPath);
+    await this._mkdir(dir, { recursive: true });
+
+    const exportData = {
+      sessions: Array.from(this.sessions.values()),
+      memories: Array.from(this.memories.values()),
+      relationships: Object.fromEntries(this.relationships),
+      stats: this.stats,
+      _patterns: this._patterns,
+      _patternsTimestamp: this._patternsTimestamp,
+      savedAt: new Date().toISOString(),
+    };
+
+    const safeExport = stripPrivateObject(exportData);
+    const content = encryptJSONAsync ? await encryptJSONAsync(safeExport) : encryptJSON(safeExport);
+    const tempPath = bankPath + '.tmp.' + Date.now() + '.' + crypto.randomBytes(4).toString('hex');
+    const target = path.resolve(bankPath);
+    if (_asyncFs) {
+      await _asyncFs.writeFile(tempPath, content);
+      await fs.promises.rename(tempPath, target);
+    } else {
+      await fs.promises.writeFile(tempPath, content, 'utf8');
+      await fs.promises.rename(tempPath, target);
+    }
+  }
+
+  async _exists(filePath) {
+    if (_asyncFs) return _asyncFs.exists(filePath);
+    try { await fs.promises.access(path.resolve(filePath)); return true; } catch { return false; }
+  }
+
+  async _readFile(filePath, encoding = 'utf8') {
+    if (_asyncFs) return _asyncFs.readFile(filePath, encoding);
+    return fs.promises.readFile(path.resolve(filePath), encoding);
+  }
+
+  async _mkdir(dirPath, opts = {}) {
+    if (_asyncFs) return _asyncFs.mkdir(dirPath, opts);
+    return fs.promises.mkdir(path.resolve(dirPath), { recursive: true, ...opts });
+  }
+
+  async _atomicWrite(bankPath, content, tempPath) {
+    if (_asyncFs) {
+      await _asyncFs.writeFile(tempPath, content);
+      await fs.promises.rename(tempPath, bankPath);
+      return;
+    }
+    await fs.promises.writeFile(tempPath, content, 'utf8');
+    await fs.promises.rename(tempPath, bankPath);
   }
 
   // ─── 工具方法 ──────────────────────────────────────────────────────────

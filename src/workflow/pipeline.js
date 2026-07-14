@@ -423,6 +423,40 @@ const DEFAULT_PIPELINE = [
         cognitionGround: ctx.cognitiveEnrichment?.cognitionGround || null,
         debateConductor: ctx.cognitiveEnrichment?.debateConductor || null,
         dreamEngineV2: ctx.cognitiveEnrichment?.dreamEngineV2 || null,
+        // [P2-T2-WF] 认知充实 + 反馈状态融合：把 cognitiveEnrichment 的模块健康度汇总到 cognition
+        enrichmentSummary: (() => {
+          try {
+            const enr = ctx.cognitiveEnrichment;
+            if (!enr || typeof enr !== 'object') return null;
+            const modules = Object.entries(enr)
+              .filter(([, v]) => v && typeof v === 'object' && !v.error)
+              .map(([k, v]) => ({ module: k, health: v.health || v.status || 'ok' }));
+            const unhealthy = modules.filter(m => m.health && m.health !== 'ok');
+            return {
+              total: modules.length,
+              healthy: modules.length - unhealthy.length,
+              unhealthyCount: unhealthy.length,
+              unhealthyModules: unhealthy.map(m => m.module),
+              degraded: unhealthy.length > 0,
+            };
+          } catch (e) {
+            return null;
+          }
+        })(),
+        // [P2-T2-WF] feedbackState 融合：将引擎闭环反馈状态暴露到 cognition
+        feedbackState: (() => {
+          try {
+            const fb = hf?._feedbackState;
+            if (!fb || typeof fb !== 'object') return null;
+            return {
+              complexityBias: fb.complexityBias || 0,
+              confidenceModifier: fb.confidenceModifier || 0,
+              decisionBias: fb.decisionBias || 'neutral',
+            };
+          } catch (e) {
+            return null;
+          }
+        })(),
       };
 
       if (hf.memory && typeof hf.memory.store === 'function' && jd.direction) {

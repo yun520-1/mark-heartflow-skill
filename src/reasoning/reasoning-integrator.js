@@ -421,7 +421,7 @@ function deepThink(input, options) {
     unknowns: unknowns,
     recommendation: {
       respond: evidenceLevel >= 1,  // 至少有一个例子再回答
-      silence: evidenceLevel < 1 && !options.force,
+      silence: evidenceLevel < 1 && !(options && options.force),
       uncertaintyMark: evidenceLevel < 2 ? '目前理解' : null
     }
   };

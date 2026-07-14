@@ -4,21 +4,29 @@
  * 将 LLM 返回的技术性/冗长输出，精炼为用户能一眼看懂的语言。
  * 核心能力：去确认词、去客套话、保留核心信息在前、保持事实不变。
  * 
- * 版本 3.0 — 新增去冗余精炼规则 + 移除追踪
+ * 版本 3.1 — 可选接入 StyleEngine 风格调度与 persona_meta 输出
  */
+
+const StyleEngine = require('../dialogue/style-engine.js');
 
 class LLMToUser {
   constructor(options = {}) {
     this.name = 'llm-to-user';
-    this.version = '3.0.0';
+    this.version = '3.1.0';
     this.options = options;
+
+    // 可选注入风格引擎；未注入时保持旧行为不变
+    this.styleEngine = options.styleEngine || null;
+
+    // 默认不强制应用风格，需调用方显式启用
+    this.autoApplyStyle = !!options.autoApplyStyle;
   }
 
   /**
    * 精炼LLM输出为用户友好语言
    * @param {string} output - LLM原始输出
-   * @param {object} context - { input, intent, tone, userPreference }
-   * @returns {object} { text, compression, removedSections, preserved }
+   * @param {object} context - { input, intent, tone, userPreference, styleMode, persona }
+   * @returns {object} { text, compression, removedSections, preserved, persona_meta?, styleResult? }
    */
   translate(output, context = {}) {
     const original = String(output || '');
@@ -155,12 +163,49 @@ class LLMToUser {
     // 判断是否保留了核心信息：长度不少于原文的20%，或不为空
     const preserved = text.length > 0 && (text.length / Math.max(original.length, 1)) >= 0.05;
 
-    return {
+    const result = {
       text,
       compression: parseFloat(ratio.toFixed(2)),
       removedSections,
       preserved
     };
+
+    // ── 可选：风格引擎调度 ───────────────────────────────────
+    if (this.styleEngine && text) {
+      const styleMode = context.styleMode || this.styleEngine.autoSelect(context);
+      const styleResult = this.styleEngine.apply(text, styleMode);
+
+      // 护栏二次校验：确保风格不破坏事实
+      const safety = this.styleEngine.verifyStyleSafety(text, styleResult);
+      if (safety.passed) {
+        result.styleResult = styleResult;
+        // 默认不污染正文；上层可通过 styleResult.wrappedText 按需应用
+        // 若显式开启 autoApplyStyle，则直接替换输出
+        if (this.autoApplyStyle) {
+          result.text = styleResult.wrappedText;
+          result.styleApplied = true;
+        } else {
+          result.styleApplied = false;
+        }
+      } else {
+        result.styleResult = { ...styleResult, _safetyFailed: true, safetyIssues: safety.issues };
+        result.styleApplied = false;
+      }
+    }
+
+    // ── 可选：persona_meta 输出 ──────────────────────────────
+    if (context.emitPersonaMeta) {
+      const persona = context.persona || {};
+      result.persona_meta = {
+        styleMode: result.styleResult?.mode || 'neutral',
+        styleName: result.styleResult?.modeName || '中性',
+        personaStyle: persona.styleMode || this.styleEngine?._personaOverride?.styleMode || 'neutral',
+        tone: context.tone || 'neutral',
+        source: 'llm-to-user',
+      };
+    }
+
+    return result;
   }
 
   /**

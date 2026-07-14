@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "description": "跨域关联边示例：类比/因果/层级关系。",
+  "links": [
+    { "from": "mathematics", "to": "physics", "type": "analogy", "confidence": 0.9, "description": "物理模型依赖数学语言描述" },
+    { "from": "physics", "to": "chemistry", "type": "causal", "confidence": 0.8, "description": "物理相互作用导致化学反应" },
+    { "from": "chemistry", "to": "biology", "type": "causal", "confidence": 0.85, "description": "分子化学机制支撑生命活动" },
+    { "from": "biology", "to": "medicine", "type": "causal", "confidence": 0.9, "description": "生物学原理是医学的基础" },
+    { "from": "psychology", "to": "economics", "type": "analogy", "confidence": 0.75, "description": "决策与激励结构有类比性" },
+    { "from": "economics", "to": "law", "type": "causal", "confidence": 0.7, "description": "经济行为催生法律制度" },
+    { "from": "philosophy", "to": "psychology", "type": "causal", "confidence": 0.8, "description": "哲学认识论影响心理学方法论" },
+    { "from": "engineering", "to": "computer_science", "type": "causal", "confidence": 0.85, "description": "工程需求推动计算机科学发展" },
+    { "from": "linguistics", "to": "computer_science", "type": "analogy", "confidence": 0.8, "description": "自然语言处理是两者交汇点" },
+    { "from": "history", "to": "economics", "type": "causal", "confidence": 0.75, "description": "历史事件塑造经济制度" },
+    { "from": "arts", "to": "psychology", "type": "analogy", "confidence": 0.7, "description": "审美体验与心智过程相关" },
+    { "from": "mathematics", "to": "computer_science", "type": "causal", "confidence": 0.9, "description": "数学理论是计算机科学基础" }
+  ],
+  "meta": {
+    "count": 12,
+    "allowedTypes": ["analogy", "causal", "hierarchical"]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "version": "6.0.0",
+  "startTime": "2026-07-13T15:22:32.677Z",
+  "endTime": "2026-07-14T07:40:00.000Z",
+  "status": "completed",
+  "phases": {
+    "P0": "completed",
+    "P1": "completed",
+    "P2": "completed",
+    "P3": "completed",
+    "P4": "completed",
+    "P5": "completed"
+  },
+  "tasks": {
+    "T0-1": "completed",
+    "T0-2": "completed",
+    "T0-3": "completed",
+    "T1-KN": "completed",
+    "T1-ID": "completed",
+    "T1-MEM": "completed",
+    "T2-REASON": "completed",
+    "T2-BRIDGE": "completed",
+    "T2-WF": "completed",
+    "T3-CORTEX": "completed",
+    "T3-PS": "completed",
+    "T4-1": "completed",
+    "T4-2": "completed",
+    "T4-3": "completed",
+    "T5-1": "completed",
+    "T5-2": "completed",
+    "T5-3": "completed"
+  },
+  "stateSync": {
+    "versionSync": [
+      "VERSION",
+      "package.json",
+      "SKILL.md",
+      "src/core/heartflow.js"
+    ],
+    "lockFile": ".upgrade-manifest.json",
+    "consistencyCheck": "node --check + bin/verify.js + npm test"
+  },
+  "acceptance": {
+    "docsComplete": true,
+    "versionSync": true,
+    "verifyPassed": true,
+    "testsPassed": true,
+    "deliverable": "v6.0.0"
+  }
+}

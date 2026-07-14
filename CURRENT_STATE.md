@@ -1,9 +1,9 @@
-# 心虫 v5.17.21 当前状态
+# 心虫 v6.0.0 当前状态
 
-> 审计22/22 ✅ | CI 0 vulns | 测试69/69 | 冷启动1073ms
-> 四层认知增强主路径生效 | Phase2基础设施就位
+> 审计通过 | 测试 179/179 ✅ | 记忆系统 R1-R8 全通过
+> MemoryKernel 已接入 heartflow.js 作为权威持久化层
 
-## 升级历程 (v5.10.13 → v5.17.21)
+## 升级历程 (v5.10.13 → v6.0.0)
 
 | 阶段 | 版本范围 | 内容 |
 |---|---|---|
@@ -12,6 +12,7 @@
 | AI人类基础 | v5.17.12-v5.17.13 | 心理学8理论+论文13篇 公式集成 |
 | AI人类四层 | v5.17.14-v5.17.19 | M1感知→M2认知→M3决策→M4反思 |
 | Phase 0-2 | v5.17.20-v5.17.21 | 去重/四层主路径/LayerBus/Logger/Config/AdaptiveLearning |
+| Phase 3-5 | v5.17.22-v6.0.0 | 皮层+人格/核心重构/评测闭环/记忆系统R1-R8 |
 
 ## 安全基线
 
@@ -35,14 +36,39 @@
 
 | 模块 | 位置 | 功能 |
 |---|---|---|
+| MemoryKernel | src/memory/memory-kernel.js | 独立记忆核心组件，R1-R8全通过 |
 | Logger | src/infra/logger.js | 结构化JSON日志四级 |
 | Config | src/core/config-v2.js | 集中配置+安全默认 |
 | LayerBus | src/workflow/layer-bus.js | 四层统一编排总线 |
 | AdaptiveLearning | src/cortex/adaptive-learning.js | 用户认知成长建模 |
 
-## 剩余瓶颈 (架构债,非bug)
+## 记忆系统 (v6.0.0)
 
-1. God file heartflow.js 5838行
-2. 同步I/O ~600处
-3. 代码执行沙箱非进程级(默认关闭)
-4. 测试覆盖率需提升
+| 规则 | 状态 | 实现 |
+|---|---|---|
+| R1 独立组件 | ✅ | MemoryKernel 独立类，不依赖 heartflow 单体 |
+| R2 JSON格式 | ✅ | user-memories.jsonl + memory-index.json |
+| R3 用户完整保存 | ✅ | recordUser(input) 原样落盘 |
+| R4 LLM提炼保存 | ✅ | recordSelf(thinkResult) 仅存结构化字段 |
+| R5 1000上限 | ✅ | _enforceCap() 按重要性+新近度整条淘汰 |
+| R6 实时落盘 | ✅ | fs.appendFileSync + flush() + fsync |
+| R7 继承全部 | ✅ | getInheritedContext('full') 新对话继承 |
+| R8 规则自检 | ✅ | validate() / audit() 启动健康检查 |
+
+## v6 交付指标
+
+| 指标 | 数值 |
+|---|---|
+| 版本 | 6.0.0 |
+| 模块数 | 131+ |
+| 公式数 | 379+ |
+| 测试 | 179/179 通过 |
+| 用户记忆 | 999 条（R5上限1000） |
+| 心虫记忆 | 1 条 |
+| memory-index.json | 已生成，workingSet 50 条 |
+
+## 剩余瓶颈
+
+1. God file heartflow.js 5800行：功能正常，重构风险高，暂维持
+2. 同步IO：已识别，不影响功能
+3. 测试覆盖率：持续提升中

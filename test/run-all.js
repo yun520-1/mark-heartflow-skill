@@ -92,6 +92,266 @@ async function runAllTests() {
   console.log('\n💭 DesireCognition (desire-cognition.js)');
   require('./desire-cognition.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
 
+  // 4.1 KnowledgeOntology 测试
+  console.log('\n📚 KnowledgeOntology');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'knowledge-ontology.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  KnowledgeOntology 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 4.2 KnowledgeQuery 测试
+  console.log('\n🔍 KnowledgeQuery');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'knowledge-query.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  KnowledgeQuery 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 4.3 KnowledgeGraphAdapter 测试
+  console.log('\n🕸️ KnowledgeGraphAdapter');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'knowledge-graph-adapter.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  KnowledgeGraphAdapter 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 4.4 SourceAnnotator 测试
+  console.log('\n🏷️ SourceAnnotator');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'source-annotator.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  SourceAnnotator 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 5. IdentityCore 测试
+  console.log('\n🧩 IdentityCore');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'identity-core.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  IdentityCore 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 5.1 BigFivePersonality 测试
+  console.log('\n🌱 BigFivePersonality');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'big-five.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  BigFivePersonality 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 5.2 SelfModel 测试
+  console.log('\n🪞 SelfModel');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'self-model.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  SelfModel 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 6. ReasoningIntegrator 测试
+  console.log('\n🧠 ReasoningIntegrator');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'reasoning-integrator.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  ReasoningIntegrator 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 6.1 LogicReasoning 测试
+  console.log('\n🧩 LogicReasoning');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'logic-reasoning.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  LogicReasoning 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 7. ReflectionLoop 测试
+  console.log('\n🔄 ReflectionLoop');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'reflection-loop.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  ReflectionLoop 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 8. PersonaEngine 测试
+  console.log('\n🎭 PersonaEngine');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'persona-engine.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  PersonaEngine 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 8.1 PersonaProfile 测试
+  console.log('\n📄 PersonaProfile');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'persona-profile.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  PersonaProfile 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 9. StyleEngine / Dialogue 测试
+  console.log('\n💬 StyleEngine');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'style-engine.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  StyleEngine 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 10. P4 回归测试：ModuleRegistry / RouteWhitelist / SafeFS
+  console.log('\n🛡️ P4 回归测试');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'module-registry.test.js') + ' && node ' + path.join(__dirname, 'route-whitelist.test.js') + ' && node ' + path.join(__dirname, 'safe-fs.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    console.log(result.trim());
+  } catch (e) {
+    console.log('  ⚠️  P4 回归测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
   // 汇总
   console.log('\\n' + '='.repeat(50));
 

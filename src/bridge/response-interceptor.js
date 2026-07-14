@@ -2,7 +2,7 @@
  * This is NOT a transparent proxy — output may be modified before reaching the user. */
 
 /**
- * ResponseInterceptor — LLM输出拦截器 (v3.1)
+ * ResponseInterceptor — LLM输出拦截器 (v3.2)
  * 
  * 拦截LLM的原始输出，执行三层心虫后处理：
  *   1. judgmentInjector — 注入心虫的判断（是否该回应、需要谨慎等）
@@ -14,24 +14,30 @@
  * ═══ 安全审计 #6 — 可配置开关 ═══
  * 新增 enableInterceptor 参数，默认开启。设为 false 时 intercept() 原样透传 LLM 输出，
  * 跳过所有心虫注入逻辑，防止因心虫误判导致 LLM 输出被篡改或注入风险。
+ * 
+ * v3.3 — 新增人格化润色 + 护栏二次校验（接入 StyleEngine）
  */
 class ResponseInterceptor {
   /**
    * @param {object} [config] - 配置对象
    * @param {boolean} [config.enableInterceptor=true] - 是否启用拦截器。关闭后 intercept() 原样透传，不做任何处理。
+   * @param {boolean} [config.allowResponseSuppression=false] - 是否允许用沉默占位符替换原始回复。
+   * @param {boolean} [config.enablePersonaPolish=true] - 是否启用人格化润色。
+   * @param {boolean} [config.emitPersonaMeta=false] - 是否输出 persona_meta。
    */
   constructor(config = {}) {
     this.name = 'response-interceptor';
-    this.version = '3.2.0';
+    this.version = '3.3.0';
 
     // ── 安全开关：关闭后完全跳过拦截逻辑，防止 LLM 输出被意外注入或篡改 ──
     this.enabled = config.enableInterceptor !== undefined ? config.enableInterceptor : true;
 
     // ── 响应抑制开关 (SkillSpector fix) ──────────────────────────
-    // 当 allowResponseSuppression = false（默认），即使心虫判定 shouldRespond=false，
-    // 也不会替换 LLM 原始输出，仅附加注释元信息。
-    // 设为 true 时允许用沉默占位符替换原始回复（需调用方显式授权）。
     this.allowResponseSuppression = config.allowResponseSuppression === true ? true : false;
+
+    // ── 人格化润色开关 ────────────────────────────────────────
+    this.enablePersonaPolish = config.enablePersonaPolish !== undefined ? config.enablePersonaPolish : true;
+    this.emitPersonaMeta = !!config.emitPersonaMeta;
   }
 
   /**
@@ -198,9 +204,56 @@ class ResponseInterceptor {
       }
     }
 
+    // ── 5. 人格化润色（可选） ─────────────────────────────────
+    let personaMeta = null;
+    let personaPolishedResponse = modifiedResponse;
+    if (this.enabled && this.enablePersonaPolish && heartflow?.personaCore?.personalityTone) {
+      try {
+        const persona = heartflow.personaCore;
+        const polishInput = {
+          text: modifiedResponse,
+          heartflow,
+          originalUserInput,
+          mode: (this._currentStyleMode || null),
+        };
+        const polished = persona.personalityTone(modifiedResponse, polishInput);
+        if (polished && typeof polished === 'string' && polished.trim()) {
+          personaPolishedResponse = polished;
+        }
+      } catch (e) {
+        // 润色失败不影响主流程
+        personaPolishedResponse = modifiedResponse;
+      }
+    }
+
+    // 护栏二次校验：确认人格化润色未破坏事实
+    let personaSafetyPassed = true;
+    if (this.enabled && this.enablePersonaPolish && personaPolishedResponse !== modifiedResponse) {
+      const originLen = modifiedResponse.length;
+      const polLen = personaPolishedResponse.length;
+      if (originLen > 0 && (polLen / originLen) > 4) {
+        personaSafetyPassed = false;
+      }
+      if (!personaPolishedResponse.includes(modifiedResponse.slice(0, Math.min(12, modifiedResponse.length)))) {
+        personaSafetyPassed = false;
+      }
+    }
+
+    // 如果护栏校验失败，回退到修改前文本
+    const finalResponse = personaSafetyPassed ? personaPolishedResponse : modifiedResponse;
+
+    if (this.emitPersonaMeta) {
+      personaMeta = {
+        personaPolishEnabled: this.enablePersonaPolish,
+        personaSafetyPassed,
+        currentMode: this._currentStyleMode || null,
+        source: 'response-interceptor',
+      };
+    }
+
     return {
       originalResponse,
-      modifiedResponse,
+      modifiedResponse: finalResponse,
       commentary: commentary
         ? (typeof commentary.comments === 'object'
           ? commentary.comments.map(c => c.text).filter(Boolean).join('\n')
@@ -210,6 +263,7 @@ class ResponseInterceptor {
       conflictNote,
       injectedJudgment,
       responseSuppressed,
+      persona_meta: personaMeta,
     };
   }
 

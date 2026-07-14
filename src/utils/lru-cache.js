@@ -101,6 +101,26 @@ class LRUCache {
   get size() {
     return this._map.size;
   }
+
+  entries() {
+    return this._map.entries();
+  }
+
+  keys() {
+    return this._map.keys();
+  }
+
+  values() {
+    return this._map.values();
+  }
+
+  forEach(callback, thisArg) {
+    this._map.forEach(callback, thisArg);
+  }
+
+  [Symbol.iterator]() {
+    return this._map[Symbol.iterator]();
+  }
 }
 
 module.exports = { LRUCache };

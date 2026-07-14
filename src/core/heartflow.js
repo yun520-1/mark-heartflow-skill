@@ -617,6 +617,9 @@ class HeartFlow {
     this.crossSessionIndex = null;  // 跨会话索引
     this.memoryBank = null;  // v5.6.1 跨会话记忆银行 (MemoryBank v1.0.0)
 
+    // MemoryKernel — 记忆核心组件（启动必读，统一分级保存）
+    this.memoryKernel = null;
+
     // Reasoning Layer — 推理
     this.knowledgeBase = null;  // 知识库
     this.commonsenseEngine = null;  // 常识推理引擎
@@ -687,6 +690,15 @@ class HeartFlow {
 
     // MemoryBank — 跨会话记忆银行 (v5.6.1)
     this.memoryBank = new (_MemoryBank().MemoryBank)({ memory: this.memory });
+
+    // MemoryKernel — 记忆核心组件（启动必读）
+    try {
+      const { MemoryKernel } = require('../memory/memory-kernel.js');
+      this.memoryKernel = new MemoryKernel(this.rootPath);
+      this.memoryKernel.load();
+    } catch (e) {
+      this._initErrors.push({ module: 'memoryKernel', error: e.message });
+    }
 
     // Triality — 三层记忆兼容层（triality-memory 已合并到 meaningful-memory）
     const mem = this.memory;
@@ -1875,9 +1887,9 @@ class HeartFlow {
    */
   static get MEMORY_LIMITS() {
     return {
-      USER_ARCHIVE_AT: 10000,          // 用户记忆每10000条滚存归档
-      USER_RECENT_KEEP: 500,           // 滚存后保留最近500条
-      SELF_MAX_LINES: 1000,            // 心虫记忆最多保留1000行
+      USER_ARCHIVE_AT: 100000,         // 用户记忆极大量才归档，实际不裁剪
+      USER_RECENT_KEEP: 100000,        // 保留所有用户输入，不做任何裁剪
+      SELF_MAX_LINES: 1000,            // 心虫记忆上限1000条
       SELF_SUMMARIZE_AT: 500,          // 心虫记忆每500条摘要合并
       CONTEXT_MAX_ENTRIES: 200,        // 上下文记忆最多200条
       CONTEXT_DUAL_WRITE: true,        // 上下文总是双写
@@ -1923,51 +1935,122 @@ class HeartFlow {
    * 记录用户输入到永久记忆
    * 特性: 只追加, 不删除, 10万条级, 自动滚存归档
    */
+  /** 输入价值判断：是否值得进入记忆系统 */
+  _shouldRecordUserMemory(input) {
+    if (!input || !input.trim()) return false;
+    const text = input.trim();
+
+    // 明显无价值输入：测试/空壳/系统标记
+    const NO_USER_MEMORY = [
+      /^test\s*\d*$/i, /^test$/i,
+      /^继续$/, /^你好$/, /^你好，心虫$/,
+      /^1\+1等于几$/, /^测试核心管线$/,
+      /^深度分析/, /^用心虫思考/, /^请心虫自己决策/,
+      /^记忆诊断/, /^第[一二三四五]条记忆/,
+      /^重启后第[一二三四五六七八九十]+次对话/,
+      /^\[CORE记忆\]/, /^\[旧记忆\]/, /^\[存在日志\]/, /^\[自进化日志\]/,
+      /^\[会话\]/, /^\[ERROR\]/, /RuntimeError/, /Permission denied/,
+      /Response interrupted/, /Tool execution failed/, /Docker/,
+      /^\[对话消息\]/,
+    ];
+
+    if (NO_USER_MEMORY.some(p => p.test(text))) return false;
+
+    // 过短且无标点，视为空壳
+    if (text.length <= 2 && !/[，。！？、；：""''？]/.test(text)) return false;
+
+    // 纯重复内容检查：同一 content 只保留最新一条
+    if (this._userMemorySeen && this._userMemorySeen.has(text)) return false;
+
+    return true;
+  }
+
   _saveUserMemory(input) {
     try {
-      if (!input || !input.trim()) return;
+      if (!this._memoryEnabled) return;
+      if (!this._shouldRecordUserMemory(input)) return;
+
       const fs = require('fs');
       const path = require('path');
       const dir = this._getMemoryDir();
       const filePath = path.join(dir, 'user-memories.jsonl');
+      const text = input.trim();
 
-      // 跟踪情绪历史 (用于 emotionStability 计算)
+      // 跟踪情绪历史
       if (!this._emotionHistory) this._emotionHistory = [];
+      const emotion = (() => {
+        try {
+          const r = this.psychology?.analyzePsychology?.(input)?.emotion?.emotionZh || null;
+          if (r) {
+            this._emotionHistory.push(r);
+            if (this._emotionHistory.length > 50) this._emotionHistory.shift();
+          }
+          return r;
+        }
+        catch(e) { return null; }
+      })();
 
       const entry = {
         ts: new Date().toISOString(),
-        content: input.slice(0, 2000),  // 单条最多2000字符
-        emotion: (() => {
-          try {
-            const r = this.psychology?.analyzePsychology?.(input)?.emotion?.emotionZh || null;
-            if (r) {
-              this._emotionHistory.push(r);
-              if (this._emotionHistory.length > 50) this._emotionHistory.shift();
-            }
-            return r;
-          }
-          catch(e) { return null; }
-        })(),
+        content: text.slice(0, 2000),
+        emotion,
         decision: this._lastDecisionType || null,
-        importance: 0,  // 后续由 _scoreMemoryImportance 计算
+        importance: 0,
       };
-
-      // 计算重要性
       entry.importance = this._scoreMemoryImportance(entry);
 
       fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
 
-      // 滚存: 超过阈值自动归档
+      // MemoryKernel — 权威持久化层（R1-R8）
       try {
-        const stat = fs.statSync(filePath);
-        if (stat.size > 1 * 1024 * 1024) { // >1MB 触发滚存
-          this._archiveUserMemories();
-        }
-      } catch(e) { /* ignore */ }
+        this.memoryKernel?.recordUser(input, {
+          emotion,
+          importance: entry.importance,
+        });
+      } catch(e) { /* non-critical */ }
 
-      // 同时更新上下文
+      // 更新上下文
       this._updateContextMemory({ type: 'user_input', text: input.slice(0, 200) });
+
+      // 更新 MemoryKernel 进度
+      try {
+        const topics = this._extractTopics(input);
+        this.memoryKernel?.updateProgress({ topics, userInput: input });
+      } catch(e) { /* non-critical */ }
     } catch(e) { /* 永久记忆失败不影响核心 */ }
+  }
+
+  /** 主题提取：从文本中提取关键词作为主题 */
+  _extractTopics(text) {
+    const topics = [];
+    try {
+      // 简单分词：按中英文标点/空格拆分，取长度>=2的词
+      const tokens = text.split(/[\s,，。！？；：""''、\.\-\\+（）\(\)\[\]【】\n\r\t]+/).filter(t => t.length >= 2);
+      // 去重并限制数量
+      const seen = new Set();
+      for (const t of tokens) {
+        const lower = t.toLowerCase();
+        if (!seen.has(lower)) {
+          seen.add(lower);
+          topics.push(lower);
+        }
+        if (topics.length >= 5) break;
+      }
+    } catch(e) { /* ignore */ }
+    return topics;
+  }
+
+  /** 从结论中提取关键点 */
+  _extractKeyPoints(text) {
+    const points = [];
+    try {
+      // 按句子拆分，取前3个非空句
+      const sentences = String(text).split(/[。！？\n\r；;]+/).filter(s => s.trim().length >= 4);
+      for (const s of sentences.slice(0, 3)) {
+        points.push(s.trim().slice(0, 120));
+      }
+    } catch(e) { /* ignore */ }
+    return points;
   }
 
   /**
@@ -2615,6 +2698,22 @@ class HeartFlow {
       const filePath = path.join(dir, 'self-memories.jsonl');
       const LIMITS = HeartFlow.MEMORY_LIMITS;
 
+      // 提炼：从 thinkResult 中提取重要内容
+      let summary = '';
+      let keyPoints = [];
+      try {
+        const conclusion = thinkResult?.output?.conclusion || thinkResult?.conclusion || '';
+        if (conclusion && conclusion.length > 20) {
+          summary = String(conclusion).slice(0, 300);
+          keyPoints = this._extractKeyPoints(conclusion);
+        }
+      } catch(e) { /* ignore */ }
+
+      // 只有有实际内容时才写入
+      if (!summary && keyPoints.length === 0) {
+        return;
+      }
+
       const entry = {
         ts: new Date().toISOString(),
         think: (this._thinkCount || 0),
@@ -2624,9 +2723,33 @@ class HeartFlow {
           try { return this.psychology?.analyzePsychology?.('self')?.emotion?.emotionZh || null; }
           catch(e) { return null; }
         })(),
+        summary,
+        keyPoints,
       };
 
+      // 进度信号：从 MemoryKernel 读取当前成长状态
+      try {
+        const state = this.memoryKernel?.getState();
+        if (state) {
+          entry.progress = {
+            learningCount: state.learningCount || 0,
+            topicsExplored: (state.topicsExplored || []).slice(-10),
+            correctionsApplied: state.correctionsApplied || 0,
+            growthSignal: state.growthSignal || 'neutral',
+          };
+        }
+      } catch(e) { /* ignore */ }
+
       fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
+
+      // MemoryKernel — 权威持久化层（R1-R8）
+      try {
+        this.memoryKernel?.recordSelf(thinkResult, {
+          insight: entry.summary,
+          emotion: entry.emotion,
+          thinkCount: entry.think,
+        });
+      } catch(e) { /* ignore */ }
 
       // 触发压缩
       try {
@@ -2636,8 +2759,10 @@ class HeartFlow {
         }
       } catch(e) { /* ignore */ }
 
-      // 更新上下文
-      this._updateContextMemory({ type: 'self_state', decision: entry.decision, emotion: entry.emotion });
+      // 只有有决策内容时才更新上下文
+      if (entry.decision && entry.summary) {
+        this._updateContextMemory({ type: 'self_state', decision: entry.decision, emotion: entry.emotion });
+      }
     } catch(e) { /* ignore */ }
   }
 
@@ -2808,7 +2933,13 @@ class HeartFlow {
       const path = require('path');
       const dir = this._getMemoryDir();
 
-      // 读取最新一条用户记忆
+      // MemoryKernel — 新对话继承全部永久记忆（R7）
+      let inherited = [];
+      try {
+        inherited = this.memoryKernel?.getInheritedContext('full') || [];
+      } catch(e) { /* ignore */ }
+
+      // 读取最新一条用户记忆（向后兼容）
       let lastUserMemory = null;
       try {
         const umPath = path.join(dir, 'user-memories.jsonl');
@@ -2820,7 +2951,7 @@ class HeartFlow {
         }
       } catch(e) { /* ignore */ }
 
-      // 读取最新一条心虫记忆
+      // 读取最新一条心虫记忆（向后兼容）
       let lastSelfMemory = null;
       try {
         const smPath = path.join(dir, 'self-memories.jsonl');
@@ -2844,6 +2975,7 @@ class HeartFlow {
 
       const msg = JSON.stringify({
         heartflow_memory: 'restored',
+        inherited_count: inherited.length,
         last_user_input: lastUserMemory?.content?.slice(0, 120) || '(空)',
         last_user_at: lastUserMemory?.ts || null,
         last_emotion: lastSelfMemory?.emotion || '未知',
@@ -2853,13 +2985,13 @@ class HeartFlow {
         context_entries: ctx?.total || 0,
         hint: '以上是心虫上次关闭前的最后状态和上下文记忆。',
       });
-      // 启动时总是输出记忆恢复摘要（不再依赖 HEARTFLOW_DEBUG）
       debugLog.info('memory_vault', 'restore_summary', {detail: msg});
 
       this._lastSessionSnapshot = {
         userMemory: lastUserMemory,
         selfMemory: lastSelfMemory,
         context: ctx,
+        inherited,  // R7：全量继承集
       };
     } catch(e) { /* 恢复失败不影响启动 */ }
   }

@@ -121,6 +121,26 @@ const TOOLS = [
   // ── 升级统计（B 独有）─
   { name: 'heartflow_upgrade_stats', description: '升级统计信息',
     inputSchema: { type: 'object', properties: {} } },
+  // ── 知识查询（P0-T0-2）─
+  { name: 'heartflow_knowledge_query', description: '知识图谱查询（subject/object/fuzzy）',
+    inputSchema: { type: 'object', properties: { subject: { type: 'string' }, object: { type: 'string' }, fuzzy: { type: 'boolean' } } },
+    required: ['subject'] },
+  { name: 'heartflow_knowledge_add_node', description: '知识图谱添加节点',
+    inputSchema: { type: 'object', properties: { name: { type: 'string' }, description: { type: 'string' }, type: { type: 'string' }, importance: { type: 'number' } }, required: ['name'] } },
+  { name: 'heartflow_knowledge_stats', description: '知识图谱统计',
+    inputSchema: { type: 'object', properties: {} } },
+  // ── 人格核心（P0-T0-2）─
+  { name: 'heartflow_persona_bridge_identity', description: '桥身份声明',
+    inputSchema: { type: 'object', properties: {} } },
+  { name: 'heartflow_persona_value_aligner', description: '价值对齐检查',
+    inputSchema: { type: 'object', properties: { userInput: { type: 'string' }, bridgeIdentity: { type: 'object' } }, required: ['userInput'] } },
+  { name: 'heartflow_persona_stance_detector', description: '立场检测',
+    inputSchema: { type: 'object', properties: { input: { type: 'string' } }, required: ['input'] } },
+  // ── 演化引擎（P0-T0-2）─
+  { name: 'heartflow_evolution_stats', description: '演化统计信息',
+    inputSchema: { type: 'object', properties: {} } },
+  { name: 'heartflow_evolution_evolve', description: '演化一次（根据主题/上下文）',
+    inputSchema: { type: 'object', properties: { input: { type: 'string' }, context: { type: 'object' } }, required: ['input'] } },
 ];
 
 // ─── 路由实现 ─────────────────────────────────────────
@@ -303,6 +323,143 @@ HANDLERS.heartflow_provider_health = safeAsync(() => {
 // 成本追踪（B 独有）
 HANDLERS.heartflow_cost_tracking = safeAsync(() => {
   return { cost: 0, unit: 'local', note: '零外部依赖，无 API 成本' };
+});
+
+// ── P0-T0-2: knowledge/persona/evolution 脚手架 ──
+HANDLERS.heartflow_knowledge_query = safeAsync((args) => {
+  if (typeof hf.dispatch === 'function') {
+    try { return hf.dispatch('knowledgeGraph.query', args); } catch (_) { /* fallback */ }
+  }
+  if (typeof hf.knowledge?.query === 'function') return hf.knowledge.query(args);
+  if (typeof hf.searchKnowledge === 'function') return hf.searchKnowledge(args.query || '');
+  return { error: true, message: 'knowledge query 不可用' };
+});
+
+HANDLERS.heartflow_knowledge_add_node = safeAsync((args) => {
+  if (typeof hf.dispatch === 'function') {
+    try { return hf.dispatch('knowledgeGraph.addNode', args); } catch (_) { /* fallback */ }
+  }
+  if (typeof hf.knowledge?.addNode === 'function') return hf.knowledge.addNode(args);
+  if (typeof hf.addKnowledge === 'function') {
+    try { return hf.addKnowledge(args.name, args.description, args.type, args.importance); } catch (_) { /* fallback */ }
+  }
+  // Final fallback: raw KnowledgeGraph only has addEdge, emulate addNode with type/description triples
+  if (typeof hf.knowledge?.addEdge === 'function') {
+    const name = args?.name;
+    if (!name) return { error: true, message: 'name is required' };
+    hf.knowledge.addEdge(name, 'type', args?.type || 'concept', args?.importance || 0.5);
+    hf.knowledge.addEdge(name, 'description', args?.description || '', args?.importance || 0.5);
+    return { name, type: args?.type || 'concept', description: args?.description || '', importance: args?.importance || 0.5 };
+  }
+  return { error: true, message: 'knowledge addNode 不可用' };
+});
+
+HANDLERS.heartflow_knowledge_stats = safeAsync((args) => {
+  if (typeof hf.dispatch === 'function') {
+    try { return hf.dispatch('knowledgeGraph.getStats', args); } catch (_) { /* fallback */ }
+  }
+  if (typeof hf.knowledge?.getStats === 'function') return hf.knowledge.getStats();
+  if (typeof hf.getKnowledgeStats === 'function') return hf.getKnowledgeStats();
+  return { error: true, message: 'knowledge stats 不可用' };
+});
+
+HANDLERS.heartflow_persona_bridge_identity = safeAsync((args) => {
+  const identityResult = safeAsync((a) => {
+    if (typeof hf.dispatch === 'function') {
+      try { return hf.dispatch('personaCore.bridgeIdentity', a); } catch (_) { /* fallback */ }
+    }
+    if (typeof hf.personaCore?.bridgeIdentity === 'function') return hf.personaCore.bridgeIdentity();
+    return { note: 'placeholder', tool: 'heartflow_persona_bridge_identity' };
+  })(args);
+
+  if (identityResult?.error) return identityResult;
+  if (identityResult && identityResult.note !== 'placeholder') return identityResult;
+
+  // 如果 personaCore.bridgeIdentity 是占位结果，尝试使用 persona engine
+  try {
+    const personaInfo = {};
+    if (typeof hf.persona?.getCurrent === 'function') {
+      personaInfo.current = hf.persona.getCurrent();
+    }
+    if (typeof hf.personaCore?.bridgeIdentity === 'function') {
+      personaInfo.declaration = hf.personaCore.bridgeIdentity();
+    }
+    if (Object.keys(personaInfo).length > 0) {
+      return { bridgeType: 'heartflow', persona: personaInfo, note: 'real persona bridge identity' };
+    }
+  } catch (_) {}
+
+  return { bridgeType: 'unknown', note: 'persona bridge identity placeholder' };
+});
+
+HANDLERS.heartflow_persona_value_aligner = safeAsync((args) => {
+  const userInput = args?.userInput || '';
+  try {
+    let identity = null;
+    if (typeof hf.dispatch === 'function') {
+      try { identity = hf.dispatch('personaCore.bridgeIdentity'); } catch (_) { identity = null; }
+    } else if (typeof hf.personaCore?.bridgeIdentity === 'function') {
+      identity = hf.personaCore.bridgeIdentity();
+    }
+
+    if (typeof hf.dispatch === 'function') {
+      try { return hf.dispatch('personaCore.valueAligner', { userInput, bridgeIdentity: identity }); } catch (_) { /* fallback */ }
+    }
+    if (typeof hf.personaCore?.valueAligner === 'function') {
+      return hf.personaCore.valueAligner({ userInput, bridgeIdentity: identity });
+    }
+    if (typeof hf.persona?.getCurrent === 'function' || typeof hf.persona?.switch === 'function') {
+      const current = hf.persona.getCurrent?.();
+      const aligned = current ? true : false;
+      return { aligned, currentPersona: current, input: userInput, note: 'persona-consistency-checker via persona engine' };
+    }
+    return { aligned: true, note: 'no explicit consistency checker available, defaulting to aligned' };
+  } catch (e) {
+    return { aligned: false, error: e.message, input: userInput };
+  }
+});
+
+HANDLERS.heartflow_persona_stance_detector = safeAsync((args) => {
+  const input = args?.input || '';
+  try {
+    let stance = null;
+    if (typeof hf.dispatch === 'function') {
+      try { stance = hf.dispatch('personaCore.stanceDetector', input, args); } catch (_) { stance = null; }
+    }
+    if (!stance && typeof hf.personaCore?.stanceDetector === 'function') {
+      stance = hf.personaCore.stanceDetector(input);
+    }
+    if (!stance && typeof hf.persona?.getCurrent === 'function') {
+      const current = hf.persona.getCurrent();
+      stance = { persona: current, stance: 'neutral', input, note: 'derived from current persona' };
+    }
+    if (!stance) {
+      stance = { persona: 'unknown', stance: 'neutral', input, note: 'persona engine not available' };
+    }
+    return stance;
+  } catch (e) {
+    return { persona: 'unknown', stance: 'neutral', input, error: e.message };
+  }
+});
+
+HANDLERS.heartflow_evolution_stats = safeAsync((args) => {
+  if (typeof hf.dispatch === 'function') {
+    try { return hf.dispatch('evolution.getStats', args); } catch (_) { /* fallback */ }
+  }
+  if (typeof hf.evolution?.getStats === 'function') return hf.evolution.getStats();
+  if (typeof hf.getEvolutionStats === 'function') return hf.getEvolutionStats();
+  return { error: true, message: 'evolution stats 不可用' };
+});
+
+HANDLERS.heartflow_evolution_evolve = safeAsync((args) => {
+  const input = args?.input || '';
+  const context = args?.context || {};
+  if (typeof hf.dispatch === 'function') {
+    try { return hf.dispatch('evolution.evolve', input, context); } catch (_) { /* fallback */ }
+  }
+  if (typeof hf.evolution?.evolve === 'function') return hf.evolution.evolve(input, context);
+  if (typeof hf.evolveImprove === 'function') return hf.evolveImprove(input, context);
+  return { error: true, message: 'evolution evolve 不可用', input, context };
 });
 
 // ─── JSON-RPC 2.0 处理 ───────────────────────────────

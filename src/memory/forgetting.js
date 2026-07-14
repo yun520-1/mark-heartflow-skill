@@ -91,6 +91,8 @@ const DEFAULT_CONFIG = {
   maxBatchSize: 100,
   maxHistorySize: 50,
   thrashingThreshold: 0.7,
+  // 引用计数保护：referenceCount >= 此值时禁止遗忘
+  referenceCountProtectionThreshold: 3,
 };
 
 // ============ INPUT VALIDATION ============
@@ -134,6 +136,22 @@ function safeString(val) {
   if (typeof val === 'string') return val;
   if (val === null || val === undefined) return '';
   return String(val);
+}
+
+// ============ REFERENCE COUNT PROTECTION ============
+
+/**
+ * 检查记忆是否应被引用计数保护（禁止遗忘）。
+ * 规则：若 memory.referenceCount >= 配置阈值，则不可遗忘。
+ * 同时兼顾层级与关键标记。
+ */
+function isReferenceProtected(memory, config) {
+  const refCount = getField(memory, 'referenceCount', 0);
+  const threshold = config.referenceCountProtectionThreshold ?? DEFAULT_CONFIG.referenceCountProtectionThreshold;
+  if (refCount >= threshold) return true;
+  const layer = (getField(memory, 'layer', 'learned') || 'learned').toUpperCase();
+  if (layer === 'CORE') return true;
+  return false;
 }
 
 // ============ CORE FUNCTIONS (keep originals for backward compat) ============
@@ -346,6 +364,7 @@ class ForgettingEngine {
       errorCount: 0,
       oscillationWarnings: 0,
       totalBatchOps: 0,
+      protectedCount: 0,
     };
 
     // Access history for oscillation detection
@@ -361,6 +380,7 @@ class ForgettingEngine {
       maxBatchSize: Math.max(1, Math.min(1000, options.maxBatchSize ?? DEFAULT_CONFIG.maxBatchSize)),
       maxHistorySize: Math.max(10, Math.min(200, options.maxHistorySize ?? DEFAULT_CONFIG.maxHistorySize)),
       thrashingThreshold: clamp(options.thrashingThreshold ?? DEFAULT_CONFIG.thrashingThreshold, 0, 1),
+      referenceCountProtectionThreshold: options.referenceCountProtectionThreshold ?? DEFAULT_CONFIG.referenceCountProtectionThreshold,
       // Ebbinghaus forgetting curve: memory strength (ms)
       // S=1day => retention drops to ~37% after 1 day
       ebbinghausStrengthMs: options.ebbinghausStrengthMs ?? 86400000,
@@ -521,7 +541,7 @@ class ForgettingEngine {
   }
 
   /**
-   * Check if a memory should be forgotten
+   * Check if a memory should be "forgotten"
    * @param {object} memory - Memory entry
    * @param {number} [threshold] - Custom threshold (0-1)
    * @returns {{ shouldForget: boolean, level: object, precision: number }}
@@ -534,6 +554,10 @@ class ForgettingEngine {
       this._stats.errorCount++;
       this._lastError = validation.error;
       return { shouldForget: true, level: null, precision: 0, error: validation.error, errorCode: validation.errorCode };
+    }
+
+    if (isReferenceProtected(memory, this._config)) {
+      return { shouldForget: false, level: getForgettingLevel(memory.timestamp || Date.now()), precision: 1, protected: true, reason: 'reference_count_or_core' };
     }
 
     const thresh = threshold !== undefined ? clamp(threshold, 0, 1) : this._config.defaultThreshold;

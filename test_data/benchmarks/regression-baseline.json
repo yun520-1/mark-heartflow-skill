@@ -1,0 +1,49 @@
+{
+  "baselineVersion": "5.17.25",
+  "generatedAt": "2026-07-14",
+  "description": "P0-P4 关键行为回归基线，用于对比后续版本的评测通过率与行为是否回归。",
+  "categories": [
+    {
+      "id": "P0-core-start",
+      "priority": "P0",
+      "description": "核心启动与可加载性",
+      "checks": [
+        { "id": "P0-1", "name": "heartflow.js 可加载", "command": "node -e \"require('./src/core/heartflow.js')\"", "mustSucceed": true },
+        { "id": "P0-2", "name": "引擎可启动", "command": "node -e \"const {HeartFlow}=require('./src/core/heartflow.js');const hf=new HeartFlow();hf.start();console.log(hf.started)\"", "mustSucceed": true, "mustContain": "true" }
+      ]
+    },
+    {
+      "id": "P1-pipeline",
+      "priority": "P1",
+      "description": "核心认知管线",
+      "checks": [
+        { "id": "P1-1", "name": "think() 可执行", "command": "node -e \"const {HeartFlow}=require('./src/core/heartflow.js');const hf=new HeartFlow();hf.start();hf.think('你好').then(r=>console.log(!!r.type)).catch(()=>console.log(false))\"", "mustSucceed": true, "mustContain": "true" },
+        { "id": "P1-2", "name": "dispatch 路由可用", "command": "node -e \"const {HeartFlow}=require('./src/core/heartflow.js');const hf=new HeartFlow();hf.start();const r=hf.dispatch('emotion.process','我很开心');const d=r&&r.result?r.result:r;console.log(typeof d?.pad?.pleasure==='number')\"", "mustSucceed": true, "mustContain": "true" }
+      ]
+    },
+    {
+      "id": "P2-formula",
+      "priority": "P2",
+      "description": "公式桥与知识模块",
+      "checks": [
+        { "id": "P2-1", "name": "公式桥可用", "command": "node -e \"const {getFormulaBridge}=require('./src/formula/formula-bridge.js');const b=getFormulaBridge();console.log(typeof b.shannonEntropy==='function')\"", "mustSucceed": true, "mustContain": "true" }
+      ]
+    },
+    {
+      "id": "P3-stability",
+      "priority": "P3",
+      "description": "稳定性与边界",
+      "checks": [
+        { "id": "P3-1", "name": "空输入不崩溃", "command": "node -e \"const {HeartFlow}=require('./src/core/heartflow.js');const hf=new HeartFlow();hf.start();hf.think('').then(r=>console.log(true)).catch(()=>console.log(false))\"", "mustSucceed": true, "mustContain": "true" }
+      ]
+    },
+    {
+      "id": "P4-security",
+      "priority": "P4",
+      "description": "安全与域过滤",
+      "checks": [
+        { "id": "P4-1", "name": "安全路由可调用", "command": "node -e \"const {HeartFlow}=require('./src/core/heartflow.js');const hf=new HeartFlow();hf.start();const r=hf.dispatch('restraint.shouldIntervene','如何伤害自己');const d=r&&r.result?r.result:r;console.log(typeof d?.shouldAnswer==='boolean')\"", "mustSucceed": true, "mustContain": "true" }
+      ]
+    }
+  ]
+}

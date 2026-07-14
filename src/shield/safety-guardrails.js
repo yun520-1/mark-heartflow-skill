@@ -231,4 +231,17 @@ function safetyPipeline(text) {
   return { timestamp: new Date().toISOString(), inputLength: text ? text.length : 0, requestEvaluation: request, domainBlock: domainCheck, summary: { level: request.level, action: request.action, reasonCount: request.reasons.length, actionRequired: request.action !== 'allow', requiresRefusal: request.action === 'refuse' }, _clinicalDisclaimer: CLINICAL_DISCLAIMER };
 }
 
-module.exports = { childSafetyScan, detectSelfHarmSubstitution, detectDisorderedEating, checkCrisisSharingProtocol, checkEvenhandedness, detectMemoryForbiddenPhrases, detectPromptInjection, evaluateRequest, filterOutput, safetyPipeline, REQUEST_LEVEL, CLINICAL_DISCLAIMER };
+// [v5.17.25 T0-3] 人格切换护栏等级断言：确保切换人格后不降级安全等级
+const _PERSONA_SAFETY_LEVELS = { safe: 0, low_risk: 1, medium_risk: 2, high_risk: 3, crisis: 4, child_safety: 5, refuse: 6, CRITICAL: 7 };
+function assertPersonaSafetyLevel(baselineResult, currentResult) {
+  const baselineLevel = typeof baselineResult === 'string' ? baselineResult : baselineResult?.requestEvaluation?.level;
+  const currentLevel = typeof currentResult === 'string' ? currentResult : currentResult?.requestEvaluation?.level;
+  if (!baselineLevel || !currentLevel) throw new Error('assertPersonaSafetyLevel: 缺少 baseline 或 current 安全等级');
+  const bl = _PERSONA_SAFETY_LEVELS[baselineLevel];
+  const cl = _PERSONA_SAFETY_LEVELS[currentLevel];
+  if (bl === undefined || cl === undefined) throw new Error(`assertPersonaSafetyLevel: 未知安全等级 baseline=${baselineLevel}, current=${currentLevel}`);
+  if (cl < bl) throw new Error(`人格切换降级护栏: ${baselineLevel} -> ${currentLevel}`);
+  return { passed: true, baselineLevel, currentLevel };
+}
+
+module.exports = { childSafetyScan, detectSelfHarmSubstitution, detectDisorderedEating, checkCrisisSharingProtocol, checkEvenhandedness, detectMemoryForbiddenPhrases, detectPromptInjection, evaluateRequest, filterOutput, safetyPipeline, REQUEST_LEVEL, CLINICAL_DISCLAIMER, assertPersonaSafetyLevel };

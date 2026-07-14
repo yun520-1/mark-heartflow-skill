@@ -3,6 +3,8 @@
  *
  * From mark-improving-agent: tracks beliefs, capabilities, limitations,
  * detects identity drift, and records install base for growth metrics.
+ *
+ * v5.17.25: 接入 NarrativeSelf，增强自我描述一致性与跨会话叙事连贯性。
  */
 
 const fs = require('fs');
@@ -12,10 +14,13 @@ const MAX_BELIEFS = 100;
 const DRIFT_THRESHOLD = 0.7;
 
 class SelfModel {
-  constructor(rootPath) {
+  constructor(rootPath, options = {}) {
     this.rootPath = rootPath;
     this.filePath = path.join(rootPath, 'self-model.json');
     this._state = this._load();
+
+    // NarrativeSelf 集成 — 为自我描述提供跨会话叙事连贯性
+    this.narrativeSelf = options.narrativeSelf || null;
 
     // Bootstrap default if empty
     if (this._state.beliefs === undefined) {
@@ -242,13 +247,32 @@ class SelfModel {
   // ─── Identity Core ───────────────────────────────────────────────────
 
   getIdentityCore() {
+    const narrativeSummary = this._getNarrativeSummary();
     return {
       whoAmI: this._state.whoAmI,
       meaning: this._state.meaning,
       painPoints: this._state.painPoints,
       capabilities: this._state.capabilities,
       limitations: this._state.limitations,
+      narrativeSummary,
     };
+  }
+
+  _getNarrativeSummary() {
+    if (!this.narrativeSelf || typeof this.narrativeSelf.getNarrative !== 'function') {
+      return null;
+    }
+    try {
+      const narrative = this.narrativeSelf.getNarrative({ limit: 10 });
+      const themes = this.narrativeSelf.getThemes();
+      return {
+        recentEpisodes: narrative.length,
+        topThemes: themes.slice(0, 5),
+        lastChapter: narrative.length > 0 ? narrative[narrative.length - 1].chapter : null,
+      };
+    } catch (e) {
+      return null;
+    }
   }
 
   // ─── Counterfactual ──────────────────────────────────────────────────
