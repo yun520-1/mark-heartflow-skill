@@ -35,6 +35,9 @@ class MemoryKernel {
       inheritAll: true,
       snapshotIntervalMs: 200,
       selfCompactAt: 500,
+      // [L-5] 文件轮转：单个记忆文件超过此字节数时轮转
+      rotateBytes: 10 * 1024 * 1024, // 10MB
+      maxRotatedFiles: 5,
     };
 
     // 状态
@@ -54,6 +57,7 @@ class MemoryKernel {
     this._seenContent = new Set();
     this._snapshotTimer = null;
     this._exitBound = false;
+    this._initErrors = [];
   }
 
   // ── R1：启动即加载永久记忆 ─────────────────────────────────────────
@@ -63,7 +67,20 @@ class MemoryKernel {
     this._loadIndex();
     if (this.rules.flushOnExit) this._bindExitHandlers();
     this._loaded = true;
+    // [M-1] 收紧记忆文件权限：仅所有者可读写
+    this._tightenPermissions();
     return this._index;
+  }
+
+  _tightenPermissions() {
+    try {
+      const targets = [this.corePath, this.userMemPath, this.selfMemPath, this.indexPath];
+      for (const p of targets) {
+        if (fs.existsSync(p)) {
+          try { fs.chmodSync(p, 0o600); } catch (e) { /* best-effort */ }
+        }
+      }
+    } catch (e) { /* best-effort */ }
   }
 
   // ── 内部加载 ──────────────────────────────────────────────────────
@@ -77,7 +94,9 @@ class MemoryKernel {
         }
       }
     } catch (e) {
-      // 静默失败，使用默认状态
+      // [M-4] 不再完全静默：记录初始化错误
+      this._appendInitError('core-load', { message: e.message });
+      _log.warn('memory-kernel', 'core_load_failed', { message: e.message });
     }
   }
 
@@ -88,6 +107,9 @@ class MemoryKernel {
         : this._buildEmptyIndex();
     } catch (e) {
       this._index = this._buildEmptyIndex();
+      // [M-4] 记录索引加载失败，便于诊断
+      this._appendInitError('index-load', { message: e.message });
+      _log.warn('memory-kernel', 'index_load_failed', { message: e.message });
     }
     // 防御：以真实文件行数校正计数
     this._index.counts.user = this._countLines(this.userMemPath);
@@ -114,7 +136,37 @@ class MemoryKernel {
 
   // ── R6：实时写盘 ──────────────────────────────────────────────────
   _appendLine(filePath, entry) {
-    fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
+    try {
+      // [L-5] 大文件轮转后再写入
+      this._rotateIfNeeded(filePath);
+    } catch (e) { /* best-effort */ }
+    const line = JSON.stringify(entry) + '\n';
+    try {
+      fs.appendFileSync(filePath, line, 'utf8');
+      // [M-5] 立即校验刚写入的行，防止磁盘/IO异常导致 JSONL 行损坏
+      this._verifyLastLine(filePath, line);
+    } catch (e) {
+      // [M-4] 不再静默丢弃：记录到 initErrors 并结构化告警
+      this._appendInitError('memory-append', { filePath, message: e.message });
+      _log.warn('memory-kernel', 'append_failed', { filePath, message: e.message });
+    }
+  }
+
+  _verifyLastLine(filePath, expectedLine) {
+    try {
+      const fd = fs.openSync(filePath, 'r');
+      let stat;
+      try { stat = fs.fstatSync(fd); } catch (e) { fs.closeSync(fd); return; }
+      if (stat.size === 0) { fs.closeSync(fd); return; }
+      const buf = Buffer.alloc(Math.min(stat.size, 4096));
+      fs.readSync(fd, buf, 0, buf.length, Math.max(0, stat.size - buf.length));
+      fs.closeSync(fd);
+      const last = buf.toString('utf8').split('\n').filter(Boolean).pop() || '';
+      if (last !== expectedLine.trim()) {
+        this._appendInitError('memory-corruption', { filePath, reason: 'last_line_mismatch' });
+        _log.warn('memory-kernel', 'corruption_detected', { filePath, reason: 'last_line_mismatch' });
+      }
+    } catch (e) { /* best-effort */ }
   }
 
   _writeIndex() {
@@ -251,6 +303,16 @@ class MemoryKernel {
   // ── 内部：_ensureLoaded ───────────────────────────────────────────
   _ensureLoaded() {
     if (!this._loaded) this.init();
+  }
+
+  _appendInitError(type, payload) {
+    if (!Array.isArray(this._initErrors)) this._initErrors = [];
+    this._initErrors.push({ type, payload, ts: new Date().toISOString() });
+    if (this._initErrors.length > 200) this._initErrors.splice(0, this._initErrors.length - 200);
+  }
+
+  getInitErrors() {
+    return Array.isArray(this._initErrors) ? [...this._initErrors] : [];
   }
 
   // ── 新 API：R3 用户输入完整保存 ──────────────────────────────────
@@ -496,6 +558,27 @@ class MemoryKernel {
     const tmp = this.selfMemPath + '.tmp.' + process.pid;
     fs.writeFileSync(tmp, all.map((e) => JSON.stringify(e)).join('\n') + '\n', 'utf8');
     fs.renameSync(tmp, this.selfMemPath);
+  }
+
+  // [L-5] 文件轮转：文件过大时重命名为 .1, .2, ... 并保持最多 maxRotatedFiles
+  _rotateIfNeeded(filePath) {
+    try {
+      if (!fs.existsSync(filePath)) return;
+      const stat = fs.statSync(filePath);
+      if (stat.size < this.rules.rotateBytes) return;
+      const base = filePath + '.';
+      for (let i = this.rules.maxRotatedFiles; i >= 1; i--) {
+        const src = base + (i - 1);
+        const dst = base + i;
+        if (fs.existsSync(src)) {
+          if (i === this.rules.maxRotatedFiles) {
+            try { fs.unlinkSync(dst); } catch (e) { /* ignore */ }
+          }
+          try { fs.renameSync(src, dst); } catch (e) { /* ignore */ }
+        }
+      }
+      fs.renameSync(filePath, base + '0');
+    } catch (e) { /* best-effort */ }
   }
 
   // ── 状态访问 ─────────────────────────────────────────────────────

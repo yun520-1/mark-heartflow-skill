@@ -22,6 +22,9 @@ const debugLog = require('../utils/debug-log');
 const { load: loadConfig } = require('./config');
 const { EngineReasoner } = require('./engine-reasoner');
 const { _getConfig, _preThinkCognitiveSnapshot, _applyCognitiveFeedback, _generatePollutionCorrection, _runSelfImprovementHealthCheck, getSelfImprovementHealth } = require('./engine-state');
+const { initializeSubsystemSlots, initializeConfig, initializeLazyRegistry, registerBuiltinSingletons } = require('./engine-constructor');
+const { dispatch: _dispatch, generateAllowedRoutes } = require('./engine-dispatcher');
+const { start: _start } = require('./engine-initializer');
 
 // ─── 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
 // [P2 FIX] LRU 容量管理 + 结构化日志 + 统一错误处理

@@ -1,4 +1,4 @@
-# HeartFlow v6.0.1 当前状态
+# HeartFlow v6.0.2 当前状态
 
 > 审计通过 | 测试 179/179 ✅ | 记忆系统 R1-R8 全通过
 > MemoryKernel 已接入 heartflow.js 作为权威持久化层
@@ -12,7 +12,7 @@
 | AI人类基础 | v5.17.12-v5.17.13 | 心理学8理论+论文13篇 公式集成 |
 | AI人类四层 | v5.17.14-v5.17.19 | M1感知→M2认知→M3决策→M4反思 |
 | Phase 0-2 | v5.17.20-v5.17.21 | 去重/四层主路径/LayerBus/Logger/Config/AdaptiveLearning |
-| Phase 3-5 | v5.17.22-v6.0.1 | 皮层+人格/核心重构/评测闭环/记忆系统R1-R8/审计整改 |
+| Phase 3-5 | v5.17.22-v6.0.2 | 皮层+人格/核心重构/评测闭环/记忆系统R1-R8/审计整改 |
 
 ## 安全基线
 
@@ -42,7 +42,7 @@
 | LayerBus | src/workflow/layer-bus.js | 四层统一编排总线 |
 | AdaptiveLearning | src/cortex/adaptive-learning.js | 用户认知成长建模 |
 
-## 记忆系统 (v6.0.1)
+## 记忆系统 (v6.0.2)
 
 | 规则 | 状态 | 实现 |
 |---|---|---|
@@ -55,7 +55,7 @@
 | R7 继承全部 | ✅ | getInheritedContext('full') 新对话继承 |
 | R8 规则自检 | ✅ | validate() / audit() 启动健康检查 |
 
-## 审计整改 (v6.0.1)
+## 审计整改 (v6.0.2)
 
 | 整改项 | 状态 | 说明 |
 |--------|------|------|

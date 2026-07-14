@@ -1,4 +1,4 @@
-# HeartFlow v6.0.1 — 本地认知预处理引擎
+# HeartFlow v6.0.2 — 本地认知预处理引擎
 
 > HeartFlow 是一个本地认知预处理引擎，提供结构化认知数据供下游模型参考。默认在用户终端内运行，不依赖外部 AI 服务。
 
@@ -136,7 +136,7 @@ npm install @yun520-1/heartflow
 
 ## 迁移指南 (v5 → v6)
 
-If you are upgrading from HeartFlow v5.x to v6.0.1:
+If you are upgrading from HeartFlow v5.x to v6.0.2:
 
 1. **Version sync**: run `node scripts/sync-version.js` so `VERSION`, `package.json`, `SKILL.md`, and `BUILD_DATE` are aligned.
 2. **Verify baseline**: run `node bin/verify.js` and ensure all 14 checks pass.
@@ -168,6 +168,6 @@ If you are upgrading from HeartFlow v5.x to v6.0.1:
 ---
 
 <p align="center">
-  <strong>HeartFlow v6.0.1</strong> — A cognitive preprocessor that structures thought for downstream models<br>
+  <strong>HeartFlow v6.0.2</strong> — A cognitive preprocessor that structures thought for downstream models<br>
   <sub>MIT License · Copyright © 2026</sub>
 </p>
