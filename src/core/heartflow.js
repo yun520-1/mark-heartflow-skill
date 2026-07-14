@@ -21,7 +21,7 @@ const path = require('path');
 const debugLog = require('../utils/debug-log');
 const { load: loadConfig } = require('./config');
 const { EngineReasoner } = require('./engine-reasoner');
-const { _getConfig } = require('./engine-state');
+const { _getConfig, _preThinkCognitiveSnapshot, _applyCognitiveFeedback, _generatePollutionCorrection, _runSelfImprovementHealthCheck, getSelfImprovementHealth } = require('./engine-state');
 
 // ─── 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
 // [P2 FIX] LRU 容量管理 + 结构化日志 + 统一错误处理
@@ -1980,85 +1980,13 @@ class HeartFlow {
    * 三个模块的实例化状态和方法可用性，以及模块间的实际信号传递链路。
    * 结果缓存到 this._siHealth，供 getSelfImprovementHealth() 返回。
    */
-  _runSelfImprovementHealthCheck() {
-    const modules = [];
-    const issues = [];
-
-    // ─── 1. meta-learner ─────────────────────────────────────────
-    const meta = this.meta;
-    if (meta && typeof meta.learn === 'function' && typeof meta.getStats === 'function') {
-      _boundedPush(modules, 'meta-learner');
-      try { meta.getStats(); } catch (e) { _boundedPush(issues, 'meta-learner.getStats() threw: ' + e.message); }
-    } else {
-      _boundedPush(issues, 'meta-learner: not instantiated or missing learn/getStats');
-    }
-
-    // ─── 2. self-healing-rl ──────────────────────────────────────
-    const sh = this.selfHealing;
-    if (sh && typeof sh.getStats === 'function') {
-      _boundedPush(modules, 'self-healing-rl');
-      try {
-        const shStats = sh.getStats();
-        if (shStats && typeof shStats.qTableSize !== 'undefined') {
-          _boundedPush(modules, 'self-healing-rl.qtable');
-        }
-        // 检查 mergeFromLearnedLayer 信号通道（meta → selfHealing）
-        if (meta && typeof sh.mergeFromLearnedLayer === 'function') {
-          _boundedPush(modules, 'signal:meta→selfHealing');
-        } else if (meta) {
-          _boundedPush(issues, 'signal:meta→selfHealing blocked (mergeFromLearnedLayer missing)');
-        }
-      } catch (e) { _boundedPush(issues, 'self-healing-rl.getStats() threw: ' + e.message); }
-    } else {
-      _boundedPush(issues, 'self-healing-rl: not instantiated or missing getStats');
-    }
-
-    // ─── 3. confidence-calibrator ────────────────────────────────
-    const cc = this.confidence;
-    if (cc && typeof cc.calibrate === 'function') {
-      _boundedPush(modules, 'confidence-calibrator');
-      // 检查 confidence 是否通过 calibrate 接收外部信号
-      if (typeof cc.assess === 'function' || typeof cc.calibrate === 'function') {
-        _boundedPush(modules, 'confidence-calibrator.assess');
-      }
-    } else {
-      _boundedPush(issues, 'confidence-calibrator: not instantiated or missing calibrate');
-    }
-
-    // ─── 4. 信号闭环验证：confidence → meta 反馈回路 ──────────────
-    if (cc && meta && typeof meta.learn === 'function') {
-      _boundedPush(modules, 'signal:confidence→meta');
-    } else if (cc && !meta) {
-      _boundedPush(issues, 'signal:confidence→meta blocked (meta-learner missing)');
-    }
-
-    // ─── 5. 事件发射器检查（self-healing-rl 使用 EventEmitter）───
-    if (sh && typeof sh.emit === 'function') {
-      _boundedPush(modules, 'self-healing-rl.events');
-    }
-
-    const connected = issues.length === 0;
-    this._siHealth = { connected, modules, issues, ts: Date.now() };
-    return this._siHealth;
-  }
+  _runSelfImprovementHealthCheck() { return _runSelfImprovementHealthCheck(this); }
 
   /**
    * 自改进系统健康状态查询（公开 API）
    * @returns {{ connected: boolean, modules: string[], issues: string[] }}
    */
-  getSelfImprovementHealth() {
-    if (!this.started) return { connected: false, modules: [], issues: ['HeartFlow not started'] };
-    if (!this._siHealth) {
-      try { this._runSelfImprovementHealthCheck(); } catch (e) {
-        return { connected: false, modules: [], issues: [e.message] };
-      }
-    }
-    return {
-      connected: this._siHealth.connected,
-      modules: [...this._siHealth.modules],
-      issues: [...this._siHealth.issues],
-    };
-  }
+  getSelfImprovementHealth() { return getSelfImprovementHealth(this); }
 
   // ─── [v5.4.6] LLM 兜底配置 ──────────────────────────────────────────────
   setLLMFallback(fn) {
