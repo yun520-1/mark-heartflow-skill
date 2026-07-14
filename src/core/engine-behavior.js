@@ -532,3 +532,49 @@ module.exports = {
   _collectEngineState,
   _generateDreamNarrative,
 };
+      } catch (e) { /* optional */ }
+
+      // 3. CORE 层记忆
+      const coreEntries = this.memory.listCore?.() || [];
+      for (const entry of coreEntries.slice(-5)) {
+        if (entry?.key && entry?.value) {
+          _boundedPush(fragments, {
+            text: `${entry.key}: ${entry.value}`,
+            layer: 'CORE',
+            key: entry.key,
+            salience: 0.9,
+          });
+        }
+      }
+
+      // 4. LEARNED 层记忆
+      const learnedEntries = this.memory.listLearned?.() || [];
+      for (const entry of learnedEntries.slice(-10)) {
+        if (entry?.key && entry?.value) {
+          _boundedPush(fragments, {
+            text: entry.value,
+            layer: 'LEARNED',
+            key: entry.key,
+            salience: 0.7,
+          });
+        }
+      }
+
+      // 5. 会话历史（近期的交互模式）
+      if (this.identityCore?.getSessionHistory) {
+        try {
+          const history = this.identityCore.getSessionHistory(10);
+          if (history && history.length > 0) {
+            for (const h of history.slice(-5)) {
+              const text = `[会话] ${h.summary || h.context || JSON.stringify(h).slice(0, 80)}`;
+              _boundedPush(fragments, { text, layer: 'EPHEMERAL', key: `session-${h.ts || ''}`, salience: 0.5 });
+            }
+          }
+        } catch (e) { /* optional */ }
+      }
+
+      // 6. 进化循环的改进建议
+      if (this.evolution?.getStats) {
+        try {
+          const stats = this.evolution.getStats();
+          if (stats?.queueSize > 0) {
