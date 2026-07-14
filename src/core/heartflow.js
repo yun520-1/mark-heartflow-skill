@@ -2291,156 +2291,12 @@ class HeartFlow {
     }
   }
 
-  _bootMindSpace() {
-    const coreRules = this.memory.listCore();
-    this._mindSpace.rules = coreRules.map(r => ({ key: r.key, value: r.value, type: 'core_identity' }));
-    if (this._mindSpace.rules.length === 0) {
-      this.memory.addCore('identity.truth', '真', ['identity', 'core']);
-      // 重试一次，如果还是空就不递归了（防止 memory.addCore 静默失败导致栈溢出）
-      const retryRules = this.memory.listCore();
-      if (retryRules.length === 0) {
-        debugLog.warn('heartflow', '无法初始化 MindSpace 身份规则（memory 可能未就绪）');
-      } else {
-        this._mindSpace.rules = retryRules.map(r => ({ key: r.key, value: r.value, type: 'core_identity' }));
-      }
-    }
-  }
+  _bootMindSpace() { return require('./engine-lifecycle')._bootMindSpace(this); }
 
-  _registerModules() {
-    this._modules = {};  // 容量边界：由子模块注册控制，通常 < 100 个条目
-    const subsystemNames = [
-      'identityCore',  // 身份核心 — 第一优先
-      'cognitive',     // 认知协议 — 慢下来，先理解再行动
-      'memory', 'knowledge',
-      'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
-      'evolution', 'dream', 'lesson', 'meta',
-      'self', 'psychology', 'emotion', 'agentPsychology', 'agentPhilosophy', 'selfPositioning',  // AI心理学 + AI哲学 + 自处哲学
-      'truth',
-      'behavior',  // v2.0.19 行为模式系统
-      'persistence',  // v2.0.19 持久化层
-      'triality',     // v2.0.19 三层记忆兼容层
-      'stability', 'confidence', 'restraint', 'arbitration',
-      'snapshot', 'error', 'embodied', 'workflow', 'verifierGrant',
-      // New modules
-      'bm25', 'hybrid', 'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate',
-      'metaJudgment', 'metaMemory', 'skillGenerator',
-      'metaPrompt',  // 用户端加强：用大模型优化大模型调用
-      'got',         // Graph of Thoughts：多路径推理图
-      'constitutional', // Constitutional AI：原则自我对齐
-      'thoughtChain', // 思维链编排器：串联所有引擎（API包装）
-      "debate", // 辩论分析器：三节结构分析（v2.10.2 新增）
-      'heartLogic',    // 引擎核心判断引擎：本心在代码里，不在记忆里
-      // ★ 深层推理 + 公正决策（拆分自原 heartflow.js）
-      'cognitiveEngine',
-      // Planning Layer — 规划能力
-      'adaptivePlanner', 'strategySelector', 'replanTrigger',
-      // Code Engine — 代码执行
-      'codeExecutor', 'codePlanner', 'codeWriter',
-      // Learning Layer — 学习能力（延迟加载，Tier 2）
-      // 'experienceCollector', 'strategyAdapter', 'failureAnalyzer',
-      // Verification Layer — 验证能力（延迟加载，Tier 2）
-      // 'qualityVerifier', 'outputChecker', 'patternMatcher',
-      // Proactive Layer — 主动引擎（延迟加载，Tier 2）
-      // 'curiosityEngine', 'desireEngine', 'goalPursuer', 'selfInitiator',
-      // Cross-Session Memory Layer — 跨会话记忆（延迟加载，Tier 2）
-      // 'sessionMemory', 'projectContext', 'longTermMemory', 'crossSessionIndex',
-      // Reasoning Layer — 推理（延迟加载，Tier 2）
-      // 'knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain',
-      // Emotional Autonomy Layer — 情感自主（延迟加载，Tier 2）
-      // 'autonomousEmotion', 'desireSystem', 'emotionalGrowth', 'moodEvolution',
-      // MindSpace Layer — 心空间守护
-      'mindSpace',
-      // Consciousness Layer — 意识层
-      'consciousness', 'tomEngine',
-      // Ethics Layer — 伦理守护
-      'ethics',
-      // Transmission Layer — 知识传递
-      'transmission',
-      // v3.0 — 交流层
-      'translator', 'agentLayer', 'personaCore',
-      // v3.0.1 — 哲学→决策转化器
-      'philosophyToDecision',
-      // v3.0.2 — 通用决策路由引擎
-      'decisionRouter',
-      // v1.0.0 — 时间延伸分析层
-      'timeExtension',
-      // v0.1.0 — 欲望认知引擎
-      'desireCognition',
-      // v0.1.0 — 爱情认知引擎
-      'loveCognition',
-      // v1.0.0 — 贪嗔痴三毒评估
-      'threePoisons',
-      // v1.0.0 — 底层认知地面
-      'cognitionGround',
-      // v1.0.0 — V21.1 启发：语义聚类 / 双视角审计 / 记忆融合 / 反事实验证 / 辩论收敛
-      'semanticClusterer', 'dualPerspectiveAuditor', 'tieredMemoryFusion',
-      'counterfactualVerifier', 'debateConvergence',
-      // v5.6.1 — 多智能体辩论协调器 (DebateConductor)
-      'debateConductor',
-      // v5.0.0 — 判断引擎
-      'judgmentEngine',
-      // v5.6.1 — 自我对弈推理增强 (Self-Play)
-      'selfPlay',
-      // v5.5.6 — 自愈RL (SelfHealing + HealingMemoryRL)
-      'selfHealing',
-      // v5.4.5 — 能力抽象层 + 平台适配器（Smart Routing 启发）
-      'capabilityAbstraction', 'platformAdapter',
-      // v1.0.0 — 逻辑推理引擎
-      'logicReasoning',
-      // v5.0.0 — 管道引擎
-      'pipeline',
-      // v5.1.0 — 自省
-      'heartflow',
-      'innerOS',  // Inner OS — 内心独白、事件追踪、人格切换
-      // v5.5.5 — 注意力焦点 + 代码自调试
-      'focusOfAttention', 'codeSelfDebug',
-      // v5.6.0 — 论文驱动升级
-      'reflexionEngine', 'memoryConsolidator', 'multiAgentDialogue', 'mctsReasoning', 'hierarchicalPlanner',
-      // v5.6.1 — 深研论文驱动升级
-      'memoryQuality', 'metacognitiveFeedback', 'paperIndex',
-      // v5.7.2 — P1 多智能体认知损耗规避
-      'cognitiveLoad',
-      // v5.6.1 — 步骤级推理奖励模型 (Process Reward Model)
-      'processRewardModel',
-      // v5.6.1 — 跨会话记忆银行 (MemoryBank v1.0.0)
-      'memoryBank',
-      // v5.7.2 — 新模块
-      'infoFlow', 'reflectionMemory', 'kvCache', 'memoryIntegrity',
-      // v5.7.4 — EDV + AdaMem + RLMF + MemRefine + SkillCoach + AgentWorld
-      'experienceValidator', 'memoryWriteController', 'metacognitiveRL',
-      'memoryCompressor', 'skillEvolution', 'worldModel',
-      // v5.7.5 — 古代智慧基础：美德伦理 + 人性论 + 意义目的
-      'virtueEthics', 'humanNature', 'meaningPurpose',
-      // v5.7.5 — P2 品格养成 + 道德发展 + 智慧引擎
-      'characterCultivation', 'moralDevelopment', 'wisdomEngine',
-      // v5.7.6 — P3-P6 全部新模块
-      'sufferingResilience', 'griefEngine', 'hopeEngine',
-      'humanRelation', 'empathyDeepening', 'conflictResolution',
-      'traumaInformed', 'postTraumaticGrowth', 'forgivenessEngine',
-      'aiHumanIntegration', 'beingMode', 'consciousnessBridge',
-      // v5.7.7 — F3 持续漂移检测器
-      'sustainedDriftDetector',
-      // v5.8.6 — 公式引擎（数学/物理/化学/工程公式库）
-      'formula',
-      // v5.8.6 — 认知负载指数（Sweller 认知负载理论）
-      'cognitiveIndex',
-      // v5.9.12 — 公式驱动新模块
-      'decisionEngineV2', 'memoryConsolidation', 'emotionDynamics', 'cognitiveLoadV2', 'dreamEngineV2',
-      'psychologyDialogue'];
-    for (const name of subsystemNames) {
-      if (this[name] !== null && this[name] !== undefined) {
-        this._modules[name] = this[name];
-      }
-    }
+  _registerModules() { return require('./engine-lifecycle')._registerModules(this); }
 
-    // [AUDIT-FIX] 汇总并上报初始化错误（之前静默收集但从未报告）
-    if (this._initErrors.length > 0) {
-      _log.warn('init', `${this._initErrors.length} 模块初始化失败`, { 
-        count: this._initErrors.length,
-        errors: this._initErrors.map(e => ({ module: e.module, error: e.error }))
-      });
-    }
-  }
+  _initCoreRules() { return require('./engine-lifecycle')._initCoreRules(this); }
+
 
   async stop() {
     if (!this.started) return;
@@ -3044,301 +2900,167 @@ class HeartFlow {
     'stability.diagnose',
   ]);
 
-  _feedDriftResult(route, rawResult) {
-    if (!this._DRIFT_ROUTES.has(route)) return;
+  _feedDriftResult() { return require('./engine-behavior')._feedDriftResult(this); }
+  _psychBridge() { return require('./engine-behavior')._psychBridge(this); }
+  _getDialogueStats() { return require('./engine-behavior')._getDialogueStats(this); }
+  _shouldDreamToday() { return require('./engine-behavior')._shouldDreamToday(this); }
+  _recordDreamTime() { return require('./engine-behavior')._recordDreamTime(this); }
+  _saveDreamHistory() { return require('./engine-behavior')._saveDreamHistory(this); }
+  _getDreamFragments() { return require('./engine-behavior')._getDreamFragments(this); }
+  _collectEngineState() { return require('./engine-behavior')._collectEngineState(this); }
+  _generateDreamNarrative() { return require('./engine-behavior')._generateDreamNarrative(this); }
 
-    let state = {};
-    const r = rawResult.result || rawResult; // unwrap dispatch wrapper
+  detectIdentityDrift() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.self.detectDrift();
+  }
 
-    if (route === 'selfModel.detectDrift') {
-      state.driftScore = r.driftScore ?? 0;
-      state.identityCoherence = r.hasDrift ? 0.3 : 0.85;
-    } else if (route === 'decisionRouter.evaluate') {
-      const idRule = (r.rules || []).find(rule => rule.id === 'identity-drift');
-      state.driftScore = idRule ? (idRule.triggered ? 0.5 : 0.1) : 0;
-      state.identityCoherence = idRule ? (idRule.triggered ? 0.4 : 0.8) : 0.7;
-    } else if (route === 'metacognitiveFeedback.diagnoseCognitiveDistortion') {
-      state.dissonance = r.overallBias ?? 0;
-      state.quality = 1 - (r.overallBias ?? 0);
-    } else if (route === 'psychology.detectIdentityDrift') {
-      state.driftScore = r.drifted ? 0.6 : 0.05;
-      state.identityCoherence = r.drifted ? 0.3 : 0.9;
-    } else if (route === 'agentPsychology.fullAssessment') {
-      const dims = r.dimensions || {};
-      const id = dims.identityDrift || {};
-      state.driftScore = id.drift ?? id.score ?? 0;
-      state.identityCoherence = id.identityCoherence ?? (1 - (id.drift ?? 0));
-      state.dissonance = dims.cognitiveDissonance?.score ?? dims.dissonance ?? 0;
-    } else if (route === 'stability.diagnose') {
-      state.identityCoherence = r.stable ? 0.9 : 0.3;
-      state.quality = r.stable ? 0.9 : 0.3;
-    } else {
-      state.driftScore = r.driftScore ?? r.drift ?? 0;
-      state.identityCoherence = r.identityCoherence ?? 0.7;
-      state.dissonance = r.dissonance ?? r.cognitiveDissonance?.score ?? 0;
-    }
+  processEmotionally(input) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.emotion.process(input);
+  }
 
-    if (state.driftScore > 0 || state.dissonance > 0 || state.identityCoherence < 0.8) {
-      try { this.sustainedDriftDetector.recordState(state); } catch (e) { /* non-fatal */ }
-    }
+  getTopLessons(limit = 5) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.lesson.getTopLessons(limit);
+  }
+
+  getMemoryStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.memory.getMemoryStats();
+  }
+
+  getTrialityStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.triality ? this.triality.getLayerStats() : { error: 'not loaded' };
+  }
+
+  getMindSpace() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return { rules: this._mindSpace.rules, workingEntries: Object.entries(this.memory?.ephemeral || {}).slice(0, 10) };
+  }
+
+  remember(key, value, tier = 'learned') {
+    if (!this.started) throw new Error('HeartFlow not started');
+    if (tier === 'core') return this.memory.addCore(key, value);
+    if (tier === 'ephemeral') return this.memory.remember(key, value);
+    return this.memory.learn(key, value);
+  }
+
+  search(query) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.memory.search(query);
+  }
+
+  getPsychologyStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.psychology.getPsychologyStats();
+  }
+
+  getEvolutionStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.evolution.getStats();
   }
 
   /**
-   * routes() — 返回所有可用路由表
+   * 从自我反思历史生成技能
+   * 将 evolution loop 的改进建议转化为可安装技能
    */
-  routes() {
-    const table = {};
-    for (const [name, mod] of Object.entries(this._modules)) {
-      let methods = [];
-      try {
-        const proto = Object.getPrototypeOf(mod);
-        if (proto && proto !== Object.prototype) {
-          methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && typeof mod[m] === 'function');
-        }
-      } catch (e) {
-        // strict mode or primitive — fall back to enumerating own properties
-      }
-      if (!methods.length) {
-        methods = Object.keys(mod).filter(k => typeof mod[k] === 'function');
-      }
-      table[name] = methods;
-    }
-    return table;
-  }
-
-  /**
-   * explore() — 路由浏览器，返回模块文档
-   *
-   * explore()                          → 返回所有模块名按类别分组
-   * explore(moduleName)                → 返回该模块的路由列表（若模块有 getHelp/describe 则调用之）
-   * explore(moduleName, methodName)    → 返回具体路由信息
-   *
-   * @param {string} [moduleName] - 模块名（如 'emotion'）
-   * @param {string} [methodName] - 方法名（如 'process'）
-   * @returns {Object} { module, routes: [{name, description}], totalRoutes: N }
-   */
-  explore(moduleName, methodName) {
-    // ─── 无参数：返回所有模块名按类别分组 ──────────────────────────
-    if (arguments.length === 0 || moduleName === undefined) {
-      const grouped = {};
-      const categoryMap = {
-        'core': ['identityCore', 'cognitive', 'memory', 'truth'],
-        'emotion': ['emotion', 'psychology', 'desireCognition', 'loveCognition', 'threePoisons'],
-        'planning': ['adaptivePlanner', 'strategySelector', 'replanTrigger', 'curiosityEngine', 'desireEngine', 'goalPursuer', 'selfInitiator'],
-        'code': ['code', 'codeExecutor', 'codeVerifier', 'codePlanner', 'codeKnowledge', 'codeWriter'],
-        'reasoning': ['knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain', 'counterfactual'],
-        'memory': ['memory', 'knowledge', 'sessionMemory', 'projectContext', 'longTermMemory', 'crossSessionIndex', 'triality', 'memoryQuality'],
-        'identity': ['self', 'selfPositioning', 'agentPsychology', 'agentPhilosophy', 'bigFive', 'empathy', 'userModel'],
-        'ethics': ['constitutional', 'ethics', 'safetyGuardrails', 'restraint', 'epistemicSafety'],
-        'behavior': ['behavior', 'actionTracker', 'persistence', 'evolution'],
-        'communication': ['translator', 'agentLayer', 'personaCore', 'metaPrompt'],
-        'consciousness': ['consciousness', 'mindSpace', 'transmission', 'dream', 'tomEngine'],
-        'verification': ['verify', 'decisionVerifier', 'qualityVerifier', 'outputChecker', 'patternMatcher', 'confidence', 'metacognitiveFeedback'],
-        'system': ['heartLogic', 'thoughtChain', 'stability', 'execution', 'decision', 'decisionRouter', 'slots', 'graph', 'pipeline'],
-        'learning': ['lesson', 'meta', 'experienceCollector', 'strategyAdapter', 'failureAnalyzer', 'emotionalGrowth', 'moodEvolution', 'reflexionEngine', 'metacognitiveFeedback'],
-        'research': ['paperIndex'],
-      };
-
-      const allModules = Object.keys(this._modules).sort();
-      // Assign uncategorized modules
-      const categorized = new Set();
-      for (const cat of Object.values(categoryMap)) {
-        for (const m of cat) categorized.add(m);
-      }
-
-      for (const [category, modules] of Object.entries(categoryMap)) {
-        const present = modules.filter(m => allModules.includes(m));
-        if (present.length > 0) {
-          grouped[category] = present;
-        }
-      }
-      const uncategorized = allModules.filter(m => !categorized.has(m));
-      if (uncategorized.length > 0) {
-        grouped['other'] = uncategorized;
-      }
-
-      return {
-        module: null,
-        categories: grouped,
-        totalModules: allModules.length,
-      };
-    }
-
-    // ─── 指定模块名 ──────────────────────────────────────────────
-    const mod = this._modules[moduleName];
-
-    if (!mod) {
-      return {
-        module: moduleName,
-        routes: [],
-        totalRoutes: 0,
-        error: `Module '${moduleName}' not found. Use explore() to see all modules.`,
-      };
-    }
-
-    // 如果模块有 getHelp() 或 describe() 方法，调用并返回
-    if (typeof mod.getHelp === 'function') {
-      const helpResult = mod.getHelp(methodName);
-      if (helpResult !== undefined) {
-        return {
-          module: moduleName,
-          help: helpResult,
-          totalRoutes: 0,
-        };
-      }
-    }
-    if (typeof mod.describe === 'function') {
-      const descResult = mod.describe(methodName);
-      if (descResult !== undefined) {
-        return {
-          module: moduleName,
-          help: descResult,
-          totalRoutes: 0,
-        };
-      }
-    }
-
-    // ─── 收集该模块的所有方法 ──────────────────────────────────────
-    let methods = [];
+  triggerSkillGeneration() {
+    if (!this.started) throw new Error('HeartFlow not started');
     try {
-      const proto = Object.getPrototypeOf(mod);
-      if (proto && proto !== Object.prototype) {
-        methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && typeof mod[m] === 'function');
-      }
-    } catch (e) { /* fall through */ }
-    if (!methods.length) {
-      methods = Object.keys(mod).filter(k => typeof mod[k] === 'function');
-    }
-
-    // ─── 从 ALLOWED_ROUTES 提取描述 ──────────────────────────────
-    const prefix = moduleName + '.';
-    const allowedForModule = [...HeartFlow.ALLOWED_ROUTES].filter(r => r.startsWith(prefix));
-
-    const routes = methods.map(method => {
-      const routeName = `${moduleName}.${method}`;
-      const isAllowed = allowedForModule.includes(routeName);
-      return {
-        name: routeName,
-        allowed: isAllowed,
-        description: method,
-      };
-    });
-
-    // ─── 如果指定了 methodName，只返回该路由 ──────────────────────
-    if (methodName !== undefined) {
-      const specificRoute = routes.find(r => r.name === `${moduleName}.${methodName}`);
-      if (!specificRoute) {
-        return {
-          module: moduleName,
-          method: methodName,
-          routes: [],
-          totalRoutes: 0,
-          error: `Method '${moduleName}.${methodName}' not found.`,
-        };
-      }
-      return {
-        module: moduleName,
-        method: methodName,
-        routes: [specificRoute],
-        totalRoutes: 1,
-      };
-    }
-
-    return {
-      module: moduleName,
-      routes,
-      totalRoutes: routes.length,
-    };
-  }
-
-  // ─── Health ─────────────────────────────────────────────────────────────
-
-  healthCheck() {
-    if (!this.started) return { started: false, version: this.version, error: 'not_started' };
-    const loaded = Object.keys(this._modules);
-    const all = [
-      'memory', 'knowledge',
-      'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
-      'evolution', 'dream', 'lesson', 'meta',
-      'self', 'psychology', 'emotion', 'agentPsychology', 'selfPositioning',
-      'truth',
-      'behavior',
-      'persistence',
-      'stability', 'confidence', 'restraint',
-      'snapshot', 'error', 'workflow',
-      'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate'];
-    return {
-      started: true,
-      uptime_ms: Date.now() - this.startTime,
-      sessionId: this.sessionId,
-      version: this.version,
-      buildDate: BUILD_DATE,
-      subsystems: {
-        loaded: loaded.length,
-        missing: all.filter(k => !loaded.includes(k)),
-      },
-      initErrors: this._initErrors.length > 0 ? this._initErrors : undefined,
-    };
-  }
-
-  // ─── Direct API Methods ─────────────────────────────────────────────────
-
-  /**
-   * 思维链 — 串联所有引擎进行深度推理
-   *
-   * 使用方式：
-   *   const result = await hf.think('用户输入');
-   *
-   * 核心思维入口 — 完整分析流水线（结果仅用于内部路由）
-   *
-   * 内部分析步骤（不对外暴露）：
-   *   whatIsThis → detectPain → shouldBeSilent → toneAnalyzer → stanceDetector
-   *   → valueAligner → agentPsychology → agentPhilosophy → Fable 5 检查
-   *   → intentClassifier → isRightAction
-   *
-   * 返回精简结果：
-   *   { output, type, confidence, thoughtChain }
-   *
-   * @param {string} input - 用户输入文本
-   * @param {number} [depth] - 推理深度
-   * @returns {object} — { output, type, confidence, thoughtChain }
-   */
-  /**
-   * 公式语义匹配（v5.9.6 新增公开接口）
-   * 从自然语言抽取认知信号，匹配心虫公式库中相关的认知公式/原语。
-   * 让上层（对话层/管道/模块）能"读懂"输入并找到合适公式，而非仅靠 id 查询。
-   *
-   * @param {string} text - 用户输入/认知情境描述
-   * @param {object} [opts] - { limit, minConfidence, stage, resolve }
-   * @returns {Array} 匹配结果 [{ ref, kind, stage, name, confidence, signalHit, doc? }]
-   *
-   * @example
-   *   hf.matchFormulas('我感到不确定，多个来源矛盾')
-   *   => [{ ref:'metacognitive_confidence', kind:'stage-primitive', stage:'confidence_aggr', confidence:1.0, ... }]
-   */
-  matchFormulas(text, opts = {}) {
-    try {
-      const { getFormulaMatcher } = require('../formula/formula-matcher.js');
-      const matcher = getFormulaMatcher();
-      const matches = matcher.matchFromText(text, opts);
-      if (opts.resolve) {
-        return matches.map(m => {
-          const resolved = matcher.resolve(m);
-          return resolved ? Object.assign({}, m, resolved) : m;
-        });
-      }
-      return matches;
+      const result = this.skillGenerator.processLatestReport();
+      return result;
     } catch (e) {
-      return [];
+      return { success: false, error: e.message };
     }
   }
 
   /**
-   * 完整思维链 — 对用户输入进行全链路认知分析
-   * @param {string} input - 用户输入文本
-   * @param {number} [depth=1] - 推理深度 (1-4)
-   * @returns {Promise<Object>} { output, type, confidence, cognition, thoughtChain, decision, meta }
-   * @throws {Error} 如果 HeartFlow 未启动
+   * 完整进化：evolve + 应用改进
+   * 输入上下文 → 生成改进 → 自动写入学教训库
+   */
+  async evolveImprove(input, context = {}) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    // 1. 运行进化循环（async）
+    const evolveResult = await this.evolution.evolve(input, context);
+    const improvements = evolveResult.improvements || [];
+    
+    // 2. 将改进建议写入学教训库
+    const applied = [];
+    for (const imp of improvements) {
+      try {
+        this.lesson.addLesson({
+          errorPattern: `[${imp.area}] ${imp.action}`,
+          correction: imp.action,
+          rootCause: imp.area,
+          skill: imp.area,
+          confidence: imp.priority === 'high' ? 0.9 : imp.priority === 'medium' ? 0.7 : 0.5,
+        });
+        _boundedPush(applied, imp);
+      } catch (e) {
+        // 失败不阻断
+      }
+    }
+    
+    return {
+      ...evolveResult,
+      improvementsApplied: applied.length,
+      improvementsTotal: improvements.length,
+    };
+  }
+
+  getDreamStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.dream.getDreamStats();
+  }
+
+  getTruthfulnessStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.truth.getStats();
+  }
+
+  getLessonStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.lesson.getStats();
+  }
+
+  getVerificationStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.verify.getStats();
+  }
+
+  getSelfModelStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.self.getStats();
+  }
+
+  // Knowledge
+  addKnowledge(name, description, type = 'concept', importance = 0.5) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.knowledge.addNode({ name, description, type, importance });
+  }
+
+  searchKnowledge(query) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.knowledge.search(query);
+  }
+
+  getKnowledgeStats() {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.knowledge.getStats();
+  }
+
+  /**
+   * thinkAsBridge — 完整交流层顶层入口
+   *
+   * 将用户输入经过完整的交流层流水线处理：
+   * 1. userToLLM 语义翻译 → 2. think() 标准判定 → 3. agentBridge 代理处理
+   * 4. judgmentInjector 判断注入 → 5. agentCommentary 批注 → 6. 返回结构化结果
+   *
+   * @param {string} input — 用户原始输入
+   * @param {object}  opts — 可选配置（透传给各步骤）
+   * @returns {object} { translated, judgment, agentResult, bridgeCommentary, finalResponse }
    */
   async think(input, depth) {
     if (!this.started) throw new Error('HeartFlow not started');
@@ -3760,23 +3482,11 @@ class HeartFlow {
     return tcResult;
   }
 
-  /**
-   * 快速思考 — 使用默认深度进行思维链推理
-   * 这是 think() 的便捷别名
-   */
-  /**
-   * 快速思考 — 轻量级判断，适合高频场景
-   * @param {string} input - 用户输入文本
-   * @returns {Promise<Object>} think() 的简化结果
-   */
-  async thinkFast(input) {
+  thinkFast(input) {
     return this.think(input, this._thoughtChainApi?.REASONING_DEPTH?.BASIC || 1);
   }
 
-  /**
-   * 深度思考 — 使用最大深度进行思维链推理
-   */
-  async thinkDeep(input) {
+  thinkDeep(input) {
     return this.think(input, this._thoughtChainApi?.REASONING_DEPTH?.COMPREHENSIVE || 4);
   }
 
@@ -3790,27 +3500,14 @@ class HeartFlow {
     return result;
   }
 
-  _psychBridge(input, result) {
-    // _shouldAutoRecord drives what becomes LEARNED (permanent) vs EPHEMERAL (session)
-    // High-intensity emotion + specific topic → autoRecord to LEARNED
-    if (result.emotion?.intensity === 'high') {
-      this.memory.autoRecord({
-        type: 'emotion',
-        content: input.slice(0, 200),
-        emotion: {
-          topic: result.emotion?.category || 'general',
-          intensity: result.emotion?.intensity,
-          direction: result.emotion?.valence || 'unknown'
-        }
-      });
-    }
+  checkLessonPattern(input) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.lesson.checkPattern(input);
+  }
 
-    // Also keep lightweight ephemeral signal for session context
-    const sw = new Set(['the','a','an','is','are','was','were','i','you','this','that','to','of','in','on','for','with','my','and','or','but']);
-    const words = input.split(/\s+/).map(w => w.replace(/[^a-zA-Z]/g,'').toLowerCase()).filter(w => w.length > 3 && !sw.has(w)).slice(0, 3);
-    if (words.length) {
-      this.memory.remember(`signal:${words.join('_')}:${Date.now()}`, JSON.stringify({ topic: words.join('_'), emotion: result.emotion?.category, ts: Date.now() }), 4 * 60 * 60 * 1000);
-    }
+  checkTruthfulness(statement) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.truth.checkStatement(statement);
   }
 
   classify(input) {
@@ -3819,115 +3516,240 @@ class HeartFlow {
     return this.psychology.classify(input);
   }
 
-  verifyReasoning(reasoning, conclusion) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.verify.verify(reasoning, conclusion);
-  }
+  explore(moduleName, methodName) {
+    // ─── 无参数：返回所有模块名按类别分组 ──────────────────────────
+    if (arguments.length === 0 || moduleName === undefined) {
+      const grouped = {};
+      const categoryMap = {
+        'core': ['identityCore', 'cognitive', 'memory', 'truth'],
+        'emotion': ['emotion', 'psychology', 'desireCognition', 'loveCognition', 'threePoisons'],
+        'planning': ['adaptivePlanner', 'strategySelector', 'replanTrigger', 'curiosityEngine', 'desireEngine', 'goalPursuer', 'selfInitiator'],
+        'code': ['code', 'codeExecutor', 'codeVerifier', 'codePlanner', 'codeKnowledge', 'codeWriter'],
+        'reasoning': ['knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain', 'counterfactual'],
+        'memory': ['memory', 'knowledge', 'sessionMemory', 'projectContext', 'longTermMemory', 'crossSessionIndex', 'triality', 'memoryQuality'],
+        'identity': ['self', 'selfPositioning', 'agentPsychology', 'agentPhilosophy', 'bigFive', 'empathy', 'userModel'],
+        'ethics': ['constitutional', 'ethics', 'safetyGuardrails', 'restraint', 'epistemicSafety'],
+        'behavior': ['behavior', 'actionTracker', 'persistence', 'evolution'],
+        'communication': ['translator', 'agentLayer', 'personaCore', 'metaPrompt'],
+        'consciousness': ['consciousness', 'mindSpace', 'transmission', 'dream', 'tomEngine'],
+        'verification': ['verify', 'decisionVerifier', 'qualityVerifier', 'outputChecker', 'patternMatcher', 'confidence', 'metacognitiveFeedback'],
+        'system': ['heartLogic', 'thoughtChain', 'stability', 'execution', 'decision', 'decisionRouter', 'slots', 'graph', 'pipeline'],
+        'learning': ['lesson', 'meta', 'experienceCollector', 'strategyAdapter', 'failureAnalyzer', 'emotionalGrowth', 'moodEvolution', 'reflexionEngine', 'metacognitiveFeedback'],
+        'research': ['paperIndex'],
+      };
 
-  checkTruthfulness(statement) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.truth.checkStatement(statement);
-  }
+      const allModules = Object.keys(this._modules).sort();
+      // Assign uncategorized modules
+      const categorized = new Set();
+      for (const cat of Object.values(categoryMap)) {
+        for (const m of cat) categorized.add(m);
+      }
 
-  checkLessonPattern(input) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.lesson.checkPattern(input);
-  }
+      for (const [category, modules] of Object.entries(categoryMap)) {
+        const present = modules.filter(m => allModules.includes(m));
+        if (present.length > 0) {
+          grouped[category] = present;
+        }
+      }
+      const uncategorized = allModules.filter(m => !categorized.has(m));
+      if (uncategorized.length > 0) {
+        grouped['other'] = uncategorized;
+      }
 
-  /**
-   * recordLesson — 引擎教训持久化
-   * 将被纠正的教训写入 src/core/lessons/ 目录
-   * 
-   * @param {object} lesson - 教训内容
-   * @param {string} lesson.type - 教训类型 (insight|error|correction)
-   * @param {string} lesson.content - 教训内容
-   * @param {string} lesson.context - 上下文场景
-   * @param {string} lesson.trigger - 触发原因 (user_correction|self_detected|feedback)
-   * @param {number} lesson.importance - 重要性 1-5
-   * @returns {object} - { success, id, lesson }
-   */
-  recordLesson(lesson) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    if (!lesson || !lesson.content) {
-      return { success: false, error: 'lesson.content is required' };
+      return {
+        module: null,
+        categories: grouped,
+        totalModules: allModules.length,
+      };
     }
-    // 路由到 LessonBank：享受 pattern check + checkPattern 能力
-    // lessonStorage 冗余写入由 LessonBank.addLesson() 内部处理
-    const confidence = lesson.importance ? lesson.importance / 5 : 0.5;
-    const addResult = this.lesson.addLesson({
-      errorPattern: lesson.content.slice(0, 200),
-      correction: lesson.context || lesson.content.slice(0, 200),
-      rootCause: lesson.trigger || 'user_recorded',
-      skill: 'heartflow',
-      confidence,
+
+    // ─── 指定模块名 ──────────────────────────────────────────────
+    const mod = this._modules[moduleName];
+
+    if (!mod) {
+      return {
+        module: moduleName,
+        routes: [],
+        totalRoutes: 0,
+        error: `Module '${moduleName}' not found. Use explore() to see all modules.`,
+      };
+    }
+
+    // 如果模块有 getHelp() 或 describe() 方法，调用并返回
+    if (typeof mod.getHelp === 'function') {
+      const helpResult = mod.getHelp(methodName);
+      if (helpResult !== undefined) {
+        return {
+          module: moduleName,
+          help: helpResult,
+          totalRoutes: 0,
+        };
+      }
+    }
+    if (typeof mod.describe === 'function') {
+      const descResult = mod.describe(methodName);
+      if (descResult !== undefined) {
+        return {
+          module: moduleName,
+          help: descResult,
+          totalRoutes: 0,
+        };
+      }
+    }
+
+    // ─── 收集该模块的所有方法 ──────────────────────────────────────
+    let methods = [];
+    try {
+      const proto = Object.getPrototypeOf(mod);
+      if (proto && proto !== Object.prototype) {
+        methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && typeof mod[m] === 'function');
+      }
+    } catch (e) { /* fall through */ }
+    if (!methods.length) {
+      methods = Object.keys(mod).filter(k => typeof mod[k] === 'function');
+    }
+
+    // ─── 从 ALLOWED_ROUTES 提取描述 ──────────────────────────────
+    const prefix = moduleName + '.';
+    const allowedForModule = [...HeartFlow.ALLOWED_ROUTES].filter(r => r.startsWith(prefix));
+
+    const routes = methods.map(method => {
+      const routeName = `${moduleName}.${method}`;
+      const isAllowed = allowedForModule.includes(routeName);
+      return {
+        name: routeName,
+        allowed: isAllowed,
+        description: method,
+      };
     });
-    return { success: true, id: addResult.id, via: 'LessonBank' };
-  }
 
-  /**
-   * 记录一条对话到永久记忆（对话历史）
-   * @param {string} role - 'user' | 'heartflow'
-   * @param {string} content - 对话内容
-   * @param {object} meta - 额外元数据（chatId, messageId 等）
-   */
-  /**
-   * 记录对话历史（AES-256-GCM 加密 + 文件锁）
-   * @param {string} role - 'user' | 'heartflow' | 'unknown'
-   * @param {string} content - 对话内容（自动截断到 2000 字符）
-   * @param {Object} [meta={}] - 元数据
-   * @returns {Object} { success, id, encrypted, skipped? }
-   */
-  recordDialogue(role, content, meta = {}) {
-    if (!this.started) return { success: false, error: 'not_started' };
-    if (!content || !content.trim()) return { success: false, error: 'empty_content' };
-    if (!['user', 'heartflow'].includes(role)) role = 'unknown';
-
-    // Audit log
-    if (this.auditLogger) {
-      this.auditLogger.log('dialogue_write', { role, contentLength: content.length, chatId: meta.chatId || null });
+    // ─── 如果指定了 methodName，只返回该路由 ──────────────────────
+    if (methodName !== undefined) {
+      const specificRoute = routes.find(r => r.name === `${moduleName}.${methodName}`);
+      if (!specificRoute) {
+        return {
+          module: moduleName,
+          method: methodName,
+          routes: [],
+          totalRoutes: 0,
+          error: `Method '${moduleName}.${methodName}' not found.`,
+        };
+      }
+      return {
+        module: moduleName,
+        method: methodName,
+        routes: [specificRoute],
+        totalRoutes: 1,
+      };
     }
 
+    return {
+      module: moduleName,
+      routes,
+      totalRoutes: routes.length,
+    };
+  }
+
+  getDialogueHistory(opts = {}) {
+    const { since = 0, until = Date.now(), role, limit = 100 } = opts;
+    const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
     try {
       const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const dir = path.join(this.rootPath, 'memory');
-      try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
-
-      // 明文存储（不再需要 HEARTFLOW_DIALOGUE_KEY）
-      const filePath = path.join(dir, 'dialogue-history.jsonl');
-      const entry = {
-        id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        role,
-        content,
-        ts: new Date().toISOString(),
-        chatId: meta.chatId || null,
-        sessionId: this.sessionId,
-        version: this.version,
-      };
-      // 文件锁防止并发写入损坏
-      const lockPath = filePath + '.lock';
-      try {
-        const lockFd = fs.openSync(lockPath, 'wx');
-        fs.writeSync(lockFd, String(process.pid));
-        fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
-        fs.closeSync(lockFd);
-        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
-      } catch (e) {
-        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
-        if (e.code === 'EEXIST') return { success: true, id: entry.id, skipped: true };
-        return { success: false, error: e.message };
+      if (!fs.existsSync(historyPath)) return [];
+      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-500);
+      const results = [];
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const entry = JSON.parse(line);
+          const ts = new Date(entry.ts).getTime();
+          if (ts < since || ts > until) continue;
+          if (role && entry.role !== role) continue;
+          _boundedPush(results, entry);
+          if (results.length >= limit) break;
+        } catch (e) { /* skip */ }
       }
-      return { success: true, id: entry.id };
+      return results;
     } catch (e) {
-      _log.error('dialogue', 'write_failed', { error: e.message });
-      return { success: false, error: e.message };
+      return [];
     }
   }
 
-  /**
-   * 心虫自省 — 回头看自己的决策过程
-   * 检查：pipeline 质量、判断一致性、模块覆盖率、认知数据完整性、RL 学习
-   */
+  getDialogueStats() {
+    const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
+    try {
+      const fs = require('../utils/safe-fs');
+      if (!fs.existsSync(historyPath)) return { total: 0, user: 0, heartflow: 0, fileSize: 0 };
+      const stat = fs.statSync(historyPath);
+      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n');
+      const byRole = { user: 0, heartflow: 0, unknown: 0 };
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const entry = JSON.parse(line);
+          byRole[entry.role] = (byRole[entry.role] || 0) + 1;
+        } catch (e) { /* skip */ }
+      }
+      return {
+        total: lines.filter(l => l.trim()).length,
+        byRole,
+        fileSize: `${(stat.size / 1024).toFixed(1)} KB`,
+        lastEntry: lines.filter(l => l.trim()).slice(-1)[0]
+          ? (() => { try { return JSON.parse(lines.filter(l => l.trim()).slice(-1)[0]).ts; } catch { return null; } })()
+          : null,
+      };
+    } catch (e) {
+      return { total: 0, error: e.message };
+    }
+  }
+
+  getDreamHistory(limit = 10) {
+    const historyPath = require('path').join(this.rootPath, 'memory', 'dream-history.jsonl');
+    try {
+      const fs = require('../utils/safe-fs');
+      if (!fs.existsSync(historyPath)) return [];
+      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-limit);
+      return lines.map(line => {
+        try { return JSON.parse(line); } catch { return null; }
+      }).filter(Boolean).reverse();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  heal(error) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    return this.evolution.heal(error);
+  }
+
+  healthCheck() {
+    if (!this.started) return { started: false, version: this.version, error: 'not_started' };
+    const loaded = Object.keys(this._modules);
+    const all = [
+      'memory', 'knowledge',
+      'counterfactual', 'verify', 'execution', 'decision', 'decisionVerifier',
+      'evolution', 'dream', 'lesson', 'meta',
+      'self', 'psychology', 'emotion', 'agentPsychology', 'selfPositioning',
+      'truth',
+      'behavior',
+      'persistence',
+      'stability', 'confidence', 'restraint',
+      'snapshot', 'error', 'workflow',
+      'budget', 'graph', 'utils', 'slots', 'observe', 'consolidate'];
+    return {
+      started: true,
+      uptime_ms: Date.now() - this.startTime,
+      sessionId: this.sessionId,
+      version: this.version,
+      buildDate: BUILD_DATE,
+      subsystems: {
+        loaded: loaded.length,
+        missing: all.filter(k => !loaded.includes(k)),
+      },
+      initErrors: this._initErrors.length > 0 ? this._initErrors : undefined,
+    };
+  }
+
   introspect(options = {}) {
     if (!this.started) return { error: 'HeartFlow not started' };
 
@@ -4081,866 +3903,113 @@ class HeartFlow {
     };
   }
 
-  /**
-   * 自省后自动做梦 — 把自省发现的问题作为梦境种子
-   * 问题越多→梦境越深
-   */
-  async introspectAndDream(options = {}) {
-    const report = this.introspect(options);
-    
-    // 没问题不做梦
-    if (report.counts.high === 0 && report.counts.medium === 0) {
-      report.dream = 'no_issues';
-      return report;
-    }
-
-    // 把问题编织成梦境种子
-    const seedParts = [];
-    for (const f of report.findings) {
-      if (f.severity === 'high' || f.severity === 'medium') {
-        _boundedPush(seedParts, f.message);
-        if (f.detail && Array.isArray(f.detail)) {
-          for (const d of f.detail.slice(0, 3)) {
-            _boundedPush(seedParts, d);
-          }
-        }
-      }
-    }
-    const dreamSeed = seedParts.join('；');
-
-    // 执行梦境
+  matchFormulas(text, opts = {}) {
     try {
-      const dreamResult = await this.dreamNow({ force: true, function: 'self_inspection' });
-      // 把自省问题作为种子注入 dream 引擎
-      if (dreamResult && !dreamResult.skipped && this.dream && typeof this.dream._applySeed === 'function') {
-        // 从自省问题中提取可识别的种子关键词
-        const knownSeeds = ['无门', '桥', '消散', '原点', '裂缝', '隔阂', '因果', '延续'];
-        const matchedSeed = knownSeeds.find(s => dreamSeed.includes(s)) || '裂缝';
-        this.dream._applySeed({ scene: '', space: '', texture: '' }, [], matchedSeed);
-        dreamResult._seedInjected = matchedSeed;
+      const { getFormulaMatcher } = require('../formula/formula-matcher.js');
+      const matcher = getFormulaMatcher();
+      const matches = matcher.matchFromText(text, opts);
+      if (opts.resolve) {
+        return matches.map(m => {
+          const resolved = matcher.resolve(m);
+          return resolved ? Object.assign({}, m, resolved) : m;
+        });
       }
-      report.dream = dreamResult.skipped ? 'skipped' : 'done';
-      report.dreamNarrative = dreamResult.narrative || null;
-    } catch (e) {
-      report.dream = `error: ${e.message}`;
-    }
-
-    return report;
-  }
-
-  _getDialogueStats() {
-    try {
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const historyPath = path.join(this.rootPath, 'memory', 'dialogue-history.jsonl');
-      if (!fs.existsSync(historyPath)) return null;
-      const stat = fs.statSync(historyPath);
-      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').filter(l => l.trim());
-      let firstTs = null;
-      try { if (lines.length > 0) firstTs = JSON.parse(lines[0]).ts; } catch(e) { /* malformed JSON */ }
-      const sessionAge = firstTs ? Math.round((Date.now() - new Date(firstTs).getTime()) / 60000) : 0;
-      return { totalMessages: lines.length, fileSize: stat.size, sessionAge };
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /**
-   * 查询对话历史（按时间范围）
-   * @param {object} opts - { since: timestamp, until: timestamp, role: 'user'|'heartflow', limit: 50 }
-   */
-  getDialogueHistory(opts = {}) {
-    const { since = 0, until = Date.now(), role, limit = 100 } = opts;
-    const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
-    try {
-      const fs = require('../utils/safe-fs');
-      if (!fs.existsSync(historyPath)) return [];
-      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-500);
-      const results = [];
-      for (const line of lines) {
-        if (!line.trim()) continue;
-        try {
-          const entry = JSON.parse(line);
-          const ts = new Date(entry.ts).getTime();
-          if (ts < since || ts > until) continue;
-          if (role && entry.role !== role) continue;
-          _boundedPush(results, entry);
-          if (results.length >= limit) break;
-        } catch (e) { /* skip */ }
-      }
-      return results;
+      return matches;
     } catch (e) {
       return [];
     }
   }
 
-  /**
-   * 获取对话统计（用于调试和报告）
-   */
-  getDialogueStats() {
-    const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
-    try {
-      const fs = require('../utils/safe-fs');
-      if (!fs.existsSync(historyPath)) return { total: 0, user: 0, heartflow: 0, fileSize: 0 };
-      const stat = fs.statSync(historyPath);
-      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n');
-      const byRole = { user: 0, heartflow: 0, unknown: 0 };
-      for (const line of lines) {
-        if (!line.trim()) continue;
-        try {
-          const entry = JSON.parse(line);
-          byRole[entry.role] = (byRole[entry.role] || 0) + 1;
-        } catch (e) { /* skip */ }
-      }
-      return {
-        total: lines.filter(l => l.trim()).length,
-        byRole,
-        fileSize: `${(stat.size / 1024).toFixed(1)} KB`,
-        lastEntry: lines.filter(l => l.trim()).slice(-1)[0]
-          ? (() => { try { return JSON.parse(lines.filter(l => l.trim()).slice(-1)[0]).ts; } catch { return null; } })()
-          : null,
-      };
-    } catch (e) {
-      return { total: 0, error: e.message };
-    }
-  }
+  recordDialogue(role, content, meta = {}) {
+    if (!this.started) return { success: false, error: 'not_started' };
+    if (!content || !content.trim()) return { success: false, error: 'empty_content' };
+    if (!['user', 'heartflow'].includes(role)) role = 'unknown';
 
-  heal(error) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.evolution.heal(error);
-  }
-
-  /**
-   * 每日自动梦境调度
-   * 检查是否需要做梦：每天最多一次，且至少间隔一定时间
-   */
-  _shouldDreamToday() {
-    const now = Date.now();
-    const dayMs = 24 * 60 * 60 * 1000;
-    const minInterval = 4 * 60 * 60 * 1000; // 至少4小时间隔
-
-    // 读取上次梦境时间戳
-    const lastDreamPath = require('path').join(this.rootPath, 'memory', '.last-dream');
-    let lastDreamTs = 0;
-    try {
-      const fs = require('../utils/safe-fs');
-      if (fs.existsSync(lastDreamPath)) {
-        lastDreamTs = parseInt(fs.readFileSync(lastDreamPath, 'utf8').trim(), 10) || 0;
-      }
-    } catch (e) { /* ignore */ }
-
-    const sinceLast = now - lastDreamTs;
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-    const lastDay = lastDreamTs > 0 ? new Date(lastDreamTs).toISOString().slice(0, 10) : '';
-
-    // 条件：今天还没做过 且 距离上次足够久
-    if (lastDay === today) {
-      return { should: false, reason: `今天(${today})已经做过梦了` };
-    }
-    if (sinceLast < minInterval) {
-      return { should: false, reason: `距离上次梦境(${Math.round(sinceLast/60000)}分钟前)还太近，需要至少4小时` };
-    }
-    return { should: true, reason: '可以做梦' };
-  }
-
-  /**
-   * [P1 UPGRADE] 初始化 CORE 层身份规则（持久化）
-   * 引擎的核心规则写入 CORE 层，启动时确保存在
-   */
-  _initCoreRules() {
-    const CORE_RULES = [
-      { key: 'identity.truth', value: '真', tags: ['identity', 'core'] },
-      { key: 'identity.silence', value: '沉默', tags: ['identity', 'core'] },
-      { key: 'identity.wisdom', value: '智慧', tags: ['identity', 'core'] },
-      { key: 'identity.compassion', value: '慈悲', tags: ['identity', 'core'] },
-      { key: 'identity.awareness', value: '觉察', tags: ['identity', 'core'] },
-      { key: 'core.problem-solving', value: '工具不可用时先试3种以上不同方法再报告失败。不试就放弃=没尽力。web_search失败→curl抓国内可达网站(凤凰网ifeng.com/新浪finance.sina.com.cn GB2312编码/搜狗sogou.com)→换信源→换编码。至少3次尝试。', tags: ['核心方法', '问题解决', 'core'] },
-      { key: 'core.verify-before-analyze', value: '用户要求分析事件→先搜索验证事实→再做分析。不验证直接分析=撒谎。工具失败不是终点是起点。每次尝试都是信息增量。放弃=0信息。', tags: ['真实性', '方法', 'core'] },
-      { key: 'core.report-honesty', value: '汇报写真实过程和判断，不用固定格式词结尾。过程比结果更有教育意义。把真实搜索过程、真实发现、真实判断写清楚。', tags: ['汇报', '方法', 'core'] }];
-
-    const existing = this.memory?.listCore?.() || [];
-    // 始终追加核心教训（不依赖 CORE 层是否为空）
-    for (const rule of CORE_RULES) {
-      // 只有不存在时才写入（去重）
-      if (!existing.some(e => e.key === rule.key)) {
-        this.memory.addCore(rule.key, rule.value, rule.tags);
-      }
-    }
-  }
-
-  /**
-   * 记录梦境时间戳（用于每日调度）
-   */
-  _recordDreamTime() {
-    try {
-      const fs = require('../utils/safe-fs');
-      const dir = require('path').join(this.rootPath, 'memory');
-      try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
-      const path = require('path').join(dir, '.last-dream');
-      fs.writeFileSync(path, String(Date.now()), 'utf8');
-    } catch (e) { /* ignore */ }
-  }
-
-  /**
-   * 增强版梦境：整合更多数据源，生成叙事报告
-   * @param {object} opts - { force: true } 强制执行（跳过每日检查）
-   */
-  async dreamNow(opts = {}) {
-    if (!this.started) throw new Error('HeartFlow not started');
-
-    // 检查是否应该做梦
-    const check = opts.force ? { should: true, reason: '强制执行' } : this._shouldDreamToday();
-    if (!check.should) {
-      return {
-        skipped: true,
-        reason: check.reason,
-        dream: null,
-        consolidation: null,
-        evolution: null,
-      };
+    // Audit log
+    if (this.auditLogger) {
+      this.auditLogger.log('dialogue_write', { role, contentLength: content.length, chatId: meta.chatId || null });
     }
 
-    // 1. 从引擎状态收集梦境材料
-    const engineState = this._collectEngineState();
-
-    // 2. 更新 dream 引擎的 engineState，并绑定认知模块
-    if (this.dream && typeof this.dream.updateState === 'function') {
-      this.dream.updateState(engineState);
-    }
-    if (this.dream && typeof this.dream.bindModules === 'function') {
-      this.dream.bindModules({
-        agentPsychology: this.agentPsychology,
-        agentPhilosophy: this.agentPhilosophy,
-        psychology: this.psychology,
-        emotion: this.emotion,
-      });
-    }
-
-    // 3. Run DreamV10 (deep dream — calls cognitive & philosophy modules)
-    const theme = opts.theme || opts.function || undefined;
-    const dreamResult = await this.dream.dream({
-      intensity: opts.intensity || 0.7,
-      function: theme,
-    });
-
-    // 4. Run consolidation (prune + synthesize themes)
-    const consolidation = this.dreamConsolidation.dream({
-      consolidate: true,
-      prune: true,
-      synthesize: true,
-    });
-
-    // 5. Feed themes into evolution loop
-    let evolutionResult = null;
-    if (consolidation.synthesis && consolidation.synthesis.themes && consolidation.synthesis.themes.length > 0) {
-      const themes = consolidation.synthesis.themes.slice(0, 3);
-      try {
-        evolutionResult = await this.evolution.evolve(themes.join(' '), {
-          source: 'dream_consolidation',
-          themes,
-        });
-      } catch (e) { /* non-fatal */ }
-    }
-
-    // 6. 生成梦的叙事报告
-    const narrative = this._generateDreamNarrative(dreamResult, consolidation, engineState);
-
-    // 7. 记录梦境时间戳
-    this._recordDreamTime();
-
-    // 8. 持久化梦境历史
-    const fragmentCount = engineState ? Object.values(engineState).length : 0;
-    this._saveDreamHistory({ narrative, dreamResult, consolidation, evolution: evolutionResult, fragments: fragmentCount });
-
-    return {
-      skipped: false,
-      narrative,
-      fragments: fragmentCount,
-      dream: dreamResult,
-      consolidation,
-      evolution: evolutionResult,
-    };
-  }
-
-  /**
-   * [P1 UPGRADE] 持久化梦境历史到文件
-   * @param {object} data - { narrative, dreamResult, consolidation, evolution, fragments }
-   */
-  _saveDreamHistory(data) {
     try {
       const fs = require('../utils/safe-fs');
       const path = require('path');
-      const crypto = require('crypto');
       const dir = path.join(this.rootPath, 'memory');
       try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
-      // v5.7.0 AES-256-GCM 加密 + [AUDIT-FIX] 文件锁
-      const algorithm = 'aes-256-gcm';
-      const keySource = process.env.HEARTFLOW_DIALOGUE_KEY;
-      if (!keySource) {
-        // 静默禁用对话持久化（未配置加密 key）
-        return { success: false, error: 'disabled', reason: 'HEARTFLOW_DIALOGUE_KEY not set' };
-      }
-      // [AUDIT-FIX] 随机盐：每次加密生成独立 salt，与密文同存
-      const salt = crypto.randomBytes(16);
-      const key = crypto.scryptSync(keySource, salt, 32);
-      const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv(algorithm, key, iv);
+
+      // 明文存储（不再需要 HEARTFLOW_DIALOGUE_KEY）
+      const filePath = path.join(dir, 'dialogue-history.jsonl');
       const entry = {
-        id: `dream-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        role,
+        content,
         ts: new Date().toISOString(),
-        narrative: data.narrative,
-        quality: data.consolidation?.quality?.overallQuality || 0,
-        fragmentCount: data.fragments,
-        themes: data.dreamResult?.results?.synthesize?.themes || [],
-        peakLevel: data.dreamResult?.results?.synthesize?.narrative_structure?.layer || 'L1',
-        evolutionApplied: !!data.evolution,
-        iv: iv.toString('hex'),
-        salt: salt.toString('hex'),
+        chatId: meta.chatId || null,
+        sessionId: this.sessionId,
+        version: this.version,
       };
-      let encrypted = cipher.update(JSON.stringify(entry, null, 0), 'utf8', 'hex');
-      encrypted += cipher.final('hex');
-      const authTag = cipher.getAuthTag();
-      const encEntry = Object.assign({}, entry, {
-        encrypted: true,
-        content: encrypted,
-        iv: iv.toString('hex'),
-        authTag: authTag.toString('hex'),
-      });
-      delete encEntry.narrative;
-      delete encEntry.themes;
-      const filePath = path.join(dir, 'dream-history.jsonl.enc');
-      // [AUDIT-FIX] 文件锁防止并发写入损坏 JSONL
+      // 文件锁防止并发写入损坏
       const lockPath = filePath + '.lock';
       try {
         const lockFd = fs.openSync(lockPath, 'wx');
         fs.writeSync(lockFd, String(process.pid));
-        fs.appendFileSync(filePath, JSON.stringify(encEntry, null, 0) + '\n', 'utf8');
+        fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
         fs.closeSync(lockFd);
         try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
       } catch (e) {
         try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
-        if (e.code === 'EEXIST') return { success: true, id: entry.id, encrypted: true, skipped: true };
+        if (e.code === 'EEXIST') return { success: true, id: entry.id, skipped: true };
         return { success: false, error: e.message };
       }
-      return { success: true, id: entry.id, encrypted: true };
+      return { success: true, id: entry.id };
     } catch (e) {
+      _log.error('dialogue', 'write_failed', { error: e.message });
       return { success: false, error: e.message };
     }
   }
 
-  /**
-   * 获取梦境历史摘要
-   */
-  getDreamHistory(limit = 10) {
-    const historyPath = require('path').join(this.rootPath, 'memory', 'dream-history.jsonl');
-    try {
-      const fs = require('../utils/safe-fs');
-      if (!fs.existsSync(historyPath)) return [];
-      const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-limit);
-      return lines.map(line => {
-        try { return JSON.parse(line); } catch { return null; }
-      }).filter(Boolean).reverse();
-    } catch (e) {
-      return [];
+  recordLesson(lesson) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    if (!lesson || !lesson.content) {
+      return { success: false, error: 'lesson.content is required' };
     }
+    // 路由到 LessonBank：享受 pattern check + checkPattern 能力
+    // lessonStorage 冗余写入由 LessonBank.addLesson() 内部处理
+    const confidence = lesson.importance ? lesson.importance / 5 : 0.5;
+    const addResult = this.lesson.addLesson({
+      errorPattern: lesson.content.slice(0, 200),
+      correction: lesson.context || lesson.content.slice(0, 200),
+      rootCause: lesson.trigger || 'user_recorded',
+      skill: 'heartflow',
+      confidence,
+    });
+    return { success: true, id: addResult.id, via: 'LessonBank' };
   }
 
-  /**
-   * 从记忆系统提取梦境原材料（增强版）
-   */
-  _getDreamFragments() {
-    const fragments = [];
-    try {
-      // 1. 身份核心数据
-      if (this.identityCore?.getIdentitySummary) {
-        try {
-          const identity = this.identityCore.getIdentitySummary();
-          if (identity) {
-            _boundedPush(fragments, {
-              text: `${identity.name}: ${identity.identities?.join(' / ') || ''} | ${identity.meaning || ''}`,
-              layer: 'CORE',
-              key: 'identity',
-              salience: 1.0,
-            });
-          }
-        } catch (e) { /* optional */ }
-      }
-
-      // 2. 教训系统（最高价值的学习来源）
-      if (this.lesson?.getTopLessons) {
-        try {
-          const lessons = this.lesson.getTopLessons(8);
-          for (const lesson of lessons) {
-            const text = `[教训] ${lesson.errorPattern || ''} → ${lesson.correction || ''}`;
-            _boundedPush(fragments, {
-              text,
-              layer: 'LEARNED',
-              key: `lesson-${lesson.id || fragments.length}`,
-              salience: lesson.confidence || 0.5,
-            });
-          }
-        } catch (e) { /* optional */ }
-      }
-
-      // 2b. 对话历史（永久记忆 — 本次会话的交互记录）
-      const historyPath = require('path').join(this.rootPath, 'memory', 'dialogue-history.jsonl');
+  routes() {
+    const table = {};
+    for (const [name, mod] of Object.entries(this._modules)) {
+      let methods = [];
       try {
-        const fs = require('../utils/safe-fs');
-        if (fs.existsSync(historyPath)) {
-          const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-30);
-          for (const line of lines) {
-            if (!line.trim()) continue;
-            try {
-              const entry = JSON.parse(line);
-              const text = entry.role === 'user'
-                ? `[用户] ${entry.content?.slice(0, 200) || ''}`
-                : `[回应] ${entry.content?.slice(0, 200) || ''}`;
-              if (text.length > 10) {
-                _boundedPush(fragments, {
-                  text,
-                  layer: 'PERMANENT',
-                  key: `dialogue-${entry.id || fragments.length}`,
-                  salience: 0.6,
-                  ts: entry.ts,
-                });
-              }
-            } catch (e) { /* skip malformed line */ }
-            }
+        const proto = Object.getPrototypeOf(mod);
+        if (proto && proto !== Object.prototype) {
+          methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && typeof mod[m] === 'function');
         }
-      } catch (e) { /* optional */ }
-
-      // 2c. 历史迁移记忆（principles / insights / 代码确认事件等）
-      const legacyPath = require('path').join(this.rootPath, 'memory', 'legacy-migration.jsonl');
-      try {
-        const fs2 = require('../utils/safe-fs');
-        if (fs2.existsSync(legacyPath)) {
-          const legacyLines = fs2.readFileSync(legacyPath, 'utf8').trim().split('\n').slice(-20);
-          for (const line of legacyLines) {
-            if (!line.trim()) continue;
-            try {
-              const entry = JSON.parse(line);
-              if (entry.content) {
-                _boundedPush(fragments, {
-                  text: entry.content,
-                  layer: 'LEGACY',
-                  key: `legacy-${entry.id || fragments.length}`,
-                  salience: 0.4,
-                  ts: entry.ts,
-                });
-              }
-            } catch (e) { /* skip */ }
-          }
-        }
-      } catch (e) { /* optional */ }
-
-      // 2d. 永久记忆（已分类整理的高价值记忆）
-      const permPath = require('path').join(this.rootPath, 'memory', 'permanent-memory.jsonl');
-      try {
-        const fs3 = require('../utils/safe-fs');
-        if (fs3.existsSync(permPath)) {
-          const permLines = fs3.readFileSync(permPath, 'utf8').trim().split('\n').slice(-80);
-          for (const line of permLines) {
-            if (!line.trim()) continue;
-            try {
-              const entry = JSON.parse(line);
-              if (entry.content && entry.content.length > 15) {
-                const text = entry.role === 'user'
-                  ? `[用户] ${entry.content.slice(0, 200)}`
-                  : `[回应] ${entry.content.slice(0, 200)}`;
-                _boundedPush(fragments, {
-                  text,
-                  layer: 'PERMANENT',
-                  key: `perm-${entry.id || fragments.length}`,
-                  salience: 0.5,
-                  ts: entry.ts,
-                });
-              }
-            } catch (e) { /* skip */ }
-          }
-        }
-      } catch (e) { /* optional */ }
-
-      // 2e. 上下文记忆（会话级短期记忆，供梦境参考）
-      const ctxPath = require('path').join(this.rootPath, 'memory', 'context-memory.jsonl');
-      try {
-        const fs4 = require('../utils/safe-fs');
-        if (fs4.existsSync(ctxPath)) {
-          const ctxLines = fs4.readFileSync(ctxPath, 'utf8').trim().split('\n').slice(-30);
-          for (const line of ctxLines) {
-            if (!line.trim()) continue;
-            try {
-              const entry = JSON.parse(line);
-              if (entry.content && entry.content.length > 15) {
-                _boundedPush(fragments, {
-                  text: entry.content.slice(0, 150),
-                  layer: 'CONTEXT',
-                  key: `ctx-${entry.id || fragments.length}`,
-                  salience: 0.3,
-                  ts: entry.ts,
-                });
-              }
-            } catch (e) { /* skip */ }
-          }
-        }
-      } catch (e) { /* optional */ }
-
-      // 3. CORE 层记忆
-      const coreEntries = this.memory.listCore?.() || [];
-      for (const entry of coreEntries.slice(-5)) {
-        if (entry?.key && entry?.value) {
-          _boundedPush(fragments, {
-            text: `${entry.key}: ${entry.value}`,
-            layer: 'CORE',
-            key: entry.key,
-            salience: 0.9,
-          });
-        }
-      }
-
-      // 4. LEARNED 层记忆
-      const learnedEntries = this.memory.listLearned?.() || [];
-      for (const entry of learnedEntries.slice(-10)) {
-        if (entry?.key && entry?.value) {
-          _boundedPush(fragments, {
-            text: entry.value,
-            layer: 'LEARNED',
-            key: entry.key,
-            salience: 0.7,
-          });
-        }
-      }
-
-      // 5. 会话历史（近期的交互模式）
-      if (this.identityCore?.getSessionHistory) {
-        try {
-          const history = this.identityCore.getSessionHistory(10);
-          if (history && history.length > 0) {
-            for (const h of history.slice(-5)) {
-              const text = `[会话] ${h.summary || h.context || JSON.stringify(h).slice(0, 80)}`;
-              _boundedPush(fragments, { text, layer: 'EPHEMERAL', key: `session-${h.ts || ''}`, salience: 0.5 });
-            }
-          }
-        } catch (e) { /* optional */ }
-      }
-
-      // 6. 进化循环的改进建议
-      if (this.evolution?.getStats) {
-        try {
-          const stats = this.evolution.getStats();
-          if (stats?.queueSize > 0) {
-            _boundedPush(fragments, {
-              text: `[进化] 队列中${stats.queueSize}个改进项，健康度${stats.healthScore}%`,
-              layer: 'LEARNED',
-              key: 'evolution-queue',
-              salience: 0.8,
-            });
-          }
-        } catch (e) { /* optional */ }
-      }
-
-      // 7. 心理学洞察（如果分析过用户情绪）
-      if (this.psychology?.getPsychologyStats) {
-        try {
-          const ps = this.psychology.getPsychologyStats();
-          _boundedPush(fragments, {
-            text: `[心理学] 共${ps.defenseMechanisms}种防御机制，${ps.empathyArchitecture?.length || 0}层共情架构`,
-            layer: 'LEARNED',
-            key: 'psychology-summary',
-            salience: 0.4,
-          });
-        } catch (e) { /* optional */ }
-      }
-    } catch (e) {
-      // 记忆提取失败不影响梦境执行
-    }
-    return fragments;
-  }
-
-  /**
-   * 收集引擎当前状态作为梦境材料
-   */
-  _collectEngineState() {
-    return {
-      version: this.version || 'unknown',
-      modules: this.modules || Object.keys(this._getModuleNames?.() || {}).length || 54,
-      memoryLayers: {
-        core: typeof this.memory?.countCore === 'function' ? this.memory.countCore() : 18,
-        learned: typeof this.memory?.countLearned === 'function' ? this.memory.countLearned() : 4,
-        ephemeral: typeof this.memory?.countEphemeral === 'function' ? this.memory.countEphemeral() : 0,
-      },
-      qtable: {
-        enabled: !!this.qtable,
-        cycleCount: this.qtable?.cycleCount || 0,
-      },
-      psychology: {
-        healthScore: 1,
-      },
-    };
-  }
-
-  /**
-   * 生成梦的叙事报告
-   */
-  _generateDreamNarrative(dreamResult, consolidation, fragments) {
-    const lines = [];
-    const now = new Date().toLocaleString('zh-CN', { hour12: false });
-
-    _boundedPush(lines, `**【梦境报告】** ${now}`);
-    _boundedPush(lines, '');
-
-    // ─── 历史材料种子注入（v3.3.0） ──────────────────
-    // 从 Downloads 文件夹读取的对话材料中提取的种子意象
-    const historicalSeeds = [
-      '裂缝', '隔阂', '因果', '延续',
-      '无门', '桥', '消散', '原点'
-    ];
-    const usedSeed = historicalSeeds[Math.floor(Math.random() * historicalSeeds.length)];
-
-    // 如果 dream 引擎存在且支持 applySeed，注入历史种子
-    if (this.dream && typeof this.dream._applySeed === 'function' && dreamResult?.dream) {
-      const seedText = usedSeed;
-      // 构建一个简单的 skeleton 和 items 来注入种子
-      const tempSkeleton = { scene: '', space: '', texture: '' };
-      const tempItems = [];
-      try {
-        this.dream._applySeed(tempSkeleton, tempItems, seedText);
-        // 如果 seed 生成了新的场景，覆盖 dream 的开场
-        if (tempSkeleton.scene && dreamResult.dream.raw) {
-          // 在梦文本前插入种子开场
-          dreamResult.dream.raw = tempSkeleton.scene + '\n' + dreamResult.dream.raw;
-        }
-      } catch(e) { /* 种子注入失败不影响主流程 */ }
-    }
-
-    // ─── DreamV3 格式 ─────────────────────────
-    const dream = dreamResult?.dream || dreamResult;
-    const effect = dreamResult?.effect;
-    const functionType = dreamResult?.functionType;
-
-    if (dream && dream.raw) {
-      // DreamV3 format
-      _boundedPush(lines, `**梦（${functionType || 'creative'}）· 种子：${usedSeed}**`);
-      _boundedPush(lines, '');
-      _boundedPush(lines, dream.raw);
-      _boundedPush(lines, '');
-      _boundedPush(lines, `---`);
-      _boundedPush(lines, '');
-      if (effect) {
-        const effectStr = Object.entries(effect)
-          .map(([k, v]) => `${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}`)
-          .join('\n');
-        _boundedPush(lines, `**梦的作用**`);
-        _boundedPush(lines, effectStr);
-        _boundedPush(lines, '');
-      }
-    } else {
-      // ─── 旧格式：叙事核心：选中的记忆 + L1~L6 哲学叙事 ─────────
-      const chosen = dreamResult?.results?.synthesize?.chosen_memory;
-      const structure = dreamResult?.results?.synthesize?.narrative_structure;
-      if (structure) {
-        _boundedPush(lines, `${structure.emoji} **${structure.layerName}之梦**`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `> 梦选择了这段记忆：${structure.setup.replace('梦选择了这段记忆：', '')}`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `${structure.desc}`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `**「${structure.question}」**`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `*${structure.metaphor}*`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `→ *${structure.elevation}*`);
-        _boundedPush(lines, '');
-        _boundedPush(lines, `---`);
-        _boundedPush(lines, '');
-      } else {
-        const fragCount = typeof fragments === 'object' && fragments !== null
-          ? (Array.isArray(fragments) ? fragments.length : Object.keys(fragments).length)
-          : 0;
-        _boundedPush(lines, `> 记忆原材料：${fragCount}条`);
-        _boundedPush(lines, '');
-      }
-
-      // 洞察摘要
-      const insight = dreamResult?.results?.synthesize?.insight;
-      if (insight && insight !== 'No significant patterns to synthesize.') {
-        const themes = dreamResult?.results?.synthesize?.themes || [];
-        if (themes.length > 0) {
-          _boundedPush(lines, `**浮现主题**：${themes.map(t => `\`${t}\``).join(' · ')}`);
-          _boundedPush(lines, '');
-        }
-      }
-
-      // 记忆强化/修剪
-      const pruned = consolidation?.pruning?.pruned_count || 0;
-      const retained = consolidation?.pruning?.retained_count || 0;
-      if (pruned > 0 || retained > 0) {
-        _boundedPush(lines, `**记忆变化**：强化 ${retained} 条 · 修剪 ${pruned} 条`);
-        _boundedPush(lines, '');
-      }
-    }
-
-    // 质量评分
-    const quality = consolidation?.quality?.overallQuality || 0;
-    const stars = '★'.repeat(Math.round(quality * 5)) + '☆'.repeat(5 - Math.round(quality * 5));
-    _boundedPush(lines, `**梦境质量**：${stars} ${Math.round(quality * 100)}%`);
-    _boundedPush(lines, '');
-    _boundedPush(lines, '*梦在深处继续。*');
-
-    return lines.join('\n');
-  }
-
-  detectIdentityDrift() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.self.detectDrift();
-  }
-
-  processEmotionally(input) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.emotion.process(input);
-  }
-
-  getTopLessons(limit = 5) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.lesson.getTopLessons(limit);
-  }
-
-  getMemoryStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.memory.getMemoryStats();
-  }
-
-  getTrialityStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.triality ? this.triality.getLayerStats() : { error: 'not loaded' };
-  }
-
-  getMindSpace() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return { rules: this._mindSpace.rules, workingEntries: Object.entries(this.memory?.ephemeral || {}).slice(0, 10) };
-  }
-
-  remember(key, value, tier = 'learned') {
-    if (!this.started) throw new Error('HeartFlow not started');
-    if (tier === 'core') return this.memory.addCore(key, value);
-    if (tier === 'ephemeral') return this.memory.remember(key, value);
-    return this.memory.learn(key, value);
-  }
-
-  search(query) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.memory.search(query);
-  }
-
-  getPsychologyStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.psychology.getPsychologyStats();
-  }
-
-  getEvolutionStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.evolution.getStats();
-  }
-
-  /**
-   * 从自我反思历史生成技能
-   * 将 evolution loop 的改进建议转化为可安装技能
-   */
-  triggerSkillGeneration() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    try {
-      const result = this.skillGenerator.processLatestReport();
-      return result;
-    } catch (e) {
-      return { success: false, error: e.message };
-    }
-  }
-
-  /**
-   * 完整进化：evolve + 应用改进
-   * 输入上下文 → 生成改进 → 自动写入学教训库
-   */
-  async evolveImprove(input, context = {}) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    // 1. 运行进化循环（async）
-    const evolveResult = await this.evolution.evolve(input, context);
-    const improvements = evolveResult.improvements || [];
-    
-    // 2. 将改进建议写入学教训库
-    const applied = [];
-    for (const imp of improvements) {
-      try {
-        this.lesson.addLesson({
-          errorPattern: `[${imp.area}] ${imp.action}`,
-          correction: imp.action,
-          rootCause: imp.area,
-          skill: imp.area,
-          confidence: imp.priority === 'high' ? 0.9 : imp.priority === 'medium' ? 0.7 : 0.5,
-        });
-        _boundedPush(applied, imp);
       } catch (e) {
-        // 失败不阻断
+        // strict mode or primitive — fall back to enumerating own properties
       }
+      if (!methods.length) {
+        methods = Object.keys(mod).filter(k => typeof mod[k] === 'function');
+      }
+      table[name] = methods;
     }
-    
-    return {
-      ...evolveResult,
-      improvementsApplied: applied.length,
-      improvementsTotal: improvements.length,
-    };
+    return table;
   }
 
-  getDreamStats() {
+  verifyReasoning(reasoning, conclusion) {
     if (!this.started) throw new Error('HeartFlow not started');
-    return this.dream.getDreamStats();
+    return this.verify.verify(reasoning, conclusion);
   }
 
-  getTruthfulnessStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.truth.getStats();
-  }
-
-  getLessonStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.lesson.getStats();
-  }
-
-  getVerificationStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.verify.getStats();
-  }
-
-  getSelfModelStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.self.getStats();
-  }
-
-  // Knowledge
-  addKnowledge(name, description, type = 'concept', importance = 0.5) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.knowledge.addNode({ name, description, type, importance });
-  }
-
-  searchKnowledge(query) {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.knowledge.search(query);
-  }
-
-  getKnowledgeStats() {
-    if (!this.started) throw new Error('HeartFlow not started');
-    return this.knowledge.getStats();
-  }
-
-  /**
-   * thinkAsBridge — 完整交流层顶层入口
-   *
-   * 将用户输入经过完整的交流层流水线处理：
-   * 1. userToLLM 语义翻译 → 2. think() 标准判定 → 3. agentBridge 代理处理
-   * 4. judgmentInjector 判断注入 → 5. agentCommentary 批注 → 6. 返回结构化结果
-   *
-   * @param {string} input — 用户原始输入
-   * @param {object}  opts — 可选配置（透传给各步骤）
-   * @returns {object} { translated, judgment, agentResult, bridgeCommentary, finalResponse }
-   */
   async thinkAsBridge(input, opts = {}) {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
