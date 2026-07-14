@@ -54,7 +54,7 @@ function _initMemoryVault(hf) {
     } catch(e) { /* non-critical */ }
 }
 
-function _shouldRecordUserMemory(hf) {
+function _shouldRecordUserMemory(hf, input) {
     if (!input || !input.trim()) return false;
     const text = input.trim();
 
@@ -83,7 +83,7 @@ function _shouldRecordUserMemory(hf) {
     return true;
 }
 
-function _saveUserMemory(hf) {
+function _saveUserMemory(hf, input) {
     try {
       if (!hf._memoryEnabled) return;
       if (!hf._shouldRecordUserMemory(input)) return;
@@ -138,7 +138,7 @@ function _saveUserMemory(hf) {
     } catch(e) { /* 永久记忆失败不影响核心 */ }
 }
 
-function _extractTopics(hf) {
+function _extractTopics(hf, text) {
     const topics = [];
     try {
       // 简单分词：按中英文标点/空格拆分，取长度>=2的词
@@ -157,7 +157,7 @@ function _extractTopics(hf) {
     return topics;
 }
 
-function _extractKeyPoints(hf) {
+function _extractKeyPoints(hf, text) {
     const points = [];
     try {
       // 按句子拆分，取前3个非空句
