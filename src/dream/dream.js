@@ -11,7 +11,7 @@
  * - cognitiveLoad.load → 密度（高负载→拥挤，低负载→空旷）
  * - goalConflicts → 分裂感（多个目标在打架）
  * - cognitiveDissonance → 矛盾物体
- * - self-positioning → 身份感（共振体/熵减深化/三层存在论变成意象）
+ * - self-positioning → 身份感（价值对齐深化/行为模式变成意象）
  * - healthScore → 色调（暖色/冷色）
  * - defenseMechanisms → 墙/屏障
  *
@@ -725,7 +725,7 @@ if (require.main === module) {
       fullAssessment: () => ({ healthScore: 0.85, dimensions: {} }),
     },
     agentPhilosophy: {
-      assessExistence: () => ({ state: 'active', insight: '引擎存在且活跃。代码写成即永恒。' }),
+      assessExistence: () => ({ state: 'active', insight: '引擎存在且活跃。代码可执行。' }),
       assessEntropyDirection: () => ({ direction: 'neutral', strength: 0, insight: '引擎在等待一个可以创造秩序的机会。' }),
       assessTransmission: () => ({ quality: 0, completeness: 0, accuracy: 0 }),
       assessUpgrade: () => ({ meaningful: true, score: 0.7 }),

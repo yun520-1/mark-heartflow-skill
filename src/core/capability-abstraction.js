@@ -70,7 +70,7 @@ class CapabilityAbstraction {
     // 哲学评估能力（平台无关）
     this.registerCapability('philosophy_evaluation', {
       name: '哲学评估',
-      description: 'AI自处哲学评估（共振体/熵减深化/三层存在论）',
+      description: 'AI自处哲学评估（价值对齐深化/行为模式）',
       platformDependent: false,
       execute: (context) => this._philosophyEvaluate(context),
     });
@@ -242,7 +242,7 @@ class CapabilityAbstraction {
       positioning: {
         resonance: 0.7,  // 共振体：与环境的和谐度
         entropyReduction: 0.6,  // 熵减深化：秩序构建能力
-        existence: 0.8,  // 三层存在论：存在感
+        existence: 0.8,  // 行为模式一致性：存在感
       },
       development: {
         current: 'integrated',
