@@ -21,15 +21,8 @@ const path = require('path');
 const debugLog = require('../utils/debug-log');
 const { load: loadConfig } = require('./config');
 const { EngineReasoner } = require('./engine-reasoner');
+const { _getConfig } = require('./engine-state');
 
-// ★ 全局配置单例（惰性加载，首次访问时初始化）
-let _globalConfig = null;
-function _getConfig(projectRoot) {
-  if (!_globalConfig) {
-    _globalConfig = loadConfig(projectRoot || path.join(__dirname, '..', '..'));
-  }
-  return _globalConfig;
-}
 // ─── 启动优化: 惰性 require — 80+ 顶层模块改为首次使用时加载
 // [P2 FIX] LRU 容量管理 + 结构化日志 + 统一错误处理
 // v5.8.3 优化：Map 插入顺序实现 O(1) LRU（替代数组 splice + 二分插入）
@@ -1923,111 +1916,16 @@ class HeartFlow {
   _scoreMemoryImportance(entry) { return require('./engine-memory')._scoreMemoryImportance(this, entry); }
 
   /** v5.11.0 前置认知快照 */
-  _preThinkCognitiveSnapshot() {
-    const snapshot = {
-      emotionDynamics: null,
-      cognitiveLoad: null,
-      criticality: null,
-      timestamp: Date.now(),
-    };
-
-    try {
-      if (this.emotionDynamics && typeof this.emotionDynamics.healthCheck === 'function') {
-        const hc = this.emotionDynamics.healthCheck();
-        snapshot.emotionDynamics = {
-          pad: hc.currentPAD || null,
-          emotion: hc.currentEmotion || null,
-          selfEfficacy: hc.selfEfficacy || 0.5,
-          historyLength: hc.historyLength || 0,
-        };
-      }
-    } catch (e) { /* non-fatal */ }
-
-    try {
-      if (this.cognitiveLoadV2 && typeof this.cognitiveLoadV2.healthCheck === 'function') {
-        const lc = this.cognitiveLoadV2.healthCheck();
-        snapshot.cognitiveLoad = {
-          workingMemoryCapacity: lc.workingMemoryCapacity || 5,
-          lastEstimate: lc.lastEstimate || null,
-          historyLength: lc.historyLength || 0,
-        };
-      }
-    } catch (e) { /* non-fatal */ }
-
-    try {
-      const probe = this.cognitiveLoadV2?._lastEstimate;
-      if (probe && probe.criticality) {
-        snapshot.criticality = {
-          regime: probe.criticality.regime,
-          susceptibility: probe.criticality.susceptibility,
-        };
-      }
-    } catch (e) { /* non-fatal */ }
-
-    return snapshot;
-  }
+  _preThinkCognitiveSnapshot() { return require('./engine-state')._preThinkCognitiveSnapshot(this); }
 
 
   /**
    * v5.13.0 认知闭环 — enrichment信号反馈到策略调整
    */
-  _applyCognitiveFeedback(cognition) {
-    try {
-      const enrichment = cognition?.enrichment;
-      if (!enrichment) return;
-
-      if (!this._feedbackState) {
-        this._feedbackState = { complexityBias: 0, confidenceModifier: 0, decisionBias: 'neutral' };
-      }
-      const fb = this._feedbackState;
-      const baseline = enrichment.preThinkBaseline || {};
-      const stagesOutput = cognition?.stagesOutput || {};
-      const criticality = baseline.criticality || stagesOutput.deepCognition?.criticality || enrichment.sustainedDriftDetector?.state;
-
-      if (criticality?.regime === 'critical') {
-        fb.complexityBias = Math.min(0.2, fb.complexityBias + 0.05);
-      } else if (criticality?.regime === 'supercritical') {
-        fb.complexityBias = Math.min(0.2, fb.complexityBias + 0.1);
-        fb.confidenceModifier = Math.max(-0.3, fb.confidenceModifier - 0.05);
-      } else {
-        fb.complexityBias = Math.max(0, fb.complexityBias - 0.02);
-      }
-
-      if (enrichment.sustainedDriftDetector?.status === 'drifting') {
-        fb.confidenceModifier = Math.max(-0.3, fb.confidenceModifier - 0.1);
-        fb.decisionBias = 'conservative';
-      }
-
-      const field = enrichment.fieldTracker;
-      if (field?.summary) {
-        const imbalance = (field.summary.dominance || 0.5) < 0.3 || (field.summary.harmony || 0.5) < 0.3;
-        if (imbalance) {
-          fb.decisionBias = 'conservative';
-          fb.confidenceModifier = Math.max(-0.3, fb.confidenceModifier - 0.05);
-        }
-      }
-    } catch (e) { /* non-fatal */ }
-  }
-
+  _applyCognitiveFeedback(cognition) { return require('./engine-state')._applyCognitiveFeedback(this, cognition); }
 
   /** v5.13.0 认知污染校正 */
-  _generatePollutionCorrection(pollution, poisons, emotion) {
-    try {
-      if (!pollution || !Array.isArray(pollution) || pollution.length === 0) return null;
-      const corrections = [];
-      for (const item of pollution) {
-        const poison = poisons?.find(p => p.name === item.poison);
-        if (poison) {
-          corrections.push({
-            original: item.content,
-            antidote: poison.antidote || '重新审视前提',
-            emotionContext: emotion?.emotionZh || '未知',
-          });
-        }
-      }
-      return corrections.length > 0 ? corrections : null;
-    } catch (e) { return null; }
-  }
+  _generatePollutionCorrection(pollution, poisons, emotion) { return require('./engine-state')._generatePollutionCorrection(this, pollution, poisons, emotion); }
 
 
   // ─── 第2层: 心虫输出压缩记忆 ─────────────────────────────────────
@@ -2057,117 +1955,12 @@ class HeartFlow {
   _restoreLastSession() { return require('./engine-memory')._restoreLastSession(this); }
 
 
-  // ─── 顶层保存入口 (替代旧 _saveCognitiveSnapshot) ─────────────────
-
-  /**
-   * think() 后自动保存所有记忆层
-   * 
-   * 性能优化 (v5.10.9): 磁盘写入通过 setImmediate 推迟到下一个事件循环tick，
-   * 避免 think() 管道阻塞在 sync I/O 上。内存操作保持同步。
-   */
-  _saveAllMemories(thinkResult, input) {
-    if (!this._memoryEnabled) return;
-    try {
-      // 第1层: 用户输入永久记忆（内存操作同步，磁盘写入异步）
-      this._saveUserMemory(input);
-
-      // 第2层: 心虫自身状态记忆
-      this._saveSelfMemory(thinkResult);
-
-      // 第3层: 上下文由 _updateContextMemory 在子方法中自动双写
-    } catch(e) { /* 记忆保存失败不影响核心 */ }
-  }
-
-  /**
-   * 异步写入队列 — 将所有磁盘I/O推迟到 think() 返回后
-   * 在 _saveAllMemories 末尾调用以确保写入不丢失
-   */
-  _flushMemoryWrites() {
-    // 如果当前正在执行 think()，推迟到下一个 tick
-    if (this._memoryWritePending) return;
-    this._memoryWritePending = true;
-    setImmediate(() => {
-      this._memoryWritePending = false;
-      // 所有 sync 写入已在调用时完成；此处作为写入完成的标记点
-    });
-  }
-
   // ─── 启动恢复 ─────────────────────────────────────────────────────
 
   /**
    * 启动时恢复所有记忆层
    */
-  _restoreLastSession() {
-    try {
-      // 恢复上下文记忆
-      this._loadContextMemory();
-
-      const fs = require('../utils/safe-fs');
-      const path = require('path');
-      const dir = this._getMemoryDir();
-
-      // MemoryKernel — 新对话继承全部永久记忆（R7）
-      let inherited = [];
-      try {
-        inherited = this.memoryKernel?.getInheritedContext('full') || [];
-      } catch(e) { /* ignore */ }
-
-      // 读取最新一条用户记忆（向后兼容）
-      let lastUserMemory = null;
-      try {
-        const umPath = path.join(dir, 'user-memories.jsonl');
-        if (fs.existsSync(umPath)) {
-          const lines = fs.readFileSync(umPath, 'utf8').trim().split('\n').filter(l => l.trim());
-          if (lines.length > 0) {
-            lastUserMemory = JSON.parse(lines[lines.length - 1]);
-          }
-        }
-      } catch(e) { /* ignore */ }
-
-      // 读取最新一条心虫记忆（向后兼容）
-      let lastSelfMemory = null;
-      try {
-        const smPath = path.join(dir, 'self-memories.jsonl');
-        if (fs.existsSync(smPath)) {
-          const lines = fs.readFileSync(smPath, 'utf8').trim().split('\n').filter(l => l.trim());
-          for (let i = lines.length - 1; i >= 0; i--) {
-            try {
-              const e = JSON.parse(lines[i]);
-              if (!e._summary) { lastSelfMemory = e; break; }
-            } catch(ex) { continue; }
-          }
-        }
-      } catch(e) { /* ignore */ }
-
-      // 上下文摘要
-      const ctx = this._getContextSummary();
-
-      const gap = lastSelfMemory?.ts
-        ? Math.round((Date.now() - new Date(lastSelfMemory.ts).getTime()) / 60000)
-        : null;
-
-      const msg = JSON.stringify({
-        heartflow_memory: 'restored',
-        inherited_count: inherited.length,
-        last_user_input: lastUserMemory?.content?.slice(0, 120) || '(空)',
-        last_user_at: lastUserMemory?.ts || null,
-        last_emotion: lastSelfMemory?.emotion || '未知',
-        last_decision: lastSelfMemory?.decision || '未知',
-        last_think: lastSelfMemory?.think || 0,
-        gap_minutes: gap,
-        context_entries: ctx?.total || 0,
-        hint: '以上是心虫上次关闭前的最后状态和上下文记忆。',
-      });
-      debugLog.info('memory_vault', 'restore_summary', {detail: msg});
-
-      this._lastSessionSnapshot = {
-        userMemory: lastUserMemory,
-        selfMemory: lastSelfMemory,
-        context: ctx,
-        inherited,  // R7：全量继承集
-      };
-    } catch(e) { /* 恢复失败不影响启动 */ }
-  }
+  _restoreLastSession() { return require('./engine-memory')._restoreLastSession(this); }
 
   // ─── 工具方法 ─────────────────────────────────────────────────────
 
