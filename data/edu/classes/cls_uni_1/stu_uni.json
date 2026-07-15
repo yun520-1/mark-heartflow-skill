@@ -1,0 +1,45 @@
+{
+  "id": "stu_uni",
+  "classId": "cls_uni_1",
+  "gradeLevel": "university",
+  "createdAt": "2026-07-14T15:41:14.534Z",
+  "records": [
+    {
+      "ok": true,
+      "lessonId": "L01",
+      "studentId": "stu_uni",
+      "timestamp": "2026-07-14T15:41:14.534Z",
+      "analysis": {
+        "type": "existential_analysis",
+        "chain": {
+          "event": "我突然意识到我一直在用同样的方式处理人际关系",
+          "thought": "这来自我的家庭",
+          "emotion": "平静",
+          "behavior": "这来自我的家庭",
+          "links": [
+            "我突然意识到我一直在用同样的方式处理人际关系",
+            "这来自我的家庭"
+          ]
+        },
+        "cognitivePatterns": [
+          {
+            "name": "原生家庭决定论的认知倾向",
+            "evidence": "将自身人际关系处理方式的成因完全归结为原生家庭，未提及个人在后天经历中的主观选择与调整空间"
+          },
+          {
+            "name": "重复行为模式的元认知觉察",
+            "evidence": "能够脱离自身行为的主观视角，抽离观察到自身长期沿用的固定关系处理模式，意识到该模式带来的问题"
+          }
+        ],
+        "lifeThemes": [],
+        "suggestion": "你正在整合16年的情感数据。下一步：选择你想要保留的模式，选择你想要改变的模式。"
+      }
+    }
+  ],
+  "vocabulary": [],
+  "emotionHistory": [
+    {
+      "timestamp": "2026-07-14T15:41:14.534Z"
+    }
+  ]
+}

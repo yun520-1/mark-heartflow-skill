@@ -58,7 +58,7 @@ const _MindSpaceGuardian = () => require('../shield/mindspace/mind-space-guardia
 const _GlobalWorkspace = () => require('../consciousness/global-workspace.js');
 const _MindWanderer = () => require('../consciousness/mind-wanderer.js');
 const _PhenomenologyEngine = () => require('../consciousness/phenomenology-engine.js');
-const _ConsciousnessSelfModel = () => require('../consciousness/self-model.js');
+const _ConsciousnessSelfModel = () => require('../identity/self-model.js');
 const _TomEngine = () => require('../consciousness/tom-engine.js');
 const _SAGEGuardian = () => require('../shield/ethics/sage-guardian.js');
 const _BoundaryNegotiation = () => require('../shield/ethics/boundary-negotiation.js');
@@ -74,19 +74,19 @@ const _MultiAgentDialogue = () => require('../consciousness/multi-agent-dialogue
 const _MCTSReasoning = () => require('../reasoning/mcts-reasoning.js');
 const _HierarchicalPlanner = () => require('../planner/hierarchical-planner.js');
 const _MemoryQuality = () => require('../memory/memory-quality.js');
-const _MetacognitiveFeedback = () => require('../memory/metacognitive-feedback.js');
+const _MetacognitiveFeedback = () => require('../cortex/metacognitive-feedback.js');
 const _PaperIndex = () => require('../memory/research-paper-index.js');
-const _CognitiveLoadBalancer = () => require('../cognitive/cognitive-load-balancer.js');
+const _CognitiveLoadBalancer = () => require('../core/cognitive-load-balancer.js');
 const _InformationFlow = () => require('./information-flow.js');
 const _ReflectionMemory = () => require('../memory/reflection-memory.js');
 const _KVCache = () => require('../memory/kv-cache-persistor.js');
-const _MemoryIntegrity = () => require('../memory/memory-integrity.js');
-const _ExperienceValidator = () => require('../memory/experience-validator.js');
+const _MemoryIntegrity = () => require('../shield/memory-integrity.js');
+const _ExperienceValidator = () => require('../cortex/experience-validator.js');
 const _MemoryWriteController = () => require('../memory/memory-write-controller.js');
-const _MetacognitiveRL = () => require('../memory/metacognitive-rl.js');
+const _MetacognitiveRL = () => require('../cortex/metacognitive-rl.js');
 const _MemoryCompressor = () => require('../memory/memory-compressor.js');
-const _SkillEvolutionEngine = () => require('../code/skill-evolution-engine.js');
-const _SelfPlay = () => require('../cortex/self-play.js');
+const _SkillEvolutionEngine = () => require('../cortex/skill-evolution-engine.js');
+const _SelfPlay = () => require('../reasoning/self-play.js');
 const _CognitiveIndex = () => require('../cognitive/cognitive-load.js');
 
 function _boundedPush(arr, item, maxSize = 500) {
@@ -531,14 +531,14 @@ function start(hf, HeartFlowClass) {
   } catch (e) { _boundedPush(hf._initErrors, { module: 'pipeline', error: e.message }, 500); }
 
   try {
-    const utl = new (require('../communication/user-to-llm.js').UserToLLM)();
-    const ltu = new (require('../communication/llm-to-user.js').LLMToUser)();
-    const ic = new (require('../communication/intent-classifier.js').IntentClassifier)();
+    const utl = new (require('../bridge/user-to-llm.js').UserToLLM)();
+    const ltu = new (require('../bridge/llm-to-user.js').LLMToUser)();
+    const ic = new (require('../bridge/intent-classifier.js').IntentClassifier)();
     const ta = new (require('../communication/tone-analyzer.js').ToneAnalyzer)();
     const ee = new (require('../communication/entity-extractor.js').EntityExtractor)();
     const ind = new (require('../communication/implicit-need-detector.js').ImplicitNeedDetector)();
     const rc = new (require('../communication/response-compressor.js').ResponseCompressor)();
-    const ca = require('../confidence/confidence-annotator.js').confidenceAnnotator;
+    const ca = require('../core/confidence-annotator.js').confidenceAnnotator;
     hf.translator = {
       userToLLM: (input, ctx) => utl.translate(input, ctx),
       llmToUser: (output, ctx) => ltu.translate(output, ctx),
@@ -606,23 +606,23 @@ function start(hf, HeartFlowClass) {
   } catch (e) { _boundedPush(hf._initErrors, { module: 'cognitionGround', error: e.message }, 500); }
 
   try {
-    hf.semanticClusterer = new (require('../memory/semantic-clusterer.js').SemanticClusterer)({ maxGroups: 64, maxConceptsPerGroup: 20 });
+    hf.semanticClusterer = new (require('./semantic-clusterer.js').SemanticClusterer)({ maxGroups: 64, maxConceptsPerGroup: 20 });
     hf.semanticClusterer.init(hf.memory);
   } catch (e) { _boundedPush(hf._initErrors, { module: 'semanticClusterer', error: e.message }, 500); }
   try {
-    hf.dualPerspectiveAuditor = new (require('../reasoning/dual-perspective-auditor.js').DualPerspectiveAuditor)({ maxRounds: 5, convergenceThreshold: 0.8 });
+    hf.dualPerspectiveAuditor = new (require('./dual-perspective-auditor.js').DualPerspectiveAuditor)({ maxRounds: 5, convergenceThreshold: 0.8 });
     hf.dualPerspectiveAuditor.init();
   } catch (e) { _boundedPush(hf._initErrors, { module: 'dualPerspectiveAuditor', error: e.message }, 500); }
   try {
-    hf.tieredMemoryFusion = new (require('../memory/tiered-memory-fusion.js').TieredMemoryFusion)({ l1Size: 10, l2Window: 50, l2Alpha: 0.3 });
+    hf.tieredMemoryFusion = new (require('./tiered-memory-fusion.js').TieredMemoryFusion)({ l1Size: 10, l2Window: 50, l2Alpha: 0.3 });
     hf.tieredMemoryFusion.init(hf.memory);
   } catch (e) { _boundedPush(hf._initErrors, { module: 'tieredMemoryFusion', error: e.message }, 500); }
   try {
-    hf.counterfactualVerifier = new (require('../reasoning/counterfactual-verifier.js').CounterfactualVerifier)({ minMargin: 0.3, maxCandidates: 5, contrastWeight: 0.2 });
+    hf.counterfactualVerifier = new (require('./counterfactual-verifier.js').CounterfactualVerifier)({ minMargin: 0.3, maxCandidates: 5, contrastWeight: 0.2 });
     hf.counterfactualVerifier.init();
   } catch (e) { _boundedPush(hf._initErrors, { module: 'counterfactualVerifier', error: e.message }, 500); }
   try {
-    hf.debateConvergence = new (require('../reasoning/debate-convergence.js').DebateConvergence)({ convergenceThreshold: 0.8, maxRounds: 9, stagnationThreshold: 3 });
+    hf.debateConvergence = new (require('./debate-convergence.js').DebateConvergence)({ convergenceThreshold: 0.8, maxRounds: 9, stagnationThreshold: 3 });
     hf.debateConvergence.init();
   } catch (e) { _boundedPush(hf._initErrors, { module: 'debateConvergence', error: e.message }, 500); }
 

@@ -8,6 +8,8 @@
  * Usage: EngineReasoner.think(hf, input, depth)
  */
 const _ThoughtChain = require('../workflow/thought-chain');
+const { RequestHooks } = require('./request-hooks');
+
 
 /**
  * engine-reasoner.js
@@ -30,10 +32,32 @@ class EngineReasoner {
     if (!hf.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
 
+    // [HookBus] 延迟初始化 request hooks
+    if (!hf._hookBus) {
+      const { HookBus } = require('./hook-bus');
+      hf._hookBus = new HookBus();
+    }
+    if (!hf._requestHooks) {
+      hf._requestHooks = new RequestHooks(hf._hookBus);
+    }
+    const hooks = hf._requestHooks;
+
+    // [HookBus] 触发 request 事件
+    const reqCtx = {
+      request: { input, sessionId: hf.sessionId || null, timestamp: Date.now() },
+    };
+    await hooks.fireRequest(reqCtx);
+    if (reqCtx.abort) {
+      return { error: reqCtx.abortReason || 'Request aborted by hook', aborted: true };
+    }
+    const normalizedInput = reqCtx.request.input;
+
     // [FIX] 输入截断：防止超长输入撑爆上下文
     const MAX_INPUT_CHARS = 80000;
-    if (input.length > MAX_INPUT_CHARS) {
-      input = input.slice(0, MAX_INPUT_CHARS) + '\n[输入已截断，原文过长]';
+    if (normalizedInput.length > MAX_INPUT_CHARS) {
+      input = normalizedInput.slice(0, MAX_INPUT_CHARS) + '\n[输入已截断，原文过长]';
+    } else {
+      input = normalizedInput;
     }
 
     // ★ 叙事污染自检: 在调用任何认知模块前，先检测是否落入道德框架陷阱
@@ -348,76 +372,82 @@ class EngineReasoner {
       }
     } catch(e) { /* non-critical */ }
 
+    // [HookBus] 触发 response 事件
+    try {
+      const resCtx = { request: reqCtx.request, response: { result } };
+      await hooks.fireResponse(resCtx);
+    } catch(e) { /* non-critical */ }
+
     return result;
-      } catch (e) {
-        // 管道引擎失败时回退到 ThoughtChain
-        console.warn('[HeartFlow] Pipeline failed, falling back to ThoughtChain:', e.message);
+  } catch (e) {
+    // 管道引擎失败时回退到 ThoughtChain
+    console.warn('[HeartFlow] Pipeline failed, falling back to ThoughtChain:', e.message);
+  }
+}
+
+// ─── [v5.0.0 回退] 管道不可用时走 ThoughtChain ──────────────
+const TC = require('../workflow/thought-chain');
+const chain = new TC.ThoughtChain(this);
+if (depth) chain.setDepth(depth);
+const chainResult = await chain.run(input);
+
+hf.recordDialogue('user', input, { source: 'think' });
+if (chainResult.response) {
+  hf.recordDialogue('heartflow', chainResult.response, { source: 'think' });
+}
+
+const taskType = chainResult.output?.meta?.taskType || 'general';
+const finalConfidence = chainResult.output?.meta?.confidence || 0.5;
+
+// ─── [v5.4.6] 任务分类器 LLM 兜底后处理（ThoughtChain 路径） ──────
+let tcTaskType = taskType;
+let tcConfidence = finalConfidence;
+if (hf._llmFallback && hf._classifyTask) {
+  try {
+    const cls = await hf._classifyTask(input);
+    if (cls.confidence < 0.7) {
+      const llmResult = await hf._llmFallback(input, cls.matchedPatterns);
+      if (llmResult?.type) {
+        tcTaskType = llmResult.type;
+        tcConfidence = llmResult.confidence || 0.7;
       }
     }
+  } catch (e) { /* 分类或 LLM 失败，保持原结果 */ }
+}
 
-    // ─── [v5.0.0 回退] 管道不可用时走 ThoughtChain ──────────────
-    const TC = require('../workflow/thought-chain');
-    const chain = new TC.ThoughtChain(this);
-    if (depth) chain.setDepth(depth);
-    const chainResult = await chain.run(input);
+// ★ 记忆持久化: ThoughtChain 回退路径也保存快照
+hf._thinkCount = (hf._thinkCount || 0) + 1;
+hf._lastUserInput = input;
+hf._lastDecisionType = tcTaskType;
 
-    hf.recordDialogue('user', input, { source: 'think' });
-    if (chainResult.response) {
-      hf.recordDialogue('heartflow', chainResult.response, { source: 'think' });
+const tcResult = {
+  output: chainResult.output,
+  type: tcTaskType,
+  confidence: tcConfidence,
+  thoughtChain: chainResult.chain || [],
+  decision: chainResult.decision || null,
+  meta: { routeHint: { type: tcTaskType, confidence: tcConfidence }, disclaimer: 'thoughtchain_fallback' },
+  analysis: { perceivedType: tcTaskType, modulesRun: 0, confidence: tcConfidence },
+  cognition: chainResult.cognition || null,  // Align with pipeline path
+};
+// ★ 记忆持久化: 保存认知快照
+// 发现相关历史记忆
+if (hf._memoryEnabled && input) {
+  try {
+    const related = hf._findRelatedMemories(input, 5);
+    if (related && related.length > 0) {
+      tcResult._relatedMemories = related.map(r => ({
+        content: r.content?.slice(0, 100),
+        emotion: r.emotion,
+        decision: r.decision,
+        similarity: r._score?.toFixed(3),
+      }));
     }
+  } catch(e) { /* non-critical */ }
+}
+try { hf._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
 
-    const taskType = chainResult.output?.meta?.taskType || 'general';
-    const finalConfidence = chainResult.output?.meta?.confidence || 0.5;
-
-    // ─── [v5.4.6] 任务分类器 LLM 兜底后处理（ThoughtChain 路径） ──────
-    let tcTaskType = taskType;
-    let tcConfidence = finalConfidence;
-    if (hf._llmFallback && hf._classifyTask) {
-      try {
-        const cls = await hf._classifyTask(input);
-        if (cls.confidence < 0.7) {
-          const llmResult = await hf._llmFallback(input, cls.matchedPatterns);
-          if (llmResult?.type) {
-            tcTaskType = llmResult.type;
-            tcConfidence = llmResult.confidence || 0.7;
-          }
-        }
-      } catch (e) { /* 分类或 LLM 失败，保持原结果 */ }
-    }
-
-    // ★ 记忆持久化: ThoughtChain 回退路径也保存快照
-    hf._thinkCount = (hf._thinkCount || 0) + 1;
-    hf._lastUserInput = input;
-    hf._lastDecisionType = tcTaskType;
-
-    const tcResult = {
-      output: chainResult.output,
-      type: tcTaskType,
-      confidence: tcConfidence,
-      thoughtChain: chainResult.chain || [],
-      decision: chainResult.decision || null,
-      meta: { routeHint: { type: tcTaskType, confidence: tcConfidence }, disclaimer: 'thoughtchain_fallback' },
-      analysis: { perceivedType: tcTaskType, modulesRun: 0, confidence: tcConfidence },
-      cognition: chainResult.cognition || null,  // Align with pipeline path
-    };
-    // ★ 记忆持久化: 保存认知快照
-    // 发现相关历史记忆
-    if (hf._memoryEnabled && input) {
-      try {
-        const related = hf._findRelatedMemories(input, 5);
-        if (related && related.length > 0) {
-          tcResult._relatedMemories = related.map(r => ({
-            content: r.content?.slice(0, 100),
-            emotion: r.emotion,
-            decision: r.decision,
-            similarity: r._score?.toFixed(3),
-          }));
-        }
-      } catch(e) { /* non-critical */ }
-    }
-    try { hf._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
-
-        // ★ 输出语言污染深度分析 (ThoughtChain 回退路径)
+    // ★ 输出语言污染深度分析 (ThoughtChain 回退路径)
     try {
       const filter = _OutputLanguageFilter();
       const conclusion = tcResult?.output?.conclusion || tcResult?.conclusion || '';
@@ -441,6 +471,12 @@ class EngineReasoner {
           tcResult._pollutionCheck = { score: pollution.score, summary: pollution.summary, types: pollution.findings.map(f => f.label), advice: filter.generateCorrectionAdvice(pollution.findings), deepAnalysis, _contaminated: true };
         }
       }
+    } catch(e) { /* non-critical */ }
+
+    // [HookBus] 触发 response 事件
+    try {
+      const resCtx = { request: reqCtx.request, response: { result: tcResult } };
+      await hooks.fireResponse(resCtx);
     } catch(e) { /* non-critical */ }
 
     return tcResult;
@@ -918,7 +954,7 @@ class EngineReasoner {
       uptime_ms: Date.now() - hf.startTime,
       sessionId: hf.sessionId,
       version: hf.version,
-      buildDate: BUILD_DATE,
+      buildDate: hf.buildDate,
       subsystems: {
         loaded: loaded.length,
         missing: all.filter(k => !loaded.includes(k)),

@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "6.0.2",
+  "version": "6.0.5",
   "description": "HeartFlow — 本地认知预处理引擎，提供结构化认知数据供下游模型参考。",
   "main": "src/core/heartflow.js",
   "bin": {
@@ -10,7 +10,7 @@
     "prepublishOnly": "node scripts/sync-version.js",
     "start": "node bin/cli.js chat",
     "status": "node bin/cli.js status",
-    "test": "node test/run-all.js 2>/dev/null || node tests/integration.test.js",
+    "test": "node test/run-all.js || node tests/integration.test.js",
     "test:integration": "node tests/integration.test.js",
     "test:unit": "node tests/unit/test-path-guard.js && node tests/unit/test-code-verifier.js",
     "test:full": "find tests test -name '*.test.js' -exec node {} \\;",

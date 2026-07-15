@@ -3359,6 +3359,48 @@
       "formula": "ψ(T) = ψ₀ × √(max(0, 1 - T/Tc))",
       "difficulty": "advanced",
       "source": "arXiv:2602.19023 — Ginzburg-Landau theory of cognitive criticality"
+    },
+    {
+      "id": "w_axis_emotional_bond_density",
+      "name": "情感连接密度 (Emotional Bond Density)",
+      "category": "psychology",
+      "subcategory": "w_axis",
+      "formula": "E_density = (Σ_i w_i * depth_i) / N, w_i = 1 / (1 + days_since_last_contact_i)",
+      "difficulty": "intermediate",
+      "variables": {
+        "w_i": {"name": "接触衰减权重", "description": "越久未联系，权重越低"},
+        "depth_i": {"name": "单次连接深度", "description": "0-1，情感共鸣强度"},
+        "N": {"name": "关系总数", "description": "活跃关系数量"}
+      },
+      "source": "HeartFlow v6.0.3 — W轴：情感连接密度"
+    },
+    {
+      "id": "w_axis_trauma_activation",
+      "name": "创伤活跃度 (Trauma Activation Level)",
+      "category": "psychology",
+      "subcategory": "w_axis",
+      "formula": "T_active = sigmoid(Σ_j trigger_j * salience_j - threshold)",
+      "difficulty": "advanced",
+      "variables": {
+        "trigger_j": {"name": "触发因子", "description": "当前环境中的创伤线索"},
+        "salience_j": {"name": "显著性", "description": "该线索对个体的情感权重"},
+        "threshold": {"name": "阈值", "description": "个体当前的整合能力"}
+      },
+      "source": "HeartFlow v6.0.3 — W轴：创伤活跃度"
+    },
+    {
+      "id": "w_axis_awakening_signal",
+      "name": "觉醒信号强度 (Awakening Signal Strength)",
+      "category": "psychology",
+      "subcategory": "w_axis",
+      "formula": "A_signal = max(0, meta_cognition * 0.5 + polarity_flip * 0.3 + arousal_spike * 0.2)",
+      "difficulty": "advanced",
+      "variables": {
+        "meta_cognition": {"name": "元认知标记", "description": "0-1，是否出现'我意识到'等元认知语言"},
+        "polarity_flip": {"name": "语义反转", "description": "0-1，当前立场与历史立场的极性差异"},
+        "arousal_spike": {"name": "情绪强度跃升", "description": "0-1，arousal>0.5且pleasure显著变化"}
+      },
+      "source": "HeartFlow v6.0.3 — W轴：觉醒信号强度，基于arXiv 2505.01542情感支持综述"
     }
   ]
 }

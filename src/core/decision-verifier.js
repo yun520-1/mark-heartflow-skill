@@ -15,7 +15,7 @@
  * - process supervision / runtime verification trends (2025-2026)
  */
 
-let retrieveLesson; try { retrieveLesson = require('./lesson-retrieval'); } catch(e) { retrieveLesson = { retrieveLesson: () => null }; }
+let retrieveLesson; try { retrieveLesson = require('../cortex/lesson-retrieval'); } catch(e) { retrieveLesson = { retrieveLesson: () => null }; }
 
 class DecisionVerifier {
   constructor(options = {}) {

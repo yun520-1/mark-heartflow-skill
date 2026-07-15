@@ -432,7 +432,7 @@ const selfCorrectionLoop = {
     if (type === 'skill') {
       // SKILL.md 验证
       try {
-        const { skillVerifier } = require('./skill-verifier');
+        const { skillVerifier } = require('../shield/skill-verifier');
         const result = skillVerifier.verify(content);
         if (!result.ok) issues.push(...result.errors);
       } catch (e) {
@@ -440,7 +440,7 @@ const selfCorrectionLoop = {
       }
     } else if (type === 'code') {
       try {
-        const { codeVerifier } = require('./code-verifier');
+        const { codeVerifier } = require('../core/code-verifier');
         const result = codeVerifier.verifyJSContent(content);
         if (!result.ok) issues.push(...result.errors);
       } catch (e) {

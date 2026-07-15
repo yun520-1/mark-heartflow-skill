@@ -108,14 +108,27 @@ function _saveUserMemory(hf, input) {
         catch(e) { return null; }
       })();
 
+      // [v6.0.3 W-AXIS] 觉醒检测
+      let awakeningScore = 0;
+      try {
+        awakeningScore = hf.psychology?.detectAwakening?.(input) || 0;
+      } catch(e) { /* non-critical */ }
+
       const entry = {
         ts: new Date().toISOString(),
         content: text.slice(0, 2000),
         emotion,
         decision: hf._lastDecisionType || null,
         importance: 0,
+        awakening: awakeningScore >= 0.5 ? true : undefined,
+        awakeningScore: awakeningScore >= 0.5 ? Math.round(awakeningScore * 100) / 100 : undefined,
       };
       entry.importance = hf._scoreMemoryImportance(entry);
+      // 觉醒条目永久提升重要性，防止归档
+      if (entry.awakening) {
+        entry.importance = Math.max(entry.importance, 0.95);
+        entry.permanent = true;
+      }
 
       fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
 
@@ -189,8 +202,22 @@ function _archiveUserMemories(hf) {
       const archiveNum = fs.readdirSync(archiveDir).filter(f => f.startsWith('user-memories-')).length + 1;
       const archivePath = path.join(archiveDir, `user-memories-${String(archiveNum).padStart(3, '0')}.jsonl`);
 
-      const toArchive = lines.slice(0, -LIMITS.USER_RECENT_KEEP);
-      const toKeep = lines.slice(-LIMITS.USER_RECENT_KEEP);
+      // [v6.0.3 W-AXIS] 觉醒/永久条目不归档
+      const keepPermanent = [];
+      const archivable = [];
+      for (const line of lines) {
+        try {
+          const obj = JSON.parse(line);
+          if (obj.permanent || obj.awakening) {
+            keepPermanent.push(line);
+            continue;
+          }
+        } catch(e) { /* ignore parse errors */ }
+        archivable.push(line);
+      }
+      const maxArchive = Math.max(0, archivable.length - LIMITS.USER_RECENT_KEEP);
+      const toArchive = archivable.slice(0, maxArchive);
+      const toKeep = archivable.slice(maxArchive).concat(keepPermanent);
 
       fs.writeFileSync(archivePath, toArchive.join('\n') + '\n', 'utf8');
       fs.writeFileSync(filePath, toKeep.join('\n') + '\n', 'utf8');
@@ -373,7 +400,7 @@ function _findRelatedMemories(hf) {
     return results;
 }
 
-function _scoreMemoryImportance(hf) {
+function _scoreMemoryImportance(hf, entry) {
     const now = Date.now();
     const age = now - new Date(entry.ts).getTime();
     const hours = age / 3600000;

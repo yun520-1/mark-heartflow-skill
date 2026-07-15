@@ -1,0 +1,82 @@
+{
+  "id": "stu_j1",
+  "classId": "cls_7_1",
+  "gradeLevel": "middle",
+  "createdAt": "2026-07-14T15:42:22.128Z",
+  "records": [
+    {
+      "ok": true,
+      "lessonId": "L01",
+      "studentId": "stu_j1",
+      "timestamp": "2026-07-14T15:42:22.129Z",
+      "analysis": {
+        "type": "trigger_chain",
+        "chain": {
+          "event": "明天考试",
+          "thought": "我肯定考不好",
+          "emotion": "平静",
+          "behavior": "不想复习",
+          "links": [
+            "明天考试",
+            "我肯定考不好",
+            "不想复习"
+          ]
+        },
+        "deepAnalysis": {
+          "emotion": {
+            "pleasure": 0.1,
+            "arousal": 0.7,
+            "dominance": 0.2,
+            "label": "焦虑、挫败",
+            "intensity": 0.75
+          },
+          "unspokenNeeds": [
+            "需要获得他人的情感支持与鼓励以缓解考试焦虑",
+            "需要降低对考试结果的负面预期减轻心理压力",
+            "需要获得高效的复习方法指导提升备考信心"
+          ],
+          "defenseMechanisms": [
+            {
+              "name": "预期性回避",
+              "trigger": "即将到来的考试任务",
+              "evidence": "提前断言自己肯定考不好，同时拒绝执行复习行为，回避备考带来的心理压力"
+            },
+            {
+              "name": "自我设障",
+              "trigger": "害怕考试失败损害自我价值感",
+              "evidence": "提前预设失败结果，为可能的失败提前构建合理借口，同时逃避需要付出的复习努力"
+            }
+          ],
+          "memoryAssociations": [],
+          "cognitivePatterns": [
+            {
+              "name": "灾难化认知",
+              "evidence": "在考试尚未发生时，就预设自己必然考不好的最坏结果，忽略自身已有的知识储备和提升可能性"
+            },
+            {
+              "name": "消极自我暗示",
+              "evidence": "反复强化自己考不好的负面信念，进一步催生逃避复习的行为，形成负向循环"
+            },
+            {
+              "name": "非黑即白认知",
+              "evidence": "将考试结果绝对化为\"考不好\"单一结果，未考虑成绩达标、发挥正常等其他可能性"
+            }
+          ],
+          "_meta": {
+            "method": "llm",
+            "confidence": "high",
+            "note": "由 LLM 协作层生成的语义展开分析",
+            "timestamp": "2026-07-14T15:42:37.722Z"
+          }
+        },
+        "suggestion": "你的情绪链条是：明天考试 → 我肯定考不好 → 不想复习。注意\"想法\"环节——它常常是改变情绪的关键。"
+      }
+    }
+  ],
+  "vocabulary": [],
+  "emotionHistory": [
+    {
+      "timestamp": "2026-07-14T15:42:22.129Z"
+    }
+  ]
+}
