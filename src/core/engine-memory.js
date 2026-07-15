@@ -6,6 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const debugLog = require('../utils/debug-log');
 
 // 记忆相关方法提取
 function _checkMemoryEnabled(hf) {
