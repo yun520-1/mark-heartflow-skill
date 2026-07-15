@@ -161,6 +161,13 @@ checkResults.push(check('扫描新增.txt/.json明文记忆', async () => {
     path.resolve(HF_DIR, 'data', 'narrative-self.json'),
   ]);
 
+  // 整目录白名单：以下目录下的 .txt/.json 均为运行时合法生成（反馈/教育子系统）
+  const allowedPlaintextDirPrefixes = [
+    path.resolve(HF_DIR, 'data', 'feedback'),
+    path.resolve(HF_DIR, 'data', 'edu'),
+    path.resolve(HF_DIR, 'data', 'edu_test'),
+  ];
+
   // 扫描 memory/ 和 data/ 下所有 .txt 和 .json 文件
   const scanDirs = [
     path.join(HF_DIR, 'memory'),
@@ -182,7 +189,10 @@ checkResults.push(check('扫描新增.txt/.json明文记忆', async () => {
       if (entry.isFile()) {
         const fullPath = path.resolve(entry.parentPath || dir, entry.name);
         if (entry.name.endsWith('.txt') || entry.name.endsWith('.json')) {
-          if (!allowedPlaintextPaths.has(fullPath)) {
+          const inAllowedDir = allowedPlaintextDirPrefixes.some(p =>
+            fullPath === p || fullPath.startsWith(p + path.sep)
+          );
+          if (!allowedPlaintextPaths.has(fullPath) && !inAllowedDir) {
             unexpected.push(path.relative(HF_DIR, fullPath));
           }
         }

@@ -1,4 +1,4 @@
-# HeartFlow v6.0.2 当前状态
+# HeartFlow v6.0.5 当前状态
 
 > 审计通过 | 测试 179/179 ✅ | 记忆系统 R1-R8 全通过
 > MemoryKernel 已接入 heartflow.js 作为权威持久化层

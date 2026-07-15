@@ -324,6 +324,8 @@ function initHeartFlow() {
     heartflow = new HeartFlow({ rootPath: HF_DIR });
     heartflow.start();
 
+    maybeAttachPostProcessHookBus();
+
     const elapsed = Date.now() - startTime;
     const loadedCount = Object.keys(heartflow._modules || {}).length;
 
@@ -334,6 +336,27 @@ function initHeartFlow() {
     process.exit(1);
   }
 }
+
+// ─── 后处理 & 反馈钩子 ───────────────────────────────────────
+let postprocess = null;
+try {
+  const { PostProcessHooks } = require(path.join(HF_DIR, 'src', 'core', 'postprocess-hooks.js'));
+  postprocess = new PostProcessHooks({ rootPath: HF_DIR });
+} catch (_) {
+  console.error('[HeartFlow MCP] postprocess-hooks 初始化失败，后续将跳过后处理');
+}
+
+// [PostProcessHooks] extend with shared hookBus when available
+function maybeAttachPostProcessHookBus() {
+  if (!postprocess || typeof postprocess.attachHookBus !== 'function') return;
+  try {
+    const hf = typeof heartflow === 'undefined' ? null : heartflow;
+    const bus = hf && hf._hookBus ? hf._hookBus : null;
+    if (bus) postprocess.attachHookBus(bus);
+  } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
+}
+
+maybeAttachPostProcessHookBus();
 
 // ═══════════════════════════════════════════════
 // 工具处理函数（与 stdio 版本相同）
@@ -363,6 +386,7 @@ async function handleThink(args) {
   const { input } = args;
   if (!input) throw new Error('input 是必填参数');
 
+  const startTime = Date.now();
   const [psychology, judgment, thoughtChain] = await Promise.all([
     Promise.resolve().then(() => safeDispatch('psychology.analyzePsychology', input)).catch(e => ({ error: e.message })),
     Promise.resolve().then(() => safeDispatch('truth.checkStatement', input)).catch(e => ({ error: e.message })),
@@ -380,10 +404,26 @@ async function handleThink(args) {
     report = { error: '报告生成失败' };
   }
 
-  return {
-    report,
-    timestamp: Date.now()
-  };
+  let result = { report, timestamp: Date.now() };
+
+  // ─── postprocessing 管线 ──────────────────────────────────────
+  if (postprocess) {
+    try {
+      result = await postprocess.run('postprocess.desensitize', result);
+      result = await postprocess.run('postprocess.format', result, { style: 'markdown' });
+    } catch (_) {
+      /* [v5.9.18] intentional: graceful degradation */
+    }
+    // 异步反馈收集，不阻塞主响应
+    postprocess.feedback_collect({
+      type: 'usage',
+      source: 'heartflow_think',
+      latencyMs: Date.now() - startTime,
+      payload: { input: typeof input === 'string' ? input.slice(0, 200) : input, hasReport: !!report }
+    }).catch(() => {});
+  }
+
+  return result;
 }
 
 // v3.0 — 交流层 handler

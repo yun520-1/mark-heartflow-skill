@@ -130,14 +130,14 @@ function getMeaningfulMemory() {
 
 function getCognitiveAppraisal() {
   if (!_ca) {
-    try { _ca = require('./cognitive-appraisal.js'); } catch(e) { _ca = null; }
+    try { _ca = require('../core/cognitive-appraisal.js'); } catch(e) { _ca = null; }
   }
   return _ca;
 }
 
 function getPsychology() {
   if (!_psy) {
-    try { _psy = require('./psychology.js'); } catch(e) { _psy = null; }
+    try { _psy = require('../emotion/psychology.js'); } catch(e) { _psy = null; }
   }
   return _psy;
 }

@@ -21,7 +21,7 @@
  */
 let claimExtractor;
 try {
-  ({ claimExtractor } = require('./claim-extractor'));
+  ({ claimExtractor } = require('../reasoning/claim-extractor'));
 } catch (e) {
   // claim-extractor 不在 src/core/ 目录，提供空实现兜底
   claimExtractor = {

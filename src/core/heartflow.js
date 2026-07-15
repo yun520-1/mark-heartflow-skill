@@ -173,7 +173,7 @@ const _GlobalWorkspace = _lazy('globalWorkspace', () => require('../consciousnes
 const _MindWanderer = _lazy('mindWanderer', () => require('../consciousness/mind-wanderer.js'));
 const _PhenomenologyEngine = _lazy('phenomenologyEngine', () => require('../consciousness/phenomenology-engine.js'));
 const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => {
-  try { return require('../consciousness/self-model.js'); } catch(e) { return null; }
+  try { return require('../identity/self-model.js'); } catch(e) { return null; }
 });
 const _TomEngine = _lazy('tomEngine', () => require('../consciousness/tom-engine.js'));
 const _SAGEGuardian = _lazy('sageGuardian', () => require('../shield/ethics/sage-guardian.js'));
@@ -341,7 +341,7 @@ const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context
 const _ResponseInterceptor = _lazy('responseInterceptor', () => require('../bridge/response-interceptor.js'));
 const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('../bridge/agent-commentary.js'); } catch(e) { return { AgentCommentary: class { constructor() {} comment() { return ''; } } }; } });
 
-const BUILD_DATE = '2026-07-12-v5.17.3';
+const BUILD_DATE = '2026-07-15-6.0.5';
 
 // ─── 特殊模块注册表 (v5.8.0 优化：O(1) 查找替代 if/else 链) ───────────────
 // 每个 entry: { type: 'object'|'ctor'|'ctor-hf'|'ctor-path', factory: Function }
@@ -496,11 +496,16 @@ class HeartFlow {
     // 合并运行时传入的 config（最高优先级）
     if (Object.keys(config).length > 0) {
       for (const [k, v] of Object.entries(config)) {
-        cfg.set(k, v);
+        if (this._configHooks) {
+          this._configHooks.set(k, v);
+        } else {
+          cfg.set(k, v);
+        }
       }
     }
 
     this.config = cfg.toEngineConfig();
+    this._options = config;
     this.config.rootPath = projectRoot;
 
     this.startTime = null;
@@ -538,6 +543,9 @@ class HeartFlow {
     this.self = null;
     this.being = null;
     this.psychology = null;
+
+    // [HookPhase] init lifecycle hook points
+    this._initHookPoints = null;
     this.emotion = null;
     this.truth = null;
     this.security = null;
@@ -1127,6 +1135,64 @@ class HeartFlow {
       });
       this.decisionRouter = this._decisionRouter;
       this._modelProfile = modelProfile;
+
+      // [v6.0.4 语义展开] LLM 协作层
+      try {
+        const { LLMOrchestrator } = require('../llm/llm-orchestrator.js');
+        this._llmOrchestrator = new LLMOrchestrator(this);
+        this.llmOrchestrator = this._llmOrchestrator;
+        this._llmOrchestrator.init();
+      } catch (e) { /* optional */ }
+
+      // [v6.0.5 教育模式] 感知情感课程引擎
+      try {
+        const { EduEngine } = require('../edu/edu-engine.js');
+        this._eduEngine = new EduEngine(this);
+      } catch (e) { /* optional */ }
+
+      // [v6.0.3 W-AXIS] 注入觉醒/情感/创伤决策规则
+      try {
+        if (this.decisionRouter && typeof this.decisionRouter.addRule === 'function') {
+          this.decisionRouter.addRule({
+            id: 'w-axis-awakening',
+            match: (r) => {
+              const score = typeof r.awakeningScore === 'number' ? r.awakeningScore : 0;
+              return score >= 0.5;
+            },
+            decision: 'AWAKEN',
+            confidence: (r) => Math.max(0.3, Math.min(0.95, (typeof r.awakeningScore === 'number' ? r.awakeningScore : 0))),
+            rationale: (r) => {
+              const score = typeof r.awakeningScore === 'number' ? r.awakeningScore.toFixed(2) : '0';
+              return `觉醒信号强度 ${score}，进入非效率优先决策流`;
+            },
+            fallback: 'HOLD',
+          });
+
+          this.decisionRouter.addRule({
+            id: 'w-axis-trauma',
+            match: (r) => {
+              const level = r.trauma?.level || r.crisis?.level || 'none';
+              return level === 'high' || level === 'severe';
+            },
+            decision: 'TRAUMA_CARE',
+            confidence: (r) => 0.8,
+            rationale: (r) => `创伤/危机等级高，优先安全化而非效率`,
+            fallback: 'PAUSE',
+          });
+
+          this.decisionRouter.addRule({
+            id: 'w-axis-bond',
+            match: (r) => {
+              const bond = r.emotionalBondDensity || r.w_axis_emotional_bond_density;
+              return typeof bond === 'number' && bond < 0.3;
+            },
+            decision: 'BOND_BUILD',
+            confidence: (r) => 0.6,
+            rationale: (r) => `情感连接密度低，建议关系建立`,
+            fallback: 'HOLD',
+          });
+        }
+      } catch (e) { /* decisionRouter optional */ }
     } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'decisionRouter', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v4.0] 决策执行器 — DecisionExecutor ──────────────────────────────
@@ -1243,7 +1309,11 @@ class HeartFlow {
       // v5.6.1 — 跨会话记忆银行 (MemoryBank v1.0.0)
       'memoryBank',
       // v5.6.1 — 多智能体辩论协调器 (DebateConductor)
-      'debateConductor'];
+      'debateConductor',
+      // [v6.0.4 语义展开] LLM 协作层
+      'llmOrchestrator',
+      // [v6.0.5 教育模式] 感知情感课程引擎
+      'eduEngine'];
     for (const name of LATE_ADDITIONS) {
       if (this[name] !== null && this[name] !== undefined) {
         this._modules[name] = this[name];
@@ -1829,6 +1899,36 @@ class HeartFlow {
 
     this.started = true;
 
+    // [HookBus] Initialize all hook buses + default hook points
+    try {
+      const { HookBus } = require('./hook-bus');
+      this._hookBus = new HookBus();
+
+      const { RequestHooks } = require('./request-hooks');
+      this._requestHooks = new RequestHooks(this._hookBus);
+
+      const { EventHooks } = require('./event-hooks');
+      this._eventHooks = new EventHooks();
+
+      const { ConfigHooks } = require('./config-hooks');
+      this._configHooks = new ConfigHooks(this._configSystem);
+
+      const { PostProcessHooks } = require('./postprocess-hooks');
+      this._postProcessHooks = new PostProcessHooks(this._hookBus);
+    } catch (e) {
+      console.warn('[HeartFlow] Hook buses init failed:', e.message);
+    }
+
+    // [InitHookPoints] initialization lifecycle hooks
+    try {
+      const { InitHookPoints } = require('./engine-hook-points');
+      this._initHookPoints = new InitHookPoints({ rootPath: this.rootPath });
+      this._runInitHookPoints();
+    } catch (e) {
+      console.warn('[HeartFlow] InitHookPoints init failed:', e.message);
+    }
+
+
     // [v5.17.0 L-001] 启动自检：人性深度模块
     const humanityModules = ['sufferingResilience','griefEngine','hopeEngine','empathyDeepening','conflictResolution','traumaInformed','postTraumaticGrowth','forgivenessEngine'];
     for (const m of humanityModules) {
@@ -1877,6 +1977,26 @@ class HeartFlow {
 
   _getMemoryDir() { return require('./engine-memory')._getMemoryDir(this); }
   _initMemoryVault() { return require('./engine-memory')._initMemoryVault(this); }
+
+  // [InitHookPoints] run init.* handlers in priority order
+  _runInitHookPoints() {
+    if (!this._initHookPoints || !this._initHookPoints.getAllHandlers) return;
+    const handlers = this._initHookPoints.getAllHandlers().slice().sort((a, b) => a.priority - b.priority);
+    const ctx = { state: {}, meta: { runAt: Date.now(), rootPath: this.rootPath } };
+    for (const entry of handlers) {
+      try {
+        entry.handler(ctx);
+      } catch (err) {
+        const msg = `[InitHookPoints] ${entry.name} failed: ${err.message}`;
+        if (entry.softInit) {
+          console.warn(msg);
+        } else {
+          throw new Error(msg);
+        }
+      }
+    }
+    this._initHookPointState = ctx.state || {};
+  }
 
   // ─── 第1层: 用户输入永久记忆 ─────────────────────────────────────
 
@@ -1990,6 +2110,37 @@ class HeartFlow {
    * @returns {{ connected: boolean, modules: string[], issues: string[] }}
    */
   getSelfImprovementHealth() { return getSelfImprovementHealth(this); }
+
+  /** [v6.0.4 语义展开] LLM 协作层接口 */
+  semanticExpand(input, context = {}) {
+    try {
+      if (!this._llmOrchestrator) return null;
+      return this._llmOrchestrator.semanticExpand(input, context);
+    } catch (e) { return null; }
+  }
+
+  /** [v6.0.5 教育模式] 感知情感课程接口 */
+  eduInit(config = {}) {
+    try { return this._eduEngine?.init(config); } catch (e) { return { ok: false, error: e.message }; }
+  }
+  eduEnterLesson(lessonId, lessonName = '') {
+    try { return this._eduEngine?.enterLesson(lessonId, lessonName); } catch (e) { return { ok: false, error: e.message }; }
+  }
+  eduExitLesson() {
+    try { return this._eduEngine?.exitLesson(); } catch (e) { return { ok: false, error: e.message }; }
+  }
+  eduProcessInput(input, options = {}) {
+    try { return this._eduEngine?.processInput(input, options); } catch (e) { return { ok: false, error: e.message }; }
+  }
+  eduGetClassStatistics(lessonId) {
+    try { return this._eduEngine?.getClassStatistics(lessonId); } catch (e) { return { ok: false, error: e.message }; }
+  }
+  eduGetStudentReport(studentId) {
+    try { return this._eduEngine?.getStudentReport(studentId); } catch (e) { return { ok: false, error: e.message }; }
+  }
+  eduGetStats() {
+    try { return this._eduEngine?.getStats(); } catch (e) { return null; }
+  }
 
   // ─── [v5.4.6] LLM 兜底配置 ──────────────────────────────────────────────
   setLLMFallback(fn) {
@@ -2127,6 +2278,11 @@ class HeartFlow {
     'verify.verify', 'verify.getStats', 'verify.getRecentIssues',
     // emotion
     'emotion.process', 'emotion.getPAD',
+    // [v6.0.4 语义展开] LLM 协作层路由
+    'llm.semanticExpand', 'llm.getStats',
+    // [v6.0.5 教育模式] 感知情感课程路由
+    'edu.init', 'edu.enterLesson', 'edu.exitLesson', 'edu.processInput',
+    'edu.getClassStatistics', 'edu.getStudentReport', 'edu.getStats',
     // decision
     'decision.decide', 'decision.getRecentStamps',
     // confidence
@@ -2578,7 +2734,28 @@ class HeartFlow {
     if (typeof mod[method] !== 'function') {
       throw new Error(`${subsystem}.${method} is not a function on ${subsystem}`);
     }
-    const rawResult = mod[method](...args);
+
+    // [EventHooks] taskStart
+    if (this._eventHooks) {
+      this._eventHooks.fireSync('taskStart', { route, subsystem, method });
+    }
+
+    let rawResult;
+    let dispatchError = null;
+    try {
+      rawResult = mod[method](...args);
+    } catch (err) {
+      dispatchError = err;
+      if (this._eventHooks) {
+        this._eventHooks.fireSync('taskFail', { route, subsystem, method, error: err.message });
+      }
+      throw err;
+    }
+
+    // [EventHooks] taskComplete
+    if (this._eventHooks) {
+      this._eventHooks.fireSync('taskComplete', { route, subsystem, method, resultType: typeof rawResult });
+    }
 
     // v5.8.0 性能监控：记录 dispatch 耗时（在决策路由之前，捕获完整执行时间）
     if (_perfStart > 0) {

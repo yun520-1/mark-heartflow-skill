@@ -12,7 +12,7 @@
    */
 
   const { generateDream, getDreamEngine, LEVELS } = require('./dream-loop.js');
-  const { WakeUpVerifier } = require('./wake-up-verifier.js');
+  const { WakeUpVerifier } = require('../shield/wake-up-verifier.js');
   const { generateNarrative, generateWideNarrative } = require('./narrative-generator.js');
 
   class InteractiveDream {

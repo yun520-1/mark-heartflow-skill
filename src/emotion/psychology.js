@@ -999,7 +999,7 @@ let _topicScopeManager = null;
 function _getTopicScope() {
   if (!_topicScopeInstance) {
     try {
-      const TopicScope = require('../identity/topic-scope.js');
+      const TopicScope = require('../memory/topic-scope.js');
       _topicScopeInstance = new TopicScope();
     } catch (e) {
       return null;

@@ -8,7 +8,7 @@ const fs = require('../../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 let SAGEGuardian;
-try { SAGEGuardian = require('../ethics/sage-guardian').SAGEGuardian; } catch (e) { SAGEGuardian = null; }
+try { SAGEGuardian = require('../../shield/ethics/sage-guardian').SAGEGuardian; } catch (e) { SAGEGuardian = null; }
 
 class GoedelEngine {
   constructor(projectRoot) {

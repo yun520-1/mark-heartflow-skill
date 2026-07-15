@@ -1,0 +1,36 @@
+{
+  "id": "stu_001",
+  "classId": "cls_7_1",
+  "gradeLevel": "middle",
+  "createdAt": "2026-07-14T15:40:54.677Z",
+  "records": [
+    {
+      "ok": true,
+      "lessonId": "L01",
+      "studentId": "stu_001",
+      "timestamp": "2026-07-14T15:40:54.677Z",
+      "analysis": {
+        "type": "trigger_chain",
+        "chain": {
+          "event": "明天要数学考试",
+          "thought": "我肯定考不好",
+          "emotion": "平静",
+          "behavior": "所以不想复习",
+          "links": [
+            "明天要数学考试",
+            "我肯定考不好",
+            "所以不想复习"
+          ]
+        },
+        "deepAnalysis": null,
+        "suggestion": "你的情绪链条是：明天要数学考试 → 我肯定考不好 → 所以不想复习。注意\"想法\"环节——它常常是改变情绪的关键。"
+      }
+    }
+  ],
+  "vocabulary": [],
+  "emotionHistory": [
+    {
+      "timestamp": "2026-07-14T15:40:54.677Z"
+    }
+  ]
+}
