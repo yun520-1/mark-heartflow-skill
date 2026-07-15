@@ -21,11 +21,9 @@
  * 5. 原子写入：temp + rename 防数据损坏
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 const crypto = require('crypto');
 
@@ -145,49 +143,12 @@ function _getOrCreateAesKey() {
     return _aesKey;
   }
 
-<<<<<<< HEAD
-  // ⚠️ 安全修复：密钥持久化存储，非真正的一次性session key
-  // 风险：如果 .aes-key 文件被复制，攻击者可解密所有 LEARNED 层记忆
-  // 正确做法：使用 ENV_AES_KEY（HEARTFLOW_AES_KEY=xxx）而非文件存储
-  // 生成或加载持久化密钥
-  const keyFile = path.join(DATA_DIR, '.aes-key');
-  if (fs.existsSync(keyFile)) {
-    try {
-      const meta = JSON.parse(fs.readFileSync(keyFile, 'utf-8'));
-      _aesKey = Buffer.from(meta.key, 'base64');
-      return _aesKey;
-    } catch (e) {
-      // corrupted, regenerate
-      process.stderr.write('[memory] AES key file corrupted, regenerating: ' + e.message + '\n');
-    }
-  }
 
-  // Generate new key
-  _aesKey = crypto.randomBytes(AES_CONFIG.keyLength);
-  const meta = { key: _aesKey.toString('base64'), createdAt: Date.now() };
-  // Write with restricted permissions (Unix only)
-  fs.writeFileSync(keyFile, JSON.stringify(meta), { mode: 0o600 });
-  // [A05][安全修复] 所有平台都警告密钥文件风险，Windows需要额外保护
-  if (process.platform === 'win32') {
-    console.warn('[Memory] WARNING: Windows - key file permissions may not be effective. Use NTFS ACLs for protection.');
-  } else {
-    // Unix系统也验证权限
-    try {
-      const stat = fs.statSync(keyFile);
-      const mode = stat.mode & 0o777;
-      if (mode & 0o077) {
-        console.warn(`[Memory] WARNING: Key file has overly permissive permissions ${mode.toString(8)}. Run: chmod 600 ${keyFile}`);
-      }
-    } catch (e) {
-      // ignore
-    }
-  }
-=======
   // [SECURITY FIX H-3] No file fallback — if env var is not set, generate in-memory only
   // This key is NOT persistent across restarts; use HEARTFLOW_AES_KEY for persistence
   console.warn('[memory] HEARTFLOW_AES_KEY not set — AES key is ephemeral (not persistent across restarts). Set HEARTFLOW_AES_KEY env var for persistent encryption.');
   _aesKey = crypto.randomBytes(AES_CONFIG.keyLength);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   return _aesKey;
 }
 
@@ -257,8 +218,7 @@ function atomicWriteJson(filePath, data) {
 // ─── 持久化 ─────────────────────────────────────────────────────────────────
 
 function _loadAll() {
-<<<<<<< HEAD
-=======
+
   // [M-4] Key existence check: if .enc files exist from previous sessions
   // but the encryption key (HEARTFLOW_AES_KEY) is not set, refuse to start
   // because a new ephemeral key cannot decrypt previously-encrypted data.
@@ -290,7 +250,7 @@ function _loadAll() {
     }
   }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   // CORE: plain JSON
   if (fs.existsSync(CORE_PATH)) {
     try {

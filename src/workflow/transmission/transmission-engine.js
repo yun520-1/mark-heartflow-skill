@@ -10,11 +10,9 @@
  */
 
 const path = require('path');
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 // ============================================================================
 // 错误分类枚举 (v1.1.0 新增)
@@ -133,11 +131,9 @@ class TransmissionEngine {
       if (!fs.existsSync(this.dataDir)) {
         fs.mkdirSync(this.dataDir, { recursive: true });
       }
-<<<<<<< HEAD
-    } catch (e) { /* [PROD] console.warn removed */ }
-=======
+
     } catch (e) { /* 已移除 console.warn */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _loadLog() {
@@ -145,11 +141,9 @@ class TransmissionEngine {
       if (fs.existsSync(this.logFile)) {
         return JSON.parse(fs.readFileSync(this.logFile, 'utf-8'));
       }
-<<<<<<< HEAD
-    } catch (e) { /* [PROD] console.warn removed */ }
-=======
+
     } catch (e) { /* 已移除 console.warn */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return [];
   }
 
@@ -158,32 +152,26 @@ class TransmissionEngine {
       if (fs.existsSync(this.lessonFile)) {
         return JSON.parse(fs.readFileSync(this.lessonFile, 'utf-8'));
       }
-<<<<<<< HEAD
-    } catch (e) { /* [PROD] console.warn removed */ }
-=======
+
     } catch (e) { /* 已移除 console.warn */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return [];
   }
 
   _saveLog() {
     try {
       fs.writeFileSync(this.logFile, JSON.stringify(this.transmissionLog, null, 2));
-<<<<<<< HEAD
-    } catch (e) { /* [PROD] console.warn removed */ }
-=======
+
     } catch (e) { /* 已移除 console.warn */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _saveLessons() {
     try {
       fs.writeFileSync(this.lessonFile, JSON.stringify(this.distilledLessons, null, 2));
-<<<<<<< HEAD
-    } catch (e) { /* [PROD] console.warn removed */ }
-=======
+
     } catch (e) { /* 已移除 console.warn */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   // ==========================================================================
@@ -522,11 +510,9 @@ class TransmissionEngine {
     // 去重检测
     const dedup = this._detectDuplicate(lesson.lesson);
     if (dedup.isDuplicate) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.console.error(`[TransmissionEngine] Skipping duplicate lesson (sim=${dedup.similarity.toFixed(2)})`);
-=======
+
       // 已禁用 console.console.error(`[TransmissionEngine] Skipping duplicate lesson (sim=${dedup.similarity.toFixed(2)})`);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       return null;
     }
 

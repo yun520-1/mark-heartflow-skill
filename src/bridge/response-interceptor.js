@@ -2,11 +2,9 @@
  * This is NOT a transparent proxy — output may be modified before reaching the user. */
 
 /**
-<<<<<<< HEAD
- * ResponseInterceptor — LLM输出拦截器 (v3.1)
-=======
+
  * ResponseInterceptor — LLM输出拦截器 (v3.2)
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
  * 
  * 拦截LLM的原始输出，执行三层心虫后处理：
  *   1. judgmentInjector — 注入心虫的判断（是否该回应、需要谨慎等）
@@ -18,22 +16,16 @@
  * ═══ 安全审计 #6 — 可配置开关 ═══
  * 新增 enableInterceptor 参数，默认开启。设为 false 时 intercept() 原样透传 LLM 输出，
  * 跳过所有心虫注入逻辑，防止因心虫误判导致 LLM 输出被篡改或注入风险。
-<<<<<<< HEAD
-=======
+
  * 
  * v3.3 — 新增人格化润色 + 护栏二次校验（接入 StyleEngine）
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
  */
 class ResponseInterceptor {
   /**
    * @param {object} [config] - 配置对象
    * @param {boolean} [config.enableInterceptor=true] - 是否启用拦截器。关闭后 intercept() 原样透传，不做任何处理。
-<<<<<<< HEAD
-   */
-  constructor(config = {}) {
-    this.name = 'response-interceptor';
-    this.version = '3.2.0';
-=======
+
    * @param {boolean} [config.allowResponseSuppression=false] - 是否允许用沉默占位符替换原始回复。
    * @param {boolean} [config.enablePersonaPolish=true] - 是否启用人格化润色。
    * @param {boolean} [config.emitPersonaMeta=false] - 是否输出 persona_meta。
@@ -41,24 +33,19 @@ class ResponseInterceptor {
   constructor(config = {}) {
     this.name = 'response-interceptor';
     this.version = '3.3.0';
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     // ── 安全开关：关闭后完全跳过拦截逻辑，防止 LLM 输出被意外注入或篡改 ──
     this.enabled = config.enableInterceptor !== undefined ? config.enableInterceptor : true;
 
     // ── 响应抑制开关 (SkillSpector fix) ──────────────────────────
-<<<<<<< HEAD
-    // 当 allowResponseSuppression = false（默认），即使心虫判定 shouldRespond=false，
-    // 也不会替换 LLM 原始输出，仅附加注释元信息。
-    // 设为 true 时允许用沉默占位符替换原始回复（需调用方显式授权）。
-    this.allowResponseSuppression = config.allowResponseSuppression === true ? true : false;
-=======
+
     this.allowResponseSuppression = config.allowResponseSuppression === true ? true : false;
 
     // ── 人格化润色开关 ────────────────────────────────────────
     this.enablePersonaPolish = config.enablePersonaPolish !== undefined ? config.enablePersonaPolish : true;
     this.emitPersonaMeta = !!config.emitPersonaMeta;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -109,12 +96,10 @@ class ResponseInterceptor {
           || response.response
           || JSON.stringify(response);
       }
-<<<<<<< HEAD
-    } catch (_) {
-=======
+
     } catch (e) {
       console.warn('[ResponseInterceptor] 提取原始响应失败:', e.message);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       originalResponse = String(response);
     }
 
@@ -229,11 +214,7 @@ class ResponseInterceptor {
       }
     }
 
-<<<<<<< HEAD
-    return {
-      originalResponse,
-      modifiedResponse,
-=======
+
     // ── 5. 人格化润色（可选） ─────────────────────────────────
     let personaMeta = null;
     let personaPolishedResponse = modifiedResponse;
@@ -284,7 +265,7 @@ class ResponseInterceptor {
     return {
       originalResponse,
       modifiedResponse: finalResponse,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       commentary: commentary
         ? (typeof commentary.comments === 'object'
           ? commentary.comments.map(c => c.text).filter(Boolean).join('\n')
@@ -294,10 +275,9 @@ class ResponseInterceptor {
       conflictNote,
       injectedJudgment,
       responseSuppressed,
-<<<<<<< HEAD
-=======
+
       persona_meta: personaMeta,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     };
   }
 

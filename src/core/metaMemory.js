@@ -8,17 +8,12 @@
  * Reads from MeaningfulMemory storage to analyze memory distribution,
  * access patterns, age distribution, and fragmentation.
  * 
-<<<<<<< HEAD
- * Storage: ~/.hermes/skills/ai/mark-heartflow-skill/data/meta-memory.json
- */
 
-const fs = require('fs');
-=======
  * Storage: ${HEARTFLOW_ROOT}/data/meta-memory.json
  */
 
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 const crypto = require('crypto');
 
@@ -585,13 +580,9 @@ class MetaMemory {
         this.accessPatterns = data.accessPatterns || this.accessPatterns;
         this.reflectionHistory = data.reflectionHistory || [];
       }
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[MetaMemory] 加载失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _saveReflection(reflection) {
@@ -606,13 +597,9 @@ class MetaMemory {
         savedAt: new Date().toISOString()
       };
       fs.writeFileSync(META_MEMORY_PATH, JSON.stringify(data, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[MetaMemory] 保存失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 }
 

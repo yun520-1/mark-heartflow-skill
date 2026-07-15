@@ -125,8 +125,7 @@ const DEFAULT_PIPELINE = [
     },
   },
 
-<<<<<<< HEAD
-=======
+
   // ── Stage 2.5: 情绪动力学（依赖 psychology + heartLogic） ────
   {
     id: 'emotionDynamics',
@@ -174,7 +173,7 @@ const DEFAULT_PIPELINE = [
     },
   },
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   // ── Stage 3: 深层认知分析（依赖 psychology） ────────────
   {
     id: 'deepCognition',
@@ -183,25 +182,7 @@ const DEFAULT_PIPELINE = [
     run: async (ctx, hf) => {
       let desire = null;
       if (hf.desireCognition && typeof hf.desireCognition.analyzeDesires === 'function') {
-<<<<<<< HEAD
-        try { desire = hf.desireCognition.analyzeDesires(ctx.input); } catch (e) { /* [PROD] */ }
-      }
-      let threePoisons = null;
-      if (hf.threePoisons && typeof hf.threePoisons.analyzeThreePoisons === 'function') {
-        try { threePoisons = hf.threePoisons.analyzeThreePoisons(ctx.input); } catch (e) { /* [PROD] */ }
-      }
-      let selfPositioning = null;
-      if (hf.selfPositioning && typeof hf.selfPositioning.analyze === 'function') {
-        try { selfPositioning = hf.selfPositioning.analyze(ctx.input); } catch (e) { /* [PROD] */ }
-      }
-      let loveCognition = null;
-      if (hf.loveCognition && typeof hf.loveCognition.evaluateTriangle === 'function') {
-        try { loveCognition = hf.loveCognition.evaluateTriangle(ctx.input); } catch (e) { /* [PROD] */ }
-      }
-      let cognitionGround = null;
-      if (hf.cognitionGround && typeof hf.cognitionGround.map === 'function') {
-        try { cognitionGround = hf.cognitionGround.map(ctx.input); } catch (e) { /* [PROD] */ }
-=======
+
         try { desire = hf.desireCognition.analyzeDesires(ctx.input); } catch (e) { /* 已禁用 */ }
       }
       let threePoisons = null;
@@ -219,7 +200,7 @@ const DEFAULT_PIPELINE = [
       let cognitionGround = null;
       if (hf.cognitionGround && typeof hf.cognitionGround.map === 'function') {
         try { cognitionGround = hf.cognitionGround.map(ctx.input); } catch (e) { /* 已禁用 */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       }
       return { desire, threePoisons, selfPositioning, loveCognition, cognitionGround };
     },
@@ -243,12 +224,7 @@ const DEFAULT_PIPELINE = [
     },
   },
 
-<<<<<<< HEAD
-  // ── Stage 4: 判断引擎 ────
-  {
-    id: 'judgment',
-    depends: ['psychology', 'deepCognition', 'intent', 'memory'],
-=======
+
   // ── Stage 3.8: 认知充实（依赖 deepCognition + logicReasoning） ──
   // v5.16.0: 提取到 src/workflow/cognitive-enrichment.js
   {
@@ -262,7 +238,7 @@ const DEFAULT_PIPELINE = [
   {
     id: 'judgment',
     depends: ['psychology', 'deepCognition', 'intent', 'memory', 'cognitiveEnrichment'],
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     description: '多路径判断引擎',
     run: async (ctx, hf) => {
       if (!hf.judgmentEngine) return { direction: 'analyze', confidence: 0.5, judgment: null };
@@ -363,11 +339,9 @@ const DEFAULT_PIPELINE = [
   // ── Stage 6: 输出生成 ──────────────
   {
     id: 'output',
-<<<<<<< HEAD
-    depends: ['judgment', 'decision', 'deepCognition', 'memory'],
-=======
+
     depends: ['judgment', 'decision', 'deepCognition', 'memory', 'cognitiveEnrichment'],
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     description: '最终输出生成 + 完整认知快照',
     run: async (ctx, hf) => {
       const dir = ctx.judgment?.direction || 'analyze';
@@ -379,28 +353,12 @@ const DEFAULT_PIPELINE = [
       const judgmentEngineOutput = jd.judgment;
       const judgmentReasoning = jd.reasoning;
 
-<<<<<<< HEAD
-      let conclusion = judgmentEngineOutput || '分析完成';
-      if (judgmentReasoning && judgmentEngineOutput) {
-        if (!judgmentEngineOutput.includes(judgmentReasoning)) {
-          conclusion = `${judgmentEngineOutput}\n\n判断理由：${judgmentReasoning}`;
-        }
-      }
 
-      if (drType) {
-        const drTypeMap = {
-          accelerate: '加速执行', pause: '暂停评估', turn: '调整方向',
-          hold: '保持现状', heal: '修复问题', resonate: '深度共情',
-          transmit: '传递知识', rest: '等待时机',
-        };
-        conclusion = `${conclusion}\n\n决策策略：${drTypeMap[drType] || drType}`;
-      }
-=======
       // [FIX] conclusion 只包含给用户的回答，不包含内部理由和决策策略
       const conclusion = judgmentEngineOutput || '分析完成';
 
       // 内部理由存入 cognition，不拼进 conclusion
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
       const paths = jd.paths || [];
       const chosenPath = jd.chosenPath;
@@ -441,14 +399,13 @@ const DEFAULT_PIPELINE = [
         loveCognition: dc.loveCognition || null,
         cognitionGround: dc.cognitionGround || null,
         logicReasoning: ctx.logicReasoning || null,
-<<<<<<< HEAD
-=======
+
         // v5.9.7 新增：公式感知——每次 think 自动附带匹配到的认知公式
         formulaMatches: (typeof hf.matchFormulas === 'function') ? hf.matchFormulas(ctx.input, { limit: 3 }) : [],
         // v5.11.0 新增：情绪动力学 + 认知负载 V2
         emotionDynamics: ctx.emotionDynamics || null,
         cognitiveLoad: ctx.cognitiveLoad || null,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         judgment: {
           direction: jd.direction || 'analyze',
           confidence: jd.confidence || 0.5,
@@ -465,8 +422,7 @@ const DEFAULT_PIPELINE = [
           direction: dd.direction || 'analyze',
         },
         memoryHits: memories.length,
-<<<<<<< HEAD
-=======
+
         // v5.12.0: 认知充实信号
         enrichment: ctx.cognitiveEnrichment || null,
         // v5.14.2: 认知充实 — 新增10个模块
@@ -514,7 +470,7 @@ const DEFAULT_PIPELINE = [
             return null;
           }
         })(),
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       };
 
       if (hf.memory && typeof hf.memory.store === 'function' && jd.direction) {
@@ -739,28 +695,13 @@ const FAST_PIPELINE = [
       const dd = ctx.decision || {};
       const memories = ctx.memory?.memories || [];
       const drType = dd.drDecision?.type || null;
-<<<<<<< HEAD
-      const judgmentEngineOutput = jd.judgment;
-      const judgmentReasoning = jd.reasoning;
-      let conclusion = judgmentEngineOutput || '分析完成';
-      if (judgmentReasoning && judgmentEngineOutput && !judgmentEngineOutput.includes(judgmentReasoning)) {
-        conclusion = `${judgmentEngineOutput}\n\n判断理由：${judgmentReasoning}`;
-      }
-      if (drType) {
-        const drTypeMap = {
-          accelerate: '加速执行', pause: '暂停评估', turn: '调整方向',
-          hold: '保持现状', heal: '修复问题', resonate: '深度共情',
-          transmit: '传递知识', rest: '等待时机',
-        };
-        conclusion = `${conclusion}\n\n决策策略：${drTypeMap[drType] || drType}`;
-      }
-=======
+
       // [FIX] conclusion 只包含给用户的回答，不包含内部理由和决策策略（快速模式）
       const judgmentEngineOutput = jd.judgment;
       const conclusion = judgmentEngineOutput || '分析完成';
 
       // 内部理由存入 cognition，不拼进 conclusion
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       const paths = jd.paths || [];
       const chosenPath = jd.chosenPath;
       let pathComparison = null;
@@ -779,14 +720,13 @@ const FAST_PIPELINE = [
         emotion: ctx.psychology?.psych?.emotion || null,
         agentPsychology: ctx.psychology?.agentPsych || null,
         agentPhilosophy: ctx.psychology?.agentPhil || null,
-<<<<<<< HEAD
-=======
+
         // v5.9.7 新增：公式感知（快速管道同样附带）
         formulaMatches: (typeof hf.matchFormulas === 'function') ? hf.matchFormulas(ctx.input, { limit: 3 }) : [],
         // v5.11.0 新增：情绪动力学 + 认知负载 V2（快速管道通过主引擎 pre-think 快照获取）
         emotionDynamics: ctx.emotionDynamics || null,
         cognitiveLoad: ctx.cognitiveLoad || null,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         judgment: {
           direction: jd.direction || 'analyze',
           confidence: jd.confidence || 0.5,
@@ -804,8 +744,7 @@ const FAST_PIPELINE = [
         },
         memoryHits: memories.length,
         mode: 'fast',
-<<<<<<< HEAD
-=======
+
         // v5.14.2: 认知充实 — 新增10个模块（快速模式 ctx.cognitiveEnrichment 未定义时为 null）
         confidenceCalibrator: ctx.cognitiveEnrichment?.confidenceCalibrator || null,
         desireCognitionHealth: ctx.cognitiveEnrichment?.desireCognitionHealth || null,
@@ -817,7 +756,7 @@ const FAST_PIPELINE = [
         cognitionGround: ctx.cognitiveEnrichment?.cognitionGround || null,
         debateConductor: ctx.cognitiveEnrichment?.debateConductor || null,
         dreamEngineV2: ctx.cognitiveEnrichment?.dreamEngineV2 || null,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       };
       if (hf.memory && typeof hf.memory.store === 'function' && jd.direction) {
         try {
@@ -870,15 +809,11 @@ function estimateComplexity(input) {
   let score = 0;
 
   // ── 维度 1: 长度因子（权重 0.25）─────────────────────
-<<<<<<< HEAD
-  // 200 字符开始有复杂度，线性增长到 800 字符封顶
-  const LENGTH_THRESHOLD = 200;
-  const LENGTH_MAX = 800;
-=======
+
   // v5.12.0: 阈值从200→80，中文100字已属中长输入，应有机会触发深层分析
   const LENGTH_THRESHOLD = 80;
   const LENGTH_MAX = 500;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   const lengthScore = Math.min(1, Math.max(0, (text.length - LENGTH_THRESHOLD) / (LENGTH_MAX - LENGTH_THRESHOLD)));
   score += lengthScore * 0.25;
 
@@ -1005,9 +940,7 @@ class Pipeline {
     const complexityDetails = this._analyzeComplexityDetails(input);
 
     // 模式选择
-<<<<<<< HEAD
-    const mode = options.mode || selectMode(input);
-=======
+
     // [v5.13.0] 认知闭环：反馈状态调整复杂度阈值
     let effectiveThreshold = this.complexityThreshold;
     if (this.heartflow?._feedbackState?.complexityBias) {
@@ -1018,7 +951,7 @@ class Pipeline {
     if (mode === 'fast' && this.heartflow?._feedbackState?.decisionBias === 'conservative') {
       mode = 'full';
     }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     const stages = mode === 'fast' ? FAST_PIPELINE : DEFAULT_PIPELINE;
     const result = await this._runStages(input, stages, options);
 

@@ -11,11 +11,7 @@
  */
 
 const https = require('https');
-<<<<<<< HEAD
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-=======
+
 const fs = require('../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -38,13 +34,12 @@ function _boundedSet(map, key, value, maxSize) {
   }
   map.set(key, value);
 }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 class SmartUpgradeEngine {
   constructor(rootPath) {
     this.rootPath = rootPath;
-<<<<<<< HEAD
-=======
+
     // [SECURITY] 默认禁用联网升级，需显式 opt-in
     this.enabled = process.env.HEARTFLOW_SMART_UPGRADE_ENABLED === 'true';
     // [D-003] Repo whitelist — empty = deny all. Only repos in this list may be sourced.
@@ -54,7 +49,7 @@ class SmartUpgradeEngine {
     );
     // [D-003] SHA-256 integrity check — stored hashes for verified repos
     this.integrityHashes = new Map(); // repo name → expected SHA-256
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     // 确保路径正确：从项目根目录计算
     this.upgradesDir = path.isAbsolute(rootPath)
       ? path.join(rootPath, 'data/upgrades')
@@ -199,46 +194,7 @@ class SmartUpgradeEngine {
   }
 
   /**
-<<<<<<< HEAD
-   * 搜索GitHub
-   */
-  searchGitHub(query) {
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('请求超时')), 30000);
-      
-      const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=10`;
-      
-      https.get(url, { headers: { 'User-Agent': 'heartflow-upgrader' } }, (res) => {
-        let data = '';
-        res.on('data', (chunk) => data += chunk);
-        res.on('end', () => {
-          clearTimeout(timeout);
-          try {
-            const result = JSON.parse(data);
-            resolve(result.items || []);
-          } catch(e) {
-            reject(e);
-          }
-        });
-      }).on('error', (e) => {
-        clearTimeout(timeout);
-        reject(e);
-      });
-    });
-  }
 
-  /**
-   * 选择最佳仓库（去重）
-   */
-  selectBestRepo(repos, manifest) {
-    const processedRepos = new Set(manifest.processed.map(p => p.repo));
-    
-    // 过滤已处理的仓库
-    const available = repos.filter(r => !processedRepos.has(r.full_name));
-    
-    if (available.length === 0) return null;
-    
-=======
    * 搜索GitHub - [P-005] routed through safeFetch
    */
   async searchGitHub(query) {
@@ -272,42 +228,13 @@ class SmartUpgradeEngine {
 
     if (available.length === 0) return null;
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     // 按星标数排序，选择最热门的
     return available.sort((a, b) => b.stargazers_count - a.stargazers_count)[0];
   }
 
   /**
-<<<<<<< HEAD
-   * 获取仓库代码
-   */
-  async fetchRepoCode(repo) {
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('请求超时')), 60000);
-      
-      // 获取默认分支的README
-      const url = `https://api.github.com/repos/${repo.full_name}/readme`;
-      
-      https.get(url, { headers: { 'User-Agent': 'heartflow-upgrader' } }, (res) => {
-        let data = '';
-        res.on('data', (chunk) => data += chunk);
-        res.on('end', () => {
-          clearTimeout(timeout);
-          try {
-            const result = JSON.parse(data);
-            // 解码base64内容
-            const content = Buffer.from(result.content, 'base64').toString('utf-8');
-            resolve(content);
-          } catch(e) {
-            resolve(null);
-          }
-        });
-      }).on('error', (e) => {
-        clearTimeout(timeout);
-        resolve(null);
-      });
-    });
-=======
+
    * 获取仓库代码 - [P-005] routed through safeFetch, [D-003] SHA-256 integrity
    */
   async fetchRepoCode(repo) {
@@ -340,7 +267,7 @@ class SmartUpgradeEngine {
     } catch (e) {
       return null;
     }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -506,11 +433,9 @@ module.exports = { ${className} };
       createdAt: Date.now()
     };
     
-<<<<<<< HEAD
-    this._cache.set(id, node);
-=======
+
     _boundedSet(this._cache, id, node, MAX_CACHE_SIZE);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return node;
   }
 
@@ -707,10 +632,8 @@ module.exports = { ${className} };
    */
   log(msg) {
     const ts = new Date().toISOString();
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[${ts}] ${msg}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     
     try {
       let logs = [];
@@ -747,17 +670,11 @@ if (require.main === module) {
   const engine = new SmartUpgradeEngine(__dirname);
   engine.runUpgrade()
     .then(result => {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.log: console.log('升级结果:', result);
+
       return;
     })
     .catch(err => {
-      // [PROD] 生产环境移除 console.error: console.error('升级失败:', err);
-=======
-      return;
-    })
-    .catch(err => {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       return;
     });
 }

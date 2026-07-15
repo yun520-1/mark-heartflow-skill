@@ -15,11 +15,9 @@
 
 'use strict';
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 // ============================================================================
@@ -227,10 +225,8 @@ class NarrativeRetriever {
       this._prototypeHealth.lastError = e.message;
       this._prototypeHealth.corruptionCount++;
       this._prototypeHealth.fallbackUsed = true;
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error('[NarrativeRetriever] Load prototypes failed:', e.message);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       return this._createDefaultPrototypeStore();
     }
   }
@@ -786,17 +782,11 @@ class NarrativeRetriever {
 
   addPrototype(id, name, keywords, framework, emotionalTone, stages) {
     if (!id || typeof id !== 'string') {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error('[NarrativeRetriever] addPrototype: id 必须是非空字符串');
+
       return false;
     }
     if (!Array.isArray(keywords) || keywords.length === 0) {
-      // [PROD] 生产环境移除 console.error: console.error('[NarrativeRetriever] addPrototype: keywords 必须是非空数组');
-=======
-      return false;
-    }
-    if (!Array.isArray(keywords) || keywords.length === 0) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       return false;
     }
 
@@ -820,17 +810,11 @@ class NarrativeRetriever {
    */
   removePrototype(id) {
     if (!id || typeof id !== 'string') {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error('[NarrativeRetriever] removePrototype: id 必须是非空字符串');
+
       return false;
     }
     if (!this.prototypes.prototypes[id]) {
-      // [PROD] 生产环境移除 console.error: console.error(`[NarrativeRetriever] removePrototype: 原型 "${id}" 不存在`);
-=======
-      return false;
-    }
-    if (!this.prototypes.prototypes[id]) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       return false;
     }
     delete this.prototypes.prototypes[id];
@@ -864,13 +848,9 @@ class NarrativeRetriever {
   savePrototypes() {
     try {
       fs.writeFileSync(this.prototypeFile, JSON.stringify(this.prototypes, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[NarrativeRetriever] Save failed:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**

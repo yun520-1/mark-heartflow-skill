@@ -14,11 +14,9 @@
  * - 健康指标：成功率/失败率/总回滚次数/最后事件
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 // ============================================================================
@@ -197,10 +195,8 @@ class RollbackManager {
     } catch (e) {
       // 日志写入失败时静默处理
     }
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[Rollback] ${message}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
   }
 
   // ========================================================================

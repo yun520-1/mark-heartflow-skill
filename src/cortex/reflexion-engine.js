@@ -16,8 +16,7 @@
 
 const VERSION = '1.0.0';
 
-<<<<<<< HEAD
-=======
+
 const MAX_HISTORY_SIZE = 100;
 
 /**
@@ -35,7 +34,7 @@ function _boundedSet(map, key, value, maxSize) {
   map.set(key, value);
 }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 class ReflexionEngine {
   constructor(options = {}) {
     this.version = VERSION;
@@ -311,20 +310,16 @@ class ReflexionEngine {
     if (!result.success) {
       const patternKey = `${category}:${reflection.insight.slice(0, 50)}`;
       if (!this.failurePatterns.has(patternKey)) {
-<<<<<<< HEAD
-        this.failurePatterns.set(patternKey, {
-=======
+
         _boundedSet(this.failurePatterns, patternKey, {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
           category,
           reason: reflection.insight,
           count: 0,
           examples: [],
-<<<<<<< HEAD
-        });
-=======
+
         }, MAX_HISTORY_SIZE);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       }
       const pattern = this.failurePatterns.get(patternKey);
       pattern.count++;
@@ -363,21 +358,17 @@ class ReflexionEngine {
   _updateStrategies(lesson) {
     const key = lesson.category;
     if (!this.strategies.has(key)) {
-<<<<<<< HEAD
-      this.strategies.set(key, {
-=======
+
       _boundedSet(this.strategies, key, {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         category: key,
         successes: 0,
         failures: 0,
         strategies: [],
         bestStrategy: null,
-<<<<<<< HEAD
-      });
-=======
+
       }, MAX_HISTORY_SIZE);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
     const strategy = this.strategies.get(key);
     if (lesson.success) {

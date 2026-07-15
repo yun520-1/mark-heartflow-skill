@@ -14,11 +14,9 @@
  *   - 保留原有 number/percentage/date 检测能力（不删）
  */
 
-<<<<<<< HEAD
-let OpenAlexClient; try { OpenAlexClient = require('./openalex-client'); } catch(e) { OpenAlexClient = class { constructor() {} }; }
-=======
+
 let OpenAlexClient; try { OpenAlexClient = require('../core/openalex-client'); } catch(e) { OpenAlexClient = class { constructor() {} }; }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 /**
  * 绝对化/不可证伪模式（引擎层硬编码）
@@ -358,11 +356,9 @@ const factChecker = {
     if (dates.length === 0) return { checked: false };
     const now = new Date();
     for (const d of dates) {
-<<<<<<< HEAD
-      const year = parseInt(d);
-=======
+
       const year = parseInt(d, 10);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       if (year > now.getFullYear() + 1) {
         return { checked: true, type: 'date', issue: `日期${d}在未来，可能错误`, confidence: 'low' };
       }

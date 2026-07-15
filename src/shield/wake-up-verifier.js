@@ -11,17 +11,12 @@
  * - Multi-dimensional quality scoring with self-correction feedback
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-const path = require('path');
-let DecisionVerifier;
-try { DecisionVerifier = require('./decision-verifier.js').DecisionVerifier; } catch (e) { DecisionVerifier = null; }
-=======
+
 const fs = require('../utils/safe-fs');
 const path = require('path');
 let DecisionVerifier;
 try { DecisionVerifier = require('../core/decision-verifier.js').DecisionVerifier; } catch (e) { DecisionVerifier = null; }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 const DREAM_HISTORY_DIR = path.join(__dirname, '..', 'data');
 const DREAM_HISTORY_FILE = path.join(DREAM_HISTORY_DIR, 'dream-history.json');
@@ -58,13 +53,9 @@ class WakeUpVerifier {
           return parsed;
         }
       }
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[WakeUpVerifier] History load failed, starting fresh:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return { entries: [], lastEntryIndex: 0 };
   }
 
@@ -72,13 +63,9 @@ class WakeUpVerifier {
     try {
       this._ensureDataDir();
       fs.writeFileSync(DREAM_HISTORY_FILE, JSON.stringify(this.history, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[WakeUpVerifier] History save failed:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _trimHistory() {
@@ -503,10 +490,6 @@ if (require.main === module) {
     next_actions: ['promote useful fragments to durable memory', 'queue contradiction checks']
   };
   const verifier = new WakeUpVerifier();
-<<<<<<< HEAD
-  // [PROD] 生产环境移除 console.log: console.log(JSON.stringify(verifier.evaluateDream(demo), null, 2));
-  // [PROD] 生产环境移除 console.log: console.log('--- History ---');
-  // [PROD] 生产环境移除 console.log: console.log(JSON.stringify(verifier.getHistory({ limit: 3 }), null, 2));
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 }

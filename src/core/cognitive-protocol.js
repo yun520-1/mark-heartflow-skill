@@ -15,11 +15,9 @@
  * - 主动停下来总结，而不是读到忘记
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 /**
@@ -650,13 +648,9 @@ class CognitiveProtocol {
       if (fs.existsSync(this.files.problemBank)) {
         return JSON.parse(fs.readFileSync(this.files.problemBank, 'utf-8'));
       }
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[CognitiveProtocol] 加载问题银行失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return [];
   }
 
@@ -667,13 +661,9 @@ class CognitiveProtocol {
     try {
       if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.problemBank, JSON.stringify(this.problemBank, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[CognitiveProtocol] 保存问题银行失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _loadPausedTasks() {
@@ -681,13 +671,9 @@ class CognitiveProtocol {
       if (fs.existsSync(this.files.pausedTasks)) {
         return JSON.parse(fs.readFileSync(this.files.pausedTasks, 'utf-8'));
       }
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[CognitiveProtocol] 加载暂停任务失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return [];
   }
 
@@ -698,13 +684,9 @@ class CognitiveProtocol {
     try {
       if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.pausedTasks, JSON.stringify(this.pausedTasks, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[CognitiveProtocol] 保存暂停任务失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -714,13 +696,9 @@ class CognitiveProtocol {
     try {
       if (!process.env.HEARTFLOW_DEBUG) return;
       fs.writeFileSync(this.files.checkpoints, JSON.stringify(this.checkpoints, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[CognitiveProtocol] 保存检查点失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -735,13 +713,9 @@ class CognitiveProtocol {
         state: this.state,
         timestamp: new Date().toISOString()
       }, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[CognitiveProtocol] 保存当前会话失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   // ─────────────────────────────────────────

@@ -347,10 +347,8 @@ class DesireCognition {
     this._conversationEmotionMemory = [];
 
     this.ready = true;
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: if (this.debug) console.error('[DesireCognition] v1.3.0 ready — 七层情感架构集成版');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
   }
 
   /**
@@ -391,11 +389,10 @@ class DesireCognition {
       brainNetworkActivation: this._computeBrainNetworkActivation(emotions, traits),
       // v1.3.0 新增输出
       padcn: padcn,
-<<<<<<< HEAD
-=======
+
       // v5.9.7 新增：IRT 特质校准（测量视角）
       irtTraits: this.estimateTraitsWithIRT(traits),
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     };
   }
 
@@ -445,11 +442,10 @@ class DesireCognition {
       wantingLiking: wlAnalysis,
       // v1.3.0 新增输出
       driveSatisfaction: driveAnalysis,
-<<<<<<< HEAD
-=======
+
       // v5.9.7 新增：IRT 特质校准（测量视角，独立于手设权重）
       irtTraits: this.estimateTraitsWithIRT(traits),
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     };
   }
 
@@ -877,10 +873,7 @@ class DesireCognition {
     // 维度3: 线索触发反应性 C
     const cueReactivity = this._computeCueReactivity(traits, desireType);
 
-<<<<<<< HEAD
-    // 综合风险: Risk = 0.4·Δ + 0.35·S(t) + 0.25·C
-    const riskScore = 0.4 * Math.max(0, delta) + 0.35 * sensitization + 0.25 * cueReactivity;
-=======
+
     // [FORMULA v5.12.0] 公式驱动的动态风险权重：用 prospectWeight 替代固定权重
     let riskWeights;
     try {
@@ -898,23 +891,12 @@ class DesireCognition {
     const _rw = riskWeights || { delta: 0.4, sensitization: 0.35, cue: 0.25 };
     // 综合风险: Risk = w_Δ·Δ + w_S·S(t) + w_C·C
     const riskScore = _rw.delta * Math.max(0, delta) + _rw.sensitization * sensitization + _rw.cue * cueReactivity;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     // 风险分级
     let riskLevel;
     let recommendation;
-<<<<<<< HEAD
-    if (riskScore >= 0.8) {
-      riskLevel = '极高危';
-      recommendation = '已形成严重成瘾模式，需要专业干预。Δ极高，S(t)高度敏化，线索触发强烈。建议：认知行为治疗 + 多巴胺调控药物评估。';
-    } else if (riskScore >= 0.6) {
-      riskLevel = '高危';
-      recommendation = '成瘾风险显著，欲望驱动已部分自动化。Δ明显分离，S(t)中度敏化。建议：建立行为监控机制，减少线索暴露，增加替代性奖励。';
-    } else if (riskScore >= 0.4) {
-      riskLevel = '中危';
-      recommendation = '存在成瘾倾向，需要早期干预。Wanting略高于Liking，S(t)开始积累。建议：正念训练，记录欲望强度与实际满足度的差异。';
-    } else if (riskScore >= 0.2) {
-=======
+
     // [FORMULA v5.12.0] 公式驱动的动态风险分级阈值：基于 wanting/liking 的动机偏差
     let riskThresholds;
     try {
@@ -945,7 +927,7 @@ class DesireCognition {
       riskLevel = '中危';
       recommendation = '存在成瘾倾向，需要早期干预。Wanting略高于Liking，S(t)开始积累。建议：正念训练，记录欲望强度与实际满足度的差异。';
     } else if (riskScore >= _rt.low) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       riskLevel = '低危';
       recommendation = '基本健康，但需保持觉察。建议：维持健康的欲望表达渠道，定期自检。';
     } else {
@@ -962,15 +944,11 @@ class DesireCognition {
       riskScore: Math.round(riskScore * 100) / 100,
       riskLevel,
       dimensions: {
-<<<<<<< HEAD
-        delta: { value: Math.round(delta * 100) / 100, weight: 0.4, label: 'Wanting-Liking分离度(Δ)' },
-        sensitization: { value: Math.round(sensitization * 100) / 100, weight: 0.35, label: '神经致敏因子S(t)' },
-        cueReactivity: { value: Math.round(cueReactivity * 100) / 100, weight: 0.25, label: '线索触发反应性(C)' },
-=======
+
         delta: { value: Math.round(delta * 100) / 100, weight: +_rw.delta.toFixed(2), label: 'Wanting-Liking分离度(Δ)' },
         sensitization: { value: Math.round(sensitization * 100) / 100, weight: +_rw.sensitization.toFixed(2), label: '神经致敏因子S(t)' },
         cueReactivity: { value: Math.round(cueReactivity * 100) / 100, weight: +_rw.cue.toFixed(2), label: '线索触发反应性(C)' },
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       },
       recommendation,
       detailedAnalysis: `对「${label}」的评估：Wanting(W=${Math.round(wanting*100)}%) vs Liking(L=${Math.round(liking*100)}%)，Δ=${Math.round(delta*100)}%。神经致敏S(t)=${Math.round(sensitization*100)}%，线索反应性C=${Math.round(cueReactivity*100)}%。`,
@@ -1692,13 +1670,7 @@ class DesireCognition {
       .sort((a, b) => a[1].score - b[1].score)
       .map(([k, v]) => ({ key: k, label: v.label, score: v.score, category: v.category }));
 
-<<<<<<< HEAD
-    // 总体等级
-    let level;
-    if (overallScore >= 0.8) level = '高情绪智能 — 情感感知、理解和应对能力出色';
-    else if (overallScore >= 0.6) level = '中等偏上 — 具备良好的情绪能力基础';
-    else if (overallScore >= 0.4) level = '中等 — 基本情绪能力尚可，有提升空间';
-=======
+
     // [FORMULA v5.12.0] 公式驱动的动态EI等级阈值：用 cognitiveDissonance + adaptiveLearningRate
     let eiThresholds;
     try {
@@ -1721,7 +1693,7 @@ class DesireCognition {
     if (overallScore >= _eit.high) level = '高情绪智能 — 情感感知、理解和应对能力出色';
     else if (overallScore >= _eit.medium) level = '中等偏上 — 具备良好的情绪能力基础';
     else if (overallScore >= _eit.low) level = '中等 — 基本情绪能力尚可，有提升空间';
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     else level = '较低 — 情绪感知和理解需要加强';
 
     return {
@@ -1875,8 +1847,7 @@ class DesireCognition {
     };
   }
 
-<<<<<<< HEAD
-=======
+
   /**
    * IRT 特质校准（v5.9.7 新增，B4 接入）
    * 把从人物(person)抽取的可观测特征标志，用 IRT 模型推断潜在特质 θ。
@@ -1938,7 +1909,7 @@ class DesireCognition {
     return result;
   }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   _scoreEmotion(emotionKey, traits) {
     // 基于人格特质推断情绪倾向
     switch (emotionKey) {
@@ -1974,20 +1945,7 @@ class DesireCognition {
   }
 
   _scoreDesire(desireKey, traits) {
-<<<<<<< HEAD
-    switch (desireKey) {
-      case 'survival':    return traits.drivenBySurvival ? 0.9 : 0.4;
-      case 'sexual':      return traits.drivenBySexual ? 0.8 : 0.4;
-      case 'social':      return traits.drivenBySocial ? 0.8 : (traits.silent ? 0.3 : 0.5);
-      case 'power':       return traits.drivenByPower ? 0.8 : 0.3;
-      case 'achievement': return traits.drivenByAchievement ? 0.8 : 0.4;
-      case 'curiosity':   return traits.drivenByAchievement ? 0.6 : 0.5;
-      case 'material':    return traits.drivenByMaterial ? 0.7 : 0.3;
-      case 'freedom':     return traits.drivenByFreedom ? 0.9 : 0.4;
-      case 'meaning':     return traits.drivenByAchievement || traits.drivenBySurvival ? 0.6 : 0.5;
-      default: return 0.5;
-    }
-=======
+
     // [FORMULA v8.15.0] 动机偏差模型 (Grether's α-β, arXiv:2606.17657)
     // 从驱动力状态计算 α (证据敏感度) 和 β (动机偏差)
     // 高驱动 → 高 α + 正 β → 偏向想要 (wanting bias)
@@ -2050,7 +2008,7 @@ class DesireCognition {
       }
       return +u.toFixed(4);
     } catch (e) { return 0; }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _describeDesireExpression(desireKey, traits) {
@@ -2357,11 +2315,7 @@ class DesireCognition {
    * 计算Valence×Arousal象限分类
    */
   _classifyVAQuadrant(valence, arousal) {
-<<<<<<< HEAD
-    if (valence >= 0.5 && arousal >= 0.5) return '愉悦高唤醒 (Joyful-Active)';
-    if (valence >= 0.5 && arousal < 0.5) return '愉悦低唤醒 (Content-Calm)';
-    if (valence < 0.5 && arousal >= 0.5) return '不悦高唤醒 (Distressed-Angry)';
-=======
+
     // [FORMULA v5.12.0] 公式驱动的动态象限边界：用 emotionStability / flowChannel 推导中性点
     let midPoint = 0.5;
     try {
@@ -2377,7 +2331,7 @@ class DesireCognition {
     if (valence >= midPoint && arousal >= midPoint) return '愉悦高唤醒 (Joyful-Active)';
     if (valence >= midPoint && arousal < midPoint) return '愉悦低唤醒 (Content-Calm)';
     if (valence < midPoint && arousal >= midPoint) return '不悦高唤醒 (Distressed-Angry)';
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return '不悦低唤醒 (Sad-Fatigued)';
   }
 
@@ -2386,26 +2340,7 @@ class DesireCognition {
    */
   _constructEmotionsFromVA(valence, arousal, traits) {
     const constructs = [];
-<<<<<<< HEAD
 
-    // 基于VA坐标构建情感描述
-    if (valence > 0.6 && arousal > 0.6) {
-      constructs.push({ label: '兴奋/狂喜', confidence: Math.min(1, (valence + arousal) / 2) });
-    }
-    if (valence > 0.6 && arousal <= 0.6) {
-      constructs.push({ label: '满足/平静', confidence: valence });
-    }
-    if (valence <= 0.6 && valence > 0.3 && arousal > 0.5) {
-      constructs.push({ label: '渴望/期待', confidence: arousal });
-    }
-    if (valence <= 0.3 && arousal > 0.6) {
-      constructs.push({ label: '愤怒/恐惧', confidence: Math.min(1, (1 - valence + arousal) / 2) });
-    }
-    if (valence <= 0.3 && arousal <= 0.6) {
-      constructs.push({ label: '悲伤/厌倦', confidence: Math.min(1, (1 - valence + 1 - arousal) / 2) });
-    }
-    if (valence > 0.3 && valence <= 0.6 && arousal <= 0.5) {
-=======
     // [FORMULA v5.12.0] 公式驱动的动态VA边界：用 flowChannel 推导高低阈值
     let hiThreshold = 0.6, loThreshold = 0.3, midThreshold = 0.5;
     try {
@@ -2437,7 +2372,7 @@ class DesireCognition {
       constructs.push({ label: '悲伤/厌倦', confidence: Math.min(1, (1 - valence + 1 - arousal) / 2) });
     }
     if (valence > lo && valence <= hi && arousal <= mid) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       constructs.push({ label: '中性/放松', confidence: 0.5 });
     }
 
@@ -2449,13 +2384,7 @@ class DesireCognition {
    * 描述VA状态
    */
   _describeVAState(valence, arousal) {
-<<<<<<< HEAD
-    if (valence > 0.6 && arousal > 0.6) return '处于积极高唤醒状态——充满能量和热情。';
-    if (valence > 0.6 && arousal <= 0.6) return '处于积极低唤醒状态——平静满足，内心安宁。';
-    if (valence <= 0.6 && valence > 0.3 && arousal > 0.6) return '处于混合高唤醒状态——有强烈情绪，但性质未完全确定。';
-    if (valence <= 0.3 && arousal > 0.6) return '处于消极高唤醒状态——焦虑、愤怒或恐惧主导。';
-    if (valence <= 0.3 && arousal <= 0.6) return '处于消极低唤醒状态——悲伤、倦怠或抑郁倾向。';
-=======
+
     // [FORMULA v5.12.0] 使用上面相同的动态阈值
     let hiThreshold = 0.6, loThreshold = 0.3;
     try {
@@ -2473,7 +2402,7 @@ class DesireCognition {
     if (valence <= hi && valence > lo && arousal > hi) return '处于混合高唤醒状态——有强烈情绪，但性质未完全确定。';
     if (valence <= lo && arousal > hi) return '处于消极高唤醒状态——焦虑、愤怒或恐惧主导。';
     if (valence <= lo && arousal <= hi) return '处于消极低唤醒状态——悲伤、倦怠或抑郁倾向。';
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return '处于情感中性状态。';
   }
 
@@ -2610,16 +2539,7 @@ class DesireCognition {
    */
   _computeSensitizationIncrement(traits, desireType) {
     let increment = 0;
-<<<<<<< HEAD
-    if (traits.addictive) increment += 0.15;
-    if (traits.impulsive) increment += 0.1;
 
-    // 特定欲望类型的敏化倾向
-    const sensitizationProne = ['sexual', 'material', 'power'];
-    if (sensitizationProne.includes(desireType)) increment += 0.1;
-
-    return Math.min(0.4, increment);
-=======
     // [FORMULA v5.12.0] 公式驱动的敏化增量权重：用 prospectWeight 替代固定增量
     let addWeight, impWeight, proneWeight, maxIncrement;
     try {
@@ -2640,19 +2560,14 @@ class DesireCognition {
     if (sensitizationProne.includes(desireType)) increment += proneWeight || 0.1;
 
     return Math.min(maxIncrement || 0.4, increment);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
    * 计算线索触发反应性
    */
   _computeCueReactivity(traits, desireType) {
-<<<<<<< HEAD
-    let reactivity = 0.3; // 基础反应性
 
-    if (traits.addictive) reactivity += 0.2;
-    if (traits.impulsive) reactivity += 0.15;
-=======
     // [FORMULA v5.12.0] 公式驱动的线索反应性：用 motivationalBias 推导基础反应性
     let reactivity = 0.3; // 基础反应性（fallback）
     try {
@@ -2667,7 +2582,7 @@ class DesireCognition {
 
     if (traits.addictive) reactivity += addWeight ? addWeight * 1.3 : 0.2;
     if (traits.impulsive) reactivity += impWeight ? impWeight * 1.5 : 0.15;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     // 高Wanting-low Liking增加线索反应性
     const wanting = this._scoreDesire(desireType, traits);
@@ -3012,35 +2927,7 @@ class DesireCognition {
    * 评价→PADCN映射 (基于emotion-system appraisal-engine.md)
    */
   _appraisalToPADCN(appraisal) {
-<<<<<<< HEAD
-    // ΔP = 0.3·goal_congruence + 0.2·self_consistency + 0.2·moral_acceptability + 0.1·coping_potential
-    const deltaP = 0.3 * appraisal.goalCongruence +
-      0.2 * appraisal.selfConsistency +
-      0.2 * appraisal.moralAcceptability +
-      0.1 * appraisal.copingPotential;
 
-    // ΔA = 0.3·(1-certainty) + 0.2·novelty + 0.2·goalRelevance - 0.1·control
-    const deltaA = 0.3 * (1 - appraisal.certainty) +
-      0.2 * appraisal.novelty +
-      0.2 * appraisal.goalRelevance -
-      0.1 * appraisal.control;
-
-    // ΔD = 0.3·control + 0.2·agency(取正部分) - 0.2·(1-copingPotential) + 0.1·certainty
-    const deltaD = 0.3 * appraisal.control +
-      0.2 * Math.max(0, appraisal.agency) -
-      0.2 * (1 - appraisal.copingPotential) +
-      0.1 * appraisal.certainty;
-
-    // ΔC = 0.4·certainty + 0.2·(1-unexpectedness) - 0.2·novelty
-    const deltaC = 0.4 * appraisal.certainty +
-      0.2 * (1 - appraisal.unexpectedness) -
-      0.2 * appraisal.novelty;
-
-    // ΔN = 0.5·novelty + 0.2·unexpectedness - 0.2·control
-    const deltaN = 0.5 * appraisal.novelty +
-      0.2 * appraisal.unexpectedness -
-      0.2 * appraisal.control;
-=======
     // [FORMULA v5.12.0] 公式驱动的动态PADCN权重：用 precisionWeight / flowChannel 替代固定权重
     let weights;
     try {
@@ -3104,7 +2991,7 @@ class DesireCognition {
     const deltaN = (w ? w.N.novel : 0.5) * appraisal.novelty +
       (w ? w.N.unexp : 0.2) * appraisal.unexpectedness -
       (w ? w.N.ctrlNeg : 0.2) * appraisal.control;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     return {
       P: Math.max(-1, Math.min(1, deltaP)),

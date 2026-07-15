@@ -13,9 +13,7 @@
 
 'use strict';
 
-<<<<<<< HEAD
-const VERSION = '5.7.3';
-=======
+
 const fs = require('../utils/safe-fs');
 const path = require('path');
 
@@ -29,6 +27,6 @@ try {
 } catch (e) {
   console.warn('[version.js] 无法读取 VERSION 文件，使用兜底版本:', VERSION);
 }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 module.exports = { VERSION };

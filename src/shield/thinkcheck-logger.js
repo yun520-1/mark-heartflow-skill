@@ -30,11 +30,9 @@
  *   两者同时输出，luoxuejian000 可以选择任意一种分析
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 const VERSION = '2.0.0';
@@ -87,18 +85,14 @@ class ThinkCheckLogger {
 
       this._ready = true;
     } catch (e) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Cannot write: ${e.message}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       this._ready = false;
     }
 
     if (this._consoleOutput) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.log: console.log(header);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     }
   }
 
@@ -121,10 +115,8 @@ class ThinkCheckLogger {
     }
 
     if (this._consoleOutput) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.log: console.log(`\n--- DECISION #${decId} ---`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     }
   }
 
@@ -147,10 +139,8 @@ class ThinkCheckLogger {
     this._currentDecision.fields.push({ key, value: formatted });
 
     if (this._consoleOutput) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.log: console.log(`${key}: ${formatted}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     }
   }
 
@@ -175,23 +165,18 @@ class ThinkCheckLogger {
 
     this.addField('timestamp', new Date().toISOString());
 
-<<<<<<< HEAD
-=======
+
     // [D-005] Restrict log file permissions to owner-only (0o600) before each append
     try { fs.chmodSync(this._outputFile, 0o600); } catch {}
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     if (this._ready) {
       const lines = this._currentDecision.fields.map(f => `${f.key}: ${f.value}`).join('\n');
       const block = `\n--- DECISION #${this._currentDecision.id} ---\n${lines}\n`;
       try {
         fs.appendFileSync(this._outputFile, block, 'utf-8');
-<<<<<<< HEAD
-      } catch (e) {
-        // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
-      }
-=======
+
       } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
 
     this._currentDecision = null;
@@ -332,18 +317,11 @@ class ThinkCheckLogger {
     // 写入文件
     try {
       fs.appendFileSync(this._cotOutputFile, lines.join('\n'), 'utf-8');
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] CoT write error: ${e.message}`);
-    }
 
-    if (this._consoleOutput) {
-      // [PROD] 生产环境移除 console.log: console.log(lines.join('\n'));
-=======
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
 
     if (this._consoleOutput) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
 
@@ -586,28 +564,18 @@ class ThinkCheckLogger {
     if (this._ready) {
       try {
         fs.appendFileSync(this._outputFile, '\n' + content + '\n', 'utf-8');
-<<<<<<< HEAD
-      } catch (e) {
-        // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Write error: ${e.message}`);
-      }
-    }
-    if (this._consoleOutput) {
-      // [PROD] 生产环境移除 console.log: console.log(content);
-=======
+
       } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     }
     if (this._consoleOutput) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
 
   flush() {
     if (this._consoleOutput) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] CoT → ${this._cotOutputFile}`);
-      // [PROD] 生产环境移除 console.error: console.error(`[ThinkCheckLogger] Decisions → ${this._outputFile}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     }
   }
 

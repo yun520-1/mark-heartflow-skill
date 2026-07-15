@@ -21,11 +21,9 @@
  * 判断结果以三段式输出（判断/理由/行动），不暴露过程数据
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 const VERSION = '1.0.0';
@@ -66,10 +64,8 @@ class JudgmentEngine {
     // 加载历史
     this._load();
 
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[JudgmentEngine v${VERSION}] 已加载 ${this.history.length} 条历史判断, ${this.consequences.length} 条后果记录`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
   }
 
   // ════════════════════════════════════════════════════════
@@ -881,13 +877,9 @@ class JudgmentEngine {
         this.consequences = data.consequences || [];
         this.rlTable = data.rlTable || {};
       }
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[JudgmentEngine] 加载历史失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _autoSave() {
@@ -909,13 +901,9 @@ class JudgmentEngine {
         version: this.version,
       }, null, 2);
       fs.writeFileSync(filePath, data, 'utf-8');
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[JudgmentEngine] 保存失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   destroy() {

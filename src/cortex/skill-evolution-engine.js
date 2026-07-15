@@ -13,8 +13,7 @@
  * @version 1.0.0
  */
 
-<<<<<<< HEAD
-=======
+
 const crypto = require('crypto');
 
 // === 技能/评分 Map 最大容量 ===
@@ -35,7 +34,7 @@ function _boundedSet(map, key, value, maxSize) {
   map.set(key, value);
 }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 class SkillEvolutionEngine {
   constructor(options = {}) {
     this._config = {
@@ -65,11 +64,9 @@ class SkillEvolutionEngine {
    * 注册新技能
    */
   registerSkill(skill) {
-<<<<<<< HEAD
-    const id = skill.id || `skill_${Date.now()}_${this._skills.size}`;
-=======
+
     const id = skill.id || `skill_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     const entry = {
       id,
       name: skill.name || id,
@@ -88,13 +85,10 @@ class SkillEvolutionEngine {
       version: '1.0.0',
     };
 
-<<<<<<< HEAD
-    this._skills.set(id, entry);
-    this._rubrics.set(id, entry.rubric);
-=======
+
     _boundedSet(this._skills, id, entry, MAX_CACHE_SIZE);
     _boundedSet(this._rubrics, id, entry.rubric, MAX_CACHE_SIZE);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this._stats.totalSkills++;
     return entry;
   }
@@ -234,11 +228,9 @@ class SkillEvolutionEngine {
 
   _incrementVersion(v) {
     const parts = v.split('.');
-<<<<<<< HEAD
-    parts[2] = String(parseInt(parts[2] || 0) + 1);
-=======
+
     parts[2] = String(parseInt(parts[2] || 0, 10) + 1);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return parts.join('.');
   }
 
@@ -324,11 +316,9 @@ class SkillEvolutionEngine {
     if (skills.length < 2) return null;
 
     const combined = {
-<<<<<<< HEAD
-      id: `composed_${Date.now()}`,
-=======
+
       id: `composed_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       name: skills.map(s => s.name).join(' + '),
       description: `Composed from: ${skills.map(s => s.name).join(', ')}`,
       category: 'composed',

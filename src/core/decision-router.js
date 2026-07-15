@@ -131,11 +131,10 @@ const DECISION_PRIORITY = {
 };
 
 // ─── 决策路由引擎 ────────────────────────────────────────────────────────
-<<<<<<< HEAD
-=======
+
 const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 class DecisionRouter {
   /**
    * @param {object} heartFlow - HeartFlow 主实例引用
@@ -493,11 +492,10 @@ class DecisionRouter {
 
     // 决策反馈循环（2026-06-28 基于 DeepSeek #1424 讨论）
     this._ruleStats = {};
-<<<<<<< HEAD
-=======
+
     // [v5.14.1] 共享认知桥接
     this._bridgeCache = getCognitiveBridge();
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     for (const rule of this._rules) {
       if (!rule.hasOwnProperty('weight')) rule.weight = 1.0;
       this._ruleStats[rule.id] = {
@@ -506,11 +504,10 @@ class DecisionRouter {
         wrong: 0,
         accuracy: 1.0,
         lastAdjustment: 0,
-<<<<<<< HEAD
-=======
+
         // v8.16.0: 时序决策历史（用于加权准确率计算）
         decisions: [],  // [{correct: boolean, ts: number}, ...]
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       };
     }
 
@@ -520,12 +517,11 @@ class DecisionRouter {
 
     this._activeDecision = null;
 
-<<<<<<< HEAD
-=======
+
     // 桥接缓存
     this._bridgeCache = undefined;
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     // 抑制——防止同一规则在短时间内重复触发
     this._suppression = new Map();
     this._suppressionWindow = 10000;
@@ -569,8 +565,7 @@ class DecisionRouter {
   // ─── v3.0.0 新增：U/D/A/H 场域计算方法 ──────────────────────────────────
 
   /**
-<<<<<<< HEAD
-=======
+
    * v5.8.0 优化：字段提取优先级表（替代 if/else 链）
    * 每个维度按优先级排列字段名，命中第一个即返回
    */
@@ -609,7 +604,7 @@ class DecisionRouter {
   }
 
   /**
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
    * 从任意模块的分析结果中提取或计算 U/D/A/H 四维值
    * @param {object} result - 模块返回值
    * @returns {{ U: number, D: number, A: number, H: number }}
@@ -619,19 +614,7 @@ class DecisionRouter {
       // v3.6.1：后备连续性 — API/模块不可用时回退到上次已知场域快照
       if (this._lastKnownField) {
         this._stats.fallbackCount++;
-<<<<<<< HEAD
-        // 轻微衰减：U/D 降 0.01，A 升 0.01，H 重新计算
-        const fallback = {
-          U: Math.max(0.2, this._lastKnownField.U - 0.01),
-          D: Math.max(0.2, this._lastKnownField.D - 0.01),
-          A: Math.min(1, this._lastKnownField.A + 0.01),
-        };
-        fallback.H = Math.max(0, Math.min(1,
-          FIELD_WEIGHTS.lambdaU * fallback.U +
-          FIELD_WEIGHTS.lambdaD * fallback.D -
-          FIELD_WEIGHTS.lambdaA * fallback.A
-        ));
-=======
+
         const fb = this._lastKnownField;
         const fallback = {
           U: Math.max(0.2, fb.U - 0.01),
@@ -639,90 +622,24 @@ class DecisionRouter {
           A: Math.min(1, fb.A + 0.01),
         };
         fallback.H = this._computeH(fallback.U, fallback.D, fallback.A);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         this._lastKnownField = fallback;
         return fallback;
       }
       return { U: 0.3, D: 0.3, A: 0, H: 0.3 };
     }
 
-<<<<<<< HEAD
-    // v3.6.1：记录当前场域快照供后备使用
-    // U（统一性/Unity）——身份在场强度
-    let rawU = 0.3;
-    if (result.identityCoherence !== undefined) {
-      rawU = result.identityCoherence;
-    } else if (result._fieldU !== undefined) {
-      rawU = result._fieldU;
-    } else if (result.ok !== undefined) {
-      rawU = result.ok ? 0.6 : 0.2;
-    } else if (result.confidence !== undefined) {
-      rawU = Math.max(0.2, result.confidence);
-    } else if (result.stability !== undefined) {
-      rawU = result.stability;
-    }
-    const U = Math.max(0, Math.min(1, rawU));
 
-    // D（发展性/Development）——信息推进的结构化程度
-    let rawD = 0.3;
-    if (result.quality !== undefined) {
-      rawD = result.quality;
-    } else if (result._fieldD !== undefined) {
-      rawD = result._fieldD;
-    } else if (result.success !== undefined) {
-      rawD = result.success ? 0.7 : 0.2;
-    } else if (result.cognitiveLoad !== undefined) {
-      rawD = Math.max(0.1, 1 - result.cognitiveLoad);
-    } else if (result.awareness !== undefined) {
-      rawD = Math.max(0.2, result.awareness * 0.8);
-    }
-    const D = Math.max(0, Math.min(1, rawD));
-
-    // A（对抗性/Adversity）——矛盾边密度
-    let rawA = 0;
-    if (result.dissonance !== undefined) {
-      rawA = result.dissonance;
-    } else if (result._fieldA !== undefined) {
-      rawA = result._fieldA;
-    } else if (result.severity !== undefined) {
-      rawA = String(result.severity).toUpperCase() === 'CRITICAL' ? 0.8 :
-          String(result.severity).toUpperCase() === 'HIGH' ? 0.6 : 0.1;
-    } else if (result.goalValid === false) {
-      rawA = 0.5;
-    } else if (result.valid === false) {
-      rawA = 0.4;
-    } else if (result.ok === false) {
-      rawA = 0.3;
-    }
-    const A = Math.max(0, Math.min(1, rawA));
-=======
     // v5.8.0 优化：使用优先级表提取字段值（O(1) 平均）
     const U = Math.max(0, Math.min(1, DecisionRouter._extractField(result, 'U', 0.3)));
     const D = Math.max(0, Math.min(1, DecisionRouter._extractField(result, 'D', 0.3)));
     const A = Math.max(0, Math.min(1, DecisionRouter._extractField(result, 'A', 0)));
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     // 保存当前场域快照（供后备连续性使用）
     this._lastKnownField = { U, D, A };
 
-<<<<<<< HEAD
-    // H（和谐度/Harmony）——加权公式（v3.8.0：场景感知权重）
-    // H = λU·U + λD·D - λA·A
-    const weights = this._activeWeights;
-    const rawH = weights.lambdaU * U + weights.lambdaD * D - weights.lambdaA * A;
-    const H = Math.max(0, Math.min(1, rawH));
 
-    // v3.9.1：记录场景上下文（解决跨场景 H 值可比性问题）
-    const scene = this._activeScene || 'default';
-    const normalizedH = this._normalizeHAcrossScenes(H, scene);
-
-    return { U, D, A, H, scene, normalizedH };
-  }
-
-  /**
-   * v3.8.0：检测当前场景类型
-   * 基于场域历史特征自动分类场景，切换权重配置
-=======
     const H = this._computeH(U, D, A);
     return { U, D, A, H };
   }
@@ -779,7 +696,7 @@ class DecisionRouter {
   /**
    * v3.8.0：检测当前场景类型
    * v5.8.0 优化：使用评分表替代 if/else 链
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
    * @param {{U:number, D:number, A:number, H:number}} fieldValues
    * @param {object} [result] - 原始模块返回值（含额外特征）
    * @returns {string} 场景类型标识
@@ -788,35 +705,7 @@ class DecisionRouter {
     const { U, D, A, H } = fieldValues;
     const hist = this._fieldHistory;
 
-<<<<<<< HEAD
-    // 条件1：技术讨论 — D 持续主导 + A 偏低 + U 稳定偏高
-    if (D > 0.5 && A < 0.2 && U > 0.4 && hist.length >= 3) {
-      const recentDrivers = hist.slice(-3).map(h => h.driver);
-      const dDominant = recentDrivers.filter(d => d === 'D').length >= 2;
-      if (dDominant) return 'technical';
-    }
 
-    // 条件2：情感冲突 — A 波动大 + 有快速升降
-    if (A > 0.3 && hist.length >= 3) {
-      const aValues = hist.slice(-3).map(h => h.A);
-      const aRange = Math.max(...aValues) - Math.min(...aValues);
-      if (aRange > 0.15) return 'emotional';
-    }
-
-    // 条件3：分析/推理 — 模块返回了 quality/directionClear 等推理信号
-    if (result && (result.quality !== undefined || result.directionClear !== undefined)) {
-      return 'analytical';
-    }
-
-    // 条件4：创意/发散 — U 高 + D 低 + A 低
-    if (U > 0.6 && D < 0.3 && A < 0.15) return 'creative';
-
-    // 条件5：自我修复 — A 高 + U 低 + H 低
-    if (A > 0.5 && U < 0.3 && H < 0.4) return 'reflective';
-
-    // 默认
-    return 'general';
-=======
     // 使用评分表并行评估所有场景，取最高分
     let bestScene = 'general';
     let bestScore = 0;
@@ -828,7 +717,7 @@ class DecisionRouter {
       }
     }
     return bestScene;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -1219,9 +1108,7 @@ class DecisionRouter {
         matches.push({
           ruleId: rule.id,
           type: rule.decision,
-<<<<<<< HEAD
-          confidence: Math.min(1, Math.max(0, baseConfidence * ruleWeight)),
-=======
+
           // [v5.17.8] 认知闭环: feedbackState调整决策置信度
           confidence: (() => {
             let conf = Math.min(1, Math.max(0, baseConfidence * ruleWeight));
@@ -1236,7 +1123,7 @@ class DecisionRouter {
             }
             return Math.min(1, Math.max(0, conf));
           })(),
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
           priority: DECISION_PRIORITY[rule.decision] || 0,
           rationale: rule.rationale(result),
           fallback: rule.fallback,
@@ -1283,8 +1170,7 @@ class DecisionRouter {
 
     const best = matches[0];
 
-<<<<<<< HEAD
-=======
+
     // [FORMULA v5.14.0] 主动推断期望自由能 — 评估多策略选择的信息寻求价值
     // EFE 衡量选择某个策略后预期获得的信息增益（熵减少）
     // 高 EFE → 策略探索性强，即使优先级略低也可能值得尝试
@@ -1332,7 +1218,7 @@ class DecisionRouter {
       }
     } catch (e) { _shapleyWeights = null; }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this._suppression.set(best.ruleId, now);
 
     // 记录历史
@@ -1709,10 +1595,7 @@ class DecisionRouter {
       stats.wrong++;
     }
 
-<<<<<<< HEAD
-    const total = stats.correct + stats.wrong;
-    stats.accuracy = total > 0 ? stats.correct / total : 1.0;
-=======
+
     // v8.16.0: 记录时序决策（用于加权准确率）
     stats.decisions = stats.decisions || [];
     stats.decisions.push({ correct: outcome === 'correct', ts: Date.now() });
@@ -1737,18 +1620,12 @@ class DecisionRouter {
       ? weightedAccuracyResult.weightedAccuracy
       : simpleAccuracy;
     stats.accuracy = +effectiveAccuracy.toFixed(4);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     const rule = this._rules.find(r => r.id === ruleId);
     if (!rule) return;
 
-<<<<<<< HEAD
-    const delta = outcome === 'correct' ? 0.05 : -0.10;
-    rule.weight = Math.max(0.1, Math.min(2.0, (rule.weight || 1.0) + delta));
-    stats.lastAdjustment = delta;
 
-    if (stats.accuracy < 0.4 && rule.weight <= 0.3) {
-=======
     // 基于加权准确率的权重调整：准确率高→增重，低→减重
     // 准确率 >= 0.8: 小幅增重 (+0.03); >= 0.6: 微调 (+0.01); < 0.4: 惩罚 (-0.08); < 0.6: 缓罚 (-0.04)
     let delta = 0;
@@ -1771,7 +1648,7 @@ class DecisionRouter {
     stats.lastAdjustment = delta;
 
     if (effectiveAccuracy < 0.4 && rule.weight <= 0.3) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       rule._downgraded = true;
       rule.priority = (rule.priority || 50) * 0.5;
     }
@@ -1780,8 +1657,7 @@ class DecisionRouter {
   }
 
   /**
-<<<<<<< HEAD
-=======
+
      * [v5.14.1] 桥接访问 — 使用共享 cognitive-bridge（构造时已初始化）
      * @returns {object|null}
      */
@@ -1790,7 +1666,7 @@ class DecisionRouter {
     }
 
   /**
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
    * 获取规则统计信息
    */
   getRuleStats() {

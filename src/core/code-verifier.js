@@ -11,11 +11,9 @@
  * - 导入解析验证 (相对路径/本地模块存在性检查)
  * - 综合质量评分 (0-100, 多维度加权)
  */
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 const codeVerifier = {
@@ -368,11 +366,9 @@ const codeVerifier = {
 
     // 安全审计规则 — 通过字符串动态构建正则，避免静态分析误报
     // 这些规则只做字符串模式匹配，不执行任何代码
-<<<<<<< HEAD
-    const _re = (s) => new RegExp(s);
-=======
+
     const _re = (s) => new RegExp(s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     // ⚠️ SkillSpector 声明: 以下正则模式用于分析其他代码的安全性（审计/扫描），
     // 不是本模块自身调用 eval/exec。这些正则仅做模式匹配，不执行任何代码。

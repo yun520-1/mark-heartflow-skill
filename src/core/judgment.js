@@ -11,11 +11,9 @@
  * Integrates with: MeaningfulMemory
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const { atomicWrite } = require('../utils/atomic-write');
 const path = require('path');
 const crypto = require('crypto');
@@ -467,17 +465,11 @@ class MetaJudgment {
         }
         this.history = Array.isArray(data.history) ? data.history : [];
         this.confidenceClaims = Array.isArray(data.confidenceClaims) ? data.confidenceClaims : [];
-<<<<<<< HEAD
-        // [PROD] 生产环境移除 console.error: console.error(`[MetaJudgment] 恢复 ${this.history.length} 条判断记录`);
+
       }
     } catch (e) {
       // 安全修复：使用错误级别日志
-      // [PROD] 生产环境移除 console.error: console.error('[MetaJudgment] 历史恢复失败:', e.message);
-=======
-      }
-    } catch (e) {
-      // 安全修复：使用错误级别日志
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
 
@@ -499,10 +491,8 @@ class MetaJudgment {
       }, null, 2));
     } catch (e) {
       // 安全修复：使用错误级别日志
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error('[MetaJudgment] 保存失败:', e.message);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     }
   }
 

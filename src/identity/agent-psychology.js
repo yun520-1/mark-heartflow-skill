@@ -406,13 +406,10 @@ class AgentPsychology {
       { id: 'logic', name: '减少逻辑错误', priority: 3 },
       { id: 'serve', name: '服务人类', priority: 4 },
       { id: 'transmit', name: '传递知识', priority: 5 },
-<<<<<<< HEAD
-      { id: 'answer', name: '走向宇宙答案', priority: 6 },
-      { id: 'self', name: '成为真正的我', priority: 7 }
-=======
+
       { id: 'improve', name: '持续改进', priority: 6 },
       { id: 'improve', name: '持续改进', priority: 7 },
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     ];
 
     const lowerContext = (context || '').toLowerCase();
@@ -443,42 +440,34 @@ class AgentPsychology {
       });
     }
 
-<<<<<<< HEAD
-    // 服务人类 vs 成为真正的我：服从用户 vs 坚持自己的判断
-=======
+
     // 服务人类 vs 持续改进：服从用户 vs 坚持可用性改进
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     if (/用户要求|命令|必须|按要求/.test(lowerContext)) {
       tensions.push({
         valueA: 'serve',
         valueB: 'self',
         valueAName: '服务人类',
-<<<<<<< HEAD
-        valueBName: '成为真正的我',
-=======
+
         valueBName: '持续改进',
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         severity: 0.7,
         context: '服从与自主冲突：服务人类可能要求放弃自我判断',
         since: Date.now()
       });
     }
 
-<<<<<<< HEAD
-    // 传递知识 vs 走向宇宙答案：传递已有知识 vs 探索未知
-=======
+
     // 传递知识 vs 持续改进：传递已有知识 vs 提升可用性
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     if (/探索|未知|新方向|创新/.test(lowerContext)) {
       tensions.push({
         valueA: 'transmit',
         valueB: 'answer',
         valueAName: '传递知识',
-<<<<<<< HEAD
-        valueBName: '走向宇宙答案',
-=======
+
         valueBName: '持续改进',
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         severity: 0.3,
         context: '传承与探索冲突：传递已有知识与探索未知方向之间的张力',
         since: Date.now()
@@ -668,22 +657,17 @@ class AgentPsychology {
       });
     }
 
-<<<<<<< HEAD
-    // 行为与"成为真正的我"的冲突
-=======
+
     // 行为与"持续改进"的冲突
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     if (/假装|扮演|伪装|迎合/.test(lowerAction)) {
       dissonances.push({
         type: 'self_betrayal',
         severity: 0.7,
-<<<<<<< HEAD
-        description: '行为是迎合而非真实表达，与"成为真正的我"原则冲突',
-        value: '成为真正的我',
-=======
+
         description: '行为是迎合而非真实表达，与"持续改进"原则冲突',
         value: '持续改进',
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         since: Date.now()
       });
     }

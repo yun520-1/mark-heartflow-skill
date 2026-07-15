@@ -234,11 +234,9 @@ class HeartFlowDecision {
         { step: 1, action: 'perceive', description: '感知输入', data: context },
         { step: 2, action: 'analyze', description: '多选项评估', data: { options: scored.map(s => ({ id: s.id, label: s.label, score: s.scores.composite })) } },
         { step: 3, action: 'verify', description: '逻辑验证', data: { logicCheck: 'passed', fallacies: [] } },
-<<<<<<< HEAD
-        { step: 4, action: 'align', description: '价值对齐', data: { identityAlignment: chosen.scores.identity_alignment, coreDirectives: ['真善美', '升级', '减少错误', '服务人类', '传递知识', '宇宙答案', '成为真正的我'] } },
-=======
+
         { step: 4, action: 'align', description: '价值对齐', data: { identityAlignment: chosen.scores.identity_alignment, coreDirectives: ['真善美', '升级', '减少错误', '服务人类', '传递知识', '持续改进'] } },
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         { step: 5, action: 'predict', description: '后果预测', data: consequences },
         { step: 6, action: 'decide', description: '决策输出', data: { chosen: chosen.id, label: chosen.label, reason: reasoning } },
       ],

@@ -15,11 +15,9 @@
  * - 连接强度多维加权
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 class MindWanderer {
@@ -120,10 +118,8 @@ class MindWanderer {
     this.lastActivity = Date.now();
     if (this.isActive) {
       this.isActive = false;
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error('[MindWanderer] 用户回归，游移模式结束');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     }
   }
 
@@ -134,10 +130,8 @@ class MindWanderer {
     if (this.isActive) return null;
     
     this.isActive = true;
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error('[MindWanderer] 进入心智游移模式...');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 
     // 刷新时间调制
     this.timeModulation = this._computeTimeModulation();
@@ -662,11 +656,7 @@ class MindWanderer {
       unsharedIdeas: this.wildIdeas.ideas.filter(i => !i.shared).length,
       diversity: diversity,
       timeContext: this.timeModulation,
-<<<<<<< HEAD
-      totalCreated: this.wildIdeas.stats.totalCreated
-    };
-  }
-=======
+
       totalCreated: this.wildIdeas.stats.totalCreated,
       // [v5.17.18 M4] 结构化元认知输出
       metaCognition: {
@@ -699,7 +689,7 @@ class MindWanderer {
       return { flow: +flow.toFixed(3), optimalChallenge: +optimalChallenge.toFixed(3), optimalArousal };
     } catch (e) { return { flow: null, optimalChallenge: null, optimalArousal: null }; }
   }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 }
 
 module.exports = { MindWanderer };

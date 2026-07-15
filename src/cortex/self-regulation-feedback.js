@@ -18,11 +18,9 @@
  * - 闭环: 评估 → 执行 → 结果 → 学习 → 改进评估
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 class SelfRegulationFeedback {
@@ -267,13 +265,9 @@ class SelfRegulationFeedback {
         const data = JSON.parse(fs.readFileSync(file, 'utf-8'));
         this.feedbackHistory = data.history || [];
       }
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('Failed to load self-regulation feedback:', e);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _save() {
@@ -283,13 +277,9 @@ class SelfRegulationFeedback {
         history: this.feedbackHistory,
         savedAt: new Date().toISOString()
       }, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('Failed to save self-regulation feedback:', e);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 }
 

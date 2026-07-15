@@ -61,12 +61,9 @@ class SAGEGuardian {
   log(message, level = 'INFO') {
     const timestamp = new Date().toISOString();
     const entry = `[${timestamp}] [${level}] ${message}\n`;
-<<<<<<< HEAD
-    fs.appendFileSync(this.logFile, entry);
-    // [PROD] 生产环境移除 console.error: console.error(`[SAGE] ${message}`);
-=======
+
     safeAppendFileSync(this.logFile, entry);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -346,17 +343,11 @@ class SAGEGuardian {
     const logLine = JSON.stringify(logEntry) + '\n';
     
     try {
-<<<<<<< HEAD
-      fs.appendFileSync(this.logFile, logLine);
-      // [PROD] 生产环境移除 console.error: console.error(`[SAGE] Security decision logged: ${decision.level}`);
-      return { success: true };
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[SAGE] Failed to log security decision:', e.message);
-=======
+
       safeAppendFileSync(this.logFile, logLine);
       return { success: true };
     } catch (e) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       return { success: false, error: e.message };
     }
   }
@@ -376,10 +367,8 @@ class SAGEGuardian {
             try {
               return JSON.parse(line);
             } catch (e) {
-<<<<<<< HEAD
-              // [PROD] 生产环境移除 console.warn: console.warn('[SAGE] Skipping invalid JSON line in security log');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
               return null;
             }
           })
@@ -387,13 +376,9 @@ class SAGEGuardian {
         
         return logs.slice(-limit);
       }
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[SAGE] Error reading security log:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return [];
   }
 

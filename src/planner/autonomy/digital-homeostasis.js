@@ -11,11 +11,9 @@
  *   - 自我修正逻辑 (self-correction) — 当系统检测到异常趋势时自动建议修正行为
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 // ============================================================================
@@ -169,20 +167,16 @@ class DigitalHomeostasis {
     this.tickInterval = setInterval(() => {
       this.tick();
     }, intervalMs);
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[DigitalHomeostasis] Tick started (interval: ${intervalMs}ms)`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
   }
 
   stopTick() {
     if (this.tickInterval) {
       clearInterval(this.tickInterval);
       this.tickInterval = null;
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error('[DigitalHomeostasis] Tick stopped');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     }
   }
 

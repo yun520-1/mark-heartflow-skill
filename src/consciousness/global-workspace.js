@@ -78,27 +78,21 @@ class GlobalWorkspace extends EventEmitter {
    */
   registerAgent(agent) {
     if (!agent || !agent.name) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error('[GWT] Rejecting agent: missing name or agent object');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       return false;
     }
 
     const validation = this._validateAgentMethods(agent);
     if (!validation.valid) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error(`[GWT] Rejecting agent "${agent.name}": missing methods [${validation.missing.join(', ')}]`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       return false;
     }
 
     if (this.agents.has(agent.name)) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.warn: console.warn(`[GWT] Overwriting existing agent: ${agent.name}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     }
 
     this.agents.set(agent.name, {
@@ -111,10 +105,8 @@ class GlobalWorkspace extends EventEmitter {
       /** 连续失败计数，用于故障检测 */
       consecutiveFailures: 0,
     });
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[GWT] Registered agent: ${agent.name}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     return true;
   }
 
@@ -143,12 +135,10 @@ class GlobalWorkspace extends EventEmitter {
 
     this.cyclePhase = 'integrating';
     const winningAgent = this.determineWinner(broadcasts);
-<<<<<<< HEAD
-    const consensus = this.integrate(winningAgent, broadcasts);
-=======
+
     const stabilizedWinner = this._stabilizeWinner(winningAgent, broadcasts, 3);
     const consensus = this.integrate(stabilizedWinner, broadcasts);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this.lastConsensus = consensus;
 
     // 记录周期历史
@@ -194,8 +184,7 @@ class GlobalWorkspace extends EventEmitter {
 
         broadcasts.push(broadcast);
 
-<<<<<<< HEAD
-=======
+
         // [v5.17.15 M1] 动态显著性阈值 — 根据情绪状态和任务类型调整
         // 高唤醒(情绪激烈) → 降低阈值(更敏感); 低噪声任务 → 提高阈值(过滤噪音)
         const emotionalArousal = context?.emotion?.arousal || 0.5;
@@ -203,7 +192,7 @@ class GlobalWorkspace extends EventEmitter {
         const salienceThreshold = 0.5 + 0.2 * (1 - emotionalArousal) + 0.1 * taskComplexity;
         broadcast.salienceThreshold = +salienceThreshold.toFixed(3);
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         agentData.lastOutput = output;
         agentData.attentionRequests.push({
           attention: broadcast.attention,
@@ -212,13 +201,9 @@ class GlobalWorkspace extends EventEmitter {
         });
         agentData.consecutiveFailures = 0;
 
-<<<<<<< HEAD
-        // [PROD] 生产环境移除 console.error: console.error(`[GWT] ${name} broadcasts: attention=${broadcast.attention.toFixed(3)}, confidence=${broadcast.confidence.toFixed(3)}`);
+
       } catch (e) {
-        // [PROD] 生产环境移除 console.error: console.error(`[GWT] Agent ${name} error:`, e.message);
-=======
-      } catch (e) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         agentData.consecutiveFailures++;
         // 即使失败也记录一个低优先级广播，保证 integrate 能看到所有参与者
         broadcasts.push({
@@ -295,11 +280,7 @@ class GlobalWorkspace extends EventEmitter {
     });
 
     const winner = scored[0];
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[GWT] Winner: ${winner.agent} (score: ${winner.score.toFixed(3)})`);
 
-    return winner;
-=======
 
     // [FORMULA v5.14.0] GWT 公式增强 —— 用公式桥接直接计算全局工作空间竞争信号
     // 不替代主逻辑（确定性排序），仅附带 GWT 计算结果供上层感知
@@ -353,7 +334,7 @@ class GlobalWorkspace extends EventEmitter {
       };
     }
     return result;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -385,8 +366,7 @@ class GlobalWorkspace extends EventEmitter {
   }
 
   /**
-<<<<<<< HEAD
-=======
+
    * [v5.17.16 M2] 马尔可夫毯稳定化 — Thoughtseed多轮竞争
    * arXiv:2408.15982 — 嵌套马尔可夫毯层级间消息传递
    * 对初始winner多轮迭代, 增强胜者注意力直到概念稳定
@@ -411,7 +391,7 @@ class GlobalWorkspace extends EventEmitter {
   }
 
   /**
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
    * 生成内心独白
    * 使用 AGENT_NAME_MAP 抽象智能体名称，避免硬编码
    */

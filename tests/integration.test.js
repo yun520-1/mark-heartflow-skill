@@ -73,7 +73,6 @@ test('confidence.calibrate路由', () => {
   return data && typeof data.confidence === 'object' && typeof data.confidence.calibrated === 'number';
 });
 
-<<<<<<< HEAD
 // Edge Case Tests - Empty String Handling
 test('Handle empty string input through emotion.process', () => {
   try {
@@ -186,8 +185,6 @@ test('Handle alternating empty strings and valid inputs', () => {
     return false;
   }
 });
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
 console.log(`\n=== 结果: ${passed}/${passed+failed} 通过 ===`);
 
 if (failed > 0) {

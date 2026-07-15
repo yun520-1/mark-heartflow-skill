@@ -21,10 +21,9 @@
  */
 
 const { GoalPursuer } = require('./goal-pursuer.js');
-<<<<<<< HEAD
-=======
+
 let validateFetchUrl; try { ({validateFetchUrl}=require('../security/url-validator.js')) } catch { validateFetchUrl = ()=>({safe:false,reason:'validator missing'}) }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 // ============================================================================
 // 状态枚举
@@ -269,10 +268,8 @@ class SelfInitiator {
   async _runCodeTask(task) {
     task.state = TASK_STATE.RUNNING;
 
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.warn: console.warn('⚠️ 安全警告: 执行用户提供的代码可能带来安全风险');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 
     try {
       // Step 1: 验证代码
@@ -563,10 +560,8 @@ function sortData(data, key = null, ascending = true) {
 
 // 使用示例
 // const result = sortData(items, 'name', true);
-<<<<<<< HEAD
-// [PROD] 生产环境移除 console.log: // console.log(result);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 ` },
       { match: /过滤|filter/i, code: (name) =>
 `/**
@@ -580,10 +575,8 @@ function filterData(data, predicate) {
 
 // 使用示例
 // const adults = filterData(people, p => p.age >= 18);
-<<<<<<< HEAD
-// [PROD] 生产环境移除 console.log: // console.log(adults);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 ` },
       { match: /统计|统计|analyze|stats|count/i, code: (name) =>
 `/**
@@ -608,10 +601,8 @@ function analyzeData(data, options = {}) {
 
 // 使用示例
 // const stats = analyzeData([1, 2, 3, 4, 5]);
-<<<<<<< HEAD
-// [PROD] 生产环境移除 console.log: // console.log(stats);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 ` },
       { match: /转换|transform|map|format/i, code: (name) =>
 `/**
@@ -625,10 +616,8 @@ function transformData(data, transformer) {
 
 // 使用示例
 // const names = transformData(users, u => u.name);
-<<<<<<< HEAD
-// [PROD] 生产环境移除 console.log: // console.log(names);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 ` },
       { match: /搜索|search|find|query/i, code: (name) =>
 `/**
@@ -655,10 +644,8 @@ function searchData(data, query, options = {}) {
 
 // 使用示例
 // const results = searchData(users, 'alice', { keys: ['name', 'email'] });
-<<<<<<< HEAD
-// [PROD] 生产环境移除 console.log: // console.log(results);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 ` },
       { match: /验证|validate|check|assert/i, code: (name) =>
 `/**
@@ -698,18 +685,15 @@ function validateData(data, rules) {
 //   name: { required: true, type: 'string' },
 //   age: { required: true, type: 'number', min: 0, max: 150 }
 // });
-<<<<<<< HEAD
-// [PROD] 生产环境移除 console.log: // console.log(result);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 ` },
       { match: /爬虫|fetch|scrape|请求|http|api/i, code: (name) =>
 `/**
  * HTTP请求封装 — 根据${name}需求生成
  */
 async function fetchData(url, options = {}) {
-<<<<<<< HEAD
-=======
+
   // SSRF 防护：校验 URL 安全性
   const urlCheck = _validateFetchUrl(url);
   if (!urlCheck.safe) {
@@ -717,7 +701,7 @@ async function fetchData(url, options = {}) {
     return { success: false, error: urlCheck.reason };
   }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   const {
     method = 'GET',
     headers = { 'Content-Type': 'application/json' },
@@ -754,10 +738,8 @@ async function fetchData(url, options = {}) {
 
 // 使用示例
 // const result = await fetchData('https://api.example.com/data');
-<<<<<<< HEAD
-// [PROD] 生产环境移除 console.log: // console.log(result);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 ` },
       { match: /缓存|cache|memoize|记忆/i, code: (name) =>
 `/**
@@ -805,20 +787,16 @@ class SimpleCache {
 // 使用示例
 // const cache = new SimpleCache({ ttl: 30000 });
 // cache.set('key', { data: 'value' });
-<<<<<<< HEAD
-// [PROD] 生产环境移除 console.log: // console.log(cache.get('key'));
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 ` },
       { match: /文件|file|read|write|读写/i, code: (name) =>
 `/**
  * 文件操作工具 — 根据${name}需求生成
  */
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 class FileToolkit {
@@ -858,10 +836,8 @@ class FileToolkit {
 // 使用示例
 // const ft = new FileToolkit('./data');
 // ft.write('test.txt', 'Hello World');
-<<<<<<< HEAD
-// [PROD] 生产环境移除 console.log: // console.log(ft.read('test.txt'));
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 ` }
     ];
 
@@ -877,10 +853,8 @@ class FileToolkit {
  * 通用脚本 — ${description.substring(0, 60)}
  */
 async function main() {
-<<<<<<< HEAD
-  // [PROD] 生产环境移除 console.log: console.log('开始执行: ${description.substring(0, 40)}');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 
   // 在此处写入你的逻辑
   // ...
@@ -889,11 +863,9 @@ async function main() {
 }
 
 // 执行入口
-<<<<<<< HEAD
-main().then(console.log).catch(console.error);
-=======
+
 main().then(r => { if (process.env.HEARTFLOW_DEBUG) console.log(r); }).catch(console.error);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 `;
   }
 

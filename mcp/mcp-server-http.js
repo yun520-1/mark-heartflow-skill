@@ -52,10 +52,7 @@ function resolveHFDir() {
     dir = parent;
   }
 
-<<<<<<< HEAD
-  // 3. Fallback 到 ~/.hermes/skills/heartflow/
-  return path.join(process.env.HOME, '.hermes', 'skills', 'heartflow');
-=======
+
   // 3. Fallback：尝试多个可能的安装位置
   const fallbacks = [
     path.join(process.env.HOME, '.hermes', 'skills', 'mark-heartflow-skill'),
@@ -68,7 +65,7 @@ function resolveHFDir() {
   }
   // 最后兜底：返回 mark-heartflow-skill 路径（即使不存在，调用方会报错）
   return path.join(process.env.HOME, '.hermes', 'skills', 'mark-heartflow-skill');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 }
 const HF_DIR = resolveHFDir();
 const HEARTFLOW_PATH = path.join(HF_DIR, 'src', 'core', 'heartflow.js');
@@ -94,11 +91,10 @@ function getVersion() {
 const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || null;
 if (!AUTH_TOKEN) {
   console.error('[MCP] SECURITY: HEARTFLOW_MCP_TOKEN is not set. MCP server requires authentication.');
-<<<<<<< HEAD
-=======
+
   console.error('[MCP] Refusing to start without authentication token.');
   process.exit(1);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 }
 
 // ─── 时间安全的 token 比较（防止 timing attack）───
@@ -123,14 +119,13 @@ const RATE_LIMIT_WINDOW = 60000; // 1 分钟窗口
 const RATE_LIMIT_MAX = 100; // 每分钟最多 100 请求
 const _rateMap = new Map(); // IP → { count, windowStart }
 
-<<<<<<< HEAD
-=======
+
 // [AUDIT-FIX] Token 维度速率限制：防止 token 暴力破解
 const TOKEN_RATE_LIMIT_WINDOW = 60000; // 1 分钟窗口
 const TOKEN_RATE_LIMIT_MAX = 30; // 每个 token 每分钟最多 30 请求
 const _tokenRateMap = new Map(); // tokenHash → { count, windowStart }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 function checkRateLimit(ip) {
   const now = Date.now();
   let entry = _rateMap.get(ip);
@@ -142,8 +137,7 @@ function checkRateLimit(ip) {
   return entry.count <= RATE_LIMIT_MAX;
 }
 
-<<<<<<< HEAD
-=======
+
 // [AUDIT-FIX] Token 维度速率检查
 function checkTokenRateLimit(tokenHash) {
   const now = Date.now();
@@ -156,19 +150,18 @@ function checkTokenRateLimit(tokenHash) {
   return entry.count <= TOKEN_RATE_LIMIT_MAX;
 }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 // 定期清理过期的速率限制记录
 setInterval(() => {
   const now = Date.now();
   for (const [ip, entry] of _rateMap) {
     if (now - entry.windowStart > RATE_LIMIT_WINDOW * 2) _rateMap.delete(ip);
   }
-<<<<<<< HEAD
-=======
+
   for (const [hash, entry] of _tokenRateMap) {
     if (now - entry.windowStart > TOKEN_RATE_LIMIT_WINDOW * 2) _tokenRateMap.delete(hash);
   }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 }, 120000);
 
 // 从 VERSION 文件读取版本
@@ -292,8 +285,7 @@ const TOOLS = [
     description: '升级统计：返回智能升级引擎的统计信息，包括升级次数、关键词分布、平均质量等。',
     inputSchema: { type: 'object', properties: {} }
   },
-<<<<<<< HEAD
-=======
+
   // v3.2.0 — Benchmark 基准测试
   {
     name: 'heartflow_benchmark_run',
@@ -329,7 +321,7 @@ const TOOLS = [
   { name: 'heartflow_persona_stance_detector', description: '立场检测', inputSchema: { type: 'object', properties: { input: { type: 'string' } }, required: ['input'] } },
   { name: 'heartflow_evolution_stats', description: '演化统计信息', inputSchema: { type: 'object', properties: {} } },
   { name: 'heartflow_evolution_evolve', description: '演化一次', inputSchema: { type: 'object', properties: { input: { type: 'string' }, context: { type: 'object' } }, required: ['input'] } },
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 ];
 
 // ═══════════════════════════════════════════════
@@ -981,8 +973,7 @@ function handleUpgradeStats(args) {
   }
 }
 
-<<<<<<< HEAD
-=======
+
 // ── P0-T0-2: knowledge/persona/evolution 脚手架 ──
 function handleKnowledgeQuery(args) {
   const query = (args && args.query) || args || {};
@@ -1186,7 +1177,7 @@ async function handleBenchmarkImportFailures(args, sessionId) {
   }
 }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const HANDLERS = {
   heartflow_think: handleThink,
   heartflow_think_fast: handleThinkFast,
@@ -1212,8 +1203,7 @@ const HANDLERS = {
   // v3.1.0 — 新增工具
   heartflow_module_health: handleModuleHealth,
   heartflow_upgrade_stats: handleUpgradeStats,
-<<<<<<< HEAD
-=======
+
   // v3.2.0 — Benchmark
   heartflow_benchmark_run: handleBenchmarkRun,
   heartflow_benchmark_import_failures: handleBenchmarkImportFailures,
@@ -1227,7 +1217,7 @@ const HANDLERS = {
   heartflow_persona_stance_detector: handlePersonaStanceDetector,
   heartflow_evolution_stats: handleEvolutionStats,
   heartflow_evolution_evolve: handleEvolutionEvolve,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 };
 
 // ═══════════════════════════════════════════════
@@ -1248,11 +1238,9 @@ function makeError(id, code, message, data) {
 // 请求处理
 // ═══════════════════════════════════════════════
 
-<<<<<<< HEAD
-async function handleRequest(request) {
-=======
+
 async function handleRequest(request, sessionId) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   const { id, method, params = {} } = request;
 
   switch (method) {
@@ -1271,16 +1259,14 @@ async function handleRequest(request, sessionId) {
       if (!handler) throw { code: -32601, message: `Method not found: ${name}` };
 
       let result;
-<<<<<<< HEAD
-      result = handler(args);
-=======
+
       // 兼容两种签名：handler(args) 和 handler(args, sessionId)
       try {
         result = handler(args, sessionId);
       } catch (_) {
         result = handler(args);
       }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       if (result && typeof result.then === 'function') result = await result;
       return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }], isError: false };
     }
@@ -1320,8 +1306,7 @@ const server = http.createServer((req, res) => {
   // SkillSpector fix: 移除 URL query parameter token 认证（token 在 URL 中会通过日志/referrer 泄露）
   
   if (!safeCompare(token, AUTH_TOKEN)) {
-<<<<<<< HEAD
-=======
+
     // [AUDIT-FIX] Token 维度速率限制：记录失败尝试
     const tokenHash = token ? crypto.createHash('sha256').update(token).digest('hex').slice(0, 16) : 'none';
     if (!checkTokenRateLimit(tokenHash)) {
@@ -1329,7 +1314,7 @@ const server = http.createServer((req, res) => {
       res.end(JSON.stringify({ error: 'Too Many Auth Failures', retryAfter: 60 }));
       return;
     }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     res.writeHead(401, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Unauthorized', message: 'Invalid or missing Bearer token in Authorization header' }));
     return;
@@ -1338,18 +1323,13 @@ const server = http.createServer((req, res) => {
   // ─── CORS Preflight ───
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
-<<<<<<< HEAD
-      'Access-Control-Allow-Origin': 'http://localhost',  // SkillSpector fix: 限制 CORS 来源,
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Max-Age': '86400'
-=======
+
       'Access-Control-Allow-Origin': 'http://localhost',  // [AUDIT-FIX] 限制 CORS 来源为本地
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Access-Control-Max-Age': '86400',
       'Access-Control-Allow-Credentials': 'false'  // [AUDIT-FIX] 禁止跨域携带凭据
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     });
     res.end();
     return;
@@ -1369,11 +1349,9 @@ const server = http.createServer((req, res) => {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       'Connection': 'keep-alive',
-<<<<<<< HEAD
-      'Access-Control-Allow-Origin': 'http://localhost',  // SkillSpector fix: 限制 CORS 来源,
-=======
+
       'Access-Control-Allow-Origin': 'http://localhost',  // [AUDIT-FIX] 限制 CORS 来源
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       'X-Accel-Buffering': 'no'
     });
 
@@ -1444,11 +1422,9 @@ const server = http.createServer((req, res) => {
           res.end(makeError(null, -32600, 'Invalid Request: expected JSON-RPC object'));
           return;
         }
-<<<<<<< HEAD
-        const result = await handleRequest(request);
-=======
+
         const result = await handleRequest(request, sessionId);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         if (result !== null) {
           // 找到对应的 SSE 客户端，通过 SSE 发送结果
           if (sessionId && sseClients.has(sessionId)) {

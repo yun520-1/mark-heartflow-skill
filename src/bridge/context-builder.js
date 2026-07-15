@@ -50,14 +50,13 @@ class ContextBuilder {
     });
 
     // === 6. 构建格式化LLM字符串 ===
-<<<<<<< HEAD
-=======
+
     // [v5.17.15 M1] 预测误差信号 — 对输入做轻量预期生成，计算与实际的偏差
     // 预测加工理论(Rao&Ballard 1999): 感知=自上而下预测 + 自下而上误差
     const predictionError = this._computePredictionError(input);
     const salienceAdjustment = predictionError > 0.5 ? 'high_surprise' : predictionError > 0.2 ? 'moderate_surprise' : 'expected';
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     const formattedForLLM = this._formatForLLM({
       systemPrompt,
       userIntent,
@@ -74,8 +73,7 @@ class ContextBuilder {
       contextFromHeartflow,
       bridgeInstruction,
       formattedForLLM,
-<<<<<<< HEAD
-=======
+
       // [v5.17.18 M4] 延展心智接口 — Clark&Chalmers(1998)均等原则
       extendedMind: {
         predictionError,
@@ -83,7 +81,7 @@ class ContextBuilder {
         toolsAvailable: ['memory_bank', 'knowledge_graph', 'formula_engine', 'cognitive_workspace'],
         externalResources: contextFromHeartflow?.memoryContext ? ['memory_retrieval'] : [],
       },
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     };
   }
 
@@ -416,8 +414,7 @@ class ContextBuilder {
 
   destroy() {}
   stop() {}
-<<<<<<< HEAD
-=======
+
 
   /**
    * [v5.17.15 M1] 预测误差计算 — 预测加工理论(Rao&Ballard 1999)
@@ -434,7 +431,7 @@ class ContextBuilder {
     if (/(because|therefore|however|因为|所以|但是|然而)/i.test(text)) surprise += 0.2;
     return Math.min(1, Math.max(0, surprise));
   }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 }
 
 module.exports = { ContextBuilder };

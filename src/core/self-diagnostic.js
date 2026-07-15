@@ -9,11 +9,9 @@
  * - Step 6-9 并发扫描所有模块
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 // 根目录（self-diagnostic.js 在 src/core/，向上两级到项目根）
@@ -110,11 +108,9 @@ class DiagnosticResult {
       for (const w of this.warnings) report += `  ⚠ ${w}\n`;
     }
     report += `\n[Step Details]\n`;
-<<<<<<< HEAD
-    for (const [id, step] of Object.entries(this.steps).sort((a, b) => parseInt(a[0]) - parseInt(b[0]))) {
-=======
+
     for (const [id, step] of Object.entries(this.steps).sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10))) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       const icon = step.status === 'pass' ? '✓' : step.status === 'fail' ? '✗' : '⊘';
       const fixedNote = step.fixed ? ' [AUTO-FIXED]' : '';
       report += `  ${icon} Step ${id}: ${step.status}${fixedNote}`;
@@ -435,10 +431,8 @@ async function step19_versionSync(result) {
   // package.json
   const pkgFile = path.join(ROOT, 'package.json');
   if (fs.existsSync(pkgFile)) {
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.warn: try { const pkg = JSON.parse(fs.readFileSync(pkgFile, 'utf-8')); versions.package = pkg.version; } catch (e) { /* [PROD] console.warn removed */ }
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
   }
   
   // SKILL.md frontmatter + title
@@ -531,10 +525,8 @@ async function step20_finalReport(result) {
 
 async function runDiagnostic() {
   const result = new DiagnosticResult();
-<<<<<<< HEAD
-  // [PROD] 生产环境移除 console.log: console.log('Starting HeartFlow Self-Diagnostic (20 steps)...\n');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
   
   // Step 1-5: 版本一致性检测（并发）
   await Promise.all([
@@ -565,10 +557,8 @@ async function runDiagnostic() {
   
   // Step 20: 生成报告
   const report = await step20_finalReport(result);
-<<<<<<< HEAD
-  // [PROD] 生产环境移除 console.log: console.log(report);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
   
   return result;
 }
@@ -577,15 +567,10 @@ async function runDiagnostic() {
 if (require.main === module) {
   runDiagnostic().then(r => {
     const s = r.summary();
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.log: console.log(`\nVerdict: ${s.allPassed ? '✓ PASS' : `✗ FAIL (${s.failed} checks failed)`}`);
+
     return;
   }).catch(e => {
-    // [PROD] 生产环境移除 console.error: console.error('Diagnostic failed:', e);
-=======
-    return;
-  }).catch(e => {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return;
   });
 }

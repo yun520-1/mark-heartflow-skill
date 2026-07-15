@@ -19,11 +19,9 @@
  * - context: 当前上下文
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 const { MemoryIndex } = require('../memory/memory-index.js');
 
@@ -83,11 +81,8 @@ class IdentityCore {
     this.loaded = true;
     result.success = result.errors.length === 0;
 
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[IdentityCore] 启动完成，已加载 ${result.loadedModules.length} 个模块`);
-    // [PROD] 生产环境移除 console.error: console.error(`[IdentityCore] sessionId: ${this.sessionId}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 
     return result;
   }
@@ -222,10 +217,8 @@ class IdentityCore {
    */
   printStartupContext() {
     if (!this.memoryIndex) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error('[IdentityCore] MemoryIndex 未加载');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       return;
     }
     this.memoryIndex.printBootSummary();

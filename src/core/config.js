@@ -14,11 +14,9 @@
  * 可选运行 `node bin/cli.js setup` 进行个性化配置。
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 const os = require('os');
 
@@ -80,14 +78,11 @@ const DEFAULTS = {
     innerMonologue: false,  // 内心独白
     dreamEngine: true,      // 梦境引擎
     theoryOfMind: true,     // 心智理论
-<<<<<<< HEAD
-    codeExecution: true,    // 代码执行
-    networkAccess: true,    // 网络访问
-=======
+
     // [v5.17.0 P-003] 危险能力默认关闭 — 与运行时的 HEARTFLOW_CODE_EXECUTOR_ENABLED 默认关对齐
     codeExecution: false,   // 代码执行 (需显式启用 HEARTFLOW_CODE_EXECUTOR_ENABLED=true)
     networkAccess: false,   // 网络访问 (需显式启用出网)
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     searchEnabled: true,    // 搜索模块
   },
 };
@@ -208,13 +203,11 @@ class HeartFlowConfig {
 
     const userConfigPath = path.join(userDir, 'config.json');
     let existing = {};
-<<<<<<< HEAD
-    try { existing = JSON.parse(fs.readFileSync(userConfigPath, 'utf-8')); } catch (_) {}
-=======
+
     try { existing = JSON.parse(fs.readFileSync(userConfigPath, 'utf-8')); } catch (e) {
       console.warn("[Core]", "操作失败:", e.message);
     }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     // 展开点号路径的键（如 'features.dreamEngine' → { features: { dreamEngine: false } }）
     const expanded = {};
@@ -262,11 +255,9 @@ class HeartFlowConfig {
       const parsed = JSON.parse(raw);
       this._deepMerge(this._values, parsed);
       this._sources.push({ file: filePath, source });
-<<<<<<< HEAD
-    } catch (_) { /* skip invalid config files */ }
-=======
+
     } catch (e) { /* 跳过无效配置文件，但记录警告 */ console.warn('[Config] 合并配置文件失败:', e.message); }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _mergeEnv() {
@@ -305,11 +296,10 @@ class HeartFlowConfig {
 
   _deepMerge(target, source) {
     for (const key of Object.keys(source)) {
-<<<<<<< HEAD
-=======
+
       // [AUDIT-FIX] 阻止原型污染（__proto__ / prototype / constructor）
       if (key === '__proto__' || key === 'prototype' || key === 'constructor') continue;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       if (source[key] && typeof source[key] === 'object' && !Array.isArray(source[key])) {
         if (!(key in target) || typeof target[key] !== 'object') target[key] = {};
         this._deepMerge(target[key], source[key]);

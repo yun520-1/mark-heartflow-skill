@@ -173,12 +173,7 @@ async function nohupStart() {
   }
   if (!detectedPort) detectedPort = 8099; // last resort
 
-<<<<<<< HEAD
-  const child = spawn(process.execPath, [serverPath, '--port', String(detectedPort)], {
-    detached: true,
-    stdio: ['ignore', outLog, errLog],
-    env: { ...process.env, NODE_ENV: 'production' },
-=======
+
   // [SECURITY-FIX] H-3: 子进程环境变量白名单
   // 只允许必要的环境变量传播到子进程，避免泄露 API Key 等敏感信息
   const ALLOWED_ENV_KEYS = [
@@ -200,7 +195,7 @@ async function nohupStart() {
     detached: true,
     stdio: ['ignore', outLog, errLog],
     env: childEnv,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   });
 
   child.unref();

@@ -18,12 +18,11 @@ class MemoryCompressor {
   constructor(options = {}) {
     this._config = {
       storageBudget: options.storageBudget || 5000,
-<<<<<<< HEAD
-=======
+
       learnedBudget: options.learnedBudget || 2000,
       ephemeralBudget: options.ephemeralBudget || 500,
       coreBudget: options.coreBudget || Infinity,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       minCompressionRatio: options.minCompressionRatio || 0.3,
       maxCompressionRatio: options.maxCompressionRatio || 0.7,
       importanceWeight: options.importanceWeight || 0.6,
@@ -32,33 +31,26 @@ class MemoryCompressor {
       ...options,
     };
 
-<<<<<<< HEAD
-    this._compressedStore = [];
-=======
+
     this._compressedStores = { CORE: [], LEARNED: [], EPHEMERAL: [] };
     this._learnedLRU = []; // ordered oldest -> newest
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this._compressionLog = [];
     this._stats = {
       totalCompressed: 0,
       bytesSaved: 0,
       avgCompressionRatio: 0,
       budgetHits: 0,
-<<<<<<< HEAD
-=======
+
       lruEvictions: 0,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     };
   }
 
   // ─── Importance Scoring ─────────────────────────────────────
 
-<<<<<<< HEAD
-  /**
-   * 计算记忆条目重要性评分
-   */
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
   computeImportance(memory) {
     const w = this._config;
     const now = Date.now();
@@ -77,13 +69,7 @@ class MemoryCompressor {
     return +Math.max(0, Math.min(1, score)).toFixed(3);
   }
 
-<<<<<<< HEAD
-  // ─── Compression Strategies ─────────────────────────────────
 
-  /**
-   * 根据内容类型选择压缩策略
-   */
-=======
   _normalizeLayer(layer) {
     const upper = String(layer || 'LEARNED').toUpperCase();
     if (!['CORE', 'LEARNED', 'EPHEMERAL'].includes(upper)) return 'LEARNED';
@@ -125,7 +111,7 @@ class MemoryCompressor {
 
   // ─── Compression Strategies ─────────────────────────────────
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   selectStrategy(memory) {
     const content = String(memory.content || memory.task || '');
 
@@ -141,11 +127,9 @@ class MemoryCompressor {
     return 'light';
   }
 
-<<<<<<< HEAD
-  compress(memory, strategy) {
-=======
+
   _applyCompression(memory, strategy) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     const chosen = strategy || this.selectStrategy(memory);
     const importance = this.computeImportance(memory);
     const maxLen = Math.floor(200 * (1 - importance * 0.5));
@@ -197,12 +181,11 @@ class MemoryCompressor {
     const compressedLength = compressedContent.length;
     const actualRatio = originalLength > 0 ? compressedLength / originalLength : 1;
 
-<<<<<<< HEAD
-=======
+
     const layer = this._normalizeLayer(memory.layer);
     const store = this._storeFor(layer);
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     const entry = {
       ...memory,
       content: compressedContent,
@@ -213,18 +196,14 @@ class MemoryCompressor {
       compressedLength,
       compressionRatio: +actualRatio.toFixed(3),
       timestamp: memory.timestamp || Date.now(),
-<<<<<<< HEAD
-    };
 
-    this._compressedStore.push(entry);
-=======
       layer,
     };
 
     store.push(entry);
     if (layer === 'LEARNED') this._bumpLearnedLRU(entry.id);
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this._stats.totalCompressed++;
     this._stats.bytesSaved += originalLength - compressedLength;
     this._stats.avgCompressionRatio = +(
@@ -239,49 +218,15 @@ class MemoryCompressor {
       compressedLength,
       ratio: actualRatio,
       importance,
-<<<<<<< HEAD
-=======
+
       layer,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     });
 
     return entry;
   }
 
-<<<<<<< HEAD
-  // ─── Budget Enforcement ─────────────────────────────────────
 
-  /**
-   * 强制压缩以符合存储预算
-   */
-  enforceBudget() {
-    const messages = [];
-    while (this._compressedStore.length > this._config.storageBudget) {
-      const sorted = this._compressedStore
-        .map(m => ({ ...m, _importance: this.computeImportance(m) }))
-        .sort((a, b) => a._importance - b._importance);
-
-      const evicted = sorted[0];
-      if (!evicted) break;
-
-      messages.push(`Evicted: ${evicted.content?.slice(0, 50)} (importance: ${evicted._importance})`);
-      this._compressedStore = this._compressedStore.filter(m => m.id !== evicted.id);
-      this._stats.budgetHits++;
-    }
-    return messages;
-  }
-
-  // ─── Retrieval ──────────────────────────────────────────────
-
-  /**
-   * 从压缩存储中检索
-   */
-  query(queryStr, maxResults = 10) {
-    const queryLower = queryStr.toLowerCase();
-    const queryWords = queryLower.split(/\s+/).filter(w => w.length > 2);
-
-    const scored = this._compressedStore
-=======
   compress(memory, strategy) {
     return this._applyCompression(memory, strategy);
   }
@@ -338,7 +283,7 @@ class MemoryCompressor {
       : Object.values(this._compressedStores).flat();
 
     const scored = pool
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       .map(m => {
         const content = String(m.content || '').toLowerCase();
         let score = 0;
@@ -348,10 +293,9 @@ class MemoryCompressor {
         score += (m.importance || 0) * 0.5;
         const recency = Math.max(0, 1 - (Date.now() - (m.timestamp || 0)) / 604800000);
         score += recency * 0.3;
-<<<<<<< HEAD
-=======
+
         if (m.layer === 'LEARNED' && this._learnedLRU.includes(m.id)) score += 0.1;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         return { ...m, _queryScore: +score.toFixed(3) };
       })
       .filter(m => m._queryScore > 0)
@@ -361,23 +305,18 @@ class MemoryCompressor {
     return scored;
   }
 
-<<<<<<< HEAD
-=======
+
   getLearnedLRU() {
     return [...this._learnedLRU];
   }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   // ─── Stats ──────────────────────────────────────────────────
 
   getStats() {
     return {
       ...this._stats,
-<<<<<<< HEAD
-      storeSize: this._compressedStore.length,
-      budget: this._config.storageBudget,
-      utilization: (this._compressedStore.length / this._config.storageBudget).toFixed(3),
-=======
+
       storeSize: Object.values(this._compressedStores).reduce((s, arr) => s + arr.length, 0),
       layerStats: Object.fromEntries(
         Object.entries(this._compressedStores).map(([k, arr]) => [k, arr.length])
@@ -385,7 +324,7 @@ class MemoryCompressor {
       budget: this._config.storageBudget,
       learnedBudget: this._config.learnedBudget,
       utilization: +(Object.values(this._compressedStores).reduce((s, arr) => s + arr.length, 0) / this._config.storageBudget).toFixed(3),
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       recentLog: this._compressionLog.slice(-10),
     };
   }

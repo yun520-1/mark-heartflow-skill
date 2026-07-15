@@ -85,8 +85,7 @@ check('模块数 >= 40', () => {
   if (count < 40) throw new Error(`只有 ${count} 个模块，期望 >= 40`);
 });
 
-<<<<<<< HEAD
-=======
+
 check('模块数 >= 124', () => {
   if (!engine) throw new Error('引擎未启动');
   const count = Object.keys(engine._modules || {}).length;
@@ -104,7 +103,7 @@ check('知识本体测试存在', () => {
   if (!fs.existsSync(p)) throw new Error('knowledge-ontology.test.js 不存在');
 });
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 check('dispatch 路由可用', () => {
   if (!engine) throw new Error('引擎未启动');
   const r = engine.dispatch('emotion.process', '测试');
@@ -131,11 +130,7 @@ if (engine) {
 check('npm 必选依赖为空', () => {
   const pkg = require(path.join(HF_DIR, 'package.json'));
   const deps = Object.keys(pkg.dependencies || {}).length;
-<<<<<<< HEAD
-  if (deps > 0) throw new Error(`dependencies 中有 ${deps} 个包`);
-});
 
-=======
   if (deps < 1) throw new Error('依赖声明为空，心虫至少需要 mathjs');
 });
 
@@ -217,7 +212,7 @@ checkResults.push(check('扫描新增.txt/.json明文记忆', async () => {
   }
 }));
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 // Wait for all async checks, then print results
 Promise.all(checkResults).then(() => {
   console.log(RESULTS.join('\n'));

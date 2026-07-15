@@ -21,8 +21,7 @@
 const crypto = require('crypto');
 const VERSION = '1.0.0';
 
-<<<<<<< HEAD
-=======
+
 // === 签名/频率 Map 最大容量 ===
 const MAX_MAP_SIZE = 200;
 
@@ -41,7 +40,7 @@ function _boundedSet(map, key, value, maxSize) {
   map.set(key, value);
 }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 // 安全规则
 const TRUSTED_SOURCES = ['user', 'system', 'reflection', 'consolidation'];
 const SUSPICIOUS_PATTERNS = [
@@ -87,11 +86,9 @@ class MemoryIntegrity {
       trusted: TRUSTED_SOURCES.includes(source),
     };
 
-<<<<<<< HEAD
-    this.signatures.set(memory.id, signature);
-=======
+
     _boundedSet(this.signatures, memory.id, signature, MAX_MAP_SIZE);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this.stats.signed++;
 
     return { ...memory, _signature: signature };
@@ -180,11 +177,9 @@ class MemoryIntegrity {
       const sig = mem._signature;
       if (sig) {
         const key = `${sig.source}:${new Date(sig.timestamp).toDateString()}`;
-<<<<<<< HEAD
-        freqMap.set(key, (freqMap.get(key) || 0) + 1);
-=======
+
         _boundedSet(freqMap, key, (freqMap.get(key) || 0) + 1, MAX_MAP_SIZE);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       }
     }
 

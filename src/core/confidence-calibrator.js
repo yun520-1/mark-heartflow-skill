@@ -563,8 +563,7 @@ class ConfidenceCalibrator {
   }
 
   /**
-<<<<<<< HEAD
-=======
+
    * [v5.11.0] 基于反馈更新阈值 — 公开 API（原名 updateFromFeedback）
    * 使用 weightedAccuracy 公式来智能调整校准阈值
    * @param {boolean} wasCorrect - 反馈是否正确
@@ -633,7 +632,7 @@ class ConfidenceCalibrator {
   }
 
   /**
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
    * 计算校准误差：已记录的预测中，声明置信度与实际准确率的绝对差值的平均值
    * @returns {number|null} 校准误差（0-1），无数据时返回 null
    * @private
@@ -642,9 +641,7 @@ class ConfidenceCalibrator {
     const withFeedback = this.records.filter(r => r.feedback !== null);
     if (withFeedback.length === 0) return null;
 
-<<<<<<< HEAD
-    const totalError = withFeedback.reduce((sum, r) => {
-=======
+
     const bridge = this._bridge;
     let totalAbsError = 0;
     let totalLogLoss = 0;
@@ -654,17 +651,12 @@ class ConfidenceCalibrator {
     let totalCrossEntropy = 0;
 
     for (const r of withFeedback) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       // 使用校准后的置信度（即向用户展示的置信度）作为 stated confidence
       const stated = r.calibrated.calibrated;
       // 实际准确率：1 = 正确, 0 = 错误
       const actual = r.feedback ? 1 : 0;
-<<<<<<< HEAD
-      return sum + Math.abs(stated - actual);
-    }, 0);
 
-    return Math.round((totalError / withFeedback.length) * 1000) / 1000;
-=======
       totalAbsError += Math.abs(stated - actual);
       // [FORMULA] 二值交叉熵（对数损失）：比绝对差更敏感地惩罚过度自信
       if (bridge) totalLogLoss += bridge.logLoss(stated, actual);
@@ -686,7 +678,7 @@ class ConfidenceCalibrator {
     const klDiv = bridge && typeof bridge.klDivergence === 'function' ? Math.round((totalKlDiv / withFeedback.length) * 1000) / 1000 : null;
     const crossEnt = bridge && typeof bridge.crossEntropy === 'function' ? Math.round((totalCrossEntropy / withFeedback.length) * 1000) / 1000 : null;
     return { absError, logLoss, klDivergence: klDiv, crossEntropy: crossEnt };
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -695,18 +687,7 @@ class ConfidenceCalibrator {
    */
   getCalibrationError() {
     const error = this._computeCalibrationError();
-<<<<<<< HEAD
-    return {
-      error,
-      samples: this.records.filter(r => r.feedback !== null).length,
-      interpretation: error === null
-        ? '尚无反馈数据，无法计算校准误差'
-        : error < 0.1
-          ? '校准优秀：置信度与实际准确率高度吻合'
-          : error < 0.25
-            ? '校准良好：存在轻微过度自信或保守倾向'
-            : error < 0.40
-=======
+
     const absError = error ? error.absError : null;
     const logLoss = error ? error.logLoss : null;
     const klDivergence = error ? error.klDivergence : null;
@@ -724,7 +705,7 @@ class ConfidenceCalibrator {
           : absError < 0.25
             ? '校准良好：存在轻微过度自信或保守倾向'
             : absError < 0.40
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
               ? '校准一般：置信度表达与实际结果存在明显偏差'
               : '校准较差：建议检查评分维度和阈值设置',
     };

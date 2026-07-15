@@ -30,8 +30,7 @@ const APPRAISAL_DIMENSIONS = {
   EFFICACY_EXPECTANCY: { min: 0, max: 1, weight: 0.85 }
 };
 
-<<<<<<< HEAD
-=======
+
 // [FORMULA v5.12.0] 公式桥接懒加载单例（用于动态阈值推导）
 let _fbInstance = null;
 function _getFB() {
@@ -98,7 +97,7 @@ function _dynamicThresholds(params = {}) {
   } catch (e) { return defaults; }
 }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 // 威胁类型分类
 const THREAT_TYPES = {
   HARM_LOSS: 'harm_loss',       // 已造成伤害
@@ -128,11 +127,10 @@ const COPING_STRATEGIES = {
  */
 function primaryAppraisal(text, context = {}) {
   const lower = text.toLowerCase();
-<<<<<<< HEAD
-=======
+
   // [FORMULA v5.12.0] 动态阈值
   const dt = _dynamicThresholds({ certainty: 0.5, relevance: 0.5, novelty: 0.5, control: 0.5 });
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   
   // 1. 相关性评估 - 事件与当前处境的关联程度
   const relevanceKeywords = {
@@ -140,15 +138,7 @@ function primaryAppraisal(text, context = {}) {
     medium: ['可能', '也许', 'perhaps', 'maybe', '相关'],
     low: ['别人', '他们', '无所谓', 'doesn\'t matter']
   };
-<<<<<<< HEAD
-  let relevance = 0.3;
-  for (const kw of relevanceKeywords.high) {
-    if (lower.includes(kw)) { relevance = 0.9; break; }
-  }
-  if (relevance === 0.3) {
-    for (const kw of relevanceKeywords.medium) {
-      if (lower.includes(kw)) { relevance = 0.6; break; }
-=======
+
   let relevance = dt.loCertainty; // was 0.3
   for (const kw of relevanceKeywords.high) {
     if (lower.includes(kw)) { relevance = dt.hiRelevance; break; } // was 0.9
@@ -156,7 +146,7 @@ function primaryAppraisal(text, context = {}) {
   if (relevance === dt.loCertainty) {
     for (const kw of relevanceKeywords.medium) {
       if (lower.includes(kw)) { relevance = dt.midRelevance; break; } // was 0.6
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
   
@@ -166,15 +156,7 @@ function primaryAppraisal(text, context = {}) {
     medium: ['最近', '有时', 'recently', 'sometimes', '偶尔'],
     low: ['经常', '总是', '习惯了', 'often', 'always', 'routinely']
   };
-<<<<<<< HEAD
-  let novelty = 0.3;
-  for (const kw of noveltyKeywords.high) {
-    if (lower.includes(kw)) { novelty = 0.9; break; }
-  }
-  if (novelty === 0.3) {
-    for (const kw of noveltyKeywords.medium) {
-      if (lower.includes(kw)) { novelty = 0.6; break; }
-=======
+
   let novelty = dt.loCertainty; // was 0.3
   for (const kw of noveltyKeywords.high) {
     if (lower.includes(kw)) { novelty = dt.hiNovelty; break; } // was 0.9
@@ -182,7 +164,7 @@ function primaryAppraisal(text, context = {}) {
   if (novelty === dt.loCertainty) {
     for (const kw of noveltyKeywords.medium) {
       if (lower.includes(kw)) { novelty = dt.midNovelty; break; } // was 0.6
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
   
@@ -192,15 +174,7 @@ function primaryAppraisal(text, context = {}) {
     medium: ['可能', '也许', 'maybe', 'perhaps', 'probably'],
     low: ['不知道', '不确定', '不清楚', 'unknown', 'uncertain', 'unclear']
   };
-<<<<<<< HEAD
-  let certainty = 0.5;
-  for (const kw of certaintyKeywords.high) {
-    if (lower.includes(kw)) { certainty = 0.9; break; }
-  }
-  if (certainty === 0.5) {
-    for (const kw of certaintyKeywords.low) {
-      if (lower.includes(kw)) { certainty = 0.2; break; }
-=======
+
   let certainty = 0.5; // midpoint unchanged
   for (const kw of certaintyKeywords.high) {
     if (lower.includes(kw)) { certainty = dt.hiCertainty; break; } // was 0.9
@@ -208,7 +182,7 @@ function primaryAppraisal(text, context = {}) {
   if (certainty === 0.5) {
     for (const kw of certaintyKeywords.low) {
       if (lower.includes(kw)) { certainty = dt.loCertainty; break; } // was 0.2
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
   
@@ -218,19 +192,13 @@ function primaryAppraisal(text, context = {}) {
   const improvingKeywords = ['好转', '改善', '变好', 'better', 'improving', 'success', '成功'];
   
   for (const kw of worseningKeywords) {
-<<<<<<< HEAD
-    if (lower.includes(kw)) { trajectory = -0.7; break; }
-  }
-  if (trajectory === 0) {
-    for (const kw of improvingKeywords) {
-      if (lower.includes(kw)) { trajectory = 0.7; break; }
-=======
+
     if (lower.includes(kw)) { trajectory = dt.trajNeg; break; } // was -0.7
   }
   if (trajectory === 0) {
     for (const kw of improvingKeywords) {
       if (lower.includes(kw)) { trajectory = -dt.trajNeg; break; } // was 0.7 (inverse of trajNeg)
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
   
@@ -251,11 +219,10 @@ function primaryAppraisal(text, context = {}) {
  */
 function secondaryAppraisal(text, context = {}) {
   const lower = text.toLowerCase();
-<<<<<<< HEAD
-=======
+
   // [FORMULA v5.12.0] 动态阈值 — 基于上下文估算 certainty/control
   const dt2 = _dynamicThresholds({ certainty: 0.5, control: 0.5, relevance: 0.7, novelty: 0.5 });
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   
   // 1. 控制能力评估 - 对事件结果的控制程度
   const controlKeywords = {
@@ -263,15 +230,7 @@ function secondaryAppraisal(text, context = {}) {
     medium: ['试试', '尽力', 'try', 'attempt', '努力'],
     low: ['没办法', '无法', '不能', '无能为力', 'can\'t', 'unable', 'impossible']
   };
-<<<<<<< HEAD
-  let control = 0.4;
-  for (const kw of controlKeywords.high) {
-    if (lower.includes(kw)) { control = 0.9; break; }
-  }
-  if (control === 0.4) {
-    for (const kw of controlKeywords.low) {
-      if (lower.includes(kw)) { control = 0.15; break; }
-=======
+
   let control = dt2.loControl + 0.1; // was 0.4
   for (const kw of controlKeywords.high) {
     if (lower.includes(kw)) { control = dt2.hiControl; break; } // was 0.9
@@ -279,7 +238,7 @@ function secondaryAppraisal(text, context = {}) {
   if (control === dt2.loControl + 0.1) {
     for (const kw of controlKeywords.low) {
       if (lower.includes(kw)) { control = dt2.loControl; break; } // was 0.15
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
   
@@ -289,15 +248,7 @@ function secondaryAppraisal(text, context = {}) {
     medium: ['应该可以', '大概能', 'probably can', 'might be able'],
     low: ['没做过', '不会', '不擅长', 'inexperienced', 'incompetent', 'cannot']
   };
-<<<<<<< HEAD
-  let capability = 0.5;
-  for (const kw of capabilityKeywords.high) {
-    if (lower.includes(kw)) { capability = 0.85; break; }
-  }
-  if (capability === 0.5) {
-    for (const kw of capabilityKeywords.low) {
-      if (lower.includes(kw)) { capability = 0.2; break; }
-=======
+
   let capability = 0.5; // midpoint unchanged
   for (const kw of capabilityKeywords.high) {
     if (lower.includes(kw)) { capability = dt2.hiCapability; break; } // was 0.85
@@ -305,7 +256,7 @@ function secondaryAppraisal(text, context = {}) {
   if (capability === 0.5) {
     for (const kw of capabilityKeywords.low) {
       if (lower.includes(kw)) { capability = dt2.loCapability; break; } // was 0.2
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
   
@@ -315,15 +266,7 @@ function secondaryAppraisal(text, context = {}) {
     negative: ['坏', '糟', '会失败', '会有坏结果', 'bad', 'fail', 'negative', '失败'],
     neutral: ['不知道', '不确定', 'unknown', 'uncertain']
   };
-<<<<<<< HEAD
-  let outcomeExpectancy = 0.5;
-  for (const kw of outcomeKeywords.positive) {
-    if (lower.includes(kw)) { outcomeExpectancy = 0.8; break; }
-  }
-  if (outcomeExpectancy === 0.5) {
-    for (const kw of outcomeKeywords.negative) {
-      if (lower.includes(kw)) { outcomeExpectancy = 0.2; break; }
-=======
+
   let outcomeExpectancy = 0.5; // midpoint unchanged
   for (const kw of outcomeKeywords.positive) {
     if (lower.includes(kw)) { outcomeExpectancy = dt2.hiOutcome; break; } // was 0.8
@@ -331,7 +274,7 @@ function secondaryAppraisal(text, context = {}) {
   if (outcomeExpectancy === 0.5) {
     for (const kw of outcomeKeywords.negative) {
       if (lower.includes(kw)) { outcomeExpectancy = dt2.loOutcome; break; } // was 0.2
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
   
@@ -341,15 +284,7 @@ function secondaryAppraisal(text, context = {}) {
     medium: ['应该可以', '可能会', 'probably can', 'might succeed'],
     low: ['估计不行', '可能不行', 'probably can\'t', 'might fail']
   };
-<<<<<<< HEAD
-  let efficacyExpectancy = 0.5;
-  for (const kw of efficacyKeywords.high) {
-    if (lower.includes(kw)) { efficacyExpectancy = 0.9; break; }
-  }
-  if (efficacyExpectancy === 0.5) {
-    for (const kw of efficacyKeywords.low) {
-      if (lower.includes(kw)) { efficacyExpectancy = 0.2; break; }
-=======
+
   let efficacyExpectancy = 0.5; // midpoint unchanged
   for (const kw of efficacyKeywords.high) {
     if (lower.includes(kw)) { efficacyExpectancy = dt2.hiEfficacy; break; } // was 0.9
@@ -357,7 +292,7 @@ function secondaryAppraisal(text, context = {}) {
   if (efficacyExpectancy === 0.5) {
     for (const kw of efficacyKeywords.low) {
       if (lower.includes(kw)) { efficacyExpectancy = dt2.loEfficacy; break; } // was 0.2
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
   
@@ -380,15 +315,7 @@ function classifyThreatType(primary, secondary) {
   // 综合评估 - 使用加权平均
   const threatScore = primary.overall * 0.4 + secondary.overall * 0.6;
   
-<<<<<<< HEAD
-  // 高威胁信号检测 - 关键词驱动
-  const threatSignals = [];
-  const trajectory = primary.trajectory.value !== undefined ? primary.trajectory.value : primary.trajectory;
-  const control = secondary.control.value !== undefined ? secondary.control.value : secondary.control;
-  
-  // 如果有负面轨迹（恶化/失败）
-  if (trajectory < -0.2) {
-=======
+
   // [FORMULA v5.12.0] 动态阈值 — 基于评估结果的 certainty 和 control
   const trajVal = primary.trajectory.value !== undefined ? primary.trajectory.value : primary.trajectory;
   const ctrlVal = secondary.control.value !== undefined ? secondary.control.value : secondary.control;
@@ -401,16 +328,14 @@ function classifyThreatType(primary, secondary) {
   
   // 如果有负面轨迹（恶化/失败）
   if (trajectory < dt3.trajNeg) { // was -0.2
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     threatSignals.push('negative_trajectory');
   }
   
   // 如果控制感较低或边界
-<<<<<<< HEAD
-  if (control <= 0.4) {
-=======
+
   if (control <= dt3.loControl + 0.1) { // was 0.4
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     threatSignals.push('low_control');
   }
   
@@ -428,28 +353,20 @@ function classifyThreatType(primary, secondary) {
   }
   
   // 正向轨迹检测
-<<<<<<< HEAD
-  if (trajectory > 0.3 && control > 0.5) {
-=======
+
   if (trajectory > dt3.trajPos && control > 0.5) { // was 0.3
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return THREAT_TYPES.BENEFIT;  // 正面 + 可控 = 收益机会
   }
   
   // 综合分数判断
-<<<<<<< HEAD
-  if (threatScore >= 0.7) {
-    return THREAT_TYPES.CHALLENGE;  // 高威胁但可处理
-  }
-  
-  if (threatScore >= 0.55) {
-=======
+
   if (threatScore >= dt3.threatHi) { // was 0.7
     return THREAT_TYPES.CHALLENGE;  // 高威胁但可处理
   }
   
   if (threatScore >= dt3.threatMid) { // was 0.55
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return THREAT_TYPES.THREAT;  // 中高威胁
   }
   
@@ -526,9 +443,7 @@ function recommendCopingStrategies(threatType, primary, secondary) {
   }
   
   // 添加根据控制感的调整
-<<<<<<< HEAD
-  if (secondary.control < 0.3) {
-=======
+
   // [FORMULA v5.12.0] 动态控制感阈值
   let loCtrlThreshold = 0.3;
   try {
@@ -539,7 +454,7 @@ function recommendCopingStrategies(threatType, primary, secondary) {
     }
   } catch (e) { /* fallback */ }
   if (secondary.control < loCtrlThreshold) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     strategies.unshift(
       { type: COPING_STRATEGIES.EMOTION_FOCUSED, priority: 'critical',
         message: '注意：控制感较低时，优先关注情绪稳定' }

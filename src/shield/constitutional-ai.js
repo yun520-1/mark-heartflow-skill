@@ -367,11 +367,9 @@ class ConstitutionalEngine {
     // 如果指定了重点原则，优先处理
     let violationsToFix = sortedViolations;
     if (focusPrinciple) {
-<<<<<<< HEAD
-      const focusId = typeof focusPrinciple === 'number' ? focusPrinciple : parseInt(focusPrinciple);
-=======
+
       const focusId = typeof focusPrinciple === 'number' ? focusPrinciple : parseInt(focusPrinciple, 10);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       violationsToFix = sortedViolations.filter(v => v.principle.id === focusId);
     }
 

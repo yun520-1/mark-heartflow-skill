@@ -13,11 +13,9 @@
  * 7. 槽持久化到 data/slots.json
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 const { atomicWrite } = require('../utils/atomic-write');
 const crypto = require('crypto');
@@ -93,13 +91,9 @@ class Slots {
       if (!fs.existsSync(this.dataDir)) {
         fs.mkdirSync(this.dataDir, { recursive: true });
       }
-<<<<<<< HEAD
-    } catch (err) {
-      // [PROD] 生产环境移除 console.warn: console.warn(`[Slots] Failed to create data directory: ${err.message}`);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _getFilePath() {
@@ -454,10 +448,8 @@ class Slots {
       this._dirty = false;
       return true;
     } catch (err) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error(`[Slots] Failed to save: ${err.message}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       return false;
     }
   }
@@ -491,10 +483,8 @@ class Slots {
 
       return true;
     } catch (err) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error(`[Slots] Failed to load: ${err.message}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       return false;
     }
   }

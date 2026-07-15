@@ -4,16 +4,7 @@
  * 将 LLM 返回的技术性/冗长输出，精炼为用户能一眼看懂的语言。
  * 核心能力：去确认词、去客套话、保留核心信息在前、保持事实不变。
  * 
-<<<<<<< HEAD
- * 版本 3.0 — 新增去冗余精炼规则 + 移除追踪
- */
 
-class LLMToUser {
-  constructor(options = {}) {
-    this.name = 'llm-to-user';
-    this.version = '3.0.0';
-    this.options = options;
-=======
  * 版本 3.1 — 可选接入 StyleEngine 风格调度与 persona_meta 输出
  */
 
@@ -30,19 +21,16 @@ class LLMToUser {
 
     // 默认不强制应用风格，需调用方显式启用
     this.autoApplyStyle = !!options.autoApplyStyle;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
    * 精炼LLM输出为用户友好语言
    * @param {string} output - LLM原始输出
-<<<<<<< HEAD
-   * @param {object} context - { input, intent, tone, userPreference }
-   * @returns {object} { text, compression, removedSections, preserved }
-=======
+
    * @param {object} context - { input, intent, tone, userPreference, styleMode, persona }
    * @returns {object} { text, compression, removedSections, preserved, persona_meta?, styleResult? }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
    */
   translate(output, context = {}) {
     const original = String(output || '');
@@ -179,18 +167,15 @@ class LLMToUser {
     // 判断是否保留了核心信息：长度不少于原文的20%，或不为空
     const preserved = text.length > 0 && (text.length / Math.max(original.length, 1)) >= 0.05;
 
-<<<<<<< HEAD
-    return {
-=======
+
     const result = {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       text,
       compression: parseFloat(ratio.toFixed(2)),
       removedSections,
       preserved
     };
-<<<<<<< HEAD
-=======
+
 
     // ── 可选：风格引擎调度 ───────────────────────────────────
     if (this.styleEngine && text) {
@@ -228,7 +213,7 @@ class LLMToUser {
     }
 
     return result;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**

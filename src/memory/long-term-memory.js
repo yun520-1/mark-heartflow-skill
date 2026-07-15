@@ -4,15 +4,12 @@
  * 持久化存储重要记忆
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-const path = require('path');
-=======
+
 const fs = require('../utils/safe-fs');
 const path = require('path');
 const { safeWriteFileSync } = require('../utils/safe-fs.js');
 const { encryptJSON, decryptJSON, isEncryptionEnabled } = require('./memory-encrypt.js');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 class LongTermMemory {
   constructor(options = {}) {
@@ -27,10 +24,9 @@ class LongTermMemory {
     this.indexFile = path.join(this.storagePath, 'index.json');
     this.maxMemories = options.maxMemories || 10000;
     this.autoSave = options.autoSave !== false;
-<<<<<<< HEAD
-=======
+
     this._encryptionEnabled = isEncryptionEnabled();
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this._ensureStoragePath();
     this._loadIndex();
   }
@@ -50,20 +46,17 @@ class LongTermMemory {
   _loadIndex() {
     try {
       if (fs.existsSync(this.indexFile)) {
-<<<<<<< HEAD
-        this.index = JSON.parse(fs.readFileSync(this.indexFile, 'utf-8'));
-=======
+
         const raw = fs.readFileSync(this.indexFile, 'utf-8');
         this.index = decryptJSON(raw) || { memories: [], tags: {} };
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       } else {
         this.index = { memories: [], tags: {} };
       }
     } catch (error) {
-<<<<<<< HEAD
-=======
+
       console.warn('[LongTermMemory] Failed to load index, starting fresh:', error.message);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       this.index = { memories: [], tags: {} };
     }
   }
@@ -75,16 +68,12 @@ class LongTermMemory {
     if (!this.autoSave) return;
 
     try {
-<<<<<<< HEAD
-      fs.writeFileSync(this.indexFile, JSON.stringify(this.index, null, 2));
-    } catch (error) {
-      // 忽略保存错误
-=======
+
       const content = encryptJSON(this.index);
       safeWriteFileSync(this.indexFile, content);
     } catch (error) {
       console.warn('[LongTermMemory] Failed to save index:', error.message);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
 
@@ -140,16 +129,12 @@ class LongTermMemory {
   _saveMemoryRecord(record) {
     const filePath = path.join(this.storagePath, `${record.id}.json`);
     try {
-<<<<<<< HEAD
-      fs.writeFileSync(filePath, JSON.stringify(record, null, 2));
-    } catch (error) {
-      // 忽略保存错误
-=======
+
       const content = encryptJSON(record);
       safeWriteFileSync(filePath, content);
     } catch (error) {
       console.warn('[LongTermMemory] Failed to save memory record:', error.message);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
   }
 
@@ -163,14 +148,7 @@ class LongTermMemory {
     }
 
     try {
-<<<<<<< HEAD
-      const record = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-      record.accessCount++;
-      record.accessedAt = Date.now();
-      fs.writeFileSync(filePath, JSON.stringify(record, null, 2));
-      return record;
-    } catch (error) {
-=======
+
       const raw = fs.readFileSync(filePath, 'utf-8');
       const record = decryptJSON(raw);
       if (!record) return null;
@@ -184,7 +162,7 @@ class LongTermMemory {
       return record;
     } catch (error) {
       console.warn('[LongTermMemory] Failed to read memory record:', error.message);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       return null;
     }
   }

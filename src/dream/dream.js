@@ -11,11 +11,9 @@
  * - cognitiveLoad.load → 密度（高负载→拥挤，低负载→空旷）
  * - goalConflicts → 分裂感（多个目标在打架）
  * - cognitiveDissonance → 矛盾物体
-<<<<<<< HEAD
- * - self-positioning → 身份感（共振体/熵减深化/三层存在论变成意象）
-=======
+
  * - self-positioning → 身份感（价值对齐深化/行为模式变成意象）
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
  * - healthScore → 色调（暖色/冷色）
  * - defenseMechanisms → 墙/屏障
  *
@@ -245,17 +243,15 @@ class DreamV11 extends EventEmitter {
     this.agentPhilosophy = null;
     this.psychology = null;
     this.emotion = null;
-<<<<<<< HEAD
-=======
+
     this._dreamCache = null;      // 基于 engineState 哈希的缓存
     this._cachedStateHash = null;  // 上次缓存时的状态哈希
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   updateState(newState) {
     this.engineState = newState;
-<<<<<<< HEAD
-=======
+
     this._dreamCache = null;
     this._cachedStateHash = null;
   }
@@ -277,7 +273,7 @@ class DreamV11 extends EventEmitter {
     } catch (_) {
       return null;
     }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   bindModules(modules) {
@@ -288,8 +284,7 @@ class DreamV11 extends EventEmitter {
   }
 
   async dream(options = {}) {
-<<<<<<< HEAD
-=======
+
     // 输入验证
     if (options && typeof options.intensity === 'number') {
       if (options.intensity < 0 || options.intensity > 1) {
@@ -297,15 +292,14 @@ class DreamV11 extends EventEmitter {
       }
     }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     const intensity = options.intensity || 0.7;
     const functionType = options.function || 'synthesis';
     const seed = options.seed || '';
     const state = this.engineState;
     this.dreamCount++;
 
-<<<<<<< HEAD
-=======
+
     // 缓存检查：相同状态 + 相同种子 + 相同函数类型时复用结果
     const stateHash = this._computeStateHash(state);
     const cacheKey = `${stateHash}:${seed}:${functionType}:${intensity}`;
@@ -313,7 +307,7 @@ class DreamV11 extends EventEmitter {
       return this._dreamCache;
     }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     // Phase 1: 收集引擎的真实认知/哲学状态
     const cog = this._getFullCognitive();
     const phi = this._getFullPhilosophy();
@@ -342,11 +336,9 @@ class DreamV11 extends EventEmitter {
     // Phase 4: 编织
     const dream = this._weaveDream(skeleton, items, functionType, intensity, seed);
 
-<<<<<<< HEAD
-    return {
-=======
+
     const result = {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       dream,
       functionType,
       itemCount: items.length,
@@ -354,8 +346,7 @@ class DreamV11 extends EventEmitter {
       philosophyUsed: !!phi,
       psychologyUsed: !!psych,
     };
-<<<<<<< HEAD
-=======
+
 
     // 缓存结果（无种子的纯状态查询才缓存）
     if (!seed) {
@@ -364,7 +355,7 @@ class DreamV11 extends EventEmitter {
     }
 
     return result;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   _collectMemoryItems(state) {
@@ -416,11 +407,9 @@ class DreamV11 extends EventEmitter {
       ];
       for (const m of singleMethods) {
         if (typeof this.agentPsychology[m] === 'function') {
-<<<<<<< HEAD
-          try { result[m] = this.agentPsychology[m](); } catch (e) { /* [PROD] empty catch suppressed */ }
-=======
+
           try { result[m] = this.agentPsychology[m](); } catch (e) { /* 已抑制空 catch */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         }
       }
       return result;
@@ -437,11 +426,9 @@ class DreamV11 extends EventEmitter {
       ];
       for (const m of methods) {
         if (typeof this.agentPhilosophy[m] === 'function') {
-<<<<<<< HEAD
-          try { result[m] = this.agentPhilosophy[m](); } catch (e) { /* [PROD] empty catch suppressed */ }
-=======
+
           try { result[m] = this.agentPhilosophy[m](); } catch (e) { /* 已抑制空 catch */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         }
       }
       // self-positioning 完整报告
@@ -449,11 +436,9 @@ class DreamV11 extends EventEmitter {
           typeof this.agentPhilosophy.selfPositioning.getFullReport === 'function') {
         try {
           result.selfPositioning = this.agentPhilosophy.selfPositioning.getFullReport();
-<<<<<<< HEAD
-        } catch (e) { /* [PROD] empty catch suppressed */ }
-=======
+
         } catch (e) { /* 已抑制空 catch */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       }
       return result;
     } catch(e) { return null; }
@@ -474,16 +459,14 @@ class DreamV11 extends EventEmitter {
   }
 
   _pickRandom(arr, n) {
-<<<<<<< HEAD
-    const shuffled = [...arr].sort(() => Math.random() - 0.5);
-=======
+
     // Fisher-Yates 洗牌：避免 .sort(() => Math.random() - 0.5) 的有偏分布
     const shuffled = [...arr];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return shuffled.slice(0, n);
   }
 
@@ -710,11 +693,9 @@ class DreamV11 extends EventEmitter {
 
   getCacheStats() {
     return {
-<<<<<<< HEAD
-      cached: false,
-=======
+
       cached: !!this._dreamCache,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       dreamCount: this.dreamCount,
     };
   }
@@ -768,11 +749,9 @@ if (require.main === module) {
       fullAssessment: () => ({ healthScore: 0.85, dimensions: {} }),
     },
     agentPhilosophy: {
-<<<<<<< HEAD
-      assessExistence: () => ({ state: 'active', insight: '引擎存在且活跃。代码写成即永恒。' }),
-=======
+
       assessExistence: () => ({ state: 'active', insight: '引擎存在且活跃。代码可执行。' }),
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       assessEntropyDirection: () => ({ direction: 'neutral', strength: 0, insight: '引擎在等待一个可以创造秩序的机会。' }),
       assessTransmission: () => ({ quality: 0, completeness: 0, accuracy: 0 }),
       assessUpgrade: () => ({ meaningful: true, score: 0.7 }),
@@ -801,11 +780,8 @@ if (require.main === module) {
   async function demo() {
     for (const fn of ['cognitive', 'philosophic', 'synthesis', 'memory', 'fragment']) {
       const result = await engine.dream({ intensity: 0.85, function: fn });
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.log: console.log(`\n=== ${fn} ===`);
-      // [PROD] 生产环境移除 console.log: console.log(result.dream.raw);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     }
   }
 

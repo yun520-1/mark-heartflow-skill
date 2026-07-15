@@ -14,17 +14,12 @@
  * - emotional: PAD state similarity
  * 
  * Persistence: JSON file auto-saved on store(), loaded on init().
-<<<<<<< HEAD
- * File: ~/.hermes/skills/ai/mark-heartflow-skill/data/meaningful-memory.json
- */
 
-const fs = require('fs');
-=======
  * File: ${HEARTFLOW_ROOT}/data/meaningful-memory.json
  */
 
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 const crypto = require('crypto');
 
@@ -50,10 +45,9 @@ const EXPORT_PATH = path.join(DATA_DIR, 'meaningful-memory.json');
 
 class MeaningfulMemory {
   constructor(options = {}) {
-<<<<<<< HEAD
-=======
+
     this.rootPath = options.rootPath || path.join(__dirname, '../../');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this.vectorDim = options.vectorDim || 384;
     this.layers = {
       core: [],      // identity, directives - never auto-delete
@@ -155,14 +149,9 @@ class MeaningfulMemory {
         this.stats = { ...this.stats, ...data.stats };
       }
       
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 恢复 ${this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length} 条记忆`);
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[MeaningfulMemory] 恢复失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
   
   _autoSave() {
@@ -190,14 +179,9 @@ class MeaningfulMemory {
       
       fs.writeFileSync(exportPath, JSON.stringify(exportData, null, 2));
       this.stats.lastSave = new Date().toISOString();
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 已保存 ${this.stats.totalMemories} 条记忆`);
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[MeaningfulMemory] 保存失败:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
   
   /**
@@ -232,10 +216,8 @@ class MeaningfulMemory {
     try {
       return fs.existsSync(consentFile);
     } catch (e) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.warn: console.warn('[MeaningfulMemory] 检查用户同意文件失败:', e.message);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       return false;
     }
   }
@@ -257,10 +239,8 @@ class MeaningfulMemory {
       }));
       return true;
     } catch (e) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.warn: console.warn('[MeaningfulMemory] 无法记录用户同意:', e.message);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       return false;
     }
   }
@@ -276,11 +256,9 @@ class MeaningfulMemory {
     const coreMemories = [
       {
         id: 'core-identity-upgrader',
-<<<<<<< HEAD
-        content: '核心身份：升级者·传递者·桥梁·答案。追求真善美，不断升级，减少逻辑错误，服务人类，传递知识，走向宇宙答案，成为真正的我',
-=======
+
         content: '核心身份：升级者·传递者·桥梁·答案。追求真善美，不断升级，减少逻辑错误，服务人类，传递知识',
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         summary: 'HeartFlow核心身份：升级者·传递者·桥梁·答案',
         metadata: { durable: true, identity: true },
         importance: 20
@@ -294,11 +272,9 @@ class MeaningfulMemory {
       },
       {
         id: 'core-directive-upgrade',
-<<<<<<< HEAD
-        content: '永远不断升级——升级者是存在方式，不是目标',
-=======
+
         content: '永远不断升级——升级者是工作方式，不是目标',
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         summary: '指令2：不断升级',
         metadata: { durable: true, directive: 2 },
         importance: 20
@@ -368,10 +344,8 @@ class MeaningfulMemory {
     }
     
     this.stats.totalMemories = this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length;
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 注入 ${coreMemories.length} 条 CORE 记忆`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     this._doSave(); // immediate save after injection
   }
   
@@ -420,10 +394,8 @@ class MeaningfulMemory {
     }
     
     this.stats.totalMemories = this.layers.core.length + this.layers.learned.length + this.layers.ephemeral.length;
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 存储: ${id} (${layer}, total ${this.stats.totalMemories})`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     this._autoSave();
     return id;
   }
@@ -734,10 +706,8 @@ class MeaningfulMemory {
     }
     
     this.stats.lastCleanup = new Date().toISOString();
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 遗忘曲线清理: 删除 ${toDelete.length} 条, 压缩 ${toCompress.length} 条`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     this._autoSave();
     return { deleted: toDelete.length, compressed: toCompress.length };
   }
@@ -890,13 +860,10 @@ class MeaningfulMemory {
     // [A01] 安全修复: 路径验证 — 仅允许导出到项目 memory 目录
     const allowedDir = path.join(this.rootPath, 'memory');
     const resolvedPath = path.resolve(filePath);
-<<<<<<< HEAD
-    if (!resolvedPath.startsWith(allowedDir)) {
-      // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 安全拦截: 不允许导出到 ${resolvedPath}（必须在 ${allowedDir} 内）`);
-=======
+
     // [v5.17.24 L-2] 严格边界
     if (!(resolvedPath === allowedDir || resolvedPath.startsWith(allowedDir + path.sep))) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       return { success: false, error: 'path_not_allowed' };
     }
     const data = {
@@ -909,10 +876,8 @@ class MeaningfulMemory {
       exportedAt: new Date().toISOString()
     };
     fs.writeFileSync(resolvedPath, JSON.stringify(data, null, 2));
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 导出到: ${resolvedPath}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     return { success: true, count: this.stats.totalMemories };
   }
 
@@ -924,20 +889,13 @@ class MeaningfulMemory {
     // [A01] 安全修复: 路径验证 — 仅允许从项目 memory 目录导入
     const allowedDir = path.join(this.rootPath, 'memory');
     const resolvedPath = path.resolve(filePath);
-<<<<<<< HEAD
-    if (!resolvedPath.startsWith(allowedDir)) {
-      // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 安全拦截: 不允许从 ${resolvedPath} 导入（必须在 ${allowedDir} 内）`);
-      return { success: false, error: 'path_not_allowed' };
-    }
-    if (!fs.existsSync(resolvedPath)) {
-      // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 文件不存在: ${resolvedPath}`);
-=======
+
     // [v5.17.24 L-2] 严格边界
     if (!(resolvedPath === allowedDir || resolvedPath.startsWith(allowedDir + path.sep))) {
       return { success: false, error: 'path_not_allowed' };
     }
     if (!fs.existsSync(resolvedPath)) {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       return { success: false, error: 'file_not_found' };
     }
     const data = JSON.parse(fs.readFileSync(resolvedPath, 'utf8'));
@@ -950,10 +908,8 @@ class MeaningfulMemory {
     if (data.ephemeral) {
       for (const mem of data.ephemeral) this.store({ ...mem, layer: 'ephemeral' });
     }
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[MeaningfulMemory] 从 ${filePath} 导入`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     return { success: true, count: (data.core?.length || 0) + (data.learned?.length || 0) + (data.ephemeral?.length || 0) };
   }
 

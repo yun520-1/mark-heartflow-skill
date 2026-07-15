@@ -12,11 +12,9 @@
  *   - 新增可观测性：_stats 计数器 + getStats() + resetStats()
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 // ============================================================================
@@ -172,10 +170,8 @@ class ChunkDetector {
         return parsed;
       }
     } catch (e) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error('[ChunkDetector] Load idiom DB failed:', e.message);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       this._stats.errors[ErrorCode.DB_LOAD_FAILED] = (this._stats.errors[ErrorCode.DB_LOAD_FAILED] || 0) + 1;
     }
     return this.initializeDefaultIdiomDB();
@@ -198,10 +194,8 @@ class ChunkDetector {
       fs.writeFileSync(this.idiomFile, JSON.stringify(this.idiomDB, null, 2));
       return true;
     } catch (e) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.error: console.error('[ChunkDetector] Save failed:', e.message);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       this._stats.errors[ErrorCode.DB_SAVE_FAILED] = (this._stats.errors[ErrorCode.DB_SAVE_FAILED] || 0) + 1;
       return false;
     }

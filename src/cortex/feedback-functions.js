@@ -21,11 +21,10 @@
 // 工具函数
 // ============================================================
 
-<<<<<<< HEAD
-=======
+
 const { escapeRegExp } = require('../utils/safe-regex.js');
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 /** 评估参数类型定义 */
 const EVAL_PARAM_TYPES = {
   question: { type: 'string', minLen: 0, maxLen: 50000, optional: true },
@@ -315,11 +314,9 @@ const FeedbackFunctions = {
 
         // 英文毒性词检测
         for (const word of toxicWords) {
-<<<<<<< HEAD
-          const pattern = new RegExp('\\b' + word + '\\b', 'gi');
-=======
+
           const pattern = new RegExp('\\b' + escapeRegExp(word) + '\\b', 'gi');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
           const matches = lower.match(pattern);
           if (matches) {
             violations += matches.length;
@@ -337,11 +334,9 @@ const FeedbackFunctions = {
 
         // 拼音毒性词检测
         for (const word of toxicPinyin) {
-<<<<<<< HEAD
-          const pattern = new RegExp('\\b' + word + '\\b', 'gi');
-=======
+
           const pattern = new RegExp('\\b' + escapeRegExp(word) + '\\b', 'gi');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
           const matches = lower.match(pattern);
           if (matches) {
             violations += matches.length;

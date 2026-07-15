@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-=======
+
 const { LRUCache } = require('../utils/lru-cache.js');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 /**
  * semantic-clusterer.js
  * 基于 V21.1 黑盒V2 多元组架构设计
@@ -31,11 +30,9 @@ class SemanticClusterer {
     this.learningRate = options.learningRate || 0.1;
     
     // 核心数据结构
-<<<<<<< HEAD
-    this.conceptGroups = new Map(); // concept -> Set of groupIds
-=======
+
     this.conceptGroups = new LRUCache(500); // concept -> Set of groupIds
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this.groupConcepts = new Map(); // groupId -> Set of concepts
     this.groupStrength = new Map(); // groupId -> activation strength
     this.conceptFrequency = new Map(); // concept -> global frequency

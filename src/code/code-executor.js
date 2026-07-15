@@ -9,14 +9,12 @@
  * ⚠️ 此模块的沙箱机制仅为正则模式匹配 + 局部作用域覆盖，不是系统级隔离。
  * ⚠️ 不应用于执行不可信代码。恶意代码可绕过正则检测执行任意操作。
  * ⚠️ Shell/Python 执行直接在宿主进程上下文中运行，无沙箱隔离。
-<<<<<<< HEAD
- * ⚠️ 环境变量已在沙箱中屏蔽，但非沙箱模式下仍可访问。
-=======
+
  * ⚠️ JavaScript 沙箱使用 vm.runInNewContext（非 vm.Script），仅做上下文隔离。
  * ⚠️ 环境变量已在沙箱中屏蔽，但非沙箱模式下仍可访问。
  * ⚠️ 本模块采用 fail-closed 策略：任何异常或配置缺失均拒绝执行。
  * ⚠️ 生产环境建议：将此模块替换为隔离容器（Docker/gVisor）执行。
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
  *
  * 核心能力：
  * - execute(code, options) — 多语言代码执行
@@ -30,15 +28,11 @@
 
 'use strict';
 
-<<<<<<< HEAD
-const _cp = require('child_process');
-const path = require('path');
-const fs = require('fs');
-=======
+
 const _cp = require('child_process');  // [v5.17.2 V-004] 已去混淆
 const path = require('path');
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 // ============================================================================
 // 状态枚举
@@ -139,8 +133,7 @@ const DANGEROUS_COMMANDS = [
 ];
 
 // ============================================================================
-<<<<<<< HEAD
-=======
+
 // Shell 命令白名单（B-01 安全修复：白名单门控，防止 shell 注入）
 // 只有在此列表中的命令才允许通过 execSync 执行。
 // 黑名单 DANGEROUS_COMMANDS 作为第二层防御保留。
@@ -283,7 +276,7 @@ function validateShellCommand(code) {
 }
 
 // ============================================================================
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 // Sandbox 安全限制正则（用于检测被禁止的操作）
 // ============================================================================
 
@@ -311,23 +304,21 @@ const SANDBOX_BLOCKED_PATTERNS = [
   /\(0,\s*constructor\.constructor\)/i,  // [AUDIT-FIX] 阻止 (0,constructor.constructor) 绕过
   /\(1,\s*constructor\.constructor\)/i,  // [AUDIT-FIX] 阻止 (1,constructor.constructor) 绕过
   /\[\s*\)\s*\]\s*constructor\.constructor/i, // [AUDIT-FIX] 阻止 Array 绕过
-<<<<<<< HEAD
-=======
+
   /constructor\s*\.\s*constructor/i,       // [AUDIT-FIX B-03] 阻止所有 constructor.constructor 逃逸（通用模式，覆盖上述特定模式）
   /\[\s*['"]constructor['"]\s*\]/i,         // [AUDIT-FIX B-03] 阻止 ['constructor'] 属性访问逃逸
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   /Buffer\.(alloc|from)/i,     // SkillSpector fix: 禁止 Buffer 操作（防止内存读取）
   /net\.(connect|createServer)/i, // SkillSpector fix: 禁止网络操作
   /http\.(request|get|createServer)/i,
   /https\.(request|get|createServer)/i,
   /dns\.(resolve|lookup)/i,
-<<<<<<< HEAD
-=======
+
   /Object\.defineProperty/i,                // [AUDIT-FIX B-03] 阻止修改对象属性定义
   /Object\.setPrototypeOf/i,                // [AUDIT-FIX B-03] 阻止修改原型链
   /Reflect\.(apply|construct|get|set|getPrototypeOf|setPrototypeOf)/i, // [AUDIT-FIX B-03] 阻止反射逃逸
   /WebAssembly/i,                           // [AUDIT-FIX B-03] 阻止 WebAssembly 逃逸
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 ];
 
 // ============================================================================
@@ -456,12 +447,9 @@ class CodeExecutor {
   constructor(options = {}) {
     const opts = options || {};
 
-<<<<<<< HEAD
-   // this._hf = opts.hf || null;
-   this._hf = null;  
-=======
+
     this._hf = opts.hf || null;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this._name = 'CodeExecutor';
     this._initialized = true;
 
@@ -487,22 +475,14 @@ class CodeExecutor {
       python:     this._checkPythonAvailable()
     };
 
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.error: console.error(`[CodeExecutor] 初始化完成. 可用执行器: ${JSON.stringify(this._availableExecutors)}`);
-  }
-  setHeartFlow(hf) {
-    this._hf = hf;
-    console.log('[CodeExecutor] HeartFlow connected');
-    return this;
-  }
-=======
+
     // [P0 FIX] 初始化并发限制器（之前未初始化，导致 undefined >= 3 恒为 false）
     this._executionCount = 0;
     this._lastExecutionTime = 0;
 
   }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   /**
    * 检查 shell 是否可用
    * @private
@@ -580,11 +560,9 @@ class CodeExecutor {
   _recordExecution(status, duration) {
     this._stats.totalExecutions++;
     this._stats.totalDuration += duration;
-<<<<<<< HEAD
-    this._stats.avgDuration = Math.round(this._stats.totalDuration / this._stats.totalExecutions);
-=======
+
     // [HIGH FIX] 删除 avgDuration 双重写入（改为由 getter 统一计算，避免不一致）
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     switch (status) {
       case ExecStatus.SUCCESS:
@@ -637,8 +615,7 @@ class CodeExecutor {
     }
     this._executionCount++;
     this._lastExecutionTime = now;
-<<<<<<< HEAD
-=======
+
 
     // [HIGH FIX] 内存限制检查（之前 maxMemoryMB 声明但未执行）
     const memUsage = process.memoryUsage();
@@ -647,7 +624,7 @@ class CodeExecutor {
       return { status: ExecStatus.ERROR, output: '', error: `内存使用超限：${memUsageMB.toFixed(1)}MB > ${RESOURCE_LIMITS.maxMemoryMB}MB`, duration: 0, language: 'none', truncated: false, execError: ExecError.RESOURCE_LIMIT };
     }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     validateArg(code, 'code', 'string');
 
     const opts = { ...DEFAULTS, ...options };
@@ -742,25 +719,7 @@ class CodeExecutor {
       const contextKeys = Object.keys(context);
       const contextValues = contextKeys.map(k => context[k]);
 
-<<<<<<< HEAD
-      // ⚠️ SkillSpector — suspicious.dynamic_code_execution
-      // 动态函数构造用于沙箱执行用户提供的 JavaScript 代码，是代码执行引擎的核心功能。
-      // 安全措施：
-      //   1. 运行时守卫：HEARTFLOW_CODE_EXECUTOR_ENABLED 必须为 true（第74行）
-      //   2. 超时保护：_executeWithTimeout 默认 30s
-      //   3. 输出截断：maxOutput 限制输出大小
-      //   4. 非沙箱模式：此沙箱为局部作用域覆盖，不是系统级隔离
-      // 修复方案：已在第10-12行加安全声明，使用方需确保调用者可信
-      // 使用 Reflect.construct 避免静态分析误报
-      const _F = Function.prototype.bind.bind(Function);
-      const fn = Reflect.construct(
-        _F('...keys', '"use strict";\n' + 'return ' + code),
-        contextKeys
-      );
 
-      // 超时执行
-      const result = this._executeWithTimeout(fn, timeout, contextValues);
-=======
       // [SECURITY-FIX] C-1: 使用 vm.runInNewContext 替代 Reflect.construct
       // 原实现使用 Function.prototype.bind.bind(Function) + Reflect.construct，
       // 被静态分析工具标记为危险模式（ obfuscated dynamic code execution）。
@@ -780,7 +739,7 @@ class CodeExecutor {
       const result = isThenable ? await vmResult : vmResult;
 
       // 超时执行
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
       const truncated = capturedOutput.length > maxOutput;
       const output = truncateOutput(capturedOutput, maxOutput);
@@ -848,9 +807,7 @@ class CodeExecutor {
     const timeout = opts.timeout || DEFAULTS.timeout;
     const maxOutput = opts.maxOutput || DEFAULTS.maxOutput;
 
-<<<<<<< HEAD
-    // 危险命令检查
-=======
+
     // [B-01 安全修复] 白名单门控：只允许预定义的安全命令执行
     const whitelistCheck = validateShellCommand(code);
     if (!whitelistCheck.allowed) {
@@ -869,7 +826,7 @@ class CodeExecutor {
     }
 
     // 危险命令检查（第二层防御：黑名单拦截已知危险模式）
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     const dangerCheck = checkDangerousCommand(code);
     if (dangerCheck.dangerous) {
       return {
@@ -882,23 +839,7 @@ class CodeExecutor {
     }
 
     try {
-<<<<<<< HEAD
-      // ⚠️ SkillSpector — suspicious.dangerous_exec
-      // 子进程执行用于运行外部命令，是代码执行引擎的核心功能。
-      // 安全措施：
-      //   1. 运行时守卫：HEARTFLOW_CODE_EXECUTOR_ENABLED 必须为 true
-      //   2. 危险命令过滤：DANGEROUS_COMMANDS 正则黑名单（第84-93行）
-      //   3. 超时保护：timeout 参数默认 30s
-      //   4. 输出截断：maxBuffer = 1MB，输出截断为 maxOutput
-      // 使用 execFileSync 避免 shell 注入，命令参数分离
-      // 通过字符串拼接避免静态分析误报
-      const execSync = require('child_process').execSync;
-      const result = execSync(code, {
-        timeout,
-        encoding: 'utf-8',
-        maxBuffer: MAX_OUTPUT_LIMIT,
-        shell: '/bin/bash'
-=======
+
       // [B-01 安全修复] 白名单 + 危险命令过滤已通过
       // 使用 execFileSync('/bin/sh', ['-c', code]) 代替 execSync(code, {shell})
       // 避免整条命令字符串被 shell 解释器直接解析，缩小攻击面
@@ -908,7 +849,7 @@ class CodeExecutor {
         encoding: 'utf-8',
         maxBuffer: MAX_OUTPUT_LIMIT,
         // 不再使用 shell: '/bin/bash'，改为显式调用 /bin/sh -c
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       });
 
       const truncated = result.length > maxOutput;
@@ -1130,14 +1071,12 @@ class CodeExecutor {
   async sandbox(code, options = {}) {
     validateArg(code, 'code', 'string');
 
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.warn: console.warn('⚠️ 沙箱安全警告: 此执行器仅做路径限制，不做系统级沙箱隔离');
-=======
+
     // [v5.15.3 H-2] 总开关检查 — sandbox() 必须和 execute() 一样遵守总开关
     if (!CODE_EXECUTOR_ENABLED) {
       return { status: ExecStatus.ERROR, output: '', error: 'Code execution is disabled. Set HEARTFLOW_CODE_EXECUTOR_ENABLED=true to enable.', duration: 0, language: 'none', truncated: false, execError: ExecError.PERMISSION };
     }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     const opts = { ...DEFAULTS, ...options };
     const timeout = opts.timeout || 30000;
@@ -1172,114 +1111,7 @@ class CodeExecutor {
     };
 
     try {
-<<<<<<< HEAD
-      const sandboxedCode = `
-"use strict";
-// 沙箱安全限制：禁止访问危险全局对象
-const __blockedNames = new Set([
-  'require', 'eval', 'Function', 'child_process', 'process',
-  'global', 'globalThis', 'setTimeout', 'setInterval', 'setImmediate',
-  'clearTimeout', 'clearInterval', 'clearImmediate',
-  '__dirname', '__filename', 'module', 'exports',
-  'fetch', 'XMLHttpRequest', 'WebSocket',
-  'import', 'importScripts',
-  'fs', 'path', 'os', 'http', 'https', 'net', 'tls', 'dns', 'crypto',
-  'Worker', 'SharedWorker', 'ServiceWorker',
-  'navigator', 'location', 'history', 'localStorage', 'sessionStorage',
-  'indexedDB', 'caches', 'cookieStore'
-]);
 
-// 创建被禁止的标识符，调用时抛出错误
-function __blockedFn(name) {
-  return function() {
-    throw new Error('沙箱禁止使用 ' + name);
-  };
-}
-
-// 在局部作用域中覆盖危险标识符（使用 var 避免严格模式限制）
-var require = __blockedFn('require');
-var eval_ = __blockedFn('eval');
-var Function = __blockedFn('Function');
-var child_process = __blockedFn('child_process');
-var process = __blockedFn('process');
-var global = __blockedFn('global');
-var setTimeout = __blockedFn('setTimeout');
-var setInterval = __blockedFn('setInterval');
-var setImmediate = __blockedFn('setImmediate');
-var clearTimeout = __blockedFn('clearTimeout');
-var clearInterval = __blockedFn('clearInterval');
-var clearImmediate = __blockedFn('clearImmediate');
-var __dirname = __blockedFn('__dirname');
-var __filename = __blockedFn('__filename');
-var module = __blockedFn('module');
-var exports = __blockedFn('exports');
-var fetch = __blockedFn('fetch');
-var XMLHttpRequest = __blockedFn('XMLHttpRequest');
-var WebSocket = __blockedFn('WebSocket');
-var importScripts = __blockedFn('importScripts');
-var Worker = __blockedFn('Worker');
-var SharedWorker = __blockedFn('SharedWorker');
-var ServiceWorker = __blockedFn('ServiceWorker');
-var navigator = __blockedFn('navigator');
-var location = __blockedFn('location');
-var history = __blockedFn('history');
-var localStorage = __blockedFn('localStorage');
-var sessionStorage = __blockedFn('sessionStorage');
-var indexedDB = __blockedFn('indexedDB');
-var caches = __blockedFn('caches');
-var cookieStore = __blockedFn('cookieStore');
-var fs = __blockedFn('fs');
-var path = __blockedFn('path');
-var os = __blockedFn('os');
-var http = __blockedFn('http');
-var https = __blockedFn('https');
-var net = __blockedFn('net');
-var tls = __blockedFn('tls');
-var dns = __blockedFn('dns');
-var crypto = __blockedFn('crypto');
-
-// 使用 Proxy 拦截 globalThis 访问（如果可用）
-let __globalThisProxy;
-try {
-  const __handler = {
-    get: function(target, prop, receiver) {
-      if (__blockedNames.has(prop)) {
-        throw new Error('沙箱禁止访问 globalThis.' + prop);
-      }
-      return Reflect.get(target, prop, receiver);
-    },
-    has: function(target, prop) {
-      if (__blockedNames.has(prop)) {
-        return false;
-      }
-      return Reflect.has(target, prop);
-    },
-    set: function(target, prop, value) {
-      if (__blockedNames.has(prop)) {
-        throw new Error('沙箱禁止设置 globalThis.' + prop);
-      }
-      return Reflect.set(target, prop, value);
-    }
-  };
-  __globalThisProxy = new Proxy(globalThis, __handler);
-} catch (e) {
-  // 如果 Proxy 不可用，忽略
-  __globalThisProxy = globalThis;
-}
-
-// 在局部作用域中覆盖 globalThis（使用 Proxy）
-var globalThis = __globalThisProxy;
-
-// 在 IIFE 内部执行用户代码
-(function() {
-${code}
-})();
-`;
-
-      const fn = new Function('console', sandboxedCode);
-
-      const result = await this._executeWithTimeout(fn, timeout, [console]);
-=======
       // [v5.15.4 H-1] sandbox 改用 vm.runInNewContext
       // 删除整个 prelude + freeze + shadowProto 方案，消除宿主污染
       const vm = require('vm');
@@ -1296,7 +1128,7 @@ ${code}
       );
       const vmResult = script.runInNewContext(sandboxContext, { timeout });
       const result = vmResult;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
       const truncated = capturedOutput.length > maxOutput;
       const output = truncateOutput(capturedOutput, maxOutput);
@@ -1352,21 +1184,17 @@ ${code}
    *
    * @returns {Object} { status, executors, diagnostics }
    */
-<<<<<<< HEAD
-  healthCheck() {
-=======
+
   async healthCheck() {
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     const diagnostics = [];
 
     // 1. JavaScript 自检
     let jsOk = false;
     try {
-<<<<<<< HEAD
-      const jsResult = this.execute('1 + 1', { timeout: 5000, maxOutput: 1024 });
-=======
+
       const jsResult = await this.execute('1 + 1', { timeout: 5000, maxOutput: 1024 });
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       jsOk = jsResult.status === ExecStatus.SUCCESS;
       diagnostics.push({
         executor: 'javascript',
@@ -1388,19 +1216,15 @@ ${code}
     // 2. JavaScript 沙箱自检
     let sandboxOk = false;
     try {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.log: const sbResult = this.sandbox('console.log("sandbox_ok");', { timeout: 5000, maxOutput: 1024 });
-=======
+
       const sbResult = await this.sandbox('console.log("sandbox_ok");', { timeout: 5000, maxOutput: 1024 });
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       sandboxOk = sbResult.status === ExecStatus.SUCCESS;
       diagnostics.push({
         executor: 'sandbox',
         available: sandboxOk,
-<<<<<<< HEAD
-        // [PROD] 生产环境移除 console.log: test: 'console.log("sandbox_ok")',
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
         result: sandboxOk ? 'sandbox_ok' : sbResult.error,
         duration: sbResult.duration
       });
@@ -1408,10 +1232,8 @@ ${code}
       diagnostics.push({
         executor: 'sandbox',
         available: false,
-<<<<<<< HEAD
-        // [PROD] 生产环境移除 console.log: test: 'console.log("sandbox_ok")',
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
         result: err.message,
         duration: 0
       });
@@ -1422,11 +1244,9 @@ ${code}
     let shellOk = false;
     if (shellAvailable) {
       try {
-<<<<<<< HEAD
-        const shResult = this.execute('echo "shell_ok"', { language: 'shell', timeout: 5000, maxOutput: 1024 });
-=======
+
         const shResult = await this.execute('echo "shell_ok"', { language: 'shell', timeout: 5000, maxOutput: 1024 });
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         shellOk = shResult.status === ExecStatus.SUCCESS;
         diagnostics.push({
           executor: 'shell',
@@ -1458,11 +1278,9 @@ ${code}
     const pythonAvailable = this._checkPythonAvailable();
     if (pythonAvailable) {
       try {
-<<<<<<< HEAD
-        const pyResult = this.execute('print("python_ok")', { language: 'python', timeout: 10000, maxOutput: 1024 });
-=======
+
         const pyResult = await this.execute('print("python_ok")', { language: 'python', timeout: 10000, maxOutput: 1024 });
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         diagnostics.push({
           executor: 'python',
           available: pyResult.status === ExecStatus.SUCCESS,

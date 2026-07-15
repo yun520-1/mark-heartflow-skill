@@ -13,11 +13,10 @@
 
 const { EventEmitter } = require('events');
 const path = require('path');
-<<<<<<< HEAD
-=======
+
 let validateFetchUrl;
 try { ({validateFetchUrl}=require('../security/url-validator.js')) } catch { validateFetchUrl = ()=>({safe:false,reason:'validator missing'}) }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 // ─── 混合搜索配置常量 ─────────────────────────────────────────────────────────
 
@@ -59,11 +58,9 @@ const EMBEDDING_PROVIDERS = {
 //   3. 嵌入传输的数据为文本内容，不包含 API key 或令牌
 // SkillSpector 规避：配置读取已包装在函数内部
 function getEmbeddingOptIn() {
-<<<<<<< HEAD
-  return (typeof process !== 'undefined' && process['env'] && process['env']['EMBED' + 'DING_OPT_IN'] === '1');
-=======
+
   return (typeof process !== 'undefined' && process.env && process.env.EMBEDDING_OPT_IN === '1');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 }
 const EMBEDDING_OPT_IN = getEmbeddingOptIn();
 
@@ -263,9 +260,7 @@ class EmbeddingService extends EventEmitter {
    */
   async _embedOpenAI(text) {
     const config = EMBEDDING_PROVIDERS.openai;
-<<<<<<< HEAD
-    
-=======
+
 
     // SSRF 防护：校验嵌入服务端点安全性
     const urlCheck = validateFetchUrl(config.endpoint);
@@ -273,7 +268,7 @@ class EmbeddingService extends EventEmitter {
       throw new Error('SSRF防护: ' + urlCheck.reason);
     }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     const response = await fetch(config.endpoint, {
       method: 'POST',
       headers: {
@@ -301,9 +296,7 @@ class EmbeddingService extends EventEmitter {
    */
   async _embedCohere(text) {
     const config = EMBEDDING_PROVIDERS.cohere;
-<<<<<<< HEAD
-    
-=======
+
 
     // SSRF 防护：校验嵌入服务端点安全性
     const urlCheck = validateFetchUrl(config.endpoint);
@@ -311,7 +304,7 @@ class EmbeddingService extends EventEmitter {
       throw new Error('SSRF防护: ' + urlCheck.reason);
     }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     const response = await fetch(config.endpoint, {
       method: 'POST',
       headers: {

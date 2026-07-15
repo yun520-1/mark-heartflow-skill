@@ -12,11 +12,9 @@
  *   - executeStrategy 返回 quality 基于实际覆盖率/相关性计算
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 class MetaLearning {
@@ -77,13 +75,9 @@ class MetaLearning {
         this.strategies = data.strategies || this.strategies;
         this.learningPatterns = data.patterns || [];
       }
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[MetaLearning] 加载模式失败');
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   savePatterns() {

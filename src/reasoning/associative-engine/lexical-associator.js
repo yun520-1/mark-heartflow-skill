@@ -5,11 +5,9 @@
  * v2.0.61 — 增强版：频率追踪/衰减/双向链接/语义回退/歧义消解/复合查询/图健康校验
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 // 拼音声母到韵母的简单映射（用于音近回退）
@@ -95,13 +93,9 @@ class LexicalAssociator {
         const data = JSON.parse(fs.readFileSync(this.graphFile, 'utf8'));
         return data;
       }
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[LexicalAssociator] Load graph failed:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return this.initializeDefaultGraph();
   }
 
@@ -953,13 +947,9 @@ class LexicalAssociator {
   saveGraph() {
     try {
       fs.writeFileSync(this.graphFile, JSON.stringify(this.graph, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[LexicalAssociator] Save failed:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   getRecentAssociations() {

@@ -5,14 +5,11 @@
  * v2 - 增强版：动态风险评分、权限过期、使用追踪、渐进式授权、相似度匹配
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-const path = require('path');
-=======
+
 const fs = require('../../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 // 风险评分表 — 动作类型 × 数据敏感度 → 基础风险分
 const RISK_MATRIX = {
@@ -302,11 +299,9 @@ class BoundaryNegotiation {
                       risk.level === 'medium' ? '⚡ 中等风险' : '✓ 低风险';
 
     const request = {
-<<<<<<< HEAD
-      request_id: `bn-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-=======
+
       request_id: `bn-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       goal,
       permission,
       impact,
@@ -495,9 +490,7 @@ class BoundaryNegotiation {
   }
 }
 
-<<<<<<< HEAD
-module.exports = { BoundaryNegotiation };
-=======
+
 // [P-006] Sensitive actions list — actions that always require explicit user consent
 const SENSITIVE_ACTIONS = [
   'delete_file',
@@ -547,4 +540,4 @@ function enforcePermission(action, bn, context = {}) {
 }
 
 module.exports = { BoundaryNegotiation, SENSITIVE_ACTIONS, enforcePermission };
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+

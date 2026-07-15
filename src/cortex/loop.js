@@ -10,11 +10,9 @@
  * - 周期持久化（独立于 core 的循环历史存储）
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 const { SelfEvolutionCore } = require('./self-evolution/self-evolution-core.js');
 
@@ -79,10 +77,8 @@ class EvolutionLoop {
         } catch (err) {
             this._recordError('boot_failed', err.message);
             this._updateHealth('core_init', false);
-<<<<<<< HEAD
-            // [PROD] 生产环境移除 console.error: console.error('[EvolutionLoop] Boot failed:', err.message);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
         }
         return this;
     }
@@ -358,13 +354,9 @@ class EvolutionLoop {
                     this.cycleCount = data.cycleCount;
                 }
             }
-<<<<<<< HEAD
-        } catch (e) {
-            // [PROD] 生产环境移除 console.error: console.error('[EvolutionLoop] 加载状态失败，使用默认');
-        }
-=======
+
         } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
 
     _saveState() {
@@ -398,13 +390,9 @@ class EvolutionLoop {
                 lastSaved: new Date().toISOString()
             };
             fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
-<<<<<<< HEAD
-        } catch (e) {
-            // [PROD] 生产环境移除 console.error: console.error('[EvolutionLoop] 保存状态失败:', e.message);
-        }
-=======
+
         } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     }
 
     // ════════════════════════════════════════════════════════

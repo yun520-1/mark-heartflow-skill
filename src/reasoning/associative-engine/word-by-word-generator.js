@@ -5,11 +5,9 @@
  * v2.0.0 — 升级：增加输入验证/震荡检测/循环保护/自愈选择/用户模型集成
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 // ============================================================================
@@ -537,14 +535,9 @@ class WordByWordGenerator {
       };
       
       fs.writeFileSync(this.stateFile, JSON.stringify(traceData, null, 2));
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.warn: console.warn('[WordByWordGenerator] Trace saved to disk');
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[WordByWordGenerator] Save failed:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   getLastTrace() {

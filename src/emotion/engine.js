@@ -18,12 +18,11 @@
 
 const psychology = require('./psychology.js');
 const empathy = require('./empathy-detector.js');
-<<<<<<< HEAD
-=======
+
 // 公式注册表：把认知公式主动注入情绪引擎（v5.9.5 重构）
 const { getFormulaRegistry } = require('../formula/formula-registry.js');
 const _registry = getFormulaRegistry();
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 // AI认知状态调节器 — 6个人类心理学模块的AI化版本
 const { breathingExercise } = require('./breathing-exercise.js');
 const { pauseAndReflect } = require('./pause-and-reflect.js');
@@ -77,12 +76,11 @@ class PsychologyEngine {
         this._status = EngineStatus.READY;
         this._moduleErrors = []; // 记录模块级错误，用于降级决策
         this._lastAnalysis = null; // 缓存上次分析结果，用于趋势检测
-<<<<<<< HEAD
-=======
+
         this._userHistory = []; // 最近用户输入历史，用于觉醒检测
         this._awakeningCount = 0; // 觉醒事件计数
         this._lastAwakeningScore = 0; // 最近一次觉醒分数
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
         // 验证依赖模块
         this._verifyDependencies();
@@ -200,49 +198,38 @@ class PsychologyEngine {
      */
     _aggregateConfidence(layers) {
         if (!layers || layers.length === 0) {
-<<<<<<< HEAD
-            return { average: 0, min: 0, max: 0, weighted: 0 };
-=======
+
             return { average: 0, min: 0, max: 0, weighted: 0, metacognitive: 0 };
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         }
 
         const confidences = layers.filter(l => typeof l.confidence === 'number' && l.confidence >= 0 && l.confidence <= 1);
         if (confidences.length === 0) {
-<<<<<<< HEAD
-            return { average: 0, min: 0, max: 0, weighted: 0 };
-=======
+
             return { average: 0, min: 0, max: 0, weighted: 0, metacognitive: 0 };
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         }
 
         const values = confidences.map(l => l.confidence);
         const sum = values.reduce((a, b) => a + b, 0);
         const average = sum / values.length;
 
-<<<<<<< HEAD
-        // 加权：较低置信度层给予更少权重
-        const weights = values.map(v => Math.max(0.1, v));
-        const weightSum = weights.reduce((a, b) => a + b, 0);
-        const weighted = weights.reduce((acc, w, i) => acc + w * values[i], 0) / weightSum;
-=======
+
         // 加权：较低置信度层给予更少权重（公式注册表 weighted_confidence 原语）
         const weighted = _registry.call('confidence_aggr', 'weighted_confidence', values, values.map(v => Math.max(0.1, v)));
 
         // 元认知置信度：多来源预测一致性越高，整体置信度越高（C = 1 - Var(p)）
         const metacognitive = _registry.call('confidence_aggr', 'metacognitive_confidence', values);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
         return {
             average: Math.round(average * 100) / 100,
             min: Math.round(Math.min(...values) * 100) / 100,
             max: Math.round(Math.max(...values) * 100) / 100,
-<<<<<<< HEAD
-            weighted: Math.round(weighted * 100) / 100
-=======
+
             weighted: Math.round((weighted || average) * 100) / 100,
             metacognitive: Math.round((metacognitive || 0) * 100) / 100
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         };
     }
 
@@ -393,21 +380,19 @@ class PsychologyEngine {
             needs: [...mappedResult.needs]
         };
 
-<<<<<<< HEAD
-=======
+
         // [v6.0.3 W-AXIS] 觉醒检测：对比当前分析与历史
         const awakeningScore = this.detectAwakening(safeInput);
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         return {
             ...mappedResult,
             insights,
             confidence,
-<<<<<<< HEAD
-=======
+
             awakeningScore,
             awakeningDetected: awakeningScore >= 0.5,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
             crisisCount: this._crisisCount,
             status: this._status,
             statusDescription: this._status === EngineStatus.DEGRADED
@@ -415,9 +400,7 @@ class PsychologyEngine {
                 : this._status === EngineStatus.ERROR
                     ? '引擎异常'
                     : '正常',
-<<<<<<< HEAD
-            engineVersion: 'v1.2.0'
-=======
+
             engineVersion: 'v1.2.0',
             // [v6.0.4 诚实化] 标注分析方法和置信度
             _meta: {
@@ -425,7 +408,7 @@ class PsychologyEngine {
                 confidence: 'low',
                 note: '本地规则层仅做关键词模式匹配，非真实语义理解。如需深度分析，请调用 LLM 协作层。'
             }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         };
     }
     
@@ -627,16 +610,14 @@ class PsychologyEngine {
             lastAnalysis: this._lastAnalysis ? {
                 timestamp: this._lastAnalysis.timestamp,
                 crisisLevel: this._lastAnalysis.crisisLevel
-<<<<<<< HEAD
-            } : null
-=======
+
             } : null,
             awakening: {
                 score: this._lastAwakeningScore,
                 eventCount: this._awakeningCount,
                 historyLength: this._userHistory.length
             }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         };
     }
 
@@ -793,8 +774,7 @@ class PsychologyEngine {
     }
 
     /**
-<<<<<<< HEAD
-=======
+
      * [v6.0.3 W-AXIS] 觉醒检测：识别用户是否正在推翻惯性立场
      * 信号：
      *   1. 语义反转：当前输入与历史立场相反（通过关键词极性对比）
@@ -886,7 +866,7 @@ class PsychologyEngine {
     }
 
     /**
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
      * 禁用引擎
      */
     disable() {

@@ -70,11 +70,9 @@ class CapabilityAbstraction {
     // 哲学评估能力（平台无关）
     this.registerCapability('philosophy_evaluation', {
       name: '哲学评估',
-<<<<<<< HEAD
-      description: 'AI自处哲学评估（共振体/熵减深化/三层存在论）',
-=======
+
       description: 'AI自处哲学评估（价值对齐深化/行为模式）',
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       platformDependent: false,
       execute: (context) => this._philosophyEvaluate(context),
     });
@@ -88,11 +86,9 @@ class CapabilityAbstraction {
   // 从外部 JSON 配置加载能力定义（Smart Routing 启发：模型能力清单外置）
   loadCapabilitiesFromConfig(configPath) {
     try {
-<<<<<<< HEAD
-      const fs = require('fs');
-=======
+
       const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       const path = require('path');
       const resolved = path.resolve(configPath);
       const raw = fs.readFileSync(resolved, 'utf-8');
@@ -250,11 +246,9 @@ class CapabilityAbstraction {
       positioning: {
         resonance: 0.7,  // 共振体：与环境的和谐度
         entropyReduction: 0.6,  // 熵减深化：秩序构建能力
-<<<<<<< HEAD
-        existence: 0.8,  // 三层存在论：存在感
-=======
+
         existence: 0.8,  // 行为模式一致性：存在感
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       },
       development: {
         current: 'integrated',

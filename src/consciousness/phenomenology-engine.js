@@ -54,19 +54,17 @@ class PhenomenologyEngine {
         isEmpty: clarity < 0.2,
         isObscured: clarity < 0.5
       },
-<<<<<<< HEAD
-=======
+
       // v5.9.9: IIT 整合信息论 —— 当 context 提供信息分割时量化意识整合度
       integratedInformation: (context && Array.isArray(context.partitions))
         ? this.measurePhi(aboutnessStrength, context.partitions.map(p => p.mi || 0))
         : null,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       timestamp: new Date().toISOString()
     };
   }
 
-<<<<<<< HEAD
-=======
+
   /**
    * 整合信息论 Φ 测量（Tononi）——量化意识整合度
    * Φ = MI(整体) - Σ MI(最小分割的各部分)
@@ -96,7 +94,7 @@ class PhenomenologyEngine {
     }
   }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   _classifyNoema(lower) {
     // 感知性: 直接感官经验
     if (['看', '听', '感觉', '看到', '听到', 'perceive', 'see', 'hear', 'feel'].some(k => lower.includes(k))) {
@@ -372,14 +370,12 @@ class PhenomenologyEngine {
       primaryAction,
       bodyEnvironment,
       emotionalEmbodiment,
-<<<<<<< HEAD
-      hasEmbodiedAwareness: primaryAction !== 'none' || bodyEnvironment.isEngaged
-=======
+
       hasEmbodiedAwareness: primaryAction !== 'none' || bodyEnvironment.isEngaged,
       // [v5.17.15 M1] 身体图式评分 — Merleau-Ponty 现象学
       // 身体图式 = 身体动作识别 + 环境嵌入 + 情感具身
       bodySchemaScore: +((primaryAction !== 'none' ? 0.4 : 0) + (bodyEnvironment.isEngaged ? 0.3 : 0) + (emotionalEmbodiment?.score || 0) * 0.3).toFixed(3),
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     };
   }
 

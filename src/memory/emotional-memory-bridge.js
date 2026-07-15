@@ -130,22 +130,18 @@ function getMeaningfulMemory() {
 
 function getCognitiveAppraisal() {
   if (!_ca) {
-<<<<<<< HEAD
-    try { _ca = require('./cognitive-appraisal.js'); } catch(e) { _ca = null; }
-=======
+
     try { _ca = require('../core/cognitive-appraisal.js'); } catch(e) { _ca = null; }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
   return _ca;
 }
 
 function getPsychology() {
   if (!_psy) {
-<<<<<<< HEAD
-    try { _psy = require('./psychology.js'); } catch(e) { _psy = null; }
-=======
+
     try { _psy = require('../emotion/psychology.js'); } catch(e) { _psy = null; }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
   return _psy;
 }
@@ -801,10 +797,8 @@ async function appraisalToMemory(text, appraisalResult, padState = {}, options =
     } catch (e) {
       // 去重失败时继续存储，但记录警告
       const dedupError = classifyError(e, ErrorType.DEDUP_CHECK_FAILED);
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.warn: if (options.debug) console.warn('[EMB] Dedup check failed, proceeding without it:', dedupError.message);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
     }
   }
   
@@ -1073,13 +1067,8 @@ async function demo() {
   const dup2 = checkDuplicate('测试去重功能'); // 应该标记为重复
   const sim = computeTextSimilarity('我今天心情不好', '我今心情不太好');
   
-<<<<<<< HEAD
-  // [PROD] 生产环境移除 console.log: console.log('[EMB Demo] Salience assessment:', JSON.stringify(results, null, 2));
-  // [PROD] 生产环境移除 console.log: console.log('[EMB Demo] First dedup check:', JSON.stringify(dup1));
-  // [PROD] 生产环境移除 console.log: console.log('[EMB Demo] Second dedup check:', JSON.stringify(dup2));
-  // [PROD] 生产环境移除 console.log: console.log('[EMB Demo] Text similarity:', sim);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
 }
 
 // ========================================

@@ -255,13 +255,10 @@ const hypothesisTester = {
           const dateA = a.text.match(/\d{4}/);
           const dateB = b.text.match(/\d{4}/);
           if (dateA && dateB && dateA[0] !== dateB[0]) {
-<<<<<<< HEAD
-            const yearA = parseInt(dateA[0]);
-            const yearB = parseInt(dateB[0]);
-=======
+
             const yearA = parseInt(dateA[0], 10);
             const yearB = parseInt(dateB[0], 10);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
             if (Math.abs(yearA - yearB) > 50) {
               contradictions.push({
                 type: 'date_discrepancy',
@@ -333,11 +330,9 @@ const hypothesisTester = {
     // 检查日期声明
     const yearMatch = claim.text.match(/(?:19|20)(\d{2})/);
     if (yearMatch) {
-<<<<<<< HEAD
-      const year = parseInt('20' + (yearMatch[1] < 50 ? yearMatch[1] : yearMatch[1])); // 简单年份解析
-=======
+
       const year = parseInt('20' + (yearMatch[1] < 50 ? yearMatch[1] : yearMatch[1]), 10); // 简单年份解析
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       const currentYear = new Date(referenceDate).getFullYear();
       const age = currentYear - year;
 
@@ -368,11 +363,9 @@ const hypothesisTester = {
       .replace(/[^a-z0-9\u4e00-\u9fff]/g, '')
       .slice(0, 50);
     const { createHash } = require('crypto');
-<<<<<<< HEAD
-    return createHash('md5').update(normalized).digest('hex').slice(0, 8);
-=======
+
     return createHash('sha256').update(normalized).digest('hex').slice(0, 8);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   },
 
   // 为声明生成未核实标记

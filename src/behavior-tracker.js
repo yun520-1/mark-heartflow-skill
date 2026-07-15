@@ -12,14 +12,11 @@
  * - 时间衰减 (旧目标自动降级)
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-const path = require('path');
-=======
+
 const fs = require('./utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 // ── 常量 ──────────────────────────────────────────────
 const MAX_GOALS = 100;
@@ -43,13 +40,9 @@ try {
   if (!fs.existsSync(resolvedDataDir)) {
     fs.mkdirSync(resolvedDataDir, { recursive: true });
   }
-<<<<<<< HEAD
-} catch (e) {
-  // [PROD] 生产环境移除 console.error: console.error('[BehaviorTracker] Failed to create data directory:', e.message);
-}
-=======
+
 } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 // ── 数据消毒 ──────────────────────────────────────────
 function _sanitize(str, maxLen = 200) {
@@ -115,18 +108,14 @@ const behaviorTracker = {
             if (!g.createdAt) g.createdAt = new Date().toISOString();
           });
         } else {
-<<<<<<< HEAD
-          // [PROD] 生产环境移除 console.warn: console.warn('[BehaviorTracker] Corrupted data structure, resetting');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
           this.data = { version: DATA_VERSION, goals: [] };
         }
       }
     } catch (e) {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.warn: console.warn('[BehaviorTracker] Load failed (corrupted file?):', e.message);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       // 尝试备份恢复
       this._tryRecovery();
     }
@@ -144,27 +133,18 @@ const behaviorTracker = {
         const parsed = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.goals)) {
           this.data = parsed;
-<<<<<<< HEAD
-          // [PROD] 生产环境移除 console.error: console.error('[BehaviorTracker] Recovered from backup');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
           // 写回主文件
           fs.writeFileSync(DATA_FILE, JSON.stringify(this.data, null, 2));
           return;
         }
       }
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[BehaviorTracker] Backup recovery failed:', e.message);
-    }
-    // 彻底失败，重置
-    this.data = { version: DATA_VERSION, goals: [] };
-    // [PROD] 生产环境移除 console.warn: console.warn('[BehaviorTracker] Data reset due to unrecoverable corruption');
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
     // 彻底失败，重置
     this.data = { version: DATA_VERSION, goals: [] };
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   },
 
   // ── 保存 (含自动备份) ──
@@ -176,13 +156,9 @@ const behaviorTracker = {
       }
       fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
       fs.writeFileSync(DATA_FILE, JSON.stringify(this.data, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.warn: console.warn('[BehaviorTracker] save failed:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return this;
   },
 
@@ -224,10 +200,8 @@ const behaviorTracker = {
       });
       const removed = this.data.goals.splice(MAX_GOALS);
       removed.forEach(r => {
-<<<<<<< HEAD
-        // [PROD] 生产环境移除 console.error: console.error(`[BehaviorTracker] Pruned stale goal: ${r.name || r.id}`);
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       });
       changed = true;
     }
@@ -235,11 +209,9 @@ const behaviorTracker = {
     if (changed) this.save();
   },
 
-<<<<<<< HEAD
-  _uuid() { return `goal-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`; },
-=======
+
   _uuid() { return `goal-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`; },
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
   // ── 创建目标 ──
   createGoal({ name, description, targetDays = 30, category = '' }) {
@@ -292,11 +264,9 @@ const behaviorTracker = {
     }
 
     const record = {
-<<<<<<< HEAD
-      id: `rec-${Date.now()}-${Math.random().toString(36).slice(2, 4)}`,
-=======
+
       id: `rec-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       type,
       note: _sanitize(note, 500),
       context: _sanitize(context, 200),

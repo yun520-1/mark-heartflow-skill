@@ -4,10 +4,7 @@
  * 收集和管理执行经验
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-const path = require('path');
-=======
+
 const fs = require('../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -29,7 +26,7 @@ function _boundedSet(map, key, value, maxSize) {
   }
   map.set(key, value);
 }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 class ExperienceCollector {
   constructor(options = {}) {
@@ -75,19 +72,12 @@ class ExperienceCollector {
       if (fs.existsSync(indexPath)) {
         const index = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
         for (const [id, meta] of Object.entries(index)) {
-<<<<<<< HEAD
-          this.experiences.set(id, meta);
-        }
-      }
-    } catch (error) {
-      // [PROD] 生产环境移除 console.warn: console.warn('加载经验失败:', error.message);
-    }
-=======
+
           _boundedSet(this.experiences, id, meta, MAX_HISTORY_SIZE);
         }
       }
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -99,13 +89,9 @@ class ExperienceCollector {
     try {
       const filePath = path.join(this.storagePath, `${id}.json`);
       fs.writeFileSync(filePath, JSON.stringify(experience, null, 2));
-<<<<<<< HEAD
-    } catch (error) {
-      // [PROD] 生产环境移除 console.warn: console.warn('保存经验失败:', error.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -118,24 +104,18 @@ class ExperienceCollector {
       const index = Object.fromEntries(this.experiences);
       const indexPath = path.join(this.storagePath, 'index.json');
       fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
-<<<<<<< HEAD
-    } catch (error) {
-      // [PROD] 生产环境移除 console.warn: console.warn('更新索引失败:', error.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
    * 添加经验
    */
   add(experience) {
-<<<<<<< HEAD
-    const id = experience.id || `exp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-=======
+
     const id = experience.id || `exp-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     const record = {
       id,
@@ -150,11 +130,9 @@ class ExperienceCollector {
       lessons: experience.lessons || []
     };
 
-<<<<<<< HEAD
-    this.experiences.set(id, record);
-=======
+
     _boundedSet(this.experiences, id, record, MAX_HISTORY_SIZE);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     this._saveExperience(id, record);
     this._updateIndex();
 
@@ -395,11 +373,9 @@ class ExperienceCollector {
     let imported = 0;
     for (const exp of data.experiences) {
       if (exp.id && exp.task) {
-<<<<<<< HEAD
-        this.experiences.set(exp.id, exp);
-=======
+
         _boundedSet(this.experiences, exp.id, exp, MAX_HISTORY_SIZE);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         this._saveExperience(exp.id, exp);
         imported++;
       }

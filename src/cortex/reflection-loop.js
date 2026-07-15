@@ -8,11 +8,9 @@
  * 去除错误计数、修复建议等纠错语义，保留认知状态快照。
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 // ============================================================
@@ -103,13 +101,9 @@ class ReflectionLoop {
       state._oscillationState = this._oscillationState;
       state._anomalyState = this._anomalyState;
       fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2));
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error('[ReflectionLoop] Save state failed:', e.message);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   // ================================================================

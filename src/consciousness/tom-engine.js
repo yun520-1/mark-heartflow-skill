@@ -1,8 +1,7 @@
-<<<<<<< HEAD
-=======
+
 const { LRUCache } = require('../utils/lru-cache');
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 /**
  * Theory of Mind (ToM) Engine.
  *
@@ -35,17 +34,12 @@ class ToMEngine {
     this.beliefUpdateRate = options.beliefUpdateRate ?? 0.15;
 
     /** @type {Map<string, Object>} Per-agent internal-state models. */
-<<<<<<< HEAD
-    this.models = new Map();
 
-    /** @type {Map<string, Array<Object>>} Raw observation histories. */
-    this.histories = new Map();
-=======
     this.models = new LRUCache(10);
 
     /** @type {Map<string, Array<Object>>} Raw observation histories. */
     this.histories = new LRUCache(10);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
     /** @type {Map<string, Array<Object>>} Prediction records per agent. Each
      *  entry: { predictedBehavior, context, timestamp, outcome: 'pending'|'confirmed'|'contradicted', actualObservation }

@@ -3,11 +3,9 @@
  * v2.0.47 — 扩展：链接验证、交叉引用检查、代码块语法检查、重复章节检测、严重性分级、修复建议
  */
 let assert;
-<<<<<<< HEAD
-try { assert = require('./assertions').assert; } catch (e) { assert = null; }
-=======
+
 try { assert = require('../core/assertions').assert; } catch (e) { assert = null; }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 // 已知的 valid skill names (用于交叉引用检查)
 const knownSkills = new Set([

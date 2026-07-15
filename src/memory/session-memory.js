@@ -4,11 +4,9 @@
  * 跨会话持久化状态
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 class SessionMemory {
@@ -73,13 +71,11 @@ class SessionMemory {
    * 获取会话文件路径
    */
   _getSessionFile(sessionId) {
-<<<<<<< HEAD
-    return path.join(this.storagePath, `${sessionId}.json`);
-=======
+
     // [AUDIT-FIX] 消毒 sessionId，防止路径遍历（../ 等）
     const safeId = String(sessionId).replace(/[^a-zA-Z0-9_-]/g, '_');
     return path.join(this.storagePath, `${safeId}.json`);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**

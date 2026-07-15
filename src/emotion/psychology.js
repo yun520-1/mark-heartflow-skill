@@ -93,8 +93,7 @@ function getEmotionFromPAD(p, a, d) {
 function detectPADFromText(text) {
   const lower = text.toLowerCase();
  
-<<<<<<< HEAD
-=======
+
   // === [v5.9.13] 叙事体检测：第三人称长文无第一人称情绪信号 → 标记 outOfScope ===
   const firstPersonSignals = /我[很非常觉得认为想]|我[不没]|帮我|给我|我想|我该|我该不该|我是否/;
   const isLongText = text.length > 30;
@@ -114,7 +113,7 @@ function detectPADFromText(text) {
     };
   }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   let pleasure = 0;
   let arousal = 0;
   let dominance = 0;
@@ -1002,11 +1001,9 @@ let _topicScopeManager = null;
 function _getTopicScope() {
   if (!_topicScopeInstance) {
     try {
-<<<<<<< HEAD
-      const TopicScope = require('../identity/topic-scope.js');
-=======
+
       const TopicScope = require('../memory/topic-scope.js');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       _topicScopeInstance = new TopicScope();
     } catch (e) {
       return null;

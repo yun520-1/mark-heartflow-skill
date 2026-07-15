@@ -1,42 +1,13 @@
 #!/usr/bin/env node
-<<<<<<< HEAD
-// sync-version.js — 将版本号从 src/core/version.js 同步到其他文件
-// 用法: node scripts/sync-version.js
-// 在 prepublishOnly 中自动调用
 
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-<<<<<<< HEAD
-const VERSION_FILE = path.join(ROOT, 'src', 'core', 'version.js');
-const PACKAGE_FILE = path.join(ROOT, 'package.json');
 
-// 从 version.js 读取版本号（唯一真相源）
-const versionContent = fs.readFileSync(VERSION_FILE, 'utf-8');
-const match = versionContent.match(/const VERSION = '([^']+)'/);
-if (!match) {
-  console.error('ERROR: Cannot find version in src/core/version.js');
-  process.exit(1);
-}
-const version = match[1];
-console.log('Source version:', version);
-
-// 同步到 package.json
-const pkg = JSON.parse(fs.readFileSync(PACKAGE_FILE, 'utf-8'));
-if (pkg.version !== version) {
-  pkg.version = version;
-  fs.writeFileSync(PACKAGE_FILE, JSON.stringify(pkg, null, 2) + '\n');
-  console.log('Updated package.json →', version);
-} else {
-  console.log('package.json already at', version);
-}
-
-=======
 const PACKAGE_FILE = path.join(ROOT, 'package.json');
 const SKILL_FILE = path.join(ROOT, 'SKILL.md');
 const HEARTFLOW_FILE = path.join(ROOT, 'src', 'core', 'heartflow.js');
@@ -102,5 +73,5 @@ if (fs.existsSync(vf)) {
 syncPackage(version);
 syncSkill(version);
 syncHeartflowBuildDate(version);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 console.log('Version sync complete:', version);

@@ -43,40 +43,34 @@ const REASONING_DEPTH = {
   COMPREHENSIVE: 4 // 综合：多路径探索，任务特化
 };
 
-<<<<<<< HEAD
-=======
+
 // [v5.17.16 M2] 双过程理论(Kahneman 2011): System1(快速直觉) vs System2(慢速反思)
 const DUAL_PROCESS = {
   SYSTEM1: 'system1',  // 直觉/自动/快速 — 计算/分类/翻译
   SYSTEM2: 'system2',  // 反思/受控/慢速 — 解释/判断/批判
 };
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 // 任务类型对应的策略
 const TASK_STRATEGIES = {
   // 计算类：直接执行，不需要假设
   calculation: {
     skipHypotheses: true,
-<<<<<<< HEAD
-    skipInvert: false,    // 但要检查计算错误
-    depth: 2
-=======
+
     skipInvert: false,
     depth: 2,
     process: 'system1',  // [v5.17.16 M2]
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   },
   // 解释类：需要假设+验证
   explanation: {
     skipHypotheses: false,
     skipInvert: false,
     minHypotheses: 2,
-<<<<<<< HEAD
-    depth: 3
-=======
+
     depth: 3,
     process: 'system2',  // [v5.17.16 M2]
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   },
   // 判断类：必须反向思考
   judgment: {
@@ -152,8 +146,7 @@ class ThoughtChain {
       { regex: /是什么|定义|概念|什么是|指什么|查|找/, type: 'retrieval', weight: 0.8 },
     ];
 
-<<<<<<< HEAD
-=======
+
     // [v5.9.13] 叙事分析检测：长文本 + 第三人称叙事特征 → narrative_analysis
     const firstPersonSignals = /我[很非常觉得认为想]|我[不没]|帮我|给我|我想|我该/;
     const narrativeIndicators = /他[们]?[被把将让]|她[被把将让]|受害者|凶手|嫌疑人|案发|事发|当时|之后|后来|此前|被告|原告|当事人/;
@@ -161,7 +154,7 @@ class ThoughtChain {
       return { type: 'narrative_analysis', confidence: 0.8, matchedPatterns: ['narrative_detection'] };
     }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     for (const p of patterns) {
       if (p.regex.test(q)) {
         matchedPatterns.push(p.type);
@@ -246,8 +239,7 @@ class ThoughtChain {
           empathyResult = null;
         }
 
-<<<<<<< HEAD
-=======
+
         // [P2-T2-WF] 知识检索：在 PARSE 阶段预取相关知识，减少下游重复检索
         let knowledgeHits = [];
         try {
@@ -259,7 +251,7 @@ class ThoughtChain {
           }
         } catch(e) { /* 知识检索降级 */ }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         // 1.8 【AgentPsychology v2.0.0】调用 AI 心理学新增维度
         let agentPsychologyResult = null;
         if (hf.agentPsychology) {
@@ -292,11 +284,10 @@ class ThoughtChain {
           goal,
           type,
           strategy,
-<<<<<<< HEAD
-=======
+
           // [P2-T2-WF] 预取知识命中结果，供下游阶段复用
           knowledgeHits,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
           // 串联结果：心理分析 + 共情检测
           psychology: psychResult ? {
             intent: psychResult.intent,
@@ -315,8 +306,7 @@ class ThoughtChain {
           } : null,
           // 【AgentPsychology v2.0.0】AI 心理学新增维度
           agentPsychology: agentPsychologyResult,
-<<<<<<< HEAD
-=======
+
           // [v5.17.19 S1] 预测误差驱动感知 — cognitiveLoadV2精度权重
           perception: (() => {
             try {
@@ -333,7 +323,7 @@ class ThoughtChain {
             } catch(e) {}
             return { precisionWeight: 0.7, salienceThreshold: 0.5 };
           })(),
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
           timestamp: Date.now()
         };
       }
@@ -457,13 +447,12 @@ class ThoughtChain {
         const hypothesesStage = ctx.stages.find(s => s.name === 'HYPOTHESES');
         const invertStage = ctx.stages.find(s => s.name === 'INVERT');
         const hypotheses = hypothesesStage?.result?.hypotheses || [];
-<<<<<<< HEAD
-=======
+
         const parse = ctx.stages[0]?.result;
 
         // [P2-T2-WF] 复用 PARSE 阶段预取的知识命中，降低重复检索成本
         const priorKnowledgeHits = Array.isArray(parse?.knowledgeHits) ? parse.knowledgeHits : [];
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
         // 4.1 对每个假设找证据
         const evidenceForHypotheses = hypotheses.map(h => {
@@ -499,11 +488,10 @@ class ThoughtChain {
           strongHypothesis: strongHypothesis || null,
           hasWeakSupport,
           mustAdmitUncertainty: !strongHypothesis && hasWeakSupport,
-<<<<<<< HEAD
-=======
+
           // [P2-T2-WF] 暴露知识命中摘要，供 SYNTHESIS/RESPOND 做 richer 综合
           knowledgeHits: priorKnowledgeHits,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
           timestamp: Date.now()
         };
       }
@@ -565,8 +553,7 @@ class ThoughtChain {
           }
         }
 
-<<<<<<< HEAD
-=======
+
         // [v5.17.19 S3] 主动推理EFE — 用ActiveInference评估探索/利用平衡
         let activeInferenceResult = null;
         try {
@@ -596,7 +583,7 @@ class ThoughtChain {
           activeInferenceConfidence = activeInferenceResult.selected.score || 0.5;
         }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         // 5.1 确定最终判断
         let conclusion;
         let confidence;
@@ -607,14 +594,13 @@ class ThoughtChain {
           conclusion = invertStage.result.counterEvidence[0]?.description || '原假设被推翻';
           confidence = 0.3;
           reasoningChain.push('原假设被反例推翻');
-<<<<<<< HEAD
-=======
+
         } else if (activeInferenceConclusion && activeInferenceConfidence > 0.6) {
           // [P2-T2-WF] 主动推理主导：当 EFE 给出高置信度最优策略时优先采用
           conclusion = activeInferenceConclusion;
           confidence = activeInferenceConfidence;
           reasoningChain.push('主动推理EFE策略选择');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         } else if (strongHypothesis) {
           // 有强证据支持
           conclusion = strongHypothesis.hypothesis.description;
@@ -640,8 +626,7 @@ class ThoughtChain {
         reasoningChain.push(`任务类型: ${parse?.type}`);
         reasoningChain.push(`深度: ${this.depth}`);
 
-<<<<<<< HEAD
-=======
+
         // [P2-T2-WF] 人格化润色：根据任务类型和用户认知档案调整语气/粒度
         let personalityPolish = null;
         try {
@@ -679,7 +664,7 @@ class ThoughtChain {
           }
         })();
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         return {
           conclusion,
           confidence,
@@ -689,8 +674,7 @@ class ThoughtChain {
           decisionSubsystem: decisionResult ? { conclusion: decisionResult.conclusion, confidence: decisionResult.confidence } : null,
           // 【AgentPhilosophy v2.0.0】AI 哲学新增维度结果
           agentPhilosophy: agentPhilosophyResult,
-<<<<<<< HEAD
-=======
+
           // [v5.17.19 S3] 主动推理EFE决策结果
           activeInference: activeInferenceResult,
           // [P2-T2-WF] 主动推理接入主路径
@@ -699,7 +683,7 @@ class ThoughtChain {
           personalityPolish,
           // [P2-T2-WF] 知识检索接入主路径
           knowledgeSummary,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
           timestamp: Date.now()
         };
       }
@@ -835,9 +819,7 @@ class ThoughtChain {
           // 【AgentPsychology v2.0.0】AI 心理学新增维度
           agentPsychology: parse?.agentPsychology || null,
           // 【AgentPhilosophy v2.0.0】AI 哲学新增维度
-<<<<<<< HEAD
-          agentPhilosophy: synthesis?.agentPhilosophy || null
-=======
+
           agentPhilosophy: synthesis?.agentPhilosophy || null,
           // [v5.17.19 S4] 偏差自审计 — language-honesty扫描回应草稿
           biasCheck: (() => {
@@ -855,7 +837,7 @@ class ThoughtChain {
             } catch(e) {}
             return null;
           })(),
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
         };
 
         // 如果没有结论且置信度低，明确说不知道
@@ -1038,10 +1020,7 @@ class ThoughtChain {
    * 找证据
    */
   _findEvidence(hypothesis, input) {
-<<<<<<< HEAD
-    // 简化实现
-    return [];
-=======
+
     // [v5.17.19 S2] 替换桩 — 接入knowledge-graph真实检索
     const evidence = [];
     try {
@@ -1060,7 +1039,7 @@ class ThoughtChain {
       }
     } catch(e) { /* 检索降级 */ }
     return evidence;
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -1262,8 +1241,7 @@ function createThoughtChain(hf, depth = REASONING_DEPTH.BASIC) {
   return chain;
 }
 
-<<<<<<< HEAD
-=======
+
 // [v5.17.23] 修复: 四层认知增强提取方法 — 供主路径和fallback共用
 ThoughtChain.prototype.runLayerEnrichment = function(input, hypotheses, conclusion, hf) {
   const enrichment = {};
@@ -1300,7 +1278,7 @@ ThoughtChain.prototype.runLayerEnrichment = function(input, hypotheses, conclusi
   return enrichment;
 };
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 module.exports = {
   ThoughtChain,
   createThoughtChain,

@@ -26,11 +26,9 @@
  *   hf.selfPlay.generateAlternatives(problem)
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-=======
+
 const fs = require('../utils/safe-fs');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 const path = require('path');
 
 const VERSION = '1.0.0';

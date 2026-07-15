@@ -11,16 +11,12 @@
  * 5. 前缀匹配（Prefix Matching）
  */
 
-<<<<<<< HEAD
-const fs = require('fs');
-const path = require('path');
-const { EventEmitter } = require('events');
-=======
+
 const fs = require('../utils/safe-fs');
 const path = require('path');
 const { EventEmitter } = require('events');
 const { LRUCache } = require('../utils/lru-cache.js');
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 // ─── BM25 配置常量 ───────────────────────────────────────────────────────────
 
@@ -106,11 +102,9 @@ class BM25Engine extends EventEmitter {
     this.b = options.b || BM25_CONFIG.b;
     
     // 文档存储：{ id: { text, tokens, metadata } }
-<<<<<<< HEAD
-    this.documents = new Map();
-=======
+
     this.documents = new LRUCache(1000);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     
     // 倒排索引：{ token: { docId: { tf, positions } } }
     this.invertedIndex = new Map();

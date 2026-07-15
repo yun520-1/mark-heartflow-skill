@@ -399,11 +399,9 @@ class LessonRetrievalEngine {
 
     // 最近教训
     if (parts[0] === 'recent' || parts[0] === 'latest') {
-<<<<<<< HEAD
-      const n = parseInt(parts[1] || 5);
-=======
+
       const n = parseInt(parts[1] || 5, 10);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       return lessonBank.lessons.slice(-n).reverse();
     }
 
@@ -414,22 +412,18 @@ class LessonRetrievalEngine {
 
     // 随机抽样
     if (parts[0] === 'random') {
-<<<<<<< HEAD
-      const n = parseInt(parts[1] || 3);
-=======
+
       const n = parseInt(parts[1] || 3, 10);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       const type = parts[2] === 'type' ? parts.slice(3).join(' ') : undefined;
       return this.randomSample(n, type ? { types: [type] } : {});
     }
 
     // 重要性过滤
     if (parts[0] === 'important' || parts[0] === 'critical') {
-<<<<<<< HEAD
-      const minImportance = parseInt(parts[1] || 4);
-=======
+
       const minImportance = parseInt(parts[1] || 4, 10);
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       return this.filterBy({ importanceMin: minImportance });
     }
 

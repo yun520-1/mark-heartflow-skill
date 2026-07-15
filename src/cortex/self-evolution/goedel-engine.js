@@ -8,11 +8,9 @@ const fs = require('../../utils/safe-fs');
 const path = require('path');
 const crypto = require('crypto');
 let SAGEGuardian;
-<<<<<<< HEAD
-try { SAGEGuardian = require('../ethics/sage-guardian').SAGEGuardian; } catch (e) { SAGEGuardian = null; }
-=======
+
 try { SAGEGuardian = require('../../shield/ethics/sage-guardian').SAGEGuardian; } catch (e) { SAGEGuardian = null; }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 
 class GoedelEngine {
   constructor(projectRoot) {
@@ -81,12 +79,10 @@ class GoedelEngine {
         return JSON.parse(fs.readFileSync(this.codeMapFile, 'utf8'));
       }
     } catch (e) {
-<<<<<<< HEAD
-    }
-=======
+
   console.warn("[Cortex]", "操作失败:", e.message);
 }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return this.buildCodeMap();
   }
 
@@ -96,12 +92,10 @@ class GoedelEngine {
         return fs.readFileSync(this.coreValuesFile, 'utf8');
       }
     } catch (e) {
-<<<<<<< HEAD
-    }
-=======
+
   console.warn("[Cortex]", "操作失败:", e.message);
 }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return null;
   }
 
@@ -288,11 +282,9 @@ class GoedelEngine {
     pad.dominance -= emotionSensitivity * 0.5;
   }`,
       'default': `  // Gödel 优化建议: ${proposal.description}
-<<<<<<< HEAD
-  // TODO(v1.3.6): Implement optimization`
-=======
+
   // 优化建议如上`
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     };
 
     const funcMatch = proposal.target.match(/(\w+)\.js$/);
@@ -367,13 +359,9 @@ class GoedelEngine {
       }
       fs.rmSync(sandboxPath, { recursive: true, force: true, maxRetries: 2 });
       this.log(`Sandbox cleaned up: ${sandboxId}`);
-<<<<<<< HEAD
-    } catch (e) {
-      // [PROD] 生产环境移除 console.error: console.error(`[Gödel] Cleanup failed: ${e.message}`);
-    }
-=======
+
     } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   }
 
   /**
@@ -390,10 +378,8 @@ class GoedelEngine {
 
     // 安全检查：需要确认环境变量 HEARTFLOW_ENABLE_SELF_MODIFICATION=1 才能自动修改
     if (process.env.HEARTFLOW_ENABLE_SELF_MODIFICATION !== '1') {
-<<<<<<< HEAD
-      // [PROD] 生产环境移除 console.warn: console.warn('[Gödel] Self modification disabled by policy');
-=======
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
+
       return { success: false, reason: 'self_modification_disabled' };
     }
 
@@ -753,12 +739,10 @@ class GoedelEngine {
         return JSON.parse(fs.readFileSync(archiveFile, 'utf8'));
       }
     } catch (e) {
-<<<<<<< HEAD
-    }
-=======
+
   console.warn("[Cortex]", "操作失败:", e.message);
 }
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return { agents: [], version: 1 };
   }
 
@@ -1007,12 +991,9 @@ class GoedelEngine {
 diff --git a/src/core/self-evolution/goedel-engine.js b/src/core/self-evolution/goedel-engine.js
 --- a/src/core/self-evolution/goedel-engine.js
 +++ b/src/core/self-evolution/goedel-engine.js
-<<<<<<< HEAD
-// TODO(v1.3.6): 应用改进
-- // 当前采样策略需要优化
-=======
+
 // 当前采样策略需要优化
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 + // 优化采样策略：增加多样性权重
 `;
 

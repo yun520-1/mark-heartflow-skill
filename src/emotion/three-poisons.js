@@ -62,8 +62,7 @@ const ThreePoisons = {
   },
 
   // ============================================================
-<<<<<<< HEAD
-=======
+
   // 0. [v5.14.1] 共享认知桥接
   // ============================================================
   get _bridge() {
@@ -75,7 +74,7 @@ const ThreePoisons = {
   },
 
   // ============================================================
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
   // 1. analyzeGreed - 贪欲分析
   // ============================================================
   /**
@@ -224,11 +223,10 @@ const ThreePoisons = {
    * @param {number} [person.delusion.confirmation_bias] - 确认偏误 (1-10)
    * @param {number} [person.delusion.belief_persistence] - 信念固着 (1-10)
    * @param {number} [person.delusion.self_deception] - 自我欺骗 (1-10)
-<<<<<<< HEAD
-=======
+
    * @param {Object} [person.delusion.evidence] - [FORMULA] 贝叶斯证据更新
    *         { priorA: 先验P(A), pBA: P(B|A)似然, pB: P(B)边际 }，用于量化"信念是否随证据更新"
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
    * @returns {Object} 愚痴分析结果
    */
   analyzeDelusion(person) {
@@ -242,8 +240,7 @@ const ThreePoisons = {
       self_deception: clamp(d.self_deception ?? defaults.self_deception, 1, 10)
     };
 
-<<<<<<< HEAD
-=======
+
     // [FORMULA] 贝叶斯信念更新度：痴的本质是"信念不随证据更新"
     // 公式引自心虫公式库 bayes_theorem: P(A|B) = P(B|A)·P(A) / P(B)
     // 理性主体面对证据应更新信念；belief_persistence 高却几乎不更新 → 认知扭曲（痴）
@@ -262,7 +259,7 @@ const ThreePoisons = {
       }
     }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     // 痴总分 = 元认知反向（越低越痴）+ 确认偏误 + 信念固着 + 自我欺骗
     // metacognition_level 越高越好 → 用 (11 - value) 转为越高越痴
     const invertedMetacognition = 11 - scores.metacognition_level;
@@ -296,8 +293,7 @@ const ThreePoisons = {
 
     const severity = this._getSeverity(delusionScore);
 
-<<<<<<< HEAD
-=======
+
     // [FORMULA] 贝叶斯阻抗：高信念固着却拒绝证据更新 → 痴的客观标志，强化评分
     let delusionScoreAdjusted = delusionScore;
     let bayesNote = null;
@@ -306,20 +302,18 @@ const ThreePoisons = {
       bayesNote = '检测到贝叶斯阻抗：高信念固着且面对证据几乎不更新信念，符合"痴"的认知扭曲特征';
     }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
     return {
       poison: 'delusion',
       label: '痴 (Moha)',
       scores,
-<<<<<<< HEAD
-      delusionScore: round(delusionScore, 2),
-=======
+
       delusionScore: round(delusionScoreAdjusted, 2),
       delusionScoreBase: round(delusionScore, 2),
       bayesUpdate: bayesUpdate !== null ? round(bayesUpdate, 4) : null,
       bayesResistance,
       bayesNote,
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       dmnOveractivity: round(dmnOveractivity, 2),
       metacognitionAssessment,
       dunningKruger,
@@ -372,11 +366,10 @@ const ThreePoisons = {
     return {
       scores,
       totalToxicity,
-<<<<<<< HEAD
-=======
+
       // [v5.17.12] Dukkha方程: 苦 = 贪(Craving) × 嗔(Resistance)
       dukkha: round((scores.greed * scores.hatred) / 10, 2),
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
       dominantPoison: dominant[0],
       dominantLabel,
       dominantScore: round(dominant[1], 2),

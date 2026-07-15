@@ -458,11 +458,9 @@ function generateDream(memoryItems, options = {}) {
             const delay = RETRY_POLICY.backoffMs * dagAttempts;
             // 使用同步延迟模拟（在事件循环中）
             const start = Date.now();
-<<<<<<< HEAD
-            // [PROD] busy-wait removed: use async delay instead
-=======
+
             // 已移除忙等待：请使用异步延迟
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
           }
 
           const fragments = items.map((item, idx) => ({
@@ -742,21 +740,9 @@ if (require.main === module) {
   ];
 
   for (const tc of testCases) {
-<<<<<<< HEAD
-    // [PROD] 生产环境移除 console.log: console.log(`\n=== Test: ${tc.name} ===`);
-    const result = generateDream(tc.input, { useDag: false });
-    // [PROD] 生产环境移除 console.log: console.log(`  state: ${result.state}`);
-    // [PROD] 生产环境移除 console.log: console.log(`  errors: ${JSON.stringify(result.errors)}`);
-    // [PROD] 生产环境移除 console.log: console.log(`  warnings: ${JSON.stringify(result.warnings)}`);
-    // [PROD] 生产环境移除 console.log: console.log(`  motifs: ${(result.motifs || []).length} items`);
-    // [PROD] 生产环境移除 console.log: console.log(`  meta: ${JSON.stringify(result._meta)}`);
-  }
 
-  // [PROD] 生产环境移除 console.log: console.log('\n=== Diagnostics ===');
-  // [PROD] 生产环境移除 console.log: console.log(JSON.stringify(getDiagnostics(), null, 2));
-=======
     const result = generateDream(tc.input, { useDag: false });
   }
 
->>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+
 }
