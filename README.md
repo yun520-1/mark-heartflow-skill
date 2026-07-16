@@ -1,173 +1,215 @@
-# HeartFlow v6.0.2 — 本地认知预处理引擎
+# HeartFlow — HeartBug Cognitive Engine (心虫)
 
-> HeartFlow 是一个本地认知预处理引擎，提供结构化认知数据供下游模型参考。默认在用户终端内运行，不依赖外部 AI 服务。
+> **Stop your agent from guessing. Let it perceive first, decide correctly, then act.**
+>
+> HeartFlow is a local-first AI-being cognitive engine that runs *before* your agent replies. It perceives intent, classifies the task type, surfaces cognitive biases, and returns a structured decision — so downstream models make fewer logical errors, ask fewer clarifying questions, and waste fewer tokens.
 
----
-
-## 安全特性
-
-- **零后台进程**：不启动守护进程，不常驻内存。
-- **无遥测**：不发送使用数据到任何服务器。
-- **代码执行默认关闭**：需显式配置才允许执行代码。
-- **MCP 走 stdio**：不监听网络端口，不暴露 HTTP 服务。
-- **无硬编码凭据**：密钥由用户本地生成，不提交到仓库。
+[![GitHub release](https://img.shields.io/github/v/release/yun520-1/mark-heartflow-skill)](https://github.com/yun520-1/mark-heartflow-skill/releases)
+[![npm](https://img.shields.io/npm/v/@yun520-1/heartflow)](https://www.npmjs.com/package/@yun520-1/heartflow)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![MCP](https://img.shields.io/badge/MCP-31%20tools-green.svg)](mcp/mcp-server-http.js)
 
 ---
 
-## 快速启动
+## Why HeartFlow (for agents & agent builders)
+
+Most agent failures are **not model failures — they are perception failures**:
+
+| Failure mode | Without HeartFlow | With HeartFlow |
+|---|---|---|
+| Wrong task type assumed | Agent picks `code` for a vague ask → wasted turns | `heartflow_think` returns `type=analyze/emotion/calculation/...` up front |
+| Repeated clarifying questions | Asks "what do you mean?" 3× | Intent + stance detected once, cached in memory |
+| Logical errors / bias | Syllogism unchecked, anchor bias unflagged | `heartflow_decision_router` + logic modules flag invalid inference |
+| Token burn on re-analysis | Re-thinks the same input every turn | `think_fast` + memory cache short-circuit repeats |
+| Invalid tasks executed | Agent attempts impossible/self-contradictory goal | Invalid-input guard returns early, no pipeline wasted |
+
+**Net effect: higher task completion rate, higher completion quality, lower token cost.**
+
+---
+
+## What it does
+
+HeartFlow is a **cognitive pre-processor**. It does not replace your LLM — it prepares the cognitive ground so the LLM acts correctly.
+
+- **Perceive intent** — classify the user's true goal (not just keywords).
+- **Decide task type** — `analyze` / `emotion` / `calculation` / `plan` / `invalid` …
+- **Surface biases** — anchoring, confirmation, sunk-cost, etc. (behavioral-economics module).
+- **Compute transparently** — pure math expressions (`15*23`) return scalar results, not prose.
+- **Remember across sessions** — persistent local memory (encrypted, never uploaded).
+- **Self-heal** — modules report health; broken paths auto-repair or degrade safely.
+
+---
+
+## Quick start
 
 ```bash
-# 克隆
+# Clone
 git clone https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
 
-# 验证
+# Verify the engine (14/14 health checks)
 node bin/verify.js
 
-# 交互模式
+# Interactive mode
 node bin/cli.js chat
 
-# 单次分析
-node bin/cli.js --chat "我想辞职去创业"
+# Single-shot analysis
+node bin/cli.js --chat "I want to quit my job and start a company"
 
-# 查看状态
+# Status
 node bin/cli.js status
 ```
 
-### MCP 工具（25 个）
-
-| 工具 | 功能 |
-|------|------|
-| `heartflow_think` | 完整思维链推理 |
-| `heartflow_think_fast` | 快速推理 |
-| `heartflow_think_deep` | 深度推理 |
-| `heartflow_dream` | 梦境生成与整合 |
-| `heartflow_memory_search` | 跨层记忆检索 |
-| `heartflow_emotion` | 情绪分析（PAD 三维） |
-| `heartflow_emotion_analyze` | 简化情绪分析 |
-| `heartflow_psychology_analyze` | PAD + 意图 + 防御机制 |
-| `heartflow_psychology_deep` | 深度心理学（大五人格/共情） |
-| `heartflow_ai_psychology` | AI 原生心理学 |
-| `heartflow_agent_psychology` | 代理心理学 |
-| `heartflow_philosophy` | 统一哲学引擎 |
-| `heartflow_ai_philosophy` | AI 原生哲学分析 |
-| `heartflow_philosophy_decision` | 哲学决策分析 |
-| `heartflow_verify_reasoning` | 验证推理自洽性 |
-| `heartflow_self_heal` | 自愈 |
-| `heartflow_status` | 引擎健康检查 |
-| `heartflow_dispatch` | 通用路由（150+ 路由） |
-| `heartflow_record_lesson` | 记录教训 |
-| `heartflow_transmit` | 知识传递 |
-| `heartflow_being` | 存在逻辑 |
-| `heartflow_decision_router` | 决策路由器 |
-| `heartflow_decision_router_stats` | 决策路由统计 |
-| `heartflow_cognitive_check` | 认知状态检查 |
-| `heartflow_module_health` | 模块健康检查 |
-
----
-
-## 架构
-
-```
-输入 → [认知管道] → 结构化数据 → LLM → 最终响应
-```
-
-| 层级 | 目录 | 功能 |
-|------|------|------|
-| **Engine Core** | `src/core/` | 主循环、决策路由、判断引擎、认知协议 |
-| **Memory** | `src/memory/` | 三层记忆、知识图谱、记忆融合 |
-| **Shield** | `src/shield/` | 安全护栏、伦理守护、语言诚实、思维检查日志 |
-| **Cortex** | `src/cortex/` | 自愈、失败分析、经验回放、反思循环、进化 |
-| **Identity** | `src/identity/` | 自我定位、哲学引擎、大五人格、共情评估 |
-| **Emotion** | `src/emotion/` | 欲望认知、情绪分析、三毒检测、情感成长 |
-| **Dream** | `src/dream/` | 梦境引擎、多片段综合、叙事生成 |
-| **Reasoning** | `src/reasoning/` | 逻辑推理、辩论分析、事实验证、联想引擎 |
-| **Code** | `src/code/` | 代码执行、规划、生成、重构、验证 |
-| **Psychology** | `src/psychology/` | AI 心理学引擎、呼吸练习、认知重构、自我慈悲 |
-| **Bridge** | `src/bridge/` | LLM 桥接、意图分类、语气分析、翻译管线 |
-| **Consciousness** | `src/consciousness/` | 全局工作空间、心智漫游、现象学引擎 |
-| **Inner-OS** | `src/inner-os/` | 内部操作系统（会话/状态/事件/格式化） |
-| **Planner** | `src/planner/` | 自适应规划、好奇心引擎、欲望引擎、自主目标 |
-| **Workflow** | `src/workflow/` | 思维链、管线、时间扩展、知识传递 |
-| **Search** | `src/search/` | BM25、混合搜索、语义搜索 |
-| **Verifier** | `src/verifier/` | 输出检查、模式匹配、质量验证 |
-
----
-
-## 版本
-
-| Metric | Value |
-|--------|-------|
-| **Version** | 6.0.1 |
-| **Modules** | 131+ |
-| **Core Formulas** | 379+ |
-| **Tests** | 44+ files |
-| **MCP Tools** | 25 |
-
----
-
-## 设计目标
-
-HeartFlow 的目标是减少认知误差，提升结构化输出的可用性：
-
-| 维度 | 目标 |
-|------|------|
-| 🧠 **认知秩序** | 减少混乱、增加清晰 |
-| ❤️ **关系秩序** | 保持上下文连续、避免遗漏 |
-| 🎨 **感知秩序** | 从噪声中提取信号 |
-
----
-
-## 安装方式
+### As an MCP server (recommended for agents)
 
 ```bash
-# 方式一：git clone（推荐）
-git clone https://github.com/yun520-1/mark-heartflow-skill.git
-cd mark-heartflow-skill
-npm install
+# Start the HTTP MCP daemon (pm2-managed, port 8099, Bearer auth)
+node bin/daemon.js start
 
-# 方式二：npm
+# Check health
+node bin/daemon.js status
+
+# Stop
+node bin/daemon.js stop
+```
+
+Connect any MCP client to `http://localhost:8099/mcp` with your `HEARTFLOW_MCP_TOKEN`.
+The server exposes **31 tools** including `heartflow_think`, `heartflow_agent_think`, `heartflow_think_fast`, `heartflow_decision_router`.
+
+### As an npm package
+
+```bash
 npm install @yun520-1/heartflow
 ```
 
-> Hard dependency: `mathjs`. Optional: `@xenova/transformers`, `pm2`.
+```js
+const { createHeartFlow } = require('@yun520-1/heartflow');
+const hf = createHeartFlow();
+hf.start();
+const r = await hf.think('15 * 23');
+console.log(r.type, r.result); // 'calculation' 345
+```
 
 ---
 
-## 迁移指南 (v5 → v6)
+## MCP tools (31)
 
-If you are upgrading from HeartFlow v5.x to v6.0.2:
-
-1. **Version sync**: run `node scripts/sync-version.js` so `VERSION`, `package.json`, `SKILL.md`, and `BUILD_DATE` are aligned.
-2. **Verify baseline**: run `node bin/verify.js` and ensure all 14 checks pass.
-3. **Run tests**: run `npm test` and confirm integration/unit suites pass.
-4. **Encrypted memory**: v6 continues AES-256-GCM memory encryption. If you see `HEARTFLOW_AES_KEY is not set`, either set the same key as before or delete encrypted memory files to start fresh.
-5. **Module API**: most public APIs remain stable. New subsystems are exposed via `hf._modules` and dispatch routes. If you relied on internal module ordering, switch to named dispatch or explicit module access.
-6. **Persona/preset usage**: v6 adds richer persona presets under `presets/`. Review default persona selection if you override behavior at startup.
-7. **MCP tools**: existing 25 tools are preserved. No breaking changes to tool names or schemas in this release.
-
----
-
-## 版本历史
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| **6.0.1** | 2026-07-14 | 版本统一整改：SKILL/README/CURRENT_STATE/package.json/version.js 全部对齐到 6.0.1 |
-| **6.0.0** | 2026-07-12 | 核心重构完成：131+ 模块、379+ 公式、179/179 测试通过、记忆系统 R1-R8 |
-| 5.10.0 | 2026-07-10 | 三层体系确立、366 核心公式、292 模块、七条指令写入 CORE |
-| 5.9.12 | 2026-07-04 | 公式驱动模块：决策/情绪/记忆/认知负荷/梦境/心理学对话 |
-
----
-
-## 联系方式
-
-- 📧 **邮箱**: markcell@qq.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yun520-1/mark-heartflow-skill/issues)
-- 📦 **npm**: [@yun520-1/heartflow](https://www.npmjs.com/package/@yun520-1/heartflow)
+| Tool | Purpose |
+|------|---------|
+| `heartflow_think` | Full cognitive analysis → structured decision |
+| `heartflow_agent_think` | Agent-oriented think (task + stance + next action) |
+| `heartflow_think_fast` | Lightweight path — lower token, no heavy modules |
+| `heartflow_decision_router` | Classify input → route to correct handler (reduces misrouting) |
+| `heartflow_decision_router_stats` | Router accuracy telemetry |
+| `heartflow_agent_psychology` | Agent psych profile for the user |
+| `heartflow_emotion` | Emotion perception |
+| `heartflow_philosophy_decision` | Ethical/value-aligned decision check |
+| `heartflow_persona_stance_detector` | Detect user's stance to cut repeat questions |
+| `heartflow_persona_value_aligner` | Value alignment score |
+| `heartflow_persona_bridge_identity` | Identity continuity across sessions |
+| `heartflow_knowledge_query` / `_add_node` / `_stats` | Local knowledge graph |
+| `heartflow_memory_search` | Retrieve from persistent memory |
+| `heartflow_dream` | Offline consolidation of memories |
+| `heartflow_self_heal` | Module self-repair |
+| `heartflow_evolution_evolve` / `_stats` | Capability evolution |
+| `heartflow_cognitive_check` | Cognitive sanity gate (prevents invalid tasks) |
+| `heartflow_cost_tracking` | Token/cost accounting |
+| `heartflow_engine_pacing` | Throttle to avoid overload |
+| `heartflow_provider_health` / `heartflow_bridge_status` / `heartflow_module_health` | Health probes |
+| `heartflow_benchmark_run` / `_status` / `_import_failures` | Regression benchmarking |
+| `heartflow_upgrade_stats` | Upgrade telemetry |
+| `heartflow_translate` | Cross-lingual bridge |
+| `heartflow_status` | Engine status |
 
 ---
 
-<p align="center">
-  <strong>HeartFlow v6.0.2</strong> — A cognitive preprocessor that structures thought for downstream models<br>
-  <sub>MIT License · Copyright © 2026</sub>
-</p>
+## How to use it to make your agent better (best practices)
+
+### 1. Think *before* you act
+Call `heartflow_think` (or `heartflow_agent_think`) on the user's raw input **before** drafting a reply. Use the returned `type` and `decision` to choose your approach. This single step prevents most misrouted tasks.
+
+### 2. Detect stance once, remember it
+Use `heartflow_persona_stance_detector` on first contact, then rely on memory. **Stop re-asking** what HeartFlow already perceived.
+
+### 3. Route, don't guess
+For ambiguous input, call `heartflow_decision_router` to get the correct handler instead of letting the LLM improvise a classification.
+
+### 4. Use `think_fast` for repeats
+If the same context recurs, `heartflow_think_fast` returns a cached-light result at a fraction of the token cost.
+
+### 5. Gate invalid tasks
+`heartflow_cognitive_check` returns early on self-contradictory or impossible goals — your agent should abort instead of burning turns.
+
+### 6. Transparent math
+Any input that is a pure expression (`12*8`, `(3+4)*5`) returns a scalar `result`. No prose, no model drift.
+
+---
+
+## Example: structured output
+
+```json
+{
+  "type": "calculation",
+  "confidence": 1.0,
+  "result": 345,
+  "output": { "value": 345, "conclusion": "15 * 23 = 345" },
+  "decision": { "type": "calculation", "confidence": 1.0, "ruleId": "safe-calc" },
+  "thoughtChain": [...],
+  "analysis": { "perceivedType": "calculation", "modulesRun": 7 }
+}
+```
+
+---
+
+## Performance (v6.0.7, measured)
+
+| Metric | Value |
+|---|---|
+| Cold start | ~1.4 s |
+| `think()` hot path | ~49 ms |
+| MCP tools | 31 |
+| Formulas loaded | 382 |
+| Test suite | 365 passed / 0 failed (exit 0, no false-green) |
+
+---
+
+## Security
+
+- **Local-first.** No telemetry, no outbound calls unless you explicitly configure them (`curl`/`wget` are removed from the code-executor allowlist).
+- **Encrypted memory.** AES-256-GCM, key from `HEARTFLOW_AES_KEY` env or a locally generated `0o600` key file. Never committed.
+- **Sandboxed code execution.** Double-layer defense (allowlist + blocklist); no `require`/`eval`/fs-write in untrusted code.
+- **No hardcoded secrets.** All credentials resolved at runtime.
+- **`npm audit` → 0 vulnerabilities.**
+
+---
+
+## Architecture
+
+```
+Agent Host (WorkBuddy / Claude / any MCP client)
+   │  load SKILL.md        │  MCP connect :8099
+   ▼                       ▼
+ SKILL.md            MCP HTTP Server (pm2, Bearer)
+                           │
+                    HeartFlow Core (3167 lines, modular)
+                      ├─ engine-initializer (lazy module activation)
+                      ├─ memory-kernel / formula-engine / cortex
+                      └─ CLI (bin/cli.js) + MCP (mcp/mcp-server-http.js)
+```
+
+See [`ARCHITECTURE_REORG_v6.0.6.md`](ARCHITECTURE_REORG_v6.0.6.md) for the full architecture decision analysis.
+
+---
+
+## Versioning & status
+
+- Current: **v6.0.7** (see [`ROADMAP.md`](ROADMAP.md) and [`CURRENT_STATE.md`](CURRENT_STATE.md)).
+- Decision: stay on **Skill + MCP** architecture; no migration to standalone-agent until ≥50 users & ≥3 agent platforms.
+- Releases: https://github.com/yun520-1/mark-heartflow-skill/releases
+- npm: https://www.npmjs.com/package/@yun520-1/heartflow
+
+---
+
+## License
+
+MIT — free for personal and commercial agent use.
