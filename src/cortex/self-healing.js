@@ -27,6 +27,8 @@ const MAX_TRACKER_SIZE = 300;
  * @param {*} value - 值
  * @param {number} maxSize - 最大容量
  */
+// [REFACTOR] TODO: 超长函数 _boundedSet (683行) — 建议拆分为独立子函数
+
 function _boundedSet(map, key, value, maxSize) {
   if (map.size >= maxSize && !map.has(key)) {
     // 淘汰最早插入的条目（Map 保持插入顺序）

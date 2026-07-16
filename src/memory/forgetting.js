@@ -301,6 +301,8 @@ function shouldForget(memory, threshold) {
 /**
  * Consolidate multiple memories into an abstracted summary
  */
+// [REFACTOR] TODO: 超长函数 consolidateMemories (524行) — 建议拆分为独立子函数
+
 function consolidateMemories(memories) {
   if (!memories || !Array.isArray(memories) || memories.length === 0) return null;
   if (memories.length === 1) return memories[0];
