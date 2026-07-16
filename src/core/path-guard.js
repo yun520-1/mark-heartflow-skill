@@ -26,12 +26,12 @@ function guardPath(filePath, extraRoots = []) {
   const resolved = path.resolve(filePath);
   const roots = [...ALLOWED_ROOTS, ...extraRoots.map(r => path.resolve(r))];
   
-  // 检查路径遍历
+  // 检查路径遍历（path.resolve 已规范化 ..，此处为防御性保留）
   if (resolved.includes('..')) {
     return { safe: false, resolved, reason: 'path traversal detected' };
   }
-  
-  // 检查是否在允许目录内
+
+  // 检查是否在允许目录内（真正的安全防线）
   const allowed = roots.some(root => resolved.startsWith(root + path.sep) || resolved === root);
   if (!allowed) {
     return { safe: false, resolved, reason: `path outside allowed roots: ${resolved}` };

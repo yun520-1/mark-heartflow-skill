@@ -173,7 +173,7 @@ class MemoryKernel {
     this._index.savedAt = new Date().toISOString();
     this._index.counts.total = this._index.counts.user + this._index.counts.self;
     this._index.workingSet = this._buildWorkingSet(50);
-    const tmp = this.indexPath + '.tmp.' + process.pid;
+    const tmp = this.indexPath + '.tmp.' + process.pid + '.' + require('crypto').randomBytes(4).toString('hex');
     fs.writeFileSync(tmp, JSON.stringify(this._index, null, 2), 'utf8');
     fs.renameSync(tmp, this.indexPath);
   }
@@ -206,7 +206,7 @@ class MemoryKernel {
     const filePath = layer === 'user' ? this.userMemPath : this.selfMemPath;
     if (!fs.existsSync(filePath)) return;
     const kept = this._readAll(layer).filter(keepFn);
-    const tmp = filePath + '.tmp.' + process.pid;
+    const tmp = filePath + '.tmp.' + process.pid + '.' + require('crypto').randomBytes(4).toString('hex');
     fs.writeFileSync(tmp, kept.map((e) => JSON.stringify(e)).join('\n') + (kept.length ? '\n' : ''), 'utf8');
     fs.renameSync(tmp, filePath);
   }
@@ -555,7 +555,7 @@ class MemoryKernel {
       avgConfidence: +(older.reduce((s, o) => s + (parseFloat(o.confidence) || 0), 0) / older.length).toFixed(2),
     };
     const all = [summary, ...recent];
-    const tmp = this.selfMemPath + '.tmp.' + process.pid;
+    const tmp = this.selfMemPath + '.tmp.' + process.pid + '.' + require('crypto').randomBytes(4).toString('hex');
     fs.writeFileSync(tmp, all.map((e) => JSON.stringify(e)).join('\n') + '\n', 'utf8');
     fs.renameSync(tmp, this.selfMemPath);
   }
