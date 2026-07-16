@@ -14,6 +14,8 @@ const debugLog = require('../utils/debug-log');
 
 
 
+// [REFACTOR] TODO: _feedDriftResult (1079行) — 建议拆分为独立子函数
+
 function _feedDriftResult(hf,route, rawResult) {
 
     if (!hf._DRIFT_ROUTES.has(route)) return;

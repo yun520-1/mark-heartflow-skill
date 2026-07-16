@@ -48,6 +48,8 @@ const crypto = require('crypto');
 
 let _semanticSearch = null;
 
+// [REFACTOR] TODO: getSemanticSearch (1907行) — 建议拆分为独立子函数
+
 function getSemanticSearch() {
 
   if (!_semanticSearch) {

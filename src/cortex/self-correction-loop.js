@@ -22,6 +22,8 @@ const MAX_MAP_SIZE = 200;
  * @param {*} value - 值
  * @param {number} maxSize - 最大容量
  */
+// [REFACTOR] TODO: _boundedSet (513行) — 建议拆分为独立子函数
+
 function _boundedSet(map, key, value, maxSize) {
   if (map.size >= maxSize && !map.has(key)) {
     const firstKey = map.keys().next().value;

@@ -64,6 +64,8 @@ const REASONING_EXAMPLES = [
  * 
  * ACL 2023 Plan-and-Solve 核心：在执行前先制定显式计划
  */
+// [REFACTOR] TODO: think (555行) — 建议拆分为独立子函数
+
 function think(input, options) {
   options = options || {};
   options.enablePlan = options.enablePlan !== false; // 默认启用计划阶段

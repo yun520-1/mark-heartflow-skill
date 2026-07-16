@@ -46,6 +46,8 @@ const SYNONYMS = {
  * @param {string} text 
  * @returns {string[]}
  */
+// [REFACTOR] TODO: tokenize (718行) — 建议拆分为独立子函数
+
 function tokenize(text) {
   if (!text || typeof text !== 'string') return [];
   

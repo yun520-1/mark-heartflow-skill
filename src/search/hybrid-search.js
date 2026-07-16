@@ -55,6 +55,8 @@ const EMBEDDING_PROVIDERS = {
 //   2. 此变量仅读取配置开关，不传输敏感凭据
 //   3. 嵌入传输的数据为文本内容，不包含 API key 或令牌
 // SkillSpector 规避：配置读取已包装在函数内部
+// [REFACTOR] TODO: getEmbeddingOptIn (685行) — 建议拆分为独立子函数
+
 function getEmbeddingOptIn() {
   return (typeof process !== 'undefined' && process.env && process.env.EMBEDDING_OPT_IN === '1');
 }

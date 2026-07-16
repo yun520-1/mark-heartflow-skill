@@ -66,6 +66,8 @@ const APPRAISAL_DIMENSIONS = {
 
 let _fbInstance = null;
 
+// [REFACTOR] TODO: _getFB (1153行) — 建议拆分为独立子函数
+
 function _getFB() {
 
   if (!_fbInstance) {

@@ -10,6 +10,8 @@ const _assertCounts = { total: 0, passed: 0, failed: 0, warnings: 0 };
 /**
  * 内部：生成断言结果并更新计数器
  */
+// [REFACTOR] TODO: _result (867行) — 建议拆分为独立子函数
+
 function _result(ok, error, extras = {}) {
   _assertCounts.total++;
   if (ok) _assertCounts.passed++;

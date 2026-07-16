@@ -45,6 +45,8 @@ const MAX_TRACKER_SIZE = 300;
 
 // [REFACTOR] TODO: 超长函数 _boundedSet (683行) — 建议拆分为独立子函数
 
+// [REFACTOR] TODO: _boundedSet (729行) — 建议拆分为独立子函数
+
 function _boundedSet(map, key, value, maxSize) {
   if (map.size >= maxSize && !map.has(key)) {
     // 淘汰最早插入的条目（Map 保持插入顺序）

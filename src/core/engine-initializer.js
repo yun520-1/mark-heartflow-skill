@@ -89,6 +89,8 @@ const _SkillEvolutionEngine = () => require('../cortex/skill-evolution-engine.js
 const _SelfPlay = () => require('../reasoning/self-play.js');
 const _CognitiveIndex = () => require('../cognitive/cognitive-load.js');
 
+// [REFACTOR] TODO: _boundedPush (795行) — 建议拆分为独立子函数
+
 function _boundedPush(arr, item, maxSize = 500) {
   if (arr.length >= maxSize) arr.shift();
   arr.push(item);

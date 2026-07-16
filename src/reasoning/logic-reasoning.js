@@ -20,6 +20,8 @@
  */
 
 // ─── 辅助：独立关键词检测 ──────────────────────────────────
+// [REFACTOR] TODO: _matchKeywords (1613行) — 建议拆分为独立子函数
+
 function _matchKeywords(input, keywords) {
   let hits = 0;
   const matched = [];

@@ -88,6 +88,8 @@ const ErrorType = {
 
 
 
+// [REFACTOR] TODO: classifyError (925行) — 建议拆分为独立子函数
+
 function classifyError(err) {
 
   if (!err) return ErrorType.UNKNOWN;

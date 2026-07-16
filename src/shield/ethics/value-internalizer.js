@@ -54,6 +54,8 @@ const ErrorType = {
 /**
  * 结构化错误工厂
  */
+// [REFACTOR] TODO: makeError (912行) — 建议拆分为独立子函数
+
 function makeError(type, message, context = {}) {
   const err = new Error(message);
   err.code = type;

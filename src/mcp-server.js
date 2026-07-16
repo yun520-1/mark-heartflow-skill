@@ -76,6 +76,8 @@ const PORT = (() => {
 
 // ─── HeartFlow 根目录自动检测 ───────────────────────────────
 
+// [REFACTOR] TODO: resolveHFDir (2831行) — 建议拆分为独立子函数
+
 function resolveHFDir() {
 
   // 1. 优先使用环境变量

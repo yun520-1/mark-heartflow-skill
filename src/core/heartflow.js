@@ -90,6 +90,8 @@ const MAX_HISTORY_SIZE = 100;    // 历史记录数组最大长度
 
  */
 
+// [REFACTOR] TODO: _boundedSet (6359行) — 建议拆分为独立子函数
+
 function _boundedSet(map, key, value, maxSize = MAX_MAP_SIZE) {
 
   if (map.size >= maxSize) {
