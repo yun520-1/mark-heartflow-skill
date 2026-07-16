@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const debugLog = require('../utils/debug-log');
+const debugLog = require('../utils/debug-log');  // [v6.0.7] 补回缺失 require，消除隐式全局依赖（对齐 v6.0.5 修复）
 
 // 记忆相关方法提取
 function _checkMemoryEnabled(hf) {

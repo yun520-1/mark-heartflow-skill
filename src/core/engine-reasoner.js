@@ -28,9 +28,58 @@ const { RequestHooks } = require('./request-hooks');
  */
 
 class EngineReasoner {
+
+  /**
+   * [v6.0.6] 安全计算透出（F4.1 修复）
+   * 仅对"纯数学表达式"求值，白名单字符 + mathjs 安全求值 + 超时保护。
+   * 非表达式（自然语言/含中文字母等）直接返回 null，绝不阻塞主路径。
+   */
+  static _safeCalculate(input) {
+    if (typeof input !== 'string' || !input.trim()) return null;
+    const s = input.trim();
+    // 白名单：数字、运算符、括号、空格、小数点、字母（仅允许基础数学函数名）
+    if (!/^[\d+\-*/().,\s^%a-zA-Z]+$/.test(s)) return null;
+    // 排除明显自然语言（含连续中文字母组合或引号/等号赋值）
+    if (/['"=]|[a-zA-Z]{4,}/.test(s)) return null;
+    try {
+      const math = require('mathjs');
+      // 禁危险函数
+      const blocked = ['import', 'createUnit', 'eval', 'lambda'];
+      if (blocked.some(b => new RegExp('\\b' + b + '\\b').test(s))) return null;
+      const value = math.evaluate(s, { timeout: 1000 });
+      if (typeof value !== 'number' || !isFinite(value)) return null;
+      return value;
+    } catch (_) {
+      return null;
+    }
+  }
   static async think(hf, input, depth) {
     if (!hf.started) throw new Error('HeartFlow not started');
-    if (!input) return { error: 'input is required' };
+    // [v6.0.6] F1.6 修复：空/无效输入前置守卫，优雅降级不进 pipeline
+    if (typeof input !== 'string' || !input.trim()) {
+      return {
+        error: 'empty_input',
+        type: 'invalid',
+        confidence: 0,
+        output: { conclusion: '输入为空。请说点什么，心虫才能感知并回应。' },
+        decision: { type: 'invalid', confidence: 0, rationale: '空输入守卫', ruleId: 'empty-guard' },
+        thoughtChain: [],
+        meta: { routeHint: { type: 'invalid', confidence: 0 } },
+        analysis: { perceivedType: 'invalid', modulesRun: 0 },
+      };
+    }
+    if (input.length > 20000) {
+      return {
+        error: 'input_too_long',
+        type: 'invalid',
+        confidence: 0,
+        output: { conclusion: '输入过长（上限 20000 字符）。请精简后重试。' },
+        decision: { type: 'invalid', confidence: 0, rationale: '超长输入守卫', ruleId: 'length-guard' },
+        thoughtChain: [],
+        meta: { routeHint: { type: 'invalid', confidence: 0 } },
+        analysis: { perceivedType: 'invalid', modulesRun: 0 },
+      };
+    }
 
     // [HookBus] 延迟初始化 request hooks
     if (!hf._hookBus) {
@@ -376,6 +425,21 @@ class EngineReasoner {
     try {
       const resCtx = { request: reqCtx.request, response: { result } };
       await hooks.fireResponse(resCtx);
+    } catch(e) { /* non-critical */ }
+
+    // [v6.0.6] F4.1 修复：纯数学表达式透出标量结果
+    try {
+      const calcValue = EngineReasoner._safeCalculate(input);
+      if (calcValue !== null) {
+        result.result = calcValue;
+        if (result.output && typeof result.output === 'object') {
+          result.output.value = calcValue;
+        }
+        if (!result.type || result.type === 'general') {
+          result.type = 'calculation';
+          result.decision = { type: 'calculation', confidence: 0.95, rationale: '数学表达式直接求值', ruleId: 'safe-calc' };
+        }
+      }
     } catch(e) { /* non-critical */ }
 
     return result;
