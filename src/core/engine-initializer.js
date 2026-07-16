@@ -94,6 +94,8 @@ function _boundedPush(arr, item, maxSize = 500) {
   arr.push(item);
 }
 
+// [REFACTOR] TODO: 超长函数 start (682行) — 建议拆分为独立子函数
+
 function start(hf, HeartFlowClass) {
   if (hf.started) return;
   hf.startTime = Date.now();
