@@ -18,6 +18,11 @@ skills/
 data/memory/
 data/sessions/
 data/self-play/
+data/large/
+models/
+dict-data/
+internal/
+*.zip
 archive/
 distilled-knowledge/
 
