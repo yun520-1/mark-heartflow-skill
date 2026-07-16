@@ -37,6 +37,8 @@ function _result(ok, error, extras = {}) {
 
 // [REFACTOR] TODO: 超长函数 _typeName (825行) — 建议拆分为独立子函数
 
+// [REFACTOR] TODO: 超长函数 _typeName (825行) — 建议拆分为独立子函数
+
 function _typeName(fn) {
   if (typeof fn === 'string') return fn;
   if (fn && fn.name) return fn.name;
