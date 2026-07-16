@@ -1322,6 +1322,8 @@ class HeartFlow {
 
 
 
+  // [REFACTOR] TODO: start() — 超长函数(2575行)，建议拆分：按初始化阶段拆分为_preInitIdentity/_preInitMemory/_initCortex/_initBridge/_initDream等子函数
+
   start() {
 
     if (this.started) return;

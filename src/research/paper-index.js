@@ -19,6 +19,8 @@ class ResearchPaperIndex {
   // Private helpers
   // ---------------------------------------------------------------------------
 
+  // [REFACTOR] TODO: _seedPapers() — 超长函数(576行)，建议拆分：按论文类别（Voyager/Agent/AutoGPT等）拆分为独立_seedCategory()方法
+
   _seedPapers() {
     const seeds = [
       {
