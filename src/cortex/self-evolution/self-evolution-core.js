@@ -56,6 +56,8 @@ const MAX_MAP_SIZE = 200;
 
 // [REFACTOR] TODO: 超长函数 _boundedSet (995行) — 建议拆分为独立子函数
 
+// [REFACTOR] TODO: 超长函数 _boundedSet (995行) — 建议拆分为独立子函数
+
 function _boundedSet(map, key, value, maxSize) {
 
   if (map.size >= maxSize && !map.has(key)) {
