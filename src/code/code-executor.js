@@ -707,7 +707,10 @@ class CodeExecutor {
       // 修复：使用 Node.js 内置 vm 模块提供适当的上下文隔离。
       // 注意：vm 上下文隔离并非绝对安全，但远优于 Reflect.construct 方案。
       const vm = require('vm');
-      const sandboxContext = { console, setTimeout, clearTimeout };
+      // [AUDIT-FIX HIGH-1] Do NOT inject setTimeout/clearTimeout into sandboxContext.
+      // They allow setTimeout.constructor -> Function -> globalThis.process escape (PoC confirmed).
+      // Outer executor owns timeout control, sandbox does not need timer functions.
+      const sandboxContext = { console };
       // 注入用户提供的上下文
       for (const k of contextKeys) {
         sandboxContext[k] = context[k];
