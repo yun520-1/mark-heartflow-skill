@@ -517,7 +517,7 @@ function detectIntrospectionIllusion(text) {
   let level = 'safe';
   if (matched.some(function(m) { return m.severity === 'over'; })) level = 'over';
   else if (matched.some(function(m) { return m.severity === 'caution'; })) level = 'caution';
-  var insightMap = {
+  const insightMap = {
     safe: '通过内省错觉检测：未发现事后推断语言',
     caution: '检测到可能的事后推断语言：引擎应使用"观察到"而非"我知道为什么"',
     over: '检测到内省错觉语言：声称知道自身内部状态因果——可能只是事后构建的叙事'
@@ -527,9 +527,9 @@ function detectIntrospectionIllusion(text) {
 
 function convertToObservableReport(text) {
   if (!text) return { result: text, replaced: 0 };
-  var result = text;
-  var replaced = 0;
-  var conversions = [
+  const result = text;
+  const replaced = 0;
+  const conversions = [
     [/我知道为什么/g, '我观察到结果是'],
     [/因为我很清楚/g, '因为数据显示'],
     [/这是因为我的/g, '这与我观察到我的'],
@@ -542,19 +542,19 @@ function convertToObservableReport(text) {
     [/我清楚地知道/g, '我倾向于认为'],
   ];
   for (var i = 0; i < conversions.length; i++) {
-    var from = conversions[i][0];
-    var to = conversions[i][1];
-    var newResult = result.replace(from, to);
+    const from = conversions[i][0];
+    const to = conversions[i][1];
+    const newResult = result.replace(from, to);
     if (newResult !== result) { replaced++; result = newResult; }
   }
   return { result: result, replaced: replaced };
 }
 
 function auditMetaReport(metaReport) {
-  var reportText = typeof metaReport === 'string' ? metaReport : JSON.stringify(metaReport);
-  var illusion = detectIntrospectionIllusion(reportText);
-  var conversion = convertToObservableReport(reportText);
-  var recommendations = [];
+  const reportText = typeof metaReport === 'string' ? metaReport : JSON.stringify(metaReport);
+  const illusion = detectIntrospectionIllusion(reportText);
+  const conversion = convertToObservableReport(reportText);
+  const recommendations = [];
   if (illusion.level === 'over') recommendations.push({ priority: 'high', message: 'MetaEngine自我报告包含内省错觉语言' });
   if (illusion.level === 'caution') recommendations.push({ priority: 'medium', message: 'MetaEngine自我报告可能包含事后推断语言' });
   return { illusion: illusion, conversion: conversion.replaced > 0 ? { replacements: conversion.replaced } : null, recommendations: recommendations, passed: illusion.level === 'safe' };
