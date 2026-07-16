@@ -590,8 +590,8 @@ function handleStatus(args) {
   const startTime = Date.now();
   const status = { version, running: heartflow !== null, modules: heartflow ? Object.keys(heartflow._modules || {}).length : 0 };
   if (heartflow) {
-    try { const ms = safeDispatch('memory.getStats'); if (ms) status.memoryLayers = { core: ms.core || 0, learned: ms.learned || 0, ephemeral: ms.ephemeral || 0 }; } catch (e) {}
-    try { const q = safeDispatch('evolution.getStats'); if (q) status.qtable = q; } catch (e) {}
+    try { const ms = safeDispatch('memory.getStats'); if (ms) status.memoryLayers = { core: ms.core || 0, learned: ms.learned || 0, ephemeral: ms.ephemeral || 0 }; } catch (e) { console.error('[HeartFlow] memory.getStats dispatch failed:', e.message); }
+    try { const q = safeDispatch('evolution.getStats'); if (q) status.qtable = q; } catch (e) { console.error('[HeartFlow] evolution.getStats dispatch failed:', e.message); }
   }
   status.checkTime = Date.now() - startTime;
   if (detail === 'basic') return { version: status.version, running: status.running, modules: status.modules, memoryLayers: status.memoryLayers || {}, checkTime: status.checkTime };
@@ -708,7 +708,7 @@ function _generateInnerMonologue(result) {
       enableInnerMonologue = config.enableInnerMonologue || false;
       frequency = config.innerMonologueFrequency || 'normal';
     }
-  } catch (e) {}
+  } catch (e) { console.error('[HeartFlow] Config read failed:', e.message); }
 
   if (!enableInnerMonologue) return null;
 
@@ -817,7 +817,7 @@ function _generatePhilosophyMonologue(decision, philo, ap) {
       const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
       enableInnerMonologue = config.enableInnerMonologue || false;
     }
-  } catch (e) {}
+  } catch (e) { console.error('[HeartFlow] Config read failed:', e.message); }
 
   if (!enableInnerMonologue) return null;
 
@@ -878,7 +878,7 @@ function _generatePacingMonologue(rhythm, pacing, pause, grounding, load) {
       const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
       enableInnerMonologue = config.enableInnerMonologue || false;
     }
-  } catch (e) {}
+  } catch (e) { console.error('[HeartFlow] Config read failed:', e.message); }
 
   if (!enableInnerMonologue) return null;
 

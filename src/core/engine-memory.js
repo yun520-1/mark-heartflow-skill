@@ -590,7 +590,7 @@ function _compactSelfMemories(hf) {
 
       const parsed = [];
       for (const l of lines) {
-        try { parsed.push(JSON.parse(l)); } catch(e) {}
+        try { parsed.push(JSON.parse(l)); } catch(e) { console.error('[HeartFlow] Memory line parse error:', e.message); }
       }
       if (parsed.length <= 200) return;
 
