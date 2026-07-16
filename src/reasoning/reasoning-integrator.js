@@ -19,7 +19,7 @@
  * Plan-and-Solve Prompt 模板 (ACL 2023 增强版)
  * 论文核心：先制定完整计划，再执行，减少推理错误
  */
-var PS_PROMPTS = {
+const PS_PROMPTS = {
   // 基础版：理解+计划+执行
   basic: "Let's first understand the problem and devise a plan. Then, let's solve step by step.",
   
@@ -45,7 +45,7 @@ var PS_PROMPTS = {
   multiPerspective: "First, let's restate the problem in our own words to ensure understanding. Second, let's consider multiple perspectives or methods to solve it. Third, let's choose the most promising approach and create a plan. Fourth, execute and verify."
 };
 
-var REASONING_EXAMPLES = [
+const REASONING_EXAMPLES = [
   {
     input: '什么是爱？',
     thinking: '1. 先拆解问题：用户问的是"爱"的定义，不能直接给结论\n2. 搜索相关：哲学、心理学、生物学的观点\n3. 检视证据：有没有研究/数据支持\n4. 给出限定：在这个语境下怎么说\n5. 保留开放：可以说"目前理解是..."',
@@ -68,7 +68,7 @@ function think(input, options) {
   options = options || {};
   options.enablePlan = options.enablePlan !== false; // 默认启用计划阶段
   
-  var result = {
+  const result = {
     input: input,
     steps: [],
     evidence: [],
@@ -78,7 +78,7 @@ function think(input, options) {
   
   // Step 0: 预搜索阶段 (如果启用)
   if (options.enablePlan) {
-    var preSearchResult = _presearchPhase(input, options);
+    const preSearchResult = _presearchPhase(input, options);
     if (preSearchResult) {
       result.steps.push(preSearchResult);
     }
@@ -98,7 +98,7 @@ function think(input, options) {
   
   // Step 2.5: 显式计划阶段 (ACL 2023 Plan-and-Solve 核心)
   if (options.enablePlan) {
-    var planResult = _explicitPlan(input, options);
+    const planResult = _explicitPlan(input, options);
     if (planResult) {
       result.steps.push(planResult);
     }
@@ -133,16 +133,16 @@ function think(input, options) {
 function _presearchPhase(input, options) {
   options = options || {};
   
-  var question = input.trim();
+  const question = input.trim();
   
   // 识别问题类型
-  var questionTypes = _classifyQuestion(question);
+  const questionTypes = _classifyQuestion(question);
   
   // 提取需要搜索的关键词
-  var searchKeywords = _extractSearchKeywords(question);
+  const searchKeywords = _extractSearchKeywords(question);
   
   // 确定相关领域
-  var relevantDomains = _identifyRelevantDomains(question);
+  const relevantDomains = _identifyRelevantDomains(question);
   
   return {
     step: '预搜索阶段',
@@ -179,19 +179,19 @@ function _presearchPhase(input, options) {
 function _explicitPlan(input, options) {
   options = options || {};
   
-  var question = input.trim();
+  const question = input.trim();
   
   // 提取变量
-  var variables = extractVariables(question);
+  const variables = extractVariables(question);
   
   // 识别问题类型和适用的解题策略
-  var problemType = _classifyQuestion(question);
+  const problemType = _classifyQuestion(question);
   
   // 生成具体步骤
-  var steps = _generatePlanSteps(question, variables, problemType);
+  const steps = _generatePlanSteps(question, variables, problemType);
   
   // 识别潜在难点和易错点
-  var pitfalls = _identifyPotentialPitfalls(question, problemType);
+  const pitfalls = _identifyPotentialPitfalls(question, problemType);
   
   return {
     step: '制定计划',
@@ -218,7 +218,7 @@ function _explicitPlan(input, options) {
  * @private
  */
 function _classifyQuestion(question) {
-  var q = question.toLowerCase();
+  const q = question.toLowerCase();
   
   if (q.match(/多少|计算|求|等于|数字|总和|平均|概率|统计/i)) {
     return '计算类';
@@ -243,17 +243,17 @@ function _classifyQuestion(question) {
  * @private
  */
 function _extractSearchKeywords(question) {
-  var words = question.split(/[\s,，。！？、；：""''（）()]+/);
-  var keywords = [];
+  const words = question.split(/[\s,，。！？、；：""''（）()]+/);
+  const keywords = [];
   
   // 过滤停用词
-  var stopWords = ['的', '是', '在', '了', '和', '与', '或', '一个', '这个', '那个', '我', '你', '他', '她', '它', '什么', '怎么', '如何', '为什么', '多少', 'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can'];
-  var stopSet = {};
-  for (var i = 0; i < stopWords.length; i++) {
+  const stopWords = ['的', '是', '在', '了', '和', '与', '或', '一个', '这个', '那个', '我', '你', '他', '她', '它', '什么', '怎么', '如何', '为什么', '多少', 'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'can'];
+  const stopSet = {};
+  for (let i = 0; i < stopWords.length; i++) {
     stopSet[stopWords[i]] = true;
   }
   
-  for (var i = 0; i < words.length; i++) {
+  for (let i = 0; i < words.length; i++) {
     if (words[i].length > 1 && !stopSet[words[i]] && !stopSet[words[i].toLowerCase()]) {
       keywords.push(words[i]);
     }
@@ -268,8 +268,8 @@ function _extractSearchKeywords(question) {
  * @private
  */
 function _identifyRelevantDomains(question) {
-  var q = question.toLowerCase();
-  var domains = [];
+  const q = question.toLowerCase();
+  const domains = [];
   
   if (q.match(/数学|计算|数字|概率|统计|几何|代数/i)) {
     domains.push('数学');
@@ -309,7 +309,7 @@ function _identifyRelevantDomains(question) {
  * @private
  */
 function _generatePlanSteps(question, variables, problemType) {
-  var steps = [];
+  const steps = [];
   
   // 基础步骤：理解问题
   steps.push('1. 复述问题：用简洁的话概括问题本质');
@@ -357,8 +357,8 @@ function _generatePlanSteps(question, variables, problemType) {
  * @private
  */
 function _identifyPotentialPitfalls(question, problemType) {
-  var q = question.toLowerCase();
-  var pitfalls = [];
+  const q = question.toLowerCase();
+  const pitfalls = [];
   
   // 通用陷阱
   pitfalls.push('假设过多：不要假设未明确给出的条件');
@@ -388,15 +388,15 @@ function _identifyPotentialPitfalls(question, problemType) {
  * 深度思考：不是快速给答案
  */
 function deepThink(input, options) {
-  var result = think(input);
+  const result = think(input);
   
   // 大模型的关键：不是只给答案，是展示推理
   
   // 1. 问题分解 - 不是马上回答
-  var question = input.trim();
+  const question = input.trim();
   
   // 2. 标准定义 - 回答"对"的标准是什么
-  var standards = [
+  const standards = [
     '逻辑自洽',
     '有证据支撑',
     '经得起反例',
@@ -404,14 +404,14 @@ function deepThink(input, options) {
   ];
   
   // 3. 证据要求 - 不是"我觉得"
-  var hasEvidence = false;
-  var evidenceLevel = 0; // 0=直觉, 1=例子, 2=数据, 3=研究
+  const hasEvidence = false;
+  const evidenceLevel = 0; // 0=直觉, 1=例子, 2=数据, 3=研究
   
   // 4. 反例思考 - 一定有例外
-  var counterExamples = [];
+  const counterExamples = [];
   
   // 5. 不确定性 - 诚实面对不知道
-  var unknowns = [];
+  const unknowns = [];
   
   return {
     question: question,
@@ -432,7 +432,7 @@ function deepThink(input, options) {
  */
 function execute(input, options) {
   options = options || {};
-  var result = deepThink(input, options);
+  const result = deepThink(input, options);
   
   // 根据证据等级决定
   if (result.recommendation.silence && !options.force) {
@@ -465,14 +465,14 @@ function execute(input, options) {
 function planAndSolve(input, options) {
   options = options || {};
   
-  var result = {
+  const result = {
     input: input,
     phases: [],
     answer: null
   };
   
   // Phase 1: 理解问题
-  var question = input.trim();
+  const question = input.trim();
   result.phases.push({
     phase: 'understand',
     content: '理解问题',
@@ -530,15 +530,15 @@ function planAndSolve(input, options) {
  * 提取变量
  */
 function extractVariables(question) {
-  var vars = {
+  const vars = {
     numbers: [],
     entities: [],
     actions: []
   };
   
-  var words = question.split(/\s+/);
-  for (var i = 0; i < words.length; i++) {
-    var w = words[i];
+  const words = question.split(/\s+/);
+  for (let i = 0; i < words.length; i++) {
+    const w = words[i];
     if (/\d+/.test(w)) vars.numbers.push(w);
   }
   
