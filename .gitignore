@@ -78,3 +78,6 @@ data/judgments/
 data/meaningful-memory.json
 data/memory-bank.json
 data/memory-index.json
+
+# runtime feedback artifacts
+data/feedback/
