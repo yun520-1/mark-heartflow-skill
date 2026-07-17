@@ -1901,8 +1901,9 @@ module.exports = { VERSION };
 
 **MCP server 的 version.js 必须指向引擎目录的 package.json**，不是 MCP server 自己的 package.json。示例（指向 `mark-code`）：
 ```javascript
+// ⚠️ 硬编码绝对路径示例（不推荐，仅作对比）：
 const pkg = JSON.parse(fs.readFileSync(
-  '/Users/apple/.hermes/skills/ai/mark-code/package.json'
+  '/path/to/.hermes/skills/ai/mark-code/package.json'
 ```
   ↓ 改为（使用 HF_DIR 环境变量，适配任意安装路径）：
 ```javascript
@@ -2052,9 +2053,9 @@ plist 文件：`~/Library/LaunchAgents/com.heartflow.mcp.plist`
     <key>WorkingDirectory</key>
     <string>~/.hermes/heartflow/mcp</string>
     <key>StandardOutPath</key>
-    <string>path.join(process.env.HF_DIR || require('path').join(require('os').homedir(), '.hermes', 'logs'), 'heartflow-mcp.log')</string>
+    <string>~/.hermes/logs/heartflow-mcp.log</string>
     <key>StandardErrorPath</key>
-    <string>path.join(process.env.HF_DIR || require('path').join(require('os').homedir(), '.hermes', 'logs'), 'heartflow-mcp.log')</string>
+    <string>~/.hermes/logs/heartflow-mcp.log</string>
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>

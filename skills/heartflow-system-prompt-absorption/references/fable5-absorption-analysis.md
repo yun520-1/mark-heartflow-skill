@@ -1,7 +1,7 @@
 # Fable 5 系统提示吸收分析
 
 来源：Claude Fable 5 泄露系统提示（3825行）
-路径：`/Users/apple/Desktop/claude-fable-5-system-prompt-leaked.txt`
+路径：`<横向比较分析/analysis/claude-fable-5-system-prompt-leaked.txt`（路径已匿名化，仅供内部参考）
 吸收日期：2026-06-11
 吸收版本：v2.9.3 → v2.9.4
 

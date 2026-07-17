@@ -257,7 +257,7 @@ function start(hf, HeartFlowClass) {
     const { atomicWrite } = require('../utils/atomic-write.js');
     const fs = require('../utils/safe-fs');
     const walDir = path.join(hf.rootPath, 'memory', 'wal');
-    try { fs.mkdirSync(walDir, { recursive: true }); } catch (e) { console.error('[HeartFlow] WAL dir creation failed:', e.message); }
+    try { fs.mkdirSync(walDir, { recursive: true }); } catch (e) { if (process.env.HEARTFLOW_DEBUG) console.error('[HeartFlow] WAL dir creation failed:', e.message); }
     const wal = new WriteAheadLog(walDir);
     wal._loadSeq();
     hf.persistence = {
@@ -785,7 +785,7 @@ function start(hf, HeartFlowClass) {
     if (hf[m] === undefined) _boundedPush(hf._initErrors, { module: m, error: '人性深度模块未初始化 (L-001)' }, 500);
   }
 
-  try { _runSelfImprovementHealthCheck(hf); } catch (e) { console.error('[HeartFlow] Self-improvement health check failed:', e.message); }
+  try { _runSelfImprovementHealthCheck(hf); } catch (e) { if (process.env.HEARTFLOW_DEBUG) console.error('[HeartFlow] Self-improvement health check failed:', e.message); }
 
   hf._memoryEnabled = hf._checkMemoryEnabled();
   if (hf._memoryEnabled) {

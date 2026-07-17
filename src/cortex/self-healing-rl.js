@@ -1220,7 +1220,7 @@ class HealingMemoryRL {
 
     // [HIGH FIX] 取消注释 _saveQTable()（之前注释掉导致 Q-table 修改只存内存，进程退出即丢失）
 
-    this._saveQTable().catch(e => console.error('[HealingMemoryRL] reflect save failed:', e.message));
+    this._saveQTable().catch(e => { if (process.env.HEARTFLOW_DEBUG) console.error('[HealingMemoryRL] reflect save failed:', e.message); });
 
 
 

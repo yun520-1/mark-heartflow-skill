@@ -423,7 +423,7 @@ const kb = new KnowledgeBase({ storagePath: '/tmp/test-kb' });
 // → Error: [KnowledgeBase] Storage path outside allowed directory
 
 // ✅ 正确：使用 data/ 下的子目录
-const kbPath = 'path.join(process.env.HF_DIR || '/root/.hermes/skills/ai/mark-heartflow', 'data', 'knowledge_test')';
+const kbPath = path.join(process.env.HF_DIR || require('path').join(require('os').homedir(), '.hermes/skills/ai/mark-heartflow'), 'data', 'knowledge_test');
 fs.mkdirSync(kbPath, { recursive: true });
 const kb = new KnowledgeBase({ storagePath: kbPath, autoSave: false });
 ```
