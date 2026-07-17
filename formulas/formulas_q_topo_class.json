@@ -1,0 +1,50 @@
+[
+  [
+    "q_topo_class_chern_number",
+    "Chern 数",
+    "C = (1/2π) ∫_{BZ} F_{xy} d²k",
+    "quantum_computing"
+  ],
+  [
+    "q_topo_class_z2_invariant",
+    "Z2 不变量",
+    "ν = ∫_{BZ} d³k/(24π²) ε^{μνρ} Tr[(h⁻¹∂_μ h)(h⁻¹∂_ν h)(h⁻¹∂_ρ h)]",
+    "quantum_computing"
+  ],
+  [
+    "q_topo_class_winding_number",
+    "卷绕数",
+    "w = ∫ dk/(2πi) ∂_k log det h(k)",
+    "quantum_computing"
+  ],
+  [
+    "q_topo_class_edge_state",
+    "边缘态",
+    "ρ_edge(E) ∝ |E - E_c|^{-1/2}",
+    "quantum_computing"
+  ],
+  [
+    "q_topo_class_bulk_boundary",
+    "体-边界对应",
+    "n_edge = n_bulk mod 2",
+    "quantum_computing"
+  ],
+  [
+    "q_topo_class_topological_invariant",
+    "拓扑不变量",
+    "I = Tr(U† [X,U])",
+    "quantum_computing"
+  ],
+  [
+    "q_topo_class_symmetry_protection",
+    "对称性保护",
+    "H(k) = H(-k), T² = -1",
+    "quantum_computing"
+  ],
+  [
+    "q_topo_class_quantum_spin_hall",
+    "量子自旋霍尔",
+    "σ_{sH} = (e/2π) (C_↑ - C_↓)",
+    "quantum_computing"
+  ]
+]

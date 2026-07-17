@@ -1,0 +1,52 @@
+{
+  "strategies": {
+    "conceptual": {
+      "success": 0,
+      "total": 0,
+      "score": 0
+    },
+    "example": {
+      "success": 0,
+      "total": 0,
+      "score": 0
+    },
+    "analogy": {
+      "success": 0,
+      "total": 0,
+      "score": 0
+    },
+    "step_by_step": {
+      "success": 3,
+      "total": 3,
+      "score": 1
+    },
+    "socratic": {
+      "success": 0,
+      "total": 0,
+      "score": 0
+    }
+  },
+  "patterns": [
+    {
+      "input": "当API返回429状态码时，应该等待至少1秒再重试，因为太快的重试会导致更多的限流错误",
+      "strategy": "step_by_step",
+      "success": true,
+      "time": 10,
+      "timestamp": "2026-06-05T13:10:10.061Z"
+    },
+    {
+      "input": "检查用户输入前必须验证参数类型，避免SQL注入风险 (context: 安全审计)",
+      "strategy": "step_by_step",
+      "success": true,
+      "time": 2,
+      "timestamp": "2026-06-05T13:10:10.061Z"
+    },
+    {
+      "input": "好",
+      "strategy": "step_by_step",
+      "success": true,
+      "time": 2,
+      "timestamp": "2026-06-05T13:10:10.062Z"
+    }
+  ]
+}

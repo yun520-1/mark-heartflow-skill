@@ -1,0 +1,242 @@
+[
+  [
+    "chemistry_40",
+    "化学 theoretical_chem",
+    "chemistry_theoretical_chem = f(chemistry_theoretical_chem_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_41",
+    "化学 computational_chem",
+    "chemistry_computational_chem = f(chemistry_computational_chem_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_42",
+    "化学 spectroscopy",
+    "chemistry_spectroscopy = f(chemistry_spectroscopy_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_43",
+    "化学 electrochemistry",
+    "chemistry_electrochemistry = f(chemistry_electrochemistry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_44",
+    "化学 photochemistry",
+    "chemistry_photochemistry = f(chemistry_photochemistry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_45",
+    "化学 surface_chem",
+    "chemistry_surface_chem = f(chemistry_surface_chem_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_46",
+    "化学 catalysis",
+    "chemistry_catalysis = f(chemistry_catalysis_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_47",
+    "化学 green_chem",
+    "chemistry_green_chem = f(chemistry_green_chem_params)",
+    "chemistry"
+  ],
+  [
+    "computer_science_48",
+    "计算机科学 algorithms",
+    "computer_science_algorithms = f(computer_science_algorithms_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_49",
+    "计算机科学 data_structures",
+    "computer_science_data_structures = f(computer_science_data_structures_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_50",
+    "计算机科学 complexity_theory",
+    "computer_science_complexity_theory = f(computer_science_complexity_theory_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_51",
+    "计算机科学 crytography",
+    "computer_science_crytography = f(computer_science_crytography_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_52",
+    "计算机科学 machine_learning",
+    "computer_science_machine_learning = f(computer_science_machine_learning_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_53",
+    "计算机科学 artificial_intelligence",
+    "computer_science_artificial_intelligence = f(computer_science_artificial_intelligence_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_54",
+    "计算机科学 computer_vision",
+    "computer_science_computer_vision = f(computer_science_computer_vision_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_55",
+    "计算机科学 natural_language",
+    "computer_science_natural_language = f(computer_science_natural_language_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_56",
+    "计算机科学 robotics",
+    "computer_science_robotics = f(computer_science_robotics_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_57",
+    "计算机科学 database",
+    "computer_science_database = f(computer_science_database_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_58",
+    "计算机科学 networking",
+    "computer_science_networking = f(computer_science_networking_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_59",
+    "计算机科学 operating_systems",
+    "computer_science_operating_systems = f(computer_science_operating_systems_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_60",
+    "计算机科学 compiler",
+    "computer_science_compiler = f(computer_science_compiler_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_61",
+    "计算机科学 security",
+    "computer_science_security = f(computer_science_security_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_62",
+    "计算机科学 distributed_systems",
+    "computer_science_distributed_systems = f(computer_science_distributed_systems_params)",
+    "computer_science"
+  ],
+  [
+    "computer_science_63",
+    "计算机科学 quantum_computing",
+    "computer_science_quantum_computing = f(computer_science_quantum_computing_params)",
+    "computer_science"
+  ],
+  [
+    "cognitive_science_64",
+    "认知科学 perception",
+    "cognitive_science_perception = f(cognitive_science_perception_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_65",
+    "认知科学 attention",
+    "cognitive_science_attention = f(cognitive_science_attention_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_66",
+    "认知科学 memory",
+    "cognitive_science_memory = f(cognitive_science_memory_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_67",
+    "认知科学 learning",
+    "cognitive_science_learning = f(cognitive_science_learning_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_68",
+    "认知科学 decision_making",
+    "cognitive_science_decision_making = f(cognitive_science_decision_making_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_69",
+    "认知科学 problem_solving",
+    "cognitive_science_problem_solving = f(cognitive_science_problem_solving_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_70",
+    "认知科学 creativity",
+    "cognitive_science_creativity = f(cognitive_science_creativity_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_71",
+    "认知科学 intelligence",
+    "cognitive_science_intelligence = f(cognitive_science_intelligence_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_72",
+    "认知科学 consciousness",
+    "cognitive_science_consciousness = f(cognitive_science_consciousness_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_73",
+    "认知科学 emotion",
+    "cognitive_science_emotion = f(cognitive_science_emotion_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_74",
+    "认知科学 social_cognition",
+    "cognitive_science_social_cognition = f(cognitive_science_social_cognition_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_75",
+    "认知科学 development",
+    "cognitive_science_development = f(cognitive_science_development_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_76",
+    "认知科学 aging",
+    "cognitive_science_aging = f(cognitive_science_aging_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_77",
+    "认知科学 disorders",
+    "cognitive_science_disorders = f(cognitive_science_disorders_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_78",
+    "认知科学 neuroscience",
+    "cognitive_science_neuroscience = f(cognitive_science_neuroscience_params)",
+    "cognitive_science"
+  ],
+  [
+    "cognitive_science_79",
+    "认知科学 artificial_cognition",
+    "cognitive_science_artificial_cognition = f(cognitive_science_artificial_cognition_params)",
+    "cognitive_science"
+  ]
+]

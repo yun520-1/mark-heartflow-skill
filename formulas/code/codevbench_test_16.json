@@ -1,0 +1,702 @@
+[
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "WHILE",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "WHILE",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "WHILE",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "ANNOTATION",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "ANNOTATION",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "prefix_full_suffix_func_empty_complete_current_block_no_evidence"
+  }
+]

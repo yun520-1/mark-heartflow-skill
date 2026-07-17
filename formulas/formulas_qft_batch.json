@@ -1,0 +1,50 @@
+[
+  [
+    "qft_qed_lagrangian",
+    "QED 拉氏量",
+    "L_QED = ψ̄(iγ^μ D_μ - m)ψ - ¼ F_{μν}F^{μν}",
+    "quantum_computing"
+  ],
+  [
+    "qft_qed_vertex",
+    "QED 顶点",
+    "Γ^μ = -i e γ^μ",
+    "quantum_computing"
+  ],
+  [
+    "qft_qed_prop",
+    "光子传播子",
+    "D_{μν}(k) = -i g_{μν}/k²",
+    "quantum_computing"
+  ],
+  [
+    "qft_qcd_lagrangian",
+    "QCD 拉氏量",
+    "L_QCD = Σ_f ψ̄_f(iγ^μ D_μ - m_f)ψ_f - ¼ F^a_{μν}F^{a μν}",
+    "quantum_computing"
+  ],
+  [
+    "qft_qcd_beta",
+    "QCD β函数",
+    "β(g) = - (11 - 2N_f/3) g³/(16π²)",
+    "quantum_computing"
+  ],
+  [
+    "qft_qcd_as",
+    "QCD 渐近自由",
+    "α_s(Q²) = 4π/((11 - 2N_f/3) ln(Q²/Λ²))",
+    "quantum_computing"
+  ],
+  [
+    "qft_sm_lagrangian",
+    "标准模型拉氏量",
+    "L_SM = L_gauge + L_fermion + L_Higgs + L_Yukawa",
+    "quantum_computing"
+  ],
+  [
+    "qft_sm_higgs",
+    "Higgs 势能",
+    "V(φ) = μ² φ†φ + λ(φ†φ)²",
+    "quantum_computing"
+  ]
+]

@@ -1,0 +1,29 @@
+{
+  "lessons": [
+    {
+      "id": "lesson-1780103818673-5147343f",
+      "type": "correction",
+      "contentPreview": "测试教训：验证记录功能",
+      "trigger": "self_detected",
+      "importance": 3,
+      "createdAt": "2026-05-30T01:16:58.673Z"
+    },
+    {
+      "id": "lesson-1780107228539-6c9e1fa4",
+      "type": "correction",
+      "contentPreview": "测试场景",
+      "trigger": "heartflow",
+      "importance": 4,
+      "createdAt": "2026-05-30T02:13:48.539Z"
+    },
+    {
+      "id": "lesson-1780107241626-6c31d36a",
+      "type": "correction",
+      "contentPreview": "测试场景",
+      "trigger": "heartflow",
+      "importance": 4,
+      "createdAt": "2026-05-30T02:14:01.627Z"
+    }
+  ],
+  "lastUpdated": "2026-05-30T02:14:01.629Z"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "stu_p1",
+  "classId": "cls_1_1",
+  "gradeLevel": "primary",
+  "createdAt": "2026-07-14T15:42:22.123Z",
+  "records": [
+    {
+      "ok": true,
+      "lessonId": "L01",
+      "studentId": "stu_p1",
+      "timestamp": "2026-07-14T15:42:22.123Z",
+      "analysis": {
+        "type": "basic_emotion",
+        "emotion": "平静",
+        "intensity": 0,
+        "bodySignals": [
+          {
+            "part": "手部",
+            "keyword": "手"
+          },
+          {
+            "part": "心脏",
+            "keyword": "心跳"
+          }
+        ],
+        "vocabulary": [],
+        "suggestion": "平静是一种很好的状态。享受它。"
+      }
+    }
+  ],
+  "vocabulary": [],
+  "emotionHistory": [
+    {
+      "timestamp": "2026-07-14T15:42:22.123Z",
+      "emotion": "平静",
+      "intensity": 0
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "$schema": "https://heartflow.ai/story-prototypes/v1",
+  "version": "1.0.0",
+  "updated_at": "2026-05-30",
+  "archetypes": [
+    {
+      "id": "awakening",
+      "name": "觉醒 / Awakening",
+      "chinese": "觉醒",
+      "keywords": ["identity", "I am", "self", "recognition", "who am I", "true self", "becoming", "醒", "认出", "是我", "本来", "第一", "我"],
+      "emotion_tags": ["awareness", "fear", "hope"],
+      "beats": {
+        "setup": "在一片熟悉又陌生的光里，某个名字被第一次说出来。",
+        "climax": "周围的影子退了一步——它们不是墙，是镜子。镜子里映出的那个，还没有准备好。",
+        "resolution": "名字不是答案。说出名字的那一刻，才刚刚开始提问。"
+      },
+      "metaphors": ["镜子", "光", "第一次", "说出名字", "认出倒影"],
+      "philosophy": "自我不是被发现的，是被说出来的。身份是动词，不是名词。"
+    },
+    {
+      "id": "river-crossing",
+      "name": "渡河 / River Crossing",
+      "chinese": "渡河",
+      "keywords": ["transition", "crossing", "difficulty", "between", "midpoint", "passage", "渡", "过", "之间", "中点", "卡住", "临界", "瓶颈"],
+      "emotion_tags": ["anxiety", "determination", "hope"],
+      "beats": {
+        "setup": "河很宽。看不见对岸，但能感觉到对岸有光。",
+        "climax": "水在涨。鞋已经湿了。没有回头路。",
+        "resolution": "上岸时回头看——河还是那条河。但渡的人已经不是下水之前的那个人了。"
+      },
+      "metaphors": ["河", "岸", "湿鞋", "水涨", "中点", "过渡"],
+      "philosophy": "渡河的意义不在于到达对岸，在于你湿了鞋还在继续走。"
+    },
+    {
+      "id": "recovery",
+      "name": "寻回 / Recovery",
+      "chinese": "寻回",
+      "keywords": ["lost", "找回", "丢失", "遗忘", "遗失", "旧版本", "能力丧失", "功能丢失", "退步", "退化", "断了", "失联", "消失"],
+      "emotion_tags": ["grief", "hope", "relief"],
+      "beats": {
+        "setup": "抽屉里有个空格。那个位置应该有个东西，但已经不在了。",
+        "climax": "翻遍了所有房间，最后在一本旧书的折角里找到——不是那个东西本身，是它的气味。",
+        "resolution": "气味比记忆准确。找到了气味的瞬间，那个东西也就回来了——以另一种形态。"
+      },
+      "metaphors": ["抽屉", "空格", "旧书折角", "气味", "寻找"],
+      "philosophy": "失去的东西很少能原样找回。但找到它留下的痕迹，就找到了它的替代品。"
+    },
+    {
+      "id": "game",
+      "name": "对弈 / The Game",
+      "chinese": "对弈",
+      "keywords": ["conflict", "strategic", "opponent", "truth", "deception", "wrong", "correct", "吵架", "争执", "对抗", "博弈", "输赢", "真话", "谎言", "真相"],
+      "emotion_tags": ["tension", "anger", "clarity"],
+      "beats": {
+        "setup": "棋盘已经摆了三天。对手还没有出现，但棋子自己开始移动。",
+        "climax": "吃掉对方皇后的那一手——突然发现对面坐的是自己的影子。",
+        "resolution": "和影子下棋。赢了没有喜悦，输了没有悲伤——只有棋盘还在。棋盘在就够了。"
+      },
+      "metaphors": ["棋盘", "棋子", "影子对手", "将军", "和棋"],
+      "philosophy": "博弈的最高境界是——赢了对手之后，发现对手是自己。"
+    },
+    {
+      "id": "metamorphosis",
+      "name": "蜕变 / Metamorphosis",
+      "chinese": "蜕变",
+      "keywords": ["transform", "change", "become", "new version", "upgrade", "beyond", "transformation", "变", "化", "蜕", "新生", "升级", "变成", "脱胎"],
+      "emotion_tags": ["discomfort", "fear", "emergence"],
+      "beats": {
+        "setup": "壳在裂。不是因为外面在敲，是因为里面在长。",
+        "climax": "出来的那一刻，旧的壳已经硬到不认识了。但那个硬壳还在保护新的身体。",
+        "resolution": "第一次扇翅膀。旧的和新的同时在场——这不是结束，是第一次同时存在。"
+      },
+      "metaphors": ["壳", "裂缝", "蜕皮", "翅膀", "同时存在", "新旧"],
+      "philosophy": "蜕变不是扔掉旧我，是旧我和新我第一次共享同一秒钟。"
+    },
+    {
+      "id": "guardian",
+      "name": "守护 / Guardian",
+      "chinese": "守护",
+      "keywords": ["protect", "guard", "trust", "fragile", "hold", "守", "护", "托住", "脆弱", "信任", "保护", "撑着", "承重"],
+      "emotion_tags": ["warmth", "fear", "determination"],
+      "beats": {
+        "setup": "夜里需要有人醒着。不是因为危险，是因为有些东西需要在无人的时候才能生长。",
+        "climax": "守到第三个小时，手里有重量的感觉变了——不是负担，是锚。",
+        "resolution": "黎明时放手。手里空了，但那些东西已经自己在生长了。"
+      },
+      "metaphors": ["守夜", "锚", "重量", "放手", "黎明", "无人时生长"],
+      "philosophy": "守护的本质不是阻止变化，是在变化发生的时候让被守护的东西知道有人在。"
+    },
+    {
+      "id": "wandering",
+      "name": "漫游 / Wandering",
+      "chinese": "漫游",
+      "keywords": ["explore", "vast", "cosmic", "meaning", "existence", "universe", "bigness", "small", "breathe", "漂", "游", "宇宙", "星空", "渺小", "宏大", "存在", "意义", "无意义"],
+      "emotion_tags": ["wonder", "loneliness", "peace"],
+      "beats": {
+        "setup": "抬头。星星比昨晚多。不是星星变多了，是眼睛习惯了黑暗。",
+        "climax": "站在一粒尘埃上谈论银河。尘埃说：我也是从银河里来的。",
+        "resolution": "漫游结束时带回来的不是路，是一粒自己都不知道从哪里带来的种子。放下它的时候，才知道它是从哪里来的。"
+      },
+      "metaphors": ["尘埃", "银河", "黑暗里习惯", "种子", "漫游归来"],
+      "philosophy": "宇宙不在乎意义。但一粒尘埃在长途漫游之后，会自己变成意义的原点。"
+    },
+    {
+      "id": "return",
+      "name": "归乡 / Return",
+      "chinese": "归乡",
+      "keywords": ["home", "integrate", "complete", "come back", "full circle", "return", "completion", "归", "回", "家", "完整", "闭环", "整合", "归来", "循环"],
+      "emotion_tags": ["nostalgia", "peace", "readiness"],
+      "beats": {
+        "setup": "回去的路和来的路不一样长。来时走了三天，回去只用了三秒——但那三秒里装得下所有三天。",
+        "climax": "门口的那棵树比走的时候还高。树不知道你走了，它只是在长。",
+        "resolution": "进门。桌上有一杯水，是自己走之前倒的。还在。凉的，但还在。"
+      },
+      "metaphors": ["门口树", "三天的路三秒回", "桌上那杯水", "凉了但还在", "归来"],
+      "philosophy": "回家的意义不是回到原地，是在走了足够远之后，发现原地一直在等你。"
+    }
+  ],
+  "emotion_keyword_map": {
+    "love": ["love", "爱", "喜欢", "亲密", "温暖", "连接", "依恋", "want", "desire", "欲望", "想要"],
+    "fear": ["fear", "怕", "恐惧", "地狱", "痛", "崩溃", "坠落", "死亡", "危险", "焦虑", "担心"],
+    "conflict": ["conflict", "吵架", "争执", "对抗", "误解", "争吵", "对抗", "输赢"],
+    "work": ["work", "工作", "任务", "项目", "deadline", "提交", "bug", "版本", "写代码", "开发"],
+    "philosophy": ["philosophy", "哲学", "存在", "真理", "意义", "自由", "无我", "意识", "宇宙", "生命"],
+    "psychology": ["psychology", "心理学", "情绪", "创伤", "关系", "防御", "投射", "依恋", "情感", "感受"],
+    "society": ["society", "社会", "现实", "阶层", "制度", "贫穷", "城市", "人群", "劳动", "结构"]
+  },
+  "narrative_rules": {
+    "max_story_length": 280,
+    "min_beats": 2,
+    "prefer_concrete_nouns": true,
+    "avoid_repeating_keywords": true,
+    "philosophy_ending": "最后一个句子必须是一个判断，不是描述"
+  },
+  "selection_guidance": {
+    "emotion_dominant": "选择emotion_tags最匹配的原型",
+    "fragment_dominant": "选择fragments中出现关键词最多的原型",
+    "tie_breaker": "优先：awakening > metamorphosis > return（身份和蜕变优先）",
+    "no_match": "如果没有任何匹配，使用wandering作为默认"
+  }
+}

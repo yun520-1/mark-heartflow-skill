@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_algo_shor_period_finding",
+    "Shor 周期查找",
+    "f(x) = aˣ mod N, period r: aʳ ≡ 1 mod N",
+    "quantum_computing"
+  ],
+  [
+    "quantum_algo_shor_quantum_fourier_transform",
+    "Shor QFT",
+    "QFT|y⟩ = (1/√N) Σₖ exp(2πi yk/N) |k⟩",
+    "quantum_computing"
+  ],
+  [
+    "quantum_algo_grover_oracle",
+    "Grover Oracle",
+    "O|x⟩ = (-1)^{f(x)} |x⟩",
+    "quantum_computing"
+  ],
+  [
+    "quantum_algo_grover_diffusion",
+    "Grover 扩散算子",
+    "D = 2|s⟩⟨s| - I",
+    "quantum_computing"
+  ],
+  [
+    "quantum_algo_vqe_ansatz",
+    "VQE Ansatz",
+    "|ψ(θ)⟩ = U(θ) |0⟩^⊗ⁿ",
+    "quantum_computing"
+  ],
+  [
+    "quantum_algo_vqe_measurement",
+    "VQE 测量",
+    "E(θ) = ⟨ψ(θ)|H|ψ(θ)⟩",
+    "quantum_computing"
+  ],
+  [
+    "quantum_algo_qaoa_cost_hamiltonian",
+    "QAOA 代价哈密顿量",
+    "H_C = Σ_i h_i Z_i + Σ_{ij} J_{ij} Z_i Z_j",
+    "quantum_computing"
+  ],
+  [
+    "quantum_algo_qaoa_mixer_hamiltonian",
+    "QAOA 混合器哈密顿量",
+    "H_B = Σ_i X_i",
+    "quantum_computing"
+  ]
+]

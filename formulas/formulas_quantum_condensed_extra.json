@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_cond_bcs",
+    "BCS 波函数",
+    "|Ψ> = Π_k (u_k + v_k c†_{k↑}c†_{-k↓})|0>",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_cooper_pair",
+    "库珀对",
+    "Δ_k = -Σ_{k'} V_{kk'} ⟨c_{-k'↓} c_{k'↑}⟩",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_gap_equation",
+    "能隙方程",
+    "1 = V Σ_k 1/(2E_k), E_k = √(ξ_k² + Δ²)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_london_equation",
+    "伦敦方程",
+    "j = -n_s e²/m A",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_ginzburg_landau",
+    "金兹堡-朗道方程",
+    "α ψ + β|ψ|² ψ + (1/2m)(-iℏ∇ - eA/c)² ψ = 0",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_josephson_effect",
+    "约瑟夫森效应",
+    "I = I_c sin(δ), V = (ℏ/2e) dδ/dt",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_quantum_hall",
+    "量子霍尔效应",
+    "σ_{xy} = ν e²/h, ν = p/q",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cond_topological_insulator",
+    "拓扑绝缘体",
+    "H = v_F (σ_x k_x + σ_y k_y)",
+    "quantum_computing"
+  ]
+]

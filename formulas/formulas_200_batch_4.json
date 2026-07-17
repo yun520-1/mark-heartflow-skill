@@ -1,0 +1,242 @@
+[
+  [
+    "chemistry_120",
+    "化学 synthetic_biology",
+    "chemistry_synthetic_biology = f(chemistry_synthetic_biology_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_121",
+    "化学 structural_biology",
+    "chemistry_structural_biology = f(chemistry_structural_biology_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_122",
+    "化学 molecular_dynamics",
+    "chemistry_molecular_dynamics = f(chemistry_molecular_dynamics_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_123",
+    "化学 quantum_chemistry",
+    "chemistry_quantum_chemistry = f(chemistry_quantum_chemistry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_124",
+    "化学 molecular_orbitals",
+    "chemistry_molecular_orbitals = f(chemistry_molecular_orbitals_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_125",
+    "化学 density_functional",
+    "chemistry_density_functional = f(chemistry_density_functional_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_126",
+    "化学 post_HF",
+    "chemistry_post_HF = f(chemistry_post_HF_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_127",
+    "化学 coupled_cluster",
+    "chemistry_coupled_cluster = f(chemistry_coupled_cluster_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_128",
+    "化学 many_body",
+    "chemistry_many_body = f(chemistry_many_body_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_129",
+    "化学 electronic_structure",
+    "chemistry_electronic_structure = f(chemistry_electronic_structure_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_130",
+    "化学 vibrational_spectroscopy",
+    "chemistry_vibrational_spectroscopy = f(chemistry_vibrational_spectroscopy_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_131",
+    "化学 rotational_spectroscopy",
+    "chemistry_rotational_spectroscopy = f(chemistry_rotational_spectroscopy_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_132",
+    "化学 NMR",
+    "chemistry_NMR = f(chemistry_NMR_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_133",
+    "化学 ESR",
+    "chemistry_ESR = f(chemistry_ESR_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_134",
+    "化学 X_ray",
+    "chemistry_X_ray = f(chemistry_X_ray_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_135",
+    "化学 neutron_diffraction",
+    "chemistry_neutron_diffraction = f(chemistry_neutron_diffraction_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_136",
+    "化学 electron_microscopy",
+    "chemistry_electron_microscopy = f(chemistry_electron_microscopy_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_137",
+    "化学 scanning_probe",
+    "chemistry_scanning_probe = f(chemistry_scanning_probe_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_138",
+    "化学 surface_analysis",
+    "chemistry_surface_analysis = f(chemistry_surface_analysis_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_139",
+    "化学 mass_spectrometry",
+    "chemistry_mass_spectrometry = f(chemistry_mass_spectrometry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_140",
+    "化学 chromatography",
+    "chemistry_chromatography = f(chemistry_chromatography_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_141",
+    "化学 separation_techniques",
+    "chemistry_separation_techniques = f(chemistry_separation_techniques_params)",
+    "chemistry"
+  ],
+  [
+    "cs_142",
+    "计算机科学 algorithms",
+    "cs_algorithms = f(cs_algorithms_params)",
+    "computer_science"
+  ],
+  [
+    "cs_143",
+    "计算机科学 data_structures",
+    "cs_data_structures = f(cs_data_structures_params)",
+    "computer_science"
+  ],
+  [
+    "cs_144",
+    "计算机科学 complexity_theory",
+    "cs_complexity_theory = f(cs_complexity_theory_params)",
+    "computer_science"
+  ],
+  [
+    "cs_145",
+    "计算机科学 cryptography",
+    "cs_cryptography = f(cs_cryptography_params)",
+    "computer_science"
+  ],
+  [
+    "cs_146",
+    "计算机科学 machine_learning",
+    "cs_machine_learning = f(cs_machine_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_147",
+    "计算机科学 artificial_intelligence",
+    "cs_artificial_intelligence = f(cs_artificial_intelligence_params)",
+    "computer_science"
+  ],
+  [
+    "cs_148",
+    "计算机科学 computer_vision",
+    "cs_computer_vision = f(cs_computer_vision_params)",
+    "computer_science"
+  ],
+  [
+    "cs_149",
+    "计算机科学 natural_language",
+    "cs_natural_language = f(cs_natural_language_params)",
+    "computer_science"
+  ],
+  [
+    "cs_150",
+    "计算机科学 robotics",
+    "cs_robotics = f(cs_robotics_params)",
+    "computer_science"
+  ],
+  [
+    "cs_151",
+    "计算机科学 database",
+    "cs_database = f(cs_database_params)",
+    "computer_science"
+  ],
+  [
+    "cs_152",
+    "计算机科学 networking",
+    "cs_networking = f(cs_networking_params)",
+    "computer_science"
+  ],
+  [
+    "cs_153",
+    "计算机科学 operating_systems",
+    "cs_operating_systems = f(cs_operating_systems_params)",
+    "computer_science"
+  ],
+  [
+    "cs_154",
+    "计算机科学 compiler",
+    "cs_compiler = f(cs_compiler_params)",
+    "computer_science"
+  ],
+  [
+    "cs_155",
+    "计算机科学 security",
+    "cs_security = f(cs_security_params)",
+    "computer_science"
+  ],
+  [
+    "cs_156",
+    "计算机科学 distributed_systems",
+    "cs_distributed_systems = f(cs_distributed_systems_params)",
+    "computer_science"
+  ],
+  [
+    "cs_157",
+    "计算机科学 quantum_computing",
+    "cs_quantum_computing = f(cs_quantum_computing_params)",
+    "computer_science"
+  ],
+  [
+    "cs_158",
+    "计算机科学 blockchain",
+    "cs_blockchain = f(cs_blockchain_params)",
+    "computer_science"
+  ],
+  [
+    "cs_159",
+    "计算机科学 internet_of_things",
+    "cs_internet_of_things = f(cs_internet_of_things_params)",
+    "computer_science"
+  ]
+]

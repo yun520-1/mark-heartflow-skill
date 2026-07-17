@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_info_extra3_surface_code",
+    "表面码",
+    "d = √n, T = d/2",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_extra3_color_code",
+    "色码",
+    "r = 3, T = 2",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_extra3_topological_code",
+    "拓扑码",
+    "ν = 2, 3, 5",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_extra3_quantum_repeater",
+    "量子中继",
+    "F = (F₀)^(1/N)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_extra3_entanglement_swapping",
+    "纠缠交换",
+    "|Ψ⟩_{AB} = (|00⟩ + |11⟩)/√2",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_extra3_quantum_memory",
+    "量子存储器",
+    "T_coh = T₁ T₂ / (T₁ + T₂)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_extra3_quantum_internet",
+    "量子互联网",
+    "Rate = O(1/√N)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_info_extra3_quantum_routing",
+    "量子路由",
+    "Path = argmin_{p} L(p)",
+    "quantum_computing"
+  ]
+]

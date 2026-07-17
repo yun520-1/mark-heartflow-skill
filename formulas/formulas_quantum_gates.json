@@ -1,0 +1,62 @@
+[
+  {
+    "id": "quantum_gate_x",
+    "name": "量子 X 门（泡利 X）",
+    "formula": "X = [[0, 1], [1, 0]]",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_gate_y",
+    "name": "量子 Y 门（泡利 Y）",
+    "formula": "Y = [[0, -i], [i, 0]]",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_gate_z",
+    "name": "量子 Z 门（泡利 Z）",
+    "formula": "Z = [[1, 0], [0, -1]]",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_gate_h",
+    "name": "量子 H 门（阿达马门）",
+    "formula": "H = (1/sqrt(2)) * [[1, 1], [1, -1]]",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_gate_s",
+    "name": "量子 S 门（相位门）",
+    "formula": "S = [[1, 0], [0, i]]",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_gate_t",
+    "name": "量子 T 门（T 门）",
+    "formula": "T = [[1, 0], [0, exp(i*pi/4)]]",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_gate_cnot",
+    "name": "量子 CNOT 门（受控非门）",
+    "formula": "CNOT = |0><0| ⊗ I + |1><1| ⊗ X",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_gate_cz",
+    "name": "量子 CZ 门（受控 Z 门）",
+    "formula": "CZ = |0><0| ⊗ I + |1><1| ⊗ Z",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_gate_swap",
+    "name": "量子 SWAP 门（交换门）",
+    "formula": "SWAP = |00><00| + |01><10| + |10><01| + |11><11|",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_gate_toffoli",
+    "name": "量子 Toffoli 门（受控受控非门）",
+    "formula": "Toffoli = |00><00| ⊗ I + |01><01| ⊗ I + |10><10| ⊗ I + |11><11| ⊗ X",
+    "category": "quantum_computing"
+  }
+]

@@ -1,0 +1,218 @@
+[
+  [
+    "cog_sci_200",
+    "认知科学 aging",
+    "cog_sci_aging = f(cog_sci_aging_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_201",
+    "认知科学 disorders",
+    "cog_sci_disorders = f(cog_sci_disorders_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_202",
+    "认知科学 neuroscience",
+    "cog_sci_neuroscience = f(cog_sci_neuroscience_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_203",
+    "认知科学 artificial_cognition",
+    "cog_sci_artificial_cognition = f(cog_sci_artificial_cognition_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_204",
+    "认知科学 cognitive_neuroscience",
+    "cog_sci_cognitive_neuroscience = f(cog_sci_cognitive_neuroscience_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_205",
+    "认知科学 behavioral_neuroscience",
+    "cog_sci_behavioral_neuroscience = f(cog_sci_behavioral_neuroscience_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_206",
+    "认知科学 systems_neuroscience",
+    "cog_sci_systems_neuroscience = f(cog_sci_systems_neuroscience_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_207",
+    "认知科学 clinical_neuroscience",
+    "cog_sci_clinical_neuroscience = f(cog_sci_clinical_neuroscience_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_208",
+    "认知科学 computational_neuroscience",
+    "cog_sci_computational_neuroscience = f(cog_sci_computational_neuroscience_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_209",
+    "认知科学 theoretical_neuroscience",
+    "cog_sci_theoretical_neuroscience = f(cog_sci_theoretical_neuroscience_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_210",
+    "认知科学 cognitive_psychology",
+    "cog_sci_cognitive_psychology = f(cog_sci_cognitive_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_211",
+    "认知科学 developmental_psychology",
+    "cog_sci_developmental_psychology = f(cog_sci_developmental_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_212",
+    "认知科学 social_psychology",
+    "cog_sci_social_psychology = f(cog_sci_social_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_213",
+    "认知科学 clinical_psychology",
+    "cog_sci_clinical_psychology = f(cog_sci_clinical_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_214",
+    "认知科学 neuropsychology",
+    "cog_sci_neuropsychology = f(cog_sci_neuropsychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_215",
+    "认知科学 health_psychology",
+    "cog_sci_health_psychology = f(cog_sci_health_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_216",
+    "认知科学 environmental_psychology",
+    "cog_sci_environmental_psychology = f(cog_sci_environmental_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_217",
+    "认知科学 organizational_psychology",
+    "cog_sci_organizational_psychology = f(cog_sci_organizational_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_218",
+    "认知科学 educational_psychology",
+    "cog_sci_educational_psychology = f(cog_sci_educational_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_219",
+    "认知科学 forensic_psychology",
+    "cog_sci_forensic_psychology = f(cog_sci_forensic_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_220",
+    "认知科学 sports_psychology",
+    "cog_sci_sports_psychology = f(cog_sci_sports_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_221",
+    "认知科学 counseling_psychology",
+    "cog_sci_counseling_psychology = f(cog_sci_counseling_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_222",
+    "认知科学 community_psychology",
+    "cog_sci_community_psychology = f(cog_sci_community_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_223",
+    "认知科学 positive_psychology",
+    "cog_sci_positive_psychology = f(cog_sci_positive_psychology_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_224",
+    "认知科学 human_factors",
+    "cog_sci_human_factors = f(cog_sci_human_factors_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_225",
+    "认知科学 ergonomics",
+    "cog_sci_ergonomics = f(cog_sci_ergonomics_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_226",
+    "认知科学 human_computer_interaction",
+    "cog_sci_human_computer_interaction = f(cog_sci_human_computer_interaction_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_227",
+    "认知科学 user_experience",
+    "cog_sci_user_experience = f(cog_sci_user_experience_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_228",
+    "认知科学 cognitive_ergonomics",
+    "cog_sci_cognitive_ergonomics = f(cog_sci_cognitive_ergonomics_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_229",
+    "认知科学 mental_health",
+    "cog_sci_mental_health = f(cog_sci_mental_health_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_230",
+    "认知科学 well_being",
+    "cog_sci_well_being = f(cog_sci_well_being_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_231",
+    "认知科学 resilience",
+    "cog_sci_resilience = f(cog_sci_resilience_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_232",
+    "认知科学 coping",
+    "cog_sci_coping = f(cog_sci_coping_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_233",
+    "认知科学 stress",
+    "cog_sci_stress = f(cog_sci_stress_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_234",
+    "认知科学 emotion_regulation",
+    "cog_sci_emotion_regulation = f(cog_sci_emotion_regulation_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_235",
+    "认知科学 self_regulation",
+    "cog_sci_self_regulation = f(cog_sci_self_regulation_params)",
+    "cognitive_science"
+  ]
+]

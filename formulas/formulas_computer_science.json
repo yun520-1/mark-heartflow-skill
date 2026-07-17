@@ -1,0 +1,229 @@
+{
+  "metadata": {
+    "version": "8.8.0",
+    "last_updated": "2026-07-09",
+    "total_formulas": 27,
+    "categories": [
+      "computer_science"
+    ],
+    "source": "wikipedia_computer_science"
+  },
+  "formulas": [
+    {
+      "id": "cs_cs_big_o",
+      "name": "Big O notation",
+      "formula": "T(n) = O(f(n))",
+      "category": "computer_science",
+      "subcategory": "algorithms",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_time_complexity",
+      "name": "Time complexity",
+      "formula": "T(n) = Σ_{i=1}^n c_i",
+      "category": "computer_science",
+      "subcategory": "algorithms",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_space_complexity",
+      "name": "Space complexity",
+      "formula": "S(n) = Σ_{i=1}^n s_i",
+      "category": "computer_science",
+      "subcategory": "algorithms",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_master_theorem",
+      "name": "Master theorem",
+      "formula": "T(n) = a*T(n/b) + f(n)",
+      "category": "computer_science",
+      "subcategory": "algorithms",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_quicksort",
+      "name": "QuickSort complexity",
+      "formula": "O(n log n) average",
+      "category": "computer_science",
+      "subcategory": "sorting",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_mergesort",
+      "name": "MergeSort complexity",
+      "formula": "O(n log n) worst",
+      "category": "computer_science",
+      "subcategory": "sorting",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_heapsort",
+      "name": "HeapSort complexity",
+      "formula": "O(n log n) worst",
+      "category": "computer_science",
+      "subcategory": "sorting",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_bubblesort",
+      "name": "BubbleSort complexity",
+      "formula": "O(n²) worst",
+      "category": "computer_science",
+      "subcategory": "sorting",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_binary_search",
+      "name": "Binary search complexity",
+      "formula": "O(log n)",
+      "category": "computer_science",
+      "subcategory": "searching",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_hash_search",
+      "name": "Hash table search",
+      "formula": "O(1) average",
+      "category": "computer_science",
+      "subcategory": "searching",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_bfs",
+      "name": "BFS complexity",
+      "formula": "O(V + E)",
+      "category": "computer_science",
+      "subcategory": "graph_algorithms",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_dfs",
+      "name": "DFS complexity",
+      "formula": "O(V + E)",
+      "category": "computer_science",
+      "subcategory": "graph_algorithms",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_array_access",
+      "name": "Array access time",
+      "formula": "O(1)",
+      "category": "computer_science",
+      "subcategory": "data_structures",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_linked_list_access",
+      "name": "Linked list access",
+      "formula": "O(n)",
+      "category": "computer_science",
+      "subcategory": "data_structures",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_binary_tree_search",
+      "name": "Binary search tree search",
+      "formula": "O(log n) average",
+      "category": "computer_science",
+      "subcategory": "data_structures",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_heap_insert",
+      "name": "Heap insert",
+      "formula": "O(log n)",
+      "category": "computer_science",
+      "subcategory": "data_structures",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_hash_insert",
+      "name": "Hash table insert",
+      "formula": "O(1) average",
+      "category": "computer_science",
+      "subcategory": "data_structures",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_gradient_descent",
+      "name": "Gradient descent update",
+      "formula": "θ = θ - α * ∇J(θ)",
+      "category": "computer_science",
+      "subcategory": "machine_learning",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_backprop",
+      "name": "Backpropagation",
+      "formula": "∂E/∂w = ∂E/∂y * ∂y/∂w",
+      "category": "computer_science",
+      "subcategory": "machine_learning",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_softmax",
+      "name": "Softmax function",
+      "formula": "σ(z)_i = e^{z_i} / Σ_j e^{z_j}",
+      "category": "computer_science",
+      "subcategory": "machine_learning",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_cross_entropy",
+      "name": "Cross-entropy loss",
+      "formula": "L = -Σ y_i log(ŷ_i)",
+      "category": "computer_science",
+      "subcategory": "machine_learning",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_relu",
+      "name": "ReLU activation",
+      "formula": "f(x) = max(0, x)",
+      "category": "computer_science",
+      "subcategory": "machine_learning",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_sigmoid",
+      "name": "Sigmoid activation",
+      "formula": "σ(x) = 1 / (1 + e^{-x})",
+      "category": "computer_science",
+      "subcategory": "machine_learning",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_shannon_entropy",
+      "name": "Shannon entropy",
+      "formula": "H(X) = -Σ p(x) log p(x)",
+      "category": "computer_science",
+      "subcategory": "information_theory",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_kl_divergence",
+      "name": "KL divergence",
+      "formula": "D_KL(P||Q) = Σ P(x) log(P(x)/Q(x))",
+      "category": "computer_science",
+      "subcategory": "information_theory",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_mutual_information",
+      "name": "Mutual information",
+      "formula": "I(X;Y) = H(X) - H(X|Y)",
+      "category": "computer_science",
+      "subcategory": "information_theory",
+      "source": "wikipedia_computer_science"
+    },
+    {
+      "id": "cs_cs_channel_capacity",
+      "name": "Channel capacity",
+      "formula": "C = max_{p(x)} I(X;Y)",
+      "category": "computer_science",
+      "subcategory": "information_theory",
+      "source": "wikipedia_computer_science"
+    }
+  ]
+}

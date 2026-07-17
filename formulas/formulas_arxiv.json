@@ -1,0 +1,85 @@
+{
+  "metadata": {
+    "version": "6.6.0",
+    "last_updated": "2026-07-08",
+    "total_formulas": 9,
+    "categories": [
+      "cognitive_science"
+    ],
+    "source": "arxiv_keyword_extraction"
+  },
+  "formulas": [
+    {
+      "id": "bayesian_update",
+      "name": "贝叶斯更新",
+      "formula": "P(H|D) ∝ P(D|H) P(H)",
+      "category": "cognitive_science",
+      "subcategory": "from_arxiv",
+      "source": "arXiv_keyword:Bayesian"
+    },
+    {
+      "id": "hodgkin_huxley",
+      "name": "Hodgkin-Huxley 模型",
+      "formula": "C_m dV/dt = - (I_Na + I_K + I_L) + I_ext",
+      "category": "cognitive_science",
+      "subcategory": "from_arxiv",
+      "source": "arXiv_keyword:Hodgkin-Huxley"
+    },
+    {
+      "id": "flow_channel",
+      "name": "心流通道",
+      "formula": "Flow = f(challenge, skill)",
+      "category": "cognitive_science",
+      "subcategory": "from_arxiv",
+      "source": "arXiv_keyword:flow"
+    },
+    {
+      "id": "mutual_information",
+      "name": "互信息",
+      "formula": "I(X;Y) = H(X) - H(X|Y)",
+      "category": "cognitive_science",
+      "subcategory": "from_arxiv",
+      "source": "arXiv_keyword:mutual information"
+    },
+    {
+      "id": "stdp",
+      "name": "脉冲时间依赖可塑性",
+      "formula": "Δw = A_+ e^{-Δt/τ_+} if Δt>0",
+      "category": "cognitive_science",
+      "subcategory": "from_arxiv",
+      "source": "arXiv_keyword:STDP"
+    },
+    {
+      "id": "kl_divergence",
+      "name": "KL 散度",
+      "formula": "D_KL(P||Q) = Σ p(x) log(p(x)/q(x))",
+      "category": "cognitive_science",
+      "subcategory": "from_arxiv",
+      "source": "arXiv_keyword:Kullback-Leibler"
+    },
+    {
+      "id": "schrodinger_equation",
+      "name": "薛定谔方程",
+      "formula": "iℏ ∂ψ/∂t = Ĥψ",
+      "category": "cognitive_science",
+      "subcategory": "from_arxiv",
+      "source": "arXiv_keyword:Schrödinger"
+    },
+    {
+      "id": "navier_stokes",
+      "name": "纳维-斯托克斯",
+      "formula": "ρ(∂v/∂t + v·∇v) = -∇p + μ∇²v + f",
+      "category": "cognitive_science",
+      "subcategory": "from_arxiv",
+      "source": "arXiv_keyword:Navier-Stokes"
+    },
+    {
+      "id": "shannon_entropy",
+      "name": "香农熵",
+      "formula": "H(X) = -Σ p(x) log₂ p(x)",
+      "category": "cognitive_science",
+      "subcategory": "from_arxiv",
+      "source": "arXiv_keyword:Shannon entropy"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "idioms": {
+    "画蛇添足": {
+      "story": "故事",
+      "meaning": "meaning",
+      "origin": "origin",
+      "narrativeSeed": null
+    },
+    "守株待兔": {
+      "story": "故事：守着树桩等兔子。",
+      "meaning": "不劳而获",
+      "origin": "韩非子",
+      "narrativeSeed": null
+    },
+    "drawing_snakes_adding_legs": {
+      "story": "Adding unnecessary things",
+      "meaning": "overkill",
+      "origin": "Warring States",
+      "narrativeSeed": null
+    },
+    "waiting_by_tree_stump": {
+      "story": "Waiting for rabbits",
+      "meaning": "laziness",
+      "origin": "Han Feizi",
+      "narrativeSeed": null
+    }
+  },
+  "poetry": {
+    "to_be_or_not_to_be": {
+      "content": "To be, or not to be",
+      "author": "Shakespeare",
+      "era": "Renaissance",
+      "narrativeSeed": null
+    }
+  },
+  "proverbs": {},
+  "metadata": {
+    "lastUpdate": "2026-06-05T19:22:28.308Z"
+  }
+}

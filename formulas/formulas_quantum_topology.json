@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_topo_berry_phase",
+    "Berry 相位",
+    "γ_n = i ∮ ⟨ψ_n|∇_R|ψ_n⟩ · dR",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_chern_number",
+    "Chern 数",
+    "C = (1/2π) ∫ d²k F_{xy}(k)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_thouless_charge_pump",
+    "Thouless 电荷泵",
+    "ΔQ = C e",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_quantum_anomaly",
+    "量子反常",
+    "∂_μ J^μ = (g²/16π²) F_{μν} F^{μν}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_topological_insulator",
+    "拓扑绝缘体",
+    "σ_xy = (e²/h) Z₂",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_majorana_zero_mode",
+    "Majorana 零模",
+    "γ = γ†, {γ_i, γ_j} = 2δ_{ij}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_skyrmion",
+    "Skyrmion 拓扑数",
+    "Q = (1/4π) ∫ d²x ε_{ij} n·(∂_i n × ∂_j n)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_quantum_hall_filling",
+    "量子霍尔填充因子",
+    "ν = n/(2j+1)",
+    "quantum_computing"
+  ]
+]

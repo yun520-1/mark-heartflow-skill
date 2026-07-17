@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "skills": {
+    "log-analyzer": {
+      "name": "Log Analyzer",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=log-analyzer",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:04Z"
+    },
+    "debug-pro": {
+      "name": "Debug Pro",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=debug-pro",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:05Z"
+    },
+    "code-fix": {
+      "name": "code-error-fixer",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=code-fix",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:06Z"
+    },
+    "superpowers-systematic-debugging": {
+      "name": "Superpowers Systematic Debugging",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=superpowers-systematic-debugging",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:07Z"
+    },
+    "bug-fixing": {
+      "name": "bug-fixing",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=bug-fixing",
+      "source": "community",
+      "version": "1.0.3",
+      "installedAt": "2026-07-05T13:11:13Z"
+    },
+    "nexus-error-explain": {
+      "name": "NEXUS Error Explain",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=nexus-error-explain",
+      "source": "community",
+      "version": "2.1.0",
+      "installedAt": "2026-07-05T13:11:14Z"
+    },
+    "pr-reviewer": {
+      "name": "pr-reviewer",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=pr-reviewer",
+      "source": "community",
+      "version": "1.0.1",
+      "installedAt": "2026-07-05T13:11:15Z"
+    },
+    "critical-code-reviewer": {
+      "name": "Critical Code Reviewer",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=critical-code-reviewer",
+      "source": "community",
+      "version": "0.1.0",
+      "installedAt": "2026-07-05T13:11:16Z"
+    },
+    "project-code-standard": {
+      "name": "Project Code Standard",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=project-code-standard",
+      "source": "community",
+      "version": "0.1.0",
+      "installedAt": "2026-07-05T13:11:36Z"
+    },
+    "security-audit": {
+      "name": "Security Audit",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=security-audit",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:37Z"
+    },
+    "clean-code-review": {
+      "name": "Clean Code",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=clean-code-review",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:38Z"
+    },
+    "cody": {
+      "name": "code-review-assistant",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=cody",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:39Z"
+    },
+    "code-analyzer": {
+      "name": "Code Analyzer",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=code-analyzer",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:45Z"
+    },
+    "agent-git-oracle": {
+      "name": "Agent Git Oracle",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=agent-git-oracle",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:46Z"
+    },
+    "uncle-bob": {
+      "name": "Uncle  Bob",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=uncle-bob",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:47Z"
+    },
+    "code-refactoring": {
+      "name": "Code Refactoring",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=code-refactoring",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:11:48Z"
+    },
+    "system-architect": {
+      "name": "System Architect",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=system-architect",
+      "source": "community",
+      "version": "1.0.0",
+      "installedAt": "2026-07-05T13:12:02Z"
+    },
+    "simplify": {
+      "name": "Simplify Code",
+      "zip_url": "https://api.skillhub.cn/api/v1/download?slug=simplify",
+      "source": "community",
+      "version": "1.0.2",
+      "installedAt": "2026-07-05T13:12:03Z"
+    }
+  }
+}

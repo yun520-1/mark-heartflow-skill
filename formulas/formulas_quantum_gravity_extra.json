@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_grav_loop_quantum_gravity",
+    "圈量子引力",
+    "⟨h|Φ(g,π)|h\"> = ∫ Dg Dπ e^{iS[g,π]} Φ(g,π)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_string_theory",
+    "弦理论",
+    "S = (1/4πα_prime) integral d²σ √h h^{ab} ∂_a X^μ ∂_b X_μ",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_m_theory",
+    "M 理论",
+    "S_M = (1/(2κ_11²)) integral d¹¹x √g (R - ½ |F₄|²) + ...",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_ads_cft_correspondence",
+    "AdS/CFT 对应",
+    "Z_CFT[g] = Z_string on AdS[g]",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_black_hole_information",
+    "黑洞信息悖论",
+    "S_total = S_BH + S_rad ≥ 0",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_hawking_radiation",
+    "霍金辐射谱",
+    "dN/dω = (ω²/πc³) (1/(exp(ℏω/k_B T_H) - 1))",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_wheeler_dewitt_equation",
+    "Wheeler-deWitt 方程",
+    "H|Ψ> = 0",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_quantum_cosmology",
+    "量子宇宙学",
+    "H|Ψ> = 0, |Ψ> = Σ_n c_n |n>",
+    "quantum_computing"
+  ]
+]

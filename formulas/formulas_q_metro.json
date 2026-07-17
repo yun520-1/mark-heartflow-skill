@@ -1,0 +1,50 @@
+[
+  [
+    "q_metro_cramor_rao",
+    "Cramér-Rao 界",
+    "var(θ̂) ≥ 1/(F_Q[θ])",
+    "quantum_computing"
+  ],
+  [
+    "q_metro_quantum_fisher",
+    "量子 Fisher 信息",
+    "F_Q[θ] = 4 Re(⟨∂_θ ψ|∂_θ ψ⟩ - |⟨ψ|∂_θ ψ⟩|²)",
+    "quantum_computing"
+  ],
+  [
+    "q_metro_heisenberg_limit",
+    "Heisenberg 极限",
+    "Δθ = 1/(N ΔH)",
+    "quantum_computing"
+  ],
+  [
+    "q_metro_standard_quantum_limit",
+    "标准量子极限",
+    "Δθ = 1/√N",
+    "quantum_computing"
+  ],
+  [
+    "q_metro_ghz_metroogy",
+    "GHZ 计量学",
+    "Δθ_GHZ = 1/N",
+    "quantum_computing"
+  ],
+  [
+    "q_metro_noisy_metroogy",
+    "噪声计量学",
+    "Δθ_noisy = √(γ/N)",
+    "quantum_computing"
+  ],
+  [
+    "q_metro_adaptive_metroogy",
+    "自适应计量学",
+    "θ̂_{k+1} = argmin_θ var(θ̂|data_k)",
+    "quantum_computing"
+  ],
+  [
+    "q_metro_multi_parameter",
+    "多参数计量学",
+    "cov(θ̂) ≥ F_Q^{-1}",
+    "quantum_computing"
+  ]
+]

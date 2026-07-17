@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_topo_floquet_topological_insulator",
+    "Floquet 拓扑绝缘体",
+    "H(t) = H_0 + V cos(ωt)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_higher_order_topological_insulator",
+    "高阶拓扑绝缘体",
+    "corner states, hinge states",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_fracton",
+    "分形子",
+    "H = Σ_{⟨ij⟩} Z_i Z_j + Σ_{⟨⟨ij⟩⟩} X_i X_j",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_quantum_spin_liquid",
+    "量子自旋液体",
+    "S = ln(2)/2 ≈ 0.346",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_kitaev_chain",
+    "Kitaev 链",
+    "H = -μ Σ_j c†_j c_j - t Σ_j (c†_j c_{j+1} + h.c.) + Δ Σ_j c_j c_{j+1} + h.c.",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_majorana_zero_mode",
+    "Majorana 零模",
+    "γ_j = c_j + c†_j, {γ_j, γ_k} = 2δ_{jk}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_topological_superconductor",
+    "拓扑超导体",
+    "Δ_k = Δ_0 (k_x + i k_y)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_topo_quantum_anomalous_hall",
+    "量子反常霍尔效应",
+    "σ_{xy} = (e²/h) (C_↑ - C_↓)",
+    "quantum_computing"
+  ]
+]

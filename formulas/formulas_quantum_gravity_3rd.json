@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_grav_causal_set",
+    "因果集",
+    "causet = (C, ≺), C finite partial order",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_asymptotic_safety",
+    "渐近安全",
+    "β(g) = β_0 g² + β_1 g³ + ..., β(g_*) = 0",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_induced_gravity",
+    "诱导引力",
+    "S = integral d⁴x √g (M_Pl² R/2 + Λ + L_matter)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_renormalization_group",
+    "重整化群流",
+    "μ dS/dμ = β(S)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_quantum_graphity",
+    "量子图引力",
+    "S = Σ_{⟨ij⟩} (1 - δ_{ij}) t_{ij} + h.c.",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_group_field_theory",
+    "群场论",
+    "S = integral d⁴g φ(g₁) φ(g₂) φ(g₃) φ(g₄) O(g₁,g₂,g₃,g₄)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_causal_dynamical_triangulations",
+    "因果动力三角剖分",
+    "Z = Σ_T e^{-S[T]}, T = triangulation",
+    "quantum_computing"
+  ],
+  [
+    "quantum_grav_quantum_riemannian_geometry",
+    "量子黎曼几何",
+    "ds² = g_{μν} dx^μ dx^ν, [g_{μν}(x), π^{ρσ}(y)] = i δ^{ρσ}_{μν} δ(x-y)",
+    "quantum_computing"
+  ]
+]

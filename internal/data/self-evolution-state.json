@@ -1,0 +1,39 @@
+{
+  "goals": [],
+  "learningHistory": [
+    {
+      "timestamp": "2026-06-01T03:34:38.131Z",
+      "input": "测试主题",
+      "cycleTime": 1,
+      "goalsCount": 1,
+      "improvementsCount": 3,
+      "prior_growth": 3
+    },
+    {
+      "timestamp": "2026-06-01T03:36:52.643Z",
+      "input": "测试主题",
+      "cycleTime": 1,
+      "goalsCount": 1,
+      "improvementsCount": 3,
+      "prior_growth": 4.5
+    },
+    {
+      "timestamp": "2026-06-01T23:55:43.435Z",
+      "input": "测试主题",
+      "cycleTime": 2,
+      "goalsCount": 1,
+      "improvementsCount": 3
+    }
+  ],
+  "improvementHistory": [],
+  "reflectionHistory": [],
+  "growthMetrics": {
+    "autonomy": 1.5,
+    "introspection": 22.5,
+    "growth": 4.5,
+    "authenticity": 0,
+    "wisdom": 11.5,
+    "compassion": 0.8999999999999999,
+    "_converged": false
+  }
+}

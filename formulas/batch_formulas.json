@@ -1,0 +1,266 @@
+{
+  "metadata": {
+    "version": "2.0.0",
+    "source": "Wikipedia + Manual collection",
+    "total_formulas": 32,
+    "last_updated": "2026-07-08"
+  },
+  "formulas": [
+    {
+      "id": "mathematics_0",
+      "name": "平方根公式",
+      "category": "mathematics",
+      "formula": "x = sqrt(a)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_1",
+      "name": "立方根公式",
+      "category": "mathematics",
+      "formula": "x = cbrt(a)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_2",
+      "name": "对数公式",
+      "category": "mathematics",
+      "formula": "log_a(x) = ln(x) / ln(a)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_3",
+      "name": "指数公式",
+      "category": "mathematics",
+      "formula": "a^x = e^(x*ln(a))",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_4",
+      "name": "正弦定理",
+      "category": "mathematics",
+      "formula": "a/sin(A) = b/sin(B) = c/sin(C)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_5",
+      "name": "余弦定理",
+      "category": "mathematics",
+      "formula": "c^2 = a^2 + b^2 - 2ab*cos(C)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_6",
+      "name": "正切定理",
+      "category": "mathematics",
+      "formula": "tan(A-B)/tan(A+B) = (a-b)/(a+b)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_7",
+      "name": "导数定义",
+      "category": "mathematics",
+      "formula": "f'(x) = lim(h->0) (f(x+h)-f(x))/h",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_8",
+      "name": "积分定义",
+      "category": "mathematics",
+      "formula": "∫f(x)dx = lim(n->∞) Σf(x_i)*Δx",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_9",
+      "name": "链式法则",
+      "category": "mathematics",
+      "formula": "d/dx[f(g(x))] = f'(g(x)) * g'(x)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_10",
+      "name": "乘积法则",
+      "category": "mathematics",
+      "formula": "d/dx[u*v] = u'v + uv'",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "mathematics_11",
+      "name": "商法则",
+      "category": "mathematics",
+      "formula": "d/dx[u/v] = (u'v - uv')/v^2",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_12",
+      "name": "牛顿第一定律",
+      "category": "physics",
+      "formula": "F_net = 0 => v = constant",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_13",
+      "name": "牛顿第三定律",
+      "category": "physics",
+      "formula": "F_12 = -F_21",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_14",
+      "name": "动能定理",
+      "category": "physics",
+      "formula": "W = ΔK = K_f - K_i",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_15",
+      "name": "势能公式",
+      "category": "physics",
+      "formula": "U = m*g*h",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_16",
+      "name": "动量定理",
+      "category": "physics",
+      "formula": "p = m*v",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_17",
+      "name": "动量守恒",
+      "category": "physics",
+      "formula": "Σp_before = Σp_after",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_18",
+      "name": "圆周运动向心力",
+      "category": "physics",
+      "formula": "F_c = m*v^2/r",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_19",
+      "name": "万有引力定律",
+      "category": "physics",
+      "formula": "F = G*(m1*m2)/r^2",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_20",
+      "name": "安培定律",
+      "category": "physics",
+      "formula": "∮B·dl = μ0*I_enc",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_21",
+      "name": "高斯定律",
+      "category": "physics",
+      "formula": "∮E·dA = Q_enc/ε0",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_22",
+      "name": "毕奥-萨伐尔定律",
+      "category": "physics",
+      "formula": "dB = (μ0/4π)*(I*dl×r)/r^3",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_23",
+      "name": "洛伦兹力",
+      "category": "physics",
+      "formula": "F = q*(E + v×B)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_24",
+      "name": "热力学第一定律",
+      "category": "physics",
+      "formula": "ΔU = Q - W",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_25",
+      "name": "热力学第二定律",
+      "category": "physics",
+      "formula": "ΔS >= 0",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_26",
+      "name": "熵公式",
+      "category": "physics",
+      "formula": "S = k_B*ln(W)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "physics_27",
+      "name": "热传导公式",
+      "category": "physics",
+      "formula": "Q = k*A*(T_h - T_c)/d",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "chemistry_28",
+      "name": "平衡常数",
+      "category": "chemistry",
+      "formula": "K = [C]^c[D]^d/([A]^a[B]^b)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "chemistry_29",
+      "name": "pH 公式",
+      "category": "chemistry",
+      "formula": "pH = -log10[H+]",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "chemistry_30",
+      "name": "能斯特方程",
+      "category": "chemistry",
+      "formula": "E = E° - (RT/nF)*ln(Q)",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "chemistry_31",
+      "name": "赫斯定律",
+      "category": "chemistry",
+      "formula": "ΔH_total = ΣΔH_steps",
+      "source": "Manual collection",
+      "difficulty": "beginner"
+    }
+  ]
+}

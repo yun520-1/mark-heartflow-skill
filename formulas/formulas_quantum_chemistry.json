@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_chem_hartree_fock",
+    "Hartree-Fock 方程",
+    "Fφ_i = ε_i S φ_i",
+    "quantum_computing"
+  ],
+  [
+    "quantum_chem_dft",
+    "密度泛函理论",
+    "E[ρ] = T[ρ] + V_ext[ρ] + J[ρ] + E_xc[ρ]",
+    "quantum_computing"
+  ],
+  [
+    "quantum_chem_hamiltonian",
+    "电子哈密顿量",
+    "H = -Σ_i ∇²_i/2 - Σ_i V(r_i) + Σ_{i<j} 1/|r_i-r_j|",
+    "quantum_computing"
+  ],
+  [
+    "quantum_chem_fci",
+    "全组态相互作用",
+    "|Ψ> = Σ_I C_I |I>",
+    "quantum_computing"
+  ],
+  [
+    "quantum_chem_cc",
+    "耦合簇方法",
+    "|Ψ> = exp(T)|Φ_0>",
+    "quantum_computing"
+  ],
+  [
+    "quantum_chem_mp2",
+    "二阶Møller-Pleset",
+    "E_MP2 = -Σ_{ia,jb} |⟨ij||ab⟩|² / (ε_a+ε_b-ε_i-ε_j)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_chem_basis_set",
+    "基组展开",
+    "φ_i = Σ_μ C_{μi} χ_μ",
+    "quantum_computing"
+  ],
+  [
+    "quantum_chem_pes",
+    "势能面",
+    "V(R) = E(R) - E(∞)",
+    "quantum_computing"
+  ]
+]

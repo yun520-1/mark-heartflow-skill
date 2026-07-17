@@ -1,0 +1,242 @@
+[
+  [
+    "physics_80",
+    "物理 early_universe",
+    "physics_early_universe = f(physics_early_universe_params)",
+    "physics"
+  ],
+  [
+    "physics_81",
+    "物理 dark_matter",
+    "physics_dark_matter = f(physics_dark_matter_params)",
+    "physics"
+  ],
+  [
+    "physics_82",
+    "物理 dark_energy",
+    "physics_dark_energy = f(physics_dark_energy_params)",
+    "physics"
+  ],
+  [
+    "physics_83",
+    "物理 modified_gravity",
+    "physics_modified_gravity = f(physics_modified_gravity_params)",
+    "physics"
+  ],
+  [
+    "physics_84",
+    "物理 quantum_gravity",
+    "physics_quantum_gravity = f(physics_quantum_gravity_params)",
+    "physics"
+  ],
+  [
+    "physics_85",
+    "物理 string_theory",
+    "physics_string_theory = f(physics_string_theory_params)",
+    "physics"
+  ],
+  [
+    "physics_86",
+    "物理 brane_world",
+    "physics_brane_world = f(physics_brane_world_params)",
+    "physics"
+  ],
+  [
+    "physics_87",
+    "物理 extra_dimensions",
+    "physics_extra_dimensions = f(physics_extra_dimensions_params)",
+    "physics"
+  ],
+  [
+    "physics_88",
+    "物理 supersymmetry",
+    "physics_supersymmetry = f(physics_supersymmetry_params)",
+    "physics"
+  ],
+  [
+    "physics_89",
+    "物理 supergravity",
+    "physics_supergravity = f(physics_supergravity_params)",
+    "physics"
+  ],
+  [
+    "physics_90",
+    "物理 superstrings",
+    "physics_superstrings = f(physics_superstrings_params)",
+    "physics"
+  ],
+  [
+    "physics_91",
+    "物理 M_theory",
+    "physics_M_theory = f(physics_M_theory_params)",
+    "physics"
+  ],
+  [
+    "physics_92",
+    "物理 F_theory",
+    "physics_F_theory = f(physics_F_theory_params)",
+    "physics"
+  ],
+  [
+    "physics_93",
+    "物理 AdS_CFT",
+    "physics_AdS_CFT = f(physics_AdS_CFT_params)",
+    "physics"
+  ],
+  [
+    "physics_94",
+    "物理 holographic_duality",
+    "physics_holographic_duality = f(physics_holographic_duality_params)",
+    "physics"
+  ],
+  [
+    "chemistry_95",
+    "化学 organic",
+    "chemistry_organic = f(chemistry_organic_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_96",
+    "化学 inorganic",
+    "chemistry_inorganic = f(chemistry_inorganic_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_97",
+    "化学 physical_chem",
+    "chemistry_physical_chem = f(chemistry_physical_chem_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_98",
+    "化学 analytical",
+    "chemistry_analytical = f(chemistry_analytical_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_99",
+    "化学 biochemistry",
+    "chemistry_biochemistry = f(chemistry_biochemistry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_100",
+    "化学 polymer",
+    "chemistry_polymer = f(chemistry_polymer_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_101",
+    "化学 materials",
+    "chemistry_materials = f(chemistry_materials_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_102",
+    "化学 nanochemistry",
+    "chemistry_nanochemistry = f(chemistry_nanochemistry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_103",
+    "化学 theoretical_chem",
+    "chemistry_theoretical_chem = f(chemistry_theoretical_chem_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_104",
+    "化学 computational_chem",
+    "chemistry_computational_chem = f(chemistry_computational_chem_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_105",
+    "化学 spectroscopy",
+    "chemistry_spectroscopy = f(chemistry_spectroscopy_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_106",
+    "化学 electrochemistry",
+    "chemistry_electrochemistry = f(chemistry_electrochemistry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_107",
+    "化学 photochemistry",
+    "chemistry_photochemistry = f(chemistry_photochemistry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_108",
+    "化学 surface_chem",
+    "chemistry_surface_chem = f(chemistry_surface_chem_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_109",
+    "化学 catalysis",
+    "chemistry_catalysis = f(chemistry_catalysis_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_110",
+    "化学 green_chem",
+    "chemistry_green_chem = f(chemistry_green_chem_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_111",
+    "化学 medicinal_chem",
+    "chemistry_medicinal_chem = f(chemistry_medicinal_chem_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_112",
+    "化学 pharmaceutical",
+    "chemistry_pharmaceutical = f(chemistry_pharmaceutical_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_113",
+    "化学 neurochemistry",
+    "chemistry_neurochemistry = f(chemistry_neurochemistry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_114",
+    "化学 immunochemistry",
+    "chemistry_immunochemistry = f(chemistry_immunochemistry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_115",
+    "化学 genomics",
+    "chemistry_genomics = f(chemistry_genomics_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_116",
+    "化学 proteomics",
+    "chemistry_proteomics = f(chemistry_proteomics_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_117",
+    "化学 metabolomics",
+    "chemistry_metabolomics = f(chemistry_metabolomics_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_118",
+    "化学 bioinformatics",
+    "chemistry_bioinformatics = f(chemistry_bioinformatics_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_119",
+    "化学 systems_biology",
+    "chemistry_systems_biology = f(chemistry_systems_biology_params)",
+    "chemistry"
+  ]
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "id": "quantum_algo_deutsch",
+    "name": "Deutsch 算法",
+    "formula": "P(0) = 1 if f(0) = f(1), else P(1) = 1",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_algo_deutsch_jozsa",
+    "name": "Deutsch-Jozsa 算法",
+    "formula": "P(正确) = 1 if f is constant or balanced",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_algo_grover",
+    "name": "Grover 算法",
+    "formula": "N_iter = floor((π/4)*sqrt(N/k))",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_algo_grover_success",
+    "name": "Grover 成功概率",
+    "formula": "P(成功) = sin²((2m+1)*θ/2)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_algo_shor",
+    "name": "Shor 算法（周期查找）",
+    "formula": "r = period of f(x) = aˣ mod N",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_algo_shor_order",
+    "name": "Shor 算法（阶查找）",
+    "formula": "aʳ ≡ 1 mod N",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_algo_vqe",
+    "name": "VQE 算法",
+    "formula": "E₀ = min(⟨ψ(θ)|H|ψ(θ)⟩)",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_algo_vqe_energy",
+    "name": "VQE 能量期望",
+    "formula": "E(θ) = Σᵢ λᵢ |cᵢ(θ)|²",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_algo_qaoa",
+    "name": "QAOA 算法",
+    "formula": "|γ, β⟩ = Πₖ exp(-iβₖH_B) exp(-iγₖH_C)|+⟩",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_algo_qaoa_cost",
+    "name": "QAOA 代价函数",
+    "formula": "F(γ, β) = ⟨γ, β|H_C|γ, β⟩",
+    "category": "quantum_computing"
+  },
+  {
+    "id": "quantum_algo_hhl",
+    "name": "HHL 算法",
+    "formula": "|x⟩ ≈ Σⱼ (λⱼ⁻¹ ⟨uⱼ|b⟩)|uⱼ⟩",
+    "category": "quantum_computing"
+  }
+]

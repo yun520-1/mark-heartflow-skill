@@ -1,0 +1,1861 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "source": "wikipedia_batch_new",
+    "generated": "2026-07-09",
+    "total_formulas": 230,
+    "subcategories": [
+      "mathematical_analysis",
+      "linear_algebra",
+      "combinatorics",
+      "differential_geometry",
+      "complex_analysis",
+      "ordinary_differential_equations",
+      "partial_differential_equations",
+      "information_theory"
+    ],
+    "validation": "basic_syntax_check"
+  },
+  "formulas": [
+    {
+      "id": "wiki_analysis_taylor_expansion",
+      "name": "泰勒展开",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "f(x) = f(a) + f'(a)*(x-a) + f''(a)*(x-a)^2/2! + f'''(a)*(x-a)^3/3!",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_maclaurin_series",
+      "name": "麦克劳林级数",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "f(x) = f(0) + f'(0)*x + f''(0)*x^2/2! + f'''(0)*x^3/3!",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_taylor_remainder_lagrange",
+      "name": "泰勒余项(拉格朗日型)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "R_n(x) = f^(n+1)(c)*(x-a)^(n+1)/(n+1)!",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_taylor_remainder_integral",
+      "name": "泰勒余项(积分型)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "R_n(x) = integral(f^(n+1)(t)*(x-t)^n/n!, t, a, x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_lophospital_rule_0_0",
+      "name": "洛必达法则(0/0型)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "lim(f(x)/g(x)) = lim(f'(x)/g'(x))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_lophospital_rule_inf_inf",
+      "name": "洛必达法则(∞/∞型)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "lim(f(x)/g(x)) = lim(f'(x)/g'(x))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_cauchy_integral_formula",
+      "name": "柯西积分公式",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "f(z_0) = (1/(2*pi*i)) * integral(f(z)/(z-z_0), z, C)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_cauchy_integral_derivative",
+      "name": "柯西积分导数公式",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "f^(n)(z_0) = (n!/(2*pi*i)) * integral(f(z)/(z-z_0)^(n+1), z, C)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_cauchy_integral_theorem",
+      "name": "柯西积分定理",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "integral(f(z), z, C) = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_residue_theorem",
+      "name": "留数定理",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "integral(f(z), z, C) = 2*pi*i * sum(Res(f, z_k))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_residue_simple_pole",
+      "name": "简单极点留数",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "Res(f, z_0) = lim(z->z_0) (z-z_0)*f(z)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_residue_order_m",
+      "name": "m阶极点留数",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "Res(f, z_0) = (1/(m-1)!) * lim(d^(m-1)/dz^(m-1)) ((z-z_0)^m * f(z))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_ratio_test",
+      "name": "比值判别法(达朗贝尔)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "lim(a_(n+1)/a_n) < 1 => 收敛",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_root_test",
+      "name": "根值判别法(柯西)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "lim(a_n^(1/n)) < 1 => 收敛",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_integral_test",
+      "name": "积分判别法",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "sum(a_n)收敛 <=> integral(f(x), x, 1, inf)收敛",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_comparison_test",
+      "name": "比较判别法",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "0 <= a_n <= b_n 且 sum(b_n)收敛 => sum(a_n)收敛",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_leibniz_alternating_test",
+      "name": "莱布尼茨交错级数判别法",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "a_n单调递减且lim(a_n)=0 => sum((-1)^n*a_n)收敛",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_dirichlet_test",
+      "name": "狄利克雷判别法",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "a_n单调趋于0, sum(b_n)部分和有界 => sum(a_n*b_n)收敛",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_abel_test",
+      "name": "阿贝尔判别法",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "sum(b_n)收敛, a_n单调有界 => sum(a_n*b_n)收敛",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_weierstrass_m_test",
+      "name": "魏尔斯特拉斯M判别法",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "|f_n(x)| <= M_n 且 sum(M_n)收敛 => sum(f_n(x))一致收敛",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_power_series_radius",
+      "name": "幂级数收敛半径",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "R = 1/limsup(a_n^(1/n))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_euler_series",
+      "name": "欧拉级数(巴塞尔问题)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "sum(1/n^2) = pi^2/6",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_fourier_series",
+      "name": "傅里叶级数",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "f(x) = a_0/2 + sum(a_n*cos(n*x) + b_n*sin(n*x))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_fourier_coefficient_a",
+      "name": "傅里叶系数a_n",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "a_n = (1/pi) * integral(f(x)*cos(n*x), x, -pi, pi)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_fourier_coefficient_b",
+      "name": "傅里叶系数b_n",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "b_n = (1/pi) * integral(f(x)*sin(n*x), x, -pi, pi)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_parseval_theorem",
+      "name": "帕塞瓦尔定理",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "(1/pi)*integral(f(x)^2, x, -pi, pi) = a_0^2/2 + sum(a_n^2 + b_n^2)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_riemann_integral_def",
+      "name": "黎曼积分定义",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "integral(f(x), x, a, b) = lim(sum(f(x_i)*delta_x))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_mean_value_theorem_integral",
+      "name": "积分中值定理",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "integral(f(x), x, a, b) = f(c)*(b-a)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_fundamental_theorem_calculus_1",
+      "name": "微积分基本定理(第一基本定理)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "d/dx integral(f(t), t, a, x) = f(x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_fundamental_theorem_calculus_2",
+      "name": "微积分基本定理(第二基本定理)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "integral(f(x), x, a, b) = F(b) - F(a)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_determinant_2x2",
+      "name": "二阶行列式",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "det(A) = a11*a22 - a12*a21",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_determinant_3x3",
+      "name": "三阶行列式(萨吕法则)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "det(A) = a11*a22*a33 + a12*a23*a31 + a13*a21*a32 - a13*a22*a31 - a12*a21*a33 - a11*a23*a32",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_determinant_laplace",
+      "name": "拉普拉斯展开",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "det(A) = sum(a_ij*C_ij)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_determinant_product",
+      "name": "行列式乘法性质",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "det(A*B) = det(A)*det(B)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_determinant_transpose",
+      "name": "行列式转置性质",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "det(A^T) = det(A)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_determinant_inverse",
+      "name": "行列式逆矩阵性质",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "det(A^(-1)) = 1/det(A)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_characteristic_polynomial",
+      "name": "特征多项式",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "det(A - lambda*I) = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_eigenvalue_definition",
+      "name": "特征值定义",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "A*v = lambda*v",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_trace_eigenvalues",
+      "name": "迹与特征值关系",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "tr(A) = sum(lambda_i)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_det_eigenvalues",
+      "name": "行列式与特征值关系",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "det(A) = product(lambda_i)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_cayley_hamilton",
+      "name": "凯莱-哈密顿定理",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "p(A) = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_spectral_decomposition",
+      "name": "谱分解定理",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "A = sum(lambda_i * v_i * v_i^T)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_svd_decomposition",
+      "name": "奇异值分解",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "A = U * Sigma * V^T",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_svd_singular_values",
+      "name": "奇异值定义",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "sigma_i = sqrt(lambda_i(A^T*A))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_svd_relation",
+      "name": "奇异值与特征值关系",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "A^T*A*v_i = sigma_i^2 * v_i",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_qr_decomposition",
+      "name": "QR分解",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "A = Q*R",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_lu_decomposition",
+      "name": "LU分解",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "A = L*U",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_cholesky_decomposition",
+      "name": "Cholesky分解",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "A = L*L^T",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_gram_schmidt",
+      "name": "Gram-Schmidt正交化",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "u_i = v_i - sum(proj(u_j, v_i))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_projection_formula",
+      "name": "投影公式",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "proj_u(v) = (v*u)/(u*u) * u",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_orthogonality_condition",
+      "name": "正交条件",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "u*v = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_matrix_norm_frobenius",
+      "name": "Frobenius范数",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "||A||_F = sqrt(sum(a_ij^2))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_matrix_norm_spectral",
+      "name": "谱范数",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "||A||_2 = sigma_max(A)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_condition_number",
+      "name": "条件数",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "kappa(A) = ||A|| * ||A^(-1)||",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_rank_nullity",
+      "name": "秩-零化度定理",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "rank(A) + nullity(A) = n",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_positive_definite",
+      "name": "正定矩阵判定",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "x^T*A*x > 0 => A正定",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_matrix_exponential",
+      "name": "矩阵指数",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "exp(A) = sum(A^n/n!)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_neumann_series",
+      "name": "诺伊曼级数",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "(I-A)^(-1) = sum(A^n)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_jacobi_formula",
+      "name": "雅可比公式",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "d/dt det(A(t)) = det(A(t)) * tr(A^(-1)*dA/dt)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_linalg_matrix_derivative_trace",
+      "name": "迹的矩阵导数",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "d/dX tr(X*A) = A^T",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_permutation",
+      "name": "排列数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "P(n,k) = n!/(n-k)!",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_combination",
+      "name": "组合数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "C(n,k) = n!/(k!*(n-k)!)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_permutation_with_repetition",
+      "name": "可重复排列",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "P_rep(n,k) = n^k",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_combination_with_repetition",
+      "name": "可重复组合",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "C(n+k-1, k) = (n+k-1)!/(k!*(n-1)!)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_multinomial_coefficient",
+      "name": "多项式系数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "M(n;k1,...,km) = n!/(k1!*k2!*...*km!)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_multinomial_theorem",
+      "name": "多项式定理",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "(x1+x2+...+xm)^n = sum(n!/(k1!*...*km!)*x1^k1*...*xm^km)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_binomial_theorem",
+      "name": "二项式定理",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "(a+b)^n = sum(C(n,k)*a^k*b^(n-k))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_pascal_identity",
+      "name": "帕斯卡恒等式",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "C(n,k) = C(n-1,k-1) + C(n-1,k)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_vandermonde_identity",
+      "name": "范德蒙恒等式",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "C(m+n, r) = sum(C(m,i)*C(n,r-i))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_stirling_first_kind",
+      "name": "第一类斯特林数(无符号)",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "s(n,k) = s(n-1,k-1) + (n-1)*s(n-1,k)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_stirling_first_signed",
+      "name": "第一类斯特林数(有符号)",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "S1(n,k) = (-1)^(n-k)*s(n,k)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_stirling_second_kind",
+      "name": "第二类斯特林数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "S(n,k) = S(n-1,k-1) + k*S(n-1,k)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_stirling_second_explicit",
+      "name": "第二类斯特林数显式",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "S(n,k) = (1/k!)*sum((-1)^(k-j)*C(k,j)*j^n)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_stirling_approximation",
+      "name": "斯特林近似",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "n! ~ sqrt(2*pi*n)*(n/exp(1))^n => log(n!) = n*log(n) - n",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_catalan_number",
+      "name": "卡特兰数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "C_n = C(2n,n)/(n+1)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_catalan_recurrence",
+      "name": "卡特兰数递推",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "C_n = sum(C_i*C_(n-1-i))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_catalan_explicit",
+      "name": "卡特兰数显式",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "C_n = (2n)!/((n+1)!*n!)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_generating_function_catalan",
+      "name": "卡特兰数生成函数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "C(x) = (1-sqrt(1-4*x))/(2*x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_generating_function_combination",
+      "name": "组合数生成函数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "(1+x)^n = sum(C(n,k)*x^k)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_generating_function_exponential",
+      "name": "指数生成函数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "exp(x) = sum(x^n/n!)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_generating_function_fibonacci",
+      "name": "斐波那契生成函数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "F(x) = x/(1-x-x^2)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_inclusion_exclusion_2",
+      "name": "容斥原理(两集)",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "|A+B| = |A| + |B| - |A*B|",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_inclusion_exclusion_3",
+      "name": "容斥原理(三集)",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "|A+B+C| = |A|+|B|+|C|-|A*B|-|A*C|-|B*C|+|A*B*C|",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_inclusion_exclusion_general",
+      "name": "容斥原理(一般)",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "|A1+...+An| = sum(|Ai|) - sum(|Ai*Aj|) + ... + (-1)^(n+1)*|A1*...*An|",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_derangement",
+      "name": "错排数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "D_n = n!*sum((-1)^k/k!)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_derangement_recurrence",
+      "name": "错排数递推",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "D_n = (n-1)*(D_(n-1)+D_(n-2))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_bell_number",
+      "name": "贝尔数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "B_n = sum(S(n,k))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_bell_number_recurrence",
+      "name": "贝尔数递推",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "B_(n+1) = sum(C(n,k)*B_k)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_partition_function",
+      "name": "整数分拆数递推",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "p(n) = sum((-1)^(k+1)*p(n-k*(3k-1)/2))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_comb_euler_totient",
+      "name": "欧拉函数",
+      "category": "mathematics",
+      "subcategory": "combinatorics",
+      "formula": "phi(n) = n*product(1-1/p)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_diffgeo_geodesic_equation",
+      "name": "测地线方程",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "d^2(x^k)/dt^2 + Gamma^k_ij * dx^i/dt * dx^j/dt = 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_christoffel_symbol",
+      "name": "克里斯托费尔符号",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "Gamma^k_ij = (1/2)*g^kl*(g_li,j + g_lj,i - g_ij,l)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_riemann_curvature_tensor",
+      "name": "黎曼曲率张量",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "R^l_ijk = Gamma^l_im*Gamma^m_jk - Gamma^l_jm*Gamma^m_ik + dGamma^l_ik/dx^j - dGamma^l_jk/dx^i",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_ricci_tensor",
+      "name": "里奇张量",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "R_ij = R^k_ikj",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_scalar_curvature",
+      "name": "标量曲率",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "R = g^ij*R_ij",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_gauss_curvature",
+      "name": "高斯曲率",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "K = R_1212/g",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_gauss_theorema_egraium",
+      "name": "高斯绝妙定理",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "K = (R_1212)/(g_11*g_22 - g_12^2)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_mean_curvature",
+      "name": "平均曲率",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "H = (k1 + k2)/2",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_principal_curvature",
+      "name": "主曲率",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "k1*k2 = K",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_first_fundamental_form",
+      "name": "第一基本形式",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "I = E*du^2 + 2*F*du*dv + G*dv^2",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_second_fundamental_form",
+      "name": "第二基本形式",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "II = L*du^2 + 2*M*du*dv + N*dv^2",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_gauss_equation",
+      "name": "高斯方程",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "R_ijkl = K*(g_ik*g_jl - g_il*g_jk)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_codazzi_equation",
+      "name": "科达齐方程",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "L_jk - L_kj = 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_connection_form",
+      "name": "联络形式",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "omega^i_j = Gamma^i_jk*dx^k",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_cartan_structure_eq_1",
+      "name": "嘉当第一结构方程",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "T^i = d(theta^i) + omega^i_j*theta^j",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_cartan_structure_eq_2",
+      "name": "嘉当第二结构方程",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "Omega^i_j = d(omega^i_j) + omega^i_k*omega^k_j",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_exterior_derivative",
+      "name": "外微分",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "d(omega) = d(a_I)*dx^I",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_stokes_theorem",
+      "name": "斯托克斯定理",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "integral(d*omega) = integral(omega)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_bianchi_identity_1",
+      "name": "比安基恒等式(第一)",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "d(R^i_j) + omega^i_k*R^k_j - R^i_k*omega^k_j = 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_bianchi_identity_2",
+      "name": "比安基恒等式(第二)",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "R^l_ijk + R^l_jki + R^l_kij = 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_lie_bracket",
+      "name": "李括号",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "[X,Y] = X*Y - Y*X",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_covariant_derivative",
+      "name": "协变导数",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "nabla_X Y = X(Y^k)*e_k + Y^k*nabla_X(e_k)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_parallel_transport",
+      "name": "平行移动",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "nabla_(dgamma/dt) V = 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_fiber_bundle_transition",
+      "name": "纤维丛转换函数",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "g_ij * g_jk = g_ik",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_pullback",
+      "name": "拉回映射",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "f^*(omega)(v1,...,vk) = omega(f_*v1,...,f_*vk)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_volume_form",
+      "name": "体积形式",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "dV = sqrt(det(g))*dx^1*...*dx^n",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_weingarten_equation",
+      "name": "魏因加滕方程",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "dN = -S*dx",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_diffgeo_euler_formula_curvature",
+      "name": "欧拉曲率公式",
+      "category": "mathematics",
+      "subcategory": "differential_geometry",
+      "formula": "k_n = k1*cos^2(theta) + k2*sin^2(theta)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_cauchy_riemann_cartesian",
+      "name": "柯西-黎曼方程(直角坐标)",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "du/dx = dv/dy, du/dy = -dv/dx",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_cauchy_riemann_polar",
+      "name": "柯西-黎曼方程(极坐标)",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "du/dr = (1/r)*dv/dtheta, dv/dr = -(1/r)*du/dtheta",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_analytic_condition",
+      "name": "解析函数条件",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f(z) = u(x,y) + i*v(x,y) 满足柯西-黎曼方程",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_complex_derivative",
+      "name": "复导数定义",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f'(z_0) = lim(f(z)-f(z_0))/(z-z_0)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_holomorphic_power_series",
+      "name": "全纯函数幂级数",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f(z) = sum(a_n*(z-z_0)^n)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_analytic_continuation_identity",
+      "name": "解析延拓恒等定理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f = g on D => f = g on Omega",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_schwarz_reflection",
+      "name": "施瓦茨反射原理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f(z_bar) = f(z)_bar",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_laurent_series",
+      "name": "洛朗级数",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f(z) = sum(a_n*(z-z_0)^n, n=-inf, inf)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_laurent_coefficient",
+      "name": "洛朗系数",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "a_n = (1/(2*pi*i))*integral(f(z)/(z-z_0)^(n+1), z, C)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_principal_part",
+      "name": "主部(洛朗级数负幂项)",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "sum(a_n*(z-z_0)^n, n=-inf, -1)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_argument_principle",
+      "name": "辐角原理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "N - P = (1/(2*pi*i))*integral(f'(z)/f(z), z, C)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_rouche_theorem",
+      "name": "儒歇定理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "|g(z)|<|f(z)| on C => f+g与f有相同零点数",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_maximum_modulus",
+      "name": "最大模原理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "|f(z)| <= max(|f(z)|) on boundary D",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_minimum_modulus",
+      "name": "最小模原理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f无零点 => |f(z)| >= min(|f(z)|) on boundary D",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_liouville_theorem",
+      "name": "刘维尔定理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f有界且全纯 => f为常数",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_morera_theorem",
+      "name": "莫雷拉定理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "integral(f(z), z, C) = 0 for all C => f全纯",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_fundamental_theorem_algebra",
+      "name": "代数基本定理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "a_n*z^n + ... + a_0 = 0 有n个复根(计重数)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_open_mapping_theorem",
+      "name": "开映射定理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f非常数全纯 => f为开映射",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_conformal_mapping",
+      "name": "保角映射条件",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f'(z_0) != 0 => f在z_0保角",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_riemann_mapping_theorem",
+      "name": "黎曼映射定理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "D为单连通非全平面 => 存在双全纯映射f:D->单位圆盘",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_schwarz_lemma",
+      "name": "施瓦茨引理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f:D->D, f(0)=0 => |f(z)|<=|z|, |f'(0)|<=1",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_schwarz_christoffel",
+      "name": "施瓦茨-克里斯托费尔映射",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f(z) = A*integral(product((t-x_k)^(alpha_k-1)), t, z0, z) + B",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_weierstrass_factorization",
+      "name": "魏尔斯特拉斯分解",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f(z) = z^m * exp(g(z)) * product(E_n(z/a_k))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_jensen_formula",
+      "name": "詹森公式",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "log|f(0)| = sum(log(r/|a_k|)) - (1/(2*pi))*integral(log|f(r*exp(i*theta))|, theta, 0, 2*pi)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_poisson_integral",
+      "name": "泊松积分公式",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f(z) = (1/(2*pi))*integral(f(exp(i*t))*(1-|z|^2)/|exp(i*t)-z|^2, t, 0, 2*pi)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_phragmen_lindelof",
+      "name": "弗拉格门-林德洛夫原理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f在带状区域有界 => f在全区域有界",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_montel_theorem",
+      "name": "蒙泰尔定理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f_n正规族 => 存在一致收敛子列",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_hurwitz_theorem",
+      "name": "赫尔维茨定理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f_n一致收敛于f, f_n无零点 => f恒为零或无零点",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_ode_first_order_linear",
+      "name": "一阶线性ODE",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "y' + P(x)*y = Q(x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_first_order_linear_solution",
+      "name": "一阶线性ODE通解",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "y = exp(-integral(P))*[integral(Q*exp(integral(P))) + C]",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_separable_ode",
+      "name": "可分离变量ODE",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "y' = f(x)*g(y) => dy/g(y) = f(x)*dx",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_exact_ode",
+      "name": "恰当ODE",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "M*dx + N*dy = 0, dM/dy = dN/dx",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_exact_ode_solution",
+      "name": "恰当ODE通解",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "F(x,y) = C, dF/dx = M, dF/dy = N",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_integrating_factor",
+      "name": "积分因子",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "mu*(M*dx + N*dy) = 0 为恰当方程",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_bernoulli_ode",
+      "name": "伯努利方程",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "y' + P(x)*y = Q(x)*y^n",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_bernoulli_solution",
+      "name": "伯努利方程解法",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "z = y^(1-n), z' + (1-n)*P*z = (1-n)*Q",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_riccati_ode",
+      "name": "黎卡提方程",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "y' = P(x)*y^2 + Q(x)*y + R(x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_riccati_reduction",
+      "name": "黎卡提方程降阶",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "y = y_p + 1/v => v' + (2*P*y_p+Q)*v = -P",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_homogeneous_ode",
+      "name": "齐次ODE",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "y' = f(y/x), 令v=y/x => v+x*v'=f(v)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_second_order_linear_homogeneous",
+      "name": "二阶线性齐次ODE",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "y'' + P(x)*y' + Q(x)*y = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_second_order_constant_coeff",
+      "name": "二阶常系数齐次ODE",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "y'' + a*y' + b*y = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_characteristic_equation",
+      "name": "特征方程",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "r^2 + a*r + b = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_euler_equation",
+      "name": "欧拉方程",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "x^2*y'' + a*x*y' + b*y = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_variation_of_parameters",
+      "name": "常数变易法",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "y_p = -y1*integral(y2*g/W) + y2*integral(y1*g/W)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_wronskian",
+      "name": "朗斯基行列式",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "W(y1,y2) = y1*y2' - y1'*y2",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_wronskian_abel",
+      "name": "阿贝尔恒等式",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "W(x) = W(x0)*exp(-integral(P))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_laplace_transform_def",
+      "name": "拉普拉斯变换定义",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "L(f) = integral(f(t)*exp(-s*t), t, 0, inf)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_laplace_derivative",
+      "name": "拉普拉斯变换导数性质",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "L(f') = s*L(f) - f(0)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_laplace_second_derivative",
+      "name": "拉普拉斯变换二阶导数",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "L(f'') = s^2*L(f) - s*f(0) - f'(0)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_laplace_convolution",
+      "name": "拉普拉斯变换卷积定理",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "L(f*g) = L(f)*L(g)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_inverse_laplace",
+      "name": "逆拉普拉斯变换",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "f(t) = (1/(2*pi*i))*integral(F(s)*exp(s*t), s, c-i*inf, c+i*inf)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_stability_eigenvalue",
+      "name": "稳定性特征值判据",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "Re(lambda_i) < 0 => 渐近稳定",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_lyapunov_stability",
+      "name": "李雅普诺夫稳定性",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "dV/dt < 0 => 渐近稳定",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_bifurcation_saddle_node",
+      "name": "鞍结分岔",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "dx/dt = mu - x^2",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_bifurcation_hopf",
+      "name": "霍普夫分岔",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "dx/dt = mu*x - y - x*(x^2+y^2), dy/dt = x + mu*y - y*(x^2+y^2)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_phase_portrait_node",
+      "name": "相图结点条件",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "tr(A)^2 > 4*det(A) => 结点",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_pde_wave_equation_1d",
+      "name": "一维波动方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "d^2*u/dt^2 = c^2 * d^2*u/dx^2",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_wave_equation_3d",
+      "name": "三维波动方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "d^2*u/dt^2 = c^2 * laplacian(u)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_wave_dalembert_solution",
+      "name": "达朗贝尔解",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "u(x,t) = f(x-ct)/2 + g(x+ct)/2",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_heat_equation_1d",
+      "name": "一维热传导方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "du/dt = alpha * d^2*u/dx^2",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_heat_equation_3d",
+      "name": "三维热传导方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "du/dt = alpha * laplacian(u)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_heat_fundamental_solution",
+      "name": "热传导基本解",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "u(x,t) = (1/sqrt(4*pi*alpha*t))*exp(-x^2/(4*alpha*t))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_laplace_equation",
+      "name": "拉普拉斯方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "laplacian(u) = 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_laplace_separation_cartesian",
+      "name": "拉普拉斯方程分离变量(直角坐标)",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "X''(x)/X + Y''(y)/Y = 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_laplace_separation_polar",
+      "name": "拉普拉斯方程分离变量(极坐标)",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "r^2*R''/R + r*R'/R = -Theta''/Theta = n^2",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_poisson_equation",
+      "name": "泊松方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "laplacian(u) = f(x)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_poisson_green_function",
+      "name": "泊松方程格林函数解",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "u(x) = integral(G(x,y)*f(y), y)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_green_function_laplace_3d",
+      "name": "三维拉普拉斯格林函数",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "G(x,y) = -1/(4*pi*|x-y|)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_green_function_laplace_2d",
+      "name": "二维拉普拉斯格林函数",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "G(x,y) = (1/(2*pi))*log(|x-y|)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_separation_of_variables",
+      "name": "分离变量法",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "u(x,t) = X(x)*T(t)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_fourier_method",
+      "name": "傅里叶方法",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "u(x,t) = sum(B_n*sin(n*pi*x/L)*exp(-alpha*n^2*pi^2*t/L^2))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_eigenvalue_problem_sturm",
+      "name": "施图姆-刘维尔特征值问题",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "-d/dx(p*dy/dx) + q*y = lambda*w*y",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_maximum_principle_elliptic",
+      "name": "椭圆方程极值原理",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "laplacian(u) >= 0 => u在边界取最大值",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_maximum_principle_parabolic",
+      "name": "抛物方程极值原理",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "du/dt - laplacian(u) >= 0 => u在抛物边界取最大值",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_energy_estimate_wave",
+      "name": "波动方程能量估计",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "E(t) = integral((du/dt)^2 + c^2*(du/dx)^2, x) = E(0)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_energy_estimate_heat",
+      "name": "热传导方程能量估计",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "d/dt integral(u^2) = -2*alpha*integral((du/dx)^2)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_well_posedness",
+      "name": "适定性条件",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "适定PDE = 存在性 + 唯一性 + 稳定性",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_characteristic_curve",
+      "name": "特征线法",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "dx/dt = a(x,t,u), du/dt = f(x,t,u)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_burgers_equation",
+      "name": "伯格斯方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "du/dt + u*du/dx = nu*d^2*u/dx^2",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_navier_stokes_1d",
+      "name": "一维纳维-斯托克斯简化",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "du/dt + u*du/dx = -dp/dx + nu*d^2*u/dx^2",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_schrödinger_equation",
+      "name": "薛定谔方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "i*hbar*du/dt = -hbar^2/(2m)*d^2*u/dx^2 + V*u",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_helmholtz_equation",
+      "name": "亥姆霍兹方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "laplacian(u) + k^2*u = 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_biharmonic_equation",
+      "name": "双调和方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "laplacian(laplacian(u)) = 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_transport_equation",
+      "name": "输运方程",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "du/dt + v*du/dx = 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_info_shannon_entropy_discrete",
+      "name": "香农熵(离散)",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H(X) = -sum(p(x)*log2(p(x)))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_shannon_entropy_continuous",
+      "name": "微分熵(连续)",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "h(X) = -integral(p(x)*log(p(x)), x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_joint_entropy",
+      "name": "联合熵",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H(X,Y) = -sum(p(x,y)*log2(p(x,y)))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_conditional_entropy",
+      "name": "条件熵",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H(Y|X) = -sum(p(x,y)*log2(p(y|x)))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_entropy_chain_rule",
+      "name": "熵链式法则",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H(X,Y) = H(X) + H(Y|X)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_mutual_information",
+      "name": "互信息",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "I(X;Y) = sum(p(x,y)*log2(p(x,y)/(p(x)*p(y))))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_mutual_information_entropy",
+      "name": "互信息与熵关系",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "I(X;Y) = H(X) - H(X|Y) = H(Y) - H(Y|X)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_mutual_information_symmetry",
+      "name": "互信息对称性",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "I(X;Y) = I(Y;X)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_conditional_mutual_information",
+      "name": "条件互信息",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "I(X;Y|Z) = sum(p(x,y,z)*log2(p(x,y|z)/(p(x|z)*p(y|z))))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_channel_capacity_discrete",
+      "name": "离散信道容量",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "C = max(I(X;Y))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_channel_capacity_awgn",
+      "name": "AWGN信道容量",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "C = B*log2(1 + S/N)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_shannon_hartley_theorem",
+      "name": "香农-哈特利定理",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "C = B*log2(1 + P/(N0*B))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_kl_divergence",
+      "name": "KL散度",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "D_KL(P||Q) = sum(P(x)*log2(P(x)/Q(x)))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_kl_divergence_continuous",
+      "name": "KL散度(连续)",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "D_KL(P||Q) = integral(P(x)*log(P(x)/Q(x)), x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_kl_divergence_nonnegativity",
+      "name": "KL散度非负性",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "D_KL(P||Q) >= 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_kl_divergence_asymmetry",
+      "name": "KL散度非对称性",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "D_KL(P||Q) != D_KL(Q||P)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_cross_entropy",
+      "name": "交叉熵",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H(P,Q) = -sum(P(x)*log2(Q(x)))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_cross_entropy_kl_relation",
+      "name": "交叉熵与KL散度关系",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H(P,Q) = H(P) + D_KL(P||Q)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_js_divergence",
+      "name": "JS散度",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "D_JS(P||Q) = (1/2)*D_KL(P||M) + (1/2)*D_KL(Q||M), M=(P+Q)/2",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_rate_distortion_function",
+      "name": "率失真函数",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "R(D) = min(I(X;X_hat))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_rate_distortion_bound",
+      "name": "率失真下界",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "R(D) >= H(X) - H(X|X_hat)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_data_processing_inequality",
+      "name": "数据处理不等式",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "X->Y->Z => I(X;Z) <= I(X;Y)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_fano_inequality",
+      "name": "法诺不等式",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H(X|Y) <= H(Pe) + Pe*log2(|X|-1)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_source_coding_theorem",
+      "name": "信源编码定理",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "L >= H(X), 存在编码使L < H(X)+1",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_channel_coding_theorem",
+      "name": "信道编码定理",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "R < C => 存在编码使Pe->0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_entropy_power_inequality",
+      "name": "熵幂不等式",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "exp(2*h(X+Y)) >= exp(2*h(X)) + exp(2*h(Y))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_reyi_entropy",
+      "name": "Renyi熵",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H_alpha(X) = (1/(1-alpha))*log2(sum(p(x)^alpha))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_tsallis_entropy",
+      "name": "Tsallis熵",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "S_q(X) = (1/(q-1))*(1 - sum(p(x)^q))",
+      "difficulty": "intermediate"
+    }
+  ]
+}

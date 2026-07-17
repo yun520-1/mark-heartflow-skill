@@ -1,0 +1,242 @@
+[
+  [
+    "cs_160",
+    "计算机科学 edge_computing",
+    "cs_edge_computing = f(cs_edge_computing_params)",
+    "computer_science"
+  ],
+  [
+    "cs_161",
+    "计算机科学 cloud_computing",
+    "cs_cloud_computing = f(cs_cloud_computing_params)",
+    "computer_science"
+  ],
+  [
+    "cs_162",
+    "计算机科学 big_data",
+    "cs_big_data = f(cs_big_data_params)",
+    "computer_science"
+  ],
+  [
+    "cs_163",
+    "计算机科学 data_mining",
+    "cs_data_mining = f(cs_data_mining_params)",
+    "computer_science"
+  ],
+  [
+    "cs_164",
+    "计算机科学 pattern_recognition",
+    "cs_pattern_recognition = f(cs_pattern_recognition_params)",
+    "computer_science"
+  ],
+  [
+    "cs_165",
+    "计算机科学 neural_networks",
+    "cs_neural_networks = f(cs_neural_networks_params)",
+    "computer_science"
+  ],
+  [
+    "cs_166",
+    "计算机科学 deep_learning",
+    "cs_deep_learning = f(cs_deep_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_167",
+    "计算机科学 reinforcement_learning",
+    "cs_reinforcement_learning = f(cs_reinforcement_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_168",
+    "计算机科学 supervised_learning",
+    "cs_supervised_learning = f(cs_supervised_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_169",
+    "计算机科学 unsupervised_learning",
+    "cs_unsupervised_learning = f(cs_unsupervised_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_170",
+    "计算机科学 semi_supervised",
+    "cs_semi_supervised = f(cs_semi_supervised_params)",
+    "computer_science"
+  ],
+  [
+    "cs_171",
+    "计算机科学 transfer_learning",
+    "cs_transfer_learning = f(cs_transfer_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_172",
+    "计算机科学 meta_learning",
+    "cs_meta_learning = f(cs_meta_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_173",
+    "计算机科学 few_shot",
+    "cs_few_shot = f(cs_few_shot_params)",
+    "computer_science"
+  ],
+  [
+    "cs_174",
+    "计算机科学 zero_shot",
+    "cs_zero_shot = f(cs_zero_shot_params)",
+    "computer_science"
+  ],
+  [
+    "cs_175",
+    "计算机科学 multi_task",
+    "cs_multi_task = f(cs_multi_task_params)",
+    "computer_science"
+  ],
+  [
+    "cs_176",
+    "计算机科学 continual_learning",
+    "cs_continual_learning = f(cs_continual_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_177",
+    "计算机科学 online_learning",
+    "cs_online_learning = f(cs_online_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_178",
+    "计算机科学 active_learning",
+    "cs_active_learning = f(cs_active_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_179",
+    "计算机科学 adversarial_learning",
+    "cs_adversarial_learning = f(cs_adversarial_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_180",
+    "计算机科学 federated_learning",
+    "cs_federated_learning = f(cs_federated_learning_params)",
+    "computer_science"
+  ],
+  [
+    "cs_181",
+    "计算机科学 privacy_preserving",
+    "cs_privacy_preserving = f(cs_privacy_preserving_params)",
+    "computer_science"
+  ],
+  [
+    "cs_182",
+    "计算机科学 secure_multiparty",
+    "cs_secure_multiparty = f(cs_secure_multiparty_params)",
+    "computer_science"
+  ],
+  [
+    "cs_183",
+    "计算机科学 homomorphic_encryption",
+    "cs_homomorphic_encryption = f(cs_homomorphic_encryption_params)",
+    "computer_science"
+  ],
+  [
+    "cs_184",
+    "计算机科学 differential_privacy",
+    "cs_differential_privacy = f(cs_differential_privacy_params)",
+    "computer_science"
+  ],
+  [
+    "cs_185",
+    "计算机科学 zero_knowledge",
+    "cs_zero_knowledge = f(cs_zero_knowledge_params)",
+    "computer_science"
+  ],
+  [
+    "cs_186",
+    "计算机科学 multi_party_computation",
+    "cs_multi_party_computation = f(cs_multi_party_computation_params)",
+    "computer_science"
+  ],
+  [
+    "cs_187",
+    "计算机科学 post_quantum_crypto",
+    "cs_post_quantum_crypto = f(cs_post_quantum_crypto_params)",
+    "computer_science"
+  ],
+  [
+    "cog_sci_188",
+    "认知科学 perception",
+    "cog_sci_perception = f(cog_sci_perception_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_189",
+    "认知科学 attention",
+    "cog_sci_attention = f(cog_sci_attention_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_190",
+    "认知科学 memory",
+    "cog_sci_memory = f(cog_sci_memory_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_191",
+    "认知科学 learning",
+    "cog_sci_learning = f(cog_sci_learning_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_192",
+    "认知科学 decision_making",
+    "cog_sci_decision_making = f(cog_sci_decision_making_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_193",
+    "认知科学 problem_solving",
+    "cog_sci_problem_solving = f(cog_sci_problem_solving_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_194",
+    "认知科学 creativity",
+    "cog_sci_creativity = f(cog_sci_creativity_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_195",
+    "认知科学 intelligence",
+    "cog_sci_intelligence = f(cog_sci_intelligence_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_196",
+    "认知科学 consciousness",
+    "cog_sci_consciousness = f(cog_sci_consciousness_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_197",
+    "认知科学 emotion",
+    "cog_sci_emotion = f(cog_sci_emotion_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_198",
+    "认知科学 social_cognition",
+    "cog_sci_social_cognition = f(cog_sci_social_cognition_params)",
+    "cognitive_science"
+  ],
+  [
+    "cog_sci_199",
+    "认知科学 development",
+    "cog_sci_development = f(cog_sci_development_params)",
+    "cognitive_science"
+  ]
+]

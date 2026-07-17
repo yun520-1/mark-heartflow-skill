@@ -1,0 +1,50 @@
+[
+  [
+    "q_opt_dressed_state",
+    "缀饰态",
+    "Δ_dressed = Δ ± √(Ω² + Δ²)/2",
+    "quantum_computing"
+  ],
+  [
+    "q_opt_mollow_triplet",
+    "Mollow 三重态",
+    "S(ω) ∝ 1/((ω-ω_0)² + γ²) + ...",
+    "quantum_computing"
+  ],
+  [
+    "q_opt_lamb_shift",
+    "Lamb 移位",
+    "Δω = (α/3π) ω³ ln(ω/ω_c)",
+    "quantum_computing"
+  ],
+  [
+    "q_opt_purcell_effect",
+    "Purcell 效应",
+    "γ_P = γ_0 (3λ³/(4πr³)) (Q/2π)",
+    "quantum_computing"
+  ],
+  [
+    "q_opt_cavity_qed",
+    "腔 QED",
+    "g = μ √(ω_c/(2ℏε_0 V))",
+    "quantum_computing"
+  ],
+  [
+    "q_opt_circuit_qed",
+    "电路 QED",
+    "g = (e/2C) √(ℏω/(2e²))",
+    "quantum_computing"
+  ],
+  [
+    "q_opt_optical_tweezers",
+    "光镊",
+    "U(r) = -α/(4ε_0 c) I(r)",
+    "quantum_computing"
+  ],
+  [
+    "q_opt_quantum_imaging",
+    "量子成像",
+    "I(r) = Tr(ρ E^{(-)}(r) E^{(+)}(r))",
+    "quantum_computing"
+  ]
+]

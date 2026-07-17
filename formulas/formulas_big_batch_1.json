@@ -1,0 +1,242 @@
+[
+  [
+    "mathematics_0",
+    "数学 algebra",
+    "mathematics_algebra = f(mathematics_algebra_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_1",
+    "数学 geometry",
+    "mathematics_geometry = f(mathematics_geometry_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_2",
+    "数学 calculus",
+    "mathematics_calculus = f(mathematics_calculus_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_3",
+    "数学 topology",
+    "mathematics_topology = f(mathematics_topology_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_4",
+    "数学 number_theory",
+    "mathematics_number_theory = f(mathematics_number_theory_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_5",
+    "数学 combinatorics",
+    "mathematics_combinatorics = f(mathematics_combinatorics_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_6",
+    "数学 probability",
+    "mathematics_probability = f(mathematics_probability_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_7",
+    "数学 statistics",
+    "mathematics_statistics = f(mathematics_statistics_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_8",
+    "数学 logic",
+    "mathematics_logic = f(mathematics_logic_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_9",
+    "数学 set_theory",
+    "mathematics_set_theory = f(mathematics_set_theory_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_10",
+    "数学 category_theory",
+    "mathematics_category_theory = f(mathematics_category_theory_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_11",
+    "数学 algebraic_geometry",
+    "mathematics_algebraic_geometry = f(mathematics_algebraic_geometry_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_12",
+    "数学 differential_geometry",
+    "mathematics_differential_geometry = f(mathematics_differential_geometry_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_13",
+    "数学 functional_analysis",
+    "mathematics_functional_analysis = f(mathematics_functional_analysis_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_14",
+    "数学 complex_analysis",
+    "mathematics_complex_analysis = f(mathematics_complex_analysis_params)",
+    "mathematics"
+  ],
+  [
+    "mathematics_15",
+    "数学 real_analysis",
+    "mathematics_real_analysis = f(mathematics_real_analysis_params)",
+    "mathematics"
+  ],
+  [
+    "physics_16",
+    "物理 classical_mech",
+    "physics_classical_mech = f(physics_classical_mech_params)",
+    "physics"
+  ],
+  [
+    "physics_17",
+    "物理 electromagnetism",
+    "physics_electromagnetism = f(physics_electromagnetism_params)",
+    "physics"
+  ],
+  [
+    "physics_18",
+    "物理 thermodynamics",
+    "physics_thermodynamics = f(physics_thermodynamics_params)",
+    "physics"
+  ],
+  [
+    "physics_19",
+    "物理 statistical_mech",
+    "physics_statistical_mech = f(physics_statistical_mech_params)",
+    "physics"
+  ],
+  [
+    "physics_20",
+    "物理 quantum_mech",
+    "physics_quantum_mech = f(physics_quantum_mech_params)",
+    "physics"
+  ],
+  [
+    "physics_21",
+    "物理 relativity",
+    "physics_relativity = f(physics_relativity_params)",
+    "physics"
+  ],
+  [
+    "physics_22",
+    "物理 fluid_dynamics",
+    "physics_fluid_dynamics = f(physics_fluid_dynamics_params)",
+    "physics"
+  ],
+  [
+    "physics_23",
+    "物理 plasma_physics",
+    "physics_plasma_physics = f(physics_plasma_physics_params)",
+    "physics"
+  ],
+  [
+    "physics_24",
+    "物理 optics",
+    "physics_optics = f(physics_optics_params)",
+    "physics"
+  ],
+  [
+    "physics_25",
+    "物理 acoustics",
+    "physics_acoustics = f(physics_acoustics_params)",
+    "physics"
+  ],
+  [
+    "physics_26",
+    "物理 solid_state",
+    "physics_solid_state = f(physics_solid_state_params)",
+    "physics"
+  ],
+  [
+    "physics_27",
+    "物理 nuclear_physics",
+    "physics_nuclear_physics = f(physics_nuclear_physics_params)",
+    "physics"
+  ],
+  [
+    "physics_28",
+    "物理 particle_physics",
+    "physics_particle_physics = f(physics_particle_physics_params)",
+    "physics"
+  ],
+  [
+    "physics_29",
+    "物理 astrophysics",
+    "physics_astrophysics = f(physics_astrophysics_params)",
+    "physics"
+  ],
+  [
+    "physics_30",
+    "物理 cosmology",
+    "physics_cosmology = f(physics_cosmology_params)",
+    "physics"
+  ],
+  [
+    "physics_31",
+    "物理 biophysics",
+    "physics_biophysics = f(physics_biophysics_params)",
+    "physics"
+  ],
+  [
+    "chemistry_32",
+    "化学 organic",
+    "chemistry_organic = f(chemistry_organic_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_33",
+    "化学 inorganic",
+    "chemistry_inorganic = f(chemistry_inorganic_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_34",
+    "化学 physical_chem",
+    "chemistry_physical_chem = f(chemistry_physical_chem_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_35",
+    "化学 analytical",
+    "chemistry_analytical = f(chemistry_analytical_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_36",
+    "化学 biochemistry",
+    "chemistry_biochemistry = f(chemistry_biochemistry_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_37",
+    "化学 polymer",
+    "chemistry_polymer = f(chemistry_polymer_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_38",
+    "化学 materials",
+    "chemistry_materials = f(chemistry_materials_params)",
+    "chemistry"
+  ],
+  [
+    "chemistry_39",
+    "化学 nanochemistry",
+    "chemistry_nanochemistry = f(chemistry_nanochemistry_params)",
+    "chemistry"
+  ]
+]

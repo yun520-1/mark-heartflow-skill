@@ -1,0 +1,6 @@
+[
+  {"version":"6.0.10","description":"审计全面修复","type":"self-heal","impact":0.3,"timestamp":1784277316900},
+  {"version":"6.0.11","description":"模块健康检查自修复","type":"self-heal","impact":0.5,"timestamp":1784277316906},
+  {"version":"6.0.15","description":"清理63处重复REFACTOR TODO","type":"autonomous-audit","impact":0.2,"timestamp":1784292336989},
+  {"version":"6.0.16","description":"审计响应: 安全护栏补16测试(195→179), 其余MEDIUM/LOW全误报已验证不修","type":"audit-response","impact":0.25,"timestamp":1784300000000}
+]

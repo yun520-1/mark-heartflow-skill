@@ -1,0 +1,50 @@
+[
+  [
+    "qml_qnn_ansatz",
+    "QNN Ansatz",
+    "U(θ) = Π_k exp(-i θ_k H_k)",
+    "quantum_computing"
+  ],
+  [
+    "qml_qnn_loss",
+    "QNN 损失",
+    "L(θ) = 1 - |⟨ψ_target|ψ(θ)⟩|²",
+    "quantum_computing"
+  ],
+  [
+    "qml_qnn_gradient",
+    "QNN 梯度",
+    "∂L/∂θ_k = -2 Im(⟨ψ|H_k|ψ⟩)",
+    "quantum_computing"
+  ],
+  [
+    "qml_qcnn_conv",
+    "QCNN 卷积",
+    "U_conv = exp(-i Σ_{i,j} θ_{ij} X_i X_j)",
+    "quantum_computing"
+  ],
+  [
+    "qml_qcnn_pool",
+    "QCNN 池化",
+    "U_pool = exp(-i Σ_i θ_i Z_i Z_{i+1})",
+    "quantum_computing"
+  ],
+  [
+    "qml_qgan_generator",
+    "QGAN 生成器",
+    "G(z) = Tr(ρ_target U(z) ρ_input U†(z))",
+    "quantum_computing"
+  ],
+  [
+    "qml_qgan_discriminator",
+    "QGAN 判别器",
+    "D(x) = Tr(ρ_x M)",
+    "quantum_computing"
+  ],
+  [
+    "qml_qgan_loss",
+    "QGAN 损失",
+    "min_G max_D V(G,D) = E_x[log D(x)] + E_z[log(1-D(G(z)))]",
+    "quantum_computing"
+  ]
+]

@@ -1,0 +1,441 @@
+{
+  "metadata": {
+    "version": "7.9.0",
+    "last_updated": "2026-07-08",
+    "total_formulas": 53,
+    "categories": [
+      "biology",
+      "earth_science",
+      "economics",
+      "chemistry",
+      "computer_science"
+    ],
+    "source": "wikipedia_manual_science"
+  },
+  "formulas": [
+    {
+      "id": "sci_chem_ideal_gas",
+      "name": "理想气体状态方程",
+      "formula": "p*V = n*R*T",
+      "category": "chemistry",
+      "subcategory": "physical_chemistry",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_boyles",
+      "name": "波义耳定律",
+      "formula": "p₁*V₁ = p₂*V₂",
+      "category": "chemistry",
+      "subcategory": "physical_chemistry",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_charles",
+      "name": "查理定律",
+      "formula": "V₁/T₁ = V₂/T₂",
+      "category": "chemistry",
+      "subcategory": "physical_chemistry",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_combined_gas",
+      "name": "联合气体定律",
+      "formula": "p*V/T = constant",
+      "category": "chemistry",
+      "subcategory": "physical_chemistry",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_daltons_law",
+      "name": "道尔顿分压定律",
+      "formula": "p_total = Σ p_i",
+      "category": "chemistry",
+      "subcategory": "physical_chemistry",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_henrys_law",
+      "name": "亨利定律",
+      "formula": "p = k_H * c",
+      "category": "chemistry",
+      "subcategory": "physical_chemistry",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_raoults_law",
+      "name": "拉乌尔定律",
+      "formula": "p = p₀*x",
+      "category": "chemistry",
+      "subcategory": "physical_chemistry",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_nernst",
+      "name": "能斯特方程",
+      "formula": "E = E° - (RT/nF) ln Q",
+      "category": "chemistry",
+      "subcategory": "electrochemistry",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_gibbs_free_energy",
+      "name": "吉布斯自由能",
+      "formula": "ΔG = ΔH - TΔS",
+      "category": "chemistry",
+      "subcategory": "thermodynamics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_hess_law",
+      "name": "赫斯定律",
+      "formula": "ΔH_total = Σ ΔH_i",
+      "category": "chemistry",
+      "subcategory": "thermodynamics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_arrhenius",
+      "name": "阿伦尼乌斯方程",
+      "formula": "k = A exp(-E_a/(R T))",
+      "category": "chemistry",
+      "subcategory": "kinetics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_rate_law",
+      "name": "反应速率定律",
+      "formula": "rate = k [A]^m [B]^n",
+      "category": "chemistry",
+      "subcategory": "kinetics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_equilibrium",
+      "name": "平衡常数",
+      "formula": "K = [C]^c [D]^d / ([A]^a [B]^b)",
+      "category": "chemistry",
+      "subcategory": "equilibrium",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_ph",
+      "name": "pH 定义",
+      "formula": "pH = -log₁₀[H⁺]",
+      "category": "chemistry",
+      "subcategory": "acid_base",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_henderson_hasselbalch",
+      "name": "亨德森-哈塞尔巴尔赫方程",
+      "formula": "pH = pK_a + log([A⁻]/[HA])",
+      "category": "chemistry",
+      "subcategory": "acid_base",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_beers",
+      "name": "比尔定律",
+      "formula": "A = ε * c * l",
+      "category": "chemistry",
+      "subcategory": "spectroscopy",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_coulombs_law",
+      "name": "库仑定律（电化学）",
+      "formula": "F = Q₁ Q₂/(4πε₀ r²)",
+      "category": "chemistry",
+      "subcategory": "electrochemistry",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_chem_faradays_law",
+      "name": "法拉第定律",
+      "formula": "m = (Q M)/(n F)",
+      "category": "chemistry",
+      "subcategory": "electrochemistry",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_bio_michaelis_menten",
+      "name": "米氏方程",
+      "formula": "v = (V_max [S])/(K_M + [S])",
+      "category": "biology",
+      "subcategory": "enzyme_kinetics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_bio_hill",
+      "name": "希尔方程",
+      "formula": "θ = [L]^n/([L]^n + K_d)",
+      "category": "biology",
+      "subcategory": "enzyme_kinetics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_bio_allee",
+      "name": "阿利效应",
+      "formula": "dN/dt = r N (1 - N/K) (N - A)/K",
+      "category": "biology",
+      "subcategory": "population_dynamics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_bio_logistic",
+      "name": "逻辑斯蒂增长",
+      "formula": "dN/dt = r N (1 - N/K)",
+      "category": "biology",
+      "subcategory": "population_dynamics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_bio_lotka_volterra",
+      "name": "洛特卡-沃尔泰拉方程",
+      "formula": "dN/dt = N (α - β P), dP/dt = P (δ N - γ)",
+      "category": "biology",
+      "subcategory": "predator_prey",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_bio_chemotaxis",
+      "name": "趋化性方程",
+      "formula": "∂c/∂t = D ∇²c - v·∇c + f(c)",
+      "category": "biology",
+      "subcategory": "cell_biology",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_bio_hodgkin_huxley",
+      "name": "霍奇金-赫胥黎方程",
+      "formula": "C dV/dt = -g_Na m³ h (V-V_Na) - g_K n⁴ (V-V_K) - g_L (V-V_L)",
+      "category": "biology",
+      "subcategory": "neurobiology",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_bio_dna_melting",
+      "name": "DNA 熔解温度",
+      "formula": "T_m = 4(G+C) + 2(A+T)",
+      "category": "biology",
+      "subcategory": "genetics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_bio_pcr",
+      "name": "PCR 扩增",
+      "formula": "N = N₀ * 2^n",
+      "category": "biology",
+      "subcategory": "genetics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_bio_mendel",
+      "name": "孟德尔遗传定律",
+      "formula": "P(Aa) = 0.5",
+      "category": "biology",
+      "subcategory": "genetics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_earth_seismology",
+      "name": "里氏震级",
+      "formula": "M_L = log₁₀(A) - log₁₀(A₀(Δ))",
+      "category": "earth_science",
+      "subcategory": "seismology",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_earth_mohr_coulomb",
+      "name": "莫尔-库仑破坏准则",
+      "formula": "τ = c + σ tan(φ)",
+      "category": "earth_science",
+      "subcategory": "geology",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_earth_darcy",
+      "name": "达西定律",
+      "formula": "Q = -K A (dh/dl)",
+      "category": "earth_science",
+      "subcategory": "hydrology",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_earth_manning",
+      "name": "曼宁方程",
+      "formula": "v = (1/n) R^{2/3} S^{1/2}",
+      "category": "earth_science",
+      "subcategory": "hydrology",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_earth_attenuation",
+      "name": "大气衰减",
+      "formula": "I = I₀ exp(-τ x)",
+      "category": "earth_science",
+      "subcategory": "meteorology",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_earth_hydrostatic",
+      "name": "流体静力学方程",
+      "formula": "dp/dz = -ρ g",
+      "category": "earth_science",
+      "subcategory": "oceanography",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_earth_coriolis",
+      "name": "科里奥利力",
+      "formula": "F_c = -2 m (ω × v)",
+      "category": "earth_science",
+      "subcategory": "meteorology",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_earth_ideal_gas_law",
+      "name": "大气理想气体方程",
+      "formula": "p = ρ R_s T",
+      "category": "earth_science",
+      "subcategory": "meteorology",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_econ_utility",
+      "name": "效用函数",
+      "formula": "U = u(x₁, x₂, ..., x_n)",
+      "category": "economics",
+      "subcategory": "microeconomics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_econ_marginal_utility",
+      "name": "边际效用",
+      "formula": "MU = ∂U/∂x",
+      "category": "economics",
+      "subcategory": "microeconomics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_econ_budget_constraint",
+      "name": "预算约束",
+      "formula": "p₁ x₁ + p₂ x₂ = I",
+      "category": "economics",
+      "subcategory": "microeconomics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_econ_cobb_douglas",
+      "name": "柯布-道格拉斯生产函数",
+      "formula": "Y = A K^α L^β",
+      "category": "economics",
+      "subcategory": "macroeconomics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_econ_solow",
+      "name": "索洛增长模型",
+      "formula": "dK/dt = s Y - δ K",
+      "category": "economics",
+      "subcategory": "macroeconomics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_econ_npv",
+      "name": "净现值",
+      "formula": "NPV = Σ (C_t)/(1+r)^t",
+      "category": "economics",
+      "subcategory": "finance",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_econ_irr",
+      "name": "内部收益率",
+      "formula": "NPV(r) = 0",
+      "category": "economics",
+      "subcategory": "finance",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_econ_sharpe",
+      "name": "夏普比率",
+      "formula": "S = (R_p - R_f)/σ_p",
+      "category": "economics",
+      "subcategory": "finance",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_econ_black_scholes",
+      "name": "布莱克-斯科尔斯方程",
+      "formula": "∂V/∂t + ½ σ² S² ∂²V/∂S² + r S ∂V/∂S - r V = 0",
+      "category": "economics",
+      "subcategory": "finance",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_econ_is_lm",
+      "name": "IS-LM 模型",
+      "formula": "Y = C(Y-T) + I(r) + G, M/P = L(Y, r)",
+      "category": "economics",
+      "subcategory": "macroeconomics",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_cs_big_o",
+      "name": "大 O 记号",
+      "formula": "f(n) = O(g(n)) ⇔ ∃ M>0, n₀ s.t. |f(n)| ≤ M|g(n)| for n>n₀",
+      "category": "computer_science",
+      "subcategory": "algorithms",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_cs_turing_machine",
+      "name": "图灵机",
+      "formula": "M = (Q, Γ, b, Σ, δ, q₀, F)",
+      "category": "computer_science",
+      "subcategory": "theory",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_cs_shannon_source",
+      "name": "香农信源编码定理",
+      "formula": "H(X) ≤ L < H(X) + 1",
+      "category": "computer_science",
+      "subcategory": "information_theory",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_cs_hamming_dist",
+      "name": "汉明距离",
+      "formula": "d(x,y) = Σ (x_i ⊕ y_i)",
+      "category": "computer_science",
+      "subcategory": "coding_theory",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_cs_complexity_class_p",
+      "name": "P 类问题",
+      "formula": "P = {L | L is decidable in polynomial time}",
+      "category": "computer_science",
+      "subcategory": "complexity_theory",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_cs_complexity_class_np",
+      "name": "NP 类问题",
+      "formula": "NP = {L | L has polynomial-time verifier}",
+      "category": "computer_science",
+      "subcategory": "complexity_theory",
+      "source": "wikipedia_manual_science"
+    },
+    {
+      "id": "sci_cs_church_turing",
+      "name": "丘奇-图灵论题",
+      "formula": "Every effectively calculable function is computable by a Turing machine",
+      "category": "computer_science",
+      "subcategory": "theory",
+      "source": "wikipedia_manual_science"
+    }
+  ]
+}

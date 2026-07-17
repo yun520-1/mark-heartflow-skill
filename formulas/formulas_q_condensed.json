@@ -1,0 +1,50 @@
+[
+  [
+    "q_cond_fermi_liquid",
+    "费米液体",
+    "E(k) = E_F + ℏ² k_F (k - k_F)/m*",
+    "quantum_computing"
+  ],
+  [
+    "q_cond_luttinger_liquid",
+    "Luttinger 液体",
+    "ρ(k) = k_d/(2π) + (k - k_F)/(2π v_F)",
+    "quantum_computing"
+  ],
+  [
+    "q_cond_quantum_critical",
+    "量子临界",
+    "S = (π/3) ln L + const",
+    "quantum_computing"
+  ],
+  [
+    "q_cond_majorana_zero",
+    "Majorana 零模",
+    "γ = γ†, {γ_i, γ_j} = 2δ_{ij}",
+    "quantum_computing"
+  ],
+  [
+    "q_cond_topological_superconductor",
+    "拓扑超导体",
+    "H = Σ_k (ξ_k τ_z + Δ_k τ_x)",
+    "quantum_computing"
+  ],
+  [
+    "q_cond_floquet_topological",
+    "Floquet 拓扑",
+    "H(t) = H_0 + V cos(ωt)",
+    "quantum_computing"
+  ],
+  [
+    "q_cond_disorder_topological",
+    "无序拓扑",
+    "σ_{xy} = (e²/h) (n + 1/2)",
+    "quantum_computing"
+  ],
+  [
+    "q_cond_fractional_quantum_hall",
+    "分数量子霍尔",
+    "ν = p/q, σ_{xy} = ν e²/h",
+    "quantum_computing"
+  ]
+]

@@ -1,0 +1,293 @@
+{
+  "metadata": {
+    "version": "8.6.0",
+    "last_updated": "2026-07-09",
+    "total_formulas": 35,
+    "categories": [
+      "engineering"
+    ],
+    "source": "wikipedia_engineering"
+  },
+  "formulas": [
+    {
+      "id": "eng_eng_hooke",
+      "name": "胡克定律",
+      "formula": "F = k*x",
+      "category": "engineering",
+      "subcategory": "mechanical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_stress",
+      "name": "应力",
+      "formula": "σ = F/A",
+      "category": "engineering",
+      "subcategory": "mechanical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_strain",
+      "name": "应变",
+      "formula": "ε = ΔL/L",
+      "category": "engineering",
+      "subcategory": "mechanical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_young",
+      "name": "杨氏模量",
+      "formula": "E = σ/ε",
+      "category": "engineering",
+      "subcategory": "mechanical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_poisson",
+      "name": "泊松比",
+      "formula": "ν = -ε_transverse/ε_axial",
+      "category": "engineering",
+      "subcategory": "mechanical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_torsion",
+      "name": "扭转应力",
+      "formula": "τ = T*r/J",
+      "category": "engineering",
+      "subcategory": "mechanical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_bending",
+      "name": "弯曲应力",
+      "formula": "σ = M*y/I",
+      "category": "engineering",
+      "subcategory": "mechanical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_shear",
+      "name": "剪切应力",
+      "formula": "τ = V*A",
+      "category": "engineering",
+      "subcategory": "mechanical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_bulk",
+      "name": "体积模量",
+      "formula": "K = -V*(dP/dV)",
+      "category": "engineering",
+      "subcategory": "mechanical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_moment_inertia",
+      "name": "截面惯性矩",
+      "formula": "I = ∫ y^2 dA",
+      "category": "engineering",
+      "subcategory": "mechanical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_ohm",
+      "name": "欧姆定律",
+      "formula": "V = I*R",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_power",
+      "name": "电功率",
+      "formula": "P = V*I",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_kirchhoff_v",
+      "name": "基尔霍夫电压定律",
+      "formula": "Σ V_i = 0",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_kirchhoff_i",
+      "name": "基尔霍夫电流定律",
+      "formula": "Σ I_i = 0",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_capacitance",
+      "name": "电容",
+      "formula": "C = Q/V",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_inductance",
+      "name": "电感",
+      "formula": "L = Φ/I",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_impedance",
+      "name": "阻抗",
+      "formula": "Z = R + jX",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_resonance",
+      "name": "谐振频率",
+      "formula": "f_0 = 1/(2π√(LC))",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_transformers",
+      "name": "变压器方程",
+      "formula": "V_p/V_s = N_p/N_s",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_maxwell_faraday",
+      "name": "法拉第定律",
+      "formula": "∇×E = -∂B/∂t",
+      "category": "engineering",
+      "subcategory": "electrical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_euler_buckling",
+      "name": "欧拉屈曲",
+      "formula": "P_cr = π²*E*I/(K*L)²",
+      "category": "engineering",
+      "subcategory": "civil",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_beam_deflection",
+      "name": "梁挠度",
+      "formula": "y_max = (5*w*L^4)/(384*E*I)",
+      "category": "engineering",
+      "subcategory": "civil",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_soil_pressure",
+      "name": "土压力",
+      "formula": "σ_v = γ*z",
+      "category": "engineering",
+      "subcategory": "civil",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_concrete_stress",
+      "name": "混凝土应力",
+      "formula": "σ_c = P/A - M*y/I",
+      "category": "engineering",
+      "subcategory": "civil",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_steel_yield",
+      "name": "钢材屈服强度",
+      "formula": "σ_y = F_y/A",
+      "category": "engineering",
+      "subcategory": "civil",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_reynolds",
+      "name": "雷诺数",
+      "formula": "Re = ρ*v*D/μ",
+      "category": "engineering",
+      "subcategory": "chemical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_fourier",
+      "name": "傅里叶定律",
+      "formula": "q = -k*A*dT/dx",
+      "category": "engineering",
+      "subcategory": "chemical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_darcy",
+      "name": "达西定律",
+      "formula": "Q = -K*A*(Δh/ΔL)",
+      "category": "engineering",
+      "subcategory": "chemical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_ntu",
+      "name": "NTU 效率",
+      "formula": "ε = 1 - exp(-NTU*(1 - C_r))",
+      "category": "engineering",
+      "subcategory": "chemical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_arrhenius",
+      "name": "阿伦尼乌斯方程",
+      "formula": "k = A*exp(-E_a/(R*T))",
+      "category": "engineering",
+      "subcategory": "chemical",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_lift",
+      "name": "升力",
+      "formula": "L = 0.5*ρ*v²*A*C_L",
+      "category": "engineering",
+      "subcategory": "aerospace",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_drag",
+      "name": "阻力",
+      "formula": "D = 0.5*ρ*v²*A*C_D",
+      "category": "engineering",
+      "subcategory": "aerospace",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_drag_polar",
+      "name": "阻力极曲线",
+      "formula": "C_D = C_D0 + C_L²/(π*e*AR)",
+      "category": "engineering",
+      "subcategory": "aerospace",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_rocket",
+      "name": "火箭方程",
+      "formula": "Δv = v_e*ln(m_0/m_f)",
+      "category": "engineering",
+      "subcategory": "aerospace",
+      "source": "wikipedia_engineering"
+    },
+    {
+      "id": "eng_eng_orbital",
+      "name": "轨道速度",
+      "formula": "v = √(G*M/r)",
+      "category": "engineering",
+      "subcategory": "aerospace",
+      "source": "wikipedia_engineering"
+    }
+  ]
+}

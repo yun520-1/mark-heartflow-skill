@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_cosmo_friedmann",
+    "Friedmann 方程",
+    "H² = (8πG/3) ρ - k/a² + Λ/3",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_hubble",
+    "Hubble 定律",
+    "v = H₀ d",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_critical_density",
+    "临界密度",
+    "ρ_c = 3H₀²/(8πG)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_dark_energy",
+    "暗能量密度",
+    "Ω_Λ = Λ/(3H₀²)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_inflaton_potential",
+    "暴胀势",
+    "V(φ) = ½ m² φ² + λ φ⁴/4!",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_schwarschild_radius",
+    "Schwarschild 半径",
+    "R_s = 2GM/c²",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_cecchini",
+    "CECCHINI 公式",
+    "S = (A/4G) + O(1)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_cosmo_quantum_fluctuation",
+    "量子涨落",
+    "δρ/ρ ∼ H²/(2π)",
+    "quantum_computing"
+  ]
+]

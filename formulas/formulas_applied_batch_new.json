@@ -1,0 +1,634 @@
+[
+ {
+  "id": "nav_haversine",
+  "name": "哈弗辛公式",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "d = 2*R*arcsin(sqrt(sin^2(dphi/2) + cos(phi1)*cos(phi2)*sin^2(dlam/2)))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_bearing",
+  "name": "方位角",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "theta = arctan2(sin(dlam)*cos(phi2), cos(phi1)*sin(phi2)-sin(phi1)*cos(phi2)*cos(dlam))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_ecef_to_lla",
+  "name": "ECEF转LLA",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "lat = arctan(z/sqrt(x^2+y^2)*(1-e^2)^(-1))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_doppler_shift",
+  "name": "多普勒频移",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "f = f_0*(c+v_r)/(c-v_s)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nav_gps_pseudorange",
+  "name": "GPS伪距",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "rho = sqrt((x-x_s)^2 + (y-y_s)^2 + (z-z_s)^2) + c*dt",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_kalman_gain",
+  "name": "卡尔曼增益",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "K = P*H^T*(H*P*H^T + R)^(-1)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_kalman_update",
+  "name": "卡尔曼更新",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "x_hat = x_pred + K*(z - H*x_pred)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_kalman_cov",
+  "name": "卡尔曼协方差更新",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "P = (I - K*H)*P_pred",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_pid",
+  "name": "PID控制器",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "u = Kp*e + Ki*integral(e) + Kd*de/dt",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nav_pid_laplace",
+  "name": "PID拉普拉斯",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "G(s) = Kp + Ki/s + Kd*s",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_dh_transform",
+  "name": "DH变换矩阵",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "T = Rz*Az*Rx*Ax",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_jacobian",
+  "name": "雅可比矩阵",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "J = d(x,y,z)/d(q1,...,qn)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_torque",
+  "name": "力矩方程",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "tau = M(q)*q_dd + C(q,q_d)*q_d + G(q)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_lagrangian_robot",
+  "name": "机器人拉格朗日",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "L = T - V where T = kinetic, V = potential",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_ekf_predict",
+  "name": "EKF预测",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "x_pred = f(x_prev, u) + w",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_ekf_cov_predict",
+  "name": "EKF协方差预测",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "P_pred = F*P*F^T + Q",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_particle_weight",
+  "name": "粒子滤波权重",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "w = p(z|x) * p(x|x_prev) / q(x|z,x_prev)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_slam_prob",
+  "name": "SLAM概率模型",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "P(x,m|z,u) = P(z|x,m)*P(x|u,x_prev)*P(m)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_icp_error",
+  "name": "ICP对齐误差",
+  "category": "engineering",
+  "subcategory": "robotics",
+  "formula": "E = sum(abs(R*p_i + t - q_i)^2)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_path_cost",
+  "name": "路径代价(A*)",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "f(n) = g(n) + h(n)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nav_great_circle",
+  "name": "大圆距离",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "d = R*arccos(sin(phi1)*sin(phi2) + cos(phi1)*cos(phi2)*cos(dlam))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nav_mercator_x",
+  "name": "墨卡托X",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "x = R*lambda",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nav_mercator_y",
+  "name": "墨卡托Y",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "y = R*ln(tan(pi/4 + phi/2))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nav_dead_reckoning",
+  "name": "航位推算",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "x_new = x_old + v*dt*cos(theta)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nav_waypoint_dist",
+  "name": "航路点距离",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "d = sqrt((x2-x1)^2 + (y2-y1)^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nav_cross_track",
+  "name": "偏航距",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "d_xt = asin(sin(d13)*sin(theta13-theta12))*R",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_along_track",
+  "name": "沿航迹距离",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "d_at = arccos(cos(d13/R)/cos(d_xt/R))*R",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "nav_magnetic_decl",
+  "name": "磁偏角",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "true_heading = magnetic_heading + declination",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "nav_wind_correction",
+  "name": "风偏修正",
+  "category": "engineering",
+  "subcategory": "navigation",
+  "formula": "heading = course - arcsin(wind_speed/airspeed*sin(wind_angle))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "stat_z_score",
+  "name": "Z分数",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "z = (x - mu) / sigma",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_confidence_interval",
+  "name": "置信区间",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "CI = x_bar +/- z*sigma/sqrt(n)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_chi_square_goodness",
+  "name": "卡方拟合优度",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "chi2 = sum((O_i - E_i)^2/E_i)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_f_test",
+  "name": "F检验",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "F = s1^2/s2^2",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_anova_ss_total",
+  "name": "ANOVA总平方和",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "SS_total = sum((x_ij - x_bar)^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_anova_ss_between",
+  "name": "ANOVA组间平方和",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "SS_between = sum(n_j*(x_bar_j - x_bar)^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_anova_ss_within",
+  "name": "ANOVA组内平方和",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "SS_within = SS_total - SS_between",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_regression_slope",
+  "name": "回归斜率",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "b1 = sum((x-x_bar)*(y-y_bar)) / sum((x-x_bar)^2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_regression_intercept",
+  "name": "回归截距",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "b0 = y_bar - b1*x_bar",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_r_squared_adj",
+  "name": "调整R^2",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "R_adj = 1 - (1-R^2)*(n-1)/(n-p-1)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_logistic",
+  "name": "逻辑回归",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "P(Y=1) = 1/(1 + exp(-(b0 + b1*x)))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_poisson_pmf",
+  "name": "泊松分布",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "P(k) = lambda^k*exp(-lambda)/k!",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_binomial_pmf",
+  "name": "二项分布",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "P(k) = C(n,k)*p^k*(1-p)^(n-k)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_normal_pdf",
+  "name": "正态分布密度",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "f(x) = (1/(sigma*sqrt(2*pi)))*exp(-(x-mu)^2/(2*sigma^2))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_exponential_pdf",
+  "name": "指数分布密度",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "f(x) = lambda*exp(-lambda*x)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_gamma_pdf",
+  "name": "伽马分布密度",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "f(x) = beta^alpha*x^(alpha-1)*exp(-beta*x)/G(alpha)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "stat_beta_pdf",
+  "name": "贝塔分布密度",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "f(x) = x^(a-1)*(1-x)^(b-1)/B(a,b)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "stat_weibull_pdf",
+  "name": "韦布尔分布密度",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "f(x) = (k/lambda)*(x/lambda)^(k-1)*exp(-(x/lambda)^k)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_kolmogorov_smirnov",
+  "name": "KS统计量",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "D = sup(abs(F_n(x) - F_0(x)))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "stat_grubbs_test",
+  "name": "Grubbs检验",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "G = max(abs(x_i - x_bar))/s",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_shapiro_wilk",
+  "name": "Shapiro-Wilk W",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "W = (sum(a_i*x_(i)))^2 / sum((x_i - x_bar)^2)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "stat_auc_roc",
+  "name": "AUC-ROC",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "AUC = P(score_positive > score_negative)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_precision",
+  "name": "精确率",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "precision = TP / (TP + FP)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_recall",
+  "name": "召回率",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "recall = TP / (TP + FN)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_f1_score",
+  "name": "F1分数",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "F1 = 2*precision*recall/(precision+recall)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_matthews_cc",
+  "name": "马修斯相关系数",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "MCC = (TP*TN-FP*FN)/sqrt((TP+FP)(TP+TN)(FN+FP)(FN+TN))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "stat_cohens_kappa",
+  "name": "科恩kappa",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "kappa = (p_o - p_e)/(1 - p_e)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_bland_altman",
+  "name": "Bland-Altman偏倚",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "bias = mean(method1 - method2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_kendall_tau",
+  "name": "Kendall tau",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "tau = (concordant - discordant) / (n*(n-1)/2)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "stat_spearman_rho",
+  "name": "Spearman rho",
+  "category": "mathematics",
+  "subcategory": "statistics",
+  "formula": "rho = 1 - 6*sum(d_i^2)/(n*(n^2-1))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_dft",
+  "name": "离散傅里叶变换",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "X(k) = sum(x(n)*exp(-i*2*pi*k*n/N))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "sig_idft",
+  "name": "逆离散傅里叶变换",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "x(n) = (1/N)*sum(X(k)*exp(i*2*pi*k*n/N))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "sig_fft_butterfly",
+  "name": "FFT蝶形运算",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "X(k) = E(k) + W_N^k*O(k)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "sig_psd",
+  "name": "功率谱密度",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "S = abs(X(f))^2 / T",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_autocorrelation",
+  "name": "自相关函数",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "R(tau) = integral(x(t)*x(t+tau))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_cross_correlation",
+  "name": "互相关函数",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "R_xy(tau) = integral(x(t)*y(t+tau))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_window_hamming",
+  "name": "汉明窗",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "w(n) = 0.54 - 0.46*cos(2*pi*n/(N-1))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_window_hann",
+  "name": "汉宁窗",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "w(n) = 0.5*(1 - cos(2*pi*n/(N-1)))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_fir_conv",
+  "name": "FIR卷积",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "y(n) = sum(h(k)*x(n-k))",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_iir_diff",
+  "name": "IIR差分方程",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "y(n) = sum(b_k*x(n-k)) - sum(a_k*y(n-k))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "sig_z_transform",
+  "name": "Z变换",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "X(z) = sum(x(n)*z^(-n))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "sig_bilinear",
+  "name": "双线性变换",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "s = (2/T)*(z-1)/(z+1)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "sig_shannon_nyquist",
+  "name": "奈奎斯特采样率",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "f_s >= 2*f_max",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_snr",
+  "name": "信噪比",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "SNR = P_signal / P_noise",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_snr_db",
+  "name": "信噪比(dB)",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "SNR_dB = 10*log10(P_signal/P_noise)",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_thd",
+  "name": "总谐波失真",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "THD = sqrt(sum(V_n^2, n>=2)) / V_1",
+  "difficulty": "intermediate"
+ },
+ {
+  "id": "sig_sinc_interp",
+  "name": "sinc插值",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "x(t) = sum(x(n)*sinc((t-n*T)/T))",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "sig_wiener_filter",
+  "name": "维纳滤波",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "H = S_xx/(S_xx + S_nn)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "sig_matched_filter",
+  "name": "匹配滤波",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "h(t) = s(T-t)",
+  "difficulty": "advanced"
+ },
+ {
+  "id": "sig_kalman_1d",
+  "name": "一维卡尔曼",
+  "category": "engineering",
+  "subcategory": "signal_processing",
+  "formula": "x_hat = x_pred + K*(z - x_pred)",
+  "difficulty": "intermediate"
+ }
+]

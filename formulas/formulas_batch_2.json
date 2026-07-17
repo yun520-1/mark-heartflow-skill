@@ -1,0 +1,242 @@
+[
+  [
+    "q_quantum_error_correction_40",
+    "量子纠错 surface",
+    "quantum_error_correction_surface = f(quantum_error_correction_surface_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_error_correction_41",
+    "量子纠错 color",
+    "quantum_error_correction_color = f(quantum_error_correction_color_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_error_correction_42",
+    "量子纠错 topological",
+    "quantum_error_correction_topological = f(quantum_error_correction_topological_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_error_correction_43",
+    "量子纠错 concatenated",
+    "quantum_error_correction_concatenated = f(quantum_error_correction_concatenated_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_error_correction_44",
+    "量子纠错 dynamic",
+    "quantum_error_correction_dynamic = f(quantum_error_correction_dynamic_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_error_correction_45",
+    "量子纠错 machine_learning",
+    "quantum_error_correction_machine_learning = f(quantum_error_correction_machine_learning_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_error_correction_46",
+    "量子纠错 neural",
+    "quantum_error_correction_neural = f(quantum_error_correction_neural_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_error_correction_47",
+    "量子纠错 hybrid",
+    "quantum_error_correction_hybrid = f(quantum_error_correction_hybrid_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_simulation_48",
+    "量子模拟 Trotter",
+    "quantum_simulation_Trotter = f(quantum_simulation_Trotter_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_simulation_49",
+    "量子模拟 VQE",
+    "quantum_simulation_VQE = f(quantum_simulation_VQE_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_simulation_50",
+    "量子模拟 QAOA",
+    "quantum_simulation_QAOA = f(quantum_simulation_QAOA_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_simulation_51",
+    "量子模拟 variational",
+    "quantum_simulation_variational = f(quantum_simulation_variational_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_simulation_52",
+    "量子模拟 tensor_network",
+    "quantum_simulation_tensor_network = f(quantum_simulation_tensor_network_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_simulation_53",
+    "量子模拟 monte_carlo",
+    "quantum_simulation_monte_carlo = f(quantum_simulation_monte_carlo_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_simulation_54",
+    "量子模拟 path_integral",
+    "quantum_simulation_path_integral = f(quantum_simulation_path_integral_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_simulation_55",
+    "量子模拟 semiclassical",
+    "quantum_simulation_semiclassical = f(quantum_simulation_semiclassical_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_information_56",
+    "量子信息 entropy",
+    "quantum_information_entropy = f(quantum_information_entropy_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_information_57",
+    "量子信息 mutual_information",
+    "quantum_information_mutual_information = f(quantum_information_mutual_information_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_information_58",
+    "量子信息 distance",
+    "quantum_information_distance = f(quantum_information_distance_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_information_59",
+    "量子信息 fidelity",
+    "quantum_information_fidelity = f(quantum_information_fidelity_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_information_60",
+    "量子信息 channel",
+    "quantum_information_channel = f(quantum_information_channel_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_information_61",
+    "量子信息 capacity",
+    "quantum_information_capacity = f(quantum_information_capacity_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_information_62",
+    "量子信息 comunication",
+    "quantum_information_comunication = f(quantum_information_comunication_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_information_63",
+    "量子信息 cryptography",
+    "quantum_information_cryptography = f(quantum_information_cryptography_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_thermodynamics_64",
+    "量子热力学 Jarzynski",
+    "quantum_thermodynamics_Jarzynski = f(quantum_thermodynamics_Jarzynski_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_thermodynamics_65",
+    "量子热力学 Crooks",
+    "quantum_thermodynamics_Crooks = f(quantum_thermodynamics_Crooks_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_thermodynamics_66",
+    "量子热力学 Landauer",
+    "quantum_thermodynamics_Landauer = f(quantum_thermodynamics_Landauer_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_thermodynamics_67",
+    "量子热力学 heat_engine",
+    "quantum_thermodynamics_heat_engine = f(quantum_thermodynamics_heat_engine_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_thermodynamics_68",
+    "量子热力学 refrigerator",
+    "quantum_thermodynamics_refrigerator = f(quantum_thermodynamics_refrigerator_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_thermodynamics_69",
+    "量子热力学 batery",
+    "quantum_thermodynamics_batery = f(quantum_thermodynamics_batery_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_thermodynamics_70",
+    "量子热力学 work_extraction",
+    "quantum_thermodynamics_work_extraction = f(quantum_thermodynamics_work_extraction_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_thermodynamics_71",
+    "量子热力学 resource_theory",
+    "quantum_thermodynamics_resource_theory = f(quantum_thermodynamics_resource_theory_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_metrology_72",
+    "量子计量学 Cramér-Rao",
+    "quantum_metrology_Cramér-Rao = f(quantum_metrology_Cramér-Rao_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_metrology_73",
+    "量子计量学 Fisher",
+    "quantum_metrology_Fisher = f(quantum_metrology_Fisher_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_metrology_74",
+    "量子计量学 Heisenberg",
+    "quantum_metrology_Heisenberg = f(quantum_metrology_Heisenberg_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_metrology_75",
+    "量子计量学 GHZ",
+    "quantum_metrology_GHZ = f(quantum_metrology_GHZ_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_metrology_76",
+    "量子计量学 adaptive",
+    "quantum_metrology_adaptive = f(quantum_metrology_adaptive_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_metrology_77",
+    "量子计量学 multi_parameter",
+    "quantum_metrology_multi_parameter = f(quantum_metrology_multi_parameter_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_metrology_78",
+    "量子计量学 noisy",
+    "quantum_metrology_noisy = f(quantum_metrology_noisy_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_metrology_79",
+    "量子计量学 collective",
+    "quantum_metrology_collective = f(quantum_metrology_collective_params)",
+    "quantum_computing"
+  ]
+]

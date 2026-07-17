@@ -1,0 +1,242 @@
+[
+  [
+    "q_quantum_optics_80",
+    "量子光学 coherent",
+    "quantum_optics_coherent = f(quantum_optics_coherent_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_optics_81",
+    "量子光学 squeezed",
+    "quantum_optics_squeezed = f(quantum_optics_squeezed_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_optics_82",
+    "量子光学 cat",
+    "quantum_optics_cat = f(quantum_optics_cat_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_optics_83",
+    "量子光学 Fock",
+    "quantum_optics_Fock = f(quantum_optics_Fock_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_optics_84",
+    "量子光学 thermal",
+    "quantum_optics_thermal = f(quantum_optics_thermal_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_optics_85",
+    "量子光学 entangled",
+    "quantum_optics_entangled = f(quantum_optics_entangled_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_optics_86",
+    "量子光学 single_photon",
+    "quantum_optics_single_photon = f(quantum_optics_single_photon_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_optics_87",
+    "量子光学 correlation",
+    "quantum_optics_correlation = f(quantum_optics_correlation_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_condensed_matter_88",
+    "量子凝聚态 BCS",
+    "quantum_condensed_matter_BCS = f(quantum_condensed_matter_BCS_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_condensed_matter_89",
+    "量子凝聚态 BEC",
+    "quantum_condensed_matter_BEC = f(quantum_condensed_matter_BEC_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_condensed_matter_90",
+    "量子凝聚态 Fermi_hubbard",
+    "quantum_condensed_matter_Fermi_hubbard = f(quantum_condensed_matter_Fermi_hubbard_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_condensed_matter_91",
+    "量子凝聚态 quantum_spin_liquid",
+    "quantum_condensed_matter_quantum_spin_liquid = f(quantum_condensed_matter_quantum_spin_liquid_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_condensed_matter_92",
+    "量子凝聚态 topological",
+    "quantum_condensed_matter_topological = f(quantum_condensed_matter_topological_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_condensed_matter_93",
+    "量子凝聚态 supersolid",
+    "quantum_condensed_matter_supersolid = f(quantum_condensed_matter_supersolid_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_condensed_matter_94",
+    "量子凝聚态 Mott",
+    "quantum_condensed_matter_Mott = f(quantum_condensed_matter_Mott_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_condensed_matter_95",
+    "量子凝聚态 Anderson",
+    "quantum_condensed_matter_Anderson = f(quantum_condensed_matter_Anderson_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_field_theory_96",
+    "量子场论 QED",
+    "quantum_field_theory_QED = f(quantum_field_theory_QED_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_field_theory_97",
+    "量子场论 QCD",
+    "quantum_field_theory_QCD = f(quantum_field_theory_QCD_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_field_theory_98",
+    "量子场论 Higgs",
+    "quantum_field_theory_Higgs = f(quantum_field_theory_Higgs_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_field_theory_99",
+    "量子场论 Yukawa",
+    "quantum_field_theory_Yukawa = f(quantum_field_theory_Yukawa_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_field_theory_100",
+    "量子场论 axial",
+    "quantum_field_theory_axial = f(quantum_field_theory_axial_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_field_theory_101",
+    "量子场论 vector",
+    "quantum_field_theory_vector = f(quantum_field_theory_vector_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_field_theory_102",
+    "量子场论 tensor",
+    "quantum_field_theory_tensor = f(quantum_field_theory_tensor_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_field_theory_103",
+    "量子场论 supersymmetry",
+    "quantum_field_theory_supersymmetry = f(quantum_field_theory_supersymmetry_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_topology_104",
+    "量子拓扑 Chern",
+    "quantum_topology_Chern = f(quantum_topology_Chern_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_topology_105",
+    "量子拓扑 Z2",
+    "quantum_topology_Z2 = f(quantum_topology_Z2_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_topology_106",
+    "量子拓扑 winding",
+    "quantum_topology_winding = f(quantum_topology_winding_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_topology_107",
+    "量子拓扑 edge",
+    "quantum_topology_edge = f(quantum_topology_edge_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_topology_108",
+    "量子拓扑 bulk-boundary",
+    "quantum_topology_bulk-boundary = f(quantum_topology_bulk-boundary_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_topology_109",
+    "量子拓扑 symmetry",
+    "quantum_topology_symmetry = f(quantum_topology_symmetry_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_topology_110",
+    "量子拓扑 disorder",
+    "quantum_topology_disorder = f(quantum_topology_disorder_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_topology_111",
+    "量子拓扑 fracton",
+    "quantum_topology_fracton = f(quantum_topology_fracton_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gravity_112",
+    "量子引力 AdS/CFT",
+    "quantum_gravity_AdS/CFT = f(quantum_gravity_AdS/CFT_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gravity_113",
+    "量子引力 holographic",
+    "quantum_gravity_holographic = f(quantum_gravity_holographic_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gravity_114",
+    "量子引力 black_hole",
+    "quantum_gravity_black_hole = f(quantum_gravity_black_hole_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gravity_115",
+    "量子引力 entanglement",
+    "quantum_gravity_entanglement = f(quantum_gravity_entanglement_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gravity_116",
+    "量子引力 cosmological",
+    "quantum_gravity_cosmological = f(quantum_gravity_cosmological_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gravity_117",
+    "量子引力 loop",
+    "quantum_gravity_loop = f(quantum_gravity_loop_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gravity_118",
+    "量子引力 spin_foam",
+    "quantum_gravity_spin_foam = f(quantum_gravity_spin_foam_params)",
+    "quantum_computing"
+  ],
+  [
+    "q_quantum_gravity_119",
+    "量子引力 causal_dynamical",
+    "quantum_gravity_causal_dynamical = f(quantum_gravity_causal_dynamical_params)",
+    "quantum_computing"
+  ]
+]

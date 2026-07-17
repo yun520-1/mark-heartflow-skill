@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_opt_extra_schrodinger_cat",
+    "薛定谔猫态",
+    "|cat> = N(|α> + |-α>)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_opt_extra_coherent_state",
+    "相干态",
+    "|α> = e^{-|α|²/2} Σ_n (αⁿ/√n!) |n>",
+    "quantum_computing"
+  ],
+  [
+    "quantum_opt_extra_squeezed_state",
+    "压缩态",
+    "|ξ> = exp(ξ* a²/2 - ξ a†²/2) |0>",
+    "quantum_computing"
+  ],
+  [
+    "quantum_opt_extra_photon_number",
+    "光子数算符",
+    "n = a† a",
+    "quantum_computing"
+  ],
+  [
+    "quantum_opt_extra_mandel_q",
+    "曼德尔 Q 参数",
+    "Q = (⟨n²⟩ - ⟨n⟩²)/⟨n⟩ - ⟨n⟩",
+    "quantum_computing"
+  ],
+  [
+    "quantum_opt_extra_hanbury_brown_twiss",
+    "HBT 干涉",
+    "g⁽²(τ) = ⟨:n(t)n(t+τ):⟩/⟨n⟩²",
+    "quantum_computing"
+  ],
+  [
+    "quantum_opt_extra_jaynes_cummings",
+    "Jaynes-Cummings 模型",
+    "H_JC = ℏω a†a + ℏω₀ σ_z/2 + g(aσ₊ + a†σ₋)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_opt_extra_quantum_zeno",
+    "量子芝诺效应",
+    "P_no_decay = (cos(g t/N))^{2N} → exp(-g² t²/N)",
+    "quantum_computing"
+  ]
+]

@@ -1,0 +1,1802 @@
+[
+ {
+  "id": "comp_math_1",
+  "name": "竞赛数学公式_1",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2 - 6x + y^2 + 2y = 9",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_2",
+  "name": "竞赛数学公式_2",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x = 2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_3",
+  "name": "竞赛数学公式_3",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y = 5",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_4",
+  "name": "竞赛数学公式_4",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(2) - g(2) = 2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_5",
+  "name": "竞赛数学公式_5",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=x^3+3",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_6",
+  "name": "竞赛数学公式_6",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x) = 2x^2 + 2x +1",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_7",
+  "name": "竞赛数学公式_7",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=f(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_8",
+  "name": "竞赛数学公式_8",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(3)=1",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_9",
+  "name": "竞赛数学公式_9",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(2x)=2f(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_10",
+  "name": "竞赛数学公式_10",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2+kx+5 = 0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_11",
+  "name": "竞赛数学公式_11",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "|x + 5| = 20",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_12",
+  "name": "竞赛数学公式_12",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "(x+2)(x-3)=14",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_13",
+  "name": "竞赛数学公式_13",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y = mx+b",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_14",
+  "name": "竞赛数学公式_14",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2-6y-3=-y^2-4x",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_15",
+  "name": "竞赛数学公式_15",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x) = x^2-2x + m",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_16",
+  "name": "竞赛数学公式_16",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x) = x^2-2x + 4m",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_17",
+  "name": "竞赛数学公式_17",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x = 4",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_18",
+  "name": "竞赛数学公式_18",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "2f(4) = g(4)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_19",
+  "name": "竞赛数学公式_19",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=u(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_20",
+  "name": "竞赛数学公式_20",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "11x^2-44x-99=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_21",
+  "name": "竞赛数学公式_21",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "(x+r)^2 = s,",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_22",
+  "name": "竞赛数学公式_22",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "|x-7| = |x+1|",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_23",
+  "name": "竞赛数学公式_23",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "|y-6| + 2y = 9",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_24",
+  "name": "竞赛数学公式_24",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2-mx+2=0.",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_25",
+  "name": "竞赛数学公式_25",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2-px+q=0.",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_26",
+  "name": "竞赛数学公式_26",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=3x-2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_27",
+  "name": "竞赛数学公式_27",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x)=f(f(f(f(x))))",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_28",
+  "name": "竞赛数学公式_28",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2+y^2=-2x-10y-16",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_29",
+  "name": "竞赛数学公式_29",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "P = (4,2)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_30",
+  "name": "竞赛数学公式_30",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "(x-5)(2x+9) = x^2-13x+40.",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_31",
+  "name": "竞赛数学公式_31",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x = 3",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_32",
+  "name": "竞赛数学公式_32",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2-5x+5=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_33",
+  "name": "竞赛数学公式_33",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x)=-f(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_34",
+  "name": "竞赛数学公式_34",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "h(x)=f(-x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_35",
+  "name": "竞赛数学公式_35",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=g(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_36",
+  "name": "竞赛数学公式_36",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=h(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_37",
+  "name": "竞赛数学公式_37",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2-5x+5=9",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_38",
+  "name": "竞赛数学公式_38",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=ax^2+bx+c",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_39",
+  "name": "竞赛数学公式_39",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x-y=15",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_40",
+  "name": "竞赛数学公式_40",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2+y^2=-4x+6y-12",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_41",
+  "name": "竞赛数学公式_41",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x = -2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_42",
+  "name": "竞赛数学公式_42",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=|x+7|-|x-2|",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_43",
+  "name": "竞赛数学公式_43",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "a-b+c=5",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_44",
+  "name": "竞赛数学公式_44",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "b-c+d=6",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_45",
+  "name": "竞赛数学公式_45",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "c-d+a=3",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_46",
+  "name": "竞赛数学公式_46",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "d-a+b=2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_47",
+  "name": "竞赛数学公式_47",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "xy=27",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_48",
+  "name": "竞赛数学公式_48",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2 + bx -28 = 0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_49",
+  "name": "竞赛数学公式_49",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y = ax + b",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_50",
+  "name": "竞赛数学公式_50",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "a^7xy-a^6y-a^5x=a^4(b^4-1)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_51",
+  "name": "竞赛数学公式_51",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "(a^mx-a^n)(a^py-a^2)=a^4b^4",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_52",
+  "name": "竞赛数学公式_52",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=x^2+1",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_53",
+  "name": "竞赛数学公式_53",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x)=2x-1",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_54",
+  "name": "竞赛数学公式_54",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=x+2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_55",
+  "name": "竞赛数学公式_55",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x)=x/3.",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_56",
+  "name": "竞赛数学公式_56",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x)=f(x+a)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_57",
+  "name": "竞赛数学公式_57",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "-2x + y = k",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_58",
+  "name": "竞赛数学公式_58",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "0.5x + y = 14",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_59",
+  "name": "竞赛数学公式_59",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x = -8.4",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_60",
+  "name": "竞赛数学公式_60",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2 - (1A)x + A0 = 0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_61",
+  "name": "竞赛数学公式_61",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "A = 2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_62",
+  "name": "竞赛数学公式_62",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=j(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_63",
+  "name": "竞赛数学公式_63",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=h(2x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_64",
+  "name": "竞赛数学公式_64",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=2j(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_65",
+  "name": "竞赛数学公式_65",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=3x^3+2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_66",
+  "name": "竞赛数学公式_66",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "h(4x-1) = 2x + 7",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_67",
+  "name": "竞赛数学公式_67",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "h(x) = x",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_68",
+  "name": "竞赛数学公式_68",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "b=12-5a",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_69",
+  "name": "竞赛数学公式_69",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x)=3x-4",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_70",
+  "name": "竞赛数学公式_70",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(a)=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_71",
+  "name": "竞赛数学公式_71",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x) = x^k",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_72",
+  "name": "竞赛数学公式_72",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2+12x=73",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_73",
+  "name": "竞赛数学公式_73",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "F(a, b, c, d) = a^b + c * d",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_74",
+  "name": "竞赛数学公式_74",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "F(2, x, 4, 11) = 300",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_75",
+  "name": "竞赛数学公式_75",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "a = 17",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_76",
+  "name": "竞赛数学公式_76",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "p(x) = 2x - 7",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_77",
+  "name": "竞赛数学公式_77",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "q(x) = 3x - b",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_78",
+  "name": "竞赛数学公式_78",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "p(q(4)) = 7",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_79",
+  "name": "竞赛数学公式_79",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x = 10",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_80",
+  "name": "竞赛数学公式_80",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y = 15",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_81",
+  "name": "竞赛数学公式_81",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2 - 11x - 42 = 0.",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_82",
+  "name": "竞赛数学公式_82",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "log_x 81=log_2 16",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_83",
+  "name": "竞赛数学公式_83",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "-35=-x^2-2x?",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_84",
+  "name": "竞赛数学公式_84",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "4x+7y+c=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_85",
+  "name": "竞赛数学公式_85",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y = -16t^2 + 80t",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_86",
+  "name": "竞赛数学公式_86",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=3x-8",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_87",
+  "name": "竞赛数学公式_87",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x+y = 10",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_88",
+  "name": "竞赛数学公式_88",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "2x+y = 13",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_89",
+  "name": "竞赛数学公式_89",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f (x) = x + 3",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_90",
+  "name": "竞赛数学公式_90",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x) = x^2 -6",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_91",
+  "name": "竞赛数学公式_91",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=c",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_92",
+  "name": "竞赛数学公式_92",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x(3x-7)=-3",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_93",
+  "name": "竞赛数学公式_93",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x) = x^2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_94",
+  "name": "竞赛数学公式_94",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x) = 3x + 4",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_95",
+  "name": "竞赛数学公式_95",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "2x + 3y = 6",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_96",
+  "name": "竞赛数学公式_96",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "6a^2 + 5a + 4 = 3,",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_97",
+  "name": "竞赛数学公式_97",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=x^2-2x",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_98",
+  "name": "竞赛数学公式_98",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y = ax^2 + bx + c",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_99",
+  "name": "竞赛数学公式_99",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "ab=48",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_100",
+  "name": "竞赛数学公式_100",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "(x+y+z)(xy+xz+yz)=25",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_101",
+  "name": "竞赛数学公式_101",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2(y+z)+y^2(x+z)+z^2(x+y)=7",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_102",
+  "name": "竞赛数学公式_102",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "(2008+x)^2=x^2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_103",
+  "name": "竞赛数学公式_103",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "9x^2+nx+1=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_104",
+  "name": "竞赛数学公式_104",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2+y^2=2x+4y-1",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_105",
+  "name": "竞赛数学公式_105",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2-13x+4=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_106",
+  "name": "竞赛数学公式_106",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "s(x)=x+1",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_107",
+  "name": "竞赛数学公式_107",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y = -4.9t^2 + 23.8t",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_108",
+  "name": "竞赛数学公式_108",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "|n + 6| = 2 - n",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_109",
+  "name": "竞赛数学公式_109",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "z = -9",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_110",
+  "name": "竞赛数学公式_110",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(3)=4",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_111",
+  "name": "竞赛数学公式_111",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(5)=1",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_112",
+  "name": "竞赛数学公式_112",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(2)=5",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_113",
+  "name": "竞赛数学公式_113",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(f(x)) = 2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_114",
+  "name": "竞赛数学公式_114",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "9x^2-18x+9y^2+36y+44=0.",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_115",
+  "name": "竞赛数学公式_115",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2-2x +y^2-10y+25=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_116",
+  "name": "竞赛数学公式_116",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2-8x+y^2-10y+37=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_117",
+  "name": "竞赛数学公式_117",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "a+b = 9",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_118",
+  "name": "竞赛数学公式_118",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "a * b = 20",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_119",
+  "name": "竞赛数学公式_119",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "a Z b = b + 10a - a^2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_120",
+  "name": "竞赛数学公式_120",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2 + 8x - 1 = 0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_121",
+  "name": "竞赛数学公式_121",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "(x + a)^2 = b",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_122",
+  "name": "竞赛数学公式_122",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "|4x|+3=35",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_123",
+  "name": "竞赛数学公式_123",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "(3x+5)(2x-9) = 0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_124",
+  "name": "竞赛数学公式_124",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x) = 2x - 5",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_125",
+  "name": "竞赛数学公式_125",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2+y^2=14x+48y",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_126",
+  "name": "竞赛数学公式_126",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "4x^2+ax+8x+9=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_127",
+  "name": "竞赛数学公式_127",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x@y=xy-2x",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_128",
+  "name": "竞赛数学公式_128",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "5x+3y=100",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_129",
+  "name": "竞赛数学公式_129",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "ax^2+20x+7=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_130",
+  "name": "竞赛数学公式_130",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "9s+5t=108",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_131",
+  "name": "竞赛数学公式_131",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "t(x) = 3x-8",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_132",
+  "name": "竞赛数学公式_132",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "s(t(x)) = x^2 + 3x - 2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_133",
+  "name": "竞赛数学公式_133",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2-6x +y^2-14y +33=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_134",
+  "name": "竞赛数学公式_134",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "T = 4",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_135",
+  "name": "竞赛数学公式_135",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "H = 8",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_136",
+  "name": "竞赛数学公式_136",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "|x-1| = |x-2|",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_137",
+  "name": "竞赛数学公式_137",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "A=(0,1),",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_138",
+  "name": "竞赛数学公式_138",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "B=(2,5),",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_139",
+  "name": "竞赛数学公式_139",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "C=(5,2),",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_140",
+  "name": "竞赛数学公式_140",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "D=(7,0).",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_141",
+  "name": "竞赛数学公式_141",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "|y|=2(|y|-1)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_142",
+  "name": "竞赛数学公式_142",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "2x^2+2y^2+10x-6y-18=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_143",
+  "name": "竞赛数学公式_143",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2 + (2a+1)x + a^2 = 0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_144",
+  "name": "竞赛数学公式_144",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "2x^2+24x-60=x(x+13)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_145",
+  "name": "竞赛数学公式_145",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=2x^2-10x-10",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_146",
+  "name": "竞赛数学公式_146",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=x^2-4x+6",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_147",
+  "name": "竞赛数学公式_147",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x)=15",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_148",
+  "name": "竞赛数学公式_148",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x) = (x+2)^2-5",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_149",
+  "name": "竞赛数学公式_149",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(x) = f(-2x),",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_150",
+  "name": "竞赛数学公式_150",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y = f(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_151",
+  "name": "竞赛数学公式_151",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(f(f(x)))=-3",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_152",
+  "name": "竞赛数学公式_152",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=f(f(x))",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_153",
+  "name": "竞赛数学公式_153",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "27^8=9^q",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_154",
+  "name": "竞赛数学公式_154",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=ax^3+bx^2+cx+d",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_155",
+  "name": "竞赛数学公式_155",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=2x+4",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_156",
+  "name": "竞赛数学公式_156",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "Q = 5+2i",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_157",
+  "name": "竞赛数学公式_157",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "E = i",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_158",
+  "name": "竞赛数学公式_158",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "D = 5-2i",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_159",
+  "name": "竞赛数学公式_159",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "a_4a_5 = 13",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_160",
+  "name": "竞赛数学公式_160",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "3x-2y = 6",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_161",
+  "name": "竞赛数学公式_161",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "2010a + 2014b = 2018",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_162",
+  "name": "竞赛数学公式_162",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "2012a + 2016b = 2020",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_163",
+  "name": "竞赛数学公式_163",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "1-iz = -1 + iz",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_164",
+  "name": "竞赛数学公式_164",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "i^2 = -1",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_165",
+  "name": "竞赛数学公式_165",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^3 + 3x^2 - 10x = 0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_166",
+  "name": "竞赛数学公式_166",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "n=x^2+2x+17",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_167",
+  "name": "竞赛数学公式_167",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "d=2x+5",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_168",
+  "name": "竞赛数学公式_168",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "ax^2+20x+c=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_169",
+  "name": "竞赛数学公式_169",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "a+c=29",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_170",
+  "name": "竞赛数学公式_170",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "\",xmin,xmax,Ticks(laxis,Step=1.0,Size=2,NoZero),Arrows(6),above=true); yaxis(\"",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_171",
+  "name": "竞赛数学公式_171",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=ax+b",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_172",
+  "name": "竞赛数学公式_172",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "kx^2+20x+k=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_173",
+  "name": "竞赛数学公式_173",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=p(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_174",
+  "name": "竞赛数学公式_174",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=q(x)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_175",
+  "name": "竞赛数学公式_175",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x=-4,",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_176",
+  "name": "竞赛数学公式_176",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "3^n = 3 * 9^3 * 81^2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_177",
+  "name": "竞赛数学公式_177",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "2x + y = 6",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_178",
+  "name": "竞赛数学公式_178",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x=f(y)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_179",
+  "name": "竞赛数学公式_179",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x) = 3x^2 - 7",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_180",
+  "name": "竞赛数学公式_180",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "g(f(4)) = 9",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_181",
+  "name": "竞赛数学公式_181",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(x)=ax^2+bx+c",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_182",
+  "name": "竞赛数学公式_182",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "3x + y = 10",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_183",
+  "name": "竞赛数学公式_183",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x + 3y = 14",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_184",
+  "name": "竞赛数学公式_184",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=x^2+10x+21",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_185",
+  "name": "竞赛数学公式_185",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "z=x^2+2y^2+6x-4y+22?",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_186",
+  "name": "竞赛数学公式_186",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f^2(x)=f(f(x))",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_187",
+  "name": "竞赛数学公式_187",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "f(2)=f^a(2)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_188",
+  "name": "竞赛数学公式_188",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=|x^2-6x+5|",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_189",
+  "name": "竞赛数学公式_189",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "log_6 (4x)=2",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_190",
+  "name": "竞赛数学公式_190",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "4x+2y=8",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_191",
+  "name": "竞赛数学公式_191",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "14mn = 55 - 7m - 2n",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_192",
+  "name": "竞赛数学公式_192",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y = (x-5)(x^2+5x+6)",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_193",
+  "name": "竞赛数学公式_193",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x^2-4x+7=19",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_194",
+  "name": "竞赛数学公式_194",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "y=3x^2+6x+9?",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_195",
+  "name": "竞赛数学公式_195",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x|x| = 2x+1",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_196",
+  "name": "竞赛数学公式_196",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "m+n=5",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_197",
+  "name": "竞赛数学公式_197",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "h = -16t^2 - 24t +160",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_198",
+  "name": "竞赛数学公式_198",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "x = ay^2 + by + c",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_199",
+  "name": "竞赛数学公式_199",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "8x^2+15x+c=0",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ },
+ {
+  "id": "comp_math_200",
+  "name": "竞赛数学公式_200",
+  "category": "mathematics",
+  "subcategory": "competition",
+  "formula": "3x+5y=20",
+  "difficulty": "advanced",
+  "source": "competition_math"
+ }
+]

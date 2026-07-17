@@ -1,0 +1,702 @@
+[
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "METHOD",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "LINE_COMMENT",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "FOR",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "WHILE",
+    "scenario": "complete_current_header_inner_block_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "TRY",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "CATCH",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "BLOCK_COMMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "STATEMENT",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  },
+  {
+    "id": null,
+    "prompt": "",
+    "target": "",
+    "block_type": "IF",
+    "scenario": "complete_current_header_empty_completion"
+  }
+]

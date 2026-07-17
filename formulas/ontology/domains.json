@@ -1,0 +1,140 @@
+{
+  "version": "1.0.0",
+  "description": "HeartFlow 领域本体一级域定义（≥12域），包含层级结构、典型类比关系与因果骨架。",
+  "topLevelDomains": [
+    {
+      "id": "mathematics",
+      "name": "数学",
+      "nameEn": "Mathematics",
+      "description": "数量、结构、空间与变化的研究。",
+      "children": ["algebra", "geometry", "analysis", "number_theory", "probability", "topology", "logic"],
+      "analogySeeds": ["pattern", "proof", "variable", "function", "axiom"],
+      "causalSeeds": ["theorem", "derivation", "computation"]
+    },
+    {
+      "id": "physics",
+      "name": "物理",
+      "nameEn": "Physics",
+      "description": "物质、能量、时空与相互作用的基本规律。",
+      "children": ["mechanics", "thermodynamics", "electromagnetism", "optics", "quantum", "relativity", "statistical_physics"],
+      "analogySeeds": ["force", "energy", "field", "particle", "wave"],
+      "causalSeeds": ["experiment", "model", "prediction", "measurement"]
+    },
+    {
+      "id": "chemistry",
+      "name": "化学",
+      "nameEn": "Chemistry",
+      "description": "物质的组成、结构、性质与变化规律。",
+      "children": ["organic", "inorganic", "physical_chemistry", "analytical", "biochemistry", "materials"],
+      "analogySeeds": ["molecule", "reaction", "bond", "catalyst", "phase"],
+      "causalSeeds": ["synthesis", "decomposition", "equilibrium"]
+    },
+    {
+      "id": "biology",
+      "name": "生物",
+      "nameEn": "Biology",
+      "description": "生命现象的结构、功能、发生与发展规律。",
+      "children": ["molecular_biology", "cell_biology", "genetics", "ecology", "evolution", "neuroscience", "immunology"],
+      "analogySeeds": ["cell", "gene", "protein", "organism", "ecosystem"],
+      "causalSeeds": ["metabolism", "reproduction", "mutation", "selection"]
+    },
+    {
+      "id": "medicine",
+      "name": "医学",
+      "nameEn": "Medicine",
+      "description": "人类健康与疾病的预防、诊断与治疗。",
+      "children": ["internal_medicine", "surgery", "pharmacology", "pathology", "radiology", "public_health"],
+      "analogySeeds": ["symptom", "diagnosis", "treatment", "pathogen", "immune"],
+      "causalSeeds": ["pathogenesis", "prognosis", "intervention", "recovery"]
+    },
+    {
+      "id": "psychology",
+      "name": "心理",
+      "nameEn": "Psychology",
+      "description": "心智、行为与情绪过程的研究。",
+      "children": ["cognitive_psychology", "social_psychology", "clinical_psychology", "developmental_psychology", "neuropsychology"],
+      "analogySeeds": ["cognition", "emotion", "behavior", "memory", "motivation"],
+      "causalSeeds": ["stimulus", "response", "bias", "reinforcement"]
+    },
+    {
+      "id": "economics",
+      "name": "经济",
+      "nameEn": "Economics",
+      "description": "稀缺资源下的选择、生产、分配与消费。",
+      "children": ["microeconomics", "macroeconomics", "finance", "game_theory", "behavioral_economics", "econometrics"],
+      "analogySeeds": ["market", "price", "cost", "incentive", "utility"],
+      "causalSeeds": ["supply", "demand", "growth", "inflation", "equilibrium"]
+    },
+    {
+      "id": "law",
+      "name": "法律",
+      "nameEn": "Law",
+      "description": "权利义务、行为规范与司法裁判体系。",
+      "children": ["constitutional_law", "civil_law", "criminal_law", "administrative_law", "international_law"],
+      "analogySeeds": ["right", "duty", "contract", "liability", "precedent"],
+      "causalSeeds": ["legislation", "adjudication", "enforcement", "compliance"]
+    },
+    {
+      "id": "philosophy",
+      "name": "哲学",
+      "nameEn": "Philosophy",
+      "description": "存在、知识、价值、理性与语言的根本问题。",
+      "children": ["metaphysics", "epistemology", "ethics", "logic", "aesthetics", "political_philosophy"],
+      "analogySeeds": ["truth", "being", "reason", "value", "meaning"],
+      "causalSeeds": ["argument", "justification", "inference", "refutation"]
+    },
+    {
+      "id": "engineering",
+      "name": "工程",
+      "nameEn": "Engineering",
+      "description": "科学原理在系统、结构与工艺中的实际应用。",
+      "children": ["civil_engineering", "mechanical_engineering", "electrical_engineering", "software_engineering", "systems_engineering"],
+      "analogySeeds": ["system", "component", "signal", "control", "reliability"],
+      "causalSeeds": ["design", "manufacture", "test", "failure", "optimization"]
+    },
+    {
+      "id": "linguistics",
+      "name": "语言学",
+      "nameEn": "Linguistics",
+      "description": "语言的结构、功能、历史与使用机制。",
+      "children": ["phonetics", "phonology", "morphology", "syntax", "semantics", "pragmatics", "sociolinguistics"],
+      "analogySeeds": ["word", "grammar", "meaning", "utterance", "context"],
+      "causalSeeds": ["acquisition", "change", "translation", "interpretation"]
+    },
+    {
+      "id": "history",
+      "name": "历史",
+      "nameEn": "History",
+      "description": "过去人类社会与事件的记录、解释与意义建构。",
+      "children": ["ancient_history", "medieval_history", "modern_history", "economic_history", "history_of_science"],
+      "analogySeeds": ["era", "civilization", "war", "revolution", "trade"],
+      "causalSeeds": ["causation", "consequence", "continuity", "transformation"]
+    },
+    {
+      "id": "computer_science",
+      "name": "计算机科学",
+      "nameEn": "Computer Science",
+      "description": "计算、信息处理与软件系统的理论与技术。",
+      "children": ["algorithms", "data_structures", "artificial_intelligence", "databases", "networks", "security", "human_computer_interaction"],
+      "analogySeeds": ["algorithm", "data", "computation", "state", "interface"],
+      "causalSeeds": ["execution", "transformation", "optimization", "failure", "learning"]
+    },
+    {
+      "id": "arts",
+      "name": "艺术",
+      "nameEn": "Arts",
+      "description": "审美表达与创造性产物的创作、传播与接受。",
+      "children": ["visual_arts", "music", "literature", "performing_arts", "film", "design"],
+      "analogySeeds": ["form", "style", "expression", "composition", "aesthetics"],
+      "causalSeeds": ["creation", "interpretation", "influence", "reception"]
+    }
+  ],
+  "meta": {
+    "count": 14,
+    "linkTypes": {
+      "hierarchical": "父域→子域",
+      "analogy": "A域概念≈B域概念",
+      "causal": "A域因果机制→B域因果机制"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+[
+  [
+    "quantum_field_lagrangian",
+    "量子场拉格朗日量",
+    "L = -¼ F_{μν}F^{μν} + ψ¯(iγ^μD_μ - m)ψ",
+    "quantum_computing"
+  ],
+  [
+    "quantum_field_feynman_propagator",
+    "费曼传播子",
+    "D_F(x-y) = ∫ d⁴p/(2π)⁴ exp(-ip·(x-y))/(p²-m²+iε)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_field_s_matrix",
+    "S 矩阵",
+    "S = T exp(-i∫ d⁴x H_int(x))",
+    "quantum_computing"
+  ],
+  [
+    "quantum_field_cross_section",
+    "散射截面",
+    "dσ = (1/(4E₁E₂v_rel)) |M|² dΠ_f",
+    "quantum_computing"
+  ],
+  [
+    "quantum_field_beta_function",
+    "β 函数（跑动耦合）",
+    "β(g) = μ d(g)/dμ",
+    "quantum_computing"
+  ],
+  [
+    "quantum_field_anomaly",
+    "量子反常",
+    "∂_μ J^μ = (g²/16π²) F_{μν} F^{μν}",
+    "quantum_computing"
+  ],
+  [
+    "quantum_field_path_integral",
+    "路径积分",
+    "Z = ∫ Dφ exp(iS[φ]/ℏ)",
+    "quantum_computing"
+  ],
+  [
+    "quantum_field_ward_identity",
+    "Ward 恒等式",
+    "q_μ Γ^μ(p,q) = S⁻¹(p+q) - S⁻¹(p)",
+    "quantum_computing"
+  ]
+]
