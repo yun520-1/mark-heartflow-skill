@@ -372,10 +372,25 @@ async function runAllTests() {
     failed++;
   }
 
-  // 汇总
-  console.log('\\n' + '='.repeat(50));
+  // 6. 安全护栏测试 (safety-guardrails.js) — 审计覆盖率补充
+  console.log('\n🛡️ 安全护栏 (safety-guardrails.js)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'safety-guardrails.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ 安全护栏测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
 
-  // 5. 核心管线测试 (v5.14.0)
+  // 汇总
+  console.log('\n' + '='.repeat(50));
   console.log('\\n🔗 核心管线 (core-pipeline.js)');
   try {
     const { execSync } = require('child_process');
