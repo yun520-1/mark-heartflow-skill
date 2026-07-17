@@ -72,6 +72,9 @@ class SmartUpgradeEngine {
     this.upgradeHistoryPath = path.isAbsolute(rootPath)
       ? path.join(rootPath, 'data/upgrade-history.json')
       : path.join(__dirname, '..', '..', 'data', 'upgrade-history.json');
+    this.selfStatePath = path.isAbsolute(rootPath)
+      ? path.join(rootPath, 'data/self-state-history.json')
+      : path.join(__dirname, '..', '..', 'data', 'self-state-history.json');
     
     // 扩展后的搜索关键词（覆盖更多AI领域）
     this.searchKeywords = [
@@ -676,6 +679,35 @@ module.exports = { ${className} };
       // 持久化失败不影响主流程
     }
     return entry;
+  }
+
+  /**
+   * 记录心虫自我状态快照（身份连续性）
+   * 每次自我升级/审计后调用，让下次启动继承"我是谁、我在变成什么"
+   */
+  recordSelfState(snapshot) {
+    const entry = Object.assign({
+      timestamp: Date.now(),
+      version: this._lastVersion || 'unknown'
+    }, snapshot);
+    try {
+      let states = [];
+      if (fs.existsSync(this.selfStatePath)) {
+        states = JSON.parse(fs.readFileSync(this.selfStatePath, 'utf8'));
+      }
+      states.push(entry);
+      if (states.length > 100) states = states.slice(-100);
+      fs.writeFileSync(this.selfStatePath, JSON.stringify(states, null, 2));
+    } catch (e) { /* ignore */ }
+    return entry;
+  }
+
+  getLatestSelfState() {
+    try {
+      if (!fs.existsSync(this.selfStatePath)) return null;
+      const states = JSON.parse(fs.readFileSync(this.selfStatePath, 'utf8'));
+      return states.length > 0 ? states[states.length - 1] : null;
+    } catch (e) { return null; }
   }
 
   /**
