@@ -309,7 +309,7 @@ class ThoughtChain {
                   salienceThreshold: est?.loadLevel === 'high' ? 0.65 : est?.loadLevel === 'moderate' ? 0.55 : 0.5,
                 };
               }
-            } catch(e) {}
+            } catch(e) {} // 防御性: 模块加载/调用失败不阻断主流程
             return { precisionWeight: 0.7, salienceThreshold: 0.5 };
           })(),
           timestamp: Date.now()
@@ -809,7 +809,7 @@ class ThoughtChain {
                   triggeredRestraint: check?.level === 'over',
                 };
               }
-            } catch(e) {}
+            } catch(e) {} // 防御性: 模块加载/调用失败不阻断主流程
             return null;
           })(),
         };
@@ -1226,7 +1226,7 @@ ThoughtChain.prototype.runLayerEnrichment = function(input, hypotheses, conclusi
         salienceThreshold: est.loadLevel === 'high' ? 0.65 : est.loadLevel === 'moderate' ? 0.55 : 0.5,
       };
     }
-  } catch(e) {}
+  } catch(e) {} // 防御性: 模块加载/调用失败不阻断主流程
   try {
     const AI = require('../decision/active-inference.js');
     const aiEngine = new AI.ActiveInference();
@@ -1237,7 +1237,7 @@ ThoughtChain.prototype.runLayerEnrichment = function(input, hypotheses, conclusi
       novelty: h.isNovel ? 0.8 : 0.3,
     }));
     if (candidates.length > 0) enrichment.activeInference = aiEngine.decide(candidates, { timePressure: 0.3 });
-  } catch(e) {}
+  } catch(e) {} // 防御性: 模块加载/调用失败不阻断主流程
   try {
     const draft = conclusion || '';
     if (draft.length > 10) {
@@ -1245,7 +1245,7 @@ ThoughtChain.prototype.runLayerEnrichment = function(input, hypotheses, conclusi
       const check = checkCertainty(draft);
       enrichment.biasCheck = { overconfidence: check.level === 'over', certaintyLevel: check.level || 'normal' };
     }
-  } catch(e) {}
+  } catch(e) {} // 防御性: 模块加载/调用失败不阻断主流程
   return enrichment;
 };
 

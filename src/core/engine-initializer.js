@@ -379,12 +379,12 @@ function start(hf, HeartFlowClass) {
   hf.utils = _CoreUtils();
   hf.graph = _Graph();
 
-  try { hf.slots = new (_Slots().Slots)({ dataDir: path.join(hf.rootPath, 'data') }); } catch (e) {}
+  try { hf.slots = new (_Slots().Slots)({ dataDir: path.join(hf.rootPath, 'data') }); } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
   try {
     const observeMod = _Observe();
     hf.observe = observeMod.createObserve(hf.memory, { autoConsolidate: true });
     hf.consolidate = { consolidate: (...args) => hf.observe.consolidate(...args), stop: () => hf.observe.stop(), stats: () => hf.observe.stats() };
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   const { runDiagnostic } = _SelfDiagnostic();
   hf.diagnostic = { run: runDiagnostic };
@@ -392,7 +392,7 @@ function start(hf, HeartFlowClass) {
   try {
     hf.mindSpace = new (_MindSpaceGuardian().MindSpaceGuardian)(hf.memory);
     hf._mindSpace = hf.mindSpace;
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   try {
     hf.globalWorkspace = new (_GlobalWorkspace().GlobalWorkspace)(hf.rootPath);
@@ -400,55 +400,55 @@ function start(hf, HeartFlowClass) {
     hf.phenomenology = new (_PhenomenologyEngine().PhenomenologyEngine)();
     hf.consciousnessSelf = new (_ConsciousnessSelfModel().SelfModel)(hf.rootPath);
     hf.consciousness = { globalWorkspace: hf.globalWorkspace, mindWanderer: hf.mindWanderer, phenomenology: hf.phenomenology, self: hf.consciousnessSelf, getStatus: () => ({ workspace: hf.globalWorkspace?.cycleCount || 0, wanderer: hf.mindWanderer?.isActive || false }) };
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   try {
     const ToM = _TomEngine ? _TomEngine() : null;
     if (ToM?.ToMEngine) hf.tomEngine = new ToM.ToMEngine({ maxAgents: 5 });
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   try {
     hf.sageGuardian = new (_SAGEGuardian().SAGEGuardian)(hf.rootPath);
     hf.boundaryNeg = new (_BoundaryNegotiation().BoundaryNegotiation)(hf.rootPath);
     hf.valueInternalizer = new (_ValueInternalizer().ValueInternalizer)(hf.rootPath);
     hf.ethics = { guardian: hf.sageGuardian, boundary: hf.boundaryNeg, values: hf.valueInternalizer, check: (input, context) => ({ guardianResult: hf.sageGuardian?.classifyContent(input, context), boundaryResult: hf.boundaryNeg?.assess(input) }) };
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   try {
     const InnerOS = (_InnerOS().InnerOS);
     hf.innerOS = new InnerOS(hf);
   } catch (e) { hf.innerOS = null; }
 
-  try { hf.transmission = new (_TransmissionEngine().TransmissionEngine)(hf.rootPath); } catch (e) {}
-  try { hf.heartLogic = new (_HeartLogic().HeartLogic)(); } catch (e) {}
+  try { hf.transmission = new (_TransmissionEngine().TransmissionEngine)(hf.rootPath); } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
+  try { hf.heartLogic = new (_HeartLogic().HeartLogic)(); } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   try {
     const { OutputChecklist } = require('./output-checklist.js');
     hf.outputChecklist = new OutputChecklist();
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
   try {
     const { PreferenceGuard } = require('./preference-guard.js');
     hf.preferenceGuard = new PreferenceGuard();
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   try {
     const { AgentPsychology } = require('../identity/agent-psychology.js');
     hf.agentPsychology = new AgentPsychology(hf);
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
   try {
     const { AgentPhilosophy } = require('../identity/agent-philosophy.js');
     hf.agentPhilosophy = new AgentPhilosophy(hf);
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
   try {
     const { AISelfPositioning } = require('../identity/ai-self-positioning.js');
     hf.aiSelfPositioning = new AISelfPositioning({ heartFlow: hf, codeRoot: __dirname });
     hf.selfPositioning = hf.aiSelfPositioning;
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   try {
     const { PhilosophyToDecision } = require('../identity/philosophy-to-decision.js');
     hf.philosophyToDecision = new PhilosophyToDecision(hf);
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   try {
     const drMod = require('./decision-router.js');
@@ -461,15 +461,15 @@ function start(hf, HeartFlowClass) {
   try {
     const { DecisionExecutor } = require('./decision-executor.js');
     hf.decisionExecutor = new DecisionExecutor(hf);
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
   try {
     const { FieldInjector } = require('./field-injector.js');
     hf.fieldInjector = new FieldInjector();
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
   try {
     const { DecisionFeedback } = require('./decision-feedback.js');
     hf.decisionFeedback = new DecisionFeedback(hf.decisionRouter);
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   try {
     const { JudgmentEngine } = require('./judgment-engine.js');
@@ -494,16 +494,16 @@ function start(hf, HeartFlowClass) {
   try {
     const { DebateAnalyzer } = require('../reasoning/debate-analyzer.js');
     hf.debate = new DebateAnalyzer(hf);
-  } catch (e) {}
+  } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   try {
     const APMod = require('../planner/adaptive-planner.js');
     hf.adaptivePlanner = new (APMod.AdaptivePlanner)();
   } catch (e) { _boundedPush(hf._initErrors, { module: 'adaptivePlanner', error: e.message }, 500); }
 
-  try { hf.codeExecutor = new (require('../code/code-executor.js').CodeExecutor)(); } catch (e) {}
-  try { hf.codePlanner = new (require('../code/code-planner.js').CodePlanner)(); } catch (e) {}
-  try { hf.codeWriter = new (require('../code/code-writer.js').CodeWriter)(); } catch (e) {}
+  try { hf.codeExecutor = new (require('../code/code-executor.js').CodeExecutor)(); } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
+  try { hf.codePlanner = new (require('../code/code-planner.js').CodePlanner)(); } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
+  try { hf.codeWriter = new (require('../code/code-writer.js').CodeWriter)(); } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
   const LATE_ADDITIONS = [
     'knowledgeBase', 'commonsenseEngine', 'causalInference', 'inferenceChain',

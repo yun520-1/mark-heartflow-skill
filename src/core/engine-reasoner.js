@@ -1050,7 +1050,7 @@ try { hf._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
 
             if (poisons) deepAnalysis.poisons = { dominant: poisons.dominantPoison, severity: poisons.severity, score: poisons.totalToxicity };
 
-          } catch(e) {}
+          } catch(e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
           try {
 
@@ -1058,7 +1058,7 @@ try { hf._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
 
             if (psych?.emotion) deepAnalysis.emotion = { pleasure: psych.emotion.pleasure, arousal: psych.emotion.arousal, dominance: psych.emotion.dominance, type: psych.emotion.emotionZh };
 
-          } catch(e) {}
+          } catch(e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
           try {
 
@@ -1066,7 +1066,7 @@ try { hf._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
 
             if (pos?.positioning) deepAnalysis.selfCheck = { isResonating: pos.positioning.isResonating, dominantDimension: pos.positioning.state?.dominantDimension, insight: pos.positioning.insight };
 
-          } catch(e) {}
+          } catch(e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
           deepAnalysis.correction = hf._generatePollutionCorrection(pollution, deepAnalysis.poisons, deepAnalysis.emotion);
 

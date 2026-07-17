@@ -614,7 +614,7 @@ function _searchUserMemories(hf) {
 
             }
 
-          } catch(e) {}
+          } catch(e) {} // 防御性: 模块加载/调用失败不阻断主流程
 
         }
 

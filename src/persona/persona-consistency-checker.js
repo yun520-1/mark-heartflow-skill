@@ -110,7 +110,7 @@ class PersonaConsistencyChecker {
     this._history = [];
     this._sinceLastReflection = 0;
     this._stats = { checked: 0, drifted: 0, corrected: 0, reflectionCount: 0 };
-    try { this.reflexion.reset(); } catch (e) {}
+    try { this.reflexion.reset(); } catch (e) {} // 防御性: 模块加载/调用失败不阻断主流程
   }
 
   _computeSignals(profile, input, output) {

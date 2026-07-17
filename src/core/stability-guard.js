@@ -526,7 +526,8 @@ class StabilityGuard {
   }
 
   summarizeAdvice(issues) {
-    return issues.slice(0, 3).map((issue) => issue.message).join(' | ');
+    if (!Array.isArray(issues) || issues.length === 0) return '';
+    return issues.slice(0, 3).map((issue) => (issue && issue.message) ? issue.message : String(issue)).join(' | ');
   }
 }
 
