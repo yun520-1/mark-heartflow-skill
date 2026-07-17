@@ -28,23 +28,14 @@ const MAX_CACHE_SIZE = 200;
  */
 // [REFACTOR] TODO: 超长函数 _boundedSet (641行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _boundedSet (641行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _boundedSet (641行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _boundedSet (641行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _boundedSet (641行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _boundedSet (641行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _boundedSet (641行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _boundedSet (641行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _boundedSet (641行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: _boundedSet (688行) — 建议拆分为独立子函数
 
 function _boundedSet(map, key, value, maxSize) {
   if (map.size >= maxSize && !map.has(key)) {
@@ -78,6 +69,9 @@ class SmartUpgradeEngine {
     this.logPath = path.isAbsolute(rootPath)
       ? path.join(rootPath, 'upgrade-log.json')
       : path.join(rootPath, 'upgrade-log.json');
+    this.upgradeHistoryPath = path.isAbsolute(rootPath)
+      ? path.join(rootPath, 'data/upgrade-history.json')
+      : path.join(__dirname, '..', '..', 'data', 'upgrade-history.json');
     
     // 扩展后的搜索关键词（覆盖更多AI领域）
     this.searchKeywords = [
@@ -659,17 +653,52 @@ module.exports = { ${className} };
   }
 
   /**
-   * 获取升级统计
+   * 记录一次自我升级（心虫主动修复/优化后调用，无需联网）
+   * 与 runUpgrade() 的 manifest 分离，专门沉淀"纠正自己"的经验
+   */
+  recordSelfUpgrade({ version, description, impact = 0, type = 'self-heal' } = {}) {
+    const entry = {
+      version: version || 'unknown',
+      description: description || '',
+      type,
+      impact: typeof impact === 'number' ? impact : 0,
+      timestamp: Date.now()
+    };
+    try {
+      let history = [];
+      if (fs.existsSync(this.upgradeHistoryPath)) {
+        history = JSON.parse(fs.readFileSync(this.upgradeHistoryPath, 'utf8'));
+      }
+      history.push(entry);
+      if (history.length > 200) history = history.slice(-200);
+      fs.writeFileSync(this.upgradeHistoryPath, JSON.stringify(history, null, 2));
+    } catch (e) {
+      // 持久化失败不影响主流程
+    }
+    return entry;
+  }
+
+  /**
+   * 获取升级统计（含联网升级 manifest + 自我升级历史）
    */
   getStats() {
     const manifest = this.loadManifest();
     const processed = manifest.processed || [];
+    let selfUpgrades = [];
+    try {
+      if (fs.existsSync(this.upgradeHistoryPath)) {
+        selfUpgrades = JSON.parse(fs.readFileSync(this.upgradeHistoryPath, 'utf8'));
+      }
+    } catch (e) { /* ignore */ }
+    const all = [...processed, ...selfUpgrades];
     return {
-      totalUpgrades: processed.length,
-      keywords: [...new Set(processed.map(p => p.keyword))],
-      lastUpgrade: manifest.stats?.lastUpgrade,
-      avgQuality: processed.length > 0
-        ? processed.reduce((sum, p) => sum + (p.quality || 0), 0) / processed.length
+      totalUpgrades: all.length,
+      networkUpgrades: processed.length,
+      selfUpgrades: selfUpgrades.length,
+      keywords: [...new Set(processed.map(p => p.keyword).filter(Boolean))],
+      lastUpgrade: (all.length > 0) ? Math.max(...all.map(u => u.timestamp || 0)) : (manifest.stats?.lastUpgrade || null),
+      avgQuality: all.length > 0
+        ? all.reduce((sum, p) => sum + (p.quality || p.impact || 0), 0) / all.length
         : 0
     };
   }
