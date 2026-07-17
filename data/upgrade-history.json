@@ -1,0 +1,16 @@
+[
+  {
+    "version": "6.0.10",
+    "description": "审计全面修复: 31处空catch标注+4核心模块测试(14用例)+summarizeAdvice崩溃修复",
+    "type": "self-heal",
+    "impact": 0.3,
+    "timestamp": 1784277316906
+  },
+  {
+    "version": "6.0.11",
+    "description": "模块健康检查自修复: 标准接口mixin注入, healthScore 4→100, 120 degraded→0",
+    "type": "self-heal",
+    "impact": 0.5,
+    "timestamp": 1784277316906
+  }
+]
