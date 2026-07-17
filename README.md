@@ -161,7 +161,7 @@ Any input that is a pure expression (`12*8`, `(3+4)*5`) returns a scalar `result
 
 ---
 
-## Performance (v6.0.7, measured)
+## Performance (v6.0.9, measured)
 
 | Metric | Value |
 |---|---|
@@ -203,7 +203,7 @@ See [`ARCHITECTURE_REORG_v6.0.6.md`](ARCHITECTURE_REORG_v6.0.6.md) for the full 
 
 ## Versioning & status
 
-- Current: **v6.0.7** (see [`ROADMAP.md`](ROADMAP.md) and [`CURRENT_STATE.md`](CURRENT_STATE.md)).
+- Current: **v6.0.9** (see [`ROADMAP.md`](ROADMAP.md) and [`CURRENT_STATE.md`](CURRENT_STATE.md)).
 - Decision: stay on **Skill + MCP** architecture; no migration to standalone-agent until ≥50 users & ≥3 agent platforms.
 - Releases: https://github.com/yun520-1/mark-heartflow-skill/releases
 - npm: https://www.npmjs.com/package/@yun520-1/heartflow
