@@ -37,6 +37,8 @@ const MAX_CACHE_SIZE = 200;
 
 
 
+// [REFACTOR] TODO: _boundedSet (751行) — 建议拆分为独立子函数
+
 function _boundedSet(map, key, value, maxSize) {
   if (map.size >= maxSize && !map.has(key)) {
     const firstKey = map.keys().next().value;
