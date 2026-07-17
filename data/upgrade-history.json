@@ -4,7 +4,7 @@
     "description": "审计全面修复: 31处空catch标注+4核心模块测试(14用例)+summarizeAdvice崩溃修复",
     "type": "self-heal",
     "impact": 0.3,
-    "timestamp": 1784277316906
+    "timestamp": 1784277316900
   },
   {
     "version": "6.0.11",
@@ -14,17 +14,10 @@
     "timestamp": 1784277316906
   },
   {
-    "version": "6.0.14",
-    "description": "自主进化: 测试覆盖率 0.14 偏低（源142:测试不足），建议补测试",
-    "type": "autonomous-audit",
-    "impact": 0.1,
-    "timestamp": 1784278630201
-  },
-  {
     "version": "6.0.15",
-    "description": "自主进化: 清理 63 处重复 REFACTOR TODO 注释块; 测试覆盖率 0.14 偏低（源310:测试44），建议补测试",
+    "description": "自主进化: 清理 63 处重复 REFACTOR TODO 注释块",
     "type": "autonomous-audit",
     "impact": 0.2,
-    "timestamp": 1784292247746
+    "timestamp": 1784292336989
   }
 ]
