@@ -3783,6 +3783,15 @@ class HeartFlow {
 
 
 
+    // ── [v6.1.0] WorldTreeBridge — 心虫 ↔ 外部 World Tree 记忆系统适配层
+    try {
+      const { ROUTES: wtRoutes } = require('../memory/worldtree-bridge');
+      for (const route of Object.keys(wtRoutes)) {
+        HeartFlow.ALLOWED_ROUTES.add(route);
+      }
+      _log.info('init', 'WorldTreeBridge 加载成功', { routes: Object.keys(wtRoutes).join(', ') });
+    } catch (e) { _boundedPush(this._initErrors, { module: 'worldtree', error: e.message }, MAX_HISTORY_SIZE); }
+
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
 
     this.heartflow = this;  // 让 dispatch('heartflow.introspect') 能找到实例
@@ -5338,6 +5347,16 @@ class HeartFlow {
     const method = route.slice(dot + 1);
 
 
+
+
+    // ─── v6.1.0 WorldTreeBridge 直连 ──────────────────────────────
+    if (subsystem === 'worldtree') {
+      const { ROUTES } = require('../memory/worldtree-bridge');
+      if (typeof ROUTES[route] !== 'function') {
+        throw new Error(`worldtree route '${route}' not found`);
+      }
+      return ROUTES[route](...args);
+    }
 
     // ─── v5.8.0 性能监控：内置子系统 ──────────────────────────────────
 
