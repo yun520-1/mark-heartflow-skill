@@ -19,5 +19,12 @@
     "type": "autonomous-audit",
     "impact": 0.1,
     "timestamp": 1784278630201
+  },
+  {
+    "version": "6.0.15",
+    "description": "自主进化: 清理 63 处重复 REFACTOR TODO 注释块; 测试覆盖率 0.14 偏低（源310:测试44），建议补测试",
+    "type": "autonomous-audit",
+    "impact": 0.2,
+    "timestamp": 1784292247746
   }
 ]
