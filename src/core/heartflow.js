@@ -1,6 +1,6 @@
 /**
 
- /** HeartFlow v5.5.6 — 自愈RL接线 + GoT判断引擎增强
+ /** HeartFlow v6.0.9 — 自愈RL接线 + GoT判断引擎增强
 
   *
 
@@ -792,23 +792,14 @@ function _createSpecialModule(subsystem, hf) {
 
 
 
-// [REFACTOR] TODO: 超长函数 _instantiateSpecialModule (2692行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _instantiateSpecialModule (2692行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _instantiateSpecialModule (2692行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _instantiateSpecialModule (2692行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _instantiateSpecialModule (2692行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _instantiateSpecialModule (2692行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _instantiateSpecialModule (2692行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: 超长函数 _instantiateSpecialModule (2692行) — 建议拆分为独立子函数
 
-// [REFACTOR] TODO: _instantiateSpecialModule (5387行) — 建议拆分为独立子函数
 
 function _instantiateSpecialModule(subsystem, Mod, hf) {
 
