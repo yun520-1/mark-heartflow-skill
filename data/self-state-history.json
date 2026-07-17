@@ -1,36 +1,11 @@
 [
   {
-    "timestamp": 1784278630201,
-    "version": "6.0.14",
-    "findings": {
-      "emptyCatchNoComment": 0,
-      "dupTodoBlocks": 0,
-      "testGaps": [],
-      "todoCount": 119,
-      "testRatio": 0.14193548387096774
-    },
-    "testsPassed": 179,
-    "notes": [
-      "测试覆盖率 0.14 偏低（源142:测试不足），建议补测试"
-    ],
-    "reflection": "我发现了自己可以改善的地方，并记录下来。改善是持续的过程，不是终点。"
-  },
-  {
-    "timestamp": 1784292247746,
+    "timestamp": 1784292336989,
     "version": "6.0.15",
-    "fixes": {
-      "dedupeTodo": 63
-    },
-    "testsPassed": 25,
-    "coverage": {
-      "src": 310,
-      "test": 44,
-      "ratio": 0.142
-    },
-    "notes": [
-      "清理 63 处重复 REFACTOR TODO 注释块",
-      "测试覆盖率 0.14 偏低（源310:测试44），建议补测试"
-    ],
-    "reflection": "我发现了自己的代码噪音并清理了。改善是持续的过程，不是终点。"
+    "fixes": { "dedupeTodo": 63 },
+    "testsPassed": 179,
+    "coverage": { "src": 310, "test": 44, "ratio": 0.142 },
+    "notes": ["测试覆盖率 0.14 偏低（源310:测试44），建议补测试"],
+    "reflection": "我发现了自己的代码噪音并清理了63处重复TODO块。改善是持续的过程，不是终点。"
   }
 ]

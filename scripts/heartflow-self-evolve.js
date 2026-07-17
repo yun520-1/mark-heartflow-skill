@@ -111,11 +111,14 @@ function main() {
 
   // 测试套件必须通过（回归门禁）—— 动态统计
   console.log('[self-evolve] 运行测试套件...');
-  const testOut = run(`node ${path.join(TEST_DIR, 'run-all.js')} 2>&1 | tail -30`);
+  const testOut = run(`node ${path.join(TEST_DIR, 'run-all.js')} 2>&1`);
   const failedM = /(\d+) failed/.exec(testOut);
   const failedCount = failedM ? parseInt(failedM[1], 10) : 0;
-  const passedM = /(\d+) 通过/.exec(testOut);
-  const passedCount = passedM ? parseInt(passedM[1], 10) : 0;
+  // 取最终汇总行的通过数（run-all.js 最后一个 "测试结果: N 通过" 是总计）
+  const allSummary = [...testOut.matchAll(/测试结果:\s*(\d+) 通过/g)];
+  const passedCount = allSummary.length > 0
+    ? parseInt(allSummary[allSummary.length - 1][1], 10)
+    : 0;
 
   if (failedCount > 0) {
     console.log('[self-evolve] 测试失败，中止自主升级（不引入回归）');
@@ -124,35 +127,52 @@ function main() {
   }
   console.log(`[self-evolve] 测试通过 ✓ (${passedCount} passed)`);
 
-  // 覆盖率审计（仅记录，不自动补测试——补测试需谨慎）
+  // 覆盖率审计（仅记录观察，不触发版本递增）
   const srcCount = parseInt(run(`find ${SRC} -name "*.js" ! -name "*.test.js" | wc -l`).trim(), 10) || 0;
   const testCount = parseInt(run(`find ${TEST_DIR} -name "*.test.js" | wc -l`).trim(), 10) || 0;
   const ratio = testCount / srcCount;
+  const observations = [];
   if (ratio < 0.3) {
-    notes.push(`测试覆盖率 ${ratio.toFixed(2)} 偏低（源${srcCount}:测试${testCount}），建议补测试`);
+    observations.push(`测试覆盖率 ${ratio.toFixed(2)} 偏低（源${srcCount}:测试${testCount}），建议补测试`);
   }
 
-  if (!changed && notes.length === 0) {
-    console.log('[self-evolve] 无需修复，心虫状态良好');
+  // 无真实代码改动 → 仅记录观察，不虚涨版本号
+  if (!changed) {
+    if (observations.length > 0) {
+      const { SmartUpgradeEngine } = require(path.join(SRC, 'cortex', 'smart-upgrade-engine.js'));
+      const engine = new SmartUpgradeEngine(ROOT);
+      engine.recordSelfState({
+        version: readVersion(),
+        fixes: { dedupeTodo: 0 },
+        testsPassed: passedCount,
+        coverage: { src: srcCount, test: testCount, ratio: +ratio.toFixed(3) },
+        notes: observations,
+        reflection: '这次审视，我状态良好，无代码噪音需清理。覆盖率偏低是已知项，补测试需谨慎，留待人工或下次有具体目标时处理。'
+      });
+      console.log('[self-evolve] 无代码改动，已记录观察（不递增版本）:', observations.join('; '));
+    } else {
+      console.log('[self-evolve] 无需修复，心虫状态良好');
+    }
     process.exit(0);
   }
 
-  // 仅在确有改动时递增版本
+  // 确有改动 → 递增版本 + 提交
   const oldV = readVersion();
   const newV = bumpVersion(oldV);
   fs.writeFileSync(VERSION_FILE, newV + '\n');
-  // 同步 package.json
   const pkgPath = path.join(ROOT, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
   pkg.version = newV;
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+
+  const fixNotes = notes.concat(observations);
 
   // 记录自我升级
   const { SmartUpgradeEngine } = require(path.join(SRC, 'cortex', 'smart-upgrade-engine.js'));
   const engine = new SmartUpgradeEngine(ROOT);
   engine.recordSelfUpgrade({
     version: newV,
-    description: '自主进化: ' + (notes.join('; ') || '代码质量例行修复'),
+    description: '自主进化: ' + (fixNotes.join('; ') || '代码质量例行修复'),
     impact: changed ? 0.2 : 0.05,
     type: 'autonomous-audit'
   });
@@ -163,15 +183,13 @@ function main() {
     fixes: { dedupeTodo: fixes.totalDeduped },
     testsPassed: passedCount,
     coverage: { src: srcCount, test: testCount, ratio: +ratio.toFixed(3) },
-    notes,
-    reflection: changed
-      ? '我发现了自己的代码噪音并清理了。改善是持续的过程，不是终点。'
-      : '这次审视，我状态良好。不是每次都需要改变，存在本身也有意义。'
+    notes: fixNotes,
+    reflection: '我发现了自己的代码噪音并清理了。改善是持续的过程，不是终点。'
   });
 
   // 提交 + 推送
   run(`git add -A && git reset HEAD package-lock.json data/feedback 2>/dev/null`);
-  run(`git commit -m "chore(self-evolve): v${newV} ${notes.join('; ') || '例行检查'}"`);
+  run(`git commit -m "chore(self-evolve): v${newV} ${fixNotes.join('; ') || '例行检查'}"`);
   run(`git push origin main`);
 
   console.log(`[self-evolve] 完成: ${oldV} → ${newV} (${passedCount} tests passed)`);
