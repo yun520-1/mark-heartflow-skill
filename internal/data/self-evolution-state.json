@@ -99,18 +99,29 @@
       "improvementsCount": 5,
       "iterations": 1,
       "converged": false,
-      "finalImprovement": 1.55
+      "finalImprovement": 1.55,
+      "prior_growth": 25.5
+    },
+    {
+      "timestamp": "2026-07-18T10:44:25.874Z",
+      "input": "自我升级",
+      "cycleTime": 139,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 1,
+      "converged": false,
+      "finalImprovement": 1.4500000000000002
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 5,
-    "introspection": 75,
-    "growth": 24,
+    "autonomy": 5.5,
+    "introspection": 82.5,
+    "growth": 25.5,
     "authenticity": 0,
-    "wisdom": 37.75,
-    "compassion": 2.9999999999999996,
+    "wisdom": 41.5,
+    "compassion": 3.2999999999999994,
     "_converged": false
   }
 }
