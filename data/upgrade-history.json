@@ -132,5 +132,13 @@
     "impact": 0.9,
     "timestamp": 1784381980381,
     "verified": true
+  },
+  {
+    "version": "6.0.36",
+    "description": "元审计闭环 v6.0.36: evolve进化动作自身被审计记录(evolution-audit.jsonl落盘, 含弱点扫描+改进项+防篡改哈希), 自我进化全过程可追溯",
+    "type": "self-heal",
+    "impact": 0.85,
+    "timestamp": 1784416563824,
+    "verified": true
   }
 ]

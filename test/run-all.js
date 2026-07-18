@@ -110,6 +110,7 @@ async function runAllTests() {
   require('./assertions.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./meta-audit.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./audit-wiring.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./evolution-audit.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
 ({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
 
   // 4. DesireCognition 测试
