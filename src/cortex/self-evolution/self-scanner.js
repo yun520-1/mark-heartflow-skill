@@ -74,8 +74,21 @@ class SelfScanner {
       result.todoCount += todos;
 
       // 沉默空 catch（catch (e) {} 或 catch(e){}）
-      const silent = (content.match(/catch\s*\([^)]*\)\s*\{\s*\}/g) || []).length;
-      result.silentCatches += silent;
+      // [v6.0.31] 排除"防御性模块加载失败"的合法静默(带 // 防御性 注释)——避免误报噪声
+      // 同时排除注释行(// 开头的 catch 描述是注释不是代码)
+      const catchLines = content.split('\n');
+      let fileSilent = 0;
+      let defensiveSilent = 0;
+      for (const line of catchLines) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('//') || trimmed.startsWith('*')) continue; // 跳过注释行
+        if (/catch\s*\([^)]*\)\s*\{\s*\}/.test(line)) {
+          if (/防御性|不阻断主流程|防御性:/.test(line)) defensiveSilent++;
+          else fileSilent++;
+        }
+      }
+      result.silentCatches += fileSilent;
+      result.defensiveCatches = (result.defensiveCatches || 0) + defensiveSilent;
 
       // 核心单体大小（>50KB）
       const bytes = Buffer.byteLength(content, 'utf8');

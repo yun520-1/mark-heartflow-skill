@@ -8,14 +8,17 @@ const os = require('os');
 
 function tmpRoot() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'hf-scan-'));
-  // 造一个有弱点的 mini 工程
   const srcDir = path.join(root, 'src');
   fs.mkdirSync(srcDir, { recursive: true });
   fs.writeFileSync(path.join(srcDir, 'big.js'),
     '// TODO: refactor\nfunction huge() {\n' + '  let x=1;\n'.repeat(350) + '}\n');
   fs.writeFileSync(path.join(srcDir, 'quiet.js'),
     'function f(){ try{ doThing(); } catch(e){} }\n');
-  // 有测试覆盖的模块
+  // 防御性 + 注释行样例
+  fs.writeFileSync(path.join(srcDir, 'defensive.js'),
+    'try { x(); } catch(e){} // 防御性: 模块加载失败不阻断主流程\n' +
+    'function g(){ try{ y(); } catch(e){} /* 普通沉默 */ }\n' +
+    '// catch(e){} 这是注释不是代码\n');
   fs.mkdirSync(path.join(root, 'test'), { recursive: true });
   fs.writeFileSync(path.join(root, 'test', 'big.test.js'), '// test for big\n');
   return root;
@@ -37,18 +40,33 @@ function run({ test, assertEqual, assertTrue, assertFalse }) {
     assertTrue(r.longFunctions[0].length > 300);
   });
 
-  test('扫描出沉默空 catch', () => {
+  test('排除防御性注释的沉默 catch', () => {
     const { SelfScanner } = require('../src/cortex/self-evolution/self-scanner.js');
     const s = new SelfScanner(tmpRoot());
     const r = s.scan();
-    assertTrue(r.silentCatches >= 1);
+    assertTrue(r.defensiveCatches >= 1); // defensive.js 的防御性 catch 计入
+  });
+
+  test('普通沉默 catch 计入 silentCatches', () => {
+    const { SelfScanner } = require('../src/cortex/self-evolution/self-scanner.js');
+    const s = new SelfScanner(tmpRoot());
+    const r = s.scan();
+    // quiet.js 1 + defensive.js 普通 1 = 2
+    assertTrue(r.silentCatches >= 2);
+  });
+
+  test('注释行中的 catch 描述不算', () => {
+    const { SelfScanner } = require('../src/cortex/self-evolution/self-scanner.js');
+    const s = new SelfScanner(tmpRoot());
+    const r = s.scan();
+    // 注释行 "// catch(e){} 这是注释" 不计入 silentCatches
+    assertFalse(r.silentCatches >= 3); // 不会因注释行虚高
   });
 
   test('识别已测试模块不报未测试', () => {
     const { SelfScanner } = require('../src/cortex/self-evolution/self-scanner.js');
     const s = new SelfScanner(tmpRoot());
     const r = s.scan();
-    // big.js 有 big.test.js 覆盖 -> 不应在 untestedModules
     assertFalse(r.untestedModules.some(m => m.includes('big.js')));
   });
 

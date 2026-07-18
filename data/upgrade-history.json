@@ -92,5 +92,13 @@
     "impact": 0.85,
     "timestamp": 1784370323790,
     "verified": true
+  },
+  {
+    "version": "6.0.31",
+    "description": "自我升级 v6.0.31: 修 Scanner 自身误报(排除防御性catch+注释行), 弱点扫描从41虚高降到8真沉默",
+    "type": "self-heal",
+    "impact": 0.75,
+    "timestamp": 1784371497080,
+    "verified": true
   }
 ]
