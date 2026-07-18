@@ -68,5 +68,13 @@
     "impact": 0.7,
     "timestamp": 1784362097029,
     "verified": true
+  },
+  {
+    "version": "6.0.28",
+    "description": "审计修复 v6.0.28: MEDIUM-2 DataEraser日志静默吞掉改warn; MEDIUM-1 密钥冷启动丢失防护(有加密数据无密钥则拒绝生成); HIGH-1核实后降级MEDIUM并加重构注释",
+    "type": "self-heal",
+    "impact": 0.7,
+    "timestamp": 1784364017256,
+    "verified": true
   }
 ]

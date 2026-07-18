@@ -800,6 +800,9 @@ function _createSpecialModule(subsystem, hf) {
 
 
 
+// [REFACTOR-BACKLOG v6.0.28] 审计 HIGH-1 (核实后降级 MEDIUM): 核心启动实例化逻辑强耦合于此。
+// 当前 180 行, 非审计误报的 4600 行。已确认 core-smoke-test 覆盖启动链路(回归护栏存在)。
+// 未来重构窗口: 拆出 src/core/module-instantiator.js, 按 subsystem 类型分派, 降低单函数失败域。
 function _instantiateSpecialModule(subsystem, Mod, hf) {
 
   const spec = _SPECIAL_MODULES[subsystem];

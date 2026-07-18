@@ -57,7 +57,8 @@ class DataEraser {
     try { if (fs.existsSync(this.logPath)) log = JSON.parse(fs.readFileSync(this.logPath, 'utf8')); } catch (e) {}
     log.push({ ...entry, timestamp: Date.now() });
     if (log.length > 200) log = log.slice(-200);
-    try { fs.writeFileSync(this.logPath, JSON.stringify(log, null, 2)); } catch (e) {}
+    try { fs.writeFileSync(this.logPath, JSON.stringify(log, null, 2)); }
+    catch (e) { console.warn(`[DataEraser] 审计日志写入失败，擦除追溯链断裂: ${e.message}`); }
   }
 
   /**
