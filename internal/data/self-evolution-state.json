@@ -110,18 +110,29 @@
       "improvementsCount": 5,
       "iterations": 1,
       "converged": false,
-      "finalImprovement": 1.4500000000000002
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 28.5
+    },
+    {
+      "timestamp": "2026-07-18T11:05:23.132Z",
+      "input": "自我升级: 列出当前可执行的真实改进项",
+      "cycleTime": 119,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 1,
+      "converged": false,
+      "finalImprovement": 1.55
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 5.5,
-    "introspection": 82.5,
-    "growth": 25.5,
+    "autonomy": 6,
+    "introspection": 90,
+    "growth": 28.5,
     "authenticity": 0,
-    "wisdom": 41.5,
-    "compassion": 3.2999999999999994,
+    "wisdom": 45.25,
+    "compassion": 3.599999999999999,
     "_converged": false
   }
 }

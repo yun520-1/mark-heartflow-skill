@@ -781,7 +781,11 @@ class SelfEvolutionCore {
       if (w.coreFileSize && Object.keys(w.coreFileSize).length > 0) {
         improvements.push({ area: 'architecture', action: '解耦 ' + Object.keys(w.coreFileSize).length + ' 个核心单体文件', priority: 'medium' });
       }
-      if (w.todoCount > 0) {
+      // [v6.0.33] 未测试模块也转成改进项(之前漏了)
+      if (w.untestedModules && w.untestedModules.length > 0) {
+        improvements.push({ area: 'testing', action: '为 ' + w.untestedModules.length + ' 个未测试模块补 TDD 测试(已补 assertions.js)', priority: 'medium' });
+      }
+            if (w.todoCount > 0) {
         improvements.push({ area: 'techDebt', action: '清理 ' + w.todoCount + ' 个 TODO/FIXME 积压', priority: 'low' });
       }
     }

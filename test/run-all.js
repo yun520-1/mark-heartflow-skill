@@ -107,6 +107,7 @@ async function runAllTests() {
   require('./latency-benchmark.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./ttl-preferences.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./self-scanner.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./assertions.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
 ({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
 
   // 4. DesireCognition 测试
