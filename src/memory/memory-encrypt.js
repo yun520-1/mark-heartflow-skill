@@ -50,6 +50,19 @@ function _getAesKeySync() {
         _aesKeyResolved = true;
         return _aesKey;
       }
+      // [v6.0.28 FIX] MEDIUM-1: 密钥冷启动丢失防护
+      // 若已存在加密数据(.enc)但密钥文件缺失 -> 拒绝生成新密钥(否则旧数据永久丢失)
+      const memDir = path.dirname(keyFile);
+      let hasEncryptedData = false;
+      try {
+        if (fs.existsSync(memDir)) {
+          hasEncryptedData = fs.readdirSync(memDir).some(f => f.endsWith('.enc'));
+        }
+      } catch (_) {}
+      if (hasEncryptedData) {
+        console.error('[memory-encrypt] 检测到已加密数据(.enc)但密钥文件 .aes-key 缺失 —— 拒绝生成新密钥，避免静默数据丢失。请用备份的 .aes-key 恢复，或删除 .enc 文件后重启。加密已禁用。');
+        return null;
+      }
       const newKey = crypto.randomBytes(32);
       fs.writeFileSync(keyFile, newKey.toString('base64'), { mode: 0o600 });
       console.log('[memory-encrypt] Generated and persisted AES key to memory/.aes-key (0o600)');
