@@ -76,5 +76,13 @@
     "impact": 0.7,
     "timestamp": 1784364017256,
     "verified": true
+  },
+  {
+    "version": "6.0.29",
+    "description": "真自我升级 v6.0.29: 进化引擎基于真实代码库审视自身(新增SelfScanner, learn()产出具体弱点而非空泛目标)",
+    "type": "self-heal",
+    "impact": 0.9,
+    "timestamp": 1784369414883,
+    "verified": true
   }
 ]

@@ -33,18 +33,73 @@
       "improvementsCount": 3,
       "iterations": 2,
       "converged": true,
-      "finalImprovement": 1.15
+      "finalImprovement": 1.15,
+      "prior_growth": 10.5
+    },
+    {
+      "timestamp": "2026-07-18T10:00:35.817Z",
+      "input": "自我升级: 审视心虫当前架构, 找出一个真实可修复的自身缺陷或能力缺口",
+      "cycleTime": 1,
+      "goalsCount": 1,
+      "improvementsCount": 3,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.35,
+      "prior_growth": 13.5
+    },
+    {
+      "timestamp": "2026-07-18T10:04:47.529Z",
+      "input": "自我升级: 基于代码库真实弱点给出具体可执行的改进项",
+      "cycleTime": 1,
+      "goalsCount": 1,
+      "improvementsCount": 3,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.25,
+      "prior_growth": 15
+    },
+    {
+      "timestamp": "2026-07-18T10:05:20.244Z",
+      "input": "test",
+      "cycleTime": 1,
+      "goalsCount": 1,
+      "improvementsCount": 3,
+      "iterations": 1,
+      "converged": false,
+      "finalImprovement": 1.15,
+      "prior_growth": 18
+    },
+    {
+      "timestamp": "2026-07-18T10:07:11.830Z",
+      "input": "自我升级: 基于代码库真实弱点给出具体改进",
+      "cycleTime": 1,
+      "goalsCount": 1,
+      "improvementsCount": 3,
+      "iterations": 1,
+      "converged": false,
+      "finalImprovement": 1.25,
+      "prior_growth": 21
+    },
+    {
+      "timestamp": "2026-07-18T10:09:07.196Z",
+      "input": "自我升级: 基于代码库真实弱点给出具体改进",
+      "cycleTime": 115,
+      "goalsCount": 1,
+      "improvementsCount": 3,
+      "iterations": 1,
+      "converged": false,
+      "finalImprovement": 1.25
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 2,
-    "introspection": 30,
-    "growth": 6,
+    "autonomy": 4.5,
+    "introspection": 67.5,
+    "growth": 21,
     "authenticity": 0,
-    "wisdom": 15.25,
-    "compassion": 1.2,
+    "wisdom": 34,
+    "compassion": 2.6999999999999997,
     "_converged": false
   }
 }
