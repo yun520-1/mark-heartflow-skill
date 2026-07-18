@@ -54,7 +54,8 @@ class DataEraser {
 
   _log(entry) {
     let log = [];
-    try { if (fs.existsSync(this.logPath)) log = JSON.parse(fs.readFileSync(this.logPath, 'utf8')); } catch (e) {}
+    try { if (fs.existsSync(this.logPath)) log = JSON.parse(fs.readFileSync(this.logPath, 'utf8')); }
+    catch (e) { console.warn(`[DataEraser] 读取旧审计日志失败(将新建): ${e.message}`); }
     log.push({ ...entry, timestamp: Date.now() });
     if (log.length > 200) log = log.slice(-200);
     try { fs.writeFileSync(this.logPath, JSON.stringify(log, null, 2)); }

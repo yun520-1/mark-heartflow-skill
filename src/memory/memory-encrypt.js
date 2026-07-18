@@ -58,7 +58,11 @@ function _getAesKeySync() {
         if (fs.existsSync(memDir)) {
           hasEncryptedData = fs.readdirSync(memDir).some(f => f.endsWith('.enc'));
         }
-      } catch (_) {}
+      } catch (e) {
+        // 不应静默：目录读取失败可能导致漏检 .enc -> 误生成新密钥丢数据
+        console.warn(`[memory-encrypt] 检测 .enc 目录失败(${e.message})，为安全起见拒绝生成新密钥。请用备份 .aes-key 恢复或手动核查 memory/。`);
+        hasEncryptedData = true; // 保守：视为有加密数据，阻断新密钥生成
+      }
       if (hasEncryptedData) {
         console.error('[memory-encrypt] 检测到已加密数据(.enc)但密钥文件 .aes-key 缺失 —— 拒绝生成新密钥，避免静默数据丢失。请用备份的 .aes-key 恢复，或删除 .enc 文件后重启。加密已禁用。');
         return null;

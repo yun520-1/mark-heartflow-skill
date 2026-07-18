@@ -75,20 +75,28 @@ class SelfScanner {
 
       // 沉默空 catch（catch (e) {} 或 catch(e){}）
       // [v6.0.31] 排除"防御性模块加载失败"的合法静默(带 // 防御性 注释)——避免误报噪声
+      // [v6.0.32] 排除"资源清理"类沉默 catch(shutdown/unlink/close 等退出时清理, 静默合法)
       // 同时排除注释行(// 开头的 catch 描述是注释不是代码)
       const catchLines = content.split('\n');
       let fileSilent = 0;
       let defensiveSilent = 0;
-      for (const line of catchLines) {
+      let cleanupSilent = 0;
+      const cleanupRe = /shutdown|unlinkSync|unlink\(|s\.close|\.close\(\)|removeSync|rmdir/;
+      for (let li = 0; li < catchLines.length; li++) {
+        const line = catchLines[li];
         const trimmed = line.trim();
         if (trimmed.startsWith('//') || trimmed.startsWith('*')) continue; // 跳过注释行
         if (/catch\s*\([^)]*\)\s*\{\s*\}/.test(line)) {
+          // 看前后 2 行是否有清理操作
+          const ctx = [catchLines[li - 1], line, catchLines[li + 1]].join(' ');
           if (/防御性|不阻断主流程|防御性:/.test(line)) defensiveSilent++;
+          else if (cleanupRe.test(ctx)) cleanupSilent++;
           else fileSilent++;
         }
       }
       result.silentCatches += fileSilent;
       result.defensiveCatches = (result.defensiveCatches || 0) + defensiveSilent;
+      result.cleanupCatches = (result.cleanupCatches || 0) + cleanupSilent;
 
       // 核心单体大小（>50KB）
       const bytes = Buffer.byteLength(content, 'utf8');

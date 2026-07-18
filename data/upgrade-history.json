@@ -100,5 +100,13 @@
     "impact": 0.75,
     "timestamp": 1784371497080,
     "verified": true
+  },
+  {
+    "version": "6.0.32",
+    "description": "自我升级 v6.0.32: 列得出->真改了。清掉2处真业务沉默catch(silentCatches 8->0), 其中memory-encrypt:61发现是真隐患(目录读失败漏检.enc致丢数据), 修成保守阻断。Scanner再去噪(cleanupCatches分类)",
+    "type": "self-heal",
+    "impact": 0.8,
+    "timestamp": 1784372125015,
+    "verified": true
   }
 ]
