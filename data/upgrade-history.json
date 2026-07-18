@@ -4,5 +4,6 @@
   {"version":"6.0.15","description":"清理63处重复REFACTOR TODO","type":"autonomous-audit","impact":0.2,"timestamp":1784292336989},
   {"version":"6.0.16","description":"安全护栏补16测试","type":"audit-response","impact":0.25,"timestamp":1784300000000},
   {"version":"6.0.17","description":"code-executor补17测试+修复2真bug","type":"audit-response","impact":0.3,"timestamp":1784305000000},
-  {"version":"6.0.18","description":"升级方向审计响应: 清升级引擎自债+文档修正+heartflow.js单体首测试","type":"audit-upgrade-direction","impact":0.35,"timestamp":1784310000000}
+  {"version":"6.0.18","description":"升级方向审计响应","type":"audit-upgrade-direction","impact":0.35,"timestamp":1784310000000},
+  {"version":"6.0.19","description":"P1-A 外部锚定+防自欺护栏(assess内部混合分)","type":"anti-self-deception","impact":0.5,"timestamp":1784315000000}
 ]
