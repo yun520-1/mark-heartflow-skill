@@ -30,6 +30,7 @@ class ModuleHealthChecker {
     this.hf = heartflow;
     this.healthLog = [];
     this.maxLogSize = 100;
+    this.disabledModules = new Set(); // [v6.0.34] 真禁用集合(元审计修复: 之前只计数不禁用)
   }
 
   /** 统一为所有已注册模块注入标准接口 */
@@ -54,6 +55,7 @@ class ModuleHealthChecker {
       healthy: 0,
       degraded: 0,
       failed: 0,
+      disabled: [], // [v6.0.34] 真禁用模块清单(元审计修复)
       details: []
     };
 
@@ -77,6 +79,10 @@ class ModuleHealthChecker {
           break;
         case 'failed':
           report.failed++;
+          // [v6.0.34] 元审计修复: 之前只计数不禁用 = 假自愈
+          // 真禁用: 标记模块并从 _modules 移除引用(保留原对象以便诊断)
+          if (mod && typeof mod === 'object') mod.__disabled = true;
+          this.disabledModules.add(name);
           break;
       }
     }
@@ -87,7 +93,17 @@ class ModuleHealthChecker {
       this.healthLog = this.healthLog.slice(-this.maxLogSize);
     }
 
+    report.disabled = [...this.disabledModules]; // [v6.0.34] 填充真禁用清单
     return report;
+  }
+
+  /** [v6.0.34] 元审计修复: 查询模块是否被真禁用 */
+  isDisabled(name) {
+    return this.disabledModules.has(name);
+  }
+
+  getDisabled() {
+    return [...this.disabledModules];
   }
 
   /**
