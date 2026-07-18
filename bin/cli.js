@@ -505,6 +505,24 @@ switch (cmd) {
     break;
   }
 
+  case 'benchmark': {
+    // 公开延迟基准 (GitHub #7 Latency 缺口)
+    const { HeartFlow } = require(path.join(hfDir, 'src/core/heartflow.js'));
+    const { LatencyBenchmark } = require(path.join(hfDir, 'src/benchmark/latency-benchmark.js'));
+    const engine = new HeartFlow({ dataDir: path.join(hfDir, 'data'), silent: true });
+    engine.start();
+    const probe = async () => {
+      await engine.think('测试延迟: 今天天气怎么样');
+    };
+    const bench = new LatencyBenchmark(probe, { warmup: 3, samples: 20 });
+    bench.report().then(r => {
+      console.log(JSON.stringify(r, null, 2));
+      engine.shutdown();
+      process.exit(0);
+    });
+    break;
+  }
+
   case 'help':
     console.log(`HeartFlow CLI
 Usage: node cli.js <command>

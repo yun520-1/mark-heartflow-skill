@@ -13,11 +13,27 @@ const TEST_DIR = __dirname;
 // 统计
 let passed = 0;
 let failed = 0;
+let pending = 0;
 const failures = [];
 
 function test(name, fn) {
   try {
-    fn();
+    const ret = fn();
+    if (ret && typeof ret.then === 'function') {
+      // async 测试：pending 计数，完成后再结算
+      pending++;
+      return ret.then(() => {
+        pending--;
+        passed++;
+        console.log(`  ✓ ${name}`);
+      }).catch((err) => {
+        pending--;
+        failed++;
+        console.log(`  ✗ ${name}`);
+        console.log(`    ${err.message}`);
+        failures.push({ name, error: err.message });
+      });
+    }
     passed++;
     console.log(`  ✓ ${name}`);
   } catch (err) {
@@ -88,6 +104,7 @@ async function runAllTests() {
   console.log('\n❤️ HeartLogic (heart-logic.js)');
   require('./heart-logic.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./data-eraser.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./latency-benchmark.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
 ({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
 
   // 4. DesireCognition 测试
