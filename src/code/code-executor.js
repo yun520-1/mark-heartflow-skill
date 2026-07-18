@@ -357,8 +357,10 @@ function validateArg(val, name, type, required = true) {
 function detectLanguage(code) {
   if (!code || typeof code !== 'string') return 'javascript';
   const trimmed = code.trim();
-  if (trimmed.startsWith('#!') || trimmed.startsWith('#!/')) return 'shell';
+  // Python shebang 优先（#! 开头但指明 python）
   if (trimmed.startsWith('#!/usr/bin/env python') || trimmed.startsWith('#!/usr/bin/python')) return 'python';
+  // 其他 #! shebang 视为 shell
+  if (trimmed.startsWith('#!')) return 'shell';
   // Python heuristics
   if (/^(import |from |def |class |print\s*\(|if __name__)/m.test(trimmed)) return 'python';
   // Shell heuristics
@@ -386,6 +388,7 @@ function checkDangerousCommand(command) {
  * @returns {{blocked: boolean, reason: string|null, matched: string|null}}
  */
 function checkSandboxRestrictions(code) {
+  if (!code || typeof code !== 'string') return { blocked: false, reason: null, matched: null };
   for (const pattern of SANDBOX_BLOCKED_PATTERNS) {
     const match = code.match(pattern);
     if (match) {
@@ -1323,4 +1326,15 @@ class CodeExecutor {
 // 导出
 // ============================================================================
 
-module.exports = { CodeExecutor, ExecStatus, ExecError };
+module.exports = {
+  CodeExecutor,
+  ExecStatus,
+  ExecError,
+  // 纯函数导出（供单元测试，无副作用）
+  detectLanguage,
+  checkDangerousCommand,
+  checkSandboxRestrictions,
+  truncateOutput,
+  validateArg,
+  validateShellCommand
+};

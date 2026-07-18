@@ -408,6 +408,23 @@ async function runAllTests() {
     failed++;
   }
 
+  // 7. 代码执行器测试 (code-executor.js) — 审计覆盖率补充
+  console.log('\n⚙️ 代码执行器 (code-executor.js)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'code-executor.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ 代码执行器测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
+
   // 汇总
   console.log('\n' + '='.repeat(50));
   console.log(`\n📊 测试结果: ${passed} 通过, ${failed} 失败, 共 ${passed + failed} 个`);
