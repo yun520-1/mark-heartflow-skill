@@ -60,5 +60,13 @@
     "impact": 0.6,
     "timestamp": 1784361013236,
     "verified": true
+  },
+  {
+    "version": "6.0.27",
+    "description": "GitHub#7 Temporary Preferences缺口真升级: 新增TTLPreferences模块+CLI pref命令, 可调时长临时偏好, 不动底层存储零风险",
+    "type": "self-heal",
+    "impact": 0.7,
+    "timestamp": 1784362097029,
+    "verified": true
   }
 ]
