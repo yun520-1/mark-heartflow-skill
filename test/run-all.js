@@ -425,6 +425,24 @@ async function runAllTests() {
     failed++;
   }
 
+
+  // 8. HeartFlow 核心单体冒烟测试 (heartflow.js) — 审计P0回归护栏
+  console.log('\n🔥 HeartFlow 核心 (heartflow.js 单体)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'heartflow-smoke.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 120000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ HeartFlow 冒烟测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
+
   // 汇总
   console.log('\n' + '='.repeat(50));
   console.log(`\n📊 测试结果: ${passed} 通过, ${failed} 失败, 共 ${passed + failed} 个`);

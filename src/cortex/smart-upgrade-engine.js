@@ -26,19 +26,6 @@ const MAX_CACHE_SIZE = 200;
  * @param {*} value - 值
  * @param {number} maxSize - 最大容量
  */
-// [REFACTOR] TODO: 超长函数 _boundedSet (641行) — 建议拆分为独立子函数
-
-
-
-
-
-
-
-
-
-
-// [REFACTOR] TODO: _boundedSet (751行) — 建议拆分为独立子函数
-
 function _boundedSet(map, key, value, maxSize) {
   if (map.size >= maxSize && !map.has(key)) {
     const firstKey = map.keys().next().value;
@@ -48,8 +35,6 @@ function _boundedSet(map, key, value, maxSize) {
 }
 
 class SmartUpgradeEngine {
-  // [REFACTOR] TODO: constructor() — 超长函数(617行)，建议拆分：按逻辑块（依赖检查/加载/缓存初始化/健康检测）拆分为独立方法
-
   constructor(rootPath) {
     this.rootPath = rootPath;
     // [SECURITY] 默认禁用联网升级，需显式 opt-in

@@ -239,7 +239,7 @@ npm install @yun520-1/heartflow
 | 类别 | 状态 |
 |------|------|
 | 后台进程 | ✅ 无 |
-| 自升级 | ✅ 无 |
+| 自升级 | ✅ 已实现（scripts/heartflow-self-evolve.js + cron 每6h 无人值守，recordSelfUpgrade 持久化） |
 | HTTP 服务 | ✅ 无（MCP 通过 stdio 通信） |
 | 凭据存储 | ✅ 无硬编码密钥 |
 | 外部通信 | ✅ 仅在用户明确配置时调用外部服务 |

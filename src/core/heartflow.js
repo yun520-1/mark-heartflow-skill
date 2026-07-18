@@ -788,7 +788,6 @@ function _createSpecialModule(subsystem, hf) {
 
 
 
-// [REFACTOR] TODO: 超长函数 _instantiateSpecialModule (2692行) — 建议拆分为独立子函数
 
 
 
