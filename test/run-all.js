@@ -461,6 +461,24 @@ async function runAllTests() {
     failed++;
   }
 
+
+  // 10. SelfBenchmark 引擎集成测试（防自欺修复为活代码验证）
+  console.log('\n🔗 SelfBenchmark 集成 (benchmark-integration.js)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'benchmark-integration.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 120000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ SelfBenchmark 集成测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
+
   // 汇总
   console.log('\n' + '='.repeat(50));
   console.log(`\n📊 测试结果: ${passed} 通过, ${failed} 失败, 共 ${passed + failed} 个`);

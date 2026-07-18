@@ -3782,7 +3782,7 @@ class HeartFlow {
 
 
 
-    // ── [v6.1.0] WorldTreeBridge — 心虫 ↔ 外部 World Tree 记忆系统适配层
+    // ─── [v6.1.0] WorldTreeBridge — 心虫 ↔ 外部 World Tree 记忆系统适配层
     try {
       const { ROUTES: wtRoutes } = require('../memory/worldtree-bridge');
       for (const route of Object.keys(wtRoutes)) {
@@ -3790,6 +3790,16 @@ class HeartFlow {
       }
       _log.info('init', 'WorldTreeBridge 加载成功', { routes: Object.keys(wtRoutes).join(', ') });
     } catch (e) { _boundedPush(this._initErrors, { module: 'worldtree', error: e.message }, MAX_HISTORY_SIZE); }
+
+    // ─── [v6.0.19] SelfBenchmark 外部锚定接入（防自欺进化）───
+    try {
+      const { SelfBenchmark } = require('../cortex/self-benchmark.js');
+      this.benchmark = new SelfBenchmark(this);
+      this._modules['benchmark'] = this.benchmark;
+      HeartFlow.ALLOWED_ROUTES.add('benchmark.assess');
+      HeartFlow.ALLOWED_ROUTES.add('benchmark.getStats');
+      _log.info('init', 'SelfBenchmark 加载成功（外部锚定防自欺已启用）');
+    } catch (e) { _boundedPush(this._initErrors, { module: 'benchmark', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
 
@@ -5355,6 +5365,18 @@ class HeartFlow {
         throw new Error(`worldtree route '${route}' not found`);
       }
       return ROUTES[route](...args);
+    }
+
+    // ─── [v6.0.19] SelfBenchmark 直连（外部锚定防自欺）───
+    if (subsystem === 'benchmark') {
+      if (!this.benchmark) {
+        const { SelfBenchmark } = require('../cortex/self-benchmark.js');
+        this.benchmark = new SelfBenchmark(this);
+      }
+      if (typeof this.benchmark[method] !== 'function') {
+        throw new Error(`benchmark.${method} is not a function`);
+      }
+      return this.benchmark[method](...args);
     }
 
     // ─── v5.8.0 性能监控：内置子系统 ──────────────────────────────────
