@@ -116,5 +116,13 @@
     "impact": 0.7,
     "timestamp": 1784373293899,
     "verified": true
+  },
+  {
+    "version": "6.0.34",
+    "description": "元审计修复 v6.0.34: audit-logger真落盘(append-only+轮转), module-health-checker真禁用失败模块, dual-perspective诚实化文档",
+    "type": "self-heal",
+    "impact": 0.95,
+    "timestamp": 1784378981641,
+    "verified": true
   }
 ]
