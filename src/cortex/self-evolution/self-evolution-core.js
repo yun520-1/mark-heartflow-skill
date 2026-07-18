@@ -23,6 +23,7 @@
 const fs = require('../../utils/safe-fs');
 
 const path = require('path');
+const { SelfScanner } = require('./self-scanner.js');
 
 const { HealingMemoryRL } = require('../self-healing-rl.js');
 
@@ -107,6 +108,9 @@ class SelfEvolutionCore {
     this.projectRoot = resolvedRoot;
 
     this.version = '7.7.000';
+
+    // 自我弱点扫描器（让 evolve 基于真实代码库产出具体改进）
+    this._scanner = new SelfScanner(this.projectRoot);
 
     
 
@@ -388,7 +392,10 @@ class SelfEvolutionCore {
 
           plan,
 
-          learning: learning.summary,
+          learning: {
+            summary: learning.summary,
+            weaknesses: learning.weaknesses || null
+          },
 
           reflection: reflection.insights,
 
@@ -627,6 +634,14 @@ class SelfEvolutionCore {
     
 
     // 总结
+
+    // [v6.0.29] 自我审视：扫描真实代码库弱点，让进化基于事实而非模板
+    try {
+      learning.weaknesses = this._scanner.scan();
+      learning.summary += `；扫描到 ${learning.weaknesses.todoCount} 个 TODO、${learning.weaknesses.silentCatches} 处沉默空 catch、${learning.weaknesses.longFunctions.length} 个超长函数`;
+    } catch (e) {
+      learning.weaknesses = { error: e.message };
+    }
 
     learning.summary = `学习到 ${learning.newKnowledge.length} 个新概念，强化 ${learning.reinforcedKnowledge.length} 个已有概念`;
 
