@@ -27,6 +27,7 @@ const fs = require('../utils/safe-fs');
 const path = require('path');
 
 const { SelfEvolutionCore } = require('./self-evolution/self-evolution-core.js');
+const { AuditLogger } = require('../shield/audit-logger.js');
 
 
 
@@ -40,6 +41,9 @@ class EvolutionLoop {
 
         // 初始化进化核心：若 hf 未注入 core，默认用 SelfEvolutionCore（防止 core_not_initialized 死锁）
         this.core = hf.core || new SelfEvolutionCore(this.projectRoot);
+
+        // [v6.0.36] 元审计闭环: 进化动作自身被审计记录(可追溯自我进化全过程)
+        this._auditLogger = new AuditLogger({ logPath: path.join(this.projectRoot, 'data', 'audit', 'evolution-audit.jsonl') });
 
         this.cycleCount = 0;
 
@@ -266,6 +270,19 @@ class EvolutionLoop {
             // ── 持久化 ──
 
             this._saveState();
+
+            // [v6.0.36] 元审计闭环: 把本次进化摘要写审计日志(自我进化可追溯)
+            try {
+              const w = result.learning && result.learning.weaknesses;
+              this._auditLogger.log('evolution_cycle', {
+                cycle: this.cycleCount,
+                input: String(input).slice(0, 100),
+                weaknesses: w ? { todoCount: w.todoCount, silentCatches: w.silentCatches, longFunctions: (w.longFunctions||[]).length, coreSize: Object.keys(w.coreFileSize||{}).length, untested: (w.untestedModules||[]).length } : null,
+                improvements: (result.improvements||[]).map(i => i.action),
+                converged: !!result.converged,
+                cycleTime
+              });
+            } catch (e) { /* 审计失败不阻断进化 */ }
 
             
 
