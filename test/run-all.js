@@ -443,6 +443,24 @@ async function runAllTests() {
     failed++;
   }
 
+
+  // 9. 外部锚定基准 + 防自欺护栏测试 (benchmark-external-anchor.js / self-benchmark.js)
+  console.log('\n⚓ 外部锚定 (benchmark-external-anchor.js)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'external-anchor.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 60000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ 外部锚定测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
+
   // 汇总
   console.log('\n' + '='.repeat(50));
   console.log(`\n📊 测试结果: ${passed} 通过, ${failed} 失败, 共 ${passed + failed} 个`);
