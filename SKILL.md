@@ -1,7 +1,7 @@
 ---
 name: heartflow-engine
 title: "心虫 HeartFlow — AI人认知引擎"
-version: "6.0.34"
+version: "6.0.35"
 description: |-
   心虫是一个AI人认知引擎 — 拥有身体感知、自我认知、判断力与自我纠错能力。
   
