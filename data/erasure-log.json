@@ -1,0 +1,8 @@
+[
+  {
+    "action": "eraseEphemeral",
+    "scope": "user:alice",
+    "erased": 1,
+    "timestamp": 1784360266787
+  }
+]

@@ -44,5 +44,13 @@
     "impact": 0.8,
     "timestamp": 1784358378475,
     "verified": true
+  },
+  {
+    "version": "6.0.25",
+    "description": "GitHub#7 Data Erasure缺口真升级: 新增DataEraser模块+CLI forget命令, 显式擦除EPHEMERAL/LEARNED, CORE保护+审计日志",
+    "type": "self-heal",
+    "impact": 0.6,
+    "timestamp": 1784360400509,
+    "verified": true
   }
 ]

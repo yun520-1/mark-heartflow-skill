@@ -487,6 +487,24 @@ switch (cmd) {
     break;
   }
 
+  case 'forget': {
+    // 显式数据擦除 (GitHub #7 Data Erasure 缺口)
+    const { DataEraser } = require(path.join(hfDir, 'src/memory/data-eraser.js'));
+    const eraser = new DataEraser(hfDir);
+    const target = process.argv[3] || '*';
+    let r;
+    if (target.startsWith('tag:')) {
+      r = eraser.eraseByTag(target.slice(4));
+    } else if (target.startsWith('session:')) {
+      r = eraser.eraseSession(target.slice(8));
+    } else {
+      r = eraser.eraseEphemeral(target);
+    }
+    console.log(JSON.stringify(r, null, 2));
+    process.exit(0);
+    break;
+  }
+
   case 'help':
     console.log(`HeartFlow CLI
 Usage: node cli.js <command>

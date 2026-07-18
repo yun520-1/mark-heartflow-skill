@@ -87,6 +87,8 @@ async function runAllTests() {
   // 3. HeartLogic 测试
   console.log('\n❤️ HeartLogic (heart-logic.js)');
   require('./heart-logic.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./data-eraser.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
 
   // 4. DesireCognition 测试
   console.log('\n💭 DesireCognition (desire-cognition.js)');
