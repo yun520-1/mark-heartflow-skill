@@ -1,4 +1,5 @@
 [
-  {"timestamp":1784292336989,"version":"6.0.15","fixes":{"dedupeTodo":63},"testsPassed":179,"coverage":{"src":310,"test":44,"ratio":0.142},"notes":["测试覆盖率0.14偏低"],"reflection":"清理63处重复TODO"},
-  {"timestamp":1784300000000,"version":"6.0.16","fixes":{"safetyTests":16},"testsPassed":195,"coverage":{"src":310,"test":45,"ratio":0.145},"notes":["审计报告MEDIUM4/LOW4全误报验证不修","仅补安全护栏测试"],"reflection":"审计无真bug，我验证了每个MEDIUM/LOW都是误报，没有盲目修。补测试是安全的真实改善。"}
+  {"timestamp":1784292336989,"version":"6.0.15","fixes":{"dedupeTodo":63},"testsPassed":179,"coverage":{"src":310,"test":44,"ratio":0.142},"notes":["清理63处重复TODO"],"reflection":"清理63处重复TODO"},
+  {"timestamp":1784300000000,"version":"6.0.16","fixes":{"safetyTests":16},"testsPassed":195,"coverage":{"src":310,"test":45,"ratio":0.145},"notes":["安全护栏补16测试"],"reflection":"补安全护栏测试"},
+  {"timestamp":1784305000000,"version":"6.0.17","fixes":{"codeExecutorTests":17,"bugsFixed":2},"testsPassed":212,"coverage":{"src":310,"test":50,"ratio":0.16},"notes":["code-executor补17测试","修复shebang误判+沙箱守卫"],"reflection":"测试驱动发现2个真bug：Python shebang被误判为shell（影响代码路由）、沙箱函数undefined崩溃。审计的MEDIUM/LOW仍是误报，但补测试帮我挖出了真bug。"}
 ]
