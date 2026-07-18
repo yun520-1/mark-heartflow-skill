@@ -523,6 +523,30 @@ switch (cmd) {
     break;
   }
 
+  case 'pref': {
+    // 可调 TTL 临时偏好 (GitHub #7 Temporary Preferences 缺口)
+    const { TTLPreferences } = require(path.join(hfDir, 'src/memory/ttl-preferences.js'));
+    const tp = new TTLPreferences(hfDir);
+    const sub = process.argv[3];
+    const key = process.argv[4];
+    const val = process.argv[5];
+    const ttl = parseInt(process.argv[6] || '0', 10);
+    if (sub === 'set') {
+      const r = tp.set(key, val, ttl);
+      console.log(JSON.stringify({ set: key, expiresAt: r.expiresAt, ttlMs: ttl }));
+    } else if (sub === 'get') {
+      console.log(JSON.stringify({ [key]: tp.get(key) }));
+    } else if (sub === 'list') {
+      console.log(JSON.stringify(tp.all(), null, 2));
+    } else if (sub === 'clear') {
+      console.log(JSON.stringify({ cleared: tp.clear() }));
+    } else {
+      console.log('用法: node bin/cli.js pref set <key> <value> <ttlMs> | pref get <key> | pref list | pref clear');
+    }
+    process.exit(0);
+    break;
+  }
+
   case 'help':
     console.log(`HeartFlow CLI
 Usage: node cli.js <command>
