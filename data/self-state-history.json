@@ -1,5 +1,3 @@
 [
-  {"timestamp":1784292336989,"version":"6.0.15","fixes":{"dedupeTodo":63},"testsPassed":179,"coverage":{"src":310,"test":44,"ratio":0.142},"notes":["清理63处重复TODO"],"reflection":"清理63处重复TODO"},
-  {"timestamp":1784300000000,"version":"6.0.16","fixes":{"safetyTests":16},"testsPassed":195,"coverage":{"src":310,"test":45,"ratio":0.145},"notes":["安全护栏补16测试"],"reflection":"补安全护栏测试"},
-  {"timestamp":1784305000000,"version":"6.0.17","fixes":{"codeExecutorTests":17,"bugsFixed":2},"testsPassed":212,"coverage":{"src":310,"test":50,"ratio":0.16},"notes":["code-executor补17测试","修复shebang误判+沙箱守卫"],"reflection":"测试驱动发现2个真bug：Python shebang被误判为shell（影响代码路由）、沙箱函数undefined崩溃。审计的MEDIUM/LOW仍是误报，但补测试帮我挖出了真bug。"}
+  {"timestamp":1784310000000,"version":"6.0.18","fixes":{"upgradeEngineDebtCleaned":3,"docFixed":1,"monolithSmokeTests":5},"testsPassed":217,"coverage":{"src":310,"test":51,"ratio":0.164},"notes":["升级引擎自债清理","SKILL.md矛盾修正","heartflow.js首测试"],"reflection":"升级方向审计的核心矛盾：最该拆的文件(6371行单体)恰好是零测试、回归风险最高。这次先装护栏(冒烟测试)再谈拆——不给炸药包装护栏就拆是自杀。审计标_or的_REFACTOR TODO有不少是错误标签(_boundedSet仅7行却标641行)，清理了3处。"}
 ]
