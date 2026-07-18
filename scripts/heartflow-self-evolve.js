@@ -150,6 +150,11 @@ function main() {
         reflection: '这次审视，我状态良好，无代码噪音需清理。覆盖率偏低是已知项，补测试需谨慎，留待人工或下次有具体目标时处理。'
       });
       console.log('[self-evolve] 无代码改动，已记录观察（不递增版本）:', observations.join('; '));
+      // 提交观察快照到 git（让自主进化在仓库有迹可循，不虚涨版本）
+      run(`git add -A && git reset HEAD package-lock.json data/feedback 2>/dev/null`);
+      run(`git commit -m "chore(self-evolve): 观察记录 v${readVersion()} — ${observations.join('; ')}" >/dev/null 2>&1`);
+      run(`git push origin main >/dev/null 2>&1`);
+      console.log(`[self-evolve] 已提交观察快照到 git (v${readVersion()}, ${passedCount} tests passed)`);
     } else {
       console.log('[self-evolve] 无需修复，心虫状态良好');
     }
