@@ -124,5 +124,13 @@
     "impact": 0.95,
     "timestamp": 1784378981641,
     "verified": true
+  },
+  {
+    "version": "6.0.35",
+    "description": "元审计闭环 v6.0.35: 审计能力真接入主链路(cli audit命令真调AuditLogger落盘+ModuleHealthChecker健康检查), 空文件变真落盘",
+    "type": "self-heal",
+    "impact": 0.9,
+    "timestamp": 1784381980381,
+    "verified": true
   }
 ]

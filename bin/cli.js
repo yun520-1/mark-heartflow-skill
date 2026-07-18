@@ -547,6 +547,30 @@ switch (cmd) {
     break;
   }
 
+  case 'audit': {
+    // 元审计闭环 v6.0.35: 真调审计能力并落盘, 不再是装饰
+    const { HeartFlow } = require(path.join(hfDir, 'src/core/heartflow.js'));
+    const { ModuleHealthChecker } = require(path.join(hfDir, 'src/shield/module-health-checker.js'));
+    const { AuditLogger } = require(path.join(hfDir, 'src/shield/audit-logger.js'));
+    const engine = new HeartFlow({ dataDir: path.join(hfDir, 'data'), silent: true });
+    engine.start();
+    const logger = new AuditLogger({ logPath: path.join(hfDir, 'data', 'audit', 'audit-log.jsonl') });
+    logger.log('engine_start', { version: engine.version, modules: Object.keys(engine._modules || {}).length });
+    const checker = new ModuleHealthChecker(engine);
+    const report = checker.check();
+    if (report.disabled && report.disabled.length) {
+      logger.log('module_disabled', { modules: report.disabled });
+    }
+    logger.log('health_check_done', { healthy: report.healthy, failed: report.failed, degraded: report.degraded });
+    console.log(JSON.stringify({
+      healthy: report.healthy, failed: report.failed, degraded: report.degraded,
+      disabled: report.disabled, auditPersisted: logger.getStats().persisted
+    }, null, 2));
+    engine.shutdown();
+    process.exit(0);
+    break;
+  }
+
   case 'help':
     console.log(`HeartFlow CLI
 Usage: node cli.js <command>
