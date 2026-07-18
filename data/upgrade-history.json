@@ -84,5 +84,13 @@
     "impact": 0.9,
     "timestamp": 1784369414883,
     "verified": true
+  },
+  {
+    "version": "6.0.30",
+    "description": "自我升级 v6.0.30: suggestImprovements 读真实弱点转具体改进项(清理41空catch/拆3超长函数/解耦10单体)",
+    "type": "self-heal",
+    "impact": 0.85,
+    "timestamp": 1784370323790,
+    "verified": true
   }
 ]

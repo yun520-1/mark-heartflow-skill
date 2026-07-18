@@ -88,18 +88,29 @@
       "improvementsCount": 3,
       "iterations": 1,
       "converged": false,
-      "finalImprovement": 1.25
+      "finalImprovement": 1.25,
+      "prior_growth": 24
+    },
+    {
+      "timestamp": "2026-07-18T10:24:21.336Z",
+      "input": "自我升级: 基于代码库真实弱点列出具体改进",
+      "cycleTime": 98,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 1,
+      "converged": false,
+      "finalImprovement": 1.55
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 4.5,
-    "introspection": 67.5,
-    "growth": 21,
+    "autonomy": 5,
+    "introspection": 75,
+    "growth": 24,
     "authenticity": 0,
-    "wisdom": 34,
-    "compassion": 2.6999999999999997,
+    "wisdom": 37.75,
+    "compassion": 2.9999999999999996,
     "_converged": false
   }
 }

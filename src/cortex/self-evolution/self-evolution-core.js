@@ -642,6 +642,8 @@ class SelfEvolutionCore {
     } catch (e) {
       learning.weaknesses = { error: e.message };
     }
+    this.lastWeaknesses = learning.weaknesses || null;
+
 
     learning.summary = `学习到 ${learning.newKnowledge.length} 个新概念，强化 ${learning.reinforcedKnowledge.length} 个已有概念`;
 
@@ -766,6 +768,24 @@ class SelfEvolutionCore {
   suggestImprovements(reflection) {
 
     const improvements = [];
+
+    // [v6.0.30] 弱点驱动改进：把扫描出的真实代码弱点转成具体可执行项
+    if (this.lastWeaknesses && !this.lastWeaknesses.error) {
+      const w = this.lastWeaknesses;
+      if (w.silentCatches > 0) {
+        improvements.push({ area: 'reliability', action: '清理 ' + w.silentCatches + ' 处沉默空catch(改为warn/error暴露)', priority: 'high' });
+      }
+      if (w.longFunctions && w.longFunctions.length > 0) {
+        improvements.push({ area: 'maintainability', action: '拆分 ' + w.longFunctions.length + ' 个超长函数(>300行)', priority: 'medium' });
+      }
+      if (w.coreFileSize && Object.keys(w.coreFileSize).length > 0) {
+        improvements.push({ area: 'architecture', action: '解耦 ' + Object.keys(w.coreFileSize).length + ' 个核心单体文件', priority: 'medium' });
+      }
+      if (w.todoCount > 0) {
+        improvements.push({ area: 'techDebt', action: '清理 ' + w.todoCount + ' 个 TODO/FIXME 积压', priority: 'low' });
+      }
+    }
+
 
     const insights = Array.isArray(reflection.insights) ? reflection.insights : [];
 
