@@ -36,5 +36,13 @@
     "impact": 0.1,
     "timestamp": 1784355387892,
     "verified": true
+  },
+  {
+    "version": "6.0.24",
+    "description": "修复进化引擎死锁: EvolutionLoop.core未初始化致evolve永远core_not_initialized。改为默认注入SelfEvolutionCore, 真进化闭环接通",
+    "type": "self-heal",
+    "impact": 0.8,
+    "timestamp": 1784358378475,
+    "verified": true
   }
 ]

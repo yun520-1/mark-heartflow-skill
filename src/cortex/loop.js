@@ -38,7 +38,8 @@ class EvolutionLoop {
 
         this.projectRoot = hf.rootPath || hf.projectRoot || process.cwd();
 
-        this.core = null;
+        // 初始化进化核心：若 hf 未注入 core，默认用 SelfEvolutionCore（防止 core_not_initialized 死锁）
+        this.core = hf.core || new SelfEvolutionCore(this.projectRoot);
 
         this.cycleCount = 0;
 

@@ -22,18 +22,29 @@
       "input": "测试主题",
       "cycleTime": 2,
       "goalsCount": 1,
-      "improvementsCount": 3
+      "improvementsCount": 3,
+      "prior_growth": 6
+    },
+    {
+      "timestamp": "2026-07-18T07:05:28.561Z",
+      "input": "测试进化：检查自身模块深度",
+      "cycleTime": 1,
+      "goalsCount": 1,
+      "improvementsCount": 3,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.15
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 1.5,
-    "introspection": 22.5,
-    "growth": 4.5,
+    "autonomy": 2,
+    "introspection": 30,
+    "growth": 6,
     "authenticity": 0,
-    "wisdom": 11.5,
-    "compassion": 0.8999999999999999,
+    "wisdom": 15.25,
+    "compassion": 1.2,
     "_converged": false
   }
 }
