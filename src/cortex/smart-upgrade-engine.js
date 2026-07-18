@@ -646,14 +646,34 @@ module.exports = { ${className} };
    * 记录一次自我升级（心虫主动修复/优化后调用，无需联网）
    * 与 runUpgrade() 的 manifest 分离，专门沉淀"纠正自己"的经验
    */
-  recordSelfUpgrade({ version, description, impact = 0, type = 'self-heal' } = {}) {
+  /**
+   * 验证该版本是否真有 git commit（防自欺：升级记录必须对应真实代码改动）
+   */
+  _verifyGitCommit(version) {
+    try {
+      const { execSync } = require('child_process');
+      const root = this.rootPath || __dirname;
+      const out = execSync(`git -C "${root}" log --oneline --all | grep -c "v${version}"`, { stdio: ['ignore', 'pipe', 'ignore'] });
+      return parseInt(out.toString().trim(), 10) > 0;
+    } catch (e) {
+      return false; // git 不可用或查不到 -> 不接受为真实升级
+    }
+  }
+
+  recordSelfUpgrade({ version, description, impact = 0, type = 'self-heal', requireGitVerify = true } = {}) {
+    const verified = requireGitVerify ? this._verifyGitCommit(version) : true;
     const entry = {
       version: version || 'unknown',
       description: description || '',
       type,
       impact: typeof impact === 'number' ? impact : 0,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      verified // 防自欺：true=有对应git commit, false=未经验证(手工/虚假)
     };
+    if (!verified) {
+      // 未验证的升级记录不写入主历史，避免污染统计
+      return { ...entry, rejected: true };
+    }
     try {
       let history = [];
       if (fs.existsSync(this.upgradeHistoryPath)) {
