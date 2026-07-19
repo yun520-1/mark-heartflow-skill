@@ -6013,13 +6013,45 @@ class HeartFlow {
     try { return sa.absorb(text, opts); } catch (e) { return null; }
   }
 
+  // [v6.0.42 信号驱动·自动进化] think 累积信号达阈值后自动跑进化，
+  // 仅真有改进时本地 commit(绝不自动 push，交由用户批准)。
   async think(input, depth) {
     const r = await EngineReasoner.think(this, input, depth);
-    // 自动吸收：每轮对话/信号都提炼经验（不阻断主返回）
+    // 1. 自动吸收：每轮对话/信号都提炼经验（不阻断主返回）
     if (typeof input === "string" && input.trim().length > 0) {
-      try { this.absorbSignal(input, { skipStore: false }); } catch (e) {}
+      try {
+        this.absorbSignal(input, { skipStore: false });
+        this._signalCount = (this._signalCount || 0) + 1;
+        // 2. 达阈值自动触发一次进化(保守：同步 await 不阻塞主链路太久)
+        if (this._signalCount >= 8) {
+          this._signalCount = 0;
+          try { await this._autoEvolveIfImproved(); } catch (e) {}
+        }
+      } catch (e) {}
     }
     return r;
+  }
+
+  async _autoEvolveIfImproved() {
+    if (!this.evolution) return;
+    const run = await this.evolution._executeEvolve({ trigger: 'signal_auto', auto: true });
+    const improved = (run && ((run.improvements && run.improvements.length > 0) || (typeof run.improvement === 'number' && run.improvement > 0)));
+    if (!improved) return; // 无真改进 → 静默，不 commit
+    // 有真改进 → 本地 commit(不 push)，并落升级历史
+    try {
+      const { execSync } = require('child_process');
+      const fs = require('fs');
+      const root = this.projectRoot || process.cwd();
+      const msg = 'self-evolution(auto): 信号驱动进化 ' + (run.learning && run.learning.summary ? run.learning.summary.slice(0, 80) : '');
+      // 只提交源码与配置，排除运行时产物 data/ (避免噪声 commit)
+      // 先 reset index 清掉任何遗留 staged 文件，再精准 add 源码范围
+      const files = ['src/', 'test/', 'VERSION', 'package.json', 'package-lock.json'];
+      execSync('git reset -q && git add ' + files.join(' ') + ' && git commit -q -m ' + JSON.stringify(msg), { cwd: root, encoding: 'utf8', timeout: 30000 });
+      const { SmartUpgradeEngine } = require('./../cortex/smart-upgrade-engine.js');
+      const s = new SmartUpgradeEngine(root);
+      s.recordSelfUpgrade({ version: (() => { try { return fs.readFileSync(root + '/VERSION', 'utf8').trim(); } catch(e){ return 'unknown'; } })(), description: '信号驱动自动进化(有真改进)', impact: 4, type: 'self-heal' });
+      console.error('[AUTO-EVOLVE] 真改进已本地 commit，待你 push：' + msg.slice(0, 60));
+    } catch (e) { /* commit 失败不阻断 */ }
   }
 
   thinkFast(input) { return EngineReasoner.thinkFast(this, input); }

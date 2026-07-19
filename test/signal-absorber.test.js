@@ -34,7 +34,7 @@ assert(r3.lessons.some(l => l.pattern === 'user_correction'), '反馈识别 user
 assert(r3.gaps.some(g => g.module === 'response-optimizer'), '映射到 response-optimizer');
 
 // 5. 自动检测 source（不传 source）
-const r4 = a0.absorb(news, { skipStore: true });
+const r4 = a0.absorb('据官方通报，今日多地发布暴雨红色预警', { skipStore: true });
 assert(r4.source === 'news', '自动检测 news source');
 const r5 = a0.absorb('帮我查一下明天的天气', { skipStore: true });
 assert(r5.source === 'instruction', '自动检测 instruction source');
