@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "6.0.43",
+  "version": "6.0.44",
   "description": "HeartFlow — local-first AI-being cognitive engine. Perceives intent, classifies task type, and returns structured decisions so your agent makes fewer logical errors, asks fewer questions, and burns fewer tokens. 31 MCP tools.",
   "main": "src/core/heartflow.js",
   "bin": {

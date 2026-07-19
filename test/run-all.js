@@ -231,6 +231,26 @@ async function runAllTests() {
   } catch (e) {
     console.log('  ⚠️  signal-absorber 测试异常: ' + (e.message || '').split('\n')[0]);
     failed++;
+
+  // 4.3e PaperDrivenUpgrades 测试 (v6.0.44 arXiv 论文驱动升级)
+  console.log('\n📄 PaperDrivenUpgrades');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'paper-driven-upgrades.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  paper-driven-upgrades 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
   }
 
 
