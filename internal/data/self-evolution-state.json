@@ -154,18 +154,29 @@
       "improvementsCount": 5,
       "iterations": 2,
       "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 37.5
+    },
+    {
+      "timestamp": "2026-07-19T03:10:54.834Z",
+      "input": "{\"trigger\":\"manual\"}",
+      "cycleTime": 243,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
       "finalImprovement": 1.4500000000000002
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 7.5,
+    "autonomy": 8,
     "introspection": 100,
-    "growth": 36,
+    "growth": 37.5,
     "authenticity": 0,
-    "wisdom": 56.5,
-    "compassion": 4.499999999999999,
+    "wisdom": 60.25,
+    "compassion": 4.799999999999999,
     "_converged": false
   }
 }

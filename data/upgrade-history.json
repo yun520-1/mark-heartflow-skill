@@ -140,5 +140,13 @@
     "impact": 0.85,
     "timestamp": 1784416563824,
     "verified": true
+  },
+  {
+    "version": "6.0.37",
+    "description": "self-evolution input防御+self-state版本读取修复",
+    "type": "self-heal",
+    "impact": 3,
+    "timestamp": 1784427960932,
+    "verified": true
   }
 ]

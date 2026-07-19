@@ -156,7 +156,26 @@ async function runAllTests() {
     failed++;
   }
 
-  // 4.3 KnowledgeGraphAdapter 测试
+  // 4.3 CognitiveLoad 测试 (v6.0.38 新增 TDD 覆盖)
+  console.log('\n🧠 CognitiveLoad');
+  for (const tf of ['cognitive-load.test.js', 'cognitive-load-v2.test.js']) {
+    try {
+      const { execSync } = require('child_process');
+      const result = execSync('node ' + path.join(__dirname, tf), {
+        cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+      });
+      const match = result.match(/(\d+) 通过, (\d+) 失败/);
+      if (match) {
+        passed += parseInt(match[1]); failed += parseInt(match[2]);
+        console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+      } else {
+        console.log(result.trim());
+      }
+    } catch (e) {
+      console.log('  ⚠️  ' + tf + ' 测试异常: ' + (e.message || '').split('\n')[0]);
+      failed++;
+    }
+  }
   console.log('\n🕸️ KnowledgeGraphAdapter');
   try {
     const { execSync } = require('child_process');
