@@ -148,5 +148,13 @@
     "impact": 3,
     "timestamp": 1784427960932,
     "verified": true
+  },
+  {
+    "version": "6.0.38",
+    "description": "CognitiveLoad两模块补TDD+flowState边界守卫",
+    "type": "self-heal",
+    "impact": 4,
+    "timestamp": 1784431073613,
+    "verified": true
   }
 ]
