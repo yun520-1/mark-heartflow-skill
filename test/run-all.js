@@ -176,6 +176,26 @@ async function runAllTests() {
       failed++;
     }
   }
+
+  // 4.3b DualPerspectiveAuditor 测试 (v6.0.39 元审计 M3 修复锁死)
+  console.log('\n⚖️ DualPerspectiveAuditor');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'dual-perspective.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  dual-perspective 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
   console.log('\n🕸️ KnowledgeGraphAdapter');
   try {
     const { execSync } = require('child_process');
