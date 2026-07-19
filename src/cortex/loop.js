@@ -347,7 +347,30 @@ class EvolutionLoop {
 
         }
 
-        return await this.core.evolve(input, context, options);
+        const coreResult = await this.core.evolve(input, context, options);
+
+        // [v6.0.41 自我升级·新闻驱动] 读取外部教训回流：
+        // 心虫从新闻/事件吸收的教训(knowledge:general + tag lessons_from_world)在此被纳入本次进化洞察，
+        // 让"世界经验→自身升级"闭环真正打通，而非只扫自身代码盲区。
+        try {
+          const { ROUTES: wtRaw } = require('../memory/worldtree-bridge');
+          const wt = wtRaw ? { query: wtRaw['worldtree.query'] } : null;
+          if (wt && wt.query) {
+            const lessons = wt.query('knowledge:general', 20);
+            const worldLessons = (lessons && lessons.success && lessons.results)
+              ? lessons.results.filter(r => (r.tags || []).includes('lessons_from_world'))
+              : [];
+            if (worldLessons.length > 0) {
+              const latest = worldLessons[worldLessons.length - 1];
+              if (coreResult && coreResult.learning && coreResult.learning.summary) {
+                coreResult.learning.summary += ' | 外部教训: ' + (latest.content || '').slice(0, 200);
+              }
+              coreResult.externalLessonsAbsorbed = worldLessons.length;
+            }
+          }
+        } catch (e) { /* 教训回流失败不阻断进化 */ }
+
+        return coreResult;
 
     }
 
