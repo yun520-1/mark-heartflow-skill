@@ -135,6 +135,26 @@ class SignalAbsorber {
       });
     }
 
+    // 模式6：慢性错误长期潜伏，靠外部触发才纠正（来源：昆明"被冒名吸毒7年"新闻 2026-07-19）
+    if (/(误(登|记|录|判)|冒名|错登|录入错误|数据(错误|有误))/.test(text)
+        && /(长期|多年|一直|7年|数年|才(发现|核查|更正|纠正)|申诉后|投诉后)/.test(text)) {
+      lessons.push({
+        pattern: 'chronic_error_undetected',
+        summary: '慢性错误长期潜伏于系统，自身从未主动复查，靠外部申诉/投诉才被动纠正',
+        transferable: '应对已判定结论/已存记忆建立"周期性主动复查"机制，而非等外部触发才纠错'
+      });
+    }
+
+    // 模式7：外部标准/规则涌现，考验自身能力边界是否跟上（来源：自主船舶规则/AI治理新闻 2026-07-19）
+    if (/(规则|标准|规范|治理|规定|协议|框架)(落地|发布|出台|生效|即将|拟)/.test(text)
+        || /(首个|全球首|国际)(.*)(规则|标准|规范)/.test(text)) {
+      lessons.push({
+        pattern: 'external_standard_emergence',
+        summary: '外部世界涌现新标准/规则，自身能力边界需评估是否跟上，否则将落后于规范',
+        transferable: '应跟踪与自身领域相关的外部标准，主动评估合规差距，纳入进化目标'
+      });
+    }
+
     if (lessons.length === 0) {
       lessons.push({
         pattern: 'generic',
@@ -176,6 +196,20 @@ class SignalAbsorber {
           matchedPattern: l.pattern
         });
       }
+      if (l.pattern === 'chronic_error_undetected') {
+        gaps.push({
+          module: 'self-heal + memory',
+          issue: 'self-heal 被动(出错才修)，对已判定结论/已存记忆缺"周期性主动复查"，慢性错误会长期潜伏',
+          matchedPattern: l.pattern
+        });
+      }
+      if (l.pattern === 'external_standard_emergence') {
+        gaps.push({
+          module: 'capability-registry + evolution-loop',
+          issue: '不跟踪外部标准/规范涌现，自身能力边界可能落后于行业规范而无人察觉',
+          matchedPattern: l.pattern
+        });
+      }
     }
     if (gaps.length === 0) {
       gaps.push({
@@ -197,6 +231,10 @@ class SignalAbsorber {
         actions.push('建立"被纠正模式"记忆，相似语境预激活更优响应');
       } else if (g.module === 'capability-registry') {
         actions.push('将高频未覆盖请求登记为进化候选目标');
+      } else if (g.module === 'self-heal + memory') {
+        actions.push('为已判定结论/已存记忆增加"周期性主动复查"：超过 N 天未复核的判定自动触发核查');
+      } else if (g.module === 'capability-registry + evolution-loop') {
+        actions.push('跟踪外部标准涌现，定期评估自身能力边界合规差距，纳入进化目标');
       } else {
         actions.push('将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用');
       }
