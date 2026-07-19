@@ -214,8 +214,28 @@ async function runAllTests() {
     console.log('  ⚠️  intent-classifier 测试异常: ' + (e.message || '').split('\n')[0]);
     failed++;
 
-  // 4.3d NewsLessonAbsorber 测试 (v6.0.41 新闻驱动自我升级)
-  console.log('\n📰 NewsLessonAbsorber');
+  // 4.3d SignalAbsorber 测试 (v6.0.41 信号驱动自我升级)
+  console.log('\n📡 SignalAbsorber');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'signal-absorber.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  signal-absorber 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+
+  // 4.3d NewsLessonAbsorber 测试 (v6.0.41 信号驱动自我升级)
+  console.log('\n📰 SignalAbsorber');
   try {
     const { execSync } = require('child_process');
     const result = execSync('node ' + path.join(__dirname, 'news-lesson-absorber.test.js'), {

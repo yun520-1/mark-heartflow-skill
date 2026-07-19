@@ -349,8 +349,8 @@ class EvolutionLoop {
 
         const coreResult = await this.core.evolve(input, context, options);
 
-        // [v6.0.41 自我升级·新闻驱动] 读取外部教训回流：
-        // 心虫从新闻/事件吸收的教训(knowledge:general + tag lessons_from_world)在此被纳入本次进化洞察，
+        // [v6.0.41 自我升级·信号驱动] 读取外部信号回流：
+        // 心虫从任意外部信号(对话/新闻/指令/反馈)吸收的经验(knowledge:general + tag signal_absorbed)在此被纳入本次进化洞察，
         // 让"世界经验→自身升级"闭环真正打通，而非只扫自身代码盲区。
         try {
           const { ROUTES: wtRaw } = require('../memory/worldtree-bridge');
@@ -358,7 +358,7 @@ class EvolutionLoop {
           if (wt && wt.query) {
             const lessons = wt.query('knowledge:general', 20);
             const worldLessons = (lessons && lessons.success && lessons.results)
-              ? lessons.results.filter(r => (r.tags || []).includes('lessons_from_world'))
+              ? lessons.results.filter(r => (r.tags || []).includes('signal_absorbed'))
               : [];
             if (worldLessons.length > 0) {
               const latest = worldLessons[worldLessons.length - 1];

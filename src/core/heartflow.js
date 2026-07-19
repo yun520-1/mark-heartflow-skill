@@ -5994,7 +5994,33 @@ class HeartFlow {
 
   // === Delegate to EngineReasoner ===
 
-  async think(input, depth) { return EngineReasoner.think(this, input, depth); }
+
+  // [v6.0.41 信号驱动] 统一信号吸收：对话/新闻/指令/反馈都走这里，
+  // 提炼可迁移经验写入 world-tree，供 self-evolve 引用。每轮 think 自动触发。
+  _ensureSignalAbsorber() {
+    if (!this._signalAbsorber) {
+      try {
+        const { SignalAbsorber } = require('./../cortex/signal-absorber.js');
+        this._signalAbsorber = new SignalAbsorber({});
+      } catch (e) { this._signalAbsorber = null; }
+    }
+    return this._signalAbsorber;
+  }
+
+  absorbSignal(text, opts = {}) {
+    const sa = this._ensureSignalAbsorber();
+    if (!sa) return null;
+    try { return sa.absorb(text, opts); } catch (e) { return null; }
+  }
+
+  async think(input, depth) {
+    const r = await EngineReasoner.think(this, input, depth);
+    // 自动吸收：每轮对话/信号都提炼经验（不阻断主返回）
+    if (typeof input === "string" && input.trim().length > 0) {
+      try { this.absorbSignal(input, { skipStore: false }); } catch (e) {}
+    }
+    return r;
+  }
 
   thinkFast(input) { return EngineReasoner.thinkFast(this, input); }
 
