@@ -6053,6 +6053,38 @@ class HeartFlow {
     try { return es.synthesize(strategy); } catch (e) { return null; }
   }
 
+  // [v6.0.45 论文驱动] 想象-执行对齐检测(BadWAM, arXiv:2607.15207)
+  _ensureAligner() {
+    if (!this._aligner) {
+      try {
+        const { ImaginationActionAligner } = require('./../cortex/imagination-action-aligner.js');
+        this._aligner = new ImaginationActionAligner({});
+      } catch (e) { this._aligner = null; }
+    }
+    return this._aligner;
+  }
+  alignImaginationAction(imaginedPlan, actualAction) {
+    const a = this._ensureAligner();
+    if (!a) return null;
+    try { return a.align(imaginedPlan, actualAction); } catch (e) { return null; }
+  }
+
+  // [v6.0.45 论文驱动] 少样本置信度校准(chem-ph arXiv:2607.14486)
+  _ensureCalibrator() {
+    if (!this._calibrator) {
+      try {
+        const { FewshotCalibrator } = require('./../cortex/fewshot-calibrator.js');
+        this._calibrator = new FewshotCalibrator({});
+      } catch (e) { this._calibrator = null; }
+    }
+    return this._calibrator;
+  }
+  calibrateConfidence(confidence, experienceCount) {
+    const c = this._ensureCalibrator();
+    if (!c) return confidence;
+    try { return c.calibrate(confidence, experienceCount); } catch (e) { return confidence; }
+  }
+
   // [v6.0.42 信号驱动·自动进化] think 累积信号达阈值后自动跑进化，
   // 仅真有改进时本地 commit(绝不自动 push，交由用户批准)。
   async think(input, depth) {
