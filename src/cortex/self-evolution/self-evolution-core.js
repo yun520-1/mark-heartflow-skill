@@ -252,6 +252,8 @@ class SelfEvolutionCore {
 
   async evolve(input, context = {}, options = {}) {
 
+    input = (typeof input === 'string' ? input : (input && input.trigger ? JSON.stringify(input) : '')) || '';
+
     const cycleStart = Date.now();
 
     const maxIterations = options.maxIterations || 10;
@@ -459,7 +461,7 @@ class SelfEvolutionCore {
 
     const goals = [];
 
-    const inputLower = input.toLowerCase();
+    const inputLower = (typeof input === 'string' ? input : '').toLowerCase();
 
     
 
@@ -601,6 +603,8 @@ class SelfEvolutionCore {
 
   async learn(input, context) {
 
+    const learnInput = (typeof input === 'string' ? input : (input && input.trigger ? JSON.stringify(input) : '')) || '';
+
     const learning = {
 
       newKnowledge: [],
@@ -617,7 +621,7 @@ class SelfEvolutionCore {
 
     // 提取关键词
 
-    const keywords = this.extractKeywords(input);
+    const keywords = this.extractKeywords(learnInput);
 
     learning.newKnowledge.push(...keywords);
 
