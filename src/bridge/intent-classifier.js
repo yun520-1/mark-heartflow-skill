@@ -14,19 +14,19 @@ class IntentClassifier {
 
   _initCategories() {
     return {
-      inquire: { weight: 1, patterns: [/什么是|是什么|告诉我|解释|什么意思/] },
-      analyze: { weight: 2, patterns: [/分析|比较|对比|区别|差异|vs|versus|为什么/] },
-      create: { weight: 1, patterns: [/写一个|创建|生成|设计|画|做|制作/] },
-      evaluate: { weight: 2, patterns: [/好不好|对不对|值得|应该|建议|推荐/] },
-      execute: { weight: 3, patterns: [/运行|执行|启动|打开|安装|配置/] },
-      meta: { weight: 1, patterns: [/你是谁|你能做什么|你的版本|你的能力/] },
+      inquire: { weight: 1, patterns: [/什么是|是什么|告诉我|解释|什么意思|怎么回事|怎么理解|为何/] },
+      analyze: { weight: 2, patterns: [/分析|比较|对比|区别|差异|vs|versus|为什么|为啥|原因|帮我看看|帮我分析|这段代码|这个逻辑|排查|诊断/] },
+      create: { weight: 1, patterns: [/写一个|写一个|创建|生成|设计|画|做|制作|搞一个|搞个|帮我写|写个|写一个|写一段|实现(一个|一下)?/] },
+      evaluate: { weight: 2, patterns: [/好不好|对不对|值得|应该|建议|推荐|这个方案|这个思路|怎么样|行不行|靠谱吗|合理吗|优劣/] },
+      execute: { weight: 3, patterns: [/运行|执行|启动|打开|安装|配置|跑一下|跑起来|测试一下|试一下|部署|上线|调用/] },
+      meta: { weight: 1, patterns: [/你是谁|你能做什么|你的版本|你的能力|介绍一下你|你是什么/] },
     };
   }
 
   classify(input, context = {}) {
     if (!input || typeof input !== 'string') {
       return {
-        primary: 'general',
+        primary: null,
         scores: {},
         confidence: 0,
         isAmbiguous: false,

@@ -196,6 +196,25 @@ async function runAllTests() {
     failed++;
   }
 
+  // 4.3c IntentClassifier 测试 (v6.0.40 中文口语意图覆盖 + 空输入降级)
+  console.log('\n🎯 IntentClassifier');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'intent-classifier.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  intent-classifier 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
   console.log('\n🕸️ KnowledgeGraphAdapter');
   try {
     const { execSync } = require('child_process');

@@ -156,5 +156,13 @@
     "impact": 4,
     "timestamp": 1784431073613,
     "verified": true
+  },
+  {
+    "version": "6.0.39",
+    "description": "元审计M3 dual-perspective debate独立性校验",
+    "type": "self-heal",
+    "impact": 4,
+    "timestamp": 1784447959765,
+    "verified": true
   }
 ]
