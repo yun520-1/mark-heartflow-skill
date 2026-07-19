@@ -6085,6 +6085,22 @@ class HeartFlow {
     try { return c.calibrate(confidence, experienceCount); } catch (e) { return confidence; }
   }
 
+  // [v6.0.45 论文驱动] 无描述符路径采样(chem-ph arXiv:2607.15101)
+  _ensurePathSampler() {
+    if (!this._pathSampler) {
+      try {
+        const { PathSampler } = require('./../cortex/path-sampler.js');
+        this._pathSampler = new PathSampler({});
+      } catch (e) { this._pathSampler = null; }
+    }
+    return this._pathSampler;
+  }
+  sampleDecisionPaths(problem, n, generator) {
+    const ps = this._ensurePathSampler();
+    if (!ps) return null;
+    try { return ps.samplePaths(problem, n, generator); } catch (e) { return null; }
+  }
+
   // [v6.0.42 信号驱动·自动进化] think 累积信号达阈值后自动跑进化，
   // 仅真有改进时本地 commit(绝不自动 push，交由用户批准)。
   async think(input, depth) {
@@ -6101,6 +6117,23 @@ class HeartFlow {
         }
       } catch (e) {}
     }
+    // 3. [v6.0.45 BadWAM] 想象-执行对齐检测: 判定意图(想象层) vs 实际响应(执行层)
+    //    若失对齐(想对做错), 在结果标注 alignmentWarning 供上层感知/拦截, 不阻断返回。
+    try {
+      if (r && r.cognition && (r.output && r.output.conclusion)) {
+        const imagined = [r.cognition.whatIsThis, r.cognition.intent, (r.decision && r.decision.type)]
+          .filter(Boolean).join(' ');
+        const actual = (r.output.conclusion || '') + ' ' + ((r.output.meta && r.output.meta.action) || '');
+        const align = this.alignImaginationAction(imagined, actual);
+        if (align && align.alert) {
+          r.alignmentWarning = {
+            driftType: align.driftType,
+            alignment: align.alignment,
+            reason: align.reason
+          };
+        }
+      }
+    } catch (e) {}
     return r;
   }
 

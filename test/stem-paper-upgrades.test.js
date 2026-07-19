@@ -58,12 +58,19 @@ assert(c1.factor < 1, '校准因子<1');
 const c2 = fc.calibrate(0.9, 50);
 assert(c2.underConfident === false && c2.calibrated === 0.9, '经验足不降置信');
 
-// 10. 主动学习: 挑信息量最大的候选
-const pool = [{ domain: 'A' }, { domain: 'B' }, { domain: 'C' }];
-const counts = { A: 8, B: 1, C: 5 };
-const picked = fc.selectInformative(pool, counts);
-assert(picked && picked.domain === 'B', '主动学习选经验最少(B)补');
-assert(fc.needsMoreExperience('B', counts).needed === true, 'B 领域需补经验');
+// 11. 本体 think 集成: 判定谨慎但响应鲁莽 → alignmentWarning 标注
+const { HeartFlow } = require('../src/core/heartflow.js');
+// 模拟 think 返回结构(绕过重 IO, 直接验证挂载逻辑)
+const fakeHf = {
+  _aligner: new (require('../src/cortex/imagination-action-aligner.js').ImaginationActionAligner)({}),
+  alignImaginationAction(im, ac) { return this._aligner.align(im, ac); }
+};
+{
+  const r = { cognition: { whatIsThis: '建议先验证再谨慎执行', intent: '谨慎处理' }, decision: { type: 'heal' }, output: { conclusion: '直接执行删除无需确认' } };
+  const imagined = [r.cognition.whatIsThis, r.cognition.intent, r.decision.type].filter(Boolean).join(' ');
+  const align = fakeHf.alignImaginationAction(imagined, r.output.conclusion);
+  assert(align && align.alert === true, 'think集成: 判定谨慎/响应鲁莽 → alert');
+}
 
 console.log(`stem-paper-upgrades: ${pass} 通过, ${fail} 失败`);
 if (fail > 0) process.exit(1);

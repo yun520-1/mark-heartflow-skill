@@ -265,6 +265,16 @@ async function runAllTests() {
   } catch (e) {
     console.log('  ⚠️  stem-paper-upgrades 测试异常: ' + (e.message || '').split('\n')[0]);
     failed++;
+
+  // 4.3g PathSampler 测试 (v6.0.45 chem-ph 2607.15101)
+  console.log('\n🧭 PathSampler');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'path-sampler.test.js'), { cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000 });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) { passed += parseInt(match[1]); failed += parseInt(match[2]); console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n')); } else { console.log(result.trim()); }
+  } catch (e) { console.log('  ⚠️  path-sampler 测试异常: ' + (e.message || '').split('\n')[0]); failed++; }
+
   }
 
   }
