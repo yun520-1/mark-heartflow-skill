@@ -6013,6 +6013,46 @@ class HeartFlow {
     try { return sa.absorb(text, opts); } catch (e) { return null; }
   }
 
+  // [v6.0.44 论文驱动] 状态级风险探测(PRISM, arXiv:2607.15218)
+  _ensureStateRiskProbe() {
+    if (!this._stateRiskProbe) {
+      try {
+        const { StateRiskProbe } = require('./../shield/state-risk-probe.js');
+        this._stateRiskProbe = new StateRiskProbe({});
+      } catch (e) { this._stateRiskProbe = null; }
+    }
+    return this._stateRiskProbe;
+  }
+
+  assessStateRisk(text, plannedAction = {}) {
+    const p = this._ensureStateRiskProbe();
+    if (!p) return null;
+    try { return p.probe(text, plannedAction); } catch (e) { return null; }
+  }
+
+  // [v6.0.44 论文驱动] 多源证据综合(AutoSynthesis, arXiv:2607.15247)
+  _ensureEvidenceSynthesis() {
+    if (!this._evidenceSynthesis) {
+      try {
+        const { EvidenceSynthesis } = require('./../cortex/evidence-synthesis.js');
+        this._evidenceSynthesis = new EvidenceSynthesis({});
+      } catch (e) { this._evidenceSynthesis = null; }
+    }
+    return this._evidenceSynthesis;
+  }
+
+  addEvidence(strategy, value, moderator) {
+    const es = this._ensureEvidenceSynthesis();
+    if (!es) return false;
+    try { return es.addEvidence(strategy, value, moderator); } catch (e) { return false; }
+  }
+
+  synthesizeEvidence(strategy) {
+    const es = this._ensureEvidenceSynthesis();
+    if (!es) return null;
+    try { return es.synthesize(strategy); } catch (e) { return null; }
+  }
+
   // [v6.0.42 信号驱动·自动进化] think 累积信号达阈值后自动跑进化，
   // 仅真有改进时本地 commit(绝不自动 push，交由用户批准)。
   async think(input, depth) {
