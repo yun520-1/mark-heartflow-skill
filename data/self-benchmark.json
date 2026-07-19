@@ -7358,5 +7358,845 @@
       "coverageRatio": "0%",
       "lessonCount": 0
     }
+  },
+  {
+    "id": "bench-1784419762815-af696129",
+    "createdAt": "2026-07-19T00:09:22.815Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784419762816-cb9ea017",
+    "createdAt": "2026-07-19T00:09:22.816Z",
+    "loopStats": {
+      "triggerRate": 90,
+      "closureRate": 90,
+      "reuseRate": 90
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 63,
+    "externalAnchor": {
+      "logicAccuracy": 1,
+      "humanSatisfaction": null,
+      "available": true,
+      "score": 1
+    },
+    "verified": true,
+    "score": 85.2,
+    "label": "omniscient-approaching",
+    "guardNote": "external_anchored",
+    "details": {
+      "closureRatePct": "90%",
+      "reuseRatePct": "90%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784419762819-f10c4af7",
+    "createdAt": "2026-07-19T00:09:22.819Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784419762822-440c60d7",
+    "createdAt": "2026-07-19T00:09:22.822Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784419762825-e9854acd",
+    "createdAt": "2026-07-19T00:09:22.825Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784419763798-81d33245",
+    "createdAt": "2026-07-19T00:09:23.798Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784419763799-28c07acd",
+    "createdAt": "2026-07-19T00:09:23.799Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427829056-61b4777f",
+    "createdAt": "2026-07-19T02:23:49.056Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427829058-22097d17",
+    "createdAt": "2026-07-19T02:23:49.058Z",
+    "loopStats": {
+      "triggerRate": 90,
+      "closureRate": 90,
+      "reuseRate": 90
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 63,
+    "externalAnchor": {
+      "logicAccuracy": 1,
+      "humanSatisfaction": null,
+      "available": true,
+      "score": 1
+    },
+    "verified": true,
+    "score": 85.2,
+    "label": "omniscient-approaching",
+    "guardNote": "external_anchored",
+    "details": {
+      "closureRatePct": "90%",
+      "reuseRatePct": "90%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427829060-e0df142c",
+    "createdAt": "2026-07-19T02:23:49.060Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427829064-8ab382ab",
+    "createdAt": "2026-07-19T02:23:49.064Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427829067-051d2443",
+    "createdAt": "2026-07-19T02:23:49.067Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427830088-3707fa93",
+    "createdAt": "2026-07-19T02:23:50.089Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427830089-3d36f1ff",
+    "createdAt": "2026-07-19T02:23:50.089Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427872739-62d56481",
+    "createdAt": "2026-07-19T02:24:32.739Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427872741-ffe96b37",
+    "createdAt": "2026-07-19T02:24:32.741Z",
+    "loopStats": {
+      "triggerRate": 90,
+      "closureRate": 90,
+      "reuseRate": 90
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 63,
+    "externalAnchor": {
+      "logicAccuracy": 1,
+      "humanSatisfaction": null,
+      "available": true,
+      "score": 1
+    },
+    "verified": true,
+    "score": 85.2,
+    "label": "omniscient-approaching",
+    "guardNote": "external_anchored",
+    "details": {
+      "closureRatePct": "90%",
+      "reuseRatePct": "90%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427872744-2c69eaf7",
+    "createdAt": "2026-07-19T02:24:32.744Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427872749-0dd090fe",
+    "createdAt": "2026-07-19T02:24:32.749Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427872751-4bb397e5",
+    "createdAt": "2026-07-19T02:24:32.751Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427873701-fc182306",
+    "createdAt": "2026-07-19T02:24:33.701Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
+  },
+  {
+    "id": "bench-1784427873702-09ee809f",
+    "createdAt": "2026-07-19T02:24:33.702Z",
+    "loopStats": {
+      "triggerRate": 0,
+      "closureRate": 0,
+      "reuseRate": 0
+    },
+    "lessonStats": {
+      "total": 0,
+      "recent": 0,
+      "avgConfidence": 0
+    },
+    "healingStats": {
+      "successRate": 0,
+      "total": 0
+    },
+    "coverageStats": {
+      "modulesUsed": 0,
+      "totalModules": 0,
+      "ratio": 0
+    },
+    "internalScore": 0,
+    "externalAnchor": {
+      "logicAccuracy": null,
+      "humanSatisfaction": null,
+      "available": false,
+      "score": null
+    },
+    "verified": false,
+    "score": 0,
+    "label": "nascent",
+    "guardNote": "UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）",
+    "details": {
+      "closureRatePct": "0%",
+      "reuseRatePct": "0%",
+      "coverageRatio": "0%",
+      "lessonCount": 0
+    }
   }
 ]

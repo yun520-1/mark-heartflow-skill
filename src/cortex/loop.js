@@ -284,6 +284,21 @@ class EvolutionLoop {
               });
             } catch (e) { /* 审计失败不阻断进化 */ }
 
+            // [v6.0.37] 进化状态快照: 每次进化的发现存入 self-state-history(可追溯/对比两次进化是否真前进)
+            try {
+              const { SmartUpgradeEngine } = require('./smart-upgrade-engine.js');
+              const sue = new SmartUpgradeEngine(this.projectRoot);
+              const w = result.learning && result.learning.weaknesses;
+              sue.recordSelfState({
+                source: 'evolution_cycle',
+                version: (() => { try { return require('fs').readFileSync(require('path').join(this.projectRoot, 'VERSION'), 'utf8').trim(); } catch(e) { return 'unknown'; } })(),
+                cycle: this.cycleCount,
+                weaknessSummary: w ? { todo: w.todoCount, silentCatch: w.silentCatches, longFn: (w.longFunctions||[]).length, untested: (w.untestedModules||[]).length } : null,
+                improvementCount: (result.improvements||[]).length,
+                timestamp: Date.now()
+              });
+            } catch (e) { /* 状态记录失败不阻断进化 */ }
+
             
 
             return result;
