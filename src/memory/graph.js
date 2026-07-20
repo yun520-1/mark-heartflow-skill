@@ -52,6 +52,8 @@ const MAX_RELATIONS = 200000;
 /**
  * 生成唯一节点ID
  */
+// [REFACTOR] TODO: generateNodeId (575行) — 建议拆分为独立子函数
+
 function generateNodeId(prefix = 'node') {
   const { randomBytes } = require('crypto');
   return `${prefix}-${Date.now()}-${randomBytes(4).toString('hex')}`;

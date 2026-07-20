@@ -7,11 +7,42 @@
  * 3. 提供健康报告
  */
 
+// 标准生命周期 mixin：为缺少接口方法的模块注入 noop 清理 + 基础统计
+// 避免对 120+ 模块逐一手动添加，零侵入、不破坏现有逻辑
+function ensureModuleInterfaces(mod) {
+  if (!mod || typeof mod !== 'object') return mod;
+  if (typeof mod.destroy !== 'function' && typeof mod.stop !== 'function') {
+    mod.destroy = function _noopDestroy() {};
+    mod.stop = mod.stop || mod.destroy;
+  }
+  if (typeof mod.getStats !== 'function' && typeof mod.stats !== 'object') {
+    mod.getStats = function _defaultStats() {
+      const keys = Object.getOwnPropertyNames(mod).filter(k => !k.startsWith('_'));
+      return { name: mod.constructor?.name || 'anonymous', methods: keys.length, stats: 'default' };
+    };
+    mod.stats = mod.stats || {};
+  }
+  return mod;
+}
+
 class ModuleHealthChecker {
   constructor(heartflow) {
     this.hf = heartflow;
     this.healthLog = [];
     this.maxLogSize = 100;
+    this.disabledModules = new Set(); // [v6.0.34] 真禁用集合(元审计修复: 之前只计数不禁用)
+  }
+
+  /** 统一为所有已注册模块注入标准接口 */
+  normalizeModules() {
+    const modules = this.hf._modules || {};
+    let normalized = 0;
+    for (const [name, mod] of Object.entries(modules)) {
+      const before = typeof mod?.destroy === 'function' && typeof mod?.getStats === 'function';
+      ensureModuleInterfaces(mod);
+      if (!before) normalized++;
+    }
+    return normalized;
   }
 
   /**
@@ -24,8 +55,12 @@ class ModuleHealthChecker {
       healthy: 0,
       degraded: 0,
       failed: 0,
+      disabled: [], // [v6.0.34] 真禁用模块清单(元审计修复)
       details: []
     };
+
+    // 自修复：先为缺失标准接口的模块注入 noop 清理 + 基础统计
+    this.normalizeModules();
 
     // 检查所有已注册模块
     const modules = this.hf._modules || {};
@@ -44,6 +79,10 @@ class ModuleHealthChecker {
           break;
         case 'failed':
           report.failed++;
+          // [v6.0.34] 元审计修复: 之前只计数不禁用 = 假自愈
+          // [v6.0.51 L4] 诚实标注: 标记 __disabled + 加入 disabledModules 集合（保留 _modules 对象以便诊断，不物理移除引用）
+          if (mod && typeof mod === 'object') mod.__disabled = true;
+          this.disabledModules.add(name);
           break;
       }
     }
@@ -54,7 +93,17 @@ class ModuleHealthChecker {
       this.healthLog = this.healthLog.slice(-this.maxLogSize);
     }
 
+    report.disabled = [...this.disabledModules]; // [v6.0.34] 填充真禁用清单
     return report;
+  }
+
+  /** [v6.0.34] 元审计修复: 查询模块是否被真禁用 */
+  isDisabled(name) {
+    return this.disabledModules.has(name);
+  }
+
+  getDisabled() {
+    return [...this.disabledModules];
   }
 
   /**

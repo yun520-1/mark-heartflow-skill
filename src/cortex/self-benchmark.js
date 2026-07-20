@@ -8,6 +8,7 @@
  */
 
 const { encryptJSON, decryptJSON } = require('../memory/memory-encrypt.js');
+const { anchorSync } = require('./benchmark-external-anchor.js');
 
 const BENCHMARK_FILE = require('path').join(__dirname, '../../data/self-benchmark.json');
 const MAX_BENCHMARKS = 500;
@@ -57,16 +58,54 @@ class SelfBenchmark {
 
   /**
    * 执行全知全能逼近度评估
+   * 修复"自欺进化"：原 score 100% 来自内部自陈指标（进化循环触发率 / lesson
+   * 置信度 / 自愈成功率 / 模块覆盖率），无任何外部可验证事实。
+   * 现改为：有外部锚时 score = 0.4*内部 + 0.6*外部；无外部锚时内部分打 0.7 折
+   * 并打标 verified:false，防止心虫拿"自评分高"自我激励。
    * @returns {Object} quantifiable report
    */
   assess() {
     const stats = this._computeStats();
+    const internalScore = this._score(stats);
+
+    // 外部锚定（同步：逻辑题 + 可选满意度；跨模型为 opt-in 异步，不在此阻塞）
+    let external = null;
+    try {
+      external = anchorSync(this.hf);
+    } catch (_) {
+      external = null;
+    }
+
+    let finalScore;
+    let verified;
+    let guardNote;
+    if (external && external.available && external.score !== null) {
+      finalScore = Number((0.4 * internalScore + 0.6 * external.score * 100).toFixed(2));
+      verified = true;
+      guardNote = 'external_anchored';
+    } else {
+      // 防自欺护栏：无外部验证时内部分打折 + 明确标记未验证
+      finalScore = Number((internalScore * 0.7).toFixed(2));
+      verified = false;
+      guardNote = 'UNVERIFIED: 分数未经验证，勿据此自我激励（无外部锚）';
+      console.warn('[self-benchmark] ' + guardNote);
+    }
+
     const report = {
       id: this._uuid(),
       createdAt: this._now(),
       ...stats,
-      score: this._score(stats),
-      label: this._label(stats.score),
+      internalScore,
+      externalAnchor: external ? {
+        logicAccuracy: external.logicAccuracy,
+        humanSatisfaction: external.humanSatisfaction,
+        available: external.available,
+        score: external.score,
+      } : null,
+      verified,
+      score: finalScore,
+      label: this._label(finalScore),
+      guardNote,
       details: this._details(stats),
     };
 

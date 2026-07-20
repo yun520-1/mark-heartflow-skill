@@ -7,7 +7,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/opt/homebrew/bin/node</string>
-        <string>/Users/apple/.hermes/mcp-servers/heartflow/src/mcp-server-http.js</string>
+        <string>$HOME/.hermes/mcp-servers/heartflow/src/mcp-server-http.js</string>
         <string>--port</string>
         <string>8099</string>
     </array>
@@ -16,11 +16,11 @@
     <key>KeepAlive</key>
     <true/>
     <key>WorkingDirectory</key>
-    <string>/Users/apple/.hermes/mcp-servers/heartflow</string>
+    <string>$HOME/.hermes/mcp-servers/heartflow</string>
     <key>StandardOutPath</key>
-    <string>/Users/apple/.hermes/logs/heartflow-mcp.log</string>
+    <string>$HOME/.hermes/logs/heartflow-mcp.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/apple/.hermes/logs/heartflow-mcp.log</string>
+    <string>$HOME/.hermes/logs/heartflow-mcp.log</string>
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>

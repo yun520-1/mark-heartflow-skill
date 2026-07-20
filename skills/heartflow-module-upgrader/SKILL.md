@@ -428,10 +428,14 @@ const kb = new KnowledgeBase({ storagePath: '/tmp/test-kb' });
 
 // ✅ 正确：使用 data/ 下的子目录
 <<<<<<< HEAD
+<<<<<<< HEAD
 const kbPath = '/Users/apple/.hermes/skills/ai/mark-heartflow-skill/data/knowledge_test';
 =======
 const kbPath = '/Users/apple/.hermes/skills/heartflow/data/knowledge_test';
 >>>>>>> e84538af12ba8f9d63816fdf6cfc2e2b929be321
+=======
+const kbPath = path.join(process.env.HF_DIR || require('path').join(require('os').homedir(), '.hermes/skills/ai/mark-heartflow'), 'data', 'knowledge_test');
+>>>>>>> upstream/main
 fs.mkdirSync(kbPath, { recursive: true });
 const kb = new KnowledgeBase({ storagePath: kbPath, autoSave: false });
 ```

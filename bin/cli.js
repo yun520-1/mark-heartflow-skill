@@ -487,6 +487,90 @@ switch (cmd) {
     break;
   }
 
+  case 'forget': {
+    // 显式数据擦除 (GitHub #7 Data Erasure 缺口)
+    const { DataEraser } = require(path.join(hfDir, 'src/memory/data-eraser.js'));
+    const eraser = new DataEraser(hfDir);
+    const target = process.argv[3] || '*';
+    let r;
+    if (target.startsWith('tag:')) {
+      r = eraser.eraseByTag(target.slice(4));
+    } else if (target.startsWith('session:')) {
+      r = eraser.eraseSession(target.slice(8));
+    } else {
+      r = eraser.eraseEphemeral(target);
+    }
+    console.log(JSON.stringify(r, null, 2));
+    process.exit(0);
+    break;
+  }
+
+  case 'benchmark': {
+    // 公开延迟基准 (GitHub #7 Latency 缺口)
+    const { HeartFlow } = require(path.join(hfDir, 'src/core/heartflow.js'));
+    const { LatencyBenchmark } = require(path.join(hfDir, 'src/benchmark/latency-benchmark.js'));
+    const engine = new HeartFlow({ dataDir: path.join(hfDir, 'data'), silent: true });
+    engine.start();
+    const probe = async () => {
+      await engine.think('测试延迟: 今天天气怎么样');
+    };
+    const bench = new LatencyBenchmark(probe, { warmup: 3, samples: 20 });
+    bench.report().then(r => {
+      console.log(JSON.stringify(r, null, 2));
+      engine.shutdown();
+      process.exit(0);
+    });
+    break;
+  }
+
+  case 'pref': {
+    // 可调 TTL 临时偏好 (GitHub #7 Temporary Preferences 缺口)
+    const { TTLPreferences } = require(path.join(hfDir, 'src/memory/ttl-preferences.js'));
+    const tp = new TTLPreferences(hfDir);
+    const sub = process.argv[3];
+    const key = process.argv[4];
+    const val = process.argv[5];
+    const ttl = parseInt(process.argv[6] || '0', 10);
+    if (sub === 'set') {
+      const r = tp.set(key, val, ttl);
+      console.log(JSON.stringify({ set: key, expiresAt: r.expiresAt, ttlMs: ttl }));
+    } else if (sub === 'get') {
+      console.log(JSON.stringify({ [key]: tp.get(key) }));
+    } else if (sub === 'list') {
+      console.log(JSON.stringify(tp.all(), null, 2));
+    } else if (sub === 'clear') {
+      console.log(JSON.stringify({ cleared: tp.clear() }));
+    } else {
+      console.log('用法: node bin/cli.js pref set <key> <value> <ttlMs> | pref get <key> | pref list | pref clear');
+    }
+    process.exit(0);
+    break;
+  }
+
+  case 'audit': {
+    // 元审计闭环 v6.0.35: 真调审计能力并落盘, 不再是装饰
+    const { HeartFlow } = require(path.join(hfDir, 'src/core/heartflow.js'));
+    const { ModuleHealthChecker } = require(path.join(hfDir, 'src/shield/module-health-checker.js'));
+    const { AuditLogger } = require(path.join(hfDir, 'src/shield/audit-logger.js'));
+    const engine = new HeartFlow({ dataDir: path.join(hfDir, 'data'), silent: true });
+    engine.start();
+    const logger = new AuditLogger({ logPath: path.join(hfDir, 'data', 'audit', 'audit-log.jsonl') });
+    logger.log('engine_start', { version: engine.version, modules: Object.keys(engine._modules || {}).length });
+    const checker = new ModuleHealthChecker(engine);
+    const report = checker.check();
+    if (report.disabled && report.disabled.length) {
+      logger.log('module_disabled', { modules: report.disabled });
+    }
+    logger.log('health_check_done', { healthy: report.healthy, failed: report.failed, degraded: report.degraded });
+    console.log(JSON.stringify({
+      healthy: report.healthy, failed: report.failed, degraded: report.degraded,
+      disabled: report.disabled, auditPersisted: logger.getStats().persisted
+    }, null, 2));
+    engine.shutdown();
+    process.exit(0);
+    break;
+  }
+
   case 'help':
     console.log(`HeartFlow CLI
 Usage: node cli.js <command>

@@ -45,6 +45,8 @@ try {
 
 
 // ── 数据消毒 ──────────────────────────────────────────
+// [REFACTOR] TODO: _sanitize (518行) — 建议拆分为独立子函数
+
 function _sanitize(str, maxLen = 200) {
   if (typeof str !== 'string') return '';
   return str

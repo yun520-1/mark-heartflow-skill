@@ -104,6 +104,12 @@ function ensureEcosystemConfig() {
 `);
 }
 
+async function pm2Disconnect() {
+  if (pm2Available && pm2 && typeof pm2.disconnect === 'function') {
+    try { pm2.disconnect(); } catch (_) { /* 忽略断开错误 */ }
+  }
+}
+
 async function pm2Start() {
   ensureEcosystemConfig();
   return new Promise((resolve, reject) => {
@@ -112,7 +118,8 @@ async function pm2Start() {
       pm2.list((err, list) => {
         if (err) return reject(err);
         const app = list.find(a => a.name === 'heartflow-mcp');
-        if (!app) return reject(new Error('PM2 未找到 heartflow-mcp 进程'));
+        if (!app) { pm2Disconnect(); return reject(new Error('PM2 未找到 heartflow-mcp 进程')); }
+        pm2Disconnect();
         resolve({ pid: app.pid, pm2Id: app.pm_id, status: app.status });
       });
     });
@@ -125,6 +132,7 @@ async function pm2Stop() {
       if (err) return reject(err);
       pm2.delete('heartflow-mcp', (err) => {
         if (err) return reject(err);
+        pm2Disconnect();
         resolve();
       });
     });
@@ -136,7 +144,8 @@ async function pm2Status() {
     pm2.list((err, list) => {
       if (err) return reject(err);
       const app = list.find(a => a.name === 'heartflow-mcp');
-      if (!app) return resolve(null);
+      if (!app) { pm2Disconnect(); return resolve(null); }
+      pm2Disconnect();
       resolve({ pid: app.pid, pm2Id: app.pm_id, status: app.status, uptime: app.uptime });
     });
   });
@@ -288,7 +297,13 @@ async function main() {
       console.log('[HeartFlow Daemon] 重启中...');
       try {
         if (pm2Available) {
-          await pm2.restart('heartflow-mcp');
+          await new Promise((resolve, reject) => {
+            pm2.restart('heartflow-mcp', (err) => {
+              if (err) return reject(err);
+              resolve();
+            });
+          });
+          pm2Disconnect();
         } else {
           nohupStop();
           await new Promise(r => setTimeout(r, 1000));

@@ -11,13 +11,14 @@ node_modules/
 # 大文件/训练数据
 formulas/
 formulas-corpus/
-train_data/
+formulas/math/
 test_data/
-tests/
 skills/
-data/memory/
-data/sessions/
-data/self-play/
+data/
+models/
+dict-data/
+internal/
+*.zip
 archive/
 distilled-knowledge/
 
@@ -33,3 +34,35 @@ distilled-knowledge/
 # SKILL.md
 # INSTALL.md
 # CHANGELOG.md
+# 心理训练数据（大文件，非引擎运行必需）
+# 语义搜索模型（可选，运行时下载）
+# 非引擎文档
+# 测试与脚本（非引擎运行必需）
+
+# 非引擎运行必需（ClawHub 5MB 限制，发布时排除）
+formulas-corpus/
+formulas/math/
+dict-data/
+models/
+data/
+internal/
+skills/
+src/core/search/
+src/psychology/
+src/consciousness/
+src/identity/
+src/cortex/
+src/memory/
+docs/
+references/
+reference-impl/
+report/
+test/
+tests/
+scripts/
+train_data/
+presets/
+plugins/
+package-lock.json
+mcp/
+test-async-queue.js

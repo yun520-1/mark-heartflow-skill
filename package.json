@@ -1,7 +1,7 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "6.0.5",
-  "description": "HeartFlow — 本地认知预处理引擎，提供结构化认知数据供下游模型参考。",
+  "version": "6.0.55",
+  "description": "HeartFlow — local-first AI-being cognitive engine. Perceives intent, classifies task type, and returns structured decisions so your agent makes fewer logical errors, asks fewer questions, and burns fewer tokens. 31 MCP tools.",
   "main": "src/core/heartflow.js",
   "bin": {
     "heartflow": "bin/cli.js"
@@ -19,24 +19,33 @@
   },
   "files": [
     "VERSION",
-    "src/core/",
+    "src/",
     "mcp/",
     "bin/",
+    "formulas/",
     "config.json",
+    "ecosystem.config.js",
     "INSTALL.md",
     "README.md",
     "SKILL.md"
   ],
   "keywords": [
     "cognitive",
+    "cognitive-engine",
+    "ai-agent",
+    "agent-framework",
+    "ai-being",
     "memory",
     "self-healing",
     "verification",
     "reasoning",
-    "ai-engine",
-    "judgment",
     "decision-routing",
     "llm",
+    "mcp",
+    "model-context-protocol",
+    "prompt-preprocessing",
+    "bias-detection",
+    "token-optimization",
     "heartflow"
   ],
   "security": {
@@ -53,7 +62,7 @@
   },
   "optionalDependencies": {
     "@xenova/transformers": "~2.17.2",
-    "pm2": "~5.0.0"
+    "pm2": "^7.0.3"
   },
   "repository": {
     "type": "git",
@@ -68,7 +77,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org"
   },
   "overrides": {
     "protobufjs": "^7.2.5"

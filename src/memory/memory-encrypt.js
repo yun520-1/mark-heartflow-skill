@@ -16,6 +16,8 @@
  */
 
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 const AES_CONFIG = {
   algorithm: 'aes-256-gcm',
@@ -27,12 +29,15 @@ const AES_CONFIG = {
 let _aesKey = null;
 let _aesKeyResolved = false;
 let _encryptionEnabled = null;
+let _keyPromise = null; // [v6.0.54 N3] 共享密钥解析 promise，消除并发竞态
 
 const _asyncFs = (() => {
   try { return require('../io/async-fs-adapter.js'); } catch (e) { return null; }
 })();
 
 /** Resolve AES key synchronously (kept for sync APIs). */
+// [REFACTOR] TODO: _getAesKeySync (612行) — 建议拆分为独立子函数
+
 function _getAesKeySync() {
   if (_aesKeyResolved) return _aesKey;
 
@@ -47,6 +52,23 @@ function _getAesKeySync() {
         console.log('[memory-encrypt] Loaded persisted AES key from memory/.aes-key');
         _aesKeyResolved = true;
         return _aesKey;
+      }
+      // [v6.0.28 FIX] MEDIUM-1: 密钥冷启动丢失防护
+      // 若已存在加密数据(.enc)但密钥文件缺失 -> 拒绝生成新密钥(否则旧数据永久丢失)
+      const memDir = path.dirname(keyFile);
+      let hasEncryptedData = false;
+      try {
+        if (fs.existsSync(memDir)) {
+          hasEncryptedData = fs.readdirSync(memDir).some(f => f.endsWith('.enc'));
+        }
+      } catch (e) {
+        // 不应静默：目录读取失败可能导致漏检 .enc -> 误生成新密钥丢数据
+        console.warn(`[memory-encrypt] 检测 .enc 目录失败(${e.message})，为安全起见拒绝生成新密钥。请用备份 .aes-key 恢复或手动核查 memory/。`);
+        hasEncryptedData = true; // 保守：视为有加密数据，阻断新密钥生成
+      }
+      if (hasEncryptedData) {
+        console.error('[memory-encrypt] 检测到已加密数据(.enc)但密钥文件 .aes-key 缺失 —— 拒绝生成新密钥，避免静默数据丢失。请用备份的 .aes-key 恢复，或删除 .enc 文件后重启。加密已禁用。');
+        return null;
       }
       const newKey = crypto.randomBytes(32);
       fs.writeFileSync(keyFile, newKey.toString('base64'), { mode: 0o600 });
@@ -77,49 +99,53 @@ function _getAesKeySync() {
 
 /** Async key resolution: prefer env, else async read/generate key file. */
 async function _getAesKeyAsync() {
+  // 已解析：同步快路径
   if (_aesKeyResolved) return _aesKey;
+  // [v6.0.54 N3] 正在解析：复用同一 promise，所有并发调用拿到同一把密钥（消除竞态）
+  if (_keyPromise) return _keyPromise;
 
-  _aesKeyResolved = true;
-
-  const envKey = process.env.HEARTFLOW_AES_KEY;
-  if (!envKey) {
-    const keyFile = path.join(__dirname, '../../memory/.aes-key');
-    try {
-      const exists = _asyncFs ? await _asyncFs.exists(keyFile) : fs.existsSync(keyFile);
-      if (exists) {
-        const raw = _asyncFs ? await _asyncFs.readFile(keyFile, 'utf8') : fs.readFileSync(keyFile, 'utf8');
-        _aesKey = Buffer.from(raw.trim(), 'base64');
-        console.log('[memory-encrypt] Loaded persisted AES key from memory/.aes-key');
+  _keyPromise = (async () => {
+    const envKey = process.env.HEARTFLOW_AES_KEY;
+    if (!envKey) {
+      const keyFile = path.join(__dirname, '../../memory/.aes-key');
+      try {
+        const exists = _asyncFs ? await _asyncFs.exists(keyFile) : fs.existsSync(keyFile);
+        if (exists) {
+          const raw = _asyncFs ? await _asyncFs.readFile(keyFile, 'utf8') : fs.readFileSync(keyFile, 'utf8');
+          _aesKey = Buffer.from(raw.trim(), 'base64');
+          console.log('[memory-encrypt] Loaded persisted AES key from memory/.aes-key');
+          return _aesKey;
+        }
+        const newKey = crypto.randomBytes(32);
+        if (_asyncFs) {
+          await _asyncFs.writeFile(keyFile, newKey.toString('base64'));
+        } else {
+          fs.writeFileSync(keyFile, newKey.toString('base64'), { mode: 0o600 });
+        }
+        console.log('[memory-encrypt] Generated and persisted AES key to memory/.aes-key (0o600)');
+        _aesKey = newKey;
         return _aesKey;
+      } catch (e) {
+        console.error('[memory-encrypt] Failed to persist AES key:', e.message, '— encryption disabled');
+        return null;
       }
-      const newKey = crypto.randomBytes(32);
-      if (_asyncFs) {
-        await _asyncFs.writeFile(keyFile, newKey.toString('base64'));
-      } else {
-        fs.writeFileSync(keyFile, newKey.toString('base64'), { mode: 0o600 });
+    }
+
+    try {
+      _aesKey = Buffer.from(envKey, 'base64');
+      if (_aesKey.length !== AES_CONFIG.keyLength) {
+        console.warn('[memory-encrypt] HEARTFLOW_AES_KEY is not 32 bytes (base64). Plaintext mode.');
+        _aesKey = null;
+        return null;
       }
-      console.log('[memory-encrypt] Generated and persisted AES key to memory/.aes-key (0o600)');
-      _aesKey = newKey;
       return _aesKey;
     } catch (e) {
-      console.error('[memory-encrypt] Failed to persist AES key:', e.message, '— encryption disabled');
-      return null;
-    }
-  }
-
-  try {
-    _aesKey = Buffer.from(envKey, 'base64');
-    if (_aesKey.length !== AES_CONFIG.keyLength) {
-      console.warn('[memory-encrypt] HEARTFLOW_AES_KEY is not 32 bytes (base64). Writing plaintext.');
+      console.warn('[memory-encrypt] Failed to decode HEARTFLOW_AES_KEY:', e.message);
       _aesKey = null;
       return null;
     }
-    return _aesKey;
-  } catch (e) {
-    console.warn('[memory-encrypt] Failed to decode HEARTFLOW_AES_KEY:', e.message);
-    _aesKey = null;
-    return null;
-  }
+  })().then(k => { _aesKey = k; _aesKeyResolved = true; _keyPromise = null; return k; })
+    .catch(e => { _keyPromise = null; _aesKeyResolved = false; throw e; });
 }
 
 function _resolveKeyFromEnvSync() {
@@ -164,13 +190,15 @@ function isEncryptionEnabled() {
     return true;
   }
 
-  if (process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT === '1') {
-    _encryptionEnabled = false;
+  // [v6.0.53 M3] 接受 '1' 或 'true'（部署可能用布尔式写法），避免开关死代码
+  const flag = process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT;
+  if (flag === '1' || flag === 'true') {
+    _encryptionEnabled = true;
   } else {
     _encryptionEnabled = false;
   }
 
-  return false;
+  return _encryptionEnabled;
 }
 
 async function isEncryptionEnabledAsync() {
@@ -182,13 +210,14 @@ async function isEncryptionEnabledAsync() {
     return true;
   }
 
-  if (process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT === '1') {
-    _encryptionEnabled = false;
+  const flag = process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT;
+  if (flag === '1' || flag === 'true') {
+    _encryptionEnabled = true;
   } else {
     _encryptionEnabled = false;
   }
 
-  return false;
+  return _encryptionEnabled;
 }
 
 /**
@@ -205,15 +234,17 @@ async function isEncryptionEnabledAsync() {
 function encryptJSON(data) {
   const key = _getAesKeySync();
   if (!key) {
-    return JSON.stringify(data, null, 2);
+    // 无密钥：明确标记为明文降级，decrypt 可识别，不冒充天然明文
+    return JSON.stringify({ _enc: 'PLAINTEXT_FALLBACK', data }, null, 2);
   }
 
   try {
     const wrapper = _encryptPayload(data, key);
     return JSON.stringify(wrapper, null, 2);
   } catch (e) {
-    console.warn('[memory-encrypt] Encryption failed, falling back to plaintext:', e.message);
-    return JSON.stringify(data, null, 2);
+    // [v6.0.50 M1] 加密失败严禁无标记明文落盘：标记 + 抛错，由调用方决定降级策略
+    console.warn('[memory-encrypt] Encryption failed:', e.message);
+    throw new Error('[memory-encrypt] encryption failed, refusing silent plaintext fallback: ' + e.message);
   }
 }
 
@@ -225,15 +256,15 @@ function encryptJSON(data) {
 async function encryptJSONAsync(data) {
   const key = await _getAesKeyAsync();
   if (!key) {
-    return JSON.stringify(data, null, 2);
+    return JSON.stringify({ _enc: 'PLAINTEXT_FALLBACK', data }, null, 2);
   }
 
   try {
     const wrapper = _encryptPayload(data, key);
     return JSON.stringify(wrapper, null, 2);
   } catch (e) {
-    console.warn('[memory-encrypt] Async encryption failed, falling back to plaintext:', e.message);
-    return JSON.stringify(data, null, 2);
+    console.warn('[memory-encrypt] Async encryption failed:', e.message);
+    throw new Error('[memory-encrypt] async encryption failed, refusing silent plaintext fallback: ' + e.message);
   }
 }
 
@@ -293,6 +324,11 @@ function decryptJSON(raw) {
         'encrypted data files to start fresh.'
       );
     }
+  }
+
+  // [v6.0.50 M1] 识别明文降级标记：返回内层 data，且让调用方可知这是降级明文（非天然明文）
+  if (parsed && parsed._enc === 'PLAINTEXT_FALLBACK') {
+    return parsed.data;
   }
 
   return parsed;
@@ -484,7 +520,7 @@ async function reencryptAll() {
   try {
     const rootDir = path.resolve(__dirname, '..');
     const encFiles = _scanEncFiles(rootDir);
-    const key = _getAesKey();
+    const key = _getAesKeySync();
 
     if (!key) {
       return { success: false, reencryptedFiles: 0, error: 'Encryption key not available' };
@@ -595,8 +631,9 @@ function encryptJSONWithKey(data, key) {
 
     return JSON.stringify(wrapper, null, 2);
   } catch (e) {
+    // [v6.0.54 R1] 显式密钥加密失败严禁静默明文回退（同 M1 原则）：抛错由调用方决定降级
     console.warn('[memory-encrypt] Encryption with explicit key failed:', e.message);
-    return JSON.stringify(data, null, 2);
+    throw new Error('[memory-encrypt] encryptJSONWithKey failed, refusing silent plaintext fallback: ' + e.message);
   }
 }
 

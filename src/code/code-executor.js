@@ -367,8 +367,10 @@ function validateArg(val, name, type, required = true) {
 function detectLanguage(code) {
   if (!code || typeof code !== 'string') return 'javascript';
   const trimmed = code.trim();
-  if (trimmed.startsWith('#!') || trimmed.startsWith('#!/')) return 'shell';
+  // Python shebang 优先（#! 开头但指明 python）
   if (trimmed.startsWith('#!/usr/bin/env python') || trimmed.startsWith('#!/usr/bin/python')) return 'python';
+  // 其他 #! shebang 视为 shell
+  if (trimmed.startsWith('#!')) return 'shell';
   // Python heuristics
   if (/^(import |from |def |class |print\s*\(|if __name__)/m.test(trimmed)) return 'python';
   // Shell heuristics
@@ -396,6 +398,7 @@ function checkDangerousCommand(command) {
  * @returns {{blocked: boolean, reason: string|null, matched: string|null}}
  */
 function checkSandboxRestrictions(code) {
+  if (!code || typeof code !== 'string') return { blocked: false, reason: null, matched: null };
   for (const pattern of SANDBOX_BLOCKED_PATTERNS) {
     const match = code.match(pattern);
     if (match) {
@@ -414,6 +417,16 @@ function checkSandboxRestrictions(code) {
  * @param {Error} err
  * @returns {string} ExecError key
  */
+// [REFACTOR] TODO: 超长函数 classifyError (869行) — 建议拆分为独立子函数
+
+
+
+
+
+
+
+
+
 function classifyError(err) {
   if (!err) return ExecError.UNKNOWN;
   const msg = String(err.message || err);
@@ -726,7 +739,10 @@ class CodeExecutor {
       // 修复：使用 Node.js 内置 vm 模块提供适当的上下文隔离。
       // 注意：vm 上下文隔离并非绝对安全，但远优于 Reflect.construct 方案。
       const vm = require('vm');
-      const sandboxContext = { console, setTimeout, clearTimeout };
+      // [AUDIT-FIX HIGH-1] Do NOT inject setTimeout/clearTimeout into sandboxContext.
+      // They allow setTimeout.constructor -> Function -> globalThis.process escape (PoC confirmed).
+      // Outer executor owns timeout control, sandbox does not need timer functions.
+      const sandboxContext = { console };
       // 注入用户提供的上下文
       for (const k of contextKeys) {
         sandboxContext[k] = context[k];
@@ -1352,4 +1368,15 @@ class CodeExecutor {
 // 导出
 // ============================================================================
 
-module.exports = { CodeExecutor, ExecStatus, ExecError };
+module.exports = {
+  CodeExecutor,
+  ExecStatus,
+  ExecError,
+  // 纯函数导出（供单元测试，无副作用）
+  detectLanguage,
+  checkDangerousCommand,
+  checkSandboxRestrictions,
+  truncateOutput,
+  validateArg,
+  validateShellCommand
+};

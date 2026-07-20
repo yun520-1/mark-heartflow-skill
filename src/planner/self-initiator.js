@@ -863,9 +863,13 @@ async function main() {
 }
 
 // 执行入口
+<<<<<<< HEAD
 
 main().then(r => { if (process.env.HEARTFLOW_DEBUG) console.log(r); }).catch(console.error);
 
+=======
+main().then(r => { if (process.env.HEARTFLOW_DEBUG) console.log(r); }).catch(err => { if (process.env.HEARTFLOW_DEBUG) console.error('[self-initiator] main error:', err.message); });
+>>>>>>> upstream/main
 `;
   }
 

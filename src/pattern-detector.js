@@ -76,6 +76,8 @@ const DEFAULT_CONFIG = {
 // 工具函数
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// [REFACTOR] TODO: _safeText (781行) — 建议拆分为独立子函数
+
 function _safeText(text) {
   return (typeof text === 'string') ? text : '';
 }

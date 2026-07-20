@@ -13,11 +13,27 @@ const TEST_DIR = __dirname;
 // 统计
 let passed = 0;
 let failed = 0;
+let pending = 0;
 const failures = [];
 
 function test(name, fn) {
   try {
-    fn();
+    const ret = fn();
+    if (ret && typeof ret.then === 'function') {
+      // async 测试：pending 计数，完成后再结算
+      pending++;
+      return ret.then(() => {
+        pending--;
+        passed++;
+        console.log(`  ✓ ${name}`);
+      }).catch((err) => {
+        pending--;
+        failed++;
+        console.log(`  ✗ ${name}`);
+        console.log(`    ${err.message}`);
+        failures.push({ name, error: err.message });
+      });
+    }
     passed++;
     console.log(`  ✓ ${name}`);
   } catch (err) {
@@ -87,7 +103,18 @@ async function runAllTests() {
   // 3. HeartLogic 测试
   console.log('\n❤️ HeartLogic (heart-logic.js)');
   require('./heart-logic.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-
+  require('./data-eraser.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./latency-benchmark.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./ttl-preferences.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./self-scanner.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./assertions.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./meta-audit.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./audit-wiring.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./evolution-audit.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./evolution-state.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./atomic-write.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./self-evolution-v2.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./behavior-tracker.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   // 4. DesireCognition 测试
   console.log('\n💭 DesireCognition (desire-cognition.js)');
   require('./desire-cognition.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
@@ -130,7 +157,153 @@ async function runAllTests() {
     failed++;
   }
 
-  // 4.3 KnowledgeGraphAdapter 测试
+  // 4.3 CognitiveLoad 测试 (v6.0.38 新增 TDD 覆盖)
+  console.log('\n🧠 CognitiveLoad');
+  for (const tf of ['cognitive-load.test.js', 'cognitive-load-v2.test.js']) {
+    try {
+      const { execSync } = require('child_process');
+      const result = execSync('node ' + path.join(__dirname, tf), {
+        cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+      });
+      const match = result.match(/(\d+) 通过, (\d+) 失败/);
+      if (match) {
+        passed += parseInt(match[1]); failed += parseInt(match[2]);
+        console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+      } else {
+        console.log(result.trim());
+      }
+    } catch (e) {
+      console.log('  ⚠️  ' + tf + ' 测试异常: ' + (e.message || '').split('\n')[0]);
+      failed++;
+    }
+  }
+
+  // 4.3b DualPerspectiveAuditor 测试 (v6.0.39 元审计 M3 修复锁死)
+  console.log('\n⚖️ DualPerspectiveAuditor');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'dual-perspective.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  dual-perspective 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  // 4.3c IntentClassifier 测试 (v6.0.40 中文口语意图覆盖 + 空输入降级)
+  console.log('\n🎯 IntentClassifier');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'intent-classifier.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  intent-classifier 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+
+  // 4.3d SignalAbsorber 测试 (v6.0.41 信号驱动自我升级)
+  console.log('\n📡 SignalAbsorber');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'signal-absorber.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  signal-absorber 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+
+  // 4.3e PaperDrivenUpgrades 测试 (v6.0.44 arXiv 论文驱动升级)
+  console.log('\n📄 PaperDrivenUpgrades');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'paper-driven-upgrades.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  paper-driven-upgrades 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+
+  // 4.3f STEMPaperUpgrades 测试 (v6.0.45 物理/化学/CS 论文驱动升级)
+  console.log('\n🔬 STEMPaperUpgrades');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'stem-paper-upgrades.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else { console.log(result.trim()); }
+  } catch (e) {
+    console.log('  ⚠️  stem-paper-upgrades 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+
+  // 4.3g PathSampler 测试 (v6.0.45 chem-ph 2607.15101)
+  console.log('\n🧭 PathSampler');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'path-sampler.test.js'), { cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000 });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) { passed += parseInt(match[1]); failed += parseInt(match[2]); console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n')); } else { console.log(result.trim()); }
+  } catch (e) { console.log('  ⚠️  path-sampler 测试异常: ' + (e.message || '').split('\n')[0]); failed++; }
+
+  }
+
+  }
+
+  }
+
+
+  // 4.3d NewsLessonAbsorber 测试 (v6.0.41 信号驱动自我升级)
+  console.log('\n📰 SignalAbsorber');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'news-lesson-absorber.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) 通过, (\d+) 失败/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('通过') || l.includes('失败')).join('\n'));
+    } else {
+      console.log(result.trim());
+    }
+  } catch (e) {
+    console.log('  ⚠️  news-lesson-absorber 测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
+  }
+
   console.log('\n🕸️ KnowledgeGraphAdapter');
   try {
     const { execSync } = require('child_process');
@@ -372,10 +545,25 @@ async function runAllTests() {
     failed++;
   }
 
-  // 汇总
-  console.log('\\n' + '='.repeat(50));
+  // 6. 安全护栏测试 (safety-guardrails.js) — 审计覆盖率补充
+  console.log('\n🛡️ 安全护栏 (safety-guardrails.js)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'safety-guardrails.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ 安全护栏测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
 
-  // 5. 核心管线测试 (v5.14.0)
+  // 汇总
+  console.log('\n' + '='.repeat(50));
   console.log('\\n🔗 核心管线 (core-pipeline.js)');
   try {
     const { execSync } = require('child_process');
@@ -390,6 +578,77 @@ async function runAllTests() {
     }
   } catch (e) {
     console.log('  ⚠️  核心管线测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
+
+  // 7. 代码执行器测试 (code-executor.js) — 审计覆盖率补充
+  console.log('\n⚙️ 代码执行器 (code-executor.js)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'code-executor.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ 代码执行器测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
+
+
+  // 8. HeartFlow 核心单体冒烟测试 (heartflow.js) — 审计P0回归护栏
+  console.log('\n🔥 HeartFlow 核心 (heartflow.js 单体)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'heartflow-smoke.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 120000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ HeartFlow 冒烟测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
+
+
+  // 9. 外部锚定基准 + 防自欺护栏测试 (benchmark-external-anchor.js / self-benchmark.js)
+  console.log('\n⚓ 外部锚定 (benchmark-external-anchor.js)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'external-anchor.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 60000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ 外部锚定测试异常: ' + (e.message || '').split('\\n')[0]);
+    failed++;
+  }
+
+
+  // 10. SelfBenchmark 引擎集成测试（防自欺修复为活代码验证）
+  console.log('\n🔗 SelfBenchmark 集成 (benchmark-integration.js)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'benchmark-integration.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 120000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ SelfBenchmark 集成测试异常: ' + (e.message || '').split('\\n')[0]);
     failed++;
   }
 

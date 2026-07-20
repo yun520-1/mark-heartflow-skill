@@ -20,9 +20,9 @@ const PHENOMENOLOGY = {
 
 class PhenomenologyEngine {
   constructor() {
-    this.noemaCache = new Map();
-    this.intentionalityHistory = [];
-    this.badFaithFlags = [];
+    // [AUDIT-FIX LOW] Removed dead fields: noemaCache (never written),
+    // intentionalityHistory (never written, always empty), badFaithFlags
+    // (never written). salienceBoost always returns 0.
   }
 
   /**
@@ -416,11 +416,10 @@ class PhenomenologyEngine {
    * 整合到Global Workspace的注意力竞争
    */
   integrateWithGlobalWorkspace() {
-    // 返回用于GWT竞争的注意力权重
+    // [AUDIT-FIX LOW] intentionalityHistory was removed (never written).
+    // salienceBoost always returned 0, now explicit.
     return {
-      salienceBoost: this.intentionalityHistory.length > 0 
-        ? 0.3 + Math.min(0.3, this.intentionalityHistory.length * 0.05)
-        : 0,
+      salienceBoost: 0,
       broadcastPriority: 'phenomenological',
       consciousnessAccess: true
     };

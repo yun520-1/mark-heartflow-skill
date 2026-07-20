@@ -27,6 +27,8 @@ const PAD_MODEL = {
  * @param {number} dominance - 支配度 (-10 到 10)
  * @returns {object} PAD状态对象
  */
+// [REFACTOR] TODO: calculatePADState (1389行) — 建议拆分为独立子函数
+
 function calculatePADState(pleasure, arousal, dominance) {
   const clamp = (v) => Math.max(PAD_MODEL.min, Math.min(PAD_MODEL.max, v));
   

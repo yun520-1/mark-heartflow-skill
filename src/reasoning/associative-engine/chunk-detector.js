@@ -55,6 +55,8 @@ const ERROR_SUGGESTIONS = {
 /**
  * 创建标准化的错误结果
  */
+// [REFACTOR] TODO: _makeError (637行) — 建议拆分为独立子函数
+
 function _makeError(code, detail) {
   const info = ERROR_SUGGESTIONS[code] || ERROR_SUGGESTIONS[ErrorCode.UNKNOWN];
   return { error: true, code, detail, severity: info.severity, suggestion: info.suggestion };

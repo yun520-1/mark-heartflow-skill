@@ -80,6 +80,8 @@ const BUDGET_NAMES = {
  * @example
  * countTokens('hello world')        // ~2-3
  * countTokens('你好世界')            // ~4-6
+// [REFACTOR] TODO: foo (1175行) — 建议拆分为独立子函数
+
  * countTokens('function foo() {}') // ~4-5
  */
 function countTokens(text) {

@@ -1,14 +1,24 @@
 /**
  * dual-perspective-auditor.js
  * 基于 V21.1 双核辩论系统设计
- * 两个AI视角互相审计，比单个视角更不容易出错
- * 
+ * 双视角辩论框架：调用方传入两个推理函数，本模块编排它们互审并做收敛判断。
+ *
+ * [v6.0.34 元审计修复] 诚实化文档：视角的"独立性"不由此模块保证——
+ * 它取决于调用方是否传入真正不同的两个函数。若调用方传同一函数，
+ * 则是同一模型自言自语两次，收敛判断形同虚设。模块只负责框架编排，
+ * 不宣称"比单视角更不易出错"。
+ *
+ * [v6.0.39 元审计 M3 修复] 从"文档诚实"升级为"运行时诚实"：
+ * debate() 入口校验两个视角函数是否实质相同（同引用/同源码）。
+ * 若塌缩，拒绝虚假收敛判断，降级为单视角结论并打 warning 标记，
+ * 置信度不夸大。配套 dual-perspective.test.js TDD 锁死此行为。
+ *
  * 核心思想：
- * 1. 两个Agent独立分析同一问题
- * 2. Agent A 出方案，Agent B 找漏洞
- * 3. 收敛判断：B 回复 CONVERGE 即结束
+ * 1. 调用方提供两个推理函数（应为不同视角/不同实现）
+ * 2. 视角A出方案，视角B找漏洞
+ * 3. 收敛判断：一致性分数超阈值即结束
  * 4. 每次辩论结果持久化，可回溯
- * 
+ *
  * 心虫实现：
  * - 用两个不同的推理路径（演绎 vs 归纳）
  * - 自动检测不一致点
@@ -69,7 +79,13 @@ class DualPerspectiveAuditor {
     if (!problem || !problem.statement) {
       return { error: 'Problem statement required' };
     }
-    
+
+    // [v6.0.39 元审计 M3 修复] 双视角独立性运行时校验：
+    // 仅检测"同一函数引用"（调用方真的传入同一个 fn 两次）这一种
+    // 确凿的塌缩情形。同源码不同引用可能是合法的两个独立实现恰好相同，
+    // 不在此强制降级（toString 比较会误伤闭包捕获不同但字面上相同的函数）。
+    const perspectivesCollapsed = (deductiveFn === inductiveFn) && typeof deductiveFn === 'function';
+
     const debate = {
       id: `debate_${Date.now()}`,
       problem: { ...problem },
@@ -78,20 +94,39 @@ class DualPerspectiveAuditor {
       converged: false,
       consensus: null,
       confidence: 0,
-      disagreements: []
+      disagreements: [],
+      perspectivesCollapsed
     };
-    
-    // 第1轮：两个视角独立分析
+
+    // 视角A / 视角B 实际执行
     const deductiveResult = await deductiveFn(problem, this.perspectives.deductive);
     const inductiveResult = await inductiveFn(problem, this.perspectives.inductive);
-    
+
     debate.rounds.push({
       round: 1,
       deductive: deductiveResult,
       inductive: inductiveResult,
       timestamp: Date.now()
     });
-    
+
+    // 视角塌缩时：不做虚假收敛判断，直接降级为单视角诚实结论
+    if (perspectivesCollapsed) {
+      debate.converged = false;
+      debate.consensus = this._mergeResults(deductiveResult, inductiveResult);
+      debate.confidence = 0; // 双视角未成立，置信度不造假
+      debate.disagreements.push({
+        type: 'perspective_collapsed',
+        message: '两个视角函数实质相同，双视角辩论未成立，已降级为单视角结论（置信度不夸大）'
+      });
+      this.debateHistory.push(debate);
+      this.stats.totalDebates++;
+      this.stats.disagreements += debate.disagreements.length;
+      this.stats.avgRounds = this.debateHistory.reduce((sum, d) => sum + d.rounds.length, 0) / this.debateHistory.length;
+      const result = this._formatResult(debate);
+      result.warning = 'perspectives_collapsed';
+      return result;
+    }
+
     // 检查一致性
     const consistency = this._checkConsistency(deductiveResult, inductiveResult);
     

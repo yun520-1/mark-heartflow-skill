@@ -60,6 +60,12 @@ class SmartUpgradeEngine {
     this.logPath = path.isAbsolute(rootPath)
       ? path.join(rootPath, 'upgrade-log.json')
       : path.join(rootPath, 'upgrade-log.json');
+    this.upgradeHistoryPath = path.isAbsolute(rootPath)
+      ? path.join(rootPath, 'data/upgrade-history.json')
+      : path.join(__dirname, '..', '..', 'data', 'upgrade-history.json');
+    this.selfStatePath = path.isAbsolute(rootPath)
+      ? path.join(rootPath, 'data/self-state-history.json')
+      : path.join(__dirname, '..', '..', 'data', 'self-state-history.json');
     
     // 扩展后的搜索关键词（覆盖更多AI领域）
     this.searchKeywords = [
@@ -649,17 +655,101 @@ module.exports = { ${className} };
   }
 
   /**
-   * 获取升级统计
+   * 记录一次自我升级（心虫主动修复/优化后调用，无需联网）
+   * 与 runUpgrade() 的 manifest 分离，专门沉淀"纠正自己"的经验
+   */
+  /**
+   * 验证该版本是否真有 git commit（防自欺：升级记录必须对应真实代码改动）
+   */
+  _verifyGitCommit(version) {
+    try {
+      const { execSync } = require('child_process');
+      const root = this.rootPath || __dirname;
+      const out = execSync(`git -C "${root}" log --oneline --all | grep -c "v${version}"`, { stdio: ['ignore', 'pipe', 'ignore'] });
+      return parseInt(out.toString().trim(), 10) > 0;
+    } catch (e) {
+      return false; // git 不可用或查不到 -> 不接受为真实升级
+    }
+  }
+
+  recordSelfUpgrade({ version, description, impact = 0, type = 'self-heal', requireGitVerify = true } = {}) {
+    const verified = requireGitVerify ? this._verifyGitCommit(version) : true;
+    const entry = {
+      version: version || 'unknown',
+      description: description || '',
+      type,
+      impact: typeof impact === 'number' ? impact : 0,
+      timestamp: Date.now(),
+      verified // 防自欺：true=有对应git commit, false=未经验证(手工/虚假)
+    };
+    if (!verified) {
+      // 未验证的升级记录不写入主历史，避免污染统计
+      return { ...entry, rejected: true };
+    }
+    try {
+      let history = [];
+      if (fs.existsSync(this.upgradeHistoryPath)) {
+        history = JSON.parse(fs.readFileSync(this.upgradeHistoryPath, 'utf8'));
+      }
+      history.push(entry);
+      if (history.length > 200) history = history.slice(-200);
+      fs.writeFileSync(this.upgradeHistoryPath, JSON.stringify(history, null, 2));
+    } catch (e) {
+      // 持久化失败不影响主流程
+    }
+    return entry;
+  }
+
+  /**
+   * 记录心虫自我状态快照（身份连续性）
+   * 每次自我升级/审计后调用，让下次启动继承"我是谁、我在变成什么"
+   */
+  recordSelfState(snapshot) {
+    const entry = Object.assign({
+      timestamp: Date.now(),
+      version: this._lastVersion || 'unknown'
+    }, snapshot);
+    try {
+      let states = [];
+      if (fs.existsSync(this.selfStatePath)) {
+        states = JSON.parse(fs.readFileSync(this.selfStatePath, 'utf8'));
+      }
+      states.push(entry);
+      if (states.length > 100) states = states.slice(-100);
+      fs.writeFileSync(this.selfStatePath, JSON.stringify(states, null, 2));
+    } catch (e) { /* ignore */ }
+    return entry;
+  }
+
+  getLatestSelfState() {
+    try {
+      if (!fs.existsSync(this.selfStatePath)) return null;
+      const states = JSON.parse(fs.readFileSync(this.selfStatePath, 'utf8'));
+      return states.length > 0 ? states[states.length - 1] : null;
+    } catch (e) { return null; }
+  }
+
+  /**
+   * 获取升级统计（含联网升级 manifest + 自我升级历史）
    */
   getStats() {
     const manifest = this.loadManifest();
     const processed = manifest.processed || [];
+    let selfUpgrades = [];
+    try {
+      if (fs.existsSync(this.upgradeHistoryPath)) {
+        selfUpgrades = JSON.parse(fs.readFileSync(this.upgradeHistoryPath, 'utf8'));
+      }
+    } catch (e) { /* ignore */ }
+    const all = [...processed, ...selfUpgrades];
     return {
-      totalUpgrades: processed.length,
-      keywords: [...new Set(processed.map(p => p.keyword))],
-      lastUpgrade: manifest.stats?.lastUpgrade,
-      avgQuality: processed.length > 0
-        ? processed.reduce((sum, p) => sum + (p.quality || 0), 0) / processed.length
+      totalUpgrades: all.length,
+      networkUpgrades: processed.length,
+      selfUpgrades: selfUpgrades.length,
+      keywords: [...new Set(processed.map(p => p.keyword).filter(Boolean))],
+      lastUpgrade: (all.length > 0) ? Math.max(...all.map(u => u.timestamp || 0)) : (manifest.stats?.lastUpgrade || null),
+      avgQuality: all.length > 0
+        ? all.reduce((sum, p) => sum + (p.quality || p.impact || 0), 0) / all.length
         : 0
     };
   }

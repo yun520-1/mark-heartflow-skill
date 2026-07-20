@@ -18,7 +18,7 @@ const fs = require('fs');
 const path = require('path');
 const { guardPath } = require('../core/path-guard.js');
 
-const GUARD_MODE = process.env.HEARTFLOW_PATH_GUARD || ''; // '', 'warn', 'enforce'
+const GUARD_MODE = process.env.HEARTFLOW_PATH_GUARD || 'warn'; // [v6.0.50 M2] 默认 warn（越界可见，不再静默放行）；生产建议 'enforce'
 
 /**
  * 路径安全检查
@@ -36,7 +36,7 @@ function _check(filePath) {
     if (GUARD_MODE === 'warn') {
       console.warn(msg);
     }
-    // 默认模式：静默切入传统模式
+    // GUARD_MODE 未设时默认 warn（见顶部）；仅显式 '' 才静默放行（兼容逃生舱）
   }
   return result;
 }

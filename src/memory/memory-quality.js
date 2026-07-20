@@ -42,6 +42,8 @@ const DEFAULTS = Object.freeze({
 
 // ─── 内部工具 ────────────────────────────────────────────
 
+// [REFACTOR] TODO: clamp01 (557行) — 建议拆分为独立子函数
+
 function clamp01(v) {
   if (typeof v !== 'number' || Number.isNaN(v)) return 0;
   return Math.max(0, Math.min(1, v));

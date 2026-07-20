@@ -200,6 +200,10 @@ class CognitiveLoadEngineV2 {
    * @returns {object} { flowScore, state, optimalChallenge, gapToFlow }
    */
   flowState(challenge, skill) {
+    challenge = Number(challenge);
+    skill = Number(skill);
+    if (!isFinite(challenge)) challenge = 0.5;
+    if (!isFinite(skill)) skill = 0.5;
     const bridge = this._bridge;
     const flowScore = bridge.flowChannel(challenge, Math.max(0.01, skill));
     const optimalChallenge = bridge.flowOptimal(skill);

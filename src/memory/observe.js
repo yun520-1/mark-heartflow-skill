@@ -24,6 +24,8 @@ const crypto = require('crypto');
  * @param {string} text2 
  * @returns {number} 相似度 0~1
  */
+// [REFACTOR] TODO: jaccardSimilarity (570行) — 建议拆分为独立子函数
+
 function jaccardSimilarity(text1, text2) {
   if (!text1 || !text2) return 0;
   

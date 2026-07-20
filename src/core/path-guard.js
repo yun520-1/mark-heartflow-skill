@@ -6,7 +6,14 @@
 const path = require('path');
 
 // 允许的根目录
+// [v6.0.52 M2-followup] 把项目自身根目录纳入白名单：心虫读写 VERSION/config/formulas/memory/src 等自身文件属合法操作，
+// 仅拦截越界到项目外的路径（/etc /home /root 等）。原白名单只含 data/tmp，导致正常文件全被判越界（warn 刷屏 / enforce 崩溃）。
+const PROJECT_ROOT = path.resolve(__dirname, '..', '..'); // src/core -> 项目根
+const _os = require('os');
+const _homeHeartflow = path.resolve(_os.homedir(), '.heartflow');
 const ALLOWED_ROOTS = [
+  PROJECT_ROOT,
+  _homeHeartflow,                                   // [v6.0.53 N1] 部署数据目录 ~/.heartflow（M2 尾巴）
   path.resolve(process.cwd(), 'data'),
   path.resolve(process.cwd(), 'tmp'),
   path.resolve('/tmp'),
@@ -26,12 +33,12 @@ function guardPath(filePath, extraRoots = []) {
   const resolved = path.resolve(filePath);
   const roots = [...ALLOWED_ROOTS, ...extraRoots.map(r => path.resolve(r))];
   
-  // 检查路径遍历
+  // 检查路径遍历（path.resolve 已规范化 ..，此处为防御性保留）
   if (resolved.includes('..')) {
     return { safe: false, resolved, reason: 'path traversal detected' };
   }
-  
-  // 检查是否在允许目录内
+
+  // 检查是否在允许目录内（真正的安全防线）
   const allowed = roots.some(root => resolved.startsWith(root + path.sep) || resolved === root);
   if (!allowed) {
     return { safe: false, resolved, reason: `path outside allowed roots: ${resolved}` };

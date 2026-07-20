@@ -47,9 +47,9 @@ function createSpecialModule(subsystem, hf) {
   switch (subsystem) {
     case 'adaptivePlanner': {
       const baseDir = path.join(__dirname, '..', 'planner');
-      hf.strategySelector = new (require(baseDir + '/strategy-selector.js').StrategySelector)();
-      hf.replanTrigger = new (require(baseDir + '/replan-trigger.js').ReplanTrigger)();
-      return new (require('../planner/adaptive-planner.js').AdaptivePlanner)({ strategySelector: hf.strategySelector, replanTrigger: hf.replanTrigger });
+      hf.strategySelector = new (require(path.join(baseDir, 'strategy-selector.js')).StrategySelector)();
+      hf.replanTrigger = new (require(path.join(baseDir, 'replan-trigger.js')).ReplanTrigger)();
+      return new (require(path.join(baseDir, 'adaptive-planner.js')).AdaptivePlanner)({ strategySelector: hf.strategySelector, replanTrigger: hf.replanTrigger });
     }
     case 'strategyAdapter': {
       const ec = require('../cortex/experience-collector.js').ExperienceCollector;

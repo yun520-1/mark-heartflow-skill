@@ -55,18 +55,51 @@ async function safeFetch(url, options = {}) {
   }
 
   const { timeout = DEFAULT_TIMEOUT, maxRetries = DEFAULT_MAX_RETRIES, ...fetchOpts } = options;
-  
+
   let lastError;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeout);
-    
+
     try {
-      const response = await fetch(url, { ...fetchOpts, signal: controller.signal });
+      // [v6.0.53 B1] redirect:'manual' — 禁止自动跟随 302，避免 SSRF 经重定向绕过二次校验
+      const response = await fetch(url, { ...fetchOpts, redirect: 'manual', signal: controller.signal });
       clearTimeout(timer);
+
+      // 处理 3xx：手动跟随但强制二次 SSRF 校验目标
+      if (response.status >= 300 && response.status < 400 && response.headers.get('location')) {
+        const location = response.headers.get('location');
+        let absLoc;
+        try {
+          absLoc = new URL(location, url).toString();
+        } catch (e) {
+          throw new Error(`SSRF blocked: invalid redirect target "${location}"`);
+        }
+        // 二次校验重定向目标（SSRF + DNS pinning），防止跳到 169.254.169.254 / 内网
+        const { validateFetchUrl } = require('../security/url-validator.js');
+        const recheck = await validateFetchUrl(absLoc);
+        if (!recheck.safe) {
+          throw new Error(`SSRF blocked: redirect target ${recheck.reason} (${absLoc})`);
+        }
+        const dns = require('dns').promises;
+        const net = require('net');
+        const rip = await dns.lookup(new URL(absLoc).hostname, { family: 4 });
+        if (!net.isIPv4(rip.address)) {
+          throw new Error(`SSRF blocked: redirect resolved to non-IPv4 ${rip.address}`);
+        }
+        const p = rip.address.split('.').map(Number);
+        if (p[0]===127||p[0]===10||(p[0]===172&&p[1]>=16&&p[1]<=31)||(p[0]===192&&p[1]===168)||p[0]===0||(p[0]===169&&p[1]===254)) {
+          throw new Error(`SSRF blocked: redirect resolved to private IP ${rip.address}`);
+        }
+        // 仅跟随一跳，目标已校验，用 follow 再取一次
+        return await fetch(absLoc, { ...fetchOpts, redirect: 'manual', signal: controller.signal });
+      }
+
       return response;
     } catch (e) {
       clearTimeout(timer);
+      // [v6.0.53 B1] SSRF 拦截立即失败，绝不重试
+      if (e.message && e.message.startsWith('SSRF blocked')) throw e;
       lastError = e;
       if (e.name === 'AbortError') {
         lastError = new Error(`fetch timeout after ${timeout}ms: ${url}`);

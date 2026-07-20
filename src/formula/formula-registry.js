@@ -87,6 +87,8 @@ class FormulaRegistry {
   // ============================================================
   // 内置注册：把 FormulaBridge 认知原语按环节挂载
   // ============================================================
+  // [REFACTOR] TODO: _registerBuiltins() — 超长函数(511行)，建议拆分：按 builtin 类别（记忆/推理/情绪/决策）拆分为独立_registerXxx()方法
+
   _registerBuiltins() {
     const _b = this._bridge;
     if (!_b) return;
