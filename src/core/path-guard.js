@@ -6,7 +6,11 @@
 const path = require('path');
 
 // 允许的根目录
+// [v6.0.52 M2-followup] 把项目自身根目录纳入白名单：心虫读写 VERSION/config/formulas/memory/src 等自身文件属合法操作，
+// 仅拦截越界到项目外的路径（/etc /home /root 等）。原白名单只含 data/tmp，导致正常文件全被判越界（warn 刷屏 / enforce 崩溃）。
+const PROJECT_ROOT = path.resolve(__dirname, '..', '..'); // src/core -> 项目根
 const ALLOWED_ROOTS = [
+  PROJECT_ROOT,
   path.resolve(process.cwd(), 'data'),
   path.resolve(process.cwd(), 'tmp'),
   path.resolve('/tmp'),
