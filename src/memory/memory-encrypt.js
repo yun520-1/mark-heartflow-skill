@@ -184,12 +184,12 @@ function isEncryptionEnabled() {
   }
 
   if (process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT === '1') {
-    _encryptionEnabled = false;
+    _encryptionEnabled = true;
   } else {
     _encryptionEnabled = false;
   }
 
-  return false;
+  return _encryptionEnabled;
 }
 
 async function isEncryptionEnabledAsync() {
@@ -202,12 +202,12 @@ async function isEncryptionEnabledAsync() {
   }
 
   if (process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT === '1') {
-    _encryptionEnabled = false;
+    _encryptionEnabled = true;
   } else {
     _encryptionEnabled = false;
   }
 
-  return false;
+  return _encryptionEnabled;
 }
 
 /**
@@ -224,15 +224,17 @@ async function isEncryptionEnabledAsync() {
 function encryptJSON(data) {
   const key = _getAesKeySync();
   if (!key) {
-    return JSON.stringify(data, null, 2);
+    // 无密钥：明确标记为明文降级，decrypt 可识别，不冒充天然明文
+    return JSON.stringify({ _enc: 'PLAINTEXT_FALLBACK', data }, null, 2);
   }
 
   try {
     const wrapper = _encryptPayload(data, key);
     return JSON.stringify(wrapper, null, 2);
   } catch (e) {
-    console.warn('[memory-encrypt] Encryption failed, falling back to plaintext:', e.message);
-    return JSON.stringify(data, null, 2);
+    // [v6.0.50 M1] 加密失败严禁无标记明文落盘：标记 + 抛错，由调用方决定降级策略
+    console.warn('[memory-encrypt] Encryption failed:', e.message);
+    throw new Error('[memory-encrypt] encryption failed, refusing silent plaintext fallback: ' + e.message);
   }
 }
 
@@ -244,15 +246,15 @@ function encryptJSON(data) {
 async function encryptJSONAsync(data) {
   const key = await _getAesKeyAsync();
   if (!key) {
-    return JSON.stringify(data, null, 2);
+    return JSON.stringify({ _enc: 'PLAINTEXT_FALLBACK', data }, null, 2);
   }
 
   try {
     const wrapper = _encryptPayload(data, key);
     return JSON.stringify(wrapper, null, 2);
   } catch (e) {
-    console.warn('[memory-encrypt] Async encryption failed, falling back to plaintext:', e.message);
-    return JSON.stringify(data, null, 2);
+    console.warn('[memory-encrypt] Async encryption failed:', e.message);
+    throw new Error('[memory-encrypt] async encryption failed, refusing silent plaintext fallback: ' + e.message);
   }
 }
 
@@ -312,6 +314,11 @@ function decryptJSON(raw) {
         'encrypted data files to start fresh.'
       );
     }
+  }
+
+  // [v6.0.50 M1] 识别明文降级标记：返回内层 data，且让调用方可知这是降级明文（非天然明文）
+  if (parsed && parsed._enc === 'PLAINTEXT_FALLBACK') {
+    return parsed.data;
   }
 
   return parsed;

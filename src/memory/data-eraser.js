@@ -47,7 +47,10 @@ class DataEraser {
     const p = this.layerPaths[name];
     try {
       fs.mkdirSync(path.dirname(p), { recursive: true });
-      fs.writeFileSync(p, JSON.stringify(data, null, 2));
+      // [v6.0.50 M5] 原子写：先写临时文件再 rename，避免半写损坏
+      const tmp = p + '.tmp-' + process.pid + '-' + Date.now();
+      fs.writeFileSync(tmp, JSON.stringify(data, null, 2));
+      fs.renameSync(tmp, p);
       return true;
     } catch (e) { return false; }
   }
@@ -71,20 +74,26 @@ class DataEraser {
     const layer = this._readLayer('ephemeral');
     const before = Array.isArray(layer) ? layer.length : 0;
     let after = before;
+    let ok;
     if (scope === '*') {
       after = 0;
-      this._writeLayer('ephemeral', []);
+      ok = this._writeLayer('ephemeral', []);
     } else {
       const filtered = layer.filter(m => {
         const s = m.scope || m.session || '';
         return s !== scope;
       });
       after = filtered.length;
-      this._writeLayer('ephemeral', filtered);
+      ok = this._writeLayer('ephemeral', filtered);
+    }
+    // [v6.0.50 M5] 写入失败不冒充已擦除：审计记 erased:0 + error，返回 ok:false
+    if (!ok) {
+      this._log({ action: 'eraseEphemeral', scope, erased: 0, error: 'write_failed' });
+      return { erased: 0, scope, before, after: before, ok: false, error: 'write_failed' };
     }
     const erased = before - after;
     this._log({ action: 'eraseEphemeral', scope, erased });
-    return { erased, scope, before, after };
+    return { erased, scope, before, after, ok: true };
   }
 
   /**
@@ -100,10 +109,14 @@ class DataEraser {
       return !tags.includes(tag);
     });
     const after = filtered.length;
-    this._writeLayer('learned', filtered);
+    const ok = this._writeLayer('learned', filtered);
+    if (!ok) {
+      this._log({ action: 'eraseByTag', tag, erased: 0, error: 'write_failed' });
+      return { erased: 0, tag, before, after: before, ok: false, error: 'write_failed' };
+    }
     const erased = before - after;
     this._log({ action: 'eraseByTag', tag, erased });
-    return { erased, tag, before, after };
+    return { erased, tag, before, after, ok: true };
   }
 
   /**

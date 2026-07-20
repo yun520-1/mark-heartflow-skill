@@ -180,106 +180,34 @@ class LLMOrchestrator {
 
   async _httpsRequest(baseUrl, apiKey, model, prompt) {
 
-    const https = require('https');
+    // [v6.0.50 M6] 走 safeFetch：SSRF 校验 + DNS pinning，杜绝裸 https.request 绕过安全基座
+    const { safeFetch } = require('../core/fetch-safe.js');
 
-    const url = new URL(baseUrl + '/chat/completions');
+    const url = baseUrl + '/chat/completions';
 
-
-
-    const payload = JSON.stringify({
-
-      model,
-
-      messages: [{ role: 'user', content: prompt }],
-
-      temperature: 0.3,
-
-      max_tokens: 2000,
-
-    });
-
-
-
-    return new Promise((resolve, reject) => {
-
-      const options = {
-
-        hostname: url.hostname,
-
-        path: url.pathname + url.search,
-
+    try {
+      const res = await safeFetch(url, {
         method: 'POST',
-
         headers: {
-
           'Content-Type': 'application/json',
-
           'Authorization': 'Bearer ' + apiKey,
-
-          'Content-Length': Buffer.byteLength(payload),
-
         },
-
-      };
-
-
-
-      const req = https.request(options, (res) => {
-
-        let data = '';
-
-        res.on('data', (chunk) => { data += chunk; });
-
-        res.on('end', () => {
-
-          if (res.statusCode < 200 || res.statusCode >= 300) {
-
-            return reject(new Error('HTTP ' + res.statusCode + ': ' + (data || '').slice(0, 200)));
-
-          }
-
-          try {
-
-            const parsed = JSON.parse(data);
-
-            const message = parsed?.choices?.[0]?.message || {};
-
-            let content = message.content || '';
-
-            if (!content && message.reasoning) content = message.reasoning;
-
-            if (!content) return reject(new Error('LLM 返回空内容'));
-
-            resolve(this._normalizeResult(this._extractJSON(content)));
-
-          } catch (e) {
-
-            reject(new Error('解析 LLM 响应失败: ' + e.message));
-
-          }
-
-        });
-
+        body: payload,
+        timeout: 30000,
       });
-
-
-
-      req.on('error', reject);
-
-      req.setTimeout(30000, () => {
-
-        req.destroy();
-
-        reject(new Error('LLM 请求超时'));
-
-      });
-
-      req.write(payload);
-
-      req.end();
-
-    });
-
+      if (res.status < 200 || res.status >= 300) {
+        const txt = await res.text().catch(() => '');
+        throw new Error('HTTP ' + res.status + ': ' + txt.slice(0, 200));
+      }
+      const parsed = await res.json();
+      const message = parsed?.choices?.[0]?.message || {};
+      let content = message.content || '';
+      if (!content && message.reasoning) content = message.reasoning;
+      if (!content) throw new Error('LLM 返回空内容');
+      return this._normalizeResult(this._extractJSON(content));
+    } catch (e) {
+      throw new Error('LLM 请求失败: ' + e.message);
+    }
   }
 
 
