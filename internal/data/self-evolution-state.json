@@ -319,18 +319,73 @@
       "improvementsCount": 5,
       "iterations": 2,
       "converged": true,
-      "finalImprovement": 1.55
+      "finalImprovement": 1.55,
+      "prior_growth": 66
+    },
+    {
+      "timestamp": "2026-07-20T01:40:27.557Z",
+      "input": "self_scan",
+      "cycleTime": 185,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 67.5
+    },
+    {
+      "timestamp": "2026-07-20T01:40:52.040Z",
+      "input": "self_scan",
+      "cycleTime": 263,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 69
+    },
+    {
+      "timestamp": "2026-07-20T02:09:33.850Z",
+      "input": "self_scan",
+      "cycleTime": 157664,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 70.5
+    },
+    {
+      "timestamp": "2026-07-20T02:29:01.712Z",
+      "input": "self_scan",
+      "cycleTime": 5162,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 72
+    },
+    {
+      "timestamp": "2026-07-20T02:59:12.337Z",
+      "input": "self_scan",
+      "cycleTime": 6105,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 15,
+    "autonomy": 17.5,
     "introspection": 100,
-    "growth": 64.5,
+    "growth": 72,
     "authenticity": 0,
     "wisdom": 100,
-    "compassion": 9,
+    "compassion": 10.500000000000004,
     "_converged": false
   }
 }

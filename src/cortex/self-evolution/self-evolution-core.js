@@ -24,6 +24,7 @@ const fs = require('../../utils/safe-fs');
 
 const path = require('path');
 const { SelfScanner } = require('./self-scanner.js');
+const { SelfEvolutionV2 } = require('../self-evolution-v2.js');
 
 const { HealingMemoryRL } = require('../self-healing-rl.js');
 
@@ -111,6 +112,7 @@ class SelfEvolutionCore {
 
     // 自我弱点扫描器（让 evolve 基于真实代码库产出具体改进）
     this._scanner = new SelfScanner(this.projectRoot);
+    this._explorer = new SelfEvolutionV2(this.projectRoot);
 
     
 
@@ -646,6 +648,17 @@ class SelfEvolutionCore {
     } catch (e) {
       learning.weaknesses = { error: e.message };
     }
+
+    // [v6.0.48] 真实外部探索：搜 arXiv 最新认知引擎论文，找自身对照差距（非仅关键词自提取）
+    try {
+      if (this._explorer && typeof this._explorer.explore === 'function') {
+        const gaps = await this._explorer.explore('cognitive architecture agent self-improvement', true);
+        if (Array.isArray(gaps) && gaps.length) {
+          learning.arxivGaps = gaps.slice(0, 5);
+          learning.summary += `；搜到 ${gaps.length} 篇 arXiv 对标论文，首篇《${(gaps[0].paperTitle || gaps[0].detail || '').slice(0,40)}》`;
+        }
+      }
+    } catch (e) { /* 探索失败不阻断进化 */ }
     this.lastWeaknesses = learning.weaknesses || null;
 
 

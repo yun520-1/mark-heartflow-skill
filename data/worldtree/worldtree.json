@@ -1480,6 +1480,584 @@
       "accessed_at": 0,
       "created_at": 1784505724632,
       "updated_at": 1784505724632
+    },
+    {
+      "id": "wt_mrsk9b7d_66adcf",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:43:32.855Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511812857,
+      "updated_at": 1784511812857
+    },
+    {
+      "id": "wt_mrsk9b7z_00b573",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:43:32.878Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511812879,
+      "updated_at": 1784511812879
+    },
+    {
+      "id": "wt_mrsk9b86_5b2a0a",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:43:32.885Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511812886,
+      "updated_at": 1784511812886
+    },
+    {
+      "id": "wt_mrsk9rbd_69bb72",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:43:53.735Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511833737,
+      "updated_at": 1784511833737
+    },
+    {
+      "id": "wt_mrsk9rc0_063c7d",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:43:53.758Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511833760,
+      "updated_at": 1784511833760
+    },
+    {
+      "id": "wt_mrsk9rc8_e7d984",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:43:53.767Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511833768,
+      "updated_at": 1784511833768
+    },
+    {
+      "id": "wt_mrsk9xep_0ec90c",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:44:01.632Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511841633,
+      "updated_at": 1784511841633
+    },
+    {
+      "id": "wt_mrsk9xf7_56ed94",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:44:01.651Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511841652,
+      "updated_at": 1784511841652
+    },
+    {
+      "id": "wt_mrsk9xfe_1e195c",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:44:01.657Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511841658,
+      "updated_at": 1784511841658
+    },
+    {
+      "id": "wt_mrskceth_2c6cf0",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:45:57.507Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511957509,
+      "updated_at": 1784511957509
+    },
+    {
+      "id": "wt_mrskceu6_0bbd20",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:45:57.532Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511957534,
+      "updated_at": 1784511957534
+    },
+    {
+      "id": "wt_mrskceue_9d9a26",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:45:57.541Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511957542,
+      "updated_at": 1784511957542
+    },
+    {
+      "id": "wt_mrskckkl_f912ce",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:46:04.964Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511964965,
+      "updated_at": 1784511964965
+    },
+    {
+      "id": "wt_mrskckkz_24aae6",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:46:04.978Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511964979,
+      "updated_at": 1784511964979
+    },
+    {
+      "id": "wt_mrskcklk_77a53f",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:46:04.999Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784511965001,
+      "updated_at": 1784511965001
+    },
+    {
+      "id": "wt_mrske43e_89631d",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:47:16.921Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512036922,
+      "updated_at": 1784512036922
+    },
+    {
+      "id": "wt_mrske441_3c918e",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:47:16.935Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512036946,
+      "updated_at": 1784512036946
+    },
+    {
+      "id": "wt_mrske44a_72c0a3",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:47:16.953Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512036954,
+      "updated_at": 1784512036954
+    },
+    {
+      "id": "wt_mrske9tz_fc6c89",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:47:24.358Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512044359,
+      "updated_at": 1784512044359
+    },
+    {
+      "id": "wt_mrske9uj_031091",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:47:24.378Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512044379,
+      "updated_at": 1784512044379
+    },
+    {
+      "id": "wt_mrske9uq_f2b4d0",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:47:24.385Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512044386,
+      "updated_at": 1784512044386
+    },
+    {
+      "id": "wt_mrskfi8c_d8c36a",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:48:21.899Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512101900,
+      "updated_at": 1784512101900
+    },
+    {
+      "id": "wt_mrskfi8x_3d2e23",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:48:21.920Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512101921,
+      "updated_at": 1784512101921
+    },
+    {
+      "id": "wt_mrskfi94_394742",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:48:21.927Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512101928,
+      "updated_at": 1784512101928
+    },
+    {
+      "id": "wt_mrskfnzd_4c627d",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:48:29.352Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512109353,
+      "updated_at": 1784512109353
+    },
+    {
+      "id": "wt_mrskfo05_e3a60f",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:48:29.380Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512109381,
+      "updated_at": 1784512109381
+    },
+    {
+      "id": "wt_mrskfo0e_cd2e34",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T01:48:29.389Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784512109390,
+      "updated_at": 1784512109390
+    },
+    {
+      "id": "wt_mrsllw1u_7e0887",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T02:21:19.360Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784514079362,
+      "updated_at": 1784514079362
+    },
+    {
+      "id": "wt_mrsllw2m_12f97e",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T02:21:19.389Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784514079390,
+      "updated_at": 1784514079390
+    },
+    {
+      "id": "wt_mrsllw2u_f91947",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T02:21:19.397Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784514079398,
+      "updated_at": 1784514079398
+    },
+    {
+      "id": "wt_mrsmr473_4f1a73",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"用户指出我之前的自我升级只是补测试，没有真正搜索新闻/论文来升级自己。根因是进化主链路(SelfEvolutionCore.learn)没接入能搜arXiv的探索层(SelfEvolutionV2)，且arXiv查询被代理阻断。现在探索层已接入并修了重定向/超时，但搜索闭环还没跑通。我该怎么决策并完成一次真正的自我进化？\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T02:53:22.814Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784516002815,
+      "updated_at": 1784516002815
+    },
+    {
+      "id": "wt_mrsmyp2g_632f04",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T02:59:16.454Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784516356456,
+      "updated_at": 1784516356456
+    },
+    {
+      "id": "wt_mrsmyp34_ccf7ee",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T02:59:16.479Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784516356480,
+      "updated_at": 1784516356480
+    },
+    {
+      "id": "wt_mrsmyp3c_fc9b5b",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T02:59:16.487Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784516356488,
+      "updated_at": 1784516356488
     }
   ],
   "accessLog": [],

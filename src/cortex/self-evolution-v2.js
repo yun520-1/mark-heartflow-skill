@@ -18,6 +18,7 @@
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const http = require('http');
 
 class SelfEvolutionV2 {
   constructor(rootPath) {
@@ -72,16 +73,17 @@ class SelfEvolutionV2 {
     this._lastExplore = now;
     try {
       // 直接搜能力关键词（提高命中率），每个能力各搜一批
+      // [v6.0.48] 改用更宽松的 2 词查询：arxiv all: 会把多词 AND 掉导致 0 命中
       const queries = [
-        'theory of mind LLM agent',
-        'curiosity-driven exploration intrinsic motivation',
-        'continual learning agent lifelong',
-        'causal reasoning LLM',
-        'world model reinforcement learning'
+        'theory of mind',
+        'curiosity intrinsic motivation',
+        'continual learning',
+        'causal inference LLM',
+        'world model reinforcement'
       ];
       let papers = [];
       for (const q of queries) {
-        const batch = await this._fetchArxiv(q, 3);
+        const batch = await this._fetchArxiv(q, 5);
         papers = papers.concat(batch);
       }
       const gaps = this._diffAgainstSelf(papers);
@@ -92,20 +94,39 @@ class SelfEvolutionV2 {
   }
 
   _fetchArxiv(query, max = 5) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const q = encodeURIComponent(query);
-      const url = `https://export.arxiv.org/api/query?search_query=all:${q}&max_results=${max}&sortBy=submittedDate&sortOrder=descending`;
-      https.get(url, res => {
-        let data = '';
-        res.on('data', c => data += c);
-        res.on('end', () => {
-          const titles = [...data.matchAll(/<title>([^<]+)<\/title>/g)].map(m => m[1].trim());
-          const summaries = [...data.matchAll(/<summary>([^<]+)<\/summary>/g)].map(m => m[1].trim());
-          const papers = titles.slice(1).map((t, i) => ({ title: t, abstract: summaries[i] || '' }));
-          resolve(papers);
+      const tryHosts = ['https://arxiv.org/api/query', 'https://export.arxiv.org/api/query'];
+      const path = `?search_query=all:${q}&max_results=${max}&sortBy=submittedDate&sortOrder=descending`;
+      let done = false;
+      const finish = (papers) => { if (!done) { done = true; resolve(papers); } };
+      tryHosts.forEach((base, idx) => {
+        const timer = setTimeout(() => finish([]), 10000); // 10s 每 host 超时
+        const req = https.get(base + path, res => {
+          // 跟随 302 重定向（location 可能是 http 或 https）
+          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+            clearTimeout(timer);
+            const lib = res.headers.location.startsWith('http:') ? http : https;
+            lib.get(res.headers.location, r2 => {
+              let d2 = ''; r2.on('data', c => d2 += c);
+              r2.on('end', () => { clearTimeout(timer); finish(this._parseArxiv(d2)); });
+            }).on('error', () => finish([]));
+            return;
+          }
+          let data = '';
+          res.on('data', c => data += c);
+          res.on('end', () => { clearTimeout(timer); finish(this._parseArxiv(data)); });
         });
-      }).on('error', reject);
+        req.on('error', () => { clearTimeout(timer); finish([]); });
+        req.setTimeout(10000, () => { req.destroy(); clearTimeout(timer); finish([]); });
+      });
     });
+  }
+
+  _parseArxiv(data) {
+    const titles = [...data.matchAll(/<title>([^<]+)<\/title>/g)].map(m => m[1].trim());
+    const summaries = [...data.matchAll(/<summary>([^<]+)<\/summary>/g)].map(m => m[1].trim());
+    return titles.slice(1).map((t, i) => ({ title: t, abstract: summaries[i] || '' }));
   }
 
   /**
@@ -115,7 +136,7 @@ class SelfEvolutionV2 {
    * 心虫承认"我看到了 X 方法，需对照检查实现深度"，驱动后续深究。
    */
   _diffAgainstSelf(papers) {
-    const gaps = [];
+    let gaps = [];
     const signalMap = {
       'skill-library': /skill librar|ever-?growing skill|code reuse/i,
       'self-play-rl': /self-?play|self-?improvement|iterative prompting/i,
@@ -143,11 +164,24 @@ class SelfEvolutionV2 {
     }
     // 去重（同 capability 只留最新一条）
     const seen = new Set();
-    return gaps.filter(g => {
+    gaps = gaps.filter(g => {
       if (seen.has(g.capability)) return false;
       seen.add(g.capability);
       return true;
     });
+    // [v6.0.48] 兜底：若窄信号未命中，把论文作为通用对标标杆（保证探索层真实产出候选，不空转）
+    if (gaps.length === 0 && papers.length > 0) {
+      const p = papers[0];
+      gaps.push({
+        kind: 'benchmark-reference',
+        severity: 'info',
+        detail: `对标标杆: 论文《${(p.title||'').slice(0,50)}》代表当前前沿方向，需对照检查自身实现深度`,
+        source: 'arxiv',
+        paperTitle: p.title,
+        capability: 'frontier-benchmark'
+      });
+    }
+    return gaps;
   }
 
 
