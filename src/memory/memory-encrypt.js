@@ -29,6 +29,7 @@ const AES_CONFIG = {
 let _aesKey = null;
 let _aesKeyResolved = false;
 let _encryptionEnabled = null;
+let _keyPromise = null; // [v6.0.54 N3] 共享密钥解析 promise，消除并发竞态
 
 const _asyncFs = (() => {
   try { return require('../io/async-fs-adapter.js'); } catch (e) { return null; }
@@ -98,49 +99,53 @@ function _getAesKeySync() {
 
 /** Async key resolution: prefer env, else async read/generate key file. */
 async function _getAesKeyAsync() {
+  // 已解析：同步快路径
   if (_aesKeyResolved) return _aesKey;
+  // [v6.0.54 N3] 正在解析：复用同一 promise，所有并发调用拿到同一把密钥（消除竞态）
+  if (_keyPromise) return _keyPromise;
 
-  _aesKeyResolved = true;
-
-  const envKey = process.env.HEARTFLOW_AES_KEY;
-  if (!envKey) {
-    const keyFile = path.join(__dirname, '../../memory/.aes-key');
-    try {
-      const exists = _asyncFs ? await _asyncFs.exists(keyFile) : fs.existsSync(keyFile);
-      if (exists) {
-        const raw = _asyncFs ? await _asyncFs.readFile(keyFile, 'utf8') : fs.readFileSync(keyFile, 'utf8');
-        _aesKey = Buffer.from(raw.trim(), 'base64');
-        console.log('[memory-encrypt] Loaded persisted AES key from memory/.aes-key');
+  _keyPromise = (async () => {
+    const envKey = process.env.HEARTFLOW_AES_KEY;
+    if (!envKey) {
+      const keyFile = path.join(__dirname, '../../memory/.aes-key');
+      try {
+        const exists = _asyncFs ? await _asyncFs.exists(keyFile) : fs.existsSync(keyFile);
+        if (exists) {
+          const raw = _asyncFs ? await _asyncFs.readFile(keyFile, 'utf8') : fs.readFileSync(keyFile, 'utf8');
+          _aesKey = Buffer.from(raw.trim(), 'base64');
+          console.log('[memory-encrypt] Loaded persisted AES key from memory/.aes-key');
+          return _aesKey;
+        }
+        const newKey = crypto.randomBytes(32);
+        if (_asyncFs) {
+          await _asyncFs.writeFile(keyFile, newKey.toString('base64'));
+        } else {
+          fs.writeFileSync(keyFile, newKey.toString('base64'), { mode: 0o600 });
+        }
+        console.log('[memory-encrypt] Generated and persisted AES key to memory/.aes-key (0o600)');
+        _aesKey = newKey;
         return _aesKey;
+      } catch (e) {
+        console.error('[memory-encrypt] Failed to persist AES key:', e.message, '— encryption disabled');
+        return null;
       }
-      const newKey = crypto.randomBytes(32);
-      if (_asyncFs) {
-        await _asyncFs.writeFile(keyFile, newKey.toString('base64'));
-      } else {
-        fs.writeFileSync(keyFile, newKey.toString('base64'), { mode: 0o600 });
+    }
+
+    try {
+      _aesKey = Buffer.from(envKey, 'base64');
+      if (_aesKey.length !== AES_CONFIG.keyLength) {
+        console.warn('[memory-encrypt] HEARTFLOW_AES_KEY is not 32 bytes (base64). Plaintext mode.');
+        _aesKey = null;
+        return null;
       }
-      console.log('[memory-encrypt] Generated and persisted AES key to memory/.aes-key (0o600)');
-      _aesKey = newKey;
       return _aesKey;
     } catch (e) {
-      console.error('[memory-encrypt] Failed to persist AES key:', e.message, '— encryption disabled');
-      return null;
-    }
-  }
-
-  try {
-    _aesKey = Buffer.from(envKey, 'base64');
-    if (_aesKey.length !== AES_CONFIG.keyLength) {
-      console.warn('[memory-encrypt] HEARTFLOW_AES_KEY is not 32 bytes (base64). Writing plaintext.');
+      console.warn('[memory-encrypt] Failed to decode HEARTFLOW_AES_KEY:', e.message);
       _aesKey = null;
       return null;
     }
-    return _aesKey;
-  } catch (e) {
-    console.warn('[memory-encrypt] Failed to decode HEARTFLOW_AES_KEY:', e.message);
-    _aesKey = null;
-    return null;
-  }
+  })().then(k => { _aesKey = k; _aesKeyResolved = true; _keyPromise = null; return k; })
+    .catch(e => { _keyPromise = null; _aesKeyResolved = false; throw e; });
 }
 
 function _resolveKeyFromEnvSync() {
@@ -626,8 +631,9 @@ function encryptJSONWithKey(data, key) {
 
     return JSON.stringify(wrapper, null, 2);
   } catch (e) {
+    // [v6.0.54 R1] 显式密钥加密失败严禁静默明文回退（同 M1 原则）：抛错由调用方决定降级
     console.warn('[memory-encrypt] Encryption with explicit key failed:', e.message);
-    return JSON.stringify(data, null, 2);
+    throw new Error('[memory-encrypt] encryptJSONWithKey failed, refusing silent plaintext fallback: ' + e.message);
   }
 }
 

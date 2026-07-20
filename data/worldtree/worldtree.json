@@ -2636,6 +2636,57 @@
       "accessed_at": 0,
       "created_at": 1784530165968,
       "updated_at": 1784530165968
+    },
+    {
+      "id": "wt_mrsw9nvk_fe12da",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T07:19:44.670Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784531984672,
+      "updated_at": 1784531984672
+    },
+    {
+      "id": "wt_mrsw9nw4_62f26d",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T07:19:44.690Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784531984692,
+      "updated_at": 1784531984692
+    },
+    {
+      "id": "wt_mrsw9nwa_fdec2f",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T07:19:44.697Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784531984698,
+      "updated_at": 1784531984698
     }
   ],
   "accessLog": [],

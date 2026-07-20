@@ -43,6 +43,29 @@ class EvidenceSynthesis {
 
   _mean(arr) { return arr.reduce((s, x) => s + x, 0) / arr.length; }
 
+  // [v6.0.54 N4] Hedges' g 小样本校正因子 J 的精确计算（Lanczos 近似 Γ 函数）
+  // 原公式 J = 1 - 3/(4*(n-1)-1) 在 n=2 时得到 J=0 -> g 恒为 0（笔误）。
+  // 正确 J = Γ(n/2) / (√(n/2) · Γ((n-1)/2))，对所有 n>=2 有效。
+  _lanczosGamma(z) {
+    const g = 7;
+    const c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+               771.32342877765313, -176.61502916214059, 12.507343278686905,
+               -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+    if (z < 0.5) return Math.PI / (Math.sin(Math.PI * z) * this._lanczosGamma(1 - z));
+    z -= 1;
+    let x = c[0];
+    for (let i = 1; i < g + 2; i++) x += c[i] / (z + i);
+    const t = z + g + 0.5;
+    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+  }
+
+  _hedgesJ(n) {
+    if (n < 2) return 1; // 样本不足，退化为无校正
+    const g = this._lanczosGamma(n / 2) / (Math.sqrt(n / 2) * this._lanczosGamma((n - 1) / 2));
+    return g;
+  }
+
+
   // 类 Hedges' g 标准化效应量: 用效应量均值 / 合并标准差(简化版随机效应思路)
   _hedgesG(outcomes) {
     const vals = outcomes.map(o => o.value);
@@ -50,9 +73,9 @@ class EvidenceSynthesis {
     const variance = this._mean(vals.map(v => (v - m) ** 2));
     const sd = Math.sqrt(variance);
     if (sd === 0) return { g: m, sd, ci: [m, m], n: vals.length };
-    // Hedges' g 的小样本校正因子 J
+    // Hedges' g 的小样本校正因子 J（精确 Γ 形式，n=2 时 J≈0.564 而非 0）
     const n = vals.length;
-    const J = 1 - (3 / (4 * (n - 1) - 1));
+    const J = this._hedgesJ(n);
     const g = (m / sd) * J;
     const se = Math.sqrt((1 / n) + (g * g / (2 * (n - 1)))); // 近似标准误
     return { g, sd, ci: [g - 1.96 * se, g + 1.96 * se], n };
