@@ -80,7 +80,7 @@ class ModuleHealthChecker {
         case 'failed':
           report.failed++;
           // [v6.0.34] 元审计修复: 之前只计数不禁用 = 假自愈
-          // 真禁用: 标记模块并从 _modules 移除引用(保留原对象以便诊断)
+          // [v6.0.51 L4] 诚实标注: 标记 __disabled + 加入 disabledModules 集合（保留 _modules 对象以便诊断，不物理移除引用）
           if (mod && typeof mod === 'object') mod.__disabled = true;
           this.disabledModules.add(name);
           break;

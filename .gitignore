@@ -81,3 +81,15 @@ data/memory-index.json
 
 # runtime feedback artifacts
 data/feedback/
+
+# [v6.0.51 L6] 运行时易变产物 / 敏感令牌不入库
+data/.mcp_token_plain
+data/heartflow.pid
+data/self-benchmark.json
+data/self-state-history.json
+data/upgrade-candidates.json
+data/upgrade-history.json
+data/erasure-log.json
+data/narrative-self.json
+data/ttl-preferences.json
+data/audit/

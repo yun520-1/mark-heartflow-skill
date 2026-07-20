@@ -510,7 +510,7 @@ async function reencryptAll() {
   try {
     const rootDir = path.resolve(__dirname, '..');
     const encFiles = _scanEncFiles(rootDir);
-    const key = _getAesKey();
+    const key = _getAesKeySync();
 
     if (!key) {
       return { success: false, reencryptedFiles: 0, error: 'Encryption key not available' };
