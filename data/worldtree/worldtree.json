@@ -2687,6 +2687,74 @@
       "accessed_at": 0,
       "created_at": 1784531984698,
       "updated_at": 1784531984698
+    },
+    {
+      "id": "wt_mrswuxz6_e613d2",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"feedback\",\"text\":\"现在要你自我升级一次，方式你自己决定：是搜前沿论文吸收、还是自检代码找真缺陷去修、还是别的？先判断，再说清楚你选哪条路、为什么。\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T07:36:17.537Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "feedback"
+      ],
+      "source": "feedback",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784532977538,
+      "updated_at": 1784532977538
+    },
+    {
+      "id": "wt_mrsxcoa4_6d1ab9",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T07:50:04.777Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784533804780,
+      "updated_at": 1784533804780
+    },
+    {
+      "id": "wt_mrsxcoat_a8f7bf",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T07:50:04.804Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784533804805,
+      "updated_at": 1784533804805
+    },
+    {
+      "id": "wt_mrsxcob0_2ce324",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T07:50:04.811Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784533804812,
+      "updated_at": 1784533804812
     }
   ],
   "accessLog": [],
