@@ -16,6 +16,8 @@
  */
 
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 const AES_CONFIG = {
   algorithm: 'aes-256-gcm',
@@ -183,7 +185,9 @@ function isEncryptionEnabled() {
     return true;
   }
 
-  if (process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT === '1') {
+  // [v6.0.53 M3] 接受 '1' 或 'true'（部署可能用布尔式写法），避免开关死代码
+  const flag = process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT;
+  if (flag === '1' || flag === 'true') {
     _encryptionEnabled = true;
   } else {
     _encryptionEnabled = false;
@@ -201,7 +205,8 @@ async function isEncryptionEnabledAsync() {
     return true;
   }
 
-  if (process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT === '1') {
+  const flag = process.env.HEARTFLOW_MEMORY_BANK_ENCRYPT;
+  if (flag === '1' || flag === 'true') {
     _encryptionEnabled = true;
   } else {
     _encryptionEnabled = false;
