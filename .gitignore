@@ -93,3 +93,4 @@ data/erasure-log.json
 data/narrative-self.json
 data/ttl-preferences.json
 data/audit/
+memory/.aes-key
