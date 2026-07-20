@@ -164,5 +164,93 @@
     "impact": 4,
     "timestamp": 1784447959765,
     "verified": true
+  },
+  {
+    "version": "6.0.40",
+    "description": "IntentClassifier中文口语覆盖+空输入降级",
+    "type": "self-heal",
+    "impact": 4,
+    "timestamp": 1784452208544,
+    "verified": true
+  },
+  {
+    "version": "6.0.41",
+    "description": "新闻驱动自我升级闭环(news-lesson-absorber+world-tree回流)",
+    "type": "self-heal",
+    "impact": 4,
+    "timestamp": 1784460809920,
+    "verified": true
+  },
+  {
+    "version": "6.0.42",
+    "description": "信号驱动自我升级:所有对话/新闻/指令/反馈自动吸收→world-tree→进化引用",
+    "type": "self-heal",
+    "impact": 5,
+    "timestamp": 1784461320865,
+    "verified": true
+  },
+  {
+    "version": "6.0.42",
+    "description": "信号驱动自动进化(有真改进)",
+    "type": "self-heal",
+    "impact": 4,
+    "timestamp": 1784462405860,
+    "verified": true
+  },
+  {
+    "version": "6.0.42",
+    "description": "信号驱动自动进化(有真改进)",
+    "type": "self-heal",
+    "impact": 4,
+    "timestamp": 1784462571875,
+    "verified": true
+  },
+  {
+    "version": "6.0.42",
+    "description": "信号驱动自动进化(有真改进)",
+    "type": "self-heal",
+    "impact": 4,
+    "timestamp": 1784462629922,
+    "verified": true
+  },
+  {
+    "version": "6.0.42",
+    "description": "信号驱动自动进化:think自动吸收+阈值触发+仅真改进本地commit",
+    "type": "self-heal",
+    "impact": 5,
+    "timestamp": 1784462939149,
+    "verified": true
+  },
+  {
+    "version": "6.0.43",
+    "description": "signal-absorber新增2模式(慢性错误潜伏/外部标准涌现),来自今日真实新闻",
+    "type": "self-heal",
+    "impact": 4,
+    "timestamp": 1784464991635,
+    "verified": true
+  },
+  {
+    "version": "6.0.44",
+    "description": "arXiv论文驱动:PRISM状态风险探测+AutoSynthesis证据元分析",
+    "type": "capability",
+    "impact": 5,
+    "timestamp": 1784468535204,
+    "verified": true
+  },
+  {
+    "version": "6.0.45",
+    "description": "STEM论文驱动: BadWAM对齐+Pauli可逆回溯+少样本校准",
+    "type": "capability",
+    "impact": 5,
+    "timestamp": 1784469764541,
+    "verified": true
+  },
+  {
+    "version": "6.0.46",
+    "description": "BadWAM对齐接入think + path-sampler补完(4篇STEM论文全部落地)",
+    "type": "integration",
+    "impact": 5,
+    "timestamp": 1784474972289,
+    "verified": true
   }
 ]
