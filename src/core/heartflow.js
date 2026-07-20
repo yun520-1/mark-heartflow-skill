@@ -6134,7 +6134,40 @@ class HeartFlow {
         }
       }
     } catch (e) {}
+
+    // 4. [v6.0.46 Pauli Propagation] 可逆回溯: 把 think 的决策阶段记入 traceback,
+    //    出错时反向定位偏差源(利用可逆性, 内存 O(1), 不存全中间态)
+    try {
+      if (r && r.thoughtChain && Array.isArray(r.thoughtChain)) {
+        const tb = this._ensureTraceback();
+        if (tb) {
+          for (const st of r.thoughtChain) {
+            const fp = st.success ? 'OK' : ('ERR-' + (st.stage || 'unknown'));
+            tb.recordStep(st.stage || 'stage', fp, true);
+          }
+          // 若结果整体失败/含错误, 反向定位偏差步并附到结果
+          const hasErr = (r.error === true) || (r.output && /失败|错误|无法/.test(r.output.conclusion || ''));
+          if (hasErr) {
+            const tb2 = tb.traceback({ step: (r.thoughtChain.find(s => !s.success) || {}).stage });
+            if (tb2 && tb2.likelySource) {
+              r.traceback = { likelySource: tb2.likelySource, steps: tb2.steps, reversibleCount: tb2.reversibleCount };
+            }
+          }
+        }
+      }
+    } catch (e) {}
+
     return r;
+  }
+
+  _ensureTraceback() {
+    if (!this._traceback) {
+      try {
+        const { ReversibleTraceback } = require('./../cortex/reversible-traceback.js');
+        this._traceback = new ReversibleTraceback({ capacity: 64 });
+      } catch (e) { this._traceback = null; }
+    }
+    return this._traceback;
   }
 
   async _autoEvolveIfImproved() {

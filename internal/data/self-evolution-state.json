@@ -176,18 +176,161 @@
       "improvementsCount": 5,
       "iterations": 2,
       "converged": true,
-      "finalImprovement": 1.4500000000000002
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 40.5
+    },
+    {
+      "timestamp": "2026-07-19T11:13:05.930Z",
+      "input": "{\"trigger\":\"manual\"}",
+      "cycleTime": 205,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 42
+    },
+    {
+      "timestamp": "2026-07-19T11:16:27.340Z",
+      "input": "{\"trigger\":\"manual\"}",
+      "cycleTime": 253,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 43.5
+    },
+    {
+      "timestamp": "2026-07-19T11:18:35.024Z",
+      "input": "{\"trigger\":\"manual\"}",
+      "cycleTime": 266,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 45
+    },
+    {
+      "timestamp": "2026-07-19T11:19:36.229Z",
+      "input": "{\"trigger\":\"manual\"}",
+      "cycleTime": 286,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 46.5
+    },
+    {
+      "timestamp": "2026-07-19T11:20:44.009Z",
+      "input": "{\"trigger\":\"manual\"}",
+      "cycleTime": 296,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 48
+    },
+    {
+      "timestamp": "2026-07-19T11:21:38.383Z",
+      "input": "{\"trigger\":\"manual\"}",
+      "cycleTime": 259,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 49.5
+    },
+    {
+      "timestamp": "2026-07-19T11:25:10.336Z",
+      "input": "{\"trigger\":\"manual\"}",
+      "cycleTime": 253,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 51
+    },
+    {
+      "timestamp": "2026-07-19T11:40:37.155Z",
+      "input": "{\"trigger\":\"manual\"}",
+      "cycleTime": 278,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 52.5
+    },
+    {
+      "timestamp": "2026-07-19T11:58:20.779Z",
+      "input": "{\"trigger\":\"manual\"}",
+      "cycleTime": 271,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 55.5
+    },
+    {
+      "timestamp": "2026-07-19T12:00:05.731Z",
+      "input": "{\"trigger\":\"signal_auto\",\"auto\":true}",
+      "cycleTime": 253,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.55,
+      "prior_growth": 58.5
+    },
+    {
+      "timestamp": "2026-07-19T12:02:51.758Z",
+      "input": "{\"trigger\":\"signal_auto\",\"auto\":true}",
+      "cycleTime": 257,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.55,
+      "prior_growth": 61.5
+    },
+    {
+      "timestamp": "2026-07-19T12:03:49.789Z",
+      "input": "{\"trigger\":\"signal_auto\",\"auto\":true}",
+      "cycleTime": 247,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.55,
+      "prior_growth": 64.5
+    },
+    {
+      "timestamp": "2026-07-19T12:42:01.123Z",
+      "input": "{\"trigger\":\"signal_auto\",\"auto\":true}",
+      "cycleTime": 193,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.55
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 8.5,
+    "autonomy": 15,
     "introspection": 100,
-    "growth": 39,
+    "growth": 64.5,
     "authenticity": 0,
-    "wisdom": 64,
-    "compassion": 5.099999999999999,
+    "wisdom": 100,
+    "compassion": 9,
     "_converged": false
   }
 }
