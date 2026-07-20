@@ -19,6 +19,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http');
+const { safeFetch } = require('../core/fetch-safe.js');
 
 class SelfEvolutionV2 {
   constructor(rootPath) {
@@ -71,6 +72,10 @@ class SelfEvolutionV2 {
       return []; // 冷却中，不刷网
     }
     this._lastExplore = now;
+    // [v6.0.49 H1-P0] opt-in 出网：默认关，需 HEARTFLOW_SELF_EVOLVE_EXPLORE=1 才搜 arXiv
+    if (process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE !== '1') {
+      return []; // 静默不出网，避免绕过安全基座
+    }
     try {
       // 直接搜能力关键词（提高命中率），每个能力各搜一批
       // [v6.0.48] 改用更宽松的 2 词查询：arxiv all: 会把多词 AND 掉导致 0 命中
@@ -94,36 +99,18 @@ class SelfEvolutionV2 {
   }
 
   _fetchArxiv(query, max = 5) {
-    return new Promise((resolve) => {
-      const q = encodeURIComponent(query);
-      const tryHosts = ['https://arxiv.org/api/query', 'https://export.arxiv.org/api/query'];
-      const path = `?search_query=all:${q}&max_results=${max}&sortBy=submittedDate&sortOrder=descending`;
-      let done = false;
-      const finish = (papers) => { if (!done) { done = true; resolve(papers); } };
-      tryHosts.forEach((base, idx) => {
-        const timer = setTimeout(() => finish([]), 10000); // 10s 每 host 超时
-        const req = https.get(base + path, res => {
-          // 跟随 302 重定向（location 可能是 http 或 https）
-          if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-            clearTimeout(timer);
-            const lib = res.headers.location.startsWith('http:') ? http : https;
-            lib.get(res.headers.location, r2 => {
-              let d2 = ''; r2.on('data', c => d2 += c);
-              r2.on('end', () => { clearTimeout(timer); finish(this._parseArxiv(d2)); });
-            }).on('error', () => finish([]));
-            return;
-          }
-          let data = '';
-          res.on('data', c => data += c);
-          res.on('end', () => { clearTimeout(timer); finish(this._parseArxiv(data)); });
-        });
-        req.on('error', () => { clearTimeout(timer); finish([]); });
-        req.setTimeout(10000, () => { req.destroy(); clearTimeout(timer); finish([]); });
-      });
-    });
+    // [v6.0.49 H1-P0] 走 safeFetch：SSRF校验 + DNS pinning + 白名单，杜绝裸出网绕过安全基座
+    const q = encodeURIComponent(query);
+    const base = 'https://arxiv.org/api/query';
+    const url = `${base}?search_query=all:${q}&max_results=${max}&sortBy=submittedDate&sortOrder=descending`;
+    return safeFetch(url, { timeout: 10000, maxRetries: 1 })
+      .then(res => res.text())
+      .then(body => this._parseArxiv(body))
+      .catch(() => []);
   }
 
   _parseArxiv(data) {
+    if (typeof data !== 'string') return [];
     const titles = [...data.matchAll(/<title>([^<]+)<\/title>/g)].map(m => m[1].trim());
     const summaries = [...data.matchAll(/<summary>([^<]+)<\/summary>/g)].map(m => m[1].trim());
     return titles.slice(1).map((t, i) => ({ title: t, abstract: summaries[i] || '' }));
