@@ -100,6 +100,12 @@ function dispatch(hf, route, ...args) {
   if (typeof mod[method] !== 'function') {
     throw new Error(`${subsystem}.${method} is not a function on ${subsystem}`);
   }
+  // [N1 自愈闸门] honor 健康检查设置的禁用标记：模块被 ModuleHealthChecker 标记 __disabled 后
+  // dispatch 必须拒绝路由，否则"禁用"只是记账、从不生效 = 假自愈。fail-closed。
+  // 例外：允许诊断/恢复类方法穿透（healthCheck/getStats/init/reset），以便观测和重新启用。
+  if (mod.__disabled === true && !['healthCheck', 'getStats', 'stats', 'init', 'reset'].includes(method)) {
+    return { _disabled: true, route, reason: `模块 ${subsystem} 已被健康检查禁用（自愈闸门拦截），仅诊断/恢复方法可调用` };
+  }
   const rawResult = mod[method](...args);
 
   if (_perfStart > 0) {
