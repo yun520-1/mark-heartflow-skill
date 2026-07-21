@@ -1923,6 +1923,17 @@ class SelfEvolutionCore {
 
     const reflection = this._reflect(task, outcome, evidence, expected);
 
+    // [v6.0.65] 真存 lesson: 之前只返回 lessonStored 但从不写入 reflectionHistory, 导致 Reflexion 检索永远空
+    if (outcome !== 'success') {
+      this.state.reflectionHistory.push({
+        lesson: reflection && reflection.lesson ? reflection.lesson : (Array.isArray(reflection) ? reflection.join('\n') : String(reflection)),
+        type: 'reflection',
+        task,
+        timestamp: new Date().toISOString()
+      });
+      this.saveState();
+    }
+
     return {
 
       outcome,
@@ -2006,42 +2017,6 @@ class SelfEvolutionCore {
    * 来源: HeartFlowEvolution.retrieveLessons()
 
    */
-
-  retrieveLessons(task, options = {}) {
-
-    const { limit = 5, minConfidence = 0 } = options;
-
-    const taskLower = task.toLowerCase();
-
-    const taskWords = taskLower.split(/\s+/).filter(w => w.length > 2);
-
-    const scoredLessons = [];
-
-    for (const [key, entry] of Object.entries(this.state.learningHistory || [])) {
-
-      if (!key.startsWith('reflexion:')) continue;
-
-      const valueLower = String(entry.lesson || '').toLowerCase();
-
-      const overlap = taskWords.filter(w => valueLower.includes(w)).length;
-
-      const similarity = taskWords.length > 0 ? overlap / taskWords.length : 0;
-
-      if (similarity >= 0.05) {
-
-        scoredLessons.push({ lesson: entry.lesson, source: 'reflexion', similarity: Math.round(similarity * 100) / 100, age: Date.now() - (entry.timestamp || Date.now()), key });
-
-      }
-
-    }
-
-    scoredLessons.sort((a, b) => b.similarity - a.similarity);
-
-    return scoredLessons.slice(0, limit).map(({ lesson, source, similarity }) => ({ lesson, source, confidence: Math.round(similarity * 100) / 100 }));
-
-  }
-
-
 
   /**
 

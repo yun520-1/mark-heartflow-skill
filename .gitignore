@@ -96,3 +96,6 @@ data/audit/
 memory/.aes-key
 
 data/*.json
+
+# [v6.0.65] 明文 MCP 鉴权 token 不入库 (C-3 审计修复)
+.mcp.env
