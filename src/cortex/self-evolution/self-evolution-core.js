@@ -697,9 +697,14 @@ class SelfEvolutionCore {
       if (this._explorer && typeof this._explorer.explore === 'function') {
         const gaps = await this._explorer.explore('cognitive architecture agent self-improvement', true);
         if (Array.isArray(gaps) && gaps.length) {
-          learning.arxivGaps = gaps.slice(0, 5);
+          learning.arxivGaps = gaps.slice(0, 8);
           learning.summary += `；搜到 ${gaps.length} 篇 arXiv 对标论文，首篇《${(gaps[0].paperTitle || gaps[0].detail || '').slice(0,40)}》`;
+        } else {
+          // [v6.0.61] 不假装没差距: 明确标记探索未产出(开关关/网络失败), 供上层诚实决策
+          learning.arxivGaps = { skipped: true, reason: process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE !== '1' ? 'explore disabled (HEARTFLOW_SELF_EVOLVE_EXPLORE!=1)' : 'no papers fetched' };
         }
+      } else {
+        learning.arxivGaps = { skipped: true, reason: 'explorer not initialized' };
       }
     } catch (e) { /* 探索失败不阻断进化 */ }
     this.lastWeaknesses = learning.weaknesses || null;

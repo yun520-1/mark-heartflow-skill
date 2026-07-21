@@ -98,15 +98,24 @@ class SelfEvolutionV2 {
     }
   }
 
-  _fetchArxiv(query, max = 5) {
+  async _fetchArxiv(query, max = 5) {
     // [v6.0.49 H1-P0] 走 safeFetch：SSRF校验 + DNS pinning + 白名单，杜绝裸出网绕过安全基座
+    // [v6.0.61] base 直连 export.arxiv.org: 原 arxiv.org 会 301 跳 http://export, safeFetch 判重定向为 HTTP 外部端点拒绝
     const q = encodeURIComponent(query);
-    const base = 'https://arxiv.org/api/query';
+    const base = 'https://export.arxiv.org/api/query';
     const url = `${base}?search_query=all:${q}&max_results=${max}&sortBy=submittedDate&sortOrder=descending`;
-    return safeFetch(url, { timeout: 10000, maxRetries: 1 })
-      .then(res => res.text())
-      .then(body => this._parseArxiv(body))
-      .catch(() => []);
+    // 重试 3 次(arXiv 偶发超时), 失败记录原因不静默吞(避免'没搜到=没差距'假象)
+    let lastErr;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const res = await safeFetch(url, { timeout: 12000, maxRetries: 2 });
+        const body = await res.text();
+        const parsed = this._parseArxiv(body);
+        if (parsed.length) return parsed;
+      } catch (e) { lastErr = e.message; }
+    }
+    this._lastFetchError = lastErr || 'empty result';
+    return [];
   }
 
   _parseArxiv(data) {
@@ -156,17 +165,19 @@ class SelfEvolutionV2 {
       seen.add(g.capability);
       return true;
     });
-    // [v6.0.48] 兜底：若窄信号未命中，把论文作为通用对标标杆（保证探索层真实产出候选，不空转）
-    if (gaps.length === 0 && papers.length > 0) {
-      const p = papers[0];
-      gaps.push({
-        kind: 'benchmark-reference',
-        severity: 'info',
-        detail: `对标标杆: 论文《${(p.title||'').slice(0,50)}》代表当前前沿方向，需对照检查自身实现深度`,
-        source: 'arxiv',
-        paperTitle: p.title,
-        capability: 'frontier-benchmark'
-      });
+    // [v6.0.61] 兜底升级: 不只留 1 条。未匹配窄信号的论文也作为前沿学习资料补齐(最多 8 条), 不浪费已抓数据
+    if (papers.length > 0) {
+      for (const p of papers.slice(0, 8)) {
+        if (gaps.some(g => g.paperTitle === p.title)) continue;
+        gaps.push({
+          kind: 'benchmark-reference',
+          severity: 'info',
+          detail: `前沿学习资料: 论文《${(p.title||'').slice(0,50)}》代表当前方向, 需对照自身实现深度`,
+          source: 'arxiv',
+          paperTitle: p.title,
+          capability: 'frontier-benchmark'
+        });
+      }
     }
     return gaps;
   }
