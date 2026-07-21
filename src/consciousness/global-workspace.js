@@ -176,6 +176,8 @@ class GlobalWorkspace extends EventEmitter {
 
     if (this.agents.has(agent.name)) {
 
+      return false;
+
     }
 
 

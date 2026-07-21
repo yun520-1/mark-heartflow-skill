@@ -98,9 +98,9 @@ class MindWanderer {
 
    */
 
-  _computeTimeModulation() {
+  _computeTimeModulation(hour) {
 
-    const hour = new Date().getHours();
+    const h = (typeof hour === 'number') ? hour : new Date().getHours();
 
     // 0-6: 深夜(抽象/诗意)
 
@@ -110,11 +110,11 @@ class MindWanderer {
 
     // 18-24: 傍晚(反思/整合)
 
-    if (hour < 6) return { creativity: 0.9, practicality: 0.3, abstraction: 0.9, social: 0.2 };
+    if (h < 6) return { creativity: 0.9, practicality: 0.3, abstraction: 0.9, social: 0.2 };
 
-    if (hour < 12) return { creativity: 0.6, practicality: 0.8, abstraction: 0.4, social: 0.5 };
+    if (h < 12) return { creativity: 0.6, practicality: 0.8, abstraction: 0.4, social: 0.5 };
 
-    if (hour < 18) return { creativity: 0.5, practicality: 0.6, abstraction: 0.5, social: 0.8 };
+    if (h < 18) return { creativity: 0.5, practicality: 0.6, abstraction: 0.5, social: 0.8 };
 
     return { creativity: 0.8, practicality: 0.5, abstraction: 0.7, social: 0.6 };
 
@@ -151,6 +151,8 @@ class MindWanderer {
       this.wildIdeas = { ideas: [], archived: [], lastWander: null, stats: { totalCreated: 0, topCategory: null, avgQuality: 0 } };
 
     }
+
+    return this.wildIdeas;
 
   }
 
