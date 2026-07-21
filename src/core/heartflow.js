@@ -2446,6 +2446,21 @@ class HeartFlow {
     } catch (e) { /* decisionFeedback optional */ }
 
 
+    // ─── [v6.0.59] 判断生长引擎 — RuleGrowth（让"做判断"可生长，非写死）──
+    try {
+
+      const { RuleGrowth } = require('../cortex/rule-growth.js');
+      this.ruleGrowth = new RuleGrowth(this.rootPath || this.projectRoot || process.cwd());
+      // 把已学规则注入决策路由，使 learned 判断生效
+      if (this.decisionRouter && typeof this.decisionRouter.addRule === 'function') {
+        for (const r of this.ruleGrowth.toDecisionRouterRules()) {
+          this.decisionRouter.addRule(r);
+        }
+      }
+
+    } catch (e) { /* ruleGrowth optional */ }
+
+
 
     // ─── [v5.0.0] 判断引擎 — JudgmentEngine（真正的多路径判断能力）──────
 
