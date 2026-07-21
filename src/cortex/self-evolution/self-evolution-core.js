@@ -603,7 +603,9 @@ class SelfEvolutionCore {
 
    */
 
-  async learn(input, context) {
+  async learn(input, context = {}) {
+
+    context = context || {};
 
     const learnInput = (typeof input === 'string' ? input : (input && input.trigger ? JSON.stringify(input) : '')) || '';
 
@@ -662,7 +664,7 @@ class SelfEvolutionCore {
     this.lastWeaknesses = learning.weaknesses || null;
 
 
-    learning.summary = `学习到 ${learning.newKnowledge.length} 个新概念，强化 ${learning.reinforcedKnowledge.length} 个已有概念`;
+    learning.summary = `学习到 ${learning.newKnowledge.length} 个新概念，强化 ${learning.reinforcedKnowledge.length} 个已有概念` + (learning.weaknesses && !learning.weaknesses.error ? `；扫描到 ${learning.weaknesses.todoCount} 个 TODO、${learning.weaknesses.silentCatches} 处沉默空 catch、${learning.weaknesses.longFunctions ? learning.weaknesses.longFunctions.length : 0} 个超长函数` : '');
 
     
 

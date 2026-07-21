@@ -56,6 +56,7 @@ class SelfScanner {
       todoCount: 0,
       longFunctions: [],
       silentCatches: 0,
+      silentDetails: [],   // [v6.0.61] 真沉默空catch明细(位置+类型),供进化决策定位
       untestedModules: [],
       coreFileSize: {},
       bypassCount: 0,        // [v6.0.57] 裸 fetch / http 旁路(未走 safeFetch)数
@@ -97,7 +98,10 @@ class SelfScanner {
           const ctx = [catchLines[li - 1], line, catchLines[li + 1]].join(' ');
           if (/防御性|不阻断主流程|防御性:/.test(line)) defensiveSilent++;
           else if (cleanupRe.test(ctx)) cleanupSilent++;
-          else fileSilent++;
+          else {
+            fileSilent++;
+            result.silentDetails.push({ file: rel, line: li + 1, snippet: trimmed.slice(0, 80) });
+          }
         }
       }
       result.silentCatches += fileSilent;

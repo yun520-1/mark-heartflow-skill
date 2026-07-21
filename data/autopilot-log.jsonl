@@ -1,0 +1,2 @@
+{"ts":1784602946437,"ok":true,"action":"dryrun","module":"IntentionTracker","wouldWrite":"/root/.hermes/skills/ai/mark-heartflow-skill/test/IntentionTracker.test.js"}
+{"ts":1784602968792,"ok":false,"action":"test_fail","module":"IntentionTracker"}

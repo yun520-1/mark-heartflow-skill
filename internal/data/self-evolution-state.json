@@ -440,18 +440,40 @@
       "improvementsCount": 5,
       "iterations": 2,
       "converged": true,
-      "finalImprovement": 1.85
+      "finalImprovement": 1.85,
+      "prior_growth": 94
+    },
+    {
+      "timestamp": "2026-07-21T02:59:15.995Z",
+      "input": "",
+      "cycleTime": 327,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.15,
+      "prior_growth": 97
+    },
+    {
+      "timestamp": "2026-07-21T03:09:36.571Z",
+      "input": "我作为自主认知引擎，应优先修复哪些真实缺陷",
+      "cycleTime": 328,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.55
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 20.5,
+    "autonomy": 21.5,
     "introspection": 100,
-    "growth": 94,
+    "growth": 97,
     "authenticity": 0,
     "wisdom": 100,
-    "compassion": 12.300000000000008,
+    "compassion": 12.90000000000001,
     "_converged": false
   }
 }

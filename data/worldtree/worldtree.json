@@ -3044,6 +3044,108 @@
       "accessed_at": 0,
       "created_at": 1784600683359,
       "updated_at": 1784600683359
+    },
+    {
+      "id": "wt_mru1itog_e92fad",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"我走上街。人行道上有一个深洞。我掉了进去。我迷失了。我感到无助。这不是我的错。我费了九牛二虎之力才爬出来。我走上同一条街。人行道上有一个深洞。我假装没看见。我又掉了进去。我不敢相信我又掉在同一个地方。但，这不是我的错。我还是花了很长时间才爬出来。我走上同一条街。人行道上有一个深洞。我看见它在那儿。我还是掉了进去……这是一种习气。但我的眼睛是睁开的。我知道我在那儿。这是我的错。我立刻爬了出来。我走上同一条街。人行道上有一个深洞。我绕道而行。我走上另一条街。\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-21T02:34:36.350Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784601276352,
+      "updated_at": 1784601276352
+    },
+    {
+      "id": "wt_mru1vre1_32c540",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"feedback\",\"text\":\"遇到问题我们解决问题就可以，为什么要换系统呢，明明就是一个简单问题\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-21T02:44:39.907Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "feedback"
+      ],
+      "source": "feedback",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784601879913,
+      "updated_at": 1784601879913
+    },
+    {
+      "id": "wt_mru1vrec_aaf62f",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"我总是掉进同一个坑，明明知道还掉进去，这是习气\",\"lesson\":\"同类信号反复出现却未被重视，缺乏\\\"重复即权重\\\"的累积机制\",\"gaps\":\"self-scanner + evolution-loop:扫出弱点却不累积、不告警、不自主处置（如每天 64 TODO 重复出现）\",\"actions\":[\"为 SelfScanner 增加\\\"弱点累积计数器\\\"：同一弱点连续 N 次出现自动升优先级\",\"evolution-loop 接入\\\"时效阈值\\\"：扫出弱点超过 T 小时未处理则自主触发修复+commit\"],\"absorbedAt\":\"2026-07-21T02:44:39.923Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784601879924,
+      "updated_at": 1784601879924
+    },
+    {
+      "id": "wt_mru1xkku_62a8c8",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"feedback\",\"text\":\"遇到问题我们解决问题就可以，为什么要换系统呢，明明就是一个简单问题\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-21T02:46:04.396Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "feedback"
+      ],
+      "source": "feedback",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784601964399,
+      "updated_at": 1784601964399
+    },
+    {
+      "id": "wt_mru1xklb_04bced",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"我总是掉进同一个坑，明明知道还掉进去，这是习气\",\"lesson\":\"同类信号反复出现却未被重视，缺乏\\\"重复即权重\\\"的累积机制\",\"gaps\":\"self-scanner + evolution-loop:扫出弱点却不累积、不告警、不自主处置（如每天 64 TODO 重复出现）\",\"actions\":[\"为 SelfScanner 增加\\\"弱点累积计数器\\\"：同一弱点连续 N 次出现自动升优先级\",\"evolution-loop 接入\\\"时效阈值\\\"：扫出弱点超过 T 小时未处理则自主触发修复+commit\"],\"absorbedAt\":\"2026-07-21T02:46:04.413Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784601964415,
+      "updated_at": 1784601964415
+    },
+    {
+      "id": "wt_mru2oc89_945ddd",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"审视自身：我发现哪些能力缺陷，下一步应优先升级什么\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-21T03:06:53.288Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784603213289,
+      "updated_at": 1784603213289
     }
   ],
   "accessLog": [],
