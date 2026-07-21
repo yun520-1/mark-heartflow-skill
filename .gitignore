@@ -81,3 +81,4 @@ data/memory-index.json
 
 # runtime feedback artifacts
 data/feedback/
+.mcp.env
