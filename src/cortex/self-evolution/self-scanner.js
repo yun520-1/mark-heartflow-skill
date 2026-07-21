@@ -154,7 +154,12 @@ class SelfScanner {
       // 未测试模块（src 下的模块是否在 test 有对应文件）
       if (rel.startsWith('src/')) {
         const modName = path.basename(f).replace(/\.js$/, '');
-        const hasTest = testFiles.some(t => t === modName || t.includes(modName) || modName.includes(t));
+        const ml = modName.toLowerCase().replace(/-/g, '');
+        // [v6.0.63] 大小写+连字符不敏感匹配: IntentionTracker vs intention-tracker 正确识别已测
+        const hasTest = testFiles.some(t => {
+          const tl = t.toLowerCase().replace(/-/g, '');
+          return tl === ml || tl.includes(ml) || ml.includes(tl);
+        });
         if (!hasTest && !modName.startsWith('index')) {
           result.untestedModules.push(rel);
         }
