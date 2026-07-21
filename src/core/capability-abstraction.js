@@ -161,6 +161,8 @@ class CapabilityAbstraction {
     const issues = [];
     if (!input || typeof input !== 'object') {
       issues.push({ type: 'invalid_input', severity: 'high', message: 'Input must be an object' });
+      // [v6.0.63] 修复: 非对象输入直接返回, 避免后续 input.xxx 在 null/undefined 上崩溃
+      return { verified: false, issues, confidence: 0.3 };
     }
     if (input.statement && !input.evidence) {
       issues.push({ type: 'missing_evidence', severity: 'medium', message: 'Statement without evidence' });
