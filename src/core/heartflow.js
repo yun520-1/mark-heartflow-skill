@@ -1545,6 +1545,8 @@ class HeartFlow {
 
             this._evolutionRaw = new (_EvolutionLoop().EvolutionLoop)({ rootPath: this.rootPath, memory: this.memory }).boot();
 
+            this.core = this._evolutionRaw;
+
           } catch (e) { this._evolutionRaw = { boot: () => this, evolve: () => ({}), getStats: () => ({}), getDiagnostics: () => ({}) }; }
 
         }

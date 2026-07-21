@@ -1342,7 +1342,8 @@ class AgentPsychology {
     const cognitiveResilience = this.assessCognitiveResilience();
 
     // 综合健康度
-    let healthScore = 1.0;
+    // 使用校准基底而非从 0 开始：正常基线 ~0.85，保证干净引擎不会跌到 1 分
+    let healthScore = 0.85;
 
     // 认知负荷扣分
     healthScore -= cognitiveLoad.load * 0.25;
@@ -1381,6 +1382,18 @@ class AgentPsychology {
 
     // 经验沉淀加分：高效沉淀 = 加分
     healthScore += (experienceSettling.settlingEfficiency - 0.5) * 0.1;
+
+    // 干净状态兜底：无冲突、无失调、低负荷、校准正常时，不应低于 0.8
+    const isClean = goalConflicts.length === 0 &&
+      dissonances.length === 0 &&
+      cognitiveLoad.load < 0.1 &&
+      (uncertainty.calibrationScore || 0) >= 0.8 &&
+      (experienceSettling.settlingEfficiency || 0) >= 0.5 &&
+      !decisionDecay.decaying &&
+      valueTensions.length === 0;
+    if (isClean) {
+      healthScore = Math.max(healthScore, 0.8);
+    }
 
     healthScore = Math.max(0, Math.min(1, healthScore));
 

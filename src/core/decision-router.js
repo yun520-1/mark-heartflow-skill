@@ -1844,7 +1844,7 @@ class DecisionRouter {
 
 
 
-      if (aAtBoundary && aStuck && dVolFlat && (domAbnormal || allStable)) {
+      if (aAtBoundary && aStuck && dVolFlat && (domAbnormal || (allStable && H < 0.4))) {
 
         flipAlert = 'primary';
 
