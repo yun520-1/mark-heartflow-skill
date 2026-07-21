@@ -547,7 +547,40 @@ class SelfEvolutionCore {
 
     
 
-    // 默认目标: 持续学习
+    // [v6.0.61] 真升级：把自我扫描的真实弱点转成可度量、可验证的能力建设目标
+    // 之前 goals 只看输入文本关键词, 弱点扫出来却不影响目标 = 进化空转
+    const w = this.lastWeaknesses && !this.lastWeaknesses.error ? this.lastWeaknesses : null;
+    if (w) {
+      if (w.untestedModules && w.untestedModules.length) {
+        goals.push({
+          type: 'testing',
+          priority: w.untestedModules.length > 10 ? 'high' : 'medium',
+          description: `为 ${w.untestedModules.length} 个未测试模块补 TDD 测试，覆盖核心决策路径`,
+          criteria: '对应模块在 test/ 下有 .test.js 且 assert 通过',
+          target: w.untestedModules.length
+        });
+      }
+      if (w.longFunctions && w.longFunctions.length) {
+        goals.push({
+          type: 'maintainability',
+          priority: 'medium',
+          description: `拆分 ${w.longFunctions.length} 个超长函数(>300行)，降低单点认知负荷`,
+          criteria: '拆出的子函数 < 100 行且原功能等价',
+          target: w.longFunctions.length
+        });
+      }
+      if (w.todoCount > 30) {
+        goals.push({
+          type: 'maintainability',
+          priority: 'low',
+          description: `消化 ${w.todoCount} 个 TODO 积压(逐个评估: 真缺陷补实现, 过期标签删)`,
+          criteria: 'TODO 数下降且未引入回归',
+          target: w.todoCount
+        });
+      }
+    }
+
+    // 默认目标: 持续学习（仅当无任何具体目标时兜底）
 
     if (goals.length === 0) {
 
@@ -565,8 +598,6 @@ class SelfEvolutionCore {
 
     }
 
-    
-
     return goals;
 
   }
@@ -581,11 +612,21 @@ class SelfEvolutionCore {
 
   createPlan(goals, context) {
 
+    // [v6.0.61] 基于 goal.type 产出具体可执行步骤, 而非空话
+    const steps = goals.map(g => {
+      if (g.type === 'testing') return `补 ${g.target||''} 个模块 TDD: 先写最小断言再扩展`; 
+      if (g.type === 'maintainability' && /拆分/.test(g.description)) return `拆分超长函数: 提取纯逻辑子函数, 原调用点替换为子函数调用`;
+      if (g.type === 'maintainability') return `评估 TODO: 真缺陷补实现, 过期标签删除`;
+      return g.description;
+    });
+
     return {
 
       goals: goals.map(g => g.description),
 
-      strategy: '循序渐进，先理解后应用',
+      steps,
+
+      strategy: '事实驱动: 先补测试门禁防回归, 再重构',
 
       estimatedTime: goals.length * 2,
 

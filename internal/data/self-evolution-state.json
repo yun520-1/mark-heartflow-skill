@@ -462,18 +462,40 @@
       "improvementsCount": 5,
       "iterations": 2,
       "converged": true,
-      "finalImprovement": 1.55
+      "finalImprovement": 1.55,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T03:18:24.060Z",
+      "input": "基于自检优先级 maintainability>testing>reliability，我应长出什么真正的新能力而非仅清理",
+      "cycleTime": 315,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.6500000000000001,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T03:19:42.432Z",
+      "input": "我该升级什么",
+      "cycleTime": 305,
+      "goalsCount": 4,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 21.5,
+    "autonomy": 22.5,
     "introspection": 100,
-    "growth": 97,
+    "growth": 100,
     "authenticity": 0,
     "wisdom": 100,
-    "compassion": 12.90000000000001,
+    "compassion": 13.50000000000001,
     "_converged": false
   }
 }

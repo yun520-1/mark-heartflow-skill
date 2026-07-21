@@ -89,8 +89,19 @@ class StrategyOrchestrator {
     const scores = {};
     for (const cap of CAPABILITY_MAP) scores[cap.dimension] = 0;
     for (const sig of valid) {
+      // [v6.0.61] 内部弱点直驱：self_scan 信号的 weaknesses 直接映射能力维度打分
+      // 这是真升级——之前扫出的弱点不影响优先级(只看 sig.text 关键词), 等于空转
+      if (sig.source === 'self_scan' && sig.weaknesses) {
+        const w = sig.weaknesses;
+        if (w.todoCount > 30) scores.maintainability = (scores.maintainability||0) + 1.0 * 1.2;
+        if (w.silentCatches > 0) scores.reliability = (scores.reliability||0) + w.silentCatches * 0.15 * 1.2;
+        if (w.longFunctions && w.longFunctions.length) scores.maintainability = (scores.maintainability||0) + w.longFunctions.length * 0.4 * 1.2;
+        if (w.untestedModules && w.untestedModules.length) scores.testing = (scores.testing||0) + Math.min(w.untestedModules.length,20) * 0.1 * 1.2;
+        if (w.coreFileSize) { const big = Object.values(w.coreFileSize).filter(kb=>kb>200).length; if (big>0) scores.architecture = (scores.architecture||0) + big * 0.3 * 1.2; }
+      }
+      const sigText = sig.text || (sig.weaknesses ? 'self_scan weakness todo untested monolith' : '');
       for (const cap of CAPABILITY_MAP) {
-        const hits = _matchSignals(sig.text, cap.signals);
+        const hits = _matchSignals(sigText, cap.signals);
         if (hits > 0) {
           const sourceBoost = sig.source === 'self_scan' ? 1.2 : 1.0;
           scores[cap.dimension] += hits * cap.weight * sourceBoost;
@@ -121,7 +132,7 @@ class StrategyOrchestrator {
       priorities,
       topPriority: priorities.length ? priorities[0].dimension : null,
       internalWeaknessScan: internalWeaknesses
-        ? { todoCount: internalWeaknesses.todoCount, silentCatch: internalWeaknesses.silentCatch, superMonolithKB: internalWeaknesses.superMonolithKB }
+        ? { todoCount: internalWeaknesses.todoCount, silentCatches: internalWeaknesses.silentCatches, longFunctions: internalWeaknesses.longFunctions ? internalWeaknesses.longFunctions.length : 0, untestedModules: internalWeaknesses.untestedModules ? internalWeaknesses.untestedModules.length : 0, coreFileSize: internalWeaknesses.coreFileSize || {} }
         : null,
       // 防 Phantom Guardrails：明确标注本推演未做任何真实改动
       verified: false,
