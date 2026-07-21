@@ -25,6 +25,10 @@ const path = require('path');
 const SCAN_DIRS = ['src', 'bin'];
 const TEST_DIR = 'test';
 const LONG_FN_THRESHOLD = 300;
+// [v6.0.57] 出网收口自检：裸 fetch / http 请求未走 safeFetch = SSRF 旁路风险
+// 教训来源：SSRF 旁路两次击穿安全层(H1→P0)，散落裸 fetch 反复成破口。
+// 固化为自检维度，让心虫每次扫描主动看见此类元级盲区，而非等外部审计。
+const BYPASS_RE = /\bawait\s+fetch\s*\(|(?<![.\w])fetch\s*\(|https?\.(get|request)\s*\(/;
 
 class SelfScanner {
   constructor(projectRoot) {
@@ -54,6 +58,8 @@ class SelfScanner {
       silentCatches: 0,
       untestedModules: [],
       coreFileSize: {},
+      bypassCount: 0,        // [v6.0.57] 裸 fetch / http 旁路(未走 safeFetch)数
+      bypassFiles: [],        // [v6.0.57] 存在旁路的相对路径
       scannedAt: Date.now()
     };
 
@@ -97,6 +103,21 @@ class SelfScanner {
       result.silentCatches += fileSilent;
       result.defensiveCatches = (result.defensiveCatches || 0) + defensiveSilent;
       result.cleanupCatches = (result.cleanupCatches || 0) + cleanupSilent;
+
+      // [v6.0.57] 出网收口自检：裸 fetch / http 旁路（safeFetch 内部除外）
+      // rel 是 safeFetch 实现文件本身时不计（它内部必须裸调用底层 http）
+      const isSafeFetchImpl = rel.includes('fetch-safe') || rel.includes('fetchSafe');
+      if (!isSafeFetchImpl) {
+        const lines2 = content.split('\n');
+        let fileBypass = 0;
+        for (const ln of lines2) {
+          if (BYPASS_RE.test(ln) && !/safeFetch|fetch-safe/.test(ln)) fileBypass++;
+        }
+        if (fileBypass > 0) {
+          result.bypassCount += fileBypass;
+          result.bypassFiles.push({ file: rel, count: fileBypass });
+        }
+      }
 
       // 核心单体大小（>50KB）
       const bytes = Buffer.byteLength(content, 'utf8');

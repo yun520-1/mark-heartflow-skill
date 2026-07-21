@@ -695,7 +695,8 @@ async function fetchData(url, options = {}) {
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const response = await fetch(url, {
+    const { safeFetch } = require('../core/fetch-safe.js');
+    const response = await safeFetch(url, {
       method,
       headers,
       body: body ? JSON.stringify(body) : null,

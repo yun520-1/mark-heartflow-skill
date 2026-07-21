@@ -418,18 +418,40 @@
       "improvementsCount": 5,
       "iterations": 2,
       "converged": true,
-      "finalImprovement": 1.6500000000000001
+      "finalImprovement": 1.6500000000000001,
+      "prior_growth": 89
+    },
+    {
+      "timestamp": "2026-07-21T00:32:03.827Z",
+      "input": "自检：扫描自身代码真实弱点（TODO/长函数/裸fetch旁路/未接入测试），挑一个最高优先级的可修复缺陷，直接改代码并验证。",
+      "cycleTime": 314,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.6500000000000001,
+      "prior_growth": 94
+    },
+    {
+      "timestamp": "2026-07-21T00:46:29.464Z",
+      "input": "你拥有120+引擎(SelfScanner/SelfEvolutionCore/strategy-orchestrator/cognitive_check/decisionRouter等)。请基于自身",
+      "cycleTime": 268,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.85
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 19.5,
+    "autonomy": 20.5,
     "introspection": 100,
-    "growth": 84.5,
+    "growth": 94,
     "authenticity": 0,
     "wisdom": 100,
-    "compassion": 11.700000000000006,
+    "compassion": 12.300000000000008,
     "_converged": false
   }
 }

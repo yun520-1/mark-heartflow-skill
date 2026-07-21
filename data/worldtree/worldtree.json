@@ -2976,6 +2976,23 @@
       "accessed_at": 0,
       "created_at": 1784593272570,
       "updated_at": 1784593272570
+    },
+    {
+      "id": "wt_mrtxi091_c31b8c",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"instruction\",\"text\":\"自我升级到底应该升级什么？是补更多bug、补更多测试、还是提升认知能力本身？请诚实判断。\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-21T00:41:59.747Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "instruction"
+      ],
+      "source": "instruction",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784594519749,
+      "updated_at": 1784594519749
     }
   ],
   "accessLog": [],
