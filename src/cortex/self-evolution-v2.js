@@ -28,6 +28,7 @@ class SelfEvolutionV2 {
     this.historyPath = path.join(this.rootPath, 'data', 'upgrade-history.json');
     this._lastExplore = 0;
     this._exploreCooldownMs = 1000 * 60 * 30; // 探索最低间隔 30min，避免刷 arXiv
+    this._safeFetch = safeFetch; // [v6.0.64] 可注入以便测试 mock (429/超时路径)
   }
 
   // ---------------------------------------------------------------------------
@@ -77,8 +78,7 @@ class SelfEvolutionV2 {
       return []; // 静默不出网，避免绕过安全基座
     }
     try {
-      // 直接搜能力关键词（提高命中率），每个能力各搜一批
-      // [v6.0.48] 改用更宽松的 2 词查询：arxiv all: 会把多词 AND 掉导致 0 命中
+      // [v6.0.64] 搜索词对应心虫真实能力(ToM/好奇心/持续学习/因果/世界模型), 已在 _fetchArxiv 内限 AI 分类
       const queries = [
         'theory of mind',
         'curiosity intrinsic motivation',
@@ -87,9 +87,12 @@ class SelfEvolutionV2 {
         'world model reinforcement'
       ];
       let papers = [];
+      this._rateLimited = false;
       for (const q of queries) {
+        if (this._rateLimited) break; // 429 后停止连击, 避免加重限流
         const batch = await this._fetchArxiv(q, 5);
         papers = papers.concat(batch);
+        await new Promise(r => setTimeout(r, 3000)); // [v6.0.64] 尊重 arXiv 限流: ~3s/请求
       }
       const gaps = this._diffAgainstSelf(papers);
       return gaps;
@@ -98,20 +101,36 @@ class SelfEvolutionV2 {
     }
   }
 
+  getExploreStatus() {
+    return {
+      rateLimited: !!this._rateLimited,
+      lastFetchError: this._lastFetchError || null,
+      lastExplore: this._lastExplore || 0
+    };
+  }
+
   async _fetchArxiv(query, max = 5) {
     // [v6.0.49 H1-P0] 走 safeFetch：SSRF校验 + DNS pinning + 白名单，杜绝裸出网绕过安全基座
     // [v6.0.61] base 直连 export.arxiv.org: 原 arxiv.org 会 301 跳 http://export, safeFetch 判重定向为 HTTP 外部端点拒绝
-    const q = encodeURIComponent(query);
+    // [v6.0.64] 限定 AI 相关分类, 避免 all: 全文搜索抓到物理/宇宙学等无关论文(实测污染 5/7)
+    //   cs.AI(人工智能) cs.CL(计算语言学) cs.LG(机器学习) cs.NE(神经/进化计算)
+    const q = encodeURIComponent(`(cat:cs.AI OR cat:cs.CL OR cat:cs.LG OR cat:cs.NE) AND all:${query}`);
     const base = 'https://export.arxiv.org/api/query';
-    const url = `${base}?search_query=all:${q}&max_results=${max}&sortBy=submittedDate&sortOrder=descending`;
-    // 重试 3 次(arXiv 偶发超时), 失败记录原因不静默吞(避免'没搜到=没差距'假象)
+    const url = `${base}?search_query=${q}&max_results=${max}&sortBy=submittedDate&sortOrder=descending`;
+    // 重试 3 次(arXiv 偶发超时/限流), 429 时立即标记并停止, 失败记录原因不静默吞
     let lastErr;
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
-        const res = await safeFetch(url, { timeout: 12000, maxRetries: 2 });
+        const res = await this._safeFetch(url, { timeout: 12000, maxRetries: 1 });
+        if (res.status === 429) {
+          this._rateLimited = true;
+          this._lastFetchError = 'HTTP 429 rate limited by arXiv';
+          return [];
+        }
         const body = await res.text();
         const parsed = this._parseArxiv(body);
         if (parsed.length) return parsed;
+        lastErr = 'empty result';
       } catch (e) { lastErr = e.message; }
     }
     this._lastFetchError = lastErr || 'empty result';
@@ -120,9 +139,16 @@ class SelfEvolutionV2 {
 
   _parseArxiv(data) {
     if (typeof data !== 'string') return [];
-    const titles = [...data.matchAll(/<title>([^<]+)<\/title>/g)].map(m => m[1].trim());
-    const summaries = [...data.matchAll(/<summary>([^<]+)<\/summary>/g)].map(m => m[1].trim());
-    return titles.slice(1).map((t, i) => ({ title: t, abstract: summaries[i] || '' }));
+    // [v6.0.64] 按 <entry> 块配对, 避免 title/summary 索引错位(原 titles.slice(1) 假设首 title=feed 名)
+    const entries = [...data.matchAll(/<entry>([\s\S]*?)<\/entry>/g)];
+    const out = [];
+    for (const m of entries) {
+      const block = m[1];
+      const t = (block.match(/<title>([^<]+)<\/title>/) || [])[1];
+      const s = (block.match(/<summary>([^<]+)<\/summary>/) || [])[1];
+      if (t) out.push({ title: t.trim(), abstract: (s || '').trim() });
+    }
+    return out;
   }
 
   /**

@@ -720,7 +720,15 @@ class SelfEvolutionCore {
           learning.summary += `；搜到 ${gaps.length} 篇 arXiv 对标论文，首篇《${(gaps[0].paperTitle || gaps[0].detail || '').slice(0,40)}》`;
         } else {
           // [v6.0.61] 不假装没差距: 明确标记探索未产出(开关关/网络失败), 供上层诚实决策
-          learning.arxivGaps = { skipped: true, reason: process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE !== '1' ? 'explore disabled (HEARTFLOW_SELF_EVOLVE_EXPLORE!=1)' : 'no papers fetched' };
+          // [v6.0.64] 区分限流: 429 时标 rateLimited, 心虫知道"这次没真对标"而非"无差距"
+          let reason;
+          if (process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE !== '1') {
+            reason = 'explore disabled (HEARTFLOW_SELF_EVOLVE_EXPLORE!=1)';
+          } else {
+            const st = (typeof this._explorer.getExploreStatus === 'function') ? this._explorer.getExploreStatus() : {};
+            reason = st.rateLimited ? 'arXiv rate limited (HTTP 429) — 未真对标, 非无差距' : (st.lastFetchError || 'no papers fetched');
+          }
+          learning.arxivGaps = { skipped: true, reason };
         }
       } else {
         learning.arxivGaps = { skipped: true, reason: 'explorer not initialized' };

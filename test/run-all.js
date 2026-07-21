@@ -15,6 +15,7 @@ let passed = 0;
 let failed = 0;
 let pending = 0;
 const failures = [];
+const asyncPromises = [];
 
 function test(name, fn) {
   try {
@@ -22,7 +23,7 @@ function test(name, fn) {
     if (ret && typeof ret.then === 'function') {
       // async 测试：pending 计数，完成后再结算
       pending++;
-      return ret.then(() => {
+      const p = ret.then(() => {
         pending--;
         passed++;
         console.log(`  ✓ ${name}`);
@@ -33,6 +34,8 @@ function test(name, fn) {
         console.log(`    ${err.message}`);
         failures.push({ name, error: err.message });
       });
+      asyncPromises.push(p); // [v6.0.64] 收集体, 汇总前 await 防止 async 测试被漏算
+      return p;
     }
     passed++;
     console.log(`  ✓ ${name}`);
@@ -118,6 +121,7 @@ async function runAllTests() {
   require('./code-verifier.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./confidence-calibrator.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./capability-abstraction.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./self-evolution-explore.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./multi-agent-dialogue.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./phenomenology-engine.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./tom-engine.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
@@ -691,6 +695,12 @@ async function runAllTests() {
   } catch (e) {
     console.log('  ⚠️ SelfBenchmark 集成测试异常: ' + (e.message || '').split('\\n')[0]);
     failed++;
+  }
+
+  // [v6.0.64] 汇总前等待所有 async 测试结算, 防止漏算 (async 测试原被假过)
+  if (asyncPromises.length) {
+    await Promise.all(asyncPromises);
+    console.log('[harness] async 测试已结算, passed=' + passed + ' failed=' + failed);
   }
 
   // 汇总
