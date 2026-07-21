@@ -17,6 +17,7 @@ const SIGNAL_SOURCES = ['industry_trend', 'arxiv', 'community_sentiment', 'audit
 
 // capability 维度 ↔ 信号关键词映射
 const CAPABILITY_MAP = [
+  { dimension: 'liveness', weight: 2.0, desc: '运行时实效/沉默失效(关键能力实际未在工作)', signals: ['silent_failure', 'liveness', 'dead_feature'] },
   {
     dimension: 'strategy_inference',
     desc: '基于外部信号反推自身进化优先级的能力',
@@ -99,7 +100,13 @@ class StrategyOrchestrator {
         if (w.untestedModules && w.untestedModules.length) scores.testing = (scores.testing||0) + Math.min(w.untestedModules.length,20) * 0.1 * 1.2;
         if (w.coreFileSize) { const big = Object.values(w.coreFileSize).filter(kb=>kb>200).length; if (big>0) scores.architecture = (scores.architecture||0) + big * 0.3 * 1.2; }
       }
-      const sigText = sig.text || (sig.weaknesses ? 'self_scan weakness todo untested monolith' : '');
+      // [v6.0.62] 沉默失效直驱: 探针 alive=false 是最严重的自我盲区, 权重高于 TODO
+      if (sig.weaknesses && Array.isArray(sig.weaknesses.livenessProbes)) {
+        const dead = sig.weaknesses.livenessProbes.filter(p => p.alive === false);
+        if (dead.length) scores.liveness = (scores.liveness || 0) + dead.length * 2.0 * (sig.source === 'self_scan' ? 1.2 : 1.0);
+      }
+
+      const sigText = sig.text || (sig.weaknesses ? 'self_scan weakness todo untested monolith liveness silent_failure' : '');
       for (const cap of CAPABILITY_MAP) {
         const hits = _matchSignals(sigText, cap.signals);
         if (hits > 0) {

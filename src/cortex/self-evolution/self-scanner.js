@@ -61,7 +61,8 @@ class SelfScanner {
       coreFileSize: {},
       bypassCount: 0,        // [v6.0.57] 裸 fetch / http 旁路(未走 safeFetch)数
       bypassFiles: [],        // [v6.0.57] 存在旁路的相对路径
-      scannedAt: Date.now()
+      scannedAt: Date.now(),
+      livenessProbes: []
     };
 
     const files = [];
@@ -162,7 +163,37 @@ class SelfScanner {
 
     // 控制未测试模块数量（避免噪声）
     result.untestedModules = result.untestedModules.slice(0, 20);
+
+    // [v6.0.62] 运行时探针 —— "为什么心虫发现不了自己问题"的根因修复:
+    //   静态扫描只能看代码长相(函数存在/语法对/有try), 发现不了"函数存在但永远返回空/开关默认关"的沉默失效。
+    //   本维度实际 probe 关键能力, 把沉默失效变成可被发现的结构化信号。
+    result.livenessProbes = this._probeLiveness();
+
     return result;
+  }
+
+  _probeLiveness() {
+    const probes = [];
+    try {
+      const { SelfEvolutionV2: V2 } = require('../self-evolution-v2.js');
+      const ex = new V2(this.projectRoot);
+      const alive = process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE === '1';
+      probes.push({
+        capability: 'arxiv_explore',
+        alive,
+        detail: alive
+          ? '开关已开, 需用 explore() 实际返回非空验证(见 arxivGaps)'
+          : 'HEARTFLOW_SELF_EVOLVE_EXPLORE!=1 -> 探索层默认静默关闭, 进化从未联网对标(沉默失效)'
+      });
+    } catch (e) {
+      probes.push({ capability: 'arxiv_explore', alive: false, detail: 'explorer 加载失败: ' + e.message });
+    }
+    probes.push({
+      capability: 'liveness_self_aware',
+      alive: true,
+      detail: '本探针维度自身已就位: 静态扫描盲区(运行时失效)现可被主动发现'
+    });
+    return probes;
   }
 }
 
