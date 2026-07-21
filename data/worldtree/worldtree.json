@@ -2993,6 +2993,57 @@
       "accessed_at": 0,
       "created_at": 1784594519749,
       "updated_at": 1784594519749
+    },
+    {
+      "id": "wt_mru0vzzt_ac0591",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"我走上街。人行道上有一个深洞。我掉了进去。我走上同一条街。人行道上有一个深洞。我绕道而行。我走上另一条街。\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-21T02:16:51.448Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784600211449,
+      "updated_at": 1784600211449
+    },
+    {
+      "id": "wt_mru11pjj_55d0cd",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"我走上街，人行道上有一个深洞，我掉了进去。我走上同一条街，绕道而行。\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-21T02:21:17.837Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784600477839,
+      "updated_at": 1784600477839
+    },
+    {
+      "id": "wt_mru1644f_73048c",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"我走上街，人行道上有一个深洞，我掉了进去。我走上同一条街，绕道而行。\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-21T02:24:43.357Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784600683359,
+      "updated_at": 1784600683359
     }
   ],
   "accessLog": [],

@@ -6172,6 +6172,17 @@ class HeartFlow {
       }
     } catch (e) {}
 
+    // 5. [v6.0.59] 判断生长 learned override：若已学规则命中且带用户直白回应，
+    //    附到结果 userFacing 字段（给用户看的真话，不堆引擎术语，不空踢回用户）
+    try {
+      if (this.ruleGrowth && typeof input === 'string' && input.trim()) {
+        const hit = this.ruleGrowth.evaluate(input);
+        if (hit && hit.userFacing) {
+          r.userFacing = hit.userFacing;
+        }
+      }
+    } catch (e) {}
+
     return r;
   }
 

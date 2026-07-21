@@ -57,11 +57,12 @@ class RuleGrowth {
    * @param {string} pattern 触发模式（关键词/正则字符串）
    * @param {string} decision 该做的决策（如 ANALYZE / SUMMARIZE / OUT_OF_SCOPE）
    * @param {string} rationale 理由
+   * @param {string} [userFacing] 给用户看的直白一句话（不堆引擎术语），可选
    */
-  observe(pattern, decision, rationale = '') {
+  observe(pattern, decision, rationale = '', userFacing = '') {
     if (!pattern || !decision) return false;
     const key = `${decision}::${pattern}`;
-    if (!this._pending[key]) this._pending[key] = { pattern, decision, rationale, count: 0 };
+    if (!this._pending[key]) this._pending[key] = { pattern, decision, rationale, userFacing, count: 0 };
     this._pending[key].count++;
     // 达到阈值 → 固化为规则
     if (this._pending[key].count >= MIN_OCCURRENCE) {
@@ -79,6 +80,7 @@ class RuleGrowth {
       pattern: p.pattern,
       decision: p.decision,
       rationale: p.rationale,
+      userFacing: p.userFacing || '',
       learnedAt: Date.now(),
       source: 'rule-growth',
     };
@@ -99,7 +101,7 @@ class RuleGrowth {
       try {
         const re = new RegExp(r.pattern, 'i');
         if (re.test(input)) {
-          return { decision: r.decision, rationale: r.rationale, learned: true, ruleId: r.id };
+          return { decision: r.decision, rationale: r.rationale, userFacing: r.userFacing || '', learned: true, ruleId: r.id };
         }
       } catch (e) { /* 非法正则跳过 */ }
     }

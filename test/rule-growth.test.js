@@ -40,13 +40,19 @@ module.exports = function ({ test, assertEqual, assertTrue, assertFalse, assertD
     assertEqual(rg.rules[0].decision, 'SUMMARIZE');
   });
 
-  test('evaluate 匹配已学规则返回决策', () => {
+  test('observe 带 userFacing 固化为规则', () => {
     const rg = makeTmp();
-    for (let i = 0; i < MIN_OCCURRENCE; i++) rg.observe('总结新闻', 'SUMMARIZE', 'r');
-    const hit = rg.evaluate('帮我总结新闻');
+    for (let i = 0; i < MIN_OCCURRENCE; i++) rg.observe('深洞', 'REFLECT_WITH_INSIGHT', 'r', '这是掉坑觉醒：绕道换街才是知变成行');
+    assertEqual(rg.rules.length, 1);
+    assertEqual(rg.rules[0].userFacing, '这是掉坑觉醒：绕道换街才是知变成行');
+  });
+
+  test('evaluate 匹配返回 userFacing', () => {
+    const rg = makeTmp();
+    for (let i = 0; i < MIN_OCCURRENCE; i++) rg.observe('绕道而行', 'REFLECT_WITH_INSIGHT', 'r', '给用户的直白');
+    const hit = rg.evaluate('我绕道而行');
     assertDefined(hit);
-    assertEqual(hit.decision, 'SUMMARIZE');
-    assertTrue(hit.learned === true);
+    assertEqual(hit.userFacing, '给用户的直白');
   });
 
   test('evaluate 无匹配返回 null', () => {
