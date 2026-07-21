@@ -99,3 +99,6 @@ data/*.json
 
 # [v6.0.65] 明文 MCP 鉴权 token 不入库 (C-3 审计修复)
 .mcp.env
+
+# 运行时累积数据(子目录) - 审计发现 worldtree 被误跟踪
+data/**/*.json
