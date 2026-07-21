@@ -114,6 +114,7 @@ async function runAllTests() {
   require('./evolution-state.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./atomic-write.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./self-evolution-v2.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./boot-check.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./behavior-tracker.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   // 4. DesireCognition 测试
   console.log('\n💭 DesireCognition (desire-cognition.js)');
