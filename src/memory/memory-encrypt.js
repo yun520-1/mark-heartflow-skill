@@ -518,7 +518,7 @@ async function reencryptAll() {
   const path = require('path');
 
   try {
-    const rootDir = path.resolve(__dirname, '..');
+    const rootDir = path.resolve(__dirname, '../..');
     const encFiles = _scanEncFiles(rootDir);
     const key = _getAesKeySync();
 

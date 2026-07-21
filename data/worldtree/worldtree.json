@@ -2755,6 +2755,227 @@
       "accessed_at": 0,
       "created_at": 1784533804812,
       "updated_at": 1784533804812
+    },
+    {
+      "id": "wt_mrsxu98a_f0ac79",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"分析2026年7月AI行业三大趋势(产品垂直化/研究成熟化/社区反噬化)对心虫(HeartFlow)自主进化路线的启示，并判断心虫下一步应优先强化哪个能力方向\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T08:03:45.080Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784534625082,
+      "updated_at": 1784534625082
+    },
+    {
+      "id": "wt_mrsxuwqe_6b5712",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"从心虫自身能力短板看：面对\\\"社区反噬化\\\"(用户厌倦AI slop/要透明可控)和\\\"研究成熟化\\\"(多agent降温/安全治理成刚需)两大趋势，心虫当前最该优先补强的具体能力模块是哪个？只给结论和理由\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T08:04:15.541Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784534655542,
+      "updated_at": 1784534655542
+    },
+    {
+      "id": "wt_mrsyazrz_9bea74",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T08:16:45.981Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784535405983,
+      "updated_at": 1784535405983
+    },
+    {
+      "id": "wt_mrsyazsb_fc571f",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T08:16:45.994Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784535405995,
+      "updated_at": 1784535405995
+    },
+    {
+      "id": "wt_mrsyazsj_4dacfa",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T08:16:46.001Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784535406003,
+      "updated_at": 1784535406003
+    },
+    {
+      "id": "wt_mrsybhtg_71ff57",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T08:17:09.362Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784535429364,
+      "updated_at": 1784535429364
+    },
+    {
+      "id": "wt_mrsybhu4_18ceee",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T08:17:09.387Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784535429388,
+      "updated_at": 1784535429388
+    },
+    {
+      "id": "wt_mrsybhuc_16aa5e",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T08:17:09.395Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784535429396,
+      "updated_at": 1784535429396
+    },
+    {
+      "id": "wt_mrsysnpm_b8b960",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"总结分析以下最新社会/国际/国内新闻的核心态势与对普通人的影响：\\n【国际】美伊冲突急剧升级：美军死亡17人，伊朗报复，Bandar Abbas桥梁受损，美军持续空袭；英国Andy Burnham将任新首相；刚果埃博拉死亡930人；俄乌基辅遭袭；印度Cockroach运动冲突。\\n【国内】外交部：中美元首年内互动安排保持沟通；上证50涨超3%煤炭电力保险走强；证监会维护市场平稳；市场监管总局降低个体户佣金抽成；Kimi暂停会员开放；长鑫科技冲刺上市。\\n【财经】美伊冲突推高油价，韩国Kospi跌4.5% AI股领跌；美国学生贷款违约潮；美油企与伊拉克签替代航运协议。\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T08:30:30.152Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784536230154,
+      "updated_at": 1784536230154
+    },
+    {
+      "id": "wt_mrt3209y_6a2598",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"测试核心管线\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T10:29:44.797Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784543384806,
+      "updated_at": 1784543384806
+    },
+    {
+      "id": "wt_mrt320aa_e64e7d",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"深度分析：评估认知引擎的元认知状态和漂移趋势\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T10:29:44.817Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784543384818,
+      "updated_at": 1784543384818
+    },
+    {
+      "id": "wt_mrt320ai_85be66",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"dialogue\",\"text\":\"继续\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-20T10:29:44.825Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "dialogue"
+      ],
+      "source": "dialogue",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784543384826,
+      "updated_at": 1784543384826
+    },
+    {
+      "id": "wt_mrtwr9x6_970581",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"instruction\",\"text\":\"审计发现真实安全缺陷：hybrid-search/self-initiator 出网校验缺await导致SSRF防护失效(已修P0)；根因是散落裸fetch旁路未统一收口到safeFetch。建议进化方向：强制所有出网请求走safeFetch、消除裸fetch旁路、新增出网收口检测。\",\"lesson\":\"外部信号包含可复盘的结构性经验\",\"gaps\":\"signal-absorber:常态信号抽取通道未打通，外部经验无法回流到自身升级闭环\",\"actions\":[\"将本信号写入 world-tree(signal_absorbed)，供下次 self-evolve 读取引用\"],\"absorbedAt\":\"2026-07-21T00:21:12.567Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "instruction"
+      ],
+      "source": "instruction",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784593272570,
+      "updated_at": 1784593272570
     }
   ],
   "accessLog": [],

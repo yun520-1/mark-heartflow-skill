@@ -678,7 +678,7 @@ function validateData(data, rules) {
  */
 async function fetchData(url, options = {}) {
   // SSRF 防护：校验 URL 安全性
-  const urlCheck = _validateFetchUrl(url);
+  const urlCheck = await validateFetchUrl(url);
   if (!urlCheck.safe) {
     console.warn('[SSRF防护] 阻止不安全请求:', urlCheck.reason);
     return { success: false, error: urlCheck.reason };

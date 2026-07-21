@@ -260,12 +260,13 @@ class EmbeddingService extends EventEmitter {
     const config = EMBEDDING_PROVIDERS.openai;
 
     // SSRF 防护：校验嵌入服务端点安全性
-    const urlCheck = validateFetchUrl(config.endpoint);
+    const urlCheck = await validateFetchUrl(config.endpoint);
     if (!urlCheck.safe) {
       throw new Error('SSRF防护: ' + urlCheck.reason);
     }
 
-    const response = await fetch(config.endpoint, {
+    const { safeFetch } = require('../core/fetch-safe.js');
+    const response = await safeFetch(config.endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

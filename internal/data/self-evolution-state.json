@@ -396,18 +396,40 @@
       "improvementsCount": 5,
       "iterations": 2,
       "converged": true,
-      "finalImprovement": 1.4500000000000002
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 80
+    },
+    {
+      "timestamp": "2026-07-21T00:27:32.344Z",
+      "input": "审计发现散落裸fetch旁路导致SSRF防护失效(P0已修)，根因是出网未统一收口到safeFetch。建议进化：强制所有出网请求走safeFetch、新增出网收口静态检测。",
+      "cycleTime": 276,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.75,
+      "prior_growth": 84.5
+    },
+    {
+      "timestamp": "2026-07-21T00:28:05.543Z",
+      "input": "出网请求未统一收口到safeFetch，散落裸fetch旁路致SSRF防护失效。进化：新增出网收口静态检测+强制safeFetch。",
+      "cycleTime": 265,
+      "goalsCount": 1,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.6500000000000001
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 18.5,
+    "autonomy": 19.5,
     "introspection": 100,
-    "growth": 75,
+    "growth": 84.5,
     "authenticity": 0,
     "wisdom": 100,
-    "compassion": 11.100000000000005,
+    "compassion": 11.700000000000006,
     "_converged": false
   }
 }

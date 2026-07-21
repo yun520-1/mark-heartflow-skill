@@ -227,6 +227,15 @@ class EvolutionLoop {
 
             if (queued) {
 
+                // [FIX] 队列此前唯一任务 → 立即触发消费，避免"有生产无消费"空转死链路
+                if (this.priorityQueue.length === 1 && !this._draining) {
+                    this._draining = true;
+                    Promise.resolve().then(async () => {
+                        try { while (this.priorityQueue.length > 0) { await this.processQueue(); } }
+                        finally { this._draining = false; }
+                    });
+                }
+
                 return {
 
                     queued: true,

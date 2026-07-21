@@ -525,6 +525,23 @@ async function runAllTests() {
     failed++;
   }
 
+  // 11. 动态接入所有未显式 require 的测试文件（D4 修复：防测试掉队）
+  console.log('\n📦 动态接入遗漏测试 (D4 fix)');
+  const fsDyn = require('fs');
+  const runAllSrc = fsDyn.readFileSync(__filename, 'utf8');
+  const explicit = new Set([...runAllSrc.matchAll(/require\('\.\/([a-zA-Z0-9_-]+)\.test'\)/g)].map(m => m[1]));
+  const allTests = fsDyn.readdirSync(TEST_DIR).filter(f => f.endsWith('.test.js') && f !== 'run-all.test.js');
+  for (const f of allTests) {
+    const name = f.replace(/\.test\.js$/, '');
+    if (explicit.has(name)) continue;
+    try {
+      require('./' + f)({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+      console.log('  + 接入 ' + name);
+    } catch (e) {
+      console.log('  ⚠️ ' + name + ' 接入异常: ' + (e.message || '').split('\\n')[0]);
+    }
+  }
+
   // 汇总
   console.log('\\n' + '='.repeat(50));
 
