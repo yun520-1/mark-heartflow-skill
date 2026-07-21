@@ -14,6 +14,12 @@ const path = require('path');
 const fs = require('fs');
 const http = require('http');
 const crypto = require('crypto');
+const { guardPath } = require('../src/core/path-guard.js'); // [v6.0.65] M-1: 替换未定义的 confinePath
+// confinePath: 约束 filePath 在 allowedRoots 内, 越界返回 null (原 confinePath 语义)
+function confinePath(filePath, root) {
+  const res = confinePath(filePath, root);
+  return res && res.safe ? res.resolved : null;
+}
 
 // ═══════════════════════════════════════════════
 // 配置

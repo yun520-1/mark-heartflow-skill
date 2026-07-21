@@ -723,7 +723,18 @@ class CodeExecutor {
       // [AUDIT-FIX HIGH-1] Do NOT inject setTimeout/clearTimeout into sandboxContext.
       // They allow setTimeout.constructor -> Function -> globalThis.process escape (PoC confirmed).
       // Outer executor owns timeout control, sandbox does not need timer functions.
-      const sandboxContext = { console };
+      // [v6.0.65] H-1 沙箱加固: 显式遮罩宿主危险全局, fail-closed
+      // ⚠️ 安全边界声明: vm.runInNewContext 并非绝对安全边界, 不可执行不可信/外部输入
+      //   理论上面向原型链的 constructor.constructor 逃逸仍可能取回宿主构造器; 本遮罩降低风险但不构成沙箱保证
+      const sandboxContext = {
+        console,
+        process: undefined,
+        require: undefined,
+        globalThis: undefined,
+        module: undefined,
+        __dirname: undefined,
+        exports: undefined
+      };
       // 注入用户提供的上下文
       for (const k of contextKeys) {
         sandboxContext[k] = context[k];

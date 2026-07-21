@@ -3146,6 +3146,23 @@
       "accessed_at": 0,
       "created_at": 1784603213289,
       "updated_at": 1784603213289
+    },
+    {
+      "id": "wt_mrue9bj1_d60fc3",
+      "category": "knowledge:general",
+      "title": null,
+      "content": "{\"source\":\"news\",\"text\":\"彭水山崩预警者口述复盘：从小颗落石到万方垮塌。起初只是零星落石，当地居民多次看到但未重视，直到大规模山体崩塌发生才紧急撤离，错失了最佳预警窗口。\",\"lesson\":\"早期微弱信号未及时累积感知与升级处置，演变为严重后果 | 同类信号反复出现却未被重视，缺乏\\\"重复即权重\\\"的累积机制 | 错失最佳处置窗口，被动响应代价远高于主动前置\",\"gaps\":\"self-scanner + evolution-loop:扫出弱点却不累积、不告警、不自主处置（如每天 64 TODO 重复出现） | self-scanner + evolution-loop:扫出弱点却不累积、不告警、不自主处置（如每天 64 TODO 重复出现） | evolution-loop:缺\\\"处置时效\\\"维度，弱点扫出后无限期搁置，无自动升级触发\",\"actions\":[\"为 SelfScanner 增加\\\"弱点累积计数器\\\"：同一弱点连续 N 次出现自动升优先级\",\"evolution-loop 接入\\\"时效阈值\\\"：扫出弱点超过 T 小时未处理则自主触发修复+commit\"],\"absorbedAt\":\"2026-07-21T08:31:07.931Z\"}",
+      "tags": [
+        "signal_absorbed",
+        "news"
+      ],
+      "source": "news",
+      "leaf_id": null,
+      "realm": "midgard",
+      "quality": 1,
+      "accessed_at": 0,
+      "created_at": 1784622667933,
+      "updated_at": 1784622667933
     }
   ],
   "accessLog": [],
