@@ -484,18 +484,117 @@
       "improvementsCount": 5,
       "iterations": 2,
       "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T04:24:17.975Z",
+      "input": "自主升级: 基于自检最高优先级真改一处",
+      "cycleTime": 2627,
+      "goalsCount": 3,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.55,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T04:25:35.790Z",
+      "input": "自主升级",
+      "cycleTime": 2628,
+      "goalsCount": 3,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T04:26:41.812Z",
+      "input": "自主升级",
+      "cycleTime": 2668,
+      "goalsCount": 3,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T04:31:23.647Z",
+      "input": "自主升级",
+      "cycleTime": 2454,
+      "goalsCount": 3,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T04:32:01.016Z",
+      "input": "自主升级",
+      "cycleTime": 2533,
+      "goalsCount": 3,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T04:33:59.128Z",
+      "input": "自主升级",
+      "cycleTime": 2291,
+      "goalsCount": 3,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T04:34:36.843Z",
+      "input": "自主升级",
+      "cycleTime": 7610,
+      "goalsCount": 3,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T04:35:34.810Z",
+      "input": "自主升级",
+      "cycleTime": 2369,
+      "goalsCount": 3,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
+      "finalImprovement": 1.4500000000000002,
+      "prior_growth": 100
+    },
+    {
+      "timestamp": "2026-07-21T04:36:58.791Z",
+      "input": "自主升级",
+      "cycleTime": 2530,
+      "goalsCount": 3,
+      "improvementsCount": 5,
+      "iterations": 2,
+      "converged": true,
       "finalImprovement": 1.4500000000000002
     }
   ],
   "improvementHistory": [],
   "reflectionHistory": [],
   "growthMetrics": {
-    "autonomy": 22.5,
+    "autonomy": 27,
     "introspection": 100,
     "growth": 100,
     "authenticity": 0,
     "wisdom": 100,
-    "compassion": 13.50000000000001,
+    "compassion": 16.200000000000017,
     "_converged": false
   }
 }

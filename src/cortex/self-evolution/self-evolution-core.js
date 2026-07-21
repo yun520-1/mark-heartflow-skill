@@ -286,21 +286,17 @@ class SelfEvolutionCore {
 
       
 
-      // 1. 目标生成或更新
+      // 1. 先学习(扫描自身+联网对标), 拿到新鲜弱点
+
+      const learning = await this.learn(input, context);
+
+      // 2. 目标生成(基于当轮扫描到的真实弱点+liveness探针, 不再用上一轮旧值)
 
       const goals = this.generateGoals(input, context);
 
-      
-
-      // 2. 行动计划制定
+      // 3. 行动计划制定
 
       const plan = this.createPlan(goals, context);
-
-      
-
-      // 3. 执行与学习
-
-      const learning = await this.learn(input, context);
 
       
 
@@ -385,9 +381,6 @@ class SelfEvolutionCore {
         
 
         this.saveState();
-
-        
-
         return {
 
           version: this.version,
@@ -398,7 +391,8 @@ class SelfEvolutionCore {
 
           learning: {
             summary: learning.summary,
-            weaknesses: learning.weaknesses || null
+            weaknesses: learning.weaknesses || null,
+            arxivGaps: learning.arxivGaps || null
           },
 
           reflection: reflection.insights,
@@ -547,9 +541,34 @@ class SelfEvolutionCore {
 
     
 
+    // [v6.0.62] 沉默失效直驱: livenessProbes 里 alive=false 是最严重的自我盲区, 必须排最高优先级且具体可落
+    // 这是"心虫为什么发现不了自己问题"的根因修复闭环 —— 不仅扫得到, 还要转成真改目标
+    const w = this.lastWeaknesses && !this.lastWeaknesses.error ? this.lastWeaknesses : null;
+    if (w && Array.isArray(w.livenessProbes)) {
+      const dead = w.livenessProbes.filter(p => p.alive === false);
+      for (const p of dead) {
+        if (p.capability === 'arxiv_explore') {
+          goals.unshift({
+            type: 'liveness',
+            priority: 'critical',
+            description: '修复进化引擎联网探索沉默失效: 开启 HEARTFLOW_SELF_EVOLVE_EXPLORE=1 并验证 explore() 真正返回 arXiv 论文',
+            criteria: 'explore() 在开开关后返回 >=1 篇论文且 arxivGaps 非空',
+            target: 'arxiv_explore'
+          });
+        } else {
+          goals.unshift({
+            type: 'liveness',
+            priority: 'critical',
+            description: `修复沉默失效: ${p.capability} - ${p.detail}`,
+            criteria: '探针 alive 转为 true',
+            target: p.capability
+          });
+        }
+      }
+    }
+
     // [v6.0.61] 真升级：把自我扫描的真实弱点转成可度量、可验证的能力建设目标
     // 之前 goals 只看输入文本关键词, 弱点扫出来却不影响目标 = 进化空转
-    const w = this.lastWeaknesses && !this.lastWeaknesses.error ? this.lastWeaknesses : null;
     if (w) {
       if (w.untestedModules && w.untestedModules.length) {
         goals.push({
