@@ -39,10 +39,38 @@ class SAGEGuardian {
     this.projectRoot = projectRoot;
     this.constitutionFile = path.join(projectRoot, 'CORE_VALUES.md');
     this.logFile = path.join(projectRoot, 'logs', 'sage-guardian.log');
+    // [审计修复] violationCount 决定 ASL 安全级别(>5=ASL-2, >10=ASL-3)，必须持久化。
+    // 原实现只存内存，进程重启即清零 → 累积违规监控形同虚设(与 N1 假自愈同类)。
+    this.stateFile = path.join(projectRoot, 'data', 'sage-guardian-state.json');
     this.violationCount = 0;
     this.cooldownUntil = null;
-    
+
     this.loadValues();
+    this._loadState();
+  }
+
+  /** [审计修复] 加载持久化的违规计数/冷却状态 */
+  _loadState() {
+    try {
+      if (fs.existsSync(this.stateFile)) {
+        const s = JSON.parse(fs.readFileSync(this.stateFile, 'utf8'));
+        if (typeof s.violationCount === 'number') this.violationCount = s.violationCount;
+        if (s.cooldownUntil) this.cooldownUntil = new Date(s.cooldownUntil);
+      }
+    } catch (_) { /* 状态文件损坏时保守从 0 开始，不阻断启动 */ }
+  }
+
+  /** [审计修复] 持久化违规计数/冷却状态，保证重启后 ASL 级别不倒退 */
+  _saveState() {
+    try {
+      const dir = path.dirname(this.stateFile);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      safeWriteFileSync(this.stateFile, JSON.stringify({
+        violationCount: this.violationCount,
+        cooldownUntil: this.cooldownUntil ? this.cooldownUntil.toISOString() : null,
+        updatedAt: new Date().toISOString(),
+      }));
+    } catch (_) { /* 持久化失败不阻断安全审查主流程 */ }
   }
 
   loadValues() {
@@ -108,6 +136,7 @@ class SAGEGuardian {
 
     if (!review.passed) {
       this.violationCount++;
+      this._saveState();
       this.log(`Proposal REJECTED: ${review.violations.join('; ')}`, 'REJECT');
     } else {
       this.log(`Proposal APPROVED: ${proposal.description}`, 'APPROVE');
@@ -217,6 +246,7 @@ class SAGEGuardian {
    */
   triggerCooldown(durationMs = 24 * 60 * 60 * 1000) {
     this.cooldownUntil = new Date(Date.now() + durationMs);
+    this._saveState();
     this.log(`Cooldown triggered until ${this.cooldownUntil.toISOString()}`, 'COOLDOWN');
   }
 
