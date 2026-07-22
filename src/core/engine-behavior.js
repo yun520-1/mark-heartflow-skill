@@ -378,424 +378,106 @@ function _saveDreamHistory(hf,data) {
 
 
 
-function _getDreamFragments(hf,) {
-
+function _getDreamFragments(hf) {
     const fragments = [];
-
     try {
-
       // 1. 身份核心数据
-
       if (hf.identityCore?.getIdentitySummary) {
-
         try {
-
           const identity = hf.identityCore.getIdentitySummary();
-
           if (identity) {
-
             _boundedPush(fragments, {
-
               text: `${identity.name}: ${identity.identities?.join(' / ') || ''} | ${identity.meaning || ''}`,
-
               layer: 'CORE',
-
               key: 'identity',
-
               salience: 1.0,
-
             });
-
           }
-
-        } catch (e) { /* optional */ }
-
-      // [AUDIT-FIX] console.error("[{context}] catch error:", e);
-
+        } catch (e) { /* optional: identity 缺失不影响梦境 */ }
       }
-
-
 
       // 2. 教训系统（最高价值的学习来源）
-
       if (hf.lesson?.getTopLessons) {
-
         try {
-
           const lessons = hf.lesson.getTopLessons(8);
-
           for (const lesson of lessons) {
-
-            const text = `[教训] ${lesson.errorPattern || ''} → ${lesson.correction || ''}`;
-
-            _boundedPush(fragments, {
-
-              text,
-
-              layer: 'LEARNED',
-
-              key: `lesson-${lesson.id || fragments.length}`,
-
-              salience: lesson.confidence || 0.5,
-
-            });
-
+            const text = `[教训] ${lesson.errorPattern || ''} -> ${lesson.correction || ''}`;
+            _boundedPush(fragments, { text, layer: 'LEARNED', key: 'lesson', salience: 0.9 });
           }
-
-        } catch (e) { /* optional */ }
-
-      // [AUDIT-FIX] console.error("[{context}] catch error:", e);
-
+        } catch (e) { /* optional: 无教训记录 */ }
       }
 
-
-
-      // 2b. 对话历史（永久记忆 — 本次会话的交互记录）
-
-      const historyPath = require('path').join(hf.rootPath, 'memory', 'dialogue-history.jsonl');
-
-      try {
-
-        const fs = require('../utils/safe-fs');
-
-        if (fs.existsSync(historyPath)) {
-
-          const lines = fs.readFileSync(historyPath, 'utf8').trim().split('\n').slice(-30);
-
-          for (const line of lines) {
-
-            if (!line.trim()) continue;
-
-            try {
-
-              const entry = JSON.parse(line);
-
-              const text = entry.role === 'user'
-
-                ? `[用户] ${entry.content?.slice(0, 200) || ''}`
-
-                : `[回应] ${entry.content?.slice(0, 200) || ''}`;
-
-              if (text.length > 10) {
-
-                _boundedPush(fragments, {
-
-                  text,
-
-                  layer: 'PERMANENT',
-
-                  key: `dialogue-${entry.id || fragments.length}`,
-
-                  salience: 0.6,
-
-                  ts: entry.ts,
-
-                });
-
-              }
-
-            } catch (e) { /* skip malformed line */ }
-
-            }
-
-        }
-
-      } catch (e) { /* optional */ }
-
-
-
-      // 2c. 历史迁移记忆（principles / insights / 代码确认事件等）
-
-      const legacyPath = require('path').join(hf.rootPath, 'memory', 'legacy-migration.jsonl');
-
-      try {
-
-        const fs2 = require('../utils/safe-fs');
-
-        if (fs2.existsSync(legacyPath)) {
-
-          const legacyLines = fs2.readFileSync(legacyPath, 'utf8').trim().split('\n').slice(-20);
-
-          for (const line of legacyLines) {
-
-            if (!line.trim()) continue;
-
-            try {
-
-              const entry = JSON.parse(line);
-
-              if (entry.content) {
-
-                _boundedPush(fragments, {
-
-                  text: entry.content,
-
-                  layer: 'LEGACY',
-
-                  key: `legacy-${entry.id || fragments.length}`,
-
-                  salience: 0.4,
-
-                  ts: entry.ts,
-
-                });
-
-              }
-
-            } catch (e) { /* skip */ }
-
-          }
-
-        }
-
-      } catch (e) { /* optional */ }
-
-
-
-      // 2d. 永久记忆（已分类整理的高价值记忆）
-
-      const permPath = require('path').join(hf.rootPath, 'memory', 'permanent-memory.jsonl');
-
-      try {
-
-        const fs3 = require('../utils/safe-fs');
-
-        if (fs3.existsSync(permPath)) {
-
-          const permLines = fs3.readFileSync(permPath, 'utf8').trim().split('\n').slice(-80);
-
-          for (const line of permLines) {
-
-            if (!line.trim()) continue;
-
-            try {
-
-              const entry = JSON.parse(line);
-
-              if (entry.content && entry.content.length > 15) {
-
-                const text = entry.role === 'user'
-
-                  ? `[用户] ${entry.content.slice(0, 200)}`
-
-                  : `[回应] ${entry.content.slice(0, 200)}`;
-
-                _boundedPush(fragments, {
-
-                  text,
-
-                  layer: 'PERMANENT',
-
-                  key: `perm-${entry.id || fragments.length}`,
-
-                  salience: 0.5,
-
-                  ts: entry.ts,
-
-                });
-
-              }
-
-            } catch (e) { /* skip */ }
-
-          }
-
-        }
-
-      } catch (e) { /* optional */ }
-
-
-
-      // 2e. 上下文记忆（会话级短期记忆，供梦境参考）
-
-      const ctxPath = require('path').join(hf.rootPath, 'memory', 'context-memory.jsonl');
-
-      try {
-
-        const fs4 = require('../utils/safe-fs');
-
-        if (fs4.existsSync(ctxPath)) {
-
-          const ctxLines = fs4.readFileSync(ctxPath, 'utf8').trim().split('\n').slice(-30);
-
-          for (const line of ctxLines) {
-
-            if (!line.trim()) continue;
-
-            try {
-
-              const entry = JSON.parse(line);
-
-              if (entry.content && entry.content.length > 15) {
-
-                _boundedPush(fragments, {
-
-                  text: entry.content.slice(0, 150),
-
-                  layer: 'CONTEXT',
-
-                  key: `ctx-${entry.id || fragments.length}`,
-
-                  salience: 0.3,
-
-                  ts: entry.ts,
-
-                });
-
-              }
-
-            } catch (e) { /* skip */ }
-
-          }
-
-        }
-
-      } catch (e) { /* optional */ }
-
-
-
-      // 3. CORE 层记忆
-
-      const coreEntries = hf.memory.listCore?.() || [];
-
-      for (const entry of coreEntries.slice(-5)) {
-
-        if (entry?.key && entry?.value) {
-
+      // 3. 记忆层快照
+      if (hf.memory) {
+        try {
+          const stats = hf.memory.getStats?.() || {};
           _boundedPush(fragments, {
-
-            text: `${entry.key}: ${entry.value}`,
-
+            text: `[记忆] core=${stats.core || 0}, learned=${stats.learned || 0}, ephemeral=${stats.ephemeral || 0}`,
             layer: 'CORE',
-
-            key: entry.key,
-
-            salience: 0.9,
-
+            key: 'memory-stats',
+            salience: 0.8,
           });
-
-        }
-
-      }
-
-
-
-      // 4. LEARNED 层记忆
-
-      const learnedEntries = hf.memory.listLearned?.() || [];
-
-      for (const entry of learnedEntries.slice(-10)) {
-
-        if (entry?.key && entry?.value) {
-
-          _boundedPush(fragments, {
-
-            text: entry.value,
-
-            layer: 'LEARNED',
-
-            key: entry.key,
-
-            salience: 0.7,
-
-          });
-
-        }
-
-      }
-
-
-
-      // 5. 会话历史（近期的交互模式）
-
-      if (hf.identityCore?.getSessionHistory) {
-
-        try {
-
-          const history = hf.identityCore.getSessionHistory(10);
-
-          if (history && history.length > 0) {
-
-            for (const h of history.slice(-5)) {
-
-              const text = `[会话] ${h.summary || h.context || JSON.stringify(h).slice(0, 80)}`;
-
-              _boundedPush(fragments, { text, layer: 'EPHEMERAL', key: `session-${h.ts || ''}`, salience: 0.5 });
-
-            }
-
-          }
-
         } catch (e) { /* optional */ }
-
-      // [AUDIT-FIX] console.error("[{context}] catch error:", e);
-
       }
 
-
-
-      // 6. 进化循环的改进建议
-
-      if (hf.evolution?.getStats) {
-
+      // 4. 近期情绪状态
+      if (hf.emotion?.getEmotionHistory) {
         try {
-
-          const stats = hf.evolution.getStats();
-
-          if (stats?.queueSize > 0) {
-
+          const emotions = hf.emotion.getEmotionHistory(5);
+          if (emotions?.length) {
             _boundedPush(fragments, {
-
-              text: `[进化] 队列中${stats.queueSize}个改进项，健康度${stats.healthScore}%`,
-
+              text: `[情绪] 近期: ${emotions.map(e => e.type).join(', ')}`,
               layer: 'LEARNED',
-
-              key: 'evolution-queue',
-
-              salience: 0.8,
-
+              key: 'emotion-history',
+              salience: 0.7,
             });
-
           }
-
         } catch (e) { /* optional */ }
-
-      // [AUDIT-FIX] console.error("[{context}] catch error:", e);
-
       }
 
-
-
-      // 7. 心理学洞察（如果分析过用户情绪）
-
-      if (hf.psychology?.getPsychologyStats) {
-
+      // 5. 认知负荷
+      if (hf.cognitiveLoad) {
         try {
-
-          const ps = hf.psychology.getPsychologyStats();
-
-          _boundedPush(fragments, {
-
-            text: `[心理学] 共${ps.defenseMechanisms}种防御机制，${ps.empathyArchitecture?.length || 0}层共情架构`,
-
-            layer: 'LEARNED',
-
-            key: 'psychology-summary',
-
-            salience: 0.4,
-
-          });
-
+          const cl = hf.cognitiveLoad.estimate?.(hf._lastUserInput || '');
+          if (cl) {
+            _boundedPush(fragments, {
+              text: `[认知负荷] ${cl.level || cl.load || '未知'}`,
+              layer: 'CORE',
+              key: 'cognitive-load',
+              salience: 0.6,
+            });
+          }
         } catch (e) { /* optional */ }
-
       }
 
+      // 6. 哲学/意义框架
+      if (hf.philosophyEngine?.getCurrentPosition) {
+        try {
+          const pos = hf.philosophyEngine.getCurrentPosition();
+          _boundedPush(fragments, {
+            text: `[哲学] ${pos.stance || '探索中'} | ${pos.meaning || ''}`,
+            layer: 'CORE',
+            key: 'philosophy',
+            salience: 0.5,
+          });
+        } catch (e) { /* optional */ }
+      }
+
+      // 7. 心理学洞察
+      if (hf.psychology?.getPsychologyStats) {
+        try {
+          const ps = hf.psychology.getPsychologyStats();
+          _boundedPush(fragments, {
+            text: `[心理学] 共${ps.defenseMechanisms}种防御机制，${ps.empathyArchitecture?.length || 0}层共情架构`,
+            layer: 'LEARNED',
+            key: 'psychology-summary',
+            salience: 0.4,
+          });
+        } catch (e) { /* optional */ }
+      }
     } catch (e) {
-
       // 记忆提取失败不影响梦境执行
-
     }
-
     return fragments;
 
   }
