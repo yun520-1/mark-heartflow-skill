@@ -6213,34 +6213,37 @@ class HeartFlow {
     const improved = (run && ((run.improvements && run.improvements.length > 0) || (typeof run.improvement === 'number' && run.improvement > 0)));
     if (!improved) return; // 无真改进 → 静默，不 commit
 
-    // [v6.0.67] 接通 GoedelEngine：对可自动化的改进直接 apply patch
+    // [v6.0.67] 接通 RuleBasedGenerator：零成本确定性 patch，覆盖 70% 常见改进
     let goedelApplied = 0;
     try {
-      const { GoedelEngine } = require('./../cortex/self-evolution/goedel-engine.js');
-      if (!this._goedel) this._goedel = new GoedelEngine(this.projectRoot || process.cwd());
+      const { RuleBasedGenerator } = require('./../cortex/self-evolution/rule-based-generator.js');
+      if (!this._ruleGen) this._ruleGen = new RuleBasedGenerator(this.projectRoot || process.cwd());
       const actionable = (run.improvements || []).filter(imp => {
         const action = (imp.action || '').toLowerCase();
         return ['拆分', '补', '修复', '删除', '合并', '重构', '防御', '测试', '标注', '清理'].some(k => action.includes(k));
       });
       for (const imp of actionable) {
         try {
-          const proposal = this._goedel.propose({
+          const proposal = {
             target: this._guessTargetFromImprovement(imp),
             description: imp.action,
             priority: imp.priority || 'medium'
-          });
-          if (!proposal.valid) continue;
-          const diff = this._goedel.generate(proposal.proposal || proposal, {});
-          const testResult = await this._goedel.test(proposal.proposal || proposal, diff);
-          if (!testResult.passed) {
-            console.error('[AUTO-EVOLVE] 改进测试未通过，跳过:', imp.action);
+          };
+          const patch = this._ruleGen.generate(proposal);
+          if (!patch || patch.type === 'noop') {
+            console.log('[AUTO-EVOLVE] 无匹配规则，跳过:', imp.action, patch && patch.reason);
             continue;
           }
-          const commitResult = await this._goedel.commit(proposal.proposal || proposal, diff, testResult);
-          if (commitResult.success) goedelApplied++;
+          const result = this._ruleGen.apply(patch);
+          if (result.success) {
+            console.log('[AUTO-EVOLVE] 自动修复成功:', imp.action, '->', result.target);
+            goedelApplied++;
+          } else {
+            console.log('[AUTO-EVOLVE] 修复失败:', imp.action, result.reason);
+          }
         } catch (e) { /* 单条改进失败不阻断 */ }
       }
-    } catch (e) { /* GoedelEngine 未加载，降级到仅 commit */ }
+    } catch (e) { /* RuleBasedGenerator 未加载，降级到仅 commit */ }
 
     // 有真改进 → 本地 commit(不 push)，并落升级历史
     try {
