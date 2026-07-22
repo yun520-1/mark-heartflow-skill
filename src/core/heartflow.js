@@ -6338,95 +6338,9 @@ class HeartFlow {
    */
 
   recordDialogue(role, content, meta = {}) {
-
-    if (!this.started) return { success: false, error: 'not_started' };
-
-    if (!content || !content.trim()) return { success: false, error: 'empty_content' };
-
-    if (!['user', 'heartflow'].includes(role)) role = 'unknown';
-
-
-
-    // Audit log
-
-    if (this.auditLogger) {
-
-      this.auditLogger.log('dialogue_write', { role, contentLength: content.length, chatId: meta.chatId || null });
-
-    }
-
-
-
-    try {
-
-      const fs = require('../utils/safe-fs');
-
-      const path = require('path');
-
-      const dir = path.join(this.rootPath, 'memory');
-
-      try { fs.mkdirSync(dir, { recursive: true }); } catch (e) { /* dir exists */ }
-
-
-
-      // 明文存储（不再需要 HEARTFLOW_DIALOGUE_KEY）
-
-      const filePath = path.join(dir, 'dialogue-history.jsonl');
-
-      const entry = {
-
-        id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-
-        role,
-
-        content,
-
-        ts: new Date().toISOString(),
-
-        chatId: meta.chatId || null,
-
-        sessionId: this.sessionId,
-
-        version: this.version,
-
-      };
-
-      // 文件锁防止并发写入损坏
-
-      const lockPath = filePath + '.lock';
-
-      try {
-
-        const lockFd = fs.openSync(lockPath, 'wx');
-
-        fs.writeSync(lockFd, String(process.pid));
-
-        fs.appendFileSync(filePath, JSON.stringify(entry) + '\n', 'utf8');
-
-        fs.closeSync(lockFd);
-
-        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
-
-      } catch (e) {
-
-        try { fs.unlinkSync(lockPath); } catch { /* ignore */ }
-
-        if (e.code === 'EEXIST') return { success: true, id: entry.id, skipped: true };
-
-        return { success: false, error: e.message };
-
-      }
-
-      return { success: true, id: entry.id };
-
-    } catch (e) {
-
-      _log.error('dialogue', 'write_failed', { error: e.message });
-
-      return { success: false, error: e.message };
-
-    }
-
+    // [v6.0.69] 委托给 dialogue-writer 模块
+    const { writeDialogue } = require('./utils/dialogue-writer.js');
+    return writeDialogue(this, role, content, meta);
   }
 
 
