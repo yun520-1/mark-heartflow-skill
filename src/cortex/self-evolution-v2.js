@@ -113,17 +113,23 @@ class SelfEvolutionV2 {
     // [v6.0.49 H1-P0] 走 safeFetch：SSRF校验 + DNS pinning + 白名单，杜绝裸出网绕过安全基座
     // [v6.0.61] base 直连 export.arxiv.org: 原 arxiv.org 会 301 跳 http://export, safeFetch 判重定向为 HTTP 外部端点拒绝
     // [v6.0.64] 限定 AI 相关分类, 避免 all: 全文搜索抓到物理/宇宙学等无关论文(实测污染 5/7)
-    //   cs.AI(人工智能) cs.CL(计算语言学) cs.LG(机器学习) cs.NE(神经/进化计算)
+    // [v6.0.67] 429 时指数退避(60s/180s/540s)而不是立即放弃
     const q = encodeURIComponent(`(cat:cs.AI OR cat:cs.CL OR cat:cs.LG OR cat:cs.NE) AND all:${query}`);
     const base = 'https://export.arxiv.org/api/query';
     const url = `${base}?search_query=${q}&max_results=${max}&sortBy=submittedDate&sortOrder=descending`;
-    // 重试 3 次(arXiv 偶发超时/限流), 429 时立即标记并停止, 失败记录原因不静默吞
+    // 重试 3 次(arXiv 偶发超时/限流), 429 时退避重试
     let lastErr;
     for (let attempt = 0; attempt < 3; attempt++) {
       try {
         const res = await this._safeFetch(url, { timeout: 12000, maxRetries: 1 });
         if (res.status === 429) {
           this._rateLimited = true;
+          if (attempt < 2) {
+            const backoff = 60000 * Math.pow(3, attempt);
+            console.warn(`[arxiv] rate-limited, backoff ${backoff/1000}s before retry...`);
+            await new Promise(r => setTimeout(r, backoff));
+            continue;
+          }
           this._lastFetchError = 'HTTP 429 rate limited by arXiv';
           return [];
         }
