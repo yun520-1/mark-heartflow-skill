@@ -1357,7 +1357,16 @@ class HeartFlow {
 
     const identityResult = this.identityCore.boot();
 
-    if (identityResult.success) {
+    // [STANDARDS-UPGRADE] 智能体互联国家标准：生成 AgentCard 数字身份卡
+    try {
+      const { AgentCard } = require('../identity/agent-card.js');
+      this.agentCard = new AgentCard(this);
+      this.agentCard.loadOrCreate();
+    } catch (e) {
+      _boundedPush(this._initErrors, { module: 'agentCard', error: e.message }, MAX_HISTORY_SIZE);
+    }
+
+    if (!identityResult.success) {
 
       // 如果有上次会话，打印会话间隔
 
