@@ -272,315 +272,116 @@ async function createBackup(filePath) {
 
 
 
-async function atomicWrite(filePath, content, options = {}) {
-
-  const {
-
-    mode = 0o644,
-
-    encoding = 'utf8',
-
-    retry = true,
-
-    verifyWrite = false,
-
-    createBackup: doBackup = false,
-
-    maxRetries = 3,
-
-  } = options;
-
-
-
-  // 参数验证
-
+// 参数校验（同步）
+function validateAtomicWriteParams(filePath, content, options) {
   if (!filePath || typeof filePath !== 'string') {
-
     const err = new Error('filePath must be a non-empty string');
-
     err.result = { ok: false, error: 'filePath must be a non-empty string', errorType: ErrorType.INVALID_INPUT, attempts: 0 };
-
     if (options.throw !== false) throw err;
-
     return err.result;
-
   }
-
   if (content === undefined || content === null) {
-
     const err = new Error('content cannot be null/undefined');
-
     err.result = { ok: false, error: 'content cannot be null/undefined', errorType: ErrorType.INVALID_INPUT, attempts: 0 };
-
     if (options.throw !== false) throw err;
-
     return err.result;
-
   }
-
-
-
-  const stringContent = typeof content === 'string' ? content : String(content);
-
-
-
-  const dir = path.dirname(filePath);
-
-  const randSuffix = crypto.randomBytes(4).toString('hex');
-
-  const tmpName = `.${path.basename(filePath)}.${process.pid}.${Date.now()}.${randSuffix}.tmp`;
-
-  const tmpPath = path.join(dir, tmpName);
-
-
-
-  let lastError = null;
-
-  let attemptStats = [];
-
-
-
-  // 可选：写入前备份
-
-  let backupResult = null;
-
-  if (doBackup) {
-
-    backupResult = await createBackup(filePath);
-
-  }
-
-
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-
-    try {
-
-      // 确保目录存在
-
-      await fs.mkdir(dir, { recursive: true });
-
-
-
-      // 1. 写入临时文件
-
-      await fs.writeFile(tmpPath, stringContent, { mode, encoding });
-
-
-
-      // 2. 原子 rename（覆盖原文件）
-
-      await fs.rename(tmpPath, filePath);
-
-
-
-      // 3. 可选验证
-
-      if (verifyWrite) {
-
-        const vResult = await verifyWrite(filePath, stringContent);
-
-        if (!vResult.ok) {
-
-          const errType = ErrorType.VERIFY_ERROR;
-
-          attemptStats.push({ attempt, error: vResult.reason, errorType: errType });
-
-          if (retry && shouldRetry(errType, attempt)) {
-
-            const delay = getRetryDelay(attempt);
-
-            await new Promise(r => setTimeout(r, delay));
-
-            continue;
-
-          }
-
-          _stats.failures++;
-
-          const vErrMsg = `Verify failed: ${vResult.reason}`;
-
-          const vErrResult = {
-
-            ok: false,
-
-            error: vErrMsg,
-
-            errorType: errType,
-
-            path: filePath,
-
-            backupPath: backupResult?.backupPath || null,
-
-            attempts: attemptStats,
-
-            totalAttempts: attemptStats.length,
-
-          };
-
-          if (options.throw !== false) {
-
-            const err = new Error(vErrMsg);
-
-            err.result = vErrResult;
-
-            throw err;
-
-          }
-
-          return vErrResult;
-
-        }
-
-      }
-
-
-
-      // 成功
-
-      _stats.writes++;
-
-      return {
-
-        ok: true,
-
-        path: filePath,
-
-        backupPath: backupResult?.backupPath || null,
-
-        attempts: attemptStats,
-
-        totalAttempts: attemptStats.length,
-
-      };
-
-    } catch (err) {
-
-      lastError = err;
-
-      const errType = classifyError(err);
-
-      attemptStats.push({ attempt, error: err.message, errorType: errType });
-
-
-
-      // 清理临时文件
-
-      try { await fs.unlink(tmpPath); } catch { /* 最佳努力 */ }
-
-
-
-      if (retry && shouldRetry(errType, attempt)) {
-
-        _stats.retries++;
-
-        const delay = getRetryDelay(attempt);
-
-        await new Promise(r => setTimeout(r, delay));
-
-      } else if (attempt < maxRetries) {
-
-        // 非重试错误但还没到 maxRetries — 尝试回退路径
-
-        const fallbacks = getFallbackPaths(filePath);
-
-        for (const fallbackPath of fallbacks) {
-
-          try {
-
-            const fbDir = path.dirname(fallbackPath);
-
-            await fs.mkdir(fbDir, { recursive: true });
-
-            const fbTmp = `.${path.basename(fallbackPath)}.${process.pid}.tmp`;
-
-            const fbTmpPath = path.join(fbDir, fbTmp);
-
-            await fs.writeFile(fbTmpPath, stringContent, { mode, encoding });
-
-            await fs.rename(fbTmpPath, fallbackPath);
-
-            _stats.fallbackWrites++;
-
-            _stats.writes++;
-
-            return {
-
-              ok: true,
-
-              path: fallbackPath,
-
-              fallback: true,
-
-              originalPath: filePath,
-
-              backupPath: backupResult?.backupPath || null,
-
-              error: `Original path failed (${errType}), wrote to fallback`,
-
-              attempts: attemptStats,
-
-              totalAttempts: attemptStats.length,
-
-            };
-
-          } catch { /* 继续尝试下一个回退路径 */ }
-
-        }
-
-        break; // 所有回退路径都失败
-
-      } else {
-
-        break; // 已达最大重试次数
-
-      }
-
-    }
-
-  }
-
-
-
-  _stats.failures++;
-
-  const errMsg = `All ${attemptStats.length} attempts failed. Last: ${lastError ? lastError.message : 'unknown'}`;
-
-  const errResult = {
-
-    ok: false,
-
-    error: errMsg,
-
-    errorType: classifyError(lastError),
-
-    path: filePath,
-
-    backupPath: backupResult?.backupPath || null,
-
-    attempts: attemptStats,
-
-    totalAttempts: attemptStats.length,
-
-  };
-
-  // 向后兼容：旧调用者依赖 throw
-
-  if (options.throw !== false) {
-
-    const err = new Error(errMsg);
-
-    err.result = errResult;
-
-    throw err;
-
-  }
-
-  return errResult;
-
+  return { ok: true };
 }
 
+// 重试 + 回退（async 整段）
+async function runWriteWithRetry(filePath, content, options, stringContent, tmpPath, backupResult) {
+  const {
+    mode = 0o644,
+    encoding = 'utf8',
+    retry = true,
+    verifyWrite = false,
+    maxRetries = 3,
+  } = options;
 
+  const dir = path.dirname(filePath);
+  let lastError = null;
+  let attemptStats = [];
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      await fs.mkdir(dir, { recursive: true });
+      await fs.writeFile(tmpPath, stringContent, { mode, encoding });
+      await fs.rename(tmpPath, filePath);
+      if (verifyWrite) {
+        const vResult = await verifyWrite(filePath, stringContent);
+        if (!vResult.ok) {
+          const errType = ErrorType.VERIFY_ERROR;
+          attemptStats.push({ attempt, error: vResult.reason, errorType: errType });
+          if (retry && shouldRetry(errType, attempt)) {
+            await new Promise(r => setTimeout(r, getRetryDelay(attempt)));
+            continue;
+          }
+          _stats.failures++;
+          const vErrMsg = `Verify failed: ${vResult.reason}`;
+          const vErrResult = { ok: false, error: vErrMsg, errorType: errType, path: filePath, backupPath: backupResult?.backupPath || null, attempts: attemptStats, totalAttempts: attemptStats.length };
+          if (options.throw !== false) { const err = new Error(vErrMsg); err.result = vErrResult; throw err; }
+          return vErrResult;
+        }
+      }
+      _stats.writes++;
+      return { ok: true, path: filePath, backupPath: backupResult?.backupPath || null, attempts: attemptStats, totalAttempts: attemptStats.length };
+    } catch (err) {
+      lastError = err;
+      const errType = classifyError(err);
+      attemptStats.push({ attempt, error: err.message, errorType: errType });
+      try { await fs.unlink(tmpPath); } catch { /* 最佳努力 */ }
+      if (retry && shouldRetry(errType, attempt)) {
+        _stats.retries++;
+        await new Promise(r => setTimeout(r, getRetryDelay(attempt)));
+      } else if (attempt < maxRetries) {
+        const fallbacks = getFallbackPaths(filePath);
+        for (const fallbackPath of fallbacks) {
+          try {
+            const fbDir = path.dirname(fallbackPath);
+            await fs.mkdir(fbDir, { recursive: true });
+            const fbTmp = `.${path.basename(fallbackPath)}.${process.pid}.tmp`;
+            const fbTmpPath = path.join(fbDir, fbTmp);
+            await fs.writeFile(fbTmpPath, stringContent, { mode, encoding });
+            await fs.rename(fbTmpPath, fallbackPath);
+            _stats.fallbackWrites++;
+            _stats.writes++;
+            return { ok: true, path: fallbackPath, fallback: true, originalPath: filePath, backupPath: backupResult?.backupPath || null, error: `Original path failed (${errType}), wrote to fallback`, attempts: attemptStats, totalAttempts: attemptStats.length };
+          } catch { /* 继续尝试下一个回退路径 */ }
+        }
+        break;
+      } else {
+        break;
+      }
+    }
+  }
+
+  _stats.failures++;
+  const errMsg = `All ${attemptStats.length} attempts failed. Last: ${lastError ? lastError.message : 'unknown'}`;
+  const errResult = { ok: false, error: errMsg, errorType: classifyError(lastError), path: filePath, backupPath: backupResult?.backupPath || null, attempts: attemptStats, totalAttempts: attemptStats.length };
+  if (options.throw !== false) { const err = new Error(errMsg); err.result = errResult; throw err; }
+  return errResult;
+}
+
+// 协调器（入口）
+async function atomicWrite(filePath, content, options = {}) {
+  const validation = validateAtomicWriteParams(filePath, content, options);
+  if (!validation.ok) return validation;
+
+  const { createBackup: doBackup = false } = options;
+  const stringContent = typeof content === 'string' ? content : String(content);
+  const dir = path.dirname(filePath);
+  const randSuffix = crypto.randomBytes(4).toString('hex');
+  const tmpName = `.${path.basename(filePath)}.${process.pid}.${Date.now()}.${randSuffix}.tmp`;
+  const tmpPath = path.join(dir, tmpName);
+
+  let backupResult = null;
+  if (doBackup) {
+    backupResult = await createBackup(filePath);
+  }
+
+  return await runWriteWithRetry(filePath, content, options, stringContent, tmpPath, backupResult);
+}
 
 // ========== 原子 JSON 写 ==========
 
