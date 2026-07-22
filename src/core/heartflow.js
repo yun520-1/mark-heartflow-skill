@@ -1557,7 +1557,7 @@ class HeartFlow {
     // ─── [P1 UPGRADE] CORE 层身份规则初始化 ───────────────────────────
 
     // [v6.0.71] _initCoreRules extracted to engine-lifecycle.js
-    try { require('./core/engine-lifecycle.js')._initCoreRules(this); } catch (e) { /* optional */ }
+    try { require('./engine-lifecycle.js')._initCoreRules(this); } catch (e) { /* optional */ }
 
 
 
@@ -4053,6 +4053,46 @@ class HeartFlow {
   _initMemoryVault() { return require('./engine-memory')._initMemoryVault(this); }
 
 
+
+  // [v6.0.71] 恢复 dispatch 路由核心（被重构误删）
+  dispatch(route, ...args) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    if (!HeartFlow.ALLOWED_ROUTES.has(route)) {
+      throw new Error(`dispatch: route '${route}' not allowed. Use routes() to see available routes.`);
+    }
+    const dot = route.indexOf('.');
+    if (dot === -1) throw new Error(`Invalid route: ${route} (missing '.')`);
+    const subsystem = route.slice(0, dot);
+    const method = route.slice(dot + 1);
+    const mod = this._modules[subsystem];
+    if (!mod) {
+      const available = Object.keys(this._modules).sort().join(', ');
+      throw new Error(`Unknown subsystem: ${subsystem}. Available: ${available}`);
+    }
+    if (typeof mod[method] !== 'function') {
+      throw new Error(`${subsystem}.${method} is not a function on ${subsystem}`);
+    }
+    return mod[method](...args);
+  }
+
+  // [v6.0.71] 恢复 routes() 路由表
+  routes() {
+    const table = {};
+    for (const [name, mod] of Object.entries(this._modules)) {
+      let methods = [];
+      try {
+        const proto = Object.getPrototypeOf(mod);
+        if (proto && proto !== Object.prototype) {
+          methods = Object.getOwnPropertyNames(proto).filter(m => m !== 'constructor' && typeof mod[m] === 'function');
+        }
+      } catch (e) { /* strict mode or primitive */ }
+      if (!methods.length) {
+        methods = Object.keys(mod).filter(k => typeof mod[k] === 'function');
+      }
+      table[name] = methods;
+    }
+    return table;
+  }
 
   // [v6.0.71] 恢复 think 主链路（委托 this.thoughtChain，被重构误删）
   async think(input, depth) {

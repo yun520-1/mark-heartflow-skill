@@ -21,7 +21,8 @@ function _bootMindSpace(hf) {
 }
 
 function _registerModules(hf) {
-    hf._modules = {};
+    // [v6.0.71] 保留手动注册的模块（benchmark/worldtree 等在此之前注册），不清空
+    hf._modules = hf._modules || {};
     const subsystemNames = [
         'identityCore',
         'cognitive',
