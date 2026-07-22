@@ -15,7 +15,7 @@
  * - process supervision / runtime verification trends (2025-2026)
  */
 
-let retrieveLesson; try { retrieveLesson = require('../cortex/lesson-retrieval'); } catch(e) { retrieveLesson = { retrieveLesson: () => null }; }
+let lessonRetrieval; try { lessonRetrieval = require('../cortex/lesson-retrieval').lessonRetrieval; } catch(e) { lessonRetrieval = { retrieve: () => null }; }
 
 class DecisionVerifier {
   constructor(options = {}) {
@@ -123,7 +123,7 @@ class DecisionVerifier {
       }
     }
 
-    if (record.alternatives.includes(record.decision)) {
+    if ((record.alternatives || []).includes(record.decision)) {
       issues.push({ type: 'duplicate_alternative', severity: 'low', message: '主决策与备选方案重复' });
     }
 
