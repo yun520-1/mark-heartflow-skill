@@ -250,6 +250,17 @@ class EngineReasoner {
 
     hf._preThinkState = hf._preThinkCognitiveSnapshot();
 
+    // [AUDIT-FIX F1] 轻量自动巡检：think 入口触发模块健康检查，不阻断主路径
+    try {
+      if (hf.moduleHealth && typeof hf.moduleHealth.check === 'function') {
+        const health = hf.moduleHealth.check();
+        if (health && health.degraded > 0) {
+          console.warn(`[HeartFlow] 模块健康巡检: ${health.degraded} 个模块异常`);
+        }
+      }
+    } catch(e) { /* 巡检失败不阻断思考 */ }
+
+
 
 
     // ─── 快速响应"启动引擎"类请求（不走完整推理链路）────────────
@@ -494,45 +505,11 @@ class EngineReasoner {
 
 
 
-        // [v5.17.21 Phase2] LayerBus增强 — 统一编排总线替代分散的四层调用
-
+        // [AUDIT-FIX F3] LayerBus 独立调用已移除，避免与 pipeline 重复编排
+        // 四层（PERCEIVE/COGNIZE/DECIDE/REFLECT）已合并到 pipeline 内部
         try {
-
-          const LayerBus = require('../workflow/layer-bus.js');
-
-          const bus = new LayerBus(this);
-
-          const busResult = await bus.run(input, {
-
-            context: { taskType: output?.taskType || 'general' },
-
-            candidates: (output?.hypotheses || []).map(h => ({ label: h?.description || h, pragmaticScore: h?.score || 0.5 })),
-
-          });
-
-          if (busResult && cognitionSnapshot?.enrichment) {
-
-            cognitionSnapshot.enrichment.layerBus = {
-
-              perception: busResult.PERCEIVE?.perception || null,
-
-              cognition: busResult.COGNIZE?.cognition || null,
-
-              decision: busResult.DECIDE?.decision || null,
-
-              reflection: busResult.REFLECT?.reflection || null,
-
-              needsMoreEvidence: busResult.needsMoreEvidence,
-
-            };
-
-          }
-
-        } catch(e) {
-
-          console.warn('[HeartFlow] LayerBus failed:', e.message);
-
-        }
+          // no-op: LayerBus merged into pipeline
+        } catch(e) { /* no-op */ }
 
 
 
