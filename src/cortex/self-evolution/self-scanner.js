@@ -166,8 +166,8 @@ class SelfScanner {
       }
     }
 
-    // 控制未测试模块数量（避免噪声）
-    result.untestedModules = result.untestedModules.slice(0, 20);
+    // 未测试模块：显示完整列表，不做硬性截断
+    result.untestedCount = result.untestedModules.length;
 
     // [v6.0.62] 运行时探针 —— "为什么心虫发现不了自己问题"的根因修复:
     //   静态扫描只能看代码长相(函数存在/语法对/有try), 发现不了"函数存在但永远返回空/开关默认关"的沉默失效。
