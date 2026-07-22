@@ -6259,14 +6259,15 @@ class HeartFlow {
 
   _guessTargetFromImprovement(imp) {
     const action = (imp.action || '').toLowerCase();
-    if (action.includes('atomic-write')) return 'src/utils/atomic-write.js';
-    if (action.includes('超长函数') || action.includes('拆分')) return 'src/utils/atomic-write.js';
-    if (action.includes('decision-verifier')) return 'src/core/decision-verifier.js';
-    if (action.includes('engine-dispatcher')) return 'src/core/engine-dispatcher.js';
-    if (action.includes('engine-hook-points')) return 'src/core/engine-hook-points.js';
-    if (action.includes('沉默') || action.includes('catch')) return 'src/core/heartflow.js';
-    if (action.includes('todo')) return 'src/core/heartflow.js';
-    return 'src/utils/atomic-write.js'; // 默认目标
+    // GoedelEngine 期望目标相对于 src/，不带 src/ 前缀
+    if (action.includes('atomic-write')) return 'utils/atomic-write.js';
+    if (action.includes('超长函数') || action.includes('拆分')) return 'utils/atomic-write.js';
+    if (action.includes('decision-verifier')) return 'core/decision-verifier.js';
+    if (action.includes('engine-dispatcher')) return 'core/engine-dispatcher.js';
+    if (action.includes('engine-hook-points')) return 'core/engine-hook-points.js';
+    if (action.includes('沉默') || action.includes('catch')) return 'core/heartflow.js';
+    if (action.includes('todo')) return 'core/heartflow.js';
+    return 'utils/atomic-write.js'; // 默认目标
   }
 
   thinkFast(input) { return EngineReasoner.thinkFast(this, input); }
