@@ -6339,7 +6339,7 @@ class HeartFlow {
 
   recordDialogue(role, content, meta = {}) {
     // [v6.0.69] 委托给 dialogue-writer 模块
-    const { writeDialogue } = require('./utils/dialogue-writer.js');
+    const { writeDialogue } = require('../utils/dialogue-writer.js');
     return writeDialogue(this, role, content, meta);
   }
 
