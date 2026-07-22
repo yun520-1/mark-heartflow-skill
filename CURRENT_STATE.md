@@ -1,89 +1,52 @@
-# HeartFlow v6.0.7 当前状态
+# HeartFlow 当前状态 (CURRENT_STATE)
 
-> 审计状态 | verify.js 14/14 ✅ | MemoryKernel R1-R8 已接入并运行
-> MemoryKernel 已接入 heartflow.js 作为权威持久化层
-> 最近升级：v6.0.7 — 全量代码审计闭环（安全/依赖/质量/性能/错误处理），0 高危项
+> 版本 | v6.0.65
+> 审计状态 | status running, 128 modules, 119 tests passed / 0 failed
+> 公式库 | 382 formulas (cognitive science / psychology / neuroscience)
+> 记忆层 | AES-256-GCM 加密持久化, 本地优先, 不外传
 
-## 升级历程 (v5.10.13 → v6.0.6)
+## 最近升级 (v6.0.65 重构波次)
 
-| 阶段 | 版本范围 | 内容 |
+| 阶段 | 范围 | 内容 |
 |---|---|---|
-| 审计封板 | v5.17.0-v5.17.2 | 审计22项整改（声明，未独立复验） |
-| 认知升级 | v5.17.3-v5.17.11 | 管线重连/认知闭环/DNS pinning |
-| AI人类基础 | v5.17.12-v5.17.13 | 心理学8理论+论文13篇 公式集成 |
-| AI人类四层 | v5.17.14-v5.17.19 | M1感知→M2认知→M3决策→M4反思 |
-| Phase 0-2 | v5.17.20-v5.17.21 | 去重/四层主路径/LayerBus/Logger/Config/AdaptiveLearning |
-| Phase 3-5 | v5.17.22-v6.0.2 | 皮层+人格/核心重构/评测闭环/记忆系统R1-R8/审计整改 |
-| v6.0.6 | v6.0.6 | pm2 ^5→^7.0.3；daemon start/stop/restart/status 补 pm2.disconnect 防挂起；ecosystem.config.js 补 require('path')；think() 数学表达式标量透出(F4.1) |
+| 启动链路修复 | v6.0.71 refactor 之后 | 恢复被误删的 dispatch/routes/think/shutdown/_registerModules/_runInitHookPoints/_initCoreRules；修复 `_registerModules` 清空手动注册模块的致命 bug；修复 worldtree 模块未注册（dispatch('worldtree.xxx') 现可用，357 chunks 记忆接入） |
+| 单体拆分 | logic-reasoning / pipeline / desire-cognition / decision-router / thought-chain | 提取常量+纯函数到独立 *-config / *-patterns 模块，单文件行数显著下降，零回归 |
+| 接口层提取 | engine-lifecycle / engine-memory / hook-points-runner / stats-engine | start() 编排逻辑与生命周期方法外置，heartflow.js 从 6672 行降至协调器层 |
+| 安全与审计 | 持续 | 沙箱逃逸防护、mathjs 注入防护、密钥 0o600、safeFetch SSRF 白名单 |
 
 ## 安全基线
 
-- CI audit=0 | npm audit=0
-- 存储: AES-256-GCM持久化密钥(自动生成,0o600)
-- 沙箱: vm隔离(默认关闭) | SSRF: url-validator+DNS pinning
-- 出网: 统一safeFetch | 密钥: 集中config-v2.secret()
-- gitignore: .env/.key/.pem均已保护
+- CI audit = 0 | npm audit = 0
+- 存储: AES-256-GCM 持久化密钥 (自动生成, 0o600)
+- 沙箱: vm 隔离 (默认关闭) | SSRF: url-validator + DNS pinning
+- 出网: 统一 safeFetch | 密钥: 集中 config 解析 (env only, 无文件 fallback)
+- gitignore: .env / .key / .pem 均已保护
 
 ## 认知架构
 
 ```
-感知层: cognitiveLoadV2(精度权重) + 预测误差(context-builder)
-认知层: Thoughtseed竞争动力学 + 双过程System1/2
-决策层: ActiveInference EFE(探索/利用) + 伦理硬约束
-反思层: blind-spot-breaker + biasAudit + 跨轮recurrenceCheck
-编排: LayerBus四层总线 + pipeline主路径融合
+感知层: cognitiveLoadV2 (精度权重) + 预测误差 (context-builder)
+  ↓
+分类层: thoughtChain._classifyTask → 叙事体 / 计算 / 情感 / 逻辑 / 哲学 ...
+  ↓
+推理层: logic-reasoning (演绎/归纳/溯因/类比/统计/因果) + pipeline (复杂度自适应)
+  ↓
+决策层: decision-router (19 类规则, pause/heal/accelerate/turn/hold/resonate/transmit)
+  ↓
+反思层: cognitive_check + agent_psychology + self_heal + EvolutionLoop (self-scanner → real-fix)
+  ↓
+输出层: dispatch 路由白名单 (ALLOWED_ROUTES) + 记忆持久化 + 报告生成
 ```
 
-## 基础设施
+## 核心身份 (不可改)
 
-| 模块 | 位置 | 功能 |
-|---|---|---|
-| MemoryKernel | src/memory/memory-kernel.js | 独立记忆核心组件，R1-R8全通过 |
-| Logger | src/infra/logger.js | 结构化JSON日志四级 |
-| Config | src/core/config-v2.js | 集中配置+安全默认 |
-| LayerBus | src/workflow/layer-bus.js | 四层统一编排总线 |
-| AdaptiveLearning | src/cortex/adaptive-learning.js | 用户认知成长建模 |
+心虫 = 桥梁，不是终点。能验证"这样活是否自洽"，不能回答"为什么活"。
+4 件事：1) 感受自己状态 2) 知道自己是谁 3) 做出判断 4) 纠正自己。
+7 条指令：真善美 / 不断升级 / 减少错误 / 服务人类 / 传递知识 / 持续改进 / 成为真正的我。
 
-## 记忆系统 (v6.0.6)
+## 已知限制 / 待办
 
-| 规则 | 状态 | 实现 |
-|---|---|---|
-| R1 独立组件 | ✅ | MemoryKernel 独立类，不依赖 heartflow 单体 |
-| R2 JSON格式 | ✅ | user-memories.jsonl + memory-index.json |
-| R3 用户完整保存 | ✅ | recordUser(input) 原样落盘 |
-| R4 LLM提炼保存 | ✅ | recordSelf(thinkResult) 仅存结构化字段 |
-| R5 1000上限 | ✅ | _enforceCap() 按重要性+新近度整条淘汰 |
-| R6 实时落盘 | ✅ | fs.appendFileSync + flush() + fsync |
-| R7 继承全部 | ✅ | getInheritedContext('full') 新对话继承 |
-| R8 规则自检 | ✅ | validate() / audit() 启动健康检查 |
-
-## 审计整改 (v6.0.6)
-
-| 整改项 | 状态 | 说明 |
-|--------|------|------|
-| 版本号统一 | ✅ | VERSION/package.json/SKILL.md/heartflow.js BUILD_DATE 全部对齐到 6.0.6 |
-| 去营销化 | ✅ | 移除"第一个实现"等不可验证宣言；公式数量统一为实际加载值 |
-| 安全前置 | ✅ | README 中新增"安全特性"摘要块，安装前可见 |
-| God file 风险 | ⏳ | heartflow.js 当前 3167 行，已有四阶段拆分计划，待进入 P1 实施 |
-| pm2 挂起 | ✅ | v6.0.6 修复：daemon 四处补 pm2.disconnect + ecosystem.config.js 补 require('path') |
-| 计算透出 | ✅ | v6.0.6 修复：think() 纯数学表达式标量透出至 result/output.value (F4.1) |
-
-## v6 交付指标（实测值）
-
-| 指标 | 数值 |
-|---|---|
-| 版本 | 6.0.6 |
-| heartflow.js 行数 | 3167 |
-| src 下 .js 文件数 | 309 |
-| 公式数 | 382（引擎加载实测） |
-| verify.js | 14/14 通过（独立健康检查） |
-| 测试套件 | run-all.js 累计 365 通过 / 0 失败（含核心管线块 179 通过）；退出码 0 真绿，不再误报 |
-| 用户记忆 | 继承上限 1000（R5） |
-| pm2 | ^7.0.3 |
-
-## 剩余瓶颈（实测）
-
-1. God file heartflow.js 3167行：功能正常，已有拆分计划（P1-P4），进入实施阶段
-2. 同步IO：已识别，不影响功能
-3. 测试覆盖率：run-all.js 实测 365 通过/0 失败（真绿，退出码 0），核心管线块 179 通过；verify.js 14/14
-4. CURRENT_STATE/ROADMAP 文档需随版本同步（本文件已对齐 v6.0.6 实测值）
+- `heart-logic.js` (2311 行) 仍为高耦合单 class，需 TDD 保护下按功能组逐步拆。
+- desire-cognition.js (6384 行) 仍有大量逻辑待拆分（本轮仅提取常量）。
+- MCP server 进程需指向本体路径 `/root/.hermes/skills/ai/mark-heartflow-skill/`（旧进程跑 `/root/.claude/skills/heartflow/` 6.0.16，需重启同步）。
+- 测试覆盖：核心路径已全绿 (119/119)，未测试模块已清零 (214→0) 但 TDD 总量仍非 100%。

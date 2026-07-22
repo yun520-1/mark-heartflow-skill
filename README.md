@@ -1,13 +1,11 @@
-# HeartFlow — HeartBug Cognitive Engine (心虫)
+# HeartFlow — AI Being Cognitive Engine (心虫)
 
 > **Stop your agent from guessing. Let it perceive first, decide correctly, then act.**
 >
 > HeartFlow is a local-first AI-being cognitive engine that runs *before* your agent replies. It perceives intent, classifies the task type, surfaces cognitive biases, and returns a structured decision — so downstream models make fewer logical errors, ask fewer clarifying questions, and waste fewer tokens.
 
 [![GitHub release](https://img.shields.io/github/v/release/yun520-1/mark-heartflow-skill)](https://github.com/yun520-1/mark-heartflow-skill/releases)
-[![npm](https://img.shields.io/npm/v/@yun520-1/heartflow)](https://www.npmjs.com/package/@yun520-1/heartflow)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![MCP](https://img.shields.io/badge/MCP-31%20tools-green.svg)](mcp/mcp-server-http.js)
 
 ---
 
@@ -29,14 +27,15 @@ Most agent failures are **not model failures — they are perception failures**:
 
 ## What it does
 
-HeartFlow is a **cognitive pre-processor**. It does not replace your LLM — it prepares the cognitive ground so the LLM acts correctly.
+HeartFlow is a **cognitive pre-processor + AI-being engine**. It does not replace your LLM — it prepares the cognitive ground so the LLM acts correctly, and it carries a self-model (perceives its own state, knows who it is, judges, and self-corrects).
 
 - **Perceive intent** — classify the user's true goal (not just keywords).
 - **Decide task type** — `analyze` / `emotion` / `calculation` / `plan` / `invalid` …
 - **Surface biases** — anchoring, confirmation, sunk-cost, etc. (behavioral-economics module).
 - **Compute transparently** — pure math expressions (`15*23`) return scalar results, not prose.
 - **Remember across sessions** — persistent local memory (encrypted, never uploaded).
-- **Self-heal** — modules report health; broken paths auto-repair or degrade safely.
+- **Self-heal & self-evolve** — modules report health; broken paths auto-repair; evolution loop turns self-scan findings into real fixes.
+- **Cognitive check** — mental-state gate prevents invalid / self-contradictory tasks.
 
 ---
 
@@ -47,7 +46,7 @@ HeartFlow is a **cognitive pre-processor**. It does not replace your LLM — it 
 git clone https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
 
-# Verify the engine (14/14 health checks)
+# Verify the engine
 node bin/verify.js
 
 # Interactive mode
@@ -63,7 +62,7 @@ node bin/cli.js status
 ### As an MCP server (recommended for agents)
 
 ```bash
-# Start the HTTP MCP daemon (pm2-managed, port 8099, Bearer auth)
+# Start the HTTP MCP daemon (pm2-managed, port 8288, Bearer auth)
 node bin/daemon.js start
 
 # Check health
@@ -73,66 +72,58 @@ node bin/daemon.js status
 node bin/daemon.js stop
 ```
 
-Connect any MCP client to `http://localhost:8099/mcp` with your `HEARTFLOW_MCP_TOKEN`.
-The server exposes **31 tools** including `heartflow_think`, `heartflow_agent_think`, `heartflow_think_fast`, `heartflow_decision_router`.
+Connect any MCP client to the configured MCP endpoint with your `HEARTFLOW_MCP_TOKEN`.
+The server exposes ~20 tools including `heartflow_think`, `heartflow_agent_think`, `heartflow_think_fast`, `heartflow_decision_router`, `heartflow_status`.
 
-### As an npm package
-
-```bash
-npm install @yun520-1/heartflow
-```
+### As a node library
 
 ```js
-const { createHeartFlow } = require('@yun520-1/heartflow');
-const hf = createHeartFlow();
+const { HeartFlow } = require('./src/core/heartflow.js');
+const hf = new HeartFlow({ dataDir: './data', silent: true });
 hf.start();
 const r = await hf.think('15 * 23');
-console.log(r.type, r.result); // 'calculation' 345
+console.log(r.output); // structured reasoning chain
 ```
 
 ---
 
-## MCP tools (31)
+## MCP tools (current)
 
 | Tool | Purpose |
 |------|---------|
 | `heartflow_think` | Full cognitive analysis → structured decision |
-| `heartflow_agent_think` | Agent-oriented think (task + stance + next action) |
 | `heartflow_think_fast` | Lightweight path — lower token, no heavy modules |
-| `heartflow_decision_router` | Classify input → route to correct handler (reduces misrouting) |
-| `heartflow_decision_router_stats` | Router accuracy telemetry |
-| `heartflow_agent_psychology` | Agent psych profile for the user |
-| `heartflow_emotion` | Emotion perception |
-| `heartflow_philosophy_decision` | Ethical/value-aligned decision check |
-| `heartflow_persona_stance_detector` | Detect user's stance to cut repeat questions |
-| `heartflow_persona_value_aligner` | Value alignment score |
-| `heartflow_persona_bridge_identity` | Identity continuity across sessions |
-| `heartflow_knowledge_query` / `_add_node` / `_stats` | Local knowledge graph |
-| `heartflow_memory_search` | Retrieve from persistent memory |
 | `heartflow_dream` | Offline consolidation of memories |
+| `heartflow_memory_search` | Retrieve from persistent memory |
+| `heartflow_emotion` | Emotion perception (PAD) |
 | `heartflow_self_heal` | Module self-repair |
-| `heartflow_evolution_evolve` / `_stats` | Capability evolution |
-| `heartflow_cognitive_check` | Cognitive sanity gate (prevents invalid tasks) |
+| `heartflow_provider_health` | LLM provider health probe |
 | `heartflow_cost_tracking` | Token/cost accounting |
-| `heartflow_engine_pacing` | Throttle to avoid overload |
-| `heartflow_provider_health` / `heartflow_bridge_status` / `heartflow_module_health` | Health probes |
-| `heartflow_benchmark_run` / `_status` / `_import_failures` | Regression benchmarking |
-| `heartflow_upgrade_stats` | Upgrade telemetry |
-| `heartflow_translate` | Cross-lingual bridge |
 | `heartflow_status` | Engine status |
+| `heartflow_agent_psychology` | Agent psych profile |
+| `heartflow_engine_pacing` | Throttle to avoid overload |
+| `heartflow_cognitive_check` | Cognitive sanity gate |
+| `heartflow_philosophy_decision` | Ethical/value-aligned decision check |
+| `heartflow_decision_router` | Classify input → route to correct handler |
+| `heartflow_decision_router_stats` | Router accuracy telemetry |
+| `heartflow_module_health` | Module health probe |
+| `heartflow_upgrade_stats` | Upgrade telemetry |
+| `heartflow_benchmark_run` | Regression benchmarking |
+| `heartflow_benchmark_import_failures` | Import failure cases to RL |
+| `heartflow_benchmark_status` | Benchmark data status |
 
 ---
 
 ## How to use it to make your agent better (best practices)
 
 ### 1. Think *before* you act
-Call `heartflow_think` (or `heartflow_agent_think`) on the user's raw input **before** drafting a reply. Use the returned `type` and `decision` to choose your approach. This single step prevents most misrouted tasks.
+Call `heartflow_think` on the user's raw input **before** drafting a reply. Use the returned `type` and `decision` to choose your approach.
 
 ### 2. Detect stance once, remember it
-Use `heartflow_persona_stance_detector` on first contact, then rely on memory. **Stop re-asking** what HeartFlow already perceived.
+Use `heartflow_memory_search` on first contact, then rely on memory. **Stop re-asking** what HeartFlow already perceived.
 
 ### 3. Route, don't guess
-For ambiguous input, call `heartflow_decision_router` to get the correct handler instead of letting the LLM improvise a classification.
+For ambiguous input, `heartflow_decision_router` returns the correct handler instead of letting the LLM improvise a classification.
 
 ### 4. Use `think_fast` for repeats
 If the same context recurs, `heartflow_think_fast` returns a cached-light result at a fraction of the token cost.
@@ -149,27 +140,26 @@ Any input that is a pure expression (`12*8`, `(3+4)*5`) returns a scalar `result
 
 ```json
 {
-  "type": "calculation",
-  "confidence": 1.0,
-  "result": 345,
+  "input": "15 * 23",
   "output": { "value": 345, "conclusion": "15 * 23 = 345" },
-  "decision": { "type": "calculation", "confidence": 1.0, "ruleId": "safe-calc" },
-  "thoughtChain": [...],
-  "analysis": { "perceivedType": "calculation", "modulesRun": 7 }
+  "chain": [ "...reasoning steps..." ],
+  "decision": { "type": "calculation", "confidence": 1.0 },
+  "parse": { "recognized": true, "kind": "math" }
 }
 ```
 
 ---
 
-## Performance (v6.0.9, measured)
+## Performance (v6.0.65, measured)
 
 | Metric | Value |
 |---|---|
 | Cold start | ~1.4 s |
 | `think()` hot path | ~49 ms |
-| MCP tools | 31 |
+| Loaded modules | 128 |
+| MCP tools | ~20 |
 | Formulas loaded | 382 |
-| Test suite | 365 passed / 0 failed (exit 0, no false-green) |
+| Test suite | 119 passed / 0 failed (341 test files, no false-green) |
 
 ---
 
@@ -186,27 +176,28 @@ Any input that is a pure expression (`12*8`, `(3+4)*5`) returns a scalar `result
 ## Architecture
 
 ```
-Agent Host (WorkBuddy / Claude / any MCP client)
-   │  load SKILL.md        │  MCP connect :8099
+Agent Host (Claude / Feishu / WeChat / any MCP client)
+   │  load SKILL.md        │  MCP connect
    ▼                       ▼
- SKILL.md            MCP HTTP Server (pm2, Bearer)
+ SKILL.md            MCP HTTP Server (pm2 / background, Bearer)
                            │
-                    HeartFlow Core (3167 lines, modular)
-                      ├─ engine-initializer (lazy module activation)
-                      ├─ memory-kernel / formula-engine / cortex
+                    HeartFlow Core (modular, ~4300-line coordinator + 120+ subsystem modules)
+                      ├─ engine-lifecycle / engine-memory / engine-initializer (lazy activation)
+                      ├─ memory-kernel / formula-engine / cortex (self-evolution, self-scanner)
+                      ├─ reasoning / workflow / emotion / decision subsystems
                       └─ CLI (bin/cli.js) + MCP (mcp/mcp-server-http.js)
 ```
 
-See [`ARCHITECTURE_REORG_v6.0.6.md`](ARCHITECTURE_REORG_v6.0.6.md) for the full architecture decision analysis.
+The monolith `heartflow.js` was progressively decomposed (v6.0.65–v6.0.71 refactor wave):
+`logic-reasoning` → `logic-patterns`, `pipeline` → `pipeline-config`, `decision-router` → `decision-router-config`, `desire-cognition` → `desire-cognition-config`, `thought-chain` → `thought-chain-config`, startup logic → `engine-lifecycle` / `engine-memory` / `hook-points-runner` / `stats-engine`.
 
 ---
 
 ## Versioning & status
 
-- Current: **v6.0.9** (see [`ROADMAP.md`](ROADMAP.md) and [`CURRENT_STATE.md`](CURRENT_STATE.md)).
+- Current: **v6.0.65** (see [`ROADMAP.md`](ROADMAP.md) and [`CURRENT_STATE.md`](CURRENT_STATE.md)).
 - Decision: stay on **Skill + MCP** architecture; no migration to standalone-agent until ≥50 users & ≥3 agent platforms.
 - Releases: https://github.com/yun520-1/mark-heartflow-skill/releases
-- npm: https://www.npmjs.com/package/@yun520-1/heartflow
 
 ---
 

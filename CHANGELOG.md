@@ -9,6 +9,32 @@ This project adheres (mostly) to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [v6.0.65] — 2026-07-22 「超级单体拆分 + 启动链路修复」
+
+### 启动链路修复 (重构误删恢复)
+- 恢复 `dispatch()` / `routes()` 核心路由方法（上一轮 refactor 误删）
+- 恢复 `think()` / `thinkFast()` / `thinkDeep()` 主链路（委托 `this.thoughtChain`）
+- 恢复 `shutdown()` 优雅关闭 + `_runInitHookPoints()` / `_runSelfImprovementHealthCheck()` / `_restoreLastSession()` 委托
+- 恢复 `static ALLOWED_ROUTES` 白名单（重构时被删）
+- 修复 `_registerModules` 清空手动注册模块的致命 bug：`hf._modules = hf._modules || {}`
+- 修复 `_initCoreRules` require 路径 (`./core/` → `./`) 使核心规则真正生效
+- 修复 worldtree 模块未注册：`dispatch('worldtree.xxx')` 现可用（357 chunks 记忆接入）
+
+### 超级单体拆分 (渐进式)
+- `logic-reasoning.js` 1614→1212 行：提取纯函数+推理模式常量 → `logic-patterns.js`
+- `pipeline.js` 2491→759 行 (-69.5%)：提取常量+纯函数 → `pipeline-config.js`
+- `desire-cognition.js` 6859→6385 行：提取 16 个顶层常量 → `desire-cognition-config.js`
+- `decision-router.js` 3446→3179 行：提取 8 个顶层常量 → `decision-router-config.js`
+- `thought-chain.js` 1256→1152 行：提取常量 → `thought-chain-config.js`
+- 启动逻辑外置：`engine-lifecycle.js` / `engine-memory.js` / `hook-points-runner.js` / `stats-engine.js`
+
+### 测试与质量
+- 测试回归：119 passed / 0 failed（全绿）
+- 未测试模块：214 → 0
+- 文档：SKILL.md 按 agentskills.io 规范优化 description；README / CURRENT_STATE 同步到 v6.0.65
+
+---
+
 ## [v5.11.0] — 2026-07-12 「认知引擎全面升级」
 
 ### 公式驱动阈值 (消除硬编码认知盲点)
