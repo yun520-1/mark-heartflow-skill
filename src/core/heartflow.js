@@ -6139,9 +6139,9 @@ class HeartFlow {
         // 2. 达阈值自动触发一次进化(保守：同步 await 不阻塞主链路太久)
         if (this._signalCount >= 8) {
           this._signalCount = 0;
-          try { await this._autoEvolveIfImproved(); } catch (e) {}
+          try { await this._autoEvolveIfImproved(); } catch (e) { /* 防御性: 自动进化失败不阻断主链路 */ }
         }
-      } catch (e) {}
+      } catch (e) { /* 防御性: 自动进化信号失败 */ }
     }
     // 3. [v6.0.45 BadWAM] 想象-执行对齐检测: 判定意图(想象层) vs 实际响应(执行层)
     //    若失对齐(想对做错), 在结果标注 alignmentWarning 供上层感知/拦截, 不阻断返回。
@@ -6159,7 +6159,7 @@ class HeartFlow {
           };
         }
       }
-    } catch (e) {}
+    } catch (e) { /* 防御性: 后处理失败不影响主结果 */ }
 
     // 4. [v6.0.46 Pauli Propagation] 可逆回溯: 把 think 的决策阶段记入 traceback,
     //    出错时反向定位偏差源(利用可逆性, 内存 O(1), 不存全中间态)
@@ -6181,7 +6181,7 @@ class HeartFlow {
           }
         }
       }
-    } catch (e) {}
+    } catch (e) { /* 防御性: 后处理失败不影响主结果 */ }
 
     // 5. [v6.0.59] 判断生长 learned override：若已学规则命中且带用户直白回应，
     //    附到结果 userFacing 字段（给用户看的真话，不堆引擎术语，不空踢回用户）
@@ -6192,7 +6192,7 @@ class HeartFlow {
           r.userFacing = hit.userFacing;
         }
       }
-    } catch (e) {}
+    } catch (e) { /* 防御性: 后处理失败不影响主结果 */ }
 
     return r;
   }

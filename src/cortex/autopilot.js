@@ -38,7 +38,7 @@ class Autopilot {
       const dir = path.dirname(this.logFile);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.appendFileSync(this.logFile, JSON.stringify({ ts: Date.now(), ...entry }) + '\n');
-    } catch (e) {}
+    } catch (e) { /* 防御性: 模块加载失败不阻断主流程 */ }
   }
 
   /**

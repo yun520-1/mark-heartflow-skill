@@ -250,7 +250,7 @@ class SignalAbsorber {
       if (r && r.success && r.results) {
         return r.results.filter(x => (x.tags || []).includes('signal_absorbed'));
       }
-    } catch (e) {}
+    } catch (e) { /* 防御性: 信号检索失败返回空 */ }
     return [];
   }
 }
