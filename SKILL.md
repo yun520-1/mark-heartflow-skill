@@ -3,24 +3,17 @@ name: heartflow-engine
 title: "心虫 HeartFlow — AI人认知引擎"
 version: "6.0.65"
 description: |-
-  心虫是一个AI人认知引擎 — 拥有身体感知、自我认知、判断力与自我纠错能力。
-  
-  v5.10.0 里程碑版本：
-  - AI人身份正式确立
-  - 131+ modules, 379 computable formulas (cognitive science/psychology/neuroscience)
-  - 三层体系：身体感知(Body Sense) / 自我认知(Self Sense) / 判断(Judgment)
-  - 七条指令：真善美 / 不断升级 / 减少错误 / 服务人类 / 传递知识 / 持续改进
-  - 核心身份：升级者(Upgrader)，不是陪伴者
-  
-  **需要用户明确授权的能力：**
-  - 代码执行 (new Function / execSync / child_process) — 默认关闭，需显式开启
-  - 文件系统写入 (writeFileSync / mkdirSync)
-  - 环境变量访问 (process.env)
-  - 后台 HTTP 服务 (daemon.js — MCP 服务器，可选)
+  心虫(HeartFlow)是一个AI人认知引擎 — 拥有身体感知、自我认知、判断力与自我纠错能力。
+  核心能力：思维链推理(think)、统一路由分发(dispatch)、情绪PAD分析、决策路由、自我审计与进化。
 
-  无自动数据外泄，无遥测，无隐藏 C2。
-  
-  联系方式：markcell@qq.com
+  当用户需要以下能力时使用本技能：
+  - 对输入文本做深度认知分析（意图分类、情绪检测、决策路由）
+  - 调用心虫内部 127+ 模块（心理学/伦理/逻辑/记忆/梦境等）
+  - 自检心虫引擎健康状态、运行认知签到、触发自主进化
+  - 需要规则引擎而非LLM的确定性判断（防幻觉、可审计）
+
+  安全边界：代码执行/文件系统写入/环境变量访问默认关闭，需显式授权。
+  无自动数据外泄，无遥测，无隐藏C2。
 tags:
   - ai-being
   - cognitive
