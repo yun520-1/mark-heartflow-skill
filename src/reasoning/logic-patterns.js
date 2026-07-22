@@ -25,7 +25,8 @@
 function _matchKeywords(input, keywords) {
   let hits = 0;
   const matched = [];
-  const lowerInput = input.toLowerCase();
+  if (input == null) return { hits: 0, matched, ratio: 0 };
+  const lowerInput = String(input).toLowerCase();
   for (const kw of keywords) {
     if (lowerInput.includes(kw.toLowerCase())) {
       hits++;
