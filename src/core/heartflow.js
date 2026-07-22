@@ -5360,6 +5360,36 @@ class HeartFlow {
 
    */
 
+  async _dispatchWorldTree(route, method, args) {
+    const { ROUTES } = require('../memory/worldtree-bridge');
+    if (typeof ROUTES[route] !== 'function') {
+      throw new Error(`worldtree route '${route}' not found`);
+    }
+    return ROUTES[route](...args);
+  }
+
+  async _dispatchBenchmark(route, method, args) {
+    if (!this.benchmark) {
+      const { SelfBenchmark } = require('../cortex/self-benchmark.js');
+      this.benchmark = new SelfBenchmark(this);
+    }
+    if (typeof this.benchmark[method] !== 'function') {
+      throw new Error(`benchmark.${method} is not a function`);
+    }
+    return this.benchmark[method](...args);
+  }
+
+  async _dispatchMonitor(method, args) {
+    const stats = _perf.getStats();
+    switch (method) {
+      case 'getStats': return stats;
+      case 'enable': _perf.enable(); return { ok: true };
+      case 'disable': _perf.disable(); return { ok: true };
+      case 'reset': _perf.reset(); return { ok: true };
+      default: throw new Error(`Unknown monitor method: ${method}`);
+    }
+  }
+
   dispatch(route, ...args) {
 
     if (!this.started) throw new Error('HeartFlow not started');
@@ -5387,48 +5417,12 @@ class HeartFlow {
 
 
 
-    // ─── v6.1.0 WorldTreeBridge 直连 ──────────────────────────────
-    if (subsystem === 'worldtree') {
-      const { ROUTES } = require('../memory/worldtree-bridge');
-      if (typeof ROUTES[route] !== 'function') {
-        throw new Error(`worldtree route '${route}' not found`);
-      }
-      return ROUTES[route](...args);
-    }
+    if (subsystem === 'worldtree') return this._dispatchWorldTree(route, method, args);
 
-    // ─── [v6.0.19] SelfBenchmark 直连（外部锚定防自欺）───
-    if (subsystem === 'benchmark') {
-      if (!this.benchmark) {
-        const { SelfBenchmark } = require('../cortex/self-benchmark.js');
-        this.benchmark = new SelfBenchmark(this);
-      }
-      if (typeof this.benchmark[method] !== 'function') {
-        throw new Error(`benchmark.${method} is not a function`);
-      }
-      return this.benchmark[method](...args);
-    }
+    if (subsystem === 'benchmark') return this._dispatchBenchmark(route, method, args);
 
-    // ─── v5.8.0 性能监控：内置子系统 ──────────────────────────────────
+    if (subsystem === 'monitor') return this._dispatchMonitor(method, args);
 
-    if (subsystem === 'monitor') {
-
-      const stats = _perf.getStats();
-
-      switch (method) {
-
-        case 'getStats': return stats;
-
-        case 'enable': _perf.enable(); return { ok: true };
-
-        case 'disable': _perf.disable(); return { ok: true };
-
-        case 'reset': _perf.reset(); return { ok: true };
-
-        default: throw new Error(`Unknown monitor method: ${method}`);
-
-      }
-
-    }
 
 
 
