@@ -984,6 +984,36 @@ const _perf = {
 
 class HeartFlow {
 
+  // dispatch 白名单 - 只有在白名单中的路由才能被外部调用
+  // 危险方法（如内部调试、文件操作）不在白名单中
+  static ALLOWED_ROUTES = new Set([
+    // memory
+    'memory.store', 'memory.retrieve', 'memory.search', 'memory.remove',
+    'memory.getLayers', 'memory.getStats',
+    // truth
+    'truth.checkStatement', 'truth.checkNumbers', 'truth.checkSources',
+    // lesson
+    'lesson.addLesson', 'lesson.getTopLessons', 'lesson.getRecent',
+    // dream
+    'dream.dreamNow', 'dream.analyzeDream',
+    // verify
+    'verify.verify', 'verify.checkConsistency',
+    // psychology
+    'psychology.analyze', 'psychology.detectCrisis',
+    // emotion
+    'emotion.process', 'emotion.getPAD',
+    // decision
+    'decision.decide', 'decision.getRecentStamps',
+    // confidence
+    'confidence.calibrate', 'confidence.admit',
+    // restraint
+    'restraint.shouldIntervene',
+    // graph
+    'graph.addNode', 'graph.search',
+    // slots
+    'slots.get', 'slots.set', 'slots.delete',
+  ]);
+
   constructor(config = {}) {
 
     this.version = null;  // 启动时惰性解析
@@ -1526,7 +1556,8 @@ class HeartFlow {
 
     // ─── [P1 UPGRADE] CORE 层身份规则初始化 ───────────────────────────
 
-    this._initCoreRules();
+    // [v6.0.71] _initCoreRules extracted to engine-lifecycle.js
+    try { require('./core/engine-lifecycle.js')._initCoreRules(this); } catch (e) { /* optional */ }
 
 
 
@@ -3834,7 +3865,8 @@ class HeartFlow {
 
 
 
-    this._registerModules();
+    // [v6.0.71] _registerModules extracted to engine-lifecycle.js
+    require('./engine-lifecycle.js')._registerModules(this);
 
 
 
@@ -3844,7 +3876,7 @@ class HeartFlow {
 
     // 硬编码列表作为兜底（覆盖未注册模块或危险方法排除）
 
-    const autoRoutes = HeartFlow._generateAllowedRoutes(this._modules);
+    const autoRoutes = generateAllowedRoutes(this._modules);
 
     for (const route of autoRoutes) {
 
@@ -3971,6 +4003,8 @@ class HeartFlow {
    */
 
   _checkMemoryEnabled() { return require('./engine-memory')._checkMemoryEnabled(this); }
+  _runSelfImprovementHealthCheck() { return require('./engine-state')._runSelfImprovementHealthCheck(this); }
+  _restoreLastSession() { return require('./engine-memory')._restoreLastSession(this); }
 
 
 
@@ -4020,11 +4054,33 @@ class HeartFlow {
 
 
 
-  // [InitHookPoints] run init.* handlers in priority order
+  // [v6.0.71] 恢复 think 主链路（委托 this.thoughtChain，被重构误删）
+  async think(input, depth) {
+    if (!this.started) throw new Error('HeartFlow not started');
+    if (!input) return { error: 'input is required' };
+    const TCMod = _ThoughtChain();
+    const chain = this.thoughtChain || new (TCMod.ThoughtChain)(this);
+    if (depth) chain.setDepth(depth);
+    return await chain.run(input);
+  }
 
+  async thinkFast(input) {
+    return this.think(input, _ThoughtChain().REASONING_DEPTH.BASIC);
+  }
+
+  async thinkDeep(input) {
+    return this.think(input, _ThoughtChain().REASONING_DEPTH.COMPREHENSIVE);
+  }
+
+  // [v6.0.71] 优雅关闭：保存记忆并停止后台任务
+  shutdown() {
+    try { require('./engine-memory')._saveAllMemories(this); } catch (_) {}
+    this.started = false;
+  }
+
+  // [v6.0.71] 委托给 hook-points-runner
   _runInitHookPoints() {
-    // [v6.0.71] 委托给 hook-points-runner
-    const { runInitHookPoints } = require('./core/hook-points-runner.js');
+    const { runInitHookPoints } = require('./hook-points-runner.js');
     runInitHookPoints(this);
   }
 
