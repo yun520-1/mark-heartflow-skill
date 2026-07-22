@@ -110,6 +110,7 @@ async function runAllTests() {
   // latency-benchmark.test removed (module not found)
   require('./ttl-preferences.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./self-scanner.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./active-inference-efe.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./assertions.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./meta-audit.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./audit-wiring.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });

@@ -436,7 +436,8 @@ class ThoughtChain {
         try {
           const AI = require('../decision/active-inference.js');
           const aiEngine = new AI.ActiveInference();
-          const candidates = (hypotheses || []).map(h => ({
+          const _hypotheses = ctx.stages.find(s => s.name === 'HYPOTHESES')?.result?.hypotheses || [];
+          const candidates = (_hypotheses || []).map(h => ({
             label: (h.description || h || '').substring(0, 40),
             pragmaticScore: h.score || 0.5,
             uncertainty: 1 - (h.confidence || 0.5),
