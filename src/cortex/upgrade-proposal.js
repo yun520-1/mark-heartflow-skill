@@ -41,7 +41,6 @@ const IDEAL_SIZE_MAX = 5000;
  * Scan all .js files in src/core/ (excluding heartflow.js and heartflow-engine.js)
  * @returns {Array<Object>} sorted by size ascending
  */
-// [REFACTOR] TODO: scanCoreModules (555行) — 建议拆分为独立子函数
 
 function scanCoreModules() {
   const results = [];

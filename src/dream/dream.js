@@ -66,7 +66,6 @@ const DREAM_FUNCTIONS = {
 
 
 
-// [REFACTOR] TODO: existenceToScene (1527行) — 建议拆分为独立子函数
 
 function existenceToScene(existence) {
 

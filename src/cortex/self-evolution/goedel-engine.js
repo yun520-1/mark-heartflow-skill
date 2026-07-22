@@ -280,7 +280,6 @@ class GoedelEngine {
 
 
 
-  // [REFACTOR] TODO: extractFunctions() — 超长函数(1735行)，建议拆分：按阶段（解析/分类/签名提取/文档生成）拆分为独立处理函数
 
   extractFunctions(content, filePath) {
 

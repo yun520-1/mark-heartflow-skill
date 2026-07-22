@@ -38,7 +38,6 @@ const MAX_HISTORY_SIZE = 100;
 
  */
 
-// [REFACTOR] TODO: _boundedSet (755行) — 建议拆分为独立子函数
 
 function _boundedSet(map, key, value, maxSize) {
 

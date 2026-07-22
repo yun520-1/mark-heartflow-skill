@@ -187,7 +187,6 @@ class ThoughtChain {
   /**
    * 构建思维链 v2.0
    */
-  // [REFACTOR] TODO: _buildChain() — 超长函数(645行)，建议拆分：按 stage 阶段（PARSE/EXECUTE/SUMMARIZE等）拆分为独立处理器
 
   _buildChain() {
     this.stages = [];

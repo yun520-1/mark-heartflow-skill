@@ -36,7 +36,6 @@ const ROOT = path.resolve(__dirname, '../..');
 
 
 
-// [REFACTOR] TODO: readJsonFile (1135行) — 建议拆分为独立子函数
 
 function readJsonFile(filePath) {
 

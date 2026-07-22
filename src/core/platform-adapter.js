@@ -273,4 +273,3 @@ module.exports = {
   createAdapter,
   getNetworkStatus,
 };
-// TODO: P2: localMemory/remoteMemory 无上限，内存泄漏

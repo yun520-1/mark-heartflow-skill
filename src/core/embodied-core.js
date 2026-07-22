@@ -42,7 +42,6 @@ const ErrorCategory = {
  * @param {Error|string} error
  * @returns {{ category: string, message: string, recoverable: boolean }}
  */
-// [REFACTOR] TODO: classifyError (881行) — 建议拆分为独立子函数
 
 function classifyError(error) {
   const msg = (error && (error.message || String(error))) || '未知错误';
@@ -83,7 +82,6 @@ const RetryStrategy = {
  * @param {string} category
  * @returns {{ strategy: string, maxRetries: number, backoffMs: number }}
  */
-// [REFACTOR] TODO: 超长函数 selectRetryStrategy (781行) — 建议拆分为独立子函数
 
 
 

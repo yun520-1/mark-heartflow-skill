@@ -90,7 +90,6 @@ const MAX_HISTORY_SIZE = 100;    // 历史记录数组最大长度
 
  */
 
-// [REFACTOR] TODO: _boundedSet (6359行) — 建议拆分为独立子函数
 
 function _boundedSet(map, key, value, maxSize = MAX_MAP_SIZE) {
 
@@ -1335,7 +1334,6 @@ class HeartFlow {
 
 
 
-  // [REFACTOR] TODO: start() — 超长函数(2575行)，建议拆分：按初始化阶段拆分为_preInitIdentity/_preInitMemory/_initCortex/_initBridge/_initDream等子函数
 
   start() {
 

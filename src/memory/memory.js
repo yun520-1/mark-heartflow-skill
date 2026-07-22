@@ -84,7 +84,6 @@ const CAPS = {
  * 设置当前会话上下文（必须在操作记忆前调用）
  * @param {object} session - { sessionId, userId, capabilities?: string[] }
  */
-// [REFACTOR] TODO: setSession (803行) — 建议拆分为独立子函数
 
 function setSession(session) {
   if (!session || !session.sessionId) {

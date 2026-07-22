@@ -36,7 +36,6 @@ const _asyncFs = (() => {
 })();
 
 /** Resolve AES key synchronously (kept for sync APIs). */
-// [REFACTOR] TODO: _getAesKeySync (612行) — 建议拆分为独立子函数
 
 function _getAesKeySync() {
   if (_aesKeyResolved) return _aesKey;

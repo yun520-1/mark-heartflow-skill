@@ -20,7 +20,6 @@ const debugLog = require('../utils/debug-log');  // [v6.0.7] 补回缺失 requir
 
 // 记忆相关方法提取
 
-// [REFACTOR] TODO: _checkMemoryEnabled (1633行) — 建议拆分为独立子函数
 
 function _checkMemoryEnabled(hf) {
 

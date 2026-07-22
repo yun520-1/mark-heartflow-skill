@@ -107,7 +107,7 @@ async function runAllTests() {
   console.log('\n❤️ HeartLogic (heart-logic.js)');
   require('./heart-logic.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./data-eraser.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./latency-benchmark.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  // latency-benchmark.test removed (module not found)
   require('./ttl-preferences.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./self-scanner.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./assertions.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });

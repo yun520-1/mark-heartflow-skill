@@ -95,7 +95,6 @@ let _lastDreamState = DREAM_STATE.IDLE;
  * @param {*} item - 任意输入
  * @returns {string} 提取的文本
  */
-// [REFACTOR] TODO: _safeText (744行) — 建议拆分为独立子函数
 
 function _safeText(item) {
   if (item === null || item === undefined) return '';

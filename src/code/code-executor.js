@@ -407,7 +407,6 @@ function checkSandboxRestrictions(code) {
  * @param {Error} err
  * @returns {string} ExecError key
  */
-// [REFACTOR] TODO: 超长函数 classifyError (869行) — 建议拆分为独立子函数
 
 
 

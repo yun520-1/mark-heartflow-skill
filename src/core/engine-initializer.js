@@ -89,16 +89,13 @@ const _SkillEvolutionEngine = () => require('../cortex/skill-evolution-engine.js
 const _SelfPlay = () => require('../reasoning/self-play.js');
 const _CognitiveIndex = () => require('../cognitive/cognitive-load.js');
 
-// [REFACTOR] TODO: _boundedPush (795行) — 建议拆分为独立子函数
 
 function _boundedPush(arr, item, maxSize = 500) {
   if (arr.length >= maxSize) arr.shift();
   arr.push(item);
 }
 
-// [REFACTOR] TODO: start() — 超长函数(679行)，建议拆分：按初始化阶段（身份/记忆/心理学/决策/交流层）拆分为独立初始化函数
 
-// [REFACTOR] TODO: 超长函数 start (682行) — 建议拆分为独立子函数
 
 
 

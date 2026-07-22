@@ -39,7 +39,6 @@ const EVAL_PARAM_TYPES = {
  * @param {Object<string, Object>} schema - 参数模式定义
  * @returns {{ valid: boolean, errors: string[] }}
  */
-// [REFACTOR] TODO: validateEvalInput (523行) — 建议拆分为独立子函数
 
 function validateEvalInput(args, schema = EVAL_PARAM_TYPES) {
   const errors = [];

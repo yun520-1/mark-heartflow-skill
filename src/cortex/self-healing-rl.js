@@ -68,7 +68,6 @@ const MAX_QTABLE_SIZE = 500;
 
  */
 
-// [REFACTOR] TODO: _boundedSet (1787行) — 建议拆分为独立子函数
 
 function _boundedSet(map, key, value, maxSize) {
 
@@ -248,7 +247,6 @@ async function _saveQMeta() {
 
 
 
-// [REFACTOR] TODO: 超长函数 _touchEntry (760行) — 建议拆分为独立子函数
 
 
 

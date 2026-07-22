@@ -282,7 +282,6 @@ class DecisionRouter {
 
    */
 
-  // [REFACTOR] TODO: constructor() — 超长函数(825行)，建议拆分：按决策路径（code/skill/debug/learn）拆分为独立策略处理器
 
   constructor(heartFlow, options = {}) {
 
