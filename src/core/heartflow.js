@@ -3868,6 +3868,22 @@ class HeartFlow {
       _log.info('init', 'SelfBenchmark 加载成功（外部锚定防自欺已启用）');
     } catch (e) { _boundedPush(this._initErrors, { module: 'benchmark', error: e.message }, MAX_HISTORY_SIZE); }
 
+    // ─── [v6.1.0] WorldLandscape 世界格局分析引擎（AI人类核心认知能力）───
+    try {
+      const { WorldLandscape, ROUTES } = require('../research/world-landscape.js');
+      const { createWorldAwareOrchestrator } = require('./../cortex/self-evolution/strategy-signal-map.js');
+      this.worldLandscape = new WorldLandscape({ projectRoot: this.projectRoot || process.cwd() });
+      this._modules['worldLandscape'] = this.worldLandscape;
+      // 世界感知战略推演层：让心虫对世界格局新闻产出自身进化优先级
+      this.worldAwareStrategy = createWorldAwareOrchestrator({ projectRoot: this.projectRoot || process.cwd() });
+      this._modules['worldAwareStrategy'] = this.worldAwareStrategy;
+      for (const route of Object.keys(ROUTES)) {
+        HeartFlow.ALLOWED_ROUTES.add(route);
+      }
+      HeartFlow.ALLOWED_ROUTES.add('worldAwareStrategy.orchestrate');
+      _log.info('init', 'WorldLandscape 加载成功', { routes: Object.keys(ROUTES).join(', ') });
+    } catch (e) { _boundedPush(this._initErrors, { module: 'worldLandscape', error: e.message }, MAX_HISTORY_SIZE); }
+
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
 
     this.heartflow = this;  // 让 dispatch('heartflow.introspect') 能找到实例

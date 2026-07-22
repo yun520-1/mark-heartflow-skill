@@ -111,6 +111,9 @@ async function runAllTests() {
   require('./ttl-preferences.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./self-scanner.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./active-inference-efe.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./world-landscape.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./strategy-signal-map.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./world-knowledge.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./assertions.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./meta-audit.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./audit-wiring.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
