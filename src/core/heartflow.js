@@ -3842,10 +3842,19 @@ class HeartFlow {
 
     // ─── [v6.1.0] WorldTreeBridge — 心虫 ↔ 外部 World Tree 记忆系统适配层
     try {
-      const { ROUTES: wtRoutes } = require('../memory/worldtree-bridge');
+      const { ROUTES: wtRoutes, CATEGORIES, VALID_CATEGORIES } = require('../memory/worldtree-bridge');
       for (const route of Object.keys(wtRoutes)) {
         HeartFlow.ALLOWED_ROUTES.add(route);
       }
+      // [v6.0.71] 注册 worldtree 模块对象，使 dispatch('worldtree.xxx') 可用
+      const wtModule = {};
+      for (const [fullRoute, fn] of Object.entries(wtRoutes)) {
+        const method = fullRoute.slice(fullRoute.indexOf('.') + 1);
+        wtModule[method] = fn;
+      }
+      wtModule.CATEGORIES = CATEGORIES;
+      wtModule.VALID_CATEGORIES = VALID_CATEGORIES;
+      this._modules['worldtree'] = wtModule;
       _log.info('init', 'WorldTreeBridge 加载成功', { routes: Object.keys(wtRoutes).join(', ') });
     } catch (e) { _boundedPush(this._initErrors, { module: 'worldtree', error: e.message }, MAX_HISTORY_SIZE); }
 
