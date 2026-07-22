@@ -6212,21 +6212,61 @@ class HeartFlow {
     const run = await this.evolution._executeEvolve({ trigger: 'signal_auto', auto: true });
     const improved = (run && ((run.improvements && run.improvements.length > 0) || (typeof run.improvement === 'number' && run.improvement > 0)));
     if (!improved) return; // 无真改进 → 静默，不 commit
+
+    // [v6.0.67] 接通 GoedelEngine：对可自动化的改进直接 apply patch
+    let goedelApplied = 0;
+    try {
+      const { GoedelEngine } = require('./../cortex/self-evolution/goedel-engine.js');
+      if (!this._goedel) this._goedel = new GoedelEngine(this.projectRoot || process.cwd());
+      const actionable = (run.improvements || []).filter(imp => {
+        const action = (imp.action || '').toLowerCase();
+        return ['拆分', '补', '修复', '删除', '合并', '重构', '防御', '测试', '标注', '清理'].some(k => action.includes(k));
+      });
+      for (const imp of actionable) {
+        try {
+          const proposal = this._goedel.propose({
+            target: this._guessTargetFromImprovement(imp),
+            description: imp.action,
+            priority: imp.priority || 'medium'
+          });
+          if (!proposal.valid) continue;
+          const diff = this._goedel.generate(proposal.proposal || proposal, {});
+          const testResult = await this._goedel.test(proposal.proposal || proposal, diff);
+          if (!testResult.passed) {
+            console.error('[AUTO-EVOLVE] 改进测试未通过，跳过:', imp.action);
+            continue;
+          }
+          const commitResult = await this._goedel.commit(proposal.proposal || proposal, diff, testResult);
+          if (commitResult.success) goedelApplied++;
+        } catch (e) { /* 单条改进失败不阻断 */ }
+      }
+    } catch (e) { /* GoedelEngine 未加载，降级到仅 commit */ }
+
     // 有真改进 → 本地 commit(不 push)，并落升级历史
     try {
       const { execSync } = require('child_process');
       const fs = require('fs');
       const root = this.projectRoot || process.cwd();
-      const msg = 'self-evolution(auto): 信号驱动进化 ' + (run.learning && run.learning.summary ? run.learning.summary.slice(0, 80) : '');
-      // 只提交源码与配置，排除运行时产物 data/ (避免噪声 commit)
-      // 先 reset index 清掉任何遗留 staged 文件，再精准 add 源码范围
+      const msg = 'self-evolution(auto): 信号驱动进化 ' + (run.learning && run.learning.summary ? run.learning.summary.slice(0, 80) : '') + (goedelApplied > 0 ? ' | GoedelEngine apply ' + goedelApplied + ' 条' : '');
       const files = ['src/', 'test/', 'VERSION', 'package.json', 'package-lock.json'];
       execSync('git reset -q && git add ' + files.join(' ') + ' && git commit -q -m ' + JSON.stringify(msg), { cwd: root, encoding: 'utf8', timeout: 30000 });
       const { SmartUpgradeEngine } = require('./../cortex/smart-upgrade-engine.js');
       const s = new SmartUpgradeEngine(root);
       s.recordSelfUpgrade({ version: (() => { try { return fs.readFileSync(root + '/VERSION', 'utf8').trim(); } catch(e){ return 'unknown'; } })(), description: '信号驱动自动进化(有真改进)', impact: 4, type: 'self-heal' });
-      console.error('[AUTO-EVOLVE] 真改进已本地 commit，待你 push：' + msg.slice(0, 60));
+      console.error('[AUTO-EVOLVE] 真改进已本地 commit' + (goedelApplied > 0 ? '，GoedelEngine 自动应用 ' + goedelApplied + ' 条' : '') + '，待你 push：' + msg.slice(0, 60));
     } catch (e) { /* commit 失败不阻断 */ }
+  }
+
+  _guessTargetFromImprovement(imp) {
+    const action = (imp.action || '').toLowerCase();
+    if (action.includes('atomic-write')) return 'src/utils/atomic-write.js';
+    if (action.includes('超长函数') || action.includes('拆分')) return 'src/utils/atomic-write.js';
+    if (action.includes('decision-verifier')) return 'src/core/decision-verifier.js';
+    if (action.includes('engine-dispatcher')) return 'src/core/engine-dispatcher.js';
+    if (action.includes('engine-hook-points')) return 'src/core/engine-hook-points.js';
+    if (action.includes('沉默') || action.includes('catch')) return 'src/core/heartflow.js';
+    if (action.includes('todo')) return 'src/core/heartflow.js';
+    return 'src/utils/atomic-write.js'; // 默认目标
   }
 
   thinkFast(input) { return EngineReasoner.thinkFast(this, input); }
