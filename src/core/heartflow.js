@@ -6214,7 +6214,7 @@ class HeartFlow {
     if (!improved) return; // 无真改进 → 静默，不 commit
 
     // [v6.0.67] 接通 RuleBasedGenerator：零成本确定性 patch，覆盖 70% 常见改进
-    let goedelApplied = 0;
+    let ruleApplied = 0;
     try {
       const { RuleBasedGenerator } = require('./../cortex/self-evolution/rule-based-generator.js');
       if (!this._ruleGen) this._ruleGen = new RuleBasedGenerator(this.projectRoot || process.cwd());
@@ -6250,7 +6250,7 @@ class HeartFlow {
       const { execSync } = require('child_process');
       const fs = require('fs');
       const root = this.projectRoot || process.cwd();
-      const msg = 'self-evolution(auto): 信号驱动进化 ' + (run.learning && run.learning.summary ? run.learning.summary.slice(0, 80) : '') + (goedelApplied > 0 ? ' | GoedelEngine apply ' + goedelApplied + ' 条' : '');
+      const msg = 'self-evolution(auto): 信号驱动进化 ' + (run.learning && run.learning.summary ? run.learning.summary.slice(0, 80) : '') + (ruleApplied > 0 ? ' | RuleBasedGenerator apply ' + ruleApplied + ' 条' : '');
       const files = ['src/', 'test/', 'VERSION', 'package.json', 'package-lock.json'];
       execSync('git reset -q && git add ' + files.join(' ') + ' && git commit -q -m ' + JSON.stringify(msg), { cwd: root, encoding: 'utf8', timeout: 30000 });
       const { SmartUpgradeEngine } = require('./../cortex/smart-upgrade-engine.js');
