@@ -271,6 +271,15 @@ class EngineReasoner {
       }
     } catch(e) { /* 非关键 */ }
 
+    // ★ 任务紧迫性估计器：前置判断输入紧迫性，计入上下文
+    try {
+      if (hf.taskUrgencyEstimator) {
+        const prev = hf._lastUrgency || null;
+        hf._urgencyEstimate = hf.taskUrgencyEstimator.estimate(input, { previousUrgency: prev });
+        hf._lastUrgency = hf._urgencyEstimate.urgency;
+      }
+    } catch(e) { /* 非关键 */ }
+
 
     // ─── 快速响应"启动引擎"类请求（不走完整推理链路）────────────
 
@@ -1088,6 +1097,13 @@ try { hf._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
     try {
       if (hf.continuousLearner && hf.lesson && tcResult) {
         hf.continuousLearner.reflect(tcResult, input, hf.lesson);
+      }
+    } catch(e) { /* 非关键 */ }
+
+    // ★ 自主学习脉动：后置触发自调度学习循环
+    try {
+      if (hf.learningPulse && tcResult) {
+        hf.learningPulse.beat(tcResult);
       }
     } catch(e) { /* 非关键 */ }
 

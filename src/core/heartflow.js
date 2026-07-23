@@ -455,6 +455,10 @@ const _KnowledgeExplorer = _lazy('knowledgeExplorer', () => require('../cortex/k
 
 const _LearningOrchestrator = _lazy('learningOrchestrator', () => require('../cortex/learning-orchestrator.js'));
 
+const _LearningPulse = _lazy('learningPulse', () => require('../cortex/learning-pulse.js'));
+
+const _TaskUrgency = _lazy('taskUrgency', () => require('../cortex/task-urgency-estimator.js'));
+
 const _HumorGenerator = _lazy('humorGenerator', () => require('../humor/humor-generator.js'));
 
 const _IntuitionEngine = _lazy('intuitionEngine', () => require('../intuition/intuition-engine.js'));
@@ -1622,6 +1626,10 @@ class HeartFlow {
     this.knowledgeExplorer = null;
 
     this.learningOrchestrator = null;
+
+    this.learningPulse = null;
+
+    this.taskUrgencyEstimator = null;
 
     // MetaJudgment — 延迟加载 (~50ms, 非热路径)
 
@@ -3917,6 +3925,16 @@ class HeartFlow {
     try {
       this.learningOrchestrator = new (_LearningOrchestrator().LearningOrchestrator)(this);
     } catch (e) { _boundedPush(this._initErrors, { module: 'learningOrchestrator', error: e.message }, MAX_HISTORY_SIZE); }
+
+    // ─── [v6.2.3] LearningPulse 自主学习脉动：每N次 think 自动触发学习流水线 ──
+    try {
+      this.learningPulse = new (_LearningPulse().LearningPulse)(this);
+    } catch (e) { _boundedPush(this._initErrors, { module: 'learningPulse', error: e.message }, MAX_HISTORY_SIZE); }
+
+    // ─── [v6.2.3] TaskUrgencyEstimator 任务紧迫性估计器 ──
+    try {
+      this.taskUrgencyEstimator = new (_TaskUrgency().TaskUrgencyEstimator)();
+    } catch (e) { _boundedPush(this._initErrors, { module: 'taskUrgencyEstimator', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
 
