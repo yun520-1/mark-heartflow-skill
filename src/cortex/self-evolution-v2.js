@@ -73,9 +73,10 @@ class SelfEvolutionV2 {
       return []; // 冷却中，不刷网
     }
     this._lastExplore = now;
-    // [v6.0.49 H1-P0] opt-in 出网：默认关，需 HEARTFLOW_SELF_EVOLVE_EXPLORE=1 才搜 arXiv
-    if (process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE !== '1') {
-      return []; // 静默不出网，避免绕过安全基座
+    // [v6.1.2] 默认开启联网探索：网络直连已通, 沉默失效=断外部水源, 必须默认开
+    // 仍保留 opt-out: 设 HEARTFLOW_SELF_EVOLVE_EXPLORE=0 可关(安全: 不强制出网)
+    if (process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE === '0') {
+      return []; // 显式关闭才静默不出网
     }
     try {
       // [v6.0.64] 搜索词对应心虫真实能力(ToM/好奇心/持续学习/因果/世界模型), 已在 _fetchArxiv 内限 AI 分类

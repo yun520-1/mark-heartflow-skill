@@ -77,8 +77,8 @@ class SelfScanner {
       try { content = fs.readFileSync(f, 'utf8'); } catch (e) { continue; }
       const rel = path.relative(this.projectRoot, f);
 
-      // TODO/FIXME 计数
-      const todos = (content.match(/TODO|FIXME|XXX/g) || []).length;
+      // TODO/FIXME 计数（仅带冒号或独立词的真实标记, 排除 XXX 占位符误匹配）
+      const todos = (content.match(/\b(?:TODO|FIXME|XXX):/g) || []).length;
       result.todoCount += todos;
 
       // 沉默空 catch（catch (e) {} 或 catch(e){}）
