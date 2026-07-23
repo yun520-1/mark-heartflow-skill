@@ -126,6 +126,8 @@ async function runAllTests() {
   require('./gap-executor.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./learning-pulse.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./task-urgency-estimator.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./self-diagnosis.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./what-learned.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./evolution-state.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./atomic-write.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./self-evolution-v2.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });

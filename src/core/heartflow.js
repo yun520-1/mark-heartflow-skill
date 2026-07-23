@@ -459,6 +459,10 @@ const _LearningPulse = _lazy('learningPulse', () => require('../cortex/learning-
 
 const _TaskUrgency = _lazy('taskUrgency', () => require('../cortex/task-urgency-estimator.js'));
 
+const _SelfDiagnosis = _lazy('selfDiagnosis', () => require('./self-diagnosis.js'));
+
+const _WhatLearned = _lazy('whatLearned', () => require('./what-learned.js'));
+
 const _HumorGenerator = _lazy('humorGenerator', () => require('../humor/humor-generator.js'));
 
 const _IntuitionEngine = _lazy('intuitionEngine', () => require('../intuition/intuition-engine.js'));
@@ -1630,6 +1634,10 @@ class HeartFlow {
     this.learningPulse = null;
 
     this.taskUrgencyEstimator = null;
+
+    this.selfDiagnosis = null;
+
+    this.whatLearned = null;
 
     // MetaJudgment — 延迟加载 (~50ms, 非热路径)
 
@@ -3935,6 +3943,16 @@ class HeartFlow {
     try {
       this.taskUrgencyEstimator = new (_TaskUrgency().TaskUrgencyEstimator)();
     } catch (e) { _boundedPush(this._initErrors, { module: 'taskUrgencyEstimator', error: e.message }, MAX_HISTORY_SIZE); }
+
+    // ─── [v6.2.3] SelfDiagnosis 自我诊断：跑一圈所有自检模块吐诚实报告 ──
+    try {
+      this.selfDiagnosis = new (_SelfDiagnosis().SelfDiagnosis)(this);
+    } catch (e) { _boundedPush(this._initErrors, { module: 'selfDiagnosis', error: e.message }, MAX_HISTORY_SIZE); }
+
+    // ─── [v6.2.3] WhatLearned 学习汇报：让心虫能回答"你学得怎么样了" ──
+    try {
+      this.whatLearned = new (_WhatLearned().WhatLearned)(this);
+    } catch (e) { _boundedPush(this._initErrors, { module: 'whatLearned', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
 
