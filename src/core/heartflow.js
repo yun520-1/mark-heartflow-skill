@@ -4136,13 +4136,20 @@ class HeartFlow {
         result.blindSpotAnalysis = blindSpot;
       }
     } catch (_) { /* 盲点检测失败不阻断主链路 */ }
-    // [v6.1.6] 对抗综合器接入主链路: 争议性议题自动多立场推演, 不单向结论
+    // [v6.1.6] 对抗综合器接入主链路
     try {
       const AdversarialSynthesis = require('../cortex/self-evolution/adversarial-synthesis.js');
       if (!this._adversarial) this._adversarial = new AdversarialSynthesis();
       const adv = this._adversarial.synthesize(input);
       if (adv && adv.ok) result.adversarialSynthesis = adv;
     } catch (_) { /* 对抗推演失败不阻断主链路 */ }
+    // [v6.1.7] 元认知诚实外显层: 基于校准结果显式说"我不确定", 不强行结论
+    try {
+      const MetaCalibration = require('./meta-calibration.js');
+      if (!this._metaCalibration) this._metaCalibration = new MetaCalibration();
+      const mc = this._metaCalibration.annotate({ calibration: result.calibration, topic: input, blindSpot: result.blindSpotAnalysis });
+      if (mc && typeof mc === 'object') result.metaCalibration = mc;
+    } catch (_) { /* 元认知标注失败不阻断主链路 */ }
     return result;
   }
 
