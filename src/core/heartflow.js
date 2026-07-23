@@ -4126,7 +4126,24 @@ class HeartFlow {
     const TCMod = _ThoughtChain();
     const chain = this.thoughtChain || new (TCMod.ThoughtChain)(this);
     if (depth) chain.setDepth(depth);
-    return await chain.run(input);
+    const result = await chain.run(input);
+    // [v6.1.5] 盲点打破器接入主链路
+    try {
+      const BlindSpotBreaker = require('../cortex/blind-spot-breaker.js');
+      if (!this._blindSpotBreaker) this._blindSpotBreaker = new BlindSpotBreaker();
+      const blindSpot = this._blindSpotBreaker.process(input, { result });
+      if (blindSpot && typeof blindSpot === 'object') {
+        result.blindSpotAnalysis = blindSpot;
+      }
+    } catch (_) { /* 盲点检测失败不阻断主链路 */ }
+    // [v6.1.6] 对抗综合器接入主链路: 争议性议题自动多立场推演, 不单向结论
+    try {
+      const AdversarialSynthesis = require('../cortex/self-evolution/adversarial-synthesis.js');
+      if (!this._adversarial) this._adversarial = new AdversarialSynthesis();
+      const adv = this._adversarial.synthesize(input);
+      if (adv && adv.ok) result.adversarialSynthesis = adv;
+    } catch (_) { /* 对抗推演失败不阻断主链路 */ }
+    return result;
   }
 
   async thinkFast(input) {
