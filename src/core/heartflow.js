@@ -291,6 +291,8 @@ const _SelfVerifier = _lazy('selfVerifier', () => require('../identity/self-veri
 
 const _LessonBank = _lazy('lessonBank', () => require('../cortex/lesson-bank.js'));
 
+const _ExperienceDistiller = _lazy('experienceDistiller', () => require('../cortex/experience-distiller.js'));
+
 const _TopicScope = _lazy('topicScope', () => require('../memory/topic-scope.js'));
 
 const _LessonStorage = _lazy('lessonStorage', () => require('../cortex/lessons/lesson-storage.js'));
@@ -1128,6 +1130,8 @@ class HeartFlow {
 
     this.skillGenerator = null;
 
+    this.experienceDistiller = null;
+
     this.self = null;
 
     this.being = null;
@@ -1604,6 +1608,8 @@ class HeartFlow {
     this.dreamConsolidation = new (_DreamConsolidation().DreamConsolidation)(this.memory);
 
     this.lesson = _LessonBank().lessonBank || _LessonBank();
+
+    this.experienceDistiller = new (_ExperienceDistiller().ExperienceDistiller)();
 
     // MetaJudgment — 延迟加载 (~50ms, 非热路径)
 

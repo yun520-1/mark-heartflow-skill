@@ -261,6 +261,15 @@ class EngineReasoner {
     } catch(e) { /* 巡检失败不阻断思考 */ }
 
 
+    // ★ 经验蒸馏器：前置召回，匹配历史抽象注入上下文
+    try {
+      if (hf.experienceDistiller) {
+        const related = hf.experienceDistiller.recall(input, 3);
+        if (related.length > 0) {
+          hf._experienceAbstractions = related;
+        }
+      }
+    } catch(e) { /* 非关键 */ }
 
 
     // ─── 快速响应"启动引擎"类请求（不走完整推理链路）────────────
@@ -1067,6 +1076,13 @@ try { hf._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
 
     } catch(e) { /* non-critical */ }
 
+
+    // ★ 经验蒸馏器：后置蒸馏，从本次 think 结果提取可复用抽象
+    try {
+      if (hf.experienceDistiller && tcResult) {
+        hf.experienceDistiller.distill(tcResult, input);
+      }
+    } catch(e) { /* 非关键 */ }
 
 
     return tcResult;
