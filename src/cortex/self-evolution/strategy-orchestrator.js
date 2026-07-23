@@ -59,6 +59,19 @@ function _matchSignals(text, keywords) {
   return hits;
 }
 
+// [v6.1.3] 反自欺增强：下行/脆弱面信号词表。推演若全无反向输入，标注乐观偏置盲区
+const DOWNSIDE_SIGNALS = [
+  '但', '风险', '脆弱', '下滑', '衰退', '冲突', '失败', '亏损', '恶化', '压力',
+  '威胁', '危机', '断供', '空心化', '失业', '外移', '贬值', '爆雷', '缺口',
+  'risk', 'decline', 'recession', 'conflict', 'failure', 'loss', 'crisis', 'threat',
+  'downside', 'vulnerab', 'fragile', 'hollow'
+];
+
+function _hasDownside(text) {
+  const lower = (text || '').toLowerCase();
+  return DOWNSIDE_SIGNALS.some(kw => lower.includes(kw.toLowerCase()));
+}
+
 class StrategyOrchestrator {
   /**
    * @param {object} opts
@@ -131,6 +144,11 @@ class StrategyOrchestrator {
       .filter(p => p.score > 0)
       .sort((a, b) => b.score - a.score);
 
+    // [v6.1.3] 反自欺盲区检测：若所有信号文本都不含下行/脆弱面词汇，推演天然乐观偏置
+    const allText = valid.map(s => s.text || '').join(' ');
+    const hasDownside = _hasDownside(allText);
+    const blindSpot = hasDownside ? null : 'optimism_bias_no_downside_signal';
+
     const decision = {
       ok: true,
       ts: Date.now(),
@@ -138,6 +156,10 @@ class StrategyOrchestrator {
       scores,
       priorities,
       topPriority: priorities.length ? priorities[0].dimension : null,
+      blindSpot,
+      blindSpotNote: blindSpot
+        ? '推演输入全为利好/中性信号，缺反向脆弱面；按反自欺原则应先列下行风险再下结论'
+        : null,
       internalWeaknessScan: internalWeaknesses
         ? { todoCount: internalWeaknesses.todoCount, silentCatches: internalWeaknesses.silentCatches, longFunctions: internalWeaknesses.longFunctions ? internalWeaknesses.longFunctions.length : 0, untestedModules: internalWeaknesses.untestedModules ? internalWeaknesses.untestedModules.length : 0, coreFileSize: internalWeaknesses.coreFileSize || {} }
         : null,
