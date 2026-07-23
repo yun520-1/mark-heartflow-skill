@@ -449,6 +449,8 @@ const _EmpathyResponder = _lazy('empathyResponder', () => require('../emotion/em
 
 const _CreativityEngine = _lazy('creativityEngine', () => require('../creativity/creativity-engine.js'));
 
+const _ContinuousLearner = _lazy('continuousLearner', () => require('../cortex/continuous-learner.js'));
+
 const _HumorGenerator = _lazy('humorGenerator', () => require('../humor/humor-generator.js'));
 
 const _IntuitionEngine = _lazy('intuitionEngine', () => require('../intuition/intuition-engine.js'));
@@ -1610,6 +1612,8 @@ class HeartFlow {
     this.lesson = _LessonBank().lessonBank || _LessonBank();
 
     this.experienceDistiller = new (_ExperienceDistiller().ExperienceDistiller)();
+
+    this.continuousLearner = new (_ContinuousLearner().ContinuousLearner)();
 
     // MetaJudgment — 延迟加载 (~50ms, 非热路径)
 

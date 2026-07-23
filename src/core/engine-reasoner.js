@@ -1084,6 +1084,13 @@ try { hf._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
       }
     } catch(e) { /* 非关键 */ }
 
+    // ★ 持续学习引擎：后置反思，从 think 结果中检测异常/低置信/空转模式
+    try {
+      if (hf.continuousLearner && hf.lesson && tcResult) {
+        hf.continuousLearner.reflect(tcResult, input, hf.lesson);
+      }
+    } catch(e) { /* 非关键 */ }
+
 
     return tcResult;
 
