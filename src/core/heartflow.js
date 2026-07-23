@@ -453,6 +453,8 @@ const _ContinuousLearner = _lazy('continuousLearner', () => require('../cortex/c
 
 const _KnowledgeExplorer = _lazy('knowledgeExplorer', () => require('../cortex/knowledge-explorer.js'));
 
+const _LearningOrchestrator = _lazy('learningOrchestrator', () => require('../cortex/learning-orchestrator.js'));
+
 const _HumorGenerator = _lazy('humorGenerator', () => require('../humor/humor-generator.js'));
 
 const _IntuitionEngine = _lazy('intuitionEngine', () => require('../intuition/intuition-engine.js'));
@@ -1618,6 +1620,8 @@ class HeartFlow {
     this.continuousLearner = new (_ContinuousLearner().ContinuousLearner)();
 
     this.knowledgeExplorer = null;
+
+    this.learningOrchestrator = null;
 
     // MetaJudgment — 延迟加载 (~50ms, 非热路径)
 
@@ -3908,6 +3912,11 @@ class HeartFlow {
         this.knowledgeExplorer.absorbLearnerSignals(this.continuousLearner.getStats());
       }
     } catch (e) { _boundedPush(this._initErrors, { module: 'knowledgeExplorer', error: e.message }, MAX_HISTORY_SIZE); }
+
+    // ─── [v6.2.2] LearningOrchestrator 学习编排器：联通4个学习模块 ──
+    try {
+      this.learningOrchestrator = new (_LearningOrchestrator().LearningOrchestrator)(this);
+    } catch (e) { _boundedPush(this._initErrors, { module: 'learningOrchestrator', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
 
