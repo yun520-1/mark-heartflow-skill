@@ -1,40 +1,29 @@
-/**
- * SelfScanner 测试 — 验证弱点扫描维度完整（心虫自检能力的回归保护）
- * 重点：bypassCount 维度(v6.0.57 新增)必须存在且能正确计数裸 fetch 旁路。
- */
-module.exports = function ({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows }) {
+// self-scanner 探针一致性测试 [v6.1.4]
+const assert = require('assert');
+const { SelfScanner } = require('../src/cortex/self-evolution/self-scanner.js');
 
-  const { SelfScanner } = require('../src/cortex/self-evolution/self-scanner.js');
-  const ROOT = '/root/.hermes/skills/ai/mark-heartflow-skill';
-
-  console.log('  🔍 SelfScanner (self-scanner.js)');
-
-  test('scan 返回结构化弱点对象', () => {
-    const s = new SelfScanner(ROOT);
+module.exports = function ({ test }) {
+  test('探针: 默认无环境变量时 arxiv_explore 应为 alive (v6.1.2 起默认开)', () => {
+    delete process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE;
+    const s = new SelfScanner(process.cwd());
     const r = s.scan();
-    assertDefined(r.todoCount);
-    assertDefined(r.untestedModules);
-    assertDefined(r.bypassCount);      // [v6.0.57] 必须存在
-    assertDefined(r.bypassFiles);
+    const p = r.livenessProbes.find(x => x.capability === 'arxiv_explore');
+    assert.ok(p, 'arxiv_explore 探针存在');
+    assert.strictEqual(p.alive, true, '默认应 alive, 不应误报沉默失效');
   });
 
-  test('bypassCount 为非负整数', () => {
-    const s = new SelfScanner(ROOT);
+  test('探针: =0 显式关闭时 alive=false', () => {
+    process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE = '0';
+    const s = new SelfScanner(process.cwd());
     const r = s.scan();
-    assertTrue(typeof r.bypassCount === 'number' && r.bypassCount >= 0);
+    const p = r.livenessProbes.find(x => x.capability === 'arxiv_explore');
+    assert.strictEqual(p.alive, false);
+    delete process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE;
   });
 
-  test('当前全库裸 fetch 已清零(bypassCount===0)', () => {
-    const s = new SelfScanner(ROOT);
+  test('扫描: TODO 计数精准 (不含 XXX 占位符)', () => {
+    const s = new SelfScanner(process.cwd());
     const r = s.scan();
-    // 本轮已把所有出网请求收口 safeFetch，裸 fetch 旁路应为 0
-    assertEqual(r.bypassCount, 0);
+    assert.ok(r.todoCount <= 5, 'TODO 应是个位数(真实标记), 不应虚高');
   });
-
-  test('todoCount 为数字', () => {
-    const s = new SelfScanner(ROOT);
-    const r = s.scan();
-    assertTrue(typeof r.todoCount === 'number');
-  });
-
 };

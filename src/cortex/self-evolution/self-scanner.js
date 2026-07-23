@@ -182,13 +182,16 @@ class SelfScanner {
     try {
       const { SelfEvolutionV2: V2 } = require('../self-evolution-v2.js');
       const ex = new V2(this.projectRoot);
-      const alive = process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE === '1';
+      // [v6.1.2] 默认开启: 仅 HEARTFLOW_SELF_EVOLVE_EXPLORE=0 才关; 否则视为意图开启
+      const optOut = process.env.HEARTFLOW_SELF_EVOLVE_EXPLORE === '0';
+      // 探针看配置意图(不实测网络, 避免 scan 变慢); 真实验活由 explore() 返回非空体现
+      const alive = !optOut;
       probes.push({
         capability: 'arxiv_explore',
         alive,
         detail: alive
-          ? '开关已开, 需用 explore() 实际返回非空验证(见 arxivGaps)'
-          : 'HEARTFLOW_SELF_EVOLVE_EXPLORE!=1 -> 探索层默认静默关闭, 进化从未联网对标(沉默失效)'
+          ? '探索层 v6.1.2 起默认开(仅=0 才关), 联网对标已启用'
+          : 'HEARTFLOW_SELF_EVOLVE_EXPLORE=0 -> 显式关闭, 进化不出网对标'
       });
     } catch (e) {
       probes.push({ capability: 'arxiv_explore', alive: false, detail: 'explorer 加载失败: ' + e.message });
