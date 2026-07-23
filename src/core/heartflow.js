@@ -451,6 +451,8 @@ const _CreativityEngine = _lazy('creativityEngine', () => require('../creativity
 
 const _ContinuousLearner = _lazy('continuousLearner', () => require('../cortex/continuous-learner.js'));
 
+const _KnowledgeExplorer = _lazy('knowledgeExplorer', () => require('../cortex/knowledge-explorer.js'));
+
 const _HumorGenerator = _lazy('humorGenerator', () => require('../humor/humor-generator.js'));
 
 const _IntuitionEngine = _lazy('intuitionEngine', () => require('../intuition/intuition-engine.js'));
@@ -1614,6 +1616,8 @@ class HeartFlow {
     this.experienceDistiller = new (_ExperienceDistiller().ExperienceDistiller)();
 
     this.continuousLearner = new (_ContinuousLearner().ContinuousLearner)();
+
+    this.knowledgeExplorer = null;
 
     // MetaJudgment — 延迟加载 (~50ms, 非热路径)
 
@@ -3893,6 +3897,17 @@ class HeartFlow {
       HeartFlow.ALLOWED_ROUTES.add('worldAwareStrategy.orchestrate');
       _log.info('init', 'WorldLandscape 加载成功', { routes: Object.keys(ROUTES).join(', ') });
     } catch (e) { _boundedPush(this._initErrors, { module: 'worldLandscape', error: e.message }, MAX_HISTORY_SIZE); }
+
+    // ─── [v6.2.0] KnowledgeExplorer 知识探索器：从置信缺口→探索队列 ──
+    try {
+      const { KnowledgeExplorer } = require('../cortex/knowledge-explorer.js');
+      this.knowledgeExplorer = new KnowledgeExplorer();
+      this._modules['knowledgeExplorer'] = this.knowledgeExplorer;
+      // 注入 ContinuousLearner 的置信信号到探索器
+      if (this.continuousLearner) {
+        this.knowledgeExplorer.absorbLearnerSignals(this.continuousLearner.getStats());
+      }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'knowledgeExplorer', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
 

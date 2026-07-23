@@ -121,6 +121,7 @@ async function runAllTests() {
   require('./experience-distiller.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./strategic-restraint.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./continuous-learner.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  require('./knowledge-explorer.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./evolution-state.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./atomic-write.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./self-evolution-v2.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
