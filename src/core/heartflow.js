@@ -467,6 +467,8 @@ const _SelfDiagnosis = _lazy('selfDiagnosis', () => require('./self-diagnosis.js
 
 const _WhatLearned = _lazy('whatLearned', () => require('./what-learned.js'));
 
+const _HypothesisDriver = _lazy('hypothesisDriver', () => require('../cortex/hypothesis-driver.js'));
+
 const _HumorGenerator = _lazy('humorGenerator', () => require('../humor/humor-generator.js'));
 
 const _IntuitionEngine = _lazy('intuitionEngine', () => require('../intuition/intuition-engine.js'));
@@ -1645,6 +1647,8 @@ class HeartFlow {
     this.selfDiagnosis = null;
 
     this.whatLearned = null;
+
+    this.hypothesisDriver = null;
 
     // MetaJudgment — 延迟加载 (~50ms, 非热路径)
 
@@ -3966,6 +3970,11 @@ class HeartFlow {
       this.whatLearned = new (_WhatLearned().WhatLearned)(this);
     } catch (e) { _boundedPush(this._initErrors, { module: 'whatLearned', error: e.message }, MAX_HISTORY_SIZE); }
 
+    // ─── [v6.2.3] HypothesisDriver 假设驱动探索：被失败驱动，不是记录失败 ──
+    try {
+      this.hypothesisDriver = new (_HypothesisDriver().HypothesisDriver)(this);
+    } catch (e) { _boundedPush(this._initErrors, { module: 'hypothesisDriver', error: e.message }, MAX_HISTORY_SIZE); }
+
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
 
     this.heartflow = this;  // 让 dispatch('heartflow.introspect') 能找到实例
@@ -4236,6 +4245,21 @@ class HeartFlow {
     // ─── 后置钩子（不依赖 engine-reasoner 提前 return 分支，保证100%触发）─────
     try { if (this.continuousLearner && this.lesson && result && input) { this.continuousLearner.reflect(result, input, this.lesson); } } catch (_) { /* 非关键 */ }
     try { if (this.learningPulse) { this.learningPulse.beat(result || {}); } } catch (_) { /* 非关键 */ }
+    // 假设驱动：从 ContinuousLearner 累积摘要中提取模式，生成假设→探索队列
+    try {
+      if (this.hypothesisDriver && result) {
+        const cl = this.continuousLearner;
+        if (cl && cl._cumulativeSummary) {
+          const clInternals = cl.getStats();
+          if (clInternals && clInternals.thinkCount > 0) {
+            const summary = cl._cumulativeSummary();
+            if (summary && summary.recurringPatterns && summary.recurringPatterns.length > 0) {
+              this.hypothesisDriver.generate(summary);
+            }
+          }
+        }
+      }
+    } catch (_) { /* 非关键 */ }
     try { if (this.strategicRestraint && input) { const e = this.strategicRestraint.evaluate(input); if (e && e.restrained) result._restrainedBy = e.matches; } } catch (_) { /* 非关键 */ }
     try { if (this.strategicRestraint && input) { const m = this.strategicRestraint.checkMission(input, this.constructor.VERSION || ''); result._missionCheck = m; } } catch (_) { /* 非关键 */ }
     return result;
