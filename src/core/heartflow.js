@@ -4232,6 +4232,12 @@ class HeartFlow {
       const mc = this._metaCalibration.annotate({ calibration: result.calibration, topic: input, blindSpot: result.blindSpotAnalysis });
       if (mc && typeof mc === 'object') result.metaCalibration = mc;
     } catch (_) { /* 元认知标注失败不阻断主链路 */ }
+
+    // ─── 后置钩子（不依赖 engine-reasoner 提前 return 分支，保证100%触发）─────
+    try { if (this.continuousLearner && this.lesson && result && input) { this.continuousLearner.reflect(result, input, this.lesson); } } catch (_) { /* 非关键 */ }
+    try { if (this.learningPulse) { this.learningPulse.beat(result || {}); } } catch (_) { /* 非关键 */ }
+    try { if (this.strategicRestraint && input) { const e = this.strategicRestraint.evaluate(input); if (e && e.restrained) result._restrainedBy = e.matches; } } catch (_) { /* 非关键 */ }
+    try { if (this.strategicRestraint && input) { const m = this.strategicRestraint.checkMission(input, this.constructor.VERSION || ''); result._missionCheck = m; } } catch (_) { /* 非关键 */ }
     return result;
   }
 
