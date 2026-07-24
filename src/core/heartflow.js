@@ -4219,6 +4219,22 @@ class HeartFlow {
   async think(input, depth) {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
+
+    // ─── 前置自我反馈：检查上一次 think 是否产生行为建议 ────────
+    const fb = this._selfFeedback;
+    if (fb && fb.hasItems) {
+      // 有低置信→建议走 deep
+      const hasLowConf = fb.items.some(i => i.type === 'low_confidence');
+      const hasMisalign = fb.items.some(i => i.type === 'misaligned');
+      if (hasLowConf && (!depth || depth < 3)) {
+        depth = 3; // 自动提升深度，不额外消耗
+      }
+      // 有克制拦截→标记
+      if (hasMisalign && (!depth || depth < 2)) {
+        depth = 2;
+      }
+    }
+
     const TCMod = _ThoughtChain();
     const chain = this.thoughtChain || new (TCMod.ThoughtChain)(this);
     if (depth) chain.setDepth(depth);
@@ -4267,6 +4283,19 @@ class HeartFlow {
     } catch (_) { /* 非关键 */ }
     try { if (this.strategicRestraint && input) { const e = this.strategicRestraint.evaluate(input); if (e && e.restrained) result._restrainedBy = e.matches; } } catch (_) { /* 非关键 */ }
     try { if (this.strategicRestraint && input) { const m = this.strategicRestraint.checkMission(input, this.constructor.VERSION || ''); result._missionCheck = m; } } catch (_) { /* 非关键 */ }
+
+    // ─── 自我反馈：把 think() 产生的认知数据反馈到下次行为 ────────
+    // 不是加字段，是把已有字段处理成行为建议存在 _selfFeedback 里
+    try {
+      const fb = [];
+      const conf = result.confidence ?? result?.analysis?.confidence ?? 0.5;
+      if (conf < 0.3) fb.push({ type: 'low_confidence', detail: `置信度 ${conf.toFixed(2)}，建议承认不确定或走深路径` });
+      if (result._restrainedBy?.length > 0) fb.push({ type: 'restrained', detail: `克制引擎拦截: ${result._restrainedBy.join(', ')}` });
+      if (result._missionCheck?.aligned === false) fb.push({ type: 'misaligned', detail: result._missionCheck.feedback });
+      if (result.metaCalibration?.level === 'low') fb.push({ type: 'uncertain', detail: '元认知校准显示不确定性高' });
+      this._selfFeedback = { hasItems: fb.length > 0, items: fb, summary: fb.map(f => `[${f.type}]`).join(' ') };
+    } catch (_) { /* 非关键 */ }
+
     return result;
   }
 
