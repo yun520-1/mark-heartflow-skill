@@ -44,7 +44,21 @@ class MemoryConsolidationEngine {
     const ageMs = now - trace.lastAccess;
     // 动态强度：基于访问频率
     const strengthMs = bridge.memoryStrengthFromFrequency(trace.accessCount);
-    const retention = bridge.ebbinghausRetention(ageMs, strengthMs);
+        let retention = bridge.ebbinghausRetention(ageMs, strengthMs);
+    // [FORMULA ebbinghaus_forgetting_curve] 公式库校验
+    try {
+      if (typeof require === 'function') {
+        const { getFormulaBridge } = require('../formula/formula-bridge.js');
+        const formulaBridge = getFormulaBridge();
+        if (formulaBridge && typeof formulaBridge.calculateCorpus === 'function') {
+          const cr = formulaBridge.calculateCorpus('ebbinghaus_forgetting_curve', { t: Math.max(1, ageMs), S: Math.max(1, strengthMs) });
+          if (cr && cr.result && cr.result.value !== undefined) {
+            const formulaRet = Math.max(0, Math.min(1, cr.result.value));
+            if (Math.abs(formulaRet - retention) > 0.01) retention = formulaRet;
+          }
+        }
+      }
+    } catch (_) {}
     
     return {
       retention: +retention.toFixed(4),

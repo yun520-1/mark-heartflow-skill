@@ -135,7 +135,19 @@ class DecisionEngine {
   updateBelief(hypothesis, likelihood, evidenceMarginal) {
     const bridge = this._bridge;
     const prior = this._beliefState.get(hypothesis) || 0.5;
-    const posterior = bridge.bayesUpdate(likelihood, prior, evidenceMarginal);
+        let posterior = bridge.bayesUpdate(likelihood, prior, evidenceMarginal);
+    // [FORMULA bayes_theorem] P(B|A)*P(A)/P(B)
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const fb = getFormulaBridge();
+      if (fb && typeof fb.calculateCorpus === 'function') {
+        const cr = fb.calculateCorpus('bayesian_updating', { 'P(D|H)': likelihood, 'P(H)': prior, 'P(D)': evidenceMarginal });
+        if (cr && cr.result && cr.result.value !== undefined) {
+          const formulaP = Math.max(0, Math.min(1, cr.result.value));
+          if (Math.abs(formulaP - posterior) > 0.01) posterior = formulaP;
+        }
+      }
+    } catch (_) {}
     this._beliefState.set(hypothesis, Math.max(0, Math.min(1, posterior)));
     return +posterior.toFixed(6);
   }

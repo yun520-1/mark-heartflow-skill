@@ -245,7 +245,19 @@ const ThreePoisons = {
     if (ev && typeof ev.priorA === 'number' && typeof ev.pBA === 'number' && typeof ev.pB === 'number') {
       const bridge = this._bridge;
       if (bridge) {
-        const posterior = bridge.bayesUpdate(ev.pBA, ev.priorA, ev.pB);
+            let posterior = bridge.bayesUpdate(ev.pBA, ev.priorA, ev.pB);
+    // [FORMULA bayesian_updating]
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const fb = getFormulaBridge();
+      if (fb && typeof fb.calculateCorpus === 'function') {
+        const cr = fb.calculateCorpus('bayesian_updating', { 'P(D|H)': ev.pBA, 'P(H)': ev.priorA, 'P(D)': ev.pB });
+        if (cr && cr.result && cr.result.value !== undefined) {
+          const formulaP = Math.max(0, Math.min(1, cr.result.value));
+          if (Math.abs(formulaP - posterior) > 0.01) posterior = formulaP;
+        }
+      }
+    } catch (_) {}
         bayesUpdate = Math.abs(posterior - ev.priorA); // 信念更新幅度
         // 高信念固着 + 证据本应带来明显更新却几乎不变 → 拒绝贝叶斯更新（痴的标志）
         if (scores.belief_persistence >= 7 && bayesUpdate < 0.1) {

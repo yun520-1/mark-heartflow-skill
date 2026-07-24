@@ -22,6 +22,7 @@ class CognitiveLoadEngineV2 {
   constructor(options = {}) {
     // [v5.14.1] 共享认知桥接 — 替代重复的 _getBridge() 访问器
     this._bridge = getCognitiveBridge();
+    this._bridgeHF = typeof getFormulaBridge !== "undefined";
     // [FORMULA v5.11.0] WM容量由 EI 比值动态计算，非固定 5
     // 默认使用标准 Cowan 4±2，但在 load 计算时会动态调整
     this._baseWMCapacity = options.workingMemoryCapacity || 5;  // Cowan 4±2
@@ -72,7 +73,16 @@ class CognitiveLoadEngineV2 {
         const clValues = this._loadHistory.slice(-5).map(h => h.cl || 0);
         const variance = clValues.reduce((a, v) => a + Math.pow(v - clValues.reduce((x,y)=>x+y,0)/clValues.length, 2), 0) / clValues.length;
         const K = Math.min(2, Math.max(0.1, variance * 10)); // 方差映射到耦合强度
-        criticality = bridge.criticalitySusceptibility(K);
+            let criticality = bridge.criticalitySusceptibility(K);
+    // [FORMULA criticality_susceptibility] χ = K^{-3/2}
+    try {
+      if (bridge && typeof bridge.calculateCorpus === 'function') {
+        const cr = bridge.calculateCorpus('criticality_susceptibility', { K: Math.max(K, 0.01) });
+        if (cr && cr.result && cr.result.value !== undefined) {
+          criticality = Math.min(1, Math.max(0, cr.result.value));
+        }
+      }
+    } catch (_) {}
       }
     } catch (e) { /* non-critical */ }
     
@@ -205,7 +215,17 @@ class CognitiveLoadEngineV2 {
     if (!isFinite(challenge)) challenge = 0.5;
     if (!isFinite(skill)) skill = 0.5;
     const bridge = this._bridge;
-    const flowScore = bridge.flowChannel(challenge, Math.max(0.01, skill));
+        let flowScore = bridge.flowChannel(challenge, Math.max(0.01, skill));
+    // [FORMULA flow_channel] Flow = 1 - |log₂(challenge/skill)| / max_bits
+    try {
+      if (bridge && typeof bridge.calculateCorpus === 'function') {
+        const cr = bridge.calculateCorpus('flow_channel', { challenge: Math.max(challenge,0.01), skill: Math.max(skill,0.01), max_bits: 5 });
+        if (cr && cr.result && cr.result.value !== undefined) {
+          const formulaFlow = Math.max(0, Math.min(1, cr.result.value));
+          if (Math.abs(formulaFlow - flowScore) > 0.1) flowScore = formulaFlow;
+        }
+      }
+    } catch (_) {}
     const optimalChallenge = bridge.flowOptimal(skill);
 
     let state;

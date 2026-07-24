@@ -114,7 +114,29 @@ class CognitiveLoadCalculator {
         }
       }
     } catch (e) { /* fallback to base capacity */ }
-    const rawCL = intrinsic + extraneous + germane + entropyLoad;
+    let rawCL = intrinsic + extraneous + germane + entropyLoad;
+
+    // [FORMULA cognitive_load_index] 公式库计算
+    // CL = (intrinsic + extraneous + germane) / working_memory_capacity
+    try {
+      if (bridge && typeof bridge.calculateCorpus === 'function') {
+        const cr = bridge.calculateCorpus('cognitive_load_index', {
+          intrinsic: Math.round(intrinsic),
+          extraneous: Math.round(extraneous),
+          germane: Math.round(germane),
+          working_memory_capacity: Math.round(effectiveCapacity),
+        });
+        if (cr && cr.result && cr.result.value !== undefined) {
+          const formulaCL = Math.min(1, Math.max(0, cr.result.value));
+          // 公式计算结果优先，偏差 >5% 时使用公式库的
+          const handCL = Math.min(1.0, rawCL / Math.max(effectiveCapacity, 1));
+          if (Math.abs(formulaCL - handCL) > 0.05) {
+            rawCL = formulaCL * effectiveCapacity;
+          }
+        }
+      }
+    } catch (_) {}
+
     const CL = Math.min(1.0, rawCL / effectiveCapacity);
 
     const result = {
