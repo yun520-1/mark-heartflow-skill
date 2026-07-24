@@ -3859,11 +3859,12 @@ class HeartFlow {
 
       const { FormulaModule } = require('../formula/formula-module.js');
 
-      this.formula = new FormulaModule({ formulasFile: path.join(this.rootPath, 'formulas', 'formulas.json') });
+      this.formula = new FormulaModule({ formulasFile: path.join(this.rootPath, 'formulas', 'formulas-core.json') });
 
       this._modules.formula = this.formula;
 
-      _log.info('init', 'Formula Engine 加载成功', { formulaCount: this.formula.healthCheck().formulaCount || 0 });
+      // 公式引擎懒加载：首次搜索时才真正加载文件，不阻塞 boot
+      _log.info('init', 'Formula Engine 注册成功（懒加载）');
 
       // 注入 hf 引用到 FormulaBridge，让桥接方法可兜底查公式库
       try {

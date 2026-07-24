@@ -24,6 +24,7 @@ class FormulaEngine {
       return;
     }
 
+    this.search._ensureLoaded();
     const formulaCount = this.search.formulas.length;
     console.log(`[FormulaEngine] 初始化完成，加载了 ${formulaCount} 个公式`);
     

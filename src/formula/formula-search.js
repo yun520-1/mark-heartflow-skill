@@ -8,19 +8,26 @@ const path = require('path');
 
 class FormulaSearch {
   constructor(options = {}) {
-    this.formulasFile = options.formulasFile || path.join(__dirname, '..', '..', 'formulas', 'formulas.json');
-    this.formulas = this.loadFormulas();
+    this.formulasFile = options.formulasFile || path.join(__dirname, '..', '..', 'formulas', 'formulas-core.json');
+    this.formulas = null; // 懒加载
   }
 
   loadFormulas() {
+    if (this.formulas) return this.formulas;
     try {
       const content = fs.readFileSync(this.formulasFile, 'utf-8');
       const data = JSON.parse(content);
-      return data.formulas || [];
+      this.formulas = data.formulas || [];
+      return this.formulas;
     } catch (error) {
       console.warn('[FormulaSearch] 无法加载公式库:', error.message);
-      return [];
+      this.formulas = [];
+      return this.formulas;
     }
+  }
+
+  _ensureLoaded() {
+    if (!this.formulas) this.loadFormulas();
   }
 
   /**
@@ -34,6 +41,7 @@ class FormulaSearch {
       limit = 10
     } = options;
 
+    this._ensureLoaded();
     let results = this.formulas;
 
     // 1. 关键词过滤（修复：也搜索 id 和 formula 字段）
@@ -116,6 +124,7 @@ class FormulaSearch {
    * 获取所有分类
    */
   getCategories() {
+    this._ensureLoaded();
     const cats = new Set();
     this.formulas.forEach(f => {
       if (f.category) cats.add(f.category);
@@ -128,6 +137,7 @@ class FormulaSearch {
    * 根据 ID 获取公式
    */
   getById(id) {
+    this._ensureLoaded();
     return this.formulas.find(f => f.id === id) || null;
   }
 
@@ -135,6 +145,7 @@ class FormulaSearch {
    * 根据分类获取公式
    */
   getByCategory(category, limit = 0) {
+    this._ensureLoaded();
     let results = this.formulas.filter(f => 
       f.category === category || 
       f.subcategory === category

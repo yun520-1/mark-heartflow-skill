@@ -1,0 +1,966 @@
+{
+  "metadata": {
+    "version": "5.15.2",
+    "last_updated": "2026-07-12",
+    "total_formulas": 376,
+    "categories": [
+      "biology",
+      "chemistry",
+      "cognitive_science",
+      "computer_science",
+      "earth_science",
+      "economics",
+      "engineering",
+      "mathematics",
+      "neuroscience",
+      "philosophy",
+      "physics",
+      "psychology",
+      "quantum_computing"
+    ],
+    "sources": [
+      "advanced",
+      "base",
+      "batch_merge",
+      "generated"
+    ],
+    "computable_rate": "99.9%",
+    "last_cleanup": "2026-07-10",
+    "before_count": 3529,
+    "after_count": 366,
+    "removed": {
+      "duplicate": 301,
+      "category": 1646,
+      "basic": 16,
+      "total": 1963
+    },
+    "math_removed": 1200,
+    "math_kept": 84
+  },
+  "formulas": [
+    {
+      "id": "constant_4",
+      "name": "boltzmann_constant",
+      "formula": "k_B = 1.380649e-23 J/K",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "constant_9",
+      "name": "stefan_boltzmann",
+      "formula": "σ = 5.670374419e-8 W/m²K⁴",
+      "category": "physics",
+      "subcategory": "constants",
+      "difficulty": "beginner",
+      "type": "constant"
+    },
+    {
+      "id": "quantum_quantum_entanglement_entropy",
+      "name": "Entanglement entropy",
+      "formula": "S(ρ_A) = -Tr(ρ_A log ρ_A)",
+      "category": "physics",
+      "subcategory": "quantum_computing",
+      "source": "quantum_dataset"
+    },
+    {
+      "id": "theoria_boltzmann_probabilities",
+      "name": "Canonical (Boltzmann) Probabilities",
+      "category": "physics",
+      "subcategory": "theoretical_physics",
+      "formula": "p_i = e^(-beta*E_i)/(Z(beta))",
+      "difficulty": "advanced",
+      "source": "theoria-dataset"
+    },
+    {
+      "id": "fr_a0671291-ba59-11ee-aa99-0c96e61a84b2",
+      "name": "Q_冰=水吸收的热量/k",
+      "name_en": "Q_ice=heat absorbed by water/k",
+      "category": "physics",
+      "subcategory": "formula_reasoning",
+      "formula": "Q_ice=heat absorbed by water/k",
+      "difficulty": "intermediate",
+      "source": "FormulaReasoning (nju-websoft)"
+    },
+    {
+      "id": "fr_a0624c86-ba59-11ee-9ec1-0c96e61a84b2",
+      "name": "U_{实际}=sqrt(P_{实际}*R_电热管)",
+      "name_en": "U_actual=sqrt(P_actual*R_heating_element)",
+      "category": "physics",
+      "subcategory": "formula_reasoning",
+      "formula": "U_actual=sqrt(P_actual*R_heating_element)",
+      "difficulty": "intermediate",
+      "source": "FormulaReasoning (nju-websoft)"
+    },
+    {
+      "id": "fr_a069756f-ba59-11ee-ba55-0c96e61a84b2",
+      "name": "q'=燃气实际放出的热量/m_{燃气}",
+      "name_en": "q'= actual heat released by the gas/m_{gas}",
+      "category": "physics",
+      "subcategory": "formula_reasoning",
+      "formula": "q'= actual heat released by the gas/m_{gas}",
+      "difficulty": "intermediate",
+      "source": "FormulaReasoning (nju-websoft)"
+    },
+    {
+      "id": "fr_a0697588-ba59-11ee-9493-0c96e61a84b2",
+      "name": "W_总=W_{加热}+W_{研磨}",
+      "name_en": "W_total=W_heating+W_grinding",
+      "category": "physics",
+      "subcategory": "formula_reasoning",
+      "formula": "W_total=W_heating+W_grinding",
+      "difficulty": "intermediate",
+      "source": "FormulaReasoning (nju-websoft)"
+    },
+    {
+      "id": "fr_a0697592-ba59-11ee-bf2d-0c96e61a84b2",
+      "name": "生活垃圾完全燃烧放出的热量=m×q",
+      "name_en": "heat released by complete combustion of household waste=m×q",
+      "category": "physics",
+      "subcategory": "formula_reasoning",
+      "formula": "heat released by complete combustion of household waste=m×q",
+      "difficulty": "intermediate",
+      "source": "FormulaReasoning (nju-websoft)"
+    },
+    {
+      "id": "fr_a06cc3eb-ba59-11ee-b866-0c96e61a84b2",
+      "name": "W=W_加热+W_清喷+W_排",
+      "name_en": "W=W_heating+W_cleansing+W_exhaust",
+      "category": "physics",
+      "subcategory": "formula_reasoning",
+      "formula": "W=W_heating+W_cleansing+W_exhaust",
+      "difficulty": "intermediate",
+      "source": "FormulaReasoning (nju-websoft)"
+    },
+    {
+      "id": "fr_a06cc3f6-ba59-11ee-b468-0c96e61a84b2",
+      "name": "天然气释放的热量=W",
+      "name_en": "The heat released from natural gas =W",
+      "category": "physics",
+      "subcategory": "formula_reasoning",
+      "formula": "The heat released from natural gas =W",
+      "difficulty": "intermediate",
+      "source": "FormulaReasoning (nju-websoft)"
+    },
+    {
+      "id": "fr_a06cc42d-ba59-11ee-baa2-0c96e61a84b2",
+      "name": "总共吸收的热量=Q_吸1+Q_吸2",
+      "name_en": "Total absorbed heat =Q_abs1+Q_abs2",
+      "category": "physics",
+      "subcategory": "formula_reasoning",
+      "formula": "Total absorbed heat =Q_abs1+Q_abs2",
+      "difficulty": "intermediate",
+      "source": "FormulaReasoning (nju-websoft)"
+    },
+    {
+      "id": "sig_snr",
+      "name": "信噪比",
+      "category": "engineering",
+      "subcategory": "signal_processing",
+      "formula": "SNR = P_signal / P_noise",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "sig_snr_db",
+      "name": "信噪比(dB)",
+      "category": "engineering",
+      "subcategory": "signal_processing",
+      "formula": "SNR_dB = 10*log10(P_signal/P_noise)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "distribution_1",
+      "name": "Binomial(n,p) 分布",
+      "formula": "P = k)",
+      "category": "mathematics",
+      "subcategory": "probability_distributions",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "distribution_2",
+      "name": "Poisson(λ) 分布",
+      "formula": "P = k)",
+      "category": "mathematics",
+      "subcategory": "probability_distributions",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "linalg_0",
+      "name": "determinant_2x2",
+      "formula": "det = ad - bc",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_1",
+      "name": "determinant_3x3",
+      "formula": "det = a(ei-fh) - b(di-fg) + c(dh-eg)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_3",
+      "name": "trace",
+      "formula": "tr = Σ a_ii",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_4",
+      "name": "eigenvalue_def",
+      "formula": "det = 0",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "linalg_6",
+      "name": "matrix_norm_frobenius",
+      "formula": "||A||_F = sqrt(Σ|a_ij|²)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_math_la_rank",
+      "name": "矩阵的秩",
+      "formula": "rank(A) = dim(col(A))",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "source": "wikipedia_manual_math"
+    },
+    {
+      "id": "adv_var_euler_lagrange",
+      "name": "Euler-Lagrange",
+      "formula": "dF/dy - d/dx (dF/dy') = 0",
+      "category": "mathematics",
+      "subcategory": "calculus_variations",
+      "source": "wikipedia_advanced"
+    },
+    {
+      "id": "nmf_first_binomial_formula",
+      "name": "First Binomial Formula",
+      "names": [
+        "First Binomial Formula",
+        "Binomial Formula",
+        "first binomial formula",
+        "binomial formula",
+        "square of a binomial",
+        "square of a sum"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "(a + b)^2 = a^2 + 2ab + b^2",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_second_binomial_formula",
+      "name": "Second Binomial Formula",
+      "names": [
+        "Second Binomial Formula",
+        "Binomial Formula",
+        "second binomial formula",
+        "binomial formula",
+        "square of a binomial",
+        "square of a difference"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "(a - b)^2 = a^2 - 2a\\cdot b + b^2",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_third_binomial_formula",
+      "name": "Third Binomial Formula",
+      "names": [
+        "Third Binomial Formula",
+        "Binomial Formula",
+        "third binomial formula",
+        "binomial formula",
+        "difference of squares"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "(a + b)(a - b) = a^2 - b^2",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_binomial_coefficient_formula",
+      "name": "Binomial Coefficient Formula",
+      "names": [
+        "Binomial coefficient formula",
+        "Binomial coefficient"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "\\binom{n}{k} = \\frac{n!}{k!(n-k)!}",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_binomial_theorem",
+      "name": "Binomial Theorem",
+      "names": [
+        "Binomial Theorem"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "(a+b)^n = \\sum_{k=0}^{n} \\binom{n}{k} a^{n-k} b^k",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_determinant_of_2x2_matrix",
+      "name": "Determinant of 2x2 Matrix",
+      "names": [
+        "Determinant of 2x2 Matrix"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "det([[a, b], [c, d]]) = ad - bc",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_determinant_of_3x3_matrix",
+      "name": "Determinant of 3x3 Matrix",
+      "names": [
+        "Determinant of 3x3 Matrix"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "det\\left([[a, b, c], [d, e, f], [g, h, j]]\\right) = a * \\det([[e, f], [h, j]]) - b * \\det([[d, f], [g, j]]) + c * \\det([[d, e], [g, h]])",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_gaussian_integral",
+      "name": "Gaussian Integral",
+      "names": [
+        "Gaussian Integral",
+        "Euler-Poisson Integral"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "\\int_{-\\infty}^\\infty exp(-x^2) dx = \\sqrt{\\pi}",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_eulers_identity",
+      "name": "Eulers Identity",
+      "names": [
+        "Eulers Formula",
+        "Eulers Identiy",
+        "Eulers Formula for complex analysis"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "exp(\\mathrm{i}\\pi) + 1 = 0",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_eulers_formula",
+      "name": "Eulers Formula",
+      "names": [
+        "Eulers Formula",
+        "Eulers Identiy",
+        "Eulers Complex Exponential Identity"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "e^{\\mathrm{i}\\alpha} = \\cos{\\alpha} + \\mathrm{i}\\sin{\\alpha}",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_eulers_formula_for_polyhedra",
+      "name": "Eulers Formula for polyhedra",
+      "names": [
+        "Eulers Formula for polyhedra",
+        "Euler's formula for polyhedra",
+        "Eulers formula for planar graphs",
+        "Eulers Polyhedral Formula"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "V - E + F = 2",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_derivative_of_a_function",
+      "name": "Derivative of a Function",
+      "names": [
+        "Derivative of a Function",
+        "Differentiation definition"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_derivative_of_inverse_function",
+      "name": "Derivative of Inverse Function",
+      "names": [
+        "Derivative of Inverse Function"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "\\frac{d}{dx} \\left[f^{-1}(x)\\right] = \\frac{1}{f'(f^{-1}(x))}",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_eulers_number",
+      "name": "Eulers Number",
+      "names": [
+        "Eulers number",
+        "Number e",
+        "Mathematical constant e"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "e = \\lim_{n\\to \\infty}(1+1/n)^n",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_bayes_theorem",
+      "name": "Bayes' Theorem",
+      "names": [
+        "Bayes' Theorem",
+        "Bayes Theorem",
+        "Bayes law",
+        "Bayes probability rule",
+        "Bayes conditional probability theorem",
+        "Bayes posterior probability theorem"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "P(A|B) = (P(B|A) \\cdot P(A)) / P(B)",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_binomial_distribution",
+      "name": "Binomial Distribution",
+      "names": [
+        "Binomial Distribution"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "P(X=k) = \\binom{n}{k} p^k * (1-p)^{n-k}",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_poisson_distribution",
+      "name": "Poisson Distribution",
+      "names": [
+        "Poisson Distribution"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "P(X=k) = \\frac{e^{-\\lambda} \\lambda^k}{k!}",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_normal_distribution",
+      "name": "Normal Distribution",
+      "names": [
+        "Normal Distribution"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} e^{-(x-\\mu)^2/(2\\sigma^2)}",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_law_of_total_probability",
+      "name": "Law of Total Probability",
+      "names": [
+        "Law of Total Probabilities"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "P(A) = \\sum_{i=1}^n P(A|B_i)P(B_i)",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_variance",
+      "name": "Variance",
+      "names": [
+        "Variance",
+        "Variance of a random variable"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "Var(X) = E((X - E(X))^2)",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_covariance",
+      "name": "Covariance",
+      "names": [
+        "Covariance",
+        "Covariance of random variables"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "Cov[X,Y] = E[(X - E[X])(Y - E[Y])]",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "nmf_binomial_series",
+      "name": "Binomial Series",
+      "names": [
+        "Binomial Series"
+      ],
+      "category": "mathematics",
+      "subcategory": "named_formulas",
+      "formula": "\\forall \\alpha, x \\in\\mathbb{C} > 0: |x| < 1 \\Rightarrow (1 + x)^{\\alpha} =1 + \\binom{\\alpha}{1}x + \\binom{\\alpha}{2}x^2 + \\binom{\\alpha}{3}x^3 + \\binom{\\alpha}{4}x^4 + \\binom{\\alpha}{5}x^5 + \\ldots",
+      "difficulty": "intermediate",
+      "source": "named_math_formulas (ddrg)"
+    },
+    {
+      "id": "ode_laplace_def",
+      "name": "拉普拉斯变换定义",
+      "category": "mathematics",
+      "subcategory": "differential_equations",
+      "formula": "L = integral(0,inf,f*exp(-s*t))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "ode_variation_params",
+      "name": "常数变易法",
+      "category": "mathematics",
+      "subcategory": "differential_equations",
+      "formula": "u = -integral(y2*f/W)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "sf_gamma",
+      "name": "伽马函数",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "formula": "G = integral(0,inf,t^(z-1)*exp(-t))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "sf_beta_integral",
+      "name": "贝塔积分",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "formula": "B = integral(0,1,t^(a-1)*(1-t)^(b-1))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "sf_legendre_orth",
+      "name": "勒让德正交",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "formula": "integral(-1,1,Pm*Pn) = 2*delta/(2*n+1)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "sf_elliptic_k",
+      "name": "完全椭圆积分K",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "formula": "K = integral(0,pi/2,1/sqrt(1-k^2*sin(t)^2))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "sf_elliptic_e",
+      "name": "完全椭圆积分E",
+      "category": "mathematics",
+      "subcategory": "special_functions",
+      "formula": "E = integral(0,pi/2,sqrt(1-k^2*sin(t)^2))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_fourier_def",
+      "name": "傅里叶变换定义",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "F = integral(-inf,inf,f*exp(-i*w*x))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_fourier_parseval",
+      "name": "帕塞瓦尔定理",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "integral(abs(f)^2) = (1/(2*pi))*integral(abs(F)^2)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_mellin_def",
+      "name": "梅林变换定义",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "M = integral(0,inf,f*x^(s-1))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_mellin_inv",
+      "name": "梅林逆变换",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "f = (1/(2*pi*i))*integral(c-i*inf,c+i*inf,M*x^(-s))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_hilbert_def",
+      "name": "希尔伯特变换",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "H = (1/pi)*integral(-inf,inf,f(t)/(x-t))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_hilbert_inv",
+      "name": "希尔伯特逆变换",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "f = -(1/pi)*integral(-inf,inf,H(t)/(x-t))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_hankel_def",
+      "name": "汉克尔变换",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "H = integral(0,inf,f*J(nu)*r*r)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_abel_def",
+      "name": "阿贝尔变换",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "A = integral(r,inf,f(r)/sqrt(r^2-x^2))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_radon_def",
+      "name": "拉东变换",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "R = integral(-inf,inf,f(x*t+s*n))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_hartley_def",
+      "name": "哈特利变换",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "H = integral(-inf,inf,f*(cos(w*x)+sin(w*x))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_stft_def",
+      "name": "短时傅里叶变换",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "STFT = integral(-inf,inf,f*w*exp(-i*w*t))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_wigner_def",
+      "name": "维格纳分布",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "W = integral(-inf,inf,f(x+t/2)*f(x-t/2)*exp(-i*w*t))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "it_wavelet_def",
+      "name": "连续小波变换",
+      "category": "mathematics",
+      "subcategory": "integral_transforms",
+      "formula": "CWT = integral(-inf,inf,f*psi((t-b)/a)/sqrt(abs(a)))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "var_action",
+      "name": "作用量定义",
+      "category": "mathematics",
+      "subcategory": "calculus_of_variations",
+      "formula": "S = integral(t1,t2,L(q,q,t))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "var_canonical_transform",
+      "name": "正则变换",
+      "category": "mathematics",
+      "subcategory": "calculus_of_variations",
+      "formula": "F = integral(p*dq - H*dt) + dS",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "prob_entropy_diff",
+      "name": "微分熵",
+      "category": "mathematics",
+      "subcategory": "probability",
+      "formula": "H = -integral(f*log(f))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "top_gauss_bonnet",
+      "name": "高斯-博内定理",
+      "category": "mathematics",
+      "subcategory": "topology",
+      "formula": "integral(K) = 2*pi*chi",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "top_homology_rank",
+      "name": "同调群秩",
+      "category": "mathematics",
+      "subcategory": "topology",
+      "formula": "rank(H_k) = b_k",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "top_index_theorem",
+      "name": "阿蒂亚-辛格指标定理",
+      "category": "mathematics",
+      "subcategory": "topology",
+      "formula": "index(D) = integral(ch(E)*Td(X))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "la_rank_nullity",
+      "name": "秩-零化度定理",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "rank(A) + nullity(A) = n",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_taylor_remainder_integral",
+      "name": "泰勒余项(积分型)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "R_n(x) = integral(f^(n+1)(t)*(x-t)^n/n!, t, a, x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_cauchy_integral_derivative",
+      "name": "柯西积分导数公式",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "f^(n)(z_0) = (n!/(2*pi*i)) * integral(f(z)/(z-z_0)^(n+1), z, C)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_cauchy_integral_theorem",
+      "name": "柯西积分定理",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "integral(f(z), z, C) = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_integral_test",
+      "name": "积分判别法",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "sum(a_n)收敛 <=> integral(f(x), x, 1, inf)收敛",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_fourier_coefficient_a",
+      "name": "傅里叶系数a_n",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "a_n = (1/pi) * integral(f(x)*cos(n*x), x, -pi, pi)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_fourier_coefficient_b",
+      "name": "傅里叶系数b_n",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "b_n = (1/pi) * integral(f(x)*sin(n*x), x, -pi, pi)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_riemann_integral_def",
+      "name": "黎曼积分定义",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "integral(f(x), x, a, b) = lim(sum(f(x_i)*delta_x))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_mean_value_theorem_integral",
+      "name": "积分中值定理",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "integral(f(x), x, a, b) = f(c)*(b-a)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_fundamental_theorem_calculus_1",
+      "name": "微积分基本定理(第一基本定理)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "d/dx integral(f(t), t, a, x) = f(x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_analysis_fundamental_theorem_calculus_2",
+      "name": "微积分基本定理(第二基本定理)",
+      "category": "mathematics",
+      "subcategory": "mathematical_analysis",
+      "formula": "integral(f(x), x, a, b) = F(b) - F(a)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_complex_laurent_coefficient",
+      "name": "洛朗系数",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "a_n = (1/(2*pi*i))*integral(f(z)/(z-z_0)^(n+1), z, C)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_morera_theorem",
+      "name": "莫雷拉定理",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "integral(f(z), z, C) = 0 for all C => f全纯",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_schwarz_christoffel",
+      "name": "施瓦茨-克里斯托费尔映射",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f(z) = A*integral(product((t-x_k)^(alpha_k-1)), t, z0, z) + B",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_jensen_formula",
+      "name": "詹森公式",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "log|f(0)| = sum(log(r/|a_k|)) - (1/(2*pi))*integral(log|f(r*exp(i*theta))|, theta, 0, 2*pi)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_complex_poisson_integral",
+      "name": "泊松积分公式",
+      "category": "mathematics",
+      "subcategory": "complex_analysis",
+      "formula": "f(z) = (1/(2*pi))*integral(f(exp(i*t))*(1-|z|^2)/|exp(i*t)-z|^2, t, 0, 2*pi)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_ode_wronskian_abel",
+      "name": "阿贝尔恒等式",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "W(x) = W(x0)*exp(-integral(P))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_ode_inverse_laplace",
+      "name": "逆拉普拉斯变换",
+      "category": "mathematics",
+      "subcategory": "ordinary_differential_equations",
+      "formula": "f(t) = (1/(2*pi*i))*integral(F(s)*exp(s*t), s, c-i*inf, c+i*inf)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_pde_poisson_green_function",
+      "name": "泊松方程格林函数解",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "u(x) = integral(G(x,y)*f(y), y)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_energy_estimate_wave",
+      "name": "波动方程能量估计",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "E(t) = integral((du/dt)^2 + c^2*(du/dx)^2, x) = E(0)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_pde_energy_estimate_heat",
+      "name": "热传导方程能量估计",
+      "category": "mathematics",
+      "subcategory": "partial_differential_equations",
+      "formula": "d/dt integral(u^2) = -2*alpha*integral((du/dx)^2)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiki_info_shannon_entropy_continuous",
+      "name": "微分熵(连续)",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "h(X) = -integral(p(x)*log(p(x)), x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wiki_info_kl_divergence_continuous",
+      "name": "KL散度(连续)",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "D_KL(P||Q) = integral(P(x)*log(P(x)/Q(x)), x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "stat_auc_roc",
+      "name": "AUC-ROC",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "formula": "AUC = P(score_positive > score_negative)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "stat_precision",
+      "name": "精确率",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "formula": "precision = TP / (TP + FP)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "stat_recall",
+      "name": "召回率",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "formula": "recall = TP / (TP + FN)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "stat_f1_score",
+      "name": "F1分数",
+      "category": "mathematics",
+      "subcategory": "statistics",
+      "formula": "F1 = 2*precision*recall/(precision+recall)",
+      "difficulty": "intermediate"
+    }
+  ]
+}
