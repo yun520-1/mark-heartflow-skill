@@ -15,12 +15,29 @@
 class FormulaBridge {
   constructor(options = {}) {
     this._cache = new Map();
+    /** @type {Map<string, {value:any,ts:number}>} 计算结果缓存 */
+    this._resultCache = new Map();
+    this._resultCacheTTL = options.resultCacheTTL || 5000; // ms
     this.defaultMemoryStrength = options.defaultMemoryStrength ?? 86400000; // 1 天（ms）
     this._hf = options.hf || null;
   }
 
+  /** 查缓存或计算 */
+  _cached(key, fn) {
+    const now = Date.now();
+    const hit = this._resultCache.get(key);
+    if (hit && (now - hit.ts) < this._resultCacheTTL) return hit.value;
+    const val = fn();
+    this._resultCache.set(key, { value: val, ts: now });
+    if (this._resultCache.size > 500) {
+      const oldest = [...this._resultCache.entries()].sort((a,b)=>a[1].ts-b[1].ts)[0][0];
+      this._resultCache.delete(oldest);
+    }
+    return val;
+  }
+
   /**
-   * 桥接到 hf.formula 公式库（382条公式兜底搜索）
+   * 桥接到 hf.formula 公式库（284条认知公式兜底搜索）
    */
   searchFromCorpus(query, limit = 3) {
     try {
@@ -37,6 +54,22 @@ class FormulaBridge {
       }
     } catch (_) { /* 桥接失败不阻断 */ }
     return [];
+  }
+
+  /**
+   * 公式库精确计算 — 调用 formula-calculator 计算任意公式
+   * 让手算替换为公式库计算
+   */
+  calculateCorpus(formulaId, params = {}) {
+    try {
+      if (this._hf && this._hf.formula && typeof this._hf.formula.calculate === 'function') {
+        const result = this._hf.formula.calculate(formulaId, params);
+        if (result && !result.error && result.result) {
+          return result;
+        }
+      }
+    } catch (_) { /* 非关键 */ }
+    return null;
   }
 
   /**

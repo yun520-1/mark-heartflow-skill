@@ -85,8 +85,13 @@ class FormulaCalculator {
 
 
       // [UPGRADE] 展开隐式乘法，统一处理
-
-      const formulaText = this._expandImplicitMul(formula.formula);
+      // 保护 params 中的多字母变量名（避免 intrinsic→i*n*t*r*i*n*s*i*c）
+      const protectedKeys = Object.keys(params).filter(k => k.length > 2);
+      // 同时保护等号左侧的纯字母变量（如 CL→C*L 破坏求解）
+      const leftSide = formula.formula.split('=')[0].trim();
+      const leftVar = leftSide.match(/^[a-zA-Z_][a-zA-Z0-9_]{0,10}$/);
+      if (leftVar && leftVar[0].length > 1) protectedKeys.push(leftVar[0]);
+      const formulaText = this._expandImplicitMul(formula.formula, protectedKeys);
 
       
 
@@ -154,7 +159,7 @@ class FormulaCalculator {
 
     // [UPGRADE] 展开隐式乘法（ax -> a*x），提高公式解析能力
 
-    let expanded = this._expandImplicitMul(formulaText);
+    let expanded = this._expandImplicitMul(formulaText, Object.keys(params).filter(k => k.length > 2));
 
     // [UPGRADE] 清洗逻辑/双向符号（<=>, ⇒, ∼ 等），只保留等式部分
 
