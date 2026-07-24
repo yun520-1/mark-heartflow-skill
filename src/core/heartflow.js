@@ -1446,7 +1446,11 @@ class HeartFlow {
 
 
 
-    // ─── [P1 UPGRADE] 七条指令写入CORE — 被延迟，未实际执行 ────────
+    // ─── [P1 UPGRADE] InstructionRegistry — 七条指令运行时加载 ────────
+    try {
+      const { InstructionRegistry } = require('./instruction-registry.js');
+      this.instructions = new InstructionRegistry();
+    } catch (e) { console.warn('[heartflow] instructions加载失败:', e.message); }
 
 
 
@@ -1645,10 +1649,6 @@ class HeartFlow {
     this.selfDiagnosis = null;
 
     this.whatLearned = null;
-
-    this.hypothesisDriver = null;
-
-    this.patternTracer = null;
 
     // MetaJudgment — 延迟加载 (~50ms, 非热路径)
 
