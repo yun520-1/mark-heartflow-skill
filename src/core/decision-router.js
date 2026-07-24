@@ -23,6 +23,22 @@ class DecisionRouter {
     this.version = VERSION;
 
     this.hf = heartFlow;
+    // 持久化决策权重路径
+    this._weightsFile = null;
+    if (heartFlow && heartFlow.rootPath) {
+      this._weightsFile = require('path').join(heartFlow.rootPath, 'data', 'decision-weights.json');
+    }
+    // 如果存在已持久化的权重，恢复
+    if (this._weightsFile) {
+      try {
+        if (require('fs').existsSync(this._weightsFile)) {
+          const saved = JSON.parse(require('fs').readFileSync(this._weightsFile, 'utf8'));
+          if (saved && saved.weights && Array.isArray(saved.weights)) {
+            this.loadWeights(saved.weights);
+          }
+        }
+      } catch (_) { /* 恢复失败不阻断 */ }
+    }
 
 
 
@@ -2584,6 +2600,29 @@ class DecisionRouter {
 
    */
 
+  /**
+   * 从持久化数据加载权重（重启恢复）
+   */
+  loadWeights(weights) {
+    if (!Array.isArray(weights)) return;
+    for (const w of weights) {
+      const rule = this._rules.find(r => r.id === w.id);
+      if (rule) rule.weight = w.weight;
+    }
+  }
+
+  /**
+   * 持久化当前权重到文件（累积能力增益不丢）
+   */
+  saveWeights() {
+    if (!this._weightsFile) return;
+    try {
+      const weights = this._rules.map(r => ({ id: r.id, weight: r.weight }));
+      require('fs').writeFileSync(this._weightsFile, JSON.stringify({ weights, ts: Date.now() }, null, 2), 'utf8');
+    } catch (_) { /* 持久化失败不阻断 */ }
+  }
+
+
   getStats() {
 
     return {
@@ -2977,6 +3016,7 @@ class DecisionRouter {
 
 
     rule.weight = Math.max(0.1, Math.min(2.0, (rule.weight || 1.0) + delta));
+    this.saveWeights();
 
     stats.lastAdjustment = delta;
 
