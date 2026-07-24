@@ -4285,7 +4285,6 @@ class HeartFlow {
     try { if (this.strategicRestraint && input) { const m = this.strategicRestraint.checkMission(input, this.constructor.VERSION || ''); result._missionCheck = m; } } catch (_) { /* 非关键 */ }
 
     // ─── 自我反馈：把 think() 产生的认知数据反馈到下次行为 ────────
-    // 不是加字段，是把已有字段处理成行为建议存在 _selfFeedback 里
     try {
       const fb = [];
       const conf = result.confidence ?? result?.analysis?.confidence ?? 0.5;
@@ -4294,6 +4293,14 @@ class HeartFlow {
       if (result._missionCheck?.aligned === false) fb.push({ type: 'misaligned', detail: result._missionCheck.feedback });
       if (result.metaCalibration?.level === 'low') fb.push({ type: 'uncertain', detail: '元认知校准显示不确定性高' });
       this._selfFeedback = { hasItems: fb.length > 0, items: fb, summary: fb.map(f => `[${f.type}]`).join(' ') };
+
+      // ⭐ 反馈回路：克制引擎拦截或使命未对齐 → 告诉决策路由上次决策可能不对
+      if (result._restrainedBy?.length > 0 || result._missionCheck?.aligned === false) {
+        const dr = this._modules?.decisionRouter || this._decisionRouterRaw;
+        if (dr && typeof dr.feedback === 'function') {
+          dr.feedback('self-check', 'wrong');
+        }
+      }
     } catch (_) { /* 非关键 */ }
 
     return result;
