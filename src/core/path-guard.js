@@ -11,9 +11,11 @@ const path = require('path');
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..'); // src/core -> 项目根
 const _os = require('os');
 const _homeHeartflow = path.resolve(_os.homedir(), '.heartflow');
+const _homeHermesHeartflow = path.resolve(_os.homedir(), '.hermes', 'heartflow');
 const ALLOWED_ROOTS = [
   PROJECT_ROOT,
   _homeHeartflow,                                   // [v6.0.53 N1] 部署数据目录 ~/.heartflow（M2 尾巴）
+  _homeHermesHeartflow,                             // [v6.2.3] 实际运行时路径 ~/.hermes/heartflow（审计 M-3）
   path.resolve(process.cwd(), 'data'),
   path.resolve(process.cwd(), 'tmp'),
   path.resolve('/tmp'),

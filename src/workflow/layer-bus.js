@@ -1,13 +1,17 @@
 'use strict';
 /**
  * reference-impl/layer-bus.js
- * 单一编排总线（LayerBus）—— 修复瓶颈 B1（双路径 + 四层休眠）。
+ * 单一编排总线（LayerBus）—— 参考设计，当前未启用。
  *
- * 设计要点：
+ * ⚠️ 诚实声明：本模块是一个经过设计但尚未接入选入 think() 主路径的
+ *    参考实现。全代码库不存在 new LayerBus() 或 layerBus.run() 调用。
+ *    当前主路径走 pipeline.run() + thoughtChain.runLayerEnrichment()。
+ *
+ * 设计要点（保留备查）：
  *  - 消灭双路径：think() 直接调用 LayerBus.run()，pipeline 降级为可选内部阶段。
  *  - 四层在主路径真实生效：PERCEIVE → COGNIZE → DECIDE → REFLECT，沿用 thought-chain.js
  *    既有的 stage 执行框架（列表 + 深度门控 + 错误捕获），但不再把四层写在 fallback 里。
- *  - 错误可见 + 有 fallback，绝不静默 null（修复 B6 / thought-chain.js:535 的 catch→null）。
+ *  - 错误可见 + 有 fallback，绝不静默 null
  *
  * 所有层的方法签名均经 v5.17.19 实测核实：
  *  cognitiveLoadV2.estimate(text,context) / .attentionAllocation(channels) / .flowState(c,s)
