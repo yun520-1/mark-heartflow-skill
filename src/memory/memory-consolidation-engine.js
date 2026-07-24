@@ -23,7 +23,9 @@ class MemoryConsolidationEngine {
     this._workingMemory = [];        // 工作记忆槽位（4±2）
     this._workingMemoryCapacity = options.workingMemoryCapacity || 5;
     this._consolidationThreshold = options.consolidationThreshold || 0.3;  // 低于此值触发巩固
-    this._spacingBase = options.spacingBase || 1.5;  // 间隔重复基础倍率
+    this._spacingBase = options.spacingBase || 1.5;
+    this._versionIndex = 0;
+    this._versionLog = [];  // 间隔重复基础倍率
   }
 
   // ═══════════════════════════════════════════

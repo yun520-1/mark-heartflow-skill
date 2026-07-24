@@ -1423,7 +1423,8 @@ class HeartFlow {
     // ─── 身份核心 — 第一优先加载 ─────────────────────────────
 
     this.identityCore = new (_IdentityCore().IdentityCore)(this.rootPath);
-
+    try { this.forgettingEngine = new (_ForgettingEngine().ForgettingEngine)(); } catch(e) { /* 非关键 */ }
+    try { const { MemoryIndex } = require('../memory/memory-index.js'); this.memoryIndex = new MemoryIndex(this.rootPath); } catch(e) { _boundedPush(this._initErrors, { module: 'memoryIndex', error: e.message }, MAX_HISTORY_SIZE); }
     const identityResult = this.identityCore.boot();
 
     // [STANDARDS-UPGRADE] 智能体互联国家标准：生成 AgentCard 数字身份卡
