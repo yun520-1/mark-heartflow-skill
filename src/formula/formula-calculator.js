@@ -86,11 +86,11 @@ class FormulaCalculator {
 
       // [UPGRADE] 展开隐式乘法，统一处理
       // 保护 params 中的多字母变量名（避免 intrinsic→i*n*t*r*i*n*s*i*c）
-      const protectedKeys = Object.keys(params).filter(k => k.length > 2);
+      const protectedKeys = Object.keys(params).filter(k => k.length >= 1);
       // 同时保护等号左侧的纯字母变量（如 CL→C*L 破坏求解）
       const leftSide = formula.formula.split('=')[0].trim();
       const leftVar = leftSide.match(/^[a-zA-Z_][a-zA-Z0-9_]{0,10}$/);
-      if (leftVar && leftVar[0].length > 1) protectedKeys.push(leftVar[0]);
+      if (leftVar && leftVar[0].length > 1 && !protectedKeys.includes(leftVar[0])) protectedKeys.push(leftVar[0]);
       const formulaText = this._expandImplicitMul(formula.formula, protectedKeys);
 
       
@@ -158,8 +158,11 @@ class FormulaCalculator {
   _solveEquality(formulaText, params, opts = {}) {
 
     // [UPGRADE] 展开隐式乘法（ax -> a*x），提高公式解析能力
-
-    let expanded = this._expandImplicitMul(formulaText, Object.keys(params).filter(k => k.length > 2));
+    // 保护所有已知变量名 + 从公式中提取的疑似变量名
+    const allVarsInFormula = (formulaText.match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [])
+      .filter(v => v.length >= 1 && !['sqrt','sin','cos','tan','log','ln','exp','abs','pow','min','max','pi','e','infinity'].includes(v.toLowerCase()));
+    const protectedSet = new Set([...Object.keys(params), ...allVarsInFormula]);
+    let expanded = this._expandImplicitMul(formulaText, [...protectedSet]);
 
     // [UPGRADE] 清洗逻辑/双向符号（<=>, ⇒, ∼ 等），只保留等式部分
 
@@ -297,7 +300,7 @@ class FormulaCalculator {
 
    */
 
-  _expandImplicitMul(expr) {
+  _expandImplicitMul(expr, protectedWords = []) {
 
     let s = expr;
 
@@ -329,6 +332,15 @@ class FormulaCalculator {
 
       placeholders.push([ph, fn]);
 
+    });
+
+    // 保护已知变量名（不参与展开）
+    const _prot = Array.isArray(protectedWords) ? protectedWords : [];
+    _prot.filter(w => w.length >= 1).forEach((word, i) => {
+      const ph = `\u0002${i}\u0002`;
+      const re = new RegExp(`(^|[^a-zA-Z0-9_])${word}(?=$|[^a-zA-Z0-9_])`, "g");
+      s = s.replace(re, (m, p1) => p1 + ph);
+      placeholders.push([ph, word]);
     });
 
     // 展开隐式乘法：字母/数字/右括号 后跟 字母/左括号 -> 加 *

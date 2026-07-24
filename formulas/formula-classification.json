@@ -1,0 +1,1816 @@
+{
+  "total": 382,
+  "breakdown": {
+    "reference": 66,
+    "computable": 289,
+    "constant": 27
+  },
+  "computable": [
+    {
+      "id": "ebbinghaus_forgetting_curve",
+      "formula": "R = exp(-t/S)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "pad_emotion_model",
+      "formula": "(P,A,D) = f(stimulus, context)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cognitive_load_index",
+      "formula": "CL = (intrinsic + extraneous + germane) / working_memory_capacity",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "bayesian_updating",
+      "formula": "P = P(D|H) P(H) / P(D)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "information_value",
+      "formula": "EVSI = E[U(D)] - E[U(∅)]",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "metacognitive_confidence",
+      "formula": "C = 1 - Var(p)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "constant_4",
+      "formula": "k_B = 1.380649e-23 J/K",
+      "category": "physics"
+    },
+    {
+      "id": "constant_9",
+      "formula": "σ = 5.670374419e-8 W/m²K⁴",
+      "category": "physics"
+    },
+    {
+      "id": "conditional_entropy",
+      "formula": "H = H(X,Y) - H(Y)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "mutual_information",
+      "formula": "I = H(X) - H(X|Y)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "channel_capacity",
+      "formula": "C = max_{p(x)} I(X;Y)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "rate_distortion",
+      "formula": "R = min_{p(ŷ|x): E[d(X,Ŷ)]≤D} I(X;Ŷ)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "yarkes_dodson",
+      "formula": "Performance = f(arousal) = -a·A² + b·A + c",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "policy_gradient",
+      "formula": "∇J(θ) = E[∇ log π(a|s) Q(s,a)]",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "bellman_equation",
+      "formula": "V = max_a [R(s,a) + γ V(s')]",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "experience_replay",
+      "formula": "sample batch from D = {(s,a,r,s')}",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "irt_1pl",
+      "formula": "P = 1 / (1 + e^{-(θ - b)})",
+      "category": "psychology"
+    },
+    {
+      "id": "irt_2pl",
+      "formula": "P = 1 / (1 + e^{-a(θ - b)})",
+      "category": "psychology"
+    },
+    {
+      "id": "irt_3pl",
+      "formula": "P = c + (1-c) / (1 + e^{-a(θ - b)})",
+      "category": "psychology"
+    },
+    {
+      "id": "irt_4pl",
+      "formula": "P = d + (c-d) / (1 + e^{-a(θ - b)})",
+      "category": "psychology"
+    },
+    {
+      "id": "irt_information",
+      "formula": "I = a² P(θ)(1-P(θ))",
+      "category": "psychology"
+    },
+    {
+      "id": "irt_sem",
+      "formula": "SE = 1/sqrt(I(θ))",
+      "category": "psychology"
+    },
+    {
+      "id": "factor_model",
+      "formula": "X = ΛF + ε",
+      "category": "psychology"
+    },
+    {
+      "id": "bartlett_test",
+      "formula": "χ² = - (n-1 - (2p+5)/6) log(det(R))",
+      "category": "psychology"
+    },
+    {
+      "id": "sem_measurement",
+      "formula": "y = Λ_y η + ε, x = Λ_x ξ + δ",
+      "category": "psychology"
+    },
+    {
+      "id": "sem_structural",
+      "formula": "η = B η + Γ ξ + ζ",
+      "category": "psychology"
+    },
+    {
+      "id": "sem_fit_cfi",
+      "formula": "CFI = 1 - (N-null - df_null)/(N_default - df_default)",
+      "category": "psychology"
+    },
+    {
+      "id": "sem_fit_rmsea",
+      "formula": "RMSEA = sqrt(max((χ²/df - 1)/(N-1), 0))",
+      "category": "psychology"
+    },
+    {
+      "id": "actr_activation",
+      "formula": "A_i = B_i + S_i + P_i - O_i",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "soar_qlearning",
+      "formula": "Q = α[r + γ max_a' Q(s',a') - Q(s,a)]",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "prospect_weight",
+      "formula": "w = p^γ / (p^γ + (1-p)^γ)^{1/γ}",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "minimax",
+      "formula": "max_min u_i = min_max u_i（零和博弈）",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "carnap_confirmation",
+      "formula": "c = P(H|E) - P(H)",
+      "category": "philosophy"
+    },
+    {
+      "id": "bayes_factor",
+      "formula": "BF = P(E|H_1) / P(E|H_0)",
+      "category": "philosophy"
+    },
+    {
+      "id": "odds_ratio",
+      "formula": "O = BF · O(H)",
+      "category": "philosophy"
+    },
+    {
+      "id": "popper_corroboration",
+      "formula": "C = P(E|H) - P(E|¬H)",
+      "category": "philosophy"
+    },
+    {
+      "id": "iit_phi",
+      "formula": "Φ = min_{M ∈ P} MI(PARTITION(M))",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "iit_mechanism",
+      "formula": "φ_m = MI({(m, past)}|cut) - MI({(m, past)}|MICE)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "iit_causal_emergence",
+      "formula": "CE = MI(cause | cut) - MI(cause | no cut)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "gwt_competition",
+      "formula": "winner = argmax_i A_i(t)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "predictive_coding_free_energy",
+      "formula": "F = -ln p(s, μ) = -ln p(s|μ) - ln p(μ)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "predictive_coding_prediction_error",
+      "formula": "ε = s - g(μ), 其中 g:生成模型",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "active_inference_efe",
+      "formula": "G = -E[Q(s,π)] + H[Q(s,π)]",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "active_inference_precision",
+      "formula": "γ = 1/σ²_ε",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "pad_pleasure",
+      "formula": "P = w_1·positive_words - w_2·negative_words + baseline",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "yarkes_dodson_equation",
+      "formula": "Performance = -a(A - A_opt)² + b, a>0",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "flow_channel_equation",
+      "formula": "Flow = 1 - |log2(challenge/ skill)| / max_bits",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "bystander_effect",
+      "formula": "P = 1 - (1 - p)^n, n",
+      "category": "psychology"
+    },
+    {
+      "id": "homophily",
+      "formula": "H = (E_within - E_random) / (E_total - E_random)",
+      "category": "psychology"
+    },
+    {
+      "id": "vygotsky_zpd",
+      "formula": "ZPD = [ability_with_help - independent_ability]",
+      "category": "psychology"
+    },
+    {
+      "id": "hodgkin_huxley",
+      "formula": "C_m dV/dt = - (I_Na + I_K + I_L) + I_ext",
+      "category": "neuroscience"
+    },
+    {
+      "id": "fitzhugh_nagumo",
+      "formula": "dv/dt = v - v³/3 - w + I, dw/dt = (v + a - bw)/τ",
+      "category": "neuroscience"
+    },
+    {
+      "id": "bcm_theory",
+      "formula": "dw/dt = η · (y · (y - θ) · x)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "ebbinghaus_forgetting",
+      "formula": "R = e^{-t/S}",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "ebbinghaus_retention_rate",
+      "formula": "R = 2^{-d/τ}, τ≈1天",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "flow_channel",
+      "formula": "Flow = 1 - |log₂(challenge/skill)| / max_bits",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "flow_optimal",
+      "formula": "challenge = skill × 1.1",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "yerkes_dodson_optimal",
+      "formula": "A_opt = (b ± sqrt(b² - 4ac)) / (2a)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "actor_critic",
+      "formula": "δ = r + γ V(s') - V(s)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "integrated_information",
+      "formula": "Φ = min_{partition} MI(PARTITION)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "global_workspace",
+      "formula": "GW = f(∑ w_i · A_i(t))",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "social_influence_french",
+      "formula": "x_i = x_i(t) + λ ∑_j w_{ij} (x_j(t) - x_i(t))",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "bayes_confirmation",
+      "formula": "c = P(H|E) - P(H)",
+      "category": "philosophy"
+    },
+    {
+      "id": "psych_reliability_test_retest",
+      "formula": "r_{xx'} = corr(X, X')",
+      "category": "psychology"
+    },
+    {
+      "id": "psych_validity_concurrent",
+      "formula": "r_{xy} = corr(X, Y)",
+      "category": "psychology"
+    },
+    {
+      "id": "psych_standard_error_measurement",
+      "formula": "SEM = σ_x √(1-r_{xx})",
+      "category": "psychology"
+    },
+    {
+      "id": "psych_effect_size_cohens_d",
+      "formula": "d = (μ₁ - μ₂)/σ_pooled",
+      "category": "psychology"
+    },
+    {
+      "id": "psych_effect_size_hedges_g",
+      "formula": "g = d (1 - 3/(4n-9))",
+      "category": "psychology"
+    },
+    {
+      "id": "psych_actr_decision_time",
+      "formula": "T = F * e^{activation/τ}",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "psych_actr_memory_threshold",
+      "formula": "P = 1 / (1 + e^{-(A - τ)/s})",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "psych_biased_competition",
+      "formula": "A_i = w_i · S_i + ∑_{j≠i} w_{ij} · A_j",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "psych_information_integration",
+      "formula": "Φ = min_{partition} MI(partition)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "psych_vygotsky_scaffolding",
+      "formula": "ZPD = [actual, potential_with_help]",
+      "category": "psychology"
+    },
+    {
+      "id": "philosophy_confirmation_degree",
+      "formula": "c = P(H|E) - P(H)",
+      "category": "philosophy"
+    },
+    {
+      "id": "philosophy_odds_updating",
+      "formula": "O = BF · O(H)",
+      "category": "philosophy"
+    },
+    {
+      "id": "philosophy_modal_possibility_distribution",
+      "formula": "Π(ω) = 1 - P(ω)",
+      "category": "philosophy"
+    },
+    {
+      "id": "philosophy_minimax_regret",
+      "formula": "a* = argmin_a max_s (u(a*,s) - u(a,s))",
+      "category": "philosophy"
+    },
+    {
+      "id": "schrodinger_equation",
+      "formula": "iℏ ∂ψ/∂t = Ĥψ",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "sci_cs_complexity_class_p",
+      "formula": "P = {L | L is decidable in polynomial time}",
+      "category": "computer_science"
+    },
+    {
+      "id": "sci_cs_complexity_class_np",
+      "formula": "NP = {L | L has polynomial-time verifier}",
+      "category": "computer_science"
+    },
+    {
+      "id": "quantum_quantum_entanglement_entropy",
+      "formula": "S(ρ_A) = -Tr(ρ_A log ρ_A)",
+      "category": "physics"
+    },
+    {
+      "id": "cs_cs_big_o",
+      "formula": "T(n) = O(f(n))",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cs_master_theorem",
+      "formula": "T(n) = a*T(n/b) + f(n)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cs_gradient_descent",
+      "formula": "θ = θ - α * ∇J(θ)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cs_backprop",
+      "formula": "∂E/∂w = ∂E/∂y * ∂y/∂w",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cs_relu",
+      "formula": "f(x) = max(0, x)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cs_sigmoid",
+      "formula": "σ(x) = 1 / (1 + e^{-x})",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cs_mutual_information",
+      "formula": "I(X;Y) = H(X) - H(X|Y)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cs_channel_capacity",
+      "formula": "C = max_{p(x)} I(X;Y)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cog_cog_forgetting",
+      "formula": "P(forget) = 1 - exp(-λ*t)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cog_working_memory",
+      "formula": "C = 7 ± 2 chunks",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cog_attention",
+      "formula": "w_i = softmax(s_i)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cog_spatial_attention",
+      "formula": "A(x,y) = exp(-(x²+y²)/(2σ²))",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cog_feature_integration",
+      "formula": "P(bind) = exp(-n/τ)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cog_drp",
+      "formula": "p(correct) = 1/(1 + exp(-Δμ/σ))",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cog_reinforcement",
+      "formula": "Q(s,a) = Q(s,a) + α*(r + γ*max_a' Q(s',a') - Q(s,a))",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cog_hebbian",
+      "formula": "Δw_ij = η * x_i * x_j",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cog_boltzmann",
+      "formula": "P(V) = exp(-E(V)/T) / Z",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cog_validity",
+      "formula": "r_xy = Cov(X,Y)/(σ_x*σ_y)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cog_item_response",
+      "formula": "P(θ) = 1/(1 + exp(-a*(θ - b)))",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "theoria_boltzmann_probabilities",
+      "formula": "p_i = e^(-beta*E_i)/(Z(beta))",
+      "category": "physics"
+    },
+    {
+      "id": "fr_a0671291-ba59-11ee-aa99-0c96e61a84b2",
+      "formula": "Q_ice=heat absorbed by water/k",
+      "category": "physics"
+    },
+    {
+      "id": "fr_a0624c86-ba59-11ee-9ec1-0c96e61a84b2",
+      "formula": "U_actual=sqrt(P_actual*R_heating_element)",
+      "category": "physics"
+    },
+    {
+      "id": "fr_a069756f-ba59-11ee-ba55-0c96e61a84b2",
+      "formula": "q'= actual heat released by the gas/m_{gas}",
+      "category": "physics"
+    },
+    {
+      "id": "fr_a0697588-ba59-11ee-9493-0c96e61a84b2",
+      "formula": "W_total=W_heating+W_grinding",
+      "category": "physics"
+    },
+    {
+      "id": "fr_a0697592-ba59-11ee-bf2d-0c96e61a84b2",
+      "formula": "heat released by complete combustion of household waste=m×q",
+      "category": "physics"
+    },
+    {
+      "id": "fr_a06cc3eb-ba59-11ee-b866-0c96e61a84b2",
+      "formula": "W=W_heating+W_cleansing+W_exhaust",
+      "category": "physics"
+    },
+    {
+      "id": "fr_a06cc42d-ba59-11ee-baa2-0c96e61a84b2",
+      "formula": "Total absorbed heat =Q_abs1+Q_abs2",
+      "category": "physics"
+    },
+    {
+      "id": "cog_cog_long_term_memory",
+      "formula": "LTP = f(θ, γ)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "psych_social_comparison_upward",
+      "formula": "S_subjective = f(own, better_other)",
+      "category": "psychology"
+    },
+    {
+      "id": "psych_erikson_crisis",
+      "formula": "Crisis_resolution = f(age, social_support)",
+      "category": "psychology"
+    },
+    {
+      "id": "pad_arousal",
+      "formula": "A = f(exclamation_count, capial_ratio, punctuation_density)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "pad_dominance",
+      "formula": "D = f(sentence_length, modal_verbs, command_count)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "social_comparison",
+      "formula": "Satisfaction = f(own_outcome, referent_outcome)",
+      "category": "psychology"
+    },
+    {
+      "id": "erikson_stages",
+      "formula": "Crisis_resolution = f(age, social_support)",
+      "category": "psychology"
+    },
+    {
+      "id": "spacing_effect",
+      "formula": "R = f(interval, repetitions)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cs_cs_binary_search",
+      "formula": "T = log n",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cs_bfs",
+      "formula": "T = V + E",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cs_dfs",
+      "formula": "T = V + E",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cs_heap_insert",
+      "formula": "T = log n",
+      "category": "computer_science"
+    },
+    {
+      "id": "cog_cowan_limit",
+      "formula": "C = 4 +/- 1 items",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_cognitive_load",
+      "formula": "CL = (intrinsic + extraneous + germane) / WMC",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_intrinsic_load",
+      "formula": "IL = element_interactivity * complexity",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_weber_fechner",
+      "formula": "dS = k*dI/I",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_stevens_power",
+      "formula": "P = k*I^n",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_signal_detection_d",
+      "formula": "d = z(hit) - z(false_alarm)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_criterion_beta",
+      "formula": "beta = f(signal)/f(noise) at criterion",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_rational_analysis",
+      "formula": "P(choice) = exp(U_i/t) / sum(exp(U_j/t))",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_bayes_optimal",
+      "formula": "P(h|d) = P(d|h)*P(h)/P(d)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_information_gap",
+      "formula": "curiosity = f(information_gap)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_spreading_activation",
+      "formula": "A_i = sum(w_ij * A_j) - decay",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_tip_of_tongue",
+      "formula": "TOT = partial_activation < threshold",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_fluency_heuristic",
+      "formula": "P(choose) = f(processing_fluency)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_dual_process",
+      "formula": "System1 = fast/automatic, System2 = slow/deliberate",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_iceberg_model",
+      "formula": "conscious = tip, unconscious = bulk",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_global_workspace",
+      "formula": "consciousness = global broadcast of local processors",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_predictive_coding",
+      "formula": "prediction_error = sensory_input - prediction",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "cog_free_energy_principle",
+      "formula": "F = -ln(p(o)) + D_KL(q||p)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "psy_rescorla_wagner",
+      "formula": "dV = alpha*beta*(lambda - V_total)",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_skinner_reinforcement",
+      "formula": "behavior = f(reinforcement_history)",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_bandura_self_efficacy",
+      "formula": "performance = ability * self_efficacy * task_difficulty",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_big_five_o",
+      "formula": "O = imagination + curiosity + aesthetic_sensitivity",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_big_five_c",
+      "formula": "C = organization + diligence + self_discipline",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_big_five_e",
+      "formula": "E = sociability + assertiveness + positive_emotion",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_big_five_a",
+      "formula": "A = trust + altruism + cooperation",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_big_five_n",
+      "formula": "N = anxiety + depression + emotional_instability",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_likert_scale",
+      "formula": "score = sum(item_ratings) / n_items",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_cronbach_alpha",
+      "formula": "alpha = (k/(k-1))*(1 - sum(var_i)/var_total)",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_cohen_d",
+      "formula": "d = (M1 - M2) / SD_pooled",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_correlation",
+      "formula": "r = sum((x-x_bar)*(y-y_bar)) / sqrt(sum((x-x_bar)^2)*sum((y-y_bar)^2))",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_anova_f",
+      "formula": "F = MS_between / MS_within",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_t_test",
+      "formula": "t = (M1 - M2) / SE_diff",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_chi_square",
+      "formula": "chi2 = sum((O-E)^2/E)",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_g_factor",
+      "formula": "g = common_variance_across_cognitive_tests",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_stress_coping",
+      "formula": "stress = demand - (resources + coping)",
+      "category": "psychology"
+    },
+    {
+      "id": "psy_attachment_style",
+      "formula": "attachment = f(caregiver_responsiveness, consistency)",
+      "category": "psychology"
+    },
+    {
+      "id": "neuro_nernst_eq",
+      "formula": "E_ion = (RT/zF)*ln([ion]_out/[ion]_in)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_goldman_hodgkin_katz",
+      "formula": "V_m = (RT/F)*ln((P_K*[K]_o + P_Na*[Na]_o + P_Cl*[Cl]_i)/(P_K*[K]_i + P_Na*[Na]_i + P_Cl*[Cl]_o))",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_hodgkin_huxley",
+      "formula": "I = C_m*dV/dt + I_Na + I_K + I_L",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_sodium_current",
+      "formula": "I_Na = g_Na*m^3*h*(V - E_Na)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_potassium_current",
+      "formula": "I_K = g_K*n^4*(V - E_K)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_leak_current",
+      "formula": "I_L = g_L*(V - E_L)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_membrane_tc",
+      "formula": "tau = R_m*C_m",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_length_constant",
+      "formula": "lambda = sqrt(r*R_m/(2*R_i))",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_synaptic_conductance",
+      "formula": "g_syn(t) = g_max*(t/tau)*exp(1-t/tau)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_stp_u",
+      "formula": "U = U_0 + u*(1-U_0)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_stp_r",
+      "formula": "dR/dt = (1-R)/tau_rec - u*R*delta(t-t_spike)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_ltp_rule",
+      "formula": "dW = eta*pre*post",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_firing_rate",
+      "formula": "r = f(I) = I_threshold function",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_poisson_spikes",
+      "formula": "P(n_spikes in T) = (r*T)^n*exp(-r*T)/n!",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_tuning_curve",
+      "formula": "r(theta) = r_0 + r_max*cos(theta - theta_pref)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_population_vector",
+      "formula": "direction = sum(r_i*e_i)/sum(r_i)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_fano_factor",
+      "formula": "FF = variance/mean",
+      "category": "neuroscience"
+    },
+    {
+      "id": "neuro_neural_entropy",
+      "formula": "H = -sum(p(r)*log(p(r)))",
+      "category": "neuroscience"
+    },
+    {
+      "id": "phil_modus_tollens",
+      "formula": "P -> Q, not Q |= not P",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_hypothetical_syllogism",
+      "formula": "P -> Q, Q -> R |= P -> R",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_contradiction",
+      "formula": "P -> (Q and not Q) |= not P",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_de_morgan_and",
+      "formula": "not(P and Q) = not P or not Q",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_de_morgan_or",
+      "formula": "not(P or Q) = not P and not Q",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_distributive_and",
+      "formula": "P and (Q or R) = (P and Q) or (P and R)",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_distributive_or",
+      "formula": "P or (Q and R) = (P or Q) and (P or R)",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_contrapositive",
+      "formula": "P -> Q = not Q -> not P",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_material_implication",
+      "formula": "P -> Q = not P or Q",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_bayesian_epistemology",
+      "formula": "P(h|e) = P(e|h)*P(h)/P(e)",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_gettier_condition",
+      "formula": "knowledge = justified_true_belief + no_Gettier_case",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_utility_bentham",
+      "formula": "utility = sum(pleasure - pain)",
+      "category": "philosophy"
+    },
+    {
+      "id": "phil_veil_of_ignorance",
+      "formula": "justice = principles chosen behind veil of ignorance",
+      "category": "philosophy"
+    },
+    {
+      "id": "cs_time_complexity_log",
+      "formula": "T(n) = O(log(n))",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_time_complexity_nlogn",
+      "formula": "T(n) = O(n*log(n))",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_shannon_entropy_bits",
+      "formula": "H = -sum(p_i*log2(p_i))",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_channel_capacity_binary",
+      "formula": "C = 1 - H(p)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_hamming_bound",
+      "formula": "sum(C(n,i)) <= 2^(n-k)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_bayes_classifier",
+      "formula": "y_hat = argmax P(y|x) = argmax P(x|y)*P(y)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_gradient_descent",
+      "formula": "theta = theta - alpha*grad(J)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_softmax",
+      "formula": "P(y=i) = exp(z_i)/sum(exp(z_j))",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_cross_entropy_loss",
+      "formula": "L = -sum(y*log(y_hat))",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_mse_loss",
+      "formula": "MSE = (1/n)*sum((y - y_hat)^2)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_l2_regularization",
+      "formula": "J_reg = J + lambda*sum(theta^2)",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_attention",
+      "formula": "Attention(Q,K,V) = softmax(Q*K^T/sqrt(d_k))*V",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_transformer_ffn",
+      "formula": "FFN(x) = max(0, x*W1 + b1)*W2 + b2",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_layer_norm",
+      "formula": "LN = (x - mu)/sqrt(sigma^2 + eps) * gamma + beta",
+      "category": "computer_science"
+    },
+    {
+      "id": "cs_backpropagation",
+      "formula": "dL/dw = dL/da * da/dz * dz/dw",
+      "category": "computer_science"
+    },
+    {
+      "id": "sig_snr",
+      "formula": "SNR = P_signal / P_noise",
+      "category": "engineering"
+    },
+    {
+      "id": "sig_snr_db",
+      "formula": "SNR_dB = 10*log10(P_signal/P_noise)",
+      "category": "engineering"
+    },
+    {
+      "id": "distribution_1",
+      "formula": "P = k)",
+      "category": "mathematics"
+    },
+    {
+      "id": "distribution_2",
+      "formula": "P = k)",
+      "category": "mathematics"
+    },
+    {
+      "id": "linalg_0",
+      "formula": "det = ad - bc",
+      "category": "mathematics"
+    },
+    {
+      "id": "linalg_1",
+      "formula": "det = a(ei-fh) - b(di-fg) + c(dh-eg)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_math_la_rank",
+      "formula": "rank(A) = dim(col(A))",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_first_binomial_formula",
+      "formula": "(a + b)^2 = a^2 + 2ab + b^2",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_second_binomial_formula",
+      "formula": "(a - b)^2 = a^2 - 2a\\cdot b + b^2",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_third_binomial_formula",
+      "formula": "(a + b)(a - b) = a^2 - b^2",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_binomial_coefficient_formula",
+      "formula": "\\binom{n}{k} = \\frac{n!}{k!(n-k)!}",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_binomial_theorem",
+      "formula": "(a+b)^n = \\sum_{k=0}^{n} \\binom{n}{k} a^{n-k} b^k",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_determinant_of_2x2_matrix",
+      "formula": "det([[a, b], [c, d]]) = ad - bc",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_determinant_of_3x3_matrix",
+      "formula": "det\\left([[a, b, c], [d, e, f], [g, h, j]]\\right) = a * \\det([[e, f], [h, j]]) - b * \\det([[d, f], [g, j]]) + c * \\det([[d, e], [g, h]])",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_gaussian_integral",
+      "formula": "\\int_{-\\infty}^\\infty exp(-x^2) dx = \\sqrt{\\pi}",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_eulers_formula",
+      "formula": "e^{\\mathrm{i}\\alpha} = \\cos{\\alpha} + \\mathrm{i}\\sin{\\alpha}",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_derivative_of_a_function",
+      "formula": "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h)-f(x)}{h}",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_derivative_of_inverse_function",
+      "formula": "\\frac{d}{dx} \\left[f^{-1}(x)\\right] = \\frac{1}{f'(f^{-1}(x))}",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_eulers_number",
+      "formula": "e = \\lim_{n\\to \\infty}(1+1/n)^n",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_bayes_theorem",
+      "formula": "P(A|B) = (P(B|A) \\cdot P(A)) / P(B)",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_binomial_distribution",
+      "formula": "P(X=k) = \\binom{n}{k} p^k * (1-p)^{n-k}",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_poisson_distribution",
+      "formula": "P(X=k) = \\frac{e^{-\\lambda} \\lambda^k}{k!}",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_normal_distribution",
+      "formula": "f(x) = \\frac{1}{\\sigma\\sqrt{2\\pi}} e^{-(x-\\mu)^2/(2\\sigma^2)}",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_law_of_total_probability",
+      "formula": "P(A) = \\sum_{i=1}^n P(A|B_i)P(B_i)",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_variance",
+      "formula": "Var(X) = E((X - E(X))^2)",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_covariance",
+      "formula": "Cov[X,Y] = E[(X - E[X])(Y - E[Y])]",
+      "category": "mathematics"
+    },
+    {
+      "id": "nmf_binomial_series",
+      "formula": "\\forall \\alpha, x \\in\\mathbb{C} > 0: |x| < 1 \\Rightarrow (1 + x)^{\\alpha} =1 + \\binom{\\alpha}{1}x + \\binom{\\alpha}{2}x^2 + \\binom{\\alpha}{3}x^3 + \\binom{\\alpha}{4}x^4 + \\binom{\\alpha}{5}x^5 + \\ldots",
+      "category": "mathematics"
+    },
+    {
+      "id": "ode_laplace_def",
+      "formula": "L = integral(0,inf,f*exp(-s*t))",
+      "category": "mathematics"
+    },
+    {
+      "id": "ode_variation_params",
+      "formula": "u = -integral(y2*f/W)",
+      "category": "mathematics"
+    },
+    {
+      "id": "sf_gamma",
+      "formula": "G = integral(0,inf,t^(z-1)*exp(-t))",
+      "category": "mathematics"
+    },
+    {
+      "id": "sf_beta_integral",
+      "formula": "B = integral(0,1,t^(a-1)*(1-t)^(b-1))",
+      "category": "mathematics"
+    },
+    {
+      "id": "sf_legendre_orth",
+      "formula": "integral(-1,1,Pm*Pn) = 2*delta/(2*n+1)",
+      "category": "mathematics"
+    },
+    {
+      "id": "sf_elliptic_k",
+      "formula": "K = integral(0,pi/2,1/sqrt(1-k^2*sin(t)^2))",
+      "category": "mathematics"
+    },
+    {
+      "id": "sf_elliptic_e",
+      "formula": "E = integral(0,pi/2,sqrt(1-k^2*sin(t)^2))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_fourier_def",
+      "formula": "F = integral(-inf,inf,f*exp(-i*w*x))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_fourier_parseval",
+      "formula": "integral(abs(f)^2) = (1/(2*pi))*integral(abs(F)^2)",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_mellin_def",
+      "formula": "M = integral(0,inf,f*x^(s-1))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_mellin_inv",
+      "formula": "f = (1/(2*pi*i))*integral(c-i*inf,c+i*inf,M*x^(-s))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_hilbert_def",
+      "formula": "H = (1/pi)*integral(-inf,inf,f(t)/(x-t))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_hilbert_inv",
+      "formula": "f = -(1/pi)*integral(-inf,inf,H(t)/(x-t))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_hankel_def",
+      "formula": "H = integral(0,inf,f*J(nu)*r*r)",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_abel_def",
+      "formula": "A = integral(r,inf,f(r)/sqrt(r^2-x^2))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_radon_def",
+      "formula": "R = integral(-inf,inf,f(x*t+s*n))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_hartley_def",
+      "formula": "H = integral(-inf,inf,f*(cos(w*x)+sin(w*x))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_stft_def",
+      "formula": "STFT = integral(-inf,inf,f*w*exp(-i*w*t))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_wigner_def",
+      "formula": "W = integral(-inf,inf,f(x+t/2)*f(x-t/2)*exp(-i*w*t))",
+      "category": "mathematics"
+    },
+    {
+      "id": "it_wavelet_def",
+      "formula": "CWT = integral(-inf,inf,f*psi((t-b)/a)/sqrt(abs(a)))",
+      "category": "mathematics"
+    },
+    {
+      "id": "var_action",
+      "formula": "S = integral(t1,t2,L(q,q,t))",
+      "category": "mathematics"
+    },
+    {
+      "id": "var_canonical_transform",
+      "formula": "F = integral(p*dq - H*dt) + dS",
+      "category": "mathematics"
+    },
+    {
+      "id": "prob_entropy_diff",
+      "formula": "H = -integral(f*log(f))",
+      "category": "mathematics"
+    },
+    {
+      "id": "top_gauss_bonnet",
+      "formula": "integral(K) = 2*pi*chi",
+      "category": "mathematics"
+    },
+    {
+      "id": "top_index_theorem",
+      "formula": "index(D) = integral(ch(E)*Td(X))",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_analysis_taylor_remainder_integral",
+      "formula": "R_n(x) = integral(f^(n+1)(t)*(x-t)^n/n!, t, a, x)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_analysis_cauchy_integral_derivative",
+      "formula": "f^(n)(z_0) = (n!/(2*pi*i)) * integral(f(z)/(z-z_0)^(n+1), z, C)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_analysis_integral_test",
+      "formula": "sum(a_n)收敛 <=> integral(f(x), x, 1, inf)收敛",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_analysis_fourier_coefficient_a",
+      "formula": "a_n = (1/pi) * integral(f(x)*cos(n*x), x, -pi, pi)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_analysis_fourier_coefficient_b",
+      "formula": "b_n = (1/pi) * integral(f(x)*sin(n*x), x, -pi, pi)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_analysis_riemann_integral_def",
+      "formula": "integral(f(x), x, a, b) = lim(sum(f(x_i)*delta_x))",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_analysis_mean_value_theorem_integral",
+      "formula": "integral(f(x), x, a, b) = f(c)*(b-a)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_analysis_fundamental_theorem_calculus_1",
+      "formula": "d/dx integral(f(t), t, a, x) = f(x)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_analysis_fundamental_theorem_calculus_2",
+      "formula": "integral(f(x), x, a, b) = F(b) - F(a)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_complex_laurent_coefficient",
+      "formula": "a_n = (1/(2*pi*i))*integral(f(z)/(z-z_0)^(n+1), z, C)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_complex_morera_theorem",
+      "formula": "integral(f(z), z, C) = 0 for all C => f全纯",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_complex_schwarz_christoffel",
+      "formula": "f(z) = A*integral(product((t-x_k)^(alpha_k-1)), t, z0, z) + B",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_complex_jensen_formula",
+      "formula": "log|f(0)| = sum(log(r/|a_k|)) - (1/(2*pi))*integral(log|f(r*exp(i*theta))|, theta, 0, 2*pi)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_complex_poisson_integral",
+      "formula": "f(z) = (1/(2*pi))*integral(f(exp(i*t))*(1-|z|^2)/|exp(i*t)-z|^2, t, 0, 2*pi)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_ode_wronskian_abel",
+      "formula": "W(x) = W(x0)*exp(-integral(P))",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_ode_inverse_laplace",
+      "formula": "f(t) = (1/(2*pi*i))*integral(F(s)*exp(s*t), s, c-i*inf, c+i*inf)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_pde_poisson_green_function",
+      "formula": "u(x) = integral(G(x,y)*f(y), y)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_pde_energy_estimate_wave",
+      "formula": "E(t) = integral((du/dt)^2 + c^2*(du/dx)^2, x) = E(0)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_pde_energy_estimate_heat",
+      "formula": "d/dt integral(u^2) = -2*alpha*integral((du/dx)^2)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_info_shannon_entropy_continuous",
+      "formula": "h(X) = -integral(p(x)*log(p(x)), x)",
+      "category": "mathematics"
+    },
+    {
+      "id": "wiki_info_kl_divergence_continuous",
+      "formula": "D_KL(P||Q) = integral(P(x)*log(P(x)/Q(x)), x)",
+      "category": "mathematics"
+    },
+    {
+      "id": "stat_auc_roc",
+      "formula": "AUC = P(score_positive > score_negative)",
+      "category": "mathematics"
+    },
+    {
+      "id": "stat_precision",
+      "formula": "precision = TP / (TP + FP)",
+      "category": "mathematics"
+    },
+    {
+      "id": "stat_recall",
+      "formula": "recall = TP / (TP + FN)",
+      "category": "mathematics"
+    },
+    {
+      "id": "stat_f1_score",
+      "formula": "F1 = 2*precision*recall/(precision+recall)",
+      "category": "mathematics"
+    },
+    {
+      "id": "emotion_transition_matrix",
+      "formula": "T[i][j] = (count[i->j] + a) / (count[i->*] + Ka), spectral gap from graph Laplacian",
+      "category": "psychology"
+    },
+    {
+      "id": "ei_working_memory",
+      "formula": "WM_capacity = base_capacity / (1 + E/I_ratio), E/I = mean(W_exc) / mean(W_inh)",
+      "category": "neuroscience"
+    },
+    {
+      "id": "motivational_bias",
+      "formula": "log(P(want)/P(not)) = alpha * log(LR) + beta, alpha = evidence sensitivity, beta = motivational bias",
+      "category": "psychology"
+    },
+    {
+      "id": "adaptive_learning_rate",
+      "formula": "alpha(t) = alpha_0 / (1 + beta * sqrt(t)), t = update count, alpha_0 = 0.5, beta controls decay speed",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "sequential_attention_weight",
+      "formula": "w(i) = exp(-lambda * i), i = position (0=most recent), lambda = decay coefficient",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "weighted_accuracy",
+      "formula": "ACC_w = sum(w_i * correct_i) / sum(w_i), w_i = exp(-lambda * (N-1-i))",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "s_measure",
+      "formula": "S(A,B) = |A ∩ B| / (|A ∪ B| + ε)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "free_energy_heuristics",
+      "formula": "F = accuracy - T × (H_post - H_prior)",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "ginzburg_landau_cognitive",
+      "formula": "ψ(T) = ψ₀ × √(max(0, 1 - T/Tc))",
+      "category": "cognitive_science"
+    },
+    {
+      "id": "w_axis_awakening_signal",
+      "formula": "A_signal = max(0, meta_cognition * 0.5 + polarity_flip * 0.3 + arousal_spike * 0.2)",
+      "category": "psychology"
+    }
+  ],
+  "reference": [
+    {
+      "id": "big_o_notation",
+      "category": "computer_science",
+      "issues": "logical quantifier, natural language condition"
+    },
+    {
+      "id": "shannon_entropy",
+      "category": "computer_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "turing_machine",
+      "category": "computer_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "shannon_information_entropy",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cross_entropy",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "kl_divergence",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "expected_utility",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "joint_entropy",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "softmax_policy",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "irt_test_information",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "factor_covariance",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "pca_svd",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "kmo_test",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "sem_fit_srms",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "actr_base_level",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "actr_spreading",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "actr_noise",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "actr_expected_gain",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "clarion_acs",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "clarion_bottom_up",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "subjective_utility",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "prospect_value",
+      "category": "cognitive_science",
+      "issues": "natural language condition"
+    },
+    {
+      "id": "regret_theory",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "shapley_value",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "gwt_accessibility",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "emotion_blend",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cognitive_dissonance",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "social_influence_model",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "neural_firing_rate",
+      "category": "neuroscience",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "stdp",
+      "category": "neuroscience",
+      "issues": "natural language condition"
+    },
+    {
+      "id": "brain_network_modularity",
+      "category": "neuroscience",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "expected_utility_general",
+      "category": "cognitive_science",
+      "issues": "∫ notation"
+    },
+    {
+      "id": "psych_reliability_cronbach",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "psych_soar_preference",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "psych_clarion_bottom_up",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "psych_global_workspace_broadcast",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "psych_phq9_score",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "psych_gad7_score",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "psych_hamilton_depression",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "philosophy_utilitarian_sum",
+      "category": "philosophy",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "philosophy_prioritarianism",
+      "category": "philosophy",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "sci_cs_big_o",
+      "category": "computer_science",
+      "issues": "logical quantifier, natural language condition"
+    },
+    {
+      "id": "sci_cs_hamming_dist",
+      "category": "computer_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cs_cs_time_complexity",
+      "category": "computer_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cs_cs_space_complexity",
+      "category": "computer_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cs_cs_softmax",
+      "category": "computer_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cs_cs_cross_entropy",
+      "category": "computer_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cs_cs_shannon_entropy",
+      "category": "computer_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cs_cs_kl_divergence",
+      "category": "computer_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cog_cog_act_r",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cog_cog_ prospect_theory",
+      "category": "cognitive_science",
+      "issues": "natural language condition"
+    },
+    {
+      "id": "cog_cog_cumulative_prospect",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cog_cog_rescorla_wagner",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cog_cog_neural",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cog_cog_hopfield",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "cog_cog_reliability",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "psy_iq_deviation",
+      "category": "psychology",
+      "issues": "natural language condition"
+    },
+    {
+      "id": "neuro_stdp",
+      "category": "neuroscience",
+      "issues": "natural language condition"
+    },
+    {
+      "id": "neuro_bcm_rule",
+      "category": "neuroscience",
+      "issues": "natural language condition"
+    },
+    {
+      "id": "linalg_3",
+      "category": "mathematics",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "linalg_6",
+      "category": "mathematics",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "criticality_susceptibility",
+      "category": "neuroscience",
+      "issues": "natural language condition"
+    },
+    {
+      "id": "maxcal_psi",
+      "category": "cognitive_science",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "dirichlet_confidence",
+      "category": "cognitive_science",
+      "issues": "natural language condition"
+    },
+    {
+      "id": "w_axis_emotional_bond_density",
+      "category": "psychology",
+      "issues": "Σ notation"
+    },
+    {
+      "id": "w_axis_trauma_activation",
+      "category": "psychology",
+      "issues": "Σ notation"
+    }
+  ],
+  "constant": [
+    "q_learning_update",
+    "nash_equilibrium",
+    "matching_pennies",
+    "deontic_obligation",
+    "deontic_permission",
+    "deontic_prohibition",
+    "bayes_continuous",
+    "sarsa_update",
+    "philosophy_deontic_distribution",
+    "philosophy_deontic_conflict",
+    "bayesian_update",
+    "fr_a06cc3f6-ba59-11ee-b468-0c96e61a84b2",
+    "cs_cs_array_access",
+    "cs_cs_linked_list_access",
+    "phil_modus_ponens",
+    "phil_disjunctive_syllogism",
+    "phil_excluded_middle",
+    "phil_noncontradiction",
+    "phil_double_negation",
+    "linalg_4",
+    "adv_var_euler_lagrange",
+    "nmf_eulers_identity",
+    "nmf_eulers_formula_for_polyhedra",
+    "top_homology_rank",
+    "la_rank_nullity",
+    "wiki_analysis_cauchy_integral_theorem",
+    "emotion_transition_entropy"
+  ]
+}

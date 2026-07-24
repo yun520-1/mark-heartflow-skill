@@ -62,10 +62,20 @@ class FormulaBridge {
    */
   calculateCorpus(formulaId, params = {}) {
     try {
-      if (this._hf && this._hf.formula && typeof this._hf.formula.calculate === 'function') {
-        const result = this._hf.formula.calculate(formulaId, params);
-        if (result && !result.error && result.result) {
-          return result;
+      if (this._hf && this._hf.formula) {
+        // 优先使用 formula-module 的 calculate
+        if (typeof this._hf.formula.calculate === 'function') {
+          const result = this._hf.formula.calculate(formulaId, params);
+          if (result && result.success !== false && result.result) {
+            return result;
+          }
+        }
+        // 降级：直接用 formula-engine
+        if (this._hf.formula.engine && typeof this._hf.formula.engine.calculate === 'function') {
+          const result = this._hf.formula.engine.calculate(formulaId, params);
+          if (result && !result.error) {
+            return result;
+          }
         }
       }
     } catch (_) { /* 非关键 */ }
