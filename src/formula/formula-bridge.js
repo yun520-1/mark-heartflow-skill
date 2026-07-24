@@ -16,6 +16,27 @@ class FormulaBridge {
   constructor(options = {}) {
     this._cache = new Map();
     this.defaultMemoryStrength = options.defaultMemoryStrength ?? 86400000; // 1 天（ms）
+    this._hf = options.hf || null;
+  }
+
+  /**
+   * 桥接到 hf.formula 公式库（382条公式兜底搜索）
+   */
+  searchFromCorpus(query, limit = 3) {
+    try {
+      if (this._hf && this._hf.formula && typeof this._hf.formula.search === 'function') {
+        const results = this._hf.formula.search(query);
+        if (results && results.success && Array.isArray(results.results)) {
+          return results.results.slice(0, limit).map(r => ({
+            id: r.id,
+            name: r.name,
+            formula: r.formula,
+            category: r.category,
+          }));
+        }
+      }
+    } catch (_) { /* 桥接失败不阻断 */ }
+    return [];
   }
 
   /**
@@ -1411,4 +1432,13 @@ function getFormulaBridge(options) {
   return _instance;
 }
 
-module.exports = { FormulaBridge, getFormulaBridge };
+/**
+ * 注入 hf 引用到已有的桥接实例（boot 时调用）
+ */
+function injectHfToBridge(hf) {
+  const bridge = getFormulaBridge();
+  bridge._hf = bridge._hf || hf;
+  return bridge;
+}
+
+module.exports = { FormulaBridge, getFormulaBridge, injectHfToBridge };

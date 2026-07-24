@@ -3853,7 +3853,7 @@ class HeartFlow {
 
 
 
-    // ── [v5.8.6] Formula Engine — 公式引擎（数学/物理/化学/工程 1149+ 公式）
+    // ── [v5.8.6] Formula Engine — 公式引擎（382个公式）
 
     try {
 
@@ -3864,6 +3864,12 @@ class HeartFlow {
       this._modules.formula = this.formula;
 
       _log.info('init', 'Formula Engine 加载成功', { formulaCount: this.formula.healthCheck().formulaCount || 0 });
+
+      // 注入 hf 引用到 FormulaBridge，让桥接方法可兜底查公式库
+      try {
+        const { injectHfToBridge } = require('../formula/formula-bridge.js');
+        injectHfToBridge(this);
+      } catch (_) { /* 非关键 */ }
 
     } catch (e) { _boundedPush(this._initErrors, { module: 'formula', error: e.message }, MAX_HISTORY_SIZE); }
 
