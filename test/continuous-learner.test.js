@@ -166,4 +166,21 @@ module.exports = function ({ test }) {
     assert.strictEqual(stats.totalReflections > 0, true, 'should have some reflections');
     cleanup();
   });
+
+  // ─── 纵向模式检测（来源：arXiv 2506.05109 + 2510.08002）──
+
+  test('ContinuousLearner: longitudinal pattern detects confidence decline', () => {
+    const { ContinuousLearner } = require('../src/cortex/continuous-learner.js');
+    const cl = new ContinuousLearner({ reflectInterval: 3, lowConfidenceThreshold: 0.4 });
+    const lb = makeFakeLessonBank();
+    let hadSummary = false;
+    for (let i = 0; i < 12; i++) {
+      const r = cl.reflect({ type: 'analytical', confidence: 0.3, analysis: {} }, 'test ' + i, lb);
+      if (r.summary && r.summary.confidenceTrend) {
+        hadSummary = true;
+        break;
+      }
+    }
+    assert.strictEqual(hadSummary, true, 'should detect declining trend');
+  });
 };

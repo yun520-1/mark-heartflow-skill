@@ -228,6 +228,75 @@ class ContinuousLearner {
     return signals;
   }
 
+  // ─── 纵向模式检测 ──────────────────────────────────────────────
+  // 来源：arXiv 2506.05109 "Truly Self-Improving Agents Require Intrinsic Metacognitive Learning"
+  //       + arXiv 2510.08002 "Learning on the Job: Experience-Driven Self-Evolving Agent"
+  // 心虫之前只反思单次 think，不做跨任务的纵向模式识别
+
+  /**
+   * 检测最近 N 次 think 中的重复模式
+   * @returns {Object} { patterns, confidenceTrend, recurringTopics }
+   */
+  _detectLongitudinalPatterns() {
+    const recent = this._log.recentReflections || [];
+    if (recent.length < 5) return { patterns: [], confidenceTrend: 'stable', recurringTopics: [] };
+
+    const lastN = recent.slice(-20);
+
+    // 1. 置信度趋势
+    const mid = Math.floor(lastN.length / 2);
+    const firstHalf = lastN.slice(0, mid);
+    const secondHalf = lastN.slice(mid);
+    const avg1 = firstHalf.reduce((s, r) => s + (r.confidence || 0.5), 0) / firstHalf.length;
+    const avg2 = secondHalf.reduce((s, r) => s + (r.confidence || 0.5), 0) / secondHalf.length;
+    const diff = avg2 - avg1;
+    const confidenceTrend = diff > 0.05 ? 'improving' : diff < -0.05 ? 'declining' : 'stable';
+
+    // 2. 话题重复模式：同类 insight 反复出现
+    const insightCounts = {};
+    for (const r of lastN) {
+      if (r.insights && Array.isArray(r.insights)) {
+        for (const ins of r.insights) {
+          insightCounts[ins] = (insightCounts[ins] || 0) + 1;
+        }
+      }
+    }
+
+    const patterns = Object.entries(insightCounts)
+      .filter(([_, count]) => count > 2 && count / lastN.length > 0.15)
+      .map(([type, count]) => ({
+        type,
+        count,
+        rate: +(count / lastN.length).toFixed(2),
+        severity: count / lastN.length > 0.3 ? 'high' : 'medium',
+        suggestion: type === 'confidence_gap' ? '需要补充相关知识或降低该领域期望值'
+          : type === 'spinning_detected' ? '可能需要更长输入或换策略'
+          : type === 'boundary_hit' ? '该领域心虫不擅长，建议标记为 out-of-scope'
+          : '检查是否持续存在同类问题',
+      }));
+
+    // 3. 低置信话题聚类（按 inputSnip 关键词）
+    const lowConfTopics = lastN
+      .filter(r => r.confidence !== undefined && r.confidence < 0.4 && r.inputSnip)
+      .map(r => {
+        const words = r.inputSnip.replace(/[^一-鿿w]/g, ' ').split(/s+/).filter(w => w.length > 1);
+        return words.slice(0, 3);
+      })
+      .flat();
+
+    const topicCounts = {};
+    for (const w of lowConfTopics) {
+      topicCounts[w] = (topicCounts[w] || 0) + 1;
+    }
+    const recurringTopics = Object.entries(topicCounts)
+      .filter(([_, count]) => count > 1)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([topic, count]) => ({ topic, count }));
+
+    return { patterns, confidenceTrend, recurringTopics };
+  }
+
   // ─── 累积摘要 ──────────────────────────────────────────────────
 
   _cumulativeSummary() {
@@ -244,6 +313,8 @@ class ContinuousLearner {
       }
     }
 
+    const longitudinal = this._detectLongitudinalPatterns();
+
     return {
       atThink: this._log.thinkCount,
       totalRecentReflections: last10.length,
@@ -254,6 +325,10 @@ class ContinuousLearner {
         ? +((this._log.thinkCount - this._log.lowConfidenceHits) / this._log.thinkCount).toFixed(3)
         : 1.0,
       sessionAge: Math.round((Date.now() - this._log.sessionStart) / 1000),
+      // [v6.2.3] 纵向模式检测：跨任务模式识别
+      confidenceTrend: longitudinal.confidenceTrend,
+      recurringPatterns: longitudinal.patterns,
+      recurringTopics: longitudinal.recurringTopics,
     };
   }
 
