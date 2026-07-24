@@ -1399,6 +1399,21 @@ class HeartFlow {
 
     this.sessionId = `session-${this.startTime}`;
 
+    // 恢复自省记录
+    try {
+      const svPath = require('path').join(this.rootPath, 'data', 'self-view.json');
+      if (require('fs').existsSync(svPath)) {
+        const sv = JSON.parse(require('fs').readFileSync(svPath, 'utf8'));
+        this._selfView = sv;
+        // 跨session学习：上session低置信率>40%、拦截多→本次boot提升初始深度
+        const prevLowRate = sv.thinkCount > 10 ? sv.lowConfCount / sv.thinkCount : 0;
+        const prevBlocked = sv.blockedCount > 5;
+        if (prevLowRate > 0.4 || prevBlocked) {
+          this._bootDepth = sv.thinkCount > 50 ? 3 : 2;
+        }
+      }
+    } catch (_) { /* 首次启动或文件损坏 */ }
+
     // 惰性解析版本号
 
     this.version = _VERSION().VERSION;
@@ -4227,6 +4242,11 @@ class HeartFlow {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
 
+    // 跨session学习：如上次session经验不好则本次自动提升深度
+    if (this._bootDepth && (!depth || depth < this._bootDepth)) {
+      depth = this._bootDepth;
+    }
+
     // ─── 前置自我反馈：检查上一次 think 是否产生行为建议 ────────
     const fb = this._selfFeedback;
     if (fb && fb.hasItems) {
@@ -4339,6 +4359,13 @@ class HeartFlow {
       if (result._missionCheck?.aligned === false) this._selfView.misalignedCount++;
       this._selfView.last50.push({ conf, restrained: !!result._restrainedBy?.length, ts: Date.now() });
       if (this._selfView.last50.length > 50) this._selfView.last50 = this._selfView.last50.slice(-50);
+    // 持久化每20次think
+    if (this._selfView.thinkCount % 20 === 0 && this.rootPath) {
+      try {
+        const svPath = require('path').join(this.rootPath, 'data', 'self-view.json');
+        require('fs').writeFileSync(svPath, JSON.stringify(this._selfView, null, 2), 'utf8');
+      } catch (_) {}
+    }
 
       // ⭐ 每次 think 反馈置信度校准器
       try {
