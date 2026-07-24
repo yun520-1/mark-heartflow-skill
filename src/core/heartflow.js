@@ -4314,6 +4314,22 @@ class HeartFlow {
       if (result.metaCalibration?.level === 'low') fb.push({ type: 'uncertain', detail: '元认知校准显示不确定性高' });
       this._selfFeedback = { hasItems: fb.length > 0, items: fb, summary: fb.map(f => `[${f.type}]`).join(' ') };
 
+      // [v6.2.x] 每次 think 后自省记录：不覆盖，累积到 session 级
+      this._selfView = this._selfView || { thinkCount: 0, lowConfCount: 0, blockedCount: 0, misalignedCount: 0, last50: [] };
+      this._selfView.thinkCount++;
+      if (conf < 0.3) this._selfView.lowConfCount++;
+      if (result._restrainedBy?.length > 0) this._selfView.blockedCount++;
+      if (result._missionCheck?.aligned === false) this._selfView.misalignedCount++;
+      this._selfView.last50.push({ conf, restrained: !!result._restrainedBy?.length, ts: Date.now() });
+      if (this._selfView.last50.length > 50) this._selfView.last50 = this._selfView.last50.slice(-50);
+
+      // ⭐ 每次 think 反馈置信度校准器
+      try {
+        if (this.confidence && typeof this.confidence.updateFromFeedback === 'function') {
+          this.confidence.updateFromFeedback(fb.length === 0, { text: input, calibrated: result?.metaCalibration });
+        }
+      } catch (_) {}
+
       // ⭐ 反馈回路：克制引擎拦截或使命未对齐 → 告诉决策路由上次决策可能不对
       // [2604.22273 Self-Correction as Feedback Control]
       // 稳定性阈值：连续多次同类型拦截才降权，单次拦截可能正确不应降权
@@ -4324,8 +4340,6 @@ class HeartFlow {
           this._blockedCount = (this._blockedCount || 0) + 1;
           if (this._blockedCount >= 3) {
             dr.feedback('self-check', 'wrong');
-            // 同步反馈给置信度校准器
-            try { if (this.confidence && typeof this.confidence.updateFromFeedback === 'function' && input) this.confidence.updateFromFeedback(false, { text: input, calibrated: result?.metaCalibration }); } catch (_) {}
             this._blockedCount = 0;
           }
         }
