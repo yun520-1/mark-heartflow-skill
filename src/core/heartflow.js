@@ -4301,6 +4301,19 @@ class HeartFlow {
           dr.feedback('self-check', 'wrong');
         }
       }
+
+      // ⭐ 反馈回路2：反复低置信 → 调低对应路由权重
+      if (this.continuousLearner) {
+        const clStats = this.continuousLearner.getStats();
+        const lowConfRate = clStats.thinkCount > 5
+          ? clStats.lowConfidenceHits / clStats.thinkCount : 0;
+        if (lowConfRate > 0.3) {
+          const dr = this._modules?.decisionRouter || this._decisionRouterRaw;
+          if (dr && typeof dr.feedback === 'function') {
+            dr.feedback('confidence-gate', 'wrong');
+          }
+        }
+      }
     } catch (_) { /* 非关键 */ }
 
     return result;
