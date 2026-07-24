@@ -4315,11 +4315,20 @@ class HeartFlow {
       this._selfFeedback = { hasItems: fb.length > 0, items: fb, summary: fb.map(f => `[${f.type}]`).join(' ') };
 
       // ⭐ 反馈回路：克制引擎拦截或使命未对齐 → 告诉决策路由上次决策可能不对
+      // [2604.22273 Self-Correction as Feedback Control]
+      // 稳定性阈值：连续多次同类型拦截才降权，单次拦截可能正确不应降权
       if (result._restrainedBy?.length > 0 || result._missionCheck?.aligned === false) {
         const dr = this._modules?.decisionRouter || this._decisionRouterRaw;
         if (dr && typeof dr.feedback === 'function') {
-          dr.feedback('self-check', 'wrong');
+          // 追踪被拦截次数：连续3次同类型拦截才判定"这个路由方向确实错了"
+          this._blockedCount = (this._blockedCount || 0) + 1;
+          if (this._blockedCount >= 3) {
+            dr.feedback('self-check', 'wrong');
+            this._blockedCount = 0;
+          }
         }
+      } else {
+        this._blockedCount = 0;  // 一旦通过拦截就重置计数
       }
 
       // ⭐ 反馈回路2：反复低置信 → 调低对应路由权重
