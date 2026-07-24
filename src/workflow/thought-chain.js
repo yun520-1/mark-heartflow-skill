@@ -190,6 +190,29 @@ class ThoughtChain {
           } : null,
           // 【AgentPsychology v2.0.0】AI 心理学新增维度
           agentPsychology: agentPsychologyResult,
+          // [v6.2.3] ExperienceDistiller 抽象注入：前置召回的经验模式供下游参考
+          experienceAbstractions: hf?._experienceAbstractions || [],
+          // [v6.2.3] StrategicRestraint 克制评估：输入是否触碰"不做"边界
+          restraint: (() => {
+            try {
+              if (hf && hf.strategicRestraint && typeof hf.strategicRestraint.evaluate === 'function') {
+                const r = hf.strategicRestraint.evaluate(input);
+                if (r.restrained) {
+                  return { restrained: true, reason: r.reason, matches: r.matches };
+                }
+              }
+            } catch(e) { /* restraint 降级 */ }
+            return { restrained: false, reason: null, matches: [] };
+          })(),
+          // [v6.2.3] MissionCheck：输入是否对齐心虫核心使命
+          missionAlignment: (() => {
+            try {
+              if (hf && hf.strategicRestraint && typeof hf.strategicRestraint.checkMission === 'function') {
+                return hf.strategicRestraint.checkMission(input, hf.constructor?.VERSION || 'unknown');
+              }
+            } catch(e) { /* mission 降级 */ }
+            return { aligned: true, feedback: null, alignedWith: [] };
+          })(),
           // [v5.17.19 S1] 预测误差驱动感知 — cognitiveLoadV2精度权重
           perception: (() => {
             try {
@@ -613,9 +636,20 @@ class ThoughtChain {
           confidence = subsystemCalibration.calibrated;
         }
 
+        // 6.3.5 [v6.2.3] ExperienceDistiller 抽象注入置信度校正
+        if (hf._experienceAbstractions && hf._experienceAbstractions.length > 0) {
+          // 有可复用抽象时小幅提升置信度（有经验支撑）
+          confidence = Math.min(confidence + 0.03, 0.95);
+        }
+
+        // 6.3.6 [v6.2.3] StrategicRestraint 克制约束
+        const parseResult = ctx.stages?.find(s => s.name === 'PARSE');
+        if (parseResult?.result?.restraint?.restrained) {
+          // 克制引擎认为"不该做"→ 置信度下调
+          confidence = Math.min(confidence, 0.4);
+        }
+
         // 6.4 人类过度自信校正：人类的"100%确定"实际约80%
-        // AI不应该模仿这种过度自信
-        const calibratedConfidence = Math.min(confidence, 0.95);
 
         // 6.5 确定是否需要不确定性标记
         const needsUncertaintyMarker = calibratedConfidence < 0.7;

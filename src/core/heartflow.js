@@ -293,6 +293,8 @@ const _LessonBank = _lazy('lessonBank', () => require('../cortex/lesson-bank.js'
 
 const _ExperienceDistiller = _lazy('experienceDistiller', () => require('../cortex/experience-distiller.js'));
 
+const _StrategicRestraint = _lazy('strategicRestraint', () => require('../cortex/strategic-restraint.js'));
+
 const _TopicScope = _lazy('topicScope', () => require('../memory/topic-scope.js'));
 
 const _LessonStorage = _lazy('lessonStorage', () => require('../cortex/lessons/lesson-storage.js'));
@@ -452,6 +454,8 @@ const _CreativityEngine = _lazy('creativityEngine', () => require('../creativity
 const _ContinuousLearner = _lazy('continuousLearner', () => require('../cortex/continuous-learner.js'));
 
 const _KnowledgeExplorer = _lazy('knowledgeExplorer', () => require('../cortex/knowledge-explorer.js'));
+
+const _GapExecutor = _lazy('gapExecutor', () => require('../cortex/gap-executor.js'));
 
 const _LearningOrchestrator = _lazy('learningOrchestrator', () => require('../cortex/learning-orchestrator.js'));
 
@@ -1624,6 +1628,9 @@ class HeartFlow {
     this.lesson = _LessonBank().lessonBank || _LessonBank();
 
     this.experienceDistiller = new (_ExperienceDistiller().ExperienceDistiller)();
+
+    this.strategicRestraint = new (_StrategicRestraint().StrategicRestraint)();
+    try { this.strategicRestraint.load(); } catch(e) { /* 加载失败不阻断 */ }
 
     this.continuousLearner = new (_ContinuousLearner().ContinuousLearner)();
 
@@ -3928,6 +3935,11 @@ class HeartFlow {
         this.knowledgeExplorer.absorbLearnerSignals(this.continuousLearner.getStats());
       }
     } catch (e) { _boundedPush(this._initErrors, { module: 'knowledgeExplorer', error: e.message }, MAX_HISTORY_SIZE); }
+
+    // ─── [v6.2.3] GapExecutor 知识缺口执行桥 ──
+    try {
+      this.gapExecutor = new (_GapExecutor().GapExecutor)();
+    } catch (e) { _boundedPush(this._initErrors, { module: 'gapExecutor', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v6.2.2] LearningOrchestrator 学习编排器：联通4个学习模块 ──
     try {
