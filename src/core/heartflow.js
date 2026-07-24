@@ -4287,6 +4287,20 @@ class HeartFlow {
       const adv = this._adversarial.synthesize(input);
       if (adv && adv.ok) result.adversarialSynthesis = adv;
     } catch (_) { /* 对抗推演失败不阻断主链路 */ }
+
+    // 情绪分析后→情感记忆桥（即使无pad也用默认值存）
+    try {
+      if (input && result) {
+        const emb = require('../memory/emotional-memory-bridge.js');
+        emb.appraisalToMemory(
+          input,
+          { emotion: result.decision?.type || result.parse?.type || 'unknown', confidence: result.decision?.confidence || 0.5 },
+          { pleasure: 0, arousal: 0.5, dominance: 0.5 },
+          { source: 'think' }
+        );
+      }
+    } catch (_) { /* 情感记忆桥失败不阻断 */ }
+
     // [v6.1.7] 元认知诚实外显层: 基于校准结果显式说"我不确定", 不强行结论
     try {
       const MetaCalibration = require('./meta-calibration.js');
