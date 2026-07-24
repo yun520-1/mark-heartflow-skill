@@ -4324,6 +4324,8 @@ class HeartFlow {
           this._blockedCount = (this._blockedCount || 0) + 1;
           if (this._blockedCount >= 3) {
             dr.feedback('self-check', 'wrong');
+            // 同步反馈给置信度校准器
+            try { if (this.confidence && typeof this.confidence.updateFromFeedback === 'function' && input) this.confidence.updateFromFeedback(false, { text: input, calibrated: result?.metaCalibration }); } catch (_) {}
             this._blockedCount = 0;
           }
         }
