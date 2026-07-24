@@ -148,15 +148,32 @@ class GapExecutor {
 
   /**
    * 批量执行待探索队列中的顶部N个缺口
+   * @param {Object} explorer
+   * @param {number} count - 最大执行数
+   * @param {Object} [opts] - { topicFilter?: string } 按话题过滤
    */
-  async executeBatch(explorer, count = 1) {
+  async executeBatch(explorer, count = 1, opts = {}) {
     if (!explorer || typeof explorer.nextToExplore !== 'function') {
       return { executed: false, error: 'explorer required' };
     }
 
     const results = [];
     for (let i = 0; i < count; i++) {
-      const next = explorer.nextToExplore();
+      let next = explorer.nextToExplore();
+      // 如果指定了 topicFilter，跳过不匹配的 gap 继续取下一个
+      if (next && opts.topicFilter) {
+        let attempts = 0;
+        while (next && !(next.gap.topic || '').toLowerCase().includes(opts.topicFilter.toLowerCase()) && attempts < 5) {
+          // 不匹配：放回队列尾部（重新排优先级）
+          explorer._ensureGap(next.gap.id || next.gap.topic, next.gap);
+          next = explorer.nextToExplore();
+          attempts++;
+        }
+        // 尝试5次都不匹配，退回到常规取
+        if (!next || !(next.gap.topic || '').toLowerCase().includes(opts.topicFilter.toLowerCase())) {
+          break;
+        }
+      }
       if (!next) break;
       const r = await this.execute(next.gap, explorer);
       results.push(r);

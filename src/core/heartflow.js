@@ -4446,6 +4446,42 @@ class HeartFlow {
       }
     } catch (_) { /* 非关键 */ }
 
+    // ─── [v6.2.4] 上下文感知探索触发：用户提到某领域→匹配探索队列→优先探索 ──
+    try {
+      if (result.knowledgeDomains && this.knowledgeExplorer && this.gapExecutor) {
+        const gaps = this.knowledgeExplorer.getGaps() || [];
+        const pending = gaps.filter(g => g.status === 'pending');
+        // 匹配：gap topic 是否包含某个已探测领域的名称或ID
+        for (const domainId of result.knowledgeDomains) {
+          const domain = this.knowledge.ontology.domains.find(d => d.id === domainId);
+          const domainWords = [domainId, domain?.name, domain?.nameEn].filter(Boolean);
+          const match = pending.find(g =>
+            domainWords.some(w => (g.topic || '').toLowerCase().includes(w.toLowerCase()))
+          );
+          if (match) {
+            // 找到匹配 gap → 立即探索（异步，不阻塞）
+            this.gapExecutor.executeBatch(this.knowledgeExplorer, 1, { topicFilter: match.topic })
+              .then(res => {
+                if (res.executed) result._autoExplored = { topic: match.topic, count: (res.results?.[0]?.searchResult?.count || 0) };
+              })
+              .catch(() => {});
+            break;
+          }
+        }
+        // 无匹配gap但非空领域→注册一个（作为incoming curiosity）
+        if (!result._autoExplored && matched.length > 0 && !pending.some(g => g.source === 'curiosity')) {
+          this.knowledgeExplorer.registerGap({
+            topic: `${matched[0].name}领域关联知识`,
+            question: `${matched[0].name}领域有哪些最新研究进展？`,
+            reason: '用户最近关注此领域',
+            priority: 7,
+            source: 'curiosity',
+            suggestedQuery: matched[0].name,
+          });
+        }
+      }
+    } catch (_) { /* 非关键 */ }
+
     // ─── [v6.2.4] 自省汇入输出：让每轮 think 携带自知状态 ──
     try {
       if (this.selfDiagnosis) {
