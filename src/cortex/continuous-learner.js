@@ -82,6 +82,17 @@ class ContinuousLearner {
     this.load();
     this._log.thinkCount++;
 
+    // 自校准：每20次think检查阈值是否合适
+    if (this._log.thinkCount > 10 && this._log.thinkCount % 20 === 0) {
+      const rate = this._log.lowConfidenceHits / this._log.thinkCount;
+      // 低置信率>40% → 阈值太严,放宽; <5% → 阈值太松,收紧
+      if (rate > 0.4) {
+        this._config.lowConfidenceThreshold = Math.max(0.1, this._config.lowConfidenceThreshold - 0.02);
+      } else if (rate < 0.05 && this._config.lowConfidenceThreshold > 0.1) {
+        this._config.lowConfidenceThreshold = Math.min(0.45, this._config.lowConfidenceThreshold + 0.02);
+      }
+    }
+
     const signals = this._detectSignals(tcResult, input);
     const insights = [];
 
