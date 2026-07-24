@@ -4230,11 +4230,15 @@ class HeartFlow {
     // ─── 前置自我反馈：检查上一次 think 是否产生行为建议 ────────
     const fb = this._selfFeedback;
     if (fb && fb.hasItems) {
-      // 有低置信→建议走 deep
+      // [Active Inference as Test-Time Scaling Law] 连续比例映射
+      // 预测误差(低置信) → 成比例缩放计算资源
       const hasLowConf = fb.items.some(i => i.type === 'low_confidence');
       const hasMisalign = fb.items.some(i => i.type === 'misaligned');
       if (hasLowConf && (!depth || depth < 3)) {
-        depth = 3; // 自动提升深度，不额外消耗
+        // 提取实际置信度做连续缩放，非二值跳变
+        const lowConfItem = fb.items.find(i => i.type === 'low_confidence');
+        const confVal = lowConfItem?.detail ? parseFloat(lowConfItem.detail.match(/[\d.]+/)?.[0] || '0.3') : 0.3;
+        depth = Math.max(1, Math.min(5, Math.round((1 - confVal) * 6)));
       }
       // 有克制拦截→标记
       if (hasMisalign && (!depth || depth < 2)) {
