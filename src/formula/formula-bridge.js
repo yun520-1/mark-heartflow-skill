@@ -67,14 +67,21 @@ class FormulaBridge {
         if (typeof this._hf.formula.calculate === 'function') {
           const result = this._hf.formula.calculate(formulaId, params);
           if (result && result.success !== false && result.result) {
-            return result;
+            // 处理嵌套结构：{result: {result: {value: N}}}
+            const val = result.result?.result?.value ?? result.result?.value;
+            if (val !== undefined) {
+              return { success: true, formulaId, result: { value: val } };
+            }
           }
         }
         // 降级：直接用 formula-engine
         if (this._hf.formula.engine && typeof this._hf.formula.engine.calculate === 'function') {
           const result = this._hf.formula.engine.calculate(formulaId, params);
           if (result && !result.error) {
-            return result;
+            const val = result.result?.value ?? result.value;
+            if (val !== undefined) {
+              return { success: true, formulaId, result: { value: val } };
+            }
           }
         }
       }
