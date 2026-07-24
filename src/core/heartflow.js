@@ -469,6 +469,8 @@ const _WhatLearned = _lazy('whatLearned', () => require('./what-learned.js'));
 
 const _HypothesisDriver = _lazy('hypothesisDriver', () => require('../cortex/hypothesis-driver.js'));
 
+const _PatternTracer = _lazy('patternTracer', () => require('../cortex/pattern-tracer.js'));
+
 const _HumorGenerator = _lazy('humorGenerator', () => require('../humor/humor-generator.js'));
 
 const _IntuitionEngine = _lazy('intuitionEngine', () => require('../intuition/intuition-engine.js'));
@@ -1649,6 +1651,8 @@ class HeartFlow {
     this.whatLearned = null;
 
     this.hypothesisDriver = null;
+
+    this.patternTracer = null;
 
     // MetaJudgment — 延迟加载 (~50ms, 非热路径)
 
@@ -3974,6 +3978,11 @@ class HeartFlow {
     try {
       this.hypothesisDriver = new (_HypothesisDriver().HypothesisDriver)(this);
     } catch (e) { _boundedPush(this._initErrors, { module: 'hypothesisDriver', error: e.message }, MAX_HISTORY_SIZE); }
+
+    // ─── [v6.2.3] PatternTracer 模式溯源器：从宏观趋势回溯微观原因 ──
+    try {
+      this.patternTracer = new (_PatternTracer().PatternTracer)(this);
+    } catch (e) { _boundedPush(this._initErrors, { module: 'patternTracer', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v5.1.0] 自省注册 ──────────────────────────────────
 
