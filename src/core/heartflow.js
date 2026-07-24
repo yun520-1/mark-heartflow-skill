@@ -4276,6 +4276,23 @@ class HeartFlow {
 
     // ─── 后置钩子（不依赖 engine-reasoner 提前 return 分支，保证100%触发）─────
     try { if (this.continuousLearner && this.lesson && result && input) { this.continuousLearner.reflect(result, input, this.lesson); } } catch (_) { /* 非关键 */ }
+
+    // [v6.2.x] 自对弈精炼：低置信度时自动走挑战→防御→精炼
+    try {
+      if (this.selfPlay && result && result.confidence < 0.4) {
+        const spResult = this.selfPlay.refine({
+          id: `think-${Date.now()}`,
+          input,
+          chosenPath: { id: result.type || 'unknown', constraints: true, feasibility: true },
+          confidence: result.confidence,
+          reasoning: result.chain || result.analysis?.reasoning,
+          paths: result.hypotheses || [],
+        }, { maxCycles: 2, convergenceThreshold: 0.1 });
+        if (spResult && spResult.improvement > 0) {
+          result.selfPlay = { improved: spResult.improvement, cycles: spResult.cycles, score: spResult.finalScore };
+        }
+      }
+    } catch (_) { /* 非关键 */ }
     // 预测误差驱动的即时巩固：高认知负荷 → 不等下次反思循环，立即触发额外反思
     try {
       if (this.cognitiveIndex && this.cognitiveIndex._lastEstimate && this.continuousLearner && input) {
