@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "6.2.3",
+  "version": "6.2.4",
   "description": "HeartFlow — rule engine cognitive preprocessor. Classifies input intent, categorizes task types, and returns structured decisions through deterministic rules. 25+ MCP tools.",
   "main": "src/core/heartflow.js",
   "bin": {

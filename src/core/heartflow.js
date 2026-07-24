@@ -463,6 +463,8 @@ const _LearningPulse = _lazy('learningPulse', () => require('../cortex/learning-
 
 const _TaskUrgency = _lazy('taskUrgency', () => require('../cortex/task-urgency-estimator.js'));
 
+const _KnowledgeSubsystem = _lazy('knowledgeSubsystem', () => require('../knowledge/index.js'));
+
 const _SelfDiagnosis = _lazy('selfDiagnosis', () => require('./self-diagnosis.js'));
 
 const _WhatLearned = _lazy('whatLearned', () => require('./what-learned.js'));
@@ -3968,6 +3970,14 @@ class HeartFlow {
       this.gapExecutor = new (_GapExecutor().GapExecutor)();
     } catch (e) { _boundedPush(this._initErrors, { module: 'gapExecutor', error: e.message }, MAX_HISTORY_SIZE); }
 
+    // ─── [v6.2.4] KnowledgeSubsystem 知识子系统：14领域本体 + 世界知识框架 + 跨域推理 ──
+    try {
+      const { KnowledgeSubsystem } = _KnowledgeSubsystem();
+      this.knowledge = new KnowledgeSubsystem({ rootPath: this.projectRoot || process.cwd() });
+      this._modules['knowledgeSubsystem'] = this.knowledge;
+      _log.info('init', 'KnowledgeSubsystem 加载成功', { domains: this.knowledge.ontology.domains.length, routes: 'knowledgeSubsystem.*, worldKnowledge.*' });
+    } catch (e) { _boundedPush(this._initErrors, { module: 'knowledgeSubsystem', error: e.message }, MAX_HISTORY_SIZE); }
+
     // ─── [v6.2.2] LearningOrchestrator 学习编排器：联通4个学习模块 ──
     try {
       this.learningOrchestrator = new (_LearningOrchestrator().LearningOrchestrator)(this);
@@ -4417,6 +4427,34 @@ class HeartFlow {
             dr.feedback('confidence-gate', 'wrong');
           }
         }
+      }
+    } catch (_) { /* 非关键 */ }
+
+    // ─── [v6.2.4] 知识域探测：输入关联哪些领域本体 ──
+    try {
+      if (this.knowledge && input) {
+        const domains = this.knowledge.ontology.domains;
+        const lowered = input.toLowerCase();
+        const matched = domains.filter(d =>
+          lowered.includes(d.id) ||
+          lowered.includes((d.name || '').toLowerCase()) ||
+          (d.nameEn && lowered.includes(d.nameEn.toLowerCase()))
+        );
+        if (matched.length > 0) {
+          result.knowledgeDomains = matched.map(d => d.id);
+        }
+      }
+    } catch (_) { /* 非关键 */ }
+
+    // ─── [v6.2.4] 自省汇入输出：让每轮 think 携带自知状态 ──
+    try {
+      if (this.selfDiagnosis) {
+        const diag = this.selfDiagnosis.run();
+        if (diag.ok) result._selfDiagnosis = diag.summary.readable || diag.summary;
+      }
+      if (this.whatLearned) {
+        const wl = this.whatLearned.report();
+        if (wl.ok !== false && wl.report) result._whatLearned = typeof wl.report === 'string' ? wl.report : (wl.report.summary || JSON.stringify(wl.report).substring(0,200));
       }
     } catch (_) { /* 非关键 */ }
 
