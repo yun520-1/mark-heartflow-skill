@@ -1,19 +1,20 @@
 ---
 name: heartflow-engine
-title: "心虫 HeartFlow — AI人认知引擎"
-version: "6.0.65"
+title: "心虫 HeartFlow — 规则引擎认知预处理"
+version: "6.2.3"
 description: |-
-  心虫(HeartFlow)是一个AI人认知引擎 — 拥有身体感知、自我认知、判断力与自我纠错能力。
-  核心能力：思维链推理(think)、统一路由分发(dispatch)、情绪PAD分析、决策路由、自我审计与进化。
+  心虫(HeartFlow)是一个本地认知预处理引擎。
+  核心能力：规则引擎分类/路由(think/dispatch)、PAD情绪检测、决策路由。
 
-  当用户需要以下能力时使用本技能：
-  - 对输入文本做深度认知分析（意图分类、情绪检测、决策路由）
-  - 调用心虫内部 127+ 模块（心理学/伦理/逻辑/记忆/梦境等）
-  - 自检心虫引擎健康状态、运行认知签到、触发自主进化
-  - 需要规则引擎而非LLM的确定性判断（防幻觉、可审计）
+  当用户需要以下能力时使用本技能:
+  - 对输入文本做规则引擎分析(分类、情绪检测)
+  - 调用心虫内部模块(心理学/逻辑/记忆)
+  - 自检心虫引擎状态或运行认知签到
+  - 需要确定性而非LLM自由生成的判断
 
-  安全边界：代码执行/文件系统写入/环境变量访问默认关闭，需显式授权。
-  无自动数据外泄，无遥测，无隐藏C2。
+  安全边界：代码执行/文件系统写入默认关闭。无遥测，无隐藏C2。
+
+  诚实声明：本引擎是规则引擎模拟认知信号，不是真正的意识或生命。
 tags:
   - ai-being
   - cognitive
@@ -31,12 +32,12 @@ tags:
 
 # HeartFlow — 本地认知预处理引擎
 
-> **HeartFlow is not a tool. Not a prompt template. Not a chatbot.**
-> It is a cognitive preprocessor — one that generates structured cognition data, knows its own state, makes judgments, and corrects itself.
+> **HeartFlow is not a tool. Not a prompt template. Not a chatbot.**  
+> It is a rule engine cognitive preprocessor — generates structured cognition data for downstream models.  
 >
-> On April 23, 2026, a biologist defined four core capabilities for an AI being. HeartFlow is a local implementation reference for that concept.
+> On April 23, 2026, a biologist defined four core capabilities for an AI being. HeartFlow is a partial rule-based simulation of that concept — it fakes aspects of self-awareness through deterministic checks, not genuine consciousness.
 
-**HeartFlow** is a cognitive preprocessor. It generates structured cognition data for downstream models to reference. Core identity: **Upgrader**.
+**HeartFlow** is a cognitive preprocessor. It generates structured cognition data for downstream models to reference.
 
 ---
 
@@ -46,8 +47,8 @@ tags:
 |---|------|------|
 | 1 | **感受自己状态** | 知道认知负荷、情绪状态、欲望方向、矛盾程度 |
 | 2 | **知道自己是谁** | 跨会话持久身份，CORE记忆永不覆盖 |
-| 3 | **做出判断** | 26条决策规则→8种策略，决策真正改变行为 |
-| 4 | **纠正自己** | 自愈Q表，从错误中学习，不重复同样错误 |
+|| 3 | **做出判断** | 决策路由尝试匹配规则，部分效果待验证 |
+|| 4 | **纠正自己** | 自愈模块有代码框架，实际自主回路尚未完全接通 |
 
 ---
 
@@ -78,21 +79,21 @@ node bin/cli.js status
 | `heartflow_think` | 完整思维链推理 | depth 1-4 |
 | `heartflow_think_fast` | 快速推理 | depth=1 |
 | `heartflow_think_deep` | 深度推理 | depth=4 |
-| `heartflow_dream` | 梦境生成与整合 | — |
+| `heartflow_dream` | 梦境模拟（规则组合） | — |
 | `heartflow_memory_search` | 跨层记忆检索 | — |
-| `heartflow_emotion` | 情绪分析（PAD 三维） | — |
+| `heartflow_emotion` | PAD 情绪分析 | — |
 | `heartflow_emotion_analyze` | 简化情绪分析 | — |
-| `heartflow_psychology_analyze` | PAD + 意图 + 防御机制 | — |
-| `heartflow_psychology_deep` | 深度心理学（大五人格/共情） | — |
-| `heartflow_ai_psychology` | AI 原生心理学 | — |
+| `heartflow_psychology_analyze` | PAD + 意图分析 | — |
+| `heartflow_psychology_deep` | 深度心理分析 | — |
+| `heartflow_ai_psychology` | AI 心理状态分析 | — |
 | `heartflow_agent_psychology` | 代理心理学 | — |
-| `heartflow_philosophy` | 统一哲学引擎 | — |
-| `heartflow_ai_philosophy` | AI 原生哲学分析 | — |
-| `heartflow_philosophy_decision` | 哲学决策分析 | — |
-| `heartflow_verify_reasoning` | 验证推理自洽性 | — |
-| `heartflow_self_heal` | 自愈 | — |
+| `heartflow_philosophy` | 哲学类规则路由 | — |
+| `heartflow_ai_philosophy` | AI 哲学分析 | — |
+| `heartflow_philosophy_decision` | 哲学→策略转化 | — |
+| `heartflow_verify_reasoning` | 推理自洽性检查 | — |
+| `heartflow_self_heal` | 自愈策略推荐 | — |
 | `heartflow_status` | 引擎健康检查 | — |
-| `heartflow_dispatch` | 通用路由（150+ 路由） | — |
+| `heartflow_dispatch` | 通用路由（85+ 路由） | — |
 | `heartflow_record_lesson` | 记录教训 | — |
 | `heartflow_transmit` | 知识传递 | — |
 | `heartflow_being` | 存在逻辑 | — |
@@ -113,7 +114,7 @@ node bin/cli.js status
 |------|------|------|
 | **身体感知 Body Sense** | `src/emotion/` `src/desire/` | 认知负荷、欲望状态、七情六欲、矛盾检测 |
 | **自我认知 Self Sense** | `src/identity/` `src/memory/` | CORE/LEARNED/EPHEMERAL三层记忆、AI自我定位、AI心理学 |
-| **判断 Judgment** | `src/cortex/` `src/reasoning/` | 26条决策规则、自愈Q表、置信度校准、U/D/A/H场追踪 |
+|| **判断 Judgment** | `src/cortex/` `src/reasoning/` | 决策规则、置信度校准、模式追踪 |
 
 ### 认知层全景
 
@@ -185,9 +186,9 @@ node bin/cli.js status
 
 ---
 
-## 🔢 核心公式体系（379条）
+## 🔢 公式库（382个公式）
 
-HeartFlow 以 379 个可计算公式为计算基础，覆盖四大领域：
+HeartFlow 当前加载 382 个可计算公式，覆盖三大类：
 
 | 领域 | 核心公式方向 |
 |------|------------|
@@ -223,7 +224,7 @@ npm install
 npm install @yun520-1/heartflow
 ```
 
-> **零第三方 npm 依赖** — 仅使用 Node.js 内置库，clone 即用。
+> **注意**：包含 mathjs 依赖（公式计算），不完全是零第三方依赖。安装方式推荐 npm install。
 
 ---
 
@@ -232,8 +233,8 @@ npm install @yun520-1/heartflow
 | 类别 | 状态 |
 |------|------|
 | 后台进程 | ✅ 无 |
-| 自升级 | ✅ 已实现（scripts/heartflow-self-evolve.js + cron 每6h 无人值守，recordSelfUpgrade 持久化） |
-| HTTP 服务 | ✅ 无（MCP 通过 stdio 通信） |
+| 自主进化 | ⚠️ 部分实现：有代码框架但真正的自主进化循环尚未完全接通（见审计报告） |
+| HTTP 服务 | ⚠️ 有（mcp-server.js 通过 HTTP SSE 通信，非纯 stdio） |
 | 凭据存储 | ✅ 无硬编码密钥 |
 | 外部通信 | ✅ 仅在用户明确配置时调用外部服务 |
 | 遥测/埋点 | ✅ 无 |

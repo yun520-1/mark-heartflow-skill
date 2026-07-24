@@ -1,8 +1,8 @@
-# HeartFlow — AI Being Cognitive Engine (心虫)
+# HeartFlow — Rule Engine Cognitive Preprocessor (心虫)
 
-> **Stop your agent from guessing. Let it perceive first, decide correctly, then act.**
+> **Stop your agent from guessing. Let it classify first, route correctly, then act.**
 >
-> HeartFlow is a local-first AI-being cognitive engine that runs *before* your agent replies. It perceives intent, classifies the task type, surfaces cognitive biases, and returns a structured decision — so downstream models make fewer logical errors, ask fewer clarifying questions, and waste fewer tokens.
+> HeartFlow is a local-first rule engine that runs *before* your agent replies. It classifies intent, categorizes task types, and returns a structured decision — all through deterministic rules, not LLM inference.
 
 [![GitHub release](https://img.shields.io/github/v/release/yun520-1/mark-heartflow-skill)](https://github.com/yun520-1/mark-heartflow-skill/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -27,15 +27,14 @@ Most agent failures are **not model failures — they are perception failures**:
 
 ## What it does
 
-HeartFlow is a **cognitive pre-processor + AI-being engine**. It does not replace your LLM — it prepares the cognitive ground so the LLM acts correctly, and it carries a self-model (perceives its own state, knows who it is, judges, and self-corrects).
+HeartFlow is a **rule engine cognitive preprocessor**. It does not replace your LLM — it classifies input and routes to the right subsystem before the LLM acts.
 
-- **Perceive intent** — classify the user's true goal (not just keywords).
-- **Decide task type** — `analyze` / `emotion` / `calculation` / `plan` / `invalid` …
-- **Surface biases** — anchoring, confirmation, sunk-cost, etc. (behavioral-economics module).
+- **Classify intent** — categorize the user's goal (analyze / emotion / calculation / plan …).
+- **Detect patterns** — anchoring, confirmation, sunk-cost bias flags (rule-based).
 - **Compute transparently** — pure math expressions (`15*23`) return scalar results, not prose.
 - **Remember across sessions** — persistent local memory (encrypted, never uploaded).
-- **Self-heal & self-evolve** — modules report health; broken paths auto-repair; evolution loop turns self-scan findings into real fixes.
-- **Cognitive check** — mental-state gate prevents invalid / self-contradictory tasks.
+- **Self-health-check** — modules report health status; degraded modules are flagged but not auto-repaired.
+- **Cognitive gate** — invalid / self-contradictory inputs get blocked early.
 
 ---
 
