@@ -783,10 +783,19 @@ class ForgettingEngine {
    * @param {number} ageMs - Age of memory in milliseconds
    * @returns {number} retention 0..1 (1 = perfectly retained)
    */
-  ebbinghausRetention(ageMs) {
+  ebbinghausRetention(ageMs, accessCount = 0) {
     const S = this._config.ebbinghausStrengthMs || 86400000;
     const t = Math.max(ageMs, 0);
-    return Math.exp(-t / S);
+    let retention = Math.exp(-t / S);
+
+    // [spacing_effect] 间隔效应：高频访问的记忆维持更高保留率
+    // R = f(interval, repetitions) — 访问越多，强度越大
+    if (accessCount > 1) {
+      const spacingBoost = Math.min(0.3, accessCount * 0.03);
+      retention = Math.min(1, retention + spacingBoost * (1 - retention));
+    }
+
+    return retention;
   }
 
   /**
