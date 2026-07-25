@@ -4080,14 +4080,19 @@ class HeartFlow {
 
       this._postProcessHooks = new PostProcessHooks(this._hookBus);
 
-      // ─── [v6.2.6] 注册 HookBus handler ──
+      // ─── [v6.3.0] PluginLoader：自动发现并加载插件 ──
       try {
-        const { register: registerBSB } = require('./hooks/blind-spot-breaker-hook.js');
-        if (this._hookBus) {
-          registerBSB(this._hookBus);
+        const { PluginLoader } = require('../loader/plugin-loader.js');
+        this._pluginLoader = new PluginLoader(this);
+        const result = this._pluginLoader.loadAll();
+        if (result.failed.length > 0) {
+          console.warn('[HeartFlow] PluginLoader: ' + result.loaded.length + ' loaded, ' + result.failed.length + ' failed');
+          for (const f of result.failed) {
+            console.warn('  plugin ' + f.name + ' failed: ' + f.error);
+          }
         }
       } catch (e) {
-        console.warn('[HeartFlow] Hook handler registration failed:', e.message);
+        console.warn('[HeartFlow] PluginLoader init failed:', e.message);
       }
 
     } catch (e) {

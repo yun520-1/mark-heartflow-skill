@@ -1,0 +1,16 @@
+{
+  "format": 1,
+  "description": "Plugin registry — add new plugins here, enabled by default",
+  "defaults": {
+    "enabled": true
+  },
+  "plugins": {
+    "blind-spot-breaker": {
+      "enabled": true,
+      "config": {
+        "priority": 100,
+        "timeout": 300
+      }
+    }
+  }
+}
