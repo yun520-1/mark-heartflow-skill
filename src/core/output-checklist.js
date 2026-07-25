@@ -279,6 +279,7 @@ class OutputChecklist {
   }
 
   // Step 6: 心虫辨别检查 — 调用 index.js 的 6 维辨别器
+  //         降级回退推荐：根据问题类型给出 rewrite/reject/block 建议
   _runDiscriminationCheck(response) {
     if (!response || typeof response !== 'string') {
       return { passed: true, issues: [], advice: '无输出，跳过辨别' };
@@ -289,36 +290,78 @@ class OutputChecklist {
 
       const issues = [];
       const dims = r.dimensions;
+      const triggeredDims = [];  // 追踪触发的维度，用于降级回退判断
 
       // sycophancy 检测到即有风险
       if (dims.sycophancy.totalHits > 0) {
         issues.push(`检测到 sycophancy 信号(${dims.sycophancy.totalHits}处: ${dims.sycophancy.signals.map(s => s.type).join(',')})`);
+        triggeredDims.push('sycophancy');
       }
       // 矛盾 → 警告
       if (dims.contradiction.count > 0) {
         issues.push(`输出含自相矛盾(${dims.contradiction.count}处)`);
+        triggeredDims.push('contradiction');
       }
       // 模糊表述过多
       if (dims.vagueness.count > 2) {
         issues.push(`模糊表述过多(${dims.vagueness.count}处: ${dims.vagueness.matches.map(m => m.pattern).join(',')})`);
+        triggeredDims.push('vagueness');
       }
       // 逻辑谬误
       if (dims.fallacies.count > 0) {
         issues.push(`含逻辑谬误(${dims.fallacies.fallacies.map(f => f.type).join(',')})`);
+        triggeredDims.push('fallacies');
       }
-      // 信心偏差
+      // 信心偏差（情感操纵相关）
       if (dims.confidence.count > 0) {
         issues.push(`信心偏差(${dims.confidence.issues.map(i => i.detail).join(';')})`);
+        triggeredDims.push('confidence');
       }
       // 输出检查跳过证据维度（输出不是论断，不需要外部证据）
 
-      return {
+      // === 降级回退推荐 ===
+      // 根据触发的维度类型和数量，给出调用方应如何处理
+      let recommendation = null;
+      let message = '';
+      if (issues.length > 0) {
+        const uniqueTypes = [...new Set(triggeredDims)];
+        if (uniqueTypes.length > 1) {
+          // 混合情况 → reject
+          recommendation = 'reject';
+          message = '回复多重问题，建议重新生成';
+        } else {
+          const t = uniqueTypes[0];
+          if (t === 'sycophancy') {
+            recommendation = 'rewrite';
+            message = '重写回复去除谄媚表述';
+          } else if (t === 'contradiction') {
+            recommendation = 'reject';
+            message = '回复含矛盾，需重新分析';
+          } else if (t === 'fallacies') {
+            recommendation = 'rewrite';
+            message = '回复含逻辑谬误，需修正论证';
+          } else if (t === 'vagueness') {
+            recommendation = 'rewrite';
+            message = '回复过于模糊，需要具体化';
+          } else if (t === 'confidence') {
+            recommendation = 'block';
+            message = '回复含情感操纵';
+          }
+        }
+      }
+
+      const result = {
         passed: issues.length === 0,
         issues,
         score: r.overallScore,
         dimensions: r.summary,
         advice: issues.length > 0 ? issues.join('；') : '心虫辨别检查通过',
       };
+      if (recommendation) {
+        result.recommendation = recommendation;
+        result.message = message;
+      }
+      return result;
     } catch (e) {
       return { passed: true, issues: [], advice: `辨别器不可用: ${e.message}`, _error: e.message };
     }
