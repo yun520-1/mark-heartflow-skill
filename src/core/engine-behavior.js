@@ -285,7 +285,7 @@ function _saveDreamHistory(hf,data) {
 
       const salt = crypto.randomBytes(16);
 
-      const key = crypto.scryptSync(keySource, salt, 32);
+      const key = crypto.scryptSync(keySource, salt, 32, { N: 16384, r: 8, p: 1 });
 
       const iv = crypto.randomBytes(16);
 
