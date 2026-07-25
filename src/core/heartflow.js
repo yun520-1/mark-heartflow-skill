@@ -4347,6 +4347,49 @@ class HeartFlow {
         }
       }
     } catch (_) { /* 非关键 */ }
+
+    // ─── [v6.2.5] AREX递归自验证：决策验证→问题发现→精炼→重验 (arXiv 2607.21461) ──
+    // 核心洞见：finding贵，verifying便宜。产出结果后先自我审计，发现缺口→立即定向精炼
+    // 实现：DecisionVerifier.verify() + SelfPlay.refine() 的两阶段递归 (max 2轮)
+    try {
+      if (this.decisionVerifier && result) {
+        for (let cycle = 0; cycle < 2; cycle++) {
+          const meta = result.output?.meta || result.meta || {};
+          const record = {
+            decision: result.output?.conclusion || result.output?.text || result.conclusion || (typeof input === 'string' ? input.substring(0, 100) : ''),
+            evidence: Array.isArray(result.hypotheses) ? result.hypotheses.map(h => typeof h === 'string' ? h : (h.text || h.id || '')) : (Array.isArray(result.evidence) ? result.evidence : []),
+            alternatives: Array.isArray(result.hypotheses) ? result.hypotheses.map(h => ({ id: h.id || h, path: h.text || h })) : (result.alternatives || []),
+            risks: result.blindSpotAnalysis?.identified ? result.blindSpotAnalysis.vulnerabilities : undefined,
+            confidence: meta.confidence ?? result.confidence ?? 0.5,
+          };
+          const vResult = this.decisionVerifier.verify(record);
+          if (vResult.issues?.length > 0) {
+            result._verification = {
+              score: vResult.score,
+              issues: vResult.issues.map(i => ({ type: i.type, severity: i.severity, message: i.message })),
+              repairHints: vResult.repairHints || [],
+            };
+            // 分数过低且可用SelfPlay → 定向精炼
+            if (vResult.score < 0.5 && this.selfPlay && cycle === 0) {
+              const spResult = await this.selfPlay.refine({
+                id: `verify-cycle-${Date.now()}`,
+                input,
+                chosenPath: { id: result.type || 'unknown', constraints: true, feasibility: true },
+                confidence: vResult.score,
+                reasoning: meta.reasoningChain || result.chain || result.analysis?.reasoning,
+                paths: Array.isArray(result.hypotheses) ? result.hypotheses : [],
+              }, { maxCycles: 1, convergenceThreshold: 0.1 });
+              if (spResult && spResult.improvement > 0) {
+                result._verification.refined = true;
+                result._verification.cycleImprovement = spResult.improvement;
+                continue; // 重新验证
+              }
+            }
+          }
+          break; // 无问题或无法精炼→停止
+        }
+      }
+    } catch (_) { /* 非关键 */ }
     try { if (this.learningPulse) { this.learningPulse.beat(result || {}); } } catch (_) { /* 非关键 */ }
     // 假设驱动：从 ContinuousLearner 累积摘要中提取模式，生成假设→探索队列
     try {
