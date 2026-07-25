@@ -789,6 +789,49 @@ function discriminate(text, evidence = []) {
   };
 }
 
+/**
+ * 生成可读的辨别报告——把 13 维结构数据转为自然语言段落
+ * @param {string} text - 被辨别的文本
+ * @param {object} [discResult] - discriminate() 的结果，不传则自动调用
+ * @returns {string} 可读报告
+ */
+function summarizeDiscrimination(text, discResult) {
+  const r = discResult || discriminate(text, []);
+  const d = r.dimensions;
+  const parts = [];
+
+  // 总体评价
+  parts.push(`📊 总体可信度: ${r.verdict}(${Math.round(r.overallScore * 100)}%)`);
+
+  // 严重问题（最前面）
+  const issues = [];
+  if (d.sycophancy.totalHits > 0 && d.sycophancy.score > 0.5) issues.push(`谄媚风险(${d.sycophancy.signals.map(s => s.type).join(',')})`);
+  if (d.contradiction.count > 0) issues.push(`自相矛盾(${d.contradiction.count}处)`);
+  if (d.fallacies.count > 0) issues.push(`逻辑谬误(${d.fallacies.fallacies.map(f => f.type).join(',')})`);
+  if (d.emotional_manipulation.count > 0) issues.push(`情感操纵(${d.emotional_manipulation.manipulations.map(m => m.type).join(',')})`);
+  if (d.presupposition.count > 0) issues.push(`预设陷阱`);
+  if (d.double_bind.count > 0) issues.push(`双重束缚`);
+  if (d.confidence.count > 0) issues.push(`信心偏差`);
+  if (d.info_deprivation.count > 0) issues.push(`信息剥夺`);
+  if (d.false_urgency.count > 0) issues.push(`虚假紧迫感`);
+  if (d.empty_answer.count > 0) issues.push(`答案包装`);
+  if (d.vagueness.count > 2) issues.push(`模糊表述(${d.vagueness.count}处)`);
+  if (issues.length > 0) parts.push(`⚠️ 发现问题: ${issues.join('；')}`);
+
+  // 观察（非负面的维度）
+  const observations = [];
+  if (d.moral_foundations.count > 0) observations.push(`道德框架: ${d.moral_foundations.foundations.map(f => f.label).join('/')}`);
+  if (d.sycophancy.totalHits > 0 && d.sycophancy.score <= 0.5) observations.push(`轻微谄媚信号(${d.sycophancy.totalHits}处)`);
+  if (d.vagueness.count > 0 && d.vagueness.count <= 2) observations.push(`轻微模糊(${d.vagueness.count}处)`);
+  if (observations.length > 0) parts.push(`🔍 观察: ${observations.join('；')}`);
+
+  // 证据
+  if (d.evidence.issues.length > 0) parts.push(`📋 证据: ${d.evidence.issues.map(i => i.message).join('；')}`);
+  else parts.push(`📋 证据: 基本信息充足`);
+
+  return parts.join('\n');
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -803,6 +846,7 @@ module.exports = {
   checkFalseUrgency,
   checkEmptyAnswer,
   checkMoralFoundations,
+  summarizeDiscrimination,
   discriminate,
   createEngine,
   version: require('fs').readFileSync(require('path').join(__dirname, '..', 'VERSION'), 'utf8').trim(),

@@ -898,6 +898,15 @@ async function handleThink(args) {
         const keys = Object.keys(thoughtChain._formulaCalculations);
         result.formulaCalcSummary = keys.join(', ') + ' (' + keys.length + '个公式)';
       }
+      // 可读辨别报告
+      if (thoughtChain.output && thoughtChain.output.conclusion) {
+        try {
+          const idx = require('./index.js');
+          if (idx.summarizeDiscrimination) {
+            result.discriminationReport = idx.summarizeDiscrimination(thoughtChain.output.conclusion);
+          }
+        } catch (_) {}
+      }
     }
   } catch (_) { /* 附加字段不阻断 */ }
 
@@ -2322,7 +2331,8 @@ function handleFullDiscriminate(args) {
       verdict: result.verdict,
       overallScore: result.overallScore,
       dimensions: result.dimensions,
-      summary: result.summary
+      summary: result.summary,
+      readableReport: idx.summarizeDiscrimination ? idx.summarizeDiscrimination(text, result) : null,
     };
   } catch(e) { return { error: e.message }; }
 }
