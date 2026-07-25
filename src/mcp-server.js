@@ -2359,6 +2359,58 @@ function handleErrorQuery(args) {
   if (!heartflow||!heartflow._hfCore) return { error: 'error memory not ready' };
   try { return heartflow._hfCore.errorMemory.query(problem, limit || 5); } catch(e) { return { error: e.message }; }
 }
+// [v6.3.7] 公式搜索
+function handleFormulaSearch(args) {
+  const { keyword, limit } = args || {};
+  if (!keyword) return { error: 'keyword required' };
+  if (!heartflow || !heartflow.formula) return { error: 'formula engine not ready' };
+  try {
+    const r = heartflow.formula.search(keyword, { limit: limit || 5 });
+    return { success: true, count: r.count, results: r.results.map(f => ({ id: f.id, name: f.name, formula: f.formula, category: f.category, subcategory: f.subcategory })) };
+  } catch(e) { return { error: e.message }; }
+}
+
+// [v6.3.7] 公式计算（调用 FormulaBridge 方法）
+function handleFormulaCalculate(args) {
+  const { domain, params } = args || {};
+  if (!domain) return { error: 'domain required (memory/decision/cognition/info/social/physics/consciousness/assessment)' };
+  if (!heartflow) return { error: 'engine not ready' };
+  try {
+    const { getFormulaBridge } = require(HF_DIR + '/src/formula/formula-bridge.js');
+    const bridge = getFormulaBridge();
+    const result = {};
+    if (domain === 'memory') {
+      const ageMs = (params && params.ageMs) || 86400000;
+      const strengthMs = (params && params.strengthMs) || 86400000;
+      result.ebbinghausRetention = bridge.ebbinghausRetention(ageMs, strengthMs);
+      result.memoryStrength = bridge.memoryStrengthFromFrequency((params && params.frequency) || 1);
+    } else if (domain === 'decision') {
+      const x = (params && params.x) || 100;
+      result.prospectValue = bridge.prospectValue(x);
+      result.prospectLoss = bridge.prospectValue(-Math.abs(x));
+      result.subjectiveUtility = bridge.subjectiveUtility((params && params.probs) || [0.5,0.3,0.2], (params && params.utils) || [100,50,0]);
+      result.minimax = bridge.minimax((params && params.payoffMatrix) || [[10,-5],[-3,8]]);
+    } else if (domain === 'cognition') {
+      const a = (params && params.arousal) || 0.5;
+      result.yerkesDodson = bridge.yerkesDodson(a);
+      result.flowChannel = bridge.flowChannel((params && params.challenge) || 5, (params && params.skill) || 5);
+      result.cognitiveDissonance = bridge.cognitiveDissonance((params && params.beliefs) || [0.8,0.3], (params && params.actions) || [0.5,0.4], (params && params.weights) || [0.5,0.5]);
+    } else if (domain === 'info') {
+      result.shannonEntropy = bridge.shannonEntropy((params && params.distribution) || [0.5,0.3,0.2]);
+      result.klDivergence = bridge.klDivergence((params && params.p) || [0.5,0.3,0.2], (params && params.q) || [0.4,0.35,0.25]);
+      result.crossEntropy = bridge.crossEntropy((params && params.p) || [0.5,0.3,0.2], (params && params.q) || [0.4,0.35,0.25]);
+    } else if (domain === 'social') {
+      result.socialInfluence = bridge.socialInfluence((params && params.state) || [0.5,0.5], (params && params.weights) || [[0,0.3],[0.3,0]], (params && params.lambda) || 0.1);
+      result.bystanderEffect = bridge.bystanderEffect((params && params.p) || 0.8, (params && params.n) || 5);
+    } else if (domain === 'consciousness') {
+      result.iitPhi = bridge.iitPhi((params && params.miWhole) || 0.8, (params && params.miParts) || 0.3);
+      result.gwtAccessibility = bridge.gwtAccessibility((params && params.weights) || [0.8,0.5,0.2], (params && params.gwSignal) || 1.0);
+    } else {
+      result.error = 'unknown domain: ' + domain;
+    }
+    return { domain, result };
+  } catch(e) { return { error: e.message }; }
+}
 
 const HANDLERS = {
 
@@ -2426,6 +2478,10 @@ const HANDLERS = {
   heartflow_check_drift: handleCheckDrift,
   heartflow_error_store: handleErrorStore,
   heartflow_error_query: handleErrorQuery,
+
+  // [v6.3.7] 公式工具
+  heartflow_formula_search: handleFormulaSearch,
+  heartflow_formula_calculate: handleFormulaCalculate,
 
 };
 
