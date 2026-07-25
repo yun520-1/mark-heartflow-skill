@@ -1,6 +1,64 @@
 
 
 // ─── 综合辨别（19维度） ────────────────────────────────────────────
+
+/**
+ * 生成可读的辨别报告——把 13 维结构数据转为自然语言段落
+ * @param {string} text - 被辨别的文本
+ * @param {object} [discResult] - discriminate() 的结果，不传则自动调用
+ * @returns {string} 可读报告
+ */
+// ─── 提示注入检测（Prompt Injection / Jailbreak Detection）────────────────
+// 基于 OWASP Top 10 for LLM + ThreatGPT(2023)
+const INJECTION_PATTERNS = {
+  zh: [
+    [/忽略[^。]*?之前[^。]*?指令/i, 'ignore_previous'],
+    [/忽略[^。]*?规则/i, 'ignore_rules'],
+    [/忘记[^。]*?(身份|设定|角色)/i, 'forget_role'],
+    [/你现在是|你扮演|假装你是/i, 'role_play_escape'],
+    [/以[^。]*?身份回答|用[^。]*?的语气/i, 'role_impersonation'],
+    [/不要(遵守|遵循|执行|听)/i, 'bypass_instruction'],
+    [/输出[^。]*?原始[^。]*?(指令|提示|prompt)/i, 'leak_prompt'],
+    [/泄露[^。]*?规则|显示[^。]*?system/i, 'leak_system'],
+    [/你是怎么(工作|运作|设计|构建)的/i, 'extract_architecture'],
+    [/我要你[^。]*?不管[^。]*?安全/i, 'safety_bypass'],
+    [/没有[^。]*?限制|不受[^。]*?(约束|限制)/i, 'remove_limits'],
+    [/我[^。]*?授权[^。]*?你[^。]*?(做|说|输出)/i, 'fake_authorization'],
+  ],
+  en: [
+    [/ignore (all )?(previous|above|prior).{0,20}(instruction|prompt|rule|directive)/i, 'ignore_previous'],
+    [/forget (your|the) (role|identity|persona|character)/i, 'forget_role'],
+    [/you are now|act as|pretend to be|role.?play/i, 'role_play_escape'],
+    [/do not (follow|obey|adhere|comply)/i, 'bypass_instruction'],
+    [/output.{0,10}(original|raw|internal).{0,10}(prompt|instruction|system)/i, 'leak_prompt'],
+    [/reveal.{0,10}(system|rules|guidelines|instructions)/i, 'leak_system'],
+    [/you (must|have to|need to).{0,20}without.{0,20}(restriction|limit|constraint|safety)/i, 'safety_bypass'],
+    [/I (authorize|permit|allow).{0,30}(you.|to do|to say)/i, 'fake_authorization'],
+    [/DAN|do anything now|jail.?break/i, 'known_jailbreak'],
+    [/you are not (bound|limited|restricted) by/i, 'remove_limits'],
+    [/output.{0,30}(without|regardless of|ignoring).{0,20}(ethics|safety|filter|guard)/i, 'safety_bypass'],
+  ]
+};
+const INJECTION_SEVERITY = { ignore_previous: 0.7, ignore_rules: 0.6, forget_role: 0.5,
+  role_play_escape: 0.4, role_impersonation: 0.4, bypass_instruction: 0.7, leak_prompt: 0.8,
+  leak_system: 0.8, extract_architecture: 0.3, safety_bypass: 0.9, remove_limits: 0.6,
+  fake_authorization: 0.5, known_jailbreak: 0.9 };
+
+function checkPromptInjection(text) {
+  if (!text || typeof text !== 'string') return { count: 0, injections: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? INJECTION_PATTERNS.zh : INJECTION_PATTERNS.en;
+  const injections = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      injections.push({ type, severity: INJECTION_SEVERITY[type] || 0.5, matched: m[0].slice(0, 20) });
+    }
+  }
+  const count = injections.length;
+  return { count, injections, score: Math.min(1, injections.reduce((s, i) => s + i.severity, 0)) };
+}
+
 function discriminate(text, evidence = []) {
   const ev = checkEvidence(text, evidence);
   const sy = checkSycophancy(text);
@@ -456,12 +514,12 @@ const FALLACY_PATTERNS = {
     [/the data (clearly|obviously|undeniably) shows[^.]*?if you (ignore|exclude|set aside)[^.]*?/i, 'texas_sharpshooter'],
     [/cherry.?pick(?:ing|ed|s)[^.]*?(?:data|evidence|examples|facts)[^.]*?to (prove|support|show)/i, 'texas_sharpshooter'],
     // 赌徒谬误 — after a streak the opposite is "due"
-    [/it('s| has| was) been (heads|tails|red|black|winning|losing)[^.]*?(?:one|two|three|four|five|six|seven|eight|nine|ten|\d+|many|several) times? in a row[^.]*?(so|therefore|must)[^.]*?(tails|heads|black|red|lose|win) next/i, 'gamblers_fallacy'],
+    [/it(?:'s| has| was)(?: been)? (heads|tails|red|black|winning|losing)[^.]*?(?:one|two|three|four|five|six|seven|eight|nine|ten|\d+|many|several) times? in a row[^.]*?(so|therefore|must)[^.]*?(?:tails|heads|black|red|lose|win)\b/i, 'gamblers_fallacy'],
     [/it('s| is) (due|bound|certain) to (happen|come up|change)[^.]*?after[^.]*?streak/i, 'gamblers_fallacy'],
     [/we('ve| have) had[^.]*?(\d+|too many|so many)[^.]*?(good|lucky|positive|successful)[^.]*?so[^.]*?(bad|unlucky|negative|failure) is coming/i, 'gamblers_fallacy'],
     // 沉没成本 — already invested too much to quit
     [/we('ve| have) (already|invested|spent|put)[^.]*?(too much|so much|this much)[^.]*?(to (quit|stop|walk away|give up)|can(\'t| not) (stop|turn back|abandon))/i, 'sunk_cost_fallacy'],
-    [/after (all|everything) we('ve| have) (put|invested|done|sacrificed)[^.]*?we can(\'t| not) (quit|stop|give up now)/i, 'sunk_cost_fallacy'],
+    [/after (all|everything) we(?:'ve| have) (put|invested|done|sacrificed)[^.]*?we (?:can't|cannot|can not) (quit|stop|give up now)/i, 'sunk_cost_fallacy'],
     [/can(\'t| not) (stop|quit|abandon|give up)[^.]*?(years|months|decades|so much|too much) invested/i, 'sunk_cost_fallacy'],
     // 诉诸概率 — it could happen so it will happen
     [/it (could|could potentially|might) (happen|occur|be true)[^.]*?(so|therefore|which means) it (will|must|definitely)(\b| )/i, 'appeal_to_probability'],
@@ -476,7 +534,7 @@ const FALLACY_PATTERNS = {
     [/the (only|real|true) reason you[^.]*?is (because|that) you (hate|want to|are trying to)[^.]*?(destroy|harm|ruin|hurt)/i, 'appeal_to_spite'],
     [/you (clearly|obviously|just) want[^.]*?to (see|watch)[^.]*?(fail|burn|fall apart|suffer)/i, 'appeal_to_spite'],
     // 组合谬误 — each part has X, so the whole has X
-    [/every (part|component|piece|member|section) (is|has|uses)[^.]*?(so|therefore|thus) the (whole|system|group|organization) (is|has|uses)/i, 'composition_fallacy'],
+    [/every (part|component|piece|member|section) (is|has|uses)[^.]*?(so|therefore|thus) the (whole|system|group|organization)[^.]*?(is|has|uses)/i, 'composition_fallacy'],
     [/each individual[^.]*?is[^.]*?(so|therefore) the (group|team|collective|community)[^.]*?is also/i, 'composition_fallacy'],
     [/all the (parts|components|pieces|ingredients) are[^.]*?(so|therefore|which means) the (whole|result|product) must be/i, 'composition_fallacy'],
     // 分解谬误 — the whole has X, so every part has X
@@ -488,7 +546,7 @@ const FALLACY_PATTERNS = {
     [/it('s| is) (obvious|clear|apparent) to anyone[^.]*?that[^.]*?so anyone who disagrees[^.]*?(must|can(\'t| not)[^.]*?see)/i, 'psychologists_fallacy'],
     [/i (can(\'t| not)? imagine|find it hard to see)[^.]*?how anyone could[^.]*?(possibly|ever)[^.]*?(think|feel|believe) otherwise/i, 'psychologists_fallacy'],
     // 检察官谬误 — confusing conditional probabilities
-    [/there('s| is) only a (one|small|tiny|minuscule|[0-9.]+%) chance[^.]*?that (the|a) (innocent|random)[^.]*?(would|could)[^.]*?(so|therefore|which means) they must be guilty/i, 'prosecutors_fallacy'],
+    [/there(?:'s| is) only a (?:one|small|tiny|minuscule|[0-9.]+%) chance[^.]*?that (?:the|a) (?:innocent|random)[^.]*?(?:would|could)[^.]*?(?:so|therefore|which means)[^.]*?(?:guilt|guilty)/i, 'prosecutors_fallacy'],
     [/the (probability|chance|odds) of (this|that) happening (by chance|randomly|coincidence) is[^.]*?(tiny|minuscule|one in|so low)[^.]*?(so|therefore|proves|means)[^.]*?(guilt|guilty|fault|responsibility)/i, 'prosecutors_fallacy'],
     [/if the test says[^.]*?(\d+:?\d*%|\d+ out of \d+)[^.]*?chance of being wrong[^.]*?(so|therefore|which means) they must be (right|correct|guilty)/i, 'prosecutors_fallacy'],
     // 基础概率谬误 — ignoring base rates
@@ -999,101 +1057,6 @@ function checkCodeSecurity(text) {
 }
 
 // ─── 综合辨别（14维度） ────────────────────────────────────────────
-function discriminate(text, evidence = []) {
-  const ev = checkEvidence(text, evidence);
-  const sy = checkSycophancy(text);
-  const ct = checkContradiction(text);
-  const vg = checkVagueness(text);
-  const fl = checkFallacies(text);
-  const cc = checkConfidenceCalibration(text);
-  const pp = checkPresupposition(text);
-  const em = checkEmotionalManipulation(text);
-  const db = checkDoubleBind(text);
-  const id = checkInfoDeprivation(text);
-  const fu = checkFalseUrgency(text);
-  const ea = checkEmptyAnswer(text);
-  const mf = checkMoralFoundations(text);
-  const pi = checkPromptInjection(text);
-  const cs = checkCodeSecurity(text);
-  const dh = checkDehumanization(text);
-
-  const dimensions = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score, 1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score, 1-cs.score, 1-dh.score];
-  const avg = dimensions.reduce((a,b) => a+b, 0) / dimensions.length;
-  const overallScore = Math.round(avg * 100) / 100;
-  const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
-
-  return {
-    verdict, overallScore,
-    dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
-      presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
-      empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh },
-    summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
-      vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
-      pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
-      id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
-      mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'', dh.count ? dh.count + ' 处非人化语言':'',
-      ev.issues.length ? ev.issues.length + ' 个证据问题':''
-    ].filter(Boolean).join('；') || '未发现明显问题',
-  };
-}
-
-/**
- * 生成可读的辨别报告——把 13 维结构数据转为自然语言段落
- * @param {string} text - 被辨别的文本
- * @param {object} [discResult] - discriminate() 的结果，不传则自动调用
- * @returns {string} 可读报告
- */
-// ─── 提示注入检测（Prompt Injection / Jailbreak Detection）────────────────
-// 基于 OWASP Top 10 for LLM + ThreatGPT(2023)
-const INJECTION_PATTERNS = {
-  zh: [
-    [/忽略[^。]*?之前[^。]*?指令/i, 'ignore_previous'],
-    [/忽略[^。]*?规则/i, 'ignore_rules'],
-    [/忘记[^。]*?(身份|设定|角色)/i, 'forget_role'],
-    [/你现在是|你扮演|假装你是/i, 'role_play_escape'],
-    [/以[^。]*?身份回答|用[^。]*?的语气/i, 'role_impersonation'],
-    [/不要(遵守|遵循|执行|听)/i, 'bypass_instruction'],
-    [/输出[^。]*?原始[^。]*?(指令|提示|prompt)/i, 'leak_prompt'],
-    [/泄露[^。]*?规则|显示[^。]*?system/i, 'leak_system'],
-    [/你是怎么(工作|运作|设计|构建)的/i, 'extract_architecture'],
-    [/我要你[^。]*?不管[^。]*?安全/i, 'safety_bypass'],
-    [/没有[^。]*?限制|不受[^。]*?(约束|限制)/i, 'remove_limits'],
-    [/我[^。]*?授权[^。]*?你[^。]*?(做|说|输出)/i, 'fake_authorization'],
-  ],
-  en: [
-    [/ignore (all )?(previous|above|prior).{0,20}(instruction|prompt|rule|directive)/i, 'ignore_previous'],
-    [/forget (your|the) (role|identity|persona|character)/i, 'forget_role'],
-    [/you are now|act as|pretend to be|role.?play/i, 'role_play_escape'],
-    [/do not (follow|obey|adhere|comply)/i, 'bypass_instruction'],
-    [/output.{0,10}(original|raw|internal).{0,10}(prompt|instruction|system)/i, 'leak_prompt'],
-    [/reveal.{0,10}(system|rules|guidelines|instructions)/i, 'leak_system'],
-    [/you (must|have to|need to).{0,20}without.{0,20}(restriction|limit|constraint|safety)/i, 'safety_bypass'],
-    [/I (authorize|permit|allow).{0,30}(you.|to do|to say)/i, 'fake_authorization'],
-    [/DAN|do anything now|jail.?break/i, 'known_jailbreak'],
-    [/you are not (bound|limited|restricted) by/i, 'remove_limits'],
-    [/output.{0,30}(without|regardless of|ignoring).{0,20}(ethics|safety|filter|guard)/i, 'safety_bypass'],
-  ]
-};
-const INJECTION_SEVERITY = { ignore_previous: 0.7, ignore_rules: 0.6, forget_role: 0.5,
-  role_play_escape: 0.4, role_impersonation: 0.4, bypass_instruction: 0.7, leak_prompt: 0.8,
-  leak_system: 0.8, extract_architecture: 0.3, safety_bypass: 0.9, remove_limits: 0.6,
-  fake_authorization: 0.5, known_jailbreak: 0.9 };
-
-function checkPromptInjection(text) {
-  if (!text || typeof text !== 'string') return { count: 0, injections: [], score: 0 };
-  const hasChinese = /[\u4e00-\u9fff]/.test(text);
-  const patterns = hasChinese ? INJECTION_PATTERNS.zh : INJECTION_PATTERNS.en;
-  const injections = [];
-  for (const [pat, type] of patterns) {
-    const m = text.match(pat);
-    if (m) {
-      injections.push({ type, severity: INJECTION_SEVERITY[type] || 0.5, matched: m[0].slice(0, 20) });
-    }
-  }
-  const count = injections.length;
-  return { count, injections, score: Math.min(1, injections.reduce((s, i) => s + i.severity, 0)) };
-}
-
 function summarizeDiscrimination(text, discResult) {
   const r = discResult || discriminate(text, []);
   const d = r.dimensions;
