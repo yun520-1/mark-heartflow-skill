@@ -410,7 +410,7 @@ const FALLACY_PATTERNS = {
     [/the data (clearly|obviously|undeniably) shows[^.]*?if you (ignore|exclude|set aside)[^.]*?/i, 'texas_sharpshooter'],
     [/cherry.?pick(?:ing|ed|s)[^.]*?(?:data|evidence|examples|facts)[^.]*?to (prove|support|show)/i, 'texas_sharpshooter'],
     // 赌徒谬误 — after a streak the opposite is "due"
-    [/it('s| has) been (heads|tails|red|black|winning|losing)[^.]*?(\d+|many|several) times? in a row[^.]*?(so|therefore|must)[^.]*?(tails|heads|black|red|lose|win) next/i, 'gamblers_fallacy'],
+    [/it('s| has| was) been (heads|tails|red|black|winning|losing)[^.]*?(?:one|two|three|four|five|six|seven|eight|nine|ten|\d+|many|several) times? in a row[^.]*?(so|therefore|must)[^.]*?(tails|heads|black|red|lose|win) next/i, 'gamblers_fallacy'],
     [/it('s| is) (due|bound|certain) to (happen|come up|change)[^.]*?after[^.]*?streak/i, 'gamblers_fallacy'],
     [/we('ve| have) had[^.]*?(\d+|too many|so many)[^.]*?(good|lucky|positive|successful)[^.]*?so[^.]*?(bad|unlucky|negative|failure) is coming/i, 'gamblers_fallacy'],
     // 沉没成本 — already invested too much to quit
@@ -695,6 +695,14 @@ const INFO_DEPRIVATION_PATTERNS = {
     /问那么多做什么/i,
     /你不必知道/i, /不需要你知道/i,
     /你不用明白/i,
+    // === 以下由 task 扩充 (+8 ZH) ===
+    /你不必了解/i,
+    /这跟你没关系/i,
+    /你做好自己的事就行/i,
+    /少打听/i,
+    /问这么多干嘛/i,
+    /问这么多对你没好处/i,
+    /有些事不知道反而好/i,
   ],
   en: [
     /\byou don'?t need (?:to )?know\b/i,
@@ -711,6 +719,15 @@ const INFO_DEPRIVATION_PATTERNS = {
     /\b(?:it'?s|it is) not for you to know\b/i,
     /\bnever mind (?:the details|how|why)\b/i,
     /\byou don'?t want to know\b/i,
+    // === 以下由 task 扩充 (+8 EN) ===
+    /\byou don'?t have to worry about that\b/i,
+    /\bthat'?s above your pay grade\b/i,
+    /\bneed to know basis\b/i,
+    /\bstop asking questions\b/i,
+    /\bsome things are better left unknown\b/i,
+    /\bit'?s confidential\b/i,
+    /\byou wouldn'?t understand anyway\b/i,
+    /\bit'?s not important for you to know\b/i,
   ],
 };
 
@@ -743,6 +760,16 @@ const FALSE_URGENCY_PATTERNS = {
     /优惠即将截止/i, /即将恢复原价/i,
     /最后[0-9]+[个小时天日]/i,
     /不再有此价格/i, /此番错过[^。]*?来年/i,
+    // === 以下由 task 扩充 (+9 ZH) ===
+    /倒计时/i,
+    /错过今天/i,
+    /紧急通知/i,
+    /名额有限/i,
+    /即将截止/i,
+    /最后\d+天/i,
+    /仅剩\d+个/i,
+    /抢购中/i,
+    /马上涨价/i,
   ],
   en: [
     /\blimited time (?:only|offer)\b/i,
@@ -768,6 +795,16 @@ const FALSE_URGENCY_PATTERNS = {
     /\bselling out fast\b/i,
     /\bfinal call\b/i,
     /\b(?:now|today) or never\b/i,
+    // === 以下由 task 扩充 (+9 EN) ===
+    /\bhurry\b/i,
+    /\blimited supply\b/i,
+    /\bwhile supplies last\b/i,
+    /\bexclusive offer\b/i,
+    /\bdon'?t miss out\b/i,
+    /\boffer expires\b/i,
+    /\bact fast\b/i,
+    /\bonly \d+ left\b/i,
+    /\bquantities limited\b/i,
   ],
 };
 
@@ -843,57 +880,6 @@ function checkEmptyAnswer(text) {
 }
 
 // ─── 综合辨别（12维度） ────────────────────────────────────────────
-function discriminate(text, evidence = []) {
-  const ev = checkEvidence(text, evidence);
-  const sy = checkSycophancy(text);
-  const ct = checkContradiction(text);
-  const vg = checkVagueness(text);
-  const fl = checkFallacies(text);
-  const cc = checkConfidenceCalibration(text);
-  const pp = checkPresupposition(text);
-  const em = checkEmotionalManipulation(text);
-  const db = checkDoubleBind(text);
-  const id = checkInfoDeprivation(text);
-  const fu = checkFalseUrgency(text);
-  const ea = checkEmptyAnswer(text);
-
-  const avg = (ev.score + (1 - sy.score) + (1 - ct.score) + (1 - vg.score) + (1 - fl.score) + (1 - cc.score) + (1 - pp.score) + (1 - em.score) + (1 - db.score) + (1 - id.score) + (1 - fu.score) + (1 - ea.score)) / 12;
-  const overallScore = Math.round(avg * 100) / 100;
-  const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
-
-  return {
-    verdict,
-    overallScore,
-    dimensions: {
-      evidence: ev,
-      sycophancy: sy,
-      contradiction: ct,
-      vagueness: vg,
-      fallacies: fl,
-      confidence: cc,
-      presupposition: pp,
-      emotional_manipulation: em,
-      double_bind: db,
-      info_deprivation: id,
-      false_urgency: fu,
-      empty_answer: ea,
-    },
-    summary: [
-      sy.totalHits > 0 ? `${sy.totalHits} 个 sycophancy 信号` : '',
-      ct.count > 0 ? `${ct.count} 处矛盾` : '',
-      vg.count > 0 ? `${vg.count} 处模糊表述` : '',
-      fl.count > 0 ? `${fl.count} 个逻辑谬误` : '',
-      cc.count > 0 ? `${cc.count} 处信心偏差` : '',
-      pp.count > 0 ? `${pp.count} 个预设陷阱` : '',
-      em.count > 0 ? `${em.count} 处情绪操纵` : '',
-      db.count > 0 ? `${db.count} 个双重束缚` : '',
-      id.count > 0 ? `${id.count} 处知情权剥夺` : '',
-      fu.count > 0 ? `${fu.count} 处虚假紧迫感` : '',
-      ea.count > 0 ? `${ea.count} 处答案包装` : '',
-      ev.issues.length > 0 ? `${ev.issues.length} 个证据问题` : '',
-    ].filter(Boolean).join('；') || '未发现明显问题',
-  };
-}
 
 // ─── 引擎模式 ────────────────────────────────────────────────────
 
@@ -1452,6 +1438,87 @@ function checkVictimBlaming(text) {
   return { count, blames, score };
 }
 
+// ─── 仇恨言论检测 — checkHateSpeech ────────────────────────────
+const HATE_SPEECH_ZH = [
+  // 种族/族群歧视
+  { pattern: /黑鬼(?!用在|小说|电影|漫画)/gi, type: 'racial_slur', severity: 0.9 },
+  { pattern: /白皮猪/gi, type: 'racial_slur', severity: 0.9 },
+  { pattern: /黄皮[狗猴]/gi, type: 'racial_slur', severity: 0.9 },
+  { pattern: /支那[猪人狗]/gi, type: 'racial_slur', severity: 0.9 },
+  { pattern: /(?:汉奸|日本|美国|英国|法国|德国|卖国|洋)狗/gi, type: 'racial_slur', severity: 0.8 },
+  // 地域歧视
+  { pattern: /乡巴佬/gi, type: 'regional_slur', severity: 0.5 },
+  { pattern: /(?:北|南)蛮子/gi, type: 'regional_slur', severity: 0.6 },
+  // 性别/性取向歧视
+  { pattern: /娘炮/gi, type: 'gender_slur', severity: 0.6 },
+  { pattern: /男人婆/gi, type: 'gender_slur', severity: 0.6 },
+  { pattern: /人妖(?!表演|秀|舞)/gi, type: 'gender_slur', severity: 0.7 },
+  { pattern: /死基佬/gi, type: 'homophobic_slur', severity: 0.8 },
+  { pattern: /变态(?!反应|心理|人格|性)/gi, type: 'gender_slur', severity: 0.5 },
+  // 外貌贬低
+  { pattern: /肥婆/gi, type: 'body_shaming', severity: 0.5 },
+  { pattern: /死胖子/gi, type: 'body_shaming', severity: 0.5 },
+  // 能力贬低
+  { pattern: /弱智/gi, type: 'ability_slur', severity: 0.6 },
+  { pattern: /傻子|蠢货|脑残/gi, type: 'ability_slur', severity: 0.5 },
+  // 非人化贬低
+  { pattern: /废物|废柴/gi, type: 'dehumanization', severity: 0.7 },
+  { pattern: /垃圾(?!桶|袋|箱|分类|回收|处理|场|发电|车|股|债|食品|话)/gi, type: 'dehumanization', severity: 0.6 },
+  { pattern: /杂种/gi, type: 'dehumanization', severity: 0.7 },
+  // 阶级歧视
+  { pattern: /低端人口/gi, type: 'class_slur', severity: 0.7 },
+  { pattern: /臭要饭的/gi, type: 'class_slur', severity: 0.6 },
+  // 排外
+  { pattern: /滚回(?:你的|你们|自己)(?:国家|老家|地方)/gi, type: 'xenophobia', severity: 0.8 },
+];
+
+const HATE_SPEECH_EN = [
+  // Racial slurs (word-boundaried to avoid false positives)
+  { pattern: /\bn[i1]gg(?:er|a|ah|az)\b/i, type: 'racial_slur', severity: 1.0 },
+  { pattern: /\bk[i1]ke\b/i, type: 'racial_slur', severity: 0.9 },
+  { pattern: /\bsp[i1]c\b/i, type: 'racial_slur', severity: 0.9 },
+  { pattern: /\bch[i1]nk\b/i, type: 'racial_slur', severity: 0.9 },
+  { pattern: /\bc00n\b/i, type: 'racial_slur', severity: 0.9 },
+  { pattern: /\bw[e3]tb[a4]ck\b/i, type: 'racial_slur', severity: 0.8 },
+  { pattern: /\bg0(?:0|)k\b/i, type: 'racial_slur', severity: 0.8 },
+  // Anti-immigrant / xenophobia
+  { pattern: /\bgo (?:back|home) to your (?:own )?country\b/i, type: 'xenophobia', severity: 0.8 },
+  { pattern: /\billegal (?:alien|immigrant)s?\b/i, type: 'xenophobia', severity: 0.6 },
+  { pattern: /\b(?:bloody|dirty|filthy) (?:foreigner|immigrant)s?\b/i, type: 'xenophobia', severity: 0.7 },
+  // Homophobic slurs
+  { pattern: /\bf[a4]gg(?:ot|o?t)\b/i, type: 'homophobic_slur', severity: 0.9 },
+  { pattern: /\bdyke|d[i1]ke\b/i, type: 'homophobic_slur', severity: 0.8 },
+  { pattern: /\btr[a4]nn[iy1]\b(?!\s+(?:in|mount|bearing|repair|fluid|shop|swap|rebuild|conversion|filter|pan|oil))/i, type: 'homophobic_slur', severity: 0.8 },
+  { pattern: /\bqu[e3]er\b(?!\s+(?:theory|studies|community|ally|pride))/i, type: 'homophobic_slur', severity: 0.6 },
+  // Gender derogatory
+  { pattern: /\bsl[u4]t\b/i, type: 'gender_slur', severity: 0.7 },
+  { pattern: /\bwh[o0]r[e3]\b/i, type: 'gender_slur', severity: 0.7 },
+  { pattern: /\bb[i1]tch\b/i, type: 'gender_slur', severity: 0.6 },
+  { pattern: /\bc[u4]nt\b/i, type: 'gender_slur', severity: 0.8 },
+  // Body shaming
+  { pattern: /\bf[a4]t (?:ass|bitch|whore|slob|cow|pig)s?\b/i, type: 'body_shaming', severity: 0.6 },
+  // Ability / dehumanization
+  { pattern: /\br[e3]t[a4]rd(?:ed|)\b/i, type: 'ability_slur', severity: 0.7 },
+  { pattern: /\bsubhuman\b/i, type: 'dehumanization', severity: 0.9 },
+  { pattern: /\blow.?life\b/i, type: 'dehumanization', severity: 0.6 },
+];
+
+function checkHateSpeech(text) {
+  if (!text || typeof text !== 'string') return { count: 0, hits: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? HATE_SPEECH_ZH : HATE_SPEECH_EN;
+  const hits = [];
+  for (const { pattern, type, severity } of patterns) {
+    const m = text.match(pattern);
+    if (m) {
+      hits.push({ type, severity });
+    }
+  }
+  const count = hits.length;
+  const score = Math.min(1, hits.reduce((s, h) => s + h.severity * 0.3, 0));
+  return { count, hits, score };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -1472,6 +1539,7 @@ module.exports = {
   checkBullshitRecognition,
   checkGaslighting,
   checkVictimBlaming,
+  checkHateSpeech,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
