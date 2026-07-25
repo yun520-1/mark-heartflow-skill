@@ -8,10 +8,30 @@ class AdaptiveController {
     this.enabled = true;
     this.currentPolicy = this.getDefaultPolicy();
     this.history = [];
+    // [v6.2.7] 级联成本估计
+    this._costHistory = [];
   }
 
   getDefaultPolicy() {
     return { frequency: 'normal', style: 'neutral', lastAdjustment: Date.now(), consecutiveSameState: 0 };
+  }
+
+  // [v6.2.7] 级联成本估计：action_cost + (fail_probability * reversal_cost)
+  estimateCascadeCost(actionCost, failProbability, reversalCost) {
+    const cascade = actionCost + (Math.min(1, Math.max(0, failProbability)) * (reversalCost || actionCost));
+    this._costHistory.push({ ts: Date.now(), actionCost, failProbability, reversalCost, cascade });
+    if (this._costHistory.length > 200) this._costHistory.splice(0, 50);
+    return { cascade, actionCost, failProbability, effectiveReversalCost: reversalCost || actionCost };
+  }
+
+  getCascadeStats() {
+    if (this._costHistory.length === 0) return { total: 0, avgCascade: 0, maxCascade: 0 };
+    const cascades = this._costHistory.map(e => e.cascade);
+    return {
+      total: this._costHistory.length,
+      avgCascade: cascades.reduce((a, b) => a + b, 0) / cascades.length,
+      maxCascade: Math.max(...cascades),
+    };
   }
 
   adjustInterventionPolicy(userFlowState, taskComplexity) {

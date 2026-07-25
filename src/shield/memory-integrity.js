@@ -208,8 +208,35 @@ class MemoryIntegrity {
       signedMemories: this.signatures.size,
       totalAnomalies: this.anomalies.length,
       criticalAnomalies: this.anomalies.filter(a => a.severity === 'critical').length,
+      quarantined: this._quarantined?.length || 0,
       ...this.stats,
     };
+  }
+
+  // [v6.2.7] 跨session自动隔离：同一记忆累计触发>=3次告警→自动隔离
+  reportIntegrityAlert(memoryId, reason) {
+    if (!memoryId) return;
+    this._alertCounts = this._alertCounts || {};
+    this._alertCounts[memoryId] = (this._alertCounts[memoryId] || 0) + 1;
+    this._quarantined = this._quarantined || [];
+
+    if (this._alertCounts[memoryId] >= 3 && !this._quarantined.includes(memoryId)) {
+      this._quarantined.push(memoryId);
+      this.stats.anomalies = (this.stats.anomalies || 0) + 1;
+    }
+  }
+
+  isQuarantined(memoryId) {
+    return this._quarantined?.includes(memoryId) || false;
+  }
+
+  getQuarantined() {
+    return (this._quarantined || []).slice();
+  }
+
+  clearQuarantine(memoryId) {
+    if (!memoryId) { this._quarantined = []; return; }
+    this._quarantined = (this._quarantined || []).filter(id => id !== memoryId);
   }
 
   /**
@@ -218,6 +245,8 @@ class MemoryIntegrity {
   reset() {
     this.signatures.clear();
     this.anomalies = [];
+    this._alertCounts = {};
+    this._quarantined = [];
     this.stats = { verified: 0, signed: 0, anomalies: 0 };
   }
 }

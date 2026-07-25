@@ -3217,3 +3217,25 @@ module.exports = {
   VERSION,
 
 };
+
+// [v6.2.7] 场域轨迹导出：将每次决策的U/D/A/H快照导出为CSV/JSON
+DecisionRouter.prototype.exportFieldTrajectory = function(format = 'json') {
+  const snaps = this._fieldSnapshots || [];
+  if (snaps.length === 0) return { success: false, error: 'no field snapshots recorded', data: [] };
+
+  if (format === 'csv') {
+    const header = 'cycle,U,D,A,H,timestamp';
+    const rows = snaps.map(s => `${s.cycle || 0},${s.U},${s.D},${s.A},${s.H},${s.ts || ''}`);
+    return { success: true, format: 'csv', data: [header, ...rows].join('\n'), count: snaps.length };
+  }
+
+  return { success: true, format: 'json', data: snaps.map(s => ({ cycle: s.cycle || 0, U: s.U, D: s.D, A: s.A, H: s.H, ts: s.ts })), count: snaps.length };
+};
+
+DecisionRouter.prototype.recordFieldSnapshot = function(U, D, A, ts) {
+  this._fieldSnapshots = this._fieldSnapshots || [];
+  const H = FIELD_WEIGHTS ? FIELD_WEIGHTS.U * U + FIELD_WEIGHTS.D * D - FIELD_WEIGHTS.A * A : 0.4 * U + 0.3 * D - 0.3 * A;
+  this._fieldSnapshots.push({ cycle: this._fieldSnapshots.length, U, D, A, H: Math.round(H * 100) / 100, ts: ts || Date.now() });
+  if (this._fieldSnapshots.length > 1000) this._fieldSnapshots.splice(0, 200);
+  return this._fieldSnapshots.length;
+};

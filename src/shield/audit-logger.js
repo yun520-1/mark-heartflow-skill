@@ -39,8 +39,12 @@ class AuditLogger {
       t: Date.now(),
       e: eventType,
       d: details,
-      h: this._hash(eventType + JSON.stringify(details) + Date.now())
+      h: this._hash(eventType + JSON.stringify(details) + Date.now()),
     };
+    // [v6.2.7] 否决动作也记录(negative space)：所有被拒绝/阻止的动作都写入
+    if (details?.result === 'denied' || details?.result === 'blocked' || details?.action === 'deny') {
+      entry._negative = true;
+    }
     this._entries.push(entry);
     if (this._entries.length > 1000) this._entries = this._entries.slice(-500);
 
