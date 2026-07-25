@@ -1,10 +1,10 @@
 {
   "name": "@yun520-1/heartflow",
   "version": "6.2.7",
-  "description": "HeartFlow v7 — AGI Error Memory & Decision Audit Layer. Remember what models forget. 5 MCP tools for cross-session error memory, decision verification, alignment checking.",
-  "main": "src/heartflow/index.js",
+  "description": "HeartFlow — rule engine cognitive preprocessor. Classifies input intent, categorizes task types, and returns structured decisions through deterministic rules.",
+  "main": "src/core/heartflow.js",
   "bin": {
-    "heartflow": "src/heartflow/mcp-server.js"
+    "heartflow": "src/mcp-server.js"
   },
   "scripts": {
     "prepublishOnly": "node scripts/sync-version.js",
