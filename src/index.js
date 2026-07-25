@@ -243,8 +243,8 @@ const FALLACY_SEVERITY = {
 
 const PRESUPPOSITION_PATTERNS = {
   zh: [
-    [/你是否已经[^，。？?]*|怎么还[^，。？?]*|还在[^，。？?]*|仍然[^，。？?]*/, 'loaded_behavior'],
-    [/难道你不觉得|难道不是[^，。？?]*|难道你没/, 'presupposed_agreement'],
+    [/你(是否)?已经[^，。？?]*|怎么还[^，。？?]*|还在[^，。？?]*|仍然[^，。？?]*/, 'loaded_behavior'],
+    [/(你)?难道你?不觉得|难道不是[^，。？?]*|难道你没/, 'presupposed_agreement'],
     [/你终于[^，。？?]*|你竟然[^，。？?]*|你怎么能[^，。？?]*/, 'presupposed_wrong_behavior'],
   ],
   en: [
