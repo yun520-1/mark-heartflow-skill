@@ -4296,13 +4296,7 @@ class HeartFlow {
     const chain = this.thoughtChain || new (TCMod.ThoughtChain)(this);
     if (depth) chain.setDepth(depth);
     const result = await chain.run(input);
-    // [v6.2.6] HookBus 链：将后置处理迁移到注册的 hook handler（优先于 inline try/catch）
-    try {
-      if (this._hookBus) {
-        await this._hookBus.fire('postprocess.think', { input, result, engine: this });
-      }
-    } catch (_) { /* HookBus 失败不阻断 */ }
-    // [v6.1.6] 对抗综合器接入主链路
+    // [v6.1.5] 盲点打破器接入主链路
     try {
       const AdversarialSynthesis = require('../cortex/self-evolution/adversarial-synthesis.js');
       if (!this._adversarial) this._adversarial = new AdversarialSynthesis();
@@ -4548,6 +4542,13 @@ class HeartFlow {
         if (wl.ok !== false && wl.report) result._whatLearned = typeof wl.report === 'string' ? wl.report : (wl.report.summary || JSON.stringify(wl.report).substring(0,200));
       }
     } catch (_) { /* 非关键 */ }
+
+    // ─── [v6.2.7] HookBus 后置处理（在所有 inline 增强之后触发，保证插件能看到完整 result）──
+    try {
+      if (this._hookBus) {
+        await this._hookBus.fire('postprocess.think', { input, result, engine: this });
+      }
+    } catch (_) { /* HookBus 失败不阻断 */ }
 
     return result;
   }

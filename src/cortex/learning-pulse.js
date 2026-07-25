@@ -16,9 +16,9 @@
 
 const DEFAULT_CONFIG = {
   // 每 N 次 think 触发一次学习 tick
-  tickInterval: 10,
+  tickInterval: 5,
   // 每 M 次 tick 触发一次探索执行
-  exploreInterval: 3,
+  exploreInterval: 2,
   // 连续低置信率 > 此值触发紧急反思
   lowConfidenceAlertThreshold: 0.25,
 };
