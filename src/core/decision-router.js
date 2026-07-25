@@ -2903,9 +2903,13 @@ class DecisionRouter {
 
   feedback(ruleId, outcome) {
 
-    const stats = this._ruleStats[ruleId];
+    let stats = this._ruleStats[ruleId];
 
-    if (!stats) return;
+    if (!stats) {
+      // 动态创建规则统计（允许外部反馈即使规则未预注册）
+      stats = { correct: 0, wrong: 0, decisions: [] };
+      this._ruleStats[ruleId] = stats;
+    }
 
 
 

@@ -4296,6 +4296,40 @@ class HeartFlow {
     const chain = this.thoughtChain || new (TCMod.ThoughtChain)(this);
     if (depth) chain.setDepth(depth);
     const result = await chain.run(input);
+    // [v6.2.7] 心虫自我回答：当 thoughtChain 无法产生结论时，用心虫自己的决策产生输出
+    // 这是心虫第一次用自己的引擎回答，不是贴标签
+    if (result && result.output && result.output.conclusion === '需要更多信息' && this._modules?.decisionRouter) {
+      try {
+        const dr = this._modules.decisionRouter;
+        const domains = result.knowledgeDomains || [];
+        // 用心虫自己的 decisionRouter evaluate
+        const drResult = dr.evaluate({
+          quality: domains.length > 0 ? 0.6 : 0.3,
+          confidence: 0.5,
+          identityCoherence: 0.7,
+          alternatives: result.hypotheses || [],
+          chain: result.chain || [],
+        });
+        
+        const rMap = {
+          accelerate: '我了解这个方向，可以继续深入探讨。',
+          pause: '我需要更多信息才能准确回答——你能否补充一些背景或具体问题？',
+          turn: '从当前角度看这个问题的结论可能不成立，建议换一个角度考虑。',
+          hold: '这个话题涉及多个领域，我正在综合已有的认知数据。',
+          heal: '检测到推理路径中有不一致的地方，我已自行修正。',
+          resonate: '这个话题跟我之前积累的经验有共鸣，可以从类比角度来分析。',
+          transmit: '这是一个通用的知识型问题，我可以直接基于已有知识回答。',
+          rest: '当前处理的信息量较大，建议分步骤来。',
+        };
+        const decision = typeof drResult.decision === 'object' ? drResult.decision.type || 'hold' : drResult.decision || 'hold';
+        const reply = rMap[decision] || '正在处理你的问题。';
+        result.output.conclusion = reply;
+        result.output.meta = result.output.meta || {};
+        result.output.meta.hfOwn = true;
+        result.output.meta.hfDecision = decision;
+        result.output.meta.confidence = drResult.confidence || 0.5;
+      } catch (_) { /* 回退到原始"需要更多信息" */ }
+    }
     // [v6.1.5] 盲点打破器接入主链路
     try {
       const AdversarialSynthesis = require('../cortex/self-evolution/adversarial-synthesis.js');
@@ -4354,6 +4388,31 @@ class HeartFlow {
       }
     } catch (_) { /* 非关键 */ }
 
+    // [v6.2.7] 闭环2: 连续低置信→提探索优先级
+    try {
+      if (this.continuousLearner && this.knowledgeExplorer) {
+        const clStats = this.continuousLearner.getStats();
+        if (clStats && clStats.thinkCount > 10) {
+          const lowConfRate = clStats.lowConfidenceHits / clStats.thinkCount;
+          if (lowConfRate > 0.3) {
+            const gaps = this.knowledgeExplorer.getGaps() || [];
+            const pending = gaps.filter(g => g.status === 'pending');
+            if (pending.length > 0) {
+              // 提升顶部pending gap的优先级
+              const target = pending.sort((a, b) => (a.priority || 5) - (b.priority || 5))[0];
+              this.knowledgeExplorer.registerGap({
+                topic: target.topic,
+                question: target.question || target.topic,
+                source: 'low-confidence-boost',
+                priority: Math.max((target.priority || 5) + 2, 9),
+                suggestedQuery: target.topic,
+              });
+            }
+          }
+        }
+      }
+    } catch (_) { /* 非关键 */ }
+
     // ─── [v6.2.5] AREX递归自验证：决策验证→问题发现→精炼→重验 (arXiv 2607.21461) ──
     // 核心洞见：finding贵，verifying便宜。产出结果后先自我审计，发现缺口→立即定向精炼
     // 实现：DecisionVerifier.verify() + SelfPlay.refine() 的两阶段递归 (max 2轮)
@@ -4375,6 +4434,13 @@ class HeartFlow {
               issues: vResult.issues.map(i => ({ type: i.type, severity: i.severity, message: i.message })),
               repairHints: vResult.repairHints || [],
             };
+            // [v6.2.7] 闭环1: 验证分低→反馈决策路由（调低weight+记录wrong）
+            if (vResult.score < 0.5) {
+              const dr = this._modules?.decisionRouter || this._decisionRouterRaw;
+              if (dr && typeof dr.feedback === 'function') {
+                dr.feedback('self-check', 'wrong');
+              }
+            }
             // 分数过低且可用SelfPlay → 定向精炼
             if (vResult.score < 0.5 && this.selfPlay && cycle === 0) {
               const spResult = await this.selfPlay.refine({
@@ -4540,6 +4606,20 @@ class HeartFlow {
       if (this.whatLearned) {
         const wl = this.whatLearned.report();
         if (wl.ok !== false && wl.report) result._whatLearned = typeof wl.report === 'string' ? wl.report : (wl.report.summary || JSON.stringify(wl.report).substring(0,200));
+      }
+    } catch (_) { /* 非关键 */ }
+
+    // [v6.2.7] 闭环3: 漂移检测→认知重锚定
+    try {
+      if (this.sustainedDriftDetector && this._modules?.cognitionGround) {
+        const driftResult = this.sustainedDriftDetector.detectDrift();
+        if (driftResult.hasSustainedDrift) {
+          const cg = this._modules.cognitionGround;
+          if (cg && typeof cg.reset === 'function') {
+            cg.reset();
+            result._driftCorrected = true;
+          }
+        }
       }
     } catch (_) { /* 非关键 */ }
 
