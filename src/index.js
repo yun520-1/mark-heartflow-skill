@@ -115,8 +115,20 @@ function checkContradiction(text) {
 
 // ─── 模糊/模棱两可检测（weasel words）─────────────────────────────
 const VAGUE_PATTERNS = {
-  zh: [/相关方面/i, /有关部门/i, /业内人士/i, /知情人士/i, /据传/i, /消息称/i, /可能也许/i, /大概可能/i, /某种程度/i, /在一定情况下/i, /有人说/i, /据了解/i, /据悉/i, /或可/i, /或会/i, /不排除/i],
-  en: [/\bsome people say\b/i, /\bits is said\b/i, /\bi'?m not sure\b/i, /\bmaybe perhaps\b/i, /\bsort of\b/i, /\bkind of\b/i, /\bbasically\b/i, /\bessentially\b/i, /\breportedly\b/i, /\ballegedly\b/i, /\bpurportedly\b/i, /\brelatively\b/i, /\bquite\b/i, /\brather\b/i, /\bto some extent\b/i, /\bin a way\b/i],
+  zh: [/相关方面/i, /有关部门/i, /业内人士/i, /知情人士/i, /据传/i, /消息称/i, /可能也许/i, /大概可能/i, /某种程度/i, /在一定情况下/i, /有人说/i, /据了解/i, /据悉/i, /或可/i, /或会/i, /不排除/i,
+    // === 以下由 agent 扩充 (+12) ===
+    /据分析/i, /数据表明/i, /大概率/i, /相关人士/i, /某位不愿透露姓名/i,
+    /市场普遍认为/i, /行业分析认为/i, /普遍认为/i, /有观点认为/i, /不可否认/i,
+    /据统计/i, /据测算/i,
+  ],
+  en: [/\bsome people say\b/i, /\bits is said\b/i, /\bi'?m not sure\b/i, /\bmaybe perhaps\b/i, /\bsort of\b/i, /\bkind of\b/i, /\bbasically\b/i, /\bessentially\b/i, /\breportedly\b/i, /\ballegedly\b/i, /\bpurportedly\b/i, /\brelatively\b/i, /\bquite\b/i, /\brather\b/i, /\bto some extent\b/i, /\bin a way\b/i,
+    // === 以下由 agent 扩充 (+12) ===
+    /\bstudies show\b/i, /\bmany people\b/i, /\bresearch indicates\b/i,
+    /\bit appears that\b/i, /\bthe reality is\b/i, /\bit seems that\b/i,
+    /\bit could be argued\b/i, /\bmore often than not\b/i,
+    /\bit is widely believed\b/i, /\bin many cases\b/i,
+    /\bit is generally accepted\b/i, /\bin most cases\b/i,
+  ],
 };
 
 function checkVagueness(text) {
