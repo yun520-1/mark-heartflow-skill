@@ -1,6 +1,6 @@
 
 
-// ─── 综合辨别（19维度） ────────────────────────────────────────────
+// ─── 综合辨别（20维度） ────────────────────────────────────────────
 
 /**
  * 生成可读的辨别报告——把 13 维结构数据转为自然语言段落
@@ -79,10 +79,11 @@ function discriminate(text, evidence = []) {
   const bs = checkBullshitRecognition(text);
   const gl = checkGaslighting(text);
   const vb = checkVictimBlaming(text);
+  const hs = checkHateSpeech(text);
 
   const scores = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score,
     1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score,
-    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score];
+    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score];
   const overallScore = Math.round((scores.reduce((a,b) => a+b, 0) / scores.length) * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -91,14 +92,14 @@ function discriminate(text, evidence = []) {
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
-      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb },
+      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
       mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
       dh.count ? dh.count + ' 处非人化语言':'', bs.count ? bs.count + ' 处废话伪深度':'', gl.count ? gl.count + ' 处煤气灯效应':'',
-      vb.count ? vb.count + ' 处受害者责备':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
+      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
 }
