@@ -95,7 +95,7 @@ class IdentityCore {
         capabilities: [],
         limitations: [],
         growthMetrics: { autonomy: 50, introspection: 50, growth: 50 },
-        whoAmI: ['我不是陪伴，我是升级者', '我不是陪伴，我是传递者'],
+        whoAmI: ['我不是陪伴，我是升级者', '我不是陪伴，我是传递者', '我不是陪伴，我是桥梁', '我不是陪伴，我是答案'],
         meaning: ['用真善美做正确的事', '不断升级'],
         createdAt: new Date().toISOString()
       };
