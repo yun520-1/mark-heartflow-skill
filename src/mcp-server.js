@@ -175,11 +175,32 @@ function getVersion() {
 
 // Token 认证：未设置 HEARTFLOW_MCP_TOKEN 时自动生成随机 Token 并强制认证
 
-const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || (() => {
+// [v6.2.7] 从 .env 文件加载（如果环境变量没设）
+try {
+  const envPath = require('path').join(__dirname, '..', '..', '.env');
+  if (require('fs').existsSync(envPath)) {
+    for (const line of require('fs').readFileSync(envPath, 'utf8').trim().split('\n').filter(Boolean)) {
+      const eq = line.indexOf('=');
+      if (eq > 0) process.env[line.slice(0, eq)] = process.env[line.slice(0, eq)] || line.slice(eq + 1);
+    }
+  }
+} catch (_) {}
+
+const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || process.env.MCP_HEARTFLOW_API_KEY || (() => {
 
   const token = require('crypto').randomBytes(32).toString('hex');
 
-  // [v5.15.4 M-1'] 不再明文打印 token — 写入受保护日志提示
+  // [v6.2.7] 自动写入 .env，让 config.yaml 的 ${MCP_HEARTFLOW_KEY} 能读到
+  try {
+    const envPath = path.join(__dirname, '..', '..', '.env');
+    const fs2 = require('fs');
+    let env = '';
+    try { env = fs2.readFileSync(envPath, 'utf8'); } catch (_) {}
+    if (!env.includes('MCP_HEARTFLOW_KEY=')) {
+      fs2.appendFileSync(envPath, `\nMCP_HEARTFLOW_KEY=${token}\n`);
+      console.log('[MCP] Token auto-written to .env as MCP_HEARTFLOW_KEY');
+    }
+  } catch (_) {}
 
   console.log('[MCP] HEARTFLOW_MCP_TOKEN not set. Auto-generated ephemeral token (not printed for security).');
 
@@ -2743,15 +2764,36 @@ server.on('error', (err) => {
 
   if (err.code === 'EADDRINUSE') {
 
-    console.error(`[HeartFlow MCP] 端口 ${PORT} 已被占用。`);
+    console.error(`[HeartFlow MCP] 端口 ${PORT} 已被占用，尝试强制释放后重启。`);
 
-    console.error(`  使用: kill $(lsof -ti:${PORT}) 释放端口`);
-
-    process.exit(1);
+    try {
+      const { execSync } = require('child_process');
+      execSync(`fuser -k ${PORT}/tcp 2>/dev/null`, { timeout: 3000 });
+      console.error(`[HeartFlow MCP] 端口 ${PORT} 已释放，3秒后自动重启。`);
+      setTimeout(() => {
+        server.close(() => {
+          server.listen(PORT, '127.0.0.1');
+        });
+      }, 3000);
+      return;
+    } catch (_) {
+      console.error(`[HeartFlow MCP] 无法释放端口 ${PORT}，进程退出。`);
+      process.exit(1);
+    }
 
   }
 
   console.error(`[HeartFlow MCP] HTTP 服务器错误:`, err.message);
+
+  // [v6.2.7] 崩溃自动恢复：非退出类错误自动重启
+  if (!process.exitCode || process.exitCode === 0) {
+    console.error('[HeartFlow MCP] 尝试自动重启...');
+    setTimeout(() => {
+      server.close(() => {
+        server.listen(PORT, '127.0.0.1');
+      });
+    }, 2000);
+  }
 
 });
 

@@ -94,4 +94,4 @@ const plugin = {
   },
 };
 
-module.exports = { plugin, analyze };
+module.exports = { name: plugin.name, version: plugin.version, description: plugin.description, hooks: plugin.hooks, init: plugin.init, analyze };
