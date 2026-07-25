@@ -1,8 +1,8 @@
 {
   "metadata": {
     "version": "5.15.2",
-    "last_updated": "2026-07-12",
-    "total_formulas": 376,
+    "last_updated": "2026-07-25",
+    "total_formulas": 619,
     "categories": [
       "biology",
       "chemistry",
@@ -3368,9 +3368,18 @@
       "formula": "E_density = (Σ_i w_i * depth_i) / N, w_i = 1 / (1 + days_since_last_contact_i)",
       "difficulty": "intermediate",
       "variables": {
-        "w_i": {"name": "接触衰减权重", "description": "越久未联系，权重越低"},
-        "depth_i": {"name": "单次连接深度", "description": "0-1，情感共鸣强度"},
-        "N": {"name": "关系总数", "description": "活跃关系数量"}
+        "w_i": {
+          "name": "接触衰减权重",
+          "description": "越久未联系，权重越低"
+        },
+        "depth_i": {
+          "name": "单次连接深度",
+          "description": "0-1，情感共鸣强度"
+        },
+        "N": {
+          "name": "关系总数",
+          "description": "活跃关系数量"
+        }
       },
       "source": "HeartFlow v6.0.3 — W轴：情感连接密度"
     },
@@ -3382,9 +3391,18 @@
       "formula": "T_active = sigmoid(Σ_j trigger_j * salience_j - threshold)",
       "difficulty": "advanced",
       "variables": {
-        "trigger_j": {"name": "触发因子", "description": "当前环境中的创伤线索"},
-        "salience_j": {"name": "显著性", "description": "该线索对个体的情感权重"},
-        "threshold": {"name": "阈值", "description": "个体当前的整合能力"}
+        "trigger_j": {
+          "name": "触发因子",
+          "description": "当前环境中的创伤线索"
+        },
+        "salience_j": {
+          "name": "显著性",
+          "description": "该线索对个体的情感权重"
+        },
+        "threshold": {
+          "name": "阈值",
+          "description": "个体当前的整合能力"
+        }
       },
       "source": "HeartFlow v6.0.3 — W轴：创伤活跃度"
     },
@@ -3396,9 +3414,18 @@
       "formula": "A_signal = max(0, meta_cognition * 0.5 + polarity_flip * 0.3 + arousal_spike * 0.2)",
       "difficulty": "advanced",
       "variables": {
-        "meta_cognition": {"name": "元认知标记", "description": "0-1，是否出现'我意识到'等元认知语言"},
-        "polarity_flip": {"name": "语义反转", "description": "0-1，当前立场与历史立场的极性差异"},
-        "arousal_spike": {"name": "情绪强度跃升", "description": "0-1，arousal>0.5且pleasure显著变化"}
+        "meta_cognition": {
+          "name": "元认知标记",
+          "description": "0-1，是否出现'我意识到'等元认知语言"
+        },
+        "polarity_flip": {
+          "name": "语义反转",
+          "description": "0-1，当前立场与历史立场的极性差异"
+        },
+        "arousal_spike": {
+          "name": "情绪强度跃升",
+          "description": "0-1，arousal>0.5且pleasure显著变化"
+        }
       },
       "source": "HeartFlow v6.0.3 — W轴：觉醒信号强度，基于arXiv 2505.01542情感支持综述"
     },
@@ -4152,6 +4179,1221 @@
       "category": "physics",
       "subcategory": "optics",
       "formula": "1/f = (n-1)(1/R₁ - 1/R₂)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "prospect_value_complete",
+      "name": "前景理论价值函数（完整）",
+      "category": "psychology",
+      "subcategory": "decision_theory",
+      "formula": "v(x) = x^alpha if x>=0, v(x) = -lambda * (-x)^beta if x<0",
+      "difficulty": "advanced",
+      "description": "alpha,beta in (0,1), lambda>1 损失厌恶系数"
+    },
+    {
+      "id": "cumulative_prospect_value",
+      "name": "累积前景理论",
+      "category": "psychology",
+      "subcategory": "decision_theory",
+      "formula": "V = sum_i pi_i * v(x_i), pi_i = w(P_i) - w(P*_{i-1})",
+      "difficulty": "advanced",
+      "description": "用累积概率权重替代单个概率权重"
+    },
+    {
+      "id": "hyperbolic_discounting",
+      "name": "时间贴现双曲线模型",
+      "category": "psychology",
+      "subcategory": "decision_theory",
+      "formula": "V = A / (1 + k * D)",
+      "difficulty": "intermediate",
+      "description": "V:当前主观价值, A:未来奖赏, D:延迟时间, k:贴现率"
+    },
+    {
+      "id": "equate_to_differentiate",
+      "name": "齐当别模型",
+      "category": "psychology",
+      "subcategory": "decision_theory",
+      "formula": "choice = argmax_i (|V_i(best_dim) - V_j(best_dim)| / sum_d |V_i(d) - V_j(d)|)",
+      "difficulty": "advanced",
+      "description": "在维度上比较优劣，选择差异最大的维度上的优势选项"
+    },
+    {
+      "id": "eu_maximization_principle",
+      "name": "期望效用最大化",
+      "category": "psychology",
+      "subcategory": "decision_theory",
+      "formula": "a* = argmax_a sum_i p_i(s_i|a) * u(s_i)",
+      "difficulty": "beginner",
+      "description": "决策者选择期望效用最大的行动"
+    },
+    {
+      "id": "rank_dependent_utility",
+      "name": "等级依赖效用理论",
+      "category": "psychology",
+      "subcategory": "decision_theory",
+      "formula": "RDU = sum_i pi_i * u(x_i), pi_i = w(sum_{j>=i} p_j) - w(sum_{j>i} p_j)",
+      "difficulty": "advanced",
+      "description": "用等级依赖权重替代线性概率"
+    },
+    {
+      "id": "regret_theory_complete",
+      "name": "后悔理论（Loomes-Sugden）",
+      "category": "psychology",
+      "subcategory": "decision_theory",
+      "formula": "EU_i = sum_j p_j * [u(x_ij) + R(u(x_ij) - u(x_kj))]",
+      "difficulty": "advanced",
+      "description": "R:后悔函数, 比较实际结果与其他选项的差异"
+    },
+    {
+      "id": "certainty_effect",
+      "name": "确定性效应",
+      "category": "psychology",
+      "subcategory": "decision_theory",
+      "formula": "w(p) > p for small p, w(p) < p for moderate/large p, w(1) = 1",
+      "difficulty": "intermediate",
+      "description": "概率权重函数, 小概率高估大概率低估"
+    },
+    {
+      "id": "power_law_learning_curve",
+      "name": "幂定律学习曲线",
+      "category": "psychology",
+      "subcategory": "learning_memory",
+      "formula": "T(N) = a * N^(-b)",
+      "difficulty": "intermediate",
+      "description": "T:反应时间, N:练习次数, a:初始表现, b:学习率"
+    },
+    {
+      "id": "hebbian_rule_delta",
+      "name": "赫布规则（突触权重更新）",
+      "category": "psychology",
+      "subcategory": "learning_memory",
+      "formula": "delta_w = eta * x_i * y_j",
+      "difficulty": "intermediate",
+      "description": "eta:学习率, x_i:前突触活动, y_j:后突触活动"
+    },
+    {
+      "id": "td_error_delta",
+      "name": "强化学习TD误差",
+      "category": "psychology",
+      "subcategory": "learning_memory",
+      "formula": "delta = R + gamma * V(s') - V(s)",
+      "difficulty": "advanced",
+      "description": "delta:预测误差, R:即时奖励, gamma:折扣因子, V:状态值"
+    },
+    {
+      "id": "rescorla_wagner_full",
+      "name": "Rescorla-Wagner 条件化模型",
+      "category": "psychology",
+      "subcategory": "learning_memory",
+      "formula": "delta_V_i = alpha_i * beta * (lambda - sum_j V_j)",
+      "difficulty": "advanced",
+      "description": "V:联结强度, alpha:线索显著性, beta:US强度参数, lambda:最大条件化"
+    },
+    {
+      "id": "retrieval_cue_familiarity",
+      "name": "提取线索熟悉度",
+      "category": "psychology",
+      "subcategory": "learning_memory",
+      "formula": "F = phi(sum w_i * f_i), phi:logistic function",
+      "difficulty": "intermediate",
+      "description": "F:熟悉度判断, w_i:线索权重, f_i:线索特征匹配度"
+    },
+    {
+      "id": "encoding_specificity",
+      "name": "编码特异性原理",
+      "category": "psychology",
+      "subcategory": "learning_memory",
+      "formula": "P(retrieval) = overlap(encoding_context, retrieval_context)",
+      "difficulty": "beginner",
+      "description": "回忆概率取决于编码与提取时情境的重叠程度"
+    },
+    {
+      "id": "interference_decay_model",
+      "name": "干扰与衰减模型",
+      "category": "psychology",
+      "subcategory": "learning_memory",
+      "formula": "P_recall = d(t) * (1 - interference), d(t) = exp(-lambda * t)",
+      "difficulty": "intermediate",
+      "description": "同时考虑时间衰减和相似记忆干扰"
+    },
+    {
+      "id": "dual_store_memory_model",
+      "name": "双重存储记忆模型（Atkinson-Shiffrin）",
+      "category": "psychology",
+      "subcategory": "learning_memory",
+      "formula": "P_LTM = rehearsal * encoding_strength / capacity_STM",
+      "difficulty": "intermediate",
+      "description": "记忆从感觉登记->短时存储->长时存储的转移概率"
+    },
+    {
+      "id": "sweller_intrinsic_load",
+      "name": "内在认知负荷（Sweller）",
+      "category": "psychology",
+      "subcategory": "cognitive_load",
+      "formula": "IL = element_interactivity * domain_complexity",
+      "difficulty": "intermediate",
+      "description": "由学习材料本身的难度和元素交互性决定"
+    },
+    {
+      "id": "sweller_extraneous_load",
+      "name": "外在认知负荷",
+      "category": "psychology",
+      "subcategory": "cognitive_load",
+      "formula": "EL = suboptimal_instructional_design_penalty",
+      "difficulty": "intermediate",
+      "description": "由不恰当的教学设计引起的额外负荷"
+    },
+    {
+      "id": "sweller_germane_load",
+      "name": "相关认知负荷",
+      "category": "psychology",
+      "subcategory": "cognitive_load",
+      "formula": "GL = schema_construction_effort * motivation",
+      "difficulty": "intermediate",
+      "description": "用于图式建构和自动化处理的认知资源"
+    },
+    {
+      "id": "mental_effort_index",
+      "name": "心智努力评级指数",
+      "category": "psychology",
+      "subcategory": "cognitive_load",
+      "formula": "MEI = (task_difficulty_rating + perceived_effort_rating) / 2",
+      "difficulty": "beginner",
+      "description": "主观心智努力评价的综合指标"
+    },
+    {
+      "id": "redundancy_effect_cognitive",
+      "name": "冗余效应（认知负荷）",
+      "category": "psychology",
+      "subcategory": "cognitive_load",
+      "formula": "learning_gain = f(unique_info) - f(redundant_info * interference)",
+      "difficulty": "intermediate",
+      "description": "冗余信息增加认知负荷降低学习效果"
+    },
+    {
+      "id": "modality_effect_cognitive",
+      "name": "通道效应（双通道加工）",
+      "category": "psychology",
+      "subcategory": "cognitive_load",
+      "formula": "retention = f(visual + auditory) - f(visual_only or auditory_only)",
+      "difficulty": "intermediate",
+      "description": "视听双通道呈现优于单通道"
+    },
+    {
+      "id": "item_discrimination_power",
+      "name": "项目区分度指数",
+      "category": "psychology",
+      "subcategory": "psychometrics",
+      "formula": "D = P_high - P_low, P_high = top27% correct rate, P_low = bottom27% correct rate",
+      "difficulty": "intermediate",
+      "description": "高分组与低分组在该项目上的正确率之差"
+    },
+    {
+      "id": "criterion_validity_coefficient",
+      "name": "效标关联效度系数",
+      "category": "psychology",
+      "subcategory": "psychometrics",
+      "formula": "r_xy = Cov(X,Y) / (sigma_X * sigma_Y)",
+      "difficulty": "intermediate",
+      "description": "测验分数与效标测量之间的相关"
+    },
+    {
+      "id": "measurement_se_formula",
+      "name": "测量标准误",
+      "category": "psychology",
+      "subcategory": "psychometrics",
+      "formula": "SEM = sigma_x * sqrt(1 - r_xx)",
+      "difficulty": "intermediate",
+      "description": "sigma_x:测验标准差, r_xx:信度系数"
+    },
+    {
+      "id": "split_half_reliability",
+      "name": "分半信度（Spearman-Brown校正）",
+      "category": "psychology",
+      "subcategory": "psychometrics",
+      "formula": "r_total = 2 * r_half / (1 + r_half)",
+      "difficulty": "intermediate",
+      "description": "r_half:两半分数的相关, 校正为全长测验信度"
+    },
+    {
+      "id": "inter_rater_reliability_kappa",
+      "name": "评分者间信度（Cohen's Kappa）",
+      "category": "psychology",
+      "subcategory": "psychometrics",
+      "formula": "kappa = (P_o - P_e) / (1 - P_e)",
+      "difficulty": "advanced",
+      "description": "P_o:观察一致率, P_e:期望一致率"
+    },
+    {
+      "id": "standardized_alpha",
+      "name": "标准化克朗巴赫α",
+      "category": "psychology",
+      "subcategory": "psychometrics",
+      "formula": "alpha_std = (k * r_bar) / (1 + (k-1) * r_bar)",
+      "difficulty": "intermediate",
+      "description": "r_bar:项目间平均相关, k:项目数"
+    },
+    {
+      "id": "yerkes_dodson_inverted_u",
+      "name": "耶克斯-多德森定律（倒U型）",
+      "category": "psychology",
+      "subcategory": "emotion_motivation",
+      "formula": "A = H^(-c) * R, Performance = -a * (A - A_opt)^2 + b",
+      "difficulty": "intermediate",
+      "description": "H:任务难度, R:唤醒度, A:实际唤醒, 简单任务需高唤醒"
+    },
+    {
+      "id": "expectancy_value_theory",
+      "name": "期望价值理论（Atkinson）",
+      "category": "psychology",
+      "subcategory": "emotion_motivation",
+      "formula": "M = E * V",
+      "difficulty": "beginner",
+      "description": "M:动机强度, E:成功期望(0-1), V:成功价值"
+    },
+    {
+      "id": "self_efficacy_quantified",
+      "name": "自我效能感（量化模型）",
+      "category": "psychology",
+      "subcategory": "emotion_motivation",
+      "formula": "SE = sum(mastery_experience * w1 + vicarious_exp * w2 + verbal_persuasion * w3 + physiological_state * w4)",
+      "difficulty": "intermediate",
+      "description": "四种效能信息来源加权总和"
+    },
+    {
+      "id": "relative_deprivation_index",
+      "name": "相对剥夺感指数",
+      "category": "psychology",
+      "subcategory": "emotion_motivation",
+      "formula": "RD = (desired_outcome - actual_outcome) / desired_outcome",
+      "difficulty": "intermediate",
+      "description": "期望与现实的差距除以期望水平"
+    },
+    {
+      "id": "attributional_theory_motivation",
+      "name": "归因理论动机模型（Weiner）",
+      "category": "psychology",
+      "subcategory": "emotion_motivation",
+      "formula": "future_expectancy = f(locus * stability * controllability of attribution)",
+      "difficulty": "intermediate",
+      "description": "对结果的归因维度影响未来期望和动机"
+    },
+    {
+      "id": "flow_channel_model_motivation",
+      "name": "心流通道动机模型",
+      "category": "psychology",
+      "subcategory": "emotion_motivation",
+      "formula": "flow_zone = { (s, c) | |log2(c/s)| < threshold }, s:skill, c:challenge",
+      "difficulty": "intermediate",
+      "description": "技能与挑战平衡时进入心流状态"
+    },
+    {
+      "id": "cognitive_dissonance_weighted",
+      "name": "费斯廷格认知失调（加权）",
+      "category": "psychology",
+      "subcategory": "social_psychology",
+      "formula": "D = sum_i (w_i * d_i), d_i = |belief_i - action_i|",
+      "difficulty": "advanced",
+      "description": "D:失调程度, w_i:认知元素重要性权重, d_i:信念-行为差距"
+    },
+    {
+      "id": "principle_of_least_interest",
+      "name": "最小利益原则（Waller）",
+      "category": "psychology",
+      "subcategory": "social_psychology",
+      "formula": "power_difference = (1 - interest_A/interest_B) for the less interested partner",
+      "difficulty": "intermediate",
+      "description": "对关系依赖度越低的一方拥有更多权力"
+    },
+    {
+      "id": "social_comparison_direction",
+      "name": "社会比较方向",
+      "category": "psychology",
+      "subcategory": "social_psychology",
+      "formula": "comparison_outcome = sign(own - referent) * weight(relevance)",
+      "difficulty": "intermediate",
+      "description": "向上比较(negative)或向下比较(positive)影响自尊"
+    },
+    {
+      "id": "equity_theory_formula",
+      "name": "公平理论（Adams）",
+      "category": "psychology",
+      "subcategory": "social_psychology",
+      "formula": "equity_ratio = (outcomes_A / inputs_A) / (outcomes_B / inputs_B)",
+      "difficulty": "beginner",
+      "description": "OA/IA = OB/IB 时为公平，不等时产生不公平感"
+    },
+    {
+      "id": "social_identity_salience",
+      "name": "社会认同显著性",
+      "category": "psychology",
+      "subcategory": "social_psychology",
+      "formula": "S = f(contextual_accessibility * fit), fit = comparative_fit + normative_fit",
+      "difficulty": "advanced",
+      "description": "社会类别的显著度由可及性和匹配度决定"
+    },
+    {
+      "id": "normative_social_influence",
+      "name": "规范性社会影响（Asch）",
+      "category": "psychology",
+      "subcategory": "social_psychology",
+      "formula": "conformity_probability = 1 - (1 - p_majority)^(n * group_pressure)",
+      "difficulty": "intermediate",
+      "description": "服从群体规范的倾向随多数一致人数增加"
+    },
+    {
+      "id": "utilitarianism_total_sum",
+      "name": "功利主义总效用",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "formula": "U_total = sum_i u_i, best_action = argmax_a sum_i u_i(a)",
+      "difficulty": "beginner",
+      "description": "最佳行动是最大化社会总效用的行动"
+    },
+    {
+      "id": "rawls_difference_principle",
+      "name": "罗尔斯差别原则",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "formula": "social_order = max min_i x_i, inequalities allowed iff benefit least_advantaged",
+      "difficulty": "intermediate",
+      "description": "最大化最不利者的利益：maximin准则"
+    },
+    {
+      "id": "kant_categorical_imperative_universal",
+      "name": "康德定言令式（普遍法则公式）",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "formula": "act only according to that maxim through which you can at the same time will that it become a universal law",
+      "difficulty": "intermediate",
+      "description": "行事的准则应可同时成为普遍法则"
+    },
+    {
+      "id": "kant_categorical_imperative_humanity",
+      "name": "康德定言令式（人是目的公式）",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "formula": "act in such a way that you treat humanity never merely as a means but always at the same time as an end",
+      "difficulty": "intermediate",
+      "description": "永远不要把他人仅当作手段"
+    },
+    {
+      "id": "golden_rule_reciprocity",
+      "name": "黄金法则（互惠原则）",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "formula": "do unto others as you would have them do unto you (or: do not do to others what you do not want done to yourself)",
+      "difficulty": "beginner",
+      "description": "跨文化伦理普适原则，也称己所不欲勿施于人"
+    },
+    {
+      "id": "double_effect_doctrine",
+      "name": "双重效应原则",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "formula": "action is permissible if: (1) act is good/neutral (2) good effect intended (3) bad effect unintended (4) proportionally grave reason",
+      "difficulty": "advanced",
+      "description": "允许有可预见但非意图的负面间接后果"
+    },
+    {
+      "id": "commitment_constraint_ethics",
+      "name": "承诺约束（Sen/Williams）",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "formula": "choice_c = argmax_a u_i(a) subject to commitment_constraint(a) >= threshold",
+      "difficulty": "advanced",
+      "description": "个人的承诺和价值观对效用最大化施加约束"
+    },
+    {
+      "id": "veil_of_ignorance_quantified",
+      "name": "无知之幕（量化模型）",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "formula": "just_principle = argmax_p E[U(random_position | p)] under veil_of_ignorance",
+      "difficulty": "intermediate",
+      "description": "在不知道自己社会位置时选择的原则就是正义的"
+    },
+    {
+      "id": "scanlon_contractualism",
+      "name": "斯坎伦契约主义",
+      "category": "philosophy",
+      "subcategory": "ethics",
+      "formula": "action is wrong if it could not be justified to others on grounds they could not reasonably reject",
+      "difficulty": "advanced",
+      "description": "道德原则是不能被任何理性人合理拒绝的原则"
+    },
+    {
+      "id": "nash_equilibrium_formal_def",
+      "name": "纳什均衡正式定义",
+      "category": "philosophy",
+      "subcategory": "game_theory",
+      "formula": "s* is NE iff for all players i: u_i(s*_i, s*_{-i}) >= u_i(s'_i, s*_{-i}) for all s'_i in S_i",
+      "difficulty": "advanced",
+      "description": "没有任何玩家可通过单方面改变策略获得更高收益"
+    },
+    {
+      "id": "prisoners_dilemma_matrix",
+      "name": "囚徒困境收益矩阵",
+      "category": "philosophy",
+      "subcategory": "game_theory",
+      "formula": "R > P > S (defection dominant), CC > DD > DC both cooperate Pareto optimal",
+      "difficulty": "intermediate",
+      "description": "R:合作奖励, P:背叛惩罚, S:傻瓜收益, T:背叛诱惑, T>R>P>S"
+    },
+    {
+      "id": "pareto_optimality_criterion",
+      "name": "帕累托最优标准",
+      "category": "philosophy",
+      "subcategory": "game_theory",
+      "formula": "state X is Pareto optimal iff not exists Y such that u_i(Y) >= u_i(X) for all i and u_j(Y) > u_j(X) for some j",
+      "difficulty": "intermediate",
+      "description": "无法在不损害任何人利益的情况下改善至少一人"
+    },
+    {
+      "id": "arrows_impossibility_theorem",
+      "name": "阿罗不可能定理",
+      "category": "philosophy",
+      "subcategory": "game_theory",
+      "formula": "no SWF satisfies all: (1) unrestricted domain (2) Pareto efficiency (3) independence of irrelevant alternatives (4) non-dictatorship for >= 3 alternatives",
+      "difficulty": "advanced",
+      "description": "没有社会福利函数能同时满足四个合理的民主条件"
+    },
+    {
+      "id": "shapley_value_formula",
+      "name": "沙普利值（联盟博弈）",
+      "category": "philosophy",
+      "subcategory": "game_theory",
+      "formula": "phi_i(v) = sum_{S subset N\\{i}} (|S|!*(n-|S|-1)!/n!) * (v(S U {i}) - v(S))",
+      "difficulty": "advanced",
+      "description": "每个玩家的边际贡献期望值"
+    },
+    {
+      "id": "nucleolus_solution",
+      "name": "核仁解",
+      "category": "philosophy",
+      "subcategory": "game_theory",
+      "formula": "nucleolus = argmin lexicographically sort excess(S) for all S subset N, excess(S) = v(S) - sum_{i in S} x_i",
+      "difficulty": "advanced",
+      "description": "按字典序最小化所有联盟的不满度"
+    },
+    {
+      "id": "core_cooperative_game",
+      "name": "合作博弈核",
+      "category": "philosophy",
+      "subcategory": "game_theory",
+      "formula": "Core = {x in R^n | sum_i x_i = v(N), sum_{i in S} x_i >= v(S) for all S subset N}",
+      "difficulty": "advanced",
+      "description": "所有联盟都无法反对的分配集合"
+    },
+    {
+      "id": "nash_bargaining_solution",
+      "name": "纳什讨价还价解",
+      "category": "philosophy",
+      "subcategory": "game_theory",
+      "formula": "x* = argmax prod_i (u_i(x) - d_i), subject to u_i(x) >= d_i",
+      "difficulty": "advanced",
+      "description": "最大化各方超过威胁点的效用之积"
+    },
+    {
+      "id": "minimax_regret_philosophy",
+      "name": "最小最大后悔（Savage）",
+      "category": "philosophy",
+      "subcategory": "game_theory",
+      "formula": "a* = argmin_a max_s [max_{a'} u(a',s) - u(a,s)]",
+      "difficulty": "advanced",
+      "description": "选择使最大可能后悔最小化的行动"
+    },
+    {
+      "id": "mixed_strategy_nash",
+      "name": "混合策略纳什均衡",
+      "category": "philosophy",
+      "subcategory": "game_theory",
+      "formula": "sigma* is MSNE iff E[u_i(sigma*_i, sigma*_{-i})] >= E[u_i(s'_i, sigma*_{-i})] for all mixed s'_i",
+      "difficulty": "advanced",
+      "description": "玩家以概率分布随机选择策略的纳什均衡"
+    },
+    {
+      "id": "agm_belief_revision_axioms",
+      "name": "AGM信念修正六公设",
+      "category": "philosophy",
+      "subcategory": "epistemology",
+      "formula": "(K*1) K*phi is a belief set. (K*2) phi in K*phi. (K*3) K*phi subset K+phi. (K*4) if not-phi not in K then K+phi subset K*phi. (K*5) K*phi = K_perp iff phi is contradictory. (K*6) if phi<=>psi then K*phi = K*psi",
+      "difficulty": "advanced",
+      "description": "Alchourron-Gardenfors-Makinson信念修正理论的六条基本公设"
+    },
+    {
+      "id": "occams_razor_probabilistic",
+      "name": "奥卡姆剃刀（概率形式）",
+      "category": "philosophy",
+      "subcategory": "epistemology",
+      "formula": "P(H_i|E) approx P(E|H_i) * P(H_i), simpler H_i with fewer params has higher prior P(H_i)",
+      "difficulty": "advanced",
+      "description": "简单假设有更高的先验概率，贝叶斯奥卡姆剃刀"
+    },
+    {
+      "id": "underdetermination_thesis",
+      "name": "不确定性论题（Duhem-Quine）",
+      "category": "philosophy",
+      "subcategory": "epistemology",
+      "formula": "evidence underdetermines theory: for any E, exists H1, H2 such that P(E|H1)=P(E|H2) but H1 != H2",
+      "difficulty": "advanced",
+      "description": "同一证据可由多个不相容理论同等解释"
+    },
+    {
+      "id": "coherentism_justification_formula",
+      "name": "融贯论证成",
+      "category": "philosophy",
+      "subcategory": "epistemology",
+      "formula": "J(belief) = sum_{i != j} (consistency(b_i, b_j) + explanatory_coherence(b_i, b_j)) / n",
+      "difficulty": "advanced",
+      "description": "信念的证成程度取决于它在信念网络中的融贯性"
+    },
+    {
+      "id": "reliabilism_justification",
+      "name": "可靠主义证成（Goldman）",
+      "category": "philosophy",
+      "subcategory": "epistemology",
+      "formula": "belief B is justified iff B is produced by a reliable process R where P(R produces true belief) > threshold",
+      "difficulty": "intermediate",
+      "description": "信念的证成取决于产生它的认知过程的可靠性"
+    },
+    {
+      "id": "sosa_virtue_epistemology",
+      "name": "索萨德性认识论（AAA模型）",
+      "category": "philosophy",
+      "subcategory": "epistemology",
+      "formula": "knowledge = apt_belief = accuracy + adroitness + aptness",
+      "difficulty": "advanced",
+      "description": "知识是真确的(accurate)、灵巧的(adroit)和适当的(apt)信念"
+    },
+    {
+      "id": "social_welfare_function_utilitarian",
+      "name": "功利主义社会福利函数",
+      "category": "philosophy",
+      "subcategory": "political_philosophy",
+      "formula": "SWF = sum_i u_i(x) (Bentham) or SWF = min_i u_i(x) (Rawlsian)",
+      "difficulty": "intermediate",
+      "description": "边沁:总效用最大化, 罗尔斯:最少受惠者效用最大化"
+    },
+    {
+      "id": "nozick_entitlement_theory",
+      "name": "诺齐克持有正义三原则",
+      "category": "philosophy",
+      "subcategory": "political_philosophy",
+      "formula": "just_holdings = [just_original_acquisition] OR [just_transfer] OR [rectification_of_injustice]",
+      "difficulty": "intermediate",
+      "description": "获取正义+转让正义+矫正正义：符合三者之一的持有就是正义的"
+    },
+    {
+      "id": "equality_of_opportunity_formula",
+      "name": "机会均等形式原则",
+      "category": "philosophy",
+      "subcategory": "political_philosophy",
+      "formula": "fair_competition: P(success_i) = f(effort_i, talent_i) NOT f(circumstance_i)",
+      "difficulty": "intermediate",
+      "description": "成功应仅取决于努力和才能而非出身等境况"
+    },
+    {
+      "id": "libertarian_minimal_state",
+      "name": "自由主义最小国家（Nozick）",
+      "category": "philosophy",
+      "subcategory": "political_philosophy",
+      "formula": "state_scope = { only protection_against_force, theft, fraud, enforcement_of_contracts }",
+      "difficulty": "intermediate",
+      "description": "国家仅限保护性功能，任何再分配都是侵犯权利"
+    },
+    {
+      "id": "capabilities_approach",
+      "name": "可行能力方法（Sen/Nussbaum）",
+      "category": "philosophy",
+      "subcategory": "political_philosophy",
+      "formula": "wellbeing = capability_set_c, c = { functionings_person_can_achieve_and_value }",
+      "difficulty": "advanced",
+      "description": "福利不是拥有什么而是能做什么和成为什么"
+    },
+    {
+      "id": "deliberative_democracy_formula",
+      "name": "商议民主模型",
+      "category": "philosophy",
+      "subcategory": "political_philosophy",
+      "formula": "legitimate_outcome iff (inclusive + equal + informed + consequential_deliberation)",
+      "difficulty": "intermediate",
+      "description": "合法政治决策来自自由平等的公民之间的理性商议"
+    },
+    {
+      "id": "calc_derivative_limit",
+      "name": "导数极限定义",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "f'(x) = lim_{h->0} (f(x+h) - f(x))/h",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "calc_chain_rule",
+      "name": "链式法则",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "dy/dx = dy/du * du/dx",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "calc_product_rule",
+      "name": "乘积法则",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "d(uv)/dx = u*dv/dx + v*du/dx",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "calc_quotient_rule",
+      "name": "商法则",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "d(u/v)/dx = (v*du/dx - u*dv/dx)/v^2",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "calc_taylor_series",
+      "name": "泰勒展开",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "f(x) = sum_{n=0}^{inf} f^{(n)}(a)*(x-a)^n/n!",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "calc_lagrange_mvt",
+      "name": "拉格朗日中值定理",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "f(b) - f(a) = f'(c)*(b-a), c in (a,b)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "calc_riemann_integral",
+      "name": "定积分定义",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "integral_a^b f(x)dx = lim_{n->inf} sum_{i=1}^n f(x_i)*delta_x_i",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "calc_integration_by_parts",
+      "name": "分部积分法",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "integral u*dv = uv - integral v*du",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "calc_lhopital_rule",
+      "name": "洛必达法则",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "lim_{x->a} f(x)/g(x) = lim_{x->a} f'(x)/g'(x), if form 0/0 or inf/inf",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "calc_green_theorem",
+      "name": "格林定理",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "integral_C (Ldx + Mdy) = integral_D (dM/dx - dL/dy)dA",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "calc_stokes_theorem",
+      "name": "斯托克斯定理",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "integral_dS F*dr = integral_S curl(F)*dS",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "calc_divergence_theorem",
+      "name": "散度定理",
+      "category": "mathematics",
+      "subcategory": "calculus",
+      "formula": "integral_dV div(F)dV = integral_S F*n dS",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "la_eigenvalue_equation",
+      "name": "特征方程",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "det(A - lambda*I) = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "la_svd_decomposition",
+      "name": "奇异值分解(SVD)",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "A = U*Sigma*V^T, U^T*U = I, V^T*V = I, Sigma = diag(sigma_1,...,sigma_r)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "la_pca_formula",
+      "name": "PCA公式",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "Cov(X) = (1/(n-1))*X^T*X, Cov(X)*v_i = lambda_i*v_i",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "la_matrix_frobenius_norm",
+      "name": "Frobenius矩阵范数",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "||A||_F = sqrt(sum_i sum_j a_ij^2) = sqrt(trace(A^T*A))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "la_cauchy_schwarz_inequality",
+      "name": "柯西-施瓦茨不等式",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "|<u,v>|^2 <= <u,u>*<v,v>",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "la_gram_schmidt_process",
+      "name": "格拉姆-施密特正交化",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "u_k = v_k - sum_{j=1}^{k-1} proj_{u_j}(v_k), e_k = u_k/||u_k||",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "la_orthogonal_projection",
+      "name": "正交投影",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "proj_W(v) = A*(A^T*A)^{-1}*A^T*v",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "la_least_squares_solution",
+      "name": "最小二乘解",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "x = (A^T*A)^{-1}*A^T*b for min_x ||Ax - b||^2",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "la_cholesky_decomposition",
+      "name": "Cholesky分解",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "A = L*L^T, where L is lower triangular and A is SPD",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "la_cayley_hamilton_theorem",
+      "name": "Cayley-Hamilton定理",
+      "category": "mathematics",
+      "subcategory": "linear_algebra",
+      "formula": "p_A(A) = 0, where p_A(lambda) = det(A - lambda*I)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "info_jensen_shannon_divergence",
+      "name": "JS散度",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "D_JS(P||Q) = 0.5*D_KL(P||M) + 0.5*D_KL(Q||M), M = 0.5*(P+Q)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "info_fano_inequality",
+      "name": "Fano不等式",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H(X|Y) <= H_2(P_e) + P_e*log(|X|-1), P_e = P(X != X_hat)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "info_data_processing_inequality",
+      "name": "数据处理不等式",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "I(X;Z) <= I(X;Y) for Markov chain X->Y->Z",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "info_entropy_rate",
+      "name": "熵率",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H(X) = lim_{n->inf} (1/n)*H(X_1,X_2,...,X_n) for stochastic process",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "info_differential_entropy",
+      "name": "微分熵",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "h(X) = -integral f(x)*log(f(x))dx for continuous random variable X",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "info_fisher_information",
+      "name": "Fisher信息量",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "I(theta) = E[(d/d_theta log f(X;theta))^2]",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "info_cramer_rao_bound",
+      "name": "Cramér-Rao下界",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "Var(theta_hat) >= 1/I(theta) for unbiased estimator theta_hat",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "info_renyi_entropy",
+      "name": "Rényi熵",
+      "category": "mathematics",
+      "subcategory": "information_theory",
+      "formula": "H_alpha(X) = (1/(1-alpha))*log(sum_i p_i^alpha), alpha >= 0, alpha != 1",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "opt_gradient_descent_update",
+      "name": "梯度下降更新",
+      "category": "mathematics",
+      "subcategory": "optimization",
+      "formula": "theta = theta - eta*grad_J(theta)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "opt_lagrange_multiplier_method",
+      "name": "拉格朗日乘数法",
+      "category": "mathematics",
+      "subcategory": "optimization",
+      "formula": "L(x,lambda) = f(x) + sum_i lambda_i*g_i(x), grad_L = 0 at optimum",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "opt_kkt_conditions",
+      "name": "KKT条件",
+      "category": "mathematics",
+      "subcategory": "optimization",
+      "formula": "grad_f(x*) + sum_i mu_i*grad_h_i(x*) + sum_j lambda_j*grad_g_j(x*) = 0, lambda_j*g_j(x*) = 0, lambda_j >= 0",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "opt_adam_optimizer_update",
+      "name": "Adam优化器",
+      "category": "mathematics",
+      "subcategory": "optimization",
+      "formula": "m_t = beta1*m_{t-1} + (1-beta1)*g_t, v_t = beta2*v_{t-1} + (1-beta2)*g_t^2, theta_t = theta_{t-1} - eta*m_t_hat/(sqrt(v_t_hat)+eps)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "opt_newton_method",
+      "name": "牛顿法",
+      "category": "mathematics",
+      "subcategory": "optimization",
+      "formula": "x_{k+1} = x_k - H_f(x_k)^{-1}*grad_f(x_k)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "opt_stochastic_gradient_descent",
+      "name": "随机梯度下降(SGD)",
+      "category": "mathematics",
+      "subcategory": "optimization",
+      "formula": "theta_{t+1} = theta_t - eta_t*grad_L(theta_t; x_i,y_i)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "graph_laplacian_matrix",
+      "name": "图拉普拉斯矩阵",
+      "category": "mathematics",
+      "subcategory": "graph_theory",
+      "formula": "L = D - A, D_ii = deg(v_i), A_ij = 1 if edge ij exists",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "graph_pagerank_formula",
+      "name": "PageRank算法",
+      "category": "mathematics",
+      "subcategory": "graph_theory",
+      "formula": "PR(u) = (1-d)/N + d*sum_{v in N(u)} PR(v)/L(v)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "graph_clustering_coefficient",
+      "name": "聚类系数",
+      "category": "mathematics",
+      "subcategory": "graph_theory",
+      "formula": "C_i = 2*|{e_jk: v_j,v_k in N(v_i)}|/(k_i*(k_i-1))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "graph_betweenness_centrality",
+      "name": "介数中心性",
+      "category": "mathematics",
+      "subcategory": "graph_theory",
+      "formula": "g(v) = sum_{s!=v!=t} sigma_{st}(v)/sigma_{st}",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "graph_degree_centrality",
+      "name": "度中心性",
+      "category": "mathematics",
+      "subcategory": "graph_theory",
+      "formula": "C_D(v) = deg(v)/(N-1)",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "graph_eigenvector_centrality",
+      "name": "特征向量中心性",
+      "category": "mathematics",
+      "subcategory": "graph_theory",
+      "formula": "c_v = (1/lambda)*sum_{u in N(v)} c_u, where A*c = lambda*c",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_attention_bottleneck",
+      "name": "注意瓶颈模型",
+      "category": "cognitive_science",
+      "subcategory": "attention",
+      "formula": "C_bottleneck = min(early_selection_capacity, late_selection_capacity)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_attention_resource_allocation",
+      "name": "注意资源分配",
+      "category": "cognitive_science",
+      "subcategory": "attention",
+      "formula": "R_allocation = sum_i w_i*S_i, with sum_i w_i <= total_capacity",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_attention_central_capacity",
+      "name": "中央容量理论",
+      "category": "cognitive_science",
+      "subcategory": "attention",
+      "formula": "Dual_task_cost = a*T_primary + b*T_secondary - c*automaticity",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_attention_spotlight",
+      "name": "聚光灯注意模型",
+      "category": "cognitive_science",
+      "subcategory": "attention",
+      "formula": "Processing_benefit = A_0*exp(-d^2/(2*sigma^2))",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_attention_perceptual_load",
+      "name": "知觉负载理论",
+      "category": "cognitive_science",
+      "subcategory": "attention",
+      "formula": "Distraction = f(perceptual_load, distractor_salience), negative if load > threshold",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_attention_guided_search",
+      "name": "引导搜索模型",
+      "category": "cognitive_science",
+      "subcategory": "attention",
+      "formula": "Activation = bottom_up_salience + top_down_guidance, RT = f(rank_of_target)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_consciousness_gnw_simplified",
+      "name": "全局神经工作空间(GNW)",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "formula": "P_conscious = sigmoid(I_stimulus - theta_gnw), ignition when global_avalanche > threshold",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_consciousness_integrated_phi",
+      "name": "整合信息Φ(IIT)",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "formula": "Phi = min_{partition} D_KL(p(cause,effect)||product(marginals))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_consciousness_hot",
+      "name": "高阶思维理论(HOT)",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "formula": "M_state = M_meta(M_first_order), consciousness = existence_of_M_state",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_consciousness_dynamic_core",
+      "name": "动态核理论",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "formula": "D_core = functional_cluster with high mutual_info_integration and low mutual_info_segregation",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_consciousness_default_mode",
+      "name": "默认模式网络(DMN)",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "formula": "DMN_activity = f(task_difficulty, self_referential_thought), DMN anticorrelated with task_positive_network",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_consciousness_attention_schema",
+      "name": "注意图式理论",
+      "category": "cognitive_science",
+      "subcategory": "consciousness",
+      "formula": "P_awareness = f(attention_schema, attended_stimulus), schema = internal_model_of_attention",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_language_word_frequency",
+      "name": "词频效应",
+      "category": "cognitive_science",
+      "subcategory": "language",
+      "formula": "RT = beta_0 - beta_1*log(frequency) + noise",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_language_semantic_priming",
+      "name": "语义启动效应",
+      "category": "cognitive_science",
+      "subcategory": "language",
+      "formula": "RT(related) = RT(unrelated) - priming_effect, priming_effect = f(association_strength)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_language_nested_structure",
+      "name": "嵌套结构加工",
+      "category": "cognitive_science",
+      "subcategory": "language",
+      "formula": "Processing_cost = O(2^n) for center_embedding_depth n",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_language_piaget_stages",
+      "name": "皮亚杰认知发展阶段",
+      "category": "cognitive_science",
+      "subcategory": "language",
+      "formula": "Stage(age) = sensorimotor(0-2) -> preoperational(2-7) -> concrete_operational(7-11) -> formal_operational(11+)",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "cogsci_language_dual_route_reading",
+      "name": "双路径阅读模型",
+      "category": "cognitive_science",
+      "subcategory": "language",
+      "formula": "P(correct) = w_lexical*lexical_route_outcome + w_sublexical*sublexical_route_outcome",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_language_statistical_learning",
+      "name": "统计学习",
+      "category": "cognitive_science",
+      "subcategory": "language",
+      "formula": "P(segment) = f(transitional_probability), TP(x,y) = P(y|x)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_reasoning_actr_production",
+      "name": "ACT-R产生式规则",
+      "category": "cognitive_science",
+      "subcategory": "reasoning",
+      "formula": "If goal_type = G and condition C then action A, Utility = P_success*G_cost - P_failure*F_cost",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_reasoning_actr_buffer",
+      "name": "ACT-R认知架构缓冲区",
+      "category": "cognitive_science",
+      "subcategory": "reasoning",
+      "formula": "Buffer_state = f(retrieval_goal, imaginal, manual, vocal, visual), each buffer holds one chunk",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_reasoning_soar_decision",
+      "name": "Soar决策周期",
+      "category": "cognitive_science",
+      "subcategory": "reasoning",
+      "formula": "Decision = propose(operators) -> compare(preferences) -> select(best) -> apply(operator), timeout -> impasse -> subgoal",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_reasoning_mental_model",
+      "name": "心理模型理论",
+      "category": "cognitive_science",
+      "subcategory": "reasoning",
+      "formula": "Validity = models_where_conclusion_holds / total_models, fewer models -> faster reasoning",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_reasoning_analogical_transfer",
+      "name": "类比推理与迁移",
+      "category": "cognitive_science",
+      "subcategory": "reasoning",
+      "formula": "P(transfer) = f(structural_similarity, surface_similarity), structural_similarity > surface_similarity for deep transfer",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_reasoning_insight_problem",
+      "name": "顿悟问题解决",
+      "category": "cognitive_science",
+      "subcategory": "reasoning",
+      "formula": "P(solution) = f(incubation_time, restructuring), insight marked by sudden spike in solution_probability",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_metacognition_calibration",
+      "name": "校准曲线",
+      "category": "cognitive_science",
+      "subcategory": "metacognition",
+      "formula": "Calibration = mean((confidence_i - accuracy_i)^2, i in bins), perfect = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_metacognition_insight_bias",
+      "name": "自知力偏差",
+      "category": "cognitive_science",
+      "subcategory": "metacognition",
+      "formula": "Insight_bias = mean_confidence - mean_accuracy, positive = overconfidence, negative = underconfidence",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_metacognition_dunning_kruger",
+      "name": "Dunning-Kruger效应",
+      "category": "cognitive_science",
+      "subcategory": "metacognition",
+      "formula": "Self_assessed_ability = true_ability + bias, bias = f(true_ability), high at low ability, low at high ability",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_metacognition_conf_acc_correlation",
+      "name": "信心-准确率相关性",
+      "category": "cognitive_science",
+      "subcategory": "metacognition",
+      "formula": "Gamma = (concordant_pairs - discordant_pairs)/(concordant_pairs + discordant_pairs), Goodman-Kruskal gamma",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "cogsci_metacognition_feeling_of_knowing",
+      "name": "知晓感(FOK)",
+      "category": "cognitive_science",
+      "subcategory": "metacognition",
+      "formula": "FOK_accuracy = P(recognize|FOK_yes) - P(recognize|FOK_no), gamma correlation for tip_of_tongue states",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "cogsci_metacognition_judgment_learning",
+      "name": "学习判断(JOL)",
+      "category": "cognitive_science",
+      "subcategory": "metacognition",
+      "formula": "JOL_accuracy = P(recall|JOL) - baseline_recall, delayed_JOL more accurate than immediate_JOL",
       "difficulty": "intermediate"
     }
   ]
