@@ -105,6 +105,7 @@ test('discriminate returns 6 dimensions', () => {
   if (!r.dimensions.confidence) throw new Error('should have confidence');
   if (!r.dimensions.prompt_injection) throw new Error('should have prompt_injection');
   if (!r.dimensions.code_security) throw new Error('should have code_security');
+  if (!r.dimensions.dehumanization) throw new Error('should have dehumanization');
 });
 
 test('discriminate clean text scores high', () => {

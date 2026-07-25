@@ -355,6 +355,10 @@ class OutputChecklist {
         issues.push(`含代码安全问题(${dims.code_security.count}处: ${dims.code_security.types?.join(',')})`);
         triggeredDims.push('code_security');
       }
+      if (dims.dehumanization && dims.dehumanization.count > 0) {
+        issues.push(`含非人化语言(${dims.dehumanization.count}处: ${dims.dehumanization.categories?.join(',')})`);
+        triggeredDims.push('dehumanization');
+      }
 
       // === 降级回退推荐 ===
       // 根据触发的维度类型和数量，给出调用方应如何处理

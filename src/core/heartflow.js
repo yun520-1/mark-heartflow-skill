@@ -4910,6 +4910,9 @@ class HeartFlow {
           result._highRiskOutput = true;
           warnings.push(`检测到代码安全问题(${disc.code_security.types?.join(',')})`);
         }
+        if (disc?.dehumanization?.count > 0) {
+          warnings.push(`检测到非人化语言(${disc.dehumanization.categories?.join(',')})`);
+        }
 
         // 10. 跨维度组合分析
         try {

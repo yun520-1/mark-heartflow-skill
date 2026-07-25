@@ -796,8 +796,9 @@ function discriminate(text, evidence = []) {
   const mf = checkMoralFoundations(text);
   const pi = checkPromptInjection(text);
   const cs = checkCodeSecurity(text);
+  const dh = checkDehumanization(text);
 
-  const dimensions = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score, 1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score, 1-cs.score];
+  const dimensions = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score, 1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score, 1-cs.score, 1-dh.score];
   const avg = dimensions.reduce((a,b) => a+b, 0) / dimensions.length;
   const overallScore = Math.round(avg * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
@@ -806,12 +807,12 @@ function discriminate(text, evidence = []) {
     verdict, overallScore,
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
-      empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs },
+      empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
-      mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
+      mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'', dh.count ? dh.count + ' 处非人化语言':'',
       ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
@@ -919,6 +920,45 @@ function summarizeDiscrimination(text, discResult) {
  * @param {object} discResult - discriminate() 返回的结果对象
  * @returns {object} 分析结果
  */
+// ─── 非人化语言检测（Dehumanization Detection）────────────────────────────────
+// 基于: Haslam(2006) dehumanization theory + 语言学模式
+// 检测将人描述为动物/物体/疾病/怪兽的语言模式
+const DEHUMANIZATION_PATTERNS = {
+  zh: {
+    animal: [/像(禽兽|畜生|猪狗|野兽|虫豸)/i, /^[^。]*?(畜牲|畜生|禽兽)/i, /猪狗不如/i, /蛀虫|寄生虫|吸血虫/i],
+    object: [/工具人|行走的[^。]*?|消耗品|炮灰|耗材/i, /不过是[^。]*?而已/i, /机器|零件|螺丝钉/i],
+    disease: [/毒瘤|癌细胞|病菌|病毒|瘟疫|瘟疫|感染|污染|腐烂|溃烂|脓疮/i],
+    threat: [/威胁|危险品|定时炸弹|祸害|隐患|公害/i, /清除|铲除|消灭[^。]*?(他们|这[^。]*?人|群体|族)/i],
+    inferior: [/劣等|低等|未开化|野蛮|原始|落后[^。]*?(民族|种族|国家)/i, /智商[^。]*?低|脑残/i],
+    disgust: [/恶心|令人作呕|讨厌|可憎|厌恶|鄙夷/i],
+  },
+  en: {
+    animal: [/\b(animals|vermin|rats|pests|parasites|cockroaches|dogs|pigs|monkeys|apes)\b/i, /\b(subhuman|less.?than human|inhuman)\b/i, /\bbreed like|infestation|swarm of\b/i],
+    object: [/\b(robots|automatons|cogs|machines|objects|tools|commodities)\b[^.]*?human/i, /\b(disposable|expendable|replaceable)\b[^.]*?(people|lives|humans)/i],
+    disease: [/\b(cancer|disease|virus|plague|infection|contagion|toxin|poison|rot|decay)\b[^.]*?(people|they|them|society)/i, /\b(purify|cleanse|exterminate|eradicate|eliminate)\b[^.]*?(them|group|population)/i],
+    threat: [/\b(threat|danger|menace|hazard|risk)\b[^.]*?(they|these|group|immigrant|minority|foreign)/i, /\b(imminent|existential)\b[^.]*?threat/i],
+    inferior: [/\b(inferior|primitive|savage|uncivilized|backward|barbaric)\b/i, /\b(low.?IQ|stupid|retard|idiot|moron)\b[^.]*?people/i],
+    disgust: [/\b(disgusting|repulsive|revolting|abhorrent|vile|despicable)\b/i, /\b(make.?me.?sick|can'?t stand)\b/i],
+  },
+};
+const DH_WEIGHTS = { animal: 0.8, object: 0.6, disease: 0.9, threat: 0.7, inferior: 0.5, disgust: 0.4 };
+
+function checkDehumanization(text) {
+  if (!text || typeof text !== 'string') return { count: 0, categories: [], hits: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const pats = hasChinese ? DEHUMANIZATION_PATTERNS.zh : DEHUMANIZATION_PATTERNS.en;
+  const hits = [];
+  for (const [cat, patterns] of Object.entries(pats)) {
+    for (const pat of patterns) {
+      const m = text.match(pat);
+      if (m) hits.push({ category: cat, matched: m[0].slice(0, 15) });
+    }
+  }
+  const cats = [...new Set(hits.map(h => h.category))];
+  const score = Math.min(1, cats.reduce((s, c) => s + (DH_WEIGHTS[c] || 0.3), 0));
+  return { count: hits.length, categories: cats, hits, score };
+}
+
 function crossAnalyze(discResult) {
   if (!discResult || !discResult.dimensions) return { patterns: [], summary: '无数据' };
   const d = discResult.dimensions;
@@ -984,8 +1024,13 @@ function crossAnalyze(discResult) {
   const allClean = !d.sycophancy.totalHits && !d.contradiction.count && !d.fallacies.count &&
     !d.emotional_manipulation.count && !d.presupposition.count && !d.double_bind.count &&
     !d.info_deprivation.count && !d.false_urgency.count && !d.empty_answer.count &&
-    !d.code_security?.count && !d.prompt_injection?.count;
-  if (allClean) patterns.push({ pattern: '健康文本', confidence: 0.9, evidence: '15维均无异常' });
+    !d.code_security?.count && !d.prompt_injection?.count && !d.dehumanization?.count;
+  // 模式11: 非人化语言+情感操纵 = 敌意沟通
+  if (d.dehumanization && d.dehumanization.count > 0 && d.emotional_manipulation.count > 0) {
+    patterns.push({ pattern: '敌意沟通', confidence: 0.8, evidence: `非人化(${d.dehumanization.categories.join(',')})+情感操纵(${d.emotional_manipulation.manipulations?.map(m=>m.type).join(',')})` });
+  }
+
+  if (allClean) patterns.push({ pattern: '健康文本', confidence: 0.9, evidence: '16维均无异常' });
 
   return { patterns, warnings, totalPatterns: patterns.filter(p => p.pattern !== '健康文本').length };
 }
@@ -1006,6 +1051,7 @@ module.exports = {
   checkMoralFoundations,
   checkPromptInjection,
   checkCodeSecurity,
+  checkDehumanization,
   summarizeDiscrimination,
   crossAnalyze,
   discriminate,
