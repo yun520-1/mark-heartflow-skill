@@ -2,7 +2,7 @@
   "name": "@yun520-1/heartflow",
   "version": "6.3.6",
   "description": "12维文本辨别引擎 — 中英双语纯规则引擎。检测sycophancy/矛盾/逻辑谬误/预设陷阱/情感操纵/虚假紧迫感/答案包装等。零LLM依赖，MCP原生，AI助手的安全门禁。",
-  "main": "src/core/heartflow.js",
+  "main": "src/index.js",
   "bin": {
     "heartflow": "src/mcp-server.js"
   },
@@ -19,15 +19,10 @@
   },
   "files": [
     "VERSION",
-    "src/",
-    "mcp/",
-    "bin/",
-    "formulas/",
-    "config.json",
-    "ecosystem.config.js",
-    "INSTALL.md",
-    "README.md",
-    "SKILL.md"
+    "src/index.js",
+    "src/core/output-checklist.js",
+    "src/mcp-server.js",
+    "README.md"
   ],
   "keywords": [
     "heartflow",
