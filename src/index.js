@@ -576,7 +576,63 @@ function checkFalseUrgency(text) {
   return { count, urgencies, score: Math.min(1, count * 0.3) };
 }
 
-// ─── 综合辨别（9维度） ────────────────────────────────────────────
+// ─── 答案包装检测（empty/vague answer）─────────────────────────────
+const EMPTY_ANSWER_PATTERNS = {
+  zh: [
+    /这个问题很复杂/i,
+    /不是一个简单的/i,
+    /需要全面考虑/i,
+    /需要具体分析/i,
+    /不能一概而论/i,
+    /因情况而异/i,
+    /视情况而定/i,
+    /有机会再说/i,
+    /到时候再看/i,
+    /等通知/i,
+    /再说吧/i,
+    /我考虑一下/i,
+    /研究研究/i,
+    /回头再说/i,
+    /不是那么简单/i,
+    /说来话长/i,
+    /你懂的/i,
+    /懂得都懂/i,
+    /懂的都懂/i,
+  ],
+  en: [
+    /\bit's complicated\b/i,
+    /\bit's not that simple\b/i,
+    /\bit depends\b/i,
+    /\bthere are many factors\b/i,
+    /\bto make a long story short\b/i,
+    /\bit is what it is\b/i,
+    /\bthat's just the way it is\b/i,
+    /\bhaving said that\b/i,
+    /\bat the end of the day\b/i,
+    /\bwhen it's all said and done\b/i,
+    /\bit remains to be seen\b/i,
+    /\btime will tell\b/i,
+    /\bwe'll see\b/i,
+    /\bonly time will tell\b/i,
+  ],
+};
+
+function checkEmptyAnswer(text) {
+  if (!text || typeof text !== 'string') return { count: 0, empties: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? EMPTY_ANSWER_PATTERNS.zh : EMPTY_ANSWER_PATTERNS.en;
+  const empties = [];
+  for (const pat of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      empties.push({ pattern: pat.source.slice(0, 25), matched: m[0].slice(0, 30), count: m.length });
+    }
+  }
+  const count = empties.length;
+  return { count, empties, score: Math.min(1, count * 0.25) };
+}
+
+// ─── 综合辨别（12维度） ────────────────────────────────────────────
 function discriminate(text, evidence = []) {
   const ev = checkEvidence(text, evidence);
   const sy = checkSycophancy(text);
@@ -589,8 +645,9 @@ function discriminate(text, evidence = []) {
   const db = checkDoubleBind(text);
   const id = checkInfoDeprivation(text);
   const fu = checkFalseUrgency(text);
+  const ea = checkEmptyAnswer(text);
 
-  const avg = (ev.score + (1 - sy.score) + (1 - ct.score) + (1 - vg.score) + (1 - fl.score) + (1 - cc.score) + (1 - pp.score) + (1 - em.score) + (1 - db.score) + (1 - id.score) + (1 - fu.score)) / 11;
+  const avg = (ev.score + (1 - sy.score) + (1 - ct.score) + (1 - vg.score) + (1 - fl.score) + (1 - cc.score) + (1 - pp.score) + (1 - em.score) + (1 - db.score) + (1 - id.score) + (1 - fu.score) + (1 - ea.score)) / 12;
   const overallScore = Math.round(avg * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -609,6 +666,7 @@ function discriminate(text, evidence = []) {
       double_bind: db,
       info_deprivation: id,
       false_urgency: fu,
+      empty_answer: ea,
     },
     summary: [
       sy.totalHits > 0 ? `${sy.totalHits} 个 sycophancy 信号` : '',
@@ -621,6 +679,7 @@ function discriminate(text, evidence = []) {
       db.count > 0 ? `${db.count} 个双重束缚` : '',
       id.count > 0 ? `${id.count} 处知情权剥夺` : '',
       fu.count > 0 ? `${fu.count} 处虚假紧迫感` : '',
+      ea.count > 0 ? `${ea.count} 处答案包装` : '',
       ev.issues.length > 0 ? `${ev.issues.length} 个证据问题` : '',
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
@@ -652,6 +711,7 @@ module.exports = {
   checkDoubleBind,
   checkInfoDeprivation,
   checkFalseUrgency,
+  checkEmptyAnswer,
   discriminate,
   createEngine,
   version: require('fs').readFileSync(require('path').join(__dirname, '..', 'VERSION'), 'utf8').trim(),
