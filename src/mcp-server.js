@@ -2293,6 +2293,23 @@ function handleVerdict(args) {
   } catch(e) { return { error: e.message }; }
 }
 
+// [v6.3.0] 全量 9 维辨别 handler
+function handleFullDiscriminate(args) {
+  const { text, evidence } = args || {};
+  if (!text) return { error: 'text required' };
+  try {
+    const idx = require('./index.js');
+    const result = idx.discriminate ? idx.discriminate(text, evidence || []) : null;
+    if (!result) return { error: 'discriminate not available' };
+    return {
+      verdict: result.verdict,
+      overallScore: result.overallScore,
+      dimensions: result.dimensions,
+      summary: result.summary
+    };
+  } catch(e) { return { error: e.message }; }
+}
+
 // [v6.3.0] 辨别引擎 handler
 function handleVerify(args) {
   const { decision, evidence, confidence } = args || {};
@@ -2387,6 +2404,7 @@ const HANDLERS = {
   // [v6.3.0] 5 个辨别引擎入口
   heartflow_verify: handleVerify,
   heartflow_verdict: handleVerdict,
+  heartflow_discriminate: handleFullDiscriminate,
   heartflow_diagnose: handleDiagnose,
   heartflow_check_drift: handleCheckDrift,
   heartflow_error_store: handleErrorStore,
