@@ -2333,6 +2333,7 @@ function handleFullDiscriminate(args) {
       dimensions: result.dimensions,
       summary: result.summary,
       readableReport: idx.summarizeDiscrimination ? idx.summarizeDiscrimination(text, result) : null,
+      crossPatterns: idx.crossAnalyze ? idx.crossAnalyze(result) : null,
     };
   } catch(e) { return { error: e.message }; }
 }

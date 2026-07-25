@@ -4911,6 +4911,18 @@ class HeartFlow {
           warnings.push(`检测到代码安全问题(${disc.code_security.types?.join(',')})`);
         }
 
+        // 10. 跨维度组合分析
+        try {
+          const idx = require('./index.js');
+          if (idx.crossAnalyze) {
+            const ca = idx.crossAnalyze(disc);
+            if (ca.totalPatterns > 0) {
+              result._crossPatterns = ca.patterns;
+              for (const w of ca.warnings) warnings.push(w);
+            }
+          }
+        } catch (_) {}
+
         result.output.warnings = warnings;
       }
     } catch (_) { /* 辨别闭环不阻断 */ }

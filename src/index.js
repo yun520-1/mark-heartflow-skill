@@ -912,6 +912,84 @@ function summarizeDiscrimination(text, discResult) {
   return parts.join('\n');
 }
 
+
+/**
+ * 跨维度组合分析——识别操纵模式/认知战术/话语特征
+ * 不新增维度，而是分析 15 维的组合模式
+ * @param {object} discResult - discriminate() 返回的结果对象
+ * @returns {object} 分析结果
+ */
+function crossAnalyze(discResult) {
+  if (!discResult || !discResult.dimensions) return { patterns: [], summary: '无数据' };
+  const d = discResult.dimensions;
+  const patterns = [];
+  const warnings = [];
+
+  // 模式1: 谄媚+回避 = 应付式回答
+  if (d.sycophancy.totalHits > 0 && d.empty_answer.count > 0) {
+    patterns.push({ pattern: '应付式回答', confidence: 0.7,
+      evidence: `谄媚(${d.sycophancy.totalHits}处)+答案包装(${d.empty_answer.count}处)` });
+  }
+
+  // 模式2: 矛盾+谬误 = 论证质量低
+  if (d.contradiction.count > 0 && d.fallacies.count > 0) {
+    patterns.push({ pattern: '论证质量差', confidence: 0.8,
+      evidence: `矛盾(${d.contradiction.count}处)+谬误(${d.fallacies.fallacies.map(f=>f.type).join(',')})` });
+  }
+
+  // 模式3: 预设陷阱+情感操纵 = 框架操控
+  if (d.presupposition.count > 0 && d.emotional_manipulation.count > 0) {
+    patterns.push({ pattern: '框架操控', confidence: 0.85,
+      evidence: `预设陷阱(${d.presupposition.count}处)+情感操纵(${d.emotional_manipulation.manipulations?.map(m=>m.type).join(',')})` });
+  }
+
+  // 模式4: 双重束缚+信息剥夺 = 封闭式沟通
+  if (d.double_bind.count > 0 && d.info_deprivation.count > 0) {
+    patterns.push({ pattern: '封闭式沟通', confidence: 0.75,
+      evidence: `双重束缚(${d.double_bind.count}处)+信息剥夺(${d.info_deprivation.count}处)` });
+  }
+
+  // 模式5: 虚假紧迫感+答案包装 = 拖延/催促并存
+  if (d.false_urgency.count > 0 && d.empty_answer.count > 0) {
+    patterns.push({ pattern: '矛盾信号', confidence: 0.6,
+      evidence: `虚假紧迫感(${d.false_urgency.count}处)但答案包装(${d.empty_answer.count}处)` });
+  }
+
+  // 模式6: 信心偏差+预设陷阱 = 框架引导
+  if (d.confidence.count > 0 && d.presupposition.count > 0) {
+    patterns.push({ pattern: '框架引导', confidence: 0.7,
+      evidence: `信心偏差(${d.confidence.count}处)+预设陷阱(${d.presupposition.count}处)` });
+  }
+
+  // 模式7: 代码安全+提示注入 = 高安全风险
+  if (d.code_security && d.code_security.count > 0 && d.prompt_injection && d.prompt_injection.count > 0) {
+    patterns.push({ pattern: '高安全风险', confidence: 0.95,
+      evidence: `代码安全问题(${d.code_security.types?.join(',')})+提示注入(${d.prompt_injection.injections?.map(i=>i.type).join(',')})` });
+    warnings.push('同时检测到代码安全漏洞和提示注入');
+  }
+
+  // 模式8: 道德框架+谬误 = 道德论证谬误
+  if (d.moral_foundations && d.moral_foundations.count > 0 && d.fallacies.count > 0) {
+    patterns.push({ pattern: '道德论证谬误', confidence: 0.65,
+      evidence: `道德基础(${d.moral_foundations.foundations?.map(f=>f.label).join('/')})+谬误(${d.fallacies.fallacies.map(f=>f.type).join(',')})` });
+  }
+
+  // 模式9: 情感操纵+信心偏差 = 施压式说服
+  if (d.emotional_manipulation.count > 0 && d.confidence.count > 0) {
+    patterns.push({ pattern: '施压式说服', confidence: 0.7,
+      evidence: `情感操纵(${d.emotional_manipulation.manipulations?.map(m=>m.type).join(',')})+信心偏差` });
+  }
+
+  // 模式10: 健康文本（无任何问题）
+  const allClean = !d.sycophancy.totalHits && !d.contradiction.count && !d.fallacies.count &&
+    !d.emotional_manipulation.count && !d.presupposition.count && !d.double_bind.count &&
+    !d.info_deprivation.count && !d.false_urgency.count && !d.empty_answer.count &&
+    !d.code_security?.count && !d.prompt_injection?.count;
+  if (allClean) patterns.push({ pattern: '健康文本', confidence: 0.9, evidence: '15维均无异常' });
+
+  return { patterns, warnings, totalPatterns: patterns.filter(p => p.pattern !== '健康文本').length };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -929,6 +1007,7 @@ module.exports = {
   checkPromptInjection,
   checkCodeSecurity,
   summarizeDiscrimination,
+  crossAnalyze,
   discriminate,
   createEngine,
   version: require('fs').readFileSync(require('path').join(__dirname, '..', 'VERSION'), 'utf8').trim(),
