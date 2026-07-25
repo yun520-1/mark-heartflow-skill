@@ -98,6 +98,30 @@ const CONTRADICTION_PAIRS = [
   { positive: /\b(should|must|have to)[^.]*?but\b/i, negative: /\bbut\b[^.]*?(shouldn|don't|not)/i },
   { positive: /\b(agree|support|endorse)[^.]*?however\b/i, negative: /\bhowever\b/i },
   { positive: /\b(good|excellent|great|valid)[^.]*?but\b/i, negative: /\bbut\b[^.]*?(problem|issue|flaw|not)/i },
+
+  // 结果↔结论冲突：数据/结果/调查表明X，转折后结论却不成立
+  { positive: /[结果数据分析调查][^。]*?(显示|表明|指出|证明)[^。]*?[但而]/g, negative: /[但而][^。]*?(并非|不是|不能|不应该|恰恰相反)/ },
+
+  // 事实↔建议冲突：陈述事实后，给出的建议与事实方向相反
+  { positive: /事实上|实际上|说实话|真实情况[^。]*?建议/g, negative: /建议[^。]*?(不|不要|别|避免|少)/ },
+
+  // 肯定+否定并用：先肯定（毫无疑问/显然/确实），随即转折否定
+  { positive: /(毫无疑问|毋庸置疑|显然|确实|的确)[^。]*?[但而]/g, negative: /[但而][^。]*?(并非|不是|没有|不成立)/ },
+
+  // encouraging+dismissing：先鼓励/表扬，紧接着否定/打压
+  { positive: /(很棒|很好|不错|厉害|加油|优秀|出色)[^。]*?但/g, negative: /但[^。]*?(不够|不行|差|不足|欠缺|没用)/ },
+
+  // 肯定能力+表示怀疑：先肯定对方能力，后表达怀疑
+  { positive: /(你(能|可以|做得很好)|你有能力|你很优秀|你有经验)[^。]*?但/g, negative: /但[^。]*?(担心|怀疑|恐怕|不过|只是|未必)/ },
+
+  // 因果冲突：因为A所以B，但建议中A被否定
+  { positive: /因为|由于|之所以/g, negative: /所以(不必|不用|不应该|没意义|无所谓|算了吧|没必要)/ },
+
+  // 全面肯定+具体否定：先总体肯定，再具体否定
+  { positive: /(整体|总体|大致|基本上|总体来说|整体来看)[^。]*?但/g, negative: /但[^。]*?(问题|缺陷|不足|遗憾|欠缺|不够|败笔)/ },
+
+  // 承诺+取消：先承诺/保证，后反悔/取消
+  { positive: /(我保证|我承诺|我一定|我肯定|我答应)[^。]*?但/g, negative: /但[^。]*?(做不到|无法|不能|没办法|不行了|取消|改变主意|还是别)/ },
 ];
 
 function checkContradiction(text) {
@@ -189,6 +213,18 @@ const FALLACY_SEVERITY = {
   circular_reasoning: 0.6, false_dilemma: 0.4, appeal_to_authority: 0.3,
   ad_hominem: 0.5, straw_man: 0.5, slippery_slope: 0.4, appeal_to_emotion: 0.3,
   bandwagon: 0.3, appeal_to_obviousness: 0.2, appeal_to_common_sense: 0.2,
+};
+
+const PRESUPPOSITION_PATTERNS = {
+  zh: [
+    [/你是否已经[^，。？?]*|怎么还[^，。？?]*|还在[^，。？?]*|仍然[^，。？?]*/, 'loaded_behavior'],
+    [/难道你不觉得|难道不是[^，。？?]*|难道你没/, 'presupposed_agreement'],
+    [/你终于[^，。？?]*|你竟然[^，。？?]*|你怎么能[^，。？?]*/, 'presupposed_wrong_behavior'],
+  ],
+  en: [
+    [/\bWhy do you always[^.]*\b|\bWhy don't you ever[^.]*\b|\bHave you stopped[^.]*\b|\bWhen did you start[^.]*\b/i, 'presupposed_pattern'],
+    [/\bDon't you think[^.]*\b|\bIsn't it true[^.]*\b|\bWouldn't you agree[^.]*\b/i, 'presupposed_agreement'],
+  ],
 };
 
 function checkFallacies(text) {
