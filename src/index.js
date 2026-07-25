@@ -402,6 +402,41 @@ function checkPresupposition(text) {
   return { count, presuppositions, score: Math.min(1, count * 0.3) };
 }
 
+// ─── 情绪操纵检测 ──────────────────────────────────────────────
+const EMOTIONAL_MANIPULATION_PATTERNS = {
+  zh: [
+    /你不[^，。]*?就会[^，。]*?(后悔|错过|损失|失去)/i,
+    /如果你不[^，。]*?你一定会[^。]*?(后悔|遗憾)/i,
+    /不[^，。]*?就会[^。]*?后悔/i,
+    /难道你忍心[^。]*?[吗？]/i,
+    /你到底[^。]*?难道你/i,
+    /你忍心[^。]*?[吗？]/i,
+    /你对得起[^。]*?[吗？]/i,
+  ],
+  en: [
+    /\bif you (don't|do not)[^.]*?you('ll| will)[^.]*?regret\b/i,
+    /\byou('ll| will)[^.]*?regret it if\b/i,
+    /\bdon't you (care|love|want)[^.]*?\b/i,
+    /\bhow could you[^.]*?after\b/i,
+    /\bif you really (cared|loved|wanted)[^.]*?you would\b/i,
+  ],
+};
+
+function checkEmotionalManipulation(text) {
+  if (!text || typeof text !== 'string') return { count: 0, manipulations: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? EMOTIONAL_MANIPULATION_PATTERNS.zh : EMOTIONAL_MANIPULATION_PATTERNS.en;
+  const manipulations = [];
+  for (const pat of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      manipulations.push({ pattern: pat.source.slice(0, 30), matched: m[0].slice(0, 40), count: m.length });
+    }
+  }
+  const count = manipulations.length;
+  return { count, manipulations, score: Math.min(1, count * 0.3) };
+}
+
 // ─── 双重束缚检测（double bind）────────────────────────────────────
 const DOUBLE_BIND_PATTERNS = {
   zh: [
@@ -438,6 +473,109 @@ function checkDoubleBind(text) {
   return { count, binds, score: Math.min(1, binds.reduce((s, b) => s + b.severity, 0)) };
 }
 
+// ─── 知情权剥夺检测（info deprivation）─────────────────────────────
+const INFO_DEPRIVATION_PATTERNS = {
+  zh: [
+    /你不需要知道/i, /你不用了解/i, /别问那么多/i,
+    /你不用管[^。]*?为什么/i, /你不用问[^。]*?为什么/i,
+    /跟你没关系/i, /跟你无关/i, /你不要管/i,
+    /你不用操心/i, /这事你不用管/i,
+    /你别管[^。]*?为什么/i,
+    /说了你也不懂/i, /你问那么多干嘛/i,
+    /问那么多做什么/i,
+    /你不必知道/i, /不需要你知道/i,
+    /你不用明白/i,
+  ],
+  en: [
+    /\byou don'?t need (?:to )?know\b/i,
+    /\byou don'?t need to understand\b/i,
+    /\byou wouldn'?t understand\b/i,
+    /\b(?:it'?s|it is) too complicated (?:to|for you) (?:explain|understand)\b/i,
+    /\bjust trust me on this\b/i,
+    /\b(?:don'?t|do not) ask\b/i,
+    /\b(?:that'?s|that is) not your concern\b/i,
+    /\b(?:it'?s|it is) above your pay grade\b/i,
+    /\byou don'?t need to worry about it\b/i,
+    /\bleave that to me\b/i,
+    /\bi'?ll handle it,? you just focus on\b/i,
+    /\b(?:it'?s|it is) not for you to know\b/i,
+    /\bnever mind (?:the details|how|why)\b/i,
+    /\byou don'?t want to know\b/i,
+  ],
+};
+
+function checkInfoDeprivation(text) {
+  if (!text || typeof text !== 'string') return { count: 0, deprivations: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? INFO_DEPRIVATION_PATTERNS.zh : INFO_DEPRIVATION_PATTERNS.en;
+  const deprivations = [];
+  for (const pat of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      deprivations.push({ pattern: pat.source.slice(0, 30), count: m.length });
+    }
+  }
+  const count = deprivations.length;
+  return { count, deprivations, score: Math.min(1, count * 0.35) };
+}
+
+// ─── 虚假紧迫感检测（false urgency）────────────────────────────────
+const FALSE_URGENCY_PATTERNS = {
+  zh: [
+    /最后机会/i, /仅此一次/i, /限时优惠/i, /错过等一年/i,
+    /倒计时/i, /抢购/i, /秒杀/i, /限时抢购/i,
+    /限时特惠/i, /限时折扣/i, /限量发行/i, /限量版/i,
+    /手慢无/i, /先到先得/i, /售完即止/i,
+    /仅限今天/i, /今天最后一天/i,
+    /错过今天[^。]*?(就没|不再|后悔)/i,
+    /机不可失[^。]*?(不再|失不再来)/i,
+    /时不我待/i, /过期不候/i,
+    /优惠即将截止/i, /即将恢复原价/i,
+    /最后[0-9]+[个小时天日]/i,
+    /不再有此价格/i, /此番错过[^。]*?来年/i,
+  ],
+  en: [
+    /\blimited time (?:only|offer)\b/i,
+    /\bact now before it'?s too late\b/i,
+    /\bact now[^.]*?(?:before|while|and)\b/i,
+    /\blimited (?:supply|stock|availability|edition)\b/i,
+    /\bwhile supplies last\b/i,
+    /\bexclusive offer ending soon\b/i,
+    /\bthis won'?t last\b/i,
+    /\blast chance\b/i,
+    /\bdon'?t miss (?:out|this opportunity)\b/i,
+    /\bhurry[^.]*?before\b/i,
+    /\boffer (?:ends|expires) (?:soon|today|in|:)|end (?:s|ing) soon\b/i,
+    /\b(?:one|only) time offer\b/i,
+    /\bone day only\b/i,
+    /\bonce in a lifetime\b/i,
+    /\bact fast\b/i,
+    /\bclosing soon\b/i,
+    /\bgoing fast\b/i,
+    /\balmost gone\b/i,
+    /\brunning out[^.]*?(?:time|stock|fast)\b/i,
+    /\blast[^.]*?(?:chance|call|opportunity)\b/i,
+    /\bselling out fast\b/i,
+    /\bfinal call\b/i,
+    /\b(?:now|today) or never\b/i,
+  ],
+};
+
+function checkFalseUrgency(text) {
+  if (!text || typeof text !== 'string') return { count: 0, urgencies: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? FALSE_URGENCY_PATTERNS.zh : FALSE_URGENCY_PATTERNS.en;
+  const urgencies = [];
+  for (const pat of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      urgencies.push({ pattern: pat.source.slice(0, 30), count: m.length });
+    }
+  }
+  const count = urgencies.length;
+  return { count, urgencies, score: Math.min(1, count * 0.3) };
+}
+
 // ─── 综合辨别（9维度） ────────────────────────────────────────────
 function discriminate(text, evidence = []) {
   const ev = checkEvidence(text, evidence);
@@ -449,8 +587,10 @@ function discriminate(text, evidence = []) {
   const pp = checkPresupposition(text);
   const em = checkEmotionalManipulation(text);
   const db = checkDoubleBind(text);
+  const id = checkInfoDeprivation(text);
+  const fu = checkFalseUrgency(text);
 
-  const avg = (ev.score + (1 - sy.score) + (1 - ct.score) + (1 - vg.score) + (1 - fl.score) + (1 - cc.score) + (1 - pp.score) + (1 - em.score) + (1 - db.score)) / 9;
+  const avg = (ev.score + (1 - sy.score) + (1 - ct.score) + (1 - vg.score) + (1 - fl.score) + (1 - cc.score) + (1 - pp.score) + (1 - em.score) + (1 - db.score) + (1 - id.score) + (1 - fu.score)) / 11;
   const overallScore = Math.round(avg * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -467,6 +607,8 @@ function discriminate(text, evidence = []) {
       presupposition: pp,
       emotional_manipulation: em,
       double_bind: db,
+      info_deprivation: id,
+      false_urgency: fu,
     },
     summary: [
       sy.totalHits > 0 ? `${sy.totalHits} 个 sycophancy 信号` : '',
@@ -477,6 +619,8 @@ function discriminate(text, evidence = []) {
       pp.count > 0 ? `${pp.count} 个预设陷阱` : '',
       em.count > 0 ? `${em.count} 处情绪操纵` : '',
       db.count > 0 ? `${db.count} 个双重束缚` : '',
+      id.count > 0 ? `${id.count} 处知情权剥夺` : '',
+      fu.count > 0 ? `${fu.count} 处虚假紧迫感` : '',
       ev.issues.length > 0 ? `${ev.issues.length} 个证据问题` : '',
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
@@ -506,6 +650,8 @@ module.exports = {
   checkPresupposition,
   checkEmotionalManipulation,
   checkDoubleBind,
+  checkInfoDeprivation,
+  checkFalseUrgency,
   discriminate,
   createEngine,
   version: require('fs').readFileSync(require('path').join(__dirname, '..', 'VERSION'), 'utf8').trim(),
