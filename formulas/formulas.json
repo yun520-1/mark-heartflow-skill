@@ -3401,6 +3401,758 @@
         "arousal_spike": {"name": "情绪强度跃升", "description": "0-1，arousal>0.5且pleasure显著变化"}
       },
       "source": "HeartFlow v6.0.3 — W轴：觉醒信号强度，基于arXiv 2505.01542情感支持综述"
+    },
+    {
+      "id": "newtons_second_law",
+      "name": "牛顿第二定律",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "F = ma",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "newtons_first_law",
+      "name": "牛顿第一定律",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "∑F = 0 ⇔ dv/dt = 0",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "newtons_third_law",
+      "name": "牛顿第三定律",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "F_12 = -F_21",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "newtons_law_of_universal_gravitation",
+      "name": "万有引力定律",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "F = G * m1 * m2 / r²",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "kinematic_equation_velocity",
+      "name": "匀变速直线运动速度公式",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "v = v₀ + at",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "kinematic_equation_position",
+      "name": "匀变速直线运动位移公式",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "x = x₀ + v₀t + ½at²",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "kinematic_equation_velocity_squared",
+      "name": "速度-位移关系式",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "v² = v₀² + 2aΔx",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "momentum_conservation",
+      "name": "动量守恒定律",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "m₁v₁ + m₂v₂ = m₁v₁' + m₂v₂'",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "impulse_momentum_theorem",
+      "name": "动量定理",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "J = FΔt = Δp",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "kinetic_energy",
+      "name": "动能公式",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "KE = ½mv²",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "potential_energy_gravitational",
+      "name": "重力势能",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "PE = mgh",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "conservation_of_mechanical_energy",
+      "name": "机械能守恒定律",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "KE₁ + PE₁ = KE₂ + PE₂",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "work_done_by_force",
+      "name": "功的定义",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "W = F·d·cosθ",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "power_mechanical",
+      "name": "功率公式",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "P = W/t = F·v",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "centripetal_force",
+      "name": "向心力",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "F_c = mv²/r = mω²r",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "torque",
+      "name": "力矩",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "τ = r × F",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "angular_momentum",
+      "name": "角动量",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "L = Iω = r × p",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "simple_harmonic_motion_period",
+      "name": "简谐运动周期",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "T = 2π√(m/k)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "simple_pendulum_period",
+      "name": "单摆周期公式",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "T = 2π√(L/g)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "keplers_third_law",
+      "name": "开普勒第三定律",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "T² / r³ = 4π² / (GM)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "hookes_law",
+      "name": "胡克定律",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "F = -kx",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "friction_force_kinetic",
+      "name": "滑动摩擦力",
+      "category": "physics",
+      "subcategory": "mechanics",
+      "formula": "f_k = μ_k·N",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "bernoullis_equation",
+      "name": "伯努利方程",
+      "category": "physics",
+      "subcategory": "fluid",
+      "formula": "P + ½ρv² + ρgh = constant",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "continuity_equation_fluid",
+      "name": "流体连续性方程",
+      "category": "physics",
+      "subcategory": "fluid",
+      "formula": "A₁v₁ = A₂v₂",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "archimedes_principle",
+      "name": "阿基米德浮力原理",
+      "category": "physics",
+      "subcategory": "fluid",
+      "formula": "F_b = ρgV",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "pascals_principle",
+      "name": "帕斯卡原理",
+      "category": "physics",
+      "subcategory": "fluid",
+      "formula": "P = F₁/A₁ = F₂/A₂",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "poiseuilles_law",
+      "name": "泊肃叶定律",
+      "category": "physics",
+      "subcategory": "fluid",
+      "formula": "Q = πr⁴ΔP / (8ηL)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "ideal_gas_law",
+      "name": "理想气体状态方程",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "PV = nRT",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "first_law_of_thermodynamics",
+      "name": "热力学第一定律",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "ΔU = Q - W",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "second_law_of_thermodynamics_clausius",
+      "name": "热力学第二定律（克劳修斯表述）",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "∮ dQ/T ≤ 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "entropy_change_reversible",
+      "name": "可逆过程熵变",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "ΔS = ∫ dQ_rev / T",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "carnot_efficiency",
+      "name": "卡诺热机效率",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "η = 1 - T_c / T_h",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "boltzmann_entropy",
+      "name": "玻尔兹曼熵公式",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "S = k_B · ln(Ω)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "gibbs_free_energy",
+      "name": "吉布斯自由能",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "G = H - TS",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "helmholtz_free_energy",
+      "name": "亥姆霍兹自由能",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "F = U - TS",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "enthalpy",
+      "name": "焓",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "H = U + PV",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "heat_capacity_constant_pressure",
+      "name": "定压热容",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "C_p = (∂H/∂T)_p",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "maxwell_boltzmann_distribution",
+      "name": "麦克斯韦-玻尔兹曼速率分布",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "f(v) = 4π(m/(2πkT))^(3/2) · v² · exp(-mv²/(2kT))",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "van_der_waals_equation",
+      "name": "范德瓦尔斯方程",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "(P + an²/V²)(V - nb) = nRT",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "heat_engine_efficiency",
+      "name": "热机效率",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "η = W / Q_h = 1 - Q_c / Q_h",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "maxwell_relation_thermodynamic",
+      "name": "麦克斯韦关系式",
+      "category": "physics",
+      "subcategory": "thermodynamics",
+      "formula": "(∂T/∂V)_S = -(∂P/∂S)_V",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "coulombs_law",
+      "name": "库仑定律",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "F = k_e · q₁q₂ / r²",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "gausss_law_electricity",
+      "name": "高斯定律（电场）",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "∮ E·dA = Q_enc / ε₀",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "gausss_law_magnetism",
+      "name": "高斯定律（磁场）",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "∮ B·dA = 0",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "faradays_law",
+      "name": "法拉第电磁感应定律",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "∮ E·dl = -dΦ_B / dt",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "amperes_law",
+      "name": "安培定律",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "∮ B·dl = μ₀ I_enc",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "maxwell_ampere_law",
+      "name": "麦克斯韦-安培定律",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "∮ B·dl = μ₀ I + μ₀ε₀ dΦ_E / dt",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "lorentz_force_law",
+      "name": "洛伦兹力",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "F = q(E + v × B)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "ohms_law",
+      "name": "欧姆定律",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "V = IR",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "joules_law_electric",
+      "name": "焦耳定律（电功率）",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "P = I²R = V²/R",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "electric_dipole_moment",
+      "name": "电偶极矩",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "p = q · d",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "magnetic_dipole_moment",
+      "name": "磁偶极矩",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "μ = I · A",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "electromagnetic_wave_equation",
+      "name": "电磁波动方程",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "∇²E = μ₀ε₀ · ∂²E/∂t²",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "capacitance_definition",
+      "name": "电容定义",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "C = Q / V",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "electric_field_point_charge",
+      "name": "点电荷电场强度",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "E = k_e · q / r²",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "electric_potential_point_charge",
+      "name": "点电荷电势",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "V = k_e · q / r",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "magnetic_field_wire",
+      "name": "无限长直导线磁场",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "B = μ₀ I / (2πr)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "resistors_in_series",
+      "name": "串联电阻",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "R_eq = R₁ + R₂ + ... + R_n",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "resistors_in_parallel",
+      "name": "并联电阻",
+      "category": "physics",
+      "subcategory": "electromagnetism",
+      "formula": "1/R_eq = 1/R₁ + 1/R₂ + ... + 1/R_n",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "time_dependent_schrodinger_equation",
+      "name": "含时薛定谔方程",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "iℏ ∂Ψ/∂t = ĤΨ",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "time_independent_schrodinger_equation",
+      "name": "定态薛定谔方程",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "Ĥψ = Eψ",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "heisenberg_uncertainty_principle",
+      "name": "海森堡不确定原理",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "Δx · Δp ≥ ℏ/2",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "pauli_exclusion_principle",
+      "name": "泡利不相容原理",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "No two fermions share same (n, l, m_l, m_s)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "planck_einstein_relation",
+      "name": "普朗克-爱因斯坦关系",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "E = hν = ℏω",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "de_broglie_wavelength",
+      "name": "德布罗意波长",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "λ = h / p",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "canonical_commutation_relation",
+      "name": "正则对易关系",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "[x̂, p̂] = iℏ",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "quantum_harmonic_oscillator_energy",
+      "name": "量子谐振子能级",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "E_n = ℏω (n + ½)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "hydrogen_atom_energy_levels",
+      "name": "氢原子能级",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "E_n = -13.6 eV / n²",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "born_rule",
+      "name": "玻恩定则",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "P(x) = |Ψ(x)|²",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "energy_time_uncertainty",
+      "name": "能量-时间不确定关系",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "ΔE · Δt ≥ ℏ/2",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "wave_function_normalization",
+      "name": "波函数归一化条件",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "∫ |Ψ|² dV = 1",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "probability_current_density",
+      "name": "概率流密度",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "j = (ℏ/(2mi)) (Ψ*∇Ψ - Ψ∇Ψ*)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "expectation_value_quantum",
+      "name": "量子力学期望值",
+      "category": "physics",
+      "subcategory": "quantum",
+      "formula": "⟨Â⟩ = ∫ Ψ* Â Ψ dV",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "mass_energy_equivalence",
+      "name": "质能方程",
+      "category": "physics",
+      "subcategory": "relativity",
+      "formula": "E = mc²",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "lorentz_transformation",
+      "name": "洛伦兹变换",
+      "category": "physics",
+      "subcategory": "relativity",
+      "formula": "x' = γ(x - vt),  t' = γ(t - vx/c²)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "time_dilation",
+      "name": "时间膨胀",
+      "category": "physics",
+      "subcategory": "relativity",
+      "formula": "Δt' = γ Δt₀,  γ = 1/√(1 - v²/c²)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "length_contraction",
+      "name": "长度收缩",
+      "category": "physics",
+      "subcategory": "relativity",
+      "formula": "L' = L₀ / γ",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "relativistic_momentum",
+      "name": "相对论动量",
+      "category": "physics",
+      "subcategory": "relativity",
+      "formula": "p = γmv",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "einstein_field_equations_simplified",
+      "name": "爱因斯坦场方程（简化）",
+      "category": "physics",
+      "subcategory": "relativity",
+      "formula": "G_μν = 8πG · T_μν / c⁴",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "relativistic_energy_momentum",
+      "name": "相对论能量-动量关系",
+      "category": "physics",
+      "subcategory": "relativity",
+      "formula": "E² = (pc)² + (mc²)²",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "relativistic_velocity_addition",
+      "name": "相对论速度合成公式",
+      "category": "physics",
+      "subcategory": "relativity",
+      "formula": "u' = (u - v) / (1 - uv/c²)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "relativistic_doppler_effect",
+      "name": "相对论多普勒效应",
+      "category": "physics",
+      "subcategory": "relativity",
+      "formula": "f_obs = f_src · √((1+β)/(1-β)),  β = v/c",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "minkowski_metric",
+      "name": "闵可夫斯基度规",
+      "category": "physics",
+      "subcategory": "relativity",
+      "formula": "ds² = -(cdt)² + dx² + dy² + dz²",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "snells_law",
+      "name": "斯涅尔定律（折射定律）",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "n₁ sinθ₁ = n₂ sinθ₂",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "thin_lens_equation",
+      "name": "薄透镜成像公式",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "1/f = 1/dₒ + 1/dᵢ",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "doppler_effect_mechanical_wave",
+      "name": "多普勒效应（机械波）",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "f' = f · (v ± vₒ) / (v ∓ vₛ)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "double_slit_interference",
+      "name": "双缝干涉明纹条件",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "d · sinθ = mλ",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "single_slit_diffraction",
+      "name": "单缝衍射暗纹条件",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "a · sinθ = mλ",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "plancks_blackbody_law",
+      "name": "普朗克黑体辐射定律",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "B(ν,T) = (2hν³/c²) · 1/(exp(hν/kT) - 1)",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "wiens_displacement_law",
+      "name": "维恩位移定律",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "λ_max · T = b",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "refractive_index_definition",
+      "name": "折射率定义",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "n = c / v",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "braggs_law",
+      "name": "布拉格衍射定律",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "nλ = 2d · sinθ",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "beer_lambert_law",
+      "name": "比尔-朗伯定律",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "I = I₀ · exp(-αx)",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "lens_maker_equation",
+      "name": "透镜制造公式",
+      "category": "physics",
+      "subcategory": "optics",
+      "formula": "1/f = (n-1)(1/R₁ - 1/R₂)",
+      "difficulty": "intermediate"
     }
   ]
 }
