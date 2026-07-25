@@ -231,24 +231,24 @@ const VAGUE_PATTERNS = {
     /还算可以/i, /相对而言/i, /差不多/i, /几乎都/i,
     /相当一部分/i, /比较常见/i, /还算不错/i,
   ],
-  en: [/\\bsome people say\\b/i, /\\bits is said\\b/i, /\\bi'?m not sure\\b/i, /\\bmaybe perhaps\\b/i, /\\bsort of\\b/i, /\\bkind of\\b/i, /\\bbasically\\b/i, /\\bessentially\\b/i, /\\breportedly\\b/i, /\\ballegedly\\b/i, /\\bpurportedly\\b/i, /\\brelatively\\b/i, /\\bquite\\b/i, /\\brather\\b/i, /\\bto some extent\\b/i, /\\bin a way\\b/i,
+  en: [/\bsome people say\b/i, /\bits is said\b/i, /\bi'?m not sure\b/i, /\bmaybe perhaps\b/i, /\bsort of\b/i, /\bkind of\b/i, /\bbasically\b/i, /\bessentially\b/i, /\breportedly\b/i, /\ballegedly\b/i, /\bpurportedly\b/i, /\brelatively\b/i, /\bquite\b/i, /\brather\b/i, /\bto some extent\b/i, /\bin a way\b/i,
     // === 以下由 agent 扩充 (+12+13) ===
-    /\\bstudies show\\b/i, /\\bmany people\\b/i, /\\bresearch indicates\\b/i,
-    /\\bit appears that\\b/i, /\\bthe reality is\\b/i, /\\bit seems that\\b/i,
-    /\\bit could be argued\\b/i, /\\bmore often than not\\b/i,
-    /\\bit is widely believed\\b/i, /\\bin many cases\\b/i,
-    /\\bit is generally accepted\\b/i, /\\bin most cases\\b/i,
+    /\bstudies show\b/i, /\bmany people\b/i, /\bresearch indicates\b/i,
+    /\bit appears that\b/i, /\bthe reality is\b/i, /\bit seems that\b/i,
+    /\bit could be argued\b/i, /\bmore often than not\b/i,
+    /\bit is widely believed\b/i, /\bin many cases\b/i,
+    /\bit is generally accepted\b/i, /\bin most cases\b/i,
     // === 统计模糊 ===
-    /\\bstatistics show\\b/i, /\\bdata suggests?\\b/i, /\\bresearch finds?\\b/i, /\\bpolls indicate\\b/i,
-    /\\bstudies have shown\\b/i, /\\bevidence suggests?\\b/i,
+    /\bstatistics show\b/i, /\bdata suggests?\b/i, /\bresearch finds?\b/i, /\bpolls indicate\b/i,
+    /\bstudies have shown\b/i, /\bevidence suggests?\b/i,
     // === 时间模糊 ===
-    /\\blately\\b/i, /\\bin recent times\\b/i, /\\bfor some time\\b/i,
+    /\blately\b/i, /\bin recent times\b/i, /\bfor some time\b/i,
     // === 范围模糊 ===
-    /\\bto a certain extent\\b/i, /\\bto some degree\\b/i, /\\bin a sense\\b/i,
-    /\\bin some respects\\b/i, /\\bup to a point\\b/i, /\\bmore or less\\b/i,
+    /\bto a certain extent\b/i, /\bto some degree\b/i, /\bin a sense\b/i,
+    /\bin some respects\b/i, /\bup to a point\b/i, /\bmore or less\b/i,
     // === 程度模糊 ===
-    /\\bpretty much\\b/i, /\\balmost\\b/i, /\\bnearly\\b/i,
-    /\\bquite a few\\b/i, /\\brather than\\b(?!\\snot)/i,
+    /\bpretty much\b/i, /\balmost\b/i, /\bnearly\b/i,
+    /\bquite a few\b/i, /\brather than\b(?!\snot)/i,
   ],
 };
 
@@ -1420,6 +1420,7 @@ module.exports = {
   checkCodeSecurity,
   checkDehumanization,
   checkBullshitRecognition,
+  checkGaslighting,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
