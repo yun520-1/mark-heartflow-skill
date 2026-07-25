@@ -4080,6 +4080,16 @@ class HeartFlow {
 
       this._postProcessHooks = new PostProcessHooks(this._hookBus);
 
+      // ─── [v6.2.6] 注册 HookBus handler ──
+      try {
+        const { register: registerBSB } = require('./hooks/blind-spot-breaker-hook.js');
+        if (this._hookBus) {
+          registerBSB(this._hookBus);
+        }
+      } catch (e) {
+        console.warn('[HeartFlow] Hook handler registration failed:', e.message);
+      }
+
     } catch (e) {
 
       console.warn('[HeartFlow] Hook buses init failed:', e.message);
@@ -4281,15 +4291,12 @@ class HeartFlow {
     const chain = this.thoughtChain || new (TCMod.ThoughtChain)(this);
     if (depth) chain.setDepth(depth);
     const result = await chain.run(input);
-    // [v6.1.5] 盲点打破器接入主链路
+    // [v6.2.6] HookBus 链：将后置处理迁移到注册的 hook handler（优先于 inline try/catch）
     try {
-      const BlindSpotBreaker = require('../cortex/blind-spot-breaker.js');
-      if (!this._blindSpotBreaker) this._blindSpotBreaker = new BlindSpotBreaker();
-      const blindSpot = this._blindSpotBreaker.process(input, { result });
-      if (blindSpot && typeof blindSpot === 'object') {
-        result.blindSpotAnalysis = blindSpot;
+      if (this._hookBus) {
+        await this._hookBus.fire('postprocess.think', { input, result, engine: this });
       }
-    } catch (_) { /* 盲点检测失败不阻断主链路 */ }
+    } catch (_) { /* HookBus 失败不阻断 */ }
     // [v6.1.6] 对抗综合器接入主链路
     try {
       const AdversarialSynthesis = require('../cortex/self-evolution/adversarial-synthesis.js');
