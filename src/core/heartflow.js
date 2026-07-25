@@ -4324,10 +4324,38 @@ class HeartFlow {
       }
     }
 
+    // ─── [v6.3.6] 输入辨别检测——在核心推理前先用 outputChecklist 扫描输入 ──
+    // 用户输入可能含预设陷阱（情感操纵/诱导/过度框架化），提前标记风险
+    // result 尚不存在，先存到 this._pendingInputCheck，run 后合并
+    try {
+      if (this.outputChecklist && typeof input === 'string') {
+        const inputCheck = this.outputChecklist.runChecklist(input, input, { _inputCheck: true });
+        if (inputCheck && !inputCheck.passed) {
+          this._pendingInputCheck = {
+            issues: inputCheck.warnings,
+            blocked: inputCheck.recommendation === 'block' || inputCheck.recommendation === 'reject',
+            full: inputCheck,
+          };
+        }
+      }
+    } catch (_) { /* 输入检测不阻断 */ }
+
     const TCMod = _ThoughtChain();
     const chain = this.thoughtChain || new (TCMod.ThoughtChain)(this);
     if (depth) chain.setDepth(depth);
     const result = await chain.run(input);
+    // ─── 合并输入辨别检测结果到 result ──
+    if (this._pendingInputCheck) {
+      try {
+        if (result) {
+          result._inputCheck = this._pendingInputCheck.full;
+          result._inputCheckIssues = this._pendingInputCheck.issues;
+          if (this._pendingInputCheck.blocked) {
+            result._inputCheckBlocked = true;
+          }
+        }
+      } finally { this._pendingInputCheck = null; }
+    }
     // [v6.2.7] 心虫的真正价值：拿规则引擎验证外部结论（LLM/用户输入）的自洽性
     // 这不是回答，是 AGI 需要的验证层——心虫的 31 条路由规则 + 决策验证引擎
     // 可以用在任何文本上
@@ -4658,6 +4686,34 @@ class HeartFlow {
         }
       }
     } catch (_) { /* checklist 失败不阻断 */ }
+
+    // ─── [v6.3.6] 消费 outputChecklist recommendation ──
+    // 将辨别结果下推到 result.output，让调用方能感知并阻断
+    try {
+      if (result._outputChecklist && !result._outputChecklist.passed) {
+        // 1. 追加警告到 output.warnings
+        if (result._outputChecklist.warnings?.length > 0) {
+          result.output = result.output || {};
+          result.output.warnings = result.output.warnings || [];
+          for (const w of result._outputChecklist.warnings) {
+            if (!result.output.warnings.includes(w)) {
+              result.output.warnings.push(w);
+            }
+          }
+        }
+        // 2. 检查 Step6 recommendation
+        const step6 = result._outputChecklist.steps?.find(s => s.step === 6);
+        if (step6 && (step6.recommendation === 'reject' || step6.recommendation === 'block')) {
+          result.output = result.output || {};
+          result.output.safetyBlocked = true;
+        }
+      }
+      // 同时检查输入检测结果
+      if (result._inputCheckBlocked) {
+        result.output = result.output || {};
+        result.output.safetyBlocked = true;
+      }
+    } catch (_) { /* recommendation 消费不阻断 */ }
 
     // ─── [v6.2.7] HookBus 后置处理（在所有 inline 增强之后触发，保证插件能看到完整 result）──
     try {

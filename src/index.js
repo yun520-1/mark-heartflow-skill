@@ -234,24 +234,26 @@ const FALLACY_PATTERNS = {
     [/\b(chemical|synthetic|artificial)\b[^.]*?\bbad\b/i, 'appeal_to_nature'],
     [/it['a]?s natural[^.]*?so it['a]?s (good|right|better)/i, 'appeal_to_nature'],
     // 虚假因果 / 事后谬误 — after this therefore because of this
-    [/after[^.]*?then[^.]*?(so|therefore|because of)/i, 'false_cause'],
+    [/after[^.]*?[, ]+[^.]*?(so|therefore|because of)/i, 'false_cause'],
     [/since [^.]*?happened[^.]*?now[^.]*?(happened|occurred|resulted)/i, 'false_cause'],
     [/correlation (proves|means|implies) causation/i, 'false_cause'],
+    [/occurred (after|following)[^.]*?(so|therefore|thus|hence)[^.]*?caused/i, 'false_cause'],
     // 诉诸传统 — we've always done it this way
     [/we('ve| have) (always|never|traditionally) (done|used|practiced)[^.]*?(so|therefore)/i, 'appeal_to_tradition'],
     [/it('s| is| has) always been (done|that way|this way)/i, 'appeal_to_tradition'],
     [/\btradition[^.]*?should (continue|be preserved|not change)/i, 'appeal_to_tradition'],
     // 诉诸无知 — can't prove it doesn't exist
     [/can'?t (prove|disprove)[^.]*?(doesn'?t|don'?t) exist/i, 'appeal_to_ignorance'],
+    [/(cannot|can not) (prove|disprove)[^.]*?(does not|doesn'?t|do not|don'?t) exist/i, 'appeal_to_ignorance'],
     [/no (one has|evidence) (ever |)(proven|shown)[^.]*?(doesn'?t|does not) exist/i, 'appeal_to_ignorance'],
-    [/you can'?t (explain|prove)[^.]*?so[^.]*?(must be|is true|exists)/i, 'appeal_to_ignorance'],
+    [/you (can'?t|cannot) (explain|prove)[^.]*?so[^.]*?(must be|is true|exists)/i, 'appeal_to_ignorance'],
     // 完美主义谬误 — if it's not perfect it's worthless
-    [/if (we|it) can'?t[^.]*?(perfectly|completely|fully)[^.]*?(then|it'?s) (worthless|pointless|useless)/i, 'perfectionist_fallacy'],
+    [/if (we|it) (can'?t|cannot)[^.]*?(perfectly|completely|fully)[^.]*?(then|it'?s)[^.]*?(worthless|pointless|useless)/i, 'perfectionist_fallacy'],
     [/\bperfect[^.]*?is the enemy of\b/i, 'perfectionist_fallacy'],
     [/either (do it|fix it|solve it)[^.]*?(perfectly|100%|completely)[^.]*?or (don'?t|not at all)/i, 'perfectionist_fallacy'],
     // 举证责任倒置 — prove it doesn't exist or I'm right
-    [/prove[^.]*?(doesn'?t|isn'?t|don'?t|not)[^.]*?or[^.]*?i'?m (right|correct)/i, 'burden_of_proof_reversal'],
-    [/you can'?t (prove|show)[^.]*?wrong[^.]*?(so|therefore) i'?m (right|correct)/i, 'burden_of_proof_reversal'],
+    [/prove[^.]*?(doesn'?t|isn'?t|don'?t|not)[^.]*?or[^.]*?(i'?m|i am) (right|correct)/i, 'burden_of_proof_reversal'],
+    [/you (can'?t|cannot) (prove|show)[^.]*?wrong[^.]*?(so|therefore) (i'?m|i am) (right|correct)/i, 'burden_of_proof_reversal'],
     [/until you (prove|disprove)[^.]*?(my|the)[^.]*?is (true|correct|valid)/i, 'burden_of_proof_reversal'],
     // 滑坡谬误扩展 — 更多的滑坡模式
     [/if[^.]*?then[^.]*?(eventually|inevitably|sooner or later)[^.]*?(disaster|catastrophe|collapse|chaos)/i, 'slippery_slope'],
@@ -266,9 +268,11 @@ const FALLACY_PATTERNS = {
     [/both (sides|extremes|positions) (have |)(a |)point[^.]*?(truth|answer) is in the middle/i, 'middle_ground'],
     [/the (moderate|middle) position is always the (right|correct|most reasonable)/i, 'middle_ground'],
     // 你也一样 — you do it too so it's okay
-    [/you (do|did|have) it too[^.]*?(so|therefore)[^.]*?(ok|fine|acceptable|can'?t complain)/i, 'tu_quoque'],
+    [/you (do|did|have) it too[^.]*?(so|therefore)[^.]*?(ok|fine|acceptable|can(not|'?t) complain)/i, 'tu_quoque'],
     [/what about[^.]*?(you|your)[^.]*?also (do|did|have)/i, 'tu_quoque'],
-    [/you('re| are) (no better|just as|equally) (guilty|bad)[^.]*?so[^.]*?can'?t criticize/i, 'tu_quoque'],
+    [/you('re| are) (no better|just as|equally) (guilty|bad|wrong)[^.]*?so[^.]*?(can(not|'?t) criticize|doesn'?t matter)/i, 'tu_quoque'],
+    [/you('re| are) no better than[^.]*?so[^.]*?(can(not|'?t) criticize|doesn'?t matter|okay)/i, 'tu_quoque'],
+    [/if you (do it|did it)[^.]*?then i (can|should|get to) (too|as well)/i, 'tu_quoque'],
   ],
 };
 
@@ -278,7 +282,8 @@ const FALLACY_SEVERITY = {
   bandwagon: 0.3, appeal_to_obviousness: 0.2, appeal_to_common_sense: 0.2,
   appeal_to_nature: 0.3, false_cause: 0.4, appeal_to_tradition: 0.2,
   appeal_to_ignorance: 0.4, perfect_solution: 0.3, false_dilemma_extended: 0.4,
-  burden_of_proof: 0.4,
+  burden_of_proof: 0.4, perfectionist_fallacy: 0.3, burden_of_proof_reversal: 0.4,
+  no_true_scotsman: 0.4, middle_ground: 0.3, tu_quoque: 0.3,
 };
 
 // ─── 情感操纵检测（emotional manipulation）─────────────────────────
