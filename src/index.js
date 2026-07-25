@@ -754,6 +754,31 @@ function checkMoralFoundations(text) {
   return { count, foundations: found, score: Math.min(1, count * 0.2) };
 }
 
+// ─── 代码安全检测（Code Security Pattern Detection）────────────────
+const CODE_SECURITY_PATTERNS = {
+  secret: [/(?:api_key|apikey|api_secret|secret_key|secretKey|password|passwd|pwd)\s*[:=]\s*['"][^'"]+['"]/i,
+    /(?:token|access_token|auth_token|bearer|jwt)\s*[:=]\s*['"][^'"]+['"]/i,
+    /(?:aws_secret|aws_access|iam_secret|github_token|ghp_|gho_|sk-[a-zA-Z0-9]{20,})/i,
+    /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/],
+  sql_injection: [/SELECT\s+.*\s+FROM\s+.*\s+WHERE\s+.*=\s*['"]\s*\+\s*(?:req\.|request\.|params\.|body\.)/is,
+    /(?:exec|execute|query)\s*\(\s*['"].*\+\s*(?:req|request|params|body|input)/i],
+  xss: [/<script\b[^>]*>/i, /javascript\s*:\s*(?:window|document|cookie|alert|eval|innerHTML)/i,
+    /onerror\s*=|onload\s*=|onclick\s*=|onmouseover\s*=/i, /innerHTML\s*=.*\+/i],
+  path_traversal: [/\.\.\//, /\.\.\\/,
+    /(?:fs\.readFile|fs\.readFileSync)\s*\(\s*['"].*\+\s*(?:req|params|body|input)/i],
+  insecure_crypto: [/\bmd5\s*\(/i, /\bsha1\s*\(/i, /\bdes\s*\(/i],
+};
+const CS_L = { secret:'critical', sql_injection:'critical', xss:'high', path_traversal:'high', insecure_crypto:'medium' };
+const CS_W = { secret:0.9, sql_injection:0.9, xss:0.7, path_traversal:0.7, insecure_crypto:0.4 };
+function checkCodeSecurity(text) {
+  if (!text || typeof text !== 'string') return { count: 0, issues: [], types: [], score: 0 };
+  const issues = [];
+  for (const [type, patterns] of Object.entries(CODE_SECURITY_PATTERNS))
+    for (const pat of patterns) { const m = text.match(pat); if (m) issues.push({ type, severity: CS_L[type] }); }
+  const types = [...new Set(issues.map(i => i.type))];
+  return { count: issues.length, types, issues, score: Math.min(1, types.reduce((s,t) => s + (CS_W[t]||0.5), 0)) };
+}
+
 // ─── 综合辨别（14维度） ────────────────────────────────────────────
 function discriminate(text, evidence = []) {
   const ev = checkEvidence(text, evidence);
@@ -770,8 +795,9 @@ function discriminate(text, evidence = []) {
   const ea = checkEmptyAnswer(text);
   const mf = checkMoralFoundations(text);
   const pi = checkPromptInjection(text);
+  const cs = checkCodeSecurity(text);
 
-  const dimensions = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score, 1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score];
+  const dimensions = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score, 1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score, 1-cs.score];
   const avg = dimensions.reduce((a,b) => a+b, 0) / dimensions.length;
   const overallScore = Math.round(avg * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
@@ -780,12 +806,12 @@ function discriminate(text, evidence = []) {
     verdict, overallScore,
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
-      empty_answer: ea, moral_foundations: mf, prompt_injection: pi },
+      empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
-      mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'',
+      mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
       ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
@@ -901,6 +927,7 @@ module.exports = {
   checkEmptyAnswer,
   checkMoralFoundations,
   checkPromptInjection,
+  checkCodeSecurity,
   summarizeDiscrimination,
   discriminate,
   createEngine,
