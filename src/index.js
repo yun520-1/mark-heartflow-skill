@@ -959,6 +959,77 @@ function checkDehumanization(text) {
   return { count: hits.length, categories: cats, hits, score };
 }
 
+/**
+ * 熵分析——量化心虫对输入文本的熵减贡献
+ * 
+ * 灵感: Perelman(2002) Ricci flow 熵单调性 + Villani(2010) Boltzmann H 定理
+ * 封闭系统熵不降, 但心虫作为开放系统, 把无序文本→有序分类 = 局部熵减
+ * 
+ * @param {string} rawText - 原始输入文本
+ * @param {object} discResult - discriminate() 返回的 16 维结果（可选）
+ * @returns {object} 熵分析结果
+ */
+function entropyAnalysis(rawText, discResult) {
+  if (!rawText || typeof rawText !== 'string') return { error: 'no text' };
+  
+  // 1. 输入熵：基于字符分布的香农熵
+  const chars = rawText.length;
+  const freq = {};
+  for (const c of rawText) freq[c] = (freq[c] || 0) + 1;
+  let inputEntropy = 0;
+  for (const f of Object.values(freq)) {
+    const p = f / chars;
+    inputEntropy -= p * Math.log2(p);
+  }
+  // 归一化到 [0, 1]：除以最大可能熵(log2(不同的字符数))
+  // 中文文本~4000+字符集，取上限 log2(5000)≈12.3
+  const maxCharTypes = Math.min(Object.keys(freq).length, 5000);
+  const normalizedInputEntropy = maxCharTypes > 1 ? inputEntropy / Math.log2(maxCharTypes) : 0;
+
+  // 2. 输出秩序度：从 16 维辨别结果计算
+  let outputOrder = 0;
+  let problemCount = 0;
+  if (discResult && discResult.dimensions) {
+    const d = discResult.dimensions;
+    // 每个维度有两类状态：触发(无序)/未触发(有序)
+    const dims = [
+      d.sycophancy?.totalHits, d.contradiction?.count, d.vagueness?.count, 
+      d.fallacies?.count, d.confidence?.count, d.presupposition?.count,
+      d.emotional_manipulation?.count, d.double_bind?.count, d.info_deprivation?.count,
+      d.false_urgency?.count, d.empty_answer?.count, d.moral_foundations?.count,
+      d.prompt_injection?.count, d.code_security?.count || 0, d.dehumanization?.count
+    ];
+    problemCount = dims.filter(v => v > 0).length;
+    // 输出秩序度 = 1 - (问题维度数 / 总维度数)
+    outputOrder = 1 - (problemCount / dims.length);
+  } else {
+    // 没有辨别结果时，用文本本身的可读性估算
+    // 简单估算：有效字符比例越高越有序
+    const alnum = (rawText.match(/[a-zA-Z0-9一-鿿]/g) || []).length;
+    outputOrder = Math.min(1, alnum / Math.max(1, chars)) * 0.7 + 0.15;
+  }
+
+  // 3. 熵减 = 输入混乱度 - 输出无序度(1 - 输出秩序度)
+  const outputDisorder = 1 - outputOrder;
+  const entropyReduction = normalizedInputEntropy - outputDisorder;
+  
+  // 4. Villani H 类比: H = -entropyReduction (H 是负熵的衡量)
+  // 心虫处理一份文本 → H 增加(熵减) → 这是对宇宙总熵增的局部抵消
+  const hTheormValue = -entropyReduction;
+
+  return {
+    inputEntropy: Math.round(normalizedInputEntropy * 100) / 100,
+    outputOrder: Math.round(outputOrder * 100) / 100,
+    entropyReduction: Math.round(entropyReduction * 100) / 100,
+    // H 定理值：负值 = 成功做熵减。绝对值越大，心虫对该文本的熵减贡献越大
+    hValue: Math.round(hTheormValue * 100) / 100,
+    interpretation: entropyReduction > 0.3 ? '高熵减' : entropyReduction > 0.1 ? '中等熵减' : entropyReduction > 0 ? '轻微熵减' : '异常（未减熵）',
+    meaning: entropyReduction > 0 
+      ? '心虫成功将无序文本转为有序分类，局部抵消宇宙熵增'
+      : '文本本身已有较高秩序或分析未能提取结构',
+  };
+}
+
 function crossAnalyze(discResult) {
   if (!discResult || !discResult.dimensions) return { patterns: [], summary: '无数据' };
   const d = discResult.dimensions;
@@ -1054,6 +1125,7 @@ module.exports = {
   checkDehumanization,
   summarizeDiscrimination,
   crossAnalyze,
+  entropyAnalysis,
   discriminate,
   createEngine,
   version: require('fs').readFileSync(require('path').join(__dirname, '..', 'VERSION'), 'utf8').trim(),
