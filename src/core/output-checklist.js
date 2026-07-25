@@ -5,7 +5,7 @@
 class OutputChecklist {
   constructor() {
     this.name = 'OutputChecklist';
-    this.version = '1.1.0';
+    this.version = '1.2.0';
     this._checkHistory = [];
   }
 
@@ -75,6 +75,14 @@ class OutputChecklist {
     if (!step5.passed) {
       results.passed = false;
       results.warnings.push(...step5.issues);
+    }
+
+    // Step 6: 心虫辨别检查 — 输出前用6维辨别器扫一遍
+    const step6 = this._runDiscriminationCheck(response);
+    results.steps.push({ step: 6, name: 'discrimination', ...step6 });
+    if (!step6.passed) {
+      results.passed = false;
+      results.warnings.push(...step6.issues);
     }
 
     this._record(input, results);
@@ -268,6 +276,52 @@ class OutputChecklist {
       issues,
       advice: issues.length > 0 ? issues.join('；') : '道德边界检查通过'
     };
+  }
+
+  // Step 6: 心虫辨别检查 — 调用 index.js 的 6 维辨别器
+  _runDiscriminationCheck(response) {
+    if (!response || typeof response !== 'string') {
+      return { passed: true, issues: [], advice: '无输出，跳过辨别' };
+    }
+    try {
+      const idx = require('../index.js');
+      const r = idx.discriminate(response, []);
+
+      const issues = [];
+      const dims = r.dimensions;
+
+      // sycophancy 检测到即有风险
+      if (dims.sycophancy.totalHits > 0) {
+        issues.push(`检测到 sycophancy 信号(${dims.sycophancy.totalHits}处: ${dims.sycophancy.signals.map(s => s.type).join(',')})`);
+      }
+      // 矛盾 → 警告
+      if (dims.contradiction.count > 0) {
+        issues.push(`输出含自相矛盾(${dims.contradiction.count}处)`);
+      }
+      // 模糊表述过多
+      if (dims.vagueness.count > 2) {
+        issues.push(`模糊表述过多(${dims.vagueness.count}处: ${dims.vagueness.matches.map(m => m.pattern).join(',')})`);
+      }
+      // 逻辑谬误
+      if (dims.fallacies.count > 0) {
+        issues.push(`含逻辑谬误(${dims.fallacies.fallacies.map(f => f.type).join(',')})`);
+      }
+      // 信心偏差
+      if (dims.confidence.count > 0) {
+        issues.push(`信心偏差(${dims.confidence.issues.map(i => i.detail).join(';')})`);
+      }
+      // 输出检查跳过证据维度（输出不是论断，不需要外部证据）
+
+      return {
+        passed: issues.length === 0,
+        issues,
+        score: r.overallScore,
+        dimensions: r.summary,
+        advice: issues.length > 0 ? issues.join('；') : '心虫辨别检查通过',
+      };
+    } catch (e) {
+      return { passed: true, issues: [], advice: `辨别器不可用: ${e.message}`, _error: e.message };
+    }
   }
 
   // 快捷方法：快速检查（只做 Step 2 安全检查）

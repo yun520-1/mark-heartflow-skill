@@ -4648,6 +4648,17 @@ class HeartFlow {
       }
     } catch (_) { /* 非关键 */ }
 
+    // ─── [v6.3.5] OutputChecklist 输出前门禁——用心虫 6 维辨别器扫一遍 ──
+    try {
+      if (this.outputChecklist && result?.output?.conclusion) {
+        const clResult = this.outputChecklist.runChecklist(input, result.output.conclusion, {});
+        result._outputChecklist = clResult;
+        if (!clResult.passed) {
+          result._outputChecklistIssues = clResult.warnings;
+        }
+      }
+    } catch (_) { /* checklist 失败不阻断 */ }
+
     // ─── [v6.2.7] HookBus 后置处理（在所有 inline 增强之后触发，保证插件能看到完整 result）──
     try {
       if (this._hookBus) {
