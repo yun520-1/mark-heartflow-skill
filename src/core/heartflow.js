@@ -4856,6 +4856,53 @@ class HeartFlow {
       }
     } catch (_) { /* 公式影响结论不阻断 */ }
 
+    // ─── [v6.3.7] 闭环：辨别结果反哺决策——检测到问题则修正输出 ──
+    try {
+      if (result && result.output) {
+        // 1. 从 _discrimination 或 _outputChecklist 提取异常
+        const disc = result._discrimination;
+        const oc = result._outputChecklist;
+        const warnings = result.output.warnings || [];
+
+        // 2. sycophancy 高 → 置信度打折
+        if (disc?.sycophancy?.totalHits > 0 && disc.sycophancy.score > 0.5) {
+          result._confidencePenalty = Math.min(0.3, disc.sycophancy.score * 0.2);
+          warnings.push(`sycophancy偏高(${(disc.sycophancy.score*100).toFixed(0)}%)，结论已打折`);
+        }
+
+        // 3. 矛盾→标注不自洽
+        if (disc?.contradiction?.count > 0 || oc?.steps?.[6]?.triggeredDims?.includes('contradiction')) {
+          result._selfContradictory = true;
+          warnings.push('输出含自相矛盾');
+        }
+
+        // 4. 逻辑谬误→警告
+        if (disc?.fallacies?.count > 0) {
+          const types = disc.fallacies.fallacies.map(f => f.type).join(',');
+          warnings.push(`含逻辑谬误(${types})`);
+        }
+
+        // 5. 情感操纵→标记高风险
+        if (disc?.emotional_manipulation?.count > 0) {
+          result._highRiskOutput = true;
+          warnings.push('含情感操纵表述');
+        }
+
+        // 6. 答案包装→提示
+        if (disc?.empty_answer?.count > 0) {
+          warnings.push('含空话/回避式回答');
+        }
+
+        // 7. 道德基础检测→标注框架
+        if (disc?.moral_foundations?.count > 0) {
+          const frames = disc.moral_foundations.foundations.map(f => f.label).join(',');
+          result._moralFrames = frames;
+        }
+
+        result.output.warnings = warnings;
+      }
+    } catch (_) { /* 辨别闭环不阻断 */ }
+
     // ─── [v6.2.7] HookBus 后置处理（在所有 inline 增强之后触发，保证插件能看到完整 result）──
     try {
       if (this._hookBus) {
