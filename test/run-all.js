@@ -297,6 +297,15 @@ async function runAllTests() {
     console.log('  ⚠️  paper-driven-upgrades 测试异常: ' + (e.message || '').split('\n')[0]);
     failed++;
 
+  // [v6.3.0] MCP 辨别引擎集成测试
+  console.log('\n🔍 MCP Discriminator (mcp-discriminator.test.js)');
+  try {
+    require('./mcp-discriminator.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+  } catch (e) {
+    console.log(`  ⚠️  MCP discriminator 测试失败: ${e.message}`);
+    failed++;
+  }
+
   // 4.3f STEMPaperUpgrades 测试 (v6.0.45 物理/化学/CS 论文驱动升级)
   console.log('\n🔬 STEMPaperUpgrades');
   try {

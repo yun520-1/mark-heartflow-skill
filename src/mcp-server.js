@@ -640,6 +640,7 @@ const TOOLS = [
     inputSchema: { type: 'object', properties: { decision: { type: 'string', description: '需要验证的论断/文本' }, evidence: { type: 'array', items: { type: 'string' }, description: '支持证据列表' }, confidence: { type: 'number', description: '置信度 0-1' } }, required: ['decision'] }
 
   },
+
   {
 
     name: 'heartflow_diagnose',
@@ -2255,6 +2256,33 @@ async function handleBenchmarkImportFailures(args, sessionId) {
 
 
 // [v6.3.0] 辨别引擎 handler
+function handleVerdict(args) {
+  const { text, evidence } = args || {};
+  if (!text) return { error: 'text required' };
+  if (!heartflow) return { error: 'engine not ready' };
+  try {
+    const result = {};
+    if (heartflow.decisionVerifier) {
+      const v = heartflow.decisionVerifier.verify({ decision: text, evidence: evidence || [], alternatives: [], confidence: 0.5 });
+      result.verifyScore = v.score;
+      result.verifyIssues = (v.issues || []).map(i => ({ type: i.type, severity: i.severity, message: i.message }));
+      result.checks = v.checks ? { evidence: v.checks.evidence?.ok, contradiction: v.checks.contradiction?.ok, risk: v.checks.risk?.ok, completeness: v.checks.completeness?.ok } : undefined;
+    }
+    if (heartflow.sustainedDriftDetector) {
+      const d = heartflow.sustainedDriftDetector.detectDrift();
+      result.driftScore = d.driftScore;
+      result.hasDrift = d.hasSustainedDrift;
+    }
+    if (heartflow.selfDiagnosis) {
+      const sd = heartflow.selfDiagnosis.run();
+      result.engineIssues = (sd.summary?.issues || []).slice(0, 3);
+    }
+    result.verdict = result.verifyScore !== undefined ? (result.verifyScore >= 0.6 ? '可信' : result.verifyScore >= 0.4 ? '需验证' : '不可信') : '未知';
+    return result;
+  } catch(e) { return { error: e.message }; }
+}
+
+// [v6.3.0] 辨别引擎 handler
 function handleVerify(args) {
   const { decision, evidence, confidence } = args || {};
   if (!decision) return { error: 'decision required' };
@@ -2347,6 +2375,7 @@ const HANDLERS = {
 
   // [v6.3.0] 5 个辨别引擎入口
   heartflow_verify: handleVerify,
+  heartflow_verdict: handleVerdict,
   heartflow_diagnose: handleDiagnose,
   heartflow_check_drift: handleCheckDrift,
   heartflow_error_store: handleErrorStore,
