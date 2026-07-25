@@ -467,41 +467,19 @@ const EMOTIONAL_MANIPULATION_PATTERNS = {
   ],
 };
 
-function checkEmotionalManipulation(text) {
-  if (!text || typeof text !== 'string') return { count: 0, manipulations: [], score: 0 };
-  const hasChinese = /[\u4e00-\u9fff]/.test(text);
-  const patterns = hasChinese ? EMOTIONAL_MANIPULATION_PATTERNS.zh : EMOTIONAL_MANIPULATION_PATTERNS.en;
-  const manipulations = [];
-  for (const pat of patterns) {
-    const m = text.match(pat);
-    if (m) {
-      manipulations.push({ pattern: pat.source.slice(0, 30), matched: m[0].slice(0, 40), count: m.length });
-    }
-  }
-  const count = manipulations.length;
-  return { count, manipulations, score: Math.min(1, count * 0.3) };
-}
-
-// ─── 双重束缚检测（double bind）────────────────────────────────────
+// 双重束缚检测模式
 const DOUBLE_BIND_PATTERNS = {
-  zh: [
-    [/如果你[^。？?]{1,80}说明你[^。？?]{1,80}如果你不[^。？?]{1,80}说明你/i, 'bidirectional_negation'],
-    [/你要是有心[^。？?]{1,80}你要是没心/i, 'contradictory_demand'],
-    [/你怎么做都是错|怎么做都不对/i, 'no_win'],
-    [/怎么选都是错|怎么选都不对/i, 'no_choice'],
-  ],
-  en: [
-    [/if you really cared[^.]*?you would[^.]*?if you don'?t[^.]*?it means/i, 'bidirectional_negation'],
-    [/you're damned if you do[^.]*?and damned if you don'?t/i, 'no_win'],
-    [/no matter what you do[^.]*?you('re| are) wrong/i, 'no_win'],
-    [/either you're with me[^.]*?(or|and)[^.]*?against me/i, 'false_dilemma_strict'],
-  ],
+  zh: [[/如果[^。]*?说明你[^。]*?如果不[^。]*?说明你/i, 'bidirectional_negation'],
+       [/你要是有心[^。]*?你要是没心/i, 'contradictory_demand'],
+       [/你怎么做都是错|怎么做都不对/i, 'no_win'],
+       [/怎么选都是错|怎么选都不对/i, 'no_choice'],
+       [/你在乎说明你|不在乎说明你|在乎说明你|不在乎也说明你/i, 'double_damned']],
+  en: [[/if you really cared[^.]*?if you don'?t[^.]*?it means/i, 'bidirectional_negation'],
+       [/damned if you do and damned if you don'?t/i, 'no_win'],
+       [/no matter what you do,? you('re| are) wrong/i, 'no_win'],
+       [/either you're (with|for) us or (against|with) them/i, 'false_dilemma_strict']],
 };
-
-const DOUBLE_BIND_SEVERITY = {
-  bidirectional_negation: 0.6, contradictory_demand: 0.6,
-  no_win: 0.5, no_choice: 0.5, false_dilemma_strict: 0.4,
-};
+const DOUBLE_BIND_SEVERITY = { bidirectional_negation: 0.6, contradictory_demand: 0.6, no_win: 0.5, no_choice: 0.5, double_damned: 0.6, false_dilemma_strict: 0.4 };
 
 function checkDoubleBind(text) {
   if (!text || typeof text !== 'string') return { count: 0, binds: [], score: 0 };
@@ -744,6 +722,73 @@ function createEngine(dataDir) {
   }
 }
 
+// ─── 道德基础检测（Moral Foundations Theory — Graham, Haidt, 2011）────────────────
+// 基于MFT的5+1基础：关爱/公平/忠诚/权威/圣洁 + 自由
+const MORAL_PATTERNS = {
+  zh: { care: /保护弱者|帮助他人|避免伤害|同情|同理|怜悯|关爱|照顾|呵护|温柔/i,
+         fairness: /公平|公正|平等|正义|歧视|偏见|权利|机会均等|一视同仁|公道/i,
+         loyalty: /忠诚|背叛|爱国|团结|集体|民族|奉献|归属|牺牲|荣誉/i,
+         authority: /服从|尊重|传统|秩序|权威|等级|领导|规矩|纪律|遵守/i,
+         sanctity: /神圣|纯洁|堕落|肮脏|污染|亵渎|自然|贞洁|恶心|腐化|败坏|低级/i,
+         liberty: /自由|压迫|控制|解放|独立|自主|奴役|专制|暴政|反抗/i },
+  en: { care: /\b(protect|care|harm|hurt|cruel|compassion|empathy|kindness|suffer|gentle)\b/i,
+         fairness: /\b(fair|justice|equal|rights|discriminat|prejudice|unfair|cheat|equity)\b/i,
+         loyalty: /\b(loyal|betray|patriot|traitor|unite|solidarity|sacrifice|honor|devote)\b/i,
+         authority: /\b(authority|respect|obey|tradition|order|disobey|rebel|defy|discipline)\b/i,
+         sanctity: /\b(holy|pure|sin|sacred|disgust|pollute|decadent|corrupt|degrade|taint)\b/i,
+         liberty: /\b(liberty|freedom|oppress|tyranny|autonomy|enslave|censor|dictator|liberate)\b/i }
+};
+const MORAL_NAMES = { care: '关爱/伤害', fairness: '公平/欺骗', loyalty: '忠诚/背叛',
+  authority: '权威/颠覆', sanctity: '圣洁/堕落', liberty: '自由/压迫' };
+
+function checkMoralFoundations(text) {
+  if (!text || typeof text !== 'string') return { count: 0, foundations: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const pats = hasChinese ? MORAL_PATTERNS.zh : MORAL_PATTERNS.en;
+  const found = [];
+  for (const [key, pat] of Object.entries(pats)) {
+    const m = text.match(pat);
+    if (m) found.push({ foundation: key, label: MORAL_NAMES[key], count: m.length, example: m[0].slice(0,15) });
+  }
+  const count = found.length;
+  return { count, foundations: found, score: Math.min(1, count * 0.2) };
+}
+
+// ─── 综合辨别（13维度） ────────────────────────────────────────────
+function discriminate(text, evidence = []) {
+  const ev = checkEvidence(text, evidence);
+  const sy = checkSycophancy(text);
+  const ct = checkContradiction(text);
+  const vg = checkVagueness(text);
+  const fl = checkFallacies(text);
+  const cc = checkConfidenceCalibration(text);
+  const pp = checkPresupposition(text);
+  const em = checkEmotionalManipulation(text);
+  const db = checkDoubleBind(text);
+  const id = checkInfoDeprivation(text);
+  const fu = checkFalseUrgency(text);
+  const ea = checkEmptyAnswer(text);
+  const mf = checkMoralFoundations(text);
+
+  const dimensions = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score, 1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score];
+  const avg = dimensions.reduce((a,b) => a+b, 0) / dimensions.length;
+  const overallScore = Math.round(avg * 100) / 100;
+  const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
+
+  return {
+    verdict, overallScore,
+    dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
+      presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
+      empty_answer: ea, moral_foundations: mf },
+    summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
+      vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
+      pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
+      id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
+      mf.count ? mf.count + ' 个道德基础框架':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
+    ].filter(Boolean).join('；') || '未发现明显问题',
+  };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -757,6 +802,7 @@ module.exports = {
   checkInfoDeprivation,
   checkFalseUrgency,
   checkEmptyAnswer,
+  checkMoralFoundations,
   discriminate,
   createEngine,
   version: require('fs').readFileSync(require('path').join(__dirname, '..', 'VERSION'), 'utf8').trim(),
