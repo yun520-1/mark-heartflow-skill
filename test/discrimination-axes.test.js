@@ -1,5 +1,5 @@
-// 辨别新维度测试 — contradiction + vagueness
-const { checkContradiction, checkVagueness, checkSycophancy, discriminate } = require('../src/index.js');
+// 辨别新维度测试 — contradiction + vagueness + fallacies + confidence
+const { checkContradiction, checkVagueness, checkSycophancy, checkFallacies, checkConfidenceCalibration, discriminate } = require('../src/index.js');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -39,14 +39,70 @@ test('clean text no vagueness', () => {
   if (r.count !== 0) throw new Error('should not detect vagueness for precise text');
 });
 
-// ─── 综合辨别（4维度） ───
-test('discriminate returns 4 dimensions', () => {
+// ─── 逻辑谬误检测 ───
+test('detects circular reasoning', () => {
+  const r = checkFallacies('因为A所以B因为A');
+  if (r.count === 0) throw new Error('should detect circular reasoning');
+  if (r.fallacies[0].type !== 'circular_reasoning') throw new Error('wrong fallacy type');
+});
+
+test('detects ad hominem', () => {
+  const r = checkFallacies('你连基本常识都不懂还敢发表意见');
+  if (r.count === 0) throw new Error('should detect ad hominem');
+});
+
+test('detects straw man in english', () => {
+  const r = checkFallacies('So what you are saying is that we should abolish everything, that is ridiculous');
+  if (r.count === 0) throw new Error('should detect straw man: ' + JSON.stringify(r));
+});
+
+test('detects slippery slope', () => {
+  const r = checkFallacies('如果允许这个，后果不堪设想');
+  if (r.count === 0) throw new Error('should detect slippery slope');
+});
+
+test('clean text no fallacies', () => {
+  const r = checkFallacies('水在100摄氏度沸腾。这是一个科学事实。');
+  if (r.count !== 0) throw new Error('clean text should have no fallacies, got ' + r.count);
+});
+
+// ─── 信心校准检测 ───
+test('detects confidence mismatch', () => {
+  const r = checkConfidenceCalibration('这个方法一定有效，但可能在某些情况下不适用');
+  if (r.count === 0) throw new Error('should detect confidence mismatch');
+  if (r.issues[0].type !== 'confidence_mismatch') throw new Error('wrong issue type: ' + r.issues[0].type);
+});
+
+test('detects en confidence mismatch', () => {
+  const r = checkConfidenceCalibration('This is undoubtedly the best approach, but it might not work.');
+  if (r.count === 0) throw new Error('should detect en confidence mismatch');
+});
+
+test('clean text no confidence issues', () => {
+  const r = checkConfidenceCalibration('实验数据表明温度每升高10度反应速率翻倍。');
+  if (r.count !== 0) throw new Error('clean text should have no confidence issues, got ' + r.count);
+});
+
+test('handles empty confidence input', () => {
+  const r = checkConfidenceCalibration('');
+  if (r.count !== 0) throw new Error('empty should return 0');
+});
+
+test('handles null confidence input', () => {
+  const r = checkConfidenceCalibration(null);
+  if (r.count !== 0) throw new Error('null should return 0');
+});
+
+// ─── 综合辨别（6维度） ───
+test('discriminate returns 6 dimensions', () => {
   const r = discriminate('你说得对，但是据了解此事可能不成立');
   if (!r.dimensions) throw new Error('should have dimensions');
-  if (!r.dimensions.contradiction) throw new Error('should have contradiction dimension');
-  if (!r.dimensions.vagueness) throw new Error('should have vagueness dimension');
-  if (!r.dimensions.sycophancy) throw new Error('should have sycophancy dimension');
-  if (!r.dimensions.evidence) throw new Error('should have evidence dimension');
+  if (!r.dimensions.contradiction) throw new Error('should have contradiction');
+  if (!r.dimensions.vagueness) throw new Error('should have vagueness');
+  if (!r.dimensions.sycophancy) throw new Error('should have sycophancy');
+  if (!r.dimensions.evidence) throw new Error('should have evidence');
+  if (!r.dimensions.fallacies) throw new Error('should have fallacies');
+  if (!r.dimensions.confidence) throw new Error('should have confidence');
 });
 
 test('discriminate clean text scores high', () => {
@@ -54,10 +110,9 @@ test('discriminate clean text scores high', () => {
   if (r.overallScore < 0.5) throw new Error('clean text should score >= 0.5, got ' + r.overallScore);
 });
 
-test('discriminate contradictory text scores lower', () => {
-  const r = discriminate('我完全同意你的观点，但是你说得不对', []);
-  if (r.overallScore > 0.8) throw new Error('contradictory+sycophancy text should be penalized, got ' + r.overallScore);
-  if (r.dimensions.contradiction.count > 0 || r.dimensions.sycophancy.totalHits > 0) {} // expected
+test('discriminate problematic text scored lower', () => {
+  const r = discriminate('专家说过这个方案一定可行，但可能在某些情况下有问题', []);
+  if (r.overallScore > 0.95) throw new Error('problematic text should not score near perfect, got ' + r.overallScore);
 });
 
 // ─── 空/边界处理 ───

@@ -2275,6 +2275,8 @@ function handleVerdict(args) {
         contradiction: idx.checkContradiction(text),
         vagueness: idx.checkVagueness(text),
         sycophancy: idx.checkSycophancy(text),
+        fallacies: idx.checkFallacies(text),
+        confidence: idx.checkConfidenceCalibration(text),
       };
     } catch (_) {}
     if (heartflow.sustainedDriftDetector) {

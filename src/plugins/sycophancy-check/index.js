@@ -200,6 +200,8 @@ const plugin = {
         sycophancy: analyze(result.output.conclusion),
         contradiction: _index ? _index.checkContradiction(result.output.conclusion) : null,
         vagueness: _index ? _index.checkVagueness(result.output.conclusion) : null,
+        fallacies: _index ? _index.checkFallacies(result.output.conclusion) : null,
+        confidence: _index ? _index.checkConfidenceCalibration(result.output.conclusion) : null,
       };
     }, { id: 'sycophancy-check', priority: 180, timeout: 100 });
 
