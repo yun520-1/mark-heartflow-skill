@@ -1828,6 +1828,68 @@ function checkSlipperySlope(text) {
   return { count, signals, score };
 }
 
+// ─── 诉诸权威增强检测（Appeal to Authority Detection）────────────────────
+// 检测仅依赖权威身份而非论证本身的推理。
+// ZH: 据权威机构/专家表示/研究表明/科学证明/调查显示/数据显示/据可靠消息/官方认定/诺贝尔奖得主说/哈佛教授指出/著名学者认为
+// EN: according to experts/scientists say/studies prove/research shows/data indicates/权威机构 said/recognized authority/leading expert/according to research by
+const AUTHORITY_PATTERNS = {
+  zh: [
+    /据权威机构/i, /专家表示/i, /专家指出/i, /专家认为/i,
+    /研究表明/i, /科学证明/i, /科学表明/i, /科学指出/i,
+    /调查显示/i, /调查表明/i, /数据显示/i, /数据表明/i,
+    /据可靠消息/i, /可靠消息称/i, /可靠消息来源/i,
+    /官方认定/i, /官方表示/i, /官方指出/i,
+    /诺贝尔奖得主说/i, /诺贝尔奖得主表示/i, /诺贝尔奖得主认为/i,
+    /哈佛教授指出/i, /哈佛教授认为/i, /哈佛教授称/i,
+    /著名学者认为/i, /著名学者指出/i, /著名学者表示/i,
+    /顶级专家/i, /业内专家/i, /行业专家/i,
+    /权威人士/i, /权威专家/i, /权威机构/i,
+    /院士表示/i, /院士指出/i, /院士认为/i,
+  ],
+  en: [
+    /according to experts/i, /according to leading/i, /according to authorities/i,
+    /scientists say/i, /scientists claim/i, /scientists believe/i,
+    /studies prove/i, /studies show/i, /studies indicate/i, /studies suggest/i,
+    /research shows/i, /research indicates/i, /research proves/i, /research suggests/i,
+    /data indicates/i, /data shows/i, /data proves/i,
+    /权威机构 said/i,
+    /recognized authority/i, /leading authority/i,
+    /leading expert/i, /leading experts/i, /top expert/i, /top experts/i,
+    /according to research by/i, /according to a study by/i,
+    /experts agree/i, /experts believe/i, /experts confirm/i,
+    /science says/i, /science proves/i, /science shows/i,
+    /Nobel laureate/i, /nobel prize.*?says/i, /nobel prize.*?said/i,
+    /Harvard professor/i, /Stanford professor/i, /MIT professor/i,
+    /world.?renowned expert/i,
+  ],
+};
+const AUTHORITY_SEVERITY = 0.35;
+
+function checkAppealToAuthority(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? AUTHORITY_PATTERNS.zh : AUTHORITY_PATTERNS.en;
+  const signals = [];
+  for (const pat of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      signals.push({ pattern: pat.source.slice(0, 25), type: 'appeal_to_authority' });
+    }
+  }
+  // Deduplicate by pattern to avoid counting same pattern multiple times
+  const unique = [];
+  const seen = new Set();
+  for (const s of signals) {
+    if (!seen.has(s.pattern)) {
+      seen.add(s.pattern);
+      unique.push(s);
+    }
+  }
+  const count = unique.length;
+  const score = Math.min(1, count * AUTHORITY_SEVERITY);
+  return { count, signals: unique, score };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -1853,6 +1915,7 @@ module.exports = {
   checkFalseEquivalence,
   checkWhataboutism,
   checkDogwhistle,
+  checkAppealToAuthority,
   checkSlipperySlope,
   summarizeDiscrimination,
   crossAnalyze,
