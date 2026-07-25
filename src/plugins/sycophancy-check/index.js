@@ -171,10 +171,15 @@ function analyze(text) {
   return { score: 0, risk: 'unknown', signals: [], note: 'unsupported language' };
 }
 
+// ─── 从 index.js 导入矛盾/模糊检测 ──────────────────────────────
+const _index = (() => {
+  try { return require('../../index.js'); } catch (_) { return null; }
+})();
+
 const plugin = {
   name: 'sycophancy-check',
-  version: '2.0.0',
-  description: 'Bilingual sycophancy detector (EN/ZH) — pattern-based, no semantics',
+  version: '2.1.0',
+  description: 'Bilingual sycophancy + contradiction + vagueness detector (EN/ZH) — pattern-based, no semantics',
 
   hooks: [
     { event: 'postprocess.think', priority: 180 },
@@ -191,7 +196,11 @@ const plugin = {
     hookBus.on('postprocess.think', async (evtCtx) => {
       const { result } = evtCtx;
       if (!result?.output?.conclusion || result.output.conclusion === '需要更多信息') return;
-      result._sycophancyCheck = analyze(result.output.conclusion);
+      result._discrimination = {
+        sycophancy: analyze(result.output.conclusion),
+        contradiction: _index ? _index.checkContradiction(result.output.conclusion) : null,
+        vagueness: _index ? _index.checkVagueness(result.output.conclusion) : null,
+      };
     }, { id: 'sycophancy-check', priority: 180, timeout: 100 });
 
     return { ok: true };

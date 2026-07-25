@@ -723,6 +723,23 @@ async function runAllTests() {
     failed++;
   }
 
+  // [v6.3.3] 辨别新维度测试 — contradiction + vagueness
+  console.log('🔍 辨别新维度 (discrimination-axes.test.js)');
+  try {
+    const { execSync } = require('child_process');
+    const result = execSync('node ' + path.join(__dirname, 'discrimination-axes.test.js'), {
+      cwd: path.join(__dirname, '..'), encoding: 'utf8', timeout: 30000
+    });
+    const match = result.match(/(\d+) passed, (\d+) failed/);
+    if (match) {
+      passed += parseInt(match[1]); failed += parseInt(match[2]);
+      console.log(result.split('\n').filter(l => l.includes('passed') || l.includes('failed')).join('\n'));
+    }
+  } catch (e) {
+    console.log('  ⚠️ 辨别新维度测试异常: ' + (e.message || '').split('\n')[0]);
+    failed++;
+  }
+
   // [v6.0.64] 汇总前等待所有 async 测试结算, 防止漏算 (async 测试原被假过)
   if (asyncPromises.length) {
     await Promise.all(asyncPromises);

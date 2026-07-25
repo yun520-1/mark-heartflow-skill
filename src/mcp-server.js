@@ -2268,6 +2268,15 @@ function handleVerdict(args) {
       result.verifyIssues = (v.issues || []).map(i => ({ type: i.type, severity: i.severity, message: i.message }));
       result.checks = v.checks ? { evidence: v.checks.evidence?.ok, contradiction: v.checks.contradiction?.ok, risk: v.checks.risk?.ok, completeness: v.checks.completeness?.ok } : undefined;
     }
+    // 轻量辨别维度（独立函数，不需引擎实例）
+    try {
+      const idx = require('./index.js');
+      result.discrimination = {
+        contradiction: idx.checkContradiction(text),
+        vagueness: idx.checkVagueness(text),
+        sycophancy: idx.checkSycophancy(text),
+      };
+    } catch (_) {}
     if (heartflow.sustainedDriftDetector) {
       const d = heartflow.sustainedDriftDetector.detectDrift();
       result.driftScore = d.driftScore;
