@@ -630,6 +630,53 @@ const TOOLS = [
 
   },
 
+  // [v6.3.0] 5 个辨别引擎 MCP 入口 — 心虫核心价值
+  {
+
+    name: 'heartflow_verify',
+
+    description: '验证一段文本的证据充分性、矛盾、风险、完整度。心虫的规则型判别器，不谄媚。',
+
+    inputSchema: { type: 'object', properties: { decision: { type: 'string', description: '需要验证的论断/文本' }, evidence: { type: 'array', items: { type: 'string' }, description: '支持证据列表' }, confidence: { type: 'number', description: '置信度 0-1' } }, required: ['decision'] }
+
+  },
+  {
+
+    name: 'heartflow_diagnose',
+
+    description: "心虫引擎自诊。返回真实状态——不是一切正常，诚实报告问题。",
+
+    inputSchema: { type: 'object', properties: {} }
+
+  },
+  {
+
+    name: 'heartflow_check_drift',
+
+    description: '检测心虫身份一致性是否随时间漂移。返回漂移评分和状态。',
+
+    inputSchema: { type: 'object', properties: {} }
+
+  },
+  {
+
+    name: 'heartflow_error_store',
+
+    description: '记录一次错误到跨会话 Q 表。同类错误不会重复。',
+
+    inputSchema: { type: 'object', properties: { problem: { type: 'string', description: '问题描述' }, action: { type: 'string', description: '执行动作' }, outcome: { type: 'string', description: '结果' } }, required: ['problem', 'action', 'outcome'] }
+
+  },
+  {
+
+    name: 'heartflow_error_query',
+
+    description: '查询相似历史错误。每次做决策前查一次，避免重蹈覆辙。',
+
+    inputSchema: { type: 'object', properties: { problem: { type: 'string', description: '当前问题' }, limit: { type: 'number', description: '最大返回数（默认5）' } }, required: ['problem'] }
+
+  },
+
 ];
 
 
@@ -2206,6 +2253,40 @@ async function handleBenchmarkImportFailures(args, sessionId) {
 
 
 
+
+// [v6.3.0] 辨别引擎 handler
+function handleVerify(args) {
+  const { decision, evidence, confidence } = args || {};
+  if (!decision) return { error: 'decision required' };
+  if (!heartflow || !heartflow.decisionVerifier) return { error: 'verifier not ready' };
+  try {
+    const r = heartflow.decisionVerifier.verify({ decision, evidence: evidence || [], alternatives: [], confidence: confidence || 0.5 });
+    return { score: r.score, issues: (r.issues || []).map(i => ({ type: i.type, severity: i.severity, message: i.message })), checks: r.checks ? { evidence: r.checks.evidence?.ok, contradiction: r.checks.contradiction?.ok, risk: r.checks.risk?.ok, completeness: r.checks.completeness?.ok } : undefined };
+  } catch(e) { return { error: e.message }; }
+}
+function handleDiagnose() {
+  if (!heartflow || !heartflow.selfDiagnosis) return { error: 'diagnose not ready' };
+  try { const r = heartflow.selfDiagnosis.run(); return { ok: r.ok, summary: r.summary, issues: r.summary?.issues || [] }; }
+  catch(e) { return { error: e.message }; }
+}
+function handleCheckDrift() {
+  if (!heartflow || !heartflow.sustainedDriftDetector) return { error: 'drift not ready' };
+  try { const r = heartflow.sustainedDriftDetector.detectDrift(); return { hasDrift: r.hasSustainedDrift, score: r.driftScore, windowSize: r.window?.length }; }
+  catch(e) { return { error: e.message }; }
+}
+function handleErrorStore(args) {
+  const { problem, action, outcome } = args || {};
+  if (!problem||!action||!outcome) return { error: 'need problem, action, outcome' };
+  if (!heartflow||!heartflow._hfCore) return { error: 'error memory not ready' };
+  try { return heartflow._hfCore.errorMemory.store(problem, action, outcome); } catch(e) { return { error: e.message }; }
+}
+function handleErrorQuery(args) {
+  const { problem, limit } = args || {};
+  if (!problem) return { error: 'need problem' };
+  if (!heartflow||!heartflow._hfCore) return { error: 'error memory not ready' };
+  try { return heartflow._hfCore.errorMemory.query(problem, limit || 5); } catch(e) { return { error: e.message }; }
+}
+
 const HANDLERS = {
 
   heartflow_think: handleThink,
@@ -2263,6 +2344,13 @@ const HANDLERS = {
   heartflow_benchmark_import_failures: handleBenchmarkImportFailures,
 
   heartflow_benchmark_status: handleBenchmarkStatus,
+
+  // [v6.3.0] 5 个辨别引擎入口
+  heartflow_verify: handleVerify,
+  heartflow_diagnose: handleDiagnose,
+  heartflow_check_drift: handleCheckDrift,
+  heartflow_error_store: handleErrorStore,
+  heartflow_error_query: handleErrorQuery,
 
 };
 
