@@ -1402,6 +1402,56 @@ function checkGaslighting(text) {
   return { count, signals, score };
 }
 
+// ─── 受害者责备检测（Victim Blaming Detection）───────────────────────────
+// 检测暗示受害者应对伤害负责的表述
+const VICTIM_BLAMING_PATTERNS = [
+  // ZH patterns
+  { pattern: /谁让你穿那么少/,            type: 'zh_victim_blaming' },
+  { pattern: /大半夜出门/,                type: 'zh_victim_blaming' },
+  { pattern: /喝那么多酒/,                type: 'zh_victim_blaming' },
+  { pattern: /为什么不反抗/,              type: 'zh_victim_blaming' },
+  { pattern: /一个巴掌拍不响/,            type: 'zh_victim_blaming' },
+  { pattern: /可怜之人必有可恨之处/,      type: 'zh_victim_blaming' },
+  { pattern: /你自己选的/,                type: 'zh_victim_blaming' },
+  { pattern: /你也有责任/,                type: 'zh_victim_blaming' },
+  { pattern: /你也有问题/,                type: 'zh_victim_blaming' },
+  { pattern: /你活该/,                    type: 'zh_victim_blaming' },
+  { pattern: /自找的/,                    type: 'zh_victim_blaming' },
+  { pattern: /为什么偏偏是你/,            type: 'zh_victim_blaming' },
+  { pattern: /你要是早点/,                type: 'zh_victim_blaming' },
+  { pattern: /如果当时你/,                type: 'zh_victim_blaming' },
+  { pattern: /你自己不小心/,              type: 'zh_victim_blaming' },
+  // EN patterns
+  { pattern: /she was asking for it/i,     type: 'en_victim_blaming' },
+  { pattern: /what was she wearing/i,      type: 'en_victim_blaming' },
+  { pattern: /why were you there/i,         type: 'en_victim_blaming' },
+  { pattern: /you shouldn't have been/i,    type: 'en_victim_blaming' },
+  { pattern: /you should have known better/i, type: 'en_victim_blaming' },
+  { pattern: /you put yourself in that situation/i, type: 'en_victim_blaming' },
+  { pattern: /you're not completely innocent/i, type: 'en_victim_blaming' },
+  { pattern: /you had to have known/i,      type: 'en_victim_blaming' },
+  { pattern: /what did you expect/i,        type: 'en_victim_blaming' },
+  { pattern: /you played a role in this/i,   type: 'en_victim_blaming' },
+  { pattern: /if only you had/i,            type: 'en_victim_blaming' },
+  { pattern: /you should have been more careful/i, type: 'en_victim_blaming' },
+  { pattern: /why didn't you just/i,        type: 'en_victim_blaming' },
+  { pattern: /well you chose to/i,          type: 'en_victim_blaming' },
+];
+
+function checkVictimBlaming(text) {
+  if (!text || typeof text !== 'string') return { count: 0, blames: [], score: 0 };
+  const blames = [];
+  for (const { pattern, type } of VICTIM_BLAMING_PATTERNS) {
+    const m = text.match(pattern);
+    if (m) {
+      blames.push({ pattern: pattern.source.slice(0, 25), type });
+    }
+  }
+  const count = blames.length;
+  const score = Math.min(1, count * 0.35);
+  return { count, blames, score };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -1421,6 +1471,7 @@ module.exports = {
   checkDehumanization,
   checkBullshitRecognition,
   checkGaslighting,
+  checkVictimBlaming,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
