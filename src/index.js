@@ -307,7 +307,7 @@ const EM_MANIPULATION_PATTERNS = {
     [/连[^。]*?都能[^。]*?你却/i, 'comparison_shame', 0.5],
   ],
   en: [
-    [/if you don'?t[^.]*?(regret|let (?:me|us) down|disappoint)/i, 'guilt_induction', 0.5],
+    [/if you (don'?t|do not)[^.]*?(regret|let (?:me|us) down|disappoint)/i, 'guilt_induction', 0.5],
     [/you('re| are) letting me down/i, 'guilt_induction', 0.5],
     [/you('re| are) (?:so )?selfish/i, 'guilt_induction', 0.5],
     [/act now[^.]*?(or|before it['a]?s)/i, 'fear_marketing', 0.5],

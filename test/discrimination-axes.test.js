@@ -103,6 +103,8 @@ test('discriminate returns 6 dimensions', () => {
   if (!r.dimensions.evidence) throw new Error('should have evidence');
   if (!r.dimensions.fallacies) throw new Error('should have fallacies');
   if (!r.dimensions.confidence) throw new Error('should have confidence');
+  if (!r.dimensions.prompt_injection) throw new Error('should have prompt_injection');
+  if (!r.dimensions.code_security) throw new Error('should have code_security');
 });
 
 test('discriminate clean text scores high', () => {

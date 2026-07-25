@@ -4905,6 +4905,12 @@ class HeartFlow {
           warnings.push(`检测到提示注入(${disc.prompt_injection.injections.map(i => i.type).join(',')})`);
         }
 
+        // 9. 代码安全→标记高风险
+        if (disc?.code_security?.count > 0) {
+          result._highRiskOutput = true;
+          warnings.push(`检测到代码安全问题(${disc.code_security.types?.join(',')})`);
+        }
+
         result.output.warnings = warnings;
       }
     } catch (_) { /* 辨别闭环不阻断 */ }
