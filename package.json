@@ -1,7 +1,7 @@
 {
   "name": "@yun520-1/heartflow",
   "version": "6.3.6",
-  "description": "HeartFlow — rule engine cognitive preprocessor. Classifies input intent, categorizes task types, and returns structured decisions through deterministic rules.",
+  "description": "12维文本辨别引擎 — 中英双语纯规则引擎。检测sycophancy/矛盾/逻辑谬误/预设陷阱/情感操纵/虚假紧迫感/答案包装等。零LLM依赖，MCP原生，AI助手的安全门禁。",
   "main": "src/core/heartflow.js",
   "bin": {
     "heartflow": "src/mcp-server.js"
@@ -30,23 +30,27 @@
     "SKILL.md"
   ],
   "keywords": [
-    "cognitive",
-    "cognitive-engine",
-    "ai-agent",
-    "agent-framework",
-    "ai-being",
-    "memory",
-    "self-healing",
-    "verification",
-    "reasoning",
-    "decision-routing",
-    "llm",
-    "mcp",
-    "model-context-protocol",
-    "prompt-preprocessing",
+    "heartflow",
+    "心虫",
+    "辨别引擎",
+    "ai-safety",
+    "llm-safety",
+    "hallucination-detection",
+    "sycophancy-detection",
+    "contradiction-detection",
+    "fallacy-detection",
     "bias-detection",
-    "token-optimization",
-    "heartflow"
+    "text-classification",
+    "rule-engine",
+    "pattern-matching",
+    "mcp-server",
+    "model-context-protocol",
+    "ai-gate",
+    "chinese-nlp",
+    "bilingual-nlp",
+    "cognitive-engine",
+    "verification",
+    "quality-assurance"
   ],
   "security": {
     "audit": "Run 'npm audit fix' to fix vulnerabilities in @xenova/transformers transitive dependencies. If major version conflicts prevent auto-fix, pin resolutions manually in package.json or update @xenova/transformers.",
