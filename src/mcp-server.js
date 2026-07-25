@@ -884,6 +884,23 @@ async function handleThink(args) {
 
   let result = { report, timestamp: Date.now() };
 
+  // [v6.3.7] 附加心虫增强字段——公式计算/辨别/公式搜索/输出门禁
+  try {
+    if (thoughtChain) {
+      if (thoughtChain._formulaCalculations) result.formulaCalculations = thoughtChain._formulaCalculations;
+      if (thoughtChain._formulasFound) result.formulasFound = thoughtChain._formulasFound;
+      if (thoughtChain._discrimination) result.discrimination = thoughtChain._discrimination;
+      if (thoughtChain._outputChecklist) result.outputChecklist = thoughtChain._outputChecklist;
+      if (thoughtChain._formulasFound && thoughtChain._formulasFound.length > 0) {
+        result.formulasSummary = thoughtChain._formulasFound.slice(0,5).map(f => f.name + ': ' + (f.formula||'').slice(0,60)).join(' | ');
+      }
+      if (thoughtChain._formulaCalculations) {
+        const keys = Object.keys(thoughtChain._formulaCalculations);
+        result.formulaCalcSummary = keys.join(', ') + ' (' + keys.length + '个公式)';
+      }
+    }
+  } catch (_) { /* 附加字段不阻断 */ }
+
 
 
   // ─── postprocessing 管线 ──────────────────────────────────────
