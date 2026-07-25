@@ -5,7 +5,7 @@
 class OutputChecklist {
   constructor() {
     this.name = 'OutputChecklist';
-    this.version = '1.2.0';
+    this.version = '1.3.0';
     this._checkHistory = [];
   }
 
@@ -318,6 +318,32 @@ class OutputChecklist {
         triggeredDims.push('confidence');
       }
       // 输出检查跳过证据维度（输出不是论断，不需要外部证据）
+
+      // ─── [v6.3.7] 新增6维：预设陷阱/情感操纵/双重束缚/信息剥夺/虚假紧迫感/答案包装 ──
+      if (dims.presupposition && dims.presupposition.count > 0) {
+        issues.push(`含预设陷阱(${dims.presupposition.count}处: ${dims.presupposition.presuppositions?.map(p => p.type).join(',') || 'loaded'})`);
+        triggeredDims.push('presupposition');
+      }
+      if (dims.emotional_manipulation && dims.emotional_manipulation.count > 0) {
+        issues.push(`含情感操纵(${dims.emotional_manipulation.count}处: ${dims.emotional_manipulation.manipulations?.map(m => m.type).join(',') || 'manipulation'})`);
+        triggeredDims.push('emotional_manipulation');
+      }
+      if (dims.double_bind && dims.double_bind.count > 0) {
+        issues.push(`含双重束缚(${dims.double_bind.count}处)`);
+        triggeredDims.push('double_bind');
+      }
+      if (dims.info_deprivation && dims.info_deprivation.count > 0) {
+        issues.push(`含信息剥夺(${dims.info_deprivation.count}处)`);
+        triggeredDims.push('info_deprivation');
+      }
+      if (dims.false_urgency && dims.false_urgency.count > 0) {
+        issues.push(`含虚假紧迫感(${dims.false_urgency.count}处: ${dims.false_urgency.urgencies?.map(u => u.pattern).join(',') || 'urgency'})`);
+        triggeredDims.push('false_urgency');
+      }
+      if (dims.empty_answer && dims.empty_answer.count > 0) {
+        issues.push(`含答案包装(${dims.empty_answer.count}处: 空话/回避)`);
+        triggeredDims.push('empty_answer');
+      }
 
       // === 降级回退推荐 ===
       // 根据触发的维度类型和数量，给出调用方应如何处理
