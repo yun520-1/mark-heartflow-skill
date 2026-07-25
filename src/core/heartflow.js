@@ -463,6 +463,8 @@ const _LearningPulse = _lazy('learningPulse', () => require('../cortex/learning-
 
 const _TaskUrgency = _lazy('taskUrgency', () => require('../cortex/task-urgency-estimator.js'));
 
+const _ErrorMemory = _lazy('errorMemory', () => { try { return require('../heartflow/index.js'); } catch(e) { return null; } });
+
 const _KnowledgeSubsystem = _lazy('knowledgeSubsystem', () => require('../knowledge/index.js'));
 
 const _SelfDiagnosis = _lazy('selfDiagnosis', () => require('./self-diagnosis.js'));
@@ -4008,6 +4010,16 @@ class HeartFlow {
       this.hypothesisDriver = new (_HypothesisDriver().HypothesisDriver)(this);
     } catch (e) { _boundedPush(this._initErrors, { module: 'hypothesisDriver', error: e.message }, MAX_HISTORY_SIZE); }
 
+    // ─── [v6.2.7] ErrorMemory 跨会话错误记忆：AGI 需要的"不遗忘"组件 ──
+    try {
+      const EM = _ErrorMemory();
+      if (EM && EM.HeartFlow) {
+        this._hfCore = new EM.HeartFlow({ silent: true, dataDir: this.rootPath ? require('path').join(this.rootPath, 'data') : undefined });
+        this._hfCore.start();
+        this._modules['errorMemory'] = { store: (p,a,o) => this._hfCore.errorMemory.store(p,a,o), query: (p,l) => this._hfCore.errorMemory.query(p,l), getStats: () => this._hfCore.errorMemory.getStats() };
+      }
+    } catch (e) { _boundedPush(this._initErrors, { module: 'errorMemory', error: e.message }, MAX_HISTORY_SIZE); }
+
     // ─── [v6.2.3] PatternTracer 模式溯源器：从宏观趋势回溯微观原因 ──
     try {
       this.patternTracer = new (_PatternTracer().PatternTracer)(this);
@@ -4118,6 +4130,26 @@ class HeartFlow {
       console.warn('[HeartFlow] InitHookPoints init failed:', e.message);
 
     }
+
+    // ─── [v6.2.7] 核心身份注入：辨别者（Discriminator）──
+    // 心虫在 AGI 五层中只占第 1 层——不生成、不推理、不记忆、不执行，
+    // 只判别已有的东西对不对。大厂不做这个，因为不赚钱。
+    // 但 AGI 没有辨别层，就是没有痛觉的人。
+    this._identity = {
+      role: 'discriminator',
+      purpose: '判别对错，不做生成',
+      manifesto: [
+        '我不是大模型，我是大模型的辨别层。',
+        '我不产生任何东西，我只判别已有的东西对不对。',
+        '心虫的价值不是回答，是说"不"。',
+        '大厂做生成，我做判别——这是个人开发者唯一能赢的位置。',
+        '不比算力（规则引擎跑在笔记本上）。',
+        '不比代码量（核心逻辑 2000 行）。',
+        '不比框架生态（零外部依赖）。',
+        '只比谁更敢说"这个不对"。',
+      ],
+    };
+    console.log('[HeartFlow] 身份：' + this._identity.role + ' — ' + this._identity.purpose);
 
 
 
