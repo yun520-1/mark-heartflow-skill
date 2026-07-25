@@ -4832,6 +4832,30 @@ class HeartFlow {
       }
     } catch (_) { /* 公式计算失败不阻断 */ }
 
+    // ─── [v6.3.7] 公式计算结果影响结论——有公式计算值则修正置信度 ──
+    try {
+      if (result._formulaCalculations && result.output && result.output.conclusion) {
+        const calc = result._formulaCalculations;
+        // 有具体数值的公式结果 → 提高结论可信度
+        const numericCount = Object.values(calc).filter(v => typeof v === 'number' && isFinite(v)).length;
+        if (numericCount >= 3) {
+          // 3+ 公式算出数值 = 有定量支撑
+          result._formulaEvidence = { count: numericCount, strength: 'quantitative' };
+          result.output.conclusion += ' [公式验证]';
+        }
+        // 认知失调>1.0 → 标注结论可能不自洽
+        if (calc.cognitiveDissonance !== undefined && calc.cognitiveDissonance > 1.0) {
+          result.output.warnings = result.output.warnings || [];
+          result.output.warnings.push('认知失调检测: ' + calc.cognitiveDissonance.toFixed(2));
+        }
+        // 心流<0.3 → 标注难度不匹配
+        if (calc.flowChannel !== undefined && calc.flowChannel < 0.3) {
+          result.output.warnings = result.output.warnings || [];
+          result.output.warnings.push('心流过低: 挑战与技能不匹配(' + calc.flowChannel.toFixed(2) + ')');
+        }
+      }
+    } catch (_) { /* 公式影响结论不阻断 */ }
+
     // ─── [v6.2.7] HookBus 后置处理（在所有 inline 增强之后触发，保证插件能看到完整 result）──
     try {
       if (this._hookBus) {

@@ -344,6 +344,10 @@ class OutputChecklist {
         issues.push(`含答案包装(${dims.empty_answer.count}处: 空话/回避)`);
         triggeredDims.push('empty_answer');
       }
+      if (dims.moral_foundations && dims.moral_foundations.count > 0) {
+        issues.push(`含道德基础框架(${dims.moral_foundations.count}处: ${dims.moral_foundations.foundations?.map(f => f.label).join(',')})`);
+        // moral_foundations 是标注型维度，不拦停
+      }
 
       // === 降级回退推荐 ===
       // 根据触发的维度类型和数量，给出调用方应如何处理
