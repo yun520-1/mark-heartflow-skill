@@ -1765,6 +1765,69 @@ function checkDogwhistle(text) {
   return { count, signals, score };
 }
 
+// ─── 滑坡谬误检测（Slippery Slope / Domino Effect）────────────────────
+const SLIPPERY_PATTERNS = {
+  zh: [
+    [/一旦开了这个口子/i, 'opening_the_floodgates'],
+    [/如果今天让步明天就/i, 'give_in_today_tomorrow'],
+    [/这会导致/i, 'this_will_lead_to'],
+    [/最终结果就是/i, 'ultimate_result'],
+    [/接下来就是/i, 'next_will_be'],
+    [/多米诺骨牌/i, 'domino_effect'],
+    [/打开了潘多拉魔盒/i, 'pandoras_box'],
+    [/不可收拾/i, 'irreversible'],
+    [/早晚会/i, 'sooner_or_later'],
+    [/迟早会/i, 'sooner_or_later'],
+    [/总有一天会/i, 'one_day_will'],
+    [/一步一步走向/i, 'step_by_step_toward'],
+  ],
+  en: [
+    [/slippery slope/i, 'slippery_slope'],
+    [/domino effect/i, 'domino_effect'],
+    [/thin edge of the wedge/i, 'thin_edge_wedge'],
+    [/foot in the door/i, 'foot_in_door'],
+    [/if we allow this then/i, 'if_allow_this_then'],
+    [/next thing you know/i, 'next_thing_you_know'],
+    [/down (the|a) slippery slope/i, 'slippery_slope'],
+    [/to give an inch/i, 'give_an_inch'],
+    [/where will it end/i, 'where_will_it_end'],
+    [/if this is allowed then/i, 'if_allowed_then'],
+    [/camel's nose under the tent|camel.?nose.?tent/i, 'camel_nose'],
+  ]
+};
+const SLIPPERY_WEIGHTS = {
+  opening_the_floodgates: 0.6, give_in_today_tomorrow: 0.7,
+  this_will_lead_to: 0.5, ultimate_result: 0.5, next_will_be: 0.5,
+  domino_effect: 0.7, pandoras_box: 0.7, irreversible: 0.6,
+  sooner_or_later: 0.5, one_day_will: 0.5, step_by_step_toward: 0.6,
+  slippery_slope: 0.8, thin_edge_wedge: 0.7, foot_in_door: 0.6,
+  if_allow_this_then: 0.7, next_thing_you_know: 0.6,
+  give_an_inch: 0.6, where_will_it_end: 0.6, if_allowed_then: 0.6,
+  camel_nose: 0.7,
+};
+
+/**
+ * 滑坡谬误检测 — 识别"如果允许X就会导致灾难级连锁反应"的论证模式
+ * Slippery slope fallacy detection — flags causal-chain disaster predictions
+ * @param {string} text - 待检测文本
+ * @returns {{ count: number, signals: Array<{pattern: string, type: string}>, score: number }}
+ */
+function checkSlipperySlope(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? SLIPPERY_PATTERNS.zh : SLIPPERY_PATTERNS.en;
+  const signals = [];
+  for (const [regex, type] of patterns) {
+    const m = text.match(regex);
+    if (m) {
+      signals.push({ pattern: m[0].slice(0, 40), type });
+    }
+  }
+  const count = signals.length;
+  const score = Math.min(1, signals.reduce((s, sig) => s + (SLIPPERY_WEIGHTS[sig.type] || 0.5), 0));
+  return { count, signals, score };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -1790,6 +1853,7 @@ module.exports = {
   checkFalseEquivalence,
   checkWhataboutism,
   checkDogwhistle,
+  checkSlipperySlope,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
