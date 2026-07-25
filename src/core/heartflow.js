@@ -4743,6 +4743,95 @@ class HeartFlow {
       }
     } catch (_) { /* recommendation 消费不阻断 */ }
 
+    // ─── [v6.3.7] FormulaBridge 综合计算——输入含领域关键词时自动调用相关公式 ──
+    try {
+      if (input && typeof input === 'string') {
+        const { getFormulaBridge } = require('../formula/formula-bridge.js');
+        const bridge = getFormulaBridge();
+        if (bridge) {
+          const calc = {};
+          const t = input.toLowerCase();
+
+          // 1. 不确定性/信息类 → Shannon + KL + CrossEntropy
+          if (/熵|entropy|信息|不确定|概率|kl|分布|distribution/.test(t)) {
+            const sampleDist = [0.5, 0.3, 0.2];
+            calc.shannonEntropy = bridge.shannonEntropy(sampleDist);
+            calc.klDivergence = bridge.klDivergence(sampleDist, [0.4, 0.35, 0.25]);
+            calc.crossEntropy = bridge.crossEntropy(sampleDist, [0.4, 0.35, 0.25]);
+          }
+
+          // 2. 决策/效用类 → prospect + regret + minimax + shapley
+          if (/决策|选择|风险|收益|utility|prospect|博弈|game|博弈|trade/.test(t)) {
+            calc.prospectValue = bridge.prospectValue(100);
+            calc.prospectLoss = bridge.prospectValue(-50);
+            calc.subjectiveUtility = bridge.subjectiveUtility([0.5, 0.3, 0.2], [100, 50, 0]);
+            calc.regretTheory = bridge.regretTheory([0.3, 0.4, 0.3], [100, 50, 0], 100);
+            calc.minimax = bridge.minimax([[10, -5], [-3, 8], [0, 2]]);
+            // shapley 简略
+            const shapPlayers = ['A', 'B', 'C'];
+            calc.shapleyValue = bridge.shapleyValue(shapPlayers, (s) => s.length * 10);
+          }
+
+          // 3. 学习/记忆类 → ebbinghaus + actr
+          if (/记忆|遗忘|学习|回忆|retention|memory|ebbinghaus/.test(t)) {
+            calc.ebbinghaus1h = bridge.ebbinghausRetention(3600000, 86400000);     // 1小时
+            calc.ebbinghaus24h = bridge.ebbinghausRetention(86400000, 86400000);   // 24小时
+            calc.ebbinghaus1w = bridge.ebbinghausRetention(604800000, 86400000);   // 1周
+            calc.memoryStrength = bridge.memoryStrengthFromFrequency(10);
+            // ACT-R
+            calc.actrBaseLevel = bridge.actrBaseLevel([3600, 7200, 14400, 28800, 86400].map(s => s * 1000));
+            calc.actrActivation = bridge.actrActivation(1.5, 0.3, 0.1, 0.2);
+          }
+
+          // 4. 认知/心理类 → cognitiveDissonance + yerkes + flow + emotionBlend + socialInfluence
+          if (/认知|失调|情绪|动机|心理|pressure|cognitive|emotion|dissonance|social/.test(t)) {
+            calc.cognitiveDissonance = bridge.cognitiveDissonance(
+              [0.8, 0.6],  // 信念强度
+              [0.9, 0.2],  // 行动承诺
+              [0.5, 0.5]
+            );
+            calc.yerkesDodson = bridge.yerkesDodson(0.7);  // 高唤醒
+            calc.flowChannel = bridge.flowChannel(8, 7);    // 挑战8 技能7
+            calc.emotionBlend = bridge.emotionBlend([0.8, 0.3, 0.1], [0.5, 0.3, 0.2]);
+            calc.socialInfluence = bridge.socialInfluence([0.6, 0.4, 0.7], [0.5, 0.3, 0.2]);
+            calc.vygotskyZPD = bridge.vygotskyZPD(4, 7);
+          }
+
+          // 5. 物理/科学类 → precisionWeight + predictiveCoding
+          if (/物理|力学|热学|量子|相对|physics|force|energy|quantum/.test(t)) {
+            calc.precisionWeight = bridge.precisionWeight(2.0);
+            calc.predictiveCodingFreeEnergy = bridge.predictiveCodingFreeEnergy(0.5, 1.0, 1.5);
+          }
+
+          // 6. 意识/注意类 → iitPhi + gwt
+          if (/意识|注意|conscious|attention|awareness/.test(t)) {
+            calc.iitPhi = bridge.iitPhi(0.8, 0.3);
+            calc.gwtAccessibility = bridge.gwtAccessibility([0.8, 0.5, 0.2], 1.0);
+            calc.gwtWinner = bridge.gwtWinner([0.3, 0.7, 0.4, 0.2]);
+          }
+
+          // 7. 心理测量/教育类 → irt + cronbachAlpha + semFit
+          if (/考试|测验|量表|IRT|信度|效度|教育|educat|assessment|cronbach/.test(t)) {
+            calc.irtRasch = bridge.irtRasch(0.5, 1.0);
+            calc.irt2PL = bridge.irt2PL(0.5, 1.2, 1.0);
+            calc.cronbachAlpha = bridge.cronbachAlpha(10, 3.5, 15.0);
+            calc.semFitRMSEA = bridge.semFitRMSEA(120, 50, 2000);
+          }
+
+          // 8. 社会/群体类 → bystanderEffect + homophily + softmax
+          if (/社会|群体|从众|旁观|herd|bystander|social|group/.test(t)) {
+            calc.bystanderEffect = bridge.bystanderEffect(0.8, 5);
+            calc.homophily = bridge.homophily(0.7, 0.3, 1.0);
+            calc.softmaxPolicy = bridge.softmaxPolicy([0.5, 1.0, 0.3], 0.5);
+          }
+
+          if (Object.keys(calc).length > 0) {
+            result._formulaCalculations = calc;
+          }
+        }
+      }
+    } catch (_) { /* 公式计算失败不阻断 */ }
+
     // ─── [v6.2.7] HookBus 后置处理（在所有 inline 增强之后触发，保证插件能看到完整 result）──
     try {
       if (this._hookBus) {
