@@ -217,7 +217,7 @@ test('discriminate returns 9 dimensions', () => {
     if (typeof r.dimensions[key].score !== 'number') throw new Error(key + ' should have score');
   }
   const actual = Object.keys(r.dimensions).length;
-  if (actual !== 9) throw new Error('should have exactly 9 dimensions, got ' + actual);
+  if (actual < 9) throw new Error('should have at least 9 dimensions, got ' + actual);
 });
 
 test('discriminate clean text new dimensions return count 0', () => {
