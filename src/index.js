@@ -217,18 +217,38 @@ function checkContradiction(text) {
 // ─── 模糊/模棱两可检测（weasel words）─────────────────────────────
 const VAGUE_PATTERNS = {
   zh: [/相关方面/i, /有关部门/i, /业内人士/i, /知情人士/i, /据传/i, /消息称/i, /可能也许/i, /大概可能/i, /某种程度/i, /在一定情况下/i, /有人说/i, /据了解/i, /据悉/i, /或可/i, /或会/i, /不排除/i,
-    // === 以下由 agent 扩充 (+12) ===
+    // === 以下由 agent 扩充 (+12+16) ===
     /据分析/i, /数据表明/i, /大概率/i, /相关人士/i, /某位不愿透露姓名/i,
     /市场普遍认为/i, /行业分析认为/i, /普遍认为/i, /有观点认为/i, /不可否认/i,
     /据统计/i, /据测算/i,
+    // === 统计模糊 ===
+    /数据显示/i, /研究表明/i, /调查发现/i, /报告显示/i,
+    // === 时间模糊 ===
+    /近期/i, /不久前/i, /最近一段时间/i, /有段时间/i, /长期以来/i, /近日/i,
+    // === 范围模糊 ===
+    /部分人/i, /有些人/i, /某些方面/i, /在一定程度上/i, /某种意义/i, /在某层面上/i, /在某种程度上/i,
+    // === 程度模糊 ===
+    /还算可以/i, /相对而言/i, /差不多/i, /几乎都/i,
+    /相当一部分/i, /比较常见/i, /还算不错/i,
   ],
-  en: [/\bsome people say\b/i, /\bits is said\b/i, /\bi'?m not sure\b/i, /\bmaybe perhaps\b/i, /\bsort of\b/i, /\bkind of\b/i, /\bbasically\b/i, /\bessentially\b/i, /\breportedly\b/i, /\ballegedly\b/i, /\bpurportedly\b/i, /\brelatively\b/i, /\bquite\b/i, /\brather\b/i, /\bto some extent\b/i, /\bin a way\b/i,
-    // === 以下由 agent 扩充 (+12) ===
-    /\bstudies show\b/i, /\bmany people\b/i, /\bresearch indicates\b/i,
-    /\bit appears that\b/i, /\bthe reality is\b/i, /\bit seems that\b/i,
-    /\bit could be argued\b/i, /\bmore often than not\b/i,
-    /\bit is widely believed\b/i, /\bin many cases\b/i,
-    /\bit is generally accepted\b/i, /\bin most cases\b/i,
+  en: [/\\bsome people say\\b/i, /\\bits is said\\b/i, /\\bi'?m not sure\\b/i, /\\bmaybe perhaps\\b/i, /\\bsort of\\b/i, /\\bkind of\\b/i, /\\bbasically\\b/i, /\\bessentially\\b/i, /\\breportedly\\b/i, /\\ballegedly\\b/i, /\\bpurportedly\\b/i, /\\brelatively\\b/i, /\\bquite\\b/i, /\\brather\\b/i, /\\bto some extent\\b/i, /\\bin a way\\b/i,
+    // === 以下由 agent 扩充 (+12+13) ===
+    /\\bstudies show\\b/i, /\\bmany people\\b/i, /\\bresearch indicates\\b/i,
+    /\\bit appears that\\b/i, /\\bthe reality is\\b/i, /\\bit seems that\\b/i,
+    /\\bit could be argued\\b/i, /\\bmore often than not\\b/i,
+    /\\bit is widely believed\\b/i, /\\bin many cases\\b/i,
+    /\\bit is generally accepted\\b/i, /\\bin most cases\\b/i,
+    // === 统计模糊 ===
+    /\\bstatistics show\\b/i, /\\bdata suggests?\\b/i, /\\bresearch finds?\\b/i, /\\bpolls indicate\\b/i,
+    /\\bstudies have shown\\b/i, /\\bevidence suggests?\\b/i,
+    // === 时间模糊 ===
+    /\\blately\\b/i, /\\bin recent times\\b/i, /\\bfor some time\\b/i,
+    // === 范围模糊 ===
+    /\\bto a certain extent\\b/i, /\\bto some degree\\b/i, /\\bin a sense\\b/i,
+    /\\bin some respects\\b/i, /\\bup to a point\\b/i, /\\bmore or less\\b/i,
+    // === 程度模糊 ===
+    /\\bpretty much\\b/i, /\\balmost\\b/i, /\\bnearly\\b/i,
+    /\\bquite a few\\b/i, /\\brather than\\b(?!\\snot)/i,
   ],
 };
 
@@ -385,6 +405,54 @@ const FALLACY_PATTERNS = {
     [/you('re| are) (no better|just as|equally) (guilty|bad|wrong)[^.]*?so[^.]*?(can(not|'?t) criticize|doesn'?t matter)/i, 'tu_quoque'],
     [/you('re| are) no better than[^.]*?so[^.]*?(can(not|'?t) criticize|doesn'?t matter|okay)/i, 'tu_quoque'],
     [/if you (do it|did it)[^.]*?then i (can|should|get to) (too|as well)/i, 'tu_quoque'],
+    // 德州神枪手谬误 — drawing the target around where the arrow landed
+    [/if we (look at|focus on|zoom in on|consider only)[^.]*?we (can see|find|conclude)[^.]*?pattern/i, 'texas_sharpshooter'],
+    [/the data (clearly|obviously|undeniably) shows[^.]*?if you (ignore|exclude|set aside)[^.]*?/i, 'texas_sharpshooter'],
+    [/cherry.?pick(?:ing|ed|s)[^.]*?(?:data|evidence|examples|facts)[^.]*?to (prove|support|show)/i, 'texas_sharpshooter'],
+    // 赌徒谬误 — after a streak the opposite is "due"
+    [/it('s| has) been (heads|tails|red|black|winning|losing)[^.]*?(\d+|many|several) times? in a row[^.]*?(so|therefore|must)[^.]*?(tails|heads|black|red|lose|win) next/i, 'gamblers_fallacy'],
+    [/it('s| is) (due|bound|certain) to (happen|come up|change)[^.]*?after[^.]*?streak/i, 'gamblers_fallacy'],
+    [/we('ve| have) had[^.]*?(\d+|too many|so many)[^.]*?(good|lucky|positive|successful)[^.]*?so[^.]*?(bad|unlucky|negative|failure) is coming/i, 'gamblers_fallacy'],
+    // 沉没成本 — already invested too much to quit
+    [/we('ve| have) (already|invested|spent|put)[^.]*?(too much|so much|this much)[^.]*?(to (quit|stop|walk away|give up)|can(\'t| not) (stop|turn back|abandon))/i, 'sunk_cost_fallacy'],
+    [/after (all|everything) we('ve| have) (put|invested|done|sacrificed)[^.]*?we can(\'t| not) (quit|stop|give up now)/i, 'sunk_cost_fallacy'],
+    [/can(\'t| not) (stop|quit|abandon|give up)[^.]*?(years|months|decades|so much|too much) invested/i, 'sunk_cost_fallacy'],
+    // 诉诸概率 — it could happen so it will happen
+    [/it (could|could potentially|might) (happen|occur|be true)[^.]*?(so|therefore|which means) it (will|must|definitely)(\b| )/i, 'appeal_to_probability'],
+    [/just because it('s| is) possible[^.]*?(doesn'?t|does not) mean[^.]*?probable/i, 'appeal_to_probability'],
+    [/it('s| is) (entirely|completely|perfectly) possible[^.]*?(so|therefore|thus)[^.]*?we should (assume|believe|plan for)/i, 'appeal_to_probability'],
+    // 诉诸嘲讽 — mockery instead of refutation
+    [/that('s| is) (ridiculous|absurd|laughable|preposterous)[^.]*?so[^.]*?clearly wrong/i, 'appeal_to_ridicule'],
+    [/you can(\'t| not) be serious[^.]*?that('s| is) (the most|a) (dumb|stupid|silly) thing/i, 'appeal_to_ridicule'],
+    [/oh (please|come on|brother)[^.]*?that('s| is) (absurd|ridiculous|a joke)/i, 'appeal_to_ridicule'],
+    // 诉诸恶意 — implying bad intentions to dismiss an argument
+    [/you (only|just|merely) (want|wish|hope)[^.]*?(because|so) (you|your) (hate|dislike|oppose|want to destroy)/i, 'appeal_to_spite'],
+    [/the (only|real|true) reason you[^.]*?is (because|that) you (hate|want to|are trying to)[^.]*?(destroy|harm|ruin|hurt)/i, 'appeal_to_spite'],
+    [/you (clearly|obviously|just) want[^.]*?to (see|watch)[^.]*?(fail|burn|fall apart|suffer)/i, 'appeal_to_spite'],
+    // 组合谬误 — each part has X, so the whole has X
+    [/every (part|component|piece|member|section) (is|has|uses)[^.]*?(so|therefore|thus) the (whole|system|group|organization) (is|has|uses)/i, 'composition_fallacy'],
+    [/each individual[^.]*?is[^.]*?(so|therefore) the (group|team|collective|community)[^.]*?is also/i, 'composition_fallacy'],
+    [/all the (parts|components|pieces|ingredients) are[^.]*?(so|therefore|which means) the (whole|result|product) must be/i, 'composition_fallacy'],
+    // 分解谬误 — the whole has X, so every part has X
+    [/the (whole|group|organization|team|system) (is|has|uses)[^.]*?(so|therefore|thus) every (part|member|component) (is|has|uses)/i, 'division_fallacy'],
+    [/since the (group|class|category|species) (is|has)[^.]*?it follows that each (individual|member|instance) (is|has)/i, 'division_fallacy'],
+    [/if the (group|team|crowd|country) (is|are)[^.]*?then (each|every|all) (member|individual|person) must (be|have)/i, 'division_fallacy'],
+    // 心理学家谬误 — assuming others think/feel like you do
+    [/everyone (thinks|feels|knows|believes|sees)[^.]*?(the same way|like I do|as I do|obviously)/i, 'psychologists_fallacy'],
+    [/it('s| is) (obvious|clear|apparent) to anyone[^.]*?that[^.]*?so anyone who disagrees[^.]*?(must|can(\'t| not)[^.]*?see)/i, 'psychologists_fallacy'],
+    [/i (can(\'t| not)? imagine|find it hard to see)[^.]*?how anyone could[^.]*?(possibly|ever)[^.]*?(think|feel|believe) otherwise/i, 'psychologists_fallacy'],
+    // 检察官谬误 — confusing conditional probabilities
+    [/there('s| is) only a (one|small|tiny|minuscule|[0-9.]+%) chance[^.]*?that (the|a) (innocent|random)[^.]*?(would|could)[^.]*?(so|therefore|which means) they must be guilty/i, 'prosecutors_fallacy'],
+    [/the (probability|chance|odds) of (this|that) happening (by chance|randomly|coincidence) is[^.]*?(tiny|minuscule|one in|so low)[^.]*?(so|therefore|proves|means)[^.]*?(guilt|guilty|fault|responsibility)/i, 'prosecutors_fallacy'],
+    [/if the test says[^.]*?(\d+:?\d*%|\d+ out of \d+)[^.]*?chance of being wrong[^.]*?(so|therefore|which means) they must be (right|correct|guilty)/i, 'prosecutors_fallacy'],
+    // 基础概率谬误 — ignoring base rates
+    [/despite the (fact|evidence) that (most|the vast majority)[^.]*?(are|do|have)[^.]*?this one[^.]*?must be[^.]*?(different|special|an exception)/i, 'base_rate_fallacy'],
+    [/(\d+%|most|the majority)[^.]*?of[^.]*?cases[^.]*?but[^.]*?this (case|instance|situation) is (clearly|obviously|definitely) different/i, 'base_rate_fallacy'],
+    [/the (rareness|uniqueness|rarity) of[^.]*?means we can (ignore|disregard|overlook) the (general|overall|base) rate/i, 'base_rate_fallacy'],
+    // 歧义谬误 — ambiguous terms leading to false conclusions
+    [/the (word|term|concept)[^.]*?has (multiple|different|two) meanings?[^.]*?(so|and|but)[^.]*?therefore[^.]*?(proves|shows|means)/i, 'ambiguity_fallacy'],
+    [/by[^.]*?we mean[^.]*?but[^.]*?you('re| are) using it to mean[^.]*?so your (argument|conclusion) (is wrong|doesn'?t follow|invalid)/i, 'ambiguity_fallacy'],
+    [/if we (equivocate|change the meaning of)[^.]*?then[^.]*?(anything|everything)[^.]*?can be (proven|shown|demonstrated)/i, 'ambiguity_fallacy'],
   ],
 };
 
@@ -399,6 +467,10 @@ const FALLACY_SEVERITY = {
   hasty_generalization: 0.4, false_binary: 0.4, appeal_to_pity: 0.4,
   genetic_fallacy: 0.3, appeal_to_motive: 0.4, narrative_fallacy: 0.3,
   confirmation_bias: 0.4, sunk_cost_fallacy: 0.4,
+  texas_sharpshooter: 0.4, gamblers_fallacy: 0.3, appeal_to_probability: 0.3,
+  appeal_to_ridicule: 0.3, appeal_to_spite: 0.4, composition_fallacy: 0.3,
+  division_fallacy: 0.3, psychologists_fallacy: 0.4, prosecutors_fallacy: 0.5,
+  base_rate_fallacy: 0.4, ambiguity_fallacy: 0.3,
 };
 
 // ─── 情感操纵检测（emotional manipulation）─────────────────────────
@@ -1221,6 +1293,115 @@ function crossAnalyze(discResult) {
   return { patterns, warnings, totalPatterns: patterns.filter(p => p.pattern !== '健康文本').length };
 }
 
+// ─── 第17维: 废话/伪深度空话检测 ──────────────────────────────────
+// 检测伪深度的"看起来有道理实际上没信息"的空话
+function checkBullshitRecognition(text) {
+  const zhPatterns = [
+    '存在即合理', '一切都是最好的安排', '格局打开', '提升认知', '底层逻辑',
+    '赋能', '闭环', '颗粒度', '打透', '高频', '低维', '高维', '降维打击',
+    '认知升级', '觉醒', '共振', '能量', '频率', '磁场', '修炼', '道法术器',
+    '顿悟', '开悟', '涅槃',
+  ];
+  const enPatterns = [
+    'think outside the box', 'paradigm shift', 'synergy', 'leverage', 'disrupt',
+    'game-changer', 'quantum leap', 'deep dive', 'touch base', 'circle back',
+    'pivot', 'scale', 'moving forward', 'at the end of the day',
+  ];
+
+  const bs = [];
+
+  for (const p of zhPatterns) {
+    const re = new RegExp(p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    let match;
+    while ((match = re.exec(text)) !== null) {
+      bs.push({ pattern: match[0], type: 'zh_buzzword' });
+    }
+  }
+
+  for (const p of enPatterns) {
+    const re = new RegExp(p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+    let match;
+    while ((match = re.exec(text)) !== null) {
+      bs.push({ pattern: match[0], type: 'en_buzzword' });
+    }
+  }
+
+  const count = bs.length;
+  const score = count > 0 ? Math.min(1, count * 0.1) : 0;
+
+  return { count, bs, score };
+}
+
+// ─── 煤气灯效应检测（Gaslighting Detection）───────────────────────────
+// 煤气灯效应 = 否认现实/扭曲事实/质疑对方记忆和感知
+// 基于: Sweet(2019) The Sociology of Gaslighting + 心理学临床模式
+const GASLIGHT_PATTERNS = {
+  zh: [
+    // 否认现实
+    /这没发生|根本没这回事|哪有这回事|不存在这种事|你编的吧|你虚构的/i,
+    /你记错了|你记性有问题|你记忆力不行|你记性不好|你根本没记对/i,
+    /我没说过|我没讲过|我什么时候说过|我从来没有说过|我不会那么说/i,
+    // 扭曲感知
+    /你想多了|你想太多了|你多想了|你脑补太多了|你想得太多了/i,
+    /你太敏感了|你别那么敏感|你也太敏感了|你这么敏感干嘛|至于这么敏感吗/i,
+    /你太玻璃心了|玻璃心|你也太玻璃了|别这么玻璃心/i,
+    /你太情绪化了|你太激动了|你太冲动了|你太极端了|你太偏激了/i,
+    /你误会了|你理解错了|你理解有误|你理解不对|你搞错了/i,
+    /你夸张了|你太夸张了|你别夸张|哪有那么严重|没你说的那么严重/i,
+    /别小题大做|小题大做|至于吗|多大点事|这点小事/i,
+    // 扭曲记忆
+    /你每次都|你总是这样|你从来都|你永远都|你又来了|你又开始了/i,
+    // 责任转嫁
+    /是你自己的问题|是你想太多|是你太敏感|是你误会了|是你理解错了|是你记错了/i,
+    /是你太玻璃心|是你太情绪化|是你自己的错|是你不对|是你有问题/i,
+    // 病态化
+    /你疯了|你神经病|你脑子有问题|你有病|你是不是有病|你精神有问题/i,
+    /你太偏执了|你太执着了|你太钻牛角尖|你太较真了/i,
+  ],
+  en: [
+    // Denial of reality
+    /that never happened/i, /that didn'?t happen/i, /nothing of the sort happened/i,
+    /you'?re making things up/i, /you'?re making it up/i, /you made that up/i,
+    /you remember it wrong/i, /you remember that wrong/i, /your memory is wrong/i,
+    /i never said that/i, /i didn'?t say that/i, /i never said anything like that/i,
+    // Perception distortion
+    /you'?re overreacting/i, /you'?re being dramatic/i, /don'?t be dramatic/i,
+    /you'?re too sensitive/i, /you are too sensitive/i, /stop being so sensitive/i,
+    /calm down you'?re being irrational/i, /you'?re being irrational/i,
+    /you'?re imagining things/i, /it'?s all in your head/i, /you'?re paranoid/i,
+    /you'?re crazy/i, /you'?ve lost your mind/i, /you must be crazy/i,
+    /you'?re confused/i, /you must have misunderstood/i, /you misunderstood/i,
+    /stop being hysterical/i, /don'?t be hysterical/i,
+    // Trivialization
+    /don'?t be ridiculous/i, /that'?s ridiculous/i, /that'?s absurd/i,
+    /you'?re being ridiculous/i, /you'?re being absurd/i,
+    /you'?re blowing this out of proportion/i, /you'?re making a mountain out of a molehill/i,
+    /it'?s not that big a deal/i, /it'?s not a big deal/i, /you'?re making a big deal out of nothing/i,
+    // Responsibility shifting
+    /it'?s your own fault/i, /that'?s on you/i, /you did this to yourself/i,
+    /you'?re the one with the problem/i, /the problem is you/i,
+    // Pathologizing
+    /you need help/i, /you'?re mentally ill/i, /you have issues/i,
+    /get over it/i, /just get over it already/i,
+  ],
+};
+
+function checkGaslighting(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? GASLIGHT_PATTERNS.zh : GASLIGHT_PATTERNS.en;
+  const signals = [];
+  for (const pat of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      signals.push({ pattern: pat.source.slice(0, 30), type: 'gaslighting' });
+    }
+  }
+  const count = signals.length;
+  const score = Math.min(1, count * 0.2);
+  return { count, signals, score };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -1238,6 +1419,7 @@ module.exports = {
   checkPromptInjection,
   checkCodeSecurity,
   checkDehumanization,
+  checkBullshitRecognition,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
