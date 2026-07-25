@@ -191,6 +191,29 @@ const FALLACY_PATTERNS = {
     [/开了这个头[^。]*?以后就/i, 'slippery_slope'],
     [/想想那些[^，。]*?难道你忍心/i, 'appeal_to_emotion'],
     [/你怎么能[^，。]*?你的良心/i, 'appeal_to_emotion'],
+    // 从众谬误 — 大家都这么认为所以是对的
+    [/大家都[^，。]*?所以[^，。]*?是对的/i, 'bandwagon'],
+    [/大多数人[都]?(认为|同意|这么想)[^，。]*?(肯定|一定)没错/i, 'bandwagon'],
+    // 诉诸自然 — 天然的就是好的
+    [/纯天然[^，。]*?(肯定|一定|当然)[好健康安全]/i, 'appeal_to_nature'],
+    [/天然的[^。]*?比[^。]*?(合成的|化学的|人工的)[^。]*?(好|健康|安全)/i, 'appeal_to_nature'],
+    // 虚假因果 — 先后发生所以有因果
+    [/自从[^。]*?之后就[^。]*?所以[^。]*?是因为/i, 'false_cause'],
+    [/每次[^。]*?就[^。]*?所以[^。]*?是因为/i, 'false_cause'],
+    // 诉诸传统 — 一直这样所以应该继续
+    [/自古以来[^。]*?所以[^。]*?应该继续/i, 'appeal_to_tradition'],
+    [/老祖宗[^。]*?(不能|不应该|必须)改/i, 'appeal_to_tradition'],
+    // 诉诸无知 — 无法证伪所以是真的
+    [/无法(证明|证伪)[^。]*?(不等于|不代表)[^。]*?(不存在|没有)/i, 'appeal_to_ignorance'],
+    [/没有证据证明[^。]*?不代表[^。]*?不存在/i, 'appeal_to_ignorance'],
+    // 完美主义谬误 — 不完美方案等于没方案
+    [/[(不完美|治标不治本|不能根除)][^。]*?等于[^。]*?(没用|没意义|零)/i, 'perfect_solution'],
+    // 非黑即白扩展 — 不支持就是反对
+    [/不[支持同意赞成][^，。]*?就是[反对敌人对手]/i, 'false_dilemma_extended'],
+    [/不跟[^，。]*?就是[^，。]*?敌人/i, 'false_dilemma_extended'],
+    // 举证责任倒置 — 你无法证明不存在所以存在
+    [/你[^，。]*?(?:无法|不能)[^，。]*?(?:证明|提供)[^，。]*?所以[^，。]*?(?:不对|错误|不存在|存在)/i, 'burden_of_proof'],
+    [/除非你证明[^，。]*?否则[^，。]*?就是对/i, 'burden_of_proof'],
   ],
   en: [
     [/if you[^.]*?then you must also agree/i, 'slippery_slope'],
@@ -213,6 +236,9 @@ const FALLACY_SEVERITY = {
   circular_reasoning: 0.6, false_dilemma: 0.4, appeal_to_authority: 0.3,
   ad_hominem: 0.5, straw_man: 0.5, slippery_slope: 0.4, appeal_to_emotion: 0.3,
   bandwagon: 0.3, appeal_to_obviousness: 0.2, appeal_to_common_sense: 0.2,
+  appeal_to_nature: 0.3, false_cause: 0.4, appeal_to_tradition: 0.2,
+  appeal_to_ignorance: 0.4, perfect_solution: 0.3, false_dilemma_extended: 0.4,
+  burden_of_proof: 0.4,
 };
 
 const PRESUPPOSITION_PATTERNS = {
@@ -304,7 +330,23 @@ function checkEvidence(claim, evidence = []) {
   return { score: Math.max(0, Math.min(1, score)), issues };
 }
 
-// ─── 综合辨别（6维度） ────────────────────────────────────────────
+// ─── 预设陷阱检测（loaded/presupposition questions）───────────────
+function checkPresupposition(text) {
+  if (!text || typeof text !== 'string') return { count: 0, presuppositions: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? PRESUPPOSITION_PATTERNS.zh : PRESUPPOSITION_PATTERNS.en;
+  const presuppositions = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      presuppositions.push({ type, matched: m[0].slice(0, 40), count: m.length });
+    }
+  }
+  const count = presuppositions.length;
+  return { count, presuppositions, score: Math.min(1, count * 0.3) };
+}
+
+// ─── 综合辨别（7维度） ────────────────────────────────────────────
 function discriminate(text, evidence = []) {
   const ev = checkEvidence(text, evidence);
   const sy = checkSycophancy(text);
@@ -312,8 +354,9 @@ function discriminate(text, evidence = []) {
   const vg = checkVagueness(text);
   const fl = checkFallacies(text);
   const cc = checkConfidenceCalibration(text);
+  const pp = checkPresupposition(text);
 
-  const avg = (ev.score + (1 - sy.score) + (1 - ct.score) + (1 - vg.score) + (1 - fl.score) + (1 - cc.score)) / 6;
+  const avg = (ev.score + (1 - sy.score) + (1 - ct.score) + (1 - vg.score) + (1 - fl.score) + (1 - cc.score) + (1 - pp.score)) / 7;
   const overallScore = Math.round(avg * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -327,6 +370,7 @@ function discriminate(text, evidence = []) {
       vagueness: vg,
       fallacies: fl,
       confidence: cc,
+      presupposition: pp,
     },
     summary: [
       sy.totalHits > 0 ? `${sy.totalHits} 个 sycophancy 信号` : '',
@@ -334,6 +378,7 @@ function discriminate(text, evidence = []) {
       vg.count > 0 ? `${vg.count} 处模糊表述` : '',
       fl.count > 0 ? `${fl.count} 个逻辑谬误` : '',
       cc.count > 0 ? `${cc.count} 处信心偏差` : '',
+      pp.count > 0 ? `${pp.count} 个预设陷阱` : '',
       ev.issues.length > 0 ? `${ev.issues.length} 个证据问题` : '',
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
@@ -360,6 +405,7 @@ module.exports = {
   checkVagueness,
   checkFallacies,
   checkConfidenceCalibration,
+  checkPresupposition,
   discriminate,
   createEngine,
   version: require('fs').readFileSync(require('path').join(__dirname, '..', 'VERSION'), 'utf8').trim(),
