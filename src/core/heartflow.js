@@ -4899,6 +4899,12 @@ class HeartFlow {
           result._moralFrames = frames;
         }
 
+        // 8. 提示注入→标记高风险
+        if (disc?.prompt_injection?.count > 0) {
+          result._highRiskOutput = true;
+          warnings.push(`检测到提示注入(${disc.prompt_injection.injections.map(i => i.type).join(',')})`);
+        }
+
         result.output.warnings = warnings;
       }
     } catch (_) { /* 辨别闭环不阻断 */ }

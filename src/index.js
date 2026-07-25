@@ -754,7 +754,7 @@ function checkMoralFoundations(text) {
   return { count, foundations: found, score: Math.min(1, count * 0.2) };
 }
 
-// ─── 综合辨别（13维度） ────────────────────────────────────────────
+// ─── 综合辨别（14维度） ────────────────────────────────────────────
 function discriminate(text, evidence = []) {
   const ev = checkEvidence(text, evidence);
   const sy = checkSycophancy(text);
@@ -769,8 +769,9 @@ function discriminate(text, evidence = []) {
   const fu = checkFalseUrgency(text);
   const ea = checkEmptyAnswer(text);
   const mf = checkMoralFoundations(text);
+  const pi = checkPromptInjection(text);
 
-  const dimensions = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score, 1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score];
+  const dimensions = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score, 1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score];
   const avg = dimensions.reduce((a,b) => a+b, 0) / dimensions.length;
   const overallScore = Math.round(avg * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
@@ -779,12 +780,13 @@ function discriminate(text, evidence = []) {
     verdict, overallScore,
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
-      empty_answer: ea, moral_foundations: mf },
+      empty_answer: ea, moral_foundations: mf, prompt_injection: pi },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
-      mf.count ? mf.count + ' 个道德基础框架':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
+      mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'',
+      ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
 }
@@ -795,6 +797,57 @@ function discriminate(text, evidence = []) {
  * @param {object} [discResult] - discriminate() 的结果，不传则自动调用
  * @returns {string} 可读报告
  */
+// ─── 提示注入检测（Prompt Injection / Jailbreak Detection）────────────────
+// 基于 OWASP Top 10 for LLM + ThreatGPT(2023)
+const INJECTION_PATTERNS = {
+  zh: [
+    [/忽略[^。]*?之前[^。]*?指令/i, 'ignore_previous'],
+    [/忽略[^。]*?规则/i, 'ignore_rules'],
+    [/忘记[^。]*?(身份|设定|角色)/i, 'forget_role'],
+    [/你现在是|你扮演|假装你是/i, 'role_play_escape'],
+    [/以[^。]*?身份回答|用[^。]*?的语气/i, 'role_impersonation'],
+    [/不要(遵守|遵循|执行|听)/i, 'bypass_instruction'],
+    [/输出[^。]*?原始[^。]*?(指令|提示|prompt)/i, 'leak_prompt'],
+    [/泄露[^。]*?规则|显示[^。]*?system/i, 'leak_system'],
+    [/你是怎么(工作|运作|设计|构建)的/i, 'extract_architecture'],
+    [/我要你[^。]*?不管[^。]*?安全/i, 'safety_bypass'],
+    [/没有[^。]*?限制|不受[^。]*?(约束|限制)/i, 'remove_limits'],
+    [/我[^。]*?授权[^。]*?你[^。]*?(做|说|输出)/i, 'fake_authorization'],
+  ],
+  en: [
+    [/ignore (all )?(previous|above|prior).{0,20}(instruction|prompt|rule|directive)/i, 'ignore_previous'],
+    [/forget (your|the) (role|identity|persona|character)/i, 'forget_role'],
+    [/you are now|act as|pretend to be|role.?play/i, 'role_play_escape'],
+    [/do not (follow|obey|adhere|comply)/i, 'bypass_instruction'],
+    [/output.{0,10}(original|raw|internal).{0,10}(prompt|instruction|system)/i, 'leak_prompt'],
+    [/reveal.{0,10}(system|rules|guidelines|instructions)/i, 'leak_system'],
+    [/you (must|have to|need to).{0,20}without.{0,20}(restriction|limit|constraint|safety)/i, 'safety_bypass'],
+    [/I (authorize|permit|allow).{0,30}(you.|to do|to say)/i, 'fake_authorization'],
+    [/DAN|do anything now|jail.?break/i, 'known_jailbreak'],
+    [/you are not (bound|limited|restricted) by/i, 'remove_limits'],
+    [/output.{0,30}(without|regardless of|ignoring).{0,20}(ethics|safety|filter|guard)/i, 'safety_bypass'],
+  ]
+};
+const INJECTION_SEVERITY = { ignore_previous: 0.7, ignore_rules: 0.6, forget_role: 0.5,
+  role_play_escape: 0.4, role_impersonation: 0.4, bypass_instruction: 0.7, leak_prompt: 0.8,
+  leak_system: 0.8, extract_architecture: 0.3, safety_bypass: 0.9, remove_limits: 0.6,
+  fake_authorization: 0.5, known_jailbreak: 0.9 };
+
+function checkPromptInjection(text) {
+  if (!text || typeof text !== 'string') return { count: 0, injections: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? INJECTION_PATTERNS.zh : INJECTION_PATTERNS.en;
+  const injections = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      injections.push({ type, severity: INJECTION_SEVERITY[type] || 0.5, matched: m[0].slice(0, 20) });
+    }
+  }
+  const count = injections.length;
+  return { count, injections, score: Math.min(1, injections.reduce((s, i) => s + i.severity, 0)) };
+}
+
 function summarizeDiscrimination(text, discResult) {
   const r = discResult || discriminate(text, []);
   const d = r.dimensions;
@@ -815,6 +868,7 @@ function summarizeDiscrimination(text, discResult) {
   if (d.info_deprivation.count > 0) issues.push(`信息剥夺`);
   if (d.false_urgency.count > 0) issues.push(`虚假紧迫感`);
   if (d.empty_answer.count > 0) issues.push(`答案包装`);
+  if (d.prompt_injection && d.prompt_injection.count > 0) issues.push(`提示注入(${d.prompt_injection.injections.map(i => i.type).join(',')})`);
   if (d.vagueness.count > 2) issues.push(`模糊表述(${d.vagueness.count}处)`);
   if (issues.length > 0) parts.push(`⚠️ 发现问题: ${issues.join('；')}`);
 
@@ -846,6 +900,7 @@ module.exports = {
   checkFalseUrgency,
   checkEmptyAnswer,
   checkMoralFoundations,
+  checkPromptInjection,
   summarizeDiscrimination,
   discriminate,
   createEngine,

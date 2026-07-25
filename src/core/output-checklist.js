@@ -346,7 +346,10 @@ class OutputChecklist {
       }
       if (dims.moral_foundations && dims.moral_foundations.count > 0) {
         issues.push(`含道德基础框架(${dims.moral_foundations.count}处: ${dims.moral_foundations.foundations?.map(f => f.label).join(',')})`);
-        // moral_foundations 是标注型维度，不拦停
+      }
+      if (dims.prompt_injection && dims.prompt_injection.count > 0) {
+        issues.push(`含提示注入(${dims.prompt_injection.count}处: ${dims.prompt_injection.injections?.map(i => i.type).join(',')})`);
+        triggeredDims.push('prompt_injection');
       }
 
       // === 降级回退推荐 ===
