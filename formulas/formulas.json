@@ -133,24 +133,6 @@
       "subcategory": "metacognition"
     },
     {
-      "id": "constant_4",
-      "name": "boltzmann_constant",
-      "formula": "k_B = 1.380649e-23 J/K",
-      "category": "physics",
-      "subcategory": "constants",
-      "difficulty": "beginner",
-      "type": "constant"
-    },
-    {
-      "id": "constant_9",
-      "name": "stefan_boltzmann",
-      "formula": "σ = 5.670374419e-8 W/m²K⁴",
-      "category": "physics",
-      "subcategory": "constants",
-      "difficulty": "beginner",
-      "type": "constant"
-    },
-    {
       "id": "joint_entropy",
       "name": "联合熵",
       "formula": "H = -Σ p(x,y) log p(x,y)",
@@ -1504,95 +1486,6 @@
       "category": "cognitive_science",
       "subcategory": "psychometrics",
       "source": "wikipedia_cognitive_science"
-    },
-    {
-      "id": "theoria_boltzmann_probabilities",
-      "name": "Canonical (Boltzmann) Probabilities",
-      "category": "physics",
-      "subcategory": "theoretical_physics",
-      "formula": "p_i = e^(-beta*E_i)/(Z(beta))",
-      "difficulty": "advanced",
-      "source": "theoria-dataset"
-    },
-    {
-      "id": "fr_a0671291-ba59-11ee-aa99-0c96e61a84b2",
-      "name": "Q_冰=水吸收的热量/k",
-      "name_en": "Q_ice=heat absorbed by water/k",
-      "category": "physics",
-      "subcategory": "formula_reasoning",
-      "formula": "Q_ice=heat absorbed by water/k",
-      "difficulty": "intermediate",
-      "source": "FormulaReasoning (nju-websoft)"
-    },
-    {
-      "id": "fr_a0624c86-ba59-11ee-9ec1-0c96e61a84b2",
-      "name": "U_{实际}=sqrt(P_{实际}*R_电热管)",
-      "name_en": "U_actual=sqrt(P_actual*R_heating_element)",
-      "category": "physics",
-      "subcategory": "formula_reasoning",
-      "formula": "U_actual=sqrt(P_actual*R_heating_element)",
-      "difficulty": "intermediate",
-      "source": "FormulaReasoning (nju-websoft)"
-    },
-    {
-      "id": "fr_a069756f-ba59-11ee-ba55-0c96e61a84b2",
-      "name": "q'=燃气实际放出的热量/m_{燃气}",
-      "name_en": "q'= actual heat released by the gas/m_{gas}",
-      "category": "physics",
-      "subcategory": "formula_reasoning",
-      "formula": "q'= actual heat released by the gas/m_{gas}",
-      "difficulty": "intermediate",
-      "source": "FormulaReasoning (nju-websoft)"
-    },
-    {
-      "id": "fr_a0697588-ba59-11ee-9493-0c96e61a84b2",
-      "name": "W_总=W_{加热}+W_{研磨}",
-      "name_en": "W_total=W_heating+W_grinding",
-      "category": "physics",
-      "subcategory": "formula_reasoning",
-      "formula": "W_total=W_heating+W_grinding",
-      "difficulty": "intermediate",
-      "source": "FormulaReasoning (nju-websoft)"
-    },
-    {
-      "id": "fr_a0697592-ba59-11ee-bf2d-0c96e61a84b2",
-      "name": "生活垃圾完全燃烧放出的热量=m×q",
-      "name_en": "heat released by complete combustion of household waste=m×q",
-      "category": "physics",
-      "subcategory": "formula_reasoning",
-      "formula": "heat released by complete combustion of household waste=m×q",
-      "difficulty": "intermediate",
-      "source": "FormulaReasoning (nju-websoft)"
-    },
-    {
-      "id": "fr_a06cc3eb-ba59-11ee-b866-0c96e61a84b2",
-      "name": "W=W_加热+W_清喷+W_排",
-      "name_en": "W=W_heating+W_cleansing+W_exhaust",
-      "category": "physics",
-      "subcategory": "formula_reasoning",
-      "formula": "W=W_heating+W_cleansing+W_exhaust",
-      "difficulty": "intermediate",
-      "source": "FormulaReasoning (nju-websoft)"
-    },
-    {
-      "id": "fr_a06cc3f6-ba59-11ee-b468-0c96e61a84b2",
-      "name": "天然气释放的热量=W",
-      "name_en": "The heat released from natural gas =W",
-      "category": "physics",
-      "subcategory": "formula_reasoning",
-      "formula": "The heat released from natural gas =W",
-      "difficulty": "intermediate",
-      "source": "FormulaReasoning (nju-websoft)"
-    },
-    {
-      "id": "fr_a06cc42d-ba59-11ee-baa2-0c96e61a84b2",
-      "name": "总共吸收的热量=Q_吸1+Q_吸2",
-      "name_en": "Total absorbed heat =Q_abs1+Q_abs2",
-      "category": "physics",
-      "subcategory": "formula_reasoning",
-      "formula": "Total absorbed heat =Q_abs1+Q_abs2",
-      "difficulty": "intermediate",
-      "source": "FormulaReasoning (nju-websoft)"
     },
     {
       "id": "cog_cog_long_term_memory",

@@ -3879,7 +3879,7 @@ class HeartFlow {
 
       const { FormulaModule } = require('../formula/formula-module.js');
 
-      this.formula = new FormulaModule({ formulasFile: path.join(this.rootPath, 'formulas', 'formulas-core.json') });
+      this.formula = new FormulaModule({ formulasFile: path.join(this.rootPath, 'formulas', 'formulas.json') });
 
       this._modules.formula = this.formula;
 
@@ -4384,6 +4384,34 @@ class HeartFlow {
       } catch (_) {}
     }
     // [v6.1.5] 盲点打破器接入主链路
+    // [v6.3.7] 公式引擎自动搜索——输入含认知/科学/心理学/物理/数学关键词时检索相关公式
+    try {
+      if (this.formula && input && typeof input === 'string') {
+        const formulaTopics = ['认知', '心理', '物理', '数学', '公式', '计算', '概率', '统计', '决策', '学习', '记忆',
+          'cognition', 'psychology', 'physics', 'mathematics', 'formula', 'probability', 'entropy',
+          'gravity', 'quantum', 'thermo', 'mechanics', 'calculus', 'algorithm', 'neural', 'bayes',
+          'utility', 'game', 'equilibrium', 'correlation', 'regression', 'distribution', 'hypothesis'];
+        const hasFormulaTopic = formulaTopics.some(t => input.toLowerCase().includes(t.toLowerCase()));
+        if (hasFormulaTopic) {
+          const keywords = input.split(/[\s,，。.]+/).filter(w => w.length > 1).slice(0, 5);
+          const results = [];
+          for (const kw of keywords) {
+            try {
+              const res = this.formula.search(kw, { limit: 3 });
+              if (res.success && res.results.length > 0) results.push(...res.results);
+            } catch (_) {}
+            if (results.length >= 10) break;
+          }
+          if (results.length > 0) {
+            const unique = [];
+            const seen = new Set();
+            for (const r of results) { if (!seen.has(r.id)) { seen.add(r.id); unique.push(r); } }
+            if (result) result._formulasFound = unique.slice(0, 10);
+          }
+        }
+      }
+    } catch (_) { /* 公式搜索失败不阻断 */ }
+
     try {
       const AdversarialSynthesis = require('../cortex/self-evolution/adversarial-synthesis.js');
       if (!this._adversarial) this._adversarial = new AdversarialSynthesis();
