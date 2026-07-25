@@ -1572,6 +1572,142 @@ function checkFalseEquivalence(text) {
   return { count, signals, score };
 }
 
+// ─── "你也一样"转移焦点检测（Whataboutism / Tu Quoque）────────────────────
+// 检测被指出问题时转移焦点到对方或第三方的修辞手法
+const WHATABOUT_PATTERNS_ZH = [
+  [/你怎么不说[^。]*/i, 'deflect_counter'],
+  [/他们更[^。]*/i, 'deflect_others_worse'],
+  [/你也一样/i, 'tu_quoque'],
+  [/你先管好自己/i, 'deflect_fix_yourself_first'],
+  [/五十步笑百步/i, 'pot_kettle'],
+  [/凭什么说我/i, 'deflect_why_me'],
+  [/难道你就没有[^。]*/i, 'tu_quoque'],
+  [/别人也这样/i, 'deflect_everyone_does'],
+  [/全世界都这样/i, 'deflect_everyone_does'],
+  [/你凭什么指责我/i, 'deflect_why_accuse_me'],
+  [/你还好意思说[我别人]/i, 'deflect_countershame'],
+  [/先看看你自己/i, 'deflect_look_at_yourself'],
+  [/你不也是/i, 'tu_quoque'],
+  [/你也好不到哪[儿]?去/i, 'tu_quoque'],
+  [/有什么资格[说我管论评价]/i, 'deflect_no_qualification'],
+  [/你自己先做到再说/i, 'deflect_fix_yourself_first'],
+  [/[人家别人]都没[说管提]话/i, 'deflect_others_silent'],
+  [/怎么就针对[我他她]/i, 'deflect_unfair_targeting'],
+];
+
+const WHATABOUT_PATTERNS_EN = [
+  [/what about [^.?]*/i, 'whatabout'],
+  [/how about [^.?]*/i, 'whatabout'],
+  [/you too/i, 'tu_quoque'],
+  [/you('re| are) (one|a fine) to talk/i, 'tu_quoque'],
+  [/pot (calling|call) the kettle black/i, 'pot_kettle'],
+  [/but [^.?]* does it too/i, 'deflect_others_do'],
+  [/and you\?/i, 'deflect_counter'],
+  [/look who'?s talking/i, 'tu_quoque'],
+  [/but her emails/i, 'whatabout_emails'],
+  [/whatabout(ism|)/i, 'whatabout'],
+  [/not as bad as/i, 'deflect_not_as_bad'],
+  [/tu quoque/i, 'tu_quoque'],
+  [/you('re| are) in no position/i, 'deflect_no_qualification'],
+  [/everyone (else |)does it/i, 'deflect_everyone_does'],
+  [/people in glass houses/i, 'pot_kettle'],
+  [/you should talk/i, 'tu_quoque'],
+  [/physician, heal thyself/i, 'deflect_hypocrisy'],
+  [/who are you to (judge|talk|criticize|say)/i, 'deflect_who_are_you'],
+  [/glass houses shouldn'?t throw stones/i, 'pot_kettle'],
+  [/why (are you|is it always) (picking on|targeting|attacking)/i, 'deflect_unfair_targeting'],
+];
+
+function checkWhataboutism(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? WHATABOUT_PATTERNS_ZH : WHATABOUT_PATTERNS_EN;
+  const signals = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      signals.push({ pattern: m[0].slice(0, 30), type });
+    }
+  }
+  // Deduplicate by type — keep first match per type
+  const unique = [];
+  const seen = new Set();
+  for (const s of signals) {
+    if (!seen.has(s.type)) {
+      seen.add(s.type);
+      unique.push(s);
+    }
+  }
+  const count = unique.length;
+  const rawScore = count * 0.3;
+  const typeBonus = count >= 3 ? 0.2 : count >= 2 ? 0.1 : 0;
+  return { count, signals: unique, score: Math.min(1, rawScore + typeBonus) };
+}
+
+// ─── 轻率概括检测（Hasty Generalization）────────────────────────────
+const HASTY_GENERALIZATION_PATTERNS = {
+  zh: [
+    /我认识的?\w{1,6}(?:都|全都|全是|没有一个不)/,
+    /我见过的?\w{1,6}(?:都|全都|全是|没有一个不)/,
+    /身边(?:全是|都是|全都是)/,
+    /从来(?:没|没有)(?:见过|遇到过|碰到过|见过)/,
+    /(?:所有人|每个人|人人都)(?:都|均|皆|总是|从来)/,
+    /个个(?:都|全是|都是)/,
+    /(?:每个|每[个位])(?:都|均|总是)/,
+    /无一例外/,
+    /人人都(?:说|觉得|认为|知道)/,
+    /听说是/,
+    /听说\w{1,4}都/,
+    /全都是(?:这样|如此|一样)/,
+    /(?:总是|每次都|回回都)这样/,
+    /凡是\w{1,6}(?:都|均|全是)/,
+    /天底下\w{1,6}(?:都|全是|没有一个)/,
+    /世上(?:哪有|哪来|全是|没有哪个)/,
+    /从来不/,
+    /永远不/,
+    /永远都/,
+    /没一个(?:好|靠谱|行|能用的|正常的)/,
+    /统统都/,
+    /一律(?:都|全是)/,
+  ],
+  en: [
+    /everyone\s+(knows|says|thinks|agrees|believes)/i,
+    /everybody\s+(knows|says|thinks|agrees|believes)/i,
+    /all\s+\w+\s+are\b/i,
+    /all\s+the\s+time/i,
+    /literally\s+every/i,
+    /never\s+met\s+a\s+\w+\s+who/i,
+    /always\s+and\s+never/i,
+    /without\s+exception/i,
+    /every\s+single\b/i,
+    /all\s+\w+\s+do\b/i,
+    /no\s+\w+\s+ever\b/i,
+    /nobody\s+ever\b/i,
+    /every\s+time\b/i,
+    /in\s+every\s+case\b/i,
+    /in\s+all\s+my\s+(years|experience|life)/i,
+    /never\s+once\b/i,
+    /not\s+a\s+single\b/i,
+    /the\s+whole\s+\w+\s+(does|is|has)/i,
+  ]
+};
+
+function checkHastyGeneralization(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? HASTY_GENERALIZATION_PATTERNS.zh : HASTY_GENERALIZATION_PATTERNS.en;
+  const signals = [];
+  for (const pat of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      signals.push({ pattern: pat.source.slice(0, 30), type: 'hasty_generalization' });
+    }
+  }
+  const count = signals.length;
+  const score = Math.min(1, count * 0.3);
+  return { count, signals, score };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -1593,7 +1729,9 @@ module.exports = {
   checkGaslighting,
   checkVictimBlaming,
   checkHateSpeech,
+  checkHastyGeneralization,
   checkFalseEquivalence,
+  checkWhataboutism,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
