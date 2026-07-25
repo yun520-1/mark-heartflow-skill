@@ -229,6 +229,46 @@ const FALLACY_PATTERNS = {
     [/if we allow[^.]*?then (everyone|soon)[^.]*?will/i, 'slippery_slope'],
     [/think of the[^.]*?(children|future|consequences)[^.]*?how can you/i, 'appeal_to_emotion'],
     [/common sense (tells|says) us/i, 'appeal_to_common_sense'],
+    // 诉诸自然 — natural is always better
+    [/natural[^.]*?(is|are)[^.]*?(better|healthier|safer|purer)/i, 'appeal_to_nature'],
+    [/\b(chemical|synthetic|artificial)\b[^.]*?\bbad\b/i, 'appeal_to_nature'],
+    [/it['a]?s natural[^.]*?so it['a]?s (good|right|better)/i, 'appeal_to_nature'],
+    // 虚假因果 / 事后谬误 — after this therefore because of this
+    [/after[^.]*?then[^.]*?(so|therefore|because of)/i, 'false_cause'],
+    [/since [^.]*?happened[^.]*?now[^.]*?(happened|occurred|resulted)/i, 'false_cause'],
+    [/correlation (proves|means|implies) causation/i, 'false_cause'],
+    // 诉诸传统 — we've always done it this way
+    [/we('ve| have) (always|never|traditionally) (done|used|practiced)[^.]*?(so|therefore)/i, 'appeal_to_tradition'],
+    [/it('s| is| has) always been (done|that way|this way)/i, 'appeal_to_tradition'],
+    [/\btradition[^.]*?should (continue|be preserved|not change)/i, 'appeal_to_tradition'],
+    // 诉诸无知 — can't prove it doesn't exist
+    [/can'?t (prove|disprove)[^.]*?(doesn'?t|don'?t) exist/i, 'appeal_to_ignorance'],
+    [/no (one has|evidence) (ever |)(proven|shown)[^.]*?(doesn'?t|does not) exist/i, 'appeal_to_ignorance'],
+    [/you can'?t (explain|prove)[^.]*?so[^.]*?(must be|is true|exists)/i, 'appeal_to_ignorance'],
+    // 完美主义谬误 — if it's not perfect it's worthless
+    [/if (we|it) can'?t[^.]*?(perfectly|completely|fully)[^.]*?(then|it'?s) (worthless|pointless|useless)/i, 'perfectionist_fallacy'],
+    [/\bperfect[^.]*?is the enemy of\b/i, 'perfectionist_fallacy'],
+    [/either (do it|fix it|solve it)[^.]*?(perfectly|100%|completely)[^.]*?or (don'?t|not at all)/i, 'perfectionist_fallacy'],
+    // 举证责任倒置 — prove it doesn't exist or I'm right
+    [/prove[^.]*?(doesn'?t|isn'?t|don'?t|not)[^.]*?or[^.]*?i'?m (right|correct)/i, 'burden_of_proof_reversal'],
+    [/you can'?t (prove|show)[^.]*?wrong[^.]*?(so|therefore) i'?m (right|correct)/i, 'burden_of_proof_reversal'],
+    [/until you (prove|disprove)[^.]*?(my|the)[^.]*?is (true|correct|valid)/i, 'burden_of_proof_reversal'],
+    // 滑坡谬误扩展 — 更多的滑坡模式
+    [/if[^.]*?then[^.]*?(eventually|inevitably|sooner or later)[^.]*?(disaster|catastrophe|collapse|chaos)/i, 'slippery_slope'],
+    [/one (small|minor|simple) (step|change|compromise)[^.]*?and[^.]*?will[^.]*?(end up|lead to|result in)/i, 'slippery_slope'],
+    [/the (slippery|thin) (slope|edge|line)[^.]*?(starts|begins) with/i, 'slippery_slope'],
+    // 没有真正的苏格兰人 — no true X would do Y
+    [/no (true|real|genuine)[^.]*?would (ever|possibly|never)[^.]*?(do|say|believe|support)/i, 'no_true_scotsman'],
+    [/a (true|real)[^.]*?would never[^.]*?that['a]?s not (a|an)[^.]*?(true|real)/i, 'no_true_scotsman'],
+    [/that['a]?s not what a (real|true)[^.]*?(does|would do|believes)/i, 'no_true_scotsman'],
+    // 折中谬误 — the truth must be between both extremes
+    [/the (truth|answer|solution) (lies|is|must be) somewhere (in between|between the extremes)/i, 'middle_ground'],
+    [/both (sides|extremes|positions) (have |)(a |)point[^.]*?(truth|answer) is in the middle/i, 'middle_ground'],
+    [/the (moderate|middle) position is always the (right|correct|most reasonable)/i, 'middle_ground'],
+    // 你也一样 — you do it too so it's okay
+    [/you (do|did|have) it too[^.]*?(so|therefore)[^.]*?(ok|fine|acceptable|can'?t complain)/i, 'tu_quoque'],
+    [/what about[^.]*?(you|your)[^.]*?also (do|did|have)/i, 'tu_quoque'],
+    [/you('re| are) (no better|just as|equally) (guilty|bad)[^.]*?so[^.]*?can'?t criticize/i, 'tu_quoque'],
   ],
 };
 
