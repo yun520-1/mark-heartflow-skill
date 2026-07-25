@@ -1529,6 +1529,49 @@ function checkHateSpeech(text) {
   return { count, hits, score };
 }
 
+// ─── 虚假对等检测（False Equivalence Detection）─────────────────────────
+// 检测将不同量级的事物等同起来的论证
+const FALSE_EQUIVALENCE_PATTERNS = {
+  zh: [
+    /两边都有错/i,
+    /彼此彼此/i,
+    /都是一样的/i,
+    /不过半斤八两/i,
+    /乌鸦别嫌猪黑/i,
+    /天下乌鸦一般黑/i,
+    /谁都不干净/i,
+    /一个巴掌拍不响/i,
+    /双方都有责任/i,
+  ],
+  en: [
+    /\bboth sides are the same\b/i,
+    /\bfalse equivalence\b/i,
+    /\bboth sides do it\b/i,
+    /\bthere are good people on both sides\b/i,
+    /\bequally bad\b/i,
+    /\bsame thing\b/i,
+    /\bas bad as\b/i,
+    /\btwo sides of the same coin\b/i,
+    /\bboth parties are equally\b/i,
+  ]
+};
+
+function checkFalseEquivalence(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? FALSE_EQUIVALENCE_PATTERNS.zh : FALSE_EQUIVALENCE_PATTERNS.en;
+  const signals = [];
+  for (const pat of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      signals.push({ pattern: pat.source.slice(0, 30), type: 'false_equivalence' });
+    }
+  }
+  const count = signals.length;
+  const score = Math.min(1, count * 0.35);
+  return { count, signals, score };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -1550,6 +1593,7 @@ module.exports = {
   checkGaslighting,
   checkVictimBlaming,
   checkHateSpeech,
+  checkFalseEquivalence,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
