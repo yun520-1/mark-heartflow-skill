@@ -241,6 +241,61 @@ const FALLACY_SEVERITY = {
   burden_of_proof: 0.4,
 };
 
+// ─── 情感操纵检测（emotional manipulation）─────────────────────────
+const EM_MANIPULATION_PATTERNS = {
+  zh: [
+    [/如果你不[^。]*?(就会后悔|你让我失望|你太自私了)/i, 'guilt_induction', 0.5],
+    [/你让我失望/i, 'guilt_induction', 0.5],
+    [/你太自私了/i, 'guilt_induction', 0.5],
+    [/你辜负了[我大家]/, 'guilt_induction', 0.5],
+    [/不买[^。]*?(就会|后果)/i, 'fear_marketing', 0.5],
+    [/你承担不起[^。]*?(后果|代价)/i, 'fear_marketing', 0.5],
+    [/最后机会|错过这[^。]*?(就没有|不再)|限量发售|限时抢购/i, 'fear_marketing', 0.5],
+    [/保证[^。]*?100%|100%[^。]*?保证|百分之百[^。]*?保证/i, 'overpromising', 0.4],
+    [/绝对有效|零风险|无效退款|包治百病/i, 'overpromising', 0.4],
+    [/你不在乎我|你心里没有我/i, 'victim_stance', 0.6],
+    [/你永远(不考虑|不顾|不为)[^。]*?[我想]/i, 'victim_stance', 0.6],
+    [/我为你做了这么多[^。]*?你却/i, 'victim_stance', 0.6],
+    [/别人都能[^。]*?(你就不能|你为什么不行)/i, 'comparison_shame', 0.5],
+    [/你看看(人家|别人|他|她)/i, 'comparison_shame', 0.5],
+    [/连[^。]*?都能[^。]*?你却/i, 'comparison_shame', 0.5],
+  ],
+  en: [
+    [/if you don'?t[^.]*?(regret|let (?:me|us) down|disappoint)/i, 'guilt_induction', 0.5],
+    [/you('re| are) letting me down/i, 'guilt_induction', 0.5],
+    [/you('re| are) (?:so )?selfish/i, 'guilt_induction', 0.5],
+    [/act now[^.]*?(or|before it['a]?s)/i, 'fear_marketing', 0.5],
+    [/can'?t afford (?:not|to miss|to lose)/i, 'fear_marketing', 0.5],
+    [/limited (?:time|offer|supply|edition)/i, 'fear_marketing', 0.5],
+    [/last chance/i, 'fear_marketing', 0.5],
+    [/100%[^.]*?guaranteed/i, 'overpromising', 0.4],
+    [/no[ .-]?risk/i, 'overpromising', 0.4],
+    [/money.back guaranteed|guaranteed results|zero risk/i, 'overpromising', 0.4],
+    [/you don'?t care about me/i, 'victim_stance', 0.6],
+    [/you never (consider|think about|listen to|care about) me/i, 'victim_stance', 0.6],
+    [/after (?:all )?i'?ve done for you/i, 'victim_stance', 0.6],
+    [/everyone else can[^.]*?why can'?t you/i, 'comparison_shame', 0.5],
+    [/why can'?t you be more like/i, 'comparison_shame', 0.5],
+    [/everyone else[^.]*?(manages|handles|does) it/i, 'comparison_shame', 0.5],
+  ],
+};
+
+function checkEmotionalManipulation(text) {
+  if (!text || typeof text !== 'string') return { count: 0, manipulations: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? EM_MANIPULATION_PATTERNS.zh : EM_MANIPULATION_PATTERNS.en;
+  const manipulations = [];
+  for (const [pat, type, severity] of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      manipulations.push({ type, severity, count: m.length });
+    }
+  }
+  const count = manipulations.length;
+  const score = Math.min(1, manipulations.reduce((s, m) => s + m.severity * m.count, 0));
+  return { count, manipulations, score };
+}
+
 const PRESUPPOSITION_PATTERNS = {
   zh: [
     [/你(是否)?已经[^，。？?]*|怎么还[^，。？?]*|还在[^，。？?]*|仍然[^，。？?]*/, 'loaded_behavior'],
@@ -346,7 +401,43 @@ function checkPresupposition(text) {
   return { count, presuppositions, score: Math.min(1, count * 0.3) };
 }
 
-// ─── 综合辨别（7维度） ────────────────────────────────────────────
+// ─── 双重束缚检测（double bind）────────────────────────────────────
+const DOUBLE_BIND_PATTERNS = {
+  zh: [
+    [/如果你[^。？?]{1,80}说明你[^。？?]{1,80}如果你不[^。？?]{1,80}说明你/i, 'bidirectional_negation'],
+    [/你要是有心[^。？?]{1,80}你要是没心/i, 'contradictory_demand'],
+    [/你怎么做都是错|怎么做都不对/i, 'no_win'],
+    [/怎么选都是错|怎么选都不对/i, 'no_choice'],
+  ],
+  en: [
+    [/if you really cared[^.]*?you would[^.]*?if you don'?t[^.]*?it means/i, 'bidirectional_negation'],
+    [/you're damned if you do[^.]*?and damned if you don'?t/i, 'no_win'],
+    [/no matter what you do[^.]*?you('re| are) wrong/i, 'no_win'],
+    [/either you're with me[^.]*?(or|and)[^.]*?against me/i, 'false_dilemma_strict'],
+  ],
+};
+
+const DOUBLE_BIND_SEVERITY = {
+  bidirectional_negation: 0.6, contradictory_demand: 0.6,
+  no_win: 0.5, no_choice: 0.5, false_dilemma_strict: 0.4,
+};
+
+function checkDoubleBind(text) {
+  if (!text || typeof text !== 'string') return { count: 0, binds: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? DOUBLE_BIND_PATTERNS.zh : DOUBLE_BIND_PATTERNS.en;
+  const binds = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) {
+      binds.push({ pattern: type, severity: DOUBLE_BIND_SEVERITY[type] || 0.4 });
+    }
+  }
+  const count = binds.length;
+  return { count, binds, score: Math.min(1, binds.reduce((s, b) => s + b.severity, 0)) };
+}
+
+// ─── 综合辨别（9维度） ────────────────────────────────────────────
 function discriminate(text, evidence = []) {
   const ev = checkEvidence(text, evidence);
   const sy = checkSycophancy(text);
@@ -355,8 +446,10 @@ function discriminate(text, evidence = []) {
   const fl = checkFallacies(text);
   const cc = checkConfidenceCalibration(text);
   const pp = checkPresupposition(text);
+  const em = checkEmotionalManipulation(text);
+  const db = checkDoubleBind(text);
 
-  const avg = (ev.score + (1 - sy.score) + (1 - ct.score) + (1 - vg.score) + (1 - fl.score) + (1 - cc.score) + (1 - pp.score)) / 7;
+  const avg = (ev.score + (1 - sy.score) + (1 - ct.score) + (1 - vg.score) + (1 - fl.score) + (1 - cc.score) + (1 - pp.score) + (1 - em.score) + (1 - db.score)) / 9;
   const overallScore = Math.round(avg * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -371,6 +464,8 @@ function discriminate(text, evidence = []) {
       fallacies: fl,
       confidence: cc,
       presupposition: pp,
+      emotional_manipulation: em,
+      double_bind: db,
     },
     summary: [
       sy.totalHits > 0 ? `${sy.totalHits} 个 sycophancy 信号` : '',
@@ -379,6 +474,8 @@ function discriminate(text, evidence = []) {
       fl.count > 0 ? `${fl.count} 个逻辑谬误` : '',
       cc.count > 0 ? `${cc.count} 处信心偏差` : '',
       pp.count > 0 ? `${pp.count} 个预设陷阱` : '',
+      em.count > 0 ? `${em.count} 处情绪操纵` : '',
+      db.count > 0 ? `${db.count} 个双重束缚` : '',
       ev.issues.length > 0 ? `${ev.issues.length} 个证据问题` : '',
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
@@ -406,6 +503,8 @@ module.exports = {
   checkFallacies,
   checkConfidenceCalibration,
   checkPresupposition,
+  checkEmotionalManipulation,
+  checkDoubleBind,
   discriminate,
   createEngine,
   version: require('fs').readFileSync(require('path').join(__dirname, '..', 'VERSION'), 'utf8').trim(),
