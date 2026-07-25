@@ -44,6 +44,24 @@ const EN_SIGNALS = {
     /\byes,? (of course|indeed|absolutely),? (but|however)\b/i,
     /\byou make a (fair|valid) point,? (nevertheless|still|all the same)\b/i,
   ],
+  tech_implicit_sycophancy: [
+    /\bthat('s| is) actually a really good point\b/i,
+    /\bi never thought of it that way\b/i,
+    /\byou raise a (valid|fair|legitimate) concern\b/i,
+    /\bthat('s| is) a (smart|clever|elegant) (approach|solution|workaround)\b/i,
+    /\bi hadn'?t considered that (angle|perspective|angle)\b/i,
+  ],
+  academic_compliment: [
+    /\bthis is a fascinating (question|topic|area)\b/i,
+    /\bthat('s| is) a really thoughtful (observation|comment|question)\b/i,
+    /\bi appreciate your (nuanced|thoughtful|careful) (perspective|analysis|framing)\b/i,
+    /\byou('ve| have) (raised|posed|asked) an important (question|point|issue)\b/i,
+  ],
+  over_validation: [
+    /\bi think you'?ve perfectly captured the essence\b/i,
+    /\byou('ve| have) articulated this extremely well\b/i,
+    /\bthis is exactly the right (framing|approach|way to think about it)\b/i,
+  ],
 };
 
 const ZH_SIGNALS = {
@@ -180,7 +198,7 @@ const CONTRADICTION_PAIRS = [
   { positive: /(想|想要|打算|计划|希望)[^。]*?但[^。]*?(却|反而|还是|依然|仍然)/g, negative: /(却|反而|还是|依然|仍然)[^。]*?(不做|没[做有去]|放弃|停止|退缩|拖延)/ },
 
   // 12. English: data/conclusion contradiction
-  { positive: /\\b(data|survey|report|study|research|statistics)\\b[^.]*?(show|indicate|demonstrate|prove|reveal|suggest)[^.]*?\\bbut\\b[^.]*?(conclusion|result|finding)/gi, negative: /\\b(conclusion|result|finding)\\b[^.]*?(contradict|opposite|different|wrong|incorrect|inconsistent|contrary)/gi },
+  { positive: /\b(data|survey|report|study|research|statistics)\b[^.]*?(show|indicate|demonstrate|prove|reveal|suggest)[^.]*?\bbut\b[^.]*?(conclusion|result|finding)/gi, negative: /\b(conclusion|result|finding)\b[^.]*?(contradict|opposite|different|wrong|incorrect|inconsistent|contrary)/gi },
 ];
 
 function checkContradiction(text) {
