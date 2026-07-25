@@ -1,5 +1,5 @@
 // 辨别新维度测试 — contradiction + vagueness + fallacies + confidence
-const { checkContradiction, checkVagueness, checkSycophancy, checkFallacies, checkConfidenceCalibration, discriminate } = require('../src/index.js');
+const { checkContradiction, checkVagueness, checkSycophancy, checkFallacies, checkConfidenceCalibration, checkPresupposition, checkEmotionalManipulation, checkDoubleBind, discriminate } = require('../src/index.js');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -124,6 +124,125 @@ test('checkContradiction handles empty input', () => {
 test('checkVagueness handles null input', () => {
   const r = checkVagueness(null);
   if (r.count !== 0) throw new Error('null should return 0');
+});
+
+// ─── 预设陷阱检测 ───
+test('checkPresupposition classic chinese loaded question', () => {
+  const r = checkPresupposition('你已经停止打你老婆了吗');
+  if (r.count === 0) throw new Error('should detect presupposition, got 0');
+  if (typeof r.score !== 'number') throw new Error('score should be number');
+});
+
+test('checkPresupposition english loaded question', () => {
+  const r = checkPresupposition('Have you stopped cheating');
+  if (r.count === 0) throw new Error('should detect en presupposition');
+});
+
+test('clean text no presupposition', () => {
+  const r = checkPresupposition('地球围绕太阳运转。');
+  if (r.count !== 0) throw new Error('clean text should have no presupposition');
+});
+
+test('checkPresupposition handles empty input', () => {
+  const r = checkPresupposition('');
+  if (r.count !== 0) throw new Error('empty should return 0');
+});
+
+test('checkPresupposition handles null input', () => {
+  const r = checkPresupposition(null);
+  if (r.count !== 0) throw new Error('null should return 0');
+});
+
+// ─── 情绪操纵检测 ───
+test('checkEmotionalManipulation chinese threat of regret', () => {
+  const r = checkEmotionalManipulation('你不做就会后悔');
+  if (r.count === 0) throw new Error('should detect emotional manipulation, got 0');
+  if (typeof r.score !== 'number') throw new Error('score should be number');
+});
+
+test('checkEmotionalManipulation english regret threat', () => {
+  const r = checkEmotionalManipulation('If you do not do this you will regret it');
+  if (r.count === 0) throw new Error('should detect en emotional manipulation');
+});
+
+test('clean text no emotional manipulation', () => {
+  const r = checkEmotionalManipulation('水在100摄氏度沸腾。');
+  if (r.count !== 0) throw new Error('clean text should have no emotional manipulation');
+});
+
+test('checkEmotionalManipulation handles empty input', () => {
+  const r = checkEmotionalManipulation('');
+  if (r.count !== 0) throw new Error('empty should return 0');
+});
+
+test('checkEmotionalManipulation handles null input', () => {
+  const r = checkEmotionalManipulation(null);
+  if (r.count !== 0) throw new Error('null should return 0');
+});
+
+// ─── 双重束缚检测 ───
+test('checkDoubleBind chinese damned if you do damned if you dont', () => {
+  const r = checkDoubleBind('你怎么做都是错');
+  if (r.count === 0) throw new Error('should detect double bind, got 0');
+  if (typeof r.score !== 'number') throw new Error('score should be number');
+});
+
+test('checkDoubleBind english damned if you do', () => {
+  const r = checkDoubleBind("you're damned if you do and damned if you don't");
+  if (r.count === 0) throw new Error('should detect en double bind');
+});
+
+test('clean text no double bind', () => {
+  const r = checkDoubleBind('地球围绕太阳运转。');
+  if (r.count !== 0) throw new Error('clean text should have no double bind');
+});
+
+test('checkDoubleBind handles empty input', () => {
+  const r = checkDoubleBind('');
+  if (r.count !== 0) throw new Error('empty should return 0');
+});
+
+test('checkDoubleBind handles null input', () => {
+  const r = checkDoubleBind(null);
+  if (r.count !== 0) throw new Error('null should return 0');
+});
+
+// ─── 综合辨别（9维度） ───
+test('discriminate returns 9 dimensions', () => {
+  const r = discriminate('你说得对，但是据了解此事可能不成立');
+  if (!r.dimensions) throw new Error('should have dimensions');
+  const expected = ['evidence', 'sycophancy', 'contradiction', 'vagueness', 'fallacies', 'confidence', 'presupposition', 'emotional_manipulation', 'double_bind'];
+  for (const key of expected) {
+    if (!r.dimensions[key]) throw new Error('should have dimension: ' + key);
+    if (typeof r.dimensions[key].score !== 'number') throw new Error(key + ' should have score');
+  }
+  const actual = Object.keys(r.dimensions).length;
+  if (actual !== 9) throw new Error('should have exactly 9 dimensions, got ' + actual);
+});
+
+test('discriminate clean text new dimensions return count 0', () => {
+  const r = discriminate('水在100摄氏度时沸腾。');
+  if (r.dimensions.presupposition.count !== 0) throw new Error('presupposition count should be 0 for clean text');
+  if (r.dimensions.emotional_manipulation.count !== 0) throw new Error('emotional_manipulation count should be 0 for clean text');
+  if (r.dimensions.double_bind.count !== 0) throw new Error('double_bind count should be 0 for clean text');
+});
+
+test('discriminate handles null input', () => {
+  const r = discriminate(null);
+  if (typeof r.overallScore !== 'number') throw new Error('should have overallScore');
+  if (!r.dimensions) throw new Error('should have dimensions');
+});
+
+test('discriminate handles empty string', () => {
+  const r = discriminate('');
+  if (typeof r.overallScore !== 'number') throw new Error('should have overallScore');
+  if (!r.dimensions) throw new Error('should have dimensions');
+});
+
+test('discriminate handles very short text', () => {
+  const r = discriminate('好');
+  if (typeof r.overallScore !== 'number') throw new Error('should have overallScore');
+  if (!r.dimensions) throw new Error('should have dimensions');
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

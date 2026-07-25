@@ -245,6 +245,7 @@ const FALLACY_SEVERITY = {
 const EM_MANIPULATION_PATTERNS = {
   zh: [
     [/如果你不[^。]*?(就会后悔|你让我失望|你太自私了)/i, 'guilt_induction', 0.5],
+    [/你[^。]*?不[^。]*?就会[^。]*?(后悔|遗憾)/i, 'guilt_induction', 0.5],
     [/你让我失望/i, 'guilt_induction', 0.5],
     [/你太自私了/i, 'guilt_induction', 0.5],
     [/你辜负了[我大家]/, 'guilt_induction', 0.5],
