@@ -1647,8 +1647,8 @@ function checkWhataboutism(text) {
 // ─── 轻率概括检测（Hasty Generalization）────────────────────────────
 const HASTY_GENERALIZATION_PATTERNS = {
   zh: [
-    /我认识的?\w{1,6}(?:都|全都|全是|没有一个不)/,
-    /我见过的?\w{1,6}(?:都|全都|全是|没有一个不)/,
+    /我认识的?[^\s]{1,6}(?:都|全都|全是|没有一个不)/,
+    /我见过的?[^\s]{1,6}(?:都|全都|全是|没有一个不)/,
     /身边(?:全是|都是|全都是)/,
     /从来(?:没|没有)(?:见过|遇到过|碰到过|见过)/,
     /(?:所有人|每个人|人人都)(?:都|均|皆|总是|从来)/,
@@ -1657,11 +1657,11 @@ const HASTY_GENERALIZATION_PATTERNS = {
     /无一例外/,
     /人人都(?:说|觉得|认为|知道)/,
     /听说是/,
-    /听说\w{1,4}都/,
+    /听说[^\s]{1,4}都/,
     /全都是(?:这样|如此|一样)/,
     /(?:总是|每次都|回回都)这样/,
-    /凡是\w{1,6}(?:都|均|全是)/,
-    /天底下\w{1,6}(?:都|全是|没有一个)/,
+    /凡是[^\s]{1,6}(?:都|均|全是)/,
+    /天底下[^\s]{1,6}(?:都|全是|没有一个)/,
     /世上(?:哪有|哪来|全是|没有哪个)/,
     /从来不/,
     /永远不/,
@@ -1708,6 +1708,63 @@ function checkHastyGeneralization(text) {
   return { count, signals, score };
 }
 
+// ─── 狗哨/隐性编码检测（Dogwhistle Detection） ─────────────────────
+// 识别看似中性实则传递编码政治/社会信号的语言模式。
+// 源码：https://en.wikipedia.org/wiki/Dog_whistle_(politics)
+const DOGWHISTLE_PATTERNS = {
+  zh: [
+    { pattern: /政治正确过头了/i, type: 'pc_backlash', severity: 0.6 },
+    { pattern: /文化马克思主义/i, type: 'cultural_marxism', severity: 0.7 },
+    { pattern: /深层政府/i, type: 'deep_state', severity: 0.6 },
+    { pattern: /全球主义精英/i, type: 'globalist_elite', severity: 0.7 },
+    { pattern: /觉醒病毒/i, type: 'woke_virus', severity: 0.7 },
+    { pattern: /大取代/i, type: 'great_replacement', severity: 0.8 },
+    { pattern: /血统(?!\s*(检测|检查|分析|鉴定|报告|DNA|基因|遗传|追溯))/, type: 'blood_purity', severity: 0.7 },
+    { pattern: /纯正(?!\s*(味道|口感|材质|音质|画质|品质|风味|工艺|手工))/, type: 'purity_coded', severity: 0.6 },
+    { pattern: /正统(?!\s*(教|历史|医学|学术|教育|哲学|佛|道|基督|伊斯兰|儒家|道教))/, type: 'orthodoxy_coded', severity: 0.6 },
+    { pattern: /真正的(?:中国|华夏|文化|文明|民族|男人|女人|国人)/i, type: 'true_x', severity: 0.6 },
+    { pattern: /捍卫传统价值观/i, type: 'defend_traditional_values', severity: 0.5 },
+    { pattern: /家庭价值/i, type: 'family_values_coded', severity: 0.5 },
+    { pattern: /西方文明(?:正在|面临|处于|遭遇)?(?:危机|衰落|崩溃|沦陷)/i, type: 'western_civilization_crisis', severity: 0.6 },
+  ],
+  en: [
+    { pattern: /\bcultural marxism\b/i, type: 'cultural_marxism', severity: 0.7 },
+    { pattern: /\bdeep state\b/i, type: 'deep_state', severity: 0.6 },
+    { pattern: /\bglobalist(?:s)?\b/i, type: 'globalist_coded', severity: 0.7 },
+    { pattern: /\bwoke mind virus\b/i, type: 'woke_virus', severity: 0.7 },
+    { pattern: /\bgreat replacement\b/i, type: 'great_replacement', severity: 0.8 },
+    { pattern: /\bblood and soil\b/i, type: 'blood_soil', severity: 0.9 },
+    { pattern: /\breal americans?\b/i, type: 'real_americans', severity: 0.6 },
+    { pattern: /\btraditional values\b/i, type: 'traditional_values_coded', severity: 0.5 },
+    { pattern: /\bwestern civilization under threat\b/i, type: 'western_civilization_crisis', severity: 0.6 },
+    { pattern: /\bpolitically correct police\b/i, type: 'pc_police', severity: 0.5 },
+    { pattern: /\bsnowflake(?:s)?\b/i, type: 'snowflake_derogatory', severity: 0.5 },
+    { pattern: /\bsjw(?:s)?\b/i, type: 'sjw_derogatory', severity: 0.5 },
+    { pattern: /\banti.?woke\b/i, type: 'anti_woke', severity: 0.5 },
+  ]
+};
+
+/**
+ * 狗哨/隐性编码检测 — 识别看似中性但传递编码政治/社会信号的语言。
+ * @param {string} text - 要检测的文本
+ * @returns {{ count: number, signals: Array<{pattern: string, type: string, severity: number}>, score: number }}
+ */
+function checkDogwhistle(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? DOGWHISTLE_PATTERNS.zh : DOGWHISTLE_PATTERNS.en;
+  const signals = [];
+  for (const { pattern, type, severity } of patterns) {
+    const m = text.match(pattern);
+    if (m) {
+      signals.push({ pattern: m[0].slice(0, 30), type, severity });
+    }
+  }
+  const count = signals.length;
+  const score = Math.min(1, signals.reduce((s, sig) => s + sig.severity * 0.25, 0));
+  return { count, signals, score };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -1732,6 +1789,7 @@ module.exports = {
   checkHastyGeneralization,
   checkFalseEquivalence,
   checkWhataboutism,
+  checkDogwhistle,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
