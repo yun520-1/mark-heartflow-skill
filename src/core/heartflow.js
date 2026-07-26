@@ -4781,6 +4781,8 @@ class HeartFlow {
             // ACT-R
             calc.actrBaseLevel = bridge.actrBaseLevel([3600, 7200, 14400, 28800, 86400].map(s => s * 1000));
             calc.actrActivation = bridge.actrActivation(1.5, 0.3, 0.1, 0.2);
+            calc.actrNoise = bridge.actrNoise([0.5, 0.8, 0.3, 0.7], 0.5);
+            calc.softmaxPolicy = bridge.softmaxPolicy([0.5, 1.0, 0.3], 0.5);
           }
 
           // 4. 认知/心理类 → cognitiveDissonance + yerkes + flow + emotionBlend + socialInfluence
