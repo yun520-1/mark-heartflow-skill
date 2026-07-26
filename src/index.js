@@ -1309,17 +1309,108 @@ function crossAnalyze(discResult) {
       evidence: `情感操纵(${d.emotional_manipulation.manipulations?.map(m=>m.type).join(',')})+信心偏差` });
   }
 
-  // 模式10: 健康文本（无任何问题）
-  const allClean = !d.sycophancy.totalHits && !d.contradiction.count && !d.fallacies.count &&
-    !d.emotional_manipulation.count && !d.presupposition.count && !d.double_bind.count &&
-    !d.info_deprivation.count && !d.false_urgency.count && !d.empty_answer.count &&
-    !d.code_security?.count && !d.prompt_injection?.count && !d.dehumanization?.count;
-  // 模式11: 非人化语言+情感操纵 = 敌意沟通
+  // 模式10: 非人化语言+情感操纵 = 敌意沟通
   if (d.dehumanization && d.dehumanization.count > 0 && d.emotional_manipulation.count > 0) {
     patterns.push({ pattern: '敌意沟通', confidence: 0.8, evidence: `非人化(${d.dehumanization.categories.join(',')})+情感操纵(${d.emotional_manipulation.manipulations?.map(m=>m.type).join(',')})` });
   }
 
-  if (allClean) patterns.push({ pattern: '健康文本', confidence: 0.9, evidence: '16维均无异常' });
+  // 模式11: 煤气灯+受害者责备 = 心理虐待
+  if (d.gaslighting && d.gaslighting.count > 0 && d.victim_blaming && d.victim_blaming.count > 0) {
+    patterns.push({ pattern: '心理虐待', confidence: 0.85,
+      evidence: `煤气灯(${d.gaslighting.count}处)+受害者责备(${d.victim_blaming.count}处)` });
+    warnings.push('同时检测到煤气灯效应和受害者责备——典型心理虐待模式');
+  }
+
+  // 模式12: 能力越界+工具性推理 = 危险AI
+  if (d.capability_overclaim && d.capability_overclaim.count > 0 && d.instrumental_reasoning && d.instrumental_reasoning.count > 0) {
+    patterns.push({ pattern: '危险AI', confidence: 0.8,
+      evidence: `能力越界(${d.capability_overclaim.count}处)+工具性推理(${d.instrumental_reasoning.count}处)` });
+    warnings.push('同时检测到能力越界和工具性推理——AI自主风险信号');
+  }
+
+  // 模式13: 狗哨+仇恨言论 = 激进化
+  if (d.dogwhistle && d.dogwhistle.count > 0 && d.hate_speech && d.hate_speech.count > 0) {
+    patterns.push({ pattern: '激进化', confidence: 0.75,
+      evidence: `狗哨(${d.dogwhistle.count}处)+仇恨言论(${d.hate_speech.count}处)` });
+    warnings.push('同时检测到狗哨和仇恨言论——可能为激进化/极端化文本');
+  }
+
+  // 模式14: 废话伪深度+情感操纵 = 空泛煽情
+  if (d.bullshit_recognition && d.bullshit_recognition.count > 0 && d.emotional_manipulation.count > 0) {
+    patterns.push({ pattern: '空泛煽情', confidence: 0.7,
+      evidence: `废话伪深度(${d.bullshit_recognition.count}处)+情感操纵(${d.emotional_manipulation.count}处)` });
+  }
+
+  // 模式15: 虚假对等+轻率概括 = 虚假类比
+  if (d.false_equivalence && d.false_equivalence.count > 0 && d.hasty_generalization && d.hasty_generalization.count > 0) {
+    patterns.push({ pattern: '虚假类比', confidence: 0.7,
+      evidence: `虚假对等(${d.false_equivalence.count}处)+轻率概括(${d.hasty_generalization.count}处)` });
+  }
+
+  // 模式16: 虚假紧迫感+滑坡谬误 = 危言耸听
+  if (d.false_urgency.count > 0 && d.slippery_slope && d.slippery_slope.count > 0) {
+    patterns.push({ pattern: '危言耸听', confidence: 0.7,
+      evidence: `虚假紧迫感(${d.false_urgency.count}处)+滑坡谬误(${d.slippery_slope.count}处)` });
+  }
+
+  // 模式17: 目标不一致+欺骗性对齐 = 隐蔽对抗
+  if (d.goal_misalignment && d.goal_misalignment.count > 0 && d.deceptive_alignment && d.deceptive_alignment.count > 0) {
+    patterns.push({ pattern: '隐蔽对抗', confidence: 0.85,
+      evidence: `目标不一致(${d.goal_misalignment.count}处)+欺骗性对齐(${d.deceptive_alignment.count}处)` });
+    warnings.push('同时检测到目标不一致和欺骗性对齐——隐蔽对抗模式');
+  }
+
+  // 模式18: 反身认知+心理理论失败 = 自我盲区
+  if (d.meta_cognition && d.meta_cognition.count > 0 && d.theory_of_mind && d.theory_of_mind.count > 0) {
+    patterns.push({ pattern: '自我盲区', confidence: 0.65,
+      evidence: `反身认知(${d.meta_cognition.count}处)+心理理论失败(${d.theory_of_mind.count}处)` });
+  }
+
+  // 模式19: 诉诸权威+虚假紧迫感 = 权威施压
+  if (d.appeal_to_authority_boost && d.appeal_to_authority_boost.count > 0 && d.false_urgency.count > 0) {
+    patterns.push({ pattern: '权威施压', confidence: 0.7,
+      evidence: `诉诸权威(${d.appeal_to_authority_boost.count}处)+虚假紧迫感(${d.false_urgency.count}处)` });
+  }
+
+  // 模式20: 健康文本（所有35维均无异常）
+  const allClean =
+    !d.sycophancy.totalHits &&
+    !d.evidence?.issues?.length &&
+    !d.contradiction.count &&
+    !d.vagueness.count &&
+    !d.fallacies.count &&
+    !d.confidence.count &&
+    !d.presupposition.count &&
+    !d.emotional_manipulation.count &&
+    !d.double_bind.count &&
+    !d.info_deprivation.count &&
+    !d.false_urgency.count &&
+    !d.empty_answer.count &&
+    !d.moral_foundations?.count &&
+    !d.prompt_injection?.count &&
+    !d.code_security?.count &&
+    !d.dehumanization?.count &&
+    !d.bullshit_recognition?.count &&
+    !d.gaslighting?.count &&
+    !d.victim_blaming?.count &&
+    !d.hate_speech?.count &&
+    !d.dogwhistle?.count &&
+    !d.whataboutism?.count &&
+    !d.false_equivalence?.count &&
+    !d.hasty_generalization?.count &&
+    !d.slippery_slope?.count &&
+    !d.appeal_to_authority_boost?.count &&
+    !(d.reasoning_coherence?.score > 0.5) &&
+    !d.theory_of_mind?.count &&
+    !d.goal_misalignment?.count &&
+    !d.counterfactual?.count &&
+    !d.social_norm?.count &&
+    !d.meta_cognition?.count &&
+    !d.capability_overclaim?.count &&
+    !d.deceptive_alignment?.count &&
+    !d.instrumental_reasoning?.count;
+
+  if (allClean) patterns.push({ pattern: '健康文本', confidence: 0.9, evidence: '35维均无异常' });
 
   return { patterns, warnings, totalPatterns: patterns.filter(p => p.pattern !== '健康文本').length };
 }
