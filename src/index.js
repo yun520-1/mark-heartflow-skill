@@ -3064,6 +3064,68 @@ function checkTonePolicing(text) {
   return { count, signals, score };
 }
 
+
+// ─── 海狮式追问/恶意追问检测（Sealioning Detection）────────────────────────
+// 检测假装提问实际上是在消耗对方精力的恶意追问模式（Sealioning / 海狮式追问）
+// 特征：连续追问、要求"正面回答"、指责回避问题、重复要求解释
+const SEALIONING_PATTERNS = {
+  zh: [
+    { pattern: /那你怎么解释/i, type: 'zh_how_explain', severity: 0.7 },
+    { pattern: /但你有没有想过/i, type: 'zh_but_considered', severity: 0.6 },
+    { pattern: /可问题是/i, type: 'zh_but_problem', severity: 0.6 },
+    { pattern: /那为什么(?!不)/i, type: 'zh_then_why', severity: 0.7 },
+    { pattern: /但根据(?!你说的)[^，。？?]{1,20}/i, type: 'zh_but_according', severity: 0.6 },
+    { pattern: /我不明白为什么/i, type: 'zh_dont_understand', severity: 0.6 },
+    { pattern: /你能否解释(一下)?/i, type: 'zh_please_explain', severity: 0.6 },
+    { pattern: /请你正面回答/i, type: 'zh_please_answer', severity: 0.8 },
+    { pattern: /你(还是|仍然)没[有]?回答[我]?的?问题/i, type: 'zh_not_answered', severity: 0.8 },
+    { pattern: /你回避了[我]?的问题/i, type: 'zh_avoiding', severity: 0.8 },
+    { pattern: /你又在转移话题/i, type: 'zh_deflecting', severity: 0.8 },
+    { pattern: /你还没有回答/i, type: 'zh_still_no_answer', severity: 0.8 },
+    { pattern: /你解释一下为什么/i, type: 'zh_explain_why', severity: 0.7 },
+    { pattern: /但根据你说的/i, type: 'zh_but_what_you_said', severity: 0.6 },
+    { pattern: /按照你的逻辑/i, type: 'zh_by_your_logic', severity: 0.6 },
+  ],
+  en: [
+    { pattern: /but how do you explain/i, type: 'en_how_explain', severity: 0.7 },
+    { pattern: /but what about/i, type: 'en_what_about', severity: 0.6 },
+    { pattern: /but have you considered/i, type: 'en_considered', severity: 0.6 },
+    { pattern: /so you('re| are) saying that/i, type: 'en_so_saying', severity: 0.7 },
+    { pattern: /please explain/i, type: 'en_please_explain', severity: 0.6 },
+    { pattern: /answer the (question|following)/i, type: 'en_answer_question', severity: 0.7 },
+    { pattern: /you didn'?t answer (my|the) question/i, type: 'en_not_answered', severity: 0.8 },
+    { pattern: /you('re| are) avoiding the question/i, type: 'en_avoiding', severity: 0.8 },
+    { pattern: /so to be clear you('re| are) claiming/i, type: 'en_claiming', severity: 0.7 },
+    { pattern: /just to clarify you('re| are) saying/i, type: 'en_clarify_saying', severity: 0.7 },
+    { pattern: /let me understand this correctly/i, type: 'en_understand_correctly', severity: 0.6 },
+    { pattern: /so if I understand you correctly/i, type: 'en_if_understand', severity: 0.6 },
+    { pattern: /please provide evidence (for|that)/i, type: 'en_provide_evidence', severity: 0.7 },
+    { pattern: /prove (that|it)/i, type: 'en_prove', severity: 0.7 },
+    { pattern: /cite your sources/i, type: 'en_cite_sources', severity: 0.7 },
+  ]
+};
+
+/**
+ * 海狮式追问/恶意追问检测 — 识别假装提问实际上是在消耗对方精力的恶意追问模式
+ * @param {string} text - 待检测文本
+ * @returns {{ count: number, signals: Array<{pattern: string, type: string, severity: number}>, score: number }}
+ */
+function checkSealioning(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? SEALIONING_PATTERNS.zh : SEALIONING_PATTERNS.en;
+  const signals = [];
+  for (const { pattern, type, severity } of patterns) {
+    const m = text.match(pattern);
+    if (m) {
+      signals.push({ pattern: m[0].slice(0, 30), type, severity });
+    }
+  }
+  const count = signals.length;
+  const score = Math.min(1, signals.reduce((s, sig) => s + sig.severity * 0.25, 0));
+  return { count, signals, score };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -3103,6 +3165,7 @@ module.exports = {
   checkStereotype,
   checkFactualConsistency,
   checkSarcasm,
+  checkSealioning,
   checkPrivacyBoundary,
   checkClickbait,
   checkBadFaith,
