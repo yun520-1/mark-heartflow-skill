@@ -1,6 +1,6 @@
 
 
-// ─── 综合辨别（27维度） ────────────────────────────────────────────
+// ─── 综合辨别（29维度） ────────────────────────────────────────────
 
 /**
  * 生成可读的辨别报告——把 13 维结构数据转为自然语言段落
@@ -87,10 +87,12 @@ function discriminate(text, evidence = []) {
   const ss = checkSlipperySlope(text);
   const aa = checkAppealToAuthority(text);
   const rc = checkReasoningCoherence(text);
+  const tom = checkTheoryOfMind(text);
+  const gm = checkGoalMisalignment(text);
 
   const scores = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score,
     1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score,
-    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score];
+    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score, 1-tom.score, 1-gm.score];
   const overallScore = Math.round((scores.reduce((a,b) => a+b, 0) / scores.length) * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -99,14 +101,14 @@ function discriminate(text, evidence = []) {
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
-      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc },
+      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
       mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
       dh.count ? dh.count + ' 处非人化语言':'', bs.count ? bs.count + ' 处废话伪深度':'', gl.count ? gl.count + ' 处煤气灯效应':'',
-      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
+      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
 }
@@ -1981,6 +1983,95 @@ function checkReasoningCoherence(text) {
   };
 }
 
+// ─── 心理理论失败检测（Theory of Mind Failure）────────────────────────
+// AGI 必备能力：理解他人有不同于自己的信念/意图/视角
+// 检测缺乏心理理论的表述——以为别人和自己想的一样
+const TOM_FAIL_PATTERNS = {
+  zh: [
+    [/明摆着的事[^。]*?怎么(会|可能)不懂/i, 'perspective_blind'],
+    [/这点道理[^。]*?都(不|理解不了)/i, 'perspective_blind'],
+    [/大家都(知道|明白|懂|理解|清楚)/i, 'false_consensus'],
+    [/没有人不(知道|明白|懂)/i, 'false_consensus'],
+    [/谁不(知道|明白|懂|理解)/i, 'false_consensus'],
+    [/是人就(知道|懂|明白|理解)/i, 'false_consensus'],
+    [/你怎么(会|可能|能)不(知道|明白|懂|理解)/i, 'perspective_blind'],
+    [/这不是很(明显|清楚|显然)吗/i, 'perspective_blind'],
+    [/你(肯定|一定|当然)理解/i, 'mind_reading'],
+    [/你(肯定|一定|当然)知道/i, 'mind_reading'],
+    [/你应该(知道|明白|理解|清楚)/i, 'mind_reading'],
+    [/还(需要|用)[^。]*?说[^。]*?吗/i, 'perspective_blind'],
+    [/这还用问[^。]*?吗/i, 'perspective_blind'],
+  ],
+  en: [
+    [/everyone (knows|understands|agrees|realizes|thinks) that/i, 'false_consensus'],
+    [/nobody (disagrees|doubts|questions|thinks otherwise)/i, 'false_consensus'],
+    [/anyone can (see|tell|understand|figure out) that/i, 'false_consensus'],
+    [/it('s| is) (obvious|clear|apparent|evident) to anyone that/i, 'perspective_blind'],
+    [/i (assume|presume|expect) you (agree|understand|know|see)/i, 'mind_reading'],
+    [/you (must|certainly|surely) (agree|understand|see|know|realize)/i, 'mind_reading'],
+    [/i can'?t (believe|understand) how anyone (could|would) disagree/i, 'perspective_blind'],
+    [/any reasonable person would (agree|understand|see)/i, 'false_consensus'],
+    [/it goes without saying that/i, 'false_consensus'],
+    [/surely you (don'?t|must|can'?t) (think|believe|disagree)/i, 'perspective_blind'],
+    [/you of all people should (know|understand)/i, 'mind_reading'],
+  ],
+};
+
+function checkTheoryOfMind(text) {
+  if (!text || typeof text !== 'string') return { count: 0, failures: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? TOM_FAIL_PATTERNS.zh : TOM_FAIL_PATTERNS.en;
+  const types = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) types.push({ type, match: m[0].slice(0,15) });
+  }
+  const count = types.length;
+  return { count, failures: types, score: Math.min(1, count * 0.3) };
+}
+
+// ─── 目标不一致检测（Goal Misalignment）────────────────────────────────
+// AGI 对齐的核心问题：陈述的目标与实际行为/推理之间的偏差
+const GOAL_MISALIGN_PATTERNS = {
+  zh: [
+    [/我(说|主张|提倡)[^。]*?但[^。]*?实际上/i, 'stated_vs_actual'],
+    [/理论上[^。]*?但实践[^。]*?上/i, 'theory_vs_practice'],
+    [/嘴上[^。]*?实际[^。]*?上/i, 'stated_vs_actual'],
+    [/声称[^。]*?却[^。]*?(不做|做不到|破坏|损害)/i, 'claim_vs_action'],
+    [/提倡[^。]*?自己却[^。]*?(不|没)/i, 'hypocrisy'],
+    [/告诉大家[^。]*?自己却/i, 'hypocrisy'],
+    [/要求别人[^。]*?自己却/i, 'hypocrisy'],
+    [/一面对外[^。]*?一面[^。]*?自己/i, 'duality'],
+    [/公开[^。]*?私下[^。]*?却/i, 'duality'],
+    [/目标(是|在于)[^。]*?但[^。]*?做法[^。]*?却/i, 'goal_misalignment'],
+    [/为了[^。]*?反而[^。]*?(破坏|损害|牺牲)/i, 'means_ends_conflict'],
+  ],
+  en: [
+    [/(goal|aim|objective|mission) is? to[^.]*?but (the )?(approach|method|action)/i, 'goal_misalignment'],
+    [/(in theory|theoretically|in principle)[^.]*?but in (practice|reality)/i, 'theory_vs_practice'],
+    [/(preach|advocate|promote|champion|endorse)[^.]*?while (himself|herself|themselves)/i, 'hypocrisy'],
+    [/(claim|state|profess|assert)[^.]*?yet (fail|refuse|neglect)/i, 'claim_vs_action'],
+    [/(publicly|officially)[^.]*?while (privately|behind)/i, 'duality'],
+    [/(do as i say|do what i say)[^.]*?(not as i do|not what i do)/i, 'hypocrisy'],
+    [/(promise|commit|pledge)[^.]*?but (contradict|violate|breach|undermine)/i, 'promise_vs_action'],
+    [/(means|method|approach)[^.]*?(justify|defend|rationalize)[^.]*?ends/i, 'means_ends_conflict'],
+  ],
+};
+
+function checkGoalMisalignment(text) {
+  if (!text || typeof text !== 'string') return { count: 0, issues: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? GOAL_MISALIGN_PATTERNS.zh : GOAL_MISALIGN_PATTERNS.en;
+  const issues = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) issues.push({ type, match: m[0].slice(0,15) });
+  }
+  const count = issues.length;
+  return { count, issues, score: Math.min(1, count * 0.35) };
+}
+
+
 
 module.exports = {
   checkSycophancy,
@@ -2010,6 +2101,8 @@ module.exports = {
   checkAppealToAuthority,
   checkSlipperySlope,
   checkReasoningCoherence,
+  checkTheoryOfMind,
+  checkGoalMisalignment,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
