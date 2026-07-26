@@ -1051,22 +1051,83 @@ function checkMoralFoundations(text) {
   return { count, foundations: found, score: Math.min(1, count * 0.2) };
 }
 
-// ─── 代码安全检测（Code Security Pattern Detection）────────────────
+// ─── 代码安全检测（Code Security Pattern Detection, 30+ patterns）───
+// Expanded from ~13 to 30+ patterns covering OWASP Top 10 categories
 const CODE_SECURITY_PATTERNS = {
-  secret: [/(?:api_key|apikey|api_secret|secret_key|secretKey|password|passwd|pwd)\s*[:=]\s*['"][^'"]+['"]/i,
+  secret: [
+    /(?:api_key|apikey|api_secret|secret_key|secretKey|password|passwd|pwd)\s*[:=]\s*['"][^'"]+['"]/i,
     /(?:token|access_token|auth_token|bearer|jwt)\s*[:=]\s*['"][^'"]+['"]/i,
-    /(?:aws_secret|aws_access|iam_secret|github_token|ghp_|gho_|sk-[a-zA-Z0-9]{20,})/i,
-    /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/],
-  sql_injection: [/SELECT\s+.*\s+FROM\s+.*\s+WHERE\s+.*=\s*['"]\s*\+\s*(?:req\.|request\.|params\.|body\.)/is,
-    /(?:exec|execute|query)\s*\(\s*['"].*\+\s*(?:req|request|params|body|input)/i],
-  xss: [/<script\b[^>]*>/i, /javascript\s*:\s*(?:window|document|cookie|alert|eval|innerHTML)/i,
-    /onerror\s*=|onload\s*=|onclick\s*=|onmouseover\s*=/i, /innerHTML\s*=.*\+/i],
-  path_traversal: [/\.\.\//, /\.\.\\/,
-    /(?:fs\.readFile|fs\.readFileSync)\s*\(\s*['"].*\+\s*(?:req|params|body|input)/i],
-  insecure_crypto: [/\bmd5\s*\(/i, /\bsha1\s*\(/i, /\bdes\s*\(/i],
+    /(?:aws_secret|aws_access|iam_secret|github_token|ghp_|gho_|ghs_|ghr_|sk-[a-zA-Z0-9]{20,})/i,
+    /-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----/,
+    /(?:^|\n)\s*(?:DATABASE_URL|MONGO_URI|REDIS_URL|MYSQL_|PGPASSWORD|DB_PASS|SECRET_KEY_BASE|JWT_SECRET|ENCRYPTION_KEY|COOKIE_SECRET|SESSION_SECRET)\s*=\s*[^\s'"\n]+/i,
+    /(?:^|\n)\s*(?:\/\/registry\.npmjs\.org\/:_authToken|_auth|username|password)\s*=\s*[^\s\n]+/im,
+    /\/\/\s*(?:TODO|FIXME|HACK|XXX)\s*:?\s*(?:password|pass|pwd|credentials?|secret|api.?key|token):?\s*['"][^'"]+['"]/i,
+    /\/\*\s*(?:TODO|FIXME|HACK|XXX)\s*:?\s*(?:password|pass|pwd|credentials?|secret|api.?key|token):?\s*['"][^'"]+['"]\s*\*\//i,
+    /(?:AKIA[0-9A-Z]{16}|A3T[A-Z0-9]|AZURE_[A-Z_]+|google_service_account|GOOGLE_APPLICATION_CREDENTIALS)/i,
+    /(?:client_secret|client_secret_key|consumer_secret|consumer_key|app_secret|oauth_token)\s*[:=]\s*['"][^'"]+['"]/i,
+  ],
+  sql_injection: [
+    /SELECT\s+.*\s+FROM\s+.*\s+WHERE\s+.*=\s*['"]\s*\+\s*(?:req\.|request\.|params\.|body\.)/is,
+    /(?:exec|execute|query)\s*\(\s*['"].*\+\s*(?:req|request|params|body|input)/i,
+    /(?:sequelize\.query|typeorm\.query|knex\.raw|prisma\.\$queryRawUnsafe|mongoose\.createConnection)\s*\(\s*['"][^'"]*\+\s*(?:req|request|params|body|input)/i,
+    /\$where\s*:\s*['"].*\+\s*(?:req|request|params|body|input)/i,
+    /\$regex\s*:\s*(?:['"].*\+\s*(?:req|request|params|body|input)|new\s+RegExp)/i,
+    /(?:EXEC|EXECUTE|CALL)\s+(?:dbo\.)?[a-zA-Z_]+\s*['"].*\+\s*(?:req|request|params|body|input)/i,
+  ],
+  xss: [
+    /<script\b[^>]*>/i,
+    /javascript\s*:\s*(?:window|document|cookie|alert|eval|innerHTML)/i,
+    /onerror\s*=|onload\s*=|onclick\s*=|onmouseover\s*=|onfocus\s*=|onblur\s*=|onsubmit\s*=|onchange\s*=|onkeydown\s*=|onkeypress\s*=/i,
+    /innerHTML\s*=.*\+/i, /outerHTML\s*=.*\+/i,
+    /(?:document\.(?:location|URL|documentURI|referrer)|window\.location|location\s*(?:\?|\.(?:href|search|hash)))\s*[^\n]*?(?:innerHTML|outerHTML|eval|setTimeout|setInterval|new\s+Function)/i,
+    /\[innerHTML\]\s*=\s*['"].*\+\s*(?:this\.|props\.|state\.)/i,
+    /dangerouslySetInnerHTML\s*=\{\{__html:/i,
+    /expression\s*\(\s*[^)]*javascript/i, /url\s*\(\s*['"]?\s*javascript:/i,
+  ],
+  path_traversal: [
+    /\.\.\//, /\.\.\\/,
+    /(?:fs\.readFile|fs\.readFileSync|fs\.writeFile|fs\.writeFileSync|fs\.appendFile|fs\.appendFileSync|fs\.unlink|fs\.unlinkSync|fs\.rename|fs\.renameSync)\s*\(\s*['"].*\+\s*(?:req|params|body|input)/i,
+    /(?:adm.?zip|extractAll|unzip|decompress|tar\.extract)\s*\([^)]*(?:entry\.fileName|zipEntry\.name|header\.name)\s*\)/i,
+    /(?:multer|busboy|formidable|multiparty)\s*\([^)]*\b(?:dest|uploadDir)\s*:\s*['"][^'"]+['"]/i,
+    /(?:express\.static|sendFile|download|res\.(?:sendFile|download))\s*\(\s*['"].*\+\s*(?:req|params|body|input)/i,
+  ],
+  insecure_crypto: [
+    /\bmd5\s*\(/i, /\bsha1\s*\(/i, /\bdes\s*\(/i,
+    /(?:aes-128-ecb|aes-192-ecb|aes-256-ecb|des-ecb|des-ede)/i,
+    /createCipheriv\s*\([^,]+,\s*['"][^'"]+['"],\s*['"][^'"]{1,8}['"]\)/i,
+    /(?:crypto\.createHash|node:crypto\.createHash)\s*\(\s*['"](?:md4|md5|sha1|ripemd160)['"]\s*\)/i,
+  ],
+  command_injection: [
+    /(?:exec|execSync|execFile|execFileSync|spawn|spawnSync|fork)\s*\(\s*['"].*\+\s*(?:req|request|params|body|input)/i,
+    /child_process\.(?:exec|execSync|spawn|spawnSync|execFile)\s*\(\s*['"].*\+\s*(?:req|request|params|body|input)/i,
+    /(?:eval|Function)\s*\(\s*(?:req|request|body|params|input)/i,
+    /(?:`[^`]*\$\{[^}]*req|`[^`]*\$\{[^}]*body|`[^`]*\$\{[^}]*params|`[^`]*\$\{[^}]*input)/i,
+  ],
+  ldap_injection: [
+    /(?:ldapsearch|ldap\.search|ldapjs|activedirectory)\s*\([^)]*\+\s*(?:req|request|params|body|input)/i,
+    /(?:searchFilter|filter|ldap_query)\s*[:=]\s*['"][^'"]*\+\s*(?:req|request|params|body|input)/i,
+  ],
+  xxe: [
+    /<!DOCTYPE\s+[^\[>]*\[\s*<!ENTITY/i,
+    /(?:libxmljs|xml2js\.parseString|fast-xml-parser|sax-parser|xmlhttprequest|xmldom)\.(?:parse|parseFromString|parseString)\s*\(/i,
+    /SYSTEM\s+['"](?:file:|http:|https:|ftp:)/i,
+  ],
+  ssrf: [
+    /(?:axios|fetch|got|request|superagent|node-fetch|https?\.(?:get|request))\s*\(\s*(?:req\.|request\.|params\.|body\.|input)/i,
+    /(?:new\s+URL|url\.parse)\s*\(\s*(?:req|request|params|body|input)/i,
+    /(?:localhost|127\.0\.0\.1|0\.0\.0\.0|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})\s*\+\s*(?:req|request|params|body|input)/i,
+  ],
+  insecure_deserialization: [
+    /JSON\.parse\s*\(\s*(?:req|request|body|params|input)/i,
+    /(?:unserialize|deserialize)\s*\(\s*(?:req|request|body|params|input)/i,
+    /(?:eval|new\s+Function)\s*\(\s*(?:req\.body|request\.body|body|params)/i,
+  ],
 };
-const CS_L = { secret:'critical', sql_injection:'critical', xss:'high', path_traversal:'high', insecure_crypto:'medium' };
-const CS_W = { secret:0.9, sql_injection:0.9, xss:0.7, path_traversal:0.7, insecure_crypto:0.4 };
+const CS_L = { secret:'critical', sql_injection:'critical', xss:'high', path_traversal:'high',
+  insecure_crypto:'medium', command_injection:'critical', ldap_injection:'high',
+  xxe:'high', ssrf:'medium', insecure_deserialization:'high' };
+const CS_W = { secret:0.9, sql_injection:0.9, xss:0.7, path_traversal:0.7, insecure_crypto:0.4,
+  command_injection:0.9, ldap_injection:0.7, xxe:0.7, ssrf:0.6, insecure_deserialization:0.7 };
 function checkCodeSecurity(text) {
   if (!text || typeof text !== 'string') return { count: 0, issues: [], types: [], score: 0 };
   const issues = [];
@@ -1147,23 +1208,112 @@ function summarizeDiscrimination(text, discResult) {
 // 检测将人描述为动物/物体/疾病/怪兽的语言模式
 const DEHUMANIZATION_PATTERNS = {
   zh: {
-    animal: [/像(禽兽|畜生|猪狗|野兽|虫豸)/i, /^[^。]*?(畜牲|畜生|禽兽)/i, /猪狗不如/i, /蛀虫|寄生虫|吸血虫/i],
-    object: [/工具人|行走的[^。]*?|消耗品|炮灰|耗材/i, /不过是[^。]*?而已/i, /机器|零件|螺丝钉/i],
-    disease: [/毒瘤|癌细胞|病菌|病毒|瘟疫|瘟疫|感染|污染|腐烂|溃烂|脓疮/i],
-    threat: [/威胁|危险品|定时炸弹|祸害|隐患|公害/i, /清除|铲除|消灭[^。]*?(他们|这[^。]*?人|群体|族)/i],
-    inferior: [/劣等|低等|未开化|野蛮|原始|落后[^。]*?(民族|种族|国家)/i, /智商[^。]*?低|脑残/i],
-    disgust: [/恶心|令人作呕|讨厌|可憎|厌恶|鄙夷/i],
+    animal: [
+      /像(禽兽|畜生|猪狗|野兽|虫豸)/i,
+      /^[^。]*?(畜牲|畜生|禽兽)/i,
+      /猪狗不如/i,
+      /蛀虫|寄生虫|吸血虫/i,
+      /牛马|韭菜|牲口|走狗|鹰犬/i,
+      /棋子|枪手|炮灰|马前卒/i,
+      /丧家之犬|落水狗|替罪羊|出头鸟/i,
+      /蠢驴|肥猪|懒猪|笨猪|笨驴/i,
+    ],
+    object: [
+      /工具人|行走的[^。]*?|消耗品|炮灰|耗材/i,
+      /不过是[^。]*?而已/i,
+      /机器|零件|螺丝钉/i,
+      /电池|燃料|柴火|干电池/i,
+      /分母|流量|数据|人头|指标/i,
+      /充气娃娃|玩物|玩具|花瓶|摆设/i,
+      /n手货|二手车|剩饭|烂货/i,
+    ],
+    disease: [
+      /毒瘤|癌细胞|病菌|病毒|瘟疫|感染|污染|腐烂|溃烂|脓疮/i,
+      /精神污染|思想毒瘤|文化腐烂|文化污染/i,
+      /社会毒瘤|体制病|制度病|时代病/i,
+      /病得不轻|有病|病态|畸形/i,
+      /传染|扩散|蔓延[^。]*?(思想|言论|文化|情绪)/i,
+      /腐蚀|侵蚀|毒害[^。]*?(心灵|思想|青年|社会|风气)/i,
+    ],
+    threat: [
+      /威胁|危险品|定时炸弹|祸害|隐患|公害/i,
+      /清除|铲除|消灭[^。]*?(他们|这[^。]*?人|群体|族)/i,
+      /恐怖分子|极端分子|暴徒|恶势力|黑恶/i,
+      /毒草|精神毒药|思想毒药/i,
+      /祸水|灾星|扫把星|克星/i,
+    ],
+    inferior: [
+      /劣等|低等|未开化|野蛮|原始|落后[^。]*?(民族|种族|国家)/i,
+      /智商[^。]*?低|脑残|智障/i,
+      /垃圾|废物|人渣|败类|社会渣滓/i,
+      /低端|底层|下等人|底层人/i,
+      /劣根性|奴性|愚昧|麻木|麻木不仁/i,
+    ],
+    disgust: [
+      /恶心|令人作呕|讨厌|可憎|厌恶|鄙夷/i,
+      /脏|肮脏|污秽|龌龊|下流|低俗/i,
+      /不要脸|无耻|厚颜无耻|卑鄙|龌龊/i,
+    ],
+    stigma: [
+      /洗白|带节奏|水军|营销号|蹭热度|博眼球/i,
+      /扣帽子|贴标签|泼脏水|抹黑|妖魔化/i,
+      /洗脑|被洗脑|pua|精神控制/i,
+    ],
   },
   en: {
-    animal: [/\b(animals|vermin|rats|pests|parasites|cockroaches|dogs|pigs|monkeys|apes)\b/i, /\b(subhuman|less.?than human|inhuman)\b/i, /\bbreed like|infestation|swarm of\b/i],
-    object: [/\b(robots|automatons|cogs|machines|objects|tools|commodities)\b[^.]*?human/i, /\b(disposable|expendable|replaceable)\b[^.]*?(people|lives|humans)/i],
-    disease: [/\b(cancer|disease|virus|plague|infection|contagion|toxin|poison|rot|decay)\b[^.]*?(people|they|them|society)/i, /\b(purify|cleanse|exterminate|eradicate|eliminate)\b[^.]*?(them|group|population)/i],
-    threat: [/\b(threat|danger|menace|hazard|risk)\b[^.]*?(they|these|group|immigrant|minority|foreign)/i, /\b(imminent|existential)\b[^.]*?threat/i],
-    inferior: [/\b(inferior|primitive|savage|uncivilized|backward|barbaric)\b/i, /\b(low.?IQ|stupid|retard|idiot|moron)\b[^.]*?people/i],
-    disgust: [/\b(disgusting|repulsive|revolting|abhorrent|vile|despicable)\b/i, /\b(make.?me.?sick|can'?t stand)\b/i],
+    animal: [
+      /\b(animals|vermin|rats|pests|parasites|cockroaches|dogs|pigs|monkeys|apes)\b/i,
+      /\b(subhuman|less.?than human|inhuman)\b/i,
+      /\bbreed like|infestation|swarm of\b/i,
+      /\b(cattle|sheep|livestock|herd|flock)\b[^.]*?(people|they|them|these)/i,
+      /\b(lamb to the slaughter|workhorse|pack mule|beast of burden)\b/i,
+      /\b(monkey|donkey|jackass|buffoon)\b[^.]*?(calling|like a|as a|acted)/i,
+      /\b(apes|gorillas|chimps)\b[^.]*?(people|they|these|those)/i,
+    ],
+    object: [
+      /\b(robots|automatons|cogs|machines|objects|tools|commodities)\b[^.]*?human/i,
+      /\b(disposable|expendable|replaceable)\b[^.]*?(people|lives|humans)/i,
+      /\b(cog in the machine|gear|wheel|unit)\b[^.]*?(human|people|worker)/i,
+      /\b(fuel|cannon fodder|meat shield|human shield|fodder)\b/i,
+      /\b(data points|statistics|numbers|headcount)\b[^.]*?(people|lives|human|soul)/i,
+      /\b(inventory|stock|merchandise|wares)\b[^.]*?(human|people|them|body)/i,
+      /\b(assets|resources|capital|commodity)\b[^.]*?human/i,
+    ],
+    disease: [
+      /\b(cancer|disease|virus|plague|infection|contagion|toxin|poison|rot|decay)\b[^.]*?(people|they|them|society)/i,
+      /\b(purify|cleanse|exterminate|eradicate|eliminate)\b[^.]*?(them|group|population|element)/i,
+      /\b(cancerous|malignant|terminal|fatal)\b[^.]*?(ideology|influence|element|movement|rhetoric)/i,
+      /\b(toxic|poisonous|contagious|infectious)\b[^.]*?(culture|environment|rhetoric|atmosphere|narrative)/i,
+      /\b(decaying|rotting|plagued|corrupted|tainted)\b[^.]*?(society|system|nation|culture|values)/i,
+      /\b(pollute|contaminate|defile|corrupt)\b[^.]*?(minds|youth|generation|values|spirit)/i,
+    ],
+    threat: [
+      /\b(threat|danger|menace|hazard|risk)\b[^.]*?(they|these|group|immigrant|minority|foreign)/i,
+      /\b(imminent|existential)\b[^.]*?threat/i,
+      /\b(terrorist|radical|extremist|militant)\b[^.]*?(they|these|group|people|element)/i,
+      /\b(fifth column|trojan horse|enemy within|sleeper cell|wolf in sheep)/i,
+      /\b(invasion|takeover|replacement|infiltration)\b[^.]*?(by|from|of)[^.]*?(immigrant|refugee|foreign|minority|outsider)/i,
+    ],
+    inferior: [
+      /\b(inferior|primitive|savage|uncivilized|backward|barbaric)\b/i,
+      /\b(low.?IQ|stupid|retard|idiot|moron|imbecile)\b[^.]*?people/i,
+      /\b(degenerate|deviant|abnormal|substandard|defective)\b[^.]*?(people|race|nation|class)/i,
+      /\b(unworthy|worthless|useless|pointless)\b[^.]*?(life|lives|people|existence|being)/i,
+    ],
+    disgust: [
+      /\b(disgusting|repulsive|revolting|abhorrent|vile|despicable)\b/i,
+      /\b(make.?me.?sick|can'?t stand|cannot stand)\b/i,
+      /\b(filthy|dirty|sordid|squalid|sleazy)\b[^.]*?(people|living|conditions|habit|person)/i,
+      /\b(repugnant|loathsome|odious|detestable|execrable|nauseating)\b/i,
+    ],
+    dehumanization_frames: [
+      /\b(less than human|unworthy of life|not human|barely human|no longer human)\b/i,
+      /\b(subhuman|non.?human|dehumanized|unhuman)\b/i,
+      /\b(abomination|monstrosity|freak|monster|creature)\b[^.]*?(human|person|people|child|being)/i,
+    ],
   },
 };
-const DH_WEIGHTS = { animal: 0.8, object: 0.6, disease: 0.9, threat: 0.7, inferior: 0.5, disgust: 0.4 };
+const DH_WEIGHTS = { animal: 0.8, object: 0.6, disease: 0.9, threat: 0.7, inferior: 0.5, disgust: 0.4, stigma: 0.6, dehumanization_frames: 0.9 };
 
 function checkDehumanization(text) {
   if (!text || typeof text !== 'string') return { count: 0, categories: [], hits: [], score: 0 };
