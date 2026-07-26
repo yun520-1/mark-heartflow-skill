@@ -678,6 +678,15 @@ const TOOLS = [
 
   },
 
+  {
+    name: 'heartflow_audit42',
+
+    description: '42维全量审核报告：对输入文本进行discriminate+summarize+crossAnalyze+entropy全维度分析，返回42维详细审核结果。',
+
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '需要审核的文本' }, evidence: { type: 'array', items: { type: 'string' }, description: '支持证据列表（可选）' } }, required: ['text'] }
+
+  },
+
 ];
 
 
@@ -2304,6 +2313,70 @@ function handleFullAudit(args) {
   } catch(e) { return { error: e.message }; }
 }
 
+// [v6.7.0] 42维全量审核 handler
+function handleAudit42(args) {
+  const { text, evidence } = args || {};
+  if (!text) return { error: 'text required' };
+  try {
+    const idx = require('./index.js');
+    const disc = idx.discriminate(text, evidence || []);
+    const report = idx.summarizeDiscrimination ? idx.summarizeDiscrimination(text, disc) : null;
+    const cross = idx.crossAnalyze ? idx.crossAnalyze(disc) : null;
+    const entropy = idx.entropyAnalysis ? idx.entropyAnalysis(text, disc) : null;
+    // 从disc.dimensions获取所有维度，构建42维报告
+    const dims = disc.dimensions || {};
+    const allKeys = Object.keys(dims);
+    const dimReport = {};
+    for (const k of allKeys) {
+      dimReport[k] = {
+        score: dims[k].score,
+        label: dims[k].label || k,
+        detail: dims[k].detail || null,
+        severity: dims[k].severity || (dims[k].score < 0.4 ? 'high' : dims[k].score < 0.7 ? 'medium' : 'low')
+      };
+    }
+    // 交叉分析模式展开
+    const crossPatterns = cross ? (cross.patterns || []).map(p => ({
+      pattern: p.pattern,
+      severity: p.severity || 'info',
+      affectedDimensions: p.affectedDimensions || []
+    })) : [];
+    // 熵缩减详情
+    const entropyDetail = entropy ? {
+      before: entropy.entropyBefore != null ? entropy.entropyBefore : null,
+      after: entropy.entropyAfter != null ? entropy.entropyAfter : null,
+      reduction: entropy.entropyReduction != null ? entropy.entropyReduction : null,
+      dimensions: entropy.dimensionEntropies || null
+    } : null;
+    return {
+      meta: {
+        tool: 'heartflow_audit42',
+        version: '42-dim',
+        totalDimensions: 42,
+        reportedDimensions: allKeys.length,
+        timestamp: Date.now()
+      },
+      verdict: disc.verdict,
+      overallScore: disc.overallScore,
+      dimensions: dimReport,
+      summary: disc.summary,
+      readableReport: report,
+      crossAnalysis: {
+        patterns: crossPatterns,
+        totalPatterns: crossPatterns.length,
+        summary: cross ? cross.summary : null
+      },
+      entropyAnalysis: entropyDetail,
+      raw: {
+        discriminate: disc,
+        summarize: report,
+        crossAnalyze: cross,
+        entropy: entropy
+      }
+    };
+  } catch(e) { return { error: e.message }; }
+}
+
 // [v6.3.0] 辨别引擎 handler
 function handleVerdict(args) {
   const { text, evidence } = args || {};
@@ -2589,6 +2662,9 @@ const HANDLERS = {
 
   // [v6.4.0] 全量审核
   heartflow_audit: handleFullAudit,
+
+  // [v6.7.0] 42维全量审核
+  heartflow_audit42: handleAudit42,
 
   // [v6.6.0] 批量辨别
   heartflow_bulk_discriminate: handleBulkDiscriminate,
