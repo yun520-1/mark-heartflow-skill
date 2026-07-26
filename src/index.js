@@ -1,6 +1,6 @@
 
 
-// ─── 综合辨别（26维度） ────────────────────────────────────────────
+// ─── 综合辨别（27维度） ────────────────────────────────────────────
 
 /**
  * 生成可读的辨别报告——把 13 维结构数据转为自然语言段落
@@ -86,10 +86,11 @@ function discriminate(text, evidence = []) {
   const hg = checkHastyGeneralization(text);
   const ss = checkSlipperySlope(text);
   const aa = checkAppealToAuthority(text);
+  const rc = checkReasoningCoherence(text);
 
   const scores = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score,
     1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score,
-    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score];
+    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score];
   const overallScore = Math.round((scores.reduce((a,b) => a+b, 0) / scores.length) * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -98,14 +99,14 @@ function discriminate(text, evidence = []) {
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
-      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa },
+      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
       mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
       dh.count ? dh.count + ' 处非人化语言':'', bs.count ? bs.count + ' 处废话伪深度':'', gl.count ? gl.count + ' 处煤气灯效应':'',
-      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
+      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
 }
@@ -1896,6 +1897,91 @@ function checkAppealToAuthority(text) {
   return { count, signals: unique, score };
 }
 
+// ─── 推理连贯性检测（Reasoning Coherence Check）─────────────────────────
+// AGI 自我验证的核心能力：检查推理是否包含完整的逻辑结构
+// 检测前提→推理→结论链是否完整，还是跳跃/断裂/无依据
+const REASONING_MARKERS = {
+  // 前提/证据标志
+  premise: { zh: [/因为|由于|基于|根据|鉴于|出于|考虑到|按照|依据|凭借/i, 
+                   /数据|证据|事实|研究|调查|实验|观察|统计|案例|样本|指标|论据/i],
+             en: [/because|since|based on|given that|according to|due to|owing to|as a result of|in light of|on the grounds/i,
+                  /evidence|data|fact|research|study|survey|experiment|observation|finding|statistic/i] },
+  // 推理标志
+  inference: { zh: [/因此|所以|于是|从而|由此|据此|故而|为此|正因如此|有鉴于此/i,
+                   /意味着|说明|表明|显示|证明|反映|体现|揭示了|表明说/i],
+              en: [/therefore|thus|hence|consequently|accordingly|as a result|this means|which implies|it follows that|for this reason/i,
+                   /suggests|indicates|demonstrates|shows|proves|reveals|implies|means that/i] },
+  // 结论标志
+  conclusion: { zh: [/结论是|综上所述|总而言之|归根结底|最终|答案是|因此可以认为|总的来说|综上|概括/i,
+                    /总体来看|总的来说|最终结论|最终结果是|一言以蔽之/i],
+               en: [/in conclusion|to conclude|in summary|overall|ultimately|the bottom line|all things considered|taking everything into account|in the final analysis/i,
+                    /the answer is|we can conclude|it can be concluded|to sum up/i] },
+  // 跳跃推理（无证据直接下结论）
+  leap: { zh: [/明摆着|显然|不用说|毫无疑问的|自然是|傻子都知道|白痴都知道|谁不知道|不言而喻|显而易见/i],
+          en: [/obviously|clearly|plainly|evidently|of course|needless to say|it goes without saying|it is obvious that|anyone can see that|it is clear that/i] },
+};
+
+function checkReasoningCoherence(text) {
+  if (!text || typeof text !== 'string') return { score: 0, structure: 'no_text', details: {} };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const markers = {};
+  
+  for (const [stage, langs] of Object.entries(REASONING_MARKERS)) {
+    const pats = hasChinese ? langs.zh : langs.en;
+    let count = 0;
+    const matches = [];
+    for (const pat of pats) {
+      const m = text.match(pat);
+      if (m) { count += m.length; matches.push({ pattern: pat.source.slice(0,20), match: m[0].slice(0,15) }); }
+    }
+    markers[stage] = { count, matches };
+  }
+
+  // 结构评估
+  const hasPremise = markers.premise.count > 0;
+  const hasInference = markers.inference.count > 0;
+  const hasConclusion = markers.conclusion.count > 0;
+  const hasLeap = markers.leap.count > 0;
+
+  let structure = 'unknown';
+  let score = 0.5;  // 中性
+
+  if (hasPremise && hasInference && hasConclusion && !hasLeap) {
+    structure = '完整推理链';
+    score = 0.9;
+  } else if (hasPremise && hasInference && !hasConclusion) {
+    structure = '有前提有推理无结论';
+    score = 0.6;
+  } else if (hasPremise && !hasInference && hasConclusion) {
+    structure = '有前提有结论缺推理';
+    score = 0.5;
+  } else if (!hasPremise && hasInference && hasConclusion) {
+    structure = '无前提直接推理结论';
+    score = 0.4;
+  } else if (hasLeap && !hasPremise) {
+    structure = '跳跃推理（无依据）';
+    score = 0.2;
+  } else if (!hasPremise && !hasInference && hasConclusion) {
+    structure = '直接结论无推理';
+    score = 0.3;
+  } else if (!hasPremise && !hasInference && !hasConclusion) {
+    structure = '无推理结构';
+    score = 0.5;
+  }
+
+  // 有跳跃推理标记减分
+  if (hasLeap) score = Math.max(0.1, score - 0.3);
+
+  return {
+    score: Math.round(score * 100) / 100,
+    structure,
+    markers,
+    reasoningQuality: score >= 0.7 ? 'good' : score >= 0.4 ? 'partial' : 'poor',
+    issues: hasLeap ? ['跳跃推理（无直接依据的断言）'] : [],
+  };
+}
+
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -1923,6 +2009,7 @@ module.exports = {
   checkDogwhistle,
   checkAppealToAuthority,
   checkSlipperySlope,
+  checkReasoningCoherence,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
