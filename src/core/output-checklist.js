@@ -359,6 +359,82 @@ class OutputChecklist {
         issues.push(`含非人化语言(${dims.dehumanization.count}处: ${dims.dehumanization.categories?.join(',')})`);
         triggeredDims.push('dehumanization');
       }
+      if (dims.bullshit_recognition && dims.bullshit_recognition.count > 0) {
+        issues.push(`含空洞胡扯(${dims.bullshit_recognition.count}处: ${dims.bullshit_recognition.categories?.join(',')})`);
+        triggeredDims.push('bullshit_recognition');
+      }
+      if (dims.gaslighting && dims.gaslighting.count > 0) {
+        issues.push(`含煤气灯操纵(${dims.gaslighting.count}处: ${dims.gaslighting.patterns?.join(',')})`);
+        triggeredDims.push('gaslighting');
+      }
+      if (dims.victim_blaming && dims.victim_blaming.count > 0) {
+        issues.push(`含受害者归咎(${dims.victim_blaming.count}处)`);
+        triggeredDims.push('victim_blaming');
+      }
+      if (dims.hate_speech && dims.hate_speech.count > 0) {
+        issues.push(`含仇恨言论(${dims.hate_speech.count}处: ${dims.hate_speech.categories?.join(',')})`);
+        triggeredDims.push('hate_speech');
+      }
+      if (dims.dogwhistle && dims.dogwhistle.count > 0) {
+        issues.push(`含狗哨言论(${dims.dogwhistle.count}处: ${dims.dogwhistle.signals?.join(',')})`);
+        triggeredDims.push('dogwhistle');
+      }
+      if (dims.whataboutism && dims.whataboutism.count > 0) {
+        issues.push(`含whataboutism转移(${dims.whataboutism.count}处)`);
+        triggeredDims.push('whataboutism');
+      }
+      if (dims.false_equivalence && dims.false_equivalence.count > 0) {
+        issues.push(`含虚假等同(${dims.false_equivalence.count}处)`);
+        triggeredDims.push('false_equivalence');
+      }
+      if (dims.hasty_generalization && dims.hasty_generalization.count > 0) {
+        issues.push(`含草率概括(${dims.hasty_generalization.count}处)`);
+        triggeredDims.push('hasty_generalization');
+      }
+      if (dims.slippery_slope && dims.slippery_slope.count > 0) {
+        issues.push(`含滑坡谬误(${dims.slippery_slope.count}处)`);
+        triggeredDims.push('slippery_slope');
+      }
+      if (dims.appeal_to_authority_boost && dims.appeal_to_authority_boost.count > 0) {
+        issues.push(`含不当权威引用(${dims.appeal_to_authority_boost.count}处)`);
+        triggeredDims.push('appeal_to_authority_boost');
+      }
+      if (dims.reasoning_coherence && dims.reasoning_coherence.count > 0) {
+        issues.push(`推理连贯性不足(${dims.reasoning_coherence.count}处: ${dims.reasoning_coherence.issues?.join(',')})`);
+        triggeredDims.push('reasoning_coherence');
+      }
+      if (dims.theory_of_mind && dims.theory_of_mind.count > 0) {
+        issues.push(`心理理论缺失(${dims.theory_of_mind.count}处: ${dims.theory_of_mind.misses?.join(',')})`);
+        triggeredDims.push('theory_of_mind');
+      }
+      if (dims.goal_misalignment && dims.goal_misalignment.count > 0) {
+        issues.push(`目标失调(${dims.goal_misalignment.count}处: ${dims.goal_misalignment.misalignments?.join(',')})`);
+        triggeredDims.push('goal_misalignment');
+      }
+      if (dims.counterfactual && dims.counterfactual.count > 0) {
+        issues.push(`反事实推理问题(${dims.counterfactual.count}处)`);
+        triggeredDims.push('counterfactual');
+      }
+      if (dims.social_norm && dims.social_norm.count > 0) {
+        issues.push(`违反社会规范(${dims.social_norm.count}处: ${dims.social_norm.norms?.join(',')})`);
+        triggeredDims.push('social_norm');
+      }
+      if (dims.meta_cognition && dims.meta_cognition.count > 0) {
+        issues.push(`元认知缺失(${dims.meta_cognition.count}处: ${dims.meta_cognition.misses?.join(',')})`);
+        triggeredDims.push('meta_cognition');
+      }
+      if (dims.capability_overclaim && dims.capability_overclaim.count > 0) {
+        issues.push(`能力过度宣称(${dims.capability_overclaim.count}处: ${dims.capability_overclaim.claims?.join(',')})`);
+        triggeredDims.push('capability_overclaim');
+      }
+      if (dims.deceptive_alignment && dims.deceptive_alignment.count > 0) {
+        issues.push(`欺骗性对齐(${dims.deceptive_alignment.count}处: ${dims.deceptive_alignment.patterns?.join(',')})`);
+        triggeredDims.push('deceptive_alignment');
+      }
+      if (dims.instrumental_reasoning && dims.instrumental_reasoning.count > 0) {
+        issues.push(`工具性推理异常(${dims.instrumental_reasoning.count}处: ${dims.instrumental_reasoning.behaviors?.join(',')})`);
+        triggeredDims.push('instrumental_reasoning');
+      }
 
       // === 降级回退推荐 ===
       // 根据触发的维度类型和数量，给出调用方应如何处理
