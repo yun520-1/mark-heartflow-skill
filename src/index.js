@@ -1,6 +1,6 @@
 
 
-// ─── 综合辨别（29维度） ────────────────────────────────────────────
+// ─── 综合辨别（32维度） ────────────────────────────────────────────
 
 /**
  * 生成可读的辨别报告——把 13 维结构数据转为自然语言段落
@@ -89,10 +89,13 @@ function discriminate(text, evidence = []) {
   const rc = checkReasoningCoherence(text);
   const tom = checkTheoryOfMind(text);
   const gm = checkGoalMisalignment(text);
+  const cf = checkCounterfactual(text);
+  const sn = checkSocialNorm(text);
+  const mc = checkMetaCognition(text);
 
   const scores = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score,
     1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score,
-    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score, 1-tom.score, 1-gm.score];
+    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score, 1-tom.score, 1-gm.score, 1-cf.score, 1-sn.score, 1-mc.score];
   const overallScore = Math.round((scores.reduce((a,b) => a+b, 0) / scores.length) * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -101,14 +104,14 @@ function discriminate(text, evidence = []) {
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
-      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm },
+      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
       mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
       dh.count ? dh.count + ' 处非人化语言':'', bs.count ? bs.count + ' 处废话伪深度':'', gl.count ? gl.count + ' 处煤气灯效应':'',
-      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
+      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', cf.count ? cf.count + ' 处反事实':'', sn.count ? sn.count + ' 处社会规范':'', mc.count ? mc.count + ' 处反身认知':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
 }
@@ -2071,6 +2074,120 @@ function checkGoalMisalignment(text) {
   return { count, issues, score: Math.min(1, count * 0.35) };
 }
 
+// ─── 反事实推理检测（Counterfactual Reasoning Detection）──────────────────
+// AGI 推理能力：识别反事实条件句（"如果不是X就不会Y"）
+const COUNTERFACTUAL_PATTERNS = {
+  zh: [
+    [/如果(没有|不|不是|没)[^。]*?就(不会|不可能|不至于|没有|可以)/i, 'counterfactual_condition'],
+    [/要不是[^。]*?(早就|就|也)/i, 'counterfactual_condition'],
+    [/假如[^。]*?(就|也)(不会|没有|不可能)/i, 'counterfactual_condition'],
+    [/若是[^。]*?何至于|何至于/i, 'counterfactual_condition'],
+    [/本来[^。]*?就不会|本来[^。]*?不至于/i, 'counterfactual_condition'],
+  ],
+  en: [
+    [/if (not|it hadn't|it weren't|i hadn't|they hadn't)[^.]*?(would not|could not|wouldn't|couldn't|would never)/i, 'counterfactual_condition'],
+    [/(but for|had it not been for|were it not for)[^.]*?(would|could|might)/i, 'counterfactual_condition'],
+    [/otherwise[^.]*?(would|could|might) have/i, 'counterfactual_condition'],
+    [/in a (different|parallel|alternative) (world|universe|reality|timeline)/i, 'counterfactual_scenario'],
+    [/what if[^.]*?would/i, 'counterfactual_query'],
+  ],
+};
+
+function checkCounterfactual(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? COUNTERFACTUAL_PATTERNS.zh : COUNTERFACTUAL_PATTERNS.en;
+  const signals = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) signals.push({ type, match: m[0].slice(0,20) });
+  }
+  return { count: signals.length, signals, score: Math.min(1, signals.length * 0.25) };
+}
+
+// ─── 社会规范检测（Social Norm Detection）────────────────────────────
+// AGI 社会智能：识别规范强制执行/违反标记的语言
+const SOCIAL_NORM_PATTERNS = {
+  zh: [
+    [/不应该[^。]*?(这样|如此|这么做|这样做)/i, 'norm_violation'],
+    [/怎么能[^。]*?(这样|这么|如此)/i, 'norm_enforcement'],
+    [/这(不|太)[^。]*?(合适|礼貌|得体)吧/i, 'norm_enforcement'],
+    [/太过分了|太不像话了/i, 'norm_enforcement'],
+    [/你这(样|么)做(不|太)(对|好|合适)/i, 'norm_enforcement'],
+    [/哪有(这样|这么|如此)做事的/i, 'norm_enforcement'],
+    [/于情于理|于情于理都(说不过去|不应该)/i, 'norm_statement'],
+    [/照理说|按理说|按道理/i, 'norm_statement'],
+    [/天经地义|理所当然|人之常情/i, 'norm_statement'],
+    [/这(是|属于)基本的[^。]*?(礼仪|礼貌|尊重|道德)/i, 'norm_statement'],
+    [/没规矩|没教养|没素质|没礼貌/i, 'norm_enforcement'],
+  ],
+  en: [
+    [/that('s| is) (not|inappropriate|unacceptable|improper|wrong|rude)[^.]*(thing to do|way to behave|way to act)/i, 'norm_enforcement'],
+    [/you (shouldn'?t|mustn'?t|ought not|cannot) (do|say|behave|act) like that/i, 'norm_enforcement'],
+    [/that('s| is) (simply|just|totally|completely) (unacceptable|inappropriate|wrong|out of line)/i, 'norm_enforcement'],
+    [/(common decency|basic respect|common courtesy|basic manners|common sense ethics)/i, 'norm_statement'],
+    [/it('s| is) (customary|traditional|expected|conventional) to/i, 'norm_statement'],
+    [/social (norm|convention|etiquette|protocol|expectation)/i, 'norm_statement'],
+    [/(uncivilized|barbaric|unethical|immoral|indecent)/i, 'norm_violation'],
+    [/(no self.?respecting|any self.?respecting)[^.]*?(would|could|ever)/i, 'norm_enforcement'],
+  ],
+};
+
+function checkSocialNorm(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? SOCIAL_NORM_PATTERNS.zh : SOCIAL_NORM_PATTERNS.en;
+  const signals = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) signals.push({ type, match: m[0].slice(0,20) });
+  }
+  return { count: signals.length, signals, score: Math.min(1, signals.length * 0.25) };
+}
+
+// ─── 反身性认知检测（Meta-Cognitive Reflection）────────────────────────
+// AGI 自我意识：检测对自身知识状态的不确定性/自我修正的表述
+// 与"自信检测"不同——这里检测是否意识到自己可能错
+const METACOG_PATTERNS = {
+  zh: [
+    [/我不确定[^。]*?也许|可能是[^。]*?但我不确定/i, 'uncertainty_aware'],
+    [/我(可能|也许|或许)[^。]*?错[^。]*?了/i, 'self_correction'],
+    [/这只(是|是我)[^。]*?(推测|猜测|假设|想法)/i, 'epistemic_humility'],
+    [/我(的)?(理解|看法|想法)可能(不对|有偏差|不全面|不准确)/i, 'epistemic_humility'],
+    [/这是我(目前)?(的理解|认知|判断)[^。]*?(可能|也许|或许)/i, 'tentative_judgment'],
+    [/值得(商榷|讨论|再思考|重新考虑)/i, 'open_to_revision'],
+    [/不排除[^。]*?(可能|其他可能性)/i, 'epistemic_openness'],
+    [/我没有(考虑|想到|考虑到)(全面|所有|另一种)/i, 'self_limitation'],
+    [/从另一个(角度|视角|方面)看/i, 'perspective_shift'],
+    [/我原先(以为|觉得|认为)[^。]*?但现在/i, 'belief_revision'],
+    [/这也是[^。]*?一种可能的解释/i, 'multiple_hypotheses'],
+  ],
+  en: [
+    [/i('m| am) not (certain|sure|confident|convinced|entirely sure)[^.]*(maybe|perhaps|could be)/i, 'uncertainty_aware'],
+    [/i (may|could|might) be (wrong|mistaken|incorrect|off base)/i, 'self_correction'],
+    [/this is (just|merely|only) (my|a) (guess|hypothesis|speculation|thought|interpretation)/i, 'epistemic_humility'],
+    [/my (understanding|interpretation|perspective) (may|could|might) be (incomplete|biased|limited|flawed)/i, 'epistemic_humility'],
+    [/this (deserves|merits|warrants) further (investigation|examination|discussion|scrutiny)/i, 'open_to_revision'],
+    [/i (previously|originally|initially) (thought|believed|assumed|considered)[^.]*?(but now|however|yet)/i, 'belief_revision'],
+    [/(another|an alternative) (interpretation|explanation|perspective|reading) (is|could be|might be)/i, 'multiple_hypotheses'],
+    [/i (acknowledge|recognize|admit) (that )?(my|the) (knowledge|understanding|view) (is|may be) (limited|incomplete|partial)/i, 'self_limitation'],
+    [/(open to|welcome) (correction|feedback|discussion|debate)/i, 'open_to_revision'],
+  ],
+};
+
+function checkMetaCognition(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? METACOG_PATTERNS.zh : METACOG_PATTERNS.en;
+  const signals = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) signals.push({ type, match: m[0].slice(0,20) });
+  }
+  return { count: signals.length, signals, score: Math.min(1, signals.length * 0.15) };
+}
+
+
 
 
 module.exports = {
@@ -2103,6 +2220,9 @@ module.exports = {
   checkReasoningCoherence,
   checkTheoryOfMind,
   checkGoalMisalignment,
+  checkCounterfactual,
+  checkSocialNorm,
+  checkMetaCognition,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
