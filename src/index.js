@@ -1540,7 +1540,12 @@ function crossAnalyze(discResult) {
       evidence: `诉诸权威(${d.appeal_to_authority_boost.count}处)+虚假紧迫感(${d.false_urgency.count}处)` });
   }
 
-  // 模式20: 健康文本（所有40维均无异常）
+  // 模式20: 标题党
+  if (d.clickbait && d.clickbait.count > 0) {
+    patterns.push({ pattern: '标题党', confidence: 0.5, evidence: `点击诱饵(${d.clickbait.count}处)` });
+  }
+
+  // 模式21: 健康文本（所有40维均无异常）
   const allClean =
     !d.sycophancy.totalHits &&
     !d.evidence?.issues?.length &&
