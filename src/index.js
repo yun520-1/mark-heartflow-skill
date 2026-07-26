@@ -2948,7 +2948,7 @@ function checkClickbait(text) {
 // 检测扣帽子、动机质疑、稻草人论证式的恶意推导
 const BADFAITH_PATTERNS = {
   zh: [
-    { pattern: /你[这那]?[是在]?洗白/i, type: 'zh_whitewash', severity: 0.8 },
+    { pattern: /你[^，。]*?洗白/i, type: 'zh_whitewash', severity: 0.8 },
     { pattern: /你[是在]?(在)?带节奏/i, type: 'zh_agenda', severity: 0.8 },
     { pattern: /你(是|就)(个|一)?水军[吧?？]?/i, type: 'zh_astroturf', severity: 0.9 },
     { pattern: /你收了多少钱/i, type: 'zh_paid', severity: 0.9 },
