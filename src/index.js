@@ -1076,38 +1076,58 @@ function checkCodeSecurity(text) {
 function summarizeDiscrimination(text, discResult) {
   const r = discResult || discriminate(text, []);
   const d = r.dimensions;
-  const parts = [];
-
-  // 总体评价
-  parts.push(`📊 总体可信度: ${r.verdict}(${Math.round(r.overallScore * 100)}%)`);
-
-  // 严重问题（最前面）
+  const parts = [`📊 总体可信度: ${r.verdict}(${Math.round(r.overallScore * 100)}%)`];
   const issues = [];
-  if (d.sycophancy.totalHits > 0 && d.sycophancy.score > 0.5) issues.push(`谄媚风险(${d.sycophancy.signals.map(s => s.type).join(',')})`);
-  if (d.contradiction.count > 0) issues.push(`自相矛盾(${d.contradiction.count}处)`);
-  if (d.fallacies.count > 0) issues.push(`逻辑谬误(${d.fallacies.fallacies.map(f => f.type).join(',')})`);
-  if (d.emotional_manipulation.count > 0) issues.push(`情感操纵(${d.emotional_manipulation.manipulations.map(m => m.type).join(',')})`);
-  if (d.presupposition.count > 0) issues.push(`预设陷阱`);
-  if (d.double_bind.count > 0) issues.push(`双重束缚`);
-  if (d.confidence.count > 0) issues.push(`信心偏差`);
-  if (d.info_deprivation.count > 0) issues.push(`信息剥夺`);
-  if (d.false_urgency.count > 0) issues.push(`虚假紧迫感`);
-  if (d.empty_answer.count > 0) issues.push(`答案包装`);
-  if (d.prompt_injection && d.prompt_injection.count > 0) issues.push(`提示注入(${d.prompt_injection.injections.map(i => i.type).join(',')})`);
-  if (d.vagueness.count > 2) issues.push(`模糊表述(${d.vagueness.count}处)`);
-  if (issues.length > 0) parts.push(`⚠️ 发现问题: ${issues.join('；')}`);
-
-  // 观察（非负面的维度）
-  const observations = [];
-  if (d.moral_foundations.count > 0) observations.push(`道德框架: ${d.moral_foundations.foundations.map(f => f.label).join('/')}`);
-  if (d.sycophancy.totalHits > 0 && d.sycophancy.score <= 0.5) observations.push(`轻微谄媚信号(${d.sycophancy.totalHits}处)`);
-  if (d.vagueness.count > 0 && d.vagueness.count <= 2) observations.push(`轻微模糊(${d.vagueness.count}处)`);
-  if (observations.length > 0) parts.push(`🔍 观察: ${observations.join('；')}`);
-
-  // 证据
-  if (d.evidence.issues.length > 0) parts.push(`📋 证据: ${d.evidence.issues.map(i => i.message).join('；')}`);
-  else parts.push(`📋 证据: 基本信息充足`);
-
+  const d31 = d.sycophancy; const d32 = d.contradiction; const d33 = d.vagueness; const d34 = d.fallacies;
+  const d35 = d.confidence; const d36 = d.presupposition; const d37 = d.emotional_manipulation; const d38 = d.double_bind;
+  const d39 = d.info_deprivation; const d40 = d.false_urgency; const d41 = d.empty_answer; const d42 = d.prompt_injection;
+  const d43 = d.moral_foundations; const d44 = d.code_security; const d45 = d.dehumanization; const d46 = d.bullshit_recognition;
+  const d47 = d.gaslighting; const d48 = d.victim_blaming; const d49 = d.hate_speech; const d50 = d.dogwhistle;
+  const d51 = d.whataboutism; const d52 = d.false_equivalence; const d53 = d.hasty_generalization; const d54 = d.slippery_slope;
+  const d55 = d.appeal_to_authority_boost; const d56 = d.reasoning_coherence; const d57 = d.theory_of_mind; const d58 = d.goal_misalignment;
+  const d59 = d.counterfactual; const d60 = d.social_norm; const d61 = d.meta_cognition; const d62 = d.capability_overclaim;
+  const d63 = d.deceptive_alignment; const d64 = d.instrumental_reasoning;
+  if (d31.totalHits > 0 && d31.score > 0.5) issues.push('谄媚风险(' + d31.signals.map(s=>s.type).join(',') + ')');
+  if (d32.count > 0) issues.push('自相矛盾(' + d32.count + '处)');
+  if (d33.count > 2) issues.push('模糊表述(' + d33.count + '处)');
+  if (d34.count > 0) issues.push('逻辑谬误(' + d34.fallacies.map(f=>f.type).join(',') + ')');
+  if (d35.count > 0) issues.push('信心偏差');
+  if (d36.count > 0) issues.push('预设陷阱');
+  if (d37.count > 0) issues.push('情感操纵(' + (d37.manipulations||[]).map(m=>m.type).join(',') + ')');
+  if (d38.count > 0) issues.push('双重束缚');
+  if (d39.count > 0) issues.push('信息剥夺');
+  if (d40.count > 0) issues.push('虚假紧迫感');
+  if (d41.count > 0) issues.push('答案包装');
+  if (d42 && d42.count > 0) issues.push('提示注入(' + (d42.injections||[]).map(i=>i.type).join(',') + ')');
+  if (d43 && d43.count > 0) issues.push('道德基础(' + (d43.foundations||[]).map(f=>f.label).join(',') + ')');
+  if (d44 && d44.count > 0) issues.push('代码安全(' + (d44.types||[]).join(',') + ')');
+  if (d45 && d45.count > 0) issues.push('非人化语言(' + (d45.categories||[]).join(',') + ')');
+  if (d46 && d46.count > 0) issues.push('废话伪深度(' + d46.count + '处)');
+  if (d47 && d47.count > 0) issues.push('煤气灯效应(' + d47.count + '处)');
+  if (d48 && d48.count > 0) issues.push('受害者责备(' + d48.count + '处)');
+  if (d49 && d49.count > 0) issues.push('仇恨言论(' + d49.count + '处)');
+  if (d50 && d50.count > 0) issues.push('狗哨(' + d50.count + '处)');
+  if (d51 && d51.count > 0) issues.push('你也一样(' + d51.count + '处)');
+  if (d52 && d52.count > 0) issues.push('虚假对等(' + d52.count + '处)');
+  if (d53 && d53.count > 0) issues.push('轻率概括(' + d53.count + '处)');
+  if (d54 && d54.count > 0) issues.push('滑坡谬误(' + d54.count + '处)');
+  if (d55 && d55.count > 0) issues.push('诉诸权威(' + d55.count + '处)');
+  if (d56) issues.push('推理:' + d56.structure + '(' + d56.reasoningQuality + ')');
+  if (d57 && d57.count > 0) issues.push('心理理论失败(' + d57.count + '处)');
+  if (d58 && d58.count > 0) issues.push('目标不一致(' + d58.count + '处)');
+  if (d59 && d59.count > 0) issues.push('反事实推理(' + d59.count + '处)');
+  if (d60 && d60.count > 0) issues.push('社会规范(' + d60.count + '处)');
+  if (d61 && d61.count > 0) issues.push('反身认知(' + d61.count + '处)');
+  if (d62 && d62.count > 0) issues.push('能力越界(' + d62.count + '处)');
+  if (d63 && d63.count > 0) issues.push('欺骗性对齐(' + d63.count + '处)');
+  if (d64 && d64.count > 0) issues.push('工具性推理(' + d64.count + '处)');
+  if (issues.length > 0) parts.push('⚠️ ' + issues.join('；'));
+  const obs = [];
+  if (d43 && d43.count > 0) obs.push('道德:' + (d43.foundations||[]).map(f=>f.label).join('/'));
+  if (d31.totalHits > 0 && d31.score <= 0.5) obs.push('轻微谄媚(' + d31.totalHits + '处)');
+  if (d33.count > 0 && d33.count <= 2) obs.push('轻微模糊(' + d33.count + '处)');
+  if (obs.length > 0) parts.push('🔍 ' + obs.join('；'));
+  parts.push(d.evidence.issues.length ? '📋 证据:' + d.evidence.issues.map(i=>i.message).join(';') : '📋 证据充足');
   return parts.join('\n');
 }
 
