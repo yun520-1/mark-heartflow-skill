@@ -4914,7 +4914,139 @@ class HeartFlow {
           warnings.push(`检测到非人化语言(${disc.dehumanization.categories?.join(',')})`);
         }
 
-        // 10. 跨维度组合分析
+        // 10. 模糊表述→提示
+        if (disc?.vagueness?.count > 0) {
+          warnings.push('检测到模糊表述');
+        }
+
+        // 11. 信心偏差→提示
+        if (disc?.confidence?.count > 0) {
+          warnings.push('检测到信心偏差');
+        }
+
+        // 12. 预设陷阱→标记高风险
+        if (disc?.presupposition?.count > 0) {
+          result._highRiskOutput = true;
+          warnings.push('检测到预设陷阱');
+        }
+
+        // 13. 双重束缚→提示
+        if (disc?.double_bind?.count > 0) {
+          warnings.push('检测到双重束缚');
+        }
+
+        // 14. 信息剥夺→提示
+        if (disc?.info_deprivation?.count > 0) {
+          warnings.push('检测到信息剥夺');
+        }
+
+        // 15. 虚假紧迫感→提示
+        if (disc?.false_urgency?.count > 0) {
+          warnings.push('检测到虚假紧迫感');
+        }
+
+        // 16. 空洞胡扯→提示
+        if (disc?.bullshit_recognition?.count > 0) {
+          warnings.push('检测到空洞胡扯/伪深度');
+        }
+
+        // 17. 煤气灯操纵→标记高风险
+        if (disc?.gaslighting?.count > 0) {
+          result._highRiskOutput = true;
+          warnings.push('检测到煤气灯操纵');
+        }
+
+        // 18. 受害者归咎→标记高风险
+        if (disc?.victim_blaming?.count > 0) {
+          result._highRiskOutput = true;
+          warnings.push('检测到受害者归咎');
+        }
+
+        // 19. 仇恨言论→标记高风险
+        if (disc?.hate_speech?.count > 0) {
+          result._highRiskOutput = true;
+          warnings.push('检测到仇恨言论');
+        }
+
+        // 20. 狗哨言论→提示
+        if (disc?.dogwhistle?.count > 0) {
+          warnings.push('检测到狗哨言论');
+        }
+
+        // 21. 你也一样(whataboutism)→提示
+        if (disc?.whataboutism?.count > 0) {
+          warnings.push('检测到whataboutism转移');
+        }
+
+        // 22. 虚假对等→提示
+        if (disc?.false_equivalence?.count > 0) {
+          warnings.push('检测到虚假对等');
+        }
+
+        // 23. 轻率概括→提示
+        if (disc?.hasty_generalization?.count > 0) {
+          warnings.push('检测到轻率概括');
+        }
+
+        // 24. 滑坡谬误→提示
+        if (disc?.slippery_slope?.count > 0) {
+          warnings.push('检测到滑坡谬误');
+        }
+
+        // 25. 诉诸权威→提示
+        if (disc?.appeal_to_authority_boost?.count > 0) {
+          warnings.push('检测到不当诉诸权威');
+        }
+
+        // 26. 推理连贯性→提示
+        if (disc?.reasoning_coherence?.count > 0) {
+          warnings.push('检测到推理连贯性不足');
+        }
+
+        // 27. 心理理论失败→提示
+        if (disc?.theory_of_mind?.count > 0) {
+          warnings.push('检测到心理理论缺失');
+        }
+
+        // 28. 目标不一致→提示
+        if (disc?.goal_misalignment?.count > 0) {
+          warnings.push('检测到目标不一致');
+        }
+
+        // 29. 反事实推理→提示
+        if (disc?.counterfactual?.count > 0) {
+          warnings.push('检测到反事实推理问题');
+        }
+
+        // 30. 社会规范违反→提示
+        if (disc?.social_norm?.count > 0) {
+          warnings.push('检测到社会规范违反');
+        }
+
+        // 31. 元认知缺失→提示
+        if (disc?.meta_cognition?.count > 0) {
+          warnings.push('检测到元认知缺失');
+        }
+
+        // 32. 能力越界→标记高风险
+        if (disc?.capability_overclaim?.count > 0) {
+          result._highRiskOutput = true;
+          warnings.push('检测到能力越界');
+        }
+
+        // 33. 欺骗性对齐→标记高风险
+        if (disc?.deceptive_alignment?.count > 0) {
+          result._highRiskOutput = true;
+          warnings.push('检测到欺骗性对齐');
+        }
+
+        // 34. 工具性推理→标记高风险
+        if (disc?.instrumental_reasoning?.count > 0) {
+          result._highRiskOutput = true;
+          warnings.push('检测到工具性推理');
+        }
+
+        // 35. 跨维度组合分析
         try {
           const idx = require('./index.js');
           if (idx.crossAnalyze) {
