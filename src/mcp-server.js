@@ -2365,27 +2365,49 @@ function handleFullDiscriminate(args) {
 function handleFullAudit(args) {
   const { text, evidence } = args || {};
   if (!text) return { error: 'text required' };
-  try {
-    const idx = require('./index.js');
-    const disc = idx.discriminate(text, evidence || []);
-    const report = idx.summarizeDiscrimination ? idx.summarizeDiscrimination(text, disc) : null;
-    const cross = idx.crossAnalyze ? idx.crossAnalyze(disc) : null;
-    const entropy = idx.entropyAnalysis ? idx.entropyAnalysis(text, disc) : null;
-    return {
-      verdict: disc.verdict,
-      overallScore: disc.overallScore,
-      dimensionCount: Object.keys(disc.dimensions).length,
-      summary: disc.summary,
-      readableReport: report,
-      crossPatterns: cross ? cross.patterns.filter(p => p.pattern !== '健康文本').map(p => p.pattern) : [],
-      entropyReduction: entropy ? entropy.entropyReduction : null,
-      timestamp: Date.now()
-    };
-  } catch(e) { return { error: e.message }; }
-}
+ try {
+ const idx = require('./index.js');
+ const disc = idx.discriminate(text, evidence || []);
+ const report = idx.summarizeDiscrimination ? idx.summarizeDiscrimination(text, disc) : null;
+ const cross = idx.crossAnalyze ? idx.crossAnalyze(disc) : null;
+ const entropy = idx.entropyAnalysis ? idx.entropyAnalysis(text, disc) : null;
+ return {
+   verdict: disc.verdict,
+   overallScore: disc.overallScore,
+   dimensionCount: Object.keys(disc.dimensions).length,
+   summary: disc.summary,
+   readableReport: report,
+   crossPatterns: cross ? cross.patterns.filter(p => p.pattern !== '健康文本').map(p => p.pattern) : [],
+   entropyReduction: entropy ? entropy.entropyReduction : null,
+   timestamp: Date.now()
+ };
+ } catch(e) { return { error: e.message }; }
+ }
 
-// [v6.3.0] 辨别引擎 handler
-function handleVerify(args) {
+ // [v6.5.0] 熵分析 handler
+ function handleEntropy(args) {
+ const { text } = args || {};
+ if (!text) return { error: 'text required' };
+ try {
+ const idx = require('./index.js');
+ const result = idx.entropyAnalysis(text);
+ return result || { error: 'entropyAnalysis returned null' };
+ } catch(e) { return { error: e.message }; }
+ }
+
+ // [v6.5.0] 交叉分析 handler
+ function handleCrossAnalyze(args) {
+ const { discResult } = args || {};
+ if (!discResult) return { error: 'discResult required' };
+ try {
+ const idx = require('./index.js');
+ const result = idx.crossAnalyze(discResult);
+ return result || { error: 'crossAnalyze returned null' };
+ } catch(e) { return { error: e.message }; }
+ }
+
+ // [v6.3.0] 辨别引擎 handler
+ function handleVerify(args) {
   const { decision, evidence, confidence } = args || {};
   if (!decision) return { error: 'decision required' };
   if (!heartflow || !heartflow.decisionVerifier) return { error: 'verifier not ready' };
@@ -2542,6 +2564,10 @@ const HANDLERS = {
 
   // [v6.4.0] 全量审核
   heartflow_audit: handleFullAudit,
+
+  // [v6.5.0] 熵分析 + 交叉分析
+  heartflow_entropy: handleEntropy,
+  heartflow_cross_analyze: handleCrossAnalyze,
 
 };
 
