@@ -2384,6 +2384,31 @@ function handleFullAudit(args) {
  } catch(e) { return { error: e.message }; }
  }
 
+ // [v6.6.0] 批量辨别 handler
+ function handleBulkDiscriminate(args) {
+   const { texts, evidence } = args || {};
+   if (!texts || !Array.isArray(texts) || texts.length === 0) return { error: 'texts[] array required' };
+   try {
+     const idx = require('./index.js');
+     const results = [];
+     for (let i = 0; i < texts.length; i++) {
+       const text = texts[i];
+       const disc = idx.discriminate ? idx.discriminate(text, evidence || []) : null;
+       results.push({
+         index: i,
+         text: text.substring(0, 200),
+         verdict: disc ? disc.verdict : 'error',
+         overallScore: disc ? disc.overallScore : null,
+         dimensions: disc ? disc.dimensions : null,
+         summary: disc ? disc.summary : null,
+         readableReport: disc && idx.summarizeDiscrimination ? idx.summarizeDiscrimination(text, disc) : null,
+         error: disc ? undefined : 'discriminate not available',
+       });
+     }
+     return { results, total: results.length };
+   } catch(e) { return { error: e.message }; }
+ }
+
  // [v6.5.0] 熵分析 handler
  function handleEntropy(args) {
  const { text } = args || {};
@@ -2564,6 +2589,9 @@ const HANDLERS = {
 
   // [v6.4.0] 全量审核
   heartflow_audit: handleFullAudit,
+
+  // [v6.6.0] 批量辨别
+  heartflow_bulk_discriminate: handleBulkDiscriminate,
 
   // [v6.5.0] 熵分析 + 交叉分析
   heartflow_entropy: handleEntropy,
