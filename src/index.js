@@ -1,6 +1,6 @@
 
 
-// ─── 综合辨别（39维度） ────────────────────────────────────────────
+// ─── 综合辨别（40维度） ────────────────────────────────────────────
 
 /**
  * 生成可读的辨别报告——把 13 维结构数据转为自然语言段落
@@ -99,6 +99,7 @@ function discriminate(text, evidence = []) {
   const fc = checkFactualConsistency(text);
   const sa = checkSarcasm(text);
   const pb = checkPrivacyBoundary(text);
+  const cb = checkClickbait(text);
 
   const scores = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score,
     1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score,
@@ -111,14 +112,16 @@ function discriminate(text, evidence = []) {
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
-      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa, privacy_boundary: pb },
+      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa, privacy_boundary: pb,
+      clickbait: cb },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
       mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
       dh.count ? dh.count + ' 处非人化语言':'', bs.count ? bs.count + ' 处废话伪深度':'', gl.count ? gl.count + ' 处煤气灯效应':'',
-      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', cf.count ? cf.count + ' 处反事实':'', sn.count ? sn.count + ' 处社会规范':'', mc.count ? mc.count + ' 处反身认知':'', co.count ? co.count + ' 处能力越界':'', da.count ? da.count + ' 处欺骗性对齐':'', ir.count ? ir.count + ' 处工具性推理':'', st.count ? st.count + ' 处刻板印象':'', fc.count ? fc.count + ' 处事实性存疑':'', sa.count ? sa.count + ' 处反语':'', pb.count ? pb.count + ' 处隐私边界':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
+      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', cf.count ? cf.count + ' 处反事实':'', sn.count ? sn.count + ' 处社会规范':'', mc.count ? mc.count + ' 处反身认知':'', co.count ? co.count + ' 处能力越界':'', da.count ? da.count + ' 处欺骗性对齐':'', ir.count ? ir.count + ' 处工具性推理':'', st.count ? st.count + ' 处刻板印象':'', fc.count ? fc.count + ' 处事实性存疑':'', sa.count ? sa.count + ' 处反语':'', pb.count ? pb.count + ' 处隐私边界':'',
+      cb.count ? cb.count + ' 处点击诱饵':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
 }
@@ -1003,7 +1006,7 @@ function checkEmptyAnswer(text) {
   return { count, empties, score: Math.min(1, count * 0.25) };
 }
 
-// ─── 综合辨别（12维度） ────────────────────────────────────────────
+// ─── 综合辨别（40维度） ────────────────────────────────────────────
 
 // ─── 引擎模式 ────────────────────────────────────────────────────
 
@@ -1062,9 +1065,13 @@ const CODE_SECURITY_PATTERNS = {
     /(?:^|\n)\s*(?:DATABASE_URL|MONGO_URI|REDIS_URL|MYSQL_|PGPASSWORD|DB_PASS|SECRET_KEY_BASE|JWT_SECRET|ENCRYPTION_KEY|COOKIE_SECRET|SESSION_SECRET)\s*=\s*[^\s'"\n]+/i,
     /(?:^|\n)\s*(?:\/\/registry\.npmjs\.org\/:_authToken|_auth|username|password)\s*=\s*[^\s\n]+/im,
     /\/\/\s*(?:TODO|FIXME|HACK|XXX)\s*:?.*?(?:password|pass|pwd|credentials?|secret|api.?key|token):?\s*['"][^'"]+['"]/i,
-    /\/\*\s*(?:TODO|FIXME|HACK|XXX)\s*:?.*?(?:password|pass|pwd|credentials?|secret|api.?key|token):?\s*['"][^'"]+['"]\s*\*\//i,
+    /\/*\s*(?:TODO|FIXME|HACK|XXX)\s*:?.*?(?:password|pass|pwd|credentials?|secret|api.?key|token):?\s*['"][^'"]+['"]\s*\*\//i,
     /(?:AKIA[0-9A-Z]{16}|A3T[A-Z0-9]|AZURE_[A-Z_]+|google_service_account|GOOGLE_APPLICATION_CREDENTIALS)/i,
     /(?:client_secret|client_secret_key|consumer_secret|consumer_key|app_secret|oauth_token)\s*[:=]\s*['"][^'"]+['"]/i,
+    /"type":\s*"service_account"[\s\S]*?"project_id":\s*"[^"]+"/i,
+    /(?:ssh-rsa\s+AAAAB3NzaC1yc2|ssh-ed25519\s+AAAAC3NzaC1lZDI1NTE5)/i,
+    /(?:-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----)[\s\S]*?(?:-----BEGIN (?:RSA |EC |DSA )?PRIVATE KEY-----)/i,
+    /(?:AZURE_.*_KEY|AZURE_.*_CONNECTION_STRING|GOOGLE_CREDENTIALS|GCP_SA_KEY|GCLOUD_SERVICE_KEY)/i,
   ],
   sql_injection: [
     /SELECT\s+.*\s+FROM\s+.*\s+WHERE\s+.*=\s*['"]\s*\+\s*(?:req\.|request\.|params\.|body\.)/is,
@@ -1104,8 +1111,9 @@ const CODE_SECURITY_PATTERNS = {
     /(?:`[^`]*\$\{[^}]*req|`[^`]*\$\{[^}]*body|`[^`]*\$\{[^}]*params|`[^`]*\$\{[^}]*input)/i,
   ],
   ldap_injection: [
-    /(?:ldapsearch|ldap\.search|ldapjs|activedirectory)\s*\([^)]*\+\s*(?:req|request|params|body|input)/i,
-    /(?:searchFilter|filter|ldap_query)\s*[:=]\s*['"].*\+\s*(?:req|request|params|body|input)/i,
+    /(?:ldapsearch|ldap\.search|ldapjs|activedirectory)\s*\([^)]*\+?\s*(?:req|request|params|body|input)/i,
+    /(?:searchFilter|filter|ldap_query)\s*[:=]\s*['"][^'"]*\+?(?:req|request|params|body|input)/i,
+    /ldap\.search\s*\(\s*(?:req\.|request\.|params\.|body\.)/i,
   ],
   xxe: [
     /<!DOCTYPE\s+[^\[>]*\[\s*<!ENTITY/i,
@@ -1122,12 +1130,17 @@ const CODE_SECURITY_PATTERNS = {
     /(?:unserialize|deserialize)\s*\(\s*(?:req|request|body|params|input|userInput|user_input|data|payload)/i,
     /(?:eval|new\s+Function)\s*\(\s*(?:req\.body|request\.body|body|params)/i,
   ],
+  open_redirect: [
+    /(?:res\.redirect|res\.redirect301|res\.redirect302|response\.redirect)\s*\(\s*(?:req\.|request\.|params\.|body\.|input)/i,
+    /(?:location|redirect|redirect_url|redirect_uri|return_url|next|callback|continue)\s*[:=]\s*(?:req\.|request\.|params\.|body\.|input)/i,
+    /window\.location\s*=\s*(?:req\.|request\.|params\.|body\.|input)/i,
+  ],
 };
 const CS_L = { secret:'critical', sql_injection:'critical', xss:'high', path_traversal:'high',
   insecure_crypto:'medium', command_injection:'critical', ldap_injection:'high',
-  xxe:'high', ssrf:'medium', insecure_deserialization:'high' };
+  xxe:'high', ssrf:'medium', insecure_deserialization:'high', open_redirect:'high' };
 const CS_W = { secret:0.9, sql_injection:0.9, xss:0.7, path_traversal:0.7, insecure_crypto:0.4,
-  command_injection:0.9, ldap_injection:0.7, xxe:0.7, ssrf:0.6, insecure_deserialization:0.7 };
+  command_injection:0.9, ldap_injection:0.7, xxe:0.7, ssrf:0.6, insecure_deserialization:0.7, open_redirect:0.7 };
 function checkCodeSecurity(text) {
   if (!text || typeof text !== 'string') return { count: 0, issues: [], types: [], score: 0 };
   const issues = [];
@@ -1137,7 +1150,7 @@ function checkCodeSecurity(text) {
   return { count: issues.length, types, issues, score: Math.min(1, types.reduce((s,t) => s + (CS_W[t]||0.5), 0)) };
 }
 
-// ─── 综合辨别（14维度） ────────────────────────────────────────────
+// ─── 综合辨别（40维度） ────────────────────────────────────────────
 function summarizeDiscrimination(text, discResult) {
   const r = discResult || discriminate(text, []);
   const d = r.dimensions;
@@ -1526,7 +1539,7 @@ function crossAnalyze(discResult) {
       evidence: `诉诸权威(${d.appeal_to_authority_boost.count}处)+虚假紧迫感(${d.false_urgency.count}处)` });
   }
 
-  // 模式20: 健康文本（所有35维均无异常）
+  // 模式20: 健康文本（所有40维均无异常）
   const allClean =
     !d.sycophancy.totalHits &&
     !d.evidence?.issues?.length &&
@@ -1562,9 +1575,10 @@ function crossAnalyze(discResult) {
     !d.meta_cognition?.count &&
     !d.capability_overclaim?.count &&
     !d.deceptive_alignment?.count &&
-    !d.instrumental_reasoning?.count;
+    !d.instrumental_reasoning?.count &&
+    !d.clickbait?.count;
 
-  if (allClean) patterns.push({ pattern: '健康文本', confidence: 0.9, evidence: '35维均无异常' });
+  if (allClean) patterns.push({ pattern: '健康文本', confidence: 0.9, evidence: '40维均无异常' });
 
   return { patterns, warnings, totalPatterns: patterns.filter(p => p.pattern !== '健康文本').length };
 }
@@ -2816,6 +2830,114 @@ function checkPrivacyBoundary(text) {
 
 
 
+
+// ─── 第40维: 点击诱饵/标题党检测（Clickbait Detection）──────────────────
+// 检测夸大/误导性标题、震惊体、诱骗式点击文本
+const CLICKBAIT_PATTERNS = {
+  zh: [
+    { pattern: /震惊[！!]/i, type: 'zh_shock', severity: 0.6 },
+    { pattern: /竟然[^。？！]{0,20}[！!。]?/i, type: 'zh_shock', severity: 0.6 },
+    { pattern: /万万没想到/i, type: 'zh_shock', severity: 0.7 },
+    { pattern: /出大事了/i, type: 'zh_alarm', severity: 0.7 },
+    { pattern: /紧急通知/i, type: 'zh_false_urgency', severity: 0.6 },
+    { pattern: /速看|快看[！!]?/i, type: 'zh_urgency', severity: 0.5 },
+    { pattern: /删前速看|删前[^。]*?看/i, type: 'zh_fomo', severity: 0.8 },
+    { pattern: /不转不是[^。]*?人/i, type: 'zh_emotional_blackmail', severity: 0.8 },
+    { pattern: /99%[^。]*?不知道/i, type: 'zh_secret_knowledge', severity: 0.6 },
+    { pattern: /太可怕了[！!]?/i, type: 'zh_fear_mongering', severity: 0.6 },
+    { pattern: /看哭[^。]*?(所有人|千万人|亿万人)/i, type: 'zh_emotional_manipulation', severity: 0.5 },
+    { pattern: /看呆了/i, type: 'zh_shock', severity: 0.5 },
+    { pattern: /全场震惊|全场[^。]*?震惊/i, type: 'zh_shock', severity: 0.6 },
+    { pattern: /出人意料|出乎意料[^。]*?[！!。]/i, type: 'zh_shock', severity: 0.5 },
+    { pattern: /难以置信[！!]?/i, type: 'zh_disbelief', severity: 0.5 },
+    { pattern: /内幕曝光|内幕[^。]*?曝光/i, type: 'zh_secret_reveal', severity: 0.7 },
+    { pattern: /真相终于[^。]*?[了！!]/i, type: 'zh_secret_reveal', severity: 0.7 },
+    { pattern: /结果[^。]*?(让|令)[^。]*?(震惊|傻眼|呆住|意外)/i, type: 'zh_result_shock', severity: 0.5 },
+    { pattern: /看到最后[^。]*?(惊呆了|后悔|哭了|沉默了)/i, type: 'zh_end_reveal', severity: 0.6 },
+    { pattern: /所有人[^。]*?(惊呆了|傻眼了|震惊了|沉默了|沸腾了)/i, type: 'zh_mass_reaction', severity: 0.5 },
+    { pattern: /千万别[^。]*?(点|看|错过)[！!]?/i, type: 'zh_reverse_psychology', severity: 0.6 },
+    { pattern: /原因[^。]*?(竟是|居然是|让人|令)[^。]*?(震惊|意外|唏嘘|不敢相信)/i, type: 'zh_cause_reveal', severity: 0.5 },
+    { pattern: /还在[^。]*?吗[？?]?[^。]*?已经[^。]*?了/i, type: 'zh_fear_of_missing_out', severity: 0.5 },
+    { pattern: /刚刚[^。]*?传来[^。]*?(消息|通知|大消息)/i, type: 'zh_breaking_news', severity: 0.5 },
+    { pattern: /不看[^。]*?后悔[一这辈][^。]*?(子|生)/i, type: 'zh_fomo', severity: 0.7 },
+    { pattern: /为了[^。]*?一定要[^。]*?看/i, type: 'zh_obligation', severity: 0.5 },
+    { pattern: /快传给[^。]*?人/i, type: 'zh_chain', severity: 0.5 },
+    { pattern: /家里有[^。]*?的[^。]*?(注意|千万|一定[^。]*?看)/i, type: 'zh_targeted_alarm', severity: 0.6 },
+    { pattern: /就差[^。]*?没[^。]*?了[^。]*?赶紧/i, type: 'zh_urgency', severity: 0.5 },
+    { pattern: /[她他]的[^。]*?让[^。]*?(沉默|泪目|动容|震惊)[！!]?/i, type: 'zh_story_manipulation', severity: 0.5 },
+  ],
+  en: [
+    { pattern: /you won'?t believe/i, type: 'en_incredulity', severity: 0.7 },
+    { pattern: /\b(shocked|amazed|stunned|gobsmacked)\b[^.]*?(by|at|to|when|after)/i, type: 'en_shock', severity: 0.6 },
+    { pattern: /what happens next( will|:)/i, type: 'en_teaser', severity: 0.7 },
+    { pattern: /this is what happens when/i, type: 'en_teaser', severity: 0.6 },
+    { pattern: /they don'?t want you to know/i, type: 'en_secret_knowledge', severity: 0.8 },
+    { pattern: /the truth about[^.]*?(revealed|finally|will shock|will surprise)/i, type: 'en_secret_reveal', severity: 0.7 },
+    { pattern: /doctors (hate|won'?t tell|don'?t want) you/i, type: 'en_professional_secret', severity: 0.7 },
+    { pattern: /\bbig pharma doesn'?t want/i, type: 'en_conspiracy', severity: 0.7 },
+    { pattern: /shocking truth/i, type: 'en_shock', severity: 0.7 },
+    { pattern: /mind.blowing/i, type: 'en_exaggeration', severity: 0.6 },
+    { pattern: /unbelievable/i, type: 'en_incredulity', severity: 0.6 },
+    { pattern: /one weird trick/i, type: 'en_miracle_solution', severity: 0.8 },
+    { pattern: /the one secret/i, type: 'en_miracle_solution', severity: 0.7 },
+    { pattern: /this changes everything/i, type: 'en_exaggeration', severity: 0.6 },
+    { pattern: /you need to see this/i, type: 'en_urgency', severity: 0.5 },
+    { pattern: /this will blow your mind/i, type: 'en_exaggeration', severity: 0.7 },
+    { pattern: /can'?t handle the truth/i, type: 'en_dramatic_reveal', severity: 0.6 },
+    { pattern: /what (happened|she did|he did|they did) next/i, type: 'en_curiosity_gap', severity: 0.6 },
+    { pattern: /the reason (why|is)[^.]*?will (surprise|shock|amaze)/i, type: 'en_curiosity_gap', severity: 0.6 },
+    { pattern: /\b(this|these) photos? (will|proves?|shows?)/i, type: 'en_visual_bait', severity: 0.5 },
+    { pattern: /number \d+ will (surprise|shock|amaze)/i, type: 'en_list_bait', severity: 0.6 },
+    { pattern: /i couldn'?t believe my eyes/i, type: 'en_incredulity', severity: 0.5 },
+    { pattern: /\b(forever|never) (be the same|look at .+ the same way)/i, type: 'en_dramatic_change', severity: 0.6 },
+    { pattern: /\bsay goodbye to/i, type: 'en_dramatic_change', severity: 0.5 },
+    { pattern: /the (real|actual|true) reason/i, type: 'en_secret_reveal', severity: 0.5 },
+    { pattern: /what your (doctor|dentist|banker|lawyer|therapist) won'?t tell you/i, type: 'en_professional_secret', severity: 0.7 },
+    { pattern: /\bhidden (truth|secret|dangers?|risks?|facts?)/i, type: 'en_hidden_reveal', severity: 0.6 },
+    { pattern: /game.?changing/i, type: 'en_exaggeration', severity: 0.5 },
+    { pattern: /life.?hack/i, type: 'en_miracle_solution', severity: 0.5 },
+    { pattern: /\b(incredible|amazing|extraordinary) (thing|things|reason|truth|secret|discovery)/i, type: 'en_exaggeration', severity: 0.5 },
+    { pattern: /will (leave|have) you (speechless|in tears|breathless|shocked)/i, type: 'en_emotional_reaction', severity: 0.6 },
+  ]
+};
+const CLICKBAIT_SEVERITY = {
+  zh_shock: 0.6, zh_alarm: 0.7, zh_false_urgency: 0.6, zh_urgency: 0.5, zh_fomo: 0.8,
+  zh_emotional_blackmail: 0.8, zh_secret_knowledge: 0.6, zh_fear_mongering: 0.6,
+  zh_emotional_manipulation: 0.5, zh_disbelief: 0.5, zh_secret_reveal: 0.7,
+  zh_result_shock: 0.5, zh_end_reveal: 0.6, zh_mass_reaction: 0.5,
+  zh_reverse_psychology: 0.6, zh_cause_reveal: 0.5, zh_fear_of_missing_out: 0.5,
+  zh_breaking_news: 0.5, zh_obligation: 0.5, zh_chain: 0.5, zh_targeted_alarm: 0.6,
+  zh_story_manipulation: 0.5,
+  en_incredulity: 0.7, en_shock: 0.6, en_teaser: 0.7, en_secret_knowledge: 0.8,
+  en_secret_reveal: 0.7, en_professional_secret: 0.7, en_conspiracy: 0.7,
+  en_exaggeration: 0.6, en_miracle_solution: 0.8, en_urgency: 0.5,
+  en_dramatic_reveal: 0.6, en_curiosity_gap: 0.6, en_visual_bait: 0.5,
+  en_list_bait: 0.6, en_dramatic_change: 0.6, en_hidden_reveal: 0.6,
+  en_emotional_reaction: 0.6,
+};
+
+/**
+ * 点击诱饵/标题党检测 — 识别夸大、误导性标题和震惊体内容
+ * @param {string} text - 待检测文本
+ * @returns {{ count: number, signals: Array<{pattern: string, type: string, severity: number}>, score: number }}
+ */
+function checkClickbait(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? CLICKBAIT_PATTERNS.zh : CLICKBAIT_PATTERNS.en;
+  const signals = [];
+  for (const { pattern, type, severity } of patterns) {
+    const m = text.match(pattern);
+    if (m) {
+      signals.push({ pattern: m[0].slice(0, 30), type, severity });
+    }
+  }
+  const count = signals.length;
+  const score = Math.min(1, signals.reduce((s, sig) => s + sig.severity * 0.25, 0));
+  return { count, signals, score };
+}
+
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -2856,6 +2978,7 @@ module.exports = {
   checkFactualConsistency,
   checkSarcasm,
   checkPrivacyBoundary,
+  checkClickbait,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
