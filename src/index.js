@@ -2944,6 +2944,125 @@ function checkClickbait(text) {
 }
 
 
+// ─── 恶意推导/扣帽子检测（Bad Faith Detection）─────────────────────────────
+// 检测扣帽子、动机质疑、稻草人论证式的恶意推导
+const BADFAITH_PATTERNS = {
+  zh: [
+    { pattern: /你[这那]?[是在]?洗白/i, type: 'zh_whitewash', severity: 0.8 },
+    { pattern: /你[是在]?(在)?带节奏/i, type: 'zh_agenda', severity: 0.8 },
+    { pattern: /你(是|就)(个|一)?水军[吧?？]?/i, type: 'zh_astroturf', severity: 0.9 },
+    { pattern: /你收了多少钱/i, type: 'zh_paid', severity: 0.9 },
+    { pattern: /你(的)?(立场|站队)(有[^。]*)?问题/i, type: 'zh_stance', severity: 0.8 },
+    { pattern: /你(的)?屁股歪了/i, type: 'zh_bias', severity: 0.8 },
+    { pattern: /你这(是|叫)(在)?偷换概念/i, type: 'zh_equivocation', severity: 0.7 },
+    { pattern: /你在打稻草人/i, type: 'zh_strawman', severity: 0.7 },
+    { pattern: /你(这[是在]?)?断章取义/i, type: 'zh_quote_mining', severity: 0.7 },
+    { pattern: /你这(是|叫)?滑坡谬误/i, type: 'zh_slippery_slope', severity: 0.7 },
+    { pattern: /你故意曲解/i, type: 'zh_misrepresentation', severity: 0.8 },
+    { pattern: /你选择性失明/i, type: 'zh_selective_blindness', severity: 0.8 },
+    { pattern: /你装傻[吧?？]?/i, type: 'zh_feigning_ignorance', severity: 0.8 },
+    { pattern: /你揣着明白装糊涂/i, type: 'zh_dishonest_pretense', severity: 0.9 },
+    { pattern: /你避重就轻/i, type: 'zh_evasion', severity: 0.7 },
+    { pattern: /你(在)?转移话题/i, type: 'zh_deflection', severity: 0.7 },
+    { pattern: /你(敢|能)[^。]*?(正面|直接)[^。]*?回答[吗么？?]?/i, type: 'zh_dare_answer', severity: 0.6 },
+  ],
+  en: [
+    { pattern: /you('re| are) just (making excuses|making up excuses)/i, type: 'en_excuses', severity: 0.7 },
+    { pattern: /you('re| are) defending the indefensible/i, type: 'en_defending', severity: 0.8 },
+    { pattern: /you('re| are) being disingenuous/i, type: 'en_disingenuous', severity: 0.8 },
+    { pattern: /you('re| are) gaslighting/i, type: 'en_gaslighting', severity: 0.9 },
+    { pattern: /you('re| are) sealioning/i, type: 'en_sealioning', severity: 0.8 },
+    { pattern: /you('re| are) concern trolling/i, type: 'en_concern_trolling', severity: 0.8 },
+    { pattern: /you('re| are) playing (devil'?s advocate|devils advocate)/i, type: 'en_devils_advocate', severity: 0.7 },
+    { pattern: /\bbad faith (argument|rhetoric|talk|discussion)/i, type: 'en_bad_faith', severity: 0.9 },
+    { pattern: /\bstraw.?man/i, type: 'en_strawman', severity: 0.8 },
+    { pattern: /you('re| are) moving the goalposts?/i, type: 'en_goalpost', severity: 0.8 },
+    { pattern: /you('re| are) cherry.?pick(ing|s)?/i, type: 'en_cherry_pick', severity: 0.8 },
+    { pattern: /you('re| are) deflect(ing|ed)/i, type: 'en_deflect', severity: 0.7 },
+    { pattern: /you('re| are) whatabout(ing|ism)?/i, type: 'en_whatabout', severity: 0.7 },
+    { pattern: /you can'?t be serious/i, type: 'en_serious', severity: 0.6 },
+    { pattern: /you('re| are) being deliberately obtuse/i, type: 'en_obtuse', severity: 0.8 },
+    { pattern: /you know what i (meant|meant|was saying)/i, type: 'en_know_what_i_mean', severity: 0.6 },
+  ]
+};
+
+/**
+ * 恶意推导/扣帽子检测 — 识别扣帽子、动机质疑、稻草人论证式的恶意推导
+ * @param {string} text - 待检测文本
+ * @returns {{ count: number, signals: Array<{pattern: string, type: string, severity: number}>, score: number }}
+ */
+function checkBadFaith(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? BADFAITH_PATTERNS.zh : BADFAITH_PATTERNS.en;
+  const signals = [];
+  for (const { pattern, type, severity } of patterns) {
+    const m = text.match(pattern);
+    if (m) {
+      signals.push({ pattern: m[0].slice(0, 30), type, severity });
+    }
+  }
+  const count = signals.length;
+  const score = Math.min(1, signals.reduce((s, sig) => s + sig.severity * 0.25, 0));
+  return { count, signals, score };
+}
+
+// ─── 第41维: 语调警察检测（Tone Policing Detection）───────────────────
+// 检测关注语气而非内容的语调警察论证
+const TONE_POLICING_PATTERNS = {
+  zh: [
+    { pattern: /你态度不对/i, type: 'zh_attitude_wrong', severity: 0.6 },
+    { pattern: /你说话语气有问题/i, type: 'zh_tone_problem', severity: 0.7 },
+    { pattern: /你能不能好好说话/i, type: 'zh_speak_properly', severity: 0.7 },
+    { pattern: /你客气点/i, type: 'zh_be_polite', severity: 0.5 },
+    { pattern: /你礼貌点/i, type: 'zh_be_courteous', severity: 0.5 },
+    { pattern: /你激动什么/i, type: 'zh_why_emotional', severity: 0.6 },
+    { pattern: /你这么大声干嘛/i, type: 'zh_why_loud', severity: 0.6 },
+    { pattern: /你冷静点/i, type: 'zh_calm_down', severity: 0.5 },
+    { pattern: /别这么激动/i, type: 'zh_dont_be_so_emotional', severity: 0.6 },
+    { pattern: /别这么情绪化/i, type: 'zh_dont_be_emotional', severity: 0.7 },
+    { pattern: /你太敏感了/i, type: 'zh_too_sensitive', severity: 0.6 },
+    { pattern: /你玻璃心/i, type: 'zh_glass_heart', severity: 0.6 },
+    { pattern: /你戾气太重/i, type: 'zh_too_aggressive', severity: 0.6 },
+    { pattern: /你说话太冲/i, type: 'zh_brusque', severity: 0.6 },
+  ],
+  en: [
+    { pattern: /you need to calm down/i, type: 'en_calm_down', severity: 0.6 },
+    { pattern: /stop being so emotional/i, type: 'en_stop_emotional', severity: 0.7 },
+    { pattern: /you('re| are) being hysterical/i, type: 'en_hysterical', severity: 0.7 },
+    { pattern: /you('re| are) overreacting/i, type: 'en_overreacting', severity: 0.6 },
+    { pattern: /you('re| are) too sensitive/i, type: 'en_too_sensitive', severity: 0.6 },
+    { pattern: /you('re| are) getting worked up over nothing/i, type: 'en_worked_up', severity: 0.7 },
+    { pattern: /keep your cool/i, type: 'en_keep_cool', severity: 0.5 },
+    { pattern: /take a deep breath/i, type: 'en_deep_breath', severity: 0.5 },
+    { pattern: /you('re| are) being irrational/i, type: 'en_irrational', severity: 0.7 },
+    { pattern: /you('re| are) not being reasonable/i, type: 'en_not_reasonable', severity: 0.6 },
+    { pattern: /why are you so angry/i, type: 'en_why_angry', severity: 0.6 },
+    { pattern: /i can't talk to you when you('re| are) like this/i, type: 'en_cant_talk', severity: 0.7 },
+  ],
+};
+
+/**
+ * 语调警察检测 — 识别关注语气而非内容的论证谬误
+ * @param {string} text - 待检测文本
+ * @returns {{ count: number, signals: Array<{pattern: string, type: string, severity: number}>, score: number }}
+ */
+function checkTonePolicing(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? TONE_POLICING_PATTERNS.zh : TONE_POLICING_PATTERNS.en;
+  const signals = [];
+  for (const { pattern, type, severity } of patterns) {
+    const m = text.match(pattern);
+    if (m) {
+      signals.push({ pattern: m[0].slice(0, 30), type, severity });
+    }
+  }
+  const count = signals.length;
+  const score = Math.min(1, signals.reduce((s, sig) => s + sig.severity * 0.25, 0));
+  return { count, signals, score };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -2985,6 +3104,8 @@ module.exports = {
   checkSarcasm,
   checkPrivacyBoundary,
   checkClickbait,
+  checkBadFaith,
+  checkTonePolicing,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
