@@ -1382,7 +1382,8 @@ function entropyAnalysis(rawText, discResult) {
       d.fallacies?.count, d.confidence?.count, d.presupposition?.count,
       d.emotional_manipulation?.count, d.double_bind?.count, d.info_deprivation?.count,
       d.false_urgency?.count, d.empty_answer?.count, d.moral_foundations?.count,
-      d.prompt_injection?.count, d.code_security?.count || 0, d.dehumanization?.count
+      d.prompt_injection?.count, d.code_security?.count || 0, d.dehumanization?.count,
+      d.clickbait?.count
     ];
     problemCount = dims.filter(v => v > 0).length;
     // 输出秩序度 = 1 - (问题维度数 / 总维度数)
