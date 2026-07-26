@@ -2281,6 +2281,29 @@ async function handleBenchmarkImportFailures(args, sessionId) {
 
 
 
+// [v6.4.0] 全量审核 handler
+function handleFullAudit(args) {
+  const { text, evidence } = args || {};
+  if (!text) return { error: 'text required' };
+  try {
+    const idx = require('./index.js');
+    const disc = idx.discriminate(text, evidence || []);
+    const report = idx.summarizeDiscrimination ? idx.summarizeDiscrimination(text, disc) : null;
+    const cross = idx.crossAnalyze ? idx.crossAnalyze(disc) : null;
+    const entropy = idx.entropyAnalysis ? idx.entropyAnalysis(text, disc) : null;
+    return {
+      verdict: disc.verdict,
+      overallScore: disc.overallScore,
+      dimensionCount: Object.keys(disc.dimensions).length,
+      summary: disc.summary,
+      readableReport: report,
+      crossPatterns: cross ? cross.patterns.filter(p => p.pattern !== '健康文本').map(p => p.pattern) : [],
+      entropyReduction: entropy ? entropy.entropyReduction : null,
+      timestamp: Date.now()
+    };
+  } catch(e) { return { error: e.message }; }
+}
+
 // [v6.3.0] 辨别引擎 handler
 function handleVerdict(args) {
   const { text, evidence } = args || {};
@@ -2334,6 +2357,29 @@ function handleFullDiscriminate(args) {
       summary: result.summary,
       readableReport: idx.summarizeDiscrimination ? idx.summarizeDiscrimination(text, result) : null,
       crossPatterns: idx.crossAnalyze ? idx.crossAnalyze(result) : null,
+    };
+  } catch(e) { return { error: e.message }; }
+}
+
+// [v6.4.0] 全量审核 handler
+function handleFullAudit(args) {
+  const { text, evidence } = args || {};
+  if (!text) return { error: 'text required' };
+  try {
+    const idx = require('./index.js');
+    const disc = idx.discriminate(text, evidence || []);
+    const report = idx.summarizeDiscrimination ? idx.summarizeDiscrimination(text, disc) : null;
+    const cross = idx.crossAnalyze ? idx.crossAnalyze(disc) : null;
+    const entropy = idx.entropyAnalysis ? idx.entropyAnalysis(text, disc) : null;
+    return {
+      verdict: disc.verdict,
+      overallScore: disc.overallScore,
+      dimensionCount: Object.keys(disc.dimensions).length,
+      summary: disc.summary,
+      readableReport: report,
+      crossPatterns: cross ? cross.patterns.filter(p => p.pattern !== '健康文本').map(p => p.pattern) : [],
+      entropyReduction: entropy ? entropy.entropyReduction : null,
+      timestamp: Date.now()
     };
   } catch(e) { return { error: e.message }; }
 }
@@ -2493,6 +2539,9 @@ const HANDLERS = {
   // [v6.3.7] 公式工具
   heartflow_formula_search: handleFormulaSearch,
   heartflow_formula_calculate: handleFormulaCalculate,
+
+  // [v6.4.0] 全量审核
+  heartflow_audit: handleFullAudit,
 
 };
 
