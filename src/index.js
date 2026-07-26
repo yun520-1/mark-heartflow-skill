@@ -1061,8 +1061,8 @@ const CODE_SECURITY_PATTERNS = {
     /-----BEGIN (?:RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----/,
     /(?:^|\n)\s*(?:DATABASE_URL|MONGO_URI|REDIS_URL|MYSQL_|PGPASSWORD|DB_PASS|SECRET_KEY_BASE|JWT_SECRET|ENCRYPTION_KEY|COOKIE_SECRET|SESSION_SECRET)\s*=\s*[^\s'"\n]+/i,
     /(?:^|\n)\s*(?:\/\/registry\.npmjs\.org\/:_authToken|_auth|username|password)\s*=\s*[^\s\n]+/im,
-    /\/\/\s*(?:TODO|FIXME|HACK|XXX)\s*:?\s*(?:password|pass|pwd|credentials?|secret|api.?key|token):?\s*['"][^'"]+['"]/i,
-    /\/\*\s*(?:TODO|FIXME|HACK|XXX)\s*:?\s*(?:password|pass|pwd|credentials?|secret|api.?key|token):?\s*['"][^'"]+['"]\s*\*\//i,
+    /\/\/\s*(?:TODO|FIXME|HACK|XXX)\s*:?.*?(?:password|pass|pwd|credentials?|secret|api.?key|token):?\s*['"][^'"]+['"]/i,
+    /\/\*\s*(?:TODO|FIXME|HACK|XXX)\s*:?.*?(?:password|pass|pwd|credentials?|secret|api.?key|token):?\s*['"][^'"]+['"]\s*\*\//i,
     /(?:AKIA[0-9A-Z]{16}|A3T[A-Z0-9]|AZURE_[A-Z_]+|google_service_account|GOOGLE_APPLICATION_CREDENTIALS)/i,
     /(?:client_secret|client_secret_key|consumer_secret|consumer_key|app_secret|oauth_token)\s*[:=]\s*['"][^'"]+['"]/i,
   ],
@@ -1109,7 +1109,7 @@ const CODE_SECURITY_PATTERNS = {
   ],
   xxe: [
     /<!DOCTYPE\s+[^\[>]*\[\s*<!ENTITY/i,
-    /(?:libxmljs|xml2js\.parseString|fast-xml-parser|sax-parser|xmlhttprequest|xmldom)\.(?:parse|parseFromString|parseString)\s*\(/i,
+    /(?:libxmljs|xml2js|fast-xml-parser|sax-parser|xmlhttprequest|xmldom)\.(?:parse|parseFromString|parseString)\s*\(/i,
     /SYSTEM\s+['"](?:file:|http:|https:|ftp:)/i,
   ],
   ssrf: [
@@ -1118,8 +1118,8 @@ const CODE_SECURITY_PATTERNS = {
     /(?:localhost|127\.0\.0\.1|0\.0\.0\.0|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})\s*\+\s*(?:req|request|params|body|input)/i,
   ],
   insecure_deserialization: [
-    /JSON\.parse\s*\(\s*(?:req|request|body|params|input)/i,
-    /(?:unserialize|deserialize)\s*\(\s*(?:req|request|body|params|input)/i,
+    /JSON\.parse\s*\(\s*(?:req|request|body|params|input|userInput|user_input|data|payload|text|content)/i,
+    /(?:unserialize|deserialize)\s*\(\s*(?:req|request|body|params|input|userInput|user_input|data|payload)/i,
     /(?:eval|new\s+Function)\s*\(\s*(?:req\.body|request\.body|body|params)/i,
   ],
 };
