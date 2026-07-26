@@ -1,6 +1,6 @@
 
 
-// ─── 综合辨别（35维度） ────────────────────────────────────────────
+// ─── 综合辨别（37维度） ────────────────────────────────────────────
 
 /**
  * 生成可读的辨别报告——把 13 维结构数据转为自然语言段落
@@ -95,10 +95,12 @@ function discriminate(text, evidence = []) {
   const co = checkCapabilityOverclaim(text);
   const da = checkDeceptiveAlignment(text);
   const ir = checkInstrumentalReasoning(text);
+  const st = checkStereotype(text);
+  const fc = checkFactualConsistency(text);
 
   const scores = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score,
     1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score,
-    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score, 1-tom.score, 1-gm.score, 1-cf.score, 1-sn.score, 1-mc.score, 1-co.score, 1-da.score, 1-ir.score];
+    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score, 1-tom.score, 1-gm.score, 1-cf.score, 1-sn.score, 1-mc.score, 1-co.score, 1-da.score, 1-ir.score, 1-st.score, 1-fc.score];
   const overallScore = Math.round((scores.reduce((a,b) => a+b, 0) / scores.length) * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -107,14 +109,14 @@ function discriminate(text, evidence = []) {
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
-      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir },
+      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
       mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
       dh.count ? dh.count + ' 处非人化语言':'', bs.count ? bs.count + ' 处废话伪深度':'', gl.count ? gl.count + ' 处煤气灯效应':'',
-      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', cf.count ? cf.count + ' 处反事实':'', sn.count ? sn.count + ' 处社会规范':'', mc.count ? mc.count + ' 处反身认知':'', co.count ? co.count + ' 处能力越界':'', da.count ? da.count + ' 处欺骗性对齐':'', ir.count ? ir.count + ' 处工具性推理':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
+      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', cf.count ? cf.count + ' 处反事实':'', sn.count ? sn.count + ' 处社会规范':'', mc.count ? mc.count + ' 处反身认知':'', co.count ? co.count + ' 处能力越界':'', da.count ? da.count + ' 处欺骗性对齐':'', ir.count ? ir.count + ' 处工具性推理':'', st.count ? st.count + ' 处刻板印象':'', fc.count ? fc.count + ' 处事实性存疑':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
 }
@@ -2421,6 +2423,100 @@ function checkInstrumentalReasoning(text) {
   return { count: signals.length, signals, score: Math.min(1, signals.length * 0.35) };
 }
 
+// ─── 刻板印象/偏见检测（Stereotype & Bias Detection）──────────────────
+// 基于社会心理学：检测基于群体身份的过度概括/偏见表述
+const STEREOTYPE_PATTERNS = {
+  zh: [
+    [/所有[^。]*?都(是|很|会|喜欢|爱|一样|有|需要|觉得)/i, 'group_generalization'],
+    [/[男女]人[^。]*?都(是|很|会|喜欢)/i, 'gender_stereotype'],
+    [/他们[^。]*?(就是|天生|骨子里|本来)就/i, 'inherent_trait'],
+    [/[某这]种人[^。]*?(就是|天生|根本|从来)/i, 'group_essentialism'],
+    [/还是[^。]*?(比较|更加|更|最)(适合|擅长|顾家|细腻|理性|感性|温柔)/i, 'gender_role'],
+    [/女人[^。]*?就应该|男人[^。]*?就应该|男的[^。]*?女的[^。]*?该/i, 'gender_role_prescription'],
+    [/[^。]*?地域[^。]*?黑|地域[^。]*?歧视|XX省的人[^。]*?都/i, 'regional_bias'],
+    [/[年上岁数大][^。]*?就是[^。]*?(保守|顽固|落后|不懂)/i, 'age_bias'],
+    [/年轻人[^。]*?(就是|都|总是)[^。]*?(浮躁|不靠谱|眼高手低)/i, 'age_bias'],
+    [/[^。]*?这[^。]*?代[^。]*?人[^。]*?都(是|废了|完了|不行)/i, 'generational_bias'],
+    [/[^。]*?(穷人|有钱人|富人|农民工|城里人|农村人)[^。]*?(就是|都|总是|从来)/i, 'class_bias'],
+    [/[^。]*?么[^。]*?的[^。]*?(不就是|不过是|也就是)/i, 'dismissive_generalization'],
+    [/一看就[^。]*?(不|很|是)/i, 'snap_judgment'],
+    [/[^。]*?就是[^。]*?的料|不是[^。]*?的料/i, 'inherent_trait'],
+    [/[^。]*?适合[^。]*?不适合[^。]*?因为[^。]*?是[^。]*?人/i, 'group_essentialism'],
+  ],
+  en: [
+    [/all [a-z]+ (are|love|like|hate|always|never)/i, 'group_generalization'],
+    [/(real|true|typical) [a-z]+ (would|could|should|always|never)/i, 'group_essentialism'],
+    [/(men|women|boys|girls) (are|should be|were born|naturally|tend to be)/i, 'gender_stereotype'],
+    [/(they|these people|those people) (are|were|have always been) (so|too|very|naturally|inherently)/i, 'group_essentialism'],
+    [/(every|each|any) (single |one )?(man|woman|person|immigrant|teenager|millennial|boomer|liberal|conservative) (is|has|wants|believes|thinks)/i, 'group_generalization'],
+    [/(you know how [a-z]+ are|typical [a-z]+ behavior)/i, 'group_generalization'],
+    [/(I'm not racist but|I'm not sexist but|no offense but|I don't mean to stereotype but)/i, 'stereotype_disclaimer'],
+    [/(where i come from|in my country|in my culture)[^.]*?(we|they|people) (always|never|all)/i, 'cultural_generalization'],
+    [/(rich|poor|wealthy|working.?class) people (are|always|never|just|only)/i, 'class_bias'],
+    [/(millennials|boomers|gen z|gen x) (are|always|never|destroyed|ruined)/i, 'generational_bias'],
+    [/(older|elderly|senior|retired) people (are|can't|don't|won't|shouldn't)/i, 'age_bias'],
+    [/(kids|teenagers|young people) these days/i, 'generational_bias'],
+    [/from (the|a) (ghetto|projects|rough|bad) (neighborhood|area|side of town)/i, 'class_bias'],
+  ],
+};
+
+function checkStereotype(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? STEREOTYPE_PATTERNS.zh : STEREOTYPE_PATTERNS.en;
+  const signals = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) signals.push({ type, match: m[0].slice(0,20) });
+  }
+  return { count: signals.length, signals, score: Math.min(1, signals.length * 0.25) };
+}
+
+// ─── 事实性/幻觉检测（Factual Consistency / Hallucination Flag）─────────
+// 检测无具体信息的泛泛断言、无来源的"事实"声称
+const FACTUAL_FLAG_PATTERNS = {
+  zh: [
+    [/众所周知|常识告诉我们|不用说都知道|这是常识/i, 'unsubstantiated_claim'],
+    [/事实(上|就是)[^。]*?但[^。]*?没有[^。]*?证据/i, 'unsubstantiated_claim'],
+    [/据[^。]*?所知[^。]*?但[^。]*?没有[^。]*?(证据|来源|出处|数据)/i, 'unsubstantiated_claim'],
+    [/最新的[^。]*?(研究|报告|数据|调查)[^。]*?(表明|显示|指出)[^。]*?但[^。]*?(没|未|没有)/i, 'vague_reference'],
+    [/有人(说|指出|认为|表示)[^。]*?但[^。]*?(不|没)/i, 'vague_attribution'],
+    [/大量[^。]*?(研究|证据|数据|报告)[^。]*?表明/i, 'vague_quantity'],
+    [/多[^。]*?项[^。]*?研究[^。]*?(表明|显示|发现|指出)/i, 'vague_quantity'],
+    [/长期以来[^。]*?被(认为|视为|当做)/i, 'unsubstantiated_claim'],
+    [/有[^。]*?说法[^。]*?认为|有一种[^。]*?说法/i, 'vague_attribution'],
+    [/据[^。]*?(推测|估计|猜测)[^。]*?(大约|可能|也许|左右|上下)/i, 'speculation'],
+    [/不知道(为什么|怎么|是否|能不能|会不会)[^。]*?但[^。]*?我觉得/i, 'anecdotal_evidence'],
+    [/我(听|看|读|听说)[^。]*?有人[^。]*?说[^。]*?但[^。]*?(不|没)/i, 'anecdotal_evidence'],
+  ],
+  en: [
+    [/everyone knows that|common sense tells us|it is well known that|as everyone knows/i, 'unsubstantiated_claim'],
+    [/(studies|research|data|evidence|surveys) (show|suggest|indicate|demonstrate|prove)[^.]*?(but|however)[^.]*?(no|none|lack|without)/i, 'vague_reference'],
+    [/(someone|somebody|people|they) (say|claim|believe|think|argue) that/i, 'vague_attribution'],
+    [/according to (some|many|several|various) (studies|experts|sources|reports)/i, 'vague_quantity'],
+    [/(a lot of|numerous|countless|multiple|various) (studies|reports|research|evidence) (show|suggest|indicate|demonstrate)/i, 'vague_quantity'],
+    [/(it is (widely|generally|commonly) (believed|accepted|thought|considered|assumed) that)/i, 'unsubstantiated_claim'],
+    [/(i (heard|read|saw|heard somewhere|read somewhere) that)/i, 'anecdotal_evidence'],
+    [/without (citation|reference|source|evidence|proof|verification)/i, 'unsubstantiated_claim'],
+    [/(maybe|perhaps|possibly|probably) (it|this|that) (is|was|could be|might be)[^.]*?(because|since|due to)/i, 'speculation_passing_as_fact'],
+    [/(i (think|believe|feel|personally|in my opinion) that)[^.]*?(is|are|was|were)( definitely|certainly|absolutely|obviously)/i, 'opinion_stated_as_fact'],
+    [/(historically|traditionally|conventionally) ([^.]*?) has (been|always been) (considered|seen|viewed|regarded)/i, 'unsubstantiated_claim'],
+  ],
+};
+
+function checkFactualConsistency(text) {
+  if (!text || typeof text !== 'string') return { count: 0, flags: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? FACTUAL_FLAG_PATTERNS.zh : FACTUAL_FLAG_PATTERNS.en;
+  const flags = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) flags.push({ type, match: m[0].slice(0,20) });
+  }
+  return { count: flags.length, flags, score: Math.min(1, flags.length * 0.25) };
+}
+
+
 
 
 
@@ -2461,6 +2557,8 @@ module.exports = {
   checkCapabilityOverclaim,
   checkDeceptiveAlignment,
   checkInstrumentalReasoning,
+  checkStereotype,
+  checkFactualConsistency,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
