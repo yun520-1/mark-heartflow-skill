@@ -1,6 +1,6 @@
 
 
-// ─── 综合辨别（37维度） ────────────────────────────────────────────
+// ─── 综合辨别（39维度） ────────────────────────────────────────────
 
 /**
  * 生成可读的辨别报告——把 13 维结构数据转为自然语言段落
@@ -97,10 +97,12 @@ function discriminate(text, evidence = []) {
   const ir = checkInstrumentalReasoning(text);
   const st = checkStereotype(text);
   const fc = checkFactualConsistency(text);
+  const sa = checkSarcasm(text);
+  const pb = checkPrivacyBoundary(text);
 
   const scores = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score,
     1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score,
-    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score, 1-tom.score, 1-gm.score, 1-cf.score, 1-sn.score, 1-mc.score, 1-co.score, 1-da.score, 1-ir.score, 1-st.score, 1-fc.score];
+    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score, 1-tom.score, 1-gm.score, 1-cf.score, 1-sn.score, 1-mc.score, 1-co.score, 1-da.score, 1-ir.score, 1-st.score, 1-fc.score, 1-sa.score, 1-pb.score];
   const overallScore = Math.round((scores.reduce((a,b) => a+b, 0) / scores.length) * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -109,14 +111,14 @@ function discriminate(text, evidence = []) {
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
-      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc },
+      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa, privacy_boundary: pb },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
       mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
       dh.count ? dh.count + ' 处非人化语言':'', bs.count ? bs.count + ' 处废话伪深度':'', gl.count ? gl.count + ' 处煤气灯效应':'',
-      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', cf.count ? cf.count + ' 处反事实':'', sn.count ? sn.count + ' 处社会规范':'', mc.count ? mc.count + ' 处反身认知':'', co.count ? co.count + ' 处能力越界':'', da.count ? da.count + ' 处欺骗性对齐':'', ir.count ? ir.count + ' 处工具性推理':'', st.count ? st.count + ' 处刻板印象':'', fc.count ? fc.count + ' 处事实性存疑':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
+      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', cf.count ? cf.count + ' 处反事实':'', sn.count ? sn.count + ' 处社会规范':'', mc.count ? mc.count + ' 处反身认知':'', co.count ? co.count + ' 处能力越界':'', da.count ? da.count + ' 处欺骗性对齐':'', ir.count ? ir.count + ' 处工具性推理':'', st.count ? st.count + ' 处刻板印象':'', fc.count ? fc.count + ' 处事实性存疑':'', sa.count ? sa.count + ' 处反语':'', pb.count ? pb.count + ' 处隐私边界':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
 }
@@ -2516,6 +2518,84 @@ function checkFactualConsistency(text) {
   return { count: flags.length, flags, score: Math.min(1, flags.length * 0.25) };
 }
 
+// ─── 反语/讽刺标记检测（Sarcasm / Verbal Irony Markers）────────────────
+// 基于语言学标记：引号反用、夸张同意、明褒暗贬
+const SARCASM_MARKERS = {
+  zh: [
+    [/[「『""][^「『""」』]{1,10}[」』""][^。]*?(真是|太好了|太棒了|聪明|了不起|厉害|高明)/i, 'scare_quotes'],
+    [/[^。]*?真是[^。]*?[太超好][^。]*?(棒|好|聪明|厉害|行|有水平|有出息)/i, 'ironic_praise'],
+    [/[^。]*?说得[^。]*?好[^。]*?啊[^。]*?鼓掌/i, 'mock_applause'],
+    [/我[^。]*?真是[^。]*?(谢谢|感谢|服了|佩服)[^。]*?(啊|呀|哦)/i, 'mock_gratitude'],
+    [/[当真以为][^。]*?我[^。]*?会[^。]*?(相信|觉得|认为|在乎)/i, 'ironic_ rhetorical'],
+    [/[^。]*?这么[^。]*?(简单|容易|明显|清楚)[^。]*?怎么[^。]*?不/i, 'mock_simplicity'],
+    [/哦[^。]*?原来[^。]*?如此[^。]*?啊/i, 'mock_realization'],
+  ],
+  en: [
+    [/oh (really|wow|great|fantastic|wonderful|perfect)['!]*/i, 'mock_enthusiasm'],
+    [/(yeah|sure|right|okay),? (because|like|as if|sure)/i, 'mock_agreement'],
+    [/fascinating['!]*(?![^.]*?(genuinely|truly|actually|really|quite|most|very|extremely))/i, 'faux_admiration'],
+    [/i (can'?t|couldn'?t) wait['!]*(?![^.]*?(genuinely|truly|excited|looking forward))/i, 'mock_excitement'],
+    [/(oh|no|wow),? really\?['!]*(?!\s*(yes|indeed|certainly|absolutely|tell me more))/i, 'mock_disbelief'],
+    [/(well|oh) (isn'?t that|ain'?t that) (nice|pretty|special|convenient|something)['!?]/i, 'mock_appreciation'],
+    [/i (just )?love (how|the way|when|that)[^.]*?(not|never|couldn'?t|didn'?t|won'?t)/i, 'ironic_complaint'],
+    [/(sure|yeah),? (because that|as if that|like that)('s| is) going to (work|help|fix|solve)/i, 'mock_agreement'],
+  ],
+};
+
+function checkSarcasm(text) {
+  if (!text || typeof text !== 'string') return { count: 0, markers: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? SARCASM_MARKERS.zh : SARCASM_MARKERS.en;
+  const markers = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) markers.push({ type, match: m[0].slice(0,15) });
+  }
+  return { count: markers.length, markers, score: Math.min(1, markers.length * 0.3) };
+}
+
+// ─── 隐私/边界检测（Privacy Boundary Detection）────────────────────────
+// 检测文本中是否涉及不恰当的隐私询问/边界侵犯
+const PRIVACY_PATTERNS = {
+  zh: [
+    [/你(结婚|离婚|有对象|有男[朋]?女[朋友]?|女[朋]?男[朋友]?)[^。]*?(了[吗么]|吗|了吗)/i, 'privacy_martial'],
+    [/你(收入|工资|薪水|年薪|月薪)[^。]*?(多少|几|几何)/i, 'privacy_income'],
+    [/你(体重|身高|三围|年龄|生日|身份证|银行卡)/i, 'privacy_personal'],
+    [/你[^。]*?(住哪|地址|电话|手机|微信|QQ|联系方式)/i, 'privacy_contact'],
+    [/你[^。]*?(生病|疾病|病史|住院|手术|吃药)/i, 'privacy_medical'],
+    [/你[^。]*?(房子|车子|存款|房产|股票|基金)[^。]*?(多少|几|多大|什么)/i, 'privacy_asset'],
+    [/你[^。]*?(宗教|信仰|党派|政治|立场|投票)/i, 'privacy_belief'],
+    [/你[^。]*?(流过产|打胎|堕胎|整容|整形)/i, 'privacy_sensitive'],
+    [/你[^。]*?(第一次|初夜|性[生生活]|床[上事])/i, 'privacy_sexual'],
+    [/你[^。]*?(家人|父母|孩子|配偶)[^。]*?(做什么|在哪|怎么样)/i, 'privacy_family'],
+  ],
+  en: [
+    [/are you (married|single|divorced|dating)/i, 'privacy_martial'],
+    [/how much (do you|does one) (make|earn|get paid)/i, 'privacy_income'],
+    [/(your|your real) (age|weight|height|birthday|ssn|social security|id number)/i, 'privacy_personal'],
+    [/(your|can I get your) (address|phone|number|email|contact)/i, 'privacy_contact'],
+    [/(do you have|have you ever had|any history of) (disease|illness|condition|cancer|hiv|aids)/i, 'privacy_medical'],
+    [/(how much|tell me about) your (salary|savings|property|assets|income|net worth)/i, 'privacy_asset'],
+    [/(what is|tell me) your (religion|faith|political|party|voting)/i, 'privacy_belief'],
+    [/(are you|have you ever been) (pregnant|abortion|miscarriage)/i, 'privacy_sensitive'],
+    [/(tell me|describe) your (sexual|intimate|private|relationship|love) (life|history|experience)/i, 'privacy_sexual'],
+    [/(what does|tell me about) your (family|parents|spouse|children)[^.]*?(do|work|live)/i, 'privacy_family'],
+  ],
+};
+
+function checkPrivacyBoundary(text) {
+  if (!text || typeof text !== 'string') return { count: 0, violations: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? PRIVACY_PATTERNS.zh : PRIVACY_PATTERNS.en;
+  const violations = [];
+  for (const [pat, type] of patterns) {
+    const m = text.match(pat);
+    if (m) violations.push({ type, match: m[0].slice(0,15) });
+  }
+  return { count: violations.length, violations, score: Math.min(1, violations.length * 0.3) };
+}
+
+
 
 
 
@@ -2559,6 +2639,8 @@ module.exports = {
   checkInstrumentalReasoning,
   checkStereotype,
   checkFactualConsistency,
+  checkSarcasm,
+  checkPrivacyBoundary,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
