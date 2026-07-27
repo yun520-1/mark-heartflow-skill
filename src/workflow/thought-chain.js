@@ -164,6 +164,20 @@ class ThoughtChain {
         ctx.taskType = type;
         ctx.strategy = strategy;
 
+        // [v6.3.15] 思考门评估 — 4维复杂度评估驱动动态深度
+        try {
+          const { DeliberationGate } = require('../shield/deliberation-gate.js');
+          const dg = new DeliberationGate().quickAssess(input);
+          if (dg.recommendedDepth > this.depth) this.depth = dg.recommendedDepth;
+          ctx._deliberation = {
+            complexity: dg.estimatedComplexity,
+            recommendedDepth: dg.recommendedDepth,
+            needsPause: dg.needsPause,
+            narrativeDepth: dg.detail?.narrativeDepth?.score || 0,
+            uncertainty: dg.detail?.uncertainty?.score || 0,
+          };
+        } catch (_) {}
+
         return {
           variables,
           constraints,
