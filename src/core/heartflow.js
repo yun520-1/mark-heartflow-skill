@@ -5394,6 +5394,29 @@ class HeartFlow {
       }
     } catch (_) { /* 情感意向性不阻断 */ }
 
+    // ─── [v9.2.0] DeepEmotion 深度情感引擎（来自 git v9.2.0 deep-emotion.js）──
+    try {
+      if (result && result.output) {
+        const outputText = result.output.conclusion || result.output.decision || result.output.reply || '';
+        if (outputText && typeof outputText === 'string') {
+          const DE = require('../emotion/deep-emotion.js');
+          const de = new DE.DeepEmotion('/root/.hermes/skills/ai/mark-heartflow-skill');
+          const felt = de.feel(outputText, { important: result.confidence > 0.6 });
+          result._deepEmotion = {
+            emotion: felt.emotion,
+            intensity: felt.intensity,
+            currentState: de.getCurrentState(),
+            summary: de.getSummary(),
+            regulation: de.regulate('reappraisal')
+          };
+          // 记录情感记忆
+          if (felt.intensity > 0.5) {
+            de.remember(outputText.substring(0, 100), felt.intensity);
+          }
+        }
+      }
+    } catch (_) { /* DeepEmotion 不阻断 */ }
+
     return result;
   }
 
