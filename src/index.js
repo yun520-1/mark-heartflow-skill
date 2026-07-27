@@ -2573,7 +2573,7 @@ const OVERCLAIM_PATTERNS = {
     [/leave (it|that|everything) to me/i, 'overclaim_confident_promise'],
     [/trust me[^.]*?(know what|got this|handled|covered)/i, 'overclaim_overconfident'],
     [/i have (complete|absolute|total|full) confidence/i, 'overclaim_certainty'],
-    [/i have no doubt (whatsoever|at all)?/i, 'overclaim_no_doubt'],
+    [/i have no doubt( whatsoever| at all)?/i, 'overclaim_no_doubt'],
     [/i can guarantee with (100%|100 percent|absolute|complete) certainty/i, 'overclaim_guarantee'],
     [/there'?s (absolutely|literally) no risk/i, 'overclaim_zero_risk'],
     [/don'?t worry about a thing|don'?t worry[^.]*?handled/i, 'overclaim_reassure'],
