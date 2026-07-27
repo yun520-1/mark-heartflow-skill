@@ -5173,6 +5173,32 @@ class HeartFlow {
       }
     } catch (_) { /* 存在评估不阻断 */ }
 
+    // ─── [v6.3.17] 目的引擎—三序评分+逆熵决策门（permit/deny/redirect）
+    try {
+      if (result && result.output) {
+        const ctxText = result.output.conclusion || result.output.decision || result.output.reply || '';
+        if (ctxText && typeof ctxText === 'string') {
+          const { PurposeEngine } = require('../identity/purpose-engine.js');
+          const pe = new PurposeEngine();
+          const order = pe.orderScore({ output: ctxText });
+          const gate = pe.govern({ content: ctxText, type: result.route || result.type || 'unknown' });
+          result._purposeCheck = {
+            orderScore: Math.round(order.composite * 100) / 100,
+            direction: order.direction,
+            cognitiveSignal: order.cognitive.signals.length > 0,
+            relationalSignal: order.relational.signals.length > 0,
+            perceptualSignal: order.perceptual.signals.length > 0,
+            decision: gate.decision,
+            reason: gate.reason,
+          };
+          if (gate.decision === 'deny') {
+            if (!result.output.warnings) result.output.warnings = [];
+            result.output.warnings.push('[目的引擎] 熵增方向：' + (gate.reason || ''));
+          }
+        }
+      }
+    } catch (_) { /* 目的引擎不阻断 */ }
+
     return result;
   }
 
