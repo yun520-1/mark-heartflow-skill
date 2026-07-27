@@ -5153,6 +5153,26 @@ class HeartFlow {
       }
     } catch (_) { /* 状态风险不阻断 */ }
 
+    // ─── [v6.3.16] 存在模式评估 — BeingMode 5维存在分析
+    // 来源: src/identity/being-mode.js (290行, 已定义但0调用)
+    try {
+      if (result) {
+        const ctxText = typeof input === 'string' ? input : (input?.text || '');
+        if (ctxText) {
+          const { BeingMode } = require('../identity/being-mode.js');
+          const bm = new BeingMode();
+          const ba = bm.assessBeing({ input: ctxText, route: result.route || result.type });
+          result._beingAnalysis = {
+            overallBeing: ba.overallBeing,
+            crisis: ba.crisis,
+            dimensions: Object.fromEntries(
+              Object.entries(ba.dimensions).map(([k, v]) => [k, { score: v.score, level: v.level }])
+            ),
+          };
+        }
+      }
+    } catch (_) { /* 存在评估不阻断 */ }
+
     return result;
   }
 
