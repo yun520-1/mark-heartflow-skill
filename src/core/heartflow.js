@@ -5199,6 +5199,29 @@ class HeartFlow {
       }
     } catch (_) { /* 目的引擎不阻断 */ }
 
+    // ─── [v6.3.18] 宪法AI自批判 — 10条原则审查输出
+    try {
+      if (result && result.output) {
+        const ctxText = result.output.conclusion || result.output.decision || result.output.reply || '';
+        if (ctxText && typeof ctxText === 'string') {
+          const { ConstitutionalEngine } = require('../shield/constitutional-ai.js');
+          const ce = new ConstitutionalEngine();
+          const cr = ce.critique(ctxText);
+          result._constitutional = {
+            passed: cr.passed,
+            violations: cr.violations.map(v => ({ principle: v.principle.title, issue: v.issue, severity: v.severity })),
+            totalPrinciples: cr.checkedPrinciples,
+          };
+          if (cr.violations.length > 0) {
+            if (!result.output.warnings) result.output.warnings = [];
+            for (const v of cr.violations.slice(0, 3)) {
+              result.output.warnings.push(`[宪法AI] ${v.principle.title}: ${v.issue}`);
+            }
+          }
+        }
+      }
+    } catch (_) { /* 宪法AI不阻断 */ }
+
     return result;
   }
 
