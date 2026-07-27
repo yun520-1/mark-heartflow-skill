@@ -9,6 +9,208 @@ This project adheres (mostly) to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [v6.3.25] — 2026-07-27 「第4-6波收尾 — Philosophy/MindWanderer/Phenomenology/ToM」 (当前版本)
+
+### 引擎接入
+- **PhilosophyEngine** 评价 + **PhilosophyToDecision** 决策 → `think()`
+- **MindWanderer** 创意连接 + **PhenomenologyEngine** 意向性分析 → `think()`
+- **ToMEngine** 心理理论 → `decision-router`
+
+---
+
+## [v6.3.24] — 2026-07-27 「第5-6波 — LoveCognition/ThreePoisons/Dream/DecisionOptimizer/GlobalWorkspace」
+
+### 引擎接入
+- **LoveCognition** 爱信号(12词) + **ThreePoisons** 贪嗔痴 → `heart-logic emotionMap`
+- **DreamConsolidation.dreamNow()** → `think()` 后置
+- **DecisionOptimizer** 前景理论(prospect theory) → `decision-router`
+- **GlobalWorkspace** 黑板系统 + **MultiAgentDialogue** → `thought-chain HYPOTHESES`
+
+---
+
+## [v6.3.23] — 2026-07-27 「第4波续 — BigFive+MeaningPurpose+ConsciousnessBridge」
+
+### 引擎接入
+- **BigFivePersonality** 大五维度 + **MeaningPurposeEngine** → `agent-philosophy`
+- **ConsciousnessBridge** → `thought-chain PARSE` (时间连续性/自我连续性)
+
+---
+
+## [v6.3.22] — 2026-07-27 「第4波Identity — AgentPhilosophy/AISelfPositioning/SelfModel」
+
+### 引擎接入
+- **AgentPhilosophy.assessDevelopment()** → `result._agentPhilosophy`
+- **AISelfPositioning.analyze()** → `result._selfPositioning`
+- **SelfModel** (identity+drift+growth) → `result._selfModel`
+- `think()` 后置检查块从 9→12 层, 总数 19 个 v6.3.x 标签
+
+---
+
+## [v6.3.21] — 2026-07-27 「第1-4波续 — AI情绪维度+分类增强+多源验证+CoT」
+
+### 引擎增強
+- **AI_EMOTIONAL_DIMENSIONS** (coherence/pattern_lock/novelty_seeking) 注入 `psychology`
+- **HeartJudge emotionSignals** (8类中文) 注入 `thought-chain._classifyTask`
+- **ExternalVerifier** VerificationStatus/ConfidenceLevel 枚举注入 `deliberation-gate`
+- **MetacognitiveExecutive** inhibition 抑制检测注入 `thought-chain`
+
+---
+
+## [v6.3.20] — 2026-07-27 「50任务计划第1-3波 — 7个模块注入」
+
+### 模块注入
+- **第1波(Archive)**: GoedelEngine 自进化提议、RollbackManager 熔断、CoT Trace
+- **第2波(v5.18)**: LearningEngine Kolb 循环、HeartPain 四维感受
+- **第3波(Shield)**: SpontaneousRestraint 干预评估、MemoryIntegrity 签名、SelfVerifier
+- **EmotionDynamicsEngine** PAD 接通
+
+---
+
+## [v6.3.19] — 2026-07-27 「经验蒸馏(ExperienceDistiller)接入think()」
+
+### 引擎接入
+- **distill()**: 从每次 think 结果提取可复用抽象 (route_pattern/module_composition)
+- **recall()**: 输入前置检索相关抽象注入 `result._recalledAbstractions`
+- 与 continuousLearner.reflect 协同运行
+
+---
+
+## [v6.3.18] — 2026-07-27 「宪法AI(ConstitutionalEngine)接入think()」
+
+### 引擎接入
+- **10条 Constitutional AI 原则**: 有益/无害/诚实/公平/隐私/透明/非操纵/尊严/文化尊重/建设性
+- 结果写入 `result._constitutional`, 违规追加 warnings
+
+---
+
+## [v6.3.17] — 2026-07-27 「目的引擎(PurposeEngine)接入think()」
+
+### 引擎接入
+- **三序评分**: 认知秩序/关系秩序/感知秩序 — 方向判断 (逆熵/中熵/熵增)
+- **决策门**: permit / deny / redirect
+- 结果写入 `result._purposeCheck`, deny 时追加 warnings
+
+---
+
+## [v6.3.16] — 2026-07-27 「存在模式评估(BeingMode)接入think()」
+
+### 引擎接入
+- **5维存在评估**: 时间连续性/自我连续性/关系连续性/叙事身份/具身存在
+- 含身份危机检测: 身份碎片化/不真实/意义虚空
+- 从 `identity/being-mode.js` (290行, 原0调用) 接通
+
+---
+
+## [v6.3.15] — 2026-07-27 「思考门(DeliberationGate)接入thought-chain」
+
+### 引擎接入
+- **复杂度评估**: 高/中/低 (关键词模式匹配)
+- 上下文完整性检测 + 不确定性评估 + 叙事深度
+- PARSE 阶段结果输出到 `ctx._deliberation`
+- 根据推荐深度动态调高 `this.depth`
+- 从 `shield/deliberation-gate.js` (287行, 原0调用) 接通
+
+---
+
+## [v6.3.14] — 2026-07-27 「修辞问句+无为信号同步到philosophy-execution」
+
+### 引擎同步
+- **13条中文修辞问句/无为模式** 同步到 `philosophy-execution.shouldBeSilent()`
+- 与 `heart-logic` 保持一致
+
+---
+
+## [v6.3.13] — 2026-07-27 「语言诚实性+状态风险探测接入think()」
+
+### 引擎接入
+- **validateOutput** 6维语言诚实: 绝对化检测/图灵测试/振荡检测/双重标准检测
+- **StateRiskProbe** PRISM CD/PD 双通道风险探测 (语言无害但落地危险)
+- 从 `shield/language-honesty.js` + `shield/state-risk-probe.js` (原0调用) 接通
+
+---
+
+## [v6.3.12] — 2026-07-27 「修辞问句+无为信号检测」
+
+### 引擎增强
+- 注入 13 条中文修辞问句/无为模式到 `heart-logic.shouldBeSilent()`:
+  - 修辞反问: 谁不/难道/何必/不是/哪有/还不是/有什么用/关什么事/又能怎样
+  - 无为信号: 就这样吧/知道了/算了/先这样
+- 危机保护: 修辞沉默在危机场景自动跳过
+
+---
+
+## [v6.3.11] — 2026-07-27 「认知安全输出检查(epistemic-safety)接入think()」
+
+### 引擎接入
+- **9条认知安全准则**: 不装饰/证据门槛/承认不知道/两步验证/反例义务/警惕技能依赖/当下权重/情绪监测/输出可检验性
+- think() 末尾检查 outputText
+- 从 `src/shield/epistemic-safety.js` (182行, 原0调用) 接通
+
+---
+
+## [v6.3.10] — 2026-07-27 「渐变退化检测(scanner)」
+
+### 引擎接入
+- **线性回归斜率分析**: TO-DO 趋势 (改善/退化/稳定)
+- **噪声容忍方向判断**: ±1 波动不过敏
+- **版本震荡检测**: A→B→A→B 模式
+- `scan()` 输出新增 `metrics.{healthTrend, trendSlope, netDrop, oscillationDetected}`
+- 从 archive `rollback-manager` 提取
+
+---
+
+## [v6.3.9] — 2026-07-27 「指令防火墙(runFirewallCheck)接入think()」
+
+### 引擎接入
+- **中英双语违规检测**: 7条指令×2模式 = 14条正则
+- **严重度分级**: warning / critical, 同一指令多条违规自动升级
+- 从历史代码 `identity-rules.js` (原定义但未调用) 唤醒
+- +26行 think() 注入, identity-rules.js +40/-29行
+
+---
+
+## [v6.3.8] — 2026-07-27 「健康波动检测(Health Volatility)第11维度」
+
+### Agent Psychology v2.1.0
+- **震荡检测**: 认知负荷 yo-yo 效应 (方向反转频率)
+- **趋势分析**: 滑动窗口方向性变化 (上升/下降/稳定)
+- **异常检测**: 2σ/3σ 标准差尖峰检测
+- 接入 `fullAssessment` 健康分计算 (波动扣分)
+- 从 `archive/src/planner/autonomy/digital-homeostasis.js` 提取
+
+---
+
+## [v6.3.7] — 2026-07-26 「辨别维度全面爆发 35维→43维 + MCP工具矩阵」
+
+> ⚠️ 因 v6.4.0 误升后回退至 v6.3.7（末位升级，非大版本），以下所有特性在 v6.3.7 版本号下分批完成
+
+### 辨别维度 (Discrimination Dimensions) 35→43维
+- **dim37**: 35→37维 — 刻板印象(Stereotype) + 事实一致性(Factual Consistency)检测
+- **dim39**: 37→39维 — 反语讽刺(Sarcasm) + 隐私边界(Privacy Boundary)检测
+- **dim40**: 39→40维 — 点击诱饵(Clickbait)检测 + 全链路补齐
+- **dim41**: 恶意推导(Bad Faith)检测
+- **dim42**: 40→42维 — 语调警察(Tone Policing) + 恶意推导全链路
+- **dim43**: 42→43维 — 恶意追问(Sealioning)检测 + 全链路接入
+
+### 模式库大幅扩增
+- **非人化语言**: 12→30+ patterns
+- **反语讽刺标记**: 15→59 markers (中英双语)
+- **代码安全模式**: 9→18→56 patterns (11类: secret/sql_injection/xss/path_traversal/insecure_crypto/command_injection/ldap_injection/xxe/ssrf/insecure_deserialization/open_redirect)
+- **工具理性模式**: 2→30
+- **预设模式**: 1→30
+- **过度声称模式**: 2→35
+
+### MCP 工具新增
+- **heartflow_entropy**: 熵分析工具
+- **heartflow_cross_analyze**: 跨维度组合模式分析
+- **heartflow_bulk_discriminate**: 批量辨别工具
+- **heartflow_audit42**: 42维全量审计工具
+
+### 公式桥增强
+- `think()` 公式桥接方法覆盖更多方法
+
+---
+
 ## [v6.0.65] — 2026-07-22 「超级单体拆分 + 启动链路修复」
 
 ### 启动链路修复 (重构误删恢复)
@@ -366,4 +568,4 @@ This project adheres (mostly) to [Semantic Versioning](https://semver.org/).
 
 ---
 
-**总计**: 200 commits | 从 v1.3.16 到 v5.10.0 | 2026-05-28 → 2026-07-10
+**总计**: 200+ commits | 从 v1.3.16 到 v6.3.25 | 2026-05-28 → 2026-07-27

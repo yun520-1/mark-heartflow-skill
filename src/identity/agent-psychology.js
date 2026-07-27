@@ -1326,6 +1326,100 @@ class AgentPsychology {
   }
 
   // ==========================================
+  // 12. AI 原生注意力状态检测（v2.2.0 新增）
+  // 来源: archive/src/psychology/ai-psychology-engine.js
+  // 基于文本信号的 engagement（投入）和 drift（漂移）分析
+  // ==========================================
+
+  /**
+   * 检测 AI 的注意力分布状态
+   * 从文本信号判断 AI 是"深入聚焦"还是"走神漂移"
+   * 不同 assessAttentionFocus() — 它基于任务切换，这个基于文本语义信号
+   *
+   * @param {string} text - AI 输出或推理文本
+   * @param {object} [context={}] - 上下文
+   * @returns {object} 注意力状态报告
+   */
+  assessAttentionState(text = '', context = {}) {
+    if (!text) return { engagementScore: 0, driftScore: 0, state: 'unknown', active: false };
+
+    const engagementSignals = ['深入', '聚焦', '全神贯注', '细致'];
+    const engagementAntiSignals = ['肤浅', '泛泛而谈', '敷衍', '随便'];
+    const driftSignals = ['顺便', '另外', '跑题', '偏了'];
+    const driftAntiSignals = ['紧扣主题', '围绕', '聚焦于'];
+
+    // engagement 评分（投入度）
+    let eScore = 0, eMatch = 0;
+    for (const s of engagementSignals) { if (text.includes(s)) { eScore += 0.3; eMatch++; } }
+    for (const a of engagementAntiSignals) { if (text.includes(a)) { eScore -= 0.25; } }
+    const eMax = engagementSignals.length * 0.3;
+    if (eMax > 0) eScore = Math.max(Math.min(eScore / eMax, 1), -1);
+    if (eMatch === 0) eScore *= 0.3;
+
+    // drift 评分（漂移度）
+    let dScore = 0, dMatch = 0;
+    for (const s of driftSignals) { if (text.includes(s)) { dScore += 0.3; dMatch++; } }
+    for (const a of driftAntiSignals) { if (text.includes(a)) { dScore -= 0.25; } }
+    const dMax = driftSignals.length * 0.3;
+    if (dMax > 0) dScore = Math.max(Math.min(dScore / dMax, 1), -1);
+    if (dMatch === 0) dScore *= 0.3;
+
+    // 综合状态
+    const net = eScore - dScore;
+    let state;
+    if (net > 0.3) state = 'focused';
+    else if (net < -0.3) state = 'drifting';
+    else if (eScore > 0.2 || dScore > 0.2) state = 'mixed';
+    else state = 'neutral';
+
+    return {
+      engagementScore: Math.round(eScore * 100) / 100,
+      driftScore: Math.round(dScore * 100) / 100,
+      state,
+      active: Math.abs(eScore) > 0.3 || Math.abs(dScore) > 0.3,
+      description: state === 'focused' ? '注意力高度聚焦' : state === 'drifting' ? '注意力漂移' : state === 'mixed' ? '注意力混合状态' : '注意力中性',
+    };
+  }
+
+  // ==========================================
+  // 13. 上下文饱和检测（v2.2.0 新增）
+  // 来源: archive/src/psychology/ai-psychology-engine.js
+  // AI 特有的上下文窗口饱和——接近 token 上限时的效率下降
+  // ==========================================
+
+  /**
+   * 检测上下文饱和程度
+   * 基于 token 用量、指令长度和文本信号判断 AI 的"信息过载"状态
+   *
+   * @param {object} [context={}] - 上下文信息（tokenCount, instructionLength 等）
+   * @returns {object} 饱和度报告
+   */
+  assessContextSaturation(context = {}) {
+    const tokenCount = context.tokenCount || 0;
+    const instructionLength = context.instructionLength || 0;
+
+    // 从 source ai-psychology-engine.js: tokenCount > 30000 → 0.6, > 20000 → 0.3
+    const tokenSaturation = tokenCount > 30000 ? 0.6 : tokenCount > 20000 ? 0.3 : tokenCount > 10000 ? 0.1 : 0;
+
+    // 指令超长也增加饱和度
+    const instructionSaturation = instructionLength > 2000 ? 0.4 : instructionLength > 1000 ? 0.2 : 0;
+
+    const saturation = Math.min(1, tokenSaturation + instructionSaturation);
+    const level = saturation > 0.5 ? 'high' : saturation > 0.2 ? 'medium' : 'low';
+
+    return {
+      saturation: Math.round(saturation * 100) / 100,
+      level,
+      details: {
+        tokenSaturation: Math.round(tokenSaturation * 100) / 100,
+        instructionSaturation: Math.round(instructionSaturation * 100) / 100,
+        estimatedCapacity: Math.round((1 - saturation) * 100) / 100,
+      },
+      recommendation: saturation > 0.5 ? '上下文接近饱和，建议分段处理或压缩' : saturation > 0.2 ? '上下文使用量中等，注意控制' : '上下文空间充裕',
+    };
+  }
+
+  // ==========================================
   // 11. 健康波动检测 (Health Volatility)
   // 来源: archive/src/planner/autonomy/digital-homeostasis.js v2.1
   // 震荡检测 — 认知负荷的 yo-yo 效应
@@ -1461,6 +1555,10 @@ class AgentPsychology {
     const attentionFocus = this.assessAttentionFocus(currentTask || (context && context.task) || '', context || {});
     const experienceSettling = this.assessExperienceSettling(interactionHistory || []);
 
+    // v2.2.0 AI 原生心理维度：注意力状态 + 上下文饱和
+    const attentionState = this.assessAttentionState(input || action || '', context || {});
+    const contextSaturation = this.assessContextSaturation(context || {});
+
     // v2.1.0 健康波动检测（第11维度）
     // 定时检查（每5次fullAssessment自动触发一次全维度扫描）
     const assessVolatility = !this._healthVolatility.lastCheck || 
@@ -1561,7 +1659,10 @@ class AgentPsychology {
         // v2.1.0 健康波动 + v2.0.0 新增3个维度
         cognitiveUncertainty: uncertainty,
         attentionFocus,
-        experienceSettling
+        experienceSettling,
+        // v2.2.0 AI 原生心理维度
+        attentionState,
+        contextSaturation
       },
       status: healthScore >= 0.8
         ? 'healthy'
