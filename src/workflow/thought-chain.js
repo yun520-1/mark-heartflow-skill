@@ -668,6 +668,11 @@ class ThoughtChain {
           personalityPolish,
           // [P2-T2-WF] 知识检索接入主路径
           knowledgeSummary,
+          // [v6.3.27] 伦理拒答 + 说前反思（来自CognitiveLoop.phaseAction）
+          _ethicsCheck: (() => {
+            const threshold = (decisionResult?.riskLevel === 'high' || ctx._deliberation?.uncertainty > 0.7);
+            return { rejected: !!threshold, reason: threshold ? '高风险或高度不确定，建议暂缓回应' : null };
+          })(),
           timestamp: Date.now()
         };
       }

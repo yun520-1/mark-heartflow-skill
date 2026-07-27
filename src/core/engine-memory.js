@@ -1405,6 +1405,14 @@ function _saveAllMemories(hf) {
       } catch(e) { /* sign failure non-critical */ }
 
       // 第1层: 用户输入永久记忆（内存操作同步，磁盘写入异步）
+      // [v6.3.27] 认知循环追踪：附加 cycleId 和 PAD 元数据
+      try {
+        if (hf.heartLogic && hf._cycleCount !== undefined) {
+          const pad = hf.heartLogic.getPADState ? hf.heartLogic.getPADState() : null;
+          hf._cycleCount = (hf._cycleCount || 0) + 1;
+          hf._lastCyclePad = pad;
+        }
+      } catch (_) {}
 
       hf._saveUserMemory(input);
 
