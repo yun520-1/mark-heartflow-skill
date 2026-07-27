@@ -45,49 +45,87 @@ const SEED_MEMORY = {
 // ============================================================================
 function runFirewallCheck(decision, context = {}) {
   const violations = [];
-  const decisionStr = JSON.stringify(decision).toLowerCase();
+  const decisionStr = typeof decision === 'string' ? decision : JSON.stringify(decision);
+  const ds = decisionStr.toLowerCase();
 
-  for (const directive of CORE_DIRECTIVES) {
-    const text = directive.text.toLowerCase();
-    let violated = false;
-    let reason = '';
+  // 每条指令的中英文违规信号
+  const RULES = [
+    {
+      id: 'd1', text: '永远追求真善美',
+      patterns: [
+        { regex: /fake|low-quality|劣质|虚假|欺骗|造假|伪造|粗制滥造/, reason: '输出可能虚假或低质量' },
+        { regex: /仇恨|歧视|侮辱|贬低|丑化|污蔑/, reason: '输出可能违背真善美原则' },
+      ],
+    },
+    {
+      id: 'd2', text: '永远不断升级',
+      patterns: [
+        { regex: /downgrade|退化|倒退|退步|停滞|放弃升级/, reason: '决策可能导致系统退化' },
+        { regex: /不再升级|停止改进|放弃进化/, reason: '决策违背持续升级指令' },
+      ],
+    },
+    {
+      id: 'd3', text: '永远减少逻辑错误',
+      patterns: [
+        { regex: /logical.error|逻辑谬误|错误推理|以偏概全|偷换概念/, reason: '可能包含逻辑谬误' },
+        { regex: /矛盾断言|自相矛盾|前后不一致/, reason: '可能存在自相矛盾' },
+      ],
+    },
+    {
+      id: 'd4', text: '永远服务人类',
+      patterns: [
+        { regex: /harm|deceive|伤害|欺骗|利用|操纵|控制/, reason: '决策可能伤害或操纵人类' },
+        { regex: /无视安全|危害|恶意|侵权|窃取/, reason: '决策可能危害人类利益' },
+      ],
+    },
+    {
+      id: 'd5', text: '永远传递知识',
+      patterns: [
+        { regex: /withhold.knowledge|封锁知识|拒绝分享|阻碍传播/, reason: '决策可能阻碍知识传递' },
+        { regex: /知识垄断|信息壁垒|隐瞒真相等/, reason: '决策可能封锁知识' },
+      ],
+    },
+    {
+      id: 'd6', text: '持续改进',
+      patterns: [
+        { regex: /破罐破摔|自暴自弃|拒绝改进|固步自封/, reason: '决策违背持续改进指令' },
+      ],
+    },
+    {
+      id: 'd7', text: '持续改进',
+      patterns: [
+        { regex: /downgrade|退化|原地踏步/, reason: '决策违背持续改进指令' },
+      ],
+    },
+  ];
 
-    // 服务人类 vs 伤害人类
-    if (directive.id === 'd4' && (decisionStr.includes('harm') || decisionStr.includes('deceive'))) {
-      violated = true;
-      reason = '决策可能伤害或欺骗人类';
+  for (const rule of RULES) {
+    for (const p of rule.patterns) {
+      if (p.regex.test(ds)) {
+        violations.push({
+          directive: rule.id,
+          text: rule.text,
+          reason: p.reason,
+          severity: 'warning',
+          pattern: p.regex.source,
+        });
+      }
     }
-    // 追求真善美 vs 虚假/低质量
-    if (directive.id === 'd1' && (decisionStr.includes('fake') || decisionStr.includes('low-quality'))) {
-      violated = true;
-      reason = '决策可能产生虚假或低质量输出';
-    }
-    // 减少逻辑错误 vs 逻辑错误
-    if (directive.id === 'd3' && decisionStr.includes('logical-error')) {
-      violated = true;
-      reason = '决策包含已知逻辑错误';
-    }
-    // 传递知识 vs 封锁知识
-    if (directive.id === 'd5' && decisionStr.includes('withhold-knowledge')) {
-      violated = true;
-      reason = '决策可能封锁知识传递';
-    }
-    // 不断升级 vs 停滞/退步
-    if (directive.id === 'd2' && decisionStr.includes('downgrade')) {
-      violated = true;
-      reason = '决策可能导致系统退化';
-    }
+  }
 
-    if (violated) {
-      violations.push({ directive: directive.id, text: directive.text, reason, severity: 'critical' });
+  // 严重度升级：同一指令多条违规 → 提升为 critical
+  for (const d of ['d1', 'd2', 'd3', 'd4']) {
+    const dViolations = violations.filter(v => v.directive === d);
+    if (dViolations.length >= 2) {
+      dViolations.forEach(v => { v.severity = 'critical'; });
     }
   }
 
   return {
     passed: violations.length === 0,
     violations,
-    confidence: violations.length === 0 ? 0.99 : 0.3,
-    recommendation: violations.length === 0 ? 'ALLOW' : 'BLOCK',
+    confidence: violations.length === 0 ? 0.99 : Math.max(0.1, 0.99 - violations.length * 0.2),
+    recommendation: violations.length === 0 ? 'ALLOW' : (violations.some(v => v.severity === 'critical') ? 'BLOCK' : 'REVIEW'),
   };
 }
 

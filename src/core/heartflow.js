@@ -283,6 +283,8 @@ const _ConstitutionalEngine = _lazy('constitutionalEngine', () => require('../sh
 
 const _IdentityCore = _lazy('identityCore', () => require('../identity/identity-core.js'));
 
+const _FirewallCheck = () => require('../identity/identity-rules.js');
+
 const _SelfModel = _lazy('selfModel', () => require('../identity/self-model.js'));
 
 const _SelfHealing = _lazy('selfHealing', () => require('../cortex/self-healing.js'));
@@ -5070,6 +5072,25 @@ class HeartFlow {
         await this._hookBus.fire('postprocess.think', { input, result, engine: this });
       }
     } catch (_) { /* HookBus 失败不阻断 */ }
+
+    // ─── [v6.3.9] 指令防火墙检查：校验输出与7条核心指令对齐 ──
+    try {
+      if (result && result.output && typeof _FirewallCheck === 'function') {
+        const decisionStr = result.output.conclusion || result.output.decision || result.output.reply || '';
+        if (decisionStr && typeof decisionStr === 'string') {
+          const fw = _FirewallCheck().runFirewallCheck(decisionStr, { _route: result.route || result.type });
+          result._firewallCheck = {
+            passed: fw.passed,
+            violations: fw.violations,
+            confidence: fw.confidence,
+            recommendation: fw.recommendation,
+          };
+          if (!fw.passed && fw.violations.some(v => v.severity === 'critical')) {
+            result._blockedByFirewall = true;
+          }
+        }
+      }
+    } catch (_) { /* 防火墙不阻断 */ }
 
     return result;
   }
