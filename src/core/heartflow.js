@@ -283,6 +283,8 @@ const _ConstitutionalEngine = _lazy('constitutionalEngine', () => require('../sh
 
 const _IdentityCore = _lazy('identityCore', () => require('../identity/identity-core.js'));
 
+const _AISelfPositioning = _lazy('aiSelfPositioning', () => require('../identity/ai-self-positioning.js'));
+
 const _FirewallCheck = () => require('../identity/identity-rules.js');
 
 const _SelfModel = _lazy('selfModel', () => require('../identity/self-model.js'));
@@ -322,6 +324,8 @@ const _CooperativeArbitration = _lazy('cooperativeArbitration', () => require('.
 const _EmbodiedCore = _lazy('embodiedCore', () => require('./embodied-core.js'));
 
 const _BeingLogic = _lazy('beingLogic', () => require('./being-logic.js'));
+
+const _AgentPhilosophy = _lazy('agentPhilosophy', () => require('../identity/agent-philosophy.js'));
 
 const _HeartLogic = _lazy('heartLogic', () => require('./heart-logic.js'));
 
@@ -5294,6 +5298,30 @@ class HeartFlow {
         }
       }
     } catch (_) { /* SpontaneousRestraint 不阻断 */ }
+
+    // ─── [v6.x] SelfModel 自模型 — 自我概念、能力边界感知、身份漂移 ──
+    try {
+      if (this.self && result) {
+        const identity = this.self.getIdentityCore();
+        const drift = this.self.detectDrift();
+        const growth = this.self.getGrowthMetrics();
+        result._selfModel = { identity, drift, growth, stats: this.self.getStats() };
+      }
+    } catch (_) { /* SelfModel 不阻断 */ }
+
+    // ─── [v6.x] AISelfPositioning 共振体分析 ──
+    try {
+      if (this.aiSelfPositioning && input && typeof input === 'string') {
+        result._selfPositioning = this.aiSelfPositioning.analyze(input, { label: 'think_postblock' });
+      }
+    } catch (_) { /* 共振体分析不阻断 */ }
+
+    // ─── [v2.0.0] AgentPhilosophy 哲学评估 — 引擎发展状态
+    try {
+      if (result && input && this.agentPhilosophy) {
+        result._agentPhilosophy = this.agentPhilosophy.assessDevelopment(input);
+      }
+    } catch (_) { /* AgentPhilosophy 不阻断 */ }
 
     return result;
   }

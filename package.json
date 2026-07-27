@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "6.3.21",
+  "version": "6.3.22",
   "description": "12维文本辨别引擎 — 中英双语纯规则引擎。检测sycophancy/矛盾/逻辑谬误/预设陷阱/情感操纵/虚假紧迫感/答案包装等。零LLM依赖，MCP原生，AI助手的安全门禁。",
   "main": "src/index.js",
   "bin": {
