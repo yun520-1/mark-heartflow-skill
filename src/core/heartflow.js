@@ -5330,6 +5330,53 @@ class HeartFlow {
       }
     } catch (_) { /* DreamConsolidation 不阻断 */ }
 
+    // ─── [v2.0.0] MindWanderer 创意连接 — 从记忆库生成跨域关联 ──
+    try {
+      if (this.mindWanderer && input && typeof input === 'string') {
+        result._mindWanderer = this.mindWanderer.enterMindWandering();
+      }
+    } catch (_) { /* MindWanderer 不阻断 */ }
+
+    // ─── [v2.0.0] PhenomenologyEngine 意向性分析 — Husserl Noema/Noesis + Sartre存在分析 ──
+    try {
+      if (this.phenomenology && input && typeof input === 'string') {
+        result._phenomenology = this.phenomenology.analyze(input);
+      }
+    } catch (_) { /* PhenomenologyEngine 不阻断 */ }
+
+    // ─── [v6.x] PhilosophyEngine — 四框架伦理评估 ──
+    try {
+      if (input && typeof input === 'string') {
+        const { PhilosophyEngine } = require('../identity/philosophy-engine.js');
+        const pe = new PhilosophyEngine();
+        result._philosophyEngine = pe.evaluate({
+          action: { description: input },
+          outcomes: {},
+          constraints: {},
+          stakeholders: []
+        });
+      }
+    } catch (_) { /* PhilosophyEngine 不阻断 */ }
+
+    // ─── [v6.x] PhilosophyToDecision — 哲学→决策指令转化 ──
+    try {
+      if (result && result._philosophyEngine) {
+        const { PhilosophyToDecision } = require('../identity/philosophy-to-decision.js');
+        const pd = new PhilosophyToDecision(this);
+        result._philosophyDecision = pd.decide(
+          result._philosophyEngine,
+          {
+            cognitiveLoad: { current: 0.5 },
+            cognitiveDissonance: { score: 0, detail: '' },
+            decisionDecay: { trend: 'stable', magnitude: 0 },
+            valueTensions: [],
+            uncertainty: { score: 0 }
+          },
+          { userPresent: true }
+        );
+      }
+    } catch (_) { /* PhilosophyToDecision 不阻断 */ }
+
     return result;
   }
 

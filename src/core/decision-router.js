@@ -1890,6 +1890,58 @@ class DecisionRouter {
 
 
 
+    // ─── v6.x: 注入 ToM 心理理论推理 ──────────────────────────────────
+
+    let _tomInsight = null;
+
+    if (this.hf && this.hf.tomEngine) {
+
+      try {
+
+        const tom = this.hf.tomEngine;
+
+        const agents = tom.getAllAgentStatus();
+
+        if (agents.length > 0) {
+
+          _tomInsight = {
+
+            agents: agents.map(a => ({
+
+              agentId: a.agentId,
+
+              beliefCount: a.beliefCount,
+
+              desireCount: a.desireCount,
+
+              intentionCount: a.intentionCount,
+
+              mood: a.mood,
+
+              accuracy: a.predictionAccuracy ? a.predictionAccuracy.accuracy : null,
+
+            })),
+
+            predictions: agents.map(a => {
+
+              const p = tom.predictBehavior(a.agentId);
+
+              return p ? { agentId: a.agentId, topPrediction: p.topPrediction, rationale: p.rationale } : null;
+
+            }).filter(Boolean),
+
+          };
+
+          result._tomMeta = _tomInsight;
+
+        }
+
+      } catch (e) { /* ToM 推理可选，失败不阻断 */ }
+
+    }
+
+
+
     // 找到所有匹配的规则
 
     const matches = [];
@@ -3254,14 +3306,20 @@ DecisionRouter.prototype.recordFieldSnapshot = function(U, D, A, ts) {
  */
 DecisionRouter.prototype.prospectDecision = function(options) {
   if (!Array.isArray(options) || options.length === 0) return { selected: null, options: [], confidence: 0 };
-  const b = this._getBridge();
-  if (!b || typeof b.prospectValue !== 'function') return { selected: null, options: [], error: 'bridge unavailable', confidence: 0 };
+  let bridge = this._getBridge && this._getBridge();
+  if (!bridge || typeof bridge.prospectValue !== 'function') {
+    try {
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      bridge = getFormulaBridge();
+    } catch (e) { return { selected: null, options: [], error: 'bridge unavailable', confidence: 0 }; }
+  }
+  if (!bridge || typeof bridge.prospectValue !== 'function') return { selected: null, options: [], error: 'bridge unavailable', confidence: 0 };
   const gamma = 0.61;
   const valued = options.map(opt => {
     const delta = (opt.outcome || 0) - (opt.referencePoint || 0);
     const p = typeof opt.probability === 'number' ? opt.probability : 0.5;
-    const v = b.prospectValue(delta);
-    const w = b.prospectWeight(p, gamma);
+    const v = bridge.prospectValue(delta);
+    const w = bridge.prospectWeight(p, gamma);
     return { option: opt, delta, referencePoint: opt.referencePoint || 0, value: v, probability: p, weight: w, subjectiveValue: v * w };
   });
   valued.sort((a, b) => b.subjectiveValue - a.subjectiveValue);
