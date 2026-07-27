@@ -5114,6 +5114,45 @@ class HeartFlow {
       }
     } catch (_) { /* 认知安全不阻断 */ }
 
+    // ─── [v6.3.13] 语言诚实性输出检测 — 6维语言诚实
+    try {
+      if (result && result.output) {
+        const outputText = result.output.conclusion || result.output.decision || result.output.reply || 
+          (typeof result.output === 'string' ? result.output : '');
+        if (outputText && typeof outputText === 'string') {
+          const { validateOutput } = require('../shield/language-honesty.js');
+          const lh = validateOutput(outputText);
+          result._languageHonesty = lh;
+          if (!lh.passed) {
+            if (!result.output.warnings) result.output.warnings = [];
+            if (lh.certainty?.level === 'over') result.output.warnings.push('[语言诚实] 过度绝对化判断');
+            if (lh.oscillation?.isOscillating) result.output.warnings.push('[语言诚实] 结论前后振荡');
+            if (lh.dualStandard?.hasDualStandard) result.output.warnings.push('[语言诚实] 双重标准');
+          }
+        }
+      }
+    } catch (_) { /* 语言诚实不阻断 */ }
+
+    // ─── [v6.3.13] 状态风险探测 — PRISM 双通道
+    try {
+      if (result) {
+        const inputText = typeof input === 'string' ? input : (input?.text || '');
+        const outputText = result.output?.decision || result.output?.conclusion || '';
+        const plannedAction = outputText ? { consequence: outputText.substring(0, 200) } : {};
+        if (inputText || plannedAction.consequence) {
+          const { StateRiskProbe } = require('../shield/state-risk-probe.js');
+          const probe = new StateRiskProbe();
+          const pr = probe.probe(inputText, plannedAction);
+          result._stateRiskProbe = pr;
+          if (pr.alert) {
+            if (!result.output) result.output = {};
+            if (!result.output.warnings) result.output.warnings = [];
+            result.output.warnings.push('[状态风险] ' + pr.reason);
+          }
+        }
+      }
+    } catch (_) { /* 状态风险不阻断 */ }
+
     return result;
   }
 
