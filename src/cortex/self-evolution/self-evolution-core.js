@@ -274,6 +274,14 @@ class SelfEvolutionCore {
 
     
 
+    // 元认知循环：评估 → 规划 → 执行 → 观察 → 调整
+    let metaCycleResult = null;
+    try {
+      metaCycleResult = await this._metaEngine.cycle(context);
+    } catch (e) {
+      console.error('[SelfEvolutionCore] MetaEngine cycle error:', e.message);
+    }
+
     // 迭代循环，直到达到最大次数或收敛
 
     while (iterationCount < maxIterations && !converged) {
@@ -409,7 +417,9 @@ class SelfEvolutionCore {
 
           improvement: currentImprovement,
 
-          iterationHistory
+          iterationHistory,
+
+          _metaCycle: metaCycleResult
 
         };
 
