@@ -4445,6 +4445,25 @@ class HeartFlow {
     // ─── 后置钩子（不依赖 engine-reasoner 提前 return 分支，保证100%触发）─────
     try { if (this.continuousLearner && this.lesson && result && input) { this.continuousLearner.reflect(result, input, this.lesson); } } catch (_) { /* 非关键 */ }
 
+    // [v6.3.19] 经验蒸馏 — 从 think() 结果提取可复用抽象
+    try {
+      if (this.experienceDistiller && result && input && typeof input === 'string') {
+        this.experienceDistiller.distill(result, input);
+      }
+    } catch (_) { /* 蒸馏不阻断 */ }
+
+    // [v6.3.19] 经验召回 — 前置检索匹配当前输入的抽象
+    try {
+      if (this.experienceDistiller && result && input && typeof input === 'string') {
+        const recalled = this.experienceDistiller.recall(input, 3);
+        if (recalled && recalled.length > 0) {
+          result._recalledAbstractions = recalled.map(a => ({
+            id: a.id, type: a.type, insight: a.insight, confidence: a.confidence,
+          }));
+        }
+      }
+    } catch (_) { /* 召回不阻断 */ }
+
     // [v6.2.x] 自对弈精炼：低置信度时自动走挑战→防御→精炼
     try {
       if (this.selfPlay && result && result.confidence < 0.4) {
