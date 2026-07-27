@@ -5377,6 +5377,23 @@ class HeartFlow {
       }
     } catch (_) { /* PhilosophyToDecision 不阻断 */ }
 
+    // ─── [v6.3.29] 情感意向性计算（来自 v9.2.0 affective-intentionality.js）──
+    try {
+      if (result && result.output) {
+        const outputText = result.output.conclusion || result.output.decision || result.output.reply || '';
+        if (outputText && typeof outputText === 'string') {
+          const AI = require('../emotion/affective-intentionality.js');
+          const ai = new AI.AffectiveIntentionality();
+          const emoType = result._emotion?.type || (result._sentiment ? 'joy' : 'neutral');
+          result._affectiveIntentionality = ai.compute({
+            type: emoType, intentionalityStrength: 0.7,
+            objectClarity: result.confidence || 0.7,
+            evaluationStrength: result.confidence || 0.7,
+          });
+        }
+      }
+    } catch (_) { /* 情感意向性不阻断 */ }
+
     return result;
   }
 
