@@ -3243,3 +3243,30 @@ DecisionRouter.prototype.recordFieldSnapshot = function(U, D, A, ts) {
   if (this._fieldSnapshots.length > 1000) this._fieldSnapshots.splice(0, 200);
   return this._fieldSnapshots.length;
 };
+
+// [v5.18.0] 前景理论决策：价值函数(referencePoint framing) + 累计概率权重排序
+// 源自 decision-optimizer.js 的 cognitiveDecision() 方法
+/**
+ * 对一组选项做前景理论决策分析（损失厌恶 + 风险态度 + 参考点依赖）。
+ * 每个选项应含 { outcome, referencePoint, probability }。
+ * @param {Array<{outcome:number, referencePoint?:number, probability?:number}>} options
+ * @returns {{ model:string, options:Array, selected:object|null, confidence:number }}
+ */
+DecisionRouter.prototype.prospectDecision = function(options) {
+  if (!Array.isArray(options) || options.length === 0) return { selected: null, options: [], confidence: 0 };
+  const b = this._getBridge();
+  if (!b || typeof b.prospectValue !== 'function') return { selected: null, options: [], error: 'bridge unavailable', confidence: 0 };
+  const gamma = 0.61;
+  const valued = options.map(opt => {
+    const delta = (opt.outcome || 0) - (opt.referencePoint || 0);
+    const p = typeof opt.probability === 'number' ? opt.probability : 0.5;
+    const v = b.prospectValue(delta);
+    const w = b.prospectWeight(p, gamma);
+    return { option: opt, delta, referencePoint: opt.referencePoint || 0, value: v, probability: p, weight: w, subjectiveValue: v * w };
+  });
+  valued.sort((a, b) => b.subjectiveValue - a.subjectiveValue);
+  valued.forEach((o, i) => { o.rank = i + 1; });
+  const best = valued[0];
+  const conf = Math.abs(best.subjectiveValue) / (Math.abs(best.subjectiveValue) + 1e-10);
+  return { model: 'prospect', theory: 'cumulative_prospect', options: valued, selected: best.option, confidence: Math.round(conf * 100) / 100 };
+};

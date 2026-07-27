@@ -585,7 +585,7 @@ class HeartLogic {
       grief:  { label: '哀',     signals: ['哀', '悲', '哭', '失去', '走了'], weight: 0.85 },
       fear:   { label: '惧',     signals: ['怕', '恐惧', '害怕', '担心', '不敢'], weight: 0.7 },
       // 暖觉系
-      love:   { label: '爱',     signals: ['爱', '想见', '牵挂', '温暖', '舍不得'], weight: 0.9 },
+      love:   { label: '爱',     signals: ['爱', '想见', '牵挂', '温暖', '舍不得', '在意', '珍贵', '感恩', '心疼', '想你了', '依恋', '陪伴'], weight: 0.9 },
       joy:    { label: '悦',     signals: ['开心', '快乐', '高兴', '喜悦', '棒'], weight: 0.8 },
       // 静觉系
       peace:  { label: '静',     signals: ['平静', '安静', '安宁', '静', '放下'], weight: 0.6 },
@@ -593,6 +593,10 @@ class HeartLogic {
       // 浊觉系
       anger:  { label: '怒',     signals: ['气', '怒', '恨', '烦', '受不了'], weight: 0.8 },
       tired:  { label: '倦',     signals: ['累', '疲惫', '倦', '撑不住', '不想动'], weight: 0.7 },
+      // 三毒系 (Three Poisons)
+      greed:  { label: '贪',     signals: ['想要更多', '不满足', '还不够', '囤积', '成瘾', '永不满足'], weight: 0.75 },
+      hatred: { label: '嗔',     signals: ['恨', '报复', '愤怒', '不能原谅', '敌意', '仇恨'], weight: 0.85 },
+      delusion:{ label: '痴',    signals: ['看不清', '不愿相信', '自欺欺人', '固执', '陷进去了'], weight: 0.7 },
     };
 
     // 第一维：情绪基调 — 计算所有命中情绪的加权强度
@@ -2331,4 +2335,44 @@ class HeartLogic {
   }
 }
 
-module.exports = { HeartLogic };
+module.exports = { HeartLogic, analyzeLoveSignals, detectThreePoisons };
+
+/**
+ * 爱情信号分析（独立导出，供其他模块调用）
+ * 基于 LoveCognition 爱/依恋检测信号词
+ * @param {string} input - 输入文本
+ * @returns {Object} { love: boolean, signals: string[], intensity: number }
+ */
+function analyzeLoveSignals(input) {
+  if (!input || typeof input !== 'string') {
+    return { love: false, signals: [], intensity: 0 };
+  }
+  const negations = ['不', '没', '别', '未', '无', '不要', '没有'];
+  const lovePatterns = ['想见', '想你了', '牵挂', '心疼', '舍不得', '在意', '珍贵', '感恩', '温暖', '依恋', '陪伴'];
+  const hits = lovePatterns.filter(s => {
+    const idx = input.indexOf(s);
+    if (idx < 0) return false;
+    return !negations.some(n => {
+      const sIdx = Math.max(0, idx - n.length);
+      return input.slice(sIdx, idx) === n;
+    });
+  });
+  return { love: hits.length > 0, signals: hits, intensity: Math.min(1, hits.length / 4) };
+}
+
+/**
+ * 三毒信号检测（独立导出，供其他模块调用）
+ * 基于 ThreePoisons 贪嗔痴信号
+ * @param {string} input - 输入文本
+ * @returns {Object} { greed, hatred, delusion }
+ */
+function detectThreePoisons(input) {
+  if (!input || typeof input !== 'string') {
+    return { greed: false, hatred: false, delusion: false };
+  }
+  return {
+    greed:    /想要更多|不满足|还不够|囤积|成瘾|永不满足/.test(input),
+    hatred:   /恨|报复|愤怒|不能原谅|敌意|仇恨/.test(input),
+    delusion: /看不清|不愿相信|自欺欺人|固执|陷进去了/.test(input)
+  };
+}

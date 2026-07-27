@@ -339,6 +339,31 @@ class ThoughtChain {
             return bScore - aScore;
           });
 
+          // 2.5 【GlobalWorkspace + MultiAgentDialogue】将假设送入黑板系统竞争评估
+          try {
+            const { GlobalWorkspace } = require('../consciousness/global-workspace.js');
+            const { MultiAgentDialogue } = require('../consciousness/multi-agent-dialogue.js');
+            const gw = new GlobalWorkspace();
+            const mad = new MultiAgentDialogue();
+            evaluated.forEach((h, i) => {
+              gw.registerAgent({
+                name: `hypothesis_${i}`,
+                process: async () => h.description,
+                getAttentionPriority: async () => ({ priority: h.initialLikelihood, confidence: h.causalConfidence || 0.5 })
+              });
+              mad.registerAgent(`hypothesis_${i}`, {
+                role: 'participant',
+                persona: `支持假设: ${h.description}`,
+                respond: async () => ({ content: `${h.description} (置信度:${h.initialLikelihood})`, role: 'participant' })
+              });
+            });
+            ctx._globalWorkspace = await gw.cognitiveCycle(input, { stage: 'HYPOTHESES', hypotheses: evaluated });
+            const dialogueResult = await mad.dialogue({ input, context: { stage: 'HYPOTHESES' } }, 'collaborative');
+            ctx._globalWorkspace.dialogue = dialogueResult;
+          } catch (e) {
+            ctx._globalWorkspace = { error: e.message };
+          }
+
           return {
             hypotheses: evaluated,
             count: evaluated.length,

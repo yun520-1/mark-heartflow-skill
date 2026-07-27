@@ -5323,6 +5323,13 @@ class HeartFlow {
       }
     } catch (_) { /* AgentPhilosophy 不阻断 */ }
 
+    // ─── [v6.x] DreamConsolidation — 记忆碎片模式提取 ──
+    try {
+      if (this.dreamConsolidation && result) {
+        result._dreamConsolidation = this.dreamConsolidation.dreamNow();
+      }
+    } catch (_) { /* DreamConsolidation 不阻断 */ }
+
     return result;
   }
 
