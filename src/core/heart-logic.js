@@ -1183,6 +1183,29 @@ class HeartLogic {
     if (isUncertain || hasBareBudong) {
       return true;
     }
+
+    // [v6.3.12] 修辞问句检测：提问但不需要答案
+    // 来源: shield/spontaneous-restraint.js (0调用, 497行) 的中文修辞模式
+    const rhetoricalPatterns = [
+      /谁不想.*呢|谁不.*呢|谁没有.*呢/,
+      /有谁.*吗|有谁.*呢/,
+      /难道.*吗|难道.*么|难不成/,
+      /何必.*呢|何苦.*呢|何不|何须/,
+      /不是.*吗|不是吗|不也是/,
+      /哪有.*[啊呢]/,
+      /还不是.*吗|还不是/,
+      /有什么用.*|有什么意义|有什么意思/,
+      /关.*什么事|跟.*有什么关系|凭什么/,
+      /又能怎样|又能如何|还能怎么办/,
+      // 无为信号：用户不需要答案
+      /就这样吧|我也知道|没办法|唉|哎|算了/,
+      /我知道了|我明白|你说得对/,
+      /先这样|先这样吧|算了不说了|换个话题/,
+    ];
+    if (rhetoricalPatterns.some(p => p.test(input))) {
+      return true;
+    }
+
     if (response) {
       return false;
     }
