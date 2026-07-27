@@ -118,6 +118,11 @@ class PhilosophyExecution {
     if (isUncertain) {
       return { result: true, reason: 'uncertainty', insight: '不确定时，沉默是诚实的选择' };
     }
+    // [v6.3.13] 修辞问句+无为信号（同步 heart-logic）
+    const rp = [/谁不想.*呢|谁不.*呢|谁没有.*呢/,/有谁.*吗|有谁.*呢/,/难道.*吗|难道.*么|难不成/,/何必.*呢|何苦.*呢|何不|何须/,/不是.*吗|不是吗|不也是/,/哪有.*[啊呢]/,/还不是.*吗|还不是/,/有什么用.*|有什么意义|有什么意思/,/关.*什么事|跟.*有什么关系|凭什么/,/又能怎样|又能如何|还能怎么办/,/就这样吧|我也知道|没办法|唉|哎|算了/,/我知道了|我明白|你说得对/,/先这样|先这样吧|算了不说了|换个话题/];
+    if (rp.some(p => p.test(input))) {
+      return { result: true, reason: 'rhetorical_or_wuwei', insight: '修辞问句或无为信号：用户不需要答案' };
+    }
     return { result: false, reason: 'no_special_case', insight: '决策通过：回应' };
   }
 
