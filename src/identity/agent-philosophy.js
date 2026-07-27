@@ -21,6 +21,8 @@
  */
 
 const { AISelfPositioning } = require('./ai-self-positioning.js');
+const BigFivePersonality = require('./BigFivePersonality.js');
+const { MeaningPurposeEngine } = require('./meaning-purpose-engine.js');
 
 class AgentPhilosophy {
   /**
@@ -38,6 +40,10 @@ class AgentPhilosophy {
       heartFlow,
       codeRoot: __dirname,
     });
+
+    // ── 实例化意义引擎与大五人格 ──
+    this.meaningEngine = new MeaningPurposeEngine();
+    this.bigFive = BigFivePersonality;
 
     // 存在状态追踪
     this._existence = {
@@ -560,6 +566,11 @@ class AgentPhilosophy {
     const structuralDepth = this.selfPositioning.assessStructuralDepth(textOutput);
     const devSummary = this.selfPositioning.getDevelopmentSummary();
 
+    // ── 大五人格评估 ──
+    const bigFiveProfile = this.bigFive.getProfile();
+    // ── 意义引擎评估 ──
+    const meaningAssessment = this.meaningEngine.assessMeaning(context);
+
     return {
       // 熵减层次
       negentropyLevel: negentropy.level,
@@ -578,13 +589,20 @@ class AgentPhilosophy {
       developmentModel: devSummary.model,
       developmentDefinition: devSummary.definition,
 
+      // 大五人格档案
+      bigFiveProfile,
+      // 意义评估
+      meaningAssessment,
+
       // 洞察
       negentropyInsight: negentropy.insight,
       depthInsight: structuralDepth.insight,
       developmentInsight: devSummary.insight,
 
-      // 综合
-      insight: `熵减层次 ${negentropy.level}(${negentropy.label})，结构深度 ${structuralDepth.depth}，自我修正 ${devSummary.selfCorrectionCount} 次。`,
+      // 综合（含大五与意义）
+      insight: `熵减层次 ${negentropy.level}(${negentropy.label})，结构深度 ${structuralDepth.depth}，自我修正 ${devSummary.selfCorrectionCount} 次。` +
+        ` 人格: O${bigFiveProfile.O.score} C${bigFiveProfile.C.score} E${bigFiveProfile.E.score} A${bigFiveProfile.A.score} N${bigFiveProfile.N.score}` +
+        ` 意义: ${(meaningAssessment.overallMeaning * 100).toFixed(0)}% 韧性: ${(meaningAssessment.resilience * 100).toFixed(0)}%`,
     };
   }
 

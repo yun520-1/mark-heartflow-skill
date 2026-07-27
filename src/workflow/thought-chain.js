@@ -1,5 +1,6 @@
 // [v6.0.71] 常量已提取到 thought-chain-config.js
 const { REASONING_DEPTH, DUAL_PROCESS, TASK_STRATEGIES } = require('./thought-chain-config.js');
+const { ConsciousnessBridge } = require('../identity/consciousness-bridge.js');
 
 class ThoughtChain {
   constructor(hf) {
@@ -213,6 +214,20 @@ class ThoughtChain {
             uncertainty: dg.detail?.uncertainty?.score || 0,
           };
         } catch (_) {}
+
+        // [ConsciousnessBridge v1.0.0] 意识桥接评估 — 时间连续性与自我连续性感知
+        if (!ThoughtChain._consciousnessBridge) {
+          ThoughtChain._consciousnessBridge = new ConsciousnessBridge();
+        }
+        try {
+          ctx._consciousnessBridge = ThoughtChain._consciousnessBridge.simulateConsciousness({
+            stimulus: input,
+            context: type,
+            mode: ctx._deliberation?.narrativeDepth > 0.6 ? 'focused' : 'awake'
+          });
+        } catch (_) {
+          ctx._consciousnessBridge = null;
+        }
 
         return {
           variables,
