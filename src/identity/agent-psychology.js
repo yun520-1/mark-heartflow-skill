@@ -28,7 +28,7 @@ class AgentPsychology {
    */
   constructor(heartFlow) {
     this.name = 'AgentPsychology';
-    this.version = '2.0.0';
+    this.version = '2.1.0';
 
     // 引用 HeartFlow 主实例
     this.hf = heartFlow;
@@ -140,6 +140,21 @@ class AgentPsychology {
       patternMisses: 0,        // 模式识别未命中次数
       knowledgeCache: new Map(), // {patternKey: {count, lastSeen, confidence}}
       settlingEfficiency: 1.0   // 0-1 知识固化效率
+    };
+
+    // ==========================================
+    // v2.1.0 健康波动追踪 (Health Volatility)
+    // 来源: archive/src/planner/autonomy/digital-homeostasis.js
+    // ==========================================
+    this._healthVolatility = {
+      enabled: true,
+      windowSize: 10,
+      oscillationThreshold: 0.4,
+      recentHistory: [],
+      oscillations: [],
+      trends: [],
+      anomalies: [],
+      lastCheck: 0
     };
 
     // 初始基线
@@ -1311,6 +1326,114 @@ class AgentPsychology {
   }
 
   // ==========================================
+  // 11. 健康波动检测 (Health Volatility)
+  // 来源: archive/src/planner/autonomy/digital-homeostasis.js v2.1
+  // 震荡检测 — 认知负荷的 yo-yo 效应
+  // 趋势分析 — 方向性变化（上升/下降/稳定）
+  // 异常检测 — 单次大幅偏离
+  // ==========================================
+
+  /** 
+   * 检测认知负荷的震荡、趋势、异常
+   * @param {object} options - { checkType: 'oscillation'|'trend'|'anomaly'|'all' }
+   * @returns {object}
+   */
+  assessHealthVolatility(options = {}) {
+    const checkType = options.checkType || 'all';
+    const hv = this._healthVolatility;
+    if (!hv.enabled) {
+      return { enabled: false, oscillations: [], trends: [], anomalies: [], volatilityScore: 0 };
+    }
+    const window = hv.recentHistory;
+    const result = { oscillations: [], trends: [], anomalies: [], volatilityScore: 0 };
+    const need = window.length;
+    if (checkType === 'all' || checkType === 'oscillation') {
+      if (need >= hv.windowSize) {
+        const values = window.slice(-hv.windowSize);
+        let directionChanges = 0;
+        for (let i = 1; i < values.length - 1; i++) {
+          const diff = values[i] - values[i - 1];
+          if (Math.abs(diff) < 0.05) continue;
+          const nextDiff = values[i + 1] - values[i];
+          if (Math.abs(nextDiff) < 0.05) continue;
+          if ((diff > 0) !== (nextDiff > 0)) directionChanges++;
+        }
+        const oscFrequency = directionChanges / (hv.windowSize - 2);
+        if (oscFrequency > hv.oscillationThreshold * 0.7) {
+          result.oscillations.push({
+            frequency: Math.round(oscFrequency * 100) / 100,
+            currentValue: values[values.length - 1],
+            severity: oscFrequency > hv.oscillationThreshold ? 'medium' : 'low',
+            detectedAt: Date.now()
+          });
+        }
+      }
+    }
+    if (checkType === 'all' || checkType === 'trend') {
+      if (need >= 5) {
+        const recent5 = window.slice(-5);
+        const half = Math.floor(recent5.length / 2);
+        const firstHalfAvg = recent5.slice(0, half).reduce((a, b) => a + b, 0) / half;
+        const secondHalfAvg = recent5.slice(half).reduce((a, b) => a + b, 0) / (recent5.length - half);
+        const diff = secondHalfAvg - firstHalfAvg;
+        const threshold = 0.03;
+        if (diff > threshold) {
+          result.trends.push({ direction: 'up', delta: Math.round(diff * 100) / 100, severity: diff > threshold * 2 ? 'high' : 'medium' });
+        } else if (diff < -threshold) {
+          result.trends.push({ direction: 'down', delta: Math.round(diff * 100) / 100, severity: Math.abs(diff) > threshold * 2 ? 'high' : 'medium' });
+        } else {
+          result.trends.push({ direction: 'stable', delta: Math.round(diff * 100) / 100, severity: 'low' });
+        }
+      }
+    }
+    if (checkType === 'all' || checkType === 'anomaly') {
+      if (need >= 5) {
+        const recent = window;
+        const mean = recent.reduce((a, b) => a + b, 0) / recent.length;
+        const variance = recent.reduce((sum, v) => sum + (v - mean) ** 2, 0) / recent.length;
+        const stddev = Math.sqrt(variance);
+        if (stddev > 0) {
+          const lastVal = window[window.length - 1];
+          const zScore = Math.abs(lastVal - mean) / stddev;
+          if (zScore > 2.0) {
+            result.anomalies.push({
+              value: lastVal,
+              mean: Math.round(mean * 100) / 100,
+              zScore: Math.round(zScore * 100) / 100,
+              severity: zScore > 3.0 ? 'high' : 'medium',
+              detectedAt: Date.now()
+            });
+          }
+        }
+      }
+    }
+    const oscScore = result.oscillations.reduce((s, o) => s + (o.severity === 'high' ? 0.3 : 0.15), 0);
+    const trendScore = result.trends.reduce((s, t) => {
+      if (t.direction === 'stable') return s;
+      return s + (t.severity === 'high' ? 0.2 : 0.1);
+    }, 0);
+    const anomalyScore = result.anomalies.reduce((s, a) => s + (a.severity === 'high' ? 0.4 : 0.2), 0);
+    result.volatilityScore = Math.min(1, Math.round((oscScore + trendScore + anomalyScore) * 100) / 100);
+    hv.oscillations = result.oscillations;
+    hv.trends = result.trends;
+    hv.anomalies = result.anomalies;
+    hv.lastCheck = Date.now();
+    return result;
+  }
+
+  /**
+   * 记录一次认知负荷快照到波动追踪
+   * @param {number} loadValue - 0-1 当前负荷值
+   */
+  recordHealthSnapshot(loadValue) {
+    const hv = this._healthVolatility;
+    hv.recentHistory.push(typeof loadValue === 'number' ? Math.max(0, Math.min(1, loadValue)) : 0);
+    if (hv.recentHistory.length > hv.windowSize * 3) {
+      hv.recentHistory = hv.recentHistory.slice(-hv.windowSize * 3);
+    }
+  }
+
+  // ==========================================
   // 综合评估
   // ==========================================
 
@@ -1330,13 +1453,21 @@ class AgentPsychology {
     const decisionDecay = this.detectDecisionDecay();
     const dissonances = this.detectCognitiveDissonance(action || '', context || {});
 
-    // v2.0.0 新增3个维度
+    // v2.1.0 健康波动 + v2.0.0 新增3个维度
     const uncertainty = this.assessUncertainty(input || action || '', {
       knowledgeConfidence: (context && context.knowledgeConfidence) || undefined,
       topic: (context && context.topic) || undefined
     });
     const attentionFocus = this.assessAttentionFocus(currentTask || (context && context.task) || '', context || {});
     const experienceSettling = this.assessExperienceSettling(interactionHistory || []);
+
+    // v2.1.0 健康波动检测（第11维度）
+    // 定时检查（每5次fullAssessment自动触发一次全维度扫描）
+    const assessVolatility = !this._healthVolatility.lastCheck || 
+      (this._healthVolatility.oscillations.length === 0 && this._healthVolatility.trends.length === 0);
+    const healthVolatility = this.assessHealthVolatility({ checkType: assessVolatility ? 'all' : 'trend' });
+    // 记录本次认知负荷快照
+    this.recordHealthSnapshot(cognitiveLoad.load);
 
     // 认知弹性（原第7维度，计算在最后因为它依赖前面的失调检测）
     const cognitiveResilience = this.assessCognitiveResilience();
@@ -1373,6 +1504,9 @@ class AgentPsychology {
     // ==========================================
     // v2.0.0 新维度对健康分的影响
     // ==========================================
+
+    // 健康波动扣分：高波动 = 扣分（震荡+异常越严重，扣分越多）
+    healthScore -= healthVolatility.volatilityScore * 0.15;
 
     // 认知不确定性扣分：低校准度 = 扣分
     healthScore -= (1 - uncertainty.calibrationScore) * 0.1;
@@ -1422,7 +1556,9 @@ class AgentPsychology {
           hasDissonance: dissonances.length > 0
         },
         cognitiveResilience,
-        // v2.0.0 新增3个维度
+        // v2.1.0 健康波动
+        healthVolatility,
+        // v2.1.0 健康波动 + v2.0.0 新增3个维度
         cognitiveUncertainty: uncertainty,
         attentionFocus,
         experienceSettling
@@ -1497,6 +1633,15 @@ class AgentPsychology {
         settlingEfficiency: this._experienceSettling.settlingEfficiency,
         totalInteractions: this._experienceSettling.interactions.length,
         knownPatterns: this._experienceSettling.knowledgeCache.size
+      },
+      // v2.1.0 健康波动
+      healthVolatility: {
+        enabled: this._healthVolatility.enabled,
+        historySize: this._healthVolatility.recentHistory.length,
+        currentOscillations: this._healthVolatility.oscillations.length,
+        currentTrends: this._healthVolatility.trends.length,
+        currentAnomalies: this._healthVolatility.anomalies.length,
+        lastCheck: this._healthVolatility.lastCheck ? new Date(this._healthVolatility.lastCheck).toISOString() : 'never'
       }
     };
   }
