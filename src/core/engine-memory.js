@@ -1381,6 +1381,29 @@ function _saveAllMemories(hf) {
 
     try {
 
+      // [MemoryIntegrity] 写记忆前签名：标记来源与内容哈希
+
+      try {
+        if (hf.memoryIntegrity && input) {
+          hf.memoryIntegrity.sign({
+            id: 'user-input-' + Date.now(),
+            content: typeof input === 'string' ? input.slice(0, 200) : JSON.stringify(input).slice(0, 200),
+          }, 'user');
+        }
+      } catch(e) { /* sign failure non-critical */ }
+
+      try {
+        if (hf.memoryIntegrity && thinkResult) {
+          const summary = thinkResult?.output?.conclusion || thinkResult?.conclusion || JSON.stringify(thinkResult).slice(0, 200);
+          if (summary) {
+            hf.memoryIntegrity.sign({
+              id: 'self-state-' + Date.now(),
+              content: String(summary).slice(0, 200),
+            }, 'system');
+          }
+        }
+      } catch(e) { /* sign failure non-critical */ }
+
       // 第1层: 用户输入永久记忆（内存操作同步，磁盘写入异步）
 
       hf._saveUserMemory(input);

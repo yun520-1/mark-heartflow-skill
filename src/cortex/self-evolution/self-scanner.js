@@ -30,6 +30,13 @@ const LONG_FN_THRESHOLD = 300;
 // 固化为自检维度，让心虫每次扫描主动看见此类元级盲区，而非等外部审计。
 const BYPASS_RE = /\bawait\s+fetch\s*\(|(?<![.\w])fetch\s*\(|https?\.(get|request)\s*\(/;
 
+/** [v6.3.11] 熔断器状态 (移植自 rollback-manager.js CircuitState) */
+const CircuitState = Object.freeze({
+  CLOSED: 'closed',
+  HALF_OPEN: 'half_open',
+  OPEN: 'open'
+});
+
 class SelfScanner {
   constructor(projectRoot) {
     this.projectRoot = projectRoot;
@@ -64,11 +71,15 @@ class SelfScanner {
       scannedAt: Date.now(),
       livenessProbes: [],
       // [v6.3.10] 渐变退化检测: 从archive rollback-manager提取
+      // [v6.3.11] 熔断器状态机: 连续回滚→circuitOpen→半开恢复
       metrics: {
         healthTrend: null,
         trendSlope: 0,
         netDrop: 0,
         oscillationDetected: false,
+        oscillationCount: 0,
+        circuitState: CircuitState.CLOSED,
+        circuitTripped: false,
       },
     };
 
@@ -224,13 +235,13 @@ class SelfScanner {
   /**
    * [v6.3.10] 渐变退化检测
    * 来源: archive/src/cortex/self-evolution/rollback-manager.js — 线性回归+噪声容忍
-   * 分析扫描历史中的健康趋势，检测渐进退化与版本震荡
+   * [v6.3.11] 增强: 引入 RollbackManager 的 A→B→A→B 版本震荡检测模式 + 熔断状态机
    * @param {Array} history - 历史扫描结果 [{todoCount, bypassCount, scannedAt}]
    * @returns {object}
    */
   analyzeHealthTrend(history = []) {
     if (history.length < 3) {
-      return { healthTrend: null, trendSlope: 0, netDrop: 0, oscillationDetected: false };
+      return { healthTrend: null, trendSlope: 0, netDrop: 0, oscillationDetected: false, oscillationCount: 0, circuitState: this._circuitState || CircuitState.CLOSED, circuitTripped: false };
     }
     const scores = history.map(h => -h.todoCount);
     const n = scores.length;
@@ -247,12 +258,49 @@ class SelfScanner {
     const netDrop = scores[0] - scores[n - 1];
     const isDeclining = slope < -0.1 && netDrop > 1;
 
+    // [v6.3.11] RollbackManager 风格 A→B→A→B 震荡检测
+    // 将 todoCount 值映射为伪版本标识，检测循环震荡模式
     const todoVals = history.map(h => h.todoCount);
-    let oscillations = 0;
-    for (let i = 2; i < todoVals.length; i++) {
-      if ((todoVals[i] > todoVals[i-1] && todoVals[i-1] < todoVals[i-2]) ||
-          (todoVals[i] < todoVals[i-1] && todoVals[i-1] > todoVals[i-2])) {
-        oscillations++;
+    const _toVersion = (v, i) => `${v}_${i % 2}`; // 相邻去重辅助
+    let distPattern = [];
+    for (let i = 1; i < todoVals.length; i++) {
+      if (todoVals[i] !== todoVals[i-1]) distPattern.push(todoVals[i]);
+    }
+    // 检测 A→B→A→B 循环
+    let cycles = 0;
+    for (let i = 2; i < distPattern.length; i++) {
+      if (distPattern[i] === distPattern[i-2] && distPattern[i-1] !== distPattern[i]) {
+        cycles++;
+      }
+    }
+    const oscDetected = cycles >= 2;
+
+    // [v6.3.11] 熔断状态机: 震荡触发→circuitOpen→半开恢复
+    if (!this._oscillationHistory) this._oscillationHistory = [];
+    this._oscillationHistory.push({ cycles, detected: oscDetected, ts: Date.now() });
+    if (this._oscillationHistory.length > 10) this._oscillationHistory = this._oscillationHistory.slice(-10);
+    if (!this._circuitTrippedAt) this._circuitTrippedAt = null;
+    if (!this._circuitState) this._circuitState = CircuitState.CLOSED;
+
+    // 连续震荡(>=2次扫描都检测到) → 熔断器打开
+    const recentOsc = this._oscillationHistory.slice(-3).filter(o => o.detected).length;
+    if (recentOsc >= 2 && this._circuitState === CircuitState.CLOSED) {
+      this._circuitState = CircuitState.OPEN;
+      this._circuitTrippedAt = Date.now();
+    }
+    // OPEN → HALF_OPEN: 如果震荡消失且经过"冷却"(3次扫描未见震荡)
+    if (this._circuitState === CircuitState.OPEN && this._oscillationHistory.length >= 3) {
+      const last3 = this._oscillationHistory.slice(-3);
+      if (!last3.some(o => o.detected)) {
+        this._circuitState = CircuitState.HALF_OPEN;
+      }
+    }
+    // HALF_OPEN → CLOSED: 半开后继续无震荡
+    if (this._circuitState === CircuitState.HALF_OPEN && this._oscillationHistory.length >= 4) {
+      const last4 = this._oscillationHistory.slice(-4);
+      if (!last4.some(o => o.detected)) {
+        this._circuitState = CircuitState.CLOSED;
+        this._circuitTrippedAt = null;
       }
     }
 
@@ -264,9 +312,12 @@ class SelfScanner {
       healthTrend,
       trendSlope: Math.round(slope * 100) / 100,
       netDrop: Math.round(netDrop * 100) / 100,
-      oscillationDetected: oscillations >= 3,
-      oscillationCount: oscillations,
+      oscillationDetected: oscDetected,
+      oscillationCount: cycles,
       sampleSize: n,
+      circuitState: this._circuitState,
+      circuitTripped: this._circuitState === CircuitState.OPEN,
+      circuitTrippedAt: this._circuitTrippedAt,
     };
   }
 }

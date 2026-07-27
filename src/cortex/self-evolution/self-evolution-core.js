@@ -2152,6 +2152,107 @@ class SelfEvolutionCore {
 
   }
 
+
+  // ──────────────────────────────────────────────────────
+  // 以下为 Gödel 自进化循环辅助方法（从 GoedelEngine 注入）
+  // ──────────────────────────────────────────────────────
+
+  /**
+   * Gödel Propose - 验证并生成进化提议
+   * 来源: GoedelEngine.propose()
+   * 自指涉闭环: 提议 → 生成 → 测试 → 提交
+   * @param {object} modification - { target, description, priority }
+   * @returns {object} { valid, proposal?, reason? }
+   */
+  goedelPropose(modification) {
+    if (!modification || !modification.target || !modification.description) {
+      return { valid: false, reason: 'invalid_proposal' };
+    }
+
+    // 检查保护文件
+    const protectedFiles = [
+      'SKILL.md', 'config.json',
+      'self-evolution-core.js', 'goedel-engine.js',
+      'heartflow.js', 'safety-guardrails.js',
+      'decision-router.js'
+    ];
+    for (const protectedFile of protectedFiles) {
+      if (modification.target.includes(protectedFile)) {
+        return { valid: false, reason: 'protected_file' };
+      }
+    }
+
+    // 检查目标文件是否存在
+    const targetPath = path.join(this.projectRoot, modification.target);
+    if (!fs.existsSync(targetPath)) {
+      return { valid: false, reason: 'file_not_found' };
+    }
+
+    return {
+      valid: true,
+      proposal: {
+        id: `prop-${Date.now()}`,
+        target: modification.target,
+        description: modification.description,
+        timestamp: new Date().toISOString(),
+        priority: modification.priority || 'medium'
+      }
+    };
+  }
+
+  /**
+   * Gödel GenerateDiff - 生成结构化代码差异
+   * 来源: GoedelEngine.simulateLLMDiff()
+   * 生成统一的 diff patch 描述，供外部 LLM 或人工应用
+   * @param {object} proposal - { target, description }
+   * @param {object} context - 额外上下文
+   * @returns {object} diff 对象
+   */
+  goedelGenerateDiff(proposal, context = {}) {
+    const targetPath = path.join(this.projectRoot, proposal.target);
+    let originalContent = '';
+    try {
+      originalContent = fs.readFileSync(targetPath, 'utf8');
+    } catch (_) {
+      return { type: 'error', reason: 'file_not_readable', target: proposal.target };
+    }
+
+    // 基于 proposal.description 生成建议变更（可被外部 LLM 增强）
+    const suggestions = {
+      'default': `  // Gödel Evolution: ${proposal.description}\n` +
+        `  // 目标文件: ${proposal.target}\n` +
+        `  // 请在目标文件中实现此变更\n`
+    };
+
+    const funcMatch = proposal.target.match(/(\w+)\.js$/);
+    const funcName = funcMatch ? funcMatch[1] : 'default';
+    const suggestion = suggestions[funcName] || suggestions.default;
+
+    return {
+      type: 'patch',
+      target: proposal.target,
+      description: proposal.description,
+      changes: [
+        {
+          type: 'insert',
+          after: '// Function implementation',
+          content: suggestion
+        }
+      ],
+      generatedAt: new Date().toISOString(),
+      originalHash: this._hashContent(originalContent)
+    };
+  }
+
+  /**
+   * 简易内容哈希（仅用于变更追踪）
+   */
+  _hashContent(content) {
+    const crypto = require('crypto');
+    return crypto.createHash('sha256').update(content).digest('hex').substring(0, 8);
+  }
+
+
 }
 
 

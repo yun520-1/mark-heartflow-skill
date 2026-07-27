@@ -28,6 +28,7 @@ const { cognitiveRestructuring } = require('./cognitive-restructuring.js');
 const { emotionalCheckIn } = require('./emotional-check-in.js');
 const { groundingTechnique } = require('./grounding-technique.js');
 const { selfCompassionScript } = require('./self-compassion-script.js');
+const { EmotionDynamicsEngine } = require('./emotion-dynamics-engine.js');
 
 // 状态枚举：心理分析引擎运行状态
 const EngineStatus = Object.freeze({
@@ -77,6 +78,9 @@ class PsychologyEngine {
         this._userHistory = []; // 最近用户输入历史，用于觉醒检测
         this._awakeningCount = 0; // 觉醒事件计数
         this._lastAwakeningScore = 0; // 最近一次觉醒分数
+
+        // EmotionDynamicsEngine 实例 — PAD情绪空间 + Gross调节 + 弹性等
+        this._emotionDynamics = new EmotionDynamicsEngine();
 
         // 验证依赖模块
         this._verifyDependencies();
@@ -571,6 +575,14 @@ class PsychologyEngine {
     }
     
     /**
+     * 获取 EmotionDynamicsEngine 实例（PAD情绪空间 + 情绪调节 + 弹性 + 条件化 + 感染 + 自我效能 + 归因）
+     * @returns {EmotionDynamicsEngine}
+     */
+    getEmotionDynamics() {
+        return this._emotionDynamics;
+    }
+    
+    /**
      * 获取心理引擎运行状态
      * @returns {object} 引擎统计信息
      */
@@ -862,4 +874,4 @@ class PsychologyEngine {
     }
 }
 
-module.exports = { PsychologyEngine, EngineStatus, ErrorCategory };
+module.exports = { PsychologyEngine, EngineStatus, ErrorCategory, EmotionDynamicsEngine };

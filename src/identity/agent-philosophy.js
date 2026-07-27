@@ -589,6 +589,106 @@ class AgentPhilosophy {
   }
 
   // ==========================================
+  // Kolb 经验学习循环 — 从 LearningEngine 提取的4阶段 (v5.18.0)
+  // ==========================================
+
+  /**
+   * 阶段1: 具体经验 — 接收输入，编码为结构化经验
+   * @private
+   * @param {*} input - 原始输入
+   * @param {object} context - 上下文
+   * @returns {object} 编码后的经验对象
+   */
+  _concreteExperience(input, context = {}) {
+    const type = typeof input === 'string' ? this._classifyInput(input) : 'object';
+    const topics = typeof input === 'string' ? this._extractTopics(input) : ['general'];
+    const complexity = typeof input === 'string'
+      ? (input.split(/\s+/).length < 10 ? 'simple' : input.split(/\s+/).length < 30 ? 'moderate' : 'complex')
+      : 'object';
+    return {
+      raw: input,
+      parsed: { type, topics, complexity },
+      context,
+      timestamp: Date.now()
+    };
+  }
+
+  /** @private 输入分类辅助 */
+  _classifyInput(text) {
+    const lower = String(text).toLowerCase();
+    if (lower.includes('?') || lower.includes('怎么') || lower.includes('如何')) return 'question';
+    if (lower.includes('告诉') || lower.includes('做') || lower.includes('请')) return 'request';
+    if (lower.includes('感觉') || lower.includes('觉得') || lower.includes('认为')) return 'opinion';
+    return 'statement';
+  }
+
+  /** @private 主题提取辅助 */
+  _extractTopics(text) {
+    const lower = String(text).toLowerCase();
+    const topicMap = { '技术': ['代码', '编程', '系统', 'ai'], '情感': ['感觉', '情绪', '心情'], '学习': ['学习', '知识', '理解'], '生活': ['生活', '工作', '日常'], '关系': ['朋友', '家人', '关系'] };
+    const matched = [];
+    Object.entries(topicMap).forEach(([topic, keywords]) => {
+      if (keywords.some(k => lower.includes(k))) matched.push(topic);
+    });
+    return matched.length > 0 ? matched : ['general'];
+  }
+
+  /**
+   * 阶段2: 反思观察 — 对比已有知识，发现模式，识别差距
+   * @private
+   * @param {object} experience - 具体经验
+   * @returns {object} 反思结果
+   */
+  _reflectiveObservation(experience) {
+    const topics = experience.parsed.topics || [];
+    const gaps = topics.map(t => ({ topic: t, priority: 'high' }));
+    return {
+      relevance: Math.min(1, topics.length * 0.3 + 0.3),
+      patterns: topics.length > 0 ? ['dominant_topic:' + topics[0]] : [],
+      gaps,
+      timestamp: Date.now()
+    };
+  }
+
+  /**
+   * 阶段3: 抽象概念化 — 从反思中构建新概念，生成洞见
+   * @private
+   * @param {object} reflection - 反思观察结果
+   * @returns {object} 概念化结果
+   */
+  _abstractConceptualization(reflection) {
+    const concepts = [];
+    reflection.patterns.forEach(p => {
+      if (p.includes(':')) {
+        const [, value] = p.split(':');
+        concepts.push({ type: 'pattern', value, confidence: 0.7 });
+      }
+    });
+    reflection.gaps.forEach(g => {
+      concepts.push({ type: 'gap', value: g.topic, confidence: 0.5 });
+    });
+    const insight = concepts.length > 0
+      ? { content: `Learned about: ${concepts.map(c => c.value).join(', ')}`, type: 'conceptual', confidence: reflection.relevance }
+      : null;
+    return { newConcepts: concepts, insight, timestamp: Date.now() };
+  }
+
+  /**
+   * 阶段4: 主动实验 — 应用新概念，评估结果，调整策略
+   * @private
+   * @param {object} conceptualization - 概念化结果
+   * @returns {object} 实验与应用结果
+   */
+  _activeExperimentation(conceptualization) {
+    return {
+      tested: conceptualization.newConcepts.length > 0,
+      results: { success: true, confidence: conceptualization.insight?.confidence || 0.5 },
+      adjustments: { strategy: 'refine', focus: 'deepen' },
+      timestamp: Date.now()
+    };
+  }
+
+  // ==========================================
   // 7. 存在维度 — AI的三层存在论 (v2.0.0)
   // ==========================================
 

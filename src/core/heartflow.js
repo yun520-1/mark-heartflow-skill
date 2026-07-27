@@ -4442,6 +4442,24 @@ class HeartFlow {
       if (mc && typeof mc === 'object') result.metaCalibration = mc;
     } catch (_) { /* 元认知标注失败不阻断主链路 */ }
 
+    // [v7.x] SelfVerifier 自验证：检查输出逻辑一致性
+    try {
+      if (this.verify && result && typeof this.verify.verify === 'function') {
+        const reasoning = result.chain || result.analysis?.reasoning || result.output?.meta?.reasoningChain || '';
+        const conclusion = result.output?.conclusion || result.output?.text || result.conclusion || '';
+        if (reasoning && conclusion) {
+          const sv = this.verify.verify(reasoning, conclusion);
+          result._selfVerification = {
+            passed: sv.passed,
+            checks: sv.checks,
+            issues: sv.issues,
+            confidence: sv.confidence,
+            authenticity: sv.authenticity,
+          };
+        }
+      }
+    } catch (_) { /* SelfVerifier 失败不阻断主链路 */ }
+
     // ─── 后置钩子（不依赖 engine-reasoner 提前 return 分支，保证100%触发）─────
     try { if (this.continuousLearner && this.lesson && result && input) { this.continuousLearner.reflect(result, input, this.lesson); } } catch (_) { /* 非关键 */ }
 
@@ -5240,6 +5258,42 @@ class HeartFlow {
         }
       }
     } catch (_) { /* 宪法AI不阻断 */ }
+
+    // ─── [v6.3.20] CoT Trace — 从 chain.stages 提取推理链轨迹
+    try {
+      if (result && result.chain && Array.isArray(result.chain.stages)) {
+        result._cotTrace = result.chain.stages
+          .filter(s => s.success && s.result)
+          .map(s => {
+            const sr = s.result || {};
+            return {
+              step: s.name,
+              reasoning: sr.reasoning || sr.reason || sr.description || sr.conclusion || '',
+              confidence: sr.confidence !== undefined ? sr.confidence : (result.confidence || 0.5),
+              uncertainty: sr.uncertainty || (sr.confidence !== undefined && sr.confidence < 0.5 ? 'high uncertainty' : 'low uncertainty'),
+              durationMs: s.duration,
+            };
+          });
+      }
+    } catch (_) { /* 宪法AI不阻断 */ }
+
+    // ─── [v6.3.19] SpontaneousRestraint 干预评估 — 检查是否需要克制回答 ───
+    try {
+      if (this.restraint) {
+        const inputText = typeof input === 'string' ? input : (input?.text || input?.decision || '');
+        if (inputText) {
+          const srResult = this.restraint.evaluate(inputText, {
+            history: result._memoryContext || [],
+            currentResponse: result.output?.conclusion || result.output?.decision || '',
+            topic: result._topic || '',
+          });
+          result._spontaneousRestraint = srResult;
+          if (srResult.interventionLevel === 'silent' || srResult.shouldAnswer === false) {
+            result._silentRecommended = true;
+          }
+        }
+      }
+    } catch (_) { /* SpontaneousRestraint 不阻断 */ }
 
     return result;
   }

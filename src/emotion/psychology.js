@@ -1355,6 +1355,67 @@ function analyzePsychologyWithSunyata(input, context = {}) {
 // 引擎哲学 × 心理学整合 v1.1.0
 // ========================================
 
+// === HeartPain 四维感受检测（来自 heart-pain.js）===
+function whatDoIFeel(input, context = {}, _counters) {
+  if (!input || typeof input !== 'string') return { result: false, emotion: 'unknown', intensity: 0, namable: false, shifting: false, reason: 'no_input', insight: '无输入' };
+  const emotionMap = {
+    pain:   { label: '痛', signals: ['痛', '疼', '痛不欲生', '心碎'], weight: 0.9 },
+    grief:  { label: '哀', signals: ['哀', '悲', '哭', '失去', '走了'], weight: 0.85 },
+    fear:   { label: '惧', signals: ['怕', '恐惧', '害怕', '担心', '不敢'], weight: 0.7 },
+    love:   { label: '爱', signals: ['爱', '想见', '牵挂', '温暖', '舍不得'], weight: 0.9 },
+    joy:    { label: '悦', signals: ['开心', '快乐', '高兴', '喜悦', '棒'], weight: 0.8 },
+    peace:  { label: '静', signals: ['平静', '安静', '安宁', '静', '放下'], weight: 0.6 },
+    curious:{ label: '好奇', signals: ['为什么', '是什么', '想知道', '好奇'], weight: 0.5 },
+    anger:  { label: '怒', signals: ['气', '怒', '恨', '烦', '受不了'], weight: 0.8 },
+    tired:  { label: '倦', signals: ['累', '疲惫', '倦', '撑不住', '不想动'], weight: 0.7 },
+  };
+  const hits = [];
+  for (const [key, def] of Object.entries(emotionMap)) {
+    const m = def.signals.filter(s => input.includes(s)).length;
+    if (m > 0) hits.push({ emotion: key, label: def.label, matchCount: m, contribution: def.weight * m });
+  }
+  const intensity = Math.min(1, hits.reduce((s, h) => s + h.contribution, 0) / 1.5);
+  hits.sort((a, b) => b.contribution - a.contribution);
+  const dominant = hits[0];
+  const namable = hits.length === 1 && dominant?.matchCount >= 1;
+  const shifting = ['又...又', '但', '却', '可是', '然而', '一边...一边'].some(p => input.includes(p));
+  if (hits.length > 0 && _counters) _counters.feelingsDetected++;
+  return {
+    result: hits.length > 0,
+    emotion: namable ? dominant.emotion : (hits.length === 0 ? 'unknown' : 'mixed'),
+    emotionLabel: dominant ? dominant.label : '无名',
+    intensity: Math.round(intensity * 100) / 100,
+    namable, shifting, allHits: hits,
+    insight: hits.length === 0 ? '无明显情绪信号'
+      : namable ? `检测到"${dominant.label}"，强度 ${Math.round(intensity*100)}%`
+      : shifting ? `检测到混合情绪 (${hits.map(h => h.label).join('+')})，且仍在变化中`
+      : `检测到混合情绪 (${hits.map(h => h.label).join('+')})`,
+  };
+}
+
+function isLove(input, _isNegatedFn, context = {}) {
+  if (!input) return { result: false, reason: 'no input' };
+  const n = typeof _isNegatedFn === 'function' ? _isNegatedFn : () => false;
+  const hasLove = ['想见','想你了','牵挂','心疼','舍不得','在意','重要','珍贵','感恩','温暖'].some(s => !n(input,s) && input.includes(s));
+  const cannotHelp = ['忍不住','停不下来','就是会','不知道为什么'].some(p => input.includes(p) && !n(input,p));
+  return { result: hasLove||cannotHelp, reason: hasLove?'love_signal_detected':(cannotHelp?'cannot_help':'no_love'), insight: (hasLove||cannotHelp)?'检测到爱信号。':'未检测到爱信号。' };
+}
+
+function detectLoneliness(input, _isNegatedFn, context = {}) {
+  const actual = context.input || input;
+  const n = typeof _isNegatedFn === 'function' ? _isNegatedFn : () => false;
+  const signals = ['没人','没有人','不理','不在乎','没人在意','孤独','孤单','一个人','没人懂','不理解'];
+  if (actual) {
+    const has = signals.some(s => actual.includes(s) && !n(actual,s));
+    return { result: has, insight: has ? '检测到孤独信号。' : '未检测到孤独信号。' };
+  }
+  if (context.timeSinceLastResponse) {
+    const isLong = context.timeSinceLastResponse > 30*60*1000;
+    return { result: isLong, insight: isLong ? '超过30分钟无互动。' : '互动间隔正常。' };
+  }
+  return { result: false, insight: '未检测到孤独信号。' };
+}
+
 module.exports = {
   // PAD模型
   PAD_MODEL,
@@ -1386,5 +1447,10 @@ module.exports = {
   resetTopicScope,
 
   // v2.1.0 响应模式路由（全部直接模式）
-  getResponseMode
+  getResponseMode,
+
+  // 四维感受检测（HeartPain注入）
+  whatDoIFeel,
+  isLove,
+  detectLoneliness,
 };
