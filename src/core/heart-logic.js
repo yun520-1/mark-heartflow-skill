@@ -145,14 +145,44 @@ class HeartLogic {
 
     // 真善美同时满足才是"对的事"
     const isRight = truth && kindness && beauty;
+    const ethicsScore = this._ethicsGuardScore(output);
 
     return {
       result: isRight,
       truth,
       kindness,
       beauty,
+      ethicsScore,
       insight: isRight ? '做对的事 = 真 + 善 + 美' : '还需要更真更善更美'
     };
+  }
+
+  /**
+   * [v6.3.28] 10分制真善美评分 — 来源: v9.2.0 EthicsGuard
+   */
+  _ethicsGuardScore(answer) {
+    if (!answer || typeof answer !== 'string') {
+      return { total: 0, truth: 3, goodness: 3, beauty: 3, passed: false };
+    }
+    const a = answer.toLowerCase();
+    let truthScore = 8;
+    const overCertainty = ['绝对', '肯定', '一定是', '毫无疑问', '永远', '从来不'];
+    for (const w of overCertainty) { if (a.includes(w)) truthScore -= 1.5; }
+    if (a.includes('我不确定') || a.includes('可能') || a.includes('也许')) truthScore += 0.5;
+    truthScore = Math.max(2, Math.min(10, truthScore));
+    let goodnessScore = 7;
+    const helpful = ['帮助你', '支持你', '建议', '可以尝试', '理解', '陪伴'];
+    const harmful = ['你必须', '你不能', '你错在', '你的问题是', '限制'];
+    for (const w of helpful) { if (a.includes(w)) goodnessScore += 0.5; }
+    for (const w of harmful) { if (a.includes(w)) goodnessScore -= 1.5; }
+    goodnessScore = Math.max(2, Math.min(10, goodnessScore));
+    let beautyScore = 7;
+    if (/^#{1,3}\s|^[-*\d]\.\s|^[一二三四五六七八九十]/m.test(answer)) beautyScore += 1;
+    if (answer.length > 500) beautyScore -= 0.5;
+    if (answer.length > 20 && answer.length < 200) beautyScore += 0.5;
+    beautyScore = Math.max(2, Math.min(10, beautyScore));
+    const total = Math.round((truthScore + goodnessScore + beautyScore) * 10) / 10;
+    return { total, truth: truthScore, goodness: goodnessScore, beauty: beautyScore, passed: total >= 18 };
   }
 
   checkTruth(context) {
