@@ -1,5 +1,5 @@
 /**
- * HeartFlow 大模型推理集成器 v3.0
+ * HeartFlow 大模型推理集成器 v3.1
  * 
  * 来源：
  * - ACL 2023 "Plan-and-Solve Prompting" (arxiv:2305.04091)
@@ -14,6 +14,11 @@
  * 5. 执行 - 按计划
  * 6. 验证 - 检查计算和常识
  */
+
+const { TimeAwareness } = require('../identity/time-awareness.js');
+
+// 全局时间感知实例
+const _timeAwareness = new TimeAwareness();
 
 /**
  * Plan-and-Solve Prompt 模板 (ACL 2023 增强版)
@@ -74,7 +79,8 @@ function think(input, options) {
     steps: [],
     evidence: [],
     uncertainties: [],
-    answer: null
+    answer: null,
+    timeContext: _timeAwareness.getTimeContext()  // 注入时间感知
   };
   
   // Step 0: 预搜索阶段 (如果启用)

@@ -25,6 +25,7 @@ const fs = require('../../utils/safe-fs');
 const path = require('path');
 const { SelfScanner } = require('./self-scanner.js');
 const { SelfEvolutionV2 } = require('../self-evolution-v2.js');
+const { MetaEngine } = require('../meta-engine.js');
 
 const { HealingMemoryRL } = require('../self-healing-rl.js');
 
@@ -111,6 +112,7 @@ class SelfEvolutionCore {
     // 自我弱点扫描器（让 evolve 基于真实代码库产出具体改进）
     this._scanner = new SelfScanner(this.projectRoot);
     this._explorer = new SelfEvolutionV2(this.projectRoot);
+    this._metaEngine = new MetaEngine(this.projectRoot);
 
     
 
