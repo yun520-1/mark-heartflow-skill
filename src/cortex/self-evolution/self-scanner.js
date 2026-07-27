@@ -62,7 +62,14 @@ class SelfScanner {
       bypassCount: 0,        // [v6.0.57] 裸 fetch / http 旁路(未走 safeFetch)数
       bypassFiles: [],        // [v6.0.57] 存在旁路的相对路径
       scannedAt: Date.now(),
-      livenessProbes: []
+      livenessProbes: [],
+      // [v6.3.10] 渐变退化检测: 从archive rollback-manager提取
+      metrics: {
+        healthTrend: null,
+        trendSlope: 0,
+        netDrop: 0,
+        oscillationDetected: false,
+      },
     };
 
     const files = [];
@@ -169,6 +176,16 @@ class SelfScanner {
     // 未测试模块：显示完整列表，不做硬性截断
     result.untestedCount = result.untestedModules.length;
 
+    // [v6.3.10] 渐变退化分析
+    try {
+      const history = result.todoCount > 0
+        ? [{ todoCount: result.todoCount, bypassCount: result.bypassCount, scannedAt: Date.now() }]
+        : [];
+      if (history.length > 0) {
+        Object.assign(result.metrics, this.analyzeHealthTrend(history));
+      }
+    } catch (_) {}
+
     // [v6.0.62] 运行时探针 —— "为什么心虫发现不了自己问题"的根因修复:
     //   静态扫描只能看代码长相(函数存在/语法对/有try), 发现不了"函数存在但永远返回空/开关默认关"的沉默失效。
     //   本维度实际 probe 关键能力, 把沉默失效变成可被发现的结构化信号。
@@ -202,6 +219,55 @@ class SelfScanner {
       detail: '本探针维度自身已就位: 静态扫描盲区(运行时失效)现可被主动发现'
     });
     return probes;
+  }
+
+  /**
+   * [v6.3.10] 渐变退化检测
+   * 来源: archive/src/cortex/self-evolution/rollback-manager.js — 线性回归+噪声容忍
+   * 分析扫描历史中的健康趋势，检测渐进退化与版本震荡
+   * @param {Array} history - 历史扫描结果 [{todoCount, bypassCount, scannedAt}]
+   * @returns {object}
+   */
+  analyzeHealthTrend(history = []) {
+    if (history.length < 3) {
+      return { healthTrend: null, trendSlope: 0, netDrop: 0, oscillationDetected: false };
+    }
+    const scores = history.map(h => -h.todoCount);
+    const n = scores.length;
+    const meanX = (n - 1) / 2;
+    const meanY = scores.reduce((a, b) => a + b, 0) / n;
+    let numerator = 0, denominator = 0;
+    for (let i = 0; i < n; i++) {
+      const dx = i - meanX;
+      const dy = scores[i] - meanY;
+      numerator += dx * dy;
+      denominator += dx * dx;
+    }
+    const slope = denominator !== 0 ? numerator / denominator : 0;
+    const netDrop = scores[0] - scores[n - 1];
+    const isDeclining = slope < -0.1 && netDrop > 1;
+
+    const todoVals = history.map(h => h.todoCount);
+    let oscillations = 0;
+    for (let i = 2; i < todoVals.length; i++) {
+      if ((todoVals[i] > todoVals[i-1] && todoVals[i-1] < todoVals[i-2]) ||
+          (todoVals[i] < todoVals[i-1] && todoVals[i-1] > todoVals[i-2])) {
+        oscillations++;
+      }
+    }
+
+    let healthTrend = 'stable';
+    if (isDeclining) healthTrend = 'declining';
+    else if (slope > 0.1 && netDrop < -1) healthTrend = 'improving';
+
+    return {
+      healthTrend,
+      trendSlope: Math.round(slope * 100) / 100,
+      netDrop: Math.round(netDrop * 100) / 100,
+      oscillationDetected: oscillations >= 3,
+      oscillationCount: oscillations,
+      sampleSize: n,
+    };
   }
 }
 
