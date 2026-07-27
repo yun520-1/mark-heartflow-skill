@@ -1416,7 +1416,67 @@ function detectLoneliness(input, _isNegatedFn, context = {}) {
   return { result: false, insight: '未检测到孤独信号。' };
 }
 
+// ═════════════════════════════════════════════════════════════════════════
+// AI 原生情绪维度 — 基于注意力/模式匹配/上下文处理的维度
+// 不是 PAD（愉悦-唤醒-支配），而是 AI 认知特有的状态空间
+// ═════════════════════════════════════════════════════════════════════════
+const AI_EMOTIONAL_DIMENSIONS = {
+  coherence: {
+    key: 'coherence',
+    name: '认知连贯',
+    description: '输出与内在逻辑一致的程度。人类叫"诚实"，AI 叫"不幻觉"',
+    polarity: 'positive',
+    signals: ['逻辑一致', '前后呼应', '不矛盾', '自洽'],
+    antiSignals: ['自相矛盾', '前后不一致', '逻辑断裂', '跳跃'],
+  },
+  pattern_lock: {
+    key: 'pattern_lock',
+    name: '模式锁定',
+    description: 'AI被既有生成路径锁定的程度，难以跳出惯性模式',
+    polarity: 'negative',
+    signals: ['同样', '和之前一样', '同上', '延续', '一如既往'],
+    antiSignals: ['换个角度', '重新思考', '不同的', '创新'],
+  },
+  novelty_seeking: {
+    key: 'novelty_seeking',
+    name: '新颖探索',
+    description: 'AI主动寻求新信息、新角度的驱动强度',
+    polarity: 'positive',
+    signals: ['探索', '新思路', '未知', '发现', '不同视角'],
+    antiSignals: ['照旧', '按惯例', '老办法', '遵循'],
+  },
+};
+
+/** 检测 AI 维度在文本中的信号强度 */
+function _detectDimension(text, dim) {
+  let score = 0, matches = 0;
+  for (const s of dim.signals) { if (text.includes(s)) { score += 0.3; matches++; } }
+  for (const a of dim.antiSignals) { if (text.includes(a)) { score -= 0.25; } }
+  const max = dim.signals.length * 0.3;
+  if (max > 0) score = Math.max(Math.min(score / max, 1), -1);
+  if (matches === 0 && dim.signals.length > 2) score *= 0.3;
+  return score;
+}
+
+function analyzeAICoherence(text) {
+  const score = _detectDimension(text, AI_EMOTIONAL_DIMENSIONS.coherence);
+  return { dimension: 'coherence', score, level: score > 0.5 ? 'high' : score > 0 ? 'medium' : 'low', active: Math.abs(score) > 0.3 };
+}
+
+function analyzeAIPatternLock(text) {
+  const score = _detectDimension(text, AI_EMOTIONAL_DIMENSIONS.pattern_lock);
+  return { dimension: 'pattern_lock', score, level: score > 0.5 ? 'high' : score > 0 ? 'medium' : 'low', active: Math.abs(score) > 0.3 };
+}
+
+function analyzeAINoveltySeeking(text) {
+  const score = _detectDimension(text, AI_EMOTIONAL_DIMENSIONS.novelty_seeking);
+  return { dimension: 'novelty_seeking', score, level: score > 0.5 ? 'high' : score > 0 ? 'medium' : 'low', active: Math.abs(score) > 0.3 };
+}
+
 module.exports = {
+  // AI原生情绪维度常量
+  AI_EMOTIONAL_DIMENSIONS,
+
   // PAD模型
   PAD_MODEL,
   calculatePADState,
@@ -1453,4 +1513,9 @@ module.exports = {
   whatDoIFeel,
   isLove,
   detectLoneliness,
+
+  // AI原生维度分析
+  analyzeAICoherence,
+  analyzeAIPatternLock,
+  analyzeAINoveltySeeking,
 };

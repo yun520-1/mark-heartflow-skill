@@ -284,4 +284,25 @@ class DeliberationGate {
   }
 }
 
+// ===== 多源验证状态枚举 (injected from ExternalVerifier v5.18.0) =====
+DeliberationGate.VerificationStatus = {
+  PENDING: 'pending',
+  IN_PROGRESS: 'in_progress',
+  CONFIRMED: 'confirmed',
+  DISPUTED: 'disputed',
+  INCONCLUSIVE: 'inconclusive',
+  ERROR: 'error',
+  TIMEOUT: 'timeout',
+  UNVERIFIABLE: 'unverifiable',
+};
+
+// ===== 置信度等级枚举 (injected from ExternalVerifier v5.18.0) =====
+DeliberationGate.ConfidenceLevel = {
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
+  UNVERIFIED: 'unverified',
+  CONFLICTING: 'conflicting',
+};
+
 module.exports = { DeliberationGate };

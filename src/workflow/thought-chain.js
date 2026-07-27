@@ -26,6 +26,38 @@ class ThoughtChain {
     let bestConfidence = 0.3; // 默认低置信度
     const matchedPatterns = [];
 
+    // ── 情绪检测（来自 heart-judge.whatIsThis） ─────────────
+    const emotionSignals = {
+      anger:   ['怒','恨','烦','受不了','受够了','气死了','恼火','火大','tmd','操','生气'],
+      sadness: ['难过','伤心','委屈','哭','绝望','悲痛','心碎'],
+      fear:    ['怕','恐惧','害怕','担心','不敢','焦虑'],
+      joy:     ['开心','快乐','高兴','喜悦','棒','太好了'],
+      neutral: ['还行','没事','一般','嗯','哦'],
+      pain:    ['痛','疼','痛苦','痛不欲生','煎熬','挣扎'],
+      tired:   ['累','疲惫','倦','撑不住','不想动','无力'],
+    };
+    let dominantEmotion = 'neutral';
+    let maxScore = 0;
+    for (const [emotion, signals] of Object.entries(emotionSignals)) {
+      const score = signals.filter(s => q.includes(s)).length;
+      if (score > maxScore) { maxScore = score; dominantEmotion = emotion; }
+    }
+    // ── 话题提取（来自 heart-judge.whatIsThis） ─────────────
+    let topic = '';
+    const topicPatterns = [
+      /关于(.{1,30})(?:的|问题|话题|事情|方面)/,
+      /讨论(.{1,30})(?:的|问题|话题|事情)/,
+      /(.{2,20})是什么/,
+      /(.{2,20})怎么做/,
+      /(.{2,20})为什么/,
+      /什么是(.{2,20})/,
+    ];
+    for (const pat of topicPatterns) {
+      const m = input.match(pat);
+      if (m) { topic = m[1].trim(); break; }
+    }
+    if (!topic) topic = input.slice(0, 30).trim();
+
     // 计算：每个匹配的模式增加置信度
     const patterns = [
       { regex: /\d+[+\-*/=]|\d+\s*(=|大于|小于|等于|总和|平均|概率)/, type: 'calculation', weight: 0.9 },
@@ -76,7 +108,7 @@ class ThoughtChain {
       }
     }
 
-    return { type: bestType, confidence: bestConfidence, matchedPatterns };
+    return { type: bestType, confidence: bestConfidence, matchedPatterns, emotion: dominantEmotion, emotionScore: maxScore, topic };
   }
 
   /**
@@ -102,6 +134,10 @@ class ThoughtChain {
 
         // 1.3 确定问题目标
         const goal = this._extractGoal(input);
+
+        // [EF-Inhibition v1.0] 认知抑制检测 — 怀疑信号识别 (Roebers 2017)
+        const _suspicionMarkers = /但是|然而|不过|另一方面|可是|却|可能|也许|或许|似乎|好像|怀疑|不确定|however|but|alternatively|perhaps|maybe|suspect|uncertain/i;
+        ctx._inhibitionSuggested = _suspicionMarkers.test(input);
 
         // 1.4 识别问题类型（含置信度 + LLM 兜底）
         const { type: type, confidence: typeConfidence } = await this._classifyTask(input);
