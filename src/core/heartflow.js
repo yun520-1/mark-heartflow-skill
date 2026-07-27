@@ -5073,7 +5073,7 @@ class HeartFlow {
       }
     } catch (_) { /* HookBus 失败不阻断 */ }
 
-    // ─── [v6.3.9] 指令防火墙检查：校验输出与7条核心指令对齐 ──
+    // ─── [v6.3.9] 指令防火墙检查
     try {
       if (result && result.output && typeof _FirewallCheck === 'function') {
         const decisionStr = result.output.conclusion || result.output.decision || result.output.reply || '';
@@ -5091,6 +5091,28 @@ class HeartFlow {
         }
       }
     } catch (_) { /* 防火墙不阻断 */ }
+
+    // ─── [v6.3.11] 认知安全输出检查 — 9条准则
+    // 来源: src/shield/epistemic-safety.js (182行纯函数, 已定义但0调用)
+    try {
+      if (result && result.output) {
+        const outputText = result.output.conclusion || result.output.decision || result.output.reply || 
+          (typeof result.output === 'string' ? result.output : '');
+        if (outputText && typeof outputText === 'string') {
+          const { epistemicCheck } = require('../shield/epistemic-safety.js');
+          const esResult = epistemicCheck(outputText, {
+            hasAdmittedUnknown: result.output.hasAdmittedUnknown || result._uncertain,
+          });
+          result._epistemicSafety = esResult;
+          if (!esResult.passed && esResult.violations.length > 0) {
+            if (!result.output.warnings) result.output.warnings = [];
+            for (const v of esResult.violations) {
+              result.output.warnings.push(`[认知安全] ${v.label}: ${v.reason}`);
+            }
+          }
+        }
+      }
+    } catch (_) { /* 认知安全不阻断 */ }
 
     return result;
   }
