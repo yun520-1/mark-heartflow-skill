@@ -968,31 +968,41 @@ async function runThinkPipeline(result, input, engine) {
     }
   } catch (_) { /* DeepEmotion 不阻断 */ }
 
-  // ─── 记忆 + 反思日志 ──
+
+
+  
+  // ─── 记忆存储（engine.memory三层） + 反思日志 ──
   try {
     if (result && engine) {
-      const inputSnippet = typeof input === 'string' ? input.slice(0, 200) : '';
-      // 写入心虫三层记忆 (engine-memory._saveUserMemory)
-      try {
-        const { _saveUserMemory } = require('./engine-memory.js');
-        _saveUserMemory(engine, '[auto-think] ' + inputSnippet);
-      } catch (e) { /* 记忆写入静默 */ }
-      // 写入反思日志
-      try {
-        const logDir = engine.projectRoot || engine.rootPath || process.cwd();
-        const logPath = require('path').join(typeof logDir === 'string' ? logDir : process.cwd(), 'logs', 'reflect.log');
-        require('fs').appendFileSync(logPath, JSON.stringify({
-          ts: Date.now(), input: inputSnippet,
-          confidence: result.confidence || result.overallScore || 0.5,
-          verdict: result.verdict || result.output?.conclusion || '',
-          emotion: result._emotion?.type || '',
-        }) + '
-');
-      } catch (e) { /* 日志静默 */ }
-    }
-  } catch (_) { /* 记忆+日志不阻断 */ }
+      const inp = typeof input === 'string' ? input.slice(0, 200) : '';
+      const key = 'think:' + Date.now().toString(36);
+      const conf = result.confidence || result.overallScore || 0.5;
+      const emo = (result._emotion && result._emotion.type) || '';
+      const verdict = result.verdict || (result.output && result.output.conclusion) || '';
+      const data = { input: inp, confidence: conf, emotion: emo, verdict: verdict, ts: Date.now() };
 
-  return result;
+      // 写 memory 三层存储（让 memory_search 能搜到）
+      try {
+        const mem = engine.memory;
+        if (mem && typeof mem.store === 'function') {
+          mem.store('learned', key, data);
+        } else if (mem && typeof mem.setItem === 'function') {
+          mem.setItem('learned', key, data);
+        }
+      } catch (e) {}
+      // 后备：_saveUserMemory
+      try {
+        const m = require('./engine-memory.js');
+        if (typeof m._saveUserMemory === 'function') m._saveUserMemory(engine, inp);
+      } catch (e) {}
+      // 反思日志
+      try {
+        const p = require('path').join(engine.projectRoot || engine.rootPath || '.', 'logs', 'reflect.log');
+        require('fs').appendFileSync(p, JSON.stringify({ ts: Date.now(), input: inp, confidence: conf, verdict: verdict, emotion: emo }) + '\n');
+      } catch (e) {}
+    }
+  } catch (_) {}
+return result;
 }
 
 module.exports = { runThinkPipeline };
