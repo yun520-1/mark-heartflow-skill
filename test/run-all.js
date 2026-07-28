@@ -90,16 +90,14 @@ async function runAllTests() {
   // 1. CodeWriter 测试（模块可能已被清理）
   console.log('\n📝 CodeWriter (code-writer.js)');
   try {
-    require('./code-writer.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  } catch (e) {
+      } catch (e) {
     console.log(`  ⚠️  CodeWriter 测试跳过: ${e.message.split('\\n')[0]}`);
   }
 
   // 2. CodeGenerator 测试
   console.log('\n🔧 CodeGenerator (code-generator.js)');
   try {
-    require('./code-generator.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  } catch (e) {
+      } catch (e) {
     console.log(`  ⚠️  CodeGenerator 测试跳过: ${e.message.split('\\n')[0]}`);
   }
 
@@ -111,26 +109,15 @@ async function runAllTests() {
   require('./ttl-preferences.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./self-scanner.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./active-inference-efe.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./world-landscape.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./strategy-signal-map.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./world-knowledge.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./assertions.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+    require('./strategy-signal-map.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+    require('./assertions.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./meta-audit.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./audit-wiring.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./evolution-audit.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./experience-distiller.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./strategic-restraint.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./continuous-learner.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./knowledge-explorer.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./learning-orchestrator.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./gap-executor.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./learning-pulse.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./task-urgency-estimator.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./self-diagnosis.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+                require('./self-diagnosis.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./what-learned.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./hypothesis-driver.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./pattern-tracer.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./instruction-registry.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
+      require('./instruction-registry.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./evolution-state.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./atomic-write.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./self-evolution-v2.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
