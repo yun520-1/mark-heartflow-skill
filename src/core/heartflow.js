@@ -4486,6 +4486,19 @@ class HeartFlow {
       }
     } catch (_) { /* 反思循环失败不阻断主链路 */ }
 
+    // [v6.3.45] ExperienceReplay — 从反思结果中提取经验模式（866行，此前0调用）
+    try {
+      const { ExperienceReplay } = require('../cortex/experience-replay.js');
+      if (!this._experienceReplay) this._experienceReplay = new ExperienceReplay(this.rootPath);
+      if (result) {
+        const replayResult = this._experienceReplay.updateSkillFromExperience();
+        if (replayResult) result._experienceReplay = {
+          suggestions: (replayResult.suggestions || []).slice(0, 3),
+          patternsFound: replayResult.patternsFound || 0,
+        };
+      }
+    } catch (_) { /* 经验回放失败不阻断主链路 */ }
+
     // [v6.3.44] Bridge 模块 — 历史分支恢复的5个通信分析引擎（共1134行，此前0调用）
     try {
       const { ConfidenceAnnotator } = require('../bridge/confidence-annotator.js');
