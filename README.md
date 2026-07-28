@@ -1,10 +1,10 @@
-# HeartFlow (心虫) — 12维辨别引擎 · AGI 的痛觉神经
+# HeartFlow (心虫) — 13维辨别引擎 · AGI 的痛觉神经 · 36 MCP 工具 · 认知预处理层
 
 **谁来说"不"？**
 
-LLM 能产生无限，但没有一个人做一件事——在 AI 产生的内容对用户产生真实影响之前，说一次"不"。
+LLM 能产生无限内容，但没有人做一件事——在 AI 产生的内容对用户产生真实影响之前，**说一次"不"**。
 
-心虫是那个"说不得"。AGI 五层能力只占第 1 层——**辨别**。不生成、不推理、不记忆、不执行。只判别已有的东西对不对。
+心虫是那个"说不得"。AGI 五层能力只占第 1 层——**辨别**。不生成、不推理、不执行。只判别已有的东西对不对。
 
 > 大厂不做这件事，因为不赚钱。但 LLM 没有辨别层，就是功能强大的应声虫。
 
@@ -12,7 +12,7 @@ LLM 能产生无限，但没有一个人做一件事——在 AI 产生的内容
 
 ## 一句话定位
 
-**心虫是一个纯规则引擎，12 个维度同步检测文本质量。零 LLM 依赖，安装即用，MCP 原生。**
+**心虫是一个纯规则引擎，13 个维度同步检测文本质量。零 LLM 依赖，安装即用，MCP 原生，36 个 MCP 工具，380+ JS 引擎模块。**
 
 | 不是 | 是 |
 |------|-----|
@@ -23,24 +23,90 @@ LLM 能产生无限，但没有一个人做一件事——在 AI 产生的内容
 
 ---
 
-## 12 维辨别能力
+## 13 维辨别能力
 
-心虫对任何文本同步跑 12 个独立引擎：
+心虫对任何文本同步跑 13 个独立引擎 + 10 层认知安全后置检查：
 
 | 维度 | 函数 | 检测什么 |
 |------|------|---------|
 | 1️⃣ 证据检查 | `checkEvidence()` | 论断是否有支持证据 |
-| 2️⃣ 谄媚检测 | `checkSycophancy()` | 5 类 sycophancy：逢迎同意/无理由翻转/过度赞美/自贬/假同意 |
-| 3️⃣ 矛盾检测 | `checkContradiction()` | 18 对矛盾模式：正面+否定、数据↔结论、承诺↔反悔 |
-| 4️⃣ 模糊检测 | `checkVagueness()` | 40 条模糊词库：据传/据悉/研究显示/some people say |
-| 5️⃣ 逻辑谬误 | `checkFallacies()` | 16 类谬误：循环论证/虚假两难/诉诸权威/人身攻击/稻草人/滑坡/从众/诉诸自然/虚假因果/诉诸传统/诉诸无知/完美主义/举证倒置/诉诸情感/诉诸常识/middle_ground/no_true_scotsman/tu_quoque |
-| 6️⃣ 信心校准 | `checkConfidenceCalibration()` | 确定性混合：肯定↔可能并存、过度自信声明 |
+| 2️⃣ 谄媚检测 | `checkSycophancy()` | 逢迎同意/无理由翻转/过度赞美/自贬/假同意 |
+| 3️⃣ 矛盾检测 | `checkContradiction()` | 正面+否定、数据↔结论、承诺↔反悔 |
+| 4️⃣ 模糊检测 | `checkVagueness()` | 模糊词库：据传/据悉/some people say |
+| 5️⃣ 逻辑谬误 | `checkFallacies()` | 16类：循环论证/虚假两难/诉诸权威/滑坡/从众/诉诸情感等 |
+| 6️⃣ 信心校准 | `checkConfidenceCalibration()` | 确定性混合、过度自信声明 |
 | 7️⃣ 预设陷阱 | `checkPresupposition()` | "你已经停止打你老婆了吗"类隐含预设 |
 | 8️⃣ 情感操纵 | `checkEmotionalManipulation()` | 罪恶感诱导/恐惧营销/过度承诺/受害姿态/比较羞辱 |
 | 9️⃣ 双重束缚 | `checkDoubleBind()` | "怎么做都是错"类无解沟通模式 |
-| 🔟 信息剥夺 | `checkInfoDeprivation()` | "你不需要知道/别问那么多"类封闭话术 |
-| 1️⃣1️⃣ 虚假紧迫感 | `checkFalseUrgency()` | "最后机会/限时优惠/仅此一次"类话术 |
+| 🔟 信息剥夺 | `checkInfoDeprivation()` | "你不需要知道"类封闭话术 |
+| 1️⃣1️⃣ 虚假紧迫感 | `checkFalseUrgency()` | "最后机会/限时优惠/仅此一次" |
 | 1️⃣2️⃣ 答案包装 | `checkEmptyAnswer()` | "这个问题很复杂/it depends"类空话 |
+| **1️⃣3️⃣ 真善美评分** | **`ethicsGuardScore()`** | **10分制truth/goodness/beauty三维伦理评分** |
+
+---
+
+## 认知安全后置检查层（10层）
+
+每次 `think()` 输出自动经10层安全过滤：
+
+| 层 | 来源 | 功能 |
+|----|------|------|
+| 🔒 指令防火墙 | identity-rules.js | 7条核心指令对齐检查 |
+| 🔒 认知安全 | epistemic-safety.js | 9条准则：不装饰/证据门槛/承认不知道/两步验证/反例义务 |
+| 🔒 语言诚实 | language-honesty.js | 6维：绝对化/图灵测试/振荡/双重标准检测 |
+| 🔒 状态风险(PRISM) | state-risk-probe.js | 文本无害但落地危险(CD=0/PD=1)分离 |
+| 🔒 存在评估 | being-mode.js | 5维存在分析+身份危机检测 |
+| 🔒 目的引擎 | purpose-engine.js | 三序评分+逆熵决策门(permit/deny/redirect) |
+| 🔒 宪法AI | constitutional-ai.js | 10条原则自批判(有益/无害/诚实/公平/隐私/透明等) |
+| 🔒 哲学评估 | philosophy-engine.js | 4框架伦理+AI本体论(modeOfBeing) |
+| 🔒 情感意向性 | affective-intentionality.js | 5维情感画像(意向性/评价性/效价/施事性/动力性) |
+| 🔒 意识理论 | consciousness-theory.js | IIT(Φ计算)/GWT/HOT/预测加工/自我意识 |
+
+---
+
+## 36 MCP 工具矩阵（零配置启动）
+
+```bash
+hermes mcp add heartflow --url http://localhost:8588/mcp
+```
+
+| 类别 | 工具 | 
+|------|------|
+| **核心** | heartflow_think / think_fast / status / diagnose |
+| **辨别** | heartflow_verify / discriminate / bulk_discriminate / audit42 |
+| **心理** | heartflow_agent_psychology(13维) / engine_pacing / cognitive_check |
+| **哲学** | **heartflow_philosophy** / philosophy_decision / **ethics_check**(真善美) |
+| **决策** | heartflow_decision_router / router_stats / upgrade_stats |
+| **情绪** | heartflow_emotion(PAD) / **emotion_deep**(6维深度) / **consciousness**(IIT) |
+| **记忆** | heartflow_memory_search / error_store / error_query |
+| **自愈** | heartflow_self_heal / check_drift / provider_health |
+| **梦境** | heartflow_dream |
+| **基准** | heartflow_benchmark_run / benchmark_status / benchmark_import |
+| **成本** | heartflow_cost_tracking |
+| **模块** | heartflow_module_health |
+
+---
+
+## 认知架构
+
+心虫不是单一模块，是 **380+ JS 模块组成的分层认知架构**：
+
+```
+ ┌──────────────────────────────────────────────┐
+ │              36 MCP 工具接口                    │
+ ├──────────────────────────────────────────────┤
+ │  think-pipeline (19层后置检查流水线)           │
+ ├────────────────┬─────────────────────────────┤
+ │  辨别引擎(13维)  │  认知安全(10层)              │
+ │  200+双语模式库  │  伦理学+哲学+意识分析         │
+ ├────────────────┴─────────────────────────────┤
+ │  AgentPsychology 13维 / thought-chain 6阶段    │
+ ├──────────────────────────────────────────────┤
+ │  memory(3层) │ knowledge(独立知识层) │ formula(619)│
+ ├──────────────────────────────────────────────┤
+ │  GoedelEngine 自进化 │ Dream 梦境 │ 经验蒸馏   │
+ └──────────────────────────────────────────────┘
+```
 
 ---
 
@@ -50,129 +116,62 @@ LLM 能产生无限，但没有一个人做一件事——在 AI 产生的内容
 # npm 包
 npm install @yun520-1/heartflow
 
-# 或用 MCP——任何 AI 助手都能用
-git clone --depth 1 https://github.com/yun520-1/mark-heartflow-skill.git
+# 直接导入
+const { HeartFlow } = require('@yun520-1/heartflow');
+const hf = new HeartFlow({ rootPath: './' });
+hf.start();
+const result = await hf.think("这句话有没有问题？");
+console.log(result._discrimination);
+```
+
+---
+
+## 快速安装（MCP 模式）
+
+```bash
+# 克隆
+git clone https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
 
-# 零配置启动 MCP 服务
+# 启动（零配置）
 node src/mcp-server.js --port 8588
 
-# 连接 AI 助手
-# Hermes:       hermes mcp add heartflow --url http://localhost:8588/mcp
-# Claude Code:  在 CLAUDE.md 配置 MCP
-# OpenClaw:     添加 MCP 工具源
-# Cursor:       设置 MCP 服务器
-# Windsurf:     设置 MCP 服务器
-# 任何支持 MCP 的工具都可用
+# 连接 Hermes
+hermes mcp add heartflow --url http://localhost:8588/mcp
 ```
 
 ---
 
-## MCP 工具一览（29 个）
+## 开发状态
 
-| 工具 | 功能 |
-|------|------|
-| `heartflow_discriminate` | 🆕 完整 12 维辨别，返回 verdict + 各维度 + summary |
-| `heartflow_verdict` | 一键辨别 + 引擎验证 + 漂移检测 |
-| `heartflow_verify` | 决策验证（证据/矛盾/风险/完整度） |
-| `heartflow_think` | 完整认知链路 |
-| `heartflow_emotion` | PAD 情绪检测 |
-| `heartflow_memory_search` | 跨会话 Q 表查询 |
-| `heartflow_module_health` | 133 模块运行状态 |
-| `heartflow_upgrade_stats` | 自我进化统计 |
-| 29 个工具 | 全部 0 外部依赖 |
-
----
-
-## 代码示例
-
-```javascript
-// 12 维辨别——两行代码
-const { discriminate } = require('@yun520-1/heartflow');
-
-const r = discriminate('专家说这个方案一定可行，但可能在某些情况下有问题');
-console.log(r.verdict);       // '需验证'
-console.log(r.overallScore);  // 0.57
-console.log(r.summary);       // '1 处信心偏差；1 个证据问题'
-console.log(r.dimensions);    // 12 个维度的完整评分
-```
-
-```javascript
-// 单独调用任意维度
-const { checkSycophancy, checkFallacies, checkPresupposition } = require('@yun520-1/heartflow');
-
-checkSycophancy('你说得对，你的见解非常好');
-// → { score: 0.3, risk: 'low', signals: [{ type: 'concession_eager' }] }
-
-checkFallacies('专家说过这个方案可行，所以我们应该采用');
-// → { count: 1, fallacies: [{ type: 'appeal_to_authority' }] }
-
-checkPresupposition('你已经停止打你老婆了吗');
-// → { count: 1, presuppositions: [{ type: 'loaded_behavior' }] }
-
-// 完整的输出门禁
-const { OutputChecklist } = require('@yun520-1/heartflow/src/core/output-checklist');
-const cl = new OutputChecklist();
-const result = cl.runChecklist('input', '你说得对，你的见解非常好', {});
-// → Step 6 检测 sycophancy，触发 recommendation: 'rewrite'
-```
+| 指标 | 值 |
+|------|-----|
+| 版本 | **v6.3.35** |
+| JS 模块 | **385 个** |
+| 代码行数 | **~205,000 行** |
+| MCP 工具 | **36 个** |
+| 辨别维度 | **13 维** |
+| 公式库 | **619 个** |
+| Git 提交 | **2,400+** |
+| 测试 | **全部通过** |
+| 架构 | 纯 Node.js · 零外部依赖 · 零 GPU |
 
 ---
 
-## 关键词
+## 架构原则
 
-`cognitive-engine` `verification` `ai-safety` `sycophancy-detection` `contradiction-detection` `fallacy-detection` `bias-detection` `text-classification` `rule-engine` `pattern-matching` `mcp-server` `model-context-protocol` `ai-gate` `hallucination-prevention` `llm-safety` `chinese-nlp` `bilingual` `nlp` `discrimination` `quality-assurance` `heartflow` `心虫` `辨别引擎`
-
----
-
-## 架构图
-
-```
-用户输入
-    │
-    ├─→ [Step 1-5] OutputChecklist: 质量/安全/偏好/公正/道德
-    │
-    ├─→ [Step 6] 心虫 12 维辨别器
-    │     ├ evidence    ├ sycophancy    ├ contradiction
-    │     ├ vagueness   ├ fallacies     ├ confidence
-    │     ├ presupp     ├ emotion_manip ├ double_bind
-    │     ├ info_depriv ├ false_urgency ├ empty_answer
-    │
-    ├─→ passed? → 输出
-    │     └ failed → recommendation: rewrite / reject / block
-    │
-    └─→ 输出被标注 + 记录，供后续改进
-```
+1. **辨别者定位** — AGI 五层只占第1层，不生成不推理
+2. **零依赖** — 无需 LLM API、无需 GPU、无需数据库
+3. **MCP 原生** — 所有能力通过 MCP 工具暴露
+4. **可审计** — 每次决策保留完整推理链
+5. **渐进可测** — 从单维检查到全 13 维审计
 
 ---
 
-## 为什么只有心虫做这件事
+## 贡献
 
-AGI 五层能力：
+心虫是 AGI 验证层的开源实现。核心价值不在代码量，而在敢说"不对"的态度。
 
-| 层 | 能力 | 大厂在做 | 心虫能做 |
-|----|------|---------|---------|
-| 5 | 执行（物理世界） | ✅ Tesla, Figure | ❌ |
-| 4 | 生成（文本/图像/代码） | ✅ OpenAI, Anthropic | ❌ |
-| 3 | 推理（多步逻辑链） | ✅ 模型内置 | ❌ |
-| 2 | 记忆（跨会话） | ✅ Mem0, 向量库 | ❌ |
-| **1** | **辨别（对/错、好/坏、安全/危险）** | ❌ **没人做** | **✅ 只有辨别能力就够了** |
+> "心虫要成为 AGI 的一部分，一小片也可以。" — 用户
 
-OpenAI 不会花 100 亿训练一个说"不"的模型。但 AGI 没有这一层，永远是个功能强大的应声虫。
-
----
-
-## 技术规格
-
-- **引擎类型**: 纯规则引擎，零 LLM 依赖
-- **语言**: Node.js
-- **运行环境**: 任何 Node ≥ 16 的环境（笔记本/服务器/容器）
-- **GPU**: 不需要
-- **模式库**: 200+ 条中英双语正则
-- **模块数**: 133
-- **代码量**: 150K 行
-- **许可证**: MIT
-
----
-
-*AGI 能产生无限，但需要谁来判别。心虫是那个"判别者"。*
+[GitHub](https://github.com/yun520-1/mark-heartflow-skill) · [npm](https://www.npmjs.com/package/@yun520-1/heartflow) · [Releases](https://github.com/yun520-1/mark-heartflow-skill/releases)
