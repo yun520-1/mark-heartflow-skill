@@ -254,6 +254,7 @@ npm install @yun520-1/heartflow
 
 ## 📬 联系方式
 
+- 📧 **邮箱**: markcell@qq.com
 - 🐛 **Issues**: [GitHub Issues](https://github.com/yun520-1/mark-heartflow-skill/issues)
 - 📦 **npm**: [@yun520-1/heartflow](https://www.npmjs.com/package/@yun520-1/heartflow)
 
