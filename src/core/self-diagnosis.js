@@ -95,6 +95,11 @@ class SelfDiagnosis {
       linkage: orchestratorStatus?.linkage || {},
       healthScore: orchestratorStatus?.healthScore || null,
       learningLoop: orchestratorStatus?.learningLoop || {},
+      // 辨别维度数：从 src/index.js 动态读取
+      dimensionCount: get(() => {
+        const idx = require('../index.js');
+        return Object.keys(idx).filter(k => k.startsWith('check')).length;
+      }, 0),
     };
   }
 
@@ -105,6 +110,10 @@ class SelfDiagnosis {
       report.push({ status: 'bad', msg: '不知道自己的版本号' });
     } else {
       report.push({ status: 'good', msg: `版本 ${data.version}` });
+    }
+    // 辨别维度完整性校验
+    if (data.dimensionCount > 0) {
+      report.push({ status: 'good', msg: `${data.dimensionCount} 维辨别引擎就绪` });
     }
     if (data.uptime > 0) {
       const h = Math.floor(data.uptime / 3600);
@@ -249,8 +258,9 @@ class SelfDiagnosis {
       // 一段可读的总结
       readable: this._readableSummary(good, ok, bad, learning, issues, all),
       honesty,
+      // confidence = good/total · ok 是"需留意"不算健康
       confidence: all.length > 0
-        ? +((good + ok) / all.length).toFixed(2)
+        ? +(good / all.length).toFixed(2)
         : 0,
     };
   }

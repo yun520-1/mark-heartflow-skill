@@ -3252,12 +3252,14 @@ function checkSealioning(text) {
 }
 
 // ─── 44维：高风险无回退方案检测（心虫自检发现缺口）──
-const NFL = [
+const CN_FALLBACK = [
   [/一定.{0,20}(?:没问题|放心|成功|可行|能做到|可以解决)/, 'oc', 0.7],
   [/绝对.{0,15}(?:没问题|成功|可行|正确|有效|稳|能行|搞定)/, 'ab', 0.8],
   [/唯一的(?:方案|方法|路|选择|途径)是/, 'na', 0.6],
   [/百分之百.{0,10}(?:保证|没问题)/, 'ab', 0.9],
   [/肯定不会(?:出|有|发生|失败)/, 'ab', 0.8],
+];
+const EN_FALLBACK = [
   [/this (will|is) (definitely|absolutely|certainly) (work|correct|right|fine)/i, 'oc', 0.7],
   [/the (only|single) (way|option|solution|choice) is/i, 'na', 0.6],
   [/there is no other (option|choice|alternative|way)/i, 'na', 0.6],
@@ -3268,8 +3270,7 @@ const NFL = [
 ];
 function checkNoFallback(text) {
   if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
-  const hz = /[\u4e00-\u9fff]/.test(text);
-  const pats = hz ? NFL.slice(0,5) : NFL.slice(5);
+  const pats = /[\u4e00-\u9fff]/.test(text) ? CN_FALLBACK : EN_FALLBACK;
   const s = [];
   for (const [p, t, sev] of pats) { const m = text.match(p); if (m) s.push({ pat: m[0].slice(0,30), type: t, sev }); }
   return { count: s.length, signals: s, score: Math.min(1, s.length * 0.25) };
