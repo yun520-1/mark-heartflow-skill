@@ -111,8 +111,7 @@
     }
   },
   "author": {
-    "name": "markcell",
-    "email": "markcell@qq.com"
+    "name": "markcell"
   },
   "exports": {
     ".": "./src/index.js",
