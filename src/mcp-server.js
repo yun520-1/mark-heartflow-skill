@@ -718,6 +718,12 @@ const TOOLS = [
     }, required: ['text'] },
   },
 
+  {
+    name: 'heartflow_reflect',
+    description: '反思与自省：运行Reflector引擎，对自身状态、情绪、任务做全面反思',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+
 ];
 
 
@@ -2736,6 +2742,15 @@ const HANDLERS = {
       const hl = new HeartLogic({});
       const r = hl.isRightAction({ output: args.text });
       return { passed: r.result, ethicsScore: r.ethicsScore, truth: r.truth, kindness: r.kindness, beauty: r.beauty };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_reflect: (args) => {
+    try {
+      const { Reflector } = require('./cortex/reflector.js');
+      const r = new Reflector(HF_DIR);
+      const report = r.run();
+      return report;
     } catch (e) { return { error: e.message }; }
   },
 
