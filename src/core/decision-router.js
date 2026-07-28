@@ -1,6 +1,6 @@
 // [v6.0.71] 常量已提取到 decision-router-config.js
 const { VERSION, FIELD_WEIGHTS, SCENE_WEIGHTS, FLIP_THRESHOLDS, MODEL_PROFILES, DEFAULT_PROFILE, DECISION, DECISION_PRIORITY } = require('./decision-router-config.js');
-const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');  // DELETED
 class DecisionRouter {
 
   /**
@@ -3309,7 +3309,7 @@ DecisionRouter.prototype.prospectDecision = function(options) {
   let bridge = this._getBridge && this._getBridge();
   if (!bridge || typeof bridge.prospectValue !== 'function') {
     try {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');  // DELETED
       bridge = getFormulaBridge();
     } catch (e) { return { selected: null, options: [], error: 'bridge unavailable', confidence: 0 }; }
   }

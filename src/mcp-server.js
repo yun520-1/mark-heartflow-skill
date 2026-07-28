@@ -2590,7 +2590,7 @@ function handleFormulaCalculate(args) {
   if (!domain) return { error: 'domain required (memory/decision/cognition/info/social/physics/consciousness/assessment)' };
   if (!heartflow) return { error: 'engine not ready' };
   try {
-    const { getFormulaBridge } = require(HF_DIR + '/src/formula/formula-bridge.js');
+    const { getFormulaBridge } = require(HF_DIR + '/src/formula/formula-bridge.js');  // DELETED
     const bridge = getFormulaBridge();
     const result = {};
     if (domain === 'memory') {
@@ -2631,11 +2631,11 @@ function handleBridgeAnalyze(args) {
   const { input } = args;
   if (!input) throw new Error('input is required');
   try {
-    const { ToneAnalyzer } = require('./bridge/tone-analyzer.js');
-    const { StanceDetector } = require('./bridge/stance-detector.js');
-    const { ConfidenceAnnotator } = require('./bridge/confidence-annotator.js');
-    const { ConflictResolver } = require('./bridge/conflict-resolver.js');
-    const { ImplicitNeedDetector } = require('./bridge/implicit-need-detector.js');
+    const { ToneAnalyzer } = require('./bridge/tone-analyzer.js');  // DELETED
+    const { StanceDetector } = require('./bridge/stance-detector.js');  // DELETED
+    const { ConfidenceAnnotator } = require('./bridge/confidence-annotator.js');  // DELETED
+    const { ConflictResolver } = require('./bridge/conflict-resolver.js');  // DELETED
+    const { ImplicitNeedDetector } = require('./bridge/implicit-need-detector.js');  // DELETED
     const tone = new ToneAnalyzer().analyze(input, {});
     const stance = new StanceDetector().detect(input, {});
     const annot = new ConfidenceAnnotator().annotate(input);
@@ -5979,7 +5979,7 @@ function handleFormulaCalculate(args) {
   if (!domain) return { error: 'domain required (memory/decision/cognition/info/social/physics/consciousness/assessment)' };
   if (!heartflow) return { error: 'engine not ready' };
   try {
-    const { getFormulaBridge } = require(HF_DIR + '/src/formula/formula-bridge.js');
+    const { getFormulaBridge } = require(HF_DIR + '/src/formula/formula-bridge.js');  // DELETED
     const bridge = getFormulaBridge();
     const result = {};
     if (domain === 'memory') {

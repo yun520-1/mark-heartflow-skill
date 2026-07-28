@@ -547,7 +547,7 @@ class ThoughtChain {
         // [v5.17.19 S3] 主动推理EFE — 用ActiveInference评估探索/利用平衡
         let activeInferenceResult = null;
         try {
-          const AI = require('../decision/active-inference.js');
+          const AI = require('../decision/active-inference.js');  // DELETED
           const aiEngine = new AI.ActiveInference();
           const _hypotheses = ctx.stages.find(s => s.name === 'HYPOTHESES')?.result?.hypotheses || [];
           const candidates = (_hypotheses || []).map(h => ({
@@ -1252,7 +1252,7 @@ ThoughtChain.prototype.runLayerEnrichment = function(input, hypotheses, conclusi
     }
   } catch(e) {} // 防御性: 模块加载/调用失败不阻断主流程
   try {
-    const AI = require('../decision/active-inference.js');
+    const AI = require('../decision/active-inference.js');  // DELETED
     const aiEngine = new AI.ActiveInference();
     const candidates = (hypotheses || []).map(h => ({
       label: (h.description || h || '').substring(0, 40),

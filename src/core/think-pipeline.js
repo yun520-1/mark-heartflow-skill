@@ -342,7 +342,7 @@ async function runThinkPipeline(result, input, engine) {
   // ─── [v6.3.7] FormulaBridge 综合计算——输入含领域关键词时自动调用相关公式 ──
   try {
     if (input && typeof input === 'string') {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');  // DELETED
       const bridge = getFormulaBridge();
       if (bridge) {
         const calc = {};

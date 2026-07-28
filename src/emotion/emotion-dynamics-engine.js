@@ -16,7 +16,7 @@
  * dispatch: 'emotionDynamics.analyze' / 'emotionDynamics.regulate' / 'emotionDynamics.resilience'
  */
 
-const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');  // DELETED
 
 class EmotionDynamicsEngine {
   constructor(options = {}) {

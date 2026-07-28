@@ -1932,7 +1932,7 @@ try { hf._saveAllMemories(tcResult, input); } catch(e) { /* ignore */ }
 
     try {
 
-      const { getFormulaMatcher } = require('../formula/formula-matcher.js');
+      const { getFormulaMatcher } = require('../formula/formula-matcher.js');  // DELETED
 
       const matcher = getFormulaMatcher();
 

@@ -282,7 +282,7 @@ class MemoryConsolidator {
 
     try {
 
-      const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+      const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');  // DELETED
 
       const b = getCognitiveBridge();
 

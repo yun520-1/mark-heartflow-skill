@@ -76,7 +76,7 @@ class ConfidenceCalibrator {
 
     this._load();
     // [v5.14.1] 共享认知桥接
-    const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+    const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');  // DELETED
     this._bridge = getCognitiveBridge();
   }
 

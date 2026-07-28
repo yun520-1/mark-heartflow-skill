@@ -524,7 +524,7 @@ const _DualPerspectiveAuditor = _lazy('dualPerspectiveAuditor', () => require('.
 const _MemoryQuality = _lazy('memoryQuality', () => require('../memory/memory-quality.js'));
 
 
-const _PaperIndex = _lazy('paperIndex', () => require('../research/paper-index.js'));
+const _PaperIndex = _lazy('paperIndex', () => require('../research/paper-index.js'));  // DELETED
 
 const _TieredMemoryFusion = _lazy('tieredMemoryFusion', () => require('./tiered-memory-fusion.js'));
 
@@ -638,7 +638,7 @@ const _PlatformAdapter = _lazy('platformAdapter', () => require('./platform-adap
 
 
 
-const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('./confidence-annotator.js'));
+const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('./confidence-annotator.js'));  // DELETED
 
 
 
@@ -3799,7 +3799,7 @@ class HeartFlow {
 
     try {
 
-      const { FormulaModule } = require('../formula/formula-module.js');
+      const { FormulaModule } = require('../formula/formula-module.js');  // DELETED
 
       this.formula = new FormulaModule({ formulasFile: path.join(this.rootPath, 'formulas', 'formulas.json') });
 
@@ -3810,7 +3810,7 @@ class HeartFlow {
 
       // 注入 hf 引用到 FormulaBridge，让桥接方法可兜底查公式库
       try {
-        const { injectHfToBridge } = require('../formula/formula-bridge.js');
+        const { injectHfToBridge } = require('../formula/formula-bridge.js');  // DELETED
         injectHfToBridge(this);
       } catch (_) { /* 非关键 */ }
 

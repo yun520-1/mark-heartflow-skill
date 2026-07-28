@@ -517,7 +517,7 @@ function _searchUserMemories(hf) {
 
       try {
 
-        const { getFormulaBridge } = require('../formula/formula-bridge.js');
+        const { getFormulaBridge } = require('../formula/formula-bridge.js');  // DELETED
 
         const bridge = getFormulaBridge();
 
@@ -743,7 +743,7 @@ function _findRelatedMemories(hf) {
 
     try {
 
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');  // DELETED
 
       const bridge = getFormulaBridge();
 
@@ -871,7 +871,7 @@ function _scoreMemoryImportance(hf, entry) {
 
     try {
 
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');  // DELETED
 
       const bridge = getFormulaBridge();
 

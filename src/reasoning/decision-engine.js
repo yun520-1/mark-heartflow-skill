@@ -17,7 +17,7 @@
  * dispatch: 'decision.analyze' / 'decision.ddm' / 'decision.sdt' / 'decision.prospect'
  */
 
-const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
+const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');  // DELETED
 
 class DecisionEngine {
   constructor(options = {}) {
@@ -138,7 +138,7 @@ class DecisionEngine {
         let posterior = bridge.bayesUpdate(likelihood, prior, evidenceMarginal);
     // [FORMULA bayes_theorem] P(B|A)*P(A)/P(B)
     try {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');  // DELETED
       const fb = getFormulaBridge();
       if (fb && typeof fb.calculateCorpus === 'function') {
         const cr = fb.calculateCorpus('bayesian_updating', { 'P(D|H)': likelihood, 'P(H)': prior, 'P(D)': evidenceMarginal });

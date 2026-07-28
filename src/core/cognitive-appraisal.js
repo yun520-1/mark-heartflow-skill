@@ -73,7 +73,7 @@ function _getFB() {
 
     try {
 
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');
+      const { getFormulaBridge } = require('../formula/formula-bridge.js');  // DELETED
 
       _fbInstance = getFormulaBridge();
 
