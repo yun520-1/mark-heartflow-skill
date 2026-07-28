@@ -687,6 +687,37 @@ const TOOLS = [
 
   },
 
+  {
+    name: 'heartflow_philosophy',
+    description: '哲学评估：返回AI自我定位、四框架伦理评估、决策指令',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+
+  {
+    name: 'heartflow_consciousness',
+    description: '意识理论分析：IIT整合信息+GWT全局工作空间+HOT高阶思维+预测加工',
+    inputSchema: { type: 'object', properties: {
+      neuralStates: { type: 'array', items: { type: 'number' } },
+      content: { type: 'number' },
+    }},
+  },
+
+  {
+    name: 'heartflow_emotion_deep',
+    description: '深度情感分析：输入文本的情绪状态、PAD维度、具身反应',
+    inputSchema: { type: 'object', properties: {
+      input: { type: 'string', description: '待分析文本' },
+    }, required: ['input'] },
+  },
+
+  {
+    name: 'heartflow_ethics_check',
+    description: '真善美伦理检查：10分制三维评分(truth/goodness/beauty)',
+    inputSchema: { type: 'object', properties: {
+      text: { type: 'string', description: '待检查文本' },
+    }, required: ['text'] },
+  },
+
 ];
 
 
@@ -2672,6 +2703,41 @@ const HANDLERS = {
   // [v6.5.0] 熵分析 + 交叉分析
   heartflow_entropy: handleEntropy,
   heartflow_cross_analyze: handleCrossAnalyze,
+
+  // [v6.3.34] 新MCP工具
+  heartflow_philosophy: (args) => {
+    try {
+      const { AISelfPositioning } = require('./identity/ai-self-positioning.js');
+      const sp = new AISelfPositioning();
+      return { positioning: sp.analyze('current state'), timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_consciousness: (args) => {
+    try {
+      const CT = require('./consciousness/consciousness-theory.js');
+      return { consciousness: CT.compute(args || {}), timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_emotion_deep: (args) => {
+    const text = args?.input || 'current state';
+    try {
+      const { DeepEmotion } = require('./emotion/deep-emotion.js');
+      const de = new DeepEmotion(HF_DIR);
+      return de.feel(text, {});
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_ethics_check: (args) => {
+    if (!args?.text) return { error: 'text required' };
+    try {
+      const { HeartLogic } = require('./core/heart-logic.js');
+      const hl = new HeartLogic({});
+      const r = hl.isRightAction({ output: args.text });
+      return { passed: r.result, ethicsScore: r.ethicsScore, truth: r.truth, kindness: r.kindness, beauty: r.beauty };
+    } catch (e) { return { error: e.message }; }
+  },
 
 };
 
