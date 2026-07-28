@@ -1,68 +1,36 @@
-# ClawHub 发布排除规则
-# 参考 .npmignore，但保留核心文档
-
-# 依赖
-node_modules/
-
-# Git
+# ClawHub 发布排除 — 只包含核心引擎文件（<5MB）
 .git/
 .github/
-
-# 大文件/训练数据
-formulas/
-formulas-corpus/
-formulas/math/
-test_data/
-skills/
-data/
-models/
-dict-data/
-internal/
-*.zip
 archive/
-distilled-knowledge/
-
-# 开发文件
+node_modules/
 *.log
 .DS_Store
-*.swp
-*.swo
-*~
 
-# 保留核心文档（不排除）
-# README.md
-# SKILL.md
-# INSTALL.md
-# CHANGELOG.md
-# 心理训练数据（大文件，非引擎运行必需）
-# 语义搜索模型（可选，运行时下载）
-# 非引擎文档
-# 测试与脚本（非引擎运行必需）
-
-# 非引擎运行必需（ClawHub 5MB 限制，发布时排除）
-formulas-corpus/
-formulas/math/
-dict-data/
-models/
+# 大训练数据
+src/psychology/psy-college-prompts.json
+src/psychology/psychology-training-data.json
+src/core/associative-engine/association-graph.json
+src/core/associative-engine/idiom-story-db.json
+src/core/associative-engine/narrative-prototypes.json
+src/core/associative-engine/story-prototypes.json
 data/
+formulas-corpus/
+models/
+dict-data/
 internal/
-skills/
-src/core/search/
-src/psychology/
-src/consciousness/
-src/identity/
-src/cortex/
-src/memory/
-docs/
-references/
-reference-impl/
-report/
+
+# 测试
 test/
 tests/
+test_data/
+
+# 非核心
+src/references/
+src/edu/
+src/io/
+src/security/
+src/report/
+src/research/
 scripts/
-train_data/
-presets/
-plugins/
-package-lock.json
-mcp/
-test-async-queue.js
+logs/
+patches/
