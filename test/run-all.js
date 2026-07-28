@@ -126,9 +126,6 @@ async function runAllTests() {
   require('./confidence-calibrator.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./capability-abstraction.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./self-evolution-explore.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./multi-agent-dialogue.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./phenomenology-engine.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./tom-engine.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./intention-tracker.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./action-tracker.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./adaptive-controller.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
@@ -145,8 +142,6 @@ async function runAllTests() {
   require('./debate-convergence.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./decision-executor.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   require('./decision-feedback.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./skill-generator.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./behavior-tracker.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   // 4. DesireCognition 测试
   console.log('\n💭 DesireCognition (desire-cognition.js)');
   require('./desire-cognition.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });

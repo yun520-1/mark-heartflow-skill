@@ -247,7 +247,6 @@ function _lazy(key, loader) {
 
 // Search modules
 
-const _BM25Engine = _lazy('bm25', () => require('../search/bm25.js'));
 
 
 const _Budget = _lazy('budget', () => require('./budget.js'));
@@ -267,9 +266,7 @@ const _KnowledgeGraph = _lazy('knowledgeGraph', () => require('../memory/knowled
 
 const _EvolutionLoop = _lazy('evolutionLoop', () => require('../cortex/loop.js'));
 
-const _DreamEngine = _lazy('dreamEngine', () => require('../dream/dream.js'));
 
-const _DreamConsolidation = _lazy('dreamConsolidation', () => require('../dream/dream-consolidation.js'));
 
 const _MetaLearner = _lazy('metaLearner', () => require('../cortex/meta-learner.js'));
 
@@ -330,7 +327,6 @@ const _MetaJudgment = _lazy('metaJudgment', () => require('./judgment.js'));
 
 const _MetaMemory = _lazy('metaMemory', () => require('./metaMemory.js'));
 
-const _SkillGenerator = _lazy('skillGenerator', () => require('../code/skill-generator.js'));
 
 const _MentalEffortTracker = _lazy('mentalEffortTracker', () => require('./mental-effort-tracker.js'));
 
@@ -347,11 +343,8 @@ const _ThoughtChain = _lazy('thoughtChain', () => require('../workflow/thought-c
 
 const _CognitiveProtocol = _lazy('cognitiveProtocol', () => require('./cognitive-protocol.js'));
 
-const _GlobalWorkspace = _lazy('globalWorkspace', () => require('../consciousness/global-workspace.js'));
 
-const _MindWanderer = _lazy('mindWanderer', () => require('../consciousness/mind-wanderer.js'));
 
-const _PhenomenologyEngine = _lazy('phenomenologyEngine', () => require('../consciousness/phenomenology-engine.js'));
 
 const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => {
 
@@ -359,7 +352,6 @@ const _ConsciousnessSelfModel = _lazy('consciousnessSelfModel', () => {
 
 });
 
-const _TomEngine = _lazy('tomEngine', () => require('../consciousness/tom-engine.js'));
 
 const _SAGEGuardian = _lazy('sageGuardian', () => require('../shield/ethics/sage-guardian.js'));
 
@@ -375,17 +367,13 @@ const _MindSpaceGuardian = _lazy('mindSpaceGuardian', () => require('../shield/m
 
 // ★ Inner OS — 内心独白、事件追踪、人格切换 (absorbed from AI-Inner-Os)
 
-const _InnerOS = _lazy('innerOS', () => { try { return require('../inner-os/heartflow-inner-os.js'); } catch(e) { return { HeartflowInnerOS: class { constructor() {} process() { return {}; } } }; } });
 
 const _TransmissionEngine = _lazy('transmissionEngine', () => require('../workflow/transmission/transmission-engine.js'));
 
 const _VerifierGrant = _lazy('verifierGrant', () => require('./verifier-grant.js'));
 
-const _AdaptivePlanner = _lazy('adaptivePlanner', () => { try { return require('../planner/adaptive-planner.js'); } catch(e) { return { AdaptivePlanner: class { constructor() {} plan() { return { steps: [], estimatedEffort: 0 }; } adapt() { return this.plan(); } quickAdjust() { return this.plan(); } getStatus() { return { status: 'unavailable', reason: '模块加载失败' }; } } }; } });
 
-const _StrategySelector = _lazy('strategySelector', () => { try { return require('../planner/strategy-selector.js'); } catch(e) { return { StrategySelector: class { constructor() {} selectStrategy() { return { name: 'default', confidence: 0, reason: '模块加载失败' }; } getStrategies() { return []; } } }; } });
 
-const _ReplanTrigger = _lazy('replanTrigger', () => { try { return require('../planner/replan-trigger.js'); } catch(e) { return { ReplanTrigger: class { constructor() {} shouldReplan() { return false; } getReplanReasons() { return []; } } }; } });
 
 const _ExperienceCollector = _lazy('experienceCollector', () => require('../cortex/experience-collector.js'));
 
@@ -399,13 +387,9 @@ const _OutputChecker = _lazy('outputChecker', () => { try { return require('../v
 
 const _PatternMatcher = _lazy('patternMatcher', () => { try { return require('../verifier/pattern-matcher.js'); } catch(e) { return { PatternMatcher: class { constructor() {} match() { return null; } matchAll() { return []; } extract() { return []; } } }; } });
 
-const _CuriosityEngine = _lazy('curiosityEngine', () => require('../planner/curiosity-engine.js'));
 
-const _DesireEngine = _lazy('desireEngine', () => require('../planner/desire-engine.js'));
 
-const _GoalPursuer = _lazy('goalPursuer', () => require('../planner/goal-pursuer.js'));
 
-const _SelfInitiator = _lazy('selfInitiator', () => require('../planner/self-initiator.js'));
 
 
 const _ProjectContext = _lazy('projectContext', () => require('../memory/project-context.js'));
@@ -437,11 +421,8 @@ const _MemoryConsolidation = _lazy('memoryConsolidation', () => require('../memo
 
 const _EmotionDynamics = _lazy('emotionDynamics', () => require('../emotion/emotion-dynamics-engine.js'));
 
-const _CognitiveLoadV2 = _lazy('cognitiveLoadV2', () => require('../cognitive/cognitive-load-v2.js'));
 
-const _DreamEngineV2 = _lazy('dreamEngineV2', () => require('../dream/dream-engine-v2.js'));
 
-const _PsychologyDialogue = _lazy('psychologyDialogue', () => require('../psychology/psychology-dialogue-engine.js'));
 
 
 const _AutonomousEmotion = _lazy('autonomousEmotion', () => { try { return require('../emotion/autonomous-emotion.js'); } catch(e) { return { AutonomousEmotion: class { constructor() {} } }; } });
@@ -455,7 +436,6 @@ const _EmpathyResponder = _lazy('empathyResponder', () => require('../emotion/em
 
 
 
-const _ErrorMemory = _lazy('errorMemory', () => { try { return require('../heartflow/index.js'); } catch(e) { return null; } });
 
 const _KnowledgeSubsystem = _lazy('knowledgeSubsystem', () => require('../knowledge/index.js'));
 
@@ -527,11 +507,9 @@ const _ReflexionEngine = _lazy('reflexionEngine', () => require('../cortex/refle
 
 const _MemoryConsolidator = _lazy('memoryConsolidator', () => require('../memory/memory-consolidator.js'));
 
-const _MultiAgentDialogue = _lazy('multiAgentDialogue', () => require('../consciousness/multi-agent-dialogue.js'));
 
 const _MCTSReasoning = _lazy('mctsReasoning', () => require('../reasoning/mcts-reasoning.js'));
 
-const _HierarchicalPlanner = _lazy('hierarchicalPlanner', () => require('../planner/hierarchical-planner.js'));
 
 
 
@@ -663,7 +641,6 @@ const _PlatformAdapter = _lazy('platformAdapter', () => require('./platform-adap
 
 // ★ 代码引擎 — 惰性加载（拉平目录后路径）
 
-const _CodeExecutor = _lazy('codeExecutor', () => require('../code/code-executor.js'));
 
 
 
@@ -1747,9 +1724,7 @@ class HeartFlow {
 
     try {
 
-      const { behaviorTracker } = require('../behavior-tracker.js');
 
-      const { patternDetector } = require('../pattern-detector.js');
 
       this.behavior = {
 
@@ -2371,7 +2346,6 @@ class HeartFlow {
 
       try {
 
-        const { LLMOrchestrator } = require('../llm/llm-orchestrator.js');
 
         this._llmOrchestrator = new LLMOrchestrator(this);
 
@@ -2387,7 +2361,6 @@ class HeartFlow {
 
       try {
 
-        const { EduEngine } = require('../edu/edu-engine.js');
 
         this._eduEngine = new EduEngine(this);
 
@@ -3867,7 +3840,6 @@ class HeartFlow {
 
     try {
 
-      const { CognitiveLoadCalculator } = require('../cognitive/cognitive-load.js');
 
       this.cognitiveIndex = new CognitiveLoadCalculator();
 
