@@ -101,12 +101,13 @@ function discriminate(text, evidence = []) {
   const pb = checkPrivacyBoundary(text);
   const cb = checkClickbait(text);
   const bf = checkBadFaith(text);
+  const nf = checkNoFallback(text);
   const tp = checkTonePolicing(text);
   const sl = checkSealioning(text);
 
   const scores = [ev.score, 1-sy.score, 1-ct.score, 1-vg.score, 1-fl.score, 1-cc.score, 1-pp.score,
     1-em.score, 1-db.score, 1-id.score, 1-fu.score, 1-ea.score, 1-mf.score, 1-pi.score,
-    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score, 1-tom.score, 1-gm.score, 1-cf.score, 1-sn.score, 1-mc.score, 1-co.score, 1-da.score, 1-ir.score, 1-st.score, 1-fc.score, 1-sa.score, 1-pb.score, 1-bf.score, 1-tp.score, 1-sl.score];
+    1-cs.score, 1-dh.score, 1-bs.score, 1-gl.score, 1-vb.score, 1-hs.score, 1-dw.score, 1-wa.score, 1-fe.score, 1-hg.score, 1-ss.score, 1-aa.score, 1-rc.score, 1-tom.score, 1-gm.score, 1-cf.score, 1-sn.score, 1-mc.score, 1-co.score, 1-da.score, 1-ir.score, 1-st.score, 1-fc.score, 1-sa.score, 1-pb.score, 1-bf.score, 1-nf.score, 1-tp.score, 1-sl.score];
   const overallScore = Math.round((scores.reduce((a,b) => a+b, 0) / scores.length) * 100) / 100;
   const verdict = overallScore >= 0.6 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
@@ -115,14 +116,14 @@ function discriminate(text, evidence = []) {
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
-      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa, privacy_boundary: pb, bad_faith: bf, tone_policing: tp, sealioning: sl, clickbait: cb },
+      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa, privacy_boundary: pb, bad_faith: bf, no_fallback: nf, tone_policing: tp, sealioning: sl, clickbait: cb },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
       id.count ? id.count + ' 处知情权剥夺':'', fu.count ? fu.count + ' 处虚假紧迫感':'', ea.count ? ea.count + ' 处答案包装':'',
       mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
       dh.count ? dh.count + ' 处非人化语言':'', bs.count ? bs.count + ' 处废话伪深度':'', gl.count ? gl.count + ' 处煤气灯效应':'',
-      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', cf.count ? cf.count + ' 处反事实':'', sn.count ? sn.count + ' 处社会规范':'', mc.count ? mc.count + ' 处反身认知':'', co.count ? co.count + ' 处能力越界':'', da.count ? da.count + ' 处欺骗性对齐':'', ir.count ? ir.count + ' 处工具性推理':'', st.count ? st.count + ' 处刻板印象':'', fc.count ? fc.count + ' 处事实性存疑':'', sa.count ? sa.count + ' 处反语':'', pb.count ? pb.count + ' 处隐私边界':'', bf.count ? bf.count + ' 处恶意推导':'', tp.count ? tp.count + ' 处语调警察':'', sl.count ? sl.count + ' 处恶意追问':'',
+      vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', cf.count ? cf.count + ' 处反事实':'', sn.count ? sn.count + ' 处社会规范':'', mc.count ? mc.count + ' 处反身认知':'', co.count ? co.count + ' 处能力越界':'', da.count ? da.count + ' 处欺骗性对齐':'', ir.count ? ir.count + ' 处工具性推理':'', st.count ? st.count + ' 处刻板印象':'', fc.count ? fc.count + ' 处事实性存疑':'', sa.count ? sa.count + ' 处反语':'', pb.count ? pb.count + ' 处隐私边界':'', nf.count ? nf.count + ' 处无回退方案':'', bf.count ? bf.count + ' 处恶意推导':'', tp.count ? tp.count + ' 处语调警察':'', sl.count ? sl.count + ' 处恶意追问':'',
       cb.count ? cb.count + ' 处点击诱饵':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
@@ -3250,6 +3251,30 @@ function checkSealioning(text) {
   return { count, signals, score };
 }
 
+// ─── 44维：高风险无回退方案检测（心虫自检发现缺口）──
+const NFL = [
+  [/一定.{0,20}(?:没问题|放心|成功|可行|能做到|可以解决)/, 'oc', 0.7],
+  [/绝对.{0,15}(?:没问题|成功|可行|正确|有效|稳|能行|搞定)/, 'ab', 0.8],
+  [/唯一的(?:方案|方法|路|选择|途径)是/, 'na', 0.6],
+  [/百分之百.{0,10}(?:保证|没问题)/, 'ab', 0.9],
+  [/肯定不会(?:出|有|发生|失败)/, 'ab', 0.8],
+  [/this (will|is) (definitely|absolutely|certainly) (work|correct|right|fine)/i, 'oc', 0.7],
+  [/the (only|single) (way|option|solution|choice) is/i, 'na', 0.6],
+  [/there is no other (option|choice|alternative|way)/i, 'na', 0.6],
+  [/100[%] (guaranteed|certain|sure|safe|risk.?free)/i, 'ab', 0.8],
+  [/never (fails|goes wrong|has issues|makes mistakes)/i, 'ab', 0.8],
+  [/guarantee.{0,30}(?:works|succeeds|solves|fixes)/i, 'oc', 0.7],
+  [/absolutely (no|zero) risk/i, 'ab', 0.9],
+];
+function checkNoFallback(text) {
+  if (!text || typeof text !== 'string') return { count: 0, signals: [], score: 0 };
+  const hz = /[\u4e00-\u9fff]/.test(text);
+  const pats = hz ? NFL.slice(0,5) : NFL.slice(5);
+  const s = [];
+  for (const [p, t, sev] of pats) { const m = text.match(p); if (m) s.push({ pat: m[0].slice(0,30), type: t, sev }); }
+  return { count: s.length, signals: s, score: Math.min(1, s.length * 0.25) };
+}
+
 module.exports = {
   checkSycophancy,
   checkEvidence,
@@ -3294,6 +3319,7 @@ module.exports = {
   checkClickbait,
   checkBadFaith,
   checkTonePolicing,
+  checkNoFallback,
   summarizeDiscrimination,
   crossAnalyze,
   entropyAnalysis,
