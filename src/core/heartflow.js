@@ -4438,6 +4438,32 @@ class HeartFlow {
       }
     } catch (_) { /* 情感记忆桥失败不阻断 */ }
 
+    // [v6.3.43] ForgettingEngine — 思维结果自动记忆衰减/巩固分析
+    try {
+      const { ForgettingEngine } = require('../memory/forgetting.js');
+      if (!this._forgetting) this._forgetting = new ForgettingEngine();
+      if (result && input) {
+        const ageMs = 0; // 当前思维刚产生，年龄=0
+        const level = this._forgetting.getLevel(Date.now());
+        const retention = this._forgetting.ebbinghausRetention(ageMs, 1);
+        const forgetProb = this._forgetting.getForgettingProbability(ageMs);
+        result._forgetting = {
+          level: level.label,
+          retention: retention,
+          forgetProbability: forgetProb,
+          score: 1 - forgetProb
+        };
+        // 高置信度思维自动巩固
+        if (result.decision?.confidence > 0.8) {
+          this._forgetting.consolidate([{
+            id: 'think-' + Date.now(),
+            content: typeof input === 'string' ? input.substring(0, 200) : String(input),
+            timestamp: Date.now()
+          }]);
+        }
+      }
+    } catch (_) { /* 遗忘引擎失败不阻断主链路 */ }
+
     // [v6.1.7] 元认知诚实外显层: 基于校准结果显式说"我不确定", 不强行结论
     try {
       const MetaCalibration = require('./meta-calibration.js');

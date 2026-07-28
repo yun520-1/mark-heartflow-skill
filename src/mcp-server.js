@@ -1244,7 +1244,7 @@ function handleMemorySearch(args) {
 
         // [安全审计修复] searchByKeywords 必须传入 layer 参数，防止跨层泄露
 
-        const r = typeof mem.searchByKeywords === 'function' ? mem.searchByKeywords(query, l, limit)
+        const r = typeof mem.searchByKeywords === 'function' ? mem.searchByKeywords(query, limit)
 
           : typeof mem.search === 'function' ? mem.search(query, l, limit) : null;
 
