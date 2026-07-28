@@ -290,7 +290,6 @@ const _SelfVerifier = _lazy('selfVerifier', () => require('../identity/self-veri
 
 const _LessonBank = _lazy('lessonBank', () => require('../cortex/lesson-bank.js'));
 
-const _ExperienceDistiller = _lazy('experienceDistiller', () => require('../cortex/experience-distiller.js'));
 
 const _StrategicRestraint = _lazy('strategicRestraint', () => require('../cortex/strategic-restraint.js'));
 
@@ -427,7 +426,6 @@ const _EmotionDynamics = _lazy('emotionDynamics', () => require('../emotion/emot
 
 const _AutonomousEmotion = _lazy('autonomousEmotion', () => { try { return require('../emotion/autonomous-emotion.js'); } catch(e) { return { AutonomousEmotion: class { constructor() {} } }; } });
 
-const _EmpathyResponder = _lazy('empathyResponder', () => require('../emotion/empathy-responder.js'));
 
 
 
@@ -525,7 +523,6 @@ const _DualPerspectiveAuditor = _lazy('dualPerspectiveAuditor', () => require('.
 
 const _MemoryQuality = _lazy('memoryQuality', () => require('../memory/memory-quality.js'));
 
-const _MetacognitiveFeedback = _lazy('metacognitiveFeedback', () => require('../cortex/metacognitive-feedback.js'));
 
 const _PaperIndex = _lazy('paperIndex', () => require('../research/paper-index.js'));
 
@@ -564,7 +561,6 @@ const _MemoryIntegrity = _lazy('memoryIntegrity', () => require('../shield/memor
 
 // v5.7.4 — P0 经验验证器 + 记忆写入控制 + 元认知RL (EDV/AdaMem/RLMF)
 
-const _ExperienceValidator = _lazy('experienceValidator', () => require('../cortex/experience-validator.js'));
 
 const _MemoryWriteController = _lazy('memoryWriteController', () => require('../memory/memory-write-controller.js'));
 
@@ -588,21 +584,15 @@ const _SkillEvolutionEngine = _lazy('skillEvolutionEngine', () => require('../co
 
 // v5.7.5 — P1 古代智慧基础：美德伦理 + 人性论 + 意义目的 (Aristotle/Stoic/Confucian/Buddhist)
 
-const _VirtueEthicsFoundation = _lazy('virtueEthics', () => require('../identity/virtue-ethics-foundation.js'));
 
-const _HumanNatureConstitution = _lazy('humanNature', () => require('../identity/human-nature-constitution.js'));
 
-const _MeaningPurposeEngine = _lazy('meaningPurpose', () => require('../identity/meaning-purpose-engine.js'));
 
 
 
 // v5.7.5 — P2 品格养成 + 道德发展 + 智慧引擎
 
-const _CharacterCultivation = _lazy('characterCultivation', () => require('../identity/character-cultivation.js'));
 
-const _MoralDevelopment = _lazy('moralDevelopment', () => require('../identity/moral-development.js'));
 
-const _WisdomEngine = _lazy('wisdomEngine', () => require('../identity/wisdom-engine.js'));
 
 
 
@@ -617,11 +607,8 @@ const _WisdomEngine = _lazy('wisdomEngine', () => require('../identity/wisdom-en
 
 
 
-const _AIHumanIntegration = _lazy('aiHumanIntegration', () => require('../identity/ai-human-integration.js'));
 
-const _BeingMode = _lazy('beingMode', () => require('../identity/being-mode.js'));
 
-const _ConsciousnessBridge = _lazy('consciousnessBridge', () => require('../identity/consciousness-bridge.js'));
 
 
 
@@ -691,13 +678,11 @@ const _SPECIAL_MODULES = {
 
   purposeEngine:   { type: 'ctor',    factory: () => new (require('../identity/purpose-engine.js').PurposeEngine)() },
 
-  riskAnalyzer:    { type: 'ctor',    factory: () => new (require('../reasoning/risk-benefit-analyzer.js').RiskBenefitAnalyzer)() },
 
   adaptiveCtrl:    { type: 'ctor',    factory: () => new (require('./adaptive-controller.js').AdaptiveController)() },
 
   intentionTrack:  { type: 'ctor',    factory: () => new (require('./IntentionTracker.js').IntentionTracker)() },
 
-  auditLogger:     { type: 'ctor',    factory: () => new (require('../shield/audit-logger.js').AuditLogger)() },
 
   // 需要特殊依赖注入的模块
 
@@ -2928,7 +2913,6 @@ class HeartFlow {
 
     try {
 
-      const { DesireCognition } = require('../emotion/desire-cognition.js');
 
       this.desireCognition = new DesireCognition();
 
@@ -2938,7 +2922,6 @@ class HeartFlow {
 
     try {
 
-      this.threePoisons = require('../emotion/three-poisons.js');
 
     } catch (e) { this._initErrors = this._initErrors || []; _boundedPush(this._initErrors, { module: 'threePoisons', error: e.message }, MAX_HISTORY_SIZE); }
 
@@ -2956,7 +2939,6 @@ class HeartFlow {
 
           try {
 
-            const { LoveCognition } = require('../emotion/love-cognition.js');
 
             this._loveCognitionRaw = new LoveCognition();
 
@@ -3881,7 +3863,6 @@ class HeartFlow {
 
     // ─── [v6.1.0] WorldLandscape 世界格局分析引擎（AI人类核心认知能力）───
     try {
-      const { createWorldAwareOrchestrator } = require('./../cortex/self-evolution/strategy-signal-map.js');
       this.worldLandscape = new WorldLandscape({ projectRoot: this.projectRoot || process.cwd() });
       this._modules['worldLandscape'] = this.worldLandscape;
       // 世界感知战略推演层：让心虫对世界格局新闻产出自身进化优先级

@@ -751,7 +751,7 @@ async function runThinkPipeline(result, input, engine) {
     if (result) {
       const ctxText = typeof input === 'string' ? input : (input?.text || '');
       if (ctxText) {
-        const { BeingMode } = require('../identity/being-mode.js');
+      // const { BeingMode } = require('../identity/being-mode.js'); // DELETED
         const bm = new BeingMode();
         const ba = bm.assessBeing({ input: ctxText, route: result.route || result.type });
         result._beingAnalysis = {
@@ -898,7 +898,7 @@ async function runThinkPipeline(result, input, engine) {
   // ─── [v6.x] PhilosophyEngine — 四框架伦理评估 ──
   try {
     if (input && typeof input === 'string') {
-      const { PhilosophyEngine } = require('../identity/philosophy-engine.js');
+      // const { PhilosophyEngine } = require('../identity/philosophy-engine.js'); // DELETED
       const pe = new PhilosophyEngine();
       result._philosophyEngine = pe.evaluate({
         action: { description: input },
@@ -933,7 +933,7 @@ async function runThinkPipeline(result, input, engine) {
     if (result && result.output) {
       const outputText = result.output.conclusion || result.output.decision || result.output.reply || '';
       if (outputText && typeof outputText === 'string') {
-        const AI = require('../emotion/affective-intentionality.js');
+      // const AI = require('../emotion/affective-intentionality.js'); // DELETED
         const ai = new AI.AffectiveIntentionality();
         const emoType = result._emotion?.type || (result._sentiment ? 'joy' : 'neutral');
         result._affectiveIntentionality = ai.compute({

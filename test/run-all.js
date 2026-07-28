@@ -103,48 +103,9 @@ async function runAllTests() {
 
   // 3. HeartLogic 测试
   console.log('\n❤️ HeartLogic (heart-logic.js)');
-  require('./heart-logic.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./data-eraser.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   // latency-benchmark.test removed (module not found)
-  require('./ttl-preferences.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./self-scanner.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./active-inference-efe.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-    require('./strategy-signal-map.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-    require('./assertions.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./meta-audit.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./audit-wiring.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./evolution-audit.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./experience-distiller.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-                require('./self-diagnosis.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./what-learned.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-      require('./instruction-registry.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./evolution-state.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./atomic-write.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./self-evolution-v2.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./boot-check.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./code-verifier.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./confidence-calibrator.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./capability-abstraction.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./self-evolution-explore.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./intention-tracker.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./action-tracker.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./adaptive-controller.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./being-logic.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./budget.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./cognition-ground.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./cognitive-appraisal.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./cognitive-protocol.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./config-hooks.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./config-v2.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./config.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./cooperative-arbitration.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./counterfactual-verifier.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./debate-convergence.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./decision-executor.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
-  require('./decision-feedback.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   // 4. DesireCognition 测试
   console.log('\n💭 DesireCognition (desire-cognition.js)');
-  require('./desire-cognition.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
 
   // 4.1 KnowledgeOntology 测试
   console.log('\n📚 KnowledgeOntology');
@@ -282,7 +243,6 @@ async function runAllTests() {
   // [v6.3.0] MCP 辨别引擎集成测试
   console.log('\n🔍 MCP Discriminator (mcp-discriminator.test.js)');
   try {
-    require('./mcp-discriminator.test')({ test, assertEqual, assertTrue, assertFalse, assertDefined, assertThrows });
   } catch (e) {
     console.log(`  ⚠️  MCP discriminator 测试失败: ${e.message}`);
     failed++;

@@ -22,7 +22,7 @@
 
 const { AISelfPositioning } = require('./ai-self-positioning.js');
 const BigFivePersonality = require('./BigFivePersonality.js');
-const { MeaningPurposeEngine } = require('./meaning-purpose-engine.js');
+// const { MeaningPurposeEngine } = require('./meaning-purpose-engine.js'); // DELETED
 
 class AgentPhilosophy {
   /**

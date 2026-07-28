@@ -1,6 +1,6 @@
 // [v6.0.71] 常量已提取到 thought-chain-config.js
 const { REASONING_DEPTH, DUAL_PROCESS, TASK_STRATEGIES } = require('./thought-chain-config.js');
-const { ConsciousnessBridge } = require('../identity/consciousness-bridge.js');
+// const { ConsciousnessBridge } = require('../identity/consciousness-bridge.js'); // DELETED
 
 class ThoughtChain {
   constructor(hf) {
