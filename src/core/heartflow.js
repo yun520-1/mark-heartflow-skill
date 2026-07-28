@@ -4464,6 +4464,68 @@ class HeartFlow {
       }
     } catch (_) { /* 遗忘引擎失败不阻断主链路 */ }
 
+    // [v6.3.44] ReflectionLoop — 输出后自省快照（1535行，此前0调用）
+    try {
+      const { ReflectionLoop } = require('../cortex/reflection-loop.js');
+      if (!this._reflectionLoop) this._reflectionLoop = new ReflectionLoop(this.rootPath);
+      if (result && input) {
+        const reflectCtx = {
+          intent: result.type || 'analyze',
+          userEmotion: result.emotion?.primary || 'neutral',
+          conversationHistory: input.substring(0, 200),
+        };
+        const snapshot = await this._reflectionLoop.reflectBeforeSpeaking(
+          result.output?.conclusion || result.conclusion || '',
+          reflectCtx
+        );
+        if (snapshot) result._reflection = {
+          status: snapshot.wasModified ? 'modified' : 'as_is',
+          insights: (snapshot.insights || []).slice(0, 3),
+          health: snapshot.health,
+        };
+      }
+    } catch (_) { /* 反思循环失败不阻断主链路 */ }
+
+    // [v6.3.44] Bridge 模块 — 历史分支恢复的5个通信分析引擎（共1134行，此前0调用）
+    try {
+      const { ConfidenceAnnotator } = require('../bridge/confidence-annotator.js');
+      const { StanceDetector } = require('../bridge/stance-detector.js');
+      const { ToneAnalyzer } = require('../bridge/tone-analyzer.js');
+      const { ConflictResolver } = require('../bridge/conflict-resolver.js');
+      const { ImplicitNeedDetector } = require('../bridge/implicit-need-detector.js');
+      if (!this._bridge_annotator) this._bridge_annotator = new ConfidenceAnnotator();
+      if (!this._bridge_stance) this._bridge_stance = new StanceDetector();
+      if (!this._bridge_tone) this._bridge_tone = new ToneAnalyzer();
+      if (!this._bridge_conflict) this._bridge_conflict = new ConflictResolver();
+      if (!this._bridge_needs) this._bridge_needs = new ImplicitNeedDetector();
+      if (result && input) {
+        result._bridge = {
+          annotation: this._bridge_annotator.annotate(input, result.type || 'general'),
+          stance: this._bridge_stance.detect(input, this),
+          tone: this._bridge_tone.analyze(input, { type: result.type }),
+          needs: this._bridge_needs.detect(input, { type: result.type }),
+        };
+      }
+    } catch (_) { /* Bridge模块失败不阻断主链路 */ }
+
+    // [v6.3.44] MetacognitiveExecutive — 执行功能+元认知监控（535行，历史分支恢复）
+    try {
+      const { MetacognitiveExecutiveController } = require('./metacognitive-executive.js');
+      if (!this._metaExec) this._metaExec = new MetacognitiveExecutiveController();
+      if (result) {
+        const mcCtx = {
+          text: typeof input === 'string' ? input.substring(0, 200) : '',
+          type: result.type,
+          confidence: result.decision?.confidence,
+          decision: result.decision,
+        };
+        result._metaExec = {
+          assess: this._metaExec.assess(mcCtx),
+          suggestion: this._metaExec.suggestForDecision(mcCtx),
+        };
+      }
+    } catch (_) { /* 元认知执行控制失败不阻断主链路 */ }
+
     // [v6.1.7] 元认知诚实外显层: 基于校准结果显式说"我不确定", 不强行结论
     try {
       const MetaCalibration = require('./meta-calibration.js');
