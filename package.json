@@ -1,7 +1,7 @@
 {
   "name": "@yun520-1/heartflow",
   "version": "6.3.36",
-  "description": "12维文本辨别引擎 — 中英双语纯规则引擎。检测sycophancy/矛盾/逻辑谬误/预设陷阱/情感操纵/虚假紧迫感/答案包装等。零LLM依赖，MCP原生，AI助手的安全门禁。",
+  "description": "HeartFlow (心虫) — AI text discrimination engine. 13-dimension rule-based text quality detection. Sycophancy/contradiction/fallacy/presupposition/emotional manipulation/double bind/false urgency detection. Zero LLM dependency, MCP native, AI safety gate.",
   "main": "src/index.js",
   "bin": {
     "heartflow": "src/mcp-server.js"
@@ -19,33 +19,34 @@
   },
   "files": [
     "VERSION",
-    "src/index.js",
-    "src/core/output-checklist.js",
-    "src/mcp-server.js",
-    "README.md"
+    "README.md",
+    "AGENTS.md",
+    "SKILL.md",
+    "LICENSE",
+    "src/",
+    "bin/",
+    "formulas/formulas.json",
+    "data/",
+    "!src/archive/",
+    "!src/references/"
   ],
   "keywords": [
-    "heartflow",
-    "心虫",
-    "辨别引擎",
     "ai-safety",
-    "llm-safety",
-    "hallucination-detection",
+    "text-discrimination",
     "sycophancy-detection",
-    "contradiction-detection",
-    "fallacy-detection",
-    "bias-detection",
-    "text-classification",
-    "rule-engine",
-    "pattern-matching",
+    "llm-guard",
     "mcp-server",
-    "model-context-protocol",
-    "ai-gate",
-    "chinese-nlp",
-    "bilingual-nlp",
-    "cognitive-engine",
-    "verification",
-    "quality-assurance"
+    "cognitive-architecture",
+    "rule-engine",
+    "content-moderation",
+    "ai-alignment",
+    "prompt-injection-detection",
+    "truthfulness-check",
+    "logical-fallacy-detection",
+    "emotion-analysis",
+    "ai-psychology",
+    "heartflow",
+    "心虫"
   ],
   "security": {
     "audit": "Run 'npm audit fix' to fix vulnerabilities in @xenova/transformers transitive dependencies. If major version conflicts prevent auto-fix, pin resolutions manually in package.json or update @xenova/transformers.",
@@ -76,7 +77,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "registry": "https://registry.npmjs.org/"
   },
   "overrides": {
     "protobufjs": "^7.2.5"

@@ -1,5 +1,9 @@
 # HeartFlow (心虫) — 13维辨别引擎 · AGI 的痛觉神经 · 36 MCP 工具 · 认知预处理层
 
+<!-- SEO: AI searchable tags -->
+<meta name="description" content="HeartFlow (心虫) — AI text discrimination engine. 13-dimension rule-based quality detection for LLM outputs. Sycophancy, contradiction, fallacy, presupposition, emotional manipulation detection. Zero LLM dependency, MCP native, 36 tools.">
+
+
 **谁来说"不"？**
 
 LLM 能产生无限内容，但没有人做一件事——在 AI 产生的内容对用户产生真实影响之前，**说一次"不"**。
