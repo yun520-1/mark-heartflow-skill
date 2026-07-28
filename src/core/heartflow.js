@@ -719,7 +719,7 @@ const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('
 
 
 
-const BUILD_DATE = '2026-07-26-6.3.7';
+const BUILD_DATE = '2026-07-28-6.3.36';
 
 
 
@@ -4662,4 +4662,8 @@ if (require.main === module) {
 
 
 
-module.exports = { HeartFlow, createHeartFlow, VERSION: _VERSION().VERSION, MentalEffortTracker: _MentalEffortTracker().MentalEffortTracker };
+// 静态版本号 — 供诊断使用（从 version.js 动态读取）
+const { VERSION: _hfVersion } = require('./version.js');
+HeartFlow.VERSION = _hfVersion;
+
+module.exports = { HeartFlow, createHeartFlow, VERSION: _hfVersion, MentalEffortTracker: _MentalEffortTracker().MentalEffortTracker };
