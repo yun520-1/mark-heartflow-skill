@@ -1,7 +1,7 @@
 ---
 name: heartflow-engine
 title: "心虫 HeartFlow — 规则引擎认知预处理"
-version: "6.3.37"
+version: "6.4.1"
 description: |-
   心虫(HeartFlow)是一个本地认知预处理引擎。
   核心能力：规则引擎分类/路由(think/dispatch)、PAD情绪检测、决策路由。

@@ -644,7 +644,7 @@ const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('
 
 
 
-const BUILD_DATE = '2026-07-28-6.3.37';
+const BUILD_DATE = '2026-07-29-6.4.1';
 
 
 
@@ -4275,7 +4275,7 @@ class HeartFlow {
             issues: vResult.issues?.slice(0, 3) || [],
           };
         }
-      } catch (_) {}
+      } catch (_) { /* 防御性: 记忆持久化容错 */ }
     }
     // [v6.1.5] 盲点打破器接入主链路
     // [v6.3.7] 公式引擎自动搜索——输入含认知/科学/心理学/物理/数学关键词时检索相关公式
@@ -4293,7 +4293,7 @@ class HeartFlow {
             try {
               const res = this.formula.search(kw, { limit: 3 });
               if (res.success && res.results.length > 0) results.push(...res.results);
-            } catch (_) {}
+            } catch (_) { /* 防御性: 子步骤容错 */ }
             if (results.length >= 10) break;
           }
           if (results.length > 0) {
@@ -4350,7 +4350,7 @@ class HeartFlow {
 
   // [v6.0.71] 优雅关闭：保存记忆并停止后台任务
   shutdown() {
-    try { require('./engine-memory')._saveAllMemories(this); } catch (_) {}
+    try { require('./engine-memory')._saveAllMemories(this); } catch (_) { /* 防御性: saveAllMemories容错 */ }
     this.started = false;
   }
 

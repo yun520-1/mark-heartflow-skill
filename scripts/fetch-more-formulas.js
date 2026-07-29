@@ -1,3 +1,8 @@
+// ⚠️ SAFETY: This script makes outbound HTTP(S) requests
+// It bypasses the engine's safeFetch gate (intentional — this is a CLI tool, not engine runtime)
+// Only run manually. Never imported by the engine pipeline.
+// To disable network access: comment out require('https') and the https.get() calls.
+
 #!/usr/bin/env node
 /**
  * 大规模公式爬虫 — 从多个开放来源抓取公式

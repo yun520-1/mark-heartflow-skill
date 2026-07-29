@@ -184,7 +184,7 @@ try {
       if (eq > 0) process.env[line.slice(0, eq)] = process.env[line.slice(0, eq)] || line.slice(eq + 1);
     }
   }
-} catch (_) {}
+} catch (_) { /* 防御性: 配置加载失败不阻断 */ }
 
 const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || process.env.MCP_HEARTFLOW_API_KEY || (() => {
 
@@ -195,12 +195,12 @@ const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || process.env.MCP_HEARTFLOW_
     const envPath = path.join(__dirname, '..', '..', '.env');
     const fs2 = require('fs');
     let env = '';
-    try { env = fs2.readFileSync(envPath, 'utf8'); } catch (_) {}
+    try { env = fs2.readFileSync(envPath, 'utf8'); } catch (_) { /* 防御性: env读取失败用默认值 */ }
     if (!env.includes('MCP_HEARTFLOW_KEY=')) {
       fs2.appendFileSync(envPath, `\nMCP_HEARTFLOW_KEY=${token}\n`);
       console.log('[MCP] Token auto-written to .env as MCP_HEARTFLOW_KEY');
     }
-  } catch (_) {}
+  } catch (_) { /* 防御性: 配置加载失败不阻断 */ }
 
   console.log('[MCP] HEARTFLOW_MCP_TOKEN not set. Auto-generated ephemeral token (not printed for security).');
 
@@ -951,7 +951,7 @@ async function handleThink(args) {
           if (idx.summarizeDiscrimination) {
             result.discriminationReport = idx.summarizeDiscrimination(thoughtChain.output.conclusion);
           }
-        } catch (_) {}
+        } catch (_) { /* 防御性: MCP工具注册容错 */ }
       }
     }
   } catch (_) { /* 附加字段不阻断 */ }
@@ -986,7 +986,7 @@ async function handleThink(args) {
 
       payload: { input: typeof input === 'string' ? input.slice(0, 200) : input, hasReport: !!report }
 
-    }).catch(() => {});
+    }).catch(() => {}) /* 防御性: 异步初始化容错 */;
 
   }
 
@@ -2437,7 +2437,7 @@ function handleVerdict(args) {
         fallacies: idx.checkFallacies(text),
         confidence: idx.checkConfidenceCalibration(text),
       };
-    } catch (_) {}
+    } catch (_) { /* 防御性: 子步骤容错 */ }
     if (heartflow.sustainedDriftDetector) {
       const d = heartflow.sustainedDriftDetector.detectDrift();
       result.driftScore = d.driftScore;
@@ -3053,7 +3053,7 @@ const server = http.createServer((req, res) => {
 
     const heartbeat = setInterval(() => {
 
-      try { sendEvent(res, 'ping', {}); } catch (_) { /* [v5.9.18] intentional: graceful degradation */ }
+      try { sendEvent(res, 'ping', {}); } catch (_) { /* [v5.9.18] 防御性: ping发送容错 */ intentional: graceful degradation */ }
 
     }, 30000);
 

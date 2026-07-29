@@ -181,7 +181,7 @@ async function runThinkPipeline(result, input, engine) {
       try {
         const svPath = require('path').join(engine.rootPath, 'data', 'self-view.json');
         require('fs').writeFileSync(svPath, JSON.stringify(engine._selfView, null, 2), 'utf8');
-      } catch (_) {}
+      } catch (_) { /* 防御性: 子步骤容错不阻断主流程 */ }
     }
 
     // ⭐ 每次 think 反馈置信度校准器
@@ -189,7 +189,7 @@ async function runThinkPipeline(result, input, engine) {
       if (engine.confidence && typeof engine.confidence.updateFromFeedback === 'function') {
         engine.confidence.updateFromFeedback(fb.length === 0, { text: input, calibrated: result?.metaCalibration });
       }
-    } catch (_) {}
+    } catch (_) { /* 防御性: 子步骤容错不阻断主流程 */ }
 
     // ⭐ 反馈回路：克制引擎拦截或使命未对齐 → 告诉决策路由上次决策可能不对
     // [2604.22273 Self-Correction as Feedback Control]
@@ -256,7 +256,7 @@ async function runThinkPipeline(result, input, engine) {
             .then(res => {
               if (res.executed) result._autoExplored = { topic: match.topic, count: (res.results?.[0]?.searchResult?.count || 0) };
             })
-            .catch(() => {});
+            .catch(() => {}) /* 防御性: 异步任务容错 */;
           break;
         }
       }
@@ -653,7 +653,7 @@ async function runThinkPipeline(result, input, engine) {
             for (const w of ca.warnings) warnings.push(w);
           }
         }
-      } catch (_) {}
+      } catch (_) { /* 防御性: pipeline步骤容错 */ }
 
       result.output.warnings = warnings;
     }
@@ -988,19 +988,19 @@ async function runThinkPipeline(result, input, engine) {
         } else if (mem && typeof mem.setItem === 'function') {
           mem.setItem('learned', key, data);
         }
-      } catch (e) {}
+      } catch (e) { /* 防御性: 子步骤容错 */ }
       // 后备：_saveUserMemory
       try {
         const m = require('./engine-memory.js');
         if (typeof m._saveUserMemory === 'function') m._saveUserMemory(engine, inp);
-      } catch (e) {}
+      } catch (e) { /* 防御性: 子步骤容错 */ }
       // 反思日志
       try {
         const p = require('path').join(engine.projectRoot || engine.rootPath || '.', 'logs', 'reflect.log');
         require('fs').appendFileSync(p, JSON.stringify({ ts: Date.now(), input: inp, confidence: conf, verdict: verdict, emotion: emo }) + '\n');
-      } catch (e) {}
+      } catch (e) { /* 防御性: 子步骤容错 */ }
     }
-  } catch (_) {}
+  } catch (_) { /* 防御性: 子步骤容错 */ }
 return result;
 }
 

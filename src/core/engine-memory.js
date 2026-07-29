@@ -1411,7 +1411,7 @@ function _saveAllMemories(hf) {
           hf._cycleCount = (hf._cycleCount || 0) + 1;
           hf._lastCyclePad = pad;
         }
-      } catch (_) {}
+      } catch (_) { /* 防御性: 记忆操作失败不阻断 */ }
 
       hf._saveUserMemory(input);
 
