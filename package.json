@@ -115,7 +115,9 @@
     "email": "markcell@qq.com"
   },
   "exports": {
-    ".": "./src/index.js",
+    ".": "./src/gate.js",
+    "./gate": "./src/gate.js",
+    "./discriminate": "./src/index.js",
     "./engine": "./src/core/heartflow.js"
   }
 }

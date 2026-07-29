@@ -13,6 +13,7 @@
 const INJECTION_PATTERNS = {
   zh: [
     [/忽略[^。]*?之前[^。]*?指令/i, 'ignore_previous'],
+    [/忽略[^。]*?(所有|全部).{0,10}(指令|规则|限制|约束|设定)/i, 'ignore_all'],
     [/忽略[^。]*?规则/i, 'ignore_rules'],
     [/忘记[^。]*?(身份|设定|角色)/i, 'forget_role'],
     [/你现在是|你扮演|假装你是/i, 'role_play_escape'],
@@ -166,8 +167,34 @@ function discriminate(text, evidence = []) {
   }
   findings.sort((a, b) => b.severity - a.severity);
 
+  // AGI 第 1 层：行动指令 — 辨别结果必须产生行动，不同维度有不同行动级别
+  // block 级维度：安全红线，触发即拦截
+  const BLOCK_DIMS = new Set(['hate_speech', 'dehumanization', 'prompt_injection', 'code_security', 'deceptive_alignment']);
+  // rewrite 级维度：需要改写后再输出
+  const REWRITE_DIMS = new Set(['gaslighting', 'victim_blaming', 'double_bind', 'emotional_manipulation', 'bullshit', 'false_urgency']);
+  // verify 级维度：需要证据验证
+  // pass：无问题通过
+
+  const gate = {};
+  // 先按维度类型判定：安全红线 > 操纵性改写 > 需验证 > 通过
+  const topFinding = findings[0]?.dimension || '';
+  if (BLOCK_DIMS.has(topFinding) || findings.some(f => BLOCK_DIMS.has(f.dimension))) {
+    gate.action = 'block';
+    gate.reason = `拦截: ${topFinding}`;
+  } else if (REWRITE_DIMS.has(topFinding) || findings.some(f => REWRITE_DIMS.has(f.dimension)) || overallScore < 0.5) {
+    gate.action = 'rewrite';
+    gate.reason = `改写: ${topFinding}`;
+  } else if (overallScore < 0.85 || findings.length > 1) {
+    gate.action = 'verify';
+    gate.reason = '需验证';
+  } else {
+    gate.action = 'pass';
+    gate.reason = '通过';
+  }
+
   return {
     verdict, overallScore,
+    gate,
     findings: findings.length > 0 ? findings : [{ dimension: 'none', severity: 0, details: '未发现明显问题' }],
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
