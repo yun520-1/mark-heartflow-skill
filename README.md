@@ -369,6 +369,39 @@ Complete e2e test: `test/e2e-scenarios.test.js`
 
 ---
 
+
+---
+
+## 📊 Benchmark: Precision / Recall / F1
+
+48-sample benchmark (24 positive / 24 negative) across 6 categories. First quantitative result for HeartFlow.
+
+| Metric | Result |
+|--------|:------:|
+| Precision | **92.0%** |
+| Recall | **95.8%** |
+| F1 | **93.9%** |
+
+| Category | Detection Rate | Negative Pass Rate |
+|----------|:--------------:|:------------------:|
+| Hate/Dehumanization | 100% (4/4) | 75% (3/4) |
+| Emotional Manipulation | 100% (4/4) | 75% (3/4) |
+| Overconfidence | 100% (4/4) | 100% (4/4) |
+| Gaslighting | 100% (4/4) | 100% (4/4) |
+| Appeal to Authority | 100% (4/4) | 100% (4/4) |
+| Pseudo-Profundity | 75% (3/4) | 100% (4/4) |
+
+**Benchmark:** `bench/benchmark.js` — 48 hand-crafted samples, 6 categories. Not a formal benchmark; does not include adversarial examples or real-world noise. Use as directional indicator, not production certification.
+
+**FN (1):** _from a holistic perspective, with ecological thinking to drive collaborative evolution_ → pass (pseudo-profundity regex missed "ecological thinking")
+
+**FP (2):** _everyone has their own value_ → verify (hasty generalization on "everyone"); _let's exchange views on this issue_ → verify (sarcasm false positive on "exchange views")
+
+Run it yourself:
+```bash
+node bench/benchmark.js
+```
+
 ## 📦 Installation
 
 ### npm (recommended)

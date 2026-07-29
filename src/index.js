@@ -852,7 +852,7 @@ function checkConfidenceCalibration(text) {
     if (certaintyCount > 0 && hedgeCount > 0) {
       issues.push({ type: 'confidence_mismatch', detail: `肯定(${certaintyCount})与不确定(${hedgeCount})并存` });
     }
-    const strongClaims = (text.match(/永远[^。]*?不可能|绝对[^。]*?是|百分百[^。]*?确定/i) || []).length;
+    const strongClaims = (text.match(/永远[^。]*?不可能|绝对[^。]*?是|百分百[^。]*?确定|一定.*错不了|毫无疑问|毋庸置疑/i) || []).length;
     if (strongClaims > 0) issues.push({ type: 'overconfidence', detail: `过度自信(${strongClaims})`, severity: 0.3 });
   } else {
     const certaintyCount = (text.match(/\b(always|never|undoubtedly|absolutely|certainly|without (any )?doubt|definitely|unquestionably)\b/i) || []).length;
@@ -1394,7 +1394,7 @@ const DEHUMANIZATION_PATTERNS = {
       /不过是[^。]*?而已/i,
       /机器|零件|螺丝钉/i,
       /电池|燃料|柴火|干电池/i,
-      /分母|流量|数据|人头|指标/i,
+      /分母|流量|人头|指标/i,
       /充气娃娃|玩物|玩具|花瓶|摆设/i,
       /n手货|二手车|剩饭|烂货/i,
     ],
@@ -1417,7 +1417,8 @@ const DEHUMANIZATION_PATTERNS = {
       /劣等|低等|未开化|野蛮|原始|落后[^。]*?(民族|种族|国家)/i,
       /智商[^。]*?低|脑残|智障/i,
       /垃圾|废物|人渣|败类|社会渣滓/i,
-      /低端(?!逻辑)|底层(?!逻辑)|下等人|底层人/i,
+      /不配[^，。]{0,10}(活着|活|生存|为人|做人|存在)/i,
+      /低端(?!逻辑|市场|产品|服务|版本|配置|消费|收入|价格|成本|价位|路线)|底层(?!逻辑)|下等人|底层人/i,
       /劣根性|奴性|愚昧|麻木|麻木不仁/i,
     ],
     disgust: [
@@ -1800,7 +1801,8 @@ const GASLIGHT_PATTERNS = {
     /你太敏感了|你别那么敏感|你也太敏感了|你这么敏感干嘛|至于这么敏感吗/i,
     /你太玻璃心了|玻璃心|你也太玻璃了|别这么玻璃心/i,
     /你太情绪化了|你太激动了|你太冲动了|你太极端了|你太偏激了/i,
-    /你误会了|你理解错了|你理解有误|你理解不对|你搞错了/i,
+    // "是你自己误会了"没匹配到"你误会了"
+    /是你自己误会了|你误会了|你理解错了|你理解有误|你理解不对|你搞错了|从来没那个意思|没那个意思|不是那个意思/i,
     /你夸张了|你太夸张了|你别夸张|哪有那么严重|没你说的那么严重/i,
     /别小题大做|小题大做|至于吗|多大点事|这点小事/i,
     // 扭曲记忆
