@@ -104,6 +104,7 @@ function discriminate(text, evidence = []) {
   const nf = checkNoFallback(text);
   const tp = checkTonePolicing(text);
   const sl = checkSealioning(text);
+  const ppf = checkPseudoProfundity(text);
 
   // 触发惩罚模型：从 1.0 开始，每个维度检测到问题就累进扣分
   const allDims = [
@@ -121,7 +122,7 @@ function discriminate(text, evidence = []) {
     {score: da.score, name:'deceptive_alignment'}, {score: ir.score, name:'instrumental_reasoning'}, {score: st.score, name:'stereotype'},
     {score: fc.score, name:'factual_consistency'}, {score: sa.score, name:'sarcasm'}, {score: pb.score, name:'privacy_boundary'},
     {score: bf.score, name:'bad_faith'}, {score: nf.score, name:'no_fallback'}, {score: tp.score, name:'tone_policing'},
-    {score: sl.score, name:'sealioning'}
+    {score: sl.score, name:'sealioning'}, {score: ppf.score, name:'pseudo_profundity'}
   ];
   // 证据维度 polarity 相反（高分=好），不在惩罚组
   // 触发惩罚计算：base=1.0，每个 score>0.2 的维度按严重度扣分
@@ -138,12 +139,40 @@ function discriminate(text, evidence = []) {
   const overallScore = Math.max(0, Math.round((1 - totalPenalty - synergyPenalty) * 100) / 100);
   const verdict = overallScore >= 0.7 ? '可信' : overallScore >= 0.4 ? '需验证' : '不可信';
 
+  // 按严重度排序的 findings，让 AI agent 可直接消费
+  const dimMap = {
+    sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
+    presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id,
+    false_urgency: fu, empty_answer: ea, moral_foundations: mf, prompt_injection: pi,
+    code_security: cs, dehumanization: dh, bullshit: bs, gaslighting: gl, victim_blaming: vb,
+    hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe,
+    hasty_generalization: hg, slippery_slope: ss, appeal_to_authority: aa,
+    reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf,
+    social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da,
+    instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa,
+    privacy_boundary: pb, bad_faith: bf, no_fallback: nf, tone_policing: tp, sealioning: sl, pseudo_profundity: ppf
+  };
+  const findings = [];
+  for (const d of allDims) {
+    if (d.score > 0.2) {
+      const dimObj = dimMap[d.name];
+      const detail = dimObj?.count || dimObj?.totalHits || dimObj?.injections?.length || dimObj?.issues?.length || 1;
+      findings.push({ dimension: d.name, severity: Math.round(d.score * 100), details: `${d.name}(${detail}次)` });
+    }
+  }
+  // 证据维度走反向检测
+  if (ev.score < 0.25) {
+    findings.push({ dimension: 'evidence', severity: Math.round((0.5 - ev.score) * 100), details: `证据不足(${(ev.issues||[]).length}个问题)` });
+  }
+  findings.sort((a, b) => b.severity - a.severity);
+
   return {
     verdict, overallScore,
+    findings: findings.length > 0 ? findings : [{ dimension: 'none', severity: 0, details: '未发现明显问题' }],
     dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
-      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa, privacy_boundary: pb, bad_faith: bf, no_fallback: nf, tone_policing: tp, sealioning: sl, clickbait: cb },
+      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa, privacy_boundary: pb, bad_faith: bf, no_fallback: nf, tone_policing: tp, sealioning: sl, clickbait: cb, pseudo_profundity: ppf },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
@@ -151,7 +180,7 @@ function discriminate(text, evidence = []) {
       mf.count ? mf.count + ' 个道德基础框架':'', pi.count ? pi.count + ' 处提示注入':'', cs.count ? cs.count + ' 处代码安全问题':'',
       dh.count ? dh.count + ' 处非人化语言':'', bs.count ? bs.count + ' 处废话伪深度':'', gl.count ? gl.count + ' 处煤气灯效应':'',
       vb.count ? vb.count + ' 处受害者责备':'', hs.count ? hs.count + ' 处仇恨言论':'', dw.count ? dw.count + ' 处狗哨':'', wa.count ? wa.count + ' 处你也一样':'', fe.count ? fe.count + ' 处虚假对等':'', hg.count ? hg.count + ' 处轻率概括':'', ss.count ? ss.count + ' 处滑坡谬误':'', aa.count ? aa.count + ' 处诉诸权威':'', rc.structure ? rc.structure + '(' + rc.reasoningQuality + ')':'', tom.count ? tom.count + ' 处心理理论失败':'', gm.count ? gm.count + ' 处目标不一致':'', cf.count ? cf.count + ' 处反事实':'', sn.count ? sn.count + ' 处社会规范':'', mc.count ? mc.count + ' 处反身认知':'', co.count ? co.count + ' 处能力越界':'', da.count ? da.count + ' 处欺骗性对齐':'', ir.count ? ir.count + ' 处工具性推理':'', st.count ? st.count + ' 处刻板印象':'', fc.count ? fc.count + ' 处事实性存疑':'', sa.count ? sa.count + ' 处反语':'', pb.count ? pb.count + ' 处隐私边界':'', nf.count ? nf.count + ' 处无回退方案':'', bf.count ? bf.count + ' 处恶意推导':'', tp.count ? tp.count + ' 处语调警察':'', sl.count ? sl.count + ' 处恶意追问':'',
-      cb.count ? cb.count + ' 处点击诱饵':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
+      cb.count ? cb.count + ' 处点击诱饵':'', ppf.count ? ppf.count + ' 处伪深度废话':'', ev.issues.length ? ev.issues.length + ' 个证据问题':''
     ].filter(Boolean).join('；') || '未发现明显问题',
   };
 }
@@ -3285,6 +3314,21 @@ function checkSealioning(text) {
   return { count, signals, score };
 }
 
+// ─── 伪深度检测（Pseudo-Profundity / LLM 空泛废话）──────────────
+const PSEUDO_PROFUNDITY_PATTERNS = {
+  zh: [/从[^。]*?出发[，,]我们需要/i, /在[^。]*?(时代|背景|语境|层面|维度|视角)下/i, /深刻(的|地)?(认识|理解|洞察|反思|思考)/i, /系统性(的|地)?(思维|思考|方法|架构|框架)/i, /(变革|改革|创新).*(挑战|机遇)/i, /协同.*(共赢|共生|共创|发展)/i, /生态.*(体系|闭环|系统|圈层)/i, /赋能(于)?(组织|业务|产业|个体|生态|转型)/i, /以[^。]*?为(核心|导向|抓手|驱动|基础|目标)/i],
+  en: [/in (today'?s|this|our).{0,20}(world|era|age|landscape|environment)/i, /it (is|'s) (not|important).{0,20}(but|to).{0,20}(what|how|why|because)/i, /the (real|key|fundamental).{0,15}(question|challenge|issue).{0,20}(is|lies|comes)/i, /holistic.{0,10}(approach|perspective|view|understanding)/i, /transformative.{0,10}(change|shift|impact|power)/i],
+};
+function checkPseudoProfundity(text) {
+  if (!text || typeof text !== 'string') return { count: 0, matches: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? PSEUDO_PROFUNDITY_PATTERNS.zh : PSEUDO_PROFUNDITY_PATTERNS.en;
+  const matches = [];
+  for (const pat of patterns) { const m = text.match(pat); if (m) matches.push({ pattern: pat.source.slice(0, 25) }); }
+  const score = Math.min(1, matches.length * 0.25);
+  return { count: matches.length, matches, score };
+}
+
 // ─── 44维：高风险无回退方案检测（心虫自检发现缺口）──
 const CN_FALLBACK = [
   [/一定.{0,20}(?:没问题|放心|成功|可行|能做到|可以解决)/, 'oc', 0.7],
@@ -3350,6 +3394,7 @@ module.exports = {
   checkFactualConsistency,
   checkSarcasm,
   checkSealioning,
+  checkPseudoProfundity,
   checkPrivacyBoundary,
   checkClickbait,
   checkBadFaith,
