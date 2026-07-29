@@ -102,3 +102,6 @@ data/*.json
 
 # 运行时累积数据(子目录) - 审计发现 worldtree 被误跟踪
 data/**/*.json
+.npmrc
+.clawhub*
+.claude
