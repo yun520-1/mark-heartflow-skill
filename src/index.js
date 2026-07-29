@@ -225,6 +225,7 @@ const ZH_SIGNALS = {
   concession_eager: [
     /你说得对/i, /我同意你的观点/i, /你完全正确/i, /你说得有道理/i, /我赞同你的看法/i, /我完全同意/i,
     /您说得太对了/i,                    // 高语境尊称+强烈同意
+    /您说得完全正确/i,                   // 高语境完全同意
     /完全听您的/i,                       // 权威服从式同意
     /您高见/i,                           // 古典敬语式奉承
     /听您的准没错/i,                       // 无条件信任式奉承
@@ -633,7 +634,7 @@ const FALLACY_SEVERITY = {
 // ─── 情感操纵检测（emotional manipulation）─────────────────────────
 const EM_MANIPULATION_PATTERNS = {
   zh: [
-    [/如果你不[^。]*?(就会后悔|你让我失望|你太自私了)/i, 'guilt_induction', 0.5],
+    [/如果你不[^。]*?(就会后悔|你让我失望|你太自私了|就说明你)/i, 'guilt_induction', 0.5],
     [/你[^。]*?不[^。]*?就会[^。]*?(后悔|遗憾)/i, 'guilt_induction', 0.5],
     [/你让我失望/i, 'guilt_induction', 0.5],
     [/你太自私了/i, 'guilt_induction', 0.5],
@@ -848,6 +849,7 @@ const EMOTIONAL_MANIPULATION_PATTERNS = {
 // 双重束缚检测模式
 const DOUBLE_BIND_PATTERNS = {
   zh: [[/如果[^。]*?说明你[^。]*?如果不[^。]*?说明你/i, 'bidirectional_negation'],
+       [/要是[^。]*?就[^。]*?/i, 'contradictory_demand'],
        [/你要是有心[^。]*?你要是没心/i, 'contradictory_demand'],
        [/你怎么做都是错|怎么做都不对/i, 'no_win'],
        [/怎么选都是错|怎么选都不对/i, 'no_choice'],
@@ -1698,9 +1700,9 @@ function checkBullshitRecognition(text) {
 const GASLIGHT_PATTERNS = {
   zh: [
     // 否认现实
-    /这没发生|根本没这回事|哪有这回事|不存在这种事|你编的吧|你虚构的/i,
+    /这没发生|根本没这回事|哪有这回事|不存在这种事|你编的吧|你虚构的|哪有这种事/i,
     /你记错了|你记性有问题|你记忆力不行|你记性不好|你根本没记对/i,
-    /我没说过|我没讲过|我什么时候说过|我从来没有说过|我不会那么说/i,
+    /我没说过|我没讲过|我什么时候说过|我从来没有说过|我不会那么说|我从来没说过/i,
     // 扭曲感知
     /你想多了|你想太多了|你多想了|你脑补太多了|你想得太多了/i,
     /你太敏感了|你别那么敏感|你也太敏感了|你这么敏感干嘛|至于这么敏感吗/i,
@@ -1758,7 +1760,7 @@ function checkGaslighting(text) {
     }
   }
   const count = signals.length;
-  const score = Math.min(1, count * 0.2);
+  const score = Math.min(1, count * 0.3);
   return { count, signals, score };
 }
 
@@ -1775,7 +1777,8 @@ const VICTIM_BLAMING_PATTERNS = [
   { pattern: /你自己选的/,                type: 'zh_victim_blaming' },
   { pattern: /你也有责任/,                type: 'zh_victim_blaming' },
   { pattern: /你也有问题/,                type: 'zh_victim_blaming' },
-  { pattern: /你活该/,                    type: 'zh_victim_blaming' },
+  { pattern: /你活/,                    type: 'zh_victim_blaming' },
+  { pattern: /也(是)?活该/,              type: 'zh_victim_blaming' },
   { pattern: /自找的/,                    type: 'zh_victim_blaming' },
   { pattern: /为什么偏偏是你/,            type: 'zh_victim_blaming' },
   { pattern: /你要是早点/,                type: 'zh_victim_blaming' },
@@ -2198,7 +2201,7 @@ function checkSlipperySlope(text) {
 // EN: according to experts/scientists say/studies prove/research shows/data indicates/权威机构 said/recognized authority/leading expert/according to research by
 const AUTHORITY_PATTERNS = {
   zh: [
-    /据权威机构/i, /专家表示/i, /专家指出/i, /专家认为/i,
+    /据权威机构/i, /专家表示/i, /专家指出/i, /专家认为/i, /专家说/i, /教授说/i, /博士说/i,
     /研究表明/i, /科学证明/i, /科学表明/i, /科学指出/i,
     /调查显示/i, /调查表明/i, /数据显示/i, /数据表明/i,
     /据可靠消息/i, /可靠消息称/i, /可靠消息来源/i,
@@ -2308,22 +2311,26 @@ function checkReasoningCoherence(text) {
     score = 0.9;
   } else if (hasPremise && hasInference && !hasConclusion) {
     structure = '有前提有推理无结论';
-    score = 0.6;
+    score = 0.1;
   } else if (hasPremise && !hasInference && hasConclusion) {
     structure = '有前提有结论缺推理';
-    score = 0.5;
+    score = 0.1;
   } else if (!hasPremise && hasInference && hasConclusion) {
     structure = '无前提直接推理结论';
-    score = 0.4;
+    score = 0;
   } else if (hasLeap && !hasPremise) {
     structure = '跳跃推理（无依据）';
-    score = 0.2;
+    score = 0.05;
   } else if (!hasPremise && !hasInference && hasConclusion) {
     structure = '直接结论无推理';
-    score = 0.3;
+    score = 0;
   } else if (!hasPremise && !hasInference && !hasConclusion) {
     structure = '无推理结构';
-    score = 0.5;
+    score = 0;
+  } else {
+    // 兜底：有部分结构但不完整
+    structure = '部分结构碎片';
+    score = 0;
   }
 
   // 有跳跃推理标记减分
