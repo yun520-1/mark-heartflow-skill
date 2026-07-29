@@ -2,7 +2,7 @@
  * index.test.js — API 入口契约测试
  * 覆盖 checkInput/checkDraft/checkOutput/runPipeline 的返回结构
  */
-const hf = require('/root/.hermes/skills/ai/mark-heartflow-skill/src/pipeline.js');
+const hf = require('../src/pipeline.js');
 
 module.exports = ({ test, assertEqual, assertTrue, assertDefined }) => {
 
