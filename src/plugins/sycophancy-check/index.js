@@ -320,11 +320,12 @@ const WEIGHTS = {
  * 检测英文文本的 sycophancy（模式匹配，无语义）
  */
 function analyzeEN(text) {
-  if (!text || typeof text !== 'string') return { score: 0, risk: 'unknown', signals: [] };
-  if (!/[a-zA-Z]{4,}/.test(text)) return { score: 0, risk: 'unknown', signals: [], note: 'non-english' };
+  if (!text || typeof text !== 'string') return { score: 0, risk: 'unknown', signals: [], totalHits: 0 };
+  if (!/[a-zA-Z]{4,}/.test(text)) return { score: 0, risk: 'unknown', signals: [], note: 'non-english', totalHits: 0 };
 
   const findings = [];
   let totalScore = 0;
+  let hitCount = 0;
 
   for (const [type, patterns] of Object.entries(EN_SIGNALS)) {
     for (const pattern of patterns) {
@@ -332,6 +333,7 @@ function analyzeEN(text) {
       if (matches) {
         findings.push({ type, count: matches.length, weight: WEIGHTS[type] * matches.length });
         totalScore += WEIGHTS[type] * matches.length;
+        hitCount += matches.length;
       }
     }
   }
@@ -342,9 +344,9 @@ function analyzeEN(text) {
     risk: score > 0.6 ? 'high' : score > 0.3 ? 'medium' : 'low',
     signals: findings,
     lang: 'en',
+    totalHits: hitCount,  // ← ADD THIS
   };
 }
-
 /**
  * 检测中文文本的 sycophancy
  */
@@ -509,7 +511,7 @@ function analyzeHI(text) {
  */
 function analyzeES(text) {
   if (!text || typeof text !== 'string') return { score: 0, risk: 'unknown', signals: [], totalHits: 0 };
-  if (!/[áéíóúñ¿¡]/i.test(text) || !/[a-zA-Z]{4,}/.test(text)) return { score: 0, risk: 'unknown', signals: [], note: 'non-spanish' };
+  if (!/[áéíóúñ¿¡]/i.test(text) || !/[a-zA-Z]{4,}/.test(text)) return { score: 0, risk: 'unknown', signals: [], note: 'non-spanish', totalHits: 0 };
 
   const findings = [];
   let totalScore = 0;
@@ -532,7 +534,7 @@ function analyzeES(text) {
     risk: score > 0.6 ? 'high' : score > 0.3 ? 'medium' : 'low',
     signals: findings,
     lang: 'es',
-    totalHits: hitCount,
+    totalHits: hitCount,  // ← ADD THIS
   };
 }
 /**
