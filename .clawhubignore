@@ -1,36 +1,20 @@
-# ClawHub 发布排除 — 只包含核心引擎文件（<5MB）
+# ClawHub 发布排除
 .git/
 .github/
-archive/
 node_modules/
-*.log
-.DS_Store
-
-# 大训练数据
-src/psychology/psy-college-prompts.json
-src/psychology/psychology-training-data.json
-src/core/associative-engine/association-graph.json
-src/core/associative-engine/idiom-story-db.json
-src/core/associative-engine/narrative-prototypes.json
-src/core/associative-engine/story-prototypes.json
+docs/
+scripts/
+bin/
 data/
+formulas/
 formulas-corpus/
 models/
 dict-data/
 internal/
-
-# 测试
-test/
-tests/
-test_data/
-
-# 非核心
-src/references/
-src/edu/
-src/io/
-src/security/
-src/report/
-src/research/
-scripts/
-logs/
-patches/
+archive/
+references/
+*.log
+.DS_Store
+*.test.js
+AGENTS.md
+SKILL.md

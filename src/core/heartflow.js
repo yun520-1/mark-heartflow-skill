@@ -1283,28 +1283,6 @@ class HeartFlow {
 
     this.moodEvolution = null;  // 心境演化
 
-
-
-    const STMod = _SearchTrace();
-
-    this.SearchTrace = STMod.SearchTrace;
-
-    this.SearchPhaseMetrics = STMod.SearchPhaseMetrics;
-
-    this.WeightComponents = STMod.WeightComponents;
-
-    this.QueryInfo = STMod.QueryInfo;
-
-    this.SearchSummary = STMod.SearchSummary;
-
-
-
-    // 记录搜索相关的类供外部引用
-
-    this._STRefs = { SearchTrace: this.SearchTrace, SearchPhaseMetrics: this.SearchPhaseMetrics, WeightComponents: this.WeightComponents, QueryInfo: this.QueryInfo, SearchSummary: this.SearchSummary };
-
-
-
     this._modules = {};           // 容量边界：由子模块注册控制，通常 < 100 个条目
 
     this._mindSpace = null;   // 内部引用（向后兼容），实际模块用 this.mindSpace
@@ -1576,9 +1554,9 @@ class HeartFlow {
 
     });
 
-    this.dream = new (_DreamEngine().DreamV11)({});
+    try { this.dream = new (_DreamEngine().DreamV11)({}); } catch (e) { this.dream = { dream: () => ({}), healthCheck: () => ({}) }; }
 
-    this.dreamConsolidation = new (_DreamConsolidation().DreamConsolidation)(this.memory);
+    try { this.dreamConsolidation = new (_DreamConsolidation().DreamConsolidation)(this.memory); } catch (e) { this.dreamConsolidation = { consolidate: () => [], healthCheck: () => ({}) }; }
 
     this.lesson = _LessonBank().lessonBank || _LessonBank();
 
