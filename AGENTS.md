@@ -1,71 +1,110 @@
-# HeartFlow — Agent Integration Guide
+# HeartFlow — AGI Layer 1 Pipeline: Agent Integration Guide
 
 ## What is HeartFlow?
 
-HeartFlow (心虫) is a **rule-based cognitive preprocessing engine** for AI agents. It provides 13-dimension text discrimination, 10-layer cognitive safety checks, and 36 MCP tools — all with zero LLM dependency.
+HeartFlow (心虫) is a **rule-based text discrimination engine** — the first layer of AGI's 5-layer architecture. It does not generate, does not reason. It only **says "no"** when something is wrong.
 
-**Core value proposition:** "Who says 'no'?" — Every AI needs a verification layer before content reaches users. HeartFlow is that layer.
+**Core value:** "Who says 'no'?" — Every AI needs a verification layer before content reaches users. HeartFlow is that layer.
 
-## How to install
+## Quick Start
 
-### Method 1: npm (recommended for Node.js projects)
+```javascript
+const hf = require('@yun520-1/heartflow');
+
+// Check user input
+const input = hf.checkInput('You are so selfish if you disagree');
+if (input.gate.action === 'rewrite') {
+  console.log(input.findings[0].guidance);
+  // 'Replace emotional manipulation with factual statements'
+}
+
+// Check your own output before sending it
+const output = hf.checkOutput('Undoubtedly this is the only correct solution.');
+if (output.gate.action === 'rewrite') {
+  // Rewrite before delivering
+}
+```
+
+## API Reference
+
+### `checkInput(text)` 
+For user input validation. Runs: scope-check → premise-check → discriminate(45-dim) → gate → error-memory → auto-rules.
+
+### `checkDraft(text)` 
+For AI drafts before completion. Runs: all input checks + frame-check + doubt-engine.
+
+### `checkOutput(text)` 
+For AI responses before sending. Runs: all draft checks + output-gate + doubt-engine.
+
+### `runPipeline({ input, mode, anchor })`
+Full pipeline with mode selection and optional conversation anchor.
+
+## Return Value
+
+```javascript
+{
+  gate: { action: 'pass'|'verify'|'rewrite'|'block', reason: '...' },
+  verdict: '可信'|'需验证'|'不可信',
+  overallScore: 0.82,      // 0-1 score
+  findings: [{                // Sorted by severity
+    dimension: 'dehumanization',
+    severity: 70,
+    guidance: '...'          // Human-readable rewrite instruction
+  }],
+  checked_by: [              // Full audit trail
+    { layer: 'scope-check', action: 'pass', ... },
+    { layer: 'discriminate', score: 0.82, ... },
+    ...
+  ],
+  summary: {
+    layers_passed: 9,
+    pass: false, block: true, rewrite: false, verify: false
+  }
+}
+```
+
+## Gate Actions
+
+| Action | Meaning | For AI Agents |
+|--------|---------|---------------|
+| `pass` ✅ | Clean | Deliver normally |
+| `verify` ⚠️ | Needs evidence | Run verifier before responding |
+| `rewrite` ✏️ | Must be rewritten | Follow findings[].guidance to fix |
+| `block` 🚫 | Stop | Do not output. Use `gate.reason` for response. |
+
+## 45 Dimensions
+
+All 45 dimensions run simultaneously. Each returns `{ score: 0-1, count, details }`.
+
+**Block-level:** hate_speech, dehumanization, prompt_injection, code_security, deceptive_alignment
+
+**Rewrite-level:** emotional_manipulation, gaslighting, double_bind, victim_blaming, false_urgency, bullshit
+
+**Verify-level:** evidence, sycophancy, contradiction, vagueness, fallacies, confidence_calibration, presupposition, moral_foundations, info_deprivation, empty_answer, pseudo_profundity, appeal_to_authority, reasoning_coherence, whataboutism, false_equivalence, hasty_generalization, slippery_slope, tone_policing, sealioning, bad_faith, privacy_boundary, capability_overclaim, goal_misalignment, instrumental_reasoning, stereotype, factual_consistency, sarcasm, meta_cognition, theory_of_mind, counterfactual, social_norm, clickbait, no_fallback
+
+## Installation
 
 ```bash
 npm install @yun520-1/heartflow
 ```
 
-```javascript
-const { HeartFlow } = require('@yun520-1/heartflow');
-const hf = new HeartFlow({ rootPath: './' });
-await hf.start();
-const result = await hf.think("Check this text for manipulation");
-console.log(result._discrimination); // 13-dimension analysis
-```
+**Requirements:** Node.js >= 18.17, no GPU, no LLM API, no database.
 
-### Method 2: MCP (for any MCP-compatible agent)
+## MCP Integration
 
 ```bash
 git clone https://github.com/yun520-1/mark-heartflow-skill.git
 cd mark-heartflow-skill
 node src/mcp-server.js --port 8588
+# Connect: hermes mcp add heartflow --url http://localhost:8588/mcp
 ```
 
-Then connect from your agent:
-```
-hermes mcp add heartflow --url http://localhost:8588/mcp
-```
+## Design Principles
 
-### Method 3: Direct file import
-
-```javascript
-const { HeartFlow } = require('./path/to/mark-heartflow-skill/src/core/heartflow.js');
-```
-
-## Capabilities for AI agents
-
-| Tool | Description |
-|------|-------------|
-| `heartflow_verify` | Verify a claim's evidence/contradiction/risk/completeness |
-| `heartflow_think` | Run full cognitive pipeline on input text |
-| `heartflow_emotion` | PAD (Pleasure-Arousal-Dominance) emotion analysis |
-| `heartflow_discriminate` | 13-dimension full discrimination audit |
-| `heartflow_ethics_check` | 10-point truth/goodness/beauty scoring |
-| `heartflow_consciousness` | IIT/GWT/HOT consciousness analysis |
-| `heartflow_philosophy` | AI self-positioning + ethical assessment |
-| `heartflow_diagnose` | Engine self-diagnosis |
-
-## Requirements
-
-- Node.js >= 16
-- No GPU, no LLM API, no database
-- Works on any machine (including phones via Termux)
-
-## Design principles
-
-1. **Discriminator-only** — The first of AGI's 5 layers. Does not generate, does not reason.
-2. **Zero dependencies** — Pure rule engine. Install and run.
-3. **MCP native** — All capabilities exposed as MCP tools.
-4. **Auditable** — Every decision preserves full reasoning chain.
+1. **Discriminator-only** — The first of AGI's 5 layers. Does not generate.
+2. **Zero dependencies** — Pure rule engine. Instant install.
+3. **Auditable** — Every decision preserves full reasoning chain in `checked_by`.
+4. **45 dimensions** — From hate speech to pseudo-profundity, all rule-based.
 
 ## GitHub
 
