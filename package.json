@@ -1,8 +1,8 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "6.4.1",
-  "description": "HeartFlow (\u5fc3\u866b) \u2014 AI text discrimination engine. 13-dimension rule-based text quality detection. Sycophancy/contradiction/fallacy/presupposition/emotional manipulation/double bind/false urgency detection. Zero LLM dependency, MCP native, AI safety gate.",
-  "main": "src/pipeline.js",
+  "version": "6.4.2",
+  "description": "HeartFlow (心虫) — AGI Layer 1: rule-based text discrimination gate. Checks sycophancy/contradiction/fallacies/prompt injection/emotional manipulation/45 dimensions. Zero LLM dependency, MCP native. The gate that says NO before AI output reaches users.",
+  "main": "src/gate.js",
   "bin": {
     "heartflow": "src/mcp-server.js"
   },
@@ -23,16 +23,20 @@
     "AGENTS.md",
     "SKILL.md",
     "LICENSE",
-    "src/",
-    "bin/",
-    "formulas/formulas.json",
-    "data/",
-    "!src/archive/",
-    "!src/references/",
-    "!formulas/",
-    "!data/",
-    "!docs/",
-    "!references/"
+    "src/gate.js",
+    "src/index.js",
+    "src/pipeline.js",
+    "src/scope-check.js",
+    "src/premise-check.js",
+    "src/doubt-engine.js",
+    "src/frame-check.js",
+    "src/output-gate.js",
+    "src/verifier.js",
+    "src/rewriter.js",
+    "src/error-memory.js",
+    "src/auto-rules.js",
+    "src/intent-anchor.js",
+    "src/stability-guard.js"
   ],
   "keywords": [
     "ai-safety",
@@ -50,7 +54,12 @@
     "emotion-analysis",
     "ai-psychology",
     "heartflow",
-    "\u5fc3\u866b"
+    "心虫",
+    "agi",
+    "agi-layer-1",
+    "discrimination-gate",
+    "ai-output-gate",
+    "llm-guardrails"
   ],
   "security": {
     "audit": "@xenova/transformers has known CVEs in sharp/libvips transitive deps. npm audit fix --allow-downgrade or remove optionalDependencies if not using embedding features.",
@@ -119,7 +128,7 @@
     "email": "markcell@qq.com"
   },
   "exports": {
-    ".": "./src/pipeline.js",
+    ".": "./src/gate.js",
     "./gate": "./src/gate.js",
     "./pipeline": "./src/pipeline.js",
     "./discriminate": "./src/index.js",

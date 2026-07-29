@@ -133,9 +133,14 @@ function runPipeline({ input, mode = 'input', anchor } = {}) {
 }
 
 function buildResult(input, gate, checked_by, data) {
+  // 合并 discriminate 的顶层字段 (overallScore, verdict, findings, dimensions)
+  const discLayer = checked_by.find(l => l.layer === 'discriminate');
   return {
     input: input.slice(0, 100),
     gate,
+    verdict: discLayer?.verdict || '未检测',
+    overallScore: discLayer?.score || 0,
+    findings: data?.discriminate?.findings || [],
     checked_by,
     data: Object.keys(data).length > 0 ? data : undefined,
     summary: {

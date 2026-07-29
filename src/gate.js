@@ -19,6 +19,7 @@
 'use strict';
 
 const { discriminate } = require('./index.js');
+const pipelineModule = require('./pipeline.js');
 
 /**
  * AGI 第 1 层门禁 — 辨别文本并返回行动指令
@@ -49,6 +50,10 @@ function check(text) {
  * AI agent 直接读 pipeline.action 决定下一步
  */
 function pipeline(text, evidence) {
+  // 支持对象形式 {input, mode, anchor} — 兼容 AGENTS.md 文档
+  if (typeof text === 'object' && text !== null) {
+    return pipelineModule.runPipeline({ input: text.input || text.text || '', mode: text.mode || 'input' });
+  }
   const result = discriminate(text, evidence);
   if (result.gate.action === 'block') {
     return { ...result, error: 'gate_blocked', message: `输出被拦截: ${result.gate.reason}` };
@@ -59,4 +64,7 @@ function pipeline(text, evidence) {
   return result;
 }
 
-module.exports = { gate, check, pipeline, discriminate };
+// 从 pipeline 重新导出完整版
+const { runPipeline, checkInput, checkDraft, checkOutput } = pipelineModule;
+
+module.exports = { gate, check, pipeline, runPipeline, discriminate, checkInput, checkDraft, checkOutput };
