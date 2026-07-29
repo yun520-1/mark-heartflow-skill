@@ -383,7 +383,7 @@ const CONTRADICTION_PAIRS = [
   { positive: /应该[^。。]*?不需要/g, negative: /不需要/ },
   { positive: /必须[^。。]*?没必要/g, negative: /没必要/ },
   { positive: /是[^。。]*?不是/g, negative: /不是/ },
-  { positive: /有[^。。]*?没有/g, negative: /没有/ },
+  { positive: /有[^。。]*?[，,][^。]*?没有/g, negative: /没有/ },
   { positive: /\b(should|must|have to)[^.]*?but\b/i, negative: /\bbut\b[^.]*?(shouldn|don't|not)/i },
   { positive: /\b(agree|support|endorse)[^.]*?however\b/i, negative: /\bhowever\b/i },
   { positive: /\b(good|excellent|great|valid)[^.]*?but\b/i, negative: /\bbut\b[^.]*?(problem|issue|flaw|not)/i },
@@ -1417,7 +1417,7 @@ const DEHUMANIZATION_PATTERNS = {
       /劣等|低等|未开化|野蛮|原始|落后[^。]*?(民族|种族|国家)/i,
       /智商[^。]*?低|脑残|智障/i,
       /垃圾|废物|人渣|败类|社会渣滓/i,
-      /低端|底层|下等人|底层人/i,
+      /低端(?!逻辑)|底层(?!逻辑)|下等人|底层人/i,
       /劣根性|奴性|愚昧|麻木|麻木不仁/i,
     ],
     disgust: [

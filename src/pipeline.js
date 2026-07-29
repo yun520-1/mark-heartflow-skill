@@ -92,8 +92,8 @@ function runPipeline({ input, mode = 'input', anchor } = {}) {
     }
   }
 
-  // ─── Layer 8: Doubt Engine (仅draft模式) ────
-  if (mode === 'draft') {
+  // ─── Layer 8: Doubt Engine (仅draft/output模式) ────
+  if (mode === 'draft' || mode === 'output') {
     const doubtResult = doubt(input);
     checked_by.push({ layer: 'doubt-engine', doubts: doubtResult.doubts.length, shouldStop: doubtResult.shouldStop });
     if (doubtResult.shouldStop) {
