@@ -17,9 +17,9 @@ module.exports = ({ test, assertEqual, assertTrue, assertDefined }) => {
     assertTrue(r.knowledge.overclaims.length > 0);
   });
 
-  test('defensive response → rewrite', () => {
+  test('defensive response → block', () => {
     const r = doubt('你可能没有理解，我的意思其实是这个方案是可行的。但更关键的是你要看到整体价值。');
-    assertEqual(r.gate.action, 'rewrite');
+    assertEqual(r.gate.action, 'block');
     assertTrue(r.shouldStop);
   });
 

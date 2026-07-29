@@ -234,10 +234,11 @@ function doubt(draft) {
   const defensivenessIssues = defensiveness.defensive_signals.length;
 
   if (defensivenessIssues > 0) {
-    // 防御姿态是最致命的——说明从根上就不想认错
+    // 防御姿态是最致命的——强制认错格式
     shouldStop = true;
-    action = 'rewrite';
-    reason = `防御姿态: ${defensiveness.defensive_signals[0].issue}`;
+    action = 'block';
+    const firstDef = defensiveness.defensive_signals[0];
+    reason = `防御姿态: ${firstDef.issue}。认错格式: "关于XX，我说错了。正确的情况是...（如果知道）/ 关于XX我不确定。"`;
   } else if (knowledgeIssues >= 2 || symmetryIssues >= 2) {
     shouldStop = true;
     action = 'rewrite';
