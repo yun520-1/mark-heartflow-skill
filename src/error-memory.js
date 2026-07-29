@@ -111,7 +111,7 @@ function checkRecurrence(context) {
     categoryCounts[e.category] = (categoryCounts[e.category] || 0) + 1;
   }
 
-  // 对有过错误记录的分类（>=1次）生成预防警告
+  // 对有过错误记录的分类生成预防警告
   for (const [category, count] of Object.entries(categoryCounts)) {
     if (count >= 1 && CATEGORIES[category]) {
       const cat = CATEGORIES[category];
@@ -129,8 +129,8 @@ function checkRecurrence(context) {
     }
   }
 
-  // 检查高频复发（同一个错误出现 3+ 次）
-  const highRecurrence = memory.errors.filter(e => (e.recurrenceCount || 0) >= 3);
+  // 检查高频复发（同一个错误重复 2+ 次）
+  const highRecurrence = memory.errors.filter(e => (e.recurrenceCount || 0) >= 2);
   for (const e of highRecurrence) {
     warnings.push({
       category: e.category,
@@ -170,7 +170,7 @@ function getStats() {
   return {
     total: memory.errors.length,
     byCategory,
-    highRecurrence: memory.errors.filter(e => (e.recurrenceCount || 0) >= 3).length,
+    highRecurrence: memory.errors.filter(e => (e.recurrenceCount || 0) >= 2).length,
   };
 }
 
