@@ -2,7 +2,7 @@
   "name": "@yun520-1/heartflow",
   "version": "6.3.42",
   "description": "HeartFlow (心虫) — AI text discrimination engine. 13-dimension rule-based text quality detection. Sycophancy/contradiction/fallacy/presupposition/emotional manipulation/double bind/false urgency detection. Zero LLM dependency, MCP native, AI safety gate.",
-  "main": "src/index.js",
+  "main": "src/pipeline.js",
   "bin": {
     "heartflow": "src/mcp-server.js"
   },
@@ -115,8 +115,9 @@
     "email": "markcell@qq.com"
   },
   "exports": {
-    ".": "./src/gate.js",
+    ".": "./src/pipeline.js",
     "./gate": "./src/gate.js",
+    "./pipeline": "./src/pipeline.js",
     "./discriminate": "./src/index.js",
     "./engine": "./src/core/heartflow.js"
   }
