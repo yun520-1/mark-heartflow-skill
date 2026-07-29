@@ -16,11 +16,12 @@
  * dispatch: 'emotionDynamics.analyze' / 'emotionDynamics.regulate' / 'emotionDynamics.resilience'
  */
 
-const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');  // DELETED
+// DELETED MODULE: ../formula/cognitive-bridge.js — fallback
+function HF_getCognitiveBridge() { return { getFormula: () => null, registerFormula: () => {}, healthCheck: () => ({}) }; }
 
 class EmotionDynamicsEngine {
   constructor(options = {}) {
-    this._bridge = getCognitiveBridge();
+    this._bridge = HF_getCognitiveBridge();
     // PAD状态
     this._padState = { pleasure: 0, arousal: 0.5, dominance: 0.5 };
     // 情绪历史（用于弹性计算）

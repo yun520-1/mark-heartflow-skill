@@ -524,8 +524,6 @@ const _DualPerspectiveAuditor = _lazy('dualPerspectiveAuditor', () => require('.
 const _MemoryQuality = _lazy('memoryQuality', () => require('../memory/memory-quality.js'));
 
 
-const _PaperIndex = _lazy('paperIndex', () => require('../research/paper-index.js'));  // DELETED
-
 const _TieredMemoryFusion = _lazy('tieredMemoryFusion', () => require('./tiered-memory-fusion.js'));
 
 const _CounterfactualVerifier = _lazy('counterfactualVerifier', () => require('./counterfactual-verifier.js'));
@@ -638,7 +636,7 @@ const _PlatformAdapter = _lazy('platformAdapter', () => require('./platform-adap
 
 
 
-const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('./confidence-annotator.js'));  // DELETED
+const _ConfidenceAnnotator = _lazy('confidenceAnnotator', () => require('./confidence-annotator.js'));  
 
 
 
@@ -1560,12 +1558,12 @@ class HeartFlow {
 
     this.lesson = _LessonBank().lessonBank || _LessonBank();
 
-    this.experienceDistiller = new (_ExperienceDistiller().ExperienceDistiller)();
+    try { this.experienceDistiller = new (_ExperienceDistiller().ExperienceDistiller)(); } catch (e) { this.experienceDistiller = { distill: () => [], healthCheck: () => ({}) }; }
 
     this.strategicRestraint = new (_StrategicRestraint().StrategicRestraint)();
     try { this.strategicRestraint.load(); } catch(e) { /* 加载失败不阻断 */ }
 
-    this.continuousLearner = new (_ContinuousLearner().ContinuousLearner)();
+    try { this.continuousLearner = new (_ContinuousLearner().ContinuousLearner)(); } catch (e) { this.continuousLearner = { learn: () => [], healthCheck: () => ({}) }; }
 
     this.knowledgeExplorer = null;
 
@@ -1609,7 +1607,7 @@ class HeartFlow {
 
     this.metaMemory = new (_MetaMemory().MetaMemory)(this.rootPath);
 
-    this.skillGenerator = new (_SkillGenerator().SkillGenerator)(this.rootPath);
+    try { this.skillGenerator = new (_SkillGenerator().SkillGenerator)(this.rootPath); } catch (e) { this.skillGenerator = { generate: () => null, healthCheck: () => ({}) }; }
 
     this.meta = new (_MetaLearner().MetaLearner)({ rootPath: this.rootPath, memory: this.memory }).boot();
 
@@ -3777,7 +3775,7 @@ class HeartFlow {
 
     try {
 
-      const { FormulaModule } = require('../formula/formula-module.js');  // DELETED
+      const { FormulaModule } = require('../formula/formula-module.js');  
 
       this.formula = new FormulaModule({ formulasFile: path.join(this.rootPath, 'formulas', 'formulas.json') });
 
@@ -3788,7 +3786,7 @@ class HeartFlow {
 
       // 注入 hf 引用到 FormulaBridge，让桥接方法可兜底查公式库
       try {
-        const { injectHfToBridge } = require('../formula/formula-bridge.js');  // DELETED
+        const { injectHfToBridge } = require('../formula/formula-bridge.js');  
         injectHfToBridge(this);
       } catch (_) { /* 非关键 */ }
 

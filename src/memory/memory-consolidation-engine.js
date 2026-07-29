@@ -14,8 +14,6 @@
  * dispatch: 'memoryConsolidation.consolidate' / 'memoryConsolidation.schedule' / 'memoryConsolidation.recall'
  */
 
-const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');  // DELETED
-
 class MemoryConsolidationEngine {
   constructor(options = {}) {
     this._bridge = getCognitiveBridge();
@@ -50,7 +48,7 @@ class MemoryConsolidationEngine {
     // [FORMULA ebbinghaus_forgetting_curve] 公式库校验
     try {
       if (typeof require === 'function') {
-        const { getFormulaBridge } = require('../formula/formula-bridge.js');  // DELETED
+        const { getFormulaBridge } = require('../formula/formula-bridge.js');  
         const formulaBridge = getFormulaBridge();
         if (formulaBridge && typeof formulaBridge.calculateCorpus === 'function') {
           const cr = formulaBridge.calculateCorpus('ebbinghaus_forgetting_curve', { t: Math.max(1, ageMs), S: Math.max(1, strengthMs) });

@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "description": "HeartFlow (\u5fc3\u866b) \u2014 AI text discrimination engine. 13-dimension rule-based text quality detection. Sycophancy/contradiction/fallacy/presupposition/emotional manipulation/double bind/false urgency detection. Zero LLM dependency, MCP native, AI safety gate.",
   "main": "src/pipeline.js",
   "bin": {

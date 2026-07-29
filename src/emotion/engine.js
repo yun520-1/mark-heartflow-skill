@@ -19,8 +19,8 @@
 const psychology = require('./psychology.js');
 const empathy = require('./empathy-detector.js');
 // 公式注册表：把认知公式主动注入情绪引擎（v5.9.5 重构）
-const { getFormulaRegistry } = require('../formula/formula-registry.js');  // DELETED
-const _registry = getFormulaRegistry();
+let _registry = { get: () => null };
+try { const { getFormulaRegistry } = require('../formula/formula-registry.js'); _registry = getFormulaRegistry(); } catch(e) { _registry = { get: () => null }; }
 // AI认知状态调节器 — 6个人类心理学模块的AI化版本
 const { breathingExercise } = require('./breathing-exercise.js');
 const { pauseAndReflect } = require('./pause-and-reflect.js');

@@ -308,7 +308,6 @@ class SustainedDriftDetector {
 
     try {
 
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');  // DELETED
 
       const bridge = getFormulaBridge();
 

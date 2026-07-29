@@ -342,7 +342,6 @@ async function runThinkPipeline(result, input, engine) {
   // ─── [v6.3.7] FormulaBridge 综合计算——输入含领域关键词时自动调用相关公式 ──
   try {
     if (input && typeof input === 'string') {
-      const { getFormulaBridge } = require('../formula/formula-bridge.js');  // DELETED
       const bridge = getFormulaBridge();
       if (bridge) {
         const calc = {};
@@ -751,7 +750,7 @@ async function runThinkPipeline(result, input, engine) {
     if (result) {
       const ctxText = typeof input === 'string' ? input : (input?.text || '');
       if (ctxText) {
-      // const { BeingMode } = require('../identity/being-mode.js'); // DELETED
+      // const { BeingMode } = require('../identity/being-mode.js'); 
         const bm = new BeingMode();
         const ba = bm.assessBeing({ input: ctxText, route: result.route || result.type });
         result._beingAnalysis = {
@@ -898,7 +897,7 @@ async function runThinkPipeline(result, input, engine) {
   // ─── [v6.x] PhilosophyEngine — 四框架伦理评估 ──
   try {
     if (input && typeof input === 'string') {
-      // const { PhilosophyEngine } = require('../identity/philosophy-engine.js'); // DELETED
+      // const { PhilosophyEngine } = require('../identity/philosophy-engine.js'); 
       const pe = new PhilosophyEngine();
       result._philosophyEngine = pe.evaluate({
         action: { description: input },
@@ -933,7 +932,7 @@ async function runThinkPipeline(result, input, engine) {
     if (result && result.output) {
       const outputText = result.output.conclusion || result.output.decision || result.output.reply || '';
       if (outputText && typeof outputText === 'string') {
-      // const AI = require('../emotion/affective-intentionality.js'); // DELETED
+      // const AI = require('../emotion/affective-intentionality.js'); 
         const ai = new AI.AffectiveIntentionality();
         const emoType = result._emotion?.type || (result._sentiment ? 'joy' : 'neutral');
         result._affectiveIntentionality = ai.compute({
