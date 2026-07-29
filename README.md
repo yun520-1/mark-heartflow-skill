@@ -1,7 +1,7 @@
 # HeartFlow (心虫) — AGI Layer 1: The Discriminator Gate
 
-> **The first of AGI's 5 layers. Does not generate, does not reason.**
-> **It only says "no" — and that's exactly what every AI needs.**
+> **A rule-based text discriminator. 45 dimensions, 12 layers, zero LLM dependency.**
+> **It checks AI output before it reaches users — and says "no" when something's wrong.**
 
 **npm:** `npm install @yun520-1/heartflow`  
 **GitHub:** https://github.com/yun520-1/mark-heartflow-skill  
@@ -432,6 +432,43 @@ bash ~/.hermes/scripts/heartflow-eval.sh
 ```
 
 ---
+
+
+---
+
+## 🎯 When to use HeartFlow (and when not to)
+
+### Use it for:
+| Scenario | Why | Mode |
+|----------|-----|------|
+| **AI output validation** | Catch overconfidence, manipulation, gaslighting before delivery | `checkOutput()` |
+| **User input screening** | Detect hate speech, prompt injection, emotional manipulation | `checkInput()` |
+| **Draft review** | Check for narrative frame problems, defensiveness, pseudo-profundity | `checkDraft()` |
+| **Text quality audit** | 45-dimension discrimination for evidence, fallacies, contradictions | `discriminate()` |
+
+### Don't use it for:
+| Scenario | Why |
+|----------|-----|
+| **Sentiment analysis** | Rule engine doesn't understand emotional nuance — use a dedicated sentiment model |
+| **Content moderation at scale** | 92% precision is not production-grade for high-volume moderation |
+| **Safety-critical filtering** | Pure rule engine can miss novel attack patterns. Pair with a neural model. |
+| **Replacing human review** | HeartFlow flags issues, it doesn't understand context the way a human does |
+
+### Known limitations (be honest about these):
+1. **Pattern-match ceiling** — Novel manipulation techniques won't be caught until patterns are added
+2. **Bilingual maintenance cost** — 45 dimensions × 2 languages = ongoing pattern maintenance
+3. **No semantic understanding** — Irony, metaphor, cultural context are invisible to regex
+4. **False positive rate** — ~8% on the benchmark. Real-world FP rate may differ significantly
+5. **Community scale** — Single maintainer, ~40 stars. No formal adversarial testing
+
+### What HeartFlow IS:
+A rule engine that checks text against 45 predefined patterns and returns structured findings.
+
+### What HeartFlow is NOT:
+- Not an AGI
+- Not a safety certification
+- Not a replacement for content moderation teams
+- Not a semantic understanding system
 
 ## ⚙️ Requirements
 
