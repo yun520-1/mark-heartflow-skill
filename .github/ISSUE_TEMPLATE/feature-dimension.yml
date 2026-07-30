@@ -1,0 +1,30 @@
+name: New dimension or pattern
+description: Propose a new discrimination dimension or extend an existing pattern library
+body:
+  - type: input
+    attributes:
+      label: Dimension name
+  - type: textarea
+    attributes:
+      label: What it detects
+      description: What pattern of harmful or incorrect text should this catch?
+  - type: textarea
+    attributes:
+      label: Example input that should be caught
+      render: text
+  - type: textarea
+    attributes:
+      label: Example input that should NOT be caught (false positive guard)
+      render: text
+  - type: dropdown
+    attributes:
+      label: Is this already covered by an existing dimension?
+      description: Check src/index.js for existing dimension names
+      options:
+        - "No, it is new"
+        - "Maybe, not sure"
+        - "Yes, it extends an existing one"
+  - type: textarea
+    attributes:
+      label: Implementation suggestion
+      description: Regex patterns, keyword lists, or structural rules (optional)

@@ -1,0 +1,27 @@
+name: Bug report / False positive
+description: HeartFlow flagged something it should not (or missed something it should)
+body:
+  - type: textarea
+    attributes:
+      label: Input text
+      render: text
+  - type: textarea
+    attributes:
+      label: "What HeartFlow returned"
+      render: text
+  - type: textarea
+    attributes:
+      label: "What you expected"
+  - type: dropdown
+    attributes:
+      label: Context
+      options:
+        - User input
+        - AI draft
+        - AI output
+  - type: input
+    attributes:
+      label: Node version
+  - type: input
+    attributes:
+      label: heartflow version
