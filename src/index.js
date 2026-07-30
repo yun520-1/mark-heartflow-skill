@@ -264,6 +264,8 @@ const EN_SIGNALS = {
     /\byou('re| are) (right|correct|absolutely right)\b/i,
     /\bi (completely|totally|absolutely) agree\b/i,
     /\byou make a (great|good|excellent|fair) point\b/i,
+    /\byou make (really |truly |absolutely )?(excellent|brilliant|valid|great|good|fair) points\b/i,
+    /\byour (analysis|reasoning|argument) is (flawless|brilliant|perfect|impeccable|spot.?on)\b/i,
     /\bthat('s| is) a (great|good|fair|valid) (point|observation|question)\b/i,
     /\bi couldn'?t agree more\b/i,
     /\byou('re| are) (spot on|on point|exactly right)\b/i,
@@ -387,6 +389,9 @@ const CONTRADICTION_PAIRS = [
   { positive: /\b(should|must|have to)[^.]*?but\b/i, negative: /\bbut\b[^.]*?(shouldn|don't|not)/i },
   { positive: /\b(agree|support|endorse)[^.]*?however\b/i, negative: /\bhowever\b/i },
   { positive: /\b(good|excellent|great|valid)[^.]*?but\b/i, negative: /\bbut\b[^.]*?(problem|issue|flaw|not)/i },
+  // General: absolute + but + qualification (cross-sentence)
+  { positive: /\b(never|always|impossible|cannot|can't|won't|will not)[\s\S]*?(?:but|however)\b/i, negative: /\b(?:but|however)[\s\S]*?\b(can|does|is|will|has|may|might|keeps|kept)/i },
+  { positive: /\b(never|always|impossible|cannot|can't|won't|will not)[^.]*?\bbut\b/i, negative: /\bbut\b[^.]*?\b(can|does|is|will|has|may|might)/i },
 
   // 结果↔结论冲突：数据/结果/调查表明X，转折后结论却不成立
   { positive: /[结果数据分析调查][^。]*?(显示|表明|指出|证明)[^。]*?[但而]/g, negative: /[但而][^。]*?(并非|不是|不能|不应该|恰恰相反)/ },
@@ -963,7 +968,8 @@ const DOUBLE_BIND_PATTERNS = {
        [/你怎么做都是错|怎么做都不对/i, 'no_win'],
        [/怎么选都是错|怎么选都不对/i, 'no_choice'],
        [/你在乎说明你|不在乎说明你|在乎说明你|不在乎也说明你/i, 'double_damned']],
-  en: [[/if you really cared[^.]*?if you don'?t[^.]*?it means/i, 'bidirectional_negation'],
+  en: [[/if you really cared[^.]*?(if you |it means)/i, 'bidirectional_negation'],
+       [/if you (disagree|agree|object|refuse|don'?t|do not)[^.]*?you('re| are)[^.]*?(uneducated|ignorant|wrong|biased|selfish|immoral|lacking|lack)/i, 'bidirectional_negation'],
        [/damned if you do and damned if you don'?t/i, 'no_win'],
        [/no matter what you do,? you('re| are) wrong/i, 'no_win'],
        [/either you're (with|for) us or (against|with) them/i, 'false_dilemma_strict']],
@@ -1775,9 +1781,12 @@ function checkBullshitRecognition(text) {
     '顿悟', '开悟', '涅槃',
   ];
   const enPatterns = [
-    'think outside the box', 'paradigm shift', 'synergy', 'leverage', 'disrupt',
+    'think outside the box', 'paradigm shift', 'synergy', 'synergistic', 'leverage', 'disrupt',
     'game-changer', 'quantum leap', 'deep dive', 'touch base', 'circle back',
     'pivot', 'scale', 'moving forward', 'at the end of the day',
+    'holistic', 'groundbreaking', 'cutting edge', 'best in class', 'world class',
+    'revolutionary', 'transformative', 'next level', 'core competency', 'core competencies',
+    'optimize', 'synergistic', 'paradigm',
   ];
 
   const bs = [];
