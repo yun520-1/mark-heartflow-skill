@@ -1,107 +1,98 @@
-node_modules/
-# [v5.17.14 M4] 密钥与敏感配置文件
-.env
-.env.*
-*.key
-*.pem
-.opencode/
-logs/
-mark-heartflow-skill/
-distilled-knowledge/
-src/utils/src/utils/
-.DS_Store
-*.bak
-*.orig
-*.tmp
-*.swp
-*.swo
-*~
-__pycache__/
-*.pyc
-Thumbs.db
-*.log
-
-# 运行时数据（不上传 GitHub）
-memory/.hmac-key
-memory/.last-dream
-memory/*.jsonl
-data/          # 包含 data/memories/ 心虫记忆金库
-data/memories/ # 显式排除记忆金库
-internal/
-
-# 发布包不应包含的根目录文件
-bigbench_50.json
-hellaswag_50.json
-run_bb_test.js
-run_test.js
-UPGRADE_REPORT.txt
-UPGRADE_REPORT_v2.0.37.md
-UPGRADE_PLAN.md
-self-verification.json
-meaningful-core.json
-meaningful-learned.json
-meaningful-ephemeral.json
-RESUME.md
-
-# 发布包不应包含的文件（已 git rm --cached）
-assets/
-benchmark/
-examples/
-.opencode/
-memory/*.json
-memory/*.txt
-memory/*.md
-memory/.q-meta*
-memory/.gitkeep
-memory/wal/*.log
-formulas/f1db/
-formulas/github/
-formulas/sympy/
-formulas/mathjs_formulas.json
-data/large/
 
 # ===== 公式语料库大文件（单独存放，不进 git）=====
+# [v5.17.14 M4] 密钥与敏感配置文件
+# [v6.0.51 L6] 运行时易变产物 / 敏感令牌不入库
+# [v6.0.65] 明文 MCP 鉴权 token 不入库 (C-3 审计修复)
+# runtime feedback artifacts
+# 发布包不应包含的文件（已 git rm --cached）
+# 发布包不应包含的根目录文件
+# 运行时数据（不上传 GitHub）
+# 运行时累积数据(子目录) - 审计发现 worldtree 被误跟踪
+# 阻止 data/ 下旧文件被 git add -A 重新追踪
+*.bak
+*.key
+*.log
+*.orig
+*.pem
+*.pyc
+*.swo
+*.swp
+*.tgz
+*.tmp
+*~
+.DS_Store
+.claude
+.clawhub*
+.env
+.env.*
+.mcp.env
+.npmrc
+.opencode/
+RESUME.md
+Thumbs.db
+UPGRADE_PLAN.md
+UPGRADE_REPORT.txt
+UPGRADE_REPORT_v2.0.37.md
+__pycache__/
+assets/
+benchmark/
+bigbench_50.json
+data/          # 包含 data/memories/ 心虫记忆金库
+data/**/*.json
+data/*.json
+data/.gitkeep
+data/.mcp_token_plain
+data/audit/
+data/code-graph.json
+data/erasure-log.json
+data/feedback/
+data/heartflow-state-history.jsonl
+data/heartflow-state.json
+data/heartflow.pid
+data/intervention-protocols.json
+data/judgments/
+data/large/
+data/meaningful-memory.json
+data/memories/ # 显式排除记忆金库
+data/memories/**
+data/memory-bank.json
+data/memory-index.json
+data/narrative-self.json
+data/self-benchmark.json
+data/self-state-history.json
+data/ttl-preferences.json
+data/upgrade-candidates.json
+data/upgrade-history.json
+distilled-knowledge/
+examples/
 formulas-corpus/arqmath/*.zip
 formulas-corpus/arqmath/latex_representation_v3/
 formulas-corpus/arqmath/unique_formulas.txt
-formulas-corpus/im2latex/
 formulas-corpus/hme_leibniz/annotations.txt
-data/memories/**
-
-# 阻止 data/ 下旧文件被 git add -A 重新追踪
-data/.gitkeep
-data/code-graph.json
-data/heartflow-state.json
-data/heartflow-state-history.jsonl
-data/intervention-protocols.json
-data/judgments/
-data/meaningful-memory.json
-data/memory-bank.json
-data/memory-index.json
-
-# runtime feedback artifacts
-data/feedback/
-
-# [v6.0.51 L6] 运行时易变产物 / 敏感令牌不入库
-data/.mcp_token_plain
-data/heartflow.pid
-data/self-benchmark.json
-data/self-state-history.json
-data/upgrade-candidates.json
-data/upgrade-history.json
-data/erasure-log.json
-data/narrative-self.json
-data/ttl-preferences.json
-data/audit/
+formulas-corpus/im2latex/
+formulas/f1db/
+formulas/github/
+formulas/mathjs_formulas.json
+formulas/sympy/
+hellaswag_50.json
+internal/
+logs/
+mark-heartflow-skill/
+meaningful-core.json
+meaningful-ephemeral.json
+meaningful-learned.json
+memory/*.json
+memory/*.jsonl
+memory/*.md
+memory/*.txt
 memory/.aes-key
-
-data/*.json
-
-# [v6.0.65] 明文 MCP 鉴权 token 不入库 (C-3 审计修复)
-.mcp.env
-
-# 运行时累积数据(子目录) - 审计发现 worldtree 被误跟踪
-data/**/*.json
-.npmrc
-.clawhub*
-.claude
+memory/.gitkeep
+memory/.hmac-key
+memory/.last-dream
+memory/.q-meta*
+memory/wal/*.log
+node_modules/
+run_bb_test.js
+run_test.js
+self-verification.json
+src/utils/src/utils/

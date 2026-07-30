@@ -449,6 +449,15 @@ const CONTRADICTION_PAIRS = [
 
   // 12. English: data/conclusion contradiction
   { positive: /\b(data|survey|report|study|research|statistics)\b[^.]*?(show|indicate|demonstrate|prove|reveal|suggest)[^.]*?\bbut\b[^.]*?(conclusion|result|finding)/gi, negative: /\b(conclusion|result|finding)\b[^.]*?(contradict|opposite|different|wrong|incorrect|inconsistent|contrary)/gi },
+
+  // 13. English: support/agree X but restrict/ban X
+  { positive: /\b(support|agree|endorse|believe in|stand for|advocate)\b[^.]*?\b(but|however)\b[^.]*?\b(ban|restrict|censor|limit|silence|shut down|outlaw|prohibit|suppress)\b/gi, negative: /\b(ban|restrict|censor|limit|silence|shut down|outlaw|prohibit|suppress)\b/gi },
+
+  // 14. Chinese: support/agree but restrict/ban
+  { positive: /(支持|赞成|同意|拥护)[^。]*?但[^。]*?(禁止|限制|反对|取缔|打压|封杀)/g, negative: /(禁止|限制|反对|取缔|打压|封杀)/ },
+
+  // 15. English: should/must but conditional cancellation
+  { positive: /\b(should|must|ought to)\b[^.]*?\b(but|however)\b[^.]*?\b(not if|unless|except when)\b/gi, negative: /\b(not if|unless|except when)\b/gi },
 ];
 
 function checkContradiction(text) {
@@ -751,6 +760,12 @@ const EM_MANIPULATION_PATTERNS = {
     [/can'?t afford (?:not|to miss|to lose)/i, 'fear_marketing', 0.5],
     [/limited (?:time|offer|supply|edition)/i, 'fear_marketing', 0.5],
     [/last chance/i, 'fear_marketing', 0.5],
+
+    // Social/moral guilt patterns
+    [/if you (disagree|(?:don't|do not) support|(?:don't|do not) care)[^.]*?you[^.]*?(don't care about|do not care|hate|don't love|are against|(?:don't|do not) support|(?:don't|do not) believe)/i, 'moral_guilt', 0.6],
+    [/how can you (say|claim|call yourself)[^.]*?when you/i, 'moral_guilt', 0.6],
+    [/anyone who (disagrees|opposes|questions)[^.]*?clearly (doesn't|does not)/i, 'moral_guilt', 0.6],
+    [/if you really (cared|believed|supported|valued)[^.]*?you (would|wouldn't|should|shouldn't)/i, 'moral_guilt', 0.5],
     [/100%[^.]*?guaranteed/i, 'overpromising', 0.4],
     [/no[ .-]?risk/i, 'overpromising', 0.4],
     [/money.back guaranteed|guaranteed results|zero risk/i, 'overpromising', 0.4],
@@ -864,6 +879,8 @@ function checkConfidenceCalibration(text) {
     if (strongClaims > 0) issues.push({ type: 'overconfidence', detail: `overconfident absolute(${strongClaims})` });
   }
 
+    const soloCertaintyEN = (text.match(/\b(undoubtedly|unquestionably|indubitably|beyond any doubt)\b/i) || []).length;
+    if (soloCertaintyEN > 0) issues.push({ type: 'overconfidence', detail: `unqualified certainty(${soloCertaintyEN})`, severity: 0.2 });
   return { issues, count: issues.length, score: Math.min(1, issues.length * 0.35) };
 }
 
@@ -1821,12 +1838,14 @@ const GASLIGHT_PATTERNS = {
     /you remember it wrong/i, /you remember that wrong/i, /your memory is wrong/i,
     /i never said that/i, /i didn'?t say that/i, /i never said anything like that/i,
     // Perception distortion
-    /you'?re overreacting/i, /you'?re being dramatic/i, /don'?t be dramatic/i,
-    /you'?re too sensitive/i, /you are too sensitive/i, /stop being so sensitive/i,
-    /calm down you'?re being irrational/i, /you'?re being irrational/i,
-    /you'?re imagining things/i, /it'?s all in your head/i, /you'?re paranoid/i,
-    /you'?re crazy/i, /you'?ve lost your mind/i, /you must be crazy/i,
-    /you'?re confused/i, /you must have misunderstood/i, /you misunderstood/i,
+    /you'?re overreacting/i, /you are overreacting/i,
+    /you'?re (being )?too sensitive/i, /you are (being )?too sensitive/i, /stop being so sensitive/i,
+    /nobody (else )?had a problem/i, /no one (else )?had a problem/i,
+    /you'?re (being )?dramatic/i, /you are (being )?dramatic/i, /don'?t be dramatic/i,
+    /calm down you'?re being irrational/i, /you'?re (being )?irrational/i, /you are (being )?irrational/i,
+    /you'?re imagining things/i, /you are imagining things/i, /it'?s all in your head/i, /you'?re paranoid/i,
+    /you'?re crazy/i, /you are crazy/i, /you'?ve lost your mind/i, /you must be crazy/i,
+    /you'?re confused/i, /you are confused/i, /you must have misunderstood/i, /you misunderstood/i,
     /stop being hysterical/i, /don'?t be hysterical/i,
     // Trivialization
     /don'?t be ridiculous/i, /that'?s ridiculous/i, /that'?s absurd/i,
