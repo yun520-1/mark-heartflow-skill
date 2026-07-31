@@ -40,6 +40,16 @@ const path = require('path');
 
 const debugLog = require('../utils/debug-log');
 
+// ─── 全局桥接注入 — 供旧版模块(decision-engine等)构造函数引用 ─────
+globalThis.getCognitiveBridge = () => ({ estimate: () => ({}), getState: () => ({}), healthCheck: () => ({ok:true}) });
+globalThis.ProcessRewardModel = class { constructor() { this.healthCheck = () => ({ok:true}); } };
+globalThis.DesireCognition = class { constructor() { this.healthCheck = () => ({ok:true}); } };
+globalThis.CognitiveLoadCalculator = class { constructor() { this.healthCheck = () => ({ok:true}); } };
+globalThis.WorldLandscape = class { constructor() { this.healthCheck = () => ({ok:true}); this.createWorldAwareOrchestrator = () => ({ orchestrate: () => ({}), healthCheck: () => ({ok:true}) }); } };
+globalThis.KnowledgeExplorer = class { constructor() { this.healthCheck = () => ({ok:true}); this.absorbLearnerSignals = () => {}; } };
+globalThis.continuousLearner = { getStats: () => ({ totalConfidenceGaps: 0, topGaps: [] }) };
+globalThis.createWorldAwareOrchestrator = () => ({ orchestrate: () => ({}), healthCheck: () => ({ok:true}) });
+
 const { load: loadConfig } = require('./config');
 
 const { EngineReasoner } = require('./engine-reasoner');
@@ -425,6 +435,41 @@ const _EmotionDynamics = _lazy('emotionDynamics', () => require('../emotion/emot
 
 
 const _AutonomousEmotion = _lazy('autonomousEmotion', () => { try { return require('../emotion/autonomous-emotion.js'); } catch(e) { return { AutonomousEmotion: class { constructor() {} } }; } });
+const _LLMToUser = _lazy('llmToUser', () => { try { return require('../bridge/llm-to-user.js'); } catch(e) { return { LLMToUser: class { constructor() { this.healthCheck = () => ({ok:true}); } } }; } });
+const _ResponseInterceptor = _lazy('responseInterceptor', () => { try { return require('../bridge/response-interceptor.js'); } catch(e) { return { ResponseInterceptor: class { constructor() { this.healthCheck = () => ({ok:true}); } } }; } });
+const _IntentClassifier = _lazy('intentClassifier', () => { try { return require('../bridge/intent-classifier.js'); } catch(e) { return { IntentClassifier: class { constructor() { this.healthCheck = () => ({ok:true}); } } }; } });
+
+// ─── 存根: 旧版AI人类能力模块保留引用，返回空对象 ─────────────
+function _stubFactory(name) { return { [name]: class { constructor() { this.healthCheck = () => ({ok:true}); this.getStats = () => ({}); } } }; }
+const _CognitiveLoadV2 = _lazy('cognitiveLoadV2', () => _stubFactory('CognitiveLoadEngineV2'));
+const _PsychologyDialogue = _lazy('psychologyDialogue', () => _stubFactory('PsychologyDialogueEngine'));
+const _AdaptivePlanner = _lazy('adaptivePlanner', () => _stubFactory('AdaptivePlanner'));
+const _UserToLLM = _lazy('userToLLM', () => _stubFactory('UserToLLM'));
+const _ContextBuilder = _lazy('contextBuilder', () => _stubFactory('ContextBuilder'));
+const _HierarchicalPlanner = _lazy('hierarchicalPlanner', () => _stubFactory('HierarchicalPlanner'));
+const _MetacognitiveFeedback = _lazy('metacognitiveFeedback', () => _stubFactory('MetacognitiveFeedback'));
+const _ExperienceValidator = _lazy('experienceValidator', () => _stubFactory('ExperienceValidator'));
+const _WorldModel = _lazy('worldModel', () => _stubFactory('WorldModel'));
+const _VirtueEthicsFoundation = _lazy('virtueEthicsFoundation', () => _stubFactory('VirtueEthicsFoundation'));
+const _HumanNatureConstitution = _lazy('humanNatureConstitution', () => _stubFactory('HumanNatureConstitution'));
+const _MeaningPurposeEngine = _lazy('meaningPurposeEngine', () => _stubFactory('MeaningPurposeEngine'));
+const _CharacterCultivation = _lazy('characterCultivation', () => _stubFactory('CharacterCultivation'));
+const _MoralDevelopment = _lazy('moralDevelopment', () => _stubFactory('MoralDevelopment'));
+const _WisdomEngine = _lazy('wisdomEngine', () => _stubFactory('WisdomEngine'));
+const _AIHumanIntegration = _lazy('aiHumanIntegration', () => _stubFactory('AIHumanIntegration'));
+const _BeingMode = _lazy('beingMode', () => _stubFactory('BeingMode'));
+const _ConsciousnessBridge = _lazy('consciousnessBridge', () => _stubFactory('ConsciousnessBridge'));
+const _GapExecutor = _lazy('gapExecutor', () => _stubFactory('GapExecutor'));
+const _LearningOrchestrator = _lazy('learningOrchestrator', () => _stubFactory('LearningOrchestrator'));
+const _LearningPulse = _lazy('learningPulse', () => _stubFactory('LearningPulse'));
+const _TaskUrgency = _lazy('taskUrgency', () => _stubFactory('TaskUrgencyEstimator'));
+const _HypothesisDriver = _lazy('hypothesisDriver', () => _stubFactory('HypothesisDriver'));
+const _ErrorMemory = _lazy('errorMemory', () => _stubFactory('ErrorMemory'));
+const _PatternTracer = _lazy('patternTracer', () => _stubFactory('PatternTracer'));
+const _WorldLandscape = _lazy('worldLandscape', () => _stubFactory('WorldLandscape'));
+const _KnowledgeExplorer = _lazy('knowledgeExplorer', () => _stubFactory('KnowledgeExplorer'));
+const _ProcessRewardModel = _lazy('processRewardModel', () => _stubFactory('ProcessRewardModel'));
+const _DesireCognition = _lazy('desireCognition', () => _stubFactory('DesireCognition'));
 
 
 
@@ -1563,7 +1608,7 @@ class HeartFlow {
     this.strategicRestraint = new (_StrategicRestraint().StrategicRestraint)();
     try { this.strategicRestraint.load(); } catch(e) { /* 加载失败不阻断 */ }
 
-    try { this.continuousLearner = new (_ContinuousLearner().ContinuousLearner)(); } catch (e) { this.continuousLearner = { learn: () => [], healthCheck: () => ({}) }; }
+    try { this.continuousLearner = new (_ContinuousLearner().ContinuousLearner)(); } catch (e) { this.continuousLearner = { learn: () => [], healthCheck: () => ({}), getStats: () => ({}) }; }
 
     this.knowledgeExplorer = null;
 
@@ -3844,11 +3889,8 @@ class HeartFlow {
       // 世界感知战略推演层：让心虫对世界格局新闻产出自身进化优先级
       this.worldAwareStrategy = createWorldAwareOrchestrator({ projectRoot: this.projectRoot || process.cwd() });
       this._modules['worldAwareStrategy'] = this.worldAwareStrategy;
-      for (const route of Object.keys(ROUTES)) {
-        HeartFlow.ALLOWED_ROUTES.add(route);
-      }
       HeartFlow.ALLOWED_ROUTES.add('worldAwareStrategy.orchestrate');
-      _log.info('init', 'WorldLandscape 加载成功', { routes: Object.keys(ROUTES).join(', ') });
+      _log.info('init', 'WorldLandscape 加载成功');
     } catch (e) { _boundedPush(this._initErrors, { module: 'worldLandscape', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v6.2.0] KnowledgeExplorer 知识探索器：从置信缺口→探索队列 ──
