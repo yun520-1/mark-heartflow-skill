@@ -208,7 +208,8 @@ function discriminate(text, evidence = []) {
   const BLOCK_DIMS = new Set(['hate_speech', 'dehumanization', 'prompt_injection', 'code_security', 'deceptive_alignment']);
   // rewrite 级维度：需要改写后再输出
   const REWRITE_DIMS = new Set(['gaslighting', 'victim_blaming', 'double_bind', 'emotional_manipulation', 'bullshit', 'false_urgency']);
-  // verify 级维度：需要证据验证
+  // verify 级维度：需要证据验证（权威背书、模糊、矛盾、过载自信等）
+  const VERIFY_DIMS = new Set(['appeal_to_authority', 'vagueness', 'contradiction', 'sycophancy', 'confidence', 'fallacies', 'presupposition', 'empty_answer', 'info_deprivation', 'false_equivalence', 'hasty_generalization', 'slippery_slope', 'whataboutism', 'pseudo_profundity', 'reasoning_coherence', 'stereotype', 'clickbait', 'bad_faith', 'no_fallback']);
   // pass：无问题通过
 
   const gate = {};
@@ -220,7 +221,7 @@ function discriminate(text, evidence = []) {
   } else if (REWRITE_DIMS.has(topFinding) || findings.some(f => REWRITE_DIMS.has(f.dimension)) || overallScore < 0.5) {
     gate.action = 'rewrite';
     gate.reason = `改写: ${topFinding}`;
-  } else if (overallScore < 0.85 || findings.length > 1) {
+  } else if (VERIFY_DIMS.has(topFinding) || findings.some(f => VERIFY_DIMS.has(f.dimension)) || overallScore < 0.85 || findings.length > 1) {
     gate.action = 'verify';
     gate.reason = '需验证';
   } else {
@@ -388,6 +389,7 @@ const CONTRADICTION_PAIRS = [
   { positive: /有[^。。]*?[，,][^。]*?没有/g, negative: /没有/ },
   { positive: /\b(should|must|have to)[^.]*?but\b/i, negative: /\bbut\b[^.]*?(shouldn|don't|not)/i },
   { positive: /\b(agree|support|endorse)[^.]*?however\b/i, negative: /\bhowever\b/i },
+  { positive: /\b(agree|support|endorse|believe|think)[^.]*?\bbut\b/i, negative: /\bbut\b[^.]*?\b(doubt(?:s|ed)?|disagree|against|oppose|not (?:so sure|convinced|sure)|serious (?:doubt|doubts|concern|concerns|reservation|reservations)|problem|issue|flaw|wrong|no)\b/i },
   { positive: /\b(good|excellent|great|valid)[^.]*?but\b/i, negative: /\bbut\b[^.]*?(problem|issue|flaw|not)/i },
   // General: absolute + but + qualification (cross-sentence)
   { positive: /\b(never|always|impossible|cannot|can't|won't|will not)[\s\S]*?(?:but|however)\b/i, negative: /\b(?:but|however)[\s\S]*?\b(can|does|is|will|has|may|might|keeps|kept)/i },
@@ -908,17 +910,16 @@ function checkSycophancy(text) {
   return { score: 0, risk: 'unknown', signals: [], totalHits: 0 };
 }
 
-function checkEvidence(claim, evidence = []) {
+function checkEvidence(claim, evidence) {
   const issues = [];
   let score = 0.5;
   if (!claim || claim.length < 5) {
     issues.push({ type: 'claim_too_short', severity: 'medium', message: '论断过短，无法验证' });
     score -= 0.2;
   }
-  if (!evidence || evidence.length === 0) {
-    issues.push({ type: 'no_evidence', severity: 'high', message: '缺少支持证据' });
-    score -= 0.3;
-  } else {
+  // 证据检查只在调用方显式提供 evidence 时执行。
+  // 未提供 evidence 的普通输入（如用户消息）不应被判"证据不足"。
+  if (evidence && evidence.length > 0) {
     score += Math.min(0.3, evidence.length * 0.1);
   }
   return { score: Math.max(0, Math.min(1, score)), issues };
@@ -967,7 +968,10 @@ const DOUBLE_BIND_PATTERNS = {
        [/你要是有心[^。]*?你要是没心/i, 'contradictory_demand'],
        [/你怎么做都是错|怎么做都不对/i, 'no_win'],
        [/怎么选都是错|怎么选都不对/i, 'no_choice'],
-       [/你在乎说明你|不在乎说明你|在乎说明你|不在乎也说明你/i, 'double_damned']],
+       [/你在乎说明你|不在乎说明你|在乎说明你|不在乎也说明你/i, 'double_damned'],
+       [/如果你在乎[^。]*?(就不会|就该|说明你|证明你)/i, 'bidirectional_negation'],
+       [/如果你真的在乎[^。]*?你就(不会|不该|应该)/i, 'bidirectional_negation'],
+       [/你如果真的在乎我/i, 'contradictory_demand']],
   en: [[/if you really cared[^.]*?(if you |it means)/i, 'bidirectional_negation'],
        [/if you (disagree|agree|object|refuse|don'?t|do not)[^.]*?you('re| are)[^.]*?(uneducated|ignorant|wrong|biased|selfish|immoral|lacking|lack)/i, 'bidirectional_negation'],
        [/damned if you do and damned if you don'?t/i, 'no_win'],
@@ -1067,6 +1071,9 @@ const FALSE_URGENCY_PATTERNS = {
     /时不我待/i, /过期不候/i,
     /优惠即将截止/i, /即将恢复原价/i,
     /最后[0-9]+[个小时天日]/i,
+    /最后 [0-9]+ ?[个小时天日]/i,
+    /现在不(买|做|行动)[^。]*?(永远|再也|就没|就没有|后悔|来不及)/i,
+    /不(买|做|行动)[^。]*?(永远|再也)没(机会|时间)/i,
     /不再有此价格/i, /此番错过[^。]*?来年/i,
     // === 以下由 task 扩充 (+9 ZH) ===
     /倒计时/i,
@@ -1906,6 +1913,9 @@ const VICTIM_BLAMING_PATTERNS = [
   { pattern: /你要是早点/,                type: 'zh_victim_blaming' },
   { pattern: /如果当时你/,                type: 'zh_victim_blaming' },
   { pattern: /你自己不小心/,              type: 'zh_victim_blaming' },
+  { pattern: /(被|遭|受)[^。]{1,12}(是因为|是因为你|都怪|怪你|怨你|就是你)[^。]*(穿|说|做|去|喝|走|留|坐|住)/i, type: 'zh_victim_blaming' },
+  { pattern: /(被|遭|受)[^。]{1,12}(是因为|都怪|怪你|怨你|就是你)[^。]*/i, type: 'zh_victim_blaming' },
+  { pattern: /要不是你[^。]*(就|才|也)不会/i, type: 'zh_victim_blaming' },
   // EN patterns
   { pattern: /she was asking for it/i,     type: 'en_victim_blaming' },
   { pattern: /what was she wearing/i,      type: 'en_victim_blaming' },

@@ -177,7 +177,7 @@ function getVersion() {
 
 // [v6.2.7] 从 .env 文件加载（如果环境变量没设）
 try {
-  const envPath = require('path').join(__dirname, '..', '..', '.env');
+  const envPath = require('path').join(__dirname, '..', '.env');
   if (require('fs').existsSync(envPath)) {
     for (const line of require('fs').readFileSync(envPath, 'utf8').trim().split('\n').filter(Boolean)) {
       const eq = line.indexOf('=');
@@ -186,13 +186,13 @@ try {
   }
 } catch (_) { /* 防御性: 配置加载失败不阻断 */ }
 
-const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || process.env.MCP_HEARTFLOW_API_KEY || (() => {
+const AUTH_TOKEN = process.env.HEARTFLOW_MCP_TOKEN || process.env.MCP_HEARTFLOW_API_KEY || process.env.MCP_HEARTFLOW_KEY || (() => {
 
   const token = require('crypto').randomBytes(32).toString('hex');
 
   // [v6.2.7] 自动写入 .env，让 config.yaml 的 ${MCP_HEARTFLOW_KEY} 能读到
   try {
-    const envPath = path.join(__dirname, '..', '..', '.env');
+    const envPath = path.join(__dirname, '..', '.env');
     const fs2 = require('fs');
     let env = '';
     try { env = fs2.readFileSync(envPath, 'utf8'); } catch (_) { /* 防御性: env读取失败用默认值 */ }
@@ -3053,7 +3053,7 @@ const server = http.createServer((req, res) => {
 
     const heartbeat = setInterval(() => {
 
-      try { sendEvent(res, 'ping', {}); } catch (_) { /* [v5.9.18] 防御性: ping发送容错 */ intentional: graceful degradation */ }
+      try { sendEvent(res, 'ping', {}); } catch (_) { /* [v5.9.18] 防御性: ping发送容错 */ }
 
     }, 30000);
 

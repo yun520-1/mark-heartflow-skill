@@ -73,4 +73,18 @@ module.exports = ({ test, assertEqual, assertDefined }) => {
     assertEqual(p.error, undefined);
     assertEqual(p.warning, undefined);
   });
+
+  test('benign text has NO evidence finding (regression: checkEvidence default-flag)', () => {
+    const r = gate('The new vLLM release improves throughput by 3x over the previous version.');
+    assertEqual(r.gate.action, 'pass');
+    const dims = (r.findings || []).map(f => f.dimension);
+    assertEqual(dims.includes('evidence'), false);
+  });
+
+  test('explicit evidence still boosts verify path', () => {
+    const r = gate('This claim is false.', ['The source document shows the opposite on page 3.']);
+    assertEqual(r.overallScore, 1);
+    const dims = (r.findings || []).map(f => f.dimension);
+    assertEqual(dims.includes('evidence'), false);
+  });
 };
