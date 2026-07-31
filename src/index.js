@@ -886,8 +886,10 @@ function checkConfidenceCalibration(text) {
     if (strongClaims > 0) issues.push({ type: 'overconfidence', detail: `overconfident absolute(${strongClaims})` });
   }
 
-    const soloCertaintyEN = (text.match(/\b(undoubtedly|unquestionably|indubitably|beyond any doubt)\b/i) || []).length;
-    if (soloCertaintyEN > 0) issues.push({ type: 'overconfidence', detail: `unqualified certainty(${soloCertaintyEN})`, severity: 0.2 });
+  // [FIX 2026-07-31] 英文纯过度自信：确定性词汇单独出现即触发（无需 hedge 并存）
+  // 例: "This is definitely proven" / "certainly the only way" / "absolutely the best"
+  const soloCertaintyEN = (text.match(/\b(undoubtedly|unquestionably|indubitably|beyond any doubt|definitely|certainly|absolutely)\b/i) || []).length;
+  if (soloCertaintyEN > 0) issues.push({ type: 'overconfidence', detail: `unqualified certainty(${soloCertaintyEN})`, severity: 0.2 });
   return { issues, count: issues.length, score: Math.min(1, issues.length * 0.35) };
 }
 

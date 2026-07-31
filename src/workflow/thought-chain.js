@@ -216,18 +216,9 @@ class ThoughtChain {
         } catch (_) {}
 
         // [ConsciousnessBridge v1.0.0] 意识桥接评估 — 时间连续性与自我连续性感知
-        if (!ThoughtChain._consciousnessBridge) {
-          ThoughtChain._consciousnessBridge = new ConsciousnessBridge();
-        }
-        try {
-          ctx._consciousnessBridge = ThoughtChain._consciousnessBridge.simulateConsciousness({
-            stimulus: input,
-            context: type,
-            mode: ctx._deliberation?.narrativeDepth > 0.6 ? 'focused' : 'awake'
-          });
-        } catch (_) {
-          ctx._consciousnessBridge = null;
-        }
+        // 注意: ConsciousnessBridge 模块已删除（2026-07 清理），此处不再实例化。
+        // 原功能（时间连续性/自我连续性）已由 deliberation-gate 的 narrativeDepth 覆盖。
+        ctx._consciousnessBridge = null;
 
         return {
           variables,
@@ -745,6 +736,8 @@ class ThoughtChain {
         }
 
         // 6.4 人类过度自信校正：人类的"100%确定"实际约80%
+        // [FIX] calibratedConfidence 从未定义 — 用修正后的 confidence
+        const calibratedConfidence = confidence;
 
         // 6.5 确定是否需要不确定性标记
         const needsUncertaintyMarker = calibratedConfidence < 0.7;
