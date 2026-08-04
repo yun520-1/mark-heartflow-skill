@@ -117,6 +117,7 @@ async function runAllTests() {
   runSubTest('🔍 KnowledgeQuery', 'knowledge-query.test.js');
   runSubTest('⚖️ DualPerspectiveAuditor', 'dual-perspective.test.js');
   runSubTest('📡 SignalAbsorber', 'signal-absorber.test.js');
+  runSubTest('🧠 MetacognitiveExecutive', 'metacognitive-executive.test.js');
   runSubTest('🕸️ KnowledgeGraphAdapter', 'knowledge-graph-adapter.test.js');
   runSubTest('🏷️ SourceAnnotator', 'source-annotator.test.js');
 

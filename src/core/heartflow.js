@@ -4379,6 +4379,34 @@ class HeartFlow {
     // ─── 后置检查流水线（从 think-pipeline.js 集中管理）─────
     await require('./think-pipeline.js').runThinkPipeline(result, input, this);
 
+    // ─── [v6.4.6] 接线真孤儿模块：元认知执行监控 + 信号吸收 ─────
+    // 1. 元认知执行功能监控（输出侧）：评估本次思考的执行功能/元认知状态
+    try {
+      if (!this._metacognitiveExecutive) {
+        const { ExecutiveFunctionDetector, MetacognitiveMonitor } = require('./metacognitive-executive.js');
+        this._metacognitiveExecutive = { ef: new ExecutiveFunctionDetector(), mc: new MetacognitiveMonitor() };
+      }
+      const lower = { text: typeof input === 'string' ? input : String(input || '') };
+      const ctx = { confidence: result?.confidence ?? result?.overallScore ?? 0.5 };
+      const efResult = this._metacognitiveExecutive.ef.detect({ lower, context: ctx, decision: result });
+      const mcResult = this._metacognitiveExecutive.mc.monitor({ lower, context: ctx, decision: result });
+      result.metacognitive = { executive: efResult, monitor: mcResult };
+    } catch (e) { /* 元认知监控失败不阻断主链路 */ }
+
+    // 2. 信号吸收（输入侧）：对话/指令信号 → 能力缺口 → 升级建议（写 world-tree）
+    try {
+      if (typeof input === 'string' && input.trim().length > 10) {
+        if (!this._signalAbsorber) {
+          const { SignalAbsorber } = require('../cortex/signal-absorber.js');
+          this._signalAbsorber = new SignalAbsorber({});
+        }
+        const abs = this._signalAbsorber.absorb(input, { source: 'dialogue' });
+        if (abs && !abs.error && abs.gaps && abs.gaps.length > 0) {
+          result.signalLearning = { gaps: abs.gaps, upgrades: abs.upgradeActions || [] };
+        }
+      }
+    } catch (e) { /* 信号吸收失败不阻断主链路 */ }
+
     return result;
   }
 
