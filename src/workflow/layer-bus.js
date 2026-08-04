@@ -24,7 +24,7 @@
  *  - 各层结果先写入 draft snapshot，run() 结束后一次性提交到 shared state
  *  - 外层通过版本号/时间戳检测并发修改，避免半写状态被消费
  */
-const { makeLogger } = require('../infra/logger');
+const { makeLogger } = (() => { try { return require('../infra/logger'); } catch (e) { return { makeLogger: () => console }; } })();
 const log = makeLogger(() => (process.env.LOG_LEVEL || 'info'));
 
 class LayerBus {

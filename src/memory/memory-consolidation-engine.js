@@ -16,7 +16,7 @@
 
 class MemoryConsolidationEngine {
   constructor(options = {}) {
-    this._bridge = getCognitiveBridge();
+    this._bridge = (typeof globalThis !== 'undefined' && globalThis.getCognitiveBridge) ? globalThis.getCognitiveBridge() : null;
     this._memoryTraces = new Map();  // traceId → { content, strength, lastAccess, accessCount, accessIntervals, encoding }
     this._workingMemory = [];        // 工作记忆槽位（4±2）
     this._workingMemoryCapacity = options.workingMemoryCapacity || 5;

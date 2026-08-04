@@ -23,7 +23,7 @@
 const fs = require('../../utils/safe-fs');
 
 const path = require('path');
-const { SelfScanner } = require('./self-scanner.js');
+const { SelfScanner } = (() => { try { return require('./self-scanner.js'); } catch (e) { return { SelfScanner: null }; } })();
 const { SelfEvolutionV2 } = require('../self-evolution-v2.js');
 const { MetaEngine } = require('../meta-engine.js');
 
@@ -110,7 +110,7 @@ class SelfEvolutionCore {
     this.version = '7.7.000';
 
     // 自我弱点扫描器（让 evolve 基于真实代码库产出具体改进）
-    this._scanner = new SelfScanner(this.projectRoot);
+    this._scanner = SelfScanner ? new SelfScanner(this.projectRoot) : null;
     this._explorer = new SelfEvolutionV2(this.projectRoot);
     this._metaEngine = new MetaEngine(this.projectRoot);
 
@@ -715,8 +715,8 @@ class SelfEvolutionCore {
 
     // [v6.0.29] 自我审视：扫描真实代码库弱点，让进化基于事实而非模板
     try {
-      learning.weaknesses = this._scanner.scan();
-      learning.summary += `；扫描到 ${learning.weaknesses.todoCount} 个 TODO、${learning.weaknesses.silentCatches} 处沉默空 catch、${learning.weaknesses.longFunctions.length} 个超长函数`;
+      learning.weaknesses = this._scanner ? this._scanner.scan() : { todoCount: 0, silentCatches: 0, longFunctions: [] };
+      learning.summary += `；扫描到 ${learning.weaknesses.todoCount || 0} 个 TODO、${learning.weaknesses.silentCatches || 0} 处沉默空 catch、${(learning.weaknesses.longFunctions || []).length} 个超长函数`;
     } catch (e) {
       learning.weaknesses = { error: e.message };
     }

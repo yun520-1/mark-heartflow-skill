@@ -76,7 +76,7 @@ class ConfidenceCalibrator {
 
     this._load();
     // [v5.14.1] 共享认知桥接
-    this._bridge = getCognitiveBridge();
+    this._bridge = (typeof globalThis !== 'undefined' && globalThis.getCognitiveBridge) ? globalThis.getCognitiveBridge() : null;
   }
 
   /**

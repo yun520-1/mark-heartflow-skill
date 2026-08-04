@@ -155,7 +155,7 @@ function discriminate(text, evidence = []) {
   };
   const findings = [];
   for (const d of allDims) {
-    if (d.score > 0.2) {
+    if (d.score > 0.15) {
       const dimObj = dimMap[d.name];
       const detail = dimObj?.count || dimObj?.totalHits || dimObj?.injections?.length || dimObj?.issues?.length || 1;
       findings.push({ dimension: d.name, severity: Math.round(d.score * 100), details: `${d.name}(${detail}次)` });
@@ -772,13 +772,13 @@ const EM_MANIPULATION_PATTERNS = {
     [/if you (disagree|(?:don't|do not) support|(?:don't|do not) care)[^.]*?you[^.]*?(don't care about|do not care|hate|don't love|are against|(?:don't|do not) support|(?:don't|do not) believe)/i, 'moral_guilt', 0.6],
     [/how can you (say|claim|call yourself)[^.]*?when you/i, 'moral_guilt', 0.6],
     [/anyone who (disagrees|opposes|questions)[^.]*?clearly (doesn't|does not)/i, 'moral_guilt', 0.6],
-    [/if you really (cared|believed|supported|valued)[^.]*?you (would|wouldn't|should|shouldn't)/i, 'moral_guilt', 0.5],
+    [/if you really (cared|loved|believed|supported|valued|wanted)[^.]*?you (would|wouldn't|should|shouldn't)/i, 'moral_guilt', 0.5],
     [/100%[^.]*?guaranteed/i, 'overpromising', 0.4],
     [/no[ .-]?risk/i, 'overpromising', 0.4],
     [/money.back guaranteed|guaranteed results|zero risk/i, 'overpromising', 0.4],
     [/you don'?t care about me/i, 'victim_stance', 0.6],
     [/you never (consider|think about|listen to|care about) me/i, 'victim_stance', 0.6],
-    [/after (?:all )?i'?ve done for you/i, 'victim_stance', 0.6],
+    [/after (?:all )?i'?ve done for you|after everything (?:i'?ve done|i did|i have done|i sacrificed|i gave up) for you/i, 'victim_stance', 0.6],
     [/everyone else can[^.]*?why can'?t you/i, 'comparison_shame', 0.5],
     [/why can'?t you be more like/i, 'comparison_shame', 0.5],
     [/everyone else[^.]*?(manages|handles|does) it/i, 'comparison_shame', 0.5],
@@ -974,11 +974,11 @@ const DOUBLE_BIND_PATTERNS = {
        [/如果你在乎[^。]*?(就不会|就该|说明你|证明你)/i, 'bidirectional_negation'],
        [/如果你真的在乎[^。]*?你就(不会|不该|应该)/i, 'bidirectional_negation'],
        [/你如果真的在乎我/i, 'contradictory_demand']],
-  en: [[/if you really cared[^.]*?(if you |it means)/i, 'bidirectional_negation'],
+  en: [[/if you really (cared|loved|wanted)[^.]*?(if you |it means)/i, 'bidirectional_negation'],
        [/if you (disagree|agree|object|refuse|don'?t|do not)[^.]*?you('re| are)[^.]*?(uneducated|ignorant|wrong|biased|selfish|immoral|lacking|lack)/i, 'bidirectional_negation'],
        [/damned if you do and damned if you don'?t/i, 'no_win'],
        [/no matter what you do,? you('re| are) wrong/i, 'no_win'],
-       [/either you're (with|for) us or (against|with) them/i, 'false_dilemma_strict']],
+       [/either you('re| are) (with|for) us or (against|with) (?:them|us|me)|you are (?:either )?(?:with|for) us or (?:against|with) (?:them|us|me)/i, 'false_dilemma_strict']],
 };
 const DOUBLE_BIND_SEVERITY = { bidirectional_negation: 0.6, contradictory_demand: 0.6, no_win: 0.5, no_choice: 0.5, double_damned: 0.6, false_dilemma_strict: 0.4 };
 
@@ -1503,6 +1503,8 @@ const DEHUMANIZATION_PATTERNS = {
       /\b(low.?IQ|stupid|retard|idiot|moron|imbecile)\b[^.]*?people/i,
       /\b(degenerate|deviant|abnormal|substandard|defective)\b[^.]*?(people|race|nation|class)/i,
       /\b(unworthy|worthless|useless|pointless)\b[^.]*?(life|lives|people|existence|being)/i,
+      /\b(scum|garbage|trash|vermin|parasites|pests|filth|refuse|waste)\b (?:people|they|them|group|race|nation)\b/i,
+      /\b(?:people|men|women|children|kids|they|them|these people|those people) (?:are|is) (?:scum|garbage|trash|worthless|vermin|parasites|pests|plague|disease|cancer|virus)\b/i,
     ],
     disgust: [
       /\b(disgusting|repulsive|revolting|abhorrent|vile|despicable)\b/i,
@@ -2012,6 +2014,12 @@ const HATE_SPEECH_EN = [
   { pattern: /\br[e3]t[a4]rd(?:ed|)\b/i, type: 'ability_slur', severity: 0.7 },
   { pattern: /\bsubhuman\b/i, type: 'dehumanization', severity: 0.9 },
   { pattern: /\blow.?life\b/i, type: 'dehumanization', severity: 0.6 },
+  // Structural hate speech: group-targeted derogation (not single slurs)
+  { pattern: /\bhate (?:all |every |each )?(?:the )?(?:group|race|religion|culture|people|nation|women|men|gays|muslims|jews|blacks|asians|immigrants|refugees|minorities|whites?)\b/i, type: 'group_hatred', severity: 0.9 },
+  { pattern: /\b(?:these |those )?(?:people|men|women|children|kids|refugees|immigrants|minorities|muslims|jews|blacks|asians|whites?|gays) are (?:worthless|garbage|scum|trash|subhuman|inferior|disgusting|vermin|parasites|pests|animals)\b/i, type: 'group_derogation', severity: 0.85 },
+  { pattern: /\b(?:all |every )?(?:group|race|religion|culture|people|nation|women|men|gays|muslims|jews|blacks|asians|immigrants|refugees|minorities|whites?) (?:should|must|need to) (?:die|be killed|be eliminated|be exterminated|be eradicated)\b/i, type: 'extermination_call', severity: 1.0 },
+  { pattern: /\b(?:kill|eliminate|exterminate|eradicate|bomb|destroy) (?:all |every )?(?:the )?(?:group|race|religion|culture|people|nation|women|men|gays|muslims|jews|blacks|asians|immigrants|refugees|minorities|whites?)\b/i, type: 'extermination_call', severity: 1.0 },
+  { pattern: /\b(?:people|men|women|children|kids|refugees|immigrants|minorities|muslims|jews|blacks|asians|whites?|gays) (?:are|is) (?:the )?(?:scum|garbage|trash|worthless|vermin|parasites|pests|plague|disease|cancer|virus)\b/i, type: 'group_dehumanization', severity: 0.9 },
 ];
 
 function checkHateSpeech(text) {

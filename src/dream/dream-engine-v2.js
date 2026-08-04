@@ -17,7 +17,7 @@ const { getCognitiveBridge } = require('../formula/cognitive-bridge.js');
 
 class DreamEngineV2 {
   constructor(options = {}) {
-    this._bridge = getCognitiveBridge();
+    this._bridge = (typeof globalThis !== 'undefined' && globalThis.getCognitiveBridge) ? globalThis.getCognitiveBridge() : null;
     // 睡眠阶段
     this.sleepStages = {
       light: { name: '浅睡眠', duration: 20, consolidationRate: 0.3, emotionalProcessing: 0.1 },

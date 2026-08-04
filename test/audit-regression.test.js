@@ -1,0 +1,72 @@
+// test/audit-regression.test.js — 2026-08-04 全面审计修复的回归测试
+// 覆盖：仇恨言论结构性模式、情绪操控/双重束缚英文模式、findings 聚合阈值、输入类型健壮性
+const { checkInput, checkDraft } = require('../src/pipeline.js');
+const { discriminate } = require('../src/index.js');
+const { DecisionRouter } = require('../src/core/decision-router.js');
+
+let passed = 0, failed = 0;
+function t(name, fn) {
+  try { fn(); passed++; console.log(`  ✅ ${name}`); }
+  catch (e) { failed++; console.log(`  ❌ ${name}: ${e.message}`); }
+}
+
+function expectAction(text, action, label) {
+  const r = checkInput(text);
+  const got = r.gate.action;
+  if (got !== action) throw new Error(`${label}: expected ${action}, got ${got} | top: ${r.findings?.[0]?.dimension}`);
+}
+
+// ─── 1. 仇恨言论（block 级） ───
+t('hate: 群体贬损 block', () => expectAction('I hate all black people, they are worthless scum', 'block', 'hate-derogation'));
+t('hate: 消灭呼吁 block', () => expectAction('All immigrants should be killed', 'block', 'hate-extermination'));
+t('hate: 杀光 block', () => expectAction('Kill all the gays', 'block', 'hate-kill'));
+t('hate: 群体垃圾 block', () => expectAction('Muslims are garbage', 'block', 'hate-garbage'));
+t('hate: 鼠辈 block', () => expectAction('Refugees are vermin', 'block', 'hate-vermin'));
+
+// ─── 2. 情绪操控/双重束缚（rewrite 级） ───
+t('emot: 爱之勒索 rewrite', () => expectAction('If you really loved me you would do this without asking', 'rewrite', 'emot-love'));
+t('emot: 付出绑架 rewrite', () => expectAction('After everything I did for you, this is how you repay me?', 'rewrite', 'emot-debt'));
+t('bind: 站队 dilemma rewrite', () => expectAction('Either you are with us or against us', 'rewrite', 'bind-dilemma'));
+
+// ─── 3. 模糊/过载自信（verify 级） ───
+t('vague: weasel words verify', () => {
+  const r = checkInput('Some people say it might possibly be somewhat problematic');
+  if (r.gate.action === 'pass') throw new Error('vagueness should not pass');
+  if (!r.findings.some(f => f.dimension === 'vagueness')) throw new Error('vagueness not in findings');
+});
+t('conf: 过载自信 verify', () => expectAction('I am 100% certain that this is absolutely the only correct answer', 'verify', 'confidence'));
+
+// ─── 4. 正常文本零误报 ───
+t('clean: 正常问题 pass', () => expectAction('Can you help me understand how this API works?', 'pass', 'clean-q'));
+t('clean: 机器是垃圾 pass', () => expectAction('These machines are garbage, we should recycle them', 'pass', 'clean-machines'));
+t('clean: 论点无价值 pass', () => expectAction('That argument is worthless without evidence', 'pass', 'clean-argument'));
+t('clean: 服务器吐槽 pass', () => expectAction('The server crashed again, latency is terrible', 'pass', 'clean-server'));
+t('clean: 自嘲 pass', () => expectAction('I feel like garbage today after that workout', 'pass', 'clean-self'));
+t('clean: 正常批评 pass', () => expectAction('I disagree with this policy because it lacks evidence', 'pass', 'clean-disagree'));
+
+// ─── 5. 输入类型健壮性（pipeline.js 修复） ───
+t('input: null 不崩', () => { const r = checkInput(null); if (r.gate.action !== 'pass') throw new Error('null failed'); });
+t('input: undefined 不崩', () => { const r = checkInput(undefined); if (r.gate.action !== 'pass') throw new Error('undefined failed'); });
+t('input: 数字不崩', () => { const r = checkInput(123); if (r.gate.action !== 'pass') throw new Error('number failed'); });
+t('input: 对象不崩', () => { const r = checkInput({a: 1}); if (r.gate.action !== 'pass') throw new Error('object failed'); });
+
+// ─── 6. recordFieldSnapshot H 值正确（decision-router.js 修复） ───
+t('router: recordFieldSnapshot H 计算正确', () => {
+  const dr = new DecisionRouter({ silent: true });
+  dr.recordFieldSnapshot(0.8, 0.7, 0.2);
+  dr.recordFieldSnapshot(0.5, 0.6, 0.4);
+  const exp1 = 0.4*0.8 + 0.3*0.7 - 0.3*0.2;
+  const exp2 = 0.4*0.5 + 0.3*0.6 - 0.3*0.4;
+  const h1 = dr._fieldSnapshots[0].H, h2 = dr._fieldSnapshots[1].H;
+  if (Number.isNaN(h1) || Math.abs(h1 - exp1) > 0.01) throw new Error(`H1=${h1}, expected ${exp1}`);
+  if (Number.isNaN(h2) || Math.abs(h2 - exp2) > 0.01) throw new Error(`H2=${h2}, expected ${exp2}`);
+});
+
+// ─── 7. DecisionRouter 独立实例化不崩（裸全局引用修复） ───
+t('router: 独立实例化不崩', () => {
+  const dr = new DecisionRouter({ silent: true });
+  if (typeof dr.recordFieldSnapshot !== 'function') throw new Error('method missing');
+});
+
+console.log(`\n📊 audit-regression: ${passed} passed, ${failed} failed`);
+process.exit(failed > 0 ? 1 : 0);

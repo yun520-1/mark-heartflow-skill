@@ -732,9 +732,10 @@ class DecisionRouter {
 
     this._ruleStats = {};
 
-    // [v5.14.1] 共享认知桥接
-
-    this._bridgeCache = getCognitiveBridge();
+    // [v5.14.1] 共享认知桥接（优先全局注入，fallback 独立加载，再 fallback 空对象）
+    this._bridgeCache = (typeof globalThis !== 'undefined' && globalThis.getCognitiveBridge)
+      ? globalThis.getCognitiveBridge()
+      : (() => { try { return require('../formula/cognitive-bridge.js').getCognitiveBridge(); } catch (e) { return null; } })();
 
     for (const rule of this._rules) {
 
@@ -3290,7 +3291,7 @@ DecisionRouter.prototype.exportFieldTrajectory = function(format = 'json') {
 
 DecisionRouter.prototype.recordFieldSnapshot = function(U, D, A, ts) {
   this._fieldSnapshots = this._fieldSnapshots || [];
-  const H = FIELD_WEIGHTS ? FIELD_WEIGHTS.U * U + FIELD_WEIGHTS.D * D - FIELD_WEIGHTS.A * A : 0.4 * U + 0.3 * D - 0.3 * A;
+  const H = FIELD_WEIGHTS ? FIELD_WEIGHTS.lambdaU * U + FIELD_WEIGHTS.lambdaD * D - FIELD_WEIGHTS.lambdaA * A : 0.4 * U + 0.3 * D - 0.3 * A;
   this._fieldSnapshots.push({ cycle: this._fieldSnapshots.length, U, D, A, H: Math.round(H * 100) / 100, ts: ts || Date.now() });
   if (this._fieldSnapshots.length > 1000) this._fieldSnapshots.splice(0, 200);
   return this._fieldSnapshots.length;

@@ -35,7 +35,9 @@ let pipelineAnchor = null;
  * @returns {object} 统一 pipeline 结果
  */
 function runPipeline({ input, mode = 'input', anchor } = {}) {
-  if (!input) return { error: 'no_input', gate: { action: 'pass', reason: '无输入' }, checked_by: [] };
+  // 统一输入类型：非字符串（数字/对象/布尔）转字符串，避免下游 .slice/.match 崩溃
+  if (input === null || input === undefined) return { error: 'no_input', gate: { action: 'pass', reason: '无输入' }, checked_by: [] };
+  if (typeof input !== 'string') input = String(input);
 
   const checked_by = [];
   let currentGate = { action: 'pass', reason: '通过' };

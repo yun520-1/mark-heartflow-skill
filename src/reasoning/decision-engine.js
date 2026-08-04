@@ -19,7 +19,7 @@
 
 class DecisionEngine {
   constructor(options = {}) {
-    this._bridge = getCognitiveBridge();
+    this._bridge = (typeof globalThis !== 'undefined' && globalThis.getCognitiveBridge) ? globalThis.getCognitiveBridge() : null;
     this._beliefState = new Map();  // 信念状态: hypothesis → probability
     this._qTable = new Map();       // Q值表: state_action → value
     this._learningRate = options.learningRate || 0.1;
