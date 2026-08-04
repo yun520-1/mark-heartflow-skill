@@ -22,7 +22,7 @@
  * - six-level consciousness: 觉察→自省→无我→彼岸→般若→圣人
  */
 
-const { DreamEngine, LEVELS, DEFAULT_SCORING } = require('./dream.js');
+const { DreamV11: DreamEngine, LEVELS, DEFAULT_SCORING } = require('./dream.js');
 
 // ============================================================================
 // 常量定义

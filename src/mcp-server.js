@@ -349,70 +349,441 @@ version = getVersion();
 // ═══════════════════════════════════════════════
 
 const TOOLS = [
+
   {
+
     name: 'heartflow_think',
-    description: '完整思维链：分类输入→路由→推理→输出。返回结构化分析（类型、置信度、思维链、辨别结果）。',
+
+    description: '完整思维链：分类输入→路由→推理→输出。返回结构化分析结果，包含类型、置信度和思维链。',
+
     inputSchema: { type: 'object', properties: { input: { type: 'string', description: '需要分析的输入文本' } }, required: ['input'] }
+
   },
+
   {
+
     name: 'heartflow_think_fast',
+
     description: '快速推理：快速分类判断模式，适合高频率、低延迟场景。返回类型和置信度。',
+
     inputSchema: { type: 'object', properties: { input: { type: 'string', description: '需要快速判断的输入文本' } }, required: ['input'] }
+
   },
+
   {
+
     name: 'heartflow_dream',
-    description: '梦境升华：从记忆碎片中提取共同模式，熔炼为新认知洞察。',
-    inputSchema: { type: 'object', properties: { theme: { type: 'string', description: '梦境主题（可选）' }, intensity: { type: 'number', description: '深度 0-1（默认0.7）' } } }
+
+    description: '梦境升华（炼金）：从多个记忆碎片中提取共同模式，熔炼为新的认知洞察。不是叙事生成，是记忆的升华与重构。',
+
+    inputSchema: { type: 'object', properties: { theme: { type: 'string', description: '梦境主题或引导语（可选）——作为模式筛选线索' }, intensity: { type: 'number', description: '梦境深度 0.0-1.0（可选，默认0.7）' } } }
+
   },
+
   {
+
     name: 'heartflow_memory_search',
-    description: '跨层记忆检索：多层记忆中搜索相关条目（语义+关键词）。',
+
+    description: '跨层记忆检索：在多层记忆中搜索相关条目。支持语义搜索和关键词搜索。',
+
     inputSchema: { type: 'object', properties: { query: { type: 'string', description: '搜索查询' }, layer: { type: 'string', enum: ['core', 'learned', 'ephemeral', 'all'], description: '记忆层（默认 all）' }, limit: { type: 'number', description: '最大返回数（默认 10）' } }, required: ['query'] }
+
   },
+
   {
+
     name: 'heartflow_emotion',
-    description: '情绪分析：PAD 三维分析（愉悦-唤醒-支配），返回情绪类型和强度。',
+
+    description: 'PAD 情绪分析：对输入文本进行 Pleasure-Arousal-Dominance 三维分析，返回情绪类型和强度。',
+
     inputSchema: { type: 'object', properties: { input: { type: 'string', description: '需要分析的文本' } }, required: ['input'] }
+
   },
+
   {
-    name: 'heartflow_emotion_deep',
-    description: '深度情感分析：情绪状态、PAD维度、具身反应。',
-    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '待分析文本' } }, required: ['input'] }
+
+    name: 'heartflow_self_heal',
+
+    description: '自愈策略推荐：基于历史经验为当前场景推荐最优策略。返回策略排名、置信度和执行建议。',
+
+    inputSchema: { type: 'object', properties: { context: { type: 'string', description: '当前上下文或失败场景描述' } }, required: ['context'] }
+
   },
+
   {
+
+    name: 'heartflow_provider_health',
+
+    description: 'Provider 健康检查：记录/查询 LLM provider 调用健康状态（延迟、错误率、建议）。',
+
+    inputSchema: {
+
+      type: 'object',
+
+      properties: {
+
+        provider: { type: 'string', description: 'Provider 名称（默认 default）' },
+
+        action: { type: 'string', enum: ['get', 'record'], description: 'get=查询健康状态, record=记录一次调用结果' },
+
+        success: { type: 'boolean', description: 'record 时必填：调用是否成功' },
+
+        latency: { type: 'number', description: 'record 时可选：延迟(ms)' },
+
+        error: { type: 'string', description: 'record 时可选：错误信息' }
+
+      },
+
+      required: ['action']
+
+    }
+
+  },
+
+  {
+
+    name: 'heartflow_cost_tracking',
+
+    description: '成本追踪：记录/查询 LLM 调用成本统计（token 消耗、费用、按 provider 分布）。',
+
+    inputSchema: {
+
+      type: 'object',
+
+      properties: {
+
+        action: { type: 'string', enum: ['record', 'stats'], description: 'record=记录一次成本, stats=查询统计' },
+
+        provider: { type: 'string', description: 'Provider 名称' },
+
+        tokensIn: { type: 'number', description: '输入 token 数' },
+
+        tokensOut: { type: 'number', description: '输出 token 数' },
+
+        cost: { type: 'number', description: '本次调用费用' },
+
+        taskType: { type: 'string', description: '任务类型（默认 unknown）' },
+
+        window: { type: 'string', enum: ['hour', 'day', 'all'], description: 'stats 时的时间窗口（默认 all）' }
+
+      },
+
+      required: ['action']
+
+    }
+
+  },
+
+  {
+
     name: 'heartflow_status',
-    description: '服务健康检查：版本、启动耗时、模块数、记忆层状态。',
+
+    description: '服务健康检查：返回版本、启动耗时、加载模块数、记忆层状态。',
+
     inputSchema: { type: 'object', properties: { detail: { type: 'string', enum: ['basic', 'full'], description: '详细程度（默认 basic）' } } }
+
+  },
+
+  {
+
+    name: 'heartflow_agent_psychology',
+
+    description: 'AI引擎心理学评估：返回引擎自身的7维认知心理状态分析（认知负荷、目标冲突、价值内化矛盾、自我认同漂移、决策质量衰减、认知失调、认知弹性）。',
+
+    inputSchema: { type: 'object', properties: { activeGoals: { type: 'array', items: { type: 'object' }, description: '当前激活的目标列表（可选）' }, context: { type: 'object', description: '上下文信息（可选）' }, action: { type: 'string', description: '最近执行的行为描述（可选）' } } }
+
+  },
+
+  {
+
+    name: 'heartflow_engine_pacing',
+
+    description: '引擎认知节律诊断：检测引擎是否需要"减速"（呼吸）、暂停或锚定。基于认知负荷、目标冲突、错误率给出处理节奏建议。',
+
+    inputSchema: { type: 'object', properties: { stats: { type: 'object', description: '引擎状态数据（可选），不传则自动获取' } } }
+
+  },
+
+  {
+
+    name: 'heartflow_cognitive_check',
+
+    description: '引擎认知状态签到：综合检查认知偏差、决策模式、是否需要自我修复。返回完整诊断+修复建议。',
+
+    inputSchema: { type: 'object', properties: { stats: { type: 'object', description: '引擎状态数据（可选）' }, errors: { type: 'array', description: '最近错误列表（可选）' } } }
+
+  },
+
+  // v3.0.1 — 哲学→决策转化器
+
+  {
+
+    name: 'heartflow_philosophy_decision',
+
+    description: '哲学→决策转化：将引擎的哲学评估和心理状态转化为可执行决策指令。返回决策类型（pause/accelerate/turn/hold/heal/resonate/transmit/rest）、置信度、优先级和决策依据。',
+
+    inputSchema: { type: 'object', properties: {
+
+      context: { type: 'object', description: '可选的上下文信息（当前任务、用户意图等）' }
+
+    } }
+
+  },
+
+  // v3.0.2 — 通用决策路由引擎
+
+  {
+
+    name: 'heartflow_decision_router',
+
+    description: '通用决策路由引擎：分析任意模块的评估结果，自动匹配决策规则并返回决策指令。支持认知负荷、认知失调、决策质量、错误严重性、稳定性等19种规则的自动匹配。',
+
+    inputSchema: { type: 'object', properties: {
+
+      input: { type: 'object', description: '分析结果对象，包含 cognitiveLoad/dissonance/quality/severity 等字段' }
+
+    }, required: ['input'] }
+
+  },
+
+  {
+
+    name: 'heartflow_decision_router_stats',
+
+    description: '决策路由引擎统计：返回历史决策统计、规则数量和当前活跃决策。',
+
+    inputSchema: { type: 'object', properties: {} }
+
+  },
+
+  // v3.1.0 新增工具
+
+  {
+
+    name: 'heartflow_module_health',
+
+    description: '模块健康检查：检查所有已加载模块的健康状态，返回健康评分和问题模块列表。',
+
+    inputSchema: { type: 'object', properties: {} }
+
+  },
+
+  {
+
+    name: 'heartflow_upgrade_stats',
+
+    description: '升级统计：返回智能升级引擎的统计信息，包括升级次数、关键词分布、平均质量等。',
+
+    inputSchema: { type: 'object', properties: {} }
+
+  },
+
+  // v3.2.0 — Benchmark 基准测试
+
+  {
+
+    name: 'heartflow_benchmark_run',
+
+    description: '运行 benchmark 测试套件。加载 JSONL 数据包，对每条数据运行 HeartFlow think()，对比 expected_output 计算准确率。支持数学推理、逻辑推理、指令遵循、SQL、工具调用等类别。失败案例自动推入自愈 RL。',
+
+    inputSchema: { type: 'object', properties: {
+
+      dataDir: { type: 'string', description: '数据包目录路径（可选，默认 data/benchmark/）' },
+
+      categories: { type: 'array', items: { type: 'string' }, description: '要测试的类别（可选，默认全部）' },
+
+      threshold: { type: 'number', description: '通过阈值 0-1（可选，默认 0.5）' },
+
+      pushFailures: { type: 'boolean', description: '是否将失败推入自愈 RL（默认 true）' }
+
+    } }
+
+  },
+
+  {
+
+    name: 'heartflow_benchmark_import_failures',
+
+    description: '导入失败案例 JSONL 到自愈 RL。读取 failure_cases 文件，每条推入 experience-collector 和 self-healing reflect()，丰富 RL 训练数据。',
+
+    inputSchema: { type: 'object', properties: {
+
+      filePath: { type: 'string', description: '失败案例 JSONL 文件路径' },
+
+      autoRetrain: { type: 'boolean', description: '导入后自动触发反思循环（默认 false）' }
+
+    }, required: ['filePath'] }
+
+  },
+
+  {
+
+    name: 'heartflow_benchmark_status',
+
+    description: '查看 benchmark 数据包状态：列出已加载的数据包、记录数、类别分布。',
+
+    inputSchema: { type: 'object', properties: {
+
+      dataDir: { type: 'string', description: '数据包目录路径（可选，默认 data/benchmark/）' }
+
+    } }
+
+  },
+
+  // [v6.3.0] 5 个辨别引擎 MCP 入口 — 心虫核心价值
+  {
+
+    name: 'heartflow_verify',
+
+    description: '验证一段文本的证据充分性、矛盾、风险、完整度。心虫的规则型判别器，不谄媚。',
+
+    inputSchema: { type: 'object', properties: { decision: { type: 'string', description: '需要验证的论断/文本' }, evidence: { type: 'array', items: { type: 'string' }, description: '支持证据列表' }, confidence: { type: 'number', description: '置信度 0-1' } }, required: ['decision'] }
+
+  },
+
+  {
+
+    name: 'heartflow_diagnose',
+
+    description: "心虫引擎自诊。返回真实状态——不是一切正常，诚实报告问题。",
+
+    inputSchema: { type: 'object', properties: {} }
+
   },
   {
-    name: 'heartflow_verify',
-    description: '验证文本证据充分性、矛盾、风险、完整度。心虫规则型判别器。',
-    inputSchema: { type: 'object', properties: { decision: { type: 'string', description: '需要验证的论断' }, evidence: { type: 'array', items: { type: 'string' }, description: '支持证据' }, confidence: { type: 'number', description: '置信度 0-1' } }, required: ['decision'] }
+
+    name: 'heartflow_check_drift',
+
+    description: '检测心虫身份一致性是否随时间漂移。返回漂移评分和状态。',
+
+    inputSchema: { type: 'object', properties: {} }
+
   },
+  {
+
+    name: 'heartflow_error_store',
+
+    description: '记录一次错误到跨会话 Q 表。同类错误不会重复。',
+
+    inputSchema: { type: 'object', properties: { problem: { type: 'string', description: '问题描述' }, action: { type: 'string', description: '执行动作' }, outcome: { type: 'string', description: '结果' } }, required: ['problem', 'action', 'outcome'] }
+
+  },
+  {
+
+    name: 'heartflow_error_query',
+
+    description: '查询相似历史错误。每次做决策前查一次，避免重蹈覆辙。',
+
+    inputSchema: { type: 'object', properties: { problem: { type: 'string', description: '当前问题' }, limit: { type: 'number', description: '最大返回数（默认5）' } }, required: ['problem'] }
+
+  },
+
   {
     name: 'heartflow_audit42',
-    description: '42维全量审核：discriminate+summarize+crossAnalyze+entropy 全维度分析。',
-    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '需要审核的文本' }, evidence: { type: 'array', items: { type: 'string' }, description: '支持证据（可选）' } }, required: ['text'] }
+
+    description: '42维全量审核报告：对输入文本进行discriminate+summarize+crossAnalyze+entropy全维度分析，返回42维详细审核结果。',
+
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '需要审核的文本' }, evidence: { type: 'array', items: { type: 'string' }, description: '支持证据列表（可选）' } }, required: ['text'] }
+
   },
+
   {
     name: 'heartflow_philosophy',
-    description: '哲学评估：AI自我定位、四框架伦理评估、决策指令。',
-    inputSchema: { type: 'object', properties: {}, additionalProperties: false }
+    description: '哲学评估：返回AI自我定位、四框架伦理评估、决策指令',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
   },
+
   {
     name: 'heartflow_consciousness',
-    description: '意识理论分析：IIT整合信息+GWT全局工作空间+HOT高阶思维+预测加工。',
-    inputSchema: { type: 'object', properties: { neuralStates: { type: 'array', items: { type: 'number' } }, content: { type: 'number' } } }
+    description: '意识理论分析：IIT整合信息+GWT全局工作空间+HOT高阶思维+预测加工',
+    inputSchema: { type: 'object', properties: {
+      neuralStates: { type: 'array', items: { type: 'number' } },
+      content: { type: 'number' },
+    }},
   },
+
+  {
+    name: 'heartflow_emotion_deep',
+    description: '深度情感分析：输入文本的情绪状态、PAD维度、具身反应',
+    inputSchema: { type: 'object', properties: {
+      input: { type: 'string', description: '待分析文本' },
+    }, required: ['input'] },
+  },
+
   {
     name: 'heartflow_ethics_check',
-    description: '真善美伦理检查：10分制三维评分(truth/goodness/beauty)。',
-    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待检查文本' } }, required: ['text'] }
+    description: '真善美伦理检查：10分制三维评分(truth/goodness/beauty)',
+    inputSchema: { type: 'object', properties: {
+      text: { type: 'string', description: '待检查文本' },
+    }, required: ['text'] },
   },
+
   {
     name: 'heartflow_reflect',
-    description: '反思自省：运行Reflector引擎，对自身状态、情绪、任务全面反思。',
-    inputSchema: { type: 'object', properties: {}, additionalProperties: false }
+    description: '反思与自省：运行Reflector引擎，对自身状态、情绪、任务做全面反思',
+    inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+  },
+
+
+  {
+    name: 'heartflow_evolve',
+    description: '进化引擎：MetaLearner/EvolutionLoop，学习新经验并进化。返回学习结果和进化统计。',
+    inputSchema: { type: 'object', properties: { experience: { type: 'string', description: '要学习的经验/教训' } } }
+  },
+  {
+    name: 'heartflow_self_heal_rl',
+    description: '自愈强化学习：基于历史失败经验推荐修复策略（Q表）。返回策略排名和置信度。',
+    inputSchema: { type: 'object', properties: { context: { type: 'string', description: '失败场景描述' } } }
+  },
+  {
+    name: 'heartflow_reflexion',
+    description: '反思引擎：对失败/决策深度反思，生成教训和改进建议。',
+    inputSchema: { type: 'object', properties: { failure: { type: 'string', description: '失败或决策内容' } } }
+  },
+  {
+    name: 'heartflow_forgetting',
+    description: '遗忘引擎：计算记忆保留率/遗忘概率（艾宾浩斯曲线），检测记忆振荡。',
+    inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['status', 'consolidate'], description: '查询或巩固' } } }
+  },
+  {
+    name: 'heartflow_knowledge_graph',
+    description: '知识图谱：查询/管理引擎知识图谱（实体关系）。',
+    inputSchema: { type: 'object', properties: { query: { type: 'string', description: '知识查询' }, action: { type: 'string', enum: ['query', 'stats'], description: '查询或统计' } } }
+  },
+  {
+    name: 'heartflow_memory_consolidation',
+    description: '记忆巩固：计算记忆保留率、ACT-R激活度、安排复习计划。',
+    inputSchema: { type: 'object', properties: { memory: { type: 'string', description: '记忆内容' }, age: { type: 'number', description: '记忆年龄(秒)' } } }
+  },
+  {
+    name: 'heartflow_emotion_dynamics',
+    description: '情绪动力学：PAD状态更新、情绪调节、心理韧性计算。',
+    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '情绪文本' }, action: { type: 'string', enum: ['analyze', 'regulate'], description: '分析或调节' } } }
+  },
+  {
+    name: 'heartflow_mood',
+    description: '情绪演化：长期情绪状态演化分析，返回情绪趋势和状态。',
+    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '情绪文本' } } }
+  },
+  {
+    name: 'heartflow_interactive_dream',
+    description: '交互梦境：记忆房间化梦境引擎，创建/探索梦境房间。',
+    inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['dream', 'rooms', 'summarize'], description: '做梦/看房间/总结记忆' }, theme: { type: 'string', description: '梦境主题' } } }
+  },
+  {
+    name: 'heartflow_meaning',
+    description: '意义引擎：评估意义感、检测意义危机、给出应对建议。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '自我表达文本' } } }
+  },
+  {
+    name: 'heartflow_cognitive_engine',
+    description: '认知引擎：全息推理、深层动机分析、风险评估、根因方案。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待分析文本' }, mode: { type: 'string', enum: ['holographic', 'motivation', 'risk', 'root'], description: '分析模式' } } }
+  },
+  {
+    name: 'heartflow_decision_verify',
+    description: '决策验证：验证决策证据充分性、矛盾、教训检查。',
+    inputSchema: { type: 'object', properties: { decision: { type: 'string', description: '决策内容' }, evidence: { type: 'array', items: { type: 'string' }, description: '支持证据' } } }
   }
 ];
 
@@ -2360,6 +2731,24 @@ const HANDLERS = {
 
   heartflow_think: handleThink,
 
+  heartflow_self_heal: handleSelfHeal,
+
+  heartflow_provider_health: handleProviderHealth,
+
+  heartflow_cost_tracking: handleCostTracking,
+
+  heartflow_agent_psychology: handleAgentPsychology,
+
+  heartflow_engine_pacing: handleEnginePacing,
+
+  heartflow_cognitive_check: handleCognitiveCheck,
+
+  heartflow_philosophy_decision: handlePhilosophyDecision,
+
+  heartflow_decision_router: handleDecisionRouter,
+
+  heartflow_decision_router_stats: handleDecisionRouterStats,
+
   heartflow_think_fast: handleThinkFast,
 
   heartflow_dream: handleDream,
@@ -2467,6 +2856,138 @@ const HANDLERS = {
     } catch (e) { return { error: e.message }; }
   },
 
+
+  // [v6.4.5] 全引擎 MCP 化 — 12 个新引擎入口
+  heartflow_evolve: (args) => {
+    try {
+      const { MetaLearner } = require('./cortex/meta-learner.js');
+      const ml = new MetaLearner({ rootPath: HF_DIR, silent: true });
+      const exp = args?.experience || 'default experience';
+      const r = ml.learn ? ml.learn(exp) : { learned: false };
+      return { learned: !!r, result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_self_heal_rl: (args) => {
+    try {
+      const { HealingMemoryRL } = require('./cortex/self-healing-rl.js');
+      const h = new HealingMemoryRL({ silent: true });
+      const ctx = args?.context || '';
+      const strategies = h._contextKey ? [h._contextKey(ctx)] : [];
+      return { strategies: strategies.slice(0, 5), count: strategies.length, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_reflexion: (args) => {
+    try {
+      const { ReflexionEngine } = require('./cortex/reflexion-engine.js');
+      const re = new ReflexionEngine({ silent: true });
+      const failure = args?.failure || '';
+      const r = re.reflect ? re.reflect({ input: failure }, { success: false }) : { reflection: null };
+      return { reflection: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_forgetting: (args) => {
+    try {
+      const { ForgettingEngine } = require('./memory/forgetting.js');
+      const fe = new ForgettingEngine({ silent: true });
+      const action = args?.action || 'status';
+      const stats = fe.getStats ? fe.getStats() : {};
+      return { action, stats, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_knowledge_graph: (args) => {
+    try {
+      const { KnowledgeGraph } = require('./memory/knowledge-graph.js');
+      const kg = new KnowledgeGraph({ silent: true });
+      const action = args?.action || 'stats';
+      const stats = kg.getStats ? kg.getStats() : {};
+      return { action, stats, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_memory_consolidation: (args) => {
+    try {
+      const { MemoryConsolidationEngine } = require('./memory/memory-consolidation-engine.js');
+      const mc = new MemoryConsolidationEngine({ silent: true });
+      const memory = args?.memory || '';
+      const age = args?.age || 3600;
+      const retention = mc.computeRetention ? mc.computeRetention(memory, age) : null;
+      return { retention, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_emotion_dynamics: (args) => {
+    try {
+      const { EmotionDynamicsEngine } = require('./emotion/emotion-dynamics-engine.js');
+      const ed = new EmotionDynamicsEngine({ silent: true });
+      const input = args?.input || '';
+      const pad = ed.updatePAD ? ed.updatePAD({}, input) : {};
+      return { pad, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_mood: (args) => {
+    try {
+      const { MoodEvolution } = require('./emotion/mood-evolution.js');
+      const me = new MoodEvolution({ silent: true });
+      const input = args?.input || '';
+      const r = me.process ? me.process(input) : {};
+      return { mood: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_interactive_dream: (args) => {
+    try {
+      const { InteractiveDream } = require('./dream/interactive-dream.js');
+      const id = new InteractiveDream({ silent: true });
+      const action = args?.action || 'dream';
+      const theme = args?.theme || '';
+      let r = {};
+      if (action === 'rooms' && id.buildRooms) r = { rooms: id.buildRooms() };
+      else if (action === 'summarize' && id.summarizeMemory) r = { summary: id.summarizeMemory() };
+      else if (id.createDream) r = { dream: id.createDream([{ text: theme || 'default', type: 'user' }]) };
+      return { action, ...r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_meaning: (args) => {
+    try {
+      const { MeaningPurposeEngine } = require('./identity/meaning-purpose-engine.js');
+      const mp = new MeaningPurposeEngine({ silent: true });
+      const text = args?.text || '';
+      const r = mp.assessMeaning ? mp.assessMeaning(text) : {};
+      return { meaning: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_cognitive_engine: (args) => {
+    try {
+      const { CognitiveEngine } = require('./core/cognitive-engine.js');
+      const ce = new CognitiveEngine({ silent: true });
+      const text = args?.text || '';
+      const mode = args?.mode || 'holographic';
+      let r = {};
+      if (mode === 'motivation' && ce.analyzeDeepMotivation) r = { motivation: ce.analyzeDeepMotivation(text, { userEmotion: 'neutral', context: '' }) };
+      else if (mode === 'risk' && ce.analyzePotentialRisks) r = { risks: ce.analyzePotentialRisks(text) };
+      else if (mode === 'root' && ce.generateRootSolution) r = { rootSolution: ce.generateRootSolution(text) };
+      else if (ce.holographicReasoning) r = { reasoning: ce.holographicReasoning(text) };
+      return { mode, ...r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_decision_verify: (args) => {
+    try {
+      const { DecisionVerifier } = require('./core/decision-verifier.js');
+      const dv = new DecisionVerifier({ silent: true });
+      const decision = args?.decision || '';
+      const evidence = args?.evidence || [];
+      const r = dv.verify ? dv.verify(decision, evidence) : {};
+      return { verification: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
 };
 
 
