@@ -4411,6 +4411,30 @@ class HeartFlow {
       }
     } catch (e) { /* 信号吸收失败不阻断主链路 */ }
 
+    // ─── [v6.4.5] 多路径判断接线：决策类输入触发 JudgmentEngine.judge ─────
+    // 心虫核心卖点"2-4条路径×6维评分"之前从未在 think 主链路调用（死能力）
+    // 检测决策意图（该不该/要不要/应该选/如何决定/怎么选），触发多路径判断
+    try {
+      if (this.judgmentEngine && typeof input === 'string') {
+        const text = input.trim();
+        const decisionIntent = /(?:该不该|要不要|是否(?:应该|需要|值得)|应该(?:选|怎么|如何)|如何决定|怎么选|选哪个|哪个(?:更好|更合适)|值不值得|要不要(?:买|去|做|换|投资))/i.test(text);
+        if (decisionIntent && text.length < 200) {
+          const judgeResult = await this.judgmentEngine.judge(text, {
+            route: result.route || result.type || 'general',
+            emotion: result._deepEmotion?.emotion || 'neutral',
+          });
+          if (judgeResult && judgeResult.paths && judgeResult.paths.length > 0) {
+            result.multiPathJudgment = {
+              paths: judgeResult.paths,
+              chosenPath: judgeResult.chosenPath,
+              direction: judgeResult.direction,
+              confidence: judgeResult.confidence,
+            };
+          }
+        }
+      }
+    } catch (e) { /* 多路径判断失败不阻断主链路 */ }
+
     // [v6.4.5] 精简模式：compact=true 时移除无消费者的内部 _ 字段（tok 优化）
   // 有消费者的保留: _outputChecklist / _verification / _discrimination / _cotTrace(链追踪)
   // 无消费者移除（约 7KB/token 节省）: _selfPositioning/_deepEmotion/_languageHonesty/_selfModel/_beingAnalysis 等
