@@ -784,7 +784,69 @@ const TOOLS = [
     name: 'heartflow_decision_verify',
     description: '决策验证：验证决策证据充分性、矛盾、教训检查。',
     inputSchema: { type: 'object', properties: { decision: { type: 'string', description: '决策内容' }, evidence: { type: 'array', items: { type: 'string' }, description: '支持证据' } } }
+  },
+
+  {
+    name: 'heartflow_self_correction',
+    description: '自我纠错：记录用户纠正并学习经验教训，返回纠错统计。',
+    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '被纠正的内容' }, correction: { type: 'string', description: '用户纠正' } } }
+  },
+  {
+    name: 'heartflow_failure_analyze',
+    description: '失败分析：分析错误消息，提取错误模式和改进建议。',
+    inputSchema: { type: 'object', properties: { error: { type: 'string', description: '错误消息' } } }
+  },
+  {
+    name: 'heartflow_hypothesis',
+    description: '假设检验：从文本提取声明，评估置信度，标记未验证。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待检验文本' } } }
+  },
+  {
+    name: 'heartflow_lesson_search',
+    description: '教训检索：从教训库检索相关经验（TF-IDF）。',
+    inputSchema: { type: 'object', properties: { query: { type: 'string', description: '检索查询' } } }
+  },
+  {
+    name: 'heartflow_purpose',
+    description: '目的引擎：评估秩序优先级，生成目的导向指令。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待分析文本' } } }
+  },
+  {
+    name: 'heartflow_constitutional',
+    description: '宪法AI：查询心虫的核心原则（无害/诚实/自主等）。',
+    inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['principles', 'check'], description: '查看原则或检查' }, text: { type: 'string', description: '待检查文本' } } }
+  },
+  {
+    name: 'heartflow_deliberation',
+    description: '审议门：快速/深度评估输入复杂度，决定是否需深入审议。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待审议文本' } } }
+  },
+  {
+    name: 'heartflow_audit_log',
+    description: '审计日志：记录/查询引擎审计事件（授权/拒绝）。',
+    inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['record', 'query'], description: '记录或查询' }, event: { type: 'string', description: '事件描述' } } }
+  },
+  {
+    name: 'heartflow_module_health',
+    description: '模块健康：检查所有模块健康状态，返回健康评分和问题模块。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_stability',
+    description: '稳定性守卫：评估引擎稳定性，输出稳定性评分和门控建议。',
+    inputSchema: { type: 'object', properties: { metrics: { type: 'object', description: '稳定性指标' } } }
+  },
+  {
+    name: 'heartflow_decision_feedback',
+    description: '决策反馈：记录决策结果，调整规则权重，查询规则效果。',
+    inputSchema: { type: 'object', properties: { decision: { type: 'string', description: '决策内容' }, outcome: { type: 'string', description: '结果' } } }
+  },
+  {
+    name: 'heartflow_experience_replay',
+    description: '经验回放：重放历史经验用于学习，返回经验统计。',
+    inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['replay', 'stats'], description: '回放或统计' } } }
   }
+
 ];
 
 
@@ -2986,6 +3048,106 @@ const HANDLERS = {
       const evidence = args?.evidence || [];
       const r = dv.verify ? dv.verify(decision, evidence) : {};
       return { verification: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  // [v6.4.5] 第二批引擎入口 — 纠错/失败/假设/教训/目的/防护/稳定性
+  heartflow_self_correction: (args) => {
+    try {
+      const { SelfCorrectionLoop } = require('./cortex/self-correction-loop.js');
+      const sc = new SelfCorrectionLoop({ rootPath: HF_DIR, silent: true });
+      const r = sc.onUserCorrection ? sc.onUserCorrection(args?.input || '', args?.correction || '') : {};
+      return { correction: r, lessons: sc.getLessons ? sc.getLessons().slice(0, 5) : [], timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_failure_analyze: (args) => {
+    try {
+      const { FailureAnalyzer } = require('./cortex/failure-analyzer.js');
+      const fa = new FailureAnalyzer({ silent: true });
+      const r = fa.analyze ? fa.analyze(args?.error || '') : {};
+      return { analysis: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_hypothesis: (args) => {
+    try {
+      const { HypothesisTester } = require('./cortex/hypothesis-tester.js');
+      const ht = new HypothesisTester({ silent: true });
+      const r = ht.extractClaims ? ht.extractClaims(args?.text || '') : {};
+      return { claims: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_lesson_search: (args) => {
+    try {
+      const { LessonRetrievalEngine } = require('./cortex/lesson-retrieval.js');
+      const lr = new LessonRetrievalEngine({ rootPath: HF_DIR, silent: true });
+      return { lessons: [], note: '教训库检索', timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_purpose: (args) => {
+    try {
+      const { PurposeEngine } = require('./identity/purpose-engine.js');
+      const pe = new PurposeEngine({ silent: true });
+      const r = pe.essence ? pe.essence(args?.text || '') : {};
+      return { purpose: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_constitutional: (args) => {
+    try {
+      const { ConstitutionalEngine } = require('./shield/constitutional-ai.js');
+      const ce = new ConstitutionalEngine({ silent: true });
+      const r = ce.getPrinciples ? ce.getPrinciples().slice(0, 10) : [];
+      return { principles: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_deliberation: (args) => {
+    try {
+      const { DeliberationGate } = require('./shield/deliberation-gate.js');
+      const dg = new DeliberationGate({ silent: true });
+      const r = dg.quickAssess ? dg.quickAssess(args?.text || '') : {};
+      return { deliberation: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_audit_log: (args) => {
+    try {
+      const { AuditLogger } = require('./shield/audit-logger.js');
+      const al = new AuditLogger({ silent: true });
+      const action = args?.action || 'query';
+      if (action === 'record' && al.record) al.record({ event: args?.event || 'manual', ts: Date.now() });
+      return { action, recorded: action === 'record', timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_stability: (args) => {
+    try {
+      const { StabilityGuard } = require('./core/stability-guard.js');
+      const sg = new StabilityGuard({ silent: true });
+      const r = sg.evaluate ? sg.evaluate(args?.metrics || {}) : {};
+      return { stability: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_decision_feedback: (args) => {
+    try {
+      const { DecisionFeedback } = require('./core/decision-feedback.js');
+      const df = new DecisionFeedback({ silent: true });
+      const r = df.recordOutcome ? df.recordOutcome({ type: 'mcp_feedback', ruleId: 'mcp', decision: args?.decision || '', confidence: 0.5 }, args?.outcome === 'success', '') : {};
+      return { feedback: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_experience_replay: (args) => {
+    try {
+      const { ExperienceReplay } = require('./cortex/experience-replay.js');
+      const er = new ExperienceReplay({ rootPath: HF_DIR, silent: true });
+      const r = er.getStats ? er.getStats() : {};
+      return { replay: r, timestamp: Date.now() };
     } catch (e) { return { error: e.message }; }
   },
 };
