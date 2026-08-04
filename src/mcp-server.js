@@ -946,8 +946,182 @@ const TOOLS = [
     name: 'heartflow_decision_executor',
     description: '决策执行：执行决策指令（含暂停处理）。',
     inputSchema: { type: 'object', properties: { decision: { type: 'string', description: '决策指令' } } }
-  }
-
+  },
+  {
+    name: 'heartflow_experience_collect',
+    description: '经验收集：收集/存储引擎经验。',
+    inputSchema: { type: 'object', properties: { experience: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_self_benchmark',
+    description: '自我基准：生成基准测试标识。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_signal_absorb',
+    description: '信号吸收：吸收外部信号并检测来源。',
+    inputSchema: { type: 'object', properties: { signal: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_strategy_adapt',
+    description: '策略适配：根据经验调整策略。',
+    inputSchema: { type: 'object', properties: { experience: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_agent_card',
+    description: '代理卡：创建/读取引擎身份卡。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_user_model',
+    description: '用户模型：预测用户反应。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_consciousness_bridge',
+    description: '意识桥：模拟意识/意向性。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_spontaneous_restraint',
+    description: '自发约束：评估是否应干预。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_state_risk_probe',
+    description: '状态风险探测：探测并选择安全状态。',
+    inputSchema: { type: 'object', properties: { state: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_autonomous_emotion',
+    description: '自主情绪：自主情绪处理。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_psychology_engine',
+    description: '心理学引擎：心理状态分析。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_memory_bank',
+    description: '记忆银行：底层记忆存储。',
+    inputSchema: { type: 'object', properties: { memory: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_memory_consolidate',
+    description: '记忆巩固器：自动巩固记忆。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_memory_write_control',
+    description: '记忆写入控制：更新用户画像。',
+    inputSchema: { type: 'object', properties: { profile: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_long_term_memory',
+    description: '长期记忆：长期记忆存储检索。',
+    inputSchema: { type: 'object', properties: { memory: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_reflection_memory',
+    description: '反思记忆：存储/搜索反思。',
+    inputSchema: { type: 'object', properties: { memory: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_focus_attention',
+    description: '注意焦点：任务注意管理。',
+    inputSchema: { type: 'object', properties: { task: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_observe_engine',
+    description: '观察引擎：观察/记录工具调用。',
+    inputSchema: { type: 'object', properties: { observation: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_decision_router',
+    description: '决策路由：字段计算与决策路由。',
+    inputSchema: { type: 'object', properties: { input: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_action_tracker',
+    description: '行动追踪：记录承诺与行动。',
+    inputSchema: { type: 'object', properties: { action: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_execution_verify',
+    description: '执行验证：验证执行结果。',
+    inputSchema: { type: 'object', properties: { result: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_flow_predict',
+    description: '流程预测：预测编辑/错误流。',
+    inputSchema: { type: 'object', properties: { event: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_information_flow',
+    description: '信息流编排：编排信息流。',
+    inputSchema: { type: 'object', properties: { flow: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_intent_infer',
+    description: '意图推断：推断输入意图。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_meta_prompt',
+    description: '元提示：优化提示词。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_meta_memory',
+    description: '元记忆：分析记忆健康。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_metacognitive_monitor',
+    description: '元认知监控：监控认知状态。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_output_check',
+    description: '输出检查：运行输出清单。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_self_diagnose',
+    description: '自我诊断：运行引擎自检。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_what_learned',
+    description: '学到了什么：生成学习报告。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_preference_guard',
+    description: '偏好守卫：应用偏好规则。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_global_workspace',
+    description: '全局工作空间：注册代理并广播。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_multi_agent_dialogue',
+    description: '多代理对话：代理间对话。',
+    inputSchema: { type: 'object', properties: { message: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_dream_v2',
+    description: '梦境引擎V2：生成梦境并巩固记忆。',
+    inputSchema: { type: 'object', properties: { theme: { type: 'string', description: '输入参数' } } }
+  },
+  {
+    name: 'heartflow_active_inference',
+    description: '主动推理：决策与统计。',
+    inputSchema: { type: 'object', properties: { context: { type: 'string', description: '输入参数' } } }
+  },
 ];
 
 
@@ -3422,6 +3596,286 @@ const HANDLERS = {
       const de = new DecisionExecutor({ silent: true });
       const r = de.execute ? de.execute(args?.decision || '') : {};
       return { execution: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_experience_collect: (args) => {
+    try {
+      const { ExperienceCollector } = require('./cortex/experience-collector.js');
+      const inst = new ExperienceCollector({ silent: true, rootPath: HF_DIR });
+      const r = inst.collectExperience ? inst.collectExperience(args?.experience || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_self_benchmark: (args) => {
+    try {
+      const { SelfBenchmark } = require('./cortex/self-benchmark.js');
+      const inst = new SelfBenchmark({ silent: true, rootPath: HF_DIR });
+      const r = {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_signal_absorb: (args) => {
+    try {
+      const { SignalAbsorber } = require('./cortex/signal-absorber.js');
+      const inst = new SignalAbsorber({ silent: true, rootPath: HF_DIR });
+      const r = inst.absorb ? inst.absorb(args?.signal || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_strategy_adapt: (args) => {
+    try {
+      const { StrategyAdapter } = require('./cortex/strategy-adapter.js');
+      const inst = new StrategyAdapter({ silent: true, rootPath: HF_DIR });
+      const r = inst.adapt ? inst.adapt(args?.experience || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_agent_card: (args) => {
+    try {
+      const { AgentCard } = require('./identity/agent-card.js');
+      const inst = new AgentCard({ silent: true, rootPath: HF_DIR });
+      const r = {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_user_model: (args) => {
+    try {
+      const { UserModel } = require('./identity/user-model.js');
+      const inst = new UserModel({ silent: true, rootPath: HF_DIR });
+      const r = inst.getModel ? inst.getModel(args?.text || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_consciousness_bridge: (args) => {
+    try {
+      const { ConsciousnessBridge } = require('./identity/consciousness-bridge.js');
+      const inst = new ConsciousnessBridge({ silent: true, rootPath: HF_DIR });
+      const r = inst.simulateConsciousness ? inst.simulateConsciousness(args?.text || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_spontaneous_restraint: (args) => {
+    try {
+      const { SpontaneousRestraint } = require('./shield/spontaneous-restraint.js');
+      const inst = new SpontaneousRestraint({ silent: true, rootPath: HF_DIR });
+      const r = inst.evaluate ? inst.evaluate(args?.text || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_state_risk_probe: (args) => {
+    try {
+      const { StateRiskProbe } = require('./shield/state-risk-probe.js');
+      const inst = new StateRiskProbe({ silent: true, rootPath: HF_DIR });
+      const r = inst.probe ? inst.probe(args?.state || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_autonomous_emotion: (args) => {
+    try {
+      const { AutonomousEmotion } = require('./emotion/autonomous-emotion.js');
+      const inst = new AutonomousEmotion({ silent: true, rootPath: HF_DIR });
+      const r = inst.process ? inst.process(args?.text || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_psychology_engine: (args) => {
+    try {
+      const { PsychologyEngine } = require('./emotion/engine.js');
+      const inst = new PsychologyEngine({ silent: true, rootPath: HF_DIR });
+      const r = {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_memory_bank: (args) => {
+    try {
+      const { MemoryBank } = require('./memory/memory-bank.js');
+      const inst = new MemoryBank({ silent: true, rootPath: HF_DIR });
+      const r = {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_memory_consolidate: (args) => {
+    try {
+      const { MemoryConsolidator } = require('./memory/memory-consolidator.js');
+      const inst = new MemoryConsolidator({ silent: true, rootPath: HF_DIR });
+      const r = {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_memory_write_control: (args) => {
+    try {
+      const { MemoryWriteController } = require('./memory/memory-write-controller.js');
+      const inst = new MemoryWriteController({ silent: true, rootPath: HF_DIR });
+      const r = inst.updateUserProfile ? inst.updateUserProfile(args?.profile || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_long_term_memory: (args) => {
+    try {
+      const { LongTermMemory } = require('./memory/long-term-memory.js');
+      const inst = new LongTermMemory({ silent: true, rootPath: HF_DIR });
+      const r = {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_reflection_memory: (args) => {
+    try {
+      const { ReflectionMemory } = require('./memory/reflection-memory.js');
+      const inst = new ReflectionMemory({ silent: true, rootPath: HF_DIR });
+      const r = inst.store ? inst.store({ text: args?.memory || '', type: 'reflection' }, { success: true }, '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_focus_attention: (args) => {
+    try {
+      const { FocusOfAttention } = require('./memory/focus-of-attention.js');
+      const inst = new FocusOfAttention({ silent: true, rootPath: HF_DIR });
+      const r = inst.setTask ? inst.setTask(args?.task || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_observe_engine: (args) => {
+    try {
+      const { Observe } = require('./memory/observe.js');
+      const inst = new Observe({ silent: true, rootPath: HF_DIR });
+      const r = inst.observe ? inst.observe(args?.observation || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_decision_router: (args) => {
+    try {
+      const { DecisionRouter } = require('./core/decision-router.js');
+      const inst = new DecisionRouter({ silent: true, rootPath: HF_DIR });
+      const r = {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_action_tracker: (args) => {
+    try {
+      const { ActionTracker } = require('./core/action-tracker.js');
+      const inst = new ActionTracker({ silent: true, rootPath: HF_DIR });
+      const r = inst.commit ? inst.commit(args?.action || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_execution_verify: (args) => {
+    try {
+      const { ExecutionVerifier } = require('./core/execution-verifier.js');
+      const inst = new ExecutionVerifier({ silent: true, rootPath: HF_DIR });
+      const r = inst.verify ? inst.verify(args?.result || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_flow_predict: (args) => {
+    try {
+      const { FlowPredictor } = require('./core/flow-predictor.js');
+      const inst = new FlowPredictor({ silent: true, rootPath: HF_DIR });
+      const r = inst.recordError ? inst.recordError(args?.event || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_information_flow: (args) => {
+    try {
+      const { InformationFlowOrchestrator } = require('./core/information-flow.js');
+      const inst = new InformationFlowOrchestrator({ silent: true, rootPath: HF_DIR });
+      const r = inst.orchestrate ? inst.orchestrate(args?.flow || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_intent_infer: (args) => {
+    try {
+      const { IntentLayer } = require('./core/intent-layer.js');
+      const inst = new IntentLayer({ silent: true, rootPath: HF_DIR });
+      const r = inst.inferIntent ? inst.inferIntent(args?.text || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_meta_prompt: (args) => {
+    try {
+      const { MetaPromptEngine } = require('./core/meta-prompt-engine.js');
+      const inst = new MetaPromptEngine({ silent: true, rootPath: HF_DIR });
+      const r = inst.optimize ? inst.optimize(args?.text || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_meta_memory: (args) => {
+    try {
+      const { MetaMemory } = require('./core/metaMemory.js');
+      const inst = new MetaMemory({ silent: true, rootPath: HF_DIR });
+      const r = {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_metacognitive_monitor: (args) => {
+    try {
+      const { MetacognitiveMonitor } = require('./core/metacognitive-executive.js');
+      const inst = new MetacognitiveMonitor({ silent: true, rootPath: HF_DIR });
+      const r = inst.monitor ? inst.monitor(args?.text || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_output_check: (args) => {
+    try {
+      const { OutputChecklist } = require('./core/output-checklist.js');
+      const inst = new OutputChecklist({ silent: true, rootPath: HF_DIR });
+      const r = inst.runChecklist ? inst.runChecklist(args?.text || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_self_diagnose: (args) => {
+    try {
+      const { SelfDiagnosis } = require('./core/self-diagnosis.js');
+      const inst = new SelfDiagnosis({ silent: true, rootPath: HF_DIR });
+      const r = {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_what_learned: (args) => {
+    try {
+      const { WhatLearned } = require('./core/what-learned.js');
+      const inst = new WhatLearned({ silent: true, rootPath: HF_DIR });
+      const r = {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_preference_guard: (args) => {
+    try {
+      const { PreferenceGuard } = require('./core/preference-guard.js');
+      const inst = new PreferenceGuard({ silent: true, rootPath: HF_DIR });
+      const r = inst.shouldApply ? inst.shouldApply(args?.text || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_global_workspace: (args) => {
+    try {
+      const { GlobalWorkspace } = require('./consciousness/global-workspace.js');
+      const inst = new GlobalWorkspace({ silent: true, rootPath: HF_DIR });
+      const r = inst.registerAgent ? inst.registerAgent(args?.text || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_multi_agent_dialogue: (args) => {
+    try {
+      const { MultiAgentDialogue } = require('./consciousness/multi-agent-dialogue.js');
+      const inst = new MultiAgentDialogue({ silent: true, rootPath: HF_DIR });
+      const r = inst.registerAgent ? inst.registerAgent(args?.message || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_dream_v2: (args) => {
+    try {
+      const { DreamEngineV2 } = require('./dream/dream-engine-v2.js');
+      const inst = new DreamEngineV2({ silent: true, rootPath: HF_DIR });
+      const r = inst.generate ? inst.generate(args?.theme || '') : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+  heartflow_active_inference: (args) => {
+    try {
+      const { ActiveInference } = require('./decision/active-inference.js');
+      const inst = new ActiveInference({ silent: true, rootPath: HF_DIR });
+      const r = inst.decide ? inst.decide([{ id: 'a', name: args?.context || '', prior: 0.5 }], {}) : {};
+      return { result: r, timestamp: Date.now() };
     } catch (e) { return { error: e.message }; }
   },
 };
