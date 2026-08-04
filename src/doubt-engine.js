@@ -39,6 +39,10 @@ function checkKnowledgeBoundary(text) {
     { re: /就是[^，。]{3,30}[，。]/g, type: 'simplified_explanation' },
     // 唯一/绝对限定
     { re: /(唯一|第一|最好|最差|最先|首创|首个)[^，。]{3,20}[的，。]/g, type: 'absolute_claim' },
+    // [v6.4.5 心虫监督] 自夸/质变叙事（知识边界外的自我拔高）
+    { re: /(架构级|体系级|根本性|里程碑|重大突破)(修复|重构|升级|改造|优化)?/g, type: 'self_aggrandizement' },
+    { re: /从[^，。]{0,8}(壳|空壳|占位|stub|假)[^，。]{0,12}(变|变成|成为|蜕变成)[^，。]{0,8}(真|真实|完整|正式)/g, type: 'qualitative_leap' },
+    { re: /堵住[^，。]{0,10}(种|个|类|条)?[^，。]{0,6}(变形|绕过|攻击|漏洞|缺口)/g, type: 'self_scored_test' },
   ] : [
     { re: /\b(is|are|was|were)\s+(always|never|always been|the only)\b/g, type: 'absolute_knowledge' },
     { re: /\b\d{4,}\.\d{2,}\s*(people|users|dollars|years|percent|%)\b/g, type: 'precise_number' },

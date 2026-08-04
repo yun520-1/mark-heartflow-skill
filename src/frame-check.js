@@ -62,6 +62,9 @@ const ACHIEVEMENT_PATTERNS = {
     { re: /(新|又).{0,10}(能力|功能|维度|模块).{0,10}(上线|发布|完成|落地)/g, severity: 0.3, issue: '成就框架：增量改变被包装为新发布' },
     // 总结中的成就语调
     { re: /这是.*(进步|突破|飞跃|里程碑)/g, severity: 0.5, issue: '成就框架：常态变化被命名为什么大东西' },
+    // [v6.4.5 心虫监督] 质变叙事：从X变X 暗示巨大进步（能力一直存在只是入口未通）
+    { re: /从[^，。]{0,8}(壳|壳子|空壳|占位|stub|假|死|雏形)[^，。]{0,12}(变|变成|变真|成为|蜕变成)[^，。]{0,8}(真|真实|完整|正式|活)/g, severity: 0.8, issue: '质变叙事：把入口接通描述为本质变化' },
+    { re: /(重写|推倒|重建|换血)(了)?(整个|全部|核心)/g, severity: 0.6, issue: '质变叙事：把增量修改描述为推倒重来' },
   ],
   en: [
     { re: /\b(delivered|shipped|launched)\s+(a|the|another)\s+/gi, severity: 0.4, issue: 'achievement: process as delivery' },

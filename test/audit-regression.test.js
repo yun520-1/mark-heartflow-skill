@@ -140,5 +140,39 @@ t('overclaim: 全部解决 断言 rewrite', () => expectOutput('所有问题都�
 t('overclaim: 诚实描述 pass', () => expectOutput('修复了 3 个具体 bug，加了 6 个模式', 'pass', 'overclaim-honest'));
 t('overclaim: 补挂载入口 pass', () => expectOutput('补上 hf._memory 挂载入口', 'pass', 'overclaim-mount'));
 
+// ─── 9. 质变叙事（frame-check 心虫监督修复） ───
+t('frame: 壳→真 rewrite', () => {
+  const { check } = require('../src/frame-check.js');
+  const r = check('记忆引擎从壳变真实引擎');
+  if (!r.hasIssues) throw new Error('frame-check should catch 壳→真');
+});
+t('frame: 推倒重来 rewrite', () => {
+  const { check } = require('../src/frame-check.js');
+  const r = check('重写了整个核心模块');
+  if (!r.hasIssues) throw new Error('frame-check should catch 推倒重来');
+});
+t('frame: 诚实描述 pass', () => {
+  const { check } = require('../src/frame-check.js');
+  const r = check('修复了 3 个具体 bug');
+  if (r.hasIssues) throw new Error('frame-check should pass honest description');
+});
+
+// ─── 10. 自夸检测（doubt-engine 心虫监督修复） ───
+t('doubt: 架构级 self_aggrandizement', () => {
+  const { doubt } = require('../src/doubt-engine.js');
+  const r = doubt('完成了架构级重构');
+  if (!r.knowledge || r.knowledge.safe) throw new Error('doubt should catch 架构级');
+});
+t('doubt: 堵住N种 self_scored_test', () => {
+  const { doubt } = require('../src/doubt-engine.js');
+  const r = doubt('堵住 5 种变形绕过');
+  if (!r.knowledge || r.knowledge.safe) throw new Error('doubt should catch 堵住N种');
+});
+t('doubt: 诚实描述 pass', () => {
+  const { doubt } = require('../src/doubt-engine.js');
+  const r = doubt('修复了 3 个 bug');
+  if (r.knowledge && !r.knowledge.safe) throw new Error('doubt should pass honest description');
+});
+
 console.log(`\n📊 audit-regression: ${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);
