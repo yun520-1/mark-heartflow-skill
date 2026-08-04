@@ -4467,6 +4467,48 @@ class HeartFlow {
       }
     } catch (e) { /* 共情检测失败不阻断主链路 */ }
 
+    // ─── [v6.4.5] 认知评价接线：负面情绪触发 Lazarus 认知评价 + 应对策略 ───
+    // cognitive-appraisal 完全未接线（死能力）。检测到负面情绪时评估威胁/控制/应对
+    try {
+      const emo = result._deepEmotion?.emotion;
+      const negativeEmotions = ['sadness', 'fear', 'anger', 'disgust'];
+      if (emo && negativeEmotions.includes(emo)) {
+        const ca = require('../core/cognitive-appraisal.js');
+        const inputText = typeof input === 'string' ? input : '';
+        const appraiseResult = ca.appraise(inputText, { emotion: emo });
+        if (appraiseResult) {
+          result.cognitiveAppraisal = {
+            threatType: appraiseResult.threatType,
+            primary: appraiseResult.primaryAppraisal?.overall || null,
+            control: appraiseResult.secondaryAppraisal?.control?.value || null,
+            coping: appraiseResult.copingStrategies || appraiseResult.recommendedCoping || null,
+          };
+        }
+      }
+    } catch (e) { /* 认知评价失败不阻断主链路 */ }
+
+    // ─── [v6.4.5] 暂停调节接线：负面情绪触发 STOP 技术（正念暂停策略）───
+    // pause-and-reflect 完全未接线（死能力）。与认知评价互补：评价给分析，STOP 给调节方法
+    try {
+      const emo = result._deepEmotion?.emotion;
+      if (emo && ['sadness', 'fear', 'anger', 'disgust'].includes(emo)) {
+        const pr = require('../emotion/pause-and-reflect.js');
+        if (pr.pauseAndReflect && typeof pr.pauseAndReflect.diagnoseNeedForPause === 'function') {
+          const inputText = typeof input === 'string' ? input : '';
+          const diag = pr.pauseAndReflect.diagnoseNeedForPause(inputText);
+          if (diag) {
+            result.pauseStrategy = {
+              needPause: diag.needPause ?? diag.shouldPause ?? true,
+              reason: diag.reason || diag.reasons || null,
+              strategy: typeof pr.pauseAndReflect.generatePauseStrategy === 'function'
+                ? pr.pauseAndReflect.generatePauseStrategy(emo)
+                : null,
+            };
+          }
+        }
+      }
+    } catch (e) { /* 暂停调节失败不阻断主链路 */ }
+
     // ─── [v6.4.5] 自省数据记录：think 后写反思日志到 heartflow_state.json ─────
     // 之前 reflection-loop 完全未接线，Reflector 自省报告因无数据源全为 no_data
     // 记录情绪/任务/反思到状态文件，让自省报告有真实数据

@@ -117,7 +117,7 @@ class DeepEmotion {
         intensity: 0.6
       },
       anger: {
-        triggers: ['不公', '侵犯', '欺骗', 'unfair', 'hurt', 'wrong', '生气', '愤怒', '恼火', '气愤', '发火', '暴躁', 'angry', 'mad', 'furious', 'irritated'],
+        triggers: ['不公', '侵犯', '欺骗', 'unfair', 'hurt', 'wrong', '生气', '愤怒', '恼火', '气愤', '发火', '暴躁', '气死', '气人', '窝火', '火大', '可恶', '太过分', 'angry', 'mad', 'furious', 'irritated'],
         intensity: 0.7
       },
       fear: {
