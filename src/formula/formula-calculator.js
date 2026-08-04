@@ -12,25 +12,24 @@ const { FormulaSearch } = require('./formula-search.js');
 
 // [AUDIT-FIX C-02] 限制 mathjs 危险函数，防止公式注入
 
-const _rawMath = require('mathjs');
-
-const math = _rawMath.create(_rawMath.all, {
-
-  matrix: 'Array',
-
-  number: 'number',
-
-});
-
-// 覆盖危险函数为安全抛出版
-
-math.import({
-
-  'import': function() { throw new Error('mathjs import disabled in HeartFlow'); },
-
-  'createUnit': function() { throw new Error('mathjs createUnit disabled in HeartFlow'); },
-
-}, { override: true });
+// [v6.4.5 性能] mathjs 惰性加载：mathjs 是 5MB 大库，顶层 require 拖慢启动 ~500ms
+// 改为首次需要时再加载（FormulaCalculator 构造时才触发）
+let _mathInstance = null;
+function getMath() {
+  if (_mathInstance) return _mathInstance;
+  const _rawMath = require('mathjs');
+  const math = _rawMath.create(_rawMath.all, {
+    matrix: 'Array',
+    number: 'number',
+  });
+  // 覆盖危险函数为安全抛出版
+  math.import({
+    'import': function() { throw new Error('mathjs import disabled in HeartFlow'); },
+    'createUnit': function() { throw new Error('mathjs createUnit disabled in HeartFlow'); },
+  }, { override: true });
+  _mathInstance = math;
+  return math;
+}
 
 
 
@@ -40,7 +39,7 @@ class FormulaCalculator {
 
     this.search = new FormulaSearch(options);
 
-    this._math = math;
+    this._math = getMath();
 
   }
 

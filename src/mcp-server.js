@@ -900,7 +900,7 @@ async function handleThink(args) {
 
     Promise.resolve().then(() => safeDispatch('truth.checkStatement', input)).catch(e => ({ error: e.message })),
 
-    safeAsyncCall(() => heartflow.think(input))
+    safeAsyncCall(() => heartflow.think(input, undefined, { compact: true }))
 
   ]);
 
@@ -1136,7 +1136,7 @@ async function handleThinkFast(args) {
 
   if (!input) throw new Error('input 是必填参数');
 
-  const result = await safeAsyncCall(() => heartflow.think(input, 1));
+  const result = await safeAsyncCall(() => heartflow.think(input, 1, { compact: true }));
 
   return { input, result: result || {}, timestamp: Date.now() };
 

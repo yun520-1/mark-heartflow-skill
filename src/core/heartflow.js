@@ -4235,7 +4235,7 @@ class HeartFlow {
   }
 
   // [v6.0.71] 恢复 think 主链路（委托 this.thoughtChain，被重构误删）
-  async think(input, depth) {
+  async think(input, depth, opts = {}) {
     if (!this.started) throw new Error('HeartFlow not started');
     if (!input) return { error: 'input is required' };
 
@@ -4411,7 +4411,25 @@ class HeartFlow {
       }
     } catch (e) { /* 信号吸收失败不阻断主链路 */ }
 
-    return result;
+    // [v6.4.5] 精简模式：compact=true 时移除无消费者的内部 _ 字段（tok 优化）
+  // 有消费者的保留: _outputChecklist / _verification / _discrimination / _cotTrace(链追踪)
+  // 无消费者移除（约 7KB/token 节省）: _selfPositioning/_deepEmotion/_languageHonesty/_selfModel/_beingAnalysis 等
+  if (opts && opts.compact && result && typeof result === 'object') {
+    const REMOVE_PREFIX = [
+      '_selfPositioning', '_deepEmotion', '_languageHonesty', '_selfModel',
+      '_beingAnalysis', '_spontaneousRestraint', '_whatLearned', '_affectiveIntentionality',
+      '_purposeCheck', '_epistemicSafety', '_missionCheck', '_stateRiskProbe',
+      '_firewallCheck', '_constitutional', '_selfDiagnosis', '_cotTrace',
+    ];
+    for (const k of REMOVE_PREFIX) { if (k in result) delete result[k]; }
+    // 额外：chain 太大时保留摘要
+    if (result.chain && typeof result.chain === 'object' && !opts.fullChain) {
+      result.chainSummary = { stageCount: Array.isArray(result.chain.stages) ? result.chain.stages.length : (result.chain.stageCount || 0) };
+      delete result.chain;
+    }
+  }
+
+  return result;
   }
 
   async thinkFast(input) {
