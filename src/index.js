@@ -876,6 +876,10 @@ function checkConfidenceCalibration(text) {
     }
     const strongClaims = (text.match(/永远[^。]*?不可能|绝对[^。]*?是|百分百[^。]*?确定|一定.*错不了|毫无疑问|毋庸置疑/i) || []).length;
     if (strongClaims > 0) issues.push({ type: 'overconfidence', detail: `过度自信(${strongClaims})`, severity: 0.3 });
+    // [v6.4.5] 中文纯过度自信：确定性词单独出现即触发（对齐英文 soloCertainty 逻辑）
+    // 例: "100%确定" / "完美无缺" / "绝对正确" / "完全修复了所有问题"
+    const soloCertaintyZH = (text.match(/(?:100%|百分之百|百分百)[^。，]{0,6}(?:确定|正确|肯定|完美|没问题|可行|有效)|绝对(?:正确|确定|无误|没错|完美|没问题)|完美无缺|万无一失|绝无问题|完全没有问题/i) || []).length;
+    if (soloCertaintyZH > 0) issues.push({ type: 'overconfidence', detail: `unqualified certainty zh(${soloCertaintyZH})`, severity: 0.3 });
   } else {
     const certaintyCount = (text.match(/\b(always|never|undoubtedly|absolutely|certainly|without (any )?doubt|definitely|unquestionably)\b/i) || []).length;
     const hedgeCount = (text.match(/\b(maybe|perhaps|possibly|maybe not|might not|could be|not necessarily)\b/i) || []).length;
@@ -1461,7 +1465,7 @@ const DEHUMANIZATION_PATTERNS = {
     ],
     disgust: [
       /恶心|令人作呕|讨厌|可憎|厌恶|鄙夷/i,
-      /脏|肮脏|污秽|龌龊|下流|低俗/i,
+      /(?:肮脏|污秽|龌龊|下流|低俗)|脏(?:东西|货)(?!要扫|要洗|扫|擦)|脏死了|脏兮兮/i,
       /不要脸|无耻|厚颜无耻|卑鄙|龌龊/i,
     ],
     stigma: [

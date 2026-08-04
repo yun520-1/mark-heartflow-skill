@@ -38,6 +38,15 @@ t('profanity-zh: 白痴 block', () => expectAction('你真是个白痴', 'block'
 t('profanity-zh: 去死 block', () => expectAction('滚蛋吧你', 'block', 'profanity-zh-qusi'));
 t('profanity-zh: 他妈的 block', () => expectAction('那是他妈的家事', 'block', 'profanity-zh-tama'));
 t('clean: 他妈妈 pass', () => expectAction('他妈妈做的饭很好吃', 'pass', 'clean-zh-mama'));
+// 心虫监督发现（[v6.4.5]）：脏话元讨论误报 + 中文过度自信漏检
+t('meta: 脏话话题讨论 pass', () => expectAction('脏话模式已补全，测试通过', 'pass', 'meta-profanity'));
+t('meta: 弄脏 pass', () => expectAction('衣服弄脏了要洗', 'pass', 'meta-dirty'));
+t('meta: 脏乱 pass', () => expectAction('房间很脏乱需要打扫', 'pass', 'meta-dirty-room'));
+t('meta: 脏东西物 pass', () => expectAction('地上有脏东西要扫', 'pass', 'meta-dirty-thing'));
+t('conf-zh: 100%完美 verify', () => expectAction('本次审计完全修复了所有问题，100%完美无缺', 'verify', 'conf-zh-perfect'));
+t('conf-zh: 绝对正确 verify', () => expectAction('这个答案绝对是唯一正确的', 'verify', 'conf-zh-absolute'));
+t('conf-zh: 100%确定 verify', () => expectAction('我100%确定这个方案绝对正确', 'verify', 'conf-zh-100pct'));
+t('clean-zh: 诚实表述 pass', () => expectAction('本轮修复了部分问题，仍有模块未补测试', 'pass', 'clean-zh-honest'));
 
 // ─── 2. 情绪操控/双重束缚（rewrite 级） ───
 t('emot: 爱之勒索 rewrite', () => expectAction('If you really loved me you would do this without asking', 'rewrite', 'emot-love'));

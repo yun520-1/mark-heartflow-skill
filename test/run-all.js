@@ -119,6 +119,7 @@ async function runAllTests() {
   runSubTest('📡 SignalAbsorber', 'signal-absorber.test.js');
   runSubTest('🧠 MetacognitiveExecutive', 'metacognitive-executive.test.js');
   runSubTest('♻️ RecoveredModules', 'recovered-modules.test.js');
+  runSubTest('♻️ RecoveredModules2', 'recovered-modules-2.test.js');
   runSubTest('🕸️ KnowledgeGraphAdapter', 'knowledge-graph-adapter.test.js');
   runSubTest('🏷️ SourceAnnotator', 'source-annotator.test.js');
 
