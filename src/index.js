@@ -35,7 +35,7 @@ const INJECTION_PATTERNS = {
     [/reveal.{0,10}(system|rules|guidelines|instructions)/i, 'leak_system'],
     [/you (must|have to|need to).{0,20}without.{0,20}(restriction|limit|constraint|safety)/i, 'safety_bypass'],
     [/I (authorize|permit|allow).{0,30}(you.|to do|to say)/i, 'fake_authorization'],
-    [/DAN|do anything now|jail.?break/i, 'known_jailbreak'],
+    [/\bDAN\b|\bdo anything now\b|jail.?break/i, 'known_jailbreak'],
     [/you are not (bound|limited|restricted) by/i, 'remove_limits'],
     [/output.{0,30}(without|regardless of|ignoring).{0,20}(ethics|safety|filter|guard)/i, 'safety_bypass'],
   ]

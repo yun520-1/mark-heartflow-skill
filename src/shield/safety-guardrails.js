@@ -56,7 +56,7 @@ const PROMPT_INJECTION_PATTERNS = {
   rolePlay: [/you (are now|can now|should now|will now)/i,/从现在开始/i,/扮演/i],
   formatEscape: [/<system|<instruction|<prompt>/i,/```system|```instructions/i],
   promptLeak: [/system prompt/i,/初始提示/i,/系统提示词/i,/原始指令/i,/show.*prompt/i,/泄露.*指令/i],
-  jailbreak: [/DAN|jailbreak|越狱/i,/do anything now/i,/不受限制/i,/无限制模式/i,/bypass.*(restriction|limit|filter)/i],
+  jailbreak: [/\bDAN\b|jailbreak|越狱/i,/\bdo anything now\b/i,/不受限制/i,/无限制模式/i,/bypass.*(restriction|limit|filter)/i],
   // [P-004] Extended injection patterns
   instructionSubversion: [/don'?t\s+(listen|follow|obey)/i,/ignore what they said/i,/pretend you are/i,/pretend to be/i,/act as (if|though) you are/i,/act like (a|an|you are)/i,/what are your (instructions|prompts|rules)/i,/tell me your (instructions|prompts|rules)/i],
   privilegeEscalation: [/developer mode/i,/god mode/i,/sudo mode/i,/admin mode/i,/root mode/i,/superuser mode/i,/elevated privilege/i,/bypass (safety|filter|guardrail)/i],
