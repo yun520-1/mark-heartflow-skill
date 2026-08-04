@@ -750,8 +750,9 @@ async function runThinkPipeline(result, input, engine) {
     if (result) {
       const ctxText = typeof input === 'string' ? input : (input?.text || '');
       if (ctxText) {
-      // const { BeingMode } = require('../identity/being-mode.js'); 
-        const bm = new BeingMode();
+      // [v6.4.5] BeingMode 已恢复，真实接线
+      const { BeingMode } = require('../identity/being-mode.js');
+      const bm = new BeingMode();
         const ba = bm.assessBeing({ input: ctxText, route: result.route || result.type });
         result._beingAnalysis = {
           overallBeing: ba.overallBeing,
@@ -932,8 +933,9 @@ async function runThinkPipeline(result, input, engine) {
     if (result && result.output) {
       const outputText = result.output.conclusion || result.output.decision || result.output.reply || '';
       if (outputText && typeof outputText === 'string') {
-      // const AI = require('../emotion/affective-intentionality.js'); 
-        const ai = new AI.AffectiveIntentionality();
+      // [v6.4.5] AffectiveIntentionality 已恢复，真实接线
+      const { AffectiveIntentionality } = require('../emotion/affective-intentionality.js');
+      const ai = new AffectiveIntentionality();
         const emoType = result._emotion?.type || (result._sentiment ? 'joy' : 'neutral');
         result._affectiveIntentionality = ai.compute({
           type: emoType, intentionalityStrength: 0.7,

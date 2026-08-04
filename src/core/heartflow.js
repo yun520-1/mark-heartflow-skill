@@ -444,20 +444,20 @@ function _stubFactory(name) { return { [name]: class { constructor() { this.heal
 const _CognitiveLoadV2 = _lazy('cognitiveLoadV2', () => _stubFactory('CognitiveLoadEngineV2'));
 const _PsychologyDialogue = _lazy('psychologyDialogue', () => _stubFactory('PsychologyDialogueEngine'));
 const _AdaptivePlanner = _lazy('adaptivePlanner', () => _stubFactory('AdaptivePlanner'));
-const _UserToLLM = _lazy('userToLLM', () => _stubFactory('UserToLLM'));
-const _ContextBuilder = _lazy('contextBuilder', () => _stubFactory('ContextBuilder'));
+const _UserToLLM = _lazy('userToLLM', () => require('../bridge/user-to-llm.js'));
+const _ContextBuilder = _lazy('contextBuilder', () => require('../bridge/context-builder.js'));
 const _HierarchicalPlanner = _lazy('hierarchicalPlanner', () => _stubFactory('HierarchicalPlanner'));
 const _MetacognitiveFeedback = _lazy('metacognitiveFeedback', () => _stubFactory('MetacognitiveFeedback'));
 const _ExperienceValidator = _lazy('experienceValidator', () => _stubFactory('ExperienceValidator'));
 const _WorldModel = _lazy('worldModel', () => _stubFactory('WorldModel'));
 const _VirtueEthicsFoundation = _lazy('virtueEthicsFoundation', () => _stubFactory('VirtueEthicsFoundation'));
 const _HumanNatureConstitution = _lazy('humanNatureConstitution', () => _stubFactory('HumanNatureConstitution'));
-const _MeaningPurposeEngine = _lazy('meaningPurposeEngine', () => _stubFactory('MeaningPurposeEngine'));
+const _MeaningPurposeEngine = _lazy('meaningPurposeEngine', () => require('../identity/meaning-purpose-engine.js'));
 const _CharacterCultivation = _lazy('characterCultivation', () => _stubFactory('CharacterCultivation'));
 const _MoralDevelopment = _lazy('moralDevelopment', () => _stubFactory('MoralDevelopment'));
 const _WisdomEngine = _lazy('wisdomEngine', () => _stubFactory('WisdomEngine'));
 const _AIHumanIntegration = _lazy('aiHumanIntegration', () => _stubFactory('AIHumanIntegration'));
-const _BeingMode = _lazy('beingMode', () => _stubFactory('BeingMode'));
+const _BeingMode = _lazy('beingMode', () => require('../identity/being-mode.js'));
 const _ConsciousnessBridge = _lazy('consciousnessBridge', () => _stubFactory('ConsciousnessBridge'));
 const _GapExecutor = _lazy('gapExecutor', () => _stubFactory('GapExecutor'));
 const _LearningOrchestrator = _lazy('learningOrchestrator', () => _stubFactory('LearningOrchestrator'));
@@ -3948,11 +3948,13 @@ class HeartFlow {
 
     // ─── [v6.2.7] ErrorMemory 跨会话错误记忆：AGI 需要的"不遗忘"组件 ──
     try {
-      const EM = _ErrorMemory();
-      if (EM && EM.HeartFlow) {
-        this._hfCore = new EM.HeartFlow({ silent: true, dataDir: this.rootPath ? require('path').join(this.rootPath, 'data') : undefined });
-        this._hfCore.start();
-        this._modules['errorMemory'] = { store: (p,a,o) => this._hfCore.errorMemory.store(p,a,o), query: (p,l) => this._hfCore.errorMemory.query(p,l), getStats: () => this._hfCore.errorMemory.getStats() };
+      const emMod = require('../error-memory.js');
+      if (emMod && typeof emMod.logCorrection === 'function') {
+        this._modules['errorMemory'] = {
+          store: (p, a, o) => emMod.logCorrection({ pattern: p, action: a }, o),
+          query: (p, l) => emMod.getStats ? emMod.getStats() : [],
+          getStats: () => emMod.getStats ? emMod.getStats() : {},
+        };
       }
     } catch (e) { _boundedPush(this._initErrors, { module: 'errorMemory', error: e.message }, MAX_HISTORY_SIZE); }
 
