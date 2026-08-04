@@ -6,7 +6,7 @@
  * 下次 checkAutoRules() 就会拦截同类型问题。
  *
  * 用法：
- *   const auto = require('./src/auto-rules.js');
+ *   const auto = require('./auto-rules.js');
  *   auto.tryGenerate(em.getStats());  // 检查是否需要生成新规则
  *   auto.checkAutoRules('当前回复');  // 检查是否踩到自生成规则
  */

@@ -10,7 +10,7 @@
  *   checkRecurrence(context) — 检查当前有没有踩过同类坑
  *
  * 用法：
- *   const errMem = require('./src/error-memory.js');
+ *   const errMem = require('./error-memory.js');
  *   // 被纠正时记录
  *   errMem.logCorrection('overconfidence', '说"唯一方案"太绝对', currentQuestion);
  *   // 每次回复前检查

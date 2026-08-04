@@ -4,7 +4,7 @@
  * New capabilities = new dir under src/plugins/, zero changes to heartflow.js
  *
  * Usage:
- *   const { PluginLoader } = require('./loader/plugin-loader.js');
+ *   const { PluginLoader } = require('./plugin-loader.js');
  *   const loader = new PluginLoader(hf);
  *   loader.loadAll();
  */

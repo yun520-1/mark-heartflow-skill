@@ -5,8 +5,8 @@
  * 纯规则，零 LLM 依赖。
  *
  * 用法：
- *   const { gate } = require('./src/gate.js');
- *   const { rewrite } = require('./src/rewriter.js');
+ *   const { gate } = require('./gate.js');
+ *   const { rewrite } = require('./rewriter.js');
  *   const r = gate(text);
  *   if (r.gate.action === 'rewrite') {
  *     const fixed = rewrite(text, r.findings);

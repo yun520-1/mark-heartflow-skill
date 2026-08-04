@@ -12,8 +12,10 @@
  */
 const { codeVerifier } = require('./code-verifier');
 const { skillVerifier } = require('../shield/skill-verifier');
-const { hypothesisTester } = (() => { try { return require('../cortex/hypothesis-tester'); } catch (e) { return { hypothesisTester: null }; } })();
-const { selfCorrectionLoop } = (() => { try { return require('../cortex/self-correction-loop'); } catch (e) { return { selfCorrectionLoop: null }; } })();
+const { HypothesisTester } = require('../cortex/hypothesis-tester.js');
+const { SelfCorrectionLoop } = require('../cortex/self-correction-loop.js');
+const hypothesisTester = new HypothesisTester();
+const selfCorrectionLoop = new SelfCorrectionLoop();
 
 // 严重性级别
 const Severity = Object.freeze({

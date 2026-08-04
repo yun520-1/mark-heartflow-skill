@@ -9,7 +9,7 @@
  * 这不是事后检查，是在你张嘴之前踩一脚。
  *
  * 用法：
- *   const { doubt } = require('./src/doubt-engine.js');
+ *   const { doubt } = require('./doubt-engine.js');
  *   const check = doubt("你的草稿回复或要说的方向");
  *   if (check.shouldStop) { rewrite(); }
  */

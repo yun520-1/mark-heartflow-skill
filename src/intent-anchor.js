@@ -4,7 +4,7 @@
  * 对话开始时固定核心指令，每轮前检查是否偏了。
  *
  * 用法：
- *   const { initAnchor, checkDrift } = require('./src/intent-anchor.js');
+ *   const { initAnchor, checkDrift } = require('./intent-anchor.js');
  *   initAnchor("用户初始指令");
  *   const drift = checkDrift("当前对话上下文");
  *   if (drift.drifted) { pullBack(); }

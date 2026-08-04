@@ -5,7 +5,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { selfCheck } = (() => { try { return require('../shield/heartcore-self-check'); } catch (e) { return { selfCheck: () => ({ ok: true, skipped: true }) }; } })();
+const { selfCheck } = require('../shield/heartcore-self-check');
 const { writeBeat } = require('./heartbeat');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -27,7 +27,7 @@ function saveSnapshot(label, data) {
   const file = path.join(SNAPSHOT_DIR, `${ts}_${label}.json`);
   fs.writeFileSync(file, JSON.stringify({
     timestamp: new Date().toISOString(),
-    version: require('../package.json').version,
+    version: require('../../package.json').version,
     ...data
   }, null, 2));
   return file;
@@ -68,7 +68,7 @@ function wake(options = {}) {
     lastWakeTime: now.toISOString(),
     deepCheck,
     hoursSinceLastWake: hoursSinceLastWake !== null ? Math.round(hoursSinceLastWake * 10) / 10 : null,
-    version: require('../package.json').version
+    version: require('../../package.json').version
   };
 
   saveLastState(state);
@@ -86,7 +86,7 @@ function sleep(summary = {}) {
   saveSnapshot('pre-sleep', {
     wakeCount,
     summary,
-    version: require('../package.json').version
+    version: require('../../package.json').version
   });
   console.log(`[HEARTCORE] Sleep after ${wakeCount} wake(s)`);
   wakeCount = 0; // reset for next cycle

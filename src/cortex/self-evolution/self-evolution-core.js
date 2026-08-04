@@ -23,7 +23,7 @@
 const fs = require('../../utils/safe-fs');
 
 const path = require('path');
-const { SelfScanner } = (() => { try { return require('./self-scanner.js'); } catch (e) { return { SelfScanner: null }; } })();
+const { SelfScanner } = require('./self-scanner.js');
 const { SelfEvolutionV2 } = require('../self-evolution-v2.js');
 const { MetaEngine } = require('../meta-engine.js');
 

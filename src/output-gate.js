@@ -10,7 +10,7 @@
  *   - 未标注不确定性
  *
  * 用法：
- *   const { screen } = require('./src/output-gate.js');
+ *   const { screen } = require('./output-gate.js');
  *   const report = screen(aiResponse);
  *   if (report.gate.action !== 'pass') {
  *     // 改写后再发 or 加风险标注

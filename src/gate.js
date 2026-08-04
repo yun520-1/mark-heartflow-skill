@@ -11,7 +11,7 @@
  *   if (gate.action === 'pass')   → 通过
  *
  * 使用方式：
- *   const hf = require('./src/gate.js');
+ *   const hf = require('./gate.js');
  *   const result = hf.gate('你要检测的文本');
  *   console.log(result.gate.action, result.gate.reason);
  */

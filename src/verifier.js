@@ -7,8 +7,8 @@
  * 零 LLM，纯规则。
  *
  * 用法：
- *   const { gate } = require('./src/gate.js');
- *   const { verify } = require('./src/verifier.js');
+ *   const { gate } = require('./gate.js');
+ *   const { verify } = require('./verifier.js');
  *   const r = gate(text);
  *   if (r.gate.action === 'verify') {
  *     const v = verify(text);

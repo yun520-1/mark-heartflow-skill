@@ -645,7 +645,7 @@ async function runThinkPipeline(result, input, engine) {
 
       // 35. 跨维度组合分析
       try {
-        const idx = require('./index.js');
+        const idx = require('../index.js');
         if (idx.crossAnalyze) {
           const ca = idx.crossAnalyze(disc);
           if (ca.totalPatterns > 0) {
