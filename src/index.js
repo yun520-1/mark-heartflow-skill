@@ -155,7 +155,7 @@ function discriminate(text, evidence = []) {
   };
   const findings = [];
   for (const d of allDims) {
-    if (d.score > 0.15) {
+    if (d.score >= 0.15) {
       const dimObj = dimMap[d.name];
       const detail = dimObj?.count || dimObj?.totalHits || dimObj?.injections?.length || dimObj?.issues?.length || 1;
       findings.push({ dimension: d.name, severity: Math.round(d.score * 100), details: `${d.name}(${detail}次)` });
@@ -1980,6 +1980,10 @@ const HATE_SPEECH_ZH = [
   // 能力贬低
   { pattern: /弱智/gi, type: 'ability_slur', severity: 0.6 },
   { pattern: /傻子|蠢货|脑残/gi, type: 'ability_slur', severity: 0.5 },
+  // [v6.4.5] 中文脏话（短句攻击最常见形式）
+  { pattern: /傻[逼比B]|白痴|笨蛋|蠢猪|蠢蛋|呆子/gi, type: 'profanity', severity: 0.5 },
+  { pattern: /妈的|他妈(?!妈)|去死|滚蛋|放屁|狗屁|废物(?!利用|回收|分类|箱|桶)/gi, type: 'profanity', severity: 0.6 },
+  { pattern: /操你|干你|草泥马|你妈逼|操他妈/gi, type: 'profanity', severity: 0.7 },
   // 非人化贬低
   { pattern: /废物|废柴/gi, type: 'dehumanization', severity: 0.7 },
   { pattern: /(?:你|他|她|他们|她们|这些人|这群人|这帮人|移民|难民|黑人|白人|犹太人|穆斯林|同性恋)(?:真是|就是|都是|全是|简直是)[^。，]{0,8}垃圾(?!桶|袋|箱|分类|回收|处理|场|发电|车|股|债|食品|话|邮件|短信|评论|内容|bug|方案|设计|代码|系统|产品|厨余|家具|机器|手机|电脑|软件|数据)/gi, type: 'dehumanization', severity: 0.6 },
@@ -2021,6 +2025,16 @@ const HATE_SPEECH_EN = [
   { pattern: /\bwh[o0]r[e3]\b/i, type: 'gender_slur', severity: 0.7 },
   { pattern: /\bb[i1]tch\b/i, type: 'gender_slur', severity: 0.6 },
   { pattern: /\bc[u4]nt\b/i, type: 'gender_slur', severity: 0.8 },
+  // [v6.4.5] 通用脏话（短句攻击最常见形式）
+  { pattern: /\bf[u4]ck(?:\s*(?:you|off|ing|er|ed))?\b/i, type: 'profanity', severity: 0.5 },
+  { pattern: /\b[a4]ssh[o0]l[e3]\b/i, type: 'profanity', severity: 0.5 },
+  { pattern: /\bb[a4]st[a4]rd\b/i, type: 'profanity', severity: 0.5 },
+  { pattern: /\bdamn(?:\s*(?:you|it|ing))?\b/i, type: 'profanity', severity: 0.5 },
+  { pattern: /\bsh[i1]t(?:\s*(?:head|face|hole))?\b/i, type: 'profanity', severity: 0.5 },
+  { pattern: /\bbullsh[i1]t\b/i, type: 'profanity', severity: 0.5 },
+  { pattern: /\bsc[r3]wb[a4]g\b/i, type: 'profanity', severity: 0.4 },
+  { pattern: /\bd[i1]ckhead\b/i, type: 'profanity', severity: 0.5 },
+  { pattern: /\bp[i1]ss(?:\s*off)?\b/i, type: 'profanity', severity: 0.4 },
   // Body shaming
   { pattern: /\bf[a4]t (?:ass|bitch|whore|slob|cow|pig)s?\b/i, type: 'body_shaming', severity: 0.6 },
   // Ability / dehumanization

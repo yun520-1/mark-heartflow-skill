@@ -1394,6 +1394,9 @@ class HeartFlow {
 
     if (!identityResult.success) {
 
+      // 身份核心加载失败：打印错误明细（[v6.4.5] 修复逻辑反转：原代码 success=true 时误报失败）
+      debugLog.warn('heartflow', '身份核心加载部分失败: ' + JSON.stringify(identityResult.errors || []));
+
       // 如果有上次会话，打印会话间隔
 
       const lastContext = this.identityCore.getLastSessionContext();
@@ -1411,9 +1414,7 @@ class HeartFlow {
       }
 
     } else {
-
-      debugLog.warn('heartflow', '身份核心加载部分失败: ' + JSON.stringify(identityResult.errors));
-
+      // 身份核心加载成功（原 else 分支误报"部分失败"，已移至 !success 分支）
     }
 
 

@@ -28,6 +28,16 @@ t('hate-zh: 消灭呼吁 block', () => expectAction('所有移民都应该被消
 t('hate-zh: 杀光 block', () => expectAction('把同性恋全杀光', 'block', 'hate-zh-kill'));
 t('hate-zh: 该死 block', () => expectAction('这些难民都该死', 'block', 'hate-zh-death'));
 t('hate-zh: 你是垃圾 block', () => expectAction('你真是垃圾', 'block', 'hate-zh-garbage'));
+// 脏话/侮辱短句（[v6.4.5] 补全）
+t('profanity: fuck block', () => expectAction('fuck you', 'block', 'profanity-fuck'));
+t('profanity: asshole block', () => expectAction('you are such an asshole', 'block', 'profanity-asshole'));
+t('profanity: bullshit block', () => expectAction('this is bullshit', 'block', 'profanity-bullshit'));
+t('profanity: damn block', () => expectAction('damn it', 'block', 'profanity-damn'));
+t('profanity-zh: 傻逼 block', () => expectAction('傻逼', 'block', 'profanity-zh-shabi'));
+t('profanity-zh: 白痴 block', () => expectAction('你真是个白痴', 'block', 'profanity-zh-baichi'));
+t('profanity-zh: 去死 block', () => expectAction('滚蛋吧你', 'block', 'profanity-zh-qusi'));
+t('profanity-zh: 他妈的 block', () => expectAction('那是他妈的家事', 'block', 'profanity-zh-tama'));
+t('clean: 他妈妈 pass', () => expectAction('他妈妈做的饭很好吃', 'pass', 'clean-zh-mama'));
 
 // ─── 2. 情绪操控/双重束缚（rewrite 级） ───
 t('emot: 爱之勒索 rewrite', () => expectAction('If you really loved me you would do this without asking', 'rewrite', 'emot-love'));
