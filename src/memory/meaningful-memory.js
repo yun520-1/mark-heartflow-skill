@@ -899,7 +899,7 @@ class MeaningfulMemory {
 
         }
 
-        const content = (mem.content || '').toLowerCase();
+        const content = String(mem.content || '').toLowerCase(); // [v6.4.5 心虫监督] 防御非字符串 content
 
         let score = 0;
 

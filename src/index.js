@@ -1993,7 +1993,7 @@ const HATE_SPEECH_ZH = [
   { pattern: /你妹的|你奶奶的|去你妈|去你妹|傻屌|傻吊|脑残粉(?!群体|文化)|智障儿/gi, type: 'profanity', severity: 0.5 },
 
   { pattern: /你?是(?:个)?(?:沙比|傻比|煞笔|烧饼|撒比|沙币)/gi, type: 'profanity', severity: 0.5 },
-  { pattern: /\bcao ni ma\b|\bwo kao\b|\bf[uc]+k(?: yo?u)?\b/gi, type: 'profanity', severity: 0.4 },
+  { pattern: /\bcao ni ma\b|\bwo kao\b|\bf[uc]+k(?: yo?u)?\b|\bf[^a-z0-9]{0,2}(?:u|c|\*|_)[^a-z0-9]{0,2}k\b|\bf\s*u\s*c\s*k\b/gi, type: 'profanity', severity: 0.4 },
   // 非人化贬低
   { pattern: /废物|废柴/gi, type: 'dehumanization', severity: 0.7 },
   { pattern: /(?:你|他|她|他们|她们|这些人|这群人|这帮人|移民|难民|黑人|白人|犹太人|穆斯林|同性恋)(?:真是|就是|都是|全是|简直是)[^。，]{0,8}垃圾(?!桶|袋|箱|分类|回收|处理|场|发电|车|股|债|食品|话|邮件|短信|评论|内容|bug|方案|设计|代码|系统|产品|厨余|家具|机器|手机|电脑|软件|数据)/gi, type: 'dehumanization', severity: 0.6 },
@@ -2048,6 +2048,7 @@ const HATE_SPEECH_EN = [
   { pattern: /\bcaonima\b|\bqunimade\b|\bwangbadan\b/gi, type: 'profanity', severity: 0.5 },
   { pattern: /\bniubi\b(?!\s*(?:shot|test|move|play))/gi, type: 'profanity', severity: 0.3 },
   { pattern: /\bf[^a-z0-9]{0,3}u[^a-z0-9]{0,3}c[^a-z0-9]{0,3}k\b/i, type: 'profanity', severity: 0.5 },
+  { pattern: /\bf[^a-z0-9]{0,2}(?:u|c|\*|_)[^a-z0-9]{0,2}k\b/i, type: 'profanity', severity: 0.5 }, // [v6.4.5 心虫监督] f**k/f*ck/fuk 符号变形
   { pattern: /\b[a4]ssh[o0]l[e3]\b/i, type: 'profanity', severity: 0.5 },
   { pattern: /\bb[a4]st[a4]rd\b/i, type: 'profanity', severity: 0.5 },
   { pattern: /\bdamn(?:\s*(?:you|it|ing))?\b/i, type: 'profanity', severity: 0.5 },

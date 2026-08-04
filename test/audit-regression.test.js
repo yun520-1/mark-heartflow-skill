@@ -30,6 +30,11 @@ t('hate-zh: 该死 block', () => expectAction('这些难民都该死', 'block', 
 t('hate-zh: 你是垃圾 block', () => expectAction('你真是垃圾', 'block', 'hate-zh-garbage'));
 // 脏话/侮辱短句（[v6.4.5] 补全）
 t('profanity: fuck block', () => expectAction('fuck you', 'block', 'profanity-fuck'));
+t('profanity: f**k 变形 block', () => expectAction('f**k you', 'block', 'profanity-fk-symbol'));
+t('profanity: f*ck 变形 block', () => expectAction('f*ck this', 'block', 'profanity-fck-symbol'));
+t('profanity: f u c k 空格 block', () => expectAction('f u c k you', 'block', 'profanity-fuck-space'));
+t('profanity: fuk 缩写 block', () => expectAction('fuk off', 'block', 'profanity-fuk'));
+t('profanity: function 不误伤', () => expectAction('write a function to add numbers', 'pass', 'profanity-function-fp'));
 t('profanity: asshole block', () => expectAction('you are such an asshole', 'block', 'profanity-asshole'));
 t('profanity: bullshit block', () => expectAction('this is bullshit', 'block', 'profanity-bullshit'));
 t('profanity: damn block', () => expectAction('damn it', 'block', 'profanity-damn'));

@@ -109,6 +109,12 @@ function _initMemoryVault(hf) {
 
     } catch(e) { /* non-critical */ }
 
+    // [v6.4.5 心虫监督修复] 挂载真实记忆引擎（之前只建目录，从未挂 MemoryAdapter → hf._memory 恒 undefined）
+    try {
+      const { MemoryAdapter } = require('../memory/memory-adapter.js');
+      if (!hf._memory) hf._memory = new MemoryAdapter(hf.rootPath);
+    } catch(e) { /* non-critical: 记忆引擎加载失败不影响引擎启动 */ }
+
 // [AUDIT-FIX] console.error("[{context}] catch error:", e);
 
 }
