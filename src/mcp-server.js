@@ -1178,6 +1178,52 @@ const TOOLS = [
     name: 'heartflow_formula_bridge',
     description: '公式桥接：从语料搜索/计算公式。',
     inputSchema: { type: 'object', properties: { query: { type: 'string', description: '搜索词' }, formula: { type: 'string', description: '公式' } } }
+  },
+
+  {
+    name: 'heartflow_agent_psychology_full',
+    description: '引擎心理学：完整认知心理状态评估（7维：负荷/冲突/失调/漂移/情绪/动机/整合）。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_decision_instruction',
+    description: '哲学指令：执行哲学→决策转换指令。',
+    inputSchema: { type: 'object', properties: { instruction: { type: 'string', description: '指令' } } }
+  },
+  {
+    name: 'heartflow_cognitive_load',
+    description: '认知负载：平衡认知负载，检测偷懒/过载。',
+    inputSchema: { type: 'object', properties: { tasks: { type: 'array', items: { type: 'string' }, description: '任务列表' } } }
+  },
+  {
+    name: 'heartflow_context_passport',
+    description: '上下文护照：上下文身份进入/假设。',
+    inputSchema: { type: 'object', properties: { context: { type: 'string', description: '上下文' } } }
+  },
+  {
+    name: 'heartflow_agent_commentary',
+    description: '代理评论：生成支持/谨慎评论。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '评论对象' } } }
+  },
+  {
+    name: 'heartflow_context_builder',
+    description: '上下文构建：构建上下文结构。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '内容' } } }
+  },
+  {
+    name: 'heartflow_corpus_math',
+    description: '语料数学：从 DLMF/公式推理语料搜索数学公式。',
+    inputSchema: { type: 'object', properties: { query: { type: 'string', description: '搜索词' } } }
+  },
+  {
+    name: 'heartflow_lesson_bank',
+    description: '教训库：搜索/检索经验教训。',
+    inputSchema: { type: 'object', properties: { query: { type: 'string', description: '搜索词' } } }
+  },
+  {
+    name: 'heartflow_project_context',
+    description: '项目上下文：设置/获取当前项目上下文。',
+    inputSchema: { type: 'object', properties: { project: { type: 'string', description: '项目名' } } }
   }
 
 ];
@@ -4040,6 +4086,89 @@ const HANDLERS = {
       const fb = new FormulaBridge({ rootPath: HF_DIR, silent: true });
       const r = fb.searchFromCorpus ? fb.searchFromCorpus(args?.query || '') : {};
       return { formula: (r.results || r).slice(0, 10), timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  // [v6.4.5] 第七批 — 心理/负载/护照/评论/语料/教训/项目
+  heartflow_agent_psychology_full: (args) => {
+    try {
+      const { AgentPsychology } = require('./identity/agent-psychology.js');
+      const ap = new AgentPsychology({ silent: true, rootPath: HF_DIR });
+      const r = ap.assessCognitiveLoad ? ap.assessCognitiveLoad() : {};
+      return { psychology: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_decision_instruction: (args) => {
+    try {
+      const { DecisionInstruction } = require('./identity/philosophy-to-decision.js');
+      const di = new DecisionInstruction({ silent: true, rootPath: HF_DIR });
+      const r = di.execute ? di.execute(args?.instruction || '') : {};
+      return { instruction: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_cognitive_load: (args) => {
+    try {
+      const { CognitiveLoadBalancer } = require('./core/cognitive-load-balancer.js');
+      const cl = new CognitiveLoadBalancer({ silent: true, rootPath: HF_DIR });
+      const tasks = Array.isArray(args?.tasks) ? args.tasks : ['task'];
+      const r = cl.balance ? cl.balance(tasks) : {};
+      return { load: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_context_passport: (args) => {
+    try {
+      const { ContextPassport } = require('./core/decision.js');
+      const cp = new ContextPassport({ silent: true, rootPath: HF_DIR });
+      const r = cp.enter ? cp.enter(args?.context || '') : {};
+      return { passport: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_agent_commentary: (args) => {
+    try {
+      const { AgentCommentary } = require('./bridge/agent-commentary.js');
+      const ac = new AgentCommentary({ silent: true, rootPath: HF_DIR });
+      const r = ac.generate ? ac.generate(args?.text || '') : {};
+      return { commentary: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_context_builder: (args) => {
+    try {
+      const { ContextBuilder } = require('./bridge/context-builder.js');
+      const cb = new ContextBuilder({ silent: true, rootPath: HF_DIR });
+      const r = cb.build ? cb.build(args?.text || '') : {};
+      return { context: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_corpus_math: (args) => {
+    try {
+      const { CorpusMathTool } = require('./formula/corpus-math-tool.js');
+      const cm = new CorpusMathTool({ rootPath: HF_DIR, silent: true });
+      const r = cm.search ? cm.search(args?.query || '') : [];
+      return { results: (r.results || r).slice(0, 10), timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_lesson_bank: (args) => {
+    try {
+      const { LessonBankAdapter } = require('./cortex/lesson-bank-adapter.js');
+      const lb = new LessonBankAdapter({ rootPath: HF_DIR, silent: true });
+      const r = lb.search ? lb.search(args?.query || '') : {};
+      return { lessons: (r.results || r).slice(0, 10), timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_project_context: (args) => {
+    try {
+      const { ProjectContext } = require('./memory/project-context.js');
+      const pc = new ProjectContext({ rootPath: HF_DIR, silent: true });
+      const r = pc.setProject ? pc.setProject(args?.project || 'default') : {};
+      return { project: r, timestamp: Date.now() };
     } catch (e) { return { error: e.message }; }
   },
 };
