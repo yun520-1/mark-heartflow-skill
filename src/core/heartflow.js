@@ -4430,6 +4430,14 @@ class HeartFlow {
               direction: judgeResult.direction,
               confidence: judgeResult.confidence,
             };
+            // [v6.4.5] 整合：用多路径判断的推荐更新 decision 结论（让决策输出真正有用）
+            if (result.decision && judgeResult.chosenPath) {
+              const cp = judgeResult.chosenPath;
+              const scores = cp.scores ? `(可行性${cp.scores.feasibility} 风险${cp.scores.risk} 成本${cp.scores.cost})` : '';
+              result.decision.conclusion = `建议${cp.label || cp.direction}：${cp.rationale || cp.description || ''} ${scores}`.trim();
+              result.decision.multiPath = true;
+              result.decision.confidence = Math.max(result.decision.confidence || 0, judgeResult.confidence || 0.5);
+            }
           }
         }
       }
