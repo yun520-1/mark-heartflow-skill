@@ -4435,6 +4435,26 @@ class HeartFlow {
       }
     } catch (e) { /* 多路径判断失败不阻断主链路 */ }
 
+    // ─── [v6.4.5] 共情检测接线：情绪类输入触发 empathy-detector（Decety & Jackson 4组件）───
+    // 之前完全未接线（死能力）。检测情绪表达（难过/焦虑/开心等），评估共情水平
+    try {
+      if (typeof input === 'string') {
+        const text = input.trim();
+        const hasEmotion = /(?:难过|伤心|焦虑|害怕|开心|高兴|愤怒|生气|委屈|孤独|失望|绝望|痛苦|纠结|烦躁|沮丧|兴奋|激动|心疼|心疼|遗憾|后悔|紧张)/.test(text);
+        if (hasEmotion && text.length < 200) {
+          const { detectEmpathy } = require('../emotion/empathy-detector.js');
+          const empResult = detectEmpathy(text);
+          if (empResult) {
+            result.empathy = {
+              score: empResult.score,
+              level: empResult.level,
+              components: empResult.components,
+            };
+          }
+        }
+      }
+    } catch (e) { /* 共情检测失败不阻断主链路 */ }
+
     // [v6.4.5] 精简模式：compact=true 时移除无消费者的内部 _ 字段（tok 优化）
   // 有消费者的保留: _outputChecklist / _verification / _discrimination / _cotTrace(链追踪)
   // 无消费者移除（约 7KB/token 节省）: _selfPositioning/_deepEmotion/_languageHonesty/_selfModel/_beingAnalysis 等
