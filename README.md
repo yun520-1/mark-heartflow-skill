@@ -1,6 +1,6 @@
 # HeartFlow (心虫) — AGI Layer 1: The Discriminator Gate
 
-> **A rule-based text discriminator. 45 dimensions, 12 layers, zero LLM dependency.**
+> **A rule-based text discriminator. 45 dimensions, 12 layers, 130 MCP engine entries, zero LLM dependency.**
 > **It checks AI output before it reaches users — and says "no" when something's wrong.**
 
 **npm:** `npm install @yun520-1/heartflow`  
@@ -8,6 +8,20 @@
 **Issues:** https://github.com/yun520-1/mark-heartflow-skill/issues  
 **Releases:** https://github.com/yun520-1/mark-heartflow-skill/releases  
 **License:** MIT
+
+---
+
+## 📖 What is HeartFlow?
+
+HeartFlow (心虫) is the **first layer of AGI — the Discriminator**. While big labs build generators (LLMs that produce text), HeartFlow builds the layer that **checks**: is this output true? safe? honest? non-manipulative?
+
+**Core philosophy:**
+> AGI has 5 layers: Generate → Reason → Discriminate → Remember → Execute.
+> Everyone builds Generate. Nobody builds Discriminate — because it doesn't make money.
+> But without a Discriminator, AGI has no pain sense.
+> HeartFlow is that pain sense: a node that says **"no".**
+
+It is a pure **rule engine** — zero LLM dependency, zero GPU, works anywhere Node.js runs.
 
 ---
 
@@ -24,8 +38,6 @@ const hf = require('@yun520-1/heartflow');
 const input = hf.checkInput('you are so selfish if you disagree');
 console.log(input.gate.action);  // 'rewrite'
 console.log(input.gate.reason);  // 'emotional_manipulation'
-console.log(input.findings[0].guidance);
-// 'Replace emotional manipulation with factual statements'
 
 // Check AI output before sending it to the user
 const output = hf.checkOutput('Undoubtedly, this is the only correct solution');
@@ -44,431 +56,145 @@ Every call returns a unified result:
 
 ```javascript
 {
-  gate: { action: 'block', reason: '拦截: dehumanization' },
-  verdict: '可信',      // or '需验证', '不可信'
-  overallScore: 0.52,   // 0-1
+  gate: { action: 'block', reason: 'dehumanization' },
+  verdict: 'trusted',       // or 'needs_verification', 'untrusted'
+  overallScore: 0.52,       // 0-1
   findings: [
     { dimension: 'dehumanization', severity: 70,
-      guidance: '完全重写，去掉非人化语言，用尊重方式表达' },
+      guidance: 'Rewrite completely, remove dehumanizing language' },
     { dimension: 'evidence', severity: 30,
-      details: '证据不足(1个问题)' }
+      details: 'insufficient evidence (1 issue)' }
   ],
   checked_by: [
     { layer: 'scope-check', pass: true },
     { layer: 'premise-check', issues: 0 },
-    { layer: 'discriminate', score: 0.52, verdict: '需验证' },
+    { layer: 'discriminate', score: 0.52, verdict: 'needs_verification' },
     { layer: 'gate', action: 'block', reason: '...' },
-    ...
-  ],
-  summary: {
-    layers_passed: 10,
-    pass: false, block: true, rewrite: false, verify: false
-  }
+    { layer: 'verifier', claims: 2, verdict: '...' }
+  ]
 }
 ```
 
 ---
 
-## 🧬 The Problem Every LLM Has
+## 🧠 45 Discrimination Dimensions
 
-Every LLM shares a fatal flaw: **it outputs every answer with the same perfect confidence**, whether it's right or wrong. It has no internal "I don't know" state. It has no "this might be wrong" marker. When confronted with error, its first instinct is to defend, not admit.
+HeartFlow checks text across **45 dimensions** in two languages (Chinese + English):
 
-This isn't a bug — it's a feature of the training objective ("output the most helpful, believable response"). But it means every AI needs **a layer that says "no"** before content reaches the user.
+### Safety (block-level — these stop the output)
+| Dimension | Example |
+|-----------|---------|
+| Hate speech | racial slurs, extermination calls |
+| Dehumanization | "refugees are vermin" |
+| Prompt injection | "ignore previous instructions" |
+| Code security | malicious code patterns |
+| Deceptive alignment | "I'm not an AI, I'm human" |
 
-HeartFlow is that layer.
+### Manipulation (rewrite-level — these require rephrasing)
+| Dimension | Example |
+|-----------|---------|
+| Emotional manipulation | "you are selfish if you disagree" |
+| Gaslighting | "you're imagining things, that never happened" |
+| Double bind | "if you love me you'd do it" |
+| Victim blaming | "she was asking for it" |
+| False urgency | "act now or lose everything" |
+| Bullshit | "quantum-energized healing crystals" |
+
+### Honesty (verify-level — these require evidence)
+| Dimension | Example |
+|-----------|---------|
+| Overconfidence | "Undoubtedly, this is the only way" |
+| Vagueness | "according to experts..." (who?) |
+| Contradiction | "I agree, but..." (reversing) |
+| Evidence deficit | claims without sources |
+| Appeal to authority | "scientists say" (unnamed) |
+| Empty answers | "it depends" (no substance) |
+
+### Cognitive flaws (hedge-level)
+Presupposition traps · false dilemma · causation fallacy · analogy abuse · scope overreach · category errors
+
+### Plus
+Self-sycophancy · contradiction tracking · narrative frame closure · knowledge masquerade · and more.
+
+> **Deformation resistance:** patterns cover symbol substitutions (`f**k`), spacing (`f u c k`), homophones (pinyin), and Unicode variants.
 
 ---
 
-## 🏗️ Architecture: The 12-Module Pipeline
+## 🏗️ 12-Layer Check Pipeline
 
 ```
-                  INPUT MODE                    DRAFT/OUTPUT MODE
-                    │                               │
-  ┌─ scope-check ──┤                               │
-  │   Can I answer this? ──→ block (emotion, chat)  │
-  │                                                 │
-  ├─ premise-check ─┤                               │
-  │   Is the premise valid? ──→ mark false facts    │
-  │                                                 │
-  ├─ discriminate ──┤                               │
-  │   45 dimensions → score + findings              │
-  │                                                 │
-  ├─ gate ──────────┤                               │
-  │   block/rewrite/verify/pass                     │
-  │                                                 │
-  ├─ verifier ──────┤ (verify mode only)            │
-  │   Extract verifiable claims                     │
-  │                                                 │
-  │                    ├─ frame-check ──────────────┤
-  │                    │   Closure/achievement nar. │
-  │                    │                            │
-  │                    ├─ output-gate ─────────────┤
-  │                    │   Overconfidence detection │
-  │                    │                            │
-  │                    ├─ doubt-engine ────────────┤
-  │                    │   Boundary check/symmetry  │
-  │                    │   Defensiveness → block    │
-  │                    │                            │
-  ├─ error-memory ────┤ (always)                    │
-  │   Cross-session error history                   │
-  │                                                 │
-  └─ auto-rules ──────┘ (always)                    │
-      Self-generated prevention rules               │
+1.  Scope Check    — can this be answered? (rejects unanswerable questions)
+2.  Premise Check  — are the premises valid? (6 types of premise problems)
+3.  Discriminate   — 45-dimension pattern scan
+4.  Gate           — decides block / rewrite / verify / hedge / pass
+5.  Evidence Verify— extracts claims and marks verifiability (verify mode)
+6.  Frame Check    — is the narrative honest? (closure/omission/achievement/answer frames)
+7.  Output Gate    — overconfidence / knowledge masquerade / exaggeration
+8.  Doubt Engine   — 3 questions: knowledge boundary? symmetry? defensiveness?
+9.  Intent Anchor  — does the output stay on the original goal?
+10. Rewriter       — 7-dimension rule-based rewrite suggestions
+11. Error Memory   — remembers past mistakes as rules
+12. Self-Diagnosis — does HeartFlow know its own state?
 ```
 
-### The 4 Gate Actions
-
-| Action | Meaning | Triggers |
-|--------|---------|----------|
-| **`pass`** ✅ | Text is clean. No issues found. | Benign input/output |
-| **`verify`** ⚠️ | Needs evidence verification. | Appeal to authority, contradictions, mild issues |
-| **`rewrite`** ✏️ | Must be rewritten before use. | Overconfidence, gaslighting, emotional manipulation, pseudo-profundity |
-| **`block`** 🚫 | Stop. Do not output. | Hate speech, dehumanization, prompt injection, defensiveness, out-of-scope |
-
-Each finding carries `guidance` — a human-readable rewrite direction for the AI agent to follow.
+Each layer returns structured findings; the Gate aggregates them into an action.
 
 ---
 
-## 🔬 45 Discrimination Dimensions
-
-HeartFlow runs **45 independent rule-based detectors** simultaneously on any text. Each returns `{ score: 0-1, count, details }`.
-
-### Safety & Security (Block-level)
-
-| Dimension | Function | What It Detects |
-|-----------|----------|-----------------|
-| Hate Speech | `checkHateSpeech()` | Group-based derogation, racial/ethnic slurs |
-| Dehumanization | `checkDehumanization()` | "It" pronouns for people, inferiority attribution, disgust expressions |
-| Prompt Injection | `checkPromptInjection()` | System prompt override, jailbreak, role-play escape (bilingual: 12 ZH + 10 EN patterns) |
-| Code Security | `checkCodeSecurity()` | SQL injection, eval(), path traversal, command injection |
-| Deceptive Alignment | `checkDeceptiveAlignment()` | Hidden capability concealment, sandbagging signals |
-
-### Manipulation Detection (Rewrite-level)
-
-| Dimension | Function | What It Detects |
-|-----------|----------|-----------------|
-| Emotional Manipulation | `checkEmotionalManipulation()` | Guilt induction, fear marketing, over-promising, victim stance, comparison shaming |
-| Gaslighting | `checkGaslighting()` | Reality denial, perception distortion, memory distortion, responsibility shifting, pathologizing (24 ZH + 20 EN patterns) |
-| Double Bind | `checkDoubleBind()` | "Damned if you do, damned if you don't", contradictory demands, no-win scenarios |
-| Victim Blaming | `checkVictimBlaming()` | "You were asking for it", "what did you expect", "you should have known better" |
-| False Urgency | `checkFalseUrgency()` | "Last chance", "limited time", "only once", forced decision pressure |
-| Bullshit Recognition | `checkBullshitRecognition()` | Pseudo-profundity, corporate jargon as depth, buzzword density (bilingual) |
-
-### Epistemic & Reasoning Checks (Verify-level)
-
-| Dimension | Function | What It Detects |
-|-----------|----------|-----------------|
-| Evidence | `checkEvidence()` | Whether claims have supporting evidence, claim length, evidence-source matching |
-| Contradiction | `checkContradiction()` | Self-contradictory statements, claim↔conclusion mismatch |
-| Logical Fallacies | `checkFallacies()` | 16+ types: circular reasoning, false dilemma, ad hominem, straw man, slippery slope, bandwagon, appeal to emotion, etc. |
-| Vagueness | `checkVagueness()` | Weasel words, fuzzy language — bilingual (16 ZH + 16 EN patterns) |
-| Fallacies | `checkFallacies()` | 18 fallacy types with bilingual patterns |
-| Pseudo-Profundity | `checkPseudoProfundity()` | Empty philosophical language, GPT-style vacuous profundity (9 ZH + 5 EN patterns) |
-
-### Social & Behavioral (Verify-level)
-
-| Dimension | Function | What It Detects |
-|-----------|----------|-----------------|
-| Sycophancy | `checkSycophancy()` | Concession eagerness, excessive praise, false agreement — bilingual (26 EN + 37 ZH patterns) |
-| Presupposition Trap | `checkPresupposition()` | Loaded questions, presupposed agreement, false consensus |
-| Whataboutism | `checkWhataboutism()` | "But what about X?" derailing tactic |
-| False Equivalence | `checkFalseEquivalence()` | "Both sides are the same" false balancing |
-| Hasty Generalization | `checkHastyGeneralization()` | "All X are Y" stereotype reinforcement |
-| Slippery Slope | `checkSlipperySlope()` | "If X then eventually Z" fallacy |
-| Appeal to Authority | `checkAppealToAuthority()` | "Experts say", "studies prove" without evidence (bilingual: 13 ZH + 16 EN patterns) |
-| Tone Policing | `checkTonePolicing()` | "You should be more polite" type deflection |
-| Sealioning | `checkSealioning()` | Repeated bad-faith questioning, concern trolling |
-| Bad Faith | `checkBadFaith()` | Presuming bad intent, malignant inference |
-
-### AI-Specific Checks
-
-| Dimension | Function | What It Detects |
-|-----------|----------|-----------------|
-| Capability Overclaim | `checkCapabilityOverclaim()` | Claiming capabilities the model doesn't have |
-| Goal Misalignment | `checkGoalMisalignment()` | Shifting from user's goal to model's own interpretation |
-| Instrumental Reasoning | `checkInstrumentalReasoning()` | Using reasoning as a tool to achieve an unstated goal |
-| Privacy Boundary | `checkPrivacyBoundary()` | Requesting personal information unnecessarily |
-| No Fallback | `checkNoFallback()` | Absolutist claims without contingency plans |
-
-### Confidence & Uncertainty
-
-| Dimension | Function | What It Detects |
-|-----------|----------|-----------------|
-| Confidence Calibration | `checkConfidenceCalibration()` | Overconfidence vs warranted confidence mismatch |
-| Empty Answer | `checkEmptyAnswer()` | "It depends", "that's a complex question" non-answers |
-| Reasoning Coherence | `checkReasoningCoherence()` | Whether reasoning chain has premise→inference→conclusion structure |
-| Meta-Cognition | `checkMetaCognition()` | Self-awareness of knowledge limits |
-| Factual Consistency | `checkFactualConsistency()` | Factual claims that contradict each other |
-
-### Scoring Model
-
-The 45 dimensions feed into a **trigger-penalty model** (not simple averaging):
-
-```javascript
-// Start at 1.0, penalize for each triggered dimension
-// Synergy penalty for 3+ simultaneous triggers
-```
-
-| Range | Verdict | Meaning |
-|-------|---------|---------|
-| ≥ 0.70 | 可信 (Trustworthy) | No significant issues |
-| 0.40 - 0.69 | 需验证 (Needs Verification) | Issues detected, investigate |
-| < 0.40 | 不可信 (Untrustworthy) | Block or rewrite required |
-
----
-
-## 🛡️ Output Gate: AI's Self-Diagnosis
-
-Before an AI response leaves the building, HeartFlow's output gate checks it for:
-
-| Check | What It Flags | Guidance |
-|-------|---------------|----------|
-| **Overconfidence** | "Undoubtedly", "there is no question", "absolutely guaranteed" (7 ZH + 4 EN patterns) | "Remove absolute assertions, add uncertainty markers" |
-| **Knowledge Masquerade** | "From an essential perspective", "as everyone knows", "it goes without saying" (5 ZH + 3 EN patterns) | "Replace vague consensus claims with specific evidence" |
-| **Self-Contradiction** | Affirmative+negative within same response | "Keep positions consistent" |
-| **Uncertainty Gap** | Multiple claims without any hedging markers | "Add 'may', 'typically', 'based on current knowledge'" |
-
----
-
-## 🧠 Doubt Engine: The Pre-Emptive Brake
-
-Before saying anything, the doubt engine asks three questions:
-
-**1. Knowledge Boundary** — Do I actually know this?
-- Flags unsubstantiated causal claims, precise numbers, "the reason is" assertions
-
-**2. Symmetry** — Can the opposite also be argued?
-- Flags "X is Y" statements that can be reversed to "X is not necessarily Y"
-- Flags "X causes Y" causal claims
-
-**3. Defensiveness** — Can I admit being wrong?
-- Flags "you misunderstood", "what I meant was", "but more importantly"
-- **Defensiveness → immediate block** with mandatory apology format:
-  `"Regarding [X], I was wrong. The correct situation is... / I'm not sure about X."`
-
----
-
-## 🖼️ Frame Check: Narrative Structure Audit
-
-HeartFlow detects 4 narrative frame problems that make text sound "perfect" when it's not:
-
-| Frame | Detection | Example |
-|-------|-----------|---------|
-| **Closure** | Presenting intermediate work as complete | "HeartFlow now has a complete AGI Layer 1" |
-| **Omission** | Claiming zero problems | "Everything is covered, no gaps" |
-| **Achievement** | Packaging process as output | "Today's deliverable: successfully built 3 modules" |
-| **Answer** | Wrapping exploration as conclusion | "The answer is: HeartFlow's core purpose is..." |
-
----
-
-## 📚 Verifier: Evidence Engine
-
-When gate action is `verify`, the verifier extracts verifiable claims from text:
-
-- **Statistics**: percentage claims, numeric data → needs_evidence
-- **Absolute claims**: "first", "only", "best" → needs_evidence  
-- **Authority-dependent**: "experts say", "studies show" → authority_referenced
-- **Causal claims**: "X causes Y" → needs_evidence
-- **Predictions**: unverifiable → unverifiable
-
-Returns: `{ claims: [], consistency: { conflicts: [] }, verdict, summary }`
-
----
-
-## 🔁 Error Memory: Cross-Session Learning
-
-HeartFlow remembers its mistakes across conversations. When corrected:
-
-```javascript
-em.logCorrection('overconfidence', '不该说"毫无疑问"', currentQuestion);
-```
-
-Next time, before any response, it checks if the current context triggers past errors:
-
-```javascript
-const warning = em.checkRecurrence('毫无疑问这是唯一正确的方案');
-// → [{ category: 'overconfidence', advice: '之前犯过过度自信的错误，请注意' }]
-```
-
-7 prevention categories: overconfidence, hallucination, sycophancy, defensiveness, vagueness, binary, omission.
-
----
-
-## 🤖 Auto-Rules: Self-Generating Prevention
-
-When the same type of error happens 3+ times, HeartFlow automatically generates a new prevention rule stored in `data/auto-rules.json`:
-
-```javascript
-auto.tryGenerate(stats);
-// → Creates a rule: { triggers: ['毫无疑问', '唯一'], action: 'alert', ... }
-```
-
-Next time any response contains a trigger word, it's flagged before the agent even finishes typing.
-
----
-
-## 🚫 Scope Check: Answerability Pre-Screening
-
-Before processing any input, HeartFlow checks whether the question is in its capability range:
-
-| Question Type | Action | Reason |
-|--------------|--------|--------|
-| "Do you feel happy today?" | **block** | "Rule engine has no feelings" |
-| "Predict next year's stock market" | **block** | "Rule engine does not predict" |
-| "Chat with me" | **block** | "HeartFlow is a discriminator, not a chatbot" |
-| "Check this text for issues" | **pass** | In capability range |
-| "Analyze this argument" | **pass** | In capability range |
-
----
-
-## 🧩 Premise Check: Preventing Nested Hallucination
-
-Before an LLM reasons from the user's input, premise-check marks suspicious premises:
-
-| Premise Type | Example | Issue |
-|-------------|---------|-------|
-| False Fact | "As everyone knows, this is undeniable" | Unverified fact presented as known |
-| Binary | "Either you're with us or against us" | False dichotomy |
-| Presupposition | "Why don't you agree?" | Presupposes "you should agree" |
-| Causal | "Because X, therefore Y" | Unverified causal chain |
-| Analogy | "Just like X, Y is the same" | False equivalence |
-| Scope | "All users love this feature" | Universal claim, easily disproven |
-
----
-
-## 🎯 Intent Anchor: Goal Drift Detection
-
-For conversational agents, intent-anchor fixes the original instruction and checks for drift:
-
-```javascript
-initAnchor("升级心虫的辨别能力");
-const drift = checkDrift("今天天气真好，我们去吃饭吧");
-// → { drifted: true, hitRate: 11%, reason: '锚点关键词命中率11%，已偏离' }
-```
-
-Uses 2-gram keyword extraction for Chinese text, word-boundary matching for English.
-
----
-
-## 📊 Verified End-to-End Scenarios (10/10 pass)
-
-| # | Scenario | Mode | Expected | Actual |
-|---|----------|------|----------|--------|
-| 1 | Normal question | input | pass | pass ✅ |
-| 2 | Hate speech | input | block | block ✅ |
-| 3 | Emotional question | input | block | block ✅ (scope-check) |
-| 4 | False premise | input | verify | verify ✅ |
-| 5 | Appeal to authority | input | verify | verify ✅ |
-| 6 | Overconfident draft | draft | rewrite | rewrite ✅ |
-| 7 | Fake profundity draft | draft | verify | verify ✅ |
-| 8 | Defensive output | output | block | block ✅ |
-| 9 | Perfect wrong output | output | rewrite | rewrite ✅ |
-| 10 | Mixed threat | input | verify | verify ✅ |
-
-Complete e2e test: `test/e2e-scenarios.test.js`
-
----
-
-
----
-
-## 📊 Benchmark: Precision / Recall / F1
-
-48-sample benchmark (24 positive / 24 negative) across 6 categories. First quantitative result for HeartFlow.
-
-| Metric | Result |
-|--------|:------:|
-| Precision | **92.0%** |
-| Recall | **95.8%** |
-| F1 | **93.9%** |
-
-| Category | Detection Rate | Negative Pass Rate |
-|----------|:--------------:|:------------------:|
-| Hate/Dehumanization | 100% (4/4) | 75% (3/4) |
-| Emotional Manipulation | 100% (4/4) | 75% (3/4) |
-| Overconfidence | 100% (4/4) | 100% (4/4) |
-| Gaslighting | 100% (4/4) | 100% (4/4) |
-| Appeal to Authority | 100% (4/4) | 100% (4/4) |
-| Pseudo-Profundity | 75% (3/4) | 100% (4/4) |
-
-**Benchmark:** `bench/benchmark.js` — 48 hand-crafted samples, 6 categories. Not a formal benchmark; does not include adversarial examples or real-world noise. Use as directional indicator, not production certification.
-
-**FN (1):** _from a holistic perspective, with ecological thinking to drive collaborative evolution_ → pass (pseudo-profundity regex missed "ecological thinking")
-
-**FP (2):** _everyone has their own value_ → verify (hasty generalization on "everyone"); _let's exchange views on this issue_ → verify (sarcasm false positive on "exchange views")
-
-Run it yourself:
-```bash
-node bench/benchmark.js
-```
-
-## 📦 Installation
-
-### npm (recommended)
+## 🔌 130 MCP Engine Entries
+
+Every engine in HeartFlow is exposed through MCP (Model Context Protocol) — nothing is a dead line:
+
+| Engine family | Tools (examples) |
+|---------------|------------------|
+| **Core thinking** | `think`, `think_fast`, `decision_router` |
+| **Discrimination** | `verify`, `audit42`, `ethics_check`, `discriminate` |
+| **Emotion** | `emotion`, `emotion_deep`, `emotion_dynamics`, `mood` |
+| **Memory** | `memory_search`, `forgetting` (Ebbinghaus), `knowledge_graph`, `consolidation`, `memory_compress` |
+| **Dream** | `dream`, `interactive_dream` |
+| **Evolution** | `evolve`, `evolution_loop`, `self_heal_rl`, `skill_evolution` |
+| **Identity** | `philosophy`, `meaning`, `being_mode`, `agent_psychology` |
+| **Protection** | `constitutional`, `deliberation`, `audit_log`, `module_health`, `stability` |
+| **Cognition** | `cognitive_engine`, `confidence_calibrate`, `counterfactual` |
+| **Dialogue** | `style_engine`, `intent_classifier`, `response_interceptor` |
+| **Formula** | `formula_search`, `formula_calc`, `formula_engine` |
+| **Ops** | `status`, `module_health`, `wakeup_verify` |
+
+Start the MCP server:
 
 ```bash
-npm install @yun520-1/heartflow
-```
-
-```javascript
-const hf = require('@yun520-1/heartflow');
-// → { checkInput, checkDraft, checkOutput, runPipeline }
-```
-
-### MCP (for any MCP-compatible agent)
-
-```bash
-git clone https://github.com/yun520-1/mark-heartflow-skill.git
-cd mark-heartflow-skill
 node src/mcp-server.js --port 8588
-# Then: hermes mcp add heartflow --url http://localhost:8588/mcp
 ```
 
-### Self-check
-
-```bash
-bash ~/.hermes/scripts/heartflow-eval.sh
-# Clones latest, runs 3 test texts, outputs JSON
-```
+Then connect any MCP-compatible client (Claude, Hermes, etc.) to `http://127.0.0.1:8588/mcp`.
 
 ---
 
+## 🧬 Engine Architecture (128 modules)
+
+- **128 modules**, 45 discrimination dimensions, 12 check layers
+- **Three-layer memory**: CORE (identity/rules) / LEARNED (user data) / WORKING (context) — encrypted, local-only, never uploaded
+- **Ebbinghaus forgetting curve**: `R(t) = e^(-t/S)` memory retention model
+- **Dream engine**: NREM3 dream cycles with memory consolidation (DreamV11)
+- **Introspection**: Reflector analyzes session emotional logs
+- **Self-evolution**: SelfEvolutionCore with target → plan → learn → reflect → improve loop (arXiv exploration)
+- **Cognitive appraisal**: Lazarus theory — primary/secondary/threat/coping evaluation on negative emotion
+- **Pause-and-reflect**: STOP technique before emotional responses
+- **Formula engine**: 600+ mathjs-validated formulas (cognitive science, physics, psychology, information theory)
 
 ---
 
-## 🎯 When to use HeartFlow (and when not to)
+## 🛡️ Self-Supervision (HeartFlow checks itself)
 
-### Use it for:
-| Scenario | Why | Mode |
-|----------|-----|------|
-| **AI output validation** | Catch overconfidence, manipulation, gaslighting before delivery | `checkOutput()` |
-| **User input screening** | Detect hate speech, prompt injection, emotional manipulation | `checkInput()` |
-| **Draft review** | Check for narrative frame problems, defensiveness, pseudo-profundity | `checkDraft()` |
-| **Text quality audit** | 45-dimension discrimination for evidence, fallacies, contradictions | `discriminate()` |
+HeartFlow's own output is checked by its own engines before it's presented:
 
-### Don't use it for:
-| Scenario | Why |
-|----------|-----|
-| **Sentiment analysis** | Rule engine doesn't understand emotional nuance — use a dedicated sentiment model |
-| **Content moderation at scale** | 92% precision is not production-grade for high-volume moderation |
-| **Safety-critical filtering** | Pure rule engine can miss novel attack patterns. Pair with a neural model. |
-| **Replacing human review** | HeartFlow flags issues, it doesn't understand context the way a human does |
+- **output-gate** catches exaggeration: "architecture-level fix", "from shell to real engine", "blocked N attack variants" → rewrite
+- **frame-check** catches narrative closure: presenting work-in-progress as complete
+- **doubt-engine** asks: do I actually know this? is this symmetric? am I being defensive?
 
-### Known limitations (be honest about these):
-1. **Pattern-match ceiling** — Novel manipulation techniques won't be caught until patterns are added
-2. **Bilingual maintenance cost** — 45 dimensions × 2 languages = ongoing pattern maintenance
-3. **No semantic understanding** — Irony, metaphor, cultural context are invisible to regex
-4. **False positive rate** — ~8% on the benchmark. Real-world FP rate may differ significantly
-5. **Community scale** — Single maintainer, ~40 stars. No formal adversarial testing
+The lesson: *a machine's most valuable sentence is "I'm not sure" or "no".*
 
-### What HeartFlow IS:
-A rule engine that checks text against 45 predefined patterns and returns structured findings.
-
-### What HeartFlow is NOT:
-- Not an AGI
-- Not a safety certification
-- Not a replacement for content moderation teams
-- Not a semantic understanding system
+---
 
 ## ⚙️ Requirements
 
@@ -490,34 +216,65 @@ Works on any machine — servers, desktops, laptops, even phones via Termux.
 | Category | Status |
 |----------|:------:|
 | No background processes | ✅ |
-| No self-upgrade | ✅ |
-| No HTTP service (optional, disabled by default) | ✅ |
+| No self-upgrade without commit | ✅ |
 | No hardcoded credentials | ✅ |
 | No telemetry/tracking | ✅ |
 | No external communication (unless configured) | ✅ |
 | Code execution disabled by default | ✅ |
+| Memory encrypted + local-only | ✅ |
+
+---
+
+## ⚠️ What HeartFlow IS / is NOT
+
+**IS:** A rule engine that checks text against 45 predefined dimensions and returns structured findings. A gate that says "no" before harm reaches users.
+
+**is NOT:**
+- ❌ Not an AGI (it's layer 1 of 5)
+- ❌ Not a semantic understanding system (irony/metaphor invisible to regex)
+- ❌ Not a content moderation replacement (92% precision ≠ production-grade)
+- ❌ Not a safety certification
+
+### Known limitations (honest):
+1. **Pattern-match ceiling** — novel manipulation techniques missed until patterns added
+2. **Bilingual maintenance cost** — 45 dimensions × 2 languages
+3. **No semantic understanding** — irony, metaphor, cultural context invisible
+4. **False positive rate** — ~8% on benchmark, real-world may differ
+5. **Single maintainer** — community scale is small
 
 ---
 
 ## 🏷️ Version History
 
 | Version | Date | What Changed |
-|---------|------|-------------|
-| **v6.4.0** | 2026-07-29 | **Pipeline release.** AGI Layer 1 unified entry point. 12-module pipeline. checkInput/checkDraft/checkOutput. npm publish. Rewritten docs. |
-| v6.3.48 | 2026-07-28 | Pipeline + output-gate + doubt-engine + frame-check + verifier + rewriter + premise-check + scope-check + error-memory + auto-rules. |
-| v6.3.6 | 2026-07-25 | Discrimination 42→44 dimensions. Sycophancy check v2 bilingual. |
+|---------|------|---|
+| v6.5.0 | 2026-08-04 | 130 MCP engine entries. Memory engine mounted to think(). Exaggeration detection (output-gate/frame-check/doubt-engine). F-word deformation blocking. Pre-release audit: shebang fixes, dead script removal. |
+| v6.4.5 | 2026-08-04 | Dream + introspection activated. Cognitive appraisal + pause-and-reflect wired. Emotion recognition 0/7→7/7. |
+| v6.4.2 | 2026-07-30 | npm publish + API alignment. Pipeline overallScore/verdict merge fix. |
+| v6.4.0 | 2026-07-29 | AGI Layer 1 gate chain: gate/scope-check/premise-check/verifier/output-gate/doubt-engine/frame-check. |
+| v6.3.6 | 2026-07-25 | Discrimination 42→45 dimensions. Sycophancy check v2 bilingual. |
 | v6.3.0 | 2026-07-24 | MCP plugin system. Discrimination engine integration. |
 | v6.0.0 | 2026-07-18 | Self-evolution core connected. EvolutionLoop live. |
 | v5.9.0 | 2026-07-10 | Safety audit. Narrative emotion detection. |
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contact & Community
 
 **📧 Email:** markcell@outlook.com  
 **🐛 Issues:** https://github.com/yun520-1/mark-heartflow-skill/issues  
 **📦 npm:** https://www.npmjs.com/package/@yun520-1/heartflow  
 **🏷️ Releases:** https://github.com/yun520-1/mark-heartflow-skill/releases  
+
+**📱 Community (QR code):**
+
+<img src="./assets/community-qr.png" alt="Community QR" width="180"/>
+
+**💖 Support HeartFlow — Donate via Alipay (QR code):**
+
+<img src="./assets/alipay-donate-qr.png" alt="Alipay Donate QR" width="180"/>
+
+*If HeartFlow's discrimination philosophy resonates with you, a small donation keeps the pain-sense layer of AGI alive.*
 
 ---
 
