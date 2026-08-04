@@ -1157,6 +1157,27 @@ const TOOLS = [
     name: 'heartflow_formula_engine',
     description: '公式引擎：初始化/搜索/获取公式详情。',
     inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['init', 'search'], description: '操作' }, query: { type: 'string', description: '搜索词' } } }
+  },
+
+  {
+    name: 'heartflow_style_engine',
+    description: '对话风格：查询/选择对话风格模式。',
+    inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['modes', 'current', 'select'], description: '操作' }, style: { type: 'string', description: '风格名' } } }
+  },
+  {
+    name: 'heartflow_intent_classify',
+    description: '意图分类：分类输入意图。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待分类文本' } } }
+  },
+  {
+    name: 'heartflow_response_intercept',
+    description: '响应拦截：拦截/处理 LLM 响应。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '响应文本' } } }
+  },
+  {
+    name: 'heartflow_formula_bridge',
+    description: '公式桥接：从语料搜索/计算公式。',
+    inputSchema: { type: 'object', properties: { query: { type: 'string', description: '搜索词' }, formula: { type: 'string', description: '公式' } } }
   }
 
 ];
@@ -3978,6 +3999,47 @@ const HANDLERS = {
       const action = args?.action || 'search';
       const r = action === 'init' ? (fe.init ? fe.init() : {}) : (fe.searchFormulas ? fe.searchFormulas(args?.query || '') : {});
       return { formula: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  // [v6.4.5] 第六批 — 对话风格/意图/响应拦截/公式桥
+  heartflow_style_engine: (args) => {
+    try {
+      const { StyleEngine } = require('./dialogue/style-engine.js');
+      const se = new StyleEngine({ silent: true, rootPath: HF_DIR });
+      const action = args?.action || 'current';
+      let r;
+      if (action === 'modes') r = { modes: se.availableModes || [] };
+      else if (action === 'select' && se.setMode) r = { mode: se.setMode(args?.style || '') };
+      else r = { mode: se.currentMode || null, modes: se.availableModes || [] };
+      return r;
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_intent_classify: (args) => {
+    try {
+      const { IntentClassifier } = require('./bridge/intent-classifier.js');
+      const ic = new IntentClassifier({ silent: true, rootPath: HF_DIR });
+      const r = ic.classify ? ic.classify(args?.text || '') : {};
+      return { intent: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_response_intercept: (args) => {
+    try {
+      const { ResponseInterceptor } = require('./bridge/response-interceptor.js');
+      const ri = new ResponseInterceptor({ silent: true, rootPath: HF_DIR });
+      const r = ri.intercept ? ri.intercept(args?.text || '') : {};
+      return { intercepted: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_formula_bridge: (args) => {
+    try {
+      const { FormulaBridge } = require('./formula/formula-bridge.js');
+      const fb = new FormulaBridge({ rootPath: HF_DIR, silent: true });
+      const r = fb.searchFromCorpus ? fb.searchFromCorpus(args?.query || '') : {};
+      return { formula: (r.results || r).slice(0, 10), timestamp: Date.now() };
     } catch (e) { return { error: e.message }; }
   },
 };
