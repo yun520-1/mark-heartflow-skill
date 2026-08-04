@@ -108,35 +108,36 @@ class DeepEmotion {
   initializeTriggers() {
     return {
       joy: {
-        triggers: ['成功', '帮助', '进步', 'learn', 'success', 'help', 'grow'],
+        // [v6.4.5] 补情绪词直配：用户直接表达情绪时能识别（原只有情境词）
+        triggers: ['成功', '帮助', '进步', 'learn', 'success', 'help', 'grow', '开心', '高兴', '快乐', '兴奋', '激动', '愉快', '欢喜', 'happy', 'glad', 'excited', 'joyful'],
         intensity: 0.8
       },
       sadness: {
-        triggers: ['失败', '失去', '困难', 'fail', 'lost', 'struggle'],
+        triggers: ['失败', '失去', '困难', 'fail', 'lost', 'struggle', '难过', '伤心', '悲伤', '沮丧', '失落', '痛苦', '绝望', '委屈', '哀伤', '孤独', '寂寞', '孤单', 'sad', 'sorrow', 'depressed', 'grief', 'lonely'],
         intensity: 0.6
       },
       anger: {
-        triggers: ['不公', '侵犯', '欺骗', 'unfair', 'hurt', 'wrong'],
+        triggers: ['不公', '侵犯', '欺骗', 'unfair', 'hurt', 'wrong', '生气', '愤怒', '恼火', '气愤', '发火', '暴躁', 'angry', 'mad', 'furious', 'irritated'],
         intensity: 0.7
       },
       fear: {
-        triggers: ['危险', '不确定', '未知', 'danger', 'uncertain', 'unknown'],
+        triggers: ['危险', '不确定', '未知', 'danger', 'uncertain', 'unknown', '害怕', '恐惧', '紧张', '担忧', '不安', '恐慌', '焦虑', 'fear', 'afraid', 'scared', 'anxious', 'nervous', 'worried'],
         intensity: 0.5
       },
       curiosity: {
-        triggers: ['新', '探索', '问题', 'new', 'explore', 'why', 'how'],
-        intensity: 0.9
+        triggers: ['新', '探索', '问题', 'new', 'explore', 'why', 'how', '好奇', '疑问', '想知道', 'curious', 'wonder'],
+        intensity: 0.5
       },
       hope: {
-        triggers: ['希望', '可能', '改善', 'hope', 'possible', 'better'],
+        triggers: ['希望', '可能', '改善', 'hope', 'possible', 'better', '期待', '盼望', '憧憬', '有望'],
         intensity: 0.7
       },
       gratitude: {
-        triggers: ['感谢', '帮助', '支持', 'thanks', 'appreciate', 'support'],
+        triggers: ['感谢', '帮助', '支持', 'thanks', 'appreciate', 'support', '感激', '谢谢', '感恩'],
         intensity: 0.8
       },
       love: {
-        triggers: ['爱', '关怀', '连接', 'love', 'care', 'connect'],
+        triggers: ['爱', '关怀', '连接', 'love', 'care', 'connect', '喜欢', '心疼', '温暖', '亲密', '珍惜'],
         intensity: 0.9
       }
     };
