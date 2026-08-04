@@ -1,9 +1,9 @@
+#!/usr/bin/env node
 // ⚠️ SAFETY: This script makes outbound HTTP(S) requests
 // It bypasses the engine's safeFetch gate (intentional — this is a CLI tool, not engine runtime)
 // Only run manually. Never imported by the engine pipeline.
 // To disable network access: comment out require('https') and the https.get() calls.
 
-#!/usr/bin/env node
 /**
  * 从 Wikipedia 批量抓公式（用 revisions API 拿 wikitext，解析 {{math|...}}）
  * 每个页面提取前 50 个公式

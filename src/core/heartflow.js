@@ -693,7 +693,7 @@ const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('
 
 
 
-const BUILD_DATE = '2026-07-31-6.4.5';
+const BUILD_DATE = '2026-08-04-6.5.0';
 
 
 
