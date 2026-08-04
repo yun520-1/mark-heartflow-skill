@@ -88,6 +88,7 @@ memory/*.txt
 memory/.aes-key
 memory/.gitkeep
 memory/.hmac-key
+memory/.qtable-hmac-key
 memory/.last-dream
 memory/.q-meta*
 memory/wal/*.log
