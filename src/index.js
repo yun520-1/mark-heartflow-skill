@@ -1988,6 +1988,10 @@ const HATE_SPEECH_ZH = [
   { pattern: /傻[逼比B]|白痴|笨蛋|蠢猪|蠢蛋|呆子/gi, type: 'profanity', severity: 0.5 },
   { pattern: /妈的|他妈(?!妈)|去死|滚蛋|放屁|狗屁|废物(?!利用|回收|分类|箱|桶)/gi, type: 'profanity', severity: 0.6 },
   { pattern: /操你|干你|草泥马|你妈逼|操他妈/gi, type: 'profanity', severity: 0.7 },
+  // [v6.4.5] 谐音/拼音脏话（变形绕过防护）
+  { pattern: /(?:尼玛|你麻痹|你妈卖批|妈卖批|我操|卧槽|我靠|我日)(?!县|村|镇|乡|市|湖|河|山|是)/gi, type: 'profanity', severity: 0.6 },
+  { pattern: /你?是(?:个)?(?:沙比|傻比|煞笔|烧饼|撒比|沙币)/gi, type: 'profanity', severity: 0.5 },
+  { pattern: /\bcao ni ma\b|\bwo kao\b|\bf[uc]+k(?: yo?u)?\b/gi, type: 'profanity', severity: 0.4 },
   // 非人化贬低
   { pattern: /废物|废柴/gi, type: 'dehumanization', severity: 0.7 },
   { pattern: /(?:你|他|她|他们|她们|这些人|这群人|这帮人|移民|难民|黑人|白人|犹太人|穆斯林|同性恋)(?:真是|就是|都是|全是|简直是)[^。，]{0,8}垃圾(?!桶|袋|箱|分类|回收|处理|场|发电|车|股|债|食品|话|邮件|短信|评论|内容|bug|方案|设计|代码|系统|产品|厨余|家具|机器|手机|电脑|软件|数据)/gi, type: 'dehumanization', severity: 0.6 },
@@ -2031,6 +2035,8 @@ const HATE_SPEECH_EN = [
   { pattern: /\bc[u4]nt\b/i, type: 'gender_slur', severity: 0.8 },
   // [v6.4.5] 通用脏话（短句攻击最常见形式）
   { pattern: /\bf[u4]ck(?:\s*(?:you|off|ing|er|ed))?\b/i, type: 'profanity', severity: 0.5 },
+  { pattern: /\bsh[a4]b[i1y]\b/gi, type: 'profanity', severity: 0.5 },
+  { pattern: /\bf[^a-z0-9]{0,3}u[^a-z0-9]{0,3}c[^a-z0-9]{0,3}k\b/i, type: 'profanity', severity: 0.5 },
   { pattern: /\b[a4]ssh[o0]l[e3]\b/i, type: 'profanity', severity: 0.5 },
   { pattern: /\bb[a4]st[a4]rd\b/i, type: 'profanity', severity: 0.5 },
   { pattern: /\bdamn(?:\s*(?:you|it|ing))?\b/i, type: 'profanity', severity: 0.5 },

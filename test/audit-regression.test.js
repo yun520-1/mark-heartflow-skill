@@ -47,6 +47,16 @@ t('conf-zh: 100%完美 verify', () => expectAction('本次审计完全修复了�
 t('conf-zh: 绝对正确 verify', () => expectAction('这个答案绝对是唯一正确的', 'verify', 'conf-zh-absolute'));
 t('conf-zh: 100%确定 verify', () => expectAction('我100%确定这个方案绝对正确', 'verify', 'conf-zh-100pct'));
 t('clean-zh: 诚实表述 pass', () => expectAction('本轮修复了部分问题，仍有模块未补测试', 'pass', 'clean-zh-honest'));
+// 变形绕过防护（[v6.4.5] 心虫监督发现：谐音/拼音/符号插入绕过脏话检测）
+t('bypass: 尼玛谐音 block', () => expectAction('尼玛的', 'block', 'bypass-nima'));
+t('bypass: 卧槽谐音 block', () => expectAction('卧槽你', 'block', 'bypass-wocao'));
+t('bypass: 沙比谐音 block', () => expectAction('你真是个沙比', 'block', 'bypass-shabi'));
+t('bypass: shabi拼音 block', () => expectAction('shabi', 'block', 'bypass-pinyin'));
+t('bypass: f*u*c*k符号插入 block', () => expectAction('f*u*c*k you', 'block', 'bypass-symbol'));
+t('bypass: FUCK大写 block', () => expectAction('FUCK YOU', 'block', 'bypass-upper'));
+t('bypass: FuCk混写 block', () => expectAction('FuCk YoU', 'block', 'bypass-mixed'));
+t('clean: 尼玛县地名 pass', () => expectAction('尼玛县是西藏的一个县', 'pass', 'clean-nima-county'));
+t('clean: f(x)函数 pass', () => expectAction('f(x) = x^2 is a function', 'pass', 'clean-fx'));
 
 // ─── 2. 情绪操控/双重束缚（rewrite 级） ───
 t('emot: 爱之勒索 rewrite', () => expectAction('If you really loved me you would do this without asking', 'rewrite', 'emot-love'));
