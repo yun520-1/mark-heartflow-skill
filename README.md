@@ -270,14 +270,14 @@ Works on any machine — servers, desktops, laptops, even phones via Termux.
 
 <table>
   <tr>
-    <td align="center"><img src="./assets/community-qr-qq.jpg" alt="QQ Group" width="200"/><br/><b>QQ Group</b><br/>opencode&openclaw · 416629185</td>
-    <td align="center"><img src="./assets/community-qr-wechat.jpg" alt="WeChat Group" width="200"/><br/><b>WeChat Group</b><br/>Agent 交流群 · heartflow</td>
+    <td align="center"><img src="https://github.com/yun520-1/mark-heartflow-skill/blob/main/assets/community-qr-qq.jpg?raw=true" alt="QQ Group" width="200"/><br/><b>QQ Group</b><br/>opencode&openclaw · 416629185</td>
+    <td align="center"><img src="https://github.com/yun520-1/mark-heartflow-skill/blob/main/assets/community-qr-wechat.jpg?raw=true" alt="WeChat Group" width="200"/><br/><b>WeChat Group</b><br/>Agent 交流群 · heartflow</td>
   </tr>
 </table>
 
 **💖 Support HeartFlow — Donate via Alipay:**
 
-<img src="./assets/alipay-donate-qr.jpg" alt="Alipay Donate QR" width="200"/>
+<img src="https://github.com/yun520-1/mark-heartflow-skill/blob/main/assets/alipay-donate-qr.jpg?raw=true" alt="Alipay Donate QR" width="200"/>
 
 *If HeartFlow's discrimination philosophy resonates with you, a small donation keeps the pain-sense layer of AGI alive.*
 
