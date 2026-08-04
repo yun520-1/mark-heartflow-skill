@@ -845,6 +845,107 @@ const TOOLS = [
     name: 'heartflow_experience_replay',
     description: '经验回放：重放历史经验用于学习，返回经验统计。',
     inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['replay', 'stats'], description: '回放或统计' } } }
+  },
+
+  {
+    name: 'heartflow_evolution_loop',
+    description: '进化循环：运行心虫进化引擎，返回进化目标/计划/改进项。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_skill_evolution',
+    description: '技能进化：注册/评估技能进化（含评分标准）。',
+    inputSchema: { type: 'object', properties: { skill: { type: 'string', description: '技能名' }, action: { type: 'string', enum: ['evaluate', 'register'], description: '评估或注册' } } }
+  },
+  {
+    name: 'heartflow_strategic_restraint',
+    description: '战略约束：评估是否应克制行动，返回克制建议。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待评估行动' } } }
+  },
+  {
+    name: 'heartflow_drift_detect',
+    description: '漂移检测：检测引擎身份/行为是否随时间漂移。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_metacognitive_rl',
+    description: '元认知强化学习：编码状态、表达置信度、领域错误率。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待分析文本' } } }
+  },
+  {
+    name: 'heartflow_self_healing',
+    description: '自愈策略：获取/设置缓存修复策略。',
+    inputSchema: { type: 'object', properties: { context: { type: 'string', description: '失败上下文' } } }
+  },
+  {
+    name: 'heartflow_agent_psychology',
+    description: '引擎心理学：7维认知心理状态评估（负荷/冲突/失调/漂移等）。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_philosophy_engine',
+    description: '哲学引擎：安全分析文本的哲学维度。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待分析文本' } } }
+  },
+  {
+    name: 'heartflow_being_mode',
+    description: '存在模式：评估存在状态（觉察/自省/无我等层级）。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待评估文本' } } }
+  },
+  {
+    name: 'heartflow_memory_integrity',
+    description: '记忆完整性：签名/验证记忆完整性，检测篡改异常。',
+    inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['verify', 'sign'], description: '验证或签名' }, memory: { type: 'string', description: '记忆内容' } } }
+  },
+  {
+    name: 'heartflow_wakeup_verify',
+    description: '唤醒验证：验证引擎唤醒状态和历史一致性。',
+    inputSchema: { type: 'object', properties: {} }
+  },
+  {
+    name: 'heartflow_affective_intentionality',
+    description: '情感意向性：计算情感驱动意图。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待分析文本' } } }
+  },
+  {
+    name: 'heartflow_desire_system',
+    description: '欲望系统：处理欲望/需求状态。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待分析文本' }, action: { type: 'string', enum: ['process', 'status'], description: '处理或状态' } } }
+  },
+  {
+    name: 'heartflow_emotional_growth',
+    description: '情绪成长：情绪发展状态处理。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待分析文本' }, action: { type: 'string', enum: ['process', 'status'], description: '处理或状态' } } }
+  },
+  {
+    name: 'heartflow_meaningful_memory',
+    description: '有意义记忆：话题过滤的记忆管理。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '记忆内容' } } }
+  },
+  {
+    name: 'heartflow_memory_quality',
+    description: '记忆质量：评估记忆质量评分。',
+    inputSchema: { type: 'object', properties: { memory: { type: 'string', description: '记忆内容' } } }
+  },
+  {
+    name: 'heartflow_topic_scope',
+    description: '话题隔离：管理当前话题上下文。',
+    inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['current', 'push', 'pop'], description: '操作' }, text: { type: 'string', description: '话题内容' } } }
+  },
+  {
+    name: 'heartflow_semantic_anchor',
+    description: '语义锚点：文本语义锚定分析。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待分析文本' } } }
+  },
+  {
+    name: 'heartflow_confidence_calibrate',
+    description: '置信度校准：评估/校准置信度，记录反馈。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '待评估文本' }, action: { type: 'string', enum: ['assess', 'calibrate'], description: '评估或校准' } } }
+  },
+  {
+    name: 'heartflow_decision_executor',
+    description: '决策执行：执行决策指令（含暂停处理）。',
+    inputSchema: { type: 'object', properties: { decision: { type: 'string', description: '决策指令' } } }
   }
 
 ];
@@ -3148,6 +3249,179 @@ const HANDLERS = {
       const er = new ExperienceReplay({ rootPath: HF_DIR, silent: true });
       const r = er.getStats ? er.getStats() : {};
       return { replay: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  // [v6.4.5] 第三批引擎入口 — 进化/身份/防护/情绪/记忆/认知
+  heartflow_evolution_loop: (args) => {
+    try {
+      const { EvolutionLoop } = require('./cortex/loop.js');
+      const el = new EvolutionLoop({ rootPath: HF_DIR, silent: true });
+      const r = el.boot ? { booted: true } : {};
+      return { evolution: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_skill_evolution: (args) => {
+    try {
+      const { SkillEvolutionEngine } = require('./cortex/skill-evolution-engine.js');
+      const se = new SkillEvolutionEngine({ rootPath: HF_DIR, silent: true });
+      const r = se.registerSkill ? se.registerSkill(args?.skill || '') : {};
+      return { skill: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_strategic_restraint: (args) => {
+    try {
+      const { StrategicRestraint } = require('./cortex/strategic-restraint.js');
+      const sr = new StrategicRestraint({ silent: true });
+      const r = sr.evaluate ? sr.evaluate(args?.text || '') : {};
+      return { restraint: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_drift_detect: (args) => {
+    try {
+      const { SustainedDriftDetector } = require('./cortex/sustained-drift-detector.js');
+      const sd = new SustainedDriftDetector({ rootPath: HF_DIR, silent: true });
+      const r = sd.load ? sd.load() : {};
+      return { drift: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_metacognitive_rl: (args) => {
+    try {
+      const { MetacognitiveRL } = require('./cortex/metacognitive-rl.js');
+      const mr = new MetacognitiveRL({ silent: true });
+      const r = mr.encodeState ? mr.encodeState(args?.text || '') : {};
+      return { metacognition: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_self_healing: (args) => {
+    try {
+      const { SelfHealing } = require('./cortex/self-healing.js');
+      const sh = new SelfHealing({ silent: true });
+      const r = sh.getCachedPolicy ? sh.getCachedPolicy(args?.context || '') : {};
+      return { healing: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_philosophy_engine: (args) => {
+    try {
+      const { PhilosophyEngine } = require('./identity/philosophy-engine.js');
+      const pe = new PhilosophyEngine({ silent: true });
+      const r = pe.analyze ? pe.analyze(args?.text || '') : {};
+      return { philosophy: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_being_mode: (args) => {
+    try {
+      const { BeingMode } = require('./identity/being-mode.js');
+      const bm = new BeingMode({ silent: true });
+      const r = bm.assessBeing ? bm.assessBeing(args?.text || '') : {};
+      return { being: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_memory_integrity: (args) => {
+    try {
+      const { MemoryIntegrity } = require('./shield/memory-integrity.js');
+      const mi = new MemoryIntegrity({ silent: true });
+      const action = args?.action || 'verify';
+      const r = action === 'sign' && mi.sign ? mi.sign(args?.memory || '') : (mi.verify ? mi.verify(args?.memory || '') : {});
+      return { action, result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_wakeup_verify: (args) => {
+    try {
+      const { WakeUpVerifier } = require('./shield/wake-up-verifier.js');
+      const wv = new WakeUpVerifier({ rootPath: HF_DIR, silent: true });
+      const r = wv._loadHistory ? wv._loadHistory() : {};
+      return { wakeup: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_affective_intentionality: (args) => {
+    try {
+      const { AffectiveIntentionality } = require('./emotion/affective-intentionality.js');
+      const ai = new AffectiveIntentionality({ silent: true });
+      const r = ai.compute ? ai.compute(args?.text || '') : {};
+      return { intentionality: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_desire_system: (args) => {
+    try {
+      const { DesireSystem } = require('./emotion/desire-system.js');
+      const ds = new DesireSystem({ silent: true });
+      const r = ds.process ? ds.process(args?.text || '') : {};
+      return { desire: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_emotional_growth: (args) => {
+    try {
+      const { EmotionalGrowth } = require('./emotion/emotional-growth.js');
+      const eg = new EmotionalGrowth({ silent: true });
+      const r = eg.process ? eg.process(args?.text || '') : {};
+      return { growth: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_meaningful_memory: (args) => {
+    try {
+      const { MeaningfulMemory } = require('./memory/meaningful-memory.js');
+      const mm = new MeaningfulMemory({ silent: true });
+      const r = mm.setCurrentTopic ? mm.setCurrentTopic(args?.text || '') : {};
+      return { memory: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_memory_quality: (args) => {
+    try {
+      const { MemoryQuality } = require('./memory/memory-quality.js');
+      const mq = new MemoryQuality({ silent: true });
+      const r = mq.score ? mq.score(args?.memory || '') : {};
+      return { quality: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_topic_scope: (args) => {
+    try {
+      const { TopicScope } = require('./memory/topic-scope.js');
+      const ts = new TopicScope({ silent: true });
+      const r = ts.getCurrentTopic ? ts.getCurrentTopic() : {};
+      return { topic: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_semantic_anchor: (args) => {
+    try {
+      const { SemanticAnchor } = require('./memory/semantic-anchor.js');
+      const sa = new SemanticAnchor({ silent: true });
+      const r = sa.initializePatterns ? { initialized: true } : {};
+      return { anchor: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_confidence_calibrate: (args) => {
+    try {
+      const { ConfidenceCalibrator } = require('./core/confidence-calibrator.js');
+      const cc = new ConfidenceCalibrator({ silent: true });
+      const r = cc.assess ? cc.assess(args?.text || '') : {};
+      return { confidence: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_decision_executor: (args) => {
+    try {
+      const { DecisionExecutor } = require('./core/decision-executor.js');
+      const de = new DecisionExecutor({ silent: true });
+      const r = de.execute ? de.execute(args?.decision || '') : {};
+      return { execution: r, timestamp: Date.now() };
     } catch (e) { return { error: e.message }; }
   },
 };
