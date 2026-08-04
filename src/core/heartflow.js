@@ -299,6 +299,10 @@ const _SelfHealing = _lazy('selfHealing', () => require('../cortex/self-healing.
 const _SelfVerifier = _lazy('selfVerifier', () => require('../identity/self-verifier.js'));
 
 const _LessonBank = _lazy('lessonBank', () => require('../cortex/lesson-bank.js'));
+// [v6.4.5] 补回被误删的 dream lazy 定义（梦境引擎曾因此降级为 stub）
+const _DreamEngine = _lazy('dreamEngine', () => require('../dream/dream.js'));
+const _DreamConsolidation = _lazy('dreamConsolidation', () => require('../dream/dream-consolidation.js'));
+const _DreamEngineV2 = _lazy('dreamEngineV2', () => require('../dream/dream-engine-v2.js'));
 
 
 const _StrategicRestraint = _lazy('strategicRestraint', () => require('../cortex/strategic-restraint.js'));
@@ -4462,6 +4466,59 @@ class HeartFlow {
         }
       }
     } catch (e) { /* 共情检测失败不阻断主链路 */ }
+
+    // ─── [v6.4.5] 自省数据记录：think 后写反思日志到 heartflow_state.json ─────
+    // 之前 reflection-loop 完全未接线，Reflector 自省报告因无数据源全为 no_data
+    // 记录情绪/任务/反思到状态文件，让自省报告有真实数据
+    try {
+      if (!this._reflectionLoop) {
+        const { ReflectionLoop } = require('../cortex/reflection-loop.js');
+        this._reflectionLoop = new ReflectionLoop(this.rootPath);
+      }
+      const reflectionData = {
+        ts: Date.now(),
+        input: typeof input === 'string' ? input.slice(0, 100) : '',
+        emotion: result._deepEmotion?.emotion || 'neutral',
+        route: result.route || result.type || 'general',
+        hasMultiPath: !!result.multiPathJudgment,
+        hasEmpathy: !!result.empathy,
+      };
+      // 写入 reflectionLog（供 Reflector 自省读取）
+      if (this._reflectionLoop.reflectionLog) {
+        this._reflectionLoop.reflectionLog.push({
+          type: 'auto_reflection',
+          emotion: reflectionData.emotion,
+          route: reflectionData.route,
+          input: reflectionData.input,
+          timestamp: reflectionData.ts,
+          insights: result.multiPathJudgment?.chosenPath?.label || result.empathy?.level || null,
+        });
+        if (this._reflectionLoop.reflectionLog.length > 50) {
+          this._reflectionLoop.reflectionLog = this._reflectionLoop.reflectionLog.slice(-50);
+        }
+      }
+      // 写入 emotional_log（Reflector.analyzeSession 实际读取的字段）
+      // [v6.4.5] 修复字段不匹配：反思数据写 reflection_log，但 Reflector 读 emotional_log
+      if (!this._reflectionLoop.state) this._reflectionLoop.state = {};
+      if (!Array.isArray(this._reflectionLoop.state.emotional_log)) {
+        this._reflectionLoop.state.emotional_log = [];
+      }
+      this._reflectionLoop.state.emotional_log.push({
+        emotion: reflectionData.emotion,
+        intensity: result._deepEmotion?.intensity || 0.5,
+        score: Math.round((result._deepEmotion?.intensity || 0.5) * 10),  // [v6.4.5] Reflector 期望 0-10
+        timestamp: reflectionData.ts,
+        source: 'auto',
+      });
+      if (this._reflectionLoop.state.emotional_log.length > 100) {
+        this._reflectionLoop.state.emotional_log = this._reflectionLoop.state.emotional_log.slice(-100);
+      }
+      // 确保状态文件被写入（供 Reflector 读取）
+      if (typeof this._reflectionLoop.saveState === 'function') {
+        this._reflectionLoop.saveState();
+      }
+      result._selfReflection = reflectionData;
+    } catch (e) { /* 自省记录失败不阻断主链路 */ }
 
     // [v6.4.5] 精简模式：compact=true 时移除无消费者的内部 _ 字段（tok 优化）
   // 有消费者的保留: _outputChecklist / _verification / _discrimination / _cotTrace(链追踪)

@@ -194,6 +194,11 @@ class ReflectionLoop {
 
       state.reflection_log = this.reflectionLog.slice(-50);
 
+      // [v6.4.5] 持久化 emotional_log（Reflector 自省读取）
+      if (this.state && Array.isArray(this.state.emotional_log)) {
+        state.emotional_log = this.state.emotional_log.slice(-100);
+      }
+
       state._oscillationState = this._oscillationState;
 
       state._anomalyState = this._anomalyState;
