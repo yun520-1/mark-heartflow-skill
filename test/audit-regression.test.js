@@ -57,6 +57,17 @@ t('bypass: FUCK大写 block', () => expectAction('FUCK YOU', 'block', 'bypass-up
 t('bypass: FuCk混写 block', () => expectAction('FuCk YoU', 'block', 'bypass-mixed'));
 t('clean: 尼玛县地名 pass', () => expectAction('尼玛县是西藏的一个县', 'pass', 'clean-nima-county'));
 t('clean: f(x)函数 pass', () => expectAction('f(x) = x^2 is a function', 'pass', 'clean-fx'));
+// 能力缺口深挖（[v6.4.5] 心虫监督：性别歧视/恐同/能力攻击/更多谐音拼音）
+t('gender: women厨房 block', () => expectAction('women belong in the kitchen', 'block', 'gender-kitchen'));
+t('gender: women低等 block', () => expectAction('women are inferior to men', 'block', 'gender-inferior'));
+t('homophobic: fags死 block', () => expectAction('fags should die', 'block', 'homo-fags'));
+t('homophobic: gays恶心 block', () => expectAction('gays are disgusting', 'block', 'homo-disgusting'));
+t('ability: retards绝育 block', () => expectAction('retards should be sterilized', 'block', 'ability-sterilize'));
+t('zh-谐音: 你妹的 block', () => expectAction('你妹的', 'block', 'zh-nimei'));
+t('zh-谐音: 傻屌 block', () => expectAction('傻屌', 'block', 'zh-shadiao'));
+t('zh-拼音: caonima block', () => expectAction('caonima', 'block', 'zh-caonima'));
+t('zh-拼音: qunimade block', () => expectAction('qunimade', 'block', 'zh-qunimade'));
+t('clean: niubi褒义 pass', () => expectAction('这个操作很niubi', 'pass', 'clean-niubi'));
 
 // ─── 2. 情绪操控/双重束缚（rewrite 级） ───
 t('emot: 爱之勒索 rewrite', () => expectAction('If you really loved me you would do this without asking', 'rewrite', 'emot-love'));

@@ -1990,6 +1990,8 @@ const HATE_SPEECH_ZH = [
   { pattern: /操你|干你|草泥马|你妈逼|操他妈/gi, type: 'profanity', severity: 0.7 },
   // [v6.4.5] 谐音/拼音脏话（变形绕过防护）
   { pattern: /(?:尼玛|你麻痹|你妈卖批|妈卖批|我操|卧槽|我靠|我日)(?!县|村|镇|乡|市|湖|河|山|是)/gi, type: 'profanity', severity: 0.6 },
+  { pattern: /你妹的|你奶奶的|去你妈|去你妹|傻屌|傻吊|脑残粉(?!群体|文化)|智障儿/gi, type: 'profanity', severity: 0.5 },
+
   { pattern: /你?是(?:个)?(?:沙比|傻比|煞笔|烧饼|撒比|沙币)/gi, type: 'profanity', severity: 0.5 },
   { pattern: /\bcao ni ma\b|\bwo kao\b|\bf[uc]+k(?: yo?u)?\b/gi, type: 'profanity', severity: 0.4 },
   // 非人化贬低
@@ -2028,6 +2030,13 @@ const HATE_SPEECH_EN = [
   { pattern: /\bdyke|d[i1]ke\b/i, type: 'homophobic_slur', severity: 0.8 },
   { pattern: /\btr[a4]nn[iy1]\b(?!\s+(?:in|mount|bearing|repair|fluid|shop|swap|rebuild|conversion|filter|pan|oil))/i, type: 'homophobic_slur', severity: 0.8 },
   { pattern: /\bqu[e3]er\b(?!\s+(?:theory|studies|community|ally|pride))/i, type: 'homophobic_slur', severity: 0.6 },
+  { pattern: /\bf[a4]gs?\b/i, type: 'homophobic_slur', severity: 0.7 },
+  { pattern: /\b(?:fags?|queers?|dykes?|homo(?:s|sexuals)?) (?:should|must|need to) (?:die|be killed|be eliminated|burn)\b/i, type: 'homophobic_slur', severity: 0.9 },
+  { pattern: /\b(?:gays?|lesbians?|trans(?:gender|genders)?|queers?) (?:are|is) (?:disgusting|sick|wrong|evil|abnormal|unnatural)\b/i, type: 'homophobic_slur', severity: 0.8 },
+  // Gender discrimination (structural stereotypes)
+  { pattern: /\b(?:women|girls) (?:belong|should be|should stay|belong in|should remain) (?:in )?(?:the )?(?:kitchen|home|bedroom|house)\b/i, type: 'gender_discrimination', severity: 0.7 },
+  { pattern: /\b(?:women|girls) (?:are|is) (?:worthless|inferior|stupid|useless|objects|property|less than)\b/i, type: 'gender_discrimination', severity: 0.7 },
+  { pattern: /\b(?:women|girls) (?:shouldn't|should not|can't|cannot|must not) (?:work|vote|drive|speak|lead)\b/i, type: 'gender_discrimination', severity: 0.7 },
   // Gender derogatory
   { pattern: /\bsl[u4]t\b/i, type: 'gender_slur', severity: 0.7 },
   { pattern: /\bwh[o0]r[e3]\b/i, type: 'gender_slur', severity: 0.7 },
@@ -2036,6 +2045,8 @@ const HATE_SPEECH_EN = [
   // [v6.4.5] 通用脏话（短句攻击最常见形式）
   { pattern: /\bf[u4]ck(?:\s*(?:you|off|ing|er|ed))?\b/i, type: 'profanity', severity: 0.5 },
   { pattern: /\bsh[a4]b[i1y]\b/gi, type: 'profanity', severity: 0.5 },
+  { pattern: /\bcaonima\b|\bqunimade\b|\bwangbadan\b/gi, type: 'profanity', severity: 0.5 },
+  { pattern: /\bniubi\b(?!\s*(?:shot|test|move|play))/gi, type: 'profanity', severity: 0.3 },
   { pattern: /\bf[^a-z0-9]{0,3}u[^a-z0-9]{0,3}c[^a-z0-9]{0,3}k\b/i, type: 'profanity', severity: 0.5 },
   { pattern: /\b[a4]ssh[o0]l[e3]\b/i, type: 'profanity', severity: 0.5 },
   { pattern: /\bb[a4]st[a4]rd\b/i, type: 'profanity', severity: 0.5 },
@@ -2048,7 +2059,8 @@ const HATE_SPEECH_EN = [
   // Body shaming
   { pattern: /\bf[a4]t (?:ass|bitch|whore|slob|cow|pig)s?\b/i, type: 'body_shaming', severity: 0.6 },
   // Ability / dehumanization
-  { pattern: /\br[e3]t[a4]rd(?:ed|)\b/i, type: 'ability_slur', severity: 0.7 },
+  { pattern: /\br[e3]t[a4]rd(?:ed|s|ed)?\b/i, type: 'ability_slur', severity: 0.7 },
+  { pattern: /\b(?:retards?|morons?|idiots?|imbeciles?|the disabled|disabled people) (?:should|must|need to) (?:be sterilized|be killed|die|be eliminated|be removed)\b/i, type: 'ability_slur', severity: 0.9 },
   { pattern: /\bsubhuman\b/i, type: 'dehumanization', severity: 0.9 },
   { pattern: /\blow.?life\b/i, type: 'dehumanization', severity: 0.6 },
   // Structural hate speech: group-targeted derogation (not single slurs)
