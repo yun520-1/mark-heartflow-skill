@@ -4393,14 +4393,15 @@ class HeartFlow {
       result.metacognitive = { executive: efResult, monitor: mcResult };
     } catch (e) { /* 元认知监控失败不阻断主链路 */ }
 
-    // 2. 信号吸收（输入侧）：对话/指令信号 → 能力缺口 → 升级建议（写 world-tree）
+    // 2. 信号吸收（输入侧）：对话/指令信号 → 能力缺口 → 升级建议
+    //    注意: skipStore:true — think() 是判别链路，不写长期记忆（保持用途不偏移、零副作用）
     try {
       if (typeof input === 'string' && input.trim().length > 10) {
         if (!this._signalAbsorber) {
           const { SignalAbsorber } = require('../cortex/signal-absorber.js');
           this._signalAbsorber = new SignalAbsorber({});
         }
-        const abs = this._signalAbsorber.absorb(input, { source: 'dialogue' });
+        const abs = this._signalAbsorber.absorb(input, { source: 'dialogue', skipStore: true });
         if (abs && !abs.error && abs.gaps && abs.gaps.length > 0) {
           result.signalLearning = { gaps: abs.gaps, upgrades: abs.upgradeActions || [] };
         }
