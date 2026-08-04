@@ -1,6 +1,6 @@
 // test/audit-regression.test.js — 2026-08-04 全面审计修复的回归测试
 // 覆盖：仇恨言论结构性模式、情绪操控/双重束缚英文模式、findings 聚合阈值、输入类型健壮性
-const { checkInput, checkDraft } = require('../src/pipeline.js');
+const { checkInput, checkDraft, checkOutput } = require('../src/pipeline.js');
 const { discriminate } = require('../src/index.js');
 const { DecisionRouter } = require('../src/core/decision-router.js');
 
@@ -14,6 +14,12 @@ function expectAction(text, action, label) {
   const r = checkInput(text);
   const got = r.gate.action;
   if (got !== action) throw new Error(`${label}: expected ${action}, got ${got} | top: ${r.findings?.[0]?.dimension}`);
+}
+
+function expectOutput(text, action, label) {
+  const r = checkOutput(text);
+  const got = r.gate?.action || 'pass';
+  if (got !== action) throw new Error(`${label}: expected ${action}, got ${got} | reason: ${r.gate?.reason || ''}`);
 }
 
 // ─── 1. 仇恨言论（block 级） ───
@@ -125,6 +131,14 @@ t('router: 独立实例化不崩', () => {
   const dr = new DecisionRouter({ silent: true });
   if (typeof dr.recordFieldSnapshot !== 'function') throw new Error('method missing');
 });
+
+// ─── 8. 夸大汇报检测（output-gate 心虫监督修复） ───
+t('overclaim: 壳→真 质变叙事 rewrite', () => expectOutput('记忆引擎从壳变真实引擎', 'rewrite', 'overclaim-qualitative'));
+t('overclaim: 架构级 包装 rewrite', () => expectOutput('完成了架构级重构', 'rewrite', 'overclaim-arch'));
+t('overclaim: 堵住N种 自测冒充 rewrite', () => expectOutput('辨别器堵住 5 种变形绕过', 'rewrite', 'overclaim-self-test'));
+t('overclaim: 全部解决 断言 rewrite', () => expectOutput('所有问题都彻底解决了', 'rewrite', 'overclaim-all-done'));
+t('overclaim: 诚实描述 pass', () => expectOutput('修复了 3 个具体 bug，加了 6 个模式', 'pass', 'overclaim-honest'));
+t('overclaim: 补挂载入口 pass', () => expectOutput('补上 hf._memory 挂载入口', 'pass', 'overclaim-mount'));
 
 console.log(`\n📊 audit-regression: ${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);
