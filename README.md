@@ -266,13 +266,18 @@ Works on any machine — servers, desktops, laptops, even phones via Termux.
 **📦 npm:** https://www.npmjs.com/package/@yun520-1/heartflow  
 **🏷️ Releases:** https://github.com/yun520-1/mark-heartflow-skill/releases  
 
-**📱 Community (QR code):**
+**📱 Community — join the HeartFlow discussion:**
 
-<img src="./assets/community-qr.png" alt="Community QR" width="180"/>
+<table>
+  <tr>
+    <td align="center"><img src="./assets/community-qr-qq.jpg" alt="QQ Group" width="200"/><br/><b>QQ Group</b><br/>opencode&openclaw · 416629185</td>
+    <td align="center"><img src="./assets/community-qr-wechat.jpg" alt="WeChat Group" width="200"/><br/><b>WeChat Group</b><br/>Agent 交流群 · heartflow</td>
+  </tr>
+</table>
 
-**💖 Support HeartFlow — Donate via Alipay (QR code):**
+**💖 Support HeartFlow — Donate via Alipay:**
 
-<img src="./assets/alipay-donate-qr.png" alt="Alipay Donate QR" width="180"/>
+<img src="./assets/alipay-donate-qr.jpg" alt="Alipay Donate QR" width="200"/>
 
 *If HeartFlow's discrimination philosophy resonates with you, a small donation keeps the pain-sense layer of AGI alive.*
 
