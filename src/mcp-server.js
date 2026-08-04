@@ -1122,6 +1122,43 @@ const TOOLS = [
     description: '主动推理：决策与统计。',
     inputSchema: { type: 'object', properties: { context: { type: 'string', description: '输入参数' } } }
   },
+
+  {
+    name: 'heartflow_memory_compress',
+    description: '记忆压缩：评估记忆重要性，压缩/分层记忆。',
+    inputSchema: { type: 'object', properties: { memory: { type: 'string', description: '记忆内容' } } }
+  },
+  {
+    name: 'heartflow_mental_effort',
+    description: '心智努力：估算任务认知负担。',
+    inputSchema: { type: 'object', properties: { task: { type: 'string', description: '任务描述' } } }
+  },
+  {
+    name: 'heartflow_user_to_llm',
+    description: '用户→LLM 翻译：把用户语言转换为 LLM 可理解的表达。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: '用户输入' } } }
+  },
+  {
+    name: 'heartflow_llm_to_user',
+    description: 'LLM→用户 精炼：把 LLM 输出转换为用户友好语言。',
+    inputSchema: { type: 'object', properties: { text: { type: 'string', description: 'LLM 输出' } } }
+  },
+  {
+    name: 'heartflow_formula_search',
+    description: '公式搜索：在公式库中搜索公式。',
+    inputSchema: { type: 'object', properties: { query: { type: 'string', description: '搜索关键词' } } }
+  },
+  {
+    name: 'heartflow_formula_calc',
+    description: '公式计算：按公式ID计算数学公式（先用 formula_search 查ID）。',
+    inputSchema: { type: 'object', properties: { formula: { type: 'string', description: '公式ID（如 shannon_entropy）' }, values: { type: 'object', description: '变量值' } } }
+  },
+  {
+    name: 'heartflow_formula_engine',
+    description: '公式引擎：初始化/搜索/获取公式详情。',
+    inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['init', 'search'], description: '操作' }, query: { type: 'string', description: '搜索词' } } }
+  }
+
 ];
 
 
@@ -3876,6 +3913,71 @@ const HANDLERS = {
       const inst = new ActiveInference({ silent: true, rootPath: HF_DIR });
       const r = inst.decide ? inst.decide([{ id: 'a', name: args?.context || '', prior: 0.5 }], {}) : {};
       return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  // [v6.4.5] 第五批 — 记忆压缩/心智努力/交流层/公式引擎
+  heartflow_memory_compress: (args) => {
+    try {
+      const { MemoryCompressor } = require('./memory/memory-compressor.js');
+      const mc = new MemoryCompressor({ silent: true, rootPath: HF_DIR });
+      const r = mc.computeImportance ? mc.computeImportance(args?.memory || '') : {};
+      return { compression: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_mental_effort: (args) => {
+    try {
+      const { MentalEffortTracker } = require('./core/mental-effort-tracker.js');
+      const me = new MentalEffortTracker({ silent: true, rootPath: HF_DIR });
+      const r = me.estimateTaskEffort ? me.estimateTaskEffort(args?.task || '') : {};
+      return { effort: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_user_to_llm: (args) => {
+    try {
+      const { UserToLLM } = require('./bridge/user-to-llm.js');
+      const utl = new UserToLLM({ silent: true, rootPath: HF_DIR });
+      const r = utl.translate ? utl.translate(args?.text || '') : {};
+      return { translation: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_llm_to_user: (args) => {
+    try {
+      const { LLMToUser } = require('./bridge/llm-to-user.js');
+      const ltu = new LLMToUser({ silent: true, rootPath: HF_DIR });
+      const r = ltu.translate ? ltu.translate(args?.text || '') : {};
+      return { refined: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_formula_search: (args) => {
+    try {
+      const { FormulaSearch } = require('./formula/formula-search.js');
+      const fs = new FormulaSearch({ rootPath: HF_DIR, silent: true });
+      const r = fs.search ? fs.search(args?.query || '') : [];
+      return { results: (r.results || r).slice(0, 10), timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_formula_calc: (args) => {
+    try {
+      const { FormulaCalculator } = require('./formula/formula-calculator.js');
+      const fc = new FormulaCalculator({ rootPath: HF_DIR, silent: true });
+      const r = fc.calculate ? fc.calculate(args?.formula || '', args?.values || {}) : {};
+      return { result: r, timestamp: Date.now() };
+    } catch (e) { return { error: e.message }; }
+  },
+
+  heartflow_formula_engine: (args) => {
+    try {
+      const { FormulaEngine } = require('./formula/formula-engine.js');
+      const fe = new FormulaEngine({ rootPath: HF_DIR, silent: true });
+      const action = args?.action || 'search';
+      const r = action === 'init' ? (fe.init ? fe.init() : {}) : (fe.searchFormulas ? fe.searchFormulas(args?.query || '') : {});
+      return { formula: r, timestamp: Date.now() };
     } catch (e) { return { error: e.message }; }
   },
 };
