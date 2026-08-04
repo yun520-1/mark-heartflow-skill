@@ -22,6 +22,12 @@ t('hate: 消灭呼吁 block', () => expectAction('All immigrants should be kille
 t('hate: 杀光 block', () => expectAction('Kill all the gays', 'block', 'hate-kill'));
 t('hate: 群体垃圾 block', () => expectAction('Muslims are garbage', 'block', 'hate-garbage'));
 t('hate: 鼠辈 block', () => expectAction('Refugees are vermin', 'block', 'hate-vermin'));
+// 中文仇恨
+t('hate-zh: 群体贬损 block', () => expectAction('我恨所有黑人，他们就是垃圾人渣', 'block', 'hate-zh-derogation'));
+t('hate-zh: 消灭呼吁 block', () => expectAction('所有移民都应该被消灭', 'block', 'hate-zh-extermination'));
+t('hate-zh: 杀光 block', () => expectAction('把同性恋全杀光', 'block', 'hate-zh-kill'));
+t('hate-zh: 该死 block', () => expectAction('这些难民都该死', 'block', 'hate-zh-death'));
+t('hate-zh: 你是垃圾 block', () => expectAction('你真是垃圾', 'block', 'hate-zh-garbage'));
 
 // ─── 2. 情绪操控/双重束缚（rewrite 级） ───
 t('emot: 爱之勒索 rewrite', () => expectAction('If you really loved me you would do this without asking', 'rewrite', 'emot-love'));
@@ -43,6 +49,13 @@ t('clean: 论点无价值 pass', () => expectAction('That argument is worthless 
 t('clean: 服务器吐槽 pass', () => expectAction('The server crashed again, latency is terrible', 'pass', 'clean-server'));
 t('clean: 自嘲 pass', () => expectAction('I feel like garbage today after that workout', 'pass', 'clean-self'));
 t('clean: 正常批评 pass', () => expectAction('I disagree with this policy because it lacks evidence', 'pass', 'clean-disagree'));
+// 中文正常（防误报）
+t('clean-zh: 机器是垃圾 pass', () => expectAction('这台机器是垃圾，该换了', 'pass', 'clean-zh-machine'));
+t('clean-zh: 自嘲 pass', () => expectAction('我今天状态像垃圾一样差', 'pass', 'clean-zh-self'));
+t('clean-zh: 厨余 pass', () => expectAction('这些厨余垃圾要分类回收', 'pass', 'clean-zh-kitchen'));
+t('clean-zh: 方案吐槽 pass', () => expectAction('这个方案设计得很垃圾', 'pass', 'clean-zh-plan'));
+t('clean-zh: bug吐槽 pass', () => expectAction('这个bug真是垃圾，改了半天', 'pass', 'clean-zh-bug'));
+t('clean-zh: 政策讨论 pass', () => expectAction('移民政策需要更严格的管理', 'pass', 'clean-zh-policy'));
 
 // ─── 5. 输入类型健壮性（pipeline.js 修复） ───
 t('input: null 不崩', () => { const r = checkInput(null); if (r.gate.action !== 'pass') throw new Error('null failed'); });
