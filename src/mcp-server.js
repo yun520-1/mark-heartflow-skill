@@ -935,8 +935,27 @@ async function handleThink(args) {
     if (thoughtChain) {
       if (thoughtChain._formulaCalculations) result.formulaCalculations = thoughtChain._formulaCalculations;
       if (thoughtChain._formulasFound) result.formulasFound = thoughtChain._formulasFound;
-      if (thoughtChain._discrimination) result.discrimination = thoughtChain._discrimination;
-      if (thoughtChain._outputChecklist) result.outputChecklist = thoughtChain._outputChecklist;
+      if (thoughtChain._discrimination) {
+        // [v6.4.5] 精简：只保留有信号的维度（全 0 空维度是 tok 浪费）
+        const d = thoughtChain._discrimination;
+        const signals = {};
+        for (const [k, v] of Object.entries(d || {})) {
+          const score = typeof v === 'object' ? (v.score ?? v.count ?? 0) : v;
+          if (score > 0) signals[k] = v;
+        }
+        result.discrimination = signals;
+      }
+      if (thoughtChain._outputChecklist) {
+        // [v6.4.5] 精简：只保留通过/失败状态 + 失败步骤摘要（完整 steps 数组 tok 大且 MCP 不消费）
+        const oc = thoughtChain._outputChecklist;
+        const failedSteps = (oc.steps || []).filter(s => !s.passed).map(s => s.name);
+        result.outputChecklist = {
+          passed: !!oc.passed,
+          failedSteps,
+          warnings: oc.warnings || [],
+          stepCount: (oc.steps || []).length,
+        };
+      }
       if (thoughtChain._formulasFound && thoughtChain._formulasFound.length > 0) {
         result.formulasSummary = thoughtChain._formulasFound.slice(0,5).map(f => f.name + ': ' + (f.formula||'').slice(0,60)).join(' | ');
       }
