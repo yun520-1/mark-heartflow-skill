@@ -97,3 +97,6 @@ run_bb_test.js
 run_test.js
 self-verification.json
 src/utils/src/utils/
+
+dict-data/
+models/
