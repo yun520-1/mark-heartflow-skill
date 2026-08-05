@@ -1379,6 +1379,29 @@ class SelfEvolutionCore {
 
     const lower = errorMsg.toLowerCase();
 
+    // [v6.5.1] 优先用 error-taxonomy 23类精细分类（借鉴 Hermes FailoverReason）
+    // 精确识别 429/401/402/403/超时/证书/上下文超限等 → 恢复策略更精准
+    try {
+      const taxonomy = require('../../shield/error-taxonomy.js');
+      if (taxonomy && typeof taxonomy.classify === 'function') {
+        const cls = taxonomy.classify(errorMsg);
+        if (cls && cls.code && cls.code !== 'unknown') {
+          // 映射 taxonomy 分类 → 自愈 errorType（保持 Q-learning 状态空间稳定）
+          const TAXONOMY_TO_HEAL_TYPE = {
+            auth: 'auth', auth_permanent: 'permission',
+            billing: 'permission', rate_limit: 'rate_limit',
+            overloaded: 'network', server_error: 'network',
+            timeout: 'timeout', ssl_cert: 'network', network: 'network',
+            context_overflow: 'memory', payload_too_large: 'memory',
+            model_not_found: 'reference', content_policy: 'permission',
+            provider_policy: 'permission', format_error: 'syntax',
+            invalid_content: 'syntax',
+          };
+          return TAXONOMY_TO_HEAL_TYPE[cls.code] || 'unknown';
+        }
+      }
+    } catch (_) { /* taxonomy 不可用时回退旧分类 */ }
+
     for (const [type, patterns] of Object.entries(this._PATTERNS)) {
 
       if (patterns.some(p => lower.includes(p.toLowerCase()))) {
@@ -1568,6 +1591,19 @@ class SelfEvolutionCore {
   _generateRepairHints(errorType, errorMsg) {
 
     const hints = [];
+
+    // [v6.5.1] 优先用 error-taxonomy 恢复策略（比内置 switch 更精准）
+    try {
+      const taxonomy = require('../../shield/error-taxonomy.js');
+      if (taxonomy && typeof taxonomy.classify === 'function') {
+        const cls = taxonomy.classify(errorMsg);
+        if (cls && cls.code && cls.code !== 'unknown' && cls.recovery) {
+          hints.push(`[错误分类:${cls.label}] ${cls.recovery}`);
+          if (cls.retryable) hints.push(`可重试（${cls.code}）— 建议按指数退避重试`);
+          else hints.push(`不可盲目重试（${cls.code}）— 先修复根因再继续`);
+        }
+      }
+    } catch (_) { /* taxonomy 不可用时回退内置 hints */ }
 
     switch (errorType) {
 
