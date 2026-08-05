@@ -1004,6 +1004,8 @@ class HeartFlow {
     'dream.dreamNow', 'dream.analyzeDream',
     // verify
     'verify.verify', 'verify.checkConsistency',
+    // error taxonomy
+    'errorTaxonomy.classify', 'errorTaxonomy.getRecovery', 'errorTaxonomy.getStats',
     // psychology
     'psychology.analyze', 'psychology.detectCrisis',
     // emotion
@@ -3955,10 +3957,20 @@ class HeartFlow {
     try {
       const emMod = require('../error-memory.js');
       if (emMod && typeof emMod.logCorrection === 'function') {
+        // errorMemory：跨会话错误记忆（原有）
         this._modules['errorMemory'] = {
           store: (p, a, o) => emMod.logCorrection({ pattern: p, action: a }, o),
           query: (p, l) => emMod.getStats ? emMod.getStats() : [],
           getStats: () => emMod.getStats ? emMod.getStats() : {},
+          classifyError: (err, ctx) => emMod.classifyError ? emMod.classifyError(err, ctx) : { code: 'unknown', recovery: '未知错误' },
+          getErrorRecovery: (code) => emMod.getErrorRecovery ? emMod.getErrorRecovery(code) : null,
+          getTaxonomyStats: () => emMod.getTaxonomyStats ? emMod.getTaxonomyStats() : {},
+        };
+        // 独立子系统 errorTaxonomy：错误分类学（不覆盖已有 error = ErrorHandler）
+        this._modules['errorTaxonomy'] = {
+          classify: (err, ctx) => emMod.classifyError ? emMod.classifyError(err, ctx) : { code: 'unknown', recovery: '未知错误' },
+          getRecovery: (code) => emMod.getErrorRecovery ? emMod.getErrorRecovery(code) : null,
+          getStats: () => emMod.getTaxonomyStats ? emMod.getTaxonomyStats() : {},
         };
       }
     } catch (e) { _boundedPush(this._initErrors, { module: 'errorMemory', error: e.message }, MAX_HISTORY_SIZE); }

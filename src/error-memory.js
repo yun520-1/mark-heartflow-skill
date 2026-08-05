@@ -21,6 +21,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const taxonomy = require('./shield/error-taxonomy.js');
 
 const MEMORY_FILE = path.join(__dirname, '..', 'data', 'error-memory.json');
 
@@ -144,6 +145,38 @@ function checkRecurrence(context) {
   return { warnings, safe: warnings.length === 0 };
 }
 
+// ─── 分类判别（错误分类学）─────────────────────────
+
+/**
+ * 判别任意错误属于哪一类，并给出恢复策略
+ * @param {Error|string} error - 错误对象或消息
+ * @param {object} [context] - { status, code, url }
+ * @returns {object} 分类结果
+ */
+function classifyError(error, context = {}) {
+  const result = taxonomy.classify(error, context);
+  return {
+    ...result,
+    recovery: result.recovery,
+    retryable: result.retryable,
+    preventionRule: generatePreventionRule(result.code),
+  };
+}
+
+/**
+ * 获取某分类的恢复策略
+ */
+function getErrorRecovery(code) {
+  return taxonomy.getRecovery(code);
+}
+
+/**
+ * 错误分类统计
+ */
+function getTaxonomyStats() {
+  return taxonomy.getStats();
+}
+
 // ─── 生成预防规则 ─────────────────────────
 
 function generatePreventionRule(category) {
@@ -179,6 +212,9 @@ module.exports = {
   checkRecurrence,
   generatePreventionRule,
   getStats,
+  classifyError,
+  getErrorRecovery,
+  getTaxonomyStats,
   CATEGORIES,
   clearMemory: () => saveMemory({ errors: [], version: '1.0' }),
 };
