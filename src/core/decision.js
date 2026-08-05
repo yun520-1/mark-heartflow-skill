@@ -283,11 +283,13 @@ class HeartFlowDecision {
     const confidence = option.confidence || 0.7;
 
     // Composite: weighted average
+    // [v6.5.1] 风险权重 10%→25%：让心虫像人一样重视风险规避
+    // （原 10% 导致高风险高回报选项总是压过低风险选项）
     const composite = (
       feasibility * 0.15 +
-      identity_alignment * 0.35 +
-      consequence_value * 0.30 +
-      (1 - risk_penalty) * 0.10 +
+      identity_alignment * 0.25 +
+      consequence_value * 0.25 +
+      (1 - risk_penalty) * 0.25 +
       confidence * 0.10
     );
 
@@ -358,6 +360,12 @@ class HeartFlowDecision {
     const uncertainty = 1 - (option.confidence || 0.7);
     if (uncertainty > 0.3) {
       risks.push({ type: 'uncertainty', level: uncertainty > 0.5 ? 'high' : 'medium', detail: `Confidence only ${Math.round((option.confidence || 0.7) * 100)}%` });
+    }
+
+    // [v6.5.1] Risk: 显式 risk 字段（0-1）— 高风险必须上报
+    const explicitRisk = Number(option.risk) || 0;
+    if (explicitRisk > 0.5) {
+      risks.push({ type: 'explicit_risk', level: explicitRisk > 0.7 ? 'high' : 'medium', detail: `显式风险评分 ${Math.round(explicitRisk * 100)}%` });
     }
 
     // Risk: Side effects

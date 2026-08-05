@@ -41,7 +41,14 @@ const path = require('path');
 const debugLog = require('../utils/debug-log');
 
 // ─── 全局桥接注入 — 供旧版模块(decision-engine等)构造函数引用 ─────
-globalThis.getCognitiveBridge = () => ({ estimate: () => ({}), getState: () => ({}), healthCheck: () => ({ok:true}) });
+// [v6.5.1] 修复：原来是假 bridge（只有空 estimate/getState），导致 DDM/SDT 全崩
+// 现在加载真实 cognitive-bridge（含 ddmDecisionTime/sdtDPrime/prospectValue 等）
+try {
+  const realBridge = require('../formula/cognitive-bridge.js').getCognitiveBridge();
+  globalThis.getCognitiveBridge = () => realBridge;
+} catch (e) {
+  globalThis.getCognitiveBridge = () => ({ estimate: () => ({}), getState: () => ({}), healthCheck: () => ({ok:true}) });
+}
 globalThis.ProcessRewardModel = class { constructor() { this.healthCheck = () => ({ok:true}); } };
 globalThis.DesireCognition = class { constructor() { this.healthCheck = () => ({ok:true}); } };
 globalThis.CognitiveLoadCalculator = class { constructor() { this.healthCheck = () => ({ok:true}); } };

@@ -19,7 +19,13 @@
 
 class DecisionEngine {
   constructor(options = {}) {
-    this._bridge = (typeof globalThis !== 'undefined' && globalThis.getCognitiveBridge) ? globalThis.getCognitiveBridge() : null;
+    // [v6.5.1] 修复：独立 require 时 getCognitiveBridge 不在 globalThis，需显式加载
+    this._bridge = (typeof globalThis !== 'undefined' && globalThis.getCognitiveBridge)
+      ? globalThis.getCognitiveBridge()
+      : (() => {
+          try { return require('../formula/cognitive-bridge.js').getCognitiveBridge(); }
+          catch { return null; }
+        })();
     this._beliefState = new Map();  // 信念状态: hypothesis → probability
     this._qTable = new Map();       // Q值表: state_action → value
     this._learningRate = options.learningRate || 0.1;
