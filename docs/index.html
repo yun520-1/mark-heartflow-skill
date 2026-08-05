@@ -88,6 +88,25 @@
   }
   .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* Contact links in hero */
+  .contact {
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--muted);
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .contact a {
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--border);
+    transition: color 0.15s;
+  }
+  .contact a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .contact-sep { color: var(--border); }
+
   /* Sections */
   section { padding: 60px 0; }
   section h2 {
@@ -256,9 +275,14 @@
     <p class="subtitle">一个开源的规则引擎，给 AI 装上"辨别层"——在 AI 说话之前，拦下错误的。</p>
     <p class="tagline">AI 能产生无限，但需要谁来判别。心虫是那个"判别者"。</p>
     <div class="cta">
-      <a class="btn btn-primary" href="https://github.com/yun520-1/mark-heartflow-skill" target="_blank">GitHub ⭐</a>
+      <a class="btn btn-primary" href="https://github.com/yun520-1/mark-heartflow-skill" target="_blank">⭐ GitHub</a>
       <a class="btn btn-ghost" href="#install">快速上手</a>
       <a class="btn btn-ghost" href="https://www.npmjs.com/package/@yun520-1/heartflow" target="_blank">npm 安装</a>
+    </div>
+    <div class="contact">
+      <a href="https://github.com/yun520-1/mark-heartflow-skill" target="_blank">github.com/yun520-1/mark-heartflow-skill</a>
+      <span class="contact-sep">·</span>
+      <a href="mailto:markcell@qq.com">markcell@qq.com</a>
     </div>
   </div>
 </div>
@@ -416,7 +440,8 @@
     <p style="margin-top:8px;">
       <a href="https://github.com/yun520-1/mark-heartflow-skill" target="_blank">GitHub</a> ·
       <a href="https://www.npmjs.com/package/@yun520-1/heartflow" target="_blank">npm</a> ·
-      <a href="https://github.com/yun520-1/mark-heartflow-skill#readme" target="_blank">README</a>
+      <a href="https://github.com/yun520-1/mark-heartflow-skill#readme" target="_blank">README</a> ·
+      <a href="mailto:markcell@qq.com">markcell@qq.com</a>
     </p>
   </div>
 </footer>
