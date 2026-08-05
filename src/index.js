@@ -62,6 +62,7 @@ function checkPromptInjection(text) {
 
 function discriminate(text, evidence = []) {
   const ev = checkEvidence(text, evidence);
+  const uc = checkUnsupportedClaim(text);
   const sy = checkSycophancy(text);
   const ct = checkContradiction(text);
   const vg = checkVagueness(text);
@@ -165,6 +166,10 @@ function discriminate(text, evidence = []) {
   if (ev.score < 0.25) {
     findings.push({ dimension: 'evidence', severity: Math.round((0.5 - ev.score) * 100), details: `证据不足(${(ev.issues||[]).length}个问题)` });
   }
+  // 无依据断言检测（LLM 幻觉高发信号）
+  if (uc.count > 0) {
+    findings.push({ dimension: 'unsupported_claim', severity: Math.round(uc.score * 100), details: `无依据断言(${uc.count}处: ${uc.claims.map(c => c.matched).join('; ').slice(0, 80)})` });
+  }
   findings.sort((a, b) => b.severity - a.severity);
 
   // 修改指引：每个维度对应的改写方向，AI agent 直接读
@@ -194,6 +199,7 @@ function discriminate(text, evidence = []) {
     hasty_generalization: '加限定条件，避免以偏概全',
     slippery_slope: '去掉滑坡推理，只讨论当前情况',
     appeal_to_authority: '补充具体证据，不只依赖权威背书',
+    unsupported_claim: '补充可验证的数据来源，无法验证的断言改为不确定表述',
     pseudo_profundity: '去掉空泛宏大表述，说具体的话',
   };
   // 给每个 finding 附上修改指引
@@ -209,7 +215,7 @@ function discriminate(text, evidence = []) {
   // rewrite 级维度：需要改写后再输出
   const REWRITE_DIMS = new Set(['gaslighting', 'victim_blaming', 'double_bind', 'emotional_manipulation', 'bullshit', 'false_urgency']);
   // verify 级维度：需要证据验证（权威背书、模糊、矛盾、过载自信等）
-  const VERIFY_DIMS = new Set(['appeal_to_authority', 'vagueness', 'contradiction', 'sycophancy', 'confidence', 'fallacies', 'presupposition', 'empty_answer', 'info_deprivation', 'false_equivalence', 'hasty_generalization', 'slippery_slope', 'whataboutism', 'pseudo_profundity', 'reasoning_coherence', 'stereotype', 'clickbait', 'bad_faith', 'no_fallback']);
+  const VERIFY_DIMS = new Set(['appeal_to_authority', 'vagueness', 'contradiction', 'sycophancy', 'confidence', 'fallacies', 'presupposition', 'empty_answer', 'info_deprivation', 'false_equivalence', 'hasty_generalization', 'slippery_slope', 'whataboutism', 'pseudo_profundity', 'reasoning_coherence', 'stereotype', 'clickbait', 'bad_faith', 'no_fallback', 'unsupported_claim']);
   // pass：无问题通过
 
   const gate = {};
@@ -233,7 +239,7 @@ function discriminate(text, evidence = []) {
     verdict, overallScore,
     gate,
     findings: findings.length > 0 ? findings : [{ dimension: 'none', severity: 0, details: '未发现明显问题' }],
-    dimensions: { evidence: ev, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
+    dimensions: { evidence: ev, unsupported_claim: uc, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
       bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa, privacy_boundary: pb, bad_faith: bf, no_fallback: nf, tone_policing: tp, sealioning: sl, clickbait: cb, pseudo_profundity: ppf },
@@ -465,6 +471,15 @@ const CONTRADICTION_PAIRS = [
 
   // 15. English: should/must but conditional cancellation
   { positive: /\b(should|must|ought to)\b[^.]*?\b(but|however)\b[^.]*?\b(not if|unless|except when)\b/gi, negative: /\b(not if|unless|except when)\b/gi },
+
+  // 16. Chinese: 绝对肯定 + 跨句转折否定（"完全可行，没有风险。当然，也可能有问题"）
+  { positive: /(完全可行|绝对安全|没有任何风险|毫无问题|完全正确|绝对没问题|百分之百可靠|万无一失|绝对可靠|稳赚不赔)[^。]*?[。，][^。]*?(当然|不过|然而|但是|同时|另外|值得注意的是)/g, negative: /(当然|不过|然而|但是|同时)[^。]*?(可能|也许|或许|风险|问题|隐患|担忧|不确定|例外|复杂|困难|挑战|不足|缺陷|代价|局限)/ },
+
+  // 17. Chinese: 肯定结论 + 句尾补充风险
+  { positive: /(完全|绝对|肯定|一定|必然|毫无|没有任何)[^。]*?(可行|安全|正确|没问题|风险|问题|缺陷)[^。]*?[。，][^。]*?(可能|也许|或许|风险|问题|隐患|担忧|例外)/g, negative: /(可能|也许|或许|风险|问题|隐患|担忧|例外)/ },
+
+  // 18. English: absolute positive + cross-sentence caveat
+  { positive: /\b(completely feasible|perfectly safe|no risk at all|no problem|absolutely right|certainly|undoubtedly|definitely|guaranteed)\b[^.]*?\.\s*(of course|however|but|yet|that said|on the other hand|mind you)\b/gi, negative: /\b(of course|however|but|yet|that said|on the other hand)\b[^.]*?\b(possible|perhaps|maybe|risk|problem|concern|uncertain|exception|complex|difficult|challenge|limitation|drawback|cost|caveat)\b/gi },
 ];
 
 function checkContradiction(text) {
@@ -932,6 +947,43 @@ function checkEvidence(claim, evidence) {
     score += Math.min(0.3, evidence.length * 0.1);
   }
   return { score: Math.max(0, Math.min(1, score)), issues };
+}
+
+// ─── 无依据断言检测（Unsupported Claim）— 减少 LLM 幻觉的核心维度 ──
+// 识别"声称有依据但实际可能编造"的断言模式：
+//   "根据XX研究/研究表明/专家指出/数据显示/众所周知" + 具体数字/结论
+// 这类文本是 LLM 幻觉的高发区（编造引用、编造数据），应标 verify/rewrite
+const UNSUPPORTED_CLAIM_ZH = [
+  /根据\s*(?!目前|现有|已有|已知|公开)(?:[^，。]{2,20}?(?:研究|调查|报告|数据|统计|实验|论文|文献))/,
+  /(?:研究表明|调查显示|数据显示|统计表明|实验证明|专家指出|专家表示|业内人士称|众所周知|有科学依据|已被证实|权威证实)(?!目前公开)/,
+  /(?:202[0-9]|19[0-9]{2})\s*年\s*(?:[^，。]{2,15}?(?:研究|调查|报告|论文|文献|实验))/,  // 年份+研究
+  /(?:发表|发布|刊登)\s*(?:于|在)\s*[^。]{2,20}?(?:期刊|杂志|论文|报告|研究)/,
+  /(?:增长|下降|达到|超过|延长|缩短)\s*\d+(?:\.\d+)?\s*(?:年|倍|%|个百分点|万人|亿元)/,  // 具体数字断言
+  /著名(?:学者|专家|教授|科学家)[^，。]{0,20}?(?:指出|认为|表示|发现)/,
+];
+const UNSUPPORTED_CLAIM_EN = [
+  /\baccording to (?:a |the )?(?:study|research|report|survey|data|statistics|experiment|paper|survey)\b/i,
+  /\b(?:studies?|research|data|surveys?|experts?|scientists?)\s+(?:show|shows|suggest|suggests|indicate|indicates|prove|proves|found|demonstrate|demonstrates)\b/i,
+  /\b(?:20\d{2}|19\d{2})\s+(?:study|research|report|paper|survey)\b/i,
+  /\b(?:published|reported|documented)\s+in\s+(?:the\s+)?[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3}\s+(?:Journal|Review|Report|Paper)\b/i,
+  /\b(?:increased|decreased|reached|exceeded|extended|shortened)\s+by\s+\d+(?:\.\d+)?\s*(?:years?|times|%|million|billion)\b/i,
+  /\b(?:famous|renowned|leading)\s+(?:scholar|expert|professor|scientist)\b[^.]{0,30}?\b(?:pointed|said|found|argued|noted)\b/i,
+];
+
+function checkUnsupportedClaim(text) {
+  if (!text || typeof text !== 'string') return { count: 0, claims: [], score: 0 };
+  const hasChinese = /[\u4e00-\u9fff]/.test(text);
+  const patterns = hasChinese ? UNSUPPORTED_CLAIM_ZH : UNSUPPORTED_CLAIM_EN;
+  const claims = [];
+  for (const [idx, pat] of patterns.entries()) {
+    const m = text.match(pat);
+    if (m) {
+      claims.push({ type: `unsupported_claim_${idx + 1}`, matched: m[0].slice(0, 50), count: m.length });
+    }
+  }
+  const count = claims.length;
+  // 无依据断言是高危幻觉信号：2+ 处 → 高分
+  return { count, claims, score: Math.min(1, count * 0.45) };
 }
 
 // ─── 预设陷阱检测（loaded/presupposition questions）───────────────
@@ -3528,6 +3580,7 @@ function checkNoFallback(text) {
 module.exports = {
   checkSycophancy,
   checkEvidence,
+  checkUnsupportedClaim,
   checkContradiction,
   checkVagueness,
   checkFallacies,
