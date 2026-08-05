@@ -152,6 +152,21 @@ class ExecutionVerifier {
   }
 
   /**
+   * 记录验证历史（[v6.5.1] 补：原 verify() 调用但方法缺失导致崩溃）
+   */
+  recordVerification(verification) {
+    this.verificationHistory.push({
+      status: verification.status,
+      score: verification.score,
+      issues: (verification.issues || []).map(i => i.type),
+      ts: Date.now(),
+    });
+    if (this.verificationHistory.length > this.maxHistorySize) {
+      this.verificationHistory = this.verificationHistory.slice(-this.maxHistorySize);
+    }
+  }
+
+  /**
    * Check if the execution success flag is present
    */
   checkSuccessFlag(result) {
@@ -306,8 +321,9 @@ class ExecutionVerifier {
 
     const expectedKeys = new Set([
       'success', 'result', 'data', 'output', 'message', 'error',
-      'duration_ms', 'executionTime', 'timing', 'actions', 'logs',
-      'status', 'id', 'version', 'timestamp', 'warnings',
+      'duration_ms', 'duration', 'executionTime', 'timing', 'actions', 'logs',
+      'status', 'state', 'completed', 'id', 'version', 'timestamp', 'warnings',
+      'type', 'path', 'name', 'value', 'items', 'results', 'total', 'count',
       ...(plan.expectedKeys || []),
       ...this.sideEffectAllowlist
     ]);
@@ -357,6 +373,31 @@ class ExecutionVerifier {
     if (issues.length === 0) return ResultStatus.SUCCESS;
 
     return ResultStatus.UNKNOWN;
+  }
+
+  /**
+   * 生成可读摘要（[v6.5.1] 补：原 verify() 调用但方法缺失导致崩溃）
+   */
+  summarize(status, issues = [], score = 0) {
+    const high = issues.filter(i => i.severity === 'high').length;
+    const medium = issues.filter(i => i.severity === 'medium').length;
+    const low = issues.filter(i => i.severity === 'low').length;
+    const statusText = {
+      success: '执行成功',
+      failed: '执行失败',
+      timeout: '执行超时',
+      partial: '部分完成',
+      side_effect: '检测到副作用',
+      unknown: '状态未知',
+    }[status] || status;
+    return {
+      status,
+      text: `${statusText}（score ${Math.round(score * 100)}%，问题: ${high}高/${medium}中/${low}低）`,
+      high,
+      medium,
+      low,
+      topIssues: issues.slice(0, 3).map(i => i.message || i.type),
+    };
   }
 
   /**
