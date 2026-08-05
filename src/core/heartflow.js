@@ -2370,6 +2370,18 @@ class HeartFlow {
 
       } catch (e) { /* optional */ }
 
+      // [v6.5.1] 接通 LLM 兜底钩子：规则置信度 < 0.7 时调大模型分类
+      // 结合 + 冗余：规则快判（快稳免费）+ LLM 兜底（覆盖规则盲区）+ gate 校验
+      // 安全：无 key 时静默降级为纯规则（_llmFallback 保持 null，调用点已判空）
+      try {
+        if (!this._llmFallback) {
+          const { classifyTaskWithLLM } = require('../llm/task-classifier-fallback.js');
+          if (classifyTaskWithLLM) {
+            this._llmFallback = async (input, matchedPatterns) => classifyTaskWithLLM(input, matchedPatterns);
+          }
+        }
+      } catch (e) { /* LLM 兜底不可用则纯规则，不阻断 */ }
+
 
 
       // [v6.0.5 教育模式] 感知情感课程引擎
