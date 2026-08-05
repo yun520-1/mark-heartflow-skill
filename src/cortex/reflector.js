@@ -148,6 +148,54 @@ class Reflector {
 
   }
 
+  /**
+   * [v6.5.1] feed() — 打通数据流：把每次 think 的任务/反馈/情绪写入 state
+   * 让 analyzeSession() 不再返回"数据格式无效"（此前无任何引擎写入数据）
+   * @param {object} data - { task?: string, feedback?: string, emotion?: {valence, arousal}, success?: boolean }
+   */
+  feed(data = {}) {
+    try {
+      const state = this.loadState();
+      // 防御：确保数组存在（旧 state 文件可能缺字段）
+      if (!Array.isArray(state.achievements)) state.achievements = [];
+      if (!Array.isArray(state.feedback_history)) state.feedback_history = [];
+      if (!Array.isArray(state.emotional_log)) state.emotional_log = [];
+      if (data.task && typeof data.task === 'string') {
+        state.achievements.push({
+          description: data.task.slice(0, 200),
+          completed: data.success !== false,
+          ts: new Date().toISOString(),
+        });
+      }
+      if (data.feedback && typeof data.feedback === 'string') {
+        state.feedback_history.push({
+          content: data.feedback.slice(0, 300),
+          positive: data.success !== false,
+          ts: new Date().toISOString(),
+        });
+      }
+      if (data.emotion && typeof data.emotion === 'object') {
+        state.emotional_log.push({
+          valence: Number(data.emotion.valence) || 5,
+          arousal: Number(data.emotion.arousal) || 5,
+          ts: new Date().toISOString(),
+        });
+      }
+      state.last_session = new Date().toISOString();
+      state.total_sessions = (state.total_sessions || 0) + 1;
+      // 限制数组长度防无限增长
+      if (state.achievements.length > 200) state.achievements = state.achievements.slice(-200);
+      if (state.feedback_history.length > 200) state.feedback_history = state.feedback_history.slice(-200);
+      if (state.emotional_log.length > 500) state.emotional_log = state.emotional_log.slice(-500);
+      const dir = path.dirname(this.stateFile);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(this.stateFile, JSON.stringify(state, null, 2), 'utf8');
+      return { ok: true, state };
+    } catch (e) {
+      return { ok: false, error: e.message };
+    }
+  }
+
 
 
   getDefaultState() {

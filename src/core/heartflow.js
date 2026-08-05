@@ -1014,6 +1014,8 @@ class HeartFlow {
     'decision.decide', 'decision.getRecentStamps',
     // confidence
     'confidence.calibrate', 'confidence.admit',
+    // introspect
+    'heartflow.introspect', 'heartflow.selfDiagnosis',
     // restraint
     'restraint.shouldIntervene',
     // graph
@@ -3941,6 +3943,7 @@ class HeartFlow {
     // ─── [v6.2.3] SelfDiagnosis 自我诊断：跑一圈所有自检模块吐诚实报告 ──
     try {
       this.selfDiagnosis = new (_SelfDiagnosis().SelfDiagnosis)(this);
+      // heartflow 子系统注册在 [v5.1.0] 自省注册处（3996 行），此处只实例化
     } catch (e) { _boundedPush(this._initErrors, { module: 'selfDiagnosis', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v6.2.3] WhatLearned 学习汇报：让心虫能回答"你学得怎么样了" ──
@@ -3984,10 +3987,20 @@ class HeartFlow {
 
     this.heartflow = this;  // 让 dispatch('heartflow.introspect') 能找到实例
 
+    // heartflow 子系统注册在 _registerModules 之后（见下方 [v6.5.1]）
+
 
 
     // [v6.0.71] _registerModules extracted to engine-lifecycle.js
     require('./engine-lifecycle.js')._registerModules(this);
+
+    // [v6.5.1] heartflow 子系统：必须在 _registerModules 之后注册
+    // （否则被 engine-lifecycle 用整个 hf 实例覆盖，introspect 不可用）
+    this._modules['heartflow'] = {
+      introspect: () => this.selfDiagnosis ? this.selfDiagnosis.run() : { ok: false, error: 'selfDiagnosis 未初始化' },
+      selfDiagnosis: () => this.selfDiagnosis ? this.selfDiagnosis.run() : { ok: false, error: 'selfDiagnosis 未初始化' },
+      version: () => ({ version: this.version }),
+    };
 
 
 
@@ -4591,6 +4604,31 @@ class HeartFlow {
       delete result.chain;
     }
   }
+
+  // [v6.5.1] think 后自省数据记录：写 self-view.json + Reflector.feed()
+  try {
+    const svPath = require('path').join(this.rootPath, 'data', 'self-view.json');
+    const sv = this._selfView || {};
+    sv.thinkCount = (sv.thinkCount || 0) + 1;
+    const conf = result?.output?.meta?.confidence ?? result?.confidence ?? 0.5;
+    if (conf < 0.4) sv.lowConfCount = (sv.lowConfCount || 0) + 1;
+    if (result?.output?.suppressed) sv.blockedCount = (sv.blockedCount || 0) + 1;
+    sv.lastThink = new Date().toISOString();
+    this._selfView = sv;
+    require('fs').writeFileSync(svPath, JSON.stringify(sv, null, 2), 'utf8');
+    // Reflector.feed() 打通自省数据流（任务/反馈/情绪）
+    try {
+      const { Reflector } = require('../cortex/reflector.js');
+      if (!this._reflector) this._reflector = new Reflector(this.rootPath);
+      if (typeof this._reflector.feed === 'function') {
+        this._reflector.feed({
+          task: typeof input === 'string' ? input.slice(0, 200) : 'think',
+          success: !result?.output?.suppressed,
+          emotion: result?._deepEmotion?.emotion ? { valence: (result._deepEmotion.intensity || 0.5) * 10, arousal: 5 } : null,
+        });
+      }
+    } catch (_) { /* Reflector 数据流失败不阻断主链路 */ }
+  } catch (_) { /* 自省计数失败不阻断主链路 */ }
 
   return result;
   }
