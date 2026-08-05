@@ -1,9 +1,9 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-const HF_DIR = path.resolve('/root/.hermes/skills/ai/mark-heartflow-skill');
+const HF_DIR = path.resolve(__dirname, '..');
 const STDIO = path.join(HF_DIR, 'mcp', 'mcp-server-stdio.js');
-const NODE = '/root/.local/bin/node';
+const NODE = process.execPath;
 
 const child = spawn(NODE, [STDIO], {
   cwd: HF_DIR,

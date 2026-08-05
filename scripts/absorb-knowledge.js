@@ -8,7 +8,7 @@
  * 4. experience-distiller — 从 self-memories 提炼可复用抽象
  */
 const path = require('path');
-const HEARTFLOW_DIR = '/root/.hermes/skills/ai/mark-heartflow-skill';
+const HEARTFLOW_DIR = path.resolve(__dirname, '..');
 
 // ─── 1. LessonBank ───
 const { lessonBank } = require(path.join(HEARTFLOW_DIR, 'src/cortex/lesson-bank.js'));

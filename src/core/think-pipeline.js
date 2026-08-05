@@ -7,6 +7,7 @@
  * v6.3.9–v6.3.29 的后置检查块全部集中在此。
  */
 
+const path = require('path');
 const _FirewallCheck = () => require('../identity/identity-rules.js');
 
 /**
@@ -952,7 +953,7 @@ async function runThinkPipeline(result, input, engine) {
     const inputText = typeof input === 'string' ? input : (input?.text || '');
     if (inputText && inputText.trim().length > 1) {
       const DE = require('../emotion/deep-emotion.js');
-      const de = new DE.DeepEmotion('/root/.hermes/skills/ai/mark-heartflow-skill');
+      const de = new DE.DeepEmotion(path.join(__dirname, '..', '..'));
       const felt = de.feel(inputText, { important: result.confidence > 0.6 });
       result._deepEmotion = {
         emotion: felt.emotion,

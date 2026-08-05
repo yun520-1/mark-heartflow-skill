@@ -1142,20 +1142,21 @@ class LogicReasoning {
       const { safeFetch } = require('../core/fetch-safe.js');
 
       // [SECURITY FIX H-2] API key from env only — no file fallback
-      const apiKey = process.env.HEARTFLOW_API_KEY;
+      const apiKey = process.env.HEARTFLOW_API_KEY || process.env.HEARTFLOW_LLM_API_KEY;
       if (!apiKey) {
         throw new Error('[logic-reasoning] HEARTFLOW_API_KEY environment variable is required');
       }
 
-      // [v5.17.9 H1] host白名单 — 仅允许腾讯Copilot域名，防止env注入外泄API Key
-      const ALLOWED_API_HOSTS = ['copilot.tencent.com', 'api.tencent.com'];
-      const apiBase = process.env.TENCENT_API_BASE;
-      let finalBase = 'https://copilot.tencent.com/v2';
+      // [v5.17.9 H1] host白名单 — 防止env注入外泄API Key
+      // provider 无关：用户可通过 HEARTFLOW_API_BASE 配置任意 OpenAI 兼容服务
+      const ALLOWED_API_HOSTS = ['copilot.tencent.com', 'api.tencent.com', 'api.openai.com', 'api.deepseek.com', 'api.stepfun.com', 'api.moonshot.cn', 'api.siliconflow.cn', 'openrouter.ai'];
+      const apiBase = process.env.HEARTFLOW_API_BASE || process.env.HEARTFLOW_LLM_BASE_URL;
+      let finalBase = apiBase || 'https://copilot.tencent.com/v2';
       if (apiBase) {
         try {
           const parsed = new URL(apiBase);
           if (!ALLOWED_API_HOSTS.some(h => parsed.hostname === h || parsed.hostname.endsWith('.' + h))) {
-            throw new Error(`TENCENT_API_BASE host "${parsed.hostname}" not in allowed list`);
+            throw new Error(`API_BASE host "${parsed.hostname}" not in allowed list`);
           }
           finalBase = apiBase;
         } catch(e) {
