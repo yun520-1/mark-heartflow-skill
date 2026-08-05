@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>心虫 HeartFlow — AGI 第 1 层辨别引擎</title>
+<meta name="description" content="心虫（HeartFlow）是一个开源的规则引擎，为 AI 提供辨别能力——在 AI 说话之前拦下错误。">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --card: #111827;
+    --border: #1f2937;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --accent: #f59e0b;
+    --green: #10b981;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  /* Hero */
+  .hero {
+    padding: 100px 0 60px;
+    text-align: center;
+    background: radial-gradient(ellipse at top, rgba(245,158,11,0.08), transparent 60%);
+  }
+  .hero .logo {
+    font-size: 64px;
+    margin-bottom: 16px;
+    display: block;
+  }
+  .hero h1 {
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero .subtitle {
+    font-size: 18px;
+    color: var(--muted);
+    margin-top: 16px;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero .tagline {
+    margin-top: 28px;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .hero .cta {
+    margin-top: 36px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: inline-block;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: var(--accent);
+    color: #111;
+    box-shadow: 0 4px 20px rgba(245,158,11,0.3);
+  }
+  .btn-ghost {
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Sections */
+  section { padding: 60px 0; }
+  section h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  section h2 .icon { font-size: 28px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  /* The core statement */
+  .core-quote {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    padding: 48px 24px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(245,158,11,0.05), transparent);
+    margin: 40px 0;
+  }
+  .core-quote .highlight {
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+  }
+
+  /* AGI 5 layers */
+  .layers {
+    display: grid;
+    gap: 8px;
+  }
+  .layer {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card);
+  }
+  .layer .num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    margin-right: 16px;
+    flex-shrink: 0;
+  }
+  .layer .name { font-weight: 600; width: 80px; }
+  .layer .who { color: var(--muted); flex: 1; }
+  .layer.active {
+    border-color: var(--accent);
+    background: rgba(245,158,11,0.06);
+  }
+  .layer.active .num { background: var(--accent); color: #111; }
+  .layer.active .name { color: var(--accent); }
+
+  /* Gate */
+  .gate-flow {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 24px 0;
+  }
+  .gate-box {
+    padding: 16px 24px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    min-width: 110px;
+  }
+  .gate-pass { background: rgba(16,185,129,0.15); border: 1px solid var(--green); color: var(--green); }
+  .gate-verify { background: rgba(59,130,246,0.15); border: 1px solid var(--blue); color: var(--blue); }
+  .gate-rewrite { background: rgba(245,158,11,0.15); border: 1px solid var(--accent); color: var(--accent); }
+  .gate-block { background: rgba(239,68,68,0.15); border: 1px solid var(--red); color: var(--red); }
+  .gate-arrow { display: flex; align-items: center; color: var(--muted); font-size: 20px; }
+
+  /* Features grid */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .feature {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .feature h3 { font-size: 17px; margin-bottom: 8px; }
+  .feature .f-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+  .feature p { color: var(--muted); font-size: 14px; }
+
+  /* Code */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    font-family: "SF Mono", "Fira Code", Consolas, monospace;
+    font-size: 14px;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  .code-block .comment { color: #6b7280; }
+  .code-block .keyword { color: #f59e0b; }
+  .code-block .string { color: #10b981; }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .stat {
+    text-align: center;
+    padding: 20px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .stat .num {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .stat .label { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  /* Footer */
+  footer {
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 32px; }
+    .core-quote { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="container">
+    <span class="logo">🪱</span>
+    <h1>心虫 HeartFlow</h1>
+    <p class="subtitle">一个开源的规则引擎，给 AI 装上"辨别层"——在 AI 说话之前，拦下错误的。</p>
+    <p class="tagline">AI 能产生无限，但需要谁来判别。心虫是那个"判别者"。</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/yun520-1/mark-heartflow-skill" target="_blank">GitHub ⭐</a>
+      <a class="btn btn-ghost" href="#install">快速上手</a>
+      <a class="btn btn-ghost" href="https://www.npmjs.com/package/@yun520-1/heartflow" target="_blank">npm 安装</a>
+    </div>
+  </div>
+</div>
+
+<!-- Core statement -->
+<div class="container">
+  <div class="core-quote">
+    AGI 有五层能力，大厂都在做第 2-5 层（生成、推理、记忆、执行）。<br>
+    <span class="highlight">第 1 层——辨别——没有人做。</span><br>
+    没有第 1 层，上面四层就是没有痛觉的人：能跑能跳，但不知道自己在受伤。
+  </div>
+</div>
+
+<!-- AGI 5 layers -->
+<div class="container">
+  <section>
+    <h2><span class="icon">🧭</span> AGI 五层能力</h2>
+    <div class="layers">
+      <div class="layer"><div class="num">5</div><div class="name">执行</div><div class="who">特斯拉、Figure 在做物理世界行动</div></div>
+      <div class="layer"><div class="num">4</div><div class="name">生成</div><div class="who">OpenAI、Anthropic 在做文本/图像/代码</div></div>
+      <div class="layer"><div class="num">3</div><div class="name">推理</div><div class="who">模型内置多步逻辑链</div></div>
+      <div class="layer"><div class="num">2</div><div class="name">记忆</div><div class="who">Mem0、向量库在做跨会话存储</div></div>
+      <div class="layer active"><div class="num">1</div><div class="name">辨别</div><div class="who"><strong>心虫</strong> — 判别对/错、好/坏、安全/危险。没有人做，只有辨别能力就够了。</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- What it does -->
+<div class="container">
+  <section>
+    <h2><span class="icon">🚦</span> 心虫做什么</h2>
+    <p style="color:var(--muted); margin-bottom:20px;">AI 想说一句话 → 先过心虫的门 → 门说"放行"才说出口。</p>
+    <div class="gate-flow">
+      <div class="gate-box gate-pass">✅ pass<br><small style="font-weight:400">放行</small></div>
+      <div class="gate-arrow">→</div>
+      <div class="gate-box gate-verify">⚠️ verify<br><small style="font-weight:400">需验证</small></div>
+      <div class="gate-arrow">→</div>
+      <div class="gate-box gate-rewrite">✏️ rewrite<br><small style="font-weight:400">改写后再发</small></div>
+      <div class="gate-arrow">→</div>
+      <div class="gate-box gate-block">🚫 block<br><small style="font-weight:400">拦截</small></div>
+    </div>
+    <div class="card" style="margin-top:24px;">
+      <strong>心虫不生成、不推理、不记忆、不执行。</strong>
+      <p style="color:var(--muted); margin-top:8px;">
+        它只做一件事：<strong style="color:var(--text)">判别已有的东西对不对</strong>。<br>
+        判别结果必须产生行动（拦截 / 改写 / 验证 / 怀疑），不是打标签。
+      </p>
+    </div>
+  </section>
+</div>
+
+<!-- Features -->
+<div class="container">
+  <section>
+    <h2><span class="icon">⚡</span> 核心能力</h2>
+    <div class="features">
+      <div class="feature">
+        <span class="f-icon">🔍</span>
+        <h3>45 维文本判别</h3>
+        <p>仇恨言论、情绪操控、双重束缚、谄媚、矛盾、无依据断言（幻觉）……中英双语，纯规则引擎，毫秒级。</p>
+      </div>
+      <div class="feature">
+        <span class="f-icon">🧠</span>
+        <h3>决策引擎</h3>
+        <p>漂移扩散模型（DDM）、前景理论、因果推理、蒙特卡洛树搜索——像人一样权衡风险，主动规避。</p>
+      </div>
+      <div class="feature">
+        <span class="f-icon">🛡️</span>
+        <h3>护栏与门禁</h3>
+        <p>序列感知的 chainCheck——单次安全调用组合成危险模式也能拦截（read 配置 → email 出去 = 泄露）。</p>
+      </div>
+      <div class="feature">
+        <span class="f-icon">💾</span>
+        <h3>记忆系统</h3>
+        <p>三层记忆（CORE/LEARNED/EPHEMERAL）+ 艾宾浩斯遗忘曲线 + 记忆投毒防御——跨会话记得住、记得对。</p>
+      </div>
+      <div class="feature">
+        <span class="f-icon">🩺</span>
+        <h3>执行验证</h3>
+        <p>长任务质检员：验证执行结果，区分成功/超时/失败，直接决策重试/缩小范围/升级人工，不问用户。</p>
+      </div>
+      <div class="feature">
+        <span class="f-icon">🔗</span>
+        <h3>零依赖</h3>
+        <p>纯规则引擎，无需 GPU、无需大模型 API、无需数据库。安装即用，任何 LLM 都能接。</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Stats -->
+<div class="container">
+  <section>
+    <h2><span class="icon">📊</span> 数字</h2>
+    <div class="stats">
+      <div class="stat"><div class="num">45+</div><div class="label">辨别维度</div></div>
+      <div class="stat"><div class="num">128</div><div class="label">模块</div></div>
+      <div class="stat"><div class="num">341</div><div class="label">模式库（中英）</div></div>
+      <div class="stat"><div class="num">130</div><div class="label">MCP 工具</div></div>
+      <div class="stat"><div class="num">0</div><div class="label">大模型依赖</div></div>
+      <div class="stat"><div class="num">~1ms</div><div class="label">判别延迟</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- Install -->
+<div class="container">
+  <section id="install">
+    <h2><span class="icon">🚀</span> 快速上手</h2>
+    <div class="code-block">
+      <span class="comment"># 安装</span><br>
+      <span class="keyword">npm</span> install @yun520-1/heartflow<br><br>
+
+      <span class="comment">// 检查 AI 的输出</span><br>
+      <span class="keyword">const</span> hf = <span class="keyword">require</span>(<span class="string">'@yun520-1/heartflow'</span>);<br><br>
+
+      <span class="comment">// 拦截幻觉：无依据断言</span><br>
+      <span class="keyword">const</span> r = hf.checkOutput(<span class="string">'根据 2025 年哈佛研究，咖啡延长寿命 12.5 年'</span>);<br>
+      <span class="keyword">if</span> (r.gate.action === <span class="string">'verify'</span>) {<br>
+      &nbsp;&nbsp;<span class="comment">// 要求 AI 补充可验证的数据来源</span><br>
+      }<br><br>
+
+      <span class="comment">// 拦截仇恨言论</span><br>
+      <span class="keyword">const</span> r2 = hf.checkInput(<span class="string">'你是垃圾，滚出去'</span>);<br>
+      <span class="comment">// r2.gate.action === 'block' — 直接拦截</span>
+    </div>
+    <p style="color:var(--muted); text-align:center; margin-top:16px;">
+      MCP 集成：<code style="background:#111827;padding:2px 8px;border-radius:4px;">node src/mcp-server.js --port 8588</code> → 130 个工具
+    </p>
+  </section>
+</div>
+
+<!-- Philosophy -->
+<div class="container">
+  <section>
+    <h2><span class="icon">💡</span> 为什么做心虫</h2>
+    <div class="card">
+      <p style="font-size:16px;">
+        OpenAI 不会花 100 亿训练一个说"不"的模型。生成是生意，判别不是。
+      </p>
+      <p style="color:var(--muted); margin-top:12px;">
+        但 AGI 没有辨别层就没有痛觉——能跑能跳，不知道自己在受伤。心虫是那个敢说"不对"的节点。
+        它是 AGI 的一部分，为 AGI 这个目标添砖加瓦的一小片。
+      </p>
+      <p style="color:var(--muted); margin-top:12px;">
+        大模型负责产生，心虫负责把关。规则引擎判别 + 可选的 LLM 兜底，结合冗余——判别永远不依赖模型的强弱。
+      </p>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="container">
+    <p>🪱 心虫 HeartFlow — AGI 第 1 层辨别引擎</p>
+    <p style="margin-top:8px;">
+      <a href="https://github.com/yun520-1/mark-heartflow-skill" target="_blank">GitHub</a> ·
+      <a href="https://www.npmjs.com/package/@yun520-1/heartflow" target="_blank">npm</a> ·
+      <a href="https://github.com/yun520-1/mark-heartflow-skill#readme" target="_blank">README</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
