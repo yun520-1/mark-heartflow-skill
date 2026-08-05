@@ -9,11 +9,12 @@ const path = require('path');
 module.exports = function ({ test }) {
   const ROOT = path.join(__dirname, '..');
 
-  test('llm-client: 配置解析含 providers', () => {
+  test('llm-client: 配置解析（单 provider 腾讯 copilot）', () => {
     const { getConfig } = require('../src/llm/llm-client.js');
     const cfg = getConfig();
-    assert.ok(cfg.providers.length >= 1, `应有 provider，实际 ${cfg.providers.length}`);
-    assert.ok(cfg.providers.some(p => p.apiKey && p.baseUrl), '应有带 key 和 base_url 的 provider');
+    assert.ok(cfg.apiKey, '应有 apiKey');
+    assert.ok(cfg.baseUrl, '应有 baseUrl');
+    assert.ok(cfg.baseUrl.includes('copilot.tencent.com') || cfg.baseUrl.includes('api.tencent.com'), `baseUrl 应为腾讯 copilot，实际 ${cfg.baseUrl}`);
   });
 
   test('llm-client: host 白名单校验', () => {
