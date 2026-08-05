@@ -324,6 +324,7 @@ class ExecutionVerifier {
       'duration_ms', 'duration', 'executionTime', 'timing', 'actions', 'logs',
       'status', 'state', 'completed', 'id', 'version', 'timestamp', 'warnings',
       'type', 'path', 'name', 'value', 'items', 'results', 'total', 'count',
+      'missing', 'foundCount', 'expected', 'actual', 'progress', 'done', 'remaining',
       ...(plan.expectedKeys || []),
       ...this.sideEffectAllowlist
     ]);

@@ -23,6 +23,19 @@ module.exports = function ({ test }) {
     assert.strictEqual(failed.retryRecommended, true);
   });
 
+  test('longtask: ExecutionVerifier 直接决策不询问（部分完成→continue_partial）', () => {
+    const { ExecutionVerifier } = require('../src/core/execution-verifier.js');
+    const ev = new ExecutionVerifier();
+    // 部分完成：期望 a.js+b.js 只产出 a.js → 直接决策 continue_partial
+    const partial = ev.verify({ success: true, actions: [{ type: 'write', path: 'a.js' }] }, { expectedOutcome: 'a.js,b.js' });
+    assert.strictEqual(partial.status, 'partial');
+    assert.strictEqual(partial.retryStrategy.strategy, 'continue_partial', '部分完成应决策继续补缺');
+    // 失败 4 次 → 直接决策 escalate（升级人工），不是询问
+    const escalated = ev.verify({ success: false, error: 'x' }, { attemptedRetries: 3 });
+    assert.strictEqual(escalated.retryStrategy.strategy, 'escalate', '重试耗尽应直接升级');
+    assert.ok(escalated.retryStrategy.suggestedNextStep.includes('人工'), '应明确升级人工');
+  });
+
   test('longtask: ExecutionVerifier 不误报副作用', () => {
     const { ExecutionVerifier } = require('../src/core/execution-verifier.js');
     const ev = new ExecutionVerifier();
