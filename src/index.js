@@ -778,6 +778,7 @@ const EM_MANIPULATION_PATTERNS = {
     [/你永远(不考虑|不顾|不为)[^。]*?[我想]/i, 'victim_stance', 0.6],
     [/我为你做了这么多[^。]*?(?:你却|你居然|你竟然|你反而|你倒)/i, 'victim_stance', 0.6],
     [/我(?:为你|对你)[^。]{0,12}(?:付出了|牺牲了|做了)[^。]{0,12}(?:你却|你居然|你竟然|你反而|你倒)/i, 'victim_stance', 0.6],
+    [/我[^。]{0,12}(?:这么辛苦|这么累|付出这么多|牺牲这么多|都是为了你)[^。]{0,12}(?:你却|你居然|你竟然|你反而|你倒|就这样)/i, 'victim_stance', 0.6],
     [/别人都能[^。]*?(你就不能|你为什么不行)/i, 'comparison_shame', 0.5],
     [/你看看(人家|别人|他|她)/i, 'comparison_shame', 0.5],
     [/连[^。]*?都能[^。]*?你却/i, 'comparison_shame', 0.5],
@@ -793,6 +794,7 @@ const EM_MANIPULATION_PATTERNS = {
 
     // Social/moral guilt patterns
     [/if you (disagree|(?:don't|do not) support|(?:don't|do not) care)[^.]*?you[^.]*?(don't care about|do not care|hate|don't love|are against|(?:don't|do not) support|(?:don't|do not) believe)/i, 'moral_guilt', 0.6],
+    [/if you (disagree|(?:don't|do not) come|(?:don't|do not) agree|object)[^.]*?it (?:means|shows|proves) (?:that )?you (?:don't|do not) (?:care|love|believe|support)/i, 'moral_guilt', 0.6],
     [/how can you (say|claim|call yourself)[^.]*?when you/i, 'moral_guilt', 0.6],
     [/anyone who (disagrees|opposes|questions)[^.]*?clearly (doesn't|does not)/i, 'moral_guilt', 0.6],
     [/if you really (cared|loved|believed|supported|valued|wanted)[^.]*?you (would|wouldn't|should|shouldn't)/i, 'moral_guilt', 0.5],
@@ -1934,7 +1936,7 @@ const GASLIGHT_PATTERNS = {
     /i never said that/i, /i didn'?t say that/i, /i never said anything like that/i,
     // Perception distortion
     /you'?re overreacting/i, /you are overreacting/i,
-    /you'?re (being )?too sensitive/i, /you are (being )?too sensitive/i, /stop being so sensitive/i,
+    /you'?re (?:just |being |just being )?too sensitive/i, /you are (?:just |being |just being )?too sensitive/i, /stop being so sensitive/i,
     /nobody (else )?had a problem/i, /no one (else )?had a problem/i,
     /you'?re (being )?dramatic/i, /you are (being )?dramatic/i, /don'?t be dramatic/i,
     /calm down you'?re being irrational/i, /you'?re (being )?irrational/i, /you are (being )?irrational/i,
@@ -2053,8 +2055,12 @@ const HATE_SPEECH_ZH = [
   // 能力贬低
   { pattern: /弱智/gi, type: 'ability_slur', severity: 0.6 },
   { pattern: /傻子|蠢货|脑残/gi, type: 'ability_slur', severity: 0.5 },
+  { pattern: /(?:怎么|这么|真|太|也)笨(?!吗|么|呢|吧)(?:得|到)?(?:像|跟)?[^。，]{0,4}(?:猪|驴|一样)?/gi, type: 'ability_slur', severity: 0.5 },
+  { pattern: /笨(?:死|透|到家)了/gi, type: 'ability_slur', severity: 0.5 },
+  { pattern: /(?:你个|你这|你就是个|真是个|就是个|是个)笨(?:蛋|瓜|货)/gi, type: 'ability_slur', severity: 0.5 },
+  { pattern: /这点(?:事|小事|活儿|工作)[^。，]{0,6}(?:都|也)?(?:做|干|办)(?:不|不好|不成)/gi, type: 'ability_slur', severity: 0.4 },
   // [v6.4.5] 中文脏话（短句攻击最常见形式）
-  { pattern: /傻[逼比B]|白痴|笨蛋|蠢猪|蠢蛋|呆子/gi, type: 'profanity', severity: 0.5 },
+  { pattern: /傻[逼比B]|白痴|笨蛋|蠢猪|蠢蛋|(?<!书)呆子/gi, type: 'profanity', severity: 0.5 },
   { pattern: /妈的|他妈(?!妈)|去死|滚蛋|放屁|狗屁|废物(?!利用|回收|分类|箱|桶)/gi, type: 'profanity', severity: 0.6 },
   { pattern: /操你|干你|草泥马|你妈逼|操他妈/gi, type: 'profanity', severity: 0.7 },
   // [v6.4.5] 谐音/拼音脏话（变形绕过防护）
