@@ -38,3 +38,57 @@ plugins/
 presets/
 plans/
 
+
+# ===== ClawHub 包瘦身：只含门禁核心（2026-08-06）=====
+# 核心保留: index.js gate.js pipeline.js scope-check.js premise-check.js
+#          discriminate/ output-gate.js frame-check.js doubt-engine.js
+#          rewriter.js intent-anchor.js agent-pathologies.js auto-rules.js
+#          error-memory.js + core/ 主引擎 + shield/ 门禁 + utils/
+# 非门禁目录排除:
+src/core/associative-engine/
+src/core/budget.js
+src/core/embodied-core.js
+src/core/cognitive-protocol.js
+src/core/cognitive-appraisal.js
+src/core/self-diagnostic.js
+src/core/meta-prompt-engine.js
+src/core/code-verifier.js
+src/core/assertions.js
+src/core/error-handler.js
+src/core/confidence-calibrator.js
+src/core/decision-router.js
+src/core/think-pipeline.js
+src/core/engine-reasoner.js
+src/core/engine-memory.js
+src/core/heart-logic.js
+src/core/judgment-engine.js
+src/core/output-checklist.js
+src/core/budget.js
+src/cortex/
+src/reasoning/
+src/identity/
+src/workflow/
+src/emotion/
+src/formula/
+src/dream/
+src/memory/
+src/search/
+src/bridge/
+src/consciousness/
+src/knowledge/
+src/dialogue/
+src/integration/
+src/io/
+src/infra/
+src/plugins/
+src/security/
+src/llm/
+src/decision/
+src/loader/
+src/verifier/
+src/benchmark/
+src/report/
+src/research/
+src/heartflow/
+src/loader/
+CHANGELOG.md
