@@ -4693,7 +4693,16 @@ server.on('error', (err) => {
 
     try {
       const { execSync } = require('child_process');
-      execSync(`fuser -k ${PORT}/tcp 2>/dev/null`, { timeout: 3000 });
+      if (!/^\d+$/.test(String(PORT))) {
+        console.error(`[HeartFlow MCP] 端口值非法，跳过自动清理: ${PORT}`);
+        process.exit(1);
+      }
+      try {
+        execSync(`fuser -k ${PORT}/tcp`, { stdio: ['ignore', 'pipe', 'pipe'], timeout: 3000 });
+      } catch (e) {
+        const stderr = (e.stderr && e.stderr.toString()) || e.message || '';
+        console.error(`[HeartFlow MCP] fuser 释放端口输出: ${stderr.trim()}`);
+      }
       console.error(`[HeartFlow MCP] 端口 ${PORT} 已释放，3秒后自动重启。`);
       setTimeout(() => {
         server.close(() => {
