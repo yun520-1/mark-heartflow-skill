@@ -4257,11 +4257,30 @@ async function handleRequest(request, sessionId) {
 
     case 'tools/call': {
 
-      const { name, arguments: args = {} } = params;
+      let { name, arguments: args = {} } = params;
 
       const handler = HANDLERS[name];
 
       if (!handler) throw { code: -32601, message: `Method not found: ${name}` };
+
+      // [AUDIT-FIX I-2] 中央参数校验：只透传 inputSchema 声明的参数，
+      // 丢弃未声明参数（防参数注入），并对 string 类型参数强制字符串（防类型混淆）
+      const toolDef = TOOLS.find(t => t.name === name);
+      if (toolDef && toolDef.inputSchema && toolDef.inputSchema.properties) {
+        const props = toolDef.inputSchema.properties;
+        const cleaned = {};
+        for (const [k, v] of Object.entries(props)) {
+          if (k in args) {
+            if ((v.type === 'string' || v.type === 'number') && typeof args[k] !== v.type) {
+              if (v.type === 'number' && typeof args[k] === 'number') { cleaned[k] = args[k]; continue; }
+              if (v.type === 'string' && (typeof args[k] === 'string' || typeof args[k] === 'number')) { cleaned[k] = String(args[k]); continue; }
+              return { content: [{ type: 'text', text: JSON.stringify({ error: `参数 ${k} 类型错误: 期望 ${v.type}`, timestamp: Date.now() }) }], isError: true };
+            }
+            cleaned[k] = args[k];
+          }
+        }
+        args = cleaned;
+      }
 
 
 
@@ -4280,6 +4299,15 @@ async function handleRequest(request, sessionId) {
       }
 
       if (result && typeof result.then === 'function') result = await result;
+
+      // [AUDIT-FIX P1-4] 错误信息收敛：过滤绝对路径，截断超长消息，避免内部结构泄露
+      if (result && typeof result === 'object' && result.error && typeof result.error === 'string') {
+        let msg = result.error;
+        msg = msg.replace(/\/[A-Za-z0-9_./-]*(?:\.hermes|\.claude|\.ssh|\.npm|node_modules|mark-heartflow-skill)[A-Za-z0-9_./-]*/g, '[path]');
+        msg = msg.replace(/\/[A-Za-z0-9_./-]{40,}/g, '[path]');
+        if (msg.length > 300) msg = msg.slice(0, 300) + '…';
+        result.error = msg;
+      }
 
       return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }], isError: false };
 

@@ -122,6 +122,7 @@ async function runAllTests() {
   runSubTest('♻️ RecoveredModules2', 'recovered-modules-2.test.js');
   runSubTest('🕸️ KnowledgeGraphAdapter', 'knowledge-graph-adapter.test.js');
   runSubTest('🏷️ SourceAnnotator', 'source-annotator.test.js');
+  runSubTest('🔐 SecurityAudit', 'security-audit.test.js');
 
   // 5. IdentityCore + BigFive + SelfModel
   runSubTest('🧩 IdentityCore', 'identity-core.test.js');
