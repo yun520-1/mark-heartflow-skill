@@ -51,9 +51,9 @@
   "security": {
     "audit": "@xenova/transformers has known CVEs in sharp/libvips transitive deps. npm audit fix --allow-downgrade or remove optionalDependencies if not using embedding features.",
     "warnings": [
-      "desktop-agent and video-generate sub-skills contain high-risk features requiring explicit user authorization",
       "No automatic external data transmission. All network communication requires explicit configuration.",
-      "No automatic API key injection. Users must provide keys explicitly."
+      "No automatic API key injection. Users must provide keys explicitly.",
+      "Benchmark MCP tools enforce guardPath confinement; git commands run parameterized (no shell interpolation)."
     ]
   },
   "license": "MIT",

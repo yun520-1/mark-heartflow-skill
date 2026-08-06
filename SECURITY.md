@@ -2,7 +2,7 @@
 
 ## Static Analysis False Positives
 
-HeartFlow is a **cognitive engine** that includes a **code sandbox** (`src/code/code-executor.js`) for executing user-provided JavaScript in an isolated environment. Static analysis tools (SkillSpector, VirusTotal) flag the sandbox's **defense mechanisms** as "dangerous" — this is a false positive.
+HeartFlow is a **rule-based discrimination engine** (AGI Layer 1 discriminator). It does not generate, does not execute user code, and has no code sandbox. It analyzes text input/output and returns gate actions (pass/verify/rewrite/block).
 
 ### What gets flagged and why
 

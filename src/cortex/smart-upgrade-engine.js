@@ -651,10 +651,11 @@ module.exports = { ${className} };
    */
   _verifyGitCommit(version) {
     try {
-      const { execSync } = require('child_process');
+      const { execFileSync } = require('child_process');
       const root = this.rootPath || __dirname;
-      const out = execSync(`git -C "${root}" log --oneline --all | grep -c "v${version}"`, { stdio: ['ignore', 'pipe', 'ignore'] });
-      return parseInt(out.toString().trim(), 10) > 0;
+      const out = execFileSync('git', ['-C', root, 'log', '--oneline', '--all'], { stdio: ['ignore', 'pipe', 'ignore'] });
+      const matches = out.toString().split('\n').filter(l => l.includes(`v${version}`)).length;
+      return matches > 0;
     } catch (e) {
       return false; // git 不可用或查不到 -> 不接受为真实升级
     }

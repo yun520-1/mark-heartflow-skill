@@ -2669,6 +2669,12 @@ function handleBenchmarkStatus(args, sessionId) {
 
   try {
 
+    const { guardPath } = require('./core/path-guard.js');
+
+    const guard = guardPath(path.resolve(dataDir));
+
+    if (!guard.safe) return { error: `路径越界被拒绝: ${guard.reason}`, dataDir, timestamp: Date.now() };
+
     if (!fs.existsSync(dataDir)) {
 
       return { dataDir, exists: false, packs: [], message: 'Benchmark 数据目录不存在，请放入 JSONL 数据包后重试' };
@@ -2714,6 +2720,12 @@ async function handleBenchmarkRun(args, sessionId) {
 
 
   try {
+
+    const { guardPath } = require('./core/path-guard.js');
+
+    const guard = guardPath(path.resolve(dataDir));
+
+    if (!guard.safe) return { error: `路径越界被拒绝: ${guard.reason}`, dataDir, timestamp: Date.now() };
 
     const { BenchmarkRunner } = require(path.join(HF_DIR, 'src', 'benchmark', 'benchmark-runner.js'));
 
@@ -2814,6 +2826,12 @@ async function handleBenchmarkImportFailures(args, sessionId) {
 
 
   try {
+
+    const { guardPath } = require('./core/path-guard.js');
+
+    const guard = guardPath(path.resolve(filePath));
+
+    if (!guard.safe) return { error: `路径越界被拒绝: ${guard.reason}`, filePath, timestamp: Date.now() };
 
     const { FailureCaseImporter } = require(path.join(HF_DIR, 'src', 'benchmark', 'failure-importer.js'));
 
