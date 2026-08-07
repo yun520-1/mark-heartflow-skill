@@ -8,9 +8,9 @@ HeartFlow is a **rule-based discrimination engine** (AGI Layer 1 discriminator).
 
 | Detection | Actual purpose |
 |-----------|---------------|
-| `child_process` | Used by the sandbox to **run user code in an isolated subprocess** — the correct and safest way to sandbox execution. Runs behind a command allowlist and dangerous-pattern filter. |
-| `vm.runInNewContext` | Node.js built-in sandbox API. Used to isolate user code from the engine's internals. |
-| `new Function(...)` | Used ONLY inside the sandbox to execute user code within a Proxy-wrapped globalThis (prototype-frozen, no file/network access). |
+| `child_process` | Two gated call sites: (1) `fuser -k` in the EADDRINUSE branch only, with a `^\d+$` PORT guard and stderr logged; (2) `execFileSync('git', [...])` parameterized (no shell interpolation) in the smart-upgrade git-verification path. A legacy code-sandbox (`src/code/code-executor.js`) is NOT included in this build — it is only referenced via lazy require and never loaded. |
+| `vm.runInNewContext` | Historical sandbox mechanism from the optional legacy code-executor, **not present in this build**. Kept in docs only for scanner reference. |
+| `new Function(...)` | Historical sandbox mechanism from the optional legacy code-executor, **not present in this build**. |
 | `eval(...)` regex | Part of `code-verifier.js`'s **security audit** — detects and blocks `eval()` in user-submitted code. The regex is split (`'e'+'val'`) to avoid triggering scanners, but some advanced scanners still detect the intent. |
 | `process.env` access | Reads optional config env vars (`HEARTFLOW_API_KEY`). Never sends env data over the network. No telemetry, no phoning home. |
 

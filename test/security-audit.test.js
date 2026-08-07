@@ -94,10 +94,29 @@ t('I5: SKILL.md 版本与 package.json 对齐', () => {
   if (!m || m[1] !== pkg.version) throw new Error(`SKILL.md ${m?.[1]} != package.json ${pkg.version}`);
 });
 
-t('I5: SECURITY.md 不再描述不存在的代码沙箱', () => {
+t('I5: SECURITY.md 不把不存在的代码沙箱描述为当前能力', () => {
   const sec = fs.readFileSync(path.join(PROJECT_ROOT, 'SECURITY.md'), 'utf-8');
-  if (sec.includes('code-executor.js')) throw new Error('SECURITY.md 仍引用不存在的 code-executor.js');
   if (!sec.includes('discrimination')) throw new Error('SECURITY.md 未描述辨别引擎定位');
+  // 允许提及 code-executor.js，但必须是"not present/历史可选"语境，不能描述为当前能力
+  if (sec.includes('code-executor.js') && !sec.includes('not present in this build') && !sec.includes('NOT included in this build')) {
+    throw new Error('SECURITY.md 提及 code-executor.js 但未标注为不存在/历史能力');
+  }
+  // 不能把沙箱描述为当前活跃能力
+  if (sec.includes('Used by the sandbox to **run user code')) {
+    throw new Error('SECURITY.md 仍把沙箱描述为当前能力');
+  }
+});
+
+t('I6: SECURITY.md 沙箱表与 no-code-sandbox 声明一致', () => {
+  const sec = fs.readFileSync(path.join(PROJECT_ROOT, 'SECURITY.md'), 'utf-8');
+  if (!sec.includes('has no code sandbox')) throw new Error('缺少 no code sandbox 声明');
+  const table = sec.split('### What gets flagged')[1] || '';
+  if (!table.includes('not present in this build')) {
+    // 允许整体描述一致：若仍描述沙箱为"当前能力"则矛盾
+    if (table.includes('Used by the sandbox to **run user code')) {
+      throw new Error('SECURITY.md 沙箱表仍把历史沙箱描述为当前能力');
+    }
+  }
 });
 
 // ─── I-2: tools/call 中央参数校验 ───
