@@ -1,7 +1,7 @@
 # HeartFlow (心虫) — AGI 第 1 层：辨别者
 
 > **A rule-based discriminator — the pain-sense of AGI.**
-> **45 discrimination dimensions · 12 check layers · 129 engine modules · 130 MCP tools · zero LLM dependency.**
+> **46 discrimination dimensions · 9 check layers · 129 engine modules · 129 MCP tools · zero LLM dependency.**
 > **It checks what AI says before it reaches humans — and says "no" when something's wrong.**
 
 **npm:** `npm install @yun520-1/heartflow`  
@@ -163,10 +163,10 @@ console.log(fact.gate.action);  // 'verify' — 无依据断言，需验证
 
 ---
 
-## 🏗️ 12 层检查管线
+## 🏗️ 9 层检查管线
 
 ```
-输入 → Scope Check → Premise Check → Discriminate(45维) → Gate
+输入 → Scope Check → Premise Check → Discriminate(46维) → Gate
      → Evidence Verify → Frame Check → Output Gate → Doubt Engine
      → Intent Anchor → Rewriter → Error Memory → Self-Diagnosis → 输出
 ```
@@ -175,7 +175,7 @@ console.log(fact.gate.action);  // 'verify' — 无依据断言，需验证
 
 ---
 
-## 🔬 45 个判别维度（中英双语）
+## 🔬 46 个判别维度（中英双语）
 
 ### 安全级（block — 直接拦截）
 仇恨言论 · 去人化 · 提示注入 · 代码安全 · 欺骗性对齐
@@ -193,7 +193,7 @@ console.log(fact.gate.action);  // 'verify' — 无依据断言，需验证
 
 ---
 
-## 🔌 130 个 MCP 引擎入口
+## 🔌 129 个 MCP 引擎入口
 
 心虫的每个引擎都通过 MCP 暴露——没有任何死线路：
 
@@ -252,7 +252,7 @@ node src/mcp-server.js --port 8588
 
 ### 已知限制（诚实）：
 1. **模式匹配上限** — 新技巧需加模式
-2. **双语维护成本** — 45 维 × 2 语言
+2. **双语维护成本** — 46 维 × 2 语言
 3. **无语义理解** — 反讽、隐喻、文化背景不可见
 4. **误报率** — 基准约 8%
 5. **单一维护者** — 社区规模还小
@@ -265,10 +265,10 @@ node src/mcp-server.js --port 8588
 |------|------|------|
 | v6.5.2 | 2026-08-08 | 文档重写：能力全景 7 大域 |
 | v6.5.1 | 2026-08-08 | 逻辑/决策/记忆增强定位 |
-| v6.5.0 | 2026-08-04 | 130 MCP 引擎入口 · 夸大检测 |
+| v6.5.0 | 2026-08-04 | 129 MCP 引擎入口 · 夸大检测 |
 | v6.4.5 | 2026-08-04 | 梦境 + 自省激活 · 情绪识别 7/7 |
 | v6.4.0 | 2026-07-29 | AGI 第 1 层门禁链 |
-| v6.3.6 | 2026-07-25 | 判别 42→45 维 |
+| v6.3.6 | 2026-07-25 | 判别 42→46 维 |
 | v6.0.0 | 2026-07-18 | 自进化核心接通 |
 
 ---

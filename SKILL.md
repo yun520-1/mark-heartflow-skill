@@ -1,10 +1,10 @@
 ---
 name: heartflow-engine
 title: "心虫 HeartFlow — AGI 第 1 层辨别者"
-version: "6.5.2"
+version: "6.5.3"
 description: |-
   心虫(HeartFlow)是AGI第1层——辨别者。纯规则引擎，判别对错/好坏/安全/危险。
-  45维判别 × 12层管线 × 129模块 × 130 MCP工具，零LLM依赖。
+  46维判别 × 9层管线 × 129模块 × 129 MCP工具，零LLM依赖。
 
   当用户需要以下能力时使用本技能:
   - 判别AI输出是否可信（幻觉/过度自信/矛盾/谬误拦截）
@@ -104,7 +104,7 @@ hf.checkOutput(text)  // 判别 AI 输出（发送前）
 hf.runPipeline({ input, mode, anchor })  // 完整管线
 ```
 
-### MCP 工具（130 个）
+### MCP 工具（129 个）
 
 | 工具 | 功能 |
 |------|------|
@@ -112,7 +112,7 @@ hf.runPipeline({ input, mode, anchor })  // 完整管线
 | `heartflow_think_fast` | 快速推理 |
 | `heartflow_decision_router` | 决策路由 |
 | `heartflow_verify` | 文本可信度判别 |
-| `heartflow_discriminate` | 45 维全量判别 |
+| `heartflow_discriminate` | 46 维全量判别 |
 | `heartflow_memory_search` | 跨层记忆检索 |
 | `heartflow_emotion` | PAD 情绪分析 |
 | `heartflow_formula_calc` | 公式计算 |
@@ -120,10 +120,10 @@ hf.runPipeline({ input, mode, anchor })  // 完整管线
 
 ---
 
-## 🏗️ 12 层检查管线
+## 🏗️ 9 层检查管线
 
 ```
-输入 → Scope Check → Premise Check → Discriminate(45维) → Gate
+输入 → Scope Check → Premise Check → Discriminate(46维) → Gate
      → Evidence Verify → Frame Check → Output Gate → Doubt Engine
      → Intent Anchor → Rewriter → Error Memory → Self-Diagnosis → 输出
 ```
@@ -132,7 +132,7 @@ Gate 聚合所有层发现，输出 `block / rewrite / verify / pass` 四级动�
 
 ---
 
-## 🔬 45 个判别维度（中英双语）
+## 🔬 46 个判别维度（中英双语）
 
 - **安全级（block）**：仇恨言论 · 去人化 · 提示注入 · 代码安全 · 欺骗性对齐
 - **操纵级（rewrite）**：情绪操控 · 煤气灯效应 · 双重束缚 · 受害者归咎 · 虚假紧迫 · 废话
@@ -166,7 +166,7 @@ Gate 聚合所有层发现，输出 `block / rewrite / verify / pass` 四级动�
 
 **已知限制：**
 1. 模式匹配上限 — 新技巧需加模式
-2. 双语维护成本 — 45 维 × 2 语言
+2. 双语维护成本 — 46 维 × 2 语言
 3. 无语义理解 — 反讽、隐喻、文化背景不可见
 4. 误报率 — 基准约 8%
 5. 单一维护者

@@ -6,7 +6,7 @@ HeartFlow (心虫) is the **first layer of AGI — the Discriminator**. A rule-b
 
 **Core value:** LLMs are great at generating but weak at knowing what they don't know. HeartFlow adds the discrimination layer — so your agent doesn't just *say* things, it says things that are *right*.
 
-**Zero LLM dependency.** Pure rule engine. 45 dimensions, 12 layers, 129 modules, 130 MCP tools.
+**Zero LLM dependency.** Pure rule engine. 46 dimensions, 12 layers, 129 modules, 129 MCP tools.
 
 ## Quick Start
 
@@ -35,7 +35,7 @@ if (fact.gate.action === 'verify') {
 ## API Reference
 
 ### `checkInput(text)`
-Discriminates user input. Runs: scope-check → premise-check → discriminate(45-dim) → gate → error-memory → auto-rules. **Rejects unanswerable questions and invalid premises early.**
+Discriminates user input. Runs: scope-check → premise-check → discriminate(46-dim) → gate → error-memory → auto-rules. **Rejects unanswerable questions and invalid premises early.**
 
 ### `checkDraft(text)`
 For AI drafts before completion. Runs: all input checks + frame-check + doubt-engine. **Catches narrative closure, overconfidence, reversibility.**
@@ -85,7 +85,7 @@ Full pipeline with mode selection (fast/deep) and conversation anchor. **Keeps t
 6. **Identity/Ethics** — identityCore, personaCore, virtueEthics, moralDevelopment, meaningPurpose
 7. **Creation/Collaboration** — skillEvolution, selfPlay, evolution, worldModel, multiAgentDialogue, codeExecutor, formula
 
-## 45 Dimensions
+## 46 Dimensions
 
 **Block-level:** hate_speech, dehumanization, prompt_injection, code_security, deceptive_alignment
 **Rewrite-level:** emotional_manipulation, gaslighting, double_bind, victim_blaming, false_urgency, bullshit
@@ -120,7 +120,7 @@ node src/mcp-server.js --port 8588
 1. **Discriminator-first** — the first of AGI's 5 layers. Does not generate.
 2. **Zero dependencies** — pure rule engine, instant install.
 3. **Auditable** — every decision preserves full reasoning chain in `checked_by`.
-4. **45 dimensions → 129 modules** — from hate speech to pseudo-profundity, all rule-based.
+4. **46 dimensions → 129 modules** — from hate speech to pseudo-profundity, all rule-based.
 5. **Self-checking** — HeartFlow's own output passes through its own gates.
 
 ## GitHub
