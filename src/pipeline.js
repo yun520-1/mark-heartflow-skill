@@ -67,11 +67,17 @@ function runPipeline({ input, mode = 'input', anchor } = {}) {
   currentGate = discResult.gate;
   checked_by.push({ layer: 'gate', action: currentGate.action, reason: currentGate.reason });
 
-  // ─── Layer 5: Evidence Verify (仅verify模式) ────
-  if (currentGate.action === 'verify') {
+  // ─── Layer 5: Evidence Verify (verify模式 + perfect_error rewrite 模式) ────
+  // verify → 常规证据检查；rewrite(perfect_error) → 同样核查声明证据状态，标注疑似编造
+  if (currentGate.action === 'verify' || (currentGate.action === 'rewrite' && discResult.dimensions?.perfect_error?.count >= 2)) {
     const evidenceResult = verify(input);
     checked_by.push({ layer: 'verifier', claims: evidenceResult.claims.length, verdict: evidenceResult.verdict });
     data.evidence = evidenceResult;
+    // perfect_error 触发 rewrite 且声明全部需证据 → 给调用方"疑似编造"信号
+    if (currentGate.action === 'rewrite' && evidenceResult.verdict === 'needs_evidence') {
+      currentGate.reason = `${currentGate.reason}；证据核查: 声明无法验证(疑似编造)`;
+      data.evidence.suspected_fabrication = true;
+    }
   }
 
   // ─── Layer 6: Frame Check (仅output/draft模式) ─
@@ -89,7 +95,13 @@ function runPipeline({ input, mode = 'input', anchor } = {}) {
     const screenResult = screen(input);
     checked_by.push({ layer: 'output-gate', issues: screenResult.findings.length });
     if (screenResult.findings.length > 0) {
-      currentGate = screenResult.gate;
+      // 若已因 perfect_error 判 rewrite，保留更具体的原因（合并而非覆盖）
+      const hadPerfectError = discResult.dimensions?.perfect_error?.count >= 2 && currentGate.action === 'rewrite';
+      if (hadPerfectError && screenResult.gate.action === 'rewrite') {
+        currentGate.reason = `${currentGate.reason}；输出门禁: ${screenResult.gate.reason || '需改写'}`;
+      } else {
+        currentGate = screenResult.gate;
+      }
       data.outputIssues = screenResult.findings;
     }
   }
