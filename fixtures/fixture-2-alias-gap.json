@@ -1,0 +1,30 @@
+{
+  "description": "Fixture 2: Alias gap — different tags but same referent should NOT be auto-superseded",
+  "entries": [
+    {
+      "id": "mem-003",
+      "layer": "learned",
+      "content": "team lead is Alice Chen",
+      "metadata": { "type": "team_role", "tags": ["team", "lead"] },
+      "timestamp": "2026-06-01T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 1
+    },
+    {
+      "id": "mem-004",
+      "layer": "learned",
+      "content": "team lead is A. Chen",
+      "metadata": { "type": "team_role", "tags": ["team", "manager"] },
+      "timestamp": "2026-06-03T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 2
+    }
+  ],
+  "expected": {
+    "note": "Same referent via alias; a tag-aware engine that only keys on tags may MISS this supersession (false negative).",
+    "mem-003": { "isCurrent": false, "supersededBy": "mem-004" },
+    "mem-004": { "isCurrent": true, "supersededBy": null }
+  }
+}

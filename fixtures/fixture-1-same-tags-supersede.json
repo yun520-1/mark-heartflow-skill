@@ -1,0 +1,29 @@
+{
+  "description": "Fixture 1: Tag-aware supersession — same type + same tags => superseded",
+  "entries": [
+    {
+      "id": "mem-001",
+      "layer": "learned",
+      "content": "user's preferred model is llama-3.1-8b",
+      "metadata": { "type": "model_preference", "tags": ["preference", "model", "user"] },
+      "timestamp": "2026-06-01T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 1
+    },
+    {
+      "id": "mem-002",
+      "layer": "learned",
+      "content": "user's preferred model is gpt-4o-mini",
+      "metadata": { "type": "model_preference", "tags": ["preference", "model", "user"] },
+      "timestamp": "2026-06-02T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 2
+    }
+  ],
+  "expected": {
+    "mem-001": { "isCurrent": false, "supersededBy": "mem-002" },
+    "mem-002": { "isCurrent": true, "supersededBy": null }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "description": "Fixture 4: Negation — contradictory update SHOULD supersede",
+  "entries": [
+    {
+      "id": "mem-007",
+      "layer": "learned",
+      "content": "user has a pet dog",
+      "metadata": { "type": "pet_ownership", "tags": ["pet", "user"] },
+      "timestamp": "2026-06-01T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 1
+    },
+    {
+      "id": "mem-008",
+      "layer": "learned",
+      "content": "user has no pet dog anymore",
+      "metadata": { "type": "pet_ownership", "tags": ["pet", "user"] },
+      "timestamp": "2026-06-04T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 2
+    }
+  ],
+  "expected": {
+    "mem-007": { "isCurrent": false, "supersededBy": "mem-008" },
+    "mem-008": { "isCurrent": true, "supersededBy": null }
+  }
+}

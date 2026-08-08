@@ -1,0 +1,29 @@
+{
+  "description": "Fixture 6: Update/close semantics — explicit close via newer empty/null value",
+  "entries": [
+    {
+      "id": "mem-011",
+      "layer": "learned",
+      "content": "user prefers dark theme",
+      "metadata": { "type": "ui_theme", "tags": ["theme", "preference"] },
+      "timestamp": "2026-06-01T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 1
+    },
+    {
+      "id": "mem-012",
+      "layer": "learned",
+      "content": "user theme preference cleared",
+      "metadata": { "type": "ui_theme", "tags": ["theme", "preference"] },
+      "timestamp": "2026-06-05T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 2
+    }
+  ],
+  "expected": {
+    "mem-011": { "isCurrent": false, "supersededBy": "mem-012" },
+    "mem-012": { "isCurrent": true, "supersededBy": null }
+  }
+}

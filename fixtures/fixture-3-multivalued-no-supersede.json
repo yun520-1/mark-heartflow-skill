@@ -1,0 +1,30 @@
+{
+  "description": "Fixture 3: Multi-valued predicates — same type, DIFFERENT values both valid (no supersession)",
+  "entries": [
+    {
+      "id": "mem-005",
+      "layer": "learned",
+      "content": "user speaks Mandarin",
+      "metadata": { "type": "user_language", "tags": ["language", "user"] },
+      "timestamp": "2026-06-01T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 1
+    },
+    {
+      "id": "mem-006",
+      "layer": "learned",
+      "content": "user speaks English",
+      "metadata": { "type": "user_language", "tags": ["language", "user"] },
+      "timestamp": "2026-06-02T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 2
+    }
+  ],
+  "expected": {
+    "note": "Multi-valued: speaking Mandarin does not contradict speaking English. Aggressive supersession would lose valid knowledge (false positive).",
+    "mem-005": { "isCurrent": true, "supersededBy": null },
+    "mem-006": { "isCurrent": true, "supersededBy": null }
+  }
+}

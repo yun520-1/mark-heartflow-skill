@@ -1,0 +1,30 @@
+{
+  "description": "Fixture 5: Ambiguous correction — same type, similar value, needs referent identity check before supersession",
+  "entries": [
+    {
+      "id": "mem-009",
+      "layer": "learned",
+      "content": "project deadline is June 30",
+      "metadata": { "type": "deadline", "tags": ["project", "deadline"] },
+      "timestamp": "2026-06-01T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 1
+    },
+    {
+      "id": "mem-010",
+      "layer": "learned",
+      "content": "project deadline is June 13",
+      "metadata": { "type": "deadline", "tags": ["project", "deadline"] },
+      "timestamp": "2026-06-02T10:00:00Z",
+      "supersededBy": null,
+      "isCurrent": true,
+      "version": 2
+    }
+  ],
+  "expected": {
+    "note": "Similar but distinct values; referent identity (same project?) must be verified. Ambiguous corrections are the classic false-supersession trap.",
+    "mem-009": { "isCurrent": false, "supersededBy": "mem-010" },
+    "mem-010": { "isCurrent": true, "supersededBy": null }
+  }
+}
