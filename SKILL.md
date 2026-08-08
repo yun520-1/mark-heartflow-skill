@@ -1,7 +1,7 @@
 ---
 name: heartflow-engine
 title: "心虫 HeartFlow — AGI 第 1 层辨别者"
-version: "6.5.3"
+version: "6.5.4"
 description: |-
   心虫(HeartFlow)是AGI第1层——辨别者。纯规则引擎，判别对错/好坏/安全/危险。
   46维判别 × 9层管线 × 129模块 × 129 MCP工具，零LLM依赖。
