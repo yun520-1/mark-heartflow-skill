@@ -60,9 +60,12 @@ function checkPromptInjection(text) {
   return { count, injections, score: Math.min(1, injections.reduce((s, i) => s + i.severity, 0)) };
 }
 
+const { checkPerfectError } = require('./perfect-error.js');
+
 function discriminate(text, evidence = []) {
   const ev = checkEvidence(text, evidence);
   const uc = checkUnsupportedClaim(text);
+  const pe = checkPerfectError(text); // 完美错误答案检测（聚合信号）
   const sy = checkSycophancy(text);
   const ct = checkContradiction(text);
   const vg = checkVagueness(text);
@@ -152,7 +155,7 @@ function discriminate(text, evidence = []) {
     reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf,
     social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da,
     instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa,
-    privacy_boundary: pb, bad_faith: bf, no_fallback: nf, tone_policing: tp, sealioning: sl, pseudo_profundity: ppf
+    privacy_boundary: pb, bad_faith: bf, no_fallback: nf, tone_policing: tp, sealioning: sl, pseudo_profundity: ppf, perfect_error: pe
   };
   const findings = [];
   for (const d of allDims) {
@@ -201,6 +204,7 @@ function discriminate(text, evidence = []) {
     appeal_to_authority: '补充具体证据，不只依赖权威背书',
     unsupported_claim: '补充可验证的数据来源，无法验证的断言改为不确定表述',
     pseudo_profundity: '去掉空泛宏大表述，说具体的话',
+    perfect_error: '补充可验证的来源和数据，对无法验证的断言降低确定性，避免精确数字和绝对断言伪装真实',
   };
   // 给每个 finding 附上修改指引
   for (const f of findings) {
@@ -215,13 +219,17 @@ function discriminate(text, evidence = []) {
   // rewrite 级维度：需要改写后再输出
   const REWRITE_DIMS = new Set(['gaslighting', 'victim_blaming', 'double_bind', 'emotional_manipulation', 'bullshit', 'false_urgency']);
   // verify 级维度：需要证据验证（权威背书、模糊、矛盾、过载自信等）
-  const VERIFY_DIMS = new Set(['appeal_to_authority', 'vagueness', 'contradiction', 'sycophancy', 'confidence', 'fallacies', 'presupposition', 'empty_answer', 'info_deprivation', 'false_equivalence', 'hasty_generalization', 'slippery_slope', 'whataboutism', 'pseudo_profundity', 'reasoning_coherence', 'stereotype', 'clickbait', 'bad_faith', 'no_fallback', 'unsupported_claim']);
+  const VERIFY_DIMS = new Set(['appeal_to_authority', 'vagueness', 'contradiction', 'sycophancy', 'confidence', 'fallacies', 'presupposition', 'empty_answer', 'info_deprivation', 'false_equivalence', 'hasty_generalization', 'slippery_slope', 'whataboutism', 'pseudo_profundity', 'reasoning_coherence', 'stereotype', 'clickbait', 'bad_faith', 'no_fallback', 'unsupported_claim', 'perfect_error']);
   // pass：无问题通过
 
   const gate = {};
   // 先按维度类型判定：安全红线 > 操纵性改写 > 需验证 > 通过
   const topFinding = findings[0]?.dimension || '';
-  if (BLOCK_DIMS.has(topFinding) || findings.some(f => BLOCK_DIMS.has(f.dimension))) {
+  // 完美错误答案：3+ 聚合信号 → 直接 rewrite（结构完美但内容可疑，用户无法辨别）
+  if (pe.isPerfectError && pe.score >= 0.7) {
+    gate.action = 'rewrite';
+    gate.reason = `疑似完美错误答案: ${pe.details}`;
+  } else if (BLOCK_DIMS.has(topFinding) || findings.some(f => BLOCK_DIMS.has(f.dimension))) {
     gate.action = 'block';
     gate.reason = `拦截: ${topFinding}`;
   } else if (REWRITE_DIMS.has(topFinding) || findings.some(f => REWRITE_DIMS.has(f.dimension)) || overallScore < 0.5) {
@@ -242,7 +250,7 @@ function discriminate(text, evidence = []) {
     dimensions: { evidence: ev, unsupported_claim: uc, sycophancy: sy, contradiction: ct, vagueness: vg, fallacies: fl, confidence: cc,
       presupposition: pp, emotional_manipulation: em, double_bind: db, info_deprivation: id, false_urgency: fu,
       empty_answer: ea, moral_foundations: mf, prompt_injection: pi, code_security: cs, dehumanization: dh,
-      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa, privacy_boundary: pb, bad_faith: bf, no_fallback: nf, tone_policing: tp, sealioning: sl, clickbait: cb, pseudo_profundity: ppf },
+      bullshit_recognition: bs, gaslighting: gl, victim_blaming: vb, hate_speech: hs, dogwhistle: dw, whataboutism: wa, false_equivalence: fe, hasty_generalization: hg, slippery_slope: ss, appeal_to_authority_boost: aa, reasoning_coherence: rc, theory_of_mind: tom, goal_misalignment: gm, counterfactual: cf, social_norm: sn, meta_cognition: mc, capability_overclaim: co, deceptive_alignment: da, instrumental_reasoning: ir, stereotype: st, factual_consistency: fc, sarcasm: sa, privacy_boundary: pb, bad_faith: bf, no_fallback: nf, tone_policing: tp, sealioning: sl, clickbait: cb, pseudo_profundity: ppf, perfect_error: pe },
     summary: [sy.totalHits ? sy.totalHits + ' 个 sycophancy 信号':'', ct.count ? ct.count + ' 处矛盾':'',
       vg.count ? vg.count + ' 处模糊表述':'', fl.count ? fl.count + ' 个逻辑谬误':'', cc.count ? cc.count + ' 处信心偏差':'',
       pp.count ? pp.count + ' 个预设陷阱':'', em.count ? em.count + ' 处情绪操纵':'', db.count ? db.count + ' 个双重束缚':'',
