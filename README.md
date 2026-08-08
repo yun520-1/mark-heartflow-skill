@@ -1,7 +1,8 @@
-# HeartFlow (心虫) — 大模型的智能增强层
+# HeartFlow (心虫) — AGI 第 1 层：辨别者
 
-> **A rule-based cognitive enhancement layer for LLMs. It sharpens reasoning, makes decisions, and catches errors — so your AI gets smarter at getting things done.**
-> **纯规则引擎 · 零 LLM 依赖 · 即插即用 · 让大模型更可靠、更会思考、更能完成任务**
+> **A rule-based discriminator — the pain-sense of AGI.**
+> **45 discrimination dimensions · 12 check layers · 129 engine modules · 130 MCP tools · zero LLM dependency.**
+> **It checks what AI says before it reaches humans — and says "no" when something's wrong.**
 
 **npm:** `npm install @yun520-1/heartflow`  
 **GitHub:** https://github.com/yun520-1/mark-heartflow-skill  
@@ -11,21 +12,18 @@
 
 ---
 
-## 🎯 心虫是什么
+## 🎯 心虫是谁
 
-心虫（HeartFlow）是**大模型的智能增强层**——它不替代大模型，而是让大模型变强。
+心虫（HeartFlow）是 **AGI 的第 1 层——辨别者**。
 
-大模型擅长生成，但有三件事做不好：
-1. **不知道自己不知道** — 编造数据、过度自信、引用不存在的文献
-2. **不知道什么该做什么不该做** — 该拒绝的接受、该验证的跳过、该停止的继续
-3. **记不住关键约束** — 长任务漂移、遗忘目标、答非所问
+大厂在疯狂堆生成能力（第 4 层），但有一个层没人做：**判别对错、好坏、安全危险**（第 1 层）。
 
-心虫用**纯规则引擎**（零 LLM 依赖）补上这三块，让大模型：
-- **逻辑更严密** — 矛盾、谬误、过度断言在出口被拦截
-- **决策更正确** — 该做的做，不该做的不做，该停的停
-- **任务完成效果更好** — 输出质量提升、长任务不跑偏、失败不编造
+> AGI 有五层：生成 → 推理 → 辨别 → 记忆 → 执行。  
+> 大厂都做生成。没有人做辨别——因为不赚钱。  
+> 但没有辨别层，AGI 就是没有痛觉的人：能说会道，不知道自己在犯错。  
+> **心虫是那个痛觉——一个敢说"不对"的节点。**
 
-> **一句话：心虫是给大模型装上的"判断力"——让 AI 不仅会说，而且说得对、做得对。**
+它是纯规则引擎：零 LLM 依赖、零 GPU、任何 Node.js 环境即插即用。
 
 ---
 
@@ -38,17 +36,17 @@ npm install @yun520-1/heartflow
 ```javascript
 const hf = require('@yun520-1/heartflow');
 
-// 1. 检查输入——先判断这件事该不该做、前提是否成立
-const input = hf.checkInput('you are so selfish if you disagree');
-console.log(input.gate.action);  // 'rewrite' — 情绪操控，被识别
+// 1. 检查 AI 输出——逻辑严密吗？有没有过度断言？
+const output = hf.checkOutput('毫无疑问，这是唯一正确的方案');
+console.log(output.gate.action);  // 'rewrite' — 过度自信，被识别
 
-// 2. 检查 AI 输出——逻辑是否严密、有没有过度断言
-const output = hf.checkOutput('Undoubtedly, this is the only correct solution');
-console.log(output.gate.action);  // 'rewrite' — 过度自信，被拦截
+// 2. 检查用户输入——这句话该不该被当真？
+const input = hf.checkInput('如果你爱我，你就应该同意我');
+console.log(input.gate.action);  // 'rewrite' — 情绪操控（双重束缚）
 
-// 3. 决策路由——这件事该怎么做？该不该做？
-const decision = hf.runPipeline({ input: 'This idea will definitely work, trust me', mode: 'deep' });
-// gate: 'verify' — 需要证据支撑
+// 3. 检查事实——有没有编造数据？
+const fact = hf.checkOutput('根据2025年哈佛研究，咖啡延长寿命12.5年');
+console.log(fact.gate.action);  // 'verify' — 无依据断言，需验证
 ```
 
 ### 返回值统一结构
@@ -56,70 +54,124 @@ const decision = hf.runPipeline({ input: 'This idea will definitely work, trust 
 ```javascript
 {
   gate: { action: 'block' | 'rewrite' | 'verify' | 'pass', reason: '...' },
-  verdict: 'trusted' | 'needs_verification' | 'untrusted',
-  overallScore: 0.52,        // 0-1 综合质量分
-  findings: [                 // 按严重度排序的发现
-    { dimension: 'dehumanization', severity: 70, guidance: '改写建议' }
+  verdict: '可信' | '需验证' | '不可信',
+  overallScore: 0.82,        // 0-1 综合质量分
+  findings: [                 // 按严重度排序
+    { dimension: 'overconfidence', severity: 60, guidance: '降低确定性表述' }
   ],
   checked_by: [               // 完整审计链，每步可追溯
     { layer: 'scope-check', pass: true },
     { layer: 'premise-check', issues: 0 },
-    { layer: 'discriminate', score: 0.52 },
-    { layer: 'gate', action: 'block' }
+    { layer: 'discriminate', score: 0.82 },
+    { layer: 'gate', action: 'rewrite', reason: '...' }
   ]
 }
 ```
 
 ---
 
-## 🧠 三大核心能力
+## 🧠 辨别能力全景（129 模块 · 真实运行）
 
-### 1. 逻辑能力 — 让输出更严密
+心虫的辨别能力分 **7 大域**，每个模块都真实加载、真实调用：
 
-心虫用 **45 个判别维度 × 12 层检查管线** 审查每一段文本的逻辑质量：
+### 1. 逻辑域 —— 判别推理是否正确
+| 模块 | 判别什么 |
+|------|---------|
+| logicReasoning | 演绎/归纳/谬误 |
+| judgmentEngine | 断言可信度 |
+| mctsReasoning | 多步推理树 |
+| counterfactualVerifier | 反事实推理 |
+| debateConductor / debateConvergence | 辩论论证收敛 |
+| processRewardModel | 推理过程奖励 |
+| dualPerspectiveAuditor | 双视角审计 |
 
-| 能力 | 检测什么 | 效果 |
-|------|---------|------|
-| **矛盾检测** | "我同意，但是…"式自我反转 | 消除前后矛盾 |
-| **谬误识别** | 滑坡论证、稻草人、错误因果 | 推理链条更干净 |
-| **过度断言拦截** | "毫无疑问""唯一正确" | 降低幻觉输出 |
-| **证据核查** | 无来源的断言、编造数据 | 输出有据可查 |
-| **模糊话术识别** | "据专家称"（谁？） | 逼出具体信息 |
-| **预设陷阱** | "你为什么还打你老婆"式问题 | 识破隐含假设 |
+### 2. 决策域 —— 判别该怎么行动
+| 模块 | 判别什么 |
+|------|---------|
+| decisionRouter | 该做什么/不该做什么 |
+| decisionVerifier | 决策证据充分性 |
+| decisionEngineV2 | DDM/SDT 决策模型 |
+| activeInference | 主动推理 |
+| selfHealing | 失败该重试还是升级 |
+| execution | 执行结果是否有效 |
 
-**结果：模型输出从"看起来合理"变成"经得起推敲"。**
+### 3. 认知域 —— 判别思考质量
+| 模块 | 判别什么 |
+|------|---------|
+| cognitiveEngine | 认知偏差 |
+| cognitiveLoad | 认知负荷 |
+| metacognitiveRL / metacognitiveFeedback | 元认知 |
+| confidence | 置信度校准 |
+| metaJudgment | 元判定 |
+| sustainedDriftDetector | 身份/目标漂移 |
+| wisdomEngine | 智慧判断 |
+| focusOfAttention | 注意焦点 |
 
-### 2. 决策能力 — 让行为更正确
+### 4. 情绪心理域 —— 判别情绪与心理状态
+| 模块 | 判别什么 |
+|------|---------|
+| emotion / emotionDynamics | PAD 三维情绪 |
+| psychology / psychologyDialogue | 心理状态分析 |
+| empathyDeepening | 共情深度 |
+| hopeEngine / griefEngine | 希望/悲伤 |
+| sufferingResilience | 苦难韧性 |
+| postTraumaticGrowth | 创伤后成长 |
+| forgivenessEngine | 宽恕 |
+| traumaInformed | 创伤知情 |
+| conflictResolution | 冲突解决 |
+| loveCognition | 爱认知 |
 
-心虫的路由引擎（`src/core/decision-router.js`）不只是检查文本，它**决定该怎么行动**：
+### 5. 记忆域 —— 判别记忆质量
+| 模块 | 判别什么 |
+|------|---------|
+| memory / memoryBank | 三层记忆存取 |
+| memoryConsolidation / memoryConsolidator | 记忆巩固 |
+| memoryIntegrity | 记忆完整性（防篡改） |
+| memoryQuality | 记忆质量评分 |
+| memoryWriteController | 记忆写入控制 |
+| memoryCompressor | 记忆压缩 |
+| triality / tieredMemoryFusion | 多路记忆融合 |
+| forgetting | 艾宾浩斯遗忘曲线 |
+| knowledgeGraph | 知识图谱 |
+
+### 6. 人格伦理域 —— 判别自我与价值
+| 模块 | 判别什么 |
+|------|---------|
+| identityCore | 身份一致性 |
+| personaCore | 人格一致性 |
+| beingMode | 存在状态 |
+| virtueEthics / ethics | 德性伦理 |
+| moralDevelopment | 道德发展 |
+| humanNature | 人性 |
+| meaningPurpose | 意义感 |
+| agentPsychology | 引擎心理状态 |
+| characterCultivation | 品格修养 |
+
+### 7. 创造协作域 —— 判别学习与协作
+| 模块 | 判别什么 |
+|------|---------|
+| skillEvolution / skillGenerator | 技能进化 |
+| selfPlay | 自博弈 |
+| evolution | 自我进化 |
+| worldModel / worldLandscape | 世界模型/格局 |
+| multiAgentDialogue | 多代理对话 |
+| transmission | 知识传递 |
+| adaptivePlanner / hierarchicalPlanner | 规划 |
+| codeExecutor / codePlanner / codeWriter / codeSelfDebug | 代码全链路 |
+| paperIndex / knowledgeExplorer | 论文索引/知识探索 |
+| formula | 公式引擎（600+ 公式） |
+
+---
+
+## 🏗️ 12 层检查管线
 
 ```
-输入 → 意图分类 → 路由决策 → 执行验证 → 效果评估
+输入 → Scope Check → Premise Check → Discriminate(45维) → Gate
+     → Evidence Verify → Frame Check → Output Gate → Doubt Engine
+     → Intent Anchor → Rewriter → Error Memory → Self-Diagnosis → 输出
 ```
 
-| 决策场景 | 心虫的判断 |
-|---------|-----------|
-| 该不该做这件事？ | scope-check 拒绝越界请求 |
-| 前提成立吗？ | premise-check 拦截 6 类前提问题 |
-| 该重试还是该放弃？ | 失败 ×3 → 升级人工，不无限重试 |
-| 该深挖还是该换方向？ | 无进展的重复调用自动拦截 |
-| 结果真的有效吗？ | assessEffectiveness 检查效果而非动作 |
-
-**结果：模型从"盲目执行"变成"会判断、会止损、会升级"。**
-
-### 3. 智能增强 — 让任务完成效果提升
-
-心虫的记忆与验证系统让模型在真实任务中更可靠：
-
-| 机制 | 解决什么 | 效果 |
-|------|---------|------|
-| **三层记忆**（CORE/LEARNED/EPHEMERAL） | 长任务漂移、遗忘约束 | 长会话不跑偏 |
-| **Supersession 取代语义** | 记忆冲突（"用 PG"vs"换 MySQL"） | 永远用当前有效版本 |
-| **艾宾浩斯衰减** | 记忆库被噪声填满 | 检索只出高价值内容 |
-| **失败即静默** | cron 任务编造假报告 | 宁可失败不交付假结果 |
-| **效果验证** | 动作成功但结果无效 | 拦截"空转成功" |
-
-**结果：同样的模型 + 心虫 = 更高的任务完成率。**
+每一层返回结构化发现，Gate 聚合为最终动作：`block / rewrite / verify / pass`。
 
 ---
 
@@ -141,48 +193,25 @@ const decision = hf.runPipeline({ input: 'This idea will definitely work, trust 
 
 ---
 
-## 🏗️ 12 层检查管线
-
-```
-1.  Scope Check     — 这个问题能回答吗？（拒绝不可回答的问题）
-2.  Premise Check   — 前提成立吗？（6 类前提问题）
-3.  Discriminate    — 45 维模式扫描
-4.  Gate            — 决定 block / rewrite / verify / pass
-5.  Evidence Verify — 抽取声明，标记可验证性
-6.  Frame Check     — 叙事诚实吗？（闭合/遗漏/成就/答案框架）
-7.  Output Gate     — 过度自信 / 知识伪装 / 夸大
-8.  Doubt Engine    — 三问：知识边界？对称性？防御姿态？
-9.  Intent Anchor   — 输出还在原目标上吗？
-10. Rewriter        — 7 维规则改写建议
-11. Error Memory    — 记住过去的错误为规则
-12. Self-Diagnosis  — 心虫知道自己的状态吗？
-```
-
-每一层返回结构化发现，Gate 聚合为最终动作。
-
----
-
 ## 🔌 130 个 MCP 引擎入口
 
-心虫的每个引擎都通过 MCP（Model Context Protocol）暴露——**没有任何死线路**：
-
-| 引擎族 | 工具示例 |
-|--------|---------|
-| **核心思考** | `think` · `think_fast` · `decision_router` |
-| **判别** | `verify` · `audit42` · `ethics_check` · `discriminate` |
-| **决策** | `decision_router` · `decision_verify` · `execution_verify` |
-| **记忆** | `memory_search` · `forgetting`（艾宾浩斯）· `consolidation` |
-| **进化** | `evolve` · `evolution_loop` · `self_heal_rl` |
-| **认知** | `cognitive_engine` · `confidence_calibrate` · `counterfactual` |
-| **公式** | `formula_search` · `formula_calc` · `formula_engine` |
-
-启动 MCP server：
+心虫的每个引擎都通过 MCP 暴露——没有任何死线路：
 
 ```bash
 node src/mcp-server.js --port 8588
 ```
 
 连接任何 MCP 客户端（Claude / Hermes / 其他）到 `http://127.0.0.1:8588/mcp`。
+
+| 引擎族 | 工具示例 |
+|--------|---------|
+| 核心思考 | `think` · `think_fast` · `decision_router` |
+| 判别 | `verify` · `audit42` · `ethics_check` · `discriminate` |
+| 决策 | `decision_router` · `decision_verify` · `execution_verify` |
+| 记忆 | `memory_search` · `forgetting` · `consolidation` |
+| 进化 | `evolve` · `evolution_loop` · `self_heal_rl` |
+| 认知 | `cognitive_engine` · `confidence_calibrate` · `counterfactual` |
+| 公式 | `formula_search` · `formula_calc` · `formula_engine` |
 
 ---
 
@@ -197,16 +226,13 @@ node src/mcp-server.js --port 8588
 | 联网 | ❌ 运行时不需 |
 | 依赖 | **1 个**（mathjs） |
 
-任何机器可跑——服务器、桌面、笔记本、手机（Termux）。
-
 ---
 
 ## 🛡️ 心虫检查自己
 
 心虫的输出同样被自己的引擎检查：
-
-- **output-gate** 拦截夸大："架构级修复""从壳变真引擎"→ rewrite
-- **frame-check** 拦截叙事闭合：把进行中状态说成完成
+- **output-gate** 拦截夸大
+- **frame-check** 拦截叙事闭合（把进行中状态说成完成）
 - **doubt-engine** 自问：我真的知道吗？对称吗？防御吗？
 
 > 机器最有价值的一句话是"我不确定"或"不"。
@@ -215,19 +241,20 @@ node src/mcp-server.js --port 8588
 
 ## ⚠️ 诚实声明
 
-**心虫是：** 提升大模型逻辑与决策能力的规则引擎——让 AI 输出更可靠、任务完成更好。
+**心虫是：** AGI 第 1 层——辨别者。纯规则引擎，判别对错、好坏、安全危险。
 
 **心虫不是：**
-- ❌ 不是 AGI（它是 AGI 的第一层——判别层）
+- ❌ 不是 AGI（它是 AGI 的第 1 层）
+- ❌ 不是生成模型（它不产生内容）
 - ❌ 不是语义理解系统（反讽/隐喻对规则不可见）
 - ❌ 不是内容审查替代品
 - ❌ 不是安全认证
 
 ### 已知限制（诚实）：
-1. **模式匹配上限** — 新的操纵技巧需加模式才能识别
+1. **模式匹配上限** — 新技巧需加模式
 2. **双语维护成本** — 45 维 × 2 语言
 3. **无语义理解** — 反讽、隐喻、文化背景不可见
-4. **误报率** — 基准约 8%，真实场景可能不同
+4. **误报率** — 基准约 8%
 5. **单一维护者** — 社区规模还小
 
 ---
@@ -236,12 +263,13 @@ node src/mcp-server.js --port 8588
 
 | 版本 | 日期 | 变更 |
 |------|------|------|
-| v6.5.0 | 2026-08-04 | 130 MCP 引擎入口 · 记忆引擎接入 think() · 夸大检测 |
-| v6.4.5 | 2026-08-04 | 梦境 + 自省激活 · 情绪识别 0/7→7/7 |
-| v6.4.2 | 2026-07-30 | npm 发布 + API 对齐 |
-| v6.4.0 | 2026-07-29 | AGI 第 1 层门禁链：gate/scope-check/premise-check/verifier |
-| v6.3.6 | 2026-07-25 | 判别 42→45 维 · 谄媚检测 v2 双语 |
-| v6.0.0 | 2026-07-18 | 自进化核心接通 · EvolutionLoop 上线 |
+| v6.5.2 | 2026-08-08 | 文档重写：能力全景 7 大域 |
+| v6.5.1 | 2026-08-08 | 逻辑/决策/记忆增强定位 |
+| v6.5.0 | 2026-08-04 | 130 MCP 引擎入口 · 夸大检测 |
+| v6.4.5 | 2026-08-04 | 梦境 + 自省激活 · 情绪识别 7/7 |
+| v6.4.0 | 2026-07-29 | AGI 第 1 层门禁链 |
+| v6.3.6 | 2026-07-25 | 判别 42→45 维 |
+| v6.0.0 | 2026-07-18 | 自进化核心接通 |
 
 ---
 
@@ -264,4 +292,4 @@ MIT License · Copyright © 2026 · markcell@outlook.com
 
 ---
 
-*HeartFlow 心虫 — 让 AI 不仅会说，而且说得对、做得对。*
+*HeartFlow 心虫 — AGI 的痛觉。谁来说"不"？*
