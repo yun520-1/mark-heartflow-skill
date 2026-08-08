@@ -100,3 +100,4 @@ src/utils/src/utils/
 
 dict-data/
 models/
+data/autopilot-log.jsonl

@@ -469,18 +469,18 @@ const _MoralDevelopment = _lazy('moralDevelopment', () => _stubFactory('MoralDev
 const _WisdomEngine = _lazy('wisdomEngine', () => _stubFactory('WisdomEngine'));
 const _AIHumanIntegration = _lazy('aiHumanIntegration', () => _stubFactory('AIHumanIntegration'));
 const _BeingMode = _lazy('beingMode', () => require('../identity/being-mode.js'));
-const _ConsciousnessBridge = _lazy('consciousnessBridge', () => _stubFactory('ConsciousnessBridge'));
+const _ConsciousnessBridge = _lazy('consciousnessBridge', () => { try { return require('../identity/consciousness-bridge.js'); } catch(e) { return _stubFactory('ConsciousnessBridge'); } });
 const _GapExecutor = _lazy('gapExecutor', () => _stubFactory('GapExecutor'));
 const _LearningOrchestrator = _lazy('learningOrchestrator', () => _stubFactory('LearningOrchestrator'));
 const _LearningPulse = _lazy('learningPulse', () => _stubFactory('LearningPulse'));
 const _TaskUrgency = _lazy('taskUrgency', () => _stubFactory('TaskUrgencyEstimator'));
-const _HypothesisDriver = _lazy('hypothesisDriver', () => _stubFactory('HypothesisDriver'));
-const _ErrorMemory = _lazy('errorMemory', () => _stubFactory('ErrorMemory'));
+const _HypothesisDriver = _lazy('hypothesisDriver', () => { try { return require('../cortex/hypothesis-tester.js'); } catch(e) { return _stubFactory('HypothesisDriver'); } });
+const _ErrorMemory = _lazy('errorMemory', () => { try { return require('../error-memory.js'); } catch(e) { return _stubFactory('ErrorMemory'); } });
 const _PatternTracer = _lazy('patternTracer', () => _stubFactory('PatternTracer'));
 const _WorldLandscape = _lazy('worldLandscape', () => _stubFactory('WorldLandscape'));
 const _KnowledgeExplorer = _lazy('knowledgeExplorer', () => _stubFactory('KnowledgeExplorer'));
 const _ProcessRewardModel = _lazy('processRewardModel', () => _stubFactory('ProcessRewardModel'));
-const _DesireCognition = _lazy('desireCognition', () => _stubFactory('DesireCognition'));
+const _DesireCognition = _lazy('desireCognition', () => { try { return require('../emotion/desire-system.js'); } catch(e) { return _stubFactory('DesireCognition'); } });
 
 
 
@@ -700,7 +700,7 @@ const _AgentCommentary = _lazy('agentCommentary', () => { try { return require('
 
 
 
-const BUILD_DATE = '2026-08-07-6.5.1';
+const BUILD_DATE = '2026-08-08-6.5.4';
 
 
 
@@ -3972,7 +3972,7 @@ class HeartFlow {
 
     // ─── [v6.2.3] HypothesisDriver 假设驱动探索：被失败驱动，不是记录失败 ──
     try {
-      this.hypothesisDriver = new (_HypothesisDriver().HypothesisDriver)(this);
+      this.hypothesisDriver = new (_HypothesisDriver().HypothesisTester)(this);
     } catch (e) { _boundedPush(this._initErrors, { module: 'hypothesisDriver', error: e.message }, MAX_HISTORY_SIZE); }
 
     // ─── [v6.2.7] ErrorMemory 跨会话错误记忆：AGI 需要的"不遗忘"组件 ──

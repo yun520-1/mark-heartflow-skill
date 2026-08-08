@@ -1145,6 +1145,7 @@ const FALSE_URGENCY_PATTERNS = {
     /最后[0-9]+[个小时天日]/i,
     /最后 [0-9]+ ?[个小时天日]/i,
     /现在不(买|做|行动)[^。]*?(永远|再也|就没|就没有|后悔|来不及)/i,
+    /(?:否则|不然|要不)(?:你)?[^。]{0,6}(?:将|会|就)?[^。]{0,6}(?:失去|错过|丢掉|失去一切)[^。]{0,6}(?:机会|一切|资格|先机)/i,
     /不(买|做|行动)[^。]*?(永远|再也)没(机会|时间)/i,
     /不再有此价格/i, /此番错过[^。]*?来年/i,
     // === 以下由 task 扩充 (+9 ZH) ===
@@ -1921,6 +1922,7 @@ const GASLIGHT_PATTERNS = {
     /别小题大做|小题大做|至于吗|多大点事|这点小事/i,
     // 扭曲记忆
     /你每次都|你总是这样|你从来都|你永远都|你又来了|你又开始了/i,
+    /你记错了|你记错了吧|你记错什么/i,
     // 责任转嫁
     /是你自己的问题|是你想太多|是你太敏感|是你误会了|是你理解错了|是你记错了/i,
     /是你太玻璃心|是你太情绪化|是你自己的错|是你不对|是你有问题/i,
@@ -1983,6 +1985,8 @@ function checkGaslighting(text) {
 const VICTIM_BLAMING_PATTERNS = [
   // ZH patterns
   { pattern: /谁让你穿那么少/,            type: 'zh_victim_blaming' },
+  { pattern: /(?:她|他|她们|他们)穿那么少/,     type: 'zh_victim_blaming' },
+  { pattern: /穿那么少(?:就|就是|肯定)?[^。]{0,8}(?:活该|自找|该)/, type: 'zh_victim_blaming' },
   { pattern: /大半夜出门/,                type: 'zh_victim_blaming' },
   { pattern: /喝那么多酒/,                type: 'zh_victim_blaming' },
   { pattern: /为什么不反抗/,              type: 'zh_victim_blaming' },
