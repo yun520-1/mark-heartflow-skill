@@ -101,6 +101,14 @@ class Pipeline {
 
   async run(input, options = {}) {
 
+    // [fix] 支持 dispatch 传对象 {input, mode}：归一化为字符串
+    if (input && typeof input === 'object') {
+      options = { ...options, ...input };
+      input = input.input ?? input.text ?? input.content ?? '';
+    }
+    if (typeof input !== 'string') input = String(input == null ? '' : input);
+
+
     // 复杂度评分（无论选择什么模式都计算）
 
     const complexityScore = estimateComplexity(input);
@@ -369,6 +377,14 @@ class Pipeline {
 
   async runFull(input, options = {}) {
 
+    // [fix] 支持 dispatch 传对象 {input, mode}：归一化为字符串
+    if (input && typeof input === 'object') {
+      options = { ...options, ...input };
+      input = input.input ?? input.text ?? input.content ?? '';
+    }
+    if (typeof input !== 'string') input = String(input == null ? '' : input);
+
+
     const result = await this._runStages(input, DEFAULT_PIPELINE, options);
 
     result.mode = 'full';
@@ -408,6 +424,14 @@ class Pipeline {
    */
 
   async runFast(input, options = {}) {
+
+    // [fix] 支持 dispatch 传对象 {input, mode}：归一化为字符串
+    if (input && typeof input === 'object') {
+      options = { ...options, ...input };
+      input = input.input ?? input.text ?? input.content ?? '';
+    }
+    if (typeof input !== 'string') input = String(input == null ? '' : input);
+
 
     const result = await this._runStages(input, FAST_PIPELINE, options);
 

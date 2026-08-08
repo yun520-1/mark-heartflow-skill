@@ -152,6 +152,13 @@ class JudgmentEngine {
 
   async judge(input, context = {}) {
 
+    // 归一化：支持 dispatch 传对象 {text, context}，也支持直接传字符串
+    if (input && typeof input === 'object') {
+      context = input.context || input.ctx || context || {};
+      input = input.text || input.input || input.content || '';
+    }
+    if (typeof input !== 'string') input = String(input || '');
+
     // 1. 提取判断上下文（用于 RL 匹配）
 
     const ctx = this._extractContext(input, context);

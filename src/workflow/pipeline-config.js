@@ -325,11 +325,11 @@ const DEFAULT_PIPELINE = [
 
         let trend = null;
 
-        if (hf.cognitiveLoadV2) {
+        if (hf.cognitiveLoadV2 && typeof hf.cognitiveLoadV2.estimate === 'function') {
 
           loadEstimate = hf.cognitiveLoadV2.estimate(ctx.input);
 
-          trend = hf.cognitiveLoadV2.analyzeTrend();
+          trend = typeof hf.cognitiveLoadV2.analyzeTrend === 'function' ? hf.cognitiveLoadV2.analyzeTrend() : null;
 
         }
 

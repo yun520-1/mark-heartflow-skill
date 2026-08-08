@@ -7,4 +7,15 @@ class CognitiveEnrichment {
   enrich(text, ctx) { return text; }
   healthCheck() { return { ok: true }; }
 }
-module.exports = { CognitiveEnrichment };
+// pipeline 阶段的运行函数：调用 enrich 并返回结构化快照
+async function cognitiveEnrichmentRun(ctx, hf) {
+  const engine = new CognitiveEnrichment();
+  const enriched = engine.enrich(typeof ctx.input === 'string' ? ctx.input : '', ctx);
+  return {
+    enriched: typeof enriched === 'string' ? enriched.slice(0, 500) : enriched,
+    ready: engine.ready,
+    modules: 20,
+  };
+}
+
+module.exports = { CognitiveEnrichment, cognitiveEnrichmentRun };
