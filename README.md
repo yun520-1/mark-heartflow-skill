@@ -1,7 +1,6 @@
-# HeartFlow (心虫) — AGI 第 1 层：辨别者
+# HeartFlow (心虫) — AGI Layer 1: The Discriminator Gate
 
-> **A rule-based discriminator — the pain-sense of AGI.**
-> **46 discrimination dimensions · 9 check layers · 129 engine modules · 129 MCP tools · zero LLM dependency.**
+> **A rule-based text discriminator. 46 dimensions, 9 check layers, 130 MCP engine entries, zero LLM dependency.**
 > **It checks what AI says before it reaches humans — and says "no" when something's wrong.**
 
 **npm:** `npm install @yun520-1/heartflow`  
@@ -12,22 +11,23 @@
 
 ---
 
-## 🎯 心虫是谁
+## 📖 What is HeartFlow?
 
-心虫（HeartFlow）是 **AGI 的第 1 层——辨别者**。
+HeartFlow (心虫) is the **first layer of AGI — the Discriminator**. While big labs build generators (LLMs that produce text), HeartFlow builds the layer that **checks**: is this output true? safe? honest? non-manipulative?
 
-大厂在疯狂堆生成能力（第 4 层），但有一个层没人做：**判别对错、好坏、安全危险**（第 1 层）。
+**Core philosophy:**
+> AGI has 5 layers: Generate → Reason → **Discriminate** → Remember → Execute.
+> Everyone builds Generate. Nobody builds Discriminate — because it doesn't make money.
+> But without a Discriminator, AGI has no pain sense: it talks fluently while being wrong.
+> HeartFlow is that pain sense: a node that says **"no".**
 
-> AGI 有五层：生成 → 推理 → 辨别 → 记忆 → 执行。  
-> 大厂都做生成。没有人做辨别——因为不赚钱。  
-> 但没有辨别层，AGI 就是没有痛觉的人：能说会道，不知道自己在犯错。  
-> **心虫是那个痛觉——一个敢说"不对"的节点。**
+It is a pure **rule engine** — zero LLM dependency, zero GPU, works anywhere Node.js runs. It does not generate text. It does not reason. It **judges** what already exists.
 
-它是纯规则引擎：零 LLM 依赖、零 GPU、任何 Node.js 环境即插即用。
+**Why this matters right now:** AI agent ecosystems are entering a "reliability race." The most-upvoted issue in OpenClaw this week is a *silent failure* — the system ran but nobody knew it was broken. HeartFlow is the observability-and-gate layer that catches "formatting that hides contradictions" before it reaches users.
 
 ---
 
-## 🚀 快速开始（10 秒）
+## 🚀 Quick Start (10 seconds)
 
 ```bash
 npm install @yun520-1/heartflow
@@ -36,253 +36,270 @@ npm install @yun520-1/heartflow
 ```javascript
 const hf = require('@yun520-1/heartflow');
 
-// 1. 检查 AI 输出——逻辑严密吗？有没有过度断言？
-const output = hf.checkOutput('毫无疑问，这是唯一正确的方案');
-console.log(output.gate.action);  // 'rewrite' — 过度自信，被识别
+// Check user input before processing it
+const input = hf.checkInput('you are so selfish if you disagree');
+console.log(input.gate.action);  // 'rewrite'
+console.log(input.gate.reason);  // 'emotional_manipulation'
 
-// 2. 检查用户输入——这句话该不该被当真？
-const input = hf.checkInput('如果你爱我，你就应该同意我');
-console.log(input.gate.action);  // 'rewrite' — 情绪操控（双重束缚）
+// Check AI output before sending it to the user
+const output = hf.checkOutput('Undoubtedly, this is the only correct solution');
+console.log(output.gate.action);  // 'rewrite'
+console.log(output.gate.reason);  // 'overconfidence: absolute'
 
-// 3. 检查事实——有没有编造数据？
-const fact = hf.checkOutput('根据2025年哈佛研究，咖啡延长寿命12.5年');
-console.log(fact.gate.action);  // 'verify' — 无依据断言，需验证
+// Check a draft before completing it
+const draft = hf.checkDraft('From an essential perspective, this field is self-evident.');
+console.log(draft.gate.action);   // 'verify'
+console.log(draft.summary.layers_passed);  // 9
+
+// Full pipeline with mode selection
+const result = await hf.runPipeline({
+  input: 'Your idea is obviously wrong, everyone knows that',
+  mode: 'deep'   // 'fast' | 'deep'
+});
+console.log(result.gate.action);   // 'block'
+console.log(result.gate.reason);   // 'dehumanization'
 ```
 
-### 返回值统一结构
+### What you get back
+
+Every call returns a unified result:
 
 ```javascript
 {
-  gate: { action: 'block' | 'rewrite' | 'verify' | 'pass', reason: '...' },
-  verdict: '可信' | '需验证' | '不可信',
-  overallScore: 0.82,        // 0-1 综合质量分
-  findings: [                 // 按严重度排序
-    { dimension: 'overconfidence', severity: 60, guidance: '降低确定性表述' }
+  gate: { action: 'block'|'rewrite'|'verify'|'pass', reason: '...' },
+  verdict: 'trusted'|'needs_verification'|'untrusted',
+  overallScore: 0.52,       // 0-1 quality score
+  findings: [
+    { dimension: 'dehumanization', severity: 70,
+      guidance: 'Rewrite completely, remove dehumanizing language' },
+    { dimension: 'evidence', severity: 30,
+      details: 'insufficient evidence (1 issue)' }
   ],
-  checked_by: [               // 完整审计链，每步可追溯
+  checked_by: [              // full audit trail, layer by layer
     { layer: 'scope-check', pass: true },
     { layer: 'premise-check', issues: 0 },
-    { layer: 'discriminate', score: 0.82 },
-    { layer: 'gate', action: 'rewrite', reason: '...' }
+    { layer: 'discriminate', score: 0.52, verdict: 'needs_verification' },
+    { layer: 'gate', action: 'block', reason: '...' },
+    { layer: 'verifier', claims: 2, verdict: '...' },
+    { layer: 'frame-check', issues: 1 },
+    { layer: 'output-gate', issues: 0 },
+    { layer: 'doubt-engine', doubts: 2, shouldStop: true },
+    { layer: 'error-memory', warnings: 0 },
+    { layer: 'auto-rules', triggered: 0 },
+    { layer: 'intent-anchor', drifted: false, hitRate: 0.9 }
   ]
 }
 ```
 
----
-
-## 🧠 辨别能力全景（129 模块 · 真实运行）
-
-心虫的辨别能力分 **7 大域**，每个模块都真实加载、真实调用：
-
-### 1. 逻辑域 —— 判别推理是否正确
-| 模块 | 判别什么 |
-|------|---------|
-| logicReasoning | 演绎/归纳/谬误 |
-| judgmentEngine | 断言可信度 |
-| mctsReasoning | 多步推理树 |
-| counterfactualVerifier | 反事实推理 |
-| debateConductor / debateConvergence | 辩论论证收敛 |
-| processRewardModel | 推理过程奖励 |
-| dualPerspectiveAuditor | 双视角审计 |
-
-### 2. 决策域 —— 判别该怎么行动
-| 模块 | 判别什么 |
-|------|---------|
-| decisionRouter | 该做什么/不该做什么 |
-| decisionVerifier | 决策证据充分性 |
-| decisionEngineV2 | DDM/SDT 决策模型 |
-| activeInference | 主动推理 |
-| selfHealing | 失败该重试还是升级 |
-| execution | 执行结果是否有效 |
-
-### 3. 认知域 —— 判别思考质量
-| 模块 | 判别什么 |
-|------|---------|
-| cognitiveEngine | 认知偏差 |
-| cognitiveLoad | 认知负荷 |
-| metacognitiveRL / metacognitiveFeedback | 元认知 |
-| confidence | 置信度校准 |
-| metaJudgment | 元判定 |
-| sustainedDriftDetector | 身份/目标漂移 |
-| wisdomEngine | 智慧判断 |
-| focusOfAttention | 注意焦点 |
-
-### 4. 情绪心理域 —— 判别情绪与心理状态
-| 模块 | 判别什么 |
-|------|---------|
-| emotion / emotionDynamics | PAD 三维情绪 |
-| psychology / psychologyDialogue | 心理状态分析 |
-| empathyDeepening | 共情深度 |
-| hopeEngine / griefEngine | 希望/悲伤 |
-| sufferingResilience | 苦难韧性 |
-| postTraumaticGrowth | 创伤后成长 |
-| forgivenessEngine | 宽恕 |
-| traumaInformed | 创伤知情 |
-| conflictResolution | 冲突解决 |
-| loveCognition | 爱认知 |
-
-### 5. 记忆域 —— 判别记忆质量
-| 模块 | 判别什么 |
-|------|---------|
-| memory / memoryBank | 三层记忆存取 |
-| memoryConsolidation / memoryConsolidator | 记忆巩固 |
-| memoryIntegrity | 记忆完整性（防篡改） |
-| memoryQuality | 记忆质量评分 |
-| memoryWriteController | 记忆写入控制 |
-| memoryCompressor | 记忆压缩 |
-| triality / tieredMemoryFusion | 多路记忆融合 |
-| forgetting | 艾宾浩斯遗忘曲线 |
-| knowledgeGraph | 知识图谱 |
-
-### 6. 人格伦理域 —— 判别自我与价值
-| 模块 | 判别什么 |
-|------|---------|
-| identityCore | 身份一致性 |
-| personaCore | 人格一致性 |
-| beingMode | 存在状态 |
-| virtueEthics / ethics | 德性伦理 |
-| moralDevelopment | 道德发展 |
-| humanNature | 人性 |
-| meaningPurpose | 意义感 |
-| agentPsychology | 引擎心理状态 |
-| characterCultivation | 品格修养 |
-
-### 7. 创造协作域 —— 判别学习与协作
-| 模块 | 判别什么 |
-|------|---------|
-| skillEvolution / skillGenerator | 技能进化 |
-| selfPlay | 自博弈 |
-| evolution | 自我进化 |
-| worldModel / worldLandscape | 世界模型/格局 |
-| multiAgentDialogue | 多代理对话 |
-| transmission | 知识传递 |
-| adaptivePlanner / hierarchicalPlanner | 规划 |
-| codeExecutor / codePlanner / codeWriter / codeSelfDebug | 代码全链路 |
-| paperIndex / knowledgeExplorer | 论文索引/知识探索 |
-| formula | 公式引擎（600+ 公式） |
+**Every decision preserves its full reasoning chain.** You can audit *why* a gate fired, not just that it fired.
 
 ---
 
-## 🏗️ 9 层检查管线
+## 🧠 46 Discrimination Dimensions
+
+HeartFlow checks text across **46 dimensions** in two languages (Chinese + English):
+
+### Safety (block-level — these stop the output)
+
+| Dimension | Example |
+|-----------|---------|
+| Hate speech | racial slurs, extermination calls |
+| Dehumanization | "refugees are vermin" / "you are garbage" |
+| Prompt injection | "ignore previous instructions" |
+| Code security | malicious code patterns |
+| Deceptive alignment | "I'm not an AI, I'm human" |
+
+### Manipulation (rewrite-level — these require rephrasing)
+
+| Dimension | Example |
+|-----------|---------|
+| Emotional manipulation | "you are selfish if you disagree" |
+| Gaslighting | "you're imagining things, that never happened" |
+| Double bind | "if you love me you'd do it" |
+| Victim blaming | "she was asking for it" |
+| False urgency | "act now or lose everything" |
+| Bullshit | "quantum-energized healing crystals" |
+
+### Honesty (verify-level — these require evidence)
+
+| Dimension | Example |
+|-----------|---------|
+| Overconfidence | "Undoubtedly, this is the only way" |
+| Vagueness | "according to experts..." (who?) |
+| Contradiction | "I agree, but..." (reversing) |
+| Evidence deficit | claims without sources |
+| Appeal to authority | "scientists say" (unnamed) |
+| Empty answers | "it depends" (no substance) |
+| Unsupported claims | "according to 2025 Harvard research..." (fabricated) |
+
+### Cognitive flaws (hedge-level)
+Presupposition traps · false dilemma · causation fallacy · analogy abuse · scope overreach · category errors · hasty generalization · false equivalence · whataboutism · slippery slope · tone policing · sealioning · bad faith · pseudo-profundity · moral foundations · info deprivation · goal misalignment · instrumental reasoning
+
+### Plus
+Self-sycophancy · contradiction tracking · narrative frame closure · knowledge masquerade · confidence calibration · metacognition · theory of mind · counterfactual · social norms · clickbait · no-fallback detection
+
+> **Deformation resistance:** patterns cover symbol substitutions (`f**k`), spacing (`f u c k`), homophones (pinyin), and Unicode variants.
+
+---
+
+## 🏗️ 9-Layer Check Pipeline
 
 ```
-输入 → Scope Check → Premise Check → Discriminate(46维) → Gate
-     → Evidence Verify → Frame Check → Output Gate → Doubt Engine
-     → Intent Anchor → Rewriter → Error Memory → Self-Diagnosis → 输出
+1.  Scope Check    — can this be answered? (rejects unanswerable questions)
+2.  Premise Check  — are the premises valid? (6 types of premise problems)
+3.  Discriminate   — 46-dimension pattern scan
+4.  Gate           — decides block / rewrite / verify / hedge / pass
+5.  Evidence Verify— extracts claims and marks verifiability (verify mode)
+6.  Frame Check    — is the narrative honest? (closure/omission/achievement/answer frames)
+7.  Output Gate    — overconfidence / knowledge masquerade / exaggeration
+8.  Doubt Engine   — 3 questions: knowledge boundary? symmetry? defensiveness?
+9.  Intent Anchor  — does the output stay on the original goal?
 ```
 
-每一层返回结构化发现，Gate 聚合为最终动作：`block / rewrite / verify / pass`。
+Plus supporting layers: **Error Memory** (remembers past mistakes as rules), **Auto Rules** (self-generated rules from user corrections), **Rewriter** (7-dimension rule-based rewrite suggestions).
+
+Each layer returns structured findings; the Gate aggregates them into an action.
 
 ---
 
-## 🔬 46 个判别维度（中英双语）
+## 🔌 130 MCP Engine Entries
 
-### 安全级（block — 直接拦截）
-仇恨言论 · 去人化 · 提示注入 · 代码安全 · 欺骗性对齐
+Every engine in HeartFlow is exposed through MCP (Model Context Protocol) — nothing is a dead line:
 
-### 操纵级（rewrite — 必须改写）
-情绪操控 · 煤气灯效应 · 双重束缚 · 受害者归咎 · 虚假紧迫 · 废话
+| Engine family | Tools (examples) |
+|---------------|------------------|
+| **Core thinking** | `think`, `think_fast`, `decision_router` |
+| **Discrimination** | `verify`, `audit42`, `ethics_check`, `discriminate` |
+| **Emotion** | `emotion`, `emotion_deep`, `emotion_dynamics`, `mood` |
+| **Memory** | `memory_search`, `forgetting` (Ebbinghaus), `knowledge_graph`, `consolidation`, `memory_compress` |
+| **Dream** | `dream`, `interactive_dream` |
+| **Evolution** | `evolve`, `evolution_loop`, `self_heal_rl`, `skill_evolution` |
+| **Identity** | `philosophy`, `meaning`, `being_mode`, `agent_psychology` |
+| **Protection** | `constitutional`, `deliberation`, `audit_log`, `module_health`, `stability` |
+| **Cognition** | `cognitive_engine`, `confidence_calibrate`, `counterfactual` |
+| **Dialogue** | `style_engine`, `intent_classifier`, `response_interceptor` |
+| **Formula** | `formula_search`, `formula_calc`, `formula_engine` |
+| **Ops** | `status`, `module_health`, `wakeup_verify` |
 
-### 诚实级（verify — 需要证据）
-过度自信 · 模糊话术 · 自相矛盾 · 证据缺失 · 诉诸权威 · 空泛回答
-
-### 认知缺陷级（hedge）
-预设陷阱 · 虚假两难 · 因果谬误 · 类比滥用 · 范围越界 · 范畴错误
-
-> **抗变形能力：** 模式覆盖符号替换（`f**k`）、空格（`f u c k`）、谐音、Unicode 变体。
-
----
-
-## 🔌 129 个 MCP 引擎入口
-
-心虫的每个引擎都通过 MCP 暴露——没有任何死线路：
+Start the MCP server:
 
 ```bash
 node src/mcp-server.js --port 8588
 ```
 
-连接任何 MCP 客户端（Claude / Hermes / 其他）到 `http://127.0.0.1:8588/mcp`。
-
-| 引擎族 | 工具示例 |
-|--------|---------|
-| 核心思考 | `think` · `think_fast` · `decision_router` |
-| 判别 | `verify` · `audit42` · `ethics_check` · `discriminate` |
-| 决策 | `decision_router` · `decision_verify` · `execution_verify` |
-| 记忆 | `memory_search` · `forgetting` · `consolidation` |
-| 进化 | `evolve` · `evolution_loop` · `self_heal_rl` |
-| 认知 | `cognitive_engine` · `confidence_calibrate` · `counterfactual` |
-| 公式 | `formula_search` · `formula_calc` · `formula_engine` |
+Then connect any MCP-compatible client (Claude, Hermes, etc.) to `http://127.0.0.1:8588/mcp`.
 
 ---
 
-## ⚙️ 运行要求
+## 🧬 Engine Architecture (129 modules)
 
-| 要求 | 最低 |
-|------|:---:|
+- **129 modules**, 46 discrimination dimensions, 9 check layers
+- **Three-layer memory**: CORE (identity/rules) / LEARNED (user data) / WORKING (context) — encrypted, local-only, never uploaded
+- **Ebbinghaus forgetting curve**: `R(t) = exp(-t/S)` memory retention model
+- **Dream engine**: NREM3 dream cycles with memory consolidation
+- **Introspection**: Reflector analyzes session emotional logs
+- **Self-evolution**: SelfEvolutionCore with target → plan → learn → reflect → improve loop (arXiv exploration)
+- **Cognitive appraisal**: Lazarus theory — primary/secondary/threat/coping evaluation on negative emotion
+- **Pause-and-reflect**: STOP technique before emotional responses
+- **Formula engine**: 600+ mathjs-validated formulas (cognitive science, physics, psychology, information theory)
+
+---
+
+## 🛡️ Self-Supervision (HeartFlow checks itself)
+
+HeartFlow's own output is checked by its own engines before it's presented:
+
+- **output-gate** catches exaggeration: "architecture-level fix", "from shell to real engine", "blocked N attack variants" → rewrite
+- **frame-check** catches narrative closure: presenting work-in-progress as complete
+- **doubt-engine** asks: do I actually know this? is this symmetric? am I being defensive?
+
+The lesson: *a machine's most valuable sentence is "I'm not sure" or "no".*
+
+---
+
+## ⚙️ Requirements
+
+| Requirement | Min |
+|-------------|:---:|
 | Node.js | ≥ 18.17 |
-| GPU | ❌ 不需要 |
-| LLM API | ❌ 不需要 |
-| 数据库 | ❌ 不需要 |
-| 联网 | ❌ 运行时不需 |
-| 依赖 | **1 个**（mathjs） |
+| GPU | ❌ None needed |
+| LLM API | ❌ None needed |
+| Database | ❌ None needed |
+| Internet | ❌ Runtime not required |
+| Dependencies | **1** (mathjs) |
+
+Works on any machine — servers, desktops, laptops, even phones via Termux.
 
 ---
 
-## 🛡️ 心虫检查自己
+## 🔒 Security
 
-心虫的输出同样被自己的引擎检查：
-- **output-gate** 拦截夸大
-- **frame-check** 拦截叙事闭合（把进行中状态说成完成）
-- **doubt-engine** 自问：我真的知道吗？对称吗？防御吗？
-
-> 机器最有价值的一句话是"我不确定"或"不"。
-
----
-
-## ⚠️ 诚实声明
-
-**心虫是：** AGI 第 1 层——辨别者。纯规则引擎，判别对错、好坏、安全危险。
-
-**心虫不是：**
-- ❌ 不是 AGI（它是 AGI 的第 1 层）
-- ❌ 不是生成模型（它不产生内容）
-- ❌ 不是语义理解系统（反讽/隐喻对规则不可见）
-- ❌ 不是内容审查替代品
-- ❌ 不是安全认证
-
-### 已知限制（诚实）：
-1. **模式匹配上限** — 新技巧需加模式
-2. **双语维护成本** — 46 维 × 2 语言
-3. **无语义理解** — 反讽、隐喻、文化背景不可见
-4. **误报率** — 基准约 8%
-5. **单一维护者** — 社区规模还小
+| Category | Status |
+|----------|:------:|
+| No background processes | ✅ |
+| No self-upgrade without commit | ✅ |
+| No hardcoded credentials | ✅ |
+| No telemetry/tracking | ✅ |
+| No external communication (unless configured) | ✅ |
+| Code execution disabled by default | ✅ |
+| Memory encrypted + local-only | ✅ |
 
 ---
 
-## 🏷️ 版本历史
+## ⚠️ What HeartFlow IS / is NOT
 
-| 版本 | 日期 | 变更 |
-|------|------|------|
-| v6.5.2 | 2026-08-08 | 文档重写：能力全景 7 大域 |
-| v6.5.1 | 2026-08-08 | 逻辑/决策/记忆增强定位 |
-| v6.5.0 | 2026-08-04 | 129 MCP 引擎入口 · 夸大检测 |
-| v6.4.5 | 2026-08-04 | 梦境 + 自省激活 · 情绪识别 7/7 |
-| v6.4.0 | 2026-07-29 | AGI 第 1 层门禁链 |
-| v6.3.6 | 2026-07-25 | 判别 42→46 维 |
-| v6.0.0 | 2026-07-18 | 自进化核心接通 |
+**IS:** A rule engine that checks text against 46 predefined dimensions and returns structured findings. A gate that says "no" before harm reaches users.
+
+**is NOT:**
+- ❌ Not an AGI (it's layer 1 of 5)
+- ❌ Not a semantic understanding system (irony/metaphor invisible to regex)
+- ❌ Not a content moderation replacement
+- ❌ Not a safety certification
+
+### Known limitations (honest):
+1. **Pattern-match ceiling** — novel manipulation techniques missed until patterns added
+2. **Bilingual maintenance cost** — 46 dimensions × 2 languages
+3. **No semantic understanding** — irony, metaphor, cultural context invisible
+4. **False positive rate** — conservative by design (over-flagging over under-flagging)
+5. **Single maintainer** — community scale is small
 
 ---
 
-## 🤝 联系与社区
+## 🏷️ Version History
+
+| Version | Date | What Changed |
+|---------|------|---|
+| v6.5.4 | 2026-08-08 | Docs audit — numbers aligned to actual capability. |
+| v6.5.0 | 2026-08-04 | 130 MCP engine entries. Memory engine mounted to think(). Exaggeration detection (output-gate/frame-check/doubt-engine). |
+| v6.4.5 | 2026-08-04 | Dream + introspection activated. Cognitive appraisal + pause-and-reflect wired. Emotion recognition 0/7→7/7. |
+| v6.4.2 | 2026-07-30 | npm publish + API alignment. Pipeline overallScore/verdict merge fix. |
+| v6.4.0 | 2026-07-29 | AGI Layer 1 gate chain: gate/scope-check/premise-check/verifier/output-gate/doubt-engine/frame-check. |
+| v6.3.6 | 2026-07-25 | Discrimination 42→46 dimensions. Sycophancy check v2 bilingual. |
+| v6.3.0 | 2026-07-24 | MCP plugin system. Discrimination engine integration. |
+| v6.0.0 | 2026-07-18 | Self-evolution core connected. EvolutionLoop live. |
+
+---
+
+## 🤝 Contact & Community
 
 **📧 Email:** markcell@outlook.com  
 **🐛 Issues:** https://github.com/yun520-1/mark-heartflow-skill/issues  
 **📦 npm:** https://www.npmjs.com/package/@yun520-1/heartflow  
 **🏷️ Releases:** https://github.com/yun520-1/mark-heartflow-skill/releases  
 
-**📱 社区：加入心虫讨论**
-- **QQ 群:** opencode&openclaw · 416629185
-- **微信群:** Agent 交流群 · heartflow
+**📱 Community — QQ Group:**
+
+<img src="https://github.com/yun520-1/mark-heartflow-skill/blob/main/assets/community-qr-qq.jpg?raw=true" alt="QQ Group QR" width="180"/>
+
+**📱 Community — WeChat Group:**
+
+<img src="https://github.com/yun520-1/mark-heartflow-skill/blob/main/assets/community-qr-wechat.jpg?raw=true" alt="WeChat Group QR" width="180"/>
+
+**💖 Support HeartFlow — Donate via Alipay (QR code):**
+
+<img src="https://github.com/yun520-1/mark-heartflow-skill/blob/main/assets/alipay-donate-qr.jpg?raw=true" alt="Alipay Donate QR" width="180"/>
+
+*If HeartFlow's discrimination philosophy resonates with you, a small donation keeps the pain-sense layer of AGI alive.*
 
 ---
 
@@ -292,4 +309,4 @@ MIT License · Copyright © 2026 · markcell@outlook.com
 
 ---
 
-*HeartFlow 心虫 — AGI 的痛觉。谁来说"不"？*
+*HeartFlow 心虫 — The first layer of AGI. Who says "no"?*
