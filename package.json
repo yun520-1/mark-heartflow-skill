@@ -1,6 +1,6 @@
 {
   "name": "@yun520-1/heartflow",
-  "version": "6.5.1",
+  "version": "6.5.2",
   "description": "HeartFlow (心虫) — rule-based cognitive enhancement layer for LLMs. Sharpens logic (45-dim contradiction/fallacy/overconfidence checks), improves decision quality (routing/retry/escalation), boosts task completion (3-layer memory, supersession, Ebbinghaus decay). Zero LLM dependency, MCP native, works anywhere Node.js runs.",
   "main": "src/gate.js",
   "bin": {
