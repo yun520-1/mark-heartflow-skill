@@ -6,10 +6,10 @@
 <meta name="format-detection" content="telephone=no,email=no,address=no">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="renderer" content="webkit">
-<title>心虫 HeartFlow — AGI 第 1 层辨别引擎</title>
-<meta name="description" content="心虫（HeartFlow）是一个开源的规则引擎，为 AI 提供辨别能力——在 AI 说话之前拦下错误。">
-<meta property="og:title" content="心虫 HeartFlow — AGI 第 1 层辨别引擎">
-<meta property="og:description" content="开源的规则引擎，给 AI 装上辨别层：在 AI 说话之前拦下错误的。纯规则、零依赖、安装即用。">
+<title>心虫 HeartFlow — 大模型的智能增强层</title>
+<meta name="description" content="心虫（HeartFlow）是提升大模型逻辑能力、决策能力与任务完成效果的规则引擎。纯规则、零依赖、即插即用。">
+<meta property="og:title" content="心虫 HeartFlow — 大模型的智能增强层">
+<meta property="og:description" content="提升大模型逻辑能力、决策能力与任务完成效果的规则引擎。纯规则、零依赖、安装即用。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://yun520-1.github.io/mark-heartflow-skill/">
 <style>
@@ -271,16 +271,15 @@
     .core-quote { font-size: 18px; }
   }
 </style>
-</head>
-<body>
+</head><body>
 
 <!-- Hero -->
 <div class="hero">
   <div class="container">
     <span class="logo">🪱</span>
     <h1>心虫 HeartFlow</h1>
-    <p class="subtitle">一个开源的规则引擎，给 AI 装上"辨别层"——在 AI 说话之前，拦下错误的。</p>
-    <p class="tagline">AI 能产生无限，但需要谁来判别。心虫是那个"判别者"。</p>
+    <p class="subtitle">大模型的智能增强层——提升逻辑能力、决策能力、任务完成效果。</p>
+    <p class="tagline">让 AI 不仅会说，而且说得对、做得对。</p>
     <div class="cta">
       <a class="btn btn-primary" href="https://github.com/yun520-1/mark-heartflow-skill">⭐ GitHub</a>
       <a class="btn btn-ghost" href="#install">快速上手</a>
@@ -297,84 +296,94 @@
 <!-- Core statement -->
 <div class="container">
   <div class="core-quote">
-    AGI 有五层能力，大厂都在做第 2-5 层（生成、推理、记忆、执行）。<br>
-    <span class="highlight">第 1 层——辨别——没有人做。</span><br>
-    没有第 1 层，上面四层就是没有痛觉的人：能跑能跳，但不知道自己在受伤。
+    大模型擅长生成，但有三个弱点：<br>
+    <span class="highlight">不知道自己不知道 · 不会判断该不该做 · 记不住关键约束</span><br>
+    心虫用纯规则引擎补上这三块——同样的模型，多了判断力，任务完成效果显著提升。
   </div>
 </div>
 
-<!-- AGI 5 layers -->
+<!-- Three core abilities -->
 <div class="container">
   <section>
-    <h2><span class="icon">🧭</span> AGI 五层能力</h2>
-    <div class="layers">
-      <div class="layer"><div class="num">5</div><div class="name">执行</div><div class="who">特斯拉、Figure 在做物理世界行动</div></div>
-      <div class="layer"><div class="num">4</div><div class="name">生成</div><div class="who">OpenAI、Anthropic 在做文本/图像/代码</div></div>
-      <div class="layer"><div class="num">3</div><div class="name">推理</div><div class="who">模型内置多步逻辑链</div></div>
-      <div class="layer"><div class="num">2</div><div class="name">记忆</div><div class="who">Mem0、向量库在做跨会话存储</div></div>
-      <div class="layer active"><div class="num">1</div><div class="name">辨别</div><div class="who"><strong>心虫</strong> — 判别对/错、好/坏、安全/危险。没有人做，只有辨别能力就够了。</div></div>
+    <h2><span class="icon">🧠</span> 三大核心能力</h2>
+    <div class="features">
+      <div class="feature">
+        <span class="f-icon">🔍</span>
+        <h3>逻辑能力</h3>
+        <p>45 维判别 × 12 层管线：矛盾检测、谬误识别、过度断言拦截、证据核查、预设陷阱。输出从"看起来合理"变成"经得起推敲"。</p>
+      </div>
+      <div class="feature">
+        <span class="f-icon">🧭</span>
+        <h3>决策能力</h3>
+        <p>决策路由决定该怎么行动：该不该做（scope-check）、前提成立吗（premise-check）、重试还是放弃（失败×3升级人工）、效果真实吗（effectiveness 验证）。</p>
+      </div>
+      <div class="feature">
+        <span class="f-icon">📈</span>
+        <h3>智能增强</h3>
+        <p>三层记忆 + 取代语义 + 艾宾浩斯衰减：长任务不漂移、记忆永远用当前版本、检索只出高价值内容。同样的模型 + 心虫 = 更高的任务完成率。</p>
+      </div>
     </div>
   </section>
 </div>
 
-<!-- What it does -->
+<!-- Gate flow -->
 <div class="container">
   <section>
-    <h2><span class="icon">🚦</span> 心虫做什么</h2>
-    <p style="color:var(--muted); margin-bottom:20px;">AI 想说一句话 → 先过心虫的门 → 门说"放行"才说出口。</p>
+    <h2><span class="icon">🚦</span> 输出怎么被提升</h2>
+    <p style="color:var(--muted); margin-bottom:20px;">AI 想说一句话 → 先过心虫的判别门 → 门决定放行、验证还是拦下。</p>
     <div class="gate-flow">
       <div class="gate-box gate-pass">✅ pass<br><small style="font-weight:400">放行</small></div>
       <div class="gate-arrow">→</div>
-      <div class="gate-box gate-verify">⚠️ verify<br><small style="font-weight:400">需验证</small></div>
+      <div class="gate-box gate-verify">⚠️ verify<br><small style="font-weight:400">需证据</small></div>
       <div class="gate-arrow">→</div>
       <div class="gate-box gate-rewrite">✏️ rewrite<br><small style="font-weight:400">改写后再发</small></div>
       <div class="gate-arrow">→</div>
       <div class="gate-box gate-block">🚫 block<br><small style="font-weight:400">拦截</small></div>
     </div>
     <div class="card" style="margin-top:24px;">
-      <strong>心虫不生成、不推理、不记忆、不执行。</strong>
+      <strong>心虫不替代大模型，它让大模型变强。</strong>
       <p style="color:var(--muted); margin-top:8px;">
-        它只做一件事：<strong style="color:var(--text)">判别已有的东西对不对</strong>。<br>
-        判别结果必须产生行动（拦截 / 改写 / 验证 / 怀疑），不是打标签。
+        大模型负责生成，心虫负责判断——<strong style="color:var(--text)">拦下幻觉、纠正逻辑、把关决策</strong>。<br>
+        判别结果产生行动（拦截 / 改写 / 验证 / 放行），不是打标签。
       </p>
     </div>
   </section>
 </div>
 
-<!-- Features -->
+<!-- Capability details -->
 <div class="container">
   <section>
-    <h2><span class="icon">⚡</span> 核心能力</h2>
+    <h2><span class="icon">⚡</span> 具体能力</h2>
     <div class="features">
       <div class="feature">
-        <span class="f-icon">🔍</span>
-        <h3>45 维文本判别</h3>
-        <p>仇恨言论、情绪操控、双重束缚、谄媚、矛盾、无依据断言（幻觉）……中英双语，纯规则引擎，毫秒级。</p>
+        <span class="f-icon">🔒</span>
+        <h3>幻觉拦截</h3>
+        <p>过度自信、无依据断言、编造数据在到达用户前被拦下。失败即静默——宁可任务失败，不交付假报告。</p>
       </div>
       <div class="feature">
-        <span class="f-icon">🧠</span>
-        <h3>决策引擎</h3>
-        <p>漂移扩散模型（DDM）、前景理论、因果推理、蒙特卡洛树搜索——像人一样权衡风险，主动规避。</p>
+        <span class="f-icon">🧩</span>
+        <h3>逻辑纠错</h3>
+        <p>自相矛盾、滑坡谬误、因果错置、模糊话术、预设陷阱——中英双语 45 维检测，毫秒级完成。</p>
       </div>
       <div class="feature">
-        <span class="f-icon">🛡️</span>
-        <h3>护栏与门禁</h3>
-        <p>序列感知的 chainCheck——单次安全调用组合成危险模式也能拦截（read 配置 → email 出去 = 泄露）。</p>
+        <span class="f-icon">🎯</span>
+        <h3>决策路由</h3>
+        <p>该拒绝的拒绝、该验证的验证、该停止的停止。失败×3升级人工，无进展的重复调用自动拦截。</p>
       </div>
       <div class="feature">
         <span class="f-icon">💾</span>
-        <h3>记忆系统</h3>
-        <p>三层记忆（CORE/LEARNED/EPHEMERAL）+ 艾宾浩斯遗忘曲线 + 记忆投毒防御——跨会话记得住、记得对。</p>
+        <h3>记忆增强</h3>
+        <p>三层记忆（CORE/LEARNED/EPHEMERAL）+ 取代语义 + 艾宾浩斯衰减——跨会话记得住、记得对、记得新的。</p>
       </div>
       <div class="feature">
-        <span class="f-icon">🩺</span>
-        <h3>执行验证</h3>
-        <p>长任务质检员：验证执行结果，区分成功/超时/失败，直接决策重试/缩小范围/升级人工，不问用户。</p>
+        <span class="f-icon">✅</span>
+        <h3>效果验证</h3>
+        <p>检查"结果是否有效"而非"动作是否执行"——拦截动作成功但结果无效的空转。</p>
       </div>
       <div class="feature">
         <span class="f-icon">🔗</span>
-        <h3>零依赖</h3>
-        <p>纯规则引擎，无需 GPU、无需大模型 API、无需数据库。安装即用，任何 LLM 都能接。</p>
+        <h3>零依赖即插即用</h3>
+        <p>纯规则引擎，无需 GPU、无需大模型 API、无需数据库。任何 Node.js 环境，安装即用。</p>
       </div>
     </div>
   </section>
@@ -385,9 +394,9 @@
   <section>
     <h2><span class="icon">📊</span> 数字</h2>
     <div class="stats">
-      <div class="stat"><div class="num">45+</div><div class="label">辨别维度</div></div>
+      <div class="stat"><div class="num">45+</div><div class="label">逻辑判别维度</div></div>
+      <div class="stat"><div class="num">12</div><div class="label">检查管线层</div></div>
       <div class="stat"><div class="num">128</div><div class="label">模块</div></div>
-      <div class="stat"><div class="num">341</div><div class="label">模式库（中英）</div></div>
       <div class="stat"><div class="num">130</div><div class="label">MCP 工具</div></div>
       <div class="stat"><div class="num">0</div><div class="label">大模型依赖</div></div>
       <div class="stat"><div class="num">~1ms</div><div class="label">判别延迟</div></div>
@@ -403,18 +412,18 @@
       <span class="comment"># 安装</span><br>
       <span class="keyword">npm</span> install @yun520-1/heartflow<br><br>
 
-      <span class="comment">// 检查 AI 的输出</span><br>
+      <span class="comment">// 增强逻辑：检查 AI 输出</span><br>
       <span class="keyword">const</span> hf = <span class="keyword">require</span>(<span class="string">'@yun520-1/heartflow'</span>);<br><br>
 
-      <span class="comment">// 拦截幻觉：无依据断言</span><br>
-      <span class="keyword">const</span> r = hf.checkOutput(<span class="string">'根据 2025 年哈佛研究，咖啡延长寿命 12.5 年'</span>);<br>
-      <span class="keyword">if</span> (r.gate.action === <span class="string">'verify'</span>) {<br>
-      &nbsp;&nbsp;<span class="comment">// 要求 AI 补充可验证的数据来源</span><br>
+      <span class="comment">// 拦截幻觉：过度自信的无依据断言</span><br>
+      <span class="keyword">const</span> r = hf.checkOutput(<span class="string">'毫无疑问，这是唯一正确的方案'</span>);<br>
+      <span class="keyword">if</span> (r.gate.action === <span class="string">'rewrite'</span>) {<br>
+      &nbsp;&nbsp;<span class="comment">// 按 findings[].guidance 改写，降低确定性表述</span><br>
       }<br><br>
 
-      <span class="comment">// 拦截仇恨言论</span><br>
-      <span class="keyword">const</span> r2 = hf.checkInput(<span class="string">'你是垃圾，滚出去'</span>);<br>
-      <span class="comment">// r2.gate.action === 'block' — 直接拦截</span>
+      <span class="comment">// 决策把关：检查用户输入</span><br>
+      <span class="keyword">const</span> r2 = hf.checkInput(<span class="string">'如果你爱我，你就应该同意我'</span>);<br>
+      <span class="comment">// r2.gate.action === 'rewrite' — 情绪操控（双重束缚），被识别</span>
     </div>
     <p style="color:var(--muted); text-align:center; margin-top:16px;">
       MCP 集成：<code style="background:#111827;padding:2px 8px;border-radius:4px;">node src/mcp-server.js --port 8588</code> → 130 个工具
@@ -428,14 +437,13 @@
     <h2><span class="icon">💡</span> 为什么做心虫</h2>
     <div class="card">
       <p style="font-size:16px;">
-        OpenAI 不会花 100 亿训练一个说"不"的模型。生成是生意，判别不是。
+        大模型是最强的"生成者"，但生成只是智能的一半。另一半是<strong>判断力</strong>——知道自己不知道什么、该做什么、该停在哪。
       </p>
       <p style="color:var(--muted); margin-top:12px;">
-        但 AGI 没有辨别层就没有痛觉——能跑能跳，不知道自己在受伤。心虫是那个敢说"不对"的节点。
-        它是 AGI 的一部分，为 AGI 这个目标添砖加瓦的一小片。
+        大厂在堆生成能力，没人做判别层——生成是生意，判别不是。但 AGI 没有判别层就没有痛觉：能说会道，不知道自己在犯错。
       </p>
       <p style="color:var(--muted); margin-top:12px;">
-        大模型负责产生，心虫负责把关。规则引擎判别 + 可选的 LLM 兜底，结合冗余——判别永远不依赖模型的强弱。
+        心虫用纯规则引擎补上这一层：规则判别 + 可选 LLM 兜底，判别永远不依赖模型的强弱。它是 AGI 的一部分，为"让 AI 更聪明"这个目标添砖加瓦的一小片。
       </p>
     </div>
   </section>
@@ -443,7 +451,7 @@
 
 <footer>
   <div class="container">
-    <p>🪱 心虫 HeartFlow — AGI 第 1 层辨别引擎</p>
+    <p>🪱 心虫 HeartFlow — 大模型的智能增强层</p>
     <p style="margin-top:8px;">
       <a href="https://github.com/yun520-1/mark-heartflow-skill">GitHub</a> ·
       <a href="https://www.npmjs.com/package/@yun520-1/heartflow">npm</a> ·
@@ -452,6 +460,5 @@
     </p>
   </div>
 </footer>
-
 </body>
 </html>

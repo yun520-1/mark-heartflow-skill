@@ -1,7 +1,7 @@
 {
   "name": "@yun520-1/heartflow",
   "version": "6.5.1",
-  "description": "HeartFlow (心虫) — AGI Layer 1: rule-based text discrimination gate. Checks sycophancy/contradiction/fallacies/prompt injection/emotional manipulation/45 dimensions. Zero LLM dependency, MCP native. The gate that says NO before AI output reaches users.",
+  "description": "HeartFlow (心虫) — rule-based cognitive enhancement layer for LLMs. Sharpens logic (45-dim contradiction/fallacy/overconfidence checks), improves decision quality (routing/retry/escalation), boosts task completion (3-layer memory, supersession, Ebbinghaus decay). Zero LLM dependency, MCP native, works anywhere Node.js runs.",
   "main": "src/gate.js",
   "bin": {
     "heartflow": "src/mcp-server.js"
